@@ -1,0 +1,52 @@
+Ginga Common Core Multi Device ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+Roberto de Azevedo (robertogerson@telemidia.puc-rio.br)
+Carlos Batista (bidu@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+- ifdefs were inserted in order to provide BSD sockets support.
+- Improved passive support
+- Created active support (through TCP connections)  
+
+--------------------------------------------------------------------------------
+
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Interfaces were defined to extern component load.
+
+--------------------------------------------------------------------------------
+Versao 0.10.0
+-------------
+ 03/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Concept of gingacc-mutidevice: a project to support Multi Devices 
+  presentations.
+
+--------------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+This is the Ginga Common Core System project.
+
+The autogen.sh script does all the magic calls to automake/autoconf and
+friends that are needed to configure the compiling environment.
+
+DEPENDENCIES
+============
+-> libtool  >= 1.3.4
+-> autoconf >= 2.13
+-> automake >= 1.4
+-> directfb >= 1.0 (www.directfb.org)
+-> telemidia-util-cpp >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
+
+INSTALLATION
+============
+As mentioned above, autogen.sh does all the `configure' magic.
+So the installation steps are:
+   $ ./autogen.sh
+   $ make
+   $ make install
+If you need to customize any path or regular `configure' value, please
+refer to the INSTALL file.

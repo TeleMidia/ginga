@@ -1,0 +1,6 @@
+For now, GingaCC is just a repository for GingaCC-related subprojects
+(see the TODO file).
+So you must compile and install each subproject in a certain sequence,
+to satisfy the internal dependencies. See the README file in each subproject.
+
+In the future, many other subprojects may be included here.

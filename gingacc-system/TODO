@@ -1,0 +1,35 @@
+Ginga Common Core System TODO List
+--------------------------------------------------------------------------------
+
+This is the TODO list for Ginga NCL Reference Implementation. If you want to 
+work on any of this, please send us a mail to ask about it first.
+ 
+It's likely that work is already started and we can give you more details on
+the particular issue.
+--------------------------------------------------------------------------------
+
+
+Resource identification
+------------
+ Finish and test the functionalities of resource identification 
+ (GingaLocatorFactory)
+ 
+Interaction Channel
+-------------
+To implement support for content streaming and the definition of a pre-search
+mechanism
+
+Protocols and schemas
+--------------
+ To implement support of urls with RTP, RTPS and sbtvd-ts protocols (only 
+ sbtvd-ts://video is implemented)
+
+Performance and memory leak tests
+----------------
+ Only system tests has been performed on Ginga-NCL. 
+ The unity and integration tests may be necessary, as well as using tools for
+ memory leak detection.
+ 
+ Plane
+ ----
+ To implement image decoding on the background plane

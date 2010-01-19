@@ -1,0 +1,28 @@
+This is Ginga Common Core Context Manager library.
+
+The autogen.sh script does all the magic calls to automake/autoconf and
+friends that are needed to configure the compiling environment.
+
+DEPENDENCIES
+============
+-> libtool        >= 1.3.4
+-> autoconf       >= 2.13
+-> automake       >= 1.4
+-> lua >= 5.1.2 (www.lua.org)
+-> telemidia-util-cpp >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
+-> gingacc-system (from gingacc-cpp) >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
+-> gingacc-cm (from gingacc-cpp) >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
+
+
+INSTALLATION
+============
+As mentioned above, autogen.sh does all the `configure' magic.
+So the installation steps are:
+   $ ./autogen.sh
+   $ make
+   $ make install
+If you need to customize any path or regular `configure' value, please
+refer to the INSTALL file.

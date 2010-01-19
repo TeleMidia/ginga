@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<middleware platform="pc" system="linux" version="2.6.27.8">
+<!-- UTIL -->
+  <component package="telemidia-util" name="libtelemidiautil.so" version="0.11.2" type="shared">
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- COMPONENT MANAGER -->
+  <component package="gingacc-cm" name="libgingacccmassembler.so" version="0.11.2" type="dynamic">
+    <symbol object="ComponentDescription" creator="createComponentDescription" destroyer="destroyComponentDescription" interface="IComponentDescription"/>
+    <location type="local" uri="/usr/local/lib/ginga/cm"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-cm" name="libgingacccmcomponent.so" version="0.11.2" type="dynamic">
+    <symbol object="Component" creator="createComponent" destroyer="destroyComponent" interface="IComponent"/>
+    <location type="local" uri="/usr/local/lib/ginga/cm"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-cm" name="libgingacccmparser.so" version="0.11.2" type="dynamic">
+    <dependency type="shared" componentName="libexpat.so" version="0.11.2"/>
+    <symbol object="ComponentParser" creator="createComponentParser" destroyer="destroyComponentParser" interface="IComponentParser"/>
+    <location type="local" uri="/usr/local/lib/ginga/cm"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-cm" name="libgingacccm.so" version="0.11.2" type="dynamic">
+    <symbol object="ComponentManager" creator="createCM" destroyer="" interface="IComponentManager"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- SYSTEM -->
+  <component package="gingacc-system" name="libgingaccsysctsimgdfb.so" version="0.11.2" type="dynamic">
+    <dependency type="shared" componentName="libdirectfb.so" version="1.3.0"/>
+    <symbol object="ImageProvider" creator="createImageProvider" destroyer="destroyImageProvider" interface="IImageProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsysctsdfbf.so" version="0.11.2" type="dynamic">
+    <dependency type="shared" componentName="libdirectfb.so" version="1.3.0"/>
+    <symbol object="FontProvider" creator="createFontProvider" destroyer="destroyFontProvider" interface="IFontProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsysctsdfbav.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libdirectfb.so" version="1.3.0"/>
+    <symbol object="VideoProvider" creator="createDFBVideoProvider" destroyer="destroyDFBVideoProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <!--component package="gingacc-system" name="libgingaccsysctsxineav.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libdirectfb.so" version="1.3.0"/>
+    <symbol object="TSVideoProvider" creator="createXineVideoProvider" destroyer="destroyXineVideoProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component-->
+
+  <component package="gingacc-system" name="libgingaccsysctsffmpegav.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libdirectfb.so" version="1.3.0"/>
+    <symbol object="TSVideoProvider" creator="createFFmpegVideoProvider" destroyer="destroyFFmpegVideoProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsystemiodfb.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libdirectfb.so" version="1.3.0"/>
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemio.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemiocodemap.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <symbol object="DeviceScreen" creator="createDFBScreen" destroyer="destroyDFBScreen" interface="IDeviceScreen"/>
+    <symbol object="EventBuffer" creator="createDFBEventBuffer" destroyer="destroyDFBEventBuffer" interface="IEventBuffer"/>
+    <symbol object="InputEvent" creator="createDFBInputEvent" destroyer="destroyDFBInputEvent" interface="IInputEvent"/>
+    <symbol object="UserEvent" creator="createDFBUserEvent" destroyer="destroyDFBUserEvent" interface="IInputEvent"/>
+    <symbol object="Surface" creator="createDFBSurface" destroyer="destroyDFBSurface" interface="ISurface"/>
+    <symbol object="Window" creator="createDFBWindow" destroyer="destroyDFBWindow" interface="IWindow"/>
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsystemio.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <symbol object="LocalDeviceManager" creator="createLocalDeviceManager" destroyer="destroyLocalDeviceManager" interface="ILocalDeviceManager"/>
+    <symbol object="GingaLocatorFactory" creator="createGingaLocatorFactory" destroyer="destroyGingaLocatorFactory" interface="IGingaLocatorFactory"/>
+    <symbol object="InputManager" creator="createInputManager" destroyer="destroyInputManager" interface="IInputManager"/>
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsystemiocodemap.so" version="0.11.2" type="shared">
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-system" name="libgingaccsystemthread.so" version="0.11.2" type="shared">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- MULTIDEVICE -->
+  <component package="gingacc-md" name="libgingaccmd.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libgingacccm.so" version="0.11.2"/>
+    <symbol object="RemoteDeviceManager" creator="createRemoteDeviceManager" destroyer="destroyRemoteDeviceManager" interface="IRemoteDeviceManager"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- CONTEXT MANAGER -->
+  <component package="gingacc-contextmanager" name="libgingacccontextmanager.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <symbol object="ContextManager" creator="createContextManager" destroyer="destroyContextManager" interface="IContextManager"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- INTERACTIVE CHANNEL -->
+  <component package="gingacc-ic" name="libgingaccic.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingacccm.so" version="0.11.2"/>
+    <symbol object="InteractiveChannelManager" creator="createICM" destroyer="destroyICM" interface="IInteractiveChannelManager"/>
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-ic" name="libgingacciccurlic.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libcurl.so" version="4.1.0"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <symbol object="CurlInteractiveChannel" creator="createCurlIC" destroyer="destroyCurlIC" interface="IInteractiveChannel"/>
+    <location type="local" uri="/usr/local/lib/ginga/ic/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- UPDATE MANAGER -->
+  <component package="gingacc-um" name="libgingaccum.so" version="0.11.2" type="dynamic">
+    <symbol object="Update" creator="createUpdate" destroyer="destroyUpdate" interface="IUpdate"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- TUNER -->
+  <component package="gingacc-tuner" name="libgingacctuner.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <symbol object="Tuner" creator="createTuner" destroyer="destroyTuner" interface="ITuner"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-tuner" name="libgingacctunerflsyprov.so" version="0.11.2" type="dynamic"> 
+    <symbol object="FileSystemProvider" creator="createFileSystemProvider" destroyer="destroyFileSystemProvider" interface="IProvider"/> 
+    <location type="local" uri="/usr/local/lib/ginga/providers"/> 
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/> 
+  </component>
+
+  <component package="gingacc-tuner" name="libgingacctunermultprov.so" version="0.11.2" type="dynamic"> 
+    <symbol object="MulticastProvider" creator="createMulticastProvider" destroyer="destroyMulticastProvider" interface="IProvider"/> 
+    <location type="local" uri="/usr/local/lib/ginga/providers"/> 
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/> 
+  </component>
+
+  <component package="gingacc-tuner" name="libgingacctunerunicprov.so" version="0.11.2" type="dynamic"> 
+    <symbol object="UnicastProvider" creator="createUnicastProvider" destroyer="destroyUnicastProvider" interface="IProvider"/> 
+    <location type="local" uri="/usr/local/lib/ginga/providers"/> 
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/> 
+  </component>
+
+<!-- TSPARSER -->
+  <component package="gingacc-tsparser" name="libgingacctsparser.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libgingacctuner.so" version="0.11.2"/>
+    <symbol object="LogoTransmissionDescriptor" creator="createLTD" destroyer="destroyLTD" interface="ILogoTransmissionDescriptor"/>
+    <symbol object="ShortEventDescriptor" creator="createSED" destroyer="destroySED" interface="IShortEventDescriptor"/>
+    <symbol object="EventInfo" creator="createEventInfo" destroyer="destroyEventInfo" interface="IEventInfo"/>
+    <symbol object="ServiceInfo" creator="createServiceInfo" destroyer="destroyServiceInfo" interface="IServiceInfo"/>
+    <symbol object="Demuxer" creator="createDemuxer" destroyer="destroyDemuxer" interface="IDemuxer"/>
+    <symbol object="PipeFilter" creator="createPipeFilter" destroyer="destroyPipeFilter" interface="ITSFilter"/>
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- DATA PROCESSING -->
+  <component package="gingacc-dataprocessing" name="libgingaccdataprocessing.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingacctsparser.so" version="0.11.2"/>
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <symbol object="DataProcessor" creator="createDP" destroyer="destroyDP" interface="IDataProcessor"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-dataprocessing" name="libgingaccdataprocncl.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <symbol object="NCLSectionProcessor" creator="createNCLSectionProcessor" destroyer="" interface="INCLSectionProcessor"/>
+    <location type="local" uri="/usr/local/lib/ginga/dp"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- PLAYERS -->
+  <component package="gingacc-player" name="libgingaccplaimg.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="ImagePlayer" creator="createImagePlayer" destroyer="destroyImagePlayer" interface="IPlayer"/>
+    <symbol object="ImageRenderer" creator="renderImage" destroyer="" interface="ISurface"/>
+    <symbol object="ImageHelper" creator="prepareSurface" destroyer="" interface="ISurface"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplalua.so" version="0.11.2" type="dynamic">
+    <dependency componentName="liblua.so" version="5.1.0"/>
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemiocodemap.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplaimg.so" version="0.11.2"/>
+    <symbol object="LuaPlayer" creator="createLuaPlayer" destroyer="destroyLuaPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplalks.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidialinks.so" version="2.1.0"/>
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="LinksPlayer" creator="createLinksPlayer" destroyer="destroyLinksPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplaplt.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplatxt.so" version="0.11.2"/>
+    <symbol object="PlainTxtPlayer" creator="createPlainTextPlayer" destroyer="destroyPlainTextPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplatxt.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="TextRenderer" creator="renderText" destroyer="" interface="none"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplasrt.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplatxt.so" version="0.11.2"/>
+    <symbol object="SrtPlayer" creator="createSrtPlayer" destroyer="destroySrtPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplacha.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="ChannelPlayer" creator="createChannelPlayer" destroyer="destroyChannelPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplapav.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="ProgramAV" creator="createProgramAV" destroyer="destroyProgramAV" interface="IProgramAV"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplaavp.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="AVPlayer" creator="createAVPlayer" destroyer="destroyAVPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplawdg.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libgingaccplayer.so" version="0.11.2"/>
+    <symbol object="ShowButton" creator="createShowButton" destroyer="destroyShowButton" interface="IShowButton"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccplayer.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemiocodemap.so" version="0.11.2"/>
+    <symbol object="Player" creator="createPlayer" destroyer="destroyPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-player" name="libgingaccsysctsfs.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libdirectfb.so" version="1.3.0"/>
+    <dependency componentName="libfusionsound.so" version="1.1.1"/>
+    <!--
+    <symbol object="DFBAudioProvider" creator="createDFBAudioProvider" destroyer="destroyDFBAudioProvider" interface="IContinuousMediaProvider"/>
+    <symbol object="FusionSoundAudioProvider" creator="createFSAudioProvider" destroyer="destroyFSAudioProvider" interface="IContinuousMediaProvider"/>
+    -->
+    <symbol object="AudioProvider" creator="createFSAudioProvider" destroyer="destroyFSAudioProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- NCL CONV -->
+  <component package="ncl30-converter" name="libncl30converter.so" version="0.11.2" type="shared">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="ncl30-converter" name="libncl30connclncm.so" version="0.11.2" type="dynamic">
+    <dependency type="shared" componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency type="dynamic" componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libncl30converter.so" version="0.11.2"/>
+    <dependency componentName="libxerces-c.so" version="2.1.27"/>
+    <symbol object="NclDocumentConverter" creator="createNclDocumentConverter" destroyer="destroyNclDocumentConverter" interface="IDocumentConverter"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- ADAPTERS -->
+  <component package="gingancl" name="libginganclpavpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="ProgramAVPlayerAdapter" creator="createPAVAdapter" destroyer="destroyPAVAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclaavpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="AVPlayerAdapter" creator="createAaVAdapter" destroyer="destroyAaVAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclchapadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="ChannelPlayerAdapter" creator="createChaAdapter" destroyer="destroyChaAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclimgpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="ImagePlayerAdapter" creator="createImgAdapter" destroyer="destroyImgAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclluapadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <dependency componentName="libginganclappadapter.so" version="0.11.2"/>
+    <symbol object="LuaPlayerAdapter" creator="createLuaAdapter" destroyer="destroyLuaAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclnclpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="NCLPlayerAdapter" creator="createNCLAdapter" destroyer="destroyNCLAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libgingancllkspadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <dependency componentName="libginganclappadapter.so" version="0.11.2"/>
+    <symbol object="LinksPlayerAdapter" creator="createLksAdapter" destroyer="destroyLksAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclpltpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="PlainTxtPlayerAdapter" creator="createPlTAdapter" destroyer="destroyPlTAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclsubpadapter.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <symbol object="SubtitlePlayerAdapter" creator="createSubAdapter" destroyer="destroySubAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- PREFETCH -->
+  <component package="gingancl" name="libginganclprefetch.so" version="0.11.2" type="dynamic">
+    <symbol object="PrefetchManager" creator="createPrefetchManager" destroyer="destroyPrefetchManager" interface="IPrefetchManager"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- GINGANCL -->
+  <component package="gingancl" name="libgingancl.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libncl30converter.so" version="0.11.2"/>
+    <dependency componentName="libgingancladaptation.so" version="0.11.2"/>
+    <dependency componentName="libgingancladapter.so" version="0.11.2"/>
+    <dependency componentName="libginganclemconverter.so" version="0.11.2"/>
+    <dependency componentName="libginganclfocus.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <symbol object="PrivateBaseManager" creator="createPrivateBaseManager" destroyer="destroyPrivateBaseManager" interface="IPrivateBaseManager"/>
+    <symbol object="Formatter" creator="createNCLPlayer" destroyer="destroyNCLPlayer" interface="INCLPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclmd.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libginganclmodel.so" version="0.11.2"/>
+    <symbol object="FormatterMultiDevice" creator="createFormatterMultiDevice" destroyer="destroyFormatterMultiDevice" interface="IFormatterMultiDevice"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- LSS -->
+  <component package="gingalssm" name="libgingalssm.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemiocodemap.so" version="0.11.2"/>
+    <dependency componentName="libgingaccsystemthread.so" version="0.11.2"/>
+    <dependency componentName="libncl30.so" version="0.11.2"/>
+    <dependency componentName="libgingacctuner.so" version="0.11.2"/>
+    <dependency componentName="libgingacctsparser.so" version="0.11.2"/>
+    <dependency componentName="libgingaccdataprocessing.so" version="0.11.2"/>
+    <symbol object="CommonCoreManager" creator="createCCM" destroyer="destroyCCM" interface="ICommonCoreManager"/>
+    <symbol object="PresentationEngineManager" creator="createPEM" destroyer="destroyPEM" interface="IPresentationEngineManager"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+<!-- GUI -->
+  <component package="ginga-gui" name="libgingagui.so" version="0.11.2" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.11.2"/>
+    <symbol object="GuiManager" creator="createGui" destroyer="destroyGui" interface="IGuiManager"/>
+    <symbol object="MenuItem" creator="createMenuItem" destroyer="destroyMenuItem" interface="IMenuItem"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="ginga-gui" name="libgingaguiparser.so" version="0.11.2" type="dynamic">
+    <symbol object="ChannelParser" creator="createChannelParser" destroyer="destroyChannelParser" interface="IChannelParser"/>
+    <location type="local" uri="/usr/local/lib/ginga"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+</middleware>

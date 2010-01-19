@@ -1,0 +1,116 @@
+Ginga Common Core Player ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+- Refactored players (xhtml and lua)
+- libasync dependency was removed (using luasocket instead)
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Interfaces were defined to extern component load.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+-------------
+ 29/09/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+New functions:
+- First dynamic lib version of gingacc-player.
+
+--------------------------------------------------------------------------------
+Version 0.9.28
+-------------
+ 08/08/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+New functions:
+- Suitable to 0.9.28 do gingacc-io
+
+--------------------------------------------------------------------------------
+Version 0.9.27
+-------------
+ 18/04/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+New functions:
+- ImagePlayers are using Ginga Locator to acquire contents.
+- PlainTxtPlayer shows the content of x-content property.
+- Images of button player are updated, using alpha channel of png.
+- API for focus control is created.
+- PlainTxtPlayer allows floating text and RGB property for font and backgroun 
+  color.
+- Editing API created for procedural players.
+- New API to properties attributions for each player.
+
+Changes:
+- Now, PlainTxtPlayer has default color white for font and black for background.
+- OffsetTime was erased.
+
+--------------------------------------------------------------------------------
+Version 0.9.26
+-------------
+ 05/12/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- PlainTxtPlayer implementado
+- Lua Player re-implementado de acordo com as especificacoes
+- ProgramAV armazena informacoes do Fluxo de Transporte de acordo com
+  requisicoes ncl
+
+Alteracoes na arquitetura:
+- Player deixa de ser listener de eventos de entrada
+
+--------------------------------------------------------------------------------
+Versao 0.9.25
+-------------
+ 31/08/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Metodo estatico para renderizar imagens
+- API Lua atualizada (francisco@telemidia.puc-rio.br)
+- PlainTxtPlayer implementado
+
+Alteracoes na arquitetura:
+- "Pai" de todos os players (responsavel por controlar passagem de propriedades,
+  estado, etc) foi trocado de modulo, vindo do gingancl para o gingaccplayer
+- Todos os players passam a ter seus status controlados pelo "Pai"
+- SrtPlayer e TextPlayer passam a usar superficies da Janela
+
+--------------------------------------------------------------------------------

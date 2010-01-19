@@ -1,0 +1,46 @@
+Ginga Common Core Interactive Channel ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+--------------------------------------------------------------------------------
+
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Interfaces were defined to extern component load.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+-------------
+ 22/10/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Concept of gingacc-ic: a project to manage Ginga Interactive Channels.
+
+--------------------------------------------------------------------------------

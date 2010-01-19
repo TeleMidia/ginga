@@ -1,0 +1,201 @@
+LICENSING
+Laboratorio TeleMidia - PUC-Rio 
+================================================================================
+
+Este arquivo prove informacoes complementares referentes ao licenciamento do 
+software disponibilizado pela Comunidade Ginga no Portal do Software Publico 
+Brasileiro.
+
+O pacote de software que inclui este arquivo eh regido unicamente pela licenca 
+GPLv2 (arquivo COPYING). Alternativamente, seguindo um modelo de licenciamento 
+duplo, estao disponiveis outros tipos licencas de variantes deste software 
+oferecidas pelo Laboratorio TeleMidia da PUC-Rio.
+
+Tire suas duvidas sobre esse assunto seguindo o indice logo abaixo.
+
+================================================================================
+
+1. Quais programas a Comunidade Ginga estah oferecendo como software livre?
+
+2. Qual eh o modelo de licenciamento do Ginga?
+
+3. Afinal, que tipo de direitos e deveres tenho adquirindo o Ginga sob a GPLv2?
+
+4. Como desenvolvedor da Comunidade Ginga, as novas funcionalidades por mim 
+elaboradas serao integradas ao software licenciado comercialmente?
+
+5. Com que tipo de mecanismos a Comunidade Ginga contarah para identificar 
+corretamente as novas funcionalidades?
+
+6. Quem pode aderir ao licenciamento livre do Ginga?
+
+7. Quem nao pode aderir ao licenciamento livre do Ginga?
+
+8. Quais sao os termos da licenca comercial?
+
+9. Ainda tenho duvidas sobre o licenciamento. Ha um canal especial de 
+comunicacao?
+
+================================================================================
+
+1. Quais programas a Comunidade Ginga estah oferecendo como software livre?
+
+R: Por enquanto, estao disponiveis a parte declarativa do middleware (Ginga-NCL) 
+e a ferramenta de autoria para aplicacoes declarativas (Composer). A parte 
+procedural (Ginga-J) tem seu licenciamento livre sob estudo no momento, uma vez 
+que envolve tecnologias proprietarias de terceiros.
+
+--------------------------------------------------------------------------------
+
+2. Qual eh o modelo de licenciamento do Ginga?
+
+R: Ginga-NCL e Composer estao disponiveis sob duplo licenciamento, a exemplo de 
+softwares populares como MySQL e Qt. Neste modelo, utilizamos duas licencas, 
+para que tipos diferentes de usuarios possam melhor se enquadrar.
+
+A primeira licenca chamamos de licenca livre e garante que o codigo publicado 
+neste Portal e suas novas funcionalidades a partir daqui desenvolvidas 
+permanecerao livres, repassando todo conhecimento gerado à Comunidade Ginga, 
+indefinidamente. A licenca livre adotada e a GPLv2.
+
+A segunda licenca chamamos de licenca comercial ou proprietaria, que prove 
+garantias ao usuario do uso irrestrito do codigo mantido pelo Laboratorio 
+TeleMidia da PUC-Rio e uma gama de servicos agregados.
+
+Todo software adquirido a partir do Portal SPB e regido unicamente pela licenca 
+livre GPLv2. Portanto, seu uso nao-livre e expressamente vedado.
+
+--------------------------------------------------------------------------------
+
+3. Afinal, que tipo de direitos e deveres eu tenho adquirindo o Ginga sob a 
+GPLv2?
+
+R: Ao fazer o download do codigo do Ginga-NCL e/ou do Composer, voce esta 
+concordando com a licenca GPLv2. Ela lhe garante:
+
+    * O direito de executar o programa para qualquer proposito
+    * O direito de estudar como o programa funciona e adapta-lo para suas
+      necessidades;
+    * O direito de redistribuir copias, permitindo assim que voce ajude outras 
+      pessoas;
+    * O direito de aperfeicoar o programa e distribuir seus aperfeicoamentos,
+      beneficiando toda a comunidade.
+
+Para que seus direitos sejam garantidos, os seguintes requisitos devem ser 
+respeitados:
+
+    * Em cada copia deve ser publicado/mantido um aviso de direitos autorais e 
+      uma notificacao sobre a exoneracao de garantia.
+    * A redistribuicao do codigo ou de novo codigo nele baseado deve ser regida
+      tambem pela licenca GPLv2.
+    * A redistribuicao do codigo ou de novo codigo deve incluir os fontes de
+      forma completa.
+
+Ha outros aspectos que podem ser encontrados na integra da licenca GPLv2
+(arquivo COPYING).
+
+Todo software adquirido a partir do Portal SPB e regido unicamente pela licenca 
+livre GPLv2. Portanto, seu uso nao-livre e expressamente vedado.
+
+--------------------------------------------------------------------------------
+
+4. Como desenvolvedor da Comunidade Ginga, as novas funcionalidades por mim 
+elaboradas serao integradas ao software licenciado comercialmente?
+
+R: Nao. Toda nova funcionalidade desenvolvida pela Comunidade Ginga e regida 
+pela GPLv2; e de direito autoral dos respectivos autores; e nao pode ser 
+incorporada ao software licenciado comercialmente. Se for de interesse de alguma 
+empresa o licenciamento nao-GPL de novas funcionalidades, este deve ser 
+negociado diretamente com os autores correspondentes.
+
+A resolucao de um  bug em codigo original Ginga e tambem regido pela GPLv2, sera 
+publicada neste Portal, porem sua propriedade e atribuida à PUC-Rio, como autor 
+original.
+
+--------------------------------------------------------------------------------
+
+5. Com que tipo de mecanismos a Comunidade Ginga contara para identificar 
+corretamente as novas funcionalidades?
+
+R: Toda nova funcionalidade e, sem distincao, regida pela licenca GPLv2. Para 
+manter total transparencia na manutencao do codigo e preservar o direito autoral 
+de cada autor, caso um desenvolvedor queira publicar na Comunidade Ginga sua 
+nova funcionalidade, esta nao sera integrada em meio ao codigo Ginga do SVN, mas 
+sim, sera disponibilizada sob a forma de patch em outra area do SVN.
+
+Ja as correcoes de bugs serao diretamente aplicadas sobre o codigo Ginga do SVN.
+
+--------------------------------------------------------------------------------
+
+6. Quem pode aderir ao licenciamento livre do Ginga?
+
+R: O licenciamento GPLv2 somente se encaixa aos usuarios que pretendem fazer uso 
+particular dos softwares Ginga e aos desenvolvedores que pretendem compartilhar 
+com a comunidade todas as modificacoes por eles desenvolvidas nos softwares 
+Ginga.
+
+No licenciamento livre nao sao oferecidas quaisquer garantias de uso dos 
+softwares Ginga, nem obriga a PUC-Rio a oferecer suporte sobre esse codigo.
+
+--------------------------------------------------------------------------------
+
+7. Quem nao pode aderir ao licenciamento livre do Ginga?
+
+R: Nao podem aderir à licenca livre os desenvolvedores que:
+
+    * Nao podem ou nao pretendem compartilhar seu codigo para a Comunidade 
+      Ginga;
+    * Desenvolvem software embarcado em plataformas e/ou sistemas operacionais
+      proprietarios;
+    * Necessitam suporte sobre o codigo fonte dos softwares Ginga;
+    * Precisam adotar outro tipo de licenciamento (nao-GPL) para seu codigo
+      baseado nos softwares Ginga.
+
+Os desenvolvedores que nao se enquadram na licenca livre estao proibidos de 
+iniciar qualquer desenvolvimento proprietario a partir do codigo publicado neste 
+Portal. Eles devem adquirir o codigo-fonte da PUC-Rio por meio de licenca 
+comercial.
+
+--------------------------------------------------------------------------------
+
+8. Quais sao os termos da licenca comercial?
+
+R: O software licenciado comercialmente nao se refere ao codigo disponibilizado 
+neste Portal, mas apenas àquele de propriedade da PUC-Rio, como destacado na 
+pergunta 4.
+
+A licenca comercial concede ao desenvolvedor o uso irrestrito do codigo sob seu 
+proprio modelo de licenciamento. O custo da licenca deve ser negociado caso a 
+caso, os quais serao enquadrados sobre um conjunto de regras publicamente 
+divulgado pela PUC-Rio no Forum do Sistema Brasileiro de TV Digital.
+
+O licenciamento comercial e um contrato de transferencia tecnologica. Assim, sao 
+tambem garantias do desenvolvedor:
+
+    * O direito de contratar consultoria sobre o codigo e arquitetura dos 
+      softwares Ginga junto aos pesquisadores dos Laboratorios TeleMidia e SERG
+      da PUC-Rio;
+    * Prioridade no treinamento em desenvolvimento de conteudo interativo
+      declarativo oferecido pelos Laboratorios TeleMidia e SERG da PUC-Rio;
+    * O direito de participar por tempo determinado dos workshops de inovacao em
+      TV Digital promovidos pelos Laboratorios TeleMidia e SERG da 
+      PUC-Rio;
+
+Cabe ressaltar que, se houver interesse no uso nao-GPL das "novas 
+funcionalidades" disponibilizadas neste Portal, a negociacao de licenciamento 
+deve ser encaminhada diretamente aos respectivos autores (vide pergunta 4).
+
+--------------------------------------------------------------------------------
+
+9. Ainda tenho duvidas sobre o licenciamento. Ha um canal especial de 
+comunicacao?
+
+R: Sim, quaisquer duvidas sobre licenciamento e contatos preliminares podem ser 
+dirigidos ao e-mail licensing@telemidia.puc-rio.br
+
+================================================================================
+Os esclarecimentos feitos neste arquivo sao de carater meramente informativo.
+Nao constituem contrato, nao podem ser tomados  para fins comerciais ou legais,
+nem possuem qualquer valor juridico. Os termos originais validos para tais fins
+sao o Protocolo de Intencoes e Declaracoes referentes a Ginga e NCL publicado
+pela PUC-Rio e a licenca GPLv2 publicada pela Free Software Foundation. 

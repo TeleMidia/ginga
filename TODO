@@ -1,0 +1,7 @@
+TODO File for Ginga Common Core super-project
+
+TODO List:
+- Create autogen.sh (and configure.in, etc) to allow the compilation of
+  the whole super project. For now, users must compile and install each
+  subproject (GingaCC-IO, GingaCC-Player, GingaCC-Tuner, GingaCC-TSParser,
+  GingaCC-DataProcessing).

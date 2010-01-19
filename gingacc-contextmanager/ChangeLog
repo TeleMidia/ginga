@@ -1,0 +1,47 @@
+Ginga Common Core Context Manager ChangeLog
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+Version 0.11.2
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+- Corrected all retrieve (listed as TODO tasks in previous version)
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Context now is managed with users properties as defined on ABNT NBR 15306-2.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+-------------
+ 03/02/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Concept of gingacc-contextmanager: a project to manage gingacc STB Context.
+
+--------------------------------------------------------------------------------

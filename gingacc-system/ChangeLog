@@ -1,0 +1,137 @@
+Ginga Common Core System ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+- Main A/V decoders were created
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Interfaces were defined to extern component load.
+- Specific abstraction layer was specified in order to feasibly ginga port.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+-------------
+ 29/09/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+New functions:
+- First dynamic lib version of gingacc-system.
+
+--------------------------------------------------------------------------------
+Versao 0.9.29
+-------------
+ 20/09/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Alteracoes na arquitetura:
+- gingacc-io was refactored to gingacc-system adding thread scope.
+
+--------------------------------------------------------------------------------
+Versao 0.9.28
+-------------
+ 08/08/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas Funcionalidades:
+- Camadas de abstracao para isolar o resto do middleware da parte dependente do
+  sw/hw.
+
+Alteracoes na arquitetura:
+- Quatro camadas de abstracao foram criadas: Gerencia, Manipulacao, Controle e
+  Criacao/Destruicao
+- Controle de Eventos de Entrada eh baseado em set e nao mais em vector
+
+--------------------------------------------------------------------------------
+Versao 0.9.27
+-------------
+ 18/04/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Ginga Locator espera sinalizacoes de condicoes para novos locators.
+- Tecla backspace do teclado inserida para simular o mnemonico BACK (tecla
+  back do controle remoto).
+- Tecla ESC do teclado inserida para simular o mnemonico EXIT (tecla
+  exit do controle remoto).
+- Configuracao layer/janela atualizada para aceitar canal alpha.
+- Gerenciador de eventos de entrada permite aos listeners especificarem os
+  eventos que desejam receber. 
+
+Alteracoes na arquitetura:
+- Inteligencia de animation/transition eliminada da Window.
+
+--------------------------------------------------------------------------------
+Versao 0.9.26
+-------------
+ 05/12/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Primeira versao do Ginga Locator
+- CodeMap mapeia mnemonicos de forma independente da engine
+- Window define primeira versao de implementacao para funcionalidades do
+  modulo ncl animation
+- Repositorio de eventos de entrada associado aos listeners
+
+Alteracoes na arquitetura:
+- Nome do projeto alterado: gingacc-gfx para gingacc-io
+
+--------------------------------------------------------------------------------
+Versao 0.9.25
+-------------
+ 31/08/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Funcao para definir cor de fundo de superficies e subsuperficies adicionada
+  em Surface
+- HashTable para converter codigo de entrada do controle remoto para string foi
+  criada em CodeMap
+- Adicionado um metodo em CodeMap para retornar o clone do mapa de chaves
+  para o LuaPlayer 
+
+Alteracoes na arquitetura:
+- Eliminadas tres superficies da Window para manter estado default, foco e
+  selecao. Atributo para armazenar o estado atual da exibicao da janela foi
+  removido.
+- Gerenciador de eventos do controle remoto passa a distribuir eventos de forma
+  "paralela"
+
+--------------------------------------------------------------------------------
