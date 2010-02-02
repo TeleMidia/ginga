@@ -215,8 +215,8 @@ namespace multidevice {
 		int taskSize;
 
 		//prepare frame
-		if(destDevClass == IDeviceDomain::CT_ACTIVE ){
-			if(frameType == IDeviceDomain::FT_PRESENTATIONEVENT){
+		if (destDevClass == IDeviceDomain::CT_ACTIVE) {
+			if (frameType == IDeviceDomain::FT_PRESENTATIONEVENT) {
 				if (strstr(payload,"start::") != NULL) {
 					_doc.assign(payload + 7, payloadSize - 7);
 					cout << "DeviceDomain::postEventTask calling ";
@@ -225,16 +225,18 @@ namespace multidevice {
 					res->startDocument(2, (char*)(_doc.c_str()));
 
 				} else if (strstr(payload,"stop::") != NULL) {
+					cout << "DeviceDomain::postEventTask calling ";
+					cout << "stopDocument" << endl;
+
 					/*char doc[payloadSize];
 					memcpy(doc, payload+6,payloadSize-6);
 					doc[payloadSize-6] = '\0';*/
 					_doc.assign(payload + 6, payloadSize - 6);
 					res->stopDocument(2, (char*)(_doc.c_str()));
 				}
-
-
 			}
-		}else{
+
+		} else {
 			task = mountFrame(myIP, destDevClass, frameType, payloadSize);
 
 			memcpy(task + HEADER_SIZE, payload, payloadSize);
