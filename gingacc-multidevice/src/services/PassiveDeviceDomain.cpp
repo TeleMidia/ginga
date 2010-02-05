@@ -91,6 +91,9 @@ namespace multidevice {
 		int connReqPayloadSize = 5;
 		int taskSize;
 
+		if (connected)
+			return;
+
 		cout << "PassiveDeviceDomain::postConnectionRequestTask";
 		cout << endl;
 
