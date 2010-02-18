@@ -92,7 +92,6 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
-	int DFBWindow::maxTransparencyValue = 0xFF;
 	DFBWindow::DFBWindow(int x, int y, int width, int height) {
 		this->win = NULL;
 		this->winSur = NULL;
@@ -157,13 +156,6 @@ namespace io {
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
-	}
-
-	void DFBWindow::setMaxTransparencyValue(int maxValue) {
-		if (maxValue < 255) {
-			DFBWindow::maxTransparencyValue = maxValue;
-			this->transparencyValue         = maxValue;
-		}
 	}
 
 	void DFBWindow::setReleaseListener(ISurface* listener) {
@@ -400,12 +392,7 @@ namespace io {
 	}
 
 	void DFBWindow::setTransparencyValue(int alpha) {
-		if (alpha > maxTransparencyValue) {
-			this->transparencyValue = maxTransparencyValue;
-
-		} else {
-			this->transparencyValue = alpha;
-		}
+		this->transparencyValue = alpha;
 	}
 
 	int DFBWindow::getTransparencyValue() {

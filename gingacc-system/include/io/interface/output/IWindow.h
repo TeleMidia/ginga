@@ -65,7 +65,6 @@ namespace io {
 	class IWindow : public IIOContainer {
 		public:
 			virtual ~IWindow(){};
-			virtual void setMaxTransparencyValue(int maxValue)=0;
 			virtual void setReleaseListener(ISurface* listener)=0;
 			virtual int getCap(string capName)=0;
 			virtual void setCaps(int caps)=0;

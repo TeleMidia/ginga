@@ -87,7 +87,6 @@ namespace io {
 			int g;
 			int b;
 			int alpha;
-			static int maxTransparencyValue;
 			int transparencyValue;
 			bool visible;
 			bool ghost;
@@ -105,7 +104,6 @@ namespace io {
 			DFBWindow(int x, int y, int width, int height);
 			virtual ~DFBWindow();
 
-			void setMaxTransparencyValue(int maxValue);
 			void setReleaseListener(ISurface* listener);
 			int getCap(string cap);
 			void setCaps(int caps);
