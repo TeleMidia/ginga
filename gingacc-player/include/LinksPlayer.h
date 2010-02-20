@@ -90,15 +90,16 @@ namespace player {
 			public IInputEventListener, public Thread {
 
 		protected:
-			static IInputManager* im ;
-			bool hasBrowser;
+			static IInputManager* im;
 			struct session* mBrowser;
+			bool hasBrowser;
 			int x, y, w, h;
 
 		public:
 			LinksPlayer(string mrl);
 			virtual ~LinksPlayer();
 
+			ISurface* getSurface();
 			bool userEventReceived(IInputEvent* ev);
 
 			void setNotifyContentUpdate(bool notify);
@@ -106,7 +107,6 @@ namespace player {
 			void play();
 			void stop();
 			void setBounds(int x, int y, int w, int h);
-			void updateBounds(int x, int y, int w, int h);
 
 			void setPropertyValue(
 					string name,

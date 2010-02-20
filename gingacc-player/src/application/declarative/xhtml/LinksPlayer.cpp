@@ -88,8 +88,8 @@ namespace player {
 			setDisplayMenu(0);
 		}
 
-		mBrowser = openBrowser(x, y, w, h);
-		hasBrowser = false;
+		hasBrowser = true;
+		mBrowser   = openBrowser(x, y, w, h);
 	}
 
 	LinksPlayer::~LinksPlayer() {
@@ -104,6 +104,31 @@ namespace player {
 		}
 	}
 
+	ISurface* LinksPlayer::getSurface() {
+		void* s;
+
+		if (this->surface == NULL) {
+			if (hasBrowser) {
+				s = browserGetSurface(mBrowser);
+				if (s != NULL) {
+#if HAVE_COMPSUPPORT
+					this->surface = ((SurfaceCreator*)(cm->getObject(
+							"Surface")))(s, 0, 0);
+#else
+
+					this->surface = new DFBSurface(s);
+#endif
+				}
+
+			} else {
+				cout << "LinksPlayer::getSurface Warning! Trying to get ";
+				cout << "a surface from a deleted browser" << endl;
+			}
+		}
+
+		return Player::getSurface();
+	}
+
 	void LinksPlayer::setNotifyContentUpdate(bool notify) {
 		if (notify) {
 			setGhostBrowser(mBrowser);
@@ -112,61 +137,31 @@ namespace player {
 	}
 
 	void LinksPlayer::setBounds(int x, int y, int w, int h) {
-		void* s;
-
 		this->x = x;
 		this->y = y;
 		this->w = w;
 		this->h = h;
 
-		if (!hasBrowser) {
-			//mBrowser = openBrowser(x, y, w, h);
-			loadUrlOn(mBrowser, mrl.c_str());
-			browserResizeCoord(mBrowser, x, y, w, h);
-			if (mBrowser != NULL) {
-				s = browserGetSurface(mBrowser);
-				if (s != NULL) {
-#if HAVE_COMPSUPPORT
-					this->surface = ((SurfaceCreator*)(cm->getObject(
-							"Surface")))(s, 0, 0);
-#else
-					this->surface = new DFBSurface(s);
-#endif
-				}
-			}
-			hasBrowser = true;
-		}
-	}
-
-	void LinksPlayer::updateBounds(int x, int y, int w, int h) {
-//		closeBrowser(mBrowser);
-//		mBrowser = NULL;
-		this->x = x;
-		this->y = y;
-		this->w = w;
-		this->h = h;
-
-//		mBrowser = openBrowser(x, y, w, h);
 		browserResizeCoord(mBrowser, x, y, w, h);
-		//browserRequestFocus(mBrowser);
-		/*parent = (Window*)(surface->getParent());
-		if (parent != NULL) {
-			cout << " UPDATE RENDER" << endl;
-			parent->renderFrom(surface);
-			parent->validate();
-
-		} else {
-			cout << " UPDATE PARENT IS NULL" << endl;
-		}*/
 	}
 
 	void LinksPlayer::play() {
-		browserShow(mBrowser);
-		//browserResizeCoord(mBrowser, x, y, w, h);
-		//loadUrlOn(mBrowser, mrl.c_str());
-		//browserRequestFocus(mBrowser);
+		IWindow* parent;
 
-		Thread::start();
+		if (surface != NULL) {
+			parent = (IWindow*)(surface->getParent());
+			if (parent != NULL) {
+				parent->renderFrom(surface);
+				browserSetFlipWindow(mBrowser, parent->getContent());
+			}
+		}
+
+		loadUrlOn(mBrowser, mrl.c_str());
+		browserShow(mBrowser);
+
+		if (notifyContentUpdate) {
+			Thread::start();
+		}
 		//::usleep(3000000);
 
 		Player::play();
@@ -210,13 +205,7 @@ namespace player {
 
 			delete params;
 
-			if (!hasBrowser) {
-				setBounds(x, y, w, h);
-
-			} else {
-				updateBounds(x, y, w, h);
-			}
-
+			setBounds(x, y, w, h);
 			return;
 		}
 
@@ -243,14 +232,14 @@ namespace player {
 	void LinksPlayer::run() {
 		IWindow* parent;
 
-		::usleep(1000000);
+		/*::usleep(1000000);
 		if (surface != NULL) {
 			parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {
 				parent->renderFrom(surface);
 				browserSetFlipWindow(mBrowser, parent->getContent());
 			}
-		}
+		}*/
 
 		if (notifyContentUpdate) {
 			while (status == PLAY || status == PAUSE) {
