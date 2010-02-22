@@ -77,7 +77,14 @@ namespace io {
 	}
 
 	LocalDeviceManager::~LocalDeviceManager() {
+		map<unsigned int, IODevice*>::iterator i;
+
 		if (devices != NULL) {
+			i = devices->begin();
+			while (i != devices->end()) {
+				delete i->second;
+				++i;
+			}
 			delete devices;
 			devices = NULL;
 		}

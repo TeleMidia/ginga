@@ -89,7 +89,6 @@ namespace io {
 			bool notifyingApp;
 			IEventBuffer* eventBuffer;
 			double lastEventTime;
-			double timeStamp;
 			double imperativeIntervalTime;
 			double declarativeIntervalTime;
 

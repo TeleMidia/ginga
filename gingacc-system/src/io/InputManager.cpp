@@ -545,9 +545,11 @@ namespace io {
 
 	void InputManager::run() {
 		IInputEvent* inputEvent;
-		int pLastCode = -1;
-		int lastCode = -1;
+
+		int pLastCode     = -1;
+		int lastCode      = -1;
 		double pTimeStamp = 0;
+		double timeStamp  = 0;
 
 		while (running && eventBuffer != NULL) {
 			eventBuffer->waitEvent();
