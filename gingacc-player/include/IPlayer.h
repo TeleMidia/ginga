@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IPLAYER_H_
 #define IPLAYER_H_
 
+#include <stdint.h>
+
 #include "system/io/interface/output/IWindow.h"
 #include "system/io/interface/output/ISurface.h"
 #include "system/io/interface/content/image/IImageProvider.h"

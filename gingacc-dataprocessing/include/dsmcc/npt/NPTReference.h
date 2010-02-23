@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef NPTREFERENCE_H_
 #define NPTREFERENCE_H_
 
+#include <stdint.h>
 #include "Descriptor.h"
 
 using namespace std;

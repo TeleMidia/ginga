@@ -58,6 +58,7 @@ http://www.telemidia.puc-rio.br
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <error.h>
+#include <stdint.h>
 
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

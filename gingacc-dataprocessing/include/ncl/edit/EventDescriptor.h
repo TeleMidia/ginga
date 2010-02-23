@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _EventDescriptor_H_
 #define _EventDescriptor_H_
 
+#include <stdint.h>
 #include <string>
 using namespace std;
 

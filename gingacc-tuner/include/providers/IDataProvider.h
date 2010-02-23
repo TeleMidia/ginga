@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IDATAPROVIDER_H_
 #define IDATAPROVIDER_H_
 
+#include <stdint.h>
+
 #include "IChannel.h"
 #include "frontends/IFrontendFilter.h"
 

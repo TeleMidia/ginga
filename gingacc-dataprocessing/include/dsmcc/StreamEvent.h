@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 #include <iostream>
 using namespace std;
 
+#include <stdint.h>
 #include <string.h>
 
 #include "IStreamEvent.h"

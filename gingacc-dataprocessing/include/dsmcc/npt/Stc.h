@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef STC_H_
 #define STC_H_
 
+#include <stdint.h>
 #include <iostream>
 #include <sys/resource.h>
 
