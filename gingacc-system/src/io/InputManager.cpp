@@ -103,6 +103,7 @@ namespace io {
 
 	InputManager::~InputManager() {
 		if (_instance != NULL) {
+			_instance->release();
 			delete _instance;
 			_instance = NULL;
 		}
@@ -153,6 +154,8 @@ namespace io {
 	}
 
 	void InputManager::release() {
+		map<IInputEventListener*, set<int>*>::iterator i;
+
 		running = false;
 		if (eventBuffer != NULL) {
 			eventBuffer->wakeUp();
@@ -162,7 +165,14 @@ namespace io {
 		cout << "InputManager::release" << endl;
 
 		if (eventListeners != NULL) {
-			eventListeners->clear();
+			i = eventListeners->begin();
+			while (i != eventListeners->end()) {
+				if (i->second != NULL) {
+					delete i->second;
+				}
+				++i;
+			}
+
 			delete eventListeners;
 			eventListeners = NULL;
 		}

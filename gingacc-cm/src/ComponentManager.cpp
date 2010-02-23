@@ -66,6 +66,7 @@ namespace cm {
 
 	ComponentManager::~ComponentManager() {
 		if (_instance != NULL) {
+			_instance->release();
 			delete _instance;
 			_instance = NULL;
 		}
