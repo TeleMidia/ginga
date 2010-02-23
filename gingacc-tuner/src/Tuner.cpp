@@ -137,7 +137,7 @@ namespace tuning {
 		char* buff;
 
 		/*int debugStream = open(
-				"debugStream.ts", O_CREAT | O_LARGEFILE | O_WRONLY);*/
+				"debugStream.ts", O_CREAT | O_LARGEFILE | O_WRONLY, 0644);*/
 
 		buff = new char[BUFFSIZE];
 		receiving = true;

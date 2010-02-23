@@ -189,7 +189,7 @@ namespace carousel {
 				path = (objectPaths->find(object->getObjectId()))->second +
 					    (objectNames->find(object->getObjectId()))->second;
 
-				fd = open(path.c_str(), O_CREAT|O_WRONLY|O_LARGEFILE);
+				fd = open(path.c_str(), O_CREAT|O_WRONLY|O_LARGEFILE, 0644);
 				size = object->getDataSize();
 				if (fd > 0) {
 					//TODO: correct BUG in content provider

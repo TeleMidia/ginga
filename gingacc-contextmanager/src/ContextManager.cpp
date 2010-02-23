@@ -317,7 +317,7 @@ namespace contextmanager {
 		map<int, IGingaUser*>::iterator i;
 
 		remove(usersUri.c_str());
-		fd = open(usersUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY);
+		fd = open(usersUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
 
 		if (fd <= 0) {
 			return;
@@ -342,7 +342,7 @@ namespace contextmanager {
 		map<int, map<string, string>*>::iterator i;
 
 		remove(contextsUri.c_str());
-		fd = open(contextsUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY);
+		fd = open(contextsUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
 
 		if (fd <= 0) {
 			return;

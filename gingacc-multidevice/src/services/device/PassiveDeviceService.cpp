@@ -119,7 +119,10 @@ namespace multidevice {
 			#else
 				uri = "/tmp/render.jpg";
 				remove((char*)(uri.c_str()));
-				fd = open(uri.c_str(), O_LARGEFILE | O_WRONLY | O_CREAT);
+				fd = open(
+						uri.c_str(),
+						O_LARGEFILE | O_WRONLY | O_CREAT,
+						0644);
 
 				if (fd > 0) {
 					bytesWrite = write(fd, stream, streamSize);

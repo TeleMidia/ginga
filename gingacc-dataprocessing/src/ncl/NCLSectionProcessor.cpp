@@ -173,7 +173,7 @@ namespace ncl {
 		cout << "'" << endl;
 
 		remove((char*)(fileUri.c_str()));
-		fd = open(fileUri.c_str(), O_LARGEFILE | O_WRONLY | O_CREAT);
+		fd = open(fileUri.c_str(), O_LARGEFILE | O_WRONLY | O_CREAT, 0644);
 		if (fd > 0) {
 			bw = write(fd, stream + 2, df->getSize());
 			close(fd);

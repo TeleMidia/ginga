@@ -121,7 +121,11 @@ namespace um {
 
 		cout << "Update::start" << endl;
 		mkdir(location.c_str(), 0666);
-		fd = open(localFileName.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE);
+		fd = open(
+				localFileName.c_str(),
+				O_CREAT | O_WRONLY | O_LARGEFILE,
+				0644);
+
 		if (fd > 0) {
 			ic = icm->createInteractiveChannel(remoteFileName);
 			if (ic != NULL) {

@@ -137,7 +137,7 @@ namespace ic {
 			mkdir(localPath.c_str(), 0666);
 		}
 
-		fd = open(localUri.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE);
+		fd = open(localUri.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
 	}
 
 	void CurlInteractiveChannel::setTarget(int fd) {

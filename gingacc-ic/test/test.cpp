@@ -83,7 +83,7 @@ int main() {
 	cout << "gingacc-ic main test: begin" << endl;
 	/*mkdir(localPath.c_str(), 0666);
 
-	fd = open(localFile.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE);
+	fd = open(localFile.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
 	if (fd > 0) {*/
 		if (icm != NULL) {
 #if HAVE_COMPSUPPORT
