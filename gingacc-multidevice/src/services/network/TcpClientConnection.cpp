@@ -57,6 +57,7 @@ namespace core {
 namespace multidevice {
 	TCPClientConnection::TCPClientConnection(char* hostname, char *port_str) {
 		struct addrinfo hints, *res;
+		int set;
 
 		srv_hostname = hostname;
 		portno = port_str;
@@ -74,6 +75,10 @@ namespace multidevice {
 			cout << "TCPClientConnection::ERROR opening socket";
 
 		} else {
+			set = 1;
+			setsockopt(
+					sockfd, SOL_SOCKET, SO_KEEPALIVE, (void*)&set, sizeof(int));
+
 			connect(sockfd, res->ai_addr, res->ai_addrlen);
 		}
 	}
@@ -89,26 +94,30 @@ namespace multidevice {
 	 */
 	bool TCPClientConnection::post(char* str) {
 		char* com;
-		asprintf(&com,"%d %s",counter,str);
+		char buf[5] = "";
+		int nr;
+		int nw;
+
+		asprintf(&com, "%d %s", counter, str);
 		counter++;
 
 		if (sockfd < 0) {
 			return false;
 		}
 
-		int nw = write(sockfd,com,strlen(com));
+		nw = send(sockfd,com,strlen(com), MSG_NOSIGNAL);
+		if (nw != strlen(com)) {
+			perror("TCPClientConnection::post send error");
 
-		cout << "NW: "<< nw<<endl;
+		} else {
+			nr = recv(sockfd,buf,5,0);
+			if (nr > 0) {
+				if (strcmp(buf,"OK\n")==0) {
+					return true;
 
-		char buf[5] = "";
-		int nr = recv(sockfd,buf,5,0);
-
-		if (nr > 0) {
-			if (strcmp(buf,"OK\n")==0) {
-				return true;
-
-			} else {
-				return false;
+				} else {
+					return false;
+				}
 			}
 		}
 
