@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef ILocalDeviceManager_H_
 #define ILocalDeviceManager_H_
 
+#include "interface/output/ISurface.h"
+
 #include <string>
 using namespace std;
 

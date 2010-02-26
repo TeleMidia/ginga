@@ -196,8 +196,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 			return;
 		}
 
-		desc.width  = this->wRes;
-		desc.height = this->hRes;
+		desc.flags = (DFBSurfaceDescriptionFlags)(desc.flags | DSDESC_CAPS);
+		desc.caps  = DSCAPS_SHARED;
 
 		ret = dfb->CreateSurface(dfb, &desc, &surface);
 		if (ret) {
@@ -244,7 +244,6 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		cout << endl << endl;
 		cout << "DFBScreen::setBackgroundImage '" << uri << "'" << endl;
 		cout << endl << endl;
-
 	}
 
 	unsigned int DFBDeviceScreen::getWidthResolution() {

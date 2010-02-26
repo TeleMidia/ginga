@@ -101,15 +101,16 @@ namespace player {
 	}
 
 	void ShowButton::stop() {
-		lock();
+		//lock();
 		previousStatus = status;
 		status = STOP;
-		Thread::start();
-		unlock();
+		//Thread::start();
+		//unlock();
+		run();
 	}
 
 	void ShowButton::pause() {
-		lock();
+		//lock();
 		previousStatus = status;
 		if (status != PAUSE) {
 			status = PAUSE;
@@ -118,8 +119,9 @@ namespace player {
 			status = PLAY;
 		}
 
-		Thread::start();
-		unlock();
+		run();
+		//Thread::start();
+		//unlock();
 	}
 
 	void ShowButton::resume() {
@@ -127,16 +129,20 @@ namespace player {
 	}
 
 	void ShowButton::release() {
+		lock();
 		if (win != NULL) {
 			win->hide();
 			delete win;
 			win = NULL;
 		}
+		unlock();
 	}
 
 	void ShowButton::render(string mrl) {
 		ISurface* surface;
+
 		surface = ImagePlayer::renderImage(mrl);
+		lock();
 		if (win == NULL) {
 			initializeWindow();
 		}
@@ -146,12 +152,13 @@ namespace player {
 		}
 		win->show();
 		win->raiseToTop();
+		unlock();
 		delete surface;
 		surface = NULL;
 	}
 
 	void ShowButton::run() {
-		lock();
+		//lock();
 		switch (status) {
 			case PAUSE:
 				cout << "ShowButton::run PAUSE" << endl;
@@ -184,7 +191,7 @@ namespace player {
 				cout << "ShowButton::run DEFAULT" << endl;
 				break;
 		}
-		unlock();
+		//unlock();
 	}
 }
 }
