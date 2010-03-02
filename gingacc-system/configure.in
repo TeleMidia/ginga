@@ -205,14 +205,15 @@ AC_SUBST(COMPONENTS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile include/thread/Makefile include/io/Makefile
+    Makefile include/thread/Makefile include/process/Makefile 
+    include/io/Makefile
     include/io/interface/Makefile include/io/interface/content/Makefile
     include/io/interface/content/image/Makefile
     include/io/interface/content/text/Makefile
     include/io/interface/device/Makefile
     include/io/interface/input/Makefile
     include/io/interface/output/Makefile
-    src/thread/Makefile src/io/Makefile
+    src/thread/Makefile src/process/Makefile src/io/Makefile
     src/io/interface/content/audio/Makefile
     src/io/interface/content/image/Makefile
     src/io/interface/content/text/Makefile
