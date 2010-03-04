@@ -11,4 +11,5 @@ libgingaccsystemprocess_so_LDFLAGS = -Wl,-soname,libgingaccsystemprocess.so \
 
 localLib_PROGRAMS = libgingaccsystemprocess.so
 libgingaccsystemprocess_so_SOURCES = Process.cpp
-libgingaccsystemprocess_so_LDADD = -lpthread -lrt $(COMPONENTS_LIBS)
+libgingaccsystemprocess_so_LDADD = -ltelemidiautil -lpthread -lrt \
+    $(COMPONENTS_LIBS)

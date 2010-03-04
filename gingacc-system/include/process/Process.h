@@ -52,12 +52,18 @@ http://www.telemidia.puc-rio.br
 
 #include "IProcessListener.h"
 
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <spawn.h>
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 
 #include <errno.h>
+#include <string.h>
+
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -76,26 +82,36 @@ namespace process {
 		static const short PST_UDONE   = 3;
 
 		pid_t pid;
+		int comDesc;
 		short processStatus;
 		char** argv;
 		char** envp;
 		string processUri;
+		string rCom;
+		string wCom;
+		int wFd;
+		int rFd;
+		bool reader;
 		posix_spawnattr_t spawnAttr;
 		posix_spawn_file_actions_t fileActions;
+
 		IProcessListener* sigListener;
 
 	public:
-		Process(string processUri, char** argv, char** envp);
+		Process(string processUri, char** argv);
 		virtual ~Process();
 
-		bool sendProcessObject(string objName, void* obj, int objSize);
-		void* receiveProcessObject(string objectName);
-		void setSignalListener(IProcessListener* listener);
+		bool sendMsg(string msg);
+		static bool sendMsg(int fd, string msg);
+
+		void setProcessListener(IProcessListener* listener);
 		void run();
 		void forceKill();
 
 	private:
+		static void* createFiles(void* ptr);
 		static void* detachWait(void* ptr);
+		static void* detachReceive(void* ptr);
   };
 }
 }

@@ -333,6 +333,7 @@ namespace player {
 	void Player::setScope(
 			string scope, short type, double initTime, double endTime) {
 
+		cout << "Player::setScope '" << scope << "'" << endl;
 		this->scope = scope;
 		this->scopeInitTime = initTime;
 		this->scopeEndTime = endTime;

@@ -49,8 +49,12 @@ http://www.telemidia.puc-rio.br
 
 #include "../../include/process/Process.h"
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
 #include <pthread.h>
-#include <iostream>
+
+extern char **environ;
 
 namespace br {
 namespace pucrio {
@@ -59,32 +63,51 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace process {
-	Process::Process(string processUri, char** argv, char** envp) {
+	Process::Process(string processUri, char** argv) {
+		pthread_t threadId_;
+
 		this->pid           = -1;
 		this->argv          = argv;
-		this->envp          = envp;
+		this->envp          = environ;
 		this->processUri    = processUri;
 		this->processStatus = PST_NULL;
 		this->sigListener   = NULL;
+		this->reader        = true;
+
+		rCom = processUri + itos((long int)(void*)this) + "_ctop";
+		wCom = processUri + itos((long int)(void*)this) + "_ptoc";
 
 		posix_spawnattr_init(&spawnAttr);
 		posix_spawn_file_actions_init(&fileActions);
+
+		pthread_create(&threadId_, 0, Process::createFiles, this);
+		pthread_detach(threadId_);
+
+		cout << "Process::Process created with rCom = '" << rCom << "'";
+		cout << " and wCom = '" << wCom << "'";
+		cout << endl;
 	}
 
 	Process::~Process() {
+		reader = false;
+
 		posix_spawnattr_destroy(&spawnAttr);
 		posix_spawn_file_actions_destroy(&fileActions);
 	}
 
-	bool Process::sendProcessObject(string objName, void* obj, int objSize) {
+	bool Process::sendMsg(string msg) {
+		pthread_mutex_lock(&comMutex);
+		sendMsg(0, msg);
+		pthread_mutex_unlock(&comMutex);
 
+		return true;
 	}
 
-	void* Process::receiveProcessObject(string objectName) {
-
+	bool Process::sendMsg(int fd, string msg) {
+		return true;
 	}
 
-	void Process::setSignalListener(IProcessListener* listener) {
+	void Process::setProcessListener(IProcessListener* listener) {
 		sigListener = listener;
 	}
 
@@ -93,7 +116,10 @@ namespace process {
 		int rspawn;
 
 		if (processStatus == PST_NULL) {
-			rspawn = posix_spawn(
+			argv[0] = (char*)rCom.c_str();
+			argv[1] = (char*)wCom.c_str();
+
+			rspawn  = posix_spawn(
 					&pid,
 					processUri.c_str(),
 					&fileActions,
@@ -112,12 +138,23 @@ namespace process {
 	void Process::forceKill() {
 		int rkill;
 
-		rkill = kill(pid, SIGKILL);
+		reader = false;
+		rkill  = kill(pid, SIGKILL);
+	}
+
+	void* Process::createFiles(void* ptr) {
+		Process* process = (Process*)ptr;
+
+		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
+		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
+
+		process->wFd = open(process->wCom.c_str(), O_WRONLY);
 	}
 
 	void* Process::detachWait(void* ptr) {
 		Process* process = (Process*)ptr;
 		int status;
+		int type;
 		int wpid;
 
 		wpid = waitpid(process->pid, &status, WUNTRACED | WCONTINUED);
@@ -126,19 +163,32 @@ namespace process {
         	cout << "Process::detachWait process '" << process->processUri;
         	cout << "' exited with exit status '" << WEXITSTATUS(status);
         	cout << "'" << endl;
-        	status = IProcessListener::PST_EXIT_OK;
+        	type = IProcessListener::PST_EXIT_OK;
 
-        } else {
+        } else if (WIFSTOPPED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;
         	cout << "' has not terminated correctly.";
         	cout << endl;
 
-        	status = IProcessListener::PST_EXIT_ERROR;
+        	type = IProcessListener::PST_EXIT_ERROR;
+
+        } else {
+        	type = IProcessListener::PST_EXEC_SIGNAL;
         }
 
 		if (process->sigListener != NULL) {
-			process->sigListener->receiveProcessSignal(status, process);
+			process->sigListener->receiveProcessSignal(type, status, process);
 		}
+
+		if (type == IProcessListener::PST_EXEC_SIGNAL) {
+			detachWait(ptr);
+		}
+	}
+
+	void* Process::detachReceive(void* ptr) {
+		Process* process = (Process*)ptr;
+
+		process->rFd = open(process->rCom.c_str(), O_RDONLY);
 	}
 }
 }

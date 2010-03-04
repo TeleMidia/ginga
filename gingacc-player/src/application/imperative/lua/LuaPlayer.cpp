@@ -423,6 +423,8 @@ bool LuaPlayer::setKeyHandler(bool isHandler) {
 void LuaPlayer::setScope(string scopeId, short type,
                          double begin, double end)
 {
+	cout << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
+	cout << "' begin '" << begin << "' end '" << end << endl;
 	addScope(scopeId, type, begin, end);
 }
 
@@ -442,6 +444,7 @@ void LuaPlayer::addScope(string scopeId, short type, double begin, double end)
 }
 
 void LuaPlayer::setCurrentScope(string scopeId) {
+	cout << "LuaPlayer::setCurrentScope '" << scopeId << "'" << endl;
 	this->currentScope = scopeId;
 }
 

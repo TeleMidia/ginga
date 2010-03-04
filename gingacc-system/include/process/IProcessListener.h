@@ -63,11 +63,12 @@ namespace system {
 namespace process {
   class IProcessListener {
 	public:
-		static const short PST_EXIT_OK    = 0;
-		static const short PST_EXIT_ERROR = 1;
+		static const short PST_EXIT_OK     = 0;
+		static const short PST_EXIT_ERROR  = 1;
+		static const short PST_EXEC_SIGNAL = 2;
 
 		virtual ~IProcessListener(){};
-		virtual void receiveProcessSignal(int processSig, void* process)=0;
+		virtual void receiveProcessSignal(int sigType, int pSig, void* pAddr)=0;
   };
 }
 }
