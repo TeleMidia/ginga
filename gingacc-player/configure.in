@@ -207,7 +207,7 @@ AC_OUTPUT(Makefile files/Makefile files/scripts/Makefile
 	src/application/declarative/xhtml/Makefile
 	src/text/Makefile src/text/plain/Makefile
 	src/text/srt/Makefile src/video/Makefile src/tv/Makefile
-	src/widget/Makefile test/Makefile)
+	src/widget/Makefile tools/Makefile test/Makefile)
 
 AC_MSG_RESULT([
 Build options: 

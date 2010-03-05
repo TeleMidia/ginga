@@ -47,25 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef __Process_h__
-#define __Process_h__
+#ifndef __SpawnedProcess_h__
+#define __SpawnedProcess_h__
 
-#include "IProcessListener.h"
-
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <spawn.h>
-#include <signal.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-
-#include <errno.h>
-#include <string.h>
-
-#include <iostream>
-#include <string>
-using namespace std;
+#include "Process.h"
 
 namespace br {
 namespace pucrio {
@@ -74,61 +59,26 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace process {
-  class Process {
-	private:
-		static const short PST_NULL    = 0;
-		static const short PST_RUNNING = 1;
-		static const short PST_SDONE   = 2;
-		static const short PST_UDONE   = 3;
-
-		static const int SHM_SIZE      = 65536;
-
-		pid_t pid;
-		int comDesc;
-		short processStatus;
-		char** argv;
-		char** envp;
-		string processUri;
-		string objName;
-		posix_spawnattr_t spawnAttr;
-		posix_spawn_file_actions_t fileActions;
-
-		int shmDesc;
-
+  class SpawnedProcess {
+	protected:
+		int rFd;
+		int wFd;
+		string objectName;
 		string rCom;
 		string wCom;
-		int wFd;
-		int rFd;
 		bool reader;
-
-		bool isCheckingCom;
-		pthread_mutex_t comMutex;
-		pthread_cond_t comCond;
-
-		IProcessListener* sigListener;
+		pthread_mutex_t waitSig;
 
 	public:
-		Process(string processUri, string objName, char** argv);
-		virtual ~Process();
+		SpawnedProcess(string objectName, string wCom, string rCom);
+		virtual ~SpawnedProcess();
 
-		static int createShm(string shmName, bool truncateFile, int shmSize);
-		void checkCom();
-
-		bool sendMsg(string msg);
-		static bool sendMsg(int fd, string msg);
-		virtual void messageReceived(string msg);
-		static string receiveMsg(int fd);
-		static int openW(string wName);
-		static int openR(string rName);
-
-		void setProcessListener(IProcessListener* listener);
-		void run();
-		void forceKill();
-
-	private:
-		static void* createFiles(void* ptr);
-		static void* detachWait(void* ptr);
 		static void* detachReceive(void* ptr);
+
+		virtual void sendMessage(string msg);
+		virtual void messageReceived(string msg);
+
+		virtual void waitSignal();
   };
 }
 }
@@ -138,4 +88,4 @@ namespace process {
 }
 }
 
-#endif //__Process_h__
+#endif //__SpawnedProcess_h__

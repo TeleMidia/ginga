@@ -7,6 +7,6 @@ LIBS =
 SUBDIRS = files include src src/image \
           src/application/declarative/xhtml \
           src/application/imperative/lua src/text \
-          src/text/plain src/text/srt src/video src/tv src/widget test
+          src/text/plain src/text/srt src/video src/tv src/widget tools test
 
 INCLUDES = -I/usr/local/include/ -I/usr/local/include/ginga/

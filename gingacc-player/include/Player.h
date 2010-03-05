@@ -112,7 +112,7 @@ namespace player {
 		public:
 			Player(string mrl);
 			virtual ~Player();
-			virtual void setStandByState(bool standBy){};
+			//virtual void setStandByState(bool standBy){};
 			virtual void setNotifyContentUpdate(bool notify);
 			virtual void addListener(IPlayerListener* listener);
 			void removeListener(IPlayerListener* listener);

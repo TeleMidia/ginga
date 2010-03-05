@@ -63,7 +63,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace process {
-	Process::Process(string processUri, char** argv) {
+	Process::Process(string processUri, string objName, char** argv) {
 		pthread_t threadId_;
 
 		this->pid           = -1;
@@ -73,12 +73,19 @@ namespace process {
 		this->processStatus = PST_NULL;
 		this->sigListener   = NULL;
 		this->reader        = true;
+		this->wFd           = -1;
+		this->rFd           = -1;
+		this->objName       = objName;
 
 		rCom = processUri + itos((long int)(void*)this) + "_ctop";
 		wCom = processUri + itos((long int)(void*)this) + "_ptoc";
 
 		posix_spawnattr_init(&spawnAttr);
 		posix_spawn_file_actions_init(&fileActions);
+
+		isCheckingCom = false;
+		pthread_mutex_init(&comMutex, NULL);
+		pthread_cond_init(&comCond, NULL);
 
 		pthread_create(&threadId_, 0, Process::createFiles, this);
 		pthread_detach(threadId_);
@@ -95,16 +102,88 @@ namespace process {
 		posix_spawn_file_actions_destroy(&fileActions);
 	}
 
-	bool Process::sendMsg(string msg) {
-		pthread_mutex_lock(&comMutex);
-		sendMsg(0, msg);
-		pthread_mutex_unlock(&comMutex);
+	int Process::createShm(string shmName, bool truncateFile, int shmSize) {
+		int fd = shm_open(shmName.c_str(), O_CREAT | O_RDWR, S_IRWXU);
+		if (fd == -1) {
+			cout << "Process::createShm can't open shm file" << endl;
+			return fd;
+		}
 
-		return true;
+		if (truncateFile && ftruncate(fd, shmSize) == -1) {
+			cout << "dfb_init::main can't truncate shm file" << endl;
+			close(fd);
+			shm_unlink(shmName.c_str());
+			return -1;
+		}
+
+		return fd;
+	}
+
+	void Process::checkCom() {
+		if (wFd > 0 && rFd > 0) {
+			return;
+		}
+
+		isCheckingCom = true;
+		pthread_mutex_lock(&comMutex);
+		pthread_cond_wait(&comCond, &comMutex);
+		isCheckingCom = false;
+		pthread_mutex_unlock(&comMutex);
+	}
+
+	bool Process::sendMsg(string msg) {
+		return sendMsg(wFd, msg);
 	}
 
 	bool Process::sendMsg(int fd, string msg) {
-		return true;
+		int rval;
+
+		if (fd >= 0) {
+			rval = write(fd, msg.c_str(), msg.length());
+			if (rval == msg.length()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Process::messageReceived(string msg) {
+		cout << "Process::messageReceived '" << msg << "'" << endl;
+	}
+
+	string Process::receiveMsg(int fd) {
+		int rval;
+		char buff[512];
+		string msg = "";
+
+		rval = read(fd, buff, sizeof(buff));
+		if (rval > 0) {
+			msg.assign(buff, rval);
+		}
+
+		return msg;
+	}
+
+	int Process::openW(string wName) {
+		int fd = open(wName.c_str(), O_WRONLY);
+		if (fd < 0) {
+			cout << "Process::openW Warning! ";
+			cout << "can't open '" << wName << "'";
+			cout << endl;
+		}
+
+		return fd;
+	}
+
+	int Process::openR(string rName) {
+		int fd = open(rName.c_str(), O_RDONLY);
+		if (fd < 0) {
+			cout << "Process::openR Warning! ";
+			cout << "can't open '" << rName << "'";
+			cout << endl;
+		}
+
+		return fd;
 	}
 
 	void Process::setProcessListener(IProcessListener* listener) {
@@ -113,11 +192,13 @@ namespace process {
 
 	void Process::run() {
 		pthread_t threadId_;
+		pthread_t threadIdR_;
 		int rspawn;
 
 		if (processStatus == PST_NULL) {
-			argv[0] = (char*)rCom.c_str();
-			argv[1] = (char*)wCom.c_str();
+			argv[0] = (char*)objName.c_str();
+			argv[1] = (char*)rCom.c_str();
+			argv[2] = (char*)wCom.c_str();
 
 			rspawn  = posix_spawn(
 					&pid,
@@ -131,6 +212,9 @@ namespace process {
 				processStatus = PST_RUNNING;
 				pthread_create(&threadId_, 0, Process::detachWait, this);
 				pthread_detach(threadId_);
+
+				pthread_create(&threadIdR_, 0, Process::detachReceive, this);
+				pthread_detach(threadIdR_);
 			}
 		}
 	}
@@ -143,12 +227,42 @@ namespace process {
 	}
 
 	void* Process::createFiles(void* ptr) {
+		int rval;
 		Process* process = (Process*)ptr;
 
 		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
-		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
+		if (rval < 0) {
+			cout << "Process::createFiles Warning! ";
+			cout << "can't create pipe '" << process->wCom << "'";
+			cout << endl;
+			return NULL;
+		}
 
-		process->wFd = open(process->wCom.c_str(), O_WRONLY);
+		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
+		if (rval < 0) {
+			cout << "Process::createFiles Warning! ";
+			cout << "can't create pipe '" << process->rCom << "'";
+			cout << endl;
+			return NULL;
+		}
+
+		cout << "Process::createFiles r e w OK!";
+		cout << endl;
+
+		process->wFd = openW(process->wCom);
+		if (process->wFd < 0) {
+			cout << "Process::createFiles Warning! ";
+			cout << "can't open '" << process->wCom << "'";
+			cout << endl;
+		}
+
+		if (process->isCheckingCom && process->rFd > 0) {
+			pthread_cond_signal(&process->comCond);
+		}
+		cout << "Process::createFiles w opened!";
+		cout << endl;
+
+		return NULL;
 	}
 
 	void* Process::detachWait(void* ptr) {
@@ -183,12 +297,37 @@ namespace process {
 		if (type == IProcessListener::PST_EXEC_SIGNAL) {
 			detachWait(ptr);
 		}
+
+		return NULL;
 	}
 
 	void* Process::detachReceive(void* ptr) {
+		string msg;
 		Process* process = (Process*)ptr;
 
-		process->rFd = open(process->rCom.c_str(), O_RDONLY);
+		process->rFd = openR(process->rCom);
+		if (process->rFd < 0) {
+			cout << "Process::detachReceive Warning! ";
+			cout << "can't open '" << process->rCom << "'";
+			cout << endl;
+			return NULL;
+		}
+
+		if (process->isCheckingCom && process->wFd > 0) {
+			pthread_cond_signal(&process->comCond);
+		}
+
+		cout << "Process::detachReceive r opened!";
+		cout << endl;
+
+		while (process->reader) {
+			msg = receiveMsg(process->rFd);
+			if (msg != "") {
+				process->messageReceived(msg);
+			}
+		}
+
+		return NULL;
 	}
 }
 }

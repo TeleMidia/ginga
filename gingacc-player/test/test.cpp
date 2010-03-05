@@ -50,46 +50,68 @@ http://www.telemidia.puc-rio.br
 #include "../include/ImagePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
+#include "system/process/Process.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::process;
+
 #include "system/io/ILocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "../include/PlayersComponentSupport.h"
 
-int main() {
+int main(int argc, char** argv) {
 	IWindow* w;
 	ISurface* s;
 	ILocalDeviceManager* dm;
 	IPlayer* player;
 	IPlayer* img;
+	Process* process;
 
+	if (argc > 1 && argv[1] == "img") {
 #if HAVE_COMPSUPPORT
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	dm = ((LocalDeviceManagerCreator*)(cm->getObject("LocalDeviceManager")))();
+		IComponentManager* cm = IComponentManager::getCMInstance();
+		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
+				"LocalDeviceManager")))();
+
 #else
-	dm = LocalDeviceManager::getInstance();
+		dm = LocalDeviceManager::getInstance();
 #endif
 
-	dm->createDevice("systemScreen(0)");
+		dm->createDevice("systemScreen(0)");
 #if HAVE_COMPSUPPORT
-	w = ((WindowCreator*)(cm->getObject("Window")))(10, 10, 100, 100);
+		w = ((WindowCreator*)(cm->getObject("Window")))(10, 10, 100, 100);
 #else
-	w = new DFBWindow(10, 10, 100, 100);
+		w = new DFBWindow(10, 10, 100, 100);
 #endif
 
-	w->setCaps(w->getCap("ALPHACHANNEL"));
-	w->draw();
-	w->show();
+		w->setCaps(w->getCap("ALPHACHANNEL"));
+		w->draw();
+		w->show();
 
-	player = new Player("teste");
-	img = new ImagePlayer("/root/bg_initializing.png");
-	s = img->getSurface();
-	w->renderFrom(s);
+		player = new Player("teste");
+		img = new ImagePlayer("/root/bg_initializing.png");
+		s = img->getSurface();
+		w->renderFrom(s);
+
+		cout << "Player test has shown image. press enter to continue" << endl;
+		getchar();
+		dm->clearWidgetPools();
+
+	} else if (argc > 1 && argv[1] == "process") {
+		process = new Process(
+				"/usr/local/etc/ginga/tools/loaderplayer", "ImagePlayer", argv);
+
+		process->run();
+		process->checkCom();
+
+		process->sendMsg("createPlayer, /root/img1.png, true");
+		::usleep(1);
+		process->sendMsg("createWindow, 10, 10, 100, 100");
+		::usleep(1);
+		process->sendMsg("play");
+	}
 
 	//TODO: tests
-	cout << "Player test has shown image. press enter to continue" << endl;
-	getchar();
-	dm->clearWidgetPools();
-	cout << "Player test has released widgets. press enter to continue" << endl;
+	cout << "Player test done. press enter to continue" << endl;
 	getchar();
 
 	return 0;

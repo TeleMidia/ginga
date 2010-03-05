@@ -10,6 +10,6 @@ libgingaccsystemprocess_so_LDFLAGS = -Wl,-soname,libgingaccsystemprocess.so \
     -shared -L/usr/local/lib -L/usr/local/lib/ginga 
 
 localLib_PROGRAMS = libgingaccsystemprocess.so
-libgingaccsystemprocess_so_SOURCES = Process.cpp
+libgingaccsystemprocess_so_SOURCES = Process.cpp SpawnedProcess.cpp
 libgingaccsystemprocess_so_LDADD = -ltelemidiautil -lpthread -lrt \
     $(COMPONENTS_LIBS)

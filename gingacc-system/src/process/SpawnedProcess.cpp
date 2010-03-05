@@ -5,10 +5,10 @@ Ginga (Ginga-NCL).
 Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
 
 Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
-os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
+os termos da Licen� Publica Geral GNU versao 2 conforme publicada pela Free
 Software Foundation.
 
-Este programa eh distribuido na expectativa de que seja util, porem, SEM
+Este programa eh distribu�o na expectativa de que seja util, porem, SEM
 NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
 ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
 GNU versao 2 para mais detalhes.
@@ -47,25 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef __Process_h__
-#define __Process_h__
-
-#include "IProcessListener.h"
-
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <spawn.h>
-#include <signal.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-
-#include <errno.h>
-#include <string.h>
-
-#include <iostream>
-#include <string>
-using namespace std;
+#include "../../include/process/SpawnedProcess.h"
 
 namespace br {
 namespace pucrio {
@@ -74,62 +56,70 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace process {
-  class Process {
-	private:
-		static const short PST_NULL    = 0;
-		static const short PST_RUNNING = 1;
-		static const short PST_SDONE   = 2;
-		static const short PST_UDONE   = 3;
+	SpawnedProcess::SpawnedProcess(string objName, string wCom, string rCom) {
+		pthread_t threadId_;
 
-		static const int SHM_SIZE      = 65536;
+		this->objectName = objName;
+		this->wCom       = wCom;
+		this->rCom       = rCom;
 
-		pid_t pid;
-		int comDesc;
-		short processStatus;
-		char** argv;
-		char** envp;
-		string processUri;
-		string objName;
-		posix_spawnattr_t spawnAttr;
-		posix_spawn_file_actions_t fileActions;
+		wFd = Process::openW(wCom);
+		if (wFd < 0) {
+			cout << "SpawnedProcess::SpawnedProcess Warning! ";
+			cout << "Can't openW '" << wCom << "'" << endl;
+		}
 
-		int shmDesc;
+		rFd = Process::openR(rCom);
+		if (rFd < 0) {
+			cout << "SpawnedProcess::SpawnedProcess Warning! ";
+			cout << "Can't openR '" << rCom << "'" << endl;
+		}
 
-		string rCom;
-		string wCom;
-		int wFd;
-		int rFd;
-		bool reader;
+		pthread_mutex_init(&waitSig, NULL);
 
-		bool isCheckingCom;
-		pthread_mutex_t comMutex;
-		pthread_cond_t comCond;
+		reader = true;
+		pthread_create(&threadId_, 0, SpawnedProcess::detachReceive, this);
+		pthread_detach(threadId_);
+	}
 
-		IProcessListener* sigListener;
+	SpawnedProcess::~SpawnedProcess() {
+		reader = false;
 
-	public:
-		Process(string processUri, string objName, char** argv);
-		virtual ~Process();
+		if (wFd > 0) {
+			close(wFd);
+		}
 
-		static int createShm(string shmName, bool truncateFile, int shmSize);
-		void checkCom();
+		if (rFd > 0) {
+			close(rFd);
+		}
 
-		bool sendMsg(string msg);
-		static bool sendMsg(int fd, string msg);
-		virtual void messageReceived(string msg);
-		static string receiveMsg(int fd);
-		static int openW(string wName);
-		static int openR(string rName);
+		pthread_mutex_destroy(&waitSig);
+	}
 
-		void setProcessListener(IProcessListener* listener);
-		void run();
-		void forceKill();
+	void* SpawnedProcess::detachReceive(void* ptr) {
+		string msg;
+		SpawnedProcess* sp = (SpawnedProcess*)ptr;
 
-	private:
-		static void* createFiles(void* ptr);
-		static void* detachWait(void* ptr);
-		static void* detachReceive(void* ptr);
-  };
+		while (sp->reader) {
+			msg = Process::receiveMsg(sp->rFd);
+			if (msg != "") {
+				sp->messageReceived(msg);
+			}
+		}
+	}
+
+	void SpawnedProcess::sendMessage(string msg) {
+		Process::sendMsg(wFd, msg);
+	}
+
+	void SpawnedProcess::messageReceived(string msg) {
+		cout << "SpawnedProcess::messageReceived '" << msg << "'" << endl;
+	}
+
+	void SpawnedProcess::waitSignal() {
+		pthread_mutex_lock(&waitSig);
+		pthread_mutex_lock(&waitSig);
+	}
 }
 }
 }
@@ -137,5 +127,3 @@ namespace process {
 }
 }
 }
-
-#endif //__Process_h__

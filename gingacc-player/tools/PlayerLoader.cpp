@@ -1,0 +1,185 @@
+/******************************************************************************
+Este arquivo eh parte da implementacao do ambiente declarativo do middleware
+Ginga (Ginga-NCL).
+
+Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+
+Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
+os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
+Software Foundation.
+
+Este programa eh distribuido na expectativa de que seja util, porem, SEM
+NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
+ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
+GNU versao 2 para mais detalhes.
+
+Voce deve ter recebido uma copia da Licenca Publica Geral do GNU versao 2 junto
+com este programa; se nao, escreva para a Free Software Foundation, Inc., no
+endereco 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
+
+Para maiores informacoes:
+ncl @ telemidia.puc-rio.br
+http://www.ncl.org.br
+http://www.ginga.org.br
+http://www.telemidia.puc-rio.br
+******************************************************************************
+This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
+
+Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License version 2 as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License version 2 for more
+details.
+
+You should have received a copy of the GNU General Public License version 2
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+
+For further information contact:
+ncl @ telemidia.puc-rio.br
+http://www.ncl.org.br
+http://www.ginga.org.br
+http://www.telemidia.puc-rio.br
+*******************************************************************************/
+
+#include "../config.h"
+
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+
+#include "system/io/ILocalDeviceManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#endif
+
+#include "system/process/SpawnedProcess.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::process;
+
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+#include "../include/IPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
+#include <vector>
+#include <iostream>
+using namespace std;
+
+class PlayerSpawnedProcess : public SpawnedProcess {
+  private:
+#if HAVE_COMPSUPPORT
+	IComponentManager* cm;
+#endif
+
+	ILocalDeviceManager* dm;
+	IPlayer* player;
+
+  public:
+	PlayerSpawnedProcess(string objectName, string wCom, string rCom) :
+			SpawnedProcess(objectName, wCom, rCom) {
+
+		dm     = NULL;
+		player = NULL;
+
+#if HAVE_COMPSUPPORT
+		IComponentManager* cm = IComponentManager::getCMInstance();
+		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
+				"LocalDeviceManager")))();
+
+		dm->createDevice("systemScreen(0)");
+#endif
+	}
+
+	void messageReceived(string msg) {
+		vector<string>* vMsg = split(msg, ",");
+		int size;
+		ISurface* surface;
+		IWindow* window;
+
+		if ((*vMsg)[0] == "createPlayer") {
+#if HAVE_COMPSUPPORT
+			player = ((PlayerCreator*)(cm->getObject(objectName)))(
+					(*vMsg)[1].c_str(), (*vMsg)[2] == "true");
+#endif
+
+		} else if ((*vMsg)[0] == "createWindow") {
+#if HAVE_COMPSUPPORT
+			window = ((WindowCreator*)(cm->getObject("Window")))(
+					stof((*vMsg)[1]),
+					stof((*vMsg)[2]),
+					stof((*vMsg)[3]),
+					stof((*vMsg)[4]));
+
+			player->getSurface()->setParent(window);
+#endif
+
+		} else if ((*vMsg)[0] == "setPropertyValue") {
+			size = vMsg->size();
+			if (size == 3) {
+				player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
+
+			} else if (size == 4) {
+				player->setPropertyValue(
+						(*vMsg)[1], (*vMsg)[2], stof((*vMsg)[3]));
+			}
+
+			//zindex
+			//mediatime
+			//scope
+			//currentScope
+			//keyHandler
+
+		} else if ((*vMsg)[0] == "getMediaTime") {
+			sendMessage(itos(player->getMediaTime()));
+
+		} else if ((*vMsg)[0] == "getWindowId") {
+			surface = player->getSurface();
+			if (surface != NULL && surface->getParent() != NULL) {
+				sendMessage(itos(((IWindow*)(surface->getParent()))->getId()));
+			}
+
+		} else if ((*vMsg)[0] == "play") {
+			player->play();
+			((IWindow*)(player->getSurface()->getParent()))->show();
+
+		} else if ((*vMsg)[0] == "stop") {
+			player->stop();
+
+		} else if ((*vMsg)[0] == "pause") {
+			player->pause();
+
+		} else if ((*vMsg)[0] == "resume") {
+			player->resume();
+
+		} else if ((*vMsg)[0] == "abort") {
+			player->abort();
+
+		} else if ((*vMsg)[0] == "getVPts") {
+			sendMessage(itos(player->getVPts()));
+		}
+
+		delete vMsg;
+	}
+};
+
+int main(int argc, char *argv[], char* envp[]) {
+	string rName, wName, objName;
+	PlayerSpawnedProcess* psp;
+
+	objName = argv[0];
+	wName   = argv[1];
+	rName   = argv[2];
+
+	cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
+	cout << "PlayerLoader::main wName = '" << wName << "'" << endl;
+	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;
+
+    psp = new PlayerSpawnedProcess(objName, wName, rName);
+    psp->waitSignal();
+	return 0;
+}

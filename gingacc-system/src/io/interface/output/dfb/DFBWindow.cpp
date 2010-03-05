@@ -399,6 +399,18 @@ namespace io {
 		return this->transparencyValue;
 	}
 
+	int DFBWindow::getId() {
+		DFBWindowID wid = -1;
+
+		lock();
+		if (win != NULL) {
+			win->GetID(win, &wid);
+		}
+		unlock();
+
+		return wid;
+	}
+
 	void DFBWindow::show() {
 		this->visible = true;
 

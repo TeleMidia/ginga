@@ -84,7 +84,7 @@ namespace player {
 
 			virtual ~INCLPlayer(){};
 
-			virtual void setStandByState(bool standBy)=0;
+			//virtual void setStandByState(bool standBy)=0;
 			virtual void setTimeBaseProvider(
 					ITimeBaseProvider* timeBaseProvider)=0;
 

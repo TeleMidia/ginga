@@ -85,6 +85,7 @@ namespace io {
 			virtual void setOpaqueRegion(int x1, int y1, int x2, int y2)=0;
 			virtual void setTransparencyValue(int alpha)=0;
 			virtual int getTransparencyValue()=0;
+			virtual int getId()=0;
 			virtual void show()=0;
 			virtual void hide()=0;
 			virtual int getX()=0;
