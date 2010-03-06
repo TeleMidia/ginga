@@ -78,6 +78,7 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 
 	ILocalDeviceManager* dm;
 	IPlayer* player;
+	IWindow* window;
 
   public:
 	PlayerSpawnedProcess(string objectName, string wCom, string rCom) :
@@ -87,83 +88,101 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 		player = NULL;
 
 #if HAVE_COMPSUPPORT
-		IComponentManager* cm = IComponentManager::getCMInstance();
+		cm = IComponentManager::getCMInstance();
 		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
 				"LocalDeviceManager")))();
 
 		dm->createDevice("systemScreen(0)");
 #endif
+
+		sendMessage("ready");
 	}
 
 	void messageReceived(string msg) {
-		vector<string>* vMsg = split(msg, ",");
+		vector<string>* cmds;
+		vector<string>* vMsg;
+		vector<string>::iterator i;
 		int size;
 		ISurface* surface;
-		IWindow* window;
 
-		if ((*vMsg)[0] == "createPlayer") {
+		cmds = split(msg, "::;::");
+		i = cmds->begin();
+		while (i != cmds->end()) {
+			vMsg = split(*i, ",");
+			if ((*vMsg)[0] == "createPlayer") {
 #if HAVE_COMPSUPPORT
-			player = ((PlayerCreator*)(cm->getObject(objectName)))(
-					(*vMsg)[1].c_str(), (*vMsg)[2] == "true");
+				player = ((PlayerCreator*)(cm->getObject(objectName)))(
+						(*vMsg)[1].c_str(), (*vMsg)[2] == "true");
 #endif
 
-		} else if ((*vMsg)[0] == "createWindow") {
+			} else if ((*vMsg)[0] == "createWindow") {
 #if HAVE_COMPSUPPORT
-			window = ((WindowCreator*)(cm->getObject("Window")))(
-					stof((*vMsg)[1]),
-					stof((*vMsg)[2]),
-					stof((*vMsg)[3]),
-					stof((*vMsg)[4]));
+				window = ((WindowCreator*)(cm->getObject("Window")))(
+						stof((*vMsg)[1]),
+						stof((*vMsg)[2]),
+						stof((*vMsg)[3]),
+						stof((*vMsg)[4]));
 
-			player->getSurface()->setParent(window);
+				window->setCaps(window->getCap("ALPHACHANNEL"));
+				window->draw();
+
+				window->renderFrom(player->getSurface());
 #endif
 
-		} else if ((*vMsg)[0] == "setPropertyValue") {
-			size = vMsg->size();
-			if (size == 3) {
-				player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
+			} else if ((*vMsg)[0] == "setPropertyValue") {
+				size = vMsg->size();
+				if (size == 3) {
+					player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
 
-			} else if (size == 4) {
-				player->setPropertyValue(
-						(*vMsg)[1], (*vMsg)[2], stof((*vMsg)[3]));
+				} else if (size == 4) {
+					player->setPropertyValue(
+							(*vMsg)[1], (*vMsg)[2], stof((*vMsg)[3]));
+				}
+
+				//zindex
+				//mediatime
+				//scope
+				//currentScope
+				//keyHandler
+
+			} else if ((*vMsg)[0] == "getMediaTime") {
+				sendMessage(itos(player->getMediaTime()));
+
+			} else if ((*vMsg)[0] == "getWindowId") {
+				surface = player->getSurface();
+				if (surface != NULL && surface->getParent() != NULL) {
+					sendMessage(itos(((IWindow*)(surface->getParent()))->getId()));
+				}
+
+			} else if ((*vMsg)[0] == "play") {
+				player->play();
+
+			} else if ((*vMsg)[0] == "stop") {
+				player->stop();
+
+			} else if ((*vMsg)[0] == "show") {
+				window->show();
+
+			} else if ((*vMsg)[0] == "hide") {
+				window->hide();
+
+			} else if ((*vMsg)[0] == "pause") {
+				player->pause();
+
+			} else if ((*vMsg)[0] == "resume") {
+				player->resume();
+
+			} else if ((*vMsg)[0] == "abort") {
+				player->abort();
+
+			} else if ((*vMsg)[0] == "getVPts") {
+				sendMessage(itos(player->getVPts()));
 			}
 
-			//zindex
-			//mediatime
-			//scope
-			//currentScope
-			//keyHandler
-
-		} else if ((*vMsg)[0] == "getMediaTime") {
-			sendMessage(itos(player->getMediaTime()));
-
-		} else if ((*vMsg)[0] == "getWindowId") {
-			surface = player->getSurface();
-			if (surface != NULL && surface->getParent() != NULL) {
-				sendMessage(itos(((IWindow*)(surface->getParent()))->getId()));
-			}
-
-		} else if ((*vMsg)[0] == "play") {
-			player->play();
-			((IWindow*)(player->getSurface()->getParent()))->show();
-
-		} else if ((*vMsg)[0] == "stop") {
-			player->stop();
-
-		} else if ((*vMsg)[0] == "pause") {
-			player->pause();
-
-		} else if ((*vMsg)[0] == "resume") {
-			player->resume();
-
-		} else if ((*vMsg)[0] == "abort") {
-			player->abort();
-
-		} else if ((*vMsg)[0] == "getVPts") {
-			sendMessage(itos(player->getVPts()));
+			delete vMsg;
+			++i;
 		}
-
-		delete vMsg;
+		delete cmds;
 	}
 };
 
@@ -175,11 +194,13 @@ int main(int argc, char *argv[], char* envp[]) {
 	wName   = argv[1];
 	rName   = argv[2];
 
-	cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
+	/*cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
 	cout << "PlayerLoader::main wName = '" << wName << "'" << endl;
-	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;
+	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;*/
 
-    psp = new PlayerSpawnedProcess(objName, wName, rName);
+	setLogToNullDev();
+
+	psp = new PlayerSpawnedProcess(objName, wName, rName);
     psp->waitSignal();
 	return 0;
 }

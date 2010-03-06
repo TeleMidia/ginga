@@ -101,6 +101,8 @@ namespace process {
 		int rFd;
 		bool reader;
 
+		bool isSpawnedReady;
+
 		bool isCheckingCom;
 		pthread_mutex_t comMutex;
 		pthread_cond_t comCond;
@@ -114,6 +116,10 @@ namespace process {
 		static int createShm(string shmName, bool truncateFile, int shmSize);
 		void checkCom();
 
+	private:
+		void tryCom();
+
+	public:
 		bool sendMsg(string msg);
 		static bool sendMsg(int fd, string msg);
 		virtual void messageReceived(string msg);
@@ -126,6 +132,7 @@ namespace process {
 		void forceKill();
 
 	private:
+		void spawnedReady(bool ready);
 		static void* createFiles(void* ptr);
 		static void* detachWait(void* ptr);
 		static void* detachReceive(void* ptr);

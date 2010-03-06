@@ -65,6 +65,7 @@ namespace system {
 namespace process {
 	Process::Process(string processUri, string objName, char** argv) {
 		pthread_t threadId_;
+		string processName;
 
 		this->pid           = -1;
 		this->argv          = argv;
@@ -77,8 +78,20 @@ namespace process {
 		this->rFd           = -1;
 		this->objName       = objName;
 
-		rCom = processUri + itos((long int)(void*)this) + "_ctop";
-		wCom = processUri + itos((long int)(void*)this) + "_ptoc";
+		if (processUri.find("/") != std::string::npos) {
+			processName = processUri.substr(
+					processUri.find_last_of("/") + 1,
+					processUri.length() - processUri.find_last_of("/") + 1);
+
+		} else {
+			processName = processUri;
+		}
+
+		rCom = ("/tmp/ginga/_" + processName +
+				itos((long int)(void*)this) + "_ctop");
+
+		wCom = ("/tmp/ginga/_" + processName +
+				itos((long int)(void*)this) + "_ptoc");
 
 		posix_spawnattr_init(&spawnAttr);
 		posix_spawn_file_actions_init(&fileActions);
@@ -90,9 +103,7 @@ namespace process {
 		pthread_create(&threadId_, 0, Process::createFiles, this);
 		pthread_detach(threadId_);
 
-		cout << "Process::Process created with rCom = '" << rCom << "'";
-		cout << " and wCom = '" << wCom << "'";
-		cout << endl;
+		isSpawnedReady = false;
 	}
 
 	Process::~Process() {
@@ -110,7 +121,7 @@ namespace process {
 		}
 
 		if (truncateFile && ftruncate(fd, shmSize) == -1) {
-			cout << "dfb_init::main can't truncate shm file" << endl;
+			cout << "Process::createShm can't truncate shm file" << endl;
 			close(fd);
 			shm_unlink(shmName.c_str());
 			return -1;
@@ -120,7 +131,7 @@ namespace process {
 	}
 
 	void Process::checkCom() {
-		if (wFd > 0 && rFd > 0) {
+		if (wFd > 0 && rFd > 0 && isSpawnedReady) {
 			return;
 		}
 
@@ -129,6 +140,12 @@ namespace process {
 		pthread_cond_wait(&comCond, &comMutex);
 		isCheckingCom = false;
 		pthread_mutex_unlock(&comMutex);
+	}
+
+	void Process::tryCom() {
+		if (wFd > 0 && rFd > 0 && isSpawnedReady && isCheckingCom) {
+			pthread_cond_signal(&comCond);
+		}
 	}
 
 	bool Process::sendMsg(string msg) {
@@ -226,6 +243,12 @@ namespace process {
 		rkill  = kill(pid, SIGKILL);
 	}
 
+	void Process::spawnedReady(bool ready) {
+		isSpawnedReady = ready;
+
+		tryCom();
+	}
+
 	void* Process::createFiles(void* ptr) {
 		int rval;
 		Process* process = (Process*)ptr;
@@ -246,9 +269,6 @@ namespace process {
 			return NULL;
 		}
 
-		cout << "Process::createFiles r e w OK!";
-		cout << endl;
-
 		process->wFd = openW(process->wCom);
 		if (process->wFd < 0) {
 			cout << "Process::createFiles Warning! ";
@@ -256,12 +276,7 @@ namespace process {
 			cout << endl;
 		}
 
-		if (process->isCheckingCom && process->rFd > 0) {
-			pthread_cond_signal(&process->comCond);
-		}
-		cout << "Process::createFiles w opened!";
-		cout << endl;
-
+		process->tryCom();
 		return NULL;
 	}
 
@@ -271,7 +286,7 @@ namespace process {
 		int type;
 		int wpid;
 
-		wpid = waitpid(process->pid, &status, WUNTRACED | WCONTINUED);
+		wpid = waitpid(process->pid, &status, WUNTRACED);
 
         if (WIFEXITED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;
@@ -281,7 +296,7 @@ namespace process {
 
         } else if (WIFSTOPPED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;
-        	cout << "' has not terminated correctly.";
+        	cout << "' has not terminated correctly: '" << WSTOPSIG(status);
         	cout << endl;
 
         	type = IProcessListener::PST_EXIT_ERROR;
@@ -295,6 +310,10 @@ namespace process {
 		}
 
 		if (type == IProcessListener::PST_EXEC_SIGNAL) {
+			cout << "Process::detachWait process '" << process->processUri;
+			cout << "' received signal '" << status << "'";
+			cout << endl;
+
 			detachWait(ptr);
 		}
 
@@ -313,16 +332,14 @@ namespace process {
 			return NULL;
 		}
 
-		if (process->isCheckingCom && process->wFd > 0) {
-			pthread_cond_signal(&process->comCond);
-		}
-
-		cout << "Process::detachReceive r opened!";
-		cout << endl;
+		process->tryCom();
 
 		while (process->reader) {
 			msg = receiveMsg(process->rFd);
-			if (msg != "") {
+			if (msg == "ready") {
+				process->spawnedReady(true);
+
+			} else if (msg != "") {
 				process->messageReceived(msg);
 			}
 		}

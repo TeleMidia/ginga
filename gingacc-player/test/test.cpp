@@ -58,7 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "../include/PlayersComponentSupport.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv, char** envp) {
 	IWindow* w;
 	ISurface* s;
 	ILocalDeviceManager* dm;
@@ -66,7 +66,9 @@ int main(int argc, char** argv) {
 	IPlayer* img;
 	Process* process;
 
-	if (argc > 1 && argv[1] == "img") {
+	setLogToNullDev();
+
+	if (argc > 1 && strcmp(argv[1], "img") == 0) {
 #if HAVE_COMPSUPPORT
 		IComponentManager* cm = IComponentManager::getCMInstance();
 		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
@@ -88,7 +90,7 @@ int main(int argc, char** argv) {
 		w->show();
 
 		player = new Player("teste");
-		img = new ImagePlayer("/root/bg_initializing.png");
+		img = new ImagePlayer("/root/img1.png");
 		s = img->getSurface();
 		w->renderFrom(s);
 
@@ -96,18 +98,21 @@ int main(int argc, char** argv) {
 		getchar();
 		dm->clearWidgetPools();
 
-	} else if (argc > 1 && argv[1] == "process") {
+	} else if (argc > 1 && strcmp(argv[1], "process") == 0) {
 		process = new Process(
 				"/usr/local/etc/ginga/tools/loaderplayer", "ImagePlayer", argv);
 
 		process->run();
 		process->checkCom();
 
-		process->sendMsg("createPlayer, /root/img1.png, true");
-		::usleep(1);
-		process->sendMsg("createWindow, 10, 10, 100, 100");
-		::usleep(1);
-		process->sendMsg("play");
+		process->sendMsg("createPlayer,/root/img1.png,true::;::");
+		process->sendMsg("createWindow,10,10,100,100::;::");
+		process->sendMsg("getWindowId::;::");
+		process->sendMsg("play::;::");
+		process->sendMsg("show::;::");
+
+		getchar();
+		process->forceKill();
 	}
 
 	//TODO: tests
