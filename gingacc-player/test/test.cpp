@@ -99,8 +99,10 @@ int main(int argc, char** argv, char** envp) {
 		dm->clearWidgetPools();
 
 	} else if (argc > 1 && strcmp(argv[1], "process") == 0) {
-		process = new Process(
-				"/usr/local/etc/ginga/tools/loaderplayer", "ImagePlayer", argv);
+		process = new Process(argv);
+		process->setProcessInfo(
+				"/usr/local/etc/ginga/tools/loaders/players",
+				"ImagePlayer");
 
 		process->run();
 		process->checkCom();

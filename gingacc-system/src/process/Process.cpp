@@ -63,10 +63,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace process {
-	Process::Process(string processUri, string objName, char** argv) {
-		pthread_t threadId_;
-		string processName;
-
+	Process::Process(char** argv) {
 		this->pid           = -1;
 		this->argv          = argv;
 		this->envp          = environ;
@@ -76,6 +73,29 @@ namespace process {
 		this->reader        = true;
 		this->wFd           = -1;
 		this->rFd           = -1;
+
+		posix_spawnattr_init(&spawnAttr);
+		posix_spawn_file_actions_init(&fileActions);
+
+		isCheckingCom = false;
+		pthread_mutex_init(&comMutex, NULL);
+		pthread_cond_init(&comCond, NULL);
+
+		isSpawnedReady = false;
+	}
+
+	Process::~Process() {
+		reader = false;
+
+		posix_spawnattr_destroy(&spawnAttr);
+		posix_spawn_file_actions_destroy(&fileActions);
+	}
+
+	void Process::setProcessInfo(string processUri, string objName) {
+		pthread_t threadId_;
+		string processName;
+
+		this->processUri    = processUri;
 		this->objName       = objName;
 
 		if (processUri.find("/") != std::string::npos) {
@@ -93,24 +113,8 @@ namespace process {
 		wCom = ("/tmp/ginga/_" + processName +
 				itos((long int)(void*)this) + "_ptoc");
 
-		posix_spawnattr_init(&spawnAttr);
-		posix_spawn_file_actions_init(&fileActions);
-
-		isCheckingCom = false;
-		pthread_mutex_init(&comMutex, NULL);
-		pthread_cond_init(&comCond, NULL);
-
 		pthread_create(&threadId_, 0, Process::createFiles, this);
 		pthread_detach(threadId_);
-
-		isSpawnedReady = false;
-	}
-
-	Process::~Process() {
-		reader = false;
-
-		posix_spawnattr_destroy(&spawnAttr);
-		posix_spawn_file_actions_destroy(&fileActions);
 	}
 
 	int Process::createShm(string shmName, bool truncateFile, int shmSize) {

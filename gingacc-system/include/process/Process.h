@@ -110,9 +110,10 @@ namespace process {
 		IProcessListener* sigListener;
 
 	public:
-		Process(string processUri, string objName, char** argv);
+		Process(char** argv);
 		virtual ~Process();
 
+		void setProcessInfo(string processUri, string objName);
 		static int createShm(string shmName, bool truncateFile, int shmSize);
 		void checkCom();
 

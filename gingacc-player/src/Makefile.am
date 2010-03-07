@@ -8,10 +8,10 @@ LIBS =
 localLibdir = /usr/local/lib/ginga
 localLib_PROGRAMS = libgingaccplayer.so
 
-libgingaccplayer_so_SOURCES = Player.cpp
+libgingaccplayer_so_SOURCES = Player.cpp PlayerProcess.cpp
 
 libgingaccplayer_so_LDFLAGS = -L/usr/local/lib/ginga -L/usr/local/lib \
 	-g -shared -Wl,-soname,libgingaccplayer.so
 
 libgingaccplayer_so_LDADD = -lpthread -ltelemidiautil \
-    -lgingaccsystemiocodemap $(COMPONENTS_LIBS)
+    -lgingaccsystemiocodemap -lgingaccsystemprocess $(COMPONENTS_LIBS)

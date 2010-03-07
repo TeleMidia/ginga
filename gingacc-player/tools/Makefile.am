@@ -4,8 +4,8 @@ INCLUDES = -I/usr/local/include/ginga/ $(all_includes)
 
 LIBS =
 
-loaderplayerdir = /usr/local/etc/ginga/tools/
-loaderplayer_PROGRAMS = loaderplayer
-loaderplayer_SOURCES = PlayerLoader.cpp
-loaderplayer_LDADD = -ltelemidiautil  -lgingaccsystemprocess -lpthread -lrt \
+playersdir = /usr/local/etc/ginga/tools/loaders
+players_PROGRAMS = players
+players_SOURCES = PlayerLoader.cpp
+players_LDADD = -ltelemidiautil  -lgingaccsystemprocess -lpthread -lrt \
     $(COMPONENTS_LIBS)

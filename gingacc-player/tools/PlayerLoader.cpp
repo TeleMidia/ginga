@@ -146,12 +146,11 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 				//keyHandler
 
 			} else if ((*vMsg)[0] == "getMediaTime") {
-				sendMessage(itos(player->getMediaTime()));
+				sendMessage("mediatime=" + itos(player->getMediaTime()));
 
 			} else if ((*vMsg)[0] == "getWindowId") {
-				surface = player->getSurface();
-				if (surface != NULL && surface->getParent() != NULL) {
-					sendMessage(itos(((IWindow*)(surface->getParent()))->getId()));
+				if (window != NULL) {
+					sendMessage("windowid=" + itos(window->getId()));
 				}
 
 			} else if ((*vMsg)[0] == "play") {
