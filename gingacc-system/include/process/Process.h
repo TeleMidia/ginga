@@ -99,14 +99,18 @@ namespace process {
 		string wCom;
 		int wFd;
 		int rFd;
+
+	protected:
 		bool reader;
 
+	private:
 		bool isSpawnedReady;
 
 		bool isCheckingCom;
 		pthread_mutex_t comMutex;
 		pthread_cond_t comCond;
 
+	protected:
 		IProcessListener* sigListener;
 
 	public:

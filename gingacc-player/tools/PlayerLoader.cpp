@@ -105,17 +105,19 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 		int size;
 		ISurface* surface;
 
+		SpawnedProcess::messageReceived(msg);
+
 		cmds = split(msg, "::;::");
 		i = cmds->begin();
 		while (i != cmds->end()) {
 			vMsg = split(*i, ",");
-			if ((*vMsg)[0] == "createPlayer") {
+			if ((*vMsg)[0] == "createplayer") {
 #if HAVE_COMPSUPPORT
 				player = ((PlayerCreator*)(cm->getObject(objectName)))(
 						(*vMsg)[1].c_str(), (*vMsg)[2] == "true");
 #endif
 
-			} else if ((*vMsg)[0] == "createWindow") {
+			} else if ((*vMsg)[0] == "createwindow") {
 #if HAVE_COMPSUPPORT
 				window = ((WindowCreator*)(cm->getObject("Window")))(
 						stof((*vMsg)[1]),
@@ -129,12 +131,56 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 				window->renderFrom(player->getSurface());
 #endif
 
-			} else if ((*vMsg)[0] == "setPropertyValue") {
+			} else if ((*vMsg)[0] == "setpropertyvalue") {
 				size = vMsg->size();
-				if (size == 3) {
+				if ((*vMsg)[1] == "bounds" && size >= 5) {
+					if (size == 5) {
+						window->setBounds(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]),
+								stof((*vMsg)[4]),
+								stof((*vMsg)[5]));
+
+					} else if (size == 6) {
+						//TODO: animation
+						window->setBounds(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]),
+								stof((*vMsg)[4]),
+								stof((*vMsg)[5]));
+					}
+
+				} else if ((*vMsg)[1] == "location" && size >= 3) {
+					if (size == 3) {
+						window->moveTo(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]));
+
+					} else if (size == 4) {
+						//TODO: animation
+						window->moveTo(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]));
+					}
+
+				} else if ((*vMsg)[1] == "size" && size >= 3) {
+					if (size == 3) {
+						window->resize(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]));
+
+					} else if (size == 4) {
+						//TODO: animation
+						window->resize(
+								stof((*vMsg)[2]),
+								stof((*vMsg)[3]));
+					}
+
+				} else if (size == 3) {
 					player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
 
 				} else if (size == 4) {
+					//TODO: animation
 					player->setPropertyValue(
 							(*vMsg)[1], (*vMsg)[2], stof((*vMsg)[3]));
 				}
@@ -145,10 +191,10 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 				//currentScope
 				//keyHandler
 
-			} else if ((*vMsg)[0] == "getMediaTime") {
+			} else if ((*vMsg)[0] == "getmediatime") {
 				sendMessage("mediatime=" + itos(player->getMediaTime()));
 
-			} else if ((*vMsg)[0] == "getWindowId") {
+			} else if ((*vMsg)[0] == "getwindowid") {
 				if (window != NULL) {
 					sendMessage("windowid=" + itos(window->getId()));
 				}
@@ -174,7 +220,7 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 			} else if ((*vMsg)[0] == "abort") {
 				player->abort();
 
-			} else if ((*vMsg)[0] == "getVPts") {
+			} else if ((*vMsg)[0] == "getvpts") {
 				sendMessage(itos(player->getVPts()));
 			}
 

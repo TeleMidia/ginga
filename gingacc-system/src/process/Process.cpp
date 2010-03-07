@@ -87,6 +87,12 @@ namespace process {
 	Process::~Process() {
 		reader = false;
 
+		tryCom();
+		forceKill();
+
+		pthread_mutex_destroy(&comMutex);
+		pthread_cond_destroy(&comCond);
+
 		posix_spawnattr_destroy(&spawnAttr);
 		posix_spawn_file_actions_destroy(&fileActions);
 	}
@@ -217,6 +223,9 @@ namespace process {
 		int rspawn;
 
 		if (processStatus == PST_NULL) {
+			if (argv == NULL) {
+				argv = envp;
+			}
 			argv[0] = (char*)objName.c_str();
 			argv[1] = (char*)rCom.c_str();
 			argv[2] = (char*)wCom.c_str();

@@ -56,6 +56,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 #include "system/io/ILocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
+#include "../include/PlayerProcess.h"
 #include "../include/PlayersComponentSupport.h"
 
 int main(int argc, char** argv, char** envp) {
@@ -65,6 +66,7 @@ int main(int argc, char** argv, char** envp) {
 	IPlayer* player;
 	IPlayer* img;
 	Process* process;
+	PlayerProcess* pprocess;
 
 	setLogToNullDev();
 
@@ -99,7 +101,7 @@ int main(int argc, char** argv, char** envp) {
 		dm->clearWidgetPools();
 
 	} else if (argc > 1 && strcmp(argv[1], "process") == 0) {
-		process = new Process(argv);
+		process = new Process(NULL);
 		process->setProcessInfo(
 				"/usr/local/etc/ginga/tools/loaders/players",
 				"ImagePlayer");
@@ -107,14 +109,32 @@ int main(int argc, char** argv, char** envp) {
 		process->run();
 		process->checkCom();
 
-		process->sendMsg("createPlayer,/root/img1.png,true::;::");
-		process->sendMsg("createWindow,10,10,100,100::;::");
-		process->sendMsg("getWindowId::;::");
+		process->sendMsg("createplayer,/root/img1.png,true::;::");
+		process->sendMsg("createwindow,10,10,100,100::;::");
+		process->sendMsg("getwindowid::;::");
 		process->sendMsg("play::;::");
 		process->sendMsg("show::;::");
 
 		getchar();
 		process->forceKill();
+
+	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
+		cout << "1" << endl;
+		pprocess = new PlayerProcess("ImagePlayer");
+
+		cout << "2" << endl;
+		pprocess->createPlayer("/root/img1.png", true);
+		cout << "3" << endl;
+		pprocess->createWindow(10,10,100,100);
+		cout << "4" << endl;
+		//pprocess->getWindowId();
+		cout << "5" << endl;
+		pprocess->play();
+		cout << "6" << endl;
+		pprocess->show();
+
+		getchar();
+		delete pprocess;
 	}
 
 	//TODO: tests
