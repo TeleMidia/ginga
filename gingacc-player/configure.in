@@ -200,6 +200,34 @@ AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
 AC_SUBST(COMPONENTS_LIBS)
 AC_SUBST(COMPONENTS_INCS)
 
+###########################
+# Multple Process Support #
+###########################
+multiprocess=yes
+AC_ARG_ENABLE(multiprocess,
+  [  --enable-multiprocess build project with multiple process support [[default=yes]]],
+  enable_multiprocess="$enableval", enable_multiprocess=yes)
+
+AC_CHECK_HEADER(
+  [system/process/Process.h],
+  [],
+  AC_MSG_WARN([*** Process header not Found.])
+    enable_multiprocess=no
+)
+
+if test x$enable_multiprocess = xno; then
+   MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_MULTIPROCESS, 0, [Def to 0 if you don't have Multiple Process support.])
+   AC_MSG_WARN([*** Multiple process support will not be built.])
+
+else
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystemprocess -lpthread -L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
+   AC_MSG_RESULT([*** Multiple Process support will be built.])
+fi
+
+AM_CONDITIONAL(MULTIPROCESS, test "$enable_multiprocess" = "no")
+AC_SUBST(MULTIPROCESS_LIBS)
 
 AC_OUTPUT(Makefile files/Makefile files/scripts/Makefile
 	include/Makefile src/Makefile src/image/Makefile
@@ -213,4 +241,5 @@ AC_MSG_RESULT([
 Build options: 
   Module directory        $MODULEDIR
   NCLET Support           $ncletplayer
+  Multi Process Support   $enable_multiprocess
 ])
