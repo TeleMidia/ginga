@@ -3,6 +3,8 @@
 INCLUDES = -I/usr/local/include/ginga/ $(all_includes)
 
 LIBS =
+
+if MULTIPROCESS
 # the library search path.
 localLibdir = /usr/local/lib/ginga
 
@@ -11,5 +13,5 @@ libgingaccsystemprocess_so_LDFLAGS = -Wl,-soname,libgingaccsystemprocess.so \
 
 localLib_PROGRAMS = libgingaccsystemprocess.so
 libgingaccsystemprocess_so_SOURCES = Process.cpp SpawnedProcess.cpp
-libgingaccsystemprocess_so_LDADD = -ltelemidiautil -lpthread -lrt \
-    $(COMPONENTS_LIBS)
+libgingaccsystemprocess_so_LDADD = $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
+endif

@@ -6,6 +6,7 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 LIBS =
 localLibdir = /usr/local/lib/ginga/iocontents/
 
+if FUSIONSOUND
 libgingaccsysctsfs_so_LDFLAGS = -Wl,-soname,libgingaccsysctsfs.so -shared \
 	-L/usr/local/lib -L/usr/local/lib/ginga -L../../../
 
@@ -16,7 +17,7 @@ libgingaccsysctsfs_so_SOURCES = DFBAudioProvider.cpp \
 
 libgingaccsysctsfs_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccsystemiodfb -lgingaccsystemio
-
+endif
 
 
 localLibffmpegadir = /usr/local/lib/ginga/iocontents/

@@ -49,7 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "../../../../config.h"
 
-#if HAVE_DVBV4L
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -233,7 +232,7 @@ namespace tuning {
 			if (feStatus & FE_HAS_VITERBI) {
 				/* found something above the noise level */
 				if (feStatus & FE_HAS_SIGNAL) {
-					/* found a DVB signal  */
+					/* found a carrier signal  */
 					if (!feStatus & FE_HAS_CARRIER) {
 						cout << "ISDBTFrontend::isTuned Warning! ";
 						cout << "can't find carrier."<< endl;
@@ -601,5 +600,3 @@ namespace tuning {
 }
 }
 }
-
-#endif //HAVE_DVBV4L

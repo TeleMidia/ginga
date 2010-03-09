@@ -1,7 +1,7 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(gingacctuner, 0.11.2)
+AM_INIT_AUTOMAKE(gingacctuner, 0.12.1)
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
@@ -73,22 +73,22 @@ Please install Ginga-CC System Thread.
 
 ]))
 
-################################
-# Checking dvb video for linux #
-################################
-hasfrontend=yes
+###############################
+# Checking FE video for linux #
+###############################
+hasv4lfrontend=yes
 
 AC_CHECK_HEADER(
    [linux/dvb/frontend.h],
-   AC_DEFINE(HAVE_DVBV4L, 1, [Def to 1 if you have dvb v4l support.])
-   AC_MSG_RESULT([*** DVB V4L support will be built.])
-   hasfrontend=yes,
-   AC_DEFINE(HAVE_DVBV4L, 0, [Def to 0 if you don't have dvb v4l support.])
-   AC_MSG_WARN([*** DVB V4L support will not be built.])
-   hasfrontend=no
+   AC_DEFINE(HAVE_FEV4L, 1, [Def to 1 if you have frontend v4l support.])
+   AC_MSG_RESULT([*** FrontEnd V4L support will be built.])
+   hasv4lfrontend=yes,
+   AC_DEFINE(HAVE_FEV4L, 0, [Def to 0 if you don't have frontend v4l support.])
+   AC_MSG_WARN([*** FrontEnd V4L support will not be built.])
+   hasv4lfrontend=no
 )
 
-AM_CONDITIONAL(HASFRONTEND, test "$hasfrontend" = "no")
+AM_CONDITIONAL(HASV4LFRONTEND, test x$hasv4lfrontend = xyes)
 
 ############################################
 # Offering a non-componentized alternative #

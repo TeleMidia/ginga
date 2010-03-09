@@ -1,7 +1,7 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(gingaccsystem, 0.11.2)
+AM_INIT_AUTOMAKE(gingaccsystem, 0.12.1)
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
@@ -88,6 +88,8 @@ fi
 DIRECTFB_MAX_VERSION=1.2.0
 DIRECTFB_MIN_VERSION=$DIRECTFB_VERSION
 
+DFB_LIBS='-L/usr/local/lib/ginga'
+
 AC_MSG_CHECKING(for DirectFB == $DIRECTFB_MAN_VERSION)
 if $PKG_CONFIG --atleast-version $DIRECTFB_MAX_VERSION directfb ; then
 DFB_CFLAGS=`$PKG_CONFIG --cflags directfb`
@@ -112,53 +114,35 @@ Try also "export PKG_CONFIG_PATH=..." and run configure again
 fi
 fi
 
+AC_SUBST(DFB_LIBS)
+
 ################
 # Fusion Sound #
 ################
+fusionsound=yes
+AC_ARG_ENABLE(fusionsound,
+  [  --enable-fusionsound build project with FusionSound support [[default=yes]]],
+  enable_fusionsound="$enableval", enable_fusionsound=yes)
 
-AC_HAVE_LIBRARY(fusionsound,
+AC_HAVE_LIBRARY(
+  fusionsound,
+  [],
+  AC_MSG_WARN([*** fusion header not Found.])
+    enable_fusionsound=no
+)
 
-AC_MSG_RESULT([FusionSound found!])
-AC_DEFINE(HAVE_FUSIONSOUND, 1, [Define to 1 if you have FusionSound support.]),
-
-AC_MSG_RESULT([
-
-Couldn't find FusionSound library.
-FusionSound Support not built.
-
-]))
-
-DFB_LIBS=`$PKG_CONFIG --libs directfb`
-FUSIONSOUND_LIBS=`$PKG_CONFIG --libs fusionsound`
-
-AC_SUBST(DFB_LIBS)
-AC_SUBST(FUSIONSOUND_LIBS)
-
-
-##########
-# FFmpeg #
-##########
-ffmpeg="no"
-AC_ARG_ENABLE(ffmpeg,
-  [  --enable-ffmpeg         build FFmpeg video provider [[default=yes]]],
-  enable_ffmpeg="$enableval", enable_ffmpeg="yes")
-
-if test "x$enable_ffmpeg" = "xyes"; then
-    AC_MSG_CHECKING([for libavcodec/libavformat])
-    if $PKG_CONFIG libavcodec libavformat; then
-        AC_MSG_RESULT(yes)
-        ffmpeg="yes"
-        FFMPEG_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat`
-        FFMPEG_LIBS=`$PKG_CONFIG --libs libavcodec libavformat`
-    else
-        AC_MSG_RESULT(no)
-        AC_MSG_WARN([
-*** libavcodec/libavformat are required - FFmpeg video provider will not be built.])
-    fi
+if test x$enable_fusionsound = xno; then
+   FUSIONSOUND_LIBS='-L/usr/local/lib/ginga'
+   AC_DEFINE(HAVE_FUSIONSOUND, 0, [Define to 0 if you don't have FusionSound support.]),
+   AC_MSG_WARN([*** Ginga FusionSound support will not be built.])
+else
+   FUSIONSOUND_LIBS=`$PKG_CONFIG --libs fusionsound`
+   AC_DEFINE(HAVE_FUSIONSOUND, 1, [Define to 1 if you have FusionSound support.]),
+   AC_MSG_RESULT([*** Ginga FusionSound support will be built.])
 fi
 
-AC_SUBST(FFMPEG_CFLAGS)
-AC_SUBST(FFMPEG_LIBS)
+AM_CONDITIONAL([FUSIONSOUND], [test x$enable_fusionsound = xyes])
+AC_SUBST(FUSIONSOUND_LIBS)
 
 
 ################################
@@ -178,8 +162,73 @@ AC_CHECK_HEADER(
    hasdvc=no
 )
 
-AM_CONDITIONAL(HASDVCLIB, test "$hasdvc" = "no")
 AC_SUBST(DVC_LIBS)
+
+########################
+# XINE MAIN AV Support #
+########################
+xineprovider=no
+AC_ARG_ENABLE(xineprovider,
+  [  --enable-xineprovider build project with xine provider support (in order to decode main A/V) [[default=no]]],
+  enable_xineprovider="$enableval", enable_xineprovider=no)
+
+AC_CHECK_HEADER(
+  [xine.h],
+  [],
+  AC_MSG_WARN([*** xine header not Found.])
+    enable_xineprovider=no
+)
+
+if test x$enable_xineprovider = xno; then
+   AC_MSG_WARN([*** Ginga Xine provider support will not be built.])
+   AC_DEFINE(HAVE_XINEPROVIDER, 0, [Def to 0 if you don't have ginga xine provider support.])
+
+else
+   AC_MSG_RESULT([*** Ginga Xine provider support will be built.])
+   AC_DEFINE(HAVE_XINEPROVIDER, 1, [Def to 1 if you don't have ginga xine provider support.])
+fi
+
+AM_CONDITIONAL([XINEPROVIDER], [test x$enable_xineprovider = xyes])
+
+##########################
+# FFMPEG MAIN AV Support #
+##########################
+ffmpegprovider=no
+AC_ARG_ENABLE(ffmpegprovider,
+  [  --enable-ffmpegprovider build project with xine provider support (in order to decode main A/V) [[default=no]]],
+  enable_ffmpegprovider="$enableval", enable_ffmpegprovider=no)
+
+AC_CHECK_HEADER(
+  [dvc/dvc.h],
+  [],
+  AC_MSG_WARN([*** dvc header not Found.])
+    enable_ffmpegprovider=no
+)
+
+if test "x$enable_ffmpeg" = "xyes"; then
+    AC_MSG_CHECKING([for libavcodec/libavformat])
+    if $PKG_CONFIG libavcodec libavformat; then
+        FFMPEG_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat`
+        FFMPEG_LIBS=`$PKG_CONFIG --libs libavcodec libavformat`
+    else
+        FFMPEG_CFLAGS='-L/usr/local/lib'
+        FFMPEG_LIBS='-L/usr/local/lib'
+        enable_ffmpegprovider=no
+    fi
+fi
+
+if test x$enable_ffmpegprovider = xno; then
+   AC_MSG_WARN([*** Ginga FFmpeg provider support will not be built.])
+   AC_DEFINE(HAVE_FFMPEGPROVIDER, 0, [Def to 0 if you don't have ginga ffmpeg provider support.])
+
+else
+   AC_MSG_RESULT([*** Ginga FFmpeg provider support will be built.])
+   AC_DEFINE(HAVE_FFMPEGPROVIDER, 1, [Def to 1 if you don't have ginga ffmpeg provider support.])
+fi
+
+AC_SUBST(FFMPEG_CFLAGS)
+AC_SUBST(FFMPEG_LIBS)
+AM_CONDITIONAL([FFMPEGPROVIDER], [test x$enable_ffmpegprovider = xyes])
 
 ############################################
 # Offering a non-componentized alternative #
@@ -193,7 +242,6 @@ if test x$enable_components = xno; then
    COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
-
 else
    COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
@@ -202,6 +250,34 @@ fi
 
 AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
 AC_SUBST(COMPONENTS_LIBS)
+
+###########################
+# Multple Process Support #
+###########################
+multiprocess=yes
+AC_ARG_ENABLE(multiprocess,
+  [  --enable-multiprocess build project with multiple process support [[default=yes]]],
+  enable_multiprocess="$enableval", enable_multiprocess=yes)
+
+AC_CHECK_HEADER(
+  [linux/fusion.h],
+  [],
+  AC_MSG_WARN([*** fusion header not Found.])
+    enable_multiprocess=no
+)
+
+if test x$enable_multiprocess = xno; then
+   MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_MULTIPROCESS, 0, [Def to 0 if you don't have Multiple Process support.])
+   AC_MSG_WARN([*** Multiple process support will not be built.])
+else
+   MULTIPROCESS_LIBS='-lrt -lpthread -ltelemidiautil -L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
+   AC_MSG_RESULT([*** Multiple Process support will be built.])
+fi
+
+AM_CONDITIONAL([MULTIPROCESS], [test x$enable_multiprocess = xyes])
+AC_SUBST(MULTIPROCESS_LIBS)
 
 
 AC_OUTPUT(

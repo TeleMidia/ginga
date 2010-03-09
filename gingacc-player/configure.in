@@ -1,7 +1,7 @@
 AC_INIT(configure.in)
 
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(gingaccplayer, 0.11.2)
+AM_INIT_AUTOMAKE(gingaccplayer, 0.12.1)
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
@@ -226,7 +226,7 @@ else
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi
 
-AM_CONDITIONAL(MULTIPROCESS, test "$enable_multiprocess" = "no")
+AM_CONDITIONAL([MULTIPROCESS], [test x$enable_multiprocess = xyes])
 AC_SUBST(MULTIPROCESS_LIBS)
 
 AC_OUTPUT(Makefile files/Makefile files/scripts/Makefile

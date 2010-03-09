@@ -50,13 +50,16 @@ http://www.telemidia.puc-rio.br
 #include "../include/ImagePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
+#if HAVE_MULTIPROCESS
 #include "system/process/Process.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::process;
+
+#include "../include/PlayerProcess.h"
+#endif
 
 #include "system/io/ILocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
-#include "../include/PlayerProcess.h"
 #include "../include/PlayersComponentSupport.h"
 
 int main(int argc, char** argv, char** envp) {
@@ -65,8 +68,10 @@ int main(int argc, char** argv, char** envp) {
 	ILocalDeviceManager* dm;
 	IPlayer* player;
 	IPlayer* img;
+#if HAVE_MULTIPROCESS
 	Process* process;
 	PlayerProcess* pprocess;
+#endif
 
 	setLogToNullDev();
 
@@ -101,6 +106,7 @@ int main(int argc, char** argv, char** envp) {
 		dm->clearWidgetPools();
 
 	} else if (argc > 1 && strcmp(argv[1], "process") == 0) {
+#if HAVE_MULTIPROCESS
 		process = new Process(NULL);
 		process->setProcessInfo(
 				"/usr/local/etc/ginga/tools/loaders/players",
@@ -117,8 +123,9 @@ int main(int argc, char** argv, char** envp) {
 
 		getchar();
 		process->forceKill();
-
+#endif
 	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
+#if HAVE_MULTIPROCESS
 		cout << "1" << endl;
 		pprocess = new PlayerProcess("ImagePlayer");
 
@@ -135,6 +142,7 @@ int main(int argc, char** argv, char** envp) {
 
 		getchar();
 		delete pprocess;
+#endif
 	}
 
 	//TODO: tests

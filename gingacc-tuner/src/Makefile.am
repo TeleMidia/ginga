@@ -5,12 +5,17 @@ LIBS =
 localLibdir = /usr/local/lib/ginga
 localLib_PROGRAMS = libgingacctuner.so
 
-libgingacctuner_so_SOURCES = providers/Channel.cpp \
+TUNERCPPS = providers/Channel.cpp \
     providers/MulticastProvider.cpp \
 	providers/UnicastProvider.cpp providers/FileSystemProvider.cpp \
-	providers/frontends/isdbt/ISDBTFrontend.cpp \
-	providers/frontends/isdbt/ISDBTProvider.cpp \
 	NetworkInterface.cpp Tuner.cpp
+
+if HASV4LFRONTEND
+	TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp \
+		providers/frontends/isdbt/ISDBTProvider.cpp
+endif
+
+libgingacctuner_so_SOURCES = $(TUNERCPPS)
 
 libgingacctuner_so_LDADD = -lpthread -lgingaccsystemthread -ltelemidiautil
 

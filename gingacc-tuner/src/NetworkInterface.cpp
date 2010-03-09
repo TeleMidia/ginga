@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include "../include/providers/UnicastProvider.h"
 
 #include "../config.h"
-#if HAVE_DVBV4L
+#if HAVE_FEV4L
 #include "../include/providers/frontends/isdbt/ISDBTProvider.h"
 #endif
 
@@ -159,7 +159,7 @@ namespace tuning {
 			provider = new FileSystemProvider(address);
 			return true;
 
-#if HAVE_DVBV4L
+#if HAVE_FEV4L
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
 			provider = new ISDBTProvider("");
 			return true;

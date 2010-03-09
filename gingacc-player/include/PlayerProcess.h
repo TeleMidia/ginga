@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef __PlayerProcess_h_
 #define __PlayerProcess_h_
 
-#include "IPlayer.h"
+#include "IPlayerProcess.h"
 
 #include "system/process/Process.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::process;
@@ -61,7 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class PlayerProcess : public IPlayer, public Process {
+	class PlayerProcess : public IPlayerProcess, public Process {
 		private:
 			map<string, string>* msgs;
 			pthread_mutex_t msgMutex;
@@ -77,6 +77,7 @@ namespace player {
 			void hide();
 			void setGhost(bool isGhost);
 			void messageReceived(string msg);
+
 			void setNotifyContentUpdate(bool notify);
 			void addListener(IPlayerListener* listener);
 			void removeListener(IPlayerListener* listener);

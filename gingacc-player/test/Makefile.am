@@ -12,7 +12,7 @@ test_LDADD =  $(COMPONENTS_LIBS) -ltelemidiautil \
     -lgingaccplatxt -lgingaccplasrt -lgingaccplaplt \
     -lgingaccplacha -lgingaccplapav -lgingaccplawdg \
     -ltelemidialinks -ldirectfb -llua -lcore \
-    -lgingaccsystemiocodemap -lgingaccsystemthread -lgingaccsystemprocess \
+    -lgingaccsystemiocodemap -lgingaccsystemthread $(MULTIPROCESS_LIBS) \
     -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L/usr/local/lib/ginga/iocontents \
     -L/usr/local/lib/ginga -L../src/ -L../src/image/ \

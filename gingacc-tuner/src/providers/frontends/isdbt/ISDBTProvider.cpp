@@ -49,7 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "../../../../config.h"
 
-#if HAVE_DVBV4L
 #include "../../../../include/providers/frontends/isdbt/ISDBTProvider.h"
 
 #include "util/functions.h"
@@ -333,5 +332,3 @@ namespace tuning {
 }
 }
 }
-
-#endif //HAVE_DVBV4L
