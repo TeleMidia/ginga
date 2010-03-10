@@ -112,7 +112,7 @@ else
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AM_CONDITIONAL([COMPONENTS], [test x$enable_components = xyes])
 AC_SUBST(COMPONENTS_LIBS)
 
 ###########################
@@ -141,7 +141,7 @@ else
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi
 
-AM_CONDITIONAL(MULTIPROCESS, test "$enable_multiprocess" = "no")
+AM_CONDITIONAL([MULTIPROCESS], [test x$enable_multiprocess = xyes])
 AC_SUBST(MULTIPROCESS_LIBS)
 
 AC_MSG_RESULT([

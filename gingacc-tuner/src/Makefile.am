@@ -10,9 +10,8 @@ TUNERCPPS = providers/Channel.cpp \
 	providers/UnicastProvider.cpp providers/FileSystemProvider.cpp \
 	NetworkInterface.cpp Tuner.cpp
 
-if HASV4LFRONTEND
-	TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp \
-		providers/frontends/isdbt/ISDBTProvider.cpp
+if V4LFRONTEND
+TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp providers/frontends/isdbt/ISDBTProvider.cpp
 endif
 
 libgingacctuner_so_SOURCES = $(TUNERCPPS)

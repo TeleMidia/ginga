@@ -78,6 +78,7 @@ namespace io {
 
 		if (mrl != NULL) {
 			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			cout << "DFBImageProvider::DFBImageProvider '" << mrl << "'" << endl;
 			DFBCHECK(dfb->CreateImageProvider(dfb, mrl, &decoder));
 		}
 	}
