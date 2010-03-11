@@ -66,12 +66,26 @@ namespace player {
 
 		pthread_mutex_init(&msgMutex, NULL);
 
+		isWaitingAns = false;
+		pthread_mutex_init(&ansMutex, NULL);
+		pthread_cond_init(&ansCond, NULL);
+
 		setProcessInfo("/usr/local/etc/ginga/tools/loaders/players", objName);
 		run();
 		checkCom();
 	}
 
 	PlayerProcess::~PlayerProcess() {
+		reader = false;
+
+		if (isWaitingAns) {
+			pthread_cond_signal(&ansCond);
+		}
+
+		isWaitingAns = false;
+		pthread_mutex_destroy(&ansMutex);
+		pthread_cond_destroy(&ansCond);
+
 		pthread_mutex_lock(&msgMutex);
 		if (msgs != NULL) {
 			delete msgs;
@@ -87,6 +101,7 @@ namespace player {
 		if (!visible) {
 			strbool = "false";
 		}
+
 		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
 	}
 
@@ -97,6 +112,14 @@ namespace player {
 				itos(y) + "," +
 				itos(w) + "," +
 				itos(h) + "::;::");
+	}
+
+	void PlayerProcess::waitAnswer() {
+		isWaitingAns = true;
+		pthread_mutex_lock(&ansMutex);
+		pthread_cond_wait(&ansCond, &ansMutex);
+		isWaitingAns = false;
+		pthread_mutex_unlock(&ansMutex);
 	}
 
 	string PlayerProcess::getWindowId() {
@@ -112,8 +135,11 @@ namespace player {
 				msgs->erase(i);
 				pthread_mutex_unlock(&msgMutex);
 				return id;
+
+			} else {
+				pthread_mutex_unlock(&msgMutex);
+				waitAnswer();
 			}
-			pthread_mutex_unlock(&msgMutex);
 		}
 
 		return "";
@@ -128,24 +154,39 @@ namespace player {
 	}
 
 	void PlayerProcess::setGhost(bool isGhost) {
+		string strbool = "true";
+		if (!isGhost) {
+			strbool = "false";
+		}
 
+		sendMsg("setghost," + strbool + "::;::");
 	}
 
 	void PlayerProcess::messageReceived(string msg) {
-		pthread_mutex_lock(&msgMutex);
-
-		cout << "Process::messageReceived '" << msg << "'" << endl;
+		string key, value;
 
 		if (msg.find("=") != std::string::npos) {
-			(*msgs)[msg.substr(0, msg.find_first_of("=") - 1)] = msg.substr(
+			key   = msg.substr(0, msg.find_first_of("="));
+			value = msg.substr(
 					msg.find_first_of("=") + 1,
 					msg.length() - msg.find_first_of("=") + 1);
+
+			pthread_mutex_lock(&msgMutex);
+			(*msgs)[key] = value;
+			pthread_mutex_unlock(&msgMutex);
+			if (isWaitingAns) {
+				pthread_cond_signal(&ansCond);
+			}
 		}
-		pthread_mutex_unlock(&msgMutex);
 	}
 
 	void PlayerProcess::setNotifyContentUpdate(bool notify) {
+		string strbool = "true";
+		if (!notify) {
+			strbool = "false";
+		}
 
+		sendMsg("setnotifycontentupdate," + strbool + "::;::");
 	}
 
 	void PlayerProcess::addListener(IPlayerListener* listener) {
@@ -196,10 +237,12 @@ namespace player {
 	}
 
 	void PlayerProcess::play() {
+		show();
 		sendMsg("play::;::");
 	}
 
 	void PlayerProcess::stop() {
+		hide();
 		sendMsg("stop::;::");
 	}
 

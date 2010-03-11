@@ -241,9 +241,6 @@ namespace player {
 			}
 
 		} else {
-			//pthread_t notifyThreadId_;
-			//struct notify* data = NULL;
-
 			if (code == PL_NOTIFY_STOP) {
 				presented = true;
 			}
@@ -251,16 +248,6 @@ namespace player {
 			i = listeners->begin();
 			while (i != listeners->end()) {
 				if ((*i) != NULL) {
-					/*data = new struct notify;
-					data->listener = *i;
-					data->code = code;
-					data->param = parameter;
-					data->type = type;
-
-					pthread_create(
-							&notifyThreadId_, 0, Player::detachNotify, data);
-
-					pthread_detach(notifyThreadId_);*/
 					(*i)->updateStatus(code, parameter, type);
 				}
 				++i;
@@ -270,26 +257,6 @@ namespace player {
 		pthread_mutex_unlock(&listM);
 		notifying = false;
 	}
-
-	/*void* Player::detachNotify(void* ptr) {
-		struct notify* data;
-		short code, type;
-		string param;
-		IPlayerListener* listener;
-
-		data = (struct notify*)ptr;
-		listener = data->listener;
-		code = data->code;
-		param = data->param;
-		type = data->type;
-		delete data;
-		data = NULL;
-		if (listener != NULL) {
-			listener->updateStatus(code, param, type);
-		}
-
-		return NULL;
-	}*/
 
 	void Player::setSurface(ISurface* surface) {
 		wclog << "Player::setSurface(" << this << ")" << endl;

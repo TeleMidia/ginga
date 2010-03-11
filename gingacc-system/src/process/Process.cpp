@@ -327,7 +327,9 @@ namespace process {
 			cout << "' received signal '" << status << "'";
 			cout << endl;
 
-			detachWait(ptr);
+			if (process->reader) {
+				detachWait(ptr);
+			}
 		}
 
 		return NULL;

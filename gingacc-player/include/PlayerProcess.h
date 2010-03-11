@@ -66,12 +66,21 @@ namespace player {
 			map<string, string>* msgs;
 			pthread_mutex_t msgMutex;
 
+			bool isWaitingAns;
+			pthread_mutex_t ansMutex;
+			pthread_cond_t ansCond;
+
 		public:
 			PlayerProcess(const char* objectName);
 			virtual ~PlayerProcess();
 
 			void createPlayer(string mrl, bool visible=true);
 			void createWindow(int x, int y, int w, int h);
+
+		private:
+			void waitAnswer();
+
+		public:
 			string getWindowId();
 			void show();
 			void hide();

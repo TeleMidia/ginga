@@ -70,7 +70,8 @@ int main(int argc, char** argv, char** envp) {
 	IPlayer* img;
 #if HAVE_MULTIPROCESS
 	Process* process;
-	PlayerProcess* pprocess;
+	PlayerProcess* pprocessA;
+	PlayerProcess* pprocessB;
 #endif
 
 	setLogToNullDev();
@@ -126,22 +127,30 @@ int main(int argc, char** argv, char** envp) {
 #endif
 	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
 #if HAVE_MULTIPROCESS
-		cout << "1" << endl;
-		pprocess = new PlayerProcess("ImagePlayer");
 
-		cout << "2" << endl;
-		pprocess->createPlayer("/root/img1.png", true);
-		cout << "3" << endl;
-		pprocess->createWindow(10,10,100,100);
-		cout << "4" << endl;
-		//pprocess->getWindowId();
-		cout << "5" << endl;
-		pprocess->play();
-		cout << "6" << endl;
-		pprocess->show();
+		pprocessA = new PlayerProcess("ImagePlayer");
+		pprocessA->createPlayer("/root/img1.png", true);
+		pprocessA->createWindow(10,10,100,100);
+		cout << "PROCESSA WINDOWID = '" << pprocessA->getWindowId() << "'";
+		cout << endl;
+		pprocessA->play();
+		getchar();
+
+		pprocessB = new PlayerProcess("ImagePlayer");
+		pprocessB->createPlayer("/root/img1.png", true);
+		pprocessB->createWindow(100,100,100,100);
+		cout << "PROCESSB WINDOWID = '" << pprocessB->getWindowId() << "'";
+		cout << endl;
+		pprocessB->play();
 
 		getchar();
-		delete pprocess;
+		pprocessB->stop();
+		getchar();
+		delete pprocessB;
+		getchar();
+		pprocessA->stop();
+		getchar();
+		delete pprocessA;
 #endif
 	}
 
