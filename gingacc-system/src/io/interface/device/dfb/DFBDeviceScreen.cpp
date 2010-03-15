@@ -268,6 +268,19 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		}
 	}
 
+	void* DFBDeviceScreen::getWindow(int winId) {
+		IDirectFBWindow* window = NULL;
+
+		if (gfxLayer != NULL) {
+			DFBCHECK(gfxLayer->GetWindow(gfxLayer, winId, &window));
+			pthread_mutex_lock(&winMutex);
+			windowPool->insert(window);
+			pthread_mutex_unlock(&winMutex);
+		}
+
+		return (void*)window;
+	}
+
 	void* DFBDeviceScreen::createWindow(void* desc) {
 		IDirectFBWindow* window = NULL;
 

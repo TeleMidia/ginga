@@ -79,6 +79,7 @@ namespace io {
 			IDirectFBWindow* win;
 			IDirectFBSurface* winSur;
 
+			int windowId;
 			int x;
 			int y;
 			int width;
@@ -102,8 +103,14 @@ namespace io {
 
 		public:
 			DFBWindow(int x, int y, int width, int height);
+			DFBWindow(int windowId);
 			virtual ~DFBWindow();
 
+		private:
+			void initialize(int windowId,int x, int y, int width, int height);
+
+		public:
+			void revertContent();
 			void setReleaseListener(ISurface* listener);
 			int getCap(string cap);
 			void setCaps(int caps);

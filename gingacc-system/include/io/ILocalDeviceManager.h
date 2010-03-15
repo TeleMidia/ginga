@@ -80,6 +80,11 @@ namespace io {
 			virtual void* getGfxRoot(unsigned int deviceNumber=0)=0;
 			virtual void clearWidgetPools()=0;
 			virtual int createDevice(string description)=0;
+			virtual void* getWindow(
+					int windowId,
+					unsigned int deviceNumber=0,
+					unsigned int screenNumber=0)=0;
+
 			virtual void* createWindow(
 					void* windowDesc,
 					unsigned int deviceNumber=0,

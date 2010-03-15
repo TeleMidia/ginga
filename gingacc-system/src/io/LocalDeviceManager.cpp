@@ -208,6 +208,20 @@ namespace io {
 		return -1;
 	}
 
+	void* LocalDeviceManager::getWindow(
+			int winId, unsigned int deviceNumber, unsigned int screenNumber) {
+
+		IODevice* dev;
+
+		if (devices->count(deviceNumber) == 0) {
+			return NULL;
+		}
+
+		dev = (*devices)[deviceNumber];
+		return dev->getWindow(winId, screenNumber);
+	}
+
+
 	void* LocalDeviceManager::createWindow(
 			void* winDesc,
 			unsigned int deviceNumber, unsigned int screenNumber) {

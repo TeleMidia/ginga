@@ -97,6 +97,7 @@ namespace player {
 
 			string mrl;
 			ISurface* surface;
+			IWindow* outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;
 			set<IPlayer*>* referredPlayers;
 			IPlayer* timeBasePlayer;
@@ -171,7 +172,7 @@ namespace player {
 			void setImmediatelyStart(bool immediatelyStartVal);
 			void forceNaturalEnd();
 			bool isForcedNaturalEnd();
-			virtual bool setOutWindow(io::IWindow* w){return false;};
+			virtual bool setOutWindow(int windowId);
 
 			/*Exclusive for ChannelPlayer*/
 			virtual IPlayer* getSelectedPlayer(){return NULL;};

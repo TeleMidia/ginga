@@ -75,15 +75,12 @@ namespace player {
 			virtual ~PlayerProcess();
 
 			void createPlayer(string mrl, bool visible=true);
-			void createWindow(int x, int y, int w, int h);
 
 		private:
 			void waitAnswer();
 
 		public:
 			string getWindowId();
-			void show();
-			void hide();
 			void setGhost(bool isGhost);
 			void messageReceived(string msg);
 
@@ -128,7 +125,7 @@ namespace player {
 			void setImmediatelyStart(bool immediatelyStartVal);
 			void forceNaturalEnd();
 			bool isForcedNaturalEnd();
-			bool setOutWindow(io::IWindow* w);
+			bool setOutWindow(int windowId);
 
 			/*Exclusive for ChannelPlayer*/
 			IPlayer* getSelectedPlayer();

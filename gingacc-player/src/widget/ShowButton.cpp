@@ -91,7 +91,7 @@ namespace player {
 		h = 60;
 
 #if HAVE_COMPSUPPORT
-		win = ((WindowCreator*)(cm->getObject("Window")))(x, y, w, h);
+		win = ((WindowCreator*)(cm->getObject("Window")))(-1, x, y, w, h);
 #else
 		win = new DFBWindow(x, y, w, h);
 #endif

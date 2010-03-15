@@ -69,6 +69,7 @@ namespace io {
 			virtual unsigned int getHeightResolution()=0;
 			virtual void setHeightResolution(unsigned int hRes)=0;
 			virtual void setColorKey(int r, int g, int b)=0;
+			virtual void* getWindow(int winId)=0;
 			virtual void* createWindow(void* desc)=0;
 			virtual void releaseWindow(void* win)=0;
 			virtual void* createSurface(void* desc)=0;

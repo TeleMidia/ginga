@@ -200,6 +200,20 @@ namespace io {
 		pthread_mutex_unlock(&mutexList);
 	}
 
+	void* IODevice::getWindow(int winId, unsigned int screenNumber) {
+		IDeviceScreen* scr;
+		void* win = NULL;
+
+		pthread_mutex_lock(&mutexList);
+		if (screenDevices != NULL && screenDevices->count(screenNumber) != 0) {
+			scr = (*screenDevices)[screenNumber];
+			win = scr->getWindow(winId);
+		}
+		pthread_mutex_unlock(&mutexList);
+
+		return win;
+	}
+
 	void* IODevice::createWindow(void* winDesc, unsigned int screenNumber) {
 		IDeviceScreen* scr;
 		void* win = NULL;

@@ -96,15 +96,6 @@ namespace player {
 		pthread_mutex_destroy(&msgMutex);
 	}
 
-	void PlayerProcess::createPlayer(string mrl, bool visible) {
-		string strbool = "true";
-		if (!visible) {
-			strbool = "false";
-		}
-
-		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
-	}
-
 	void PlayerProcess::createWindow(int x, int y, int w, int h) {
 		sendMsg(
 				"createwindow," +
@@ -143,14 +134,6 @@ namespace player {
 		}
 
 		return "";
-	}
-
-	void PlayerProcess::show() {
-		sendMsg("show::;::");
-	}
-
-	void PlayerProcess::hide() {
-		sendMsg("hide::;::");
 	}
 
 	void PlayerProcess::setGhost(bool isGhost) {
@@ -323,8 +306,8 @@ namespace player {
 
 	}
 
-	bool PlayerProcess::setOutWindow(io::IWindow* w) {
-
+	bool PlayerProcess::setOutWindow(int windowId) {
+		sendMsg("setoutwindow," + itos(windowId) + "::;::");
 	}
 
 	IPlayer* PlayerProcess::getSelectedPlayer() {

@@ -89,8 +89,6 @@ namespace player {
 	}
 
 	IPlayer* ChannelPlayer::getSelectedPlayer() {
-		wclog << "ChannelPlayer::getSelectedPlayerAdd = '";
-		wclog << selectedPlayer << endl;
 		if (selectedPlayer == NULL) {
 			wclog << "ChannelPlayer::getSelectedPlayerAdd == NULL";
 			wclog << endl;
@@ -100,7 +98,6 @@ namespace player {
 	}
 
 	map<string, IPlayer*>* ChannelPlayer::getPlayerMap() {
-		wclog << "ChannelPlayer::getPlayerMap" << endl;
 		if (objectMap == NULL || objectMap->empty()) {
 			return NULL;
 		}
@@ -111,7 +108,6 @@ namespace player {
 	IPlayer* ChannelPlayer::getPlayer(string objectId) {
 		IPlayer* newSelected;
 
-		wclog << "ChannelPlayer::getPlayer" << endl;
 		if (objectMap->count(objectId) != 0) {
 			newSelected = (*objectMap)[objectId];
 			if (newSelected != NULL && newSelected != selectedPlayer) {
@@ -134,8 +130,6 @@ namespace player {
 	}
 
 	double ChannelPlayer::getMediaTime() {
-		wclog << "ChannelPlayer::getMediaTime = '";
-		wclog << selectedPlayer->getMediaTime() << "'" << endl;
 		return selectedPlayer->getMediaTime();
 	}
 
@@ -157,7 +151,6 @@ namespace player {
 	}
 
 	ISurface* ChannelPlayer::getSurface() {
-		wclog << endl << "ChannelPlayer::getSurface" << endl << endl;
 		if (selectedPlayer != NULL) {
 			return selectedPlayer->getSurface();
 		}

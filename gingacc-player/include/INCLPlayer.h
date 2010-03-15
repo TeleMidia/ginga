@@ -140,7 +140,7 @@ namespace player {
 			virtual void setImmediatelyStart(bool immediatelyStartVal)=0;
 			virtual void forceNaturalEnd()=0;
 			virtual bool isForcedNaturalEnd()=0;
-			virtual bool setOutWindow(io::IWindow* w)=0;
+			virtual bool setOutWindow(int windowId)=0;
 
 			/*Exclusive for ChannelPlayer*/
 			virtual IPlayer* getSelectedPlayer()=0;

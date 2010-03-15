@@ -1387,9 +1387,18 @@ namespace player {
 		}
 	}
 
-	bool AVPlayer::setOutWindow(io::IWindow* win) {
+	bool AVPlayer::setOutWindow(int windowId) {
+		Player::setOutWindow(windowId);
+
 		if (mainAV) {
-			this->win = win;
+#if HAVE_COMPSUPPORT
+			win = ((WindowCreator*)(cm->getObject("Window")))(
+					windowId, -1, -1, -1, -1);
+
+#else
+			win = new DFBWindow(windowId);
+#endif
+
 			if (!running) {
 				Thread::start();
 			}

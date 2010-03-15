@@ -177,7 +177,7 @@ namespace player {
 			void setAVPid(int aPid, int vPid);
 
 			//geode:
-			bool setOutWindow(io::IWindow* win);
+			bool setOutWindow(int windowId);
 			void setAlphaBlend(int x, int y, int w, int h);
 			void checkResize();
 

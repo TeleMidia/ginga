@@ -93,27 +93,12 @@ namespace core {
 namespace system {
 namespace io {
 	DFBWindow::DFBWindow(int x, int y, int width, int height) {
-		this->win = NULL;
-		this->winSur = NULL;
-		this->x = x;
-		this->y = y;
-		this->width = width;
-		this->height = height;
-		this->ghost = false;
-		this->visible = false;
-		this->transparencyValue    = 0xFF;
-		this->r = -1;
-		this->g = -1;
-		this->b = -1;
-		this->alpha = 0xFF;
-		this->childSurfaces = new vector<ISurface*>;
-		this->releaseListener = NULL;
-		this->fit = true;
-		this->stretch = true;
-		this->caps = DWCAPS_NODECORATION;
+		initialize(-1, x, y, width, height);
+	}
 
-		pthread_mutex_init(&mutex, NULL);
-		pthread_mutex_init(&mutexC, NULL);
+	DFBWindow::DFBWindow(int windowId) {
+		initialize(windowId, -1, -1, -1, -1);
+		draw();
 	}
 
 	DFBWindow::~DFBWindow() {
@@ -158,6 +143,40 @@ namespace io {
 		pthread_mutex_destroy(&mutexC);
 	}
 
+	void DFBWindow::initialize(
+			int windowId, int x, int y, int width, int height) {
+
+		this->win               = NULL;
+		this->winSur            = NULL;
+		this->windowId          = windowId;
+		this->x                 = x;
+		this->y                 = y;
+		this->width             = width;
+		this->height            = height;
+		this->ghost             = false;
+		this->visible           = false;
+		this->transparencyValue = 0xFF;
+		this->r                 = -1;
+		this->g                 = -1;
+		this->b                 = -1;
+		this->alpha             = 0xFF;
+		this->childSurfaces     = new vector<ISurface*>;
+		this->releaseListener   = NULL;
+		this->fit               = true;
+		this->stretch           = true;
+		this->caps              = DWCAPS_NODECORATION;
+
+		pthread_mutex_init(&mutex, NULL);
+		pthread_mutex_init(&mutexC, NULL);
+	}
+
+	void DFBWindow::revertContent() {
+		lock();
+		win    = NULL;
+		winSur = NULL;
+		unlock();
+	}
+
 	void DFBWindow::setReleaseListener(ISurface* listener) {
 		this->releaseListener = listener;
 	}
@@ -196,7 +215,7 @@ namespace io {
 		if (win != NULL) {
 			cout << "DFBWindow::draw Warning! Requesting redraw" << endl;
 
-		} else {
+		} else if (windowId < 0) {
 			DFBWindowDescription dsc;
 
 			dsc.flags  = (DFBWindowDescriptionFlags)(
@@ -222,6 +241,16 @@ namespace io {
 
 			DFBCHECK(win->SetOpacity(win, 0x00));
 			DFBCHECK(win->GetSurface(win, &winSur));
+			DFBCHECK(win->GetID(win, (DFBWindowID*)&windowId));
+
+		} else {
+			win = (IDirectFBWindow*)(
+					LocalDeviceManager::getInstance()->getWindow(windowId));
+
+			win->GetPosition(win, &x, &y);
+			win->GetSize(win, &width, &height);
+			DFBCHECK(win->GetSurface(win, &winSur));
+			return;
 		}
 
 		if (caps & DWCAPS_ALPHACHANNEL) {
@@ -400,15 +429,7 @@ namespace io {
 	}
 
 	int DFBWindow::getId() {
-		DFBWindowID wid = -1;
-
-		lock();
-		if (win != NULL) {
-			win->GetID(win, &wid);
-		}
-		unlock();
-
-		return wid;
+		return windowId;
 	}
 
 	void DFBWindow::show() {
@@ -783,10 +804,16 @@ namespace io {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::system::io::IWindow*
-		createDFBWindow(int x, int y, int width, int height) {
+		createDFBWindow(int windowId, int x, int y, int width, int height) {
 
-	return new ::br::pucrio::telemidia::ginga::core::system::io::DFBWindow(
-			x, y, width, height);
+	if (windowId < 0) {
+		return new ::br::pucrio::telemidia::ginga::core::system::io::DFBWindow(
+				x, y, width, height);
+
+	} else {
+		return new ::br::pucrio::telemidia::ginga::core::system::io::DFBWindow(
+				windowId);
+	}
 }
 
 extern "C" void destroyDFBWindow(

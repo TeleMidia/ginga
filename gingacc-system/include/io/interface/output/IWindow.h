@@ -65,6 +65,7 @@ namespace io {
 	class IWindow : public IIOContainer {
 		public:
 			virtual ~IWindow(){};
+			virtual void revertContent()=0;
 			virtual void setReleaseListener(ISurface* listener)=0;
 			virtual int getCap(string capName)=0;
 			virtual void setCaps(int caps)=0;
@@ -126,7 +127,7 @@ namespace io {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::system::io::IWindow*
-		WindowCreator(int x, int y, int width, int height);
+		WindowCreator(int windowId, int x, int y, int width, int height);
 
 typedef void WindowDestroyer(
 		::br::pucrio::telemidia::ginga::core::system::io::IWindow*);

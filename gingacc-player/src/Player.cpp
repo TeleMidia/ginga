@@ -52,6 +52,8 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "../include/PlayersComponentSupport.h"
+
 #include <iostream>
 
 namespace br {
@@ -69,6 +71,7 @@ namespace player {
 		this->listeners           = NULL;
 		this->lockedListeners     = NULL;
 		this->referredPlayers     = NULL;
+		this->outputWindow        = NULL;
 		this->surface             = NULL;
 
 		this->notifying           = false;
@@ -98,6 +101,12 @@ namespace player {
 			lockedListeners->clear();
 			delete lockedListeners;
 			lockedListeners = NULL;
+		}
+
+		if (outputWindow != NULL) {
+			outputWindow->revertContent();
+			delete outputWindow;
+			outputWindow = NULL;
 		}
 
 		if (surface != NULL) {
@@ -443,6 +452,36 @@ namespace player {
 
 	bool Player::isForcedNaturalEnd() {
 		return forcedNaturalEnd;
+	}
+
+	bool Player::setOutWindow(int windowId) {
+		ISurface* renderedSurface;
+
+		if (outputWindow == NULL) {
+#if HAVE_COMPSUPPORT
+			outputWindow = ((WindowCreator*)(cm->getObject("Window")))(
+					windowId, -1, -1, -1, -1);
+
+#else
+			outputWindow = new DFBWindow(windowId);
+#endif
+		}
+
+		if (outputWindow == NULL || outputWindow->getId() != windowId) {
+			return false;
+		}
+
+		renderedSurface = getSurface();
+		if (renderedSurface != NULL) {
+			if (renderedSurface->setParent((void*)outputWindow)) {
+				outputWindow->renderFrom(renderedSurface);
+			}
+
+		} else {
+			return false;
+		}
+
+		return true;
 	}
 }
 }

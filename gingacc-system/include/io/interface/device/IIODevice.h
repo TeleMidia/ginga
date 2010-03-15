@@ -72,6 +72,9 @@ namespace io {
 		virtual unsigned int getScreenWidthRes(unsigned int screenNumber=0)=0;
 		virtual unsigned int getScreenHeightRes(unsigned int screenNumber=0)=0;
 		virtual void* getGfxRoot()=0;
+		virtual void* getWindow(
+				int winId, unsigned int screenNumber=0)=0;
+
 		virtual void* createWindow(
 				void* winDesc, unsigned int screenNumber=0)=0;
 

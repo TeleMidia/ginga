@@ -88,7 +88,7 @@ int main(int argc, char** argv, char** envp) {
 
 		dm->createDevice("systemScreen(0)");
 #if HAVE_COMPSUPPORT
-		w = ((WindowCreator*)(cm->getObject("Window")))(10, 10, 100, 100);
+		w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
 #else
 		w = new DFBWindow(10, 10, 100, 100);
 #endif
@@ -99,8 +99,10 @@ int main(int argc, char** argv, char** envp) {
 
 		player = new Player("teste");
 		img = new ImagePlayer("/root/img1.png");
-		s = img->getSurface();
-		w->renderFrom(s);
+		//s = img->getSurface();
+		//w->renderFrom(s);
+		img->setOutWindow(w->getId());
+		w->validate();
 
 		cout << "Player test has shown image. press enter to continue" << endl;
 		getchar();

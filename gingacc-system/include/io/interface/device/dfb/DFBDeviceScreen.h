@@ -123,6 +123,7 @@ namespace io {
 			unsigned int getHeightResolution();
 			void setHeightResolution(unsigned int hRes);
 			void setColorKey(int r, int g, int b);
+			void* getWindow(int winId);
 			void* createWindow(void* desc);
 			void releaseWindow(void* win);
 			void* createSurface(void* desc);
