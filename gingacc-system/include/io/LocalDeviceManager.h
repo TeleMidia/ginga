@@ -93,6 +93,12 @@ namespace io {
 
 			void clearWidgetPools();
 			int createDevice(string description);
+
+			void mergeIds(
+					int destId,
+					vector<int>* srcIds,
+					unsigned int deviceNumber=0, unsigned int screenNumber=0);
+
 			void* getWindow(
 					int windowId,
 					unsigned int deviceNumber=0, unsigned int screenNumber=0);

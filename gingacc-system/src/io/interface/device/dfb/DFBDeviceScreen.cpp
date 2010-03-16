@@ -268,14 +268,40 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		}
 	}
 
+	void DFBDeviceScreen::mergeIds(int destId, vector<int>* srcIds) {
+		IDirectFBWindow* srcWin  = NULL;
+		IDirectFBWindow* dstWin  = NULL;
+		IDirectFBSurface* srcSur = NULL;
+		IDirectFBSurface* dstSur = NULL;
+		vector<int>::iterator i;
+		int x, y;
+
+		dstWin = (IDirectFBWindow*)getWindow(destId);
+		if (dstWin == NULL) {
+			return;
+		}
+
+		dstWin->GetSurface(dstWin, &dstSur);
+		DFBCHECK(dstSur->SetBlittingFlags(
+				dstSur, (DFBSurfaceBlittingFlags)DSBLIT_BLEND_ALPHACHANNEL));
+
+		i = srcIds->begin();
+		while (i != srcIds->end()) {
+			srcWin = (IDirectFBWindow*)getWindow(*i);
+			if (srcWin != NULL) {
+				srcWin->GetPosition(srcWin, &x, &y);
+				srcWin->GetSurface(srcWin, &srcSur);
+				DFBCHECK(dstSur->Blit(dstSur, srcSur, NULL, x, y));
+			}
+			++i;
+		}
+	}
+
 	void* DFBDeviceScreen::getWindow(int winId) {
 		IDirectFBWindow* window = NULL;
 
 		if (gfxLayer != NULL) {
 			DFBCHECK(gfxLayer->GetWindow(gfxLayer, winId, &window));
-			pthread_mutex_lock(&winMutex);
-			windowPool->insert(window);
-			pthread_mutex_unlock(&winMutex);
 		}
 
 		return (void*)window;

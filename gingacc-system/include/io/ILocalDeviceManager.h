@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "interface/output/ISurface.h"
 
+#include <vector>
 #include <string>
 using namespace std;
 
@@ -80,6 +81,12 @@ namespace io {
 			virtual void* getGfxRoot(unsigned int deviceNumber=0)=0;
 			virtual void clearWidgetPools()=0;
 			virtual int createDevice(string description)=0;
+			virtual void mergeIds(
+					int destId,
+					vector<int>* srcIds,
+					unsigned int deviceNumber=0,
+					unsigned int screenNumber=0)=0;
+
 			virtual void* getWindow(
 					int windowId,
 					unsigned int deviceNumber=0,

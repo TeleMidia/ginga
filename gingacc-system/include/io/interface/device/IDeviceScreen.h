@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef IDEVICESCREEN_H_
 #define IDEVICESCREEN_H_
 
+#include <vector>
 #include <string>
 using namespace std;
 
@@ -69,6 +70,7 @@ namespace io {
 			virtual unsigned int getHeightResolution()=0;
 			virtual void setHeightResolution(unsigned int hRes)=0;
 			virtual void setColorKey(int r, int g, int b)=0;
+			virtual void mergeIds(int destId, vector<int>* srcIds)=0;
 			virtual void* getWindow(int winId)=0;
 			virtual void* createWindow(void* desc)=0;
 			virtual void releaseWindow(void* win)=0;

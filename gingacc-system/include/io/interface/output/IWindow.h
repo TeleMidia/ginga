@@ -78,6 +78,7 @@ namespace io {
 			virtual void setColorKey(int r, int g, int b)=0;
 			virtual void moveTo(int x, int y)=0;
 			virtual void resize(int width, int height)=0;
+			virtual void setZBoundaries(int lower, int upper)=0;
 			virtual void raise()=0;
 			virtual void lower()=0;
 			virtual void raiseToTop()=0;

@@ -124,6 +124,7 @@ namespace io {
 			void setColorKey(int r, int g, int b);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
+			void setZBoundaries(int lower, int upper);
 			void raise();
 			void lower();
 			void raiseToTop();
@@ -146,6 +147,11 @@ namespace io {
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();
+
+		private:
+			void unprotectedValidate();
+
+		public:
 			void addChildSurface(ISurface* s);
 			bool removeChildSurface(ISurface* s);
 			void setStretch(bool stretchTo);

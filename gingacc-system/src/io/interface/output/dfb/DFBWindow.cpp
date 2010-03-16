@@ -278,6 +278,7 @@ namespace io {
 		if (win != NULL) {
 			DFBCHECK(win->SetBounds(win, x, y, width, height));
 		}
+		unprotectedValidate();
 		unlock();
 	}
 
@@ -368,6 +369,33 @@ namespace io {
 		if (win != NULL) {
 			DFBCHECK(win->Resize(win, width, height));
 		}
+		unlock();
+	}
+
+	void DFBWindow::setZBoundaries(int lower, int upper) {
+		IDirectFBWindow* bWin;
+
+		lock();
+		if (win == NULL) {
+			unlock();
+			return;
+		}
+
+		if (upper >= 0) {
+			bWin = (IDirectFBWindow*)(
+					LocalDeviceManager::getInstance()->getWindow(upper));
+
+			DFBCHECK(win->PutBelow(win, bWin));
+		}
+
+		if (lower >= 0) {
+			bWin = (IDirectFBWindow*)(
+					LocalDeviceManager::getInstance()->getWindow(lower));
+
+			DFBCHECK(win->PutAtop(win, bWin));
+		}
+
+		unprotectedValidate();
 		unlock();
 	}
 
@@ -527,11 +555,18 @@ namespace io {
 	}
 
 	void DFBWindow::validate() {
+		lock();
+		unprotectedValidate();
+		unlock();
+	}
+
+	void DFBWindow::unprotectedValidate() {
+		ISurface* surface;
+
 		if (win != NULL && winSur != NULL) {
 			if (winSur != NULL) {
 				lockChilds();
 				if (childSurfaces != NULL && !childSurfaces->empty()) {
-					ISurface* surface;
 					surface = childSurfaces->at(0);
 					if (surface != NULL) {
 						renderFrom(surface);

@@ -63,30 +63,34 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
-	class IODevice : public IIODevice {
-		private:
-			string id;
-			pthread_mutex_t mutexList;
-			map<unsigned int, IDeviceAudio*>* audioDevices;
-			map<unsigned int, IDeviceScreen*>* screenDevices;
-			map<unsigned int, IDeviceCommunication*>* connectorDevices;
+  class IODevice : public IIODevice {
+	private:
+		string id;
+		pthread_mutex_t mutexList;
+		map<unsigned int, IDeviceAudio*>* audioDevices;
+		map<unsigned int, IDeviceScreen*>* screenDevices;
+		map<unsigned int, IDeviceCommunication*>* connectorDevices;
 
-		public:
-			IODevice();
-			~IODevice();
-			unsigned int addAudio(IDeviceAudio* audioResource);
-			unsigned int addScreen(IDeviceScreen* screenResource);
-			unsigned int addChannel(IDeviceCommunication* channelResource);
-			unsigned int getScreenWidthRes(unsigned int screenNumber=0);
-			unsigned int getScreenHeightRes(unsigned int screenNumber=0);
-			void* getGfxRoot();
-			void setBackgroundImage(string uri);
-			void* getWindow(int winId, unsigned int screenNumber=0);
-			void* createWindow(void* winDesc, unsigned int screenNumber=0);
-			void releaseWindow(void* win, unsigned int screenNumber=0);
-			void* createSurface(void* surfaceDesc, unsigned int screenNumber=0);
-			void releaseSurface(void* sur, unsigned int screenNumber=0);
-	};
+	public:
+		IODevice();
+		~IODevice();
+		unsigned int addAudio(IDeviceAudio* audioResource);
+		unsigned int addScreen(IDeviceScreen* screenResource);
+		unsigned int addChannel(IDeviceCommunication* channelResource);
+		unsigned int getScreenWidthRes(unsigned int screenNumber=0);
+		unsigned int getScreenHeightRes(unsigned int screenNumber=0);
+		void* getGfxRoot();
+		void setBackgroundImage(string uri);
+
+		void mergeIds(
+				int destId, vector<int>* srcIds, unsigned int screenNumber=0);
+
+		void* getWindow(int winId, unsigned int screenNumber=0);
+		void* createWindow(void* winDesc, unsigned int screenNumber=0);
+		void releaseWindow(void* win, unsigned int screenNumber=0);
+		void* createSurface(void* surfaceDesc, unsigned int screenNumber=0);
+		void releaseSurface(void* sur, unsigned int screenNumber=0);
+  };
 }
 }
 }
