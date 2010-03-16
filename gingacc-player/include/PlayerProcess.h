@@ -77,10 +77,9 @@ namespace player {
 			void createPlayer(string mrl, bool visible=true);
 
 		private:
-			void waitAnswer();
+			void waitAnswer(int milliseconds);
 
 		public:
-			string getWindowId();
 			void setGhost(bool isGhost);
 			void messageReceived(string msg);
 

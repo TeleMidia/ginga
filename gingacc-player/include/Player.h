@@ -126,10 +126,6 @@ namespace player {
 					short code, string paremeter="",
 					short type=TYPE_PRESENTATION);
 
-		protected:
-			//static void* detachNotify(void* ptr);
-
-		public:
 			virtual void setSurface(ISurface* surface);
 			virtual ISurface* getSurface();
 			virtual void setMediaTime(double newTime);

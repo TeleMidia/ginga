@@ -64,6 +64,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 int main(int argc, char** argv, char** envp) {
 	IWindow* w;
+	IWindow* ww;
 	ISurface* s;
 	ILocalDeviceManager* dm;
 	IPlayer* player;
@@ -76,27 +77,33 @@ int main(int argc, char** argv, char** envp) {
 
 	setLogToNullDev();
 
+#if HAVE_COMPSUPPORT
+	IComponentManager* cm = IComponentManager::getCMInstance();
+	dm = ((LocalDeviceManagerCreator*)(cm->getObject(
+			"LocalDeviceManager")))();
+
+#else
+	dm = LocalDeviceManager::getInstance();
+#endif
+
+	dm->createDevice("systemScreen(0)");
+#if HAVE_COMPSUPPORT
+	w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
+	ww = ((WindowCreator*)(cm->getObject("Window")))(-1, 90, 90, 400, 400);
+#else
+	w  = new DFBWindow(10, 10, 100, 100);
+	ww = new DFBWindow(90, 90, 400, 400);
+#endif
+
+	w->setCaps(w->getCap("ALPHACHANNEL"));
+	w->draw();
+	w->show();
+
+	ww->setCaps(w->getCap("ALPHACHANNEL"));
+	ww->draw();
+	ww->show();
+
 	if (argc > 1 && strcmp(argv[1], "img") == 0) {
-#if HAVE_COMPSUPPORT
-		IComponentManager* cm = IComponentManager::getCMInstance();
-		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
-				"LocalDeviceManager")))();
-
-#else
-		dm = LocalDeviceManager::getInstance();
-#endif
-
-		dm->createDevice("systemScreen(0)");
-#if HAVE_COMPSUPPORT
-		w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
-#else
-		w = new DFBWindow(10, 10, 100, 100);
-#endif
-
-		w->setCaps(w->getCap("ALPHACHANNEL"));
-		w->draw();
-		w->show();
-
 		player = new Player("teste");
 		img = new ImagePlayer("/root/img1.png");
 		//s = img->getSurface();
@@ -119,7 +126,7 @@ int main(int argc, char** argv, char** envp) {
 		process->checkCom();
 
 		process->sendMsg("createplayer,/root/img1.png,true::;::");
-		process->sendMsg("createwindow,10,10,100,100::;::");
+		process->sendMsg("setoutwindow," + itos(w->getId()) + "::;::");
 		process->sendMsg("getwindowid::;::");
 		process->sendMsg("play::;::");
 		process->sendMsg("show::;::");
@@ -127,22 +134,24 @@ int main(int argc, char** argv, char** envp) {
 		getchar();
 		process->forceKill();
 #endif
+
 	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
 #if HAVE_MULTIPROCESS
 
+		cout << "CREATING PLAYER PROCESS A " << endl;
 		pprocessA = new PlayerProcess("ImagePlayer");
+		cout << "PROCESS A CREATING PLAYER" << endl;
 		pprocessA->createPlayer("/root/img1.png", true);
-		pprocessA->createWindow(10,10,100,100);
-		cout << "PROCESSA WINDOWID = '" << pprocessA->getWindowId() << "'";
-		cout << endl;
+		cout << "PROCESS A SETTING OUT WINDOW" << endl;
+		pprocessA->setOutWindow(w->getId());
+		cout << "PROCESS A SETTING PLAYING" << endl;
 		pprocessA->play();
+		cout << "PROCESS A SETTING WAITING USER" << endl;
 		getchar();
 
-		pprocessB = new PlayerProcess("ImagePlayer");
-		pprocessB->createPlayer("/root/img1.png", true);
-		pprocessB->createWindow(100,100,100,100);
-		cout << "PROCESSB WINDOWID = '" << pprocessB->getWindowId() << "'";
-		cout << endl;
+		pprocessB = new PlayerProcess("AVPlayer");
+		pprocessB->createPlayer("/root/vid1.mpg", true);
+		pprocessB->setOutWindow(ww->getId());
 		pprocessB->play();
 
 		getchar();

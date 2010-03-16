@@ -64,13 +64,14 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 using namespace ::br::pucrio::telemidia::util;
 
 #include "../include/IPlayer.h"
+#include "../include/IPlayerListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include <vector>
 #include <iostream>
 using namespace std;
 
-class PlayerSpawnedProcess : public SpawnedProcess {
+class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
   private:
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm;
@@ -98,6 +99,17 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 		sendMessage("ready");
 	}
 
+	void updateStatus(
+			short code, string parameter, short type) {
+
+		string param = parameter;
+
+		if (param == "") {
+			param = "NULL";
+		}
+		sendMessage("updatestatus," + itos(code) + "," + param + itos(type));
+	}
+
 	void messageReceived(string msg) {
 		vector<string>* cmds;
 		vector<string>* vMsg;
@@ -105,7 +117,7 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 		int size;
 		ISurface* surface;
 
-		SpawnedProcess::messageReceived(msg);
+		//SpawnedProcess::messageReceived(msg);
 
 		cmds = split(msg, "::;::");
 		i = cmds->begin();
@@ -115,6 +127,8 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 #if HAVE_COMPSUPPORT
 				player = ((PlayerCreator*)(cm->getObject(objectName)))(
 						(*vMsg)[1].c_str(), (*vMsg)[2] == "true");
+
+				player->addListener(this);
 #endif
 
 			} else if ((*vMsg)[0] == "setoutwindow") {
@@ -139,11 +153,6 @@ class PlayerSpawnedProcess : public SpawnedProcess {
 
 			} else if ((*vMsg)[0] == "getmediatime") {
 				sendMessage("mediatime=" + itos(player->getMediaTime()));
-
-			} else if ((*vMsg)[0] == "getwindowid") {
-				if (window != NULL) {
-					sendMessage("windowid=" + itos(window->getId()));
-				}
 
 			} else if ((*vMsg)[0] == "play") {
 				player->play();

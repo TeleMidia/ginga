@@ -96,44 +96,38 @@ namespace player {
 		pthread_mutex_destroy(&msgMutex);
 	}
 
-	void PlayerProcess::createWindow(int x, int y, int w, int h) {
-		sendMsg(
-				"createwindow," +
-				itos(x) + "," +
-				itos(y) + "," +
-				itos(w) + "," +
-				itos(h) + "::;::");
-	}
-
-	void PlayerProcess::waitAnswer() {
-		isWaitingAns = true;
-		pthread_mutex_lock(&ansMutex);
-		pthread_cond_wait(&ansCond, &ansMutex);
-		isWaitingAns = false;
-		pthread_mutex_unlock(&ansMutex);
-	}
-
-	string PlayerProcess::getWindowId() {
-		map<string, string>::iterator i;
-		string id;
-
-		sendMsg("getwindowid::;::");
-		while (reader) {
-			pthread_mutex_lock(&msgMutex);
-			i = msgs->find("windowid");
-			if (i != msgs->end()) {
-				id = i->second;
-				msgs->erase(i);
-				pthread_mutex_unlock(&msgMutex);
-				return id;
-
-			} else {
-				pthread_mutex_unlock(&msgMutex);
-				waitAnswer();
-			}
+	void PlayerProcess::createPlayer(string mrl, bool visible) {
+		string strbool = "true";
+		if (!visible) {
+			strbool = "false";
 		}
 
-		return "";
+		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
+	}
+
+	void PlayerProcess::waitAnswer(int milliseconds) {
+		int res;
+		struct timeval time;
+		struct timespec timeOut;
+		long int micro;
+
+		gettimeofday(&time, NULL);
+		timeOut.tv_sec = time.tv_sec + (long int)(milliseconds / 1000);
+		micro = ((milliseconds%1000) * 1000) + time.tv_usec;
+		if (micro > 1000000) {
+			timeOut.tv_sec++;
+			micro -= 1000000;
+		}
+
+		timeOut.tv_nsec = micro * 1000;
+
+		pthread_mutex_lock(&ansMutex);
+		isWaitingAns = true;
+		pthread_cond_timedwait(
+				&ansCond, &ansMutex, (const struct timespec*)(&timeOut));
+
+		isWaitingAns = false;
+		pthread_mutex_unlock(&ansMutex);
 	}
 
 	void PlayerProcess::setGhost(bool isGhost) {
@@ -147,6 +141,8 @@ namespace player {
 
 	void PlayerProcess::messageReceived(string msg) {
 		string key, value;
+		vector<string>* vMsg;
+		vector<string>::iterator i;
 
 		if (msg.find("=") != std::string::npos) {
 			key   = msg.substr(0, msg.find_first_of("="));
@@ -159,6 +155,12 @@ namespace player {
 			pthread_mutex_unlock(&msgMutex);
 			if (isWaitingAns) {
 				pthread_cond_signal(&ansCond);
+			}
+
+		} else {
+			vMsg = split(msg, ",");
+			if ((*vMsg)[0] == "updatestatus" && vMsg->size() == 4) {
+				notifyListeners(stof((*vMsg)[1]),(*vMsg)[2], stof((*vMsg)[3]));
 			}
 		}
 	}
@@ -220,12 +222,10 @@ namespace player {
 	}
 
 	void PlayerProcess::play() {
-		show();
 		sendMsg("play::;::");
 	}
 
 	void PlayerProcess::stop() {
-		hide();
 		sendMsg("stop::;::");
 	}
 

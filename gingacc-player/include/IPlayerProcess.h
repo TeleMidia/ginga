@@ -64,7 +64,6 @@ namespace player {
 
 			//For process
 			virtual void createPlayer(string mrl, bool visible=true)=0;
-			virtual string getWindowId()=0;
 			virtual void setGhost(bool isGhost)=0;
 			virtual void messageReceived(string msg)=0;
 
