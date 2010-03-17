@@ -99,13 +99,17 @@ namespace player {
 			LinksPlayer(string mrl);
 			virtual ~LinksPlayer();
 
+		protected:
 			ISurface* getSurface();
+
+		public:
 			bool userEventReceived(IInputEvent* ev);
 
 			void setNotifyContentUpdate(bool notify);
 
 			void play();
 			void stop();
+			bool setOutWindow(int windowId);
 			void setBounds(int x, int y, int w, int h);
 
 			void setPropertyValue(

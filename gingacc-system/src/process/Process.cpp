@@ -73,6 +73,7 @@ namespace process {
 		this->reader        = true;
 		this->wFd           = -1;
 		this->rFd           = -1;
+		this->hasCom        = false;
 
 		posix_spawnattr_init(&spawnAttr);
 		posix_spawn_file_actions_init(&fileActions);
@@ -101,8 +102,8 @@ namespace process {
 		pthread_t threadId_;
 		string processName;
 
-		this->processUri    = processUri;
-		this->objName       = objName;
+		this->processUri = processUri;
+		this->objName    = objName;
 
 		if (processUri.find("/") != std::string::npos) {
 			processName = processUri.substr(
@@ -222,6 +223,10 @@ namespace process {
 		pthread_t threadIdR_;
 		int rspawn;
 
+		while (!hasCom) {
+			::usleep(10000);
+		}
+
 		if (processStatus == PST_NULL) {
 			if (argv == NULL) {
 				argv = envp;
@@ -254,6 +259,9 @@ namespace process {
 
 		reader = false;
 		rkill  = kill(pid, SIGKILL);
+		if (rkill != 0) {
+			perror("forceKill");
+		}
 	}
 
 	void Process::spawnedReady(bool ready) {
@@ -269,7 +277,8 @@ namespace process {
 		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
 		if (rval < 0) {
 			cout << "Process::createFiles Warning! ";
-			cout << "can't create pipe '" << process->wCom << "'";
+			perror("wCom");
+			cout << "can't create wCom pipe '" << process->wCom << "'";
 			cout << endl;
 			return NULL;
 		}
@@ -277,11 +286,13 @@ namespace process {
 		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
 		if (rval < 0) {
 			cout << "Process::createFiles Warning! ";
-			cout << "can't create pipe '" << process->rCom << "'";
+			perror("rCom");
+			cout << "can't create rCom pipe '" << process->rCom << "'";
 			cout << endl;
 			return NULL;
 		}
 
+		process->hasCom = true;
 		process->wFd = openW(process->wCom);
 		if (process->wFd < 0) {
 			cout << "Process::createFiles Warning! ";
@@ -298,8 +309,13 @@ namespace process {
 		int status;
 		int type;
 		int wpid;
+		int ppid;
+		IProcessListener* listener;
 
-		wpid = waitpid(process->pid, &status, WUNTRACED);
+		listener = process->sigListener;
+		ppid     = process->pid;
+
+		wpid = waitpid(ppid, &status, WUNTRACED);
 
         if (WIFEXITED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;
@@ -318,18 +334,8 @@ namespace process {
         	type = IProcessListener::PST_EXEC_SIGNAL;
         }
 
-		if (process->sigListener != NULL) {
-			process->sigListener->receiveProcessSignal(type, status, process);
-		}
-
-		if (type == IProcessListener::PST_EXEC_SIGNAL) {
-			cout << "Process::detachWait process '" << process->processUri;
-			cout << "' received signal '" << status << "'";
-			cout << endl;
-
-			if (process->reader) {
-				detachWait(ptr);
-			}
+		if (listener != NULL) {
+			listener->receiveProcessSignal(type, status, ppid);
 		}
 
 		return NULL;

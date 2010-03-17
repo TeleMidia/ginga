@@ -147,10 +147,6 @@ namespace player {
 		}
 	}
 
-	ISurface* ImagePlayer::getSurface() {
-		return Player::getSurface();
-	}
-
 	void ImagePlayer::play() {
 		if (provider == NULL ||
 				surface == NULL || surface->getContent() == NULL) {

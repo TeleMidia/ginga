@@ -107,7 +107,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		if (param == "") {
 			param = "NULL";
 		}
-		sendMessage("updatestatus," + itos(code) + "," + param + itos(type));
+		sendMessage(
+				"updatestatus," + itos(code) + "," + param + "," + itos(type));
 	}
 
 	void messageReceived(string msg) {
@@ -116,6 +117,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		vector<string>::iterator i;
 		int size;
 		ISurface* surface;
+		bool auxBool;
+		string auxStr;
 
 		//SpawnedProcess::messageReceived(msg);
 
@@ -123,6 +126,10 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		i = cmds->begin();
 		while (i != cmds->end()) {
 			vMsg = split(*i, ",");
+
+			cout << "PlayerLoader::messageReceived '";
+			cout << (*vMsg)[0] << "'" << endl;
+
 			if ((*vMsg)[0] == "createplayer") {
 #if HAVE_COMPSUPPORT
 				player = ((PlayerCreator*)(cm->getObject(objectName)))(
@@ -131,18 +138,34 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 				player->addListener(this);
 #endif
 
+			} else if (player == NULL) {
+				cout << "PlayerLoader::messageReceived Warning! ";
+				cout << "PLAYER IS NULL" << endl;
+
 			} else if ((*vMsg)[0] == "setoutwindow") {
 				player->setOutWindow(stof((*vMsg)[1]));
 
 			} else if ((*vMsg)[0] == "setpropertyvalue") {
 				size = vMsg->size();
-				if (size == 3) {
-					player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
+				if ((*vMsg)[1] == "bounds" && size == 6) {
+					auxStr = (*vMsg)[2] + "," + (*vMsg)[3] + "," +
+							(*vMsg)[4] + "," + (*vMsg)[5];
 
-				} else if (size == 4) {
-					//TODO: animation
-					player->setPropertyValue(
-							(*vMsg)[1], (*vMsg)[2], stof((*vMsg)[3]));
+					cout << "PlayerLoader::messageReceived setproperty '";
+					cout << (*vMsg)[1] << "' = '" << auxStr << "'" << endl;
+
+					player->setPropertyValue((*vMsg)[1], auxStr);
+
+				} else if ((*vMsg)[1] == "location" && size == 4) {
+					auxStr = (*vMsg)[2] + "," + (*vMsg)[3];
+					player->setPropertyValue((*vMsg)[1], auxStr);
+
+				} else if ((*vMsg)[1] == "size" && size == 4) {
+					auxStr = (*vMsg)[2] + "," + (*vMsg)[3];
+					player->setPropertyValue((*vMsg)[1], auxStr);
+
+				} else if (size == 3) {
+					player->setPropertyValue((*vMsg)[1], (*vMsg)[2]);
 				}
 
 				//zindex
@@ -154,11 +177,15 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 			} else if ((*vMsg)[0] == "getmediatime") {
 				sendMessage("mediatime=" + itos(player->getMediaTime()));
 
+			} else if ((*vMsg)[0] == "setmediatime" && vMsg->size() == 2) {
+				player->setMediaTime(stof((*vMsg)[1]));
+
 			} else if ((*vMsg)[0] == "play") {
 				player->play();
 
 			} else if ((*vMsg)[0] == "stop") {
 				player->stop();
+				player->setOutWindow(-1);
 
 			} else if ((*vMsg)[0] == "pause") {
 				player->pause();
@@ -168,9 +195,36 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 
 			} else if ((*vMsg)[0] == "abort") {
 				player->abort();
+				player->setOutWindow(-1);
 
 			} else if ((*vMsg)[0] == "getvpts") {
-				sendMessage(itos(player->getVPts()));
+				sendMessage("vpts=" + itos(player->getVPts()));
+
+			} else if ((*vMsg)[0] == "getpropertyvalue" && vMsg->size() == 2) {
+				sendMessage(
+						"propertyvalue" + (*vMsg)[1] + "=" +
+								player->getPropertyValue((*vMsg)[1]));
+
+			} else if ((*vMsg)[0] == "setkeyhandler" && vMsg->size() == 2) {
+				auxBool = player->setKeyHandler((*vMsg)[1] == "true");
+				auxStr  = "true";
+				if (!auxBool) {
+					auxStr = "false";
+				}
+				sendMessage("iskeyhandler=" + auxStr);
+
+			} else if ((*vMsg)[0] == "setscope" && vMsg->size() == 5) {
+				player->setScope(
+						(*vMsg)[1],
+						stof((*vMsg)[2]),
+						stof((*vMsg)[3]),
+						stof((*vMsg)[4]));
+
+			} else if ((*vMsg)[0] == "setcurrentscope" && vMsg->size() == 2) {
+				player->setCurrentScope((*vMsg)[1]);
+
+			} else if ((*vMsg)[0] == "timeshift" && vMsg->size() == 2) {
+				player->timeShift((*vMsg)[1]);
 			}
 
 			delete vMsg;

@@ -89,7 +89,6 @@ namespace player {
 					io::IImageProvider* provider, string mrl);
 
 			static io::ISurface* renderImage(string mrl);
-			virtual ISurface* getSurface();
 	};
 }
 }

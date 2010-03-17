@@ -113,6 +113,8 @@ namespace player {
 		public:
 			Player(string mrl);
 			virtual ~Player();
+
+			virtual void setMrl(string mrl, bool visible=true);
 			//virtual void setStandByState(bool standBy){};
 			virtual void setNotifyContentUpdate(bool notify);
 			virtual void addListener(IPlayerListener* listener);
@@ -128,6 +130,7 @@ namespace player {
 
 			virtual void setSurface(ISurface* surface);
 			virtual ISurface* getSurface();
+
 			virtual void setMediaTime(double newTime);
 			virtual int64_t getVPts(){return 0;};
 

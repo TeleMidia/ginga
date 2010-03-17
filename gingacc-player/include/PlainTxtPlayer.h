@@ -71,11 +71,6 @@ namespace player {
 
 		private:
 			void loadTxt();
-
-		public:
-			ISurface* getSurface();
-
-		private:
 			void setContent(string content);
 
 		public:

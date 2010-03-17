@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef __PlayerProcess_h_
 #define __PlayerProcess_h_
 
-#include "IPlayerProcess.h"
+#include "Player.h"
 
 #include "system/process/Process.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::process;
@@ -61,7 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class PlayerProcess : public IPlayerProcess, public Process {
+	class PlayerProcess : public Player, public Process {
 		private:
 			map<string, string>* msgs;
 			pthread_mutex_t msgMutex;
@@ -74,13 +74,13 @@ namespace player {
 			PlayerProcess(const char* objectName);
 			virtual ~PlayerProcess();
 
-			void createPlayer(string mrl, bool visible=true);
+			void setMrl(string mrl, bool visible=true);
 
 		private:
+			string getAnswer(string token, int howPatient);
 			void waitAnswer(int milliseconds);
 
 		public:
-			void setGhost(bool isGhost);
 			void messageReceived(string msg);
 
 			void setNotifyContentUpdate(bool notify);
@@ -89,8 +89,6 @@ namespace player {
 			void notifyListeners(
 					short code, string paremeter, short type);
 
-			void setSurface(io::ISurface* surface);
-			io::ISurface* getSurface();
 			int64_t getVPts();
 			double getMediaTime();
 			void setMediaTime(double newTime);

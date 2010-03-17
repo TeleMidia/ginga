@@ -135,6 +135,11 @@ namespace player {
 		pthread_mutex_destroy(&listM);
    	}
 
+	void Player::setMrl(string mrl, bool visible) {
+		this->mrl     = mrl;
+		this->visible = visible;
+	}
+
 	void Player::setNotifyContentUpdate(bool notify) {
 		this->notifyContentUpdate = notify;
 	}
@@ -268,7 +273,6 @@ namespace player {
 	}
 
 	void Player::setSurface(ISurface* surface) {
-		wclog << "Player::setSurface(" << this << ")" << endl;
 		if (this->surface != NULL) {
 			delete this->surface;
 			this->surface = NULL;
@@ -457,7 +461,10 @@ namespace player {
 	bool Player::setOutWindow(int windowId) {
 		ISurface* renderedSurface;
 
-		if (outputWindow == NULL) {
+		if (windowId < 0 && outputWindow != NULL) {
+			outputWindow->revertContent();
+
+		} else if (outputWindow == NULL) {
 #if HAVE_COMPSUPPORT
 			outputWindow = ((WindowCreator*)(cm->getObject("Window")))(
 					windowId, -1, -1, -1, -1);

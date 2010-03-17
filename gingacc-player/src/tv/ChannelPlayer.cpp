@@ -136,14 +136,14 @@ namespace player {
 	void ChannelPlayer::setSurfacesParent(void* parent) {
 		map<string, IPlayer*>::iterator players;
 		IPlayer* avPlayer;
+		ISurface* s = NULL;
 
 		players = objectMap->begin();
 		while (players != objectMap->end()) {
 			avPlayer = players->second;
-			if (avPlayer->getSurface() != NULL &&
-					avPlayer->getSurface()->getParent() != parent) {
-
-				avPlayer->getSurface()->setParent(parent);
+			s = ((Player*)avPlayer)->getSurface();
+			if (s != NULL && s->getParent() != parent) {
+				s->setParent(parent);
 			}
 			++players;
 		}
@@ -152,17 +152,18 @@ namespace player {
 
 	ISurface* ChannelPlayer::getSurface() {
 		if (selectedPlayer != NULL) {
-			return selectedPlayer->getSurface();
+			return ((Player*)selectedPlayer)->getSurface();
 		}
 		return NULL;
 	}
 
 	void ChannelPlayer::play() {
-		if (selectedPlayer != NULL) {
-			if (!hasParent && selectedPlayer->getSurface() != NULL &&
-					selectedPlayer->getSurface()->getParent() != NULL) {
+		ISurface* s;
 
-				setSurfacesParent(selectedPlayer->getSurface()->getParent());
+		if (selectedPlayer != NULL) {
+			s = ((Player*)selectedPlayer)->getSurface();
+			if (!hasParent && s != NULL && s->getParent() != NULL) {
+				setSurfacesParent(s->getParent());
 				selectedPlayer->play();
 
 			} else if (!hasVisual) {

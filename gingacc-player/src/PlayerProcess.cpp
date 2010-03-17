@@ -61,7 +61,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	PlayerProcess::PlayerProcess(const char* objName) : Process(NULL) {
+	PlayerProcess::PlayerProcess(const char* objName) :
+			Player(""), Process(NULL) {
+
 		msgs = new map<string, string>;
 
 		pthread_mutex_init(&msgMutex, NULL);
@@ -76,6 +78,7 @@ namespace player {
 	}
 
 	PlayerProcess::~PlayerProcess() {
+		cout << "PlayerProcess::~PlayerProcess '" << mrl << "'" << endl;
 		reader = false;
 
 		if (isWaitingAns) {
@@ -96,13 +99,38 @@ namespace player {
 		pthread_mutex_destroy(&msgMutex);
 	}
 
-	void PlayerProcess::createPlayer(string mrl, bool visible) {
+	void PlayerProcess::setMrl(string mrl, bool visible) {
 		string strbool = "true";
 		if (!visible) {
 			strbool = "false";
 		}
 
+		cout << "PlayerProcess::setMrl '" << mrl << "'" << endl;
 		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
+		Player::setMrl(mrl, visible);
+	}
+
+	string PlayerProcess::getAnswer(string token, int howPatient) {
+		string ans = "";
+		map<string, string>::iterator i;
+
+		cout << "PlayerProcess::getAnswer '" << token << "'" << endl;
+		while (reader) {
+			pthread_mutex_lock(&msgMutex);
+			i = msgs->find(token);
+			if (i != msgs->end()) {
+				ans = i->second;
+				msgs->erase(i);
+				pthread_mutex_unlock(&msgMutex);
+				return ans;
+
+			} else {
+				pthread_mutex_unlock(&msgMutex);
+				waitAnswer(howPatient);
+			}
+		}
+
+		return ans;
 	}
 
 	void PlayerProcess::waitAnswer(int milliseconds) {
@@ -130,85 +158,99 @@ namespace player {
 		pthread_mutex_unlock(&ansMutex);
 	}
 
-	void PlayerProcess::setGhost(bool isGhost) {
-		string strbool = "true";
-		if (!isGhost) {
-			strbool = "false";
-		}
-
-		sendMsg("setghost," + strbool + "::;::");
-	}
-
 	void PlayerProcess::messageReceived(string msg) {
 		string key, value;
 		vector<string>* vMsg;
 		vector<string>::iterator i;
 
+		cout << "PlayerProcess::messageReceived 1 '" << msg << "'" << endl;
 		if (msg.find("=") != std::string::npos) {
 			key   = msg.substr(0, msg.find_first_of("="));
 			value = msg.substr(
 					msg.find_first_of("=") + 1,
 					msg.length() - msg.find_first_of("=") + 1);
 
+			cout << "PlayerProcess::messageReceived 2 '" << key << "'" << endl;
 			pthread_mutex_lock(&msgMutex);
+			cout << "PlayerProcess::messageReceived '" << key << "'" << endl;
 			(*msgs)[key] = value;
 			pthread_mutex_unlock(&msgMutex);
 			if (isWaitingAns) {
 				pthread_cond_signal(&ansCond);
 			}
 
-		} else {
+		} else if (msg.find(",") != std::string::npos) {
 			vMsg = split(msg, ",");
 			if ((*vMsg)[0] == "updatestatus" && vMsg->size() == 4) {
-				notifyListeners(stof((*vMsg)[1]),(*vMsg)[2], stof((*vMsg)[3]));
+				if ((*vMsg)[2] == "NULL") {
+					(*vMsg)[2] = "";
+				}
+				notifyListeners(stof((*vMsg)[1]), (*vMsg)[2], stof((*vMsg)[3]));
 			}
 		}
 	}
 
 	void PlayerProcess::setNotifyContentUpdate(bool notify) {
-		string strbool = "true";
-		if (!notify) {
-			strbool = "false";
-		}
-
-		sendMsg("setnotifycontentupdate," + strbool + "::;::");
+		Player::setNotifyContentUpdate(notify);
 	}
 
 	void PlayerProcess::addListener(IPlayerListener* listener) {
-
+		Player::addListener(listener);
 	}
 
 	void PlayerProcess::removeListener(IPlayerListener* listener) {
-
+		Player::removeListener(listener);
 	}
 
 	void PlayerProcess::notifyListeners(
-			short code, string paremeter, short type) {
+			short code, string parameter, short type) {
 
-	}
-
-	void PlayerProcess::setSurface(io::ISurface* surface) {
-
-	}
-
-	io::ISurface* PlayerProcess::getSurface() {
-
+		Player::notifyListeners(code, parameter, type);
 	}
 
 	int64_t PlayerProcess::getVPts() {
+		string ans;
 
+		sendMsg("getvpts::;::");
+
+		ans = getAnswer("vpts", 1000);
+		if (ans == "") {
+			return 0.0;
+		}
+
+		return stof(ans);
 	}
 
 	double PlayerProcess::getMediaTime() {
+		string ans;
 
+		sendMsg("getmediatime::;::");
+
+		ans = getAnswer("mediatime", 1000);
+		if (ans == "") {
+			return 0.0;
+		}
+
+		return stof(ans);
 	}
 
 	void PlayerProcess::setMediaTime(double newTime) {
-
+		sendMsg("setmediatime," + itos(newTime) + "::;::");
 	}
 
 	bool PlayerProcess::setKeyHandler(bool isHandler) {
+		string auxstr = "true";
+		if (!isHandler) {
+			auxstr = "false";
+		}
 
+		sendMsg("setkeyhandler," + auxstr + "::;::");
+		auxstr = getAnswer("iskeyhandler", 1000);
+		if (auxstr == "") {
+			return false;
+		}
+
+		return auxstr == "true";
 	}
 
 	void PlayerProcess::setScope(
@@ -216,6 +258,7 @@ namespace player {
 
 		sendMsg(
 				"setscope," +
+				scope       + "," +
 				itos(type)  + "," +
 				itos(begin) + "," +
 				itos(end)   + "::;::");
@@ -242,68 +285,88 @@ namespace player {
 	}
 
 	string PlayerProcess::getPropertyValue(string name) {
+		string ans;
 
+		sendMsg("getpropertyvalue," + name + "::;::");
+
+		ans = getAnswer("propertyvalue" + name, 1000);
+		if (ans == "") {
+			return "";
+		}
+
+		return ans;
 	}
 
 	void PlayerProcess::setPropertyValue(
 			string name, string value, double duration, double by) {
 
+		string msg = "setpropertyvalue," + name + "," + value;
+
+		if (duration > 0) {
+			msg = msg + "," + itos(duration);
+		}
+
+		if (by > 0) {
+			msg = msg + "," + itos(by);
+		}
+
+		sendMsg(msg + "::;::");
 	}
 
 	void PlayerProcess::setReferenceTimePlayer(IPlayer* player) {
-
+		Player::setReferenceTimePlayer(player);
 	}
 
 	void PlayerProcess::addTimeReferPlayer(IPlayer* referPlayer) {
-
+		Player::addTimeReferPlayer(referPlayer);
 	}
 
 	void PlayerProcess::removeTimeReferPlayer(IPlayer* referPlayer) {
-
+		Player::removeTimeReferPlayer(referPlayer);
 	}
 
 	void PlayerProcess::notifyReferPlayers(int transition) {
-
+		Player::notifyReferPlayers(transition);
 	}
 
 	void PlayerProcess::timebaseObjectTransitionCallback(int transition) {
-
+		Player::timebaseObjectTransitionCallback(transition);
 	}
 
 	void PlayerProcess::setTimeBasePlayer(IPlayer* timeBasePlayer) {
-
+		Player::setTimeBasePlayer(timeBasePlayer);
 	}
 
 	bool PlayerProcess::hasPresented() {
-
+		return Player::hasPresented();
 	}
 
 	void PlayerProcess::setPresented(bool presented) {
-
+		Player::setPresented(presented);
 	}
 
 	bool PlayerProcess::isVisible() {
-
+		return Player::isVisible();
 	}
 
 	void PlayerProcess::setVisible(bool visible) {
-
+		Player::setVisible(visible);
 	}
 
 	bool PlayerProcess::immediatelyStart() {
-
+		return Player::immediatelyStart();
 	}
 
 	void PlayerProcess::setImmediatelyStart(bool immediatelyStartVal) {
-
+		Player::setImmediatelyStart(immediatelyStartVal);
 	}
 
 	void PlayerProcess::forceNaturalEnd() {
-
+		Player::forceNaturalEnd();
 	}
 
 	bool PlayerProcess::isForcedNaturalEnd() {
-
+		return Player::isForcedNaturalEnd();
 	}
 
 	bool PlayerProcess::setOutWindow(int windowId) {
@@ -331,11 +394,11 @@ namespace player {
 	}
 
 	void PlayerProcess::setCurrentScope(string scopeId) {
-
+		sendMsg("setcurrentscope," + scopeId + "::;::");
 	}
 
 	void PlayerProcess::timeShift(string direction) {
-
+		sendMsg("timeshift," + direction + "::;::");
 	}
 }
 }

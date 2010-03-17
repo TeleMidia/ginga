@@ -84,6 +84,8 @@ namespace player {
 			static const short TYPE_PASSIVEDEVICE         = 12;
 
 			virtual ~IPlayer(){};
+
+			virtual void setMrl(string mrl, bool visible=true)=0;
 			//virtual void setStandByState(bool standBy)=0;
 			virtual void setNotifyContentUpdate(bool notify)=0;
 			virtual void addListener(IPlayerListener* listener)=0;
@@ -91,8 +93,6 @@ namespace player {
 			virtual void notifyListeners(
 					short code, string paremeter, short type)=0;
 
-			virtual void setSurface(io::ISurface* surface)=0;
-			virtual io::ISurface* getSurface()=0;
 			virtual int64_t getVPts()=0;
 			virtual double getMediaTime()=0;
 			virtual void setMediaTime(double newTime)=0;

@@ -47,6 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "../config.h"
+
 #include "../include/ImagePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
@@ -65,14 +67,17 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 int main(int argc, char** argv, char** envp) {
 	IWindow* w;
 	IWindow* ww;
+	IWindow* www;
 	ISurface* s;
 	ILocalDeviceManager* dm;
 	IPlayer* player;
 	IPlayer* img;
+
 #if HAVE_MULTIPROCESS
 	Process* process;
-	PlayerProcess* pprocessA;
-	PlayerProcess* pprocessB;
+	IPlayer* pprocessA;
+	IPlayer* pprocessB;
+	IPlayer* pprocessC;
 #endif
 
 	setLogToNullDev();
@@ -89,7 +94,8 @@ int main(int argc, char** argv, char** envp) {
 	dm->createDevice("systemScreen(0)");
 #if HAVE_COMPSUPPORT
 	w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
-	ww = ((WindowCreator*)(cm->getObject("Window")))(-1, 90, 90, 400, 400);
+	ww = ((WindowCreator*)(cm->getObject("Window")))(-1, 90, 90, 150, 150);
+	www = ((WindowCreator*)(cm->getObject("Window")))(-1, 120, 120, 400, 400);
 #else
 	w  = new DFBWindow(10, 10, 100, 100);
 	ww = new DFBWindow(90, 90, 400, 400);
@@ -103,11 +109,13 @@ int main(int argc, char** argv, char** envp) {
 	ww->draw();
 	ww->show();
 
+	www->setCaps(w->getCap("ALPHACHANNEL"));
+	www->draw();
+	www->show();
+
 	if (argc > 1 && strcmp(argv[1], "img") == 0) {
 		player = new Player("teste");
 		img = new ImagePlayer("/root/img1.png");
-		//s = img->getSurface();
-		//w->renderFrom(s);
 		img->setOutWindow(w->getId());
 		w->validate();
 
@@ -137,24 +145,49 @@ int main(int argc, char** argv, char** envp) {
 
 	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
 #if HAVE_MULTIPROCESS
-
 		cout << "CREATING PLAYER PROCESS A " << endl;
+
+#if HAVE_COMPSUPPORT
+		pprocessA = ((PlayerCreator*)(cm->getObject("PlayerProcess")))(
+				"ImagePlayer", true);
+#else
 		pprocessA = new PlayerProcess("ImagePlayer");
-		cout << "PROCESS A CREATING PLAYER" << endl;
-		pprocessA->createPlayer("/root/img1.png", true);
-		cout << "PROCESS A SETTING OUT WINDOW" << endl;
+#endif
+
+		pprocessA->setMrl("/root/img1.png", true);
 		pprocessA->setOutWindow(w->getId());
-		cout << "PROCESS A SETTING PLAYING" << endl;
 		pprocessA->play();
-		cout << "PROCESS A SETTING WAITING USER" << endl;
 		getchar();
 
+#if HAVE_COMPSUPPORT
+		pprocessB = ((PlayerCreator*)(cm->getObject("PlayerProcess")))(
+				"AVPlayer", true);
+#else
 		pprocessB = new PlayerProcess("AVPlayer");
-		pprocessB->createPlayer("/root/vid1.mpg", true);
+#endif
+
+		pprocessB->setMrl("/root/vid1.mpg", true);
 		pprocessB->setOutWindow(ww->getId());
 		pprocessB->play();
-
 		getchar();
+
+#if HAVE_COMPSUPPORT
+		pprocessC = ((PlayerCreator*)(cm->getObject("PlayerProcess")))(
+				"LinksPlayer", true);
+#else
+		pprocessC = new PlayerProcess("LinksPlayer");
+#endif
+
+		pprocessC->setMrl("/root/pag1.html", true);
+		pprocessC->setOutWindow(www->getId());
+		pprocessC->setPropertyValue("bounds", "120,120,400,400");
+		pprocessC->play();
+		getchar();
+
+		pprocessC->stop();
+		getchar();
+		delete pprocessC;
+
 		pprocessB->stop();
 		getchar();
 		delete pprocessB;

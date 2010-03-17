@@ -168,13 +168,6 @@ namespace player {
 		}
 	}
 
-	ISurface* PlainTxtPlayer::getSurface() {
-		/*if (surface != NULL && surface->getSurface() != NULL) {
-			loadTxt();
-		}*/
-		return surface;
-	}
-
 	void PlainTxtPlayer::setContent(string content) {
 		pthread_mutex_lock(&mutex);
 

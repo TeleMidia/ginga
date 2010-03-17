@@ -136,6 +136,14 @@ namespace player {
 		Player::setNotifyContentUpdate(notify);
 	}
 
+	bool LinksPlayer::setOutWindow(int windowId) {
+		Player::setOutWindow(windowId);
+
+		if (hasBrowser && outputWindow != NULL) {
+			browserSetFlipWindow(mBrowser, outputWindow->getContent());
+		}
+	}
+
 	void LinksPlayer::setBounds(int x, int y, int w, int h) {
 		this->x = x;
 		this->y = y;
@@ -148,13 +156,13 @@ namespace player {
 	void LinksPlayer::play() {
 		IWindow* parent;
 
-		if (surface != NULL) {
+		/*if (surface != NULL) {
 			parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {
 				parent->renderFrom(surface);
 				browserSetFlipWindow(mBrowser, parent->getContent());
 			}
-		}
+		}*/
 
 		loadUrlOn(mBrowser, mrl.c_str());
 		browserShow(mBrowser);

@@ -8,8 +8,4 @@ HTOINSTALL = IApplicationPlayer.h \
 	IPlayerListener.h IProgramAV.h \
 	IShowButton.h AnimePlayer.h
 
-if MULTIPROCESS
-HTOINSTALL += IPlayerProcess.h
-endif
-
 localInclude_HEADERS = $(HTOINSTALL)

@@ -68,7 +68,7 @@ namespace process {
 		static const short PST_EXEC_SIGNAL = 2;
 
 		virtual ~IProcessListener(){};
-		virtual void receiveProcessSignal(int sigType, int pSig, void* pAddr)=0;
+		virtual void receiveProcessSignal(int sigType, int pSig, int ppid)=0;
   };
 }
 }

@@ -105,6 +105,7 @@ namespace process {
 
 	private:
 		bool isSpawnedReady;
+		bool hasCom;
 
 		bool isCheckingCom;
 		pthread_mutex_t comMutex;

@@ -85,8 +85,10 @@ namespace player {
 	private:
 		void setSurfacesParent(void* parent);
 
-	public:
+	protected:
 		io::ISurface* getSurface();
+
+	public:
 		void play();
 		void pause();
 		void resume();

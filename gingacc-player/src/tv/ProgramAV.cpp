@@ -180,7 +180,7 @@ namespace player {
 		IWindow* w;
 		string bounds = "";
 
-		s = player->getSurface();
+		s = ((Player*)player)->getSurface();
 		if (s == NULL) {
 			cout << "ProgramAV::getBounds player surface is NULL" << endl;
 			return bounds;
@@ -197,7 +197,7 @@ namespace player {
 	void ProgramAV::setBounds(IPlayer* player, string bounds) {
 		int x, y, w, h;
 		vector<string>* args;
-		ISurface* s  = player->getSurface();
+		ISurface* s  = ((Player*)player)->getSurface();
 		IWindow* win = (IWindow*)(s->getParent());
 
 		if (win == NULL) {
