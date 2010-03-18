@@ -87,6 +87,7 @@ namespace player {
 			virtual ~IPlayer(){};
 
 			virtual void setMrl(string mrl, bool visible=true)=0;
+			virtual void reset()=0;
 			virtual void rebase()=0;
 			//virtual void setStandByState(bool standBy)=0;
 			virtual void setNotifyContentUpdate(bool notify)=0;

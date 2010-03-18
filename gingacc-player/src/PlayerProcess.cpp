@@ -125,30 +125,23 @@ namespace player {
 		Player::setMrl(mrl, visible);
 	}
 
-	void PlayerProcess::rebase() {
-		cout << "PlayerProcess::rebase '" << mrl << "' call release" << endl;
+	void PlayerProcess::reset() {
 		Process::release();
 
-		cout << "PlayerProcess::rebase '" << mrl << "' call init" << endl;
 		init(objName.c_str());
-
-		cout << "PlayerProcess::rebase '" << mrl << "' call setlist" << endl;
 		setProcessListener(this);
-
-		cout << "PlayerProcess::rebase '" << mrl << "' call setmrl" << endl;
 		setMrl(mrl, visible);
-
-		cout << "PlayerProcess::rebase '" << mrl << "' call setoutwin" << endl;
 		setOutWindow(windowId);
+	}
 
-		cout << "PlayerProcess::rebase '" << mrl << "' call setscope '";
-		cout << getMediaTime() << "'" << endl;
-		setScope(scope, scopeType, getMediaTime() + 0.15, scopeEndTime);
+	void PlayerProcess::rebase() {
+		if (status == PLAY) {
+			play();
 
-		cout << "PlayerProcess::rebase '" << mrl << "' call play" << endl;
-		play();
-
-		cout << "PlayerProcess::rebase '" << mrl << "' all done!" << endl;
+		} else if (status == PAUSE) {
+			play();
+			pause();
+		}
 	}
 
 	string PlayerProcess::getAnswer(string token, int howPatient) {
@@ -264,7 +257,8 @@ namespace player {
 	}
 
 	void PlayerProcess::setMediaTime(double newTime) {
-		sendMsg("setmediatime," + itos(newTime) + "::;::");
+		sendMsg("setmediatime," + itos(newTime + 0.25) + "::;::");
+		Player::setMediaTime(newTime);
 	}
 
 	bool PlayerProcess::setKeyHandler(bool isHandler) {

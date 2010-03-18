@@ -150,6 +150,10 @@ namespace player {
 			int64_t getVPts();
 			void timeShift(string direction);
 
+		private:
+			double getCurrentMediaTime();
+
+		public:
 			double getMediaTime();
 			void setMediaTime(double pos);
 			void setStopTime(double pos);

@@ -84,6 +84,7 @@ namespace player {
 		public:
 			void receiveProcessSignal(int sigType, int pSig, int ppid);
 			void setMrl(string mrl, bool visible=true);
+			void reset();
 			void rebase();
 
 		private:

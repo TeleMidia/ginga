@@ -1211,13 +1211,17 @@ namespace player {
 		}
 	}
 
-	double AVPlayer::getMediaTime() {
+	double AVPlayer::getCurrentMediaTime() {
 		if (provider == NULL) {
 			this->wakeUp();
 			return -1;
 		}
 
 		return provider->getMediaTime();
+	}
+
+	double AVPlayer::getMediaTime() {
+		return getCurrentMediaTime();
 	}
 
 	void AVPlayer::setMediaTime(double pos) {
@@ -1293,6 +1297,9 @@ namespace player {
 			return;
 		}
 
+		if (outputWindow != NULL) {
+			outputWindow->validate();
+		}
 		provider->pause();
 		this->wakeUp();
 		/*if (hasVisual) {
@@ -1376,8 +1383,8 @@ namespace player {
 			return false;
 		}
 
-		if ((getMediaTime() <= 0 && status != PAUSE) ||
-			    (getMediaTime() >= getStopTime() &&
+		if ((getCurrentMediaTime() <= 0 && status != PAUSE) ||
+			    (getCurrentMediaTime() >= getStopTime() &&
 			    getStopTime() > 0)) {
 
 			return false;
@@ -1501,7 +1508,7 @@ namespace player {
 			}
 
 			::usleep(850000);
-			currentTime = getMediaTime();
+			currentTime = getCurrentMediaTime();
 			if (currentTime > 0) {
 				while (dur > (currentTime + 0.1)) {
 					/*cout << "AVPlayer::run dur = '" << dur;
@@ -1530,7 +1537,7 @@ namespace player {
 						break;
 					}
 
-					currentTime = getMediaTime();
+					currentTime = getCurrentMediaTime();
 					if (currentTime <= 0) {
 						break;
 					}

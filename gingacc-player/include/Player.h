@@ -116,6 +116,7 @@ namespace player {
 			virtual ~Player();
 
 			virtual void setMrl(string mrl, bool visible=true);
+			virtual void reset(){};
 			virtual void rebase(){};
 			//virtual void setStandByState(bool standBy){};
 			virtual void setNotifyContentUpdate(bool notify);

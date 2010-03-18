@@ -261,24 +261,16 @@ namespace io {
 	}
 
 	void DFBWindow::setBounds(int posX, int posY, int w, int h) {
-		if (win == NULL) {
-			this->x = posX;
-			this->y = posY;
-			this->width = w;
-			this->height = h;
-			return;
-		}
-
-		this->x = posX;
-		this->y = posY;
-		this->width = w;
+		this->x      = posX;
+		this->y      = posY;
+		this->width  = w;
 		this->height = h;
 
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->SetBounds(win, x, y, width, height));
+			unprotectedValidate();
 		}
-		unprotectedValidate();
 		unlock();
 	}
 
@@ -340,12 +332,6 @@ namespace io {
 	}
 
 	void DFBWindow::moveTo(int posX, int posY) {
-		//wclog << this << ">> DFBWindow::moveTo" << endl;
-
-		if (win == NULL) {
-			return;
-		}
-
 		this->x = posX;
 		this->y = posY;
 
@@ -357,11 +343,6 @@ namespace io {
 	}
 
 	void DFBWindow::resize(int width, int height) {
-		//wclog << this << ">> DFBWindow::resize" << endl;
-		if (win == NULL) {
-			return;
-		}
-
 		this->width = width;
 		this->height = height;
 
@@ -403,6 +384,7 @@ namespace io {
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->Raise(win));
+			unprotectedValidate();
 		}
 		unlock();
 	}
@@ -411,6 +393,7 @@ namespace io {
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->Lower(win));
+			unprotectedValidate();
 		}
 		unlock();
 	}
@@ -428,6 +411,7 @@ namespace io {
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->LowerToBottom(win));
+			unprotectedValidate();
 		}
 		unlock();
 	}
