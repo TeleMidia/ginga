@@ -149,6 +149,7 @@ namespace player {
 			double getTotalMediaTime();
 			int64_t getVPts();
 			void timeShift(string direction);
+
 			double getMediaTime();
 			void setMediaTime(double pos);
 			void setStopTime(double pos);

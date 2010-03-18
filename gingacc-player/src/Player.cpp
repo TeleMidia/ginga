@@ -81,6 +81,7 @@ namespace player {
 		this->status              = STOP;
 		this->forcedNaturalEnd    = false;
 		this->scope               = "";
+		this->scopeType           = -1;
 		this->scopeInitTime       = -1;
 		this->scopeEndTime        = -1;
 		this->properties          = new map<string, string>;
@@ -314,9 +315,10 @@ namespace player {
 			string scope, short type, double initTime, double endTime) {
 
 		cout << "Player::setScope '" << scope << "'" << endl;
-		this->scope = scope;
+		this->scope         = scope;
+		this->scopeType     = type;
 		this->scopeInitTime = initTime;
-		this->scopeEndTime = endTime;
+		this->scopeEndTime  = endTime;
 	}
 
 	void Player::play() {

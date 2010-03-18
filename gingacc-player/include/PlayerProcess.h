@@ -53,6 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "Player.h"
 
 #include "system/process/Process.h"
+#include "system/process/IProcessListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 
 namespace br {
@@ -61,7 +62,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class PlayerProcess : public Player, public Process {
+	class PlayerProcess :
+			public Player, public Process, public IProcessListener {
+
 		private:
 			map<string, string>* msgs;
 			pthread_mutex_t msgMutex;
@@ -69,12 +72,19 @@ namespace player {
 			bool isWaitingAns;
 			pthread_mutex_t ansMutex;
 			pthread_cond_t ansCond;
+			int windowId;
 
 		public:
 			PlayerProcess(const char* objectName);
 			virtual ~PlayerProcess();
 
+		private:
+			void init(const char* objName);
+
+		public:
+			void receiveProcessSignal(int sigType, int pSig, int ppid);
 			void setMrl(string mrl, bool visible=true);
+			void rebase();
 
 		private:
 			string getAnswer(string token, int howPatient);

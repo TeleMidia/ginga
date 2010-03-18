@@ -400,27 +400,36 @@ namespace io {
 	}
 
 	void DFBWindow::raise() {
+		lock();
 		if (win != NULL) {
 			DFBCHECK(win->Raise(win));
 		}
+		unlock();
 	}
 
 	void DFBWindow::lower() {
+		lock();
 		if (win != NULL) {
 			DFBCHECK(win->Lower(win));
 		}
+		unlock();
 	}
 
 	void DFBWindow::raiseToTop() {
+		lock();
 		if (win != NULL) {
 			DFBCHECK(win->RaiseToTop(win));
+			unprotectedValidate();
 		}
+		unlock();
 	}
 
 	void DFBWindow::lowerToBottom() {
+		lock();
 		if (win != NULL) {
 			DFBCHECK(win->LowerToBottom(win));
 		}
+		unlock();
 	}
 
 	void DFBWindow::setCurrentTransparency(int alpha) {

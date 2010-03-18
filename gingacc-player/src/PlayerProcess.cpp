@@ -72,13 +72,14 @@ namespace player {
 		pthread_mutex_init(&ansMutex, NULL);
 		pthread_cond_init(&ansCond, NULL);
 
-		setProcessInfo("/usr/local/etc/ginga/tools/loaders/players", objName);
-		run();
-		checkCom();
+		init(objName);
+		setProcessListener(this);
 	}
 
 	PlayerProcess::~PlayerProcess() {
-		cout << "PlayerProcess::~PlayerProcess '" << mrl << "'" << endl;
+		cout << "PlayerProcess::~PlayerProcess(" << this;
+		cout << ") => '" << mrl << "'" << endl;
+
 		reader = false;
 
 		if (isWaitingAns) {
@@ -99,6 +100,19 @@ namespace player {
 		pthread_mutex_destroy(&msgMutex);
 	}
 
+	void PlayerProcess::init(const char* objName) {
+		setProcessInfo(
+				"/usr/local/etc/ginga/tools/loaders/players",
+				objName);
+
+		run();
+		checkCom();
+	}
+
+	void PlayerProcess::receiveProcessSignal(int sigType, int pSig, int ppid) {
+		notifyListeners(PL_NOTIFY_STOP, itos(pSig), TYPE_SIGNAL);
+	}
+
 	void PlayerProcess::setMrl(string mrl, bool visible) {
 		string strbool = "true";
 		if (!visible) {
@@ -106,8 +120,35 @@ namespace player {
 		}
 
 		cout << "PlayerProcess::setMrl '" << mrl << "'" << endl;
+
 		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
 		Player::setMrl(mrl, visible);
+	}
+
+	void PlayerProcess::rebase() {
+		cout << "PlayerProcess::rebase '" << mrl << "' call release" << endl;
+		Process::release();
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call init" << endl;
+		init(objName.c_str());
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call setlist" << endl;
+		setProcessListener(this);
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call setmrl" << endl;
+		setMrl(mrl, visible);
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call setoutwin" << endl;
+		setOutWindow(windowId);
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call setscope '";
+		cout << getMediaTime() << "'" << endl;
+		setScope(scope, scopeType, getMediaTime() + 0.15, scopeEndTime);
+
+		cout << "PlayerProcess::rebase '" << mrl << "' call play" << endl;
+		play();
+
+		cout << "PlayerProcess::rebase '" << mrl << "' all done!" << endl;
 	}
 
 	string PlayerProcess::getAnswer(string token, int howPatient) {
@@ -163,16 +204,13 @@ namespace player {
 		vector<string>* vMsg;
 		vector<string>::iterator i;
 
-		cout << "PlayerProcess::messageReceived 1 '" << msg << "'" << endl;
 		if (msg.find("=") != std::string::npos) {
 			key   = msg.substr(0, msg.find_first_of("="));
 			value = msg.substr(
 					msg.find_first_of("=") + 1,
 					msg.length() - msg.find_first_of("=") + 1);
 
-			cout << "PlayerProcess::messageReceived 2 '" << key << "'" << endl;
 			pthread_mutex_lock(&msgMutex);
-			cout << "PlayerProcess::messageReceived '" << key << "'" << endl;
 			(*msgs)[key] = value;
 			pthread_mutex_unlock(&msgMutex);
 			if (isWaitingAns) {
@@ -222,16 +260,7 @@ namespace player {
 	}
 
 	double PlayerProcess::getMediaTime() {
-		string ans;
-
-		sendMsg("getmediatime::;::");
-
-		ans = getAnswer("mediatime", 1000);
-		if (ans == "") {
-			return 0.0;
-		}
-
-		return stof(ans);
+		return Player::getMediaTime();
 	}
 
 	void PlayerProcess::setMediaTime(double newTime) {
@@ -262,26 +291,33 @@ namespace player {
 				itos(type)  + "," +
 				itos(begin) + "," +
 				itos(end)   + "::;::");
+
+		Player::setScope(scope, type, begin, end);
 	}
 
 	void PlayerProcess::play() {
 		sendMsg("play::;::");
+		Player::play();
 	}
 
 	void PlayerProcess::stop() {
 		sendMsg("stop::;::");
+		Player::stop();
 	}
 
 	void PlayerProcess::abort() {
 		sendMsg("abort::;::");
+		Player::abort();
 	}
 
 	void PlayerProcess::pause() {
 		sendMsg("pause::;::");
+		Player::pause();
 	}
 
 	void PlayerProcess::resume() {
 		sendMsg("resume::;::");
+		Player::resume();
 	}
 
 	string PlayerProcess::getPropertyValue(string name) {
@@ -370,11 +406,13 @@ namespace player {
 	}
 
 	bool PlayerProcess::setOutWindow(int windowId) {
+		this->windowId = windowId;
 		sendMsg("setoutwindow," + itos(windowId) + "::;::");
+		return true;
 	}
 
 	IPlayer* PlayerProcess::getSelectedPlayer() {
-
+		return NULL;
 	}
 
 	void PlayerProcess::setPlayerMap(map<string, IPlayer*>* objs) {

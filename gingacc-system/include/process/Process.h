@@ -89,7 +89,6 @@ namespace process {
 		char** argv;
 		char** envp;
 		string processUri;
-		string objName;
 		posix_spawnattr_t spawnAttr;
 		posix_spawn_file_actions_t fileActions;
 
@@ -101,6 +100,7 @@ namespace process {
 		int rFd;
 
 	protected:
+		string objName;
 		bool reader;
 
 	private:
@@ -118,6 +118,10 @@ namespace process {
 		Process(char** argv);
 		virtual ~Process();
 
+	protected:
+		void release();
+
+	public:
 		void setProcessInfo(string processUri, string objName);
 		static int createShm(string shmName, bool truncateFile, int shmSize);
 		void checkCom();

@@ -70,7 +70,7 @@ namespace process {
 		this->processUri    = processUri;
 		this->processStatus = PST_NULL;
 		this->sigListener   = NULL;
-		this->reader        = true;
+		this->reader        = false;
 		this->wFd           = -1;
 		this->rFd           = -1;
 		this->hasCom        = false;
@@ -86,16 +86,33 @@ namespace process {
 	}
 
 	Process::~Process() {
-		reader = false;
+		cout << "Process::~Process(" << this;
+		cout << ")" << endl;
 
-		tryCom();
-		forceKill();
+		sigListener = NULL;
+
+		release();
 
 		pthread_mutex_destroy(&comMutex);
 		pthread_cond_destroy(&comCond);
 
 		posix_spawnattr_destroy(&spawnAttr);
 		posix_spawn_file_actions_destroy(&fileActions);
+	}
+
+	void Process::release() {
+		tryCom();
+		forceKill();
+
+		hasCom         = false;
+		isSpawnedReady = false;
+		processStatus  = PST_NULL;
+
+		close(wFd);
+		close(rFd);
+
+		unlink(wCom.c_str());
+		unlink(rCom.c_str());
 	}
 
 	void Process::setProcessInfo(string processUri, string objName) {
@@ -244,6 +261,7 @@ namespace process {
 					envp);
 
 			if (rspawn == 0) {
+				reader        = true;
 				processStatus = PST_RUNNING;
 				pthread_create(&threadId_, 0, Process::detachWait, this);
 				pthread_detach(threadId_);
@@ -257,8 +275,9 @@ namespace process {
 	void Process::forceKill() {
 		int rkill;
 
-		reader = false;
-		rkill  = kill(pid, SIGKILL);
+		sigListener = NULL;
+		reader      = false;
+		rkill       = kill(pid, SIGKILL);
 		if (rkill != 0) {
 			perror("forceKill");
 		}
@@ -274,22 +293,38 @@ namespace process {
 		int rval;
 		Process* process = (Process*)ptr;
 
-		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
-		if (rval < 0) {
-			cout << "Process::createFiles Warning! ";
-			perror("wCom");
-			cout << "can't create wCom pipe '" << process->wCom << "'";
-			cout << endl;
-			return NULL;
+		cout << "Process::createFiles(" << process << ")";
+		cout << " creating wCom: '" << process->wCom << "'" << endl;
+		if (fileExists(process->wCom)) {
+			cout << "Process::createFiles(" << process << ") File '";
+			cout << process->wCom << "' already exists" << endl;
+
+		} else {
+			rval = mkfifo(process->wCom.c_str(), S_IFIFO);
+			if (rval < 0 && !fileExists(process->wCom)) {
+				cout << "Process::createFiles Warning! ";
+				perror("wCom");
+				cout << "can't create wCom pipe '" << process->wCom << "'";
+				cout << endl;
+				return NULL;
+			}
 		}
 
-		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
-		if (rval < 0) {
-			cout << "Process::createFiles Warning! ";
-			perror("rCom");
-			cout << "can't create rCom pipe '" << process->rCom << "'";
-			cout << endl;
-			return NULL;
+		cout << "Process::createFiles(" << process << ")";
+		cout << " creating rCom: '" << process->rCom << "'" << endl;
+		if (fileExists(process->rCom)) {
+			cout << "Process::createFiles(" << process << ") File '";
+			cout << process->rCom << "' already exists" << endl;
+
+		} else {
+			rval = mkfifo(process->rCom.c_str(), S_IFIFO);
+			if (rval < 0) {
+				cout << "Process::createFiles Warning! ";
+				perror("rCom");
+				cout << "can't create rCom pipe '" << process->rCom << "'";
+				cout << endl;
+				return NULL;
+			}
 		}
 
 		process->hasCom = true;
@@ -312,10 +347,14 @@ namespace process {
 		int ppid;
 		IProcessListener* listener;
 
+		ppid = process->pid;
+		while (true) {
+			wpid = waitpid(ppid, &status, WUNTRACED);
+			if (wpid == ppid) {
+				break;
+			}
+		}
 		listener = process->sigListener;
-		ppid     = process->pid;
-
-		wpid = waitpid(ppid, &status, WUNTRACED);
 
         if (WIFEXITED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;

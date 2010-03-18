@@ -71,21 +71,23 @@ namespace core {
 namespace player {
 	class IPlayer {
 		public:
-			static const short PL_NOTIFY_START            =  0;
-			static const short PL_NOTIFY_STOP             =  1;
-			static const short PL_NOTIFY_PAUSE            =  2;
-			static const short PL_NOTIFY_RESUME           =  3;
-			static const short PL_NOTIFY_ABORT            =  4;
-			static const short PL_NOTIFY_NCLEDIT          =  5;
-			static const short PL_NOTIFY_UPDATECONTENT    =  6;
+			static const short PL_NOTIFY_START         =  0;
+			static const short PL_NOTIFY_STOP          =  1;
+			static const short PL_NOTIFY_PAUSE         =  2;
+			static const short PL_NOTIFY_RESUME        =  3;
+			static const short PL_NOTIFY_ABORT         =  4;
+			static const short PL_NOTIFY_NCLEDIT       =  5;
+			static const short PL_NOTIFY_UPDATECONTENT =  6;
 
-			static const short TYPE_PRESENTATION          = 10;
-			static const short TYPE_ATTRIBUTION           = 11;
-			static const short TYPE_PASSIVEDEVICE         = 12;
+			static const short TYPE_PRESENTATION       = 10;
+			static const short TYPE_ATTRIBUTION        = 11;
+			static const short TYPE_SIGNAL             = 12;
+			static const short TYPE_PASSIVEDEVICE      = 13;
 
 			virtual ~IPlayer(){};
 
 			virtual void setMrl(string mrl, bool visible=true)=0;
+			virtual void rebase()=0;
 			//virtual void setStandByState(bool standBy)=0;
 			virtual void setNotifyContentUpdate(bool notify)=0;
 			virtual void addListener(IPlayerListener* listener)=0;

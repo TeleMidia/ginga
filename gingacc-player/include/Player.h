@@ -107,6 +107,7 @@ namespace player {
 			bool forcedNaturalEnd;
 			bool notifyContentUpdate;
 			string scope;
+			short scopeType;
 			double scopeInitTime;
 			double scopeEndTime;
 
@@ -115,6 +116,7 @@ namespace player {
 			virtual ~Player();
 
 			virtual void setMrl(string mrl, bool visible=true);
+			virtual void rebase(){};
 			//virtual void setStandByState(bool standBy){};
 			virtual void setNotifyContentUpdate(bool notify);
 			virtual void addListener(IPlayerListener* listener);
