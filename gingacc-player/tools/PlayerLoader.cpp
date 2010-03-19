@@ -88,6 +88,9 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		dm     = NULL;
 		player = NULL;
 
+		cout << "PlayerSpawnedProcess(" << objectName << ") creating GFX";
+		cout << " stuffs" << endl;
+
 #if HAVE_COMPSUPPORT
 		cm = IComponentManager::getCMInstance();
 		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
@@ -97,6 +100,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 #endif
 
 		sendMessage("ready");
+		cout << "PlayerSpawnedProcess(" << objectName << ") READY" << endl;
 	}
 
 	void updateStatus(
@@ -238,15 +242,15 @@ int main(int argc, char *argv[], char* envp[]) {
 	string rName, wName, objName;
 	PlayerSpawnedProcess* psp;
 
+	setLogToNullDev();
+
 	objName = argv[0];
 	wName   = argv[1];
 	rName   = argv[2];
 
-	/*cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
+	cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
 	cout << "PlayerLoader::main wName = '" << wName << "'" << endl;
-	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;*/
-
-	setLogToNullDev();
+	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;
 
 	psp = new PlayerSpawnedProcess(objName, wName, rName);
     psp->waitSignal();

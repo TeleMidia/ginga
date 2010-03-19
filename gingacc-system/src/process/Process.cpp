@@ -261,6 +261,8 @@ namespace process {
 					envp);
 
 			if (rspawn == 0) {
+				cout << "Process::run process '";
+				cout << processUri << "' successfully spawned" << endl;
 				reader        = true;
 				processStatus = PST_RUNNING;
 				pthread_create(&threadId_, 0, Process::detachWait, this);
@@ -268,6 +270,10 @@ namespace process {
 
 				pthread_create(&threadIdR_, 0, Process::detachReceive, this);
 				pthread_detach(threadIdR_);
+
+			} else {
+				cout << "Process::run Warning! Can't spawn process '";
+				cout << processUri << "'" << endl;
 			}
 		}
 	}
@@ -298,16 +304,16 @@ namespace process {
 		if (fileExists(process->wCom)) {
 			cout << "Process::createFiles(" << process << ") File '";
 			cout << process->wCom << "' already exists" << endl;
+			unlink(process->wCom.c_str());
+		}
 
-		} else {
-			rval = mkfifo(process->wCom.c_str(), S_IFIFO);
-			if (rval < 0 && !fileExists(process->wCom)) {
-				cout << "Process::createFiles Warning! ";
-				perror("wCom");
-				cout << "can't create wCom pipe '" << process->wCom << "'";
-				cout << endl;
-				return NULL;
-			}
+		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
+		if (rval < 0 && !fileExists(process->wCom)) {
+			cout << "Process::createFiles Warning! ";
+			perror("wCom");
+			cout << "can't create wCom pipe '" << process->wCom << "'";
+			cout << endl;
+			return NULL;
 		}
 
 		cout << "Process::createFiles(" << process << ")";
@@ -315,16 +321,17 @@ namespace process {
 		if (fileExists(process->rCom)) {
 			cout << "Process::createFiles(" << process << ") File '";
 			cout << process->rCom << "' already exists" << endl;
+			unlink(process->rCom.c_str());
 
-		} else {
-			rval = mkfifo(process->rCom.c_str(), S_IFIFO);
-			if (rval < 0) {
-				cout << "Process::createFiles Warning! ";
-				perror("rCom");
-				cout << "can't create rCom pipe '" << process->rCom << "'";
-				cout << endl;
-				return NULL;
-			}
+		}
+
+		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
+		if (rval < 0) {
+			cout << "Process::createFiles Warning! ";
+			perror("rCom");
+			cout << "can't create rCom pipe '" << process->rCom << "'";
+			cout << endl;
+			return NULL;
 		}
 
 		process->hasCom = true;

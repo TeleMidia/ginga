@@ -257,7 +257,12 @@ namespace player {
 	}
 
 	void PlayerProcess::setMediaTime(double newTime) {
-		sendMsg("setmediatime," + itos(newTime + 0.25) + "::;::");
+		if (status == PLAY) {
+			sendMsg("setmediatime," + itos(newTime + 0.25) + "::;::");
+
+		} else {
+			sendMsg("setmediatime," + itos(newTime) + "::;::");
+		}
 		Player::setMediaTime(newTime);
 	}
 
