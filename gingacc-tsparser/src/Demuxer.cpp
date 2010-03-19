@@ -407,8 +407,9 @@ namespace tsparser {
 			} else if (stFilters->count(debugDest) != 0) {
 				stFilters->find(debugDest)->second->receiveTSPacket(packet);
 			}
+		}
 
-		} else if (pesFilters->count(0) != 0) {
+		if (pesFilters->count(0) != 0) {
 			(*pesFilters)[0]->receiveTSPacket(packet);
 		}
 

@@ -78,6 +78,7 @@ namespace tsparser {
 	}
 
 	void PipeFilter::addPid(int pid) {
+		cout << "PipeFilter::addPid '" << pid << "'" << endl;
 		lock();
 		pids->insert(pid);
 		unlock();
@@ -99,14 +100,18 @@ namespace tsparser {
 
 	void PipeFilter::receiveTSPacket(ITSPacket* pack) {
 		int ret;
+		int ppid;
 		char packData[ITSPacket::TS_PACKET_SIZE];
 
+		ppid = pack->getPid();
 		while (!fifoCreated) {
 			::usleep(10000);
 		}
 
 		lock();
-		if (pids->count(pack->getPid()) == 0) {
+		if (pids->count(ppid) == 0) {
+			cout << "PipeFilter::receiveTSPacket packet '" << ppid;
+			cout << "' discarded by filter" << endl;
 			unlock();
 			return;
 		}
