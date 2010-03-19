@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "../include/PSIFilter.h"
 #include "../include/PesFilter.h"
 
+#include "../config.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -650,11 +652,11 @@ namespace tsparser {
 		}
 
 		if (type == PFT_DEFAULTTS) {
-			if (ni->getCaps() & DPC_CAN_FILTERPID) {
-				vPid = pat->getDefaultMainVideoPid();
-				aPid = pat->getDefaultMainAudioPid();
-				pPid = pat->getDefaultProgramPid();
+			vPid = pat->getDefaultMainVideoPid();
+			aPid = pat->getDefaultMainAudioPid();
+			pPid = pat->getDefaultProgramPid();
 
+			if (ni->getCaps() & DPC_CAN_FILTERPID) {
 				cout << "Demuxer::addPesFilter aPid = '" << aPid << "'";
 				cout << " vPid = '" << vPid << "'" << endl;
 
@@ -676,6 +678,11 @@ namespace tsparser {
 
 			} else {
 				if (pesFilters->find(0) == pesFilters->end()) {
+					filter->addPid(0x00);
+					filter->addPid(pPid);
+					filter->addPid(aPid);
+					filter->addPid(vPid);
+
 					(*pesFilters)[0] = filter;
 
 				} else {

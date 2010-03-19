@@ -1395,8 +1395,6 @@ namespace player {
 	}
 
 	bool AVPlayer::setOutWindow(int windowId) {
-		Player::setOutWindow(windowId);
-
 		if (mainAV) {
 #if HAVE_COMPSUPPORT
 			win = ((WindowCreator*)(cm->getObject("Window")))(
@@ -1410,6 +1408,9 @@ namespace player {
 				Thread::start();
 			}
 			return true;
+
+		} else {
+			Player::setOutWindow(windowId);
 		}
 		return false;
 	}

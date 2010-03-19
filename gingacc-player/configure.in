@@ -133,9 +133,9 @@ AC_ARG_ENABLE(ncletplayer,
 
 if test x$enable_ncletplayer = xyes; then
   AC_HAVE_LIBRARY(jni, [
-      AC_CHECK_HEADER(SAVIGNON_PATH!!!!/jni.h,
+      AC_CHECK_HEADER(jni.h,
         ncletplayer=yes
-        NCLET_LIBS='-ljni -lOUTRAS_LIBS_SAVIGNON'
+        NCLET_LIBS='-ljni'
         NCLET_HEADERS='NCLetPlayer.h'
         AC_DEFINE(HAVE_NCLET, 1, [Def to 1 if you have nclet player support.]),
         AC_MSG_WARN([
@@ -143,7 +143,7 @@ if test x$enable_ncletplayer = xyes; then
     ], [
       AC_MSG_WARN([
 *** jni not found -- nclet player support will not be built.])
-    ], -lm -lSAVIGNON_OUTRAS_DEPENDENCIAS)
+    ], -lm)
 fi
 
 AM_CONDITIONAL(NCLET, test x$ncletplayer = xyes)

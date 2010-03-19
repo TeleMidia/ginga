@@ -145,24 +145,7 @@ AM_CONDITIONAL([FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AC_SUBST(FUSIONSOUND_LIBS)
 
 
-################################
-# Checking dvb video for linux #
-################################
-hasdvc=yes
-
-AC_CHECK_HEADER(
-   [/usr/local/include/dvc/dvc.h],
-   AC_DEFINE(HAVE_DVCLIB, 1, [Def to 1 if you have static dvc support.])
-   AC_MSG_RESULT([*** DVC lib support will be built.])
-   DVC_LIBS='/usr/src/ginga/deps/DirectFB-extra/lib/dvc/libdvc.la'
-   hasdvc=yes,
-   AC_DEFINE(HAVE_DVCLIB, 0, [Def to 0 if you don't have static dvc support.])
-   AC_MSG_WARN([*** DVC lib support will not be built.])
-   DVC_LIBS=
-   hasdvc=no
-)
-
-AC_SUBST(DVC_LIBS)
+DVC_LIBS=
 
 ########################
 # XINE MAIN AV Support #
@@ -186,6 +169,7 @@ if test x$enable_xineprovider = xno; then
 else
    AC_MSG_RESULT([*** Ginga Xine provider support will be built.])
    AC_DEFINE(HAVE_XINEPROVIDER, 1, [Def to 1 if you don't have ginga xine provider support.])
+   DVC_LIBS='/usr/src/ginga/deps/DirectFB-extra/lib/dvc/libdvc.la'
 fi
 
 AM_CONDITIONAL([XINEPROVIDER], [test x$enable_xineprovider = xyes])
@@ -205,7 +189,7 @@ AC_CHECK_HEADER(
     enable_ffmpegprovider=no
 )
 
-if test "x$enable_ffmpeg" = "xyes"; then
+if test "x$enable_ffmpegprovider" = "xyes"; then
     AC_MSG_CHECKING([for libavcodec/libavformat])
     if $PKG_CONFIG libavcodec libavformat; then
         FFMPEG_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat`
@@ -223,11 +207,13 @@ if test x$enable_ffmpegprovider = xno; then
 
 else
    AC_MSG_RESULT([*** Ginga FFmpeg provider support will be built.])
-   AC_DEFINE(HAVE_FFMPEGPROVIDER, 1, [Def to 1 if you don't have ginga ffmpeg provider support.])
+   AC_DEFINE(HAVE_FFMPEGPROVIDER, 1, [Def to 1 if you have ginga ffmpeg provider support.])
+   DVC_LIBS='/usr/src/ginga/deps/DirectFB-extra/lib/dvc/libdvc.la'
 fi
 
 AC_SUBST(FFMPEG_CFLAGS)
 AC_SUBST(FFMPEG_LIBS)
+AC_SUBST(DVC_LIBS)
 AM_CONDITIONAL([FFMPEGPROVIDER], [test x$enable_ffmpegprovider = xyes])
 
 ############################################

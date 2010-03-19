@@ -118,7 +118,6 @@ int main(int argc, char** argv) {
 		} else if (strcmp(argv[1], "ffmpeg") == 0) {
 			cout << "System test will test ffmpeg video provider" << endl;
 #if HAVE_FFMPEGPROVIDER
-#if HAVE_DVCLIB
 			ffmpegProvider = new FFmpegVideoProvider(argv[2]);
 			s = ffmpegProvider->getPerfectSurface();
 			s->setParent(w);
@@ -127,7 +126,6 @@ int main(int argc, char** argv) {
 			ffmpegProvider->checkVideoResizeEvent(s);
 			ffmpegProvider->setSoundLevel(100);
 			ffmpegProvider->playOver(s, true);
-#endif
 #endif
 		}
 	}

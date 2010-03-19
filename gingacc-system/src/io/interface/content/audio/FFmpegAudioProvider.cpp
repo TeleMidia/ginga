@@ -48,7 +48,6 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "../../../../../config.h"
-#if HAVE_DVCLIB
 
 #include "../../../../../include/io/LocalDeviceManager.h"
 #include "../../../../../include/io/interface/content/audio/FFmpegAudioProvider.h"
@@ -1203,5 +1202,3 @@ extern "C" void destroyFFmpegAudioProvider(
 
 	delete cmp;
 }
-
-#endif /*HAVE_DVCLIB*/

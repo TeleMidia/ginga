@@ -88,9 +88,8 @@ namespace tuning {
 			int rval = read(fileDescriptor, (void*)buff, BUFFSIZE);
 			if (rval < BUFFSIZE) {
 				printf("File is over, set file to begin again!\n");
-				lseek(fileDescriptor,0,SEEK_SET);
-			} else
-				lseek(fileDescriptor,-1,SEEK_CUR);
+				lseek(fileDescriptor, 0, SEEK_SET);
+			}
 			return rval;
 		}
 

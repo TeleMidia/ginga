@@ -65,11 +65,22 @@ namespace tsparser {
 		this->fifoCreated     = false;
 		this->dvrReader       = false;
 		this->dvrName         = "";
+		this->pids            = new set<int>;
+
 		Thread::start();
 	}
 
 	PipeFilter::~PipeFilter() {
+		if (pids != NULL) {
+			delete pids;
+			pids = NULL;
+		}
+	}
 
+	void PipeFilter::addPid(int pid) {
+		lock();
+		pids->insert(pid);
+		unlock();
 	}
 
 	bool PipeFilter::hasData() {
@@ -93,6 +104,13 @@ namespace tsparser {
 		while (!fifoCreated) {
 			::usleep(10000);
 		}
+
+		lock();
+		if (pids->count(pack->getPid()) == 0) {
+			unlock();
+			return;
+		}
+		unlock();
 
 		pack->getPacketData(packData);
 		if (pipeFd > 0) {

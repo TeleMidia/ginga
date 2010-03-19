@@ -112,11 +112,7 @@ namespace tuning {
 			return;
 		}
 
-		if (provider->getCaps() & DPC_CAN_FILTERPID &&
-				provider->getCaps() & DPC_CAN_FILTERTID) {
-
-			provider->attachFilter(filter);
-		}
+		provider->attachFilter(filter);
 	}
 
 	void NetworkInterface::removeFilter(IFrontendFilter* filter) {

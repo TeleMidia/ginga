@@ -64,6 +64,8 @@ namespace tsparser {
 	class ITSFilter {
 		public:
 			virtual ~ITSFilter(){};
+
+			virtual void addPid(int pid)=0;
 			virtual void receiveTSPacket(ITSPacket* pack)=0;
 
 			virtual void receiveSection(

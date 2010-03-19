@@ -51,7 +51,6 @@ http://www.telemidia.puc-rio.br
 #define FFmpegVideoProvider_H_
 
 #include "../../../../../config.h"
-#if HAVE_DVCLIB
 
 #include "../IContinuousMediaProvider.h"
 #include "../audio/FusionSoundAudioProvider.h"
@@ -281,5 +280,4 @@ namespace io {
 }
 }
 
-#endif /*HAVE_DVCLIB*/
 #endif /*FFmpegVideoProvider_H_*/

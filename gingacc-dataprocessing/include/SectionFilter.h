@@ -99,6 +99,8 @@ namespace dataprocessing {
 			SectionFilter();
 			virtual ~SectionFilter();
 
+			void addPid(int pid){};
+
 		private:
 			void ignore(ITransportSection* section);
 			void process(ITransportSection* section);
