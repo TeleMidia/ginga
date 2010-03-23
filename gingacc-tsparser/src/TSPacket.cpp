@@ -78,7 +78,9 @@ namespace tsparser {
 	// Create TSPacket.  Returs true if successful, otherwise returns
 	// false.
 	bool TSPacket::create(char* data) {
-		unsigned int payload_offset = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
+		unsigned int aflen;
+
+		payloadOffset = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
 
 		// Header data.
 		if ((syncByte = (data[0] & 0xFF)) != TS_PACKET_SYNC_BYTE) {
@@ -103,29 +105,26 @@ namespace tsparser {
 
 		// Adaptation field followed by payload.
 		} else if (getAdaptationFieldControl() == ADAPT_PAYLOAD) {
-
 			// Specifies the number of bytes in the adaptationField
 			// following this byte.  Maximum value 182 + 1
 			// (+1 because of the adaptationFieldLength itself).
-			unsigned int aflen = (data[4] & 0xFF) + 1;
+			aflen = (data[4] & 0xFF) + 1;
 			if (aflen < 0 || aflen > 183) {
 				cout << "TSPacket::create: Warning! ";
 				cout << "Invalid adaptationFieldLength: ";
 				cout << aflen << endl;
 				return false;
 			}
-			payload_offset += aflen;
+			payloadOffset += aflen;
 
 		// Adaptation field only.
 		} else if (getAdaptationFieldControl() == NO_PAYLOAD) {
 			// Nothing to do.
-			//cout << "TSPacket::create: Warning! NO_PAYLOAD" << endl;
-			return false;
 		}
 
 		// Update pointerField (the first payload byte).
 		if (getStartIndicator()) {
-			pointerField = (data[payload_offset] & 0xFF);
+			pointerField = (data[payloadOffset] & 0xFF);
 
 			// TODO: Pat, Pmp and SectionFilter code
 			// cannot handle pointerField as the first payload
@@ -133,14 +132,14 @@ namespace tsparser {
 			// pointerField from the payload before this ``bad''
 			// code is called.  This is only a workaround, the real
 			// solution is fix all external code.
-			payload_offset ++;
+			payloadOffset++;
 		}
 
-		payloadSize = TS_PACKET_SIZE - payload_offset;
+		payloadSize = TS_PACKET_SIZE - payloadOffset;
 		memcpy(
 				(void*)(&payload[0]),
-				(void*)(&data[payload_offset]),
-				payloadSize);
+				(void*)(&data[TS_PACKET_SIZE - TS_PAYLOAD_SIZE]),
+				TS_PAYLOAD_SIZE);
 
 		return true;
 	}
@@ -168,13 +167,13 @@ namespace tsparser {
 		memcpy(
 				(void*)(&streamData[payload_offset]),
 				(void*)(&payload[0]),
-				payloadSize);
+				TS_PAYLOAD_SIZE);
 	}
 
 	void TSPacket::getPayload(char streamData[184]) {
 		memcpy(
 				(void*)(&streamData[0]),
-				(void*)(&payload[0]),
+				(void*)(&payload[payloadOffset - 4]),
 				payloadSize);
 	}
 

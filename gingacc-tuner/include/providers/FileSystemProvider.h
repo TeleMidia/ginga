@@ -62,6 +62,7 @@ extern "C" {
 #include "IDataProvider.h"
 
 #include <string>
+#include <iostream>
 using namespace std;
 
 namespace br {
@@ -86,26 +87,12 @@ namespace tuning {
 			short getCaps();
 			bool tune();
 
-			IChannel* getCurrentChannel() {
-				return NULL;
-			}
-
-			bool getSTCValue(uint64_t* stc, int* valueType) {
-				return false;
-			}
-
-			bool changeChannel(int factor) {
-				return false;
-			}
-
-			int createPesFilter(int pid, int pesType, bool compositeFiler) {
-				return -1;
-			}
-
-			string getPesFilterOutput() {
-				return "";
-			}
-
+			IChannel* getCurrentChannel();
+			bool getSTCValue(uint64_t* stc, int* valueType);
+			bool changeChannel(int factor);
+			bool setChannel(string channelValue);
+			int createPesFilter(int pid, int pesType, bool compositeFiler);
+			string getPesFilterOutput();
 			void close();
 			int receiveData(char* buff);
 	};

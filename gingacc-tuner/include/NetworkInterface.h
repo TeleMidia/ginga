@@ -98,6 +98,7 @@ namespace tuning {
 			bool hasSignal();
 			bool tune();
 			bool changeChannel(int factor);
+			bool setChannel(string channelValue);
 			bool getSTCValue(uint64_t* stc, int* valueType);
 			IChannel* getCurrentChannel();
 			int createPesFilter(int pid, int pesType, bool compositeFiler);

@@ -168,10 +168,10 @@ namespace dataprocessing {
 		unsigned int counter;
 		int last;
 
-		if (pack->getStartIndicator()) {
+		/*if (pack->getStartIndicator()) {
 			cout << "SectionFilter::receiveTSPacket number '" << recvPack;
 			cout << "'" << endl;
-		}
+		}*/
 		recvPack++;
 
 		counter               = pack->getContinuityCounter();
@@ -331,10 +331,10 @@ namespace dataprocessing {
 		pack->getPayload(data);
 		if (diff < (ARRAY_SIZE(sectionHeader) - currentHeaderSize)) {
 
-			cout << "SectionFilter::verifyAndCreateSection ";
+			/*cout << "SectionFilter::verifyAndCreateSection ";
 			cout << "Creating Section header, currentSize is '";
 			cout << currentHeaderSize;
-			cout << endl;
+			cout << endl;*/
 
 			memcpy(
 					(void*)&sectionHeader[currentHeaderSize],

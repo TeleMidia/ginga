@@ -78,6 +78,7 @@ namespace tuning {
 			virtual bool hasSignal()=0;
 			virtual bool tune()=0;
 			virtual bool changeChannel(int factor)=0;
+			virtual bool setChannel(string channelValue)=0;
 			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
 			virtual IChannel* getCurrentChannel()=0;
 			virtual int createPesFilter(

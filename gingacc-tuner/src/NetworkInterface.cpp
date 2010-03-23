@@ -192,6 +192,14 @@ namespace tuning {
 		return false;
 	}
 
+	bool NetworkInterface::setChannel(string channelValue) {
+		if (provider != NULL) {
+			return provider->setChannel(channelValue);
+		}
+
+		return false;
+	}
+
 	bool NetworkInterface::getSTCValue(uint64_t* stc, int* valueType) {
 		if (provider != NULL) {
 			return provider->getSTCValue(stc, valueType);

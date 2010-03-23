@@ -144,44 +144,46 @@ namespace carousel {
 						module = (*info)[modId];
 					}
 
-					cout << "SD waiting srg module" << endl;
+					cout << "ServiceDomain::run waiting srg module" << endl;
 					while (!module->isConsolidated()) {
 						::usleep(1000);
 					}
-					cout << "SD srg module is consolidated, creating biop";
+					cout << "ServiceDomain::run srg module is consolidated, ";
+					cout << "creating biop";
 					cout << endl;
 
 					biop = new Biop(module, processor);
-					cout << "SD BIOP->porcessingSRG" << endl;
+					cout << "ServiceDomain::run BIOP processing SRG" << endl;
 					biop->processServiceGateway(
 							serviceGatewayIor->getObjectKey());
 
 					hasServiceGateway = true;
-					cout << "SD SRG PROCESSED!" << endl;
+					cout << "ServiceDomain::run SRG PROCESSED!" << endl;
 
 					delete biop;
 					biop = NULL;
 
-					cout << "SD PROCESSING SRG MODULE" << endl;
+					cout << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 					biop = new Biop(module, processor);
 					biop->process();
 
 					info->erase(i);
 					i = info->begin();
 
-					cout << "SD SRG MODULE PROCESSED!" << endl;
+					cout << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
 
 				} else {
 					module = i->second;
 					if (module->isConsolidated()) {
 						biop = new Biop(module, processor);
-						cout << "SD BIOP->porcess" << endl;
+						cout << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
 						info->erase(i);
 						i = info->begin();
 
-						cout << "SD BIOP->porcess DONE!" << endl;
+						cout << "ServiceDomain::run BIOP->process DONE!";
+						cout << endl;
 //						delete biop;
 //						biop = NULL;
 
@@ -203,6 +205,7 @@ namespace carousel {
 		}
 
 		mounted = true;
+		cout << "ServiceDomain::run ";
 		cout << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
 		if (sdl != NULL) {
 			sdl->serviceDomainMounted(

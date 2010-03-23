@@ -72,6 +72,7 @@ int main(int argc, char** argv, char** envp) {
 	ILocalDeviceManager* dm;
 	IPlayer* player;
 	IPlayer* img;
+	IPlayer* avp;
 
 #if HAVE_MULTIPROCESS
 	Process* process;
@@ -120,6 +121,18 @@ int main(int argc, char** argv, char** envp) {
 		w->validate();
 
 		cout << "Player test has shown image. press enter to continue" << endl;
+		getchar();
+		dm->clearWidgetPools();
+
+	} else if (argc > 1 && strcmp(argv[1], "avpipe") == 0) {
+#if HAVE_COMPSUPPORT
+		avp = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+				"sbtvd-ts://dvr0.ts", true);
+#else
+		avp = (IPlayer*)(new AVPlayer("sbtvd-ts://dvr0.ts", true));
+#endif
+
+		avp->setOutWindow(w->getId());
 		getchar();
 		dm->clearWidgetPools();
 

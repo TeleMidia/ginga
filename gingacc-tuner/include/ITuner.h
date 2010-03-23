@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "ITunerListener.h"
 #include "INetworkInterface.h"
 
+#include <string>
+using namespace std;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -66,6 +69,7 @@ namespace tuning {
 			virtual void channelUp()=0;
 			virtual void channelDown()=0;
 			virtual void changeChannel(int factor)=0;
+			virtual void setSpec(string ni, string ch)=0;
 			virtual void tune()=0;
 			virtual void addListener(ITunerListener* listener)=0;
 			virtual void removeListener(ITunerListener* listener)=0;

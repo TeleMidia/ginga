@@ -84,6 +84,7 @@ namespace tuning {
 			virtual ~Tuner();
 
 		private:
+			void initializeInterface(string niSpec);
 			void initializeInterfaces();
 			void createInterface(
 					string network, string protocol, string address);
@@ -92,6 +93,7 @@ namespace tuning {
 			void receive(INetworkInterface* interface);
 
 		public:
+			void setSpec(string ni, string ch);
 			void tune();
 			INetworkInterface* getCurrentInterface();
 			void channelUp();

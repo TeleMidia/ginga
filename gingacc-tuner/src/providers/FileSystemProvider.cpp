@@ -79,6 +79,35 @@ namespace tuning {
 		return true;
 	}
 
+	IChannel* FileSystemProvider::getCurrentChannel() {
+		return NULL;
+	}
+
+	bool FileSystemProvider::getSTCValue(uint64_t* stc, int* valueType) {
+		return false;
+	}
+
+	bool FileSystemProvider::changeChannel(int factor) {
+		return false;
+	}
+
+	bool FileSystemProvider::setChannel(string channelValue) {
+		cout << "FileSystemProvider::setChannel '" << channelValue << "'";
+		cout << endl;
+		fileName = channelValue;
+		return true;
+	}
+
+	int FileSystemProvider::createPesFilter(
+			int pid, int pesType, bool compositeFiler) {
+
+		return -1;
+	}
+
+	string FileSystemProvider::getPesFilterOutput() {
+		return "";
+	}
+
 	void FileSystemProvider::close() {
 		::close(fileDescriptor);
 	}
@@ -89,6 +118,8 @@ namespace tuning {
 			if (rval < BUFFSIZE) {
 				printf("File is over, set file to begin again!\n");
 				lseek(fileDescriptor, 0, SEEK_SET);
+			} else {
+				lseek(fileDescriptor, -1, SEEK_CUR);
 			}
 			return rval;
 		}

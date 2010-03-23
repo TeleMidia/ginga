@@ -139,6 +139,9 @@ namespace tsparser {
 		// is present, then the payload size is 183 bytes.
 		char payload[TS_PAYLOAD_SIZE];
 		unsigned int payloadSize;
+
+		unsigned int payloadOffset;
+
 	public:
 		TSPacket(char* packetData);
 		~TSPacket();

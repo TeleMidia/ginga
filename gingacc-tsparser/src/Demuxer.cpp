@@ -743,11 +743,11 @@ namespace tsparser {
 				i = i + 188;
 
 			} else if (i + 188 < size) {
-				/*cout << "Demuxer::receiveData hunting when i = '";
+				cout << "Demuxer::receiveData hunting when i = '";
 				cout << i << "' and size = '" << size << "'";
 				cout << " current byte value = '" << (buff[i] & 0xFF);
 				cout << "' next sync = '" << (buff[i + 188] & 0xFF);
-				cout << "'" << endl;*/
+				cout << "'" << endl;
 
 				i++;
 				i = i + hunt(buff + i, size - i);

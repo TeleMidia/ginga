@@ -60,7 +60,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <set>
+#include <map>
 #include <string>
 using namespace std;
 
@@ -82,7 +82,7 @@ namespace tsparser {
 			unsigned int packetsReceived;
 			bool dvrReader;
 			string dvrName;
-			set<int>* pids;
+			map<int, int>* pids;
 
 		public:
 			PipeFilter(unsigned int pid);

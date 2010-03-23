@@ -65,7 +65,7 @@ namespace tsparser {
 		this->fifoCreated     = false;
 		this->dvrReader       = false;
 		this->dvrName         = "";
-		this->pids            = new set<int>;
+		this->pids            = new map<int, int>;
 
 		Thread::start();
 	}
@@ -80,7 +80,7 @@ namespace tsparser {
 	void PipeFilter::addPid(int pid) {
 		cout << "PipeFilter::addPid '" << pid << "'" << endl;
 		lock();
-		pids->insert(pid);
+		(*pids)[pid] = 0;
 		unlock();
 	}
 
@@ -101,6 +101,7 @@ namespace tsparser {
 	void PipeFilter::receiveTSPacket(ITSPacket* pack) {
 		int ret;
 		int ppid;
+		int contCounter;
 		char packData[ITSPacket::TS_PACKET_SIZE];
 
 		ppid = pack->getPid();
@@ -110,19 +111,23 @@ namespace tsparser {
 
 		lock();
 		if (pids->count(ppid) == 0) {
-			cout << "PipeFilter::receiveTSPacket packet '" << ppid;
-			cout << "' discarded by filter" << endl;
 			unlock();
 			return;
 		}
 		unlock();
 
+		contCounter = (*pids)[ppid];
+		pack->setContinuityCounter(contCounter);
+		if (pack->getContinuityCounter() != 2 &&
+				pack->getContinuityCounter() != 0) {
+
+			(*pids)[ppid] = contCounter + 1;
+		}
+
 		pack->getPacketData(packData);
-		if (pipeFd > 0) {
-			ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
-			if (ret == ITSPacket::TS_PACKET_SIZE) {
-				dataReceived = true;
-			}
+		ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
+		if (ret == ITSPacket::TS_PACKET_SIZE) {
+			dataReceived = true;
 		}
 	}
 

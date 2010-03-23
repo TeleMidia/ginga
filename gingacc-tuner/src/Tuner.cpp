@@ -66,11 +66,50 @@ namespace tuning {
 	}
 
 	Tuner::~Tuner() {
-		delete listeners;
-		listeners = NULL;
+		map<int, INetworkInterface*>::iterator i;
 
-		delete interfaces;
-		interfaces = NULL;
+		if (listeners != NULL) {
+			delete listeners;
+			listeners = NULL;
+		}
+
+		lock();
+		if (interfaces != NULL) {
+			i = interfaces->begin();
+			while (i != interfaces->end()) {
+				delete i->second;
+				++i;
+			}
+			delete interfaces;
+			interfaces = NULL;
+		}
+		unlock();
+	}
+
+	void Tuner::initializeInterface(string niSpec) {
+		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
+			if (niSpec.substr(0, 3) >= "224" &&
+					niSpec.substr(0, 3) <= "239") {
+
+				createInterface("eth", "udp_multicast", niSpec);
+
+			} else if ((niSpec.substr(0, 3) >= "001" &&
+					niSpec.substr(0, 3) <= "223") ||
+					(niSpec.substr(0, 3) >= "240" &&
+							niSpec.substr(0, 3) <= "254")) {
+
+				createInterface("eth", "udp_unicast", niSpec);
+
+			} else if (niSpec == "isdbt" || niSpec == "sbtvdt") {
+				createInterface("sbtvd", "terrestrial", niSpec);
+
+			} else if (niSpec.substr(0, 2) == "fs") {
+				createInterface(
+						"fs",
+						"local",
+						niSpec.substr(3, niSpec.length() - 3));
+			}
+		}
 	}
 
 	void Tuner::initializeInterfaces() {
@@ -89,29 +128,7 @@ namespace tuning {
 			currentInterface = 0;
 			fis >> addr;
 			while (fis.good()) {
-				if (addr.length() > 3 && addr.substr(0, 1) != "#") {
-					if (addr.substr(0, 3) >= "224" &&
-							addr.substr(0, 3) <= "239") {
-
-						createInterface("eth", "udp_multicast", addr);
-
-					} else if ((addr.substr(0, 3) >= "001" &&
-							addr.substr(0, 3) <= "223") ||
-							(addr.substr(0, 3) >= "240" &&
-							addr.substr(0, 3) <= "254")) {
-
-						createInterface("eth", "udp_unicast", addr);
-
-					} else if (addr == "isdbt" || addr == "sbtvdt") {
-						createInterface("sbtvd", "terrestrial", addr);
-
-					} else if (addr.substr(0, 2) == "fs") {
-						createInterface(
-								"fs",
-								"local",
-								addr.substr(3, addr.length() - 3));
-					}
-				}
+				initializeInterface(addr);
 				fis >> addr;
 			}
 			fis.close();
@@ -125,7 +142,9 @@ namespace tuning {
 		INetworkInterface* newInterface = new NetworkInterface(
 				currentInterface, network, protocol, address);
 
+		lock();
 		(*interfaces)[currentInterface] = newInterface;
+		unlock();
 	}
 
 	bool Tuner::listen(INetworkInterface* interface) {
@@ -168,15 +187,35 @@ namespace tuning {
 
 	bool Tuner::hasSignal() {
 		map<int, INetworkInterface*>::iterator i;
-		INetworkInterface* curInt;
+		INetworkInterface* ni;
 
-		i = interfaces->find(currentInterface);
-		if (i != interfaces->end()) {
-			curInt = i->second;
-			return curInt->hasSignal();
+		ni = getCurrentInterface();
+		if (ni != NULL) {
+			return ni->hasSignal();
 		}
 
 		return false;
+	}
+
+	void Tuner::setSpec(string niName, string ch) {
+		map<int, INetworkInterface*>::iterator i;
+		INetworkInterface* ni;
+
+		lock();
+		i = interfaces->begin();
+		while (i != interfaces->end()) {
+			ni = i->second;
+			if (ni->getName() == niName) {
+				ni->setChannel(ch);
+				currentInterface = i->first;
+				unlock();
+				return;
+			}
+			++i;
+		}
+		unlock();
+
+		initializeInterface(niName + ":" + ch);
 	}
 
 	void Tuner::tune() {
@@ -185,11 +224,16 @@ namespace tuning {
 
 	INetworkInterface* Tuner::getCurrentInterface() {
 		map<int, INetworkInterface*>::iterator i;
+		INetworkInterface* ni;
 
+		lock();
 		i = interfaces->find(currentInterface);
 		if (i != interfaces->end()) {
-			return i->second;
+			ni = i->second;
+			unlock();
+			return ni;
 		}
+		unlock();
 
 		return NULL;
 	}
@@ -212,9 +256,9 @@ namespace tuning {
 			waitForUnlockCondition();
 		}
 
-		if (interfaces->count(currentInterface) != 0) {
-			interface = (*interfaces)[currentInterface];
-			channel   = interface->getCurrentChannel();
+		interface = getCurrentInterface();
+		if (interface != NULL) {
+			channel = interface->getCurrentChannel();
 			updateListenersStatus(TS_SWITCHING_CHANNEL, channel);
 			if (!interface->changeChannel(factor)) {
 				cout << "Tuner::changeChannel can't find channel '";
@@ -276,51 +320,47 @@ namespace tuning {
 
 		cout << "Tuner::run tuning... " << endl;
 
-		if (!interfaces->empty()) {
-			if (interfaces->count(currentInterface) != 0) {
-				curInt = (*interfaces)[currentInterface];
-
-				if (curInt != NULL) {
-					tuned = listen(curInt);
-					if (tuned) {
-						interface = curInt;
-					}
-				}
+		curInt = getCurrentInterface();
+		if (curInt != NULL) {
+			tuned = listen(curInt);
+			if (tuned) {
+				interface = curInt;
 			}
+		}
 
+		if (!tuned) {
+			lock();
 			i = interfaces->begin();
-			while (!tuned) {
+			while (i != interfaces->end()) {
 				intIx     = i->first;
 				interface = i->second;
 
 				if (curInt != interface) {
 					tuned = listen(interface);
+					if (tuned) {
+						break;
+					}
 				}
 
 				++i;
-				if (i == interfaces->end()) {
-					break;
-				}
 			}
-
-			if (tuned && firstTune) {
-				firstTune = false;
-				channel = interface->getCurrentChannel();
-				updateListenersStatus(TS_NEW_CHANNEL_TUNED, channel);
-			}
-
-			if (tuned && interface != NULL &&
-					!(interface->getCaps() & DPC_CAN_DEMUXBYHW)) {
-
-				cout << "Tuner::run() call receive" << endl;
-				receive(interface);
-			}
-
-			cout << "Tuner::run done " << endl;
-
-		} else {
-			cout << "Tuner::run warning! interfaces.empty" << endl;
+			unlock();
 		}
+
+		if (tuned && firstTune) {
+			firstTune = false;
+			channel = interface->getCurrentChannel();
+			updateListenersStatus(TS_NEW_CHANNEL_TUNED, channel);
+		}
+
+		if (tuned && interface != NULL &&
+				!(interface->getCaps() & DPC_CAN_DEMUXBYHW)) {
+
+			cout << "Tuner::run() call receive" << endl;
+			receive(interface);
+		}
+
+		cout << "Tuner::run done " << endl;
 	}
 }
 }

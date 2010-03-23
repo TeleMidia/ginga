@@ -95,6 +95,10 @@ namespace tuning {
 				return false;
 			}
 
+			bool setChannel(string channelValue) {
+				return false;
+			}
+
 			virtual int createPesFilter(
 					int pid, int pesType, bool compositeFiler) {
 
