@@ -140,6 +140,10 @@ namespace io {
 			int getY();
 			int getW();
 			int getH();
+			void setX(int x);
+			void setY(int y);
+			void setW(int w);
+			void setH(int h);
 			void* getContent();
 			void setColor(int r, int g, int b, int alpha=255);
 			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);

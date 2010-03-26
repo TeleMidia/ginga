@@ -81,9 +81,7 @@ namespace player {
 			void stop();
 			void resume();
 
-			virtual void setPropertyValue(
-					string name,
-					string value, double duration=-1, double by=-1);
+			virtual void setPropertyValue(string name, string value);
 
 			static io::ISurface* prepareSurface(
 					io::IImageProvider* provider, string mrl);

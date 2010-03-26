@@ -184,8 +184,7 @@ namespace player {
 		Player::stop();
 	}
 
-	void LinksPlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
+	void LinksPlayer::setPropertyValue(string name, string value) {
 
 		//TODO: set scrollbar, support...
 		if (name == "transparency") {
@@ -217,7 +216,7 @@ namespace player {
 			return;
 		}
 
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 	}
 
 	bool LinksPlayer::setKeyHandler(bool isHandler) {

@@ -295,8 +295,7 @@ namespace player {
 		}
 	}
 
-	void SrtPlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
+	void SrtPlayer::setPropertyValue(string name, string value) {
 
 		if (name == "x-setFontUri") {
 		    setFont(value);
@@ -328,7 +327,7 @@ namespace player {
 		}
 
 		//TODO: set font url, font size, font color, ...
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 	}
 
 	void SrtPlayer::busy() {

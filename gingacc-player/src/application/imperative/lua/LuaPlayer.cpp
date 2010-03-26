@@ -292,17 +292,11 @@ void LuaPlayer::abort()
     Player::abort();
 }
 
-void LuaPlayer::setPropertyValue2 (string name, string value)
-{
-	Player::setPropertyValue(name, value, 0, 0);
-}
-
-void LuaPlayer::setPropertyValue (string name, string value,
-                                  double duration, double by)
+void LuaPlayer::setPropertyValue(string name, string value)
 {
     //cout << "SET == " << name << " = " << value << endl;
 	this->lock();
-	Player::setPropertyValue(name, value, duration, by);
+	Player::setPropertyValue(name, value);
 
     map<string,string> evt;
         evt["class"]  = "ncl";

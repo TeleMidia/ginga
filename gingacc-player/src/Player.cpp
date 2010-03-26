@@ -362,9 +362,53 @@ namespace player {
 		return "";
 	}
 
-	void Player::setPropertyValue(
-			string name, string value, double duration, double by) {
+	void Player::setPropertyValue(string name, string value) {
+		vector<string>* params = NULL;
 
+		if (outputWindow != NULL) {
+			if (name == "bounds") {
+				params = split(value, ",");
+				if (params->size() == 4) {
+					outputWindow->setBounds(
+							stof((*params)[0]),
+							stof((*params)[1]),
+							stof((*params)[2]),
+							stof((*params)[3]));
+				}
+				delete params;
+
+			} else if (name == "location") {
+				params = split(value, ",");
+				if (params->size() == 2) {
+					outputWindow->moveTo(
+							stof((*params)[0]), stof((*params)[1]));
+				}
+				delete params;
+
+			} else if (name == "size") {
+				params = split(value, ",");
+				if (params->size() == 2) {
+					outputWindow->resize(
+							stof((*params)[0]), stof((*params)[1]));
+				}
+				delete params;
+
+			} else if (name == "left") {
+				outputWindow->setX(stof(value));
+
+			} else if (name == "top") {
+				outputWindow->setY(stof(value));
+
+			} else if (name == "width") {
+				outputWindow->setW(stof(value));
+
+			} else if (name == "height") {
+				outputWindow->setH(stof(value));
+
+			} else if (name == "transparency") {
+				outputWindow->setCurrentTransparency(stof(value));
+			}
+		}
 		(*properties)[name] = value;
 	}
 

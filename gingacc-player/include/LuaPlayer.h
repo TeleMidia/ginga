@@ -210,9 +210,7 @@ namespace player {
 		void pause();
 		void resume();
         //string getPropertyValue (string name);
-		void setPropertyValue2 (string name, string value);
-		virtual void setPropertyValue (
-				string name, string value, double duration=-1, double by=-1);
+		virtual void setPropertyValue(string name, string value);
 
 		void pushEPGEvent(map<string, string> event);
 

@@ -332,9 +332,7 @@ namespace player {
 		return ans;
 	}
 
-	void PlayerProcess::setPropertyValue(
-			string name, string value, double duration, double by) {
-
+	void PlayerProcess::setPropertyValue(string name, string value) {
 		string msg = "setpropertyvalue," + name + "," + value;
 
 		if (duration > 0) {

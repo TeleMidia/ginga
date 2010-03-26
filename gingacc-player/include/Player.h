@@ -155,9 +155,7 @@ namespace player {
 			virtual void pause();
 			virtual void resume();
 			virtual string getPropertyValue(string name);
-			virtual void setPropertyValue(
-					string name,
-					string value, double duration=-1, double by=-1);
+			virtual void setPropertyValue(string name, string value);
 
 			virtual void setReferenceTimePlayer(IPlayer* player){};
 

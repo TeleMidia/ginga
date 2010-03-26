@@ -94,6 +94,10 @@ namespace io {
 			virtual int getY()=0;
 			virtual int getW()=0;
 			virtual int getH()=0;
+			virtual void setX(int x)=0;
+			virtual void setY(int y)=0;
+			virtual void setW(int w)=0;
+			virtual void setH(int h)=0;
 			virtual void* getContent()=0;
 			virtual void setColor(int r, int g, int b, int alpha)=0;
 			virtual void setBorder(

@@ -489,6 +489,38 @@ namespace io {
 		return this->height;
 	}
 
+	void DFBWindow::setX(int x) {
+		lock();
+		if (win != NULL) {
+			DFBCHECK(win->MoveTo(win, x, y));
+		}
+		unlock();
+	}
+
+	void DFBWindow::setY(int y) {
+		lock();
+		if (win != NULL) {
+			DFBCHECK(win->MoveTo(win, x, y));
+		}
+		unlock();
+	}
+
+	void DFBWindow::setW(int w) {
+		lock();
+		if (win != NULL) {
+			DFBCHECK(win->Resize(win, w, height));
+		}
+		unlock();
+	}
+
+	void DFBWindow::setH(int h) {
+		lock();
+		if (win != NULL) {
+			DFBCHECK(win->Resize(win, width, h));
+		}
+		unlock();
+	}
+
 	void* DFBWindow::getContent() {
 		return win;
 	}
@@ -572,7 +604,6 @@ namespace io {
 				unlockChilds();
 			}
 		}
-		//wclog << "DFBWindow::validate " << endl;
 	}
 
 	void DFBWindow::addChildSurface(ISurface* s) {

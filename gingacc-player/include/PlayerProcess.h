@@ -115,9 +115,7 @@ namespace player {
 			void resume();
 
 			string getPropertyValue(string name);
-			void setPropertyValue(
-					string name,
-					string value, double duration=-1, double by=-1);
+			void setPropertyValue(string name, string value);
 
 			void setReferenceTimePlayer(IPlayer* player);
 			void addTimeReferPlayer(IPlayer* referPlayer);

@@ -207,9 +207,7 @@ namespace player {
 		notifyListeners(code, parameter, type);
 	}
 
-	void ChannelPlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
-
+	void ChannelPlayer::setPropertyValue(string name, string value) {
 		IPlayer* objectPlayer;
 		map<string, IPlayer*>::iterator players;
 
@@ -218,12 +216,12 @@ namespace player {
 			players = objectMap->begin();
 			while (players != objectMap->end()) {
 				objectPlayer = players->second;
-				objectPlayer->setPropertyValue(name, value, duration, by);
+				objectPlayer->setPropertyValue(name, value);
 				++players;
 			}
 		}
 
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 	}
 }
 }

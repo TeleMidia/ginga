@@ -198,9 +198,7 @@ namespace player {
 		pthread_mutex_unlock(&mutex);
 	}
 
-	void PlainTxtPlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
-
+	void PlainTxtPlayer::setPropertyValue(string name, string value) {
 		pthread_mutex_lock(&mutex);
 
 		vector<string>* params;
@@ -307,7 +305,7 @@ namespace player {
 			refresh = false;
 		}
 
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 		pthread_mutex_unlock(&mutex);
 
 		// refreshing changes

@@ -166,8 +166,7 @@ namespace player {
 		ImagePlayer::play();
 	}
 
-	void ImagePlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
+	void ImagePlayer::setPropertyValue(string name, string value) {
 
 		//TODO: set brightness, rotate...
 		//refresh changes
@@ -177,7 +176,7 @@ namespace player {
 			win->renderFrom(surface);
 		}
 
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 	}
 
 	ISurface* ImagePlayer::prepareSurface(

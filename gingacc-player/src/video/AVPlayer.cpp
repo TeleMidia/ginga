@@ -1332,9 +1332,7 @@ namespace player {
 		}
 	}
 
-	void AVPlayer::setPropertyValue(
-			string name, string value, double duration, double by) {
-
+	void AVPlayer::setPropertyValue(string name, string value) {
 		float fValue = 1.0;
 
 		//TODO: animation, set volume, brightness, ...
@@ -1345,7 +1343,7 @@ namespace player {
 			setSoundLevel(fValue);
 		}
 
-		Player::setPropertyValue(name, value, duration, by);
+		Player::setPropertyValue(name, value);
 	}
 
 	void AVPlayer::addListener(IPlayerListener* listener) {

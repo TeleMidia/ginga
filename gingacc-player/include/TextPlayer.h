@@ -111,9 +111,7 @@ namespace player {
 			int getCurrentColumn();
 			int getCurrentLine();
 
-			virtual void setPropertyValue(
-					string name,
-					string value, double duration=-1, double by=-1);
+			virtual void setPropertyValue(string name, string value);
 	};
 }
 }

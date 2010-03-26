@@ -112,9 +112,7 @@ namespace player {
 			bool setOutWindow(int windowId);
 			void setBounds(int x, int y, int w, int h);
 
-			void setPropertyValue(
-					string name,
-					string value, double duration=-1, double by=-1);
+			void setPropertyValue(string name, string value);
 
 			bool setKeyHandler(bool isHandler);
 
