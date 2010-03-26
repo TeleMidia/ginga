@@ -292,6 +292,10 @@ void LuaPlayer::abort()
     Player::abort();
 }
 
+void LuaPlayer::unprotectedSetPropertyValue(string name, string value) {
+	Player::setPropertyValue(name, value);
+}
+
 void LuaPlayer::setPropertyValue(string name, string value)
 {
     //cout << "SET == " << name << " = " << value << endl;

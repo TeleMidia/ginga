@@ -19,7 +19,7 @@ libgingaccsysctsfs_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccsystemiodfb -lgingaccsystemio
 endif
 
-
+if FFMPEGPROVIDER
 localLibffmpegadir = /usr/local/lib/ginga/iocontents/
 
 localLibffmpega_PROGRAMS = libgingaccsysctsffmpega.so
@@ -34,3 +34,4 @@ libgingaccsysctsffmpega_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccsystemiodfb -lgingaccsystemio -lgingaccsystemthread \
     -lgingaccsysctsfs
+endif

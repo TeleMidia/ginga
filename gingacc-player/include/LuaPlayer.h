@@ -210,6 +210,8 @@ namespace player {
 		void pause();
 		void resume();
         //string getPropertyValue (string name);
+
+		void unprotectedSetPropertyValue(string name, string value);
 		virtual void setPropertyValue(string name, string value);
 
 		void pushEPGEvent(map<string, string> event);

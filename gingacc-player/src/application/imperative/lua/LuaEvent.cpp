@@ -251,8 +251,8 @@ static int l_post (lua_State* L)
                     // [ dst | evt | class | type | ttrans | TRANS | prop ]
 				lua_getfield(L, 2, "value");
                     // [ dst | evt | class | type | ttrans | TRANS | prop | v ]
-				GETPLAYER(L)->setPropertyValue(luaL_checkstring(L,-2),
-                                                luaL_optstring(L,-1,""));
+				GETPLAYER(L)->unprotectedSetPropertyValue(
+						luaL_checkstring(L,-2), luaL_optstring(L,-1,""));
 
 				GETPLAYER(L)->notifyListeners(lua_tointeger(L, -3),
                                               luaL_checkstring(L, -2),
