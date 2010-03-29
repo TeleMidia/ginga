@@ -335,14 +335,6 @@ namespace player {
 	void PlayerProcess::setPropertyValue(string name, string value) {
 		string msg = "setpropertyvalue," + name + "," + value;
 
-		if (duration > 0) {
-			msg = msg + "," + itos(duration);
-		}
-
-		if (by > 0) {
-			msg = msg + "," + itos(by);
-		}
-
 		sendMsg(msg + "::;::");
 	}
 
