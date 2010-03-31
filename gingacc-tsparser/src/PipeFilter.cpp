@@ -183,7 +183,6 @@ namespace tsparser {
 			fifoName = "dvr" + itos(pid) + ".ts";
 
 			rval = mkfifo(fifoName.c_str(), S_IFIFO);
-			cout << "pipe '" << fifoName << "' created" << endl;
 			fifoCreated = true;
 
 			pipeFd = open(fifoName.c_str(), O_WRONLY);
@@ -191,14 +190,11 @@ namespace tsparser {
 				cout << "error opening pipe '" << pid << "'" << endl;
 
 			} else {
-				cout << "pipe '" << fifoName << "' opened" << endl;
-
 				if (secondPid > 0) {
 					fifoName = "dvr" + itos(secondPid) + ".ts";
 					mkfifo(fifoName.c_str(), S_IFIFO);
-					cout << "pipe '" << fifoName << "' created" << endl;
 					secondFd = open(fifoName.c_str(), O_WRONLY);
-					cout << "pipe '" << fifoName << "' opened" << endl;
+					cout << "secpipe '" << fifoName << "' opened" << endl;
 				}
 				fifoCreated = true;
 			}
