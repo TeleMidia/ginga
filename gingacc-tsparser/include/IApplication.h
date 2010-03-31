@@ -47,13 +47,14 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef IAPPLICATION_H_
+#define IAPPLICATION_H_
 
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <map>
+#include <string>
+#include <vector>
 using namespace std;
 
 namespace br {
@@ -61,17 +62,42 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
+namespace tsparser {
+namespace si {
+	class IApplication {
 		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+			static const unsigned char DT_APPLICATION                   = 0x00;
+			static const unsigned char DT_APPLICATION_NAME              = 0x01;
+			static const unsigned char DT_TRANSPORT_PROTOCOL            = 0x02;
+			static const unsigned char DT_GINGAJ_APPLICATION            = 0x03;
+			static const unsigned char DT_GINGAJ_APPLICATION_LOCATION   = 0x04;
+			static const unsigned char DT_EXTERNAL_APPLICATION          = 0x05;
+			static const unsigned char DT_GINGANCL_APPLICATION          = 0x06;
+			static const unsigned char DT_GINGANCL_APPLICATION_LOCATION = 0x07;
+			static const unsigned char DT_APPLICATION_ICONS             = 0x0B;
+			static const unsigned char DT_PREFETCH                      = 0x0C;
+			static const unsigned char DT_DII_LOCATION                  = 0x0D;
+			static const unsigned char DT_IP_SIGNALLING                 = 0x11;
+			static const unsigned char DT_PRIVATE_DATA_SPECIFIER        = 0x5F;
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
-	};
+			static const unsigned char CC_AUTOSTART                     = 0x01;
+			static const unsigned char CC_PRESENT                       = 0x02;
+			static const unsigned char CC_DESTROY                       = 0x03;
+			static const unsigned char CC_KILL                          = 0x04;
+			static const unsigned char CC_PREFETCH                      = 0x05;
+			static const unsigned char CC_REMOTE                        = 0x06;
+			static const unsigned char CC_UNBOUND                       = 0x07;
+
+			virtual ~IApplication(){};
+			virtual string getBaseDirectory()=0;
+			virtual string getInitialClass()=0;
+			virtual unsigned short getControlCode()=0;
+			virtual unsigned short getLength()=0;
+			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
+			virtual size_t process(char* data, size_t pos)=0;
+		};
+
+}
 }
 }
 }
@@ -79,4 +105,4 @@ namespace dataprocessing {
 }
 }
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+#endif /* IAPPLICATION_H_ */

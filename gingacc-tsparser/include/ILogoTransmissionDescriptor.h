@@ -81,6 +81,7 @@ namespace descriptors {
 			virtual string getName()=0;
 			virtual unsigned char getNameLength()=0;
 			virtual unsigned char getDescriptorTag()=0;
+			virtual size_t process(char* data, size_t pos)=0;
     };
 }
 }

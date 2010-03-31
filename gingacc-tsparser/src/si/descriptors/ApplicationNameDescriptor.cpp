@@ -47,36 +47,79 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
-
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
-
-#include <map>
-using namespace std;
+#include "../../../include/ApplicationNameDescriptor.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
-		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+namespace tsparser {
+namespace si {
+	ApplicationNameDescriptor::ApplicationNameDescriptor() {
+		descriptorLength = 0;
+		descriptorTag = 0x01;
+		appNames = new vector<struct AppName*>;
+	}
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
-	};
-}
-}
-}
-}
-}
-}
+	ApplicationNameDescriptor::~ApplicationNameDescriptor() {
+		vector<struct AppName*>::iterator i;
+		if(appNames != NULL){
+			i = appNames->begin();
+			while(i != appNames->end()){
+				delete (*i);
+				++i;
+			}
+			delete appNames;
+			appNames = NULL;
+		}
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+	}
+	unsigned char ApplicationNameDescriptor::getDescriptorTag() {
+		return descriptorTag;
+	}
+
+	unsigned int ApplicationNameDescriptor::getDescriptorLength() {
+		return descriptorLength;
+	}
+
+	void ApplicationNameDescriptor::print(){
+
+	}
+
+	size_t ApplicationNameDescriptor::process (char* data, size_t pos) {
+		unsigned char remainingBytes;
+		struct AppName* appName;
+
+		descriptorTag = data[pos];
+		descriptorLength = data[pos+1];
+		pos ++;
+
+		remainingBytes = descriptorLength;
+		while (remainingBytes) {
+			appName = new struct AppName;
+			pos ++;
+
+			memcpy(appName->languageCode, data+pos, 3);
+			pos += 3;
+
+			appName->applicationNameLentgh = data[pos];
+			appName->applicationNameChar =
+					new char[appName->applicationNameLentgh];
+
+			memcpy(appName->applicationNameChar, data+pos+1,
+					appName->applicationNameLentgh);
+
+			pos += appName->applicationNameLentgh ;
+			remainingBytes -= appName->applicationNameLentgh - 4;
+			appNames->push_back(appName);
+		}
+		return pos;
+	}
+}
+}
+}
+}
+}
+}
+}

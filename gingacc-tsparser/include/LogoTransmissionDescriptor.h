@@ -87,6 +87,7 @@ namespace descriptors {
 			string getName();
 			unsigned char getNameLength();
 			unsigned char getDescriptorTag();
+			size_t process(char* data, size_t pos){return 0;};
     };
 }
 }

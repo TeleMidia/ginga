@@ -50,7 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IFILTERLISTENER_H_
 #define IFILTERLISTENER_H_
 
-#include "ITransportSection.h"
+#include "tsparser/ITransportSection.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
 namespace pucrio {

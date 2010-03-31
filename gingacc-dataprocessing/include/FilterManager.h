@@ -50,8 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef FILTERMANAGER_H_
 #define FILTERMANAGER_H_
 
+#include "tsparser/ITransportSection.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
 #include "SectionFilter.h"
-#include "ITransportSection.h"
 
 #include <string>
 #include <vector>

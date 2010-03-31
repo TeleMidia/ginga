@@ -64,10 +64,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "tsparser/IDemuxer.h"
 #include "tsparser/ITSPacket.h"
+#include "tsparser/ITransportSection.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IFilterListener.h"
-#include "ITransportSection.h"
 
 #include <string>
 #include <map>

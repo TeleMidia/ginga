@@ -59,7 +59,7 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
-	Pat::Pat() : TSSection() {
+	Pat::Pat() : TransportSection() {
 		programs = new map<unsigned int, Pmt*>;
 		pat = new map<unsigned int, unsigned int>;
 		unprocessedPmts = new vector<unsigned int>;

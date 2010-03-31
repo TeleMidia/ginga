@@ -57,7 +57,9 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
-	Pmt::Pmt(unsigned int pid, unsigned int programNumber) : TSSection() {
+	Pmt::Pmt(unsigned int pid, unsigned int programNumber) :
+			TransportSection() {
+
 		streams = new map<unsigned int, short>;
 		streamTypeNames = new map<short, string>;
 		//aits = new map<unsigned int, AITInfo*>;
@@ -96,11 +98,6 @@ namespace si {
 		(*streams)[pid] = esType;
 	}
 
-/*
-	void Pmt::addAITInfo(unsigned int pid, AITInfo* info) {
-		(*aits)[pid] = info;
-	}
-*/
 	unsigned int Pmt::getPid() {
 		return this->pid;
 	}

@@ -73,11 +73,12 @@ namespace descriptors {
 			virtual void setDescription(string text, unsigned char len)=0;
 			virtual unsigned char getEventNameLength()=0;
 			virtual unsigned char getDescriptionLength()=0;
-			virtual char * getLanguageCode()=0;
-			virtual char * getEventName()=0;
-			virtual char * getDescription()=0;
+			virtual char* getLanguageCode()=0;
+			virtual char* getEventName()=0;
+			virtual char* getDescription()=0;
 			virtual void setDescriptorLength(unsigned char length)=0;
 			virtual unsigned char getDescriptorLength()=0;
+			virtual size_t process(char* data, size_t pos)=0;
     };
 }
 }

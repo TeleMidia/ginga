@@ -53,6 +53,12 @@ http://www.telemidia.puc-rio.br
 //TODO: clean this mess
 #include "../include/dsmcc/npt/DSMCCSectionPayload.h"
 
+#include "../config.h"
+
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#endif
 
 namespace br {
 namespace pucrio {
@@ -60,6 +66,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
+
+#if HAVE_COMPSUPPORT
+	static IComponentManager* cm = IComponentManager::getCMInstance();
+#endif
+
 	DataProcessor::DataProcessor() : Thread() {
 		eventListeners  = new map<string, set<IStreamEventListener*>*>;
 		objectListeners = new set<IObjectListener*>;
@@ -75,6 +86,8 @@ namespace dataprocessing {
 
 		removeOCFilter  = false;
 		demux           = NULL;
+		ait             = NULL;
+
 		start();
 
 		pthread_mutex_init(&mutex, NULL);
@@ -129,11 +142,24 @@ namespace dataprocessing {
 			sections = NULL;
 		}
 
+		if (ait != NULL) {
+			delete ait;
+			ait = NULL;
+		}
+
 		pthread_mutex_destroy(&mutex);
 	}
 
+	void DataProcessor::applicationInfoMounted(IAIT* ait) {
+		if (sdl != NULL) {
+			sdl->applicationInfoMounted(ait);
+		}
+	}
+
 	void DataProcessor::serviceDomainMounted(
-			map<string, string>* names, map<string, string>* paths) {
+			string mountPoint,
+			map<string, string>* names,
+			map<string, string>* paths) {
 
 		if (removeOCFilter && demux != NULL) {
 			cout << "DataProcessor::run requesting ";
@@ -142,7 +168,7 @@ namespace dataprocessing {
 		}
 
 		if (sdl != NULL) {
-			sdl->serviceDomainMounted(names, paths);
+			sdl->serviceDomainMounted(mountPoint, names, paths);
 		}
 	}
 
@@ -216,7 +242,6 @@ namespace dataprocessing {
 				j = listeners->find(listener);
 				if (j != listeners->end()) {
 					listeners->erase(j);
-					return;
 				}
 			}
 		}
@@ -331,7 +356,7 @@ namespace dataprocessing {
 							section->getPayload(), section->getPayloadSize());
 
 					//i = processedIds->find(se->getId());
-					//if (i == processedIds->end()) {
+					//if (i == processedIds->end()) {377
 						cout << "DataProcessor::receiveSection STE" << endl;
 
 						processedIds->insert(se->getId());
@@ -364,6 +389,35 @@ namespace dataprocessing {
 				sections->push_back(section);
 				unlock();
 				unlockConditionSatisfied();
+
+			//AIT
+			} else if (tableId == AIT_TID) {
+				cout << "DataProcessor::receiveSection AIT" << endl;
+
+				if (ait != NULL &&
+						ait->getSectionName() == section->getSectionName()) {
+
+					return;
+				}
+
+				if (ait != NULL) {
+					delete ait;
+					ait = NULL;
+				}
+
+#if HAVE_COMPSUPPORT
+				ait = ((AITCreator*)(cm->getObject("AIT")))();
+#else
+				ait = new AIT();
+#endif
+
+				ait->setSectionName(section->getSectionName());
+				ait->setApplicationType(section->getExtensionId());
+				cout << "DataProcessor::receiveSection AIT calling process";
+				cout << endl;
+				ait->process(section->getPayload(), section->getPayloadSize());
+
+				applicationInfoMounted(ait);
 
 			//SDT
 			} else if (tableId == SDT_TID) {
@@ -432,7 +486,7 @@ namespace dataprocessing {
 					sectionName = section->getSectionName();
 
 					if (filterManager->processSection(section)) {
-						message     = new DsmccMessageHeader(sectionName, pid);
+						message = new DsmccMessageHeader(sectionName, pid);
 						if (processors->count(pid) == 0) {
 							processor = new MessageProcessor();
 							(*processors)[pid] = processor;

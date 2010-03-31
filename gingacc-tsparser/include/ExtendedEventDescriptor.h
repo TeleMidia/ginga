@@ -85,6 +85,8 @@ using namespace std;
 		public:
 			ExtendedEventDescriptor();
 			~ExtendedEventDescriptor();
+
+			size_t process(char* data, size_t pos) {return 0;};
 	};
 }
 }

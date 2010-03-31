@@ -47,36 +47,51 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef PREFETCHDESCRIPTOR_H_
+#define PREFETCHDESCRIPTOR_H_
 
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
-
-#include <map>
+#include <vector>
 using namespace std;
+
+#include <string.h>
+
+#include "IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
-		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+namespace tsparser {
+namespace si {
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
+	struct Prefetch {
+		unsigned char lambelLength;
+		char* labelChar;
+		unsigned char prefecthPriority;
+
 	};
-}
-}
-}
-}
-}
-}
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+	class PrefetchDescriptor : public IMpegDescriptor {
+		private:
+			unsigned char transportLabel;
+			vector<struct Prefetch*>* prefetchs;
+
+		public:
+			PrefetchDescriptor();
+			virtual ~PrefetchDescriptor();
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			size_t process (char* data, size_t pos);
+			void print();
+	};
+
+}
+}
+}
+}
+}
+}
+}
+#endif /* PREFETCHDESCRIPTOR_H_ */

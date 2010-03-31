@@ -209,7 +209,9 @@ namespace carousel {
 		cout << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
 		if (sdl != NULL) {
 			sdl->serviceDomainMounted(
-					processor->getSDNames(), processor->getSDPaths());
+					mountPoint,
+					processor->getSDNames(),
+					processor->getSDPaths());
 		}
 	}
 }

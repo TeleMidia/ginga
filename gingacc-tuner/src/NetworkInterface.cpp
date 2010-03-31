@@ -130,17 +130,12 @@ namespace tuning {
 	bool NetworkInterface::createProvider() {
 		string ip, portNumber;
 
-		cout << "NetworkInterface::createProvider(" << name << ":" << protocol;
-		cout << ")" << endl;
 		close();
 
 		if (name == "eth") {
 			ip = address.substr(0, address.find(":"));
-			cout << "IP = '" << ip << "'";
 			portNumber = address.substr(
 					address.find(":") + 1, address.length());
-
-			cout << "PORT NUMBER = '" << portNumber << "'" << endl;
 
 			if (protocol == "udp_unicast") {
 				provider = new UnicastProvider(ip, (int)stof(portNumber));
@@ -170,8 +165,6 @@ namespace tuning {
 	}
 
 	bool NetworkInterface::tune() {
-		cout << "NetworkInterface::tune(" << name << ":" << protocol;
-		cout << ")" << endl;
 		if (provider == NULL) {
 			if (createProvider()) {
 				tuned = provider->tune();

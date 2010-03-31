@@ -47,10 +47,13 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef ITRANSPORTSECTION_H_
-#define ITRANSPORTSECTION_H_
+#ifndef TRANSPORTPROTOCOLDESCRIPTOR_H_
+#define TRANSPORTPROTOCOLDESCRIPTOR_H_
 
-#include <string>
+#include "IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
+
+#include <iostream>
 using namespace std;
 
 namespace br {
@@ -58,29 +61,29 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class ITransportSection {
+namespace tsparser {
+namespace si {
+	class TransportProtocolDescriptor : public IMpegDescriptor {
+		private:
+			unsigned short protocolId;
+			unsigned char transportProtocolLabel;
+			unsigned char selectorByteLength;
+			char* selectorByte;
+
 		public:
-			virtual ~ITransportSection(){};
-			virtual void setESId(unsigned int id)=0;
-			virtual unsigned int getESId()=0;
-			virtual void addData(char bytes[184], unsigned int size)=0;
-			virtual string getSectionName()=0;
-			virtual unsigned int getTableId()=0;
-			virtual bool getSectionSyntaxIndicator()=0;
-			virtual unsigned int getSectionLength()=0;
-			virtual unsigned int getCurrentSize()=0;
-			virtual unsigned int getExtensionId()=0;
-			virtual unsigned int getSectionVersion()=0;
-			virtual bool getCurrentNextIndicator()=0;
-			virtual unsigned int getSectionNumber()=0;
-			virtual unsigned int getLastSectionNumber()=0;
-			virtual void* getPayload()=0;
-			virtual unsigned int getPayloadSize()=0;
-			virtual bool isConsolidated()=0;
-			virtual bool isConstructionFailed()=0;
-			virtual void print()=0;
+			TransportProtocolDescriptor();
+			virtual ~TransportProtocolDescriptor();
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			size_t process(char* data, size_t pos);
+			void print();
+			unsigned int getSelectorByteLength();
+			unsigned short getProtocolId();
+			unsigned char getTransportProtocolLabel();
+			char* getSelectorByte();
 	};
+
+}
 }
 }
 }
@@ -88,4 +91,4 @@ namespace dataprocessing {
 }
 }
 
-#endif /*ITRANSPORTSECTION_H_*/
+#endif /* TRANSPORTPROTOCOLDESCRIPTOR_H_ */

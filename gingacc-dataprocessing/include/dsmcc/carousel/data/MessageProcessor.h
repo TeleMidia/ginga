@@ -50,8 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef MESSAGEPROCESSOR_H_
 #define MESSAGEPROCESSOR_H_
 
-#include "../../../TransportSection.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
+#include "tsparser/ITransportSection.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "../ServiceDomain.h"
 #include "DsmccMessageHeader.h"

@@ -51,7 +51,7 @@ http://www.telemidia.puc-rio.br
 #define PAT_H_
 
 #include "Pmt.h"
-#include "TSSection.h"
+#include "TransportSection.h"
 
 #include <map>
 #include <vector>
@@ -65,7 +65,7 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
-	class Pat : public TSSection {
+	class Pat : public TransportSection {
 		protected:
 			unsigned int currentPid;
 			unsigned int currentCarouselId;

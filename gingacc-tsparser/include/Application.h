@@ -47,13 +47,22 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef APPLICATION_H_
+#define APPLICATION_H_
 
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <map>
+#include "ApplicationDescriptor.h"
+#include "ApplicationLocationDescriptor.h"
+#include "ApplicationNameDescriptor.h"
+#include "PrefetchDescriptor.h"
+#include "TransportProtocolDescriptor.h"
+
+#include "IApplication.h"
+
+#include <vector>
+#include <iostream>
 using namespace std;
 
 namespace br {
@@ -61,22 +70,39 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
+namespace tsparser {
+namespace si {
+
+	typedef struct {
+		unsigned int organizationId;
+		unsigned short applicationId;
+	} ApplicationIdentifier;
+
+	class Application : public IApplication {
+		private:
+			ApplicationIdentifier applicationId;
+			unsigned short applicationControlCode;
+			unsigned short appDescriptorsLoopLength;
+			vector<IMpegDescriptor*>* descriptors;
+			unsigned short applicationLength;
+
 		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+			Application();
+			virtual ~Application();
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
-	};
-}
-}
-}
-}
-}
-}
+			string getBaseDirectory();
+			string getInitialClass();
+			unsigned short getControlCode();
+			unsigned short getLength();
+			vector<IMpegDescriptor*>* getDescriptors();
+			size_t process(char* data, size_t pos);
+		};
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+}
+}
+}
+}
+}
+}
+}
+#endif /* APPLICATION_H_ */

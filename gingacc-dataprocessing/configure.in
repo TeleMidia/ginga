@@ -83,16 +83,6 @@ Please install Ginga CC System Thread Library.
 
 ]))
 
-######################
-# Ginga CC TS Parser #
-######################
-AC_HAVE_LIBRARY(gingacctsparser, , AC_ERROR([
-
-Couldn't find Ginga CC TS Parser library.
-Please install Ginga CC TS Parser Library.
-
-]))
-
 ############################################
 # Offering a non-componentized alternative #
 ############################################

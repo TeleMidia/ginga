@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef PMT_H_
 #define PMT_H_
 
-#include "TSSection.h"
+#include "TransportSection.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "util/functions.h"
@@ -67,7 +67,7 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
-	class Pmt : public TSSection {
+	class Pmt : public TransportSection {
 		protected:
 			map<unsigned int, short>* streams;
 			map<short, string>* streamTypeNames;

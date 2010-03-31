@@ -48,10 +48,16 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "../include/SectionFilter.h"
-#include "../include/TransportSection.h"
 
 #ifndef abs
 #define abs(a) ((a) < 0 ? (-a) : (a))
+#endif
+
+#include "../config.h"
+
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
 
 namespace br {
@@ -60,6 +66,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
+
+#if HAVE_COMPSUPPORT
+	static IComponentManager* cm = IComponentManager::getCMInstance();
+#endif
+
 	SectionFilter::SectionFilter() {
 		this->processedSections     = new set<string>;
 		this->lastContinuityCounter = -1;
@@ -137,20 +148,20 @@ namespace dataprocessing {
 		string sectionName;
 
 		tableId = section->getTableId();
-		if (section->getSectionVersion() > 0) {
+		if (section->getVersionNumber() > 0) {
 			if (tableId == 0x42 || tableId == 0x4E || tableId == 0xC8) {
 				sectionName = "epg/data/" +
 						itos(section->getESId()) +
 					    itos(section->getTableId()) +
 					    itos(section->getExtensionId()) +
-					    itos(section->getSectionVersion() - 1);
+					    itos(section->getVersionNumber() - 1);
 
 			} else {
 				sectionName = "carousel/modules/" +
 						itos(section->getESId()) +
 					    itos(section->getTableId()) +
 					    itos(section->getExtensionId()) +
-					    itos(section->getSectionVersion() - 1);
+					    itos(section->getVersionNumber() - 1);
 			}
 
 			if (checkProcessedSections(sectionName)) {
@@ -234,7 +245,13 @@ namespace dataprocessing {
 		}
 
 		if (currentSection == NULL) {
+#if HAVE_COMPSUPPORT
+			currentSection = ((TSSectionCreator*)(cm->getObject(
+					"TransportSection")))(buf, len);
+
+#else
 			currentSection = new TransportSection(buf, len);
+#endif
 			currentSection->setESId(filter->getPid());
 
 		} else {
@@ -365,16 +382,28 @@ namespace dataprocessing {
 					(void*)&data[offset], diff);
 
 			/* Creates the new section */
+#if HAVE_COMPSUPPORT
+			currentSection = ((TSSectionCreator*)(cm->getObject(
+					"TransportSection")))(buffer, diff + currentHeaderSize);
+
+#else
 			currentSection = new TransportSection(
 					buffer, diff + currentHeaderSize);
+#endif
 
 			delete buffer;
 			buffer = NULL;
 
 		/* The Header is ready */
 		} else if (pack->getStartIndicator()) {
+#if HAVE_COMPSUPPORT
+			currentSection = ((TSSectionCreator*)(cm->getObject(
+					"TransportSection")))(&data[offset], diff);
+
+#else
 			currentSection = new TransportSection(
 					&data[offset], diff);
+#endif
 
 		} else {
 			cout << "SectionFilter::verifyAndCreateSection ";

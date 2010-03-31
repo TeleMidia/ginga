@@ -177,6 +177,8 @@
     <dependency componentName="libtelemidiautil.so" version="0.12.1"/>
     <dependency componentName="libgingaccsystemthread.so" version="0.12.1"/>
     <dependency componentName="libgingacctuner.so" version="0.12.1"/>
+    <symbol object="AIT" creator="createAIT" destroyer="destroyAIT" interface="IAIT"/>
+    <symbol object="TransportSection" creator="createTSSection" destroyer="destroyTSSection" interface="ITransportSection"/>
     <symbol object="LogoTransmissionDescriptor" creator="createLTD" destroyer="destroyLTD" interface="ILogoTransmissionDescriptor"/>
     <symbol object="ShortEventDescriptor" creator="createSED" destroyer="destroySED" interface="IShortEventDescriptor"/>
     <symbol object="EventInfo" creator="createEventInfo" destroyer="destroyEventInfo" interface="IEventInfo"/>

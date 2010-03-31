@@ -110,8 +110,19 @@ int main(int argc, char** argv) {
 	IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
-	nptProcessor = new NPTProcessor(NULL);
-	dsmccSection = new DSMCCSectionPayload(NULL, 0);
+#if HAVE_COMPSUPPORT
+	tuner         = ((TunerCreator*)(cm->getObject("Tuner")))();
+	demuxer       = ((demCreator*)(cm->getObject("Demuxer")))((ITuner*)tuner);
+	dataProcessor = ((dpCreator*)(cm->getObject("DataProcessor")))();
+
+#else
+	tuner         = new Tuner();
+	demuxer       = new Demuxer(tuner);
+	dataProcessor = new DataProcessor();
+#endif
+
+	nptProcessor  = new NPTProcessor(NULL);
+	dsmccSection  = new DSMCCSectionPayload(NULL, 0);
 
 	if (argc == 1) {
 		//encoding NCL sections
@@ -119,7 +130,7 @@ int main(int argc, char** argv) {
 		cout << "gingacc-dataprocessing test: encoding streams (creating ";
 		cout << baseUri << "metadata.xml)" << endl;
 
-		nsp = new NCLSectionProcessor();
+		nsp   = new NCLSectionProcessor();
 
 		files = new vector<string>;
 		files->push_back("01/test1.ncl");
@@ -162,7 +173,7 @@ int main(int argc, char** argv) {
 
 		delete files;
 
-	} else if (argc == 2) {
+	} else if (argc == 2 && strcmp(argv[1], "--time") == 0) {
 		cout << "gingacc-dataprocessing test (argc = 2)";
 		cout << endl;
 		clk = new TimeBaseClock();
@@ -173,54 +184,31 @@ int main(int argc, char** argv) {
 			::usleep(1000000);
 		}
 
-	} else if (argc == 3) {
-		cout << "gingacc-dataprocessing test (argc = 3)";
+	} else if (argc == 3 && strcmp(argv[1], "--decode-oc") == 0) {
+		cout << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
+		cout << argv[2] << "'";
 		cout << endl;
 
-#if HAVE_COMPSUPPORT
-		tuner   = ((TunerCreator*)(cm->getObject("Tuner")))();
-		demuxer = ((demCreator*)(cm->getObject("Demuxer")))((ITuner*)tuner);
-
-#else
-		tuner   = new Tuner();
-		demuxer = new Demuxer(tuner);
-#endif
-
-		dataProcessor = new DataProcessor();
-		if (strcmp(argv[1], "--decode-oc") == 0) {
-			cout << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
-			cout << argv[2] << "'";
-			cout << endl;
-
-			fd = open(argv[2], O_RDONLY | O_LARGEFILE);
-			if (fd < 0) {
-				cout << "gingacc-dataprocessing test (argc = 3) Error! ";
-				cout << " can't find '" << argv[2] << "'";
-				cout << endl;
-			}
-
-			dataProcessor->createStreamTypeSectionFilter(
-					STREAM_TYPE_DSMCC_TYPE_B, demuxer);
-
-			demuxer->setDestination(STREAM_TYPE_DSMCC_TYPE_B);
-			do {
-				rval = read(fd, buf, buffSize);
-				if (rval != buffSize) {
-					cout << "gingacc-dataprocessing(" << __LINE__ << ")";
-					cout << " Warning! Can't read '" << buffSize << "'";
-					cout << " bytes" << endl;
-				}
-				demuxer->receiveData(buf, rval);
-			} while (rval > 0);
-
-		} else {
-			cout << "gingacc-dataprocessing(" << __LINE__ << ")";
-			cout << " test (argc = 3) invalid args:" << endl;
-			cout << "argv[0] = '" << (string)(argv[0]) << "'" << endl;
-			cout << "argv[1] = '" << (string)(argv[1]) << "'" << endl;
-			cout << "argv[2] = '" << (string)(argv[2]) << "'" << endl;
+		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
+		if (fd < 0) {
+			cout << "gingacc-dataprocessing test (argc = 3) Error! ";
+			cout << " can't find '" << argv[2] << "'";
 			cout << endl;
 		}
+
+		dataProcessor->createStreamTypeSectionFilter(
+				STREAM_TYPE_DSMCC_TYPE_B, demuxer);
+
+		demuxer->setDestination(STREAM_TYPE_DSMCC_TYPE_B);
+		do {
+			rval = read(fd, buf, buffSize);
+			if (rval != buffSize) {
+				cout << "gingacc-dataprocessing(" << __LINE__ << ")";
+				cout << " Warning! Can't read '" << buffSize << "'";
+				cout << " bytes" << endl;
+			}
+			demuxer->receiveData(buf, rval);
+		} while (rval > 0);
 
 		cout << "gingacc-dataprocessing test decode-oc all done! press enter";
 		cout << " to quit" << endl;
@@ -231,9 +219,39 @@ int main(int argc, char** argv) {
 
 		close(fd);
 
-	} else {
-		cout << "gingacc-dataprocessing test (argc = " << argc << ")";
+	} else if (argc == 3 && strcmp(argv[1], "--ait") == 0) {
+		cout << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
+		cout << argv[2] << "'";
 		cout << endl;
+
+		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
+		if (fd < 0) {
+			cout << "gingacc-dataprocessing test (argc = 3) Error! ";
+			cout << " can't find '" << argv[2] << "'";
+			cout << endl;
+		}
+
+		dataProcessor->createStreamTypeSectionFilter(
+				STREAM_TYPE_PRIVATE_SECTION, demuxer);
+
+		do {
+			rval = read(fd, buf, buffSize);
+			if (rval != buffSize) {
+				cout << "gingacc-dataprocessing(" << __LINE__ << ")";
+				cout << " Warning! Can't read '" << buffSize << "'";
+				cout << " bytes" << endl;
+			}
+			demuxer->receiveData(buf, rval);
+		} while (rval > 0);
+
+		cout << "gingacc-dataprocessing test decode-oc all done! press enter";
+		cout << " to quit" << endl;
+		getchar();
+		delete dataProcessor;
+		delete demuxer;
+		delete tuner;
+
+		close(fd);
 	}
 
 	cout << "gingacc-dataprocessing(" << __LINE__ << ")";

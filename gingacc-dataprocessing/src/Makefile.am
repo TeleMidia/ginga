@@ -13,7 +13,6 @@ libgingaccdataprocessing_so_LDFLAGS = -Wl,-soname,libgingaccdataprocessing.so \
 localLib_PROGRAMS = libgingaccdataprocessing.so
 libgingaccdataprocessing_so_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     FilterManager.cpp SectionFilter.cpp \
-    TransportSection.cpp \
     dsmcc/StreamEvent.cpp dsmcc/carousel/Binding.cpp dsmcc/carousel/Biop.cpp \
     dsmcc/carousel/Ior.cpp dsmcc/carousel/ServiceDomain.cpp \
     dsmcc/carousel/data/DownloadDataBlock.cpp \

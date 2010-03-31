@@ -92,8 +92,6 @@ namespace tuning {
 	}
 
 	bool FileSystemProvider::setChannel(string channelValue) {
-		cout << "FileSystemProvider::setChannel '" << channelValue << "'";
-		cout << endl;
 		fileName = channelValue;
 		return true;
 	}

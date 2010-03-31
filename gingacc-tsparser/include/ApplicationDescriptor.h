@@ -47,36 +47,61 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef APPLICATIONDESCRIPTOR_H_
+#define APPLICATIONDESCRIPTOR_H_
 
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
-
-#include <map>
+#include <iostream>
+#include <vector>
 using namespace std;
+
+#include "IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
-		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+namespace tsparser {
+namespace si {
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
+	struct Profile {
+		unsigned short applicationProfile;
+		unsigned char versionMajor;
+		unsigned char versionMinor;
+		unsigned char versionMicro;
 	};
-}
-}
-}
-}
-}
-}
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+	class ApplicationDescriptor : public IMpegDescriptor{
+		private:
+			unsigned char applicationProfilesLength;
+			vector<Profile*>* profiles;
+			bool serviceBoundFlag;
+			unsigned char visibility;
+			unsigned char applicationPriority;
+			char* transportProtocolLabels;
+			unsigned char transportProtocolLabelsLength;
+
+		public:
+			ApplicationDescriptor();
+			virtual ~ApplicationDescriptor();
+
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			size_t process(char* data, size_t pos);
+			void print();
+			unsigned char getApplicationPriority();
+			unsigned char getVisibility();
+			unsigned char getTransportProtocolLabelsLength();
+			char* getTransportProtocolLabels();
+			vector<struct Profile*>* getProfiles();
+	};
+
+}
+}
+}
+}
+}
+}
+}
+#endif /* APPLICATIONDESCRIPTOR_H_ */

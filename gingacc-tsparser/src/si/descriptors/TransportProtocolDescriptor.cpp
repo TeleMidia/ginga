@@ -47,36 +47,98 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
-
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
-
-#include <map>
-using namespace std;
+#include "../../../include/TransportProtocolDescriptor.h"
+#include <string.h>
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
-		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+namespace tsparser {
+namespace si {
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
-	};
-}
-}
-}
-}
-}
-}
+	TransportProtocolDescriptor::TransportProtocolDescriptor() {
+		protocolId = 0;
+		transportProtocolLabel = 0;
+		selectorByte = NULL;
+		selectorByteLength = 0;
+		descriptorLength = 0;
+		descriptorTag = 0x02;
+	}
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+	TransportProtocolDescriptor::~TransportProtocolDescriptor() {
+		if (selectorByte != NULL) {
+			delete selectorByte;
+		}
+	}
+	unsigned int TransportProtocolDescriptor::getDescriptorLength() {
+		return descriptorLength;
+	}
+
+	unsigned char TransportProtocolDescriptor::getDescriptorTag() {
+		return descriptorTag;
+	}
+
+	unsigned int TransportProtocolDescriptor::getSelectorByteLength() {
+		return selectorByteLength;
+	}
+
+	char* TransportProtocolDescriptor::getSelectorByte() {
+		return selectorByte;
+	}
+
+	unsigned char TransportProtocolDescriptor::getTransportProtocolLabel() {
+		return transportProtocolLabel;
+	}
+
+	unsigned short TransportProtocolDescriptor::getProtocolId() {
+		return protocolId;
+	}
+
+	void TransportProtocolDescriptor::print() {
+		cout << "TransportProtocolDescriptor::print" << endl;
+	}
+
+
+	size_t TransportProtocolDescriptor::process(char* data, size_t pos) {
+
+		cout << "TransportProtocolDescriptor::process with pos = " << pos;
+		cout << endl;
+
+		cout << "TransportProtocolDescriptor::process values: " << endl;
+
+		descriptorLength = data[pos+1];
+		cout << " descriptorLenght = " << (unsigned int) descriptorLength;
+		pos += 2;
+
+		protocolId = ((((data[pos] & 0xFF ) << 8) & 0xFF00) |
+				(data[pos+1] & 0xFF));
+		pos += 2;
+
+		cout << " protocolId = " << protocolId;
+
+		transportProtocolLabel =  data[pos];
+		//pos ++;
+		cout << " transportProtocolLabel = " << (unsigned int) transportProtocolLabel;
+
+		selectorByteLength = descriptorLength - 3;
+		cout << " and selectorByteLenght = " << (unsigned int)selectorByteLength << endl;
+		selectorByte = new char[selectorByteLength];
+
+		memcpy(selectorByte, data+pos+1, selectorByteLength);
+
+		pos += selectorByteLength;
+
+		cout << "TransportProtocolDescriptor::process finish with pos = ";
+		cout << pos << endl;
+		return pos;
+	}
+
+}
+}
+}
+}
+}
+}
+}

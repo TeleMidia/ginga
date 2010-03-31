@@ -56,6 +56,9 @@ extern "C" {
 	#include <fcntl.h>
 }
 
+#include "tsparser/IAIT.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+
 #include "dsmcc/carousel/ServiceDomain.h"
 #include "dsmcc/carousel/IServiceDomainListener.h"
 #include "dsmcc/carousel/object/IObjectListener.h"
@@ -90,7 +93,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-	class DataProcessor : public IDataProcessor, public IServiceDomainListener, public Thread {
+	class DataProcessor :
+			public IDataProcessor,
+			public IServiceDomainListener,
+			public Thread {
+
 		private:
 			FilterManager* filterManager;
 			map<unsigned int, MessageProcessor*>* processors;
@@ -103,6 +110,7 @@ namespace dataprocessing {
 			NPTProcessor* nptProcessor;
 			vector<ITransportSection*>* sections;
 			IDemuxer* demux;
+			IAIT* ait;
 			bool running;
 			bool removeOCFilter;
 
@@ -110,8 +118,11 @@ namespace dataprocessing {
 			DataProcessor();
 			~DataProcessor();
 
+			void applicationInfoMounted(IAIT* ait);
 			void serviceDomainMounted(
-					map<string, string>* names, map<string, string>* paths);
+					string mountPoint,
+					map<string, string>* names,
+					map<string, string>* paths);
 
 			void removeOCFilterAfterMount(bool removeIt);
 

@@ -1121,7 +1121,6 @@ namespace player {
 	}
 
 	AVPlayer::~AVPlayer() {
-		cout << "AVPlayer::~AVPlayer(" << mrl << ")" << endl;
 		if (status != STOP) {
 			stop();
 		}
@@ -1280,7 +1279,6 @@ namespace player {
 
 		Player::play();
 		if (!isRemoteMrl) {
-			cout << "void AVPlayer::play(" << mrl << ")" << endl;
 			provider->playOver(surface, hasVisual, this);
 		}
 
@@ -1322,7 +1320,6 @@ namespace player {
 
 		Player::play();
 		if (!isRemoteMrl) {
-			cout << "void AVPlayer::play(" << mrl << ")" << endl;
 			provider->resume(surface, hasVisual);
 		}
 
@@ -1417,11 +1414,6 @@ namespace player {
 		while (!buffered) {
 			::usleep(150000);
 		}
-
-		cout << "AVPlayer::setAVPid";
-		cout << " aPid = '" << aPid << "'";
-		cout << " vPid = '" << vPid << "'";
-		cout << endl;
 		provider->setAVPid(aPid, vPid);
 	}
 
@@ -1461,11 +1453,9 @@ namespace player {
 
 		lock();
 		if (mainAV) {
-			cout << "AVPlayer::run mainAV mrl: '" << mrl << "'" << endl;
 			running = true;
 
 			if (hasVisual) {
-				cout << "AVPlayer::run creating provider" << endl;
 #if HAVE_COMPSUPPORT
 				this->provider = ((CMPCreator*)(cm->getObject(
 						"TSVideoProvider")))(mrl.c_str());
@@ -1474,7 +1464,6 @@ namespace player {
 				this->provider = new XineVideoProvider(mrl.c_str());
 #endif
 
-				cout << "AVPlayer::run call create frame" << endl;
 				unlock();
 				this->surface = createFrame();
 				lock();
@@ -1490,15 +1479,12 @@ namespace player {
 			}
 
 			if (this->win != NULL && surface->getParent() == NULL) {
-				cout << "AVPlayer::run call set parent" << endl;
 				this->surface->setParent((void*)win);
 			}
 
-			cout << "AVPlayer::run call play" << endl;
 			provider->playOver(surface, hasVisual);
 			checkVideoResizeEvent();
 			buffered = true;
-			cout << "AVPlayer::run wait unlock condition" << endl;
 			waitForUnlockCondition();
 
 		} else {

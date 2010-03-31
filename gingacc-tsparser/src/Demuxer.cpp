@@ -341,7 +341,7 @@ namespace tsparser {
 					    packet->getAdaptationFieldControl() == 3) {
 
 				packet->getPayload(tsPacketPayload);
-				pat->process(tsPacketPayload, 184); /* Mount PAT HEADER */
+				pat->addData(tsPacketPayload, 184); /* Mount PAT HEADER */
 				if (pat->processSectionPayload()) { /* Mount unProcessed PMTs */
 					_debug("Demuxer::demux - PAT mounted!\n");
 					addPat(pat);
@@ -361,7 +361,7 @@ namespace tsparser {
 			pmt = (*pmts)[pid];
 			if (pmt->isConsolidated()) { /* If the PMT is OK, try update the PMT */
 				newPmt = new Pmt(pid, pmt->getProgramNumber());
-				newPmt->process(tsPacketPayload, 184);
+				newPmt->addData(tsPacketPayload, 184);
 				if (newPmt->processSectionPayload()) { /* Process the new PMT */
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
@@ -388,7 +388,7 @@ namespace tsparser {
 				}
 
 			} else if (!pmt->hasProcessed()) { /* Tries to consolidate the PMT */
-				pmt->process(tsPacketPayload, 184);
+				pmt->addData(tsPacketPayload, 184);
 				if (pmt->processSectionPayload()) {
 					_debug("Demuxer:demux - PMT pid=%d processed!\n",
 							pmt->getPid());
@@ -555,7 +555,7 @@ namespace tsparser {
 				//TODO: handle pat updates
 
 			} else {
-				pat->process(section, secLen);
+				pat->addData(section, secLen);
 				if (pat->processSectionPayload()) {
 					addPat(pat);
 					pids = pat->getUnprocessedPmtPids();
@@ -578,7 +578,7 @@ namespace tsparser {
 			pmt = (*pmts)[pid];
 			if (pmt->isConsolidated()) {
 				newPmt = new Pmt(pid, pmt->getProgramNumber());
-				newPmt->process(section, secLen);
+				newPmt->addData(section, secLen);
 				if (newPmt->processSectionPayload()) {
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
@@ -601,7 +601,7 @@ namespace tsparser {
 				}
 
 			} else if (!pmt->hasProcessed()) {
-				pmt->process(section, secLen);
+				pmt->addData(section, secLen);
 				if (pmt->processSectionPayload()) {
 					cout << "Demuxer::receiveSection call pat->addPmt";
 					cout << endl;

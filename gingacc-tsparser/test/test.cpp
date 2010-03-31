@@ -50,7 +50,11 @@ http://www.telemidia.puc-rio.br
 #include "../include/Demuxer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
+#include "../include/AIT.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+
 int main() {
+	IAIT* ait = new AIT();
 	IDemuxer* demuxer = new Demuxer(NULL);
 	//TODO: tests
 	return 0;

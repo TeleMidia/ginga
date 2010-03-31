@@ -47,88 +47,48 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef TRANSPORTSECTION_H_
-#define TRANSPORTSECTION_H_
+#ifndef APPLICATIONLOCATIONDESCRIPTOR_H_
+#define APPLICATIONLOCATIONDESCRIPTOR_H_
 
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+#include "IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "ITransportSection.h"
-
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
-#endif
-
+#include <string.h>
+#include <string>
+#include <iostream>
+using namespace std;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class TransportSection : public ITransportSection {
+namespace tsparser {
+namespace si {
+	class ApplicationLocationDescriptor : public IMpegDescriptor{
 		private:
-			// Original TS packet id.
-			unsigned int pid;
-
-			// ISO/IEC 13818-1 TS SECTION HEADER
-			unsigned int tableId;
-			bool sectionSyntaxIndicator;
-
-			/*
-			 * Number of bytes of the section, starting immediately following
-			 * the sectionLength field, and including CRC32. Thus, 9 bytes
-			 * of overhead.
-			 */
-			unsigned int sectionLength;
-
-			/*
-			 * Transport_stream_id for PAT
-			 * program_number for PMT
-			 * table_id_extension for DSM_CC Section
-			 */
-			unsigned int idExtention;
-			unsigned int versionNumber;
-			bool currentNextIndicator;
-			unsigned int sectionNumber;
-			unsigned int lastSectionNumber;
-
-			// Section data.
-			char section[4096];
-
-			unsigned int currentSize;
-
-			string sectionName;
-
+			unsigned char baseDirectoryLength;
+			char* baseDirectoryByte;
+			unsigned char classPathExtensionLength;
+			char* classPathExtensionByte;
+			unsigned char initialClassLentgh;
+			char* initialClassByte;
 
 		public:
-			TransportSection(char *sectionBytes, unsigned int size);
-			~TransportSection();
-			void setESId(unsigned int id);
-			unsigned int getESId();
-			void addData(char bytes[184], unsigned int size);
-
-		private:
-			void setSectionName();
-			bool create(char *sectionBytes, unsigned int size);
-			bool constructionFailed;
-		public:
-			string getSectionName();
-			unsigned int getTableId();
-			bool getSectionSyntaxIndicator();
-			unsigned int getSectionLength();
-			unsigned int getCurrentSize();
-			unsigned int getExtensionId();
-			unsigned int getSectionVersion();
-			bool getCurrentNextIndicator();
-			unsigned int getSectionNumber();
-			unsigned int getLastSectionNumber();
-			void* getPayload();
-			unsigned int getPayloadSize();
-			bool isConsolidated();
-			bool isConstructionFailed();
+			ApplicationLocationDescriptor();
+			virtual ~ApplicationLocationDescriptor();
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			size_t process(char* data, size_t pos);
 			void print();
-	};
+			unsigned int getBaseDirectoryLength();
+			string getBaseDirectory();
+			unsigned int getClassPathExtensionLength();
+			string getClassPathExtension();
+			unsigned int getInitialClassLength();
+			string getInitialClass();
+		};
+}
 }
 }
 }
@@ -136,4 +96,4 @@ namespace dataprocessing {
 }
 }
 
-#endif /*TRANSPORTSECTION_H_*/
+#endif /* APPLICATIONLOCATIONDESCRIPTOR_H_ */

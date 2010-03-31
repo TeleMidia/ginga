@@ -57,17 +57,27 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	TransportSection::TransportSection(
-			char *sectionBytes, unsigned int size) {
+namespace tsparser {
+	TransportSection::TransportSection() {
+		initialize();
+	}
 
-		this->pid = 0;
-		sectionName = "";
+	TransportSection::TransportSection(
+			char* sectionBytes, unsigned int size) {
+
+		initialize();
 		constructionFailed = create(sectionBytes, size);
 	}
 
 	TransportSection::~TransportSection() {
 
+	}
+
+	void TransportSection::initialize() {
+		constructionFailed = true;
+		pid                = 0;
+		sectionLength      = 0;
+		sectionName        = "";
 	}
 
 	bool TransportSection::isConstructionFailed() {
@@ -77,10 +87,10 @@ namespace dataprocessing {
 	bool TransportSection::create(char *sectionBytes, unsigned int size){
 		// Verifies the size to protect the memcpy call
 		if (size > ARRAY_SIZE(section)) {
-					cout << "TransportSection::new: Warning! "
-					     << "Invalid section size " << size << " "
-					     << "truncating..." << endl;
-					size = ARRAY_SIZE(section);
+			cout << "TransportSection::create Warning! ";
+			cout << "Invalid section size " << size << " ";
+			cout << "truncating..." << endl;
+			size = ARRAY_SIZE(section);
 		}
 
 		memcpy((void*)&(section[0]), (void*)&(sectionBytes[0]), size);
@@ -89,11 +99,8 @@ namespace dataprocessing {
 		tableId                = section[0];
 		sectionSyntaxIndicator = (section[1] & 0x80) >> 7;
 
-		sectionLength          = (
-				((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
-
-		idExtention            = (
-				((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
+		sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
+		idExtention   = (((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
 
 		versionNumber          = (section[5] & 0x3E) >> 1;
 		currentNextIndicator   = (section[5] & 0x01);
@@ -103,6 +110,7 @@ namespace dataprocessing {
 		// Update current section size.
 		if (size >= sectionLength + 3) {
 			currentSize = sectionLength + 3;
+
 		} else {
 			currentSize = size;
 		}
@@ -112,7 +120,6 @@ namespace dataprocessing {
 			_warn(
 					"TransportSection::new: Invalid section size=%d\n",
 					sectionLength);
-
 			return false;
 		}
 
@@ -139,6 +146,11 @@ namespace dataprocessing {
 
 	void TransportSection::addData(char bytes[184], unsigned int size) {
 		unsigned int freespace = sectionLength + 3 - currentSize;
+
+		if (sectionLength == 0) {
+			constructionFailed = create(bytes, size);
+			return;
+		}
 
 		if (isConsolidated()) {
 			cout << "TransportSection::addData: Warning! ";
@@ -200,7 +212,7 @@ namespace dataprocessing {
 		return idExtention;
 	}
 
-	unsigned int TransportSection::getSectionVersion() {
+	unsigned int TransportSection::getVersionNumber() {
 		return versionNumber;
 	}
 
@@ -244,7 +256,7 @@ namespace dataprocessing {
 		cout << "syntax indicator = " << getSectionSyntaxIndicator() << endl;
 		cout << "section length = " << getSectionLength() << endl;
 		cout << "extendion Id = " << getExtensionId() << endl;
-		cout << "section version = " << getSectionVersion() << endl;
+		cout << "section version = " << getVersionNumber() << endl;
 		cout << "current next indicator = " << getCurrentNextIndicator() << endl;
 		cout << "section number = " << getSectionNumber() << endl;
 		cout << "last secion number = " << getLastSectionNumber() << endl;
@@ -262,4 +274,17 @@ namespace dataprocessing {
 }
 }
 }
+}
+
+extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::ITransportSection*
+		createTSSection(char* sectionBytes, unsigned int size) {
+
+	if (sectionBytes == NULL) {
+		return new ::br::pucrio::telemidia::ginga::core::tsparser::
+			TransportSection();
+
+	} else {
+		return new ::br::pucrio::telemidia::ginga::core::tsparser::
+			TransportSection(sectionBytes, size);
+	}
 }

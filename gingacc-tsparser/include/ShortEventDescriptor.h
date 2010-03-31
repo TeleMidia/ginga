@@ -79,10 +79,11 @@ namespace descriptors {
 			void setDescription(string text, unsigned char len);
 			unsigned char getEventNameLength();
 			unsigned char getDescriptionLength();
-			char * getLanguageCode();
-			char * getEventName();
-			char * getDescription();
+			char* getLanguageCode();
+			char* getEventName();
+			char* getDescription();
 			void setDescriptorLength(unsigned char length);
+			size_t process(char* data, size_t pos){return 0;};
 			unsigned char getDescriptorLength();
     };
 }

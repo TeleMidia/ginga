@@ -47,31 +47,44 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef APPLICATIONNAMEDESCRIPTOR_H_
+#define APPLICATIONNAMEDESCRIPTOR_H_
 
-#include "tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+#include <string.h>
 
-#include <map>
+#include <vector>
 using namespace std;
+
+#include "IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
-		public:
-			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+namespace tsparser {
+namespace si {
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
+	struct AppName {
+		char languageCode[3];
+		unsigned char applicationNameLentgh;
+		char* applicationNameChar;
 	};
+
+	class ApplicationNameDescriptor : public IMpegDescriptor {
+		private:
+			vector<struct AppName*>* appNames;
+
+		public:
+			ApplicationNameDescriptor();
+			virtual ~ApplicationNameDescriptor();
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			size_t process(char* data, size_t pos);
+			void print();
+		};
+}
 }
 }
 }
@@ -79,4 +92,4 @@ namespace dataprocessing {
 }
 }
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+#endif /* APPLICATIONNAMEDESCRIPTOR_H_ */
