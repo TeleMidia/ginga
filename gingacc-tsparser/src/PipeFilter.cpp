@@ -124,7 +124,7 @@ namespace tsparser {
 		if (pack->getAdaptationFieldControl() != 2 &&
 				pack->getAdaptationFieldControl() != 0) {
 
-			if (contCounter == 11) {
+			if (contCounter == 15) {
 				contCounter = -1;
 			}
 			(*pids)[ppid] = contCounter + 1;
