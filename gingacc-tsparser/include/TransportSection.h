@@ -141,6 +141,7 @@ namespace tsparser {
 			unsigned int getPayloadSize();
 			bool isConsolidated();
 			bool isConstructionFailed();
+			static unsigned int crc32(char *data, unsigned int len);
 			void print();
 	};
 }

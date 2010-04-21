@@ -49,6 +49,9 @@ http://www.telemidia.puc-rio.br
 
 #include "../include/PipeFilter.h"
 
+#include "../include/Pat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -118,13 +121,19 @@ namespace tsparser {
 
 		contCounter = (*pids)[ppid];
 		pack->setContinuityCounter(contCounter);
-		if (pack->getContinuityCounter() != 2 &&
-				pack->getContinuityCounter() != 0) {
+		if (pack->getAdaptationFieldControl() != 2 &&
+				pack->getAdaptationFieldControl() != 0) {
 
+			if (contCounter == 11) {
+				contCounter = -1;
+			}
 			(*pids)[ppid] = contCounter + 1;
 		}
 
 		pack->getPacketData(packData);
+		if (ppid == 0x00) {
+			Pat::resetPayload(packData + 4, pack->getPayloadSize());
+		}
 		ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
 		if (ret == ITSPacket::TS_PACKET_SIZE) {
 			dataReceived = true;

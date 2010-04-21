@@ -59,6 +59,9 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
+	int Pat::defaultProgramNumber = -1;
+	int Pat::defaultProgramPid    = -1;
+
 	Pat::Pat() : TransportSection() {
 		programs = new map<unsigned int, Pmt*>;
 		pat = new map<unsigned int, unsigned int>;
@@ -262,12 +265,17 @@ namespace si {
 	}
 
 	bool Pat::processSectionPayload() {
+		char* payload;
+
 		if (tableId != 0 || !isConsolidated()) {
 			return false;
 		}
 
 		char sectionPayload[sectionLength - 9];
-		memcpy((void*)(&sectionPayload[0]), getPayload(), sectionLength - 9);
+
+		payload = (char*)getPayload();
+		memcpy((void*)(&sectionPayload[0]), payload, sectionLength - 9);
+		delete payload;
 
 		unsigned int n;
 		unsigned int i;
@@ -283,11 +291,82 @@ namespace si {
 				    (sectionPayload[((i*4) + 3)] & 0xFF);
 
 			if (pid != (unsigned int)NIT_PID) { /* Ignores NIT_PIDs */
+				if (defaultProgramNumber == -1 ||
+						programNumber < defaultProgramNumber) {
+
+					cout << "Pat::process ";
+					cout << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
+					cout << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
+					cout << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
+					cout << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
+					cout << "' sectionLength = '" << getSectionLength();
+					cout << "'" << endl;
+
+					defaultProgramNumber = programNumber;
+					defaultProgramPid    = pid;
+				}
+
 				(*pat)[pid] = programNumber;
 				unprocessedPmts->push_back(pid);
 			}
 		}
 		return true;
+	}
+
+	void Pat::resetPayload(char* payload, int size) {
+		int pointerField = 1;
+		int offset;
+		unsigned long crcValue;
+
+		if (defaultProgramNumber < 0) {
+			cout << "Pat::resetPayload Warning! Can't reset: programNum < 0";
+			cout << endl;
+			return;
+		}
+
+		if (payload[0] != 0x0) {
+			pointerField = payload[0] & 0xFF;
+		}
+
+		offset = pointerField;
+
+		if (payload[offset] != 0x00) {
+			cout << "Pat::resetPayload Warning! Pat Table Id != 0x00";
+			cout << endl;
+		}
+
+		//update section_length
+		payload[offset + 1] = payload[offset + 1] & 0xF0;
+		payload[offset + 2] = (9 + 4) & 0xFF;
+
+		offset = offset + 8; //escape section_header
+
+		payload[offset    ] = (defaultProgramNumber  & 0x0000FF00) >> 8;
+		payload[offset + 1] = (defaultProgramNumber) & 0x000000FF;
+
+		if (defaultProgramPid < 255) {
+			payload[offset + 2] = 0xE0;
+
+		} else {
+			payload[offset + 2] = ((defaultProgramPid & 0x0000FF00) | 0xE0) >> 8;
+		}
+
+		payload[offset + 3] = (defaultProgramPid) & 0x000000FF;
+
+		offset = offset + 4; //skipping created program
+
+		crcValue = TransportSection::crc32(payload + pointerField, 3 + 5 + 4);
+
+		payload[offset    ] = (crcValue & 0xFF000000) >> 24;
+		payload[offset + 1] = (crcValue & 0x00FF0000) >> 16;
+		payload[offset + 2] = (crcValue & 0x0000FF00) >> 8;
+		payload[offset + 3] = (crcValue & 0x000000FF);
+
+		offset = offset + 4; //skipping crc32
+		while (offset < size) {
+			payload[offset] = 0xFF;
+			offset++;
+		}
 	}
 
 	bool Pat::hasUnprocessedPmt() {

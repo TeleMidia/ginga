@@ -66,6 +66,10 @@ namespace core {
 namespace tsparser {
 namespace si {
 	class Pat : public TransportSection {
+		private:
+			static int defaultProgramNumber;
+			static int defaultProgramPid;
+
 		protected:
 			unsigned int currentPid;
 			unsigned int currentCarouselId;
@@ -100,6 +104,9 @@ namespace si {
 			unsigned int getProgramNumberByPid(unsigned int pid);
 			short getStreamType(unsigned int pid);
 			bool isSectionType(unsigned int pid);
+
+			static void resetPayload(char* payload, int size);
+
 			bool processSectionPayload();
 			bool hasUnprocessedPmt();
 			vector<unsigned int>* getUnprocessedPmtPids();
