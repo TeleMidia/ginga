@@ -1474,7 +1474,7 @@ namespace player {
 						"TSAudioProvider")))(mrl.c_str());
 
 #else
-				this->provider = new FFmpegAudioProvider(mrl.c_str());
+				this->provider = new XineVideoProvider(mrl.c_str());
 #endif
 			}
 

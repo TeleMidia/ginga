@@ -1,6 +1,8 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes)
+INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
+    $(all_includes)
+
 LIBS =
 
 #noinst_PROGRAMS = dsmccExtract

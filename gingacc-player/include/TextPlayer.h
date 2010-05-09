@@ -96,6 +96,12 @@ namespace player {
 					string fontUri = "",
 					int fontSize = 12, IColor* fontColor = NULL);
 
+			virtual void play(){Player::play();};
+			virtual void stop(){Player::stop();};
+			virtual void abort(){Player::abort();};
+			virtual void pause(){Player::pause();};
+			virtual void resume(){Player::resume();};
+
 			bool setFont(string someUri);
 			void setFontSize(int size);
 			int getFontSize();

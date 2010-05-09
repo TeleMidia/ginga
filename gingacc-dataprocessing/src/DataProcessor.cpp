@@ -58,6 +58,8 @@ http://www.telemidia.puc-rio.br
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#else
+#include "../../gingacc-tsparser/include/AIT.h"
 #endif
 
 namespace br {

@@ -158,7 +158,6 @@ namespace player {
 	}
 
 	void PlainTxtPlayer::play() {
-		Player::play();
 		if (surface != NULL && surface->getContent() != NULL) {
 			wclog << "PlainTxtPlayer::play ok" << endl;
 			loadTxt();
@@ -166,6 +165,12 @@ namespace player {
 		} else {
 			wclog << "PlainTxtPlayer::play warning" << endl;
 		}
+
+		Player::play();
+	}
+
+	void PlainTxtPlayer::stop() {
+		Player::stop();
 	}
 
 	void PlainTxtPlayer::setContent(string content) {

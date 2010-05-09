@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "../config.h"
 
 #include "../include/ImagePlayer.h"
+#include "../include/AVPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #if HAVE_MULTIPROCESS

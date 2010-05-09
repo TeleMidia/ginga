@@ -501,6 +501,9 @@ namespace player {
 	}
 
 	bool Player::isForcedNaturalEnd() {
+		if (mrl == "") {
+			return false;
+		}
 		return forcedNaturalEnd;
 	}
 

@@ -180,6 +180,7 @@ AC_ARG_ENABLE(components,
 if test x$enable_components = xno; then
    COMPONENTS_LIBS='-lgingaccsysctsdfbf -lgingaccsysctsfs \
     -lgingaccsysctsimgdfb -lgingaccsysctsdfbav \
+    -lgingaccsysctsxineav \
     -lgingaccsystemio -lgingaccsystemiocodemap \
     -lgingaccsystemiodfb -lgingaccsystemthread \
     -L/usr/local/lib/ginga/ -L/usr/local/lib \

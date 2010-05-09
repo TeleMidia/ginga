@@ -58,13 +58,15 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
 #include "IPlayer.h"
 
+#ifndef HAVE_CLOCKTIME
+#define HAVE_CLOCKTIME 1
+#endif
+
 #include <set>
 #include <vector>
 #include <map>
 #include <string>
 using namespace std;
-
-#include "../config.h"
 
 typedef struct lockedPlayerLitenerAction {
 	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* l;
