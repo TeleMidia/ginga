@@ -510,6 +510,7 @@ namespace player {
 	bool Player::setOutWindow(int windowId) {
 		ISurface* renderedSurface;
 
+#if HAVE_MULTIPROCESS
 		if (windowId < 0 && outputWindow != NULL) {
 			outputWindow->revertContent();
 
@@ -536,7 +537,7 @@ namespace player {
 		} else {
 			return false;
 		}
-
+#endif
 		return true;
 	}
 }

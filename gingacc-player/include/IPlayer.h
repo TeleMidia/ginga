@@ -86,6 +86,7 @@ namespace player {
 
 			virtual ~IPlayer(){};
 
+			virtual io::ISurface* getSurface()=0;
 			virtual void setMrl(string mrl, bool visible=true)=0;
 			virtual void reset()=0;
 			virtual void rebase()=0;
