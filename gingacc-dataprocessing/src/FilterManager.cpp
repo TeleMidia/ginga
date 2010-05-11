@@ -242,8 +242,11 @@ namespace dataprocessing {
 		sn = section->getSectionNumber();
 		lsn = section->getLastSectionNumber();
 		if (secs->count(sn) != 0) {
-			_warn("FilterManager Warning! Adding section %s in an existent "
-				  "position=%d\n", sectionName.c_str(), sn);
+			cout << "FilterManager Warning! Adding section '";
+			cout << sectionName;
+			cout << "' in an existent ";
+			cout << "position = '" << sn << "'";
+			cout << endl;
 
 			return false;
 
@@ -258,7 +261,7 @@ namespace dataprocessing {
 
 			if (sectionFd < 0) {
 				cout << "FilterManager Warning! error open file ";
-				cout << sectionName.c_str();
+				cout << sectionName;
 				cout << "." << endl;
 				return false;
 			}

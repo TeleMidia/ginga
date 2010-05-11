@@ -122,8 +122,8 @@ namespace carousel {
 		char token[6];
 		unsigned int j, size;
 
-		cout << "ObjectProcessor::mountObject of kind '" << object->getKind();
-		cout << "'" << endl;
+		/*cout << "ObjectProcessor::mountObject of kind '" << object->getKind();
+		cout << "'" << endl;*/
 		if (object->getKind() == "srg" ||
 			    object->getKind() == "DSM::ServiceGateway") {
 
@@ -133,22 +133,22 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				cout << "ObjectProcessor::mountObject srg adding objId '";
-				cout << objectId << "'" << endl;
+				/*cout << "ObjectProcessor::mountObject srg adding objId '";
+				cout << objectId << "'" << endl;*/
 				(*objectNames)[objectId] = (*i)->getId();
 				(*objectPaths)[objectId] = "carousel/" +
 					    itos(object->getCarouselId()) + "/";
 			}
-			cout << "ObjectProcessor::mountObject srg done" << endl;
+			//cout << "ObjectProcessor::mountObject srg done" << endl;
 			return true;
 
 		} else if (object->getKind() == "dir" ||
 			    object->getKind() == "DSM::Directory") {
 
 			if (objectPaths->count(object->getObjectId()) == 0) {
-				cout << "ObjectProcessor::mountObject Warning!";
+				/*cout << "ObjectProcessor::mountObject Warning!";
 				cout << "cant find object id '" << object->getObjectId();
-				cout << endl;
+				cout << endl;*/
 				return false;
 
 			} else {
@@ -156,8 +156,8 @@ namespace carousel {
 					    (objectNames->find(object->getObjectId()))->second +
 					    "/";
 
-				cout << "ObjectProcessor::mountObject create dir '" << path;
-				cout << endl;
+				/*cout << "ObjectProcessor::mountObject create dir '" << path;
+				cout << endl;*/
 				mkdir(path.c_str(), 0777);
 			}
 
@@ -167,22 +167,22 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				cout << "ObjectProcessor::mountObject dir adding objId '";
-				cout << objectId << "'" << endl;
+				/*cout << "ObjectProcessor::mountObject dir adding objId '";
+				cout << objectId << "'" << endl;*/
 
 				(*objectNames)[objectId] = (*i)->getId();
 				(*objectPaths)[objectId] = path;
 			}
-			cout << "ObjectProcessor::mountObject dir done" << endl;
+			//cout << "ObjectProcessor::mountObject dir done" << endl;
 			return true;
 
 		} else if (object->getKind() == "fil" ||
 			    object->getKind() == "DSM::File") {
 
 			if (objectPaths->count(object->getObjectId()) == 0) {
-				cout << "ObjectProcessor::mountObject Warning! ";
+				/*cout << "ObjectProcessor::mountObject Warning! ";
 				cout << "cant find object id '" << object->getObjectId();
-				cout << "" << endl;
+				cout << "" << endl;*/
 				return false;
 
 			} else {
@@ -220,7 +220,7 @@ namespace carousel {
 					return false;
 				}
 			}
-			cout << "ObjectProcessor::mountObject fil done" << endl;
+			//cout << "ObjectProcessor::mountObject fil done" << endl;
 			return true;
 		}
 

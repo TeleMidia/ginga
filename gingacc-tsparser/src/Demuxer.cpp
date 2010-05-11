@@ -290,18 +290,18 @@ namespace tsparser {
 					attached = true;
 
 				} else {
-					cout << "Demuxer::setupFilter can't getPidByTid pid = '";
+					/*cout << "Demuxer::setupFilter can't getPidByTid pid = '";
 					cout << pid << "' tid = '" << filter->getTid() << "'";
 
 					cout << " PMT print: " << endl;
-					pmt->print();
+					pmt->print();*/
 				}
 
 				++i;
 			}
 
 		} else {
-			cout << "Demuxer::setupFilter can't get pmt" << endl;
+			//cout << "Demuxer::setupFilter can't get pmt" << endl;
 		}
 
 		return attached;
@@ -319,8 +319,8 @@ namespace tsparser {
 			cout << "Demuxer::demux filtred packet number '";
 			cout << debugPackCount;
 			cout << "'" << endl;
-		}
-		debugPackCount++;*/
+		}*/
+		debugPackCount++;
 
 		pid = packet->getPid();
 
@@ -343,7 +343,6 @@ namespace tsparser {
 				packet->getPayload(tsPacketPayload);
 				pat->addData(tsPacketPayload, 184); /* Mount PAT HEADER */
 				if (pat->processSectionPayload()) { /* Mount unProcessed PMTs */
-					_debug("Demuxer::demux - PAT mounted!\n");
 					addPat(pat);
 					pids = pat->getUnprocessedPmtPids();
 					i = pids->begin();
@@ -366,32 +365,29 @@ namespace tsparser {
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
 					if (newVer != currVer) { /* If the version is different update */
-						cout << "demuxer replace pmt id = '" << pid << "'";
+						/*cout << "demuxer replace pmt id = '" << pid << "'";
 						cout << " newVer = '" << newVer;
 						cout << "' currVer = '" << currVer << "': ";
 						newPmt->print();
-						cout << endl;
+						cout << endl;*/
 						pat->replacePmt(pid, newPmt);
 						(*pmts)[pid] = newPmt;
 
 					} else { /* If the version is the same ignores */
-						//_debug("Demuxer:demux - found a equal PMT. Ignoring\n");
 						delete newPmt;
 					}
 
 				} else {
 					//TODO: make possible to have pmt carried in two or more
 					// ts packets
-					_warn("Warning! Demuxer::demux - make possible to have "
-					      "PMT carried in two or more ts packets.\n");
+					/*_warn("Warning! Demuxer::demux - make possible to have "
+					      "PMT carried in two or more ts packets.\n");*/
 					delete newPmt;
 				}
 
 			} else if (!pmt->hasProcessed()) { /* Tries to consolidate the PMT */
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->processSectionPayload()) {
-					_debug("Demuxer:demux - PMT pid=%d processed!\n",
-							pmt->getPid());
 					pat->addPmt(pmt);
 				}
 			}
@@ -565,7 +561,7 @@ namespace tsparser {
 						(*pmts)[*i] = pmt;
 						++i;
 					}
-					cout << "Demuxer::receiveSection PAT mounted" << endl;
+					//cout << "Demuxer::receiveSection PAT mounted" << endl;
 					ni = tuner->getCurrentInterface();
 					if (ni != NULL) {
 						ni->removeFilter(f);
@@ -583,12 +579,12 @@ namespace tsparser {
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
 					if (newVer != currVer) {
-						cout << "Demuxer::receiveSection ";
+						/*cout << "Demuxer::receiveSection ";
 						cout << "replace pmt id = '" << pid << "'";
 						cout << " newVer = '" << newVer;
 						cout << "' currVer = '" << currVer << "': ";
 						newPmt->print();
-						cout << endl;
+						cout << endl;*/
 						pat->replacePmt(pid, newPmt);
 						(*pmts)[pid] = newPmt;
 
@@ -603,10 +599,10 @@ namespace tsparser {
 			} else if (!pmt->hasProcessed()) {
 				pmt->addData(section, secLen);
 				if (pmt->processSectionPayload()) {
-					cout << "Demuxer::receiveSection call pat->addPmt";
+					/*cout << "Demuxer::receiveSection call pat->addPmt";
 					cout << endl;
 
-					pmt->print();
+					pmt->print();*/
 
 					pat->addPmt(pmt);
 					ni = tuner->getCurrentInterface();
@@ -743,11 +739,11 @@ namespace tsparser {
 				i = i + 188;
 
 			} else if (i + 188 < size) {
-				cout << "Demuxer::receiveData hunting when i = '";
+				/*cout << "Demuxer::receiveData hunting when i = '";
 				cout << i << "' and size = '" << size << "'";
 				cout << " current byte value = '" << (buff[i] & 0xFF);
 				cout << "' next sync = '" << (buff[i + 188] & 0xFF);
-				cout << "'" << endl;
+				cout << "'" << endl;*/
 
 				i++;
 				i = i + hunt(buff + i, size - i);

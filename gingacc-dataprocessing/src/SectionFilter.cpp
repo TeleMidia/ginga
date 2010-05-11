@@ -195,14 +195,16 @@ namespace dataprocessing {
 		if (pack->getStartIndicator()) {
 			// Consolidates previous section.
 			if (currentSection != NULL) {
-				_debug("Consolidates previous section.\n");
+				/*cout << "SectionFilter::receiveTSPacket ";
+				cout << "Consolidates previous section.";
+				cout << endl;*/
 				verifyAndAddData(pack);
 			}
 
 			// Create a new section.
 			if (!verifyAndCreateSection(pack)) {
-				_warn("SectionFilter::receiveTSPacket - Failed to create "
-						"Section, perhaps header is not complete yet!\n");
+				/*cout << "SectionFilter::receiveTSPacket - Failed to create ";
+				cout << "Section, perhaps header is not complete yet!" << endl;*/
 			}
 
 		// Continuation of a previous section.
@@ -211,9 +213,10 @@ namespace dataprocessing {
 				/* Tries to create a continuation of section
 				 * which the header was not ready at the moment */
 				if (!verifyAndCreateSection(pack)) {
-					_warn("SectionFilter::receiveTSPacket - Receive a "
-						  "continuation but Failed to create "
-						  "Section, perhaps header is not complete yet!\n");
+					/*cout << "SectionFilter::receiveTSPacket - Receive a ";
+					cout << "continuation but Failed to create ";
+					cout << "Section, perhaps header is not complete yet!";
+					cout << endl;*/
 				}
 			}
 
@@ -225,16 +228,16 @@ namespace dataprocessing {
 				verifyAndAddData(pack);
 
 			} else { // Discontinuity, ignore section.
-				cout << "SectionFilter::receiveTSPacket: ";
+				/*cout << "SectionFilter::receiveTSPacket: ";
 				cout << "Discontinuity, ignoring section...";
-				cout << endl;
+				cout << endl;*/
 
 				ignore(currentSection);
 				return;
 			}
 		}
 	}
-	
+
 	void SectionFilter::receiveSection(
 			char* buf, int len, IFrontendFilter* filter) {
 
@@ -283,14 +286,14 @@ namespace dataprocessing {
 		if (!checkProcessedSections(currentSection->getSectionName())
 				&& listener != NULL) {
 
-			_debug("SectionFilter::process Sending to listener ... \n");
+			cout << "SectionFilter::process Sending to listener ..." << endl;
 			listener->receiveSection(currentSection);
 
 		} else {
-			_debug(
+			/*_debug(
 					"SectionFilter::process"
 					"Section %s already processed! ... \n",
-					currentSection->getSectionName().c_str());
+					currentSection->getSectionName().c_str());*/
 		}
 
 		currentSection = NULL;
@@ -365,10 +368,10 @@ namespace dataprocessing {
 
 		/* Needs to copy the header */
 		} else if (currentHeaderSize > 0) {
-			_debug(
+			/*_debug(
 					"Appending Section header (%d) to data (%d)\n",
 					currentHeaderSize,
-					diff);
+					diff);*/
 
 			/* Creates the new data buffer */
 			buffer = new char[currentHeaderSize + diff];
@@ -408,13 +411,13 @@ namespace dataprocessing {
 #endif
 
 		} else {
-			cout << "SectionFilter::verifyAndCreateSection ";
+			/*cout << "SectionFilter::verifyAndCreateSection ";
 			cout << "nothing to do";
 			cout << "current header size is '";
 			cout << currentHeaderSize << "' current section address is '";
 			cout << currentSection << "' TS packet: ";
 			pack->print();
-			cout << endl;
+			cout << endl;*/
 		}
 
 		return setSectionParameters(pack);
@@ -428,20 +431,20 @@ namespace dataprocessing {
 
 		/* Verifies if the TransportSection has been created! */
 		if (!(currentSection->isConstructionFailed())) {
-			_error("SectionFilter::receiveTSPacket Failed to create Section!\n");
+			//_error("SectionFilter::receiveTSPacket Failed to create Section!\n");
 			ignore(currentSection);
 			return false;
 		}
 
 		currentSection->setESId(pack->getPid());
 
-		_debug(
+		/*_debug(
 				"SectionFilter::setSectionParameters "
 				"Section %s created with secNUm=%d, lasSec=%d and secLen=%d\n",
 				currentSection->getSectionName().c_str(),
 				currentSection->getSectionNumber(),
 				currentSection->getLastSectionNumber(),
-				currentSection->getSectionLength());
+				currentSection->getSectionLength());*/
 
 		if (currentSection->isConsolidated()) {
 			process(currentSection);

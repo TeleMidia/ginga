@@ -137,8 +137,6 @@ namespace si {
 		IMpegDescriptor* descriptor;
 		size_t localpos;
 
-		cout << "Application::process with pos = " << pos << endl;
-
 		applicationId.organizationId = (
 				(((data[pos] & 0xFF)   << 24) & 0xFF000000) |
 				(((data[pos+1] & 0xFF) << 16) & 0x00FF0000) |
@@ -151,39 +149,25 @@ namespace si {
 				(data[pos+1] & 0xFF));
 
 		pos += 2;
-		cout << "Application::process appId.orgId = ";
-		cout << applicationId.organizationId << " and appId.appId";
-		cout << applicationId.applicationId << endl;
 
 		applicationControlCode = data[pos];
-		cout << "Application::process with appControlCode = ";
-		cout << applicationControlCode << " and pos = " << pos << endl;
 
 		pos++;
 
 		appDescriptorsLoopLength = ((((data[pos] & 0x0F) << 8) & 0xFF00)  |
 				(data[pos+1] & 0xFF));
 
-		cout << "Application::process appDescLoopLength = ";
-		cout << appDescriptorsLoopLength << " and pos = " << pos << endl;
-
 		pos+=2;
 		applicationLength = appDescriptorsLoopLength + 9;
 		remainingBytes = appDescriptorsLoopLength;
 		descriptorTag = data[pos];
 
-		cout << "Application::process descriptorTag = " << hex;
-		cout << descriptorTag << dec;
 		value = ((data[pos+1] & 0xFF) + 2);
-		cout << "Application::process  value = " << value << endl;
 
 		while (remainingBytes) {
 			descriptorTag = data[pos];
-			cout << "Application::process descriptorTag = " << hex;
-			cout << descriptorTag << dec;
 
 			value = ((data[pos+1] & 0xFF) + 2);
-			//cout << "Application::process with value = " << value << endl;
 			remainingBytes -= value;
 
 			switch (descriptorTag) {
@@ -233,10 +217,7 @@ namespace si {
 					break;
 			}
 			pos += value;
-			cout << "Application::process finish descriptor with pos = " << pos;
-			cout << endl;
 		}
-		cout << "Application::process finished with pos = " << pos <<  endl;
 		return pos;
 	}
 

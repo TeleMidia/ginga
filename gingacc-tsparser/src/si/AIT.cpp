@@ -57,8 +57,6 @@ namespace core {
 namespace tsparser {
 namespace si {
 	AIT::AIT() {
-		cout << "AIT::AIT" << endl;
-
 		secName                 = "";
 		applicationType         = 0;
 		commonDescriptorsLength = 0;
@@ -101,7 +99,6 @@ namespace si {
 
 	void AIT::setApplicationType(unsigned int type) {
 		applicationType = type;
-		cout << "AIT::setApplicationType type = " << applicationType << endl;
 	}
 
 	vector<IMpegDescriptor*>* AIT::getDescriptors() {
@@ -121,8 +118,6 @@ namespace si {
 		IMpegDescriptor* descriptor;
 		unsigned char value;
 
-		cout << "AIT::process with size =" << payloadSize << endl;
-
 		data = new char[payloadSize];
 		memcpy((void*)&(data[0]), payloadBytes, payloadSize);
 
@@ -136,19 +131,13 @@ namespace si {
 		commonDescriptorsLength = ((((data[pos] & 0x0F) << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF));
 
-		cout << "AIT::process commonDescriptorsLength = ";
-		cout << commonDescriptorsLength << endl;
-
 		//handle Descriptors!
 		pos += 2;
 		descpos = pos;
 		remainingBytes = commonDescriptorsLength;
 		while (remainingBytes) {
 			descriptorTag = data[descpos];
-			cout << "Ait::process descriptorTag = " << hex <<  descriptorTag ;
-			cout << dec << endl;
 			value = ((data[pos+1] & 0xFF) + 2);
-			cout << "Ait::process with vale = " << value << endl;
 			remainingBytes -= value;
 
 			switch (descriptorTag) {
@@ -195,12 +184,8 @@ namespace si {
 		}
 
 		pos =  descpos + commonDescriptorsLength;
-		cout << "Ait::process pos after desclength = " << pos << endl;
 		applicationLoopLength = ((((data[pos] & 0x0F) << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF));
-
-		cout << "Ait::process applicationLoopLength = " << applicationLoopLength;
-		cout << endl;
 
 		pos += 2;
 		remainingBytes = applicationLoopLength;
@@ -210,7 +195,6 @@ namespace si {
 			pos += application->getLength();
 			applications->push_back(application);
 		}
-		cout << "Ait::process ALL DONE!" << endl;
 
 		delete data;
 	}

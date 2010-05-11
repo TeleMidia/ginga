@@ -113,30 +113,19 @@ namespace si {
 	}
 
 	void ApplicationDescriptor::print(){
-		vector<struct Profile*>::iterator i;
-		for (i = profiles->begin(); i != profiles->end(); ++i) {
 
-		}
 	}
 
 	size_t ApplicationDescriptor::process(char* data, size_t pos) {
 		struct Profile* profile;
 		size_t profpos;
 
-		cout << "ApplicationDescriptor::process with pos = '" << pos;
-
 		descriptorLength = data[pos+1];
-		cout << "' and length = '" << (unsigned int)descriptorLength;
-		cout << endl;
 
 		pos += 2;
 		applicationProfilesLength = data[pos];
 
-		cout << "ApplicationDescriptor::process appProfilesLength = '";
-		cout << (unsigned int)applicationProfilesLength << "'" << endl;
-
 		profpos = pos;
-		cout << "ApplicationDescriptor::process profiles pos = " << pos << endl;
 		for (int i = 0; i < applicationProfilesLength; ++i) {
 			pos++;
 			profile = new struct Profile;
@@ -152,18 +141,9 @@ namespace si {
 			pos++;
 			profile->versionMicro = data[pos];
 			profiles->push_back(profile);
-			cout << "ApplicationDescriptor::process with prefetch ";
-			cout << "applicationProfile = '" << profile->applicationProfile;
-			cout << "' versionMajor = '" << (profile->versionMajor & 0xFF);
-			cout << "' versionMinor = '" << (profile->versionMinor & 0xFF);
-			cout << "' versionMicro = '" << (profile->versionMicro & 0xFF);
-			cout << "'" << endl;
 		}
 
 		pos = profpos + applicationProfilesLength;
-
-		cout << "ApplicationDescriptor::process pos after length = ";
-		cout << pos << endl;
 
 		serviceBoundFlag = ((data[pos] & 0x80) << 7);
 		visibility       = ((data[pos] & 0x60) << 6);
@@ -173,17 +153,11 @@ namespace si {
 		transportProtocolLabelsLength =
 				descriptorLength - applicationProfilesLength - 2;
 
-		cout << "ApplicationDescriptor::process priority = ";
-		cout << (unsigned int) applicationPriority;
-		cout << " and transpPLabelsLenght = " ;
-		cout << (unsigned int) transportProtocolLabelsLength << endl;
-
 		transportProtocolLabels = new char[transportProtocolLabelsLength];
 		for (int i = 0; i < transportProtocolLabelsLength; ++i) {
 			pos++;
 			transportProtocolLabels[i] = data[pos];
 		}
-		cout << "ApplicationDescriptor::process finish with pos = " << pos << endl;
 		return pos;
 	}
 }

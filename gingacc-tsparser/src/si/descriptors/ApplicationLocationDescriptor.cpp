@@ -125,34 +125,17 @@ namespace si {
 	}
 
 	size_t ApplicationLocationDescriptor::process(char* data, size_t pos) {
-
-		cout << "ApplicationLocationDescriptor::process with pos = '" << pos;
-		cout << "'" << endl;
-
 		descriptorTag    = data[pos];
 		descriptorLength = data[pos+1];
 		pos += 2;
 
-		cout << "ApplicationLocationDescriptor::process with length = '";
-		cout << (unsigned int)descriptorLength << "'" << endl;
-
 		baseDirectoryLength = data[pos];
-
-		cout << "ApplicationLocationDescriptor::process byteDirectoryLength = ";
-		cout << "'";
-		cout << (unsigned int) baseDirectoryLength;
-		cout << "' and pos = '" << pos;
-		cout << "'" << endl;
 
 		baseDirectoryByte = new char[baseDirectoryLength];
 		memcpy(baseDirectoryByte, data+pos+1, baseDirectoryLength);
 		pos += baseDirectoryLength + 1;
 
 		classPathExtensionLength = data[pos];
-		cout << "ApplicationLocationDescriptor::process";
-		cout << " classPathExtensionLength = '";
-		cout << (unsigned int) classPathExtensionLength << "'";
-		cout << " and pos = '" << pos << "'" << endl;
 
 		classPathExtensionByte = new char[classPathExtensionLength];
 		memcpy(classPathExtensionByte, data+pos+1, classPathExtensionLength);
@@ -161,28 +144,14 @@ namespace si {
 		initialClassLentgh = descriptorLength - baseDirectoryLength -
 				classPathExtensionLength - 2;
 
-		cout << "ApplicationLocationDescriptor::process with" ;
-		cout << " initialClassLength = '"  << (unsigned int)initialClassLentgh;
-		cout << "'" << endl;
-
 		initialClassByte = new char[initialClassLentgh];
 		memcpy(initialClassByte, data+pos, initialClassLentgh);
 
-		cout << "ApplicationLocationDescriptor::process pos = '" << pos;
-		cout << "' and initialClassLength = '";
-		cout << (unsigned int)initialClassLentgh << "'";
-		cout << endl;
 		pos += initialClassLentgh;
 
 		string baseDir, iniClass;
 		baseDir.assign(baseDirectoryByte, (baseDirectoryLength & 0xFF));
 		iniClass.assign(initialClassByte, (initialClassLentgh & 0xFF));
-		cout << "ApplicationLocationDescriptor::process finish with pos = '";
-		cout << pos << "' baseDirectory = '" << baseDir;
-		cout << "' initialClass = '" << iniClass << "'";
-		cout << "base dir strlen = '" << strlen(baseDirectoryByte);
-		cout << "' base dir len = '" << (baseDirectoryLength & 0xFF);
-		cout << "'" << endl;
 
 		return pos;
 	}

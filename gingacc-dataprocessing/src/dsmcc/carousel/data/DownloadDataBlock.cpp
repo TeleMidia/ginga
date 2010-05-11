@@ -132,7 +132,7 @@ namespace carousel {
 					}
 
 				} else {
-					_debug(
+					/*_debug(
 							"DownloadDataBlock::processDataBlock Warning! "
 							"Reading file (%s), with fd (%d), "
 							"the last call to read bytes (%d) is not equal "
@@ -141,16 +141,15 @@ namespace carousel {
 							fd,
 							rval,
 							messageLength,
-							trval);
+							trval);*/
 				}
 
 				delete bytes;
 				bytes = NULL;
 
 			} else {
-				_debug("Warning! Unknown DDB MessageId=%02hhX \n", messageId);
-				//cout << "Warning! Unknown DDB MessageId: ";
-				//cout << hex << messageId << endl;
+				cout << "Warning! Unknown DDB MessageId: ";
+				cout << hex << messageId << endl;
 			}
 		}
 		close(fd);

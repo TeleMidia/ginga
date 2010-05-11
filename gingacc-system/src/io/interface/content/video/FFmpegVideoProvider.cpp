@@ -226,9 +226,6 @@ static bool queue_is_full(PacketQueue *queue) {
 static void* FFmpegInput(DirectThread *self, void *arg) {
 	IDirectFBVideoProvider_FFmpeg_data* data;
 
-	cout << "FFmpegInput";
-	cout << endl;
-
 	data = (IDirectFBVideoProvider_FFmpeg_data*)arg;
 	if (url_is_streamed(data->context->pb)) {
 		data->input.buffering = true;
@@ -307,8 +304,6 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 		}
 
 		if (av_read_frame(data->context, &packet) < 0) {
-			cout << "FFmpegInput check eof";
-			cout << endl;
 			if (url_feof(data->context->pb)) {
 				if (data->input.buffering) {
 					pthread_mutex_unlock(&data->audio.queue.lock);
@@ -450,9 +445,6 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 	IDirectFBVideoProvider_FFmpeg_data *data;
 	data = (IDirectFBVideoProvider_FFmpeg_data*)arg;
 
-	cout << "FFmpegVideo";
-	cout << endl;
-
 	AVStream* st          = data->video.st;
 	s64	firtspts          = 0;
 	unsigned int framecnt = 0;
@@ -577,9 +569,6 @@ static void* FFmpegAudio(DirectThread *self, void *arg) {
 	int	decoded;
 	int	len;
 	int	size;
-
-	cout << "FFmpegAudio";
-	cout << endl;
 
 	data = (IDirectFBVideoProvider_FFmpeg_data*)arg;
 	AVStream *st = data->audio.st;
@@ -774,8 +763,6 @@ namespace io {
 		IDirectFB* dfb = NULL;
 		DFBDataBufferDescription desc;
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg " << endl;
-
 		memset(rContainer, 0, sizeof(*rContainer));
 
 		rContainer->ref         = 1;
@@ -810,10 +797,10 @@ namespace io {
 			}
 
 		} else {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "Warning! can't peek '" << sizeof(buf) << "' bytes from '";
 			cout << mrl << "'";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			return false;
@@ -824,39 +811,28 @@ namespace io {
 			av_register_all();
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
-		cout << "Creating AV probe data for '" << mrl << "' ";
-		cout << "with len = '" << len << "' ";
-		cout << "with peeked = '" << peeked << "' ";
-		cout << endl;
-
 		pd.filename = mrl;
 		pd.buf      = &buf[0];
 		pd.buf_size = peeked;
 
 		fmt = av_probe_input_format(&pd, 1);
 		if (fmt == NULL) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "Warning! no format found";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			return false;
 		}
-
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
-		cout << "Found format '" << fmt->name << "' ";
-		cout << "read packet address '" << fmt->read_packet << "' ";
-		cout << endl;
 
 		rContainer->seekable = (
 				rContainer->buffer->SeekTo(rContainer->buffer, 0) == DFB_OK);
 
 		rContainer->iobuf = new char[IO_BUFFER_SIZE * 1024];
 		if (!rContainer->iobuf) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "can't create io buffer (size = " << IO_BUFFER_SIZE * 1024;
-			cout << ")" << endl;
+			cout << ")" << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
@@ -872,9 +848,9 @@ namespace io {
 				NULL,
 				rContainer->seekable ? av_seek_callback : NULL) < 0) {
 
-			cout << "FFmpegVideoProvider::initializeFFmpeg";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg";
 			cout << "init_put_byte() failed!";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
@@ -888,10 +864,6 @@ namespace io {
 				!strncmp(pd.filename, "ftp://",  6 )	||
 				!strncmp(pd.filename, "rtsp://", 7 ));
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
-		cout << "Opening input stream";
-		cout << endl;
-
 		if (av_open_input_stream(
 				&(rContainer->context),
 				&rContainer->pb,
@@ -899,33 +871,28 @@ namespace io {
 				fmt,
 				NULL) < 0) {
 
-			cout << "FFmpegVideoProvider::initializeFFmpeg";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg";
 			cout << " av_open_input_stream() failed!";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Searching stream info";
-		cout << endl;
+		cout << endl;*/
 
 		if (av_find_stream_info(rContainer->context) < 0) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "couldn't find stream info!";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
-
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
-		cout << "Searching codec for '" << rContainer->context->nb_streams;
-		cout << "' streams";
-		cout << endl;
 
 		for (i = 0; i < rContainer->context->nb_streams; i++) {
 			switch (rContainer->context->streams[i]->codec->codec_type) {
@@ -952,23 +919,23 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Checking video stream";
-		cout << endl;
+		cout << endl;*/
 
 		if (!rContainer->video.st) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "couldn't find video stream!";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Checking video codec";
-		cout << endl;
+		cout << endl;*/
 
 		rContainer->video.ctx   = rContainer->video.st->codec;
 		rContainer->video.codec = avcodec_find_decoder(
@@ -978,9 +945,9 @@ namespace io {
 				avcodec_open(
 						rContainer->video.ctx, rContainer->video.codec) < 0) {
 
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "error opening video codec!";
-			cout << endl;
+			cout << endl;*/
 
 			rContainer->video.ctx = NULL;
 			rContainer->buffer->Release(rContainer->buffer);
@@ -991,35 +958,35 @@ namespace io {
 		avcodec_thread_init(rContainer->video.ctx, 2);
 		rContainer->video.ctx->thread_count = 2;
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Creating video frame";
-		cout << endl;
+		cout << endl;*/
 
 		rContainer->video.src_frame = avcodec_alloc_frame();
 		if (rContainer->video.src_frame == NULL) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
-			cout << "CAN'T CREATE FRAME CODEC" << endl;
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			cout << "CAN'T CREATE FRAME CODEC" << endl;*/
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "video frame created!";
-		cout << endl;
+		cout << endl;*/
 
 		rContainer->video.rate = av_q2d(rContainer->video.st->r_frame_rate);
 		if (!rContainer->video.rate || !finite(rContainer->video.rate)) {
-			cout << "FFmpegVideoProvider::initializeFFmpeg ";
+			/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 			cout << "assuming 25 framesXsecond.";
-			cout << endl;
+			cout << endl;*/
 			rContainer->video.rate = 25.0;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Checking audio stream";
-		cout << endl;
+		cout << endl;*/
 
 		if (rContainer->audio.st) {
 			rContainer->audio.ctx   = rContainer->audio.st->codec;
@@ -1036,18 +1003,13 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Checking initializing fusion sound";
-		cout << endl;
+		cout << endl;*/
 
 		if (FusionSoundAudioProvider::_fsSound == NULL) {
 			FusionSoundAudioProvider::initialize();
 		}
-
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
-		cout << "Creating audio stream _fsSound = '";
-		cout << FusionSoundAudioProvider::_fsSound << "'";
-		cout << endl;
 
 		if (rContainer->audio.st &&
 				FusionSoundAudioProvider::_fsSound != NULL) {
@@ -1073,9 +1035,9 @@ namespace io {
 					&dsc, &rContainer->audio.stream);
 
 			if (ret != DR_OK) {
-				cout << "FFmpegVideoProvider::initializeFFmpeg ";
+				/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 				cout << "IFusionSound::CreateStream() failed!";
-				cout << endl;
+				cout << endl;*/
 				rContainer->audio.sound->Release(rContainer->audio.sound);
 				rContainer->audio.sound = NULL;
 
@@ -1095,9 +1057,9 @@ namespace io {
 			cout << endl;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Filling video context";
-		cout << endl;
+		cout << endl;*/
 
 		rContainer->video.queue.max_len = av_rescale_q(
 				MAX_QUEUE_LEN*AV_TIME_BASE,
@@ -1112,9 +1074,9 @@ namespace io {
 			rContainer->video.queue.max_size = MAX_QUEUE_LEN * 256 * 1024;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Filling audio context";
-		cout << endl;
+		cout << endl;*/
 
 		if (rContainer->audio.st) {
 			rContainer->audio.queue.max_len = av_rescale_q(
@@ -1131,17 +1093,17 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Determining start time";
-		cout << endl;
+		cout << endl;*/
 
 		if (rContainer->context->start_time != (int64_t)AV_NOPTS_VALUE) {
 			rContainer->start_time = rContainer->context->start_time;
 		}
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ";
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ";
 		cout << "Initialing mutexes";
-		cout << endl;
+		cout << endl;*/
 
 		direct_util_recursive_pthread_mutex_init(&rContainer->input.lock);
 		direct_util_recursive_pthread_mutex_init(&rContainer->video.lock);
@@ -1151,8 +1113,8 @@ namespace io {
 		pthread_cond_init (&rContainer->video.cond, NULL);
 		pthread_cond_init (&rContainer->audio.cond, NULL);
 
-		cout << "FFmpegVideoProvider::initializeFFmpeg ALL DONE";
-		cout << endl;
+		/*cout << "FFmpegVideoProvider::initializeFFmpeg ALL DONE";
+		cout << endl;*/
 
 		return true;
 	}
