@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
 #include "IPlayer.h"
+#include "IPlayerListener.h"
 
 #include <vector>
 
@@ -70,6 +71,7 @@ typedef struct {
 	string nodeId;
 	string docId;
 	void* focusManager;
+	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* editListener;
 } NclPlayerData;
 
 namespace br {

@@ -258,14 +258,13 @@ static int l_post (lua_State* L)
                                               luaL_checkstring(L, -2),
                                               Player::TYPE_ATTRIBUTION);
 			}
-			// NCLEDIT event
-			else if ( !strcmp(type, "ncledit") )
-			{
-				lua_getfield(L, 2, "command");
-                    // [ dst | evt | class | type | command ]
-				GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT,
-                                              luaL_checkstring(L, -1));
-			}
+
+	    // NCL edit
+		} else if ( !strcmp(clazz, "edit") ) {
+			lua_getfield(L, 2, "command");
+                // [ dst | evt | class | type | command ]
+			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT,
+                                          luaL_checkstring(L, -1));
 		}
 		else
 			return luaL_error(L, "invalid event class");
