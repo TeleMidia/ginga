@@ -203,8 +203,8 @@ namespace dataprocessing {
 
 			// Create a new section.
 			if (!verifyAndCreateSection(pack)) {
-				/*cout << "SectionFilter::receiveTSPacket - Failed to create ";
-				cout << "Section, perhaps header is not complete yet!" << endl;*/
+				cout << "SectionFilter::receiveTSPacket - Failed to create ";
+				cout << "Section, perhaps header is not complete yet!" << endl;
 			}
 
 		// Continuation of a previous section.
@@ -286,7 +286,6 @@ namespace dataprocessing {
 		if (!checkProcessedSections(currentSection->getSectionName())
 				&& listener != NULL) {
 
-			cout << "SectionFilter::process Sending to listener ..." << endl;
 			listener->receiveSection(currentSection);
 
 		} else {
@@ -353,10 +352,11 @@ namespace dataprocessing {
 		pack->getPayload(data);
 		if (diff < (ARRAY_SIZE(sectionHeader) - currentHeaderSize)) {
 
-			/*cout << "SectionFilter::verifyAndCreateSection ";
+			cout << "SectionFilter::verifyAndCreateSection ";
 			cout << "Creating Section header, currentSize is '";
-			cout << currentHeaderSize;
-			cout << endl;*/
+			cout << currentHeaderSize << "and dataSize is '";
+			cout << diff << "'";
+			cout << endl;
 
 			memcpy(
 					(void*)&sectionHeader[currentHeaderSize],
@@ -368,10 +368,8 @@ namespace dataprocessing {
 
 		/* Needs to copy the header */
 		} else if (currentHeaderSize > 0) {
-			/*_debug(
-					"Appending Section header (%d) to data (%d)\n",
-					currentHeaderSize,
-					diff);*/
+			cout << "Appending Section header '" << currentHeaderSize << "'";
+			cout << " to data '" << diff << "'" << endl;
 
 			/* Creates the new data buffer */
 			buffer = new char[currentHeaderSize + diff];

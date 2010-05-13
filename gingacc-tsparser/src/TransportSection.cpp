@@ -125,7 +125,15 @@ namespace tsparser {
 		tableId                = section[0];
 		sectionSyntaxIndicator = (section[1] & 0x80) >> 7;
 
-		sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
+		//sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
+		if (tableId == 0x00 || tableId == 0x02) {
+			sectionLength = (((section[1] & 0x03) << 8) |
+					(section[2] & 0xFF));
+
+		} else {
+			sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
+		}
+
 		idExtention   = (((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
 
 		versionNumber        = (section[5] & 0x3E) >> 1;
@@ -148,15 +156,6 @@ namespace tsparser {
 					sectionLength);
 			return false;
 		}
-
-		/*_debug("NEW====================currSize=%d , secLen=%d secNum=%d\n",
-				currentSize, sectionLength,sectionNumber);*/
-		//DEBUG
-		/*printf("NEW====================currsize=%d , secLen=%d\n", currentSize, sectionLength);
-		for (int i = 0; i < currentSize; i++) {
-			printf("%02hhX ", (char) section[i]);
-		}
-		printf("\n====================\n");*/
 
 		return true;
 	}
@@ -200,11 +199,12 @@ namespace tsparser {
 		currentSize += size;
 
 		//DEBUG
-//		printf("ADDDATA====================currsize=%d\n", currentSize);
-//		for (int i = 0; i < currentSize; i++) {
-//			printf("%02hhX ", (char) section[i]);
-//		}
-//		printf("\n====================\n");
+		/*
+		printf("ADDDATA====================currsize=%d\n", currentSize);
+		for (int i = 0; i < currentSize; i++) {
+			printf("%02hhX ", (char) section[i]);
+		}
+		printf("\n====================\n"); */
 	}
 
 	void TransportSection::setSectionName() {
@@ -297,6 +297,9 @@ namespace tsparser {
 		cout << "current next indicator = " << getCurrentNextIndicator() << endl;
 		cout << "section number = " << getSectionNumber() << endl;
 		cout << "last secion number = " << getLastSectionNumber() << endl;
+
+		printf ("%s\n", getPayload());
+		return;
 
 		char payload[currentSize - 12];
 		memcpy((void*)&(payload[0]), getPayload(), currentSize - 12);
