@@ -237,9 +237,8 @@ namespace dataprocessing {
 					cout << "Section, perhaps header is not complete yet!";
 					cout << endl;*/
 				}
-			}
 
-			if (handler->section != NULL) {
+			} else {
 				bool isValidCounter = false;
 
 				if (pack->getAdaptationFieldControl() == 2 ||
@@ -365,9 +364,9 @@ namespace dataprocessing {
 
 	void SectionFilter::verifyAndAddData(ITSPacket* pack) {
 		char data[184];
+		SectionHandler* handler;
 		/* Get the freespace in Section */
 		unsigned int freespace;
-		SectionHandler* handler;
 
 		handler = getSectionHandler(pack->getPid());
 		if (handler == NULL) {
@@ -378,10 +377,11 @@ namespace dataprocessing {
 				handler->section->getCurrentSize();
 
 		/* If the freeSpace is bigger than payLoadSize then
-		 * add just the payloadSize	 */
+		* add just the payloadSize      */
 		if (freespace > pack->getPayloadSize()) {
 			freespace = pack->getPayloadSize();
 		}
+		memset(data, 0, sizeof(data));
 
 		pack->getPayload(data);
 		if (freespace > 0) {
@@ -390,6 +390,14 @@ namespace dataprocessing {
 		} else {
 			_debug("Trying to add 0 bytes in the section\n");
 		}
+
+		/*if (pack->getPid() == 0x384) {
+			printf("NEW ====================%d\n", pack->getPayloadSize());
+			for (int j = 0; j < pack->getPayloadSize(); j++) {
+				printf("%02hhX ", (char) data[j]);
+			}
+			printf("\n====================\n");
+		}*/
 
 		if (handler->section->isConsolidated()) {
 			process(handler->section, pack->getPid());
@@ -525,8 +533,8 @@ namespace dataprocessing {
 			handler->lastContinuityCounter = pack->getContinuityCounter();
 		}
 
-		handler->headerSize = 0;
-		memset(handler->sectionHeader, 0, ARRAY_SIZE(handler->sectionHeader));
+		//handler->headerSize = 0;
+		//memset(handler->sectionHeader, 0, ARRAY_SIZE(handler->sectionHeader));
 		return true;
 	}
 }

@@ -119,7 +119,7 @@ namespace tsparser {
 		public:
 			void setESId(unsigned int id);
 			unsigned int getESId();
-			void addData(char bytes[184], unsigned int size);
+			void addData(char* bytes, unsigned int size);
 
 		private:
 			void setSectionName();

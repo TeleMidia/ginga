@@ -104,6 +104,9 @@ namespace tsparser {
 		pid                = 0;
 		sectionLength      = 0;
 		sectionName        = "";
+		currentSize        = 0;
+
+		memset(section, 0, sizeof(section));
 	}
 
 	bool TransportSection::isConstructionFailed() {
@@ -169,7 +172,7 @@ namespace tsparser {
 		return this->pid;
 	}
 
-	void TransportSection::addData(char bytes[184], unsigned int size) {
+	void TransportSection::addData(char* bytes, unsigned int size) {
 		unsigned int freespace = sectionLength + 3 - currentSize;
 
 		if (sectionLength == 0) {
@@ -187,24 +190,28 @@ namespace tsparser {
 		// Invalid size.
 		if (size > freespace) {
 			cout << "TransportSection::addData: size (";
-			cout << size << ") is larger thant the available space (";
+			cout << size << ") is larger than the available space (";
 			cout << freespace << "), truncating..." << endl;
 			size = freespace;
 		}
 
-		/*_debug("### currSize=%d, secLen=%d, freesp=%d, size=%d secNum=%d\n",
-			currentSize, sectionLength, freespace, size, sectionNumber);*/
+		/*printf("### currSize=%d, secLen=%d, freesp=%d, size=%d secNum=%d\n",
+			currentSize, sectionLength, freespace, size, sectionNumber);
 
-		memcpy((void*)&(section[currentSize]), (void*)bytes, size);
-		currentSize += size;
+		fflush(stdout);*/
 
+		memcpy((void*)(section + currentSize), (void*)bytes, size);
+
+		/*if (pid == 0x384) {
 		//DEBUG
-		/*
-		printf("ADDDATA====================currsize=%d\n", currentSize);
-		for (int i = 0; i < currentSize; i++) {
-			printf("%02hhX ", (char) section[i]);
-		}
-		printf("\n====================\n"); */
+			printf("ADDDATA====================currsize=%d\n", currentSize + size);
+			for (int i = 0; i < currentSize + size; i++) {
+				printf("%02hhX ", (char) section[i]);
+			}
+			printf("\n====================\n");
+		}*/
+
+		currentSize += size;
 	}
 
 	void TransportSection::setSectionName() {

@@ -64,7 +64,7 @@ namespace tsparser {
 			virtual ~ITransportSection(){};
 			virtual void setESId(unsigned int id)=0;
 			virtual unsigned int getESId()=0;
-			virtual void addData(char bytes[184], unsigned int size)=0;
+			virtual void addData(char* bytes, unsigned int size)=0;
 			virtual string getSectionName()=0;
 			virtual unsigned int getTableId()=0;
 			virtual bool getSectionSyntaxIndicator()=0;
