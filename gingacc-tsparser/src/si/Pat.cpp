@@ -294,13 +294,13 @@ namespace si {
 				if (defaultProgramNumber == -1 ||
 						programNumber < defaultProgramNumber) {
 
-					cout << "Pat::process ";
+					/*cout << "Pat::process ";
 					cout << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
 					cout << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
 					cout << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
 					cout << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
 					cout << "' sectionLength = '" << getSectionLength();
-					cout << "'" << endl;
+					cout << "'" << endl;*/
 
 					defaultProgramNumber = programNumber;
 					defaultProgramPid    = pid;

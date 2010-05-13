@@ -134,9 +134,12 @@ namespace tsparser {
 		if (ppid == 0x00) {
 			Pat::resetPayload(packData + 4, pack->getPayloadSize());
 		}
-		ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
-		if (ret == ITSPacket::TS_PACKET_SIZE) {
-			dataReceived = true;
+
+		if (pipeFd > 0) {
+			ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
+			if (ret == ITSPacket::TS_PACKET_SIZE) {
+				dataReceived = true;
+			}
 		}
 	}
 

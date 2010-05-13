@@ -82,24 +82,17 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 	struct SectionHandler {
-			// Last section's continuityCounter.
-			int lastContinuityCounter;
-			char sectionHeader[8];
-			unsigned int headerSize;
-			ITransportSection* section;
+		// Last section's packet continuityCounter.
+		int lastContinuityCounter;
+		char sectionHeader[8];
+		unsigned int headerSize;
+		ITransportSection* section;
+		int recvPack;
 	};
 
 	class SectionFilter : public ITSFilter {
 		private:
-			// Last section's continuityCounter.
-			int lastContinuityCounter;
-			char sectionHeader[8];
-			unsigned int currentHeaderSize;
-			ITransportSection* currentSection;
-
 			map<unsigned int, SectionHandler*> sectionPidSelector;
-			int recvPack;
-
 
 			IFilterListener* listener;
 			set<string>* processedSections;
@@ -113,8 +106,10 @@ namespace dataprocessing {
 			void addPid(int pid){};
 
 		private:
-			void ignore(ITransportSection* section);
-			void process(ITransportSection* section);
+			void resetHandler(SectionHandler* handler);
+			void ignore(unsigned int pid);
+			SectionHandler* getSectionHandler(unsigned int pid);
+			void process(ITransportSection* section, unsigned int pid);
 			void verifyAndAddData(ITSPacket* pack);
 			bool verifyAndCreateSection(ITSPacket* pack);
 			bool setSectionParameters(ITSPacket* pack);
