@@ -240,15 +240,30 @@ namespace dataprocessing {
 			}
 
 			if (handler->section != NULL) {
-				if (last >= 0 || (last == 15 && counter == 0) ||
-						(abs(last - counter) == 1)) {
+				bool isValidCounter = false;
 
+				if (pack->getAdaptationFieldControl() == 2 ||
+						pack->getAdaptationFieldControl() == 0) {
+
+					if (last == counter) {
+						isValidCounter = true;
+					}
+
+				} else if ((last == 15 && counter == 0) ||
+						(counter - last == 1)) {
+
+					isValidCounter = true;
+				}
+
+				if (isValidCounter) {
 					/* The section is OK */
 					verifyAndAddData(pack);
 
 				} else { // Discontinuity, ignore section.
 					cout << "SectionFilter::receiveTSPacket: ";
-					cout << "Discontinuity, ignoring section...";
+					cout << "Discontinuity, last = '" << last << "'";
+					cout << " counter = '" << counter << "'";
+					cout << " ignoring section.";
 					cout << endl;
 
 					ignore(pack->getPid());
