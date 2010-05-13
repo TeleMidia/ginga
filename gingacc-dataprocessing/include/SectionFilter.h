@@ -81,15 +81,26 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
+	struct SectionHandler {
+			// Last section's continuityCounter.
+			int lastContinuityCounter;
+			char sectionHeader[8];
+			unsigned int headerSize;
+			ITransportSection* section;
+	};
+
 	class SectionFilter : public ITSFilter {
 		private:
 			// Last section's continuityCounter.
 			int lastContinuityCounter;
 			char sectionHeader[8];
 			unsigned int currentHeaderSize;
+			ITransportSection* currentSection;
+
+			map<unsigned int, SectionHandler*> sectionPidSelector;
 			int recvPack;
 
-			ITransportSection* currentSection;
+
 			IFilterListener* listener;
 			set<string>* processedSections;
 

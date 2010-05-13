@@ -75,15 +75,13 @@ namespace dataprocessing {
 
 	SectionFilter::SectionFilter() {
 		this->processedSections     = new set<string>;
-		this->lastContinuityCounter = -1;
 		this->currentSection        = NULL;
 		this->listener              = NULL;
-		this->currentHeaderSize     = 0;
+
 		this->recvPack              = 1;
 
 		pthread_mutex_init(&stlMutex, NULL);
 
-		memset(sectionHeader, 0, ARRAY_SIZE(sectionHeader));
 	}
 
 	SectionFilter::~SectionFilter() {
@@ -93,6 +91,16 @@ namespace dataprocessing {
 		if (processedSections != NULL) {
 			delete processedSections;
 			processedSections = NULL;
+		}
+
+		/*Clear the allocated structs */
+		map<unsigned int, SectionHandler*>::iterator i;
+
+		i = sectionPidSelector.begin();
+		while (i != sectionPidSelector.end()) {
+			//TODO - verify if needs to delete the internal allocated memory
+			delete i->second;
+			++i;
 		}
 
 		pthread_mutex_unlock(&stlMutex);
@@ -180,6 +188,31 @@ namespace dataprocessing {
 	void SectionFilter::receiveTSPacket(ITSPacket* pack) {
 		unsigned int counter;
 		int last;
+		SectionHandler *currentSectionHandler;
+		unsigned int packPID;
+
+		packPID = pack->getPid();
+		if (sectionPidSelector.count(packPID) != 0) {
+			currentSectionHandler = sectionPidSelector[packPID];
+			this->lastContinuityCounter = currentSectionHandler->
+					lastContinuityCounter;
+
+			memcpy(
+					(void*)&this->sectionHeader[0],
+					(void*)&currentSectionHandler->sectionHeader[0],
+					ARRAY_SIZE(currentSectionHandler->sectionHeader));
+
+			this->currentHeaderSize = currentSectionHandler->headerSize;
+			this->currentSection = currentSectionHandler->section;
+
+		} else {
+			currentSectionHandler = new SectionHandler;
+			currentSectionHandler->lastContinuityCounter = -1;
+			currentSectionHandler->headerSize = 0;
+			memset(sectionHeader, 0, ARRAY_SIZE(sectionHeader));
+			currentSectionHandler->section = NULL;
+			sectionPidSelector[packPID] = currentSectionHandler;
+		}
 
 		/*if (pack->getStartIndicator()) {
 			cout << "SectionFilter::receiveTSPacket number '" << recvPack;
@@ -195,9 +228,9 @@ namespace dataprocessing {
 		if (pack->getStartIndicator()) {
 			// Consolidates previous section.
 			if (currentSection != NULL) {
-				/*cout << "SectionFilter::receiveTSPacket ";
+				cout << "SectionFilter::receiveTSPacket ";
 				cout << "Consolidates previous section.";
-				cout << endl;*/
+				cout << endl;
 				verifyAndAddData(pack);
 			}
 
@@ -205,6 +238,8 @@ namespace dataprocessing {
 			if (!verifyAndCreateSection(pack)) {
 				cout << "SectionFilter::receiveTSPacket - Failed to create ";
 				cout << "Section, perhaps header is not complete yet!" << endl;
+			} else {
+				cout << "New section created with success!" << endl;
 			}
 
 		// Continuation of a previous section.
@@ -213,10 +248,10 @@ namespace dataprocessing {
 				/* Tries to create a continuation of section
 				 * which the header was not ready at the moment */
 				if (!verifyAndCreateSection(pack)) {
-					/*cout << "SectionFilter::receiveTSPacket - Receive a ";
+					cout << "SectionFilter::receiveTSPacket - Receive a ";
 					cout << "continuation but Failed to create ";
 					cout << "Section, perhaps header is not complete yet!";
-					cout << endl;*/
+					cout << endl;
 				}
 			}
 
@@ -233,9 +268,21 @@ namespace dataprocessing {
 				cout << endl;*/
 
 				ignore(currentSection);
-				return;
+				SectionHandler *handler = sectionPidSelector[pack->getPid()];
+				sectionPidSelector.erase(pack->getPid());
+				handler = NULL;
+				delete handler;
 			}
 		}
+
+		currentSectionHandler->lastContinuityCounter = this->lastContinuityCounter;
+		currentSectionHandler->headerSize = this->currentHeaderSize;
+		memcpy(
+				(void*)&currentSectionHandler->sectionHeader[0],
+				 (void*)&this->sectionHeader[0],
+				 ARRAY_SIZE(this->sectionHeader));
+
+		currentSectionHandler->section = currentSection;
 	}
 
 	void SectionFilter::receiveSection(
@@ -299,6 +346,7 @@ namespace dataprocessing {
 		delete currentSection;
 		this->lastContinuityCounter = -1;
 		this->currentHeaderSize = 0;
+
 	}
 
 	// Ignore SECTION.
@@ -335,6 +383,12 @@ namespace dataprocessing {
 
 		if (currentSection->isConsolidated()) {
 			process(currentSection);
+			if (sectionPidSelector.count(pack->getPid()) != 0) {
+				SectionHandler *handler = sectionPidSelector[pack->getPid()];
+				sectionPidSelector.erase(pack->getPid());
+				handler = NULL;
+				delete handler;
+			}
 		}
 	}
 
@@ -350,11 +404,12 @@ namespace dataprocessing {
 		diff   = pack->getPayloadSize() - offset;
 
 		pack->getPayload(data);
+		/* The payload has only a part of the header */
 		if (diff < (ARRAY_SIZE(sectionHeader) - currentHeaderSize)) {
 
 			cout << "SectionFilter::verifyAndCreateSection ";
 			cout << "Creating Section header, currentSize is '";
-			cout << currentHeaderSize << "and dataSize is '";
+			cout << currentHeaderSize << " and dataSize is '";
 			cout << diff << "'";
 			cout << endl;
 
@@ -368,6 +423,8 @@ namespace dataprocessing {
 
 		/* Needs to copy the header */
 		} else if (currentHeaderSize > 0) {
+			cout << "Pointer field: " << pack->getPointerField();
+			cout << " PayloadSize: " << pack->getPayloadSize() << endl;
 			cout << "Appending Section header '" << currentHeaderSize << "'";
 			cout << " to data '" << diff << "'" << endl;
 
@@ -399,6 +456,7 @@ namespace dataprocessing {
 
 		/* The Header is ready */
 		} else if (pack->getStartIndicator()) {
+			_debug("Header is ready already!\n");
 #if HAVE_COMPSUPPORT
 			currentSection = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(&data[offset], diff);
@@ -409,13 +467,13 @@ namespace dataprocessing {
 #endif
 
 		} else {
-			/*cout << "SectionFilter::verifyAndCreateSection ";
+			cout << "SectionFilter::verifyAndCreateSection ";
 			cout << "nothing to do";
 			cout << "current header size is '";
 			cout << currentHeaderSize << "' current section address is '";
 			cout << currentSection << "' TS packet: ";
 			pack->print();
-			cout << endl;*/
+			cout << endl;
 		}
 
 		return setSectionParameters(pack);
@@ -429,23 +487,35 @@ namespace dataprocessing {
 
 		/* Verifies if the TransportSection has been created! */
 		if (!(currentSection->isConstructionFailed())) {
-			//_error("SectionFilter::receiveTSPacket Failed to create Section!\n");
+			_error("SectionFilter::receiveTSPacket Failed to create Section!\n");
 			ignore(currentSection);
+			if (sectionPidSelector.count(pack->getPid()) != 0) {
+				SectionHandler *handler = sectionPidSelector[pack->getPid()];
+				sectionPidSelector.erase(pack->getPid());
+				handler = NULL;
+				delete handler;
+			}
 			return false;
 		}
 
 		currentSection->setESId(pack->getPid());
 
-		/*_debug(
+		_debug(
 				"SectionFilter::setSectionParameters "
 				"Section %s created with secNUm=%d, lasSec=%d and secLen=%d\n",
 				currentSection->getSectionName().c_str(),
 				currentSection->getSectionNumber(),
 				currentSection->getLastSectionNumber(),
-				currentSection->getSectionLength());*/
+				currentSection->getSectionLength());
 
 		if (currentSection->isConsolidated()) {
 			process(currentSection);
+			if (sectionPidSelector.count(pack->getPid()) != 0) {
+				SectionHandler *handler = sectionPidSelector[pack->getPid()];
+				sectionPidSelector.erase(pack->getPid());
+				handler = NULL;
+				delete handler;
+			}
 
 		} else {
 			this->lastContinuityCounter = pack->getContinuityCounter();
