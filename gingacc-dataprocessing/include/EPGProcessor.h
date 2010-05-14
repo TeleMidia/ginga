@@ -67,11 +67,19 @@ using namespace ::br::pucrio::telemidia::util;
 #include "tsparser/IEventInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#include "tsparser/IShortEventDescriptor.h"
-#include "tsparser/ILogoTransmissionDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+//#include "tsparser/IShortEventDescriptor.h"
+//#include "tsparser/IExtendedEventDescriptor.h"
+//#include "tsparser/IAudioComponentDescriptor.h"
+//#include "tsparser/ILogoTransmissionDescriptor.h"
+//using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+
+
+
+#include "IEPGProcessor.h"
 
 #include <set>
+#include <vector>
+#include <map>
 #include <string>
 using namespace std;
 
@@ -82,21 +90,48 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace epg {
-	class EPGProcessor {
+
+	class EPGProcessor : public IEPGProcessor {
 		private:
+			set<string>* processedSections;
+			unsigned int firstPresentSection;
+			unsigned int firstScheduleSection;
+			bool presentMapReady;
+			bool scheduleMapReady;
+
+		protected:
 			//TODO: link service id from sdt to eit and cdt
-			static set<string>* cdt;
-			static int files;
+			set<string>* cdt;
+			int files;
+			//map<string, set<IEPGListener*>*>* epgListeners;
+			set<IEPGListener*>* epgListeners;
+			map<unsigned int, IEventInfo*>* eventPresent;
+			map<unsigned int, IEventInfo*>* eventSchedule;
+			static EPGProcessor* _instance;
+			unsigned int lastSectionVersion;
+			unsigned int lastTableId;
 
 		public:
-			/*EPGProcessor();
-			~EPGProcessor();*/
-			static void decodeSdt(string fileName);
-			static set<IEventInfo*>* decodeEit(string fileName);
-			static void decodeCdt(string fileName);
+			~EPGProcessor();
+			static EPGProcessor* getInstance();
+			void decodeSdt(string fileName);
+			void decodeSdtSection(ITransportSection* section);
+			set<IEventInfo*>* decodeEit(string fileName);
+			void decodeCdt(string fileName);
+			void decodeEitSection(ITransportSection* section);
+			//void decodeEitSectionNew(ITransportSection* section);
+			void addEPGListener(IEPGListener* listener, string request);
+			void removeEPGListener(IEPGListener * listener);
 
+			//void generatePresentMap();
 		private:
-			static int savePNG(char* data, int pngSize);
+			EPGProcessor();
+			struct Field* handleFieldStr(string str);
+			int savePNG(char* data, int pngSize);
+			void generateMap(map<unsigned int, IEventInfo*>* actualMap);
+			bool checkSection(ITransportSection* section);
+			void addProcessedSection(ITransportSection* section);
+			void printFieldMap(map<string, struct Field>* fieldMap);
 	};
 }
 }

@@ -155,6 +155,41 @@ LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt)
     int_dispatch(L);  // [ ...]
     return 0;
 }
+LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt,
+		bool dispatch)
+{
+	string str;
+	map<string, struct Field>::iterator it;
+
+	// [ ... ]
+	lua_newtable(L);    // [ ... | evt ]
+
+	//cout << "LuaEvent::ext_postHashRec TABLE = {" << endl;
+
+	for (it=evt.begin(); it!=evt.end(); ++it) {
+    	//cout << "	LuaEvent::ext_postHashRec: " << it->first.c_str();
+
+    	 if ( it->second.table.empty() == false){ //table inside table
+    		//cout << " (table) = " << endl;
+
+    		ext_postHashRec(L, it->second.table, false);// [ ... | evt | evt ]
+			lua_setfield(L, -2, it->first.c_str()); // [ ... | evt ]
+    	}
+    	 else if (it->second.str.empty() == false) { // field is a string
+			//cout << " = " << it->second.str.c_str() << endl;
+
+			lua_pushstring(L, it->second.str.c_str());  // [ ... | evt | value ]
+    		lua_setfield(L, -2, it->first.c_str()); // [ ... | evt ]
+    	}
+    }
+    //cout << "LuaEvent::ext_postHashRec }" << endl;
+    // [ ... | evt ]
+    if (dispatch == true){
+    	//cout << "LuaEvent::ext_postHashRec going to dispatch!" << endl;
+    	int_dispatch(L);  // [ ... ]
+	}
+    return 0;
+}
 
 static int l_post (lua_State* L)
 {
@@ -267,6 +302,19 @@ static int l_post (lua_State* L)
 			strCmd = cmd_to_str(L);
 			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT, strCmd);
 
+		} else if ( !strcmp(clazz, "si") ){
+			//cout << "LuaEvent::l_post SI EVENT!!!!!" << endl;
+			
+			lua_getfield(L, 2, "type");
+			// [ dst | evt | class | type ]
+			const char* type = luaL_checkstring(L, -1);
+			
+			// SI event
+			if ( !strcmp(type, "epg") ){
+				//TODO: handle epg request data table properly.
+				GETPLAYER(L)->addAsEPGListener();
+			}
+			
 		} else {
 			return luaL_error(L, "invalid event class");
 		}

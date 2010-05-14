@@ -58,63 +58,131 @@ namespace tsparser {
 namespace si {
 namespace descriptors {
 	ShortEventDescriptor::ShortEventDescriptor() {
-		descriptorTag = 0x4D;
-		eventNameLength = 0;
-		descriptionLength = 0;
-	}
+		descriptorTag    = 0x4D;
+		descriptorLength = 0;
+		eventNameLength  = 0;
+		eventNameChar    = NULL;
+		textLength       = 0;
+		textChar         = NULL;
 
+	}
 	ShortEventDescriptor::~ShortEventDescriptor() {
-
+		if (eventNameChar != NULL){
+			delete eventNameChar;
+			eventNameChar = NULL;
+		}
+		if (textChar != NULL){
+			delete textChar;
+			textChar = NULL;
+		}
 	}
-
 	unsigned char ShortEventDescriptor::getDescriptorTag() {
-		return 0x4D;
+		return descriptorTag;
+	}
+	unsigned int ShortEventDescriptor::getDescriptorLength() {
+		return (unsigned int)descriptorLength;
 	}
 
-	void ShortEventDescriptor::setLanguageCode(string language) {
-		strncpy(languageCode, language.c_str(), 3);
+	unsigned int ShortEventDescriptor::getEventNameLength() {
+		return (unsigned int)eventNameLength;
 	}
 
-	void ShortEventDescriptor::setEventName(string name, unsigned char len) {
-		eventNameLength = len;
-		memset(eventName, 0, 255);
-		memcpy(eventName, name.c_str(), eventNameLength);
-		descriptorLength = (eventNameLength + descriptionLength + 5);
+	unsigned int ShortEventDescriptor::getTextLength() {
+		return (unsigned int)textLength;
 	}
 
-	void ShortEventDescriptor::setDescription(string text, unsigned char len) {
-		descriptionLength = len;
-		memset(description, 0, 255);
-		memcpy(description, text.c_str(), descriptionLength);
-		descriptorLength = (eventNameLength + descriptionLength + 5);
+	string ShortEventDescriptor::getLanguageCode() {
+		string str;
+
+		str.append(languageCode, 3);
+		return str;
 	}
 
-	unsigned char ShortEventDescriptor::getDescriptorLength() {
-		return descriptorLength;
+	string ShortEventDescriptor::getEventName() {
+		string str;
+
+		if(eventNameChar == NULL){
+			return "";
+		}
+		str.append(eventNameChar, eventNameLength);
+		return str;
 	}
 
-	unsigned char ShortEventDescriptor::getEventNameLength() {
-		return eventNameLength;
+	string ShortEventDescriptor::getTextChar() {
+		string str;
+
+		if(textChar == NULL){
+			return "";
+		}
+		str.append(textChar, textLength);
+		return textChar;
 	}
 
-	unsigned char ShortEventDescriptor::getDescriptionLength() {
-		return descriptionLength;
+
+	void ShortEventDescriptor::print() {
+		cout << "ShortEventDescriptor::print printing...." << endl;
+		cout << " -languageCode = "  << getLanguageCode() << endl;
+		cout << " -eventNameChar = " << getEventName() << endl;
+		cout << " -textChar = "      << getTextChar() << endl;
 	}
 
-	char * ShortEventDescriptor::getLanguageCode() {
-		return languageCode;
-	}
+	size_t ShortEventDescriptor::process(char* data, size_t pos) {
+		unsigned char len = 0;
+		cout << "ShortEventDescriptor::process with pos = " << pos << endl;
 
-	char * ShortEventDescriptor::getEventName() {
-		return eventName;
-	}
+		descriptorLength = data[pos+1];
+		cout << "ShortEventDescriptor::process descriptorLength = ";
+		cout << (descriptorLength & 0XFF) << endl;
+		pos += 2;
 
-	char * ShortEventDescriptor::getDescription() {
-		return description;
-	}
+		memcpy(languageCode, data+pos, 3);
+		cout << "ShortEventDescriptor::process LanguageCode = " << languageCode;
+		cout << endl;
 
-	void ShortEventDescriptor::setDescriptorLength(unsigned char length) {
-		descriptorLength = length;
+		pos += 3;
+
+		eventNameLength = data[pos];
+		//cout << "Short Event length " << (unsigned int) eventNameLength;
+		//cout << " with pos = " << pos << endl;
+		if(eventNameLength > 0){
+			eventNameChar = new char[eventNameLength];
+			if(eventNameChar == NULL){
+				cout << "ShortEvent::process error allocating memory" << endl;
+				return -1;
+			}
+			memset(eventNameChar, 0, eventNameLength);
+			memcpy(eventNameChar, data+pos+1, eventNameLength);
+			
+			cout << "ShortEventDescriptor::Short Event EventName = ";
+			for (int i = 0; i < eventNameLength; i++){
+				cout << eventNameChar[i];
+			}
+			cout << endl;
+			
+		}
+		pos += eventNameLength + 1;
+
+		textLength = data[pos];
+		//cout << "Short Event textLength = " << (unsigned int)textLength << endl;
+		if(textLength){
+			textChar = new char[textLength];
+			if(textChar == NULL){
+				//cout << "ShortEvent::process error allocating memory" << endl;
+				return -1;
+			}
+			memset(textChar, 0, textLength);
+			memcpy(textChar, data+pos+1, textLength);
+			/*
+			cout << "Short Event textChar = ";
+			for (int i = 0; i < textLength; i++){
+				cout << textChar[i];
+			}
+			cout << endl;
+			 */
+		}
+		pos += textLength;
+
+		return pos;
 	}
 }
 }
@@ -125,16 +193,3 @@ namespace descriptors {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		IShortEventDescriptor* createSED() {
-
-	return (new ::br::pucrio::telemidia::ginga::core::tsparser::si::
-			descriptors::ShortEventDescriptor());
-}
-
-extern "C" void destroySED(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		IShortEventDescriptor* sed) {
-
-	delete sed;
-}

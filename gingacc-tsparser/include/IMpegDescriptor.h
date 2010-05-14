@@ -50,7 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IMPEGDESCRIPTOR_H_
 #define IMPEGDESCRIPTOR_H_
 
-#include <string.h>
+#include <iostream>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -66,7 +67,10 @@ namespace tsparser {
 		public:
 			virtual ~IMpegDescriptor(){};
 			virtual unsigned char getDescriptorTag()=0;
-			virtual size_t process(char* data, size_t pos)=0;
+			virtual unsigned int getDescriptorLength()=0;
+			virtual size_t process (char* data, size_t pos)=0;
+			virtual void print()=0;
+
 	};
 }
 }

@@ -50,9 +50,16 @@ http://www.telemidia.puc-rio.br
 #ifndef SHORTEVENTDESCRIPTOR_H_
 #define SHORTEVENTDESCRIPTOR_H_
 
+
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
 #include "IShortEventDescriptor.h"
 
 #include <cstring>
+
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -63,28 +70,25 @@ namespace tsparser {
 namespace si {
 namespace descriptors {
     class ShortEventDescriptor : public IShortEventDescriptor {
+
 		protected:
 			char languageCode[3];
 			unsigned char eventNameLength;
-			char eventName[255];
-			unsigned char descriptionLength;
-			char description[255];
-
+			char* eventNameChar;
+			unsigned char textLength;
+			char* textChar;
 		public:
 			ShortEventDescriptor();
 			~ShortEventDescriptor();
 			unsigned char getDescriptorTag();
-			void setLanguageCode(string language);
-			void setEventName(string name, unsigned char len);
-			void setDescription(string text, unsigned char len);
-			unsigned char getEventNameLength();
-			unsigned char getDescriptionLength();
-			char* getLanguageCode();
-			char* getEventName();
-			char* getDescription();
-			void setDescriptorLength(unsigned char length);
-			size_t process(char* data, size_t pos){return 0;};
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
+			string getLanguageCode();
+			unsigned int getEventNameLength();
+			string getEventName();
+			unsigned int getTextLength();
+			string getTextChar();
+			void print();
+			size_t process(char* data, size_t pos);
     };
 }
 }

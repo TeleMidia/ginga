@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <set>
+#include <vector>
 using namespace std;
 
 namespace br {
@@ -78,9 +78,11 @@ namespace si {
 			virtual void setFreeCAMode(unsigned char mode)=0;
 			virtual unsigned char getFreeCAMode()=0;
 			virtual unsigned short getDescriptorsLoopLength()=0;
-			virtual void setDescriptorsLoopLength(unsigned short length)=0;
-			virtual void insertDescriptor(IMpegDescriptor* info)=0;
-			virtual set<IMpegDescriptor*> * getDescriptors()=0;
+			//virtual void setDescriptorsLoopLength(unsigned short length)=0;
+			virtual void insertDescriptor(IMpegDescriptor* descriptor)=0;
+			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
+			virtual size_t process (char* data, size_t pos)=0;
+			virtual void print()=0;
 	};
 }
 }

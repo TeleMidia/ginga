@@ -57,12 +57,24 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 #include "../../gingacc-tsparser/include/ServiceInfo.h"
 #include "../../gingacc-tsparser/include/EventInfo.h"
-#include "../../gingacc-tsparser/include/IShortEventDescriptor.h"
+#include "../../gingacc-tsparser/include/ShortEventDescriptor.h"
 #include "../../gingacc-tsparser/include/LogoTransmissionDescriptor.h"
 #endif
 
 #include "tsparser/IServiceInfo.h"
 #include "tsparser/IEventInfo.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+
+#include "tsparser/IMpegDescriptor.h"
+using namespace::br::pucrio::telemidia::ginga::core::tsparser;
+
+#include "tsparser/IShortEventDescriptor.h"
+#include "tsparser/IExtendedEventDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+
+#include "../include/IEPGListener.h"
+#include <iostream>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -71,309 +83,432 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace epg {
-	set<string>* EPGProcessor::cdt = new set<string>;
-	int EPGProcessor::files = 0;
+	//set<string>* EPGProcessor::cdt = new set<string>;
+	//int EPGProcessor::files = 0;
+
 #if HAVE_COMPSUPPORT
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
-	/*EPGProcessor::EPGProcessor() {
-		EPGProcessor::eit = new set<EventInfo*>;
-		EPGProcessor::cdt = new set<string>;
-		EPGProcessor::files = 0;
-	}*/
+//TODO: test CDT
 
-	void EPGProcessor::decodeSdt(string fileName) {
+	EPGProcessor::EPGProcessor(){
+		set<string>* cdt   = new set<string>;
+		int files          = 0;
+		eventPresent       = new map<unsigned int, IEventInfo*>;
+		eventSchedule      = new map<unsigned int, IEventInfo*>;
+		//epgListeners       = new map<string, set<IEPGListener*>*>;
+		epgListeners       = NULL;
+		processedSections  = new set<string>;
+		presentMapReady    = false;
+		scheduleMapReady   = false;
+
+	}
+	EPGProcessor::~EPGProcessor(){
+		//TODO: delete listeners vector/set/map, but do NOT delete all listeners!
+
+		map<unsigned int, IEventInfo*>::iterator i;
+
+		for (i = eventPresent->begin(); i != eventPresent->end(); ++i) {
+			delete i->second;
+		}
+		delete eventPresent;
+		eventPresent = NULL;
+
+		for (i = eventSchedule->begin(); i != eventSchedule->end(); ++i) {
+			delete i->second;
+		}
+		delete eventSchedule;
+		eventSchedule = NULL;
+
+		if (epgListeners != NULL) {
+			delete epgListeners;
+			epgListeners  = NULL;
+		}
+
+		delete processedSections;
+		processedSections = NULL;
+
+		_instance = NULL;
+	}
+
+	EPGProcessor* EPGProcessor::_instance = NULL;
+
+	EPGProcessor* EPGProcessor::getInstance() {
+		if (EPGProcessor::_instance == NULL) {
+			EPGProcessor::_instance = new EPGProcessor();
+		}
+		return EPGProcessor::_instance;
+	}
+
+
+/*
+ * The EPG events could only be resquested by Lua node. When a Lua node request
+ * epg events, the Lua Player register himself as epgListener associated with
+ * request (more than one Lua could make the same request, making 1 request to n
+ * epgListener association).
+ * The standard defines three general request types:
+ * 1 - current event (with desired metadata fiedls)
+ * 2 - next event to a specified event (with desired metadata fields)
+ * 3 - schedule (with desired time range and desired metadata fields)
+ *
+ * The EPGProcessor only process EIT table if there is at least one epgListener.
+ *
+ */
+	/*
+	void EPGProcessor::addEPGListener(IEPGListener* listener, string request) {
+		map<string, set<IEPGListener*>*>::iterator i;
+		set<IEPGListener*>* listeners;
+
+		cout << "EPGProcessor::addEPGListener with request = " << request;
+		cout << endl;
+		i = epgListeners->find(request);
+		if (i != epgListeners->end()) {
+			listeners = i->second;
+			if (listeners == NULL)
+				listeners = new set<IEPGListener*>;
+
+			listeners->insert(listener);
+
+		} else {
+			listeners = new set<IEPGListener*>;
+			listeners->insert(listener);
+			(*epgListeners)[request] = listeners;
+		}
+		map<string, string> t;
+		//t["startTime"] = "01/03 23:45";
+
+		t["networkId"]       = "1511";
+		t["id"]               = "1";
+		t["startTime"]        = "906000490";
+		t["endTime"]          = "906004090";
+		t["name"]             = "24";
+		t["shortDescription"] = "Jack Bauer leads the field team to bring Farhaad";
+
+		cout << "EPGProcessor::addAsEPGListener calling pushEPGEvent" << endl;
+		listener->pushEPGEvent(t);
+
+	}
+	*/
+	void EPGProcessor::addEPGListener(IEPGListener* listener, string request) {
+		map<string, struct Field> data;
+		if (epgListeners == NULL) {
+			epgListeners = new set<IEPGListener*>;
+		}
+		epgListeners->insert(listener);
+		listener->pushEPGEvent(data);
+	}
+/*
+	void EPGProcessor::removeEPGListener(IEPGListener* listener) {
+		set<IEPGListener*>::iterator i;
+
+		i = epgListeners->find(listener);
+		if (i != epgListeners->end()) {
+			epgListeners->erase(i);
+		}
+	}
+*/
+	void EPGProcessor::decodeSdtSection(ITransportSection* section) {
 		IServiceInfo* srvi;
-		ILogoTransmissionDescriptor* ltd;
-		char data[4084];
+		//ILogoTransmissionDescriptor* ltd;
+		unsigned int payloadSize;
+		char* data;
 		int fd, rval;
 		unsigned short originalNetworkId;
 		size_t pos, remainingBytesDescriptor, value;
 
-		cout << "Decoding SDT stream..." << endl << endl;
+		cout << "EPGProcessor::decodeSdtSection decoding SDT section";
+		payloadSize = section->getPayloadSize();
+		cout << " with payloadSize = "<< payloadSize << endl;
 
-		fd = open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
-		rval = read(fd, (void*)&(data[0]), 4084);
-		while (rval > 0) {
-			originalNetworkId = (((data[0] << 8) & 0xFF00) | (data[1] & 0xFF));
-			cout << "OriginalNetworkId: " << originalNetworkId << endl;
-			cout << endl;
+		data = new char[payloadSize];
+		memcpy((void*)&(data[0]), section->getPayload(), payloadSize);
 
-			pos = 3; //jumping reserved... it points to service_id
+		pos = 0;
+		//originalNetworkId = (((data[0] << 8) & 0xFF00) | (data[1] & 0xFF));
+		originalNetworkId = (((data[pos] << 8) & 0xFF00) | (data[pos+1] & 0xFF));
 
-			while (pos < rval) {
-				//there's at least one serviceinfo
+		cout << "OriginalNetworkId: " << originalNetworkId << endl;
+
+		//pos = 3; //jumping reserved... it points to service_id
+		pos += 3;
+		while (pos < payloadSize) {
+			//there's at least one serviceinfo
 #if HAVE_COMPSUPPORT
-				srvi = ((ServiceInfoCreator*)(cm->getObject("ServiceInfo")))();
+			srvi = ((ServiceInfoCreator*)(cm->getObject("ServiceInfo")))();
 #else
-				srvi = new ServiceInfo();
+			srvi = new ServiceInfo();
 #endif
-				if (srvi == NULL) {
-					continue;
-				}
+			pos = srvi-> process(data, pos);
+			//srvi->print();
+		}
+		cout << "EPGProcessor::decodedSdtSection section decoded" << endl;
+	}
+	void EPGProcessor::addProcessedSection(ITransportSection* section) {
+		string newName, sectionName;
 
-				srvi->setServiceId((((data[pos] << 8) & 0xFF00) |
-						(data[pos+1] & 0xFF)));
+		sectionName = section->getSectionName();
+		newName =  sectionName + itos(section->getSectionNumber());
+		processedSections->insert(newName);
 
-				pos += 2;
-				srvi->setEitScheduleFlag((data[pos] & 0x02) >> 1);
-				srvi->setEitPresentFollowingFlag(data[pos] & 0x01);
-				pos++;
-				srvi->setRunningStatus((data[pos] & 0xE0) >> 5);
-				srvi->setFreeCAMode((data[pos] & 0x10) >> 4);
-				srvi->setDescriptorsLoopLength(
-						(((data[pos] & 0x0F) << 8) & 0xFF00) |
-						(data[pos+1] & 0xFF));
+		/* with tableId = 0x4E, when sections 0 and 1 are processed, the map is
+		 * ready to go.
+		 * With tableId for schedule, the sections numbers could be anyone, so
+		 * is impossible to know if all sections are processed before the last
+		 * section is received twice. This verification is done by checkSection
+		 * function.
+		 */
+		if (section->getTableId() == 0x4E) {
+			if (processedSections->count(sectionName + itos(0)) &&
+				processedSections->count(sectionName + itos(1))) {
 
-				pos += 2;
-
-				cout << "ServiceId: " << srvi->getServiceId() << endl;
-				cout << "EitSchecudeFlag: ";
-				if (srvi->getEitScheduleFlag()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-
-				cout << "EitPresentFollowingFlag: ";
-				if (srvi->getEitPresentFollowingFlag()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-
-				cout << "RunningStatus: ";
-				if (srvi->getRunningStatus()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-
-				cout << "FreeCAMode: ";
-				if (srvi->getRunningStatus()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-
-				cout << "DescriptorsLoopLength: ";
-				cout << srvi->getDescriptorsLoopLength() << endl;
+				cout << "EPGProcessor::addProcessedSection presentMap ready!";
 				cout << endl;
 
-				remainingBytesDescriptor = srvi->getDescriptorsLoopLength();
+				generateMap(eventPresent);
+				presentMapReady = true;
+			}
+		}
 
-				while (remainingBytesDescriptor) {
-					//there's at least one descriptor
-					value = data[pos+1] + 2;
-					remainingBytesDescriptor -= value;
-					switch (data[pos]) {
-					case 0xCF: //Logo Transmission Descriptor
-#if HAVE_COMPSUPPORT
-						ltd = ((LTDCreator*)(cm->getObject(
-								"LogoTransmissionDescriptor")))();
-#else
-						ltd = new LogoTransmissionDescriptor();
-#endif
-						pos++;
-						ltd->setDescriptorLength(data[pos]);
-						cout << "Descriptor length: ";
-						cout << (ltd->getDescriptorLength() & 0xFF) << endl;
-						pos++;
-						ltd->setType(data[pos]);
-						cout << "Type: " << (ltd->getType() & 0xFF) << endl;
-						pos++;
-						if (data[pos-1] == 0x01) { // scheme 1
-							ltd->setLogoId(((data[pos] << 8) & 0xFF00) |
-									(data[pos+1] & 0xFF));
+	}
+	bool EPGProcessor::checkSection(ITransportSection* section) {
+		unsigned int tableId, sectionNumber, lastSectionNumber;
+		string newSectionName;
 
-							pos += 2;
-							ltd->setLogoVersion(((data[pos] << 8) &
-										0x0100) | (data[pos+1] & 0xFF));
-							pos += 2;
-							ltd->setDownloadDataId(((data[pos] << 8) &
-										0xFF00) | (data[pos+1] & 0xFF));
-							pos += 2;
-						}
-						else if (data[pos-1] == 0x02) { // scheme 2
-							ltd->setLogoId(((data[pos] << 8) & 0xFF00) |
-												(data[pos+1] & 0xFF));
-							pos += 2;
-						}
-						else if (data[pos-1] == 0x03) { // simple logo system
-							char str[ltd->getDescriptorLength()];
-							memcpy(str, data + pos, ltd->getDescriptorLength()-1);
-							str[ltd->getDescriptorLength()-1] = 0;
-							ltd->setName((string) str);
-							pos += (ltd->getDescriptorLength()-1);
-							cout << "Simple logo system: " << ltd->getName() << endl;
-						}
-						else {
-							pos += (ltd->getDescriptorLength()-1);
-							cout << "Unrecognized Logo Transmission Type: "
-										<< ltd->getType() << endl;
-						}
+		if (section->getPayloadSize()<= 6) {
+			//cout << "EPGProcessor::checkSection discarding section" << endl;
+			return false;
+		}
+		sectionNumber      = section->getSectionNumber();
+		lastSectionNumber  = section->getLastSectionNumber();
+		newSectionName =  section->getSectionName() + itos(sectionNumber);
 
-						srvi->insertDescriptor(ltd);
-						break;
+		if (processedSections->count(newSectionName) > 0) {
 
-					default: //Unrecognized Descriptor
-						pos += value;
-						break;
+			tableId = section->getTableId();
+			cout << "EPGProcessor::checkSection section exists:!";
+			cout << endl;
+			cout << "  -TableId = " << hex    << tableId << dec;
+			cout << "    -SectionVersion = "  << section->getVersionNumber();
+			cout << "    -SectionNumber = "   << sectionNumber ;
+			cout << "	 -LastSectionNumber=" << lastSectionNumber;
+			cout << "    -SectionName="       << newSectionName << endl; ;
+
+			if (sectionNumber == lastSectionNumber) {
+				cout << "EPGProcessor::checkSection is last version: ";
+
+				if (tableId == 0x4E ) {
+					if (!presentMapReady) {
+						cout << "presentMap ready to move" << endl;
+						//generateMap(eventPresent);
+						presentMapReady = true;
+					}
+					else {
+						cout << "presentMap is already ready" << endl;
 					}
 				}
-			}
-			rval = read(fd, (void*)&(data[0]), 4093);
-		}
-		cout << "Stream decoded successfully." << endl;
-	}
+				else if ((tableId <= 0x50 && tableId >= 0x5F) &&
+						!scheduleMapReady){
 
-	set<IEventInfo*>* EPGProcessor::decodeEit(string fileName) {
-		set<IEventInfo*>* eit;
+					cout << "scheduleMap ready to move" << endl;
+					//generateMap(eventSchedule);
+					scheduleMapReady = true;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+	void EPGProcessor::decodeEitSection(ITransportSection* section){
+		unsigned int payloadSize, transportStreamId, originalNetworkId;
+		unsigned int segmentLastSectionNumber, lastTableId, sectionLength;
+		unsigned int sectionVersion, tableId, sectionNumber, lastSectionNumber;
+		string sectionName;
 		IEventInfo* ei;
-		IShortEventDescriptor* se;
-		int fd, rval;
-		time_t time;
-		size_t pos, remainingBytesDescriptor, value;
-		char str[256];
-		char data[4084];
+		set<IEventInfo*>* eit;
+		char* data;
+		size_t pos;
+		map<unsigned int, IEventInfo*>::iterator i;
 
-		int transportStreamId, originalNetworkId, segmentLastSectionNumber;
-		int lastTableId;
-		cout << "Decoding EIT stream..." << endl << endl;
+		tableId     = section->getTableId();
+		payloadSize = section->getPayloadSize();
 
-		eit = new set<IEventInfo*>;
-		fd = open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
-		rval = read(fd, (void*)&(data[0]), 4084);
-		while (rval > 0) {
-			transportStreamId = (((data[0] << 8) & 0xFF00) |
-					(data[1] & 0xFF));
+		if(!checkSection(section)) {
+			return;
+		}
 
-			originalNetworkId = (((data[2] << 8) & 0xFF00) |
-					(data[3] & 0xFF));
+		cout << "EPGProcessor::decodeEitSection with tableId = " << hex ;
+		cout << tableId << dec <<  " and payloadSize = " << payloadSize << endl;
 
-			segmentLastSectionNumber = data[4];
-			//TODO: works only for short
-			lastTableId = data[5];
+		sectionLength     = section->getSectionLength();
+		sectionVersion    = section->getVersionNumber();
+		sectionNumber     = section->getSectionNumber();
+		lastSectionNumber = section->getLastSectionNumber();
+		sectionName       = section->getSectionName();
 
-			cout << "TransportStreamId: " << transportStreamId << endl;
-			cout << "OriginalNetworkId: " << originalNetworkId << endl;
-			cout << endl;
+		data = new char[payloadSize];
+		memcpy((void*)&(data[0]), section->getPayload(), payloadSize);
 
-			pos = 6;
+		pos = 0;
+		transportStreamId = (((data[pos] << 8) & 0xFF00) |
+				(data[pos+1] & 0xFF));
 
-			while ((pos) < rval) {
-				//there's at least one eventinfo
+		pos += 2;
+		originalNetworkId = (((data[pos] << 8) & 0xFF00) |
+				(data[pos+1] & 0xFF));
+
+		pos += 2;
+		segmentLastSectionNumber = data[pos];
+		pos++;
+		lastTableId = data[pos];
+
+		cout << "TransportStreamId: " << transportStreamId << endl;
+		cout << "OriginalNetworkId: " << originalNetworkId << endl;
+		cout << endl;
+
+
+		cout << "TableId: " << hex << tableId << dec << endl;
+		cout << "SectionVersion: "   << sectionVersion << endl;
+		cout << "SectionNumber:"     << sectionNumber << endl;
+		cout << "LastSectionNumber:" << lastSectionNumber << endl;
+		cout << "SectionName: " << sectionName << endl;
+
+		pos++; //pos = 6;
+		while(pos < payloadSize){
 #if HAVE_COMPSUPPORT
-				ei = ((EICreator*)(cm->getObject("EventInfo")))();
+			ei = ((EICreator*)(cm->getObject("EventInfo")))();
 #else
-				ei = new EventInfo();
+			ei = new EventInfo();
 #endif
-				if (ei == NULL) {
-					continue;
-				}
 
-				ei->setEventId((((data[pos] << 8) & 0xFF00) |
-						(data[pos+1] & 0xFF)));
+			pos = ei->process(data, pos);
 
-				pos += 2;
-				ei->setStartTimeEncoded(data+pos);
+			//TODO: clean this mess.
+			//ei->setTableId(tableId);
+			//ei->setSectionVersion(sectionVersion);
+			//ei->setSectionNumber(sectionNumber);
 
-				pos += 5;
-				ei->setDurationEncoded(data+pos);
-
-				pos += 3;
-				ei->setRunningStatus((data[pos] & 0xE0) >> 5);
-				ei->setFreeCAMode((data[pos] & 0x10) >> 4);
-				ei->setDescriptorsLoopLength(
-						(((data[pos] & 0x0F) << 8) & 0xFF00) |
-						(data[pos+1] & 0xFF));
-
-				pos += 2;
-
-				cout << "EventId: " << ei->getEventId() << endl;
-				time = ei->getStartTime();
-				if (time) {
-					cout << "StartTime: " << time << endl;
-				} else {
-					cout << "StartTime: undefined." << endl;
-				}
-				time = ei->getDuration();
-				cout << "Duration: " << time << endl;
-				cout << "RunningStatus: ";
-				if (ei->getRunningStatus()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-				cout << "FreeCAMode: ";
-				if (ei->getRunningStatus()) {
-					cout << "Yes" << endl;
-				} else {
-					cout << "No" << endl;
-				}
-				cout << "DescriptorsLoopLength: ";
-				cout << ei->getDescriptorsLoopLength() << endl;
-				cout << endl;
-
-				remainingBytesDescriptor = ei->getDescriptorsLoopLength();
-
-				while (remainingBytesDescriptor) {
-					//there's at least one descriptor
-					value = ((data[pos+1] & 0xFF) + 2);
-					remainingBytesDescriptor -= value;
-					switch (data[pos]) {
-					case 0x4D: //Short Event Descriptor
-#if HAVE_COMPSUPPORT
-						se = ((SEDCreator*)(cm->getObject(
-								"ShortEventDescriptor")))();
-#else
-						se = new ShortEventDescriptor();
-#endif
-						se->setDescriptorLength(data[pos+1]);
-						pos += 2;
-						se->setLanguageCode(data+pos);
-						pos += 3;
-						se->setEventName(data+pos+1, data[pos]);
-						pos += (se->getEventNameLength()+1);
-						se->setDescription(data+pos+1, data[pos]);
-						pos += (se->getDescriptionLength() + 1);
-
-						cout << "Descriptor: Short Event Descriptor" << endl;
-						memcpy(str, se->getLanguageCode(), 3); str[3] = 0;
-						cout << "LanguageCode: " << str << endl;
-						memcpy(str, se->getEventName(),
-								se->getEventNameLength());
-						str[se->getEventNameLength()] = 0;
-						cout << "EventName: " << str << endl;
-						memcpy(str, se->getDescription(),
-								se->getDescriptionLength());
-						str[se->getDescriptionLength()] = 0;
-						cout << "Description: " << str << endl;
-						cout << endl;
-
-						ei->insertDescriptor(se);
-						break;
-
-					default: //Unrecognized Descriptor
-						pos += value;
-						break;
-					}
-				}
-				eit->insert(ei);
+			if(tableId == 0x4E) {
+				(*eventPresent)[sectionNumber] = ei;
 			}
-			rval = read(fd, (void*)&(data[0]), 4093);
+
+			else if (tableId >= 0x50 && tableId <= 0x5F) {
+				(*eventSchedule)[sectionNumber] = ei;
+			}
+
+			addProcessedSection(section);
+			cout << "EPGProcessor::decodedEitSection ei process finished with ";
+			cout << "pos = " << pos << endl;
 		}
 
-		if (eit->empty()) {
-			delete eit;
-			eit = NULL;
-		}
-
-		cout << "EIT Stream decoded successfully." << endl;
-		return eit;
 	}
 
+	void EPGProcessor::generateMap(map<unsigned int, IEventInfo*>* actualMap) {
+		map<string, struct Field> responseMap, data;
+		IEventInfo* ei;
+		map<unsigned int, IEventInfo*>::iterator i ;
+		vector<IMpegDescriptor*>::iterator j;
+		struct Field field, fieldMap;
+		IShortEventDescriptor* sed;
+		vector<IMpegDescriptor*>* descs;
+		string name;
+		set<IEPGListener*>::iterator k;
+
+		cout << "EPGProcessor::generateMap beginning" << endl;
+		for (i = actualMap->begin(); i != actualMap->end(); ++i) {
+			ei = i->second;
+			if (ei != NULL) {
+
+				field.str = itos(ei->getEventId());
+				(responseMap)["id"] =  field;
+
+				field.str = ei->getStartTimeSecsStr();
+				(responseMap)["startTime"] = field;
+
+				field.str = ei->getEndTimeSecsStr();
+				(responseMap)["endTime"] = field;
+				descs = ei->getDescriptors();
+
+				cout << "EPGProcessor::generateMap printing:" << endl;
+				cout << "  -id = " << (responseMap)["id"].str;
+				cout << "  -startTime = " << (responseMap)["startTime"].str;
+				cout << "  -endTime = " << (responseMap)["endTime"].str;
+
+				if (descs != NULL) {
+					for (j = descs->begin(); j != descs->end(); ++j) {
+
+						switch ((*j)->getDescriptorTag()) {
+							case IEventInfo::SHORT_EVENT:
+								sed = (IShortEventDescriptor*)(*j);
+								field.str = sed->getEventName();
+								(responseMap)["name"] = field;
+								cout << "  -name = ";
+								cout << (responseMap)["name"].str;
+
+								field.str = sed->getTextChar();
+								(responseMap)["shortDescription"] = field;
+								cout << "  -shortDescription = ";
+								cout << (responseMap)["shortDescription"].str;
+
+
+								break;
+
+							case IEventInfo::PARENTAL_RATING:
+								break;
+							default:
+								break;
+						}
+					}
+				}
+				//cout << endl;
+				name = "evt" + itos(ei->getEventId());
+				fieldMap.table = responseMap;
+				(data)[name] = fieldMap;
+				cout << "(evt belongs to data[" << name << "])" << endl;
+			}
+		}
+		//printFieldMap(&data);
+		if (epgListeners != NULL) {
+			for (k = epgListeners->begin(); k != epgListeners->end(); ++k) {
+				//(*k)->pushEPGEvent(data);
+			}
+		}
+	}
+	void EPGProcessor::printFieldMap(map<string, struct Field>* fieldMap){
+		map<string, struct Field>::iterator i;
+
+		cout << "EPGProcesor::printFieldMap printing..." << endl;
+		for (i = fieldMap->begin(); i!= fieldMap->end(); ++i){
+			cout << i->first << " = ";
+			if (i->second.str.empty()){
+				if (i->second.table.empty()){
+					cout << "all empty"<< endl;
+				}
+				else{
+					cout << "map: { " << endl;
+					printFieldMap(&(i->second.table));
+					cout << "}" << endl;
+				}
+			}
+			else {
+				cout << i->second.str << endl;
+			}
+		}
+	}
+
+	struct Field* EPGProcessor::handleFieldStr(string str) {
+		struct Field* field;
+	//	cout << "EPGProcessor::handleFieldstr with str = " << str << endl;
+		field = new struct Field;
+
+		if (str == "") {
+			field->str = "0";
+			return field;
+		}
+
+		field->str = str;
+		return field;
+	}
 	void EPGProcessor::decodeCdt(string fileName) {
 		char data[4084];
 		int fd, rval, pngSize, totalSize, times, remainder, pos;
@@ -406,7 +541,7 @@ namespace epg {
 				//TODO: check data_type!!!
 
 				//descriptorsLoopLength = ((((data[3] & 0x0F) << 8) & 0xFF00) |
-				//	(data[4] & 0xFF));
+					//	(data[4] & 0xFF));
 
 				memcpy(pngData+pos, data+5, 4079);
 				pos += 4079;
@@ -431,7 +566,7 @@ namespace epg {
 
 		close(fd);
 
-		savePNG(pngData, pngSize);
+		this->savePNG(pngData, pngSize);
 		cout << "Stream decoded successfully. PngSize is '" << pngSize;
 		cout << "', pos is '" << pos + remainder << "'" << endl;
 	}
@@ -474,4 +609,17 @@ namespace epg {
 }
 }
 }
+}
+
+extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::IEPGProcessor*
+		createEPGP() {
+
+	return (::br::pucrio::telemidia::ginga::core::dataprocessing::epg::
+			EPGProcessor::getInstance());
+}
+
+extern "C" void destroyEPGP(::br::pucrio::telemidia::ginga::core::
+		dataprocessing::epg::IEPGProcessor* epgp) {
+
+	delete epgp;
 }

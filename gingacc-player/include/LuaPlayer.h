@@ -117,6 +117,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
+#include "dataprocessing/IEPGProcessor.h"
+#include "dataprocessing/IEPGListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -143,6 +147,7 @@ void t_dump (lua_State* L, int idx);
 // FUNCOES C AUXILIARES
 
 // Converte uma HashTable C++ para uma tabela Lua.
+LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt, bool dispatch);
 LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt);
 LUALIB_API int ext_postRef (lua_State* L, int ref);
 
@@ -173,7 +178,8 @@ namespace core {
 namespace player {
 
   class LuaPlayer :
-		  public Player, public Thread, public io::IInputEventListener {
+		  public Player, public Thread, public io::IInputEventListener,
+		  IEPGListener {
 
 	private:
 		bool loaded;     // se o script ja foi carregado (executado)
@@ -195,7 +201,7 @@ namespace player {
 
 	    IInputManager* im;
         bool isHandler;  // se o player esta com o foco
-
+		IEPGProcessor* epgProc;
 		LuaPlayer (string mrl);
 		virtual ~LuaPlayer ();
 		void run();
@@ -215,7 +221,8 @@ namespace player {
 		void unprotectedSetPropertyValue(string name, string value);
 		virtual void setPropertyValue(string name, string value);
 
-		void pushEPGEvent(map<string, string> event);
+		void pushEPGEvent(map<string, struct Field> event);
+		void addAsEPGListener();
 
         // TECLADO
 		bool userEventReceived (io::IInputEvent* evt);

@@ -650,9 +650,11 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
     this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
+    this->epgProc = ((epgpCreator*)(cm->getObject("EPGProcessor")))();
 #else
     this->im = InputManager::getInstance();
     this->surface = new DFBSurface();
+    this->epgProc = EPGProcessor::getInstance();
 #endif
 
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
@@ -877,48 +879,23 @@ void LuaPlayer::refreshContent() {
 	}
 }
 
-/*
-void LuaPlayer::pushEPGEvent (map<string, string> event)
-{
-	cout << "LuaPlayer::pushEPGEvent in '" << mrl << "'" << endl;
-    *
-	if (event->count("id") != 0) {
-		cout << (*event)["id"] << " ";
-	}
-
-	if (event->count("startTime") != 0) {
-		cout << (*event)["startTime"] << " ";
-	}
-
-	if (event->count("duration") != 0) {
-		cout << (*event)["duration"] << " ";
-	}
-
-	if (event->count("isRunning") != 0) {
-		cout << (*event)["isRunning"] << " ";
-	}
-
-	if (event->count("language") != 0) {
-		cout << (*event)["language"] << " ";
-	}
-
-	if (event->count("name") != 0) {
-		cout << (*event)["name"] << " ";
-	}
-
-	if (event->count("description") != 0) {
-		cout << (*event)["description"] << " ";
-	}
-    *
-
-	this->lock();
-	lua_getfield(this->L, LUA_EVENTINDEX, "post"); // [ event.post ]
-	lua_pushstring(this->L, "in");                 // [ event.post | "in" ]
-	ext_postHash(this->L, event);                 // [ event.post | "in" | evt ]
-	lua_call(this->L, 2, 0);                       // [ ]
-	this->unlock();
+void LuaPlayer::addAsEPGListener () {
+	this->epgProc->addEPGListener(this, "all");
 }
-*/
+
+
+void LuaPlayer::pushEPGEvent (map<string, struct Field> event)
+{
+	struct Field field;
+	//map<string, struct Field> data;
+	map<string, struct Field> evt;
+	
+	if (! event.empty()) {
+		field.table = event;
+		evt["data"] = field;
+		ext_postHashRec(this->L, evt, true);
+	}
+}
 
 /*
 string LuaPlayer::getPropertyValue (string name)

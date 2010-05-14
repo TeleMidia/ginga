@@ -215,7 +215,9 @@ namespace tsparser {
 	}
 
 	void TransportSection::setSectionName() {
-		if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID) {
+		if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID ||
+		 						(tableId >= 0x50 && tableId <= 0x5F )) {
+								
 			sectionName = "epg/data/" + itos(pid) +
 			    itos(tableId) + itos(idExtention) + itos(versionNumber);
 

@@ -66,12 +66,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "EPGProcessor.h"
+#include "IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 
 #include "FilterManager.h"
 #include "IDataProcessor.h"
 #include "dsmcc/IStreamEventListener.h"
-#include "IEPGListener.h"
 
 #include "dsmcc/npt/NPTProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
@@ -99,6 +99,7 @@ namespace dataprocessing {
 			public Thread {
 
 		private:
+			EPGProcessor* epgProcessor;
 			FilterManager* filterManager;
 			map<unsigned int, MessageProcessor*>* processors;
 			map<string, set<IStreamEventListener*>*>* eventListeners;

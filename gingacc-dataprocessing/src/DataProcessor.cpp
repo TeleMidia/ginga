@@ -99,6 +99,8 @@ namespace dataprocessing {
 
 		mkdir("epg", 0777);
 		mkdir("epg/data", 0777);
+	
+		epgProcessor = EPGProcessor::getInstance();
 	}
 
 	DataProcessor::~DataProcessor() {
@@ -148,6 +150,12 @@ namespace dataprocessing {
 			delete ait;
 			ait = NULL;
 		}
+		
+		if (epgProcessor != NULL) {
+			delete epgProcessor;
+			epgProcessor = NULL;
+		}
+
 
 		pthread_mutex_destroy(&mutex);
 	}
@@ -320,16 +328,6 @@ namespace dataprocessing {
 		}
 	}
 
-	void DataProcessor::notifyEitListeners(set<IEventInfo*>* events) {
-		set<IEPGListener*>::iterator i;
-
-		i = epgListeners->begin();
-		while (i != epgListeners->end()) {
-			(*i)->receiveEventInfo(events);
-			++i;
-		}
-	}
-
 	void DataProcessor::receiveSection(ITransportSection* section) {
 		IStreamEvent* se;
 		string sectionName;
@@ -423,36 +421,29 @@ namespace dataprocessing {
 
 			//SDT
 			} else if (tableId == SDT_TID) {
-				cout << "DataProcessor::receiveSection SDT" << endl;
-				sectionName = section->getSectionName();
-				if (filterManager->processSection(section)) {
-					EPGProcessor::decodeSdt(sectionName);
-					cout << "SDT MONTADA!!!" << endl;
-				}
+				//cout << "DataProcessor::receiveSection SDT" << endl;
+				epgProcessor->decodeSdtSection(section);
+				delete section;
+				section = NULL;
 
-			//EIT
-			} else if (tableId == EIT_TID) {
-				cout << "DataProcessor::receiveSection EIT" << endl;
-				sectionName = section->getSectionName();
-				if (filterManager->processSection(section)) {
-					// notify eit listeners
-					cout << "decoding EIT" << endl;
-					eit = EPGProcessor::decodeEit(sectionName);
-					if (eit != NULL) {
-						notifyEitListeners(eit);
-						delete eit;
-					}
-					cout << "EIT MONTADA" << endl;
-				}
+			// EIT present/following and schedule 
+			} else if ( tableId == EIT_TID || //EIT present/following in actual TS
+						(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
+					
+				
+				/*TODO: TS files don't have EITs p/f and sched in other TS.
+				 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F (schedule)
+				*/
+				
+				epgProcessor->decodeEitSection(section);
+				delete section;
+				section = NULL;
 
 			//CDT
 			} else if (tableId == CDT_TID) {
 				cout << "DataProcessor::receiveSection CDT" << endl;
 				sectionName = section->getSectionName();
-				if (filterManager->processSection(section)) {
-					EPGProcessor::decodeCdt(sectionName);
-					cout << "CDT MONTADA!!!" << endl;
-				}
+				//TODO: TS files don't have any CDT sections.
 			}
 		}
 	}

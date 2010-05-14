@@ -50,12 +50,6 @@ http://www.telemidia.puc-rio.br
 #ifndef ISHORTEVENTDESCRIPTOR_H_
 #define ISHORTEVENTDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
-
-#include <string>
-using namespace std;
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -64,22 +58,14 @@ namespace core {
 namespace tsparser {
 namespace si {
 namespace descriptors {
-    class IShortEventDescriptor : public IMpegDescriptor {
+	class IShortEventDescriptor : public IMpegDescriptor{
 		public:
-			virtual ~IShortEventDescriptor(){};
-			virtual unsigned char getDescriptorTag()=0;
-			virtual void setLanguageCode(string language)=0;
-			virtual void setEventName(string name, unsigned char len)=0;
-			virtual void setDescription(string text, unsigned char len)=0;
-			virtual unsigned char getEventNameLength()=0;
-			virtual unsigned char getDescriptionLength()=0;
-			virtual char* getLanguageCode()=0;
-			virtual char* getEventName()=0;
-			virtual char* getDescription()=0;
-			virtual void setDescriptorLength(unsigned char length)=0;
-			virtual unsigned char getDescriptorLength()=0;
-			virtual size_t process(char* data, size_t pos)=0;
-    };
+			~IShortEventDescriptor(){};
+			virtual string getLanguageCode()=0;
+			virtual string getEventName()=0;
+			virtual string getTextChar()=0;
+
+	};
 }
 }
 }
@@ -89,11 +75,5 @@ namespace descriptors {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		IShortEventDescriptor* SEDCreator();
 
-typedef void SEDDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		IShortEventDescriptor* sed);
-
-#endif /*ISHORTEVENTDESCRIPTOR_H_*/
+#endif /* ISHORTEVENTDESCRIPTOR_H_ */

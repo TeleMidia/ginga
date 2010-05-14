@@ -53,8 +53,20 @@ http://www.telemidia.puc-rio.br
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
+#include <string.h>
 #include <vector>
 using namespace std;
+
+#include "IExtendedEventDescriptor.h"
+
+/*
+struct Item {
+	unsigned char itemDescriptionLength;
+	char* itemDescriptionChar;
+	unsigned char itemLength;
+	char* itemChar;
+};
+*/
 
 namespace br {
 namespace pucrio {
@@ -64,29 +76,34 @@ namespace core {
 namespace tsparser {
 namespace si {
 namespace descriptors {
-using namespace std;
-	typedef struct {
-		unsigned char fieldLength;
-		char fieldName[255];
-		unsigned char textLength;
-		char text[255];
-	} ItemData;
 
-	class ExtendedEventDescriptor : public IMpegDescriptor {
+	class ExtendedEventDescriptor : public IExtendedEventDescriptor  {
 		protected:
+			vector<Item*>* items;
+			//unsigned char descriptorTag;
 			unsigned char descriptorNumber;
 			unsigned char lastDescriptorNumber;
 			char languageCode[3];
 			unsigned char lengthOfItems;
-			vector<ItemData*>* items;
 			unsigned char textLength;
-			char text[255];
+			char* textChar; //extendedDescription field on EPG table
 
 		public:
 			ExtendedEventDescriptor();
 			~ExtendedEventDescriptor();
+			unsigned char getDescriptorTag();
+			unsigned int getDescriptorLength();
+			unsigned int getDescriptorNumber();
+			unsigned int getLastDescriptorNumber ();
+			string getLanguageCode();
+			unsigned int getTextLength();
+			string getTextChar();
+			vector<Item*>* getItems();
+			string getItemDescriptionChar(struct Item* item);
+			string getItemChar(struct Item* item);
+			void print();
+			size_t process(char* data, size_t pos);
 
-			size_t process(char* data, size_t pos) {return 0;};
 	};
 }
 }

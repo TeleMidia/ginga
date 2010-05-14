@@ -50,9 +50,15 @@ http://www.telemidia.puc-rio.br
 #ifndef LOGOTRANSMISSIONDESCRIPTOR_H_
 #define LOGOTRANSMISSIONDESCRIPTOR_H_
 
-#include "ILogoTransmissionDescriptor.h"
+//#include "ILogoTransmissionDescriptor.h"
 
-#include <cstring>
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
+#include <string.h>
+
+#include <iostream>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -62,7 +68,7 @@ namespace core {
 namespace tsparser {
 namespace si {
 namespace descriptors {
-    class LogoTransmissionDescriptor : public ILogoTransmissionDescriptor {
+    class LogoTransmissionDescriptor : public IMpegDescriptor {
 		protected:
 			unsigned char logoType;
 			unsigned short logoId;
@@ -73,8 +79,7 @@ namespace descriptors {
 		public:
 			LogoTransmissionDescriptor();
 			~LogoTransmissionDescriptor();
-			void setDescriptorLength(unsigned short length);
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
 			void setType(unsigned char type);
 			unsigned char getType();
 			void setLogoId(unsigned short id);
@@ -87,7 +92,8 @@ namespace descriptors {
 			string getName();
 			unsigned char getNameLength();
 			unsigned char getDescriptorTag();
-			size_t process(char* data, size_t pos){return 0;};
+			void print();
+			size_t process (char* data, size_t pos);
     };
 }
 }

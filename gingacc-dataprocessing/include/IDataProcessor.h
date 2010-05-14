@@ -67,6 +67,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IEPGListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+
 #include "IFilterListener.h"
 
 #include <map>

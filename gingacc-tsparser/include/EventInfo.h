@@ -57,13 +57,25 @@ using namespace ::br::pucrio::telemidia::util;
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "ShortEventDescriptor.h"
+#include "ExtendedEventDescriptor.h"
+#include "ComponentDescriptor.h"
+#include "ContentDescriptor.h"
+#include "DigitalCCDescriptor.h"
+#include "AudioComponentDescriptor.h"
+#include "DataContentDescriptor.h"
+#include "SeriesDescriptor.h"
+#include "ParentalRatingDescriptor.h"
+#include "ContentAvailabilityDescriptor.h"
+
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "IEventInfo.h"
 
 #include <iostream>
-#include <time.h>
-#include <set>
+#include <sstream>
+//#include <time.h>
+//#include <vector>
+//#include <map>
 using namespace std;
 
 namespace br {
@@ -81,44 +93,75 @@ namespace si {
 			unsigned char runningStatus;
 			unsigned char freeCAMode;
 			unsigned short descriptorsLoopLength;
-			set<IMpegDescriptor*> descriptors;
-			time_t startTime;
-			time_t duration;
+			vector<IMpegDescriptor*>* descriptors;
+			map<unsigned char, IMpegDescriptor*>* desc;
+
+			/*attention: tm_mon represents month from 0(January) to 11(December).
+			 * the print function is printing month in 1(jan) to 12(dec)*/
+			struct tm startTime;
+			struct tm duration;
+			struct tm endTime;
+
+			unsigned int sectionNumber;
+			unsigned int tableId;
+			unsigned int sectionVersion;
+
 
 		public:
 			EventInfo();
 			~EventInfo();
-			static int bcd(int dec);
-			static int decimal(int bcd);
-			static int mjd(time_t date);
-			static time_t decodeMjd(unsigned short date);
-			size_t getSize();
-			void setEventId(unsigned short id);
+			void setStartTime(char* date);
+			void setDuration(char* dur);
+			struct tm calcEndTime(struct tm start, struct tm end);
+
+			time_t getStartTimeSecs();
+			time_t getEndTimeSecs();
+			unsigned int getDurationSecs();
+
+			virtual string getStartTimeSecsStr();
+			virtual string getEndTimeSecsStr();
+			virtual string getDurationSecsStr();
+
+			struct tm getStartTime();
+			struct tm getDuration();
+			struct tm getEndTime();
+
+			string getStartTimeEncoded();
+			string getDurationEncoded();
+			string getStartTimeStr();
+			string getEndTimeStr();
+			string getDurationStr();
+
+			unsigned short getLength();
 			unsigned short getEventId();
-			void setStartTime(time_t time);
-			time_t getStartTime();
-			char * getStartTimeEncoded();
+			string getRunningStatus();
+			string getRunningStatusDescription();
+			unsigned char getFreeCAMode();
+			unsigned short getDescriptorsLoopLength();
+
+			vector<IMpegDescriptor*>* getDescriptors();
+			map<unsigned char, IMpegDescriptor*>* getDescriptorsMap();
+
+			void print();
+			size_t process(char* data, size_t pos);
+			void setSectionNumber(unsigned int number);
+			void setTableId(unsigned int id);
+			void setSectionVersion(unsigned int version);
+			unsigned int getSectionVersion();
+			unsigned int getTableId();
+
+		protected:
+			int convertDecimaltoBCD(int dec);
+			int convertBCDtoDecimal(int bcd);
+			struct tm convertMJDtoUTC(unsigned int mjd);
+			int convertUTCtoMJD (int day, int month, int year);
 
 		private:
 			string getFormatNumStr(int un);
+			//void clearDescriptors();
 
-		public:
-			string getFormattedStartTime();
-			void setStartTimeEncoded(char* ste);
-			void setDuration(time_t duration);
-			time_t getDuration();
-			void setDurationEncoded(char* duration);
-			char * getDurationEncoded();
-			string getFormattedDuration();
-			void setRunningStatus(unsigned char status);
-			unsigned char getRunningStatus();
-			void setFreeCAMode(unsigned char mode);
-			unsigned char getFreeCAMode();
-			unsigned short getDescriptorsLoopLength();
-			void setDescriptorsLoopLength(unsigned short length);
-			void insertDescriptor(IMpegDescriptor* info);
-			set<IMpegDescriptor*> * getDescriptors();
-	};
+
+		};
 }
 }
 }

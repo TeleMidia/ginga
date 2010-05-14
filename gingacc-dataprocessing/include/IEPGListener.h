@@ -53,17 +53,63 @@ http://www.telemidia.puc-rio.br
 #include "tsparser/IEventInfo.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser::si;
 
+#include <string>
+#include <map>
+using namespace std;
+
+/*
+ * A Lua Node can register himself to handle EPG events (class='si', type='epg').
+ * Doing this, his associated Lua Player becames an IEPGListener. The standard
+ * defines 3 main types that a Lua Node can request EPG events.
+ *
+ * 1) stage='current', fields={field_1, field_2,...field_j}
+ * 2) stage='next', eventId=<number>, fields={field_1, field_2,...field_j}
+ * 3) stage='schedule', startTime=<date>, endTime=<date>, fields={field_1,
+ * 		field_2,...field_j}
+ *
+ * The struct Request was create to model a lua node request for EPG events.
+ * That request has to be stored associated with her N IEPGListeners.
+ */
+
+struct Request{
+	string stage;
+	/* 3 possible values: current, next or schedule*/
+
+	unsigned short eventId;
+	/* only if stage==next, requesting the next event of the event with this
+	 *  eventId. If is not specified, the request is for the next event of the
+	 *  current event*/
+
+	string startTime;
+	string endTime;
+	/* only if stage==schedule, requesting events with startTime and endTime in
+	* the range specified by this startTime and this endTime*/
+
+	string fields;
+	/*requesting specified metadata fields for each event. If is not specified
+	 * the request is for all possible metadada fields*/
+};
+
+struct Field{
+	string str;
+	map<string, struct Field> table;
+};
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
+namespace epg {
 	class IEPGListener {
 		public:
 			virtual ~IEPGListener(){};
-			virtual void receiveEventInfo(set<IEventInfo*>* events)=0;
+			virtual void pushEPGEvent(map<string, struct Field> event)=0;
+			virtual void addAsEPGListener()=0;
+
 	};
+}
 }
 }
 }

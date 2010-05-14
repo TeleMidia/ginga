@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef SERVICEINFO_H_
 #define SERVICEINFO_H_
 
+#include "ServiceDescriptor.h"
 #include "LogoTransmissionDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
@@ -57,7 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include <iostream>
 #include <time.h>
-#include <set>
+#include <vector>
 using namespace std;
 
 namespace br {
@@ -75,7 +76,10 @@ namespace si {
 			unsigned char runningStatus;
 			unsigned char freeCAMode;
 			unsigned short descriptorsLoopLength;
-			set<IMpegDescriptor*> descriptors;
+			vector<IMpegDescriptor*>* descriptors;
+		public:
+			static const unsigned char LOGO_TRANMISSION = 0XCF;
+			static const unsigned char SERVICE = 0x48;
 
 		public:
 			ServiceInfo();
@@ -94,7 +98,10 @@ namespace si {
 			unsigned short getDescriptorsLoopLength();
 			void setDescriptorsLoopLength(unsigned short length);
 			void insertDescriptor(IMpegDescriptor* info);
-			set<IMpegDescriptor*> * getDescriptors();
+			vector<IMpegDescriptor*>* getDescriptors();
+			void print();
+			size_t process (char* data, size_t pos);
+
 	};
 }
 }
