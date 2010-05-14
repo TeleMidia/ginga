@@ -65,23 +65,25 @@ namespace descriptors {
 		serviceNameLength         = 0;
 		serviceNameChar           = NULL;
 		serviceType               = 0;
-
 	}
 
 	ServiceDescriptor::~ServiceDescriptor() {
-		if(serviceProviderNameChar != NULL){
+		if(serviceProviderNameChar != NULL) {
 			delete serviceProviderNameChar;
 			serviceProviderNameChar = NULL;
 		}
-		if(serviceNameChar != NULL){
+
+		if(serviceNameChar != NULL) {
 			delete serviceNameChar;
 			serviceNameChar = NULL;
 		}
 	}
-	unsigned char ServiceDescriptor::getDescriptorTag(){
+
+	unsigned char ServiceDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
-	unsigned int ServiceDescriptor::getDescriptorLength(){
+
+	unsigned int ServiceDescriptor::getDescriptorLength() {
 		return (unsigned int) descriptorLength;
 	}
 
@@ -90,13 +92,13 @@ namespace descriptors {
 	}
 
 	unsigned int ServiceDescriptor::getServiceNameLength() {
-		return (unsigned int)serviceNameChar;
+		return (unsigned int)serviceNameLength;
 	}
 
 	string ServiceDescriptor::getServiceProviderNameChar() {
 		string str;
 
-		if(serviceProviderNameChar == NULL){
+		if (serviceProviderNameChar == NULL) {
 			return "";
 		}
 		str.append(serviceProviderNameChar, serviceProviderNameLength);
@@ -106,26 +108,27 @@ namespace descriptors {
 	string ServiceDescriptor::getServiceNameChar() {
 		string str;
 
-		if(serviceNameChar == NULL){
+		if(serviceNameChar == NULL) {
 			return "";
 		}
 		str.append(serviceNameChar, serviceNameLength);
 		return str;
 	}
+
 	void ServiceDescriptor::print() {
 		cout << "ServiceDescriptor::print printing..." << endl;
 		cout << " -descriptorLength = " << getDescriptorLength() << endl;
-		if (serviceProviderNameLength > 0){
+		if (serviceProviderNameLength > 0) {
 			cout << "-serviceProviderNameChar = "
 					<< getServiceProviderNameChar() << endl;
-
 		}
-		if (serviceNameLength > 0){
+
+		if (serviceNameLength > 0) {
 			cout << " -serviceNameChar = " << getServiceNameChar() << endl;
 		}
-
 	}
-	size_t ServiceDescriptor::process(char* data, size_t pos){
+
+	size_t ServiceDescriptor::process(char* data, size_t pos) {
 		//cout << "ServiceDescriptor:: process with pos = " << pos << endl;
 		descriptorLength = data[pos+1];
 		pos += 2;
@@ -133,16 +136,22 @@ namespace descriptors {
 		serviceType = data[pos];
 		pos++;
 
-		//cout <<"service length = " << (unsigned int)descriptorLength << " and serviceType = ";
+		//cout <<"service length = " << (unsigned int)descriptorLength;
+		//cout << " and serviceType = ";
 		//cout << (unsigned int)serviceType << endl;
 
 		serviceProviderNameLength = data[pos];
 		if(serviceProviderNameLength > 0){
-			//cout << "ServiceProviderNameLength = " << (unsigned int)serviceProviderNameLength;
+			//cout << "ServiceProviderNameLength = ";
+			//cout << (unsigned int)serviceProviderNameLength;
 			//cout << endl;
 			serviceProviderNameChar = new char[serviceProviderNameLength];
 			memset(serviceProviderNameChar, 0 , serviceProviderNameLength);
-			memcpy(serviceProviderNameChar, data+pos+1, serviceProviderNameLength);
+			memcpy(
+					serviceProviderNameChar,
+					data+pos+1,
+					serviceProviderNameLength);
+
 			/*
 			cout <<" ServiceDescriptor:: serviceProviderNameChar = ";
 			for(int i = 0; i < serviceProviderNameLength; i++){
@@ -154,7 +163,7 @@ namespace descriptors {
 		pos += serviceProviderNameLength + 1;
 
 		serviceNameLength = data[pos];
-		if(serviceNameLength > 0){
+		if (serviceNameLength > 0) {
 			//cout << "ServiceNameLength = " << (unsigned int)serviceNameLength;
 			//cout << endl;
 
@@ -173,7 +182,6 @@ namespace descriptors {
 		return pos;
 
 	}
-
 }
 }
 }
