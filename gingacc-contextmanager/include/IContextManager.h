@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "system/ISystemInfo.h"
 #include "user/IGingaUser.h"
 
+#include "IContextListener.h"
+
 #include <map>
 using namespace std;
 
@@ -78,6 +80,8 @@ namespace contextmanager {
 		virtual map<string, string>* getUserProfile(int userId)=0;
 		virtual map<string, string>* getUsersNames()=0;
 		virtual ISystemInfo* getSystemInfo()=0;
+		virtual void addContextListener(IContextListener* listener)=0;
+		virtual void setGlobalVar(string varName, string varValue)=0;
   };
 }
 }

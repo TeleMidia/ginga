@@ -68,31 +68,43 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
+	IContextManager* ContextManager::_instance = NULL;
+
 	ContextManager::ContextManager() {
-		usersUri    = "/usr/local/etc/ginga/files/contextmanager/users.ini";
-		contextsUri = "/usr/local/etc/ginga/files/contextmanager/contexts.ini";
-		users       = new map<int, IGingaUser*>;
-		contexts    = new map<int, map<string, string>*>;
-		curUserId   = -1;
-		systemInfo  = new SystemInfo();
+		usersUri     = "/usr/local/etc/ginga/files/contextmanager/users.ini";
+		contextsUri  = "/usr/local/etc/ginga/files/contextmanager/contexts.ini";
+		users        = new map<int, IGingaUser*>;
+		contexts     = new map<int, map<string, string>*>;
+		curUserId    = -1;
+		systemInfo   = new SystemInfo();
+		ctxListeners = new set<IContextListener*>;
 
 		initializeUsers();
 		initializeContexts();
 
 		systemInfo->setSystemTable(getUserProfile(getCurrentUserId()));
+
+		pthread_mutex_init(&groupsMutex, NULL);
 	}
 
 	ContextManager::~ContextManager() {
 		map<int, IGingaUser*>::iterator i;
+		set<IContextListener*>::iterator j;
 
+		pthread_mutex_lock(&groupsMutex);
 		i = users->begin();
 		while (i != users->end()) {
 			delete i->second;
 			++i;
 		}
-	}
 
-	IContextManager* ContextManager::_instance = NULL;
+		if (ctxListeners != NULL) {
+			delete ctxListeners;
+			ctxListeners = NULL;
+		}
+		pthread_mutex_unlock(&groupsMutex);
+		pthread_mutex_destroy(&groupsMutex);
+	}
 
 	IContextManager* ContextManager::getInstance() {
 		if (_instance == NULL) {
@@ -449,6 +461,28 @@ namespace contextmanager {
 			++i;
 		}
 		cout << endl;
+	}
+
+	void ContextManager::addContextListener(IContextListener* listener) {
+		cout << "ContextManager::registerPresentationContext" << endl;
+		pthread_mutex_lock(&groupsMutex);
+		ctxListeners->insert(listener);
+		pthread_mutex_unlock(&groupsMutex);
+	}
+
+	void ContextManager::setGlobalVar(string varName, string varValue) {
+		set<IContextListener*>::iterator i;
+
+		cout << "ContextManager::setGlobalVar(" << varName << ", ";
+		cout << varValue << ") " << endl;
+
+		pthread_mutex_lock(&groupsMutex);
+		i = ctxListeners->begin();
+		while (i != ctxListeners->end()) {
+			(*i)->receiveGlobalAttribution(varName, varValue);
+			++i;
+		}
+		pthread_mutex_unlock(&groupsMutex);
 	}
 }
 }

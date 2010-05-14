@@ -52,6 +52,12 @@ http://www.telemidia.puc-rio.br
 
 #include "IContextManager.h"
 
+#include "IContextListener.h"
+
+#include <pthread.h>
+#include <set>
+using namespace std;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -62,12 +68,14 @@ namespace contextmanager {
 	private:
 		map<int, IGingaUser*>* users;
 		map<int, map<string, string>*>* contexts;
+		set<IContextListener*>* ctxListeners;
 		string usersUri, contextsUri;
 		int curUserId;
 		ISystemInfo* systemInfo;
-
 		static IContextManager* _instance;
 		ContextManager();
+
+		pthread_mutex_t groupsMutex;
 
 	public:
 		~ContextManager();
@@ -82,6 +90,8 @@ namespace contextmanager {
 		void addUser(IGingaUser* newUser);
 		void saveUsersAccounts();
 		void saveUsersProfiles();
+		void addContextListener(IContextListener* listener);
+		void setGlobalVar(string varName, string varValue);
 
 	private:
 		void saveProfile(int fd, int userId, map<string, string>* profile);
@@ -93,7 +103,6 @@ namespace contextmanager {
 		map<string,string>* getUserProfile(int userId);
 		map<string, string>* getUsersNames();
 		ISystemInfo* getSystemInfo();
-
 
 	private:
 		void listUsersNicks();
