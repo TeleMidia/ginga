@@ -60,13 +60,19 @@ http://www.telemidia.puc-rio.br
 #include <string.h>
 using namespace std;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+#include "../../IRemoteDeviceListener.h"
+#include "../IDeviceDomain.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	class TCPClientConnection {
+	class TCPClientConnection : public Thread  {
 		private:
 			int sockfd;
 			int counter;
@@ -74,12 +80,19 @@ namespace multidevice {
 			char* portno;
 			struct sockaddr_in server_addr;
 			struct hostent *server;
-
+			IRemoteDeviceListener *resrv;
+			void run();
+			bool running;
+			unsigned int deviceId;
 		public:
-			TCPClientConnection(char* hostname, char* port_str);
+			TCPClientConnection(unsigned int devid,
+					    char* hostname,
+					    char* port_str,
+					    IRemoteDeviceListener* srv);
 			virtual ~TCPClientConnection();
 			bool post(char* str);
 			void end();
+			void release();
 	};
 }
 }

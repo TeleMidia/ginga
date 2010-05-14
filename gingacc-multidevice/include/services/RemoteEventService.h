@@ -51,7 +51,11 @@ http://www.telemidia.puc-rio.br
 
 #include <pthread.h>
 #include <map>
+#include <vector>
 using namespace std;
+
+#include "contextmanager/IContextManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #ifndef REMOTEEVENTSERVICE_H_
 #define REMOTEEVENTSERVICE_H_
@@ -64,15 +68,19 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	class RemoteEventService {
+	class RemoteEventService : public IRemoteDeviceListener {
 		private:
+			static RemoteEventService* _instance;
 			pthread_mutex_t groupsMutex;
 			map<int,TcpSocketService*>* groups;
 			static const int DEFAULT_PORT = 22222;
+			static IContextManager* contextManager;
 
 		public:
 			RemoteEventService();
 			virtual ~RemoteEventService();
+
+			static RemoteEventService* getInstance();
 
 			void addDeviceClass(unsigned int id);
 			void addDevice(
@@ -83,10 +91,26 @@ namespace multidevice {
 			void addDocument(unsigned int device_class, char* name, char* body);
 			void startDocument(unsigned int device_class, char* name);
 			void stopDocument(unsigned int device_class, char* name);
-			/*
-			 *TODO - generalizar. criar um remoteeventservice pra
-			 *       cada classe (tratar a volta)
-			 */
+
+			bool newDeviceConnected(int newDevClass, int w, int h);
+			void connectedToBaseDevice(unsigned int domainAddr);
+
+			bool receiveRemoteContent(
+					int remoteDevClass,
+					string contentUri);
+
+			bool receiveRemoteContent(
+					int remoteDevClass,
+					char *stream, int streamSize);
+
+			bool receiveRemoteContentInfo(
+					string contentId, string contentUri);
+
+			bool receiveRemoteEvent(
+					int remoteDevClass,
+					int eventType,
+					string eventContent);
+
 	};
 }
 }

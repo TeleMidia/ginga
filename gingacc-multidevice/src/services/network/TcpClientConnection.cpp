@@ -55,12 +55,18 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	TCPClientConnection::TCPClientConnection(char* hostname, char *port_str) {
+	TCPClientConnection::TCPClientConnection(unsigned int devid,
+						 char* hostname,
+						 char *port_str,
+						 IRemoteDeviceListener* srv) {
+
+		deviceId = devid;
 		struct addrinfo hints, *res;
 		int set;
 
 		srv_hostname = hostname;
 		portno = port_str;
+		resrv = srv;
 
 		counter = 0;
 
@@ -84,6 +90,7 @@ namespace multidevice {
 	}
 
 	TCPClientConnection::~TCPClientConnection() {
+		running = false;
 		close(sockfd);
 	}
 
@@ -108,8 +115,11 @@ namespace multidevice {
 		nw = send(sockfd,com,strlen(com), MSG_NOSIGNAL);
 		if (nw != strlen(com)) {
 			perror("TCPClientConnection::post send error");
+			this->end();
 
 		} else {
+			return true;
+			/*
 			nr = recv(sockfd,buf,5,0);
 			if (nr > 0) {
 				if (strcmp(buf,"OK\n")==0) {
@@ -119,12 +129,64 @@ namespace multidevice {
 					return false;
 				}
 			}
+			*/
 		}
 
 		return false;
 	}
 
+	void TCPClientConnection::run() {
+		while (running) {
+			char buf[100]; //max event string size
+			char msgType[4];
+			char evtType[5];
+
+			int nr = recv(sockfd,buf,100,0);
+
+			if (nr > 3) {
+				if (nr > 100)
+					buf[99] = '\0';
+				else
+					buf[nr] = '\0';
+
+				//cout << "TCPClientConnection:run buf= " << buf << endl;
+
+				strncpy(msgType,buf,3);
+				msgType[3] = '\0';
+
+				strncpy(buf,buf+4,nr);
+
+				if ((strcmp(msgType,"EVT")) == 0) {
+					strncpy(evtType,buf,4);
+					evtType[4] = '\0';
+					strncpy(buf,buf+5,nr);
+
+					if ((strcmp(evtType,"ATTR")) == 0) {
+						//cout << " new buf: " << buf << endl;
+						resrv->receiveRemoteEvent(
+								2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
+					}
+
+				}
+			}
+			else {
+				if (nr < 0) {
+					cout << "TCPClientConnection::run end()!";
+					cout << " reason: nr=" << nr;
+					cout << " buf=" << buf << endl;
+					this->end();
+				}
+
+			}
+		}
+	}
+
+	void TCPClientConnection::release() {
+		running = false;
+	}
+
 	void TCPClientConnection::end() {
+		release();
 		close(sockfd);
 	}
 }

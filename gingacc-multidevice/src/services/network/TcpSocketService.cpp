@@ -62,8 +62,10 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 
-TcpSocketService::TcpSocketService(unsigned int p) {
+TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
+	res = r;
 	port = p;
+
 	connections = new map<unsigned int, TCPClientConnection*>;
 	pthread_mutex_init(&connMutex, NULL);
 }
@@ -85,21 +87,38 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 	asprintf(&portStr,"%d",port);
 	pthread_mutex_lock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
-		(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
+		//(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
+		TCPClientConnection* tcpcc = new TCPClientConnection(
+						deviceId,
+						addr,
+						portStr,
+						(IRemoteDeviceListener*)res);
+		(*connections)[deviceId] = tcpcc;
+		tcpcc->start();
 
 	} else if (connections != NULL) {
-		cout << "TcpSocketService::addConnection Warning!";
-		cout << " Trying to add the same device id twice (" << deviceId << ")";
-		cout << endl;
+		cout << "TcpSocketService::warning - connection already registered" << endl;
+		cout << "TcpSocketService::warning - removing and adding it again (" << deviceId;
+		cout << ")" << endl;
+		
+		this->removeConnection(deviceId);
+
+		(*connections)[deviceId] = new TCPClientConnection(
+						deviceId,
+						addr,
+						portStr,
+						(IRemoteDeviceListener*) res);
+
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}
 	pthread_mutex_unlock(&connMutex);
 }
 
-void TcpSocketService::removeConnection(unsigned int deviceid) {
-
-
+void TcpSocketService::removeConnection(unsigned int deviceId) {
+	TCPClientConnection *con = (*connections)[deviceId];
+	con->end();
+	(*connections)[deviceId] = NULL;
 }
 
 void TcpSocketService::postTcpCommand(
@@ -120,15 +139,17 @@ void TcpSocketService::postTcpCommand(
 			(int)strlen(payload),
 			payload);
 
-	cout << "TcpSocketService::postTcpCommand posting command = ";
-	cout << com << endl;
+	//cout << "TcpSocketService::postTcpCommand = ";
+	//cout << com << endl;
 
 	pthread_mutex_lock(&connMutex);
 	i = connections->begin();
+
 	while (i != connections->end()) {
 		i->second->post(com);
 		++i;
 	}
+
 	pthread_mutex_unlock(&connMutex);
 }
 

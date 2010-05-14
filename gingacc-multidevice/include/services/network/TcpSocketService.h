@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 #include <string.h>
 using namespace std;
 
+#include "../../IRemoteDeviceListener.h"
 #include "TcpClientConnection.h"
 
 namespace br {
@@ -67,9 +68,10 @@ namespace multidevice {
 			map<unsigned int, TCPClientConnection*>* connections;
 			unsigned int port;
 			pthread_mutex_t connMutex;
+			IRemoteDeviceListener* res;
 
 		public:
-			TcpSocketService(unsigned int p);
+			TcpSocketService(unsigned int p, IRemoteDeviceListener* r);
 			virtual ~TcpSocketService();
 			void addConnection(unsigned int deviceId, char* addr);
 			void removeConnection(unsigned int deviceId);

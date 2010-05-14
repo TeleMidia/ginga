@@ -47,7 +47,16 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "../../config.h"
+
 #include "../../include/services/RemoteEventService.h"
+
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#else
+#include "../../../gingacc-contextmanager/include/ContextManager.h"
+#endif
 
 namespace br {
 namespace pucrio {
@@ -55,7 +64,22 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
+
+#if HAVE_COMPSUPPORT
+	static IComponentManager* cm = IComponentManager::getCMInstance();
+#endif
+	IContextManager* RemoteEventService::contextManager = NULL;
+	RemoteEventService* RemoteEventService::_instance = NULL;
+
 	RemoteEventService::RemoteEventService() {
+		#if HAVE_COMPSUPPORT
+		RemoteEventService::contextManager = ((ContextManagerCreator*)(cm->getObject(
+						"ContextManager")))();
+		#else
+		RemoteEventService::contextManager = ContextManager::getInstance();
+		#endif
+		cout << "RemoteEventService::new RemoteEventService()" << endl;
+
 		groups = new map<int,TcpSocketService*>;
 		pthread_mutex_init(&groupsMutex, NULL);
 	}
@@ -78,12 +102,19 @@ namespace multidevice {
 		pthread_mutex_destroy(&groupsMutex);
 	}
 
+	RemoteEventService* RemoteEventService::getInstance() {
+		if (_instance == NULL) {
+			_instance = new RemoteEventService();
+		}
+		return _instance;
+	}
+
 	void RemoteEventService::addDeviceClass(unsigned int id) {
 		pthread_mutex_lock(&groupsMutex);
 		if (groups->count(id) == 0) {
 			(*groups)[id] = new TcpSocketService(
-					RemoteEventService::DEFAULT_PORT);;
-
+							RemoteEventService::DEFAULT_PORT,
+							this);
 		} else {
 			cout << "RemoteEventService::addDeviceClass Warning! Trying to ";
 			cout << "add the same device class '" << id << "' twice!" << endl;
@@ -135,7 +166,7 @@ namespace multidevice {
 		}
 
 		tss = (*groups)[device_class];
-		cout << "POSTING START DOCUMENT ("<< name << ")" << endl;
+		cout << "RemoteEventService::startDocument "<<name<<endl; 
 		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
 		pthread_mutex_unlock(&groupsMutex);
 	}
@@ -152,10 +183,60 @@ namespace multidevice {
 		}
 
 		tss = (*groups)[device_class];
-		cout << "POSTING STOP DOCUMENT (" << name << ")" << endl;
+		cout << "RemoteEventService::stopDocument "<< name << endl;
 		tss->postTcpCommand((char*)"STOP", 0, name, (char*)"");
 		pthread_mutex_unlock(&groupsMutex);
 	}
+
+	/***/
+
+	bool RemoteEventService::newDeviceConnected(int newDevClass, int w, int h) {
+		return false;
+	}
+
+	void RemoteEventService::connectedToBaseDevice(unsigned int domainAddr) {
+
+	}
+
+	bool RemoteEventService::receiveRemoteContent(
+			int remoteDevClass,
+			string contentUri) {
+		return false;
+	}
+
+	bool RemoteEventService::receiveRemoteContent(
+			int remoteDevClass,
+			char *stream, int streamSize) {
+		return false;
+	}
+
+	bool RemoteEventService::receiveRemoteContentInfo(
+			string contentId, string contentUri) {
+		return false;
+	}
+
+
+	bool RemoteEventService::receiveRemoteEvent(
+						int remoteDevClass,
+						int eventType,
+						string eventContent) {
+
+		if (eventType == IDeviceDomain::FT_ATTRIBUTIONEVENT) {
+			//cout << "RemoteEventService::receiveRemoteEvent ATTR";
+			//cout << eventContent << endl;
+
+			string name, value;
+			size_t pos;
+			pos = eventContent.find("=");
+			name = eventContent.substr(0,pos-1);
+			value = eventContent.substr(pos+2);
+			RemoteEventService::contextManager->setGlobalVar(name,value);
+
+		}
+		return true;
+	}
+
+
 }
 }
 }
