@@ -259,19 +259,21 @@ static int l_post (lua_State* L)
                                               Player::TYPE_ATTRIBUTION);
 			}
 
-	    // NCL edit
+	    // edit
 		} else if ( !strcmp(clazz, "edit") ) {
-			lua_getfield(L, 2, "command");
-                // [ dst | evt | class | type | command ]
-			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT,
-                                          luaL_checkstring(L, -1));
-		}
-		else
-			return luaL_error(L, "invalid event class");
-	}
+			string strCmd;
 
-	else
+			// [ dst | evt | class | type | command ]
+			strCmd = cmd_to_str(L);
+			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT, strCmd);
+
+		} else {
+			return luaL_error(L, "invalid event class");
+		}
+
+	} else {
 		return luaL_argerror(L, 1, "possible values are: 'in', 'out'");
+	}
 
 	return 0;
 }

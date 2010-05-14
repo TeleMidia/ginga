@@ -136,6 +136,7 @@ extern "C" {
 #define LUAPLAYER_PLAYER    "luaplayer.Player"
 #define LUAPLAYER_TCP       "luaplayer.TCP"
 
+string cmd_to_str(lua_State* L);
 void l_dump (lua_State* L, char* point);
 void t_dump (lua_State* L, int idx);
 

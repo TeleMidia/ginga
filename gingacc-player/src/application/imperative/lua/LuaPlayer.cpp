@@ -56,6 +56,537 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "system/io/IInputManager.h"
 
+string cmd_to_str(lua_State* L) {
+	const char* baseId     = NULL;
+	const char* documentId = NULL;
+	const char* command    = NULL;
+	string str;
+	string docId;
+	string editCommand;
+	string edit[8];
+
+	lua_getfield(L, 2, "command");
+	command = luaL_checkstring(L, -1);
+
+	edit[0] = command;
+	//[ dst | evt | class | command ]
+
+	//cout << "luaEvent::editCommandToString begin with command:" << command;
+
+	lua_getfield(L, 2,"baseId");
+	if (! lua_isnil(L, -1)) {
+		baseId = luaL_checkstring(L, -1);
+		//[ dst | evt | class | command | baseId ]
+
+		edit[2].append(baseId);
+		lua_pop(L, 1);
+
+	} else {
+		str.append(" ,");
+		edit[2].append(" ");
+	}
+
+	lua_getfield(L, 2,"documentId");
+	if (! lua_isnil(L, -1)) {
+		documentId = luaL_checkstring(L, -1);
+		//[ dst | evt | class | command | documentId ]
+		edit[3].append(documentId);
+		lua_pop(L, 1);
+
+	} else {
+		edit[3].append(" ");
+	}
+
+	/****BASE****/
+	if (!strcmp(command, "openBase")) {
+		//[ dst | evt | class | command | location ]
+		lua_getfield(L, 2,"location");
+		const char* location = luaL_checkstring(L, -1);
+
+		edit[1].append("0x00");
+		edit[3].clear();
+		edit[4].append(location);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "activeBase")) {
+		edit[1].append("0x01");
+		edit[3].clear();
+
+	} else if (!strcmp(command, "deactivateBase")) {
+		edit[1].append("0x02");
+		edit[3].clear();
+
+	} else if (!strcmp(command, "saveBase")) {
+		//[ dst | evt | class | command | baseId | location ]
+		lua_getfield(L, 2,"location");
+		const char* location = luaL_checkstring(L, -1);
+		edit[4].append(location);
+		lua_pop(L, 1);
+
+		edit[1].append("0x03");
+		edit[3].clear();
+
+	} else if (!strcmp(command, "closeBase")) {
+		edit[1].append("0x04");
+		edit[3].clear();
+
+	/****DOCUMENT****/
+	} else if (!strcmp(command, "addDocument")) {
+
+		lua_getfield(L, 2,"uri");
+		const char* uri = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"id");
+		const char* id = luaL_checkstring(L, -1);
+
+		edit[1].append("0x05");
+		edit[4].append(uri);
+		edit[5].append(id);
+
+		lua_pop(L, 2);
+
+	} else if (!strcmp(command, "removeDocument")) {
+		edit[1].append("0x06");
+
+	} else if (!strcmp(command, "saveDocument")) {
+		lua_getfield(L, 2,"location");
+		const char* location = luaL_checkstring(L, -1);
+
+		edit[1].append("0x07");
+		edit[4].append(location);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "startDocument")){
+		lua_getfield(L, 2,"interfaceId");
+		const char* interfaceId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"offset");
+		const char* offset = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"refDocumentId");
+		const char* refDocumentId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"refNodeId");
+		const char* refNodeId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x07");
+		edit[4].append(interfaceId);
+		edit[5].append(offset);
+		edit[6].append(refDocumentId);
+		edit[7].append(refNodeId);
+
+		lua_pop(L, 4);
+
+	} else if (!strcmp(command, "stopDocument")) {
+		edit[1].append("0x8");
+
+	} else if (!strcmp(command, "pauseDocument")) {
+		edit[1].append("0x09");
+
+	} else if (!strcmp(command, "resumeDocument")) {
+		edit[1].append("0x0A");
+
+	/****REGION****/
+	} else if (!strcmp(command, "addRegion")) {
+
+		lua_getfield(L, 2,"regionBaseId");
+		const char* regionBaseId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2, "regionId");
+		const char* regionId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"data");
+		const char* xmlRegion = luaL_checkstring(L, -1);
+
+		edit[1].append("0x0B");
+		edit[4].append(regionBaseId);
+		edit[5].append(regionId);
+		edit[6].append(xmlRegion);
+		lua_pop(L, 3);
+
+	} else if (!strcmp(command, "removeRegion")) {
+
+		lua_getfield(L, 2,"regionId");
+		const char* regionId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x0C");
+		edit[4].append(regionId);
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addRegionBase")) {
+
+		lua_getfield(L, 2,"data");
+		const char* xmlRegionBase = luaL_checkstring(L, -1);
+
+		edit[1].append("0x0D");
+		edit[4].append(xmlRegionBase);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeRegionBase")) {
+
+		lua_getfield(L, 2,"regionBaseId");
+		const char* regionBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x0E");
+		edit[4].append(regionBaseId);
+
+		lua_pop(L, 1);
+
+	/****RULE****/
+	} else if (!strcmp(command, "addRule")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlRule = luaL_checkstring(L, -1);
+
+		edit[1].append("0x0F");
+		edit[4].append(xmlRule);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeRule")) {
+		lua_getfield(L, 2,"ruleId");
+		const char* ruleId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x10");
+		edit[4].append(ruleId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addRuleBase")) {
+
+		lua_getfield(L, 2,"data");
+		const char* xmlRuleBase = luaL_checkstring(L, -1);
+
+		edit[1].append("0x11");
+		edit[4].append(xmlRuleBase);
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeRuleBase")) {
+
+		lua_getfield(L, 2,"ruleBaseId");
+		const char* ruleBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x12");
+		edit[4].append(ruleBaseId);
+
+		lua_pop(L, 1);
+
+	/****CONNECTOR****/
+	} else if (!strcmp(command, "addConnector")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlCon = luaL_checkstring(L, -1);
+
+		edit[1].append("0x13");
+		edit[4].append(xmlCon);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeConnector")) {
+		lua_getfield(L, 2,"connectorId");
+		const char* conId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x14");
+		edit[4].append(conId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addConnectorBase")) {
+
+		lua_getfield(L, 2,"data");
+		const char* xmlRule = luaL_checkstring(L, -1);
+
+		edit[1].append("0x15");
+		edit[4].append(xmlRule);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeConnectorBase")) {
+		lua_getfield(L, 2,"connectorBaseId");
+		const char* xmlRule = luaL_checkstring(L, -1);
+
+		edit[1].append("0x16");
+		edit[4].append(xmlRule);
+
+		lua_pop(L, 1);
+
+	/****DESCRIPTOR****/
+	} else if (!strcmp(command, "addDescriptor")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlDesc = luaL_checkstring(L, -1);
+
+		edit[1].append("0x17");
+		edit[4].append(xmlDesc);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeDescriptor")) {
+		lua_getfield(L, 2,"connectorBaseId");
+		const char* xmlRule = luaL_checkstring(L, -1);
+
+		edit[1].append("0x18");
+		edit[4].append(xmlRule);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addDescriptorSwitch")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlDescSwitch = luaL_checkstring(L, -1);
+
+		edit[1].append("0x19");
+		edit[4].append(xmlDescSwitch);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeDescriptorSwitch")) {
+		lua_getfield(L, 2,"descriptorSwitchId");
+		const char* descSwitchId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1A");
+		edit[4].append(descSwitchId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addDescriptorBase")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlDescriptorBase = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1B");
+		edit[4].append(xmlDescriptorBase);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeDescriptorBase")) {
+		lua_getfield(L, 2,"descriptorBaseId");
+		const char* descBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1C");
+		edit[4].append(descBaseId);
+
+		lua_pop(L, 1);
+
+	/****TRANSITION****/
+	} else if (!strcmp(command, "addTransition")) {
+		lua_getfield(L, 2,"connectorBaseId");
+		const char* conBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1D");
+		edit[4].append(conBaseId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeTransition")) {
+		lua_getfield(L, 2,"transitionId");
+		const char* transitionId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1E");
+		edit[4].append(transitionId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addTransitionBase")) {
+		lua_getfield(L, 2,"data");
+		const char* transBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x1F");
+		edit[4].append(transBaseId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeTransitionBase")) {
+		lua_getfield(L, 2,"transitionBaseId");
+		const char* transBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x20");
+		edit[4].append(transBaseId);
+
+		lua_pop(L, 1);
+
+	/****IMPORT****/
+	} else if (!strcmp(command, "addImportBase")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlRule = luaL_checkstring(L, -1);
+
+		edit[1].append("0x21");
+		edit[4].append(xmlRule);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeImportBase")) {
+		lua_getfield(L, 2,"docBaseId");
+		const char* docBaseId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"docURI");
+		const char* docURI = luaL_checkstring(L, -1);
+
+		edit[1].append("0x22");
+		edit[4].append(docURI);
+
+		lua_pop(L, 2);
+
+	} else if (!strcmp(command, "addImportedDocumentBase")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlImportedBase = luaL_checkstring(L, -1);
+
+		edit[1].append("0x23");
+		edit[4].append(xmlImportedBase);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeImportedDocumentBase")) {
+		lua_getfield(L, 2,"importedDocumentBaseId");
+		const char* importedDocBaseId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x24");
+		edit[4].append(importedDocBaseId);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "addImportNCL")) {
+		lua_getfield(L, 2,"data");
+		const char* xmlImportNCL = luaL_checkstring(L, -1);
+
+		edit[1].append("0x25");
+		edit[4].append(xmlImportNCL);
+
+		lua_pop(L, 1);
+
+	} else if (!strcmp(command, "removeImportNCL")) {
+		lua_getfield(L, 2,"documentURI");
+		const char* documentURI = luaL_checkstring(L, -1);
+
+		edit[1].append("0x26");
+		edit[4].append(documentURI);
+
+		lua_pop(L, 1);
+
+	/****NODE****/
+	} else if (!strcmp(command, "addNode")) {
+		lua_getfield(L, 2,"compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"data");
+		const char* xmlNode = luaL_checkstring(L, -1);
+
+		edit[1].append("0x27");
+		edit[4].append(compositeId);
+		edit[5].append(xmlNode);
+
+		lua_pop(L, 2);
+
+	} else if (!strcmp(command, "removeNode")) {
+		lua_getfield(L, 2,"compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"nodeId");
+		const char* nodeId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x28");
+		edit[4].append(compositeId);
+		edit[5].append(nodeId);
+
+		lua_pop(L, 2);
+
+	/****INTERFACE****/
+	} else if (!strcmp(command, "addInterface")) {
+		lua_getfield(L, 2,"compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"nodeId");
+		const char* nodeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"data");
+		const char* xmlInterface = luaL_checkstring(L, -1);
+
+		edit[1].append("0x29");
+		edit[4].append(compositeId);
+		edit[5].append(nodeId);
+		edit[6].append(xmlInterface);
+
+		lua_pop(L, 3);
+
+	} else if (!strcmp(command, "removeInterface")) {
+		lua_getfield(L, 2,"compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"nodeId");
+		const char* nodeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"interfaceId");
+		const char* interfaceId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x2A");
+		edit[4].append(compositeId);
+		edit[5].append(nodeId);
+		edit[6].append(interfaceId);
+
+		lua_pop(L, 3);
+
+	/****LINK****/
+	} else if (!strcmp(command, "addLink")) {
+		lua_getfield(L, 2,"compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2,"data");
+		const char* xmlLink = luaL_checkstring(L, -1);
+
+		edit[1].append("0x2B");
+		edit[4].append(compositeId);
+		edit[5].append(xmlLink);
+
+		lua_pop(L, 2);
+
+	} else if (!strcmp(command, "removeLink")) {
+		lua_getfield(L, 2, "compositeId");
+		const char* compositeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2, "linkId");
+		const char* linkId = luaL_checkstring(L, -1);
+
+		edit[1].append("0x2B");
+		edit[4].append(compositeId);
+		edit[5].append(linkId);
+
+		lua_pop(L, 2);
+
+	/****ATTRIBUTION****/
+	} else if (!strcmp(command, "setPropertyValue")) {
+		lua_getfield(L, 2, "nodeId");
+		const char* nodeId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2, "propertyId");
+		const char* propertyId = luaL_checkstring(L, -1);
+
+		lua_getfield(L, 2, "value");
+		const char* value = luaL_checkstring(L, -1);
+
+		edit[1].append("0x2B");
+		edit[5].append(nodeId);
+		edit[6].append(propertyId);
+		edit[7].append(value);
+
+		lua_pop(L, 3);
+	}
+
+	/****MOUNTING COMMAND****/
+	cout << "LuaEvent::editcommnadToString for:" << endl;
+	for (int i = 1; i <= 7; i++){
+		if (! edit[i].empty()) {
+
+			if (i > 1) {
+				editCommand.append(",");
+			}
+			editCommand.append(edit[i]);
+
+			cout << i << " = " << editCommand << endl;
+		}
+	}
+
+	cout << "LuaEvent::editToString editCommand:" << editCommand << endl;
+	return editCommand;
+}
+
 void l_dump (lua_State* L, char* point)
 {
 	int i;
