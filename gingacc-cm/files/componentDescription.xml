@@ -194,6 +194,7 @@
     <dependency componentName="libgingacctsparser.so" version="0.12.1"/>
     <dependency componentName="libtelemidiautil.so" version="0.12.1"/>
     <dependency componentName="libgingaccsystemthread.so" version="0.12.1"/>
+    <symbol object="EPGProcessor" creator="createEPGP" destroyer="destroyEPGP" interface="IEPGProcessor"/>
     <symbol object="DataProcessor" creator="createDP" destroyer="destroyDP" interface="IDataProcessor"/>
     <location type="local" uri="/usr/local/lib/ginga"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>

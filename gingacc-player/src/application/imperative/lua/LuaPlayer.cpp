@@ -644,13 +644,19 @@ namespace player {
  */
 LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 {
+	void* compObj;
+
     chdir(getPath(mrl).c_str());    // execucao a partir do diretorio fonte
     this->L = luaL_newstate();      // estado Lua
 
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
     this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
-    this->epgProc = ((epgpCreator*)(cm->getObject("EPGProcessor")))();
+
+    compObj = cm->getObject("EPGProcessor");
+    if (compObj != NULL) {
+    	this->epgProc = ((epgpCreator*)compObj)();
+    }
 #else
     this->im = InputManager::getInstance();
     this->surface = new DFBSurface();
