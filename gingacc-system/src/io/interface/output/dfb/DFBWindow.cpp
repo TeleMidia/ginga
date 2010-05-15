@@ -383,7 +383,7 @@ namespace io {
 	void DFBWindow::raise() {
 		lock();
 		if (win != NULL) {
-			DFBCHECK(win->Raise(win));
+			win->Raise(win);
 			unprotectedValidate();
 		}
 		unlock();
@@ -392,7 +392,7 @@ namespace io {
 	void DFBWindow::lower() {
 		lock();
 		if (win != NULL) {
-			DFBCHECK(win->Lower(win));
+			win->Lower(win);
 			unprotectedValidate();
 		}
 		unlock();
@@ -401,7 +401,7 @@ namespace io {
 	void DFBWindow::raiseToTop() {
 		lock();
 		if (win != NULL) {
-			DFBCHECK(win->RaiseToTop(win));
+			win->RaiseToTop(win);
 			unprotectedValidate();
 		}
 		unlock();
@@ -410,7 +410,7 @@ namespace io {
 	void DFBWindow::lowerToBottom() {
 		lock();
 		if (win != NULL) {
-			DFBCHECK(win->LowerToBottom(win));
+			win->LowerToBottom(win);
 			unprotectedValidate();
 		}
 		unlock();
