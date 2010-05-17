@@ -102,8 +102,6 @@ namespace player {
 			virtual bool editingCommand(
 					string commandTag, string editingCommand)=0;
 
-			virtual void pushEPGEventToEPGFactory(map<string, string> t)=0;
-
 			virtual void setNotifyContentUpdate(bool notify)=0;
 			virtual void addListener(IPlayerListener* listener)=0;
 			virtual void removeListener(IPlayerListener* listener)=0;

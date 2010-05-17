@@ -86,15 +86,15 @@ namespace dataprocessing {
 	public:
 		virtual ~IDataProcessor(){};
 
+		virtual void setDemuxer(IDemuxer* demux)=0;
 		virtual void removeOCFilterAfterMount(bool removeIt)=0;
 
 		virtual void setSTCProvider(ISTCProvider* stcProvider)=0;
 		virtual ITimeBaseProvider* getNPTProvider()=0;
-		virtual void createStreamTypeSectionFilter(
-				short streamType, IDemuxer* demux)=0;
+		virtual void createStreamTypeSectionFilter(short streamType)=0;
 
-		virtual void createPidSectionFilter(int pid, IDemuxer* demux)=0;
-		virtual void addEPGListener(IEPGListener* listener)=0;
+		virtual void createPidSectionFilter(int pid)=0;
+
 		virtual void addSEListener(
 				string eventType, IStreamEventListener* listener)=0;
 

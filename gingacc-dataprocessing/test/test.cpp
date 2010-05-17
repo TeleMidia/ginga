@@ -124,6 +124,8 @@ int main(int argc, char** argv) {
 	nptProcessor  = new NPTProcessor(NULL);
 	dsmccSection  = new DSMCCSectionPayload(NULL, 0);
 
+	dataProcessor->setDemuxer(demuxer);
+
 	if (argc == 1) {
 		//encoding NCL sections
 		baseUri = "/root/ncl/Tests/";
@@ -196,10 +198,9 @@ int main(int argc, char** argv) {
 			cout << endl;
 		}
 
-		dataProcessor->createStreamTypeSectionFilter(
-				STREAM_TYPE_DSMCC_TYPE_B, demuxer);
-
+		dataProcessor->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_B);
 		demuxer->setDestination(STREAM_TYPE_DSMCC_TYPE_B);
+
 		do {
 			rval = read(fd, buf, buffSize);
 			if (rval != buffSize) {
@@ -232,7 +233,7 @@ int main(int argc, char** argv) {
 		}
 
 		dataProcessor->createStreamTypeSectionFilter(
-				STREAM_TYPE_PRIVATE_SECTION, demuxer);
+				STREAM_TYPE_PRIVATE_SECTION);
 
 		do {
 			rval = read(fd, buf, buffSize);

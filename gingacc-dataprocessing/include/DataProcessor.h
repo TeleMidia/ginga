@@ -93,10 +93,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-	class DataProcessor :
-			public IDataProcessor,
-			public IServiceDomainListener,
-			public Thread {
+	class DataProcessor : public IDataProcessor,
+				public IServiceDomainListener, public Thread {
 
 		private:
 			EPGProcessor* epgProcessor;
@@ -105,7 +103,6 @@ namespace dataprocessing {
 			map<string, set<IStreamEventListener*>*>* eventListeners;
 			set<IObjectListener*>* objectListeners;
 			IServiceDomainListener* sdl;
-			set<IEPGListener*>* epgListeners;
 			set<unsigned int>* processedIds;
 			pthread_mutex_t mutex;
 			NPTProcessor* nptProcessor;
@@ -125,16 +122,15 @@ namespace dataprocessing {
 					map<string, string>* names,
 					map<string, string>* paths);
 
+			void setDemuxer(IDemuxer* demux);
 			void removeOCFilterAfterMount(bool removeIt);
 
 			void setSTCProvider(ISTCProvider* stcProvider);
 			ITimeBaseProvider* getNPTProvider();
 
-			void createStreamTypeSectionFilter(
-					short streamType, IDemuxer* demux);
+			void createStreamTypeSectionFilter(short streamType);
+			void createPidSectionFilter(int pid);
 
-			void createPidSectionFilter(int pid, IDemuxer* demux);
-			void addEPGListener(IEPGListener* listener);
 			void addSEListener(
 					string eventType, IStreamEventListener* listener);
 

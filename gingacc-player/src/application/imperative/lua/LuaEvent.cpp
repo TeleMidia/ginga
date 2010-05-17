@@ -155,6 +155,7 @@ LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt)
     int_dispatch(L);  // [ ...]
     return 0;
 }
+
 LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt,
 		bool dispatch)
 {
@@ -303,7 +304,7 @@ static int l_post (lua_State* L)
 			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT, strCmd);
 
 		} else if ( !strcmp(clazz, "si") ){
-			//cout << "LuaEvent::l_post SI EVENT!!!!!" << endl;
+			cout << "LuaEvent::l_post SI EVENT!!!!!" << endl;
 			
 			lua_getfield(L, 2, "type");
 			// [ dst | evt | class | type ]
@@ -339,6 +340,7 @@ struct t_timer {
     lua_State* L;
 	int time;
 };
+
 static void* sleep_thread (void* data)
 {
 	struct t_timer* t = (struct t_timer *)data;
@@ -356,6 +358,7 @@ static void* sleep_thread (void* data)
 	delete t;
 	return NULL;
 }
+
 static int l_cancel (lua_State* L)
 {
 	// [ ]

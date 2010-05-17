@@ -67,14 +67,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include "tsparser/IEventInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-//#include "tsparser/IShortEventDescriptor.h"
-//#include "tsparser/IExtendedEventDescriptor.h"
-//#include "tsparser/IAudioComponentDescriptor.h"
-//#include "tsparser/ILogoTransmissionDescriptor.h"
-//using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
-
-
-
+#include "IDataProcessor.h"
 #include "IEPGProcessor.h"
 
 #include <set>
@@ -90,7 +83,6 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace epg {
-
 	class EPGProcessor : public IEPGProcessor {
 		private:
 			set<string>* processedSections;
@@ -103,8 +95,8 @@ namespace epg {
 			//TODO: link service id from sdt to eit and cdt
 			set<string>* cdt;
 			int files;
-			//map<string, set<IEPGListener*>*>* epgListeners;
 			set<IEPGListener*>* epgListeners;
+			IDataProcessor* dataProcessor;
 			map<unsigned int, IEventInfo*>* eventPresent;
 			map<unsigned int, IEventInfo*>* eventSchedule;
 			static EPGProcessor* _instance;
@@ -114,6 +106,7 @@ namespace epg {
 		public:
 			~EPGProcessor();
 			static EPGProcessor* getInstance();
+			void setDataProcessor(IDataProcessor* dataProcessor);
 			void decodeSdt(string fileName);
 			void decodeSdtSection(ITransportSection* section);
 			set<IEventInfo*>* decodeEit(string fileName);
@@ -124,6 +117,7 @@ namespace epg {
 			void removeEPGListener(IEPGListener * listener);
 
 			//void generatePresentMap();
+
 		private:
 			EPGProcessor();
 			struct Field* handleFieldStr(string str);

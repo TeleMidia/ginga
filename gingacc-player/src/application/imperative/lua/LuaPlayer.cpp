@@ -180,7 +180,7 @@ string cmd_to_str(lua_State* L) {
 		lua_pop(L, 4);
 
 	} else if (!strcmp(command, "stopDocument")) {
-		edit[1].append("0x8");
+		edit[1].append("0x08");
 
 	} else if (!strcmp(command, "pauseDocument")) {
 		edit[1].append("0x09");
@@ -490,9 +490,6 @@ string cmd_to_str(lua_State* L) {
 
 	/****INTERFACE****/
 	} else if (!strcmp(command, "addInterface")) {
-		lua_getfield(L, 2,"compositeId");
-		const char* compositeId = luaL_checkstring(L, -1);
-
 		lua_getfield(L, 2,"nodeId");
 		const char* nodeId = luaL_checkstring(L, -1);
 
@@ -500,16 +497,12 @@ string cmd_to_str(lua_State* L) {
 		const char* xmlInterface = luaL_checkstring(L, -1);
 
 		edit[1].append("0x29");
-		edit[4].append(compositeId);
-		edit[5].append(nodeId);
-		edit[6].append(xmlInterface);
+		edit[4].append(nodeId);
+		edit[5].append(xmlInterface);
 
 		lua_pop(L, 3);
 
 	} else if (!strcmp(command, "removeInterface")) {
-		lua_getfield(L, 2,"compositeId");
-		const char* compositeId = luaL_checkstring(L, -1);
-
 		lua_getfield(L, 2,"nodeId");
 		const char* nodeId = luaL_checkstring(L, -1);
 
@@ -517,9 +510,8 @@ string cmd_to_str(lua_State* L) {
 		const char* interfaceId = luaL_checkstring(L, -1);
 
 		edit[1].append("0x2A");
-		edit[4].append(compositeId);
-		edit[5].append(nodeId);
-		edit[6].append(interfaceId);
+		edit[4].append(nodeId);
+		edit[5].append(interfaceId);
 
 		lua_pop(L, 3);
 
@@ -570,7 +562,7 @@ string cmd_to_str(lua_State* L) {
 	}
 
 	/****MOUNTING COMMAND****/
-	cout << "LuaEvent::editcommnadToString for:" << endl;
+	//cout << "LuaEvent::editcommnadToString for:" << endl;
 	for (int i = 1; i <= 7; i++){
 		if (! edit[i].empty()) {
 
@@ -579,11 +571,11 @@ string cmd_to_str(lua_State* L) {
 			}
 			editCommand.append(edit[i]);
 
-			cout << i << " = " << editCommand << endl;
+			//cout << i << " = " << editCommand << endl;
 		}
 	}
 
-	cout << "LuaEvent::editToString editCommand:" << editCommand << endl;
+	//cout << "LuaEvent::editToString editCommand:" << editCommand << endl;
 	return editCommand;
 }
 
@@ -649,6 +641,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     chdir(getPath(mrl).c_str());    // execucao a partir do diretorio fonte
     this->L = luaL_newstate();      // estado Lua
 
+    epgProc = NULL;
+
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
     this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
@@ -656,7 +650,12 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     compObj = cm->getObject("EPGProcessor");
     if (compObj != NULL) {
     	this->epgProc = ((epgpCreator*)compObj)();
+
+    } else {
+    	cout << "LuaPlayer::LuaPlayer Warning! Can't create EPGProcessor: ";
+    	cout << "symbol not found!" << endl;
     }
+
 #else
     this->im = InputManager::getInstance();
     this->surface = new DFBSurface();
@@ -886,19 +885,33 @@ void LuaPlayer::refreshContent() {
 }
 
 void LuaPlayer::addAsEPGListener () {
-	this->epgProc->addEPGListener(this, "all");
+	if (epgProc) {
+		this->epgProc->addEPGListener(this, "all");
+	}
 }
 
-
+//TODO: generalize to pushSIEvent
 void LuaPlayer::pushEPGEvent (map<string, struct Field> event)
 {
 	struct Field field;
 	//map<string, struct Field> data;
 	map<string, struct Field> evt;
-	
-	if (! event.empty()) {
+
+	cout << "LuaPlayer::pushEPGEvent event.size = '" << event.size() << "'";
+	cout << endl;
+
+	if (!event.empty()) {
+		cout << "LuaPlayer::pushEPGEvent" << endl;
+		field.str    = "si";
+		evt["class"] = field;
+
+		field.str   = "epg";
+		evt["type"] = field;
+
+		field.str   = "";
 		field.table = event;
 		evt["data"] = field;
+
 		ext_postHashRec(this->L, evt, true);
 	}
 }

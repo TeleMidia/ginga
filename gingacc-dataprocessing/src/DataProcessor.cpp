@@ -76,7 +76,6 @@ namespace dataprocessing {
 	DataProcessor::DataProcessor() : Thread() {
 		eventListeners  = new map<string, set<IStreamEventListener*>*>;
 		objectListeners = new set<IObjectListener*>;
-		epgListeners    = new set<IEPGListener*>;
 		filterManager   = new FilterManager();
 		processedIds    = new set<unsigned int>;
 
@@ -97,10 +96,8 @@ namespace dataprocessing {
 		mkdir("carousel", 0777);
 		mkdir("carousel/modules", 0777);
 
-		mkdir("epg", 0777);
-		mkdir("epg/data", 0777);
-	
 		epgProcessor = EPGProcessor::getInstance();
+		epgProcessor->setDataProcessor(this);
 	}
 
 	DataProcessor::~DataProcessor() {
@@ -114,11 +111,6 @@ namespace dataprocessing {
 		if (objectListeners != NULL) {
 			delete objectListeners;
 			objectListeners = NULL;
-		}
-
-		if (epgListeners != NULL) {
-			delete epgListeners;
-			epgListeners = NULL;
 		}
 
 		if (filterManager != NULL) {
@@ -150,12 +142,11 @@ namespace dataprocessing {
 			delete ait;
 			ait = NULL;
 		}
-		
+
 		if (epgProcessor != NULL) {
 			delete epgProcessor;
 			epgProcessor = NULL;
 		}
-
 
 		pthread_mutex_destroy(&mutex);
 	}
@@ -182,6 +173,10 @@ namespace dataprocessing {
 		}
 	}
 
+	void DataProcessor::setDemuxer(IDemuxer* demux) {
+		this->demux = demux;
+	}
+
 	void DataProcessor::removeOCFilterAfterMount(bool removeIt) {
 		removeOCFilter = removeIt;
 	}
@@ -194,26 +189,17 @@ namespace dataprocessing {
 		return nptProcessor;
 	}
 
-	void DataProcessor::createStreamTypeSectionFilter(
-			short streamType, IDemuxer* demux) {
-
+	void DataProcessor::createStreamTypeSectionFilter(short streamType) {
 		cout << "DataProcessor::createStreamTypeSectionFilter '";
 		cout << streamType << "'" << endl;
-		this->demux = demux;
 		filterManager->createStreamTypeSectionFilter(streamType, demux, this);
 	}
 
-	void DataProcessor::createPidSectionFilter(int pid, IDemuxer* demux) {
+	void DataProcessor::createPidSectionFilter(int pid) {
 		cout << "DataProcessor::createPidSectionFilter '";
 		cout << pid << "'" << endl;
 
-		this->demux = demux;
 		filterManager->createPidSectionFilter(pid, demux, this);
-	}
-
-	void DataProcessor::addEPGListener(IEPGListener* listener) {
-		cout << "DataProcessor::addEPGListener" << endl;
-		epgListeners->insert(listener);
 	}
 
 	void DataProcessor::addSEListener(
