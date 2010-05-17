@@ -154,15 +154,14 @@ namespace player {
 	}
 
 	void LinksPlayer::play() {
-		IWindow* parent;
-
-		/*if (surface != NULL) {
-			parent = (IWindow*)(surface->getParent());
+#if !HAVE_MULTIPROCESS
+		if (surface != NULL) {
+			IWindow* parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {
-				parent->renderFrom(surface);
 				browserSetFlipWindow(mBrowser, parent->getContent());
 			}
-		}*/
+		}
+#endif
 
 		loadUrlOn(mBrowser, mrl.c_str());
 		browserShow(mBrowser);
