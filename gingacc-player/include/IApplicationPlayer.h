@@ -60,28 +60,28 @@ namespace ginga {
 namespace core {
 namespace player {
 	//nclEdit base
-	static const string EC_OPEN_BASE                     = "0x0";
-	static const string EC_ACTIVATE_BASE                 = "0x1";
-	static const string EC_DEACTIVATE_BASE               = "0x2";
-	static const string EC_SAVE_BASE                     = "0x3";
-	static const string EC_CLOSE_BASE                    = "0x4";
+	static const string EC_OPEN_BASE                     = "0x00";
+	static const string EC_ACTIVATE_BASE                 = "0x01";
+	static const string EC_DEACTIVATE_BASE               = "0x02";
+	static const string EC_SAVE_BASE                     = "0x03";
+	static const string EC_CLOSE_BASE                    = "0x04";
 
 	//nclEdit document
-	static const string EC_ADD_DOCUMENT                  = "0x5";
-	static const string EC_REMOVE_DOCUMENT               = "0x6";
-	static const string EC_START_DOCUMENT                = "0x7";
-	static const string EC_STOP_DOCUMENT                 = "0x8";
-	static const string EC_PAUSE_DOCUMENT                = "0x9";
-	static const string EC_RESUME_DOCUMENT               = "0xA";
+	static const string EC_ADD_DOCUMENT                  = "0x05";
+	static const string EC_REMOVE_DOCUMENT               = "0x06";
+	static const string EC_START_DOCUMENT                = "0x07";
+	static const string EC_STOP_DOCUMENT                 = "0x08";
+	static const string EC_PAUSE_DOCUMENT                = "0x09";
+	static const string EC_RESUME_DOCUMENT               = "0x0A";
 
 	//nclEdit region
-	static const string EC_ADD_REGION                    = "0xB";
-	static const string EC_REMOVE_REGION                 = "0xC";
-	static const string EC_ADD_REGION_BASE               = "0xD";
-	static const string EC_REMOVE_REGION_BASE            = "0xE";
+	static const string EC_ADD_REGION                    = "0x0B";
+	static const string EC_REMOVE_REGION                 = "0x0C";
+	static const string EC_ADD_REGION_BASE               = "0x0D";
+	static const string EC_REMOVE_REGION_BASE            = "0x0E";
 
 	//nclEdit rule
-	static const string EC_ADD_RULE                      = "0xF";
+	static const string EC_ADD_RULE                      = "0x0F";
 	static const string EC_REMOVE_RULE                   = "0x10";
 	static const string EC_ADD_RULE_BASE                 = "0x11";
 	static const string EC_REMOVE_RULE_BASE              = "0x12";
