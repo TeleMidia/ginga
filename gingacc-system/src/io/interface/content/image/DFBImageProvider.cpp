@@ -131,10 +131,9 @@ namespace io {
 					renderedSurface->setChromaColor(chromaKey);
 					//outputDisplay->setColorKey(0, 0, 0);
 					//cout << "black color cause it is a gif image" << endl;
-
-				} else {
-					renderedSurface->setCaps(DWCAPS_ALPHACHANNEL);
 				}
+
+				renderedSurface->addCaps(DWCAPS_ALPHACHANNEL);
 
 				//cout << " trying to blit image alpha channel" << endl;
 
