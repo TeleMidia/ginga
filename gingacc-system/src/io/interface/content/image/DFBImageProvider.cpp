@@ -133,8 +133,6 @@ namespace io {
 					//cout << "black color cause it is a gif image" << endl;
 				}
 
-				renderedSurface->addCaps(DWCAPS_ALPHACHANNEL);
-
 				//cout << " trying to blit image alpha channel" << endl;
 
 				DFBCHECK(destination->SetBlittingFlags(destination,
@@ -176,6 +174,8 @@ namespace io {
 				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
 				cout << " NOFX" << endl;*/
 			}
+
+			renderedSurface->addCaps(DWCAPS_ALPHACHANNEL);
 		}
 
 		if (destination != NULL && renderedSurface != NULL) {
