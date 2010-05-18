@@ -120,6 +120,9 @@ namespace tsparser {
 				case STREAM_TYPE_DSMCC_TYPE_D:
 					return STE_TID;
 
+				case STREAM_TYPE_PRIVATE_SECTION:
+					return AIT_TID;
+
 				default:
 					return -1;
 			}
@@ -135,6 +138,9 @@ namespace tsparser {
 
 				case STE_TID:
 					return STREAM_TYPE_DSMCC_TYPE_D;
+
+				case AIT_TID:
+					return STREAM_TYPE_PRIVATE_SECTION;
 
 				default:
 					return -1;
