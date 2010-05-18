@@ -124,8 +124,10 @@ namespace io {
 				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
 				cout << " setted alphachannel: ";*/
 
+				renderedSurface->setCaps(DWCAPS_ALPHACHANNEL);
+
 				//alpha channel of gif does not exists anymore, it turn into
-				//black src color key (marcio 20/04/2007)
+				//black src color key
 				if (isGif) {
 					chromaKey = new Color(0, 0, 0);
 					renderedSurface->setChromaColor(chromaKey);
@@ -174,8 +176,6 @@ namespace io {
 				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
 				cout << " NOFX" << endl;*/
 			}
-
-			renderedSurface->addCaps(DWCAPS_ALPHACHANNEL);
 		}
 
 		if (destination != NULL && renderedSurface != NULL) {
