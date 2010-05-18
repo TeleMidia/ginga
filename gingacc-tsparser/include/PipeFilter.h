@@ -87,6 +87,7 @@ namespace tsparser {
 		public:
 			PipeFilter(unsigned int pid);
 			virtual ~PipeFilter();
+
 			void addPid(int pid);
 			bool hasData();
 

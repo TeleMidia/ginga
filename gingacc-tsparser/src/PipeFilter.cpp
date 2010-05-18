@@ -52,6 +52,10 @@ http://www.telemidia.puc-rio.br
 #include "../include/Pat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -136,10 +140,16 @@ namespace tsparser {
 		}
 
 		if (pipeFd > 0) {
-			ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
-			if (ret == ITSPacket::TS_PACKET_SIZE) {
-				dataReceived = true;
-			}
+		    try {
+				ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
+				if (ret == ITSPacket::TS_PACKET_SIZE) {
+					dataReceived = true;
+				}
+
+		    } catch (const char *except) {
+		    	cout << "PipeFilter::receiveTSPacket catch: " << except << endl;
+		    	::usleep(100000);
+		    }
 		}
 	}
 

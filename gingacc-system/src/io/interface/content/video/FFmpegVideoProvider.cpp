@@ -1146,8 +1146,11 @@ namespace io {
 	void FFmpegVideoProvider::getVideoSurfaceDescription(
 			DFBSurfaceDescription* desc) {
 
-		if (!desc)
+		if (!desc) {
+			cout << "FFmpegVideoProvider::getVideoSurfaceDescription ";
+			cout << "Warning! CAN'T DEFINE MAIN VIDEO SURFACE" << endl;
 			return;
+		}
 
 		desc->flags = (DFBSurfaceDescriptionFlags)(
 				DSDESC_WIDTH | DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
@@ -1158,6 +1161,9 @@ namespace io {
 
 			desc->caps = DSCAPS_INTERLACED;
 		}
+
+		desc->caps = (DFBSurfaceCapabilities)(
+				desc->caps | DSCAPS_VIDEOONLY | DSCAPS_STATIC_ALLOC);
 
 		desc->width  = rContainer->video.ctx->width;
 		desc->height = rContainer->video.ctx->height;
