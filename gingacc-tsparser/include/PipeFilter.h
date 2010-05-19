@@ -81,6 +81,7 @@ namespace tsparser {
 			bool fifoCreated;
 			unsigned int packetsReceived;
 			bool dvrReader;
+			string fifoName;
 			string dvrName;
 			map<int, int>* pids;
 
@@ -88,6 +89,7 @@ namespace tsparser {
 			PipeFilter(unsigned int pid);
 			virtual ~PipeFilter();
 
+			void setDestName(string name);
 			void addPid(int pid);
 			bool hasData();
 

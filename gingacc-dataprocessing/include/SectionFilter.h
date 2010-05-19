@@ -103,6 +103,7 @@ namespace dataprocessing {
 			SectionFilter();
 			virtual ~SectionFilter();
 
+			void setDestName(string name){};
 			void addPid(int pid){};
 
 		private:

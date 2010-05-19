@@ -1089,6 +1089,8 @@ namespace player {
 			} else {
 				this->mrl = mrl.substr(11, mrl.length() - 11);
 			}
+			cout << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
+			cout << this->mrl << "'" << endl;
 
 		} else if (fileExists(mrl)) {
 #if HAVE_COMPSUPPORT
@@ -1127,6 +1129,17 @@ namespace player {
 
 		unlockConditionSatisfied();
 		lock();
+		if (surface != NULL && mainAV) {
+			surface->setParent(NULL);
+		}
+
+		if (mainAV) {
+			if (win != NULL) {
+				delete win;
+				win = NULL;
+			}
+		}
+
 		if (this->provider != NULL) {
 			release();
 		}
@@ -1169,9 +1182,16 @@ namespace player {
 		if (surface != NULL) {
 			cout << "AVPlayer::createFrame Warning! surface != NULL";
 			cout << endl;
+			if (mainAV) {
+				surface->setParent(NULL);
+			}
 			delete surface;
 		}
+
 		surface = provider->getPerfectSurface();
+		if (win != NULL && mainAV) {
+			surface->setParent(win);
+		}
 		unlock();
 		return surface;
 	}
@@ -1331,6 +1351,10 @@ namespace player {
 
 	void AVPlayer::setPropertyValue(string name, string value) {
 		float fValue = 1.0;
+		vector<string>* vals;
+
+		cout << "AVPlayer::setPropertyValue '" << name << "' ";
+		cout << "= '" << value << "'" << endl;
 
 		//TODO: animation, set volume, brightness, ...
 		if (name == "soundLevel") {
@@ -1338,6 +1362,56 @@ namespace player {
 				fValue = stof(value);
 			}
 			setSoundLevel(fValue);
+
+		} else if (mainAV) {
+			if (name == "createWindow") {
+				vals = split(value, ",");
+				if (vals->size() == 4) {
+#if HAVE_COMPSUPPORT
+					win = ((WindowCreator*)(cm->getObject("Window")))(
+							-1,
+							stof((*vals)[0]),
+							stof((*vals)[1]),
+							stof((*vals)[2]),
+							stof((*vals)[3]));
+
+#else
+					win = new DFBWindow(
+							stof((*vals)[0]),
+							stof((*vals)[1]),
+							stof((*vals)[2]),
+							stof((*vals)[3]));
+#endif
+
+					win->setCaps(win->getCap("NOSTRUCTURE") |
+							win->getCap("DOUBLEBUFFER"));
+
+					win->draw();
+				}
+
+				delete vals;
+
+				if (!running) {
+					Thread::start();
+				}
+
+			} else if (name == "bounds" && win != NULL) {
+				vals = split(value, ",");
+				if (vals->size() == 4) {
+					win->setBounds(
+							stof((*vals)[0]),
+							stof((*vals)[1]),
+							stof((*vals)[2]),
+							stof((*vals)[3]));
+				}
+				delete vals;
+
+			} else if (name == "show" && win != NULL) {
+				win->show();
+
+			} else if (name == "hide" && win != NULL) {
+				win->hide();
+			}
 		}
 
 		Player::setPropertyValue(name, value);
@@ -1390,7 +1464,7 @@ namespace player {
 	}
 
 	bool AVPlayer::setOutWindow(int windowId) {
-		if (mainAV) {
+		if (mainAV && win == NULL) {
 #if HAVE_COMPSUPPORT
 			win = ((WindowCreator*)(cm->getObject("Window")))(
 					windowId, -1, -1, -1, -1);

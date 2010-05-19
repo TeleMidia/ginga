@@ -73,14 +73,21 @@ namespace tsparser {
 		this->dvrReader       = false;
 		this->dvrName         = "";
 		this->pids            = new map<int, int>;
-
-		Thread::start();
 	}
 
 	PipeFilter::~PipeFilter() {
 		if (pids != NULL) {
 			delete pids;
 			pids = NULL;
+		}
+	}
+
+	void PipeFilter::setDestName(string name) {
+		fifoName = name;
+		Thread::start();
+
+		while (!fifoCreated) {
+			::usleep(10000);
 		}
 	}
 
@@ -112,9 +119,6 @@ namespace tsparser {
 		char packData[ITSPacket::TS_PACKET_SIZE];
 
 		ppid = pack->getPid();
-		while (!fifoCreated) {
-			::usleep(10000);
-		}
 
 		lock();
 		if (pids->count(ppid) == 0) {
@@ -160,11 +164,21 @@ namespace tsparser {
 
 	void PipeFilter::receivePes(char* buf, int len, IFrontendFilter* filter) {
 		if (secondFd > 0) {
-			write(secondFd, buf, len);
+			try {
+				write(secondFd, buf, len);
+
+		    } catch (const char *except) {
+		    	cout << "PipeFilter::receivePes p2 catch: " << except << endl;
+		    }
 		}
 
 		if (pipeFd > 0) {
-			write(pipeFd, buf, len);
+			try {
+				write(pipeFd, buf, len);
+
+			} catch (const char *except) {
+				cout << "PipeFilter::receivePes p1 catch: " << except << endl;
+			}
 		}
 	}
 
@@ -176,21 +190,30 @@ namespace tsparser {
 
 	void PipeFilter::run() {
 		int rval, fd;
-		string fifoName;
 		int buffSize = 188 * 1024;
 		char buff[buffSize];
 		string cmd;
 
+		cout << "PipeFilter::run(" << this << ")" << endl;
+
 		if (dvrReader) {
-			cout << "PipeFilter::run reader" << endl;
+			cout << "PipeFilter::run(" << this << ") reader" << endl;
 
 			fd = open(dvrName.c_str(), O_RDONLY | O_NONBLOCK);
 			//fd = open(dvrName.c_str(), O_RDONLY);
 			if (fd < 0) {
-				cout << "PipeFilter::run can't open '" << dvrName;
-				cout << "'" << endl;
-				return;
+				fd = open(dvrName.c_str(), O_RDONLY);
+				if (fd < 0) {
+					cout << "PipeFilter::run(" << this << ")";
+					cout << " can't open '" << dvrName;
+					cout << "'" << endl;
+					perror("PipeFilter::run can't open file");
+					return;
+				}
 			}
+
+			cout << "PipeFilter::run(" << this << ") '" << dvrName;
+			cout << "' OPENED" << endl;
 
 			while (dvrReader) {
 				rval = read(fd, buff, buffSize);
@@ -199,17 +222,17 @@ namespace tsparser {
 				}
 			}
 
-			cout << "PipeFilter::run reader all done!" << endl;
+			cout << "PipeFilter::run(" << this << ") reader all done!" << endl;
 
 		} else {
-			fifoName = "dvr" + itos(pid) + ".ts";
-
 			rval = mkfifo(fifoName.c_str(), S_IFIFO);
 			fifoCreated = true;
 
 			pipeFd = open(fifoName.c_str(), O_WRONLY);
 			if (pipeFd == -1) {
-				cout << "error opening pipe '" << pid << "'" << endl;
+				cout << "PipeFilter::run error opening pipe '";
+				cout << fifoName << "'";
+				cout << endl;
 
 			} else {
 				if (secondPid > 0) {

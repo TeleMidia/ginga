@@ -284,7 +284,7 @@
 
   <component package="gingacc-player" name="libgingaccplapav.so" version="0.12.1" type="dynamic">
     <dependency componentName="libgingaccplayer.so" version="0.12.1"/>
-    <symbol object="ProgramAV" creator="createProgramAV" destroyer="destroyProgramAV" interface="IProgramAV"/>
+    <symbol object="ProgramAV" creator="createProgramAV" destroyer="destroyProgramAV" interface="IPlayer"/>
     <location type="local" uri="/usr/local/lib/ginga/players/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

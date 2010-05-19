@@ -74,10 +74,10 @@ namespace player {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::player::IProgramAV*
+typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		ProgramHandlerCreator();
 
 typedef void ProgramHandlerDestroyer(
-		::br::pucrio::telemidia::ginga::core::player::IProgramAV* ipav);
+		::br::pucrio::telemidia::ginga::core::player::IPlayer* ipav);
 
 #endif /*IPROGRAMAV_H_*/

@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef PROGRAMAV_H_
 #define PROGRAMAV_H_
 
-#include "IPlayer.h"
+#include "Player.h"
 #include "IProgramAV.h"
 
 #include <iostream>
@@ -63,11 +63,14 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class ProgramAV : public IProgramAV {
+	class ProgramAV : public Player {
 		private:
 			static ProgramAV* _instance;
-			map<int, IPlayer*>* vp;
+			map<int, IPlayer*>* players;
+			map<int, string>* playerBounds;
+			map<string, int>* namePids;
 			IPlayer* currentPlayer;
+			int currentPid;
 			string fullScreenBounds;
 
 			ProgramAV();
@@ -76,15 +79,22 @@ namespace player {
 		public:
 			static ProgramAV* getInstance();
 			void release();
-			void setAVPid(int programPid, int aPid, int vPid);
-			IPlayer* getPlayer(int pid);
-			void setPlayer(int pid, IPlayer*);
-			void setPropertyValue(string pName, string pValue);
+			ISurface* getSurface();
 
 		private:
-			string intToStrBounds(int x, int y, int w, int h);
-			string getBounds(IPlayer* player);
-			void setBounds(IPlayer* player, string bounds);
+			void addPidName(string name, int pid);
+			int getPidByName(string name);
+			void forcePids(string pValue);
+			void setAVPid(string name, int aPid, int vPid);
+			string getNameFromMrl(string mrl);
+			void showPlayer(string mrl);
+			void hidePlayer(string mrl);
+			void createPlayer(string mrl);
+			void setPlayer(int pid, IPlayer*);
+			IPlayer* getPlayer(string mrl);
+			IPlayer* getPlayer(int pid);
+
+			void setPropertyValue(string pName, string pValue);
 	};
 }
 }

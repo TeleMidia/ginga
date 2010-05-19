@@ -47,6 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "../../config.h"
+
+#include "../../include/PlayersComponentSupport.h"
 #include "../../include/ProgramAV.h"
 #include "../../include/AVPlayer.h"
 
@@ -59,8 +62,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ProgramAV::ProgramAV() {
-		vp               = new map<int, IPlayer*>;
+	ProgramAV::ProgramAV() : Player("") {
+		players          = new map<int, IPlayer*>;
+		playerBounds     = new map<int, string>;
+		namePids         = new map<string, int>;
+		currentPid       = -1;
 		currentPlayer    = NULL;
 		fullScreenBounds = "";
 	}
@@ -68,9 +74,9 @@ namespace player {
 	ProgramAV::~ProgramAV() {
 		map<int, IPlayer*>::iterator i;
 
-		if (vp != NULL) {
-			i = vp->begin();
-			while (i != vp->end()) {
+		if (players != NULL) {
+			i = players->begin();
+			while (i != players->end()) {
 				i->second->stop();
 				if (i->second == currentPlayer) {
 					currentPlayer = NULL;
@@ -79,7 +85,18 @@ namespace player {
 				++i;
 			}
 
-			delete vp;
+			delete players;
+			players = NULL;
+		}
+
+		if (namePids != NULL) {
+			delete namePids;
+			namePids = NULL;
+		}
+
+		if (playerBounds != NULL) {
+			delete playerBounds;
+			playerBounds = NULL;
 		}
 
 		if (currentPlayer != NULL) {
@@ -108,11 +125,54 @@ namespace player {
 		}
 	}
 
-	void ProgramAV::setAVPid(int programPid, int aPid, int vPid) {
+	ISurface* ProgramAV::getSurface() {
+		if (currentPlayer != NULL) {
+			return currentPlayer->getSurface();
+		}
+
+		return NULL;
+	}
+
+	void ProgramAV::addPidName(string name, int pid) {
+		cout << "ProgramAV::addPidName '" << name << "' = '" << pid;
+		cout << "'" << endl;
+		(*namePids)[name] = pid;
+	}
+
+	int ProgramAV::getPidByName(string name) {
+		map<string, int>::iterator i;
+
+		i = namePids->find(name);
+		if (i != namePids->end()) {
+			return i->second;
+		}
+
+		return -1;
+	}
+
+	void ProgramAV::forcePids(string pValue) {
+		vector<string>* vals;
+		string name;
+
+		vals = split(pValue, ",");
+		if (vals->size() == 3) {
+			name = getNameFromMrl((*vals)[0]);
+			setAVPid(name, stof((*vals)[1]), stof((*vals)[2]));
+		}
+
+		delete vals;
+	}
+
+	void ProgramAV::setAVPid(string name, int aPid, int vPid) {
 		IPlayer* p;
+		int pid;
 
-		p = getPlayer(programPid);
+		pid = getPidByName(name);
+		if (pid < 0) {
+			return;
+		}
 
+		p = getPlayer(pid);
 		if (p != NULL) {
 			cout << "ProgramAV::setAVPid";
 			cout << " aPid = '" << aPid << "'";
@@ -122,47 +182,152 @@ namespace player {
 			((AVPlayer*)p)->setAVPid(aPid, vPid);
 
 		} else {
-			cout << "ProgramAV::setAVPid Warning! Can't find programPid '";
-			cout << programPid << "'";
+			cout << "ProgramAV::setAVPid Warning! Can't find name '";
+			cout << name << "' to set '" << aPid << "' and '" << vPid << "'";
 			cout << endl;
 		}
 	}
 
-	IPlayer* ProgramAV::getPlayer(int pid) {
-		map<int, IPlayer*>::iterator i;
-		i = vp->find(pid);
+	string ProgramAV::getNameFromMrl(string mrl) {
+		if (mrl.substr(0, 11) == "sbtvd-ts://") {
+			return mrl.substr(11, mrl.length() - 11);
+		}
 
-		if (i == vp->end())
-			return NULL;
+		return mrl;
+	}
 
-		return i->second;
+	void ProgramAV::showPlayer(string mrl) {
+		IPlayer* player;
+
+		player = getPlayer(mrl);
+		if (player != NULL) {
+			player->setPropertyValue("show", "0xFF");
+		}
+	}
+
+	void ProgramAV::hidePlayer(string mrl) {
+		IPlayer* player;
+
+		player = getPlayer(mrl);
+		if (player != NULL) {
+			player->setPropertyValue("hide", "0x00");
+		}
+	}
+
+	void ProgramAV::createPlayer(string mrl) {
+		string name;
+		int pid;
+
+		name = getNameFromMrl(mrl);
+		if (isNumeric((void*)(name.c_str()))) {
+			pid = stof(name);
+
+		} else {
+			pid = getPidByName(name);
+		}
+
+		if (pid < 0) {
+			cout << "ProgramAV::createPlayer Warning! Can't create player '";
+			cout << mrl << "' with name '" << name << "': pid '" << pid;
+			cout << "' not found!" << endl;
+			return;
+		}
+
+		currentPid = pid;
+
+#if HAVE_COMPSUPPORT
+		currentPlayer = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+				mrl.c_str(), true);
+
+#else
+		currentPlayer = new AVPlayer(mrl.c_str(), true);
+#endif
+
+		if (fullScreenBounds != "") {
+			(*playerBounds)[pid] = fullScreenBounds;
+			currentPlayer->setPropertyValue("createWindow", fullScreenBounds);
+			fullScreenBounds = "";
+		}
+
+		setPlayer(pid, currentPlayer);
+
+		cout << "ProgramAV::createPlayer for '" << mrl << "' all done" << endl;
 	}
 
 	void ProgramAV::setPlayer(int pid, IPlayer* player) {
 		map<int, IPlayer*>::iterator i;
 		IPlayer* ePlayer;
 
-		i = vp->find(pid);
-		if (i == vp->end()) {
-			(*vp)[pid]       = player;
-			currentPlayer    = player;
-			fullScreenBounds = getBounds(currentPlayer);
+		i = players->find(pid);
+		if (i == players->end()) {
+			(*players)[pid] = player;
 
 		} else {
-			ePlayer    = (*vp)[pid];
-			(*vp)[pid] = player;
+			ePlayer = (*players)[pid];
+			(*players)[pid] = player;
 			delete ePlayer;
 			ePlayer = NULL;
 		}
 	}
 
+	IPlayer* ProgramAV::getPlayer(string mrl) {
+		string name;
+		int pid;
+
+		name = getNameFromMrl(mrl);
+		if (isNumeric((void*)(name.c_str()))) {
+			pid = stof(name);
+
+		} else {
+			pid = getPidByName(name);
+		}
+
+		return getPlayer(pid);
+	}
+
+	IPlayer* ProgramAV::getPlayer(int pid) {
+		map<int, IPlayer*>::iterator i;
+
+		i = players->find(pid);
+		if (i != players->end()) {
+			return i->second;
+		}
+
+		return NULL;
+	}
+
 	void ProgramAV::setPropertyValue(string pName, string pValue) {
-		if (currentPlayer != NULL) {
+		cout << "ProgramAV::setPropertyValue '" << pName << "' = '";
+		cout << pValue << "'" << endl;
+
+		if (pName.substr(0, 11) == "sbtvd-ts://") {
+			addPidName(getNameFromMrl(pName), stof(pValue));
+
+		} else if (pName == "createPlayer") {
+			createPlayer(pValue);
+
+		} else if (pName == "showPlayer") {
+			showPlayer(pValue);
+
+		} else if (pName == "hidePlayer") {
+			hidePlayer(pValue);
+
+		} else if (pName == "setBoundaries") {
+			fullScreenBounds = pValue;
+
+		} else if (pName == "forcePids") {
+			forcePids(pValue);
+
+		} else if (currentPlayer != NULL) {
 			if (pName == "bounds") {
 				if (pValue == "") {
-					setBounds(currentPlayer, fullScreenBounds);
+					if (playerBounds->count(currentPid) != 0) {
+						currentPlayer->setPropertyValue(
+								pName, (*playerBounds)[currentPid]);
+					}
+
 				} else {
-					setBounds(currentPlayer, pValue);
+					currentPlayer->setPropertyValue(pName, pValue);
 				}
 
 			} else {
@@ -170,54 +335,6 @@ namespace player {
 			}
 		}
 	}
-
-	string ProgramAV::intToStrBounds(int x, int y, int w, int h) {
-		return itos(x) + "," + itos(y) + "," + itos(w) + "," + itos(h);
-	}
-
-	string ProgramAV::getBounds(IPlayer* player) {
-		ISurface* s;
-		IWindow* w;
-		string bounds = "";
-
-		s = ((Player*)player)->getSurface();
-		if (s == NULL) {
-			cout << "ProgramAV::getBounds player surface is NULL" << endl;
-			return bounds;
-		}
-
-		w = (IWindow*)(s->getParent());
-		if (w != NULL) {
-			bounds = intToStrBounds(w->getX(), w->getY(), w->getW(), w->getH());
-		}
-
-		return bounds;
-	}
-
-	void ProgramAV::setBounds(IPlayer* player, string bounds) {
-		int x, y, w, h;
-		vector<string>* args;
-		ISurface* s  = ((Player*)player)->getSurface();
-		IWindow* win = (IWindow*)(s->getParent());
-
-		if (win == NULL) {
-			cout << "ProgramAV::setBounds Warning! PAV Window is NULL";
-			cout << endl;
-			return;
-		}
-
-		args = split(bounds, ",");
-		if (args->size() == 4) {
-			x = stof((*args)[0]);
-			y = stof((*args)[1]);
-			w = stof((*args)[2]);
-			h = stof((*args)[3]);
-
-			win->setBounds(x, y, w, h);
-		}
-
-		delete args;
-	}
 }
 }
 }
@@ -225,16 +342,13 @@ namespace player {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::player::
-		IProgramAV* createProgramAV() {
+using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-	return ::br::pucrio::telemidia::ginga::core::player::ProgramAV::
-			getInstance();
+extern "C" IPlayer* createProgramAV() {
+	return (IPlayer*)(Player*)ProgramAV::getInstance();
 }
 
-extern "C" void destroyProgramAV(::br::pucrio::telemidia::ginga::core::player::
-		IProgramAV* pav) {
-
+extern "C" void destroyProgramAV(IPlayer* pav) {
 	//TODO: static release method
 	return delete pav;
 }

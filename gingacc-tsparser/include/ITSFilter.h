@@ -55,6 +55,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "ITSPacket.h"
 
+#include <string>
+using namespace std;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -65,6 +68,7 @@ namespace tsparser {
 		public:
 			virtual ~ITSFilter(){};
 
+			virtual void setDestName(string name)=0;
 			virtual void addPid(int pid)=0;
 			virtual void receiveTSPacket(ITSPacket* pack)=0;
 
