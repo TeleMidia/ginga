@@ -65,6 +65,8 @@ namespace io {
 	class ISurface : public IIOContainer {
 		public:
 			virtual ~ISurface(){};
+			virtual void setExternalHandler(bool extHandler)=0;
+			virtual bool hasExternalHandler()=0;
 			virtual void addCaps(int caps)=0;
 			virtual void setCaps(int caps)=0;
 			virtual int getCap(string cap)=0;

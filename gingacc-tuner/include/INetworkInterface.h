@@ -76,7 +76,7 @@ namespace tuning {
 			virtual void removeFilter(IFrontendFilter* filter)=0;
 			virtual void setDataProvider(IDataProvider* provider)=0;
 			virtual bool hasSignal()=0;
-			virtual bool tune()=0;
+			virtual IDataProvider* tune()=0;
 			virtual bool changeChannel(int factor)=0;
 			virtual bool setChannel(string channelValue)=0;
 			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;

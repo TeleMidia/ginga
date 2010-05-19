@@ -47,55 +47,22 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef PROGRAMAV_H_
-#define PROGRAMAV_H_
-
-#include "Player.h"
-#include "IProgramAV.h"
-
-#include <iostream>
-#include <map>
-using namespace std;
+#ifndef IPROVIDERLISTENER_H_
+#define IPROVIDERLISTENER_H_
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace player {
-	class ProgramAV : public Player {
-		private:
-			static ProgramAV* _instance;
-			map<int, IPlayer*>* players;
-			map<int, string>* playerBounds;
-			map<string, int>* namePids;
-			IPlayer* currentPlayer;
-			int currentPid;
-			string fullScreenBounds;
+namespace tuning {
 
-			ProgramAV();
-			~ProgramAV();
+	static const short PST_LOOP = 0x01;
 
+	class IProviderListener {
 		public:
-			static ProgramAV* getInstance();
-			void release();
-			int64_t getVPts();
-			ISurface* getSurface();
-
-		private:
-			void addPidName(string name, int pid);
-			int getPidByName(string name);
-			void forcePids(string pValue);
-			void setAVPid(string name, int aPid, int vPid);
-			string getNameFromMrl(string mrl);
-			void showPlayer(string mrl);
-			void hidePlayer(string mrl);
-			void createPlayer(string mrl);
-			void setPlayer(int pid, IPlayer*);
-			IPlayer* getPlayer(string mrl);
-			IPlayer* getPlayer(int pid);
-
-			void setPropertyValue(string pName, string pValue);
+			virtual ~IProviderListener(){};
+			virtual void receiveSignal(short signalCode)=0;
 	};
 }
 }
@@ -104,4 +71,4 @@ namespace player {
 }
 }
 
-#endif /*PROGRAMAV_H_*/
+#endif /*IPROVIDERLISTENER_H_*/

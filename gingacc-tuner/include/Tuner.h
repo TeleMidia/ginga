@@ -57,6 +57,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "providers/Channel.h"
 #include "NetworkInterface.h"
 #include "ITunerListener.h"
+#include "providers/IProviderListener.h"
 
 #include <fstream>
 #include <string>
@@ -71,7 +72,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Tuner : public Thread, public ITuner {
+	class Tuner : public Thread, public IProviderListener, public ITuner {
 		private:
 			bool receiving;
 			set<ITunerListener*>* listeners;
@@ -82,6 +83,8 @@ namespace tuning {
 		public:
 			Tuner();
 			virtual ~Tuner();
+
+			void receiveSignal(short signalCode);
 
 		private:
 			void initializeInterface(string niSpec);

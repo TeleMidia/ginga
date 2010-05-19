@@ -76,11 +76,13 @@ namespace tuning {
 			string fileName;
 			int fileDescriptor;
 			short capabilities;
+			IProviderListener* listener;
 
 		public:
 			FileSystemProvider(string fileName);
 			virtual ~FileSystemProvider();
 
+			void setListener(IProviderListener* listener);
 			void attachFilter(IFrontendFilter* filter){};
 			void removeFilter(IFrontendFilter* filter){};
 

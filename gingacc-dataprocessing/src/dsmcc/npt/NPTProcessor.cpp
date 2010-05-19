@@ -321,10 +321,10 @@ void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
 	map<double, set<INPTListener*>*>::iterator j;
 	set<INPTListener*>::iterator k;
 
-	/*cout << "NPTProcessor::notifyTimeListeners ";
+	cout << "NPTProcessor::notifyTimeListeners ";
 	cout << "cid '" << (cid & 0xFF);
 	cout << "' nptvalue '" << nptValue;
-	cout << "'" << endl;*/
+	cout << "'" << endl;
 
 	lock();
 	i = timeListeners->find(cid);
@@ -516,6 +516,9 @@ int NPTProcessor::decodeNPT(vector<Descriptor*>* list) {
 		}
 		++it;
 	}
+
+	/*cout << "NPTProcessor::decodeNPT processed '" << list->size() << "'";
+	cout << " descriptors" << endl;*/
 
 	return timeBaseClock->size();
 }

@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "../../include/providers/FileSystemProvider.h"
+#include "../../include/providers/IProviderListener.h"
 
 namespace br {
 namespace pucrio {
@@ -59,10 +60,15 @@ namespace tuning {
 		this->fileName       = fileName;
 		this->fileDescriptor = -1;
 		this->capabilities   = DPC_CAN_FETCHDATA;
+		this->listener       = NULL;
 	}
 
 	FileSystemProvider::~FileSystemProvider() {
 
+	}
+
+	void FileSystemProvider::setListener(IProviderListener* listener) {
+		this->listener = listener;
 	}
 
 	short FileSystemProvider::getCaps() {
@@ -116,6 +122,10 @@ namespace tuning {
 			if (rval < BUFFSIZE) {
 				printf("File is over, set file to begin again!\n");
 				lseek(fileDescriptor, 0, SEEK_SET);
+				if (listener != NULL) {
+					listener->receiveSignal(PST_LOOP);
+				}
+
 			} else {
 				lseek(fileDescriptor, -1, SEEK_CUR);
 			}

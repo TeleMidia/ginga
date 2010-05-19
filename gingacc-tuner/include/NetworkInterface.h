@@ -96,7 +96,7 @@ namespace tuning {
 
 		public:
 			bool hasSignal();
-			bool tune();
+			IDataProvider* tune();
 			bool changeChannel(int factor);
 			bool setChannel(string channelValue);
 			bool getSTCValue(uint64_t* stc, int* valueType);

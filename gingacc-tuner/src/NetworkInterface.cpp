@@ -164,7 +164,7 @@ namespace tuning {
 		return tuned;
 	}
 
-	bool NetworkInterface::tune() {
+	IDataProvider* NetworkInterface::tune() {
 		if (provider == NULL) {
 			if (createProvider()) {
 				tuned = provider->tune();
@@ -174,7 +174,11 @@ namespace tuning {
 			tuned = provider->tune();
 		}
 
-		return tuned;
+		if (tuned) {
+			return provider;
+		}
+
+		return NULL;
 	}
 
 	bool NetworkInterface::changeChannel(int factor) {

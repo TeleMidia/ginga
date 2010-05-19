@@ -71,17 +71,19 @@ namespace core {
 namespace system {
 namespace io {
 	DFBSurface::DFBSurface() {
-		this->sur = NULL;
-		this->parent = NULL;
-		this->chromaColor = NULL;
-		this->caps = 0;
+		this->sur           = NULL;
+		this->parent        = NULL;
+		this->chromaColor   = NULL;
+		this->caps          = 0;
+		this->hasExtHandler = false;
 	}
 
 	DFBSurface::DFBSurface(void* someSurface) {
-		this->sur = (IDirectFBSurface*)someSurface;
-		this->parent = NULL;
-		this->chromaColor = NULL;
-		this->caps = 0;
+		this->sur           = (IDirectFBSurface*)someSurface;
+		this->parent        = NULL;
+		this->chromaColor   = NULL;
+		this->caps          = 0;
+		this->hasExtHandler = false;
 	}
 
 	DFBSurface::DFBSurface(int w, int h) {
@@ -102,8 +104,9 @@ namespace io {
 		this->sur = (IDirectFBSurface*)(
 				LocalDeviceManager::getInstance()->createSurface(&surDsc));
 
-		this->parent = NULL;
-		this->chromaColor = NULL;
+		this->parent        = NULL;
+		this->chromaColor   = NULL;
+		this->hasExtHandler = false;
 	}
 
 	DFBSurface::~DFBSurface() {
@@ -126,6 +129,14 @@ namespace io {
 				sur = NULL;
 			}
 		}
+	}
+
+	void DFBSurface::setExternalHandler(bool extHandler) {
+		this->hasExtHandler = extHandler;
+	}
+
+	bool DFBSurface::hasExternalHandler() {
+		return this->hasExtHandler;
 	}
 
 	void DFBSurface::addCaps(int caps) {

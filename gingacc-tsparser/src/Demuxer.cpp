@@ -760,6 +760,9 @@ namespace tsparser {
 		INetworkInterface* ni;
 
 		switch (newStatus) {
+			case TS_LOOP_DETECTED:
+				break;
+
 			case TS_SWITCHING_CHANNEL:
 				resetDemuxer();
 				break;

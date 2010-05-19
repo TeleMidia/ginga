@@ -71,6 +71,7 @@ namespace io {
 		private:
 			IDirectFBSurface* sur;
 			IWindow* parent;
+			bool hasExtHandler;
 			IColor* chromaColor;
 			int caps;
 
@@ -79,6 +80,10 @@ namespace io {
 			DFBSurface(int w, int h);
 			DFBSurface(void* someSurface);      //SurfaceGraphicsWg
 			virtual ~DFBSurface();
+
+			void setExternalHandler(bool extHandler);
+			bool hasExternalHandler();
+
 			void addCaps(int caps);
 			void setCaps(int caps);
 			int getCap(string cap);

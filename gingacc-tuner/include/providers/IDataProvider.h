@@ -53,6 +53,7 @@ http://www.telemidia.puc-rio.br
 #include <stdint.h>
 
 #include "IChannel.h"
+#include "IProviderListener.h"
 #include "frontends/IFrontendFilter.h"
 
 #define BUFFSIZE (188 * 100) + 1
@@ -81,6 +82,7 @@ namespace tuning {
 		public:
 			virtual ~IDataProvider(){};
 			virtual short getCaps()=0;
+			virtual void setListener(IProviderListener* listener)=0;
 			virtual void attachFilter(IFrontendFilter* filter)=0;
 			virtual void removeFilter(IFrontendFilter* filter)=0;
 			virtual int receiveData(char* buff)=0;

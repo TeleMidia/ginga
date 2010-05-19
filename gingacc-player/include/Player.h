@@ -62,6 +62,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 #define HAVE_CLOCKTIME 1
 #endif
 
+#include <iostream>
 #include <set>
 #include <vector>
 #include <map>
@@ -137,7 +138,10 @@ namespace player {
 			virtual ISurface* getSurface();
 
 			virtual void setMediaTime(double newTime);
-			virtual int64_t getVPts(){return 0;};
+			virtual int64_t getVPts() {
+				cout << "Player::getVPts return 0" << endl;
+				return 0;
+			};
 
 #if HAVE_CLOCKTIME
 			double getMediaTime();

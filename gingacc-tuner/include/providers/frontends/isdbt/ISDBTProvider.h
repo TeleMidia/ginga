@@ -82,12 +82,14 @@ namespace tuning {
 			vector<IChannel*>* channels;
 			vector<IChannel*>::iterator currentChannel;
 			short capabilities;
+			IProviderListener* listener;
 
 		public:
 			ISDBTProvider(string fileName);
 			virtual ~ISDBTProvider();
 
 			short getCaps();
+			void setListener(IProviderListener* listener);
 			void attachFilter(IFrontendFilter* filter);
 			void removeFilter(IFrontendFilter* filter);
 

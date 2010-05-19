@@ -59,11 +59,12 @@ namespace ginga {
 namespace core {
 namespace tuning {
 	//tuner status
-	static const short TS_SWITCHING_CHANNEL      = 1;
-	static const short TS_NEW_CHANNEL_TUNED      = 2;
-	static const short TS_NEW_SERVICE_TUNED      = 3;
-	static const short TS_SWITCHING_INTERFACE    = 4;
-	static const short TS_NEW_INTERFACE_SELECTED = 5;
+	static const short TS_LOOP_DETECTED          = 0x01;
+	static const short TS_SWITCHING_CHANNEL      = 0x02;
+	static const short TS_NEW_CHANNEL_TUNED      = 0x03;
+	static const short TS_NEW_SERVICE_TUNED      = 0x04;
+	static const short TS_SWITCHING_INTERFACE    = 0x05;
+	static const short TS_NEW_INTERFACE_SELECTED = 0x06;
 
 	class ITunerListener {
 		public:

@@ -86,6 +86,17 @@ namespace tuning {
 		unlock();
 	}
 
+	void Tuner::receiveSignal(short signalCode) {
+		switch (signalCode) {
+			case PST_LOOP:
+				updateListenersStatus(TS_LOOP_DETECTED, NULL);
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	void Tuner::initializeInterface(string niSpec) {
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 			if (niSpec.substr(0, 3) >= "224" &&
@@ -148,7 +159,16 @@ namespace tuning {
 	}
 
 	bool Tuner::listen(INetworkInterface* interface) {
-		return interface->tune();
+		IDataProvider* provider;
+		bool tuned = false;
+
+		provider = interface->tune();
+		if (provider != NULL) {
+			tuned = true;
+			provider->setListener(this);
+		}
+
+		return tuned;
 	}
 
 	void Tuner::receive(INetworkInterface* interface) {

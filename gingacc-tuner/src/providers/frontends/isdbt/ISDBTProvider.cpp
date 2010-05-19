@@ -69,6 +69,7 @@ namespace tuning {
 		this->feDescriptor   = -1;
 		this->channels       = new vector<IChannel*>;
 		this->currentChannel = channels->end();
+		this->listener       = NULL;
 		this->capabilities   = (
 				DPC_CAN_FETCHDATA |
 				DPC_CAN_DEMUXBYHW |
@@ -78,6 +79,10 @@ namespace tuning {
 
 	ISDBTProvider::~ISDBTProvider() {
 		close();
+	}
+
+	void ISDBTProvider::setListener(IProviderListener* listener) {
+		this->listener = listener;
 	}
 
 	short ISDBTProvider::getCaps() {

@@ -125,12 +125,25 @@ namespace player {
 		}
 	}
 
-	ISurface* ProgramAV::getSurface() {
+	int64_t ProgramAV::getVPts() {
 		if (currentPlayer != NULL) {
-			return currentPlayer->getSurface();
+			return currentPlayer->getVPts();
 		}
 
-		return NULL;
+		return 0;
+	}
+
+	ISurface* ProgramAV::getSurface() {
+		ISurface* pSur = NULL;
+
+		if (currentPlayer != NULL) {
+			pSur = currentPlayer->getSurface();
+			if (pSur != NULL) {
+				pSur->setExternalHandler(true);
+			}
+		}
+
+		return pSur;
 	}
 
 	void ProgramAV::addPidName(string name, int pid) {
