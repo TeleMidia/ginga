@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "../../../../include/PlayersComponentSupport.h"
 
+// TODO: alter type verification of other modules
+// or try a more generic approach for protection
+
 // Indices para variaveis locais ao modulo.
 // Deve iniciar de 3 (REFNIL=-1/NOREF=-2)
 #define LUAPLAYER_EVENT "luaplayer.Event"
@@ -195,19 +198,35 @@ LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt,
 static int l_post (lua_State* L)
 {
     // [ [dst] | evt ]
+    	const char* dst = NULL;
 	if (lua_gettop(L) == 1) {
 		lua_pushstring(L, "out");                 // [ evt | "out" ]
 		lua_insert(L, 1);                         // [ "out" | evt ]
 	}
-	const char* dst = luaL_checkstring(L, 1);
-
+	if (!lua_isstring(L, 1)) {
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #1 (string expected)\n");
+		fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #1 (string esperado)\n");
+		return 0;
+	}
+	else {
+		dst = luaL_checkstring(L, 1);
+	}
     // [ dst | evt ]
 
 	// dst == "in"
 	if ( !strcmp(dst, "in") )
 	{
 		// [ dst | evt ]
-        luaL_checktype(L, 2, LUA_TTABLE);
+        //luaL_checktype(L, 2, LUA_TTABLE);
+	if(!lua_istable(L, 2)){
+
+			fprintf(stderr,"Lua conformity error: event module\n");
+			fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #2 (table expected)\n");
+			fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #2 (table esperado)\n");
+	
+			return 0;
+		}
         int ref = luaL_ref(L, LUA_REGISTRYINDEX); // [ dst ]
 
 //cout << ">send " << L << " ref " << ref << endl;
@@ -222,7 +241,15 @@ static int l_post (lua_State* L)
 	// dst == "out"
 	else if ( !strcmp(dst, "out") )
 	{
-		luaL_checktype(L, 2, LUA_TTABLE);
+		//luaL_checktype(L, 2, LUA_TTABLE);
+		if(!lua_istable(L, 2)){
+			
+			fprintf(stderr,"Lua conformity error: event module\n");
+			fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #2 (table expected)\n");
+			fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #2 (table esperado)\n");
+			
+			return 0;
+		}
 		lua_getfield(L, 2, "class");         // [ dst | evt | class ]
 		const char* clazz = luaL_checkstring(L, -1);
 
@@ -390,7 +417,15 @@ static int l_timer (lua_State* L)
 	lua_pushvalue(L, -3);                   // [ msec | func | t* | t* | func ]
 
 	// REGISTRY[t] = func
-	luaL_checktype(L, 2, LUA_TFUNCTION);
+	//luaL_checktype(L, 2, LUA_TFUNCTION);
+	if(!lua_isfunction(L, 2)){
+
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'timer' does not follow Ginga-NCL standard: bad argument #2 (function expected)\n");
+		fprintf(stderr,"Chamada a 'timer' nao segue padrao Ginga-NCL: argumento #2 (function esperado)\n");
+				
+		return 0;
+	}
 	lua_settable(L, LUA_REGISTRYINDEX);     // [ msec | func | t* ]
 
 	// returns `cancel` function
@@ -456,9 +491,32 @@ static int l_register (lua_State* L)
         lua_newtable(L);    // [ i | func | filter ]
 
     // [ i | func | filter ]
-	luaL_checktype(L, 1, LUA_TNUMBER);
-	luaL_checktype(L, 2, LUA_TFUNCTION);
-	luaL_checktype(L, 3, LUA_TTABLE);
+	//luaL_checktype(L, 1, LUA_TNUMBER);
+	//luaL_checktype(L, 2, LUA_TFUNCTION);
+	//luaL_checktype(L, 3, LUA_TTABLE);
+    if(!lua_isnumber(L, 1)){
+
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'register' does not follow Ginga-NCL standard: bad argument #1 (number expected)\n");
+		fprintf(stderr,"Chamada a 'register' nao segue padrao Ginga-NCL: argumento #1 (number esperado)\n");
+	    
+	    	return 0;
+    }
+    if(!lua_isfunction(L,2)){
+
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'register' does not follow Ginga-NCL standard: bad argument #2 (function expected)\n");
+		fprintf(stderr,"Chamada a 'register' nao segue padrao Ginga-NCL: argumento #2 (function esperado)\n");
+	    
+	    	return 0;
+    }
+    if(!lua_istable(L,3)){
+
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'register' does not follow Ginga-NCL standard: bad argument #3 (table expected)\n");
+		fprintf(stderr,"Chamada a 'register' nao segue padrao Ginga-NCL: argumento #3 (table esperado)\n");
+	        return 0;
+    }
 
     // filter.__func = func
     lua_pushvalue(L, 2);           // [ i | func | filter | func ]
@@ -493,8 +551,15 @@ static int l_register (lua_State* L)
 static int l_unregister (lua_State* L)
 {
 	// [ func ]
-	luaL_checktype(L, 1, LUA_TFUNCTION);
+	// luaL_checktype(L, 1, LUA_TFUNCTION);
+	if(!lua_isfunction(L, 1)){
 
+		fprintf(stderr,"Lua conformity error: event module\n");
+		fprintf(stderr,"Call to 'unregister' does not follow Ginga-NCL standard: bad argument #1 (function expected)\n");
+		fprintf(stderr,"Chamada a 'unregister' nao segue padrao Ginga-NCL: argumento #1 (function esperado)\n");
+			        
+		return 0;
+	}
     // creates newlisteners
     lua_rawgeti(L, LUA_ENVIRONINDEX, -REFLISTENERS);    // [ func | lst ]
     lua_rawgeti(L, LUA_ENVIRONINDEX, -REFNEWLISTENERS); // [ func | lst | ? ]
