@@ -76,11 +76,16 @@ namespace dataprocessing {
 	SectionFilter::SectionFilter() {
 		this->processedSections = new set<string>;
 		this->listener          = NULL;
+		this->hFilteredSections = new map<int, ITransportSection*>;
+		this->lastPid           = -1;
 
 		pthread_mutex_init(&stlMutex, NULL);
 	}
 
 	SectionFilter::~SectionFilter() {
+		map<int, ITransportSection*>::iterator i;
+		map<unsigned int, SectionHandler*>::iterator j;
+
 		cout << "SectionFilter::~SectionFilter" << endl;
 		pthread_mutex_lock(&stlMutex);
 
@@ -89,14 +94,23 @@ namespace dataprocessing {
 			processedSections = NULL;
 		}
 
-		/*Clear the allocated structs */
-		map<unsigned int, SectionHandler*>::iterator i;
+		if (hFilteredSections != NULL) {
+			i = hFilteredSections->begin();
+			while (i != hFilteredSections->end()) {
+				delete i->second;
+				++i;
+			}
 
-		i = sectionPidSelector.begin();
-		while (i != sectionPidSelector.end()) {
+			delete hFilteredSections;
+			hFilteredSections = NULL;
+		}
+
+		/*Clear the allocated structs */
+		j = sectionPidSelector.begin();
+		while (j != sectionPidSelector.end()) {
 			//TODO - verify if needs to delete the internal allocated memory
-			delete i->second;
-			++i;
+			delete j->second;
+			++j;
 		}
 
 		pthread_mutex_unlock(&stlMutex);
@@ -275,37 +289,50 @@ namespace dataprocessing {
 			char* buf, int len, IFrontendFilter* filter) {
 
 		//cout << "SectionFilter::receiveSection '" << len << "'" << endl;
-		ITransportSection* currentSection;
+		ITransportSection* filteredSection = NULL;
+		map<int, ITransportSection*>::iterator i;
+		int pid;
 
 		if (listener == NULL) {
-			cout << "SectionFilter::receiveSection ";
+			cout << "SectionFilter::receiveSection Warning!";
 			cout << " NULL listener" << endl;
 			return;
 		}
 
-		if (currentSection == NULL) {
+		pid     = filter->getPid();
+		lastPid = pid;
+
+		i = hFilteredSections->find(pid);
+		if (i == hFilteredSections->end()) {
 #if HAVE_COMPSUPPORT
-			currentSection = ((TSSectionCreator*)(cm->getObject(
+			filteredSection = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(buf, len);
 
 #else
-			currentSection = new TransportSection(buf, len);
+			filteredSection = new TransportSection(buf, len);
 #endif
-			currentSection->setESId(filter->getPid());
+			filteredSection->setESId(pid);
+			(*hFilteredSections)[pid] = filteredSection;
+			i = hFilteredSections->find(pid);
 
 		} else {
-			currentSection->addData(buf, len);
+			filteredSection = i->second;
+			filteredSection->addData(buf, len);
 		}
 
-		if (currentSection->isConsolidated()) {
-			if (!checkProcessedSections(currentSection->getSectionName())) {
-				listener->receiveSection(currentSection);
-
-			} else {
-				delete currentSection;
+		if (filteredSection->isConsolidated()) {
+			if (i != hFilteredSections->end()) {
+				hFilteredSections->erase(i);
 			}
 
-			currentSection = NULL;
+			if (!checkProcessedSections(filteredSection->getSectionName())) {
+				listener->receiveSection(filteredSection);
+
+			} else {
+				delete filteredSection;
+			}
+
+			filteredSection = NULL;
 		}
 	}
 

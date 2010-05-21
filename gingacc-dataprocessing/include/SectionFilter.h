@@ -86,8 +86,8 @@ namespace dataprocessing {
 		int lastContinuityCounter;
 		char sectionHeader[8];
 		unsigned int headerSize;
-		ITransportSection* section;
 		int recvPack;
+		ITransportSection* section;
 	};
 
 	class SectionFilter : public ITSFilter {
@@ -97,6 +97,8 @@ namespace dataprocessing {
 			IFilterListener* listener;
 			set<string>* processedSections;
 
+			int lastPid;
+			map<int, ITransportSection*>* hFilteredSections;
 			pthread_mutex_t stlMutex;
 
 		public:
