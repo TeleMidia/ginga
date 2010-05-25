@@ -138,6 +138,14 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-ic" name="libgingaccicccrtp.so" version="0.12.1" type="dynamic">
+    <dependency componentName="libccrtp.so" version="1.7.0"/>
+    <dependency componentName="libtelemidiautil.so" version="0.12.1"/>
+    <symbol object="CCRTPInteractiveChannel" creator="createCCRTPIC" destroyer="destroyCCRTPIC" interface="IInteractiveChannel"/>
+    <location type="local" uri="/usr/local/lib/ginga/ic/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
 <!-- UPDATE MANAGER -->
   <component package="gingacc-um" name="libgingaccum.so" version="0.12.1" type="dynamic">
     <symbol object="Update" creator="createUpdate" destroyer="destroyUpdate" interface="IUpdate"/>

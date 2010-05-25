@@ -66,14 +66,15 @@ namespace ic {
 	CURL* CurlInteractiveChannel::curl = NULL;
 
 	CurlInteractiveChannel::CurlInteractiveChannel() {
-		fd = 0;
-		buffer = NULL;
-		type = 0;
-		rate = 0;
-		uri = "";
-		listener = NULL;
-		localUri = "";
+		fd        = 0;
+		buffer    = NULL;
+		type      = 0;
+		rate      = 0;
+		uri       = "";
+		listener  = NULL;
+		localUri  = "";
 		userAgent = "";
+
 		defaultServer = "http://www.club.ncl.org.br";
 
 		if (!mutexInit) {

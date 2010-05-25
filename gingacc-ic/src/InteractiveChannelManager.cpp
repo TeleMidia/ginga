@@ -71,7 +71,7 @@ namespace ic {
 #endif
 
 	InteractiveChannelManager::InteractiveChannelManager() {
-		ics = new set<IInteractiveChannel*>;
+		ics     = new set<IInteractiveChannel*>;
 		urisIcs = new map<string, IInteractiveChannel*>;
 	}
 
@@ -114,12 +114,14 @@ namespace ic {
 			++i;
 		}
 #else
+#if HAVE_CURL
 		ic = new CurlInteractiveChannel();
 		if (ic->hasConnection()) {
 			delete ic;
 			return true;
 		}
 		delete ic;
+#endif
 #endif
 		cout << "InteractiveChannelManager::hasInteractiveChannel";
 		cout << " return false" << endl;
@@ -166,21 +168,32 @@ namespace ic {
 	}
 
 	IInteractiveChannel* InteractiveChannelManager::createInteractiveChannel(
-			string remoteUri) {
+			string rUri) {
 
 		IInteractiveChannel* ic = NULL;
 
-		if (remoteUri.length() > 7 && remoteUri.substr(0, 7) == "http://") {
+		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
+#if HAVE_CURL
 #if HAVE_COMPSUPPORT
 			ic = ((ICCreator*)(cm->getObject("CurlInteractiveChannel")))();
 #else
 			ic = new CurlInteractiveChannel();
 #endif
+#endif
+
+		} else if (rUri.length() > 6 && rUri.substr(0, 6) == "rtp://") {
+#if HAVE_CCRTP
+#if HAVE_COMPSUPPORT
+			ic = ((ICCreator*)(cm->getObject("CCRTPInteractiveChannel")))();
+#else
+			ic = new CCRTPInteractiveChannel();
+#endif
+#endif
 		}
 
 		if (ic != NULL) {
 			ics->insert(ic);
-			(*urisIcs)[remoteUri] = ic;
+			(*urisIcs)[rUri] = ic;
 		}
 
 		return ic;
@@ -226,7 +239,7 @@ namespace ic {
 		set<IInteractiveChannel*>* icSet;
 		set<IInteractiveChannel*>::iterator i;
 
-		icm = (InteractiveChannelManager*)thiz;
+		icm   = (InteractiveChannelManager*)thiz;
 		icSet = icm->getInteractiveChannels();
 
 		i = icSet->begin();

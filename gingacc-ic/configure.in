@@ -38,6 +38,58 @@ Please install gingacc-system project.
 
 ]))
 
+################
+# CURL Support #
+################
+curl=yes
+AC_ARG_ENABLE(curl,
+  [  --enable-curl build project with curl ic [[default=yes]]],
+  enable_curl="$enableval", enable_curl=yes)
+
+AC_CHECK_HEADER(
+  [curl/curl.h],
+  [],
+  AC_MSG_WARN([*** CURL header not Found.])
+    enable_curl=no
+)
+
+if test x$enable_curl = xno; then
+   AC_MSG_WARN([*** Ginga CURL IC support will not be built.])
+   AC_DEFINE(HAVE_CURL, 0, [Def to 0 if you don't have ginga curl support.])
+
+else
+   AC_MSG_RESULT([*** Ginga CURL IC support will be built.])
+   AC_DEFINE(HAVE_CURL, 1, [Def to 1 if you have ginga curl support.])
+fi
+
+AM_CONDITIONAL([CURLLIB], [test x$enable_curl = xyes])
+
+#################
+# CCRTP Support #
+#################
+ccrtp=yes
+AC_ARG_ENABLE(ccrtp,
+  [  --enable-ccrtp build project with ccrtp ic [[default=yes]]],
+  enable_ccrtp="$enableval", enable_ccrtp=yes)
+
+AC_CHECK_HEADER(
+  [ccrtp/rtp.h],
+  [],
+  AC_MSG_WARN([*** CCRTP header not Found.])
+    enable_ccrtp=no
+)
+
+if test x$enable_ccrtp = xno; then
+   AC_MSG_WARN([*** Ginga CCRTP IC support will not be built.])
+   AC_DEFINE(HAVE_CCRTP, 0, [Def to 0 if you don't have ginga ccrtp support.])
+
+else
+   AC_MSG_RESULT([*** Ginga CCRTP IC support will be built.])
+   AC_DEFINE(HAVE_CCRTP, 1, [Def to 1 if you have ginga ccrtp support.])
+fi
+
+AM_CONDITIONAL([CCRTPLIB], [test x$enable_ccrtp = xyes])
+
 ############################################
 # Offering a non-componentized alternative #
 ############################################
@@ -70,4 +122,5 @@ AC_SUBST(TEST_COMPONENTS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile include/Makefile src/curlic/Makefile src/Makefile test/Makefile)
+    Makefile include/Makefile src/ccrtpic/Makefile 
+    src/curlic/Makefile src/Makefile test/Makefile)

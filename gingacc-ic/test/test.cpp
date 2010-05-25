@@ -55,54 +55,127 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 #include "../include/InteractiveChannelManager.h"
 #include "../include/curlic/CurlInteractiveChannel.h"
+#include "../include/ccrtpic/CCRTPInteractiveChannel.h"
 #endif
 
 #include "../include/IInteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+#include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string>
 #include <iostream>
 using namespace std;
 
-int main() {
+class ICListener : public IInteractiveChannelListener {
+	private:
+		int fd;
+
+	public:
+		ICListener() {
+			fd = open("recv.ts", O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+		}
+
+		~ICListener() {
+			if (fd > 0) {
+				close(fd);
+			}
+		}
+
+		void receiveCode(long respCode) {
+			cout << "ICListener received code '" << respCode << "'" << endl;
+		}
+
+		void receiveDataStream(char* buffer, int size) {
+			if (fd > 0 && size > 0) {
+				write(fd, buffer, size);
+			}
+		}
+
+		void receiveDataPipe(int fd, int size) {
+			cout << "ICListener received write '" << size << "'" << endl;
+		}
+
+		void downloadCompleted(const char* localUri) {
+			cout << "ICListener download completed '" << localUri << "'";
+			cout << endl;
+		}
+};
+
+int main(int argc, char** argv) {
+	ICListener* listener;
 	IInteractiveChannel* ic;
 #if HAVE_COMPSUPPORT
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	IInteractiveChannelManager* icm = ((ICMCreator*)(cm->getObject(
-			"InteractiveChannelManager")))();
-#else
-	IInteractiveChannelManager* icm = InteractiveChannelManager::getInstance();
+	IComponentManager* cm;
 #endif
+	IInteractiveChannelManager* icm;
 
+	int fd           = -1;
+	char* buffer     = NULL;
 	string localPath = "/tmp/gingaTests/";
 	string localFile = localPath + "CurlInteractiveChannelTest.xml";
 	string remoteUri = "http://apps.club.ncl.org.br/78/main.ncl";
 
 	cout << "gingacc-ic main test: begin" << endl;
-	/*mkdir(localPath.c_str(), 0666);
+	setLogToNullDev();
+	mkdir(localPath.c_str(), 0666);
 
-	fd = open(localFile.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
-	if (fd > 0) {*/
+#if HAVE_COMPSUPPORT
+	cm = IComponentManager::getCMInstance();
+	icm = ((ICMCreator*)(cm->getObject("InteractiveChannelManager")))();
+
+#else
+	icm = InteractiveChannelManager::getInstance();
+#endif
+
+	listener = new ICListener();
+
+	if (argc == 3 && strcmp(argv[1], "--curl") == 0) {
+		if (strcmp(argv[2], "fd") == 0) {
+			fd = open(localFile.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
+		}
+
 		if (icm != NULL) {
+#if HAVE_CURL
 #if HAVE_COMPSUPPORT
 			ic = ((ICCreator*)(cm->getObject("CurlInteractiveChannel")))();
 #else
 			ic = new CurlInteractiveChannel();
 #endif
 			if (ic != NULL && ic->hasConnection()) {
-				//ic->setTarget(fd);
+				if (fd > 0) {
+					ic->setTarget(fd);
+				}
 				ic->setSourceTarget(localFile);
 				ic->reserveUrl(remoteUri, NULL);
 				ic->performUrl();
 			}
+#endif
 		}
 
-	/*} else {
-		cout << "gingacc-ic main test: can't create file" << endl;
-	}*/
+	} else if (argc == 3 && strcmp(argv[1], "--ccrtp") == 0) {
+#if HAVE_CCRTP
+#if HAVE_COMPSUPPORT
+		ic = ((ICCreator*)(cm->getObject("CCRTPInteractiveChannel")))();
+#else
+		ic = new CCRTPInteractiveChannel();
+#endif
 
+		remoteUri.assign(argv[2], strlen(argv[2]));
+		buffer = new char[10240];
+		if (ic != NULL && ic->hasConnection()) {
+			ic->setTarget(buffer);
+			ic->reserveUrl(remoteUri, listener);
+			ic->performUrl();
+		}
+#endif
+	}
+
+	delete listener;
 	cout << "gingacc-ic main test: end - check '" << localFile << "'" << endl;
 	return 0;
 }
