@@ -74,7 +74,8 @@ namespace ic {
 		InetMcastAddress ima;
 
 		cout << "CCRTPInteractiveChannel::createClient with uri '";
-		cout << uri << "'" << endl;
+		cout << uri << "'";
+		cout << endl;
 
 		if (uri.length() > 6 && uri.substr(0, 6) == "rtp://") {
 			uri = uri.substr(6, uri.length() - 6);

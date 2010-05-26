@@ -60,7 +60,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace ic {
-	class CCRTPInteractiveChannel: public IInteractiveChannel {
+	class CCRTPInteractiveChannel : public IInteractiveChannel {
 		private:
 			int fd;
 			string uri;

@@ -7,8 +7,6 @@ LIBS =
 
 libgingaccicccrtpdir = /usr/local/lib/ginga/ic
 
-# AM_CXXFLAGS = -g
-
 libgingaccicccrtp_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L/usr/local/lib/ginga -Wl,-soname,libgingaccicccrtp.so -shared
 
