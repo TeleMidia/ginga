@@ -339,7 +339,9 @@ namespace io {
 	}
 
 	void DFBVideoProvider::setSoundLevel(float level) {
-		DFBCHECK(rContainer->dec->SetVolume(rContainer->dec, level));
+		if (rContainer != NULL && rContainer->dec != NULL) {
+			DFBCHECK(rContainer->dec->SetVolume(rContainer->dec, level));
+		}
 	}
 
 	bool DFBVideoProvider::releaseAll() {

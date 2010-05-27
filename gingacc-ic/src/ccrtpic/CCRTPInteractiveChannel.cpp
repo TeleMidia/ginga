@@ -166,6 +166,7 @@ namespace ic {
 		}
 
 		delete rtpClient;
+		cout << "CCRTPInteractiveChannel::performUrl all done" << endl;
 		return true;
 	}
 

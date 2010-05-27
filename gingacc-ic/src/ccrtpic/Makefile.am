@@ -14,5 +14,4 @@ libgingaccicccrtp_PROGRAMS = libgingaccicccrtp.so
 
 libgingaccicccrtp_so_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
 
-libgingaccicccrtp_so_LDADD = -lccrtp1 \
-    $(COMPONENTS_LIBS)
+libgingaccicccrtp_so_LDADD = -lccrtp1 $(COMPONENTS_LIBS)

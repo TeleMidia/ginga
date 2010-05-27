@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define CCRTPClient_H_
 
 #include "../IInteractiveChannelListener.h"
+#include "../IInteractiveChannel.h"
 
 #include <cstdlib>
 #include <ccrtp/rtp.h>
@@ -69,6 +70,7 @@ namespace ic {
 	class CCRTPClient: public RTPSession {
 		private:
 			bool hasSession;
+			IInteractiveChannel* rtpIC;
 
 		public:
 			CCRTPClient(InetMcastAddress& ima, tpport_t port);
@@ -76,6 +78,7 @@ namespace ic {
 
 			virtual ~CCRTPClient();
 
+			void setInteractiveChannel(IInteractiveChannel* ic);
 			void openSession();
 			char* getPacketData(int* size);
 			void printSSRC();

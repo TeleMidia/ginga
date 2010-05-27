@@ -84,6 +84,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "Player.h"
+#include "PlayersComponentSupport.h"
+
+#if HAVE_CCRTPIC
+#include "RTPListener.h"
+#endif
 
 #include <vector>
 #include <iostream>
@@ -100,12 +105,17 @@ namespace player {
 			public Player,
 			public IProviderListener {
 
+		private:
+			pthread_mutex_t pMutex;
+#if HAVE_CCRTPIC
+			RTPListener* icListener;
+#endif
+
 		protected:
 			bool running;
 			bool buffered;
 			bool hasVisual;
 			float soundLevel;
-			bool isRemoteMrl;
 
 		private:
 			IContinuousMediaProvider* provider;
@@ -129,6 +139,12 @@ namespace player {
 
 			virtual ~AVPlayer();
 
+			ISurface* getSurface();
+
+		private:
+			static void* createProvider(void* ptr);
+
+		public:
 			void finished();
 			double getEndTime();
 

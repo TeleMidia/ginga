@@ -49,8 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "../../include/AVPlayer.h"
 
-#include "../../include/PlayersComponentSupport.h"
-
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -1072,7 +1070,6 @@ namespace player {
 		this->provider    = NULL;
 		this->mainAV      = false;
 		this->buffered    = false;
-		this->isRemoteMrl = false;
 
 		this->status      = STOP;
 		this->running     = false;
@@ -1080,7 +1077,25 @@ namespace player {
 		this->soundLevel  = 1.0;
 		this->win         = NULL;
 
-		if (mrl.length() > 11 && mrl.substr(0, 11) == "sbtvd-ts://") {
+		pthread_mutex_init(&pMutex, NULL);
+
+#if HAVE_CCRTPIC
+		this->icListener  = NULL;
+#endif
+
+		if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
+#if HAVE_CCRTPIC
+			icListener = new RTPListener(mrl);
+			this->mrl  = icListener->getUrl();
+
+			Thread::start();
+
+			pthread_t _tId;
+			pthread_create(&_tId, NULL, createProvider, this);
+			pthread_detach(_tId);
+#endif
+
+		} else if (mrl.length() > 11 && mrl.substr(0, 11) == "sbtvd-ts://") {
 			this->mainAV = true;
 			pos = mrl.find("#");
 			if (pos != std::string::npos) {
@@ -1092,33 +1107,9 @@ namespace player {
 			cout << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
 			cout << this->mrl << "'" << endl;
 
-		} else if (fileExists(mrl)) {
-#if HAVE_COMPSUPPORT
-			if (hasVisual) {
-				this->provider = ((CMPCreator*)(cm->getObject(
-						"VideoProvider")))(mrl.c_str());
-
-			} else {
-				this->provider = ((CMPCreator*)(cm->getObject(
-						"AudioProvider")))(mrl.c_str());
-			}
-#else
-			if (hasVisual) {
-				this->provider = new DFBVideoProvider(mrl.c_str());
-
-			} else {
-				this->provider = new FusionSoundAudioProvider(mrl.c_str());
-			}
-#endif
-
-			this->surface = createFrame();
-			this->scopeEndTime = getTotalMediaTime();
-
 		} else {
-			cout << "AVPlayer::AVPlayer Warning! File not Found: '";
-			cout << mrl << "'" << endl;
-			this->provider = NULL;
-			this->surface = NULL;
+			createProvider(this);
+			this->scopeEndTime = getTotalMediaTime();
 		}
 	}
 
@@ -1127,6 +1118,9 @@ namespace player {
 			stop();
 		}
 
+		pthread_mutex_lock(&pMutex);
+		pthread_mutex_unlock(&pMutex);
+		pthread_mutex_destroy(&pMutex);
 		unlockConditionSatisfied();
 		lock();
 		if (surface != NULL && mainAV) {
@@ -1144,6 +1138,50 @@ namespace player {
 			release();
 		}
 		unlock();
+	}
+
+	ISurface* AVPlayer::getSurface() {
+		if (provider == NULL) {
+			createProvider(this);
+			if (provider == NULL) {
+				cout << "AVPlayer::getSurface() can't create provider" << endl;
+			}
+		}
+
+		return Player::getSurface();
+	}
+
+	void* AVPlayer::createProvider(void* ptr) {
+		AVPlayer* p = (AVPlayer*)ptr;
+
+		cout << "AVPlayer::createProvider '" << p->mrl << "'" << endl;
+		pthread_mutex_lock(&(p->pMutex));
+
+		if (p->provider == NULL && fileExists(p->mrl)) {
+#if HAVE_COMPSUPPORT
+			if (p->hasVisual) {
+				p->provider = ((CMPCreator*)(cm->getObject(
+						"VideoProvider")))(p->mrl.c_str());
+
+			} else {
+				p->provider = ((CMPCreator*)(cm->getObject(
+						"AudioProvider")))(p->mrl.c_str());
+			}
+#else
+			if (p->hasVisual) {
+				p->provider = new DFBVideoProvider(p->mrl.c_str());
+
+			} else {
+				p->provider = new FusionSoundAudioProvider(p->mrl.c_str());
+			}
+#endif
+
+			cout << "AVPlayer::createProvider call createFrame" << endl;
+			p->surface = p->createFrame();
+		}
+
+		pthread_mutex_unlock(&(p->pMutex));
+		cout << "AVPlayer::createProvider '" << p->mrl << "' all done" << endl;
 	}
 
 	void AVPlayer::finished() {
@@ -1298,9 +1336,7 @@ namespace player {
 		}
 
 		Player::play();
-		if (!isRemoteMrl) {
-			provider->playOver(surface, hasVisual, this);
-		}
+		provider->playOver(surface, hasVisual, this);
 
 		if (!running) {
 			running = true;
@@ -1327,6 +1363,11 @@ namespace player {
 
 	void AVPlayer::stop() {
 		Player::stop();
+#if HAVE_CCRTPIC
+		if (icListener != NULL) {
+			icListener->releaseIC();
+		}
+#endif
 		if (provider == NULL) {
 			this->wakeUp();
 			return;
@@ -1339,9 +1380,7 @@ namespace player {
 		setSoundLevel(soundLevel);
 
 		Player::play();
-		if (!isRemoteMrl) {
-			provider->resume(surface, hasVisual);
-		}
+		provider->resume(surface, hasVisual);
 
 		if (!running) {
 			running = true;
@@ -1437,6 +1476,13 @@ namespace player {
 			cm->releaseComponentFromObject("AudioProvider");
 		}
 #endif
+
+#if HAVE_CCRTPIC
+		if (icListener != NULL) {
+			delete icListener;
+			icListener = NULL;
+		}
+#endif
 	}
 
 	void AVPlayer::setMrl(const char* mrl) {
@@ -1453,8 +1499,7 @@ namespace player {
 		}
 
 		if ((getCurrentMediaTime() <= 0 && status != PAUSE) ||
-			    (getCurrentMediaTime() >= getStopTime() &&
-			    getStopTime() > 0)) {
+			    (getCurrentMediaTime() >= getStopTime() && getStopTime() > 0)) {
 
 			return false;
 
@@ -1526,6 +1571,23 @@ namespace player {
 		double timeRemain;
 
 		lock();
+#if HAVE_CCRTPIC
+		if (icListener != NULL) {
+			running = true;
+			unlock();
+			cout << "AVPlayer::run call performIC" << endl;
+			icListener->performIC();
+			cout << "AVPlayer::run call performIC done" << endl;
+			if (status != STOP && status != PAUSE) {
+				status  = STOP;
+				running = false;
+				notifyListeners(PL_NOTIFY_STOP, "");
+			}
+
+			return;
+		}
+#endif
+
 		if (mainAV) {
 			running = true;
 

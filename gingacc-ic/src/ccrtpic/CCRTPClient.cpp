@@ -59,16 +59,23 @@ namespace ic {
 			RTPSession(ima, port) {
 
 		hasSession = false;
+		rtpIC      = NULL;
 	}
 
 	CCRTPClient::CCRTPClient(InetHostAddress& ia, tpport_t port) :
 			RTPSession(ia, port) {
 
 		hasSession = false;
+		rtpIC      = NULL;
 	}
 
 	CCRTPClient::~CCRTPClient() {
 		hasSession = false;
+		rtpIC      = NULL;
+	}
+
+	void CCRTPClient::setInteractiveChannel(IInteractiveChannel* ic) {
+		rtpIC = ic;
 	}
 
 	void CCRTPClient::openSession() {
@@ -187,6 +194,10 @@ namespace ic {
 			const SyncSource& source, const std::string& reason) {
 
 		hasSession = true;
+
+		if (rtpIC != NULL) {
+			rtpIC->releaseUrl();
+		}
 
 		cout << "CCRTPClient::onGotGoodbye ";
 		cout << "I got a Goodbye packet from ";
