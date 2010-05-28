@@ -5,6 +5,7 @@ $(all_includes)
 
 LIBS =
 
+if CCRTPLIB
 libgingaccicccrtpdir = /usr/local/lib/ginga/ic
 
 libgingaccicccrtp_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
@@ -15,3 +16,4 @@ libgingaccicccrtp_PROGRAMS = libgingaccicccrtp.so
 libgingaccicccrtp_so_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
 
 libgingaccicccrtp_so_LDADD = -lccrtp1 $(COMPONENTS_LIBS)
+endif
