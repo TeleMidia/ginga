@@ -137,6 +137,7 @@ namespace tsparser {
 			sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
 
 		}
+
 		if (sectionSyntaxIndicator == 0) {
 			//when sectionSyntaxIndicator is 0 the last field of the header is
 			// sectionLength
@@ -147,7 +148,7 @@ namespace tsparser {
 			sectionNumber        = 0;
 			lastSectionNumber    = 0;
 
-		} else if (sectionSyntaxIndicator == 1) {
+		} else {
 			//when sectionSyntaxIndicator is 1 the header section is bigger.
 
 			idExtention   = (((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
@@ -156,8 +157,8 @@ namespace tsparser {
 			currentNextIndicator = (section[5] & 0x01);
 			sectionNumber        = (section[6] & 0xFF);
 			lastSectionNumber    = (section[7] & 0xFF);
-
 		}
+
 		// Update current section size.
 		if (size >= sectionLength + 3) {
 			currentSize = sectionLength + 3;
@@ -232,7 +233,7 @@ namespace tsparser {
 	void TransportSection::setSectionName() {
 		if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID ||
 		 						(tableId >= 0x50 && tableId <= 0x5F )) {
-								
+
 			sectionName = "epg/data/" + itos(pid) +
 			    itos(tableId) + itos(idExtention) + itos(versionNumber);
 

@@ -56,7 +56,6 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 namespace si {
-
 	TOT::TOT() {
 		memset(UTC3Time, 0, 5);
 		descriptorsLoopLength = 0;
@@ -65,8 +64,14 @@ namespace si {
 
 	TOT::~TOT() {
 		vector<IMpegDescriptor*>::iterator i;
-		for (i = descriptors->begin(); i != descriptors->end(); ++i) {
-			delete(*i);
+
+		if (descriptors != NULL) {
+			for (i = descriptors->begin(); i != descriptors->end(); ++i) {
+				delete(*i);
+			}
+
+			delete descriptors;
+			descriptors = NULL;
 		}
 	}
 
@@ -80,7 +85,6 @@ namespace si {
 		str << time.tm_min;
 
 		return str.str();
-
 	}
 
 	struct tm TOT::getUTC3TimeTm() {
@@ -88,21 +92,22 @@ namespace si {
 	}
 
 	struct tm TOT::convertMJDtoUTC(unsigned int mjd) {
-
 		struct tm time;
 		int year,month,day,k, weekDay;
 
-		year = ((mjd-15078.2) / 365.25);
-		month =  (( mjd - 14956.1 - (int) (year * 365.25) ) / 30.6001 ) ;
-		day = mjd - 14956 - ((int) (year * 365.25)) - ((int)(month * 30.6001));
-		if (month == 14 || month == 15){
+		year  = ((mjd-15078.2) / 365.25);
+		month = (( mjd - 14956.1 - (int) (year * 365.25) ) / 30.6001 ) ;
+		day   = mjd - 14956 - ((int) (year * 365.25)) - ((int)(month * 30.6001));
+
+		if (month == 14 || month == 15) {
 			k = 1;
-		}
-		else {
+
+		} else {
 			k = 0;
 		}
-		year = year + k;
-		month = month - 1 - k * 12;
+
+		year    = year + k;
+		month   = month - 1 - k * 12;
 		weekDay = (((mjd + 2) % 7) + 1);
 
 		time.tm_year = year;
@@ -134,15 +139,14 @@ namespace si {
 
 			return;
 		}
-		mjd = (((UTC3Time[0] << 8) & 0xFF00) |
-						(UTC3Time[1] & 0xFF));
+
+		mjd  = (((UTC3Time[0] << 8) & 0xFF00) | (UTC3Time[1] & 0xFF));
 
 		time = convertMJDtoUTC(mjd);
 
 		time.tm_hour = convertBCDtoDecimal((int)UTC3Time[2]);
 		time.tm_min  = convertBCDtoDecimal((int)UTC3Time[3]);
 		time.tm_sec  = convertBCDtoDecimal((int)UTC3Time[4]);
-
 	}
 
 	vector<IMpegDescriptor*>* TOT::getDescriptors() {
@@ -177,8 +181,9 @@ namespace si {
 		pos += 5;
 		calculateTime();
 
-		descriptorsLoopLength = ((((data[pos] & 0x0F) << 8) & 0xFF00) |
-				(data[pos+1] & 0xFF));
+		descriptorsLoopLength = (
+				(((data[pos] & 0x0F) << 8) & 0xFF00) | (data[pos+1] & 0xFF));
+
 		pos +=2;
 
 		remainingBytes  = descriptorsLoopLength;
@@ -223,4 +228,3 @@ extern "C" void destroyTOT(
 
 	delete tot;
 }
-

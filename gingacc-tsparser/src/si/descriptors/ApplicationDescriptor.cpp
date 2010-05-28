@@ -112,7 +112,7 @@ namespace si {
 		return descriptorTag;
 	}
 
-	void ApplicationDescriptor::print(){
+	void ApplicationDescriptor::print() {
 		cout << "ApplicationDescriptor::print printing..." << endl;
 		vector<Profile*>::iterator i;
 
@@ -125,7 +125,6 @@ namespace si {
 		}
 		cout << "ServiceBoundFlag: " << serviceBoundFlag << endl;
 		cout << "Visibility: "       << visibility       << endl;
-
 	}
 
 	size_t ApplicationDescriptor::process(char* data, size_t pos) {

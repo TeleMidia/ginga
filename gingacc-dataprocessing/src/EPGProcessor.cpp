@@ -178,48 +178,10 @@ namespace epg {
  * The EPGProcessor only process EIT table if there is at least one epgListener.
  *
  */
-	map<string, struct Field> EPGProcessor::createMap() {
 
-		struct Field field;
-		map<string, struct Field> t;
-		map<string, struct Field> t2;
-		map<string, struct Field> data;
-		field.str = "1511";
-		t["networkId"]       = field;
-		field.str             = "2";
-		t["id"]               = field;
-		field.str	        = "1270512000";
-		t["startTime"]        = field;
-		t["endTime"]          = field;
-		field.str = "House";
-		t["name"]             = field;
-		field.str = "House saves a patient";
-		t["shortDescription"] = field;
+	void EPGProcessor::addEPGListener(
+			IEPGListener* listener, string request, unsigned char type) {
 
-		field.str = "1511";
-		t2["networkId"]       = field;
-		field.str             = "1";
-		t2["id"]               = field;
-		field.str	        = "1270508400";
-		t2["startTime"]        = field;
-		t2["endTime"]          = field;
-		field.str = "24";
-		t2["name"]             = field;
-		field.str = "Jack Bauer leads the field team to bring Farhaad";
-		t2["shortDescription"] = field;
-
-		field.str = "";
-		field.table = t;
-		data["evt2"] = field;
-
-		field.table = t2;
-		data["evt1"] = field;
-
-		return data;
-
-
-	}
-	void EPGProcessor::addEPGListener(IEPGListener* listener, string request, unsigned char type) {
 		//TODO: handle request properly.
 		cout << "EPGProcessor::addEPGListener with type:" << type << endl;
 
@@ -238,10 +200,6 @@ namespace epg {
 			}
 
 			epgListeners->insert(listener);
-			if (dataProcessor == NULL) {
-				map<string, struct Field> table = createMap();
-				listener->pushSIEvent(table,listener->EPG_LISTENER);
-			}
 
 		} else if (type == listener->SI_LISTENER) {
 			if (serviceListeners == NULL) {
@@ -271,7 +229,7 @@ namespace epg {
 			//TODO: removePidSectionFilter
 		}
 
-		//todo remove SDT e TOT listeners
+		//TODO: remove SDT e TOT listeners
 	}
 
 	void EPGProcessor::decodeSdtSection(ITransportSection* section) {
@@ -372,6 +330,7 @@ namespace epg {
 			//generate map
 		}
 	}
+
 	/* If a section is the last section means that in that moment all sections
 	 * were received so the map could be sent to the listeners. The problem is
 	 * if the TS is malformed the last section could never arrives. For this
@@ -539,9 +498,6 @@ namespace epg {
 	}
 
 	void EPGProcessor::generateSdtMap(IServiceInfo* si) {
-		if (si == NULL) {
-			return;
-		}
 		struct Field field, fieldMap;
 		map<string, struct Field> responseMap, data;
 		vector<IMpegDescriptor*>::iterator i;
@@ -549,6 +505,9 @@ namespace epg {
 		IServiceDescriptor* sd;
 		set<IEPGListener*>::iterator j;
 
+		if (si == NULL) {
+			return;
+		}
 
 		field.str           = itos(si->getServiceId());
 		(responseMap)["id"] = field;
@@ -558,15 +517,14 @@ namespace epg {
 
 		descs = si->getDescriptors();
 		if (descs == NULL) {
-
 			fieldMap.table = responseMap;
 			string name    = "0";
 			(data)["0"]    = fieldMap;
 			//TODO: send and test! All SDT section has at least one descriptors.
+			return;
 		}
-		for (i = si->getDescriptors()->begin(); i != si->getDescriptors()->end();
-				++i) {
 
+		for (i = descs->begin(); i != descs->end(); ++i) {
 			switch((*i)->getDescriptorTag()) {
 				case IServiceInfo::DT_SERVICE:
 					sd = (IServiceDescriptor*)(*i);
@@ -577,15 +535,24 @@ namespace epg {
 					field.str = sd->getServiceNameChar();
 					(responseMap)["serviceName"] =  field;
 					break;
+
+				default:
+					cout << "EPGProcessor::generateSdtMap Unknown type" << endl;
+					break;
 			}
 		}
+
 		fieldMap.table = responseMap;
 		string name    = "0";
 		(data)["0"]    = fieldMap;
 
 		//printFieldMap(&data);
-		if ( serviceListeners != NULL && !serviceListeners->empty()) {
-			for (j = serviceListeners->begin(); j != serviceListeners->end(); ++j) {
+		if (serviceListeners != NULL && !serviceListeners->empty()) {
+			for (
+					j = serviceListeners->begin();
+					j != serviceListeners->end();
+					++j) {
+
 				(*j)->pushSIEvent(data, (*j)->SI_LISTENER);
 			}
 
@@ -596,13 +563,16 @@ namespace epg {
 	}
 
 	void EPGProcessor::generateTotMap(ITOT* tot) {
+		map<string, struct Field> responseMap, data;
+		set<IEPGListener*>::iterator i;
+		struct Field field, fieldMap;
+		struct tm time;
+
 		if (tot == NULL) {
 			return;
 		}
-		map<string, struct Field> responseMap, data;
-		struct Field field, fieldMap;
 
-		struct tm time = tot->getUTC3TimeTm();
+		time = tot->getUTC3TimeTm();
 		field.str = itos(time.tm_year);
 		(responseMap)["year"] = field;
 
@@ -622,15 +592,15 @@ namespace epg {
 		(responseMap)["seconds"] = field;
 
 		if (timeListeners != NULL && !timeListeners->empty()) {
-			set<IEPGListener*>::iterator i;
-
 			for (i = timeListeners->begin(); i != timeListeners->end(); ++i) {
 				(*i)->pushSIEvent(responseMap, (*i)->TIME_LISTENER);
 			}
 		}
 	}
 
-	void EPGProcessor::generateEitMap(map<unsigned int, IEventInfo*>* actualMap) {
+	void EPGProcessor::generateEitMap(
+			map<unsigned int, IEventInfo*>* actualMap) {
+
 		map<string, struct Field> responseMap, data;
 		IEventInfo* ei;
 		map<unsigned int, IEventInfo*>::iterator i ;
@@ -699,7 +669,6 @@ namespace epg {
 		if (epgListeners != NULL && !epgListeners->empty()) {
 			for (k = epgListeners->begin(); k != epgListeners->end(); ++k) {
 				(*k)->pushSIEvent(data, (*k)->EPG_LISTENER);
-
 			}
 
 		} else {
@@ -707,7 +676,6 @@ namespace epg {
 			cout << endl;
 		}
 	}
-
 
 	void EPGProcessor::printFieldMap(map<string, struct Field>* fieldMap) {
 		map<string, struct Field>::iterator i;
@@ -733,9 +701,9 @@ namespace epg {
 
 	struct Field* EPGProcessor::handleFieldStr(string str) {
 		struct Field* field;
-	//	cout << "EPGProcessor::handleFieldstr with str = " << str << endl;
-		field = new struct Field;
+		//cout << "EPGProcessor::handleFieldstr with str = " << str << endl;
 
+		field = new struct Field;
 		if (str == "") {
 			field->str = "0";
 			return field;
@@ -744,6 +712,7 @@ namespace epg {
 		field->str = str;
 		return field;
 	}
+
 	void EPGProcessor::decodeTot(ITransportSection* section) {
 		unsigned int payloadSize;
 		char* data;
