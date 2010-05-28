@@ -84,6 +84,7 @@ namespace tsparser {
 	static const short EIT_TID  = 0x4E;
 	static const short CDT_TID  = 0xC8;
 	static const short AIT_TID  = 0x74;
+	static const short TOT_TID  = 0x73;
 
 	// specific stream types
 	static const short STREAM_TYPE_VIDEO_MPEG1     = 0x01;

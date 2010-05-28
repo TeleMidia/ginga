@@ -58,49 +58,25 @@ namespace tsparser {
 namespace si {
 	EventInfo::EventInfo() {
 		descriptorsLoopLength = 0;
-		descriptors           = NULL;
+		descriptors           = new vector<IMpegDescriptor*>;
 		eventId               = 0;
 		freeCAMode            = 0;
 		runningStatus         = 0;
-		sectionNumber         = 0;
-		tableId               = 0;
-		sectionVersion        = 0;
-
 	}
 
 	EventInfo::~EventInfo() {
 		vector<IMpegDescriptor*>::iterator i;
-		if(descriptors != NULL){
-			i = descriptors->begin();
-			while(i != descriptors->end()){
-				delete (*i);
-				++i;
-			}
-			delete descriptors;
-			descriptors = NULL;
-		}
-	}
-	/* Function to set what kind of section the EventInfo was part of
-	 * tableId give information if the EventInfo is present/following (0x4E) or
-	 * schedule (0x50, 5F).
-	 * These functions should be call only by the section processor (EPGProcessor)
-	 */
-	void EventInfo::setSectionNumber (unsigned int number){
-		sectionNumber = number;
-	}
-	void EventInfo::setTableId(unsigned int id) {
-		tableId = id;
-	}
-	void EventInfo::setSectionVersion(unsigned int version) {
-		sectionVersion = version;
-	}
-	unsigned int EventInfo::getTableId() {
-		return tableId;
-	}
-	unsigned int EventInfo::getSectionVersion(){
-		return sectionVersion;
-	}
 
+		i = descriptors->begin();
+		while (i != descriptors->end()) {
+			delete (*i);
+			++i;
+		}
+
+		delete descriptors;
+		descriptors = NULL;
+
+	}
 
 	/*
 	 *
@@ -110,7 +86,7 @@ namespace si {
 	 * in ABNT SI standard, but there is some errors on it.
 	 *
 	 */
-	struct tm EventInfo::convertMJDtoUTC (unsigned int mjd){
+	struct tm EventInfo::convertMJDtoUTC(unsigned int mjd) {
 
 		struct tm start;
 		int year,month,day,k, weekDay;
@@ -145,14 +121,13 @@ namespace si {
 		cout << "day: " << start.tm_mday <<endl;
 		*/
 		return start;
-
 	}
 	/*
 	 * convertUTCtoMJD Method obtains MJD value through day, month and year in
 	 * UTC. The Algorithm used is described in ETSI DVD-SI. It is also described
 	 * in ABNT SI standard, but there is some errors on it.
 	 */
-	int EventInfo::convertUTCtoMJD (int day, int month, int year){
+	int EventInfo::convertUTCtoMJD(int day, int month, int year) {
 		if (day == 0 || month == 0 || year == 0){
 			return 0;
 		}
@@ -169,11 +144,11 @@ namespace si {
 		return mjd;
 	}
 
-	int EventInfo::convertDecimaltoBCD(int dec){
+	int EventInfo::convertDecimaltoBCD(int dec) {
 		return ((dec / 10) << 4) + (dec % 10);
 	}
 
-	int EventInfo::convertBCDtoDecimal(int bcd){
+	int EventInfo::convertBCDtoDecimal(int bcd) {
 		return ((bcd >> 4) * 10) + bcd % 16;
 	}
 	/*
@@ -188,7 +163,7 @@ namespace si {
 	 * The MJD date is stored in 5 bytes vector. The method calls the
 	 * convertMJDtoUTC to convert MJD to UTC properly
 	 */
-	void EventInfo::setStartTime (char* date){
+	void EventInfo::setStartTime(char* date) {
 		unsigned int mjd = 0;
 		memcpy(startTimeEncoded, date, 5);
 		//40 bits (5 bytes) no campo start_time
@@ -551,25 +526,13 @@ namespace si {
 		}
 
 	}
-	/*
-	map<string, string> EventInfo::mapGenerator() {
-		map<string, string> t;
-		stringstream ss;
 
-		t["startTime"] = getStartTimeStr();
-		t["endTime"] = getEndTimeStr();
-		ss << runningStatus;
-		t["runningStatus"] = ss.str();
-
-
-	}
-	*/
 	size_t EventInfo::process (char* data, size_t pos){
 		IMpegDescriptor* descriptor;
 		unsigned short remainingBytesDescriptor, value;
 		stringstream ss;
 
-		cout << "EventInfo::start process" << endl;
+		//cout << "EventInfo::start process" << endl;
 
 		eventId = ((((data[pos] << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF)));
@@ -585,145 +548,100 @@ namespace si {
 		//cout << "duration = " << getDurationStr() << endl;
 		pos += 3;
 		runningStatus = ((data[pos] & 0xE0) >> 5);
-		freeCAMode = ((data[pos] & 0x10) >> 4);
+		freeCAMode    = ((data[pos] & 0x10) >> 4);
 		descriptorsLoopLength = (
 				(((data[pos] & 0x0F) << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF));
 		pos += 2;
 
 		remainingBytesDescriptor = descriptorsLoopLength;
-		if(remainingBytesDescriptor > 0){
-			descriptors = new vector<IMpegDescriptor*>;
-		}
-		
-		//cout << "EventInfo::process going to descriptors" << endl; 
 		size_t localpos = pos;
-		while (remainingBytesDescriptor) {//there's at least one descriptor
+		
+		while (remainingBytesDescriptor) {
+			//there's at least one descriptor
 			value = ((data[pos+1] & 0xFF) + 2);
 			remainingBytesDescriptor -= value;
 
 			switch (data[pos]) {//pos = descriptorTag
-				case SHORT_EVENT:
+				case DT_SHORT_EVENT:
 					descriptor = new ShortEventDescriptor();
-					//cout << "EventInfo::process sed in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process sed in" << endl;
-
-					//ShortEventDescriptor* sed = new ShortEventDescriptor();
-					//localpos = sed->process(data, pos);
-					//cout << "EventInfo::process ending short and localpos is = ";
-					//cout << localpos << " and pos = " << pos << endl;
 					pos += value;
 					descriptors->push_back(descriptor);
-
 					break;
 
-				case EXTENDED_EVENT:
+				case DT_EXTENDED_EVENT:
 					descriptor = new ExtendedEventDescriptor();
-					//cout << "EventInfo::process eed in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process eed out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending extended. localpos = ";
-					//cout << localpos << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
-				case COMPONENT:
+				case DT_COMPONENT:
 					descriptor = new ComponentDescriptor();
-					//cout << "EventInfo::process component in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process component out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending Component. localpos is = ";
-					//cout << localpos << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
-				case CONTENT:
+				case DT_CONTENT:
 					descriptor = new ContentDescriptor();
-					//cout << "EventInfo::process content in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process content out" << endl;
 					pos += value;
 					descriptors->push_back(descriptor);
 					break;
 
-				case DIGITAL_COPY:
+				case DT_DIGITAL_COPY:
 					descriptor = new DigitalCCDescriptor();
-					//cout << "EventInfo::process dccd in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process dccd out" << endl;
 					pos += value;
 					descriptors->push_back(descriptor);
 					break;
 
-				case AUDIO_COMPONENT:
+				case DT_AUDIO_COMPONENT:
 					descriptor = new AudioComponentDescriptor();
-					//cout << "EventInfo::process audio in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process content out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending audio and localpos is = " << localpos;
-					//cout << " and pos = " << pos << endl;
-
 					descriptors->push_back(descriptor);
 					break;
 
-				case DATA_CONTENTS:
+				case DT_DATA_CONTENTS:
 					descriptor = new DataContentDescriptor();
-					//cout << "EventInfo::process data_content in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process data_content out" << endl;
 					pos += value;
-					//cout << "EventInfo:: process ending Data Content and localpos is = ";
-					//cout << localpos << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
-				case SERIES:
+				case DT_SERIES:
 					descriptor = new SeriesDescriptor();
-					//cout << "EventInfo::process series in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process series out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending Series and localpos is = " << localpos;
-					//cout << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
-				case PARENTAL_RATING:
+				case DT_PARENTAL_RATING:
 					descriptor = new ParentalRatingDescriptor();
-					//cout << "EventInfo::process parental in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process parental out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending parental and localpos = " << localpos;
-					//cout << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
-				case CONTENT_AVAILABILITY:
+				case DT_CONTENT_AVAILABILITY:
 					descriptor = new ContentAvailabilityDescriptor();
-					//cout << "EventInfo::process CA in" << endl;
 					localpos = descriptor->process(data, pos);
-					//cout << "EventInfo::process CA out" << endl;
 					pos += value;
-					//cout << "EventInfo::process ending ContentAvail. and localpos =";
-					//cout << localpos << " and pos = " << pos << endl;
 					descriptors->push_back(descriptor);
 					break;
 
 				default: //Event Group Des., Stuffing Des. and Component Group Des.
 					cout << "EventInfo::process default descriptor with tag = ";
 					cout << hex << (data[pos] & 0xFF) << dec << endl;
-					//cout << " and pos = " << pos << " and length = ";
-					//cout << (value - 2) << endl;
 					pos += value; // pos no proximo descriptorTag
 					break;
 				}
-				//cout << "EventInfo::process remaining = " << remainingBytesDescriptor;
-				//cout << endl;
+				//cout << "EventInfo::process remainingBytes: ";
+				//cout << remainingBytesDescriptor << endl;
+
 		}
 		cout << "EventInfo::process finished pos = " << pos << endl;
 

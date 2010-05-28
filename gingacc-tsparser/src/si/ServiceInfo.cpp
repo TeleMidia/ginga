@@ -57,19 +57,20 @@ namespace core {
 namespace tsparser {
 namespace si {
 	ServiceInfo::ServiceInfo() {
-		descriptorsLoopLength = 0;
-		serviceId = 0;
-		runningStatus = 0;
+		descriptorsLoopLength   = 0;
+		serviceId               = 0;
+		runningStatus           = 0;
 		eitPresentFollowingFlag = false;
-		eitScheduleFlag = false;
+		eitScheduleFlag         = false;
+		descriptors             = new vector<IMpegDescriptor*>;
 
 	}
 
 	ServiceInfo::~ServiceInfo() {
 		vector<IMpegDescriptor*>::iterator i;
-		if(descriptors != NULL){
+		if (descriptors != NULL) {
 			i = descriptors->begin();
-			while(i != descriptors->end()){
+			while (i != descriptors->end()) {
 				delete (*i);
 				++i;
 			}
@@ -82,40 +83,45 @@ namespace si {
 		return (descriptorsLoopLength + 5);
 	}
 
-	void ServiceInfo::setServiceId(unsigned short id) {
-		serviceId = id;
-	}
-
 	unsigned short ServiceInfo::getServiceId() {
 		return serviceId;
 	}
 
-	void ServiceInfo::setEitScheduleFlag(unsigned char flag) {
-		eitScheduleFlag = flag;
-	}
-
-	unsigned char ServiceInfo::getEitScheduleFlag() {
+	bool ServiceInfo::getEitScheduleFlag() {
 		return eitScheduleFlag;
 	}
 
-	void ServiceInfo::setEitPresentFollowingFlag(unsigned char flag) {
-		eitPresentFollowingFlag = flag;
-	}
-
-	unsigned char ServiceInfo::getEitPresentFollowingFlag() {
+	bool ServiceInfo::getEitPresentFollowingFlag() {
 		return eitPresentFollowingFlag;
-	}
-
-	void ServiceInfo::setRunningStatus(unsigned char status) {
-		runningStatus = status;
 	}
 
 	unsigned char ServiceInfo::getRunningStatus() {
 		return runningStatus;
 	}
 
-	void ServiceInfo::setFreeCAMode(unsigned char mode) {
-		freeCAMode = mode;
+	string ServiceInfo::getRunningStatusDescription () {
+		switch (runningStatus) {
+			case 0:
+				return "Undefined";
+				break;
+
+			case 1:
+				return "Off";
+				break;
+
+			case 2:
+				return "Start within few minutes";
+				break;
+
+			case 3:
+				return "Paused";
+				break;
+
+			case 4:
+				return "Running";
+				break;
+			//5-7 are reserved for future used
+		}
 	}
 
 	unsigned char ServiceInfo::getFreeCAMode() {
@@ -138,15 +144,23 @@ namespace si {
 	vector<IMpegDescriptor*>* ServiceInfo::getDescriptors() {
 		return descriptors;
 	}
+
 	void ServiceInfo::print() {
 		vector<IMpegDescriptor*>::iterator i;
 
 		cout << "ServiceInfo::print printing..." << endl;
-		for(i =  descriptors->begin(); i!= descriptors->end(); ++i){
+		cout << " -serviceId: "               << serviceId        << endl;
+		cout << " -eitScheduleFlag: "         << eitScheduleFlag  << endl;
+		cout << " -eitPresentFlag:"           << eitPresentFollowingFlag;
+		cout << endl;
+		cout << " -runningStatusDesc: "       << getRunningStatusDescription();
+		cout << endl;
+
+		for (i =  descriptors->begin(); i!= descriptors->end(); ++i) {
 			(*i)->print();
 		}
 	}
-	size_t ServiceInfo::process(char* data, size_t pos){
+	size_t ServiceInfo::process(char* data, size_t pos) {
 		IMpegDescriptor*  descriptor;
 		size_t localpos;
 		unsigned char remainingBytesDescriptor, value;
@@ -156,7 +170,7 @@ namespace si {
 		serviceId = ((((data[pos] << 8) & 0xFF00) |
 								(data[pos+1] & 0xFF)));
 
-		cout <<"ServiceId = " << serviceId << endl;
+		//cout <<"ServiceId = " << serviceId << endl;
 		pos += 2;
 		//jumping reserved_future_use
 		eitScheduleFlag = ((data[pos] & 0x02) >> 1);
@@ -171,42 +185,34 @@ namespace si {
 
 		pos += 2;
 
-		cout << "DescriptorsLoopLength = " << descriptorsLoopLength << endl;
+		//cout << "DescriptorsLoopLength = " << descriptorsLoopLength << endl;
 		remainingBytesDescriptor = descriptorsLoopLength;
-		if(remainingBytesDescriptor > 0){
-			descriptors = new vector<IMpegDescriptor*>;
-		}
 
 		while (remainingBytesDescriptor) {//there's at least one descriptor
 			value = data[pos+1] + 2;
 			remainingBytesDescriptor -= value;
+
 			switch (data[pos]) {
 				case LOGO_TRANMISSION:
 					descriptor = new LogoTransmissionDescriptor();
 					localpos = descriptor->process(data, pos);
 					pos += value;
 					descriptors->push_back(descriptor);
-					//cout << "ServiceInfo::process ending LogoTransmission and"
-					//		" localpos = " << localpos;
-					//cout << " and pos = " << pos << endl;
 					break;
+
 				case SERVICE:
 					descriptor = new ServiceDescriptor();
 					localpos = descriptor->process(data, pos);
 					pos += value;
 					descriptors->push_back(descriptor);
-					//cout << "ServiceInfo::process ending Service Des. and"
-					//		" localpos = " << localpos;
-					//cout << " and pos = " << pos << endl;
 					break;
 
 				default: //Unrecognized Descriptor
-					cout << "ServiceInfo:: process default descriptor with tag = ";
-					cout << (unsigned int)data[pos] << " with length = ";
-					cout << (unsigned int)data[pos+1] << " and with pos = " << pos << endl;
+					cout << "ServiceInfo:: process default descriptor with tag: ";
+					cout << hex << (unsigned int)data[pos] << dec ;
+					cout << " with length = " << (unsigned int)data[pos+1];
+					cout << " and with pos = " << pos << endl;
 					pos += value;
-					//cout << "ServiceInfo:: process ending default with pos = "<<pos;
-					//cout << endl;
 					break;
 			}
 		}

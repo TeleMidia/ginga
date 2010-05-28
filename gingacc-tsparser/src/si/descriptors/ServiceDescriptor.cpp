@@ -108,23 +108,29 @@ namespace descriptors {
 	string ServiceDescriptor::getServiceNameChar() {
 		string str;
 
-		if(serviceNameChar == NULL) {
+		if (serviceNameChar == NULL) {
 			return "";
 		}
-		str.append(serviceNameChar, serviceNameLength);
+		//using serviceNameChar[1] because [0] is usually sent with encoding
+		//value, value is equal to 0x0E. So the serviceName starts in [1].
+		str.assign(serviceNameChar+1, (serviceNameLength & 0xFF)-1);
 		return str;
 	}
 
 	void ServiceDescriptor::print() {
 		cout << "ServiceDescriptor::print printing..." << endl;
 		cout << " -descriptorLength = " << getDescriptorLength() << endl;
+
 		if (serviceProviderNameLength > 0) {
 			cout << "-serviceProviderNameChar = "
 					<< getServiceProviderNameChar() << endl;
 		}
 
 		if (serviceNameLength > 0) {
-			cout << " -serviceNameChar = " << getServiceNameChar() << endl;
+			cout << " -serviceNameLength: " << getServiceNameLength() << endl;
+			cout << " -serviceNameChar: "   << getServiceNameChar()   << endl;
+			//cout << " -charEnconde:" << hex << (serviceNameChar[0] & 0xFF);
+			//cout << dec << endl;
 		}
 	}
 
@@ -141,42 +147,24 @@ namespace descriptors {
 		//cout << (unsigned int)serviceType << endl;
 
 		serviceProviderNameLength = data[pos];
-		if(serviceProviderNameLength > 0){
+		if (serviceProviderNameLength > 0) {
 			//cout << "ServiceProviderNameLength = ";
 			//cout << (unsigned int)serviceProviderNameLength;
 			//cout << endl;
 			serviceProviderNameChar = new char[serviceProviderNameLength];
 			memset(serviceProviderNameChar, 0 , serviceProviderNameLength);
-			memcpy(
-					serviceProviderNameChar,
-					data+pos+1,
+			memcpy(serviceProviderNameChar,data+pos+1,
 					serviceProviderNameLength);
 
-			/*
-			cout <<" ServiceDescriptor:: serviceProviderNameChar = ";
-			for(int i = 0; i < serviceProviderNameLength; i++){
-				cout << serviceProviderNameChar[i];
-			}
-			cout << endl;
-			*/
 		}
 		pos += serviceProviderNameLength + 1;
-
 		serviceNameLength = data[pos];
-		if (serviceNameLength > 0) {
-			//cout << "ServiceNameLength = " << (unsigned int)serviceNameLength;
-			//cout << endl;
 
+		if (serviceNameLength > 0) {
 			serviceNameChar = new char[serviceNameLength];
 			memset(serviceNameChar, 0 , serviceNameLength);
 			memcpy(serviceNameChar, data+pos+1, serviceNameLength);
-			/*
-			cout <<" ServiceDescriptor:: serviceNameChar = ";
-			for(int i = 0; i < serviceNameLength; i++){
-				cout << serviceNameChar[i];
-			}
-			cout << endl;
-			*/
+
 		}
 		pos += serviceNameLength;
 		return pos;

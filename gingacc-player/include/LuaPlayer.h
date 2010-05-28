@@ -221,8 +221,8 @@ namespace player {
 		void unprotectedSetPropertyValue(string name, string value);
 		virtual void setPropertyValue(string name, string value);
 
-		void pushEPGEvent(map<string, struct Field> event);
-		void addAsEPGListener();
+		void pushSIEvent(map<string, struct Field> event, unsigned char type);
+		void addAsSIListener(unsigned char type);
 
         // TECLADO
 		bool userEventReceived (io::IInputEvent* evt);

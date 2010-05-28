@@ -85,7 +85,7 @@ struct Request{
 	/* only if stage==schedule, requesting events with startTime and endTime in
 	* the range specified by this startTime and this endTime*/
 
-	string fields;
+	vector<string> fields;
 	/*requesting specified metadata fields for each event. If is not specified
 	 * the request is for all possible metadada fields*/
 };
@@ -103,11 +103,19 @@ namespace core {
 namespace dataprocessing {
 namespace epg {
 	class IEPGListener {
+
+		public:
+			static const unsigned char SI_LISTENER     = 1;
+			static const unsigned char EPG_LISTENER    = 2;
+			static const unsigned char MOSAIC_LISTENER = 3;
+			static const unsigned char TIME_LISTENER   = 4;
+
 		public:
 			virtual ~IEPGListener(){};
-			virtual void pushEPGEvent(map<string, struct Field> event)=0;
-			virtual void addAsEPGListener()=0;
+			virtual void pushSIEvent(map<string, struct Field> event,
+					unsigned char type)=0;
 
+			virtual void addAsSIListener(unsigned char type)=0;
 	};
 }
 }

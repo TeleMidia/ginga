@@ -416,9 +416,9 @@ namespace dataprocessing {
 			} else if ( tableId == EIT_TID || //EIT present/following in actual TS
 						(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
 					
-				
 				/*TODO: TS files don't have EITs p/f and sched in other TS.
-				 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F (schedule)
+				 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F
+				 (schedule)
 				*/
 				
 				epgProcessor->decodeEitSection(section);
@@ -430,6 +430,10 @@ namespace dataprocessing {
 				cout << "DataProcessor::receiveSection CDT" << endl;
 				sectionName = section->getSectionName();
 				//TODO: TS files don't have any CDT sections.
+
+			} else if (tableId == 0x73) {
+				cout << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
+				epgProcessor->decodeTot(section);
 			}
 		}
 	}

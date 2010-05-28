@@ -83,13 +83,20 @@ namespace descriptors {
 			~AudioComponentDescriptor();
 			unsigned char getDescriptorTag();
 			unsigned char getStreamContent();
+			unsigned char getComponentTag();
+			unsigned char getComponentType();
+			unsigned char getStreamType();
+			unsigned char getSimulcastGroupTag();
+			bool getESMultiLingualFlag();
+			bool getMainComponentFlag();
+			unsigned char getQualityIndicator();
+			unsigned char getSamplingRate();
 			string getLanguageCode();
 			string getLanguageCode2();
 			string getTextChar();
 			void print();
 			unsigned int getDescriptorLength();
 			size_t process (char* data, size_t pos);
-
 	};
 
 }

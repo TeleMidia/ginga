@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <vector>
+#include <string>
 using namespace std;
 
 namespace br {
@@ -64,21 +65,21 @@ namespace core {
 namespace tsparser {
 namespace si {
     class IServiceInfo {
+
+		public:
+			static const unsigned char DT_SERVICE           = 0x48;
+			static const unsigned char DT_LOGO_TRANSMISSION = 0xCF;
+
 		public:
 			virtual ~IServiceInfo(){};
 			virtual size_t getSize()=0;
-			virtual void setServiceId(unsigned short id)=0;
 			virtual unsigned short getServiceId()=0;
-			virtual void setEitScheduleFlag(unsigned char flag)=0;
-			virtual unsigned char getEitScheduleFlag()=0;
-			virtual void setEitPresentFollowingFlag(unsigned char flag)=0;
-			virtual unsigned char getEitPresentFollowingFlag()=0;
-			virtual void setRunningStatus(unsigned char status)=0;
+			virtual bool getEitScheduleFlag()=0;
+			virtual bool getEitPresentFollowingFlag()=0;
 			virtual unsigned char getRunningStatus()=0;
-			virtual void setFreeCAMode(unsigned char mode)=0;
+			virtual string getRunningStatusDescription()=0;
 			virtual unsigned char getFreeCAMode()=0;
 			virtual unsigned short getDescriptorsLoopLength()=0;
-			//virtual void setDescriptorsLoopLength(unsigned short length)=0;
 			virtual void insertDescriptor(IMpegDescriptor* descriptor)=0;
 			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
 			virtual size_t process (char* data, size_t pos)=0;

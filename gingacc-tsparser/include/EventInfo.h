@@ -50,11 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef EVENTINFO_H_
 #define EVENTINFO_H_
 
+#include "IEventInfo.h"
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
-
-#include "IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "ShortEventDescriptor.h"
 #include "ExtendedEventDescriptor.h"
@@ -66,10 +65,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "SeriesDescriptor.h"
 #include "ParentalRatingDescriptor.h"
 #include "ContentAvailabilityDescriptor.h"
-
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
-#include "IEventInfo.h"
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
 
 #include <iostream>
 #include <sstream>
@@ -101,11 +101,6 @@ namespace si {
 			struct tm startTime;
 			struct tm duration;
 			struct tm endTime;
-
-			unsigned int sectionNumber;
-			unsigned int tableId;
-			unsigned int sectionVersion;
-
 
 		public:
 			EventInfo();
@@ -144,11 +139,6 @@ namespace si {
 
 			void print();
 			size_t process(char* data, size_t pos);
-			void setSectionNumber(unsigned int number);
-			void setTableId(unsigned int id);
-			void setSectionVersion(unsigned int version);
-			unsigned int getSectionVersion();
-			unsigned int getTableId();
 
 		protected:
 			int convertDecimaltoBCD(int dec);

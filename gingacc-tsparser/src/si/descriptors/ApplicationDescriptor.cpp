@@ -113,6 +113,18 @@ namespace si {
 	}
 
 	void ApplicationDescriptor::print(){
+		cout << "ApplicationDescriptor::print printing..." << endl;
+		vector<Profile*>::iterator i;
+
+		for (i = profiles->begin(); i != profiles->end(); ++i) {
+			cout << "Profile: " << endl;
+			cout << " -ApplicationProfile: " << (*i)->applicationProfile << endl;
+			cout << " -VersionMajor: "       << (*i)->versionMajor       << endl;
+			cout << " -VersionMinor: "       << (*i)->versionMinor       << endl;
+			cout << " -VersionMicro: "       << (*i)->versionMicro       << endl;
+		}
+		cout << "ServiceBoundFlag: " << serviceBoundFlag << endl;
+		cout << "Visibility: "       << visibility       << endl;
 
 	}
 
@@ -145,8 +157,8 @@ namespace si {
 
 		pos = profpos + applicationProfilesLength;
 
-		serviceBoundFlag = ((data[pos] & 0x80) << 7);
-		visibility       = ((data[pos] & 0x60) << 6);
+		serviceBoundFlag = ((data[pos] & 0x80) >> 7);
+		visibility       = ((data[pos] & 0x60) >> 6);
 		pos++;
 
 		applicationPriority = data[pos];

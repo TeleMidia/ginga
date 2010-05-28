@@ -56,7 +56,7 @@ namespace core {
 namespace tsparser {
 namespace si{
 namespace descriptors{
-//TODO: methods gets
+
 	AudioComponentDescriptor::AudioComponentDescriptor() {
 		descriptorTag      = 0xC4;
 		ESMultiLingualFlag = false;
@@ -82,6 +82,7 @@ namespace descriptors{
 			delete textChar;
 			textChar == NULL;
 		}
+
 		if (languageCode2 != NULL) {
 			delete languageCode2;
 			languageCode2 = NULL;
@@ -91,6 +92,7 @@ namespace descriptors{
 	unsigned char AudioComponentDescriptor::getDescriptorTag (){
 		return descriptorTag;
 	}
+
 	unsigned int AudioComponentDescriptor::getDescriptorLength(){
 		return (unsigned int)descriptorLength;
 	}
@@ -98,6 +100,7 @@ namespace descriptors{
 	unsigned char AudioComponentDescriptor::getStreamContent (){
 		return streamContent;
 	}
+
 	string AudioComponentDescriptor::getLanguageCode() {
 		string str;
 
@@ -127,49 +130,47 @@ namespace descriptors{
 
 	}
 
-/*
-	unsigned char AudioComponentDescriptor::getComponentTag (){
+	unsigned char AudioComponentDescriptor::getComponentTag() {
 		return componentTag;
 	}
 
-	unsigned char AudioComponentDescriptor::getComponentType (){
+	unsigned char AudioComponentDescriptor::getComponentType() {
 		return componentType;
 	}
 
-	unsigned char AudioComponentDescriptor::getStreamType (){
+	unsigned char AudioComponentDescriptor::getStreamType() {
 		return streamType;
 	}
 
-	unsigned char AudioComponentDescriptor::getSimulcastGroupTag (){
+	unsigned char AudioComponentDescriptor::getSimulcastGroupTag() {
 		return simulcastGroupTag;
 	}
 
-	unsigned char AudioComponentDescriptor::getESmultiLingualFlag (){
-		return ESmultiLingualFlag;
+	bool AudioComponentDescriptor::getESMultiLingualFlag() {
+		return ESMultiLingualFlag;
 	}
 
-	unsigned char AudioComponentDescriptor::getMainComponentFlag (){
+	bool AudioComponentDescriptor::getMainComponentFlag() {
 		return mainComponentFlag;
 	}
 
-	unsigned char AudioComponentDescriptor::getQualityIndicator (){
+	unsigned char AudioComponentDescriptor::getQualityIndicator() {
 		return qualityIndicator;
 	}
 
-	unsigned char AudioComponentDescriptor::getSamplingRate (){
+	unsigned char AudioComponentDescriptor::getSamplingRate() {
 		return samplingRate;
 	}
 
-	*/
-	void AudioComponentDescriptor::print(){
+	void AudioComponentDescriptor::print() {
 		cout << "AudioComponentDescriptor::print" << endl;
 		cout << " -languageCode = " << getLanguageCode() << endl;
-		if(ESMultiLingualFlag == true){
+		if (ESMultiLingualFlag) {
 			cout << " -languageCode2 = " << getLanguageCode2() << endl;
 		}
 	}
 
-	size_t AudioComponentDescriptor::process(char* data, size_t pos){
+	size_t AudioComponentDescriptor::process(char* data, size_t pos) {
 		//cout << "Audio Component process beginning with pos =  " << pos;
 
 		descriptorLength = data[pos+1];
@@ -197,46 +198,29 @@ namespace descriptors{
 		pos ++; //25
 
 		ESMultiLingualFlag = ((data[pos] & 0x80) >> 7);
-		mainComponentFlag = ((data[pos] & 0x40) >> 6);
-		qualityIndicator = ((data[pos] & 0x30) >> 4);
-		samplingRate = ((data[pos] & 0x0C));
+		mainComponentFlag  = ((data[pos] & 0x40) >> 6);
+		qualityIndicator   = ((data[pos] & 0x30) >> 4);
+		samplingRate       = ((data[pos] & 0x0C));
 		pos++;//pos= 26
 
 		memcpy(languageCode, data+pos, 3);
 		pos += 3; //pos = 29
-		/*
-		cout << "Audio languageCode = ";
-		for (int i = 0; i < 3; i++){
-			cout << languageCode[i];
-		}
-		cout << endl;
-		*/
 
-		if (ESMultiLingualFlag == true){
+		if (ESMultiLingualFlag) {
 			languageCode2 = new char[3];
 			memcpy(languageCode2, data+pos, 3);
 			pos+=3;
-			//cout << "audio languageCode2 = " << languageCode2 << endl;
 			textLength = descriptorLength - 12;
-			//12 bytes since descriptorLenght until languageCode2
-		}
-		else {
+
+		} else {
 			textLength = descriptorLength - 9;
 			//9 bytes since descriptorLenght until languageCode
-
 		}
-		if (textLength > 0){
+
+		if (textLength > 0) {
 			textChar = new char[textLength];
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos, textLength);
-
-			/*
-			 cout << "Audio text char = ";
-			for (int i = 0; i < textLength; i++){
-				cout << (textChar[i]);
-			}
-			cout << endl;
-			*/
 		}
 		pos += textLength;
 		return pos;

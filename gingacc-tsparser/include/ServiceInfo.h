@@ -59,6 +59,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 #include <iostream>
 #include <time.h>
 #include <vector>
+#include <string>
 using namespace std;
 
 namespace br {
@@ -85,18 +86,13 @@ namespace si {
 			ServiceInfo();
 			~ServiceInfo();
 			size_t getSize();
-			void setServiceId(unsigned short id);
 			unsigned short getServiceId();
-			void setEitScheduleFlag(unsigned char flag);
-			unsigned char getEitScheduleFlag();
-			void setEitPresentFollowingFlag(unsigned char flag);
-			unsigned char getEitPresentFollowingFlag();
-			void setRunningStatus(unsigned char status);
+			bool getEitScheduleFlag();
+			bool getEitPresentFollowingFlag();
 			unsigned char getRunningStatus();
-			void setFreeCAMode(unsigned char mode);
+			string getRunningStatusDescription();
 			unsigned char getFreeCAMode();
 			unsigned short getDescriptorsLoopLength();
-			void setDescriptorsLoopLength(unsigned short length);
 			void insertDescriptor(IMpegDescriptor* info);
 			vector<IMpegDescriptor*>* getDescriptors();
 			void print();

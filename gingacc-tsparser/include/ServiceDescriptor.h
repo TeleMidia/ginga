@@ -50,8 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef SERVICEDESCRIPTOR_H_
 #define SERVICEDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+#include "IServiceDescriptor.h"
 
 #include <string.h>
 
@@ -63,7 +62,7 @@ namespace core {
 namespace tsparser {
 namespace si {
 namespace descriptors {
-	class ServiceDescriptor : public IMpegDescriptor {
+	class ServiceDescriptor : public IServiceDescriptor {
 		protected:
 			unsigned char serviceType;
 			unsigned char serviceProviderNameLength;

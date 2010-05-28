@@ -14,7 +14,7 @@ libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
     PipeFilter.cpp PSIFilter.cpp \
     PesFilter.cpp TransportSection.cpp TSPacket.cpp \
     si/AIT.cpp si/Application.cpp si/EventInfo.cpp \
-    si/Pat.cpp si/Pmt.cpp si/ServiceInfo.cpp \
+    si/Pat.cpp si/Pmt.cpp si/ServiceInfo.cpp si/TOT.cpp \
     si/descriptors/ApplicationDescriptor.cpp \
     si/descriptors/ApplicationLocationDescriptor.cpp \
     si/descriptors/ApplicationNameDescriptor.cpp \
@@ -31,7 +31,8 @@ libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
 	si/descriptors/ContentDescriptor.cpp \
 	si/descriptors/DigitalCCDescriptor.cpp \
 	si/descriptors/ContentAvailabilityDescriptor.cpp \
-	si/descriptors/ServiceDescriptor.cpp
+	si/descriptors/ServiceDescriptor.cpp \
+	si/descriptors/LocalTimeOffsetDescriptor.cpp
 
 libgingacctsparser_so_LDADD = -ltelemidiautil -lpthread -lgingaccsystemthread \
     -lgingacctuner

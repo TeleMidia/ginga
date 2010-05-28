@@ -65,6 +65,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "tsparser/IServiceInfo.h"
 #include "tsparser/IEventInfo.h"
+#include "tsparser/ITOT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include "IDataProcessor.h"
@@ -86,22 +87,24 @@ namespace epg {
 	class EPGProcessor : public IEPGProcessor {
 		private:
 			set<string>* processedSections;
-			unsigned int firstPresentSection;
-			unsigned int firstScheduleSection;
 			bool presentMapReady;
 			bool scheduleMapReady;
+			bool serviceMapReady;
+			bool timeMapReady;
 
 		protected:
 			//TODO: link service id from sdt to eit and cdt
+			static EPGProcessor* _instance;
+			IServiceInfo* service;
+			map<unsigned int, IEventInfo*>* eventPresent;
+			map<unsigned int, IEventInfo*>* eventSchedule;
+			ITOT* tot;
 			set<string>* cdt;
 			int files;
 			set<IEPGListener*>* epgListeners;
+			set<IEPGListener*>* serviceListeners;
+			set<IEPGListener*>* timeListeners;
 			IDataProcessor* dataProcessor;
-			map<unsigned int, IEventInfo*>* eventPresent;
-			map<unsigned int, IEventInfo*>* eventSchedule;
-			static EPGProcessor* _instance;
-			unsigned int lastSectionVersion;
-			unsigned int lastTableId;
 
 		public:
 			~EPGProcessor();
@@ -110,10 +113,11 @@ namespace epg {
 			void decodeSdt(string fileName);
 			void decodeSdtSection(ITransportSection* section);
 			set<IEventInfo*>* decodeEit(string fileName);
+			void decodeTot(ITransportSection* section);
 			void decodeCdt(string fileName);
 			void decodeEitSection(ITransportSection* section);
-			//void decodeEitSectionNew(ITransportSection* section);
-			void addEPGListener(IEPGListener* listener, string request);
+			void addEPGListener(IEPGListener* listener, string request, unsigned char type);
+			map<string, struct Field> createMap();
 			void removeEPGListener(IEPGListener * listener);
 
 			//void generatePresentMap();
@@ -122,10 +126,14 @@ namespace epg {
 			EPGProcessor();
 			struct Field* handleFieldStr(string str);
 			int savePNG(char* data, int pngSize);
-			void generateMap(map<unsigned int, IEventInfo*>* actualMap);
-			bool checkSection(ITransportSection* section);
+			void generateEitMap(map<unsigned int, IEventInfo*>* actualMap);
+			void generateSdtMap(IServiceInfo* si);
+			void generateTotMap(ITOT* tot);
 			void addProcessedSection(ITransportSection* section);
+			void callMapGenerator(unsigned int tableId);
+			bool checkProcessedSections(ITransportSection* section);
 			void printFieldMap(map<string, struct Field>* fieldMap);
+
 	};
 }
 }

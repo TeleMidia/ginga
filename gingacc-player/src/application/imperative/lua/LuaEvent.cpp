@@ -330,19 +330,30 @@ static int l_post (lua_State* L)
 			strCmd = cmd_to_str(L);
 			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT, strCmd);
 
+		// SI event
 		} else if ( !strcmp(clazz, "si") ){
-			cout << "LuaEvent::l_post SI EVENT!!!!!" << endl;
+			cout << "LuaEvent::l_post SI EVENT";
 			
 			lua_getfield(L, 2, "type");
 			// [ dst | evt | class | type ]
 			const char* type = luaL_checkstring(L, -1);
+			cout << " with type:" << type << endl;
+
+			//TODO: handle epg request data table properly.
+			if (!strcmp(type, "si")) {
+				GETPLAYER(L)->addAsSIListener(1);
+
+			} else if (!strcmp(type, "epg")) {
+				GETPLAYER(L)->addAsSIListener(2);
 			
-			// SI event
-			if ( !strcmp(type, "epg") ){
-				//TODO: handle epg request data table properly.
-				GETPLAYER(L)->addAsEPGListener();
+			} else if (!strcmp(type, "mosaic")) {
+
+				GETPLAYER(L)->addAsSIListener(3);
+			} else if (!strcmp(type, "time")) {
+
+				GETPLAYER(L)->addAsSIListener(4);
 			}
-			
+
 		} else {
 			return luaL_error(L, "invalid event class");
 		}

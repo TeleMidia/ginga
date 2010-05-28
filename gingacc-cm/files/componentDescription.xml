@@ -193,6 +193,7 @@
     <symbol object="ServiceInfo" creator="createServiceInfo" destroyer="destroyServiceInfo" interface="IServiceInfo"/>
     <symbol object="Demuxer" creator="createDemuxer" destroyer="destroyDemuxer" interface="IDemuxer"/>
     <symbol object="PipeFilter" creator="createPipeFilter" destroyer="destroyPipeFilter" interface="ITSFilter"/>
+    <symbol object="TOT" creator="createTOT" destroyer="destroyTOT" interface="ITOT"/>
     <location type="local" uri="/usr/local/lib/ginga/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

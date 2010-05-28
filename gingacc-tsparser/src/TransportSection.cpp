@@ -135,18 +135,33 @@ namespace tsparser {
 
 		} else {
 			sectionLength = (((section[1] & 0x0F) << 8) | (section[2] & 0xFF));
+
 		}
+		if (sectionSyntaxIndicator == 0) {
+			//when sectionSyntaxIndicator is 0 the last field of the header is
+			// sectionLength
 
-		idExtention   = (((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
+			idExtention          = 0;
+			versionNumber        = 0;
+			currentNextIndicator = 0;
+			sectionNumber        = 0;
+			lastSectionNumber    = 0;
 
-		versionNumber        = (section[5] & 0x3E) >> 1;
-		currentNextIndicator = (section[5] & 0x01);
-		sectionNumber        = (section[6] & 0xFF);
-		lastSectionNumber    = (section[7] & 0xFF);
+		} else if (sectionSyntaxIndicator == 1) {
+			//when sectionSyntaxIndicator is 1 the header section is bigger.
 
+			idExtention   = (((section[3] & 0xFF) << 8) | (section[4] & 0xFF));
+
+			versionNumber        = (section[5] & 0x3E) >> 1;
+			currentNextIndicator = (section[5] & 0x01);
+			sectionNumber        = (section[6] & 0xFF);
+			lastSectionNumber    = (section[7] & 0xFF);
+
+		}
 		// Update current section size.
 		if (size >= sectionLength + 3) {
 			currentSize = sectionLength + 3;
+			//section header has 3 bytes including the sectionLength field.
 
 		} else {
 			currentSize = size;
@@ -266,8 +281,14 @@ namespace tsparser {
 	void* TransportSection::getPayload() {
 		unsigned int size = this->getPayloadSize();
 		char *buffer = new char[size];
-		memcpy((void*)buffer,
-						   (void*)&section[8], size);
+
+		if (sectionSyntaxIndicator == 0) {
+			memcpy((void*)buffer,(void*)&section[3], size);
+
+		} else {
+			memcpy((void*)buffer,(void*)&section[8], size);
+		}
+
 		return (void*)(buffer);
 	}
 
@@ -277,7 +298,17 @@ namespace tsparser {
 
 	unsigned int TransportSection::getPayloadSize() {
 		// Skipping header.
-		return sectionLength - 9;
+		if (sectionSyntaxIndicator == 0) {
+			//when 0, the payload starts after the sectionLength field and the
+			//section does not have CRC.
+
+			return sectionLength;
+
+		} else {
+			//when 1, header has 5 bytes after sectionLength field and has the
+			//4 bytes for CRC.
+			return sectionLength - 9;
+		}
 	}
 
 	bool TransportSection::isConsolidated() {
@@ -298,23 +329,39 @@ namespace tsparser {
 	void TransportSection::print() {
 		unsigned int i;
 		cout << "TS SECTION " << endl;
-		cout << "tableid = " << getTableId() << endl;
-		cout << "syntax indicator = " << getSectionSyntaxIndicator() << endl;
-		cout << "section length = " << getSectionLength() << endl;
-		cout << "extendion Id = " << getExtensionId() << endl;
-		cout << "section version = " << getVersionNumber() << endl;
-		cout << "current next indicator = " << getCurrentNextIndicator() << endl;
-		cout << "section number = " << getSectionNumber() << endl;
-		cout << "last secion number = " << getLastSectionNumber() << endl;
+		cout << "tableid = "           << getTableId() << endl;
+		cout << "syntax indicator = "  << getSectionSyntaxIndicator() << endl;
+		cout << "section length = "    << getSectionLength() << endl;
+
+		if (sectionSyntaxIndicator == 1) {
+			cout << "extendion Id = "           << getExtensionId() << endl;
+			cout << "section version = "        << getVersionNumber() << endl;
+			cout << "current next indicator = " << getCurrentNextIndicator();
+			cout << endl;
+			cout << "section number = "         << getSectionNumber() << endl;
+			cout << "last section number = "    << getLastSectionNumber();
+			cout << endl;
+		}
 
 		printf ("%s\n", getPayload());
 		return;
 
-		char payload[currentSize - 12];
-		memcpy((void*)&(payload[0]), getPayload(), currentSize - 12);
+		unsigned int payloadLength;
 
-		for (i=0; i < (currentSize - 12); i++) {
-			cout << (payload[i] & 0xFF) << " ";
+		if(sectionSyntaxIndicator == 0) {
+			i = 3;
+			payloadLength = sectionLength;
+
+		} else {
+			//char payload[currentSize - 12];
+			i = 8;
+			payloadLength = currentSize - 12;
+		}
+
+		//memcpy((void*)&(payload[0]), getPayload(), currentSize - 12);
+
+		for (; i < (payloadLength); i++) {
+			cout << (section[i] & 0xFF) << " ";
 		}
 		cout << endl << endl;
 	}

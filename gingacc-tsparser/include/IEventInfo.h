@@ -68,30 +68,23 @@ namespace si {
     class IEventInfo {
 		public:
 			//obrigatory descriptors tag:
-			static const unsigned char SHORT_EVENT = 0x4D;
-			static const unsigned char COMPONENT = 0X50;
-			static const unsigned char AUDIO_COMPONENT = 0XC4;
-			static const unsigned char PARENTAL_RATING = 0x55;
-
+			static const unsigned char DT_SHORT_EVENT          = 0x4D;
+			static const unsigned char DT_COMPONENT            = 0X50;
+			static const unsigned char DT_AUDIO_COMPONENT      = 0XC4;
+			static const unsigned char DT_PARENTAL_RATING      = 0x55;
 			//optional descriptors tag:
-			static const unsigned char EXTENDED_EVENT = 0x4E;
-			static const unsigned char CONTENT = 0x54;
-			static const unsigned char DIGITAL_COPY = 0xC1;
-			static const unsigned char DATA_CONTENTS = 0XC7;
-			static const unsigned char SERIES = 0XD5;
-			static const unsigned char EVENT_GROUP = 0x55;
-			static const unsigned char CONTENT_AVAILABILITY = 0XDE;
-			static const unsigned char STUFFING = 0X42;
-			static const unsigned char COMPONENT_GROUP = 0xD9;
+			static const unsigned char DT_EXTENDED_EVENT       = 0x4E;
+			static const unsigned char DT_CONTENT              = 0x54;
+			static const unsigned char DT_DIGITAL_COPY         = 0xC1;
+			static const unsigned char DT_DATA_CONTENTS        = 0XC7;
+			static const unsigned char DT_SERIES               = 0XD5;
+			static const unsigned char DT_EVENT_GROUP          = 0x55;
+			static const unsigned char DT_CONTENT_AVAILABILITY = 0XDE;
+			static const unsigned char DT_STUFFING             = 0X42;
+			static const unsigned char DT_COMPONENT_GROUP      = 0xD9;
 
 		public:
 			virtual ~IEventInfo(){};
-
-			//virtual struct tm convertMJDtoUTC(unsigned int mjd)=0;
-			//virtual int convertUTCtoMJD (int day, int month, int year)=0;
-			//virtual void setStartTime(char* date)=0;
-			//virtual void setDuration(char* dur)=0;
-			//virtual struct tm calcEndTime(struct tm start, struct tm end)=0;
 
 			virtual time_t getStartTimeSecs()=0; //startTime in secs since Epoch
 			virtual time_t getEndTimeSecs()=0; //endTime in secs since Epoch
@@ -105,37 +98,18 @@ namespace si {
 			virtual struct tm getStartTime()=0;
 			virtual struct tm getDuration()=0;
 			virtual struct tm getEndTime()=0;
-
-			//virtual string getStartTimeEncoded()=0;
-			//virtual string getDurationEncoded()=0;
-
 			virtual string getStartTimeStr()=0;
 			virtual string getEndTimeStr()=0;
 			virtual string getDurationStr()=0;
-
-			virtual void setSectionNumber(unsigned int number)=0;
-			virtual void setTableId(unsigned int id)=0;
-			virtual void setSectionVersion(unsigned int version)=0;
-			virtual unsigned int getSectionVersion()=0;
-
-
-			//virtual static int bcd(int dec)=0;
-			//virtual static int decimal(int bcd)=0;
-
 			virtual unsigned short getLength()=0;
 			virtual unsigned short getEventId()=0;
 			virtual	string getRunningStatus()=0;
 			virtual string getRunningStatusDescription()=0;
 			virtual unsigned char getFreeCAMode()=0;
 			virtual unsigned short getDescriptorsLoopLength()=0;
-
 			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
-		//	virtual map<unsigned char, IMpegDescriptor*>* getDescriptorsMap()=0;
 			virtual size_t process (char* data, size_t pos)=0;
 			virtual void print()=0;
-			//virtual void setDurationEncoded(char* duration)=0;
-			//virtual char * getDurationEncoded()=0;
-			//virtual void insertDescriptor(IMpegDescriptor* descriptor)=0;
 
     };
 }

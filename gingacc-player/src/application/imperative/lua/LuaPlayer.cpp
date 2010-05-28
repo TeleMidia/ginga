@@ -195,16 +195,28 @@ string cmd_to_str(lua_State* L) {
 		const char* regionBaseId = luaL_checkstring(L, -1);
 
 		lua_getfield(L, 2, "regionId");
-		const char* regionId = luaL_checkstring(L, -1);
+		const char* regionId = NULL;
+
+		if (! lua_isnil(L, -1)) {
+			 regionId = luaL_checkstring(L, -1);
+		}
 
 		lua_getfield(L, 2,"data");
 		const char* xmlRegion = luaL_checkstring(L, -1);
 
 		edit[1].append("0x0B");
 		edit[4].append(regionBaseId);
-		edit[5].append(regionId);
 		edit[6].append(xmlRegion);
-		lua_pop(L, 3);
+
+		if (regionId != NULL) {
+			edit[5].append(regionId);
+			lua_pop(L, 3);
+
+		} else {
+			edit[5].append(" ");
+			lua_pop(L, 2);
+		}
+
 
 	} else if (!strcmp(command, "removeRegion")) {
 
@@ -570,7 +582,6 @@ string cmd_to_str(lua_State* L) {
 				editCommand.append(",");
 			}
 			editCommand.append(edit[i]);
-
 			//cout << i << " = " << editCommand << endl;
 		}
 	}
@@ -884,30 +895,41 @@ void LuaPlayer::refreshContent() {
 	}
 }
 
-void LuaPlayer::addAsEPGListener () {
+void LuaPlayer::addAsSIListener (unsigned char type) {
 	if (epgProc) {
-		this->epgProc->addEPGListener(this, "all");
+		this->epgProc->addEPGListener(this, "all", type);
 	}
 }
 
 //TODO: generalize to pushSIEvent
-void LuaPlayer::pushEPGEvent (map<string, struct Field> event)
+void LuaPlayer::pushSIEvent (map<string, struct Field> event, unsigned char type)
 {
 	struct Field field;
 	//map<string, struct Field> data;
 	map<string, struct Field> evt;
 
-	cout << "LuaPlayer::pushEPGEvent event.size = '" << event.size() << "'";
+	cout << "LuaPlayer::pushSIEvent event.size = '" << event.size() << "'";
 	cout << endl;
 
 	if (!event.empty()) {
-		cout << "LuaPlayer::pushEPGEvent" << endl;
+		cout << "LuaPlayer::pushSIEvent" << endl;
 		field.str    = "si";
 		evt["class"] = field;
 
-		field.str   = "epg";
-		evt["type"] = field;
+		if (type == EPG_LISTENER) {
+			field.str   = "epg";
 
+		} else if (type == SI_LISTENER) {
+			field.str   = "services";
+
+		} else if (type == MOSAIC_LISTENER) {
+			field.str   = "mosaic";
+
+		} else if (type == TIME_LISTENER) {
+			field.str   = "time";
+		}
+
+		evt["type"] = field;
 		field.str   = "";
 		field.table = event;
 		evt["data"] = field;

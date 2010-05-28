@@ -66,19 +66,22 @@ namespace descriptors {
 		textChar         = NULL;
 
 	}
+
 	ShortEventDescriptor::~ShortEventDescriptor() {
-		if (eventNameChar != NULL){
+		if (eventNameChar != NULL) {
 			delete eventNameChar;
 			eventNameChar = NULL;
 		}
-		if (textChar != NULL){
+		if (textChar != NULL) {
 			delete textChar;
 			textChar = NULL;
 		}
 	}
+
 	unsigned char ShortEventDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
+
 	unsigned int ShortEventDescriptor::getDescriptorLength() {
 		return (unsigned int)descriptorLength;
 	}
@@ -118,67 +121,48 @@ namespace descriptors {
 		return textChar;
 	}
 
-
 	void ShortEventDescriptor::print() {
 		cout << "ShortEventDescriptor::print printing...." << endl;
-		cout << " -languageCode = "  << getLanguageCode() << endl;
-		cout << " -eventNameChar = " << getEventName() << endl;
-		cout << " -textChar = "      << getTextChar() << endl;
-	}
+		cout << " -languageCode: "  << getLanguageCode()   << endl;
+		cout << " -eventNameChar: " << getEventName()      << endl;
+		cout << " -textChar: "      << getTextChar()       << endl;
+ 	}
 
 	size_t ShortEventDescriptor::process(char* data, size_t pos) {
 		unsigned char len = 0;
-		cout << "ShortEventDescriptor::process with pos = " << pos << endl;
+		//cout << "ShortEventDescriptor::process with pos = " << pos << endl;
 
 		descriptorLength = data[pos+1];
-		cout << "ShortEventDescriptor::process descriptorLength = ";
-		cout << (descriptorLength & 0XFF) << endl;
 		pos += 2;
 
 		memcpy(languageCode, data+pos, 3);
-		cout << "ShortEventDescriptor::process LanguageCode = " << languageCode;
-		cout << endl;
-
 		pos += 3;
 
 		eventNameLength = data[pos];
-		//cout << "Short Event length " << (unsigned int) eventNameLength;
-		//cout << " with pos = " << pos << endl;
-		if(eventNameLength > 0){
+
+		if (eventNameLength > 0) {
 			eventNameChar = new char[eventNameLength];
-			if(eventNameChar == NULL){
+
+			if (eventNameChar == NULL) {
 				cout << "ShortEvent::process error allocating memory" << endl;
 				return -1;
 			}
 			memset(eventNameChar, 0, eventNameLength);
 			memcpy(eventNameChar, data+pos+1, eventNameLength);
-			
-			cout << "ShortEventDescriptor::Short Event EventName = ";
-			for (int i = 0; i < eventNameLength; i++){
-				cout << eventNameChar[i];
-			}
-			cout << endl;
-			
 		}
 		pos += eventNameLength + 1;
 
 		textLength = data[pos];
-		//cout << "Short Event textLength = " << (unsigned int)textLength << endl;
-		if(textLength){
+		if (textLength) {
+
 			textChar = new char[textLength];
-			if(textChar == NULL){
+			if (textChar == NULL) {
 				//cout << "ShortEvent::process error allocating memory" << endl;
 				return -1;
 			}
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos+1, textLength);
-			/*
-			cout << "Short Event textChar = ";
-			for (int i = 0; i < textLength; i++){
-				cout << textChar[i];
-			}
-			cout << endl;
-			 */
+
 		}
 		pos += textLength;
 

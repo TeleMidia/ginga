@@ -85,7 +85,7 @@ namespace si {
 
 		public:
 			AIT();
-			virtual ~AIT();
+			~AIT();
 			string getSectionName();
 			void setSectionName(string secName);
 			void setApplicationType(unsigned int type);

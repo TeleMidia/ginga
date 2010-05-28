@@ -8,8 +8,8 @@ localInclude_HEADERS = IAIT.h IApplication.h \
     ShortEventDescriptor.h ExtendedEventDescriptor.h AudioComponentDescriptor.h \
     ParentalRatingDescriptor.h ComponentDescriptor.h SeriesDescriptor.h \
     DataContentDescriptor.h ContentDescriptor.h DigitalCCDescriptor.h \
-    ContentAvailabilityDescriptor.h ServiceDescriptor.h \
+    ContentAvailabilityDescriptor.h ServiceDescriptor.h IServiceDescriptor.h \
     IExtendedEventDescriptor.h IParentalRatingDescriptor.h \
     ApplicationDescriptor.h ApplicationLocationDescriptor.h \
     ApplicationNameDescriptor.h PrefetchDescriptor.h \
-    TransportProtocolDescriptor.h
+    TransportProtocolDescriptor.h LocalTimeOffsetDescriptor.h ITOT.h TOT.h

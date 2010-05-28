@@ -70,8 +70,9 @@ namespace epg {
 			virtual void decodeEitSection(ITransportSection* section)=0;
 			//virtual void addEPGListener(IEPGListener* listener,
 				//	struct tRequest* request)=0;
+			virtual void decodeTot(ITransportSection* section)=0;
 			virtual void addEPGListener(IEPGListener* listener,
-					string request)=0;
+					string request, unsigned char type)=0;
 
 
 			//virtual void removeEPGListener(IEPGListener * listener)=0;;
