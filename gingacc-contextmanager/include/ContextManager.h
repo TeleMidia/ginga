@@ -91,6 +91,7 @@ namespace contextmanager {
 		void saveUsersAccounts();
 		void saveUsersProfiles();
 		void addContextListener(IContextListener* listener);
+		void removeContextListener(IContextListener* listener);
 		void setGlobalVar(string varName, string varValue);
 
 	private:
@@ -100,6 +101,11 @@ namespace contextmanager {
 		void setCurrentUserId(int userId);
 		int getCurrentUserId();
 		IGingaUser* getUser(int userId);
+
+	private:
+		map<string,string>* getUserMap(int userId);
+
+	public:
 		map<string,string>* getUserProfile(int userId);
 		map<string, string>* getUsersNames();
 		ISystemInfo* getSystemInfo();

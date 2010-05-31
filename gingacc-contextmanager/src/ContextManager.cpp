@@ -415,7 +415,7 @@ namespace contextmanager {
 		return NULL;
 	}
 
-	map<string,string>* ContextManager::getUserProfile(int userId) {
+	map<string, string>* ContextManager::getUserMap(int userId) {
 		map<int, map<string, string>*>::iterator i;
 
 		i = contexts->find(userId);
@@ -426,6 +426,19 @@ namespace contextmanager {
 		cout << "ContextManager::getUserProfile Warning! can't find profile ";
 		cout << "of user '" << userId << "'" << endl;
 		return NULL;
+	}
+
+	map<string, string>* ContextManager::getUserProfile(int userId) {
+		map<string, string>* userMap;
+		map<string, string>* userProfile;
+
+		userMap = getUserMap(userId);
+		if (userMap == NULL) {
+			return NULL;
+		}
+
+		userProfile = new map<string,string>(*userMap);
+		return userProfile;
 	}
 
 	map<string, string>* ContextManager::getUsersNames() {
@@ -464,9 +477,21 @@ namespace contextmanager {
 	}
 
 	void ContextManager::addContextListener(IContextListener* listener) {
-		cout << "ContextManager::registerPresentationContext" << endl;
+		cout << "ContextManager::addContextListener" << endl;
 		pthread_mutex_lock(&groupsMutex);
 		ctxListeners->insert(listener);
+		pthread_mutex_unlock(&groupsMutex);
+	}
+
+	void ContextManager::removeContextListener(IContextListener* listener) {
+		set<IContextListener*>::iterator i;
+
+		cout << "ContextManager::removeContextListener" << endl;
+		pthread_mutex_lock(&groupsMutex);
+		i = ctxListeners->find(listener);
+		if (i != ctxListeners->end()) {
+			ctxListeners->erase(i);
+		}
 		pthread_mutex_unlock(&groupsMutex);
 	}
 

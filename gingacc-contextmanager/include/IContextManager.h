@@ -81,6 +81,7 @@ namespace contextmanager {
 		virtual map<string, string>* getUsersNames()=0;
 		virtual ISystemInfo* getSystemInfo()=0;
 		virtual void addContextListener(IContextListener* listener)=0;
+		virtual void removeContextListener(IContextListener* listener)=0;
 		virtual void setGlobalVar(string varName, string varValue)=0;
   };
 }
