@@ -845,9 +845,10 @@ void LuaPlayer::unprotectedSetPropertyValue(string name, string value) {
 	Player::setPropertyValue(name, value);
 }
 
-void LuaPlayer::setPropertyValue(string name, string value)
-{
-    //cout << "SET == " << name << " = " << value << endl;
+void LuaPlayer::setPropertyValue(string name, string value) {
+	cout << "LuaPlayer::setPropertyValue ";
+    cout << "set property '" << name << "' = '" << value << "'" << endl;
+
 	this->lock();
 	Player::setPropertyValue(name, value);
 
