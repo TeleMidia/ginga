@@ -468,7 +468,7 @@ namespace io {
 
 		lock();
 		if (win != NULL) {
-			DFBCHECK(win->SetOpacity(win, 0x00));
+			win->SetOpacity(win, 0x00);
 		}
 		unlock();
 	}
