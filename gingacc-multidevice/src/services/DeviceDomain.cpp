@@ -317,6 +317,10 @@ namespace multidevice {
 	void DeviceDomain::addDeviceListener(IRemoteDeviceListener* listener) {
 		deviceService->addListener(listener);
 	}
+
+	void DeviceDomain::removeDeviceListener(IRemoteDeviceListener* listener) {
+		deviceService->removeListener(listener);
+	}
 }
 }
 }

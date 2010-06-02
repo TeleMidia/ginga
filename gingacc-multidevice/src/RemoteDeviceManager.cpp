@@ -75,12 +75,17 @@ namespace multidevice {
 	}
 
 	RemoteDeviceManager::~RemoteDeviceManager() {
+		running = false;
+
+		lock();
 		connecting = false;
 
 		if (domainService != NULL) {
 			delete domainService;
 			domainService = NULL;
 		}
+
+		unlock();
 	}
 
 	void RemoteDeviceManager::release() {
@@ -122,7 +127,15 @@ namespace multidevice {
 	}
 
 	void RemoteDeviceManager::addListener(IRemoteDeviceListener* listener) {
-		domainService->addDeviceListener(listener);
+		if (domainService != NULL) {
+			domainService->addDeviceListener(listener);
+		}
+	}
+
+	void RemoteDeviceManager::removeListener(IRemoteDeviceListener* listener) {
+		if (domainService != NULL) {
+			domainService->removeDeviceListener(listener);
+		}
 	}
 
 	void RemoteDeviceManager::postEvent(
@@ -151,13 +164,21 @@ namespace multidevice {
 		connecting = true;
 		running    = true;
 
-		while (true) {
+		lock();
+		if (!running) {
+			unlock();
+			return;
+		}
+
+		while (running) {
 			/*cout << "RemoteDeviceManager::run postConnectionRequestTask";
 			cout << endl;*/
 
 			//TODO: correct this code urgently
-			domainService->checkDomainTasks();
-			domainService->postConnectionRequestTask();
+			if (domainService != NULL) {
+				domainService->checkDomainTasks();
+				domainService->postConnectionRequestTask();
+			}
 
 			/*if (connecting) {
 				if (domainService->isConnected()) {
@@ -174,6 +195,7 @@ namespace multidevice {
 
 			::usleep(25000);
 		}
+		unlock();
 	}
 }
 }

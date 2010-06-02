@@ -147,6 +147,7 @@ namespace multidevice {
 	public:
 		virtual void checkDomainTasks();
 		virtual void addDeviceListener(IRemoteDeviceListener* listener);
+		virtual void removeDeviceListener(IRemoteDeviceListener* listener);
   };
 }
 }

@@ -97,6 +97,7 @@ namespace multidevice {
 		virtual int getDeviceClass()=0;
 		virtual void checkDomainTasks()=0;
 		virtual void addDeviceListener(IRemoteDeviceListener* listener)=0;
+		virtual void removeDeviceListener(IRemoteDeviceListener* listener)=0;
 
 		virtual void postNclMetadata(
 				int devClass, vector<StreamData*>* streams)=0;

@@ -65,6 +65,7 @@ namespace multidevice {
 	public:
 		virtual ~IDeviceService(){};
 		virtual void addListener(IRemoteDeviceListener* listener)=0;
+		virtual void removeListener(IRemoteDeviceListener* listener)=0;
 
 		virtual bool addDevice(
 				unsigned int deviceAddress,

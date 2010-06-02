@@ -69,6 +69,7 @@ namespace multidevice {
 		virtual ~IRemoteDeviceManager(){};
 		virtual void release()=0;
 		virtual void addListener(IRemoteDeviceListener* listener)=0;
+		virtual void removeListener(IRemoteDeviceListener* listener)=0;
 		virtual void setDeviceInfo(int deviceClass, int width, int height)=0;
 		virtual int getDeviceClass()=0;
 		virtual void postEvent(

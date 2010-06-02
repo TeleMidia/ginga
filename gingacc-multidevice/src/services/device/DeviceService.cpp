@@ -107,6 +107,17 @@ namespace multidevice {
 		pthread_mutex_unlock(&lMutex);
 	}
 
+	void DeviceService::removeListener(IRemoteDeviceListener* listener) {
+		set<IRemoteDeviceListener*>::iterator i;
+
+		pthread_mutex_lock(&lMutex);
+		i = listeners->find(listener);
+		if (i != listeners->end()) {
+			listeners->erase(i);
+		}
+		pthread_mutex_unlock(&lMutex);
+	}
+
 	bool DeviceService::addDevice(
 			unsigned int deviceAddress,
 			int newDevClass,

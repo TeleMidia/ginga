@@ -83,6 +83,8 @@ namespace multidevice {
 
 	public:
 		void addListener(IRemoteDeviceListener* listener);
+		void removeListener(IRemoteDeviceListener* listener);
+
 		bool addDevice(
 				unsigned int deviceAddress,
 				int newDevClass,

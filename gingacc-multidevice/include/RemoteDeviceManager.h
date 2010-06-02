@@ -80,6 +80,7 @@ namespace multidevice {
 		void setDeviceInfo(int deviceClass, int width, int height);
 		int getDeviceClass();
 		void addListener(IRemoteDeviceListener* listener);
+		void removeListener(IRemoteDeviceListener* listener);
 		void postEvent(int devClass, int eventType, char* event, int eventSize);
 		bool postMediaContent(int destDevClass, string url);
 		void postNclMetadata(int devClass, vector<StreamData*>* streams);
