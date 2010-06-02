@@ -118,6 +118,7 @@ namespace player {
 			Player(string mrl);
 			virtual ~Player();
 
+			virtual void flip(){};
 			virtual void setMrl(string mrl, bool visible=true);
 			virtual void reset(){};
 			virtual void rebase(){};
