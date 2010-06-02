@@ -141,6 +141,8 @@ namespace io {
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
+
+		cout << "DFBWindow::~DFBWindow(" << this << ") all done" << endl;
 	}
 
 	void DFBWindow::initialize(
