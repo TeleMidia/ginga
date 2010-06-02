@@ -63,6 +63,8 @@ namespace system {
 namespace thread {
   class Thread {
 	protected:
+		bool isDeleting;
+
 		pthread_mutex_t threadMutex;
 
 		bool isSleeping;

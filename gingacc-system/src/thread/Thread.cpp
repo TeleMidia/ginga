@@ -57,6 +57,8 @@ namespace core {
 namespace system {
 namespace thread {
 	Thread::Thread() {
+		isDeleting = false;
+
 		pthread_mutex_init(&threadMutex, NULL);
 
 		isSleeping = false;
@@ -94,7 +96,7 @@ namespace thread {
 	}
 
 	void* Thread::function(void* ptr) {
-		if (!ptr) {
+		if (!ptr || static_cast<Thread*>(ptr)->isDeleting) {
 			return NULL;
 		}
 
@@ -104,8 +106,10 @@ namespace thread {
 	}
 
 	void Thread::start() {
-		pthread_create(&threadId_, &tattr, Thread::function, this);
-		pthread_detach(threadId_);
+		if (!isDeleting) {
+			pthread_create(&threadId_, &tattr, Thread::function, this);
+			pthread_detach(threadId_);
+		}
 	}
 
 	bool Thread::sleep(long int seconds) {
