@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "INCLSectionProcessor.h"
 
+#include <sys/stat.h>
 #include <vector>
 #include <string>
 using namespace std;

@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 
 #include "curl/curl.h"
 
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 

@@ -56,6 +56,7 @@ http://www.telemidia.puc-rio.br
 #include "ginga/ic/IInteractiveChannel.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <iostream>

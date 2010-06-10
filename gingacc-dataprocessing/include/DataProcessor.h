@@ -76,6 +76,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #include "dsmcc/npt/NPTProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
+#include <sys/stat.h>
 #include <map>
 #include <set>
 #include <string>

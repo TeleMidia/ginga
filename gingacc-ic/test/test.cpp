@@ -65,6 +65,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::ic;
 using namespace ::br::pucrio::telemidia::util;
 
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <string>
