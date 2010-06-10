@@ -94,6 +94,7 @@ string cmd_to_str(lua_State* L) {
 		lua_pop(L, 1);
 
 	} else {
+		str.append(" ,");
 		edit[3].append(" ");
 	}
 
@@ -548,7 +549,7 @@ string cmd_to_str(lua_State* L) {
 		lua_getfield(L, 2, "linkId");
 		const char* linkId = luaL_checkstring(L, -1);
 
-		edit[1].append("0x2B");
+		edit[1].append("0x2C");
 		edit[4].append(compositeId);
 		edit[5].append(linkId);
 
@@ -565,7 +566,7 @@ string cmd_to_str(lua_State* L) {
 		lua_getfield(L, 2, "value");
 		const char* value = luaL_checkstring(L, -1);
 
-		edit[1].append("0x2B");
+		edit[1].append("0x2D");
 		edit[5].append(nodeId);
 		edit[6].append(propertyId);
 		edit[7].append(value);
