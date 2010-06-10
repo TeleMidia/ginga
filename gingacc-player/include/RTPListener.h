@@ -61,6 +61,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::ic;
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
