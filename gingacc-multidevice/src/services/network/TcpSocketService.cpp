@@ -82,13 +82,14 @@ TcpSocketService::~TcpSocketService() {
 
 void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 	char* portStr;
+	TCPClientConnection* tcpcc;
 	//unsigned int newDevId;
 
 	asprintf(&portStr,"%d",port);
 	pthread_mutex_lock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
 		//(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
-		TCPClientConnection* tcpcc = new TCPClientConnection(
+		tcpcc = new TCPClientConnection(
 						deviceId,
 						addr,
 						portStr,
@@ -97,21 +98,25 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 		tcpcc->start();
 
 	} else if (connections != NULL) {
-		cout << "TcpSocketService::warning - connection already registered" << endl;
-		cout << "TcpSocketService::warning - removing and adding it again (" << deviceId;
-		cout << ")" << endl;
-		
-		this->removeConnection(deviceId);
+		cout << "TcpSocketService::warning - connection already registered";
+		cout << endl;
 
-		(*connections)[deviceId] = new TCPClientConnection(
+		cout << "TcpSocketService::warning - removing and adding it again (";
+		cout << deviceId << ")" << endl;
+
+		this->removeConnection(deviceId);
+		tcpcc = new TCPClientConnection(
 						deviceId,
 						addr,
 						portStr,
 						(IRemoteDeviceListener*) res);
 
+		tcpcc->start();
+		(*connections)[deviceId] = tcpcc;
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}
+
 	pthread_mutex_unlock(&connMutex);
 }
 
