@@ -55,7 +55,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 #include "../include/InteractiveChannelManager.h"
 #include "../include/curlic/CurlInteractiveChannel.h"
+#if HAVE_CCRTP
 #include "../include/ccrtpic/CCRTPInteractiveChannel.h"
+#endif
 #endif
 
 #include "../include/IInteractiveChannelManager.h"
@@ -72,6 +74,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include <iostream>
 using namespace std;
 
+#if HAVE_CCRTP
 class ICListener : public IInteractiveChannelListener {
 	private:
 		int fd;
@@ -106,9 +109,12 @@ class ICListener : public IInteractiveChannelListener {
 			cout << endl;
 		}
 };
+#endif
 
 int main(int argc, char** argv) {
+#if HAVE_CCRTP
 	ICListener* listener;
+#endif
 	IInteractiveChannel* ic;
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm;
@@ -133,7 +139,9 @@ int main(int argc, char** argv) {
 	icm = InteractiveChannelManager::getInstance();
 #endif
 
+#if HAVE_CCRTP
 	listener = new ICListener();
+#endif
 
 	if (argc == 3 && strcmp(argv[1], "--curl") == 0) {
 		if (strcmp(argv[2], "fd") == 0) {
@@ -176,7 +184,9 @@ int main(int argc, char** argv) {
 #endif
 	}
 
+#if HAVE_CCRTP
 	delete listener;
+#endif
 	cout << "gingacc-ic main test: end - check '" << localFile << "'" << endl;
 	return 0;
 }
