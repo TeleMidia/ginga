@@ -72,7 +72,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Tuner : public Thread, public IProviderListener, public ITuner {
+	class Tuner : public Thread, public ITProviderListener, public ITuner {
 		private:
 			bool receiving;
 			set<ITunerListener*>* listeners;

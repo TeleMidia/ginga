@@ -190,6 +190,7 @@ if test x$enable_components = xno; then
     -lgingaccsysctsxineav \
     -lgingaccsystemio -lgingaccsystemiocodemap \
     -lgingaccsystemiodfb -lgingaccsystemthread -lgingaccic \
+    -lgingaccdataprocessing \
     -L/usr/local/lib/ginga/ -L/usr/local/lib \
     -L/usr/local/lib/ginga/iocontents/ \
     -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'

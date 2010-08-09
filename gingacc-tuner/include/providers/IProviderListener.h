@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IPROVIDERLISTENER_H_
-#define IPROVIDERLISTENER_H_
+#ifndef ITPROVIDERLISTENER_H_
+#define ITPROVIDERLISTENER_H_
 
 namespace br {
 namespace pucrio {
@@ -59,9 +59,9 @@ namespace tuning {
 
 	static const short PST_LOOP = 0x01;
 
-	class IProviderListener {
+	class ITProviderListener {
 		public:
-			virtual ~IProviderListener(){};
+			virtual ~ITProviderListener(){};
 			virtual void receiveSignal(short signalCode)=0;
 	};
 }
@@ -71,4 +71,4 @@ namespace tuning {
 }
 }
 
-#endif /*IPROVIDERLISTENER_H_*/
+#endif /*ITPROVIDERLISTENER_H_*/

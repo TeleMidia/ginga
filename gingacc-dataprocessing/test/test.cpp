@@ -58,8 +58,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "../../gingacc-tsparser/include/PipeFilter.h"
 #include "../../gingacc-dataprocessing/include/DataProcessor.h"
 #include "../../gingacc-system/include/io/interface/output/dfb/DFBWindow.h"
-#include "../../gingacc-player/include/AVPlayer.h"
-#include "../../gingacc-player/include/ProgramAV.h"
 #endif
 
 #include "tuner/ITuner.h"

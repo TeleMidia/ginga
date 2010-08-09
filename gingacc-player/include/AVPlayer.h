@@ -79,6 +79,12 @@ extern "C" {
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
+#ifdef IPROVIDERLISTENER
+#undef IPROVIDERLISTENER
+#endif
+#include "system/io/interface/content/IProviderListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+
 #include "system/io/interface/content/IContinuousMediaProvider.h"
 #include "system/io/interface/output/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;

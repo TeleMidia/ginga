@@ -82,7 +82,7 @@ namespace tuning {
 		public:
 			virtual ~IDataProvider(){};
 			virtual short getCaps()=0;
-			virtual void setListener(IProviderListener* listener)=0;
+			virtual void setListener(ITProviderListener* listener)=0;
 			virtual void attachFilter(IFrontendFilter* filter)=0;
 			virtual void removeFilter(IFrontendFilter* filter)=0;
 			virtual int receiveData(char* buff)=0;

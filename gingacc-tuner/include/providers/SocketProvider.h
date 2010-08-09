@@ -68,7 +68,7 @@ namespace tuning {
 		public:
 			virtual ~SocketProvider(){};
 
-			virtual void setListener(IProviderListener* listener){};
+			virtual void setListener(ITProviderListener* listener){};
 			virtual void attachFilter(IFrontendFilter* filter){};
 			virtual void removeFilter(IFrontendFilter* filter){};
 

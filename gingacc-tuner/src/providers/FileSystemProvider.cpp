@@ -67,7 +67,7 @@ namespace tuning {
 
 	}
 
-	void FileSystemProvider::setListener(IProviderListener* listener) {
+	void FileSystemProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}
 

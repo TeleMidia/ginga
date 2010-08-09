@@ -81,7 +81,7 @@ namespace tuning {
 		close();
 	}
 
-	void ISDBTProvider::setListener(IProviderListener* listener) {
+	void ISDBTProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}
 

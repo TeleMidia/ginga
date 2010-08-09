@@ -56,6 +56,7 @@ http://www.telemidia.puc-rio.br
 #include "ginga/cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
+#include "../../gingacc-dataprocessing/include/EPGProcessor.h"
 #include "../../gingacc-system/include/io/GingaLocatorFactory.h"
 #include "../../gingacc-system/include/io/InputManager.h"
 #include "../../gingacc-system/include/io/LocalDeviceManager.h"
@@ -67,6 +68,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "../../gingacc-system/include/io/interface/content/video/DFBVideoProvider.h"
 #include "../../gingacc-system/include/io/interface/content/video/XineVideoProvider.h"
 #include "../../gingacc-system/include/io/interface/content/audio/FusionSoundAudioProvider.h"
+
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #endif
 
 namespace br {
