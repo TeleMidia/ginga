@@ -50,7 +50,7 @@ if test x$enable_components = xno; then
    COMPONENTS_LIBS='-lgingaccdataprocncl \
       -L/usr/local/lib/ginga/dp/ -L/usr/local/lib/ -L/usr/local/lib/ginga/'
    TEST_COMPONENTS_LIBS='-lgingaccmd -lgingaccdataprocncl \
-      -lgingaccsystemthread \
+      -lgingaccsystemthread -lgingacccontextmanager \
       -L/usr/local/lib/ginga/dp/ -L/usr/local/lib/ -L/usr/local/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
