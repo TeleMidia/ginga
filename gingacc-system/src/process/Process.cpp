@@ -181,10 +181,19 @@ namespace process {
 	}
 
 	bool Process::sendMsg(int fd, string msg) {
-		int rval;
+		int rval = -1;
 
 		if (fd >= 0) {
-			rval = write(fd, msg.c_str(), msg.length());
+
+			try {
+				rval = write(fd, msg.c_str(), msg.length());
+
+		    } catch (const char *except) {
+		    	cout << "Process::sendMsg catch: " << except << endl;
+		    	::usleep(100000);
+		    	rval = write(fd, msg.c_str(), msg.length());
+		    }
+
 			if (rval == msg.length()) {
 				return true;
 			}
@@ -197,11 +206,19 @@ namespace process {
 	}
 
 	string Process::receiveMsg(int fd) {
-		int rval;
+		int rval = -1;
 		char buff[512];
 		string msg = "";
 
-		rval = read(fd, buff, sizeof(buff));
+		try {
+			rval = read(fd, buff, sizeof(buff));
+
+	    } catch (const char *except) {
+	    	cout << "Process::receiveMsg catch: " << except << endl;
+	    	::usleep(100000);
+	    	rval = read(fd, buff, sizeof(buff));
+	    }
+
 		if (rval > 0) {
 			msg.assign(buff, rval);
 		}
