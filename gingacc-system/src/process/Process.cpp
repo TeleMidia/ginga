@@ -367,12 +367,14 @@ namespace process {
         	cout << "Process::detachWait process '" << process->processUri;
         	cout << "' exited with exit status '" << WEXITSTATUS(status);
         	cout << "'" << endl;
+        	printTimeStamp();
         	type = IProcessListener::PST_EXIT_OK;
 
         } else if (WIFSTOPPED(status)) {
         	cout << "Process::detachWait process '" << process->processUri;
         	cout << "' has not terminated correctly: '" << WSTOPSIG(status);
         	cout << endl;
+        	printTimeStamp();
 
         	type = IProcessListener::PST_EXIT_ERROR;
 
@@ -381,6 +383,10 @@ namespace process {
         }
 
 		if (listener != NULL) {
+        	cout << "Process::detachWait process '" << process->processUri;
+        	cout << "' send status '" << WEXITSTATUS(status);
+        	cout << "'" << endl;
+        	printTimeStamp();
 			listener->receiveProcessSignal(type, status, ppid);
 		}
 
