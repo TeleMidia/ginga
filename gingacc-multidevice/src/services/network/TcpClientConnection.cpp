@@ -60,18 +60,19 @@ namespace multidevice {
 						 char *port_str,
 						 IRemoteDeviceListener* srv) {
 
-		deviceId = devid;
 		struct addrinfo hints, *res;
 		int set;
 
+		deviceId     = devid;
 		srv_hostname = hostname;
-		portno = port_str;
-		resrv = srv;
-
-		counter = 0;
+		portno       = port_str;
+		resrv        = srv;
+		counter      = 0;
+		running      = true;
 
 		memset(&hints, 0, sizeof hints);
-		hints.ai_family = AF_INET;
+
+		hints.ai_family   = AF_INET;
 		hints.ai_socktype = SOCK_STREAM;
 
 		getaddrinfo(srv_hostname, port_str, &hints, &res);
@@ -136,18 +137,25 @@ namespace multidevice {
 	}
 
 	void TCPClientConnection::run() {
-		while (running) {
-			char buf[100]; //max event string size
-			char msgType[4];
-			char evtType[5];
+		char buf[100]; //max event string size
+		char msgType[4];
+		char evtType[5];
+		int nr;
 
-			int nr = recv(sockfd,buf,100,0);
+		while (running) {
+			memset(buf, 0, 100); //max event string size
+			memset(msgType, 0, 4);
+			memset(evtType, 0, 5);
+
+			nr = recv(sockfd, buf, 100, 0);
 
 			if (nr > 3) {
-				if (nr > 100)
+				if (nr > 100) {
 					buf[99] = '\0';
-				else
+
+				} else {
 					buf[nr] = '\0';
+				}
 
 				//cout << "TCPClientConnection:run buf= " << buf << endl;
 
@@ -166,17 +174,15 @@ namespace multidevice {
 						resrv->receiveRemoteEvent(
 								2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
 					}
-
 				}
-			}
-			else {
+
+			} else {
 				if (nr < 0) {
 					cout << "TCPClientConnection::run end()!";
 					cout << " reason: nr=" << nr;
 					cout << " buf=" << buf << endl;
 					this->end();
 				}
-
 			}
 		}
 	}
