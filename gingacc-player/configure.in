@@ -28,6 +28,17 @@ done
 # HEADERS #
 ###########
 
+############################
+# Ginga CC Data Processing #
+############################
+AC_CHECK_HEADER([dataprocessing/IDataProcessor.h], [], AC_MSG_ERROR([
+
+Couldn't find Ginga CC Data Processing headers.
+Please install Ginga CC Data Processing Headers.
+
+]))
+
+
 ##################
 # TeleMidia Util #
 ##################
@@ -72,6 +83,17 @@ Please install gingacc-system project.
 ########
 # LIBS #
 ########
+
+############################
+# Ginga CC Data Processing #
+############################
+AC_HAVE_LIBRARY(gingaccdataprocessing, , AC_ERROR([
+
+Couldn't find Ginga CC Data Processing library.
+Please install Ginga CC Data Processing Library.
+
+]))
+
 
 ##################
 # TeleMidia Util #
