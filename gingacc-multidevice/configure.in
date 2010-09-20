@@ -28,6 +28,17 @@ done
 # HEADERS #
 ###########
 
+############################
+# Ginga CC Context Manager #
+############################
+AC_CHECK_HEADER([contextmanager/IContextManager.h], [], AC_MSG_ERROR([
+
+Couldn't find Ginga CC Context Manager headers.
+Please install Ginga CC Context Manager Hearders.
+
+]))
+
+
 ##########################
 # Ginga-CC System Thread #
 ##########################
@@ -104,3 +115,18 @@ Build options:
 AC_OUTPUT(
     Makefile include/Makefile include/services/Makefile src/Makefile
     test/Makefile)
+
+
+########
+# LIBS #
+########
+
+############################
+# Ginga CC Context Manager #
+############################
+AC_HAVE_LIBRARY(gingacccontextmanager, , AC_ERROR([
+
+Couldn't find Ginga CC Context Manager library.
+Please install Ginga CC Context Manager Library.
+
+]))
