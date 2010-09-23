@@ -140,7 +140,52 @@ namespace io {
 
 	const int DFBGInputEvent::getKeyCode() {
 		if (event != NULL && event->clazz == DFEC_INPUT) {
-			return ((DFBInputEvent*)event)->key_symbol;
+
+			int result = ((DFBInputEvent*)event)->key_symbol;
+			
+			//Maping between keyboard and remote control
+			if (result == CodeMap::KEY_F1) {
+				result = CodeMap::KEY_RED;
+
+			} else if (result == CodeMap::KEY_F2) {
+				result = CodeMap::KEY_GREEN;
+
+			} else if (result == CodeMap::KEY_F3) {
+				result = CodeMap::KEY_YELLOW;
+		
+			} else if (result == CodeMap::KEY_F4) {
+				result = CodeMap::KEY_BLUE;
+
+			} else if (result == CodeMap::KEY_F5) {
+				result = CodeMap::KEY_MENU;
+
+			} else if (result == CodeMap::KEY_F6) {
+				result = CodeMap::KEY_INFO;
+
+			} else if (result == CodeMap::KEY_F7) {
+				result = CodeMap::KEY_EPG;
+
+			} else if (result == CodeMap::KEY_PLUS_SIGN) {
+				result = CodeMap::KEY_VOLUME_UP;
+
+			} else if (result == CodeMap::KEY_MINUS_SIGN) {
+				result = CodeMap::KEY_VOLUME_DOWN;
+
+			} else if (result == CodeMap::KEY_PAGE_UP) {
+				result = CodeMap::KEY_CHANNEL_UP;
+	
+			} else if (result == CodeMap::KEY_PAGE_DOWN) {
+				result = CodeMap::KEY_CHANNEL_DOWN;
+
+			} else if (result == CodeMap::KEY_BACKSPACE) {
+				result = CodeMap::KEY_BACK;
+
+			} else if (result == CodeMap::KEY_ESCAPE) {
+				result = CodeMap::KEY_EXIT;
+			}
+
+			return result;
+
 		}
 		return CodeMap::KEY_NULL;
 	}

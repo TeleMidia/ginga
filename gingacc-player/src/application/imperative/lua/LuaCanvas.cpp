@@ -84,6 +84,8 @@ typedef struct Canvas {
            crop;
 	struct { int x; int y; int w; int h; }
            clip;
+	struct { int w; int h; int inUse;}
+	   scale;
 	struct { char face[20]; int size; char style[20]; }
            font;
 } Canvas;
@@ -141,12 +143,15 @@ static int l_new (lua_State* L)
 }
 
 /*******************************************************************************
- * ATRIBUTOS:
- * - canvas:attrSize()
- * - canvas:attrColor()
+ * ATRIBUTOS
  * - canvas:attrFont()
  * - canvas:attrCrop()
  * - canvas:attrClip()
+ * - canvas:attrScale() 
+ ******************************************************************************/
+
+/*******************************************************************************
+ * canvas:attrSize () -> width, height: number 
  ******************************************************************************/
 
 static int l_attrSize (lua_State* L)
@@ -167,6 +172,11 @@ static int l_attrSize (lua_State* L)
 	return luaL_error(L, "not supported");
 }
 
+/*******************************************************************************
+ * canvas:attrColor (R, G, B, A: number)
+ * canvas:attrColor (clr_name: string)
+ * canvas:attrColor () -> R, G, B, A: number
+ ******************************************************************************/
 static int l_attrColor (lua_State* L)
 {
 	Canvas* canvas = CHECKCANVAS(L);
@@ -294,6 +304,46 @@ static int l_attrClip (lua_State* L)
 
 	canvas->sfc->setClip(
 			canvas->clip.x, canvas->clip.y, canvas->clip.w, canvas->clip.h);
+
+	return 0;
+}
+
+/*******************************************************************************
+ * canvas:attrScale (w,h: number|boolean)
+ * canvas:attrScale () -> w, h: number
+ ******************************************************************************/
+static int l_attrScale (lua_State* L)
+{
+	Canvas* canvas = CHECKCANVAS(L);
+
+	// GET
+	// [ canvas ]
+	if (lua_gettop(L) == 1) {
+		lua_pushnumber(L, canvas->scale.w);
+		lua_pushnumber(L, canvas->scale.h);
+		return 2;                          
+	}
+
+	//SET
+	int width, height;
+	canvas->sfc->getSize(&width, &height);
+	
+	if(lua_isboolean(L, 2)) {
+		int new_height = luaL_checkint(L, 3);		
+		width = ((double)new_height/height) * width;
+		height = new_height;
+	
+	} else if (lua_isboolean(L, 3)) {
+		int new_width = luaL_checkint(L, 2);
+		height = ((double)new_width/width) * height;
+		width = new_width;
+	} else {
+		width = luaL_checkint(L, 2);
+		height = luaL_checkint(L, 3);
+	}
+	canvas->scale.w = width;
+	canvas->scale.h = height;
+	canvas->sfc->scale(width, height);
 
 	return 0;
 }
@@ -440,6 +490,7 @@ static const struct luaL_Reg meths[] = {
 	{ "attrFont",    l_attrFont    },
 	{ "attrCrop",    l_attrCrop    },
 	{ "attrClip",    l_attrClip    },
+	{ "attrScale",   l_attrScale   },
 	{ "drawLine",    l_drawLine    },
 	{ "drawRect",    l_drawRect    },
 	{ "drawText",    l_drawText    },

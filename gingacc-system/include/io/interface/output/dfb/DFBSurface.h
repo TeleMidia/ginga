@@ -107,6 +107,7 @@ namespace io {
 			void setFont(void* font);
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();
+			void scale(int x, int y);
 			void blit(
 					int x,
 					int y,

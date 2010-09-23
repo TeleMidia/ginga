@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "../../../../../include/io/interface/output/dfb/DFBSurface.h"
+#include "../../../../../include/io/interface/output/dfb/Matrix.h"
 #include "../../../../../include/io/interface/output/dfb/DFBWindow.h"
 #include "../../../../../include/io/interface/content/text/IFontProvider.h"
 #include "../../../../../include/io/LocalDeviceManager.h"
@@ -360,7 +361,44 @@ namespace io {
 			DFBCHECK( sur->Flip (sur, NULL, DSFLIP_NONE) );
 		}
 	}
+	
+	void DFBSurface::scale(int x, int y) {
 
+		int width, height;
+		sur->GetSize(sur, &width, &height);
+
+		/*Copy to a temporary surface*/
+		DFBSurface* sur_temp = new DFBSurface(width, height);		
+		IDirectFBSurface* temp = (IDirectFBSurface*)(sur_temp->getContent());		
+		temp->SetBlittingFlags(temp, (DFBSurfaceBlittingFlags)
+						(DSBLIT_BLEND_ALPHACHANNEL |
+						 DSBLIT_SRC_COLORKEY));
+		temp->Blit(temp, sur, NULL, 0, 0);		
+
+	        /* Clear the frame. */
+		sur->SetDrawingFlags(sur, (DFBSurfaceDrawingFlags)(DSDRAW_NOFX) );
+		sur->Clear(sur, 0x00, 0x00, 0x00, 0x00 );
+		
+		sur->SetRenderOptions( sur, (DFBSurfaceRenderOptions)(DSRO_MATRIX | DSRO_ANTIALIAS));
+
+		/*Scale the matrix*/
+		matrix_t matrix;
+		Matrix::initTranslate(&matrix, width/2, height/2);				
+		Matrix::scale(&matrix, (double)x/width, (double)y/height);
+		Matrix::setMatrix(&matrix, sur);
+		
+		/*Copy back*/
+		sur->SetBlittingFlags(sur, (DFBSurfaceBlittingFlags)
+						(DSBLIT_BLEND_ALPHACHANNEL |
+						 DSBLIT_SRC_COLORKEY));
+		sur->Blit(sur, temp, NULL, -width/2, -height/2);		
+		
+         	/* Flip the output surface. */
+ 		sur->Flip( sur, NULL, (DFBSurfaceFlipFlags)(DSFLIP_WAITFORSYNC));
+		free(sur_temp);	
+
+	}
+	
 	void DFBSurface::blit(
 			int x, int y, ISurface* src,
 			int srcX, int srcY, int srcW, int srcH) {
@@ -405,13 +443,13 @@ namespace io {
 		DFBRegion rg;
 
 		rg.x1 = x;
-	    rg.y1 = y;
-	    rg.x2 = w;
-	    rg.y2 = h;
+		rg.y1 = y;
+		rg.x2 = x+w;
+		rg.y2 = y+h;
 
-	    if (sur != NULL) {
-	    	DFBCHECK( sur->SetClip(sur, &rg) );
-	    }
+		if (sur != NULL) {
+			DFBCHECK( sur->SetClip(sur, &rg) );
+		}
 	}
 
 	void DFBSurface::getSize(int* w, int* h) {
