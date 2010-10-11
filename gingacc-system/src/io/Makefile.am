@@ -27,7 +27,8 @@ libgingaccsystemiodfb_PROGRAMS = libgingaccsystemiodfb.so
 libgingaccsystemiodfb_so_SOURCES =	interface/device/dfb/DFBDeviceScreen.cpp \
 	interface/input/dfb/DFBEventBuffer.cpp \
 	interface/input/dfb/DFBGInputEvent.cpp \
-	interface/output/dfb/DFBSurface.cpp interface/output/dfb/DFBWindow.cpp 
+	interface/output/dfb/DFBSurface.cpp interface/output/dfb/DFBWindow.cpp \
+	interface/output/dfb/Matrix.cpp
 
 libgingaccsystemiodfb_so_LDADD = $(DFB_LIBS) -ltelemidiautil -lpthread \
     -lgingaccsystemthread -lgingaccsystemio -lgingaccsystemiocodemap
