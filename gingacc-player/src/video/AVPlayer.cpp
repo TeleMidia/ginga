@@ -1392,8 +1392,8 @@ namespace player {
 		float fValue = 1.0;
 		vector<string>* vals;
 
-		cout << "AVPlayer::setPropertyValue '" << name << "' ";
-		cout << "= '" << value << "'" << endl;
+		/*cout << "AVPlayer::setPropertyValue '" << name << "' ";
+		cout << "= '" << value << "'" << endl;*/
 
 		//TODO: animation, set volume, brightness, ...
 		if (name == "soundLevel") {
