@@ -12,7 +12,7 @@ CFLAGS="-fPIC $CFLAGS"
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/iocontents; do
+for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ ; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
@@ -120,6 +120,26 @@ AC_OUTPUT(
 ########
 # LIBS #
 ########
+
+###################
+# TeleMidia Util  #
+###################
+AC_HAVE_LIBRARY(telemidiautil, , AC_ERROR([
+
+Couldn't find util library.
+Please install TeleMidia Util.
+
+]))
+
+###########################
+# Ginga CC System Thread  #
+###########################
+AC_HAVE_LIBRARY(gingaccsystemthread, , AC_ERROR([
+
+Couldn't find util library.
+Please install TeleMidia Util.
+
+]))
 
 ############################
 # Ginga CC Context Manager #
