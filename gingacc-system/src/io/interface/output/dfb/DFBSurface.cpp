@@ -362,7 +362,7 @@ namespace io {
 		}
 	}
 	
-	void DFBSurface::scale(int x, int y) {
+	void DFBSurface::scale(double x, double y) {
 
 		int width, height;
 		sur->GetSize(sur, &width, &height);
@@ -375,7 +375,7 @@ namespace io {
 						 DSBLIT_SRC_COLORKEY));
 		temp->Blit(temp, sur, NULL, 0, 0);		
 
-	        /* Clear the frame. */
+		/* Clear the frame. */
 		sur->SetDrawingFlags(sur, (DFBSurfaceDrawingFlags)(DSDRAW_NOFX) );
 		sur->Clear(sur, 0x00, 0x00, 0x00, 0x00 );
 		
@@ -384,16 +384,17 @@ namespace io {
 		/*Scale the matrix*/
 		matrix_t matrix;
 		Matrix::initTranslate(&matrix, width/2, height/2);				
-		Matrix::scale(&matrix, (double)x/width, (double)y/height);
+		Matrix::scale(&matrix, x, y);
+
 		Matrix::setMatrix(&matrix, sur);
 		
 		/*Copy back*/
 		sur->SetBlittingFlags(sur, (DFBSurfaceBlittingFlags)
 						(DSBLIT_BLEND_ALPHACHANNEL |
 						 DSBLIT_SRC_COLORKEY));
-		sur->Blit(sur, temp, NULL, -width/2, -height/2);		
-		
-         	/* Flip the output surface. */
+		sur->Blit(sur, temp, NULL, -width/2, -height/2);
+
+		/* Flip the output surface. */
  		sur->Flip( sur, NULL, (DFBSurfaceFlipFlags)(DSFLIP_WAITFORSYNC));
 		free(sur_temp);	
 

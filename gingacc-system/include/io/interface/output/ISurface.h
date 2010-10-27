@@ -89,7 +89,7 @@ namespace io {
 			virtual void setColor(IColor* writeColor)=0;
 			virtual void setFont(void* font)=0;
 			virtual void flip()=0;
-			virtual void scale(int x, int y)=0;
+			virtual void scale(double x, double y)=0;
 			virtual void blit(
 					int x,
 					int y,
