@@ -328,6 +328,15 @@ static int l_attrScale (lua_State* L)
 	int width, height;
 	canvas->sfc->getSize(&width, &height);
 	
+	// For some reason DFB is using not the original size of the canvas
+	// but the scaled size, if a scale was applied before.
+	int scalew = width;
+	int scaleh = height;
+	if(canvas->scale.inUse) {
+		scalew = canvas->scale.w;
+		scaleh = canvas->scale.h;
+	}
+
 	if(lua_isboolean(L, 2)) {
 		int new_height = luaL_checkint(L, 3);		
 		width = ((double)new_height/height) * width;
@@ -341,9 +350,15 @@ static int l_attrScale (lua_State* L)
 		width = luaL_checkint(L, 2);
 		height = luaL_checkint(L, 3);
 	}
+
+	double x = ((double)width/scalew);
+	double y = ((double)height/scaleh);
+
 	canvas->scale.w = width;
 	canvas->scale.h = height;
-	canvas->sfc->scale(width, height);
+
+	canvas->sfc->scale(x, y);
+	canvas->scale.inUse = 1;
 
 	return 0;
 }
