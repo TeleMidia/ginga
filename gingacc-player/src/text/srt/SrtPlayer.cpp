@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/SrtPlayer.h"
+#include "player/SrtPlayer.h"
 
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;

@@ -1,14 +1,15 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/directfb/ -I/usr/local/include/ginga/ \
-    -I/usr/include/libuser/ $(all_includes)
+    -I/usr/include/libuser/ -I../include $(all_includes) \
+    -I$(top_srcdir)/include/contextmanager
 
 LIBS =
 
 libgingacccontextmanagerdir = /usr/local/lib/ginga
 
 # AM_CXXFLAGS = -g
-
+libgingacccontextmanager_so_CPPFLAGS = -I$(top_srcdir)/include
 libgingacccontextmanager_so_LDFLAGS = -Wl,-soname,libgingacccontextmanager.so \
     -shared
 

@@ -23,6 +23,12 @@ if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
+#TODO: Search telemidia-util, gingacc-sytem, ... include paths 
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-dataprocessing/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-contextmanager/include $CPPFLAGS"
+
 
 ###########
 # HEADERS #
@@ -113,7 +119,10 @@ Build options:
 ])
 
 AC_OUTPUT(
-    Makefile include/Makefile include/services/Makefile src/Makefile
+    Makefile
+    include/multidevice/Makefile
+    include/multidevice/services/Makefile
+    src/Makefile
     test/Makefile)
 
 

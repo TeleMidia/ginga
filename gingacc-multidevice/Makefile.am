@@ -2,4 +2,4 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = include include/services src test
+SUBDIRS = include/multidevice include/multidevice/services src test

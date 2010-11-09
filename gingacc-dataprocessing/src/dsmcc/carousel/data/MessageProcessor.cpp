@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../include/dsmcc/carousel/data/MessageProcessor.h"
+#include "dataprocessing/dsmcc/carousel/data/MessageProcessor.h"
 
 #ifndef DII_MESSAGE
 	#define DII_MESSAGE 0x1002

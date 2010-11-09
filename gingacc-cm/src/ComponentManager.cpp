@@ -48,8 +48,8 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include <dlfcn.h>
-#include "../include/ComponentManager.h"
-#include "../include/parser/IComponentParser.h"
+#include "cm/ComponentManager.h"
+#include "cm/parser/IComponentParser.h"
 
 namespace br {
 namespace pucrio {

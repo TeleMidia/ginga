@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/EventGroupDescriptor.h"
+#include "tsparser/EventGroupDescriptor.h"
 
 namespace br {
 namespace pucrio {

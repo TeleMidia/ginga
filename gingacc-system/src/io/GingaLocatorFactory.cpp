@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/io/GingaLocatorFactory.h"
+#include "system/io/GingaLocatorFactory.h"
 
 namespace br {
 namespace pucrio {

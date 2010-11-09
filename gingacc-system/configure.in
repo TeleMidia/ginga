@@ -38,6 +38,9 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util include path
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS" 
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-cpp/gingacc-system/include $CPPFLAGS"
 
 ###########
 # HEADERS #
@@ -260,16 +263,24 @@ AC_SUBST(MULTIPROCESS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile include/thread/Makefile include/process/Makefile 
-    include/io/Makefile
-    include/io/interface/Makefile include/io/interface/content/Makefile
-    include/io/interface/content/image/Makefile
-    include/io/interface/content/text/Makefile
-    include/io/interface/device/Makefile
-    include/io/interface/input/Makefile
-    include/io/interface/output/Makefile
-    src/thread/Makefile src/process/Makefile src/io/Makefile
-    src/io/interface/content/audio/Makefile
-    src/io/interface/content/image/Makefile
-    src/io/interface/content/text/Makefile
-    src/io/interface/content/video/Makefile files/Makefile test/Makefile)
+	Makefile
+	include/system/thread/Makefile
+	include/system/process/Makefile 
+	include/system/io/Makefile
+	include/system/io/interface/Makefile 
+	include/system/io/interface/content/Makefile
+	include/system/io/interface/content/image/Makefile
+	include/system/io/interface/content/text/Makefile
+	include/system/io/interface/device/Makefile
+	include/system/io/interface/input/Makefile
+	include/system/io/interface/output/Makefile
+	src/thread/Makefile 
+	src/process/Makefile
+	src/io/Makefile
+    	src/io/interface/content/audio/Makefile
+    	src/io/interface/content/image/Makefile
+    	src/io/interface/content/text/Makefile
+    	src/io/interface/content/video/Makefile
+	files/Makefile
+	test/Makefile
+)

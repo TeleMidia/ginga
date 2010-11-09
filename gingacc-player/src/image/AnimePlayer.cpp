@@ -47,14 +47,14 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/AnimePlayer.h"
+#include "player/AnimePlayer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../../config.h"
+#include "config.h"
 
-#include "../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {

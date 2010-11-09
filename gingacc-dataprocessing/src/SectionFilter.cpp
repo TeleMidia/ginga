@@ -47,19 +47,19 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/SectionFilter.h"
+#include "dataprocessing/SectionFilter.h"
 
 #ifndef abs
 #define abs(a) ((a) < 0 ? (-a) : (a))
 #endif
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../gingacc-tsparser/include/TransportSection.h"
+#include "tsparser/TransportSection.h"
 #endif
 
 namespace br {

@@ -47,12 +47,12 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Player.h"
+#include "player/Player.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 #include <iostream>
 

@@ -24,6 +24,10 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util, gingacc-tuner ... include paths 
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-tuner/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+
 ###########
 # HEADERS #
 ###########
@@ -167,4 +171,7 @@ Build options:
   Multi Process Support   $enable_multiprocess
 ])
 
-AC_OUTPUT(Makefile include/Makefile src/Makefile test/Makefile)
+AC_OUTPUT(Makefile
+	include/tsparser/Makefile
+	src/Makefile
+	test/Makefile)

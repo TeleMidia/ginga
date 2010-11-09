@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/device/PassiveDeviceService.h"
-#include "../../../include/services/IDeviceDomain.h"
+#include "multidevice/services/device/PassiveDeviceService.h"
+#include "multidevice/services/IDeviceDomain.h"
 
 #include <string.h>
 #include <stdlib.h>

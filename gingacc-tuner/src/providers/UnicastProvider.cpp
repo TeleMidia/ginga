@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/providers/UnicastProvider.h"
+#include "tuner/providers/UnicastProvider.h"
 
 namespace br {
 namespace pucrio {

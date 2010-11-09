@@ -2,5 +2,11 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = include/component include/assembler include/parser \
-    include files src/component src/assembler src/parser src test
+SUBDIRS = 	include/cm include/cm/component include/cm/parser \
+		include/cm/assembler \
+		src \
+		src/component \
+		src/assembler \
+		src/parser \
+		files \
+		test

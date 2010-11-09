@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/network/MulticastSocketService.h"
+#include "multidevice/services/network/MulticastSocketService.h"
 
 namespace br {
 namespace pucrio {

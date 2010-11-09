@@ -2,7 +2,7 @@
 
 PROJECT="Ginga Common Core Interactive Channel 0.11.2"
 TEST_TYPE=-f
-FILE=include/IInteractiveChannelManager.h
+FILE=include/ic/IInteractiveChannelManager.h
 
 LIBTOOL_REQUIRED_VERSION=1.3.4
 AUTOCONF_REQUIRED_VERSION=2.13

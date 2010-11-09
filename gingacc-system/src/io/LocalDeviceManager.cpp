@@ -47,15 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/io/LocalDeviceManager.h"
+#include "system/io/LocalDeviceManager.h"
 
-#include "../../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../include/io/interface/device/dfb/DFBDeviceScreen.h"
+#include "system/io/interface/device/dfb/DFBDeviceScreen.h"
 #endif
 
 namespace br {

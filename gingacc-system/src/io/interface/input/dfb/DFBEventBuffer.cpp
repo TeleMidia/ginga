@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../../include/io/interface/input/dfb/DFBEventBuffer.h"
-#include "../../../../../include/io/interface/input/dfb/DFBGInputEvent.h"
+#include "system/io/interface/input/dfb/DFBEventBuffer.h"
+#include "system/io/interface/input/dfb/DFBGInputEvent.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK

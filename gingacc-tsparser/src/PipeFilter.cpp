@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/PipeFilter.h"
+#include "tsparser/PipeFilter.h"
 
-#include "../include/Pat.h"
+#include "tsparser/Pat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include <stdio.h>

@@ -24,6 +24,9 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util include path 
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+
 ###########
 # HEADERS #
 ###########
@@ -157,4 +160,8 @@ Build options:
   Frontend V4L            $enable_v4lfrontend
 ])
 
-AC_OUTPUT(Makefile files/Makefile src/Makefile include/Makefile test/Makefile)
+AC_OUTPUT(Makefile
+	files/Makefile
+	src/Makefile
+	include/tuner/Makefile
+	test/Makefile)

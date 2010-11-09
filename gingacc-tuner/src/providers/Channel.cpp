@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/providers/Channel.h"
+#include "tuner/providers/Channel.h"
 
 namespace br {
 namespace pucrio {

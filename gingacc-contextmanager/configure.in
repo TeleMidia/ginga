@@ -24,6 +24,10 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util, gingacc-system ... include paths 
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+
 ###########
 # HEADERS #
 ###########
@@ -79,5 +83,10 @@ AC_SUBST(TEST_COMPONENTS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile files/Makefile include/Makefile include/system/Makefile
-    include/user/Makefile src/Makefile test/Makefile)
+    Makefile 
+    files/Makefile 
+    include/contextmanager/Makefile
+    include/contextmanager/system/Makefile
+    include/contextmanager/user/Makefile
+    src/Makefile 
+    test/Makefile)

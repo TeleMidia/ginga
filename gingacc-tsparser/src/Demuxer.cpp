@@ -47,13 +47,13 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Demuxer.h"
+#include "tsparser/Demuxer.h"
 
-#include "../include/PipeFilter.h"
-#include "../include/PSIFilter.h"
-#include "../include/PesFilter.h"
+#include "tsparser/PipeFilter.h"
+#include "tsparser/PSIFilter.h"
+#include "tsparser/PesFilter.h"
 
-#include "../config.h"
+#include "config.h"
 
 namespace br {
 namespace pucrio {

@@ -24,6 +24,12 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util, gingacc-system ... include paths 
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-tsparser/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-tuner/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+
 ###########
 # HEADERS #
 ###########
@@ -141,11 +147,13 @@ Build options:
 ])
 
 AC_OUTPUT(Makefile
-    include/ncl/Makefile
-    include/ncl/edit/Makefile
-    include/dsmcc/Makefile include/dsmcc/npt/Makefile
-    include/dsmcc/carousel/object/Makefile
-    include/Makefile
+    include/dataprocessing/ncl/Makefile
+    include/dataprocessing/ncl/edit/Makefile
+    include/dataprocessing/dsmcc/Makefile
+    include/dataprocessing/dsmcc/npt/Makefile
+    include/dataprocessing/dsmcc/carousel/object/Makefile
+    include/dataprocessing/Makefile
     src/ncl/Makefile
     src/ncl/edit/Makefile
-    src/Makefile test/Makefile)
+    src/Makefile
+    test/Makefile)

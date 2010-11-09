@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/TargetRegionDescriptor.h"
+#include "tsparser/TargetRegionDescriptor.h"
 
 namespace br {
 namespace pucrio {

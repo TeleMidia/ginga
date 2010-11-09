@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../config.h"
+#include "config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -55,10 +55,10 @@ http://www.telemidia.puc-rio.br
 #include <linux/dvb/dmx.h>
 #include <errno.h>
 
-#include "../../../../include/providers/frontends/isdbt/ISDBTFrontend.h"
-#include "../../../../include/providers/IDataProvider.h"
-#include "../../../../include/providers/ISTCProvider.h"
-#include "../../../../include/providers/Channel.h"
+#include "tuner/providers/frontends/isdbt/ISDBTFrontend.h"
+#include "tuner/providers/IDataProvider.h"
+#include "tuner/providers/ISTCProvider.h"
+#include "tuner/providers/Channel.h"
 
 namespace br {
 namespace pucrio {

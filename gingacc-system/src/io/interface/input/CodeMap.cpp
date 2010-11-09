@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../include/io/interface/input/CodeMap.h"
+#include "system/io/interface/input/CodeMap.h"
 
 #ifdef __cplusplus
 extern "C" {

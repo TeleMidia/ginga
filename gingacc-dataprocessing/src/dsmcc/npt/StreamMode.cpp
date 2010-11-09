@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/dsmcc/npt/StreamMode.h"
+#include "dataprocessing/dsmcc/npt/StreamMode.h"
 
 namespace br {
 namespace pucrio {

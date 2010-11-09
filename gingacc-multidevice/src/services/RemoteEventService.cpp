@@ -47,15 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../config.h"
+#include "config.h"
 
-#include "../../include/services/RemoteEventService.h"
+#include "multidevice/services/RemoteEventService.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../../gingacc-contextmanager/include/ContextManager.h"
+#include "contextmanager/ContextManager.h"
 #endif
 
 namespace br {

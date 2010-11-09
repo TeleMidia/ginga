@@ -2,4 +2,9 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = files include include/system include/user src test
+SUBDIRS = files \
+          include/contextmanager \
+          include/contextmanager/system \
+          include/contextmanager/user \
+          src/ \
+          test

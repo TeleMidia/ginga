@@ -47,17 +47,17 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../gingacc-tuner/include/Tuner.h"
-#include "../../gingacc-tsparser/include/Demuxer.h"
-#include "../../gingacc-tsparser/include/PipeFilter.h"
-#include "../../gingacc-dataprocessing/include/DataProcessor.h"
-#include "../../gingacc-system/include/io/interface/output/dfb/DFBWindow.h"
+#include "tuner/Tuner.h"
+#include "tsparser/Demuxer.h"
+#include "tsparser/PipeFilter.h"
+#include "dataprocessing/DataProcessor.h"
+#include "system/io/interface/output/dfb/DFBWindow.h"
 #endif
 
 #include "tuner/ITuner.h"
@@ -67,20 +67,21 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #include "tsparser/ITSFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "../include/DataProcessor.h"
+#include "dataprocessing/DataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "../include/ncl/NCLSectionProcessor.h"
-#include "../include/ncl/Metadata.h"
+#include "dataprocessing/ncl/NCLSectionProcessor.h"
+#include "dataprocessing/ncl/Metadata.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
-#include "../include/dsmcc/npt/DSMCCSectionPayload.h"
-#include "../include/dsmcc/npt/NPTProcessor.h"
-#include "../include/dsmcc/npt/Stc.h"
+#include "dataprocessing/dsmcc/npt/DSMCCSectionPayload.h"
+#include "dataprocessing/dsmcc/npt/NPTProcessor.h"
+#include "dataprocessing/dsmcc/npt/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 #include <fcntl.h>
 
 int main(int argc, char** argv) {

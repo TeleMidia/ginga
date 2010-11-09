@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/assembler/ComponentDescription.h"
+#include "cm/assembler/ComponentDescription.h"
 
 #include <unistd.h>
 

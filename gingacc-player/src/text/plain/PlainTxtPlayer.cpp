@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "util/Color.h"
 
-#include "../../../include/PlainTxtPlayer.h"
+#include "player/PlainTxtPlayer.h"
 
 namespace br {
 namespace pucrio {

@@ -51,9 +51,9 @@ http://www.telemidia.puc-rio.br
 #include "system/io/interface/content/text/IFontProvider.h"
 #include "system/io/interface/output/ISurface.h"
 
-#include "../../include/TextPlayer.h"
+#include "player/TextPlayer.h"
 
-#include "../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {

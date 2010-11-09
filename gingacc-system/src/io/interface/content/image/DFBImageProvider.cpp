@@ -49,10 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "util/Color.h"
 
-#include "../../../../../include/io/interface/content/image/DFBImageProvider.h"
-#include "../../../../../include/io/interface/output/dfb/DFBWindow.h"
-#include "../../../../../include/io/interface/output/dfb/DFBSurface.h"
-#include "../../../../../include/io/LocalDeviceManager.h"
+#include "system/io/interface/content/image/DFBImageProvider.h"
+#include "system/io/interface/output/dfb/DFBWindow.h"
+#include "system/io/interface/output/dfb/DFBSurface.h"
+#include "system/io/LocalDeviceManager.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK

@@ -50,16 +50,16 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../include/RemoteDeviceManager.h"
+#include "multidevice/RemoteDeviceManager.h"
 #endif
 
-#include "../include/IRemoteDeviceManager.h"
+#include "multidevice/IRemoteDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 
 int main(int argc, char *argv[]) {

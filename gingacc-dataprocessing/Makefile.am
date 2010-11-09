@@ -2,6 +2,13 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = include include/dsmcc include/dsmcc/npt \
-    include/dsmcc/carousel/object include/ncl include/ncl/edit \
-    src src/ncl src/ncl/edit test
+SUBDIRS =	include/dataprocessing \
+		include/dataprocessing/dsmcc \
+		include/dataprocessing/dsmcc/npt \
+		include/dataprocessing/dsmcc/carousel/object \
+		include/dataprocessing/ncl \
+		include/dataprocessing/ncl/edit \
+    		src \
+    		src/ncl \
+    		src/ncl/edit \
+    		test

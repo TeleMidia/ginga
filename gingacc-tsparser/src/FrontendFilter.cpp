@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/FrontendFilter.h"
+#include "tsparser/FrontendFilter.h"
 
 namespace br {
 namespace pucrio {

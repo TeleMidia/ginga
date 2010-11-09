@@ -2,12 +2,20 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = include/thread include/process include/io include/io/interface \
-    include/io/interface/content \
-    include/io/interface/content/image include/io/interface/content/text \
-    include/io/interface/device \
-    include/io/interface/input \
-    include/io/interface/output \
-    src/thread src/process src/io \
-    src/io/interface/content/audio src/io/interface/content/image \
-    src/io/interface/content/text src/io/interface/content/video files test
+SUBDIRS = 	include/system/thread \
+			include/system/process \
+			include/system/io \
+			include/system/io/interface \
+			include/system/io/interface/content \
+			include/system/io/interface/content/image \
+			include/system/io/interface/content/text \
+			include/system/io/interface/device \
+			include/system/io/interface/input \
+			include/system/io/interface/output \
+			src/thread src/process src/io \
+			src/io/interface/content/audio \
+			src/io/interface/content/image \
+			src/io/interface/content/text \
+			src/io/interface/content/video \
+			files \
+			test

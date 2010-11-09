@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/network/BroadcastSocketService.h"
+#include "multidevice/services/network/BroadcastSocketService.h"
 
 #include <stdio.h>
 #include <errno.h>

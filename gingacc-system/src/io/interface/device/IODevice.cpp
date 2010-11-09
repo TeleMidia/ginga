@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../include/io/interface/device/IODevice.h"
+#include "system/io/interface/device/IODevice.h"
 
 namespace br {
 namespace pucrio {

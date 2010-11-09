@@ -2,7 +2,7 @@
 
 PROJECT="Ginga Common Core Data Processing 0.11.2"
 TEST_TYPE=-f
-FILE=include/DataProcessor.h
+FILE=include/dataprocessing/DataProcessor.h
 
 LIBTOOL_REQUIRED_VERSION=1.3.4
 AUTOCONF_REQUIRED_VERSION=2.13

@@ -47,15 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../config.h"
-#include "../include/NetworkInterface.h"
+#include "config.h"
+#include "tuner/NetworkInterface.h"
 
-#include "../include/providers/FileSystemProvider.h"
-#include "../include/providers/MulticastProvider.h"
-#include "../include/providers/UnicastProvider.h"
+#include "tuner/providers/FileSystemProvider.h"
+#include "tuner/providers/MulticastProvider.h"
+#include "tuner/providers/UnicastProvider.h"
 
 #if HAVE_FEV4L
-#include "../include/providers/frontends/isdbt/ISDBTProvider.h"
+#include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
 #endif
 
 namespace br {

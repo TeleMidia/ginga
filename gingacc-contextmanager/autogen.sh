@@ -2,7 +2,7 @@
 
 PROJECT="Ginga Common Core Context Manager 0.11.2"
 TEST_TYPE=-f
-FILE=include/IContextManager.h
+FILE=include/contextmanager/IContextManager.h
 
 LIBTOOL_REQUIRED_VERSION=1.3.4
 AUTOCONF_REQUIRED_VERSION=2.13

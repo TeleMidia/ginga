@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../include/LuaPlayer.h"
+#include "player/LuaPlayer.h"
 
-#include "../../../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -335,7 +335,7 @@ string cmd_to_str(lua_State* L) {
 		lua_pop(L, 1);
 
 	} else if (!strcmp(command, "removeDescriptor")) {
-		lua_getfield(L, 2,"connectorBaseId");
+		lua_getfield(L, 2,"descriptorId");
 		const char* xmlRule = luaL_checkstring(L, -1);
 
 		edit[1].append("0x18");
@@ -381,7 +381,7 @@ string cmd_to_str(lua_State* L) {
 
 	/****TRANSITION****/
 	} else if (!strcmp(command, "addTransition")) {
-		lua_getfield(L, 2,"connectorBaseId");
+		lua_getfield(L, 2,"data");
 		const char* conBaseId = luaL_checkstring(L, -1);
 
 		edit[1].append("0x1D");

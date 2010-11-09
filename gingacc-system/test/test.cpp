@@ -50,24 +50,24 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../config.h"
+#include "config.h"
 
-#include "../include/io/LocalDeviceManager.h"
+#include "system/io/LocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
 #if HAVE_XINEPROVIDER
-#include "../include/io/interface/content/video/XineVideoProvider.h"
+#include "system/io/interface/content/video/XineVideoProvider.h"
 #endif
 
 #if HAVE_FFMPEGPROVIDER
-#include "../include/io/interface/content/video/FFmpegVideoProvider.h"
+#include "system/io/interface/content/video/FFmpegVideoProvider.h"
 #endif
 
-#include "../include/io/interface/input/CodeMap.h"
+#include "system/io/interface/input/CodeMap.h"
 
-#include "../include/io/interface/output/ISurface.h"
-#include "../include/io/interface/output/dfb/DFBWindow.h"
-#include "../include/io/interface/content/image/DFBImageProvider.h"
+#include "system/io/interface/output/ISurface.h"
+#include "system/io/interface/output/dfb/DFBWindow.h"
+#include "system/io/interface/content/image/DFBImageProvider.h"
 
 #include <iostream>
 using namespace std;

@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/services/BaseDeviceDomain.h"
-#include "../../include/services/device/ActiveDeviceService.h"
-#include "../../include/services/device/PassiveDeviceService.h"
+#include "multidevice/services/BaseDeviceDomain.h"
+#include "multidevice/services/device/ActiveDeviceService.h"
+#include "multidevice/services/device/PassiveDeviceService.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

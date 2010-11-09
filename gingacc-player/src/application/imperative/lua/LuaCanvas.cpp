@@ -61,11 +61,11 @@ http://www.telemidia.puc-rio.br
  * funcoes DFB correspondentes.
  ******************************************************************************/
 
-#include "../../../../include/LuaPlayer.h"
-#include "../../../../include/ImagePlayer.h"
+#include "player/LuaPlayer.h"
+#include "player/ImagePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "../../../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 #include "system/io/interface/content/text/IFontProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::io;

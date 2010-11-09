@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/providers/FileSystemProvider.h"
-#include "../../include/providers/IProviderListener.h"
+#include "tuner/providers/FileSystemProvider.h"
+#include "tuner/providers/IProviderListener.h"
 
 namespace br {
 namespace pucrio {

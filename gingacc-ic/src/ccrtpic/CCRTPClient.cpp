@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/ccrtpic/CCRTPClient.h"
+#include "ic/ccrtpic/CCRTPClient.h"
 
 namespace br {
 namespace pucrio {

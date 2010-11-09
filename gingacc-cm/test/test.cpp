@@ -47,10 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/IComponentManager.h"
-#include "../include/assembler/IComponentDescription.h"
-#include "../include/parser/IComponentParser.h"
-#include "../include/component/IComponent.h"
+#include "cm/IComponentManager.h"
+#include "cm/assembler/IComponentDescription.h"
+#include "cm/parser/IComponentParser.h"
+#include "cm/component/IComponent.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 #include <sys/stat.h>

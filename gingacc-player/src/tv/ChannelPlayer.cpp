@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/ChannelPlayer.h"
+#include "player/ChannelPlayer.h"
 
 #include <iostream>
 using namespace std;

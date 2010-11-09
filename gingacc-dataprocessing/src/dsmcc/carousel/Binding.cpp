@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/dsmcc/carousel/Binding.h"
+#include "dataprocessing/dsmcc/carousel/Binding.h"
 
 namespace br {
 namespace pucrio {

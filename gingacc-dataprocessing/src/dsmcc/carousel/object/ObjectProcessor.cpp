@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../include/dsmcc/carousel/object/ObjectProcessor.h"
+#include "dataprocessing/dsmcc/carousel/object/ObjectProcessor.h"
 
 namespace br {
 namespace pucrio {

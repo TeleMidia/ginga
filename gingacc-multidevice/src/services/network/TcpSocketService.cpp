@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include <netinet/in.h>
 #include <netdb.h>
 #include <pthread.h>
-#include "../../../include/services/network/TcpSocketService.h"
+#include "multidevice/services/network/TcpSocketService.h"
 
 namespace br {
 namespace pucrio {

@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/network/TcpClientConnection.h"
+#include "multidevice/services/network/TcpClientConnection.h"
 
 namespace br {
 namespace pucrio {

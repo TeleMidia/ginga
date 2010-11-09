@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/EPGProcessor.h"
+#include "dataprocessing/EPGProcessor.h"
 
-#include "../config.h"
+#include "config.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -58,11 +58,11 @@ using namespace ::br::pucrio::telemidia::util;
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../gingacc-tsparser/include/ServiceInfo.h"
-#include "../../gingacc-tsparser/include/EventInfo.h"
-#include "../../gingacc-tsparser/include/TOT.h"
-#include "../../gingacc-tsparser/include/ShortEventDescriptor.h"
-#include "../../gingacc-tsparser/include/LogoTransmissionDescriptor.h"
+#include "tsparser/ServiceInfo.h"
+#include "tsparser/EventInfo.h"
+#include "tsparser/TOT.h"
+#include "tsparser/ShortEventDescriptor.h"
+#include "tsparser/LogoTransmissionDescriptor.h"
 #endif
 
 #include "tsparser/IServiceInfo.h"
@@ -77,7 +77,7 @@ using namespace::br::pucrio::telemidia::ginga::core::tsparser;
 #include "tsparser/IServiceDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
-#include "../include/IEPGListener.h"
+#include "dataprocessing/IEPGListener.h"
 #include <iostream>
 using namespace std;
 

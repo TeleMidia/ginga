@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-    $(FFMPEG_CFLAGS) $(all_includes)
+    $(FFMPEG_CFLAGS) $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 

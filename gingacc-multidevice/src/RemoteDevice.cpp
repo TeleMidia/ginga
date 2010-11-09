@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/RemoteDevice.h"
+#include "multidevice/RemoteDevice.h"
 
 namespace br {
 namespace pucrio {

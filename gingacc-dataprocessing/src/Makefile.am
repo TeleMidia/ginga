@@ -1,12 +1,13 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ $(all_includes)
+INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
 # the library search path.
 localLibdir = /usr/local/lib/ginga
 
+libgingaccdataprocessing_so_CPPFLAGS = -I../include
 libgingaccdataprocessing_so_LDFLAGS = -Wl,-soname,libgingaccdataprocessing.so \
 	-shared -L/usr/local/lib -L/usr/local/lib/ginga
 

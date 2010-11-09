@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/ncl/DataFile.h"
+#include "dataprocessing/ncl/DataFile.h"
 
 namespace br {
 namespace pucrio {

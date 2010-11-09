@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Tuner.h"
+#include "tuner/Tuner.h"
 
 namespace br {
 namespace pucrio {

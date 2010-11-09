@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/device/ActiveDeviceService.h"
-#include "../../../include/services/IDeviceDomain.h"
+#include "multidevice/services/device/ActiveDeviceService.h"
+#include "multidevice/services/IDeviceDomain.h"
 
 namespace br {
 namespace pucrio {

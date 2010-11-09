@@ -47,16 +47,16 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/io/InputManager.h"
+#include "system/io/InputManager.h"
 
-#include "../../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../include/io/interface/input/dfb/DFBEventBuffer.h"
-#include "../../include/io/interface/input/dfb/DFBGInputEvent.h"
+#include "system/io/interface/input/dfb/DFBEventBuffer.h"
+#include "system/io/interface/input/dfb/DFBGInputEvent.h"
 #endif
 
 namespace br {

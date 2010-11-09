@@ -47,23 +47,23 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../config.h"
+#include "config.h"
 
-#include "../include/ImagePlayer.h"
-#include "../include/AVPlayer.h"
+#include "player/ImagePlayer.h"
+#include "player/AVPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #if HAVE_MULTIPROCESS
 #include "system/process/Process.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 
-#include "../include/PlayerProcess.h"
+#include "player/PlayerProcess.h"
 #endif
 
 #include "system/io/ILocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
-#include "../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 int main(int argc, char** argv, char** envp) {
 	IWindow* w;

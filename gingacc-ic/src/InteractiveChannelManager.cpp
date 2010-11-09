@@ -47,16 +47,16 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/InteractiveChannelManager.h"
-#include "../include/IInteractiveChannel.h"
+#include "ic/InteractiveChannelManager.h"
+#include "ic/IInteractiveChannel.h"
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../include/curlic/CurlInteractiveChannel.h"
+#include "ic/curlic/CurlInteractiveChannel.h"
 #endif
 
 namespace br {

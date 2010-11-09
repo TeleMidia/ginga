@@ -1,6 +1,6 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes)
+INCLUDES = $(all_includes) -I$(top_srcdir)/include
 LIBS =
 
 noinst_PROGRAMS = test
@@ -10,4 +10,4 @@ test_SOURCES = test.cpp
 test_LDADD =  -ldl
 
 test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L../src -L../src/component -L../src/parser
+    -L../src/cm -L../src/cm/component -L../src/cm/parser

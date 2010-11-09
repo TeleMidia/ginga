@@ -51,10 +51,10 @@ http://www.telemidia.puc-rio.br
 
 #include <string.h>
 
-#include "../../../../include/LuaPlayer.h"
+#include "player/LuaPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "../../../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 // TODO: alter type verification of other modules
 // or try a more generic approach for protection

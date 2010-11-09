@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/Pmt.h"
-#include "../../include/IDemuxer.h"
+#include "tsparser/Pmt.h"
+#include "tsparser/IDemuxer.h"
 
 namespace br {
 namespace pucrio {

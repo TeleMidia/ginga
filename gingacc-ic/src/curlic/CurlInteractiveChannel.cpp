@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/curlic/CurlInteractiveChannel.h"
+#include "ic/curlic/CurlInteractiveChannel.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
