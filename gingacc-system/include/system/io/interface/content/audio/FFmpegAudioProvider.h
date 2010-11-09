@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef FFmpegAudioProvider_H_
 #define FFmpegAudioProvider_H_
 
-#include "../../../../../config.h"
+#include "config.h"
 
 #include "../IContinuousMediaProvider.h"
 #include "../audio/FusionSoundAudioProvider.h"
