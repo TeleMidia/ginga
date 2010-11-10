@@ -47,7 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "multidevice/services/network/TcpClientConnection.h"
+#include "../../../include/multidevice/services/network/TcpClientConnection.h"
+
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#endif
 
 namespace br {
 namespace pucrio {
@@ -83,8 +87,13 @@ namespace multidevice {
 
 		} else {
 			set = 1;
+#ifndef _WIN32
 			setsockopt(
 					sockfd, SOL_SOCKET, SO_KEEPALIVE, (void*)&set, sizeof(int));
+#else
+			setsockopt(
+					sockfd, SOL_SOCKET, SO_KEEPALIVE, (char*)&set, sizeof(int));
+#endif
 
 			connect(sockfd, res->ai_addr, res->ai_addrlen);
 		}
@@ -106,14 +115,23 @@ namespace multidevice {
 		int nr;
 		int nw;
 
+#ifndef _WIN32
 		asprintf(&com, "%d %s", counter, str);
+#else
+		com = new char(32);
+		sprintf_s(com, 32,"%d %s", counter, str);
+#endif
 		counter++;
 
 		if (sockfd < 0) {
 			return false;
 		}
 
+#ifndef _WIN32
 		nw = send(sockfd,com,strlen(com), MSG_NOSIGNAL);
+#else
+		nw = send(sockfd,com,strlen(com), 0 /*MSG_NOSIGNAL*/);
+#endif
 		if (nw != strlen(com)) {
 			perror("TCPClientConnection::post send error");
 			this->end();

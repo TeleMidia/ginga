@@ -59,6 +59,10 @@ http://www.telemidia.puc-rio.br
 #include <dlfcn.h>
 #include <fcntl.h>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#pragma comment(lib,"ws2_32.lib")
+#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -68,7 +72,7 @@ http://www.telemidia.puc-rio.br
 #include <netdb.h>
 #include <unistd.h>
 #include <net/if.h>
-
+#endif
 #ifdef __DARWIN_UNIX03
 #include <ifaddrs.h>
 #define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])

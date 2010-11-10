@@ -50,7 +50,11 @@ http://www.telemidia.puc-rio.br
 #ifndef _BaseDeviceDomain_H_
 #define _BaseDeviceDomain_H_
 
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

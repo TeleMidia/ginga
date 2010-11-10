@@ -54,8 +54,12 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#ifdef _WIN32
+#include <io.h>
+#else
 #include <unistd.h>
 #include <sys/ioctl.h>
+#endif
 #include <fcntl.h>
 
 namespace br {
