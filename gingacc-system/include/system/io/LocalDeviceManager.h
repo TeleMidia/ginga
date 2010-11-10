@@ -81,7 +81,9 @@ namespace io {
 			void release();
 
 			void setBackgroundImage(string uri);
-
+#ifdef _WIN32			
+			void callStaticSetParameters(int numArgs, char* args[]);
+#endif
 			static LocalDeviceManager* getInstance();
 			int getDeviceWidth(
 					unsigned int deviceNumber=0, unsigned int screenNumber=0);

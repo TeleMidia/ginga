@@ -55,7 +55,11 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "system/io/interface/device/dfb/DFBDeviceScreen.h"
+#ifndef _WIN32
+#include "../../include/system/io/interface/device/dfb/DFBDeviceScreen.h"
+#else
+#include "../../include/system/io/interface/device/dx/DXDeviceScreen.h"
+#endif
 #endif
 
 namespace br {
@@ -115,7 +119,11 @@ namespace io {
 			dev->setBackgroundImage(uri);
 		}
 	}
-
+#ifdef _WIN32
+	void LocalDeviceManager::callStaticSetParameters(int numArgs, char* args[]){
+		LocalDeviceManager::setParameters(numArgs, args);
+	}
+#endif
 	void LocalDeviceManager::setParameters(int numArgs, char* args[]) {
 		LocalDeviceManager::numArgs = numArgs;
 		LocalDeviceManager::args = args;
@@ -196,7 +204,11 @@ namespace io {
 #if HAVE_COMPSUPPORT
 			scr = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(0, NULL);
 #else
+#ifndef _WIN32
 			scr = new DFBDeviceScreen(0, NULL);
+#else
+			scr = new DXDeviceScreen(this->numArgs, this->args);
+#endif
 #endif
 
 			if (scr != NULL) {

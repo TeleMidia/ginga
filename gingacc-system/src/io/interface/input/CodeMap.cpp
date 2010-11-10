@@ -49,12 +49,17 @@ http://www.telemidia.puc-rio.br
 
 #include "system/io/interface/input/CodeMap.h"
 
+#ifdef _WIN32
+#include <dinput.h>
+#else
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 #include <directfb.h>
 #ifdef __cplusplus
 }
+#endif
 #endif
 
 namespace br {
@@ -64,6 +69,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
+#ifndef _WIN32
 	const int CodeMap::KEY_NULL              = DIKS_NULL;
 	const int CodeMap::KEY_0                 = DIKS_0;
 	const int CodeMap::KEY_1                 = DIKS_1;
@@ -196,7 +202,140 @@ namespace io {
 	const int CodeMap::KEY_LESS_THAN_SIGN    = DIKS_LESS_THAN_SIGN;
 
 	const int CodeMap::KEY_TAP = DIKS_CUSTOM0;
+#else
+	const int CodeMap::KEY_NULL = 0x00; // ?
+	const int CodeMap::KEY_0 = DIK_0;
+	const int CodeMap::KEY_1 = DIK_1;
+	const int CodeMap::KEY_2 = DIK_2;
+	const int CodeMap::KEY_3 = DIK_3;
+	const int CodeMap::KEY_4 = DIK_4;
+	const int CodeMap::KEY_5 = DIK_5;
+	const int CodeMap::KEY_6 = DIK_6;
+	const int CodeMap::KEY_7 = DIK_7;
+	const int CodeMap::KEY_8 = DIK_8;
+	const int CodeMap::KEY_9 = DIK_9;
 
+	const int CodeMap::KEY_GREATER_THAN_SIGN = 0x00;
+	const int CodeMap::KEY_LESS_THAN_SIGN = 0x00;
+	const int CodeMap::KEY_SUPER = 0x00;
+
+	const int CodeMap::KEY_SMALL_A = DIK_A;
+	const int CodeMap::KEY_SMALL_B = DIK_B;
+	const int CodeMap::KEY_SMALL_C = DIK_C;
+	const int CodeMap::KEY_SMALL_D = DIK_D;
+	const int CodeMap::KEY_SMALL_E = DIK_E;
+	const int CodeMap::KEY_SMALL_F = DIK_F;
+	const int CodeMap::KEY_SMALL_G = DIK_G;
+	const int CodeMap::KEY_SMALL_H = DIK_H;
+	const int CodeMap::KEY_SMALL_I = DIK_I;
+	const int CodeMap::KEY_SMALL_J = DIK_J;
+	const int CodeMap::KEY_SMALL_K = DIK_K;
+	const int CodeMap::KEY_SMALL_L = DIK_L;
+	const int CodeMap::KEY_SMALL_M = DIK_M;
+	const int CodeMap::KEY_SMALL_N = DIK_N;
+	const int CodeMap::KEY_SMALL_O = DIK_O;
+	const int CodeMap::KEY_SMALL_P = DIK_P;
+	const int CodeMap::KEY_SMALL_Q = DIK_Q;
+	const int CodeMap::KEY_SMALL_R = DIK_R;
+	const int CodeMap::KEY_SMALL_S = DIK_S;
+	const int CodeMap::KEY_SMALL_T = DIK_T;
+	const int CodeMap::KEY_SMALL_U = DIK_U;
+	const int CodeMap::KEY_SMALL_V = DIK_V;
+	const int CodeMap::KEY_SMALL_W = DIK_W;
+	const int CodeMap::KEY_SMALL_X = DIK_X;
+	const int CodeMap::KEY_SMALL_Y = DIK_Y;
+	const int CodeMap::KEY_SMALL_Z = DIK_Z;
+
+	const int CodeMap::KEY_CAPITAL_A = DIK_A;
+	const int CodeMap::KEY_CAPITAL_B = DIK_B;
+	const int CodeMap::KEY_CAPITAL_C = DIK_C;
+	const int CodeMap::KEY_CAPITAL_D = DIK_D;
+	const int CodeMap::KEY_CAPITAL_E = DIK_E;
+	const int CodeMap::KEY_CAPITAL_F = DIK_F;
+	const int CodeMap::KEY_CAPITAL_G = DIK_G;
+	const int CodeMap::KEY_CAPITAL_H = DIK_H;
+	const int CodeMap::KEY_CAPITAL_I = DIK_I;
+	const int CodeMap::KEY_CAPITAL_J = DIK_J;
+	const int CodeMap::KEY_CAPITAL_K = DIK_K;
+	const int CodeMap::KEY_CAPITAL_L = DIK_L;
+	const int CodeMap::KEY_CAPITAL_M = DIK_M;
+	const int CodeMap::KEY_CAPITAL_N = DIK_N;
+	const int CodeMap::KEY_CAPITAL_O = DIK_O;
+	const int CodeMap::KEY_CAPITAL_P = DIK_P;
+	const int CodeMap::KEY_CAPITAL_Q = DIK_Q;
+	const int CodeMap::KEY_CAPITAL_R = DIK_R;
+	const int CodeMap::KEY_CAPITAL_S = DIK_S;
+	const int CodeMap::KEY_CAPITAL_T = DIK_T;
+	const int CodeMap::KEY_CAPITAL_U = DIK_U;
+	const int CodeMap::KEY_CAPITAL_V = DIK_V;
+	const int CodeMap::KEY_CAPITAL_W = DIK_W;
+	const int CodeMap::KEY_CAPITAL_X = DIK_X;
+	const int CodeMap::KEY_CAPITAL_Y = DIK_Y;
+	const int CodeMap::KEY_CAPITAL_Z = DIK_Z;
+
+	const int CodeMap::KEY_PAGE_DOWN = DIK_PGDN;
+	const int CodeMap::KEY_PAGE_UP	 = DIK_PGUP;
+
+	const int CodeMap::KEY_F1 = DIK_F1;
+	const int CodeMap::KEY_F2 = DIK_F2;
+	const int CodeMap::KEY_F3 = DIK_F3;
+	const int CodeMap::KEY_F4 = DIK_F4;
+	const int CodeMap::KEY_F5 = DIK_F5;
+	const int CodeMap::KEY_F6 = DIK_F6;
+	const int CodeMap::KEY_F7 = DIK_F7;
+	const int CodeMap::KEY_F8 = DIK_F8;
+	const int CodeMap::KEY_F9 = DIK_F9;
+	const int CodeMap::KEY_F10 = DIK_F10;
+	const int CodeMap::KEY_F11 = DIK_F11;
+	const int CodeMap::KEY_F12 = DIK_F12;
+
+	const int CodeMap::KEY_PLUS_SIGN = DIK_NUMPADPLUS;
+	const int CodeMap::KEY_MINUS_SIGN = DIK_NUMPADPERIOD;
+
+	const int CodeMap::KEY_ASTERISK = DIK_MULTIPLY;
+	const int CodeMap::KEY_NUMBER_SIGN = 0x23; // ?
+	const int CodeMap::KEY_PERIOD = 0x00; // ?
+	const int CodeMap::KEY_PRINTSCREEN = 0x00;
+
+	const int CodeMap::KEY_MENU = DIK_APPS; 
+	const int CodeMap::KEY_INFO = 0x14; // ?
+	const int CodeMap::KEY_EPG = 0x1B; // ?
+
+	const int CodeMap::KEY_CURSOR_DOWN = DIK_DOWN;
+	const int CodeMap::KEY_CURSOR_LEFT = DIK_LEFT;
+	const int CodeMap::KEY_CURSOR_RIGHT = DIK_RIGHT;
+	const int CodeMap::KEY_CURSOR_UP = DIK_UP;
+
+	const int CodeMap::KEY_CHANNEL_DOWN = 0x47; // ?
+	const int CodeMap::KEY_CHANNEL_UP = 0x46; // ?
+
+	const int CodeMap::KEY_VOLUME_DOWN = DIK_VOLUMEDOWN;
+	const int CodeMap::KEY_VOLUME_UP = DIK_VOLUMEUP;
+
+	const int CodeMap::KEY_ENTER = DIK_RETURN;
+	const int CodeMap::KEY_OK = 0x0B; // ?
+
+	const int CodeMap::KEY_RED = 0x42; // ?
+	const int CodeMap::KEY_GREEN = 0x43; // ?
+	const int CodeMap::KEY_YELLOW = 0x44; // ?
+	const int CodeMap::KEY_BLUE = 0x45; // ?
+
+	const int CodeMap::KEY_BACKSPACE = DIK_BACKSPACE;
+	const int CodeMap::KEY_BACK = DIK_BACK;
+	const int CodeMap::KEY_ESCAPE = DIK_ESCAPE;
+	const int CodeMap::KEY_EXIT = 0x62; // ?
+
+	const int CodeMap::KEY_POWER = DIK_POWER;
+	const int CodeMap::KEY_REWIND = 0x59; // ?
+	const int CodeMap::KEY_STOP = DIK_STOP;
+	const int CodeMap::KEY_EJECT = 0x57; // ?
+	const int CodeMap::KEY_PLAY = DIK_PLAYPAUSE;
+	const int CodeMap::KEY_RECORD = 0x56;
+	const int CodeMap::KEY_PAUSE = DIK_PAUSE;
+
+	const int CodeMap::KEY_TAP = DIMOFS_BUTTON0;
+
+#endif
 	CodeMap::CodeMap() {
 		keyMap = new map<string, int>;
 		(*keyMap)["NO_CODE"] = KEY_NULL;

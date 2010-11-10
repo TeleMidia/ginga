@@ -52,6 +52,10 @@ http://www.telemidia.puc-rio.br
 
 #include "IIODevice.h"
 
+#ifdef _WIN32
+#include <pthread.h>
+#endif
+
 #include <string>
 #include <map>
 using namespace std;

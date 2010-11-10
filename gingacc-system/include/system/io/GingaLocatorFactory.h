@@ -55,6 +55,10 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "IGingaLocatorFactory.h"
 
+#ifdef _WIN32
+#include <pthread.h>
+#endif
+
 #include <map>
 #include <vector>
 #include <string>

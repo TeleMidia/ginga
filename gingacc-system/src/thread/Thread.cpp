@@ -49,6 +49,16 @@ http://www.telemidia.puc-rio.br
 
 #include "system/thread/Thread.h"
 
+#ifdef _WIN32
+void gettimeofday(struct timeval* t,void* timezone)
+{       struct _timeb timebuffer;
+		_ftime64_s(&timebuffer);
+       // _ftime( &timebuffer );
+        t->tv_sec= (long)timebuffer.time;
+        t->tv_usec=1000*timebuffer.millitm;
+}
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {

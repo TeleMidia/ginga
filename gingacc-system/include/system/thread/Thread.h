@@ -51,7 +51,14 @@ http://www.telemidia.puc-rio.br
 #define __THREAD_H__
 
 #include <errno.h>
+#ifdef _WIN32
+#include <sys/timeb.h>
+#include <sys/types.h>
+#include <winsock2.h>
+#endif
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 #include <pthread.h>
 
 namespace br {
