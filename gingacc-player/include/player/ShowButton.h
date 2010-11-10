@@ -61,7 +61,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
+#ifndef _WIN32
 #include "system/io/interface/output/dfb/DFBWindow.h"
+#else
+#include "system/io/interface/output/dx/DXWindow.h"
+#endif
 #endif
 
 #include "IShowButton.h"

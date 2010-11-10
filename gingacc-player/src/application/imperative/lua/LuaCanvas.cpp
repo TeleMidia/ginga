@@ -73,7 +73,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 #define LUAPLAYER_CANVAS  "luaplayer.Canvas"
 #define REFFILL           (-3)
 #define REFFRAME          (-4)
+#ifndef _WIN32
 #define FONTDIR   "/usr/local/etc/ginga/files/font/"
+#else
+#define FONTDIR   "/usr/local/etc/ginga/files/font/"
+#endif
 #define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
 
 typedef struct Canvas {
@@ -128,9 +132,15 @@ static int l_new (lua_State* L)
 			sfc->setBgColor(canvas->color);
 			sfc->clearContent();
 #else
+#ifndef _WIN32
 			sfc = new DFBSurface(luaL_checkint(L, 2), luaL_checkint(L, 3));
 			sfc->setBgColor(canvas->color);
 			sfc->clearContent();
+#else
+			sfc = new DXSurface(luaL_checkint(L, 2), luaL_checkint(L, 3));
+			sfc->setBgColor(canvas->color);
+			sfc->clearContent();
+#endif
 #endif
 			break;
 		}
@@ -248,7 +258,11 @@ static int l_attrFont (lua_State* L)
 	font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
 			path, canvas->font.size);
 #else
+#ifndef _WIN32
 	font = new DFBFontProvider(path, canvas->font.size);
+#else
+	font = new DXFontProvider(path, canvas->font.size);
+#endif
 #endif
 
 	if (font == NULL) luaL_error(L, "invalid font: %s", path);

@@ -58,6 +58,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
 #include "IPlayer.h"
 
+#include <pthread.h>
+
 #ifndef HAVE_CLOCKTIME
 #define HAVE_CLOCKTIME 1
 #endif

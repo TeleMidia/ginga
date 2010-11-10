@@ -67,7 +67,11 @@ namespace player {
 			provider = ((ImageProviderCreator*)(cm->getObject(
 					"ImageProvider")))(mrl.c_str());
 #else
+#ifndef _WIN32
 			provider = new DFBImageProvider(mrl.c_str());
+#else
+			provider = new DXImageProvider(mrl.c_str());
+#endif
 #endif
 		} else {
 			if (!fileExists(mrl) && !isAbsolutePath(mrl)) {
@@ -113,7 +117,11 @@ namespace player {
 						provider = ((ImageProviderCreator*)(cm->getObject(
 								"ImageProvider")))(newMrl.c_str());
 #else
+#ifndef _WIN32
 						provider = new DFBImageProvider(newMrl.c_str());
+#else
+						provider = new DXImageProvider(newMrl.c_str());
+#endif
 #endif
 					} else {
 						provider = NULL;
@@ -204,7 +212,12 @@ namespace player {
 			imgProvider = ((ImageProviderCreator*)(cm->getObject(
 					"ImageProvider")))(mrl.c_str());
 #else
+#ifndef _WIN32
 			imgProvider = new DFBImageProvider(mrl.c_str());
+#else
+			imgProvider = new DXImageProvider(mrl.c_str());
+#endif
+
 #endif
 		} else {
 			if (!isAbsolutePath(mrl)) {
@@ -214,7 +227,11 @@ namespace player {
 					imgProvider = ((ImageProviderCreator*)(cm->getObject(
 							"ImageProvider")))(newMrl.c_str());
 #else
+#ifndef _WIN32
 					imgProvider = new DFBImageProvider(newMrl.c_str());
+#else
+					imgProvider = new DXImageProvider(newMrl.c_str());
+#endif
 #endif
 				} else {
 					cout << "ImagePlayer::renderImage Warning! Can't render '";

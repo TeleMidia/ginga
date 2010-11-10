@@ -241,5 +241,5 @@ extern "C" void destroyChannelPlayer(::br::pucrio::telemidia::ginga::core::
 		player::IPlayer* p) {
 
 	//TODO: static release method
-	return delete p;
+	delete p;
 }

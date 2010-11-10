@@ -229,7 +229,7 @@ namespace player {
 		} else if (name == "fontSize" && value != "" &&
 				isNumeric((void*)(value.c_str()))) {
 
-			setFontSize((int)(stof(value)));
+			setFontSize((int)(util::stof(value)));
 
 		} else if (name == "fontUri" && value != "") {
 			setFont(value);
@@ -263,9 +263,9 @@ namespace player {
 					}
 
 					bgColor = new Color(
-							(int)stof((*params)[0]),
-							(int)stof((*params)[1]),
-							(int)stof((*params)[2]));
+							(int)util::stof((*params)[0]),
+							(int)util::stof((*params)[1]),
+							(int)util::stof((*params)[2]));
 
 					//this->surface->setCaps(0);
 					surface->clearContent();
@@ -288,9 +288,9 @@ namespace player {
 				}
 
 				fontColor = new Color(
-						(int)stof((*params)[0]),
-						(int)stof((*params)[1]),
-						(int)stof((*params)[2]));
+						(int)util::stof((*params)[0]),
+						(int)util::stof((*params)[1]),
+						(int)util::stof((*params)[2]));
 
 			} else {
 				refresh = false;

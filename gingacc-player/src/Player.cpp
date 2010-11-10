@@ -306,7 +306,11 @@ namespace player {
 
 	bool Player::setKeyHandler(bool isHandler) {
 		if (isHandler) {
+#ifndef _WIN32
 			::usleep(200000);
+#else
+			Sleep(200);
+#endif
 		}
 		return false;
 	}
@@ -370,10 +374,10 @@ namespace player {
 				params = split(value, ",");
 				if (params->size() == 4) {
 					outputWindow->setBounds(
-							stof((*params)[0]),
-							stof((*params)[1]),
-							stof((*params)[2]),
-							stof((*params)[3]));
+							util::stof((*params)[0]),
+							util::stof((*params)[1]),
+							util::stof((*params)[2]),
+							util::stof((*params)[3]));
 				}
 				delete params;
 
@@ -381,7 +385,7 @@ namespace player {
 				params = split(value, ",");
 				if (params->size() == 2) {
 					outputWindow->moveTo(
-							stof((*params)[0]), stof((*params)[1]));
+							util::stof((*params)[0]), util::stof((*params)[1]));
 				}
 				delete params;
 
@@ -389,24 +393,24 @@ namespace player {
 				params = split(value, ",");
 				if (params->size() == 2) {
 					outputWindow->resize(
-							stof((*params)[0]), stof((*params)[1]));
+							util::stof((*params)[0]), util::stof((*params)[1]));
 				}
 				delete params;
 
 			} else if (name == "left") {
-				outputWindow->setX(stof(value));
+				outputWindow->setX(util::stof(value));
 
 			} else if (name == "top") {
-				outputWindow->setY(stof(value));
+				outputWindow->setY(util::stof(value));
 
 			} else if (name == "width") {
-				outputWindow->setW(stof(value));
+				outputWindow->setW(util::stof(value));
 
 			} else if (name == "height") {
-				outputWindow->setH(stof(value));
+				outputWindow->setH(util::stof(value));
 
 			} else if (name == "transparency") {
-				outputWindow->setCurrentTransparency(stof(value));
+				outputWindow->setCurrentTransparency(util::stof(value));
 			}
 		}
 		(*properties)[name] = value;

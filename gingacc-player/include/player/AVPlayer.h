@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef AVPLAYER_H_
 #define AVPLAYER_H_
 
+#ifndef _WIN32
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -59,6 +60,8 @@ extern "C" {
 	#include <unistd.h>
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #ifdef STx7100

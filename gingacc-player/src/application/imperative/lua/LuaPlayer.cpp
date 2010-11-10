@@ -670,8 +670,12 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 
 #else
     this->im = InputManager::getInstance();
-    this->surface = new DFBSurface();
-    this->epgProc = EPGProcessor::getInstance();
+#ifndef _WIN32	
+	this->surface = new DFBSurface();
+	this->epgProc = EPGProcessor::getInstance();
+#else    
+	this->surface = new DXSurface();
+#endif
 #endif
 
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));

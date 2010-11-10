@@ -234,7 +234,11 @@ static int l_post (lua_State* L)
         GETPLAYER(L)->im->postEvent(
 	        ((UserEventCreator*)(cm->getObject("UserEvent")))(ref, L));
 #else
+#ifndef _WIN32
         GETPLAYER(L)->im->postEvent(new DFBGInputEvent(ref, (void*)L));
+#else
+		GETPLAYER(L)->im->postEvent(new DXInputEvent((void*)L, ref));
+#endif
 #endif
 	}
 
@@ -382,7 +386,11 @@ struct t_timer {
 static void* sleep_thread (void* data)
 {
 	struct t_timer* t = (struct t_timer *)data;
+#ifndef _WIN32
 	usleep(t->time*1000);
+#else
+	Sleep(t->time);
+#endif
 
 	t->player->lock();
 	lua_pushlightuserdata(t->L, t);         // [ ... | t* ]
@@ -680,7 +688,11 @@ static void* tcp_thread (void* data)
     player->tcp_running = true;
 //cout << "TCP STARTED\n";
     while (1) {
+#ifndef _WIN32
 	    usleep(500000);
+#else
+		Sleep(500);
+#endif
         player->lock();
         lua_getfield(player->L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT);  // [ ... | env ]
         lua_rawgeti(player->L, -1, -REFTCPIN);       // [ ... | env | f_in ]

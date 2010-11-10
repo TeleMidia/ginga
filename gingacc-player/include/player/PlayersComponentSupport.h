@@ -56,6 +56,7 @@ http://www.telemidia.puc-rio.br
 #include "ginga/cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
+#ifndef _WIN32
 #include "dataprocessing/EPGProcessor.h"
 #include "system/io/GingaLocatorFactory.h"
 #include "system/io/InputManager.h"
@@ -70,6 +71,20 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "system/io/interface/content/audio/FusionSoundAudioProvider.h"
 
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+
+#else
+//#include "dataprocessing/include/EPGProcessor.h"
+#include "system/io/GingaLocatorFactory.h"
+#include "system/io/InputManager.h"
+#include "system/io/LocalDeviceManager.h"
+#include "system/io/interface/output/dx/DXSurface.h"
+#include "system/io/interface/output/dx/DXWindow.h"
+#include "system/io/interface/input/dx/DXInputEvent.h"
+#include "system/io/interface/content/text/dx/DXFontProvider.h"
+#include "system/io/interface/content/image/dx/DXImageProvider.h"
+#include "system/io/interface/content/video/dx/DXVideoProvider.h"
+#include "system/io/interface/content/audio/dx/DXAudioProvider.h"
+#endif
 #endif
 
 namespace br {

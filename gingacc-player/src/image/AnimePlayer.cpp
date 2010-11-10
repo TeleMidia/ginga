@@ -62,7 +62,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AnimePlayer::AnimePlayer(vector<string>* mrls) : Thread::Thread() {
+	AnimePlayer::AnimePlayer(vector<string>* mrls) : Thread() {
 		string mrl;
 		vector<string>::iterator i;
 
@@ -78,7 +78,11 @@ namespace player {
 				anime->push_back(((ImageProviderCreator*)(cm->getObject(
 						"ImageProvider")))(mrl.c_str()));
 #else
+#ifndef _WIN32
 				anime->push_back(new DFBImageProvider(mrl.c_str()));
+#else
+				anime->push_back(new DXImageProvider(mrl.c_str()));
+#endif
 #endif
 			}
 			++i;
@@ -164,7 +168,7 @@ namespace player {
 					}
 					delete surface;
 					surface = NULL;
-					::usleep(dur);
+					Thread::usleep(dur);
 					++i;
 					if (!running) {
 						unlockConditionSatisfied();
