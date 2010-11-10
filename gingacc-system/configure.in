@@ -274,6 +274,7 @@ AC_OUTPUT(
 	include/system/io/interface/device/Makefile
 	include/system/io/interface/input/Makefile
 	include/system/io/interface/output/Makefile
+	include/system/io/interface/output/dfb/Makefile
 	src/thread/Makefile 
 	src/process/Makefile
 	src/io/Makefile

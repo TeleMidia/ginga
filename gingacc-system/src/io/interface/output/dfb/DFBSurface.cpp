@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include <stdlib.h>
 #include "system/io/interface/output/dfb/DFBSurface.h"
 #include "system/io/interface/output/dfb/Matrix.h"
 #include "system/io/interface/output/dfb/DFBWindow.h"

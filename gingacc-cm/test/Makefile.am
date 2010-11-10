@@ -10,4 +10,4 @@ test_SOURCES = test.cpp
 test_LDADD =  -ldl
 
 test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L../src/cm -L../src/cm/component -L../src/cm/parser
+    -L../src -L../src/component -L../src/parser

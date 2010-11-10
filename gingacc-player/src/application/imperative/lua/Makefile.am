@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-	$(all_includes) -I$(top_srcdir)/include
+	$(all_includes) -I$(top_srcdir)/include/player
 
 LIBS = 
 
