@@ -183,7 +183,7 @@ namespace player {
 #else
 				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
 #endif
-				Thread::usleep(1000000);
+//				Thread::usleep(1000000);
 				release();
 				break;
 
@@ -198,7 +198,7 @@ namespace player {
 #else
 				render("/usr/local/etc/ginga/files/img/button/playButton.png");
 #endif
-				Thread::usleep(1000000);
+//				Thread::usleep(1000000);
 				release();
 				break;
 
