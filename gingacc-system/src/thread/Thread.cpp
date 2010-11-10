@@ -75,6 +75,8 @@ namespace thread {
 	}
 
 	Thread::~Thread() {
+		isDeleting = true;
+
 		wakeUp();
 		pthread_cond_signal(&threadFlagConditionVariable);
 		pthread_cond_destroy(&threadFlagConditionVariable);
@@ -96,7 +98,7 @@ namespace thread {
 	}
 
 	void* Thread::function(void* ptr) {
-		if (!ptr || static_cast<Thread*>(ptr)->isDeleting) {
+		if (ptr == NULL || static_cast<Thread*>(ptr)->isDeleting) {
 			return NULL;
 		}
 

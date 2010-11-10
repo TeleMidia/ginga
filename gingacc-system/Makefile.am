@@ -12,6 +12,7 @@ SUBDIRS = 	include/system/thread \
 			include/system/io/interface/device \
 			include/system/io/interface/input \
 			include/system/io/interface/output \
+			include/system/io/interface/output/dfb \
 			src/thread src/process src/io \
 			src/io/interface/content/audio \
 			src/io/interface/content/image \
