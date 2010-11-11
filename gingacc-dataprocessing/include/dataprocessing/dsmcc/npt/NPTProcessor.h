@@ -65,7 +65,9 @@ using namespace br::pucrio::telemidia::ginga::core::tuning;
 #include "TimeBaseClock.h"
 #include "INPTListener.h"
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <set>
 #include <map>
 #include <iostream>
