@@ -499,6 +499,35 @@ namespace player {
 		this->immediatelyStartVar = immediattelyStartVal;
 	}
 
+	void Player::checkScopeTime() {
+		pthread_t threadId_;
+
+		if (scopeInitTime >= 0 && scopeEndTime >= scopeInitTime) {
+			pthread_create(
+					&threadId_, 0, Player::scopeTimeHandler, (void*)this);
+
+			pthread_detach(threadId_);
+		}
+	}
+
+	void* Player::scopeTimeHandler(void* ptr) {
+		double expectedSleepTime;
+		Player* p = (Player*)ptr;
+
+		expectedSleepTime = (
+				p->scopeEndTime -
+				(p->scopeInitTime + (p->getMediaTime() / 1000)));
+
+		cout << "Player::scopeTimeHandler expectedSleepTime = '";
+		cout << expectedSleepTime << "'" << endl;
+
+		if (expectedSleepTime > 0) {
+			::usleep(expectedSleepTime * 1000000);
+		}
+
+		p->forceNaturalEnd();
+	}
+
 	void Player::forceNaturalEnd() {
 		forcedNaturalEnd = true;
 		notifyListeners(PL_NOTIFY_STOP);

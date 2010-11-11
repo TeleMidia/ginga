@@ -179,6 +179,14 @@ namespace player {
 			void setVisible(bool visible);
 			bool immediatelyStart();
 			void setImmediatelyStart(bool immediatelyStartVal);
+
+		protected:
+			void checkScopeTime();
+
+		private:
+			static void* scopeTimeHandler(void* ptr);
+
+		public:
 			void forceNaturalEnd();
 			bool isForcedNaturalEnd();
 			virtual bool setOutWindow(int windowId);
