@@ -755,7 +755,9 @@ void LuaPlayer::load ()
 		lua_error(this->L);
 		return;
 	}
-    lua_call(this->L, 0, 0);                          // [ ]
+    if( lua_pcall(this->L, 0, 0, 0) != 0 ) { 	      // [ ]
+    	cout << "LUA ERROR:: " << lua_tostring(L, -1) << endl;
+    }
 }
 
 void LuaPlayer::run ()
