@@ -50,12 +50,24 @@ http://www.telemidia.puc-rio.br
 #ifndef __THREAD_H__
 #define __THREAD_H__
 
+#ifdef _WIN32
+#if	_EXP_THREAD_API == 0
+#define THREAD_API	__declspec(dllexport)
+#else
+#define THREAD_API	__declspec(dllimport)
+#endif
+#else
+#define THREAD_API
+#endif
+
 #include <errno.h>
+
 #ifdef _WIN32
 #include <sys/timeb.h>
 #include <sys/types.h>
 #include <winsock2.h>
 #endif
+
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
@@ -68,7 +80,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace thread {
-  class Thread {
+  class THREAD_API Thread {
 	protected:
 		bool isDeleting;
 

@@ -47,6 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#ifdef _WIN32
+#define	_EXP_LOCALDEVICEMANAGER_API 0
+#endif
+
 #include "system/io/LocalDeviceManager.h"
 
 #include "config.h"
