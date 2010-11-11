@@ -46,7 +46,7 @@ http://www.ncl.org.br
 http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
-#include "../../../include/AudioComponentDescriptor.h"
+#include "tsparser/AudioComponentDescriptor.h"
 
 namespace br {
 namespace pucrio {

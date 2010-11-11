@@ -47,11 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../config.h"
+#include "config.h"
 
-#include "../../include/PlayersComponentSupport.h"
-#include "../../include/ProgramAV.h"
-#include "../../include/AVPlayer.h"
+#include "player/PlayersComponentSupport.h"
+#include "player/ProgramAV.h"
+#include "player/AVPlayer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -170,7 +170,7 @@ namespace player {
 		vals = split(pValue, ",");
 		if (vals->size() == 3) {
 			name = getNameFromMrl((*vals)[0]);
-			setAVPid(name, stof((*vals)[1]), stof((*vals)[2]));
+			setAVPid(name, util::stof((*vals)[1]), util::stof((*vals)[2]));
 		}
 
 		delete vals;
@@ -233,7 +233,7 @@ namespace player {
 
 		name = getNameFromMrl(mrl);
 		if (isNumeric((void*)(name.c_str()))) {
-			pid = stof(name);
+			pid = util::stof(name);
 
 		} else {
 			pid = getPidByName(name);
@@ -289,7 +289,7 @@ namespace player {
 
 		name = getNameFromMrl(mrl);
 		if (isNumeric((void*)(name.c_str()))) {
-			pid = stof(name);
+			pid = util::stof(name);
 
 		} else {
 			pid = getPidByName(name);
@@ -314,7 +314,7 @@ namespace player {
 		cout << pValue << "'" << endl;
 
 		if (pName.substr(0, 11) == "sbtvd-ts://") {
-			addPidName(getNameFromMrl(pName), stof(pValue));
+			addPidName(getNameFromMrl(pName), util::stof(pValue));
 
 		} else if (pName == "createPlayer") {
 			createPlayer(pValue);
@@ -363,5 +363,5 @@ extern "C" IPlayer* createProgramAV() {
 
 extern "C" void destroyProgramAV(IPlayer* pav) {
 	//TODO: static release method
-	return delete pav;
+	delete pav;
 }

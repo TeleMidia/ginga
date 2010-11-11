@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../../include/io/interface/content/video/DFBDataBuffer.h"
-#include "../../../../../include/io/interface/content/video/DFBVideoProvider.h"
-#include "../../../../../include/io/LocalDeviceManager.h"
+#include "system/io/interface/content/video/DFBDataBuffer.h"
+#include "system/io/interface/content/video/DFBVideoProvider.h"
+#include "system/io/LocalDeviceManager.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

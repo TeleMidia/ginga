@@ -1,12 +1,12 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) $(COMPONENTS_INCS)
+INCLUDES = $(all_includes) -I$(top_srcdir)/include $(COMPONENTS_INCS)
 LIBS =
 
 noinst_PROGRAMS = test
 
 test_SOURCES = test.cpp
-
+test_CFLAGS = $(top_srcdir)/include
 test_LDADD =  $(COMPONENTS_LIBS) -ltelemidiautil \
     -lgingaccplayer -lgingaccplaavp -lgingaccplaimg -lgingaccplalua \
     -lgingaccplatxt -lgingaccplasrt -lgingaccplaplt \

@@ -47,15 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Update.h"
+#include "um/Update.h"
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../gingacc-ic/include/InteractiveChannelManager.h"
+#include "ic/InteractiveChannelManager.h"
 #endif
 
 namespace br {

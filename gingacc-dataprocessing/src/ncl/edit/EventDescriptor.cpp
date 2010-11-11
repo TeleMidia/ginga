@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../../../include/ncl/edit/EventDescriptor.h"
+#include "dataprocessing/ncl/edit/EventDescriptor.h"
 
 namespace br {
 namespace pucrio {

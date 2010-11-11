@@ -23,6 +23,10 @@ if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
+#TODO: Search telemidia-util, gingacc-sytem, ... include paths 
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-dataprocessing/include $CPPFLAGS"
 
 ###########
 # HEADERS #
@@ -84,17 +88,6 @@ Please install gingacc-system project.
 # LIBS #
 ########
 
-############################
-# Ginga CC Data Processing #
-############################
-AC_HAVE_LIBRARY(gingaccdataprocessing, , AC_ERROR([
-
-Couldn't find Ginga CC Data Processing library.
-Please install Ginga CC Data Processing Library.
-
-]))
-
-
 ##################
 # TeleMidia Util #
 ##################
@@ -102,6 +95,16 @@ AC_HAVE_LIBRARY(telemidiautil, , AC_ERROR([
 
 Couldn't find TeleMidia Util library.
 Please install TeleMidia Util Library.
+
+]))
+
+############################
+# Ginga CC Data Processing #
+############################
+AC_HAVE_LIBRARY(gingaccdataprocessing, , AC_ERROR([
+
+Couldn't find Ginga CC Data Processing library.
+Please install Ginga CC Data Processing Library.
 
 ]))
 
@@ -260,13 +263,20 @@ fi
 AM_CONDITIONAL([MULTIPROCESS], [test x$enable_multiprocess = xyes])
 AC_SUBST(MULTIPROCESS_LIBS)
 
-AC_OUTPUT(Makefile files/Makefile files/scripts/Makefile
-	include/Makefile src/Makefile src/image/Makefile
+AC_OUTPUT(Makefile
+	files/Makefile
+	files/scripts/Makefile
+	include/player/Makefile
+	src/Makefile
+	src/image/Makefile
 	src/application/imperative/lua/Makefile
 	src/application/declarative/xhtml/Makefile
 	src/text/Makefile src/text/plain/Makefile
-	src/text/srt/Makefile src/video/Makefile src/tv/Makefile
-	src/widget/Makefile tools/Makefile test/Makefile)
+	src/text/srt/Makefile
+	src/video/Makefile
+	src/tv/Makefile
+	src/widget/Makefile
+	tools/Makefile test/Makefile)
 
 AC_MSG_RESULT([
 Build options: 

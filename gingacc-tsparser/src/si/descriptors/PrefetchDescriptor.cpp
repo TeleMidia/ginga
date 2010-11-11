@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/PrefetchDescriptor.h"
+#include "tsparser/PrefetchDescriptor.h"
 
 namespace br {
 namespace pucrio {

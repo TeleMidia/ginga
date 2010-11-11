@@ -39,7 +39,14 @@ Please install libexpat.
 ]))
 
 AC_OUTPUT(
-    Makefile include/component/Makefile include/assembler/Makefile
-    include/parser/Makefile include/Makefile
-    files/Makefile src/component/Makefile src/assembler/Makefile
-    src/parser/Makefile src/Makefile test/Makefile)
+    Makefile
+    include/cm/Makefile 
+    include/cm/component/Makefile 
+    include/cm/assembler/Makefile
+    include/cm/parser/Makefile
+    files/Makefile
+    src/Makefile
+    src/component/Makefile
+    src/assembler/Makefile
+    src/parser/Makefile
+    test/Makefile)

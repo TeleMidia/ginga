@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/network/NetworkUtil.h"
-#include "../../../include/services/IDeviceDomain.h"
+#include "multidevice/services/network/NetworkUtil.h"
+#include "multidevice/services/IDeviceDomain.h"
 
 static char sendingControlFrameId   = -1;
 static char receivedControlFrameId = -2;

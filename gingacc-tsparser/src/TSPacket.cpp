@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/TSPacket.h"
-#include "../include/Demuxer.h"
+#include "tsparser/TSPacket.h"
+#include "tsparser/Demuxer.h"
 
 namespace br {
 namespace pucrio {

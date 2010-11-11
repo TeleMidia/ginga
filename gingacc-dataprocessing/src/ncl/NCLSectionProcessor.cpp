@@ -47,11 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/ncl/NCLSectionProcessor.h"
-#include "../../include/ncl/Metadata.h"
-#include "../../include/ncl/DataFile.h"
+#include "dataprocessing/ncl/NCLSectionProcessor.h"
+#include "dataprocessing/ncl/Metadata.h"
+#include "dataprocessing/ncl/DataFile.h"
 
-#include "../../include/ncl/parser/NCLMetadataParser.h"
+#include "dataprocessing/ncl/parser/NCLMetadataParser.h"
 
 #include "util/functions.h"
 

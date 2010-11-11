@@ -60,7 +60,7 @@ developed by University of Southern California.
 
 #include <math.h>
 
-#include "../../../../../include/io/interface/output/dfb/Matrix.h"
+#include "system/io/interface/output/dfb/Matrix.h"
 
 
 namespace br {

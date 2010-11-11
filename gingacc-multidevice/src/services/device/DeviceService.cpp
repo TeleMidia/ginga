@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/services/device/DeviceService.h"
+#include "multidevice/services/device/DeviceService.h"
 
 #include <iostream>
 using namespace std;

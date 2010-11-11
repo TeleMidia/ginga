@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "cm/component/IComponent.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include "../include/IUpdate.h"
+#include "um/IUpdate.h"
 using namespace ::br::pucrio::telemidia::ginga::core::um;
 
 #include <sys/stat.h>

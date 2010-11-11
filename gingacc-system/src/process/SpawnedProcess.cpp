@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/process/SpawnedProcess.h"
+#include "system/process/SpawnedProcess.h"
 
 namespace br {
 namespace pucrio {

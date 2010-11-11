@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/RTPListener.h"
+#include "player/RTPListener.h"
 
 namespace br {
 namespace pucrio {

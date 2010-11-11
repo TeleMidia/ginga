@@ -2,7 +2,7 @@
 
 PROJECT="Ginga Common Core Tuner 0.11.2"
 TEST_TYPE=-f
-FILE=include/providers/IDataProvider.h
+FILE=include/tuner/providers/IDataProvider.h
 
 LIBTOOL_REQUIRED_VERSION=1.3.4
 AUTOCONF_REQUIRED_VERSION=2.13
@@ -118,7 +118,7 @@ echo Running aclocal ...
 aclocal $ACLOCAL_FLAGS
 
 echo Running libtoolize ...
-libtoolize --automake
+libtoolize --automake --copy --install
 
 echo Running autoconf ...
 autoconf

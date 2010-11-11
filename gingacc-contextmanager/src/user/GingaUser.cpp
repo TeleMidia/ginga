@@ -47,7 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/user/GingaUser.h"
+#include "contextmanager/user/GingaUser.h"
+
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

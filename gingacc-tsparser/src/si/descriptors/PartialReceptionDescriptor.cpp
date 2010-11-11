@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/PartialReceptionDescriptor.h"
+#include "tsparser/PartialReceptionDescriptor.h"
 
 namespace br {
 namespace pucrio {

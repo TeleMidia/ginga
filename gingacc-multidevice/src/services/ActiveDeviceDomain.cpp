@@ -47,10 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/services/ActiveDeviceDomain.h"
+#include "multidevice/services/ActiveDeviceDomain.h"
 
-#include "../../include/services/device/ActiveDeviceService.h"
-#include "../../include/services/network/MulticastSocketService.h"
+#include "multidevice/services/device/ActiveDeviceService.h"
+#include "multidevice/services/network/MulticastSocketService.h"
 
 namespace br {
 namespace pucrio {

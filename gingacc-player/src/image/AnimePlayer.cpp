@@ -47,14 +47,14 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/AnimePlayer.h"
+#include "player/AnimePlayer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../../config.h"
+#include "config.h"
 
-#include "../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
@@ -62,7 +62,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AnimePlayer::AnimePlayer(vector<string>* mrls) : Thread::Thread() {
+	AnimePlayer::AnimePlayer(vector<string>* mrls) : Thread() {
 		string mrl;
 		vector<string>::iterator i;
 
@@ -78,7 +78,11 @@ namespace player {
 				anime->push_back(((ImageProviderCreator*)(cm->getObject(
 						"ImageProvider")))(mrl.c_str()));
 #else
+#ifndef _WIN32
 				anime->push_back(new DFBImageProvider(mrl.c_str()));
+#else
+				anime->push_back(new DXImageProvider(mrl.c_str()));
+#endif
 #endif
 			}
 			++i;
@@ -164,7 +168,11 @@ namespace player {
 					}
 					delete surface;
 					surface = NULL;
+#ifndef _WIN32
 					::usleep(dur);
+#else
+					Sleep(dur/1000);
+#endif
 					++i;
 					if (!running) {
 						unlockConditionSatisfied();

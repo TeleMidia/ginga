@@ -47,7 +47,17 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/thread/Thread.h"
+#include "system/thread/Thread.h"
+
+#ifdef _WIN32
+void gettimeofday(struct timeval* t,void* timezone)
+{       struct _timeb timebuffer;
+		_ftime64_s(&timebuffer);
+       // _ftime( &timebuffer );
+        t->tv_sec= (long)timebuffer.time;
+        t->tv_usec=1000*timebuffer.millitm;
+}
+#endif
 
 namespace br {
 namespace pucrio {
@@ -75,6 +85,8 @@ namespace thread {
 	}
 
 	Thread::~Thread() {
+		isDeleting = true;
+
 		wakeUp();
 		pthread_cond_signal(&threadFlagConditionVariable);
 		pthread_cond_destroy(&threadFlagConditionVariable);
@@ -96,7 +108,7 @@ namespace thread {
 	}
 
 	void* Thread::function(void* ptr) {
-		if (!ptr || static_cast<Thread*>(ptr)->isDeleting) {
+		if (ptr == NULL || static_cast<Thread*>(ptr)->isDeleting) {
 			return NULL;
 		}
 

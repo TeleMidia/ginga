@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/PesFilter.h"
+#include "tsparser/PesFilter.h"
 
 namespace br {
 namespace pucrio {

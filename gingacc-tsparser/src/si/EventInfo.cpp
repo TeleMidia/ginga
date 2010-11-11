@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/EventInfo.h"
+#include "tsparser/EventInfo.h"
 
 namespace br {
 namespace pucrio {

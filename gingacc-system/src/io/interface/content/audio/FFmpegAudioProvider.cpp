@@ -47,11 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../../config.h"
+#include "config.h"
 
-#include "../../../../../include/io/LocalDeviceManager.h"
-#include "../../../../../include/io/interface/content/audio/FFmpegAudioProvider.h"
-#include "../../../../../include/io/interface/output/dfb/DFBSurface.h"
+#include "system/io/LocalDeviceManager.h"
+#include "system/io/interface/content/audio/FFmpegAudioProvider.h"
+#include "system/io/interface/output/dfb/DFBSurface.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK

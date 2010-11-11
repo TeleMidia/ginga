@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
@@ -63,8 +63,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "../include/IPlayer.h"
-#include "../include/IPlayerListener.h"
+#include "player/IPlayer.h"
+#include "player/IPlayerListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include <vector>

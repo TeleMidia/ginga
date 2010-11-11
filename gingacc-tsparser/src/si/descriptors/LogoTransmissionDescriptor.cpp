@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/LogoTransmissionDescriptor.h"
+#include "tsparser/LogoTransmissionDescriptor.h"
 
 namespace br {
 namespace pucrio {

@@ -24,6 +24,9 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util include path 
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
+
 ###########
 # HEADERS #
 ###########
@@ -122,5 +125,9 @@ AC_SUBST(TEST_COMPONENTS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile include/Makefile src/ccrtpic/Makefile 
-    src/curlic/Makefile src/Makefile test/Makefile)
+    Makefile
+    include/ic/Makefile
+    src/ccrtpic/Makefile 
+    src/curlic/Makefile
+    src/Makefile
+    test/Makefile)

@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/ParentalRatingDescriptor.h"
+#include "tsparser/ParentalRatingDescriptor.h"
 
 namespace br {
 namespace pucrio {

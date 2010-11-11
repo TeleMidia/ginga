@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/SrtPlayer.h"
+#include "player/SrtPlayer.h"
 
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -200,13 +200,13 @@ namespace player {
 
 		float hours, minutes, seconds, milliseconds;
 
-		hours = stof(time.substr(0, time.find_first_of(":")));
+		hours = util::stof(time.substr(0, time.find_first_of(":")));
 		time = time.substr(time.find_first_of(":") + 1, time.length());
-		minutes = stof(time.substr(0, time.find_first_of(":")));
+		minutes = util::stof(time.substr(0, time.find_first_of(":")));
 		time = time.substr(time.find_first_of(":") + 1, time.length());
-		seconds = stof(time.substr(0, time.find_first_of(",")));
+		seconds = util::stof(time.substr(0, time.find_first_of(",")));
 		time = time.substr(time.find_first_of(",") + 1, time.length());
-		milliseconds = stof(time);
+		milliseconds = util::stof(time);
 
 		return (float)(
 			    (hours * 3600) +
@@ -301,7 +301,7 @@ namespace player {
 		    setFont(value);
 
 		} else if (name == "x-setFontSize") {
-		    setFontSize((int)stof(value));
+		    setFontSize((int)util::stof(value));
 
 		} else if (name == "x-controlVisibility") {
 			if (value == "true") {

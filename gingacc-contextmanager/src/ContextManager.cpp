@@ -47,10 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/ContextManager.h"
+#include "contextmanager/ContextManager.h"
 
-#include "../include/user/GingaUser.h"
-#include "../include/system/SystemInfo.h"
+#include "contextmanager/user/GingaUser.h"
+#include "contextmanager/system/SystemInfo.h"
+
+#ifdef _WIN32
+#include <io.h>
+#define O_LARGEFILE 0
+#endif
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -71,8 +76,13 @@ namespace contextmanager {
 	IContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
-		usersUri     = "/usr/local/etc/ginga/files/contextmanager/users.ini";
-		contextsUri  = "/usr/local/etc/ginga/files/contextmanager/contexts.ini";
+#ifdef _WIN32
+		usersUri    = getUserDocAndSetPath().append("\\config\\context\\users.ini");
+		contextsUri = getUserDocAndSetPath().append("\\config\\context\\contexts.ini");
+#else
+		usersUri    = "/usr/local/etc/ginga/files/contextmanager/users.ini";
+		contextsUri = "/usr/local/etc/ginga/files/contextmanager/contexts.ini";
+#endif
 		users        = new map<int, IGingaUser*>;
 		contexts     = new map<int, map<string, string>*>;
 		curUserId    = -1;
@@ -136,7 +146,7 @@ namespace contextmanager {
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					curUserId = stof(line);
+					curUserId = util::stof(line);
 				} else {
 					invalidUser = true;
 					cout << "ContextManager::initializeUsers ";
@@ -152,7 +162,7 @@ namespace contextmanager {
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					id = (int)stof(line);
+					id = (int)util::stof(line);
 					if (id >= 0) {
 						fis >> line;
 						name = line;
@@ -161,7 +171,7 @@ namespace contextmanager {
 							passwd = line;
 							if (passwd != "") {
 								fis >> line;
-								age = (int)stof(line);
+								age = (int)util::stof(line);
 								if (age >= 0) {
 									fis >> line;
 									location = line;
@@ -257,7 +267,7 @@ namespace contextmanager {
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					curUserId = stof(line);
+					curUserId = util::stof(line);
 				}
 			}
 
@@ -268,7 +278,7 @@ namespace contextmanager {
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					id = (int)stof(line);
+					id = (int)util::stof(line);
 					if (id >= 0) {
 						while (fis.good()) {
 							fis >> line;

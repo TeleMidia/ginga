@@ -47,11 +47,12 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../../include/io/interface/output/dfb/DFBSurface.h"
-#include "../../../../../include/io/interface/output/dfb/Matrix.h"
-#include "../../../../../include/io/interface/output/dfb/DFBWindow.h"
-#include "../../../../../include/io/interface/content/text/IFontProvider.h"
-#include "../../../../../include/io/LocalDeviceManager.h"
+#include <stdlib.h>
+#include "system/io/interface/output/dfb/DFBSurface.h"
+#include "system/io/interface/output/dfb/Matrix.h"
+#include "system/io/interface/output/dfb/DFBWindow.h"
+#include "system/io/interface/content/text/IFontProvider.h"
+#include "system/io/LocalDeviceManager.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK

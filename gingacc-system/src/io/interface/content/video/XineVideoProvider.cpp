@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../../include/io/LocalDeviceManager.h"
-#include "../../../../../include/io/interface/content/video/XineVideoProvider.h"
-#include "../../../../../include/io/interface/output/dfb/DFBSurface.h"
+#include "system/io/LocalDeviceManager.h"
+#include "system/io/interface/content/video/XineVideoProvider.h"
+#include "system/io/interface/output/dfb/DFBSurface.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK

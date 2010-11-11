@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/dsmcc/npt/NPTProcessor.h"
+#include "dataprocessing/dsmcc/npt/NPTProcessor.h"
 
 namespace br {
 namespace pucrio {

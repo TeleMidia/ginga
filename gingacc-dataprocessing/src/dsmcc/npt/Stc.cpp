@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/dsmcc/npt/Stc.h"
+#include "dataprocessing/dsmcc/npt/Stc.h"
 
 namespace br {
 namespace pucrio {

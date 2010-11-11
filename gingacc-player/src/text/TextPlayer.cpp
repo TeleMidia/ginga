@@ -51,9 +51,9 @@ http://www.telemidia.puc-rio.br
 #include "system/io/interface/content/text/IFontProvider.h"
 #include "system/io/interface/output/ISurface.h"
 
-#include "../../include/TextPlayer.h"
+#include "player/TextPlayer.h"
 
-#include "../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
@@ -100,7 +100,11 @@ namespace player {
 		this->currentColumn = 0;
 		this->tabSize = 0;
 		this->font = NULL;
+#ifdef _WIN32
+		this->fontUri = getUserDocAndSetPath().append("\\config\\player\\text\\fonts\\decker.ttf");
+#else
 		this->fontUri = "/usr/local/share/directfb-examples/fonts/decker.ttf";
+#endif
 		this->fontColor = NULL;
 		this->fontSize = 12;
 
@@ -108,7 +112,11 @@ namespace player {
 		this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(
 				NULL, 0, 0);
 #else
+#ifndef _WIN32
 		this->surface = new DFBSurface();
+#else
+		this->surface = new DXSurface();
+#endif
 #endif
 		if (this->surface != NULL) {
 			this->surface->setCaps(
@@ -123,7 +131,11 @@ namespace player {
 			int fontSize, IColor* fontColor) {
 
 		string aux;
+#ifdef _WIN32		
+		aux = getUserDocAndSetPath().append("\\config\\player\\text\\fonts\\decker.ttf");
+#else
 		aux = "/usr/local/share/directfb-examples/fonts/decker.ttf";
+#endif
 		if (fontSize < 1 || s == NULL || text == "") {
 			return 0;
 		}
@@ -146,7 +158,11 @@ namespace player {
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
 				aux.c_str(), fontSize);
 #else
+#ifndef _WIN32
 		font = new DFBFontProvider(aux.c_str(), fontSize);
+#else
+		font = new DXFontProvider(aux.c_str(), fontSize);
+#endif
 #endif
 
 		if (fontColor == NULL) {
@@ -194,7 +210,11 @@ namespace player {
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
 				someUri.c_str(), fontSize);
 #else
+#ifndef _WIN32
 		font = new DFBFontProvider(someUri.c_str(), fontSize);
+#else
+		font = new DXFontProvider(someUri.c_str(), fontSize);
+#endif
 #endif
 
 		if (font == NULL || font->getContent() == NULL) {

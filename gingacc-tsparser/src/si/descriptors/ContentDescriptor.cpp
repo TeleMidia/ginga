@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/ContentDescriptor.h"
+#include "tsparser/ContentDescriptor.h"
 namespace br {
 namespace pucrio {
 namespace telemidia {

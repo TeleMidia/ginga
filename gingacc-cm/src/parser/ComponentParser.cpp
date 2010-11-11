@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/parser/ComponentParser.h"
+#include "cm/parser/ComponentParser.h"
 
 #include <string.h>
 #include <dlfcn.h>

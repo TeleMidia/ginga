@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/TransportProtocolDescriptor.h"
+#include "tsparser/TransportProtocolDescriptor.h"
 #include <string.h>
 
 namespace br {

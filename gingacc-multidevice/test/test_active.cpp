@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#include "../include/services/RemoteEventService.h"
+#include "multidevice/services/RemoteEventService.h"
 
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 

@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/component/Component.h"
+#include "cm/component/Component.h"
 
 namespace br {
 namespace pucrio {

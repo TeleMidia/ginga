@@ -38,6 +38,9 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+#TODO: Search telemidia-util include path
+CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS" 
+CPPFLAGS='-I${top_srcdir}'"/../gingacc-cpp/gingacc-system/include $CPPFLAGS"
 
 ###########
 # HEADERS #
@@ -147,7 +150,31 @@ AC_SUBST(FUSIONSOUND_LIBS)
 
 DVC_LIBS=
 
-########################
+#############################################
+# Offering a non-componentized alternative #
+############################################
+components=yes
+force_xineprovider=no
+AC_ARG_ENABLE(components,
+  [  --enable-components build project using components [[default=yes]]],
+  enable_components="$enableval", enable_components=yes)
+
+if test x$enable_components = xno; then
+   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
+   AC_MSG_WARN([*** Component support will not be built.])
+   force_xineprovider=yes
+   AC_MSG_WARN([*** Xine provider will be forced in a non-componentized built.])
+else
+   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
+   AC_MSG_RESULT([*** Component support will be built.])
+fi
+
+AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AC_SUBST(COMPONENTS_LIBS)
+
+#######################
 # XINE MAIN AV Support #
 ########################
 xineprovider=no
@@ -159,8 +186,15 @@ AC_CHECK_HEADER(
   [xine.h],
   [],
   AC_MSG_WARN([*** xine header not Found.])
-    enable_xineprovider=no
+  enable_xineprovider=no
+  if test x$force_xineprovider = yes; then
+    AC_ERROR(["Xine not found!"])
+  fi
 )
+
+if test x$force_xineprovider = xyes; then
+  enable_xineprovider=yes
+fi
 
 if test x$enable_xineprovider = xno; then
    AC_MSG_WARN([*** Ginga Xine provider support will not be built.])
@@ -216,26 +250,6 @@ AC_SUBST(FFMPEG_LIBS)
 AC_SUBST(DVC_LIBS)
 AM_CONDITIONAL([FFMPEGPROVIDER], [test x$enable_ffmpegprovider = xyes])
 
-############################################
-# Offering a non-componentized alternative #
-############################################
-components=yes
-AC_ARG_ENABLE(components,
-  [  --enable-components build project using components [[default=yes]]],
-  enable_components="$enableval", enable_components=yes)
-
-if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/'
-   AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
-   AC_MSG_WARN([*** Component support will not be built.])
-else
-   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
-   AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
-   AC_MSG_RESULT([*** Component support will be built.])
-fi
-
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
-AC_SUBST(COMPONENTS_LIBS)
 
 ###########################
 # Multple Process Support #
@@ -260,16 +274,25 @@ AC_SUBST(MULTIPROCESS_LIBS)
 
 
 AC_OUTPUT(
-    Makefile include/thread/Makefile include/process/Makefile 
-    include/io/Makefile
-    include/io/interface/Makefile include/io/interface/content/Makefile
-    include/io/interface/content/image/Makefile
-    include/io/interface/content/text/Makefile
-    include/io/interface/device/Makefile
-    include/io/interface/input/Makefile
-    include/io/interface/output/Makefile
-    src/thread/Makefile src/process/Makefile src/io/Makefile
-    src/io/interface/content/audio/Makefile
-    src/io/interface/content/image/Makefile
-    src/io/interface/content/text/Makefile
-    src/io/interface/content/video/Makefile files/Makefile test/Makefile)
+	Makefile
+	include/system/thread/Makefile
+	include/system/process/Makefile 
+	include/system/io/Makefile
+	include/system/io/interface/Makefile 
+	include/system/io/interface/content/Makefile
+	include/system/io/interface/content/image/Makefile
+	include/system/io/interface/content/text/Makefile
+	include/system/io/interface/device/Makefile
+	include/system/io/interface/input/Makefile
+	include/system/io/interface/output/Makefile
+	include/system/io/interface/output/dfb/Makefile
+	src/thread/Makefile 
+	src/process/Makefile
+	src/io/Makefile
+    	src/io/interface/content/audio/Makefile
+    	src/io/interface/content/image/Makefile
+    	src/io/interface/content/text/Makefile
+    	src/io/interface/content/video/Makefile
+	files/Makefile
+	test/Makefile
+)

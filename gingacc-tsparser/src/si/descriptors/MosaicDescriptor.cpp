@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/MosaicDescriptor.h"
+#include "tsparser/MosaicDescriptor.h"
 
 namespace br {
 namespace pucrio {

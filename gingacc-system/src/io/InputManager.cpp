@@ -47,16 +47,21 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/io/InputManager.h"
+#include "system/io/InputManager.h"
 
-#include "../../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../include/io/interface/input/dfb/DFBEventBuffer.h"
-#include "../../include/io/interface/input/dfb/DFBGInputEvent.h"
+#ifndef _WIN32
+#include "../../include/system/io/interface/input/dfb/DFBEventBuffer.h"
+#include "../../include/system/io/interface/input/dfb/DFBGInputEvent.h"
+#else
+#include "../../include/system/io/interface/input/dx/DXEventBuffer.h"
+#include "../../include/system/io/interface/input/dx/DXInputEvent.h"
+#endif
 #endif
 
 namespace br {
@@ -86,7 +91,11 @@ namespace io {
 #if HAVE_COMPSUPPORT
 		eventBuffer   = ((EventBufferCreator*)(cm->getObject("EventBuffer")))();
 #else
+#ifndef _WIN32
 		eventBuffer   = new DFBEventBuffer();
+#else
+		eventBuffer   = new DXEventBuffer();
+#endif
 #endif
 		running       = true;
 		notifying     = false;
@@ -115,8 +124,11 @@ namespace io {
 
 		imperativeIntervalTime = 0;
 		declarativeIntervalTime = 0;
-
+#ifdef _WIN32
+		strVar = getUserDocAndSetPath().append("\\config\\input.cfg");
+#else
 		strVar = "/usr/local/etc/ginga/files/system/config/input.cfg";
+#endif	
 		fis.open(strVar.c_str(), ifstream::in);
 		if (!fis.is_open()) {
 			cout << "InputManager: can't open input file:";
@@ -131,7 +143,7 @@ namespace io {
 				if (strVar == "=" && fis.good()) {
 					fis >> strVar;
 					if (strVar != "") {
-						imperativeIntervalTime = stof(strVar);
+						imperativeIntervalTime = util::stof(strVar);
 					}
 				}
 			} else if (strVar == "declarative.inputIntervalTime" &&
@@ -141,7 +153,7 @@ namespace io {
 				if (strVar == "=" && fis.good()) {
 					fis >> strVar;
 					if (strVar != "") {
-						declarativeIntervalTime = stof(strVar);
+						declarativeIntervalTime = util::stof(strVar);
 					}
 				}
 			}
@@ -530,7 +542,11 @@ namespace io {
 #if HAVE_COMPSUPPORT
 		ie = ((InputEventCreator*)(cm->getObject("InputEvent")))(NULL, keyCode);
 #else
+#ifndef _WIN32
 		ie = new DFBGInputEvent(keyCode);
+#else
+		ie = new DXInputEvent(keyCode);
+#endif
 #endif
 		postEvent(ie);
 	}

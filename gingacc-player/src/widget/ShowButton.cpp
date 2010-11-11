@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/ShowButton.h"
+#include "player/ShowButton.h"
 
-#include "../../include/PlayersComponentSupport.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
@@ -93,9 +93,12 @@ namespace player {
 #if HAVE_COMPSUPPORT
 		win = ((WindowCreator*)(cm->getObject("Window")))(-1, x, y, w, h);
 #else
+#ifndef _WIN32
 		win = new DFBWindow(x, y, w, h);
+#else
+		win = new DXWindow(x, y, w, h);
 #endif
-
+#endif
 		win->setCaps(win->getCap("ALPHACHANNEL"));
 		win->draw();
 	}
@@ -162,7 +165,11 @@ namespace player {
 		switch (status) {
 			case PAUSE:
 				cout << "ShowButton::run PAUSE" << endl;
+#ifdef _WIN32		
+				render(getUserDocAndSetPath().append("\\resource\\img\\button\\pauseButton.png"));
+#else
 				render("/usr/local/etc/ginga/files/img/button/pauseButton.png");
+#endif
 				break;
 
 			case STOP:
@@ -171,8 +178,16 @@ namespace player {
 					release();
 				}
 
+#ifdef _WIN32		
+				render(getUserDocAndSetPath().append("\\resource\\img\\button\\stopButton.png"));
+#else
 				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
+#endif
+#ifndef _WIN32
 				::usleep(1000000);
+#else
+				Sleep(1000);
+#endif
 				release();
 				break;
 
@@ -182,8 +197,16 @@ namespace player {
 					release();
 				}
 
+#ifdef _WIN32		
+				render(getUserDocAndSetPath().append("\\resource\\img\\button\\playButton.png"));
+#else
 				render("/usr/local/etc/ginga/files/img/button/playButton.png");
+#endif
+#ifndef _WIN32
 				::usleep(1000000);
+#else
+				Sleep(1000);
+#endif
 				release();
 				break;
 
@@ -211,5 +234,5 @@ extern "C" ::br::pucrio::telemidia::ginga::core::player::IShowButton*
 extern "C" void destroyShowButton(
 		::br::pucrio::telemidia::ginga::core::player::IShowButton* sb) {
 
-	return delete sb;
+	delete sb;
 }

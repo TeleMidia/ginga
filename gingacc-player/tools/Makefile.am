@@ -1,6 +1,6 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ $(all_includes)
+INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 

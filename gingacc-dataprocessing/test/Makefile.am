@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-    $(all_includes)
+    $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
@@ -19,6 +19,7 @@ noinst_PROGRAMS = test
 
 test_SOURCES = test.cpp
 
+test_CPPFLAGS = -I$(top_srcdir)/include
 test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
     -lgingacctsparser -lgingaccdataprocessing \
     -lgingaccdataprocncl

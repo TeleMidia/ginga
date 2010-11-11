@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/StreamIdentifierDescriptor.h"
+#include "tsparser/StreamIdentifierDescriptor.h"
 
 namespace br {
 namespace pucrio {

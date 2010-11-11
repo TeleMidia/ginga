@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/Pat.h"
+#include "tsparser/Pat.h"
 
-#include "../../include/IDemuxer.h"
+#include "tsparser/IDemuxer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {

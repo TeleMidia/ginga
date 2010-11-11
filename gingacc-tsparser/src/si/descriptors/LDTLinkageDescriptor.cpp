@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/LDTLinkageDescriptor.h"
+#include "tsparser/LDTLinkageDescriptor.h"
 
 namespace br {
 namespace pucrio {

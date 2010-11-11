@@ -47,19 +47,19 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/DataProcessor.h"
-#include "../include/dsmcc/StreamEvent.h"
+#include "dataprocessing/DataProcessor.h"
+#include "dataprocessing/dsmcc/StreamEvent.h"
 
 //TODO: clean this mess
-#include "../include/dsmcc/npt/DSMCCSectionPayload.h"
+#include "dataprocessing/dsmcc/npt/DSMCCSectionPayload.h"
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../../gingacc-tsparser/include/AIT.h"
+#include "tsparser/AIT.h"
 #endif
 
 namespace br {

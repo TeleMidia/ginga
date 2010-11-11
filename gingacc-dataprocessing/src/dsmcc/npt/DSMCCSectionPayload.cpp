@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../include/dsmcc/npt/DSMCCSectionPayload.h"
+#include "dataprocessing/dsmcc/npt/DSMCCSectionPayload.h"
 
 namespace br {
 namespace pucrio {

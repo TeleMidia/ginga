@@ -47,9 +47,9 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../../../config.h"
+#include "config.h"
 
-#include "../../../../include/providers/frontends/isdbt/ISDBTProvider.h"
+#include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

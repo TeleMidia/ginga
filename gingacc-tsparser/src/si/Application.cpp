@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/Application.h"
+#include "tsparser/Application.h"
 
 namespace br {
 namespace pucrio {

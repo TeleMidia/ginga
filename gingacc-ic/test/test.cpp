@@ -47,20 +47,20 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "../include/InteractiveChannelManager.h"
-#include "../include/curlic/CurlInteractiveChannel.h"
+#include "ic/InteractiveChannelManager.h"
+#include "ic/curlic/CurlInteractiveChannel.h"
 #if HAVE_CCRTP
-#include "../include/ccrtpic/CCRTPInteractiveChannel.h"
+#include "ic/ccrtpic/CCRTPInteractiveChannel.h"
 #endif
 #endif
 
-#include "../include/IInteractiveChannelManager.h"
+#include "ic/IInteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
 #include "util/functions.h"

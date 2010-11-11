@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/PlayerProcess.h"
+#include "player/PlayerProcess.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

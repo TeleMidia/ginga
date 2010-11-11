@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Tuner.h"
+#include "tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 int main() {

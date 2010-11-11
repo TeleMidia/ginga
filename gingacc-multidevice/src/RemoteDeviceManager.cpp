@@ -47,11 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/RemoteDeviceManager.h"
+#include "multidevice/RemoteDeviceManager.h"
 
-#include "../include/services/ActiveDeviceDomain.h"
-#include "../include/services/PassiveDeviceDomain.h"
-#include "../include/services/BaseDeviceDomain.h"
+#include "multidevice/services/ActiveDeviceDomain.h"
+#include "multidevice/services/PassiveDeviceDomain.h"
+#include "multidevice/services/BaseDeviceDomain.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -192,8 +192,11 @@ namespace multidevice {
 					domainService->postConnectionRequestTask();
 				}
 			}*/
-
+#ifndef _WIN32
 			::usleep(25000);
+#else
+			Sleep(25);
+#endif
 		}
 		unlock();
 	}

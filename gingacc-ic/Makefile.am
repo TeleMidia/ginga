@@ -2,4 +2,4 @@
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
-SUBDIRS = include src/ccrtpic src/curlic src test
+SUBDIRS = include/ic src/ccrtpic src/curlic src test

@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../../include/AVPlayer.h"
+#include "player/AVPlayer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -1169,10 +1169,18 @@ namespace player {
 			}
 #else
 			if (p->hasVisual) {
+#ifndef _WIN32
 				p->provider = new DFBVideoProvider(p->mrl.c_str());
+#else
+				p->provider = new DXVideoProvider(p->mrl.c_str());
+#endif
 
 			} else {
+#ifndef _WIN32
 				p->provider = new FusionSoundAudioProvider(p->mrl.c_str());
+#else
+				p->provider = new DXAudioProvider(p->mrl.c_str());
+#endif
 			}
 #endif
 
@@ -1182,6 +1190,7 @@ namespace player {
 
 		pthread_mutex_unlock(&(p->pMutex));
 		cout << "AVPlayer::createProvider '" << p->mrl << "' all done" << endl;
+		return p;
 	}
 
 	void AVPlayer::finished() {
@@ -1398,7 +1407,7 @@ namespace player {
 		//TODO: animation, set volume, brightness, ...
 		if (name == "soundLevel") {
 			if (value != "") {
-				fValue = stof(value);
+				fValue = util::stof(value);
 			}
 			setSoundLevel(fValue);
 
@@ -1409,17 +1418,25 @@ namespace player {
 #if HAVE_COMPSUPPORT
 					win = ((WindowCreator*)(cm->getObject("Window")))(
 							-1,
-							stof((*vals)[0]),
-							stof((*vals)[1]),
-							stof((*vals)[2]),
-							stof((*vals)[3]));
+							util::stof((*vals)[0]),
+							util::stof((*vals)[1]),
+							util::stof((*vals)[2]),
+							util::stof((*vals)[3]));
 
 #else
+#ifndef _WIN32
 					win = new DFBWindow(
-							stof((*vals)[0]),
-							stof((*vals)[1]),
-							stof((*vals)[2]),
-							stof((*vals)[3]));
+							util::stof((*vals)[0]),
+							util::stof((*vals)[1]),
+							util::stof((*vals)[2]),
+							util::stof((*vals)[3]));
+#else
+					win = new DXWindow(
+							util::stof((*vals)[0]),
+							util::stof((*vals)[1]),
+							util::stof((*vals)[2]),
+							util::stof((*vals)[3]));
+#endif
 #endif
 
 					win->setCaps(win->getCap("NOSTRUCTURE") |
@@ -1438,10 +1455,10 @@ namespace player {
 				vals = split(value, ",");
 				if (vals->size() == 4) {
 					win->setBounds(
-							stof((*vals)[0]),
-							stof((*vals)[1]),
-							stof((*vals)[2]),
-							stof((*vals)[3]));
+							util::stof((*vals)[0]),
+							util::stof((*vals)[1]),
+							util::stof((*vals)[2]),
+							util::stof((*vals)[3]));
 				}
 				delete vals;
 
@@ -1515,7 +1532,11 @@ namespace player {
 					windowId, -1, -1, -1, -1);
 
 #else
+#ifndef _WIN32
 			win = new DFBWindow(windowId);
+#else
+			//win = new DXWindow();
+#endif
 #endif
 
 			if (!running) {
@@ -1531,7 +1552,11 @@ namespace player {
 
 	void AVPlayer::setAVPid(int aPid, int vPid) {
 		while (!buffered) {
+#ifndef _WIN32
 			::usleep(150000);
+#else
+			Sleep(150);
+#endif
 		}
 		provider->setAVPid(aPid, vPid);
 	}
@@ -1554,7 +1579,11 @@ namespace player {
 		if (mainAV) {
 			provider->feedBuffers();
 		} else {
+#ifndef _WIN32
 			::usleep(150000);
+#else
+			Sleep(150);
+#endif
 		}
 		hasEvent = provider->checkVideoResizeEvent(surface);
 		setSoundLevel(this->soundLevel);
@@ -1597,7 +1626,11 @@ namespace player {
 						"TSVideoProvider")))(mrl.c_str());
 
 #else
+#ifndef _WIN32
 				this->provider = new XineVideoProvider(mrl.c_str());
+#else
+				this->provider = new DXVideoProvider(mrl.c_str());
+#endif
 #endif
 
 				unlock();
@@ -1610,7 +1643,11 @@ namespace player {
 						"TSAudioProvider")))(mrl.c_str());
 
 #else
+#ifndef _WIN32
 				this->provider = new XineVideoProvider(mrl.c_str());
+#else
+				this->provider = new DXVideoProvider(mrl.c_str());
+#endif
 #endif
 			}
 
@@ -1632,8 +1669,11 @@ namespace player {
 			} else {
 				dur = getTotalMediaTime();
 			}
-
+#ifndef _WIN32
 			::usleep(850000);
+#else
+			Sleep(850);
+#endif
 			currentTime = getCurrentMediaTime();
 			if (currentTime > 0) {
 				while (dur > (currentTime + 0.1)) {

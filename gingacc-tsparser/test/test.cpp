@@ -47,10 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "../include/Demuxer.h"
+#include "tsparser/Demuxer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "../include/AIT.h"
+#include "tsparser/AIT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 int main() {
