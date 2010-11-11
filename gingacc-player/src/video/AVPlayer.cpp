@@ -1552,7 +1552,11 @@ namespace player {
 
 	void AVPlayer::setAVPid(int aPid, int vPid) {
 		while (!buffered) {
+#ifndef _WIN32
 			::usleep(150000);
+#else
+			Sleep(150);
+#endif
 		}
 		provider->setAVPid(aPid, vPid);
 	}
@@ -1575,7 +1579,11 @@ namespace player {
 		if (mainAV) {
 			provider->feedBuffers();
 		} else {
+#ifndef _WIN32
 			::usleep(150000);
+#else
+			Sleep(150);
+#endif
 		}
 		hasEvent = provider->checkVideoResizeEvent(surface);
 		setSoundLevel(this->soundLevel);
@@ -1661,8 +1669,11 @@ namespace player {
 			} else {
 				dur = getTotalMediaTime();
 			}
-
+#ifndef _WIN32
 			::usleep(850000);
+#else
+			Sleep(850);
+#endif
 			currentTime = getCurrentMediaTime();
 			if (currentTime > 0) {
 				while (dur > (currentTime + 0.1)) {

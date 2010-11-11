@@ -183,7 +183,11 @@ namespace player {
 #else
 				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
 #endif
+#ifndef _WIN32
 				::usleep(1000000);
+#else
+				Sleep(1000);
+#endif
 				release();
 				break;
 
@@ -198,7 +202,11 @@ namespace player {
 #else
 				render("/usr/local/etc/ginga/files/img/button/playButton.png");
 #endif
+#ifndef _WIN32
 				::usleep(1000000);
+#else
+				Sleep(1000);
+#endif
 				release();
 				break;
 
