@@ -1535,7 +1535,6 @@ namespace player {
 #ifndef _WIN32
 			win = new DFBWindow(windowId);
 #else
-			printf("cade a janela ??");
 			//win = new DXWindow();
 #endif
 #endif
@@ -1553,7 +1552,7 @@ namespace player {
 
 	void AVPlayer::setAVPid(int aPid, int vPid) {
 		while (!buffered) {
-			Thread::usleep(150000);
+			::usleep(150000);
 		}
 		provider->setAVPid(aPid, vPid);
 	}
@@ -1576,7 +1575,7 @@ namespace player {
 		if (mainAV) {
 			provider->feedBuffers();
 		} else {
-			Thread::usleep(150000);
+			::usleep(150000);
 		}
 		hasEvent = provider->checkVideoResizeEvent(surface);
 		setSoundLevel(this->soundLevel);
@@ -1663,7 +1662,7 @@ namespace player {
 				dur = getTotalMediaTime();
 			}
 
-			Thread::usleep(850000);
+			::usleep(850000);
 			currentTime = getCurrentMediaTime();
 			if (currentTime > 0) {
 				while (dur > (currentTime + 0.1)) {

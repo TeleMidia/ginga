@@ -193,7 +193,7 @@ namespace multidevice {
 				}
 			}*/
 
-			Thread::usleep(25000);
+			::usleep(25000);
 		}
 		unlock();
 	}
