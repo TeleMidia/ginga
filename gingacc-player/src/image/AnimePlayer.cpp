@@ -168,7 +168,7 @@ namespace player {
 					}
 					delete surface;
 					surface = NULL;
-					//Thread::usleep(dur);
+					::usleep(dur);
 					++i;
 					if (!running) {
 						unlockConditionSatisfied();
