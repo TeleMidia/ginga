@@ -1535,7 +1535,6 @@ namespace player {
 #ifndef _WIN32
 			win = new DFBWindow(windowId);
 #else
-			//win = new DXWindow();
 #endif
 #endif
 

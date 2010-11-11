@@ -50,6 +50,16 @@ http://www.telemidia.puc-rio.br
 #ifndef LocalDeviceManager_H_
 #define LocalDeviceManager_H_
 
+#ifdef _WIN32
+#if	_EXP_LOCALDEVICEMANAGER_API == 0
+#define LOCALDEVICEMANAGER_API	__declspec(dllexport)
+#else
+#define LOCALDEVICEMANAGER_API	__declspec(dllimport)
+#endif
+#else
+#define LOCALDEVICEMANAGER_API
+#endif
+
 #include "interface/device/IODevice.h"
 #include "ILocalDeviceManager.h"
 
@@ -65,7 +75,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
-	class LocalDeviceManager : public ILocalDeviceManager {
+	class LOCALDEVICEMANAGER_API LocalDeviceManager : public ILocalDeviceManager {
 		private:
 			map<unsigned int, IODevice*>* devices;
 			map<unsigned int, string>* profiles;

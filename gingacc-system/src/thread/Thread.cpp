@@ -47,6 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#ifdef _WIN32
+#define _EXP_THREAD_API 0
+#endif
+
 #include "system/thread/Thread.h"
 
 #ifdef _WIN32
