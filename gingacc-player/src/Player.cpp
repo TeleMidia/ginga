@@ -522,10 +522,18 @@ namespace player {
 		cout << expectedSleepTime << "'" << endl;
 
 		if (expectedSleepTime > 0) {
+#ifndef _WIN32
 			::usleep(expectedSleepTime * 1000000);
+#else
+			Sleep(expectedSleepTime * 1000);
+#endif
 		}
 
 		p->forceNaturalEnd();
+
+#ifdef WIN32
+		return ptr;
+#endif
 	}
 
 	void Player::forceNaturalEnd() {
