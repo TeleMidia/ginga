@@ -13,3 +13,5 @@ localInclude_HEADERS = IAIT.h IApplication.h \
     ApplicationDescriptor.h ApplicationLocationDescriptor.h \
     ApplicationNameDescriptor.h PrefetchDescriptor.h \
     TransportProtocolDescriptor.h LocalTimeOffsetDescriptor.h ITOT.h TOT.h
+
+MAINTAINERCLEANFILES = Makefile.in

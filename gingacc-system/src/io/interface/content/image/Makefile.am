@@ -15,3 +15,5 @@ libgingaccsysctsimgdfb_so_SOURCES = DFBImageProvider.cpp
 
 libgingaccsysctsimgdfb_so_LDADD = $(DFB_LIBS) -lgingaccsystemiodfb \
     -lgingaccsystemio
+
+MAINTAINERCLEANFILES = Makefile.in

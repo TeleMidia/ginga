@@ -20,3 +20,5 @@ libgingaccplayer_so_LDFLAGS = -L/usr/local/lib/ginga -L/usr/local/lib \
 
 libgingaccplayer_so_LDADD = -lpthread -ltelemidiautil \
     -lgingaccsystemiocodemap $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

@@ -11,3 +11,5 @@ test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
     -lgingacctsparser
 
 test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L/usr/local/lib
+
+MAINTAINERCLEANFILES = Makefile.in

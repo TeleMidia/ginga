@@ -12,3 +12,5 @@ libgingaccdataprocncledit_so_LDFLAGS = -Wl,-soname,libgingaccdataprocncledit.so 
 
 libgingaccdataprocncledit_PROGRAMS = libgingaccdataprocncledit.so
 libgingaccdataprocncledit_so_SOURCES = EventDescriptor.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

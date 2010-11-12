@@ -8,3 +8,5 @@ LIBS =
 localIncludedir = /usr/local/include/ginga/multidevice
 localInclude_HEADERS = IRemoteDeviceManager.h IRemoteDeviceListener.h \
     IRemoteDevice.h
+
+MAINTAINERCLEANFILES = Makefile.in

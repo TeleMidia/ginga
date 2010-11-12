@@ -32,3 +32,5 @@ libgingaccmd_so_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
 
 libgingaccmd_so_LDADD = -lpthread -ltelemidiautil -lgingaccsystemthread \
     $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

@@ -36,3 +36,5 @@ libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
 
 libgingacctsparser_so_LDADD = -ltelemidiautil -lpthread -lgingaccsystemthread \
     -lgingacctuner
+
+MAINTAINERCLEANFILES = Makefile.in

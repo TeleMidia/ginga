@@ -10,3 +10,5 @@ players_PROGRAMS = players
 players_SOURCES = PlayerLoader.cpp
 players_LDADD = -ltelemidiautil  $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
 endif
+
+MAINTAINERCLEANFILES = Makefile.in

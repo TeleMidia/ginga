@@ -13,3 +13,5 @@ libgingaccdataprocncl_so_LDFLAGS = -Wl,-soname,libgingaccdataprocncl.so \
 libgingaccdataprocncl_PROGRAMS = libgingaccdataprocncl.so
 libgingaccdataprocncl_so_SOURCES = Metadata.cpp DataFile.cpp \
     NCLSectionProcessor.cpp parser/NCLMetadataParser.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

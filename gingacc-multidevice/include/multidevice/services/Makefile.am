@@ -11,3 +11,4 @@ servicesInclude_HEADERS = IDeviceDomain.h RemoteEventService.h
 servicesnetIncludedir = /usr/local/include/ginga/multidevice/services/network
 servicesnetInclude_HEADERS = network/ISocketService.h network/TcpClientConnection.h \
 	network/TcpSocketService.h
+MAINTAINERCLEANFILES = Makefile.in

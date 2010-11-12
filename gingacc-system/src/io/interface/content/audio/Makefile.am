@@ -35,3 +35,4 @@ libgingaccsysctsffmpega_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccsystemiodfb -lgingaccsystemio -lgingaccsystemthread \
     -lgingaccsysctsfs
 endif
+MAINTAINERCLEANFILES = Makefile.in

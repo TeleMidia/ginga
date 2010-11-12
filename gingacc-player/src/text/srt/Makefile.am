@@ -16,3 +16,5 @@ libgingaccplasrt_so_SOURCES = SrtPlayer.cpp
 
 libgingaccplasrt_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
     -lgingaccplayer -lgingaccplatxt $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

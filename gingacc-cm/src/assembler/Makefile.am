@@ -11,3 +11,5 @@ libgingacccmassembler_so_LDFLAGS = -Wl,-soname,libgingacccmassembler.so \
 
 libgingacccmassembler_PROGRAMS = libgingacccmassembler.so
 libgingacccmassembler_so_SOURCES = ComponentDescription.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

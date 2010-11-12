@@ -16,3 +16,5 @@ libgingaccplawdg_so_SOURCES = ShowButton.cpp
 
 libgingaccplawdg_so_LDADD = -lgingaccsystemthread -lgingaccplayer \
     -lgingaccplaimg $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

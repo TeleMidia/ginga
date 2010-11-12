@@ -11,3 +11,5 @@ libgingaccum_so_LDFLAGS = -Wl,-soname,libgingaccum.so \
 
 libgingaccum_PROGRAMS = libgingaccum.so
 libgingaccum_so_SOURCES = Update.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

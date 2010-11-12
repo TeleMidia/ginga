@@ -16,3 +16,5 @@ libgingaccsysctsdfbf_so_SOURCES = DFBFontProvider.cpp
 
 libgingaccsysctsdfbf_so_LDADD = $(DFB_LIBS) -lgingaccsystemiodfb \
     -lgingaccsystemio
+
+MAINTAINERCLEANFILES = Makefile.in

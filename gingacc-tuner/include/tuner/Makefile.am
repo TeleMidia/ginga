@@ -10,3 +10,5 @@ localPInclude_HEADERS = providers/IDataProvider.h providers/IChannel.h \
 
 localFIncludedir = /usr/local/include/ginga/tuner/providers/frontends
 localFInclude_HEADERS = providers/frontends/IFrontendFilter.h
+
+MAINTAINERCLEANFILES = Makefile.in

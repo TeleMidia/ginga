@@ -20,3 +20,25 @@ SUBDIRS = 	include/system/thread \
 			src/io/interface/content/video \
 			files \
 			test
+
+
+MAINTAINERCLEANFILES = 	aclocal.m4 \
+			config.log \
+			config.guess \
+			config.h.in \
+			config.status \
+			config.sub \
+			configure \
+			depcomp \
+			install-sh \
+			libtool \
+			ltmain.sh \
+			Makefile.in \
+			missing \
+			mkinstalldirs \
+			autom4te.cache/* \
+			.deps/*
+
+maintainer-clean-local:
+	rm -rf .deps
+	rm -rf autom4te.cache

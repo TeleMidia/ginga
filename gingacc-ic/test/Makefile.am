@@ -11,3 +11,4 @@ test_LDADD = $(TEST_COMPONENTS_LIBS) -ltelemidiautil
 
 test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L../src -L../src/curlic
+MAINTAINERCLEANFILES = Makefile.in

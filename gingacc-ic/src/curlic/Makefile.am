@@ -19,3 +19,4 @@ libgingacciccurlic_so_LDADD = -lcurl -ltelemidiautil -lpthread \
     $(COMPONENTS_LIBS)
 
 endif
+MAINTAINERCLEANFILES = Makefile.in

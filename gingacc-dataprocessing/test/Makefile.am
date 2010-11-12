@@ -26,3 +26,5 @@ test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
 
 test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L../src/dsmcc/npt \
     -L../src/ncl -L/usr/local/lib
+
+MAINTAINERCLEANFILES = Makefile.in

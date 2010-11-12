@@ -9,3 +9,5 @@ test_CPPFLAGS = -I$(top_srcdir)/include
 test_SOURCES = test.cpp
 
 test_LDADD = $(TEST_COMPONENTS_LIBS) -ltelemidiautil -L../src
+
+MAINTAINERCLEANFILES = Makefile.in

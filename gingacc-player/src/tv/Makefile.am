@@ -30,3 +30,5 @@ libgingaccplapav_so_SOURCES = ProgramAV.cpp
 
 libgingaccplapav_so_LDADD = -lgingaccplayer -lgingaccplaavp \
     -ltelemidiautil $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

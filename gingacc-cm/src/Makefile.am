@@ -8,3 +8,5 @@ libgingacccmdir = /usr/local/lib/ginga
 libgingacccm_so_LDFLAGS = -Wl,-soname,libgingacccm.so -shared -ldl
 libgingacccm_PROGRAMS = libgingacccm.so
 libgingacccm_so_SOURCES = ComponentManager.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

@@ -11,3 +11,5 @@ test_LDADD =  $(TEST_COMPONENTS_LIBS) -ltelemidiautil
 
 test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L/usr/local/lib/ginga -L../src
+
+MAINTAINERCLEANFILES = Makefile.in

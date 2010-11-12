@@ -31,3 +31,5 @@ libgingaccdataprocessing_so_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
 
 libgingaccdataprocessing_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
     $(COMPONENTS_LIBS) -L/usr/local/lib/ -L/usr/local/lib/ginga/
+
+MAINTAINERCLEANFILES = Makefile.in

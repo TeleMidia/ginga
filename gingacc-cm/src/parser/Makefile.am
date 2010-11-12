@@ -11,3 +11,5 @@ libgingacccmparser_so_LDFLAGS = -Wl,-soname,libgingacccmparser.so \
 
 libgingacccmparser_PROGRAMS = libgingacccmparser.so
 libgingacccmparser_so_SOURCES = ComponentParser.cpp
+
+MAINTAINERCLEANFILES = Makefile.in

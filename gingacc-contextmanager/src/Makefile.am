@@ -19,3 +19,5 @@ libgingacccontextmanager_so_SOURCES = ContextManager.cpp user/GingaUser.cpp \
     system/SystemInfo.cpp
 
 libgingacccontextmanager_so_LDADD = $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

@@ -48,3 +48,5 @@ libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 
 libgingaccsystemio_so_LDADD = -ltelemidiautil -lpthread \
     -lgingaccsystemthread $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

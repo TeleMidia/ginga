@@ -17,3 +17,5 @@ libgingaccic_PROGRAMS = libgingaccic.so
 libgingaccic_so_SOURCES = InteractiveChannelManager.cpp
 
 libgingaccic_so_LDADD = -lpthread $(ICM_COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

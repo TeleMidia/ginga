@@ -32,3 +32,5 @@ test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L/usr/local/lib/ginga -L../src/thread -L../src/io \
     -L../src/io/interface/content/audio -L../src/io/interface/content/image \
     -L../src/io/interface/content/text -L../src/io/interface/content/video
+
+MAINTAINERCLEANFILES = Makefile.in

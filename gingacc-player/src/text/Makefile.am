@@ -15,3 +15,5 @@ libgingaccplatxt_PROGRAMS = libgingaccplatxt.so
 libgingaccplatxt_so_SOURCES = TextPlayer.cpp
 
 libgingaccplatxt_so_LDADD = -ltelemidiautil -lgingaccplayer $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

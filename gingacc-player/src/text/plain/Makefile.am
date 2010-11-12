@@ -16,3 +16,5 @@ libgingaccplaplt_so_SOURCES = PlainTxtPlayer.cpp
 
 libgingaccplaplt_so_LDADD = -ltelemidiautil -lgingaccplayer \
     -lpthread -lgingaccplatxt $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in

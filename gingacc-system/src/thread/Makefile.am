@@ -11,3 +11,5 @@ libgingaccsystemthread_so_LDFLAGS = -Wl,-soname,libgingaccsystemthread.so \
 localLib_PROGRAMS = libgingaccsystemthread.so
 libgingaccsystemthread_so_SOURCES = Thread.cpp
 libgingaccsystemthread_so_LDADD = -lpthread
+
+MAINTAINERCLEANFILES = Makefile.in

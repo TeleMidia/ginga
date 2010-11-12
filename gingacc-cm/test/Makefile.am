@@ -11,3 +11,5 @@ test_LDADD =  -ldl
 
 test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
     -L../src -L../src/component -L../src/parser
+
+MAINTAINERCLEANFILES = Makefile.in

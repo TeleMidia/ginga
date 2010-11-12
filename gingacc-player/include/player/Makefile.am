@@ -9,3 +9,4 @@ HTOINSTALL = IApplicationPlayer.h \
 	IShowButton.h AnimePlayer.h
 
 localInclude_HEADERS = $(HTOINSTALL)
+MAINTAINERCLEANFILES = Makefile.in

@@ -17,3 +17,4 @@ libgingaccicccrtp_so_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
 
 libgingaccicccrtp_so_LDADD = -lccrtp1 $(COMPONENTS_LIBS)
 endif
+MAINTAINERCLEANFILES = Makefile.in

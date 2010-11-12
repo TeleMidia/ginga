@@ -21,3 +21,5 @@ test_LDADD =  $(COMPONENTS_LIBS) -ltelemidiautil \
     -L../src/text -L../src/text/srt -L../src/text/plain \
     -L/usr/local/lib/lua/5.1/socket \
     -L../src/tv -L../src/video -L../src/widget
+
+MAINTAINERCLEANFILES = Makefile.in

@@ -22,3 +22,5 @@ libgingaccplaavp_so_SOURCES = $(CPPSRCS)
 
 libgingaccplaavp_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
     -lgingaccplayer $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES = Makefile.in
