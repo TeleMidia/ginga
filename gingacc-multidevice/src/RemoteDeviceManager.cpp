@@ -195,7 +195,7 @@ namespace multidevice {
 #ifndef _WIN32
 			::usleep(25000);
 #else
-			Sleep(25);
+			Sleep(2500);
 #endif
 		}
 		unlock();
