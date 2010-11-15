@@ -88,15 +88,11 @@ namespace io {
 
 		}else{
 			this->dxHwnd = NULL;
-			this->width  = 400;
-			this->height = 300;
+			this->width  = 800;
+			this->height = 600;
 		}
 
-
 		init = 0;
-		
-
-
 
 		windowPool = new set<DX2DSurface*>;
 		surfacePool = new set<DX2DSurface*>;

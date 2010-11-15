@@ -76,7 +76,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 #ifndef _WIN32
 #define FONTDIR   "/usr/local/etc/ginga/files/font/"
 #else
-#define FONTDIR   "/usr/local/etc/ginga/files/font/"
+#define FONTDIR   (getUserDocAndSetPath().append("\\config\\config\\player\\text\\fonts")).c_str()
 #endif
 #define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
 

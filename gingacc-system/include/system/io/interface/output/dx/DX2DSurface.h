@@ -101,6 +101,7 @@ namespace io {
 			void update();
 			void fill(int x, int y, int w, int h);
 			void drawString(int x, int y, const char* txt);
+			void replaceTex(LPDIRECT3DTEXTURE9 newtex);
 
 		private:
 			void buildVertex();

@@ -71,9 +71,9 @@ namespace io {
 		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
 
 		m_pVideo.reset(new VideoGraph(mrl, pD3ddev));
-
-                m_pVideo->play();
-                videoTex = m_pVideo->getVMRTexture();
+		
+		m_pVideo->play();
+		videoTex = m_pVideo->getVMRTexture();
 	}
 
 	DXVideoProvider::~DXVideoProvider() {
@@ -97,12 +97,13 @@ namespace io {
 			tex->GetLevelDesc(0, &desc);
 			surProp.x = 0;
 			surProp.y = 0;
+			surProp.z = 1.0;
 			surProp.width = desc.Width;
 			surProp.height = desc.Height;
 		}
 
 		DX2DSurface* sur = (DX2DSurface*)LocalDeviceManager::getInstance()->createSurface(&surProp);
-		sur->setTexture(videoTex);
+		sur->replaceTex(videoTex);
 
 		return new DXSurface(sur);
 	}
@@ -141,7 +142,7 @@ namespace io {
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 		cout << "DXVideoProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
 		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
-		s->setTexture(videoTex);
+		//s->setTexture(videoTex);
 		
 		m_pVideo->play();
 	}
@@ -158,7 +159,7 @@ namespace io {
 
 	void DXVideoProvider::stop() {
 		cout << "DXVideoProvider::stop()" << endl;
-			m_pVideo->stop();
+		m_pVideo->stop();
 	}
 
 	void DXVideoProvider::setSoundLevel(float level) {

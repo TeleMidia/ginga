@@ -186,6 +186,7 @@ namespace io {
 		surProp.height = info.Height;
 		surProp.x = 0;
 		surProp.y = 0;
+		surProp.z = 1.0;
 
 		destination = (DX2DSurface*)(LocalDeviceManager::getInstance()->createSurface(&surProp));
 		renderedSurface = new DXSurface(destination);

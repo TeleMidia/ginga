@@ -483,12 +483,14 @@ namespace io {
 			if( winSur != NULL && winSur != contentSurface){
 				if( (w != winProp.width || h != winProp.height) && fit ){
 					if(stretch){
-						winSur->setTexture(contentSurface->getTexture());
+						//winSur->setTexture(contentSurface->getTexture());
+						winSur->replaceTex(contentSurface->getTexture());
 					}else{
 						
 					}
 				}else{
-					winSur->setTexture(contentSurface->getTexture());
+					//winSur->setTexture(contentSurface->getTexture());
+					winSur->replaceTex(contentSurface->getTexture());
 				}
 			}
 		}

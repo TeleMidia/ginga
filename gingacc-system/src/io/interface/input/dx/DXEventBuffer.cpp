@@ -117,7 +117,6 @@ namespace io {
 		}else if(evt->isMotionType()){
 
 		}else if(evt->isUserClass()){
-			cout << "sad" << endl;
 			//DIDEVICEOBJECTDATA* didod = ((DIDEVICEOBJECTDATA*)evt->getContent());
 			userEventsPool->insert(evt);
 		}
@@ -126,7 +125,7 @@ namespace io {
 
 	void DXEventBuffer::waitEvent() {
 		//cout << "DXEventBuffer::waitEvent()" << endl;
-		Sleep(500);
+		Sleep(10);
 	}
 
 	IInputEvent* DXEventBuffer::getNextEvent() {
@@ -137,6 +136,16 @@ namespace io {
 
 		ZeroMemory( &tmp_mouse, sizeof(tmp_mouse) );
 		std::auto_ptr<DIDEVICEOBJECTDATA> pDidod (new DIDEVICEOBJECTDATA());
+
+		if (!userEventsPool->empty()){
+			IInputEvent* evt;
+			set<IInputEvent*>::iterator it;
+			it = userEventsPool->begin();
+			evt = ((IInputEvent*)(*it));
+			userEventsPool->erase(userEventsPool->begin());
+			//pthread_mutex_unlock(&m_mtxInput);
+			return (evt);
+		}
 
 		//pthread_mutex_lock(&m_mtxInput);
 		if( m_dInputKeyBoard != NULL){
@@ -233,15 +242,6 @@ namespace io {
 			}
 		}
 
-		if (!userEventsPool->empty()){
-			IInputEvent* evt;
-			set<IInputEvent*>::iterator it;
-			it = userEventsPool->begin();
-			evt = ((IInputEvent*)(*it));
-			userEventsPool->erase(userEventsPool->begin());
-			//pthread_mutex_unlock(&m_mtxInput);
-			return (evt);
-		}
 		//pthread_mutex_unlock(&m_mtxInput);
 		return NULL;
 	}

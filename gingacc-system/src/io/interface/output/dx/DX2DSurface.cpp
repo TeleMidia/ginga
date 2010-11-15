@@ -74,7 +74,7 @@ namespace io {
 	DX2DSurface::DX2DSurface(int x, int y, int w, int h, IDirect3DDevice9 *dev)
 	{
 		pD3ddev = NULL;
-		pD3ddev = dev;//((IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot()));
+		pD3ddev = dev;
 	
 		this->x =  x ;
 		this->y =  y ; 
@@ -100,6 +100,7 @@ namespace io {
 			LPDIRECT3DSURFACE9 pTexSur;
 			DXCHECK((pTex)->GetSurfaceLevel(0, &pTexSur),"","") ;
 			DXCHECK(pD3ddev->ColorFill(pTexSur, NULL, color ),"","");
+			pTexSur->Release();
 		}
 
 
@@ -110,6 +111,7 @@ namespace io {
 			LPDIRECT3DSURFACE9 pCanvasSur;
 			DXCHECK((pTexCanvas)->GetSurfaceLevel(0, &pCanvasSur),"","") ;
 			DXCHECK(pD3ddev->ColorFill(pCanvasSur, NULL, color ),"","");
+			pCanvasSur->Release();
 		}
 
 		initGraphics();
@@ -120,7 +122,6 @@ namespace io {
 
 		pTex->Release();
 		pTex = NULL;
-
 		pthread_mutex_destroy(&tex_lock);
 		pthread_mutex_destroy(&visible_lock);
 	}
@@ -248,8 +249,36 @@ namespace io {
 	}
 
 	void DX2DSurface::setTexture(LPDIRECT3DTEXTURE9 tex){
+		
+		LPDIRECT3DSURFACE9 pSSur, pDSur;
+
+		if(FAILED(tex->GetSurfaceLevel(0, &pSSur))){
+			cout << "Can't get tex surface level 0" << endl;
+		}
+
+		if(FAILED(pTex->GetSurfaceLevel(0, &pDSur))){
+			cout << "Can't get pTex surface level 0" << endl; 
+		}
+
+
 		pthread_mutex_lock(&tex_lock);
-		pTex = tex;
+
+		DXCHECK( pD3ddev->StretchRect(pSSur, NULL, pDSur, NULL, D3DTEXF_NONE), "DX2DSurface::setTexture", "erro" );
+
+
+		//pTex = tex;
+		
+		pthread_mutex_unlock(&tex_lock);
+		pSSur->Release();
+		pDSur->Release();
+
+	}
+
+	void DX2DSurface::replaceTex(LPDIRECT3DTEXTURE9 newTex){
+		pthread_mutex_lock(&tex_lock);
+		pTex->Release();
+		pTex = NULL;
+		pTex = newTex;
 		pthread_mutex_unlock(&tex_lock);
 	}
 
@@ -287,7 +316,7 @@ namespace io {
 			// --- DEFAULT to SYSTEM
 
 			LPDIRECT3DTEXTURE9 srcTex = src->getTexture();
-			srcTex->GetLevelDesc(0, &srcSurDesc);
+			DXCHECK(srcTex->GetLevelDesc(0, &srcSurDesc), "srcTex->GetLevelDesc" , "error");
 			
 			if(FAILED(pD3ddev->CreateTexture( srcSurDesc.Width, srcSurDesc.Height, 1, D3DUSAGE_DYNAMIC, srcSurDesc.Format,
 											D3DPOOL_SYSTEMMEM, &(tmpTex), NULL))){
@@ -304,13 +333,23 @@ namespace io {
 			// SYSTEM to DEFAULT
 			hr = (pTexCanvas)->GetSurfaceLevel(0, &pCanvasSur) ;
 			
-			if( (srcX >= 0) && (srcY >= 0) && (srcH >= 0) && (srcW >= 0) ){
-				srcRect = new RECT();
+			srcX = (srcX >= 0)? srcX : 0;
+			srcY = (srcY >= 0)? srcY: 0;
+			srcH = (srcH >= 0)? srcH: srcSurDesc.Height;
+			srcW = (srcW >= 0)? srcW: srcSurDesc.Width;
+
+			srcRect = new RECT();
+			srcRect->bottom = srcY + srcH;
+			srcRect->left = srcX;
+			srcRect->right = srcX + srcW;
+			srcRect->top = srcY;
+
+			/*if( (srcX >= 0) && (srcY >= 0) && (srcH >= 0) && (srcW >= 0) ){
 				srcRect->bottom = srcY + srcH;
 				srcRect->left = srcX;
 				srcRect->right = srcX + srcW;
 				srcRect->top = srcY;
-			}
+			}*/
 
 			dstPoint.x = x;
 			dstPoint.y = y;
@@ -323,7 +362,7 @@ namespace io {
 			pSrcSur->Release();
 			pTmpSur->Release();
 			tmpTex->Release();
-
+			//srcTex->Release();
 			delete srcRect;
 	}
 
@@ -345,9 +384,10 @@ namespace io {
 	void DX2DSurface::update(){
 		LPDIRECT3DTEXTURE9 oldPtex;
 
-		oldPtex = this->getTexture();
+		//oldPtex = this->getTexture();
 		this->setTexture(pTexCanvas);
-		oldPtex->Release();
+		//oldPtex->Release();
+		pTexCanvas->Release();
 		pTexCanvas = NULL;
 
 		if(pTexCanvas != NULL){

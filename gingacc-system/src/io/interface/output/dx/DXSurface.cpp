@@ -257,7 +257,7 @@ namespace io {
 	void DXSurface::fillRectangle(int x, int y, int w, int h) {
 		cout << "DXSurface::fillRectangle(int x, int y, int w, int h)" << endl;
 //		LPDIRECT3DSURFACE9 pSur;
-		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalDeviceManager::getInstance())->getGfxRoot());
+//		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalDeviceManager::getInstance())->getGfxRoot());
 
 		
 		(this->sur)->fill(x, y, w, h);
