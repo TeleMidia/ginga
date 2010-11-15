@@ -101,7 +101,7 @@ namespace player {
 		this->tabSize = 0;
 		this->font = NULL;
 #ifdef _WIN32
-		this->fontUri = getUserDocAndSetPath().append("\\config\\player\\text\\fonts\\decker.ttf");
+		this->fontUri = getUserDocAndSetPath().append("\\config\\decker.ttf");
 #else
 		this->fontUri = "/usr/local/share/directfb-examples/fonts/decker.ttf";
 #endif
@@ -132,7 +132,7 @@ namespace player {
 
 		string aux;
 #ifdef _WIN32		
-		aux = getUserDocAndSetPath().append("\\config\\player\\text\\fonts\\decker.ttf");
+		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
 #else
 		aux = "/usr/local/share/directfb-examples/fonts/decker.ttf";
 #endif

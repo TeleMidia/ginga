@@ -72,22 +72,26 @@ namespace io {
 		m_dInputMouse		= NULL;
 		m_mouseHolding	= false;
 
+		nEvt		= 0;
+
 		m_cursorPos.x = 0;
 		m_cursorPos.y = 0;
 		
 		m_scrWidth	= 0;
 		m_scrHeight = 0;
 
-		//pthread_cond_init(&m_condRunnig, NULL);
+		pthread_mutex_init(&m_mtxInput, NULL);
+		pthread_mutex_init(&evt_lock, NULL);
 
-		//pthread_mutex_init(&m_mtxInput, NULL);
+		//pthread_cond_init(&evt_cond, NULL);
 
 		initDirectInput();
 	}
 
 	DXEventBuffer::~DXEventBuffer() {
 		cout << "DXEventBuffer::~DXEventBuffer()" << endl;
-		//pthread_mutex_lock(&m_mtxInput);
+
+		pthread_mutex_lock(&m_mtxInput);
 		if(m_dInput){
 
 			m_dInputKeyBoard->Unacquire();
@@ -101,12 +105,16 @@ namespace io {
 			m_dInput->Release();
 			m_dInput = NULL;
 		}
-		//pthread_mutex_unlock(&m_mtxInput);
-		//pthread_mutex_destroy(&m_mtxInput);
+		pthread_mutex_unlock(&m_mtxInput);
+		pthread_mutex_destroy(&m_mtxInput);
+
+		pthread_mutex_unlock(&evt_lock);
+		pthread_mutex_destroy(&evt_lock);
 	}
 
 	void DXEventBuffer::wakeUp() {
 		cout << "DXEventBuffer::wakeUp()" << endl;
+		pthread_mutex_lock(&evt_lock);
 	}
 
 	void DXEventBuffer::postEvent(IInputEvent* evt) {
@@ -125,7 +133,9 @@ namespace io {
 
 	void DXEventBuffer::waitEvent() {
 		//cout << "DXEventBuffer::waitEvent()" << endl;
-		Sleep(10);
+		pthread_mutex_lock(&evt_lock);
+		Sleep(20);
+		pthread_mutex_unlock(&evt_lock);
 	}
 
 	IInputEvent* DXEventBuffer::getNextEvent() {
@@ -133,6 +143,8 @@ namespace io {
 		DIMOUSESTATE2 tmp_mouse;
 		DWORD dwElements = 1;
 		HRESULT hr = 0;
+
+		pthread_mutex_lock(&m_mtxInput);
 
 		ZeroMemory( &tmp_mouse, sizeof(tmp_mouse) );
 		std::auto_ptr<DIDEVICEOBJECTDATA> pDidod (new DIDEVICEOBJECTDATA());
@@ -143,11 +155,10 @@ namespace io {
 			it = userEventsPool->begin();
 			evt = ((IInputEvent*)(*it));
 			userEventsPool->erase(userEventsPool->begin());
-			//pthread_mutex_unlock(&m_mtxInput);
+			pthread_mutex_unlock(&m_mtxInput);
 			return (evt);
 		}
 
-		//pthread_mutex_lock(&m_mtxInput);
 		if( m_dInputKeyBoard != NULL){
 
             hr = m_dInputKeyBoard->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), pDidod.get(), &dwElements, 0 );
@@ -165,12 +176,11 @@ namespace io {
 
 				if(pDidod->dwOfs != NULL){
 					printf( "---> 0x%02x [%s] \n", pDidod->dwOfs, (pDidod->dwData & 0x80) ? "D" : "U");
+					pthread_mutex_unlock(&m_mtxInput);
 					return new DXInputEvent(pDidod.release());
-					//pthread_mutex_unlock(&m_mtxInput);
 				}
-
 			}
-
+			pthread_mutex_unlock(&m_mtxInput);
 		}
 
 		if( m_dInputMouse != NULL){
@@ -204,24 +214,24 @@ namespace io {
 
 			if(m_cursorPos.x < 0){
 				m_dInputMouse->Unacquire();
-				//pthread_mutex_unlock(&m_mtxInput);
+				pthread_mutex_unlock(&m_mtxInput);
 				return NULL;
 			}else{
 				if(m_cursorPos.x > m_scrWidth){
 					m_dInputMouse->Unacquire();
-					//pthread_mutex_unlock(&m_mtxInput);
+					pthread_mutex_unlock(&m_mtxInput);
 					return NULL;
 				}
 			}
 
 			if(m_cursorPos.y < 0){
 				m_dInputMouse->Unacquire();
-				//pthread_mutex_unlock(&m_mtxInput);
+				pthread_mutex_unlock(&m_mtxInput);
 				return NULL;
 			}else{
 				if(m_cursorPos.y > m_scrHeight){
 					m_dInputMouse->Unacquire();
-					//pthread_mutex_unlock(&m_mtxInput);
+					pthread_mutex_unlock(&m_mtxInput);
 					return NULL;
 				}
 			}
@@ -232,17 +242,19 @@ namespace io {
 			if(((tmp_mouse.rgbButtons[0] & 0x80) || (tmp_mouse.rgbButtons[1] & 0x80)) ){
 				if(!m_mouseHolding){
 					m_mouseHolding = true;
-					//pthread_mutex_unlock(&m_mtxInput);
+					pthread_mutex_unlock(&m_mtxInput);
 					return new DXInputEvent(tmp_mouse); // button (left/right) pressed
 				}
 			}else{
 				m_mouseHolding = false;
-				//pthread_mutex_unlock(&m_mtxInput);
+				pthread_mutex_unlock(&m_mtxInput);
 				return new DXInputEvent(tmp_mouse); // just xy axis moving
 			}
+			pthread_mutex_unlock(&m_mtxInput);
 		}
 
-		//pthread_mutex_unlock(&m_mtxInput);
+		pthread_mutex_unlock(&m_mtxInput);
+
 		return NULL;
 	}
 
