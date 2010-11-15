@@ -606,7 +606,8 @@ namespace io {
 					cout << currentYAxis << "'" << endl;*/
 
 					delete inputEvent;
-					inputEvent = eventBuffer->getNextEvent();
+					if(eventBuffer != NULL)
+						inputEvent = eventBuffer->getNextEvent();
 					continue;
 				}
 
