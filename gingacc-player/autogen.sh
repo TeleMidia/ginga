@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Player 0.11.2"
+PROJECT="Ginga Common Core Player 0.12.1"
 TEST_TYPE=-f
 FILE=include/player/AVPlayer.h
 

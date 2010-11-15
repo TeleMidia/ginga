@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core System 0.11.2"
+PROJECT="Ginga Common Core System 0.12.1"
 TEST_TYPE=-f
 FILE=include/system/io/interface/output/IWindow.h
 
