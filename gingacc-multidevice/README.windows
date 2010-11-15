@@ -1,0 +1,20 @@
+This is Ginga Common Core Interactive Channel library (Windows Version).
+
+DEPENDENCIES
+============
+-> boost (> 1.44.0)
+   (http://www.boost.org/users/download/)
+
+-> dlfcn 
+   (http://code.google.com/p/dlfcn-win32/)
+
+-> telemidia-util-cpp >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
+-> gingacc-cm (from gingacc-cpp) >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
+-> gingacc-system (from gingacc-cpp) >= 0.11.2
+   (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
+
+INSTALLATION
+============
+See 'telemidia-vs2010-solution' project.

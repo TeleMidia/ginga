@@ -531,9 +531,7 @@ namespace player {
 
 		p->forceNaturalEnd();
 
-#ifdef WIN32
 		return ptr;
-#endif
 	}
 
 	void Player::forceNaturalEnd() {
