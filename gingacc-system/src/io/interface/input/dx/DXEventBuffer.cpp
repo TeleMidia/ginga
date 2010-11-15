@@ -134,7 +134,7 @@ namespace io {
 	void DXEventBuffer::waitEvent() {
 		//cout << "DXEventBuffer::waitEvent()" << endl;
 		pthread_mutex_lock(&evt_lock);
-		Sleep(20);
+		Sleep(80);
 		pthread_mutex_unlock(&evt_lock);
 	}
 

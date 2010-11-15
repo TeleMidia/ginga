@@ -136,6 +136,10 @@ namespace io {
 
 		private:
 			void run();
+
+#ifdef _WIN32
+			pthread_mutex_t mutex_event_buffer;
+#endif
 	};
 }
 }

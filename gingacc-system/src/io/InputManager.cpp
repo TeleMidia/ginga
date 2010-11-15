@@ -106,6 +106,10 @@ namespace io {
 
 		pthread_mutex_init(&appMutex, NULL);
 
+#ifdef _WIN32
+		pthread_mutex_init(&mutex_event_buffer, NULL);
+#endif
+
 		initializeInputIntervalTime();
 		Thread::start();
 	}
@@ -116,6 +120,15 @@ namespace io {
 			delete _instance;
 			_instance = NULL;
 		}
+
+#ifdef _WIN32
+		pthread_mutex_lock(&mutex_event_buffer);
+		if (eventBuffer != NULL) {
+			delete eventBuffer;
+			eventBuffer = NULL;
+		}
+		pthread_mutex_unlock(&mutex_event_buffer);
+#endif
 	}
 
 	void InputManager::initializeInputIntervalTime() {
@@ -219,10 +232,12 @@ namespace io {
 		pthread_mutex_unlock(&appMutex);
 		pthread_mutex_destroy(&appMutex);
 
+#ifndef _WIN32
 		if (eventBuffer != NULL) {
 			delete eventBuffer;
 			eventBuffer = NULL;
 		}
+#endif
 
 		unlock();
 	}
@@ -577,6 +592,9 @@ namespace io {
 		double pTimeStamp = 0;
 		double timeStamp  = 0;
 
+#ifdef _WIN32
+		pthread_mutex_lock(&mutex_event_buffer);
+#endif
 		while (running && eventBuffer != NULL) {
 			eventBuffer->waitEvent();
 			if (!running) {
@@ -646,6 +664,9 @@ namespace io {
 				inputEvent = eventBuffer->getNextEvent();
 			}
 		}
+#ifdef _WIN32
+		pthread_mutex_unlock(&mutex_event_buffer);
+#endif
 	}
 }
 }
