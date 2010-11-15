@@ -275,11 +275,15 @@ namespace io {
 	}
 
 	void DX2DSurface::replaceTex(LPDIRECT3DTEXTURE9 newTex){
-		pthread_mutex_lock(&tex_lock);
-		pTex->Release();
-		pTex = NULL;
-		pTex = newTex;
-		pthread_mutex_unlock(&tex_lock);
+		if(pTex != newTex){
+			pthread_mutex_lock(&tex_lock);
+			pTex->Release();
+			pTex = NULL;
+			pTex = newTex;
+			pthread_mutex_unlock(&tex_lock);
+		}else{
+			cout << "same tex" << endl; 
+		}
 	}
 
 	void DX2DSurface::draw2DSurface(){
@@ -384,9 +388,7 @@ namespace io {
 	void DX2DSurface::update(){
 		LPDIRECT3DTEXTURE9 oldPtex;
 
-		//oldPtex = this->getTexture();
 		this->setTexture(pTexCanvas);
-		//oldPtex->Release();
 		pTexCanvas->Release();
 		pTexCanvas = NULL;
 
@@ -428,7 +430,7 @@ namespace io {
 
             if (SUCCEEDED(texSur->GetDC(&hdc))){
 				RECT rect = {x, y, w, h};
-				SetTextColor(hdc, D3DCOLOR_ARGB(100, 255, 255, 255));
+				SetTextColor(hdc, D3DCOLOR_ARGB(100, 0, 100, 255));
 				SetBkColor(hdc, D3DCOLOR_ARGB(100, 0, 0, 0)); // fg color
 				
 				int txtSize = strlen(txt);
@@ -437,9 +439,8 @@ namespace io {
 				DrawTextW(hdc, wBuffer, txtSize, &rect, DT_LEFT|DT_TOP);
 				texSur->ReleaseDC(hdc);
 
-				
-				if(SUCCEEDED( pTexSwp->GetSurfaceLevel(0, &pSwpSur) )){
-				//	DXCHECK( pD3ddev->UpdateSurface(texSur, NULL, pCanvasSur,&pt), "", "");
+				setTexture(pTexSwp);
+				/*if(SUCCEEDED( pTexSwp->GetSurfaceLevel(0, &pSwpSur) )){
 					if( SUCCEEDED( pD3ddev->UpdateSurface(texSur, NULL, pSwpSur, NULL) )){
 						if(SUCCEEDED(pTexCanvas->GetSurfaceLevel(0, &pCanvasSur))){
 							RECT rectTwo = {0, 0, w, h};
@@ -453,7 +454,7 @@ namespace io {
 					}
 					pSwpSur->Release();
 					pTexSwp->Release();
-				}
+				}*/
 				
 				texSur->Release();
 

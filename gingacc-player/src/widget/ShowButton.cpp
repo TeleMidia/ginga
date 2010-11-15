@@ -166,7 +166,7 @@ namespace player {
 			case PAUSE:
 				cout << "ShowButton::run PAUSE" << endl;
 #ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resource\\img\\button\\pauseButton.png"));
+				render(getUserDocAndSetPath().append("\\resources\\images\\pauseButton.png"));
 #else
 				render("/usr/local/etc/ginga/files/img/button/pauseButton.png");
 #endif
@@ -179,7 +179,7 @@ namespace player {
 				}
 
 #ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resource\\img\\button\\stopButton.png"));
+				render(getUserDocAndSetPath().append("\\resources\\images\\stopButton.png"));
 #else
 				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
 #endif
@@ -198,7 +198,7 @@ namespace player {
 				}
 
 #ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resource\\img\\button\\playButton.png"));
+				render(getUserDocAndSetPath().append("\\resources\\images\\playButton.png"));
 #else
 				render("/usr/local/etc/ginga/files/img/button/playButton.png");
 #endif

@@ -81,13 +81,16 @@ namespace io {
 
 			int		m_scrWidth;
 			int		m_scrHeight;
+			int		nEvt;
 
 			HWND	m_hwndC;
 			BOOL	m_mouseHolding;
 			
 			static set<IInputEvent*>* userEventsPool; // NCLua dummy event pool
-			//pthread_mutex_t				m_mtxInput;
-			//pthread_cond_t				m_condRunnig;
+			pthread_mutex_t				m_mtxInput;
+			pthread_mutex_t				evt_lock;
+			//pthread_cond_t				evt_cond;
+
 		public:
 			DXEventBuffer();
 			~DXEventBuffer();
