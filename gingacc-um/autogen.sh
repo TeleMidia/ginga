@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Update Manager 0.11.2"
+PROJECT="Ginga Common Core Update Manager 0.12.1"
 TEST_TYPE=-f
 FILE=include/um/IUpdate.h
 
