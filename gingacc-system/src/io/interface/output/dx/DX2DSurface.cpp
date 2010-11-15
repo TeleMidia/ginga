@@ -252,6 +252,11 @@ namespace io {
 		
 		LPDIRECT3DSURFACE9 pSSur, pDSur;
 
+		if (tex == NULL){
+				cout << "DX2DSurface::setTexture WARNING! Texture is NULL! Returning..." << endl;
+				return;
+		}
+
 		if(FAILED(tex->GetSurfaceLevel(0, &pSSur))){
 			cout << "Can't get tex surface level 0" << endl;
 		}
