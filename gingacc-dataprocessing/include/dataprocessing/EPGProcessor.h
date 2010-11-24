@@ -111,6 +111,7 @@ namespace epg {
 
 		public:
 			static EPGProcessor* getInstance();
+			void release();
 			void setDataProcessor(IDataProcessor* dataProcessor);
 			void decodeSdt(string fileName);
 			void decodeSdtSection(ITransportSection* section);

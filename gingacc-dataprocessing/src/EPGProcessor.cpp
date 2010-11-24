@@ -161,6 +161,13 @@ namespace epg {
 		return EPGProcessor::_instance;
 	}
 
+	void EPGProcessor::release() {
+		if (EPGProcessor::_instance != NULL) {
+			delete EPGProcessor::_instance;
+			_instance = NULL;
+		}
+	}
+
 	void EPGProcessor::setDataProcessor(IDataProcessor* dataProcessor) {
 		this->dataProcessor = dataProcessor;
 	}

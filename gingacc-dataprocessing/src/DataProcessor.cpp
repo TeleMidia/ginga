@@ -144,7 +144,7 @@ namespace dataprocessing {
 		}
 
 		if (epgProcessor != NULL) {
-			delete epgProcessor;
+			epgProcessor->release();
 			epgProcessor = NULL;
 		}
 

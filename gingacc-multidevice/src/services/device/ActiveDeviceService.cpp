@@ -115,29 +115,31 @@ namespace multidevice {
 				nsp->process(stream, streamSize);
 				nsp->mount();
 
-			if (nsp != NULL && nsp->isConsolidated()) {
-				//TODO: mount according to NCL sections
-				pthread_mutex_lock(&lMutex);
-				i = listeners->begin();
-				while (i != listeners->end()) {
-					(*i)->receiveRemoteContentInfo(
-							nsp->getMetadata()->getName(), nsp->getRootUri());
+				if (nsp != NULL && nsp->isConsolidated()) {
+					//TODO: mount according to NCL sections
+					pthread_mutex_lock(&lMutex);
+					i = listeners->begin();
+					while (i != listeners->end()) {
+						(*i)->receiveRemoteContentInfo(
+								nsp->getMetadata()->getName(), nsp->getRootUri());
 
-					(*i)->receiveRemoteContent(
-							remoteDevClass, nsp->getRootUri());
-					++i;
+						(*i)->receiveRemoteContent(
+								remoteDevClass, nsp->getRootUri());
+						++i;
+					}
+					pthread_mutex_unlock(&lMutex);
 				}
-				pthread_mutex_unlock(&lMutex);
+				return true;
+
+				#endif
+
 			}
-			return true;
-
-			#endif
-
-		} else {
-			cout << "PassiveDeviceService::receiveMediaContent Warning! ";
-			cout << " can't find device '" << dev << "' or no listeners found";
-			cout << endl;
 		}
+
+		cout << "ActiveDeviceService::receiveMediaContent Warning! ";
+		cout << " can't find device '" << dev << "' or no listeners found";
+		cout << endl;
+
 		return false;
 	}
 }
