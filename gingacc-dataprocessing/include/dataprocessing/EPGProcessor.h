@@ -106,8 +106,10 @@ namespace epg {
 			set<IEPGListener*>* timeListeners;
 			IDataProcessor* dataProcessor;
 
+		private:
+			virtual ~EPGProcessor();
+
 		public:
-			~EPGProcessor();
 			static EPGProcessor* getInstance();
 			void setDataProcessor(IDataProcessor* dataProcessor);
 			void decodeSdt(string fileName);

@@ -135,7 +135,6 @@ namespace si {
 		unsigned short remainingBytes;
 		unsigned short descriptorTag, value;
 		IMpegDescriptor* descriptor;
-		size_t localpos;
 
 		applicationId.organizationId = (
 				(((data[pos] & 0xFF)   << 24) & 0xFF000000) |

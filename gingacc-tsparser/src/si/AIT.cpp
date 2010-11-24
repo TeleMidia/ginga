@@ -111,7 +111,7 @@ namespace si {
 
 	void AIT::process(void* payloadBytes, unsigned int payloadSize) {
 		char* data;
-		size_t pos, descpos, localpos;
+		size_t pos, descpos;
 		unsigned char descriptorTag;
 		unsigned short remainingBytes;
 		Application* application;

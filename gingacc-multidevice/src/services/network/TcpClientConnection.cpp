@@ -111,8 +111,7 @@ namespace multidevice {
 	 */
 	bool TCPClientConnection::post(char* str) {
 		char* com;
-		char buf[5] = "";
-		int nr;
+		//int nr;
 		int nw;
 
 #ifndef _WIN32
@@ -134,9 +133,15 @@ namespace multidevice {
 #endif
 		if (nw != strlen(com)) {
 			perror("TCPClientConnection::post send error");
+#ifdef _WIN32
+			delete com;
+#endif
 			this->end();
 
 		} else {
+#ifdef _WIN32
+			delete com;
+#endif
 			return true;
 			/*
 			nr = recv(sockfd,buf,5,0);

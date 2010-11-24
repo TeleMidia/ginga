@@ -152,7 +152,7 @@ namespace player {
 		}
 
 		IFontProvider* font = NULL;
-		int width;
+		int width = 0;
 
 #if HAVE_COMPSUPPORT
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(

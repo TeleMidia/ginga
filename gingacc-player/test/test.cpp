@@ -69,7 +69,6 @@ int main(int argc, char** argv, char** envp) {
 	IWindow* w;
 	IWindow* ww;
 	IWindow* www;
-	ISurface* s;
 	ILocalDeviceManager* dm;
 	IPlayer* player;
 	IPlayer* img;

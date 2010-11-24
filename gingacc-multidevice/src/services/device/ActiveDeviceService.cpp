@@ -87,7 +87,7 @@ namespace multidevice {
 		IRemoteDevice* dev;
 		string uri;
 		set<IRemoteDeviceListener*>::iterator i;
-		INCLSectionProcessor* nsp;
+		INCLSectionProcessor* nsp = NULL;
 		bool hasLists;
 
 		//cout << "ActiveDeviceService::receiveMediaContent" << endl;
@@ -111,10 +111,11 @@ namespace multidevice {
 
 			#else
 
-			nsp->process(stream, streamSize);
-			nsp->mount();
+			if (nsp != NULL) {
+				nsp->process(stream, streamSize);
+				nsp->mount();
 
-			if (nsp->isConsolidated()) {
+			if (nsp != NULL && nsp->isConsolidated()) {
 				//TODO: mount according to NCL sections
 				pthread_mutex_lock(&lMutex);
 				i = listeners->begin();

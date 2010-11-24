@@ -98,8 +98,8 @@ namespace epg {
 //TODO: test CDT
 
 	EPGProcessor::EPGProcessor() {
-		set<string>* cdt   = new set<string>;
-		int files          = 0;
+		files              = 0;
+		cdt                = new set<string>;
 		eventPresent       = new map<unsigned int, IEventInfo*>;
 		eventSchedule      = new map<unsigned int, IEventInfo*>;
 		//services           = new map<unsigned int, IServiceInfo*>;
@@ -114,7 +114,7 @@ namespace epg {
 
 	EPGProcessor::~EPGProcessor() {
 		/*TODO:
-		 * delete listeners vector/set/map, but do NOT delete all listeners!
+		 * delete listeners vector/set/map, but do NOT delete listeners!
 		 */
 
 		map<unsigned int, IEventInfo*>::iterator i;
@@ -237,9 +237,8 @@ namespace epg {
 		unsigned int payloadSize, tableId, sectionNumber, lastSectionNumber;
 		unsigned int sectionVersion;
 		char* data;
-		int fd, rval;
 		unsigned short originalNetworkId;
-		size_t pos, remainingBytesDescriptor, value;
+		size_t pos;
 		string newSectionName;
 
 		cout << "EPGProcessor::decodeSdtSection decoding SDT section";
@@ -406,7 +405,6 @@ namespace epg {
 		unsigned int sectionVersion, tableId, sectionNumber, lastSectionNumber;
 		string sectionName, newSectionName;
 		IEventInfo* ei;
-		set<IEventInfo*>* eit;
 		char* data;
 		size_t pos;
 		map<unsigned int, IEventInfo*>::iterator i;

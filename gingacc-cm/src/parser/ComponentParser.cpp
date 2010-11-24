@@ -155,9 +155,6 @@ namespace cm {
 	}
 
 	void ComponentParser::releaseMaps() {
-		map<string, set<string>*>::iterator i;
-		set<string>* childs;
-
 		if (components != NULL) {
 			delete components;
 			components = NULL;

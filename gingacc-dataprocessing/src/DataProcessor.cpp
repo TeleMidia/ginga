@@ -317,7 +317,6 @@ namespace dataprocessing {
 	void DataProcessor::receiveSection(ITransportSection* section) {
 		IStreamEvent* se;
 		string sectionName;
-		set<IEventInfo*>* eit;
 		set<unsigned int>::iterator i;
 		char* payload;
 		short tableId;
