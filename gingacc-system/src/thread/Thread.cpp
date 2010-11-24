@@ -78,6 +78,7 @@ namespace thread {
 		isSleeping = false;
 		pthread_mutex_init(&threadFlagMutex, NULL);
 		pthread_mutex_init(&threadFlagMutexLockUntilSignal, NULL);
+		pthread_mutex_init(&threadIdMutex, NULL);
 
 		isWaiting = false;
 		pthread_cond_init(&threadFlagConditionVariable, NULL);
@@ -108,6 +109,9 @@ namespace thread {
 		pthread_mutex_unlock(&threadFlagMutexLockUntilSignal);
 		pthread_mutex_destroy(&threadFlagMutexLockUntilSignal);
 
+		pthread_mutex_unlock(&threadIdMutex);
+		pthread_mutex_destroy(&threadIdMutex);
+
 		pthread_attr_destroy(&tattr);
 	}
 
@@ -123,8 +127,10 @@ namespace thread {
 
 	void Thread::start() {
 		if (!isDeleting) {
+			pthread_mutex_lock(&threadIdMutex);
 			pthread_create(&threadId_, &tattr, Thread::function, this);
 			pthread_detach(threadId_);
+			pthread_mutex_unlock(&threadIdMutex);
 		}
 	}
 

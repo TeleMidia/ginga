@@ -94,8 +94,12 @@ namespace thread {
 		pthread_mutex_t threadFlagMutexLockUntilSignal;
 		pthread_cond_t threadFlagCVLockUntilSignal;
 
+	private:
+		pthread_mutex_t threadIdMutex;
+
 		pthread_attr_t tattr;
 
+	protected:
 		virtual void run()=0;
 
 	private:

@@ -545,6 +545,7 @@ namespace io {
 
 	void InputManager::postEvent(IInputEvent* event) {
 		if (!running) {
+			delete event;
 			return;
 		}
 

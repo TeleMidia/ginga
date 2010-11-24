@@ -237,7 +237,7 @@ namespace io {
 		}
 
 		dev = (*devices)[deviceNumber];
-		return dev->mergeIds(destId, srcIds, screenNumber);
+		dev->mergeIds(destId, srcIds, screenNumber);
 	}
 
 	void* LocalDeviceManager::getWindow(
