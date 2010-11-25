@@ -136,9 +136,6 @@ namespace io {
 		}
 		unlock();
 
-		pthread_mutex_unlock(&mutex);
-		pthread_mutex_unlock(&mutexC);
-
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
 
