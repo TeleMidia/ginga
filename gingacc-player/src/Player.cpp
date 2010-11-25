@@ -90,14 +90,14 @@ namespace player {
 
 	Player::~Player() {
 		this->status = STOP;
-		//pthread_mutex_lock(&listM);
+		pthread_mutex_lock(&listM);
 		if (listeners != NULL) {
 			listeners->clear();
 			delete listeners;
 			listeners = NULL;
 		}
 
-		//pthread_mutex_lock(&remListM);
+		pthread_mutex_lock(&lockedListM);
 		if (lockedListeners != NULL) {
 			lockedListeners->clear();
 			delete lockedListeners;
@@ -115,7 +115,7 @@ namespace player {
 			surface = NULL;
 		}
 
-		//pthread_mutex_lock(&referM);
+		pthread_mutex_lock(&referM);
 		if (referredPlayers != NULL) {
 			referredPlayers->clear();
 			delete referredPlayers;

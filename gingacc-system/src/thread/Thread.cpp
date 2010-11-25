@@ -100,15 +100,19 @@ namespace thread {
 		pthread_cond_signal(&threadFlagCVLockUntilSignal);
 		pthread_cond_destroy(&threadFlagCVLockUntilSignal);
 
+		pthread_mutex_lock(&threadMutex);
 		pthread_mutex_unlock(&threadMutex);
 		pthread_mutex_destroy(&threadMutex);
 
+		pthread_mutex_lock(&threadFlagMutex);
 		pthread_mutex_unlock(&threadFlagMutex);
 		pthread_mutex_destroy(&threadFlagMutex);
 
+		pthread_mutex_lock(&threadFlagMutexLockUntilSignal);
 		pthread_mutex_unlock(&threadFlagMutexLockUntilSignal);
 		pthread_mutex_destroy(&threadFlagMutexLockUntilSignal);
 
+		pthread_mutex_lock(&threadIdMutex);
 		pthread_mutex_unlock(&threadIdMutex);
 		pthread_mutex_destroy(&threadIdMutex);
 
