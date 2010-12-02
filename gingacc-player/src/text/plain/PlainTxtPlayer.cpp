@@ -234,7 +234,7 @@ namespace player {
 		} else if (name == "fontUri" && value != "") {
 			setFont(value);
 
-		} else if (name == "x-bgColor" && value != "") {
+		} else if ((name == "x-bgColor" || name == "bgColor") && value != "") {
 			if (surface != NULL) {
 				if (bgColor != NULL) {
 					delete bgColor;
@@ -253,7 +253,9 @@ namespace player {
 				surface->setBgColor(bgColor);
 			}
 
-		} else if (name == "x-rgbBgColor" && value != "") {
+		} else if ((name == "x-rgbBgColor" || name == "rgbBgColor")
+				&& value != "") {
+
 			params = split(value, ",");
 			if (params->size() == 3) {
 				if (surface != NULL) {
@@ -279,7 +281,9 @@ namespace player {
 			delete params;
 			params = NULL;
 
-		} else if (name == "x-rgbFontColor" && value != "") {
+		} else if ((name == "x-rgbFontColor" || name == "rgbFontColor")
+				&& value != "") {
+
 			params = split(value, ",");
 			if (params->size() == 3) {
 				if (fontColor != NULL) {
