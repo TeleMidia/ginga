@@ -1715,13 +1715,14 @@ namespace player {
 			presented = true;
 		}
 
-		if (provider != NULL) {
-			provider->stop();
-		}
-
 		if (status != STOP && status != PAUSE) {
-			status = STOP;
+			status  = STOP;
 			running = false;
+
+			if (provider != NULL) {
+				provider->stop();
+			}
+
 			unlock();
 			notifyListeners(PL_NOTIFY_STOP, "");
 
