@@ -61,6 +61,8 @@ extern "C" {
 }
 #endif
 
+#include <pthread.h>
+
 #include <set>
 using namespace std;
 
@@ -72,10 +74,11 @@ namespace core {
 namespace system {
 namespace io {
 	class FusionSoundAudioProvider : public IContinuousMediaProvider {
-		protected:
+		private:
 			IFusionSoundMusicProvider* decoder;
 			IFusionSoundStream* stream;
 			IFusionSoundPlayback* playback;
+			pthread_mutex_t decMutex;
 
 		public:
 			static IFusionSound* _fsSound;
