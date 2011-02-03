@@ -124,8 +124,13 @@ static void int_dispatch (lua_State* L)
 		lua_rawgeti(L, -1, i);         // [ ... | evt | env | lst | t ]
         lua_getfield(L, -1, "__func"); // [ ... | evt | env | lst | t | func ]
 		lua_pushvalue(L, -5);          // [ ... | evt | env | lst | t | func | evt]
-		lua_call(L, 1, 1);             // [ ... | evt | env | lst | t | ret]
-        if (lua_toboolean(L, -1)) {
+
+		if (lua_pcall(L, 1, 1, 0) != 0) { // [ ... | evt | env | lst | t | ret]
+			cout << "LUAEVENT int_dispatch ERROR:: ";
+			cout << lua_tostring(L, -1) << endl;
+		}
+
+		if (lua_toboolean(L, -1)) {
             lua_pop(L, 2);             // [ ... | evt | env | lst ]
             break;
         }
@@ -267,7 +272,11 @@ static int l_post (lua_State* L)
             }
             lua_rawgeti(L, LUA_ENVIRONINDEX, -REFTCPOUT); // [ dst | evt | class | f_out ]
             lua_pushvalue(L, 2);                          // [ dst | evt | class | f_out | evt ]
-            lua_call(L, 1, 0);                            // [ dst | evt | class ]
+
+            if (lua_pcall(L, 1, 0, 0) != 0) {             // [ dst | evt | class ]
+            	cout << "LUAEVENT l_post ERROR:: ";
+            	cout << lua_tostring(L, -1) << endl;
+            }
         }
 
         // NCL event
@@ -395,10 +404,15 @@ static void* sleep_thread (void* data)
 	t->player->lock();
 	lua_pushlightuserdata(t->L, t);         // [ ... | t* ]
 	lua_gettable(t->L, LUA_REGISTRYINDEX);  // [ ... | func ]
-	if (!lua_isnil(t->L, -1))
-		lua_call(t->L, 0, 0);               // [ ... ]
-	else
+	if (!lua_isnil(t->L, -1)) {
+		if (lua_pcall(t->L, 0, 0, 0) != 0) {// [ ... ]
+			cout << "LUAEVENT sleep_thread ERROR:: ";
+			cout << lua_tostring(t->L, -1) << endl;
+		}
+
+	} else {
 		lua_pop(t->L, 1);                   // [ ... ]
+	}
 	t->player->unlock();
 
 	delete t;
@@ -557,7 +571,11 @@ static int l_register (lua_State* L)
     lua_pushvalue(L, 5);           // [ -> | table | tinsert | newlst ]
     lua_pushvalue(L, 1);           // [ -> | table | tinsert | newlst | i ]
     lua_pushvalue(L, 3);           // [ -> | table | tinsert | newlst | i | filter ]
-    lua_call(L, 3, 0);             // [ -> | table ]
+
+    if (lua_pcall(L, 3, 0, 0) != 0) {// [ -> | table ]
+    	cout << "LUAEVENT l_register ERROR:: ";
+    	cout << lua_tostring(L, -1) << endl;
+    }
 
     // [ i | func | filter | lst | newlst | table ]
     return 0;
@@ -601,7 +619,12 @@ static int l_unregister (lua_State* L)
             lua_getfield(L, -1, "remove"); // [ -> | f' | table | remove ]
             lua_pushvalue(L, 3);           // [ -> | f' | table | remove | newlst ]
             lua_pushnumber(L, i);          // [ -> | f' | table | remove | newlst | i ]
-            lua_call(L, 2, 0);             // [ -> | f' | table ]
+
+            if (lua_pcall(L, 2, 0, 0) != 0) {// [ -> | f' | table ]
+            	cout << "LUAEVENT l_unregister ERROR:: ";
+            	cout << lua_tostring(L, -1) << endl;
+            }
+
             lua_pop(L, 1);                 // [ -> | f' ]
 	    }
 	    lua_pop(L, 2);                 // [ func | lst | newlst ]
@@ -670,7 +693,12 @@ LUALIB_API int luaopen_event (lua_State* L)
     // trigger tcp thread
     lua_getglobal(L, "require");                  // [ require ]
     lua_pushstring(L, "tcp_event");               // [ require | "tcp_event" ]
-    lua_call(L, 1, 1);                            // [ {f_in,f_out} ]
+
+    if (lua_pcall(L, 1, 1, 0) != 0) {             // [ {f_in,f_out} ]
+		cout << "LUAEVENT luaopen_event ERROR:: ";
+		cout << lua_tostring(L, -1) << endl;
+    }
+
     lua_rawgeti(L, -1, 1);                        // [ {f_in,f_out} | f_in ]
 	lua_rawseti(L, LUA_ENVIRONINDEX, -REFTCPIN);  // [ {f_in,f_out} ]
     lua_rawgeti(L, -1, 2);                        // [ {f_in,f_out} | f_out ]
@@ -696,7 +724,12 @@ static void* tcp_thread (void* data)
         player->lock();
         lua_getfield(player->L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT);  // [ ... | env ]
         lua_rawgeti(player->L, -1, -REFTCPIN);       // [ ... | env | f_in ]
-        lua_call(player->L, 0, 1);                   // [ ... | env | count ]
+
+        if (lua_pcall(player->L, 0, 1, 0) != 0) {          // [ ... | env | count ]
+        	cout << "LUAEVENT tcp_thread ERROR:: ";
+        	cout << lua_tostring(player->L, -1) << endl;
+        }
+
         int count = luaL_checknumber(player->L, -1); // [ ... | env | count ]
         lua_pop(player->L, 2);                       // [ ... ]
         player->unlock();

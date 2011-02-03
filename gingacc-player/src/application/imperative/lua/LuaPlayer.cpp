@@ -688,13 +688,21 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 
     // modulo 'event'
 	lua_pushcfunction(this->L, luaopen_event);    // [ l_event ]
-	lua_call(this->L, 0, 0);                      // [ ]
-    this->tcp_running = false;
+
+	if (lua_pcall(this->L, 0, 0, 0) != 0) {       // [ ]
+		cout << "LUAPLAYER LuaPlayer 1 ERROR:: ";
+		cout << lua_tostring(this->L, -1) << endl;
+	}
+
+	this->tcp_running = false;
 
     // modulo 'canvas'
     this->lock();
 	lua_pushcfunction(this->L, luaopen_canvas);   // [ l_canvas ]
-	lua_call(this->L, 0, 0);                      // [ ]
+	if (lua_pcall(this->L, 0, 0, 0) != 0) {       // [ ]
+		cout << "LUAPLAYER LuaPlayer 2 ERROR:: ";
+		cout << lua_tostring(this->L, -1) << endl;
+	}
     this->unlock();
 
     // estado inicial
@@ -751,7 +759,7 @@ void LuaPlayer::load ()
 		return;
 	}
     if( lua_pcall(this->L, 0, 0, 0) != 0 ) { 	      // [ ]
-    	cout << "LUA ERROR:: " << lua_tostring(L, -1) << endl;
+    	cout << "LUAPLAYER load ERROR:: " << lua_tostring(this->L, -1) << endl;
     }
 }
 
