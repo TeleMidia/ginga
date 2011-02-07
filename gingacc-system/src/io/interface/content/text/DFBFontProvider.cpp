@@ -86,19 +86,49 @@ namespace io {
 		IDirectFB* dfb;
 		DFBFontDescription desc;
 
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
-		desc.flags = (DFBFontDescriptionFlags)(
-			    DFDESC_HEIGHT | DFDESC_ATTRIBUTES);
+		string aux = "";
 
-		desc.height = heightInPixel;
-		desc.attributes = (DFBFontAttributes)0;
+		font = NULL;
 
-		DFBCHECK(dfb->CreateFont(dfb, fontUri, &desc, &font));
+#ifdef _WIN32
+		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
+#else
+		aux = "/usr/local/share/directfb-examples/fonts/decker.ttf";
+#endif
+
+		if (strcmp(fontUri, "") == 0 || !fileExists(fontUri)) {
+			if (!fileExists(aux)) {
+				cout << "DFBFontProvider Warning! File not found: '";
+				cout << fontUri << "' and '";
+				cout << aux << "'" << endl;
+				aux = "";
+			}
+
+		} else {
+			aux = fontUri;
+		}
+
+		if (heightInPixel < 1) {
+			aux = "";
+		}
+
+		if (aux != "") {
+			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			desc.flags = (DFBFontDescriptionFlags)(
+					DFDESC_HEIGHT | DFDESC_ATTRIBUTES);
+
+			desc.height = heightInPixel;
+			desc.attributes = (DFBFontAttributes)0;
+
+			DFBCHECK(dfb->CreateFont(dfb, aux.c_str(), &desc, &font));
+		}
 	}
 
 	DFBFontProvider::~DFBFontProvider() {
-		font->Release(font);
-		font = NULL;
+		if (font != NULL) {
+			font->Release(font);
+			font = NULL;
+		}
 	}
 
 	void* DFBFontProvider::getContent() {
@@ -108,14 +138,19 @@ namespace io {
 	int DFBFontProvider::getMaxAdvance() {
 		int maxAdvance = 0;
 
-		DFBCHECK(font->GetMaxAdvance(font, &maxAdvance));
+		if (font != NULL) {
+			DFBCHECK(font->GetMaxAdvance(font, &maxAdvance));
+		}
+
 		return maxAdvance;
 	}
 
 	int DFBFontProvider::getStringWidth(const char* text, int textLength) {
 		int width = 0;
 
-		DFBCHECK(font->GetStringWidth(font, text, textLength, &width));
+		if (font != NULL) {
+			DFBCHECK(font->GetStringWidth(font, text, textLength, &width));
+		}
 
 		return width;
 	}
@@ -123,7 +158,9 @@ namespace io {
 	int DFBFontProvider::getHeight() {
 		int fontHeight = 0;
 
-		DFBCHECK(font->GetHeight(font, &fontHeight));
+		if (font != NULL) {
+			DFBCHECK(font->GetHeight(font, &fontHeight));
+		}
 		return fontHeight;
 	}
 

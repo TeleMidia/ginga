@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef DFBFONTPROVIDER_H_
 #define DFBFONTPROVIDER_H_
 
+#include "util/functions.h"
+
 #include "IFontProvider.h"
 #include "../../output/ISurface.h"
 

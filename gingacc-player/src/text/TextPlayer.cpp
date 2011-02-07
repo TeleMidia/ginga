@@ -130,25 +130,8 @@ namespace player {
 			string fontUri,
 			int fontSize, IColor* fontColor) {
 
-		string aux;
-#ifdef _WIN32		
-		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
-#else
-		aux = "/usr/local/share/directfb-examples/fonts/decker.ttf";
-#endif
 		if (fontSize < 1 || s == NULL || text == "") {
 			return 0;
-		}
-
-		if (fontUri == "" || !fileExists(fontUri)) {
-			if (!fileExists(aux)) {
-				cout << "TextPlayer::write Warning! File not found: '";
-				cout << fontUri.c_str() << "'" << endl;
-				return 0;
-			}
-
-		} else {
-			aux = fontUri;
 		}
 
 		IFontProvider* font = NULL;
@@ -156,12 +139,12 @@ namespace player {
 
 #if HAVE_COMPSUPPORT
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-				aux.c_str(), fontSize);
+				fontUri.c_str(), fontSize);
 #else
 #ifndef _WIN32
-		font = new DFBFontProvider(aux.c_str(), fontSize);
+		font = new DFBFontProvider(fontUri.c_str(), fontSize);
 #else
-		font = new DXFontProvider(aux.c_str(), fontSize);
+		font = new DXFontProvider(fontUri.c_str(), fontSize);
 #endif
 #endif
 
