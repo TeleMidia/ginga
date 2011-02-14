@@ -63,21 +63,23 @@ namespace descriptors{
 		componentType    = 0;
 		componentTag     = 0;
 		textChar         = NULL;
-
 	}
 
 	ComponentDescriptor::~ComponentDescriptor() {
-		if(textChar != NULL){
+		if (textChar != NULL) {
 			delete textChar;
 			textChar == NULL;
 		}
 	}
+
 	unsigned char ComponentDescriptor::getDescriptorTag(){
 			return descriptorTag;
 	}
+
 	unsigned int ComponentDescriptor::getDescriptorLength(){
 		return (unsigned int)descriptorLength;
 	}
+
 	string ComponentDescriptor::getTextChar() {
 		string str;
 
@@ -87,6 +89,7 @@ namespace descriptors{
 		str.append(textChar, textLength);
 		return str;
 	}
+
 	void ComponentDescriptor::print() {
 		cout << "ComponentDescriptor::print printing..." << endl;
 		cout << " -descriptorLength = "   << (unsigned int)descriptorLength;
@@ -103,12 +106,9 @@ namespace descriptors{
 			cout << endl;
 		}
 		*/
-
-
-
 	}
-	size_t ComponentDescriptor::process(char* data, size_t pos){
 
+	size_t ComponentDescriptor::process(char* data, size_t pos){
 		//cout << "ComponentDescriptor::process beginning with pos =  " << pos;
 		descriptorLength = data[pos+1];
 
@@ -136,11 +136,15 @@ namespace descriptors{
 		 *for this reason, it has to be calculated. It was kept as
 		 *a class atribute to maintain conformity with others classes
 		 */
-		if (textLength > 0){
+		if (textLength > 0) {
+			if (textChar != NULL) {
+				delete textChar;
+			}
 			//setTextChar(data+pos, textLength);
-			textChar = new char [textLength];
+			textChar = new char[textLength];
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos, textLength);
+
 			/*
 			cout << "ComponentDescriptor::process text char = ";
 			for (int i = 0; i < textLength; i++){
@@ -151,10 +155,8 @@ namespace descriptors{
 		}
 		pos += textLength;
 		return pos;
-		}
-
 	}
-
+}
 }
 }
 }

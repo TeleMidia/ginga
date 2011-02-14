@@ -265,8 +265,9 @@ namespace ic {
 		IInteractiveChannelListener* l;
 
 		channel = (CurlInteractiveChannel*)stream;
-		l = channel->getListener();
+		l  = channel->getListener();
 		fd = channel->getLocalFileDescriptor();
+		w  = 0;
 
 		if (fd > 0) {
 			w = write(fd, ptr, (size * nmemb));

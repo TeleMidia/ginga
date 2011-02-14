@@ -129,7 +129,6 @@ namespace descriptors {
  	}
 
 	size_t ShortEventDescriptor::process(char* data, size_t pos) {
-		unsigned char len = 0;
 		//cout << "ShortEventDescriptor::process with pos = " << pos << endl;
 
 		descriptorLength = data[pos+1];

@@ -138,7 +138,6 @@ namespace descriptors {
 
 	size_t ParentalRatingDescriptor::process (char* data, size_t pos){
 		size_t remainingBytes;
-		unsigned char mul;
 		Parental* parental;
 
 		//cout << "ParentalRatingDescriptor::process with pos =  " << pos ;
@@ -169,10 +168,9 @@ namespace descriptors {
 			countryRatings->push_back(parental);
 			remainingBytes = remainingBytes - 4 ;
 		}
+
 		return pos;
-
 	}
-
 }
 }
 }

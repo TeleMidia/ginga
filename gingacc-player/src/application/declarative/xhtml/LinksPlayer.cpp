@@ -141,7 +141,10 @@ namespace player {
 
 		if (hasBrowser && outputWindow != NULL) {
 			browserSetFlipWindow(mBrowser, outputWindow->getContent());
+			return true;
 		}
+
+		return false;
 	}
 
 	void LinksPlayer::setBounds(int x, int y, int w, int h) {
@@ -236,9 +239,9 @@ namespace player {
 	}
 
 	void LinksPlayer::run() {
-		IWindow* parent;
+		/*IWindow* parent;
 
-		/*::usleep(1000000);
+		::usleep(1000000);
 		if (surface != NULL) {
 			parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {

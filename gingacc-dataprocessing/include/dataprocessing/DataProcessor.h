@@ -115,7 +115,7 @@ namespace dataprocessing {
 
 		public:
 			DataProcessor();
-			~DataProcessor();
+			virtual ~DataProcessor();
 
 			void applicationInfoMounted(IAIT* ait);
 			void serviceDomainMounted(

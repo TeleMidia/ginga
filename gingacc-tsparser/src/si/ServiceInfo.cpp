@@ -122,6 +122,8 @@ namespace si {
 				break;
 			//5-7 are reserved for future used
 		}
+
+		return "";
 	}
 
 	unsigned char ServiceInfo::getFreeCAMode() {

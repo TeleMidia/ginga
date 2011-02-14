@@ -74,13 +74,12 @@ namespace descriptors{
 		languageCode[1]    = 0;
 		languageCode2      = NULL;
 		textChar           = NULL;
-
 	}
 
 	AudioComponentDescriptor::~AudioComponentDescriptor() {
 		if (textChar != NULL) {
 			delete textChar;
-			textChar == NULL;
+			textChar = NULL;
 		}
 
 		if (languageCode2 != NULL) {
@@ -110,6 +109,7 @@ namespace descriptors{
 		str.append(languageCode, 3);
 		return str;
 	}
+
 	string AudioComponentDescriptor::getLanguageCode2(){
 		string str;
 
@@ -119,15 +119,17 @@ namespace descriptors{
 		str.append(languageCode2, 3);
 		return str;
 	}
+
 	string AudioComponentDescriptor::getTextChar() {
 		string str;
 
 		if(textChar == NULL){
 			return "";
 		}
-		str.append(textChar, textLength);
-		return str;
 
+		str.append(textChar, textLength);
+
+		return str;
 	}
 
 	unsigned char AudioComponentDescriptor::getComponentTag() {
@@ -207,6 +209,10 @@ namespace descriptors{
 		pos += 3; //pos = 29
 
 		if (ESMultiLingualFlag) {
+			if (languageCode2 != NULL) {
+				delete languageCode2;
+			}
+
 			languageCode2 = new char[3];
 			memcpy(languageCode2, data+pos, 3);
 			pos+=3;
@@ -218,15 +224,17 @@ namespace descriptors{
 		}
 
 		if (textLength > 0) {
+			if (textChar != NULL) {
+				delete textChar;
+			}
 			textChar = new char[textLength];
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos, textLength);
 		}
+
 		pos += textLength;
 		return pos;
 	}
-
-
 }
 }
 }

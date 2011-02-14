@@ -122,7 +122,6 @@ int main(int argc, char** argv) {
 	IInteractiveChannelManager* icm;
 
 	int fd           = -1;
-	char* buffer     = NULL;
 	string localPath = "/tmp/gingaTests/";
 	string localFile = localPath + "CurlInteractiveChannelTest.xml";
 	string remoteUri = "http://apps.club.ncl.org.br/78/main.ncl";
@@ -163,6 +162,8 @@ int main(int argc, char** argv) {
 				ic->reserveUrl(remoteUri, NULL);
 				ic->performUrl();
 			}
+
+			delete ic;
 #endif
 		}
 
@@ -174,6 +175,8 @@ int main(int argc, char** argv) {
 		ic = new CCRTPInteractiveChannel();
 #endif
 
+		char* buffer = NULL;
+
 		remoteUri.assign(argv[2], strlen(argv[2]));
 		buffer = new char[10240];
 		if (ic != NULL && ic->hasConnection()) {
@@ -181,6 +184,9 @@ int main(int argc, char** argv) {
 			ic->reserveUrl(remoteUri, listener);
 			ic->performUrl();
 		}
+
+		delete ic;
+		delete buffer;
 #endif
 	}
 

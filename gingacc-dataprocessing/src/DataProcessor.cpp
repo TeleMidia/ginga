@@ -144,7 +144,7 @@ namespace dataprocessing {
 		}
 
 		if (epgProcessor != NULL) {
-			delete epgProcessor;
+			epgProcessor->release();
 			epgProcessor = NULL;
 		}
 
@@ -317,7 +317,6 @@ namespace dataprocessing {
 	void DataProcessor::receiveSection(ITransportSection* section) {
 		IStreamEvent* se;
 		string sectionName;
-		set<IEventInfo*>* eit;
 		set<unsigned int>::iterator i;
 		char* payload;
 		short tableId;

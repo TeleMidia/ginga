@@ -152,7 +152,7 @@ namespace multidevice {
 			unsigned int payloadSize) {
 
 		char* fourBytesStream;
-		char* frame;
+		char* frame = NULL;
 
 		try {
 			frame = new char[HEADER_SIZE + payloadSize];
@@ -161,6 +161,8 @@ namespace multidevice {
 			cout << "BaseDeviceDomain::mountFrame Warning! ";
 			cout << "can't alloc '" << HEADER_SIZE + payloadSize << "'";
 			cout << " bytes" << endl;
+
+			return NULL;
 		}
 
 		if (isControlFrame(mountFrameType)) {

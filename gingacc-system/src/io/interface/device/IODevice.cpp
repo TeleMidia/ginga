@@ -105,7 +105,7 @@ namespace io {
 	}
 
 	unsigned int IODevice::addAudio(IDeviceAudio* audioResource) {
-		unsigned int i;
+		unsigned int i = 0;
 
 		pthread_mutex_lock(&mutexList);
 		if (audioDevices != NULL) {
@@ -118,7 +118,7 @@ namespace io {
 	}
 
 	unsigned int IODevice::addScreen(IDeviceScreen* screenResource) {
-		unsigned int i;
+		unsigned int i = 0;
 
 		pthread_mutex_lock(&mutexList);
 		if (screenDevices != NULL) {
@@ -131,7 +131,7 @@ namespace io {
 	}
 
 	unsigned int IODevice::addChannel(IDeviceCommunication* channelResource) {
-		unsigned int i;
+		unsigned int i = 0;
 
 		pthread_mutex_lock(&mutexList);
 		if (connectorDevices != NULL) {

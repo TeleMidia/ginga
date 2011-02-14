@@ -299,7 +299,7 @@ namespace tuning {
 	}
 
 	bool ISDBTProvider::setChannel(string channelValue) {
-		frontend->changeFrequency(stof(channelValue));
+		return frontend->changeFrequency(stof(channelValue));
 	}
 
 	int ISDBTProvider::createPesFilter(

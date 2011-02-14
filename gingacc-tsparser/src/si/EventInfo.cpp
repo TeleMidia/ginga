@@ -67,15 +67,16 @@ namespace si {
 	EventInfo::~EventInfo() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		i = descriptors->begin();
-		while (i != descriptors->end()) {
-			delete (*i);
-			++i;
+		if (descriptors != NULL) {
+			i = descriptors->begin();
+			while (i != descriptors->end()) {
+				delete (*i);
+				++i;
+			}
+
+			delete descriptors;
+			descriptors = NULL;
 		}
-
-		delete descriptors;
-		descriptors = NULL;
-
 	}
 
 	/*
@@ -87,7 +88,6 @@ namespace si {
 	 *
 	 */
 	struct tm EventInfo::convertMJDtoUTC(unsigned int mjd) {
-
 		struct tm start;
 		int year,month,day,k, weekDay;
 
@@ -96,8 +96,8 @@ namespace si {
 		day = mjd - 14956 - ((int) (year * 365.25)) - ((int)(month * 30.6001));
 		if (month == 14 || month == 15){
 			k = 1;
-		}
-		else {
+
+		} else {
 			k = 0;
 		}
 		year = year + k;
@@ -122,22 +122,26 @@ namespace si {
 		*/
 		return start;
 	}
+
 	/*
 	 * convertUTCtoMJD Method obtains MJD value through day, month and year in
 	 * UTC. The Algorithm used is described in ETSI DVD-SI. It is also described
 	 * in ABNT SI standard, but there is some errors on it.
 	 */
 	int EventInfo::convertUTCtoMJD(int day, int month, int year) {
+		int l, mjd;
+
 		if (day == 0 || month == 0 || year == 0){
 			return 0;
 		}
-		int l, mjd;
+
 		if (month == 1 || month == 2){
 			l = 1;
-		}
-		else{
+
+		} else{
 			l = 0;
 		}
+
 		mjd = 14956 + day + ((int)((year - l)* 365.25)) +
 				((int)((month + 1 + l * 12 ) * 30.6001));
 
@@ -151,6 +155,7 @@ namespace si {
 	int EventInfo::convertBCDtoDecimal(int bcd) {
 		return ((bcd >> 4) * 10) + bcd % 16;
 	}
+
 	/*
 	 * setStartTime receives an array of bytes which is start_time field.
 	 * This 40-bit field contains the start time of the event in UTC-3
@@ -191,6 +196,7 @@ namespace si {
 		cout << " " << startTime.tm_hour << ":" << startTime.tm_min << endl;
 		*/
 	}
+
 	/*
 	 * getStartTimeSecs and getEndTimeSecs return the startTime and endTime
 	 * values in seconds since Epoch (Jan 1, 1970)
@@ -203,6 +209,7 @@ namespace si {
 		localtime(&secs);
 		return secs;
 	}
+
 	time_t EventInfo::getEndTimeSecs (){
 		time_t secs;
 		struct tm end =  endTime;
@@ -283,6 +290,7 @@ namespace si {
 		cout << " " << endTime.tm_hour << ":" << endTime.tm_min << endl;
 		*/
 	}
+
 	/*
 	 * Method calcEndTime calculates the end time of an event through start time
 	 * and duration values, updating correctly minute, hour, day, month and year.
@@ -291,7 +299,6 @@ namespace si {
 	 * (values stored are year - 100, ie, for 1900, the stored value is 100).
 	 * Ano bissexto = leap year
 	 */
-
 	struct tm EventInfo::calcEndTime(struct tm start, struct tm dur){
 		struct tm end;
 
@@ -399,6 +406,7 @@ namespace si {
 		str.append(startTimeEncoded, 5);
 		return str;
 	}
+
 	string EventInfo::getDurationEncoded() {
 		string str;
 
@@ -425,6 +433,7 @@ namespace si {
 
 		return str.str();
 	}
+
 	string EventInfo::getEndTimeStr(){
 		stringstream str;
 
@@ -436,6 +445,7 @@ namespace si {
 
 		return str.str();
 	}
+
 	string EventInfo::getDurationStr() {
 		stringstream str;
 
@@ -462,6 +472,7 @@ namespace si {
 
 		return str.str();
 	}
+
 	string EventInfo::getRunningStatusDescription () {
 		switch (runningStatus) {
 			case 0:
@@ -485,7 +496,10 @@ namespace si {
 				break;
 			//5-7 are reserved for future used
 		}
+
+		return "";
 	}
+
 	unsigned char EventInfo::getFreeCAMode() {
 		return freeCAMode;
 	}
@@ -506,9 +520,11 @@ namespace si {
 		*/
 		return descriptors;
 	}
+
 	map<unsigned char, IMpegDescriptor*>* EventInfo::getDescriptorsMap() {
 		return desc;
 	}
+
 	void EventInfo::print() {
 		vector<IMpegDescriptor*>::iterator i;
 
@@ -524,7 +540,6 @@ namespace si {
 		for(i = descriptors->begin(); i != descriptors->end(); ++i) {
 			((IMpegDescriptor*)(*i))->print();
 		}
-
 	}
 
 	size_t EventInfo::process (char* data, size_t pos){
@@ -648,7 +663,6 @@ namespace si {
 		print();
 		return pos;
 	}
-
 }
 }
 }

@@ -344,7 +344,7 @@ namespace tsparser {
 			cout << endl;
 		}
 
-		printf ("%s\n", getPayload());
+		cout << (char*)getPayload() << endl;
 		return;
 
 		unsigned int payloadLength;
