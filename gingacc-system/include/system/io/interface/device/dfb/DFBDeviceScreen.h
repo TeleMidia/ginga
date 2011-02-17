@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef DFBDEVICESCREEN_H_
 #define DFBDEVICESCREEN_H_
 
+#include "../IDeviceScreen.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -69,13 +71,6 @@ extern "C" {
 	}                                                             \
 }
 #endif /*DFBCHECK*/
-
-#include <directfb_strings.h>
-static const DirectFBScreenCapabilitiesNames(screen_caps);
-static const DirectFBDisplayLayerCapabilitiesNames(layer_caps);
-static const DirectFBDisplayLayerTypeFlagsNames(layer_types);
-
-#include "../IDeviceScreen.h"
 
 #include <pthread.h>
 
@@ -116,7 +111,7 @@ namespace io {
 
 		public:
 			DFBDeviceScreen(int numArgs=0, char* args[]=NULL);
-			~DFBDeviceScreen();
+			virtual ~DFBDeviceScreen();
 			void setBackgroundImage(string uri);
 			unsigned int getWidthResolution();
 			void setWidthResolution(unsigned int wRes);
