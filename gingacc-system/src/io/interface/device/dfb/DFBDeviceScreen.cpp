@@ -301,7 +301,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		IDirectFBWindow* window = NULL;
 
 		if (gfxLayer != NULL) {
-			DFBCHECK(gfxLayer->GetWindow(gfxLayer, winId, &window));
+			if (gfxLayer->GetWindow(gfxLayer, winId, &window) != DFB_OK) {
+				cout << "DFBDeviceScreen::getWindow can't find id '" << winId;
+				cout << "'" << endl;
+				window = NULL;
+			}
 		}
 
 		return (void*)window;
