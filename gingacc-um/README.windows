@@ -8,9 +8,9 @@ DEPENDENCIES
 -> dlfcn
    (http://code.google.com/p/dlfcn-win32/)
 
--> gingacc-cm (from gingacc-cpp) >= 0.12.1
+-> gingacc-cm (from gingacc-cpp) >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
--> gingacc-ic (from gingacc-cpp) >= 0.12.1
+-> gingacc-ic (from gingacc-cpp) >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 
 INSTALLATION

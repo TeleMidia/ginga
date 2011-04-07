@@ -14,9 +14,9 @@ DEPENDENCIES
 -> lua 5.1.4
    (http://code.google.com/p/luaforwindows/)
 
--> telemidia-util-cpp >= 0.12.1
+-> telemidia-util-cpp >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
--> gingacc-system (from gingacc-cpp) >= 0.12.1
+-> gingacc-system (from gingacc-cpp) >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 -> telemidia-links-cpp
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-links-cpp)

@@ -8,9 +8,9 @@ DEPENDENCIES
 -> dlfcn 
    (http://code.google.com/p/dlfcn-win32/)
 
--> telemidia-util-cpp >= 0.12.1
+-> telemidia-util-cpp >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
--> gingacc-cm (from gingacc-cpp) >= 0.12.1
+-> gingacc-cm (from gingacc-cpp) >= 0.12.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 
 INSTALLATION
