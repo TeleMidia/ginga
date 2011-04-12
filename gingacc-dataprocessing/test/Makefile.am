@@ -1,28 +1,15 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-    $(all_includes) -I$(top_srcdir)/include
-
+INCLUDES = $(all_includes) -I$(top_srcdir)/include
 LIBS =
-
-#noinst_PROGRAMS = dsmccExtract
-
-#dsmccExtract_SOURCES = dsmccExtract.cpp
-
-#dsmccExtract_LDADD = -lgingaccsystemthread -ltelemidiautil \
-#	-lgingacctuner -lgingacctsparser -lgingaccdataprocessing
-
-#dsmccExtract_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L../src/dsmcc/npt \
-#    -L../src/ncl -L/usr/local/lib
 
 noinst_PROGRAMS = test
 
 test_SOURCES = test.cpp
 
-test_CPPFLAGS = -I$(top_srcdir)/include
 test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
     -lgingacctsparser -lgingaccdataprocessing \
-    -lgingaccdataprocncl
+    -lgingaccdataprocncl -ldl
 
 test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L../src/dsmcc/npt \
     -L../src/ncl -L/usr/local/lib

@@ -16,7 +16,7 @@ localLib_PROGRAMS = libgingaccplalua.so
 
 libgingaccplalua_so_SOURCES = LuaCanvas.cpp LuaEvent.cpp LuaPlayer.cpp
 
-libgingaccplalua_so_LDADD = -llua -lcore -ltelemidiautil \
+libgingaccplalua_so_LDADD = -llua -lcore -lpthread -ltelemidiautil \
      -lgingaccsystemthread -lgingaccsystemiocodemap -lgingaccplayer \
      -lgingaccplaimg $(COMPONENTS_LIBS)
 
