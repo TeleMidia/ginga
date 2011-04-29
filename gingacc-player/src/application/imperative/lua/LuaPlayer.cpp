@@ -125,10 +125,13 @@ string cmd_to_str(lua_State* L) {
   if (!strcmp(command, "addDocument")) {
 
     lua_getfield(L, 2, "data");
-    const char* xmlDocument = luaL_checkstring(L, -1);
+    string xmlDocument = "'";
+    xmlDocument += luaL_checkstring(L, -1);
+    xmlDocument += "'";
+
 
     edit[1].append("0x05");
-    edit[3].append(xmlDocument);
+    edit[3].append(xmlDocument.c_str());
 
     lua_pop(L, 1);
 
@@ -188,11 +191,13 @@ string cmd_to_str(lua_State* L) {
     }
 
     lua_getfield(L, 2,"data");
-    const char* xmlRegion = luaL_checkstring(L, -1);
+    string xmlRegion = "'";
+    xmlRegion += luaL_checkstring(L, -1);
+    xmlRegion += "'";
 
     edit[1].append("0x0B");
     edit[4].append(regionBaseId);
-    edit[6].append(xmlRegion);
+    edit[6].append(xmlRegion.c_str());
 
     if (regionId != NULL) {
       edit[5].append(regionId);
@@ -216,10 +221,12 @@ string cmd_to_str(lua_State* L) {
   } else if (!strcmp(command, "addRegionBase")) {
 
     lua_getfield(L, 2,"data");
-    const char* xmlRegionBase = luaL_checkstring(L, -1);
+    string xmlRegionBase = "'";
+    xmlRegionBase += luaL_checkstring(L, -1);
+    xmlRegionBase += "'";
 
     edit[1].append("0x0D");
-    edit[4].append(xmlRegionBase);
+    edit[4].append(xmlRegionBase.c_str());
 
     lua_pop(L, 1);
 
@@ -236,10 +243,12 @@ string cmd_to_str(lua_State* L) {
     /****RULE****/
   } else if (!strcmp(command, "addRule")) {
     lua_getfield(L, 2,"data");
-    const char* xmlRule = luaL_checkstring(L, -1);
+    string xmlRule = "'";
+    xmlRule += luaL_checkstring(L, -1);
+    xmlRule += "'";
 
     edit[1].append("0x0F");
-    edit[4].append(xmlRule);
+    edit[4].append(xmlRule.c_str());
 
     lua_pop(L, 1);
 
@@ -255,10 +264,12 @@ string cmd_to_str(lua_State* L) {
   } else if (!strcmp(command, "addRuleBase")) {
 
     lua_getfield(L, 2,"data");
-    const char* xmlRuleBase = luaL_checkstring(L, -1);
+    string xmlRuleBase = "'";
+    xmlRuleBase += luaL_checkstring(L, -1);
+    xmlRuleBase += "'";
 
     edit[1].append("0x11");
-    edit[4].append(xmlRuleBase);
+    edit[4].append(xmlRuleBase.c_str());
     lua_pop(L, 1);
 
   } else if (!strcmp(command, "removeRuleBase")) {
@@ -274,10 +285,12 @@ string cmd_to_str(lua_State* L) {
     /****CONNECTOR****/
   } else if (!strcmp(command, "addConnector")) {
     lua_getfield(L, 2,"data");
-    const char* xmlCon = luaL_checkstring(L, -1);
+    string xmlCon = "'";
+    xmlCon += luaL_checkstring(L, -1);
+    xmlCon += "'";
 
     edit[1].append("0x13");
-    edit[4].append(xmlCon);
+    edit[4].append(xmlCon.c_str());
 
     lua_pop(L, 1);
 
@@ -293,10 +306,12 @@ string cmd_to_str(lua_State* L) {
   } else if (!strcmp(command, "addConnectorBase")) {
 
     lua_getfield(L, 2,"data");
-    const char* xmlConnectorBase = luaL_checkstring(L, -1);
+    string xmlConnectorBase = "'";
+    xmlConnectorBase += luaL_checkstring(L, -1);
+    xmlConnectorBase += "'";
 
     edit[1].append("0x15");
-    edit[4].append(xmlConnectorBase);
+    edit[4].append(xmlConnectorBase.c_str());
 
     lua_pop(L, 1);
 
@@ -312,10 +327,12 @@ string cmd_to_str(lua_State* L) {
     /****DESCRIPTOR****/
   } else if (!strcmp(command, "addDescriptor")) {
     lua_getfield(L, 2,"data");
-    const char* xmlDesc = luaL_checkstring(L, -1);
+    string xmlDesc = "'";
+    xmlDesc += luaL_checkstring(L, -1);
+    xmlDesc += "'";
 
     edit[1].append("0x17");
-    edit[4].append(xmlDesc);
+    edit[4].append(xmlDesc.c_str());
 
     lua_pop(L, 1);
 
@@ -330,10 +347,12 @@ string cmd_to_str(lua_State* L) {
 
   } else if (!strcmp(command, "addDescriptorSwitch")) {
     lua_getfield(L, 2,"data");
-    const char* xmlDescSwitch = luaL_checkstring(L, -1);
+    string xmlDescSwitch = "'";
+    xmlDescSwitch += luaL_checkstring(L, -1);
+    xmlDescSwitch += "'";
 
     edit[1].append("0x19");
-    edit[4].append(xmlDescSwitch);
+    edit[4].append(xmlDescSwitch.c_str());
 
     lua_pop(L, 1);
 
@@ -348,10 +367,12 @@ string cmd_to_str(lua_State* L) {
 
   } else if (!strcmp(command, "addDescriptorBase")) {
     lua_getfield(L, 2,"data");
-    const char* xmlDescriptorBase = luaL_checkstring(L, -1);
+    string xmlDescriptorBase = "'";
+    xmlDescriptorBase += luaL_checkstring(L, -1);
+    xmlDescriptorBase += "'";
 
     edit[1].append("0x1B");
-    edit[4].append(xmlDescriptorBase);
+    edit[4].append(xmlDescriptorBase.c_str());
 
     lua_pop(L, 1);
 
@@ -367,10 +388,12 @@ string cmd_to_str(lua_State* L) {
     /****TRANSITION****/
   } else if (!strcmp(command, "addTransition")) {
     lua_getfield(L, 2,"data");
-    const char* xmlTransition = luaL_checkstring(L, -1);
+    string xmlTransition = "'";
+    xmlTransition += luaL_checkstring(L, -1);
+    xmlTransition += "'";
 
     edit[1].append("0x1D");
-    edit[4].append(xmlTransition);
+    edit[4].append(xmlTransition.c_str());
 
     lua_pop(L, 1);
 
@@ -385,10 +408,12 @@ string cmd_to_str(lua_State* L) {
 
   } else if (!strcmp(command, "addTransitionBase")) {
     lua_getfield(L, 2,"data");
-    const char* xmlTransitionBase = luaL_checkstring(L, -1);
+    string xmlTransitionBase = "'";
+    xmlTransitionBase += luaL_checkstring(L, -1);
+    xmlTransitionBase += "'";
 
     edit[1].append("0x1F");
-    edit[4].append(xmlTransitionBase);
+    edit[4].append(xmlTransitionBase.c_str());
 
     lua_pop(L, 1);
 
@@ -407,11 +432,13 @@ string cmd_to_str(lua_State* L) {
     const char* docBaseId = luaL_checkstring(L, -1);
 
     lua_getfield(L, 2, "data");
-    const char* xmlImportBase = luaL_checkstring(L, -1);
+    string xmlImportBase = "'";
+    xmlImportBase += luaL_checkstring(L, -1);
+    xmlImportBase += "'";
 
     edit[1].append("0x21");
     edit[4].append(docBaseId);
-    edit[5].append(xmlImportBase);
+    edit[5].append(xmlImportBase.c_str());
 
     lua_pop(L, 2);
 
@@ -430,10 +457,12 @@ string cmd_to_str(lua_State* L) {
 
   } else if (!strcmp(command, "addImportedDocumentBase")) {
     lua_getfield(L, 2,"data");
-    const char* xmlImportedBase = luaL_checkstring(L, -1);
+    string xmlImportedBase = "'";
+    xmlImportedBase += luaL_checkstring(L, -1);
+    xmlImportedBase += "'";
 
     edit[1].append("0x23");
-    edit[4].append(xmlImportedBase);
+    edit[4].append(xmlImportedBase.c_str());
 
     lua_pop(L, 1);
 
@@ -448,10 +477,12 @@ string cmd_to_str(lua_State* L) {
 
   } else if (!strcmp(command, "addImportNCL")) {
     lua_getfield(L, 2,"data");
-    const char* xmlImportNCL = luaL_checkstring(L, -1);
+    string xmlImportNCL = "'";
+    xmlImportNCL += luaL_checkstring(L, -1);
+    xmlImportNCL += "'";
 
     edit[1].append("0x25");
-    edit[4].append(xmlImportNCL);
+    edit[4].append(xmlImportNCL.c_str());
 
     lua_pop(L, 1);
 
@@ -470,11 +501,13 @@ string cmd_to_str(lua_State* L) {
     const char* compositeId = luaL_checkstring(L, -1);
 
     lua_getfield(L, 2,"data");
-    const char* xmlNode = luaL_checkstring(L, -1);
+    string xmlNode = "'";
+    xmlNode += luaL_checkstring(L, -1);
+    xmlNode += "'";
 
     edit[1].append("0x27");
     edit[4].append(compositeId);
-    edit[5].append(xmlNode);
+    edit[5].append(xmlNode.c_str());
 
     lua_pop(L, 2);
 
@@ -497,11 +530,14 @@ string cmd_to_str(lua_State* L) {
     const char* nodeId = luaL_checkstring(L, -1);
 
     lua_getfield(L, 2,"data");
-    const char* xmlInterface = luaL_checkstring(L, -1);
+    string xmlInterface = "'";
+    xmlInterface += luaL_checkstring(L, -1);
+    xmlInterface += "'";
+
 
     edit[1].append("0x29");
     edit[4].append(nodeId);
-    edit[5].append(xmlInterface);
+    edit[5].append(xmlInterface.c_str());
 
     lua_pop(L, 2);
 
@@ -524,11 +560,13 @@ string cmd_to_str(lua_State* L) {
     const char* compositeId = luaL_checkstring(L, -1);
 
     lua_getfield(L, 2,"data");
-    const char* xmlLink = luaL_checkstring(L, -1);
+    string xmlLink = "'";
+    xmlLink += luaL_checkstring(L, -1);
+    xmlLink += "'";
 
     edit[1].append("0x2B");
     edit[4].append(compositeId);
-    edit[5].append(xmlLink);
+    edit[5].append(xmlLink.c_str());
 
     lua_pop(L, 2);
 
