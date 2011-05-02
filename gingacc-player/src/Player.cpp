@@ -529,14 +529,16 @@ namespace player {
 #endif
 		}
 
-		p->forceNaturalEnd();
+		p->forceNaturalEnd(true);
 
 		return ptr;
 	}
 
-	void Player::forceNaturalEnd() {
-		forcedNaturalEnd = true;
-		notifyListeners(PL_NOTIFY_STOP);
+	void Player::forceNaturalEnd(bool forceIt) {
+		forcedNaturalEnd = forceIt;
+		if (forceIt) {
+			notifyListeners(PL_NOTIFY_STOP);
+		}
 	}
 
 	bool Player::isForcedNaturalEnd() {

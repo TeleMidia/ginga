@@ -187,7 +187,7 @@ namespace player {
 			static void* scopeTimeHandler(void* ptr);
 
 		public:
-			void forceNaturalEnd();
+			void forceNaturalEnd(bool forceIt);
 			bool isForcedNaturalEnd();
 			virtual bool setOutWindow(int windowId);
 

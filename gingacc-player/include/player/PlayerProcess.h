@@ -129,7 +129,7 @@ namespace player {
 			void setVisible(bool visible);
 			bool immediatelyStart();
 			void setImmediatelyStart(bool immediatelyStartVal);
-			void forceNaturalEnd();
+			void forceNaturalEnd(bool forceIt);
 			bool isForcedNaturalEnd();
 			bool setOutWindow(int windowId);
 

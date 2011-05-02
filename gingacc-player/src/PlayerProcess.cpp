@@ -386,8 +386,8 @@ namespace player {
 		Player::setImmediatelyStart(immediatelyStartVal);
 	}
 
-	void PlayerProcess::forceNaturalEnd() {
-		Player::forceNaturalEnd();
+	void PlayerProcess::forceNaturalEnd(bool forceIt) {
+		Player::forceNaturalEnd(forceIt);
 	}
 
 	bool PlayerProcess::isForcedNaturalEnd() {
@@ -409,11 +409,11 @@ namespace player {
 	}
 
 	map<string, IPlayer*>* PlayerProcess::getPlayerMap() {
-
+		return NULL;
 	}
 
 	IPlayer* PlayerProcess::getPlayer(string objectId) {
-
+		return NULL;
 	}
 
 	void PlayerProcess::select(IPlayer* selObject) {

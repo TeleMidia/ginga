@@ -139,7 +139,7 @@ namespace player {
 			virtual void setVisible(bool visible)=0;
 			virtual bool immediatelyStart()=0;
 			virtual void setImmediatelyStart(bool immediatelyStartVal)=0;
-			virtual void forceNaturalEnd()=0;
+			virtual void forceNaturalEnd(bool forceIt)=0;
 			virtual bool isForcedNaturalEnd()=0;
 			virtual bool setOutWindow(int windowId)=0;
 
