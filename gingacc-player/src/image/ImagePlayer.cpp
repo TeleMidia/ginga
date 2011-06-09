@@ -51,6 +51,9 @@ http://www.telemidia.puc-rio.br
 
 #include "player/PlayersComponentSupport.h"
 
+#include "ic/IInteractiveChannelManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::ic;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -61,6 +64,30 @@ namespace player {
 		io::IGingaLocatorFactory* glf = NULL;
 		string path, name, clientPath, newMrl;
 		bool resolved = false;
+
+		if (mrl.substr(0, 7) == "http://" ||
+				mrl.substr(0, 8) == "https://") {
+
+			IInteractiveChannelManager* icm;
+
+#if HAVE_COMPSUPPORT
+			icm = ((ICMCreator*)(cm->getObject(
+					"InteractiveChannelManager")))();
+
+#else
+			icm = InteractiveChannelManager::getInstance();
+#endif
+
+			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
+			newMrl = itos((long int)this);
+			ic->setSourceTarget(newMrl);
+			ic->reserveUrl(mrl, NULL, "GingaNCL/0.12.2");
+			ic->performUrl();
+
+			icm->releaseInteractiveChannel(ic);
+
+			mrl = newMrl;
+		}
 
 		if (fileExists(mrl)) {
 #if HAVE_COMPSUPPORT
@@ -73,8 +100,9 @@ namespace player {
 			provider = new DXImageProvider(mrl.c_str());
 #endif
 #endif
+
 		} else {
-			if (!fileExists(mrl) && !isAbsolutePath(mrl)) {
+			if (!isAbsolutePath(mrl)) {
 				newMrl = getDocumentPath() + mrl;
 				if (fileExists(newMrl)) {
 					resolved = true;
@@ -175,13 +203,15 @@ namespace player {
 	}
 
 	void ImagePlayer::setPropertyValue(string name, string value) {
-
 		//TODO: set brightness, rotate...
 		//refresh changes
 		IWindow* win;
-		win = (IWindow*)(surface->getParent());
-		if (win != NULL) {
-			win->renderFrom(surface);
+
+		if (surface != NULL) {
+			win = (IWindow*)(surface->getParent());
+			if (win != NULL) {
+				win->renderFrom(surface);
+			}
 		}
 
 		Player::setPropertyValue(name, value);

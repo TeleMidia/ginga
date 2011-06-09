@@ -69,6 +69,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "system/io/interface/content/video/DFBVideoProvider.h"
 #include "system/io/interface/content/video/XineVideoProvider.h"
 #include "system/io/interface/content/audio/FusionSoundAudioProvider.h"
+#include "ic/InteractiveChannelManager.h"
 
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 

@@ -222,7 +222,7 @@ namespace ic {
 			} else {
 
 				cout << "CurlInteractiveChannel::performUrl '" << uri << "'";
-				cout << " all done, notifying listeners" << endl;
+				cout << " done, notifying listeners" << endl;
 
 				if (listener != NULL) {
 					if (!positiveResponse(&respCode)) {
@@ -241,6 +241,8 @@ namespace ic {
 			cout << " NULL CURL FOR '" << uri << "'" << endl;
 		}
 
+		cout << "CurlInteractiveChannel::performUrl '" << uri << "'";
+		cout << " all done!!!" << endl;
 		pthread_mutex_unlock(&mutex);
 		return success;
 	}
