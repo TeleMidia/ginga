@@ -1153,11 +1153,20 @@ namespace player {
 
 	void* AVPlayer::createProvider(void* ptr) {
 		AVPlayer* p = (AVPlayer*)ptr;
+		bool isRemote = false;
 
 		cout << "AVPlayer::createProvider '" << p->mrl << "'" << endl;
 		pthread_mutex_lock(&(p->pMutex));
 
-		if (p->provider == NULL && fileExists(p->mrl)) {
+		if (p->mrl.substr(0, 7) == "rtsp://" ||
+				p->mrl.substr(0, 6) == "rtp://" ||
+				p->mrl.substr(0, 7) == "http://" ||
+				p->mrl.substr(0, 8) == "https://") {
+
+			isRemote = true;
+		}
+
+		if (p->provider == NULL && (fileExists(p->mrl) || isRemote)) {
 #if HAVE_COMPSUPPORT
 			if (p->hasVisual) {
 				p->provider = ((CMPCreator*)(cm->getObject(
@@ -1167,6 +1176,7 @@ namespace player {
 				p->provider = ((CMPCreator*)(cm->getObject(
 						"AudioProvider")))(p->mrl.c_str());
 			}
+
 #else
 			if (p->hasVisual) {
 #ifndef _WIN32
