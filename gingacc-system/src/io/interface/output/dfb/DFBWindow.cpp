@@ -154,7 +154,7 @@ namespace io {
 		this->height            = height;
 		this->ghost             = false;
 		this->visible           = false;
-		this->transparencyValue = 0xFF;
+		this->transparencyValue = 0x00;
 		this->r                 = -1;
 		this->g                 = -1;
 		this->b                 = -1;
@@ -416,7 +416,7 @@ namespace io {
 	}
 
 	void DFBWindow::setCurrentTransparency(int alpha) {
-		if (alpha != 0) {
+		if (alpha != 255) {
 			this->visible = true;
 
 		} else {
@@ -424,9 +424,10 @@ namespace io {
 		}
 
 		lock();
+		transparencyValue = alpha;
 		if (win != NULL) {
-			if (alpha == 0 || !ghost) {
-				win->SetOpacity(win, alpha);
+			if (alpha == 255 || !ghost) {
+				win->SetOpacity(win, (255 - alpha));
 			}
 		}
 		unlock();
@@ -438,10 +439,6 @@ namespace io {
 			win->SetOpaqueRegion(win, x1, y1, x2, y2);
 		}
 		unlock();
-	}
-
-	void DFBWindow::setTransparencyValue(int alpha) {
-		this->transparencyValue = alpha;
 	}
 
 	int DFBWindow::getTransparencyValue() {
@@ -457,7 +454,7 @@ namespace io {
 
 		if (win != NULL) {
 			if (!ghost) {
-				win->SetOpacity(win, transparencyValue);
+				win->SetOpacity(win, (255 - transparencyValue));
 			}
 		}
 	}

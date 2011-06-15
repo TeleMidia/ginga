@@ -83,7 +83,7 @@ namespace io {
 
 		this->ghost = false;
 		this->visible = false;
-		this->transparencyValue = 255;
+		this->transparencyValue = 0;
 
 		this->childSurfaces = new vector<ISurface*>;
 		this->releaseListener = NULL;
@@ -280,11 +280,6 @@ namespace io {
 	void DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2) {
 		cout << "DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2)" << endl;
 		cout << "setOpaqueRegion: Not implemented yet" << endl; 
-	}
-
-	void DXWindow::setTransparencyValue(int alpha) {
-		cout << "DXWindow::setTransparencyValue(int alpha)" << endl;
-		cout << "setTransparencyValue: Not implemented yet" << endl; 
 	}
 
 	int DXWindow::getTransparencyValue() {
