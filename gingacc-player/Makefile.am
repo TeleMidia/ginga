@@ -8,7 +8,8 @@ SUBDIRS = 	files \
 			include/player \
 			src \
 			src/image \
-			src/application/declarative/xhtml \
+			src/application/declarative/xhtml/links \
+			src/application/declarative/xhtml/berkelium \
 			src/application/imperative/lua \
 			src/text \
 			src/text/plain \

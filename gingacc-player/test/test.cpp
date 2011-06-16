@@ -49,6 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
+#if HAVE_BERKELIUM
+#include "player/BerkeliumPlayer.h"
+#endif
+
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
@@ -208,6 +212,13 @@ int main(int argc, char** argv, char** envp) {
 		pprocessA->stop();
 		getchar();
 		delete pprocessA;
+#endif
+	} else if (argc > 1 && strcmp(argv[1], "berkelium") == 0) {
+#if HAVE_BERKELIUM
+		BerkeliumPlayer* bp;
+		bp = new BerkeliumPlayer("http://www.google.com");
+
+		bp->play();
 #endif
 	}
 

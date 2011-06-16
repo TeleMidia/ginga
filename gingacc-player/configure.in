@@ -118,16 +118,6 @@ Please install Ginga CC System Thread Library.
 
 ]))
 
-###################
-# TeleMidia Links #
-###################
-AC_HAVE_LIBRARY(telemidialinks, , AC_ERROR([
-
-Couldn't find telemidialinks library.
-Please install TeleMidia Links Player.
-
-]))
-
 #######
 # Lua #
 #######
@@ -234,6 +224,64 @@ AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
 AC_SUBST(COMPONENTS_LIBS)
 AC_SUBST(COMPONENTS_INCS)
 
+#####################
+# Berkelium Support #
+#####################
+berkelium=yes
+AC_ARG_ENABLE(berkelium,
+  [  --enable-berkelium build project with berkelium player [[default=yes]]],
+  enable_berkelium="$enableval", enable_berkelium=yes)
+
+AC_CHECK_HEADER(
+  [berkelium/Berkelium.hpp],
+  [],
+  AC_MSG_WARN([*** Berkelium header not Found.])
+    enable_berkelium=no
+)
+
+if test x$enable_berkelium = xno; then
+   AC_MSG_WARN([*** Ginga Berkelium Player support will not be built.])
+   AC_DEFINE(HAVE_BERKELIUM, 0, [Def to 0 if you don't have ginga berkelium support.])
+
+else
+   TEST_LIBS='-lgingaccplabkl -llibberkelium'
+   AC_MSG_RESULT([*** Ginga Berkelium Player support will be built.])
+   AC_DEFINE(HAVE_BERKELIUM, 1, [Def to 1 if you have ginga berkelium support.])
+fi
+
+AM_CONDITIONAL([BERKELIUMLIB], [test x$enable_berkelium = xyes])
+
+
+#################
+# Links Support #
+#################
+links=yes
+AC_ARG_ENABLE(links,
+  [  --enable-links build project with links player [[default=yes]]],
+  enable_links="$enableval", enable_links=yes)
+
+AC_HAVE_LIBRARY(telemidialinks, ,
+  AC_MSG_WARN([*** TeleMidia Links Library not Found.])
+    enable_links=no
+)
+
+if test x$enable_links = xno; then
+   AC_MSG_WARN([*** Ginga Links Player support will not be built.])
+   AC_DEFINE(HAVE_LINKS, 0, [Def to 0 if you don't have ginga links support.])
+
+else
+if test x$enable_berkelium = xno; then
+   TEST_LIBS='-lgingaccplalks -ltelemidialinks'
+else
+   TEST_LIBS='-lgingaccplabkl -llibberkelium -lgingaccplalks -ltelemidialinks'
+fi
+   AC_MSG_RESULT([*** Ginga Links Player support will be built.])
+   AC_DEFINE(HAVE_BERKELIUM, 1, [Def to 1 if you have ginga links support.])
+fi
+
+AM_CONDITIONAL([LINKSLIB], [test x$enable_links = xyes])
+AC_SUBST(TEST_LIBS)
+
 ###########################
 # Multple Process Support #
 ###########################
@@ -270,7 +318,8 @@ AC_OUTPUT(Makefile
 	src/Makefile
 	src/image/Makefile
 	src/application/imperative/lua/Makefile
-	src/application/declarative/xhtml/Makefile
+	src/application/declarative/xhtml/links/Makefile
+	src/application/declarative/xhtml/berkelium/Makefile
 	src/text/Makefile src/text/plain/Makefile
 	src/text/srt/Makefile
 	src/video/Makefile
@@ -280,7 +329,9 @@ AC_OUTPUT(Makefile
 
 AC_MSG_RESULT([
 Build options: 
-  Module directory        $MODULEDIR
-  NCLET Support           $ncletplayer
-  Multi Process Support   $enable_multiprocess
+  Module directory          $MODULEDIR
+  Links Player Support      $enable_links
+  Berkelium Player Support  $enable_berkelium
+  NCLET Support             $ncletplayer
+  Multi Process Support     $enable_multiprocess
 ])
