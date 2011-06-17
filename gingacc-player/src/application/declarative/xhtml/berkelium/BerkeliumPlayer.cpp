@@ -72,6 +72,10 @@ namespace player {
 			pthread_attr_t tattr;
 
 			pthread_mutex_init(&(berkeliumFactory.mutex), NULL);
+
+			berkeliumFactory.isWaiting = false;
+			pthread_cond_init(&berkeliumFactory.condition, NULL);
+
 			pthread_attr_init(&tattr);
 			pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
 			pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
@@ -84,6 +88,7 @@ namespace player {
 		berkelium.width    = 0;
 		berkelium.height   = 0;
 		berkelium.bHandler = new BerkeliumHandler(mrl);
+		berkelium.isValid  = false;
 	}
 
 	BerkeliumPlayer::~BerkeliumPlayer() {
@@ -91,29 +96,9 @@ namespace player {
 	}
 
 	ISurface* BerkeliumPlayer::getSurface() {
-		void* s;
-
 		cout << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
 
-/*		if (this->surface == NULL) {
-			if (hasBrowser) {
-				s = browserGetSurface(mBrowser);
-				if (s != NULL) {
-#if HAVE_COMPSUPPORT
-					this->surface = ((SurfaceCreator*)(cm->getObject(
-							"Surface")))(s, 0, 0);
-#else
-
-					this->surface = new DFBSurface(s);
-#endif
-				}
-
-			} else {
-				cout << "BerkeliumPlayer::getSurface Warning! Trying to get ";
-				cout << "a surface from a deleted browser" << endl;
-			}
-		}
-*/
+		surface = berkelium.bHandler->getSurface();
 		return Player::getSurface();
 	}
 
@@ -145,6 +130,13 @@ namespace player {
 		cout << "BerkeliumPlayer::setBounds '" << w << "', ";
 		cout << "BerkeliumPlayer::setBounds '" << h << "'.";
 		cout << endl;
+
+		if (berkelium.isValid) {
+			berkelium.bWindow->resize(w, h);
+		}
+
+		berkelium.width  = w;
+		berkelium.height = h;
 /*
 		this->x = x;
 		this->y = y;
@@ -166,25 +158,21 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::play() {
-		/*cout << "BerkeliumPlayer::play '" << mrl << "'" << endl;
-#if !HAVE_MULTIPROCESS
-		if (surface != NULL) {
-			IWindow* parent = (IWindow*)(surface->getParent());
-			if (parent != NULL) {
-				browserSetFlipWindow(mBrowser, parent->getContent());
-			}
+		if (berkeliumFactory.create != NULL) {
+			berkeliumFactory.isWaiting = true;
+			pthread_mutex_lock(&berkeliumFactory.mutex);
+			pthread_cond_wait(
+				    &berkeliumFactory.condition, &berkeliumFactory.mutex);
+
+			berkeliumFactory.isWaiting = false;
+			berkeliumFactory.create = &berkelium;
+			pthread_mutex_unlock(&berkeliumFactory.mutex);
+
+		} else {
+			pthread_mutex_lock(&berkeliumFactory.mutex);
+			berkeliumFactory.create = &berkelium;
+			pthread_mutex_unlock(&berkeliumFactory.mutex);
 		}
-#endif
-
-		loadUrlOn(mBrowser, mrl.c_str());
-		browserShow(mBrowser);*/
-
-		berkelium.width    = 800;
-		berkelium.height   = 600;
-
-		pthread_mutex_lock(&berkeliumFactory.mutex);
-		berkeliumFactory.create = &berkelium;
-		pthread_mutex_unlock(&berkeliumFactory.mutex);
 
 		Player::play();
 	}
@@ -267,7 +255,6 @@ namespace player {
 		cout << "BerkeliumPlayer::mainLoop" << endl;
 
 		while (true) {
-			pthread_mutex_lock(&(berkeliumFactory.mutex));
 			if (berkeliumFactory.create != NULL) {
 				berkelium = berkeliumFactory.create;
 				berkeliumFactory.create = NULL;
@@ -288,13 +275,19 @@ namespace player {
 				bwin->navigateTo(URLString::point_to(berkelium->mrl));
 
 				berkelium->bWindow = bwin;
+				berkelium->isValid = true;
+
+				Berkelium::update();
 			}
 
 			if (berkeliumFactory.remove != NULL) {
 				bSet.erase(berkeliumFactory.remove);
 				berkeliumFactory.remove = NULL;
 			}
-			pthread_mutex_unlock(&berkeliumFactory.mutex);
+
+			if (berkeliumFactory.isWaiting) {
+				pthread_cond_signal(&berkeliumFactory.condition);
+			}
 
 			if (bSet.size() > 0) {
 				Berkelium::update();
@@ -305,7 +298,7 @@ namespace player {
 #else
 			struct timeval tv;
 			tv.tv_sec = 0;
-			tv.tv_usec = 10000;
+			tv.tv_usec = 100;
 			::select(0,NULL,NULL,NULL, &tv);
 #endif
 	    }

@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define BerkeliumHandler_h_
 
 #include "system/io/IInputManager.h"
+#include "system/io/interface/output/IWindow.h"
 #include "system/io/interface/input/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
@@ -89,11 +90,13 @@ namespace player {
 		std::string mURL;
 		static IInputManager* im;
 		ILocalDeviceManager* dm;
+		ISurface* surface;
 
 	public:
 		BerkeliumHandler(string mrl);
 		virtual ~BerkeliumHandler();
 
+		ISurface* getSurface();
 		bool userEventReceived(IInputEvent* ev);
 
 		virtual void onAddressBarChanged(Window *win, URLString newURL);

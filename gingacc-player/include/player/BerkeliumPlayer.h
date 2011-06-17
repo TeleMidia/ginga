@@ -66,12 +66,15 @@ typedef struct {
 	int width;
 	int height;
 	string mrl;
+	bool isValid;
 } BBrowser;
 
 typedef struct {
 	BBrowser* create;
 	BBrowser* remove;
 	pthread_mutex_t mutex;
+	pthread_cond_t condition;
+	bool isWaiting;
 } BBrowserFactory;
 
 namespace br {
@@ -90,10 +93,7 @@ namespace player {
 			BerkeliumPlayer(string mrl);
 			virtual ~BerkeliumPlayer();
 
-		protected:
 			ISurface* getSurface();
-
-		public:
 			void setNotifyContentUpdate(bool notify);
 
 			void play();

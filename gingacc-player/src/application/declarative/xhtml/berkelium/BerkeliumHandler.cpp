@@ -69,7 +69,7 @@ namespace player {
 	IInputManager* BerkeliumHandler::im = NULL;
 
 	BerkeliumHandler::BerkeliumHandler(string mrl) {
-		mURL = mrl;
+		mURL    = mrl;
 
 #if HAVE_COMPSUPPORT
 		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
@@ -78,15 +78,22 @@ namespace player {
 		if (im == NULL) {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
 		}
+
+		surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
 #else
 		dm = LocalDeviceManager::getInstance();
 		im = InputManager::getInstance();
+		surface = new DFBSurface(NULL);
 #endif
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {
 		cout << "BerkeliumHandler::~BerkeliumHandler " << endl;
 		im->removeInputEventListener(this);
+	}
+
+	ISurface* BerkeliumHandler::getSurface() {
+		return surface;
 	}
 
 	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
@@ -107,15 +114,12 @@ namespace player {
 	}
 
 	void BerkeliumHandler::onLoadingStateChanged(Window *win, bool isLoading) {
-		std::cout << "*** Loading state changed "<<mURL<<" to "<<(isLoading?"loading":"stopped")<<std::endl;
+		cout << "*** Loading state changed ";
+		cout << mURL << " to " << (isLoading?"loading":"stopped") << endl;
 	}
 
 	void BerkeliumHandler::onLoad(Window *win) {
         sleep(1);
-        win->resize(1280,1024);
-        win->resize(500,400);
-        win->resize(600,500);
-        win->resize(1024,768);
 	}
 
 	void BerkeliumHandler::onLoadError(Window *win, WideString error) {
@@ -143,16 +147,23 @@ namespace player {
 
 		string str;
 		static int call_count = 0;
+		IWindow* win;
+
+		IDirectFB* dfb = NULL;
+		IDirectFBImageProvider* provider;
+		IDirectFBSurface* destination;
+		DFBSurfaceDescription sDesc;
 
 		cout << "*** onPaint "<< mURL << endl;
 
 		FILE *outfile;
 		{
 			std::ostringstream os;
-			os << "/tmp/chromium_render_" << time(NULL) << "_" << (call_count++) << ".ppm";
+			os << "/tmp/bh_r_" << time(NULL) << "_" << (call_count++) << ".ppm";
 			str = os.str();
 			outfile = fopen(str.c_str(), "wb");
 		}
+
 		const int width = bitmap_rect.width();
 		const int height = bitmap_rect.height();
 
@@ -174,52 +185,37 @@ namespace player {
 		}
 		fclose(outfile);
 
-		IDirectFB* dfb = NULL;
-		IDirectFBImageProvider* provider;
-		IDirectFBSurface* destination;
-		DFBSurfaceDescription sDesc;
-		DFBDataBufferDescription desc;
-
-		IDirectFBWindow* win;
-		IDirectFBSurface* winSur;
-		DFBWindowDescription dsc;
-
-		dsc.flags  = (DFBWindowDescriptionFlags)(
-				DWDESC_POSX |
-				DWDESC_POSY |
-				DWDESC_WIDTH |
-				DWDESC_HEIGHT);
-
-		dsc.posx   = 0;
-		dsc.posy   = 0;
-		dsc.width  = width;
-		dsc.height = height;
-
-		win = (IDirectFBWindow*)(dm->createWindow(&dsc));
-
-		win->SetOpacity(win, 0xFF);
-		win->GetSurface(win, &winSur);
+		win = (IWindow*)(surface->getParent());
+		if (win != NULL) {
+			surface->setParent(NULL);
+		}
 
 		dfb = (IDirectFB*)(dm->getGfxRoot());
-
 		dfb->CreateImageProvider(dfb, str.c_str(), &provider);
+
 		provider->GetSurfaceDescription(provider, &sDesc);
 		destination = (IDirectFBSurface*)(dm->createSurface(&sDesc));
 
 		provider->RenderTo(provider, destination, NULL);
+		provider->Release(provider);
 
-		winSur->Blit(winSur, destination, NULL, 0, 0);
-		winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0);
+		surface->setContent(destination);
+
+		if (win != NULL) {
+			surface->setParent(win);
+			win->renderFrom(surface);
+			cout << "BerkeliumHandler::onPaint rendered" << endl;
+		}
 	}
 
 	void BerkeliumHandler::onCrashed(Window *win) {
-		std::cout << "*** onCrashed "<<mURL<<std::endl;
+		cout << "*** onCrashed " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onCreatedWindow(
 			Window *win, Window *newWindow, const Rect &initialRect) {
 
-        std::cout << "*** onCreatedWindow from source "<<mURL<<std::endl;
+        cout << "*** onCreatedWindow from source " << mURL << endl;
         //newWindow->setDelegate(new BerkeliumHandler);
 	}
 
@@ -229,8 +225,9 @@ namespace player {
 			URLString origin,
 			URLString target) {
 
-        std::cout << "*** onChromeSend at URL "<<mURL<<" from "<<origin<<" to "<<target<<":"<<std::endl;
-        std::wcout << message<<std::endl;
+        cout << "*** onChromeSend at URL " << mURL << " from " << origin;
+        cout << " to " << target << ":" << endl;
+        cout << message << endl;
 	}
 
 	void BerkeliumHandler::onPaintPluginTexture(
