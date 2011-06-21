@@ -61,7 +61,6 @@ namespace ginga {
 namespace core {
 namespace player {
 	BBrowserFactory BerkeliumPlayer::berkeliumFactory;
-	bool BerkeliumPlayer::isInitialized = false;
 
 	BBrowserFactory::BBrowserFactory() {
 		pthread_mutex_init(&smutex, NULL);

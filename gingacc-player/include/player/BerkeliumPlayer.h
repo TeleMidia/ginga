@@ -105,7 +105,6 @@ namespace player {
 
 	class BerkeliumPlayer : public Player {
 		private:
-			static bool isInitialized;
 			static BBrowserFactory berkeliumFactory;
 			BerkeliumHandler* bInfo;
 
