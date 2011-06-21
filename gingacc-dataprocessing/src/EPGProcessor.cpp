@@ -192,7 +192,7 @@ namespace epg {
 		//TODO: handle request properly.
 		cout << "EPGProcessor::addEPGListener with type:" << type << endl;
 
-		if (type == listener->EPG_LISTENER) {
+		if (type ==  IEPGListener::EPG_LISTENER) {
 			if (epgListeners == NULL) {
 				epgListeners = new set<IEPGListener*>;
 
@@ -208,14 +208,14 @@ namespace epg {
 
 			epgListeners->insert(listener);
 
-		} else if (type == listener->SI_LISTENER) {
+		} else if (type ==  IEPGListener::SI_LISTENER) {
 			if (serviceListeners == NULL) {
 				serviceListeners = new set<IEPGListener*>;
 			}
 
 			serviceListeners->insert(listener);
 
-		} else if (type == listener->TIME_LISTENER) {
+		} else if (type == IEPGListener::TIME_LISTENER) {
 			if (timeListeners == NULL) {
 				timeListeners = new set<IEPGListener*>;
 			}
@@ -558,7 +558,7 @@ namespace epg {
 					j != serviceListeners->end();
 					++j) {
 
-				(*j)->pushSIEvent(data, (*j)->SI_LISTENER);
+				(*j)->pushSIEvent(data, IEPGListener::SI_LISTENER);
 			}
 
 		} else {
@@ -598,7 +598,7 @@ namespace epg {
 
 		if (timeListeners != NULL && !timeListeners->empty()) {
 			for (i = timeListeners->begin(); i != timeListeners->end(); ++i) {
-				(*i)->pushSIEvent(responseMap, (*i)->TIME_LISTENER);
+				(*i)->pushSIEvent(responseMap, IEPGListener::TIME_LISTENER);
 			}
 		}
 	}
@@ -673,7 +673,7 @@ namespace epg {
 		//printFieldMap(&data);
 		if (epgListeners != NULL && !epgListeners->empty()) {
 			for (k = epgListeners->begin(); k != epgListeners->end(); ++k) {
-				(*k)->pushSIEvent(data, (*k)->EPG_LISTENER);
+				(*k)->pushSIEvent(data, IEPGListener::EPG_LISTENER);
 			}
 
 		} else {
