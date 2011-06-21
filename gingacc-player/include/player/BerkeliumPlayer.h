@@ -60,34 +60,54 @@ http://www.telemidia.puc-rio.br
 #include <string>
 using namespace std;
 
-typedef struct {
-	std::auto_ptr<Window> bWindow;
-	BerkeliumHandler* bHandler;
-	int width;
-	int height;
-	string mrl;
-	bool isValid;
-} BBrowser;
-
-typedef struct {
-	BBrowser* create;
-	BBrowser* remove;
-	pthread_mutex_t mutex;
-	pthread_cond_t condition;
-	bool isWaiting;
-} BBrowserFactory;
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+	class BBrowserFactory {
+		private:
+			bool running;
+
+			set<BerkeliumHandler*> bSet;
+			pthread_mutex_t smutex;
+
+			set<BerkeliumHandler*> cBSet;
+			pthread_mutex_t cmutex;
+
+			set<BerkeliumHandler*> dBSet;
+			pthread_mutex_t dmutex;
+
+		public:
+			BBrowserFactory();
+			virtual ~BBrowserFactory();
+
+			void start();
+			void stop();
+			bool isRunning();
+			bool hasBrowser();
+			void createBrowser(BerkeliumHandler* bInfo);
+			void destroyBrowser(BerkeliumHandler* bInfo);
+
+		private:
+			void updateSets();
+
+			void lockCSet();
+			void unlockCSet();
+
+			void lockDSet();
+			void unlockDSet();
+
+			void lockSet();
+			void unlockSet();
+	};
+
 	class BerkeliumPlayer : public Player {
-		protected:
-			static bool initialized;
+		private:
+			static bool isInitialized;
 			static BBrowserFactory berkeliumFactory;
-			BBrowser berkelium;
+			BerkeliumHandler* bInfo;
 
 		public:
 			BerkeliumPlayer(string mrl);

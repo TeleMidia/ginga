@@ -218,7 +218,7 @@ int main(int argc, char** argv, char** envp) {
 		BerkeliumPlayer* bp1, *bp2, *bp3;
 		ISurface* s;
 
-		bp1 = new BerkeliumPlayer("http://www.google.com");
+		bp1 = new BerkeliumPlayer("http://xkcd.com");
 		bp1->setBounds(120, 120, 400, 400);
 		s = bp1->getSurface();
 		if (s == NULL) {
@@ -254,6 +254,52 @@ int main(int argc, char** argv, char** envp) {
 		cout << "gingacc-player test Call bp3->play" << endl;
 		bp3->play();
 
+		cout << "gingacc-player test press enter to remove berkelium player 1";
+		cout << endl;
+		getchar();
+		bp1->stop();
+
+		delete bp1;
+		www->hide();
+
+		cout << "gingacc-player test press enter to remove berkelium player 2";
+		cout << endl;
+		getchar();
+		bp2->stop();
+		ww->hide();
+
+		delete bp2;
+
+		cout << "gingacc-player test press enter to remove berkelium player 3";
+		cout << endl;
+		getchar();
+		bp3->stop();
+		w->hide();
+
+		delete bp3;
+
+		cout << "gingacc-player test press enter to create berkelium player 4";
+		cout << endl;
+		getchar();
+
+		bp1 = new BerkeliumPlayer("http://xkcd.com");
+		bp1->setBounds(120, 120, 400, 400);
+		s = bp1->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(www);
+		}
+		cout << "gingacc-player test Call bp1->play" << endl;
+		www->show();
+		bp1->play();
+
+		cout << "gingacc-player test press enter to remove berkelium player 4";
+		cout << endl;
+		getchar();
+		bp1->stop();
+		www->hide();
 #endif
 	}
 

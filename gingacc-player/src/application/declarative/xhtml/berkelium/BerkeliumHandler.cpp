@@ -68,9 +68,7 @@ namespace core {
 namespace player {
 	IInputManager* BerkeliumHandler::im = NULL;
 
-	BerkeliumHandler::BerkeliumHandler(string mrl) {
-		mURL    = mrl;
-
+	BerkeliumHandler::BerkeliumHandler() {
 #if HAVE_COMPSUPPORT
 		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
 				"LocalDeviceManager")))();
@@ -85,11 +83,50 @@ namespace player {
 		im = InputManager::getInstance();
 		surface = new DFBSurface(NULL);
 #endif
+
+		w = 0;
+		h = 0;
+
+		isValid = false;
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {
 		cout << "BerkeliumHandler::~BerkeliumHandler " << endl;
+		if (isValid) {
+			isValid = false;
+			bWindow->setDelegate(NULL);
+			bWindow->del();
+		}
+
 		im->removeInputEventListener(this);
+		//Caution: Surface is deleted by Player
+	}
+
+	void BerkeliumHandler::setWindow(std::auto_ptr<Window> window) {
+		bWindow = window;
+		isValid = true;
+	}
+
+	void BerkeliumHandler::getSize(int* w, int* h) {
+		*w = this->w;
+		*h = this->h;
+	}
+
+	void BerkeliumHandler::setSize(int w, int h) {
+		this->w = w;
+		this->h = h;
+
+		if (isValid) {
+			bWindow->resize(w, h);
+		}
+	}
+
+	void BerkeliumHandler::setUrl(string url) {
+		mURL = url;
+	}
+
+	string BerkeliumHandler::getUrl() {
+		return mURL;
 	}
 
 	ISurface* BerkeliumHandler::getSurface() {
@@ -106,11 +143,11 @@ namespace player {
         std::string x = "hi";
         x+= newURL;
         mURL = newURL.get<std::string>();
-        std::cout << "*** onAddressChanged to "<<newURL<<std::endl;
+        cout << "*** onAddressChanged to " << newURL << endl;
 	}
 
 	void BerkeliumHandler::onStartLoading(Window *win, URLString newURL) {
-		std::cout << "*** Start loading "<<newURL<<" from "<<mURL<<std::endl;
+		cout << "*** Start loading " << newURL << " from " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onLoadingStateChanged(Window *win, bool isLoading) {
@@ -119,20 +156,20 @@ namespace player {
 	}
 
 	void BerkeliumHandler::onLoad(Window *win) {
-        sleep(1);
+
 	}
 
 	void BerkeliumHandler::onLoadError(Window *win, WideString error) {
-        std::cout << L"*** onLoadError "<<mURL<<": ";
-        std::wcout << error<<std::endl;
+        cout << L"*** onLoadError " << mURL << ": ";
+        wcout << error << endl;
 	}
 
 	void BerkeliumHandler::onResponsive(Window *win) {
-		std::cout << "*** onResponsive "<<mURL<<std::endl;
+		cout << "*** onResponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onUnresponsive(Window *win) {
-		std::cout << "*** onUnresponsive "<<mURL<<std::endl;
+		cout << "*** onUnresponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onPaint(
@@ -154,7 +191,14 @@ namespace player {
 		IDirectFBSurface* destination;
 		DFBSurfaceDescription sDesc;
 
-		cout << "*** onPaint "<< mURL << endl;
+		cout << "*** onPaint " << mURL << endl;
+
+		if (bitmap_rect.left() != 0 || bitmap_rect.top() != 0 ||
+				bitmap_rect.right() != w || bitmap_rect.bottom() != h) {
+
+			cout << "*** onPaint '" << mURL << "' not full" << endl;
+			return;
+		}
 
 		FILE *outfile;
 		{
@@ -215,7 +259,7 @@ namespace player {
 	void BerkeliumHandler::onCreatedWindow(
 			Window *win, Window *newWindow, const Rect &initialRect) {
 
-        cout << "*** onCreatedWindow from source " << mURL << endl;
+		cout << "*** onCreatedWindow from source " << mURL << endl;
         //newWindow->setDelegate(new BerkeliumHandler);
 	}
 
@@ -225,9 +269,9 @@ namespace player {
 			URLString origin,
 			URLString target) {
 
-        cout << "*** onChromeSend at URL " << mURL << " from " << origin;
-        cout << " to " << target << ":" << endl;
-        cout << message << endl;
+		cout << "*** onChromeSend at URL " << mURL << " from " << origin;
+		cout << " to " << target << ":" << endl;
+		cout << message << endl;
 	}
 
 	void BerkeliumHandler::onPaintPluginTexture(
@@ -236,25 +280,30 @@ namespace player {
 			const std::vector<Rect> srcRects,
 			const Rect &destRect) {
 
+		cout << "*** onPaintPluginTexture from source " << mURL << endl;
+
 	}
 
 	void BerkeliumHandler::onWidgetCreated(
 			Window *win, Widget *newWidget, int zIndex) {
 
+		cout << "*** onWidgetCreated from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetDestroyed(Window *win, Widget *newWidget) {
-
+		cout << "*** onWidgetDestroyed from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetResize(
 			Window *win, Widget *wid, int newWidth, int newHeight) {
 
+		cout << "*** onWidgetResize from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetMove(
 			Window *win, Widget *wid, int newX, int newY) {
 
+		cout << "*** onWidgetMove from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetPaint(
@@ -268,6 +317,7 @@ namespace player {
 			int dy,
 			const Rect &scrollRect) {
 
+		cout << "*** onWidgetPaint from source " << mURL << endl;
 	}
 }
 }

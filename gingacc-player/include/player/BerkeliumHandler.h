@@ -91,11 +91,19 @@ namespace player {
 		static IInputManager* im;
 		ILocalDeviceManager* dm;
 		ISurface* surface;
+		int w, h;
+		std::auto_ptr<Window> bWindow;
+		bool isValid;
 
 	public:
-		BerkeliumHandler(string mrl);
+		BerkeliumHandler();
 		virtual ~BerkeliumHandler();
 
+		void setWindow(std::auto_ptr<Window> window);
+		void getSize(int* w, int* h);
+		void setSize(int w, int h);
+		void setUrl(string url);
+		string getUrl();
 		ISurface* getSurface();
 		bool userEventReceived(IInputEvent* ev);
 

@@ -276,7 +276,7 @@ else
    TEST_LIBS='-lgingaccplabkl -llibberkelium -lgingaccplalks -ltelemidialinks'
 fi
    AC_MSG_RESULT([*** Ginga Links Player support will be built.])
-   AC_DEFINE(HAVE_BERKELIUM, 1, [Def to 1 if you have ginga links support.])
+   AC_DEFINE(HAVE_LINKS, 1, [Def to 1 if you have ginga links support.])
 fi
 
 AM_CONDITIONAL([LINKSLIB], [test x$enable_links = xyes])

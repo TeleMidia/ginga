@@ -300,7 +300,6 @@ namespace player {
 }
 }
 
-
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		createLinksPlayer(const char* mrl, bool hasVisual) {
 
