@@ -131,7 +131,6 @@ namespace io {
 			void lowerToBottom();
 			void setCurrentTransparency(int alpha);
 			void setOpaqueRegion(int x1, int y1, int x2, int y2);
-			void setTransparencyValue(int alpha);
 			int getTransparencyValue();
 			int getId();
 			void show();

@@ -70,6 +70,7 @@ typedef struct {
 	string parentDocId;
 	string nodeId;
 	string docId;
+	float transparency;
 	void* focusManager;
 	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* editListener;
 } NclPlayerData;

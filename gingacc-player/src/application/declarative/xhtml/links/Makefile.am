@@ -5,10 +5,11 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
+if LINKSLIB
 libgingaccplalksdir = /usr/local/lib/ginga/players/
 
 libgingaccplalks_so_LDFLAGS = -Wl,-soname,libgingaccplalks.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../../../
+	-L/usr/local/lib -L/usr/local/lib/ginga -L../../../../
 
 libgingaccplalks_PROGRAMS = libgingaccplalks.so
 
@@ -16,5 +17,5 @@ libgingaccplalks_so_SOURCES = LinksPlayer.cpp
 
 libgingaccplalks_so_LDADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
     -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS)
-
+endif
 MAINTAINERCLEANFILES = Makefile.in

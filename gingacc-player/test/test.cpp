@@ -49,6 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
+#if HAVE_BERKELIUM
+#include "player/BerkeliumPlayer.h"
+#endif
+
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
@@ -208,6 +212,48 @@ int main(int argc, char** argv, char** envp) {
 		pprocessA->stop();
 		getchar();
 		delete pprocessA;
+#endif
+	} else if (argc > 1 && strcmp(argv[1], "berkelium") == 0) {
+#if HAVE_BERKELIUM
+		BerkeliumPlayer* bp1, *bp2, *bp3;
+		ISurface* s;
+
+		bp1 = new BerkeliumPlayer("http://www.google.com");
+		bp1->setBounds(120, 120, 400, 400);
+		s = bp1->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(www);
+		}
+		cout << "gingacc-player test Call bp1->play" << endl;
+		bp1->play();
+
+		bp2 = new BerkeliumPlayer("http://www.telemidia.puc-rio.br");
+		bp2->setBounds(90, 90, 150, 150);
+		s = bp2->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(ww);
+		}
+		cout << "gingacc-player test Call bp2->play" << endl;
+		bp2->play();
+
+		bp3 = new BerkeliumPlayer("http://www.ncl.org.br");
+		bp3->setBounds(10, 10, 100, 100);
+		s = bp3->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(w);
+		}
+		cout << "gingacc-player test Call bp3->play" << endl;
+		bp3->play();
+
 #endif
 	}
 

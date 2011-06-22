@@ -47,83 +47,66 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef DFBDEVICESCREEN_H_
-#define DFBDEVICESCREEN_H_
+#ifndef BerkeliumPlayer_h_
+#define BerkeliumPlayer_h_
 
-#include "../IDeviceScreen.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <directfb.h>
-#ifdef __cplusplus
-}
-#endif
-
-/* macro for a safe call to DirectFB functions */
-#ifndef DFBCHECK
-#define DFBCHECK(x...)                                            \
-{                                                                 \
-	DFBResult err = x;                                            \
-	if (err != DFB_OK) {                                          \
-		fprintf( stderr, "%s <%d>:\n\t", __FILE__, __LINE__ );    \
-	}                                                             \
-}
-#endif /*DFBCHECK*/
+#include "Player.h"
+#include "BerkeliumHandler.h"
 
 #include <pthread.h>
+#include <sys/select.h>
 
 #include <set>
-#include <iostream>
+#include <string>
 using namespace std;
+
+typedef struct {
+	std::auto_ptr<Window> bWindow;
+	BerkeliumHandler* bHandler;
+	int width;
+	int height;
+	string mrl;
+	bool isValid;
+} BBrowser;
+
+typedef struct {
+	BBrowser* create;
+	BBrowser* remove;
+	pthread_mutex_t mutex;
+	pthread_cond_t condition;
+	bool isWaiting;
+} BBrowserFactory;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace system {
-namespace io {
-	class DFBDeviceScreen : public IDeviceScreen {
-		public:
-			static const unsigned int DSA_UNKNOWN;
-			static const unsigned int DSA_4x3;
-			static const unsigned int DSA_16x9;
-
+namespace player {
+	class BerkeliumPlayer : public Player {
 		protected:
-			unsigned int aspect;
-			unsigned int hSize;
-			unsigned int vSize;
-			unsigned int hRes;
-			unsigned int wRes;
+			static bool initialized;
+			static BBrowserFactory berkeliumFactory;
+			BBrowser berkelium;
+
+		public:
+			BerkeliumPlayer(string mrl);
+			virtual ~BerkeliumPlayer();
+
+			ISurface* getSurface();
+			void setNotifyContentUpdate(bool notify);
+
+			void play();
+			void stop();
+			bool setOutWindow(int windowId);
+			void setBounds(int x, int y, int w, int h);
+
+			void setPropertyValue(string name, string value);
+
+			bool setKeyHandler(bool isHandler);
 
 		private:
-			set<IDirectFBWindow*>* windowPool;
-			set<IDirectFBSurface*>* surfacePool;
-
-			pthread_mutex_t winMutex;
-			pthread_mutex_t surMutex;
-
-			static unsigned int numOfDFBScreens;
-			static IDirectFB* dfb;
-			static IDirectFBDisplayLayer* gfxLayer;
-
-		public:
-			DFBDeviceScreen(int numArgs=0, char* args[]=NULL);
-			virtual ~DFBDeviceScreen();
-			void setBackgroundImage(string uri);
-			unsigned int getWidthResolution();
-			void setWidthResolution(unsigned int wRes);
-			unsigned int getHeightResolution();
-			void setHeightResolution(unsigned int hRes);
-			void setColorKey(int r, int g, int b);
-			void mergeIds(int destId, vector<int>* srcIds);
-			void* getWindow(int winId);
-			void* createWindow(void* desc);
-			void releaseWindow(void* win);
-			void* createSurface(void* desc);
-			void releaseSurface(void* sur);
-			void* getGfxRoot();
+			static void* mainLoop(void* ptr);
 	};
 }
 }
@@ -131,6 +114,5 @@ namespace io {
 }
 }
 }
-}
 
-#endif /*DFBDEVICESCREEN_H_*/
+#endif /*BerkeliumPlayer_h_*/
