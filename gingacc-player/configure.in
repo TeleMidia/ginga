@@ -10,6 +10,18 @@ AC_PROG_CXX([g++])
 CXXFLAGS="-fPIC $CXXFLAGS"
 CFLAGS="-fPIC $CFLAGS"
 
+######################
+# Finding pkg-config #
+######################
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+if test x$PKG_CONFIG = xno ; then
+AC_MSG_ERROR([*** pkg-config not found. See http://pkgconfig.sourceforge.net])
+fi
+
+if ! pkg-config --atleast-pkgconfig-version 0.9 ; then
+AC_MSG_ERROR([*** pkg-config too old; version 0.9 or better required.])
+fi
+
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
 for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/iocontents /usr/local/lib/ginga/ic; do
@@ -244,13 +256,16 @@ if test x$enable_berkelium = xno; then
    AC_DEFINE(HAVE_BERKELIUM, 0, [Def to 0 if you don't have ginga berkelium support.])
 
 else
+   BKL_CFLAGS=`$PKG_CONFIG --cflags glib-2.0`
+   BKL_LIBS=`$PKG_CONFIG --libs glib-2.0`
    TEST_LIBS='-lgingaccplabkl -llibberkelium'
    AC_MSG_RESULT([*** Ginga Berkelium Player support will be built.])
    AC_DEFINE(HAVE_BERKELIUM, 1, [Def to 1 if you have ginga berkelium support.])
 fi
 
 AM_CONDITIONAL([BERKELIUMLIB], [test x$enable_berkelium = xyes])
-
+AC_SUBST(BKL_LIBS)
+AC_SUBST(BKL_CFLAGS)
 
 #################
 # Links Support #

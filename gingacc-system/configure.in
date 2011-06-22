@@ -73,9 +73,9 @@ Please install TeleMidia Util Library.
 
 ]))
 
-#
-# Find pkg-config
-#
+######################
+# Finding pkg-config #
+######################
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 if test x$PKG_CONFIG = xno ; then
 AC_MSG_ERROR([*** pkg-config not found. See http://pkgconfig.sourceforge.net])

@@ -94,12 +94,22 @@ namespace player {
 		cout << "BerkeliumHandler::~BerkeliumHandler " << endl;
 		if (isValid) {
 			isValid = false;
+			bWindow->stop();
 			bWindow->setDelegate(NULL);
 			bWindow->del();
 		}
 
+		if (context != NULL) {
+			context->destroy();
+			context = NULL;
+		}
+
 		im->removeInputEventListener(this);
 		//Caution: Surface is deleted by Player
+	}
+
+	void BerkeliumHandler::setContext(Context* context) {
+		this->context = context;
 	}
 
 	void BerkeliumHandler::setWindow(std::auto_ptr<Window> window) {

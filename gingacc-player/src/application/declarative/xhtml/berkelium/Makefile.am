@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-    -I/usr/local/include/	$(all_includes) -I$(top_srcdir)/include
+    -I/usr/local/include/ $(BKL_CFLAGS) $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
@@ -16,6 +16,6 @@ libgingaccplabkl_PROGRAMS = libgingaccplabkl.so
 libgingaccplabkl_so_SOURCES = BerkeliumHandler.cpp BerkeliumPlayer.cpp
 
 libgingaccplabkl_so_LDADD = -llibberkelium -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS)
+    -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS) $(BKL_LIBS)
 endif
 MAINTAINERCLEANFILES = Makefile.in

@@ -92,6 +92,7 @@ namespace player {
 		ILocalDeviceManager* dm;
 		ISurface* surface;
 		int w, h;
+		Context* context;
 		std::auto_ptr<Window> bWindow;
 		bool isValid;
 
@@ -99,6 +100,7 @@ namespace player {
 		BerkeliumHandler();
 		virtual ~BerkeliumHandler();
 
+		void setContext(Context* context);
 		void setWindow(std::auto_ptr<Window> window);
 		void getSize(int* w, int* h);
 		void setSize(int w, int h);

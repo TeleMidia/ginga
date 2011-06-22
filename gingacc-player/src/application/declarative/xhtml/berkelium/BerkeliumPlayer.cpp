@@ -51,6 +51,9 @@ http://www.telemidia.puc-rio.br
 
 #include "player/PlayersComponentSupport.h"
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -130,8 +133,8 @@ namespace player {
 
 			context = Context::create();
 			std::auto_ptr<Window> bwin(Window::create(context));
-			delete context;
 
+			bInfo->setContext(context);
 			bInfo->getSize(&w, &h);
 
 			bwin->resize(w, h);
