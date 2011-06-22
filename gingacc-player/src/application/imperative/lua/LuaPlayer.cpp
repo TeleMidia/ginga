@@ -699,10 +699,10 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 
 #else
     this->im = InputManager::getInstance();
-#ifndef _WIN32	
+#ifndef _WIN32
 	this->surface = new DFBSurface();
 	this->epgProc = EPGProcessor::getInstance();
-#else    
+#else
 	this->surface = new DXSurface();
 #endif
 #endif
@@ -961,16 +961,16 @@ void LuaPlayer::pushSIEvent (map<string, struct Field> event, unsigned char type
 		field.str    = "si";
 		evt["class"] = field;
 
-		if (type == EPG_LISTENER) {
+		if (type == IEPGListener::EPG_LISTENER) {
 			field.str   = "epg";
 
-		} else if (type == SI_LISTENER) {
+		} else if (type == IEPGListener::SI_LISTENER) {
 			field.str   = "services";
 
-		} else if (type == MOSAIC_LISTENER) {
+		} else if (type == IEPGListener::MOSAIC_LISTENER) {
 			field.str   = "mosaic";
 
-		} else if (type == TIME_LISTENER) {
+		} else if (type == IEPGListener::TIME_LISTENER) {
 			field.str   = "time";
 		}
 
