@@ -106,6 +106,8 @@ namespace process {
 				sp->messageReceived(msg);
 			}
 		}
+
+		return sp;
 	}
 
 	void SpawnedProcess::sendMessage(string msg) {

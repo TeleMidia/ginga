@@ -133,5 +133,5 @@ echo Running configure "$@" ...
 $srcdir/configure "$@" || exit 1
 
 echo "$PROJECT"
-echo "Copyleft 1989-2009 PUC-RIO/LABORATORIO TELEMIDIA, Some Rights Reserved."
+echo "Copyleft 1989-2011 PUC-RIO/LABORATORIO TELEMIDIA, Some Rights Reserved."
 echo "Now type 'make' to compile the project."

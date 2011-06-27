@@ -15,4 +15,5 @@ localLib_PROGRAMS = libgingaccsystemprocess.so
 libgingaccsystemprocess_so_SOURCES = Process.cpp SpawnedProcess.cpp
 libgingaccsystemprocess_so_LDADD = $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
 endif
+
 MAINTAINERCLEANFILES = Makefile.in
