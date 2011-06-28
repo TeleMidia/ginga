@@ -56,7 +56,8 @@ http://www.telemidia.puc-rio.br
 {                                                                 \
 	DFBResult err = x;                                            \
 	if (err != DFB_OK) {                                          \
-		fprintf( stderr, "%s <%d>:\n\t", __FILE__, __LINE__ );    \
+		fprintf( stderr, "%s <%d>: \n\t", __FILE__, __LINE__ );   \
+		DirectFBError( #x, err );                                 \
 	}                                                             \
 }
 #endif /*DFBCHECK*/

@@ -86,17 +86,10 @@ AC_SUBST(TEST_COMPONENTS_LIBS)
 ###########################
 # Multple Process Support #
 ###########################
-multiprocess=yes
+multiprocess=no
 AC_ARG_ENABLE(multiprocess,
-  [  --enable-multiprocess build project with multiple process support [[default=yes]]],
-  enable_multiprocess="$enableval", enable_multiprocess=yes)
-
-AC_CHECK_HEADER(
-  [system/process/Process.h],
-  [],
-  AC_MSG_WARN([*** Process header not Found.])
-    enable_multiprocess=no
-)
+  [  --enable-multiprocess build project with multiple process support [[default=no]]],
+  enable_multiprocess="$enableval", enable_multiprocess=no)
 
 if test x$enable_multiprocess = xno; then
    MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'

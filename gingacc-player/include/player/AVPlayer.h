@@ -127,6 +127,7 @@ namespace player {
 			float soundLevel;
 
 		private:
+			string pSym;
 			IContinuousMediaProvider* provider;
 			bool hasResized;
 			bool mainAV;

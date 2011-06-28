@@ -53,17 +53,17 @@
     <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
-<!--
+
   <component package="gingacc-system" name="libgingaccsysctsxineav.so" version="0.12.2" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
-    <symbol object="TSVideoProvider" creator="createXineVideoProvider" destroyer="destroyXineVideoProvider" interface="IContinuousMediaProvider"/>
+    <symbol object="XineVideoProvider" creator="createXineVideoProvider" destroyer="destroyXineVideoProvider" interface="IContinuousMediaProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
--->
+
   <component package="gingacc-system" name="libgingaccsysctsffmpegav.so" version="0.12.2" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
-    <symbol object="TSVideoProvider" creator="createFFmpegVideoProvider" destroyer="destroyFFmpegVideoProvider" interface="IContinuousMediaProvider"/>
+    <symbol object="FFmpegVideoProvider" creator="createFFmpegVideoProvider" destroyer="destroyFFmpegVideoProvider" interface="IContinuousMediaProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/iocontents/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

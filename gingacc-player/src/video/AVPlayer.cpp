@@ -1076,6 +1076,7 @@ namespace player {
 		this->hasVisual   = hasVisual;
 		this->soundLevel  = 1.0;
 		this->win         = NULL;
+		this->pSym        = "";
 
 		pthread_mutex_init(&pMutex, NULL);
 
@@ -1083,19 +1084,7 @@ namespace player {
 		this->icListener  = NULL;
 #endif
 
-		if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
-#if HAVE_CCRTPIC
-			icListener = new RTPListener(mrl);
-			this->mrl  = icListener->getUrl();
-
-			Thread::start();
-
-			pthread_t _tId;
-			pthread_create(&_tId, NULL, createProvider, this);
-			pthread_detach(_tId);
-#endif
-
-		} else if (mrl.length() > 11 && mrl.substr(0, 11) == "sbtvd-ts://") {
+		if (mrl.length() > 11 && mrl.substr(0, 11) == "sbtvd-ts://") {
 			this->mainAV = true;
 			pos = mrl.find("#");
 			if (pos != std::string::npos) {
@@ -1107,6 +1096,19 @@ namespace player {
 			cout << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
 			cout << this->mrl << "'" << endl;
 
+#if HAVE_CCRTPIC
+		} else if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
+			cout << "AVPlayer::AVPlayer creating RTP IC " << endl;
+
+			icListener = new RTPListener(mrl);
+			this->mrl  = icListener->getUrl();
+
+			Thread::start();
+
+			pthread_t _tId;
+			pthread_create(&_tId, NULL, createProvider, this);
+			pthread_detach(_tId);
+#endif
 		} else {
 			createProvider(this);
 			this->scopeEndTime = getTotalMediaTime();
@@ -1169,13 +1171,25 @@ namespace player {
 		if (p->provider == NULL && (fileExists(p->mrl) || isRemote)) {
 #if HAVE_COMPSUPPORT
 			if (p->hasVisual) {
-				p->provider = ((CMPCreator*)(cm->getObject(
-						"VideoProvider")))(p->mrl.c_str());
+				p->pSym = "VideoProvider";
 
 			} else {
-				p->provider = ((CMPCreator*)(cm->getObject(
-						"AudioProvider")))(p->mrl.c_str());
+				p->pSym = "AudioProvider";
 			}
+
+			if (isRemote) {
+#if HAVE_XINEPROVIDER
+				p->pSym = "XineVideoProvider";
+
+#elif HAVE_FFMPEGPROVIDER
+				p->pSym = "FFmpegVideoProvider";
+#endif
+			}
+
+			p->provider = ((CMPCreator*)(cm->getObject(
+					p->pSym)))(p->mrl.c_str());
+
+			cout << "AVPlayer::createProvider provider created" << endl;
 
 #else
 			if (p->hasVisual) {
@@ -1497,11 +1511,7 @@ namespace player {
 		provider = NULL;
 
 #if HAVE_COMPSUPPORT
-		if (hasVisual) {
-			cm->releaseComponentFromObject("VideoProvider");
-		} else {
-			cm->releaseComponentFromObject("AudioProvider");
-		}
+		cm->releaseComponentFromObject(pSym);
 #endif
 
 #if HAVE_CCRTPIC
@@ -1607,6 +1617,7 @@ namespace player {
 		double dur;
 		double currentTime;
 		double timeRemain;
+		double totalTime;
 
 		lock();
 #if HAVE_CCRTPIC
@@ -1629,36 +1640,29 @@ namespace player {
 		if (mainAV) {
 			running = true;
 
-			if (hasVisual) {
 #if HAVE_COMPSUPPORT
-				this->provider = ((CMPCreator*)(cm->getObject(
-						"TSVideoProvider")))(mrl.c_str());
+#if HAVE_XINEPROVIDER
+			pSym = "XineVideoProvider";
+
+#elif HAVE_FFMPEGPROVIDER
+			pSym = "FFmpegVideoProvider";
+#else
+			pSym = "VideoProvider";
+#endif
+
+			this->provider = ((CMPCreator*)(cm->getObject(pSym)))(mrl.c_str());
 
 #else
 #ifndef _WIN32
-				this->provider = new XineVideoProvider(mrl.c_str());
+			this->provider = new XineVideoProvider(mrl.c_str());
 #else
-				this->provider = new DXVideoProvider(mrl.c_str());
+			this->provider = new DXVideoProvider(mrl.c_str());
 #endif
 #endif
 
-				unlock();
-				this->surface = createFrame();
-				lock();
-
-			} else {
-#if HAVE_COMPSUPPORT
-				this->provider = ((CMPCreator*)(cm->getObject(
-						"TSAudioProvider")))(mrl.c_str());
-
-#else
-#ifndef _WIN32
-				this->provider = new XineVideoProvider(mrl.c_str());
-#else
-				this->provider = new DXVideoProvider(mrl.c_str());
-#endif
-#endif
-			}
+			unlock();
+			this->surface = createFrame();
+			lock();
 
 			if (this->win != NULL && surface->getParent() == NULL) {
 				this->surface->setParent((void*)win);
@@ -1670,14 +1674,23 @@ namespace player {
 			waitForUnlockCondition();
 
 		} else {
+			totalTime = getTotalMediaTime();
 			if (!isInfinity(scopeEndTime) &&
-					scopeEndTime > 0 && scopeEndTime < getTotalMediaTime()) {
+					scopeEndTime > 0 && scopeEndTime < totalTime) {
 
 				dur = getStopTime();
 
 			} else {
-				dur = getTotalMediaTime();
+				dur = totalTime;
 			}
+
+			if (isInfinity(dur)) {
+				cout << "AVPlayer::run duration is INF";
+				cout << " => returning" << endl;
+				unlock();
+				return;
+			}
+
 #ifndef _WIN32
 			::usleep(850000);
 #else
@@ -1693,6 +1706,8 @@ namespace player {
 					cout << "' for '" << mrl << "'" << endl;*/
 
 					if (status != PLAY) {
+						cout << "AVPlayer::run status != play => exiting";
+						cout << endl;
 						break;
 					}
 
@@ -1709,11 +1724,15 @@ namespace player {
 						}
 
 					} else if (!this->usleep(timeRemain)) {
+						cout << "AVPlayer::run can't sleep '" << timeRemain;
+						cout << "' => exiting" << endl;
 						break;
 					}
 
 					currentTime = getCurrentMediaTime();
 					if (currentTime <= 0) {
+						cout << "AVPlayer::run currentTime = '" << currentTime;
+						cout << "' => exiting" << endl;
 						break;
 					}
 				}
@@ -1733,6 +1752,7 @@ namespace player {
 				provider->stop();
 			}
 
+			cout << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
 			unlock();
 			notifyListeners(PL_NOTIFY_STOP, "");
 
@@ -1742,9 +1762,7 @@ namespace player {
 			unlock();
 		}
 
-		/*cout << endl;
 		cout << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
-		cout << endl;*/
 	}
 }
 }

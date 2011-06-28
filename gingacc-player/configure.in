@@ -157,6 +157,42 @@ fi
 
 AM_CONDITIONAL(CCRTPIC, test x$hasrtpic = xyes)
 
+########################
+# XineProvider Support #
+########################
+
+hasxinep=no
+AC_HAVE_LIBRARY(gingaccsysctsxineav, hasxinep=yes, hasxinep=no)
+
+if test x$hasxinep = xno; then
+   AC_MSG_WARN([*** Xine Provider support will not be built.])
+   AC_DEFINE(HAVE_XINEPROVIDER, 0, [Def to 0 if you don't have xine provider support.])
+
+else
+   AC_MSG_RESULT([*** Xine Provider support will be built.])
+   AC_DEFINE(HAVE_XINEPROVIDER, 1, [Def to 1 if you have xine provider support.])
+fi
+
+AM_CONDITIONAL(XINEPROVIDER, test x$hasxinep = xyes)
+
+##########################
+# FFmpegProvider Support #
+##########################
+
+hasffmpegp=no
+AC_HAVE_LIBRARY(gingaccsysctsxineav, hasffmpegp=yes, hasffmpegp=no)
+
+if test x$hasffmpegp = xno; then
+   AC_MSG_WARN([*** FFmpeg Provider support will not be built.])
+   AC_DEFINE(HAVE_FFMPEGPROVIDER, 0, [Def to 0 if you don't have FFmpeg provider support.])
+
+else
+   AC_MSG_RESULT([*** FFmpeg Provider support will be built.])
+   AC_DEFINE(HAVE_FFMPEGPROVIDER, 1, [Def to 1 if you have FFmpeg provider support.])
+fi
+
+AM_CONDITIONAL(FFMPEGPROVIDER, test x$hasffmpegp = xyes)
+
 ##############
 # JAVA check #
 ##############
@@ -300,17 +336,10 @@ AC_SUBST(TEST_LIBS)
 ###########################
 # Multple Process Support #
 ###########################
-multiprocess=yes
+multiprocess=no
 AC_ARG_ENABLE(multiprocess,
-  [  --enable-multiprocess build project with multiple process support [[default=yes]]],
-  enable_multiprocess="$enableval", enable_multiprocess=yes)
-
-AC_CHECK_HEADER(
-  [system/process/Process.h],
-  [],
-  AC_MSG_WARN([*** Process header not Found.])
-    enable_multiprocess=no
-)
+  [  --enable-multiprocess build project with multiple process support [[default=no]]],
+  enable_multiprocess="$enableval", enable_multiprocess=no)
 
 if test x$enable_multiprocess = xno; then
    MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
@@ -345,6 +374,8 @@ AC_OUTPUT(Makefile
 AC_MSG_RESULT([
 Build options: 
   Module directory          $MODULEDIR
+  Xine Provider Support     $hasxinep
+  FFmpeg Provider Support   $hasffmpegp
   Links Player Support      $enable_links
   Berkelium Player Support  $enable_berkelium
   NCLET Support             $ncletplayer

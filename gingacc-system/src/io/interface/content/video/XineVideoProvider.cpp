@@ -51,13 +51,17 @@ http://www.telemidia.puc-rio.br
 #include "system/io/interface/content/video/XineVideoProvider.h"
 #include "system/io/interface/output/dfb/DFBSurface.h"
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK
 #define DFBCHECK(x...)                                            \
 {                                                                 \
 	DFBResult err = x;                                            \
 	if (err != DFB_OK) {                                          \
-		fprintf( stderr, "%s <%d>:\n\t", __FILE__, __LINE__ );    \
+		fprintf( stderr, "%s <%d>: \n\t", __FILE__, __LINE__ );   \
+		DirectFBError( #x, err );                                 \
 	}                                                             \
 }
 #endif /*DFBCHECK*/
@@ -503,7 +507,7 @@ namespace io {
 	}
 
 	double XineVideoProvider::getTotalMediaTime() {
-		int pos = 0;
+		/*int pos = 0;
 
 		if (rContainer->stream == NULL) {
 			return 0;
@@ -511,7 +515,9 @@ namespace io {
 
 		xine_get_pos_length(rContainer->stream, NULL, NULL, &pos);
 
-		return (double)pos / 1000.0;
+		return (double)pos / 1000.0;*/
+
+		return infinity();
 	}
 
 	double XineVideoProvider::getMediaTime() {
