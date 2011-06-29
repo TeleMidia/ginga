@@ -81,9 +81,15 @@ namespace tuning {
 			bool firstTune;
 
 		public:
-			Tuner();
+			Tuner(
+					string network = "",
+					string protocol = "",
+					string address = "");
+
 			virtual ~Tuner();
 
+		private:
+			void clearInterfaces();
 			void receiveSignal(short signalCode);
 
 		private:

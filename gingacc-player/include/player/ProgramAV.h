@@ -74,7 +74,7 @@ namespace player {
 			string fullScreenBounds;
 
 			ProgramAV();
-			~ProgramAV();
+			virtual ~ProgramAV();
 
 		public:
 			static ProgramAV* getInstance();

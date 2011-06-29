@@ -47,15 +47,78 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "../config.h"
+
+#include "tuner/ITuner.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+
+#include "tsparser/PipeFilter.h"
 #include "tsparser/Demuxer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "tsparser/AIT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-int main() {
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#else
+#include "tuner/Tuner.h"
+#endif
+
+#ifdef _WIN32
+#include <io.h>
+#define O_LARGEFILE 0
+#endif
+
+#include <sys/types.h>
+#include <fcntl.h>
+
+int main(int argc, char** argv, char** envp) {
 	IAIT* ait = new AIT();
-	IDemuxer* demuxer = new Demuxer(NULL);
+	IDemuxer* demuxer = NULL;
+	ITSFilter* pipeFilter = NULL;
+	ITuner* tuner = NULL;
+	int fdPipe = -1, fd = -1, ret;
+	string pipeName, fileName;
+	char buffer[188];
+
+	pipeName = "dtv_channel.ts";
+	fileName = "/tmp/TSPARSERTEST.ts";
+
+#if HAVE_COMPSUPPORT
+	IComponentManager* cm = IComponentManager::getCMInstance();
+	tuner = ((TunerCreator*)(cm->getObject("Tuner")))();
+#else
+	tuner = new Tuner();
+#endif
+
+	demuxer = new Demuxer(tuner);
+
+	((ITuner*)tuner)->tune();
+	((IDemuxer*)demuxer)->waitProgramInformation();
+
+	pipeFilter = new PipeFilter(0);
+	pipeFilter->setDestName(pipeName);
+	((IDemuxer*)demuxer)->addPesFilter(PFT_DEFAULTTS, pipeFilter);
+
+	if (argc == 2 && strcmp(argv[1], "save-pipe") == 0) {
+		fdPipe = open(pipeName.c_str(), O_RDONLY);
+		fd = open(fileName.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+
+		while (true) {
+			ret = read(fdPipe, buffer, ITSPacket::TS_PACKET_SIZE);
+			if (ret == ITSPacket::TS_PACKET_SIZE) {
+				write(fd, buffer, ITSPacket::TS_PACKET_SIZE);
+
+			} else {
+				break;
+			}
+		}
+	}
 	//TODO: tests
+
+	cout << "gingacc-tsparser test all done. press enter to exit" << endl;
+	getchar();
 	return 0;
 }

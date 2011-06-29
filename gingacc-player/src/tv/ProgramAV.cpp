@@ -203,6 +203,9 @@ namespace player {
 
 	string ProgramAV::getNameFromMrl(string mrl) {
 		if (mrl.substr(0, 11) == "sbtvd-ts://") {
+			if (mrl.find("dtv_channel.ts") != std::string::npos) {
+				return "0";
+			}
 			return mrl.substr(11, mrl.length() - 11);
 		}
 

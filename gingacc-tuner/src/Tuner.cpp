@@ -55,34 +55,51 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	Tuner::Tuner() : Thread() {
+	Tuner::Tuner(string network, string protocol, string address) : Thread() {
 		receiving        = false;
 		listeners        = new set<ITunerListener*>;
 		interfaces       = new map<int, INetworkInterface*>;
 		currentInterface = -1;
 		firstTune        = true;
 
-		initializeInterfaces();
+		if (network == "" && protocol == "" && address == "") {
+			initializeInterfaces();
+
+		} else {
+			createInterface(network, protocol, address);
+		}
 	}
 
 	Tuner::~Tuner() {
-		map<int, INetworkInterface*>::iterator i;
-
 		if (listeners != NULL) {
 			delete listeners;
 			listeners = NULL;
 		}
 
+		clearInterfaces();
+		lock();
+		if (interfaces != NULL) {
+			delete interfaces;
+			interfaces = NULL;
+		}
+		unlock();
+	}
+
+	void Tuner::clearInterfaces() {
+		map<int, INetworkInterface*>::iterator i;
+		INetworkInterface* ni;
+
 		lock();
 		if (interfaces != NULL) {
 			i = interfaces->begin();
 			while (i != interfaces->end()) {
-				delete i->second;
-				++i;
+				ni = i->second;
+				delete ni;
+				interfaces->erase(i);
+				i = interfaces->begin();
 			}
-			delete interfaces;
-			interfaces = NULL;
 		}
+		currentInterface = -1;
 		unlock();
 	}
 
@@ -98,18 +115,31 @@ namespace tuning {
 	}
 
 	void Tuner::initializeInterface(string niSpec) {
+		size_t pos;
+
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
+			if (niSpec.find("ip:") != string::npos) {
+				niSpec = niSpec.substr(3, niSpec.length() - 3);
+
+			} else {
+				pos = niSpec.find_first_of("//");
+				if (pos != string::npos) {
+					niSpec = niSpec.substr(
+							pos + 2, niSpec.length() - (pos + 2));
+				}
+			}
+
 			if (niSpec.substr(0, 3) >= "224" &&
 					niSpec.substr(0, 3) <= "239") {
 
-				createInterface("eth", "udp_multicast", niSpec);
+				createInterface("ip", "udp_multicast", niSpec);
 
 			} else if ((niSpec.substr(0, 3) >= "001" &&
 					niSpec.substr(0, 3) <= "223") ||
 					(niSpec.substr(0, 3) >= "240" &&
 							niSpec.substr(0, 3) <= "254")) {
 
-				createInterface("eth", "udp_unicast", niSpec);
+				createInterface("ip", "udp_unicast", niSpec);
 
 			} else if (niSpec == "isdbt" || niSpec == "sbtvdt") {
 				createInterface("sbtvd", "terrestrial", niSpec);
@@ -119,7 +149,15 @@ namespace tuning {
 						"fs",
 						"local",
 						niSpec.substr(3, niSpec.length() - 3));
+
+			} else {
+				cout << "Tuner::initializeInterface can't initialize '";
+				cout << niSpec << "': unknown specification" << endl;
 			}
+
+		} else if (niSpec.substr(0, 1) != "#") {
+			cout << "Tuner::initializeInterface can't initialize '";
+			cout << niSpec << "': invalid specification" << endl;
 		}
 	}
 
@@ -218,24 +256,11 @@ namespace tuning {
 	}
 
 	void Tuner::setSpec(string niName, string ch) {
-		map<int, INetworkInterface*>::iterator i;
-		INetworkInterface* ni;
-
-		lock();
-		i = interfaces->begin();
-		while (i != interfaces->end()) {
-			ni = i->second;
-			if (ni->getName() == niName) {
-				ni->setChannel(ch);
-				currentInterface = i->first;
-				unlock();
-				return;
-			}
-			++i;
-		}
-		unlock();
-
+		clearInterfaces();
 		initializeInterface(niName + ":" + ch);
+
+		cout << "Tuner::setSpec NI = '" << niName << "'";
+		cout << ", channel = '" << ch << "' all done!" << endl;
 	}
 
 	void Tuner::tune() {
@@ -341,7 +366,10 @@ namespace tuning {
 		cout << "Tuner::run tuning... " << endl;
 
 		curInt = getCurrentInterface();
-		if (curInt != NULL) {
+		if (curInt == NULL) {
+			cout << "Tuner::run current interface not found" << endl;
+
+		} else {
 			tuned = listen(curInt);
 			if (tuned) {
 				interface = curInt;
@@ -349,6 +377,9 @@ namespace tuning {
 		}
 
 		if (!tuned) {
+			cout << "Tuner::run current interface can't tune...";
+			cout << " trying other interfaces" << endl;
+
 			lock();
 			i = interfaces->begin();
 			while (i != interfaces->end()) {

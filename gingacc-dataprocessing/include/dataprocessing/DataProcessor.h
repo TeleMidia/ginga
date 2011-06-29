@@ -56,6 +56,9 @@ extern "C" {
 	#include <fcntl.h>
 }
 
+#include "tsparser/IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
 #include "tsparser/IAIT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 

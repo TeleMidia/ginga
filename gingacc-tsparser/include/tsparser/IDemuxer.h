@@ -78,7 +78,7 @@ namespace tsparser {
 	static const short TSDT_TID = 0x03; //TS Description Section
 	static const short OCI_TID  = 0x3B; //Object Carousel Info
 	static const short OCD_TID  = 0x3C; //Object Carousel Data
-	static const short STE_TID  = 0x3D; //DSM-CC Stream Event
+	static const short DDE_TID  = 0x3D; //DSM-CC Descriptors
 	static const short NIT_TID  = 0x40;
 	static const short SDT_TID  = 0x42;
 	static const short EIT_TID  = 0x4E;
@@ -119,7 +119,7 @@ namespace tsparser {
 					return OCD_TID;
 
 				case STREAM_TYPE_DSMCC_TYPE_D:
-					return STE_TID;
+					return DDE_TID;
 
 				case STREAM_TYPE_PRIVATE_SECTION:
 					return AIT_TID;
@@ -137,7 +137,7 @@ namespace tsparser {
 				case OCD_TID:
 					return STREAM_TYPE_DSMCC_TYPE_C;
 
-				case STE_TID:
+				case DDE_TID:
 					return STREAM_TYPE_DSMCC_TYPE_D;
 
 				case AIT_TID:

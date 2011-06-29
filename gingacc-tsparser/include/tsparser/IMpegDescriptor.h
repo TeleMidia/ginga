@@ -65,6 +65,11 @@ namespace tsparser {
 			unsigned char descriptorLength;
 
 		public:
+			static const int NPT_REFERENCE_TAG = 0x01;
+			static const int NPT_ENDPOINT_TAG  = 0x02;
+			static const int STR_MODE_TAG      = 0x03;
+			static const int STR_EVENT_TAG     = 0x04;
+
 			virtual ~IMpegDescriptor(){};
 			virtual unsigned char getDescriptorTag()=0;
 			virtual unsigned int getDescriptorLength()=0;

@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef ISHORTEVENTDESCRIPTOR_H_
 #define ISHORTEVENTDESCRIPTOR_H_
 
+#include "IMpegDescriptor.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -60,7 +62,7 @@ namespace si {
 namespace descriptors {
 	class IShortEventDescriptor : public IMpegDescriptor{
 		public:
-			~IShortEventDescriptor(){};
+			virtual ~IShortEventDescriptor(){};
 			virtual string getLanguageCode()=0;
 			virtual string getEventName()=0;
 			virtual string getTextChar()=0;

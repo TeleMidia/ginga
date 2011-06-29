@@ -8,7 +8,7 @@ noinst_PROGRAMS = test
 test_SOURCES = test.cpp
 
 test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
-    -lgingacctsparser
+    -lgingacctsparser -ldl
 
 test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L/usr/local/lib
 

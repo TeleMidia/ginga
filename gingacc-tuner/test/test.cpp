@@ -48,10 +48,84 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "tuner/Tuner.h"
+#include "tuner/ITunerListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
-int main() {
-	ITuner* tuner = new Tuner();
+#ifdef _WIN32
+#include <io.h>
+#define O_LARGEFILE 0
+#endif
+
+#include <sys/types.h>
+#include <fcntl.h>
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+class TestTunerListener : public ITunerListener {
+	private:
+		string url;
+		int fd;
+
+	public:
+		TestTunerListener(string url) {
+			this->url = url;
+			fd = open(url.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+		}
+
+		void receiveData(char* buff, unsigned int size) {
+			if (fd > 0) {
+				write(fd, buff, size);
+			}
+		}
+
+		void updateStatus(short newStatus, IChannel* channel) {
+
+		}
+};
+
+int main(int argc, char** argv, char** envp) {
+	string name = "", protocol = "", address = "";
+	TestTunerListener* ttl = NULL;
+	ITuner* tuner;
+
+	if (argc > 3) {
+		if (strcmp(argv[1], "udp") == 0 || strcmp(argv[1], "rtp") == 0 ||
+				strcmp(argv[1], "http") == 0) {
+
+			name = "ip";
+			protocol.assign(argv[1]);
+
+			if (strcmp(argv[2], "multicast") == 0) {
+				protocol = protocol + "_multicast";
+
+			} else if (strcmp(argv[2], "unicast") == 0) {
+				protocol = protocol + "_unicast";
+			}
+
+		} else if (strcmp(argv[1], "isdbt") == 0 || strcmp(argv[1], "sbtvdt")) {
+			name = "sbtvd";
+			protocol = "terrestrial";
+
+		} else if (strcmp(argv[1], "fs")) {
+			name = "fs";
+			protocol = "local";
+		}
+
+		address.assign(argv[3]);
+	}
+
+	if (argc > 4) {
+		ttl = new TestTunerListener(argv[4]);
+	}
+
+	tuner = new Tuner(name, protocol, address);
+
+	if (ttl != NULL) {
+		tuner->addListener(ttl);
+	}
+
 	tuner->tune();
 
 	getchar();
@@ -61,6 +135,17 @@ int main() {
 	tuner->channelUp();
 
 	getchar();
+
+	if (ttl != NULL) {
+		tuner->removeListener(ttl);
+		delete ttl;
+	}
+
+	delete tuner;
+
+	cout << "gingacc-tuner test all done. press enter to exit." << endl;
+	getchar();
+
 	//TODO: more tests
 	return 0;
 }

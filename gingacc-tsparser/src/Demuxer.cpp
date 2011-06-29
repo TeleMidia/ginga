@@ -680,6 +680,7 @@ namespace tsparser {
 					filter->addPid(aPid);
 					filter->addPid(vPid);
 
+					cout << "Demuxer::addPesFilter created" << endl;
 					(*pesFilters)[0] = filter;
 
 				} else {

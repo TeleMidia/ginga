@@ -328,13 +328,15 @@ namespace dataprocessing {
 			tableId = section->getTableId();
 
 			//stream event
-			if (tableId == STE_TID) {
-
+			if (tableId == DDE_TID) {
 				//filterManager->addProcessedSection(section->getSectionName());
 
 				payload = (char*)(section->getPayload());
 
-				if ((payload[0] & 0xFF) == IStreamEvent::SE_DESCRIPTOR_TAG ||
+				/*cout << "DataProcessor::receiveSection DSM-CC descriptor";
+				cout << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
+
+				if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
 						(payload[0] & 0xFF) == 0x1a) {
 
 					se = new StreamEvent(
@@ -342,7 +344,7 @@ namespace dataprocessing {
 
 					//i = processedIds->find(se->getId());
 					//if (i == processedIds->end()) {377
-						cout << "DataProcessor::receiveSection STE" << endl;
+						//cout << "DataProcessor::receiveSection STE" << endl;
 
 						processedIds->insert(se->getId());
 						//TODO: get stream event object from oc
@@ -355,7 +357,12 @@ namespace dataprocessing {
 						//delete se;
 					//}
 
-				} else {
+				} else if ((payload[0] & 0xFF) ==
+								IMpegDescriptor::NPT_REFERENCE_TAG ||
+
+						(payload[0] & 0xFF) ==
+								IMpegDescriptor::NPT_ENDPOINT_TAG) {
+
 					//TODO: we have to organize this mess
 					dsmccSection = new DSMCCSectionPayload(
 							payload, section->getPayloadSize());
@@ -377,7 +384,7 @@ namespace dataprocessing {
 
 			//AIT
 			} else if (tableId == AIT_TID) {
-				cout << "DataProcessor::receiveSection AIT" << endl;
+				//cout << "DataProcessor::receiveSection AIT" << endl;
 
 				if (ait != NULL &&
 						ait->getSectionName() == section->getSectionName()) {

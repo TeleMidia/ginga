@@ -132,7 +132,7 @@ namespace tuning {
 
 		close();
 
-		if (name == "eth") {
+		if (name == "ip") {
 			ip = address.substr(0, address.find(":"));
 			portNumber = address.substr(
 					address.find(":") + 1, address.length());

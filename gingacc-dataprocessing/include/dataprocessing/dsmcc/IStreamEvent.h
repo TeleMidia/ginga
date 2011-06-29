@@ -62,8 +62,6 @@ namespace core {
 namespace dataprocessing {
 	class IStreamEvent {
 		public:
-			static const int SE_DESCRIPTOR_TAG = 0x04;
-
 			virtual ~IStreamEvent(){};
 			virtual unsigned int getDescriptorTag()=0;
 			virtual unsigned int getDescriptorLength()=0;

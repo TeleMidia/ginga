@@ -120,26 +120,28 @@ namespace tsparser {
 
 		ppid = pack->getPid();
 
-		lock();
-		if (pids->count(ppid) == 0) {
-			unlock();
-			return;
-		}
-		unlock();
-
-		contCounter = (*pids)[ppid];
-		pack->setContinuityCounter(contCounter);
-		if (pack->getAdaptationFieldControl() != 2 &&
-				pack->getAdaptationFieldControl() != 0) {
-
-			if (contCounter == 15) {
-				contCounter = -1;
+		if (!pids->empty()) {
+			lock();
+			if (pids->count(ppid) == 0) {
+				unlock();
+				return;
 			}
-			(*pids)[ppid] = contCounter + 1;
+			unlock();
+
+			contCounter = (*pids)[ppid];
+			pack->setContinuityCounter(contCounter);
+			if (pack->getAdaptationFieldControl() != 2 &&
+					pack->getAdaptationFieldControl() != 0) {
+
+				if (contCounter == 15) {
+					contCounter = -1;
+				}
+				(*pids)[ppid] = contCounter + 1;
+			}
 		}
 
 		pack->getPacketData(packData);
-		if (ppid == 0x00) {
+		if (ppid == 0x00 && !pids->empty()) {
 			Pat::resetPayload(packData + 4, pack->getPayloadSize());
 		}
 
