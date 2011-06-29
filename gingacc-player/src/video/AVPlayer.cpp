@@ -1080,7 +1080,7 @@ namespace player {
 
 		pthread_mutex_init(&pMutex, NULL);
 
-#if HAVE_CCRTPIC
+#if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		this->icListener  = NULL;
 #endif
 
@@ -1096,7 +1096,7 @@ namespace player {
 			cout << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
 			cout << this->mrl << "'" << endl;
 
-#if HAVE_CCRTPIC
+#if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		} else if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
 			cout << "AVPlayer::AVPlayer creating RTP IC " << endl;
 
@@ -1396,7 +1396,7 @@ namespace player {
 
 	void AVPlayer::stop() {
 		Player::stop();
-#if HAVE_CCRTPIC
+#if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
 			icListener->releaseIC();
 		}
@@ -1514,7 +1514,7 @@ namespace player {
 		cm->releaseComponentFromObject(pSym);
 #endif
 
-#if HAVE_CCRTPIC
+#if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
 			delete icListener;
 			icListener = NULL;
@@ -1620,7 +1620,7 @@ namespace player {
 		double totalTime;
 
 		lock();
-#if HAVE_CCRTPIC
+#if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
 			running = true;
 			unlock();
