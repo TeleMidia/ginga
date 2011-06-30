@@ -60,6 +60,7 @@ namespace carousel {
 		this->pid = 0;
 		this->id = moduleId;
 		currentDownloadSize = 0;
+		overflowNotification = true;
 	}
 
 	void Module::setESId(unsigned int pid) {
@@ -94,8 +95,16 @@ namespace carousel {
 
 	bool Module::isConsolidated() {
 		if (currentDownloadSize > size) {
-			cout << "MODULE OVERFLOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+			if (overflowNotification) {
+				cout << "Module::isConsolidated Warning! ";
+				cout << "MODULE '" << getModuleFileName() << "' ";
+				cout << "OVERFLOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+				cout << " SIZE='" << size << "' RCVD='";
+				cout << currentDownloadSize << "'" << endl;
+				overflowNotification = false;
+			}
 		}
+
 		return (currentDownloadSize == size);
 	}
 
@@ -124,16 +133,24 @@ namespace carousel {
 				itos(pid) + itos(id) + itos(version) + ".mod");
 	}
 
-	void Module::pushDownloadData(void* data, unsigned int dataSize) {
+	void Module::pushDownloadData(
+			unsigned int blockNumber, void* data, unsigned int dataSize) {
+
 		unsigned int bytesSaved;
 
 		if (!isConsolidated()) {
-			//cout << "Module opening '" << getModuleFileName() << "'" << endl;
+			if (blocks.find(blockNumber) != blocks.end()) {
+				return;
+			}
+
+			blocks.insert(blockNumber);
 			if (moduleFd != -1) {
 				bytesSaved = write(moduleFd, data, dataSize);
 				if (bytesSaved != dataSize) {
-					cout << "Module Warning! size of data is '" << dataSize;
-					cout << "' saved only '" << bytesSaved << "'" << endl;
+					cout << "Module::pushDownloadData Warning!";
+					cout << " size of data is '" << dataSize;
+					cout << "' saved only '" << bytesSaved << "'";
+					cout << endl;
 				}
 
 				currentDownloadSize = currentDownloadSize + bytesSaved;

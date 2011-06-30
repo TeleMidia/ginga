@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "config.h"
+#include "../config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"

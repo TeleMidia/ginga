@@ -59,7 +59,7 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include <vector>
+#include <set>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -82,6 +82,8 @@ namespace carousel {
 			unsigned int version;
 			unsigned int infoLength;
 			unsigned int currentDownloadSize;
+			bool overflowNotification;
+			set<unsigned int> blocks;
 
 		public:
 			Module(unsigned int moduleId);
@@ -99,7 +101,11 @@ namespace carousel {
 			unsigned int getVersion();
 			unsigned int getInfoLength();
 			string getModuleFileName();
-			void pushDownloadData(void* data, unsigned int dataSize);
+			void pushDownloadData(
+					unsigned int blockNumber,
+					void* data,
+					unsigned int dataSize);
+
 			void print();
 	};
 }
