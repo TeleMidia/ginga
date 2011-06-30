@@ -69,8 +69,8 @@ namespace tuning {
 		// Create socket source
 		socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-		cout << "conecting to " << this->addr;
-		cout << ": " << portNumber << endl;
+		cout << "connecting to " << this->addr;
+		cout << ":" << portNumber << endl;
 
 		if (socketDescriptor < 0) {
 			perror("UnicastProvider::callServer openSocket");
