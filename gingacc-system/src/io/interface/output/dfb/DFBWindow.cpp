@@ -683,11 +683,55 @@ namespace io {
 		return false;
 	}
 
+	void DFBWindow::renderFrom(string serializedImageUrl) {
+		IDirectFB* dfb;
+		IDirectFBImageProvider* ip;
+		DFBImageDescription imgDsc;
+		IDirectFBSurface* destination = NULL;
+		DFBSurfaceDescription surDsc;
+		IColor* chromaKey = NULL;
+
+		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+		DFBCHECK(dfb->CreateImageProvider(dfb, serializedImageUrl.c_str(), &ip));
+
+		if ((ip->GetImageDescription(ip, &imgDsc) == DFB_OK) &&
+			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
+
+			destination = (IDirectFBSurface*)(
+					LocalDeviceManager::getInstance()->createSurface(&surDsc));
+
+			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
+				DFBCHECK(destination->SetBlittingFlags(destination,
+					 (DFBSurfaceBlittingFlags)(DSBLIT_BLEND_ALPHACHANNEL)));
+			}
+
+			if (imgDsc.caps & DICAPS_COLORKEY) {
+				DFBCHECK(destination->SetSrcColorKey(
+						destination,
+					    imgDsc.colorkey_r,
+					    imgDsc.colorkey_g,
+					    imgDsc.colorkey_b));
+
+				DFBCHECK(destination->SetBlittingFlags(destination,
+					    (DFBSurfaceBlittingFlags)(
+					    DSBLIT_BLEND_ALPHACHANNEL |
+					    DSBLIT_SRC_COLORKEY)));
+
+			} else if (imgDsc.caps & DICAPS_NONE) {
+				DFBCHECK(destination->SetBlittingFlags(destination,
+					    (DFBSurfaceBlittingFlags)DSBLIT_NOFX));
+			}
+		}
+
+		if (destination != NULL) {
+			DFBCHECK(ip->RenderTo(ip, (IDirectFBSurface*)(destination), NULL));
+			renderFrom(destination);
+			LocalDeviceManager::getInstance()->releaseSurface(destination);
+		}
+	}
+
 	void DFBWindow::renderFrom(ISurface* surface) {
 		IDirectFBSurface* contentSurface;
-		ISurface* sur;
-		IDirectFBSurface* s2;
-		int w, h;
 
 		if (win != NULL && !isMine(surface)) {
 			contentSurface = (IDirectFBSurface*)(surface->getContent());
@@ -695,40 +739,48 @@ namespace io {
 				return;
 			}
 
-			DFBCHECK(contentSurface->GetSize(contentSurface, &w, &h));
-			if (winSur != NULL && winSur != contentSurface) {
-				DFBCHECK(winSur->Clear(winSur, 0, 0, 0, 0));
-				if ((w != width || h != height) && fit) {
-					if (stretch) {
-						DFBCHECK(winSur->StretchBlit(
-								winSur, contentSurface, NULL, NULL));
+			renderFrom(contentSurface);
+		}
+	}
 
-					} else {
-						sur = new DFBSurface(width, height);
-						s2 = (IDirectFBSurface*)(sur->getContent());
+	void DFBWindow::renderFrom(IDirectFBSurface* contentSurface) {
+		int w, h;
+		ISurface* sur;
+		IDirectFBSurface* s2;
 
-						DFBCHECK(s2->StretchBlit(
-							    s2,
-							    contentSurface,
-							    NULL,
-							    NULL));
-
-						DFBCHECK(s2->Flip(
-								s2, NULL, (DFBSurfaceFlipFlags)DSFLIP_BLIT));
-
-						DFBCHECK(winSur->Blit(winSur, s2, NULL, 0, 0));
-						DFBCHECK(winSur->Flip(
-								winSur,
-								NULL, (DFBSurfaceFlipFlags) DSFLIP_BLIT));
-
-						delete sur;
-					}
+		DFBCHECK(contentSurface->GetSize(contentSurface, &w, &h));
+		if (winSur != NULL && winSur != contentSurface) {
+			DFBCHECK(winSur->Clear(winSur, 0, 0, 0, 0));
+			if ((w != width || h != height) && fit) {
+				if (stretch) {
+					DFBCHECK(winSur->StretchBlit(
+							winSur, contentSurface, NULL, NULL));
 
 				} else {
-					DFBCHECK(winSur->Blit(winSur, contentSurface, NULL, 0, 0));
+					sur = new DFBSurface(width, height);
+					s2 = (IDirectFBSurface*)(sur->getContent());
+
+					DFBCHECK(s2->StretchBlit(
+						    s2,
+						    contentSurface,
+						    NULL,
+						    NULL));
+
+					DFBCHECK(s2->Flip(
+							s2, NULL, (DFBSurfaceFlipFlags)DSFLIP_BLIT));
+
+					DFBCHECK(winSur->Blit(winSur, s2, NULL, 0, 0));
+					DFBCHECK(winSur->Flip(
+							winSur,
+							NULL, (DFBSurfaceFlipFlags) DSFLIP_BLIT));
+
+					delete sur;
 				}
-				DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
+
+			} else {
+				DFBCHECK(winSur->Blit(winSur, contentSurface, NULL, 0, 0));
 			}
+			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
 		}
 	}
 

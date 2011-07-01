@@ -167,7 +167,13 @@ namespace io {
 			bool isMine(ISurface* surface);
 
 		public:
+			void renderFrom(string serializedImageUrl);
 			void renderFrom(ISurface* s);
+
+		private:
+			void renderFrom(IDirectFBSurface* contentSurface);
+
+		public:
 			void blit(IWindow* src);
 			void stretchBlit(IWindow* src);
 			string getDumpFileUri(int quality, int dumpW, int dumpH);
