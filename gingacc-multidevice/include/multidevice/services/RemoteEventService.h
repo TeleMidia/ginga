@@ -54,6 +54,9 @@ http://www.telemidia.puc-rio.br
 #include <vector>
 using namespace std;
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
 #include "contextmanager/IContextManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 

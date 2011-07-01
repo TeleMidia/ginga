@@ -152,6 +152,8 @@ namespace multidevice {
 		tss = (*groups)[device_class];
 		tss->postTcpCommand((char*)"ADD", 0, name, body);
 		pthread_mutex_unlock(&groupsMutex);
+		//TODO: prefetch will be here. add without start
+		//TODO: change method signature to be equal to startdoc
 	}
 
 	void RemoteEventService::startDocument(
@@ -166,8 +168,33 @@ namespace multidevice {
 		}
 
 		tss = (*groups)[device_class];
+
 		cout << "RemoteEventService::startDocument "<<name<<endl; 
-		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
+		//TODO: ver se eh um ncl ou um media object qq
+		//TODO: ver a parada dos arquivos serem listados num xml
+
+		char *zip_dump = "/tmp/tmpzip.zip";
+
+		string dir_app = getCurrentPath() + getPath(string(name));
+		cout << "RemoteEventService::dir app="<<dir_app<<endl;
+
+		zip_directory(zip_dump,(char*)dir_app.c_str());
+		string zip_base64 = getBase64FromFile(zip_dump);
+
+		remove(zip_dump);
+		//TODO: prefetch. add sem start
+		//TODO: remote node start. start sem add.
+
+//		cout << "RemoteEventService::zipb64="<<endl;
+//		cout << zip_base64 <<endl;
+
+//		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
+//		cout << "RemoteEventService:: ADD name="<<name<<endl;
+
+//		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
+		tss->postTcpCommand((char*)"START", 0, name, (char*)zip_base64.c_str());
+		cout << "RemoteEventService:: START name="<<name<<endl;
+
 		pthread_mutex_unlock(&groupsMutex);
 	}
 
