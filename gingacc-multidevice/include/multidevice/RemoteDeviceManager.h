@@ -66,6 +66,7 @@ namespace multidevice {
 	private:
 		bool connecting;
 		bool running;
+		bool released;
 		IDeviceDomain* domainService;
 		static RemoteDeviceManager* _instance;
 

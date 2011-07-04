@@ -72,6 +72,7 @@ namespace multidevice {
 		domainService = NULL;
 		connecting    = false;
 		running       = false;
+		released      = false;
 	}
 
 	RemoteDeviceManager::~RemoteDeviceManager() {
@@ -90,10 +91,14 @@ namespace multidevice {
 
 	void RemoteDeviceManager::release() {
 		running = false;
+		connecting = false;
+		released = true;
+		/*
 		if (_instance != NULL) {
 			delete _instance;
 			_instance = NULL;
 		}
+		*/
 	}
 
 	RemoteDeviceManager* RemoteDeviceManager::getInstance() {
@@ -113,7 +118,7 @@ namespace multidevice {
 
 		if (domainService != NULL) {
 			domainService->setDeviceInfo(width, height);
-			if (!running) {
+			if ((!running)&&(!released)) {
 				start();
 			}
 		}
