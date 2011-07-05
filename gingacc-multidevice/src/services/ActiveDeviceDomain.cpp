@@ -62,6 +62,7 @@ namespace multidevice {
 		deviceClass     = CT_ACTIVE;
 		deviceService   = new ActiveDeviceService();
 
+		cout << "ActiveDeviceDomain() creator" <<endl;
 		//activeMulticast = new BroadcastSocketService();
 
 		activeMulticast =  new MulticastSocketService(

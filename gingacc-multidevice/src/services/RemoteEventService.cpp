@@ -135,6 +135,9 @@ namespace multidevice {
 
 		tss = (*groups)[device_class];
 		tss->addConnection(device_id, addr);
+		cout << "RemoteEventService :: TcpSocketService->addConnection";
+		cout << "devie_id="<<device_id<<endl;
+
 		pthread_mutex_unlock(&groupsMutex);
 	}
 

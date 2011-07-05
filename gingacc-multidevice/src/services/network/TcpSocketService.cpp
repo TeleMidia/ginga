@@ -105,7 +105,9 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 #endif
 	pthread_mutex_lock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
-		//(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
+
+//	if (connections != NULL) {
+	//(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
 		tcpcc = new TCPClientConnection(
 						deviceId,
 						addr,
@@ -128,8 +130,8 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 						portStr,
 						(IRemoteDeviceListener*) res);
 
+		(*connections)[deviceId] = tcpcc;	
 		tcpcc->start();
-		(*connections)[deviceId] = tcpcc;
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}
