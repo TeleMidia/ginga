@@ -77,19 +77,25 @@ namespace multidevice {
 		lastMediaContentTask.size = 0;
 
 		//passiveMulticast  = new BroadcastSocketService();
-
-		passiveMulticast  = new MulticastSocketService(
-				(char*)(PASSIVE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_PASSIVE);
-
+		passiveMulticast = NULL;
 		//activeMulticast = new BroadcastSocketService();
-		activeMulticast = new MulticastSocketService(
-				(char*)(ACTIVE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_ACTIVE);
+		activeMulticast = NULL;
+
+		prepareMulticast();
 	}
 
 	BaseDeviceDomain::~BaseDeviceDomain() {
 		pthread_mutex_destroy(&pMutex);
+	}
+
+	void BaseDeviceDomain::prepareMulticast() {
+		passiveMulticast  = new MulticastSocketService(
+				(char*)(PASSIVE_MCAST_ADDR.c_str()),
+				BROADCAST_PORT + CT_PASSIVE);
+
+		activeMulticast = new MulticastSocketService(
+				(char*)(ACTIVE_MCAST_ADDR.c_str()),
+				BROADCAST_PORT + CT_ACTIVE);
 	}
 
 	bool BaseDeviceDomain::taskRequest(
