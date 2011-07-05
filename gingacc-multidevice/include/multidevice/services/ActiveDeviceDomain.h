@@ -64,7 +64,7 @@ namespace multidevice {
 		virtual ~ActiveDeviceDomain();
 
 	protected:
-		virtual void prepareMulticast();
+		virtual void initialize();
 		void postConnectionRequestTask(int width, int height);
 		void receiveAnswerTask(char* answerTask);
 		bool receiveMediaContentTask(char* task);

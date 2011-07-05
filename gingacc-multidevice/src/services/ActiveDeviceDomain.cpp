@@ -59,9 +59,6 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	ActiveDeviceDomain::ActiveDeviceDomain() : BaseDeviceDomain() {
-		deviceClass     = CT_ACTIVE;
-		deviceService   = new ActiveDeviceService();
-
 		cout << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
 	}
 
@@ -69,8 +66,11 @@ namespace multidevice {
 
 	}
 
-	void ActiveDeviceDomain::prepareMulticast() {
-		activeMulticast = new MulticastSocketService(
+	void ActiveDeviceDomain::initialize() {
+		passiveMulticast = NULL;
+		deviceClass      = CT_ACTIVE;
+		deviceService    = new ActiveDeviceService();
+		activeMulticast  = new MulticastSocketService(
 				(char*)(ACTIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_ACTIVE);
 	}

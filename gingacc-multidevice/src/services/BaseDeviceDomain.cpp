@@ -67,8 +67,6 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	BaseDeviceDomain::BaseDeviceDomain() : DeviceDomain() {
-		deviceClass   = CT_BASE;
-		deviceService = new BaseDeviceService();
 		timerCount    = 0;
 
 		pthread_mutex_init(&pMutex, NULL);
@@ -76,19 +74,17 @@ namespace multidevice {
 		passiveTimestamp  = 0;
 		lastMediaContentTask.size = 0;
 
-		//passiveMulticast  = new BroadcastSocketService();
-		passiveMulticast = NULL;
-		//activeMulticast = new BroadcastSocketService();
-		activeMulticast = NULL;
-
-		prepareMulticast();
+		initialize();
 	}
 
 	BaseDeviceDomain::~BaseDeviceDomain() {
 		pthread_mutex_destroy(&pMutex);
 	}
 
-	void BaseDeviceDomain::prepareMulticast() {
+	void BaseDeviceDomain::initialize() {
+		deviceClass   = CT_BASE;
+		deviceService = new BaseDeviceService();
+
 		passiveMulticast  = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
