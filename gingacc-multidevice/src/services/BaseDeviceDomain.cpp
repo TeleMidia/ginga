@@ -80,10 +80,6 @@ namespace multidevice {
 		passiveMulticast  = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
-
-		activeMulticast = new MulticastSocketService(
-				(char*)(ACTIVE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_ACTIVE);
 	}
 
 	BaseDeviceDomain::~BaseDeviceDomain() {
@@ -133,7 +129,6 @@ namespace multidevice {
 		/*cout << "BaseDeviceDomain::activeTaskRequest ";
 		cout << endl;*/
 
-		activeMulticast->dataRequest(data, taskSize);
 		return true;
 	}
 
@@ -152,6 +147,10 @@ namespace multidevice {
 		if (addDevice(reqDevClass, width, height)) {
 			schedDevClass = reqDevClass;
 			schedulePost  = FT_ANSWERTOREQUEST;
+
+		} else {
+			cout << "BaseDeviceDomain::receiveConnectionRequest can't add ";
+			cout << "device" << endl;
 		}
 	}
 
@@ -354,8 +353,12 @@ namespace multidevice {
 			if (frameSize + HEADER_SIZE != bytesRecv) {
 				delete[] task;
 				taskIndicationFlag = false;
+				cout << "DeviceDomain::runControlTask Warning! Invalid task ";
+				cout << "size '" << frameSize + HEADER_SIZE << "' (received '";
+				cout << bytesRecv << "'" << endl;
 				return false;
 			}
+
 			cout << "BaseDeviceDomain::runControlTask frame type '";
 			cout << frameType << "'" << endl;
 
@@ -499,10 +502,6 @@ namespace multidevice {
  			runDataTask();
 		}
 
-		if (activeMulticast->checkInputBuffer(mdFrame, &bytesRecv)) {
- 			runDataTask();
-		}
-
 		checkPassiveTasks();
 		if (!passiveMulticast->checkOutputBuffer()) {
 			if (lastMediaContentTask.size != 0) {
@@ -523,8 +522,6 @@ namespace multidevice {
 				}
 			}
 		}
-
-		activeMulticast->checkOutputBuffer();
 	}
 }
 }

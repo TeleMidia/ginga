@@ -301,7 +301,7 @@ namespace multidevice {
 	}
 
 	bool MulticastSocketService::checkInputBuffer(char* data, int* size) {
-		int nfds, res;
+		int nfds, res, recvFrom;
 		fd_set fdset;
 		struct timeval tv_timeout;
 
@@ -351,9 +351,19 @@ namespace multidevice {
 					}
 				}
 
-				if (*size <= HEADER_SIZE ||
-						!isValidRecvFrame(data)) {
+				if (*size <= HEADER_SIZE) {
+					cout << "MulticastSocketService::checkInputBuffer ";
+					cout << "Warning! Received invalid frame: ";
+					cout << "bytes received = '" << *size << "' ";
+					cout << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+					cout << endl;
 
+					memset(data, 0, MAX_FRAME_SIZE);
+					return false;
+				}
+
+				recvFrom = getUIntFromStream(data + 1);
+				if (!isValidRecvFrame(recvFrom, data)) {
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;
 				}

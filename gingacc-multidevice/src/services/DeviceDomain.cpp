@@ -173,7 +173,7 @@ namespace multidevice {
 	void DeviceDomain::printTaskHeader() {
 		cout << "FrameId = '";
 		cout << (int)(unsigned char)headerStream[0];
-		cout << "SourceIp = '" << sourceIp << "', which means '";
+		cout << "' SourceIp = '" << sourceIp << "', which means '";
 		cout << getStrIP(sourceIp);
 		cout << "', destClase = '" << destClass << "' header[5] = '";
 		cout << (int)(unsigned char)headerStream[5];
@@ -239,9 +239,6 @@ namespace multidevice {
 					cout << "DeviceDomain::postEventTask calling ";
 					cout << "stopDocument" << endl;
 
-					/*char doc[payloadSize];
-					memcpy(doc, payload+6,payloadSize-6);
-					doc[payloadSize-6] = '\0';*/
 					_doc.assign(payload + 6, payloadSize - 6);
 					res->stopDocument(2, (char*)(_doc.c_str()));
 				}
@@ -290,17 +287,28 @@ namespace multidevice {
 					break;
 
 				default:
+					cout << "DeviceDomain::checkDomainTasks RES = '";
+					cout << res << "'" << endl;
 					break;
 			}
 		}
 
-		if (broadcastService->checkInputBuffer(mdFrame, &bytesRecv)) {
-			taskIndicationFlag = true;
- 			if (runControlTask()) {
- 				receivedTimeStamp = getCurrentTimeMillis();
- 			}
+		if (!taskIndicationFlag) {
+			if (broadcastService->checkInputBuffer(mdFrame, &bytesRecv)) {
+				taskIndicationFlag = true;
+				if (runControlTask()) {
+					receivedTimeStamp = getCurrentTimeMillis();
+				}
+			}
 
 		} else {
+			cout << "DeviceDomain::checkDomainTasks can't process input ";
+			cout << "buffer: task indication flag is true" << endl;
+		}
+
+		broadcastService->checkOutputBuffer();
+
+		/*} else {
 			receivedElapsedTime = getCurrentTimeMillis() - receivedTimeStamp;
  			if (receivedElapsedTime > IFS || receivedTimeStamp == -1) {
  				if (getCurrentTimeMillis() - sentTimeStamp > IFS ||
@@ -322,7 +330,7 @@ namespace multidevice {
  				cout << "DeviceDomain::checkDomainTasks waiting IFS by ";
  				cout << "reveivedElapsedTime" << endl;
  			}
-		}
+		}*/
 	}
 
 	void DeviceDomain::addDeviceListener(IRemoteDeviceListener* listener) {

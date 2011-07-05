@@ -91,13 +91,13 @@ namespace multidevice {
 			return false;
 		};
 
-		bool runControlTask() {
-			return false;
-		};
+		bool runControlTask();
 
 		bool runDataTask() {
 			return false;
 		};
+
+		void checkDomainTasks();
   };
 }
 }

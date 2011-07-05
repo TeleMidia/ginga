@@ -50,11 +50,20 @@ http://www.telemidia.puc-rio.br
 #include "multidevice/services/network/NetworkUtil.h"
 #include "multidevice/services/IDeviceDomain.h"
 
-static char sendingControlFrameId   = -1;
+#include <map>
+using namespace std;
+
+map<int, char> _rcf; //received control frames;
+map<int, char> _rdf; //received data frames;
+
+char _scf = -1; //sending control frame;
+char _sdf = -1; //sending data frame;
+
+/*static char sendingControlFrameId   = -1;
 static char receivedControlFrameId = -2;
 
 static char sendingDataFrameId      = -1;
-static char receivedDataFrameId    = -2;
+static char receivedDataFrameId    = -2;*/
 
 namespace br {
 namespace pucrio {
@@ -62,7 +71,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	bool isValidRecvFrame(char* frame) {
+	bool isValidRecvFrame(int recvFrom, char* frame) {
+		map<int, char>::iterator i;
 		int frameType;
 		char frameId;
 
@@ -70,32 +80,36 @@ namespace multidevice {
 		frameType = getFrameType(frame);
 
 		if (isControlFrame(frameType)) {
-
-			/** BUG AQUI = NAO RESOLVE SER APENAS o MESMO receivedControlFrameId (verificar IP tb??)**/
-			//TODO: Resolver isto aqui para possibilitar mais de um device!
-
-			if (frameId == receivedControlFrameId) {
-				return false;
+			i = _rcf.find(recvFrom);
+			if (i != _rcf.end()) {
+				if (frameId == i->second) {
+					return false;
+				}
 			}
 
+			_rcf[recvFrom] = frameId;
 			/*if ((frameId == 0 && receivedControlFrameId > 110) ||
 					(frameId > receivedControlFrameId) ||
-					(receivedControlFrameId == 120)) {*/
+					(receivedControlFrameId == 120)) {
 
-			receivedControlFrameId = frameId;
+			receivedControlFrameId = frameId;*/
 			return true;
 			//}
 
 		} else {
-			if (frameId == receivedDataFrameId) {
-				return false;
+			i = _rdf.find(recvFrom);
+			if (i != _rdf.end()) {
+				if (frameId == i->second) {
+					return false;
+				}
 			}
 
+			_rdf[recvFrom] = frameId;
 			/*if ((frameId == 0 && receivedDataFrameId > 110) ||
 					(frameId > receivedDataFrameId) ||
-					(receivedDataFrameId == 120)) {*/
+					(receivedDataFrameId == 120)) {
 
-			receivedDataFrameId = frameId;
+			receivedDataFrameId = frameId;*/
 			return true;
 			//}
 		}
@@ -166,20 +180,20 @@ namespace multidevice {
 		}
 
 		if (isControlFrame(mountFrameType)) {
-			if (sendingControlFrameId >= 120) {
-				sendingControlFrameId = -1;
+			if (_scf >= 120) {
+				_scf = -1;
 			}
 
-			sendingControlFrameId++;
-			frame[0] = sendingControlFrameId;
+			_scf++;
+			frame[0] = _scf;
 
 		} else {
-			if (sendingDataFrameId >= 120) {
-				sendingDataFrameId = -1;
+			if (_sdf >= 120) {
+				_sdf = -1;
 			}
 
-			sendingDataFrameId++;
-			frame[0] = sendingDataFrameId;
+			_sdf++;
+			frame[0] = _sdf;
 		}
 
 		fourBytesStream = getStreamFromUInt(sourceIp);

@@ -125,15 +125,17 @@ namespace multidevice {
 	void RemoteEventService::addDevice(
 			unsigned int device_class, unsigned int device_id, char* addr) {
 
+		map<int, TcpSocketService*>::iterator i;
 		TcpSocketService* tss;
 
 		pthread_mutex_lock(&groupsMutex);
-		if (groups->count(device_class) == 0) {
+		i = groups->find(device_class);
+		if (i == groups->end()) {
 			pthread_mutex_unlock(&groupsMutex);
 			return;
 		}
 
-		tss = (*groups)[device_class];
+		tss = i->second;
 		tss->addConnection(device_id, addr);
 		cout << "RemoteEventService :: TcpSocketService->addConnection";
 		cout << "devie_id="<<device_id<<endl;

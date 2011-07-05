@@ -85,7 +85,6 @@ typedef struct {
   class BaseDeviceDomain : public DeviceDomain {
 	protected:
 	  ISocketService* passiveMulticast;
-	  ISocketService* activeMulticast;
 
 	  pthread_mutex_t pMutex;
 	  vector<RemoteTask*> passiveTasks;

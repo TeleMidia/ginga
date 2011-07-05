@@ -74,7 +74,6 @@ namespace multidevice {
 		int taskSize;
 
 		//TODO: offer a configure way in requests connection to CT_ACTIVE devs
-
 		/*cout << "ActiveDeviceDomain::postConnectionRequestTask";
 		cout << endl;*/
 
@@ -102,7 +101,7 @@ namespace multidevice {
 			return; //this is'nt a warning
 		}
 
-		deviceService->connectedToBaseDevice(sourceIp);
+		deviceService->connectedToBaseDevice(sourceIp);*/
 
 		if (connected) {
 			cout << "ActiveDeviceDomain::receiveAnswerTask Warning! ";
@@ -110,17 +109,103 @@ namespace multidevice {
 		}
 
 		//TODO: check if central domain IP + port received in task is correct
-		//cout << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
-		//cout << "base multi-device domain" << endl;
-		connected = true;*/
+		cout << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
+		cout << "base multi-device domain" << endl;
+		connected = true;
 	}
 
 	bool ActiveDeviceDomain::receiveMediaContentTask(char* task) {
-		/*cout << "ActiveDeviceDomain::receiveMediaContentTask ";
-		cout << "destcass = '" << destClass << "'" << endl;
-		return deviceService->receiveMediaContent(
+		cout << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
+
+		/*return deviceService->receiveMediaContent(
 				sourceIp, task, this->frameSize);*/
+
 		return false;
+	}
+
+	bool ActiveDeviceDomain::runControlTask() {
+		char* task;
+
+		if (taskIndicationFlag) {
+			task = taskReceive();
+			if (task == NULL) {
+				taskIndicationFlag = false;
+				cout << "ActiveDeviceDomain::runControlTask Warning! ";
+				cout << "received a NULL task" << endl;
+				return false;
+			}
+
+			if (myIP == sourceIp) {
+				/*
+				cout << "ActiveDeviceDomain::runControlTask got my own task ";
+				cout << "(size = '" << frameSize << "')" << endl;*/
+
+				delete[] task;
+				taskIndicationFlag = false;
+				return false;
+			}
+
+			if (destClass != deviceClass) {
+				cout << "ActiveDeviceDomain::runControlTask Task isn't for me!";
+				cout << endl;
+
+				delete[] task;
+				taskIndicationFlag = false;
+				return false;
+			}
+
+			if (frameSize + HEADER_SIZE != bytesRecv) {
+				delete[] task;
+				taskIndicationFlag = false;
+				cout << "ActiveDeviceDomain::runControlTask Warning! ";
+				cout << "received a wrong size frame '" << frameSize;
+				cout << "' bytes received '" << bytesRecv << "'" << endl;
+				return false;
+			}
+			//cout << "ActiveDeviceDomain::runControlTask frame type '";
+			//cout << frameType << "'" << endl;
+
+			switch (frameType) {
+				case FT_ANSWERTOREQUEST:
+					if (frameSize != 11) {
+						cout << "ActiveDeviceDomain::runControlTask Warning!";
+						cout << "received an answer to connection request with";
+						cout << " wrong size: '" << frameSize << "'" << endl;
+						delete[] task;
+						taskIndicationFlag = false;
+						return false;
+
+					} else {
+						receiveAnswerTask(task);
+					}
+					break;
+
+				case FT_KEEPALIVE:
+					cout << "ActiveDeviceDomain::runControlTask KEEPALIVE";
+					cout << endl;
+					break;
+
+				default:
+					cout << "ActiveDeviceDomain::runControlTask WHAT? FT '";
+					cout << frameType << "'" << endl;
+					delete[] task;
+					taskIndicationFlag = false;
+					return false;
+			}
+
+			delete[] task;
+
+		} else {
+			cout << "ActiveDeviceDomain::runControlTask Warning! ";
+			cout << "task indication flag is false" << endl;
+		}
+
+		taskIndicationFlag = false;
+		return true;
+	}
+
+	void ActiveDeviceDomain::checkDomainTasks() {
+		DeviceDomain::checkDomainTasks();
 	}
 }
 }

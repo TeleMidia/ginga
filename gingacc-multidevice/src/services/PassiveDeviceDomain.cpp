@@ -61,8 +61,6 @@ namespace multidevice {
 		deviceClass      = CT_PASSIVE;
 		deviceService    = new PassiveDeviceService();
 
-		//passiveMulticast = new BroadcastSocketService();
-
 		passiveMulticast = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);

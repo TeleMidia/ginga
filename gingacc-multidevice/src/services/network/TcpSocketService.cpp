@@ -137,6 +137,8 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 	}
 
 	pthread_mutex_unlock(&connMutex);
+
+	cout << "TcpSocketService::addConnection all done" << endl;
 }
 
 void TcpSocketService::removeConnection(unsigned int deviceId) {

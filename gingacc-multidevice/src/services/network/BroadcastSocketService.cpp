@@ -369,7 +369,7 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
-		int nfds, res;
+		int nfds, res, recvFrom;
 		fd_set fdset;
 		struct timeval tv_timeout;
 
@@ -389,6 +389,9 @@ namespace multidevice {
 				return false;
 
 			case 1:
+				cout << "BroadcastSocketService::checkInputBuffer ";
+				cout << "receiving data ..." << endl;
+
 				memset(data, 0, MAX_FRAME_SIZE);
 				//result = recv(sd, headerStream, headerSize, 0);
 				*size = recvfrom(
@@ -416,9 +419,19 @@ namespace multidevice {
 					}
 				}
 
-				if (*size <= HEADER_SIZE ||
-						!isValidRecvFrame(data)) {
+				if (*size <= HEADER_SIZE) {
+					cout << "BroadcastSocketService::checkInputBuffer ";
+					cout << "Warning! Received invalid frame: ";
+					cout << "bytes received = '" << *size << "' ";
+					cout << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+					cout << endl;
 
+					memset(data, 0, MAX_FRAME_SIZE);
+					return false;
+				}
+
+				recvFrom = getUIntFromStream(data + 1);
+				if (!isValidRecvFrame(recvFrom, data)) {
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;
 				}

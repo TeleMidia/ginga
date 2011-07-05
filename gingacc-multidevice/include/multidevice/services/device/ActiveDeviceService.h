@@ -61,7 +61,7 @@ namespace multidevice {
   class ActiveDeviceService : public BaseDeviceService {
 	public:
 		ActiveDeviceService();
-		~ActiveDeviceService();
+		virtual ~ActiveDeviceService();
 
 		void connectedToBaseDevice(unsigned int domainAddr);
 

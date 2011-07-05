@@ -93,6 +93,7 @@ namespace multidevice {
 		running = false;
 		connecting = false;
 		released = true;
+
 		/*
 		if (_instance != NULL) {
 			delete _instance;
@@ -183,7 +184,9 @@ namespace multidevice {
 			//TODO: correct this code urgently
 			if (domainService != NULL) {
 				domainService->checkDomainTasks();
-				domainService->postConnectionRequestTask();
+				if (domainService->getDeviceClass() != 0) {
+					domainService->postConnectionRequestTask();
+				}
 
 			} else if (notifyWarning) {
 				notifyWarning = false;
@@ -210,6 +213,8 @@ namespace multidevice {
 #endif
 		}
 		unlock();
+
+		cout << "RemoteDeviceManager::run All done!" << endl;
 	}
 }
 }

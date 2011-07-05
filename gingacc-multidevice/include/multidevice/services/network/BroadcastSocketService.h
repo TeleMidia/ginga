@@ -73,7 +73,7 @@ namespace multidevice {
 
 	public:
 		BroadcastSocketService();
-		~BroadcastSocketService();
+		virtual ~BroadcastSocketService();
 
 	private:
 		static bool buildDomainAddress();

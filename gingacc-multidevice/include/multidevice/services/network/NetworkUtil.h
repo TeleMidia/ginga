@@ -81,7 +81,7 @@ namespace multidevice {
 	static const int NUM_OF_COPIES           = 2;
 	static const double IFS                  = 1;
 
-	bool isValidRecvFrame(char* frame);
+	bool isValidRecvFrame(int recvFrom, char* frame);
 	bool isControlFrame(int frameType);
 	char getFrameId(char* frame);
 	int getFrameType(char* frame);
