@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _ActiveDeviceDomain_H_
 #define _ActiveDeviceDomain_H_
 
-#include "BaseDeviceDomain.h"
+#include "DeviceDomain.h"
 
 namespace br {
 namespace pucrio {
@@ -58,15 +58,46 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class ActiveDeviceDomain : public BaseDeviceDomain {
+  class ActiveDeviceDomain : public DeviceDomain {
 	public:
 		ActiveDeviceDomain();
 		virtual ~ActiveDeviceDomain();
 
 	protected:
+		bool taskRequest(int destDevClass, char* data, int taskSize) {
+			return false;
+		};
+
+		bool passiveTaskRequest(char* data, int taskSize) {
+			return false;
+		};
+
+		bool activeTaskRequest(char* data, int taskSize) {
+			return false;
+		};
+
 		void postConnectionRequestTask(int width, int height);
+		void receiveConnectionRequest(char* task) {};
+		void postAnswerTask(int reqDeviceClass, int answer) {};
 		void receiveAnswerTask(char* answerTask);
+		void postNclMetadata(int devClass, vector<StreamData*>* streams) {};
+		bool postMediaContentTask(int destDevClass, string url) {
+			return false;
+		};
+
 		bool receiveMediaContentTask(char* task);
+
+		bool receiveEventTask(char* task) {
+			return false;
+		};
+
+		bool runControlTask() {
+			return false;
+		};
+
+		bool runDataTask() {
+			return false;
+		};
   };
 }
 }

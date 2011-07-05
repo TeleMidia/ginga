@@ -60,10 +60,8 @@ namespace core {
 namespace multidevice {
 	ActiveDeviceDomain::ActiveDeviceDomain() : DeviceDomain() {
 		cout << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
-		passiveMulticast = NULL;
-		deviceClass      = CT_ACTIVE;
-		deviceService    = NULL;
-		activeMulticast  = NULL;
+		deviceClass   = CT_ACTIVE;
+		deviceService = NULL;
 	}
 
 	ActiveDeviceDomain::~ActiveDeviceDomain() {
