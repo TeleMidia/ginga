@@ -58,21 +58,16 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	ActiveDeviceDomain::ActiveDeviceDomain() : BaseDeviceDomain() {
+	ActiveDeviceDomain::ActiveDeviceDomain() : DeviceDomain() {
 		cout << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
+		passiveMulticast = NULL;
+		deviceClass      = CT_ACTIVE;
+		deviceService    = NULL;
+		activeMulticast  = NULL;
 	}
 
 	ActiveDeviceDomain::~ActiveDeviceDomain() {
 
-	}
-
-	void ActiveDeviceDomain::initialize() {
-		passiveMulticast = NULL;
-		deviceClass      = CT_ACTIVE;
-		deviceService    = new ActiveDeviceService();
-		activeMulticast  = new MulticastSocketService(
-				(char*)(ACTIVE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_ACTIVE);
 	}
 
 	void ActiveDeviceDomain::postConnectionRequestTask(int w, int h) {
@@ -102,7 +97,7 @@ namespace multidevice {
 	}
 
 	void ActiveDeviceDomain::receiveAnswerTask(char* task) {
-		unsigned int taskIP;
+		/*unsigned int taskIP;
 
 		taskIP = getUIntFromStream(task);
 		if (taskIP != myIP) {
@@ -119,14 +114,15 @@ namespace multidevice {
 		//TODO: check if central domain IP + port received in task is correct
 		//cout << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
 		//cout << "base multi-device domain" << endl;
-		connected = true;
+		connected = true;*/
 	}
 
 	bool ActiveDeviceDomain::receiveMediaContentTask(char* task) {
 		/*cout << "ActiveDeviceDomain::receiveMediaContentTask ";
-		cout << "destcass = '" << destClass << "'" << endl;*/
+		cout << "destcass = '" << destClass << "'" << endl;
 		return deviceService->receiveMediaContent(
-				sourceIp, task, this->frameSize);
+				sourceIp, task, this->frameSize);*/
+		return false;
 	}
 }
 }

@@ -99,7 +99,6 @@ typedef struct {
 		virtual ~BaseDeviceDomain();
 
 	protected:
-		virtual void initialize();
 		virtual bool taskRequest(int destDevClass, char* data, int taskSize);
 		virtual bool passiveTaskRequest(char* data, int taskSize);
 		virtual bool activeTaskRequest(char* data, int taskSize);

@@ -74,14 +74,6 @@ namespace multidevice {
 		passiveTimestamp  = 0;
 		lastMediaContentTask.size = 0;
 
-		initialize();
-	}
-
-	BaseDeviceDomain::~BaseDeviceDomain() {
-		pthread_mutex_destroy(&pMutex);
-	}
-
-	void BaseDeviceDomain::initialize() {
 		deviceClass   = CT_BASE;
 		deviceService = new BaseDeviceService();
 
@@ -92,6 +84,10 @@ namespace multidevice {
 		activeMulticast = new MulticastSocketService(
 				(char*)(ACTIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_ACTIVE);
+	}
+
+	BaseDeviceDomain::~BaseDeviceDomain() {
+		pthread_mutex_destroy(&pMutex);
 	}
 
 	bool BaseDeviceDomain::taskRequest(
