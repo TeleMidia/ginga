@@ -164,6 +164,7 @@ namespace multidevice {
 
 	void RemoteDeviceManager::run() {
 		double rdmTimer;
+		bool notifyWarning = true;
 
 		rdmTimer   = 0;
 		connecting = true;
@@ -183,6 +184,11 @@ namespace multidevice {
 			if (domainService != NULL) {
 				domainService->checkDomainTasks();
 				domainService->postConnectionRequestTask();
+
+			} else if (notifyWarning) {
+				notifyWarning = false;
+				cout << "RemoteDeviceManager::run Warning! domainService is ";
+				cout << "NULL" << endl;
 			}
 
 			/*if (connecting) {

@@ -193,6 +193,8 @@ namespace multidevice {
 	bool DeviceDomain::addDevice(
 			int reqDeviceClass, int width, int height) {
 
+		bool added = false;
+
 		if (reqDeviceClass == 2) {
 			cout << "DeviceDomain::addDevice adding new device - class 2...";
 			cout << endl;
@@ -203,8 +205,13 @@ namespace multidevice {
 					(char*)getStrIP(sourceIp).c_str());
 		}
 
-		return deviceService->addDevice(
+
+		if (deviceService != NULL) {
+			added = deviceService->addDevice(
 				sourceIp, reqDeviceClass, width, height);
+		}
+
+		return added;
 	}
 
 	void DeviceDomain::postConnectionRequestTask() {
@@ -319,11 +326,15 @@ namespace multidevice {
 	}
 
 	void DeviceDomain::addDeviceListener(IRemoteDeviceListener* listener) {
-		deviceService->addListener(listener);
+		if (deviceService != NULL) {
+			deviceService->addListener(listener);
+		}
 	}
 
 	void DeviceDomain::removeDeviceListener(IRemoteDeviceListener* listener) {
-		deviceService->removeListener(listener);
+		if (deviceService != NULL) {
+			deviceService->removeListener(listener);
+		}
 	}
 }
 }
