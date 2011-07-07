@@ -53,6 +53,10 @@ http://www.telemidia.puc-rio.br
 #include "player/BerkeliumPlayer.h"
 #endif
 
+#if HAVE_LINKS
+#include "player/LinksPlayer.h"
+#endif
+
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
@@ -299,6 +303,100 @@ int main(int argc, char** argv, char** envp) {
 		cout << endl;
 		getchar();
 		bp1->stop();
+		www->hide();
+#endif
+	} else if (argc > 1 && strcmp(argv[1], "links") == 0) {
+#if HAVE_LINKS
+		LinksPlayer* lp1, *lp2, *lp3;
+		ISurface* s;
+
+		lp1 = new LinksPlayer("http://xkcd.com");
+		lp1->setBounds(120, 120, 400, 400);
+		s = lp1->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(www);
+		}
+
+		lp1->setKeyHandler(true);
+		cout << "gingacc-player test Call lp1->play" << endl;
+		lp1->play();
+
+		cout << "gingacc-player test Call lp1->play Ok, press enter to ";
+		cout << "continue" << endl;
+		getchar();
+
+		lp2 = new LinksPlayer("http://www.telemidia.puc-rio.br");
+		lp2->setBounds(90, 90, 150, 150);
+		s = lp2->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(ww);
+		}
+		cout << "gingacc-player test Call bp2->play" << endl;
+		lp2->play();
+
+		lp3 = new LinksPlayer("http://www.ncl.org.br");
+		lp3->setBounds(10, 10, 100, 100);
+		s = lp3->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(w);
+		}
+		cout << "gingacc-player test Call bp3->play" << endl;
+		lp3->play();
+
+		cout << "gingacc-player test press enter to remove links player 1";
+		cout << endl;
+		getchar();
+		lp1->stop();
+
+		delete lp1;
+		www->hide();
+
+		cout << "gingacc-player test press enter to remove links player 2";
+		cout << endl;
+		getchar();
+		lp2->stop();
+		ww->hide();
+
+		delete lp2;
+
+		cout << "gingacc-player test press enter to remove links player 3";
+		cout << endl;
+		getchar();
+		lp3->stop();
+		w->hide();
+
+		delete lp3;
+
+		cout << "gingacc-player test press enter to create links player 4";
+		cout << endl;
+		getchar();
+
+		lp1 = new LinksPlayer("http://xkcd.com");
+		lp1->setBounds(120, 120, 400, 400);
+		s = lp1->getSurface();
+		if (s == NULL) {
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
+
+		} else {
+			s->setParent(www);
+		}
+		cout << "gingacc-player test Call bp1->play" << endl;
+		www->show();
+		lp1->play();
+
+		cout << "gingacc-player test press enter to remove links player 4";
+		cout << endl;
+		getchar();
+		lp1->stop();
 		www->hide();
 #endif
 	}

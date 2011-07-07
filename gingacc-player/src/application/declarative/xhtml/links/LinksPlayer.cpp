@@ -180,10 +180,11 @@ namespace player {
 	}
 
 	void LinksPlayer::play() {
-		cout << "LinksPlayer::play '" << mrl << "'" << endl;
+		cout << "LinksPlayer::play(" << mrl << ")" << endl;
 #if !HAVE_MULTIPROCESS
 		if (surface != NULL) {
 			IWindow* parent = (IWindow*)(surface->getParent());
+
 			if (parent != NULL) {
 				browserSetFlipWindow(mBrowser, parent->getContent());
 			}
@@ -221,6 +222,7 @@ namespace player {
 
 			val = stof(value);
 			if (val >= 0.0 && val <= 1.0) {
+				val = 1 - val;
 				browserSetAlpha((int)(val * 0xFF), mBrowser);
 			}
 
@@ -253,7 +255,10 @@ namespace player {
 	}
 
 	bool LinksPlayer::setKeyHandler(bool isHandler) {
-		cout << "LinksPlayer::setKeyHandler '" << mrl << "'" << endl;
+		cout << "LinksPlayer::setKeyHandler '" << mrl << "': isHandler = '";
+		cout << isHandler << "', notifyContentUpdate = '";
+		cout << notifyContentUpdate << "'" << endl;
+
 		if (isHandler && notifyContentUpdate) {
 			im->addInputEventListener(this, NULL);
 
@@ -266,7 +271,12 @@ namespace player {
 	}
 
 	bool LinksPlayer::userEventReceived(IInputEvent* userEvent) {
-		cout << "LinksPlayer::userEventReceived '" << mrl << "'" << endl;
+		/*cout << "LinksPlayer::userEventReceived(" << mrl << "'): ";
+		if (userEvent != NULL) {
+			cout << userEvent->getKeyCode() << "'";
+		}
+		cout << endl;*/
+
 		browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
 		return true;
 	}

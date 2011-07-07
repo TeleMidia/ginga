@@ -99,10 +99,8 @@ namespace player {
 			LinksPlayer(string mrl);
 			virtual ~LinksPlayer();
 
-		protected:
 			ISurface* getSurface();
 
-		public:
 			bool userEventReceived(IInputEvent* ev);
 
 			void setNotifyContentUpdate(bool notify);

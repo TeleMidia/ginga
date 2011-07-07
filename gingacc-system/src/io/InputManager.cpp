@@ -417,8 +417,6 @@ namespace io {
 		performInputLockedActions();
 
 		if (eventListeners->empty() || inputEvent == NULL) {
-			cout << "InputManager::dispatchEvent Warning!";
-			cout << "no listeners found or inputEvent is null"<< endl;
 			unlock();
 			notifying = false;
 			return true;
