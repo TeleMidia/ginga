@@ -152,3 +152,17 @@ Couldn't find Ginga CC Context Manager library.
 Please install Ginga CC Context Manager Library.
 
 ]))
+
+############
+# PROGRAMS #
+############
+
+###########
+# convert #
+###########
+
+AC_CHECK_PROG(CONVERT,convert,convert)
+
+if test "x$CONVERT" = "x"; then
+	AC_ERROR(Couldn't find convert. Please install ImageMagick.)
+fi
