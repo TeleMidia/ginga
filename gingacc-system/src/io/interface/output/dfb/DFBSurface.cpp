@@ -228,6 +228,11 @@ namespace io {
 			DFBCHECK(sur->SetBlittingFlags(sur,
 					(DFBSurfaceBlittingFlags)(
 							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));
+
+		} else {
+			cout << "DFBSurface::setChromaColor Warning! ";
+			cout << "Can't set chroma color: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
@@ -237,6 +242,9 @@ namespace io {
 
 	void DFBSurface::clearContent() {
 		if (sur == NULL) {
+			cout << "DFBSurface::clearContent Warning! ";
+			cout << "Can't clear content: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
 
@@ -248,6 +256,9 @@ namespace io {
 
 	void DFBSurface::clearSurface() {
 		if (sur == NULL) {
+			cout << "DFBSurface::clearSurface Warning! ";
+			cout << "Can't clear surface: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
 
@@ -260,6 +271,9 @@ namespace io {
 		DFBRectangle rect;
 
 		if (this->sur == NULL) {
+			cout << "DFBSurface::getSubSurface Warning! ";
+			cout << "Can't get sub surface: ";
+			cout << "internal surface is NULL" << endl;
 			return NULL;
 		}
 
@@ -278,18 +292,33 @@ namespace io {
 	void DFBSurface::drawLine(int x1, int y1, int x2, int y2) {
 		if (sur != NULL) {
 			sur->DrawLine(sur, x1, y1, x2, y2);
+
+		} else {
+			cout << "DFBSurface::drawLine Warning! ";
+			cout << "Can't draw line: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
 	void DFBSurface::drawRectangle(int x, int y, int w, int h) {
 		if (sur != NULL) {
 			DFBCHECK( sur->DrawRectangle(sur, x, y, w, h) );
+
+		} else {
+			cout << "DFBSurface::drawRectangle Warning! ";
+			cout << "Can't draw rectangle: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
 	void DFBSurface::fillRectangle(int x, int y, int w, int h) {
 		if (sur != NULL) {
 			DFBCHECK( sur->FillRectangle(sur, x, y, w, h) );
+
+		} else {
+			cout << "DFBSurface::fillRectangle Warning! ";
+			cout << "Can't fill rectangle: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
@@ -297,15 +326,23 @@ namespace io {
 		if (sur != NULL) {
 			DFBCHECK(sur->DrawString(sur,
 					txt, -1, x, y, (DFBSurfaceTextFlags)(DSTF_LEFT|DSTF_TOP)));
+
+		} else {
+			cout << "DFBSurface::drawString Warning! ";
+			cout << "Can't draw string: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
 	void DFBSurface::setBorder(IColor* borderColor) {
+		int w, h;
+
 		if (sur == NULL) {
+			cout << "DFBSurface::setBorder Warning! ";
+			cout << "Can't set border color: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
-
-		int w, h;
 
 		DFBCHECK(sur->GetSize(sur, &w, &h));
 		DFBCHECK(sur->SetColor(
@@ -324,6 +361,9 @@ namespace io {
 
 	void DFBSurface::setColor(IColor* writeColor) {
 		if (sur == NULL) {
+			cout << "DFBSurface::setColor Warning! ";
+			cout << "Can't set color: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
 
@@ -336,6 +376,9 @@ namespace io {
 
 	void DFBSurface::setBgColor(IColor* bgColor) {
 		if (sur == NULL) {
+			cout << "DFBSurface::setBgColor Warning! ";
+			cout << "Can't set background color: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
 
@@ -354,34 +397,49 @@ namespace io {
 				return;
 			}
 		}
+
 		cout << "DFBSurface::setFont Warning! Can't set font '" << f << "'";
 		cout << " surface '" << sur << "'" << endl;
 	}
 
 	void DFBSurface::flip() {
 		if (sur != NULL) {
-			DFBCHECK( sur->Flip (sur, NULL, DSFLIP_NONE) );
+			DFBCHECK(sur->Flip (sur, NULL, DSFLIP_NONE));
+
+		} else {
+			cout << "DFBSurface::flip Warning! ";
+			cout << "Can't flip surface: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
-	
-	void DFBSurface::scale(double x, double y) {
 
+	void DFBSurface::scale(double x, double y) {
 		int width, height;
+
+		if (sur == NULL) {
+			cout << "DFBSurface::scale Warning! ";
+			cout << "Can't scale surface: ";
+			cout << "internal surface is NULL" << endl;
+			return;
+		}
+
 		sur->GetSize(sur, &width, &height);
 
 		/*Copy to a temporary surface*/
 		DFBSurface* sur_temp = new DFBSurface(width, height);		
 		IDirectFBSurface* temp = (IDirectFBSurface*)(sur_temp->getContent());		
-		temp->SetBlittingFlags(temp, (DFBSurfaceBlittingFlags)
-						(DSBLIT_BLEND_ALPHACHANNEL |
-						 DSBLIT_SRC_COLORKEY));
+		temp->SetBlittingFlags(
+				temp, (DFBSurfaceBlittingFlags)(
+						DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY));
+
 		temp->Blit(temp, sur, NULL, 0, 0);		
 
 		/* Clear the frame. */
 		sur->SetDrawingFlags(sur, (DFBSurfaceDrawingFlags)(DSDRAW_NOFX) );
 		sur->Clear(sur, 0x00, 0x00, 0x00, 0x00 );
 		
-		sur->SetRenderOptions( sur, (DFBSurfaceRenderOptions)(DSRO_MATRIX | DSRO_ANTIALIAS));
+		sur->SetRenderOptions(
+				sur, (DFBSurfaceRenderOptions)(DSRO_MATRIX | DSRO_ANTIALIAS));
 
 		/*Scale the matrix*/
 		matrix_t matrix;
@@ -391,17 +449,18 @@ namespace io {
 		Matrix::setMatrix(&matrix, sur);
 		
 		/*Copy back*/
-		sur->SetBlittingFlags(sur, (DFBSurfaceBlittingFlags)
-						(DSBLIT_BLEND_ALPHACHANNEL |
-						 DSBLIT_SRC_COLORKEY));
+		sur->SetBlittingFlags(
+				sur,
+				(DFBSurfaceBlittingFlags)(
+						DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY));
+
 		sur->Blit(sur, temp, NULL, -width/2, -height/2);
 
 		/* Flip the output surface. */
  		sur->Flip( sur, NULL, (DFBSurfaceFlipFlags)(DSFLIP_WAITFORSYNC));
-		free(sur_temp);	
-
+		delete sur_temp;
 	}
-	
+
 	void DFBSurface::blit(
 			int x, int y, ISurface* src,
 			int srcX, int srcY, int srcW, int srcH) {
@@ -426,7 +485,17 @@ namespace io {
 
 				DFBCHECK( sur->Blit(
 						sur, (IDirectFBSurface*)(src->getContent()), r, x, y));
+
+			} else {
+				cout << "DFBSurface::blit Warning! ";
+				cout << "Can't blit surface: ";
+				cout << "internal surface is NULL" << endl;
 			}
+
+		} else {
+			cout << "DFBSurface::blit Warning! ";
+			cout << "Can't blit surface: ";
+			cout << "source surface is NULL" << endl;
 		}
 	}
 
@@ -439,6 +508,11 @@ namespace io {
 			DFBCHECK( font->GetStringExtents(font, text, -1, &rect, NULL) );
 			*w = rect.w;
 			*h = rect.h;
+
+		} else {
+			cout << "DFBSurface::getStringExtends Warning! ";
+			cout << "Can't get string info: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
@@ -452,11 +526,19 @@ namespace io {
 
 		if (sur != NULL) {
 			DFBCHECK( sur->SetClip(sur, &rg) );
+
+		} else {
+			cout << "DFBSurface::setClip Warning! ";
+			cout << "Can't set surface clip: ";
+			cout << "internal surface is NULL" << endl;
 		}
 	}
 
 	void DFBSurface::getSize(int* w, int* h) {
 		if (sur == NULL) {
+			cout << "DFBSurface::getSize Warning! ";
+			cout << "Can't get surface size: ";
+			cout << "internal surface is NULL" << endl;
 			return;
 		}
 
@@ -467,7 +549,12 @@ namespace io {
 		string uri;
 
 		if (sur == NULL) {
+			cout << "DFBSurface::getDumpFileUri Warning! ";
+			cout << "Can't dump surface bitmap: ";
+			cout << "internal surface is NULL" << endl;
+
 			uri = "";
+
 		} else {
 			uri = "/tmp/dump_0000";
 			remove((char*)((uri + ".ppm").c_str()));
