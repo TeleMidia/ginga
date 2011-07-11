@@ -290,7 +290,10 @@ namespace si {
 			pid = ((sectionPayload[((i*4) + 2)] & 0x1F) << 8) |
 				    (sectionPayload[((i*4) + 3)] & 0xFF);
 
-			if (pid != (unsigned int)NIT_PID) { /* Ignores NIT_PIDs */
+			/* Ignoring NIT_PIDs */
+			if (pid != (unsigned int)NIT_PID ||
+					(pid == (unsigned int)NIT_PID && ((n / 4) < 2))) {
+
 				if (defaultProgramNumber == -1 ||
 						programNumber < defaultProgramNumber) {
 
