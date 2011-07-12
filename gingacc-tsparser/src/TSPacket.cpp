@@ -106,14 +106,19 @@ namespace tsparser {
 		// Adaptation field followed by payload.
 		} else if (getAdaptationFieldControl() == ADAPT_PAYLOAD) {
 			// Specifies the number of bytes in the adaptationField
-			// following this byte.  Maximum value 182 + 1
-			// (+1 because of the adaptationFieldLength itself).
-			aflen = (data[4] & 0xFF) + 1;
+			// following this byte.  Maximum value 183 (184 minus
+			// adaptation field length byte)
+			aflen = data[4] & 0xFF;
 			if (aflen < 0 || aflen > 183) {
 				cout << "TSPacket::create: Warning! ";
 				cout << "Invalid adaptationFieldLength: ";
 				cout << aflen << endl;
 				return false;
+			}
+
+			// adaptation field length is 0 then we have to skip it
+			if (aflen == 0) {
+				aflen = 1;
 			}
 			payloadOffset += aflen;
 
@@ -122,17 +127,27 @@ namespace tsparser {
 			// Nothing to do.
 		}
 
-		// Update pointerField (the first payload byte).
 		if (getStartIndicator()) {
-			pointerField = (data[payloadOffset] & 0xFF);
+			//checking if it is section or pes
+			unsigned int pesStartCode = (((data[payloadOffset] & 0xFF) << 16) |
+					((data[payloadOffset + 1] & 0xFF) << 8) |
+					(data[payloadOffset + 2] & 0xFF));
 
-			// TODO: Pat, Pmp and SectionFilter code
-			// cannot handle pointerField as the first payload
-			// byte.  For compatibility we're removing the
-			// pointerField from the payload before this ``bad''
-			// code is called.  This is only a workaround, the real
-			// solution is fix all external code.
-			payloadOffset++;
+			if (pesStartCode == 0x01 && pid != 0x00) {
+				pointerField = 0;
+
+			} else {
+				// Update pointerField (the first payload byte).
+				pointerField = (data[payloadOffset] & 0xFF);
+
+				// TODO: Pat, Pmp and SectionFilter code
+				// cannot handle pointerField as the first payload
+				// byte.  For compatibility we're removing the
+				// pointerField from the payload before this ``bad''
+				// code is called.  This is only a workaround, the real
+				// solution is fix all external code.
+				payloadOffset++;
+			}
 		}
 
 		payloadSize = TS_PACKET_SIZE - payloadOffset;
