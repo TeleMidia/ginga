@@ -118,7 +118,16 @@ namespace tuning {
 		size_t pos;
 
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
-			if (niSpec.find("ip:") != string::npos) {
+
+			if (niSpec.substr(0, 3) == "fs:") {
+				createInterface(
+						"fs",
+						"local",
+						niSpec.substr(3, niSpec.length() - 3));
+
+				return;
+
+			} else if (niSpec.find("ip:") != string::npos) {
 				niSpec = niSpec.substr(3, niSpec.length() - 3);
 
 			} else {
@@ -143,12 +152,6 @@ namespace tuning {
 
 			} else if (niSpec == "isdbt" || niSpec == "sbtvdt") {
 				createInterface("sbtvd", "terrestrial", niSpec);
-
-			} else if (niSpec.substr(0, 2) == "fs") {
-				createInterface(
-						"fs",
-						"local",
-						niSpec.substr(3, niSpec.length() - 3));
 
 			} else {
 				cout << "Tuner::initializeInterface can't initialize '";
@@ -256,8 +259,11 @@ namespace tuning {
 	}
 
 	void Tuner::setSpec(string niName, string ch) {
+		string niSpec;
 		clearInterfaces();
-		initializeInterface(niName + ":" + ch);
+
+		niSpec = niName + ":" + ch;
+		initializeInterface(niSpec);
 
 		cout << "Tuner::setSpec NI = '" << niName << "'";
 		cout << ", channel = '" << ch << "' all done!" << endl;

@@ -358,13 +358,14 @@ namespace tsparser {
 		} else if (pmts->count(pid) != 0) {
 			packet->getPayload(tsPacketPayload);
 			pmt = (*pmts)[pid];
-			if (pmt->isConsolidated()) { /* If the PMT is OK, try update the PMT */
+			if (pmt->isConsolidated()) { /* If the PMT is OK, try update it */
 				newPmt = new Pmt(pid, pmt->getProgramNumber());
 				newPmt->addData(tsPacketPayload, 184);
 				if (newPmt->processSectionPayload()) { /* Process the new PMT */
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
-					if (newVer != currVer) { /* If the version is different update */
+					/* If the version is different update */
+					if (newVer != currVer) {
 						/*cout << "demuxer replace pmt id = '" << pid << "'";
 						cout << " newVer = '" << newVer;
 						cout << "' currVer = '" << currVer << "': ";
