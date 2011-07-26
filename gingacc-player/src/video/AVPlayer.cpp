@@ -1061,9 +1061,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	static const unsigned int buffSize = 188 * 1024;
-	static const char dataBuffer[buffSize] = "";
-
 	AVPlayer::AVPlayer(string mrl, bool hasVisual) : Thread(), Player(mrl) {
 		string::size_type pos;
 

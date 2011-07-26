@@ -144,7 +144,7 @@ namespace tsparser {
 
 	public:
 		TSPacket(char* packetData);
-		~TSPacket();
+		virtual ~TSPacket();
 
 	protected:
 		bool create(char data[TS_PACKET_SIZE]);
