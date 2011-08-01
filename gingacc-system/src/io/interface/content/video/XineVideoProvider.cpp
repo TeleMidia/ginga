@@ -66,12 +66,6 @@ using namespace ::br::pucrio::telemidia::util;
 }
 #endif /*DFBCHECK*/
 
-#ifdef GS_FFMPEGAUDIO
-#undef GS_FFMPEGAUDIO
-#endif
-
-#define GS_FFMPEGAUDIO 1
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -177,7 +171,6 @@ namespace io {
 			return false;
 		}
 
-#if !GS_FFMPEGAUDIO
 		/* open audio driver (auto) */
 		rContainer->ao = xine_open_audio_driver(rContainer->xine, "auto", NULL);
 		if (!rContainer->ao) {
@@ -204,14 +197,6 @@ namespace io {
 				}
 			}
 		}
-#else
-		/* disable audio */
-		rContainer->ao = xine_open_audio_driver(
-				rContainer->xine, "null", NULL);
-
-		xine_engine_set_param(
-				rContainer->xine, XINE_PARAM_IGNORE_AUDIO, 1);
-#endif
 
 		rContainer->stream = xine_stream_new(
 				rContainer->xine, rContainer->ao, rContainer->vo);
@@ -243,7 +228,6 @@ namespace io {
 	}
 
 	void XineVideoProvider::initializeAudio() {
-#if !GS_FFMPEGAUDIO
 		xine_set_param(
 				rContainer->stream, XINE_PARAM_AUDIO_REPORT_LEVEL, 1);
 
@@ -264,7 +248,6 @@ namespace io {
 
 		xine_set_param(
 				rContainer->stream, XINE_PARAM_AUDIO_AMP_LEVEL, 200);
-#endif
 	}
 
 	void XineVideoProvider::setAVPid(int aPid, int vPid) {
@@ -618,7 +601,6 @@ namespace io {
 	}
 
 	void XineVideoProvider::setSoundLevel(float level) {
-#if !GS_FFMPEGAUDIO
 		float soundValue = level * 100;
 		if (soundValue > 100.0) {
 			soundValue = 100.0;
@@ -634,7 +616,6 @@ namespace io {
 
 		xine_set_param(
 				rContainer->stream, XINE_PARAM_AUDIO_AMP_LEVEL, soundValue);
-#endif
 	}
 
 	bool XineVideoProvider::releaseAll() {
