@@ -11,7 +11,7 @@ DEPENDENCIES
 -> directx sdk >9.0 (eq directfb)
    (http://www.microsoft.com/downloads/en/details.aspx?displaylang=en&FamilyID=3021d52b-514e-41d3-ad02-438a3ba730ba)
 
--> telemidia-util-cpp >= 0.12.2
+-> telemidia-util-cpp >= 0.12.3
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
 
 -> awesomium
