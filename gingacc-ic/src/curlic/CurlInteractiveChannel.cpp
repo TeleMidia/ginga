@@ -138,7 +138,7 @@ namespace ic {
 #ifdef _WIN32
 			_mkdir(localPath.c_str());
 #else
-			mkdir(localPath.c_str(), 0666);
+			mkdir(localPath.c_str(), 0755);
 #endif
 		}
 #ifndef _WIN32
