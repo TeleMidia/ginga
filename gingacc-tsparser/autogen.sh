@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core TS Parser 0.12.2"
+PROJECT="Ginga Common Core TS Parser 0.12.3"
 TEST_TYPE=-f
 FILE=include/tsparser/Demuxer.h
 

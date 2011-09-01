@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME           = gingaccplayer
-PROJECT_NUMBER         = 0.12.2
+PROJECT_NUMBER         = 0.12.3
 OUTPUT_DIRECTORY       = 
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
