@@ -395,12 +395,20 @@ struct t_timer {
 static void* sleep_thread (void* data)
 {
 	struct t_timer* t = (struct t_timer *)data;
+
+	if (!t->player->isRunning()) {
+		return NULL;
+	}
+
 #ifndef _WIN32
 	usleep(t->time*1000);
 #else
 	Sleep(t->time);
 #endif
 
+	if (!t->player->isRunning()) {
+		return NULL;
+	}
 	t->player->lock();
 	lua_pushlightuserdata(t->L, t);         // [ ... | t* ]
 	lua_gettable(t->L, LUA_REGISTRYINDEX);  // [ ... | func ]

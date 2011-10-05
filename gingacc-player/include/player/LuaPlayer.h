@@ -210,6 +210,9 @@ namespace player {
         // A partir de um estado Lua, eh possivel chegar ao Player associado.
 		static LuaPlayer* getPlayer (lua_State* L);
 
+		bool isRunning() {
+			return running;
+		}
         // COMUNICACAO COM O FORMATADOR
 		void play();
 		void stop();

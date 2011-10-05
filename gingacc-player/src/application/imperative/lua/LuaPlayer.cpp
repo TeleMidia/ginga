@@ -758,8 +758,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
  */
 LuaPlayer::~LuaPlayer ()
 {
-    this->lock();
 	this->running = false;
+	this->lock();
 	lua_pushcfunction(this->L, luaclose_event);   // [ l_event ]
 	//lua_call(this->L, 0, 0);                      // [ ]
 	lua_close(this->L);
