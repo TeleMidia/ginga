@@ -56,6 +56,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 #endif
 #include <directfb.h>
+#include "directfb/direct/interface.h"
 #ifdef __cplusplus
 }
 #endif

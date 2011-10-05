@@ -50,6 +50,10 @@ http://www.telemidia.puc-rio.br
 #include "system/io/LocalDeviceManager.h"
 #include "system/io/interface/content/audio/FusionSoundAudioProvider.h"
 
+#if DFBTM_PATCH
+	static int fspRefs = 0;
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -62,7 +66,11 @@ namespace io {
 	bool FusionSoundAudioProvider::_fsInitialized    = false;
 
 	FusionSoundAudioProvider::FusionSoundAudioProvider(const char* mrl) {
-		FSStreamDescription   s_desc;
+		FSStreamDescription s_desc;
+
+#if DFBTM_PATCH
+		fspRefs++;
+#endif
 
 		if (_fsSound == NULL) {
 			initialize();
@@ -110,6 +118,14 @@ namespace io {
 
 		pthread_mutex_unlock(&decMutex);
 		pthread_mutex_destroy(&decMutex);
+
+#if DFBTM_PATCH
+		fspRefs--;
+
+		if (fspRefs == 0) {
+			DirectReleaseInterface("IFusionSoundMusicProvider");
+		}
+#endif //DFBTM_PATCH
 	}
 
 	void FusionSoundAudioProvider::initialize(int numArgs, char* args[]) {

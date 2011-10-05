@@ -57,6 +57,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 #endif
 #include "fusionsound/fusionsound.h"
+#include "directfb/direct/interface.h"
 #ifdef __cplusplus
 }
 #endif

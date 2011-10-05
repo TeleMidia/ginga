@@ -50,14 +50,21 @@ http://www.telemidia.puc-rio.br
 #include "ic/InteractiveChannelManager.h"
 #include "ic/IInteractiveChannel.h"
 
-#include "config.h"
+#include "../config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
+#if HAVE_CURL
 #include "ic/curlic/CurlInteractiveChannel.h"
-#endif
+#endif //HAVE_CURL
+
+#if HAVE_CCRTP
+#include "ic/ccrtpic/CCRTPInteractiveChannel.h"
+#endif //HAVE_CCRTP
+
+#endif //HAVE_COMPSUPPORT
 
 namespace br {
 namespace pucrio {

@@ -58,6 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 extern "C" {
 #endif
 #include <directfb.h>
+#include "directfb/direct/interface.h"
 #ifdef __cplusplus
 }
 #endif

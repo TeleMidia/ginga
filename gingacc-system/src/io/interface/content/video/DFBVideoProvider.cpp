@@ -63,6 +63,10 @@ http://www.telemidia.puc-rio.br
 }
 #endif /*DFBCHECK*/
 
+#if DFBTM_PATCH
+	static int dvpRefs = 0;
+#endif //DFBTM_PATCH
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -72,6 +76,10 @@ namespace system {
 namespace io {
 	DFBVideoProvider::DFBVideoProvider(const char* mrl) {
 		IDirectFB* dfb = NULL;
+
+#if DFBTM_PATCH
+		dvpRefs++;
+#endif //DFBTM_PATCH
 
 		rContainer = new DFBRendererContainer;
 		rContainer->dec = NULL;
@@ -103,6 +111,13 @@ namespace io {
 			delete rContainer;
 			rContainer = NULL;
 		}
+
+#if DFBTM_PATCH
+		dvpRefs--;
+		if (dvpRefs == 0) {
+			DirectReleaseInterface("IDirectFBVideoProvider");
+		}
+#endif //DFBTM_PATCH
 	}
 
 	void* DFBVideoProvider::getContent() {

@@ -66,16 +66,6 @@ namespace player {
    	}
 
 	TextPlayer::~TextPlayer() {
-		wclog << "TextPlayer::~TextPlayer" << endl;
-
-   		if (font != NULL) {
-   			delete font;
-   			font = NULL;
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("FontProvider");
-#endif
-   		}
-
    		if (fontColor != NULL) {
    			delete fontColor;
    			fontColor = NULL;
@@ -85,12 +75,26 @@ namespace player {
    			delete bgColor;
    			bgColor = NULL;
    		}
-		/*
-		 * TODO: is some class deleting this
-		 * if (renderSurface != NULL) {
-			delete renderSurface;
-			renderSurface = NULL;
-		}*/
+
+   		/* release window and surface first; then, release font */
+		if (outputWindow != NULL) {
+			outputWindow->revertContent();
+			delete outputWindow;
+			outputWindow = NULL;
+		}
+
+		if (surface != NULL) {
+			delete surface;
+			surface = NULL;
+		}
+
+   		if (font != NULL) {
+   			delete font;
+   			font = NULL;
+#if HAVE_COMPSUPPORT
+			cm->releaseComponentFromObject("FontProvider");
+#endif
+   		}
    	}
 
 	void TextPlayer::initializePlayer() {

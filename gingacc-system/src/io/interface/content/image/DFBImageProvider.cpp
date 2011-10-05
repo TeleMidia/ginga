@@ -66,6 +66,10 @@ http://www.telemidia.puc-rio.br
 }
 #endif /*DFBCHECK*/
 
+#if DFBTM_PATCH
+	static int dipRefs = 0;
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -74,7 +78,12 @@ namespace core {
 namespace system {
 namespace io {
 	DFBImageProvider::DFBImageProvider(const char* mrl) {
-		IDirectFB* dfb = NULL;
+		IDirectFB* dfb;
+
+#if DFBTM_PATCH
+		dipRefs++;
+#endif
+
 		decoder = NULL;
 
 		if (mrl != NULL) {
@@ -84,8 +93,18 @@ namespace io {
 	}
 
 	DFBImageProvider::~DFBImageProvider() {
-		decoder->Release(decoder);
-		decoder = NULL;
+		if (decoder != NULL) {
+			decoder->Release(decoder);
+			decoder = NULL;
+		}
+
+#if DFBTM_PATCH
+		dipRefs--;
+
+		if (dipRefs == 0) {
+			DirectReleaseInterface("IDirectFBImageProvider");
+		}
+#endif //DFBTM_PATCH
 	}
 
 	void* DFBImageProvider::getContent() {

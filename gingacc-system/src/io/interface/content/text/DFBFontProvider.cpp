@@ -62,6 +62,10 @@ http://www.telemidia.puc-rio.br
 }
 #endif /*DFBCHECK*/
 
+#if DFBTM_PATCH
+	static int dfpRefs = 0;
+#endif //DFBTM_PATCH
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -86,6 +90,10 @@ namespace io {
 	DFBFontProvider::DFBFontProvider(const char* fontUri, int heightInPixel) {
 		IDirectFB* dfb;
 		DFBFontDescription desc;
+
+#if DFBTM_PATCH
+		dfpRefs++;
+#endif //DFBTM_PATCH
 
 		string aux = "";
 
@@ -130,6 +138,14 @@ namespace io {
 			font->Release(font);
 			font = NULL;
 		}
+
+#if DFBTM_PATCH
+		dfpRefs--;
+
+		if (dfpRefs == 0) {
+			DirectReleaseInterface("IDirectFBFont");
+		}
+#endif //DFBTM_PATCH
 	}
 
 	void* DFBFontProvider::getContent() {
