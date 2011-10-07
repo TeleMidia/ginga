@@ -93,10 +93,10 @@ namespace carousel {
 	}
 
 	void Ior::print() {
-		cout << "IOR" << endl;
-		cout << "typeId = " << typeId.c_str() << endl;
-		cout << "carouselId = " << carouselId << endl;
-		cout << "moduleId = " << moduleId << endl;
+		clog << "IOR" << endl;
+		clog << "typeId = " << typeId.c_str() << endl;
+		clog << "carouselId = " << carouselId << endl;
+		clog << "moduleId = " << moduleId << endl;
 	}
 }
 }

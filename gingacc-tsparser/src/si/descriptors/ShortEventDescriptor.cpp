@@ -122,14 +122,14 @@ namespace descriptors {
 	}
 
 	void ShortEventDescriptor::print() {
-		cout << "ShortEventDescriptor::print printing...." << endl;
-		cout << " -languageCode: "  << getLanguageCode()   << endl;
-		cout << " -eventNameChar: " << getEventName()      << endl;
-		cout << " -textChar: "      << getTextChar()       << endl;
+		clog << "ShortEventDescriptor::print printing...." << endl;
+		clog << " -languageCode: "  << getLanguageCode()   << endl;
+		clog << " -eventNameChar: " << getEventName()      << endl;
+		clog << " -textChar: "      << getTextChar()       << endl;
  	}
 
 	size_t ShortEventDescriptor::process(char* data, size_t pos) {
-		//cout << "ShortEventDescriptor::process with pos = " << pos << endl;
+		//clog << "ShortEventDescriptor::process with pos = " << pos << endl;
 
 		descriptorLength = data[pos+1];
 		pos += 2;
@@ -143,7 +143,7 @@ namespace descriptors {
 			eventNameChar = new char[eventNameLength];
 
 			if (eventNameChar == NULL) {
-				cout << "ShortEvent::process error allocating memory" << endl;
+				clog << "ShortEvent::process error allocating memory" << endl;
 				return -1;
 			}
 			memset(eventNameChar, 0, eventNameLength);
@@ -156,7 +156,7 @@ namespace descriptors {
 
 			textChar = new char[textLength];
 			if (textChar == NULL) {
-				//cout << "ShortEvent::process error allocating memory" << endl;
+				//clog << "ShortEvent::process error allocating memory" << endl;
 				return -1;
 			}
 			memset(textChar, 0, textLength);

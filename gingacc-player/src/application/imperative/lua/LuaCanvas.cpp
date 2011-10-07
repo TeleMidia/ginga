@@ -251,7 +251,7 @@ static int l_attrFont (lua_State* L)
     //strncat(path, "-", 2);
     //strncat(path, canvas->font.style, 20);
 	strncat(path, ".ttf", 5);
-    //cout << "PATH: " << path << endl;
+    //clog << "PATH: " << path << endl;
 
 	IFontProvider* font = NULL;
 #if HAVE_COMPSUPPORT

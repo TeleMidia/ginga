@@ -65,7 +65,7 @@ namespace io {
 	DXVideoProvider::DXVideoProvider(const char* mrl) {
 		CoInitializeEx(NULL, COINIT_MULTITHREADED);
 		JCriticalSection crit;
-		cout << "DXVideoProvider::DXVideoProvider(" << mrl << ")" << endl;
+		clog << "DXVideoProvider::DXVideoProvider(" << mrl << ")" << endl;
 		pD3ddev = NULL;
 
 		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
@@ -77,17 +77,17 @@ namespace io {
 	}
 
 	DXVideoProvider::~DXVideoProvider() {
-		cout << "DXVideoProvider::~DXVideoProvider()" << endl;
+		clog << "DXVideoProvider::~DXVideoProvider()" << endl;
 		//m_pVideo->stop();
 	}
 
 	void* DXVideoProvider::getContent() {
-		cout << "DXVideoProvider::getContent()" << endl;
+		clog << "DXVideoProvider::getContent()" << endl;
 		return NULL;
 	}
 
 	ISurface* DXVideoProvider::getPerfectSurface() {
-		cout << "DXVideoProvider::getPerfectSurface()" << endl;
+		clog << "DXVideoProvider::getPerfectSurface()" << endl;
 		DX2DSurfaceProp surProp;
 
 		//IDirect3DTexture9 * tex = vmr->GetTexture();
@@ -109,11 +109,11 @@ namespace io {
 	}
 
 	void DXVideoProvider::dynamicRenderCallBack(void* rendererContainer) {
-		cout << "DXVideoProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
+		clog << "DXVideoProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
 	}
 
 	void DXVideoProvider::getOriginalResolution(int* height, int* width) {
-		cout << "DXVideoProvider::getOriginalResolution(int* height, int* width)" << endl;
+		clog << "DXVideoProvider::getOriginalResolution(int* height, int* width)" << endl;
 //		RECT rect =  m_pVideo->getOiginalResolution();
 
 		(*height) = 100; //rect.bottom;
@@ -123,24 +123,24 @@ namespace io {
 	double DXVideoProvider::getTotalMediaTime() {
 //		double total = vmr->getTotalMediaTime();
 		double total = m_pVideo->getTotalMediaTime();
-		cout << "DXVideoProvider::getTotalMediaTime -> " << total  << endl;
+		clog << "DXVideoProvider::getTotalMediaTime -> " << total  << endl;
 		return total;
 	}
 
 	double DXVideoProvider::getMediaTime() {
 		double mediaTime = m_pVideo->getMediaTime();
-		cout << "DXVideoProvider::getMediaTime -> " << mediaTime  << endl;
+		clog << "DXVideoProvider::getMediaTime -> " << mediaTime  << endl;
 		return mediaTime;
 	}
 
 	void DXVideoProvider::setMediaTime(double pos) {
-		cout << "DXVideoProvider::setMediaTime(double pos)" << endl;
+		clog << "DXVideoProvider::setMediaTime(double pos)" << endl;
 		m_pVideo->seek(pos);
 	}
 
 	void DXVideoProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
-		cout << "DXVideoProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
+		clog << "DXVideoProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
 		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
 		//s->setTexture(videoTex);
 		
@@ -148,26 +148,26 @@ namespace io {
 	}
 
 	void DXVideoProvider::resume(ISurface* surface, bool hasVisual) {
-		cout << "DXVideoProvider::resume(ISurface* surface, bool hasVisual)" << endl;
+		clog << "DXVideoProvider::resume(ISurface* surface, bool hasVisual)" << endl;
 		playOver(surface, hasVisual, 0);
 	}
 
 	void DXVideoProvider::pause() {
-		cout << "DXVideoProvider::pause()" << endl;
+		clog << "DXVideoProvider::pause()" << endl;
 		m_pVideo->pause();
 	}
 
 	void DXVideoProvider::stop() {
-		cout << "DXVideoProvider::stop()" << endl;
+		clog << "DXVideoProvider::stop()" << endl;
 		m_pVideo->stop();
 	}
 
 	void DXVideoProvider::setSoundLevel(float level) {
-		cout << "DXVideoProvider::setSoundLevel(float level)" << endl;
+		clog << "DXVideoProvider::setSoundLevel(float level)" << endl;
 	}
 
 	bool DXVideoProvider::releaseAll() {
-		cout << " DXVideoProvider::releaseAll()" << endl;
+		clog << " DXVideoProvider::releaseAll()" << endl;
 		return true;
 	}
 

@@ -74,7 +74,7 @@ namespace descriptors {
 		return descriptorLength;
 	}
 	void TargetRegionDescriptor::print() {
-		cout << "StreamIdentifierDescriptor::print printing..." << endl;
+		clog << "StreamIdentifierDescriptor::print printing..." << endl;
 	}
 	size_t TargetRegionDescriptor::process(char* data, size_t pos) {
 		descriptorLength =  data[pos+1];

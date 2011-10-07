@@ -318,7 +318,7 @@ namespace player {
 	void Player::setScope(
 			string scope, short type, double initTime, double endTime) {
 
-		cout << "Player::setScope '" << scope << "'" << endl;
+		clog << "Player::setScope '" << scope << "'" << endl;
 		this->scope         = scope;
 		this->scopeType     = type;
 		this->scopeInitTime = initTime;
@@ -468,7 +468,7 @@ namespace player {
 	}
 
 	void Player::setTimeBasePlayer(IPlayer* timeBasePlayer) {
-		wclog << "Player::setTimeBasePlayer" << endl;
+		clog << "Player::setTimeBasePlayer" << endl;
 		if (timeBasePlayer != NULL) {
 			this->timeBasePlayer = timeBasePlayer;
 			this->timeBasePlayer->addTimeReferPlayer(this);
@@ -518,8 +518,8 @@ namespace player {
 				p->scopeEndTime -
 				(p->scopeInitTime + (p->getMediaTime() / 1000)));
 
-		cout << "Player::scopeTimeHandler expectedSleepTime = '";
-		cout << expectedSleepTime << "'" << endl;
+		clog << "Player::scopeTimeHandler expectedSleepTime = '";
+		clog << expectedSleepTime << "'" << endl;
 
 		if (expectedSleepTime > 0) {
 #ifndef _WIN32

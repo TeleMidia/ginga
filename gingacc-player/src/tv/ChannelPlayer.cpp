@@ -90,8 +90,8 @@ namespace player {
 
 	IPlayer* ChannelPlayer::getSelectedPlayer() {
 		if (selectedPlayer == NULL) {
-			wclog << "ChannelPlayer::getSelectedPlayerAdd == NULL";
-			wclog << endl;
+			clog << "ChannelPlayer::getSelectedPlayerAdd == NULL";
+			clog << endl;
 			return NULL;
 		}
 		return selectedPlayer;

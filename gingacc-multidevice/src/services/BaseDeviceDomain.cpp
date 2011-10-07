@@ -126,8 +126,8 @@ namespace multidevice {
 	}
 
 	bool BaseDeviceDomain::activeTaskRequest(char* data, int taskSize) {
-		/*cout << "BaseDeviceDomain::activeTaskRequest ";
-		cout << endl;*/
+		/*clog << "BaseDeviceDomain::activeTaskRequest ";
+		clog << endl;*/
 
 		return true;
 	}
@@ -135,7 +135,7 @@ namespace multidevice {
 	void BaseDeviceDomain::receiveConnectionRequest(char* task) {
 		int reqDevClass, width, height;
 
-		cout << "BaseDeviceDomain::receiveConnectionRequest " << endl;
+		clog << "BaseDeviceDomain::receiveConnectionRequest " << endl;
 
 		reqDevClass = (int)(unsigned char)task[0];
 		width = ((((unsigned char)task[1]) & 0xFF) |
@@ -149,8 +149,8 @@ namespace multidevice {
 			schedulePost  = FT_ANSWERTOREQUEST;
 
 		} else {
-			cout << "BaseDeviceDomain::receiveConnectionRequest can't add ";
-			cout << "device" << endl;
+			clog << "BaseDeviceDomain::receiveConnectionRequest can't add ";
+			clog << "device" << endl;
 		}
 	}
 
@@ -162,10 +162,10 @@ namespace multidevice {
 		char* task;
 		char* streamSourceIP;
 
-		cout << "BaseDeviceDomain::postAnswerTask answer '";
-		cout << answer << "' for device '";
-		cout << sourceIp << "', which means '" << getStrIP(sourceIp);
-		cout << "', of class '" << reqDeviceClass << endl;
+		clog << "BaseDeviceDomain::postAnswerTask answer '";
+		clog << answer << "' for device '";
+		clog << sourceIp << "', which means '" << getStrIP(sourceIp);
+		clog << "', of class '" << reqDeviceClass << endl;
 
 		//prepare frame
 		task = mountFrame(
@@ -230,17 +230,17 @@ namespace multidevice {
 		int fd, fileSize, bytesRead, tSize;
 		char* task;
 
-		cout << "BaseDeviceDomain::postMediaContentTask file '";
-		cout << url << "' to devices of class '" << destDevClass << "'";
-		cout << endl;
+		clog << "BaseDeviceDomain::postMediaContentTask file '";
+		clog << url << "' to devices of class '" << destDevClass << "'";
+		clog << endl;
 
 		if (destDevClass == 0) {
 			return false;
 		}
 
 		if (!deviceService->hasDevices()) {
-			cout << "BaseDeviceDomain::postMediaContentTask no devs found!";
-			cout << endl;
+			clog << "BaseDeviceDomain::postMediaContentTask no devs found!";
+			clog << endl;
 			return false;
 		}
 
@@ -252,18 +252,18 @@ namespace multidevice {
 
 				if (fileSize > MAX_FRAME_SIZE) {
 					//TODO: frame segmentation support
-					cout << "BaseDeviceDomain::postMediaContentTask ";
-					cout << "Warning! Can't post a frame that the ";
-					cout << "network doesn't support (" << fileSize;
-					cout << ")" << endl;
+					clog << "BaseDeviceDomain::postMediaContentTask ";
+					clog << "Warning! Can't post a frame that the ";
+					clog << "network doesn't support (" << fileSize;
+					clog << ")" << endl;
 					return false;
 				}
 
 				fd = open(url.c_str(), O_RDONLY);
 				if (fd < 0) {
-					cout << "BaseDeviceDomain::postMediaContentTask ";
-					cout << "Warning! Can't re-open file '" << url;
-					cout << "'" << endl;
+					clog << "BaseDeviceDomain::postMediaContentTask ";
+					clog << "Warning! Can't re-open file '" << url;
+					clog << "'" << endl;
 					return false;
 				}
 
@@ -285,33 +285,33 @@ namespace multidevice {
 						taskRequest(destDevClass, task, tSize);
 
 					} else {
-						cout << "BaseDeviceDomain::";
-						cout << "postMediaContentTask ";
-						cout << "Warning! Can't read '" << fileSize;
-						cout << "' bytes from file '" << url << "' (";
-						cout << bytesRead << " bytes read)" << endl;
+						clog << "BaseDeviceDomain::";
+						clog << "postMediaContentTask ";
+						clog << "Warning! Can't read '" << fileSize;
+						clog << "' bytes from file '" << url << "' (";
+						clog << bytesRead << " bytes read)" << endl;
 						delete[] task;
 					}
 				}
 
 			} else {
-				cout << "BaseDeviceDomain::postMediaContentTask ";
-				cout << "Warning! Can't seek file '" << url << "'" << endl;
+				clog << "BaseDeviceDomain::postMediaContentTask ";
+				clog << "Warning! Can't seek file '" << url << "'" << endl;
 			}
 
 			close(fd);
 
 		} else {
-			cout << "BaseDeviceDomain::postMediaContentTask ";
-			cout << "Warning! Can't open file '" << url << "'" << endl;
+			clog << "BaseDeviceDomain::postMediaContentTask ";
+			clog << "Warning! Can't open file '" << url << "'" << endl;
 		}
 
 		return true;
 	}
 
 	bool BaseDeviceDomain::receiveEventTask(char* task) {
-		cout << "BaseDeviceDomain::receiveEventTask destClass '";
-		cout << destClass << "'" << endl;
+		clog << "BaseDeviceDomain::receiveEventTask destClass '";
+		clog << destClass << "'" << endl;
 		return deviceService->receiveEvent(
 				sourceIp, frameType, task, this->frameSize);
 	}
@@ -323,7 +323,7 @@ namespace multidevice {
 
 	bool BaseDeviceDomain::runControlTask() {
 		char* task;
-		cout << "BaseDeviceDomain::runControlTask :: " << endl;
+		clog << "BaseDeviceDomain::runControlTask :: " << endl;
 
 		if (taskIndicationFlag) {
 			task = taskReceive();
@@ -333,8 +333,8 @@ namespace multidevice {
 			}
 
 			if (myIP == sourceIp) {
-				/*cout << "DeviceDomain::runControlTask got my own task ";
-				cout << "(size = '" << frameSize << "')" << endl;*/
+				/*clog << "DeviceDomain::runControlTask got my own task ";
+				clog << "(size = '" << frameSize << "')" << endl;*/
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -342,8 +342,8 @@ namespace multidevice {
 			}
 
 			if (destClass != deviceClass) {
-				cout << "DeviceDomain::runControlTask Task isn't for me!";
-				cout << endl;
+				clog << "DeviceDomain::runControlTask Task isn't for me!";
+				clog << endl;
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -353,37 +353,37 @@ namespace multidevice {
 			if (frameSize + HEADER_SIZE != bytesRecv) {
 				delete[] task;
 				taskIndicationFlag = false;
-				cout << "DeviceDomain::runControlTask Warning! Invalid task ";
-				cout << "size '" << frameSize + HEADER_SIZE << "' (received '";
-				cout << bytesRecv << "'" << endl;
+				clog << "DeviceDomain::runControlTask Warning! Invalid task ";
+				clog << "size '" << frameSize + HEADER_SIZE << "' (received '";
+				clog << bytesRecv << "'" << endl;
 				return false;
 			}
 
-			cout << "BaseDeviceDomain::runControlTask frame type '";
-			cout << frameType << "'" << endl;
+			clog << "BaseDeviceDomain::runControlTask frame type '";
+			clog << frameType << "'" << endl;
 
 			switch (frameType) {
 				case FT_CONNECTIONREQUEST:
 					if (frameSize != 5) {
-						cout << "25BaseDeviceDomain::runControlTask Warning!";
-						cout << "received a connection request frame with";
-						cout << " wrong size: '" << frameSize << "'" << endl;
+						clog << "25BaseDeviceDomain::runControlTask Warning!";
+						clog << "received a connection request frame with";
+						clog << " wrong size: '" << frameSize << "'" << endl;
 
 					} else {
-						cout << "calling receiveConnectionRequest" << endl;
+						clog << "calling receiveConnectionRequest" << endl;
 						receiveConnectionRequest(task);
 					}
 					break;
 
 				case FT_KEEPALIVE:
-					cout << "BaseDeviceDomain::runControlTask KEEPALIVE";
-					cout << endl;
+					clog << "BaseDeviceDomain::runControlTask KEEPALIVE";
+					clog << endl;
 					break;
 
 				//what?
 				default:
-					cout << "DeviceDomain::runControlTask frame type ";
-					cout << "WHAT?" << endl;
+					clog << "DeviceDomain::runControlTask frame type ";
+					clog << "WHAT?" << endl;
 					delete[] task;
 					taskIndicationFlag = false;
 					return false;
@@ -392,8 +392,8 @@ namespace multidevice {
 			delete[] task;
 
 		} else {
-			cout << "DeviceDomain::runControlTask Warning! Trying to control";
-			cout << "a non indicated task." << endl;
+			clog << "DeviceDomain::runControlTask Warning! Trying to control";
+			clog << "a non indicated task." << endl;
 		}
 
 		taskIndicationFlag = false;
@@ -409,18 +409,18 @@ namespace multidevice {
 		}
 
 		if (myIP == sourceIp) {
-			/*cout << "BaseDeviceDomain::runDataTask receiving my own task";
-			cout << endl;*/
+			/*clog << "BaseDeviceDomain::runDataTask receiving my own task";
+			clog << endl;*/
 
 			delete[] task;
 			return false;
 		}
 
 		if (destClass != deviceClass) {
-			cout << "BaseDeviceDomain::runDataTask";
-			cout << " should never reaches here (receiving wrong destination";
-			cout << " class '" << destClass << "')";
-			cout << endl;
+			clog << "BaseDeviceDomain::runDataTask";
+			clog << " should never reaches here (receiving wrong destination";
+			clog << " class '" << destClass << "')";
+			clog << endl;
 
 			delete[] task;
 			return false;
@@ -428,8 +428,8 @@ namespace multidevice {
 
 		if (frameSize + HEADER_SIZE != bytesRecv) {
 			delete[] task;
-			cout << "BaseDeviceDomain::runDataTask Warning! wrong ";
-			cout << "frameSize '" << bytesRecv << "'" << endl;
+			clog << "BaseDeviceDomain::runDataTask Warning! wrong ";
+			clog << "frameSize '" << bytesRecv << "'" << endl;
 			return false;
 		}
 
@@ -442,8 +442,8 @@ namespace multidevice {
 
 			//what?
 			default:
-				cout << "BaseDeviceDomain::runDataTask frame type ";
-				cout << "WHAT?" << endl;
+				clog << "BaseDeviceDomain::runDataTask frame type ";
+				clog << "WHAT?" << endl;
 				delete[] task;
 				return false;
 		}
@@ -473,9 +473,9 @@ namespace multidevice {
 				passiveTaskRequest(data, taskSize);
 
 			} else {
-				//cout << "CONTIGUOUS FRAME" << endl;
+				//clog << "CONTIGUOUS FRAME" << endl;
 				/*if (passiveTasks.size() > 1) {
-					cout << "DISCARDING FRAME" << endl;
+					clog << "DISCARDING FRAME" << endl;
 					delete[] data;
 
 				} else {*/

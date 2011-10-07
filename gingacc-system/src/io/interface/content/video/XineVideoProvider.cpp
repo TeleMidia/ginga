@@ -139,8 +139,8 @@ namespace io {
 
 		rContainer->xine = xine_new();
 		if (rContainer->xine == NULL) {
-			cout << "XineVideoProvider::initializeXine xine_new() failed!";
-			cout << endl;
+			clog << "XineVideoProvider::initializeXine xine_new() failed!";
+			clog << endl;
 			return false;
 		}
 
@@ -165,9 +165,9 @@ namespace io {
 				(void*)&visual);
 
 		if (!rContainer->vo) {
-			cout << "XineVideoProvider::initializeXine ";
-			cout << "couldn't open video driver DFB!";
-			cout << endl;
+			clog << "XineVideoProvider::initializeXine ";
+			clog << "couldn't open video driver DFB!";
+			clog << endl;
 			return false;
 		}
 
@@ -184,9 +184,9 @@ namespace io {
 						rContainer->xine, "oss", NULL);
 
 				if (!rContainer->ao) {
-					cout << "XineVideoProvider::initializeXine Warning! ";
-					cout << "couldn't find a working audio driver!";
-					cout << endl;
+					clog << "XineVideoProvider::initializeXine Warning! ";
+					clog << "couldn't find a working audio driver!";
+					clog << endl;
 
 					/* disable audio */
 					rContainer->ao = xine_open_audio_driver(
@@ -202,9 +202,9 @@ namespace io {
 				rContainer->xine, rContainer->ao, rContainer->vo);
 
 		if (!rContainer->stream) {
-			cout << "XineVideoProvider::initializeXine ";
-			cout << "couldn't create a new stream!";
-			cout << endl;
+			clog << "XineVideoProvider::initializeXine ";
+			clog << "couldn't create a new stream!";
+			clog << endl;
 			return false;
 		}
 
@@ -217,13 +217,13 @@ namespace io {
 		initializeAudio();
 
 		if (!xine_open(rContainer->stream, mrl)) {
-			cout << "XineVideoProvider::initializeXine ";
-			cout << "unsupported content!";
-			cout << endl;
+			clog << "XineVideoProvider::initializeXine ";
+			clog << "unsupported content!";
+			clog << endl;
 			return false;
 		}
 
-		cout << "XineVideoProvider::initializeXine OK!" << endl;
+		clog << "XineVideoProvider::initializeXine OK!" << endl;
 		return true;
 	}
 
@@ -261,10 +261,10 @@ namespace io {
 		data.apid = aPid;
 		data.vpid = vPid;
 
-		cout << "XineVideoProvider::setAVPid";
-		cout << " aPid = '" << aPid << "'";
-		cout << " vPid = '" << vPid << "'";
-		cout << endl;
+		clog << "XineVideoProvider::setAVPid";
+		clog << " aPid = '" << aPid << "'";
+		clog << " vPid = '" << vPid << "'";
+		clog << endl;
 		xine_event_send(rContainer->stream, &event);
 
 		initializeAudio();
@@ -320,11 +320,11 @@ namespace io {
 
 		frame->getSize(&w, &h);
 		if (dsc.width != w || dsc.height != h) {
-			cout << "XineVideoProvider::checkVideoResizeEvent ";
-			cout << "width = '" << w << "' height = '" << h;
-			cout << "' dsc.w = '" << dsc.width;
-			cout << "' dsc.h = '" << dsc.height << "'";
-			cout << endl;
+			clog << "XineVideoProvider::checkVideoResizeEvent ";
+			clog << "width = '" << w << "' height = '" << h;
+			clog << "' dsc.w = '" << dsc.width;
+			clog << "' dsc.h = '" << dsc.height << "'";
+			clog << endl;
 
 			s = (IDirectFBSurface*)(
 					LocalDeviceManager::getInstance()->createSurface(&dsc));
@@ -335,8 +335,8 @@ namespace io {
 			return true;
 
 		} else {
-			cout << "XineVideoProvider::checkVideoResizeEvent !update ";
-			cout << "width = '" << w << "' height = '" << h << "'" << endl;
+			clog << "XineVideoProvider::checkVideoResizeEvent !update ";
+			clog << "width = '" << w << "' height = '" << h << "'" << endl;
 		}
 
 		return false;
@@ -553,16 +553,16 @@ namespace io {
 	}
 
 	bool XineVideoProvider::updateVisualData(ISurface* surface) {
-		cout << "XineVideoProvider::updateVisualData " << endl;
+		clog << "XineVideoProvider::updateVisualData " << endl;
 		visual.destination = (IDirectFBSurface*)(surface->getContent());
 		visual.subpicture  = NULL;
 
 		if (!xine_port_send_gui_data(
 				rContainer->vo, XINE_GUI_SEND_SELECT_VISUAL, (void*)&visual)) {
 
-			cout << "XineVideoProvider::updateVisualData ";
-			cout << "failed to update driver's visual!!";
-			cout << endl;
+			clog << "XineVideoProvider::updateVisualData ";
+			clog << "failed to update driver's visual!!";
+			clog << endl;
 			return false;
 		}
 
@@ -609,8 +609,8 @@ namespace io {
 			soundValue = 0;
 		}
 
-		cout << "XineVideoProvider::setSoundLevel '" << level;
-		cout << "'" << endl;
+		clog << "XineVideoProvider::setSoundLevel '" << level;
+		clog << "'" << endl;
 		xine_set_param(
 				rContainer->stream, XINE_PARAM_AUDIO_VOLUME, soundValue);
 

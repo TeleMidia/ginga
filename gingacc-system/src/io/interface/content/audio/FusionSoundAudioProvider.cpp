@@ -191,7 +191,7 @@ namespace io {
 
 		pthread_mutex_lock(&decMutex);
 		if (decoder == NULL) {
-			cout << "FusionSoundAudioProvider::playOver decoder = NULL" << endl;
+			clog << "FusionSoundAudioProvider::playOver decoder = NULL" << endl;
 			pthread_mutex_unlock(&decMutex);
 			return;
 		}
@@ -222,7 +222,7 @@ namespace io {
 			return;
 		}
 
-		cout << "FusionSoundAudioProvider::stop(" << this << ")" << endl;
+		clog << "FusionSoundAudioProvider::stop(" << this << ")" << endl;
 		decoder->Stop(decoder);
 		pthread_mutex_unlock(&decMutex);
 	}
@@ -248,7 +248,7 @@ namespace io {
 	bool FusionSoundAudioProvider::releaseAll() {
 		//TODO: release all structures
 
-		cout << "FusionSoundAudioProvider::releaseAll" << endl;
+		clog << "FusionSoundAudioProvider::releaseAll" << endl;
 		/*if (sound != NULL) {
 			sound->Release(sound);
 			sound = NULL;

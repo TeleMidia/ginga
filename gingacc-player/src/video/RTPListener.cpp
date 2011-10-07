@@ -78,8 +78,8 @@ namespace player {
 				Thread::start();
 
 			} else {
-				cout << "RTPListener::RTPListener Warning! Can't create ";
-				cout << "IC for '" << url << "'" << endl;
+				clog << "RTPListener::RTPListener Warning! Can't create ";
+				clog << "IC for '" << url << "'" << endl;
 			}
 		}
 	}
@@ -125,13 +125,13 @@ namespace player {
 				write(fd, buffer, size);
 
 			} catch (const char *except) {
-				cout << "RTPListener::receiveDataStream catch: ";
-				cout << except << endl;
+				clog << "RTPListener::receiveDataStream catch: ";
+				clog << except << endl;
 			}
 
 		} else {
-			cout << "RTPListener::receiveDataStream can't write fd = '";
-			cout << fd << "' size = '" << size << "'" << endl;
+			clog << "RTPListener::receiveDataStream can't write fd = '";
+			clog << fd << "' size = '" << size << "'" << endl;
 		}
 	}
 
@@ -146,9 +146,9 @@ namespace player {
 	void RTPListener::run() {
 		if (fd < 0) {
 			mkfifo(this->url.c_str(), S_IFIFO);
-			cout << "RTPListener::RTPListener '" << url << "' CREATEP" << endl;
+			clog << "RTPListener::RTPListener '" << url << "' CREATEP" << endl;
 			fd = open(this->url.c_str(), O_WRONLY);
-			cout << "RTPListener::RTPListener CREATEP OPENED" << endl;
+			clog << "RTPListener::RTPListener CREATEP OPENED" << endl;
 		}
 	}
 }

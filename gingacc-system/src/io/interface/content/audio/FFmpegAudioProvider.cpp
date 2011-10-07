@@ -261,8 +261,8 @@ static bool queue_is_full(_PacketQueue *queue) {
 static void* FFmpegInput(DirectThread *self, void *arg) {
 	IDirectFBAudioProvider_FFmpeg_data* data;
 
-	cout << "FFmpegInput";
-	cout << endl;
+	clog << "FFmpegInput";
+	clog << endl;
 
 	data = (IDirectFBAudioProvider_FFmpeg_data*)arg;
 	if (url_is_streamed(data->context->pb)) {
@@ -327,8 +327,8 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 		}
 
 		if (av_read_frame(data->context, &packet) < 0) {
-			cout << "FFmpegInput check eof";
-			cout << endl;
+			clog << "FFmpegInput check eof";
+			clog << endl;
 			if (url_feof(data->context->pb)) {
 				if (data->input.buffering) {
 					pthread_mutex_unlock(&data->audio.queue.lock);
@@ -428,7 +428,7 @@ static inline DVCPixelFormat ff2dvc_pixelformat(int pix_fmt) {
 			return DVCPF_BGR32;
 
 		default:
-			cout << "unsupported picture format" << endl;
+			clog << "unsupported picture format" << endl;
 			break;
 	}
 
@@ -438,8 +438,8 @@ static inline DVCPixelFormat ff2dvc_pixelformat(int pix_fmt) {
 static void* FFmpegAudio(DirectThread *self, void *arg) {
 	IDirectFBAudioProvider_FFmpeg_data *data;
 
-	cout << "FFmpegAudio";
-	cout << endl;
+	clog << "FFmpegAudio";
+	clog << endl;
 
 	data = (IDirectFBAudioProvider_FFmpeg_data*)arg;
 	AVStream *st = data->audio.st;
@@ -609,7 +609,7 @@ namespace io {
 		IDirectFB* dfb = NULL;
 		DFBDataBufferDescription desc;
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg " << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg " << endl;
 
 		memset(rContainer, 0, sizeof(*rContainer));
 
@@ -643,10 +643,10 @@ namespace io {
 			}
 
 		} else {
-			cout << "FFmpegAudioProvider::initializeFFmpeg ";
-			cout << "Warning! can't peek '" << sizeof(buf) << "' bytes from '";
-			cout << mrl << "'";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg ";
+			clog << "Warning! can't peek '" << sizeof(buf) << "' bytes from '";
+			clog << mrl << "'";
+			clog << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			return false;
@@ -657,11 +657,11 @@ namespace io {
 			av_register_all();
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Creating AV probe data for '" << mrl << "' ";
-		cout << "with len = '" << len << "' ";
-		cout << "with peeked = '" << peeked << "' ";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Creating AV probe data for '" << mrl << "' ";
+		clog << "with len = '" << len << "' ";
+		clog << "with peeked = '" << peeked << "' ";
+		clog << endl;
 
 		pd.filename = mrl;
 		pd.buf      = &buf[0];
@@ -669,27 +669,27 @@ namespace io {
 
 		fmt = av_probe_input_format(&pd, 1);
 		if (fmt == NULL) {
-			cout << "FFmpegAudioProvider::initializeFFmpeg ";
-			cout << "Warning! no format found";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg ";
+			clog << "Warning! no format found";
+			clog << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			return false;
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Found format '" << fmt->name << "' ";
-		cout << "read packet address '" << fmt->read_packet << "' ";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Found format '" << fmt->name << "' ";
+		clog << "read packet address '" << fmt->read_packet << "' ";
+		clog << endl;
 
 		rContainer->seekable = (
 				rContainer->buffer->SeekTo(rContainer->buffer, 0) == DFB_OK);
 
 		rContainer->iobuf = new char[IO_BUFFER_SIZE * 1024];
 		if (!rContainer->iobuf) {
-			cout << "FFmpegAudioProvider::initializeFFmpeg ";
-			cout << "can't create io buffer (size = " << IO_BUFFER_SIZE * 1024;
-			cout << ")" << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg ";
+			clog << "can't create io buffer (size = " << IO_BUFFER_SIZE * 1024;
+			clog << ")" << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
@@ -705,9 +705,9 @@ namespace io {
 				NULL,
 				rContainer->seekable ? av_seek_callback : NULL) < 0) {
 
-			cout << "FFmpegAudioProvider::initializeFFmpeg";
-			cout << "init_put_byte() failed!";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg";
+			clog << "init_put_byte() failed!";
+			clog << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
@@ -721,9 +721,9 @@ namespace io {
 				!strncmp(pd.filename, "ftp://",  6 )	||
 				!strncmp(pd.filename, "rtsp://", 7 ));
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Opening input stream";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Opening input stream";
+		clog << endl;
 
 		if (av_open_input_stream(
 				&(rContainer->context),
@@ -732,33 +732,33 @@ namespace io {
 				fmt,
 				NULL) < 0) {
 
-			cout << "FFmpegAudioProvider::initializeFFmpeg";
-			cout << " av_open_input_stream() failed!";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg";
+			clog << " av_open_input_stream() failed!";
+			clog << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Searching stream info";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Searching stream info";
+		clog << endl;
 
 		if (av_find_stream_info(rContainer->context) < 0) {
-			cout << "FFmpegAudioProvider::initializeFFmpeg ";
-			cout << "couldn't find stream info!";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg ";
+			clog << "couldn't find stream info!";
+			clog << endl;
 
 			rContainer->buffer->Release(rContainer->buffer);
 			delete (char*)(rContainer->iobuf);
 			return false;
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Searching codec for '" << rContainer->context->nb_streams;
-		cout << "' streams";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Searching codec for '" << rContainer->context->nb_streams;
+		clog << "' streams";
+		clog << endl;
 
 		for (i = 0; i < rContainer->context->nb_streams; i++) {
 			switch (rContainer->context->streams[i]->codec->codec_type) {
@@ -776,9 +776,9 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Checking audio stream";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Checking audio stream";
+		clog << endl;
 
 		if (rContainer->audio.st) {
 			rContainer->audio.ctx   = rContainer->audio.st->codec;
@@ -795,18 +795,18 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Checking initializing fusion sound";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Checking initializing fusion sound";
+		clog << endl;
 
 		if (FusionSoundAudioProvider::_fsSound == NULL) {
 			FusionSoundAudioProvider::initialize();
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Creating audio stream _fsSound = '";
-		cout << FusionSoundAudioProvider::_fsSound << "'";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Creating audio stream _fsSound = '";
+		clog << FusionSoundAudioProvider::_fsSound << "'";
+		clog << endl;
 
 		if (rContainer->audio.st &&
 				FusionSoundAudioProvider::_fsSound != NULL) {
@@ -832,9 +832,9 @@ namespace io {
 					&dsc, &rContainer->audio.stream);
 
 			if (ret != DR_OK) {
-				cout << "FFmpegAudioProvider::initializeFFmpeg ";
-				cout << "IFusionSound::CreateStream() failed!";
-				cout << endl;
+				clog << "FFmpegAudioProvider::initializeFFmpeg ";
+				clog << "IFusionSound::CreateStream() failed!";
+				clog << endl;
 				rContainer->audio.sound->Release(rContainer->audio.sound);
 				rContainer->audio.sound = NULL;
 
@@ -849,14 +849,14 @@ namespace io {
 			}
 
 		} else if (rContainer->audio.st) {
-			cout << "FFmpegAudioProvider::initializeFFmpeg ";
-			cout << "couldn't get FusionSound interface!";
-			cout << endl;
+			clog << "FFmpegAudioProvider::initializeFFmpeg ";
+			clog << "couldn't get FusionSound interface!";
+			clog << endl;
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Filling audio context";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Filling audio context";
+		clog << endl;
 
 		if (rContainer->audio.st) {
 			rContainer->audio.queue.max_len = av_rescale_q(
@@ -873,17 +873,17 @@ namespace io {
 			}
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Determining start time";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Determining start time";
+		clog << endl;
 
 		if (rContainer->context->start_time != AV_NOPTS_VALUE) {
 			rContainer->start_time = rContainer->context->start_time;
 		}
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ";
-		cout << "Initialing mutexes";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ";
+		clog << "Initialing mutexes";
+		clog << endl;
 
 		direct_util_recursive_pthread_mutex_init(&rContainer->input.lock);
 		direct_util_recursive_pthread_mutex_init(&rContainer->audio.lock);
@@ -891,8 +891,8 @@ namespace io {
 		direct_util_recursive_pthread_mutex_init(&rContainer->events_lock);
 		pthread_cond_init (&rContainer->audio.cond, NULL);
 
-		cout << "FFmpegAudioProvider::initializeFFmpeg ALL DONE";
-		cout << endl;
+		clog << "FFmpegAudioProvider::initializeFFmpeg ALL DONE";
+		clog << endl;
 
 		return true;
 	}
@@ -1080,7 +1080,7 @@ namespace io {
 	void FFmpegAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
-		cout << "FFmpegAudioProvider::playOver" << endl;
+		clog << "FFmpegAudioProvider::playOver" << endl;
 
 		pthread_mutex_lock(&rContainer->input.lock);
 		pthread_mutex_lock(&rContainer->audio.lock);
@@ -1097,8 +1097,8 @@ namespace io {
 		rContainer->ctx        = rContainer;
 
 		if (rContainer->status == DVSTATE_FINISHED) {
-			cout << "FFmpegAudioProvider::playOver status is finished ";
-			cout << endl;
+			clog << "FFmpegAudioProvider::playOver status is finished ";
+			clog << endl;
 			rContainer->input.seek_time = 0;
 			rContainer->input.seek_flag = 0;
 			rContainer->input.seeked	= true;

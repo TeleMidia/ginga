@@ -82,7 +82,7 @@ namespace carousel {
 			object = i->second;
 
 			if (mountObject(object)) {
-				cout << "ObjectProcessor::pushObject call notifyLists" << endl;
+				clog << "ObjectProcessor::pushObject call notifyLists" << endl;
 				notifyListeners(object);
 
 				objects->erase(i);
@@ -122,8 +122,8 @@ namespace carousel {
 		char token[6];
 		unsigned int j, size;
 
-		/*cout << "ObjectProcessor::mountObject of kind '" << object->getKind();
-		cout << "'" << endl;*/
+		/*clog << "ObjectProcessor::mountObject of kind '" << object->getKind();
+		clog << "'" << endl;*/
 		if (object->getKind() == "srg" ||
 			    object->getKind() == "DSM::ServiceGateway") {
 
@@ -133,22 +133,22 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				/*cout << "ObjectProcessor::mountObject srg adding objId '";
-				cout << objectId << "'" << endl;*/
+				/*clog << "ObjectProcessor::mountObject srg adding objId '";
+				clog << objectId << "'" << endl;*/
 				(*objectNames)[objectId] = (*i)->getId();
 				(*objectPaths)[objectId] = "carousel/" +
 					    itos(object->getCarouselId()) + "/";
 			}
-			//cout << "ObjectProcessor::mountObject srg done" << endl;
+			//clog << "ObjectProcessor::mountObject srg done" << endl;
 			return true;
 
 		} else if (object->getKind() == "dir" ||
 			    object->getKind() == "DSM::Directory") {
 
 			if (objectPaths->count(object->getObjectId()) == 0) {
-				/*cout << "ObjectProcessor::mountObject Warning!";
-				cout << "cant find object id '" << object->getObjectId();
-				cout << endl;*/
+				/*clog << "ObjectProcessor::mountObject Warning!";
+				clog << "cant find object id '" << object->getObjectId();
+				clog << endl;*/
 				return false;
 
 			} else {
@@ -156,8 +156,8 @@ namespace carousel {
 					    (objectNames->find(object->getObjectId()))->second +
 					    "/";
 
-				/*cout << "ObjectProcessor::mountObject create dir '" << path;
-				cout << endl;*/
+				/*clog << "ObjectProcessor::mountObject create dir '" << path;
+				clog << endl;*/
 				mkdir(path.c_str(), 0777);
 			}
 
@@ -167,22 +167,22 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				/*cout << "ObjectProcessor::mountObject dir adding objId '";
-				cout << objectId << "'" << endl;*/
+				/*clog << "ObjectProcessor::mountObject dir adding objId '";
+				clog << objectId << "'" << endl;*/
 
 				(*objectNames)[objectId] = (*i)->getId();
 				(*objectPaths)[objectId] = path;
 			}
-			//cout << "ObjectProcessor::mountObject dir done" << endl;
+			//clog << "ObjectProcessor::mountObject dir done" << endl;
 			return true;
 
 		} else if (object->getKind() == "fil" ||
 			    object->getKind() == "DSM::File") {
 
 			if (objectPaths->count(object->getObjectId()) == 0) {
-				/*cout << "ObjectProcessor::mountObject Warning! ";
-				cout << "cant find object id '" << object->getObjectId();
-				cout << "" << endl;*/
+				/*clog << "ObjectProcessor::mountObject Warning! ";
+				clog << "cant find object id '" << object->getObjectId();
+				clog << "" << endl;*/
 				return false;
 
 			} else {
@@ -194,7 +194,7 @@ namespace carousel {
 				if (fd > 0) {
 					//TODO: correct BUG in content provider
 					if (path.find(".ncl") != std::string::npos) {
-						cout << "ObjectProcessor::mount NCL FILE" << endl;
+						clog << "ObjectProcessor::mount NCL FILE" << endl;
 						data = object->getData();
 						j = 0;
 						while (j < size) {
@@ -211,21 +211,21 @@ namespace carousel {
 					write(fd, (void*)(object->getData()), size);
 					close(fd);
 
-					cout << "ObjectProcessor::mountObject create fil '";
-					cout << path << "'" << endl;
+					clog << "ObjectProcessor::mountObject create fil '";
+					clog << path << "'" << endl;
 
 				} else {
-					cout << "Warning! Cannot mount ";
-					cout << path.c_str() << endl;
+					clog << "Warning! Cannot mount ";
+					clog << path.c_str() << endl;
 					return false;
 				}
 			}
-			//cout << "ObjectProcessor::mountObject fil done" << endl;
+			//clog << "ObjectProcessor::mountObject fil done" << endl;
 			return true;
 		}
 
-		cout << "ObjectProcessor::mountObject Warning! unrecognized type";
-		cout << endl;
+		clog << "ObjectProcessor::mountObject Warning! unrecognized type";
+		clog << endl;
 		return false;
 	}
 
@@ -248,8 +248,8 @@ namespace carousel {
 		if (listeners != NULL) {
 			i = listeners->begin();
 			while (i != listeners->end()) {
-				cout << "ObjectProcessor::notifyListeners call objectmounted";
-				cout << " for '" << objectId << "'" << endl;
+				clog << "ObjectProcessor::notifyListeners call objectmounted";
+				clog << " for '" << objectId << "'" << endl;
 				(*i)->objectMounted(objectId, clientUri, name);
 				++i;
 			}

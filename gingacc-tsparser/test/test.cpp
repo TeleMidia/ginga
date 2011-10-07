@@ -118,7 +118,7 @@ int main(int argc, char** argv, char** envp) {
 	}
 	//TODO: tests
 
-	cout << "gingacc-tsparser test all done. press enter to exit" << endl;
+	clog << "gingacc-tsparser test all done. press enter to exit" << endl;
 	getchar();
 	return 0;
 }

@@ -121,8 +121,8 @@ namespace cm {
 	void* ComponentManager::getComponent(string dLibName) {
 		void* component = dlopen(dLibName.c_str(), RTLD_LAZY);
 		if (component == NULL) {
-			cout << "ComponentManager warning: cant load component '";
-			cout << dLibName.c_str() << "' => " << dlerror() << endl;
+			clog << "ComponentManager warning: cant load component '";
+			clog << dLibName.c_str() << "' => " << dlerror() << endl;
 			return NULL;
 		}
 
@@ -135,8 +135,8 @@ namespace cm {
 		const char* dlsym_error = dlerror();
 
 		if (dlsym_error != NULL) {
-			cout << "ComponentManager::getSymbol warning: cant load symbol '";
-			cout << sym.c_str() << "' => " << dlsym_error << endl;
+			clog << "ComponentManager::getSymbol warning: cant load symbol '";
+			clog << sym.c_str() << "' => " << dlsym_error << endl;
 			return NULL;
 		}
 
@@ -153,8 +153,8 @@ namespace cm {
 		}
 
 		if (symbols->count(objectName) == 0) {
-			cout << "ComponentManager::getObject warning! '" << objectName;
-			cout << "' symbol not found!" << endl;
+			clog << "ComponentManager::getObject warning! '" << objectName;
+			clog << "' symbol not found!" << endl;
 			return NULL;
 		}
 
@@ -168,13 +168,13 @@ namespace cm {
 			}
 
 		} else {
-			cout << "ComponentManager::getObject warning! Component for '";
-			cout << objectName << "' was not descripted" << endl;
+			clog << "ComponentManager::getObject warning! Component for '";
+			clog << objectName << "' was not descripted" << endl;
 			return NULL;
 		}
 
-		cout << "ComponentManager::getObject warning! Can't create component '";
-		cout << c->getName() << "'" << endl;
+		clog << "ComponentManager::getObject warning! Can't create component '";
+		clog << c->getName() << "'" << endl;
 		return NULL;
 	}
 
@@ -197,9 +197,9 @@ namespace cm {
 		void* comp;
 
 		if (symbols->count(objName) == 0) {
-			cout << "ComponentManager::releaseComponentFromaObject";
-			cout << " warning! '" << objName;
-			cout << "' symbol not found!" << endl;
+			clog << "ComponentManager::releaseComponentFromaObject";
+			clog << " warning! '" << objName;
+			clog << "' symbol not found!" << endl;
 			return false;
 		}
 
@@ -207,15 +207,15 @@ namespace cm {
 		if (c != NULL) {
 			comp = c->getComponent();
 			if (comp != NULL) {
-				cout << "ComponentManager::releaseComponentFromObject '";
-				cout << objName << "'" << endl;
+				clog << "ComponentManager::releaseComponentFromObject '";
+				clog << objName << "'" << endl;
 				if (releaseComponent(comp)) {
 					return true;
 				}
 				c->setComponent(NULL);
-				cout << "ComponentManager::releaseComponentFromObject ";
-				cout << "Warning! object '" << objName;
-				cout << "' was not released." << endl;
+				clog << "ComponentManager::releaseComponentFromObject ";
+				clog << "Warning! object '" << objName;
+				clog << "' was not released." << endl;
 			}
 
 			return false;
@@ -232,8 +232,8 @@ namespace cm {
 		const char* dlsym_error = dlerror();
 
 		if (dlsym_error != NULL) {
-			cout << "ComponentManager::releaseComponent Warning! Cant release";
-			cout << " => " << dlsym_error << endl;
+			clog << "ComponentManager::releaseComponent Warning! Cant release";
+			clog << " => " << dlsym_error << endl;
 
 			return false;
 		}
@@ -248,8 +248,8 @@ namespace cm {
 		string compUri;
 
 		if (components != NULL && !components->empty()) {
-			cout << "ComponentManager::refreshComponentDescription already ";
-			cout << " up to date." << endl;
+			clog << "ComponentManager::refreshComponentDescription already ";
+			clog << " up to date." << endl;
 			return;
 		}
 

@@ -142,7 +142,7 @@ namespace player {
 
 			virtual void setMediaTime(double newTime);
 			virtual int64_t getVPts() {
-				cout << "Player::getVPts return 0" << endl;
+				clog << "Player::getVPts return 0" << endl;
 				return 0;
 			};
 

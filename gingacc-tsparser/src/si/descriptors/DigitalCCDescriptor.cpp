@@ -87,20 +87,20 @@ namespace descriptors {
 		return (unsigned int)descriptorLength;
 	}
 	void DigitalCCDescriptor::print() {
-		cout << "DigitalCCDescriptor::print printing..." << endl;
+		clog << "DigitalCCDescriptor::print printing..." << endl;
 		if(components->size()> 0){
 			vector<Component*>::iterator i;
 			for (i = components->begin(); i!= components->end(); ++i) {
-				cout << " -Component:";
-				cout << " componentTag = " << (unsigned int)(*i)->componentTag;
-				cout << " -copyControlType = ";
-				cout << (unsigned int) (*i)->copyControlType ;
+				clog << " -Component:";
+				clog << " componentTag = " << (unsigned int)(*i)->componentTag;
+				clog << " -copyControlType = ";
+				clog << (unsigned int) (*i)->copyControlType ;
 				if ((*i)->maximumBitrateFlag == true) {
-					cout << " -maximumBitRate = ";
-					cout << (unsigned int)((*i)->maximumBitrate) << endl;
+					clog << " -maximumBitRate = ";
+					clog << (unsigned int)((*i)->maximumBitrate) << endl;
 				}
 				else {
-					cout << endl;
+					clog << endl;
 				}
 
 			}
@@ -110,26 +110,26 @@ namespace descriptors {
 		size_t remainingBytes = 0;
 		struct Component* component;
 
-		//cout << "DigitalCCDescriptor::process with pos = " << pos;
+		//clog << "DigitalCCDescriptor::process with pos = " << pos;
 		descriptorLength = data[pos+1];
-		//cout << " and length = " << (descriptorLength & 0xFF)<< endl;
+		//clog << " and length = " << (descriptorLength & 0xFF)<< endl;
 		pos += 2;
 
 		digitalRecordingControlData = ((data[pos] & 0xC0) >> 6); //2 bits
 		maximumBitrateFlag =  ((data[pos] & 0x20 ) >> 5) ;//1 bit
 		componentControlFlag = ((data[pos] & 0x10) >> 4 ); //1 bit
-		//cout << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF) << endl;
+		//clog << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF) << endl;
 		copyControlType = ((data[pos] & 0x0C) >> 2);//2 bits
 
 		if(copyControlType != 00){
 			APSControlData = (data[pos] & 0x03); //2 bits
 		}
-		//cout << "DigitalCCD debug third byte = " << (data[pos] & 0xFF) << endl;
+		//clog << "DigitalCCD debug third byte = " << (data[pos] & 0xFF) << endl;
 		pos++;
 
 		if(maximumBitrateFlag == 1){
 			maximumBitRate = data[pos];
-			//cout << "DCCD maximumBitRate = " << maximumBitRate << endl;
+			//clog << "DCCD maximumBitRate = " << maximumBitRate << endl;
 			pos++;
 		}
 		if(componentControlFlag == 1){

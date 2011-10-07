@@ -123,8 +123,8 @@ namespace multidevice {
 
 		sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 		if (sd == -1) {
-			cout << "BroadcastSocketService::buildClientAddress Warning!";
-			cout << " can't create socket (sd == -1)" << endl;
+			clog << "BroadcastSocketService::buildClientAddress Warning!";
+			clog << " can't create socket (sd == -1)" << endl;
 			return false;
 		}
 
@@ -145,8 +145,8 @@ namespace multidevice {
 		ret = bind(sd, (struct sockaddr *)&domain_addr, domain_addr_len);
 
 		if (ret == -1) {
-			cout << "BroadcastSocketService::buildClientAddress Warning!";
-			cout << " can't bind socket (ret == -1)" << endl;
+			clog << "BroadcastSocketService::buildClientAddress Warning!";
+			clog << " can't bind socket (ret == -1)" << endl;
 			return false;
 		}
 
@@ -206,9 +206,9 @@ namespace multidevice {
 				host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
 
 				if (s != 0) {
-					cout << "BroadcastSocketService::discoverBroadcastAddress";
-					cout << " getnameinfo() failed: " << gai_strerror(s);
-					cout << endl;
+					clog << "BroadcastSocketService::discoverBroadcastAddress";
+					clog << " getnameinfo() failed: " << gai_strerror(s);
+					clog << endl;
 					return 0;
 				}
 
@@ -218,11 +218,11 @@ namespace multidevice {
 				broadcast_addr.sin_addr.s_addr = inet_addr(inet_ntoa(
 						((struct sockaddr_in *)ifa->ifa_broadaddr)->sin_addr));
 
-				/*cout << "Broadcast addr = ";
-				cout << inet_ntoa(
+				/*clog << "Broadcast addr = ";
+				clog << inet_ntoa(
 						((struct sockaddr_in *)ifa->ifa_broadaddr)->sin_addr);
 
-				cout << endl;*/
+				clog << endl;*/
 
 				memset(
 						broadcast_addr.sin_zero,
@@ -230,9 +230,9 @@ namespace multidevice {
 						sizeof(broadcast_addr.sin_zero));
 
 				if (result >= 0) {
-					cout << "BroadcastSocketService::";
-					cout << "discoverBroadcastAddress interfaceName: '";
-					cout << ifa->ifa_name;
+					clog << "BroadcastSocketService::";
+					clog << "discoverBroadcastAddress interfaceName: '";
+					clog << ifa->ifa_name;
 
 					inet_aton(
 							host,
@@ -272,10 +272,10 @@ namespace multidevice {
 					if (result >= 0) {
 						myAddr = (struct sockaddr_in*)&(netInterface->ifr_addr);
 
-						cout << "BroadcastSocketService::";
-						cout << "discoverBroadcastAddress interfaceName: '";
-						cout << netInterface->ifr_name;
-						cout << endl;
+						clog << "BroadcastSocketService::";
+						clog << "discoverBroadcastAddress interfaceName: '";
+						clog << netInterface->ifr_name;
+						clog << endl;
 
 						return (unsigned int)(myAddr->sin_addr.s_addr);
 					}
@@ -284,8 +284,8 @@ namespace multidevice {
 			i++;
 		}
 #endif
-		cout << "BroadcastSocketService::discoverBroadcastAddress Warning!";
-		cout << " can't discover broadcast address" << endl;
+		clog << "BroadcastSocketService::discoverBroadcastAddress Warning!";
+		clog << " can't discover broadcast address" << endl;
 		return 0;
 	}
 
@@ -317,9 +317,9 @@ namespace multidevice {
 		data     = f->data;
 		taskSize = f->size;
 
-		/*cout << "BroadcastSocketService::sendData Sending";
-		cout << " taskSize = '" << taskSize  << "' and headerSize = '";
-		cout << headerSize << "'" << endl;*/
+		/*clog << "BroadcastSocketService::sendData Sending";
+		clog << " taskSize = '" << taskSize  << "' and headerSize = '";
+		clog << headerSize << "'" << endl;*/
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			result = sendto(
@@ -360,8 +360,8 @@ namespace multidevice {
 			}
 
 		} else {
-			/*cout << "BroadcastSocketService::checkOutputBuffer ";
-			cout << "empty buffer" << endl;*/
+			/*clog << "BroadcastSocketService::checkOutputBuffer ";
+			clog << "empty buffer" << endl;*/
 		}
 		pthread_mutex_unlock(&mutexBuffer);
 
@@ -383,14 +383,14 @@ namespace multidevice {
 
 		switch (res) {
 			case -1:
-				cout << "BroadcastSocketService::checkInputBuffer ";
-				cout << "Warning! select ERRNO = " << errno << endl;
+				clog << "BroadcastSocketService::checkInputBuffer ";
+				clog << "Warning! select ERRNO = " << errno << endl;
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
 
 			case 1:
-				cout << "BroadcastSocketService::checkInputBuffer ";
-				cout << "receiving data ..." << endl;
+				clog << "BroadcastSocketService::checkInputBuffer ";
+				clog << "receiving data ..." << endl;
 
 				memset(data, 0, MAX_FRAME_SIZE);
 				//result = recv(sd, headerStream, headerSize, 0);
@@ -404,12 +404,12 @@ namespace multidevice {
 
 				if (*size == -1) {
 					if (errno != EAGAIN) {
-						cout << "BroadcastSocketService::checkInputBuffer ";
+						clog << "BroadcastSocketService::checkInputBuffer ";
 #ifndef _WIN32
 						herror("check domain error: ");
 #endif
-						cout << "Warning! receive data ERRNO = " << errno;
-						cout << endl;
+						clog << "Warning! receive data ERRNO = " << errno;
+						clog << endl;
 						memset(data, 0, MAX_FRAME_SIZE);
 						return false;
 
@@ -420,11 +420,11 @@ namespace multidevice {
 				}
 
 				if (*size <= HEADER_SIZE) {
-					cout << "BroadcastSocketService::checkInputBuffer ";
-					cout << "Warning! Received invalid frame: ";
-					cout << "bytes received = '" << *size << "' ";
-					cout << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
-					cout << endl;
+					clog << "BroadcastSocketService::checkInputBuffer ";
+					clog << "Warning! Received invalid frame: ";
+					clog << "bytes received = '" << *size << "' ";
+					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+					clog << endl;
 
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;

@@ -92,7 +92,7 @@ namespace descriptors {
 		return (unsigned int)descriptorLength;
 	}
 	void EventGroupDescriptor::print(){
-		cout << "EventGroupDescriptor::print printing..."<< endl;
+		clog << "EventGroupDescriptor::print printing..."<< endl;
 	}
 	size_t EventGroupDescriptor::process(char* data, size_t pos){
 		struct Event* event;

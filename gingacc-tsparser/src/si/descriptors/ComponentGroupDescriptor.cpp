@@ -94,7 +94,7 @@ namespace descriptors {
 		return (unsigned int)descriptorLength;
 	}
 	void ComponentGroupDescriptor::print(){
-		cout << "ComponentGroupDescriptor::print..."<< endl;
+		clog << "ComponentGroupDescriptor::print..."<< endl;
 	}
 	size_t ComponentGroupDescriptor::process(char* data, size_t pos){
 		struct ComponentGroup* cg;

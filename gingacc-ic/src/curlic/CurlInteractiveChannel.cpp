@@ -92,8 +92,8 @@ namespace ic {
 
 		pthread_mutex_lock(&mutex);
 		if (curl != NULL) {
-			cout << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
-			cout << endl;
+			clog << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
+			clog << endl;
 		}
 
 		curl = curl_easy_init();
@@ -104,8 +104,8 @@ namespace ic {
 
 			res = curl_easy_perform(curl);
 			if (res != CURLE_OK) {
-				cout << "CurlInteractiveChannel::hasConnection Warning! ";
-				cout << "cant connect, code '" << res << "'" << endl;
+				clog << "CurlInteractiveChannel::hasConnection Warning! ";
+				clog << "cant connect, code '" << res << "'" << endl;
 				releaseUrl();
 				pthread_mutex_unlock(&mutex);
 				return false;
@@ -114,9 +114,9 @@ namespace ic {
 	        curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 0);
 
 	        releaseUrl();
-			cout << endl;
-			cout << "CurlInteractiveChannel::hasConnection OK!" << endl;
-			cout << endl;
+			clog << endl;
+			clog << "CurlInteractiveChannel::hasConnection OK!" << endl;
+			clog << endl;
 
 			pthread_mutex_unlock(&mutex);
 			return true;
@@ -133,8 +133,8 @@ namespace ic {
 
 		if (localUri.find("/") != std::string::npos) {
 			localPath = localUri.substr(0, localUri.find_last_of("/") + 1);
-			cout << "CurlInteractiveChannel::setSourceTarget creating '";
-			cout << localPath << "' local path" << endl;
+			clog << "CurlInteractiveChannel::setSourceTarget creating '";
+			clog << localPath << "' local path" << endl;
 #ifdef _WIN32
 			_mkdir(localPath.c_str());
 #else
@@ -174,7 +174,7 @@ namespace ic {
 			IInteractiveChannelListener* listener,
 			string userAgent) {
 
-		cout << "RESERVE '" << uri << "'" << endl;
+		clog << "RESERVE '" << uri << "'" << endl;
 		this->uri = uri;
 		this->listener = listener;
 		this->userAgent = userAgent;
@@ -186,12 +186,12 @@ namespace ic {
 		CURLcode res;
 		bool success = false;
 
-		cout << "CurlInteractiveChannel::performUrl '" << uri << "'" << endl;
+		clog << "CurlInteractiveChannel::performUrl '" << uri << "'" << endl;
 
 		pthread_mutex_lock(&mutex);
 		if (curl != NULL) {
-			cout << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
-			cout << endl;
+			clog << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
+			clog << endl;
 		}
 
 		curl = curl_easy_init();
@@ -214,15 +214,15 @@ namespace ic {
 		if (curl != NULL) {
 			res = curl_easy_perform(curl);
 			if (res != CURLE_OK) {
-				cout << endl;
-				cout << "CurlInteractiveChannel::performUrl Warning! ";
-				cout << res << " for '" << uri << "'" << endl;
-				cout << endl;
+				clog << endl;
+				clog << "CurlInteractiveChannel::performUrl Warning! ";
+				clog << res << " for '" << uri << "'" << endl;
+				clog << endl;
 
 			} else {
 
-				cout << "CurlInteractiveChannel::performUrl '" << uri << "'";
-				cout << " done, notifying listeners" << endl;
+				clog << "CurlInteractiveChannel::performUrl '" << uri << "'";
+				clog << " done, notifying listeners" << endl;
 
 				if (listener != NULL) {
 					if (!positiveResponse(&respCode)) {
@@ -237,12 +237,12 @@ namespace ic {
 			releaseUrl();
 
 		} else {
-			cout << "CurlInteractiveChannel::performUrl Warning! ";
-			cout << " NULL CURL FOR '" << uri << "'" << endl;
+			clog << "CurlInteractiveChannel::performUrl Warning! ";
+			clog << " NULL CURL FOR '" << uri << "'" << endl;
 		}
 
-		cout << "CurlInteractiveChannel::performUrl '" << uri << "'";
-		cout << " all done!!!" << endl;
+		clog << "CurlInteractiveChannel::performUrl '" << uri << "'";
+		clog << " all done!!!" << endl;
 		pthread_mutex_unlock(&mutex);
 		return success;
 	}
@@ -274,8 +274,8 @@ namespace ic {
 		if (fd > 0) {
 			w = write(fd, ptr, (size * nmemb));
 			if (w != (int)(size * nmemb)) {
-				cout << "CurlInteractiveChannel::writeCallBack can't write";
-				cout << endl;
+				clog << "CurlInteractiveChannel::writeCallBack can't write";
+				clog << endl;
 
 			} else if (l != NULL) {
 				l->receiveDataPipe(fd, w);
@@ -283,8 +283,8 @@ namespace ic {
 			}
 
 		} else {
-			cout << "CurlInteractiveChannel::writeCallBack throw write";
-			cout << endl;
+			clog << "CurlInteractiveChannel::writeCallBack throw write";
+			clog << endl;
 		}
 
 		return w;
@@ -293,8 +293,8 @@ namespace ic {
 	bool CurlInteractiveChannel::positiveResponse(long *respCode) {
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, respCode);
 
-		cout << "CurlInteractiveChannel::positiveResponse received code is '";
-		cout << *respCode << "' for '" << uri << "'" << endl;
+		clog << "CurlInteractiveChannel::positiveResponse received code is '";
+		clog << *respCode << "' for '" << uri << "'" << endl;
 		return false;
 	}
 

@@ -93,8 +93,8 @@ namespace si {
 	}
 
 	void Pmt::addElementaryStream(unsigned int pid, short esType) {
-		cout << "pid = '" << pid << "' esType = '" << esType;
-		cout << "' " << endl;
+		clog << "pid = '" << pid << "' esType = '" << esType;
+		clog << "' " << endl;
 		(*streams)[pid] = esType;
 	}
 
@@ -182,21 +182,21 @@ namespace si {
 
 	bool Pmt::processSectionPayload() {
 		if (processed) {
-			cout << "Warning! Pmt::processSectionPayload() - Try to process a "
+			clog << "Warning! Pmt::processSectionPayload() - Try to process a "
 				 << "already processed PMT " << endl;
 			return false;
 		}
 
 		if (tableId != (unsigned int)PMT_TID || !isConsolidated()) {
-			cout << "Pmt::processSectionPayload Warning! inconsistency found";
-			cout << " tableId = " << tableId << " and isConsolidated = ";
-			cout << isConsolidated() << endl;
+			clog << "Pmt::processSectionPayload Warning! inconsistency found";
+			clog << " tableId = " << tableId << " and isConsolidated = ";
+			clog << isConsolidated() << endl;
 			return false;
 		}
 
 		if (programNumber != idExtention) {
-			cout << "Pmt::processSectionPayload Warning! programNumber !=";
-			cout << " idExtension." << endl;
+			clog << "Pmt::processSectionPayload Warning! programNumber !=";
+			clog << " idExtension." << endl;
 		}
 
 		char sectionPayload[sectionLength - 9];
@@ -291,13 +291,13 @@ namespace si {
 	}
 
 	void Pmt::print() {
-		cout << "Pmt::print" << endl;
-		cout << "Program number = " << idExtention << endl;
-		cout << "streams:" << endl;
+		clog << "Pmt::print" << endl;
+		clog << "Program number = " << idExtention << endl;
+		clog << "streams:" << endl;
 		map<unsigned int, short>::iterator i;
 		for (i = streams->begin(); i != streams->end(); ++i) {
-			cout << "streamType '" << getStreamTypeName(i->second) << "' ";
-			cout << " has pid = '" << i->first << "'" << endl;
+			clog << "streamType '" << getStreamTypeName(i->second) << "' ";
+			clog << " has pid = '" << i->first << "'" << endl;
 		}
 	}
 }

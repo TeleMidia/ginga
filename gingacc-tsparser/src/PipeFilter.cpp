@@ -92,7 +92,7 @@ namespace tsparser {
 	}
 
 	void PipeFilter::addPid(int pid) {
-		cout << "PipeFilter::addPid '" << pid << "'" << endl;
+		clog << "PipeFilter::addPid '" << pid << "'" << endl;
 		lock();
 		(*pids)[pid] = 0;
 		unlock();
@@ -153,7 +153,7 @@ namespace tsparser {
 				}
 
 		    } catch (const char *except) {
-		    	cout << "PipeFilter::receiveTSPacket catch: " << except << endl;
+		    	clog << "PipeFilter::receiveTSPacket catch: " << except << endl;
 		    	::usleep(100000);
 		    }
 		}
@@ -170,7 +170,7 @@ namespace tsparser {
 				write(secondFd, buf, len);
 
 		    } catch (const char *except) {
-		    	cout << "PipeFilter::receivePes p2 catch: " << except << endl;
+		    	clog << "PipeFilter::receivePes p2 catch: " << except << endl;
 		    }
 		}
 
@@ -179,13 +179,13 @@ namespace tsparser {
 				write(pipeFd, buf, len);
 
 			} catch (const char *except) {
-				cout << "PipeFilter::receivePes p1 catch: " << except << endl;
+				clog << "PipeFilter::receivePes p1 catch: " << except << endl;
 			}
 		}
 	}
 
 	bool PipeFilter::addDestination(unsigned int dest) {
-		cout << "PipeFilter::addDestination '" << dest << "'" << endl;
+		clog << "PipeFilter::addDestination '" << dest << "'" << endl;
 		secondPid = dest;
 		return true;
 	}
@@ -196,26 +196,26 @@ namespace tsparser {
 		char buff[buffSize];
 		string cmd;
 
-		cout << "PipeFilter::run(" << this << ")" << endl;
+		clog << "PipeFilter::run(" << this << ")" << endl;
 
 		if (dvrReader) {
-			cout << "PipeFilter::run(" << this << ") reader" << endl;
+			clog << "PipeFilter::run(" << this << ") reader" << endl;
 
 			fd = open(dvrName.c_str(), O_RDONLY | O_NONBLOCK);
 			//fd = open(dvrName.c_str(), O_RDONLY);
 			if (fd < 0) {
 				fd = open(dvrName.c_str(), O_RDONLY);
 				if (fd < 0) {
-					cout << "PipeFilter::run(" << this << ")";
-					cout << " can't open '" << dvrName;
-					cout << "'" << endl;
+					clog << "PipeFilter::run(" << this << ")";
+					clog << " can't open '" << dvrName;
+					clog << "'" << endl;
 					perror("PipeFilter::run can't open file");
 					return;
 				}
 			}
 
-			cout << "PipeFilter::run(" << this << ") '" << dvrName;
-			cout << "' OPENED" << endl;
+			clog << "PipeFilter::run(" << this << ") '" << dvrName;
+			clog << "' OPENED" << endl;
 
 			while (dvrReader) {
 				rval = read(fd, buff, buffSize);
@@ -224,7 +224,7 @@ namespace tsparser {
 				}
 			}
 
-			cout << "PipeFilter::run(" << this << ") reader all done!" << endl;
+			clog << "PipeFilter::run(" << this << ") reader all done!" << endl;
 
 		} else {
 			rval = mkfifo(fifoName.c_str(), S_IFIFO);
@@ -232,16 +232,16 @@ namespace tsparser {
 
 			pipeFd = open(fifoName.c_str(), O_WRONLY);
 			if (pipeFd == -1) {
-				cout << "PipeFilter::run error opening pipe '";
-				cout << fifoName << "'";
-				cout << endl;
+				clog << "PipeFilter::run error opening pipe '";
+				clog << fifoName << "'";
+				clog << endl;
 
 			} else {
 				if (secondPid > 0) {
 					fifoName = "dvr" + itos(secondPid) + ".ts";
 					mkfifo(fifoName.c_str(), S_IFIFO);
 					secondFd = open(fifoName.c_str(), O_WRONLY);
-					cout << "secpipe '" << fifoName << "' opened" << endl;
+					clog << "secpipe '" << fifoName << "' opened" << endl;
 				}
 				fifoCreated = true;
 			}

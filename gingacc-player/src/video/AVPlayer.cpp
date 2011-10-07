@@ -102,7 +102,7 @@ namespace player {
 
 	AVPlayer::~AVPlayer() {
 		lock();
-		wclog << "AVPlayer::~AVPlayer()" << endl;
+		clog << "AVPlayer::~AVPlayer()" << endl;
 
 		if (hasVisual) {
 			video_close(video);
@@ -111,7 +111,7 @@ namespace player {
 			audio_close(audio);
 		}
 
-		wclog << "AVPlayer::~AVPlayer() done" << endl;
+		clog << "AVPlayer::~AVPlayer() done" << endl;
 	}
 
 	Surface* AVPlayer::loadFile() {
@@ -757,40 +757,40 @@ namespace player {
 		try {
 			//tentando abrir dispositivos
 			if (open_devices() == -1) {
-				wclog << "Erro: v4l2 devices nao foram iniciados." << endl;
+				clog << "Erro: v4l2 devices nao foram iniciados." << endl;
 
 			} else {
 				//verifica a existencia de decoder, capturadora de TV ...
 				int DriverCapability();
 				if(HasDecoder && !CanDigital) {
-					wclog << "Erro no CanDigital." << endl;
+					clog << "Erro no CanDigital." << endl;
 					close_devices();
 
 				} else if (!HasDecoder) {
 					if(!CanDigital) {
 						if(set_input(0) == -1) {
-							wclog << "Erro: decoder nao encontrada." << endl;
+							clog << "Erro: decoder nao encontrada." << endl;
 							close_devices();
 						}
 					}
 
 				} else if (get_vout_format(&width,&height) ==-1) {
-					wclog << "Erro: nao tem capacidade para pegar resolucao"
-					wclog << " da tela." << endl;
+					clog << "Erro: nao tem capacidade para pegar resolucao"
+					clog << " da tela." << endl;
 					close_devices();
 
 				} else if (set_video_fmt(width, height) == -1) {
-					wclog << "Erro: nao tem capacidade para configurar"
-					wclog << " a resolucao do video" << endl;
+					clog << "Erro: nao tem capacidade para configurar"
+					clog << " a resolucao do video" << endl;
 					close_devices();
 
 				} else if (set_color_key(OVERLAY_KEY, OVERLAY_MASK) == -1) {
-					wclog << "Erro: nao tem capacidade para fazer overlay.";
-					wclog << endl;
+					clog << "Erro: nao tem capacidade para fazer overlay.";
+					clog << endl;
 					close_devices();
 
 				} else if (set_vout_control(1) == -1) {
-					wclog << "Erro: falha na inicializacao do overlay" << endl;
+					clog << "Erro: falha na inicializacao do overlay" << endl;
 					close_devices();
 				}
 
@@ -805,7 +805,7 @@ namespace player {
 				//para fazer com que o driver de audio seja carregado
 				audio = open( "/dev/audio", O_RDONLY );
 				if (audio == -1) {
-					wclog << "Warning! Initializing audio device." << endl;
+					clog << "Warning! Initializing audio device." << endl;
 				}
 				close(audio);
 
@@ -822,7 +822,7 @@ namespace player {
 
 			}
 		} catch (...) {
-			wclog << "Warning! AVPlayer::AVPlayer" << endl;
+			clog << "Warning! AVPlayer::AVPlayer" << endl;
 		}
 	} //constructor
 
@@ -949,7 +949,7 @@ namespace player {
 			/*FMPEnableOverlay(1);*/
 
 		} catch (...) {
-			wclog << "Warning! AVPlayer::setVoutWindow" << endl;
+			clog << "Warning! AVPlayer::setVoutWindow" << endl;
 		}
 	}
 
@@ -959,7 +959,7 @@ namespace player {
 			//SetAlphaBlend(alpha1, x, y, w, h, 0, 0x00FFFF, 0, 0);
 
 		} catch(...) {
-			wclog << "Warning! AVPlayer::setAlphaBlend" << endl;
+			clog << "Warning! AVPlayer::setAlphaBlend" << endl;
 		}
 	}
 
@@ -968,13 +968,13 @@ namespace player {
 		firstLoop = true;
 
 		try {
-			//wclog << "AVPlayer:: Thread running" << endl;
-			//wclog << "AVPlayer:: API Play" << endl;
+			//clog << "AVPlayer:: Thread running" << endl;
+			//clog << "AVPlayer:: API Play" << endl;
 			FMPPlay();
 
-			//wclog << "AVPlayer:: turn on preview" << endl;
+			//clog << "AVPlayer:: turn on preview" << endl;
 			preview(1);
-			//wclog << "AVPlayer:: setting alpha blend";
+			//clog << "AVPlayer:: setting alpha blend";
 			SetAlphaBlend(alpha0, x, y, width, height, 0, -1, 0, 0);
 
 			/*FMPSetVideoPortDimensions(width,height);
@@ -987,13 +987,13 @@ namespace player {
 			playfile_state = PLAYING;
 
 			while (bytesread > 0) {
-				//wclog << "AVPlayer:: reading from file" << endl;
+				//clog << "AVPlayer:: reading from file" << endl;
 				FMP_BUFFER FMPBuf;
 
 				// get a pointer to a free buffer
 				rc = FMPGetBuffer (&FMPBuf, TRUE);
 				if (rc != FMPE_OK) {
-					wclog << "FMPError : " << FMPGetLastError(rc) << endl;
+					clog << "FMPError : " << FMPGetLastError(rc) << endl;
 					break;
 				}
 
@@ -1013,17 +1013,17 @@ namespace player {
 				if (FMPGet(FMPI_PTS) < initialTimeStamp) {
 					initialTimeStamp = FMPGet(FMPI_PTS);
 				}
-				//wclog << "PTS = " << FMPGet (FMPI_PTS) << " STC = ";
-				//wclog << FMPGet (FMPI_STC) << endl;
+				//clog << "PTS = " << FMPGet (FMPI_PTS) << " STC = ";
+				//clog << FMPGet (FMPI_STC) << endl;
 
 				// the buffer is ready to be queued
 				if (FMPPush (&FMPBuf) != FMPE_OK) {
-					wclog << "Warning! pushing buffer" << endl;
+					clog << "Warning! pushing buffer" << endl;
 				}
 				if (firstLoop && FMPGet(FMPI_PTS) != 0) {
 					firstLoop = false;
 					initialTimeStamp = FMPGet(FMPI_PTS);
-					//wclog << "initialTimeStamp = " << initialTimeStamp << endl;
+					//clog << "initialTimeStamp = " << initialTimeStamp << endl;
 				}
 			}
 			::usleep(2000000);
@@ -1040,7 +1040,7 @@ namespace player {
 			notifyListeners(PlayerListener::PL_NOTIFY_STOP);
 
 		} catch (...) {
-			wclog << "Warning! AVPlayer::run" << endl;
+			clog << "Warning! AVPlayer::run" << endl;
 		}
 	}
 }
@@ -1090,12 +1090,12 @@ namespace player {
 			} else {
 				this->mrl = mrl.substr(11, mrl.length() - 11);
 			}
-			cout << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
-			cout << this->mrl << "'" << endl;
+			clog << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
+			clog << this->mrl << "'" << endl;
 
 #if HAVE_CCRTPIC & !HAVE_XINEPROVIDER
 		} else if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
-			cout << "AVPlayer::AVPlayer creating RTP IC " << endl;
+			clog << "AVPlayer::AVPlayer creating RTP IC " << endl;
 
 			icListener = new RTPListener(mrl);
 			this->mrl  = icListener->getUrl();
@@ -1143,7 +1143,7 @@ namespace player {
 		if (provider == NULL) {
 			createProvider(this);
 			if (provider == NULL) {
-				cout << "AVPlayer::getSurface() can't create provider" << endl;
+				clog << "AVPlayer::getSurface() can't create provider" << endl;
 			}
 		}
 
@@ -1154,7 +1154,7 @@ namespace player {
 		AVPlayer* p = (AVPlayer*)ptr;
 		bool isRemote = false;
 
-		cout << "AVPlayer::createProvider '" << p->mrl << "'" << endl;
+		clog << "AVPlayer::createProvider '" << p->mrl << "'" << endl;
 		pthread_mutex_lock(&(p->pMutex));
 
 		if (p->mrl.substr(0, 7) == "rtsp://" ||
@@ -1186,7 +1186,7 @@ namespace player {
 			p->provider = ((CMPCreator*)(cm->getObject(
 					p->pSym)))(p->mrl.c_str());
 
-			cout << "AVPlayer::createProvider provider created" << endl;
+			clog << "AVPlayer::createProvider provider created" << endl;
 
 #else
 			if (p->hasVisual) {
@@ -1205,17 +1205,17 @@ namespace player {
 			}
 #endif
 
-			cout << "AVPlayer::createProvider call createFrame" << endl;
+			clog << "AVPlayer::createProvider call createFrame" << endl;
 			p->surface = p->createFrame();
 		}
 
 		pthread_mutex_unlock(&(p->pMutex));
-		cout << "AVPlayer::createProvider '" << p->mrl << "' all done" << endl;
+		clog << "AVPlayer::createProvider '" << p->mrl << "' all done" << endl;
 		return p;
 	}
 
 	void AVPlayer::finished() {
-		cout << "AVPlayer::finished" << endl;
+		clog << "AVPlayer::finished" << endl;
 	}
 
 	double AVPlayer::getEndTime() {
@@ -1235,7 +1235,7 @@ namespace player {
 	}
 
 	void AVPlayer::setSoundLevel(float level) {
-		//wclog << "AVPlayer::setSoundLevel()" << endl;
+		//clog << "AVPlayer::setSoundLevel()" << endl;
 		//lock()();
 		this->soundLevel = level;
 		if (provider != NULL) {
@@ -1245,11 +1245,11 @@ namespace player {
 	}
 
 	ISurface* AVPlayer::createFrame() {
-		//wclog << "AVPlayer::createFrame()" << endl;
+		//clog << "AVPlayer::createFrame()" << endl;
 		lock();
 		if (surface != NULL) {
-			cout << "AVPlayer::createFrame Warning! surface != NULL";
-			cout << endl;
+			clog << "AVPlayer::createFrame Warning! surface != NULL";
+			clog << endl;
 			if (mainAV) {
 				surface->setParent(NULL);
 			}
@@ -1360,7 +1360,7 @@ namespace player {
 
 	void AVPlayer::play() {
 		if (provider == NULL) {
-			cout << "AVPlayer::play() can't play, provider is NULL" << endl;
+			clog << "AVPlayer::play() can't play, provider is NULL" << endl;
 			this->wakeUp();
 			return;
 		}
@@ -1422,8 +1422,8 @@ namespace player {
 		float fValue = 1.0;
 		vector<string>* vals;
 
-		/*cout << "AVPlayer::setPropertyValue '" << name << "' ";
-		cout << "= '" << value << "'" << endl;*/
+		/*clog << "AVPlayer::setPropertyValue '" << name << "' ";
+		clog << "= '" << value << "'" << endl;*/
 
 		//TODO: animation, set volume, brightness, ...
 		if (name == "soundLevel") {
@@ -1621,9 +1621,9 @@ namespace player {
 		if (icListener != NULL) {
 			running = true;
 			unlock();
-			cout << "AVPlayer::run call performIC" << endl;
+			clog << "AVPlayer::run call performIC" << endl;
 			icListener->performIC();
-			cout << "AVPlayer::run call performIC done" << endl;
+			clog << "AVPlayer::run call performIC done" << endl;
 			if (status != STOP && status != PAUSE) {
 				status  = STOP;
 				running = false;
@@ -1682,8 +1682,8 @@ namespace player {
 			}
 
 			if (isInfinity(dur)) {
-				cout << "AVPlayer::run duration is INF";
-				cout << " => returning" << endl;
+				clog << "AVPlayer::run duration is INF";
+				clog << " => returning" << endl;
 				unlock();
 				return;
 			}
@@ -1696,15 +1696,15 @@ namespace player {
 			currentTime = getCurrentMediaTime();
 			if (currentTime > 0) {
 				while (dur > (currentTime + 0.1)) {
-					/*cout << "AVPlayer::run dur = '" << dur;
-					cout << "' curMediaTime = '";
-					cout << currentTime << "' total = '";
-					cout << getTotalMediaTime();
-					cout << "' for '" << mrl << "'" << endl;*/
+					/*clog << "AVPlayer::run dur = '" << dur;
+					clog << "' curMediaTime = '";
+					clog << currentTime << "' total = '";
+					clog << getTotalMediaTime();
+					clog << "' for '" << mrl << "'" << endl;*/
 
 					if (status != PLAY) {
-						cout << "AVPlayer::run status != play => exiting";
-						cout << endl;
+						clog << "AVPlayer::run status != play => exiting";
+						clog << endl;
 						break;
 					}
 
@@ -1721,22 +1721,22 @@ namespace player {
 						}
 
 					} else if (!this->usleep(timeRemain)) {
-						cout << "AVPlayer::run can't sleep '" << timeRemain;
-						cout << "' => exiting" << endl;
+						clog << "AVPlayer::run can't sleep '" << timeRemain;
+						clog << "' => exiting" << endl;
 						break;
 					}
 
 					currentTime = getCurrentMediaTime();
 					if (currentTime <= 0) {
-						cout << "AVPlayer::run currentTime = '" << currentTime;
-						cout << "' => exiting" << endl;
+						clog << "AVPlayer::run currentTime = '" << currentTime;
+						clog << "' => exiting" << endl;
 						break;
 					}
 				}
 			}
 		}
 
-		/*cout << "AVPlayer::run(" << mrl << ") notifying ... " << endl;*/
+		/*clog << "AVPlayer::run(" << mrl << ") notifying ... " << endl;*/
 		if (status != PAUSE) {
 			presented = true;
 		}
@@ -1749,7 +1749,7 @@ namespace player {
 				provider->stop();
 			}
 
-			cout << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
+			clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
 			unlock();
 			notifyListeners(PL_NOTIFY_STOP, "");
 
@@ -1759,7 +1759,7 @@ namespace player {
 			unlock();
 		}
 
-		cout << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
+		clog << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
 	}
 }
 }

@@ -119,7 +119,7 @@ namespace um {
 		remoteFileName = component->getRepository(0) + component->getName();
 		localFileName = location + component->getName();
 
-		cout << "Update::start" << endl;
+		clog << "Update::start" << endl;
 		mkdir(location.c_str(), 0666);
 		fd = open(
 				localFileName.c_str(),
@@ -133,13 +133,13 @@ namespace um {
 				ic->reserveUrl(remoteFileName, NULL);
 
 			} else {
-				cout << "Update::start warning: can't create Interactive ";
-				cout << "channel for '" << remoteFileName << "'" << endl;
+				clog << "Update::start warning: can't create Interactive ";
+				clog << "channel for '" << remoteFileName << "'" << endl;
 			}
 
 		} else {
-			cout << "Update::start warning: can't create local file '";
-			cout << localFileName << "'" << endl;
+			clog << "Update::start warning: can't create local file '";
+			clog << localFileName << "'" << endl;
 		}
 	}
 

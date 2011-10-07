@@ -255,9 +255,9 @@ namespace io {
 			args = NULL;
 		}
 
-		cout << "GingaLocatorFactory::addClientLocation ";
-		cout << "clientUri '" << clientUri << "' ior '";
-		cout << newIor << "'" << endl;
+		clog << "GingaLocatorFactory::addClientLocation ";
+		clog << "clientUri '" << clientUri << "' ior '";
+		clog << newIor << "'" << endl;
 		(*iorClients)[newIor] = clientUri;
 		(*iorNames)[newIor] = name;
 		newLocatorConditionSatisfied();

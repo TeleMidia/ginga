@@ -82,7 +82,7 @@ namespace carousel {
 			trval = trval + rval;
 
 			if (rval == 0) {
-				cout << "DownloadDataBlock::processDataBlock eof" << endl;
+				clog << "DownloadDataBlock::processDataBlock eof" << endl;
 				break;
 			}
 
@@ -112,9 +112,9 @@ namespace carousel {
 
 							//checking reserved
 							if ((bytes[i + 3] & 0xFF) != 0xFF) {
-								cout << "DownloadDataBlock::processDataBlock ";
-								cout << "Warning! Reserved DDB shall be set";
-								cout << "to 0xFF" << endl;
+								clog << "DownloadDataBlock::processDataBlock ";
+								clog << "Warning! Reserved DDB shall be set";
+								clog << "to 0xFF" << endl;
 							}
 
 							blockNumber = ((bytes[i + 4] & 0xFF) << 8) |
@@ -127,9 +127,9 @@ namespace carousel {
 						}
 
 					} else {
-						cout << "DownloadDataBlock::processDataBlock ";
-						cout << "DDB Warning! modId '" << moduleId << "' not";
-						cout << " found!" << endl;
+						clog << "DownloadDataBlock::processDataBlock ";
+						clog << "DDB Warning! modId '" << moduleId << "' not";
+						clog << " found!" << endl;
 					}
 
 				} else {
@@ -149,8 +149,8 @@ namespace carousel {
 				bytes = NULL;
 
 			} else {
-				cout << "Warning! Unknown DDB MessageId: ";
-				cout << hex << messageId << endl;
+				clog << "Warning! Unknown DDB MessageId: ";
+				clog << hex << messageId << endl;
 			}
 		}
 		close(fd);
@@ -167,9 +167,9 @@ namespace carousel {
 	}
 
 	void DownloadDataBlock::print() {
-		cout << "messageLength " << header->getMessageLength() << endl;
-		cout << "datablock moduleId " << moduleId << endl;
-		cout << "datablock moduleVersion " << moduleVersion << endl;
+		clog << "messageLength " << header->getMessageLength() << endl;
+		clog << "datablock moduleId " << moduleId << endl;
+		clog << "datablock moduleVersion " << moduleVersion << endl;
 	}
 }
 }

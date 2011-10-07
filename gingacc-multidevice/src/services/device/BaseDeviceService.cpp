@@ -106,8 +106,8 @@ namespace multidevice {
 		if (dev != NULL && hasLists) {
 			strStream.append(stream, streamSize);
 
-			/*cout << "BaseDeviceService::receiveEvent '" << strStream << "'";
-			cout << endl;*/
+			/*clog << "BaseDeviceService::receiveEvent '" << strStream << "'";
+			clog << endl;*/
 			devClass = dev->getDeviceClass();
 
 			pthread_mutex_lock(&lMutex);

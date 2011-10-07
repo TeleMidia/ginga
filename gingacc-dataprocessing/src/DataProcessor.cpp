@@ -163,8 +163,8 @@ namespace dataprocessing {
 			map<string, string>* paths) {
 
 		if (removeOCFilter && demux != NULL) {
-			cout << "DataProcessor::run requesting ";
-			cout << "OC filter destroy" << endl;
+			clog << "DataProcessor::run requesting ";
+			clog << "OC filter destroy" << endl;
 			filterManager->destroyFilter(demux, STREAM_TYPE_DSMCC_TYPE_B);
 		}
 
@@ -190,14 +190,14 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::createStreamTypeSectionFilter(short streamType) {
-		cout << "DataProcessor::createStreamTypeSectionFilter '";
-		cout << streamType << "'" << endl;
+		clog << "DataProcessor::createStreamTypeSectionFilter '";
+		clog << streamType << "'" << endl;
 		filterManager->createStreamTypeSectionFilter(streamType, demux, this);
 	}
 
 	void DataProcessor::createPidSectionFilter(int pid) {
-		cout << "DataProcessor::createPidSectionFilter '";
-		cout << pid << "'" << endl;
+		clog << "DataProcessor::createPidSectionFilter '";
+		clog << pid << "'" << endl;
 
 		filterManager->createPidSectionFilter(pid, demux, this);
 	}
@@ -208,7 +208,7 @@ namespace dataprocessing {
 		map<string, set<IStreamEventListener*>*>::iterator i;
 		set<IStreamEventListener*>* listeners;
 
-		cout << "DataProcessor::addSEListener" << endl;
+		clog << "DataProcessor::addSEListener" << endl;
 		i = eventListeners->find(eventType);
 		if (i != eventListeners->end()) {
 			listeners = i->second;
@@ -290,8 +290,8 @@ namespace dataprocessing {
 		struct notifyData* data = NULL;
 		string eventName = se->getEventName();
 
-		cout << "DataProcessor::notifySEListeners for eventName '";
-		cout << eventName << "'" << endl;
+		clog << "DataProcessor::notifySEListeners for eventName '";
+		clog << eventName << "'" << endl;
 		if (eventListeners->count(eventName) != 0) {
 			listeners = (*eventListeners)[eventName];
 			j = listeners->begin();
@@ -333,8 +333,8 @@ namespace dataprocessing {
 
 				payload = (char*)(section->getPayload());
 
-				/*cout << "DataProcessor::receiveSection DSM-CC descriptor";
-				cout << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
+				/*clog << "DataProcessor::receiveSection DSM-CC descriptor";
+				clog << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
 
 				if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
 						(payload[0] & 0xFF) == 0x1a) {
@@ -344,7 +344,7 @@ namespace dataprocessing {
 
 					//i = processedIds->find(se->getId());
 					//if (i == processedIds->end()) {377
-						//cout << "DataProcessor::receiveSection STE" << endl;
+						//clog << "DataProcessor::receiveSection STE" << endl;
 
 						processedIds->insert(se->getId());
 						//TODO: get stream event object from oc
@@ -377,14 +377,14 @@ namespace dataprocessing {
 			//object carousel 0x3B = MSG, 0x3C = DDB
 			} else if (tableId == OCI_TID || tableId == OCD_TID) {
 				lock();
-				//cout << "DataProcessor::receiveSection OC" << endl;
+				//clog << "DataProcessor::receiveSection OC" << endl;
 				sections->push_back(section);
 				unlock();
 				unlockConditionSatisfied();
 
 			//AIT
 			} else if (tableId == AIT_TID) {
-				//cout << "DataProcessor::receiveSection AIT" << endl;
+				//clog << "DataProcessor::receiveSection AIT" << endl;
 
 				if (ait != NULL &&
 						ait->getSectionName() == section->getSectionName()) {
@@ -405,15 +405,15 @@ namespace dataprocessing {
 
 				ait->setSectionName(section->getSectionName());
 				ait->setApplicationType(section->getExtensionId());
-				cout << "DataProcessor::receiveSection AIT calling process";
-				cout << endl;
+				clog << "DataProcessor::receiveSection AIT calling process";
+				clog << endl;
 				ait->process(section->getPayload(), section->getPayloadSize());
 
 				applicationInfoMounted(ait);
 
 			//SDT
 			} else if (tableId == SDT_TID) {
-				//cout << "DataProcessor::receiveSection SDT" << endl;
+				//clog << "DataProcessor::receiveSection SDT" << endl;
 				epgProcessor->decodeSdtSection(section);
 				delete section;
 				section = NULL;
@@ -433,12 +433,12 @@ namespace dataprocessing {
 
 			//CDT
 			} else if (tableId == CDT_TID) {
-				cout << "DataProcessor::receiveSection CDT" << endl;
+				clog << "DataProcessor::receiveSection CDT" << endl;
 				sectionName = section->getSectionName();
 				//TODO: TS files don't have any CDT sections.
 
 			} else if (tableId == 0x73) {
-				cout << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
+				clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
 				epgProcessor->decodeTot(section);
 			}
 		}
@@ -455,7 +455,7 @@ namespace dataprocessing {
 
 		running = true;
 		while (running) {
-			//cout << "DataProcessor::run checking tasks" << endl;
+			//clog << "DataProcessor::run checking tasks" << endl;
 			lock();
 			if (sections->empty()) {
 				unlock();
@@ -467,7 +467,7 @@ namespace dataprocessing {
 				unlock();
 
 				do {
-					//cout << "DataProcessor::run call FM->processSec" << endl;
+					//clog << "DataProcessor::run call FM->processSec" << endl;
 
 					//we must to acquire pid and section name before process
 					//the section
@@ -504,7 +504,7 @@ namespace dataprocessing {
 			}
 		}
 
-		cout << "DataProcessor::run all done!" << endl;
+		clog << "DataProcessor::run all done!" << endl;
 	}
 }
 }

@@ -144,7 +144,7 @@ namespace multidevice {
 			}
 		}
 
-		//cout << "DeviceService::addDevice '" << deviceAddress << "'" << endl;
+		//clog << "DeviceService::addDevice '" << deviceAddress << "'" << endl;
 		return true;
 	}
 

@@ -126,8 +126,8 @@ static void int_dispatch (lua_State* L)
 		lua_pushvalue(L, -5);          // [ ... | evt | env | lst | t | func | evt]
 
 		if (lua_pcall(L, 1, 1, 0) != 0) { // [ ... | evt | env | lst | t | ret]
-			cout << "LUAEVENT int_dispatch ERROR:: ";
-			cout << lua_tostring(L, -1) << endl;
+			clog << "LUAEVENT int_dispatch ERROR:: ";
+			clog << lua_tostring(L, -1) << endl;
 		}
 
 		if (lua_toboolean(L, -1)) {
@@ -173,28 +173,28 @@ LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt,
 	// [ ... ]
 	lua_newtable(L);    // [ ... | evt ]
 
-	//cout << "LuaEvent::ext_postHashRec TABLE = {" << endl;
+	//clog << "LuaEvent::ext_postHashRec TABLE = {" << endl;
 
 	for (it=evt.begin(); it!=evt.end(); ++it) {
-    	//cout << "	LuaEvent::ext_postHashRec: " << it->first.c_str();
+    	//clog << "	LuaEvent::ext_postHashRec: " << it->first.c_str();
 
     	 if ( it->second.table.empty() == false){ //table inside table
-    		//cout << " (table) = " << endl;
+    		//clog << " (table) = " << endl;
 
     		ext_postHashRec(L, it->second.table, false);// [ ... | evt | evt ]
 			lua_setfield(L, -2, it->first.c_str()); // [ ... | evt ]
     	}
     	 else if (it->second.str.empty() == false) { // field is a string
-			//cout << " = " << it->second.str.c_str() << endl;
+			//clog << " = " << it->second.str.c_str() << endl;
 
 			lua_pushstring(L, it->second.str.c_str());  // [ ... | evt | value ]
     		lua_setfield(L, -2, it->first.c_str()); // [ ... | evt ]
     	}
     }
-    //cout << "LuaEvent::ext_postHashRec }" << endl;
+    //clog << "LuaEvent::ext_postHashRec }" << endl;
     // [ ... | evt ]
     if (dispatch == true){
-    	//cout << "LuaEvent::ext_postHashRec going to dispatch!" << endl;
+    	//clog << "LuaEvent::ext_postHashRec going to dispatch!" << endl;
     	int_dispatch(L);  // [ ... ]
 	}
     return 0;
@@ -234,7 +234,7 @@ static int l_post (lua_State* L)
 		}
         int ref = luaL_ref(L, LUA_REGISTRYINDEX); // [ dst ]
 
-//cout << ">send " << L << " ref " << ref << endl;
+//clog << ">send " << L << " ref " << ref << endl;
 #if HAVE_COMPSUPPORT
         GETPLAYER(L)->im->postEvent(
 	        ((UserEventCreator*)(cm->getObject("UserEvent")))(ref, L));
@@ -274,8 +274,8 @@ static int l_post (lua_State* L)
             lua_pushvalue(L, 2);                          // [ dst | evt | class | f_out | evt ]
 
             if (lua_pcall(L, 1, 0, 0) != 0) {             // [ dst | evt | class ]
-            	cout << "LUAEVENT l_post ERROR:: ";
-            	cout << lua_tostring(L, -1) << endl;
+            	clog << "LUAEVENT l_post ERROR:: ";
+            	clog << lua_tostring(L, -1) << endl;
             }
         }
 
@@ -345,12 +345,12 @@ static int l_post (lua_State* L)
 
 		// SI event
 		} else if ( !strcmp(clazz, "si") ){
-			cout << "LuaEvent::l_post SI EVENT";
+			clog << "LuaEvent::l_post SI EVENT";
 			
 			lua_getfield(L, 2, "type");
 			// [ dst | evt | class | type ]
 			const char* type = luaL_checkstring(L, -1);
-			cout << " with type:" << type << endl;
+			clog << " with type:" << type << endl;
 
 			//TODO: handle epg request data table properly.
 			if (!strcmp(type, "si")) {
@@ -414,8 +414,8 @@ static void* sleep_thread (void* data)
 	lua_gettable(t->L, LUA_REGISTRYINDEX);  // [ ... | func ]
 	if (!lua_isnil(t->L, -1)) {
 		if (lua_pcall(t->L, 0, 0, 0) != 0) {// [ ... ]
-			cout << "LUAEVENT sleep_thread ERROR:: ";
-			cout << lua_tostring(t->L, -1) << endl;
+			clog << "LUAEVENT sleep_thread ERROR:: ";
+			clog << lua_tostring(t->L, -1) << endl;
 		}
 
 	} else {
@@ -581,8 +581,8 @@ static int l_register (lua_State* L)
     lua_pushvalue(L, 3);           // [ -> | table | tinsert | newlst | i | filter ]
 
     if (lua_pcall(L, 3, 0, 0) != 0) {// [ -> | table ]
-    	cout << "LUAEVENT l_register ERROR:: ";
-    	cout << lua_tostring(L, -1) << endl;
+    	clog << "LUAEVENT l_register ERROR:: ";
+    	clog << lua_tostring(L, -1) << endl;
     }
 
     // [ i | func | filter | lst | newlst | table ]
@@ -629,8 +629,8 @@ static int l_unregister (lua_State* L)
             lua_pushnumber(L, i);          // [ -> | f' | table | remove | newlst | i ]
 
             if (lua_pcall(L, 2, 0, 0) != 0) {// [ -> | f' | table ]
-            	cout << "LUAEVENT l_unregister ERROR:: ";
-            	cout << lua_tostring(L, -1) << endl;
+            	clog << "LUAEVENT l_unregister ERROR:: ";
+            	clog << lua_tostring(L, -1) << endl;
             }
 
             lua_pop(L, 1);                 // [ -> | f' ]
@@ -703,8 +703,8 @@ LUALIB_API int luaopen_event (lua_State* L)
     lua_pushstring(L, "tcp_event");               // [ require | "tcp_event" ]
 
     if (lua_pcall(L, 1, 1, 0) != 0) {             // [ {f_in,f_out} ]
-		cout << "LUAEVENT luaopen_event ERROR:: ";
-		cout << lua_tostring(L, -1) << endl;
+		clog << "LUAEVENT luaopen_event ERROR:: ";
+		clog << lua_tostring(L, -1) << endl;
     }
 
     lua_rawgeti(L, -1, 1);                        // [ {f_in,f_out} | f_in ]
@@ -722,7 +722,7 @@ static void* tcp_thread (void* data)
 {
     LuaPlayer* player = (LuaPlayer*) data;
     player->tcp_running = true;
-//cout << "TCP STARTED\n";
+//clog << "TCP STARTED\n";
     while (1) {
 #ifndef _WIN32
 	    usleep(500000);
@@ -734,8 +734,8 @@ static void* tcp_thread (void* data)
         lua_rawgeti(player->L, -1, -REFTCPIN);       // [ ... | env | f_in ]
 
         if (lua_pcall(player->L, 0, 1, 0) != 0) {          // [ ... | env | count ]
-        	cout << "LUAEVENT tcp_thread ERROR:: ";
-        	cout << lua_tostring(player->L, -1) << endl;
+        	clog << "LUAEVENT tcp_thread ERROR:: ";
+        	clog << lua_tostring(player->L, -1) << endl;
         }
 
         int count = luaL_checknumber(player->L, -1); // [ ... | env | count ]
@@ -743,7 +743,7 @@ static void* tcp_thread (void* data)
         player->unlock();
         if (count == 0) break;
     }
-//cout << "TCP FINISHED\n";
+//clog << "TCP FINISHED\n";
     player->tcp_running = false;
     return NULL;
 }

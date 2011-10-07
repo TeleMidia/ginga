@@ -90,7 +90,7 @@ namespace multidevice {
 		INCLSectionProcessor* nsp = NULL;
 		bool hasLists;
 
-		//cout << "ActiveDeviceService::receiveMediaContent" << endl;
+		//clog << "ActiveDeviceService::receiveMediaContent" << endl;
 
 		dev = getDevice(devAddr);
 		pthread_mutex_lock(&lMutex);
@@ -136,9 +136,9 @@ namespace multidevice {
 			}
 		}
 
-		cout << "ActiveDeviceService::receiveMediaContent Warning! ";
-		cout << " can't find device '" << dev << "' or no listeners found";
-		cout << endl;
+		clog << "ActiveDeviceService::receiveMediaContent Warning! ";
+		clog << " can't find device '" << dev << "' or no listeners found";
+		clog << endl;
 
 		return false;
 	}

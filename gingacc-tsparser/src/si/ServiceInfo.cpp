@@ -150,13 +150,13 @@ namespace si {
 	void ServiceInfo::print() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		cout << "ServiceInfo::print printing..." << endl;
-		cout << " -serviceId: "               << serviceId        << endl;
-		cout << " -eitScheduleFlag: "         << eitScheduleFlag  << endl;
-		cout << " -eitPresentFlag:"           << eitPresentFollowingFlag;
-		cout << endl;
-		cout << " -runningStatusDesc: "       << getRunningStatusDescription();
-		cout << endl;
+		clog << "ServiceInfo::print printing..." << endl;
+		clog << " -serviceId: "               << serviceId        << endl;
+		clog << " -eitScheduleFlag: "         << eitScheduleFlag  << endl;
+		clog << " -eitPresentFlag:"           << eitPresentFollowingFlag;
+		clog << endl;
+		clog << " -runningStatusDesc: "       << getRunningStatusDescription();
+		clog << endl;
 
 		for (i =  descriptors->begin(); i!= descriptors->end(); ++i) {
 			(*i)->print();
@@ -187,7 +187,7 @@ namespace si {
 
 		pos += 2;
 
-		//cout << "DescriptorsLoopLength = " << descriptorsLoopLength << endl;
+		//clog << "DescriptorsLoopLength = " << descriptorsLoopLength << endl;
 		remainingBytesDescriptor = descriptorsLoopLength;
 
 		while (remainingBytesDescriptor) {//there's at least one descriptor
@@ -210,10 +210,10 @@ namespace si {
 					break;
 
 				default: //Unrecognized Descriptor
-					cout << "ServiceInfo:: process default descriptor with tag: ";
-					cout << hex << (unsigned int)data[pos] << dec ;
-					cout << " with length = " << (unsigned int)data[pos+1];
-					cout << " and with pos = " << pos << endl;
+					clog << "ServiceInfo:: process default descriptor with tag: ";
+					clog << hex << (unsigned int)data[pos] << dec ;
+					clog << " with length = " << (unsigned int)data[pos+1];
+					clog << " and with pos = " << pos << endl;
 					pos += value;
 					break;
 			}

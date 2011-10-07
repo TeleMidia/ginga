@@ -90,8 +90,8 @@ namespace ic {
 	}
 
 	void CCRTPClient::printSSRC() {
-		cout << "CCRTPClient::printSSRC ";
-		cout << "My SSRC identifier is: " << hex << getLocalSSRC() << endl;
+		clog << "CCRTPClient::printSSRC ";
+		clog << "My SSRC identifier is: " << hex << getLocalSSRC() << endl;
 	}
 
 	char* CCRTPClient::getPacketData(int* size) {
@@ -122,18 +122,18 @@ namespace ic {
 	}
 
 	void CCRTPClient::printADU(const AppDataUnit* adu) {
-		cout << "CCRTPClient::printADU ";
-		cout << "I got an app. data unit - ";
-		cout << adu->getSize();
-		cout << " payload octets (";
-		cout << "pt " << (int)adu->getType();
-		cout << ") from ";
-		cout << hex << (int)adu->getSource().getID();
-		cout << "@" << dec;
-		cout << adu->getSource().getNetworkAddress();
-		cout << ":";
-		cout << adu->getSource().getDataTransportPort();
-		cout << endl;
+		clog << "CCRTPClient::printADU ";
+		clog << "I got an app. data unit - ";
+		clog << adu->getSize();
+		clog << " payload octets (";
+		clog << "pt " << (int)adu->getType();
+		clog << ") from ";
+		clog << hex << (int)adu->getSource().getID();
+		clog << "@" << dec;
+		clog << adu->getSource().getNetworkAddress();
+		clog << ":";
+		clog << adu->getSource().getDataTransportPort();
+		clog << endl;
 	}
 
 	/*************************************************************************/
@@ -142,9 +142,9 @@ namespace ic {
 
 	// redefined from IncomingDataQueue
 	void CCRTPClient::onNewSyncSource(const SyncSource& src) {
-		cout << "CCRTPClient::onNewSyncSource ";
-		cout << "* New synchronization source: ";
-		cout << hex << (int)src.getID() << endl;
+		clog << "CCRTPClient::onNewSyncSource ";
+		clog << "* New synchronization source: ";
+		clog << hex << (int)src.getID() << endl;
 	}
 
 	// redefined from QueueRTCPManager
@@ -152,12 +152,12 @@ namespace ic {
 			SyncSource& source, SendReport& SR, uint8 blocks) {
 
 		RTPSession::onGotSR(source,SR,blocks);
-		cout << "CCRTPClient::onGotSR ";
-		cout << "I got an SR RTCP report from ";
-		cout << hex << (int)source.getID() << "@";
-		cout << dec;
-		cout << source.getNetworkAddress() << ":";
-		cout << source.getControlTransportPort() << endl;
+		clog << "CCRTPClient::onGotSR ";
+		clog << "I got an SR RTCP report from ";
+		clog << hex << (int)source.getID() << "@";
+		clog << dec;
+		clog << source.getNetworkAddress() << ":";
+		clog << source.getControlTransportPort() << endl;
 	}
 
 	// redefined from QueueRTCPManager
@@ -165,12 +165,12 @@ namespace ic {
 			SyncSource& source, RecvReport& RR, uint8 blocks) {
 
 		RTPSession::onGotRR(source,RR,blocks);
-		cout << "CCRTPClient::onGotRR ";
-		cout << "I got an RR RTCP report from ";
-		cout << hex << (int)source.getID() << "@";
-		cout << dec;
-		cout << source.getNetworkAddress() << ":";
-		cout << source.getControlTransportPort() << endl;
+		clog << "CCRTPClient::onGotRR ";
+		clog << "I got an RR RTCP report from ";
+		clog << hex << (int)source.getID() << "@";
+		clog << dec;
+		clog << source.getNetworkAddress() << ":";
+		clog << source.getControlTransportPort() << endl;
 	}
 
 	// redefined from QueueRTCPManager
@@ -178,15 +178,15 @@ namespace ic {
 			SyncSource& source, SDESChunk& chunk, size_t len) {
 
 		bool result = RTPSession::onGotSDESChunk(source, chunk, len);
-		cout << "CCRTPClient::onGotSDESChunk ";
-		cout << "I got a SDES chunk from ";
-		cout << hex << (int)source.getID() << "@";
-		cout << dec;
-		cout << source.getNetworkAddress() << ":";
-		cout << source.getControlTransportPort();
-		cout << " (";
-		cout << source.getParticipant()->getSDESItem(SDESItemTypeCNAME);
-		cout << ") " << endl;
+		clog << "CCRTPClient::onGotSDESChunk ";
+		clog << "I got a SDES chunk from ";
+		clog << hex << (int)source.getID() << "@";
+		clog << dec;
+		clog << source.getNetworkAddress() << ":";
+		clog << source.getControlTransportPort();
+		clog << " (";
+		clog << source.getParticipant()->getSDESItem(SDESItemTypeCNAME);
+		clog << ") " << endl;
 		return result;
 	}
 
@@ -199,13 +199,13 @@ namespace ic {
 			rtpIC->releaseUrl();
 		}
 
-		cout << "CCRTPClient::onGotGoodbye ";
-		cout << "I got a Goodbye packet from ";
-		cout << hex << (int)source.getID() << "@";
-		cout << dec;
-		cout << source.getNetworkAddress() << ":";
-		cout << source.getControlTransportPort() << endl;
-		cout << "   Goodbye reason: \"" << reason << "\"" << endl;
+		clog << "CCRTPClient::onGotGoodbye ";
+		clog << "I got a Goodbye packet from ";
+		clog << hex << (int)source.getID() << "@";
+		clog << dec;
+		clog << source.getNetworkAddress() << ":";
+		clog << source.getControlTransportPort() << endl;
+		clog << "   Goodbye reason: \"" << reason << "\"" << endl;
 	}
 }
 }

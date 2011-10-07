@@ -63,7 +63,7 @@ namespace player {
 	IInputManager* LinksPlayer::im = NULL;
 
 	LinksPlayer::LinksPlayer(string mrl) : Player(mrl), Thread::Thread() {
-		cout << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
+		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
 		ILocalDeviceManager* dm = NULL;
 
 		mBrowser = NULL;
@@ -93,21 +93,21 @@ namespace player {
 	}
 
 	LinksPlayer::~LinksPlayer() {
-		cout << "LinksPlayer::~LinksPlayer " << endl;
+		clog << "LinksPlayer::~LinksPlayer " << endl;
 		im->removeInputEventListener(this);
 
 		if (hasBrowser) {
-			cout << "LinksPlayer::~LinksPlayer hasBrowser" << endl;
+			clog << "LinksPlayer::~LinksPlayer hasBrowser" << endl;
 			closeBrowser(mBrowser);
 			mBrowser = NULL;
-			cout << "LinksPlayer::~LinksPlayer browser closed" << endl;
+			clog << "LinksPlayer::~LinksPlayer browser closed" << endl;
 		}
 	}
 
 	ISurface* LinksPlayer::getSurface() {
 		void* s;
 
-		cout << "LinksPlayer::getSurface '" << mrl << "'" << endl;
+		clog << "LinksPlayer::getSurface '" << mrl << "'" << endl;
 
 		if (this->surface == NULL) {
 			if (hasBrowser) {
@@ -123,8 +123,8 @@ namespace player {
 				}
 
 			} else {
-				cout << "LinksPlayer::getSurface Warning! Trying to get ";
-				cout << "a surface from a deleted browser" << endl;
+				clog << "LinksPlayer::getSurface Warning! Trying to get ";
+				clog << "a surface from a deleted browser" << endl;
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace player {
 	}
 
 	void LinksPlayer::setNotifyContentUpdate(bool notify) {
-		cout << "LinksPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
+		clog << "LinksPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
 		if (notify) {
 			setGhostBrowser(mBrowser);
 		}
@@ -140,12 +140,12 @@ namespace player {
 	}
 
 	bool LinksPlayer::setOutWindow(int windowId) {
-		cout << "LinksPlayer::setOutWindow '" << mrl << "'" << endl;
+		clog << "LinksPlayer::setOutWindow '" << mrl << "'" << endl;
 		Player::setOutWindow(windowId);
 
 		if (hasBrowser && outputWindow != NULL) {
-			cout << "LinksPlayer::setOutWindow '" << mrl << "' call ";
-			cout << "browserSetFlipWindow" << endl;
+			clog << "LinksPlayer::setOutWindow '" << mrl << "' call ";
+			clog << "browserSetFlipWindow" << endl;
 			browserSetFlipWindow(mBrowser, outputWindow->getContent());
 			return true;
 		}
@@ -154,11 +154,11 @@ namespace player {
 	}
 
 	void LinksPlayer::setBounds(int x, int y, int w, int h) {
-		cout << "LinksPlayer::setBounds '" << x << "', ";
-		cout << "LinksPlayer::setBounds '" << y << "', ";
-		cout << "LinksPlayer::setBounds '" << w << "', ";
-		cout << "LinksPlayer::setBounds '" << h << "'.";
-		cout << endl;
+		clog << "LinksPlayer::setBounds '" << x << "', ";
+		clog << "LinksPlayer::setBounds '" << y << "', ";
+		clog << "LinksPlayer::setBounds '" << w << "', ";
+		clog << "LinksPlayer::setBounds '" << h << "'.";
+		clog << endl;
 
 		this->x = x;
 		this->y = y;
@@ -166,21 +166,21 @@ namespace player {
 		this->h = h;
 
 		if (hasBrowser) {
-			cout << "LinksPlayer::setBounds '" << mrl;
-			cout << "' call browserResizeCoord";
-			cout << endl;
+			clog << "LinksPlayer::setBounds '" << mrl;
+			clog << "' call browserResizeCoord";
+			clog << endl;
 			browserResizeCoord(mBrowser, x, y, w, h);
 
 		} else {
-			cout << "LinksPlayer::setBounds '" << mrl << "' call openBrowser";
-			cout << endl;
+			clog << "LinksPlayer::setBounds '" << mrl << "' call openBrowser";
+			clog << endl;
 			hasBrowser = true;
 			mBrowser   = openBrowser(x, y, w, h);
 		}
 	}
 
 	void LinksPlayer::play() {
-		cout << "LinksPlayer::play(" << mrl << ")" << endl;
+		clog << "LinksPlayer::play(" << mrl << ")" << endl;
 #if !HAVE_MULTIPROCESS
 		if (surface != NULL) {
 			IWindow* parent = (IWindow*)(surface->getParent());
@@ -203,7 +203,7 @@ namespace player {
 	}
 
 	void LinksPlayer::stop() {
-		cout << "LinksPlayer::stop '" << mrl << "'" << endl;
+		clog << "LinksPlayer::stop '" << mrl << "'" << endl;
 		if (hasBrowser) {
 			closeBrowser(mBrowser);
 			mBrowser = NULL;
@@ -213,8 +213,8 @@ namespace player {
 	}
 
 	void LinksPlayer::setPropertyValue(string name, string value) {
-		cout << "LinksPlayer::setProperty '" << name << "' value '";
-		cout << value << "'" << endl;
+		clog << "LinksPlayer::setProperty '" << name << "' value '";
+		clog << value << "'" << endl;
 
 		//TODO: set scrollbar, support...
 		if (name == "transparency") {
@@ -255,9 +255,9 @@ namespace player {
 	}
 
 	bool LinksPlayer::setKeyHandler(bool isHandler) {
-		cout << "LinksPlayer::setKeyHandler '" << mrl << "': isHandler = '";
-		cout << isHandler << "', notifyContentUpdate = '";
-		cout << notifyContentUpdate << "'" << endl;
+		clog << "LinksPlayer::setKeyHandler '" << mrl << "': isHandler = '";
+		clog << isHandler << "', notifyContentUpdate = '";
+		clog << notifyContentUpdate << "'" << endl;
 
 		if (isHandler && notifyContentUpdate) {
 			im->addInputEventListener(this, NULL);
@@ -271,18 +271,18 @@ namespace player {
 	}
 
 	bool LinksPlayer::userEventReceived(IInputEvent* userEvent) {
-		/*cout << "LinksPlayer::userEventReceived(" << mrl << "'): ";
+		/*clog << "LinksPlayer::userEventReceived(" << mrl << "'): ";
 		if (userEvent != NULL) {
-			cout << userEvent->getKeyCode() << "'";
+			clog << userEvent->getKeyCode() << "'";
 		}
-		cout << endl;*/
+		clog << endl;*/
 
 		browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
 		return true;
 	}
 
 	void LinksPlayer::run() {
-		cout << "LinksPlayer::run '" << mrl << "'" << endl;
+		clog << "LinksPlayer::run '" << mrl << "'" << endl;
 		/*IWindow* parent;
 
 		::usleep(1000000);

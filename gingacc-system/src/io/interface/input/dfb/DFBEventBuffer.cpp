@@ -104,7 +104,7 @@ namespace io {
 	}
 
 	DFBEventBuffer::~DFBEventBuffer() {
-		cout << "DFBEventBuffer::~DFBEventBuffer()" << endl;
+		clog << "DFBEventBuffer::~DFBEventBuffer()" << endl;
 		set<IDirectFBEventBuffer*>::iterator i;
 
 		i = pool->find(eventBuffer);

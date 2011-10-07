@@ -87,7 +87,7 @@ namespace tuning {
 	}
 
 	void Channel::setFrequency(unsigned int freq) {
-		cout << "Channel::setFrequency '" << freq << "'" << endl;
+		clog << "Channel::setFrequency '" << freq << "'" << endl;
 		frequency = freq;
 	}
 

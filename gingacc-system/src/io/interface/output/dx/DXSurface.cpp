@@ -65,7 +65,7 @@ http://www.telemidia.puc-rio.br
 	HRESULT hr = call;								\
 	if(FAILED(hr)){									\
 		string Err(DXGetErrorDescription(hr));		\
-		cout << " [ERRO] " << Err.c_str()  << endl	\
+		clog << " [ERRO] " << Err.c_str()  << endl	\
 			 << " [LOCATION] " << location << endl	\
 			 << " [MSG] " <<  failureMsg   << endl;	\
 	}												\
@@ -90,11 +90,11 @@ namespace io {
           : sur(0), parent(0), chromaColor(0)
           , caps(0)
         {
-		cout << "DXSurface::DXSurface()" << endl;
+		clog << "DXSurface::DXSurface()" << endl;
 	}
 
 	DXSurface::DXSurface(void* someSurface) {
-		cout << "DXSurface::DXSurface(void* someSurface)" << endl;
+		clog << "DXSurface::DXSurface(void* someSurface)" << endl;
 		this->sur = (DX2DSurface*)someSurface;
 		this->parent = NULL;
 		this->chromaColor = NULL;
@@ -102,7 +102,7 @@ namespace io {
 	}
 
 	DXSurface::DXSurface(int w, int h) {
-		cout << "DXSurface::DXSurface(int w, int h)" << endl;
+		clog << "DXSurface::DXSurface(int w, int h)" << endl;
 
 		surProp.x = 0;
 		surProp.y = 0;
@@ -118,7 +118,7 @@ namespace io {
 	}
 
 	DXSurface::~DXSurface() {
-		cout << "DXSurface::~DXSurface()" << endl;
+		clog << "DXSurface::~DXSurface()" << endl;
 		if (chromaColor != NULL) {
 			delete chromaColor;
 			chromaColor = NULL;
@@ -139,32 +139,32 @@ namespace io {
 	}
 
 	void DXSurface::addCaps(int caps) {
-		cout << "DXSurface::addCaps(int caps)" << endl;
+		clog << "DXSurface::addCaps(int caps)" << endl;
 		this->caps = this->caps | caps;
 	}
 
 	void DXSurface::setCaps(int caps) {
-		cout << "DXSurface::setCaps(int caps)" << endl;
+		clog << "DXSurface::setCaps(int caps)" << endl;
 		this->caps = caps;
 	}
 
 	int DXSurface::getCap(string cap) {
-		cout << "DXSurface::getCap(string cap)" << endl;
+		clog << "DXSurface::getCap(string cap)" << endl;
 		return 0;
 	}
 
 	int DXSurface::getCaps() {
-		cout << "DXSurface::getCaps()" << endl;
+		clog << "DXSurface::getCaps()" << endl;
 		return this->caps;
 	}
 
 	void* DXSurface::getContent() {
-		cout << "DXSurface::getContent()" << endl;
+		clog << "DXSurface::getContent()" << endl;
 		return sur;
 	}
 
 	void DXSurface::setContent(void* surface) {
-		cout << "DXSurface::setContent(void* surface)" << endl;
+		clog << "DXSurface::setContent(void* surface)" << endl;
 		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				LocalDeviceManager::getInstance()->releaseSurface(sur);
@@ -175,7 +175,7 @@ namespace io {
 	}
 
 	bool DXSurface::setParent(void* parentWindow) {
-		cout << "DXSurface::setParent(void* parentWindow)" << endl;
+		clog << "DXSurface::setParent(void* parentWindow)" << endl;
 		this->parent = (IWindow*)parentWindow;
 		if (parent != NULL && chromaColor != NULL) {
 			parent->setColorKey(
@@ -200,12 +200,12 @@ namespace io {
 	}
 
 	void* DXSurface::getParent() {
-		cout << "DXSurface::getParent()" << endl;
+		clog << "DXSurface::getParent()" << endl;
 		return this->parent;
 	}
 
 	void DXSurface::setChromaColor(IColor* color) {
-		cout << "DXSurface::setChromaColor(IColor* color)" << endl;
+		clog << "DXSurface::setChromaColor(IColor* color)" << endl;
 		if (this->chromaColor != NULL) {
 			delete this->chromaColor;
 			chromaColor = NULL;
@@ -219,12 +219,12 @@ namespace io {
 	}
 
 	IColor* DXSurface::getChromaColor() {
-		cout << "DXSurface::getChromaColor()" << endl;
+		clog << "DXSurface::getChromaColor()" << endl;
 		return this->chromaColor;
 	}
 
 	void DXSurface::clearContent() {
-		cout << "DXSurface::clearContent()" << endl;
+		clog << "DXSurface::clearContent()" << endl;
 		if (sur == NULL) {
 			return;
 		}
@@ -235,27 +235,27 @@ namespace io {
 	}
 
 	void DXSurface::clearSurface() {
-		cout << "DXSurface::clearSurface()" << endl;
+		clog << "DXSurface::clearSurface()" << endl;
 		if (sur == NULL) {
 			return;
 		}
 	}
 
 	ISurface* DXSurface::getSubSurface(int x, int y, int w, int h) {
-		cout << "DXSurface::getSubSurface(int x, int y, int w, int h)" << endl;
+		clog << "DXSurface::getSubSurface(int x, int y, int w, int h)" << endl;
 		return NULL;
 	}
 
 	void DXSurface::drawLine(int x1, int y1, int x2, int y2) {
-		cout << "DXSurface::drawLine(int x1, int y1, int x2, int y2)" << endl;
+		clog << "DXSurface::drawLine(int x1, int y1, int x2, int y2)" << endl;
 	}
 
 	void DXSurface::drawRectangle(int x, int y, int w, int h) {
-		cout << "DXSurface::drawRectangle(int x, int y, int w, int h)" << endl;
+		clog << "DXSurface::drawRectangle(int x, int y, int w, int h)" << endl;
 	}
 
 	void DXSurface::fillRectangle(int x, int y, int w, int h) {
-		cout << "DXSurface::fillRectangle(int x, int y, int w, int h)" << endl;
+		clog << "DXSurface::fillRectangle(int x, int y, int w, int h)" << endl;
 //		LPDIRECT3DSURFACE9 pSur;
 //		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalDeviceManager::getInstance())->getGfxRoot());
 
@@ -267,53 +267,53 @@ namespace io {
 	}
 
 	void DXSurface::drawString(int x, int y, const char* txt) {
-		cout << "DXSurface::drawString(int x, int y, const char* txt)" << endl;
+		clog << "DXSurface::drawString(int x, int y, const char* txt)" << endl;
 		sur->drawString(((x<0)?0:x) , (y<0)?0:y, txt);
 	}
 
 	void DXSurface::setBorder(IColor* borderColor) {
-		cout << "DXSurface::setBorder(IColor* borderColor)" << endl;
+		clog << "DXSurface::setBorder(IColor* borderColor)" << endl;
 	}
 
 	void DXSurface::setColor(IColor* writeColor) {
-		cout << "DXSurface::setColor(IColor* writeColor)" << endl;
+		clog << "DXSurface::setColor(IColor* writeColor)" << endl;
 		//surProp.color = D3DCOLOR_ARGB(writeColor->getAlpha(), writeColor->getR(), writeColor->getG(), writeColor->getB());
 	}
 
 	void DXSurface::setBgColor(IColor* bgColor) {
-		cout << "DXSurface::setBgColor(IColor* bgColor)" << endl;
+		clog << "DXSurface::setBgColor(IColor* bgColor)" << endl;
 	}
 
 	void DXSurface::setFont(void* font) {
-		cout << "DXSurface::setFont(void* font)" << endl;
+		clog << "DXSurface::setFont(void* font)" << endl;
 	}
 
 	void DXSurface::flip() {
-		cout << "DXSurface::flip()" << endl;
+		clog << "DXSurface::flip()" << endl;
 		sur->update();
 	}
 
 	void DXSurface::blit(
 			int x, int y, ISurface* src,
 			int srcX, int srcY, int srcW, int srcH) {
-		cout << "DXSurface::blit(int x, int y, ISurface* src, int srcX, int srcY, int srcW, int srcH)" << endl;
+		clog << "DXSurface::blit(int x, int y, ISurface* src, int srcX, int srcY, int srcW, int srcH)" << endl;
 
 		sur->blit(x, y, (DX2DSurface*)src->getContent(), srcX, srcY, srcW, srcH);
 
 	}
 
 	void DXSurface::getStringExtents(const char* text, int* w, int* h) {
-		cout << "DXSurface::getStringExtents(const char* text, int* w, int* h)" << endl;
+		clog << "DXSurface::getStringExtents(const char* text, int* w, int* h)" << endl;
 		*w = strlen(text) + 30;
 		*h = 20;
 	}
 
 	void DXSurface::setClip(int x, int y, int w, int h) {
-		cout << "DXSurface::setClip(int x, int y, int w, int h)" << endl;
+		clog << "DXSurface::setClip(int x, int y, int w, int h)" << endl;
 	}
 
 	void DXSurface::getSize(int* w, int* h) {
-		cout << "DXSurface::getSize(int* w, int* h)" << endl;
+		clog << "DXSurface::getSize(int* w, int* h)" << endl;
 		if(sur == NULL)
 			return;
 
@@ -323,7 +323,7 @@ namespace io {
 	}
 
 	string DXSurface::getDumpFileUri() {
-		cout << "DXSurface::getDumpFileUri()" << endl;
+		clog << "DXSurface::getDumpFileUri()" << endl;
 		return "";
 	}
 }

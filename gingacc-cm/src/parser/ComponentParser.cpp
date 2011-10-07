@@ -87,15 +87,15 @@ namespace cm {
 
 		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
 		if (fd < 0) {
-			cout << "ComponentParser::parse: can't open file:" << xmlDocument;
-			cout << endl;
+			clog << "ComponentParser::parse: can't open file:" << xmlDocument;
+			clog << endl;
 			return;
 		}
 
 		fileSize = lseek(fd, 0, SEEK_END);
 		if (fileSize < 0) {
-			cout << "ComponentParser::parse: file '" << xmlDocument;
-			cout << "' is empty" << endl;
+			clog << "ComponentParser::parse: file '" << xmlDocument;
+			clog << "' is empty" << endl;
 			close(fd);
 			return;
 		}
@@ -103,8 +103,8 @@ namespace cm {
 		close(fd);
 		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
 		if (fd < 0) {
-			cout << "ComponentParser::parse2: can't open file:" << xmlDocument;
-			cout << endl;
+			clog << "ComponentParser::parse2: can't open file:" << xmlDocument;
+			clog << endl;
 			return;
 		}
 
@@ -169,8 +169,8 @@ namespace cm {
 	void ComponentParser::startElementHandler(
 			void* data, const XML_Char* element, const XML_Char** attrs) {
 
-		wclog << "ComponentParser::startElementHandler element '";
-		wclog << element << "'" << endl;
+		clog << "ComponentParser::startElementHandler element '";
+		clog << element << "'" << endl;
 
 		if (strcmp(element, "component") == 0) {
 			parseComponent(data, attrs);
@@ -233,10 +233,10 @@ namespace cm {
 				}
 
 				dlerror();
-				wclog << "ComponentParser::parseComponent create component '";
-				wclog << name.c_str() << "' version '";
-				wclog << version.c_str() << "' type '";
-				wclog << type.c_str() << "'" << endl;
+				clog << "ComponentParser::parseComponent create component '";
+				clog << name.c_str() << "' version '";
+				clog << version.c_str() << "' type '";
+				clog << type.c_str() << "'" << endl;
 
 				((ComponentAndParser*)data)->currentComponent = component;
 				((ComponentParser*)cp)->addComponent(name, component);
@@ -288,9 +288,9 @@ namespace cm {
 
 				comps->insert(name);
 			}
-			wclog << "ComponentParser::parseDependency added '";
-			wclog << name.c_str();
-			wclog << "' version '" << version.c_str() << "'" << endl;
+			clog << "ComponentParser::parseDependency added '";
+			clog << name.c_str();
+			clog << "' version '" << version.c_str() << "'" << endl;
 		}
 	}
 
@@ -332,10 +332,10 @@ namespace cm {
 			c->addCreatorSymbol(object, creator);
 			c->addDestroyerSymbol(object, destroyer);
 
-			wclog << "ComponentParser::parseSymbol added object '";
-			wclog << object.c_str();
-			wclog << "' creator '" << creator.c_str() << "' destroyer '";
-			wclog << destroyer.c_str() << "'" << endl;
+			clog << "ComponentParser::parseSymbol added object '";
+			clog << object.c_str();
+			clog << "' creator '" << creator.c_str() << "' destroyer '";
+			clog << destroyer.c_str() << "'" << endl;
 		}
 	}
 
@@ -380,9 +380,9 @@ namespace cm {
 		if (uri != "") {
 			c->setLocation(uri, type);
 
-			wclog << "ComponentParser::parseLocation added uri '";
-			wclog << uri.c_str();
-			wclog << "' type '" << type.c_str() << "'" << endl;
+			clog << "ComponentParser::parseLocation added uri '";
+			clog << uri.c_str();
+			clog << "' type '" << type.c_str() << "'" << endl;
 		}
 	}
 
@@ -403,9 +403,9 @@ namespace cm {
 		if (uri != "") {
 			c->addUri(uri);
 
-			wclog << "ComponentParser::parseRepository added uri '";
-			wclog << uri.c_str();
-			wclog << "'" << endl;
+			clog << "ComponentParser::parseRepository added uri '";
+			clog << uri.c_str();
+			clog << "'" << endl;
 		}
 	}
 
@@ -413,8 +413,8 @@ namespace cm {
 			void* data, const XML_Char* element) {
 
 		IComponentParser* cp = ((ComponentAndParser*)data)->parser;
-		wclog << "ComponentParser::stopElementHandler element '";
-		wclog << element << "'" << endl;
+		clog << "ComponentParser::stopElementHandler element '";
+		clog << element << "'" << endl;
 
 		if (strcmp(element, "middleware") == 0) {
 			((ComponentAndParser*)data)->isParsing = false;

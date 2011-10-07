@@ -66,7 +66,7 @@ namespace io {
 	DXAudioProvider::DXAudioProvider(const char* mrl) {
 		CoInitializeEx(NULL, COINIT_MULTITHREADED);
 		JCriticalSection crit;
-		cout << "DXAudioProvider::DXAudioProvider(" << mrl << ")" << endl;
+		clog << "DXAudioProvider::DXAudioProvider(" << mrl << ")" << endl;
 		
 		IDirect3DDevice9* pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
 		
@@ -87,17 +87,17 @@ namespace io {
 	}
 
 	DXAudioProvider::~DXAudioProvider() {
-		cout << "DXAudioProvider::~DXAudioProvider()" << endl;
+		clog << "DXAudioProvider::~DXAudioProvider()" << endl;
 //		vmr->Stop();
 	}
 
 	void* DXAudioProvider::getContent() {
-		cout << "DXAudioProvider::getContent()" << endl;
+		clog << "DXAudioProvider::getContent()" << endl;
 		return NULL;
 	}
 
 	ISurface* DXAudioProvider::getPerfectSurface() {
-		cout << "DXAudioProvider::getPerfectSurface()" << endl;
+		clog << "DXAudioProvider::getPerfectSurface()" << endl;
 		DX2DSurfaceProp surProp;
 
 //		IDirect3DTexture9 * tex = vmr->GetTexture();
@@ -124,34 +124,34 @@ namespace io {
 	}
 
 	void DXAudioProvider::dynamicRenderCallBack(void* rendererContainer) {
-		cout << "DXAudioProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
+		clog << "DXAudioProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
 	}
 
 	void DXAudioProvider::getOriginalResolution(int* height, int* width) {
-		cout << "DXAudioProvider::getOriginalResolution(int* height, int* width)" << endl;
+		clog << "DXAudioProvider::getOriginalResolution(int* height, int* width)" << endl;
 		(*height) = 200;
 		(*width) = 200;
 	}
 
 	double DXAudioProvider::getTotalMediaTime() {
-		cout << "DXAudioProvider::getTotalMediaTime()" << endl;
+		clog << "DXAudioProvider::getTotalMediaTime()" << endl;
 		double totalMediaTime = m_pAudio->getTotalMediaTime();
 		return totalMediaTime;
 	}
 
 	double DXAudioProvider::getMediaTime() {
 		double mediaTime = m_pAudio->getMediaTime();
-		cout << "DXAudioProvider::getMediaTime" << mediaTime  << endl;
+		clog << "DXAudioProvider::getMediaTime" << mediaTime  << endl;
 		return mediaTime;
 	}
 
 	void DXAudioProvider::setMediaTime(double pos) {
-		cout << "DXAudioProvider::setMediaTime(double pos)" << endl;
+		clog << "DXAudioProvider::setMediaTime(double pos)" << endl;
 	}
 
 	void DXAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
-		cout << "DXAudioProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
+		clog << "DXAudioProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
 		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
 		// s->setTexture(videoTex);
 		
@@ -159,26 +159,26 @@ namespace io {
 	}
 
 	void DXAudioProvider::resume(ISurface* surface, bool hasVisual) {
-		cout << "DXAudioProvider::resume(ISurface* surface, bool hasVisual)" << endl;
+		clog << "DXAudioProvider::resume(ISurface* surface, bool hasVisual)" << endl;
 		playOver(surface, hasVisual, 0);
 	}
 
 	void DXAudioProvider::pause() {
-		cout << "DXAudioProvider::pause()" << endl;
+		clog << "DXAudioProvider::pause()" << endl;
 		stop();
 	}
 
 	void DXAudioProvider::stop() {
-		cout << "DXAudioProvider::stop()" << endl;
+		clog << "DXAudioProvider::stop()" << endl;
 		//vmr->Stop();
 	}
 
 	void DXAudioProvider::setSoundLevel(float level) {
-		cout << "DXAudioProvider::setSoundLevel(float level)" << endl;
+		clog << "DXAudioProvider::setSoundLevel(float level)" << endl;
 	}
 
 	bool DXAudioProvider::releaseAll() {
-		cout << " DXAudioProvider::releaseAll()" << endl;
+		clog << " DXAudioProvider::releaseAll()" << endl;
 		return true;
 	}
 

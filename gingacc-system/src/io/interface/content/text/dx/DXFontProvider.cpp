@@ -59,7 +59,7 @@ http://www.telemidia.puc-rio.br
 	HRESULT hr = call;								\
 	if(FAILED(hr)){									\
 		string Err(DXGetErrorDescription(hr));		\
-		cout << " [ERRO] " << Err.c_str()  << endl	\
+		clog << " [ERRO] " << Err.c_str()  << endl	\
 			 << " [LOCATION] " << location << endl	\
 			 << " [MSG] " <<  failureMsg   << endl;	\
 	}												\
@@ -96,7 +96,7 @@ namespace io {
 	set<LPD3DXFONT >* DXFontProvider::pool = new set<LPD3DXFONT>;
 
 	DXFontProvider::DXFontProvider(const char* fontUri, int heightInPixel) {
-		cout << "DXFontProvider::DXFontProvider" << endl;
+		clog << "DXFontProvider::DXFontProvider" << endl;
 		pD3ddev = NULL;
 		fontTex = NULL;
 		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
@@ -107,7 +107,7 @@ namespace io {
 	}
 
 	DXFontProvider::~DXFontProvider() {
-		cout << "DXFontProvider::~DXFontProvider" << endl;
+		clog << "DXFontProvider::~DXFontProvider" << endl;
 		set<LPD3DXFONT>::iterator i;
 		i = pool->find(font);
 		if (i != pool->end()) {
@@ -118,12 +118,12 @@ namespace io {
 	}
 
 	void* DXFontProvider::getContent() {
-		cout << "DXFontProvider::getContent()" << endl;
+		clog << "DXFontProvider::getContent()" << endl;
 		return font;
 	}
 
 	int DXFontProvider::getMaxAdvance() {
-		cout << "DXFontProvider::getMaxAdvance()" << endl;
+		clog << "DXFontProvider::getMaxAdvance()" << endl;
 		int maxAdvance = 0;
 		TEXTMETRICA mtc;
 
@@ -133,7 +133,7 @@ namespace io {
 	}
 
 	int DXFontProvider::getStringWidth(const char* text, int textLength) {
-		cout << "DXFontProvider::getStringWidth()" << endl;
+		clog << "DXFontProvider::getStringWidth()" << endl;
 		TEXTMETRICA mtc;
 
 
@@ -143,7 +143,7 @@ namespace io {
 	}
 
 	int DXFontProvider::getHeight() {
-		cout << "DXFontProvider::getHeight()" << endl;
+		clog << "DXFontProvider::getHeight()" << endl;
 		TEXTMETRICA mtc;
 
 		font->GetTextMetricsA(&mtc);
@@ -151,7 +151,7 @@ namespace io {
 	}
 
 	void DXFontProvider::playOver( void* surface, const char* text, int x, int y, short align) {
-		cout << "DXFontProvider::playOver()" << endl;
+		clog << "DXFontProvider::playOver()" << endl;
 		DX2DSurface*	givenSurface = NULL;
 		IDirect3DSurface9*	texSur = NULL; // Texture Surface
 
@@ -190,21 +190,21 @@ namespace io {
 		}
 
 /*		if(texture == NULL)
-			cout << "" << endl;
+			clog << "" << endl;
 
 		// Get Level 0 Texture Surface
-		DXCHECK(texture->GetSurfaceLevel(0, &texSur),"DXFontProvider::playOver()", "Can´t Get Surface Level");
+		DXCHECK(texture->GetSurfaceLevel(0, &texSur),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 
 		pD3ddev->ColorFill(texSur, NULL, D3DCOLOR_ARGB(100,100,0,0) );
 
 		// Time to setup renderTarget
-		DXCHECK(pD3ddev->GetRenderTarget(0, &pBackBuffer),"DXFontProvider::playOver()", "Can´t Get Surface Level");
+		DXCHECK(pD3ddev->GetRenderTarget(0, &pBackBuffer),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 		DXCHECK(pD3ddev->BeginScene(), "","");
-		DXCHECK(pD3ddev->SetRenderTarget(0, texSur),"DXFontProvider::playOver()", "Can´t Get Surface Level");
-		DXCHECK(font->DrawTextA(NULL, LPCSTR(text), strlen(text), NULL, DT_LEFT, D3DCOLOR_ARGB(255, 255, 255, 255)),"DXFontProvider::playOver()", "Can´t Get Surface Level");
+		DXCHECK(pD3ddev->SetRenderTarget(0, texSur),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
+		DXCHECK(font->DrawTextA(NULL, LPCSTR(text), strlen(text), NULL, DT_LEFT, D3DCOLOR_ARGB(255, 255, 255, 255)),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 		DXCHECK(pD3ddev->EndScene(), "","");
 		// Restore BackBuffer
-		DXCHECK(pD3ddev->SetRenderTarget(0, pBackBuffer),"DXFontProvider::playOver()", "Can´t SetRenderTarget");
+		DXCHECK(pD3ddev->SetRenderTarget(0, pBackBuffer),"DXFontProvider::playOver()", "Canï¿½t SetRenderTarget");
 		givenSurface->setTexture(texture);
 		givenSurface->show();*/
 		//}
@@ -219,36 +219,36 @@ namespace io {
 		gfxDev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
 		givenSurface = (IDirect3DSurface9*)(((ISurface*)surface)->getContent());
 
-		DXCHECK(givenSurface->GetDesc(&destSurDesc), "DXFontProvider::playOver()", "Can´t Get Descriptor");
+		DXCHECK(givenSurface->GetDesc(&destSurDesc), "DXFontProvider::playOver()", "Canï¿½t Get Descriptor");
 
 		((ISurface*)surface)->getSize(&gSurWidth, &gSurHeight);
 		DXCHECK(gfxDev->CreateTexture(gSurWidth, gSurHeight, 1, D3DUSAGE_RENDERTARGET, D3DFMT_X8R8G8B8,
-										D3DPOOL_DEFAULT, &texture, NULL),"DXFontProvider::playOver()", "Can´t Get Size" );
+										D3DPOOL_DEFAULT, &texture, NULL),"DXFontProvider::playOver()", "Canï¿½t Get Size" );
 
 		// Get Level 0 Texture Surface
-		DXCHECK(texture->GetSurfaceLevel(0, &texSur),"DXFontProvider::playOver()", "Can´t Get Surface Level");
+		DXCHECK(texture->GetSurfaceLevel(0, &texSur),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 
-		// Surface cloning. Why don´t you do it after texture drawing ?
+		// Surface cloning. Why donï¿½t you do it after texture drawing ?
 		// DXCHECK(D3DXLoadSurfaceFromSurface(givenSurface, NULL, NULL, texSur, NULL, NULL, D3DX_FILTER_LINEAR, D3DCOLOR_RGBA(0, 0, 0, 255)));
 
 		// Time to setup renderTarget
-		DXCHECK(gfxDev->GetRenderTarget(0, &pBackBuffer),"DXFontProvider::playOver()", "Can´t Get Surface Level");
-		DXCHECK(gfxDev->SetRenderTarget(0, texSur),"DXFontProvider::playOver()", "Can´t Get Surface Level");
+		DXCHECK(gfxDev->GetRenderTarget(0, &pBackBuffer),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
+		DXCHECK(gfxDev->SetRenderTarget(0, texSur),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 		
 		// Clear Texture Surface with Background Color 
 		DXCHECK(gfxDev->Clear(0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB( 10 , 0, 0, 0), 1.0f, 0),
-				"DXFontProvider::playOver()", "Can´t Get Surface Level");
+				"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
 
-		DXCHECK(gfxDev->BeginScene(),"DXFontProvider::playOver()", "Can´t Get Surface Level");
-		DXCHECK(font->DrawTextA(NULL, LPCSTR(text), strlen(text), NULL, DT_LEFT, D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f )),"DXFontProvider::playOver()", "Can´t Get Surface Level");
-		DXCHECK(gfxDev->EndScene(),"DXFontProvider::playOver()", "Can´t End Scene");
+		DXCHECK(gfxDev->BeginScene(),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
+		DXCHECK(font->DrawTextA(NULL, LPCSTR(text), strlen(text), NULL, DT_LEFT, D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f )),"DXFontProvider::playOver()", "Canï¿½t Get Surface Level");
+		DXCHECK(gfxDev->EndScene(),"DXFontProvider::playOver()", "Canï¿½t End Scene");
 
 		// Restore BackBuffer
-		DXCHECK(gfxDev->SetRenderTarget(0, pBackBuffer),"DXFontProvider::playOver()", "Can´t SetRenderTarget");
+		DXCHECK(gfxDev->SetRenderTarget(0, pBackBuffer),"DXFontProvider::playOver()", "Canï¿½t SetRenderTarget");
 
-		// Surface cloning. Why don´t you do it after texture drawing ?
+		// Surface cloning. Why donï¿½t you do it after texture drawing ?
 		DXCHECK(D3DXLoadSurfaceFromSurface(givenSurface, NULL, NULL, texSur, NULL, NULL, D3DX_FILTER_LINEAR, D3DCOLOR_RGBA(0, 0, 0, 10)),
-			"DXFontProvider::playOver()", "Can´t D3DXLoadSurfaceFromSurface");
+			"DXFontProvider::playOver()", "Canï¿½t D3DXLoadSurfaceFromSurface");
 
 		while(1){
 			POINT pt;

@@ -77,7 +77,7 @@ namespace descriptors {
 		return descriptorTag;
 	}
 	void ParentalRatingDescriptor::print() {
-		cout << "ParentalRatingDescriptor::print printing..." << endl;
+		clog << "ParentalRatingDescriptor::print printing..." << endl;
 	}
 	size_t ParentalRatingDescriptor::process(char* data, size_t pos) {
 		size_t servicesNumber;

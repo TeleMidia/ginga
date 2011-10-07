@@ -86,7 +86,7 @@ namespace dataprocessing {
 		map<int, ITransportSection*>::iterator i;
 		map<unsigned int, SectionHandler*>::iterator j;
 
-		cout << "SectionFilter::~SectionFilter" << endl;
+		clog << "SectionFilter::~SectionFilter" << endl;
 		pthread_mutex_lock(&stlMutex);
 
 		if (processedSections != NULL) {
@@ -212,8 +212,8 @@ namespace dataprocessing {
 		}
 
 		/*if (pack->getStartIndicator()) {
-			cout << "SectionFilter::receiveTSPacket number '" << recvPack;
-			cout << "'" << endl;
+			clog << "SectionFilter::receiveTSPacket number '" << recvPack;
+			clog << "'" << endl;
 		}*/
 		handler->recvPack++;
 
@@ -227,16 +227,16 @@ namespace dataprocessing {
 		if (pack->getStartIndicator()) {
 			// Consolidates previous section.
 			if (handler->section != NULL) {
-				/*cout << "SectionFilter::receiveTSPacket ";
-				cout << "Consolidates previous section.";
-				cout << endl;*/
+				/*clog << "SectionFilter::receiveTSPacket ";
+				clog << "Consolidates previous section.";
+				clog << endl;*/
 				verifyAndAddData(pack);
 			}
 
 			// Create a new section.
 			if (!verifyAndCreateSection(pack)) {
-				/*cout << "SectionFilter::receiveTSPacket - Failed to create ";
-				cout << "Section, perhaps header is not complete yet!" << endl;
+				/*clog << "SectionFilter::receiveTSPacket - Failed to create ";
+				clog << "Section, perhaps header is not complete yet!" << endl;
 				*/
 			}
 
@@ -246,10 +246,10 @@ namespace dataprocessing {
 				/* Tries to create a continuation of section
 				 * which the header was not ready at the moment */
 				if (!verifyAndCreateSection(pack)) {
-					/*cout << "SectionFilter::receiveTSPacket - Receive a ";
-					cout << "continuation but failed to create ";
-					cout << "Section, perhaps header is not complete yet!";
-					cout << endl;*/
+					/*clog << "SectionFilter::receiveTSPacket - Receive a ";
+					clog << "continuation but failed to create ";
+					clog << "Section, perhaps header is not complete yet!";
+					clog << endl;*/
 				}
 
 			} else {
@@ -273,11 +273,11 @@ namespace dataprocessing {
 					verifyAndAddData(pack);
 
 				} else { // Discontinuity, ignore section.
-					cout << "SectionFilter::receiveTSPacket: ";
-					cout << "Discontinuity, last = '" << last << "'";
-					cout << " counter = '" << counter << "'";
-					cout << " ignoring section.";
-					cout << endl;
+					clog << "SectionFilter::receiveTSPacket: ";
+					clog << "Discontinuity, last = '" << last << "'";
+					clog << " counter = '" << counter << "'";
+					clog << " ignoring section.";
+					clog << endl;
 
 					ignore(pack->getPid());
 				}
@@ -288,14 +288,14 @@ namespace dataprocessing {
 	void SectionFilter::receiveSection(
 			char* buf, int len, IFrontendFilter* filter) {
 
-		//cout << "SectionFilter::receiveSection '" << len << "'" << endl;
+		//clog << "SectionFilter::receiveSection '" << len << "'" << endl;
 		ITransportSection* filteredSection = NULL;
 		map<int, ITransportSection*>::iterator i;
 		int pid;
 
 		if (listener == NULL) {
-			cout << "SectionFilter::receiveSection Warning!";
-			cout << " NULL listener" << endl;
+			clog << "SectionFilter::receiveSection Warning!";
+			clog << " NULL listener" << endl;
 			return;
 		}
 
@@ -339,7 +339,7 @@ namespace dataprocessing {
 	void SectionFilter::receivePes(
 			char* buf, int len, IFrontendFilter* filter) {
 
-		cout << "SectionFilter::receivePes" << endl;
+		clog << "SectionFilter::receivePes" << endl;
 	}
 
 	SectionHandler* SectionFilter::getSectionHandler(unsigned int pid) {
@@ -451,11 +451,11 @@ namespace dataprocessing {
 		pack->getPayload(data);
 		/* The payload has only a part of the header */
 		if (diff < (ARRAY_SIZE(handler->sectionHeader) - handler->headerSize)) {
-			/*cout << "SectionFilter::verifyAndCreateSection ";
-			cout << "Creating Section header, currentSize is '";
-			cout << handler->headerSize << " and dataSize is '";
-			cout << diff << "'";
-			cout << endl;*/
+			/*clog << "SectionFilter::verifyAndCreateSection ";
+			clog << "Creating Section header, currentSize is '";
+			clog << handler->headerSize << " and dataSize is '";
+			clog << diff << "'";
+			clog << endl;*/
 
 			memcpy(
 					(void*)&handler->sectionHeader[handler->headerSize],
@@ -468,10 +468,10 @@ namespace dataprocessing {
 
 		/* Needs to copy the header */
 		} else if (handler->headerSize > 0) {
-			/*cout << "Pointer field: " << pack->getPointerField();
-			cout << " PayloadSize: " << pack->getPayloadSize() << endl;
-			cout << "Appending Section header '" << handler->headerSize << "'";
-			cout << " to data '" << diff << "'" << endl;*/
+			/*clog << "Pointer field: " << pack->getPointerField();
+			clog << " PayloadSize: " << pack->getPayloadSize() << endl;
+			clog << "Appending Section header '" << handler->headerSize << "'";
+			clog << " to data '" << diff << "'" << endl;*/
 
 			/* Creates the new data buffer */
 			buffer = new char[handler->headerSize + diff];
@@ -502,9 +502,9 @@ namespace dataprocessing {
 
 		/* The Header is ready */
 		} else if (pack->getStartIndicator()) {
-			/*cout << "SectionFilter::verifyAndCreateSection PUSI = 1";
-			cout << " for PID = '" << pack->getPid() << "'";
-			cout << "Header is ready already!" << endl;*/
+			/*clog << "SectionFilter::verifyAndCreateSection PUSI = 1";
+			clog << " for PID = '" << pack->getPid() << "'";
+			clog << "Header is ready already!" << endl;*/
 
 #if HAVE_COMPSUPPORT
 			handler->section = ((TSSectionCreator*)(cm->getObject(
@@ -516,12 +516,12 @@ namespace dataprocessing {
 #endif
 
 		} else {
-			/*cout << "SectionFilter::verifyAndCreateSection ";
-			cout << "nothing to do current header size is '";
-			cout << handler->headerSize << "' current section address is '";
-			cout << handler->section << "' TS packet: ";
+			/*clog << "SectionFilter::verifyAndCreateSection ";
+			clog << "nothing to do current header size is '";
+			clog << handler->headerSize << "' current section address is '";
+			clog << handler->section << "' TS packet: ";
 			pack->print();
-			cout << endl;*/
+			clog << endl;*/
 		}
 
 		return setSectionParameters(pack);

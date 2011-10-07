@@ -92,7 +92,7 @@ namespace carousel {
 
 	void ServiceDomain::receiveDDB(DownloadDataBlock* ddb) {
 		ddb->processDataBlock(info);
-		cout << "ddb done!" << endl;
+		clog << "ddb done!" << endl;
 	}
 
 	Module* ServiceDomain::getModuleById(unsigned int id) {
@@ -144,46 +144,46 @@ namespace carousel {
 						module = (*info)[modId];
 					}
 
-					cout << "ServiceDomain::run waiting srg module" << endl;
+					clog << "ServiceDomain::run waiting srg module" << endl;
 					while (!module->isConsolidated()) {
 						::usleep(1000);
 					}
-					cout << "ServiceDomain::run srg module is consolidated, ";
-					cout << "creating biop";
-					cout << endl;
+					clog << "ServiceDomain::run srg module is consolidated, ";
+					clog << "creating biop";
+					clog << endl;
 
 					biop = new Biop(module, processor);
-					cout << "ServiceDomain::run BIOP processing SRG" << endl;
+					clog << "ServiceDomain::run BIOP processing SRG" << endl;
 					biop->processServiceGateway(
 							serviceGatewayIor->getObjectKey());
 
 					hasServiceGateway = true;
-					cout << "ServiceDomain::run SRG PROCESSED!" << endl;
+					clog << "ServiceDomain::run SRG PROCESSED!" << endl;
 
 					delete biop;
 					biop = NULL;
 
-					cout << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
+					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 					biop = new Biop(module, processor);
 					biop->process();
 
 					info->erase(i);
 					i = info->begin();
 
-					cout << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
+					clog << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
 
 				} else {
 					module = i->second;
 					if (module->isConsolidated()) {
 						biop = new Biop(module, processor);
-						cout << "ServiceDomain::run BIOP->process" << endl;
+						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
 						info->erase(i);
 						i = info->begin();
 
-						cout << "ServiceDomain::run BIOP->process DONE!";
-						cout << endl;
+						clog << "ServiceDomain::run BIOP->process DONE!";
+						clog << endl;
 //						delete biop;
 //						biop = NULL;
 
@@ -205,8 +205,8 @@ namespace carousel {
 		}
 
 		mounted = true;
-		cout << "ServiceDomain::run ";
-		cout << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
+		clog << "ServiceDomain::run ";
+		clog << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
 		if (sdl != NULL) {
 			sdl->serviceDomainMounted(
 					mountPoint,

@@ -112,19 +112,19 @@ namespace descriptors {
 		return nextTimeOffset;
 	}
 	void LocalTimeOffsetDescriptor::print() {
-		cout << "LocalTimeOffsetDescriptor::print printing..."      << endl;
-		cout << "CountryCode: "             << getCountryCode()     << endl;
-		cout << "CountryRegionId: "         << (countryRegionId & 0xFF) << endl;
-		cout << "LocalTimeOffsetPolarity: " << (localTimeOffsetPolarity & 0xFF);
-		cout << endl;
-		cout << "LocalTimeOffSet:"          << (localTimeOffset & 0xFF) << endl;
-		cout << "TimeOfChange: "            << getTimeOfChange()    << endl;
-		cout << "NextTimeOffset: "          << getNextTimeOffset()  << endl;
+		clog << "LocalTimeOffsetDescriptor::print printing..."      << endl;
+		clog << "CountryCode: "             << getCountryCode()     << endl;
+		clog << "CountryRegionId: "         << (countryRegionId & 0xFF) << endl;
+		clog << "LocalTimeOffsetPolarity: " << (localTimeOffsetPolarity & 0xFF);
+		clog << endl;
+		clog << "LocalTimeOffSet:"          << (localTimeOffset & 0xFF) << endl;
+		clog << "TimeOfChange: "            << getTimeOfChange()    << endl;
+		clog << "NextTimeOffset: "          << getNextTimeOffset()  << endl;
 	}
 
 	size_t LocalTimeOffsetDescriptor::process(char* data, size_t pos) {
 
-		cout << " LocalTimeOffsetDescriptor::process" << endl;
+		clog << " LocalTimeOffsetDescriptor::process" << endl;
 		descriptorLength = data[pos+1];
 		pos += 2;
 

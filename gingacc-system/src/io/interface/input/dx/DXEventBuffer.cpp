@@ -65,7 +65,7 @@ namespace io {
 	set<IInputEvent*>* DXEventBuffer::userEventsPool = new set<IInputEvent*>();
 
 	DXEventBuffer::DXEventBuffer() {
-		cout << "DXEventBuffer::DXEventBuffer()" << endl;
+		clog << "DXEventBuffer::DXEventBuffer()" << endl;
 
 		m_dInput			= NULL;
 		m_dInputKeyBoard	= NULL;
@@ -89,7 +89,7 @@ namespace io {
 	}
 
 	DXEventBuffer::~DXEventBuffer() {
-		cout << "DXEventBuffer::~DXEventBuffer()" << endl;
+		clog << "DXEventBuffer::~DXEventBuffer()" << endl;
 
 		pthread_mutex_lock(&m_mtxInput);
 		if(m_dInput){
@@ -113,12 +113,12 @@ namespace io {
 	}
 
 	void DXEventBuffer::wakeUp() {
-		cout << "DXEventBuffer::wakeUp()" << endl;
+		clog << "DXEventBuffer::wakeUp()" << endl;
 		pthread_mutex_lock(&evt_lock);
 	}
 
 	void DXEventBuffer::postEvent(IInputEvent* evt) {
-		cout << "DXEventBuffer::postEvent(IInputEvent* event)" << endl;
+		clog << "DXEventBuffer::postEvent(IInputEvent* event)" << endl;
 
 		if(evt->isKeyType()){
 
@@ -132,14 +132,14 @@ namespace io {
 	}
 
 	void DXEventBuffer::waitEvent() {
-		//cout << "DXEventBuffer::waitEvent()" << endl;
+		//clog << "DXEventBuffer::waitEvent()" << endl;
 		pthread_mutex_lock(&evt_lock);
 		Sleep(80);
 		pthread_mutex_unlock(&evt_lock);
 	}
 
 	IInputEvent* DXEventBuffer::getNextEvent() {
-		//cout << "DXEventBuffer::getNextEvent()" << endl;
+		//clog << "DXEventBuffer::getNextEvent()" << endl;
 		DIMOUSESTATE2 tmp_mouse;
 		DWORD dwElements = 1;
 		HRESULT hr = 0;
@@ -259,7 +259,7 @@ namespace io {
 	}
 
 	void* DXEventBuffer::getContent() {
-		cout << "DXEventBuffer::getContent()" << endl;
+		clog << "DXEventBuffer::getContent()" << endl;
 		return NULL;
 	}
 	void DXEventBuffer::initDirectInput(){
@@ -281,10 +281,10 @@ namespace io {
 			if(pSwapChain){
 				pSwapChain->GetPresentParameters(&dPresentParam);
 			}else{
-				cout << "DXEventBuffer: error - pSwapChain is NULL" << endl;
+				clog << "DXEventBuffer: error - pSwapChain is NULL" << endl;
 			}
 		}else{
-			cout << "DXEventBuffer: error - pD3dDev is NULL" << endl;
+			clog << "DXEventBuffer: error - pD3dDev is NULL" << endl;
 		}
 
 		m_scrWidth	= (LocalDeviceManager::getInstance())->getDeviceWidth();	
@@ -302,60 +302,60 @@ namespace io {
 		keybHr = DirectInput8Create( hInstance,DIRECTINPUT_VERSION ,IID_IDirectInput8, (void**)&m_dInput, NULL);
 
 		if(FAILED(keybHr)){
-			cout << "DXEventBuffer: error - m_dInput is NULL" << endl;
+			clog << "DXEventBuffer: error - m_dInput is NULL" << endl;
 		}
 		
 		keybHr = m_dInput->CreateDevice( GUID_SysKeyboard, &m_dInputKeyBoard, NULL);
 
 		if(FAILED(keybHr)){
-			cout << "DXEventBuffer: error - can not create  m_dInputKeyBoard device" << endl;
+			clog << "DXEventBuffer: error - can not create  m_dInputKeyBoard device" << endl;
 		}
 
 		keybHr = m_dInputKeyBoard->SetDataFormat(&c_dfDIKeyboard);
 
 		if(FAILED(keybHr)){
-			cout << "DXEventBuffer: error - can not set dInputKeyBoard data format" << endl;
+			clog << "DXEventBuffer: error - can not set dInputKeyBoard data format" << endl;
 		}
 
 		keybHr = m_dInputKeyBoard->SetCooperativeLevel(m_hwndC, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 		// DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 		if(FAILED(keybHr)){
-			cout << "DXEventBuffer: error - can not set dInputKeyBoard Cooperative Level" << endl;
+			clog << "DXEventBuffer: error - can not set dInputKeyBoard Cooperative Level" << endl;
 		}
 
 		keybHr = m_dInputKeyBoard->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
 
 		if(FAILED(keybHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 
 		m_dInputKeyBoard->Acquire();
 
 		if(FAILED(keybHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 
 		mouseHr = m_dInput->CreateDevice( GUID_SysMouse, &m_dInputMouse, NULL);
 
 		if(FAILED(mouseHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 
 		mouseHr = m_dInputMouse->SetDataFormat(&c_dfDIMouse2);
 
 		if(FAILED(mouseHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 
 		mouseHr = m_dInputMouse->SetCooperativeLevel(m_hwndC, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
 
 		if(FAILED(mouseHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 		
 		m_dInputMouse->Acquire();
 		if(FAILED(mouseHr)){
-			cout << "error - DirectInput8Create" << endl;
+			clog << "error - DirectInput8Create" << endl;
 		}
 	
 		/*

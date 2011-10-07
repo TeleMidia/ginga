@@ -146,8 +146,8 @@ namespace si {
 	void Pat::addProgram(unsigned int pid, unsigned int programNumber) {
 		if (pat->count(pid) != 0) {
 
-			cout << "Pat::addProgram Warning! Trying to override an existent";
-			cout << " program. Pid = '" << pid << "'" << endl;
+			clog << "Pat::addProgram Warning! Trying to override an existent";
+			clog << " program. Pid = '" << pid << "'" << endl;
 
 		} else {
 			(*pat)[pid] = programNumber;
@@ -169,9 +169,9 @@ namespace si {
 
 		if (programs->count(program->getPid() != 0)) {
 
-			cout << "Pat::addPmt Warning! Trying to override an existent";
-			cout << " program. Pid = '" << program->getPid() << "'";
-			cout << endl;
+			clog << "Pat::addPmt Warning! Trying to override an existent";
+			clog << " program. Pid = '" << program->getPid() << "'";
+			clog << endl;
 
 		} else {
 			(*programs)[program->getPid()] = program;
@@ -297,13 +297,13 @@ namespace si {
 				if (defaultProgramNumber == -1 ||
 						programNumber < defaultProgramNumber) {
 
-					/*cout << "Pat::process ";
-					cout << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
-					cout << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
-					cout << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
-					cout << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
-					cout << "' sectionLength = '" << getSectionLength();
-					cout << "'" << endl;*/
+					/*clog << "Pat::process ";
+					clog << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
+					clog << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
+					clog << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
+					clog << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
+					clog << "' sectionLength = '" << getSectionLength();
+					clog << "'" << endl;*/
 
 					defaultProgramNumber = programNumber;
 					defaultProgramPid    = pid;
@@ -322,8 +322,8 @@ namespace si {
 		unsigned long crcValue;
 
 		if (defaultProgramNumber < 0) {
-			cout << "Pat::resetPayload Warning! Can't reset: programNum < 0";
-			cout << endl;
+			clog << "Pat::resetPayload Warning! Can't reset: programNum < 0";
+			clog << endl;
 			return;
 		}
 
@@ -334,8 +334,8 @@ namespace si {
 		offset = pointerField;
 
 		if (payload[offset] != 0x00) {
-			cout << "Pat::resetPayload Warning! Pat Table Id != 0x00";
-			cout << endl;
+			clog << "Pat::resetPayload Warning! Pat Table Id != 0x00";
+			clog << endl;
 		}
 
 		//update section_length
@@ -439,13 +439,13 @@ namespace si {
 	}
 
 	void Pat::print() {
-		cout << "Pat::print" << endl;
-		cout << "TS id = " << idExtention << endl;
-		cout << "programs:" << endl;
+		clog << "Pat::print" << endl;
+		clog << "TS id = " << idExtention << endl;
+		clog << "programs:" << endl;
 		map<unsigned int, unsigned int>::iterator i;
 		for (i = pat->begin(); i != pat->end(); ++i) {
-			cout << "programNumber '" << hex << i->second << "' ";
-			cout << " has pid = '" << hex << i->first << "'" << endl;
+			clog << "programNumber '" << hex << i->second << "' ";
+			clog << " has pid = '" << hex << i->first << "'" << endl;
 		}
 	}
 }

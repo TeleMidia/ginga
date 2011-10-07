@@ -86,8 +86,8 @@ namespace process {
 	}
 
 	Process::~Process() {
-		cout << "Process::~Process(" << this;
-		cout << ")" << endl;
+		clog << "Process::~Process(" << this;
+		clog << ")" << endl;
 
 		sigListener = NULL;
 
@@ -144,12 +144,12 @@ namespace process {
 	int Process::createShm(string shmName, bool truncateFile, int shmSize) {
 		int fd = shm_open(shmName.c_str(), O_CREAT | O_RDWR, S_IRWXU);
 		if (fd == -1) {
-			cout << "Process::createShm can't open shm file" << endl;
+			clog << "Process::createShm can't open shm file" << endl;
 			return fd;
 		}
 
 		if (truncateFile && ftruncate(fd, shmSize) == -1) {
-			cout << "Process::createShm can't truncate shm file" << endl;
+			clog << "Process::createShm can't truncate shm file" << endl;
 			close(fd);
 			shm_unlink(shmName.c_str());
 			return -1;
@@ -189,7 +189,7 @@ namespace process {
 				rval = write(fd, msg.c_str(), msg.length());
 
 		    } catch (const char *except) {
-		    	cout << "Process::sendMsg catch: " << except << endl;
+		    	clog << "Process::sendMsg catch: " << except << endl;
 		    	::usleep(100000);
 		    	rval = write(fd, msg.c_str(), msg.length());
 		    }
@@ -202,7 +202,7 @@ namespace process {
 	}
 
 	void Process::messageReceived(string msg) {
-		cout << "Process::messageReceived '" << msg << "'" << endl;
+		clog << "Process::messageReceived '" << msg << "'" << endl;
 	}
 
 	string Process::receiveMsg(int fd) {
@@ -214,7 +214,7 @@ namespace process {
 			rval = read(fd, buff, sizeof(buff));
 
 	    } catch (const char *except) {
-	    	cout << "Process::receiveMsg catch: " << except << endl;
+	    	clog << "Process::receiveMsg catch: " << except << endl;
 	    	::usleep(100000);
 	    	rval = read(fd, buff, sizeof(buff));
 	    }
@@ -229,9 +229,9 @@ namespace process {
 	int Process::openW(string wName) {
 		int fd = open(wName.c_str(), O_WRONLY);
 		if (fd < 0) {
-			cout << "Process::openW Warning! ";
-			cout << "can't open '" << wName << "'";
-			cout << endl;
+			clog << "Process::openW Warning! ";
+			clog << "can't open '" << wName << "'";
+			clog << endl;
 		}
 
 		return fd;
@@ -240,9 +240,9 @@ namespace process {
 	int Process::openR(string rName) {
 		int fd = open(rName.c_str(), O_RDONLY);
 		if (fd < 0) {
-			cout << "Process::openR Warning! ";
-			cout << "can't open '" << rName << "'";
-			cout << endl;
+			clog << "Process::openR Warning! ";
+			clog << "can't open '" << rName << "'";
+			clog << endl;
 		}
 
 		return fd;
@@ -278,8 +278,8 @@ namespace process {
 					envp);
 
 			if (rspawn == 0) {
-				cout << "Process::run process '";
-				cout << processUri << "' successfully spawned" << endl;
+				clog << "Process::run process '";
+				clog << processUri << "' successfully spawned" << endl;
 				reader        = true;
 				processStatus = PST_RUNNING;
 				pthread_create(&threadId_, 0, Process::detachWait, this);
@@ -289,8 +289,8 @@ namespace process {
 				pthread_detach(threadIdR_);
 
 			} else {
-				cout << "Process::run Warning! Can't spawn process '";
-				cout << processUri << "'" << endl;
+				clog << "Process::run Warning! Can't spawn process '";
+				clog << processUri << "'" << endl;
 			}
 		}
 	}
@@ -316,47 +316,47 @@ namespace process {
 		int rval;
 		Process* process = (Process*)ptr;
 
-		cout << "Process::createFiles(" << process << ")";
-		cout << " creating wCom: '" << process->wCom << "'" << endl;
+		clog << "Process::createFiles(" << process << ")";
+		clog << " creating wCom: '" << process->wCom << "'" << endl;
 		if (fileExists(process->wCom)) {
-			cout << "Process::createFiles(" << process << ") File '";
-			cout << process->wCom << "' already exists" << endl;
+			clog << "Process::createFiles(" << process << ") File '";
+			clog << process->wCom << "' already exists" << endl;
 			unlink(process->wCom.c_str());
 		}
 
 		rval = mkfifo(process->wCom.c_str(), S_IFIFO);
 		if (rval < 0 && !fileExists(process->wCom)) {
-			cout << "Process::createFiles Warning! ";
+			clog << "Process::createFiles Warning! ";
 			perror("wCom");
-			cout << "can't create wCom pipe '" << process->wCom << "'";
-			cout << endl;
+			clog << "can't create wCom pipe '" << process->wCom << "'";
+			clog << endl;
 			return NULL;
 		}
 
-		cout << "Process::createFiles(" << process << ")";
-		cout << " creating rCom: '" << process->rCom << "'" << endl;
+		clog << "Process::createFiles(" << process << ")";
+		clog << " creating rCom: '" << process->rCom << "'" << endl;
 		if (fileExists(process->rCom)) {
-			cout << "Process::createFiles(" << process << ") File '";
-			cout << process->rCom << "' already exists" << endl;
+			clog << "Process::createFiles(" << process << ") File '";
+			clog << process->rCom << "' already exists" << endl;
 			unlink(process->rCom.c_str());
 
 		}
 
 		rval = mkfifo(process->rCom.c_str(), S_IFIFO);
 		if (rval < 0) {
-			cout << "Process::createFiles Warning! ";
+			clog << "Process::createFiles Warning! ";
 			perror("rCom");
-			cout << "can't create rCom pipe '" << process->rCom << "'";
-			cout << endl;
+			clog << "can't create rCom pipe '" << process->rCom << "'";
+			clog << endl;
 			return NULL;
 		}
 
 		process->hasCom = true;
 		process->wFd = openW(process->wCom);
 		if (process->wFd < 0) {
-			cout << "Process::createFiles Warning! ";
-			cout << "can't open '" << process->wCom << "'";
-			cout << endl;
+			clog << "Process::createFiles Warning! ";
+			clog << "can't open '" << process->wCom << "'";
+			clog << endl;
 		}
 
 		process->tryCom();
@@ -381,16 +381,16 @@ namespace process {
 		listener = process->sigListener;
 
         if (WIFEXITED(status)) {
-        	cout << "Process::detachWait process '" << process->processUri;
-        	cout << "' exited with exit status '" << WEXITSTATUS(status);
-        	cout << "'" << endl;
+        	clog << "Process::detachWait process '" << process->processUri;
+        	clog << "' exited with exit status '" << WEXITSTATUS(status);
+        	clog << "'" << endl;
         	printTimeStamp();
         	type = IProcessListener::PST_EXIT_OK;
 
         } else if (WIFSTOPPED(status)) {
-        	cout << "Process::detachWait process '" << process->processUri;
-        	cout << "' has not terminated correctly: '" << WSTOPSIG(status);
-        	cout << endl;
+        	clog << "Process::detachWait process '" << process->processUri;
+        	clog << "' has not terminated correctly: '" << WSTOPSIG(status);
+        	clog << endl;
         	printTimeStamp();
 
         	type = IProcessListener::PST_EXIT_ERROR;
@@ -400,9 +400,9 @@ namespace process {
         }
 
 		if (listener != NULL) {
-        	cout << "Process::detachWait process '" << process->processUri;
-        	cout << "' send status '" << WEXITSTATUS(status);
-        	cout << "'" << endl;
+        	clog << "Process::detachWait process '" << process->processUri;
+        	clog << "' send status '" << WEXITSTATUS(status);
+        	clog << "'" << endl;
         	printTimeStamp();
 			listener->receiveProcessSignal(type, status, ppid);
 		}
@@ -416,9 +416,9 @@ namespace process {
 
 		process->rFd = openR(process->rCom);
 		if (process->rFd < 0) {
-			cout << "Process::detachReceive Warning! ";
-			cout << "can't open '" << process->rCom << "'";
-			cout << endl;
+			clog << "Process::detachReceive Warning! ";
+			clog << "can't open '" << process->rCom << "'";
+			clog << endl;
 			return NULL;
 		}
 

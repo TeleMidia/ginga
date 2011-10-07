@@ -91,7 +91,7 @@ class ICListener : public IInteractiveChannelListener {
 		}
 
 		void receiveCode(long respCode) {
-			cout << "ICListener received code '" << respCode << "'" << endl;
+			clog << "ICListener received code '" << respCode << "'" << endl;
 		}
 
 		void receiveDataStream(char* buffer, int size) {
@@ -101,12 +101,12 @@ class ICListener : public IInteractiveChannelListener {
 		}
 
 		void receiveDataPipe(int fd, int size) {
-			cout << "ICListener received write '" << size << "'" << endl;
+			clog << "ICListener received write '" << size << "'" << endl;
 		}
 
 		void downloadCompleted(const char* localUri) {
-			cout << "ICListener download completed '" << localUri << "'";
-			cout << endl;
+			clog << "ICListener download completed '" << localUri << "'";
+			clog << endl;
 		}
 };
 #endif
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
 	string localFile = localPath + "CurlInteractiveChannelTest.xml";
 	string remoteUri = "http://apps.club.ncl.org.br/78/main.ncl";
 
-	cout << "gingacc-ic main test: begin" << endl;
+	clog << "gingacc-ic main test: begin" << endl;
 	setLogToNullDev();
 	mkdir(localPath.c_str(), 0666);
 
@@ -193,6 +193,6 @@ int main(int argc, char** argv) {
 #if HAVE_CCRTP
 	delete listener;
 #endif
-	cout << "gingacc-ic main test: end - check '" << localFile << "'" << endl;
+	clog << "gingacc-ic main test: end - check '" << localFile << "'" << endl;
 	return 0;
 }

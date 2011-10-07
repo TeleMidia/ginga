@@ -88,7 +88,7 @@ namespace descriptors {
 		return descriptorTag;
 	}
 	void MosaicDescriptor::print() {
-		cout << "MosaicDescriptor::print printing..." << endl;
+		clog << "MosaicDescriptor::print printing..." << endl;
 	}
 	size_t MosaicDescriptor::process(char* data, size_t pos) {
 		size_t remainingBytes;

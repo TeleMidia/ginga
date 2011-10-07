@@ -65,14 +65,14 @@ namespace process {
 
 		wFd = Process::openW(wCom);
 		if (wFd < 0) {
-			cout << "SpawnedProcess::SpawnedProcess Warning! ";
-			cout << "Can't openW '" << wCom << "'" << endl;
+			clog << "SpawnedProcess::SpawnedProcess Warning! ";
+			clog << "Can't openW '" << wCom << "'" << endl;
 		}
 
 		rFd = Process::openR(rCom);
 		if (rFd < 0) {
-			cout << "SpawnedProcess::SpawnedProcess Warning! ";
-			cout << "Can't openR '" << rCom << "'" << endl;
+			clog << "SpawnedProcess::SpawnedProcess Warning! ";
+			clog << "Can't openR '" << rCom << "'" << endl;
 		}
 
 		pthread_mutex_init(&waitSig, NULL);
@@ -115,7 +115,7 @@ namespace process {
 	}
 
 	void SpawnedProcess::messageReceived(string msg) {
-		cout << "SpawnedProcess::messageReceived '" << msg << "'" << endl;
+		clog << "SpawnedProcess::messageReceived '" << msg << "'" << endl;
 	}
 
 	void SpawnedProcess::waitSignal() {

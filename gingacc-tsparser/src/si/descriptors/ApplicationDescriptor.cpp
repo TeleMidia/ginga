@@ -113,18 +113,18 @@ namespace si {
 	}
 
 	void ApplicationDescriptor::print() {
-		cout << "ApplicationDescriptor::print printing..." << endl;
+		clog << "ApplicationDescriptor::print printing..." << endl;
 		vector<Profile*>::iterator i;
 
 		for (i = profiles->begin(); i != profiles->end(); ++i) {
-			cout << "Profile: " << endl;
-			cout << " -ApplicationProfile: " << (*i)->applicationProfile << endl;
-			cout << " -VersionMajor: "       << (*i)->versionMajor       << endl;
-			cout << " -VersionMinor: "       << (*i)->versionMinor       << endl;
-			cout << " -VersionMicro: "       << (*i)->versionMicro       << endl;
+			clog << "Profile: " << endl;
+			clog << " -ApplicationProfile: " << (*i)->applicationProfile << endl;
+			clog << " -VersionMajor: "       << (*i)->versionMajor       << endl;
+			clog << " -VersionMinor: "       << (*i)->versionMinor       << endl;
+			clog << " -VersionMicro: "       << (*i)->versionMicro       << endl;
 		}
-		cout << "ServiceBoundFlag: " << serviceBoundFlag << endl;
-		cout << "Visibility: "       << visibility       << endl;
+		clog << "ServiceBoundFlag: " << serviceBoundFlag << endl;
+		clog << "Visibility: "       << visibility       << endl;
 	}
 
 	size_t ApplicationDescriptor::process(char* data, size_t pos) {

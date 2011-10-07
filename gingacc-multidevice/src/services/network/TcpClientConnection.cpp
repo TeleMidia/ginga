@@ -83,7 +83,7 @@ namespace multidevice {
 
 		sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 		if (sockfd < 0) {
-			cout << "TCPClientConnection::ERROR opening socket";
+			clog << "TCPClientConnection::ERROR opening socket";
 
 		} else {
 			set = 1;
@@ -180,7 +180,7 @@ namespace multidevice {
 					buf[nr] = '\0';
 				}
 
-				//cout << "TCPClientConnection:run buf= " << buf << endl;
+				//clog << "TCPClientConnection:run buf= " << buf << endl;
 
 				strncpy(msgType,buf,3);
 				msgType[3] = '\0';
@@ -193,7 +193,7 @@ namespace multidevice {
 					strncpy(buf,buf+5,nr);
 
 					if ((strcmp(evtType,"ATTR")) == 0) {
-						//cout << " new buf: " << buf << endl;
+						//clog << " new buf: " << buf << endl;
 						resrv->receiveRemoteEvent(
 								2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
 					}
@@ -201,9 +201,9 @@ namespace multidevice {
 
 			} else {
 				if (nr < 0) {
-					cout << "TCPClientConnection::run end()!";
-					cout << " reason: nr=" << nr;
-					cout << " buf=" << buf << endl;
+					clog << "TCPClientConnection::run end()!";
+					clog << " reason: nr=" << nr;
+					clog << " buf=" << buf << endl;
 					this->end();
 				}
 			}

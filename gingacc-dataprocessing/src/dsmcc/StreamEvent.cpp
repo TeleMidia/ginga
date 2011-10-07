@@ -108,12 +108,12 @@ namespace dataprocessing {
 	}
 
 	void StreamEvent::print() {
-		cout << "descriptorTag: " << descriptorTag << endl;
-		cout << "descriptorLength: " << descriptorLength << endl;
-		cout << "eventId: " << eventId << endl;
-		cout << "eventNPT: " << timeReference << endl;
-		cout << "eventName: " << eventName << endl;
-		cout << "privateData: " << (string)(char*)getEventData() << endl;
+		clog << "descriptorTag: " << descriptorTag << endl;
+		clog << "descriptorLength: " << descriptorLength << endl;
+		clog << "eventId: " << eventId << endl;
+		clog << "eventNPT: " << timeReference << endl;
+		clog << "eventName: " << eventName << endl;
+		clog << "privateData: " << (string)(char*)getEventData() << endl;
 	}
 }
 }

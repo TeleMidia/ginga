@@ -78,7 +78,7 @@ namespace multidevice {
 		#else
 		RemoteEventService::contextManager = ContextManager::getInstance();
 		#endif
-		cout << "RemoteEventService::new RemoteEventService()" << endl;
+		clog << "RemoteEventService::new RemoteEventService()" << endl;
 
 		groups = new map<int,TcpSocketService*>;
 		pthread_mutex_init(&groupsMutex, NULL);
@@ -116,8 +116,8 @@ namespace multidevice {
 							RemoteEventService::DEFAULT_PORT,
 							this);
 		} else {
-			cout << "RemoteEventService::addDeviceClass Warning! Trying to ";
-			cout << "add the same device class '" << id << "' twice!" << endl;
+			clog << "RemoteEventService::addDeviceClass Warning! Trying to ";
+			clog << "add the same device class '" << id << "' twice!" << endl;
 		}
 		pthread_mutex_unlock(&groupsMutex);
 	}
@@ -137,8 +137,8 @@ namespace multidevice {
 
 		tss = i->second;
 		tss->addConnection(device_id, addr);
-		cout << "RemoteEventService :: TcpSocketService->addConnection";
-		cout << "devie_id="<<device_id<<endl;
+		clog << "RemoteEventService :: TcpSocketService->addConnection";
+		clog << "devie_id="<<device_id<<endl;
 
 		pthread_mutex_unlock(&groupsMutex);
 	}
@@ -174,14 +174,14 @@ namespace multidevice {
 
 		tss = (*groups)[device_class];
 
-		cout << "RemoteEventService::startDocument "<<name<<endl; 
+		clog << "RemoteEventService::startDocument "<<name<<endl; 
 		//TODO: ver se eh um ncl ou um media object qq
 		//TODO: ver a parada dos arquivos serem listados num xml
 
 		char *zip_dump = "/tmp/tmpzip.zip";
 
 		string dir_app = getCurrentPath() + getPath(string(name));
-		cout << "RemoteEventService::dir app="<<dir_app<<endl;
+		clog << "RemoteEventService::dir app="<<dir_app<<endl;
 
 		zip_directory(zip_dump,(char*)dir_app.c_str());
 		string zip_base64 = getBase64FromFile(zip_dump);
@@ -190,15 +190,15 @@ namespace multidevice {
 		//TODO: prefetch. add sem start
 		//TODO: remote node start. start sem add.
 
-//		cout << "RemoteEventService::zipb64="<<endl;
-//		cout << zip_base64 <<endl;
+//		clog << "RemoteEventService::zipb64="<<endl;
+//		clog << zip_base64 <<endl;
 
 //		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
-//		cout << "RemoteEventService:: ADD name="<<name<<endl;
+//		clog << "RemoteEventService:: ADD name="<<name<<endl;
 
 //		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
 		tss->postTcpCommand((char*)"START", 0, name, (char*)zip_base64.c_str());
-		cout << "RemoteEventService:: START name="<<name<<endl;
+		clog << "RemoteEventService:: START name="<<name<<endl;
 
 		pthread_mutex_unlock(&groupsMutex);
 	}
@@ -215,7 +215,7 @@ namespace multidevice {
 		}
 
 		tss = (*groups)[device_class];
-		cout << "RemoteEventService::stopDocument "<< name << endl;
+		clog << "RemoteEventService::stopDocument "<< name << endl;
 		tss->postTcpCommand((char*)"STOP", 0, name, (char*)"");
 		pthread_mutex_unlock(&groupsMutex);
 	}
@@ -254,8 +254,8 @@ namespace multidevice {
 						string eventContent) {
 
 		if (eventType == IDeviceDomain::FT_ATTRIBUTIONEVENT) {
-			//cout << "RemoteEventService::receiveRemoteEvent ATTR";
-			//cout << eventContent << endl;
+			//clog << "RemoteEventService::receiveRemoteEvent ATTR";
+			//clog << eventContent << endl;
 
 			string name, value;
 			size_t pos;

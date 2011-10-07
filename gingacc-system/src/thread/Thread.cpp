@@ -158,7 +158,7 @@ namespace thread {
 
 		timeOut.tv_nsec = micro * 1000;
 
-		//wclog << "teste = '" << teste <<  "'" << endl;
+		//clog << "teste = '" << teste <<  "'" << endl;
 		/*timeOut.tv_nsec = (time.tv_usec * 1000) +
 			    (long int)(milliseconds % 1000);*/
 

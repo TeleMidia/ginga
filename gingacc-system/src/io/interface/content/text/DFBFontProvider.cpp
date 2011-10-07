@@ -107,9 +107,9 @@ namespace io {
 
 		if (strcmp(fontUri, "") == 0 || !fileExists(fontUri)) {
 			if (!fileExists(aux)) {
-				cout << "DFBFontProvider Warning! File not found: '";
-				cout << fontUri << "' and '";
-				cout << aux << "'" << endl;
+				clog << "DFBFontProvider Warning! File not found: '";
+				clog << fontUri << "' and '";
+				clog << aux << "'" << endl;
 				aux = "";
 			}
 

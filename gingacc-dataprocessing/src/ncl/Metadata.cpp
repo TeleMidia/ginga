@@ -232,16 +232,16 @@ namespace ncl {
 		mdFile = new ofstream(mdUri.c_str(), ios::out | ios::binary);
 
 		if (!mdFile) {
-			cout << "Metadata::createMetadataFile warning: can't create '";
-			cout << mdUri << "'" << endl;
+			clog << "Metadata::createMetadataFile warning: can't create '";
+			clog << mdUri << "'" << endl;
 			return false;
 
 		} else {
 			mdFile->seekp(ofstream::end);
 			if (mdFile->tellp() > 2) {
-				cout << "ComponentDescription::createFile warning: opening ";
-				cout << " existent file '" << mdFile << "' pos = '";
-				cout << mdFile->tellp() << "'" << endl;
+				clog << "ComponentDescription::createFile warning: opening ";
+				clog << " existent file '" << mdFile << "' pos = '";
+				clog << mdFile->tellp() << "'" << endl;
 				return false;
 			}
 			mdFile->seekp(0);
@@ -304,14 +304,14 @@ namespace ncl {
 		if (fd > 0) {
 			bytes = read(fd, stream, fileSize);
 			if (bytes != fileSize) {
-				cout << "Metadata::copyContent Warning! Can't read '";
-				cout << fileSize << "' from file '" << absUri << "' (";
-				cout << bytes << " bytes read)" << endl;
+				clog << "Metadata::copyContent Warning! Can't read '";
+				clog << fileSize << "' from file '" << absUri << "' (";
+				clog << bytes << " bytes read)" << endl;
 			}
 
 		} else {
-			cout << "Metadata::copyContent Warning! Can't open file '";
-			cout << absUri << "'" << endl;
+			clog << "Metadata::copyContent Warning! Can't open file '";
+			clog << absUri << "'" << endl;
 		}
 	}
 

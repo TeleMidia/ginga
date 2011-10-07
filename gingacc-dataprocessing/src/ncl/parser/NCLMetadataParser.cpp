@@ -75,8 +75,8 @@ namespace ncl {
 
 		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
 		if (fd < 0) {
-			cout << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
-			cout << endl;
+			clog << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
+			clog << endl;
 			return NULL;
 		}
 
@@ -84,24 +84,24 @@ namespace ncl {
 		close(fd);
 
 		if (fileSize <= 0) {
-			cout << "NCLMetadataParser::parse: file '" << xmlDocument;
-			cout << "' is empty" << endl;
+			clog << "NCLMetadataParser::parse: file '" << xmlDocument;
+			clog << "' is empty" << endl;
 			return NULL;
 		}
 
 		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
 		if (fd < 0) {
-			cout << "NCLMetadataParser::parse2: can't open file:" << xmlDocument;
-			cout << endl;
+			clog << "NCLMetadataParser::parse2: can't open file:" << xmlDocument;
+			clog << endl;
 			return NULL;
 		}
 
 		char* content = new char[fileSize];
 		bytes = read(fd, content, fileSize);
 		if (bytes != fileSize) {
-			cout << "NCLMetadataParser::parse3: can't read '" << bytes;
-			cout << "' bytes from '" << xmlDocument << "'";
-			cout << endl;
+			clog << "NCLMetadataParser::parse3: can't read '" << bytes;
+			clog << "' bytes from '" << xmlDocument << "'";
+			clog << endl;
 			return NULL;
 		}
 
@@ -129,19 +129,19 @@ namespace ncl {
 		if (XML_Parse(parser, xmlStream, streamSize, true) ==
 				XML_STATUS_ERROR) {
 
-			cout << "NCLMetadataParser::parse() error '";
-			cout << XML_ErrorString(XML_GetErrorCode(parser));
-			cout << "' at line '" << XML_GetCurrentLineNumber(parser);
-			cout << "'" << endl;
+			clog << "NCLMetadataParser::parse() error '";
+			clog << XML_ErrorString(XML_GetErrorCode(parser));
+			clog << "' at line '" << XML_GetCurrentLineNumber(parser);
+			clog << "'" << endl;
 			delete mp;
 			XML_ParserFree(parser);
 			return NULL;
 		}
 
 		if (mp->isParsing) {
-			cout << "NCLMetadataParser::parse4 Warning! underflow";
-			cout << " XML parser ";
-			cout << endl;
+			clog << "NCLMetadataParser::parse4 Warning! underflow";
+			clog << " XML parser ";
+			clog << endl;
 		}
 
 		metadata = mp->metadata;
@@ -156,8 +156,8 @@ namespace ncl {
 
 		IMetadata* nm = ((MetadataAndParser*)data)->metadata;
 		bool isValid = (nm != NULL);
-		cout << "NCLMetadataParser::startElementHandler element '";
-		cout << element << "'" << endl;
+		clog << "NCLMetadataParser::startElementHandler element '";
+		clog << element << "'" << endl;
 
 		if (strcmp(element, "metadata") == 0) {
 			parseMetadata(data, attrs);

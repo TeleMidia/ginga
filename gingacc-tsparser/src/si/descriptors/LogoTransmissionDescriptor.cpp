@@ -136,18 +136,18 @@ namespace descriptors {
 		return descriptorTag;
 	}
 	void LogoTransmissionDescriptor::print(){
-		cout << "LogoTransmissionDescriptor::print printing..." << endl;
-		cout << " -logoName =  " << logoName << endl;
+		clog << "LogoTransmissionDescriptor::print printing..." << endl;
+		clog << " -logoName =  " << logoName << endl;
 
 	}
 	size_t LogoTransmissionDescriptor::process (char* data, size_t pos){
 		descriptorLength = data[pos+1];
-		//cout << "Descriptor length: ";
-		//cout << (ltd->getDescriptorLength() & 0xFF) << endl;
+		//clog << "Descriptor length: ";
+		//clog << (ltd->getDescriptorLength() & 0xFF) << endl;
 		pos += 2;
 
 		setType(data[pos]);
-		//cout << "Type: " << (ltd->getType() & 0xFF) << endl;
+		//clog << "Type: " << (ltd->getType() & 0xFF) << endl;
 		pos ++;
 		if (logoType == 0x01) { // scheme 1
 			logoId = (((data[pos] << 8) & 0x0100) |
@@ -172,11 +172,11 @@ namespace descriptors {
 			str[descriptorLength] = 0;
 			logoName = ((string) str);
 			pos += (descriptorLength - 1);
-			//cout << "Simple logo system: " << ltd->getName() << endl;
+			//clog << "Simple logo system: " << ltd->getName() << endl;
 		}
 		else {
 			pos += (descriptorLength-1);
-			//cout << "Unrecognized Logo Transmission Type: "
+			//clog << "Unrecognized Logo Transmission Type: "
 					//	<< logoType << endl;
 		}
 		return pos;

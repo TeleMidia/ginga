@@ -71,11 +71,11 @@ int main() {
 	IContextManager* contextManager = ContextManager::getInstance();
 #endif
 
-	cout << "gingacc-contextmanager main test: begin" << endl;
+	clog << "gingacc-contextmanager main test: begin" << endl;
 	if (contextManager != NULL) {
 
 	}
 
-	cout << "gingacc-contextmanager main test: end - check" << endl;
+	clog << "gingacc-contextmanager main test: end - check" << endl;
 	return 0;
 }

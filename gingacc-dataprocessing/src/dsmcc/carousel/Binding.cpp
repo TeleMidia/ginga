@@ -101,11 +101,11 @@ namespace carousel {
 	}
 
 	void Binding::print() {
-		cout << "BINDING" << endl;
-		cout << "id = " << id.c_str() << endl;
-		cout << "kind = " << kind.c_str() << endl;
-		cout << "type = " << type << endl;
-		cout << " info = " << objectInfo.c_str() << endl;
+		clog << "BINDING" << endl;
+		clog << "id = " << id.c_str() << endl;
+		clog << "kind = " << kind.c_str() << endl;
+		clog << "type = " << type << endl;
+		clog << " info = " << objectInfo.c_str() << endl;
 	}
 }
 }

@@ -133,8 +133,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		set<IDirectFBWindow*>::iterator w;
 		set<IDirectFBSurface*>::iterator s;
 
-		cout << "windowPool size = " << windowPool->size() << endl;
-		cout << "surfacePool size = " << surfacePool->size() << endl;
+		clog << "windowPool size = " << windowPool->size() << endl;
+		clog << "surfacePool size = " << surfacePool->size() << endl;
 
 		//Releasing still Window objects in Window Pool
 		pthread_mutex_lock(&winMutex);
@@ -241,9 +241,9 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		surface->Release(surface);
 		provider->Release(provider);
 
-		cout << endl << endl;
-		cout << "DFBScreen::setBackgroundImage '" << uri << "'" << endl;
-		cout << endl << endl;
+		clog << endl << endl;
+		clog << "DFBScreen::setBackgroundImage '" << uri << "'" << endl;
+		clog << endl << endl;
 	}
 
 	unsigned int DFBDeviceScreen::getWidthResolution() {
@@ -302,8 +302,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 		if (gfxLayer != NULL) {
 			if (gfxLayer->GetWindow(gfxLayer, winId, &window) != DFB_OK) {
-				cout << "DFBDeviceScreen::getWindow can't find id '" << winId;
-				cout << "'" << endl;
+				clog << "DFBDeviceScreen::getWindow can't find id '" << winId;
+				clog << "'" << endl;
 				window = NULL;
 			}
 		}

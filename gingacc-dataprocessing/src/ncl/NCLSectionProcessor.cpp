@@ -131,8 +131,8 @@ namespace ncl {
 		while (i != dirs->end()) {
 			dir = dir + "/" + *i;
 			mkdir(dir.c_str(), 0777);
-			//cout << "PrefetchManager::createDirectory '";
-			//cout << dir << "'" << endl;
+			//clog << "PrefetchManager::createDirectory '";
+			//clog << dir << "'" << endl;
 			++i;
 		}
 
@@ -169,8 +169,8 @@ namespace ncl {
 		fileUri = updatePath(fileUri);
 		createDirectory(fileUri.substr(0, fileUri.find_last_of("/")));
 
-		cout << "NCLSectionProcessor::processDataFile '" << fileUri;
-		cout << "'" << endl;
+		clog << "NCLSectionProcessor::processDataFile '" << fileUri;
+		clog << "'" << endl;
 
 		remove((char*)(fileUri.c_str()));
 		fd = open(fileUri.c_str(), O_LARGEFILE | O_WRONLY | O_CREAT, 0644);
@@ -179,9 +179,9 @@ namespace ncl {
 			close(fd);
 
 		} else {
-			cout << "NCLSectionProcessor::processDataFile Warning! ";
-			cout << " can't create file '" << fileUri << "'";
-			cout << endl;
+			clog << "NCLSectionProcessor::processDataFile Warning! ";
+			clog << " can't create file '" << fileUri << "'";
+			clog << endl;
 		}
 		delete[] stream;
 	}
@@ -209,9 +209,9 @@ namespace ncl {
 				break;
 
 			default:
-				cout << "NCLSectionProcessor::process Warning! Unrecognized";
-				cout << " structure type: '" << structType << "'";
-				cout << endl;
+				clog << "NCLSectionProcessor::process Warning! Unrecognized";
+				clog << " structure type: '" << structType << "'";
+				clog << endl;
 				break;
 		}
 	}
@@ -221,8 +221,8 @@ namespace ncl {
 		vector<StreamData*>::iterator i;
 
 		if (metadata == NULL) {
-			cout << "NCLSectionProcessor::mount Warning! can't mount:";
-			cout << " metadata(" << metadata << ")" << endl;
+			clog << "NCLSectionProcessor::mount Warning! can't mount:";
+			clog << " metadata(" << metadata << ")" << endl;
 
 		} else if (dataToProcess != NULL) {
 			i = dataToProcess->begin();
@@ -294,9 +294,9 @@ namespace ncl {
 				fileSize = Metadata::getFileSize(
 						updatePath(baseUri + "/" + fileUri));
 			}
-			cout << "NCLSectionProcessor::createNCLSections file '";
-			cout << fileUri << "' has '" << fileSize << "' bytes (base";
-			cout << " uri is '" << baseUri << "'" << endl;
+			clog << "NCLSectionProcessor::createNCLSections file '";
+			clog << fileUri << "' has '" << fileSize << "' bytes (base";
+			clog << " uri is '" << baseUri << "'" << endl;
 
 			if (fileSize > 0) {
 				dataFile = new DataFile(structureId);
@@ -314,9 +314,9 @@ namespace ncl {
 				}
 
 			} else {
-				cout << "NCLSectionProcessor::prepareFilesToNCLSections ";
-				cout << "Warning! Can't include file: '" << fileUri;
-				cout << "'" << endl;
+				clog << "NCLSectionProcessor::prepareFilesToNCLSections ";
+				clog << "Warning! Can't include file: '" << fileUri;
+				clog << "'" << endl;
 			}
 
 			++i;

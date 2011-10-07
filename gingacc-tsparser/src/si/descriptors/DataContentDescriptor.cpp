@@ -101,37 +101,37 @@ namespace descriptors{
 		return str;
 	}
 	void DataContentDescriptor::print() {
-		cout << "DataContentDescriptor::print printing..." << endl;
-		cout << " -descriptorLenght = "  << getDescriptorLength() << endl;
-		cout << " -languageCode = "      << getLanguageCode()     << endl;
-		cout << " -textChar = "          << getTextChar()         << endl;
+		clog << "DataContentDescriptor::print printing..." << endl;
+		clog << " -descriptorLenght = "  << getDescriptorLength() << endl;
+		clog << " -languageCode = "      << getLanguageCode()     << endl;
+		clog << " -textChar = "          << getTextChar()         << endl;
 	}
 	size_t DataContentDescriptor::process (char* data, size_t pos){
-		//cout << "DataContentDescriptor process with pos = " << pos;
+		//clog << "DataContentDescriptor process with pos = " << pos;
 
 		descriptorLength = data[pos+1];
 		pos += 2;
-		//cout << " and length = " << (descriptorLength & 0xFF) << endl;
+		//clog << " and length = " << (descriptorLength & 0xFF) << endl;
 
 		dataComponentId = (((data[pos] << 8) & 0x00FF)| (data[pos+1] & 0xFF));
-		//cout << "Data dataComponentId = " << (dataComponentId & 0xFF) << endl;
+		//clog << "Data dataComponentId = " << (dataComponentId & 0xFF) << endl;
 		pos += 2;
 
 		entryComponent = data[pos];
 		pos ++;
 		selectorLength = data[pos];
-		//cout << "Data Contents entryComponent = " << (entryComponent & 0xFF) << " and";
-		//cout << " selectorLength = " << (selectorLength & 0xFF) << endl;
+		//clog << "Data Contents entryComponent = " << (entryComponent & 0xFF) << " and";
+		//clog << " selectorLength = " << (selectorLength & 0xFF) << endl;
 		if(selectorLength > 0){
 			selectorByte = new char[selectorLength];
 			memset(selectorByte, 0 , selectorLength);
 			memcpy(selectorByte, data+pos+1 , selectorLength);
 			/*
-			cout << "Data selectorByte = " << endl;
+			clog << "Data selectorByte = " << endl;
 			for(int i = 0; i < selectorLength; i++){
-				cout << selectorByte[i];
+				clog << selectorByte[i];
 			}
-			cout << endl;
+			clog << endl;
 			*/
 		}
 		pos += selectorLength + 1;
@@ -141,11 +141,11 @@ namespace descriptors{
 			memset(componentRef, 0, numOfComponentRef);
 			memcpy(componentRef, data+pos+1, numOfComponentRef);
 			/*
-			cout << "Data Comp Ref = " << endl;
+			clog << "Data Comp Ref = " << endl;
 			for(int i = 0; i < numOfComponentRef; i++){
-				cout << componentRef[i];
+				clog << componentRef[i];
 			}
-			cout << endl;
+			clog << endl;
 			*/
 		}
 		pos += numOfComponentRef + 1;
@@ -153,11 +153,11 @@ namespace descriptors{
 		memcpy(languageCode, data+pos, 3);
 		pos += 3;
 		/*
-		cout << "Data languageCode = ";
+		clog << "Data languageCode = ";
 		for (int i = 0; i < 3; i++){
-			cout << languageCode[i];
+			clog << languageCode[i];
 		}
-		cout << endl;
+		clog << endl;
 		*/
 		textLength =  data[pos];
 		if(textLength > 0){
@@ -165,12 +165,12 @@ namespace descriptors{
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos+1, textLength);
 			/*
-			cout << "Data textLength = " << (textLength & 0xFF) << endl;
-			cout << "Data textChar = ";
+			clog << "Data textLength = " << (textLength & 0xFF) << endl;
+			clog << "Data textChar = ";
 			for(int i = 0; i < textLength; i++){
-				cout << textChar[i];
+				clog << textChar[i];
 			}
-			cout << endl;
+			clog << endl;
 			*/
 		}
 		pos += textLength;

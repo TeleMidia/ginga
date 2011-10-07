@@ -164,7 +164,7 @@ namespace player {
 		//lock();
 		switch (status) {
 			case PAUSE:
-				cout << "ShowButton::run PAUSE" << endl;
+				clog << "ShowButton::run PAUSE" << endl;
 #ifdef _WIN32		
 				render(getUserDocAndSetPath().append("\\resources\\images\\pauseButton.png"));
 #else
@@ -173,7 +173,7 @@ namespace player {
 				break;
 
 			case STOP:
-				cout << "ShowButton::run STOP" << endl;
+				clog << "ShowButton::run STOP" << endl;
 				if (previousStatus == PAUSE) {
 					release();
 				}
@@ -192,7 +192,7 @@ namespace player {
 				break;
 
 			case PLAY:
-				cout << "ShowButton::run PLAY" << endl;
+				clog << "ShowButton::run PLAY" << endl;
 				if (previousStatus == PAUSE) {
 					release();
 				}
@@ -211,7 +211,7 @@ namespace player {
 				break;
 
 			default:
-				cout << "ShowButton::run DEFAULT" << endl;
+				clog << "ShowButton::run DEFAULT" << endl;
 				break;
 		}
 		//unlock();

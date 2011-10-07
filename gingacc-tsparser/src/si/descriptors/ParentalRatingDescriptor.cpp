@@ -117,8 +117,8 @@ namespace descriptors {
 	}
 
 	void ParentalRatingDescriptor::print() {
-		cout << "ParentalRatingDescriptor::print printing..." << endl;
-		cout << " -descriptorLength = " << getDescriptorLength() << endl;
+		clog << "ParentalRatingDescriptor::print printing..." << endl;
+		clog << " -descriptorLength = " << getDescriptorLength() << endl;
 
 		if (countryRatings != NULL){
 			vector<Parental*>::iterator i;
@@ -127,11 +127,11 @@ namespace descriptors {
 			for(i = countryRatings->begin(); i != countryRatings->end();++i){
 				parental = ((Parental*)(*i));
 
-				cout << " -country = "     << getCountryCode(parental);
-				cout << " -age = "         << getAge(parental);
-				cout << " -description = ";
-				cout << getContentDescription(parental);
-				cout << endl;
+				clog << " -country = "     << getCountryCode(parental);
+				clog << " -age = "         << getAge(parental);
+				clog << " -description = ";
+				clog << getContentDescription(parental);
+				clog << endl;
 			}
 		}
 	}
@@ -140,9 +140,9 @@ namespace descriptors {
 		size_t remainingBytes;
 		Parental* parental;
 
-		//cout << "ParentalRatingDescriptor::process with pos =  " << pos ;
+		//clog << "ParentalRatingDescriptor::process with pos =  " << pos ;
 		descriptorLength = data[pos+1];
-		//cout << " and descriptorLenght = " << (descriptorLength & 0xFF) <<endl;
+		//clog << " and descriptorLenght = " << (descriptorLength & 0xFF) <<endl;
 
 		pos ++;
 		if (descriptorLength > 0) {
@@ -161,9 +161,9 @@ namespace descriptors {
 			parental->contentDescription = ((data[pos] & 0xF0) >> 4);
 			parental->age = (data[pos] & 0x0F);
 
-			//cout << "contentDescription = ";
-			//cout << (parental->contentDescription & 0xFF);
-			//cout << " and age = " << (parental->age & 0XFF) << endl;
+			//clog << "contentDescription = ";
+			//clog << (parental->contentDescription & 0xFF);
+			//clog << " and age = " << (parental->age & 0XFF) << endl;
 
 			countryRatings->push_back(parental);
 			remainingBytes = remainingBytes - 4 ;

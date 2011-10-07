@@ -165,15 +165,15 @@ namespace descriptors{
 	}
 
 	void AudioComponentDescriptor::print() {
-		cout << "AudioComponentDescriptor::print" << endl;
-		cout << " -languageCode = " << getLanguageCode() << endl;
+		clog << "AudioComponentDescriptor::print" << endl;
+		clog << " -languageCode = " << getLanguageCode() << endl;
 		if (ESMultiLingualFlag) {
-			cout << " -languageCode2 = " << getLanguageCode2() << endl;
+			clog << " -languageCode2 = " << getLanguageCode2() << endl;
 		}
 	}
 
 	size_t AudioComponentDescriptor::process(char* data, size_t pos) {
-		//cout << "Audio Component process beginning with pos =  " << pos;
+		//clog << "Audio Component process beginning with pos =  " << pos;
 
 		descriptorLength = data[pos+1];
 		//cout <<" and length = " << (descriptorLength & 0xFF) <<endl;

@@ -172,9 +172,9 @@ namespace multidevice {
 			frame = new char[HEADER_SIZE + payloadSize];
 
 		} catch (bad_alloc &e) {
-			cout << "BaseDeviceDomain::mountFrame Warning! ";
-			cout << "can't alloc '" << HEADER_SIZE + payloadSize << "'";
-			cout << " bytes" << endl;
+			clog << "BaseDeviceDomain::mountFrame Warning! ";
+			clog << "can't alloc '" << HEADER_SIZE + payloadSize << "'";
+			clog << " bytes" << endl;
 
 			return NULL;
 		}

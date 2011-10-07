@@ -60,14 +60,14 @@ using namespace ::br::pucrio::telemidia::ginga::core::um;
 #include <sys/types.h>
 
 int main() {
-	/*cout << "MAIN instancing CM" << endl;
+	/*clog << "MAIN instancing CM" << endl;
 	IComponentManager* cm = IComponentManager::getCMInstance();
 	IComponentDescription* as;
 	IUpdate* up;
 	IComponent* cp;
 	map<string, IComponent*>* comps;
 
-	cout << "MAIN cm instance ok" << endl;
+	clog << "MAIN cm instance ok" << endl;
 
 	string remoteUri = "http://www.telemidia.puc-rio.br/~marcio/gingaUpdate/";
 	string localUri = "/tmp/gingaUpdate/";

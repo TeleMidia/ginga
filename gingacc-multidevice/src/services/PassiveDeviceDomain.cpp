@@ -79,7 +79,7 @@ namespace multidevice {
 	}
 
 	bool PassiveDeviceDomain::passiveTaskRequest(char* data, int taskSize) {
-		//cout << "PassiveDeviceDomain::passiveTaskRequest" << endl;
+		//clog << "PassiveDeviceDomain::passiveTaskRequest" << endl;
 		passiveMulticast->dataRequest(data, taskSize);
 		return true;
 	}
@@ -92,8 +92,8 @@ namespace multidevice {
 		if (connected)
 			return;
 
-		cout << "PassiveDeviceDomain::postConnectionRequestTask";
-		cout << endl;
+		clog << "PassiveDeviceDomain::postConnectionRequestTask";
+		clog << endl;
 
 		//prepare frame
 		task = mountFrame(
@@ -122,19 +122,19 @@ namespace multidevice {
 		deviceService->connectedToBaseDevice(sourceIp);
 
 		if (connected) {
-			cout << "PassiveDeviceDomain::receiveAnswerTask Warning! ";
-			cout << "received an answer task in connected state" << endl;
+			clog << "PassiveDeviceDomain::receiveAnswerTask Warning! ";
+			clog << "received an answer task in connected state" << endl;
 		}
 
 		//TODO: check if central domain IP + port received in task is correct
-		//cout << "PassiveDeviceDomain::receiveAnswerTask Connected with ";
-		//cout << "base multi-device domain" << endl;
+		//clog << "PassiveDeviceDomain::receiveAnswerTask Connected with ";
+		//clog << "base multi-device domain" << endl;
 		connected = true;
 	}
 
 	bool PassiveDeviceDomain::receiveMediaContentTask(char* task) {
-		/*cout << "PassiveDeviceDomain::receiveMediaContentTask ";
-		cout << "destcass = '" << destClass << "'" << endl;*/
+		/*clog << "PassiveDeviceDomain::receiveMediaContentTask ";
+		clog << "destcass = '" << destClass << "'" << endl;*/
 		return deviceService->receiveMediaContent(
 				sourceIp, task, this->frameSize);
 	}
@@ -151,14 +151,14 @@ namespace multidevice {
 			task = taskReceive();
 			if (task == NULL) {
 				taskIndicationFlag = false;
-				cout << "PassiveDeviceDomain::runControlTask Warning! ";
-				cout << "received a NULL task" << endl;
+				clog << "PassiveDeviceDomain::runControlTask Warning! ";
+				clog << "received a NULL task" << endl;
 				return false;
 			}
 
 			if (myIP == sourceIp) {
-				cout << "PassiveDeviceDomain::runControlTask got my own task ";
-				cout << "(size = '" << frameSize << "')" << endl;
+				clog << "PassiveDeviceDomain::runControlTask got my own task ";
+				clog << "(size = '" << frameSize << "')" << endl;
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -166,8 +166,8 @@ namespace multidevice {
 			}
 
 			if (destClass != deviceClass) {
-				cout << "PassiveDeviceDomain::runControlTask Task isn't for me!";
-				cout << endl;
+				clog << "PassiveDeviceDomain::runControlTask Task isn't for me!";
+				clog << endl;
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -177,20 +177,20 @@ namespace multidevice {
 			if (frameSize + HEADER_SIZE != bytesRecv) {
 				delete[] task;
 				taskIndicationFlag = false;
-				cout << "PassiveDeviceDomain::runControlTask Warning! ";
-				cout << "received a wrong size frame '" << frameSize;
-				cout << "' bytes received '" << bytesRecv << "'" << endl;
+				clog << "PassiveDeviceDomain::runControlTask Warning! ";
+				clog << "received a wrong size frame '" << frameSize;
+				clog << "' bytes received '" << bytesRecv << "'" << endl;
 				return false;
 			}
-			//cout << "PassiveDeviceDomain::runControlTask frame type '";
-			//cout << frameType << "'" << endl;
+			//clog << "PassiveDeviceDomain::runControlTask frame type '";
+			//clog << frameType << "'" << endl;
 
 			switch (frameType) {
 				case FT_ANSWERTOREQUEST:
 					if (frameSize != 11) {
-						cout << "PassiveDeviceDomain::runControlTask Warning!";
-						cout << "received an answer to connection request with";
-						cout << " wrong size: '" << frameSize << "'" << endl;
+						clog << "PassiveDeviceDomain::runControlTask Warning!";
+						clog << "received an answer to connection request with";
+						clog << " wrong size: '" << frameSize << "'" << endl;
 						delete[] task;
 						taskIndicationFlag = false;
 						return false;
@@ -201,13 +201,13 @@ namespace multidevice {
 					break;
 
 				case FT_KEEPALIVE:
-					cout << "PassiveDeviceDomain::runControlTask KEEPALIVE";
-					cout << endl;
+					clog << "PassiveDeviceDomain::runControlTask KEEPALIVE";
+					clog << endl;
 					break;
 
 				default:
-					cout << "PassiveDeviceDomain::runControlTask WHAT? FT '";
-					cout << frameType << "'" << endl;
+					clog << "PassiveDeviceDomain::runControlTask WHAT? FT '";
+					clog << frameType << "'" << endl;
 					delete[] task;
 					taskIndicationFlag = false;
 					return false;
@@ -229,18 +229,18 @@ namespace multidevice {
 		}
 
 		if (myIP == sourceIp) {
-			cout << "PassiveDeviceDomain::runDataTask receiving my own task";
-			cout << endl;
+			clog << "PassiveDeviceDomain::runDataTask receiving my own task";
+			clog << endl;
 
 			delete[] task;
 			return false;
 		}
 
 		if (destClass != deviceClass) {
-			cout << "PassiveDeviceDomain::runDataTask";
-			cout << " should never reaches here (receiving wrong destination";
-			cout << " class '" << destClass << "')";
-			cout << endl;
+			clog << "PassiveDeviceDomain::runDataTask";
+			clog << " should never reaches here (receiving wrong destination";
+			clog << " class '" << destClass << "')";
+			clog << endl;
 
 			delete[] task;
 			taskIndicationFlag = false;
@@ -249,24 +249,24 @@ namespace multidevice {
 
 		if (frameSize + HEADER_SIZE != bytesRecv) {
 			delete[] task;
-			cout << "PassiveDeviceDomain::runDataTask Warning! wrong ";
-			cout << "frameSize '" << bytesRecv << "'" << endl;
+			clog << "PassiveDeviceDomain::runDataTask Warning! wrong ";
+			clog << "frameSize '" << bytesRecv << "'" << endl;
 			return false;
 		}
 
-		//cout << "PassiveDeviceDomain::runDataTask frame type '";
-		//cout << frameType << "'" << endl;
+		//clog << "PassiveDeviceDomain::runDataTask frame type '";
+		//clog << frameType << "'" << endl;
 
 		switch (frameType) {
 			case FT_MEDIACONTENT:
-				/*cout << "PassiveDeviceDomain::runDataTask call ";
-				cout << "receiveMediaContentTask " << endl;*/
+				/*clog << "PassiveDeviceDomain::runDataTask call ";
+				clog << "receiveMediaContentTask " << endl;*/
 				receiveMediaContentTask(task);
 				break;
 
 			default:
-				cout << "PassiveDeviceDomain::runDataTask WHAT? frame type '";
-				cout << frameType << "'" << endl;
+				clog << "PassiveDeviceDomain::runDataTask WHAT? frame type '";
+				clog << frameType << "'" << endl;
 				delete[] task;
 				taskIndicationFlag = false;
 				return false;

@@ -57,13 +57,13 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include <sys/types.h>
 
 int main() {
-	cout << "MAIN instancing CM" << endl;
+	clog << "MAIN instancing CM" << endl;
 	IComponentManager* cm = IComponentManager::getCMInstance();
 	IComponentDescription* as;
 	map<string, IComponent*>* comps;
 	string localUri = "/tmp/";
 
-	cout << "MAIN cm instance ok" << endl;
+	clog << "MAIN cm instance ok" << endl;
 
 	comps = cm->getComponentDescription();
 	as = ((ComponentDescriptionCreator*)(

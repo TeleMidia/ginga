@@ -156,8 +156,8 @@ namespace si {
 	void TOT::print() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		cout << "TOT::print printing..." << endl;
-		cout << "UTC3Time: " << getUTC3TimeStr() << endl;
+		clog << "TOT::print printing..." << endl;
+		clog << "UTC3Time: " << getUTC3TimeStr() << endl;
 /*
 		for (i = descriptors->begin(); i != descriptors->end(); ++i) {
 			(*i)->print();
@@ -171,7 +171,7 @@ namespace si {
 		unsigned short remainingBytes, value;
 		LocalTimeOffsetDescriptor* localDescriptor;
 
-		cout << "TOT::process" << endl;
+		clog << "TOT::process" << endl;
 
 		pos  = 0;
 		data = new char[payloadSize];
@@ -188,20 +188,20 @@ namespace si {
 
 		remainingBytes  = descriptorsLoopLength;
 
-		cout << "TOT::process going to descriptors with descriptorsLength:";
-		cout << descriptorsLoopLength << endl;
+		clog << "TOT::process going to descriptors with descriptorsLength:";
+		clog << descriptorsLoopLength << endl;
 
 		while (remainingBytes) {
 			value = ((data[pos+1] & 0xFF) + 2);
 			remainingBytes -= value;
 
 			if (data[pos] == DT_LOCAL_TIME_OFFSET) {
-				cout << "TOT::process LocalTimeOffsetDescriptor" << endl;
+				clog << "TOT::process LocalTimeOffsetDescriptor" << endl;
 				localDescriptor = new LocalTimeOffsetDescriptor();
 				localpos = localDescriptor->process(data, pos);
 				pos += value;
-				cout << "TOT::process Desc finished with pos: " << pos;
-				cout << " and localpos: " << localpos << endl;
+				clog << "TOT::process Desc finished with pos: " << pos;
+				clog << " and localpos: " << localpos << endl;
 
 				descriptors->push_back((IMpegDescriptor*)localDescriptor);
 			}

@@ -70,7 +70,7 @@ namespace io {
 	map<float, list<DXWindow*>>* DXWindow::depthMap = new map<float, list<DXWindow*>>();
 
 	DXWindow::DXWindow(int x, int y, int width, int height) {
-		cout << "DXWindow::DXWindow(int x, int y, int width, int height)" << endl;
+		clog << "DXWindow::DXWindow(int x, int y, int width, int height)" << endl;
 		this->win = NULL;
 		this->winSur = NULL;
 
@@ -98,7 +98,7 @@ namespace io {
 	}
 
 	DXWindow::~DXWindow() {
-		cout << "DXWindow::~DXWindow" << endl;
+		clog << "DXWindow::~DXWindow" << endl;
 		ISurface* surface;
 		vector<ISurface*>::iterator i;
 
@@ -141,35 +141,35 @@ namespace io {
 	}
 
 	void DXWindow::setReleaseListener(ISurface* listener) {
-		cout << "XWindow::setReleaseListener(ISurface* listener)" << endl;
+		clog << "XWindow::setReleaseListener(ISurface* listener)" << endl;
 		this->releaseListener = listener;
 	}
 
 	int DXWindow::getCap(string cap) {
-		cout << "DXWindow::getCap(string cap)" << endl;
+		clog << "DXWindow::getCap(string cap)" << endl;
 		return 0;
 	}
 
 	void DXWindow::setCaps(int caps) {
-		cout << "DXWindow::setCaps(int caps)" << endl;
+		clog << "DXWindow::setCaps(int caps)" << endl;
 		this->caps = caps;
 	}
 
 	void DXWindow::addCaps(int capability) {
-		cout << "DXWindow::addCaps(int capability)" << endl;
+		clog << "DXWindow::addCaps(int capability)" << endl;
 		this->caps = (this->caps | capability);
 	}
 
 	int DXWindow::getCaps() {
-		cout << " DXWindow::getCaps()" << endl;
+		clog << " DXWindow::getCaps()" << endl;
 		return caps;
 	}
 
 	void DXWindow::draw() {
-		cout << "DXWindow::draw()" << endl;
+		clog << "DXWindow::draw()" << endl;
 
 		if (win != NULL) {
-			cout << "DXWindow::draw Warning! Requesting redraw" << endl;
+			clog << "DXWindow::draw Warning! Requesting redraw" << endl;
 		} else {
 			win = (DX2DSurface *)(LocalDeviceManager::getInstance()->createWindow(&winProp));
 			if (win != NULL) {
@@ -180,9 +180,9 @@ namespace io {
 	}
 
 	void DXWindow::setBounds(int posX, int posY, int w, int h) {
-		cout << "DXWindow::setBounds(" << posY << ", " << posY << ", " << w << ", " << h << ")" << endl;
+		clog << "DXWindow::setBounds(" << posY << ", " << posY << ", " << w << ", " << h << ")" << endl;
 		if (win == NULL) {
-			cout << "DXWindow::setBounds Warning! window is null " << endl;
+			clog << "DXWindow::setBounds Warning! window is null " << endl;
 			winProp.x = posX;
 			winProp.y = posY;
 			winProp.width = w;
@@ -200,21 +200,21 @@ namespace io {
 	}
 
 	void DXWindow::setBackgroundColor(int r, int g, int b, int alpha) {
-		cout << "DXWindow::setBackgroundColor(r = " <<  r << ", g = " << g << ", b = " <<  b << ", alpha = " << alpha << " )" << endl;
+		clog << "DXWindow::setBackgroundColor(r = " <<  r << ", g = " << g << ", b = " <<  b << ", alpha = " << alpha << " )" << endl;
 		winProp.color = D3DCOLOR_ARGB(alpha, r, g, b);
 	}
 
 	IColor* DXWindow::getBgColor() {
-		cout << "DXWindow::getBgColor()" << endl;
+		clog << "DXWindow::getBgColor()" << endl;
 		return new Color(GetRValue(winProp.color), GetGValue(winProp.color), GetBValue(winProp.color));
 	}
 
 	void DXWindow::setColorKey(int r, int g, int b) {
-		cout << "DXWindow::setColorKey(r = " <<  r << ", g = " << g << ", b = " <<  b << ")" << endl;
+		clog << "DXWindow::setColorKey(r = " <<  r << ", g = " << g << ", b = " <<  b << ")" << endl;
 	}
 
 	void DXWindow::moveTo(int posX, int posY) {
-		cout << "DXWindow::moveTo(int posX, int posY)" << endl;
+		clog << "DXWindow::moveTo(int posX, int posY)" << endl;
 
 		winProp.x = posX;
 		winProp.y = posY;
@@ -225,7 +225,7 @@ namespace io {
 	}
 
 	void DXWindow::resize(int width, int height) {
-		cout << "DXWindow::resize(int width, int height)" << endl;
+		clog << "DXWindow::resize(int width, int height)" << endl;
 		
 		winProp.width = width;
 		winProp.height = height;
@@ -236,7 +236,7 @@ namespace io {
 	}
 
 	void DXWindow::raise() {
-		cout << "DXWindow::raise()" << endl;
+		clog << "DXWindow::raise()" << endl;
 		((*depthMap)[winProp.z]).remove(this);
 		winProp.z -= 0.002f;
 		((*depthMap)[winProp.z]).push_back(this);
@@ -244,7 +244,7 @@ namespace io {
 	}
 
 	void DXWindow::lower() {
-		cout << "DXWindow::lower()" << endl;
+		clog << "DXWindow::lower()" << endl;
 		((*depthMap)[winProp.z]).remove(this);
 		winProp.z += 0.002f;
 		((*depthMap)[winProp.z]).push_back(this);
@@ -252,18 +252,18 @@ namespace io {
 	}
 
 	void DXWindow::raiseToTop() {
-		cout << "DXWindow::raiseToTop()" << endl;
+		clog << "DXWindow::raiseToTop()" << endl;
 		lock();
 		((*depthMap)[winProp.z]).remove(this);
 		winProp.z = lastBiggestZindex = (lastBiggestZindex - 0.002f) ;
-		cout << "lastBiggestZindex = " << lastBiggestZindex << endl;
+		clog << "lastBiggestZindex = " << lastBiggestZindex << endl;
 		((*depthMap)[winProp.z]).push_back(this);
 		win->setProperties(&winProp);
 		unlock();
 	}
 
 	void DXWindow::lowerToBottom() {
-		cout << "DXWindow::lowerToBottom()" << endl;
+		clog << "DXWindow::lowerToBottom()" << endl;
 		lock();
 		((*depthMap)[winProp.z]).remove(this);
 		winProp.z = lastLowestZindex = (lastLowestZindex + 0.002f) ;
@@ -273,84 +273,84 @@ namespace io {
 	}
 
 	void DXWindow::setCurrentTransparency(int alpha) {
-		cout << "DXWindow::setCurrentTransparency(alpha = " << alpha << ")" << endl;
+		clog << "DXWindow::setCurrentTransparency(alpha = " << alpha << ")" << endl;
 		winProp.color =  (winProp.color & 0x00FFFFFF) | (alpha << 24);
 	}
 
 	void DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2) {
-		cout << "DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2)" << endl;
-		cout << "setOpaqueRegion: Not implemented yet" << endl; 
+		clog << "DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2)" << endl;
+		clog << "setOpaqueRegion: Not implemented yet" << endl; 
 	}
 
 	int DXWindow::getTransparencyValue() {
-		cout << "DXWindow::getTransparencyValue()" << endl;
+		clog << "DXWindow::getTransparencyValue()" << endl;
 		return 0;
 	}
 
 	void DXWindow::show() {
-		cout << "DXWindow::show()" << endl;
+		clog << "DXWindow::show()" << endl;
 		this->visible = true;
 		win->show();
 	}
 
 	void DXWindow::hide() {
-		cout << "DXWindow::hide()" << endl;
+		clog << "DXWindow::hide()" << endl;
 		this->visible = false;
 		win->hide();
 	}
 
 	int DXWindow::getX() {
-		cout << "DXWindow::getX()" << endl;
+		clog << "DXWindow::getX()" << endl;
 		return winProp.x;
 	}
 
 	int DXWindow::getY() {
-		cout << "DXWindow::getY()" << endl;
+		clog << "DXWindow::getY()" << endl;
 		return winProp.y;
 	}
 
 	int DXWindow::getW() {
-		cout << "DXWindow::getW()" << endl;
+		clog << "DXWindow::getW()" << endl;
 		return winProp.width;
 	}
 
 	int DXWindow::getH() {
-		cout << "DXWindow::getH()" << endl;
+		clog << "DXWindow::getH()" << endl;
 		return winProp.height;
 	}
 
 	void* DXWindow::getContent() {
-		cout << "DXWindow::getContent()" << endl;
+		clog << "DXWindow::getContent()" << endl;
 		return win;
 	}
 
 	void DXWindow::setColor(int r, int g, int b, int alpha) {
-		cout << "DXWindow::setColor(int r, int g, int b, int alpha)" << endl;
+		clog << "DXWindow::setColor(int r, int g, int b, int alpha)" << endl;
 		winProp.color = D3DCOLOR_ARGB(alpha, r, g, b);
 	}
 
 	void DXWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-		cout << "DXWindow::setBorder(int r, int g, int b, int alpha, int bWidth)" << endl;
-		cout << "setBorder: Not implemented yet" << endl; 
+		clog << "DXWindow::setBorder(int r, int g, int b, int alpha, int bWidth)" << endl;
+		clog << "setBorder: Not implemented yet" << endl; 
 	}
 
 	void DXWindow::setBorder(IColor* color, int bWidth) {
-		cout << "DXWindow::setBorder(IColor* color, int bWidth)" << endl;
-		cout << "setBorder: Not implemented yet" << endl; 
+		clog << "DXWindow::setBorder(IColor* color, int bWidth)" << endl;
+		clog << "setBorder: Not implemented yet" << endl; 
 	}
 
 	void DXWindow::setGhostWindow(bool ghost) {
-		cout << "DXWindow::setGhostWindow(bool ghost)" << endl;
-		cout << "setGhostWindow: Not implemented yet" << endl; 
+		clog << "DXWindow::setGhostWindow(bool ghost)" << endl;
+		clog << "setGhostWindow: Not implemented yet" << endl; 
 	}
 
 	bool DXWindow::isVisible() {
-		cout << "DXWindow::isVisible()" << endl;
+		clog << "DXWindow::isVisible()" << endl;
 		return visible;
 	}
 
 	void DXWindow::validate() {
-		cout << "DXWindow::validate()" << endl;
+		clog << "DXWindow::validate()" << endl;
 		if (win != NULL && winSur != NULL) {
 			if (winSur != NULL) {
 				lockChilds();
@@ -362,7 +362,7 @@ namespace io {
 					}
 
 				} else {
-						cout << "No child surfaces" << endl;
+						clog << "No child surfaces" << endl;
 				}
 				unlockChilds();
 			}
@@ -370,7 +370,7 @@ namespace io {
 	}
 
 	void DXWindow::addChildSurface(ISurface* s) {
-		cout << "DXWindow::addChildSurface(ISurface* s)" << endl;
+		clog << "DXWindow::addChildSurface(ISurface* s)" << endl;
 		int i;
 		ISurface* surface;
 
@@ -387,7 +387,7 @@ namespace io {
 	}
 
 	bool DXWindow::removeChildSurface(ISurface* s) {
-		cout << "DXWindow::removeChildSurface(ISurface* s)" << endl;
+		clog << "DXWindow::removeChildSurface(ISurface* s)" << endl;
 		int i;
 		vector<ISurface*>::iterator j;
 		ISurface* surface;
@@ -416,34 +416,34 @@ namespace io {
 	}
 
 	void DXWindow::setStretch(bool stretchTo) {
-		cout << "DXWindow::setStretch(bool stretchTo)" << endl;
-		cout << "setStretch: Not implemented yet" << endl; 
+		clog << "DXWindow::setStretch(bool stretchTo)" << endl;
+		clog << "setStretch: Not implemented yet" << endl; 
 	}
 
 	bool DXWindow::getStretch() {
-		cout << "DXWindow::getStretch()" << endl;
-		cout << "getStretch: Not implemented yet" << endl; 
+		clog << "DXWindow::getStretch()" << endl;
+		clog << "getStretch: Not implemented yet" << endl; 
 		return NULL;
 	}
 
 	void DXWindow::setFit(bool fitTo) {
-		cout << "DXWindow::setFit(bool fitTo)" << endl;
-		cout << "setFit: Not implemented yet" << endl; 
+		clog << "DXWindow::setFit(bool fitTo)" << endl;
+		clog << "setFit: Not implemented yet" << endl; 
 	}
 
 	bool DXWindow::getFit() {
-		cout << "DXWindow::getFit()" << endl;
-		cout << "getFit: Not implemented yet" << endl; 
+		clog << "DXWindow::getFit()" << endl;
+		clog << "getFit: Not implemented yet" << endl; 
 		return false;
 	}
 
 	void DXWindow::clearContent() {
-		cout << "DXWindow::clearContent()" << endl;
-		cout << "clearContent: Not implemented yet" << endl; 
+		clog << "DXWindow::clearContent()" << endl;
+		clog << "clearContent: Not implemented yet" << endl; 
 	}
 
 	bool DXWindow::isMine(ISurface* surface) {
-		cout << "DXWindow::isMine(ISurface* surface)" << endl;
+		clog << "DXWindow::isMine(ISurface* surface)" << endl;
 		DX2DSurface* contentSurface;
 
 		if (win == NULL || winSur == NULL || surface == NULL) {
@@ -459,7 +459,7 @@ namespace io {
 	}
 
 	void DXWindow::renderFrom(ISurface* surface) {
-		cout << "DXWindow::renderFrom(ISurface* surface)" << endl;
+		clog << "DXWindow::renderFrom(ISurface* surface)" << endl;
 		DX2DSurface* contentSurface, *s;
 		//D3DSURFACE_DESC desc;
 		int w, h;
@@ -469,7 +469,7 @@ namespace io {
 			contentSurface = (DX2DSurface*)(surface->getContent());
 
 			if(contentSurface == NULL){
-				cout << "contentSurface is NULL" << endl;
+				clog << "contentSurface is NULL" << endl;
 			}
 
 			w = contentSurface->getWidth();
@@ -492,49 +492,49 @@ namespace io {
 	}
 
 	void DXWindow::blit(IWindow* src) {
-		cout << "DXWindow::blit(IWindow* src)" << endl;
-		cout << "blit: Not implemented yet" << endl; 
+		clog << "DXWindow::blit(IWindow* src)" << endl;
+		clog << "blit: Not implemented yet" << endl; 
 	}
 
 	void DXWindow::stretchBlit(IWindow* src) {
-		cout << "DXWindow::stretchBlit(IWindow* src)" << endl;
-		cout << "stretchBlit: Not implemented yet" << endl; 
+		clog << "DXWindow::stretchBlit(IWindow* src)" << endl;
+		clog << "stretchBlit: Not implemented yet" << endl; 
 	}
 
 	string DXWindow::getDumpFileUri() {
-		cout << "DXWindow::getDumpFileUri()" << endl;
-		cout << "getDumpFileUri: Not implemented yet" << endl; 
+		clog << "DXWindow::getDumpFileUri()" << endl;
+		clog << "getDumpFileUri: Not implemented yet" << endl; 
 		return "";
 	}
 
 	void DXWindow::lock() {
-		cout << "DXWindow::lock()" << endl;
+		clog << "DXWindow::lock()" << endl;
 		pthread_mutex_lock(&mutex);
 	}
 
 	void DXWindow::unlock() {
-		cout << "DXWindow::unlock()" << endl;
+		clog << "DXWindow::unlock()" << endl;
 		pthread_mutex_unlock(&mutex);
 	}
 
 	void DXWindow::lockChilds() {
-		cout << "DXWindow::lockChilds()" << endl;
+		clog << "DXWindow::lockChilds()" << endl;
 		pthread_mutex_lock(&mutexC);
 	}
 
 	void DXWindow::unlockChilds() {
-		cout << "DXWindow::unlockChilds()" << endl;
+		clog << "DXWindow::unlockChilds()" << endl;
 		pthread_mutex_unlock(&mutexC);
 	}
 
 	void DXWindow::setMaxTransparencyValue(int maxValue){
-		cout << "DXWindow::setMaxTransparencyValue()" << endl;
-		cout << "setMaxTransparencyValue: Not implemented yet" << endl; 
+		clog << "DXWindow::setMaxTransparencyValue()" << endl;
+		clog << "setMaxTransparencyValue: Not implemented yet" << endl; 
 	}
 
 	string DXWindow::getDumpFileUri(int quality, int dumpW, int dumpH){
-		cout << "DXWindow::getDumpFileUri()" << endl;
-		cout << "getDumpFileUri: Not implemented yet" << endl; 
+		clog << "DXWindow::getDumpFileUri()" << endl;
+		clog << "getDumpFileUri: Not implemented yet" << endl; 
 		return "";
 	}
 

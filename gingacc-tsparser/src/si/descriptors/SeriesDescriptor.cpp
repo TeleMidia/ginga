@@ -145,24 +145,24 @@ namespace descriptors{
 	}
 	*/
 	void SeriesDescriptor::print(){
-		cout << "SeriesDescriptor::print printing...";
-		cout << " -seriesId = "            << seriesId              << endl;
-		cout << " -descriptorLength = "    << getDescriptorLength() << endl;
-		cout << " -episodeNumber = "       << episodeNumber         << endl;
-		cout << " -lastEpisodeNumber = "   << lastEpisodeNumber     << endl;
-		cout << " -seriesNameChar = "      << getSeriesNameChar()   << endl;
+		clog << "SeriesDescriptor::print printing...";
+		clog << " -seriesId = "            << seriesId              << endl;
+		clog << " -descriptorLength = "    << getDescriptorLength() << endl;
+		clog << " -episodeNumber = "       << episodeNumber         << endl;
+		clog << " -lastEpisodeNumber = "   << lastEpisodeNumber     << endl;
+		clog << " -seriesNameChar = "      << getSeriesNameChar()   << endl;
 	}
 	size_t SeriesDescriptor::process(char* data, size_t pos){
-		//cout << "SeriesDescriptor::process with pos = " << pos;
+		//clog << "SeriesDescriptor::process with pos = " << pos;
 
 		descriptorLength = data[pos+1];
 		pos += 2;
 
-		//cout << "and descriptorlength = ";
+		//clog << "and descriptorlength = ";
 		//cout<< (descriptorLength & 0xFF) << endl;
 
 		seriesId = (((data[pos] << 8) & 0xFF00) | (data[pos+1] & 0xFF));
-		//cout << "Series seriedId = "<< (seriesId & 0xFF) << endl;
+		//clog << "Series seriedId = "<< (seriesId & 0xFF) << endl;
 		pos += 2; //pos = 22
 
 		repeatLabel = ((data[pos] & 0xF0) >> 4);
@@ -170,12 +170,12 @@ namespace descriptors{
 		expireDateValidFlag =  (data[pos] & 0x01);
 		pos ++;//pos = 23
 
-		//cout << "Series repeatLabel" << repeatLabel;
-		//cout << " and programPattern = " << programPattern;
-		//cout << " and expireDateValidFlag = " << expireDateValidFlag << endl;
+		//clog << "Series repeatLabel" << repeatLabel;
+		//clog << " and programPattern = " << programPattern;
+		//clog << " and expireDateValidFlag = " << expireDateValidFlag << endl;
 
 		expireDate[0] = data[pos];
-		//cout << "Series expireDate = " << (expireDate[0]&0xFF);
+		//clog << "Series expireDate = " << (expireDate[0]&0xFF);
 		expireDate[1] = data[pos+1];
 		//cout <<"."<< (expireDate[1] & 0xFF) << endl;
 		pos += 2;//pos = 25
@@ -187,9 +187,9 @@ namespace descriptors{
 				(data[pos+2] & 0xFF) >> 8);
 
 		pos+=3;//pos = 28
-		//cout << "Series episodeNumber = " << (episodeNumber & 0xFF);
-		//cout << " and lastEpisodeNUmber = " ;
-		//cout << (lastEpisodeNumber & 0xFF) << endl;
+		//clog << "Series episodeNumber = " << (episodeNumber & 0xFF);
+		//clog << " and lastEpisodeNUmber = " ;
+		//clog << (lastEpisodeNumber & 0xFF) << endl;
 
 		seriesNameLength = descriptorLength - 8;
 		if (seriesNameLength > 0){

@@ -97,7 +97,7 @@ namespace si {
 	}
 
 	void TransportProtocolDescriptor::print() {
-		cout << "TransportProtocolDescriptor::print" << endl;
+		clog << "TransportProtocolDescriptor::print" << endl;
 	}
 
 

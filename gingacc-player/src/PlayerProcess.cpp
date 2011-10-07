@@ -77,8 +77,8 @@ namespace player {
 	}
 
 	PlayerProcess::~PlayerProcess() {
-		cout << "PlayerProcess::~PlayerProcess(" << this;
-		cout << ") => '" << mrl << "'" << endl;
+		clog << "PlayerProcess::~PlayerProcess(" << this;
+		clog << ") => '" << mrl << "'" << endl;
 
 		reader = false;
 
@@ -119,7 +119,7 @@ namespace player {
 			strbool = "false";
 		}
 
-		cout << "PlayerProcess::setMrl '" << mrl << "'" << endl;
+		clog << "PlayerProcess::setMrl '" << mrl << "'" << endl;
 
 		sendMsg("createplayer," + mrl + "," + strbool + "::;::");
 		Player::setMrl(mrl, visible);
@@ -148,7 +148,7 @@ namespace player {
 		string ans = "";
 		map<string, string>::iterator i;
 
-		cout << "PlayerProcess::getAnswer '" << token << "'" << endl;
+		clog << "PlayerProcess::getAnswer '" << token << "'" << endl;
 		while (reader) {
 			pthread_mutex_lock(&msgMutex);
 			i = msgs->find(token);

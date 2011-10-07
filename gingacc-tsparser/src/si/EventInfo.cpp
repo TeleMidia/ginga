@@ -116,9 +116,9 @@ namespace si {
 		start.tm_sec  = 0;
 
 		/*
-		cout << "EventInfo::convertMJDtoUTC printing..." <<endl;
-		cout << "   year: " << start.tm_year << "month: " << start.tm_mon;
-		cout << "day: " << start.tm_mday <<endl;
+		clog << "EventInfo::convertMJDtoUTC printing..." <<endl;
+		clog << "   year: " << start.tm_year << "month: " << start.tm_mon;
+		clog << "day: " << start.tm_mday <<endl;
 		*/
 		return start;
 	}
@@ -191,9 +191,9 @@ namespace si {
 		startTime.tm_min  = convertBCDtoDecimal((int)startTimeEncoded[3]);
 		startTime.tm_sec  = convertBCDtoDecimal((int)startTimeEncoded[4]);
 		/*
-		cout << "EventInfo: setStartTime startTime = " << startTime.tm_mday;
-		cout << "/" << startTime.tm_mon << "/" << startTime.tm_year;
-		cout << " " << startTime.tm_hour << ":" << startTime.tm_min << endl;
+		clog << "EventInfo: setStartTime startTime = " << startTime.tm_mday;
+		clog << "/" << startTime.tm_mon << "/" << startTime.tm_year;
+		clog << " " << startTime.tm_hour << ":" << startTime.tm_min << endl;
 		*/
 	}
 
@@ -278,16 +278,16 @@ namespace si {
 		duration.tm_sec  = convertBCDtoDecimal((int)durationEncoded[2]);
 
 		/*
-		cout << "EventInfo::setDuration duration= ";
-		cout << "    " << duration.tm_hour << ":" << duration.tm_min << ":";
-		cout << duration.tm_sec << endl;
+		clog << "EventInfo::setDuration duration= ";
+		clog << "    " << duration.tm_hour << ":" << duration.tm_min << ":";
+		clog << duration.tm_sec << endl;
 		*/
 
 		endTime = calcEndTime(startTime, duration);
 		/*
-		cout << "EventInfo::setDuration endTime = " << endTime.tm_mday;
-		cout << "/" << endTime.tm_mon << "/" << endTime.tm_year;
-		cout << " " << endTime.tm_hour << ":" << endTime.tm_min << endl;
+		clog << "EventInfo::setDuration endTime = " << endTime.tm_mday;
+		clog << "/" << endTime.tm_mon << "/" << endTime.tm_year;
+		clog << " " << endTime.tm_hour << ":" << endTime.tm_min << endl;
 		*/
 	}
 
@@ -528,14 +528,14 @@ namespace si {
 	void EventInfo::print() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		cout << "EventInfo::print printing..." << endl;
-		cout << " -eventId = "                 << eventId            << endl;
-		cout << " -startTime = "               << getStartTimeStr()  << endl;
-		cout << " -duration = "                << getDurationStr()   << endl;
-		cout << " -endTime = "                 << getEndTimeStr() 	 << endl;
-  		cout << " -runningStatus = "           << (unsigned int)runningStatus ;
-		cout << endl;
-		cout << " -descriptorsLoopLength = "   << descriptorsLoopLength << endl;
+		clog << "EventInfo::print printing..." << endl;
+		clog << " -eventId = "                 << eventId            << endl;
+		clog << " -startTime = "               << getStartTimeStr()  << endl;
+		clog << " -duration = "                << getDurationStr()   << endl;
+		clog << " -endTime = "                 << getEndTimeStr() 	 << endl;
+  		clog << " -runningStatus = "           << (unsigned int)runningStatus ;
+		clog << endl;
+		clog << " -descriptorsLoopLength = "   << descriptorsLoopLength << endl;
 
 		for(i = descriptors->begin(); i != descriptors->end(); ++i) {
 			((IMpegDescriptor*)(*i))->print();
@@ -547,20 +547,20 @@ namespace si {
 		unsigned short remainingBytesDescriptor, value;
 		stringstream ss;
 
-		//cout << "EventInfo::start process" << endl;
+		//clog << "EventInfo::start process" << endl;
 
 		eventId = ((((data[pos] << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF)));
 
-		//cout << " and eventId = " << eventId;
+		//clog << " and eventId = " << eventId;
 
 		pos += 2;
 		setStartTime(data+pos);
-		//cout << "startTime = " << getStartTimeStr() << endl;
+		//clog << "startTime = " << getStartTimeStr() << endl;
 
 		pos += 5;
 		setDuration(data+pos);
-		//cout << "duration = " << getDurationStr() << endl;
+		//clog << "duration = " << getDurationStr() << endl;
 		pos += 3;
 		runningStatus = ((data[pos] & 0xE0) >> 5);
 		freeCAMode    = ((data[pos] & 0x10) >> 4);
@@ -649,16 +649,16 @@ namespace si {
 					break;
 
 				default: //Event Group Des., Stuffing Des. and Component Group Des.
-					cout << "EventInfo::process default descriptor with tag = ";
-					cout << hex << (data[pos] & 0xFF) << dec << endl;
+					clog << "EventInfo::process default descriptor with tag = ";
+					clog << hex << (data[pos] & 0xFF) << dec << endl;
 					pos += value; // pos no proximo descriptorTag
 					break;
 				}
-				//cout << "EventInfo::process remainingBytes: ";
-				//cout << remainingBytesDescriptor << endl;
+				//clog << "EventInfo::process remainingBytes: ";
+				//clog << remainingBytesDescriptor << endl;
 
 		}
-		cout << "EventInfo::process finished pos = " << pos << endl;
+		clog << "EventInfo::process finished pos = " << pos << endl;
 
 		print();
 		return pos;

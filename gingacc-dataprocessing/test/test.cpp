@@ -128,8 +128,8 @@ int main(int argc, char** argv) {
 	if (argc == 1) {
 		//encoding NCL sections
 		baseUri = "/root/ncl/Tests/";
-		cout << "gingacc-dataprocessing test: encoding streams (creating ";
-		cout << baseUri << "metadata.xml)" << endl;
+		clog << "gingacc-dataprocessing test: encoding streams (creating ";
+		clog << baseUri << "metadata.xml)" << endl;
 
 		nsp   = new NCLSectionProcessor();
 
@@ -159,8 +159,8 @@ int main(int argc, char** argv) {
 		}
 
 		//decoding NCL sections
-		cout << "gingacc-dataprocessing test: decoding streams print results: ";
-		cout << endl;
+		clog << "gingacc-dataprocessing test: decoding streams print results: ";
+		clog << endl;
 
 		nsp = new NCLSectionProcessor();
 		i = streams->begin();
@@ -175,26 +175,26 @@ int main(int argc, char** argv) {
 		delete files;
 
 	} else if (argc == 2 && strcmp(argv[1], "--time") == 0) {
-		cout << "gingacc-dataprocessing test (argc = 2)";
-		cout << endl;
+		clog << "gingacc-dataprocessing test (argc = 2)";
+		clog << endl;
 		clk = new TimeBaseClock();
 		clk->setReference(0);
 		while (true) {
-			cout << "stc in seconds: '" << clk->getBaseToSecond() << "'";
-			cout << endl;
+			clog << "stc in seconds: '" << clk->getBaseToSecond() << "'";
+			clog << endl;
 			::usleep(1000000);
 		}
 
 	} else if (argc == 3 && strcmp(argv[1], "--decode-oc") == 0) {
-		cout << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
-		cout << argv[2] << "'";
-		cout << endl;
+		clog << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
+		clog << argv[2] << "'";
+		clog << endl;
 
 		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
 		if (fd < 0) {
-			cout << "gingacc-dataprocessing test (argc = 3) Error! ";
-			cout << " can't find '" << argv[2] << "'";
-			cout << endl;
+			clog << "gingacc-dataprocessing test (argc = 3) Error! ";
+			clog << " can't find '" << argv[2] << "'";
+			clog << endl;
 		}
 
 		dataProcessor->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_B);
@@ -203,15 +203,15 @@ int main(int argc, char** argv) {
 		do {
 			rval = read(fd, buf, buffSize);
 			if (rval != buffSize) {
-				cout << "gingacc-dataprocessing(" << __LINE__ << ")";
-				cout << " Warning! Can't read '" << buffSize << "'";
-				cout << " bytes" << endl;
+				clog << "gingacc-dataprocessing(" << __LINE__ << ")";
+				clog << " Warning! Can't read '" << buffSize << "'";
+				clog << " bytes" << endl;
 			}
 			demuxer->receiveData(buf, rval);
 		} while (rval > 0);
 
-		cout << "gingacc-dataprocessing test decode-oc all done! press enter";
-		cout << " to quit" << endl;
+		clog << "gingacc-dataprocessing test decode-oc all done! press enter";
+		clog << " to quit" << endl;
 		getchar();
 		delete dataProcessor;
 		delete demuxer;
@@ -220,15 +220,15 @@ int main(int argc, char** argv) {
 		close(fd);
 
 	} else if (argc == 3 && strcmp(argv[1], "--ait") == 0) {
-		cout << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
-		cout << argv[2] << "'";
-		cout << endl;
+		clog << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
+		clog << argv[2] << "'";
+		clog << endl;
 
 		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
 		if (fd < 0) {
-			cout << "gingacc-dataprocessing test (argc = 3) Error! ";
-			cout << " can't find '" << argv[2] << "'";
-			cout << endl;
+			clog << "gingacc-dataprocessing test (argc = 3) Error! ";
+			clog << " can't find '" << argv[2] << "'";
+			clog << endl;
 		}
 
 		dataProcessor->createStreamTypeSectionFilter(
@@ -237,15 +237,15 @@ int main(int argc, char** argv) {
 		do {
 			rval = read(fd, buf, buffSize);
 			if (rval != buffSize) {
-				cout << "gingacc-dataprocessing(" << __LINE__ << ")";
-				cout << " Warning! Can't read '" << buffSize << "'";
-				cout << " bytes" << endl;
+				clog << "gingacc-dataprocessing(" << __LINE__ << ")";
+				clog << " Warning! Can't read '" << buffSize << "'";
+				clog << " bytes" << endl;
 			}
 			demuxer->receiveData(buf, rval);
 		} while (rval > 0);
 
-		cout << "gingacc-dataprocessing test decode-oc all done! press enter";
-		cout << " to quit" << endl;
+		clog << "gingacc-dataprocessing test decode-oc all done! press enter";
+		clog << " to quit" << endl;
 		getchar();
 		delete dataProcessor;
 		delete demuxer;
@@ -254,8 +254,8 @@ int main(int argc, char** argv) {
 		close(fd);
 	}
 
-	cout << "gingacc-dataprocessing(" << __LINE__ << ")";
-	cout << " all done!" << endl;
+	clog << "gingacc-dataprocessing(" << __LINE__ << ")";
+	clog << " all done!" << endl;
 	//TODO: tests
 	return 0;
 }

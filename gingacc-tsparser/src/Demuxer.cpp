@@ -230,9 +230,9 @@ namespace tsparser {
 			vPid = pat->getDefaultMainVideoPid();
 
 			if (aPid != 0 && vPid != 0) {
-				cout << "Demuxer::setupUnsolvedFilters aPid = '";
-				cout << aPid << "' vPid = '" << vPid;
-				cout << "'" << endl;
+				clog << "Demuxer::setupUnsolvedFilters aPid = '";
+				clog << aPid << "' vPid = '" << vPid;
+				clog << "'" << endl;
 
 				ni = tuner->getCurrentInterface();
 				if (ni != NULL) {
@@ -250,8 +250,8 @@ namespace tsparser {
 				}
 
 			} else {
-				cout << "Demuxer::setupUnsolvedFilters can't solve A/V PIDs";
-				cout << endl;
+				clog << "Demuxer::setupUnsolvedFilters can't solve A/V PIDs";
+				clog << endl;
 			}
 		}
 	}
@@ -290,10 +290,10 @@ namespace tsparser {
 					attached = true;
 
 				} else {
-					/*cout << "Demuxer::setupFilter can't getPidByTid pid = '";
-					cout << pid << "' tid = '" << filter->getTid() << "'";
+					/*clog << "Demuxer::setupFilter can't getPidByTid pid = '";
+					clog << pid << "' tid = '" << filter->getTid() << "'";
 
-					cout << " PMT print: " << endl;
+					clog << " PMT print: " << endl;
 					pmt->print();*/
 				}
 
@@ -301,7 +301,7 @@ namespace tsparser {
 			}
 
 		} else {
-			//cout << "Demuxer::setupFilter can't get pmt" << endl;
+			//clog << "Demuxer::setupFilter can't get pmt" << endl;
 		}
 
 		return attached;
@@ -316,9 +316,9 @@ namespace tsparser {
 		char tsPacketPayload[184];
 
 		/*if (packet->getStartIndicator()) {
-			cout << "Demuxer::demux filtred packet number '";
-			cout << debugPackCount;
-			cout << "'" << endl;
+			clog << "Demuxer::demux filtred packet number '";
+			clog << debugPackCount;
+			clog << "'" << endl;
 		}*/
 		debugPackCount++;
 
@@ -366,11 +366,11 @@ namespace tsparser {
 					currVer = pmt->getVersionNumber();
 					/* If the version is different update */
 					if (newVer != currVer) {
-						/*cout << "demuxer replace pmt id = '" << pid << "'";
-						cout << " newVer = '" << newVer;
-						cout << "' currVer = '" << currVer << "': ";
+						/*clog << "demuxer replace pmt id = '" << pid << "'";
+						clog << " newVer = '" << newVer;
+						clog << "' currVer = '" << currVer << "': ";
 						newPmt->print();
-						cout << endl;*/
+						clog << endl;*/
 						pat->replacePmt(pid, newPmt);
 						(*pmts)[pid] = newPmt;
 
@@ -449,7 +449,7 @@ namespace tsparser {
 	}
 
 	void Demuxer::setDestination(short int streamType) {
-		cout << "Demuxer::setDestination '" << streamType << "'" << endl;
+		clog << "Demuxer::setDestination '" << streamType << "'" << endl;
 		this->debugDest = streamType;
 	}
 
@@ -562,7 +562,7 @@ namespace tsparser {
 						(*pmts)[*i] = pmt;
 						++i;
 					}
-					//cout << "Demuxer::receiveSection PAT mounted" << endl;
+					//clog << "Demuxer::receiveSection PAT mounted" << endl;
 					ni = tuner->getCurrentInterface();
 					if (ni != NULL) {
 						ni->removeFilter(f);
@@ -580,12 +580,12 @@ namespace tsparser {
 					newVer = newPmt->getVersionNumber();
 					currVer = pmt->getVersionNumber();
 					if (newVer != currVer) {
-						/*cout << "Demuxer::receiveSection ";
-						cout << "replace pmt id = '" << pid << "'";
-						cout << " newVer = '" << newVer;
-						cout << "' currVer = '" << currVer << "': ";
+						/*clog << "Demuxer::receiveSection ";
+						clog << "replace pmt id = '" << pid << "'";
+						clog << " newVer = '" << newVer;
+						clog << "' currVer = '" << currVer << "': ";
 						newPmt->print();
-						cout << endl;*/
+						clog << endl;*/
 						pat->replacePmt(pid, newPmt);
 						(*pmts)[pid] = newPmt;
 
@@ -600,8 +600,8 @@ namespace tsparser {
 			} else if (!pmt->hasProcessed()) {
 				pmt->addData(section, secLen);
 				if (pmt->processSectionPayload()) {
-					/*cout << "Demuxer::receiveSection call pat->addPmt";
-					cout << endl;
+					/*clog << "Demuxer::receiveSection call pat->addPmt";
+					clog << endl;
 
 					pmt->print();*/
 
@@ -612,9 +612,9 @@ namespace tsparser {
 					}
 
 					if (!pat->hasUnprocessedPmt()) {
-						cout << "Demuxer::receiveSection trying to solve ";
-						cout << "unsolved filters";
-						cout << endl;
+						clog << "Demuxer::receiveSection trying to solve ";
+						clog << "unsolved filters";
+						clog << endl;
 
 						if (isWaitingPI) {
 							pthread_cond_signal(&flagCondSignal);
@@ -637,7 +637,7 @@ namespace tsparser {
 
 	void Demuxer::addStreamTypeFilter(short streamType, ITSFilter* filter) {
 		(*stFilters)[streamType] = filter;
-		cout << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
+		clog << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
 	}
 
 	void Demuxer::addPesFilter(short type, ITSFilter* filter) {
@@ -655,8 +655,8 @@ namespace tsparser {
 			pPid = pat->getDefaultProgramPid();
 
 			if (ni->getCaps() & DPC_CAN_FILTERPID) {
-				cout << "Demuxer::addPesFilter aPid = '" << aPid << "'";
-				cout << " vPid = '" << vPid << "'" << endl;
+				clog << "Demuxer::addPesFilter aPid = '" << aPid << "'";
+				clog << " vPid = '" << vPid << "'" << endl;
 
 				ni->createPesFilter(0x00, PFT_OTHER, true);
 				ni->createPesFilter(pPid, PFT_OTHER, true);
@@ -681,7 +681,7 @@ namespace tsparser {
 					filter->addPid(aPid);
 					filter->addPid(vPid);
 
-					cout << "Demuxer::addPesFilter created" << endl;
+					clog << "Demuxer::addPesFilter created" << endl;
 					(*pesFilters)[0] = filter;
 
 				} else {
@@ -741,18 +741,18 @@ namespace tsparser {
 				i = i + 188;
 
 			} else if (i + 188 < size) {
-				/*cout << "Demuxer::receiveData hunting when i = '";
-				cout << i << "' and size = '" << size << "'";
-				cout << " current byte value = '" << (buff[i] & 0xFF);
-				cout << "' next sync = '" << (buff[i + 188] & 0xFF);
-				cout << "'" << endl;*/
+				/*clog << "Demuxer::receiveData hunting when i = '";
+				clog << i << "' and size = '" << size << "'";
+				clog << " current byte value = '" << (buff[i] & 0xFF);
+				clog << "' next sync = '" << (buff[i + 188] & 0xFF);
+				clog << "'" << endl;*/
 
 				i++;
 				i = i + hunt(buff + i, size - i);
 
 			} else {
-				/*cout << "Demuxer::receiveData breaking when i = '";
-				cout << i << "' and size = '" << size << "'" << endl;*/
+				/*clog << "Demuxer::receiveData breaking when i = '";
+				clog << i << "' and size = '" << size << "'" << endl;*/
 				break;
 			}
 		}
@@ -832,7 +832,7 @@ namespace tsparser {
 			return ni->getCaps();
 
 		} else {
-			cout << "Demuxer::getCaps return 0 (NULL NI)" << endl;
+			clog << "Demuxer::getCaps return 0 (NULL NI)" << endl;
 		}
 
 		return 0;

@@ -56,8 +56,8 @@ namespace ginga {
 namespace core {
 namespace tuning {
 	MulticastProvider::MulticastProvider(string groupAddr, int port) {
-		cout << "UDP MulticastProvider address '" << groupAddr << ":";
-		cout << port << "'" << endl;
+		clog << "UDP MulticastProvider address '" << groupAddr << ":";
+		clog << port << "'" << endl;
 
 		this->addr         = groupAddr;
 		this->portNumber   = port;

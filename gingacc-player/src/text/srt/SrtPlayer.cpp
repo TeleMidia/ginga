@@ -69,7 +69,7 @@ namespace player {
 	}
 
 	SrtPlayer::~SrtPlayer() {
-		wclog << "SrtPlayer::~SrtPlayer" << endl;
+		clog << "SrtPlayer::~SrtPlayer" << endl;
 		lock();
 		/*
 		 * TODO: is some class deleting this
@@ -93,8 +93,8 @@ namespace player {
 		this->mrl = mrl;
 
 		if (this->mrl == "" || !fileExists(this->mrl)) {
-			wclog << "SrtPlayer::loadFile Warning! File not found: '";
-			wclog << this->mrl.c_str() << "'" << endl;
+			clog << "SrtPlayer::loadFile Warning! File not found: '";
+			clog << this->mrl.c_str() << "'" << endl;
 			return;
 		}
 
@@ -105,25 +105,25 @@ namespace player {
 				loadSrt();
 
 			} else {
-				wclog << "SrtPlayer::loadFile Warning! Unknown file type: '";
-				wclog << this->mrl.c_str() << "'" << endl;
+				clog << "SrtPlayer::loadFile Warning! Unknown file type: '";
+				clog << this->mrl.c_str() << "'" << endl;
 			}
 
 		} else {
-			wclog << "SrtPlayer::loadFile Warning! Unknown extension type: '";
-			wclog << this->mrl.c_str() << "'" << endl;
+			clog << "SrtPlayer::loadFile Warning! Unknown extension type: '";
+			clog << this->mrl.c_str() << "'" << endl;
 		}
 	}
 
 	void SrtPlayer::loadSrt() {
-		wclog << "SrtPlayer::loadSrt " << endl;
+		clog << "SrtPlayer::loadSrt " << endl;
 		ifstream fisSub;
 		string line, key, value, text;
 
 		fisSub.open((this->mrl).c_str(), ifstream::in);
 		if (!fisSub.is_open()) {
-			wclog << "SrtPlayer::loadFile Warning! can't open input file: '";
-			wclog << this->mrl.c_str() << "'" << endl;
+			clog << "SrtPlayer::loadFile Warning! can't open input file: '";
+			clog << this->mrl.c_str() << "'" << endl;
 			return;
 		}
 
@@ -148,7 +148,7 @@ namespace player {
 			if (line.find('\r') != std::string::npos) {
 				line = line.substr(0, line.find('\r'));
 			}
-//			wclog << "line = '" << line << "'" << endl;
+//			clog << "line = '" << line << "'" << endl;
 			if (trim(line) == itos(i)) {
 				while (line.find("-->") == std::string::npos &&
 					    !fisSub.eof()) {
@@ -165,8 +165,8 @@ namespace player {
 				value = trim(line.substr((line.find("-->") + 3),
 					    line.length()));
 
-//				wclog << "key = '" << key << "'" << endl;
-//				wclog << "value = '" << value << "'" << endl;
+//				clog << "key = '" << key << "'" << endl;
+//				clog << "value = '" << value << "'" << endl;
 
 				(*textEvents)[strTimeToFloat(key)] = strTimeToFloat(value);
 
@@ -184,7 +184,7 @@ namespace player {
 					}
 				}
 
-//				wclog << " text = '" << text << "'" << endl;
+//				clog << " text = '" << text << "'" << endl;
 				textLines->push_back(text);
 				i++;
 			}
@@ -217,7 +217,7 @@ namespace player {
 
 	void SrtPlayer::printSrt() {
 		if (textEvents == NULL || textLines == NULL) {
-			wclog << "SrtPlayer::printSrt nothing to print" << endl;
+			clog << "SrtPlayer::printSrt nothing to print" << endl;
 			return;
 		}
 
@@ -264,8 +264,8 @@ namespace player {
 		Player::play();
 		if (!isPlaying) {
 			if (player == NULL) {
-				wclog << "SrtPlayer::play ";
-				wclog << "warning! referenceTimePlayer is NULL!!" << endl;
+				clog << "SrtPlayer::play ";
+				clog << "warning! referenceTimePlayer is NULL!!" << endl;
 			}
 			isPlaying = true;
 			Thread::start();
@@ -273,7 +273,7 @@ namespace player {
 	}
 
 	void SrtPlayer::stop() {
-		wclog << "SrtPlayer::stop()" << endl;
+		clog << "SrtPlayer::stop()" << endl;
 		Player::stop();
 		isPlaying = false;
 		wakeUp();
@@ -288,7 +288,7 @@ namespace player {
 		Player::resume();
 		if (!isPlaying) {
 			if (player == NULL) {
-				wclog << " warning! referenceTimePlayer is NULL!!" << endl;
+				clog << " warning! referenceTimePlayer is NULL!!" << endl;
 			}
 			isPlaying = true;
 			Thread::start();
@@ -331,7 +331,7 @@ namespace player {
 	}
 
 	void SrtPlayer::busy() {
-		wclog << "SrtPlayer::busy()" << endl;
+		clog << "SrtPlayer::busy()" << endl;
 		if (running) {
 			this->waitForUnlockCondition();
 		}
@@ -350,7 +350,7 @@ namespace player {
 	}
 
 	void SrtPlayer::run() {
-		wclog << "SrtPlayer::run" << endl;
+		clog << "SrtPlayer::run" << endl;
 		running = true;
 		lock();
 		IWindow* parent = NULL;
@@ -358,7 +358,7 @@ namespace player {
 			parent = (IWindow*)(surface->getParent());
 
 		} else {
-			wclog << "SrtPlayer::run warning! surface == NULL" << endl;
+			clog << "SrtPlayer::run warning! surface == NULL" << endl;
 		}
 		unlock();
 
@@ -420,8 +420,8 @@ namespace player {
 
 				mediaTime = (float)(player->getMediaTime());
 				sleepTime = (int)(((show - mediaTime) * 1000000) - 70000);
-//				wclog << "show = '" << show << "' mediaTime = '" << mediaTime;
-//				wclog << "' sleepTime = '" << sleepTime << "'" << endl;
+//				clog << "show = '" << show << "' mediaTime = '" << mediaTime;
+//				clog << "' sleepTime = '" << sleepTime << "'" << endl;
 				if (sleepTime > 0) {
 					Thread::usleep(sleepTime / 1000);
 				}
@@ -453,19 +453,19 @@ namespace player {
 					parent = (IWindow*)(surface->getParent());
 					if (parent != NULL && isPlayingSrt()) {
 						if (controlParentVisibility) {
-							wclog << "SrtPlayer::run show";
-							wclog << "LINE: '" << line.c_str() << "'" << endl;
+							clog << "SrtPlayer::run show";
+							clog << "LINE: '" << line.c_str() << "'" << endl;
 							parent->show();
 						}
 
 					} else {
-						wclog << "SrtPlayer::run warning! ";
-						wclog << "cant render, NULL parent" << endl;
+						clog << "SrtPlayer::run warning! ";
+						clog << "cant render, NULL parent" << endl;
 					}
 
 				} else {
-					wclog << "SrtPlayer::run warning! ";
-					wclog << "cant render, NULL surface" << endl;
+					clog << "SrtPlayer::run warning! ";
+					clog << "cant render, NULL surface" << endl;
 				}
 				unlock();
 
@@ -516,15 +516,15 @@ namespace player {
 		}
 
 		if (isPlayingSrt()) { //natural end
-			wclog << "SrtPlayer::run natural end" << endl;
+			clog << "SrtPlayer::run natural end" << endl;
 			isPlaying = false;
 			notifyListeners(PL_NOTIFY_STOP, "");
 
 		} else {
-			wclog << "SrtPlayer::run stoped" << endl;
+			clog << "SrtPlayer::run stoped" << endl;
 		}
 
-		wclog << "SrtPlayer::run subtitle done!" << endl;
+		clog << "SrtPlayer::run subtitle done!" << endl;
 		running = false;
 		this->unlockConditionSatisfied();
 	}

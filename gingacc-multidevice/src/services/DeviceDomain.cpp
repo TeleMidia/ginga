@@ -136,12 +136,12 @@ namespace multidevice {
 		if (frameSize == 0) {
 			memset(headerStream, 0, HEADER_SIZE);
 			if (frameType != FT_KEEPALIVE) {
-				cout << "DeviceDomain::taskReceive Warning! ";
-				cout << " empty payload in a non keep alive frame" << endl;
+				clog << "DeviceDomain::taskReceive Warning! ";
+				clog << " empty payload in a non keep alive frame" << endl;
 
 			} else {
-				cout << "DeviceDomain::taskReceive Keep Alive! ";
-				cout << endl;
+				clog << "DeviceDomain::taskReceive Keep Alive! ";
+				clog << endl;
 			}
 			return NULL;
 		}
@@ -150,8 +150,8 @@ namespace multidevice {
 			data = new char[frameSize];
 
 		} catch (bad_alloc &e) {
-			cout << "DeviceDomain::taskReceive Warning! ";
-			cout << "can't alloc '" << frameSize << "' bytes." << endl;
+			clog << "DeviceDomain::taskReceive Warning! ";
+			clog << "can't alloc '" << frameSize << "' bytes." << endl;
 			return NULL;
 		}
 
@@ -171,23 +171,23 @@ namespace multidevice {
 	}
 
 	void DeviceDomain::printTaskHeader() {
-		cout << "FrameId = '";
-		cout << (int)(unsigned char)headerStream[0];
-		cout << "' SourceIp = '" << sourceIp << "', which means '";
-		cout << getStrIP(sourceIp);
-		cout << "', destClase = '" << destClass << "' header[5] = '";
-		cout << (int)(unsigned char)headerStream[5];
-		cout << "', frameType = '" << frameType << "' header[6] = '";
-		cout << (int)(unsigned char)headerStream[6];
-		cout << "', frameSize = '" << frameSize << "' header[7] = '";
-		cout << (int)(unsigned char)headerStream[7];
-		cout << "', header[8] = '";
-		cout << (int)(unsigned char)headerStream[8];
-		cout << "' header[9] = '";
-		cout << (int)(unsigned char)headerStream[9];
-		cout << "', header[10] = '";
-		cout << (int)(unsigned char)headerStream[10];
-		cout << "'" << endl;
+		clog << "FrameId = '";
+		clog << (int)(unsigned char)headerStream[0];
+		clog << "' SourceIp = '" << sourceIp << "', which means '";
+		clog << getStrIP(sourceIp);
+		clog << "', destClase = '" << destClass << "' header[5] = '";
+		clog << (int)(unsigned char)headerStream[5];
+		clog << "', frameType = '" << frameType << "' header[6] = '";
+		clog << (int)(unsigned char)headerStream[6];
+		clog << "', frameSize = '" << frameSize << "' header[7] = '";
+		clog << (int)(unsigned char)headerStream[7];
+		clog << "', header[8] = '";
+		clog << (int)(unsigned char)headerStream[8];
+		clog << "' header[9] = '";
+		clog << (int)(unsigned char)headerStream[9];
+		clog << "', header[10] = '";
+		clog << (int)(unsigned char)headerStream[10];
+		clog << "'" << endl;
 	}
 
 	bool DeviceDomain::addDevice(
@@ -196,8 +196,8 @@ namespace multidevice {
 		bool added = false;
 
 		if (reqDeviceClass == 2) {
-			cout << "DeviceDomain::addDevice adding new device - class 2...";
-			cout << endl;
+			clog << "DeviceDomain::addDevice adding new device - class 2...";
+			clog << endl;
 
 			res->addDevice(
 					reqDeviceClass,
@@ -230,14 +230,14 @@ namespace multidevice {
 			if (frameType == IDeviceDomain::FT_PRESENTATIONEVENT) {
 				if (strstr(payload,"start::") != NULL) {
 					_doc.assign(payload + 7, payloadSize - 7);
-					cout << "DeviceDomain::postEventTask calling ";
-					cout << "startDocument with doc = '";
-					cout << _doc << "'" << endl;
+					clog << "DeviceDomain::postEventTask calling ";
+					clog << "startDocument with doc = '";
+					clog << _doc << "'" << endl;
 					res->startDocument(2, (char*)(_doc.c_str()));
 
 				} else if (strstr(payload,"stop::") != NULL) {
-					cout << "DeviceDomain::postEventTask calling ";
-					cout << "stopDocument" << endl;
+					clog << "DeviceDomain::postEventTask calling ";
+					clog << "stopDocument" << endl;
 
 					_doc.assign(payload + 6, payloadSize - 6);
 					res->stopDocument(2, (char*)(_doc.c_str()));
@@ -268,8 +268,8 @@ namespace multidevice {
 		double receivedElapsedTime;
 
 		if (deviceClass < 0) {
-			cout << "DeviceDomain::checkDomainTasks ";
-			cout << "Warning! deviceClass = " << deviceClass << endl;
+			clog << "DeviceDomain::checkDomainTasks ";
+			clog << "Warning! deviceClass = " << deviceClass << endl;
 			return;
 		}
 
@@ -287,8 +287,8 @@ namespace multidevice {
 					break;
 
 				default:
-					cout << "DeviceDomain::checkDomainTasks RES = '";
-					cout << res << "'" << endl;
+					clog << "DeviceDomain::checkDomainTasks RES = '";
+					clog << res << "'" << endl;
 					break;
 			}
 		}
@@ -302,8 +302,8 @@ namespace multidevice {
 			}
 
 		} else {
-			cout << "DeviceDomain::checkDomainTasks can't process input ";
-			cout << "buffer: task indication flag is true" << endl;
+			clog << "DeviceDomain::checkDomainTasks can't process input ";
+			clog << "buffer: task indication flag is true" << endl;
 		}
 
 		broadcastService->checkOutputBuffer();
@@ -319,16 +319,16 @@ namespace multidevice {
  					}
 
  				} else {
- 	 				cout << "DeviceDomain::checkDomainTasks waiting IFS by ";
- 	 				cout << "sentElapsedTime '";
- 	 				cout << getCurrentTimeMillis() - sentTimeStamp;
- 	 				cout << "' when sentTimeStamp = '" << sentTimeStamp;
- 	 				cout << "'" << endl;
+ 	 				clog << "DeviceDomain::checkDomainTasks waiting IFS by ";
+ 	 				clog << "sentElapsedTime '";
+ 	 				clog << getCurrentTimeMillis() - sentTimeStamp;
+ 	 				clog << "' when sentTimeStamp = '" << sentTimeStamp;
+ 	 				clog << "'" << endl;
  				}
 
  			} else {
- 				cout << "DeviceDomain::checkDomainTasks waiting IFS by ";
- 				cout << "reveivedElapsedTime" << endl;
+ 				clog << "DeviceDomain::checkDomainTasks waiting IFS by ";
+ 				clog << "reveivedElapsedTime" << endl;
  			}
 		}*/
 	}

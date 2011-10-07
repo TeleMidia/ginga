@@ -84,8 +84,8 @@ namespace tsparser {
 
 		// Header data.
 		if ((syncByte = (data[0] & 0xFF)) != TS_PACKET_SYNC_BYTE) {
-			cout << "TSPacket::create: Warning! syncByte != 0x47";
-			cout << endl;
+			clog << "TSPacket::create: Warning! syncByte != 0x47";
+			clog << endl;
 			return false;
 		}
 
@@ -110,9 +110,9 @@ namespace tsparser {
 			// adaptation field length byte)
 			aflen = data[4] & 0xFF;
 			if (aflen < 0 || aflen > 183) {
-				cout << "TSPacket::create: Warning! ";
-				cout << "Invalid adaptationFieldLength: ";
-				cout << aflen << endl;
+				clog << "TSPacket::create: Warning! ";
+				clog << "Invalid adaptationFieldLength: ";
+				clog << aflen << endl;
 				return false;
 			}
 
@@ -218,34 +218,34 @@ namespace tsparser {
 
 	void TSPacket::print() {
 		unsigned int i;
-		cout << "TS PACK" << endl;
-		cout << "sync = " << hex << (syncByte & 0xFF) << endl;
-		cout << "pid = " << hex << pid << endl;
+		clog << "TS PACK" << endl;
+		clog << "sync = " << hex << (syncByte & 0xFF) << endl;
+		clog << "pid = " << hex << pid << endl;
 
-		cout << "payloadSize = " << payloadSize << endl;
+		clog << "payloadSize = " << payloadSize << endl;
 
-		cout << "transportErrorIndication = "
+		clog << "transportErrorIndication = "
 		     << transportErrorIndication << endl;
 
-		cout << "payloadUnitStartIndicator = "
+		clog << "payloadUnitStartIndicator = "
 		     << hex << payloadUnitStartIndicator << endl;
 
-		cout << "transportPriority = " << transportPriority << endl;
+		clog << "transportPriority = " << transportPriority << endl;
 
-		cout << "transportScramblingControl = "
+		clog << "transportScramblingControl = "
 		     << hex << transportScramblingControl << endl;
 
-		cout << "adaptationFieldControl = " << hex
+		clog << "adaptationFieldControl = " << hex
 		     << adaptationFieldControl << endl;
 
-		cout << "continuityCounter = " << hex << continuityCounter
+		clog << "continuityCounter = " << hex << continuityCounter
 		     << endl;
 
-		cout << "payload: " << endl;
+		clog << "payload: " << endl;
 		for (i=0; i < 184; i++) {
-			cout << (payload[i] & 0xFF) << " ";
+			clog << (payload[i] & 0xFF) << " ";
 		}
-		cout << endl << endl;
+		clog << endl << endl;
 	}
 }
 }

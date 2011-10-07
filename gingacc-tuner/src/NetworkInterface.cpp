@@ -84,8 +84,8 @@ namespace tuning {
 			return provider->getCaps();
 
 		} else {
-			cout << "NetworkInterface::getCaps return 0 (NULL provider)";
-			cout << endl;
+			clog << "NetworkInterface::getCaps return 0 (NULL provider)";
+			clog << endl;
 		}
 
 		return 0;

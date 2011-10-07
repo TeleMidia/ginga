@@ -94,7 +94,7 @@ namespace io {
 		dataBuffer->WaitForData(dataBuffer, 188 * 1024 * 8);
 		dataBuffer->CreateVideoProvider(dataBuffer, &dec);
 
-		//cout << "DFBDataBuffer::createProvider done" << endl;
+		//clog << "DFBDataBuffer::createProvider done" << endl;
 		return new DFBVideoProvider(dec);
 	}
 
@@ -104,7 +104,7 @@ namespace io {
 		while(true) {
 			rval = read(deviceFd, data, dataSize);
 			if (rval > 0) {
-				//cout << "DFBDataBuffer::run " << rval << endl;
+				//clog << "DFBDataBuffer::run " << rval << endl;
 				dataBuffer->PutData(dataBuffer, data, rval);
 			}
 		}

@@ -190,7 +190,7 @@ namespace epg {
 			IEPGListener* listener, string request, unsigned char type) {
 
 		//TODO: handle request properly.
-		cout << "EPGProcessor::addEPGListener with type:" << type << endl;
+		clog << "EPGProcessor::addEPGListener with type:" << type << endl;
 
 		if (type ==  IEPGListener::EPG_LISTENER) {
 			if (epgListeners == NULL) {
@@ -248,9 +248,9 @@ namespace epg {
 		size_t pos;
 		string newSectionName;
 
-		cout << "EPGProcessor::decodeSdtSection decoding SDT section";
+		clog << "EPGProcessor::decodeSdtSection decoding SDT section";
 		payloadSize = section->getPayloadSize();
-		cout << " with payloadSize = "<< payloadSize << endl;
+		clog << " with payloadSize = "<< payloadSize << endl;
 
 		if (checkProcessedSections(section)) {
 			return;
@@ -269,15 +269,15 @@ namespace epg {
 		pos = 0;
 		originalNetworkId = (((data[pos] << 8) & 0xFF00) | (data[pos+1] & 0xFF));
 /*
-		cout << endl;
-		cout << "OriginalNetworkId: " << originalNetworkId << endl;
+		clog << endl;
+		clog << "OriginalNetworkId: " << originalNetworkId << endl;
 
-		cout << "TableId: " << hex   << tableId   << dec  << endl;
-		cout << "SectionVersion: "   << sectionVersion    << endl;
-		cout << "SectionNumber:"     << sectionNumber     << endl;
-		cout << "LastSectionNumber:" << lastSectionNumber << endl;
-		cout << "CurrentNextId: "    << section->getCurrentNextIndicator();
-		cout << endl;
+		clog << "TableId: " << hex   << tableId   << dec  << endl;
+		clog << "SectionVersion: "   << sectionVersion    << endl;
+		clog << "SectionNumber:"     << sectionNumber     << endl;
+		clog << "LastSectionNumber:" << lastSectionNumber << endl;
+		clog << "CurrentNextId: "    << section->getCurrentNextIndicator();
+		clog << endl;
 */
 		//pos = 3; //jumping reserved... it points to service_id
 		pos += 3;
@@ -295,13 +295,13 @@ namespace epg {
 			service = srvi;
 			addProcessedSection(section);
 		}
-		//cout << "EPGProcessor::decodedSdtSection section decoded" << endl;
+		//clog << "EPGProcessor::decodedSdtSection section decoded" << endl;
 	}
 
 	void EPGProcessor::callMapGenerator(unsigned tableId) {
 		if (tableId == 0x4E ) {
 			if (!presentMapReady) {
-				cout << "EPGProcessor::callMapGenerator presentMap";
+				clog << "EPGProcessor::callMapGenerator presentMap";
 				cout <<	 " ready to move" << endl;
 				presentMapReady = true;
 				if (epgListeners != NULL) {
@@ -311,7 +311,7 @@ namespace epg {
 
 		} else if (tableId >= 0x50 && tableId <= 0x5F) {
 			if (!scheduleMapReady) {
-				cout << "EPGProcessor::callMapGenerator scheduleMap";
+				clog << "EPGProcessor::callMapGenerator scheduleMap";
 				cout <<	 " ready to move" << endl;
 				scheduleMapReady = true;
 				printTimeStamp();
@@ -327,8 +327,8 @@ namespace epg {
 				if (!serviceMapReady) {
 					serviceMapReady = true;
 					generateSdtMap(service);
-					cout << "EPGProcessor::callMapGenerator serviceMap ready to";
-					cout << "move" << endl;
+					clog << "EPGProcessor::callMapGenerator serviceMap ready to";
+					clog << "move" << endl;
 				}
 
 		} else if (tableId == 0x73) {
@@ -376,7 +376,7 @@ namespace epg {
 		string newSectionName;
 
 		if (section->getPayloadSize() <= 6) {
-			//cout << "EPGProcessor::checkSection discarding section" << endl;
+			//clog << "EPGProcessor::checkSection discarding section" << endl;
 			return true;
 		}
 
@@ -387,16 +387,16 @@ namespace epg {
 		if (processedSections->count(newSectionName) > 0) {
 
 			tableId = section->getTableId();
-			cout << "EPGProcessor::checkSection section exists:!";
-			cout << endl;
+			clog << "EPGProcessor::checkSection section exists:!";
+			clog << endl;
 
-			cout << "  -TableId: " << hex      << tableId << dec;
-			cout << "    -SectionVersion: "    << section->getVersionNumber();
-			cout << "    -SectionNumber: "     << sectionNumber ;
-			cout << "	 -LastSectionNumber: " << lastSectionNumber;
-			cout << "    -CurrentNextId: ";
-			cout << section->getCurrentNextIndicator();
-  			cout << "    -SectionName:"        << newSectionName << endl;
+			clog << "  -TableId: " << hex      << tableId << dec;
+			clog << "    -SectionVersion: "    << section->getVersionNumber();
+			clog << "    -SectionNumber: "     << sectionNumber ;
+			clog << "	 -LastSectionNumber: " << lastSectionNumber;
+			clog << "    -CurrentNextId: ";
+			clog << section->getCurrentNextIndicator();
+  			clog << "    -SectionName:"        << newSectionName << endl;
 
   			callMapGenerator(tableId);
 			return true;
@@ -422,10 +422,10 @@ namespace epg {
 		if (checkProcessedSections(section)) {
 			return;
 		}
-		cout << endl;
-		cout << "EPGProcessor::decodeEitSection with tableId = " << hex ;
-		cout << tableId << dec <<  " and payloadSize = ";
-		cout << payloadSize << endl;
+		clog << endl;
+		clog << "EPGProcessor::decodeEitSection with tableId = " << hex ;
+		clog << tableId << dec <<  " and payloadSize = ";
+		clog << payloadSize << endl;
 
 		sectionLength     = section->getSectionLength();
 		sectionVersion    = section->getVersionNumber();
@@ -450,18 +450,18 @@ namespace epg {
 		pos++;
 		lastTableId = data[pos];
 /*
-		cout << "TransportStreamId: "      << transportStreamId;
-		cout << " and OriginalNetworkId: " << originalNetworkId << endl;
-		//cout << endl;
+		clog << "TransportStreamId: "      << transportStreamId;
+		clog << " and OriginalNetworkId: " << originalNetworkId << endl;
+		//clog << endl;
 
-		cout << "TableId: " << hex    << tableId   << dec  << endl;
-		cout << "SectionVersion: "    << sectionVersion    << endl;
-		cout << "SectionNumber: "     << sectionNumber     << endl;
-		cout << "LastSectionNumber: " << lastSectionNumber << endl;
-		cout << "CurrentNextId: "     << section->getCurrentNextIndicator();
-		cout << endl;
-		//cout << "SectionName: "       << sectionName       << endl;
-		//cout << "NewSectionName: "    << newSectionName    << endl;
+		clog << "TableId: " << hex    << tableId   << dec  << endl;
+		clog << "SectionVersion: "    << sectionVersion    << endl;
+		clog << "SectionNumber: "     << sectionNumber     << endl;
+		clog << "LastSectionNumber: " << lastSectionNumber << endl;
+		clog << "CurrentNextId: "     << section->getCurrentNextIndicator();
+		clog << endl;
+		//clog << "SectionName: "       << sectionName       << endl;
+		//clog << "NewSectionName: "    << newSectionName    << endl;
 */
 		pos++; //pos = 6;
 		while (pos < payloadSize) {
@@ -475,8 +475,8 @@ namespace epg {
 
 			if (tableId == 0x4E) {
 				if (presentMapReady) {
-					cout << "EPGProcessor::decodeEitSection cleaning pres map";
-					cout << endl;
+					clog << "EPGProcessor::decodeEitSection cleaning pres map";
+					clog << endl;
 					eventPresent->clear();
 					presentMapReady = false;
 					/* receiving the first non-processed section after processed
@@ -488,8 +488,8 @@ namespace epg {
 			} else if (tableId >= 0x50 && tableId <= 0x5F) {
 				printTimeStamp();
 				if (scheduleMapReady) {
-					cout << "EPGProcessor::decodeEitSection cleaning sched map";
-					cout << endl;
+					clog << "EPGProcessor::decodeEitSection cleaning sched map";
+					clog << endl;
 					eventSchedule->clear();
 					scheduleMapReady = false;
 					/* receiving the first non-processed section after processed
@@ -542,7 +542,7 @@ namespace epg {
 					break;
 
 				default:
-					cout << "EPGProcessor::generateSdtMap Unknown type" << endl;
+					clog << "EPGProcessor::generateSdtMap Unknown type" << endl;
 					break;
 			}
 		}
@@ -562,8 +562,8 @@ namespace epg {
 			}
 
 		} else {
-			cout << "EPGProcessor::generateSdtMap there is no service listener";
-			cout << " to notify" << endl;
+			clog << "EPGProcessor::generateSdtMap there is no service listener";
+			clog << " to notify" << endl;
 		}
 	}
 
@@ -617,7 +617,7 @@ namespace epg {
 		set<IEPGListener*>::iterator k;
 
 		//
-		//cout << "EPGProcessor::generateMap beginning" << endl;
+		//clog << "EPGProcessor::generateMap beginning" << endl;
 		for (i = actualMap->begin(); i != actualMap->end(); ++i) {
 			ei = i->second;
 			if (ei != NULL) {
@@ -632,10 +632,10 @@ namespace epg {
 				(responseMap)["endTime"] = field;
 				descs = ei->getDescriptors();
 
-				/*cout << "EPGProcessor::generateMap printing:" << endl;
-				cout << "  -id = " << (responseMap)["id"].str;
-				cout << "  -startTime = " << (responseMap)["startTime"].str;
-				cout << "  -endTime = " << (responseMap)["endTime"].str;*/
+				/*clog << "EPGProcessor::generateMap printing:" << endl;
+				clog << "  -id = " << (responseMap)["id"].str;
+				clog << "  -startTime = " << (responseMap)["startTime"].str;
+				clog << "  -endTime = " << (responseMap)["endTime"].str;*/
 
 				if (descs != NULL) {
 					for (j = descs->begin(); j != descs->end(); ++j) {
@@ -645,13 +645,13 @@ namespace epg {
 
 								field.str = sed->getEventName();
 								(responseMap)["name"] = field;
-								//cout << "  -name = ";
-								//cout << (responseMap)["name"].str;
+								//clog << "  -name = ";
+								//clog << (responseMap)["name"].str;
 
 								field.str = sed->getTextChar();
 								(responseMap)["shortDescription"] = field;
-								//cout << "  -shortDescription = ";
-								//cout << (responseMap)["shortDescription"].str;
+								//clog << "  -shortDescription = ";
+								//clog << (responseMap)["shortDescription"].str;
 								break;
 
 							case IEventInfo::DT_PARENTAL_RATING:
@@ -662,11 +662,11 @@ namespace epg {
 						}
 					}
 				}
-				//cout << endl;
+				//clog << endl;
 				name           = "evt" + itos(ei->getEventId());
 				fieldMap.table = responseMap;
 				(data)[name]   = fieldMap;
-				//cout << "(evt belongs to data[" << name << "])" << endl;
+				//clog << "(evt belongs to data[" << name << "])" << endl;
 			}
 		}
 
@@ -677,36 +677,36 @@ namespace epg {
 			}
 
 		} else {
-			cout << "EPGProcessor::generateEitMap there is no epg listener to notify";
-			cout << endl;
+			clog << "EPGProcessor::generateEitMap there is no epg listener to notify";
+			clog << endl;
 		}
 	}
 
 	void EPGProcessor::printFieldMap(map<string, struct Field>* fieldMap) {
 		map<string, struct Field>::iterator i;
 
-		cout << "EPGProcesor::printFieldMap printing..." << endl;
+		clog << "EPGProcesor::printFieldMap printing..." << endl;
 		for (i = fieldMap->begin(); i!= fieldMap->end(); ++i){
-			cout << i->first << " = ";
+			clog << i->first << " = ";
 			if (i->second.str.empty()){
 				if (i->second.table.empty()){
-					cout << "all empty"<< endl;
+					clog << "all empty"<< endl;
 
 				} else {
-					cout << "map: { " << endl;
+					clog << "map: { " << endl;
 					printFieldMap(&(i->second.table));
-					cout << "}" << endl;
+					clog << "}" << endl;
 				}
 
 			} else {
-				cout << i->second.str << endl;
+				clog << i->second.str << endl;
 			}
 		}
 	}
 
 	struct Field* EPGProcessor::handleFieldStr(string str) {
 		struct Field* field;
-		//cout << "EPGProcessor::handleFieldstr with str = " << str << endl;
+		//clog << "EPGProcessor::handleFieldstr with str = " << str << endl;
 
 		field = new struct Field;
 		if (str == "") {
@@ -723,8 +723,8 @@ namespace epg {
 		char* data;
 		payloadSize = section->getPayloadSize();
 
-		cout << "EPGProcessor::decodeTOT";
-		cout << "withPayloadSize: " << payloadSize << endl;
+		clog << "EPGProcessor::decodeTOT";
+		clog << "withPayloadSize: " << payloadSize << endl;
 
 		data = new char[payloadSize];
 		memcpy((void*)&(data[0]), section->getPayload(), payloadSize);
@@ -743,7 +743,7 @@ namespace epg {
 		int fd, rval, pngSize, totalSize, times, remainder, pos;
 		int originalNetworkId/*, descriptorsLoopLength*/;
 
-		cout << "Decoding CDT stream..." << endl << endl;
+		clog << "Decoding CDT stream..." << endl << endl;
 
 		fd = open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
 		pngSize = 0;
@@ -759,8 +759,8 @@ namespace epg {
 
 		char pngData[pngSize];
 
-		cout << "CDT reading first blocks. pngSize is '" << pngSize << "'";
-		cout << endl;
+		clog << "CDT reading first blocks. pngSize is '" << pngSize << "'";
+		clog << endl;
 		for (int i = 0; i < times; i++) {
 			rval = read(fd, (void*)&(data[0]), 4084);
 			if (rval == 4084) {
@@ -776,28 +776,28 @@ namespace epg {
 				pos += 4079;
 
 			} else {
-				cout << "CDT Warning! Can't read 4079 block of bytes.";
-				cout << " pos = '" << pos << "'" << endl;
+				clog << "CDT Warning! Can't read 4079 block of bytes.";
+				clog << " pos = '" << pos << "'" << endl;
 				return;
 			}
 		}
 
-		cout << "CDT reading remainder." << endl;
+		clog << "CDT reading remainder." << endl;
 		rval = read(fd, (void*)&(data[0]), remainder);
 		if (rval == remainder) {
 			memcpy(pngData+pos, data+5, remainder);
 
 		} else {
-			cout << "CDT Warning! Can't read remaining of '" << remainder;
-			cout << "' bytes. pos = '" << pos << "'" << endl;
+			clog << "CDT Warning! Can't read remaining of '" << remainder;
+			clog << "' bytes. pos = '" << pos << "'" << endl;
 			return;
 		}
 
 		close(fd);
 
 		this->savePNG(pngData, pngSize);
-		cout << "Stream decoded successfully. PngSize is '" << pngSize;
-		cout << "', pos is '" << pos + remainder << "'" << endl;
+		clog << "Stream decoded successfully. PngSize is '" << pngSize;
+		clog << "', pos is '" << pos + remainder << "'" << endl;
 	}
 
 	int EPGProcessor::savePNG(char* pngData, int pngSize) {
@@ -808,25 +808,25 @@ namespace epg {
 		path = itos(files) + ".png";
 		files++;
 		if (pngData == NULL) {
-			cout << "No data to save." << endl;
+			clog << "No data to save." << endl;
 			return 1;
 		}
 
-		cout << "Creating png file." << endl;
+		clog << "Creating png file." << endl;
 		png = fopen(path.c_str(), "wb");
 		if (png == NULL) {
-			cout << "cannot open PNG file. (" << path << ")" << endl;
+			clog << "cannot open PNG file. (" << path << ")" << endl;
 			return 2;
 		}
 
-		cout << "Writing data to png file." << endl;
+		clog << "Writing data to png file." << endl;
 		wc = fwrite(pngData, 1, pngSize, png);
 		if (wc != pngSize) {
-			cout << "Writing error." << endl;
+			clog << "Writing error." << endl;
 			return 3;
 		}
 
-		cout << "Closing png file." << endl;
+		clog << "Closing png file." << endl;
 		cdt->insert(path);
 
 		fclose(png);

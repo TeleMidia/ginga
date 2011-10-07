@@ -103,13 +103,13 @@ int DSMCCSectionPayload::processSectionPayload() {
 				break;
 
 			case 0x04: // Stream Event
-				cout << "DSMCCSectionPayload::processSectionPayload";
-				cout << " stream event. " << endl;
+				clog << "DSMCCSectionPayload::processSectionPayload";
+				clog << " stream event. " << endl;
 
 			default:
-				cout << "DSMCCSectionPayload::processSectionPayload";
-				cout << "Descriptor unrecognized. ";
-				cout << (descriptorTag & 0xFF) << endl;
+				clog << "DSMCCSectionPayload::processSectionPayload";
+				clog << "Descriptor unrecognized. ";
+				clog << (descriptorTag & 0xFF) << endl;
 		}
 		pos = pos + descriptorSize;
 	}

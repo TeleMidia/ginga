@@ -138,7 +138,7 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 	map<unsigned char, set<INPTListener*>*>::iterator i;
 	set<INPTListener*>* listeners;
 
-	cout << "NPTProcessor::addLoopListener " << endl;
+	clog << "NPTProcessor::addLoopListener " << endl;
 
 	pthread_mutex_lock(&loopMutex);
 	i = loopListeners->find(cid);
@@ -167,7 +167,7 @@ bool NPTProcessor::addTimeListener(
 	set<INPTListener*>* setListeners;
 	bool added;
 
-	cout << "NPTProcessor::addTimeListener TIME = " << nptValue << endl;
+	clog << "NPTProcessor::addTimeListener TIME = " << nptValue << endl;
 
 	lock();
 	i = timeListeners->find(cid);
@@ -244,7 +244,7 @@ bool NPTProcessor::addIdListener(ITimeBaseListener* ltn) {
 	wakeUp();
 	//unlock();
 
-	//cout << "NPTProcessor::addIdListener" << endl;
+	//clog << "NPTProcessor::addIdListener" << endl;
 	return added;
 }
 
@@ -299,16 +299,16 @@ void NPTProcessor::notifyLoopToTimeListeners(unsigned char cid) {
 	map<unsigned char, set<INPTListener*>*>::iterator i;
 	set<INPTListener*>::iterator j;
 
-	cout << "NPTProcessor::notifyLoopToTimeListeners ";
-	cout << endl;
+	clog << "NPTProcessor::notifyLoopToTimeListeners ";
+	clog << endl;
 
 	pthread_mutex_lock(&loopMutex);
 	i = loopListeners->find(cid);
 	if (i != loopListeners->end()) {
 		j = i->second->begin();
 		while (j != i->second->end()) {
-			cout << "NPTProcessor::notifyLoopToTimeListeners ";
-			cout << "CALL loop detected" << endl;
+			clog << "NPTProcessor::notifyLoopToTimeListeners ";
+			clog << "CALL loop detected" << endl;
 			((ITimeBaseListener*)(*j))->loopDetected();
 			++j;
 		}
@@ -321,10 +321,10 @@ void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
 	map<double, set<INPTListener*>*>::iterator j;
 	set<INPTListener*>::iterator k;
 
-	cout << "NPTProcessor::notifyTimeListeners ";
-	cout << "cid '" << (cid & 0xFF);
-	cout << "' nptvalue '" << nptValue;
-	cout << "'" << endl;
+	clog << "NPTProcessor::notifyTimeListeners ";
+	clog << "cid '" << (cid & 0xFF);
+	clog << "' nptvalue '" << nptValue;
+	clog << "'" << endl;
 
 	lock();
 	i = timeListeners->find(cid);
@@ -349,7 +349,7 @@ void NPTProcessor::notifyIdListeners(
 	//lock();
 	i = cidListeners->begin();
 	while (i != cidListeners->end()) {
-		cout << "NPTProcessor::notifyIdListeners" << endl;
+		clog << "NPTProcessor::notifyIdListeners" << endl;
 		((ITimeBaseListener*)(*i))->updateTimeBaseId(oldCid, newCid);
 		++i;
 	}
@@ -400,9 +400,9 @@ int NPTProcessor::updateTimeBase(TimeBaseClock* clk, NPTReference* npt) {
 	nptSecs = Stc::baseToSecond(newNpt);
 	if (nptSecs > 0.0 && nptSecs < 3.0) {
 		if (!loopControlMin && loopControlMax) {
-			cout << endl << endl << endl;
-			cout << "NPTProcessor::updateTimeBase LOOP !!!!!!!!!!";
-			cout << endl << endl << endl;
+			clog << endl << endl << endl;
+			clog << "NPTProcessor::updateTimeBase LOOP !!!!!!!!!!";
+			clog << endl << endl << endl;
 			notifyLoopToTimeListeners(npt->getContentId());
 			loopControlMin = true;
 		}
@@ -412,11 +412,11 @@ int NPTProcessor::updateTimeBase(TimeBaseClock* clk, NPTReference* npt) {
 		loopControlMin = false;
 	}
 
-	/*cout << "NPTProcessor::updateTimeBase ";
-	cout << "Clock '" << (clk->getContentId() & 0xFF);
-	cout << "' set to '" << nptSecs;
-	cout << "' STC = '" << stcValue << "'";
-	cout << endl;*/
+	/*clog << "NPTProcessor::updateTimeBase ";
+	clog << "Clock '" << (clk->getContentId() & 0xFF);
+	clog << "' set to '" << nptSecs;
+	clog << "' STC = '" << stcValue << "'";
+	clog << endl;*/
 	return 0;
 }
 
@@ -450,17 +450,17 @@ bool NPTProcessor::checkTimeBaseArgs(
 		string function, TimeBaseClock* clk, NPTReference* npt) {
 
 	if (clk == NULL || npt == NULL) {
-		cout << "NPTProcessor::" << function << " Warning!";
-		cout << " clk(" << clk << ") npt(" << npt << ")";
-		cout << endl;
+		clog << "NPTProcessor::" << function << " Warning!";
+		clog << " clk(" << clk << ") npt(" << npt << ")";
+		clog << endl;
 		return false;
 	}
 
 	if (clk->getContentId() != npt->getContentId()) {
-		cout << "NPTProcessor::" << function << " Warning! DIFF CIDS";
-		cout << " clk->cid = '" << (clk->getContentId() & 0xFF) << "'";
-		cout << " npt->cid = '" << (npt->getContentId() & 0xFF) << "'";
-		cout << endl;
+		clog << "NPTProcessor::" << function << " Warning! DIFF CIDS";
+		clog << " clk->cid = '" << (clk->getContentId() & 0xFF) << "'";
+		clog << " npt->cid = '" << (npt->getContentId() & 0xFF) << "'";
+		clog << endl;
 		return false;
 	}
 
@@ -517,8 +517,8 @@ int NPTProcessor::decodeNPT(vector<Descriptor*>* list) {
 		++it;
 	}
 
-	/*cout << "NPTProcessor::decodeNPT processed '" << list->size() << "'";
-	cout << " descriptors" << endl;*/
+	/*clog << "NPTProcessor::decodeNPT processed '" << list->size() << "'";
+	clog << " descriptors" << endl;*/
 
 	return timeBaseClock->size();
 }
@@ -643,8 +643,8 @@ bool NPTProcessor::processNptValues(NPTReference* npt, bool* isNotify) {
 		updateTimeBase(clk, npt);
 
 	} else {
-		cout << "NPTProcessor::processNptValues Warning! NULL npt && !notify";
-		cout << endl;
+		clog << "NPTProcessor::processNptValues Warning! NULL npt && !notify";
+		clog << endl;
 		return false;
 	}
 

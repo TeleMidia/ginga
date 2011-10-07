@@ -141,8 +141,8 @@ namespace io {
 			renderedSurface = new DFBSurface(destination);
 
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
-				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				cout << " setted alphachannel: ";*/
+				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
+				clog << " setted alphachannel: ";*/
 
 				renderedSurface->setCaps(DWCAPS_ALPHACHANNEL);
 
@@ -152,20 +152,20 @@ namespace io {
 					chromaKey = new Color(0, 0, 0);
 					renderedSurface->setChromaColor(chromaKey);
 					//outputDisplay->setColorKey(0, 0, 0);
-					//cout << "black color cause it is a gif image" << endl;
+					//clog << "black color cause it is a gif image" << endl;
 				}
 
-				//cout << " trying to blit image alpha channel" << endl;
+				//clog << " trying to blit image alpha channel" << endl;
 
 				DFBCHECK(destination->SetBlittingFlags(destination,
 					 (DFBSurfaceBlittingFlags)(DSBLIT_BLEND_ALPHACHANNEL)));
 
-				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				cout << " setted alpha: '";
-				cout << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
-				cout << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
-				cout << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
-				cout << "'" << endl;*/
+				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
+				clog << " setted alpha: '";
+				clog << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
+				clog << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
+				clog << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
+				clog << "'" << endl;*/
 			}
 
 			if (imgDsc.caps & DICAPS_COLORKEY) {
@@ -180,12 +180,12 @@ namespace io {
 					    DSBLIT_SRC_COLORKEY)));
 
 				renderedSurface->setChromaColor(chromaKey);
-				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				cout << " setted colorkey: '";
-				cout << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
-				cout << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
-				cout << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
-				cout << "'" << endl;*/
+				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
+				clog << " setted colorkey: '";
+				clog << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
+				clog << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
+				clog << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
+				clog << "'" << endl;*/
 			}
 
 			if (imgDsc.caps & DICAPS_NONE) {
@@ -193,8 +193,8 @@ namespace io {
 					    (DFBSurfaceBlittingFlags)DSBLIT_NOFX));
 
 				renderedSurface->setCaps(DWCAPS_NONE);
-				/*cout << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				cout << " NOFX" << endl;*/
+				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
+				clog << " NOFX" << endl;*/
 			}
 		}
 
@@ -243,7 +243,7 @@ namespace io {
 			s->Flip(s, NULL, (DFBSurfaceFlipFlags) DSFLIP_BLIT);
 
 		} catch (...) {
-			wclog << "Warning! VideoPlayer::frameCB" << endl;
+			clog << "Warning! VideoPlayer::frameCB" << endl;
 		}
 		return NULL;
 	}*/

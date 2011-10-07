@@ -249,8 +249,8 @@ namespace multidevice {
 		data     = f->data;
 		taskSize = f->size;
 
-		/*cout << "MulticastSocketService::sendData Sending";
-		cout << " taskSize = '" << taskSize  << "'" << endl;*/
+		/*clog << "MulticastSocketService::sendData Sending";
+		clog << " taskSize = '" << taskSize  << "'" << endl;*/
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			result = sendto(
@@ -263,7 +263,7 @@ namespace multidevice {
 
 			if (result == -1) {
 				perror ("MulticastSocketService::sendData msdW sendTo");
-				cout << " TASKSIZE = '" << taskSize << "'" << endl;
+				clog << " TASKSIZE = '" << taskSize << "'" << endl;
 				return false;
 			}
 
@@ -292,8 +292,8 @@ namespace multidevice {
 			}
 
 		} else {
-			/*cout << "MulticastSocketService::checkOutputBuffer ";
-			cout << "empty buffer" << endl;*/
+			/*clog << "MulticastSocketService::checkOutputBuffer ";
+			clog << "empty buffer" << endl;*/
 		}
 		pthread_mutex_unlock(&mutexBuffer);
 
@@ -315,8 +315,8 @@ namespace multidevice {
 		res = select(nfds, &fdset, NULL, NULL, &tv_timeout);
 		switch (res) {
 			case -1:
-				cout << "MulticastSocketService::checkInputBuffer ";
-				cout << "Warning! select ERRNO = " << errno << endl;
+				clog << "MulticastSocketService::checkInputBuffer ";
+				clog << "Warning! select ERRNO = " << errno << endl;
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
 
@@ -336,12 +336,12 @@ namespace multidevice {
 
 				if (*size == -1) {
 					if (errno != EAGAIN) {
-						cout << "MulticastSocketService::checkInputBuffer ";
+						clog << "MulticastSocketService::checkInputBuffer ";
 #ifndef _WIN32
 						herror("check domain error: ");
 #endif
-						cout << "Warning! receive data ERRNO = " << errno;
-						cout << endl;
+						clog << "Warning! receive data ERRNO = " << errno;
+						clog << endl;
 						memset(data, 0, MAX_FRAME_SIZE);
 						return false;
 
@@ -352,11 +352,11 @@ namespace multidevice {
 				}
 
 				if (*size <= HEADER_SIZE) {
-					cout << "MulticastSocketService::checkInputBuffer ";
-					cout << "Warning! Received invalid frame: ";
-					cout << "bytes received = '" << *size << "' ";
-					cout << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
-					cout << endl;
+					clog << "MulticastSocketService::checkInputBuffer ";
+					clog << "Warning! Received invalid frame: ";
+					clog << "bytes received = '" << *size << "' ";
+					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+					clog << endl;
 
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;

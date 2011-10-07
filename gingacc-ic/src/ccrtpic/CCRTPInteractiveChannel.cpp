@@ -73,16 +73,16 @@ namespace ic {
 		string strPort;
 		InetMcastAddress ima;
 
-		cout << "CCRTPInteractiveChannel::createClient with uri '";
-		cout << uri << "'";
-		cout << endl;
+		clog << "CCRTPInteractiveChannel::createClient with uri '";
+		clog << uri << "'";
+		clog << endl;
 
 		if (uri.length() > 6 && uri.substr(0, 6) == "rtp://") {
 			uri = uri.substr(6, uri.length() - 6);
 		}
 
-		cout << "CCRTPInteractiveChannel::createClient url: '";
-		cout << uri << "'" << endl;
+		clog << "CCRTPInteractiveChannel::createClient url: '";
+		clog << uri << "'" << endl;
 
 		if (uri.find(":") == std::string::npos) {
 			return NULL;
@@ -94,16 +94,16 @@ namespace ic {
 
 		ima = InetMcastAddress(address.c_str());
 
-		cout << "CCRTPInteractiveChannel::createClient Listening ";
+		clog << "CCRTPInteractiveChannel::createClient Listening ";
 
 		tpport_t port = atoi(strPort.c_str());
 		if (ima.isInetAddress()) {
-			cout << "on multicast address " << ima << ":" << port << endl;
+			clog << "on multicast address " << ima << ":" << port << endl;
 			return new CCRTPClient(ima, port);
 
 		} else {
 			InetHostAddress ia(address.c_str());
-			cout << "on unicast address " << ia << ":" << port << endl;
+			clog << "on unicast address " << ia << ":" << port << endl;
 			return new CCRTPClient(ia, port);
 		}
 	}
@@ -136,7 +136,7 @@ namespace ic {
 		char* buffer;
 		int size;
 
-		cout << "CCRTPInteractiveChannel::performUrl" << endl;
+		clog << "CCRTPInteractiveChannel::performUrl" << endl;
 
 		if (listener == NULL) {
 			return false;
@@ -166,7 +166,7 @@ namespace ic {
 		}
 
 		delete rtpClient;
-		cout << "CCRTPInteractiveChannel::performUrl all done" << endl;
+		clog << "CCRTPInteractiveChannel::performUrl all done" << endl;
 		return true;
 	}
 
@@ -175,7 +175,7 @@ namespace ic {
 			IInteractiveChannelListener* listener,
 			string userAgent) {
 
-		cout << "CCRTPInteractiveChannel::reserveUrl '" << uri << "'" << endl;
+		clog << "CCRTPInteractiveChannel::reserveUrl '" << uri << "'" << endl;
 		this->uri       = uri;
 		this->listener  = listener;
 		this->userAgent = userAgent;

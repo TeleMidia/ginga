@@ -58,7 +58,7 @@ namespace core {
 namespace system {
 namespace io {
 	DXInputEvent::DXInputEvent(void* event) {
-		//cout << "DXInputEvent::DXInputEvent(void* event)" << endl;
+		//clog << "DXInputEvent::DXInputEvent(void* event)" << endl;
 		DXInputEvent* evt = (DXInputEvent*) event;
 
 		this->pDidod = new DIDEVICEOBJECTDATA;
@@ -69,7 +69,7 @@ namespace io {
 	}
 
 	DXInputEvent::DXInputEvent(const int keyCode) {
-		//cout << "DXInputEvent::DXInputEvent(const int keyCode)" << endl;
+		//clog << "DXInputEvent::DXInputEvent(const int keyCode)" << endl;
 		pDidod = new DIDEVICEOBJECTDATA();
 		pDidod->dwOfs = 0xFF;
 		//this->m_mouseState = NULL;
@@ -84,7 +84,7 @@ namespace io {
 	}
 
 	DXInputEvent::DXInputEvent(int clazz, int type) {
-		//cout << "DXInputEvent::DXInputEvent(int clazz, int type)" << endl;
+		//clog << "DXInputEvent::DXInputEvent(int clazz, int type)" << endl;
 		pDidod = new DIDEVICEOBJECTDATA();
 		pDidod->dwOfs = 0xFF;
 		pDidod->dwData = DWORD("EVENTOUSUARIO");
@@ -92,7 +92,7 @@ namespace io {
 	}
 
 	DXInputEvent::DXInputEvent(LPDIDEVICEOBJECTDATA diDevObjData){
-		//cout << "DXInputEvent::DXInputEvent(LPDIDEVICEOBJECTDATA pDidod)" << endl;
+		//clog << "DXInputEvent::DXInputEvent(LPDIDEVICEOBJECTDATA pDidod)" << endl;
 		pDidod = diDevObjData;
 		//this->m_mouseState = NULL;
 	}
@@ -103,20 +103,20 @@ namespace io {
 	}
 
 	DXInputEvent::DXInputEvent(BYTE keyCode[256]) {
-		//cout << "DXInputEvent::DXInputEvent(BYTE keyCode)" << endl;
+		//clog << "DXInputEvent::DXInputEvent(BYTE keyCode)" << endl;
 	}
 
 	DXInputEvent::~DXInputEvent() {
           delete pDidod;
-		//cout << "DXInputEvent::~DXInputEvent()" << endl;
+		//clog << "DXInputEvent::~DXInputEvent()" << endl;
 	}
 
 	void DXInputEvent::clearContent() {
-		//cout << "DXInputEvent::clearContent()" << endl;
+		//clog << "DXInputEvent::clearContent()" << endl;
 	}
 
 	void* DXInputEvent::getContent() {
-		//cout << "DXInputEvent::getContent()" << endl;
+		//clog << "DXInputEvent::getContent()" << endl;
 		if(pDidod != NULL){
 			return pDidod;
 		}else{
@@ -125,11 +125,11 @@ namespace io {
 	}
 
 	void DXInputEvent::setKeyCode(const int keyCode) {
-		//cout << "DXInputEvent::setKeyCode(const int keyCode)" << endl;
+		//clog << "DXInputEvent::setKeyCode(const int keyCode)" << endl;
 	}
 
 	const int DXInputEvent::getKeyCode() {
-		cout << "DXInputEvent::getKeyCode()" << endl;
+		clog << "DXInputEvent::getKeyCode()" << endl;
 		if(pDidod != NULL){
 			return pDidod->dwOfs;
 		}else{
@@ -139,11 +139,11 @@ namespace io {
 	}
 
 	void DXInputEvent::setType(unsigned int type) {
-		//cout << "DXInputEvent::setType(unsigned int type)" << endl;
+		//clog << "DXInputEvent::setType(unsigned int type)" << endl;
 	}
 
 	unsigned int DXInputEvent::getType() {
-		//cout << "DXInputEvent::getType()" << endl;
+		//clog << "DXInputEvent::getType()" << endl;
 		
 		if( isButtonPressType() || isMotionType() ||  isPressedType() || isKeyType()){
 			return 0;
@@ -155,7 +155,7 @@ namespace io {
 	}
 
 	bool DXInputEvent::isButtonPressType() {
-		//cout << "DXInputEvent::isButtonPressType()" << endl;
+		//clog << "DXInputEvent::isButtonPressType()" << endl;
 
 		if(pDidod != NULL){
 			return false;
@@ -175,7 +175,7 @@ namespace io {
 	}
 
 	bool DXInputEvent::isMotionType() {
-		//cout << "DXInputEvent::isMotionType()" << endl;
+		//clog << "DXInputEvent::isMotionType()" << endl;
 		if(pDidod != NULL){
 			return false;
 		}else{
@@ -196,7 +196,7 @@ namespace io {
 	}
 
 	bool DXInputEvent::isPressedType() {
-		//cout << "DXInputEvent::isPressedType()" << endl;
+		//clog << "DXInputEvent::isPressedType()" << endl;
 		if( pDidod != NULL && (pDidod->dwOfs < 0xED) && (pDidod->dwOfs > 0x01) ){
 			if(pDidod->dwData & 0x80){
 				return true; // "D"
@@ -209,7 +209,7 @@ namespace io {
 	}
 
 	bool DXInputEvent::isKeyType() {
-		//cout << "DXInputEvent::isKeyType()" << endl;
+		//clog << "DXInputEvent::isKeyType()" << endl;
 		if( (pDidod != NULL) && (pDidod->dwOfs < 0xED) && (pDidod->dwOfs > 0x01) ){
 			return true;
 		}else{
@@ -218,7 +218,7 @@ namespace io {
 	}
 
 	bool DXInputEvent::isUserClass() {
-		//cout << "DXInputEvent::isUserClass()" << endl;
+		//clog << "DXInputEvent::isUserClass()" << endl;
 		if( (pDidod != NULL) && (pDidod->dwOfs == 0xFF)){
 			return true;
 		}
@@ -226,11 +226,11 @@ namespace io {
 	}
 
 	void DXInputEvent::setAxisValue(int x, int y, int z) {
-		cout << "DXInputEvent::setAxisValue(int x, int y, int z)" << endl;
+		clog << "DXInputEvent::setAxisValue(int x, int y, int z)" << endl;
 	}
 
 	void DXInputEvent::getAxisValue(int* x, int* y, int* z) {
-		//cout << "DXInputEvent::getAxisValue(int* x, int* y, int* z)" << endl;
+		//clog << "DXInputEvent::getAxisValue(int* x, int* y, int* z)" << endl;
 
 		(*x) = m_mouseState.lX;
 		(*y) = m_mouseState.lY;

@@ -184,21 +184,21 @@ namespace si {
 					break;
 
 				case DT_TRANSPORT_PROTOCOL:
-					cout << " TransportProtocolDescriptor" << endl;
+					clog << " TransportProtocolDescriptor" << endl;
 					descriptor = new TransportProtocolDescriptor();
 					descriptor->process(data, pos);
 					descriptors->push_back(descriptor);
 					break;
 
 				case DT_GINGAJ_APPLICATION_LOCATION:
-					cout << " GingaJApplicationLocationDesc" << endl;
+					clog << " GingaJApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
 					descriptors->push_back(descriptor);
 					break;
 
 				case DT_GINGANCL_APPLICATION_LOCATION:
-					cout << " GingaNCLApplicationLocationDesc" << endl;
+					clog << " GingaNCLApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
 					descriptors->push_back(descriptor);

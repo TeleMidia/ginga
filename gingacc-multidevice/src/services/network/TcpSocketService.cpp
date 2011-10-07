@@ -117,11 +117,11 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 		tcpcc->start();
 
 	} else if (connections != NULL) {
-		cout << "TcpSocketService::warning - connection already registered";
-		cout << endl;
+		clog << "TcpSocketService::warning - connection already registered";
+		clog << endl;
 
-		cout << "TcpSocketService::warning - removing and adding it again (";
-		cout << deviceId << ")" << endl;
+		clog << "TcpSocketService::warning - removing and adding it again (";
+		clog << deviceId << ")" << endl;
 
 		this->removeConnection(deviceId);
 		tcpcc = new TCPClientConnection(
@@ -138,7 +138,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 
 	pthread_mutex_unlock(&connMutex);
 
-	cout << "TcpSocketService::addConnection all done" << endl;
+	clog << "TcpSocketService::addConnection all done" << endl;
 }
 
 void TcpSocketService::removeConnection(unsigned int deviceId) {
@@ -170,8 +170,8 @@ void TcpSocketService::postTcpCommand(
 	sprintf_s(com, 32,"d %s %s %d\n%s\n", npt, command, payloadDesc, (int)strlen(payload),payload );
 #endif
 
-	//cout << "TcpSocketService::postTcpCommand = ";
-	//cout << com << endl;
+	//clog << "TcpSocketService::postTcpCommand = ";
+	//clog << com << endl;
 
 	pthread_mutex_lock(&connMutex);
 	i = connections->begin();

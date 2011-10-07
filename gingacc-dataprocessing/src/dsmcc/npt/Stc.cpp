@@ -96,7 +96,7 @@ int Stc::userClock(struct timeval* usrClk) {
 	struct rusage usage;
 
 	if (getrusage(RUSAGE_SELF, &usage) != 0) {
-		cout << "Stc::userClock getrusage error." << endl;
+		clog << "Stc::userClock getrusage error." << endl;
 		return -1;
 	}
 

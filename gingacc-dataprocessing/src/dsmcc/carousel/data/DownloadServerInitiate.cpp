@@ -107,8 +107,8 @@ namespace carousel {
 //			remove(header->getFileName().c_str());
 
 		} else {
-			cout << "Message header error: could not open file ";
-			cout << header->getFileName().c_str() << endl;
+			clog << "Message header error: could not open file ";
+			clog << header->getFileName().c_str() << endl;
 		}
 	}
 
@@ -136,8 +136,8 @@ namespace carousel {
 
 		idx = idx + 4;
 		if (len > 1) {
-			cout << "Warning: DSI::TaggedProfiles, never reach here!!! TP = ";
-			cout << len << endl;
+			clog << "Warning: DSI::TaggedProfiles, never reach here!!! TP = ";
+			clog << len << endl;
 		}
 
 		//get ior profile tag and check it
@@ -146,8 +146,8 @@ namespace carousel {
 
 		idx = idx + 4;
 		if (len != TAG_BIOP) {
-			cout << "Warning: DSI::TAG_BIOP, never reach here!!!";
-			cout << " TAG = " << len << endl;
+			clog << "Warning: DSI::TAG_BIOP, never reach here!!!";
+			clog << " TAG = " << len << endl;
 
 		} else {
 			// BIOP Profile Body
@@ -166,8 +166,8 @@ namespace carousel {
 			 */
 			len = (data[idx] & 0xFF);
 			if (len != 2) {
-				cout << "Warning: liteComponents, never reach here!!! LC = ";
-				cout << len << endl;
+				clog << "Warning: liteComponents, never reach here!!! LC = ";
+				clog << len << endl;
 			}
 
 			idx++;
@@ -178,8 +178,8 @@ namespace carousel {
 				    ((data[idx+2] & 0xFF) << 8) | (data[idx+3] & 0xFF);
 
 			if (len != TAG_BIOP_OBJECT_LOCATION) {
-				cout << "Warning: TAG_ObjectLocation, never reach here!!!";
-				cout << " TAG = " << len << endl;
+				clog << "Warning: TAG_ObjectLocation, never reach here!!!";
+				clog << " TAG = " << len << endl;
 
 			} else {
 				idx = idx + 4;
@@ -204,8 +204,8 @@ namespace carousel {
 				if (((data[idx] & 0xFF) != 0x01) ||
 						((data[idx+1] & 0xFF) != 0x00)) {
 
-					cout << "DSI Warning: Object version, never reach here!!!";
-					cout << endl;
+					clog << "DSI Warning: Object version, never reach here!!!";
+					clog << endl;
 				}
 
 				idx = idx + 2;
@@ -216,9 +216,9 @@ namespace carousel {
 
 				// if len > 4 then the unsigned int is not larger enough
 				if (len > 4) {
-					cout << "Warning! Size of";
-					cout << " objectKey > 4, never reaches here!";
-					cout << endl;
+					clog << "Warning! Size of";
+					clog << " objectKey > 4, never reaches here!";
+					clog << endl;
 
 					idx = idx + len;
 

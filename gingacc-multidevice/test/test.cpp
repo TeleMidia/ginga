@@ -83,8 +83,8 @@ int main(int argc, char *argv[]) {
 	rdm = RemoteDeviceManager::getInstance();
 #endif
 
-	cout << "gingacc-multidevice test with class '" << deviceClass;
-	cout << "'" << endl;
+	clog << "gingacc-multidevice test with class '" << deviceClass;
+	clog << "'" << endl;
 	rdm->setDeviceInfo(deviceClass, 800, 600);
 
 	getchar();

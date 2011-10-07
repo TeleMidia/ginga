@@ -159,8 +159,8 @@ namespace io {
 
 		frame->getSize(&w, &h);
 		if (dsc.width != w || dsc.height != h) {
-			cout << "DFBVideoProvider::checkVideoResizeEvent ";
-			cout << "width = '" << w << "' height = '" << h << "'" << endl;
+			clog << "DFBVideoProvider::checkVideoResizeEvent ";
+			clog << "width = '" << w << "' height = '" << h << "'" << endl;
 
 			s = (IDirectFBSurface*)(
 					LocalDeviceManager::getInstance()->createSurface(&dsc));

@@ -76,25 +76,25 @@ namespace descriptors {
 		return (unsigned int)descriptorLength;
 	}
 	void ContentAvailabilityDescriptor::print() {
-		cout << "ContentAvailabilityDescriptor::print printing..." << endl;
+		clog << "ContentAvailabilityDescriptor::print printing..." << endl;
 	}
 	size_t ContentAvailabilityDescriptor::process(char* data, size_t pos){
-		//cout << "ContentAvailabiltyDescriptor::process with pos = " << pos;
+		//clog << "ContentAvailabiltyDescriptor::process with pos = " << pos;
 
 		descriptorLength = data[pos+1];
-		//cout << " and length = " << (unsigned int)descriptorLength << endl;
+		//clog << " and length = " << (unsigned int)descriptorLength << endl;
 		pos += 2;
 
 		//2 bits reserved for future use
-		//cout << "CA debug = " << (data[pos] & 0xFF) << endl;
+		//clog << "CA debug = " << (data[pos] & 0xFF) << endl;
 		imageConstraintToken = ((data[pos] & 0x20) >> 5); //1 bit
-		//cout << " CA ImageConstraingToken = " << (int)imageConstraintToken << endl;
+		//clog << " CA ImageConstraingToken = " << (int)imageConstraintToken << endl;
 		retentionMode = ((data[pos] & 0x10) >> 4); //1 bit
-		//cout << "CA retentionMode = " << (int)retentionMode << endl;
+		//clog << "CA retentionMode = " << (int)retentionMode << endl;
 		retentionState = ((data[pos] & 0x0E) >> 1);//3 bits
-		//cout << "CA retentionState = " << (int)retentionState << endl;
+		//clog << "CA retentionState = " << (int)retentionState << endl;
 		encriptionMode = (data[pos] & 0x01); // 1 bit
-		//cout << "CA encriptionMode = " << (int)encriptionMode << endl;
+		//clog << "CA encriptionMode = " << (int)encriptionMode << endl;
 		pos ++;
 
 		pos += descriptorLength - 2; //jumping reserved future use

@@ -140,7 +140,7 @@ namespace io {
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
 
-		cout << "DFBWindow::~DFBWindow(" << this << ") all done" << endl;
+		clog << "DFBWindow::~DFBWindow(" << this << ") all done" << endl;
 	}
 
 	void DFBWindow::initialize(
@@ -213,7 +213,7 @@ namespace io {
 
 	void DFBWindow::draw() {
 		if (win != NULL) {
-			cout << "DFBWindow::draw Warning! Requesting redraw" << endl;
+			clog << "DFBWindow::draw Warning! Requesting redraw" << endl;
 
 		} else if (windowId < 0) {
 			DFBWindowDescription dsc;
@@ -275,7 +275,7 @@ namespace io {
 	}
 
 	void DFBWindow::setBackgroundColor(int r, int g, int b, int alpha) {
-		//wclog << this << ">> DFBWindow::setBackgroundColor" << endl;
+		//clog << this << ">> DFBWindow::setBackgroundColor" << endl;
 		if (win == NULL) {
 			return;
 		}
@@ -311,7 +311,7 @@ namespace io {
 	}
 
 	void DFBWindow::setColorKey(int r, int g, int b) {
-		//cout << this << ">> DFBWindow::setColorKey" << endl;
+		//clog << this << ">> DFBWindow::setColorKey" << endl;
 		//lock();
 		if (win == NULL) {
 			return;
@@ -872,8 +872,8 @@ namespace io {
 					::usleep(10000);
 					remove((char*)((uri + ".jpg").c_str()));
 					if (::system(strCmd.c_str()) < 0) {
-						cout << "DFBWindow::getDumpFileUri Warning!!! ";
-						cout << " Can't create JPEG file" << endl;
+						clog << "DFBWindow::getDumpFileUri Warning!!! ";
+						clog << " Can't create JPEG file" << endl;
 						unlock();
 						return uri + ".ppm";
 					}

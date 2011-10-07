@@ -136,8 +136,8 @@ namespace contextmanager {
 		fis.open(usersUri.c_str(), ifstream::in);
 
 		if (!fis.is_open()) {
-			cout << "ContextManager::initializeUsers() Warning: can't open ";
-			cout << "config file '" << usersUri << "'" << endl;
+			clog << "ContextManager::initializeUsers() Warning: can't open ";
+			clog << "config file '" << usersUri << "'" << endl;
 			return;
 		}
 
@@ -149,9 +149,9 @@ namespace contextmanager {
 					curUserId = util::stof(line);
 				} else {
 					invalidUser = true;
-					cout << "ContextManager::initializeUsers ";
-					cout << "warning! currentUser token must to be ':: ='";
-					cout << endl;
+					clog << "ContextManager::initializeUsers ";
+					clog << "warning! currentUser token must to be ':: ='";
+					clog << endl;
 				}
 			}
 
@@ -186,48 +186,48 @@ namespace contextmanager {
 
 										} else {
 											invalidUser = true;
-											cout << "ContextManager::";
-											cout << "initializeUsers ";
-											cout << "warning! genre != m and f";
-											cout << endl;
+											clog << "ContextManager::";
+											clog << "initializeUsers ";
+											clog << "warning! genre != m and f";
+											clog << endl;
 										}
 
 									} else {
 										invalidUser = true;
-										cout << "ContextManager::";
-										cout << "initializeUsers ";
-										cout << "warning! NULL location";
-										cout << endl;
+										clog << "ContextManager::";
+										clog << "initializeUsers ";
+										clog << "warning! NULL location";
+										clog << endl;
 									}
 
 								} else {
 									invalidUser = true;
-									cout << "ContextManager::initializeUsers ";
-									cout << "warning! age < 0" << endl;
+									clog << "ContextManager::initializeUsers ";
+									clog << "warning! age < 0" << endl;
 								}
 
 							} else {
 								invalidUser = true;
-								cout << "ContextManager::initializeUsers ";
-								cout << "warning! NULL passwd." << endl;
+								clog << "ContextManager::initializeUsers ";
+								clog << "warning! NULL passwd." << endl;
 							}
 
 						} else {
 							invalidUser = true;
-							cout << "ContextManager::initializeUsers warning! ";
-							cout << "name == ''" << endl;
+							clog << "ContextManager::initializeUsers warning! ";
+							clog << "name == ''" << endl;
 						}
 
 					} else {
 						invalidUser = true;
-						cout << "ContextManager::initializeUsers warning! ";
-						cout << "token < 0" << endl;
+						clog << "ContextManager::initializeUsers warning! ";
+						clog << "token < 0" << endl;
 					}
 
 				} else {
 					invalidUser = true;
-					cout << "ContextManager::initializeUsers warning! ";
-					cout << "token != '='" << endl;
+					clog << "ContextManager::initializeUsers warning! ";
+					clog << "token != '='" << endl;
 				}
 			}
 
@@ -241,8 +241,8 @@ namespace contextmanager {
 				addUser(newUser);
 
 			} else if (invalidUser) {
-				cout << "ContextManager::initializeUsers warning! Invalid ";
-				cout << "user '" << curUserId << "'" << endl;
+				clog << "ContextManager::initializeUsers warning! Invalid ";
+				clog << "user '" << curUserId << "'" << endl;
 			}
 		}
 
@@ -257,8 +257,8 @@ namespace contextmanager {
 		fis.open(contextsUri.c_str(), ifstream::in);
 
 		if (!fis.is_open()) {
-			cout << "ContextManager::initializeContexts() Warning: can't open ";
-			cout << "cfg file '" << contextsUri << "'" << endl;
+			clog << "ContextManager::initializeContexts() Warning: can't open ";
+			clog << "cfg file '" << contextsUri << "'" << endl;
 			return;
 		}
 
@@ -325,9 +325,9 @@ namespace contextmanager {
 
 		id = newUser->getUserId();
 		if (users->count(id) != 0) {
-			cout << "ContextManager::addUser Warning! ";
-			cout << "Trying to add the same user twice (id = '";
-			cout << id << "'" << endl;
+			clog << "ContextManager::addUser Warning! ";
+			clog << "Trying to add the same user twice (id = '";
+			clog << id << "'" << endl;
 			return;
 		}
 
@@ -420,8 +420,8 @@ namespace contextmanager {
 			return i->second;
 		}
 
-		cout << "ContextManager::getUser Warning! can't find user '";
-		cout << userId << "'" << endl;
+		clog << "ContextManager::getUser Warning! can't find user '";
+		clog << userId << "'" << endl;
 		return NULL;
 	}
 
@@ -433,8 +433,8 @@ namespace contextmanager {
 			return i->second;
 		}
 
-		cout << "ContextManager::getUserProfile Warning! can't find profile ";
-		cout << "of user '" << userId << "'" << endl;
+		clog << "ContextManager::getUserProfile Warning! can't find profile ";
+		clog << "of user '" << userId << "'" << endl;
 		return NULL;
 	}
 
@@ -477,17 +477,17 @@ namespace contextmanager {
 	void ContextManager::listUsersNicks() {
 		map<int, IGingaUser*>::iterator i;
 
-		cout << "ContextManager::listUsersNicks '";
+		clog << "ContextManager::listUsersNicks '";
 		i = users->begin();
 		while (i != users->end()) {
-			cout << i->second->getUserName() << "' ";
+			clog << i->second->getUserName() << "' ";
 			++i;
 		}
-		cout << endl;
+		clog << endl;
 	}
 
 	void ContextManager::addContextListener(IContextListener* listener) {
-		cout << "ContextManager::addContextListener" << endl;
+		clog << "ContextManager::addContextListener" << endl;
 		pthread_mutex_lock(&groupsMutex);
 		ctxListeners->insert(listener);
 		pthread_mutex_unlock(&groupsMutex);
@@ -496,7 +496,7 @@ namespace contextmanager {
 	void ContextManager::removeContextListener(IContextListener* listener) {
 		set<IContextListener*>::iterator i;
 
-		cout << "ContextManager::removeContextListener" << endl;
+		clog << "ContextManager::removeContextListener" << endl;
 		pthread_mutex_lock(&groupsMutex);
 		i = ctxListeners->find(listener);
 		if (i != ctxListeners->end()) {
@@ -508,8 +508,8 @@ namespace contextmanager {
 	void ContextManager::setGlobalVar(string varName, string varValue) {
 		set<IContextListener*>::iterator i;
 
-		cout << "ContextManager::setGlobalVar(" << varName << ", ";
-		cout << varValue << ") " << endl;
+		clog << "ContextManager::setGlobalVar(" << varName << ", ";
+		clog << varValue << ") " << endl;
 
 		pthread_mutex_lock(&groupsMutex);
 		i = ctxListeners->begin();

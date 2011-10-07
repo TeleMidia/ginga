@@ -227,7 +227,7 @@ namespace io {
 	void DFBAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 		if (decoder == NULL) {
-			cout << "DFBAudioProvider::playOver decoder = NULL" << endl;
+			clog << "DFBAudioProvider::playOver decoder = NULL" << endl;
 			return;
 		}
 

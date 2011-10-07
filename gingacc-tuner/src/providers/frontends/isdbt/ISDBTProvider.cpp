@@ -112,8 +112,8 @@ namespace tuning {
 		fis.open(iniFileName.c_str(), ifstream::in);
 
 		if (!fis.is_open()) {
-			cout << "ISDBTProvider::initializeChannels ";
-			cout << "can't open '" << iniFileName << "'" << endl;
+			clog << "ISDBTProvider::initializeChannels ";
+			clog << "can't open '" << iniFileName << "'" << endl;
 
 		} else {
 			fis >> token;
@@ -158,31 +158,31 @@ namespace tuning {
 								}
 
 							} else if (!skipLine) {
-								cout << "ISDBTProvider::initializeChannels ";
-								cout << " token segment not found";
-								cout << " current token is '" << token;
-								cout << "'" << endl;
+								clog << "ISDBTProvider::initializeChannels ";
+								clog << " token segment not found";
+								clog << " current token is '" << token;
+								clog << "'" << endl;
 							}
 
 						} else if (!skipLine) {
-							cout << "ISDBTProvider::initializeChannels token";
-							cout << " frequency not found";
-							cout << " current token is '" << token;
-							cout << "'" << endl;
+							clog << "ISDBTProvider::initializeChannels token";
+							clog << " frequency not found";
+							clog << " current token is '" << token;
+							clog << "'" << endl;
 						}
 
 					} else if (!skipLine) {
-						cout << "ISDBTProvider::initializeChannels token";
-						cout << " name not found";
-						cout << " current token is '" << token;
-						cout << "'" << endl;
+						clog << "ISDBTProvider::initializeChannels token";
+						clog << " name not found";
+						clog << " current token is '" << token;
+						clog << "'" << endl;
 					}
 
 				} else if (!skipLine) {
-					cout << "ISDBTProvider::initializeChannels token";
-					cout << " id not found";
-					cout << " current token is '" << token;
-					cout << "'" << endl;
+					clog << "ISDBTProvider::initializeChannels token";
+					clog << " id not found";
+					clog << " current token is '" << token;
+					clog << "'" << endl;
 				}
 				fis >> token;
 			}
@@ -205,7 +205,7 @@ namespace tuning {
 		if ((feDescriptor = open(
 				ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) {
 
-			cout << "ISDBTProvider::tune failed" << endl;
+			clog << "ISDBTProvider::tune failed" << endl;
 			return false;
 		}
 
@@ -213,8 +213,8 @@ namespace tuning {
 		if (frontend->hasFrontend()) {
 			initializeChannels();
 			if (channels->empty()) {
-				cout << "ISDBTProvider::tune no frequencies found";
-				cout << endl;
+				clog << "ISDBTProvider::tune no frequencies found";
+				clog << endl;
 				return false;
 			}
 			currentChannel = channels->begin();
@@ -224,15 +224,15 @@ namespace tuning {
 				if (!tuned) {
 					++currentChannel;
 					if (currentChannel == channels->end()) {
-						cout << "ISDBTProvider::tune all frequencies failed";
-						cout << endl;
+						clog << "ISDBTProvider::tune all frequencies failed";
+						clog << endl;
 						break;
 					}
 
 				} else {
-					cout << "ISDBTProvider::tune tuned at '";
-					cout << channel->getFrequency() << "' - ";
-					cout << channel->getName() << endl;
+					clog << "ISDBTProvider::tune tuned at '";
+					clog << channel->getFrequency() << "' - ";
+					clog << channel->getName() << endl;
 				}
 			}
 
@@ -267,9 +267,9 @@ namespace tuning {
 		IChannel* channel;
 
 		if (channels->empty() || frontend == NULL) {
-			cout << "ISDBTProvider::changeChannel return false: ";
-			cout << "number of channels is " << channels->size();
-			cout << " and frontend address is " << frontend << endl;
+			clog << "ISDBTProvider::changeChannel return false: ";
+			clog << "number of channels is " << channels->size();
+			clog << " and frontend address is " << frontend << endl;
 			return false;
 		}
 
@@ -290,8 +290,8 @@ namespace tuning {
 		freq = (*currentChannel)->getFrequency();
 
 		if (frontend->changeFrequency(freq)) {
-			cout << "ISDBTProvider::changeChannel tuned at '" << freq;
-			cout << "' - " << channel->getName() << "" << endl;
+			clog << "ISDBTProvider::changeChannel tuned at '" << freq;
+			clog << "' - " << channel->getName() << "" << endl;
 			return true;
 		}
 

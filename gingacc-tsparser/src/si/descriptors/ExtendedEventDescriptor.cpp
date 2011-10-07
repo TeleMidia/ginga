@@ -146,11 +146,11 @@ namespace descriptors {
 		return str;
 	}
 	void ExtendedEventDescriptor::print() {
-		cout << "ExtendedEventDescriptor::print" << endl;
-		cout << " -descriptorNumber = "     << getDescriptorNumber()    << endl;
-		cout << " -lastDescriptorNumber = " << getLastDescriptorNumber()<< endl;
-		cout << " -languageCode = "         << getLanguageCode()        << endl;
-		cout << " -textChar = "             << getTextChar()            << endl;
+		clog << "ExtendedEventDescriptor::print" << endl;
+		clog << " -descriptorNumber = "     << getDescriptorNumber()    << endl;
+		clog << " -lastDescriptorNumber = " << getLastDescriptorNumber()<< endl;
+		clog << " -languageCode = "         << getLanguageCode()        << endl;
+		clog << " -textChar = "             << getTextChar()            << endl;
 
 		if (lengthOfItems > 0) {
 			vector<Item*>::iterator i;
@@ -158,12 +158,12 @@ namespace descriptors {
 
 			for (i = items->begin(); i!= items->end(); ++i){
 				item = ((Item*)(*i));
-				cout << " -Item: ";
-				cout << "itemDescriptionChar = " <<
+				clog << " -Item: ";
+				clog << "itemDescriptionChar = " <<
 						getItemDescriptionChar(item);
-				cout << " -itemChar = " << getItemChar(item);
+				clog << " -itemChar = " << getItemChar(item);
 			}
-			cout << endl;
+			clog << endl;
 		}
 	}
 	size_t ExtendedEventDescriptor::process(char* data, size_t pos) {
@@ -172,27 +172,27 @@ namespace descriptors {
 		struct Item* item;
 		size_t itempos;
 
-		//cout << "ExtendedEventDescriptor::process with pos = " << pos;
+		//clog << "ExtendedEventDescriptor::process with pos = " << pos;
 
 		descriptorLength = data[pos+1];//pos = 19
 		pos += 2; //pos = 20
-		//cout << " and  lenght = " << (descriptorLength&0xFF) << endl;
+		//clog << " and  lenght = " << (descriptorLength&0xFF) << endl;
 
 		descriptorNumber = ((data[pos] & 0xF0) >> 4);//4 bits
 		lastDescriptorNumber = ((data[pos] & 0x0F));//4 bits
-		//cout << " Extended descriptorNumber = " << (descriptorNumber & 0xFF);
-		//cout << " and lastDescriptorNumber = " << (lastDescriptorNumber & 0xFF) << endl;
+		//clog << " Extended descriptorNumber = " << (descriptorNumber & 0xFF);
+		//clog << " and lastDescriptorNumber = " << (lastDescriptorNumber & 0xFF) << endl;
 		pos += 1;
 
 		memcpy(languageCode, data+pos, 3);
-		//cout << "Extended languageCode = " << languageCode <<endl;
+		//clog << "Extended languageCode = " << languageCode <<endl;
 		pos += 3;
 
 		lengthOfItems = data[pos];
 		itempos = pos;
 		pos ++; //item_descriptor_lenght
-		//cout << "Extended Lenght Of Items = " << (lengthOfItems & 0xFF);
-		//cout << " and pos is = " << pos << endl;
+		//clog << "Extended Lenght Of Items = " << (lengthOfItems & 0xFF);
+		//clog << " and pos is = " << pos << endl;
 
 		remainingBytesItems = lengthOfItems;
 		items = new vector<Item*>;
@@ -201,7 +201,7 @@ namespace descriptors {
 			item = new struct Item;
 
 			item->itemDescriptionLength = data[pos];
-			//cout << " itemDescriptionLenght = "<< (item->itemDescriptionLength & 0xFF);
+			//clog << " itemDescriptionLenght = "<< (item->itemDescriptionLength & 0xFF);
 			if (item->itemDescriptionLength != 0){
 
 				item->itemDescriptionChar =
@@ -221,47 +221,47 @@ namespace descriptors {
 				item->itemChar = new char[item->itemLength];
 				memset(item->itemChar, 0, item->itemLength);
 				memcpy(item->itemChar, data+pos+1, item->itemLength);
-				//cout << "itemLenght = " << (item->itemLength&0xFF);
+				//clog << "itemLenght = " << (item->itemLength&0xFF);
 				/*
-				cout << "itemChar = ";
+				clog << "itemChar = ";
 				for (int i = 0; i < item->itemLength; i++){
-					cout << (item->itemChar[i]);
+					clog << (item->itemChar[i]);
 				}
-				cout << endl;
+				clog << endl;
 				*/
 			}
 			value = item->itemDescriptionLength + item->itemLength + 2;
 			items->push_back(item);
 			pos += data[pos] + 1;
-			//cout << "ExtendedEvent:: insertItem finishing with pos = ";
-			//cout << pos << endl;
+			//clog << "ExtendedEvent:: insertItem finishing with pos = ";
+			//clog << pos << endl;
 			remainingBytesItems -= value;
 		}
 
 		itempos += lengthOfItems + 1;
 		if (pos != itempos){
-			//cout << "Extended error in pos after all items " << endl;
+			//clog << "Extended error in pos after all items " << endl;
 			pos = itempos;
 		}
 
 		textLength = data[pos];
 
 		if(textLength > 0){
-			//cout << "ExtendedEventDescriptor::process textLength = ";
-			//cout << (unsigned int) textLength << endl;
+			//clog << "ExtendedEventDescriptor::process textLength = ";
+			//clog << (unsigned int) textLength << endl;
 			textChar = new char[textLength];
 			if(textChar == NULL){
-				cout << "ExtendedEventDescriptor::process error allocating memory" << endl;
+				clog << "ExtendedEventDescriptor::process error allocating memory" << endl;
 				return -1;
 			}
 			memset(textChar, 0, textLength);
 			memcpy(textChar, data+pos+1, textLength);
 			/*
-			cout << "ExtendedEventDescriptor::process textChar = ";
+			clog << "ExtendedEventDescriptor::process textChar = ";
 			for (int i = 0; i < textLength; i++){
-				cout << textChar[i];
+				clog << textChar[i];
 			}
-			cout << endl;
+			clog << endl;
 			*/
 		}
 		pos += textLength;

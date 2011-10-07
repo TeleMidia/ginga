@@ -133,12 +133,12 @@ namespace player {
 #endif
 
 				if (glf != NULL) {
-					cout << "ImagePlayer trying to find '" << mrl << "'";
-					cout << endl;
+					clog << "ImagePlayer trying to find '" << mrl << "'";
+					clog << endl;
 					clientPath = glf->getLocation(path);
 					newMrl = clientPath + name;
-					cout << "ImagePlayer found newMrl = '" << newMrl;
-					cout << "'" << endl;
+					clog << "ImagePlayer found newMrl = '" << newMrl;
+					clog << "'" << endl;
 
 					if (fileExists(newMrl)) {
 #if HAVE_COMPSUPPORT
@@ -153,16 +153,16 @@ namespace player {
 #endif
 					} else {
 						provider = NULL;
-						cout << "ImagePlayer::ImagePlayer Warning! File ";
-						cout << " Not Found: '" << newMrl.c_str();
-						cout << "'" << endl;
+						clog << "ImagePlayer::ImagePlayer Warning! File ";
+						clog << " Not Found: '" << newMrl.c_str();
+						clog << "'" << endl;
 					}
 
 				} else {
 					provider = NULL;
-					cout << "ImagePlayer::ImagePlayer Warning! ";
-					cout << "GLF Component ";
-					cout << " Found!" << endl;
+					clog << "ImagePlayer::ImagePlayer Warning! ";
+					clog << "GLF Component ";
+					clog << " Found!" << endl;
 				}
 			}
 		}
@@ -264,14 +264,14 @@ namespace player {
 #endif
 #endif
 				} else {
-					cout << "ImagePlayer::renderImage Warning! Can't render '";
-					cout << mrl << "': file not found '" << mrl << "'";
-					cout << " neither '" << newMrl << "'" << endl;
+					clog << "ImagePlayer::renderImage Warning! Can't render '";
+					clog << mrl << "': file not found '" << mrl << "'";
+					clog << " neither '" << newMrl << "'" << endl;
 				}
 
 			} else {
-				cout << "ImagePlayer::renderImage Warning! Can't render '";
-				cout << mrl << "', file not found!" << endl;
+				clog << "ImagePlayer::renderImage Warning! Can't render '";
+				clog << mrl << "', file not found!" << endl;
 			}
 		}
 

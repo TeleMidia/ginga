@@ -128,8 +128,8 @@ namespace carousel {
 //			remove(header->getFileName().c_str());
 
 		} else {
-			cout << "Message header error: could not open file ";
-			cout << header->getFileName().c_str() << endl;
+			clog << "Message header error: could not open file ";
+			clog << header->getFileName().c_str() << endl;
 		}
 	}
 
@@ -168,9 +168,9 @@ namespace carousel {
 	}
 
 	void DownloadInfoIndication::print() {
-		cout << "downloadId = " << this->downloadId << endl;
-		cout << "blockSize = " << this->blockSize << endl;
-		cout << "numberOfModules = " << this->numberOfModules << endl;
+		clog << "downloadId = " << this->downloadId << endl;
+		clog << "blockSize = " << this->blockSize << endl;
+		clog << "numberOfModules = " << this->numberOfModules << endl;
 	}
 }
 }

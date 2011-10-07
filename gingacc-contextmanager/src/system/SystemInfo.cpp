@@ -113,8 +113,8 @@ namespace contextmanager {
 		fis.open("/proc/cpuinfo", ifstream::in);
 
 		if (!fis.is_open()) {
-			cout << "SystemInfo::initializeClockSpeed Warning: can't open ";
-			cout << "file '/proc/cpuinfo'" << endl;
+			clog << "SystemInfo::initializeClockSpeed Warning: can't open ";
+			clog << "file '/proc/cpuinfo'" << endl;
 			return;
 		}
 
@@ -150,10 +150,10 @@ namespace contextmanager {
 	void SystemInfo::printSysTable() {
 		map<string, string>::iterator i;
 
-		cout << "SystemInfo::printSysTable " << endl;
+		clog << "SystemInfo::printSysTable " << endl;
 		i = sysTable->begin();
 		while (i != sysTable->end()) {
-			cout << "'" << i->first << "' = '" << i->second << "'" << endl;
+			clog << "'" << i->first << "' = '" << i->second << "'" << endl;
 			++i;
 		}
 	}
@@ -170,8 +170,8 @@ namespace contextmanager {
 	string SystemInfo::getSystemLanguage() {
 		string value = getValue("system.language");
 		if (value == "") {
-			cout << "SystemInfo::getSystemLanguage can't find '";
-			cout << "system.language, return por" << endl;
+			clog << "SystemInfo::getSystemLanguage can't find '";
+			clog << "system.language, return por" << endl;
 			return "por";
 		}
 

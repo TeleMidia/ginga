@@ -107,10 +107,10 @@ namespace ncl {
 
 		privateDataLength = event[10] & 0xFF;
 		if (privateDataLength + 11 != event.length()) {
-			cout << "EventDescriptor::getPrivateDataPayload Warning! ";
-			cout << "invalid private data length(" << privateDataLength;
-			cout << ") for event length(" << event.length() << ")";
-			cout << endl;
+			clog << "EventDescriptor::getPrivateDataPayload Warning! ";
+			clog << "invalid private data length(" << privateDataLength;
+			clog << ") for event length(" << event.length() << ")";
+			clog << endl;
 		}
 		return event.substr(13, privateDataLength - 3);
 	}

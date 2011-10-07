@@ -147,8 +147,8 @@ namespace player {
 	}
 
 	void ProgramAV::addPidName(string name, int pid) {
-		cout << "ProgramAV::addPidName '" << name << "' = '" << pid;
-		cout << "'" << endl;
+		clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
+		clog << "'" << endl;
 		(*namePids)[name] = pid;
 	}
 
@@ -187,17 +187,17 @@ namespace player {
 
 		p = getPlayer(pid);
 		if (p != NULL) {
-			cout << "ProgramAV::setAVPid";
-			cout << " aPid = '" << aPid << "'";
-			cout << " vPid = '" << vPid << "'";
-			cout << endl;
+			clog << "ProgramAV::setAVPid";
+			clog << " aPid = '" << aPid << "'";
+			clog << " vPid = '" << vPid << "'";
+			clog << endl;
 
 			((AVPlayer*)p)->setAVPid(aPid, vPid);
 
 		} else {
-			cout << "ProgramAV::setAVPid Warning! Can't find name '";
-			cout << name << "' to set '" << aPid << "' and '" << vPid << "'";
-			cout << endl;
+			clog << "ProgramAV::setAVPid Warning! Can't find name '";
+			clog << name << "' to set '" << aPid << "' and '" << vPid << "'";
+			clog << endl;
 		}
 	}
 
@@ -243,9 +243,9 @@ namespace player {
 		}
 
 		if (pid < 0) {
-			cout << "ProgramAV::createPlayer Warning! Can't create player '";
-			cout << mrl << "' with name '" << name << "': pid '" << pid;
-			cout << "' not found!" << endl;
+			clog << "ProgramAV::createPlayer Warning! Can't create player '";
+			clog << mrl << "' with name '" << name << "': pid '" << pid;
+			clog << "' not found!" << endl;
 			return;
 		}
 
@@ -267,7 +267,7 @@ namespace player {
 
 		setPlayer(pid, currentPlayer);
 
-		cout << "ProgramAV::createPlayer for '" << mrl << "' all done" << endl;
+		clog << "ProgramAV::createPlayer for '" << mrl << "' all done" << endl;
 	}
 
 	void ProgramAV::setPlayer(int pid, IPlayer* player) {
@@ -313,8 +313,8 @@ namespace player {
 	}
 
 	void ProgramAV::setPropertyValue(string pName, string pValue) {
-		cout << "ProgramAV::setPropertyValue '" << pName << "' = '";
-		cout << pValue << "'" << endl;
+		clog << "ProgramAV::setPropertyValue '" << pName << "' = '";
+		clog << pValue << "'" << endl;
 
 		if (pName.substr(0, 11) == "sbtvd-ts://") {
 			addPidName(getNameFromMrl(pName), util::stof(pValue));

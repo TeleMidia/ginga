@@ -91,25 +91,25 @@ namespace descriptors{
 	}
 
 	void ComponentDescriptor::print() {
-		cout << "ComponentDescriptor::print printing..." << endl;
-		cout << " -descriptorLength = "   << (unsigned int)descriptorLength;
-		cout << endl;
-		cout << " -streamContent = " << (unsigned int)streamContent;
-		cout << endl;
-		cout << " -componentType = " << (unsigned int)componentType;
-		cout << endl;
+		clog << "ComponentDescriptor::print printing..." << endl;
+		clog << " -descriptorLength = "   << (unsigned int)descriptorLength;
+		clog << endl;
+		clog << " -streamContent = " << (unsigned int)streamContent;
+		clog << endl;
+		clog << " -componentType = " << (unsigned int)componentType;
+		clog << endl;
 		/*if (textLength > 0){
-			cout << " and textChar = " ;
+			clog << " and textChar = " ;
 			for(int i = 0; i < textLength; ++i){
-				cout << textChar[i];
+				clog << textChar[i];
 			}
-			cout << endl;
+			clog << endl;
 		}
 		*/
 	}
 
 	size_t ComponentDescriptor::process(char* data, size_t pos){
-		//cout << "ComponentDescriptor::process beginning with pos =  " << pos;
+		//clog << "ComponentDescriptor::process beginning with pos =  " << pos;
 		descriptorLength = data[pos+1];
 
 		//cout <<" and length = " << (descriptorLength & 0xFF) <<endl;
@@ -125,7 +125,7 @@ namespace descriptors{
 		pos ++;
 
 		componentTag = data[pos];
-		//cout << "Componenet component tag = "<< (componentTag & 0xFF) << endl;
+		//clog << "Componenet component tag = "<< (componentTag & 0xFF) << endl;
 
 		pos++; //pos=23
 		memcpy(languageCode, data+pos, 3);
@@ -146,11 +146,11 @@ namespace descriptors{
 			memcpy(textChar, data+pos, textLength);
 
 			/*
-			cout << "ComponentDescriptor::process text char = ";
+			clog << "ComponentDescriptor::process text char = ";
 			for (int i = 0; i < textLength; i++){
-				cout << (textChar[i]);
+				clog << (textChar[i]);
 			}
-			cout << endl;
+			clog << endl;
 			*/
 		}
 		pos += textLength;

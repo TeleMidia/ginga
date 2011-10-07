@@ -88,8 +88,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		dm     = NULL;
 		player = NULL;
 
-		cout << "PlayerSpawnedProcess(" << objectName << ") creating GFX";
-		cout << " stuffs" << endl;
+		clog << "PlayerSpawnedProcess(" << objectName << ") creating GFX";
+		clog << " stuffs" << endl;
 
 #if HAVE_COMPSUPPORT
 		cm = IComponentManager::getCMInstance();
@@ -100,7 +100,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 #endif
 
 		sendMessage("ready");
-		cout << "PlayerSpawnedProcess(" << objectName << ") READY" << endl;
+		clog << "PlayerSpawnedProcess(" << objectName << ") READY" << endl;
 	}
 
 	void updateStatus(
@@ -131,8 +131,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 		while (i != cmds->end()) {
 			vMsg = split(*i, ",");
 
-			cout << "PlayerLoader::messageReceived '";
-			cout << (*vMsg)[0] << "'" << endl;
+			clog << "PlayerLoader::messageReceived '";
+			clog << (*vMsg)[0] << "'" << endl;
 
 			if ((*vMsg)[0] == "createplayer") {
 #if HAVE_COMPSUPPORT
@@ -143,8 +143,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 #endif
 
 			} else if (player == NULL) {
-				cout << "PlayerLoader::messageReceived Warning! ";
-				cout << "PLAYER IS NULL" << endl;
+				clog << "PlayerLoader::messageReceived Warning! ";
+				clog << "PLAYER IS NULL" << endl;
 
 			} else if ((*vMsg)[0] == "setoutwindow") {
 				player->setOutWindow(stof((*vMsg)[1]));
@@ -155,8 +155,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 					auxStr = (*vMsg)[2] + "," + (*vMsg)[3] + "," +
 							(*vMsg)[4] + "," + (*vMsg)[5];
 
-					cout << "PlayerLoader::messageReceived setproperty '";
-					cout << (*vMsg)[1] << "' = '" << auxStr << "'" << endl;
+					clog << "PlayerLoader::messageReceived setproperty '";
+					clog << (*vMsg)[1] << "' = '" << auxStr << "'" << endl;
 
 					player->setPropertyValue((*vMsg)[1], auxStr);
 
@@ -248,9 +248,9 @@ int main(int argc, char *argv[], char* envp[]) {
 	wName   = argv[1];
 	rName   = argv[2];
 
-	cout << "PlayerLoader::main oName = '" << objName << "'" << endl;
-	cout << "PlayerLoader::main wName = '" << wName << "'" << endl;
-	cout << "PlayerLoader::main rName = '" << rName << "'" << endl;
+	clog << "PlayerLoader::main oName = '" << objName << "'" << endl;
+	clog << "PlayerLoader::main wName = '" << wName << "'" << endl;
+	clog << "PlayerLoader::main rName = '" << rName << "'" << endl;
 
 	psp = new PlayerSpawnedProcess(objName, wName, rName);
     psp->waitSignal();

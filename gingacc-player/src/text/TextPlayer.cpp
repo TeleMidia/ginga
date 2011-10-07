@@ -179,8 +179,8 @@ namespace player {
 
 	bool TextPlayer::setFont(string someUri) {
 		if (!fileExists(someUri)) {
-			cout << "TextPlayer::setFont Warning! File not found: '";
-			cout << someUri.c_str() << "'" << endl;
+			clog << "TextPlayer::setFont Warning! File not found: '";
+			clog << someUri.c_str() << "'" << endl;
 			return false;
 		}
 
@@ -205,8 +205,8 @@ namespace player {
 #endif
 
 		if (font == NULL || font->getContent() == NULL) {
-			cout << "TextPlayer::setFont Warning! Can't create Font '";
-			cout << someUri << "'" << endl;
+			clog << "TextPlayer::setFont Warning! Can't create Font '";
+			clog << someUri << "'" << endl;
 			return false;
 		}
 
@@ -273,7 +273,7 @@ namespace player {
 		}
 
 		if (font == NULL) {
-			cout << "TextPlayer::drawText Warning! can't set font" << endl;
+			clog << "TextPlayer::drawText Warning! can't set font" << endl;
 			return;
 
 		} else {
@@ -431,9 +431,9 @@ namespace player {
 			}
 
 		} else {
-			cout << "TextPlayer::drawText Warning! FontProvider(" << font;
-			cout << ") or Surface(" << surface << ") = NULL";
-			cout << endl;
+			clog << "TextPlayer::drawText Warning! FontProvider(" << font;
+			clog << ") or Surface(" << surface << ") = NULL";
+			clog << endl;
 		}
 	}
 
@@ -454,10 +454,10 @@ namespace player {
 
 		surface->getSize(&w, &h);
 		if ((currentLine + fontHeight) > h) {
-			cout << "TextPlayer::breakLine() Warning! Exceed surface bounds";
-			cout << " currentLine = '" << currentLine << "'";
-			cout << " fontHeight = '" << fontHeight << "'";
-			cout << " surH = '" << h << "'" << endl;
+			clog << "TextPlayer::breakLine() Warning! Exceed surface bounds";
+			clog << " currentLine = '" << currentLine << "'";
+			clog << " fontHeight = '" << fontHeight << "'";
+			clog << " surH = '" << h << "'" << endl;
 			currentColumn = 0;
 
 		} else {

@@ -80,7 +80,7 @@ namespace tuning {
 			new vector<ActionsToFilters*>);
 
 	ISDBTFrontend::ISDBTFrontend(int feFd) : Thread() {
-		cout << "ISDBTFrontend::ISDBTFrontend" << endl;
+		clog << "ISDBTFrontend::ISDBTFrontend" << endl;
 
 		this->feFd = feFd;
 
@@ -94,12 +94,12 @@ namespace tuning {
 	}
 
 	bool ISDBTFrontend::hasFrontend() {
-		cout << "ISDBTFrontend::hasFrontend" << endl;
+		clog << "ISDBTFrontend::hasFrontend" << endl;
 		return feFd > 0;
 	}
 
 	void ISDBTFrontend::initIsdbtParameters() {
-		cout << "ISDBTFrontend::initIsdbtParameters" << endl;
+		clog << "ISDBTFrontend::initIsdbtParameters" << endl;
 
 #if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
 		params.delivery_system                 = SYS_ISDBT;
@@ -129,21 +129,21 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::dumpFrontendInfo() {
-		cout << "frontend_info:" << endl;
-		cout << "name:            " << info.name << endl;
-		cout << "fe_type:         " << info.type << endl;
-		cout << "freq_min:        " << info.frequency_min << endl;
-		cout << "freq_max:        " << info.frequency_max << endl;
-		cout << "freq_step:       " << info.frequency_stepsize << endl;
-		cout << "symbol_rate_min: " << info.symbol_rate_min << endl;
-		cout << "symbol_rate_max: " << info.symbol_rate_max << endl;
-		cout << "symbol_rate_tol: " << info.symbol_rate_tolerance << endl;
-		cout << "notifier_delay:  " << info.notifier_delay << endl;
-		cout << "caps:            " << info.caps << endl;
+		clog << "frontend_info:" << endl;
+		clog << "name:            " << info.name << endl;
+		clog << "fe_type:         " << info.type << endl;
+		clog << "freq_min:        " << info.frequency_min << endl;
+		clog << "freq_max:        " << info.frequency_max << endl;
+		clog << "freq_step:       " << info.frequency_stepsize << endl;
+		clog << "symbol_rate_min: " << info.symbol_rate_min << endl;
+		clog << "symbol_rate_max: " << info.symbol_rate_max << endl;
+		clog << "symbol_rate_tol: " << info.symbol_rate_tolerance << endl;
+		clog << "notifier_delay:  " << info.notifier_delay << endl;
+		clog << "caps:            " << info.caps << endl;
 	}
 
 	void ISDBTFrontend::updateIsdbtFrontendParameters() {
-		cout << "ISDBTFrontend::updateIsdbtFrontendParameters" << endl;
+		clog << "ISDBTFrontend::updateIsdbtFrontendParameters" << endl;
 
 #if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
 
@@ -213,7 +213,7 @@ namespace tuning {
 
 		res = ioctl(feFd, FE_SET_PROPERTY, &dtv_prop);
 		if (res == -1) {
-			cout << "setting properties failed" << endl;
+			clog << "setting properties failed" << endl;
 		}
 		free(dtv_prop_arg);
 #endif
@@ -222,7 +222,7 @@ namespace tuning {
 	bool ISDBTFrontend::isTuned() {
 		::usleep(200000);
 		if (ioctl(feFd, FE_READ_STATUS, &feStatus) == -1) {
-			cout << "ISDBTFrontend::isTuned FE_READ_STATUS failed" << endl;
+			clog << "ISDBTFrontend::isTuned FE_READ_STATUS failed" << endl;
 			return false;
 		}
 
@@ -234,14 +234,14 @@ namespace tuning {
 				if (feStatus & FE_HAS_SIGNAL) {
 					/* found a carrier signal  */
 					if (!feStatus & FE_HAS_CARRIER) {
-						cout << "ISDBTFrontend::isTuned Warning! ";
-						cout << "can't find carrier."<< endl;
+						clog << "ISDBTFrontend::isTuned Warning! ";
+						clog << "can't find carrier."<< endl;
 					}
 
 					/* found sync bytes  */
 					if (feStatus & FE_HAS_SYNC) {
-						cout << "ISDBTFrontend::isTuned Warning! ";
-						cout << "can't find sync byte."<< endl;
+						clog << "ISDBTFrontend::isTuned Warning! ";
+						clog << "can't find sync byte."<< endl;
 					}
 					return true;
 				}
@@ -272,7 +272,7 @@ namespace tuning {
 		*stc       = _stc->stc / _stc->base;
 		*valueType = ST_90KHz;
 
-		cout << "ISDBTFrontend::getSTCValue '" << *stc << "'" << endl;
+		clog << "ISDBTFrontend::getSTCValue '" << *stc << "'" << endl;
 		close(fd);
 
 		delete _stc;
@@ -282,7 +282,7 @@ namespace tuning {
 	bool ISDBTFrontend::changeFrequency(unsigned int frequency) {
 		int i;
 
-		cout << "ISDBTFrontend::changeFrequency" << endl;
+		clog << "ISDBTFrontend::changeFrequency" << endl;
 
 		currentFreq      = frequency;
 		params.frequency = currentFreq;
@@ -290,14 +290,14 @@ namespace tuning {
 
 		for (i = 0; i < 6; i++) {
 			if (isTuned()) {
-				cout << "ISDBTFrontend::changeFrequency tuned at '";
-				cout << currentFreq << "'" << endl;
+				clog << "ISDBTFrontend::changeFrequency tuned at '";
+				clog << currentFreq << "'" << endl;
 				return true;
 			}
 		}
 
-		cout << "ISDBTFrontend::changeFrequency can't change frequency";
-		cout << endl;
+		clog << "ISDBTFrontend::changeFrequency can't change frequency";
+		clog << endl;
 		return false;
 	}
 
@@ -306,7 +306,7 @@ namespace tuning {
 		bool infFm = false, infVhf = false, infUhf = false;
 		IChannel* channel;
 
-		cout << "ISDBTFrontend::scanFrequencies searching channels" << endl;
+		clog << "ISDBTFrontend::scanFrequencies searching channels" << endl;
 
 		currentFreq             = IFE_FORCED_MIN_FREQ;
 		info.frequency_stepsize = IFE_FORCED_STEP_SIZE;
@@ -316,7 +316,7 @@ namespace tuning {
 
 			if (currentFreq < 115000000) {
 				if (!infFm) {
-					cout << "Current Frequency at FM band" << endl;
+					clog << "Current Frequency at FM band" << endl;
 					infFm = true;
 				}
 				continue;
@@ -324,7 +324,7 @@ namespace tuning {
 
 			if (currentFreq >= 115000000 && currentFreq < 250000000) {
 				if (!infVhf) {
-					cout << "Current Frequency at VHF band" << endl;
+					clog << "Current Frequency at VHF band" << endl;
 					infVhf = true;
 				}
 				continue;
@@ -332,7 +332,7 @@ namespace tuning {
 
 			if (currentFreq >= 250000000 && currentFreq < 863000000) {
 				if (!infUhf) {
-					cout << "Current Frequency at UHF band" << endl;
+					clog << "Current Frequency at UHF band" << endl;
 					infUhf = true;
 				}
 
@@ -345,8 +345,8 @@ namespace tuning {
 
 			for (i = 0; i < 4; i++) {
 				if (isTuned()) {
-					cout << "ISDBTFrontend::scanFrequencies tuned at '";
-					cout << currentFreq << "'" << endl;
+					clog << "ISDBTFrontend::scanFrequencies tuned at '";
+					clog << currentFreq << "'" << endl;
 
 					channel = new Channel();
 					channel->setFrequency(currentFreq);
@@ -356,7 +356,7 @@ namespace tuning {
 			}
 		}
 
-		cout << "ISDBTFrontend::scanFrequencies Finished." << endl;
+		clog << "ISDBTFrontend::scanFrequencies Finished." << endl;
 	}
 
 	void ISDBTFrontend::attachFilter(IFrontendFilter* filter) {
@@ -364,20 +364,20 @@ namespace tuning {
 		int fd, numOfFilters;
 		ActionsToFilters* action;
 
-		cout << "ISDBTFrontend::attachFilter pid = '";
-		cout << filter->getPid() << "' tid = '" << filter->getTid();
-		cout << "'" << endl;
+		clog << "ISDBTFrontend::attachFilter pid = '";
+		clog << filter->getPid() << "' tid = '" << filter->getTid();
+		clog << "'" << endl;
 
 		numOfFilters = runningFilters->size();
 
 		if (numOfFilters == IFE_MAX_FILTERS) {
-			cout << "ISDBTFrontend::attachFilter reached max filters" << endl;
+			clog << "ISDBTFrontend::attachFilter reached max filters" << endl;
 			return;
 		}
 
 		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR | O_NONBLOCK)) < 0) {
-			cout << "ISDBTFrontend::attachFilter can't open '";
-			cout << IFE_DEMUX_DEV_NAME << "'" << endl;
+			clog << "ISDBTFrontend::attachFilter can't open '";
+			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
 			return;
 		}
 
@@ -405,8 +405,8 @@ namespace tuning {
 		f.flags = DMX_IMMEDIATE_START | DMX_CHECK_CRC;
 
 		if (ioctl(fd, DMX_SET_FILTER, &f) == -1) {
-			cout << "ISDBTFrontend::attachFilter ";
-			cout << "ioctl DMX_SET_FILTER failed" << endl;
+			clog << "ISDBTFrontend::attachFilter ";
+			clog << "ioctl DMX_SET_FILTER failed" << endl;
 			return;
 		}
 
@@ -433,14 +433,14 @@ namespace tuning {
 
 		convPid = pid;
 
-		cout << "ISDBTFrontend::createPesFilter pid '" << convPid << "'";
-		cout << " pesType '" << pesType << "'" << endl;
+		clog << "ISDBTFrontend::createPesFilter pid '" << convPid << "'";
+		clog << " pesType '" << pesType << "'" << endl;
 		memset(&f, 0, sizeof(f));
 
 		fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR);
 		if (fd < 0) {
-			cout << "ISDBTFrontend::createPesFilter can't open '";
-			cout << IFE_DEMUX_DEV_NAME << "'" << endl;
+			clog << "ISDBTFrontend::createPesFilter can't open '";
+			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
 			return fd;
 		}
 
@@ -468,8 +468,8 @@ namespace tuning {
 
 		res = ioctl(fd, DMX_SET_PES_FILTER, &f);
 		if (res < 0) {
-			cout << "ISDBTFrontend::createPesFilter ";
-			cout << "ioctl DMX_SET_PES_FILTER failed" << endl;
+			clog << "ISDBTFrontend::createPesFilter ";
+			clog << "ioctl DMX_SET_PES_FILTER failed" << endl;
 		}
 
 		return fd;
@@ -478,7 +478,7 @@ namespace tuning {
 	void ISDBTFrontend::removeFilter(IFrontendFilter* filter) {
 		ActionsToFilters* action;
 
-		cout << "ISDBTFrontend::removeFilter" << endl;
+		clog << "ISDBTFrontend::removeFilter" << endl;
 
 		action = new ActionsToFilters;
 		action->ff    = filter;
@@ -497,8 +497,8 @@ namespace tuning {
 			pollFds[i].fd = -1;
 		}
 
-		cout << "ISDBTFrontend::updatePool: current size is ";
-		cout << runningFilters->size() << endl;
+		clog << "ISDBTFrontend::updatePool: current size is ";
+		clog << runningFilters->size() << endl;
 
 		i = 0;
 		j = runningFilters->begin();
@@ -550,13 +550,13 @@ namespace tuning {
 
 		n = poll(pollFds, fSize, 1000);
 		if (n == -1) {
-			cout << "ISDBTFrontend::readFilters poll failed! ";
-			cout << endl;
+			clog << "ISDBTFrontend::readFilters poll failed! ";
+			clog << endl;
 			return;
 
 		} else if (n == 0) {
-			/*cout << "ISDBTFrontend::readFilters poll timeout! ";
-			cout << endl;*/
+			/*clog << "ISDBTFrontend::readFilters poll timeout! ";
+			clog << endl;*/
 			return;
 		}
 
@@ -566,9 +566,9 @@ namespace tuning {
 			fd     = filter->getDescriptor();
 			if (pollFds[i].revents) {
 				if (pollFds[i].fd != fd) {
-					cout << "ISDBTFrontend::readFilters Warning Poolfd has ";
-					cout << "a different fd of the filter";
-					cout << endl;
+					clog << "ISDBTFrontend::readFilters Warning Poolfd has ";
+					clog << "a different fd of the filter";
+					clog << endl;
 				}
 
 				if (((recv = read(
@@ -588,11 +588,11 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::run() {
-		cout << "ISDBTFrontend::run" << endl;
+		clog << "ISDBTFrontend::run" << endl;
 		do {
 			readFilters();
 		} while (true);
-		cout << "ISDBTFrontend::run no filters running!" << endl;
+		clog << "ISDBTFrontend::run no filters running!" << endl;
 	}
 }
 }

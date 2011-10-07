@@ -603,7 +603,7 @@ string cmd_to_str(lua_State* L) {
   }
 
   /****MOUNTING COMMAND****/
-  //cout << "LuaEvent::editcommnadToString for:" << endl;
+  //clog << "LuaEvent::editcommnadToString for:" << endl;
   for (int i = 1; i <= 7; i++){
     if (! edit[i].empty()) {
 
@@ -611,11 +611,11 @@ string cmd_to_str(lua_State* L) {
 	editCommand.append(",");
       }
       editCommand.append(edit[i]);
-      //cout << i << " = " << editCommand << endl;
+      //clog << i << " = " << editCommand << endl;
     }
   }
 
-  //cout << "LuaEvent::editToString editCommand:" << editCommand << endl;
+  //clog << "LuaEvent::editToString editCommand:" << editCommand << endl;
 
   return editCommand;
 }
@@ -693,8 +693,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     	this->epgProc = ((epgpCreator*)compObj)();
 
     } else {
-    	cout << "LuaPlayer::LuaPlayer Warning! Can't create EPGProcessor: ";
-    	cout << "symbol not found!" << endl;
+    	clog << "LuaPlayer::LuaPlayer Warning! Can't create EPGProcessor: ";
+    	clog << "symbol not found!" << endl;
     }
 
 #else
@@ -728,8 +728,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 	lua_pushcfunction(this->L, luaopen_event);    // [ l_event ]
 
 	if (lua_pcall(this->L, 0, 0, 0) != 0) {       // [ ]
-		cout << "LUAPLAYER LuaPlayer 1 ERROR:: ";
-		cout << lua_tostring(this->L, -1) << endl;
+		clog << "LUAPLAYER LuaPlayer 1 ERROR:: ";
+		clog << lua_tostring(this->L, -1) << endl;
 	}
 
 	this->tcp_running = false;
@@ -738,8 +738,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     this->lock();
 	lua_pushcfunction(this->L, luaopen_canvas);   // [ l_canvas ]
 	if (lua_pcall(this->L, 0, 0, 0) != 0) {       // [ ]
-		cout << "LUAPLAYER LuaPlayer 2 ERROR:: ";
-		cout << lua_tostring(this->L, -1) << endl;
+		clog << "LUAPLAYER LuaPlayer 2 ERROR:: ";
+		clog << lua_tostring(this->L, -1) << endl;
 	}
     this->unlock();
 
@@ -797,7 +797,7 @@ void LuaPlayer::load ()
 		return;
 	}
     if( lua_pcall(this->L, 0, 0, 0) != 0 ) { 	      // [ ]
-    	cout << "LUAPLAYER load ERROR:: " << lua_tostring(this->L, -1) << endl;
+    	clog << "LUAPLAYER load ERROR:: " << lua_tostring(this->L, -1) << endl;
     }
 }
 
@@ -890,8 +890,8 @@ void LuaPlayer::unprotectedSetPropertyValue(string name, string value) {
 }
 
 void LuaPlayer::setPropertyValue(string name, string value) {
-	cout << "LuaPlayer::setPropertyValue ";
-    cout << "set property '" << name << "' = '" << value << "'" << endl;
+	clog << "LuaPlayer::setPropertyValue ";
+    clog << "set property '" << name << "' = '" << value << "'" << endl;
 
 	this->lock();
 	Player::setPropertyValue(name, value);
@@ -914,10 +914,10 @@ bool LuaPlayer::userEventReceived (IInputEvent* evt)
 	this->lock();
 
 	if (evt->isUserClass()) {
-//cout << ">recv " << L << " ref " << evt->getType() << endl;
+//clog << ">recv " << L << " ref " << evt->getType() << endl;
         lua_State* srcL = (lua_State*) evt->getData();
         if (srcL == L) {
-//cout << "<recv " << L << endl;
+//clog << "<recv " << L << endl;
 		    ext_postRef(this->L, evt->getType());
         }
 
@@ -953,11 +953,11 @@ void LuaPlayer::pushSIEvent (map<string, struct Field> event, unsigned char type
 	//map<string, struct Field> data;
 	map<string, struct Field> evt;
 
-	cout << "LuaPlayer::pushSIEvent event.size = '" << event.size() << "'";
-	cout << endl;
+	clog << "LuaPlayer::pushSIEvent event.size = '" << event.size() << "'";
+	clog << endl;
 
 	if (!event.empty()) {
-		cout << "LuaPlayer::pushSIEvent" << endl;
+		clog << "LuaPlayer::pushSIEvent" << endl;
 		field.str    = "si";
 		evt["class"] = field;
 
@@ -988,13 +988,13 @@ string LuaPlayer::getPropertyValue (string name)
 {
 	this->lock();
 	CHECKRET("getPropertyValue()", "")
-	cout << "[LUA] getPropertyValue('" << name.c_str() << "')";
+	clog << "[LUA] getPropertyValue('" << name.c_str() << "')";
 
 	lua_getglobal(this->L, name.c_str());         // [ var ]
 	string ret = luaL_optstring(L, -1, "");
 	lua_pop(this->L, 1);                          // [ ]
 
-	cout << " -> '" << ret.c_str() << "'" << endl;
+	clog << " -> '" << ret.c_str() << "'" << endl;
 	this->unlock();
 	return ret;
 }
@@ -1003,7 +1003,7 @@ string LuaPlayer::getPropertyValue (string name)
 // MÉTODOS AUXILIARES
 
 bool LuaPlayer::hasPresented() {
-    //cout << "LuaPlayer::hasPresented '" << played << "'" << endl;
+    //clog << "LuaPlayer::hasPresented '" << played << "'" << endl;
 	return played;
 }
 
@@ -1015,8 +1015,8 @@ bool LuaPlayer::setKeyHandler(bool isHandler) {
 void LuaPlayer::setScope(string scopeId, short type,
                          double begin, double end)
 {
-	cout << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
-	cout << "' begin '" << begin << "' end '" << end << endl;
+	clog << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
+	clog << "' begin '" << begin << "' end '" << end << endl;
 	addScope(scopeId, type, begin, end);
 }
 
@@ -1036,7 +1036,7 @@ void LuaPlayer::addScope(string scopeId, short type, double begin, double end)
 }
 
 void LuaPlayer::setCurrentScope(string scopeId) {
-	cout << "LuaPlayer::setCurrentScope '" << scopeId << "'" << endl;
+	clog << "LuaPlayer::setCurrentScope '" << scopeId << "'" << endl;
 	this->currentScope = scopeId;
 }
 

@@ -78,7 +78,7 @@ namespace descriptors {
 		return (unsigned int)descriptorLength;
 	}
 	void HiperlinkDescriptor::print(){
-		cout << "HiperlinkDescriptor::print..."<< endl;
+		clog << "HiperlinkDescriptor::print..."<< endl;
 	}
 	size_t HiperlinkDescriptor::process(char* data, size_t pos){
 		descriptorLength = data[pos+1];

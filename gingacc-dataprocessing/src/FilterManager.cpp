@@ -151,8 +151,8 @@ namespace dataprocessing {
 		SectionFilter* sf;
 		map<short, SectionFilter*>::iterator i;
 
-		cout << "FilterManager::destroyFilter type '";
-		cout << streamType << "'" << endl;
+		clog << "FilterManager::destroyFilter type '";
+		clog << streamType << "'" << endl;
 
 		pthread_mutex_lock(&filterMutex);
 		i = streamTypeFilters->find(streamType);
@@ -168,8 +168,8 @@ namespace dataprocessing {
 	void FilterManager::destroyFilter(IDemuxer* demux, ITSFilter* filter) {
 		map<short, SectionFilter*>::iterator i;
 
-		cout << "FilterManager::destroyFilter filter '";
-		cout << filter << "'" << endl;
+		clog << "FilterManager::destroyFilter filter '";
+		clog << filter << "'" << endl;
 
 		pthread_mutex_lock(&filterMutex);
 		i = streamTypeFilters->begin();
@@ -198,39 +198,39 @@ namespace dataprocessing {
 		unsigned int i;
 
 		if (section == NULL) {
-			cout << "FilterManager::processSection ";
-			cout << "Warning! Section is NULL" << endl;
+			clog << "FilterManager::processSection ";
+			clog << "Warning! Section is NULL" << endl;
 			return false;
 		}
 
 		if (section->getPayloadSize() <= 0 ||
 			    section->getPayloadSize() > 4096) {
 
-			cout << "FilterManager::processSection ";
-			cout << "Warning! Wrong payloadSize" << endl;
+			clog << "FilterManager::processSection ";
+			clog << "Warning! Wrong payloadSize" << endl;
 			return false;
 		}
 
 		sectionName = section->getSectionName();
 		len = sectionName.length();
 		if (sectionName == "") {
-			cout << "FilterManager::processSection ";
-			cout << "Warning! Empty section name" << endl;
+			clog << "FilterManager::processSection ";
+			clog << "Warning! Empty section name" << endl;
 			return false;
 
 		} else if ((len < 8 || sectionName.substr(0,8) != "carousel") &&
 				(len < 3 || sectionName.substr(0,3) != "epg")) {
 
-			cout << "FilterManager::processSection ";
-			cout << "Warning! Wrong section name: ";
-			cout << sectionName.c_str() << endl;
+			clog << "FilterManager::processSection ";
+			clog << "Warning! Wrong section name: ";
+			clog << sectionName.c_str() << endl;
 			return false;
 		}
 
 		pthread_mutex_lock(&filterMutex);
 		if (sections->count(sectionName) == 0) {
-			cout << "FilterManager::processSection creating map for section '";
-			cout << sectionName << "'" << endl;
+			clog << "FilterManager::processSection creating map for section '";
+			clog << sectionName << "'" << endl;
 			secs = new map<unsigned int, ITransportSection*>;
 			(*sections)[sectionName] = secs;
 
@@ -242,11 +242,11 @@ namespace dataprocessing {
 		sn = section->getSectionNumber();
 		lsn = section->getLastSectionNumber();
 		if (secs->count(sn) != 0) {
-			cout << "FilterManager Warning! Adding section '";
-			cout << sectionName;
-			cout << "' in an existent ";
-			cout << "position = '" << sn << "'";
-			cout << endl;
+			clog << "FilterManager Warning! Adding section '";
+			clog << sectionName;
+			clog << "' in an existent ";
+			clog << "position = '" << sn << "'";
+			clog << endl;
 
 			return false;
 
@@ -260,17 +260,17 @@ namespace dataprocessing {
 					 O_CREAT|O_WRONLY|O_LARGEFILE|O_APPEND|O_SYNC, 0777);
 
 			if (sectionFd < 0) {
-				cout << "FilterManager Warning! error open file ";
-				cout << sectionName;
-				cout << "." << endl;
+				clog << "FilterManager Warning! error open file ";
+				clog << sectionName;
+				clog << "." << endl;
 				return false;
 			}
 
 			i = 0;
 			while (i <= lsn) {
 				if (secs->count(i) == 0) {
-					cout << "FilterManager Warning! cant find pos '";
-					cout << i << "'" << endl;
+					clog << "FilterManager Warning! cant find pos '";
+					clog << i << "'" << endl;
 					close(sectionFd);
 					return false;
 				}
@@ -281,9 +281,9 @@ namespace dataprocessing {
 						sec->getPayload(), sec->getPayloadSize());
 
 				if (bytesSaved != (int)(sec->getPayloadSize())) {
-					cout << "FilterManager Warning! bytesSaved = ";
-					cout << bytesSaved << " dataSize = ";
-					cout << sec->getPayloadSize() << endl;
+					clog << "FilterManager Warning! bytesSaved = ";
+					clog << bytesSaved << " dataSize = ";
+					clog << sec->getPayloadSize() << endl;
 				}
 
 				i++;
@@ -297,9 +297,9 @@ namespace dataprocessing {
 			delete secs;
 			secs = NULL;
 
-			cout << "FilterManager::processSection all sections ";
-			cout << "received and processed for '";
-			cout << sectionName << "'" << endl;
+			clog << "FilterManager::processSection all sections ";
+			clog << "received and processed for '";
+			clog << sectionName << "'" << endl;
 
 			return true;
 		}
@@ -315,8 +315,8 @@ namespace dataprocessing {
 		pthread_mutex_lock(&filterMutex);
 		i = streamTypeFilters->begin();
 		while (i != streamTypeFilters->end()) {
-			cout << "FilterManager::addProcessedSection '";
-			cout << sectionName << "'" << endl;
+			clog << "FilterManager::addProcessedSection '";
+			clog << sectionName << "'" << endl;
 			sf = i->second;
 			sf->addProcessedSection(sectionName);
 			++i;
@@ -332,8 +332,8 @@ namespace dataprocessing {
 			sections->erase(sections->find(sectionName));
 		}
 		pthread_mutex_unlock(&filterMutex);
-		/*cout << "FilterManager::addProcessedSection '" << sectionName << "'";
-		cout << " done!" << endl;*/
+		/*clog << "FilterManager::addProcessedSection '" << sectionName << "'";
+		clog << " done!" << endl;*/
 	}
 }
 }

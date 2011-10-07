@@ -118,24 +118,24 @@ namespace descriptors {
 	}
 
 	void ServiceDescriptor::print() {
-		cout << "ServiceDescriptor::print printing..." << endl;
-		cout << " -descriptorLength = " << getDescriptorLength() << endl;
+		clog << "ServiceDescriptor::print printing..." << endl;
+		clog << " -descriptorLength = " << getDescriptorLength() << endl;
 
 		if (serviceProviderNameLength > 0) {
-			cout << "-serviceProviderNameChar = "
+			clog << "-serviceProviderNameChar = "
 					<< getServiceProviderNameChar() << endl;
 		}
 
 		if (serviceNameLength > 0) {
-			cout << " -serviceNameLength: " << getServiceNameLength() << endl;
-			cout << " -serviceNameChar: "   << getServiceNameChar()   << endl;
-			//cout << " -charEnconde:" << hex << (serviceNameChar[0] & 0xFF);
-			//cout << dec << endl;
+			clog << " -serviceNameLength: " << getServiceNameLength() << endl;
+			clog << " -serviceNameChar: "   << getServiceNameChar()   << endl;
+			//clog << " -charEnconde:" << hex << (serviceNameChar[0] & 0xFF);
+			//clog << dec << endl;
 		}
 	}
 
 	size_t ServiceDescriptor::process(char* data, size_t pos) {
-		//cout << "ServiceDescriptor:: process with pos = " << pos << endl;
+		//clog << "ServiceDescriptor:: process with pos = " << pos << endl;
 		descriptorLength = data[pos+1];
 		pos += 2;
 
@@ -143,14 +143,14 @@ namespace descriptors {
 		pos++;
 
 		//cout <<"service length = " << (unsigned int)descriptorLength;
-		//cout << " and serviceType = ";
-		//cout << (unsigned int)serviceType << endl;
+		//clog << " and serviceType = ";
+		//clog << (unsigned int)serviceType << endl;
 
 		serviceProviderNameLength = data[pos];
 		if (serviceProviderNameLength > 0) {
-			//cout << "ServiceProviderNameLength = ";
-			//cout << (unsigned int)serviceProviderNameLength;
-			//cout << endl;
+			//clog << "ServiceProviderNameLength = ";
+			//clog << (unsigned int)serviceProviderNameLength;
+			//clog << endl;
 			serviceProviderNameChar = new char[serviceProviderNameLength];
 			memset(serviceProviderNameChar, 0 , serviceProviderNameLength);
 			memcpy(serviceProviderNameChar,data+pos+1,

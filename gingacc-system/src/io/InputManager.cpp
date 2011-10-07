@@ -144,8 +144,8 @@ namespace io {
 #endif	
 		fis.open(strVar.c_str(), ifstream::in);
 		if (!fis.is_open()) {
-			cout << "InputManager: can't open input file:";
-			cout << strVar.c_str() << endl;
+			clog << "InputManager: can't open input file:";
+			clog << strVar.c_str() << endl;
 			return;
 		}
 
@@ -173,9 +173,9 @@ namespace io {
 		}
 		fis.close();
 
-		cout << "InputManager::initializeInputIntervalTime imperative = '";
-		cout << imperativeIntervalTime << "' declarative = '";
-		cout << declarativeIntervalTime << "'" << endl;
+		clog << "InputManager::initializeInputIntervalTime imperative = '";
+		clog << imperativeIntervalTime << "' declarative = '";
+		clog << declarativeIntervalTime << "'" << endl;
 	}
 
 	void InputManager::release() {
@@ -187,7 +187,7 @@ namespace io {
 		}
 		lock();
 		notifying = true;
-		cout << "InputManager::release" << endl;
+		clog << "InputManager::release" << endl;
 
 		if (eventListeners != NULL) {
 			i = eventListeners->begin();
@@ -606,9 +606,9 @@ namespace io {
 					inputEvent->getAxisValue(
 							&currentXAxis, &currentYAxis, NULL);
 
-					/*cout << "InputManager::run got currentX = '";
-					cout << currentXAxis << "' currentY = '";
-					cout << currentYAxis << "'" << endl;*/
+					/*clog << "InputManager::run got currentX = '";
+					clog << currentXAxis << "' currentY = '";
+					clog << currentYAxis << "'" << endl;*/
 
 					if (currentXAxis > maxX) {
 						currentXAxis = maxX;
@@ -618,9 +618,9 @@ namespace io {
 						currentYAxis = maxY;
 					}
 
-					/*cout << "InputManager::run new currentX = '";
-					cout << currentXAxis << "' currentY = '";
-					cout << currentYAxis << "'" << endl;*/
+					/*clog << "InputManager::run new currentX = '";
+					clog << currentXAxis << "' currentY = '";
+					clog << currentYAxis << "'" << endl;*/
 
 					delete inputEvent;
 					if(eventBuffer != NULL)

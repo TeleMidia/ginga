@@ -78,15 +78,15 @@ namespace carousel {
 	}
 
 	Biop::~Biop() {
-//				cout << "Biop destructor" << endl;
+//				clog << "Biop destructor" << endl;
 
 		if (moduleFd >= 0) {
-//					cout << "closing file" << endl;
+//					clog << "closing file" << endl;
 			close(moduleFd);
 		}
 
 		if (data != NULL && sizeof(data) > 0) {
-//					cout << "free data memory" << endl;
+//					clog << "free data memory" << endl;
 			free(data);
 			data = NULL;
 		}
@@ -101,7 +101,7 @@ namespace carousel {
 	}
 
 	void Biop::abortProcess(string warningText) {
-		cout << "Warning! " << warningText.c_str() << endl;
+		clog << "Warning! " << warningText.c_str() << endl;
 		close(moduleFd);
 		if (data != NULL && sizeof(data) > 0) {
 			free(data);
@@ -172,9 +172,9 @@ namespace carousel {
 				((data[i+1] & 0xFF) << 16) |
 				((data[i+2] & 0xFF) << 8) | (data[i+3] & 0xFF);
 
-		cout << "messageSize = '" << hex << messageSize;
-		cout << "' currentSize = '" << hex << currentSize << "'";
-		cout << " moduleSize = '" << hex << module->getSize() << "'" << endl;
+		clog << "messageSize = '" << hex << messageSize;
+		clog << "' currentSize = '" << hex << currentSize << "'";
+		clog << " moduleSize = '" << hex << module->getSize() << "'" << endl;
 
 		idx = 0;
 
@@ -198,7 +198,7 @@ namespace carousel {
 		unsigned int len;
 		char* field;
 
-		cout << "Biop::processMessageSubHeader" << endl;
+		clog << "Biop::processMessageSubHeader" << endl;
 
 		data = (char*)malloc(messageSize + 12);
 		memset(data, 0, sizeof(data));
@@ -213,7 +213,7 @@ namespace carousel {
 			return;
 		}
 
-		cout << rval << " bytes readed from ";
+		clog << rval << " bytes readed from ";
 		cout  << module->getModuleFileName() << endl;
 
 		// BIOP::MessageSubHeader
@@ -223,8 +223,8 @@ namespace carousel {
 		idx++;
 
 		if (len > 4) {
-			cout << "Warning! Size of objectKey > 4, never reaches here!";
-			cout << endl;
+			clog << "Warning! Size of objectKey > 4, never reaches here!";
+			clog << endl;
 			idx = idx + len;
 
 		} else if (len > 0) {
@@ -246,7 +246,7 @@ namespace carousel {
 				objectKey = (data[idx] & 0xFF);
 			}
 
-			cout << "biop objectkey = " << objectKey << endl;
+			clog << "biop objectkey = " << objectKey << endl;
 			idx = idx + len;
 		}
 
@@ -262,10 +262,10 @@ namespace carousel {
 			this->objectKind = (string)field;
 			free(field);
 			idx = idx + len;
-			cout << "objectKind: " << objectKind << endl;
+			clog << "objectKind: " << objectKind << endl;
 
 		} else {
-			cout << "Warning! No kind never reaches here!" << endl;
+			clog << "Warning! No kind never reaches here!" << endl;
 			objectKind = "";
 		}
 
@@ -278,7 +278,7 @@ namespace carousel {
 			memcpy(field, (void*)&(data[idx]), len);
 			objectInfo = (string)field;
 			free(field);
-			cout << "objectInfo: " << objectInfo << endl;
+			clog << "objectInfo: " << objectInfo << endl;
 			idx = idx + len;
 
 		} else {
@@ -292,7 +292,7 @@ namespace carousel {
 	void Biop::skipObject() {
 		unsigned int len;
 
-		cout << "Biop::skipObject" << endl;
+		clog << "Biop::skipObject" << endl;
 
 		// size of messageBody
 		len = ((data[idx] & 0xFF) << 24) | ((data[idx+1] & 0xFF) << 16)
@@ -316,9 +316,9 @@ namespace carousel {
 		Binding* binding;
 		Object* carouselObject;
 
-		cout << "Biop::processServiceGateway" << endl;
+		clog << "Biop::processServiceGateway" << endl;
 		if (!isValidHdr) {
-			cout << "BIOP process SRG Warning! Invalid HDR" << endl;
+			clog << "BIOP process SRG Warning! Invalid HDR" << endl;
 			return;
 
 		} else {
@@ -329,7 +329,7 @@ namespace carousel {
 
 		while (objectKey != srgObjectKey) {
 			skipObject();
-			cout << "currentObject key = " << objectKey << endl;
+			clog << "currentObject key = " << objectKey << endl;
 		}
 
 		carouselObject->setCarouselId(module->getCarouselId());
@@ -346,7 +346,7 @@ namespace carousel {
 		//get Number of bindings
 		len = (data[idx] & 0xFF) << 8 | (data[idx+1] & 0xFF);
 		idx = idx + 2;
-		cout << "Number of bindings = " << len << endl;
+		clog << "Number of bindings = " << len << endl;
 
 		for (i = 0; i < len; i++) {
 			binding = processBinding();
@@ -363,14 +363,14 @@ namespace carousel {
 		unsigned int numberOfComponents, len;
 		char* field;
 
-		cout << "Biop::processingBinding" << endl;
+		clog << "Biop::processingBinding" << endl;
 
 		numberOfComponents = (data[idx] & 0xFF);
 		idx++;
-		cout << "Number of components = " << numberOfComponents << endl;
+		clog << "Number of components = " << numberOfComponents << endl;
 
 		if (numberOfComponents > 1)
-			cout << "Warning: numberOfComponents, Never reach here!!! NOC = "
+			clog << "Warning: numberOfComponents, Never reach here!!! NOC = "
 				    << numberOfComponents << endl;
 
 		//binding
@@ -384,7 +384,7 @@ namespace carousel {
 		binding->setId((string)field);
 		free(field);
 		field = NULL;
-		cout << "bindingId = " << binding->getId() << endl;
+		clog << "bindingId = " << binding->getId() << endl;
 		idx = idx + len;
 
 		//kind_length
@@ -396,13 +396,13 @@ namespace carousel {
 		memcpy(field, (void*)&(data[idx]), len);
 		binding->setKind((string)field);
 		free(field);
-		cout << "bindingKind = " << binding->getKind() << endl;
+		clog << "bindingKind = " << binding->getKind() << endl;
 		idx = idx + len;
 
 		//bindingType
 		len = (data[idx] & 0xFF);
 		binding->setType(len);
-		cout << "bindingType = " << binding->getType() << endl;
+		clog << "bindingType = " << binding->getType() << endl;
 		idx++;
 
 		processIor(binding);
@@ -416,7 +416,7 @@ namespace carousel {
 			memcpy(field, (void*)&(data[idx]), len);
 			binding->setObjectInfo((string)field);
 			free(field);
-			cout << "bindingsObjectInfo = " << binding->getObjectInfo() << endl;
+			clog << "bindingsObjectInfo = " << binding->getObjectInfo() << endl;
 			idx = idx + len;
 		}
 
@@ -430,7 +430,7 @@ namespace carousel {
 
 		ior = new Ior();
 
-		cout << "Biop::processIor " << endl;
+		clog << "Biop::processIor " << endl;
 
 		//type_id_length
 		n1 = ((data[idx] & 0xFF) << 24) | ((data[idx+1] & 0xFF) << 16) |
@@ -443,14 +443,14 @@ namespace carousel {
 		memcpy(field, (void*)&(data[idx]), n1);
 		ior->setTypeId((string)field);
 		free(field);
-		cout << "Ior typeId = " << ior->getTypeId() << endl;
+		clog << "Ior typeId = " << ior->getTypeId() << endl;
 		idx = idx + n1;
 
 		//CDR alignment rule
 		if (n1 % 4 != 0) {
 			for (unsigned int i = 0; i < (4 - (n1 % 4)); i++) {
 				if ((data[idx] & 0xFF) != 0xFF) {
-					cout << "CDR alignment Warning! gap must be 0xFF" << endl;
+					clog << "CDR alignment Warning! gap must be 0xFF" << endl;
 				}
 				idx++;
 			}
@@ -462,8 +462,8 @@ namespace carousel {
 
 		idx = idx + 4;
 		if (len > 1) {
-			cout << "Warning: TaggedProfiles, never reach here!!! TP = ";
-			cout << len << endl;
+			clog << "Warning: TaggedProfiles, never reach here!!! TP = ";
+			clog << len << endl;
 		}
 
 		//get ior profile tag and check it
@@ -472,8 +472,8 @@ namespace carousel {
 
 		idx = idx + 4;
 		if (len != TAG_BIOP) {
-			cout << "Warning: TAG_BIOP, never reach here!!!";
-			cout << " TAG = " << len << endl;
+			clog << "Warning: TAG_BIOP, never reach here!!!";
+			clog << " TAG = " << len << endl;
 
 		} else {
 			// BIOP Profile Body
@@ -482,7 +482,7 @@ namespace carousel {
 				    ((data[idx+2] & 0xFF) << 8) | (data[idx+3] & 0xFF);
 
 			idx = idx + 4;
-			cout << "Biop profile body size '" << len << "'" << endl;
+			clog << "Biop profile body size '" << len << "'" << endl;
 
 			// skip byte_order field
 			idx++;
@@ -493,8 +493,8 @@ namespace carousel {
 			 */
 			len = (data[idx] & 0xFF);
 			if (len != 2) {
-				cout << "Warning: liteComponents, never reach here!!! LC = ";
-				cout << len << endl;
+				clog << "Warning: liteComponents, never reach here!!! LC = ";
+				clog << len << endl;
 			}
 			idx++;
 
@@ -506,8 +506,8 @@ namespace carousel {
 			idx = idx + 4;
 
 			if (len != TAG_BIOP_OBJECT_LOCATION) {
-				cout << "Warning: TAG_ObjectLocation, never reach here!!!";
-				cout << " TAG = " << len << endl;
+				clog << "Warning: TAG_ObjectLocation, never reach here!!!";
+				clog << " TAG = " << len << endl;
 
 			} else {
 				// skip size of object data, we don't need it.
@@ -520,25 +520,25 @@ namespace carousel {
 						(data[idx+3] & 0xFF);
 
 				ior->setCarouselId(len);
-				cout << "Ior carrouselID = " << ior->getCarouselId() << endl;
+				clog << "Ior carrouselID = " << ior->getCarouselId() << endl;
 				idx = idx + 4;
 
 				//module_id
 				len = ((data[idx] & 0xFF) << 8) | (data[idx+1] & 0xFF);
 				ior->setModuleId(len);
-				cout << "Ior moduleId = " << ior->getModuleId() << endl;
+				clog << "Ior moduleId = " << ior->getModuleId() << endl;
 				idx = idx + 2;
 
 				//check version: major == 1 && minor == 0
 				if (((data[idx] & 0xFF) != 0x01) ||
 						((data[idx+1] & 0xFF) != 0x00)) {
 
-					cout << "BIOP Warning: Obj version, never reach here!!!";
-					cout << endl;
+					clog << "BIOP Warning: Obj version, never reach here!!!";
+					clog << endl;
 
-					cout << "current size '" << hex << currentSize;
-					cout << "' current ix '";
-					cout << hex << idx << "'" << endl;
+					clog << "current size '" << hex << currentSize;
+					clog << "' current ix '";
+					clog << hex << idx << "'" << endl;
 				}
 
 				idx = idx + 2;
@@ -549,9 +549,9 @@ namespace carousel {
 
 				// if len > 4 then the unsigned int is not larger enough
 				if (len > 4) {
-					cout << "Warning! Size of";
-					cout << " objectKey > 4, never reaches here!";
-					cout << endl;
+					clog << "Warning! Size of";
+					clog << " objectKey > 4, never reaches here!";
+					clog << endl;
 
 				} else if (len > 0) {
 					unsigned int key;
@@ -572,7 +572,7 @@ namespace carousel {
 					} else {
 						key = (data[idx] & 0xFF);
 					}
-					cout << "Ior objectkey = " << key << endl;
+					clog << "Ior objectkey = " << key << endl;
 					ior->setObjectKey(key);
 				}
 				idx = idx + len;
@@ -597,7 +597,7 @@ namespace carousel {
 		Binding* binding;
 		Object* carouselObject;
 
-		cout << "Biop::processDirectory = " << endl;
+		clog << "Biop::processDirectory = " << endl;
 
 		carouselObject = new Object();
 		carouselObject->setCarouselId(module->getCarouselId());
@@ -611,7 +611,7 @@ namespace carousel {
 		//get Number of bindings
 		len = ((data[idx] & 0xFF) << 8) | (data[idx+1] & 0xFF);
 		idx = idx + 2;
-		cout << "Number of bindings = " << len << endl;
+		clog << "Number of bindings = " << len << endl;
 
 		for (i = 0; i < len; i++) {
 			binding = processBinding();
@@ -625,7 +625,7 @@ namespace carousel {
 		unsigned int len;
 		Object* carouselObject;
 
-		cout << "BIOP processFIL" << endl;
+		clog << "BIOP processFIL" << endl;
 
 		carouselObject = new Object();
 		carouselObject->setCarouselId(module->getCarouselId());
@@ -657,9 +657,9 @@ namespace carousel {
 	}
 
 	void Biop::print() {
-		cout << "BIOP" << endl;
-		cout << "objectKind = " << objectKind.c_str() << endl;
-		cout << "objectInfo = " << objectInfo.c_str() << endl;
+		clog << "BIOP" << endl;
+		clog << "objectKind = " << objectKind.c_str() << endl;
+		clog << "objectInfo = " << objectInfo.c_str() << endl;
 	}
 
 	void Biop::processObject() {
@@ -683,31 +683,31 @@ namespace carousel {
 	void Biop::process() {
 		bool processed;
 
-		cout << "Biop::process" << endl;
+		clog << "Biop::process" << endl;
 		if (moduleFd >= 0) {
 			processed = false;
 			do {
 				if (isValidHdr) {
-					cout << "Biop::process processing sub hdr" << endl;
+					clog << "Biop::process processing sub hdr" << endl;
 					processMessageSubHeader();
-					cout << "Biop::process processing obj" << endl;
+					clog << "Biop::process processing obj" << endl;
 					processObject();
 				}
 
 				if (hasMoreBiopMessage) {
-					cout << "Biop::process processing has more msgs" << endl;
+					clog << "Biop::process processing has more msgs" << endl;
 					if (data != NULL && sizeof(data) > 0) {
 						free(data);
 						data = NULL;
 					}
 
-					cout << "processing another BIOP message from file ";
-					cout << module->getModuleFileName() << endl;
+					clog << "processing another BIOP message from file ";
+					clog << module->getModuleFileName() << endl;
 
 					isValidHdr = processMessageHeader();
 
 				} else {
-					cout << "Biop::process processing done" << endl;
+					clog << "Biop::process processing done" << endl;
 					processed = true;
 				}
 

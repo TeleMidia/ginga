@@ -61,7 +61,7 @@ http://www.telemidia.puc-rio.br
 	HRESULT hr = call;								\
 	if(FAILED(hr)){									\
 		string Err(DXGetErrorDescription(hr));		\
-		cout << " [ERRO] " << Err.c_str()  << endl	\
+		clog << " [ERRO] " << Err.c_str()  << endl	\
 			 << " [LOCATION] " << location << endl	\
 			 << " [MSG] " <<  failureMsg   << endl;	\
 	}												\
@@ -86,7 +86,7 @@ namespace io {
 
 	DXImageProvider::DXImageProvider(const char* pmrl)
 	{
-		cout << "DXImageProvider::DXImageProvider( " << pmrl << " ) " << endl;
+		clog << "DXImageProvider::DXImageProvider( " << pmrl << " ) " << endl;
 		FIBITMAP *pDibPicture;
 		FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 		UINT width, heigth;
@@ -96,7 +96,7 @@ namespace io {
 		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
 		
 		if(pD3ddev == NULL)
-			cout << "DXImageProvider - No Direct3D device found" << endl;
+			clog << "DXImageProvider - No Direct3D device found" << endl;
 
 		fif = FreeImage_GetFileType(pmrl, 0);
 		if(fif == FIF_UNKNOWN) {
@@ -116,7 +116,7 @@ namespace io {
 			info.Height = heigth;
 
 			if(FAILED(pD3ddev->CreateTexture( width, heigth, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &(imageTex), NULL))){
-				cout << "Erro" << endl;
+				clog << "Erro" << endl;
 			}else{
 
 				LPDIRECT3DSURFACE9 surfaceLevel;
@@ -146,7 +146,7 @@ namespace io {
 					}
 
 				}else{
-					cout << "Erro" << endl;
+					clog << "Erro" << endl;
 				}
 
 				delete[] textura;
@@ -159,25 +159,25 @@ namespace io {
 
 	DXImageProvider::~DXImageProvider()
 	{
-		cout << "DXImageProvider::~DXImageProvider( " << mrl.c_str() << " ) " << endl;
+		clog << "DXImageProvider::~DXImageProvider( " << mrl.c_str() << " ) " << endl;
 		imageTex->Release();
 	}
 
 	void* DXImageProvider::getContent()
 	{
-		cout << "DXImageProvider::getContent()" << endl;
+		clog << "DXImageProvider::getContent()" << endl;
 		return NULL;
 	}
 
 	void DXImageProvider::playOver(ISurface* surface)
 	{
-		cout << "DXImageProvider::playOver(ISurface* surface)" << endl;
+		clog << "DXImageProvider::playOver(ISurface* surface)" << endl;
 		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
 	}
 
 	ISurface* DXImageProvider::prepare(bool isGif)
 	{
-		cout << "DXImageProvider::prepare(bool isGif)" << endl;
+		clog << "DXImageProvider::prepare(bool isGif)" << endl;
 		ISurface* renderedSurface = NULL;
 		DX2DSurface* destination = NULL;
 		DX2DSurfaceProp	surProp;
@@ -199,7 +199,7 @@ namespace io {
 
 	bool DXImageProvider::releaseAll()
 	{
-		cout << "DXImageProvider::releaseAll()" << endl;
+		clog << "DXImageProvider::releaseAll()" << endl;
 		return false;
 	}
 

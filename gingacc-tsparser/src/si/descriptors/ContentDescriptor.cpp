@@ -105,21 +105,21 @@ namespace descriptors{
 	}
 
 	void ContentDescriptor::print() {
-		cout << "ContentDescriptor::print printing..." << endl;
-		cout << " -descriptorLength = " << getDescriptorLength() << endl;
+		clog << "ContentDescriptor::print printing..." << endl;
+		clog << " -descriptorLength = " << getDescriptorLength() << endl;
 		if(contents != NULL){
 			vector<Content*>::iterator i;
 			struct Content* content;
 
 			for(i = contents->begin(); i != contents->end(); ++i) {
 				content = ((struct Content *)(*i));
-				cout << " -contentNibble1 = " << getContentNibble1(content);
-				cout << " -contentNibble2 = " << getContentNibble2(content);
-				cout << " -userNibble1 = "    << getUserNibble1(content);
-				cout << " -userNibble2 = "    << getUserNibble2(content);
+				clog << " -contentNibble1 = " << getContentNibble1(content);
+				clog << " -contentNibble2 = " << getContentNibble2(content);
+				clog << " -userNibble1 = "    << getUserNibble1(content);
+				clog << " -userNibble2 = "    << getUserNibble2(content);
 			}
 		}
-		cout << endl;
+		clog << endl;
 
 	}
 
@@ -127,11 +127,11 @@ namespace descriptors{
 		size_t remainingBytes = 0;
 		struct Content* content;
 
-		//cout << "ContentDescriptor process with pos = " << pos;
+		//clog << "ContentDescriptor process with pos = " << pos;
 
 		descriptorLength = data[pos+1];
 
-		//cout << " and length = " << (descriptorLength & 0xFF) << endl;
+		//clog << " and length = " << (descriptorLength & 0xFF) << endl;
 		//pos += 2;
 		pos++;
 		remainingBytes = descriptorLength;
@@ -144,15 +144,15 @@ namespace descriptors{
 			content->contentNibbleLevel1 = ((data[pos] & 0xF0) >> 4);
 			content->contentNibbleLevel2 = (data[pos] & 0x0F);
 
-			//cout << "Content contentNibble 1 = " << ((unsigned int)contentNibbleLevel1 ) ;
-		    //cout << " and 2 = " << ((unsigned int)contentNibbleLevel2) << endl;
+			//clog << "Content contentNibble 1 = " << ((unsigned int)contentNibbleLevel1 ) ;
+		    //clog << " and 2 = " << ((unsigned int)contentNibbleLevel2) << endl;
 			pos ++;
 
 			content->userNibble1 = ((data[pos] & 0xF0) >> 4);
 			content->userNibble2 = (data[pos] & 0x0F);
 
-			//cout << "userNibble 1 = " << ((unsigned int)userNibble1) ;
-			//cout << " and 2 = " << ((unsigned int)userNibble2&0xFF) << endl;
+			//clog << "userNibble 1 = " << ((unsigned int)userNibble1) ;
+			//clog << " and 2 = " << ((unsigned int)userNibble2&0xFF) << endl;
 			contents->push_back(content);
 			remainingBytes = remainingBytes - 2;
 		}

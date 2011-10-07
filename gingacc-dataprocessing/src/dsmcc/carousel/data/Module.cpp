@@ -96,11 +96,11 @@ namespace carousel {
 	bool Module::isConsolidated() {
 		if (currentDownloadSize > size) {
 			if (overflowNotification) {
-				cout << "Module::isConsolidated Warning! ";
-				cout << "MODULE '" << getModuleFileName() << "' ";
-				cout << "OVERFLOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
-				cout << " SIZE='" << size << "' RCVD='";
-				cout << currentDownloadSize << "'" << endl;
+				clog << "Module::isConsolidated Warning! ";
+				clog << "MODULE '" << getModuleFileName() << "' ";
+				clog << "OVERFLOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+				clog << " SIZE='" << size << "' RCVD='";
+				clog << currentDownloadSize << "'" << endl;
 				overflowNotification = false;
 			}
 		}
@@ -147,16 +147,16 @@ namespace carousel {
 			if (moduleFd != -1) {
 				bytesSaved = write(moduleFd, data, dataSize);
 				if (bytesSaved != dataSize) {
-					cout << "Module::pushDownloadData Warning!";
-					cout << " size of data is '" << dataSize;
-					cout << "' saved only '" << bytesSaved << "'";
-					cout << endl;
+					clog << "Module::pushDownloadData Warning!";
+					clog << " size of data is '" << dataSize;
+					clog << "' saved only '" << bytesSaved << "'";
+					clog << endl;
 				}
 
 				currentDownloadSize = currentDownloadSize + bytesSaved;
 
 			} else {
-				cout << "Module Warning! File not open." << endl;
+				clog << "Module Warning! File not open." << endl;
 			}
 		}
 
@@ -166,13 +166,13 @@ namespace carousel {
 	}
 
 	void Module::print() {
-		cout << endl << endl;
-		cout << "id: " << id << endl;
-		cout << "currentDownloadSize: " << currentDownloadSize << endl;
-		cout << "size: " << size << endl;
-		cout << "version: " << version << endl;
-		cout << "infolengh: " << infoLength << endl;
-		cout << endl << endl;
+		clog << endl << endl;
+		clog << "id: " << id << endl;
+		clog << "currentDownloadSize: " << currentDownloadSize << endl;
+		clog << "size: " << size << endl;
+		clog << "version: " << version << endl;
+		clog << "infolengh: " << infoLength << endl;
+		clog << endl << endl;
 	}
 }
 }

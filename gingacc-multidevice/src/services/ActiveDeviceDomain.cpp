@@ -59,7 +59,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	ActiveDeviceDomain::ActiveDeviceDomain() : DeviceDomain() {
-		cout << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
+		clog << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
 		deviceClass   = CT_ACTIVE;
 		deviceService = NULL;
 	}
@@ -74,8 +74,8 @@ namespace multidevice {
 		int taskSize;
 
 		//TODO: offer a configure way in requests connection to CT_ACTIVE devs
-		/*cout << "ActiveDeviceDomain::postConnectionRequestTask";
-		cout << endl;*/
+		/*clog << "ActiveDeviceDomain::postConnectionRequestTask";
+		clog << endl;*/
 
 		//prepare frame
 		task = mountFrame(
@@ -104,18 +104,18 @@ namespace multidevice {
 		deviceService->connectedToBaseDevice(sourceIp);*/
 
 		if (connected) {
-			cout << "ActiveDeviceDomain::receiveAnswerTask Warning! ";
-			cout << "received an answer task in connected state" << endl;
+			clog << "ActiveDeviceDomain::receiveAnswerTask Warning! ";
+			clog << "received an answer task in connected state" << endl;
 		}
 
 		//TODO: check if central domain IP + port received in task is correct
-		cout << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
-		cout << "base multi-device domain" << endl;
+		clog << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
+		clog << "base multi-device domain" << endl;
 		connected = true;
 	}
 
 	bool ActiveDeviceDomain::receiveMediaContentTask(char* task) {
-		cout << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
+		clog << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
 
 		/*return deviceService->receiveMediaContent(
 				sourceIp, task, this->frameSize);*/
@@ -130,15 +130,15 @@ namespace multidevice {
 			task = taskReceive();
 			if (task == NULL) {
 				taskIndicationFlag = false;
-				cout << "ActiveDeviceDomain::runControlTask Warning! ";
-				cout << "received a NULL task" << endl;
+				clog << "ActiveDeviceDomain::runControlTask Warning! ";
+				clog << "received a NULL task" << endl;
 				return false;
 			}
 
 			if (myIP == sourceIp) {
 				/*
-				cout << "ActiveDeviceDomain::runControlTask got my own task ";
-				cout << "(size = '" << frameSize << "')" << endl;*/
+				clog << "ActiveDeviceDomain::runControlTask got my own task ";
+				clog << "(size = '" << frameSize << "')" << endl;*/
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -146,8 +146,8 @@ namespace multidevice {
 			}
 
 			if (destClass != deviceClass) {
-				cout << "ActiveDeviceDomain::runControlTask Task isn't for me!";
-				cout << endl;
+				clog << "ActiveDeviceDomain::runControlTask Task isn't for me!";
+				clog << endl;
 
 				delete[] task;
 				taskIndicationFlag = false;
@@ -157,20 +157,20 @@ namespace multidevice {
 			if (frameSize + HEADER_SIZE != bytesRecv) {
 				delete[] task;
 				taskIndicationFlag = false;
-				cout << "ActiveDeviceDomain::runControlTask Warning! ";
-				cout << "received a wrong size frame '" << frameSize;
-				cout << "' bytes received '" << bytesRecv << "'" << endl;
+				clog << "ActiveDeviceDomain::runControlTask Warning! ";
+				clog << "received a wrong size frame '" << frameSize;
+				clog << "' bytes received '" << bytesRecv << "'" << endl;
 				return false;
 			}
-			//cout << "ActiveDeviceDomain::runControlTask frame type '";
-			//cout << frameType << "'" << endl;
+			//clog << "ActiveDeviceDomain::runControlTask frame type '";
+			//clog << frameType << "'" << endl;
 
 			switch (frameType) {
 				case FT_ANSWERTOREQUEST:
 					if (frameSize != 11) {
-						cout << "ActiveDeviceDomain::runControlTask Warning!";
-						cout << "received an answer to connection request with";
-						cout << " wrong size: '" << frameSize << "'" << endl;
+						clog << "ActiveDeviceDomain::runControlTask Warning!";
+						clog << "received an answer to connection request with";
+						clog << " wrong size: '" << frameSize << "'" << endl;
 						delete[] task;
 						taskIndicationFlag = false;
 						return false;
@@ -181,13 +181,13 @@ namespace multidevice {
 					break;
 
 				case FT_KEEPALIVE:
-					cout << "ActiveDeviceDomain::runControlTask KEEPALIVE";
-					cout << endl;
+					clog << "ActiveDeviceDomain::runControlTask KEEPALIVE";
+					clog << endl;
 					break;
 
 				default:
-					cout << "ActiveDeviceDomain::runControlTask WHAT? FT '";
-					cout << frameType << "'" << endl;
+					clog << "ActiveDeviceDomain::runControlTask WHAT? FT '";
+					clog << frameType << "'" << endl;
 					delete[] task;
 					taskIndicationFlag = false;
 					return false;
@@ -196,8 +196,8 @@ namespace multidevice {
 			delete[] task;
 
 		} else {
-			cout << "ActiveDeviceDomain::runControlTask Warning! ";
-			cout << "task indication flag is false" << endl;
+			clog << "ActiveDeviceDomain::runControlTask Warning! ";
+			clog << "task indication flag is false" << endl;
 		}
 
 		taskIndicationFlag = false;

@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 	HRESULT hr = call;								\
 	if(FAILED(hr)){									\
 		string Err(DXGetErrorDescription(hr));		\
-		cout << " [ERRO] " << Err.c_str()  << endl	\
+		clog << " [ERRO] " << Err.c_str()  << endl	\
 			 << " [LOCATION] " << location << endl	\
 			 << " [MSG] " <<  failureMsg   << endl;	\
 	}												\
@@ -95,7 +95,7 @@ namespace io {
 		pthread_mutex_init(&tex_lock, NULL);
 		
 		if(FAILED(pD3ddev->CreateTexture( width, height, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &(pTex), NULL))){
-			cout << "erro" << endl;
+			clog << "erro" << endl;
 		}else{
 			LPDIRECT3DSURFACE9 pTexSur;
 			DXCHECK((pTex)->GetSurfaceLevel(0, &pTexSur),"","") ;
@@ -106,7 +106,7 @@ namespace io {
 
 		if(FAILED(pD3ddev->CreateTexture( width, height, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8,
 											D3DPOOL_DEFAULT, &(pTexCanvas), NULL))){
-			cout << "erro" << endl;
+			clog << "erro" << endl;
 		}else{
 			LPDIRECT3DSURFACE9 pCanvasSur;
 			DXCHECK((pTexCanvas)->GetSurfaceLevel(0, &pCanvasSur),"","") ;
@@ -144,7 +144,7 @@ namespace io {
 
 			if(FAILED(pD3ddev->CreateIndexBuffer(sizeof(short)*6, 0, D3DFMT_INDEX16,
 												D3DPOOL_MANAGED, &pIndexBuffer, NULL))){
-				cout << "Falhou" << endl;
+				clog << "Falhou" << endl;
 			}
 
 			if(SUCCEEDED(pIndexBuffer->Lock(0, 0, &IndexData, 0))){
@@ -222,7 +222,7 @@ namespace io {
 	}
 
 	void DX2DSurface::resize(int width, int height){
-		cout << "resize" << endl;
+		clog << "resize" << endl;
 	}
 
 	void DX2DSurface::moveTo(int posX, int posY){
@@ -243,7 +243,7 @@ namespace io {
 
 	LPDIRECT3DTEXTURE9 DX2DSurface::getTexture(){
 		if(pTex == NULL)
-			cout << "DX2DSurface::getTexture() : pTex is NULL" << endl;
+			clog << "DX2DSurface::getTexture() : pTex is NULL" << endl;
 
 		return pTex;
 	}
@@ -253,16 +253,16 @@ namespace io {
 		LPDIRECT3DSURFACE9 pSSur, pDSur;
 
 		if (tex == NULL){
-				cout << "DX2DSurface::setTexture WARNING! Texture is NULL! Returning..." << endl;
+				clog << "DX2DSurface::setTexture WARNING! Texture is NULL! Returning..." << endl;
 				return;
 		}
 
 		if(FAILED(tex->GetSurfaceLevel(0, &pSSur))){
-			cout << "Can't get tex surface level 0" << endl;
+			clog << "Can't get tex surface level 0" << endl;
 		}
 
 		if(FAILED(pTex->GetSurfaceLevel(0, &pDSur))){
-			cout << "Can't get pTex surface level 0" << endl; 
+			clog << "Can't get pTex surface level 0" << endl; 
 		}
 
 
@@ -287,7 +287,7 @@ namespace io {
 			pTex = newTex;
 			pthread_mutex_unlock(&tex_lock);
 		}else{
-			cout << "same tex" << endl; 
+			clog << "same tex" << endl; 
 		}
 	}
 
@@ -329,7 +329,7 @@ namespace io {
 			
 			if(FAILED(pD3ddev->CreateTexture( srcSurDesc.Width, srcSurDesc.Height, 1, D3DUSAGE_DYNAMIC, srcSurDesc.Format,
 											D3DPOOL_SYSTEMMEM, &(tmpTex), NULL))){
-				cout << "erro" << endl;
+				clog << "erro" << endl;
 			}
 	
 			tmpTex->GetLevelDesc(0, &tmpSurDesc);
@@ -364,7 +364,7 @@ namespace io {
 			dstPoint.y = y;
 
 			if(FAILED(pD3ddev->UpdateSurface(pTmpSur, srcRect, pCanvasSur, &dstPoint))){
-				cout << "DX2DSurface::blit(...) : " << endl;
+				clog << "DX2DSurface::blit(...) : " << endl;
 			}
 
 			pCanvasSur->Release();
@@ -426,7 +426,7 @@ namespace io {
 		}
 
 		if(FAILED(pD3ddev->CreateTexture(w, h, 1, D3DUSAGE_DYNAMIC, D3DFMT_X8R8G8B8 , D3DPOOL_DEFAULT, &pTexSwp, NULL))){
-			cout << "asdas" << endl;
+			clog << "asdas" << endl;
 		}
 
 		if( (pTexFont != NULL ) && SUCCEEDED( pTexFont->GetSurfaceLevel(0, &texSur))){
@@ -450,11 +450,11 @@ namespace io {
 						if(SUCCEEDED(pTexCanvas->GetSurfaceLevel(0, &pCanvasSur))){
 							RECT rectTwo = {0, 0, w, h};
 							if( FAILED(pD3ddev->StretchRect(pSwpSur, NULL, pCanvasSur, &rectTwo, D3DTEXF_NONE)) ){
-								cout << "asdas" << endl;
+								clog << "asdas" << endl;
 							}
 							pCanvasSur->Release();
 						}else{
-							cout << "asdas" << endl;
+							clog << "asdas" << endl;
 						}
 					}
 					pSwpSur->Release();
@@ -464,7 +464,7 @@ namespace io {
 				texSur->Release();
 
 			}else{
-				cout << "" << endl;
+				clog << "" << endl;
 			}
 			
 		}

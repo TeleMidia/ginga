@@ -74,7 +74,7 @@ namespace carousel {
 		unsigned int messageId;
 
 		if (message == NULL) {
-			cout << "Warning! Try to push NULL message" << endl;
+			clog << "Warning! Try to push NULL message" << endl;
 
 		} else {
 			messageId = message->getMessageId();
@@ -96,10 +96,10 @@ namespace carousel {
 			DsmccMessageHeader* message) {
 
 		if (dsi == NULL) {
-			cout << "Message Processor dsi done!" << endl;
+			clog << "Message Processor dsi done!" << endl;
 			dsi = new DownloadServerInitiate(message);
 			if (dii != NULL && sd == NULL) {
-				cout << "Creating SD" << endl;
+				clog << "Creating SD" << endl;
 				sd = new ServiceDomain(dsi, dii);
 				return sd;
 			}
@@ -121,9 +121,9 @@ namespace carousel {
 			 * or has every DII file less then 4066
 			 * bytes?
 			 */
-			cout << "Message Processor dii done!" << endl;
+			clog << "Message Processor dii done!" << endl;
 			if (dsi != NULL && sd == NULL) {
-				cout << "Creating SD" << endl;
+				clog << "Creating SD" << endl;
 				sd = new ServiceDomain(dsi, dii);
 				return sd;
 			}
@@ -140,7 +140,7 @@ namespace carousel {
 
 		if (sd != NULL) {
 			while (!msgs->empty()) {
-				cout << "call sd receive ddb" << endl;
+				clog << "call sd receive ddb" << endl;
 				msg = *(msgs->begin());
 				ddb = new DownloadDataBlock(msg);
 				sd->receiveDDB(ddb);

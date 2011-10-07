@@ -178,8 +178,8 @@ namespace multidevice {
 		}
 
 		while (running) {
-			/*cout << "RemoteDeviceManager::run postConnectionRequestTask";
-			cout << endl;*/
+			/*clog << "RemoteDeviceManager::run postConnectionRequestTask";
+			clog << endl;*/
 
 			//TODO: correct this code urgently
 			if (domainService != NULL) {
@@ -190,13 +190,13 @@ namespace multidevice {
 
 			} else if (notifyWarning) {
 				notifyWarning = false;
-				cout << "RemoteDeviceManager::run Warning! domainService is ";
-				cout << "NULL" << endl;
+				clog << "RemoteDeviceManager::run Warning! domainService is ";
+				clog << "NULL" << endl;
 			}
 
 			/*if (connecting) {
 				if (domainService->isConnected()) {
-					cout << "RemoteDeviceManager::run connected" << endl;
+					clog << "RemoteDeviceManager::run connected" << endl;
 					connecting = false;
 
 				} else if (rdmTimer == 0 ||
@@ -214,7 +214,7 @@ namespace multidevice {
 		}
 		unlock();
 
-		cout << "RemoteDeviceManager::run All done!" << endl;
+		clog << "RemoteDeviceManager::run All done!" << endl;
 	}
 }
 }

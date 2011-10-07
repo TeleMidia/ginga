@@ -78,8 +78,8 @@ namespace carousel {
 
 				//reserved
 				if ((bytes[8] & 0xFF) != 0xFF) {
-					cout << "Warning: reserved field shall be equal to 0xFF";
-					cout << endl;
+					clog << "Warning: reserved field shall be equal to 0xFF";
+					clog << endl;
 				}
 
 				this->adaptationLength = (bytes[9] & 0xFF);
@@ -87,12 +87,12 @@ namespace carousel {
 						(bytes[11] & 0xFF);
 
 			} else {
-				cout << "Warning: cannot read 12 bytes, " << rval;
-				cout << " readed." << endl;
+				clog << "Warning: cannot read 12 bytes, " << rval;
+				clog << " readed." << endl;
 			}
 		} else {
-			cout << "Message header error: could not open file ";
-			cout << fileName.c_str() << endl;
+			clog << "Message header error: could not open file ";
+			clog << fileName.c_str() << endl;
 		}
 		close(fd);
 	}
@@ -126,13 +126,13 @@ namespace carousel {
 	}
 
 	void DsmccMessageHeader::print() {
-		cout << "fileName = " << fileName.c_str() << endl;
-		cout << "protocolDiscriminator = " << protocolDiscriminator << endl;
-		cout << "dsmccType = " << dsmccType << endl;
-		cout << "messageId = " << messageId << endl;
-		cout << "transactionId = " << transactionId << endl;
-		cout << "adaptationLength = " << adaptationLength << endl;
-		cout << "messageLength = " << messageLength << endl;
+		clog << "fileName = " << fileName.c_str() << endl;
+		clog << "protocolDiscriminator = " << protocolDiscriminator << endl;
+		clog << "dsmccType = " << dsmccType << endl;
+		clog << "messageId = " << messageId << endl;
+		clog << "transactionId = " << transactionId << endl;
+		clog << "adaptationLength = " << adaptationLength << endl;
+		clog << "messageLength = " << messageLength << endl;
 	}
 }
 }

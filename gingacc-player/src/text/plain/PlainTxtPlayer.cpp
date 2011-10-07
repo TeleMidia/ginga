@@ -77,8 +77,8 @@ namespace player {
 
 	void PlainTxtPlayer::setFile(string mrl) {
 		if (mrl == "" || !fileExists(mrl)) {
-			cout << "PlainTxtPlayer::setFile Warning! File not found: '";
-			cout << mrl << "'" << endl;
+			clog << "PlainTxtPlayer::setFile Warning! File not found: '";
+			clog << mrl << "'" << endl;
 			return;
 		}
 
@@ -88,13 +88,13 @@ namespace player {
 			this->mrl = mrl;
 			fileType = this->mrl.substr(this->mrl.length() - 4, 4);
 			if (fileType != ".txt") {
-				cout << "PlainTxtPlayer::loadFile Warning! Unknown file ";
-				cout << "type for: '" << this->mrl << "'" << endl;
+				clog << "PlainTxtPlayer::loadFile Warning! Unknown file ";
+				clog << "type for: '" << this->mrl << "'" << endl;
 			}
 
 		} else {
-			cout << "PlainTxtPlayer::loadFile Warning! Unknown extension ";
-			cout << "type for: '" << mrl << "'" << endl;
+			clog << "PlainTxtPlayer::loadFile Warning! Unknown extension ";
+			clog << "type for: '" << mrl << "'" << endl;
 		}
 	}
 
@@ -112,8 +112,8 @@ namespace player {
 		pthread_mutex_lock(&mutex);
 		fis.open((this->mrl).c_str(), ifstream::in);
 		if (!fis.is_open() && (mrl != "" || content == "")) {
-			cout << "PlainTxtPlayer::loadFile Warning! can't open input ";
-			cout << "file: '" << this->mrl << "'" << endl;
+			clog << "PlainTxtPlayer::loadFile Warning! can't open input ";
+			clog << "file: '" << this->mrl << "'" << endl;
 			pthread_mutex_unlock(&mutex);
 			return;
 		}
@@ -159,11 +159,11 @@ namespace player {
 
 	void PlainTxtPlayer::play() {
 		if (surface != NULL && surface->getContent() != NULL) {
-			wclog << "PlainTxtPlayer::play ok" << endl;
+			clog << "PlainTxtPlayer::play ok" << endl;
 			loadTxt();
 
 		} else {
-			wclog << "PlainTxtPlayer::play warning" << endl;
+			clog << "PlainTxtPlayer::play warning" << endl;
 		}
 
 		Player::play();
@@ -210,8 +210,8 @@ namespace player {
 		bool refresh = true;
 
 		/*
-		cout << "PlainTxtPlayer::setPropertyValue name = '" << name.c_str();
-		cout << "' value = '" << value.c_str() << "'" << endl;
+		clog << "PlainTxtPlayer::setPropertyValue name = '" << name.c_str();
+		clog << "' value = '" << value.c_str() << "'" << endl;
 		*/
 
 		if (surface == NULL || surface->getContent() == NULL) {

@@ -143,7 +143,7 @@ int main(int argc, char** argv, char** envp) {
 
 	delete tuner;
 
-	cout << "gingacc-tuner test all done. press enter to exit." << endl;
+	clog << "gingacc-tuner test all done. press enter to exit." << endl;
 	getchar();
 
 	//TODO: more tests

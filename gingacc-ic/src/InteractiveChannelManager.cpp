@@ -99,16 +99,16 @@ namespace ic {
 #if HAVE_COMPSUPPORT
 		objects = cm->getObjectsFromInterface("IInteractiveChannel");
 		if (objects == NULL) {
-			cout << "InteractiveChannelManager::hasInteractiveChannel";
-			cout << " objects = NULL => return false" << endl;
+			clog << "InteractiveChannelManager::hasInteractiveChannel";
+			clog << " objects = NULL => return false" << endl;
 			return false;
 		}
 
 		i = objects->begin();
 		while (i != objects->end()) {
-			cout << "Get symbol! " << objects->size() << endl;
+			clog << "Get symbol! " << objects->size() << endl;
 			symbol = *i;
-			cout << "Trying to create '" << symbol << "'" << endl;
+			clog << "Trying to create '" << symbol << "'" << endl;
 			ic = ((ICCreator*)(cm->getObject(symbol)))();
 			if (ic != NULL) {
 				if (ic->hasConnection()) {
@@ -130,8 +130,8 @@ namespace ic {
 		delete ic;
 #endif
 #endif
-		cout << "InteractiveChannelManager::hasInteractiveChannel";
-		cout << " return false" << endl;
+		clog << "InteractiveChannelManager::hasInteractiveChannel";
+		clog << " return false" << endl;
 		return false;
 	}
 
@@ -230,8 +230,8 @@ namespace ic {
 	void InteractiveChannelManager::performPendingUrls() {
 		pthread_t id1;
 
-		cout << "InteractiveChannelManager::performPendingUrls for '";
-		cout << ics->size() << "' urls" << endl;
+		clog << "InteractiveChannelManager::performPendingUrls for '";
+		clog << ics->size() << "' urls" << endl;
 
 		if (!ics->empty()) {
 			pthread_create(

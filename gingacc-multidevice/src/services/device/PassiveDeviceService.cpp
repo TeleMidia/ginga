@@ -101,7 +101,7 @@ namespace multidevice {
 		set<IRemoteDeviceListener*>::iterator i;
 		bool hasLists;
 
-		//cout << "PassiveDeviceService::receiveMediaContent" << endl;
+		//clog << "PassiveDeviceService::receiveMediaContent" << endl;
 
 		dev = getDevice(devAddr);
 		pthread_mutex_lock(&lMutex);
@@ -142,25 +142,25 @@ namespace multidevice {
 						return true;
 
 					} else {
-						cout << "PassiveDeviceService::receiveMediaContent ";
-						cout << "Warning! can't write '" << streamSize << "'";
-						cout << " in file '" << uri << "' (" << bytesWrite;
-						cout << " bytes wrote";
-						cout << endl;
+						clog << "PassiveDeviceService::receiveMediaContent ";
+						clog << "Warning! can't write '" << streamSize << "'";
+						clog << " in file '" << uri << "' (" << bytesWrite;
+						clog << " bytes wrote";
+						clog << endl;
 					}
 
 				} else {
-					cout << "PassiveDeviceService::receiveMediaContent Warning! ";
-					cout << " can't create file '" << uri << "'";
-					cout << endl;
+					clog << "PassiveDeviceService::receiveMediaContent Warning! ";
+					clog << " can't create file '" << uri << "'";
+					clog << endl;
 				}
 
 			#endif
 
 		} else {
-			cout << "PassiveDeviceService::receiveMediaContent Warning! ";
-			cout << " can't find device '" << dev << "' or no listeners found";
-			cout << endl;
+			clog << "PassiveDeviceService::receiveMediaContent Warning! ";
+			clog << " can't find device '" << dev << "' or no listeners found";
+			clog << endl;
 		}
 		return false;
 	}

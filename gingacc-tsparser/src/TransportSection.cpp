@@ -116,9 +116,9 @@ namespace tsparser {
 	bool TransportSection::create(char *sectionBytes, unsigned int size){
 		// Verifies the size to protect the memcpy call
 		if (size > ARRAY_SIZE(section)) {
-			cout << "TransportSection::create Warning! ";
-			cout << "Invalid section size " << size << " ";
-			cout << "truncating..." << endl;
+			clog << "TransportSection::create Warning! ";
+			clog << "Invalid section size " << size << " ";
+			clog << "truncating..." << endl;
 			size = ARRAY_SIZE(section);
 		}
 
@@ -197,17 +197,17 @@ namespace tsparser {
 		}
 
 		if (isConsolidated()) {
-			cout << "TransportSection::addData: Warning! ";
-			cout << "Trying to add " << size << " ";
-			cout << "bytes in a consolidated section." << endl;
+			clog << "TransportSection::addData: Warning! ";
+			clog << "Trying to add " << size << " ";
+			clog << "bytes in a consolidated section." << endl;
 			return;
 		}
 
 		// Invalid size.
 		if (size > freespace) {
-			cout << "TransportSection::addData: size (";
-			cout << size << ") is larger than the available space (";
-			cout << freespace << "), truncating..." << endl;
+			clog << "TransportSection::addData: size (";
+			clog << size << ") is larger than the available space (";
+			clog << freespace << "), truncating..." << endl;
 			size = freespace;
 		}
 
@@ -329,22 +329,22 @@ namespace tsparser {
 
 	void TransportSection::print() {
 		unsigned int i;
-		cout << "TS SECTION " << endl;
-		cout << "tableid = "           << getTableId() << endl;
-		cout << "syntax indicator = "  << getSectionSyntaxIndicator() << endl;
-		cout << "section length = "    << getSectionLength() << endl;
+		clog << "TS SECTION " << endl;
+		clog << "tableid = "           << getTableId() << endl;
+		clog << "syntax indicator = "  << getSectionSyntaxIndicator() << endl;
+		clog << "section length = "    << getSectionLength() << endl;
 
 		if (sectionSyntaxIndicator == 1) {
-			cout << "extendion Id = "           << getExtensionId() << endl;
-			cout << "section version = "        << getVersionNumber() << endl;
-			cout << "current next indicator = " << getCurrentNextIndicator();
-			cout << endl;
-			cout << "section number = "         << getSectionNumber() << endl;
-			cout << "last section number = "    << getLastSectionNumber();
-			cout << endl;
+			clog << "extendion Id = "           << getExtensionId() << endl;
+			clog << "section version = "        << getVersionNumber() << endl;
+			clog << "current next indicator = " << getCurrentNextIndicator();
+			clog << endl;
+			clog << "section number = "         << getSectionNumber() << endl;
+			clog << "last section number = "    << getLastSectionNumber();
+			clog << endl;
 		}
 
-		cout << (char*)getPayload() << endl;
+		clog << (char*)getPayload() << endl;
 		return;
 
 		unsigned int payloadLength;
@@ -362,9 +362,9 @@ namespace tsparser {
 		//memcpy((void*)&(payload[0]), getPayload(), currentSize - 12);
 
 		for (; i < (payloadLength); i++) {
-			cout << (section[i] & 0xFF) << " ";
+			clog << (section[i] & 0xFF) << " ";
 		}
-		cout << endl << endl;
+		clog << endl << endl;
 	}
 }
 }

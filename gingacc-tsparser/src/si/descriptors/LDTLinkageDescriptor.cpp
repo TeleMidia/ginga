@@ -128,7 +128,7 @@ namespace descriptors {
     }
     */
 	void LDTLinkageDescriptor::print(){
-		cout << "LDTLinkageDescriptor::print..."<< endl;
+		clog << "LDTLinkageDescriptor::print..."<< endl;
 	}
 	size_t LDTLinkageDescriptor::process(char* data, size_t pos){
 		struct Description* description;

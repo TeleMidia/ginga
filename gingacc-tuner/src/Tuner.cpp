@@ -154,13 +154,13 @@ namespace tuning {
 				createInterface("sbtvd", "terrestrial", niSpec);
 
 			} else {
-				cout << "Tuner::initializeInterface can't initialize '";
-				cout << niSpec << "': unknown specification" << endl;
+				clog << "Tuner::initializeInterface can't initialize '";
+				clog << niSpec << "': unknown specification" << endl;
 			}
 
 		} else if (niSpec.substr(0, 1) != "#") {
-			cout << "Tuner::initializeInterface can't initialize '";
-			cout << niSpec << "': invalid specification" << endl;
+			clog << "Tuner::initializeInterface can't initialize '";
+			clog << niSpec << "': invalid specification" << endl;
 		}
 	}
 
@@ -173,8 +173,8 @@ namespace tuning {
 				ifstream::in);
 
 		if (!fis.is_open()) {
-			cout << "can't open /usr/local/etc/ginga/files/tuner/tuner.ini";
-			cout << endl;
+			clog << "can't open /usr/local/etc/ginga/files/tuner/tuner.ini";
+			clog << endl;
 
 		} else {
 			currentInterface = 0;
@@ -243,7 +243,7 @@ namespace tuning {
 
 		interface->close();
 		unlockConditionSatisfied();
-		cout << "Tuner::receive ALL DONE!" << endl;
+		clog << "Tuner::receive ALL DONE!" << endl;
 	}
 
 	bool Tuner::hasSignal() {
@@ -265,8 +265,8 @@ namespace tuning {
 		niSpec = niName + ":" + ch;
 		initializeInterface(niSpec);
 
-		cout << "Tuner::setSpec NI = '" << niName << "'";
-		cout << ", channel = '" << ch << "' all done!" << endl;
+		clog << "Tuner::setSpec NI = '" << niName << "'";
+		clog << ", channel = '" << ch << "' all done!" << endl;
 	}
 
 	void Tuner::tune() {
@@ -303,7 +303,7 @@ namespace tuning {
 
 		if (receiving) {
 			receiving = false;
-			cout << "Tuner::changeChannel waiting" << endl;
+			clog << "Tuner::changeChannel waiting" << endl;
 			waitForUnlockCondition();
 		}
 
@@ -312,8 +312,8 @@ namespace tuning {
 			channel = interface->getCurrentChannel();
 			updateListenersStatus(TS_SWITCHING_CHANNEL, channel);
 			if (!interface->changeChannel(factor)) {
-				cout << "Tuner::changeChannel can't find channel '";
-				cout << factor << "'" << endl;
+				clog << "Tuner::changeChannel can't find channel '";
+				clog << factor << "'" << endl;
 
 			} else {
 				channel = interface->getCurrentChannel();
@@ -321,7 +321,7 @@ namespace tuning {
 			}
 		}
 
-		cout << "Tuner::changeChannel start new thread" << endl;
+		clog << "Tuner::changeChannel start new thread" << endl;
 		start();
 	}
 
@@ -369,11 +369,11 @@ namespace tuning {
 		int intIx = -1;
 		IChannel* channel;
 
-		cout << "Tuner::run tuning... " << endl;
+		clog << "Tuner::run tuning... " << endl;
 
 		curInt = getCurrentInterface();
 		if (curInt == NULL) {
-			cout << "Tuner::run current interface not found" << endl;
+			clog << "Tuner::run current interface not found" << endl;
 
 		} else {
 			tuned = listen(curInt);
@@ -383,8 +383,8 @@ namespace tuning {
 		}
 
 		if (!tuned) {
-			cout << "Tuner::run current interface can't tune...";
-			cout << " trying other interfaces" << endl;
+			clog << "Tuner::run current interface can't tune...";
+			clog << " trying other interfaces" << endl;
 
 			lock();
 			i = interfaces->begin();
@@ -413,11 +413,11 @@ namespace tuning {
 		if (tuned && interface != NULL &&
 				!(interface->getCaps() & DPC_CAN_DEMUXBYHW)) {
 
-			cout << "Tuner::run() call receive" << endl;
+			clog << "Tuner::run() call receive" << endl;
 			receive(interface);
 		}
 
-		cout << "Tuner::run done " << endl;
+		clog << "Tuner::run done " << endl;
 	}
 }
 }

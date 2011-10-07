@@ -69,8 +69,8 @@ namespace tuning {
 		// Create socket source
 		socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
 
-		cout << "connecting to " << this->addr;
-		cout << ":" << portNumber << endl;
+		clog << "connecting to " << this->addr;
+		clog << ":" << portNumber << endl;
 
 		if (socketDescriptor < 0) {
 			perror("UnicastProvider::callServer openSocket");
@@ -105,9 +105,9 @@ namespace tuning {
 				server.sin_port = htons(portNumber+count);
 
 			} else {
-				cout << " connected to " << this->addr;
-				cout << " on port '" << portNumber+count << "'";
-				cout << "returning '" << socketDescriptor << "'" << endl;
+				clog << " connected to " << this->addr;
+				clog << " on port '" << portNumber+count << "'";
+				clog << "returning '" << socketDescriptor << "'" << endl;
 				return socketDescriptor;
 			}
 		}
@@ -121,8 +121,8 @@ namespace tuning {
 
 		rval = read(socketDescriptor, buff, BUFFSIZE);
 		if (rval <= 0) {
-			cout << "UnicastProvider::receiveData Warning! Received '";
-			cout << rval << "' while reading socket source." << endl;
+			clog << "UnicastProvider::receiveData Warning! Received '";
+			clog << rval << "' while reading socket source." << endl;
 		}
 		return rval;
 	}

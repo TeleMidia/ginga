@@ -98,12 +98,12 @@ int main(int argc, char** argv) {
 		w->renderFrom(s);
 		w->show();
 
-		cout << CodeMap::KEY_ASTERISK << endl;
-		cout << "System test has shown image. press enter to continue" << endl;
+		clog << CodeMap::KEY_ASTERISK << endl;
+		clog << "System test has shown image. press enter to continue" << endl;
 
 	} else if (argc == 3) {
 		if (strcmp(argv[1], "xine") == 0) {
-			cout << "System test will test xine video provider" << endl;
+			clog << "System test will test xine video provider" << endl;
 #if HAVE_XINEPROVIDER
 			xineProvider = new XineVideoProvider(argv[2]);
 			s = xineProvider->getPerfectSurface();
@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 			w->show();
 #endif
 		} else if (strcmp(argv[1], "ffmpeg") == 0) {
-			cout << "System test will test ffmpeg video provider" << endl;
+			clog << "System test will test ffmpeg video provider" << endl;
 #if HAVE_FFMPEGPROVIDER
 			ffmpegProvider = new FFmpegVideoProvider(argv[2]);
 			s = ffmpegProvider->getPerfectSurface();

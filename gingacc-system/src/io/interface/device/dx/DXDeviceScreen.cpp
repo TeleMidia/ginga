@@ -74,7 +74,7 @@ namespace io {
 	DXDeviceScreen::DXDeviceScreen(int numArgs, char* args[]) 
           : Thread(), release_run(false), released(false)
         {
-		cout << "DXDeviceScreen::DXDeviceScreen(int numArgs, char* args[])" << endl;
+		clog << "DXDeviceScreen::DXDeviceScreen(int numArgs, char* args[])" << endl;
 		this->dxHdc = NULL;
 		this->pD3d = NULL;
 		this->pD3dDev = NULL;
@@ -114,7 +114,7 @@ namespace io {
 	}
 
 	DXDeviceScreen::~DXDeviceScreen() {
-		cout << "DXDeviceScreen::~DXDeviceScreen()" << endl;
+		clog << "DXDeviceScreen::~DXDeviceScreen()" << endl;
 		m_running = false;
 		Sleep(1000);
                 {
@@ -157,29 +157,29 @@ namespace io {
 	}
 
 	unsigned int DXDeviceScreen::getWidthResolution() {
-		cout << "DXDeviceScreen::getWidthResolution()" << endl;
+		clog << "DXDeviceScreen::getWidthResolution()" << endl;
 		return width;
 	}
 
 	void DXDeviceScreen::setWidthResolution(unsigned int wRes) {
-		cout << "DXDeviceScreen::setWidthResolution(unsigned int wRes)" << endl;
+		clog << "DXDeviceScreen::setWidthResolution(unsigned int wRes)" << endl;
 	}
 
 	unsigned int DXDeviceScreen::getHeightResolution() {
-		cout << "DXDeviceScreen::getHeightResolution()" << endl;
+		clog << "DXDeviceScreen::getHeightResolution()" << endl;
 		return height;
 	}
 
 	void DXDeviceScreen::setHeightResolution(unsigned int hRes) {
-		cout << "DXDeviceScreen::setHeightResolution(unsigned int hRes)" << endl;
+		clog << "DXDeviceScreen::setHeightResolution(unsigned int hRes)" << endl;
 	}
 
 	void DXDeviceScreen::setColorKey(int r, int g, int b) {
-		cout << "DXDeviceScreen::setColorKey(int r, int g, int b)" << endl;
+		clog << "DXDeviceScreen::setColorKey(int r, int g, int b)" << endl;
 	}
 
 	void* DXDeviceScreen::createWindow(void* desc) {
-		cout << "DXDeviceScreen::createWindow(void* desc)" << endl;
+		clog << "DXDeviceScreen::createWindow(void* desc)" << endl;
 		DX2DSurface* window = NULL;
 		DX2DSurfaceProp *surProp = (DX2DSurfaceProp*) desc;
 
@@ -197,7 +197,7 @@ namespace io {
 	}
 
 	void DXDeviceScreen::releaseWindow(void* win) {
-		cout << "DXDeviceScreen::releaseWindow(void* win)" << endl;
+		clog << "DXDeviceScreen::releaseWindow(void* win)" << endl;
 		set<DX2DSurface*>::iterator i;
 		DX2DSurface* w;
 		w = (DX2DSurface*)win;
@@ -218,7 +218,7 @@ namespace io {
 	}
 
 	void* DXDeviceScreen::createSurface(void* desc) {
-		cout << "DXDeviceScreen::createSurface(void* desc)" << endl;
+		clog << "DXDeviceScreen::createSurface(void* desc)" << endl;
 		DX2DSurface* surface = NULL;
 		DX2DSurfaceProp *surProp = (DX2DSurfaceProp*) desc;
 
@@ -234,7 +234,7 @@ namespace io {
 	}
 
 	void DXDeviceScreen::releaseSurface(void* sur) {
-		cout << "DXDeviceScreen::releaseSurface(void* sur)" << endl;
+		clog << "DXDeviceScreen::releaseSurface(void* sur)" << endl;
 		set<DX2DSurface*>::iterator i;
 		DX2DSurface* s;
 		s = (DX2DSurface*)sur;
@@ -255,12 +255,12 @@ namespace io {
 	}
 
 	void* DXDeviceScreen::getGfxRoot() {
-		cout << "DXDeviceScreen::getGfxRoot()" << endl;
+		clog << "DXDeviceScreen::getGfxRoot()" << endl;
 		return (this->pD3dDev);
 	}
 
 	void DXDeviceScreen::run(){
-		cout << "DXDeviceScreen::run()" << endl;
+		clog << "DXDeviceScreen::run()" << endl;
 
 		HINSTANCE dxHinstance;
 		WNDCLASSEX wndclass;
@@ -298,7 +298,7 @@ namespace io {
 		ShowWindowAsync(dxHwnd, SW_SHOWNORMAL);
 		UpdateWindow(dxHwnd);
 
-		cout << "DXDeviceScreen::run() -> " << dxHwnd << endl;
+		clog << "DXDeviceScreen::run() -> " << dxHwnd << endl;
 
 		pthread_mutex_lock(&init_lock);
 		init = 1;
@@ -341,7 +341,7 @@ namespace io {
 			d3dInit();
 		}
 
-		cout << "DXDeviceScreen::run() -> " << dxHwnd << endl;
+		clog << "DXDeviceScreen::run() -> " << dxHwnd << endl;
 
 		init = 1;
 		pthread_cond_broadcast(&init_cond);
@@ -362,9 +362,9 @@ namespace io {
 		set<DX2DSurface*>::iterator k;
 
 		if(SUCCEEDED((this->pD3dDev)->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER , D3DCOLOR_ARGB(255, 0, 0, 0), 1.0f, 0 ))){
-		//	cout << "clearok" << endl;
+		//	clog << "clearok" << endl;
 		}else{
-			cout << "falhou" << endl;
+			clog << "falhou" << endl;
 		}
 
 		srand ( time(NULL) );
@@ -404,12 +404,12 @@ namespace io {
 
 
 	bool DXDeviceScreen::d3dInit(){
-		cout << "DXDeviceScreen::d3dInit()" << endl;
+		clog << "DXDeviceScreen::d3dInit()" << endl;
 
 		D3DDISPLAYMODE dspMode;
 
 		if( (pD3d = Direct3DCreate9(D3D_SDK_VERSION)) == NULL){
-			cout << "nao consegui iniciar o dx v: " << D3D9b_SDK_VERSION << endl;		
+			clog << "nao consegui iniciar o dx v: " << D3D9b_SDK_VERSION << endl;		
 			return false;
 		}
 
@@ -433,7 +433,7 @@ namespace io {
 
 		if(FAILED(pD3d->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, dxHwnd,
 									 D3DCREATE_SOFTWARE_VERTEXPROCESSING|D3DCREATE_MULTITHREADED, &d3dpp,&pD3dDev))){
-			cout << " NAO CONSEGUI CRIAR O Direct3dDev D3DDEVTYPE_HAL " << endl;
+			clog << " NAO CONSEGUI CRIAR O Direct3dDev D3DDEVTYPE_HAL " << endl;
 			return false;
 		}
 
