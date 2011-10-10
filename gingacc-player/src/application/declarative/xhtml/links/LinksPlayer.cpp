@@ -209,6 +209,8 @@ namespace player {
 #if HAVE_COMPSUPPORT
 			closeBrowser(mBrowser);
 			mBrowser = NULL;
+#else
+			browserHide(mBrowser);
 #endif
 			hasBrowser = false;
 		}
