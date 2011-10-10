@@ -95,13 +95,14 @@ namespace player {
 	LinksPlayer::~LinksPlayer() {
 		clog << "LinksPlayer::~LinksPlayer " << endl;
 		im->removeInputEventListener(this);
-
+#if HAVE_COMPSUPPORT
 		if (hasBrowser) {
 			clog << "LinksPlayer::~LinksPlayer hasBrowser" << endl;
 			closeBrowser(mBrowser);
 			mBrowser = NULL;
 			clog << "LinksPlayer::~LinksPlayer browser closed" << endl;
 		}
+#endif
 	}
 
 	ISurface* LinksPlayer::getSurface() {
@@ -205,8 +206,10 @@ namespace player {
 	void LinksPlayer::stop() {
 		clog << "LinksPlayer::stop '" << mrl << "'" << endl;
 		if (hasBrowser) {
+#if HAVE_COMPSUPPORT
 			closeBrowser(mBrowser);
 			mBrowser = NULL;
+#endif
 			hasBrowser = false;
 		}
 		Player::stop();
