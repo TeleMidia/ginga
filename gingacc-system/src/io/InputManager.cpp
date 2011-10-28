@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "system/io/InputManager.h"
 
-#include "config.h"
+#include "../../../config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
@@ -100,6 +100,7 @@ namespace io {
 		running       = true;
 		notifying     = false;
 		notifyingApp  = false;
+		ief           = new InputEventFactory(this);
 
 		pthread_mutex_init(&actInpMutex, NULL);
 		pthread_mutex_init(&actAppMutex, NULL);
@@ -119,6 +120,11 @@ namespace io {
 			_instance->release();
 			delete _instance;
 			_instance = NULL;
+		}
+
+		if (ief != NULL) {
+			delete ief;
+			ief = NULL;
 		}
 
 #ifdef _WIN32
@@ -594,6 +600,15 @@ namespace io {
 #ifdef _WIN32
 		pthread_mutex_lock(&mutex_event_buffer);
 #endif
+
+#ifdef HAVE_KINECTSUPPORT
+		if (running) {
+			ief->createFactory(InputEventFactory::FT_KINECT, this);
+			clog << "InputManager constructor can't initialize Kinect Factory:";
+			clog << endl;
+		}
+#endif
+
 		while (running && eventBuffer != NULL) {
 			eventBuffer->waitEvent();
 			if (!running) {

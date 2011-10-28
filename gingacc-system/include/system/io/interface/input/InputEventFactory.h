@@ -47,29 +47,18 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef INPUTMANAGER_H_
-#define INPUTMANAGER_H_
+#ifndef InputEventFactory_H_
+#define InputEventFactory_H_
 
-#include "../thread/Thread.h"
+#include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
-
-#include "interface/input/InputEventFactory.h"
-#include "IInputManager.h"
+#include "system/io/IInputManager.h"
+#include "system/io/interface/input/CodeMap.h"
 
 #include <iostream>
-#include <vector>
-#include <set>
-#include <map>
+#include <string>
 using namespace std;
-
-typedef struct lockedLitenerAction {
-	::br::pucrio::telemidia::ginga::core::system::io::IInputEventListener* l;
-	bool isAdd;
-	set<int>* events;
-} LockedAction;
 
 namespace br {
 namespace pucrio {
@@ -78,70 +67,25 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
-	class InputManager : public IInputManager, public Thread {
+	class InputEventFactory : public Thread {
+		public:
+			static const short FT_KINECT = 0;
+
 		private:
-			static InputManager* _instance;
-			map<IInputEventListener*, set<int>*>* eventListeners;
-			vector<LockedAction*>* actionsToInpListeners;
-			set<IInputEventListener*>* applicationListeners;
-			vector<LockedAction*>* actionsToAppListeners;
+			short currentType;
 			bool running;
-			bool notifying;
-			bool notifyingApp;
-			IEventBuffer* eventBuffer;
-			double lastEventTime;
-			double imperativeIntervalTime;
-			double declarativeIntervalTime;
-			InputEventFactory* ief;
-
-			int currentXAxis;
-			int currentYAxis;
-			int maxX;
-			int maxY;
-
-			pthread_mutex_t actAppMutex;
-			pthread_mutex_t actInpMutex;
-
-			pthread_mutex_t appMutex;
-
-			InputManager();
-			virtual ~InputManager();
-
-			void initializeInputIntervalTime();
+			IInputManager* iem;
 
 		public:
-			void release();
-			static InputManager* getInstance();
-			void addInputEventListener(
-					IInputEventListener* listener, set<int>* events=NULL);
-
-			void removeInputEventListener(IInputEventListener* listener);
+			InputEventFactory();
+			virtual ~InputEventFactory();
 
 		private:
-			void performInputLockedActions();
-			void performApplicationLockedActions();
-			bool dispatchEvent(IInputEvent* keyEvent);
-			bool dispatchApplicationEvent(IInputEvent* keyEvent);
+			void clear();
 
 		public:
-			void addApplicationInputEventListener(IInputEventListener* listener);
-			void removeApplicationInputEventListener(
-					IInputEventListener* listener);
-
-			void postEvent(IInputEvent* event);
-			void postEvent(int keyCode);
-
-			void setAxisValues(int x, int y, int z);
-			void setAxisBoundaries(int x, int y, int z);
-			int getCurrentXAxisValue();
-			int getCurrentYAxisValue();
-
-		private:
+			bool createFactory(short factoryType, IInputManager* ctx);
 			void run();
-
-#ifdef _WIN32
-			pthread_mutex_t mutex_event_buffer;
-#endif
 	};
 }
 }
@@ -151,4 +95,4 @@ namespace io {
 }
 }
 
-#endif /*INPUTMANAGER_H_*/
+#endif /*InputEventFactory_H_*/

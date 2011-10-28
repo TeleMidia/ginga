@@ -274,6 +274,43 @@ fi
 AM_CONDITIONAL([MULTIPROCESS], [test x$multiprocess = xyes])
 AC_SUBST(MULTIPROCESS_LIBS)
 
+##################
+# Kinect Support #
+##################
+kinect=no
+AC_ARG_ENABLE(kinect,
+  [  --enable-kinect build project with kinect support (kinect as an input device) [[default=no]]],
+  enable_kinect="$enableval", enable_kinect=no)
+
+if test x$kinect = xno; then
+   KINECT_LIBS='-L/usr/local/lib/ginga/'
+   KINECT_INCS='-L/usr/local/include/ginga/'
+   AC_DEFINE(HAVE_KINECTSUPPORT, 0, [Def to 0 if you don't have Kinect support.])
+   AC_MSG_WARN([*** Kinect support will not be built.])
+else
+
+AC_HAVE_LIBRARY(
+    XnVNite_1_4_1,
+    kinect=yes,
+    AC_MSG_WARN([Couldn't find XnVNite_1_4_1.])
+    kinect=no
+)
+
+if test x$kinect = xno; then
+   KINECT_LIBS='-L/usr/local/lib/ginga/'
+   KINECT_INCS='-L/usr/local/include/ginga/'
+   AC_DEFINE(HAVE_KINECTSUPPORT, 0, [Def to 0 if you don't have Kinect support.])
+   AC_MSG_WARN([*** Kinect support will not be built.])
+else
+   KINECT_LIBS='-lOpenNI -lXnVNite_1_4_1 -L/usr/local/lib/ginga/'
+   KINECT_INCS='-I/usr/local/include/kinect/NITE-Bin-Linux32-v1.4.1.2/Include -I/usr/include/ni -I/usr/local/include/kinect/Sensor/Source/XnCommon'
+   AC_DEFINE(HAVE_KINECTSUPPORT, 1, [Def to 1 if you have Kinect support.])
+   AC_MSG_RESULT([*** Kinect support will be built.])
+fi
+fi
+
+AC_SUBST(KINECT_LIBS)
+AC_SUBST(KINECT_INCS)
 
 AC_OUTPUT(
 	Makefile

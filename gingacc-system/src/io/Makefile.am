@@ -44,6 +44,7 @@ libgingaccsystemio_PROGRAMS = libgingaccsystemio.so
 libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 	interface/device/DeviceCommunication.cpp \
 	interface/device/IODevice.cpp \
+	interface/input/InputEventFactory.cpp \
 	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
 
 libgingaccsystemio_so_LDADD = -ltelemidiautil -lpthread \
