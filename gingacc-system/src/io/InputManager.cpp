@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "system/io/InputManager.h"
 
-#include "../../../config.h"
+#include "../../config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
@@ -100,7 +100,7 @@ namespace io {
 		running       = true;
 		notifying     = false;
 		notifyingApp  = false;
-		ief           = new InputEventFactory(this);
+		ief           = new InputEventFactory();
 
 		pthread_mutex_init(&actInpMutex, NULL);
 		pthread_mutex_init(&actAppMutex, NULL);
