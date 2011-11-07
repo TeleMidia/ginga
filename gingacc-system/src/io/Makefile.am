@@ -48,6 +48,6 @@ libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
 
 libgingaccsystemio_so_LDADD = -ltelemidiautil -lpthread \
-    -lgingaccsystemthread $(COMPONENTS_LIBS) $(KINECT_LIBS)
+    -lgingaccsystemthread -lgingaccsystemiocodemap $(COMPONENTS_LIBS) $(KINECT_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in
