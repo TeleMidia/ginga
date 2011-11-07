@@ -47,11 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "system/io/interface/input/InputEventFactory.h"
-
 #include "../../../../config.h"
 
+#include "system/io/interface/input/InputEventFactory.h"
+#include "system/io/interface/input/CodeMap.h"
+#include "system/io/IInputManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+
 #if HAVE_KINECTSUPPORT
+#include <XnCppWrapper.h>
 #include <XnVSessionManager.h>
 #include <XnVPushDetector.h>
 #include <XnVBroadcaster.h>
@@ -60,7 +64,7 @@ http://www.telemidia.puc-rio.br
 #define TRACKING_FILE "/usr/local/etc/ginga/files/system/config/_tracking.xml"
 
 xn::Context context;
-xn::ScriptNode ScriptNode;
+xn::ScriptNode scriptNode;
 
 XnVSessionManager* sessionmanager = NULL;
 XnVSelectableSlider2D* sel2d;
@@ -117,7 +121,7 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(
 		}
 
 		if (keyCode != CodeMap::KEY_NULL && ctx != NULL) {
-			(IInputManager*(ctx))->postEvent(keyCode);
+			((IInputManager*)ctx)->postEvent(keyCode);
 		}
 	}
 }
@@ -128,7 +132,7 @@ void XN_CALLBACK_TYPE handsUpdate(const XnVMultipleHands& mh, void* ctx) {
 	handsNumber = mh.ActiveEntries();
 
 	if (handsNumber == 2 && oldnhands != 2 && ctx != NULL) {
-		(IInputManager*(ctx))->postEvent(CodeMap::KEY_BACK);
+		((IInputManager*)ctx)->postEvent(CodeMap::KEY_BACK);
 	}
 }
 
@@ -136,7 +140,7 @@ void XN_CALLBACK_TYPE pushDetector(
 		XnFloat fVelocity, XnFloat fAngle, void* ctx) {
 
 	if (handsNumber == 1 && ctx != NULL) {
-		(IInputManager*(ctx))->postEvent(CodeMap::KEY_OK);
+		((IInputManager*)ctx)->postEvent(CodeMap::KEY_OK);
 	}
 }
 
@@ -205,7 +209,7 @@ namespace io {
 			sessionmanager = new XnVSessionManager();
 			sel2d = new XnVSelectableSlider2D(3, 3);
 
-			rc = context.InitFromXmlFile(TRACKING_FILE, ScriptNode);
+			rc = context.InitFromXmlFile(TRACKING_FILE, scriptNode);
 			if (rc != XN_STATUS_OK) {
 				clog << "InputEventFactory::createFactory Warning! ";
 				clog << "Couldn't initialize: " << xnGetStatusString(rc);

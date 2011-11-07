@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-	$(all_includes) -I$(top_srcdir)/include
+	$(all_includes) -I$(top_srcdir)/include $(KINECT_INCS)
 
 LIBS =
 
@@ -48,6 +48,6 @@ libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
 
 libgingaccsystemio_so_LDADD = -ltelemidiautil -lpthread \
-    -lgingaccsystemthread $(COMPONENTS_LIBS)
+    -lgingaccsystemthread $(COMPONENTS_LIBS) $(KINECT_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

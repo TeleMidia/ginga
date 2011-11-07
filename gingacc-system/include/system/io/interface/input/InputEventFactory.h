@@ -54,7 +54,6 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "system/io/IInputManager.h"
-#include "system/io/interface/input/CodeMap.h"
 
 #include <iostream>
 #include <string>
