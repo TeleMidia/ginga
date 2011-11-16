@@ -11,7 +11,7 @@ test_SOURCES = test.cpp
 
 test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
     -lgingacctsparser -lgingaccdataprocessing \
-    -lgingaccdataprocncl -ldl
+    -lgingaccdataprocncl -lexpat -ldl
 
 test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L../src/dsmcc/npt \
     -L../src/ncl -L/usr/local/lib

@@ -174,7 +174,7 @@ fi
 AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
 AC_SUBST(COMPONENTS_LIBS)
 
-#######################
+########################
 # XINE MAIN AV Support #
 ########################
 xineprovider=no
@@ -308,6 +308,7 @@ else
 fi
 fi
 
+AM_CONDITIONAL([KINECT], [test x$enable_kinect = xyes])
 AC_SUBST(KINECT_LIBS)
 AC_SUBST(KINECT_INCS)
 

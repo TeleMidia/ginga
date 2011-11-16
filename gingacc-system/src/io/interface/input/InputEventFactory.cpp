@@ -50,11 +50,12 @@ http://www.telemidia.puc-rio.br
 #include "../../../../config.h"
 
 #include "system/io/interface/input/InputEventFactory.h"
-#include "system/io/interface/input/CodeMap.h"
 #include "system/io/IInputManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
 #if HAVE_KINECTSUPPORT
+#include "system/io/interface/input/CodeMap.h"
+
 #include <XnCppWrapper.h>
 #include <XnVSessionManager.h>
 #include <XnVPushDetector.h>

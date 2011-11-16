@@ -41,13 +41,21 @@ libgingaccsystemio_so_LDFLAGS = -Wl,-soname,libgingaccsystemio.so -shared \
 
 libgingaccsystemio_PROGRAMS = libgingaccsystemio.so
 
+if KINECT
+libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
+	interface/device/DeviceCommunication.cpp \
+	interface/device/IODevice.cpp \
+	interface/input/InputEventFactory.cpp interface/input/CodeMap.cpp \
+	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
+else
 libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 	interface/device/DeviceCommunication.cpp \
 	interface/device/IODevice.cpp \
 	interface/input/InputEventFactory.cpp \
 	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
+endif
 
 libgingaccsystemio_so_LDADD = -ltelemidiautil -lpthread \
-    -lgingaccsystemthread -lgingaccsystemiocodemap $(COMPONENTS_LIBS) $(KINECT_LIBS)
+    -lgingaccsystemthread $(COMPONENTS_LIBS) $(KINECT_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in
