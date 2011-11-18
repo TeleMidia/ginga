@@ -73,6 +73,10 @@ XnVSelectableSlider2D* sel2d;
 //slider variables
 float oldX = -1;
 float oldY = -1;
+bool leftc = false;
+bool rightc = false;
+bool upc = false;
+bool downc = false;
 
 //multiple hands
 int handsNumber = 0;
@@ -83,39 +87,58 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(
 
 	float difX;
 	float difY;
-	float errop = 0.1;
-	float erron = -0.1;
+	float initialX = 0.5;
+	float initialY = 0.5;
+	float margin = 0.15;
 
 	int keyCode = CodeMap::KEY_NULL;
 
 	if (handsNumber == 1) {
 		if (oldX == -1) {
 			oldX = fXValue;
+			//initialX = fXValue;
 		}
 
 		if (oldY == -1) {
 			oldY = fYValue;
+			//initialY = fYValue;
 		}
 
-		difX = fXValue - oldX;
-		difY = fYValue - oldY;
+		difX = fXValue - initialX;
+		difY = fYValue - initialY;
 
-		if ((difX > 0) && (difX > errop)) {
+		if ((fXValue > initialX - margin)&&(fXValue < initialX + margin)){
+			leftc = false;
+			rightc = false;
+		}
+		if ((fYValue > initialY - margin)&&(fYValue < initialY + margin)){
+			upc = false;
+			downc = false;
+		}
+		if ((!rightc) && (difX > 0) && (difX > margin)) {
+			rightc = true;
+			leftc = false;
 			oldX = fXValue;
 			oldY = fYValue;
 			keyCode = CodeMap::KEY_CURSOR_RIGHT;
 
-		} else if ((difX < 0) && (difX < erron)) {
+		} else if ((!leftc) && (difX < 0) && (difX < -margin)) {
+			leftc = true;
+			rightc = false;
 			oldX = fXValue;
 			oldY = fYValue;
 			keyCode = CodeMap::KEY_CURSOR_LEFT;
 
-		} else if ((difY > 0) && (difY > errop)) {
+		} else if ((!upc) && (difY > 0) && (difY > margin)) {
+			upc = true;
+			downc = false;
 			oldX = fXValue;
 			oldY = fYValue;
 			keyCode = CodeMap::KEY_CURSOR_UP;
 
-		} else if ((difY < 0) && (difY < erron)) {
+		} else if ((!downc) && (difY < 0) && (difY < -margin)) {
+			downc = true;
+			upc = false;
 			oldX = fXValue;
 			oldY = fYValue;
 			keyCode = CodeMap::KEY_CURSOR_DOWN;
@@ -208,7 +231,7 @@ namespace io {
 			XnVBroadcaster broadcaster;
 
 			sessionmanager = new XnVSessionManager();
-			sel2d = new XnVSelectableSlider2D(3, 3);
+			sel2d = new XnVSelectableSlider2D(10, 10);
 
 			rc = context.InitFromXmlFile(TRACKING_FILE, scriptNode);
 			if (rc != XN_STATUS_OK) {
