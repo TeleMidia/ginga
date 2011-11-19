@@ -162,7 +162,7 @@ void XN_CALLBACK_TYPE handsUpdate(const XnVMultipleHands& mh, void* ctx) {
 
 void XN_CALLBACK_TYPE pushDetector(
 		XnFloat fVelocity, XnFloat fAngle, void* ctx) {
-
+	
 	if (handsNumber == 1 && ctx != NULL) {
 		((IInputManager*)ctx)->postEvent(CodeMap::KEY_OK);
 	}
@@ -253,7 +253,7 @@ namespace io {
 			sessionmanager->RegisterSession(
 					NULL, &sessionStart, &sessionEnd, NULL);
 
-			pushdetector.RegisterPush(NULL, &pushDetector);
+			pushdetector.RegisterPush(iem, &pushDetector);
 			sel2d->RegisterValueChange(iem, &MainSlider_OnValueChange);
 			sel2d->RegisterHandsUpdate(iem, &handsUpdate);
 

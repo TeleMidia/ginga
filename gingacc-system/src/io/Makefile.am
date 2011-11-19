@@ -37,7 +37,7 @@ libgingaccsystemiodfb_so_LDADD = $(DFB_LIBS) -ltelemidiautil -lpthread \
 libgingaccsystemiodir = /usr/local/lib/ginga
 
 libgingaccsystemio_so_LDFLAGS = -Wl,-soname,libgingaccsystemio.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../thread
+	-L/usr/local/lib -L/usr/local/lib/ginga -L../thread -L./
 
 libgingaccsystemio_PROGRAMS = libgingaccsystemio.so
 
@@ -52,6 +52,7 @@ libgingaccsystemio_so_SOURCES =	interface/device/DeviceAudio.cpp \
 	interface/device/DeviceCommunication.cpp \
 	interface/device/IODevice.cpp \
 	interface/input/InputEventFactory.cpp \
+	interface/input/CodeMap.cpp \
 	GingaLocatorFactory.cpp InputManager.cpp LocalDeviceManager.cpp
 endif
 

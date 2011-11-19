@@ -7,7 +7,9 @@ LIBS =
 libgingacccmparserdir = /usr/local/lib/ginga/cm
 
 libgingacccmparser_so_LDFLAGS = -Wl,-soname,libgingacccmparser.so \
-    -shared -ldl -lexpat
+    -shared -ldl
+
+libgingacccmparser_so_LDADD=  -lexpat
 
 libgingacccmparser_PROGRAMS = libgingacccmparser.so
 libgingacccmparser_so_SOURCES = ComponentParser.cpp
