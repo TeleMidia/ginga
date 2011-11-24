@@ -73,8 +73,8 @@ namespace player {
 		this->h = 1;
 
 #if HAVE_COMPSUPPORT
-		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
-				"LocalDeviceManager")))();
+		dm = ((LocalDeviceManagerCreator*)(
+				cm->getObject("LocalDeviceManager")))();
 
 		if (im == NULL) {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();

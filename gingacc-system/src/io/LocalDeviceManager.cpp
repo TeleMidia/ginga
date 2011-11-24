@@ -123,12 +123,8 @@ namespace io {
 			dev->setBackgroundImage(uri);
 		}
 	}
-#ifdef _WIN32
-	void LocalDeviceManager::callStaticSetParameters(int numArgs, char* args[]){
-		LocalDeviceManager::setParameters(numArgs, args);
-	}
-#endif
-	void LocalDeviceManager::setParameters(int numArgs, char* args[]) {
+
+	void LocalDeviceManager::setParameters(int numArgs, char** args) {
 		LocalDeviceManager::numArgs = numArgs;
 		LocalDeviceManager::args = args;
 	}
@@ -206,10 +202,11 @@ namespace io {
 			(*profiles)[deviceNumber] = description;
 
 #if HAVE_COMPSUPPORT
-			scr = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(0, NULL);
+			scr = ((ScreenCreator*)(
+					cm->getObject("DeviceScreen")))(this->numArgs, this->args);
 #else
 #ifndef _WIN32
-			scr = new DFBDeviceScreen(0, NULL);
+			scr = new DFBDeviceScreen(this->numArgs, this->args);
 #else
 			scr = new DXDeviceScreen(this->numArgs, this->args);
 #endif
@@ -318,8 +315,11 @@ namespace io {
 extern "C" ::br::pucrio::telemidia::ginga::core::system::io::
 		ILocalDeviceManager* createLocalDeviceManager() {
 
-	return ::br::pucrio::telemidia::ginga::core::system::io::
+	::br::pucrio::telemidia::ginga::core::system::io::ILocalDeviceManager* ldm;
+	ldm = ::br::pucrio::telemidia::ginga::core::system::io::
 			LocalDeviceManager::getInstance();
+
+	return ldm;
 }
 
 extern "C" void destroyLocalDeviceManager(::br::pucrio::telemidia::ginga::core::

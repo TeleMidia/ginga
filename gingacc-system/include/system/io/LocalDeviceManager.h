@@ -75,25 +75,26 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
-	class LOCALDEVICEMANAGER_API LocalDeviceManager : public ILocalDeviceManager {
+	class LOCALDEVICEMANAGER_API LocalDeviceManager :
+			public ILocalDeviceManager {
+
 		private:
 			map<unsigned int, IODevice*>* devices;
 			map<unsigned int, string>* profiles;
 			static LocalDeviceManager* _instance;
+
 			static int numArgs;
 			static char** args;
 
 			LocalDeviceManager();
-			~LocalDeviceManager();
+			virtual ~LocalDeviceManager();
 
 		public:
-			static void setParameters(int numArgs, char* args[]);
+			void setParameters(int numArgs, char** args);
 			void release();
 
 			void setBackgroundImage(string uri);
-#ifdef _WIN32			
-			void callStaticSetParameters(int numArgs, char* args[]);
-#endif
+
 			static LocalDeviceManager* getInstance();
 			int getDeviceWidth(
 					unsigned int deviceNumber=0, unsigned int screenNumber=0);

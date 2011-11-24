@@ -93,8 +93,8 @@ int main(int argc, char** argv, char** envp) {
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();
-	dm = ((LocalDeviceManagerCreator*)(cm->getObject(
-			"LocalDeviceManager")))();
+	dm = ((LocalDeviceManagerCreator*)(
+			cm->getObject("LocalDeviceManager")))();
 
 #else
 	dm = LocalDeviceManager::getInstance();

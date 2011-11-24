@@ -87,7 +87,7 @@ namespace io {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen*
-		ScreenCreator(int numArgs, char* args[]);
+		ScreenCreator(int numArgs, char** args);
 
 typedef void ScreenDestroyer(
 		::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen* ds);

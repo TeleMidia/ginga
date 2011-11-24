@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "system/io/interface/device/dfb/DFBDeviceScreen.h"
+#include "system/io/ILocalDeviceManager.h"
 
 namespace br {
 namespace pucrio {
@@ -65,18 +66,18 @@ unsigned int DFBDeviceScreen::numOfDFBScreens = 0;
 IDirectFB* DFBDeviceScreen::dfb = NULL;
 IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
-	DFBDeviceScreen::DFBDeviceScreen(int numArgs, char* args[]) {
+	DFBDeviceScreen::DFBDeviceScreen(int numArgs, char** args) {
 		DFBDisplayLayerConfig layer_config;
 		DFBResult ret;
 
 		aspect = DSA_UNKNOWN;
-		hSize = 0;
-		vSize = 0;
-		hRes = 0;
-		wRes = 0;
+		hSize  = 0;
+		vSize  = 0;
+		hRes   = 0;
+		wRes   = 0;
 		numOfDFBScreens++;
 
-		windowPool = new set<IDirectFBWindow*>;
+		windowPool  = new set<IDirectFBWindow*>;
 		surfacePool = new set<IDirectFBSurface*>;
 
 		pthread_mutex_init(&winMutex, NULL);
@@ -84,7 +85,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 		if (DFBDeviceScreen::dfb == NULL) {
 			DFBCHECK(DirectFBInit(&numArgs, &args));
-			DFBCHECK(DirectFBCreate( &dfb));
+			DFBCHECK(DirectFBCreate(&dfb));
 
 			if (gfxLayer == NULL) {
 				DFBCHECK(dfb->GetDisplayLayer(
@@ -443,7 +444,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen*
-		createDFBScreen(int numArgs, char* args[]) {
+		createDFBScreen(int numArgs, char** args) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::system::
 			io::DFBDeviceScreen(numArgs, args));

@@ -109,7 +109,8 @@ namespace io {
 			static IDirectFBDisplayLayer* gfxLayer;
 
 		public:
-			DFBDeviceScreen(int numArgs=0, char* args[]=NULL);
+			DFBDeviceScreen(int numArgs, char** args);
+
 			virtual ~DFBDeviceScreen();
 			void setBackgroundImage(string uri);
 			unsigned int getWidthResolution();

@@ -66,6 +66,9 @@ namespace io {
 	class ILocalDeviceManager {
 		public:
 			virtual ~ILocalDeviceManager(){};
+
+			virtual void setParameters(int numArgs, char** args)=0;
+
 			virtual void release()=0;
 
 			virtual void setBackgroundImage(string uri)=0;

@@ -93,8 +93,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 
 #if HAVE_COMPSUPPORT
 		cm = IComponentManager::getCMInstance();
-		dm = ((LocalDeviceManagerCreator*)(cm->getObject(
-				"LocalDeviceManager")))();
+		dm = ((LocalDeviceManagerCreator*)(
+				cm->getObject("LocalDeviceManager")))();
 
 		dm->createDevice("systemScreen(0)");
 #endif
