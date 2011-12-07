@@ -47,75 +47,108 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _IComponentManager_H_
-#define _IComponentManager_H_
+#include "../../../../../config.h"
 
-#include "component/IComponent.h"
-
-#include <dlfcn.h>
-#include <iostream>
-#include <map>
-#include <string>
-using namespace std;
-
-typedef void* CMCreator();
+#include "player/AwesomiumHandler.h"
+#include "player/PlayersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace cm {
-	class IComponentManager {
-		public:
-			virtual ~IComponentManager(){};
-			virtual void* getObject(string objectName)=0;
-			virtual set<string>* getObjectsFromInterface(
-					string interfaceName)=0;
+namespace player {
+	IInputManager* AwesomiumHandler::im = NULL;
 
-			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;
-			virtual bool releaseComponentFromObject(string objName)=0;
-			virtual void refreshComponentDescription()=0;
-			virtual map<string, IComponent*>* getComponentDescription()=0;
+	WebView* AwesomiumHandler::webView = NULL;
+	WebCore* AwesomiumHandler::webCore = NULL;
 
-		private:
-			virtual void* getComponent(string dLibName)=0;
-			virtual void* getSymbol(void* component, string symbolName)=0;
-			virtual bool releaseComponent(void* component)=0;
+	AwesomiumHandler::AwesomiumHandler() {
+#if HAVE_COMPSUPPORT
+		dm = ((LocalDeviceManagerCreator*)(
+				cm->getObject("LocalDeviceManager")))();
 
-		public:
-			static IComponentManager* getCMInstance() {
-				void* cmComponent = dlopen("libgingacccm.so", RTLD_LAZY);
-				if (cmComponent == NULL) {
-					cerr << "IComponentManager warning: cant load ";
-					cerr << "component libgingaccm' => ";
-					cerr << dlerror() << endl;
-					return (NULL);
-				}
+		if (im == NULL) {
+			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
+		}
 
-				dlerror();
+		surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
+#else
+		dm = LocalDeviceManager::getInstance();
+		im = InputManager::getInstance();
+		surface = new DFBSurface(NULL);
+#endif
 
-				CMCreator* cmCreator = (CMCreator*)(dlsym(
-						cmComponent, "createCM"));
+		w = 0;
+		h = 0;
 
-				const char* dlsym_error = dlerror();
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: can't load symbol '";
-					cerr << "createCM' => " << dlsym_error << endl;
-					return (NULL);
-				}
+		hasFocus = false;
 
-				IComponentManager* icm = (IComponentManager*)(cmCreator());
+		if (webCore == NULL) {
+			webCore = new Awesomium::WebCore();
+		}
+	}
 
-				dlerror();
-				return (icm);
-			}
-	};
+	AwesomiumHandler::~AwesomiumHandler() {
+		clog << "AwesomiumHandler::~AwesomiumHandler " << endl;
+
+		im->removeInputEventListener(this);
+		//Attention: Surface is deleted by Player
+	}
+
+	void AwesomiumHandler::getSize(int* w, int* h) {
+		*w = this->w;
+		*h = this->h;
+	}
+
+	void AwesomiumHandler::setSize(int w, int h) {
+		this->w = w;
+		this->h = h;
+	}
+
+	void AwesomiumHandler::loadUrl(string url) {
+		mURL = url;
+
+		if (webView == NULL) {
+			webView = webCore->createWebView(w, h);
+		}
+
+		if (webView != NULL) {
+			webView->loadURL(mURL);
+		}
+	}
+
+	string AwesomiumHandler::getUrl() {
+		return (mURL);
+	}
+
+	ISurface* AwesomiumHandler::getSurface() {
+		return (surface);
+	}
+
+	void AwesomiumHandler::setFocus(bool focus) {
+		if (focus && !hasFocus) {
+			hasFocus = true;
+			im->addInputEventListener(this);
+
+		} else if (!focus && hasFocus) {
+			hasFocus = false;
+			im->removeInputEventListener(this);
+		}
+	}
+
+	bool AwesomiumHandler::userEventReceived(IInputEvent* userEvent) {
+		cout << "AwesomiumHandler::userEventReceived " << endl;
+
+		return (true);
+	}
+
+	void AwesomiumHandler::refresh() {
+
+	}
 }
 }
 }
 }
 }
 }
-
-#endif //_IComponentManager_H_

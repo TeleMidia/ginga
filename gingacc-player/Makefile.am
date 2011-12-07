@@ -10,6 +10,7 @@ SUBDIRS = 	files \
 			src/image \
 			src/application/declarative/xhtml/links \
 			src/application/declarative/xhtml/berkelium \
+			src/application/declarative/xhtml/awesomium \
 			src/application/imperative/lua \
 			src/text \
 			src/text/plain \

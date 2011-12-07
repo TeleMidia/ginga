@@ -47,69 +47,54 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _IComponentManager_H_
-#define _IComponentManager_H_
+#ifndef AwesomiumHandler_h_
+#define AwesomiumHandler_h_
 
-#include "component/IComponent.h"
+#include "system/io/ILocalDeviceManager.h"
+#include "system/io/IInputManager.h"
+#include "system/io/interface/output/IWindow.h"
+#include "system/io/interface/input/IInputEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
-#include <dlfcn.h>
-#include <iostream>
-#include <map>
+#include <stdio.h>
 #include <string>
+#include <sstream>
+#include <iostream>
 using namespace std;
 
-typedef void* CMCreator();
+#include <Awesomium/WebCore.h>
+using namespace Awesomium;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace cm {
-	class IComponentManager {
-		public:
-			virtual ~IComponentManager(){};
-			virtual void* getObject(string objectName)=0;
-			virtual set<string>* getObjectsFromInterface(
-					string interfaceName)=0;
-
-			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;
-			virtual bool releaseComponentFromObject(string objName)=0;
-			virtual void refreshComponentDescription()=0;
-			virtual map<string, IComponent*>* getComponentDescription()=0;
-
+namespace player {
+	class AwesomiumHandler : public IInputEventListener {
 		private:
-			virtual void* getComponent(string dLibName)=0;
-			virtual void* getSymbol(void* component, string symbolName)=0;
-			virtual bool releaseComponent(void* component)=0;
+			static WebView* webView;
+			static WebCore* webCore;
+			string mURL;
+			static IInputManager* im;
+			ILocalDeviceManager* dm;
+			ISurface* surface;
+			int w, h;
+			bool hasFocus;
 
 		public:
-			static IComponentManager* getCMInstance() {
-				void* cmComponent = dlopen("libgingacccm.so", RTLD_LAZY);
-				if (cmComponent == NULL) {
-					cerr << "IComponentManager warning: cant load ";
-					cerr << "component libgingaccm' => ";
-					cerr << dlerror() << endl;
-					return (NULL);
-				}
+			AwesomiumHandler();
+			virtual ~AwesomiumHandler();
 
-				dlerror();
+			void getSize(int* w, int* h);
+			void setSize(int w, int h);
+			void loadUrl(string url);
+			string getUrl();
+			ISurface* getSurface();
+			void setFocus(bool focus);
+			bool userEventReceived(IInputEvent* ev);
 
-				CMCreator* cmCreator = (CMCreator*)(dlsym(
-						cmComponent, "createCM"));
-
-				const char* dlsym_error = dlerror();
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: can't load symbol '";
-					cerr << "createCM' => " << dlsym_error << endl;
-					return (NULL);
-				}
-
-				IComponentManager* icm = (IComponentManager*)(cmCreator());
-
-				dlerror();
-				return (icm);
-			}
+			void refresh();
 	};
 }
 }
@@ -118,4 +103,4 @@ namespace cm {
 }
 }
 
-#endif //_IComponentManager_H_
+#endif /*AwesomiumHandler_h_*/

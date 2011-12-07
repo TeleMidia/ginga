@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef DSMCCSectionPayload_H_
 #define DSMCCSectionPayload_H_
 
+#include <string.h>
 #include <stdint.h>
 
 #include "Crc.h"

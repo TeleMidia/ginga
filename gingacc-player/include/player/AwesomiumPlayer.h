@@ -47,69 +47,47 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _IComponentManager_H_
-#define _IComponentManager_H_
+#ifndef AwesomiumPlayer_h_
+#define AwesomiumPlayer_h_
 
-#include "component/IComponent.h"
+#include "Player.h"
+#include "AwesomiumHandler.h"
 
-#include <dlfcn.h>
-#include <iostream>
-#include <map>
+#include <pthread.h>
+#include <sys/select.h>
+
+#include <set>
 #include <string>
 using namespace std;
-
-typedef void* CMCreator();
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace cm {
-	class IComponentManager {
-		public:
-			virtual ~IComponentManager(){};
-			virtual void* getObject(string objectName)=0;
-			virtual set<string>* getObjectsFromInterface(
-					string interfaceName)=0;
+namespace player {
+	class AwesomiumPlayer : public Player {
+		private:
+			AwesomiumHandler* awesome;
 
-			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;
-			virtual bool releaseComponentFromObject(string objName)=0;
-			virtual void refreshComponentDescription()=0;
-			virtual map<string, IComponent*>* getComponentDescription()=0;
+		public:
+			AwesomiumPlayer(string mrl);
+			virtual ~AwesomiumPlayer();
+
+			ISurface* getSurface();
+			void setNotifyContentUpdate(bool notify);
+
+			void play();
+			void stop();
+			bool setOutWindow(int windowId);
+			void setBounds(int x, int y, int w, int h);
+
+			void setPropertyValue(string name, string value);
+
+			bool setKeyHandler(bool isHandler);
 
 		private:
-			virtual void* getComponent(string dLibName)=0;
-			virtual void* getSymbol(void* component, string symbolName)=0;
-			virtual bool releaseComponent(void* component)=0;
-
-		public:
-			static IComponentManager* getCMInstance() {
-				void* cmComponent = dlopen("libgingacccm.so", RTLD_LAZY);
-				if (cmComponent == NULL) {
-					cerr << "IComponentManager warning: cant load ";
-					cerr << "component libgingaccm' => ";
-					cerr << dlerror() << endl;
-					return (NULL);
-				}
-
-				dlerror();
-
-				CMCreator* cmCreator = (CMCreator*)(dlsym(
-						cmComponent, "createCM"));
-
-				const char* dlsym_error = dlerror();
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: can't load symbol '";
-					cerr << "createCM' => " << dlsym_error << endl;
-					return (NULL);
-				}
-
-				IComponentManager* icm = (IComponentManager*)(cmCreator());
-
-				dlerror();
-				return (icm);
-			}
+			static void* mainLoop(void* ptr);
 	};
 }
 }
@@ -118,4 +96,4 @@ namespace cm {
 }
 }
 
-#endif //_IComponentManager_H_
+#endif /*AwesomiumPlayer_h_*/

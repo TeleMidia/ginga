@@ -47,15 +47,19 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "config.h"
+#include "../config.h"
 
 #if HAVE_BERKELIUM
 #include "player/BerkeliumPlayer.h"
-#endif
+#endif //HAVE_BERKELIUM
 
 #if HAVE_LINKS
 #include "player/LinksPlayer.h"
-#endif
+#endif //HAVE_LINKS
+
+#if HAVE_AWESOMIUM
+#include "player/AwesomiumPlayer.h"
+#endif //HAVE_AWESOMIUM
 
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"

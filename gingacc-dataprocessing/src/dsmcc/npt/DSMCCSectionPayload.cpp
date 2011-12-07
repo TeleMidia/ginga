@@ -104,12 +104,14 @@ int DSMCCSectionPayload::processSectionPayload() {
 
 			case 0x04: // Stream Event
 				clog << "DSMCCSectionPayload::processSectionPayload";
-				clog << " stream event. " << endl;
+				clog << " stream event." << endl;
+				break;
 
 			default:
 				clog << "DSMCCSectionPayload::processSectionPayload";
 				clog << "Descriptor unrecognized. ";
 				clog << (descriptorTag & 0xFF) << endl;
+				break;
 		}
 		pos = pos + descriptorSize;
 	}
@@ -242,7 +244,8 @@ int DSMCCSectionPayload::setPrivateDataByte(char* data, unsigned short length) {
 	} catch(...) {
 		return -1;
 	}
-	memcpy(privateDataByte, data, length);
+
+	memcpy((void*)privateDataByte, (void*)data, (::size_t)length);
 	privateDataLength = length;
 	return privateDataLength;
 }

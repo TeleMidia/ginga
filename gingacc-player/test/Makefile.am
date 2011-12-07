@@ -1,6 +1,8 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include $(COMPONENTS_INCS)
+INCLUDES = $(all_includes) -I$(top_srcdir)/include $(COMPONENTS_INCS) \
+    -I/usr/include/Awesomium/
+ 
 LIBS =
 
 noinst_PROGRAMS = test
@@ -18,6 +20,7 @@ test_LDADD =  $(COMPONENTS_LIBS) $(TEST_LIBS) -ltelemidiautil \
     -L/usr/local/lib/ginga -L../src/ -L../src/image/ \
     -L../src/application/declarative/xhtml/links \
     -L../src/application/declarative/xhtml/berkelium \
+    -L../src/application/declarative/xhtml/awesomium \
     -L../src/application/imperative/lua \
     -L../src/text -L../src/text/srt -L../src/text/plain \
     -L/usr/local/lib/lua/5.1/socket \

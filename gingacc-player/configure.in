@@ -331,6 +331,44 @@ fi
 fi
 
 AM_CONDITIONAL([LINKSLIB], [test x$enable_links = xyes])
+
+#####################
+# Awesomium Support #
+#####################
+awesomium=yes
+AC_ARG_ENABLE(awesomium,
+  [  --enable-awesomium build project with awesomium player [[default=yes]]],
+  enable_awesomium="$enableval", enable_awesomium=yes)
+
+AC_CHECK_HEADER(
+  [Awesomium/WebCore.h],
+  [],
+  AC_MSG_WARN([*** Awesomium header not Found.])
+    enable_awesomium=no
+)
+
+if test x$enable_awesomium = xno; then
+   AC_MSG_WARN([*** Ginga Awesomium Player support will not be built.])
+   AC_DEFINE(HAVE_AWESOMIUM, 0, [Def to 0 if you don't have ginga awesomium support.])
+else # enabling awesomium
+if test x$enable_berkelium = xno; then # awesomium without berkelium
+if test x$enable_links = xno; then # awesomium without berkelium/links
+   TEST_LIBS='-lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+else # awesomium with links
+   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+fi
+else # awesomium with berkelium
+if test x$enable_links = xno; then # awesomium with berkelium without links
+   TEST_LIBS='-lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+else # awesomium with links/berkelium
+   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+fi
+fi
+   AC_MSG_RESULT([*** Ginga Awesomium Player support will be built.])
+   AC_DEFINE(HAVE_AWESOMIUM, 1, [Def to 1 if you have ginga awesomium support.])
+fi
+
+AM_CONDITIONAL([AWESOMIUMLIB], [test x$enable_awesomium = xyes])
 AC_SUBST(TEST_LIBS)
 
 ###########################
@@ -364,6 +402,7 @@ AC_OUTPUT(Makefile
 	src/application/imperative/lua/Makefile
 	src/application/declarative/xhtml/links/Makefile
 	src/application/declarative/xhtml/berkelium/Makefile
+	src/application/declarative/xhtml/awesomium/Makefile
 	src/text/Makefile src/text/plain/Makefile
 	src/text/srt/Makefile
 	src/video/Makefile
@@ -378,6 +417,7 @@ Build options:
   FFmpeg Provider Support   $hasffmpegp
   Links Player Support      $enable_links
   Berkelium Player Support  $enable_berkelium
+  Awesomium Player Support  $enable_awesomium
   NCLET Support             $ncletplayer
   Multi Process Support     $enable_multiprocess
 ])
