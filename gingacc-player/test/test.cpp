@@ -408,7 +408,10 @@ int main(int argc, char** argv, char** envp) {
 		AwesomiumPlayer* awe1;
 		ISurface* s;
 
-		awe1 = new AwesomiumPlayer("http://www.google.com");
+		//awe1 = new AwesomiumPlayer("http://www.google.com");
+		awe1 = new AwesomiumPlayer(
+				"/root/workspaces/Ginga/ginganclplugin-cpp/test/simple.html");
+
 		awe1->setBounds(0, 0, 800, 800);
 		s = awe1->getSurface();
 		s->setParent(www);

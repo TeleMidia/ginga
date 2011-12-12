@@ -241,7 +241,29 @@ namespace player {
 			if (aInfo->webView != NULL) {
 				cout << "AwesomiumHandler::loadUrl call loadUrl" << endl;
 
-				aInfo->webView->loadURL(aInfo->mURL);
+				if (fileExists(aInfo->mURL)) {
+					string base, file;
+
+					if (aInfo->mURL.substr(0, 1) == "/") {
+						base = aInfo->mURL.substr(
+								0, aInfo->mURL.find_last_of("/"));
+
+						file = aInfo->mURL.substr(
+								aInfo->mURL.find_last_of("/") + 1,
+								aInfo->mURL.length() - (
+										aInfo->mURL.find_last_of("/") + 1));
+
+					} else {
+						base = getCurrentPath();
+						file = aInfo->mURL;
+					}
+
+					aInfo->webCore->setBaseDirectory(base);
+					aInfo->webView->loadFile(file);
+
+				} else {
+					aInfo->webView->loadURL(aInfo->mURL);
+				}
 
 				setFocus(aInfo);
 
