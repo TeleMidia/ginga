@@ -597,6 +597,8 @@ namespace io {
 		double pTimeStamp = 0;
 		double timeStamp  = 0;
 
+		int mouseX, mouseY;
+
 #ifdef _WIN32
 		pthread_mutex_lock(&mutex_event_buffer);
 #endif
@@ -618,28 +620,36 @@ namespace io {
 			inputEvent = eventBuffer->getNextEvent();
 			while (inputEvent != NULL) {
 				if (inputEvent->isMotionType()) {
+					mouseX = currentXAxis;
+					mouseY = currentYAxis;
+
 					inputEvent->getAxisValue(
 							&currentXAxis, &currentYAxis, NULL);
 
-					/*clog << "InputManager::run got currentX = '";
-					clog << currentXAxis << "' currentY = '";
-					clog << currentYAxis << "'" << endl;*/
+					if (currentXAxis == 0) {
+						currentXAxis = mouseX;
 
-					if (currentXAxis > maxX) {
+					} else if (currentXAxis > maxX && maxX != 0) {
 						currentXAxis = maxX;
 					}
 
-					if (currentYAxis > maxY) {
+					if (currentYAxis == 0) {
+						currentYAxis = mouseY;
+
+					} else if (currentYAxis > maxY && maxY != 0) {
 						currentYAxis = maxY;
 					}
 
-					/*clog << "InputManager::run new currentX = '";
+					/*
+					clog << "InputManager::run new currentX = '";
 					clog << currentXAxis << "' currentY = '";
 					clog << currentYAxis << "'" << endl;*/
 
 					delete inputEvent;
-					if(eventBuffer != NULL)
+					if (eventBuffer != NULL) {
 						inputEvent = eventBuffer->getNextEvent();
+					}
+
 					continue;
 				}
 

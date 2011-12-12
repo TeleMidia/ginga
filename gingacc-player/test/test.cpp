@@ -108,7 +108,7 @@ int main(int argc, char** argv, char** envp) {
 #if HAVE_COMPSUPPORT
 	w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
 	ww = ((WindowCreator*)(cm->getObject("Window")))(-1, 90, 90, 150, 150);
-	www = ((WindowCreator*)(cm->getObject("Window")))(-1, 120, 120, 400, 400);
+	www = ((WindowCreator*)(cm->getObject("Window")))(-1, 0, 0, 800, 800);
 #else
 	w  = new DFBWindow(10, 10, 100, 100);
 	ww = new DFBWindow(90, 90, 400, 400);
@@ -132,7 +132,7 @@ int main(int argc, char** argv, char** envp) {
 		img->setOutWindow(w->getId());
 		w->validate();
 
-		clog << "Player test has shown image. press enter to continue" << endl;
+		cout << "Player test has shown image. press enter to continue" << endl;
 		getchar();
 		dm->clearWidgetPools();
 
@@ -170,7 +170,7 @@ int main(int argc, char** argv, char** envp) {
 
 	} else if (argc > 1 && strcmp(argv[1], "pprocess") == 0) {
 #if HAVE_MULTIPROCESS
-		clog << "CREATING PLAYER PROCESS A " << endl;
+		cout << "CREATING PLAYER PROCESS A " << endl;
 
 #if HAVE_COMPSUPPORT
 		pprocessA = ((PlayerCreator*)(cm->getObject("PlayerProcess")))(
@@ -230,81 +230,81 @@ int main(int argc, char** argv, char** envp) {
 		bp1->setBounds(120, 120, 400, 400);
 		s = bp1->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(www);
 		}
-		clog << "gingacc-player test Call bp1->play" << endl;
+		cout << "gingacc-player test Call bp1->play" << endl;
 		bp1->play();
 
 		bp2 = new BerkeliumPlayer("http://www.telemidia.puc-rio.br");
 		bp2->setBounds(90, 90, 150, 150);
 		s = bp2->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(ww);
 		}
-		clog << "gingacc-player test Call bp2->play" << endl;
+		cout << "gingacc-player test Call bp2->play" << endl;
 		bp2->play();
 
 		bp3 = new BerkeliumPlayer("http://www.ncl.org.br");
 		bp3->setBounds(10, 10, 100, 100);
 		s = bp3->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(w);
 		}
-		clog << "gingacc-player test Call bp3->play" << endl;
+		cout << "gingacc-player test Call bp3->play" << endl;
 		bp3->play();
 
-		clog << "gingacc-player test press enter to remove berkelium player 1";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove berkelium player 1";
+		cout << endl;
 		getchar();
 		bp1->stop();
 
 		delete bp1;
 		www->hide();
 
-		clog << "gingacc-player test press enter to remove berkelium player 2";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove berkelium player 2";
+		cout << endl;
 		getchar();
 		bp2->stop();
 		ww->hide();
 
 		delete bp2;
 
-		clog << "gingacc-player test press enter to remove berkelium player 3";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove berkelium player 3";
+		cout << endl;
 		getchar();
 		bp3->stop();
 		w->hide();
 
 		delete bp3;
 
-		clog << "gingacc-player test press enter to create berkelium player 4";
-		clog << endl;
+		cout << "gingacc-player test press enter to create berkelium player 4";
+		cout << endl;
 		getchar();
 
 		bp1 = new BerkeliumPlayer("http://xkcd.com");
 		bp1->setBounds(120, 120, 400, 400);
 		s = bp1->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(www);
 		}
-		clog << "gingacc-player test Call bp1->play" << endl;
+		cout << "gingacc-player test Call bp1->play" << endl;
 		www->show();
 		bp1->play();
 
-		clog << "gingacc-player test press enter to remove berkelium player 4";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove berkelium player 4";
+		cout << endl;
 		getchar();
 		bp1->stop();
 		www->hide();
@@ -318,95 +318,119 @@ int main(int argc, char** argv, char** envp) {
 		lp1->setBounds(120, 120, 400, 400);
 		s = lp1->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(www);
 		}
 
 		lp1->setKeyHandler(true);
-		clog << "gingacc-player test Call lp1->play" << endl;
+		cout << "gingacc-player test Call lp1->play" << endl;
 		lp1->play();
 
-		clog << "gingacc-player test Call lp1->play Ok, press enter to ";
-		clog << "continue" << endl;
+		cout << "gingacc-player test Call lp1->play Ok, press enter to ";
+		cout << "continue" << endl;
 		getchar();
 
 		lp2 = new LinksPlayer("http://www.telemidia.puc-rio.br");
 		lp2->setBounds(90, 90, 150, 150);
 		s = lp2->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(ww);
 		}
-		clog << "gingacc-player test Call bp2->play" << endl;
+		cout << "gingacc-player test Call bp2->play" << endl;
 		lp2->play();
 
 		lp3 = new LinksPlayer("http://www.ncl.org.br");
 		lp3->setBounds(10, 10, 100, 100);
 		s = lp3->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(w);
 		}
-		clog << "gingacc-player test Call bp3->play" << endl;
+		cout << "gingacc-player test Call bp3->play" << endl;
 		lp3->play();
 
-		clog << "gingacc-player test press enter to remove links player 1";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove links player 1";
+		cout << endl;
 		getchar();
 		lp1->stop();
 
 		delete lp1;
 		www->hide();
 
-		clog << "gingacc-player test press enter to remove links player 2";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove links player 2";
+		cout << endl;
 		getchar();
 		lp2->stop();
 		ww->hide();
 
 		delete lp2;
 
-		clog << "gingacc-player test press enter to remove links player 3";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove links player 3";
+		cout << endl;
 		getchar();
 		lp3->stop();
 		w->hide();
 
 		delete lp3;
 
-		clog << "gingacc-player test press enter to create links player 4";
-		clog << endl;
+		cout << "gingacc-player test press enter to create links player 4";
+		cout << endl;
 		getchar();
 
 		lp1 = new LinksPlayer("http://xkcd.com");
 		lp1->setBounds(120, 120, 400, 400);
 		s = lp1->getSurface();
 		if (s == NULL) {
-			clog << "gingacc-player test Warning! surface is NULL" << endl;
+			cout << "gingacc-player test Warning! surface is NULL" << endl;
 
 		} else {
 			s->setParent(www);
 		}
-		clog << "gingacc-player test Call bp1->play" << endl;
+		cout << "gingacc-player test Call bp1->play" << endl;
 		www->show();
 		lp1->play();
 
-		clog << "gingacc-player test press enter to remove links player 4";
-		clog << endl;
+		cout << "gingacc-player test press enter to remove links player 4";
+		cout << endl;
 		getchar();
 		lp1->stop();
+		www->hide();
+#endif
+	} else if (argc > 1 && strcmp(argv[1], "awesomium") == 0) {
+#if HAVE_AWESOMIUM
+		AwesomiumPlayer* awe1;
+		ISurface* s;
+
+		awe1 = new AwesomiumPlayer("http://www.google.com");
+		awe1->setBounds(0, 0, 800, 800);
+		s = awe1->getSurface();
+		s->setParent(www);
+		cout << "gingacc-player test Call awe1->play" << endl;
+		awe1->play();
+		cout << "gingacc-player test Call awe1->setKeyHandler" << endl;
+		awe1->setKeyHandler(true);
+
+		cout << "gingacc-player test waiting getchar" << endl;
+		getchar();
+
+		cout << "gingacc-player test Call awe1->stop" << endl;
+		awe1->stop();
+		cout << "gingacc-player test Call delete awe1" << endl;
+		delete awe1;
+		cout << "gingacc-player test Call www->hide" << endl;
 		www->hide();
 #endif
 	}
 
 	//TODO: tests
-	clog << "Player test done. press enter to continue" << endl;
+	cout << "Player test done. press enter to continue" << endl;
 	getchar();
 
 	return 0;

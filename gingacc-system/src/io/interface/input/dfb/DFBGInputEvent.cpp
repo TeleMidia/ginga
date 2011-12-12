@@ -314,7 +314,6 @@ namespace io {
 					default:
 						break;
 				}
-
 			}
 
 		} else if (isButtonPressType()) {

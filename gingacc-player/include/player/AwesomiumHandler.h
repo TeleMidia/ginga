@@ -50,6 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef AwesomiumHandler_h_
 #define AwesomiumHandler_h_
 
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+
 #include "system/io/ILocalDeviceManager.h"
 #include "system/io/IInputManager.h"
 #include "system/io/interface/output/IWindow.h"
@@ -59,6 +62,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 #include <stdio.h>
 #include <string>
 #include <sstream>
+#include <map>
 #include <iostream>
 using namespace std;
 
@@ -71,30 +75,66 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class AwesomiumHandler : public IInputEventListener {
-		private:
-			static WebView* webView;
-			static WebCore* webCore;
+	typedef int AwesomiumHDR;
+
+	static IInputManager* im;
+	static ILocalDeviceManager* dm;
+
+	class AwesomiumInfo : public IInputEventListener {
+		public:
+			AwesomiumHDR id;
+			WebCore* webCore;
+			WebView* webView;
 			string mURL;
-			static IInputManager* im;
-			ILocalDeviceManager* dm;
 			ISurface* surface;
+			int mouseX, mouseY;
 			int w, h;
 			bool hasFocus;
+			bool setFocus;
+			string rFile;
+			bool update;
+			IInputEvent* ev;
+
+			bool _eMVarW;
+			pthread_cond_t _eMVar;
+			pthread_mutex_t _eM;
+
+			AwesomiumInfo(AwesomiumHDR id);
+			virtual ~AwesomiumInfo();
+
+			void useEvent();
+			bool eventUsed();
+			bool userEventReceived(IInputEvent* ev);
+	};
+
+	class AwesomiumHandler {
+		private:
+			static map<AwesomiumHDR, AwesomiumInfo*> _infos;
+			static AwesomiumHDR _id;
+
+			static bool getAwesomeInfo(
+					AwesomiumHDR id,
+					AwesomiumInfo** aInfo,
+					bool removeInfo=false);
 
 		public:
-			AwesomiumHandler();
-			virtual ~AwesomiumHandler();
+			static AwesomiumHDR createAwesomium();
+			static void destroyAwesomium(AwesomiumHDR id);
+			static void getSize(AwesomiumHDR id, int* w, int* h);
+			static void setSize(AwesomiumHDR id, int w, int h);
+			static void loadUrl(AwesomiumHDR id, string url);
+			static string getUrl(AwesomiumHDR id);
+			static ISurface* getSurface(AwesomiumHDR id);
+			static void setFocus(AwesomiumHDR id, bool focus);
 
-			void getSize(int* w, int* h);
-			void setSize(int w, int h);
-			void loadUrl(string url);
-			string getUrl();
-			ISurface* getSurface();
-			void setFocus(bool focus);
-			bool userEventReceived(IInputEvent* ev);
+		private:
+			static void setFocus(AwesomiumInfo* aInfo);
+			static void eventHandler(AwesomiumInfo* aInfo);
+			static void refresh(AwesomiumHDR id);
+			static void update(AwesomiumInfo* aInfo, double value);
 
-			void refresh();
+		public:
+			static void stopUpdate(AwesomiumHDR id);
 	};
 }
 }

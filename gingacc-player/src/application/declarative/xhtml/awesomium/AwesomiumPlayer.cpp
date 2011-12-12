@@ -61,29 +61,19 @@ namespace ginga {
 namespace core {
 namespace player {
 	AwesomiumPlayer::AwesomiumPlayer(string mrl) : Player(mrl) {
-		pthread_t tId;
-		pthread_attr_t tattr;
-
-		awesome = new AwesomiumHandler();
-
-		pthread_attr_init(&tattr);
-		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
-		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
-
-		pthread_create(&tId, &tattr, AwesomiumPlayer::mainLoop, this);
-		pthread_detach(tId);
+		awesome = AwesomiumHandler::createAwesomium();
 	}
 
 	AwesomiumPlayer::~AwesomiumPlayer() {
 		clog << "AwesomiumPlayer::~AwesomiumPlayer " << endl;
 
-		delete awesome;
+		AwesomiumHandler::destroyAwesomium(awesome);
 	}
 
 	ISurface* AwesomiumPlayer::getSurface() {
 		clog << "AwesomiumPlayer::getSurface '" << mrl << "'" << endl;
 
-		surface = awesome->getSurface();
+		surface = AwesomiumHandler::getSurface(awesome);
 		return (Player::getSurface());
 	}
 
@@ -100,15 +90,25 @@ namespace player {
 		clog << y << "', w = '" << w << "', h = '" << h << "'.";
 		clog << endl;
 
-		awesome->setSize(w, h);
+		AwesomiumHandler::setSize(awesome, w - x, h - y);
 	}
 
 	void AwesomiumPlayer::play() {
-		awesome->loadUrl(mrl);
+		pthread_t tId;
+		pthread_attr_t tattr;
+
+		pthread_attr_init(&tattr);
+		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
+		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
+		pthread_create(&tId, &tattr, AwesomiumPlayer::_loadUrl, this);
+		pthread_detach(tId);
+
 		Player::play();
 	}
 
 	void AwesomiumPlayer::stop() {
+		AwesomiumHandler::stopUpdate(awesome);
 		Player::stop();
 	}
 
@@ -163,25 +163,17 @@ namespace player {
 	}
 
 	bool AwesomiumPlayer::setKeyHandler(bool isHandler) {
-		awesome->setFocus(isHandler);
+		AwesomiumHandler::setFocus(awesome, isHandler);
 		return (isHandler);
 	}
 
-	void* AwesomiumPlayer::mainLoop(void* ptr) {
+	void* AwesomiumPlayer::_loadUrl(void* ptr) {
 		AwesomiumPlayer* p = (AwesomiumPlayer*)ptr;
-		struct timeval tv;
+		/*struct timeval tv;
 		tv.tv_sec = 0;
-		tv.tv_usec = 25000;
+		tv.tv_usec = 100000;*/
 
-		while (p->status != STOP) {
-			p->awesome->refresh();
-
-#ifdef _WIN32
-			Sleep(25);
-#else
-			::select(0, NULL, NULL, NULL, &tv);
-#endif
-	    }
+		AwesomiumHandler::loadUrl(p->awesome, p->mrl);
 
 		return (NULL);
 	}

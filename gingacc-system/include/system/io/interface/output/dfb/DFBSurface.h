@@ -81,6 +81,7 @@ namespace io {
 			DFBSurface(void* someSurface);      //SurfaceGraphicsWg
 			virtual ~DFBSurface();
 
+			void write(int x, int y, int w, int h, int pitch, char* buff);
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();
 

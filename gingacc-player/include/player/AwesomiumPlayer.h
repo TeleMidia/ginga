@@ -68,7 +68,7 @@ namespace core {
 namespace player {
 	class AwesomiumPlayer : public Player {
 		private:
-			AwesomiumHandler* awesome;
+			AwesomiumHDR awesome;
 
 		public:
 			AwesomiumPlayer(string mrl);
@@ -87,7 +87,7 @@ namespace player {
 			bool setKeyHandler(bool isHandler);
 
 		private:
-			static void* mainLoop(void* ptr);
+			static void* _loadUrl(void* ptr);
 	};
 }
 }
