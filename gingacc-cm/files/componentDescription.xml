@@ -267,6 +267,15 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-player" name="libgingaccplaawe.so" version="0.12.3" type="dynamic">
+    <dependency componentName="libawesomium-1.6.3.so" version="1.6.3"/>
+    <dependency componentName="libtelemidiautil.so" version="0.12.3"/>
+    <dependency componentName="libgingaccplayer.so" version="0.12.3"/>
+    <symbol object="AwesomiumPlayer" creator="createAwesomiumPlayer" destroyer="destroyAwesomiumPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
   <component package="gingacc-player" name="libgingaccplaplt.so" version="0.12.3" type="dynamic">
     <dependency componentName="libtelemidiautil.so" version="0.12.3"/>
     <dependency componentName="libgingaccplayer.so" version="0.12.3"/>
@@ -434,6 +443,16 @@
     <dependency componentName="libgingancladapter.so" version="0.12.3"/>
     <dependency componentName="libginganclappadapter.so" version="0.12.3"/>
     <symbol object="BerkeliumPlayerAdapter" creator="createBklAdapter" destroyer="destroyBklAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclawepadapter.so" version="0.12.3" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.12.3"/>
+    <dependency componentName="libginganclmodel.so" version="0.12.3"/>
+    <dependency componentName="libgingancladapter.so" version="0.12.3"/>
+    <dependency componentName="libginganclappadapter.so" version="0.12.3"/>
+    <symbol object="AwesomiumPlayerAdapter" creator="createAweAdapter" destroyer="destroyAweAdapter" interface="IPlayerAdapter"/>
     <location type="local" uri="/usr/local/lib/ginga/adapters"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

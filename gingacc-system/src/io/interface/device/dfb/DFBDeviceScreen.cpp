@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "../../../../../config.h"
 #include "system/io/interface/device/dfb/DFBDeviceScreen.h"
 #include "system/io/ILocalDeviceManager.h"
 
@@ -66,7 +67,9 @@ unsigned int DFBDeviceScreen::numOfDFBScreens = 0;
 IDirectFB* DFBDeviceScreen::dfb = NULL;
 IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
-	DFBDeviceScreen::DFBDeviceScreen(int numArgs, char** args) {
+	DFBDeviceScreen::DFBDeviceScreen(
+			int numArgs, char** args, void* parentId) {
+
 		DFBDisplayLayerConfig layer_config;
 		DFBResult ret;
 
@@ -85,6 +88,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 		if (DFBDeviceScreen::dfb == NULL) {
 			DFBCHECK(DirectFBInit(&numArgs, &args));
+
+			if (parentId != NULL) {
+				setParentDevice(parentId);
+			}
+
 			DFBCHECK(DirectFBCreate(&dfb));
 
 			if (gfxLayer == NULL) {
@@ -174,6 +182,15 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 			gfxLayer = NULL;
 			dfb = NULL;
 		}
+	}
+
+	void DFBDeviceScreen::setParentDevice(void* devId) {
+#if HAVE_WINDOWLESS
+		dfb_config_set_x11_root_window(devId);
+		cout << endl;
+		cout << "DFBDeviceScreen::setParentDevice '";
+		cout << (char*)devId << "'" << endl;
+#endif //HAVE_WINDOWLESS
 	}
 
 	void DFBDeviceScreen::setBackgroundImage(string uri) {
@@ -444,10 +461,10 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen*
-		createDFBScreen(int numArgs, char** args) {
+		createDFBScreen(int numArgs, char** args, void* parentId) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::system::
-			io::DFBDeviceScreen(numArgs, args));
+			io::DFBDeviceScreen(numArgs, args, parentId));
 }
 
 extern "C" void destroyDFBScreen(

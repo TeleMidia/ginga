@@ -73,6 +73,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace io {
+	void* LocalDeviceManager::parentId = NULL;
 	int LocalDeviceManager::numArgs = 0;
 	char** LocalDeviceManager::args = NULL;
 #if HAVE_COMPSUPPORT
@@ -104,6 +105,10 @@ namespace io {
 	}
 
 	LocalDeviceManager* LocalDeviceManager::_instance = NULL;
+
+	void LocalDeviceManager::setParentDevice(void* devId) {
+		parentId = devId;
+	}
 
 	void LocalDeviceManager::release() {
 		if (_instance != NULL) {
@@ -202,13 +207,14 @@ namespace io {
 			(*profiles)[deviceNumber] = description;
 
 #if HAVE_COMPSUPPORT
-			scr = ((ScreenCreator*)(
-					cm->getObject("DeviceScreen")))(this->numArgs, this->args);
+			scr = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
+					this->numArgs, this->args, parentId);
+
 #else
 #ifndef _WIN32
-			scr = new DFBDeviceScreen(this->numArgs, this->args);
+			scr = new DFBDeviceScreen(this->numArgs, this->args, parentId);
 #else
-			scr = new DXDeviceScreen(this->numArgs, this->args);
+			scr = new DXDeviceScreen(this->numArgs, this->args, parentId);
 #endif
 #endif
 

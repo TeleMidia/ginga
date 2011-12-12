@@ -212,7 +212,6 @@ namespace player {
 
 	void AwesomiumHandler::loadUrl(AwesomiumHDR id, string url) {
 		AwesomiumInfo* aInfo;
-		int loadingT = 0;
 
 		if (getAwesomeInfo(id, &aInfo)) {
 			aInfo->mURL   = url;
@@ -272,10 +271,6 @@ namespace player {
 
 				while (aInfo->webView->isLoadingPage()) {
 					update(aInfo, 50);
-					loadingT++;
-					if (loadingT == 30) {
-						aInfo->webView->reload();
-					}
 				}
 
 				cout << "AwesomiumHandler::loadUrl '";

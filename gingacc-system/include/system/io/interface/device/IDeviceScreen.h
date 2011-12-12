@@ -64,6 +64,7 @@ namespace io {
 	class IDeviceScreen {
 		public:
 			virtual ~IDeviceScreen(){};
+			virtual void setParentDevice(void* devId)=0;
 			virtual void setBackgroundImage(string uri)=0;
 			virtual unsigned int getWidthResolution()=0;
 			virtual void setWidthResolution(unsigned int wRes)=0;
@@ -87,7 +88,7 @@ namespace io {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen*
-		ScreenCreator(int numArgs, char** args);
+		ScreenCreator(int numArgs, char** args, void* parentId);
 
 typedef void ScreenDestroyer(
 		::br::pucrio::telemidia::ginga::core::system::io::IDeviceScreen* ds);

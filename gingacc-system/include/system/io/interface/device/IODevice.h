@@ -78,6 +78,7 @@ namespace io {
 	public:
 		IODevice();
 		~IODevice();
+
 		unsigned int addAudio(IDeviceAudio* audioResource);
 		unsigned int addScreen(IDeviceScreen* screenResource);
 		unsigned int addChannel(IDeviceCommunication* channelResource);

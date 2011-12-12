@@ -83,6 +83,7 @@ namespace io {
 			map<unsigned int, string>* profiles;
 			static LocalDeviceManager* _instance;
 
+			static void* parentId;
 			static int numArgs;
 			static char** args;
 
@@ -90,6 +91,8 @@ namespace io {
 			virtual ~LocalDeviceManager();
 
 		public:
+			void setParentDevice(void* devId);
+
 			void setParameters(int numArgs, char** args);
 			void release();
 

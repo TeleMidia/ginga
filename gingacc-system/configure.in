@@ -312,6 +312,23 @@ AM_CONDITIONAL([KINECT], [test x$enable_kinect = xyes])
 AC_SUBST(KINECT_LIBS)
 AC_SUBST(KINECT_INCS)
 
+######################
+# Windowless Support #
+######################
+windowless=no
+AC_ARG_ENABLE(windowless,
+  [  --enable-windowless build project with windowless support [[default=no]]],
+  enable_windowless="$enableval", enable_windowless=no)
+
+if test x$enable_awesomium = xyes; then
+   AC_MSG_RESULT([*** Ginga Windowless support will be built.])
+   AC_DEFINE(HAVE_WINDOWLESS, 1, [Def to 1 if you have ginga windowless support.])
+else
+   AC_MSG_RESULT([*** Ginga Windowless support will not be built.])
+   AC_DEFINE(HAVE_WINDOWLESS, 1, [Def to 0 if you don't have ginga windowless support.])
+fi
+
+
 AC_OUTPUT(
 	Makefile
 	include/system/thread/Makefile

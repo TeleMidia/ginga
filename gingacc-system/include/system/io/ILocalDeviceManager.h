@@ -67,10 +67,10 @@ namespace io {
 		public:
 			virtual ~ILocalDeviceManager(){};
 
+			virtual void setParentDevice(void* devId)=0;
+
 			virtual void setParameters(int numArgs, char** args)=0;
-
 			virtual void release()=0;
-
 			virtual void setBackgroundImage(string uri)=0;
 
 			virtual int getDeviceWidth(
