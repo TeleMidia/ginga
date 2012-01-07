@@ -1,7 +1,7 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
-	$(all_includes) -I$(top_srcdir)/include
+INCLUDES = $(all_includes) -I$(top_srcdir)/include \
+    -I/usr/local/include/directfb/ -I/usr/local/include/ginga/
 
 LIBS = 
 
@@ -14,10 +14,10 @@ libgingaccplalua_so_LDFLAGS = -Wl,-E,-soname,libgingaccplalua.so -shared \
 
 localLib_PROGRAMS = libgingaccplalua.so
 
-libgingaccplalua_so_SOURCES = LuaCanvas.cpp LuaEvent.cpp LuaPlayer.cpp
+libgingaccplalua_so_SOURCES = LuaEvent.cpp LuaCanvas.cpp LuaPlayer.cpp
 
 libgingaccplalua_so_LDADD = -llua -lcore -lpthread -ltelemidiautil \
      -lgingaccsystemthread -lgingaccsystemiocodemap -lgingaccplayer \
-     -lgingaccplaimg $(COMPONENTS_LIBS)
+     -lgingaccplaimg $(COMPONENTS_LIBS) $(DATAPROC_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -51,6 +51,9 @@ http://www.telemidia.puc-rio.br
 #include "system/io/interface/device/dfb/DFBDeviceScreen.h"
 #include "system/io/ILocalDeviceManager.h"
 
+#include <string.h>
+#include <stdlib.h>
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -90,6 +93,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 			DFBCHECK(DirectFBInit(&numArgs, &args));
 
 			if (parentId != NULL) {
+				cout << "DFBDeviceScreen::DFBDeviceScreen" << endl;
 				setParentDevice(parentId);
 			}
 
@@ -185,11 +189,14 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 	}
 
 	void DFBDeviceScreen::setParentDevice(void* devId) {
+		//unsigned long xid = strtoul(strdup((const char*)devId), NULL, 10);
 #if HAVE_WINDOWLESS
+#ifdef DFB_CONFIG_SET_X11_ROOT_WINDOW
 		dfb_config_set_x11_root_window(devId);
 		cout << endl;
-		cout << "DFBDeviceScreen::setParentDevice '";
+		cout << "DFBDeviceScreen::setParentDevice(" << this << ") devId = '";
 		cout << (char*)devId << "'" << endl;
+#endif //DFB_CONFIG_SET_X11_ROOT_WINDOW
 #endif //HAVE_WINDOWLESS
 	}
 

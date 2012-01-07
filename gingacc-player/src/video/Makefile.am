@@ -14,7 +14,7 @@ localLib_PROGRAMS = libgingaccplaavp.so
 
 CPPSRCS = AVPlayer.cpp
 
-if CCRTPIC
+if IC
 CPPSRCS += RTPListener.cpp
 endif
 

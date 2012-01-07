@@ -107,6 +107,8 @@ namespace io {
 	LocalDeviceManager* LocalDeviceManager::_instance = NULL;
 
 	void LocalDeviceManager::setParentDevice(void* devId) {
+		cout << "LocalDeviceManager::setParentDevice(" << this << ")";
+		cout << " parent device ID = '" << devId << "'" << endl;
 		parentId = devId;
 	}
 
@@ -207,6 +209,9 @@ namespace io {
 			(*profiles)[deviceNumber] = description;
 
 #if HAVE_COMPSUPPORT
+			cout << "LocalDeviceManager::createDevice(" << this << ") with";
+			cout << " parentId = '" << parentId << "'" << endl;
+
 			scr = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
 					this->numArgs, this->args, parentId);
 

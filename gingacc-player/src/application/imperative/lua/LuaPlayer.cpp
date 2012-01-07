@@ -682,12 +682,15 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     chdir(getPath(mrl).c_str());    // execucao a partir do diretorio fonte
     this->L = luaL_newstate();      // estado Lua
 
+#if HAVE_DATAPROC
     epgProc = NULL;
+#endif //HAVE_DATAPROC
 
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
     this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
 
+#if HAVE_DATAPROC
     compObj = cm->getObject("EPGProcessor");
     if (compObj != NULL) {
     	this->epgProc = ((epgpCreator*)compObj)();
@@ -696,16 +699,23 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
     	clog << "LuaPlayer::LuaPlayer Warning! Can't create EPGProcessor: ";
     	clog << "symbol not found!" << endl;
     }
+#endif //HAVE_DATAPROC
 
-#else
+#else //HAVE_COMPSUPPORT
+
     this->im = InputManager::getInstance();
+
 #ifndef _WIN32
 	this->surface = new DFBSurface();
-	this->epgProc = EPGProcessor::getInstance();
-#else
+#else //_WIN32
 	this->surface = new DXSurface();
-#endif
-#endif
+#endif //_WIN32
+
+#if HAVE_DATAPROC
+	this->epgProc = EPGProcessor::getInstance();
+#endif //HAVE_DATAPROC
+
+#endif //HAVE_COMPSUPPORT
 
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
 	this->im->addApplicationInputEventListener(this);
@@ -941,16 +951,19 @@ void LuaPlayer::refreshContent() {
 }
 
 void LuaPlayer::addAsSIListener (unsigned char type) {
+#if HAVE_DATAPROC
 	if (epgProc) {
 		this->epgProc->addEPGListener(this, "all", type);
 	}
+#endif //HAVE_DATAPROC
 }
 
 //TODO: generalize to pushSIEvent
-void LuaPlayer::pushSIEvent (map<string, struct Field> event, unsigned char type)
+void LuaPlayer::pushSIEvent (map<string, struct SIField> event, unsigned char type)
 {
+#if HAVE_DATAPROC
 	struct Field field;
-	//map<string, struct Field> data;
+	//map<string, struct SIField> data;
 	map<string, struct Field> evt;
 
 	clog << "LuaPlayer::pushSIEvent event.size = '" << event.size() << "'";
@@ -981,6 +994,7 @@ void LuaPlayer::pushSIEvent (map<string, struct Field> event, unsigned char type
 
 		ext_postHashRec(this->L, evt, true);
 	}
+#endif //HAVE_DATAPROC
 }
 
 /*

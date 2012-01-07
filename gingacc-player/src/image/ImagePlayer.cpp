@@ -51,8 +51,10 @@ http://www.telemidia.puc-rio.br
 
 #include "player/PlayersComponentSupport.h"
 
+#if HAVE_IC
 #include "ic/IInteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
+#endif //HAVE_IC
 
 namespace br {
 namespace pucrio {
@@ -68,6 +70,7 @@ namespace player {
 		if (mrl.substr(0, 7) == "http://" ||
 				mrl.substr(0, 8) == "https://") {
 
+#if HAVE_IC
 			IInteractiveChannelManager* icm;
 
 #if HAVE_COMPSUPPORT
@@ -76,7 +79,7 @@ namespace player {
 
 #else
 			icm = InteractiveChannelManager::getInstance();
-#endif
+#endif //HAVE_COMPSUPPORT
 
 			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
 			newMrl = itos((long int)this);
@@ -87,6 +90,7 @@ namespace player {
 			icm->releaseInteractiveChannel(ic);
 
 			mrl = newMrl;
+#endif //HAVE_IC
 		}
 
 		if (fileExists(mrl)) {

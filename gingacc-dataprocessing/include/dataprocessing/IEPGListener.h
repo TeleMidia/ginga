@@ -71,7 +71,7 @@ using namespace std;
  * That request has to be stored associated with her N IEPGListeners.
  */
 
-struct Request{
+struct Request {
 	string stage;
 	/* 3 possible values: current, next or schedule*/
 
@@ -90,9 +90,9 @@ struct Request{
 	 * the request is for all possible metadada fields*/
 };
 
-struct Field{
+struct SIField {
 	string str;
-	map<string, struct Field> table;
+	map<string, struct SIField> table;
 };
 
 namespace br {
@@ -112,8 +112,8 @@ namespace epg {
 
 		public:
 			virtual ~IEPGListener(){};
-			virtual void pushSIEvent(map<string, struct Field> event,
-					unsigned char type)=0;
+			virtual void pushSIEvent(
+					map<string, struct SIField> event, unsigned char type)=0;
 
 			virtual void addAsSIListener(unsigned char type)=0;
 	};

@@ -503,8 +503,8 @@ namespace epg {
 	}
 
 	void EPGProcessor::generateSdtMap(IServiceInfo* si) {
-		struct Field field, fieldMap;
-		map<string, struct Field> responseMap, data;
+		struct SIField field, fieldMap;
+		map<string, struct SIField> responseMap, data;
 		vector<IMpegDescriptor*>::iterator i;
 		vector<IMpegDescriptor*>* descs;
 		IServiceDescriptor* sd;
@@ -568,9 +568,9 @@ namespace epg {
 	}
 
 	void EPGProcessor::generateTotMap(ITOT* tot) {
-		map<string, struct Field> responseMap, data;
+		map<string, struct SIField> responseMap, data;
 		set<IEPGListener*>::iterator i;
-		struct Field field, fieldMap;
+		struct SIField field, fieldMap;
 		struct tm time;
 
 		if (tot == NULL) {
@@ -606,11 +606,11 @@ namespace epg {
 	void EPGProcessor::generateEitMap(
 			map<unsigned int, IEventInfo*>* actualMap) {
 
-		map<string, struct Field> responseMap, data;
+		map<string, struct SIField> responseMap, data;
 		IEventInfo* ei;
 		map<unsigned int, IEventInfo*>::iterator i ;
 		vector<IMpegDescriptor*>::iterator j;
-		struct Field field, fieldMap;
+		struct SIField field, fieldMap;
 		IShortEventDescriptor* sed;
 		vector<IMpegDescriptor*>* descs;
 		string name;
@@ -682,8 +682,8 @@ namespace epg {
 		}
 	}
 
-	void EPGProcessor::printFieldMap(map<string, struct Field>* fieldMap) {
-		map<string, struct Field>::iterator i;
+	void EPGProcessor::printFieldMap(map<string, struct SIField>* fieldMap) {
+		map<string, struct SIField>::iterator i;
 
 		clog << "EPGProcesor::printFieldMap printing..." << endl;
 		for (i = fieldMap->begin(); i!= fieldMap->end(); ++i){
@@ -704,11 +704,11 @@ namespace epg {
 		}
 	}
 
-	struct Field* EPGProcessor::handleFieldStr(string str) {
-		struct Field* field;
+	struct SIField* EPGProcessor::handleFieldStr(string str) {
+		struct SIField* field;
 		//clog << "EPGProcessor::handleFieldstr with str = " << str << endl;
 
-		field = new struct Field;
+		field = new struct SIField;
 		if (str == "") {
 			field->str = "0";
 			return field;

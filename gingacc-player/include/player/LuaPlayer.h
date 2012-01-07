@@ -108,6 +108,20 @@ http://www.telemidia.puc-rio.br
 #ifndef LUAPLAYER_H_
 #define LUAPLAYER_H_
 
+#include "config.h"
+
+extern "C" {
+	//#include <ctrace.h>
+	#include <lua.h>
+	#include <lualib.h>
+	#include <lauxlib.h>
+}
+
+#include <map>
+#include <string>
+#include <iostream>
+using namespace std;
+
 #include "system/io/interface/output/IWindow.h"
 #include "system/io/interface/content/text/IFontProvider.h"
 #include "system/io/ILocalDeviceManager.h"
@@ -117,25 +131,18 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
+#if HAVE_DATAPROC
 #include "dataprocessing/IEPGProcessor.h"
 #include "dataprocessing/IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
-
-#include <iostream>
-#include <string>
-#include <map>
-using namespace std;
+#endif //HAVE_DATAPROC
 
 #include "Player.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-//#include <ctrace.h>
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+struct Field {
+	string str;
+	map<string, struct Field> table;
+};
 
 #define LUAPLAYER_PLAYER    "luaplayer.Player"
 #define LUAPLAYER_TCP       "luaplayer.TCP"
@@ -147,7 +154,9 @@ void t_dump (lua_State* L, int idx);
 // FUNCOES C AUXILIARES
 
 // Converte uma HashTable C++ para uma tabela Lua.
-LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt, bool dispatch);
+LUALIB_API int ext_postHashRec (
+		lua_State* L, map<string, struct Field> evt, bool dispatch);
+
 LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt);
 LUALIB_API int ext_postRef (lua_State* L, int ref);
 
@@ -158,9 +167,6 @@ LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect);
 
 #define GETPLAYER(L) (LuaPlayer::getPlayer(L))
 
-#ifdef __cplusplus
-}
-#endif
 
 // ESCOPO
 struct scopeInfo {
@@ -177,9 +183,14 @@ namespace ginga {
 namespace core {
 namespace player {
 
+#if HAVE_DATAPROC
   class LuaPlayer :
-		  public Player, public Thread, public io::IInputEventListener,
-		  IEPGListener {
+	  public Player, public Thread, public io::IInputEventListener,
+	  	  public IEPGListener {
+#else
+  class LuaPlayer :
+	  public Player, public Thread, public io::IInputEventListener {
+#endif //HAVE_DATAPROC
 
 	private:
 		bool loaded;     // se o script ja foi carregado (executado)
@@ -201,7 +212,11 @@ namespace player {
 
 	    IInputManager* im;
         bool isHandler;  // se o player esta com o foco
+
+#if HAVE_DATAPROC
 		IEPGProcessor* epgProc;
+#endif //HAVE_DATAPROC
+
 		LuaPlayer (string mrl);
 		virtual ~LuaPlayer ();
 		void run();
@@ -224,7 +239,7 @@ namespace player {
 		void unprotectedSetPropertyValue(string name, string value);
 		virtual void setPropertyValue(string name, string value);
 
-		void pushSIEvent(map<string, struct Field> event, unsigned char type);
+		void pushSIEvent(map<string, struct SIField> event, unsigned char type);
 		void addAsSIListener(unsigned char type);
 
         // TECLADO

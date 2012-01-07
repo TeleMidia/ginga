@@ -38,22 +38,10 @@ done
 #TODO: Search telemidia-util, gingacc-sytem, ... include paths 
 CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
 CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
-CPPFLAGS='-I${top_srcdir}'"/../gingacc-dataprocessing/include $CPPFLAGS"
 
 ###########
 # HEADERS #
 ###########
-
-############################
-# Ginga CC Data Processing #
-############################
-AC_CHECK_HEADER([dataprocessing/IDataProcessor.h], [], AC_MSG_ERROR([
-
-Couldn't find Ginga CC Data Processing headers.
-Please install Ginga CC Data Processing Headers.
-
-]))
-
 
 ##################
 # TeleMidia Util #
@@ -95,7 +83,6 @@ Please install gingacc-system project.
 
 ]))
 
-
 ########
 # LIBS #
 ########
@@ -103,59 +90,22 @@ Please install gingacc-system project.
 ##################
 # TeleMidia Util #
 ##################
-AC_HAVE_LIBRARY(telemidiautil, , AC_ERROR([
+AC_HAVE_LIBRARY(telemidiautil, , AC_MSG_ERROR([
 
 Couldn't find TeleMidia Util library.
 Please install TeleMidia Util Library.
 
 ]))
 
-############################
-# Ginga CC Data Processing #
-############################
-AC_HAVE_LIBRARY(gingaccdataprocessing, , AC_ERROR([
-
-Couldn't find Ginga CC Data Processing library.
-Please install Ginga CC Data Processing Library.
-
-]))
-
 ##########################
 # Ginga CC System Thread #
 ##########################
-AC_HAVE_LIBRARY(gingaccsystemthread, , AC_ERROR([
+AC_HAVE_LIBRARY(gingaccsystemthread, , AC_MSG_ERROR([
 
 Couldn't find Ginga CC System Thread library.
 Please install Ginga CC System Thread Library.
 
 ]))
-
-#######
-# Lua #
-#######
-AC_HAVE_LIBRARY(lua, , AC_ERROR([
-
-Couldn't find Lua library.
-Please install Lua 5.1.2 or later.
-
-]))
-
-#################
-# GINGACCIC RTP #
-#################
-hasrtpic=no
-AC_HAVE_LIBRARY(gingaccicccrtp, hasrtpic=yes, hasrtpic=no)
-
-if test x$hasrtpic = xno; then
-   AC_MSG_WARN([*** Ginga-NCL RTP support will not be built.])
-   AC_DEFINE(HAVE_CCRTPIC, 0, [Def to 0 if you don't have gingaccic rtp support.])
-
-else
-   AC_MSG_RESULT([*** Ginga-NCL RTP support will be built.])
-   AC_DEFINE(HAVE_CCRTPIC, 1, [Def to 1 if you have gingaccic rtp support.])
-fi
-
-AM_CONDITIONAL(CCRTPIC, test x$hasrtpic = xyes)
 
 ########################
 # XineProvider Support #
@@ -192,6 +142,42 @@ else
 fi
 
 AM_CONDITIONAL(FFMPEGPROVIDER, test x$hasffmpegp = xyes)
+
+################################
+# GINGA CC Interactive Channel #
+################################
+hasic=no
+AC_HAVE_LIBRARY(gingaccic, hasic=yes, hasic=no)
+
+if test x$hasic = xno; then
+   AC_MSG_WARN([*** Ginga-CC Interactive Channel support will not be built.])
+   AC_DEFINE(HAVE_IC, 0, [Def to 0 if you don't have gingaccic support.])
+
+else
+   AC_MSG_RESULT([*** Ginga-CC Interactive Channel support will be built.])
+   AC_DEFINE(HAVE_IC, 1, [Def to 1 if you have gingaccic support.])
+fi
+
+AM_CONDITIONAL(IC, test x$hasic = xyes)
+
+############################
+# GINGA CC Data Processing #
+############################
+hasdataprocessing=no
+AC_HAVE_LIBRARY(gingaccdataprocessing, hasdataprocessing=yes, hasdataprocessing=no)
+
+if test x$hasdataprocessing = xno; then
+   AC_MSG_WARN([*** Ginga-CC Data Processing support will not be built.])
+   AC_DEFINE(HAVE_DATAPROC, 0, [Def to 0 if you don't have gingaccdataprocessing support.])
+   DATAPROC_LIBS='-lgingaccplayer'
+
+else
+   AC_MSG_RESULT([*** Ginga-CC TS Parser support will be built.])
+   AC_DEFINE(HAVE_DATAPROC, 1, [Def to 1 if you have gingaccdataprocessing support.])
+   DATAPROC_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/ -lgingacctsparser -lgingaccdataprocessing'
+fi
+
+AC_SUBST(DATAPROC_LIBS)
 
 ##############
 # JAVA check #
@@ -253,7 +239,6 @@ if test x$enable_components = xno; then
     -lgingaccsysctsxineav \
     -lgingaccsystemio -lgingaccsystemiocodemap \
     -lgingaccsystemiodfb -lgingaccsystemthread -lgingaccic \
-    -lgingaccdataprocessing \
     -L/usr/local/lib/ginga/ -L/usr/local/lib \
     -L/usr/local/lib/ginga/iocontents/ \
     -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'
@@ -412,12 +397,14 @@ AC_OUTPUT(Makefile
 
 AC_MSG_RESULT([
 Build options: 
-  Module directory          $MODULEDIR
-  Xine Provider Support     $hasxinep
-  FFmpeg Provider Support   $hasffmpegp
-  Links Player Support      $enable_links
-  Berkelium Player Support  $enable_berkelium
-  Awesomium Player Support  $enable_awesomium
-  NCLET Support             $ncletplayer
-  Multi Process Support     $enable_multiprocess
+  Module directory             $MODULEDIR
+  Xine Provider Support        $hasxinep
+  FFmpeg Provider Support      $hasffmpegp
+  Links Player Support         $enable_links
+  Berkelium Player Support     $enable_berkelium
+  Awesomium Player Support     $enable_awesomium
+  NCLET Support                $ncletplayer
+  Interactive Channel Support  $hasic
+  TS Parser Support            $hasdataprocessing
+  Multi Process Support        $enable_multiprocess
 ])

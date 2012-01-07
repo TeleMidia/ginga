@@ -120,14 +120,14 @@ namespace epg {
 			void decodeCdt(string fileName);
 			void decodeEitSection(ITransportSection* section);
 			void addEPGListener(IEPGListener* listener, string request, unsigned char type);
-			map<string, struct Field> createMap();
+			map<string, struct SIField> createMap();
 			void removeEPGListener(IEPGListener * listener);
 
 			//void generatePresentMap();
 
 		private:
 			EPGProcessor();
-			struct Field* handleFieldStr(string str);
+			struct SIField* handleFieldStr(string str);
 			int savePNG(char* data, int pngSize);
 			void generateEitMap(map<unsigned int, IEventInfo*>* actualMap);
 			void generateSdtMap(IServiceInfo* si);
@@ -135,7 +135,7 @@ namespace epg {
 			void addProcessedSection(ITransportSection* section);
 			void callMapGenerator(unsigned int tableId);
 			bool checkProcessedSections(ITransportSection* section);
-			void printFieldMap(map<string, struct Field>* fieldMap);
+			void printFieldMap(map<string, struct SIField>* fieldMap);
 
 	};
 }
