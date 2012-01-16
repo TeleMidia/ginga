@@ -828,12 +828,14 @@ void LuaPlayer::post (string action)
 	if (scope->type == TYPE_PRESENTATION)
     {
         map<string,string> evt;
-            evt["class"]    = "ncl";
-            evt["type"]     = "presentation";
-            evt["action"]   = action;
-            if (scope->initTime == -1)
-                evt["label"] = currentScope;
-            else {
+            evt["class"]     = "ncl";
+            evt["type"]      = "presentation";
+            evt["action"]    = action;
+
+            //TODO: Is an interval anchor id a label?
+            evt["label"]     = currentScope;
+
+            if (scope->initTime != -1) {
                 evt["begin"] = scope->initTime; //TODO: tostring?
                 evt["end"]   = scope->endTime; //TODO: tostring?
             }
@@ -861,6 +863,7 @@ void LuaPlayer::stop ()
 
     if (this->currentScope == "")
     {
+    	cout << "LuaPlayer::stop setting played to TRUE" << endl;
 	    this->im->removeApplicationInputEventListener(this);
 		this->forcedNaturalEnd = true;
 		this->played = true;
@@ -998,21 +1001,26 @@ void LuaPlayer::pushSIEvent (map<string, struct SIField> event, unsigned char ty
 }
 
 /*
-string LuaPlayer::getPropertyValue (string name)
-{
+string LuaPlayer::getPropertyValue (string name) {
 	this->lock();
-	CHECKRET("getPropertyValue()", "")
-	clog << "[LUA] getPropertyValue('" << name.c_str() << "')";
 
 	lua_getglobal(this->L, name.c_str());         // [ var ]
 	string ret = luaL_optstring(L, -1, "");
 	lua_pop(this->L, 1);                          // [ ]
 
-	clog << " -> '" << ret.c_str() << "'" << endl;
 	this->unlock();
+
+	cout << "LuaPlayer::getPropertyValue '" << name << "' = '" << ret << "'";
+	cout << endl;
+
+	if (ret == "") {
+		return Player::getPropertyValue(name);
+	}
+
 	return ret;
 }
 */
+
 
 // MÉTODOS AUXILIARES
 
@@ -1029,8 +1037,8 @@ bool LuaPlayer::setKeyHandler(bool isHandler) {
 void LuaPlayer::setScope(string scopeId, short type,
                          double begin, double end)
 {
-	clog << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
-	clog << "' begin '" << begin << "' end '" << end << endl;
+	cout << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
+	cout << "' begin '" << begin << "' end '" << end << endl;
 	addScope(scopeId, type, begin, end);
 }
 
@@ -1050,7 +1058,6 @@ void LuaPlayer::addScope(string scopeId, short type, double begin, double end)
 }
 
 void LuaPlayer::setCurrentScope(string scopeId) {
-	clog << "LuaPlayer::setCurrentScope '" << scopeId << "'" << endl;
 	this->currentScope = scopeId;
 }
 

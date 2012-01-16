@@ -674,13 +674,7 @@ namespace io {
 					}
 				}
 
-				if ((inputEvent->isKeyType() && ((getCurrentTimeMillis() -
-						pTimeStamp) >= imperativeIntervalTime ||
-								pLastCode != inputEvent->getKeyCode())) ||
-								inputEvent->isUserClass()) {
-
-					pLastCode = inputEvent->getKeyCode();
-					pTimeStamp = getCurrentTimeMillis();
+				if (inputEvent->isKeyType() || inputEvent->isUserClass()) {
 					dispatchApplicationEvent(inputEvent);
 				}
 
