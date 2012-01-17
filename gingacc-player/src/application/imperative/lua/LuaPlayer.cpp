@@ -863,7 +863,6 @@ void LuaPlayer::stop ()
 
     if (this->currentScope == "")
     {
-    	cout << "LuaPlayer::stop setting played to TRUE" << endl;
 	    this->im->removeApplicationInputEventListener(this);
 		this->forcedNaturalEnd = true;
 		this->played = true;
@@ -992,7 +991,7 @@ void LuaPlayer::pushSIEvent (map<string, struct SIField> event, unsigned char ty
 
 		evt["type"] = field;
 		field.str   = "";
-		field.table = event;
+		//TODO: use the same structure Field x SIField: field.table = event;
 		evt["data"] = field;
 
 		ext_postHashRec(this->L, evt, true);
@@ -1037,8 +1036,6 @@ bool LuaPlayer::setKeyHandler(bool isHandler) {
 void LuaPlayer::setScope(string scopeId, short type,
                          double begin, double end)
 {
-	cout << "LuaPlayer::setScope '" << scopeId << "' type '" << type;
-	cout << "' begin '" << begin << "' end '" << end << endl;
 	addScope(scopeId, type, begin, end);
 }
 
