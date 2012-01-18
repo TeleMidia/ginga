@@ -73,7 +73,7 @@ int main() {
 	string localUri = "/tmp/gingaUpdate/";
 
 	cp = ((ComponentCreator*)(cm->getObject("Component")))(
-			"test.xml", "0.12.3", "xml");
+			"test.xml", "0.12.4", "xml");
 
 	cp->addUri(remoteUri);
 

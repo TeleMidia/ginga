@@ -9,11 +9,11 @@ DEPENDENCIES
 -> autoconf       >= 2.13
 -> automake       >= 1.4
 -> lua >= 5.1.2 (www.lua.org)
--> telemidia-util-cpp >= 0.12.3
+-> telemidia-util-cpp >= 0.12.4
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
--> gingacc-system (from gingacc-cpp) >= 0.12.3
+-> gingacc-system (from gingacc-cpp) >= 0.12.4
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
--> gingacc-cm (from gingacc-cpp) >= 0.12.3
+-> gingacc-cm (from gingacc-cpp) >= 0.12.4
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 
 

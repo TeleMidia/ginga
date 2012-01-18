@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core TS Parser 0.12.3"
+PROJECT="Ginga Common Core TS Parser 0.12.4"
 TEST_TYPE=-f
 FILE=include/tsparser/Demuxer.h
 
@@ -134,5 +134,5 @@ echo Running configure "$@" ...
 $srcdir/configure "$@" || exit 1
 
 echo "$PROJECT"
-echo "Copyleft 1989-2011 PUC-RIO/LABORATORIO TELEMIDIA, Some Rights Reserved."
+echo "Copyleft 1989-2012 PUC-RIO/LABORATORIO TELEMIDIA, Some Rights Reserved."
 echo "Now type 'make' to compile the project."
