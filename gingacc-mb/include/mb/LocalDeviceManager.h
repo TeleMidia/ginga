@@ -60,7 +60,7 @@ http://www.telemidia.puc-rio.br
 #define LOCALDEVICEMANAGER_API
 #endif
 
-#include "interface/IODevice.h"
+#include "interface/IDeviceScreen.h"
 #include "ILocalDeviceManager.h"
 
 #include <string>
@@ -78,11 +78,11 @@ namespace mb {
 			public ILocalDeviceManager {
 
 		private:
-			map<unsigned int, IODevice*>* devices;
-			map<unsigned int, string>* profiles;
+			IDeviceScreen* screenManager;
+
 			static LocalDeviceManager* _instance;
 
-			static void* parentId;
+			static unsigned long parentId;
 			static int numArgs;
 			static char** args;
 

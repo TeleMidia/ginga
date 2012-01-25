@@ -72,7 +72,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	void* LocalDeviceManager::parentId = NULL;
+	unsigned long LocalDeviceManager::parentId = 0;
 	int LocalDeviceManager::numArgs = 0;
 	char** LocalDeviceManager::args = NULL;
 #if HAVE_COMPSUPPORT
@@ -80,26 +80,13 @@ namespace mb {
 #endif
 
 	LocalDeviceManager::LocalDeviceManager() {
-		devices  = new map<unsigned int, IODevice*>;
-		profiles = new map<unsigned int, string>;
+		screenManager = NULL;
 	}
 
 	LocalDeviceManager::~LocalDeviceManager() {
-		map<unsigned int, IODevice*>::iterator i;
-
-		if (devices != NULL) {
-			i = devices->begin();
-			while (i != devices->end()) {
-				delete i->second;
-				++i;
-			}
-			delete devices;
-			devices = NULL;
-		}
-
-		if (profiles != NULL) {
-			delete profiles;
-			profiles = NULL;
+		if (screenManager != NULL) {
+			delete screenManager;
+			screenManager = NULL;
 		}
 	}
 
@@ -108,7 +95,7 @@ namespace mb {
 	void LocalDeviceManager::setParentDevice(void* devId) {
 		cout << "LocalDeviceManager::setParentDevice(" << this << ")";
 		cout << " parent device ID = '" << devId << "'" << endl;
-		parentId = devId;
+		parentId = (unsigned long)devId;
 	}
 
 	void LocalDeviceManager::release() {
@@ -120,13 +107,8 @@ namespace mb {
 	}
 
 	void LocalDeviceManager::setBackgroundImage(string uri) {
-		IODevice* dev;
-		map<unsigned int, IODevice*>::iterator i;
-
-		i = devices->find(0);
-		if (i != devices->end()) {
-			dev = i->second;
-			dev->setBackgroundImage(uri);
+		if (screenManager != NULL) {
+			screenManager->setBackgroundImage(0, uri);
 		}
 	}
 
@@ -145,90 +127,60 @@ namespace mb {
 	int LocalDeviceManager::getDeviceWidth(
 			unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return 0;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->getScreenWidthRes(screenNumber);
+		return screenManager->getWidthResolution(screenNumber);
 	}
 
 	int LocalDeviceManager::getDeviceHeight(
 			unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return 0;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->getScreenHeightRes(screenNumber);
+		return screenManager->getHeightResolution(screenNumber);
 	}
 
 	void* LocalDeviceManager::getGfxRoot(unsigned int deviceNumber) {
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return 0;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->getGfxRoot();
+		return screenManager->getGfxRoot();
 	}
 
 	void LocalDeviceManager::clearWidgetPools() {
-		//TODO: delete pools in screen devices
-		map<unsigned int, IODevice*>::iterator i;
-
-		if (devices != NULL) {
-			i = devices->begin();
-			while (i != devices->end()) {
-				delete i->second;
-				++i;
-			}
-
-			devices->clear();
+		if (screenManager != NULL) {
+			//screenManager->clearWidgets();
 		}
 	}
 
 	int LocalDeviceManager::createDevice(string description) {
 		unsigned int deviceNumber;
-		IODevice* dev;
-		//DeviceAudio* aud;
-		//DeviceCommunication* com;
 		IDeviceScreen* scr = NULL;
 
-		if (description == "systemScreen(0)") {
-			deviceNumber = devices->size();
-			dev = new IODevice();
-			(*devices)[deviceNumber] = dev;
-			(*profiles)[deviceNumber] = description;
-
 #if HAVE_COMPSUPPORT
-			cout << "LocalDeviceManager::createDevice(" << this << ") with";
-			cout << " parentId = '" << parentId << "'" << endl;
+		cout << "LocalDeviceManager::createDevice(" << this << ") with";
+		cout << " parentId = '" << parentId << "'" << endl;
 
-			scr = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
-					this->numArgs, this->args, parentId);
+		screenManager = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
+				this->numArgs, this->args, (void*)parentId);
 
 #else
 #ifndef _WIN32
-			scr = new DFBDeviceScreen(this->numArgs, this->args, parentId);
+		screenManager = new DFBDeviceScreen(
+				this->numArgs, this->args, parentId);
+
 #else
-			scr = new DXDeviceScreen(this->numArgs, this->args, parentId);
+		screenManager = new DXDeviceScreen(
+				this->numArgs, this->args, parentId);
 #endif
 #endif
 
-			if (scr != NULL) {
-				dev->addScreen(scr);
-			}
-
-			return (int)deviceNumber;
-		}
-		return -1;
+		return 0;
 	}
 
 	void LocalDeviceManager::mergeIds(
@@ -237,82 +189,64 @@ namespace mb {
 			unsigned int deviceNumber,
 			unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return;
 		}
 
-		dev = (*devices)[deviceNumber];
-		dev->mergeIds(destId, srcIds, screenNumber);
+		screenManager->mergeIds(destId, srcIds);
 	}
 
 	void* LocalDeviceManager::getWindow(
 			int winId, unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return NULL;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->getWindow(winId, screenNumber);
+		return screenManager->getWindow(winId);
 	}
 
 	void* LocalDeviceManager::createWindow(
 			void* winDesc,
 			unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return NULL;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->createWindow(winDesc, screenNumber);
+		return screenManager->createWindow(screenNumber, winDesc);
 	}
 
 	void LocalDeviceManager::releaseWindow(
 			void* win, unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->releaseWindow(win, screenNumber);
+		return screenManager->releaseWindow(win);
 	}
 
 	void* LocalDeviceManager::createSurface(
 			void* surfaceDesc,
 			unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == 0) {
 			return NULL;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->createSurface(surfaceDesc, screenNumber);
+		return screenManager->createSurface(surfaceDesc);
 	}
 
 	void LocalDeviceManager::releaseSurface(
 			void* sur,
 			unsigned int deviceNumber, unsigned int screenNumber) {
 
-		IODevice* dev;
-
-		if (devices->count(deviceNumber) == 0) {
+		if (screenManager == NULL) {
 			return;
 		}
 
-		dev = (*devices)[deviceNumber];
-		return dev->releaseSurface(sur, screenNumber);
+		return screenManager->releaseSurface(sur);
 	}
 }
 }

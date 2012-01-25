@@ -93,7 +93,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 			if (parentId != NULL) {
 				cout << "DFBDeviceScreen::DFBDeviceScreen" << endl;
-				setParentDevice(parentId);
+				setParentScreen((unsigned long)parentId);
 			}
 
 			DFBCHECK(DirectFBCreate(&dfb));
@@ -187,19 +187,21 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		}
 	}
 
-	void DFBDeviceScreen::setParentDevice(void* devId) {
+	void DFBDeviceScreen::setParentScreen(unsigned long screenId) {
 		//unsigned long xid = strtoul(strdup((const char*)devId), NULL, 10);
 #if HAVE_WINDOWLESS
 #ifdef DFB_CONFIG_SET_X11_ROOT_WINDOW
-		dfb_config_set_x11_root_window(devId);
+		//dfb_config_set_x11_root_window(screenId);
 		cout << endl;
 		cout << "DFBDeviceScreen::setParentDevice(" << this << ") devId = '";
-		cout << (char*)devId << "'" << endl;
+		cout << screenId << "'" << endl;
 #endif //DFB_CONFIG_SET_X11_ROOT_WINDOW
 #endif //HAVE_WINDOWLESS
 	}
 
-	void DFBDeviceScreen::setBackgroundImage(string uri) {
+	void DFBDeviceScreen::setBackgroundImage(
+			unsigned long screenId, string uri) {
+
 		DFBResult               ret;
 		DFBSurfaceDescription   desc;
 		IDirectFBSurface       *surface;
@@ -270,23 +272,29 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		clog << endl << endl;
 	}
 
-	unsigned int DFBDeviceScreen::getWidthResolution() {
+	unsigned int DFBDeviceScreen::getWidthResolution(unsigned long screenId) {
 		return wRes;
 	}
 
-	void DFBDeviceScreen::setWidthResolution(unsigned int wRes) {
+	void DFBDeviceScreen::setWidthResolution(
+			unsigned long screenId, unsigned int wRes) {
+
 		this->wRes = wRes;
 	}
 
-	unsigned int DFBDeviceScreen::getHeightResolution() {
+	unsigned int DFBDeviceScreen::getHeightResolution(unsigned long screenId) {
 		return hRes;
 	}
 
-	void DFBDeviceScreen::setHeightResolution(unsigned int hRes) {
+	void DFBDeviceScreen::setHeightResolution(
+			unsigned long screenId, unsigned int hRes) {
+
 		this->hRes = hRes;
 	}
 
-	void DFBDeviceScreen::setColorKey(int r, int g, int b) {
+	void DFBDeviceScreen::setColorKey(
+			unsigned long screenId, int r, int g, int b) {
+
 		if (gfxLayer != NULL) {
 			DFBCHECK(gfxLayer->SetSrcColorKey(gfxLayer, r, g, b));
 		}
@@ -335,7 +343,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		return (void*)window;
 	}
 
-	void* DFBDeviceScreen::createWindow(void* desc) {
+	void* DFBDeviceScreen::createWindow(unsigned long screenId, void* desc) {
 		IDirectFBWindow* window = NULL;
 
 		if (gfxLayer != NULL) {

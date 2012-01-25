@@ -25,10 +25,7 @@ libgingaccmb_PROGRAMS = libgingaccmb.so
 
 libgingaccmb_so_SOURCES = \
                           interface/CodeMap.cpp \
-                          interface/DeviceAudio.cpp \
-                          interface/DeviceCommunication.cpp \
                           interface/InputEventFactory.cpp \
-                          interface/IODevice.cpp \
                           interface/Matrix.cpp \
                           InputManager.cpp \
                           LocalDeviceManager.cpp
