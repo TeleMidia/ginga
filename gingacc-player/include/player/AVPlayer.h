@@ -85,12 +85,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #ifdef IPROVIDERLISTENER
 #undef IPROVIDERLISTENER
 #endif
-#include "system/io/interface/content/IProviderListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
 
-#include "system/io/interface/content/IContinuousMediaProvider.h"
-#include "system/io/interface/output/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IContinuousMediaProvider.h"
+#include "mb/interface/IWindow.h"
+#include "mb/interface/IProviderListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
 #include "PlayersComponentSupport.h"
@@ -132,7 +131,7 @@ namespace player {
 			bool hasResized;
 			bool mainAV;
 			bool hasData;
-			io::IWindow* win;
+			IWindow* win;
 
 		public:
 			AVPlayer(string mrl, bool hasVisual);

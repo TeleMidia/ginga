@@ -122,11 +122,11 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/interface/content/text/IFontProvider.h"
-#include "system/io/ILocalDeviceManager.h"
-#include "system/io/IInputManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IWindow.h"
+#include "mb/interface/IFontProvider.h"
+#include "mb/ILocalDeviceManager.h"
+#include "mb/IInputManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -185,11 +185,11 @@ namespace player {
 
 #if HAVE_DATAPROC
   class LuaPlayer :
-	  public Player, public Thread, public io::IInputEventListener,
+	  public Player, public Thread, public IInputEventListener,
 	  	  public IEPGListener {
 #else
   class LuaPlayer :
-	  public Player, public Thread, public io::IInputEventListener {
+	  public Player, public Thread, public IInputEventListener {
 #endif //HAVE_DATAPROC
 
 	private:
@@ -243,7 +243,7 @@ namespace player {
 		void addAsSIListener(unsigned char type);
 
         // TECLADO
-		bool userEventReceived (io::IInputEvent* evt);
+		bool userEventReceived(IInputEvent* evt);
 		void refreshContent();
 
         // ESCOPO

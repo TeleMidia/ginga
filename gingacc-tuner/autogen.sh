@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Tuner 0.12.4"
+PROJECT="Ginga Common Core Tuner 0.13.1"
 TEST_TYPE=-f
 FILE=include/tuner/providers/IDataProvider.h
 

@@ -17,7 +17,7 @@ libgingaccplaawe_PROGRAMS = libgingaccplaawe.so
 libgingaccplaawe_so_SOURCES = AwesomiumHandler.cpp AwesomiumPlayer.cpp
 
 libgingaccplaawe_so_LDADD = -lawesomium-1.6.3 -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS)
+    -lgingaccsystem -lpthread $(COMPONENTS_LIBS)
 endif
 
 MAINTAINERCLEANFILES = Makefile.in

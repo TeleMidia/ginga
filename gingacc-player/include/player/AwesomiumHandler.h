@@ -53,11 +53,11 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include "system/io/ILocalDeviceManager.h"
-#include "system/io/IInputManager.h"
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/interface/input/IInputEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/ILocalDeviceManager.h"
+#include "mb/IInputManager.h"
+#include "mb/interface/IWindow.h"
+#include "mb/interface/IInputEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <stdio.h>
 #include <string>

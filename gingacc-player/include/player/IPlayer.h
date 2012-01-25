@@ -52,10 +52,10 @@ http://www.telemidia.puc-rio.br
 
 #include <stdint.h>
 
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/interface/output/ISurface.h"
-#include "system/io/interface/content/image/IImageProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IWindow.h"
+#include "mb/interface/ISurface.h"
+#include "mb/interface/IImageProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "IPlayerListener.h"
 
@@ -87,7 +87,7 @@ namespace player {
 			virtual ~IPlayer(){};
 
 			virtual void flip()=0;
-			virtual io::ISurface* getSurface()=0;
+			virtual ISurface* getSurface()=0;
 			virtual void setMrl(string mrl, bool visible=true)=0;
 			virtual void reset()=0;
 			virtual void rebase()=0;
@@ -156,10 +156,10 @@ typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer* PlayerCreator(
 typedef void PlayerDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IPlayer* player);
 
-typedef io::ISurface* SurfaceHelper(io::IImageProvider* provider, string mrl);
-typedef io::ISurface* ImageRenderer(string mrl);
+typedef ISurface* SurfaceHelper(IImageProvider* provider, string mrl);
+typedef ISurface* ImageRenderer(string mrl);
 typedef int TextRenderer(
-		io::ISurface* s,
+		ISurface* s,
 		string text, string fontUri, int fontSize,
 		::br::pucrio::telemidia::util::IColor* fontColor);
 

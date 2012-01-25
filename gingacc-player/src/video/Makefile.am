@@ -20,7 +20,7 @@ endif
 
 libgingaccplaavp_so_SOURCES = $(CPPSRCS)
 
-libgingaccplaavp_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
+libgingaccplaavp_so_LDADD = -ltelemidiautil -lgingaccsystem \
     -lgingaccplayer $(COMPONENTS_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

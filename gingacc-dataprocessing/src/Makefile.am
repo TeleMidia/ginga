@@ -29,7 +29,7 @@ libgingaccdataprocessing_so_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     dsmcc/npt/NPTReference.cpp dsmcc/npt/Stc.cpp dsmcc/npt/StreamMode.cpp \
     dsmcc/npt/TimeBaseClock.cpp
 
-libgingaccdataprocessing_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
+libgingaccdataprocessing_so_LDADD = -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS) -L/usr/local/lib/ -L/usr/local/lib/ginga/
 
 MAINTAINERCLEANFILES = Makefile.in

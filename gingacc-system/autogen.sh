@@ -1,8 +1,8 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core System 0.12.4"
+PROJECT="Ginga Common Core System 0.13.1"
 TEST_TYPE=-f
-FILE=include/system/io/interface/output/IWindow.h
+FILE=include/system/thread/Thread.h
 
 LIBTOOL_REQUIRED_VERSION=1.3.4
 AUTOCONF_REQUIRED_VERSION=2.13

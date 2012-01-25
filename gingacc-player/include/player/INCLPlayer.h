@@ -50,8 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _INCLPlayer_H_
 #define _INCLPlayer_H_
 
-#include "system/io/interface/content/ITimeBaseProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "system/time/ITimeBaseProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "IPlayer.h"
 #include "IPlayerListener.h"
@@ -109,8 +109,8 @@ namespace player {
 			virtual void notifyListeners(
 					short code, string paremeter, short type)=0;
 
-			virtual void setSurface(io::ISurface* surface)=0;
-			virtual io::ISurface* getSurface()=0;
+			virtual void setSurface(ISurface* surface)=0;
+			virtual ISurface* getSurface()=0;
 			virtual int64_t getVPts(){return 0;};
 			virtual double getMediaTime()=0;
 			virtual void setMediaTime(double newTime)=0;

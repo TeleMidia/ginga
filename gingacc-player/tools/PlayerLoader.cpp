@@ -53,8 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include "system/io/ILocalDeviceManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/ILocalDeviceManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #endif
 
 #include "system/process/SpawnedProcess.h"

@@ -67,8 +67,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "player/PlayersComponentSupport.h"
 
-#include "system/io/interface/content/text/IFontProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/interface/IFontProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #define LUAPLAYER_CANVAS  "luaplayer.Canvas"
 #define REFFILL           (-3)

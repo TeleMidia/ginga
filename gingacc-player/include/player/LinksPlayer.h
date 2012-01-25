@@ -67,13 +67,13 @@ extern "C" {
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/io/IInputManager.h"
-#include "system/io/interface/input/IInputEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/IInputManager.h"
+#include "mb/interface/IInputEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/io/ILocalDeviceManager.h"
-#include "system/io/interface/output/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/ILocalDeviceManager.h"
+#include "mb/interface/IWindow.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
 

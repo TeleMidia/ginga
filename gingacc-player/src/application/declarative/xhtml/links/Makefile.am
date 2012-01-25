@@ -16,6 +16,6 @@ libgingaccplalks_PROGRAMS = libgingaccplalks.so
 libgingaccplalks_so_SOURCES = LinksPlayer.cpp
 
 libgingaccplalks_so_LDADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS)
+    -lgingaccsystem -lpthread $(COMPONENTS_LIBS)
 endif
 MAINTAINERCLEANFILES = Makefile.in

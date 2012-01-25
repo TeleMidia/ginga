@@ -9,7 +9,7 @@ noinst_PROGRAMS = test
 
 test_SOURCES = test.cpp
 
-test_LDADD = -lgingaccsystemthread -ltelemidiautil -lgingacctuner \
+test_LDADD = -lgingaccsystem -ltelemidiautil -lgingacctuner \
     -lgingacctsparser -lgingaccdataprocessing \
     -lgingaccdataprocncl -lexpat -ldl
 

@@ -34,7 +34,7 @@ libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
 	si/descriptors/ServiceDescriptor.cpp \
 	si/descriptors/LocalTimeOffsetDescriptor.cpp
 
-libgingacctsparser_so_LDADD = -ltelemidiautil -lpthread -lgingaccsystemthread \
+libgingacctsparser_so_LDADD = -ltelemidiautil -lpthread -lgingaccsystem \
     -lgingacctuner
 
 MAINTAINERCLEANFILES = Makefile.in

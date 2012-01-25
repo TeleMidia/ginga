@@ -16,6 +16,6 @@ libgingaccplabkl_PROGRAMS = libgingaccplabkl.so
 libgingaccplabkl_so_SOURCES = BerkeliumHandler.cpp BerkeliumPlayer.cpp
 
 libgingaccplabkl_so_LDADD = -llibberkelium -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystemthread -lpthread $(COMPONENTS_LIBS) $(BKL_LIBS)
+    -lgingaccsystem -lpthread $(COMPONENTS_LIBS) $(BKL_LIBS)
 endif
 MAINTAINERCLEANFILES = Makefile.in

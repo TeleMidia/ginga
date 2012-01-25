@@ -50,10 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef TEXTPLAYER_H_
 #define TEXTPLAYER_H_
 
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/interface/content/text/IFontProvider.h"
-#include "system/io/ILocalDeviceManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IWindow.h"
+#include "mb/interface/IFontProvider.h"
+#include "mb/ILocalDeviceManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"
 
@@ -83,7 +83,7 @@ namespace player {
 			int fontSize;
 			IColor* fontColor;
 			string fontUri;
-			io::IFontProvider* font;
+			IFontProvider* font;
 
 		public:
 			TextPlayer();

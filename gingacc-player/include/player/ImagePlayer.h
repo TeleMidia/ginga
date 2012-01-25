@@ -50,10 +50,12 @@ http://www.telemidia.puc-rio.br
 #ifndef IMAGEPLAYER_H_
 #define IMAGEPLAYER_H_
 
-#include "system/io/interface/content/image/IImageProvider.h"
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/IGingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IImageProvider.h"
+#include "mb/interface/IWindow.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "system/fs/IGingaLocatorFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "util/Color.h"
 #include "util/functions.h"
@@ -72,7 +74,7 @@ namespace core {
 namespace player {
 	class ImagePlayer : public Player {
 		protected:
-			io::IImageProvider* provider;
+			IImageProvider* provider;
 
 		public:
 			ImagePlayer(string mrl);
@@ -83,10 +85,10 @@ namespace player {
 
 			virtual void setPropertyValue(string name, string value);
 
-			static io::ISurface* prepareSurface(
-					io::IImageProvider* provider, string mrl);
+			static ISurface* prepareSurface(
+					IImageProvider* provider, string mrl);
 
-			static io::ISurface* renderImage(string mrl);
+			static ISurface* renderImage(string mrl);
 	};
 }
 }

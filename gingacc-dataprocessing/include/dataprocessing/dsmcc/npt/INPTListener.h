@@ -50,8 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef INPTLISTENER_H_
 #define INPTLISTENER_H_
 
-#include "system/io/interface/content/ITimeBaseListener.h"
-using namespace br::pucrio::telemidia::ginga::core::system::io;
+#include "system/time/ITimeBaseListener.h"
+using namespace br::pucrio::telemidia::ginga::core::system;
 
 #include <string>
 using namespace std;

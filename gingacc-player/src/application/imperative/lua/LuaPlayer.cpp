@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "system/io/IInputManager.h"
+#include "mb/IInputManager.h"
 
 string cmd_to_str(lua_State* L) {
   const char* documentId = NULL;

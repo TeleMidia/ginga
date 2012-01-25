@@ -50,11 +50,13 @@ http://www.telemidia.puc-rio.br
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "system/io/IGingaLocatorFactory.h"
-#include "system/io/IInputManager.h"
-#include "system/io/interface/input/IInputEventListener.h"
-#include "system/io/interface/input/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "system/fs/IGingaLocatorFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+
+#include "mb/IInputManager.h"
+#include "mb/interface/IInputEventListener.h"
+#include "mb/interface/CodeMap.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "IPlayer.h"
 

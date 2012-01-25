@@ -16,7 +16,7 @@ endif
 
 libgingacctuner_so_SOURCES = $(TUNERCPPS)
 
-libgingacctuner_so_LDADD = -lpthread -lgingaccsystemthread -ltelemidiautil
+libgingacctuner_so_LDADD = -lpthread -lgingaccsystem -ltelemidiautil
 
 libgingacctuner_so_LDFLAGS = -L/usr/local/lib/ginga -L/usr/local/lib \
 	-g -shared -Wl,-soname,libgingacctuner.so

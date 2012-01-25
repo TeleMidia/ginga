@@ -50,11 +50,13 @@ http://www.telemidia.puc-rio.br
 #ifndef SHOWBUTTON_H_
 #define SHOWBUTTON_H_
 
+#include "config.h"
+
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/io/ILocalDeviceManager.h"
-#include "system/io/interface/output/IWindow.h"
+#include "mb/ILocalDeviceManager.h"
+#include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #if HAVE_COMPSUPPORT
@@ -62,9 +64,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 #ifndef _WIN32
-#include "system/io/interface/output/dfb/DFBWindow.h"
+#include "mb/interface/dfb/output/DFBWindow.h"
 #else
-#include "system/io/interface/output/dx/DXWindow.h"
+#include "mb/interface/dx/output/DXWindow.h"
 #endif
 #endif
 
@@ -87,7 +89,7 @@ namespace player {
 
 			static ShowButton* _instance;
 			short previousStatus;
-			io::IWindow* win;
+			IWindow* win;
 
 		private:
 			ShowButton();

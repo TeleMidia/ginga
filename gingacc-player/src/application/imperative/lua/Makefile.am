@@ -17,7 +17,7 @@ localLib_PROGRAMS = libgingaccplalua.so
 libgingaccplalua_so_SOURCES = LuaEvent.cpp LuaCanvas.cpp LuaPlayer.cpp
 
 libgingaccplalua_so_LDADD = -llua -lcore -lpthread -ltelemidiautil \
-     -lgingaccsystemthread -lgingaccsystemiocodemap -lgingaccplayer \
+     -lgingaccsystem -lgingaccmb -lgingaccplayer \
      -lgingaccplaimg $(COMPONENTS_LIBS) $(DATAPROC_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

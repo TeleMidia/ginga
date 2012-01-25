@@ -31,7 +31,7 @@ libgingaccplaani_PROGRAMS = libgingaccplaani.so
 
 libgingaccplaani_so_SOURCES = AnimePlayer.cpp
 
-libgingaccplaani_so_LDADD = -ltelemidiautil -lgingaccsystemthread \
+libgingaccplaani_so_LDADD = -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

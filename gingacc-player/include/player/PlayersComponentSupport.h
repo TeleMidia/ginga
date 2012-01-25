@@ -58,33 +58,38 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 #ifndef _WIN32
 #include "dataprocessing/EPGProcessor.h"
-#include "system/io/GingaLocatorFactory.h"
-#include "system/io/InputManager.h"
-#include "system/io/LocalDeviceManager.h"
-#include "system/io/interface/output/dfb/DFBSurface.h"
-#include "system/io/interface/output/dfb/DFBWindow.h"
-#include "system/io/interface/input/dfb/DFBGInputEvent.h"
-#include "system/io/interface/content/text/DFBFontProvider.h"
-#include "system/io/interface/content/image/DFBImageProvider.h"
-#include "system/io/interface/content/video/DFBVideoProvider.h"
-#include "system/io/interface/content/video/XineVideoProvider.h"
-#include "system/io/interface/content/audio/FusionSoundAudioProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+
 #include "ic/InteractiveChannelManager.h"
 
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+#include "system/fs/GingaLocatorFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+
+#include "mb/InputManager.h"
+#include "mb/LocalDeviceManager.h"
+#include "mb/interface/dfb/output/DFBSurface.h"
+#include "mb/interface/dfb/output/DFBWindow.h"
+#include "mb/interface/dfb/input/DFBGInputEvent.h"
+#include "mb/interface/dfb/content/text/DFBFontProvider.h"
+#include "mb/interface/dfb/content/image/DFBImageProvider.h"
+#include "mb/interface/dfb/content/video/DFBVideoProvider.h"
+#include "mb/interface/dfb/content/video/XineVideoProvider.h"
+#include "mb/interface/dfb/content/audio/FusionSoundAudioProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #else
 //#include "dataprocessing/include/EPGProcessor.h"
-#include "system/io/GingaLocatorFactory.h"
-#include "system/io/InputManager.h"
-#include "system/io/LocalDeviceManager.h"
-#include "system/io/interface/output/dx/DXSurface.h"
-#include "system/io/interface/output/dx/DXWindow.h"
-#include "system/io/interface/input/dx/DXInputEvent.h"
-#include "system/io/interface/content/text/dx/DXFontProvider.h"
-#include "system/io/interface/content/image/dx/DXImageProvider.h"
-#include "system/io/interface/content/video/dx/DXVideoProvider.h"
-#include "system/io/interface/content/audio/dx/DXAudioProvider.h"
+#include "system/fs/GingaLocatorFactory.h"
+
+#include "mb/InputManager.h"
+#include "mb/LocalDeviceManager.h"
+#include "mb/interface/dx/output/DXSurface.h"
+#include "mb/interface/dx/output/DXWindow.h"
+#include "mb/interface/dx/input/DXInputEvent.h"
+#include "mb/interface/dx/content/text/DXFontProvider.h"
+#include "mb/interface/dx/content/image/DXImageProvider.h"
+#include "mb/interface/dx/content/video/DXVideoProvider.h"
+#include "mb/interface/dx/content/audio/DXAudioProvider.h"
 #endif
 #endif
 

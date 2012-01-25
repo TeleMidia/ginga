@@ -158,10 +158,10 @@ typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer* PlayerCreator(
 typedef void PlayerDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IPlayer* player);
 
-typedef io::ISurface* SurfaceHelper(io::IImageProvider* provider, string mrl);
-typedef io::ISurface* ImageRenderer(string mrl);
+typedef ISurface* SurfaceHelper(IImageProvider* provider, string mrl);
+typedef ISurface* ImageRenderer(string mrl);
 typedef int TextRenderer(
-		io::ISurface* s,
+		ISurface* s,
 		string text, string fontUri, int fontSize,
 		::br::pucrio::telemidia::util::IColor* fontColor);
 

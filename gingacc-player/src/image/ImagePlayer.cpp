@@ -63,7 +63,7 @@ namespace ginga {
 namespace core {
 namespace player {
 	ImagePlayer::ImagePlayer(string mrl) : Player(mrl) {
-		io::IGingaLocatorFactory* glf = NULL;
+		IGingaLocatorFactory* glf = NULL;
 		string path, name, clientPath, newMrl;
 		bool resolved = false;
 
@@ -84,7 +84,7 @@ namespace player {
 			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
 			newMrl = itos((long int)this);
 			ic->setSourceTarget(newMrl);
-			ic->reserveUrl(mrl, NULL, "GingaNCL/0.12.4");
+			ic->reserveUrl(mrl, NULL, "GingaNCL/0.13.1");
 			ic->performUrl();
 
 			icm->releaseInteractiveChannel(ic);
@@ -298,7 +298,7 @@ namespace player {
 }
 }
 
-extern "C" ISurface* prepareSurface(io::IImageProvider* provider, string mrl) {
+extern "C" ISurface* prepareSurface(IImageProvider* provider, string mrl) {
 	return (::br::pucrio::telemidia::ginga::core::player::
 			ImagePlayer::prepareSurface(provider, mrl));
 }

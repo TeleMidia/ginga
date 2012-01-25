@@ -48,8 +48,8 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "util/Color.h"
-#include "system/io/interface/content/text/IFontProvider.h"
-#include "system/io/interface/output/ISurface.h"
+#include "mb/interface/IFontProvider.h"
+#include "mb/interface/ISurface.h"
 
 #include "player/TextPlayer.h"
 
@@ -486,7 +486,7 @@ namespace player {
 }
 
 extern "C" int renderText(
-		::br::pucrio::telemidia::ginga::core::system::io::ISurface* s,
+		::br::pucrio::telemidia::ginga::core::mb::ISurface* s,
 		string text, string fontUri, int fontSize, IColor* fontColor) {
 
 	return ::br::pucrio::telemidia::ginga::core::player::TextPlayer::write(

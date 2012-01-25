@@ -50,8 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef CHANNELPLAYER_H_
 #define CHANNELPLAYER_H_
 
-#include "system/io/interface/output/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+#include "mb/interface/IWindow.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
 
@@ -86,7 +86,7 @@ namespace player {
 		void setSurfacesParent(void* parent);
 
 	protected:
-		io::ISurface* getSurface();
+		ISurface* getSurface();
 
 	public:
 		void play();

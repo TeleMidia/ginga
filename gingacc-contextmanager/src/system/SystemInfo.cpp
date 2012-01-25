@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "system/io/LocalDeviceManager.h"
+#include "mb/LocalDeviceManager.h"
 #endif
 
 #include "util/functions.h"

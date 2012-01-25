@@ -50,8 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _SystemInfo_H_
 #define _SystemInfo_H_
 
-#include "system/io/ILocalDeviceManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/ILocalDeviceManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ISystemInfo.h"
 

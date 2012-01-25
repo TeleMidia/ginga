@@ -50,14 +50,14 @@ http://www.telemidia.puc-rio.br
 #ifndef BerkeliumHandler_h_
 #define BerkeliumHandler_h_
 
-#include "system/io/IInputManager.h"
-#include "system/io/interface/output/IWindow.h"
-#include "system/io/interface/input/IInputEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/IInputManager.h"
+#include "mb/interface/IWindow.h"
+#include "mb/interface/IInputEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/io/ILocalDeviceManager.h"
-#include "system/io/interface/output/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/ILocalDeviceManager.h"
+#include "mb/interface/IWindow.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "berkelium/Berkelium.hpp"
 #include "berkelium/Window.hpp"

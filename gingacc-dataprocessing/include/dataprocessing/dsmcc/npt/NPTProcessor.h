@@ -53,8 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "system/thread/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/io/interface/content/ITimeBaseProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::system::io;
+#include "system/time/ITimeBaseProvider.h"
+using namespace br::pucrio::telemidia::ginga::core::system::time;
 
 #include "tuner/providers/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;

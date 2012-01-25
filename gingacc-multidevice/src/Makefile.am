@@ -30,7 +30,7 @@ libgingaccmd_so_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
     services/network/TcpSocketService.cpp \
     services/network/TcpClientConnection.cpp
 
-libgingaccmd_so_LDADD = -lpthread -ltelemidiautil -lgingaccsystemthread \
+libgingaccmd_so_LDADD = -lpthread -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

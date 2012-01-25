@@ -72,7 +72,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 #include "player/PlayerProcess.h"
 #endif
 
-#include "system/io/ILocalDeviceManager.h"
+#include "mb/ILocalDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "player/PlayersComponentSupport.h"

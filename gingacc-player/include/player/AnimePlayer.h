@@ -50,9 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef ANIMEPLAYER_H_
 #define ANIMEPLAYER_H_
 
-#include "system/io/interface/content/image/IImageProvider.h"
-#include "system/io/interface/output/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::io;
+#include "mb/interface/IImageProvider.h"
+#include "mb/interface/IWindow.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
