@@ -32,43 +32,43 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-<!-- SYSTEM -->
-  <component package="gingacc-system" name="libgingaccmbdecdfbimg.so" version="0.12.3" type="dynamic">
+<!-- MULTIMEDIA BACKEND -->
+  <component package="gingacc-mb" name="libgingaccmbdecdfbimg.so" version="0.12.3" type="dynamic">
     <dependency type="shared" componentName="libdirectfb.so" version="1.3.0"/>
     <symbol object="ImageProvider" creator="createImageProvider" destroyer="destroyImageProvider" interface="IImageProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/mbdec/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmbdecdfbf.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmbdecdfbf.so" version="0.12.3" type="dynamic">
     <dependency type="shared" componentName="libdirectfb.so" version="1.3.0"/>
     <symbol object="FontProvider" creator="createFontProvider" destroyer="destroyFontProvider" interface="IFontProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/mbdec/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmbdecdfbav.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmbdecdfbav.so" version="0.12.3" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
     <symbol object="VideoProvider" creator="createDFBVideoProvider" destroyer="destroyDFBVideoProvider" interface="IContinuousMediaProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/mbdec/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmbdecdfbxineav.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmbdecdfbxineav.so" version="0.12.3" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
     <symbol object="XineVideoProvider" creator="createXineVideoProvider" destroyer="destroyXineVideoProvider" interface="IContinuousMediaProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/mbdec/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmbdecdfbffmpegav.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmbdecdfbffmpegav.so" version="0.12.3" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
     <symbol object="FFmpegVideoProvider" creator="createFFmpegVideoProvider" destroyer="destroyFFmpegVideoProvider" interface="IContinuousMediaProvider"/>
     <location type="local" uri="/usr/local/lib/ginga/mbdec/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmbdfb.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmbdfb.so" version="0.12.3" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
     <dependency componentName="libtelemidiautil.so" version="0.12.3"/>
     <dependency componentName="libgingaccmb.so" version="0.12.3"/>
@@ -83,16 +83,17 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-system" name="libgingaccmb.so" version="0.12.3" type="dynamic">
+  <component package="gingacc-mb" name="libgingaccmb.so" version="0.12.3" type="dynamic">
     <dependency componentName="libtelemidiautil.so" version="0.12.3"/>
     <dependency componentName="libgingaccsystem.so" version="0.12.3"/>
-    <symbol object="LocalDeviceManager" creator="createLocalDeviceManager" destroyer="destroyLocalDeviceManager" interface="ILocalDeviceManager"/>
+    <symbol object="LocalScreenManager" creator="createLocalScreenManager" destroyer="destroyLocalScreenManager" interface="ILocalScreenManager"/>
     <symbol object="GingaLocatorFactory" creator="createGingaLocatorFactory" destroyer="destroyGingaLocatorFactory" interface="IGingaLocatorFactory"/>
     <symbol object="InputManager" creator="createInputManager" destroyer="destroyInputManager" interface="IInputManager"/>
     <location type="local" uri="/usr/local/lib/ginga/"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+<!-- STSTEM -->
   <component package="gingacc-system" name="libgingaccsystem.so" version="0.12.3" type="shared">
     <dependency componentName="libtelemidiautil.so" version="0.12.3"/>
     <location type="local" uri="/usr/local/lib/ginga"/>

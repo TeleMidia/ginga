@@ -323,14 +323,16 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 	void* DFBDeviceScreen::getWindow(GingaWindowID winId) {
 		IDirectFBWindow* window = NULL;
+		DFBWindowID wid;
 
 		if (gfxLayer != NULL) {
+			wid = (DFBWindowID)(unsigned long)winId;
 			if (gfxLayer->GetWindow(
 					gfxLayer,
-					(DFBWindowID)(unsigned long)winId,
+					wid,
 					&window) != DFB_OK) {
 
-				clog << "DFBDeviceScreen::getWindow can't find id '" << winId;
+				clog << "DFBDeviceScreen::getWindow can't find id '" << wid;
 				clog << "'" << endl;
 				window = NULL;
 			}

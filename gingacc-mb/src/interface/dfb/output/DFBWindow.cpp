@@ -160,14 +160,14 @@ namespace mb {
 			this->windowId    = (DFBWindowID)(unsigned long)underlyingWindowID;
 
 		} else {
-			this->windowId    = -1;
+			this->windowId    = 0;
 		}
 
 		if (parentWindowID != NULL) {
 			this->parentId    = (DFBWindowID)(unsigned long)parentWindowID;
 
 		} else {
-			this->parentId    = -1;
+			this->parentId    = 0;
 		}
 
 		this->win             = NULL;
@@ -244,7 +244,7 @@ namespace mb {
 		if (win != NULL) {
 			clog << "DFBWindow::draw Warning! Requesting redraw" << endl;
 
-		} else if (windowId < 0) {
+		} else if (windowId <= 0) {
 			DFBWindowDescription dsc;
 
 			dsc.flags  = (DFBWindowDescriptionFlags)(
@@ -268,9 +268,15 @@ namespace mb {
 			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
 					createWindow(myScreen, &dsc));
 
-			DFBCHECK(win->SetOpacity(win, 0x00));
-			DFBCHECK(win->GetSurface(win, &winSur));
-			DFBCHECK(win->GetID(win, (DFBWindowID*)&windowId));
+			if (win != NULL) {
+				DFBCHECK(win->SetOpacity(win, 0x00));
+				DFBCHECK(win->GetSurface(win, &winSur));
+				DFBCHECK(win->GetID(win, &windowId));
+
+			} else {
+				clog << "DFBWindow::draw Warning! Can't create window from ";
+				clog << "screen '" << myScreen << "'" << endl;
+			}
 
 		} else {
 			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
@@ -278,13 +284,15 @@ namespace mb {
 							myScreen,
 							(GingaWindowID)(unsigned long)windowId));
 
-			win->GetPosition(win, &x, &y);
-			win->GetSize(win, &width, &height);
-			DFBCHECK(win->GetSurface(win, &winSur));
+			if (win != NULL) {
+				win->GetPosition(win, &x, &y);
+				win->GetSize(win, &width, &height);
+				DFBCHECK(win->GetSurface(win, &winSur));
+			}
 			return;
 		}
 
-		if (caps & DWCAPS_ALPHACHANNEL) {
+		if (win != NULL && (caps & DWCAPS_ALPHACHANNEL)) {
 			DFBCHECK(win->SetOptions(win, (DFBWindowOptions)DWOP_ALPHACHANNEL));
 		}
 
@@ -478,7 +486,16 @@ namespace mb {
 	}
 
 	GingaWindowID DFBWindow::getId() {
-		return (GingaWindowID)(unsigned long)windowId;
+		GingaWindowID myId;
+
+		if (win == NULL) {
+			myId = NULL;
+
+		} else {
+			myId = (GingaWindowID)(unsigned long)windowId;
+		}
+
+		return myId;
 	}
 
 	void DFBWindow::show() {
