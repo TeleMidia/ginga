@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "system/time/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
+#include "mb/IMBDefs.h"
+
 #include "IPlayer.h"
 #include "IPlayerListener.h"
 
@@ -62,6 +64,7 @@ typedef struct {
 	string baseId;
 	string playerId;
 	int devClass;
+	GingaScreenID screenId;
 	int x;
 	int y;
 	int w;
