@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dx/content/video/DXVideoProvider.h"
 #include "mb/interface/dx/output/DXSurface.h"
 
@@ -65,7 +65,7 @@ namespace mb {
 		clog << "DXVideoProvider::DXVideoProvider(" << mrl << ")" << endl;
 		pD3ddev = NULL;
 
-		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
+		pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
 
 		m_pVideo.reset(new VideoGraph(mrl, pD3ddev));
 		
@@ -99,7 +99,7 @@ namespace mb {
 			surProp.height = desc.Height;
 		}
 
-		DX2DSurface* sur = (DX2DSurface*)LocalDeviceManager::getInstance()->createSurface(&surProp);
+		DX2DSurface* sur = (DX2DSurface*)LocalScreenManager::getInstance()->createSurface(&surProp);
 		sur->replaceTex(videoTex);
 
 		return new DXSurface(sur);

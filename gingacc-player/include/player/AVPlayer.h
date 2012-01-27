@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef AVPLAYER_H_
 #define AVPLAYER_H_
 
+#include "mb/IMBDefs.h"
+
 #ifndef _WIN32
 #ifdef __cplusplus
 extern "C" {
@@ -134,7 +136,7 @@ namespace player {
 			IWindow* win;
 
 		public:
-			AVPlayer(string mrl, bool hasVisual);
+			AVPlayer(GingaScreenID screenId, string mrl, bool hasVisual);
 
 #ifdef STx7100
 		private:
@@ -142,8 +144,8 @@ namespace player {
 			audio_t *audio;
 
 		public:
-			AVPlayer(video_t *video);
-			AVPlayer(audio_t *audio);
+			AVPlayer(GingaScreenID screenId, video_t *video);
+			AVPlayer(GingaScreenID screenId, audio_t *audio);
 #endif
 
 			virtual ~AVPlayer();
@@ -205,7 +207,7 @@ namespace player {
 			void setAVPid(int aPid, int vPid);
 
 			//geode:
-			bool setOutWindow(int windowId);
+			bool setOutWindow(GingaWindowID windowId);
 			void setAlphaBlend(int x, int y, int w, int h);
 			void checkResize();
 

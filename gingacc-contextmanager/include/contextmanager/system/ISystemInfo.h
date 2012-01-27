@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _ISystemInfo_H_
 #define _ISystemInfo_H_
 
+#include "mb/IMBDefs.h"
+
 #include <map>
 #include <string>
 using namespace std;
@@ -68,8 +70,12 @@ namespace contextmanager {
 		virtual string getCaptionLanguage()=0;
 		virtual string getSubtitleLanguage()=0;
 		virtual float getReturnBitRate()=0;
-		virtual void getScreenSize(int* width, int* height)=0;
-		virtual void getScreenGraphicSize(int* width, int* height)=0;
+		virtual void getScreenSize(
+				GingaScreenID screenId, int* width, int* height)=0;
+
+		virtual void getScreenGraphicSize(
+				GingaScreenID screenId, int* width, int* height)=0;
+
 		virtual string getAudioType()=0;
 		virtual float getCPUClock()=0;
 		virtual float getMemorySize()=0;

@@ -72,7 +72,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::process;
 #include "player/PlayerProcess.h"
 #endif
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "player/PlayersComponentSupport.h"
@@ -81,10 +81,11 @@ int main(int argc, char** argv, char** envp) {
 	IWindow* w;
 	IWindow* ww;
 	IWindow* www;
-	ILocalDeviceManager* dm;
+	ILocalScreenManager* dm;
 	IPlayer* player;
 	IPlayer* img;
 	IPlayer* avp;
+	GingaScreenID screen;
 
 #if HAVE_MULTIPROCESS
 	Process* process;
@@ -97,21 +98,29 @@ int main(int argc, char** argv, char** envp) {
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();
-	dm = ((LocalDeviceManagerCreator*)(
-			cm->getObject("LocalDeviceManager")))();
+	dm = ((LocalScreenManagerCreator*)(
+			cm->getObject("LocalScreenManager")))();
 
 #else
-	dm = LocalDeviceManager::getInstance();
+	dm = LocalScreenManager::getInstance();
 #endif
 
-	dm->createDevice("systemScreen(0)");
+	screen = dm->createScreen(0, NULL);
+
 #if HAVE_COMPSUPPORT
-	w = ((WindowCreator*)(cm->getObject("Window")))(-1, 10, 10, 100, 100);
-	ww = ((WindowCreator*)(cm->getObject("Window")))(-1, 90, 90, 150, 150);
-	www = ((WindowCreator*)(cm->getObject("Window")))(-1, 0, 0, 800, 800);
+	w = ((WindowCreator*)(cm->getObject("Window")))(
+			NULL, NULL, screen, 10, 10, 100, 100);
+
+	ww = ((WindowCreator*)(cm->getObject("Window")))(
+			NULL, NULL, screen, 90, 90, 150, 150);
+
+	www = ((WindowCreator*)(cm->getObject("Window")))(
+			NULL, NULL, screen, 0, 0, 800, 800);
+
 #else
-	w  = new DFBWindow(10, 10, 100, 100);
-	ww = new DFBWindow(90, 90, 400, 400);
+	w   = new DFBWindow(NULL, NULL, screen, 10, 10, 100, 100);
+	ww  = new DFBWindow(NULL, NULL, screen, 90, 90, 400, 400);
+	www = new DFBWindow(NULL, NULL, screen, 0, 0, 800, 800);
 #endif
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
@@ -127,26 +136,26 @@ int main(int argc, char** argv, char** envp) {
 	www->show();
 
 	if (argc > 1 && strcmp(argv[1], "img") == 0) {
-		player = new Player("teste");
-		img = new ImagePlayer("/root/img1.png");
+		player = new Player(screen, "teste");
+		img = new ImagePlayer(screen, "/root/img1.png");
 		img->setOutWindow(w->getId());
 		w->validate();
 
 		cout << "Player test has shown image. press enter to continue" << endl;
 		getchar();
-		dm->clearWidgetPools();
+		dm->clearWidgetPools(screen);
 
 	} else if (argc > 1 && strcmp(argv[1], "avpipe") == 0) {
 #if HAVE_COMPSUPPORT
 		avp = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-				"sbtvd-ts://dvr0.ts", true);
+				screen, "sbtvd-ts://dvr0.ts", true);
 #else
-		avp = (IPlayer*)(new AVPlayer("sbtvd-ts://dvr0.ts", true));
+		avp = (IPlayer*)(new AVPlayer(screen, "sbtvd-ts://dvr0.ts", true));
 #endif
 
 		avp->setOutWindow(w->getId());
 		getchar();
-		dm->clearWidgetPools();
+		dm->clearWidgetPools(screen);
 
 	} else if (argc > 1 && strcmp(argv[1], "process") == 0) {
 #if HAVE_MULTIPROCESS
@@ -226,7 +235,7 @@ int main(int argc, char** argv, char** envp) {
 		BerkeliumPlayer* bp1, *bp2, *bp3;
 		ISurface* s;
 
-		bp1 = new BerkeliumPlayer("http://xkcd.com");
+		bp1 = new BerkeliumPlayer(screen, "http://xkcd.com");
 		bp1->setBounds(120, 120, 400, 400);
 		s = bp1->getSurface();
 		if (s == NULL) {
@@ -238,7 +247,7 @@ int main(int argc, char** argv, char** envp) {
 		cout << "gingacc-player test Call bp1->play" << endl;
 		bp1->play();
 
-		bp2 = new BerkeliumPlayer("http://www.telemidia.puc-rio.br");
+		bp2 = new BerkeliumPlayer(screen, "http://www.telemidia.puc-rio.br");
 		bp2->setBounds(90, 90, 150, 150);
 		s = bp2->getSurface();
 		if (s == NULL) {
@@ -250,7 +259,7 @@ int main(int argc, char** argv, char** envp) {
 		cout << "gingacc-player test Call bp2->play" << endl;
 		bp2->play();
 
-		bp3 = new BerkeliumPlayer("http://www.ncl.org.br");
+		bp3 = new BerkeliumPlayer(screen, "http://www.ncl.org.br");
 		bp3->setBounds(10, 10, 100, 100);
 		s = bp3->getSurface();
 		if (s == NULL) {
@@ -314,7 +323,7 @@ int main(int argc, char** argv, char** envp) {
 		LinksPlayer* lp1, *lp2, *lp3;
 		ISurface* s;
 
-		lp1 = new LinksPlayer("http://xkcd.com");
+		lp1 = new LinksPlayer(screen, "http://xkcd.com");
 		lp1->setBounds(120, 120, 400, 400);
 		s = lp1->getSurface();
 		if (s == NULL) {
@@ -332,7 +341,7 @@ int main(int argc, char** argv, char** envp) {
 		cout << "continue" << endl;
 		getchar();
 
-		lp2 = new LinksPlayer("http://www.telemidia.puc-rio.br");
+		lp2 = new LinksPlayer(screen, "http://www.telemidia.puc-rio.br");
 		lp2->setBounds(90, 90, 150, 150);
 		s = lp2->getSurface();
 		if (s == NULL) {
@@ -344,7 +353,7 @@ int main(int argc, char** argv, char** envp) {
 		cout << "gingacc-player test Call bp2->play" << endl;
 		lp2->play();
 
-		lp3 = new LinksPlayer("http://www.ncl.org.br");
+		lp3 = new LinksPlayer(screen, "http://www.ncl.org.br");
 		lp3->setBounds(10, 10, 100, 100);
 		s = lp3->getSurface();
 		if (s == NULL) {
@@ -384,7 +393,7 @@ int main(int argc, char** argv, char** envp) {
 		cout << endl;
 		getchar();
 
-		lp1 = new LinksPlayer("http://xkcd.com");
+		lp1 = new LinksPlayer(screen, "http://xkcd.com");
 		lp1->setBounds(120, 120, 400, 400);
 		s = lp1->getSurface();
 		if (s == NULL) {
@@ -410,6 +419,7 @@ int main(int argc, char** argv, char** envp) {
 
 		//awe1 = new AwesomiumPlayer("http://www.google.com");
 		awe1 = new AwesomiumPlayer(
+				screen,
 				"/root/workspaces/Ginga/ginganclplugin-cpp/test/simple.html");
 				//"about:plugins");
 

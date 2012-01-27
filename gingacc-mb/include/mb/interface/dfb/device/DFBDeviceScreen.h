@@ -108,23 +108,31 @@ namespace mb {
 			static IDirectFBDisplayLayer* gfxLayer;
 
 		public:
-			DFBDeviceScreen(int numArgs, char** args, void* parentId);
+			DFBDeviceScreen(int numArgs, char** args, GingaWindowID parentId);
 
 			virtual ~DFBDeviceScreen();
 
-			void setParentScreen(unsigned long screenId);
-			void setBackgroundImage(unsigned long screenId, string uri);
-			unsigned int getWidthResolution(unsigned long screenId);
-			void setWidthResolution(unsigned long screenId, unsigned int wRes);
-			unsigned int getHeightResolution(unsigned long screenId);
-			void setHeightResolution(unsigned long screenId, unsigned int hRes);
-			void setColorKey(unsigned long screenId, int r, int g, int b);
-			void mergeIds(int destId, vector<int>* srcIds);
-			void* getWindow(int winId);
-			void* createWindow(unsigned long screenId, void* desc);
+			void clearWidgetPools();
+
+			void setParentScreen(GingaWindowID parentId);
+
+			void setBackgroundImage(string uri);
+
+			unsigned int getWidthResolution();
+			void setWidthResolution(unsigned int wRes);
+			unsigned int getHeightResolution();
+			void setHeightResolution(unsigned int hRes);
+
+			void setColorKey(int r, int g, int b);
+
+			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
+			void* getWindow(GingaWindowID winId);
+			void* createWindow(void* desc);
 			void releaseWindow(void* win);
+
 			void* createSurface(void* desc);
 			void releaseSurface(void* sur);
+
 			void* getGfxRoot();
 	};
 }

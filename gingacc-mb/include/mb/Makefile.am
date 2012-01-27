@@ -5,6 +5,9 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 localIncludedir = /usr/local/include/ginga/mb
 
-localInclude_HEADERS = ILocalDeviceManager.h IInputManager.h
+localInclude_HEADERS = \
+                       IInputManager.h \
+                       ILocalScreenManager.h \
+                       IMBDefs.h
 
 MAINTAINERCLEANFILES = Makefile.in

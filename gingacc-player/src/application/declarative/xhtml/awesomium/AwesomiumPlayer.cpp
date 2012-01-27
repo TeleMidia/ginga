@@ -60,8 +60,10 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AwesomiumPlayer::AwesomiumPlayer(string mrl) : Player(mrl) {
-		awesome = AwesomiumHandler::createAwesomium();
+	AwesomiumPlayer::AwesomiumPlayer(GingaScreenID screenId, string mrl) :
+			Player(screenId, mrl) {
+
+		awesome = AwesomiumHandler::createAwesomium(screenId);
 	}
 
 	AwesomiumPlayer::~AwesomiumPlayer() {
@@ -81,7 +83,7 @@ namespace player {
 		Player::setNotifyContentUpdate(notify);
 	}
 
-	bool AwesomiumPlayer::setOutWindow(int windowId) {
+	bool AwesomiumPlayer::setOutWindow(GingaWindowID windowId) {
 		return (Player::setOutWindow(windowId));
 	}
 
@@ -185,10 +187,11 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createAwesomiumPlayer(const char* mrl, bool hasVisual) {
+		createAwesomiumPlayer(
+				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::player::AwesomiumPlayer(
-			(string)mrl));
+			screenId, (string)mrl));
 }
 
 extern "C" void destroyAwesomiumPlayer(

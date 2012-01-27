@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _SystemInfo_H_
 #define _SystemInfo_H_
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ISystemInfo.h"
@@ -94,8 +94,13 @@ namespace contextmanager {
 			string getCaptionLanguage();
 			string getSubtitleLanguage();
 			float getReturnBitRate();
-			void getScreenSize(int* width, int* height);
-			void getScreenGraphicSize(int* width, int* height);
+
+			void getScreenSize(
+					GingaScreenID screenId, int* width, int* height);
+
+			void getScreenGraphicSize(
+					GingaScreenID screenId, int* width, int* height);
+
 			string getAudioType();
 			float getCPUClock();
 			float getMemorySize();

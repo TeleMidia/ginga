@@ -78,8 +78,11 @@ namespace player {
 	private:
 		int fd;
 		string url;
+
+#if HAVE_CCRTPIC
 		IInteractiveChannelManager* icm;
 		IInteractiveChannel* ic;
+#endif
 
 		static const short CMD_CREATEP = 0;
 		static const short CMD_PERFORM = 1;

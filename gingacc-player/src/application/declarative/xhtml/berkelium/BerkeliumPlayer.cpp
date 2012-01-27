@@ -235,7 +235,7 @@ namespace player {
 		Player::setNotifyContentUpdate(notify);
 	}
 
-	bool BerkeliumPlayer::setOutWindow(int windowId) {
+	bool BerkeliumPlayer::setOutWindow(GingaWindowID windowId) {
 		clog << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
 		Player::setOutWindow(windowId);
 /*

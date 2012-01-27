@@ -62,9 +62,11 @@ namespace core {
 namespace player {
 	IInputManager* LinksPlayer::im = NULL;
 
-	LinksPlayer::LinksPlayer(string mrl) : Player(mrl), Thread::Thread() {
+	LinksPlayer::LinksPlayer(GingaScreenID screenId, string mrl) :
+			Player(screenId, mrl), Thread::Thread() {
+
 		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
-		ILocalDeviceManager* dm = NULL;
+		ILocalScreenManager* dm = NULL;
 
 		mBrowser = NULL;
 		this->x = 1;
@@ -73,19 +75,19 @@ namespace player {
 		this->h = 1;
 
 #if HAVE_COMPSUPPORT
-		dm = ((LocalDeviceManagerCreator*)(
-				cm->getObject("LocalDeviceManager")))();
+		dm = ((LocalScreenManagerCreator*)(
+				cm->getObject("LocalScreenManager")))();
 
 		if (im == NULL) {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
 		}
 #else
-		dm = LocalDeviceManager::getInstance();
+		dm = LocalScreenManager::getInstance();
 		im = InputManager::getInstance();
 #endif
 
 		if (dm != NULL) {
-			setBrowserDFB(dm->getGfxRoot());
+			setBrowserDFB(dm->getGfxRoot(myScreen));
 			setDisplayMenu(0);
 		}
 
@@ -116,10 +118,10 @@ namespace player {
 				if (s != NULL) {
 #if HAVE_COMPSUPPORT
 					this->surface = ((SurfaceCreator*)(cm->getObject(
-							"Surface")))(s, 0, 0);
+							"Surface")))(myScreen, s, 0, 0);
 #else
 
-					this->surface = new DFBSurface(s);
+					this->surface = new DFBSurface(myScreen, s);
 #endif
 				}
 
@@ -140,7 +142,7 @@ namespace player {
 		Player::setNotifyContentUpdate(notify);
 	}
 
-	bool LinksPlayer::setOutWindow(int windowId) {
+	bool LinksPlayer::setOutWindow(GingaWindowID windowId) {
 		clog << "LinksPlayer::setOutWindow '" << mrl << "'" << endl;
 		Player::setOutWindow(windowId);
 
@@ -316,10 +318,11 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createLinksPlayer(const char* mrl, bool hasVisual) {
+		createLinksPlayer(
+				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
 	return new ::br::pucrio::telemidia::ginga::core::player::LinksPlayer(
-			(string)mrl);
+			screenId, (string)mrl);
 }
 
 extern "C" void destroyLinksPlayer(

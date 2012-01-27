@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef ISHOWBUTTON_H_
 #define ISHOWBUTTON_H_
 
+#include "mb/IMBDefs.h"
 #include <string>
 
 namespace br {
@@ -77,7 +78,7 @@ namespace player {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::player::IShowButton*
-         WidgetCreator();
+         WidgetCreator(GingaScreenID screenId);
 
 typedef void WidgetDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IShowButton*

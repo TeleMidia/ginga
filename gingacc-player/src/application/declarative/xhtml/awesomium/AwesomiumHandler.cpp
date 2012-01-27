@@ -63,7 +63,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AwesomiumInfo::AwesomiumInfo(AwesomiumHDR id) {
+	AwesomiumInfo::AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id) {
+		this->myScreen = screenId;
 		this->id       = id;
 		this->webCore  = NULL;
 		this->webView  = NULL;
@@ -140,7 +141,7 @@ namespace player {
 		return hasInfo;
 	}
 
-	AwesomiumHDR AwesomiumHandler::createAwesomium() {
+	AwesomiumHDR AwesomiumHandler::createAwesomium(GingaScreenID screenId) {
 		AwesomiumInfo* aInfo;
 
 #if HAVE_COMPSUPPORT
@@ -149,13 +150,13 @@ namespace player {
 		}
 
 		if (dm == NULL) {
-			dm = ((LocalDeviceManagerCreator*)(
-				cm->getObject("LocalDeviceManager")))();
+			dm = ((LocalScreenManagerCreator*)(
+				cm->getObject("LocalScreenManager")))();
 		}
 
 #else
 		if (dm == NULL) {
-			dm = LocalDeviceManager::getInstance();
+			dm = LocalScreenManager::getInstance();
 		}
 
 		if (im == NULL) {
@@ -164,14 +165,14 @@ namespace player {
 #endif
 
 		_id++;
-		aInfo = new AwesomiumInfo(_id);
+		aInfo = new AwesomiumInfo(screenId, _id);
 
 #if HAVE_COMPSUPPORT
 		aInfo->surface = ((SurfaceCreator*)(
-				cm->getObject("Surface")))(NULL, 0, 0);
+				cm->getObject("Surface")))(screenId, NULL, 0, 0);
 
 #else
-		aInfo->surface = new DFBSurface(NULL);
+		aInfo->surface = new DFBSurface(screenId, NULL);
 #endif
 
 		_infos[_id] = aInfo;

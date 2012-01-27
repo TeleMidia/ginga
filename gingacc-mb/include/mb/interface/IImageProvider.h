@@ -51,7 +51,6 @@ http://www.telemidia.puc-rio.br
 #define IIMAGEPROVIDER_H_
 
 #include "ISurface.h"
-#include "IIOContainer.h"
 
 #include <set>
 using namespace std;
@@ -62,7 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IImageProvider : IIOContainer {
+	class IImageProvider {
 		public:
 			virtual ~IImageProvider(){};
 			virtual void* getContent()=0;
@@ -78,7 +77,7 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IImageProvider*
-		ImageProviderCreator(const char* mrl);
+		ImageProviderCreator(GingaScreenID screenId, const char* mrl);
 
 typedef void ImageProviderDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IImageProvider* ip);

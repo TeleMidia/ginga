@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/audio/FFmpegAudioProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -529,7 +529,10 @@ namespace mb {
 
 	bool FFmpegAudioProvider::_ffmpegInitialized = false;
 
-	FFmpegAudioProvider::FFmpegAudioProvider(const char* mrl) {
+	FFmpegAudioProvider::FFmpegAudioProvider(
+			GingaScreenID screenId, const char* mrl) {
+
+		myScreen   = screenId;
 		rContainer = new IDirectFBAudioProvider_FFmpeg_data;
 		resumePos  = 0;
 		startPos   = 0;
@@ -625,7 +628,7 @@ namespace mb {
 		desc.memory.length = sizeof(buf);*/
 		desc.flags         = (DFBDataBufferDescriptionFlags)DBDESC_FILE;
 
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot());
 		dfb->CreateDataBuffer(dfb, &desc, &rContainer->buffer);
 
 		retB = rContainer->buffer->WaitForData(rContainer->buffer, sizeof(buf));
@@ -931,7 +934,7 @@ namespace mb {
 		getVideoSurfaceDescription(&dsc);
 
 		return new DFBSurface(
-				LocalDeviceManager::getInstance()->createSurface(&dsc));
+				LocalScreenManager::getInstance()->createSurface(&dsc));
 	}
 
 	bool FFmpegAudioProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -1188,16 +1191,15 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createFFmpegAudioProvider(const char* mrl) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+	createFFmpegAudioProvider(GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			FFmpegAudioProvider(mrl));
+			FFmpegAudioProvider(screenId, mrl));
 }
 
-extern "C" void destroyFFmpegAudioProvider(
-		::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* cmp) {
+extern "C" void destroyFFmpegAudioProvider(::br::pucrio::telemidia::ginga::
+		core::mb::IContinuousMediaProvider*cmp) {
 
 	delete cmp;
 }

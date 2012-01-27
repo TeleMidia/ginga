@@ -71,7 +71,10 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::
-		IDataBuffer* DataBufferCreator(const void* data, unsigned int dataSize);
+typedef ::br::pucrio::telemidia::ginga::core::mb::IDataBuffer*
+		DataBufferCreator(
+				GingaScreenID screenId,
+				const void* data,
+				unsigned int dataSize);
 
 #endif /*IDataBuffer_H_*/

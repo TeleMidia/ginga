@@ -78,7 +78,9 @@ namespace mb {
 			IDirectFBWindow* win;
 			IDirectFBSurface* winSur;
 
-			int windowId;
+			GingaScreenID myScreen;
+			DFBWindowID windowId;
+			DFBWindowID parentId;
 			int x;
 			int y;
 			int width;
@@ -101,14 +103,23 @@ namespace mb {
 		    pthread_mutex_t mutexC;
 
 		public:
-			DFBWindow(int x, int y, int width, int height);
-			DFBWindow(int windowId);
+			DFBWindow(
+					GingaWindowID underlyingWindowID,
+					GingaWindowID parentWindowID,
+					GingaScreenID screenId,
+					int x, int y, int width, int height);
+
 			virtual ~DFBWindow();
 
 		private:
-			void initialize(int windowId,int x, int y, int width, int height);
+			void initialize(
+					GingaWindowID underlyingWindowID,
+					GingaWindowID parentWindowID,
+					GingaScreenID screenId,
+					int x, int y, int width, int height);
 
 		public:
+			GingaScreenID getScreen();
 			void revertContent();
 			void setReleaseListener(ISurface* listener);
 			int getCap(string cap);
@@ -123,7 +134,7 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
-			void setZBoundaries(int lower, int upper);
+			void setZBoundaries(GingaWindowID lower, GingaWindowID upper);
 			void raise();
 			void lower();
 			void raiseToTop();
@@ -131,7 +142,7 @@ namespace mb {
 			void setCurrentTransparency(int alpha);
 			void setOpaqueRegion(int x1, int y1, int x2, int y2);
 			int getTransparencyValue();
-			int getId();
+			GingaWindowID getId();
 			void show();
 			void hide();
 			int getX();

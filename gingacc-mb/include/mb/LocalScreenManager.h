@@ -47,13 +47,27 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef ILocalDeviceManager_H_
-#define ILocalDeviceManager_H_
+#ifndef LocalScreenManager_H_
+#define LocalScreenManager_H_
 
-#include "interface/ISurface.h"
+#ifdef _WIN32
+#if	_EXP_LOCALSCREENHANDLER_API == 0
+#define LOCALSCREENHANDLER_API	__declspec(dllexport)
+#else
+#define LOCALSCREENHANDLER_API	__declspec(dllimport)
+#endif
+#else
+#define LOCALSCREENHANDLER_API
+#endif
 
-#include <vector>
+#include "interface/IDeviceScreen.h"
+#include "ILocalScreenManager.h"
+
+#include <pthread.h>
+
 #include <string>
+#include <iostream>
+#include <map>
 using namespace std;
 
 namespace br {
@@ -62,57 +76,54 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class ILocalDeviceManager {
+	class LOCALSCREENHANDLER_API LocalScreenManager :
+			public ILocalScreenManager {
+
+		private:
+			map<GingaScreenID, IDeviceScreen*>* screens;
+			pthread_mutex_t scrMutex;
+
+			static LocalScreenManager* _instance;
+
+			LocalScreenManager();
+			virtual ~LocalScreenManager();
+
 		public:
-			virtual ~ILocalDeviceManager(){};
+			void releaseHandler();
 
-			virtual void setParentDevice(void* devId)=0;
+			void setParentScreen(GingaScreenID screenId, void* parentId);
 
-			virtual void setParameters(int numArgs, char** args)=0;
-			virtual void release()=0;
-			virtual void setBackgroundImage(string uri)=0;
+			void setBackgroundImage(GingaScreenID screenId, string uri);
 
-			virtual int getDeviceWidth(
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			static LocalScreenManager* getInstance();
 
-			virtual int getDeviceHeight(
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			int getDeviceWidth(GingaScreenID screenId);
 
-			virtual void* getGfxRoot(unsigned int deviceNumber=0)=0;
-			virtual void clearWidgetPools()=0;
-			virtual int createDevice(string description)=0;
-			virtual void mergeIds(
-					int destId,
-					vector<int>* srcIds,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			int getDeviceHeight(GingaScreenID screenId);
 
-			virtual void* getWindow(
-					int windowId,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			void* getGfxRoot(GingaScreenID screenId);
 
-			virtual void* createWindow(
-					void* windowDesc,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			void clearWidgetPools(GingaScreenID screenId);
 
-			virtual void releaseWindow(
-					void* window,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			unsigned long createScreen(int numArgs, char** args);
 
-			virtual void* createSurface(
-					void* surfaceDesc,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			void mergeIds(
+					GingaScreenID screenId,
+					GingaWindowID destId,
+					vector<GingaWindowID>* srcIds);
 
-			virtual void releaseSurface(
-					void* sur,
-					unsigned int deviceNumber=0,
-					unsigned int screenNumber=0)=0;
+			void* getWindow(GingaScreenID screenId, GingaWindowID windowId);
+			void* createWindow(GingaScreenID screenId, void* windowDesc);
+			void releaseWindow(GingaScreenID screenId, void* window);
+			void* createSurface(GingaScreenID screenId, void* surfaceDesc);
+			void releaseSurface(GingaScreenID screenId, void* sur);
+
+		private:
+			void addScreen(GingaScreenID screenId, IDeviceScreen* screen);
+			short getNumOfScreens();
+			bool getScreen(GingaScreenID screenId, IDeviceScreen** screen);
+			void lockScreens();
+			void unlockScreens();
 	};
 }
 }
@@ -121,11 +132,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::ILocalDeviceManager*
-		LocalDeviceManagerCreator();
-
-typedef void LocalDeviceManagerDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::
-				ILocalDeviceManager* dm);
-
-#endif /*ILocalDeviceManager_H_*/
+#endif /*LocalScreenManager_H_*/

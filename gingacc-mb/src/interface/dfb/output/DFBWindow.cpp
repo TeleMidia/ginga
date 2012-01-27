@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "util/Color.h"
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -92,13 +92,21 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBWindow::DFBWindow(int x, int y, int width, int height) {
-		initialize(-1, x, y, width, height);
-	}
+	DFBWindow::DFBWindow(
+			GingaWindowID underlyingWindowID,
+			GingaWindowID parentWindowID,
+			GingaScreenID screenId,
+			int x, int y, int width, int height) {
 
-	DFBWindow::DFBWindow(int windowId) {
-		initialize(windowId, -1, -1, -1, -1);
-		draw();
+		initialize(
+				underlyingWindowID,
+				parentWindowID,
+				screenId,
+				x, y, width, height);
+
+		if (underlyingWindowID != NULL) {
+			draw();
+		}
 	}
 
 	DFBWindow::~DFBWindow() {
@@ -126,12 +134,12 @@ namespace mb {
 		unlockChilds();
 
 		if (winSur != NULL) {
-			LocalDeviceManager::getInstance()->releaseSurface(winSur);
+			LocalScreenManager::getInstance()->releaseSurface(myScreen, winSur);
 			winSur = NULL;
 		}
 
 		if (win != NULL) {
-			LocalDeviceManager::getInstance()->releaseWindow(win);
+			LocalScreenManager::getInstance()->releaseWindow(myScreen, win);
 			win = NULL;
 		}
 		unlock();
@@ -143,30 +151,52 @@ namespace mb {
 	}
 
 	void DFBWindow::initialize(
-			int windowId, int x, int y, int width, int height) {
+			GingaWindowID underlyingWindowID,
+			GingaWindowID parentWindowID,
+			GingaScreenID screenId,
+			int x, int y, int w, int h) {
 
-		this->win               = NULL;
-		this->winSur            = NULL;
-		this->windowId          = windowId;
-		this->x                 = x;
-		this->y                 = y;
-		this->width             = width;
-		this->height            = height;
-		this->ghost             = false;
-		this->visible           = false;
-		this->transparencyValue = 0x00;
-		this->r                 = -1;
-		this->g                 = -1;
-		this->b                 = -1;
-		this->alpha             = 0xFF;
-		this->childSurfaces     = new vector<ISurface*>;
-		this->releaseListener   = NULL;
-		this->fit               = true;
-		this->stretch           = true;
-		this->caps              = DWCAPS_NODECORATION;
+		if (underlyingWindowID != NULL) {
+			this->windowId    = (DFBWindowID)(unsigned long)underlyingWindowID;
+
+		} else {
+			this->windowId    = -1;
+		}
+
+		if (parentWindowID != NULL) {
+			this->parentId    = (DFBWindowID)(unsigned long)parentWindowID;
+
+		} else {
+			this->parentId    = -1;
+		}
+
+		this->win             = NULL;
+		this->winSur          = NULL;
+		this->myScreen        = screenId;
+
+		this->x               = x;
+		this->y               = y;
+		this->width           = w;
+		this->height          = h;
+		this->ghost           = false;
+		this->visible         = false;
+		this->r               = -1;
+		this->g               = -1;
+		this->b               = -1;
+		this->alpha           = 0xFF;
+		this->childSurfaces   = new vector<ISurface*>;
+		this->releaseListener = NULL;
+		this->fit             = true;
+		this->stretch         = true;
+		this->caps            = DWCAPS_NODECORATION;
+		transparencyValue     = 0x00;
 
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
+	}
+
+	GingaScreenID DFBWindow::getScreen() {
+		return myScreen;
 	}
 
 	void DFBWindow::revertContent() {
@@ -235,16 +265,18 @@ namespace mb {
 				dsc.caps  = (DFBWindowCapabilities)(caps);
 			}
 
-			win = (IDirectFBWindow*)(
-					LocalDeviceManager::getInstance()->createWindow(&dsc));
+			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
+					createWindow(myScreen, &dsc));
 
 			DFBCHECK(win->SetOpacity(win, 0x00));
 			DFBCHECK(win->GetSurface(win, &winSur));
 			DFBCHECK(win->GetID(win, (DFBWindowID*)&windowId));
 
 		} else {
-			win = (IDirectFBWindow*)(
-					LocalDeviceManager::getInstance()->getWindow(windowId));
+			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
+					getWindow(
+							myScreen,
+							(GingaWindowID)(unsigned long)windowId));
 
 			win->GetPosition(win, &x, &y);
 			win->GetSize(win, &width, &height);
@@ -352,7 +384,7 @@ namespace mb {
 		unlock();
 	}
 
-	void DFBWindow::setZBoundaries(int lower, int upper) {
+	void DFBWindow::setZBoundaries(GingaWindowID lower, GingaWindowID upper) {
 		IDirectFBWindow* bWin;
 
 		lock();
@@ -362,15 +394,15 @@ namespace mb {
 		}
 
 		if (upper >= 0) {
-			bWin = (IDirectFBWindow*)(
-					LocalDeviceManager::getInstance()->getWindow(upper));
+			bWin = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
+					getWindow(myScreen, upper));
 
 			DFBCHECK(win->PutBelow(win, bWin));
 		}
 
 		if (lower >= 0) {
-			bWin = (IDirectFBWindow*)(
-					LocalDeviceManager::getInstance()->getWindow(lower));
+			bWin = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
+					getWindow(myScreen, lower));
 
 			DFBCHECK(win->PutAtop(win, bWin));
 		}
@@ -445,8 +477,8 @@ namespace mb {
 		return this->transparencyValue;
 	}
 
-	int DFBWindow::getId() {
-		return windowId;
+	GingaWindowID DFBWindow::getId() {
+		return (GingaWindowID)(unsigned long)windowId;
 	}
 
 	void DFBWindow::show() {
@@ -690,14 +722,18 @@ namespace mb {
 		DFBSurfaceDescription surDsc;
 		IColor* chromaKey = NULL;
 
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
-		DFBCHECK(dfb->CreateImageProvider(dfb, serializedImageUrl.c_str(), &ip));
+		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+				myScreen));
+
+		DFBCHECK(dfb->CreateImageProvider(
+				dfb, serializedImageUrl.c_str(), &ip));
 
 		if ((ip->GetImageDescription(ip, &imgDsc) == DFB_OK) &&
 			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
 
 			destination = (IDirectFBSurface*)(
-					LocalDeviceManager::getInstance()->createSurface(&surDsc));
+					LocalScreenManager::getInstance()->createSurface(
+							myScreen, &surDsc));
 
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
 				DFBCHECK(destination->SetBlittingFlags(destination,
@@ -725,7 +761,8 @@ namespace mb {
 		if (destination != NULL) {
 			DFBCHECK(ip->RenderTo(ip, (IDirectFBSurface*)(destination), NULL));
 			renderFrom(destination);
-			LocalDeviceManager::getInstance()->releaseSurface(destination);
+			LocalScreenManager::getInstance()->releaseSurface(
+					myScreen, destination);
 		}
 	}
 
@@ -756,7 +793,7 @@ namespace mb {
 							winSur, contentSurface, NULL, NULL));
 
 				} else {
-					sur = new DFBSurface(width, height);
+					sur = new DFBSurface(myScreen, width, height);
 					s2 = (IDirectFBSurface*)(sur->getContent());
 
 					DFBCHECK(s2->StretchBlit(
@@ -910,16 +947,14 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		createDFBWindow(int windowId, int x, int y, int width, int height) {
+		createDFBWindow(
+				GingaWindowID underlyingWindowID,
+				GingaWindowID parentWindowID,
+				GingaScreenID screenID,
+				int x, int y, int w, int h) {
 
-	if (windowId < 0) {
-		return new ::br::pucrio::telemidia::ginga::core::mb::DFBWindow(
-				x, y, width, height);
-
-	} else {
-		return new ::br::pucrio::telemidia::ginga::core::mb::DFBWindow(
-				windowId);
-	}
+	return new ::br::pucrio::telemidia::ginga::core::mb::DFBWindow(
+			underlyingWindowID, parentWindowID, screenID, x, y, w, h);
 }
 
 extern "C" void destroyDFBWindow(

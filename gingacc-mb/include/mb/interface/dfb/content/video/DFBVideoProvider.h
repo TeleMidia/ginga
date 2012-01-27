@@ -84,10 +84,14 @@ namespace mb {
 	class DFBVideoProvider : public IContinuousMediaProvider {
 		protected:
 			DFBRendererContainer* rContainer;
+			GingaScreenID myScreen;
 
 		public:
-			DFBVideoProvider(const char* mrl);
-			DFBVideoProvider(IDirectFBVideoProvider* dec);
+			DFBVideoProvider(GingaScreenID screenId, const char* mrl);
+
+			DFBVideoProvider(
+					GingaScreenID screenId, IDirectFBVideoProvider* dec);
+
 			virtual ~DFBVideoProvider();
 			void* getContent();
 			virtual void setAVPid(int aPid, int vPid){};

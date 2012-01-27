@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dfb/content/image/DFBImageProvider.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK
@@ -76,17 +76,22 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBImageProvider::DFBImageProvider(const char* mrl) {
+	DFBImageProvider::DFBImageProvider(
+			GingaScreenID screenId, const char* mrl) {
+
 		IDirectFB* dfb;
 
 #if DFBTM_PATCH
 		dipRefs++;
 #endif
 
-		decoder = NULL;
+		myScreen = screenId;
+		decoder  = NULL;
 
 		if (mrl != NULL) {
-			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+					myScreen));
+
 			DFBCHECK(dfb->CreateImageProvider(dfb, mrl, &decoder));
 		}
 	}
@@ -135,9 +140,10 @@ namespace mb {
 			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
 
 			destination = (IDirectFBSurface*)(
-					LocalDeviceManager::getInstance()->createSurface(&surDsc));
+					LocalScreenManager::getInstance()->createSurface(
+							myScreen, &surDsc));
 
-			renderedSurface = new DFBSurface(destination);
+			renderedSurface = new DFBSurface(myScreen, destination);
 
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
 				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
@@ -254,10 +260,10 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IImageProvider*
-		createImageProvider(const char* mrl) {
+		createImageProvider(GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBImageProvider(mrl));
+			DFBImageProvider(screenId, mrl));
 }
 
 extern "C" void destroyImageProvider(

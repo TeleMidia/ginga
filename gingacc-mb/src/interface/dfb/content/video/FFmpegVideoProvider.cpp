@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/video/FFmpegVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -665,7 +665,10 @@ namespace mb {
 
 	bool FFmpegVideoProvider::_ffmpegInitialized = false;
 
-	FFmpegVideoProvider::FFmpegVideoProvider(const char* mrl) {
+	FFmpegVideoProvider::FFmpegVideoProvider(
+			GingaScreenID screenId, const char* mrl) {
+
+		myScreen   = screenId;
 		rContainer = new IDirectFBVideoProvider_FFmpeg_data;
 		resumePos  = 0;
 		startPos   = 0;
@@ -780,7 +783,9 @@ namespace mb {
 		desc.memory.length = sizeof(buf);*/
 		desc.flags         = (DFBDataBufferDescriptionFlags)DBDESC_FILE;
 
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+				myScreen));
+
 		dfb->CreateDataBuffer(dfb, &desc, &rContainer->buffer);
 
 		retB = rContainer->buffer->WaitForData(rContainer->buffer, sizeof(buf));
@@ -1222,7 +1227,9 @@ namespace mb {
 		getVideoSurfaceDescription(&dsc);
 
 		return new DFBSurface(
-				LocalDeviceManager::getInstance()->createSurface(&dsc));
+				myScreen,
+				LocalScreenManager::getInstance()->createSurface(
+						myScreen, &dsc));
 	}
 
 	bool FFmpegVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -1238,7 +1245,7 @@ namespace mb {
 			clog << "width = '" << w << "' height = '" << h << "'" << endl;
 
 			s = (IDirectFBSurface*)(
-					LocalDeviceManager::getInstance()->createSurface(&dsc));
+					LocalScreenManager::getInstance()->createSurface(&dsc));
 
 			rContainer->video.dest = s;
 			frame->setContent(s);
@@ -1534,11 +1541,11 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createFFmpegVideoProvider(const char* mrl) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+		createFFmpegVideoProvider(GingaScreenID screenId, const char* mrl) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			FFmpegVideoProvider(mrl));
+	return (new ::br::pucrio::telemidia::ginga::core::mb::FFmpegVideoProvider(
+			screenId, mrl));
 }
 
 extern "C" void destroyFFmpegVideoProvider(

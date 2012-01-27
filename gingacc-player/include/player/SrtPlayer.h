@@ -70,7 +70,7 @@ namespace player {
 			bool running;
 
 		public:
-			SrtPlayer(string mrl);
+			SrtPlayer(GingaScreenID screenId, string mrl);
 			virtual ~SrtPlayer();
 			void loadFile(string url);
 

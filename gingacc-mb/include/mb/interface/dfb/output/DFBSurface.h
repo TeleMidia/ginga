@@ -69,17 +69,23 @@ namespace mb {
 	class DFBSurface : public ISurface {
 		private:
 			IDirectFBSurface* sur;
+			GingaScreenID myScreen;
 			IWindow* parent;
 			bool hasExtHandler;
 			IColor* chromaColor;
 			int caps;
 
 		public:
-			DFBSurface();
-			DFBSurface(int w, int h);
-			DFBSurface(void* someSurface);      //SurfaceGraphicsWg
+			DFBSurface(GingaScreenID screenId);
+			DFBSurface(GingaScreenID screenId, int w, int h);
+			DFBSurface(GingaScreenID screenId, void* underlyingSurface);
+
 			virtual ~DFBSurface();
 
+		private:
+			void initialize(GingaScreenID screenId);
+
+		public:
 			void write(int x, int y, int w, int h, int pitch, char* buff);
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();

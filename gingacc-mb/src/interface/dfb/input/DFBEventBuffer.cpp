@@ -68,9 +68,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	set<IDirectFBEventBuffer*>* DFBEventBuffer::pool = (
-			new set<IDirectFBEventBuffer*>);
-
 	/*DFBEnumerationResult DFBEventBuffer::enum_input_device(
 		    DFBInputDeviceID device_id,
 		    DFBInputDeviceDescription desc,
@@ -88,9 +85,10 @@ namespace mb {
 
 	IDirectFBEventBuffer* DFBEventBuffer::eventBuffer = NULL;
 
-	DFBEventBuffer::DFBEventBuffer() {
+	DFBEventBuffer::DFBEventBuffer(GingaScreenID screen) {
 		IDirectFB* dfb;
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+				screen));
 
 		//dfb_true => the focus doesn't matter
 		DFBCHECK(dfb->CreateInputEventBuffer(
@@ -98,18 +96,10 @@ namespace mb {
 			    DICAPS_ALL,
 			    DFB_TRUE,
 			    &eventBuffer));
-
-		pool->insert(eventBuffer);
 	}
 
 	DFBEventBuffer::~DFBEventBuffer() {
 		clog << "DFBEventBuffer::~DFBEventBuffer()" << endl;
-		set<IDirectFBEventBuffer*>::iterator i;
-
-		i = pool->find(eventBuffer);
-		if (i != pool->end()) {
-			pool->erase(i);
-		}
 
 		eventBuffer->Release(eventBuffer);
 		eventBuffer = NULL;
@@ -171,9 +161,10 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IEventBuffer*
-		createDFBEventBuffer() {
+		createDFBEventBuffer(GingaScreenID screen) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::mb::DFBEventBuffer());
+	return (new ::br::pucrio::telemidia::ginga::core::mb::DFBEventBuffer(
+			screen));
 }
 
 extern "C" void destroyDFBEventBuffer(

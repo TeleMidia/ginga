@@ -71,7 +71,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/interface/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -96,7 +96,7 @@ namespace player {
 			int x, y, w, h;
 
 		public:
-			LinksPlayer(string mrl);
+			LinksPlayer(GingaScreenID screenId, string mrl);
 			virtual ~LinksPlayer();
 
 			ISurface* getSurface();
@@ -107,7 +107,7 @@ namespace player {
 
 			void play();
 			void stop();
-			bool setOutWindow(int windowId);
+			bool setOutWindow(GingaWindowID windowId);
 			void setBounds(int x, int y, int w, int h);
 
 			void setPropertyValue(string name, string value);

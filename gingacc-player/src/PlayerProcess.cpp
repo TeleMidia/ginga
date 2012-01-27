@@ -394,9 +394,9 @@ namespace player {
 		return Player::isForcedNaturalEnd();
 	}
 
-	bool PlayerProcess::setOutWindow(int windowId) {
+	bool PlayerProcess::setOutWindow(GingaWindowID windowId) {
 		this->windowId = windowId;
-		sendMsg("setoutwindow," + itos(windowId) + "::;::");
+		sendMsg("setoutwindow," + itos((unsigned long)windowId) + "::;::");
 		return true;
 	}
 

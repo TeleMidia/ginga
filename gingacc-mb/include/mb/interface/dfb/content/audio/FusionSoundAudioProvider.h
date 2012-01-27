@@ -79,12 +79,13 @@ namespace mb {
 			IFusionSoundStream* stream;
 			IFusionSoundPlayback* playback;
 			pthread_mutex_t decMutex;
+			GingaScreenID myScreen;
 
 		public:
 			static IFusionSound* _fsSound;
 			static bool _fsInitialized;
 
-			FusionSoundAudioProvider(const char* mrl);
+			FusionSoundAudioProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~FusionSoundAudioProvider();
 			static void initialize(int numArgs=0, char* args[]=NULL);
 			static void release();

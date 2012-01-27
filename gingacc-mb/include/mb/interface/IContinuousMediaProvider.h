@@ -50,7 +50,6 @@ http://www.telemidia.puc-rio.br
 #ifndef ICONTINUOUSMEDIAPROVIDER_H_
 #define ICONTINUOUSMEDIAPROVIDER_H_
 
-#include "IIOContainer.h"
 #include "ISurface.h"
 
 #include "IProviderListener.h"
@@ -63,7 +62,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IContinuousMediaProvider : public IIOContainer {
+	class IContinuousMediaProvider {
 		public:
 			virtual ~IContinuousMediaProvider(){};
 			virtual void setAVPid(int aPid, int vPid)=0;
@@ -93,8 +92,8 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* CMPCreator(const char* mrl);
+typedef ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+		CMPCreator(GingaScreenID screenId, const char* mrl);
 
 typedef void CMPDestroyer(::br::pucrio::telemidia::ginga::core::mb::
 		IContinuousMediaProvider* cmp);

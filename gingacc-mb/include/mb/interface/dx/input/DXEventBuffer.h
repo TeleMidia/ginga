@@ -57,7 +57,7 @@ http://www.telemidia.puc-rio.br
 
 #include "pthread.h"
 #include "mb/interface/IEventBuffer.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 #include <set>
 using namespace std;

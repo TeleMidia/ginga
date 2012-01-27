@@ -61,8 +61,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	TextPlayer::TextPlayer() : Player("") {
-   		initializePlayer();
+	TextPlayer::TextPlayer(GingaScreenID screenId) : Player(screenId, "") {
+   		initializePlayer(screenId);
    	}
 
 	TextPlayer::~TextPlayer() {
@@ -97,7 +97,7 @@ namespace player {
    		}
    	}
 
-	void TextPlayer::initializePlayer() {
+	void TextPlayer::initializePlayer(GingaScreenID screenId) {
 		this->bgColor = NULL;
 		this->fontHeight = 0;
 		this->currentLine = 0;
@@ -114,12 +114,12 @@ namespace player {
 
 #if HAVE_COMPSUPPORT
 		this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(
-				NULL, 0, 0);
+				myScreen, NULL, 0, 0);
 #else
 #ifndef _WIN32
-		this->surface = new DFBSurface();
+		this->surface = new DFBSurface(myScreen);
 #else
-		this->surface = new DXSurface();
+		this->surface = new DXSurface(myScreen);
 #endif
 #endif
 		if (this->surface != NULL) {
@@ -129,6 +129,7 @@ namespace player {
 	}
 
 	int TextPlayer::write(
+			GingaScreenID screenId,
 			ISurface* s,
 			string text,
 			string fontUri,
@@ -143,12 +144,12 @@ namespace player {
 
 #if HAVE_COMPSUPPORT
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-				fontUri.c_str(), fontSize);
+				screenId, fontUri.c_str(), fontSize);
 #else
 #ifndef _WIN32
-		font = new DFBFontProvider(fontUri.c_str(), fontSize);
+		font = new DFBFontProvider(screenId, fontUri.c_str(), fontSize);
 #else
-		font = new DXFontProvider(fontUri.c_str(), fontSize);
+		font = new DXFontProvider(screenId, fontUri.c_str(), fontSize);
 #endif
 #endif
 
@@ -195,12 +196,12 @@ namespace player {
 
 #if HAVE_COMPSUPPORT
 		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-				someUri.c_str(), fontSize);
+				myScreen, someUri.c_str(), fontSize);
 #else
 #ifndef _WIN32
-		font = new DFBFontProvider(someUri.c_str(), fontSize);
+		font = new DFBFontProvider(myScreen, someUri.c_str(), fontSize);
 #else
-		font = new DXFontProvider(someUri.c_str(), fontSize);
+		font = new DXFontProvider(myScreen, someUri.c_str(), fontSize);
 #endif
 #endif
 
@@ -486,10 +487,10 @@ namespace player {
 }
 
 extern "C" int renderText(
+		GingaScreenID screenId,
 		::br::pucrio::telemidia::ginga::core::mb::ISurface* s,
 		string text, string fontUri, int fontSize, IColor* fontColor) {
 
 	return ::br::pucrio::telemidia::ginga::core::player::TextPlayer::write(
-			s, text, fontUri, fontSize, fontColor);
+			screenId, s, text, fontUri, fontSize, fontColor);
 }
-

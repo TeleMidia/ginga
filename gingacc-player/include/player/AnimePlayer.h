@@ -70,12 +70,13 @@ namespace player {
 	class AnimePlayer : public Thread {
 		protected:
 			vector<IImageProvider*>* anime;
+			GingaScreenID myScreen;
 			double dur;
 			IWindow* win;
 			bool running;
 
 		public:
-			AnimePlayer(vector<string>* mrl);
+			AnimePlayer(GingaScreenID screenId, vector<string>* mrl);
 			virtual ~AnimePlayer();
 			void play();
 			void stop();

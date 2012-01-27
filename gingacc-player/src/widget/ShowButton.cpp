@@ -57,7 +57,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ShowButton::ShowButton() : Thread() {
+	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
+		myScreen       = screenId;
 		status         = NONE;
 		previousStatus = NONE;
 		win            = NULL;
@@ -65,25 +66,25 @@ namespace player {
 
 	ShowButton* ShowButton::_instance = NULL;
 
-	ShowButton* ShowButton::getInstance() {
+	ShowButton* ShowButton::getInstance(GingaScreenID screenId) {
 		if (ShowButton::_instance == NULL) {
-			ShowButton::_instance = new ShowButton();
+			ShowButton::_instance = new ShowButton(screenId);
 		}
 		return ShowButton::_instance;
 	}
 
 	void ShowButton::initializeWindow() {
 		int x = 0, y, w, h;
-		ILocalDeviceManager* dm = NULL;
+		ILocalScreenManager* dm = NULL;
 #if HAVE_COMPSUPPORT
-		dm = ((LocalDeviceManagerCreator*)(
-				cm->getObject("LocalDeviceManager")))();
+		dm = ((LocalScreenManagerCreator*)(
+				cm->getObject("LocalScreenManager")))();
 #else
-		dm = LocalDeviceManager::getInstance();
+		dm = LocalScreenManager::getInstance();
 #endif
 
 		if (dm != NULL) {
-			x = (int)(dm->getDeviceWidth() - 70);
+			x = (int)(dm->getDeviceWidth(myScreen) - 70);
 		}
 
 		y = 10;
@@ -91,12 +92,13 @@ namespace player {
 		h = 60;
 
 #if HAVE_COMPSUPPORT
-		win = ((WindowCreator*)(cm->getObject("Window")))(-1, x, y, w, h);
+		win = ((WindowCreator*)(cm->getObject("Window")))(
+				NULL, NULL, myScreen, x, y, w, h);
 #else
 #ifndef _WIN32
-		win = new DFBWindow(x, y, w, h);
+		win = new DFBWindow(NULL, NULL, myScreen, x, y, w, h);
 #else
-		win = new DXWindow(x, y, w, h);
+		win = new DXWindow(NULL, NULL, myScreen, x, y, w, h);
 #endif
 #endif
 		win->setCaps(win->getCap("ALPHACHANNEL"));
@@ -144,7 +146,7 @@ namespace player {
 	void ShowButton::render(string mrl) {
 		ISurface* surface;
 
-		surface = ImagePlayer::renderImage(mrl);
+		surface = ImagePlayer::renderImage(myScreen, mrl);
 		lock();
 		if (win == NULL) {
 			initializeWindow();
@@ -224,10 +226,12 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IShowButton*
-		createShowButton() {
+		createShowButton(GingaScreenID screenId) {
 
 	br::pucrio::telemidia::ginga::core::player::ShowButton* sb;
-	sb = br::pucrio::telemidia::ginga::core::player::ShowButton::getInstance();
+	sb = br::pucrio::telemidia::ginga::core::player::ShowButton::getInstance(
+			screenId);
+
 	return sb;
 }
 

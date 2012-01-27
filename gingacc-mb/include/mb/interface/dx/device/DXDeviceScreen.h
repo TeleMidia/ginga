@@ -122,7 +122,7 @@ namespace mb {
 			void setBackgroundImage(string uri);
 	
 			void mergeIds(int destId, vector<int>* srcIds){};
-			void* getWindow(int winId){return NULL;};
+			void* getWindow(void* winId){return NULL;};
 
 			HWND getHwnd();
 		private:

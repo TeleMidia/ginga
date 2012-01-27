@@ -124,7 +124,7 @@ using namespace std;
 
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IFontProvider.h"
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -217,8 +217,10 @@ namespace player {
 		IEPGProcessor* epgProc;
 #endif //HAVE_DATAPROC
 
-		LuaPlayer (string mrl);
+		LuaPlayer (GingaScreenID screenId, string mrl);
 		virtual ~LuaPlayer ();
+
+		GingaScreenID getScreenId();
 		void run();
 		virtual bool hasPresented();
 

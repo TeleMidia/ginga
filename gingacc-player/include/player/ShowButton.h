@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
@@ -88,14 +88,15 @@ namespace player {
 			static const short STOP = 3;
 
 			static ShowButton* _instance;
+			GingaScreenID myScreen;
 			short previousStatus;
 			IWindow* win;
 
 		private:
-			ShowButton();
+			ShowButton(GingaScreenID screenId);
 
 		public:
-			static ShowButton* getInstance();
+			static ShowButton* getInstance(GingaScreenID screenId);
 
 			void initializeWindow();
 			void stop();

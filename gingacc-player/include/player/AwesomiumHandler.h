@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IInputEventListener.h"
@@ -78,10 +78,11 @@ namespace player {
 	typedef int AwesomiumHDR;
 
 	static IInputManager* im;
-	static ILocalDeviceManager* dm;
+	static ILocalScreenManager* dm;
 
 	class AwesomiumInfo : public IInputEventListener {
 		public:
+			GingaScreenID myScreen;
 			AwesomiumHDR id;
 			WebCore* webCore;
 			WebView* webView;
@@ -99,7 +100,7 @@ namespace player {
 			pthread_cond_t _eMVar;
 			pthread_mutex_t _eM;
 
-			AwesomiumInfo(AwesomiumHDR id);
+			AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id);
 			virtual ~AwesomiumInfo();
 
 			void useEvent();
@@ -118,7 +119,7 @@ namespace player {
 					bool removeInfo=false);
 
 		public:
-			static AwesomiumHDR createAwesomium();
+			static AwesomiumHDR createAwesomium(GingaScreenID screenId);
 			static void destroyAwesomium(AwesomiumHDR id);
 			static void getSize(AwesomiumHDR id, int* w, int* h);
 			static void setSize(AwesomiumHDR id, int w, int h);

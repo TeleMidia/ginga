@@ -28,7 +28,7 @@ libgingaccmb_so_SOURCES = \
                           interface/InputEventFactory.cpp \
                           interface/Matrix.cpp \
                           InputManager.cpp \
-                          LocalDeviceManager.cpp
+                          LocalScreenManager.cpp
 
 libgingaccmb_so_LDADD   = \
                           -ltelemidiautil -lpthread \

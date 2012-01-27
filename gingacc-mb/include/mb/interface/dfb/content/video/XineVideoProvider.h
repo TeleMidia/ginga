@@ -113,14 +113,15 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class XineVideoProvider : public IContinuousMediaProvider {
-		protected:
+		private:
+			GingaScreenID myScreen;
 			XineRendererContainer* rContainer;
 			dfb_visual_t visual;
 			int resumePos;
 			int startPos;
 
 		public:
-			XineVideoProvider(const char* mrl);
+			XineVideoProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~XineVideoProvider();
 
 		private:

@@ -62,7 +62,7 @@ http://www.telemidia.puc-rio.br
 
 
 #include "mb/interface/dx/output/DX2DSurface.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include <dxerr.h>
 namespace br {
 namespace pucrio {

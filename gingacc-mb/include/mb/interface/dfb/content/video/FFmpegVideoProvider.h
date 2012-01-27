@@ -227,12 +227,14 @@ namespace mb {
 	class FFmpegVideoProvider : public IContinuousMediaProvider {
 		private:
 			IDirectFBVideoProvider_FFmpeg_data* rContainer;
+			GingaScreenID myScreen;
 			int resumePos;
 			int startPos;
 			static bool _ffmpegInitialized;
 
 		public:
-			FFmpegVideoProvider(const char* mrl);
+			FFmpegVideoProvider(GingaScreenID screenId, const char* mrl);
+
 			virtual ~FFmpegVideoProvider();
 
 		private:

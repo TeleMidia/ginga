@@ -76,6 +76,7 @@ namespace mb {
 	class DFBFontProvider : public IFontProvider {
 		protected:
 			IDirectFBFont* font;
+			GingaScreenID myScreen;
 
 		public:
 			static const short A_LEFT;
@@ -92,7 +93,11 @@ namespace mb {
 			static const short A_BOTTOM_LEFT;
 			static const short A_BOTTOM_RIGHT;
 
-			DFBFontProvider(const char* fontUri, int heightInPixel);
+			DFBFontProvider(
+					GingaScreenID screenId,
+					const char* fontUri,
+					int heightInPixel);
+
 			virtual ~DFBFontProvider();
 			void* getContent();
 			int getMaxAdvance();

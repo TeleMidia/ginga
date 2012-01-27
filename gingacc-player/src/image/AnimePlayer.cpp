@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "mb/IMBDefs.h"
 #include "player/AnimePlayer.h"
 
 #include "util/functions.h"
@@ -62,32 +63,35 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AnimePlayer::AnimePlayer(vector<string>* mrls) : Thread() {
+	AnimePlayer::AnimePlayer(
+			GingaScreenID screenId, vector<string>* mrls) : Thread() {
+
 		string mrl;
 		vector<string>::iterator i;
 
-		dur = 100000;
-		running = false;
-		win = NULL;
-		anime = new vector<IImageProvider*>;
+		myScreen = screenId;
+		dur      = 100000;
+		running  = false;
+		win      = NULL;
+		anime    = new vector<IImageProvider*>;
+
 		i = mrls->begin();
 		while (i != mrls->end()) {
 			mrl = *i;
 			if (fileExists(mrl)) {
 #if HAVE_COMPSUPPORT
 				anime->push_back(((ImageProviderCreator*)(cm->getObject(
-						"ImageProvider")))(mrl.c_str()));
+						"ImageProvider")))(myScreen, mrl.c_str()));
 #else
 #ifndef _WIN32
-				anime->push_back(new DFBImageProvider(mrl.c_str()));
+				anime->push_back(new DFBImageProvider(myScreen, mrl.c_str()));
 #else
-				anime->push_back(new DXImageProvider(mrl.c_str()));
+				anime->push_back(new DXImageProvider(myScreen, mrl.c_str()));
 #endif
 #endif
 			}
 			++i;
 		}
-
 	}
 
 	AnimePlayer::~AnimePlayer() {

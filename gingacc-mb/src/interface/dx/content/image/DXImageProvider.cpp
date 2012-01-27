@@ -72,7 +72,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/dx/content/image/DXImageProvider.h"
 #include "mb/interface/dx/output/DXSurface.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 
 
@@ -91,7 +91,7 @@ namespace mb {
 
 		mrl = string(pmrl);
 		pD3ddev = NULL;
-		pD3ddev = (IDirect3DDevice9 *)(LocalDeviceManager::getInstance()->getGfxRoot());
+		pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
 		
 		if(pD3ddev == NULL)
 			clog << "DXImageProvider - No Direct3D device found" << endl;
@@ -186,7 +186,7 @@ namespace mb {
 		surProp.y = 0;
 		surProp.z = 1.0;
 
-		destination = (DX2DSurface*)(LocalDeviceManager::getInstance()->createSurface(&surProp));
+		destination = (DX2DSurface*)(LocalScreenManager::getInstance()->createSurface(&surProp));
 		renderedSurface = new DXSurface(destination);
 
 		if(destination != NULL && renderedSurface != NULL){

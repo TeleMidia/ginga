@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/Matrix.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/IFontProvider.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK
@@ -72,24 +72,21 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBSurface::DFBSurface() {
-		this->sur           = NULL;
-		this->parent        = NULL;
-		this->chromaColor   = NULL;
-		this->caps          = 0;
-		this->hasExtHandler = false;
+	DFBSurface::DFBSurface(GingaScreenID screenId) {
+		initialize(screenId);
 	}
 
-	DFBSurface::DFBSurface(void* someSurface) {
-		this->sur           = (IDirectFBSurface*)someSurface;
-		this->parent        = NULL;
-		this->chromaColor   = NULL;
-		this->caps          = 0;
-		this->hasExtHandler = false;
+	DFBSurface::DFBSurface(GingaScreenID screenId, void* underlyingSurface) {
+		initialize(screenId);
+
+		this->sur = (IDirectFBSurface*)underlyingSurface;
 	}
 
-	DFBSurface::DFBSurface(int w, int h) {
+	DFBSurface::DFBSurface(GingaScreenID screenId, int w, int h) {
 		DFBSurfaceDescription surDsc;
+
+		initialize(screenId);
+
 		surDsc.width = w;
 		surDsc.height = h;
 		surDsc.pixelformat = DSPF_LUT8;
@@ -102,13 +99,9 @@ namespace mb {
 	     desc.caps        = DSCAPS_PRIMARY | DSCAPS_DOUBLE;
 	     desc.pixelformat = DSPF_LUT8;*/
 
-		this->caps = 0;
-		this->sur = (IDirectFBSurface*)(
-				LocalDeviceManager::getInstance()->createSurface(&surDsc));
+		this->sur = (IDirectFBSurface*)(LocalScreenManager::getInstance()->
+				createSurface(myScreen, &surDsc));
 
-		this->parent        = NULL;
-		this->chromaColor   = NULL;
-		this->hasExtHandler = false;
 	}
 
 	DFBSurface::~DFBSurface() {
@@ -121,16 +114,29 @@ namespace mb {
 			if (parent != NULL) {
 				if (parent->removeChildSurface(this)) {
 					DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-					LocalDeviceManager::getInstance()->releaseSurface(sur);
+					LocalScreenManager::getInstance()->releaseSurface(
+							myScreen, sur);
+
 					sur = NULL;
 				}
 
 			} else {
 				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-				LocalDeviceManager::getInstance()->releaseSurface(sur);
+				LocalScreenManager::getInstance()->releaseSurface(
+						myScreen, sur);
+
 				sur = NULL;
 			}
 		}
+	}
+
+	void DFBSurface::initialize(GingaScreenID screenId) {
+		this->myScreen      = screenId;
+		this->sur           = NULL;
+		this->parent        = NULL;
+		this->chromaColor   = NULL;
+		this->caps          = 0;
+		this->hasExtHandler = false;
 	}
 
 	void DFBSurface::write(int x, int y, int w, int h, int pitch, char* buff) {
@@ -188,7 +194,9 @@ namespace mb {
 		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-				LocalDeviceManager::getInstance()->releaseSurface(sur);
+				LocalScreenManager::getInstance()->releaseSurface(
+						myScreen, sur);
+
 				sur = NULL;
 			}
 		}
@@ -298,7 +306,7 @@ namespace mb {
 
 		DFBCHECK(sur->GetSubSurface(sur, &rect, &s));
 
-		subSurface = new DFBSurface(s);
+		subSurface = new DFBSurface(myScreen, s);
 		subSurface->setParent(parent);
 		return subSurface;
 	}
@@ -440,7 +448,7 @@ namespace mb {
 		sur->GetSize(sur, &width, &height);
 
 		/*Copy to a temporary surface*/
-		DFBSurface* sur_temp = new DFBSurface(width, height);		
+		DFBSurface* sur_temp = new DFBSurface(myScreen, width, height);
 		IDirectFBSurface* temp = (IDirectFBSurface*)(sur_temp->getContent());		
 		temp->SetBlittingFlags(
 				temp, (DFBSurfaceBlittingFlags)(
@@ -592,19 +600,19 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		createDFBSurface(void* sur, int w, int h) {
+		createDFBSurface(GingaScreenID screenId, void* sur, int w, int h) {
 
 	if (sur != NULL) {
 		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface(sur));
+				DFBSurface(screenId, sur));
 
 	} else if (w != 0 && h != 0) {
 		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface(w, h));
+				DFBSurface(screenId, w, h));
 
 	} else {
 		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface());
+				DFBSurface(screenId));
 	}
 }
 

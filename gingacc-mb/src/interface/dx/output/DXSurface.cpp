@@ -76,7 +76,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dx/output/DXSurface.h"
 #include "mb/interface/dx/output/DXWindow.h"
 #include "mb/interface/IFontProvider.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 
 namespace br {
@@ -110,7 +110,7 @@ namespace mb {
 		surProp.height = h;
 
 		this->caps = 0;
-		this->sur = (DX2DSurface*)(LocalDeviceManager::getInstance()->createSurface(&surProp));
+		this->sur = (DX2DSurface*)(LocalScreenManager::getInstance()->createSurface(&surProp));
 
 		this->parent = NULL;
 		this->chromaColor = NULL;
@@ -126,12 +126,12 @@ namespace mb {
 		if (sur != NULL) {
 			if (parent != NULL) {
 				if (parent->removeChildSurface(this)) {
-					LocalDeviceManager::getInstance()->releaseSurface(sur);
+					LocalScreenManager::getInstance()->releaseSurface(sur);
 					sur = NULL;
 				}
 
 			} else {
-				LocalDeviceManager::getInstance()->releaseSurface(sur);
+				LocalScreenManager::getInstance()->releaseSurface(sur);
 				sur = NULL;
 			}
 		}
@@ -166,7 +166,7 @@ namespace mb {
 		clog << "DXSurface::setContent(void* surface)" << endl;
 		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
-				LocalDeviceManager::getInstance()->releaseSurface(sur);
+				LocalScreenManager::getInstance()->releaseSurface(sur);
 				sur = NULL;
 			}
 		}
@@ -256,7 +256,7 @@ namespace mb {
 	void DXSurface::fillRectangle(int x, int y, int w, int h) {
 		clog << "DXSurface::fillRectangle(int x, int y, int w, int h)" << endl;
 //		LPDIRECT3DSURFACE9 pSur;
-//		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalDeviceManager::getInstance())->getGfxRoot());
+//		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalScreenManager::getInstance())->getGfxRoot());
 
 		
 		(this->sur)->fill(x, y, w, h);

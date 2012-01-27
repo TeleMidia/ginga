@@ -12,7 +12,6 @@ localInclude_HEADERS = \
                        IImageProvider.h \
                        IInputEvent.h \
                        IInputEventListener.h \
-                       IIOContainer.h \
                        IProviderListener.h \
                        ISurface.h \
                        IWindow.h

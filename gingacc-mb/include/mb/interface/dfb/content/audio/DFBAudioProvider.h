@@ -73,9 +73,10 @@ namespace mb {
 	class DFBAudioProvider : public IContinuousMediaProvider {
 		protected:
 			IDirectFBVideoProvider* decoder;
+			GingaScreenID myScreen;
 
 		public:
-			DFBAudioProvider(const char* mrl);
+			DFBAudioProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~DFBAudioProvider();
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};

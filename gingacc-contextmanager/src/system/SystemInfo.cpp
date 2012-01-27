@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #endif
 
 #include "util/functions.h"
@@ -76,7 +76,7 @@ namespace contextmanager {
 #if HAVE_COMPSUPPORT
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
-	static ILocalDeviceManager* dm = NULL;
+	static ILocalScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
 #ifndef _WIN32
@@ -89,10 +89,10 @@ namespace contextmanager {
 
 		if (dm == NULL) {
 #if HAVE_COMPSUPPORT
-			dm = ((LocalDeviceManagerCreator*)(
-					cm->getObject("LocalDeviceManager")))();
+			dm = ((LocalScreenManagerCreator*)(
+					cm->getObject("LocalScreenManager")))();
 #else
-			dm = LocalDeviceManager::getInstance();
+			dm = LocalScreenManager::getInstance();
 #endif
 		}
 	}
@@ -205,16 +205,18 @@ namespace contextmanager {
 		return util::stof(value);
 	}
 
-	void SystemInfo::getScreenSize(int* width, int* height) {
-		// TODO: correct retrieve
-		*width = dm->getDeviceWidth();
-		*height = dm->getDeviceHeight();
+	void SystemInfo::getScreenSize(
+			GingaScreenID screenId, int* width, int* height) {
+
+		*width = dm->getDeviceWidth(screenId);
+		*height = dm->getDeviceHeight(screenId);
 	}
 
-	void SystemInfo::getScreenGraphicSize(int* width, int* height) {
-		// TODO: correct retrieve
-		*width = dm->getDeviceWidth();
-		*height = dm->getDeviceHeight();
+	void SystemInfo::getScreenGraphicSize(
+			GingaScreenID screenId, int* width, int* height) {
+
+		*width = dm->getDeviceWidth(screenId);
+		*height = dm->getDeviceHeight(screenId);
 	}
 
 	string SystemInfo::getAudioType() {

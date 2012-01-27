@@ -62,11 +62,12 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	Player::Player(string mrl) {
+	Player::Player(GingaScreenID screenId, string mrl) {
 		pthread_mutex_init(&listM, NULL);
 		pthread_mutex_init(&lockedListM, NULL);
 		pthread_mutex_init(&referM, NULL);
 
+		this->myScreen            = screenId;
 		this->mrl                 = mrl;
 		this->listeners           = NULL;
 		this->lockedListeners     = NULL;
@@ -548,7 +549,7 @@ namespace player {
 		return forcedNaturalEnd;
 	}
 
-	bool Player::setOutWindow(int windowId) {
+	bool Player::setOutWindow(GingaWindowID windowId) {
 #if HAVE_MULTIPROCESS
 		ISurface* renderedSurface;
 
@@ -589,9 +590,10 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer* createPlayer(
-		const char* mrl, bool hasVisual) {
+		GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::player::Player(""));
+	return (new ::br::pucrio::telemidia::ginga::core::player::Player(
+			screenId, ""));
 }
 
 extern "C" void destroyPlayer(

@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/dfb/content/video/DFBDataBuffer.h"
 #include "mb/interface/dfb/content/video/DFBVideoProvider.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -61,9 +61,14 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBDataBuffer::DFBDataBuffer(void* data, unsigned int dataSize) : Thread() {
+	DFBDataBuffer::DFBDataBuffer(
+			GingaScreenID screenId,
+			void* data,
+			unsigned int dataSize) : Thread() {
+
 		IDirectFB* dfb = NULL;
 
+		myScreen           = screenId;
 		deviceUri          = NULL;
 		deviceFd           = -1;
 		this->dataSize     = dataSize;
@@ -74,7 +79,9 @@ namespace mb {
 		desc.memory.length = dataSize;
 		desc.flags         = (DFBDataBufferDescriptionFlags)DBDESC_MEMORY;
 
-		dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+				myScreen));
+
 		dfb->CreateDataBuffer(dfb, &desc, &dataBuffer);
 	}
 
@@ -94,7 +101,7 @@ namespace mb {
 		dataBuffer->CreateVideoProvider(dataBuffer, &dec);
 
 		//clog << "DFBDataBuffer::createProvider done" << endl;
-		return new DFBVideoProvider(dec);
+		return new DFBVideoProvider(myScreen, dec);
 	}
 
 	void DFBDataBuffer::run() {
@@ -115,9 +122,12 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IDataBuffer* createDFBDataBuffer(void* data, unsigned int dataSize) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDataBuffer*
+		createDFBDataBuffer(
+				GingaScreenID screenId,
+				void* data,
+				unsigned int dataSize) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBDataBuffer(data, dataSize));
+	return (new ::br::pucrio::telemidia::ginga::core::mb::DFBDataBuffer(
+			screenId, data, dataSize));
 }

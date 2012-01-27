@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef IFONTPROVIDER_H_
 #define IFONTPROVIDER_H_
 
-#include "IIOContainer.h"
+#include "mb/IMBDefs.h"
 
 namespace br {
 namespace pucrio {
@@ -58,7 +58,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IFontProvider : IIOContainer {
+	class IFontProvider {
 		public:
 			virtual ~IFontProvider(){};
 			virtual void* getContent()=0;
@@ -78,7 +78,10 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
-		FontProviderCreator(const char* fontUri, int heightInPixel);
+		FontProviderCreator(
+				GingaScreenID screenId,
+				const char* fontUri,
+				int heightInPixel);
 
 typedef void FontProviderDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IFontProvider* fp);

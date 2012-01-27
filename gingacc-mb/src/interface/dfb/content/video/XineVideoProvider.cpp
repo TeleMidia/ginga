@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/video/XineVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -72,7 +72,10 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	XineVideoProvider::XineVideoProvider(const char* mrl) {
+	XineVideoProvider::XineVideoProvider(
+			GingaScreenID screenId, const char* mrl) {
+
+		myScreen             = screenId;
 		rContainer           = new XineRendererContainer;
 		rContainer->isValid  = false;
 		rContainer->xine     = NULL;
@@ -307,7 +310,9 @@ namespace mb {
 		}
 
 		return new DFBSurface(
-				LocalDeviceManager::getInstance()->createSurface(&dsc));
+				myScreen,
+				LocalScreenManager::getInstance()->createSurface(
+						myScreen, &dsc));
 	}
 
 	bool XineVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -326,7 +331,8 @@ namespace mb {
 			clog << endl;
 
 			s = (IDirectFBSurface*)(
-					LocalDeviceManager::getInstance()->createSurface(&dsc));
+					LocalScreenManager::getInstance()->createSurface(
+							myScreen, &dsc));
 
 			visual.destination = s;
 			frame->setContent(s);
@@ -628,11 +634,11 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createXineVideoProvider(const char* mrl) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+		createXineVideoProvider(GingaScreenID screenId, const char* mrl) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			XineVideoProvider(mrl));
+	return (new ::br::pucrio::telemidia::ginga::core::mb::XineVideoProvider(
+			screenId, mrl));
 }
 
 extern "C" void destroyXineVideoProvider(

@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -89,7 +89,7 @@ namespace player {
 	private:
 		std::string mURL;
 		static IInputManager* im;
-		ILocalDeviceManager* dm;
+		ILocalScreenManager* dm;
 		ISurface* surface;
 		int w, h;
 		Context* context;

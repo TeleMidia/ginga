@@ -675,8 +675,9 @@ namespace player {
  * - inicializa bibliotecas disponiveis ao NCLua
  * - associa Player ao seu estado Lua
  */
-LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
-{
+LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
+		Player(screenId, mrl), Thread() {
+
 	void* compObj;
 
     chdir(getPath(mrl).c_str());    // execucao a partir do diretorio fonte
@@ -688,7 +689,8 @@ LuaPlayer::LuaPlayer (string mrl) : Player(mrl), Thread()
 
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
-    this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
+    this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(
+    		screenId, NULL, 0, 0);
 
 #if HAVE_DATAPROC
     compObj = cm->getObject("EPGProcessor");
@@ -775,6 +777,10 @@ LuaPlayer::~LuaPlayer ()
 	lua_close(this->L);
 	this->L = NULL;
     this->unlock();
+}
+
+GingaScreenID LuaPlayer::getScreenId() {
+	return myScreen;
 }
 
 // Retorna Player associado ao estado Lua.
@@ -1061,10 +1067,11 @@ void LuaPlayer::setCurrentScope(string scopeId) {
 } } } } } }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createLuaPlayer(const char* mrl, bool hasVisual) {
+		createLuaPlayer(
+				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
 	return new ::br::pucrio::telemidia::ginga::core::player::LuaPlayer(
-			(string)mrl);
+			screenId, (string)mrl);
 }
 
 extern "C" void destroyLuaPlayer(

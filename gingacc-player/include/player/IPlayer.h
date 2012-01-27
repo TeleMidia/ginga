@@ -129,7 +129,7 @@ namespace player {
 			virtual void setImmediatelyStart(bool immediatelyStartVal)=0;
 			virtual void forceNaturalEnd(bool forceIt)=0;
 			virtual bool isForcedNaturalEnd()=0;
-			virtual bool setOutWindow(int windowId)=0;
+			virtual bool setOutWindow(GingaWindowID windowId)=0;
 
 			/*Exclusive for ChannelPlayer*/
 			virtual IPlayer* getSelectedPlayer()=0;
@@ -151,14 +151,15 @@ namespace player {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer* PlayerCreator(
-		const char* mrl, bool hasVisual);
+		GingaScreenID screenId, const char* mrl, bool hasVisual);
 
 typedef void PlayerDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IPlayer* player);
 
 typedef ISurface* SurfaceHelper(IImageProvider* provider, string mrl);
-typedef ISurface* ImageRenderer(string mrl);
+typedef ISurface* ImageRenderer(GingaScreenID screenId, string mrl);
 typedef int TextRenderer(
+		GingaScreenID screenId,
 		ISurface* s,
 		string text, string fontUri, int fontSize,
 		::br::pucrio::telemidia::util::IColor* fontColor);

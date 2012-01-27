@@ -70,8 +70,8 @@ namespace player {
 
 	BerkeliumHandler::BerkeliumHandler() {
 #if HAVE_COMPSUPPORT
-		dm = ((LocalDeviceManagerCreator*)(
-				cm->getObject("LocalDeviceManager")))();
+		dm = ((LocalScreenManagerCreator*)(
+				cm->getObject("LocalScreenManager")))();
 
 		if (im == NULL) {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
@@ -79,7 +79,7 @@ namespace player {
 
 		surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
 #else
-		dm = LocalDeviceManager::getInstance();
+		dm = LocalScreenManager::getInstance();
 		im = InputManager::getInstance();
 		surface = new DFBSurface(NULL);
 #endif

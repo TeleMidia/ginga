@@ -96,6 +96,7 @@ namespace player {
 			vector<LockedPlayerListener*>* lockedListeners;
 
 		protected:
+			GingaScreenID myScreen;
 			short status;
 			static const short NONE = 0;
 			static const short PLAY = 1;
@@ -119,7 +120,7 @@ namespace player {
 			double scopeEndTime;
 
 		public:
-			Player(string mrl);
+			Player(GingaScreenID screenId, string mrl);
 			virtual ~Player();
 
 			virtual void flip(){};
@@ -191,7 +192,7 @@ namespace player {
 		public:
 			void forceNaturalEnd(bool forceIt);
 			bool isForcedNaturalEnd();
-			virtual bool setOutWindow(int windowId);
+			virtual bool setOutWindow(GingaWindowID windowId);
 
 			/*Exclusive for ChannelPlayer*/
 			virtual IPlayer* getSelectedPlayer(){return NULL;};

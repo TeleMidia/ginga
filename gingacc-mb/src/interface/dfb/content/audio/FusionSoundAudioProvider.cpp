@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/audio/FusionSoundAudioProvider.h"
 
 #if DFBTM_PATCH
@@ -64,12 +64,16 @@ namespace mb {
 	IFusionSound* FusionSoundAudioProvider::_fsSound = NULL;
 	bool FusionSoundAudioProvider::_fsInitialized    = false;
 
-	FusionSoundAudioProvider::FusionSoundAudioProvider(const char* mrl) {
+	FusionSoundAudioProvider::FusionSoundAudioProvider(
+			GingaScreenID screenId, const char* mrl) {
+
 		FSStreamDescription s_desc;
 
 #if DFBTM_PATCH
 		fspRefs++;
 #endif
+
+		myScreen = screenId;
 
 		if (_fsSound == NULL) {
 			initialize();
@@ -261,11 +265,11 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createFSAudioProvider(const char* mrl) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+	createFSAudioProvider(GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			FusionSoundAudioProvider(mrl));
+			FusionSoundAudioProvider(screenId, mrl));
 }
 
 extern "C" void destroyFSAudioProvider(

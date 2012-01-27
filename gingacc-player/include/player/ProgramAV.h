@@ -73,11 +73,11 @@ namespace player {
 			int currentPid;
 			string fullScreenBounds;
 
-			ProgramAV();
+			ProgramAV(GingaScreenID screenId);
 			virtual ~ProgramAV();
 
 		public:
-			static ProgramAV* getInstance();
+			static ProgramAV* getInstance(GingaScreenID screenId);
 			void release();
 			int64_t getVPts();
 			ISurface* getSurface();

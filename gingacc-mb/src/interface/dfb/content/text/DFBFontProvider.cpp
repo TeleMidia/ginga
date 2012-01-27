@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/text/DFBFontProvider.h"
 
 /* macro for a safe call to DirectFB functions */
@@ -86,7 +86,9 @@ namespace mb {
 	const short DFBFontProvider::A_BOTTOM_LEFT = DSTF_BOTTOMLEFT;
 	const short DFBFontProvider::A_BOTTOM_RIGHT = DSTF_BOTTOMRIGHT;
 
-	DFBFontProvider::DFBFontProvider(const char* fontUri, int heightInPixel) {
+	DFBFontProvider::DFBFontProvider(
+			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
+
 		IDirectFB* dfb;
 		DFBFontDescription desc;
 
@@ -94,9 +96,11 @@ namespace mb {
 		dfpRefs++;
 #endif //DFBTM_PATCH
 
-		string aux = "";
+		string aux;
 
-		font = NULL;
+		aux      = "";
+		myScreen = screenId;
+		font     = NULL;
 
 #ifdef _WIN32
 		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
@@ -121,7 +125,9 @@ namespace mb {
 		}
 
 		if (aux != "") {
-			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+					myScreen));
+
 			desc.flags = (DFBFontDescriptionFlags)(
 					DFDESC_HEIGHT | DFDESC_ATTRIBUTES);
 
@@ -196,10 +202,13 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
-		createFontProvider(const char* fontUri, int heightInPixel) {
+		createFontProvider(
+				GingaScreenID screenId,
+				const char* fontUri,
+				int heightInPixel) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBFontProvider(fontUri, heightInPixel));
+			DFBFontProvider(screenId, fontUri, heightInPixel));
 }
 
 extern "C" void destroyFontProvider(

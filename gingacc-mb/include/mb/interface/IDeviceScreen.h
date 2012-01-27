@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IDEVICESCREEN_H_
 #define IDEVICESCREEN_H_
 
+#include "mb/IMBDefs.h"
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -63,28 +65,27 @@ namespace mb {
 	class IDeviceScreen {
 		public:
 			virtual ~IDeviceScreen(){};
-			virtual void setParentScreen(unsigned long screenId)=0;
-			virtual void setBackgroundImage(
-					unsigned long screenId, string uri)=0;
 
-			virtual unsigned int getWidthResolution(unsigned long screenId)=0;
+			virtual void clearWidgetPools()=0;
 
-			virtual void setWidthResolution(
-					unsigned long screenId, unsigned int wRes)=0;
+			virtual void setParentScreen(GingaWindowID parentId)=0;
 
-			virtual unsigned int getHeightResolution(unsigned long screenId)=0;
+			virtual void setBackgroundImage(string uri)=0;
 
-			virtual void setHeightResolution(
-					unsigned long screenId, unsigned int hRes)=0;
+			virtual unsigned int getWidthResolution()=0;
+			virtual void setWidthResolution(unsigned int wRes)=0;
+			virtual unsigned int getHeightResolution()=0;
+			virtual void setHeightResolution(unsigned int hRes)=0;
 
-			virtual void setColorKey(
-					unsigned long screenId, int r, int g, int b)=0;
+			virtual void setColorKey(int r, int g, int b)=0;
 
-			virtual void mergeIds(int destId, vector<int>* srcIds)=0;
+			virtual void mergeIds(
+					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
 
-			virtual void* getWindow(int winId)=0;
-			virtual void* createWindow(unsigned long screenId, void* desc)=0;
+			virtual void* getWindow(GingaWindowID winId)=0;
+			virtual void* createWindow(void* desc)=0;
 			virtual void releaseWindow(void* win)=0;
+
 			virtual void* createSurface(void* desc)=0;
 			virtual void releaseSurface(void* sur)=0;
 
@@ -98,7 +99,7 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
-		ScreenCreator(int numArgs, char** args, void* parentId);
+		ScreenCreator(int numArgs, char** args, GingaWindowID parentId);
 
 typedef void ScreenDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds);

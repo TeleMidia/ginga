@@ -88,12 +88,14 @@ namespace mb {
 		lastEventTime = 0;
 
 #if HAVE_COMPSUPPORT
-		eventBuffer   = ((EventBufferCreator*)(cm->getObject("EventBuffer")))();
+		eventBuffer   = ((EventBufferCreator*)(
+				cm->getObject("EventBuffer")))(0); //default screen
+
 #else
 #ifndef _WIN32
-		eventBuffer   = new DFBEventBuffer();
+		eventBuffer   = new DFBEventBuffer(0);
 #else
-		eventBuffer   = new DXEventBuffer();
+		eventBuffer   = new DXEventBuffer(0);
 #endif
 #endif
 		running       = true;

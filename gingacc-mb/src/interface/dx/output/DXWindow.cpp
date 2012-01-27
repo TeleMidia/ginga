@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "util/Color.h"
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dx/output/DXWindow.h"
 #include "mb/interface/dx/output/DXSurface.h"
 
@@ -122,12 +122,12 @@ namespace mb {
 		unlockChilds();
 
 		if (winSur != NULL) {
-			LocalDeviceManager::getInstance()->releaseSurface(winSur);
+			LocalScreenManager::getInstance()->releaseSurface(winSur);
 			winSur = NULL;
 		}
 
 		if (win != NULL) {
-			LocalDeviceManager::getInstance()->releaseWindow(win);
+			LocalScreenManager::getInstance()->releaseWindow(win);
 			win = NULL;
 		}
 		unlock();
@@ -170,7 +170,7 @@ namespace mb {
 		if (win != NULL) {
 			clog << "DXWindow::draw Warning! Requesting redraw" << endl;
 		} else {
-			win = (DX2DSurface *)(LocalDeviceManager::getInstance()->createWindow(&winProp));
+			win = (DX2DSurface *)(LocalScreenManager::getInstance()->createWindow(&winProp));
 			if (win != NULL) {
 				this->winSur = this->win;
 			}

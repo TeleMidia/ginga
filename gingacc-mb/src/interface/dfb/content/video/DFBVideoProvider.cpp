@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/video/DFBVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -73,19 +73,24 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBVideoProvider::DFBVideoProvider(const char* mrl) {
+	DFBVideoProvider::DFBVideoProvider(
+			GingaScreenID screenId, const char* mrl) {
+
 		IDirectFB* dfb = NULL;
 
 #if DFBTM_PATCH
 		dvpRefs++;
 #endif //DFBTM_PATCH
 
+		myScreen   = screenId;
 		rContainer = new DFBRendererContainer;
 		rContainer->dec = NULL;
 		rContainer->isValid = false;
 
 		if (mrl != NULL) {
-			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+					myScreen));
+
 			DFBCHECK(dfb->CreateVideoProvider(dfb, mrl, &rContainer->dec));
 
 			/* enable gapless looping playback */
@@ -93,7 +98,10 @@ namespace mb {
 		}
 	}
 
-	DFBVideoProvider::DFBVideoProvider(IDirectFBVideoProvider* dec) {
+	DFBVideoProvider::DFBVideoProvider(
+			GingaScreenID screenId, IDirectFBVideoProvider* dec) {
+
+		myScreen   = screenId;
 		rContainer = new DFBRendererContainer;
 		rContainer->dec = dec;
 		rContainer->isValid = false;
@@ -146,7 +154,9 @@ namespace mb {
 		dsc.flags = (DFBSurfaceDescriptionFlags)(DSDESC_WIDTH | DSDESC_HEIGHT);
 
 		return new DFBSurface(
-				LocalDeviceManager::getInstance()->createSurface(&dsc));
+				myScreen,
+				LocalScreenManager::getInstance()->createSurface(
+						myScreen, &dsc));
 	}
 
 	bool DFBVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -162,7 +172,8 @@ namespace mb {
 			clog << "width = '" << w << "' height = '" << h << "'" << endl;
 
 			s = (IDirectFBSurface*)(
-					LocalDeviceManager::getInstance()->createSurface(&dsc));
+					LocalScreenManager::getInstance()->createSurface(
+							myScreen, &dsc));
 
 			frame->setContent(s);
 			return true;
@@ -370,11 +381,11 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createDFBVideoProvider(const char* mrl) {
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
+		createDFBVideoProvider(GingaScreenID screenId, const char* mrl) {
 
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBVideoProvider(mrl));
+	return (new ::br::pucrio::telemidia::ginga::core::mb::DFBVideoProvider(
+			screenId, mrl));
 }
 
 extern "C" void destroyDFBVideoProvider(

@@ -62,7 +62,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ProgramAV::ProgramAV() : Player("") {
+	ProgramAV::ProgramAV(GingaScreenID screenId) : Player(screenId, "") {
 		players          = new map<int, IPlayer*>;
 		playerBounds     = new map<int, string>;
 		namePids         = new map<string, int>;
@@ -107,9 +107,9 @@ namespace player {
 
 	ProgramAV* ProgramAV::_instance = 0;
 
-	ProgramAV* ProgramAV::getInstance() {
+	ProgramAV* ProgramAV::getInstance(GingaScreenID screenId) {
 		if (ProgramAV::_instance == NULL) {
-			ProgramAV::_instance = new ProgramAV();
+			ProgramAV::_instance = new ProgramAV(screenId);
 		}
 		return ProgramAV::_instance;
 	}
@@ -253,10 +253,10 @@ namespace player {
 
 #if HAVE_COMPSUPPORT
 		currentPlayer = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-				mrl.c_str(), true);
+				myScreen, mrl.c_str(), true);
 
 #else
-		currentPlayer = new AVPlayer(mrl.c_str(), true);
+		currentPlayer = new AVPlayer(myScreen, mrl.c_str(), true);
 #endif
 
 		if (fullScreenBounds != "") {
@@ -360,8 +360,8 @@ namespace player {
 
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-extern "C" IPlayer* createProgramAV() {
-	return (IPlayer*)(Player*)ProgramAV::getInstance();
+extern "C" IPlayer* createProgramAV(GingaScreenID screenId) {
+	return (IPlayer*)(Player*)ProgramAV::getInstance(screenId);
 }
 
 extern "C" void destroyProgramAV(IPlayer* pav) {

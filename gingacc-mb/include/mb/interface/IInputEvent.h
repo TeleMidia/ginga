@@ -50,15 +50,13 @@ http://www.telemidia.puc-rio.br
 #ifndef IINPUTEVENT_H_
 #define IINPUTEVENT_H_
 
-#include "IIOContainer.h"
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IInputEvent : IIOContainer {
+	class IInputEvent {
 		public:
 			virtual ~IInputEvent(){};
 			virtual void clearContent()=0;

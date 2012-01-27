@@ -51,7 +51,7 @@ http://www.telemidia.puc-rio.br
 #define DFBEVENTBUFFER_H_
 
 #include "mb/interface/IEventBuffer.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,14 +73,13 @@ namespace mb {
 	class DFBEventBuffer : public IEventBuffer {
 		private:
 			static IDirectFBEventBuffer* eventBuffer;
-			static set<IDirectFBEventBuffer*>* pool;
 			/*static DFBEnumerationResult enum_input_device(
 				    DFBInputDeviceID device_id,
 				    DFBInputDeviceDescription desc,
 				    void* data);*/
 
 		public:
-			DFBEventBuffer();
+			DFBEventBuffer(GingaScreenID screen);
 			~DFBEventBuffer();
 			void wakeUp();
 			void postEvent(IInputEvent* event);

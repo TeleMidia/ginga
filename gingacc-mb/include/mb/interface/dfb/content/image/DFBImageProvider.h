@@ -71,11 +71,12 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class DFBImageProvider : public IImageProvider {
-		protected:
+		private:
 			IDirectFBImageProvider* decoder;
+			GingaScreenID myScreen;
 
 		public:
-			DFBImageProvider(const char* mrl);
+			DFBImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~DFBImageProvider();
 			void* getContent();
 			void playOver(ISurface* surface);

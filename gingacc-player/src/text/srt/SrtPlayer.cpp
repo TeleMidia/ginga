@@ -58,7 +58,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	SrtPlayer::SrtPlayer(string mrl) : TextPlayer(), Thread() {
+	SrtPlayer::SrtPlayer(GingaScreenID screenId, string mrl) :
+			TextPlayer(screenId), Thread() {
+
 		this->mrl = mrl;
 		this->textEvents = NULL;
 		this->textLines = NULL;
@@ -536,10 +538,11 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createSrtPlayer(const char* mrl, bool hasVisual) {
+		createSrtPlayer(
+				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::player::
-			SrtPlayer((string)mrl));
+			SrtPlayer(screenId, (string)mrl));
 }
 
 extern "C" void destroySrtPlayer(

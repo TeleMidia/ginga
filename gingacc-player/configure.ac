@@ -76,7 +76,7 @@ Please install Lua 5.1.2 or later.
 ###############################
 # Ginga CC Multimedia Backend #
 ###############################
-AC_CHECK_HEADER([mb/interface/IIOContainer.h], [], AC_MSG_ERROR([
+AC_CHECK_HEADER([mb/interface/IWindow.h], [], AC_MSG_ERROR([
 
 Couldn't find Ginga Common Core System I/O headers.
 Please install gingacc-system project.

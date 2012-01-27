@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #endif
 
@@ -77,7 +77,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 	IComponentManager* cm;
 #endif
 
-	ILocalDeviceManager* dm;
+	ILocalScreenManager* dm;
 	IPlayer* player;
 	IWindow* window;
 
@@ -93,8 +93,8 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 
 #if HAVE_COMPSUPPORT
 		cm = IComponentManager::getCMInstance();
-		dm = ((LocalDeviceManagerCreator*)(
-				cm->getObject("LocalDeviceManager")))();
+		dm = ((LocalScreenManagerCreator*)(
+				cm->getObject("LocalScreenManager")))();
 
 		dm->createDevice("systemScreen(0)");
 #endif
@@ -147,7 +147,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 				clog << "PLAYER IS NULL" << endl;
 
 			} else if ((*vMsg)[0] == "setoutwindow") {
-				player->setOutWindow(stof((*vMsg)[1]));
+				player->setOutWindow(GingaWindowID((*vMsg)[1]));
 
 			} else if ((*vMsg)[0] == "setpropertyvalue") {
 				size = vMsg->size();
@@ -189,7 +189,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 
 			} else if ((*vMsg)[0] == "stop") {
 				player->stop();
-				player->setOutWindow(-1);
+				player->setOutWindow(NULL);
 
 			} else if ((*vMsg)[0] == "pause") {
 				player->pause();
@@ -199,7 +199,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 
 			} else if ((*vMsg)[0] == "abort") {
 				player->abort();
-				player->setOutWindow(-1);
+				player->setOutWindow(NULL);
 
 			} else if ((*vMsg)[0] == "getvpts") {
 				sendMessage("vpts=" + itos(player->getVPts()));

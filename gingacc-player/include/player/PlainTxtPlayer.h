@@ -63,7 +63,7 @@ namespace player {
 			string content;
 
 		public:
-			PlainTxtPlayer(string mrl);
+			PlainTxtPlayer(GingaScreenID screenId, string mrl);
 			virtual ~PlainTxtPlayer();
 
 		protected:

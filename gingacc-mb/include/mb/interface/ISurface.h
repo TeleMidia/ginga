@@ -50,10 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef ISURFACE_H_
 #define ISURFACE_H_
 
+#include "mb/IMBDefs.h"
+
 #include "util/IColor.h"
 using namespace ::br::pucrio::telemidia::util;
-
-#include "IIOContainer.h"
 
 namespace br {
 namespace pucrio {
@@ -61,7 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class ISurface : public IIOContainer {
+	class ISurface {
 		public:
 			virtual ~ISurface(){};
 			virtual void write(
@@ -112,7 +112,7 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		SurfaceCreator(void* sur, int w, int h);
+		SurfaceCreator(GingaScreenID screenId, void* sur, int w, int h);
 
 typedef void SurfaceDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::ISurface* s);

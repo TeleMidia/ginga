@@ -114,7 +114,7 @@ static int l_new (lua_State* L)
 		// [ canvas | img_path ]
 		case LUA_TSTRING: {
 			sfc = ImagePlayer::renderImage(
-					(char*)luaL_checkstring(L, 2));
+					GETPLAYER(L)->getScreenId(), (char*)luaL_checkstring(L, 2));
 
 			break;
 		}
@@ -125,6 +125,7 @@ static int l_new (lua_State* L)
 #if HAVE_COMPSUPPORT
 			sfc = ((SurfaceCreator*)(
 					cm->getObject("Surface")))(
+							GETPLAYER(L)->getScreenId(),
 							NULL,
 							luaL_checkint(L, 2),
 							luaL_checkint(L, 3));
@@ -133,11 +134,20 @@ static int l_new (lua_State* L)
 			sfc->clearContent();
 #else
 #ifndef _WIN32
-			sfc = new DFBSurface(luaL_checkint(L, 2), luaL_checkint(L, 3));
+			sfc = new DFBSurface(
+					GETPLAYER(L)->getScreenId(),
+					luaL_checkint(L, 2),
+					luaL_checkint(L, 3));
+
 			sfc->setBgColor(canvas->color);
 			sfc->clearContent();
+
 #else
-			sfc = new DXSurface(luaL_checkint(L, 2), luaL_checkint(L, 3));
+			sfc = new DXSurface(
+					GETPLAYER(L)->getScreenId(),
+					luaL_checkint(L, 2),
+					luaL_checkint(L, 3));
+
 			sfc->setBgColor(canvas->color);
 			sfc->clearContent();
 #endif
@@ -256,12 +266,15 @@ static int l_attrFont (lua_State* L)
 	IFontProvider* font = NULL;
 #if HAVE_COMPSUPPORT
 	font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-			path, canvas->font.size);
+			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
 #else
 #ifndef _WIN32
-	font = new DFBFontProvider(path, canvas->font.size);
+	font = new DFBFontProvider(
+			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
+
 #else
-	font = new DXFontProvider(path, canvas->font.size);
+	font = new DXFontProvider(
+			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
 #endif
 #endif
 

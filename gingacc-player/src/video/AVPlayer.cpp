@@ -1061,7 +1061,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AVPlayer::AVPlayer(string mrl, bool hasVisual) : Thread(), Player(mrl) {
+	AVPlayer::AVPlayer(GingaScreenID screenId, string mrl, bool hasVisual) :
+			Thread(), Player(screenId, mrl) {
+
 		string::size_type pos;
 
 		this->provider    = NULL;
@@ -1184,23 +1186,24 @@ namespace player {
 			}
 
 			p->provider = ((CMPCreator*)(cm->getObject(
-					p->pSym)))(p->mrl.c_str());
+					p->pSym)))(p->myScreen, p->mrl.c_str());
 
 			clog << "AVPlayer::createProvider provider created" << endl;
 
 #else
 			if (p->hasVisual) {
 #ifndef _WIN32
-				p->provider = new DFBVideoProvider(p->mrl.c_str());
+				p->provider = new DFBVideoProvider(p->myScreen, p->mrl.c_str());
 #else
-				p->provider = new DXVideoProvider(p->mrl.c_str());
+				p->provider = new DXVideoProvider(p->myScreen, p->mrl.c_str());
 #endif
 
 			} else {
 #ifndef _WIN32
-				p->provider = new FusionSoundAudioProvider(p->mrl.c_str());
+				p->provider = new FusionSoundAudioProvider(
+						p->myScreen, p->mrl.c_str());
 #else
-				p->provider = new DXAudioProvider(p->mrl.c_str());
+				p->provider = new DXAudioProvider(p->myScreen, p->mrl.c_str());
 #endif
 			}
 #endif
@@ -1438,7 +1441,9 @@ namespace player {
 				if (vals->size() == 4) {
 #if HAVE_COMPSUPPORT
 					win = ((WindowCreator*)(cm->getObject("Window")))(
-							-1,
+							NULL,
+							NULL,
+							myScreen,
 							util::stof((*vals)[0]),
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
@@ -1447,12 +1452,18 @@ namespace player {
 #else
 #ifndef _WIN32
 					win = new DFBWindow(
+							NULL,
+							NULL,
+							myScreen,
 							util::stof((*vals)[0]),
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
 							util::stof((*vals)[3]));
 #else
 					win = new DXWindow(
+							NULL,
+							NULL,
+							myScreen,
 							util::stof((*vals)[0]),
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
@@ -1542,15 +1553,15 @@ namespace player {
 		}
 	}
 
-	bool AVPlayer::setOutWindow(int windowId) {
+	bool AVPlayer::setOutWindow(GingaWindowID windowId) {
 		if (mainAV && win == NULL) {
 #if HAVE_COMPSUPPORT
 			win = ((WindowCreator*)(cm->getObject("Window")))(
-					windowId, -1, -1, -1, -1);
+					windowId, NULL, myScreen, -1, -1, -1, -1);
 
 #else
 #ifndef _WIN32
-			win = new DFBWindow(windowId);
+			win = new DFBWindow(myScreen, windowId);
 #else
 #endif
 #endif
@@ -1647,13 +1658,14 @@ namespace player {
 			pSym = "VideoProvider";
 #endif
 
-			this->provider = ((CMPCreator*)(cm->getObject(pSym)))(mrl.c_str());
+			this->provider = ((CMPCreator*)(cm->getObject(pSym)))(
+					myScreen, mrl.c_str());
 
 #else
 #ifndef _WIN32
-			this->provider = new XineVideoProvider(mrl.c_str());
+			this->provider = new XineVideoProvider(myScreen, mrl.c_str());
 #else
-			this->provider = new DXVideoProvider(mrl.c_str());
+			this->provider = new DXVideoProvider(myScreen, mrl.c_str());
 #endif
 #endif
 
@@ -1775,7 +1787,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 static pthread_mutex_t avpm;
 static bool avpmInit = false;
 
-extern "C" IPlayer* createAVPlayer(const char* mrl, bool hasVisual) {
+extern "C" IPlayer* createAVPlayer(
+		GingaScreenID screenId, const char* mrl, bool hasVisual) {
+
 	AVPlayer* player;
 	if (!avpmInit) {
 		avpmInit = true;
@@ -1783,7 +1797,7 @@ extern "C" IPlayer* createAVPlayer(const char* mrl, bool hasVisual) {
 	}
 
 	pthread_mutex_lock(&avpm);
-	player = new AVPlayer(mrl, hasVisual);
+	player = new AVPlayer(screenId, mrl, hasVisual);
 	pthread_mutex_unlock(&avpm);
 
 	return player;

@@ -47,8 +47,15 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IIOCONTAINER_H_
-#define IIOCONTAINER_H_
+#ifndef ILocalScreenManager_H_
+#define ILocalScreenManager_H_
+
+#include "IMBDefs.h"
+#include "interface/ISurface.h"
+
+#include <vector>
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -56,10 +63,45 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IIOContainer {
+	class ILocalScreenManager {
 		public:
-			virtual ~IIOContainer(){};
-			virtual void* getContent()=0;
+			virtual ~ILocalScreenManager(){};
+
+			virtual void releaseHandler()=0;
+
+			virtual void setParentScreen(
+					GingaScreenID screenId, GingaWindowID parentId)=0;
+
+			virtual void setBackgroundImage(
+					GingaScreenID screenId, string uri)=0;
+
+			virtual int getDeviceWidth(GingaScreenID screenId)=0;
+
+			virtual int getDeviceHeight(GingaScreenID screenId)=0;
+
+			virtual void* getGfxRoot(GingaScreenID screenId)=0;
+
+			virtual void clearWidgetPools(GingaScreenID screenId)=0;
+
+			virtual unsigned long createScreen(int numArgs, char** args)=0;
+
+			virtual void mergeIds(
+					GingaScreenID screenId,
+					GingaWindowID destId,
+					vector<GingaWindowID>* srcIds)=0;
+
+			virtual void* getWindow(
+					GingaScreenID screenId, GingaWindowID windowId)=0;
+
+			virtual void* createWindow(
+					GingaScreenID screenId, void* windowDesc)=0;
+
+			virtual void releaseWindow(GingaScreenID screenId, void* window)=0;
+
+			virtual void* createSurface(
+					GingaScreenID screenId, void* surfaceDesc)=0;
+
+			virtual void releaseSurface(GingaScreenID screenId, void* sur)=0;
 	};
 }
 }
@@ -68,4 +110,11 @@ namespace mb {
 }
 }
 
-#endif /*IIOCONTAINER_H_*/
+typedef ::br::pucrio::telemidia::ginga::core::mb::ILocalScreenManager*
+		LocalScreenManagerCreator();
+
+typedef void LocalScreenManagerDestroyer(
+		::br::pucrio::telemidia::ginga::core::mb::
+				ILocalScreenManager* dm);
+
+#endif /*ILocalScreenManager_H_*/

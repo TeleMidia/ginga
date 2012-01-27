@@ -52,13 +52,15 @@ http://www.telemidia.puc-rio.br
 
 #include "IInputEvent.h"
 
+#include "mb/IMBDefs.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IEventBuffer : IIOContainer {
+	class IEventBuffer {
 		public:
 			virtual ~IEventBuffer(){};
 			virtual void wakeUp()=0;
@@ -75,7 +77,7 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IEventBuffer*
-		EventBufferCreator();
+		EventBufferCreator(GingaScreenID screen);
 
 typedef void EventBufferDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IEventBuffer* ieb);

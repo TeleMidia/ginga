@@ -73,7 +73,7 @@ namespace player {
 		bool hasVisual;
 
 	public:
-		ChannelPlayer(bool hasVisual);
+		ChannelPlayer(GingaScreenID screenId, bool hasVisual);
 		virtual ~ChannelPlayer();
 		IPlayer* getSelectedPlayer();
 		void setPlayerMap(map<string, IPlayer*>* objs);

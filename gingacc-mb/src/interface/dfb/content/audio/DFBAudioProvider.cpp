@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/audio/DFBAudioProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -73,17 +73,22 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBAudioProvider::DFBAudioProvider(const char* mrl) {
+	DFBAudioProvider::DFBAudioProvider(
+			GingaScreenID screenId, const char* mrl) {
+
 		IDirectFB* dfb;
 
 #if DFBTM_PATCH
 		dapRefs++;
 #endif
 
-		decoder = NULL;
+		myScreen = screenId;
+		decoder  = NULL;
 
 		if (mrl != NULL) {
-			dfb = (IDirectFB*)(LocalDeviceManager::getInstance()->getGfxRoot());
+			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
+					myScreen));
+
 			DFBCHECK(dfb->CreateVideoProvider(dfb, mrl, &decoder));
 		}
 	}
@@ -111,7 +116,9 @@ namespace mb {
 
 		DFBCHECK(decoder->GetSurfaceDescription(decoder, &dsc));
 		return new DFBSurface(
-				LocalDeviceManager::getInstance()->createSurface(&dsc));
+				myScreen,
+				LocalScreenManager::getInstance()->createSurface(
+						myScreen, &dsc));
 	}
 
 	void DFBAudioProvider::dynamicRenderCallBack(void* dec) {
@@ -162,7 +169,9 @@ namespace mb {
 					IDirectFBSurface* s2;
 
 					sur = new DFBSurface(
-							someWindow->getW(), someWindow->getH());
+							someWindow->getScreen(),
+							someWindow->getW(),
+							someWindow->getH());
 
 					s2 = (IDirectFBSurface*)(sur->getContent());
 
@@ -285,10 +294,11 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createDFBAudioProvider(const char* mrl) {
+		IContinuousMediaProvider* createDFBAudioProvider(
+				GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBAudioProvider(mrl));
+			DFBAudioProvider(screenId, mrl));
 }
 
 extern "C" void destroyDFBAudioProvider(

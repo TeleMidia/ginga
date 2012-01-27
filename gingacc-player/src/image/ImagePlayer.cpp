@@ -62,7 +62,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ImagePlayer::ImagePlayer(string mrl) : Player(mrl) {
+	ImagePlayer::ImagePlayer(GingaScreenID screenId, string mrl) :
+			Player(screenId, mrl) {
+
 		IGingaLocatorFactory* glf = NULL;
 		string path, name, clientPath, newMrl;
 		bool resolved = false;
@@ -96,12 +98,12 @@ namespace player {
 		if (fileExists(mrl)) {
 #if HAVE_COMPSUPPORT
 			provider = ((ImageProviderCreator*)(cm->getObject(
-					"ImageProvider")))(mrl.c_str());
+					"ImageProvider")))(myScreen, mrl.c_str());
 #else
 #ifndef _WIN32
-			provider = new DFBImageProvider(mrl.c_str());
+			provider = new DFBImageProvider(myScreen, mrl.c_str());
 #else
-			provider = new DXImageProvider(mrl.c_str());
+			provider = new DXImageProvider(myScreen, mrl.c_str());
 #endif
 #endif
 
@@ -147,12 +149,14 @@ namespace player {
 					if (fileExists(newMrl)) {
 #if HAVE_COMPSUPPORT
 						provider = ((ImageProviderCreator*)(cm->getObject(
-								"ImageProvider")))(newMrl.c_str());
+								"ImageProvider")))(myScreen, newMrl.c_str());
 #else
 #ifndef _WIN32
-						provider = new DFBImageProvider(newMrl.c_str());
+						provider = new DFBImageProvider(
+								myScreen, newMrl.c_str());
 #else
-						provider = new DXImageProvider(newMrl.c_str());
+						provider = new DXImageProvider(
+								myScreen, newMrl.c_str());
 #endif
 #endif
 					} else {
@@ -236,7 +240,7 @@ namespace player {
 		return renderedSurface;
 	}
 
-	ISurface* ImagePlayer::renderImage(string mrl) {
+	ISurface* ImagePlayer::renderImage(GingaScreenID screenId, string mrl) {
 		IImageProvider* imgProvider = NULL;
 		ISurface* renderedSurface = NULL;
 		string newMrl;
@@ -244,12 +248,12 @@ namespace player {
 		if (fileExists(mrl)) {
 #if HAVE_COMPSUPPORT
 			imgProvider = ((ImageProviderCreator*)(cm->getObject(
-					"ImageProvider")))(mrl.c_str());
+					"ImageProvider")))(screenId, mrl.c_str());
 #else
 #ifndef _WIN32
-			imgProvider = new DFBImageProvider(mrl.c_str());
+			imgProvider = new DFBImageProvider(screenId, mrl.c_str());
 #else
-			imgProvider = new DXImageProvider(mrl.c_str());
+			imgProvider = new DXImageProvider(screenId, mrl.c_str());
 #endif
 
 #endif
@@ -259,12 +263,14 @@ namespace player {
 				if (fileExists(newMrl)) {
 #if HAVE_COMPSUPPORT
 					imgProvider = ((ImageProviderCreator*)(cm->getObject(
-							"ImageProvider")))(newMrl.c_str());
+							"ImageProvider")))(screenId, newMrl.c_str());
 #else
 #ifndef _WIN32
-					imgProvider = new DFBImageProvider(newMrl.c_str());
+					imgProvider = new DFBImageProvider(
+							screenId, newMrl.c_str());
+
 #else
-					imgProvider = new DXImageProvider(newMrl.c_str());
+					imgProvider = new DXImageProvider(screenId, newMrl.c_str());
 #endif
 #endif
 				} else {
@@ -303,15 +309,16 @@ extern "C" ISurface* prepareSurface(IImageProvider* provider, string mrl) {
 			ImagePlayer::prepareSurface(provider, mrl));
 }
 
-extern "C" ISurface* renderImage(string mrl) {
+extern "C" ISurface* renderImage(GingaScreenID screenId, string mrl) {
 	return (::br::pucrio::telemidia::ginga::core::player::
-			ImagePlayer::renderImage(mrl));
+			ImagePlayer::renderImage(screenId, mrl));
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createImagePlayer(const char* mrl) {
+		createImagePlayer(GingaScreenID screenId, const char* mrl) {
 
-	return new ::br::pucrio::telemidia::ginga::core::player::ImagePlayer(mrl);
+	return new ::br::pucrio::telemidia::ginga::core::player::ImagePlayer(
+			screenId, mrl);
 }
 
 extern "C" void destroyImagePlayer(

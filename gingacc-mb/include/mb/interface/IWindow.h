@@ -61,9 +61,10 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IWindow : public IIOContainer {
+	class IWindow {
 		public:
 			virtual ~IWindow(){};
+			virtual GingaScreenID getScreen()=0;
 			virtual void revertContent()=0;
 			virtual void setReleaseListener(ISurface* listener)=0;
 			virtual int getCap(string capName)=0;
@@ -77,7 +78,10 @@ namespace mb {
 			virtual void setColorKey(int r, int g, int b)=0;
 			virtual void moveTo(int x, int y)=0;
 			virtual void resize(int width, int height)=0;
-			virtual void setZBoundaries(int lower, int upper)=0;
+
+			virtual void setZBoundaries(
+					GingaWindowID lowerId, GingaWindowID upperId)=0;
+
 			virtual void raise()=0;
 			virtual void lower()=0;
 			virtual void raiseToTop()=0;
@@ -85,7 +89,7 @@ namespace mb {
 			virtual void setCurrentTransparency(int alpha)=0;
 			virtual void setOpaqueRegion(int x1, int y1, int x2, int y2)=0;
 			virtual int getTransparencyValue()=0;
-			virtual int getId()=0;
+			virtual GingaWindowID getId()=0;
 			virtual void show()=0;
 			virtual void hide()=0;
 			virtual int getX()=0;
@@ -130,7 +134,11 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		WindowCreator(int windowId, int x, int y, int width, int height);
+		WindowCreator(
+				GingaWindowID underlyingWindowID,
+				GingaWindowID parentWindowID,
+				GingaScreenID screenId,
+				int x, int y, int w, int h);
 
 typedef void WindowDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IWindow*);

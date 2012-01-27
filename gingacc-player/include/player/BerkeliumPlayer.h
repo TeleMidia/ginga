@@ -117,7 +117,7 @@ namespace player {
 
 			void play();
 			void stop();
-			bool setOutWindow(int windowId);
+			bool setOutWindow(GingaWindowID windowId);
 			void setBounds(int x, int y, int w, int h);
 
 			void setPropertyValue(string name, string value);

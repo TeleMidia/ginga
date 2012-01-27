@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IFontProvider.h"
-#include "mb/ILocalDeviceManager.h"
+#include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"
@@ -86,11 +86,15 @@ namespace player {
 			IFontProvider* font;
 
 		public:
-			TextPlayer();
+			TextPlayer(GingaScreenID screenId);
 			virtual ~TextPlayer();
-			void initializePlayer();
 
+		private:
+			void initializePlayer(GingaScreenID screenId);
+
+		public:
 			static int write(
+					GingaScreenID screenId,
 					ISurface* s,
 					string text,
 					string fontUri = "",

@@ -76,10 +76,13 @@ namespace mb {
 			const char* deviceUri;
 			int deviceFd;
 			IDirectFBDataBuffer* dataBuffer;
+			GingaScreenID myScreen;
 			DFBDataBufferDescription desc;
 
 		public:
-			DFBDataBuffer(void* data, unsigned int dataSize);
+			DFBDataBuffer(
+					GingaScreenID screenId, void* data, unsigned int dataSize);
+
 			virtual ~DFBDataBuffer();
 			IContinuousMediaProvider* createProvider(const char* mrl);
 

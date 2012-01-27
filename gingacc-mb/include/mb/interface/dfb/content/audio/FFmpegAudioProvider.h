@@ -202,12 +202,13 @@ namespace mb {
 	class FFmpegAudioProvider : public IContinuousMediaProvider {
 		private:
 			IDirectFBAudioProvider_FFmpeg_data* rContainer;
+			GingaScreenID myScreen;
 			int resumePos;
 			int startPos;
 			static bool _ffmpegInitialized;
 
 		public:
-			FFmpegAudioProvider(const char* mrl);
+			FFmpegAudioProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~FFmpegAudioProvider();
 
 		private:

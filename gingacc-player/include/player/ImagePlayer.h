@@ -73,11 +73,11 @@ namespace ginga {
 namespace core {
 namespace player {
 	class ImagePlayer : public Player {
-		protected:
+		private:
 			IImageProvider* provider;
 
 		public:
-			ImagePlayer(string mrl);
+			ImagePlayer(GingaScreenID screenId, string mrl);
 			virtual ~ImagePlayer();
 			void play();
 			void stop();
@@ -88,7 +88,7 @@ namespace player {
 			static ISurface* prepareSurface(
 					IImageProvider* provider, string mrl);
 
-			static ISurface* renderImage(string mrl);
+			static ISurface* renderImage(GingaScreenID screenId, string mrl);
 	};
 }
 }

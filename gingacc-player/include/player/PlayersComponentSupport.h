@@ -66,7 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "mb/InputManager.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/input/DFBGInputEvent.h"
@@ -82,7 +82,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "system/fs/GingaLocatorFactory.h"
 
 #include "mb/InputManager.h"
-#include "mb/LocalDeviceManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/dx/output/DXSurface.h"
 #include "mb/interface/dx/output/DXWindow.h"
 #include "mb/interface/dx/input/DXInputEvent.h"
