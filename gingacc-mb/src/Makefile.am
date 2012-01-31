@@ -3,8 +3,7 @@
 INCLUDES = \
           $(all_includes) \
           -I/usr/local/include/ginga/ \
-          -I/usr/local/include/directfb/ \
-	      -I$(top_srcdir)/include \
+          -I$(top_srcdir)/include \
 	      -I$(top_srcdir)/include/mb \
 	      -I$(top_srcdir)/include/mb/interface \
 	      $(KINECT_INCS)

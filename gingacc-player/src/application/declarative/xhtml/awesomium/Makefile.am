@@ -1,6 +1,6 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
+INCLUDES = -I/usr/local/include/ginga/ \
     -I/usr/local/include/ -I/usr/local/include/ -I/usr/include/Awesomium/ \
     $(all_includes) -I$(top_srcdir)/include
 

@@ -105,7 +105,7 @@ int main(int argc, char** argv, char** envp) {
 	dm = LocalScreenManager::getInstance();
 #endif
 
-	screen = dm->createScreen(0, NULL);
+	screen = dm->createScreen(argc, argv);
 
 #if HAVE_COMPSUPPORT
 	w = ((WindowCreator*)(cm->getObject("Window")))(

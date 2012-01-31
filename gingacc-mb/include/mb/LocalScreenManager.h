@@ -83,6 +83,9 @@ namespace mb {
 			map<GingaScreenID, IDeviceScreen*>* screens;
 			pthread_mutex_t scrMutex;
 
+			map<string, short>* sysNames;
+			pthread_mutex_t sysMutex;
+
 			static LocalScreenManager* _instance;
 
 			LocalScreenManager();
@@ -105,8 +108,25 @@ namespace mb {
 
 			void clearWidgetPools(GingaScreenID screenId);
 
-			unsigned long createScreen(int numArgs, char** args);
+			GingaScreenID createScreen(int argc, char** args);
 
+		private:
+			GingaScreenID createScreen(
+					string mbSystem,
+					string mbSubSystem,
+					string mbMode,
+					string mbParent);
+
+			void getMBSystemType(
+					string mbSystemName,
+					short* mbSystemType,
+					string mbSubSystemName,
+					short* mbSubSystemType);
+
+			void lockSysNames();
+			void unlockSysNames();
+
+		public:
 			void mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,

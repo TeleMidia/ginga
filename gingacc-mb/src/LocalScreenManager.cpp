@@ -53,6 +53,10 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/LocalScreenManager.h"
 
+extern "C" {
+#include "string.h"
+}
+
 #include "config.h"
 
 #if HAVE_COMPSUPPORT
@@ -78,8 +82,20 @@ namespace mb {
 #endif
 
 	LocalScreenManager::LocalScreenManager() {
-		screens = new map<GingaScreenID, IDeviceScreen*>;
+		screens  = new map<GingaScreenID, IDeviceScreen*>;
 		pthread_mutex_init(&scrMutex, NULL);
+
+		sysNames = new map<string, short>;
+		pthread_mutex_init(&sysMutex, NULL);
+
+		(*sysNames)["dflt" ] = GMBST_DFLT;
+		(*sysNames)["dfb"  ] = GMBST_DFB;
+		(*sysNames)["dx"   ] = GMBST_DX;
+		(*sysNames)["term" ] = GMBST_TERM;
+		(*sysNames)["sdl"  ] = GMBST_SDL;
+		(*sysNames)["fbdev"] = GMBSST_FBDEV;
+		(*sysNames)["x11"  ] = GMBSST_X11;
+		(*sysNames)["hwnd" ] = GMBSST_HWND;
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
@@ -96,8 +112,15 @@ namespace mb {
 			screens = NULL;
 		}
 		unlockScreens();
-
 		pthread_mutex_destroy(&scrMutex);
+
+		lockSysNames();
+		if (sysNames != NULL) {
+			delete sysNames;
+			sysNames = NULL;
+		}
+		unlockSysNames();
+		pthread_mutex_destroy(&sysMutex);
 	}
 
 	LocalScreenManager* LocalScreenManager::_instance = NULL;
@@ -179,29 +202,102 @@ namespace mb {
 		}
 	}
 
-	unsigned long LocalScreenManager::createScreen(int numArgs, char** args) {
+	GingaScreenID LocalScreenManager::createScreen(int argc, char** args) {
+		int i;
+		string mbSystem = "", mbSubSystem = "", mbMode = "", mbParent = "";
+
+		for (i = 0; i < argc; i++) {
+			if ((strcmp(args[i], "--system") == 0) && ((i + 1) < argc)) {
+				mbSystem.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "--subsystem") == 0) &&
+					((i + 1) < argc)) {
+
+				mbSubSystem.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "--mode") == 0) && ((i + 1) < argc)) {
+				mbMode.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
+				mbParent.assign(args[i + 1]);
+			}
+		}
+
+		return createScreen(mbSystem, mbSubSystem, mbMode, mbParent);
+	}
+
+	GingaScreenID LocalScreenManager::createScreen(
+			string mbSystem,
+			string mbSubSystem,
+			string mbMode,
+			string mbParent) {
+
 		IDeviceScreen* screen;
 		GingaScreenID screenId;
 		GingaWindowID parentId = NULL;
+		short sysType, subSysType;
 
-		screenId = getNumOfScreens();
+		getMBSystemType(mbSystem, &sysType, mbSubSystem, &subSysType);
 
+		switch (sysType) {
+			case GMBST_DFLT:
+			default:
 #if HAVE_COMPSUPPORT
-		screen = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
-				numArgs, args, parentId);
+				screen = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
+						0, NULL, parentId);
 
 #else
 #ifndef _WIN32
-		screen = new DFBDeviceScreen(numArgs, args, parentId);
+				screen = new DFBDeviceScreen(0, NULL, parentId);
 
 #else
-		screen = new DXDeviceScreen(numArgs, args, parentId);
+				screen = new DXDeviceScreen(0, NULL, parentId);
 #endif
 #endif
+				break;
+		}
 
 		addScreen(screenId, screen);
 
 		return screenId;
+	}
+
+	void LocalScreenManager::getMBSystemType(
+			string mbSystemName,
+			short* mbSystemType,
+			string mbSubSystemName,
+			short* mbSubSystemType) {
+
+		map<string, short>::iterator i;
+
+		*mbSystemType    = GMBST_DFLT;
+		*mbSubSystemType = GMBSST_DFLT;
+
+#if !HAVE_COMPSUPPORT
+		return;
+#endif
+
+		lockSysNames();
+
+		i = sysNames->find(mbSystemName);
+		if (i != sysNames->end()) {
+			*mbSystemType = i->second;
+		}
+
+		i = sysNames->find(mbSubSystemName);
+		if (i != sysNames->end()) {
+			*mbSubSystemType = i->second;
+		}
+
+		unlockSysNames();
+	}
+
+	void LocalScreenManager::lockSysNames() {
+		pthread_mutex_lock(&sysMutex);
+	}
+
+	void LocalScreenManager::unlockSysNames() {
+		pthread_mutex_unlock(&sysMutex);
 	}
 
 	void LocalScreenManager::mergeIds(

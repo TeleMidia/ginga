@@ -72,22 +72,36 @@ Please install TeleMidia Util Library.
 ######################
 # Finding pkg-config #
 ######################
+haspkgconfig=yes
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 if test x$PKG_CONFIG = xno ; then
-AC_MSG_ERROR([*** pkg-config not found. See http://pkgconfig.sourceforge.net])
+AC_MSG_WARN([*** pkg-config not found. See http://pkgconfig.sourceforge.net])
+haspkgconfig=no
 fi
 
 if ! pkg-config --atleast-pkgconfig-version 0.9 ; then
-AC_MSG_ERROR([*** pkg-config too old; version 0.9 or better required.])
+AC_MSG_WARN([*** pkg-config too old; version 0.9 or better required.])
+haspkgconfig=no
 fi
 
-############
-# DirectFB #
-############
+###################
+# DirectFB System #
+###################
+DFB_LIBS='-L/usr/local/lib/ginga'
+
+if test x$haspkgconfig = xyes; then
+dfb=yes
+AC_ARG_ENABLE(dfb,
+  [  --enable-dfb build project with DirectFB support [[default=yes]]],
+  enable_dfb="$enableval", enable_dfb=yes)
+
+if test x$enable_dfb = xno; then
+AC_MSG_WARN([
+*** Ginga DirectFB support will not be built.
+])
+else
 DIRECTFB_MAX_VERSION=1.2.0
 DIRECTFB_MIN_VERSION=$DIRECTFB_VERSION
-
-DFB_LIBS='-L/usr/local/lib/ginga'
 
 AC_MSG_CHECKING(for DirectFB == $DIRECTFB_MAN_VERSION)
 if $PKG_CONFIG --atleast-version $DIRECTFB_MAX_VERSION directfb ; then
@@ -106,14 +120,71 @@ AC_MSG_RESULT([found (version $DFB_VERSION)])
 AC_DEFINE(HAVE_DIRECTFB, 1, [Define to 1 if you have DFB support.])
 AC_DEFINE(DFB_VER, 100, [Version Control.])
 else
-AC_MSG_ERROR([
+AC_MSG_WARN([
+*** Ginga DirectFB support will not be built.
 *** DirectFB $DIRECTFB_REQUIRED_VERSION or newer is required.
 Try also "export PKG_CONFIG_PATH=..." and run configure again
 ])
+enable_dfb=no
+fi
+fi
+fi #enable_dfb
+else #haspkgconfig
+AC_MSG_WARN([
+*** Ginga DirectFB support will not be built.
+*** DirectFB $DIRECTFB_REQUIRED_VERSION or newer is required.
+Try also "export PKG_CONFIG_PATH=..." and run configure again
+])
+enable_dfb=no
+fi #haspkgconfig
+
+AM_CONDITIONAL([DFBSYSTEM], [test x$enable_dfb = xyes])
+AC_SUBST(DFB_LIBS)
+
+###################
+# Terminal System #
+###################
+term=no
+AC_ARG_ENABLE(term,
+  [  --enable-term build project with Terminal System support [[default=no]]],
+  enable_term="$enableval", enable_term=yes)
+
+if test x$enable_term = xno; then
+AC_MSG_WARN([
+*** Ginga Terminal support will not be built.
+])
+fi
+AM_CONDITIONAL([TERMSYSTEM], [test x$enable_term = xyes])
+
+##############
+# SDL System #
+##############
+sdl=no
+AC_ARG_ENABLE(sdl,
+  [  --enable-sdl build project with SDL System support [[default=no]]],
+  enable_sdl="$enableval", enable_sdl=yes)
+
+if test x$enable_sdl = xno; then
+AC_MSG_WARN([
+*** Ginga SDL support will not be built.
+])
+fi
+AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
+
+#########################################
+# Checking if we have at least 1 system #
+#########################################
+
+if test x$enable_dfb = xno; then
+if test x$enable_term = xno; then
+if test x$enable_sdl = xno; then
+AC_MSG_ERROR([
+*** No multimedia backend system found. Ginga cannot be built.
+])
+fi
 fi
 fi
 
-AC_SUBST(DFB_LIBS)
 
 ################
 # Fusion Sound #
@@ -156,18 +227,21 @@ AC_ARG_ENABLE(components,
   enable_components="$enableval", enable_components=yes)
 
 if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   TEST_LIBS='-lgingaccmbdfb -lgingaccmbdecdfbimg -lgingaccmbdecdfbav -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
+   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
    force_xineprovider=yes
    AC_MSG_WARN([*** Xine provider will be forced in a non-componentized built.])
 else
+   TEST_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
    COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
 AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AC_SUBST(TEST_LIBS)
 AC_SUBST(COMPONENTS_LIBS)
 
 ########################
@@ -310,17 +384,31 @@ AC_CONFIG_FILES(
 	src/interface/dfb/content/image/Makefile
 	src/interface/dfb/content/text/Makefile
 	src/interface/dfb/content/video/Makefile
+	src/interface/term/Makefile
+	src/interface/term/content/audio/Makefile
+	src/interface/term/content/image/Makefile
+	src/interface/term/content/text/Makefile
+	src/interface/term/content/video/Makefile
 	files/Makefile
 )
 
 AC_OUTPUT
 
 AC_MSG_RESULT([
-Build options: 
+Build options:
   Module directory                 $MODULEDIR
+   
+  Mulimedia Backend Systems:
+  DirectFB System Support          $enable_dfb
+  Terminal System Support          $enable_term
+  SDL System Support               $enable_sdl
+  
+  Providers:
   FusionSound Provider Support     $enable_fusionsound
   Xine Main AV Provider Support    $enable_xineprovider
   FFmpeg Main AV Provider Support  $enable_ffmpegprovider
+  
   Component Support                $enable_components
+  
   Kinect (input device) Support    $enable_kinect
 ])

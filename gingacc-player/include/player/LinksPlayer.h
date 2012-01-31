@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 #endif
 
-#include "player/telemidialinks.h"
+#include "mb/dec/telemidialinks.h"
 #include <unistd.h>
 
 #ifdef __cplusplus

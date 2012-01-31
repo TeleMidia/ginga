@@ -1,6 +1,6 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/directfb/ -I/usr/local/include/ginga/ \
+INCLUDES = -I/usr/local/include/ginga/ \
     -I/usr/include/libuser/ -I../include $(all_includes) \
     -I$(top_srcdir)/include/contextmanager
 

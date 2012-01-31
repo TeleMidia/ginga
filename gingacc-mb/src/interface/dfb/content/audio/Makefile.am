@@ -4,7 +4,9 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 	$(all_includes) -I$(top_srcdir)/include
 
 LIBS =
-localLibdir = /usr/local/lib/ginga/mbdec/
+
+if DFBSYSTEM
+localLibdir = /usr/local/lib/ginga/mb/dec/
 
 if FUSIONSOUND
 libgingaccmbdecdfbfs_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbfs.so -shared \
@@ -18,10 +20,10 @@ libgingaccmbdecdfbfs_so_SOURCES = DFBAudioProvider.cpp \
 
 libgingaccmbdecdfbfs_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdfb -lgingaccmb
-endif
+endif #FUSIONSOUND
 
 if FFMPEGPROVIDER
-localLibffmpegadir = /usr/local/lib/ginga/mbdec/
+localLibffmpegadir = /usr/local/lib/ginga/mb/dec/
 
 localLibffmpega_PROGRAMS = libgingaccmbdecdfbffmpega.so
 
@@ -35,5 +37,9 @@ libgingaccmbdecdfbffmpega_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
     -lgingaccmbdecdfbfs
-endif
+    
+endif #FFMPEGPROVIDER
+
+endif #DFBSYSTEM
+
 MAINTAINERCLEANFILES = Makefile.in

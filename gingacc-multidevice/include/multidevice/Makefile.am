@@ -1,7 +1,7 @@
 METASOURCES = AUTO
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/directfb/ -I/usr/local/include/ginga/ \
+INCLUDES = -I/usr/local/include/ginga/ \
     $(all_includes) -I$(top_srcdir)/include
 
 LIBS =

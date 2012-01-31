@@ -65,6 +65,22 @@ namespace core {
 namespace mb {
 	class ILocalScreenManager {
 		public:
+			/* Ginga defining its Multimedia Backend System Types (GMBST)     */
+			                                     /* System Description  String*/
+			static const short GMBST_DFLT   = 0; /* Default system:      dflt */
+			static const short GMBST_DFB    = 1; /* DirectFB:            dfb  */
+			static const short GMBST_DX     = 2; /* DirectX:             dx   */
+			static const short GMBST_TERM   = 3; /* Teminal:             term */
+			static const short GMBST_SDL    = 4; /* SDL:                 sdl  */
+
+			/* Ginga defining its Multimedia Backend SubSystem Types (GMBSST) */
+			                                     /* System Description  String*/
+			static const short GMBSST_DFLT  = 0; /* Default subsystem:  dflt  */
+			static const short GMBSST_FBDEV = 1; /* Frame buffer:       fbdev */
+			static const short GMBSST_X11   = 2; /* X11:                x11   */
+			static const short GMBSST_HWND  = 3; /* MS-W Window Handle: hwnd  */
+			static const short GMBSST_SDL   = 4; /* SDL:                sdl   */
+
 			virtual ~ILocalScreenManager(){};
 
 			virtual void releaseHandler()=0;
@@ -83,7 +99,7 @@ namespace mb {
 
 			virtual void clearWidgetPools(GingaScreenID screenId)=0;
 
-			virtual unsigned long createScreen(int numArgs, char** args)=0;
+			virtual GingaScreenID createScreen(int numArgs, char** args)=0;
 
 			virtual void mergeIds(
 					GingaScreenID screenId,

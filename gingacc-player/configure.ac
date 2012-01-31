@@ -24,13 +24,13 @@ fi
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/mbdec /usr/local/lib/ginga/ic; do
+for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/mb /usr/local/lib/ginga/mb/dec /usr/local/lib/ginga/ic; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/; do
+for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/ /usr/local/include/ginga/mb /usr/local/include/ginga/mb/dec; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -240,7 +240,7 @@ if test x$enable_components = xno; then
     -lgingaccmb \
     -lgingaccmbdfb -lgingaccsystem -lgingaccic \
     -L/usr/local/lib/ginga/ -L/usr/local/lib \
-    -L/usr/local/lib/ginga/mbdec/ \
+    -L/usr/local/lib/ginga/mb/dec/  -L/usr/local/lib/ginga/mb \
     -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'
    COMPONENTS_INCS='-I/usr/local/include/ginga -I/usr/local/include/directfb/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])

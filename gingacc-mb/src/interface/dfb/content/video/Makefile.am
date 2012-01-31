@@ -5,7 +5,8 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
-localLibdfbdir = /usr/local/lib/ginga/mbdec/
+if DFBSYSTEM
+localLibdfbdir = /usr/local/lib/ginga/mb/dec/
 
 localLibdfb_PROGRAMS = libgingaccmbdecdfbav.so
 
@@ -19,7 +20,7 @@ libgingaccmbdecdfbav_so_LDADD = $(DFB_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem
 
 if XINEPROVIDER
-localLibxinedir = /usr/local/lib/ginga/mbdec/
+localLibxinedir = /usr/local/lib/ginga/mb/dec/
 
 localLibxine_PROGRAMS = libgingaccmbdecdfbxineav.so
 
@@ -32,10 +33,10 @@ libgingaccmbdecdfbxineav_so_SOURCES = XineVideoProvider.cpp
 libgingaccmbdecdfbxineav_so_LDADD = $(DFB_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem -lxine
 
-endif
+endif #XINEPROVIDER
 
 if FFMPEGPROVIDER
-localLibffmpegavdir = /usr/local/lib/ginga/mbdec/
+localLibffmpegavdir = /usr/local/lib/ginga/mb/dec/
 
 localLibffmpegav_PROGRAMS = libgingaccmbdecdfbffmpegav.so
 
@@ -50,6 +51,7 @@ libgingaccmbdecdfbffmpegav_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
     -lgingaccmbdfbfs
 
-endif
+endif #FFMPEGPROVIDER
+endif #DFBSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

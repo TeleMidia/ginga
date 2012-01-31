@@ -62,10 +62,10 @@ AC_ARG_ENABLE(components,
 
 if test x$enable_components = xno; then
    COMPONENTS_LIBS='-lgingaccsystem -lgingaccmb -lgingaccmbdfb \
-    -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+    -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
    TEST_COMPONENTS_LIBS='-lgingaccmb \
     -lgingaccmbdfb -lgingaccsystem -lgingacccontextmanager \
-    -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+    -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
 

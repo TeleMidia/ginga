@@ -5,7 +5,8 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
-localLibdir = /usr/local/lib/ginga/mbdec/
+if DFBSYSTEM
+localLibdir = /usr/local/lib/ginga/mb/dec/
 
 libgingaccmbdecdfbf_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbf.so -shared \
 	-L/usr/local/lib -L/usr/local/lib/ginga \
@@ -17,5 +18,6 @@ libgingaccmbdecdfbf_so_SOURCES = DFBFontProvider.cpp
 
 libgingaccmbdecdfbf_so_LDADD = $(DFB_LIBS) -lgingaccmbdfb \
     -lgingaccmb
+endif
 
 MAINTAINERCLEANFILES = Makefile.in

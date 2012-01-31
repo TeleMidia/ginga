@@ -8,8 +8,9 @@ LIBS =
 ################
 # gingaccmbdfb #
 ################
+if DFBSYSTEM
 libgingaccmbdfbdir         = \
-                             /usr/local/lib/ginga
+                             /usr/local/lib/ginga/mb
 
 libgingaccmbdfb_so_LDFLAGS = \
                              -Wl,-soname,libgingaccmbdfb.so -shared \
@@ -29,5 +30,6 @@ libgingaccmbdfb_so_SOURCES = \
 libgingaccmbdfb_so_LDADD   = \
                              $(DFB_LIBS) -ltelemidiautil -lpthread \
                              -lgingaccsystem -lgingaccmb
+endif #DFBSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -16,7 +16,8 @@ test_LDADD =  $(COMPONENTS_LIBS) $(TEST_LIBS) -ltelemidiautil \
     -ldirectfb -llua -lcore \
     -lgingaccmb -lgingaccsystem $(MULTIPROCESS_LIBS) \
     -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga/mbdec \
+    -L/usr/local/lib/ginga/mb \
+    -L/usr/local/lib/ginga/mb/dec \
     -L/usr/local/lib/ginga -L../src/ -L../src/image/ \
     -L../src/application/declarative/xhtml/links \
     -L../src/application/declarative/xhtml/berkelium \
