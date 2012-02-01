@@ -97,8 +97,9 @@ namespace mb {
 			unsigned int wRes;
 
 		private:
-			set<IDirectFBWindow*>* windowPool;
-			set<IDirectFBSurface*>* surfacePool;
+			set<IWindow*>* windowPool;
+			set<ISurface*>* surfacePool;
+			GingaScreenID id;
 
 			pthread_mutex_t winMutex;
 			pthread_mutex_t surMutex;
@@ -108,7 +109,9 @@ namespace mb {
 			static IDirectFBDisplayLayer* gfxLayer;
 
 		public:
-			DFBDeviceScreen(int numArgs, char** args, GingaWindowID parentId);
+			DFBDeviceScreen(
+					int numArgs, char** args,
+					GingaScreenID myId, GingaWindowID parentId);
 
 			virtual ~DFBDeviceScreen();
 
@@ -126,14 +129,30 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
-			void* getWindow(GingaWindowID winId);
-			void* createWindow(void* desc);
-			void releaseWindow(void* win);
 
-			void* createSurface(void* desc);
-			void releaseSurface(void* sur);
+			IWindow* createWindow(int x, int y, int w, int h);
+			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
+			void releaseWindow(IWindow* win);
+
+			ISurface* createSurface();
+			ISurface* createSurface(int w, int h);
+			ISurface* createSurfaceFrom(void* underlyingSurface);
+			void releaseSurface(ISurface* sur);
 
 			void* getGfxRoot();
+
+			/* libgingaccmbdfb internal use*/
+			static IDirectFBWindow* getUnderlyingWindow(GingaWindowID winId);
+
+			static IDirectFBWindow* createUnderlyingWindow(
+					DFBWindowDescription* desc);
+
+			static void releaseUnderlyingWindow(IDirectFBWindow* uWin);
+
+			static IDirectFBSurface* createUnderlyingSurface(
+					DFBSurfaceDescription* desc);
+
+			static void releaseUnderlyingSurface(IDirectFBSurface* uSur);
 	};
 }
 }

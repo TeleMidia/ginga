@@ -111,10 +111,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		SurfaceCreator(GingaScreenID screenId, void* sur, int w, int h);
-
-typedef void SurfaceDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s);
-
 #endif /*SURFACE_H_*/

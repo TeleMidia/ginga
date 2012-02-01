@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dfb/content/image/DFBImageProvider.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
+#include "mb/interface/dfb/device/DFBDeviceScreen.h"
 #include "mb/LocalScreenManager.h"
 
 /* macro for a safe call to DirectFB functions */
@@ -140,8 +141,7 @@ namespace mb {
 			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
 
 			destination = (IDirectFBSurface*)(
-					LocalScreenManager::getInstance()->createSurface(
-							myScreen, &surDsc));
+					DFBDeviceScreen::createUnderlyingSurface(&surDsc));
 
 			renderedSurface = new DFBSurface(myScreen, destination);
 

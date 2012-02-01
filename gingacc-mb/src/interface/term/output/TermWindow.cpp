@@ -138,10 +138,6 @@ namespace mb {
 
 	}
 
-	void TermWindow::setZBoundaries(GingaWindowID lower, GingaWindowID upper) {
-
-	}
-
 	void TermWindow::raise() {
 
 	}
@@ -283,10 +279,6 @@ namespace mb {
 	}
 
 	void TermWindow::renderFrom(ISurface* surface) {
-
-	}
-
-	void TermWindow::renderFrom(IDirectFBSurface* contentSurface) {
 
 	}
 

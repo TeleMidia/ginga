@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "config.h"
 
 #include "mb/LocalScreenManager.h"
+#include "mb/interface/dfb/device/DFBDeviceScreen.h"
 #include "mb/interface/dfb/content/video/FFmpegVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
@@ -1228,8 +1229,7 @@ namespace mb {
 
 		return new DFBSurface(
 				myScreen,
-				LocalScreenManager::getInstance()->createSurface(
-						myScreen, &dsc));
+				DFBDeviceScreen::createUnderlyingSurface(&dsc));
 	}
 
 	bool FFmpegVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -1244,8 +1244,7 @@ namespace mb {
 			clog << "FFmpegVideoProvider::checkVideoResizeEvent ";
 			clog << "width = '" << w << "' height = '" << h << "'" << endl;
 
-			s = (IDirectFBSurface*)(
-					LocalScreenManager::getInstance()->createSurface(&dsc));
+			s = DFBDeviceScreen::createUnderlyingSurface(&dsc);
 
 			rContainer->video.dest = s;
 			frame->setContent(s);

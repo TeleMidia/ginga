@@ -132,11 +132,22 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);
 
-			void* getWindow(GingaScreenID screenId, GingaWindowID windowId);
-			void* createWindow(GingaScreenID screenId, void* windowDesc);
-			void releaseWindow(GingaScreenID screenId, void* window);
-			void* createSurface(GingaScreenID screenId, void* surfaceDesc);
-			void releaseSurface(GingaScreenID screenId, void* sur);
+			IWindow* createWindow(
+					GingaScreenID screenId, int x, int y, int w, int h);
+
+			IWindow* createWindowFrom(
+					GingaScreenID screenId, GingaWindowID underlyingWindow);
+
+			void releaseWindow(GingaScreenID screenId, IWindow* window);
+
+			ISurface* createSurface(GingaScreenID screenId);
+
+			ISurface* createSurface(GingaScreenID screenId, int w, int h);
+
+			ISurface* createSurfaceFrom(
+					GingaScreenID screenId, void* underlyingSurface);
+
+			void releaseSurface(GingaScreenID screenId, ISurface* surface);
 
 		private:
 			void addScreen(GingaScreenID screenId, IDeviceScreen* screen);

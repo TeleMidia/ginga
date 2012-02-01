@@ -167,13 +167,7 @@ namespace player {
 		_id++;
 		aInfo = new AwesomiumInfo(screenId, _id);
 
-#if HAVE_COMPSUPPORT
-		aInfo->surface = ((SurfaceCreator*)(
-				cm->getObject("Surface")))(screenId, NULL, 0, 0);
-
-#else
-		aInfo->surface = new DFBSurface(screenId, NULL);
-#endif
+		aInfo->surface = dm->createSurface(screenId);
 
 		_infos[_id] = aInfo;
 

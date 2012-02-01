@@ -91,16 +91,7 @@ namespace player {
 		w = 60;
 		h = 60;
 
-#if HAVE_COMPSUPPORT
-		win = ((WindowCreator*)(cm->getObject("Window")))(
-				NULL, NULL, myScreen, x, y, w, h);
-#else
-#ifndef _WIN32
-		win = new DFBWindow(NULL, NULL, myScreen, x, y, w, h);
-#else
-		win = new DXWindow(NULL, NULL, myScreen, x, y, w, h);
-#endif
-#endif
+		win = dm->createWindow(myScreen, x, y, w, h);
 		win->setCaps(win->getCap("ALPHACHANNEL"));
 		win->draw();
 	}

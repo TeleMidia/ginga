@@ -58,4 +58,4 @@ typedef void* GingaWindowID;
 typedef short GingaScreenID;
 #endif //GingaScreenID
 
-#endif /*ILocalScreenManager_H_*/
+#endif /*IMBDefs_H_*/

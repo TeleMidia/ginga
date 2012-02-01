@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/video/XineVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
+#include "mb/interface/dfb/device/DFBDeviceScreen.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -310,9 +311,7 @@ namespace mb {
 		}
 
 		return new DFBSurface(
-				myScreen,
-				LocalScreenManager::getInstance()->createSurface(
-						myScreen, &dsc));
+				myScreen, DFBDeviceScreen::createUnderlyingSurface(&dsc));
 	}
 
 	bool XineVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -330,9 +329,7 @@ namespace mb {
 			clog << "' dsc.h = '" << dsc.height << "'";
 			clog << endl;
 
-			s = (IDirectFBSurface*)(
-					LocalScreenManager::getInstance()->createSurface(
-							myScreen, &dsc));
+			s = DFBDeviceScreen::createUnderlyingSurface(&dsc);
 
 			visual.destination = s;
 			frame->setContent(s);

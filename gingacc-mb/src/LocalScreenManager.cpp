@@ -237,21 +237,30 @@ namespace mb {
 		GingaWindowID parentId = NULL;
 		short sysType, subSysType;
 
+		screenId = getNumOfScreens();
 		getMBSystemType(mbSystem, &sysType, mbSubSystem, &subSysType);
 
 		switch (sysType) {
+			case GMBST_TERM:
+#if HAVE_COMPSUPPORT
+				screen = ((ScreenCreator*)(cm->getObject(
+						"TermDeviceScreen")))(0, NULL, screenId, parentId);
+
+#endif
+				break;
+
 			case GMBST_DFLT:
 			default:
 #if HAVE_COMPSUPPORT
-				screen = ((ScreenCreator*)(cm->getObject("DeviceScreen")))(
-						0, NULL, parentId);
+				screen = ((ScreenCreator*)(cm->getObject(
+						"DFBDeviceScreen")))(0, NULL, screenId, parentId);
 
 #else
 #ifndef _WIN32
-				screen = new DFBDeviceScreen(0, NULL, parentId);
+				screen = new DFBDeviceScreen(0, NULL, screenId, parentId);
 
 #else
-				screen = new DXDeviceScreen(0, NULL, parentId);
+				screen = new DXDeviceScreen(0, NULL, screenId, parentId);
 #endif
 #endif
 				break;
@@ -312,33 +321,35 @@ namespace mb {
 		}
 	}
 
-	void* LocalScreenManager::getWindow(
-			GingaScreenID screenId, GingaWindowID winId) {
+	IWindow* LocalScreenManager::createWindow(
+			GingaScreenID screenId, int x, int y, int w, int h) {
 
 		IDeviceScreen* screen;
-		void* window = NULL;
+		IWindow* window = NULL;
 
 		if (getScreen(screenId, &screen)) {
-			window = screen->getWindow(winId);
+			window = screen->createWindow(x, y, w, h);
 		}
 
 		return window;
 	}
 
-	void* LocalScreenManager::createWindow(
-			GingaScreenID screenId, void* winDesc) {
+	IWindow* LocalScreenManager::createWindowFrom(
+			GingaScreenID screenId, GingaWindowID underlyingWindow) {
 
 		IDeviceScreen* screen;
-		void* window = NULL;
+		IWindow* window = NULL;
 
 		if (getScreen(screenId, &screen)) {
-			window = screen->createWindow(winDesc);
+			window = screen->createWindowFrom(underlyingWindow);
 		}
 
 		return window;
 	}
 
-	void LocalScreenManager::releaseWindow(GingaScreenID screenId, void* win) {
+	void LocalScreenManager::releaseWindow(
+			GingaScreenID screenId, IWindow* win) {
+
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {
@@ -346,20 +357,46 @@ namespace mb {
 		}
 	}
 
-	void* LocalScreenManager::createSurface(
-			GingaScreenID screenId, void* surfaceDesc) {
-
+	ISurface* LocalScreenManager::createSurface(GingaScreenID screenId) {
 		IDeviceScreen* screen;
-		void* surface = NULL;
+		ISurface* surface = NULL;
 
 		if (getScreen(screenId, &screen)) {
-			surface = screen->createSurface(surfaceDesc);
+			surface = screen->createSurface();
 		}
 
 		return surface;
 	}
 
-	void LocalScreenManager::releaseSurface(GingaScreenID screenId, void* sur) {
+	ISurface* LocalScreenManager::createSurface(
+			GingaScreenID screenId, int w, int h) {
+
+		IDeviceScreen* screen;
+		ISurface* surface = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			surface = screen->createSurface(w, h);
+		}
+
+		return surface;
+	}
+
+	ISurface* LocalScreenManager::createSurfaceFrom(
+			GingaScreenID screenId, void* underlyingSurface) {
+
+		IDeviceScreen* screen;
+		ISurface* surface = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			surface = screen->createSurfaceFrom(underlyingSurface);
+		}
+
+		return surface;
+	}
+
+	void LocalScreenManager::releaseSurface(
+			GingaScreenID screenId, ISurface* sur) {
+
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {

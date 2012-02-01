@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IFontProvider.h"
 #include "mb/interface/ISurface.h"
 
+#include <string.h>
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -77,7 +79,7 @@ namespace mb {
 			void playOver(
 					void* surface,
 					const char* text,
-					int x=0, int y=0, short align=A_TOP_LEFT);
+					int x=0, int y=0, short align=0);
 	};
 }
 }

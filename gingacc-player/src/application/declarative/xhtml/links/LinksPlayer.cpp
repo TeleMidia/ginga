@@ -66,7 +66,6 @@ namespace player {
 			Player(screenId, mrl), Thread::Thread() {
 
 		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
-		ILocalScreenManager* dm = NULL;
 
 		mBrowser = NULL;
 		this->x = 1;
@@ -75,21 +74,17 @@ namespace player {
 		this->h = 1;
 
 #if HAVE_COMPSUPPORT
-		dm = ((LocalScreenManagerCreator*)(
-				cm->getObject("LocalScreenManager")))();
-
 		if (im == NULL) {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
 		}
 #else
-		dm = LocalScreenManager::getInstance();
-		im = InputManager::getInstance();
+		if (im == NULL) {
+			im = InputManager::getInstance();
+		}
 #endif
 
-		if (dm != NULL) {
-			setBrowserDFB(dm->getGfxRoot(myScreen));
-			setDisplayMenu(0);
-		}
+		setBrowserDFB(dm->getGfxRoot(myScreen));
+		setDisplayMenu(0);
 
 		hasBrowser = false;
 	}
@@ -116,13 +111,7 @@ namespace player {
 			if (hasBrowser) {
 				s = browserGetSurface(mBrowser);
 				if (s != NULL) {
-#if HAVE_COMPSUPPORT
-					this->surface = ((SurfaceCreator*)(cm->getObject(
-							"Surface")))(myScreen, s, 0, 0);
-#else
-
-					this->surface = new DFBSurface(myScreen, s);
-#endif
+					this->surface = dm->createSurfaceFrom(myScreen, s);
 				}
 
 			} else {

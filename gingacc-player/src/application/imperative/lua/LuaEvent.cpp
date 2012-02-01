@@ -237,7 +237,7 @@ static int l_post (lua_State* L)
 //clog << ">send " << L << " ref " << ref << endl;
 #if HAVE_COMPSUPPORT
         GETPLAYER(L)->im->postEvent(
-	        ((UserEventCreator*)(cm->getObject("UserEvent")))(ref, L));
+	        ((UserEventCreator*)(cm->getObject("DFBUserEvent")))(ref, L));
 #else
 #ifndef _WIN32
         GETPLAYER(L)->im->postEvent(new DFBGInputEvent(ref, (void*)L));

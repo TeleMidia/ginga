@@ -689,8 +689,6 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
 
 #if HAVE_COMPSUPPORT
 	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
-    this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(
-    		screenId, NULL, 0, 0);
 
 #if HAVE_DATAPROC
     compObj = cm->getObject("EPGProcessor");
@@ -707,18 +705,13 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
 
     this->im = InputManager::getInstance();
 
-#ifndef _WIN32
-	this->surface = new DFBSurface();
-#else //_WIN32
-	this->surface = new DXSurface();
-#endif //_WIN32
-
 #if HAVE_DATAPROC
 	this->epgProc = EPGProcessor::getInstance();
 #endif //HAVE_DATAPROC
 
 #endif //HAVE_COMPSUPPORT
 
+    this->surface = dm->createSurface(screenId);
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
 	this->im->addApplicationInputEventListener(this);
 
@@ -781,6 +774,10 @@ LuaPlayer::~LuaPlayer ()
 
 GingaScreenID LuaPlayer::getScreenId() {
 	return myScreen;
+}
+
+ILocalScreenManager* LuaPlayer::getScreenManager() {
+	return dm;
 }
 
 // Retorna Player associado ao estado Lua.

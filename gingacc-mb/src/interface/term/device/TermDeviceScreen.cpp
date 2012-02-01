@@ -115,24 +115,33 @@ namespace mb {
 
 	}
 
-	void* TermDeviceScreen::getWindow(GingaWindowID winId) {
+	IWindow* TermDeviceScreen::createWindow(int x, int y, int w, int h) {
 		return NULL;
 	}
 
-	void* TermDeviceScreen::createWindow(void* desc) {
+	IWindow* TermDeviceScreen::createWindowFrom(
+			GingaWindowID underlyingWindow) {
+
 		return NULL;
 	}
 
-	void TermDeviceScreen::releaseWindow(void* win) {
+	void TermDeviceScreen::releaseWindow(IWindow* win) {
 
 	}
 
-	void* TermDeviceScreen::createSurface(void* desc) {
-		surfacePool.insert("surface");
+	ISurface* TermDeviceScreen::createSurface() {
 		return NULL;
 	}
 
-	void TermDeviceScreen::releaseSurface(void* sur) {
+	ISurface* TermDeviceScreen::createSurface(int w, int h) {
+		return NULL;
+	}
+
+	ISurface* TermDeviceScreen::createSurfaceFrom(void* underlyingSurface) {
+		return NULL;
+	}
+
+	void TermDeviceScreen::releaseSurface(ISurface* sur) {
 
 	}
 

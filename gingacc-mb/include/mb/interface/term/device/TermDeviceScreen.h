@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/IDeviceScreen.h"
 
+#include <iostream>
 #include <string>
 #include <set>
 using namespace std;
@@ -83,12 +84,14 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
-			void* getWindow(GingaWindowID winId);
-			void* createWindow(void* desc);
-			void releaseWindow(void* win);
+			IWindow* createWindow(int x, int y, int w, int h);
+			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
+			void releaseWindow(IWindow* win);
 
-			void* createSurface(void* desc);
-			void releaseSurface(void* sur);
+			ISurface* createSurface();
+			ISurface* createSurface(int w, int h);
+			ISurface* createSurfaceFrom(void* underlyingSurface);
+			void releaseSurface(ISurface* sur);
 
 			void* getGfxRoot();
 	};

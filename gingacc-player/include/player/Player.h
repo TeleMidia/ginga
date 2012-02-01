@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "mb/IInputManager.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/interface/IInputEventListener.h"
 #include "mb/interface/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -104,6 +105,7 @@ namespace player {
 			static const short STOP = 3;
 
 			string mrl;
+			static ILocalScreenManager* dm;
 			ISurface* surface;
 			IWindow* outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;

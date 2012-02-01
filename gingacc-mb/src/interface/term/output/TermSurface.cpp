@@ -124,7 +124,6 @@ namespace mb {
 	}
 
 	bool TermSurface::setParent(void* parentWindow) {
-		this->parent = parentWindow;
 		return true;
 	}
 

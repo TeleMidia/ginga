@@ -147,7 +147,7 @@ AC_SUBST(DFB_LIBS)
 term=no
 AC_ARG_ENABLE(term,
   [  --enable-term build project with Terminal System support [[default=no]]],
-  enable_term="$enableval", enable_term=yes)
+  enable_term="$enableval", enable_term=no)
 
 if test x$enable_term = xno; then
 AC_MSG_WARN([
@@ -162,7 +162,7 @@ AM_CONDITIONAL([TERMSYSTEM], [test x$enable_term = xyes])
 sdl=no
 AC_ARG_ENABLE(sdl,
   [  --enable-sdl build project with SDL System support [[default=no]]],
-  enable_sdl="$enableval", enable_sdl=yes)
+  enable_sdl="$enableval", enable_sdl=no)
 
 if test x$enable_sdl = xno; then
 AC_MSG_WARN([

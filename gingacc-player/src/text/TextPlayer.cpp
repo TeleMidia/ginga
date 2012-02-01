@@ -112,16 +112,7 @@ namespace player {
 		this->fontColor = NULL;
 		this->fontSize = 12;
 
-#if HAVE_COMPSUPPORT
-		this->surface = ((SurfaceCreator*)(cm->getObject("Surface")))(
-				myScreen, NULL, 0, 0);
-#else
-#ifndef _WIN32
-		this->surface = new DFBSurface(myScreen);
-#else
-		this->surface = new DXSurface(myScreen);
-#endif
-#endif
+		this->surface = dm->createSurface(myScreen);
 		if (this->surface != NULL) {
 			this->surface->setCaps(
 					this->surface->getCap("ALPHACHANNEL"));

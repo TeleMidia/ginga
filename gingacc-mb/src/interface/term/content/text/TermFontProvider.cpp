@@ -56,43 +56,39 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	DFBFontProvider::DFBFontProvider(
+	TermFontProvider::TermFontProvider(
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
 		myScreen = screenId;
-
-		if (strcmp(fontUri, "") == 0 || !fileExists(fontUri)) {
-
-		}
 	}
 
-	DFBFontProvider::~DFBFontProvider() {
+	TermFontProvider::~TermFontProvider() {
 
 	}
 
-	void* DFBFontProvider::getContent() {
+	void* TermFontProvider::getContent() {
 		return NULL;
 	}
 
-	int DFBFontProvider::getMaxAdvance() {
+	int TermFontProvider::getMaxAdvance() {
 		int maxAdvance = 0;
 
 		return maxAdvance;
 	}
 
-	int DFBFontProvider::getStringWidth(const char* text, int textLength) {
+	int TermFontProvider::getStringWidth(const char* text, int textLength) {
 		int width = 0;
 
 		return width;
 	}
 
-	int DFBFontProvider::getHeight() {
+	int TermFontProvider::getHeight() {
 		int fontHeight = 0;
 
 		return fontHeight;
 	}
 
-	void DFBFontProvider::playOver(
+	void TermFontProvider::playOver(
 			void* surface, const char* text, int x, int y, short align) {
 
 	}

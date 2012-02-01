@@ -49,6 +49,8 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 #include "mb/interface/dfb/device/DFBDeviceScreen.h"
+#include "mb/interface/dfb/output/DFBWindow.h"
+#include "mb/interface/dfb/output/DFBSurface.h"
 #include "mb/ILocalScreenManager.h"
 
 #include <string.h>
@@ -70,7 +72,8 @@ IDirectFB* DFBDeviceScreen::dfb = NULL;
 IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 	DFBDeviceScreen::DFBDeviceScreen(
-			int numArgs, char** args, GingaWindowID parentId) {
+			int numArgs, char** args,
+			GingaScreenID myId, GingaWindowID parentId) {
 
 		DFBDisplayLayerConfig layer_config;
 		DFBResult ret;
@@ -80,10 +83,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		vSize  = 0;
 		hRes   = 0;
 		wRes   = 0;
+		id     = myId;
 		numOfDFBScreens++;
 
-		windowPool  = new set<IDirectFBWindow*>;
-		surfacePool = new set<IDirectFBSurface*>;
+		windowPool  = new set<IWindow*>;
+		surfacePool = new set<ISurface*>;
 
 		pthread_mutex_init(&winMutex, NULL);
 		pthread_mutex_init(&surMutex, NULL);
@@ -156,35 +160,37 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 	}
 
 	void DFBDeviceScreen::clearWidgetPools() {
-		set<IDirectFBWindow*>::iterator w;
-		set<IDirectFBSurface*>::iterator s;
+		set<IWindow*>::iterator i;
+		set<ISurface*>::iterator j;
 
 		clog << "DFBDeviceScreen::clearWidgetPools ";
 		clog << "windowPool size = " << windowPool->size();
 		clog << ", surfacePool size = " << surfacePool->size() << endl;
 
-		//Releasing still Window objects in Window Pool
+		//Releasing remaining Window objects in Window Pool
 		pthread_mutex_lock(&winMutex);
 		if (windowPool != NULL) {
-			w = windowPool->begin();
-			while (w != windowPool->end()) {
-				if ((*w) != NULL) {
-					(*w)->Release(*w);
+			i = windowPool->begin();
+			while (i != windowPool->end()) {
+				if ((*i) != NULL) {
+					delete (*i);
 				}
-				++w;
+				++i;
 			}
 			windowPool->clear();
 		}
 		pthread_mutex_unlock(&winMutex);
 
-		//Releasing still Surface objects in Surface Pool
+		//Releasing remaining Surface objects in Surface Pool
 		pthread_mutex_lock(&surMutex);
-		for (s = surfacePool->begin(); s != surfacePool->end(); ++s) {
-			if ((*s) != NULL) {
-				(*s)->Release(*s);
+		if (surfacePool != NULL) {
+			for (j = surfacePool->begin(); j != surfacePool->end(); ++j) {
+				if ((*j) != NULL) {
+					delete (*j);
+				}
 			}
+			surfacePool->clear();
 		}
-		surfacePool->clear();
 		pthread_mutex_unlock(&surMutex);
 	}
 
@@ -300,7 +306,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		vector<void*>::iterator i;
 		int x, y;
 
-		dstWin = (IDirectFBWindow*)getWindow(destId);
+		dstWin = getUnderlyingWindow(destId);
 		if (dstWin == NULL) {
 			return;
 		}
@@ -311,7 +317,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 
 		i = srcIds->begin();
 		while (i != srcIds->end()) {
-			srcWin = (IDirectFBWindow*)getWindow(*i);
+			srcWin = getUnderlyingWindow(*i);
 			if (srcWin != NULL) {
 				srcWin->GetPosition(srcWin, &x, &y);
 				srcWin->GetSurface(srcWin, &srcSur);
@@ -321,49 +327,36 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		}
 	}
 
-	void* DFBDeviceScreen::getWindow(GingaWindowID winId) {
-		IDirectFBWindow* window = NULL;
-		DFBWindowID wid;
+	IWindow* DFBDeviceScreen::createWindow(int x, int y, int w, int h) {
+		IWindow* iWin;
 
-		if (gfxLayer != NULL) {
-			wid = (DFBWindowID)(unsigned long)winId;
-			if (gfxLayer->GetWindow(
-					gfxLayer,
-					wid,
-					&window) != DFB_OK) {
+		pthread_mutex_lock(&winMutex);
+		iWin = new DFBWindow(NULL, NULL, id, x, y, w, h);
+		windowPool->insert(iWin);
+		pthread_mutex_unlock(&winMutex);
 
-				clog << "DFBDeviceScreen::getWindow can't find id '" << wid;
-				clog << "'" << endl;
-				window = NULL;
-			}
-		}
-
-		return (void*)window;
+		return iWin;
 	}
 
-	void* DFBDeviceScreen::createWindow(void* desc) {
-		IDirectFBWindow* window = NULL;
+	IWindow* DFBDeviceScreen::createWindowFrom(GingaWindowID underlyingWindow) {
+		IWindow* iWin = NULL;
 
-		if (gfxLayer != NULL) {
-			DFBCHECK(gfxLayer->CreateWindow(
-					gfxLayer, (const DFBWindowDescription*)desc, &window));
-
+		if (underlyingWindow != NULL) {
 			pthread_mutex_lock(&winMutex);
-			windowPool->insert(window);
+			iWin = new DFBWindow(NULL, NULL, id, 0, 0, 0, 0);
+			windowPool->insert(iWin);
 			pthread_mutex_unlock(&winMutex);
 		}
 
-		return (void*)window;
+		return iWin;
 	}
 
-	void DFBDeviceScreen::releaseWindow(void* win) {
-		set<IDirectFBWindow*>::iterator i;
-		IDirectFBWindow* w;
-		w = (IDirectFBWindow*)win;
+	void DFBDeviceScreen::releaseWindow(IWindow* win) {
+		set<IWindow*>::iterator i;
 
 		pthread_mutex_lock(&winMutex);
 		if (windowPool != NULL) {
-			i = windowPool->find(w);
+			i = windowPool->find(win);
 			if (i != windowPool->end()) {
 				windowPool->erase(i);
 				pthread_mutex_unlock(&winMutex);
@@ -375,31 +368,42 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		} else {
 			pthread_mutex_unlock(&winMutex);
 		}
-
-		w->Destroy(w);
-		w->Release(w);
-		win = NULL;
-		w = NULL;
 	}
 
-	void* DFBDeviceScreen::createSurface(void* desc) {
-		IDirectFBSurface* surface;
+	ISurface* DFBDeviceScreen::createSurface() {
+		return createSurfaceFrom(NULL);
+	}
 
-		if (dfb != NULL) {
-			DFBCHECK(dfb->CreateSurface(
-					dfb, (const DFBSurfaceDescription*)desc, &surface));
-		}
+	ISurface* DFBDeviceScreen::createSurface(int w, int h) {
+		ISurface* iSur = NULL;
 
 		pthread_mutex_lock(&surMutex);
-		surfacePool->insert(surface);
+		iSur = new DFBSurface(id, w, h);
+		surfacePool->insert(iSur);
 		pthread_mutex_unlock(&surMutex);
-		return (void*)surface;
+
+		return iSur;
 	}
 
-	void DFBDeviceScreen::releaseSurface(void* sur) {
-		set<IDirectFBSurface*>::iterator i;
-		IDirectFBSurface* s;
-		s = (IDirectFBSurface*)sur;
+	ISurface* DFBDeviceScreen::createSurfaceFrom(void* uSur) {
+		ISurface* iSur = NULL;
+
+		pthread_mutex_lock(&surMutex);
+		if (uSur != NULL) {
+			iSur = new DFBSurface(id, uSur);
+
+		} else {
+			iSur = new DFBSurface(id);
+		}
+
+		surfacePool->insert(iSur);
+		pthread_mutex_unlock(&surMutex);
+
+		return iSur;
+	}
+
+	void DFBDeviceScreen::releaseSurface(ISurface* s) {
+		set<ISurface*>::iterator i;
 
 		pthread_mutex_lock(&surMutex);
 		if (surfacePool != NULL) {
@@ -415,15 +419,69 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		} else {
 			pthread_mutex_unlock(&surMutex);
 		}
-
-		s->Clear(s, 0, 0, 0, 0);
-		s->Release(s);
-		s = NULL;
-		sur = NULL;
 	}
 
 	void* DFBDeviceScreen::getGfxRoot() {
 		return (void*)dfb;
+	}
+
+	IDirectFBWindow* DFBDeviceScreen::getUnderlyingWindow(GingaWindowID winId) {
+		IDirectFBWindow* window = NULL;
+		DFBWindowID wid;
+
+		if (gfxLayer != NULL) {
+			wid = (DFBWindowID)(unsigned long)winId;
+			if (gfxLayer->GetWindow(
+					gfxLayer,
+					wid,
+					&window) != DFB_OK) {
+
+				clog << "DFBDeviceScreen::getUnderlyingWindow ";
+				clog << "can't find id '" << wid;
+				clog << "'" << endl;
+				window = NULL;
+			}
+		}
+
+		return window;
+	}
+
+	IDirectFBWindow* DFBDeviceScreen::createUnderlyingWindow(
+			DFBWindowDescription* desc) {
+
+		IDirectFBWindow* window = NULL;
+
+		if (gfxLayer != NULL) {
+			DFBCHECK(gfxLayer->CreateWindow(
+					gfxLayer, (const DFBWindowDescription*)desc, &window));
+		}
+
+		return window;
+	}
+
+	void DFBDeviceScreen::releaseUnderlyingWindow(IDirectFBWindow* uWin) {
+		uWin->Destroy(uWin);
+		uWin->Release(uWin);
+		uWin = NULL;
+	}
+
+	IDirectFBSurface* DFBDeviceScreen::createUnderlyingSurface(
+			DFBSurfaceDescription* desc) {
+
+		IDirectFBSurface* surface;
+
+		if (dfb != NULL) {
+			DFBCHECK(dfb->CreateSurface(
+					dfb, (const DFBSurfaceDescription*)desc, &surface));
+		}
+
+		return surface;
+	}
+
+	void DFBDeviceScreen::releaseUnderlyingSurface(IDirectFBSurface* uSur) {
+		uSur->Clear(uSur, 0, 0, 0, 0x00);
+		uSur->Release(uSur);
+		uSur = NULL;
 	}
 
 	/*
@@ -472,10 +530,12 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
-		createDFBScreen(int numArgs, char** args, GingaWindowID parentId) {
+		createDFBScreen(
+				int numArgs, char** args,
+				GingaScreenID myId, GingaWindowID parentId) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBDeviceScreen(numArgs, args, parentId));
+			DFBDeviceScreen(numArgs, args, myId, parentId));
 }
 
 extern "C" void destroyDFBScreen(

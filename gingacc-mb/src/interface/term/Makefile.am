@@ -23,7 +23,7 @@ libgingaccmbterm_PROGRAMS   = \
 libgingaccmbterm_so_SOURCES = \
                              device/TermDeviceScreen.cpp \
                              input/TermEventBuffer.cpp \
-                             input/TermGInputEvent.cpp \
+                             input/TermInputEvent.cpp \
                              output/TermSurface.cpp \
                              output/TermWindow.cpp
 

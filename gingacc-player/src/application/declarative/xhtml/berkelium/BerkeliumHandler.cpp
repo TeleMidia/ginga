@@ -77,12 +77,12 @@ namespace player {
 			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
 		}
 
-		surface = ((SurfaceCreator*)(cm->getObject("Surface")))(NULL, 0, 0);
 #else
 		dm = LocalScreenManager::getInstance();
 		im = InputManager::getInstance();
-		surface = new DFBSurface(NULL);
 #endif
+
+		surface = dm->createSurface(0);
 
 		w = 0;
 		h = 0;
@@ -192,7 +192,7 @@ namespace player {
 			int dy,
 			const Rect &scroll_rect) {
 
-		string str;
+		/*string str;
 		static int call_count = 0;
 		IWindow* win;
 
@@ -259,7 +259,7 @@ namespace player {
 			surface->setParent(win);
 			win->renderFrom(surface);
 			clog << "BerkeliumHandler::onPaint rendered" << endl;
-		}
+		}*/
 	}
 
 	void BerkeliumHandler::onCrashed(Window *win) {

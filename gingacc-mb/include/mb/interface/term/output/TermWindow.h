@@ -125,7 +125,6 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
-			void setZBoundaries(GingaWindowID lower, GingaWindowID upper);
 			void raise();
 			void lower();
 			void raiseToTop();

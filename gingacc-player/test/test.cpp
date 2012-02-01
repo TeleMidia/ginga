@@ -107,21 +107,9 @@ int main(int argc, char** argv, char** envp) {
 
 	screen = dm->createScreen(argc, argv);
 
-#if HAVE_COMPSUPPORT
-	w = ((WindowCreator*)(cm->getObject("Window")))(
-			NULL, NULL, screen, 10, 10, 100, 100);
-
-	ww = ((WindowCreator*)(cm->getObject("Window")))(
-			NULL, NULL, screen, 90, 90, 150, 150);
-
-	www = ((WindowCreator*)(cm->getObject("Window")))(
-			NULL, NULL, screen, 0, 0, 800, 800);
-
-#else
-	w   = new DFBWindow(NULL, NULL, screen, 10, 10, 100, 100);
-	ww  = new DFBWindow(NULL, NULL, screen, 90, 90, 400, 400);
-	www = new DFBWindow(NULL, NULL, screen, 0, 0, 800, 800);
-#endif
+	w = dm->createWindow(screen, 10, 10, 100, 100);
+	ww = dm->createWindow(screen, 90, 90, 150, 150);
+	www = w = dm->createWindow(screen, 0, 0, 800, 800);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

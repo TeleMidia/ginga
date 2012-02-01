@@ -73,12 +73,10 @@
     <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
     <dependency componentName="libgingaccmb.so" version="0.13.1"/>
     <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
-    <symbol object="DeviceScreen" creator="createDFBScreen" destroyer="destroyDFBScreen" interface="IDeviceScreen"/>
-    <symbol object="EventBuffer" creator="createDFBEventBuffer" destroyer="destroyDFBEventBuffer" interface="IEventBuffer"/>
-    <symbol object="InputEvent" creator="createDFBInputEvent" destroyer="destroyDFBInputEvent" interface="IInputEvent"/>
-    <symbol object="UserEvent" creator="createDFBUserEvent" destroyer="destroyDFBUserEvent" interface="IInputEvent"/>
-    <symbol object="Surface" creator="createDFBSurface" destroyer="destroyDFBSurface" interface="ISurface"/>
-    <symbol object="Window" creator="createDFBWindow" destroyer="destroyDFBWindow" interface="IWindow"/>
+    <symbol object="DFBDeviceScreen" creator="createDFBScreen" destroyer="destroyDFBScreen" interface="IDeviceScreen"/>
+    <symbol object="DFBEventBuffer" creator="createDFBEventBuffer" destroyer="destroyDFBEventBuffer" interface="IEventBuffer"/>
+    <symbol object="DFBInputEvent" creator="createDFBInputEvent" destroyer="destroyDFBInputEvent" interface="IInputEvent"/>
+    <symbol object="DFBUserEvent" creator="createDFBUserEvent" destroyer="destroyDFBUserEvent" interface="IInputEvent"/>
     <location type="local" uri="/usr/local/lib/ginga/mb"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

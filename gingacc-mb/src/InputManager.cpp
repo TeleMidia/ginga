@@ -89,7 +89,7 @@ namespace mb {
 
 #if HAVE_COMPSUPPORT
 		eventBuffer   = ((EventBufferCreator*)(
-				cm->getObject("EventBuffer")))(0); //default screen
+				cm->getObject("DFBEventBuffer")))(0); //default screen
 
 #else
 #ifndef _WIN32
@@ -561,7 +561,7 @@ namespace mb {
 		IInputEvent* ie;
 
 #if HAVE_COMPSUPPORT
-		ie = ((InputEventCreator*)(cm->getObject("InputEvent")))(NULL, keyCode);
+		ie = ((InputEventCreator*)(cm->getObject("DFBInputEvent")))(NULL, keyCode);
 #else
 #ifndef _WIN32
 		ie = new DFBGInputEvent(keyCode);

@@ -122,19 +122,7 @@ static int l_new (lua_State* L)
 		// NEW { w, h }
 		// [ canvas | w | h ]
 		case LUA_TNUMBER: {
-#if HAVE_COMPSUPPORT
-			sfc = ((SurfaceCreator*)(
-					cm->getObject("Surface")))(
-							GETPLAYER(L)->getScreenId(),
-							NULL,
-							luaL_checkint(L, 2),
-							luaL_checkint(L, 3));
-
-			sfc->setBgColor(canvas->color);
-			sfc->clearContent();
-#else
-#ifndef _WIN32
-			sfc = new DFBSurface(
+			sfc = GETPLAYER(L)->getScreenManager()->createSurface(
 					GETPLAYER(L)->getScreenId(),
 					luaL_checkint(L, 2),
 					luaL_checkint(L, 3));
@@ -142,16 +130,6 @@ static int l_new (lua_State* L)
 			sfc->setBgColor(canvas->color);
 			sfc->clearContent();
 
-#else
-			sfc = new DXSurface(
-					GETPLAYER(L)->getScreenId(),
-					luaL_checkint(L, 2),
-					luaL_checkint(L, 3));
-
-			sfc->setBgColor(canvas->color);
-			sfc->clearContent();
-#endif
-#endif
 			break;
 		}
 

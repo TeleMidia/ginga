@@ -124,7 +124,6 @@ using namespace std;
 
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IFontProvider.h"
-#include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -221,6 +220,7 @@ namespace player {
 		virtual ~LuaPlayer ();
 
 		GingaScreenID getScreenId();
+		ILocalScreenManager* getScreenManager();
 		void run();
 		virtual bool hasPresented();
 

@@ -101,7 +101,7 @@ namespace mb {
 
 	void TermVideoProvider::playOver(
 			ISurface* surface,
-			bool hasVisual=true, IProviderListener* listener=NULL) {
+			bool hasVisual, IProviderListener* listener) {
 
 	}
 

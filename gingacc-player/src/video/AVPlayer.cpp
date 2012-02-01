@@ -1439,37 +1439,12 @@ namespace player {
 			if (name == "createWindow") {
 				vals = split(value, ",");
 				if (vals->size() == 4) {
-#if HAVE_COMPSUPPORT
-					win = ((WindowCreator*)(cm->getObject("Window")))(
-							NULL,
-							NULL,
+					win = dm->createWindow(
 							myScreen,
 							util::stof((*vals)[0]),
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
 							util::stof((*vals)[3]));
-
-#else
-#ifndef _WIN32
-					win = new DFBWindow(
-							NULL,
-							NULL,
-							myScreen,
-							util::stof((*vals)[0]),
-							util::stof((*vals)[1]),
-							util::stof((*vals)[2]),
-							util::stof((*vals)[3]));
-#else
-					win = new DXWindow(
-							NULL,
-							NULL,
-							myScreen,
-							util::stof((*vals)[0]),
-							util::stof((*vals)[1]),
-							util::stof((*vals)[2]),
-							util::stof((*vals)[3]));
-#endif
-#endif
 
 					win->setCaps(win->getCap("NOSTRUCTURE") |
 							win->getCap("DOUBLEBUFFER"));
@@ -1555,16 +1530,7 @@ namespace player {
 
 	bool AVPlayer::setOutWindow(GingaWindowID windowId) {
 		if (mainAV && win == NULL) {
-#if HAVE_COMPSUPPORT
-			win = ((WindowCreator*)(cm->getObject("Window")))(
-					windowId, NULL, myScreen, -1, -1, -1, -1);
-
-#else
-#ifndef _WIN32
-			win = new DFBWindow(myScreen, windowId);
-#else
-#endif
-#endif
+			win = dm->createWindowFrom(myScreen, windowId);
 
 			if (!running) {
 				Thread::start();

@@ -62,10 +62,23 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+	ILocalScreenManager* Player::dm = NULL;
+
 	Player::Player(GingaScreenID screenId, string mrl) {
 		pthread_mutex_init(&listM, NULL);
 		pthread_mutex_init(&lockedListM, NULL);
 		pthread_mutex_init(&referM, NULL);
+
+#if HAVE_COMPSUPPORT
+		if (dm == NULL) {
+			dm = ((LocalScreenManagerCreator*)(
+					cm->getObject("LocalScreenManager")))();
+		}
+#else
+		if (dm == NULL) {
+			dm = LocalScreenManager::getInstance();
+		}
+#endif
 
 		this->myScreen            = screenId;
 		this->mrl                 = mrl;
@@ -557,13 +570,7 @@ namespace player {
 			outputWindow->revertContent();
 
 		} else if (outputWindow == NULL) {
-#if HAVE_COMPSUPPORT
-			outputWindow = ((WindowCreator*)(cm->getObject("Window")))(
-					windowId, -1, -1, -1, -1);
-
-#else
-			outputWindow = new DFBWindow(windowId);
-#endif
+			dm->createWindowFrom(myScreen, windowId);
 		}
 
 		if (outputWindow == NULL || outputWindow->getId() != windowId) {

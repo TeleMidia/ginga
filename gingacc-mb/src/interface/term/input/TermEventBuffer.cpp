@@ -56,8 +56,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	IDirectFBEventBuffer* TermEventBuffer::eventBuffer = NULL;
-
 	TermEventBuffer::TermEventBuffer(GingaScreenID screen) {
 
 	}

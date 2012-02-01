@@ -146,7 +146,6 @@ namespace mb {
 			void setMaxTransparencyValue(int maxValue);
 			string getDumpFileUri(int quality, int dumpW, int dumpH);
 			void revertContent(){};
-			void setZBoundaries(int lower, int upper){};
 			int getId(){return 0;};
 			void setX(int x){};
 			void setY(int y){};

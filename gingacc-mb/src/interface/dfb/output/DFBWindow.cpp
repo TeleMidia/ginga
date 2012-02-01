@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
+#include "mb/interface/dfb/device/DFBDeviceScreen.h"
 
 #include <stdlib.h>
 
@@ -133,14 +134,16 @@ namespace mb {
 		}
 		unlockChilds();
 
+		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
+
 		if (winSur != NULL) {
-			LocalScreenManager::getInstance()->releaseSurface(myScreen, winSur);
+			winSur->Clear(winSur, 0, 0, 0, 0x00);
+			winSur->Release(winSur);
 			winSur = NULL;
 		}
 
 		if (win != NULL) {
-			LocalScreenManager::getInstance()->releaseWindow(myScreen, win);
-			win = NULL;
+			DFBDeviceScreen::releaseUnderlyingWindow(win);
 		}
 		unlock();
 
@@ -265,8 +268,7 @@ namespace mb {
 				dsc.caps  = (DFBWindowCapabilities)(caps);
 			}
 
-			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
-					createWindow(myScreen, &dsc));
+			win = DFBDeviceScreen::createUnderlyingWindow(&dsc);
 
 			if (win != NULL) {
 				DFBCHECK(win->SetOpacity(win, 0x00));
@@ -279,10 +281,8 @@ namespace mb {
 			}
 
 		} else {
-			win = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
-					getWindow(
-							myScreen,
-							(GingaWindowID)(unsigned long)windowId));
+			win = DFBDeviceScreen::getUnderlyingWindow(
+					(GingaWindowID)(unsigned long)windowId);
 
 			if (win != NULL) {
 				win->GetPosition(win, &x, &y);
@@ -389,33 +389,6 @@ namespace mb {
 		if (win != NULL) {
 			DFBCHECK(win->Resize(win, width, height));
 		}
-		unlock();
-	}
-
-	void DFBWindow::setZBoundaries(GingaWindowID lower, GingaWindowID upper) {
-		IDirectFBWindow* bWin;
-
-		lock();
-		if (win == NULL) {
-			unlock();
-			return;
-		}
-
-		if (upper >= 0) {
-			bWin = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
-					getWindow(myScreen, upper));
-
-			DFBCHECK(win->PutBelow(win, bWin));
-		}
-
-		if (lower >= 0) {
-			bWin = (IDirectFBWindow*)(LocalScreenManager::getInstance()->
-					getWindow(myScreen, lower));
-
-			DFBCHECK(win->PutAtop(win, bWin));
-		}
-
-		unprotectedValidate();
 		unlock();
 	}
 
@@ -748,9 +721,7 @@ namespace mb {
 		if ((ip->GetImageDescription(ip, &imgDsc) == DFB_OK) &&
 			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
 
-			destination = (IDirectFBSurface*)(
-					LocalScreenManager::getInstance()->createSurface(
-							myScreen, &surDsc));
+			destination = DFBDeviceScreen::createUnderlyingSurface(&surDsc);
 
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
 				DFBCHECK(destination->SetBlittingFlags(destination,
@@ -778,8 +749,7 @@ namespace mb {
 		if (destination != NULL) {
 			DFBCHECK(ip->RenderTo(ip, (IDirectFBSurface*)(destination), NULL));
 			renderFrom(destination);
-			LocalScreenManager::getInstance()->releaseSurface(
-					myScreen, destination);
+			DFBDeviceScreen::releaseUnderlyingSurface(destination);
 		}
 	}
 

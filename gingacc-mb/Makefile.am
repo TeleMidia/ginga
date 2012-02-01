@@ -11,6 +11,11 @@ SUBDIRS = 	\
 			src/interface/dfb/content/image \
 			src/interface/dfb/content/text \
 			src/interface/dfb/content/video \
+			src/interface/term \
+			src/interface/term/content/audio \
+			src/interface/term/content/image \
+			src/interface/term/content/text \
+			src/interface/term/content/video \
 			files
 
 MAINTAINERCLEANFILES = 	aclocal.m4 \

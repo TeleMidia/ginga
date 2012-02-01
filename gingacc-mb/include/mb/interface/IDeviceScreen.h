@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/IMBDefs.h"
 
+#include "IWindow.h"
+#include "ISurface.h"
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -82,12 +85,14 @@ namespace mb {
 			virtual void mergeIds(
 					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
 
-			virtual void* getWindow(GingaWindowID winId)=0;
-			virtual void* createWindow(void* desc)=0;
-			virtual void releaseWindow(void* win)=0;
+			virtual IWindow* createWindow(int x, int y, int w, int h)=0;
+			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
+			virtual void releaseWindow(IWindow* win)=0;
 
-			virtual void* createSurface(void* desc)=0;
-			virtual void releaseSurface(void* sur)=0;
+			virtual ISurface* createSurface()=0;
+			virtual ISurface* createSurface(int w, int h)=0;
+			virtual ISurface* createSurfaceFrom(void* underlyingSurface)=0;
+			virtual void releaseSurface(ISurface* sur)=0;
 
 			virtual void* getGfxRoot()=0;
 	};
@@ -99,7 +104,9 @@ namespace mb {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
-		ScreenCreator(int numArgs, char** args, GingaWindowID parentId);
+		ScreenCreator(
+				int numArgs, char** args,
+				GingaScreenID myId, GingaWindowID parentId);
 
 typedef void ScreenDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds);

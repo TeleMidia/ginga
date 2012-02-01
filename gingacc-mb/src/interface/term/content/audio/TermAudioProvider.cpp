@@ -101,7 +101,7 @@ namespace mb {
 
 	void TermAudioProvider::playOver(
 			ISurface* surface,
-			bool hasVisual=true, IProviderListener* listener=NULL) {
+			bool hasVisual, IProviderListener* listener) {
 
 	}
 
@@ -140,14 +140,14 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createDFBAudioProvider(
+		IContinuousMediaProvider* createAudioProvider(
 				GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBAudioProvider(screenId, mrl));
+			TermAudioProvider(screenId, mrl));
 }
 
-extern "C" void destroyDFBAudioProvider(
+extern "C" void destroyAudioProvider(
 		::br::pucrio::telemidia::ginga::core::mb::
 		IContinuousMediaProvider* cmp) {
 

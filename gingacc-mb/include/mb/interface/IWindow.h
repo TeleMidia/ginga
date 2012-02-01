@@ -78,10 +78,6 @@ namespace mb {
 			virtual void setColorKey(int r, int g, int b)=0;
 			virtual void moveTo(int x, int y)=0;
 			virtual void resize(int width, int height)=0;
-
-			virtual void setZBoundaries(
-					GingaWindowID lowerId, GingaWindowID upperId)=0;
-
 			virtual void raise()=0;
 			virtual void lower()=0;
 			virtual void raiseToTop()=0;
@@ -132,15 +128,5 @@ namespace mb {
 }
 }
 }
-
-typedef ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		WindowCreator(
-				GingaWindowID underlyingWindowID,
-				GingaWindowID parentWindowID,
-				GingaScreenID screenId,
-				int x, int y, int w, int h);
-
-typedef void WindowDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IWindow*);
 
 #endif /*IWINDOW_H_*/

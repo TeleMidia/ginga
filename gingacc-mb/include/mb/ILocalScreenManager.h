@@ -51,6 +51,8 @@ http://www.telemidia.puc-rio.br
 #define ILocalScreenManager_H_
 
 #include "IMBDefs.h"
+
+#include "interface/IWindow.h"
 #include "interface/ISurface.h"
 
 #include <vector>
@@ -106,18 +108,25 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds)=0;
 
-			virtual void* getWindow(
-					GingaScreenID screenId, GingaWindowID windowId)=0;
+			virtual IWindow* createWindow(
+					GingaScreenID screenId, int x, int y, int w, int h)=0;
 
-			virtual void* createWindow(
-					GingaScreenID screenId, void* windowDesc)=0;
+			virtual IWindow* createWindowFrom(
+					GingaScreenID screenId, GingaWindowID underlyingWindow)=0;
 
-			virtual void releaseWindow(GingaScreenID screenId, void* window)=0;
+			virtual void releaseWindow(
+					GingaScreenID screenId, IWindow* window)=0;
 
-			virtual void* createSurface(
-					GingaScreenID screenId, void* surfaceDesc)=0;
+			virtual ISurface* createSurface(GingaScreenID screenId)=0;
 
-			virtual void releaseSurface(GingaScreenID screenId, void* sur)=0;
+			virtual ISurface* createSurface(
+					GingaScreenID screenId, int w, int h)=0;
+
+			virtual ISurface* createSurfaceFrom(
+					GingaScreenID screenId, void* underlyingSurface)=0;
+
+			virtual void releaseSurface(
+					GingaScreenID screenId, ISurface* sur)=0;
 	};
 }
 }

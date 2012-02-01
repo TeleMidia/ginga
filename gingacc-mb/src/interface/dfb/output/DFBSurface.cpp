@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dfb/output/DFBSurface.h"
 #include "mb/interface/Matrix.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
+#include "mb/interface/dfb/device/DFBDeviceScreen.h"
 #include "mb/interface/IFontProvider.h"
 #include "mb/LocalScreenManager.h"
 
@@ -95,13 +96,7 @@ namespace mb {
 				DSDESC_CAPS | DSDESC_WIDTH |
 				DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
 
-	     /*desc.flags       = DSDESC_CAPS | DSDESC_PIXELFORMAT;
-	     desc.caps        = DSCAPS_PRIMARY | DSCAPS_DOUBLE;
-	     desc.pixelformat = DSPF_LUT8;*/
-
-		this->sur = (IDirectFBSurface*)(LocalScreenManager::getInstance()->
-				createSurface(myScreen, &surDsc));
-
+		this->sur = DFBDeviceScreen::createUnderlyingSurface(&surDsc);
 	}
 
 	DFBSurface::~DFBSurface() {
@@ -110,21 +105,19 @@ namespace mb {
 			chromaColor = NULL;
 		}
 
+		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
+
 		if (sur != NULL) {
 			if (parent != NULL) {
 				if (parent->removeChildSurface(this)) {
 					DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-					LocalScreenManager::getInstance()->releaseSurface(
-							myScreen, sur);
-
+					sur->Release(sur);
 					sur = NULL;
 				}
 
 			} else {
 				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-				LocalScreenManager::getInstance()->releaseSurface(
-						myScreen, sur);
-
+				sur->Release(sur);
 				sur = NULL;
 			}
 		}
@@ -193,10 +186,7 @@ namespace mb {
 	void DFBSurface::setContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
-				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-				LocalScreenManager::getInstance()->releaseSurface(
-						myScreen, sur);
-
+				DFBDeviceScreen::releaseUnderlyingSurface(sur);
 				sur = NULL;
 			}
 		}
@@ -306,7 +296,9 @@ namespace mb {
 
 		DFBCHECK(sur->GetSubSurface(sur, &rect, &s));
 
-		subSurface = new DFBSurface(myScreen, s);
+		subSurface = LocalScreenManager::getInstance()->createSurfaceFrom(
+				myScreen, s);
+
 		subSurface->setParent(parent);
 		return subSurface;
 	}
