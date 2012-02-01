@@ -170,6 +170,9 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 	}
 
 	void DFBDeviceScreen::clearWidgetPools() {
+		IWindow* iWin;
+		ISurface* iSur;
+
 		set<IWindow*>::iterator i;
 		set<ISurface*>::iterator j;
 
@@ -182,21 +185,34 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		if (windowPool != NULL) {
 			i = windowPool->begin();
 			while (i != windowPool->end()) {
-				if ((*i) != NULL) {
-					delete (*i);
+				iWin = (*i);
+
+				windowPool->erase(i);
+				i = windowPool->begin();
+
+				if (iWin != NULL) {
+					pthread_mutex_unlock(&winMutex);
+					delete iWin;
+					pthread_mutex_lock(&winMutex);
 				}
-				++i;
 			}
-			windowPool->clear();
 		}
 		pthread_mutex_unlock(&winMutex);
 
 		//Releasing remaining Surface objects in Surface Pool
 		pthread_mutex_lock(&surMutex);
 		if (surfacePool != NULL) {
-			for (j = surfacePool->begin(); j != surfacePool->end(); ++j) {
-				if ((*j) != NULL) {
-					delete (*j);
+			j = surfacePool->begin();
+			while (j != surfacePool->end()) {
+				iSur = (*j);
+
+				surfacePool->erase(j);
+				j = surfacePool->begin();
+
+				if (iSur != NULL) {
+					pthread_mutex_unlock(&surMutex);
+					delete iSur;
+					pthread_mutex_lock(&surMutex);
 				}
 			}
 			surfacePool->clear();
