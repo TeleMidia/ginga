@@ -73,15 +73,9 @@ namespace player {
 		this->w = 1;
 		this->h = 1;
 
-#if HAVE_COMPSUPPORT
 		if (im == NULL) {
-			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
+			im = dm->getInputManager(myScreen);
 		}
-#else
-		if (im == NULL) {
-			im = InputManager::getInstance();
-		}
-#endif
 
 		setBrowserDFB(dm->getGfxRoot(myScreen));
 		setDisplayMenu(0);

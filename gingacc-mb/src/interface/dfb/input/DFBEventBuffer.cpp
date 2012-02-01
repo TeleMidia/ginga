@@ -159,16 +159,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IEventBuffer*
-		createDFBEventBuffer(GingaScreenID screen) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::DFBEventBuffer(
-			screen));
-}
-
-extern "C" void destroyDFBEventBuffer(
-		::br::pucrio::telemidia::ginga::core::mb::IEventBuffer* ieb) {
-
-	delete ieb;
-}

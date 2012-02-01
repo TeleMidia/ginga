@@ -234,17 +234,9 @@ static int l_post (lua_State* L)
 		}
         int ref = luaL_ref(L, LUA_REGISTRYINDEX); // [ dst ]
 
-//clog << ">send " << L << " ref " << ref << endl;
-#if HAVE_COMPSUPPORT
         GETPLAYER(L)->im->postEvent(
-	        ((UserEventCreator*)(cm->getObject("DFBUserEvent")))(ref, L));
-#else
-#ifndef _WIN32
-        GETPLAYER(L)->im->postEvent(new DFBGInputEvent(ref, (void*)L));
-#else
-		GETPLAYER(L)->im->postEvent(new DXInputEvent((void*)L, ref));
-#endif
-#endif
+        		GETPLAYER(L)->getScreenManager()->createUserEvent(
+        				GETPLAYER(L)->getScreenId(), ref, (void*)L));
 	}
 
 	// dst == "out"

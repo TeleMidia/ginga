@@ -132,6 +132,7 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);
 
+
 			/* Interfacing output */
 			IWindow* createWindow(
 					GingaScreenID screenId, int x, int y, int w, int h);
@@ -149,6 +150,7 @@ namespace mb {
 					GingaScreenID screenId, void* underlyingSurface);
 
 			void releaseSurface(GingaScreenID screenId, ISurface* surface);
+
 
 			/* Interfacing content */
 			IContinuousMediaProvider* createContinuousMediaProvider(
@@ -177,6 +179,16 @@ namespace mb {
 
 			ISurface* createRenderedSurfaceFromImageFile(
 					GingaScreenID screenId, const char* mrl);
+
+
+			/* interfacing input */
+			IInputManager* getInputManager(GingaScreenID screenId);
+			IEventBuffer* createEventBuffer(GingaScreenID screenId);
+			IInputEvent* createInputEvent(
+					GingaScreenID screenId, void* event, const int symbol);
+
+			IInputEvent* createUserEvent(
+					GingaScreenID screenId, int type, void* data);
 
 		private:
 			void addScreen(GingaScreenID screenId, IDeviceScreen* screen);

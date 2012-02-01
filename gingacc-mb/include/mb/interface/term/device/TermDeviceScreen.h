@@ -117,6 +117,15 @@ namespace mb {
 			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
 
 
+			/* interfacing input */
+
+			IInputManager* getInputManager();
+			void setInputManager(IInputManager* im);
+			IEventBuffer* createEventBuffer();
+			IInputEvent* createInputEvent(void* event, const int symbol);
+			IInputEvent* createUserEvent(int type, void* data);
+
+
 			/* interfacing underlying multimedia system */
 
 			void* getGfxRoot();

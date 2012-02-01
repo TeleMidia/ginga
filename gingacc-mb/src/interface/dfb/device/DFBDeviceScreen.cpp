@@ -48,9 +48,15 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "config.h"
+
 #include "mb/interface/dfb/device/DFBDeviceScreen.h"
+
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
+
+#include "mb/interface/dfb/input/DFBEventBuffer.h"
+#include "mb/interface/dfb/input/DFBGInputEvent.h"
+
 #include "mb/ILocalScreenManager.h"
 
 #include <string.h>
@@ -86,6 +92,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		vSize  = 0;
 		hRes   = 0;
 		wRes   = 0;
+		im     = NULL;
 		id     = myId;
 		numOfDFBScreens++;
 
@@ -551,6 +558,39 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		delete provider;
 
 		return iSur;
+	}
+
+
+	/* interfacing input */
+
+	IInputManager* DFBDeviceScreen::getInputManager() {
+		return im;
+	}
+
+	void DFBDeviceScreen::setInputManager(IInputManager* im) {
+		this->im = im;
+	}
+
+	IEventBuffer* DFBDeviceScreen::createEventBuffer() {
+		return new DFBEventBuffer(id);
+	}
+
+	IInputEvent* DFBDeviceScreen::createInputEvent(
+			void* event, const int symbol) {
+
+		if (event != NULL) {
+			return new DFBGInputEvent(event);
+		}
+
+		if (symbol >= 0) {
+			return new DFBGInputEvent(symbol);
+		}
+
+		return NULL;
+	}
+
+	IInputEvent* DFBDeviceScreen::createUserEvent(int type, void* data) {
+		return new DFBGInputEvent(DFEC_USER, type, data);
 	}
 
 

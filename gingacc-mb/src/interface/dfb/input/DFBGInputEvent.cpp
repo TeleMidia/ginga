@@ -326,25 +326,3 @@ namespace mb {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-extern "C" IInputEvent* createDFBInputEvent(void* event, const int symbol) {
-	if (event != NULL) {
-		return new DFBGInputEvent(event);
-	}
-
-	if (symbol >= 0) {
-		return new DFBGInputEvent(symbol);
-	}
-
-	return NULL;
-}
-
-extern "C" IInputEvent* createDFBUserEvent(int type, void* data) {
-	return new DFBGInputEvent(DFEC_USER, type, data);
-}
-
-extern "C" void destroyDFBInputEvent(IInputEvent* eb) {
-	delete eb;
-}

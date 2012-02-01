@@ -73,14 +73,13 @@ namespace player {
 		dm = ((LocalScreenManagerCreator*)(
 				cm->getObject("LocalScreenManager")))();
 
-		if (im == NULL) {
-			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
-		}
-
 #else
 		dm = LocalScreenManager::getInstance();
-		im = InputManager::getInstance();
 #endif
+
+		if (im == NULL) {
+			im = dm->getInputManager(0);
+		}
 
 		surface = dm->createSurface(0);
 

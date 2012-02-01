@@ -115,6 +115,9 @@ namespace mb {
 
 	}
 
+
+	/* interfacing output */
+
 	IWindow* TermDeviceScreen::createWindow(int x, int y, int w, int h) {
 		return NULL;
 	}
@@ -146,6 +149,7 @@ namespace mb {
 	}
 
 
+	/* interfacing content */
 	IContinuousMediaProvider* TermDeviceScreen::createContinuousMediaProvider(
 			const char* mrl, bool hasVisual, bool isRemote) {
 
@@ -179,6 +183,30 @@ namespace mb {
 	ISurface* TermDeviceScreen::createRenderedSurfaceFromImageFile(
 			const char* mrl) {
 
+		return NULL;
+	}
+
+
+	/* interfacing input */
+	IInputManager* TermDeviceScreen::getInputManager() {
+		return NULL;
+	}
+
+	void TermDeviceScreen::setInputManager(IInputManager* im) {
+
+	}
+
+	IEventBuffer* TermDeviceScreen::createEventBuffer() {
+		return NULL;
+	}
+
+	IInputEvent* TermDeviceScreen::createInputEvent(
+			void* event, const int symbol) {
+
+		return NULL;
+	}
+
+	IInputEvent* TermDeviceScreen::createUserEvent(int type, void* data) {
 		return NULL;
 	}
 

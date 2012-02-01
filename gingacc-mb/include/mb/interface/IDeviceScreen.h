@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define IDEVICESCREEN_H_
 
 #include "mb/IMBDefs.h"
+#include "mb/IInputManager.h"
 
 #include "IContinuousMediaProvider.h"
 #include "IFontProvider.h"
@@ -120,6 +121,18 @@ namespace mb {
 
 			virtual ISurface* createRenderedSurfaceFromImageFile(
 					const char* mrl)=0;
+
+
+			/* interfacing input */
+
+			virtual IInputManager* getInputManager()=0;
+			virtual void setInputManager(IInputManager* im)=0;
+			virtual IEventBuffer* createEventBuffer()=0;
+
+			virtual IInputEvent* createInputEvent(
+					void* event, const int symbol)=0;
+
+			virtual IInputEvent* createUserEvent(int type, void* data)=0;
 
 
 			/* interfacing underlying multimedia system */

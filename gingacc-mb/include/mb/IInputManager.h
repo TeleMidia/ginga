@@ -68,7 +68,7 @@ namespace mb {
 
 		virtual void release()=0;
 		virtual void addInputEventListener(
-				IInputEventListener* listener, set<int>* events=NULL)=0;
+				IInputEventListener* listener, set<int>* events)=0;
 
 		virtual void removeInputEventListener(IInputEventListener* listener)=0;
 
@@ -92,11 +92,5 @@ namespace mb {
 }
 }
 }
-
-typedef ::br::pucrio::telemidia::ginga::core::mb::IInputManager*
-		InputManagerCreator();
-
-typedef void InputManagerDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IInputManager* im);
 
 #endif /*IINPUTMANAGER_H_*/

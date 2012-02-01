@@ -76,10 +76,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IEventBuffer*
-		EventBufferCreator(GingaScreenID screen);
-
-typedef void EventBufferDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IEventBuffer* ieb);
-
 #endif /*IEVENTBUFFER_H_*/

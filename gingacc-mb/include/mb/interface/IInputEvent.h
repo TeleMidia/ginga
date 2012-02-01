@@ -81,13 +81,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IInputEvent*
-		InputEventCreator(void* event, const int symbol);
-
-typedef ::br::pucrio::telemidia::ginga::core::mb::IInputEvent*
-		UserEventCreator(int type, void* data);
-
-typedef void InputEventDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IInputEvent* ie);
-
 #endif /*IINPUTEVENT_H_*/

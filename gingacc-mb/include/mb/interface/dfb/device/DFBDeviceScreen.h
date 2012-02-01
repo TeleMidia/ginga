@@ -110,6 +110,7 @@ namespace mb {
 			set<IWindow*>* windowPool;
 			set<ISurface*>* surfacePool;
 			GingaScreenID id;
+			IInputManager* im;
 
 			pthread_mutex_t winMutex;
 			pthread_mutex_t surMutex;
@@ -172,11 +173,23 @@ namespace mb {
 			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
 
 
+			/* interfacing input */
+
+			IInputManager* getInputManager();
+			void setInputManager(IInputManager* im);
+
+			IEventBuffer* createEventBuffer();
+			IInputEvent* createInputEvent(void* event, const int symbol);
+			IInputEvent* createUserEvent(int type, void* data);
+
+
 			/* interfacing underlying multimedia system */
 
 			void* getGfxRoot();
 
+
 			/* libgingaccmbdfb internal use*/
+
 			static IDirectFBWindow* getUnderlyingWindow(GingaWindowID winId);
 
 			static IDirectFBWindow* createUnderlyingWindow(

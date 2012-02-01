@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "mb/InputManager.h"
+#include "mb/ILocalScreenManager.h"
 
 #include "config.h"
 
@@ -55,13 +56,11 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#ifndef _WIN32
-#include "../../include/mb/interface/dfb/input/DFBEventBuffer.h"
-#include "../../include/mb/interface/dfb/input/DFBGInputEvent.h"
-#else
-#include "../../include/mb/interface/dx/input/DXEventBuffer.h"
-#include "../../include/mb/interface/dx/input/DXInputEvent.h"
-#endif
+
+#include "mb/interface/dfb/input/DFBEventBuffer.h"
+#include "mb/interface/dfb/input/DFBGInputEvent.h"
+#include "mb/LocalScreenManager.h"
+
 #endif
 
 namespace br {
@@ -72,9 +71,13 @@ namespace core {
 namespace mb {
 #if HAVE_COMPSUPPORT
 	static IComponentManager* cm = IComponentManager::getCMInstance();
+	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+			cm->getObject("LocalScreenManager")))();
+#else
+	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
 #endif
 
-	InputManager::InputManager() : Thread() {
+	InputManager::InputManager(GingaScreenID screenId) : Thread() {
 		eventListeners         = new map<IInputEventListener*, set<int>*>;
 		actionsToInpListeners  = new vector<LockedAction*>;
 
@@ -86,18 +89,10 @@ namespace mb {
 		maxX          = 0;
 		maxY          = 0;
 		lastEventTime = 0;
+		myScreen      = screenId;
 
-#if HAVE_COMPSUPPORT
-		eventBuffer   = ((EventBufferCreator*)(
-				cm->getObject("DFBEventBuffer")))(0); //default screen
+		eventBuffer   = dm->createEventBuffer(myScreen);
 
-#else
-#ifndef _WIN32
-		eventBuffer   = new DFBEventBuffer(0);
-#else
-		eventBuffer   = new DXEventBuffer(0);
-#endif
-#endif
 		running       = true;
 		notifying     = false;
 		notifyingApp  = false;
@@ -108,42 +103,24 @@ namespace mb {
 
 		pthread_mutex_init(&appMutex, NULL);
 
-#ifdef _WIN32
-		pthread_mutex_init(&mutex_event_buffer, NULL);
-#endif
-
 		initializeInputIntervalTime();
 		Thread::start();
 	}
 
 	InputManager::~InputManager() {
-		if (_instance != NULL) {
-			_instance->release();
-			delete _instance;
-			_instance = NULL;
-		}
-
 		if (ief != NULL) {
 			delete ief;
 			ief = NULL;
 		}
-
-#ifdef _WIN32
-		pthread_mutex_lock(&mutex_event_buffer);
-		if (eventBuffer != NULL) {
-			delete eventBuffer;
-			eventBuffer = NULL;
-		}
-		pthread_mutex_unlock(&mutex_event_buffer);
-#endif
 	}
 
 	void InputManager::initializeInputIntervalTime() {
 		string strVar;
 		ifstream fis;
 
-		imperativeIntervalTime = 0;
+		imperativeIntervalTime  = 0;
 		declarativeIntervalTime = 0;
+
 #ifdef _WIN32
 		strVar = getUserDocAndSetPath().append("\\config\\input.cfg");
 #else
@@ -249,15 +226,6 @@ namespace mb {
 		unlock();
 	}
 
-	InputManager* InputManager::_instance = 0;
-
-	InputManager* InputManager::getInstance() {
-		if (InputManager::_instance == NULL) {
-			InputManager::_instance = new InputManager();
-		}
-		return InputManager::_instance;
-	}
-
 	void InputManager::addInputEventListener(
 		    IInputEventListener* listener, set<int>* evs) {
 
@@ -266,6 +234,8 @@ namespace mb {
 		map<IInputEventListener*, set<int>*>::iterator i;
 
 		if (!running) {
+			clog << "InputManager::addInputEventListener can't add listener ";
+			clog << "since InputManager thread is not running" << endl;
 			return;
 		}
 
@@ -426,6 +396,9 @@ namespace mb {
 		if (eventListeners->empty() || inputEvent == NULL) {
 			unlock();
 			notifying = false;
+
+			clog << "InputManger::dispatchEvent no listeners to notify '";
+			clog << inputEvent << "'" << endl;
 			return true;
 		}
 
@@ -560,15 +533,7 @@ namespace mb {
 	void InputManager::postEvent(int keyCode) {
 		IInputEvent* ie;
 
-#if HAVE_COMPSUPPORT
-		ie = ((InputEventCreator*)(cm->getObject("DFBInputEvent")))(NULL, keyCode);
-#else
-#ifndef _WIN32
-		ie = new DFBGInputEvent(keyCode);
-#else
-		ie = new DXInputEvent(keyCode);
-#endif
-#endif
+		ie = dm->createInputEvent(myScreen, NULL, keyCode);
 		postEvent(ie);
 	}
 
@@ -600,15 +565,9 @@ namespace mb {
 
 		int mouseX, mouseY;
 
-#ifdef _WIN32
-		pthread_mutex_lock(&mutex_event_buffer);
-#endif
-
 #ifdef HAVE_KINECTSUPPORT
 		if (running) {
 			ief->createFactory(InputEventFactory::FT_KINECT, this);
-			clog << "InputManager constructor can't initialize Kinect Factory:";
-			clog << endl;
 		}
 #endif
 
@@ -683,26 +642,10 @@ namespace mb {
 				inputEvent = eventBuffer->getNextEvent();
 			}
 		}
-#ifdef _WIN32
-		pthread_mutex_unlock(&mutex_event_buffer);
-#endif
 	}
 }
 }
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IInputManager*
-		createInputManager() {
-
-	return (::br::pucrio::telemidia::ginga::core::mb::
-			InputManager::getInstance());
-}
-
-extern "C" void destroyInputManager(
-		::br::pucrio::telemidia::ginga::core::mb::IInputManager* im) {
-
-	im->release();
 }

@@ -145,10 +145,6 @@ namespace player {
 		AwesomiumInfo* aInfo;
 
 #if HAVE_COMPSUPPORT
-		if (im == NULL) {
-			im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
-		}
-
 		if (dm == NULL) {
 			dm = ((LocalScreenManagerCreator*)(
 				cm->getObject("LocalScreenManager")))();
@@ -158,11 +154,9 @@ namespace player {
 		if (dm == NULL) {
 			dm = LocalScreenManager::getInstance();
 		}
-
-		if (im == NULL) {
-			im = InputManager::getInstance();
-		}
 #endif
+
+		im = dm->getInputManager(screenId);
 
 		_id++;
 		aInfo = new AwesomiumInfo(screenId, _id);
@@ -373,7 +367,7 @@ namespace player {
 	void AwesomiumHandler::setFocus(AwesomiumInfo* aInfo) {
 		if (aInfo->setFocus && !aInfo->hasFocus) {
 			aInfo->hasFocus = true;
-			im->addInputEventListener(aInfo);
+			im->addInputEventListener(aInfo, NULL);
 			if (aInfo->webView != NULL) {
 				cout << "AwesomiumHandler::setFocus focus" << endl;
 				aInfo->webView->focus();

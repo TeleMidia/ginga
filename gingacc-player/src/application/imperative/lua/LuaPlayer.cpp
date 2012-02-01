@@ -688,8 +688,6 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
 #endif //HAVE_DATAPROC
 
 #if HAVE_COMPSUPPORT
-	this->im = ((InputManagerCreator*)(cm->getObject("InputManager")))();
-
 #if HAVE_DATAPROC
     compObj = cm->getObject("EPGProcessor");
     if (compObj != NULL) {
@@ -702,16 +700,14 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
 #endif //HAVE_DATAPROC
 
 #else //HAVE_COMPSUPPORT
-
-    this->im = InputManager::getInstance();
-
 #if HAVE_DATAPROC
 	this->epgProc = EPGProcessor::getInstance();
 #endif //HAVE_DATAPROC
-
 #endif //HAVE_COMPSUPPORT
 
-    this->surface = dm->createSurface(screenId);
+	this->im = dm->getInputManager(myScreen);
+
+    this->surface = dm->createSurface(myScreen);
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
 	this->im->addApplicationInputEventListener(this);
 

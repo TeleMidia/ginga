@@ -57,6 +57,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::util;
 
 #include "interface/InputEventFactory.h"
+
+#include "IMBDefs.h"
 #include "IInputManager.h"
 
 #include <iostream>
@@ -79,7 +81,6 @@ namespace core {
 namespace mb {
 	class InputManager : public IInputManager, public Thread {
 		private:
-			static InputManager* _instance;
 			map<IInputEventListener*, set<int>*>* eventListeners;
 			vector<LockedAction*>* actionsToInpListeners;
 			set<IInputEventListener*>* applicationListeners;
@@ -92,6 +93,7 @@ namespace mb {
 			double imperativeIntervalTime;
 			double declarativeIntervalTime;
 			InputEventFactory* ief;
+			GingaScreenID myScreen;
 
 			int currentXAxis;
 			int currentYAxis;
@@ -103,14 +105,14 @@ namespace mb {
 
 			pthread_mutex_t appMutex;
 
-			InputManager();
+		public:
+			InputManager(GingaScreenID screenId);
 			virtual ~InputManager();
 
 			void initializeInputIntervalTime();
 
-		public:
 			void release();
-			static InputManager* getInstance();
+
 			void addInputEventListener(
 					IInputEventListener* listener, set<int>* events=NULL);
 
@@ -137,10 +139,6 @@ namespace mb {
 
 		private:
 			void run();
-
-#ifdef _WIN32
-			pthread_mutex_t mutex_event_buffer;
-#endif
 	};
 }
 }

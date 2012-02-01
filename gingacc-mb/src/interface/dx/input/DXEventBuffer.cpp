@@ -368,13 +368,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IEventBuffer*
-		createDXEventBuffer() {
-	return (new ::br::pucrio::telemidia::ginga::core::mb::DXEventBuffer());
-}
-
-extern "C" void destroyDXEventBuffer(
-		::br::pucrio::telemidia::ginga::core::mb::IEventBuffer* ieb) {
-	delete ieb;
-}

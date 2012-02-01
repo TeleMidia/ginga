@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 #endif
 
 #include "mb/LocalScreenManager.h"
+#include "mb/InputManager.h"
 
 extern "C" {
 #include "string.h"
@@ -492,6 +493,60 @@ namespace mb {
 		}
 
 		return uSur;
+	}
+
+
+	/* interfacing input */
+	IInputManager* LocalScreenManager::getInputManager(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+		IInputManager* iManager = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			iManager = screen->getInputManager();
+			if (iManager == NULL) {
+				iManager = new InputManager(screenId);
+				screen->setInputManager(iManager);
+			}
+		}
+
+		return iManager;
+	}
+
+	IEventBuffer* LocalScreenManager::createEventBuffer(GingaScreenID screenId){
+		IDeviceScreen* screen;
+		IEventBuffer* buffer = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			buffer = screen->createEventBuffer();
+		}
+
+		return buffer;
+	}
+
+	IInputEvent* LocalScreenManager::createInputEvent(
+			GingaScreenID screenId, void* event, const int symbol) {
+
+		IDeviceScreen* screen;
+		IInputEvent* iEvent = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			iEvent = screen->createInputEvent(event, symbol);
+		}
+
+		return iEvent;
+	}
+
+	IInputEvent* LocalScreenManager::createUserEvent(
+			GingaScreenID screenId, int type, void* data) {
+
+		IDeviceScreen* screen;
+		IInputEvent* iEvent = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			iEvent = screen->createUserEvent(type, data);
+		}
+
+		return iEvent;
 	}
 
 

@@ -59,6 +59,10 @@ http://www.telemidia.puc-rio.br
 #include "interface/IFontProvider.h"
 #include "interface/IImageProvider.h"
 
+#include "IInputManager.h"
+#include "interface/IInputEvent.h"
+#include "interface/IEventBuffer.h"
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -164,6 +168,17 @@ namespace mb {
 
 			virtual ISurface* createRenderedSurfaceFromImageFile(
 					GingaScreenID screenId, const char* mrl)=0;
+
+
+			/* Interfacing input */
+			virtual IInputManager* getInputManager(GingaScreenID screenId)=0;
+			virtual IEventBuffer* createEventBuffer(GingaScreenID screenId)=0;
+
+			virtual IInputEvent* createInputEvent(
+					GingaScreenID screenId, void* event, const int symbol)=0;
+
+			virtual IInputEvent* createUserEvent(
+					GingaScreenID screenId, int type, void* data)=0;
 	};
 }
 }
