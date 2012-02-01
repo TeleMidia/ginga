@@ -231,16 +231,19 @@ namespace mb {
 			int resumePos;
 			int startPos;
 			static bool _ffmpegInitialized;
+			string symbol;
 
 		public:
 			FFmpegVideoProvider(GingaScreenID screenId, const char* mrl);
-
 			virtual ~FFmpegVideoProvider();
 
 		private:
 			bool initializeFFmpeg(const char* mrl);
 
 		public:
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void setAVPid(int aPid, int vPid);
 			void* getContent();
 			void feedBuffers();

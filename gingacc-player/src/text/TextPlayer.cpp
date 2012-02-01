@@ -89,11 +89,8 @@ namespace player {
 		}
 
    		if (font != NULL) {
-   			delete font;
+   			dm->releaseFontProvider(myScreen, font);
    			font = NULL;
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("FontProvider");
-#endif
    		}
    	}
 
@@ -133,16 +130,7 @@ namespace player {
 		IFontProvider* font = NULL;
 		int width = 0;
 
-#if HAVE_COMPSUPPORT
-		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-				screenId, fontUri.c_str(), fontSize);
-#else
-#ifndef _WIN32
-		font = new DFBFontProvider(screenId, fontUri.c_str(), fontSize);
-#else
-		font = new DXFontProvider(screenId, fontUri.c_str(), fontSize);
-#endif
-#endif
+		font = dm->createFontProvider(screenId, fontUri.c_str(), fontSize);
 
 		if (fontColor == NULL) {
 			fontColor = new Color("black");
@@ -156,10 +144,8 @@ namespace player {
 					text.c_str(), strlen((const char*)(text.c_str())));
 
 			font->playOver((void*)s, text.c_str());
-			delete font;
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("FontProvider");
-#endif
+
+			dm->releaseFontProvider(screenId, font);
 			font = NULL;
 		}
 
@@ -178,24 +164,11 @@ namespace player {
 
 		this->fontUri = someUri;
 		if (font != NULL) {
-			delete font;
+			dm->releaseFontProvider(myScreen, font);
 			font = NULL;
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("FontProvider");
-#endif
 		}
 
-#if HAVE_COMPSUPPORT
-		font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-				myScreen, someUri.c_str(), fontSize);
-#else
-#ifndef _WIN32
-		font = new DFBFontProvider(myScreen, someUri.c_str(), fontSize);
-#else
-		font = new DXFontProvider(myScreen, someUri.c_str(), fontSize);
-#endif
-#endif
-
+		font = dm->createFontProvider(myScreen, someUri.c_str(), fontSize);
 		if (font == NULL || font->getContent() == NULL) {
 			clog << "TextPlayer::setFont Warning! Can't create Font '";
 			clog << someUri << "'" << endl;

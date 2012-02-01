@@ -54,7 +54,12 @@ http://www.telemidia.puc-rio.br
 
 #include "IProviderListener.h"
 
+extern "C" {
 #include <stdint.h>
+}
+
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -65,6 +70,8 @@ namespace mb {
 	class IContinuousMediaProvider {
 		public:
 			virtual ~IContinuousMediaProvider(){};
+			virtual void setLoadSymbol(string symbol)=0;
+			virtual string getLoadSymbol()=0;
 			virtual void setAVPid(int aPid, int vPid)=0;
 			virtual void feedBuffers()=0;
 			virtual ISurface* getPerfectSurface()=0;

@@ -67,6 +67,14 @@ namespace mb {
 
 	}
 
+	void TermVideoProvider::setLoadSymbol(string symbol) {
+
+	}
+
+	string TermVideoProvider::getLoadSymbol() {
+		return "";
+	}
+
 	void TermVideoProvider::setAVPid(int aPid, int vPid) {
 
 	}

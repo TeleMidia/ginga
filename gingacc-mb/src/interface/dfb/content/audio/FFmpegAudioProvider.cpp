@@ -900,6 +900,14 @@ namespace mb {
 		return true;
 	}
 
+	void FFmpegAudioProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string FFmpegAudioProvider::getLoadSymbol() {
+		return this->symbol;
+	}
+
 	void FFmpegAudioProvider::setAVPid(int aPid, int vPid) {
 
 	}

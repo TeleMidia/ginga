@@ -74,10 +74,15 @@ namespace mb {
 		protected:
 			IDirectFBVideoProvider* decoder;
 			GingaScreenID myScreen;
+			string symbol;
 
 		public:
 			DFBAudioProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~DFBAudioProvider();
+
+			virtual void setLoadSymbol(string symbol);
+			virtual string getLoadSymbol();
+
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			void* getContent();

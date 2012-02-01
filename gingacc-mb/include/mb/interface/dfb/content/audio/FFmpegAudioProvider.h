@@ -206,6 +206,7 @@ namespace mb {
 			int resumePos;
 			int startPos;
 			static bool _ffmpegInitialized;
+			string symbol;
 
 		public:
 			FFmpegAudioProvider(GingaScreenID screenId, const char* mrl);
@@ -215,6 +216,9 @@ namespace mb {
 			bool initializeFFmpeg(const char* mrl);
 
 		public:
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void setAVPid(int aPid, int vPid);
 			void* getContent();
 			void feedBuffers();

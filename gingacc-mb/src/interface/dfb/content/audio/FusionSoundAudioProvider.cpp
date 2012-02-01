@@ -142,6 +142,14 @@ namespace mb {
 		}
 	}
 
+	void FusionSoundAudioProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string FusionSoundAudioProvider::getLoadSymbol() {
+		return this->symbol;
+	}
+
 	void* FusionSoundAudioProvider::getContent() {
 		return decoder;
 	}

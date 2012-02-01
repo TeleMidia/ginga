@@ -66,6 +66,9 @@ namespace mb {
 			TermAudioProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~TermAudioProvider();
 
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void setAVPid(int aPid, int vPid);
 			void feedBuffers();
 			ISurface* getPerfectSurface();

@@ -67,6 +67,15 @@ namespace mb {
 
 	}
 
+
+	void TermAudioProvider::setLoadSymbol(string symbol) {
+
+	}
+
+	string TermAudioProvider::getLoadSymbol() {
+		return "";
+	}
+
 	void TermAudioProvider::setAVPid(int aPid, int vPid) {
 
 	}

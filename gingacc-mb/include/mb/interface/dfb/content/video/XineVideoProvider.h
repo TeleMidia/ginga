@@ -119,6 +119,7 @@ namespace mb {
 			dfb_visual_t visual;
 			int resumePos;
 			int startPos;
+			string symbol;
 
 		public:
 			XineVideoProvider(GingaScreenID screenId, const char* mrl);
@@ -129,6 +130,9 @@ namespace mb {
 			void initializeAudio();
 
 		public:
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void setAVPid(int aPid, int vPid);
 			void* getContent();
 			void feedBuffers();

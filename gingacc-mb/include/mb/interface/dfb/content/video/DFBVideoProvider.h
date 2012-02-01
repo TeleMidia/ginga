@@ -85,6 +85,7 @@ namespace mb {
 		protected:
 			DFBRendererContainer* rContainer;
 			GingaScreenID myScreen;
+			string symbol;
 
 		public:
 			DFBVideoProvider(GingaScreenID screenId, const char* mrl);
@@ -93,6 +94,11 @@ namespace mb {
 					GingaScreenID screenId, IDirectFBVideoProvider* dec);
 
 			virtual ~DFBVideoProvider();
+
+
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void* getContent();
 			virtual void setAVPid(int aPid, int vPid){};
 			void feedBuffers();

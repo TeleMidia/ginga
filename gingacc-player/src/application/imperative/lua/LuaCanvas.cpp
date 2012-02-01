@@ -113,8 +113,10 @@ static int l_new (lua_State* L)
 		// IMAGE
 		// [ canvas | img_path ]
 		case LUA_TSTRING: {
-			sfc = ImagePlayer::renderImage(
-					GETPLAYER(L)->getScreenId(), (char*)luaL_checkstring(L, 2));
+			sfc = GETPLAYER(L)->getScreenManager()->
+					createRenderedSurfaceFromImageFile(
+							GETPLAYER(L)->getScreenId(),
+							(char*)luaL_checkstring(L, 2));
 
 			break;
 		}
@@ -242,19 +244,9 @@ static int l_attrFont (lua_State* L)
     //clog << "PATH: " << path << endl;
 
 	IFontProvider* font = NULL;
-#if HAVE_COMPSUPPORT
-	font = ((FontProviderCreator*)(cm->getObject("FontProvider")))(
-			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
-#else
-#ifndef _WIN32
-	font = new DFBFontProvider(
-			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
 
-#else
-	font = new DXFontProvider(
+	font = GETPLAYER(L)->getScreenManager()->createFontProvider(
 			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
-#endif
-#endif
 
 	if (font == NULL) luaL_error(L, "invalid font: %s", path);
 	canvas->sfc->setFont((void*)font);

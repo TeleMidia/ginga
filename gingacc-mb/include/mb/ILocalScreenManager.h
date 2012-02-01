@@ -55,6 +55,10 @@ http://www.telemidia.puc-rio.br
 #include "interface/IWindow.h"
 #include "interface/ISurface.h"
 
+#include "interface/IContinuousMediaProvider.h"
+#include "interface/IFontProvider.h"
+#include "interface/IImageProvider.h"
+
 #include <vector>
 #include <string>
 using namespace std;
@@ -108,6 +112,9 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds)=0;
 
+
+			/* Interfacing output */
+
 			virtual IWindow* createWindow(
 					GingaScreenID screenId, int x, int y, int w, int h)=0;
 
@@ -127,6 +134,36 @@ namespace mb {
 
 			virtual void releaseSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
+
+
+			/* Interfacing content */
+
+			virtual IContinuousMediaProvider* createContinuousMediaProvider(
+					GingaScreenID screenId,
+					const char* mrl,
+					bool hasVisual,
+					bool isRemote)=0;
+
+			virtual void releaseContinuousMediaProvider(
+					GingaScreenID screenId,
+					IContinuousMediaProvider* provider)=0;
+
+			virtual IFontProvider* createFontProvider(
+					GingaScreenID screenId,
+					const char* mrl,
+					int fontSize)=0;
+
+			virtual void releaseFontProvider(
+					GingaScreenID screenId, IFontProvider* provider)=0;
+
+			virtual IImageProvider* createImageProvider(
+					GingaScreenID screenId, const char* mrl)=0;
+
+			virtual void releaseImageProvider(
+					GingaScreenID screenId, IImageProvider* provider)=0;
+
+			virtual ISurface* createRenderedSurfaceFromImageFile(
+					GingaScreenID screenId, const char* mrl)=0;
 	};
 }
 }

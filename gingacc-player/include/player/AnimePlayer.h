@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef ANIMEPLAYER_H_
 #define ANIMEPLAYER_H_
 
-#include "mb/interface/IImageProvider.h"
+#include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -69,6 +69,7 @@ namespace core {
 namespace player {
 	class AnimePlayer : public Thread {
 		protected:
+			static ILocalScreenManager* dm;
 			vector<IImageProvider*>* anime;
 			GingaScreenID myScreen;
 			double dur;

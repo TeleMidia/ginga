@@ -85,10 +85,8 @@ namespace player {
 
 			virtual void setPropertyValue(string name, string value);
 
-			static ISurface* prepareSurface(
-					IImageProvider* provider, string mrl);
-
-			static ISurface* renderImage(GingaScreenID screenId, string mrl);
+		private:
+			ISurface* prepareSurface(IImageProvider* provider, string mrl);
 	};
 }
 }

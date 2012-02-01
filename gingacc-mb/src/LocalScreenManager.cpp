@@ -321,6 +321,8 @@ namespace mb {
 		}
 	}
 
+	/* interfacing output */
+
 	IWindow* LocalScreenManager::createWindow(
 			GingaScreenID screenId, int x, int y, int w, int h) {
 
@@ -403,6 +405,97 @@ namespace mb {
 			screen->releaseSurface(sur);
 		}
 	}
+
+	/* interfacing content */
+
+	IContinuousMediaProvider* LocalScreenManager::createContinuousMediaProvider(
+			GingaScreenID screenId,
+			const char* mrl,
+			bool hasVisual,
+			bool isRemote) {
+
+		IDeviceScreen* screen;
+		IContinuousMediaProvider* provider = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			provider = screen->createContinuousMediaProvider(
+					mrl, hasVisual, isRemote);
+		}
+
+		return provider;
+	}
+
+	void LocalScreenManager::releaseContinuousMediaProvider(
+			GingaScreenID screenId, IContinuousMediaProvider* provider) {
+
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->releaseContinuousMediaProvider(provider);
+		}
+	}
+
+	IFontProvider* LocalScreenManager::createFontProvider(
+			GingaScreenID screenId, const char* mrl, int fontSize) {
+
+		IDeviceScreen* screen;
+		IFontProvider* provider = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			provider = screen->createFontProvider(mrl, fontSize);
+		}
+
+		return provider;
+	}
+
+	void LocalScreenManager::releaseFontProvider(
+			GingaScreenID screenId, IFontProvider* provider) {
+
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->releaseFontProvider(provider);
+		}
+	}
+
+	IImageProvider* LocalScreenManager::createImageProvider(
+			GingaScreenID screenId, const char* mrl) {
+
+		IDeviceScreen* screen;
+		IImageProvider* provider = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			provider = screen->createImageProvider(mrl);
+		}
+
+		return provider;
+	}
+
+	void LocalScreenManager::releaseImageProvider(
+			GingaScreenID screenId, IImageProvider* provider) {
+
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->releaseImageProvider(provider);
+		}
+	}
+
+	ISurface* LocalScreenManager::createRenderedSurfaceFromImageFile(
+			GingaScreenID screenId, const char* mrl) {
+
+		IDeviceScreen* screen;
+		ISurface* uSur = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			uSur = screen->createRenderedSurfaceFromImageFile(mrl);
+		}
+
+		return uSur;
+	}
+
+
+	/* private functions */
 
 	void LocalScreenManager::addScreen(
 			GingaScreenID screenId, IDeviceScreen* screen) {

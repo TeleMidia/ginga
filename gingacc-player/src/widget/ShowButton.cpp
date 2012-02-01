@@ -57,6 +57,13 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+#if HAVE_COMPSUPPORT
+	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+			cm->getObject("LocalScreenManager")))();
+#else
+	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
+#endif
+
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
 		myScreen       = screenId;
 		status         = NONE;
@@ -75,13 +82,6 @@ namespace player {
 
 	void ShowButton::initializeWindow() {
 		int x = 0, y, w, h;
-		ILocalScreenManager* dm = NULL;
-#if HAVE_COMPSUPPORT
-		dm = ((LocalScreenManagerCreator*)(
-				cm->getObject("LocalScreenManager")))();
-#else
-		dm = LocalScreenManager::getInstance();
-#endif
 
 		if (dm != NULL) {
 			x = (int)(dm->getDeviceWidth(myScreen) - 70);
@@ -137,7 +137,8 @@ namespace player {
 	void ShowButton::render(string mrl) {
 		ISurface* surface;
 
-		surface = ImagePlayer::renderImage(myScreen, mrl);
+		surface = dm->createRenderedSurfaceFromImageFile(myScreen, mrl.c_str());
+
 		lock();
 		if (win == NULL) {
 			initializeWindow();
@@ -159,7 +160,8 @@ namespace player {
 			case PAUSE:
 				clog << "ShowButton::run PAUSE" << endl;
 #ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resources\\images\\pauseButton.png"));
+				render(getUserDocAndSetPath().append(
+						"\\resources\\images\\pauseButton.png"));
 #else
 				render("/usr/local/etc/ginga/files/img/button/pauseButton.png");
 #endif

@@ -1125,6 +1125,14 @@ namespace mb {
 		return true;
 	}
 
+	void FFmpegVideoProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string FFmpegVideoProvider::getLoadSymbol() {
+		return this->symbol;
+	}
+
 	void FFmpegVideoProvider::setAVPid(int aPid, int vPid) {
 
 	}

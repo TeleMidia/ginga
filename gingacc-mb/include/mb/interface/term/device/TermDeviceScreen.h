@@ -84,6 +84,10 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
+
+
+			/* interfacing output */
+
 			IWindow* createWindow(int x, int y, int w, int h);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			void releaseWindow(IWindow* win);
@@ -92,6 +96,28 @@ namespace mb {
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
 			void releaseSurface(ISurface* sur);
+
+
+			/* interfacing content */
+
+			IContinuousMediaProvider* createContinuousMediaProvider(
+					const char* mrl, bool hasVisual, bool isRemote);
+
+			void releaseContinuousMediaProvider(
+					IContinuousMediaProvider* provider);
+
+			IFontProvider* createFontProvider(
+					const char* mrl, int fontSize);
+
+			void releaseFontProvider(IFontProvider* provider);
+
+			IImageProvider* createImageProvider(const char* mrl);
+			void releaseImageProvider(IImageProvider* provider);
+
+			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
+
+
+			/* interfacing underlying multimedia system */
 
 			void* getGfxRoot();
 	};

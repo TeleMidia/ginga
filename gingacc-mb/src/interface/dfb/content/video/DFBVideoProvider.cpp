@@ -128,6 +128,14 @@ namespace mb {
 #endif //DFBTM_PATCH
 	}
 
+	void DFBVideoProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string DFBVideoProvider::getLoadSymbol() {
+		return this->symbol;
+	}
+
 	void* DFBVideoProvider::getContent() {
 		return (void*)(rContainer->dec);
 	}

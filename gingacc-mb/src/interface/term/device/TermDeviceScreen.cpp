@@ -145,6 +145,44 @@ namespace mb {
 
 	}
 
+
+	IContinuousMediaProvider* TermDeviceScreen::createContinuousMediaProvider(
+			const char* mrl, bool hasVisual, bool isRemote) {
+
+		return NULL;
+	}
+
+	void TermDeviceScreen::releaseContinuousMediaProvider(
+			IContinuousMediaProvider* provider) {
+
+
+	}
+
+	IFontProvider* TermDeviceScreen::createFontProvider(
+			const char* mrl, int fontSize) {
+
+		return NULL;
+	}
+
+	void TermDeviceScreen::releaseFontProvider(IFontProvider* provider) {
+
+	}
+
+	IImageProvider* TermDeviceScreen::createImageProvider(const char* mrl) {
+		return NULL;
+	}
+
+	void TermDeviceScreen::releaseImageProvider(IImageProvider* provider) {
+
+	}
+
+	ISurface* TermDeviceScreen::createRenderedSurfaceFromImageFile(
+			const char* mrl) {
+
+		return NULL;
+	}
+
+
 	void* TermDeviceScreen::getGfxRoot() {
 		return NULL;
 	}

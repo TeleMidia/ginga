@@ -158,12 +158,4 @@ typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer* PlayerCreator(
 typedef void PlayerDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IPlayer* player);
 
-typedef ISurface* SurfaceHelper(IImageProvider* provider, string mrl);
-typedef ISurface* ImageRenderer(string mrl);
-typedef int TextRenderer(
-		GingaScreenID screenId,
-		ISurface* s,
-		string text, string fontUri, int fontSize,
-		::br::pucrio::telemidia::util::IColor* fontColor);
-
 #endif /*__PlayerProcess_h_*/

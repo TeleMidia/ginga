@@ -63,6 +63,13 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+#if HAVE_COMPSUPPORT
+	ILocalScreenManager* AnimePlayer::dm = ((LocalScreenManagerCreator*)(
+			cm->getObject("LocalScreenManager")))();
+#else
+	ILocalScreenManager* AnimePlayer::dm  = LocalScreenManager::getInstance();
+#endif
+
 	AnimePlayer::AnimePlayer(
 			GingaScreenID screenId, vector<string>* mrls) : Thread() {
 
@@ -79,16 +86,8 @@ namespace player {
 		while (i != mrls->end()) {
 			mrl = *i;
 			if (fileExists(mrl)) {
-#if HAVE_COMPSUPPORT
-				anime->push_back(((ImageProviderCreator*)(cm->getObject(
-						"ImageProvider")))(myScreen, mrl.c_str()));
-#else
-#ifndef _WIN32
-				anime->push_back(new DFBImageProvider(myScreen, mrl.c_str()));
-#else
-				anime->push_back(new DXImageProvider(myScreen, mrl.c_str()));
-#endif
-#endif
+				anime->push_back(dm->createImageProvider(
+						myScreen, mrl.c_str()));
 			}
 			++i;
 		}
@@ -115,12 +114,7 @@ namespace player {
 			while (i != anime->end()) {
 				provider = *i;
 				if (provider != NULL) {
-					delete provider;
-					provider = NULL;
-
-#if HAVE_COMPSUPPORT
-					cm->releaseComponentFromObject("ImageProvider");
-#endif
+					dm->releaseImageProvider(myScreen, provider);
 				}
 				++i;
 			}

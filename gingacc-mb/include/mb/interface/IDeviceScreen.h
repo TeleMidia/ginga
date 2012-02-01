@@ -52,6 +52,10 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/IMBDefs.h"
 
+#include "IContinuousMediaProvider.h"
+#include "IFontProvider.h"
+#include "IImageProvider.h"
+
 #include "IWindow.h"
 #include "ISurface.h"
 
@@ -85,6 +89,9 @@ namespace mb {
 			virtual void mergeIds(
 					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
 
+
+			/* interfacing output */
+
 			virtual IWindow* createWindow(int x, int y, int w, int h)=0;
 			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
 			virtual void releaseWindow(IWindow* win)=0;
@@ -93,6 +100,29 @@ namespace mb {
 			virtual ISurface* createSurface(int w, int h)=0;
 			virtual ISurface* createSurfaceFrom(void* underlyingSurface)=0;
 			virtual void releaseSurface(ISurface* sur)=0;
+
+
+			/* interfacing content */
+
+			virtual IContinuousMediaProvider* createContinuousMediaProvider(
+					const char* mrl, bool hasVisual, bool isRemote)=0;
+
+			virtual void releaseContinuousMediaProvider(
+					IContinuousMediaProvider* provider)=0;
+
+			virtual IFontProvider* createFontProvider(
+					const char* mrl, int fontSize)=0;
+
+			virtual void releaseFontProvider(IFontProvider* provider)=0;
+
+			virtual IImageProvider* createImageProvider(const char* mrl)=0;
+			virtual void releaseImageProvider(IImageProvider* provider)=0;
+
+			virtual ISurface* createRenderedSurfaceFromImageFile(
+					const char* mrl)=0;
+
+
+			/* interfacing underlying multimedia system */
 
 			virtual void* getGfxRoot()=0;
 	};

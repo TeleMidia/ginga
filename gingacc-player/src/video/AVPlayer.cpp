@@ -1168,47 +1168,9 @@ namespace player {
 		}
 
 		if (p->provider == NULL && (fileExists(p->mrl) || isRemote)) {
-#if HAVE_COMPSUPPORT
-			if (p->hasVisual) {
-				p->pSym = "VideoProvider";
+			p->provider = dm->createContinuousMediaProvider(
+					p->myScreen, p->mrl.c_str(), p->hasVisual, isRemote);
 
-			} else {
-				p->pSym = "AudioProvider";
-			}
-
-			if (isRemote) {
-#if HAVE_XINEPROVIDER
-				p->pSym = "XineVideoProvider";
-
-#elif HAVE_FFMPEGPROVIDER
-				p->pSym = "FFmpegVideoProvider";
-#endif
-			}
-
-			p->provider = ((CMPCreator*)(cm->getObject(
-					p->pSym)))(p->myScreen, p->mrl.c_str());
-
-			clog << "AVPlayer::createProvider provider created" << endl;
-
-#else
-			if (p->hasVisual) {
-#ifndef _WIN32
-				p->provider = new DFBVideoProvider(p->myScreen, p->mrl.c_str());
-#else
-				p->provider = new DXVideoProvider(p->myScreen, p->mrl.c_str());
-#endif
-
-			} else {
-#ifndef _WIN32
-				p->provider = new FusionSoundAudioProvider(
-						p->myScreen, p->mrl.c_str());
-#else
-				p->provider = new DXAudioProvider(p->myScreen, p->mrl.c_str());
-#endif
-			}
-#endif
-
-			clog << "AVPlayer::createProvider call createFrame" << endl;
 			p->surface = p->createFrame();
 		}
 
@@ -1614,26 +1576,8 @@ namespace player {
 		if (mainAV) {
 			running = true;
 
-#if HAVE_COMPSUPPORT
-#if HAVE_XINEPROVIDER
-			pSym = "XineVideoProvider";
-
-#elif HAVE_FFMPEGPROVIDER
-			pSym = "FFmpegVideoProvider";
-#else
-			pSym = "VideoProvider";
-#endif
-
-			this->provider = ((CMPCreator*)(cm->getObject(pSym)))(
-					myScreen, mrl.c_str());
-
-#else
-#ifndef _WIN32
-			this->provider = new XineVideoProvider(myScreen, mrl.c_str());
-#else
-			this->provider = new DXVideoProvider(myScreen, mrl.c_str());
-#endif
-#endif
+			this->provider = dm->createContinuousMediaProvider(
+					myScreen, mrl.c_str(), true, true);
 
 			unlock();
 			this->surface = createFrame();

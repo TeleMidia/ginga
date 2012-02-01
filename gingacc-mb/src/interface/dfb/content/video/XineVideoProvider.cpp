@@ -253,6 +253,14 @@ namespace mb {
 				rContainer->stream, XINE_PARAM_AUDIO_AMP_LEVEL, 200);
 	}
 
+	void XineVideoProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string XineVideoProvider::getLoadSymbol() {
+		return this->symbol;
+	}
+
 	void XineVideoProvider::setAVPid(int aPid, int vPid) {
 		xine_event_t event;
 		xine_pids_data_t data;

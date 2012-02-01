@@ -62,6 +62,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+#if HAVE_COMPSUPPORT
+	IComponentManager* DFBDeviceScreen::cm = IComponentManager::getCMInstance();
+#endif
 
 const unsigned int DFBDeviceScreen::DSA_UNKNOWN = 0;
 const unsigned int DFBDeviceScreen::DSA_4x3     = 1;
@@ -327,6 +330,9 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		}
 	}
 
+
+	/* interfacing output */
+
 	IWindow* DFBDeviceScreen::createWindow(int x, int y, int w, int h) {
 		IWindow* iWin;
 
@@ -420,6 +426,135 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 			pthread_mutex_unlock(&surMutex);
 		}
 	}
+
+
+	/* interfacing content */
+	IContinuousMediaProvider* DFBDeviceScreen::createContinuousMediaProvider(
+			const char* mrl, bool hasVisual, bool isRemote) {
+
+		IContinuousMediaProvider* provider;
+		string strSym;
+
+#if HAVE_COMPSUPPORT
+		if (hasVisual) {
+			strSym = "DFBVideoProvider";
+
+		} else {
+			strSym = "AudioProvider";
+		}
+
+		if (isRemote) {
+#if HAVE_XINEPROVIDER
+			strSym = "XineVideoProvider";
+
+#elif HAVE_FFMPEGPROVIDER
+			strSym = "FFmpegVideoProvider";
+#endif
+		}
+
+		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
+
+#else //!HAVE_COMPSUPPORT
+		if (>hasVisual) {
+			provider = new DFBVideoProvider(id, mrl);
+
+		} else {
+			provider = new FusionSoundAudioProvider(id, mrl);
+		}
+#endif
+
+		provider->setLoadSymbol(strSym);
+		return provider;
+	}
+
+	void DFBDeviceScreen::releaseContinuousMediaProvider(
+			IContinuousMediaProvider* provider) {
+
+		string strSym = provider->getLoadSymbol();
+
+		delete provider;
+		provider = NULL;
+
+#if HAVE_COMPSUPPORT
+		cm->releaseComponentFromObject(strSym);
+#endif
+	}
+
+	IFontProvider* DFBDeviceScreen::createFontProvider(
+			const char* mrl, int fontSize) {
+
+		IFontProvider* provider = NULL;
+
+#if HAVE_COMPSUPPORT
+		provider = ((FontProviderCreator*)(cm->getObject("DFBFontProvider")))(
+				id, mrl, fontSize);
+
+#else
+		provider = new DFBFontProvider(id, mrl, fontSize);
+#endif
+
+		return provider;
+	}
+
+	void DFBDeviceScreen::releaseFontProvider(IFontProvider* provider) {
+		delete provider;
+		provider = NULL;
+
+#if HAVE_COMPSUPPORT
+		cm->releaseComponentFromObject("DFBFontProvider");
+#endif
+	}
+
+	IImageProvider* DFBDeviceScreen::createImageProvider(const char* mrl) {
+		IImageProvider* provider = NULL;
+
+#if HAVE_COMPSUPPORT
+		provider = ((ImageProviderCreator*)(cm->getObject(
+				"DFBImageProvider")))(id, mrl);
+#else
+		provider = new DFBImageProvider(id, mrl);
+#endif
+
+		return provider;
+	}
+
+	void DFBDeviceScreen::releaseImageProvider(IImageProvider* provider) {
+		delete provider;
+		provider = NULL;
+
+#if HAVE_COMPSUPPORT
+		cm->releaseComponentFromObject("DFBImageProvider");
+#endif
+	}
+
+	ISurface* DFBDeviceScreen::createRenderedSurfaceFromImageFile(
+			const char* mrl) {
+
+		ISurface* iSur           = NULL;
+		IImageProvider* provider = NULL;
+		string strMrl            = "";
+
+		provider = createImageProvider(mrl);
+
+		if (provider != NULL) {
+			strMrl.assign(mrl);
+			if (strMrl.length() > 4 &&
+					strMrl.substr(strMrl.length() - 4, 4) == ".gif") {
+
+				iSur = provider->prepare(true);
+
+			} else {
+				iSur = provider->prepare(false);
+			}
+		}
+
+		delete provider;
+
+		return iSur;
+	}
+
+
+	/* interfacing underlying multimedia system */
 
 	void* DFBDeviceScreen::getGfxRoot() {
 		return (void*)dfb;

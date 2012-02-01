@@ -132,6 +132,7 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);
 
+			/* Interfacing output */
 			IWindow* createWindow(
 					GingaScreenID screenId, int x, int y, int w, int h);
 
@@ -148,6 +149,34 @@ namespace mb {
 					GingaScreenID screenId, void* underlyingSurface);
 
 			void releaseSurface(GingaScreenID screenId, ISurface* surface);
+
+			/* Interfacing content */
+			IContinuousMediaProvider* createContinuousMediaProvider(
+					GingaScreenID screenId,
+					const char* mrl,
+					bool hasVisual,
+					bool isRemote);
+
+			void releaseContinuousMediaProvider(
+					GingaScreenID screenId,
+					IContinuousMediaProvider* provider);
+
+			IFontProvider* createFontProvider(
+					GingaScreenID screenId,
+					const char* mrl,
+					int fontSize);
+
+			void releaseFontProvider(
+					GingaScreenID screenId, IFontProvider* provider);
+
+			IImageProvider* createImageProvider(
+					GingaScreenID screenId, const char* mrl);
+
+			void releaseImageProvider(
+					GingaScreenID screenId, IImageProvider* provider);
+
+			ISurface* createRenderedSurfaceFromImageFile(
+					GingaScreenID screenId, const char* mrl);
 
 		private:
 			void addScreen(GingaScreenID screenId, IDeviceScreen* screen);

@@ -96,16 +96,7 @@ namespace player {
 		}
 
 		if (fileExists(mrl)) {
-#if HAVE_COMPSUPPORT
-			provider = ((ImageProviderCreator*)(cm->getObject(
-					"ImageProvider")))(myScreen, mrl.c_str());
-#else
-#ifndef _WIN32
-			provider = new DFBImageProvider(myScreen, mrl.c_str());
-#else
-			provider = new DXImageProvider(myScreen, mrl.c_str());
-#endif
-#endif
+			provider = dm->createImageProvider(myScreen, mrl.c_str());
 
 		} else {
 			if (!isAbsolutePath(mrl)) {
@@ -147,18 +138,9 @@ namespace player {
 					clog << "'" << endl;
 
 					if (fileExists(newMrl)) {
-#if HAVE_COMPSUPPORT
-						provider = ((ImageProviderCreator*)(cm->getObject(
-								"ImageProvider")))(myScreen, newMrl.c_str());
-#else
-#ifndef _WIN32
-						provider = new DFBImageProvider(
+						provider = dm->createImageProvider(
 								myScreen, newMrl.c_str());
-#else
-						provider = new DXImageProvider(
-								myScreen, newMrl.c_str());
-#endif
-#endif
+
 					} else {
 						provider = NULL;
 						clog << "ImagePlayer::ImagePlayer Warning! File ";
@@ -176,18 +158,13 @@ namespace player {
 		}
 
 		if (provider != NULL) {
-			surface = ImagePlayer::prepareSurface(provider, mrl);
+			surface = prepareSurface(provider, mrl);
 		}
 	}
 
 	ImagePlayer::~ImagePlayer() {
 		if (provider != NULL) {
-			delete provider;
-			provider = NULL;
-
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("ImageProvider");
-#endif
+			dm->releaseImageProvider(myScreen, provider);
 		}
 	}
 
@@ -239,79 +216,11 @@ namespace player {
 
 		return renderedSurface;
 	}
-
-	ISurface* ImagePlayer::renderImage(GingaScreenID screenId, string mrl) {
-		IImageProvider* imgProvider = NULL;
-		ISurface* renderedSurface = NULL;
-		string newMrl;
-
-		if (fileExists(mrl)) {
-#if HAVE_COMPSUPPORT
-			imgProvider = ((ImageProviderCreator*)(cm->getObject(
-					"ImageProvider")))(screenId, mrl.c_str());
-#else
-#ifndef _WIN32
-			imgProvider = new DFBImageProvider(screenId, mrl.c_str());
-#else
-			imgProvider = new DXImageProvider(screenId, mrl.c_str());
-#endif
-
-#endif
-		} else {
-			if (!isAbsolutePath(mrl)) {
-				newMrl = updatePath(getDocumentPath() + "/" + mrl);
-				if (fileExists(newMrl)) {
-#if HAVE_COMPSUPPORT
-					imgProvider = ((ImageProviderCreator*)(cm->getObject(
-							"ImageProvider")))(screenId, newMrl.c_str());
-#else
-#ifndef _WIN32
-					imgProvider = new DFBImageProvider(
-							screenId, newMrl.c_str());
-
-#else
-					imgProvider = new DXImageProvider(screenId, newMrl.c_str());
-#endif
-#endif
-				} else {
-					clog << "ImagePlayer::renderImage Warning! Can't render '";
-					clog << mrl << "': file not found '" << mrl << "'";
-					clog << " neither '" << newMrl << "'" << endl;
-				}
-
-			} else {
-				clog << "ImagePlayer::renderImage Warning! Can't render '";
-				clog << mrl << "', file not found!" << endl;
-			}
-		}
-
-		if (imgProvider != NULL) {
-			renderedSurface = ImagePlayer::prepareSurface(imgProvider, mrl);
-			delete imgProvider;
-			imgProvider = NULL;
-
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("ImageProvider");
-#endif
-		}
-
-		return renderedSurface;
-	}
 }
 }
 }
 }
 }
-}
-
-extern "C" ISurface* prepareSurface(IImageProvider* provider, string mrl) {
-	return (::br::pucrio::telemidia::ginga::core::player::
-			ImagePlayer::prepareSurface(provider, mrl));
-}
-
-extern "C" ISurface* renderImage(GingaScreenID screenId, string mrl) {
-	return (::br::pucrio::telemidia::ginga::core::player::
-			ImagePlayer::renderImage(screenId, mrl));
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*

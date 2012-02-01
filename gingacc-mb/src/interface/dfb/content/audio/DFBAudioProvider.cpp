@@ -83,6 +83,7 @@ namespace mb {
 		dapRefs++;
 #endif
 
+		symbol   = "";
 		myScreen = screenId;
 		decoder  = NULL;
 
@@ -106,6 +107,14 @@ namespace mb {
 			DirectReleaseInterface("IDirectFBVideoProvider");
 		}
 #endif //DFBTM_PATCH
+	}
+
+	void DFBAudioProvider::setLoadSymbol(string symbol) {
+		this->symbol = symbol;
+	}
+
+	string DFBAudioProvider::getLoadSymbol() {
+		return this->symbol;
 	}
 
 	void* DFBAudioProvider::getContent() {

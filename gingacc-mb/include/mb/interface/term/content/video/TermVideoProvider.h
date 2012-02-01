@@ -67,6 +67,9 @@ namespace mb {
 			TermVideoProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~TermVideoProvider();
 
+			void setLoadSymbol(string symbol);
+			string getLoadSymbol();
+
 			void setAVPid(int aPid, int vPid);
 			void feedBuffers();
 			ISurface* getPerfectSurface();
