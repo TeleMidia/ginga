@@ -64,11 +64,7 @@ extern "C" {
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#ifndef _WIN32
-#include "mb/interface/dfb/device/DFBDeviceScreen.h"
-#else
-#include "mb/interface/dx/device/DXDeviceScreen.h"
-#endif
+#include "mb/interface/dfb/DFBDeviceScreen.h"
 #endif
 
 namespace br {

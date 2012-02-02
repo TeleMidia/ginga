@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/video/XineVideoProvider.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
-#include "mb/interface/dfb/device/DFBDeviceScreen.h"
+#include "mb/interface/dfb/DFBDeviceScreen.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

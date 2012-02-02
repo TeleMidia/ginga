@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/content/audio/DFBAudioProvider.h"
-#include "mb/interface/dfb/device/DFBDeviceScreen.h"
+#include "mb/interface/dfb/DFBDeviceScreen.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 
 /* macro for a safe call to DirectFB functions */

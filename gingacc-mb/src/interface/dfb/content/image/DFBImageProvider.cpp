@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dfb/content/image/DFBImageProvider.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
-#include "mb/interface/dfb/device/DFBDeviceScreen.h"
+#include "mb/interface/dfb/DFBDeviceScreen.h"
 #include "mb/LocalScreenManager.h"
 
 /* macro for a safe call to DirectFB functions */

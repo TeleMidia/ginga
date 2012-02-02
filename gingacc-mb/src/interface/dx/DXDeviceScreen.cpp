@@ -48,7 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 
-#include "mb/interface/dx/device/DXDeviceScreen.h"
+#include "mb/interface/dx/DXDeviceScreen.h"
 
 #include <boost/thread.hpp>
 

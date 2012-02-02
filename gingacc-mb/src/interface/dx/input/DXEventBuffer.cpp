@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/dx/input/DXEventBuffer.h"
 #include "mb/interface/dx/input/DXInputEvent.h"
-#include "mb/interface/dx/device/DXDeviceScreen.h"
+#include "mb/interface/dx/DXDeviceScreen.h"
 
 
 namespace br {

@@ -48,7 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "config.h"
-#include "mb/interface/term/device/TermDeviceScreen.h"
+#include "mb/interface/term/TermDeviceScreen.h"
 #include "mb/ILocalScreenManager.h"
 
 #include <string.h>
