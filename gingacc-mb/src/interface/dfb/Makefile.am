@@ -21,7 +21,7 @@ libgingaccmbdfb_PROGRAMS   = \
                              libgingaccmbdfb.so
 
 libgingaccmbdfb_so_SOURCES = \
-                             device/DFBDeviceScreen.cpp \
+                             DFBDeviceScreen.cpp \
                              input/DFBEventBuffer.cpp \
                              input/DFBGInputEvent.cpp \
                              output/DFBSurface.cpp \
