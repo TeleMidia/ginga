@@ -238,6 +238,9 @@ namespace mb {
 		GingaWindowID parentId = NULL;
 		short sysType, subSysType;
 
+		string params  = "";
+		string command = "ginga";
+
 		screenId = getNumOfScreens();
 		getMBSystemType(mbSystem, &sysType, mbSubSystem, &subSysType);
 
@@ -250,19 +253,61 @@ namespace mb {
 #endif
 				break;
 
-			case GMBST_DFLT:
-			default:
+			case GMBST_SDL:
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject(
-						"DFBDeviceScreen")))(0, NULL, screenId, parentId);
-
-#else
-#ifndef _WIN32
-				screen = new DFBDeviceScreen(0, NULL, screenId, parentId);
-
-#else
-				screen = new DXDeviceScreen(0, NULL, screenId, parentId);
+						"SDLDeviceScreen")))(0, NULL, screenId, parentId);
 #endif
+				break;
+
+			case GMBST_DFLT:
+			case GMBST_DFB:
+			default:
+				char* args[1];
+
+				params = "";
+
+				if (mbSubSystem != "") {
+					params = "--dfb:system=" + mbSubSystem;
+				}
+
+				if (mbMode != "") {
+					if (params == "") {
+						params = "--dfb:mode=" + mbMode;
+
+					} else {
+						params = params + ",mode=" + mbMode;
+					}
+				}
+
+				if (mbParent != "") {
+					if (params == "") {
+						params = "--dfb:x11-root-window=" + mbParent;
+
+					} else {
+						params = params + ",x11-root-window=" + mbParent;
+					}
+				}
+
+				if (params == "") {
+					params = "--dfb:no-sighandler,force-windowed";
+
+				} else {
+					params = params + ",no-sighandler,force-windowed";
+				}
+
+				clog << "LocalScreenManager::createScreen DFB params = '";
+				clog << params << "'" << endl;
+
+				args[0] = (char*)command.c_str();
+				args[1] = (char*)params.c_str();
+
+#if HAVE_COMPSUPPORT
+				screen = ((ScreenCreator*)(cm->getObject(
+						"DFBDeviceScreen")))(2, args, screenId, parentId);
+
+#else
+				screen = new DFBDeviceScreen(2, args, screenId, parentId);
 #endif
 				break;
 		}

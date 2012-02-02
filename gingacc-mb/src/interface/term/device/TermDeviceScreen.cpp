@@ -222,13 +222,13 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
-		createDFBScreen(int numArgs, char** args, GingaWindowID parentId) {
+		createTermScreen(int numArgs, char** args, GingaWindowID parentId) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
 			TermDeviceScreen(numArgs, args, parentId));
 }
 
-extern "C" void destroyDFBScreen(
+extern "C" void destroyTermScreen(
 		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds) {
 
 	delete ds;
