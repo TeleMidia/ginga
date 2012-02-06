@@ -119,12 +119,19 @@ namespace mb {
 			static IDirectFB* dfb;
 			static IDirectFBDisplayLayer* gfxLayer;
 
+			static pthread_mutex_t ieMutex;
+			static map<int, int>* gingaToDFBCodeMap;
+			static map<int, int>* dfbToGingaCodeMap;
+
 		public:
 			DFBDeviceScreen(
 					int numArgs, char** args,
 					GingaScreenID myId, GingaWindowID parentId);
 
 			virtual ~DFBDeviceScreen();
+
+			void releaseScreen();
+			void releaseMB();
 
 			void clearWidgetPools();
 
@@ -181,7 +188,8 @@ namespace mb {
 			IEventBuffer* createEventBuffer();
 			IInputEvent* createInputEvent(void* event, const int symbol);
 			IInputEvent* createUserEvent(int type, void* data);
-
+			int fromMBToGinga(int keyCode);
+			int fromGingaToMB(int keyCode);
 
 			/* interfacing underlying multimedia system */
 
@@ -190,6 +198,10 @@ namespace mb {
 
 			/* libgingaccmbdfb internal use*/
 
+			/* input */
+			static void initCodeMaps();
+
+			/* output */
 			static IDirectFBWindow* getUnderlyingWindow(GingaWindowID winId);
 
 			static IDirectFBWindow* createUnderlyingWindow(

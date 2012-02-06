@@ -91,11 +91,11 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermInputEvent::setKeyCode(const int keyCode) {
+	void TermInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
 
 	}
 
-	const int TermInputEvent::getKeyCode() {
+	const int TermInputEvent::getKeyCode(GingaScreenID screenId) {
 		return CodeMap::KEY_NULL;
 	}
 

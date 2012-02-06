@@ -129,8 +129,8 @@ namespace mb {
 			void removeApplicationInputEventListener(
 					IInputEventListener* listener);
 
-			void postEvent(IInputEvent* event);
-			void postEvent(int keyCode);
+			void postInputEvent(IInputEvent* event);
+			void postInputEvent(int keyCode);
 
 			void setAxisValues(int x, int y, int z);
 			void setAxisBoundaries(int x, int y, int z);

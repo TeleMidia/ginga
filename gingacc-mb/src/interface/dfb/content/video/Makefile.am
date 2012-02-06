@@ -49,7 +49,7 @@ libgingaccmbdecdfbffmpegav_so_SOURCES = FFmpegVideoProvider.cpp
 libgingaccmbdecdfbffmpegav_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
-    -lgingaccmbdfbfs
+    -lgingaccmbdfbdecfs
 
 endif #FFMPEGPROVIDER
 endif #DFBSYSTEM

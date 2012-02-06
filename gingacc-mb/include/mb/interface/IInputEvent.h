@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IINPUTEVENT_H_
 #define IINPUTEVENT_H_
 
+#include "mb/IMBDefs.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -60,8 +62,8 @@ namespace mb {
 		public:
 			virtual ~IInputEvent(){};
 			virtual void clearContent()=0;
-			virtual void setKeyCode(const int keyCode)=0;
-			virtual const int getKeyCode()=0;
+			virtual void setKeyCode(GingaScreenID scrId, const int keyCode)=0;
+			virtual const int getKeyCode(GingaScreenID screenId)=0;
 			virtual void setType(unsigned int type)=0;
 			virtual unsigned int getType()=0;
 			virtual void* getData()=0;

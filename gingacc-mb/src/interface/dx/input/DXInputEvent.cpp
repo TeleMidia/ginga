@@ -123,11 +123,11 @@ namespace mb {
 		}
 	}
 
-	void DXInputEvent::setKeyCode(const int keyCode) {
+	void DXInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
 		//clog << "DXInputEvent::setKeyCode(const int keyCode)" << endl;
 	}
 
-	const int DXInputEvent::getKeyCode() {
+	const int DXInputEvent::getKeyCode(GingaScreenID screenId) {
 		clog << "DXInputEvent::getKeyCode()" << endl;
 		if(pDidod != NULL){
 			return pDidod->dwOfs;

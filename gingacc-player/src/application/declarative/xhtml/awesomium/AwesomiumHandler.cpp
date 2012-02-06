@@ -303,7 +303,7 @@ namespace player {
 		}
 
 		if (ev->isKeyType()) {
-			keyCode = ev->getKeyCode();
+			keyCode = ev->getKeyCode(aInfo->myScreen);
 			key = keyCode;
 
 	        Awesomium::WebKeyboardEvent keyEvent;

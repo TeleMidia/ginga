@@ -90,6 +90,7 @@ namespace mb {
 			static const short GMBSST_X11   = 2; /* X11:                x11   */
 			static const short GMBSST_HWND  = 3; /* MS-W Window Handle: hwnd  */
 			static const short GMBSST_SDL   = 4; /* SDL:                sdl   */
+			static const short GMBSST_COCOA = 5; /* COCOA:              cocoa */
 
 			virtual ~ILocalScreenManager(){};
 
@@ -107,6 +108,8 @@ namespace mb {
 
 			virtual void* getGfxRoot(GingaScreenID screenId)=0;
 
+			virtual void releaseScreen(GingaScreenID screenId)=0;
+			virtual void releaseMB(GingaScreenID screenId)=0;
 			virtual void clearWidgetPools(GingaScreenID screenId)=0;
 
 			virtual GingaScreenID createScreen(int numArgs, char** args)=0;
@@ -179,6 +182,9 @@ namespace mb {
 
 			virtual IInputEvent* createUserEvent(
 					GingaScreenID screenId, int type, void* data)=0;
+
+			virtual int fromMBToGinga(GingaScreenID screenId, int keyCode)=0;
+			virtual int fromGingaToMB(GingaScreenID screenId, int keyCode)=0;
 	};
 }
 }

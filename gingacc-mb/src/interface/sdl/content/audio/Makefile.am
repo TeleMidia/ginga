@@ -1,0 +1,38 @@
+
+# set the include path found by configure
+INCLUDES                        = \
+                                  -I/usr/local/include/ginga/ \
+                                  -I/usr/local/include/SDL/ \
+                                  -I$(top_srcdir)/include \
+                                  $(all_includes)
+
+LIBS                            =
+
+if SDLSYSTEM
+localLibdir                     = \
+                                  /usr/local/lib/ginga/mb/dec/
+
+if SDLFFMPEG #OR SDL_MIXER??
+libgingaccmbdecsdlap_so_LDFLAGS = \
+                                  -Wl,-soname,libgingaccmbdecsdlap.so -shared \
+	                              -L/usr/local/lib \
+	                              -L/usr/local/lib/ginga \
+	                              -L$(top_srcdir)/src \
+	                              -L$(top_srcdir)/src/interface/sdl
+
+localLib_PROGRAMS               = \
+                                  libgingaccmbdecsdlap.so
+
+libgingaccmbdecsdlap_so_SOURCES = \
+                                  SDLAudioProvider.cpp
+
+libgingaccmbdecsdlap_so_LDADD   = \
+                                  -lgingaccmbsdl \
+                                  -lgingaccmb \
+                                  -lSDL -lavformat -lswscale -lSDL_ffmpeg
+endif #SDLFFMPEG
+
+endif #SDLSYSTEM
+
+MAINTAINERCLEANFILES            = \
+                                  Makefile.in

@@ -106,6 +106,8 @@ namespace mb {
 
 			void* getGfxRoot(GingaScreenID screenId);
 
+			void releaseScreen(GingaScreenID screenId);
+			void releaseMB(GingaScreenID screenId);
 			void clearWidgetPools(GingaScreenID screenId);
 
 			GingaScreenID createScreen(int argc, char** args);
@@ -117,11 +119,7 @@ namespace mb {
 					string mbMode,
 					string mbParent);
 
-			void getMBSystemType(
-					string mbSystemName,
-					short* mbSystemType,
-					string mbSubSystemName,
-					short* mbSubSystemType);
+			void getMBSystemType(string mbSystemName, short* mbSystemType);
 
 			void lockSysNames();
 			void unlockSysNames();
@@ -190,10 +188,18 @@ namespace mb {
 			IInputEvent* createUserEvent(
 					GingaScreenID screenId, int type, void* data);
 
+			int fromMBToGinga(GingaScreenID screenId, int keyCode);
+			int fromGingaToMB(GingaScreenID screenId, int keyCode);
+
 		private:
-			void addScreen(GingaScreenID screenId, IDeviceScreen* screen);
+			void addScreen(
+					GingaScreenID screenId, IDeviceScreen* screen);
+
 			short getNumOfScreens();
-			bool getScreen(GingaScreenID screenId, IDeviceScreen** screen);
+
+			bool getScreen(
+					GingaScreenID screenId, IDeviceScreen** screen);
+
 			void lockScreens();
 			void unlockScreens();
 	};

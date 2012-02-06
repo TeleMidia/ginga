@@ -72,6 +72,7 @@ namespace core {
 namespace mb {
 	class DFBEventBuffer : public IEventBuffer {
 		private:
+			GingaScreenID myScreen;
 			static IDirectFBEventBuffer* eventBuffer;
 			/*static DFBEnumerationResult enum_input_device(
 				    DFBInputDeviceID device_id,
@@ -82,7 +83,7 @@ namespace mb {
 			DFBEventBuffer(GingaScreenID screen);
 			~DFBEventBuffer();
 			void wakeUp();
-			void postEvent(IInputEvent* event);
+			void postInputEvent(IInputEvent* event);
 			void waitEvent();
 			IInputEvent* getNextEvent();
 			void* getContent();

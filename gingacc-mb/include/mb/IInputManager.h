@@ -78,8 +78,8 @@ namespace mb {
 		virtual void removeApplicationInputEventListener(
 				IInputEventListener* listener)=0;
 
-		virtual void postEvent(IInputEvent* event)=0;
-		virtual void postEvent(int keyCode)=0;
+		virtual void postInputEvent(IInputEvent* event)=0;
+		virtual void postInputEvent(int keyCode)=0;
 
 		virtual void setAxisValues(int x, int y, int z)=0;
 		virtual void setAxisBoundaries(int x, int y, int z)=0;

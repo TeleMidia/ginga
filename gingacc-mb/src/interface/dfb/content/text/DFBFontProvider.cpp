@@ -202,7 +202,7 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
-		createFontProvider(
+		createDFBFontProvider(
 				GingaScreenID screenId,
 				const char* fontUri,
 				int heightInPixel) {
@@ -211,7 +211,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
 			DFBFontProvider(screenId, fontUri, heightInPixel));
 }
 
-extern "C" void destroyFontProvider(
+extern "C" void destroyDFBFontProvider(
 		::br::pucrio::telemidia::ginga::core::mb::IFontProvider* fp) {
 
 	delete fp;

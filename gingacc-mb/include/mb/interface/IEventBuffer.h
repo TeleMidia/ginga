@@ -64,7 +64,7 @@ namespace mb {
 		public:
 			virtual ~IEventBuffer(){};
 			virtual void wakeUp()=0;
-			virtual void postEvent(IInputEvent* event)=0;
+			virtual void postInputEvent(IInputEvent* event)=0;
 			virtual void waitEvent()=0;
 			virtual IInputEvent* getNextEvent()=0;
 			virtual void* getContent()=0;

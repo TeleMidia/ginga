@@ -68,7 +68,7 @@ namespace mb {
 
 	}
 
-	void TermEventBuffer::postEvent(IInputEvent* event) {
+	void TermEventBuffer::postInputEvent(IInputEvent* event) {
 
 	}
 

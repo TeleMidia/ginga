@@ -109,6 +109,9 @@ namespace mb {
 			static LRESULT CALLBACK wndProc(HWND hWnd, UINT message,
 											WPARAM wParam, LPARAM lParam);
 
+			void releaseScreen();
+			void releaseMB();
+
 			unsigned int getWidthResolution();
 			void setWidthResolution(unsigned int wRes);
 			unsigned int getHeightResolution();

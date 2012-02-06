@@ -93,7 +93,7 @@ namespace mb {
 			DXEventBuffer();
 			~DXEventBuffer();
 			void wakeUp();
-			void postEvent(IInputEvent* event);
+			void postInputEvent(IInputEvent* event);
 			void waitEvent();
 			IInputEvent* getNextEvent();
 			void* getContent();

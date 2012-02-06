@@ -47,6 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "mb/LocalScreenManager.h"
+
 #include "mb/interface/dfb/input/DFBGInputEvent.h"
 
 /* macro for a safe call to DirectFB functions */
@@ -71,10 +73,6 @@ namespace core {
 namespace mb {
 	DFBGInputEvent::DFBGInputEvent(void* event) {
 		this->event = (DFBEvent*)event;
-
-		if (isButtonPressType()) {
-			setKeyCode(CodeMap::KEY_TAP);
-		}
 
 		x = 0;
 		y = 0;
@@ -131,19 +129,33 @@ namespace mb {
 		return event;
 	}
 
-	void DFBGInputEvent::setKeyCode(const int keyCode) {
+	void DFBGInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
+		int dfbCode;
 		if (event != NULL && event->clazz == DFEC_INPUT) {
+			dfbCode = LocalScreenManager::getInstance()->fromGingaToMB(
+					screenId, keyCode);
+
 			((DFBInputEvent*)event)->key_symbol = (DFBInputDeviceKeySymbol)(
-					keyCode);
+					dfbCode);
 		}
 	}
 
-	const int DFBGInputEvent::getKeyCode() {
-		if (event != NULL && event->clazz == DFEC_INPUT) {
+	const int DFBGInputEvent::getKeyCode(GingaScreenID screenId) {
+		int result;
 
-			int result = ((DFBInputEvent*)event)->key_symbol;
-			
-			//Maping between keyboard and remote control
+		if (event != NULL && event->clazz == DFEC_INPUT) {
+			if (((DFBInputEvent*)event)->type == DIET_BUTTONPRESS) {
+				cout << "DFBGInputEvent::getKeyCode is returning KEY_TAP ";
+				cout << "when keyCode was '";
+				cout << ((DFBInputEvent*)event)->key_symbol << "'" << endl;
+				return CodeMap::KEY_TAP;
+			}
+
+			result = ((DFBInputEvent*)event)->key_symbol;
+			result = LocalScreenManager::getInstance()->fromMBToGinga(
+					screenId, result);
+
+			//Mapping between keyboard and remote control
 			if (result == CodeMap::KEY_F1) {
 				result = CodeMap::KEY_RED;
 

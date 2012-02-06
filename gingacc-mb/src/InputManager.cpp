@@ -48,20 +48,9 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "mb/InputManager.h"
-#include "mb/ILocalScreenManager.h"
-
-#include "config.h"
-
-#if HAVE_COMPSUPPORT
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
-
-#include "mb/interface/dfb/input/DFBEventBuffer.h"
-#include "mb/interface/dfb/input/DFBGInputEvent.h"
 #include "mb/LocalScreenManager.h"
 
-#endif
+#include "config.h"
 
 namespace br {
 namespace pucrio {
@@ -69,14 +58,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-#if HAVE_COMPSUPPORT
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
-	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
-#endif
-
 	InputManager::InputManager(GingaScreenID screenId) : Thread() {
 		eventListeners         = new map<IInputEventListener*, set<int>*>;
 		actionsToInpListeners  = new vector<LockedAction*>;
@@ -91,7 +72,8 @@ namespace mb {
 		lastEventTime = 0;
 		myScreen      = screenId;
 
-		eventBuffer   = dm->createEventBuffer(myScreen);
+		eventBuffer   = LocalScreenManager::getInstance()->createEventBuffer(
+				myScreen);
 
 		running       = true;
 		notifying     = false;
@@ -402,7 +384,7 @@ namespace mb {
 			return true;
 		}
 
-		keyCode = inputEvent->getKeyCode();
+		keyCode = inputEvent->getKeyCode(myScreen);
 		i = eventListeners->begin();
 		while (i != eventListeners->end()) {
 			evs = i->second;
@@ -521,20 +503,26 @@ namespace mb {
 		}
 	}
 
-	void InputManager::postEvent(IInputEvent* event) {
+	void InputManager::postInputEvent(IInputEvent* event) {
 		if (!running) {
 			delete event;
 			return;
 		}
 
-		eventBuffer->postEvent(event);
+		eventBuffer->postInputEvent(event);
 	}
 
-	void InputManager::postEvent(int keyCode) {
+	void InputManager::postInputEvent(int keyCode) {
 		IInputEvent* ie;
+		int mbKeyCode;
 
-		ie = dm->createInputEvent(myScreen, NULL, keyCode);
-		postEvent(ie);
+		mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
+				myScreen, keyCode);
+
+		ie = LocalScreenManager::getInstance()->createInputEvent(
+				myScreen, NULL, mbKeyCode);
+
+		postInputEvent(ie);
 	}
 
 	void InputManager::setAxisValues(int x, int y, int z) {
@@ -623,9 +611,9 @@ namespace mb {
 
 				if (inputEvent->isPressedType() && ((getCurrentTimeMillis() -
 						timeStamp) >= declarativeIntervalTime ||
-								lastCode != inputEvent->getKeyCode())) {
+								lastCode != inputEvent->getKeyCode(myScreen))) {
 
-					lastCode = inputEvent->getKeyCode();
+					lastCode = inputEvent->getKeyCode(myScreen);
 					timeStamp = getCurrentTimeMillis();
 					if (!dispatchEvent(inputEvent)) {
 						delete inputEvent;

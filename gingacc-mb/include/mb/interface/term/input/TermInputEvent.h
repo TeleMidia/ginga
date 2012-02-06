@@ -76,8 +76,8 @@ namespace mb {
 
 		public:
 			void clearContent();
-			void setKeyCode(const int keyCode);
-			const int getKeyCode();
+			void setKeyCode(GingaScreenID screenId, const int keyCode);
+			const int getKeyCode(GingaScreenID screenId);
 			void setType(unsigned int type);
 			unsigned int getType();
 			void* getData();

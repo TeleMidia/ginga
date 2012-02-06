@@ -70,7 +70,7 @@ namespace mb {
 			TermEventBuffer(GingaScreenID screen);
 			~TermEventBuffer();
 			void wakeUp();
-			void postEvent(IInputEvent* event);
+			void postInputEvent(IInputEvent* event);
 			void waitEvent();
 			IInputEvent* getNextEvent();
 			void* getContent();

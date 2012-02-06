@@ -16,7 +16,13 @@ SUBDIRS = 	\
 			src/interface/term/content/image \
 			src/interface/term/content/text \
 			src/interface/term/content/video \
-			files
+			src/interface/sdl \
+			src/interface/sdl/content/audio \
+			src/interface/sdl/content/image \
+			src/interface/sdl/content/text \
+			src/interface/sdl/content/video \
+			files \
+			test
 
 MAINTAINERCLEANFILES = 	aclocal.m4 \
 			config.log \

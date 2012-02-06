@@ -66,7 +66,15 @@ namespace mb {
 	}
 
 	TermDeviceScreen::~TermDeviceScreen() {
+
+	}
+
+	void TermDeviceScreen::releaseScreen() {
 		clearWidgetPools();
+	}
+
+	void TermDeviceScreen::releaseMB() {
+
 	}
 
 	void TermDeviceScreen::clearWidgetPools() {
@@ -208,6 +216,14 @@ namespace mb {
 
 	IInputEvent* TermDeviceScreen::createUserEvent(int type, void* data) {
 		return NULL;
+	}
+
+	int TermDeviceScreen::fromMBToGinga(int keyCode) {
+		return 0;
+	}
+
+	int TermDeviceScreen::fromGingaToMB(int keyCode) {
+		return 0;
 	}
 
 

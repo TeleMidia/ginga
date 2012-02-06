@@ -72,7 +72,11 @@ namespace mb {
 			TermDeviceScreen(int numArgs, char** args, GingaWindowID parentId);
 			virtual ~TermDeviceScreen();
 
+			void releaseScreen();
+			void releaseMB();
+
 			void clearWidgetPools();
+
 			void setParentScreen(GingaWindowID parentId);
 			void setBackgroundImage(string uri);
 
@@ -124,7 +128,8 @@ namespace mb {
 			IEventBuffer* createEventBuffer();
 			IInputEvent* createInputEvent(void* event, const int symbol);
 			IInputEvent* createUserEvent(int type, void* data);
-
+			int fromMBToGinga(int keyCode);
+			int fromGingaToMB(int keyCode);
 
 			/* interfacing underlying multimedia system */
 

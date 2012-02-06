@@ -145,7 +145,7 @@ void XN_CALLBACK_TYPE MainSlider_OnValueChange(
 		}
 
 		if (keyCode != CodeMap::KEY_NULL && ctx != NULL) {
-			((IInputManager*)ctx)->postEvent(keyCode);
+			((IInputManager*)ctx)->postInputEvent(keyCode);
 		}
 	}
 }
@@ -156,7 +156,7 @@ void XN_CALLBACK_TYPE handsUpdate(const XnVMultipleHands& mh, void* ctx) {
 	handsNumber = mh.ActiveEntries();
 
 	if (handsNumber == 2 && oldnhands != 2 && ctx != NULL) {
-		((IInputManager*)ctx)->postEvent(CodeMap::KEY_BACK);
+		((IInputManager*)ctx)->postInputEvent(CodeMap::KEY_BACK);
 	}
 }
 
@@ -164,7 +164,7 @@ void XN_CALLBACK_TYPE pushDetector(
 		XnFloat fVelocity, XnFloat fAngle, void* ctx) {
 	
 	if (handsNumber == 1 && ctx != NULL) {
-		((IInputManager*)ctx)->postEvent(CodeMap::KEY_OK);
+		((IInputManager*)ctx)->postInputEvent(CodeMap::KEY_OK);
 	}
 }
 

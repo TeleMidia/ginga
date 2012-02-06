@@ -72,8 +72,17 @@ namespace core {
 namespace mb {
 	class IDeviceScreen {
 		public:
+			/*
+			 * Attention:
+			 *
+			 * If you are exiting from your program or if you are
+			 * removing all screens of a specific multimedia backend, call
+			 *    ds->releaseMB() before delete it
+			 */
 			virtual ~IDeviceScreen(){};
 
+			virtual void releaseScreen()=0;
+			virtual void releaseMB()=0;
 			virtual void clearWidgetPools()=0;
 
 			virtual void setParentScreen(GingaWindowID parentId)=0;
@@ -133,6 +142,8 @@ namespace mb {
 					void* event, const int symbol)=0;
 
 			virtual IInputEvent* createUserEvent(int type, void* data)=0;
+			virtual int fromMBToGinga(int keyCode)=0;
+			virtual int fromGingaToMB(int keyCode)=0;
 
 
 			/* interfacing underlying multimedia system */

@@ -87,8 +87,11 @@ namespace mb {
 
 	DFBEventBuffer::DFBEventBuffer(GingaScreenID screen) {
 		IDirectFB* dfb;
+
+		myScreen = screen;
+
 		dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
-				screen));
+				myScreen));
 
 		//dfb_true => the focus doesn't matter
 		DFBCHECK(dfb->CreateInputEventBuffer(
@@ -111,7 +114,7 @@ namespace mb {
 		}
 	}
 
-	void DFBEventBuffer::postEvent(IInputEvent* event) {
+	void DFBEventBuffer::postInputEvent(IInputEvent* event) {
 		DFBEvent* ev;
 
 		if (eventBuffer != NULL &&

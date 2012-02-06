@@ -933,7 +933,9 @@ bool LuaPlayer::userEventReceived (IInputEvent* evt)
         }
 
 	} else if (evt->isKeyType() && this->isHandler) {
-		string key_str = CodeMap::getInstance()->getValue(evt->getKeyCode());
+		string key_str = CodeMap::getInstance()->getValue(evt->getKeyCode(
+				myScreen));
+
         map<string,string> lua_evt;
         lua_evt["class"] = "key";
         lua_evt["type"]  = evt->isPressedType() ? "press" : "release";

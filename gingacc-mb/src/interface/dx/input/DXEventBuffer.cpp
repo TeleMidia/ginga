@@ -114,8 +114,8 @@ namespace mb {
 		pthread_mutex_lock(&evt_lock);
 	}
 
-	void DXEventBuffer::postEvent(IInputEvent* evt) {
-		clog << "DXEventBuffer::postEvent(IInputEvent* event)" << endl;
+	void DXEventBuffer::postInputEvent(IInputEvent* evt) {
+		clog << "DXEventBuffer::postInputEvent(IInputEvent* event)" << endl;
 
 		if(evt->isKeyType()){
 

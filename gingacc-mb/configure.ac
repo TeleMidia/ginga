@@ -32,7 +32,7 @@ LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga /usr/local/include/directfb; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga /usr/local/include/directfb /usr/local/include/SDL; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -52,7 +52,6 @@ Couldn't find TeleMidia Util headers.
 Please install TeleMidia Util Headers.
 
 ]))
-
 
 ########
 # LIBS #
@@ -197,7 +196,7 @@ AC_ARG_ENABLE(fusionsound,
 AC_HAVE_LIBRARY(
   fusionsound,
   [],
-  AC_MSG_WARN([*** fusion header not Found.])
+  AC_MSG_WARN([*** fusion sound lib not Found.])
     enable_fusionsound=no
 )
 
@@ -214,6 +213,28 @@ fi
 AM_CONDITIONAL([FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AC_SUBST(FUSIONSOUND_LIBS)
 
+##############
+# SDL_ffmpeg #
+##############
+sdlffmpeg=yes
+if test x$enable_sdl = xno; then
+AC_HAVE_LIBRARY(
+  SDL_ffmpeg,
+  [],
+  AC_MSG_WARN([*** SDL_ffmpeg lib not Found.])
+    sdlffmpeg=no
+)
+
+if test x$sdlffmpeg = xno; then
+   AC_MSG_WARN([*** Ginga SDL_ffmpeg support will not be built.])
+else
+   AC_MSG_RESULT([*** Ginga SDL_ffmpeg support will be built.])
+fi
+else
+sdlffmpeg=no
+fi
+
+AM_CONDITIONAL([SDLFFMPEG], [test x$sdlffmpeg = xyes])
 
 DVC_LIBS=
 
@@ -384,12 +405,18 @@ AC_CONFIG_FILES(
 	src/interface/dfb/content/image/Makefile
 	src/interface/dfb/content/text/Makefile
 	src/interface/dfb/content/video/Makefile
+	src/interface/sdl/Makefile
+	src/interface/sdl/content/audio/Makefile
+	src/interface/sdl/content/image/Makefile
+	src/interface/sdl/content/text/Makefile
+	src/interface/sdl/content/video/Makefile
 	src/interface/term/Makefile
 	src/interface/term/content/audio/Makefile
 	src/interface/term/content/image/Makefile
 	src/interface/term/content/text/Makefile
 	src/interface/term/content/video/Makefile
 	files/Makefile
+	test/Makefile
 )
 
 AC_OUTPUT

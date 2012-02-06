@@ -93,7 +93,9 @@ namespace mb {
 			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
 					myScreen));
 
-			DFBCHECK(dfb->CreateImageProvider(dfb, mrl, &decoder));
+			if (dfb != NULL) {
+				DFBCHECK(dfb->CreateImageProvider(dfb, mrl, &decoder));
+			}
 		}
 	}
 
@@ -126,9 +128,13 @@ namespace mb {
 	}
 
 	ISurface* DFBImageProvider::prepare(bool isGif) {
-		ISurface* renderedSurface = NULL;
+		ISurface* renderedSurface  = NULL;
+		IDirectFBImageProvider* ip = NULL;
 
-		IDirectFBImageProvider* ip;
+		if (decoder == NULL) {
+			return NULL;
+		}
+
 		ip = (IDirectFBImageProvider*)decoder;
 
 		DFBImageDescription imgDsc;
@@ -260,13 +266,13 @@ namespace mb {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IImageProvider*
-		createImageProvider(GingaScreenID screenId, const char* mrl) {
+		createDFBImageProvider(GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
 			DFBImageProvider(screenId, mrl));
 }
 
-extern "C" void destroyImageProvider(
+extern "C" void destroyDFBImageProvider(
 		::br::pucrio::telemidia::ginga::core::mb::IImageProvider* ip) {
 
 	delete ip;

@@ -89,8 +89,8 @@ namespace mb {
 			DXInputEvent(void* tapEvent, int devClass, int x, int y);
 			virtual ~DXInputEvent();
 			void clearContent();
-			void setKeyCode(const int keyCode);
-			const int getKeyCode();
+			void setKeyCode(GingaScreenID screenId, const int keyCode);
+			const int getKeyCode(GingaScreenID screenId);
 			void setType(unsigned int type);
 			unsigned int getType();
 

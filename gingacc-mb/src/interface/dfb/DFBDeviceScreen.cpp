@@ -57,6 +57,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/dfb/input/DFBEventBuffer.h"
 #include "mb/interface/dfb/input/DFBGInputEvent.h"
 
+#include "mb/interface/CodeMap.h"
 #include "mb/ILocalScreenManager.h"
 
 #include <string.h>
@@ -72,13 +73,16 @@ namespace mb {
 	IComponentManager* DFBDeviceScreen::cm = IComponentManager::getCMInstance();
 #endif
 
-const unsigned int DFBDeviceScreen::DSA_UNKNOWN = 0;
-const unsigned int DFBDeviceScreen::DSA_4x3     = 1;
-const unsigned int DFBDeviceScreen::DSA_16x9    = 2;
+const unsigned int DFBDeviceScreen::DSA_UNKNOWN   = 0;
+const unsigned int DFBDeviceScreen::DSA_4x3       = 1;
+const unsigned int DFBDeviceScreen::DSA_16x9      = 2;
 
-unsigned int DFBDeviceScreen::numOfDFBScreens = 0;
-IDirectFB* DFBDeviceScreen::dfb = NULL;
-IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
+pthread_mutex_t DFBDeviceScreen::ieMutex;
+map<int, int>* DFBDeviceScreen::gingaToDFBCodeMap = NULL;
+map<int, int>* DFBDeviceScreen::dfbToGingaCodeMap = NULL;
+unsigned int DFBDeviceScreen::numOfDFBScreens     = 0;
+IDirectFB* DFBDeviceScreen::dfb                   = NULL;
+IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 	DFBDeviceScreen::DFBDeviceScreen(
 			int numArgs, char** args,
@@ -106,7 +110,6 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 			DFBCHECK(DirectFBInit(&numArgs, &args));
 
 			if (parentId != NULL) {
-				cout << "DFBDeviceScreen::DFBDeviceScreen" << endl;
 				setParentScreen(parentId);
 			}
 
@@ -145,28 +148,47 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 					gfxLayer, &layer_config, &failed_flags)) != DFB_OK) {
 
 				DirectFBError(
-						"gingacc-systemio DFBDeviceScreen TestConfig error: ",
-						ret);
+						"gingacc-mb DFBDeviceScreen TestConfig error: ", ret);
 
 			} else {
 				DFBCHECK(gfxLayer->
 						SetConfiguration(gfxLayer, &layer_config));
 			}
 		}
+
+		initCodeMaps();
 	}
 
 	DFBDeviceScreen::~DFBDeviceScreen() {
-		clearWidgetPools();
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
 
 		numOfDFBScreens--;
-		if (numOfDFBScreens == 0) {
-			gfxLayer->Release(gfxLayer);
-			dfb->Release(dfb);
-			gfxLayer = NULL;
-			dfb = NULL;
+	}
+
+	void DFBDeviceScreen::releaseScreen() {
+		clearWidgetPools();
+	}
+
+	void DFBDeviceScreen::releaseMB() {
+		int errCount = 0;
+
+		while (numOfDFBScreens > 1) {
+			::usleep(100000);
+			errCount++;
+			if (errCount > 5) {
+				cout << "DFBDeviceScreen::releaseMB Warning! call to releaseMB";
+				cout << " with undeleted DFBDeviceScreen. Please solve your ";
+				cout << "program." << endl;
+				break;
+			}
 		}
+
+		gfxLayer->Release(gfxLayer);
+		dfb->Release(dfb);
+
+		gfxLayer = NULL;
+		dfb      = NULL;
 	}
 
 	void DFBDeviceScreen::clearWidgetPools() {
@@ -609,6 +631,34 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		return new DFBGInputEvent(DFEC_USER, type, data);
 	}
 
+	int DFBDeviceScreen::fromMBToGinga(int keyCode) {
+		map<int, int>::iterator i;
+		int translated = CodeMap::KEY_NULL;
+
+		pthread_mutex_lock(&ieMutex);
+		i = dfbToGingaCodeMap->find(keyCode);
+		if (i != dfbToGingaCodeMap->end()) {
+			translated = i->second;
+		}
+		pthread_mutex_unlock(&ieMutex);
+
+		return translated;
+	}
+
+	int DFBDeviceScreen::fromGingaToMB(int keyCode) {
+		map<int, int>::iterator i;
+		int translated = CodeMap::KEY_NULL;
+
+		pthread_mutex_lock(&ieMutex);
+		i = gingaToDFBCodeMap->find(keyCode);
+		if (i != gingaToDFBCodeMap->end()) {
+			translated = i->second;
+		}
+		pthread_mutex_unlock(&ieMutex);
+
+		return translated;
+	}
+
 
 	/* interfacing underlying multimedia system */
 
@@ -616,6 +666,160 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 		return (void*)dfb;
 	}
 
+	/* libgingaccmbdfb internal use*/
+
+	/* input */
+	void DFBDeviceScreen::initCodeMaps() {
+		if (gingaToDFBCodeMap != NULL) {
+			return;
+		}
+
+		gingaToDFBCodeMap = new map<int, int>;
+		dfbToGingaCodeMap = new map<int, int>;
+		pthread_mutex_init(&ieMutex, NULL);
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_NULL]              = DIKS_NULL;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_0]                 = DIKS_0;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_1]                 = DIKS_1;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_2]                 = DIKS_2;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_3]                 = DIKS_3;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_4]                 = DIKS_4;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_5]                 = DIKS_5;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_6]                 = DIKS_6;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_7]                 = DIKS_7;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_8]                 = DIKS_8;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_9]                 = DIKS_9;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_A]           = DIKS_SMALL_A;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_B]           = DIKS_SMALL_B;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_C]           = DIKS_SMALL_C;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_D]           = DIKS_SMALL_D;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_E]           = DIKS_SMALL_E;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_F]           = DIKS_SMALL_F;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_G]           = DIKS_SMALL_G;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_H]           = DIKS_SMALL_H;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_I]           = DIKS_SMALL_I;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_J]           = DIKS_SMALL_J;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_K]           = DIKS_SMALL_K;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_L]           = DIKS_SMALL_L;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_M]           = DIKS_SMALL_M;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_N]           = DIKS_SMALL_N;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_O]           = DIKS_SMALL_O;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_P]           = DIKS_SMALL_P;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_Q]           = DIKS_SMALL_Q;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_R]           = DIKS_SMALL_R;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_S]           = DIKS_SMALL_S;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_T]           = DIKS_SMALL_T;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_U]           = DIKS_SMALL_U;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_V]           = DIKS_SMALL_V;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_W]           = DIKS_SMALL_W;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_X]           = DIKS_SMALL_X;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_Y]           = DIKS_SMALL_Y;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SMALL_Z]           = DIKS_SMALL_Z;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_A]         = DIKS_CAPITAL_A;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_B]         = DIKS_CAPITAL_B;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_C]         = DIKS_CAPITAL_C;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_D]         = DIKS_CAPITAL_D;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_E]         = DIKS_CAPITAL_E;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_F]         = DIKS_CAPITAL_F;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_G]         = DIKS_CAPITAL_G;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_H]         = DIKS_CAPITAL_H;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_I]         = DIKS_CAPITAL_I;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_J]         = DIKS_CAPITAL_J;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_K]         = DIKS_CAPITAL_K;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_L]         = DIKS_CAPITAL_L;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_M]         = DIKS_CAPITAL_M;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_N]         = DIKS_CAPITAL_N;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_O]         = DIKS_CAPITAL_O;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_P]         = DIKS_CAPITAL_P;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_Q]         = DIKS_CAPITAL_Q;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_R]         = DIKS_CAPITAL_R;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_S]         = DIKS_CAPITAL_S;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_T]         = DIKS_CAPITAL_T;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_U]         = DIKS_CAPITAL_U;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_V]         = DIKS_CAPITAL_V;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_W]         = DIKS_CAPITAL_W;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_X]         = DIKS_CAPITAL_X;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_Y]         = DIKS_CAPITAL_Y;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CAPITAL_Z]         = DIKS_CAPITAL_Z;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PAGE_DOWN]         = DIKS_PAGE_DOWN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PAGE_UP]           = DIKS_PAGE_UP;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F1]                = DIKS_F1;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F2]                = DIKS_F2;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F3]                = DIKS_F3;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F4]                = DIKS_F4;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F5]                = DIKS_F5;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F6]                = DIKS_F6;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F7]                = DIKS_F7;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F8]                = DIKS_F8;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F9]                = DIKS_F9;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F10]               = DIKS_F10;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F11]               = DIKS_F11;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_F12]               = DIKS_F12;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PLUS_SIGN]         = DIKS_PLUS_SIGN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_MINUS_SIGN]        = DIKS_MINUS_SIGN;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_ASTERISK]          = DIKS_ASTERISK;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_NUMBER_SIGN]       = DIKS_NUMBER_SIGN;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PERIOD]            = DIKS_PERIOD;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SUPER]             = DIKS_SUPER;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PRINTSCREEN]       = DIKS_PRINT;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_MENU]              = DIKS_MENU;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_INFO]              = DIKS_INFO;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_EPG]               = DIKS_EPG;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CURSOR_DOWN]       = DIKS_CURSOR_DOWN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CURSOR_LEFT]       = DIKS_CURSOR_LEFT;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CURSOR_RIGHT]      = DIKS_CURSOR_RIGHT;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CURSOR_UP]         = DIKS_CURSOR_UP;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CHANNEL_DOWN]      = DIKS_CHANNEL_DOWN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_CHANNEL_UP]        = DIKS_CHANNEL_UP;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_VOLUME_DOWN]       = DIKS_VOLUME_DOWN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_VOLUME_UP]         = DIKS_VOLUME_UP;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_ENTER]             = DIKS_ENTER;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_OK]                = DIKS_OK;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_RED]               = DIKS_RED;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_GREEN]             = DIKS_GREEN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_YELLOW]            = DIKS_YELLOW;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_BLUE]              = DIKS_BLUE;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_BACKSPACE]         = DIKS_BACKSPACE;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_BACK]              = DIKS_BACK;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_ESCAPE]            = DIKS_ESCAPE;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_EXIT]              = DIKS_EXIT;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_POWER]             = DIKS_POWER;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_REWIND]            = DIKS_REWIND;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_STOP]              = DIKS_STOP;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_EJECT]             = DIKS_EJECT;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PLAY]              = DIKS_PLAY;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_RECORD]            = DIKS_RECORD;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_PAUSE]             = DIKS_PAUSE;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_GREATER_THAN_SIGN] = DIKS_GREATER_THAN_SIGN;
+		(*gingaToDFBCodeMap)[CodeMap::KEY_LESS_THAN_SIGN]    = DIKS_LESS_THAN_SIGN;
+
+		(*gingaToDFBCodeMap)[CodeMap::KEY_TAP]               = DIKS_CUSTOM0;
+
+        map<int, int>::iterator i;
+        i = gingaToDFBCodeMap->begin();
+        while (i != gingaToDFBCodeMap->end()) {
+		    (*dfbToGingaCodeMap)[i->second] = i->first;
+		    ++i;
+        }
+	}
+
+	/* output */
 	IDirectFBWindow* DFBDeviceScreen::getUnderlyingWindow(GingaWindowID winId) {
 		IDirectFBWindow* window = NULL;
 		DFBWindowID wid;
@@ -659,7 +863,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer = NULL;
 	IDirectFBSurface* DFBDeviceScreen::createUnderlyingSurface(
 			DFBSurfaceDescription* desc) {
 
-		IDirectFBSurface* surface;
+		IDirectFBSurface* surface = NULL;
 
 		if (dfb != NULL) {
 			DFBCHECK(dfb->CreateSurface(

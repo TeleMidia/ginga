@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define	_EXP_LOCALSCREENHANDLER_API 0
 #endif
 
+#include "mb/interface/CodeMap.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/InputManager.h"
 
@@ -73,7 +74,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-
 #if HAVE_COMPSUPPORT
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
@@ -105,6 +105,7 @@ namespace mb {
 				delete i->second;
 				++i;
 			}
+			screens->clear();
 			delete screens;
 			screens = NULL;
 		}
@@ -113,6 +114,7 @@ namespace mb {
 
 		lockSysNames();
 		if (sysNames != NULL) {
+			sysNames->clear();
 			delete sysNames;
 			sysNames = NULL;
 		}
@@ -191,6 +193,22 @@ namespace mb {
 		return gfxRoot;
 	}
 
+	void LocalScreenManager::releaseScreen(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->releaseScreen();
+		}
+	}
+
+	void LocalScreenManager::releaseMB(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->releaseMB();
+		}
+	}
+
 	void LocalScreenManager::clearWidgetPools(GingaScreenID screenId) {
 		IDeviceScreen* screen;
 
@@ -229,18 +247,49 @@ namespace mb {
 			string mbMode,
 			string mbParent) {
 
-		IDeviceScreen* screen;
-		GingaScreenID screenId;
+		IDeviceScreen* screen  = NULL;
 		GingaWindowID parentId = NULL;
-		short sysType, subSysType;
+		int argc               = 0;
+
+		short sysType;
+		GingaScreenID screenId;
+		char* mbArgs[4];
 
 		string params  = "";
-		string command = "ginga";
+		string mycmd   = "ginga";
+
 
 		screenId = getNumOfScreens();
-		getMBSystemType(mbSystem, &sysType, mbSubSystem, &subSysType);
+		getMBSystemType(mbSystem, &sysType);
 
 		switch (sysType) {
+			case GMBST_SDL:
+				argc         = 0;
+				mbArgs[argc] = (char*)mycmd.c_str();
+				argc++;
+
+				if (mbSubSystem != "") {
+					mbArgs[argc] = (char*)"subsystem";
+					argc++;
+
+					mbArgs[argc] = (char*)mbSubSystem.c_str();
+					argc++;
+				}
+
+				if (mbMode != "") {
+					mbArgs[argc] = (char*)"mode";
+					argc++;
+
+					mbArgs[argc] = (char*)mbMode.c_str();
+					argc++;
+				}
+
+#if HAVE_COMPSUPPORT
+				screen = ((ScreenCreator*)(cm->getObject(
+						"SDLDeviceScreen")))(argc, mbArgs, screenId, parentId);
+#endif
+				break;
+
 			case GMBST_TERM:
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject(
@@ -249,18 +298,10 @@ namespace mb {
 #endif
 				break;
 
-			case GMBST_SDL:
-#if HAVE_COMPSUPPORT
-				screen = ((ScreenCreator*)(cm->getObject(
-						"SDLDeviceScreen")))(0, NULL, screenId, parentId);
-#endif
-				break;
-
 			case GMBST_DFLT:
 			case GMBST_DFB:
 			default:
-				char* args[1];
-
+				argc   = 2;
 				params = "";
 
 				if (mbSubSystem != "") {
@@ -292,18 +333,15 @@ namespace mb {
 					params = params + ",no-sighandler,force-windowed";
 				}
 
-				clog << "LocalScreenManager::createScreen DFB params = '";
-				clog << params << "'" << endl;
-
-				args[0] = (char*)command.c_str();
-				args[1] = (char*)params.c_str();
+				mbArgs[0] = (char*)mycmd.c_str();
+				mbArgs[1] = (char*)params.c_str();
 
 #if HAVE_COMPSUPPORT
-				screen = ((ScreenCreator*)(cm->getObject(
-						"DFBDeviceScreen")))(2, args, screenId, parentId);
+				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
+						argc, mbArgs, screenId, parentId);
 
 #else
-				screen = new DFBDeviceScreen(2, args, screenId, parentId);
+				screen = new DFBDeviceScreen(argc, mbArgs, screenId, parentId);
 #endif
 				break;
 		}
@@ -314,15 +352,11 @@ namespace mb {
 	}
 
 	void LocalScreenManager::getMBSystemType(
-			string mbSystemName,
-			short* mbSystemType,
-			string mbSubSystemName,
-			short* mbSubSystemType) {
+			string mbSystemName, short* mbSystemType) {
 
 		map<string, short>::iterator i;
 
-		*mbSystemType    = GMBST_DFLT;
-		*mbSubSystemType = GMBSST_DFLT;
+		*mbSystemType = GMBST_DFLT;
 
 #if !HAVE_COMPSUPPORT
 		return;
@@ -333,11 +367,6 @@ namespace mb {
 		i = sysNames->find(mbSystemName);
 		if (i != sysNames->end()) {
 			*mbSystemType = i->second;
-		}
-
-		i = sysNames->find(mbSubSystemName);
-		if (i != sysNames->end()) {
-			*mbSubSystemType = i->second;
 		}
 
 		unlockSysNames();
@@ -373,6 +402,10 @@ namespace mb {
 
 		if (getScreen(screenId, &screen)) {
 			window = screen->createWindow(x, y, w, h);
+
+		} else {
+			clog << "LocalScreenManager::createWindow Warning! ";
+			clog << "can't find screen '" << screenId << "'" << endl;
 		}
 
 		return window;
@@ -588,6 +621,28 @@ namespace mb {
 		}
 
 		return iEvent;
+	}
+
+	int LocalScreenManager::fromMBToGinga(GingaScreenID screenId, int keyCode) {
+		IDeviceScreen* screen;
+		int translated = CodeMap::KEY_NULL;
+
+		if (getScreen(screenId, &screen)) {
+			translated = screen->fromMBToGinga(keyCode);
+		}
+
+		return translated;
+	}
+
+	int LocalScreenManager::fromGingaToMB(GingaScreenID screenId, int keyCode) {
+		IDeviceScreen* screen;
+		int translated = CodeMap::KEY_NULL;
+
+		if (getScreen(screenId, &screen)) {
+			translated = screen->fromGingaToMB(keyCode);
+		}
+
+		return translated;
 	}
 
 
