@@ -180,7 +180,7 @@ namespace mb {
 			virtual IInputEvent* createInputEvent(
 					GingaScreenID screenId, void* event, const int symbol)=0;
 
-			virtual IInputEvent* createUserEvent(
+			virtual IInputEvent* createApplicationEvent(
 					GingaScreenID screenId, int type, void* data)=0;
 
 			virtual int fromMBToGinga(GingaScreenID screenId, int keyCode)=0;

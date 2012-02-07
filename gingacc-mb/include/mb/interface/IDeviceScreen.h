@@ -77,7 +77,7 @@ namespace mb {
 			 *
 			 * If you are exiting from your program or if you are
 			 * removing all screens of a specific multimedia backend, call
-			 *    ds->releaseMB() before delete it
+			 * releaseMB() before delete it
 			 */
 			virtual ~IDeviceScreen(){};
 
@@ -141,7 +141,7 @@ namespace mb {
 			virtual IInputEvent* createInputEvent(
 					void* event, const int symbol)=0;
 
-			virtual IInputEvent* createUserEvent(int type, void* data)=0;
+			virtual IInputEvent* createApplicationEvent(int type, void* data)=0;
 			virtual int fromMBToGinga(int keyCode)=0;
 			virtual int fromGingaToMB(int keyCode)=0;
 

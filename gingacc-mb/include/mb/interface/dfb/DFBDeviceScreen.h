@@ -187,7 +187,7 @@ namespace mb {
 
 			IEventBuffer* createEventBuffer();
 			IInputEvent* createInputEvent(void* event, const int symbol);
-			IInputEvent* createUserEvent(int type, void* data);
+			IInputEvent* createApplicationEvent(int type, void* data);
 			int fromMBToGinga(int keyCode);
 			int fromGingaToMB(int keyCode);
 

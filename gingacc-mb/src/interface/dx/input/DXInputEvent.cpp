@@ -62,7 +62,7 @@ namespace mb {
 
 		this->pDidod = new DIDEVICEOBJECTDATA;
                 std::memcpy(pDidod, evt->getContent(), sizeof(*pDidod));
-		this->data = evt->getData();
+		this->data = evt->getApplicationData();
 		//this->m_mouseState = NULL;
 
 	}
@@ -135,10 +135,6 @@ namespace mb {
 			return DIMOFS_BUTTON0;
 			//return m_mouseState.rgbButtons
 		}
-	}
-
-	void DXInputEvent::setType(unsigned int type) {
-		//clog << "DXInputEvent::setType(unsigned int type)" << endl;
 	}
 
 	unsigned int DXInputEvent::getType() {
@@ -216,8 +212,8 @@ namespace mb {
 		}
 	}
 
-	bool DXInputEvent::isUserClass() {
-		//clog << "DXInputEvent::isUserClass()" << endl;
+	bool DXInputEvent::isApplicationType() {
+		//clog << "DXInputEvent::isApplicationType()" << endl;
 		if( (pDidod != NULL) && (pDidod->dwOfs == 0xFF)){
 			return true;
 		}
@@ -236,7 +232,7 @@ namespace mb {
 		//(*z) = pMouseState->lZ;
 	}
 
-	void* DXInputEvent::getData(){
+	void* DXInputEvent::getApplicationData(){
 		return data;
 	}
 }

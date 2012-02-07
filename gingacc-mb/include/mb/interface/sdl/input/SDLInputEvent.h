@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef SDLINPUTEVENT_H_
 #define SDLINPUTEVENT_H_
 
+#include "SDL.h"
+
 #include "mb/interface/IInputEvent.h"
 #include "mb/interface/CodeMap.h"
 
@@ -60,33 +62,35 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class SDLInputEvent : public IInputEvent {
+		public:
+			static const string ET_WAKEUP;
+			static const string ET_INPUTEVENT;
+			static const string ET_USEREVENT;
+
 		private:
+			SDL_Event* event;
 			int x;
 			int y;
 
 		public:
 			SDLInputEvent(void* event);
 			SDLInputEvent(const int keyCode);
-			SDLInputEvent(int clazz, int type, void* data);
 			SDLInputEvent(int type, void* data);
+
 			virtual ~SDLInputEvent();
 
-		private:
-			void initialize(int clazz, int type, void* data);
-
-		public:
 			void clearContent();
 			void setKeyCode(GingaScreenID screenId, const int keyCode);
 			const int getKeyCode(GingaScreenID screenId);
-			void setType(unsigned int type);
+
 			unsigned int getType();
-			void* getData();
+			void* getApplicationData();
 
 			bool isButtonPressType();
 			bool isMotionType();
 			bool isPressedType();
 			bool isKeyType();
-			bool isUserClass();
+			bool isApplicationType();
 
 			void setAxisValue(int x, int y, int z);
 			void getAxisValue(int* x, int* y, int* z);

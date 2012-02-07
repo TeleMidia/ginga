@@ -924,9 +924,9 @@ bool LuaPlayer::userEventReceived (IInputEvent* evt)
 {
 	this->lock();
 
-	if (evt->isUserClass()) {
+	if (evt->isApplicationType()) {
 //clog << ">recv " << L << " ref " << evt->getType() << endl;
-        lua_State* srcL = (lua_State*) evt->getData();
+        lua_State* srcL = (lua_State*) evt->getApplicationData();
         if (srcL == L) {
 //clog << "<recv " << L << endl;
 		    ext_postRef(this->L, evt->getType());

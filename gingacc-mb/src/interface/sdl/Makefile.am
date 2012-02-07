@@ -2,7 +2,7 @@
 # set the include path found by configure
 INCLUDES                   = \
                              -I/usr/local/include/ginga/ \
-                             -I/usr/local/include/SDL/ \
+                             -I/usr/local/include/SDL2/ \
                              -I$(top_srcdir)/include \
                              $(all_includes)
 

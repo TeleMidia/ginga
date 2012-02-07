@@ -89,12 +89,14 @@ namespace mb {
 		y = 0;
 	}
 
-	DFBGInputEvent::DFBGInputEvent(int clazz, int type, void* data) {
-		initialize(clazz, type, data);
-	}
-
 	DFBGInputEvent::DFBGInputEvent(int type, void* data) {
-		initialize(DFEC_USER, type, data);
+		event = (DFBEvent*)(new DFBUserEvent);
+		event->clazz = (DFBEventClass)DFEC_USER;
+		((DFBUserEvent*)event)->type = type;
+		((DFBUserEvent*)event)->data = data;
+
+		x = 0;
+		y = 0;
 	}
 
 	DFBGInputEvent::~DFBGInputEvent() {
@@ -102,23 +104,6 @@ namespace mb {
 			delete event;
 			event = NULL;
 		}
-	}
-
-	void DFBGInputEvent::initialize(int clazz, int type, void* data) {
-		if (clazz == DFEC_USER) {
-			event = (DFBEvent*)(new DFBUserEvent);
-			event->clazz = (DFBEventClass)clazz;
-			((DFBUserEvent*)event)->type = type;
-			((DFBUserEvent*)event)->data = data;
-
-		} else if (clazz == DFEC_INPUT) {
-			event = (DFBEvent*)(new DFBInputEvent);
-			event->clazz = (DFBEventClass)clazz;
-			((DFBInputEvent*)event)->type = (DFBInputEventType)type;
-		}
-
-		x = 0;
-		y = 0;
 	}
 
 	void DFBGInputEvent::clearContent() {
@@ -141,7 +126,7 @@ namespace mb {
 	}
 
 	const int DFBGInputEvent::getKeyCode(GingaScreenID screenId) {
-		int result;
+		int result = CodeMap::KEY_NULL;
 
 		if (event != NULL && event->clazz == DFEC_INPUT) {
 			if (((DFBInputEvent*)event)->type == DIET_BUTTONPRESS) {
@@ -195,14 +180,12 @@ namespace mb {
 			} else if (result == CodeMap::KEY_ESCAPE) {
 				result = CodeMap::KEY_EXIT;
 			}
-
-			return result;
-
 		}
-		return CodeMap::KEY_NULL;
+
+		return result;
 	}
 
-	void DFBGInputEvent::setType(unsigned int type) {
+	/*void DFBGInputEvent::setType(unsigned int type) {
 		if (event != NULL) {
 			if (event->clazz == DFEC_INPUT) {
 				((DFBInputEvent*)event)->type = (DFBInputEventType)type;
@@ -211,9 +194,9 @@ namespace mb {
 				((DFBUserEvent*)event)->type = (DFBInputEventType)type;
 			}
 		}
-	}
+	}*/
 
-	void* DFBGInputEvent::getData() {
+	void* DFBGInputEvent::getApplicationData() {
 		if (event != NULL) {
 			if (event->clazz == DFEC_USER) {
 				return ((DFBUserEvent*)event)->data;
@@ -263,7 +246,7 @@ namespace mb {
 		return false;
 	}
 
-	bool DFBGInputEvent::isUserClass() {
+	bool DFBGInputEvent::isApplicationType() {
 		if (event != NULL) {
 			return (event->clazz == DFEC_USER);
 		}

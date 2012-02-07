@@ -106,6 +106,10 @@ namespace mb {
 
 			SDL_Window* screen;
 
+			static pthread_mutex_t ieMutex;
+			static map<int, int>* gingaToSDLCodeMap;
+			static map<int, int>* sdlToGingaCodeMap;
+
 		public:
 			SDLDeviceScreen(
 					int numArgs, char** args,
@@ -171,7 +175,7 @@ namespace mb {
 
 			IEventBuffer* createEventBuffer();
 			IInputEvent* createInputEvent(void* event, const int symbol);
-			IInputEvent* createUserEvent(int type, void* data);
+			IInputEvent* createApplicationEvent(int type, void* data);
 
 			int fromMBToGinga(int keyCode);
 			int fromGingaToMB(int keyCode);
@@ -184,6 +188,10 @@ namespace mb {
 
 			/* libgingaccmbdfb internal use*/
 
+			/* input */
+			static void initCodeMaps();
+
+			/* output */
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
 			static SDL_Window* createUnderlyingWindow(void* desc);

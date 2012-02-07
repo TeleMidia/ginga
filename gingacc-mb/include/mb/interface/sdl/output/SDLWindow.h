@@ -57,6 +57,14 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "SDL.h"
 
+#ifndef Uint32
+typedef uint32_t Uint32;
+#endif
+
+#ifndef SDL_WindowID
+typedef Uint32 SDL_WindowID;
+#endif
+
 #include <iostream>
 #include <vector>
 using namespace std;

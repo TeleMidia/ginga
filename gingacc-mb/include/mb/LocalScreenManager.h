@@ -185,7 +185,7 @@ namespace mb {
 			IInputEvent* createInputEvent(
 					GingaScreenID screenId, void* event, const int symbol);
 
-			IInputEvent* createUserEvent(
+			IInputEvent* createApplicationEvent(
 					GingaScreenID screenId, int type, void* data);
 
 			int fromMBToGinga(GingaScreenID screenId, int keyCode);

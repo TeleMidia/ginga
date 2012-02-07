@@ -32,7 +32,7 @@ LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga /usr/local/include/directfb /usr/local/include/SDL; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga /usr/local/include/directfb /usr/local/include/SDL2; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi

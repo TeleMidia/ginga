@@ -76,26 +76,21 @@ namespace mb {
 		public:
 			DFBGInputEvent(void* event);
 			DFBGInputEvent(const int keyCode);
-			DFBGInputEvent(int clazz, int type, void* data);
 			DFBGInputEvent(int type, void* data);
 			virtual ~DFBGInputEvent();
 
-		private:
-			void initialize(int clazz, int type, void* data);
-
-		public:
 			void clearContent();
 			void setKeyCode(GingaScreenID screenId, const int keyCode);
 			const int getKeyCode(GingaScreenID screenId);
-			void setType(unsigned int type);
+
 			unsigned int getType();
-			void* getData();
+			void* getApplicationData();
 
 			bool isButtonPressType();
 			bool isMotionType();
 			bool isPressedType();
 			bool isKeyType();
-			bool isUserClass();
+			bool isApplicationType();
 
 			void setAxisValue(int x, int y, int z);
 			void getAxisValue(int* x, int* y, int* z);

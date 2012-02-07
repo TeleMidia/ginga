@@ -235,7 +235,7 @@ static int l_post (lua_State* L)
         int ref = luaL_ref(L, LUA_REGISTRYINDEX); // [ dst ]
 
         GETPLAYER(L)->im->postInputEvent(
-        		GETPLAYER(L)->getScreenManager()->createUserEvent(
+        		GETPLAYER(L)->getScreenManager()->createApplicationEvent(
         				GETPLAYER(L)->getScreenId(), ref, (void*)L));
 	}
 

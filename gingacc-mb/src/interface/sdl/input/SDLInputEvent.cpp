@@ -57,68 +57,99 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+
+	const string SDLInputEvent::ET_WAKEUP     = "GINGA_WAKEUP";
+	const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
+	const string SDLInputEvent::ET_USEREVENT  = "GINGA_USEREVENT";
+
 	SDLInputEvent::SDLInputEvent(void* event) {
+		this->event = (SDL_Event*)event;
+
 		x = 0;
 		y = 0;
 	}
 
 	SDLInputEvent::SDLInputEvent(const int keyCode) {
+		event = new SDL_Event;
+
+		event->type       = SDL_USEREVENT;
+		event->user.code  = keyCode;
+		event->user.data1 = (void*)(ET_INPUTEVENT.c_str());
+		event->user.data2 = NULL;
+
 		x = 0;
 		y = 0;
-	}
-
-	SDLInputEvent::SDLInputEvent(int clazz, int type, void* data) {
-		initialize(clazz, type, data);
 	}
 
 	SDLInputEvent::SDLInputEvent(int type, void* data) {
-		//initialize(DFEC_USER, type, data);
-	}
+		event = new SDL_Event;
 
-	SDLInputEvent::~SDLInputEvent() {
-
-	}
-
-	void SDLInputEvent::initialize(int clazz, int type, void* data) {
-		/*if (clazz == DFEC_USER) {
-			event = (SDLEvent*)(new SDLUserEvent);
-			event->clazz = (SDLEventClass)clazz;
-			((SDLUserEvent*)event)->type = type;
-			((SDLUserEvent*)event)->data = data;
-
-		} else if (clazz == DFEC_INPUT) {
-			event = (SDLEvent*)(new SDLInputEvent);
-			event->clazz = (SDLEventClass)clazz;
-			((SDLInputEvent*)event)->type = (SDLInputEventType)type;
-		}*/
+		event->type       = SDL_USEREVENT;
+		event->user.code  = type;
+		event->user.data1 = (void*)(ET_USEREVENT.c_str());
+		event->user.data2 = data;
 
 		x = 0;
 		y = 0;
 	}
 
-	void SDLInputEvent::clearContent() {
+	SDLInputEvent::~SDLInputEvent() {
+		if (event != NULL) {
+			delete event;
+			event = NULL;
+		}
+	}
 
+	void SDLInputEvent::clearContent() {
+		this->event = NULL;
 	}
 
 	void* SDLInputEvent::getContent() {
-		return NULL;
+		return event;
 	}
 
 	void SDLInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
+		int sdlCode;
 
+		if (event != NULL) {
+			sdlCode = LocalScreenManager::getInstance()->fromGingaToMB(
+					screenId, keyCode);
+
+			if (event->type == SDL_USEREVENT) {
+				event->user.code = sdlCode;
+
+			} else if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
+				event->key.keysym.sym = sdlCode;
+			}
+		}
 	}
 
 	const int SDLInputEvent::getKeyCode(GingaScreenID screenId) {
 		int result = CodeMap::KEY_NULL;
 
-		//if (event != NULL && event->clazz == DFEC_INPUT) {
+		if (event != NULL) {
+			if (event->type == SDL_FINGERUP ||
+					event->type == SDL_MOUSEBUTTONUP ||
+					event->type == SDL_TOUCHBUTTONUP) {
 
-			//int result = ((SDLInputEvent*)event)->key_symbol;
-			
+				return CodeMap::KEY_TAP;
+			}
+
+			if (event->type == SDL_USEREVENT) {
+				result = event->user.code;
+
+			} else if (event->type == SDL_KEYDOWN || event->type == SDL_KEYUP) {
+
+				result = event->key.keysym.sym;
+
+			} else {
+				return result;
+			}
+
 			result = LocalScreenManager::getInstance()->fromMBToGinga(
 					screenId, result);
 
-			//Maping between keyboard and remote control
+			//Mapping between keyboard and remote control
 			if (result == CodeMap::KEY_F1) {
 				result = CodeMap::KEY_RED;
 
@@ -158,74 +189,92 @@ namespace mb {
 			} else if (result == CodeMap::KEY_ESCAPE) {
 				result = CodeMap::KEY_EXIT;
 			}
+		}
 
-			//return result;
-
-		//}
-		//return CodeMap::KEY_NULL;
 		return result;
 	}
 
-	void SDLInputEvent::setType(unsigned int type) {
-		/*if (event != NULL) {
-			if (event->clazz == DFEC_INPUT) {
-				((SDLInputEvent*)event)->type = (SDLInputEventType)type;
+	void* SDLInputEvent::getApplicationData() {
+		if (isApplicationType()) {
+			return event->user.data2;
+		}
 
-			} else if (event->clazz == DFEC_USER) {
-				((SDLUserEvent*)event)->type = (SDLInputEventType)type;
-			}
-		}*/
-	}
-
-	void* SDLInputEvent::getData() {
 		return NULL;
 	}
 
 	unsigned int SDLInputEvent::getType() {
-		/*if (event != NULL) {
-			if (event->clazz == DFEC_INPUT) {
-				return ((SDLInputEvent*)event)->type;
+		unsigned int result = CodeMap::KEY_NULL;
 
-			} else if (event->clazz == DFEC_USER) {
-				return ((SDLUserEvent*)event)->type;
+		if (event != NULL) {
+			if (event->type == SDL_USEREVENT) {
+				result = event->user.code;
+
+			} else {
+				result = event->type;
 			}
-		}*/
-		return CodeMap::KEY_NULL;
+		}
+
+		return result;
 	}
 
 	bool SDLInputEvent::isButtonPressType() {
-		/*if (event != NULL && event->clazz == DFEC_INPUT) {
-			return (((SDLInputEvent*)event)->type == DIET_BUTTONPRESS);
-		}*/
+		if (event != NULL) {
+			if (event->type == SDL_FINGERUP ||
+					event->type == SDL_MOUSEBUTTONUP ||
+					event->type == SDL_TOUCHBUTTONUP ||
+					event->type == SDL_FINGERDOWN ||
+					event->type == SDL_MOUSEBUTTONDOWN ||
+					event->type == SDL_TOUCHBUTTONDOWN) {
+
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool SDLInputEvent::isMotionType() {
-		/*if (event != NULL && event->clazz == DFEC_INPUT) {
-			return (((SDLInputEvent*)event)->type == DIET_AXISMOTION);
-		}*/
+		if (event != NULL) {
+			if (event->type == SDL_MOUSEMOTION ||
+					event->type == SDL_FINGERMOTION) {
+
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool SDLInputEvent::isPressedType() {
-		/*if (event != NULL && event->clazz == DFEC_INPUT) {
-			return (((SDLInputEvent*)event)->type == DIET_KEYPRESS);
-		}*/
+		if (event != NULL) {
+			if (event->type == SDL_KEYDOWN) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool SDLInputEvent::isKeyType() {
-		/*if (event != NULL && event->clazz == DFEC_INPUT) {
-			return (((SDLInputEvent*)event)->type == DIET_KEYPRESS ||
-					((SDLInputEvent*)event)->type == DIET_KEYRELEASE);
-		}*/
+		if (event != NULL) {
+			if (event->type == SDL_KEYUP || event->type == SDL_KEYDOWN) {
+				return true;
+			}
+		}
 		return false;
 	}
 
-	bool SDLInputEvent::isUserClass() {
-		/*if (event != NULL) {
-			return (event->clazz == DFEC_USER);
-		}*/
+	bool SDLInputEvent::isApplicationType() {
+		if (event != NULL) {
+			if (event->type == SDL_USEREVENT &&
+					event->user.data1 != NULL &&
+					event->user.data2 != NULL) {
+
+				if (strcmp(
+						(char*)(event->user.data1),
+						ET_USEREVENT.c_str()) == 0) {
+
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 
@@ -235,61 +284,37 @@ namespace mb {
 	}
 
 	void SDLInputEvent::getAxisValue(int* x, int* y, int* z) {
-		/*if (event != NULL && ((SDLInputEvent*)event)->type == DIET_AXISMOTION) {
-			if (((SDLInputEvent*)event)->flags & DIEF_AXISABS) {
-				switch (((SDLInputEvent*)event)->axis) {
-					case DIAI_X:
-						*x = ((SDLInputEvent*)event)->axisabs;
-						break;
+		SDL_MouseMotionEvent* mouseEvent;
+		SDL_TouchFingerEvent* fingerEvent;
 
-					case DIAI_Y:
-						*y = ((SDLInputEvent*)event)->axisabs;
-						break;
+		*x = 0;
+		*y = 0;
+		*z = 0;
 
-					case DIAI_Z:
-						if (z != NULL) {
-							*z = ((SDLInputEvent*)event)->axisabs;
-						}
-						break;
+		if (event != NULL) {
+			if (event->type == SDL_MOUSEMOTION ||
+					event->type == SDL_MOUSEBUTTONUP ||
+					event->type == SDL_MOUSEBUTTONDOWN) {
 
-					default:
-						break;
-				}
+				mouseEvent = (SDL_MouseMotionEvent*)event;
 
-			} else if (((SDLInputEvent*)event)->flags & DIEF_AXISREL) {
-				switch (((SDLInputEvent*)event)->axis) {
-					case DIAI_X:
-						*x += ((SDLInputEvent*)event)->axisrel;
-						if (*x < 0) {
-							*x = 0;
-						}
-						break;
+				*x = mouseEvent->x;
+				*y = mouseEvent->y;
+				*z = 0;
 
-					case DIAI_Y:
-						*y += ((SDLInputEvent*)event)->axisrel;
-						if (*y < 0) {
-							*y = 0;
-						}
-						break;
+			} else if (event->type == SDL_FINGERMOTION ||
+					event->type == SDL_FINGERUP ||
+					event->type == SDL_TOUCHBUTTONUP ||
+					event->type == SDL_FINGERDOWN ||
+					event->type == SDL_TOUCHBUTTONDOWN) {
 
-					case DIAI_Z:
-						if (z != NULL) {
-							*z += ((SDLInputEvent*)event)->axisrel;
-							if (*z < 0) {
-								*z = 0;
-							}
-						}
-						break;
+				fingerEvent = (SDL_TouchFingerEvent*)event;
 
-					default:
-						break;
-				}
+				*x = fingerEvent->x;
+				*y = fingerEvent->y;
+				*z = 0;
 			}
-
-		} else if (isButtonPressType()) {
-			*x = this->x;
-			*y = this->y;
-		}*/
+		}
 	}
 }
 }

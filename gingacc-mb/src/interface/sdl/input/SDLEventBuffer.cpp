@@ -57,31 +57,99 @@ namespace ginga {
 namespace core {
 namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
-
+		pthread_mutex_init(&ebMutex, NULL);
+		eventBuffer = new vector<SDL_Event*>;
 	}
 
 	SDLEventBuffer::~SDLEventBuffer() {
+		vector<SDL_Event*>::iterator i;
 
+		pthread_mutex_lock(&ebMutex);
+		i = eventBuffer->begin();
+		while (i != eventBuffer->end()) {
+			delete *i;
+			++i;
+		}
+		eventBuffer->clear();
+		pthread_mutex_unlock(&ebMutex);
+		pthread_mutex_destroy(&ebMutex);
 	}
 
 	void SDLEventBuffer::wakeUp() {
+		SDL_Event event;
 
+		event.type       = SDL_USEREVENT;
+		event.user.code  = SDLK_APPLICATION;
+		event.user.data1 = (void*)(SDLInputEvent::ET_WAKEUP.c_str());
+		event.user.data2 = NULL;
+
+		SDL_PushEvent(&event);
 	}
 
 	void SDLEventBuffer::postInputEvent(IInputEvent* event) {
+		SDL_Event* ev;
 
+		if (event != NULL && event->getContent() != NULL) {
+			ev = (SDL_Event*)(event->getContent());
+			SDL_PushEvent(ev);
+		}
+
+		if (event != NULL) {
+			event->clearContent();
+			delete event;
+		}
 	}
 
 	void SDLEventBuffer::waitEvent() {
+		SDL_Event event;
 
+		pthread_mutex_lock(&ebMutex);
+		if (!eventBuffer->empty()) {
+			pthread_mutex_unlock(&ebMutex);
+			return;
+		}
+		pthread_mutex_unlock(&ebMutex);
+
+		if (SDL_WaitEvent(&event)) {
+			if (event.type == SDL_USEREVENT &&
+					event.user.code == SDLK_APPLICATION &&
+					event.user.data1 != NULL &&
+					event.user.data2 == NULL) {
+
+				if (strcmp(
+						(char*)event.user.data1,
+						SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
+
+					return;
+				}
+			}
+
+			pthread_mutex_lock(&ebMutex);
+			eventBuffer->push_back(&event);
+			pthread_mutex_unlock(&ebMutex);
+		}
 	}
 
 	IInputEvent* SDLEventBuffer::getNextEvent() {
-		return NULL;
+		SDL_Event* sdlEvent     = NULL;
+		IInputEvent* gingaEvent = NULL;
+		vector<SDL_Event*>::iterator i;
+
+		pthread_mutex_lock(&ebMutex);
+		if (eventBuffer != NULL && !eventBuffer->empty()) {
+			i = eventBuffer->begin();
+			sdlEvent = *i;
+			eventBuffer->erase(i);
+
+			gingaEvent = new SDLInputEvent((void*)sdlEvent);
+		}
+		pthread_mutex_unlock(&ebMutex);
+
+		return gingaEvent;
 	}
 
 	void* SDLEventBuffer::getContent() {
-		return NULL;
+		return (void*)eventBuffer;
 	}
 }
 }

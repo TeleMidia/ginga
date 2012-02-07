@@ -91,19 +91,19 @@ namespace mb {
 			void clearContent();
 			void setKeyCode(GingaScreenID screenId, const int keyCode);
 			const int getKeyCode(GingaScreenID screenId);
-			void setType(unsigned int type);
+
 			unsigned int getType();
 
 			bool isButtonPressType();
 			bool isMotionType();
 			bool isPressedType();
 			bool isKeyType();
-			bool isUserClass();
+			bool isApplicationType();
 
 			void setAxisValue(int x, int y, int z);
 			void getAxisValue(int* x, int* y, int* z);
 			void* getContent();
-			void* getData();
+			void* getApplicationData();
 	};
 }
 }

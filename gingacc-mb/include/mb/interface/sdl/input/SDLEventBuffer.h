@@ -53,7 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IEventBuffer.h"
 #include "mb/LocalScreenManager.h"
 
-#include <set>
+#include "SDL.h"
+
+#include <vector>
 using namespace std;
 
 namespace br {
@@ -63,6 +65,10 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class SDLEventBuffer : public IEventBuffer {
+		private:
+			pthread_mutex_t ebMutex;
+			vector<SDL_Event*>* eventBuffer;
+
 		public:
 			SDLEventBuffer(GingaScreenID screen);
 			~SDLEventBuffer();

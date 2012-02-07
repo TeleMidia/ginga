@@ -610,14 +610,14 @@ namespace mb {
 		return iEvent;
 	}
 
-	IInputEvent* LocalScreenManager::createUserEvent(
+	IInputEvent* LocalScreenManager::createApplicationEvent(
 			GingaScreenID screenId, int type, void* data) {
 
 		IDeviceScreen* screen;
 		IInputEvent* iEvent = NULL;
 
 		if (getScreen(screenId, &screen)) {
-			iEvent = screen->createUserEvent(type, data);
+			iEvent = screen->createApplicationEvent(type, data);
 		}
 
 		return iEvent;

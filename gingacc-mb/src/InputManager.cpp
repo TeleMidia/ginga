@@ -622,7 +622,7 @@ namespace mb {
 					}
 				}
 
-				if (inputEvent->isKeyType() || inputEvent->isUserClass()) {
+				if (inputEvent->isKeyType() || inputEvent->isApplicationType()) {
 					dispatchApplicationEvent(inputEvent);
 				}
 

@@ -66,10 +66,6 @@ namespace mb {
 		y = 0;
 	}
 
-	TermInputEvent::TermInputEvent(int clazz, int type, void* data) {
-
-	}
-
 	TermInputEvent::TermInputEvent(int type, void* data) {
 
 	}
@@ -99,11 +95,7 @@ namespace mb {
 		return CodeMap::KEY_NULL;
 	}
 
-	void TermInputEvent::setType(unsigned int type) {
-
-	}
-
-	void* TermInputEvent::getData() {
+	void* TermInputEvent::getApplicationData() {
 		return NULL;
 	}
 
@@ -127,7 +119,7 @@ namespace mb {
 		return false;
 	}
 
-	bool TermInputEvent::isUserClass() {
+	bool TermInputEvent::isApplicationType() {
 		return false;
 	}
 
@@ -145,26 +137,4 @@ namespace mb {
 }
 }
 }
-}
-
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-extern "C" IInputEvent* createInputEvent(void* event, const int symbol) {
-	if (event != NULL) {
-		return new TermInputEvent(event);
-	}
-
-	if (symbol >= 0) {
-		return new TermInputEvent(symbol);
-	}
-
-	return NULL;
-}
-
-extern "C" IInputEvent* createUserEvent(int type, void* data) {
-	return new TermInputEvent(0, type, data);
-}
-
-extern "C" void destroyInputEvent(IInputEvent* eb) {
-	delete eb;
 }

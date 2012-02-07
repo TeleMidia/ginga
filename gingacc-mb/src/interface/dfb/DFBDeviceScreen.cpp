@@ -80,6 +80,7 @@ const unsigned int DFBDeviceScreen::DSA_16x9      = 2;
 pthread_mutex_t DFBDeviceScreen::ieMutex;
 map<int, int>* DFBDeviceScreen::gingaToDFBCodeMap = NULL;
 map<int, int>* DFBDeviceScreen::dfbToGingaCodeMap = NULL;
+
 unsigned int DFBDeviceScreen::numOfDFBScreens     = 0;
 IDirectFB* DFBDeviceScreen::dfb                   = NULL;
 IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
@@ -627,8 +628,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		return NULL;
 	}
 
-	IInputEvent* DFBDeviceScreen::createUserEvent(int type, void* data) {
-		return new DFBGInputEvent(DFEC_USER, type, data);
+	IInputEvent* DFBDeviceScreen::createApplicationEvent(int type, void* data) {
+		return new DFBGInputEvent(type, data);
 	}
 
 	int DFBDeviceScreen::fromMBToGinga(int keyCode) {

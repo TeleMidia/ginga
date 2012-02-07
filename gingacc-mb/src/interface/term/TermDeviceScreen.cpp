@@ -214,7 +214,7 @@ namespace mb {
 		return NULL;
 	}
 
-	IInputEvent* TermDeviceScreen::createUserEvent(int type, void* data) {
+	IInputEvent* TermDeviceScreen::createApplicationEvent(int type, void* data) {
 		return NULL;
 	}
 

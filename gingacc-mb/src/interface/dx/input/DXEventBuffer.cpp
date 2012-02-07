@@ -121,7 +121,7 @@ namespace mb {
 
 		}else if(evt->isMotionType()){
 
-		}else if(evt->isUserClass()){
+		}else if(evt->isApplicationType()){
 			//DIDEVICEOBJECTDATA* didod = ((DIDEVICEOBJECTDATA*)evt->getContent());
 			userEventsPool->insert(evt);
 		}

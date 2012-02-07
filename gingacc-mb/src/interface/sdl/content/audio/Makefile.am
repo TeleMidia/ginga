@@ -2,7 +2,7 @@
 # set the include path found by configure
 INCLUDES                        = \
                                   -I/usr/local/include/ginga/ \
-                                  -I/usr/local/include/SDL/ \
+                                  -I/usr/local/include/SDL2/ \
                                   -I$(top_srcdir)/include \
                                   $(all_includes)
 
@@ -29,7 +29,7 @@ libgingaccmbdecsdlap_so_SOURCES = \
 libgingaccmbdecsdlap_so_LDADD   = \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
-                                  -lSDL -lavformat -lswscale -lSDL_ffmpeg
+                                  -lSDL2 -lavformat -lswscale -lSDL_ffmpeg
 endif #SDLFFMPEG
 
 endif #SDLSYSTEM

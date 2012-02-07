@@ -64,14 +64,14 @@ namespace mb {
 			virtual void clearContent()=0;
 			virtual void setKeyCode(GingaScreenID scrId, const int keyCode)=0;
 			virtual const int getKeyCode(GingaScreenID screenId)=0;
-			virtual void setType(unsigned int type)=0;
+
 			virtual unsigned int getType()=0;
-			virtual void* getData()=0;
+			virtual void* getApplicationData()=0;
 			virtual bool isButtonPressType()=0;
 			virtual bool isMotionType()=0;
 			virtual bool isPressedType()=0;
 			virtual bool isKeyType()=0;
-			virtual bool isUserClass()=0;
+			virtual bool isApplicationType()=0;
 			virtual void setAxisValue(int x, int y, int z)=0;
 			virtual void getAxisValue(int* x, int* y, int* z)=0;
 			virtual void* getContent()=0;
