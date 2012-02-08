@@ -345,10 +345,6 @@ namespace mb {
 		}
 	}
 
-	IColor* DFBWindow::getBgColor() {
-		return new Color(r, g, b, alpha);
-	}
-
 	void DFBWindow::setColorKey(int r, int g, int b) {
 		//clog << this << ">> DFBWindow::setColorKey" << endl;
 		//lock();
@@ -392,24 +388,6 @@ namespace mb {
 		unlock();
 	}
 
-	void DFBWindow::raise() {
-		lock();
-		if (win != NULL) {
-			win->Raise(win);
-			unprotectedValidate();
-		}
-		unlock();
-	}
-
-	void DFBWindow::lower() {
-		lock();
-		if (win != NULL) {
-			win->Lower(win);
-			unprotectedValidate();
-		}
-		unlock();
-	}
-
 	void DFBWindow::raiseToTop() {
 		lock();
 		if (win != NULL) {
@@ -442,14 +420,6 @@ namespace mb {
 			if (alpha == 255 || !ghost) {
 				win->SetOpacity(win, (255 - alpha));
 			}
-		}
-		unlock();
-	}
-
-	void DFBWindow::setOpaqueRegion(int x1, int y1, int x2, int y2) {
-		lock();
-		if (win != NULL) {
-			win->SetOpaqueRegion(win, x1, y1, x2, y2);
 		}
 		unlock();
 	}
@@ -931,21 +901,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		createDFBWindow(
-				GingaWindowID underlyingWindowID,
-				GingaWindowID parentWindowID,
-				GingaScreenID screenID,
-				int x, int y, int w, int h) {
-
-	return new ::br::pucrio::telemidia::ginga::core::mb::DFBWindow(
-			underlyingWindowID, parentWindowID, screenID, x, y, w, h);
-}
-
-extern "C" void destroyDFBWindow(
-		::br::pucrio::telemidia::ginga::core::mb::IWindow* w) {
-
-	delete w;
 }

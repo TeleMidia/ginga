@@ -17,6 +17,6 @@ localLib_PROGRAMS = libgingaccmbdectermf.so
 libgingaccmbdectermf_so_SOURCES = TermFontProvider.cpp
 
 libgingaccmbdectermf_so_LDADD = -lgingaccmbterm -lgingaccmb
-endif
+endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -63,7 +63,6 @@ namespace core {
 namespace mb {
 	class SDLAudioProvider : public IContinuousMediaProvider {
 		protected:
-			IDirectFBVideoProvider* decoder;
 			GingaScreenID myScreen;
 			string symbol;
 

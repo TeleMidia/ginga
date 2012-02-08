@@ -17,6 +17,6 @@ localLib_PROGRAMS = libgingaccmbdectermimg.so
 libgingaccmbdectermimg_so_SOURCES = TermImageProvider.cpp
 
 libgingaccmbdectermimg_so_LDADD = -lgingaccmbterm -lgingaccmb
-endif
+endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

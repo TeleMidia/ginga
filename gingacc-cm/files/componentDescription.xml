@@ -68,21 +68,30 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
-  <component package="gingacc-mb" name="libgingaccmbterm.so" version="0.13.1" type="dynamic">
-    <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
-    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
-    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
-    <symbol object="TermDeviceScreen" creator="createTermScreen" destroyer="destroyTermScreen" interface="IDeviceScreen"/>
-    <location type="local" uri="/usr/local/lib/ginga/mb"/>
-    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
-  </component>
-
   <component package="gingacc-mb" name="libgingaccmbdfb.so" version="0.13.1" type="dynamic">
     <dependency componentName="libdirectfb.so" version="1.3.0"/>
     <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
     <dependency componentName="libgingaccmb.so" version="0.13.1"/>
     <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
     <symbol object="DFBDeviceScreen" creator="createDFBScreen" destroyer="destroyDFBScreen" interface="IDeviceScreen"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-mb" name="libgingaccmbsdl.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <symbol object="SDLDeviceScreen" creator="createSDLScreen" destroyer="destroySDLScreen" interface="IDeviceScreen"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-mb" name="libgingaccmbterm.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <symbol object="TermDeviceScreen" creator="createTermScreen" destroyer="destroyTermScreen" interface="IDeviceScreen"/>
     <location type="local" uri="/usr/local/lib/ginga/mb"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

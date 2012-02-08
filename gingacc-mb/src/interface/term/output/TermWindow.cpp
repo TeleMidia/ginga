@@ -122,10 +122,6 @@ namespace mb {
 
 	}
 
-	IColor* TermWindow::getBgColor() {
-		return new Color(r, g, b, alpha);
-	}
-
 	void TermWindow::setColorKey(int r, int g, int b) {
 
 	}
@@ -138,14 +134,6 @@ namespace mb {
 
 	}
 
-	void TermWindow::raise() {
-
-	}
-
-	void TermWindow::lower() {
-
-	}
-
 	void TermWindow::raiseToTop() {
 
 	}
@@ -155,10 +143,6 @@ namespace mb {
 	}
 
 	void TermWindow::setCurrentTransparency(int alpha) {
-
-	}
-
-	void TermWindow::setOpaqueRegion(int x1, int y1, int x2, int y2) {
 
 	}
 
@@ -314,21 +298,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		createTermWindow(
-				GingaWindowID underlyingWindowID,
-				GingaWindowID parentWindowID,
-				GingaScreenID screenID,
-				int x, int y, int w, int h) {
-
-	return new ::br::pucrio::telemidia::ginga::core::mb::TermWindow(
-			underlyingWindowID, parentWindowID, screenID, x, y, w, h);
-}
-
-extern "C" void destroyTermWindow(
-		::br::pucrio::telemidia::ginga::core::mb::IWindow* w) {
-
-	delete w;
 }

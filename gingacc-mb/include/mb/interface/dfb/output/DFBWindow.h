@@ -130,16 +130,12 @@ namespace mb {
 			void draw();
 			void setBounds(int x, int y, int width, int height);
 			void setBackgroundColor(int r, int g, int b, int alpha);
-			IColor* getBgColor();
 			void setColorKey(int r, int g, int b);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
-			void raise();
-			void lower();
 			void raiseToTop();
 			void lowerToBottom();
 			void setCurrentTransparency(int alpha);
-			void setOpaqueRegion(int x1, int y1, int x2, int y2);
 			int getTransparencyValue();
 			GingaWindowID getId();
 			void show();

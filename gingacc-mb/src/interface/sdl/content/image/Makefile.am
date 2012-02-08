@@ -30,7 +30,7 @@ libgingaccmbdecsdlimg_so_LDADD   = \
                                    -lSDL2 \
                                    -lgingaccmbsdl \
                                    -lgingaccmb
-endif
+endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES             = \
                                    Makefile.in

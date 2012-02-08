@@ -81,7 +81,6 @@ namespace mb {
 			virtual IColor* getChromaColor()=0;
 			virtual void clearContent()=0;
 			virtual void clearSurface()=0;
-			virtual ISurface* getSubSurface(int x, int y, int w, int h)=0;
 			virtual void drawLine(int x1, int y1, int x2, int y2)=0;
 			virtual void drawRectangle(int x, int y, int w, int h)=0;
 			virtual void fillRectangle(int x, int y, int w, int h)=0;

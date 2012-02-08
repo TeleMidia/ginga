@@ -105,6 +105,7 @@ namespace mb {
 			pthread_mutex_t surMutex;
 
 			SDL_Window* screen;
+			SDL_Renderer* renderer;
 
 			static pthread_mutex_t ieMutex;
 			static map<int, int>* gingaToSDLCodeMap;
@@ -194,11 +195,12 @@ namespace mb {
 			/* output */
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
-			static SDL_Window* createUnderlyingWindow(void* desc);
+			static SDL_Texture* createTexture(
+					SDL_Renderer* renderer, SDL_Surface* surface);
 
-			static void releaseUnderlyingWindow(SDL_Window* uWin);
+			static void releaseTexture(SDL_Texture* uWin);
 
-			static SDL_Surface* createUnderlyingSurface(void* desc);
+			static SDL_Surface* createUnderlyingSurface(int width, int height);
 
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 	};

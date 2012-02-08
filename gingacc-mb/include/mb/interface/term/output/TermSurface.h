@@ -94,7 +94,6 @@ namespace mb {
 			IColor* getChromaColor();
 			void clearContent();
 			void clearSurface();
-			ISurface* getSubSurface(int x, int y, int w, int h);
 			void drawLine(int x1, int y1, int x2, int y2);
 			void drawRectangle(int x, int y, int w, int h);
 			void fillRectangle(int x, int y, int w, int h);

@@ -78,6 +78,19 @@ namespace mb {
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
+	const short LocalScreenManager::GMBST_DFLT   = 0;
+	const short LocalScreenManager::GMBST_DFB    = 1;
+	const short LocalScreenManager::GMBST_DX     = 2;
+	const short LocalScreenManager::GMBST_SDL    = 3;
+	const short LocalScreenManager::GMBST_TERM   = 4;
+
+	const short LocalScreenManager::GMBSST_DFLT  = 0;
+	const short LocalScreenManager::GMBSST_FBDEV = 1;
+	const short LocalScreenManager::GMBSST_X11   = 2;
+	const short LocalScreenManager::GMBSST_HWND  = 3;
+	const short LocalScreenManager::GMBSST_SDL   = 4;
+	const short LocalScreenManager::GMBSST_COCOA = 5;
+
 	LocalScreenManager::LocalScreenManager() {
 		screens  = new map<GingaScreenID, IDeviceScreen*>;
 		pthread_mutex_init(&scrMutex, NULL);
@@ -88,11 +101,12 @@ namespace mb {
 		(*sysNames)["dflt" ] = GMBST_DFLT;
 		(*sysNames)["dfb"  ] = GMBST_DFB;
 		(*sysNames)["dx"   ] = GMBST_DX;
-		(*sysNames)["term" ] = GMBST_TERM;
 		(*sysNames)["sdl"  ] = GMBST_SDL;
-		(*sysNames)["fbdev"] = GMBSST_FBDEV;
-		(*sysNames)["x11"  ] = GMBSST_X11;
-		(*sysNames)["hwnd" ] = GMBSST_HWND;
+		(*sysNames)["term" ] = GMBST_TERM;
+
+		sortSys.push_back(GMBST_DFB);
+		sortSys.push_back(GMBST_SDL);
+		sortSys.push_back(GMBST_TERM);
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
@@ -355,10 +369,15 @@ namespace mb {
 			string mbSystemName, short* mbSystemType) {
 
 		map<string, short>::iterator i;
+		vector<short>::iterator j;
+		bool foundit = false;
 
 		*mbSystemType = GMBST_DFLT;
 
 #if !HAVE_COMPSUPPORT
+		clog << "LocalScreenManager::getMBSystemType no component support! ";
+		clog << "Returning DEFAULT multimedia system";
+		clog << endl;
 		return;
 #endif
 
@@ -367,9 +386,59 @@ namespace mb {
 		i = sysNames->find(mbSystemName);
 		if (i != sysNames->end()) {
 			*mbSystemType = i->second;
+			foundit = true;
+
+		} else {
+			foundit = false;
+		}
+
+		if (!foundit || (foundit && !isAvailable(*mbSystemType))) {
+			foundit = false;
+			j = sortSys.begin();
+			while (j != sortSys.end()) {
+				if (*j != *mbSystemType) {
+					if (isAvailable(*j)) {
+						foundit = true;
+						*mbSystemType = *j;
+						break;
+					}
+				}
+				++j;
+			}
 		}
 
 		unlockSysNames();
+
+		if (!foundit) {
+			*mbSystemType = -1;
+		}
+	}
+
+	bool LocalScreenManager::isAvailable(short mbSysType) {
+		bool hasSys = false;
+		string screenName = "";
+
+#if HAVE_COMPSUPPORT
+		switch (mbSysType) {
+			case GMBST_SDL:
+				screenName = "SDLDeviceScreen";
+				break;
+
+			case GMBST_TERM:
+				screenName = "TermDeviceScreen";
+				break;
+
+			case GMBST_DFB:
+				screenName = "DFBDeviceScreen";
+				break;
+		}
+
+		if (screenName != "") {
+			hasSys = cm->isAvailable(screenName);
+		}
+#endif
+
+		return hasSys;
 	}
 
 	void LocalScreenManager::lockSysNames() {

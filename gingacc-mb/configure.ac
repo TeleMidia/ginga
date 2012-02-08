@@ -161,14 +161,77 @@ AM_CONDITIONAL([TERMSYSTEM], [test x$enable_term = xyes])
 sdl=no
 AC_ARG_ENABLE(sdl,
   [  --enable-sdl build project with SDL System support [[default=no]]],
-  enable_sdl="$enableval", enable_sdl=no)
+  enable_sdl="$enableval", 
+  enable_sdl=no
+)
+
+if test x$enable_sdl = xyes; then
+AC_HAVE_LIBRARY(SDL2, [], enable_sdl=no)
+fi
 
 if test x$enable_sdl = xno; then
-AC_MSG_WARN([
-*** Ginga SDL support will not be built.
-])
+AC_MSG_WARN([*** SDL2 lib not Found!])
+AC_MSG_WARN([*** Ginga SDL2 support will not be built.])
 fi
+
 AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
+
+##############
+# SDL_ffmpeg #
+##############
+sdlffmpeg=yes
+
+if test x$enable_sdl = xno; then
+sdlffmpeg=no
+else
+AC_HAVE_LIBRARY(SDL2_ffmpeg, [], sdlffmpeg=no)
+fi
+
+if test x$sdlffmpeg = xno; then
+AC_MSG_WARN([*** SDL2_ffmpeg lib not Found, disabling SDL support.])
+enable_sdl=no
+fi
+
+AM_CONDITIONAL([SDLFFMPEG], [test x$sdlffmpeg = xyes])
+
+#############
+# SDL_image #
+#############
+sdlimage=yes
+
+if test x$enable_sdl = xno; then
+sdlimage=no
+else
+AC_HAVE_LIBRARY(SDL2_image, [], sdlimage=no)
+fi
+
+if test x$sdlimage = xno; then
+AC_MSG_WARN([*** SDL2_image lib not Found, disabling SDL support.])
+enable_sdl=no
+sdlffmpeg=no
+fi
+
+AM_CONDITIONAL([SDLFFMPEG], [test x$sdlimage = xyes])
+
+###########
+# SDL_ttf #
+###########
+sdlttf=yes
+
+if test x$enable_sdl = xno; then
+sdlttf=no
+else
+AC_HAVE_LIBRARY(SDL2_ttf, [], sdlttf=no)
+fi
+
+if test x$sdlttf = xno; then
+AC_MSG_WARN([*** SDL2_ttf lib not Found, disabling SDL support.])
+sdlffmpeg=no
+sdlimage=no
+enable_sdl=no
+fi
+
+AM_CONDITIONAL([SDLFONT], [test x$sdlttf = xyes])
 
 #########################################
 # Checking if we have at least 1 system #
@@ -193,6 +256,9 @@ AC_ARG_ENABLE(fusionsound,
   [  --enable-fusionsound build project with FusionSound support [[default=yes]]],
   enable_fusionsound="$enableval", enable_fusionsound=yes)
 
+if test x$enable_dfb = xno; then
+enable_fusionsound=no
+else
 AC_HAVE_LIBRARY(
   fusionsound,
   [],
@@ -209,32 +275,10 @@ else
    AC_DEFINE(HAVE_FUSIONSOUND, 1, [Define to 1 if you have FusionSound support.])
    AC_MSG_RESULT([*** Ginga FusionSound support will be built.])
 fi
+fi
 
 AM_CONDITIONAL([FUSIONSOUND], [test x$enable_fusionsound = xyes])
 AC_SUBST(FUSIONSOUND_LIBS)
-
-##############
-# SDL_ffmpeg #
-##############
-sdlffmpeg=yes
-if test x$enable_sdl = xno; then
-AC_HAVE_LIBRARY(
-  SDL_ffmpeg,
-  [],
-  AC_MSG_WARN([*** SDL_ffmpeg lib not Found.])
-    sdlffmpeg=no
-)
-
-if test x$sdlffmpeg = xno; then
-   AC_MSG_WARN([*** Ginga SDL_ffmpeg support will not be built.])
-else
-   AC_MSG_RESULT([*** Ginga SDL_ffmpeg support will be built.])
-fi
-else
-sdlffmpeg=no
-fi
-
-AM_CONDITIONAL([SDLFFMPEG], [test x$sdlffmpeg = xyes])
 
 DVC_LIBS=
 
@@ -273,6 +317,10 @@ AC_ARG_ENABLE(xineprovider,
   [  --enable-xineprovider build project with xine provider support (in order to decode main A/V) [[default=no]]],
   enable_xineprovider="$enableval", enable_xineprovider=no)
 
+if test x$enable_dfb = xno; then
+enable_xineprovider=no
+else
+
 AC_CHECK_HEADER(
   [xine.h],
   [],
@@ -296,6 +344,7 @@ else
    AC_DEFINE(HAVE_XINEPROVIDER, 1, [Def to 1 if you don't have ginga xine provider support.])
    DVC_LIBS='/usr/src/ginga/deps/DirectFB-extra/lib/dvc/libdvc.la'
 fi
+fi
 
 AM_CONDITIONAL([XINEPROVIDER], [test x$enable_xineprovider = xyes])
 
@@ -307,6 +356,9 @@ AC_ARG_ENABLE(ffmpegprovider,
   [  --enable-ffmpegprovider build project with xine provider support (in order to decode main A/V) [[default=no]]],
   enable_ffmpegprovider="$enableval", enable_ffmpegprovider=no)
 
+if test x$enable_dfb = xno; then
+enable_ffmpegprovider=no
+else
 AC_CHECK_HEADER(
   [dvc/dvc.h],
   [],
@@ -334,6 +386,7 @@ else
    AC_MSG_RESULT([*** Ginga FFmpeg provider support will be built.])
    AC_DEFINE(HAVE_FFMPEGPROVIDER, 1, [Def to 1 if you have ginga ffmpeg provider support.])
    DVC_LIBS='/usr/src/ginga/deps/DirectFB-extra/lib/dvc/libdvc.la'
+fi
 fi
 
 AC_SUBST(FFMPEG_CFLAGS)
@@ -430,10 +483,15 @@ Build options:
   Terminal System Support          $enable_term
   SDL System Support               $enable_sdl
   
-  Providers:
-  FusionSound Provider Support     $enable_fusionsound
-  Xine Main AV Provider Support    $enable_xineprovider
-  FFmpeg Main AV Provider Support  $enable_ffmpegprovider
+  DFB Providers:
+  FusionSound                      $enable_fusionsound
+  Xine Main AV                     $enable_xineprovider
+  FFmpeg Main AV                   $enable_ffmpegprovider
+  
+  SDL Providers:
+  SDL2_image                       $sdlimage
+  SDL2_ffmpeg                      $sdlffmpeg
+  SDL2_ttf                         $sdlttf
   
   Component Support                $enable_components
   

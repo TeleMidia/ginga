@@ -12,7 +12,6 @@ if SDLSYSTEM
 localLibdir                     = \
                                   /usr/local/lib/ginga/mb/dec/
 
-if SDLFFMPEG #OR SDL_MIXER??
 libgingaccmbdecsdlap_so_LDFLAGS = \
                                   -Wl,-soname,libgingaccmbdecsdlap.so -shared \
 	                              -L/usr/local/lib \
@@ -29,9 +28,7 @@ libgingaccmbdecsdlap_so_SOURCES = \
 libgingaccmbdecsdlap_so_LDADD   = \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
-                                  -lSDL2 -lavformat -lswscale -lSDL_ffmpeg
-endif #SDLFFMPEG
-
+                                  -lSDL2 -lavformat -lswscale -lSDL2_ffmpeg
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

@@ -74,16 +74,12 @@ namespace mb {
 			virtual void draw()=0;
 			virtual void setBounds(int x, int y, int width, int height)=0;
 			virtual void setBackgroundColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBgColor()=0;
 			virtual void setColorKey(int r, int g, int b)=0;
 			virtual void moveTo(int x, int y)=0;
 			virtual void resize(int width, int height)=0;
-			virtual void raise()=0;
-			virtual void lower()=0;
 			virtual void raiseToTop()=0;
 			virtual void lowerToBottom()=0;
 			virtual void setCurrentTransparency(int alpha)=0;
-			virtual void setOpaqueRegion(int x1, int y1, int x2, int y2)=0;
 			virtual int getTransparencyValue()=0;
 			virtual GingaWindowID getId()=0;
 			virtual void show()=0;

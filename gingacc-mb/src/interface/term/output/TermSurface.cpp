@@ -166,10 +166,6 @@ namespace mb {
 		}
 	}
 
-	ISurface* TermSurface::getSubSurface(int x, int y, int w, int h) {
-		return NULL;
-	}
-
 	void TermSurface::drawLine(int x1, int y1, int x2, int y2) {
 
 	}
@@ -240,27 +236,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		createTermSurface(GingaScreenID screenId, void* sur, int w, int h) {
-
-	if (sur != NULL) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				TermSurface(screenId, sur));
-
-	} else if (w != 0 && h != 0) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				TermSurface(screenId, w, h));
-
-	} else {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				TermSurface(screenId));
-	}
-}
-
-extern "C" void destroyTermSurface(
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s) {
-
-	delete s;
 }

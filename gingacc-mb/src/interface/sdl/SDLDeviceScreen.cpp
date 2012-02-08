@@ -145,7 +145,9 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 		if (uId != NULL) {
 			cout << "SDLDeviceScreen::SDLDeviceScreen" << endl;
 			screen = SDL_CreateWindowFrom(uId);
-			SDL_GetWindowSize(screen, &wRes, &hRes);
+			if (screen != NULL) {
+				SDL_GetWindowSize(screen, &wRes, &hRes);
+			}
 
 		} else {
 			int x, y;
@@ -161,8 +163,8 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 						mbMode.length() - (mbMode.find_first_of("x")) + 1));
 
 			} else {
-				wRes = rect.w;
-				hRes = rect.h;
+				wRes = 1280;
+				hRes = 720;
 			}
 
 			if (wRes <= 0 || wRes > rect.w) {
@@ -177,6 +179,15 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 			y = (rect.h - hRes) / 2;
 
 			screen = SDL_CreateWindow(title.c_str(), x, y, wRes, hRes, 0);
+		}
+
+		if (screen != NULL) {
+			renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
+
+			if (renderer == NULL) {
+				renderer = SDL_CreateRenderer(
+						screen, -1, SDL_RENDERER_SOFTWARE);
+			}
 		}
 
 		initCodeMaps();
@@ -605,7 +616,7 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 	/* interfacing underlying multimedia system */
 
 	void* SDLDeviceScreen::getGfxRoot() {
-		return NULL;
+		return renderer;
 	}
 
 	/* libgingaccmbdfb internal use*/
@@ -778,28 +789,63 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 		return window;
 	}
 
-	SDL_Window* SDLDeviceScreen::createUnderlyingWindow(
-			void* desc) {
+	SDL_Texture* SDLDeviceScreen::createTexture(
+			SDL_Renderer* renderer, SDL_Surface* surface) {
 
-		SDL_Window* window = NULL;
+		SDL_Texture* texture;
 
-		return window;
+	    texture = SDL_CreateTextureFromSurface(renderer, surface);
+	    if (!texture) {
+	        cout << "SDLDeviceScreen::createTexture";
+	        cout << "Couldn't create texture: " << SDL_GetError();
+	        cout << endl;
+	        return NULL;
+	    }
+
+	    /* allowing alpha */
+	    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+		return texture;
 	}
 
-	void SDLDeviceScreen::releaseUnderlyingWindow(SDL_Window* uWin) {
-		SDL_DestroyWindow(uWin);
+	void SDLDeviceScreen::releaseTexture(SDL_Texture* texture) {
+		SDL_DestroyTexture(texture);
 	}
 
 	SDL_Surface* SDLDeviceScreen::createUnderlyingSurface(
-			void* desc) {
+			int width, int height) {
 
-		SDL_Surface* surface = NULL;
+		SDL_Surface* surface;
+		Uint32 rmask, gmask, bmask, amask;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+		rmask = 0xff000000;
+		gmask = 0x00ff0000;
+		bmask = 0x0000ff00;
+		amask = 0x000000ff;
+#else
+		rmask = 0x000000ff;
+		gmask = 0x0000ff00;
+		bmask = 0x00ff0000;
+		amask = 0xff000000;
+#endif
+
+		surface = SDL_CreateRGBSurface(
+				0, width, height, 32, rmask, gmask, bmask, amask);
+
+		if (surface == NULL) {
+			cout << "SDLDeviceScreen::createUnderlyingSurface Warning! ";
+			cout << "Can't create surface: " << SDL_GetError() << "'";
+			cout << endl;
+		}
+
+		//surface = SDL_CreateRGBSurface(0,width,height,32,0,0,0,0);
 
 		return surface;
 	}
 
 	void SDLDeviceScreen::releaseUnderlyingSurface(SDL_Surface* uSur) {
-
+		SDL_FreeSurface(uSur);
 	}
 }
 }

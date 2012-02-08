@@ -77,6 +77,7 @@ namespace cm {
 			virtual bool releaseComponentFromObject(string objName)=0;
 			virtual void refreshComponentDescription()=0;
 			virtual map<string, IComponent*>* getComponentDescription()=0;
+			virtual bool isAvailable(string objName)=0;
 
 		private:
 			virtual void* getComponent(string dLibName)=0;

@@ -203,11 +203,6 @@ namespace mb {
 		winProp.color = D3DCOLOR_ARGB(alpha, r, g, b);
 	}
 
-	IColor* DXWindow::getBgColor() {
-		clog << "DXWindow::getBgColor()" << endl;
-		return new Color(GetRValue(winProp.color), GetGValue(winProp.color), GetBValue(winProp.color));
-	}
-
 	void DXWindow::setColorKey(int r, int g, int b) {
 		clog << "DXWindow::setColorKey(r = " <<  r << ", g = " << g << ", b = " <<  b << ")" << endl;
 	}
@@ -234,22 +229,6 @@ namespace mb {
 		unlock();
 	}
 
-	void DXWindow::raise() {
-		clog << "DXWindow::raise()" << endl;
-		((*depthMap)[winProp.z]).remove(this);
-		winProp.z -= 0.002f;
-		((*depthMap)[winProp.z]).push_back(this);
-		win->setProperties(&winProp);
-	}
-
-	void DXWindow::lower() {
-		clog << "DXWindow::lower()" << endl;
-		((*depthMap)[winProp.z]).remove(this);
-		winProp.z += 0.002f;
-		((*depthMap)[winProp.z]).push_back(this);
-		win->setProperties(&winProp);
-	}
-
 	void DXWindow::raiseToTop() {
 		clog << "DXWindow::raiseToTop()" << endl;
 		lock();
@@ -274,11 +253,6 @@ namespace mb {
 	void DXWindow::setCurrentTransparency(int alpha) {
 		clog << "DXWindow::setCurrentTransparency(alpha = " << alpha << ")" << endl;
 		winProp.color =  (winProp.color & 0x00FFFFFF) | (alpha << 24);
-	}
-
-	void DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2) {
-		clog << "DXWindow::setOpaqueRegion(int x1, int y1, int x2, int y2)" << endl;
-		clog << "setOpaqueRegion: Not implemented yet" << endl; 
 	}
 
 	int DXWindow::getTransparencyValue() {
@@ -542,16 +516,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IWindow*
-		createDXWindow(int x, int y, int width, int height) {
-
-	return new ::br::pucrio::telemidia::ginga::core::mb::DXWindow(
-			x, y, width, height);
-}
-
-extern "C"  void destroyDXWindow(
-		::br::pucrio::telemidia::ginga::core::mb::IWindow* w) {
-	delete w;
 }

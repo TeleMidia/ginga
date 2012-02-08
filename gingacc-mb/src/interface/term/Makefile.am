@@ -30,6 +30,6 @@ libgingaccmbterm_so_SOURCES = \
 libgingaccmbterm_so_LDADD   = \
                              -ltelemidiautil -lpthread \
                              -lgingaccsystem -lgingaccmb
-endif
+endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -16,8 +16,7 @@ localLib_PROGRAMS = libgingaccmbdecdfbf.so
 
 libgingaccmbdecdfbf_so_SOURCES = DFBFontProvider.cpp
 
-libgingaccmbdecdfbf_so_LDADD = $(DFB_LIBS) -lgingaccmbdfb \
-    -lgingaccmb
-endif
+libgingaccmbdecdfbf_so_LDADD = $(DFB_LIBS) -lgingaccmbdfb -lgingaccmb
+endif #DFBSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -17,6 +17,6 @@ localLib_PROGRAMS = libgingaccmbdectermap.so
 libgingaccmbdectermap_so_SOURCES = TermAudioProvider.cpp
 
 libgingaccmbdectermap_so_LDADD = -lgingaccmbterm -lgingaccmb
-endif
+endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

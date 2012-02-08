@@ -240,11 +240,6 @@ namespace mb {
 		}
 	}
 
-	ISurface* DXSurface::getSubSurface(int x, int y, int w, int h) {
-		clog << "DXSurface::getSubSurface(int x, int y, int w, int h)" << endl;
-		return NULL;
-	}
-
 	void DXSurface::drawLine(int x1, int y1, int x2, int y2) {
 		clog << "DXSurface::drawLine(int x1, int y1, int x2, int y2)" << endl;
 	}
@@ -330,25 +325,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		createDXSurface(void* sur, int w, int h) {
-
-	if (sur != NULL) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::DXSurface(sur));
-
-	} else if (w != 0 || h != 0) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DXSurface(w, h));
-
-	} else {
-		return (new br::pucrio::telemidia::ginga::core::mb::
-				DXSurface());
-	}
-}
-
-extern "C" void destroyDXSurface(
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s) {
-	delete s;
 }

@@ -18,6 +18,6 @@ libgingaccmbdectermav_so_SOURCES = TermVideoProvider.cpp
 
 libgingaccmbdectermav_so_LDADD = -ltelemidiautil \
     -lgingaccmbterm -lgingaccmb -lgingaccsystem
-endif
+endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

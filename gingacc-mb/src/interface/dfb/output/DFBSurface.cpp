@@ -277,32 +277,6 @@ namespace mb {
 		DFBCHECK(sur->Clear(sur, 0, 0, 0, 0xFF));
 	}
 
-	ISurface* DFBSurface::getSubSurface(int x, int y, int w, int h) {
-		IDirectFBSurface* s = NULL;
-		ISurface* subSurface = NULL;
-		DFBRectangle rect;
-
-		if (this->sur == NULL) {
-			clog << "DFBSurface::getSubSurface Warning! ";
-			clog << "Can't get sub surface: ";
-			clog << "internal surface is NULL" << endl;
-			return NULL;
-		}
-
-		rect.x = x;
-		rect.y = y;
-		rect.w = w;
-		rect.h = h;
-
-		DFBCHECK(sur->GetSubSurface(sur, &rect, &s));
-
-		subSurface = LocalScreenManager::getInstance()->createSurfaceFrom(
-				myScreen, s);
-
-		subSurface->setParent(parent);
-		return subSurface;
-	}
-
 	void DFBSurface::drawLine(int x1, int y1, int x2, int y2) {
 		if (sur != NULL) {
 			sur->DrawLine(sur, x1, y1, x2, y2);
@@ -589,27 +563,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		createDFBSurface(GingaScreenID screenId, void* sur, int w, int h) {
-
-	if (sur != NULL) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface(screenId, sur));
-
-	} else if (w != 0 && h != 0) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface(screenId, w, h));
-
-	} else {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				DFBSurface(screenId));
-	}
-}
-
-extern "C" void destroyDFBSurface(
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s) {
-
-	delete s;
 }

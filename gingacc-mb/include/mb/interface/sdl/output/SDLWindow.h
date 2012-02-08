@@ -50,20 +50,15 @@ http://www.telemidia.puc-rio.br
 #ifndef SDLWINDOW_H_
 #define SDLWINDOW_H_
 
-#include "util/IColor.h"
+#include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
 
 #include "mb/interface/IWindow.h"
 
 #include "SDL.h"
 
-#ifndef Uint32
 typedef uint32_t Uint32;
-#endif
-
-#ifndef SDL_WindowID
 typedef Uint32 SDL_WindowID;
-#endif
 
 #include <iostream>
 #include <vector>
@@ -77,20 +72,20 @@ namespace core {
 namespace mb {
 	class SDLWindow : public IWindow {
 		private:
-			SDL_Window* win;
+			SDL_Texture* texture;
 			SDL_Surface* winSur;
 
 			GingaScreenID myScreen;
-			SDL_WindowID windowId;
-			SDL_WindowID parentId;
-			int x;
-			int y;
-			int width;
-			int height;
-			int r;
-			int g;
-			int b;
-			int alpha;
+			GingaWindowID windowId;
+			GingaWindowID parentId;
+
+			SDL_Rect rect;
+
+			int borderWidth;
+			IColor* bgColor;
+			IColor* borderColor;
+			IColor* winColor;
+			IColor* colorKey;
 			int transparencyValue;
 			bool visible;
 			bool ghost;
@@ -120,6 +115,11 @@ namespace mb {
 					GingaScreenID screenId,
 					int x, int y, int width, int height);
 
+			void releaseBGColor();
+			void releaseWinColor();
+			void releaseColorKey();
+			void releaseBorderColor();
+
 		public:
 			GingaScreenID getScreen();
 			void revertContent();
@@ -132,16 +132,15 @@ namespace mb {
 			void draw();
 			void setBounds(int x, int y, int width, int height);
 			void setBackgroundColor(int r, int g, int b, int alpha);
-			IColor* getBgColor();
 			void setColorKey(int r, int g, int b);
+			void setColor(int r, int g, int b, int alpha=255);
+			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
+			void setBorder(IColor* color, int bWidth=1);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
-			void raise();
-			void lower();
 			void raiseToTop();
 			void lowerToBottom();
 			void setCurrentTransparency(int alpha);
-			void setOpaqueRegion(int x1, int y1, int x2, int y2);
 			int getTransparencyValue();
 			GingaWindowID getId();
 			void show();
@@ -155,9 +154,6 @@ namespace mb {
 			void setW(int w);
 			void setH(int h);
 			void* getContent();
-			void setColor(int r, int g, int b, int alpha=255);
-			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
-			void setBorder(IColor* color, int bWidth=1);
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();

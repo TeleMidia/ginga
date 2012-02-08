@@ -31,7 +31,7 @@ libgingaccmbsdl_so_SOURCES = \
                              output/SDLWindow.cpp
 
 libgingaccmbsdl_so_LDADD   = \
-                             $(SDL_LIBS) -ltelemidiautil -lpthread \
+                             -lSDL2 -ltelemidiautil -lpthread \
                              -lgingaccsystem -lgingaccmb
 endif #SDLSYSTEM
 

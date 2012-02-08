@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "IComponentManager.h"
 #include "component/IComponent.h"
 
+#include <pthread.h>
+
 #include <map>
 using namespace std;
 
@@ -68,6 +70,8 @@ namespace cm {
 			map<string, IComponent*>* symbols;
 			map<string, set<string>*>* parentObjects;
 			map<string, set<string>*>* unsolvedDependencies;
+
+			pthread_mutex_t mapMutex;
 
 			static ComponentManager* _instance;
 			ComponentManager();
@@ -93,6 +97,8 @@ namespace cm {
 		public:
 			void refreshComponentDescription();
 			map<string, IComponent*>* getComponentDescription();
+
+			bool isAvailable(string objName);
 	};
 }
 }

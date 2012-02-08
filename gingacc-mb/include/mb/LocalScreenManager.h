@@ -79,10 +79,29 @@ namespace mb {
 	class LOCALSCREENHANDLER_API LocalScreenManager :
 			public ILocalScreenManager {
 
+		public:
+			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
+										     /* System Description  String   */
+			static const short GMBST_DFLT;   /* Default system:      dflt    */
+			static const short GMBST_DFB;    /* DirectFB:            dfb     */
+			static const short GMBST_DX;     /* DirectX:             dx      */
+			static const short GMBST_SDL;    /* SDL:                 sdl     */
+			static const short GMBST_TERM;   /* Teminal:             term    */
+
+			/* Ginga defining its Multimedia Backend SubSystem Types (GMBSST)*/
+											 /* System Description  String   */
+			static const short GMBSST_DFLT;  /* Default subsystem:  dflt     */
+			static const short GMBSST_FBDEV; /* Frame buffer:       fbdev    */
+			static const short GMBSST_X11;   /* X11:                x11      */
+			static const short GMBSST_HWND;  /* MS-W Window Handle: hwnd     */
+			static const short GMBSST_SDL;   /* SDL:                sdl      */
+			static const short GMBSST_COCOA; /* COCOA:              cocoa    */
+
 		private:
 			map<GingaScreenID, IDeviceScreen*>* screens;
 			pthread_mutex_t scrMutex;
 
+			vector<short> sortSys;
 			map<string, short>* sysNames;
 			pthread_mutex_t sysMutex;
 
@@ -121,6 +140,7 @@ namespace mb {
 
 			void getMBSystemType(string mbSystemName, short* mbSystemType);
 
+			bool isAvailable(short mbSysType);
 			void lockSysNames();
 			void unlockSysNames();
 

@@ -72,19 +72,9 @@ namespace mb {
 	}
 
 	SDLSurface::SDLSurface(GingaScreenID screenId, int w, int h) {
-		/*SDLSurfaceDescription surDsc;
-
 		initialize(screenId);
 
-		surDsc.width = w;
-		surDsc.height = h;
-		surDsc.pixelformat = DSPF_LUT8;
-		surDsc.caps = (SDLSurfaceCapabilities)(DSCAPS_ALL);
-		surDsc.flags = (SDLSurfaceDescriptionFlags)(
-				DSDESC_CAPS | DSDESC_WIDTH |
-				DSDESC_HEIGHT | DSDESC_PIXELFORMAT);
-
-		this->sur = SDLDeviceScreen::createUnderlyingSurface(&surDsc);*/
+		this->sur = SDLDeviceScreen::createUnderlyingSurface(w, h);
 	}
 
 	SDLSurface::~SDLSurface() {
@@ -94,6 +84,19 @@ namespace mb {
 		}
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
+
+		if (sur != NULL) {
+			if (parent != NULL) {
+				if (parent->removeChildSurface(this)) {
+					SDLDeviceScreen::releaseUnderlyingSurface(sur);
+				}
+
+			} else {
+				SDLDeviceScreen::releaseUnderlyingSurface(sur);
+			}
+
+			sur = NULL;
+		}
 	}
 
 	void SDLSurface::initialize(GingaScreenID screenId) {
@@ -126,15 +129,6 @@ namespace mb {
 	}
 
 	int SDLSurface::getCap(string cap) {
-		/*if (cap == "ALL") {
-			return DWCAPS_ALL;
-		} else if (cap == "NOSTRUCTURE") {
-			return DWCAPS_NODECORATION;
-		} else if (cap == "ALPHACHANNEL") {
-			return DWCAPS_ALPHACHANNEL;
-		} else {
-			return DWCAPS_NONE;
-		}*/
 		return 0;
 	}
 
@@ -147,17 +141,19 @@ namespace mb {
 	}
 
 	void SDLSurface::setContent(void* surface) {
-		/*if (this->sur != NULL && surface != NULL) {
+		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				SDLDeviceScreen::releaseUnderlyingSurface(sur);
 				sur = NULL;
 			}
 		}
-		this->sur = (IDirectFBSurface*)surface;*/
+
+		this->sur = (SDL_Surface*)surface;
 	}
 
 	bool SDLSurface::setParent(void* parentWindow) {
-		/*this->parent = (IWindow*)parentWindow;
+		this->parent = (IWindow*)parentWindow;
+
 		if (parent != NULL && chromaColor != NULL) {
 			parent->setColorKey(
 				    chromaColor->getR(),
@@ -166,18 +162,12 @@ namespace mb {
 		}
 
 		if (this->sur == NULL && parent != NULL) {
-			IDirectFBWindow* wgWin;
-
-			wgWin = (IDirectFBWindow*)(parent->getContent());
-			SDLCHECK(wgWin->GetSurface(wgWin, &sur));
-			SDLCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-			parent->setReleaseListener(this);
 			return false;
 		}
 
 		if (parent != NULL) {
 			parent->addChildSurface(this);
-		}*/
+		}
 		return true;
 	}
 
@@ -193,8 +183,9 @@ namespace mb {
 
 		this->chromaColor = color;
 
-		/*if (sur != NULL) {
-			SDLCHECK(sur->SetSrcColorKey(
+		if (sur != NULL) {
+			SDL_SetColorKey(sur, 1, 0);
+			/*SDLCHECK(sur->SetSrcColorKey(
 					sur,
 				    chromaColor->getR(),
 				    chromaColor->getG(),
@@ -202,13 +193,8 @@ namespace mb {
 
 			SDLCHECK(sur->SetBlittingFlags(sur,
 					(SDLSurfaceBlittingFlags)(
-							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));
-
-		} else {
-			clog << "SDLSurface::setChromaColor Warning! ";
-			clog << "Can't set chroma color: ";
-			clog << "internal surface is NULL" << endl;
-		}*/
+							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));*/
+		}
 	}
 
 	IColor* SDLSurface::getChromaColor() {
@@ -217,13 +203,9 @@ namespace mb {
 
 	void SDLSurface::clearContent() {
 		if (sur == NULL) {
-			clog << "SDLSurface::clearContent Warning! ";
-			clog << "Can't clear content: ";
-			clog << "internal surface is NULL" << endl;
 			return;
 		}
 
-		//sur->Clear(sur, 0, 0, 0, 0xFF);
 		if (parent != NULL) {
 			parent->clearContent();
 		}
@@ -231,40 +213,10 @@ namespace mb {
 
 	void SDLSurface::clearSurface() {
 		if (sur == NULL) {
-			clog << "SDLSurface::clearSurface Warning! ";
-			clog << "Can't clear surface: ";
-			clog << "internal surface is NULL" << endl;
 			return;
 		}
 
 		//sur->Clear(sur, 0, 0, 0, 0xFF);
-	}
-
-	ISurface* SDLSurface::getSubSurface(int x, int y, int w, int h) {
-		/*IDirectFBSurface* s = NULL;
-		ISurface* subSurface = NULL;
-		SDLRectangle rect;
-
-		if (this->sur == NULL) {
-			clog << "SDLSurface::getSubSurface Warning! ";
-			clog << "Can't get sub surface: ";
-			clog << "internal surface is NULL" << endl;
-			return NULL;
-		}
-
-		rect.x = x;
-		rect.y = y;
-		rect.w = w;
-		rect.h = h;
-
-		SDLCHECK(sur->GetSubSurface(sur, &rect, &s));
-
-		subSurface = LocalScreenManager::getInstance()->createSurfaceFrom(
-				myScreen, s);
-
-		subSurface->setParent(parent);
-		return subSurface;*/
-		return NULL;
 	}
 
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
@@ -383,27 +335,4 @@ namespace mb {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::ISurface*
-		createSDLSurface(GingaScreenID screenId, void* sur, int w, int h) {
-
-	if (sur != NULL) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				SDLSurface(screenId, sur));
-
-	} else if (w != 0 && h != 0) {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				SDLSurface(screenId, w, h));
-
-	} else {
-		return (new ::br::pucrio::telemidia::ginga::core::mb::
-				SDLSurface(screenId));
-	}
-}
-
-extern "C" void destroySDLSurface(
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s) {
-
-	delete s;
 }

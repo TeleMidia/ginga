@@ -51,6 +51,10 @@ http://www.telemidia.puc-rio.br
 #include "cm/ComponentManager.h"
 #include "cm/parser/IComponentParser.h"
 
+extern "C" {
+#include <unistd.h>
+}
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -62,6 +66,8 @@ namespace cm {
 		this->symbols              = NULL;
 		this->parentObjects        = NULL;
 		this->unsolvedDependencies = NULL;
+
+		pthread_mutex_init(&mapMutex, NULL);
 	}
 
 	ComponentManager::~ComponentManager() {
@@ -76,6 +82,7 @@ namespace cm {
 		set<string>* childs;
 		map<string, set<string>*>::iterator i;
 
+		pthread_mutex_lock(&mapMutex);
 		if (parentObjects != NULL) {
 			i = parentObjects->begin();
 			while (i != parentObjects->end()) {
@@ -108,7 +115,11 @@ namespace cm {
 			delete unsolvedDependencies;
 			unsolvedDependencies = NULL;
 		}
+
+		pthread_mutex_unlock(&mapMutex);
+		pthread_mutex_destroy(&mapMutex);
 	}
+
 	ComponentManager* ComponentManager::_instance = NULL;
 
 	ComponentManager* ComponentManager::getInstance() {
@@ -147,7 +158,9 @@ namespace cm {
 	void* ComponentManager::getObject(string objectName) {
 		IComponent* c;
 		void* comp;
+		void* symbol;
 
+		pthread_mutex_lock(&mapMutex);
 		if (symbols == NULL || components == NULL) {
 			refreshComponentDescription();
 		}
@@ -155,16 +168,20 @@ namespace cm {
 		if (symbols->count(objectName) == 0) {
 			clog << "ComponentManager::getObject warning! '" << objectName;
 			clog << "' symbol not found!" << endl;
+
+			pthread_mutex_unlock(&mapMutex);
 			return NULL;
 		}
 
 		c = (*symbols)[objectName];
+		pthread_mutex_unlock(&mapMutex);
 
 		if (c != NULL) {
 			comp = this->getComponent(c->getName());
 			if (comp != NULL) {
 				c->setComponent(comp);
-				return getSymbol(comp, c->getCreatorSymbol(objectName));
+				symbol = getSymbol(comp, c->getCreatorSymbol(objectName));
+				return symbol;
 			}
 
 		} else {
@@ -217,12 +234,9 @@ namespace cm {
 				clog << "Warning! object '" << objName;
 				clog << "' was not released." << endl;
 			}
-
-			return false;
-
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	bool ComponentManager::releaseComponent(void* component) {
@@ -271,7 +285,47 @@ namespace cm {
 	}
 
 	map<string, IComponent*>* ComponentManager::getComponentDescription() {
-		return components;
+		map<string, IComponent*>* compdesc;
+
+		pthread_mutex_lock(&mapMutex);
+		compdesc = new map<string,IComponent*>(*components);
+		pthread_mutex_unlock(&mapMutex);
+
+		return compdesc;
+	}
+
+	bool ComponentManager::isAvailable(string objName) {
+		IComponent* c;
+		string url;
+
+		pthread_mutex_lock(&mapMutex);
+		if (symbols->count(objName) == 0) {
+			pthread_mutex_unlock(&mapMutex);
+			clog << "ComponentManager::isAvailable Can't find symbol for '";
+			clog << objName << "'! Returning false" << endl;
+			return false;
+		}
+
+		c = (*symbols)[objName];
+		if (c != NULL) {
+			url = c->getLocation() + "/" + c->getName();
+			if (access(url.c_str(), F_OK) == 0) {
+				pthread_mutex_unlock(&mapMutex);
+				return true;
+
+			} else {
+				clog << "ComponentManager::isAvailable ";
+				clog << "File not found: '" << url << "'! Returning false";
+				clog << endl;
+			}
+
+		} else {
+			clog << "ComponentManager::isAvailable Null Component for symbol '";
+			clog << objName << "'! Returgning false" << endl;
+		}
+
+		pthread_mutex_unlock(&mapMutex);
+		return false;
 	}
 }
 }

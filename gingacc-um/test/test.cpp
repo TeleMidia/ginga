@@ -82,8 +82,6 @@ int main() {
 	up->setLocation(localUri);
 	up->start();
 
-	comps = cm->getComponentDescription();
-
 	as = ((ComponentDescriptionCreator*)(
 			cm->getObject("ComponentDescription")))(comps);
 
