@@ -48,13 +48,17 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "util/Color.h"
+#include "util/functions.h"
 
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/dfb/output/DFBWindow.h"
 #include "mb/interface/dfb/output/DFBSurface.h"
 #include "mb/interface/dfb/DFBDeviceScreen.h"
 
+extern "C" {
+#include <unistd.h>
 #include <stdlib.h>
+}
 
 /* macro for a safe call to DirectFB functions */
 #ifdef DFBCHECK
@@ -850,7 +854,8 @@ namespace mb {
 			remove((char*)((uri + ".pgm").c_str()));
 			winSur->Dump(winSur, "/tmp", "dump");
 
-			if (fileExists(uri + ".ppm")) {
+			uri = uri + ".ppm";
+			if (access(uri.c_str(), F_OK) == 0) {
 				strCmd = ("convert -quality " + itos(quality) + " " +
 						"-resize " + itos(dumpW) + "x" + itos(dumpH) + " " +
 						//"-colors 32 " +

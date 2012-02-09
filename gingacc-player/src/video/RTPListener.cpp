@@ -58,6 +58,7 @@ namespace player {
 	RTPListener::RTPListener(string url) {
 		this->fd  = -1;
 		this->url = "";
+
 		this->icm = NULL;
 		this->ic  = NULL;
 

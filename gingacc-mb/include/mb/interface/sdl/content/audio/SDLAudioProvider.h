@@ -50,7 +50,31 @@ http://www.telemidia.puc-rio.br
 #ifndef SDLAUDIOPROVIDER_H_
 #define SDLAUDIOPROVIDER_H_
 
+#include "system/thread/Thread.h"
+using namespace br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "mb/interface/IContinuousMediaProvider.h"
+
+/* SDL_ffmpeg cplusplus compat begin */
+extern "C" {
+#include <stdint.h>
+}
+
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#endif //INT64_C
+
+#ifndef UINT64_C
+#define UINT64_C(c) (c ## ULL)
+#endif //UINT64_C
+
+/* SDL_ffmpeg cplusplus compat end*/
+
+#include <cmath>
+
+#include "SDL.h"
+#include "SDL_thread.h"
+#include "SDL_ffmpeg.h"
 
 #include <set>
 using namespace std;
@@ -61,10 +85,23 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLAudioProvider : public IContinuousMediaProvider {
+	class SDLAudioProvider : public IContinuousMediaProvider, public Thread {
 		protected:
+			static const short ST_PLAYING = 0;
+			static const short ST_PAUSED  = 1;
+			static const short ST_STOPPED = 2;
+			static const short BUF_SIZE   = 10;
+
 			GingaScreenID myScreen;
 			string symbol;
+			bool running;
+			short state;
+
+			SDL_mutex* mutex;
+			SDL_ffmpegFile* file;
+			SDL_AudioSpec specs;
+			SDL_ffmpegAudioFrame* audioFrame[BUF_SIZE];
+			uint64_t sync;
 
 		public:
 			SDLAudioProvider(GingaScreenID screenId, const char* mrl);
@@ -78,7 +115,6 @@ namespace mb {
 			void* getContent();
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
 			ISurface* getPerfectSurface();
-			static void dynamicRenderCallBack(void* dec);
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();
@@ -93,6 +129,12 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 			void getOriginalResolution(int* height, int* width);
+
+		protected:
+			static void audioCallback(void* data, Uint8* stream, int len);
+			virtual uint64_t getSync();
+
+			virtual void run();
 	};
 }
 }

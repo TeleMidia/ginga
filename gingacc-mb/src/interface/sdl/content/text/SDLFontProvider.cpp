@@ -56,39 +56,64 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	/*const short SDLFontProvider::A_LEFT = DSTF_LEFT;
-	const short SDLFontProvider::A_CENTER = DSTF_CENTER;
-	const short SDLFontProvider::A_RIGHT = DSTF_RIGHT;
+	const short SDLFontProvider::A_LEFT          = 0;
+	const short SDLFontProvider::A_CENTER        = 1;
+	const short SDLFontProvider::A_RIGHT         = 2;
 
-	const short SDLFontProvider::A_TOP = DSTF_TOP;
-	const short SDLFontProvider::A_TOP_CENTER = DSTF_TOPCENTER;
-	const short SDLFontProvider::A_TOP_LEFT = DSTF_TOPLEFT;
-	const short SDLFontProvider::A_TOP_RIGHT = DSTF_TOPRIGHT;
+	const short SDLFontProvider::A_TOP           = 3;
+	const short SDLFontProvider::A_TOP_CENTER    = 4;
+	const short SDLFontProvider::A_TOP_LEFT      = 5;
+	const short SDLFontProvider::A_TOP_RIGHT     = 6;
 
-	const short SDLFontProvider::A_BOTTOM = DSTF_BOTTOM;
-	const short SDLFontProvider::A_BOTTOM_CENTER = DSTF_BOTTOMCENTER;
-	const short SDLFontProvider::A_BOTTOM_LEFT = DSTF_BOTTOMLEFT;
-	const short SDLFontProvider::A_BOTTOM_RIGHT = DSTF_BOTTOMRIGHT;*/
+	const short SDLFontProvider::A_BOTTOM        = 7;
+	const short SDLFontProvider::A_BOTTOM_CENTER = 8;
+	const short SDLFontProvider::A_BOTTOM_LEFT   = 9;
+	const short SDLFontProvider::A_BOTTOM_RIGHT  = 10;
+
+	bool SDLFontProvider::initialized = false;
+	short SDLFontProvider::fontRefs   = 0;
 
 	SDLFontProvider::SDLFontProvider(
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
+		if (!initialized) {
+			initialized = true;
+			if (TTF_Init() < 0) {
+				cout << "SDLFontProvider::SDLFontProvider ";
+				cout << "Couldn't initialize TTF: " << SDL_GetError();
+				cout << endl;
+			}
+		}
+
+		fontRefs++;
+
+		this->fontUri  = "";
+		this->myScreen = screenId;
+		this->height   = heightInPixel;
+		this->fontUri.assign(fontUri);
+
+		this->font = TTF_OpenFont(fontUri, height);
 	}
 
 	SDLFontProvider::~SDLFontProvider() {
+		fontRefs--;
 
+		if (font != NULL) {
+			TTF_CloseFont(font);
+		}
+
+		if (fontRefs == 0) {
+			TTF_Quit();
+			initialized = false;
+		}
 	}
 
 	void* SDLFontProvider::getContent() {
-		return NULL;
-	}
-
-	int SDLFontProvider::getMaxAdvance() {
-		return 0;
+		return font;
 	}
 
 	int SDLFontProvider::getStringWidth(const char* text, int textLength) {
-		return 0;
+		return FP_AUTO_WORDWRAP;
 	}
 
 	int SDLFontProvider::getHeight() {
@@ -98,8 +123,13 @@ namespace mb {
 	}
 
 	void SDLFontProvider::playOver(
-			void* surface, const char* text, int x, int y, short align) {
+			ISurface* surface, const char* text, int x, int y, short align) {
 
+		SDL_Color black = { 0x00, 0x00, 0x00, 0 };
+
+		SDL_Surface* renderedSurface = TTF_RenderText_Solid(font, text, black);
+
+		surface->setContent(renderedSurface);
 	}
 }
 }

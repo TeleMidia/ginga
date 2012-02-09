@@ -157,16 +157,6 @@ namespace mb {
 		return font;
 	}
 
-	int DFBFontProvider::getMaxAdvance() {
-		int maxAdvance = 0;
-
-		if (font != NULL) {
-			DFBCHECK(font->GetMaxAdvance(font, &maxAdvance));
-		}
-
-		return maxAdvance;
-	}
-
 	int DFBFontProvider::getStringWidth(const char* text, int textLength) {
 		int width = 0;
 
@@ -187,10 +177,10 @@ namespace mb {
 	}
 
 	void DFBFontProvider::playOver(
-			void* surface, const char* text, int x, int y, short align) {
+			ISurface* surface, const char* text, int x, int y, short align) {
 
 		IDirectFBSurface* s;
-		s = (IDirectFBSurface*)(((ISurface*)surface)->getContent());
+		s = (IDirectFBSurface*)(surface->getContent());
 		DFBCHECK(s->DrawString(
 				s, text, -1, x, y, (DFBSurfaceTextFlags)(align)));
 	}

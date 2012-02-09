@@ -52,11 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "PlayersComponentSupport.h"
 
-#if HAVE_CCRTPIC
 #include "ic/IInteractiveChannelManager.h"
 #include "ic/IInteractiveChannelListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
-#endif
 
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -79,10 +77,8 @@ namespace player {
 		int fd;
 		string url;
 
-#if HAVE_CCRTPIC
 		IInteractiveChannelManager* icm;
 		IInteractiveChannel* ic;
-#endif
 
 		static const short CMD_CREATEP = 0;
 		static const short CMD_PERFORM = 1;

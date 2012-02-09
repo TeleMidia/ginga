@@ -184,16 +184,7 @@ namespace mb {
 		this->chromaColor = color;
 
 		if (sur != NULL) {
-			SDL_SetColorKey(sur, 1, 0);
-			/*SDLCHECK(sur->SetSrcColorKey(
-					sur,
-				    chromaColor->getR(),
-				    chromaColor->getG(),
-				    chromaColor->getB()));
-
-			SDLCHECK(sur->SetBlittingFlags(sur,
-					(SDLSurfaceBlittingFlags)(
-							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));*/
+			SDL_SetColorKey(sur, 1, chromaColor->getRGBA());
 		}
 	}
 

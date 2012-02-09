@@ -104,7 +104,7 @@ namespace mb {
 			void feedBuffers();
 
 		private:
-			void getVideoSurfaceDescription(DFBSurfaceDescription* dsc);
+			bool getVideoSurfaceDescription(DFBSurfaceDescription* dsc);
 
 		public:
 			ISurface* getPerfectSurface();

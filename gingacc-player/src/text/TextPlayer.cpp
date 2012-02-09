@@ -143,7 +143,7 @@ namespace player {
 			width = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
 
-			font->playOver((void*)s, text.c_str());
+			font->playOver(s, text.c_str());
 
 			dm->releaseFontProvider(screenId, font);
 			font = NULL;
@@ -229,7 +229,7 @@ namespace player {
 		string::size_type splitPos, len;
 		unsigned int widthAverage;
 		bool space;
-		int maxAdvance, oldTextWidth;
+		int oldTextWidth;
 		string splited;
 
 		uri = "/usr/local/etc/ginga/files/font/vera.ttf";
@@ -257,7 +257,6 @@ namespace player {
 
 			if (textWidth > surWidth) {
 				space = false;
-				maxAdvance = font->getMaxAdvance();
 
 				widthAverage = (int)(textWidth / text.length());
 				maxToDraw = (int)(((surWidth) / widthAverage) * 0.85);
@@ -310,7 +309,7 @@ namespace player {
 				}
 
 				font->playOver(
-						(void*)surface, text.c_str(),
+						surface, text.c_str(),
 						currentColumn, currentLine, align);
 
 				/*if (align == A_TOP_CENTER) {
@@ -353,7 +352,7 @@ namespace player {
 
 			} else {
 				font->playOver(
-						(void*)surface, text.c_str(),
+						surface, text.c_str(),
 						currentColumn, currentLine, align);
 /*
 				if (align == A_TOP_CENTER) {

@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IContinuousMediaProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
+#include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
+
 #include <set>
 using namespace std;
 
@@ -62,16 +64,16 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLVideoProvider : public IContinuousMediaProvider {
-		protected:
-			GingaScreenID myScreen;
-			string symbol;
+	class SDLVideoProvider : public SDLAudioProvider {
+		private:
+			SDL_ffmpegVideoFrame* videoFrame;
+			int wRes;
+			int hRes;
+
+			uint64_t getSync();
 
 		public:
 			SDLVideoProvider(GingaScreenID screenId, const char* mrl);
-
-			SDLVideoProvider(
-					GingaScreenID screenId, void* dec);
 
 			virtual ~SDLVideoProvider();
 
@@ -90,10 +92,6 @@ namespace mb {
 			ISurface* getPerfectSurface();
 			bool checkVideoResizeEvent(ISurface* frame);
 
-		private:
-			static void dynamicRenderCallBack(void* surface);
-
-		public:
 			void getOriginalResolution(int* height, int* width);
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
@@ -108,6 +106,9 @@ namespace mb {
 			void stop();
 			void setSoundLevel(float level);
 			bool releaseAll();
+
+		protected:
+			void run();
 	};
 }
 }

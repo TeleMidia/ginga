@@ -160,6 +160,26 @@ fi
 
 AM_CONDITIONAL(IC, test x$hasic = xyes)
 
+####################################
+# GINGA CC Interactive Channel RTP #
+####################################
+hasicrtp=no
+
+if test x$hasic = xyes; then
+AC_HAVE_LIBRARY(gingaccicccrtp, hasicrtp=yes, hasicrtp=no)
+
+if test x$hasicrtp = xno; then
+   AC_MSG_WARN([*** Ginga-CC Interactive Channel RTP support will not be built.])
+   AC_DEFINE(HAVE_ICRTP, 0, [Def to 0 if you don't have gingaccic RTP support.])
+
+else
+   AC_MSG_RESULT([*** Ginga-CC Interactive Channel RTP support will be built.])
+   AC_DEFINE(HAVE_ICRTP, 1, [Def to 1 if you have gingaccic RTP support.])
+fi
+fi
+
+AM_CONDITIONAL(ICRTP, test x$hasicrtp = xyes)
+
 ############################
 # GINGA CC Data Processing #
 ############################
@@ -400,14 +420,15 @@ AC_OUTPUT
 AC_MSG_RESULT([
 Build options: 
   Module directory             $MODULEDIR
-  Xine Provider Support        $hasxinep
-  FFmpeg Provider Support      $hasffmpegp
-  Links Player Support         $enable_links
-  Berkelium Player Support     $enable_berkelium
-  Awesomium Player Support     $enable_awesomium
+  Xine Provider                $hasxinep
+  FFmpeg Provider              $hasffmpegp
+  Links Player                 $enable_links
+  Berkelium Player             $enable_berkelium
+  Awesomium Player             $enable_awesomium
   NCLET Support                $ncletplayer
-  Interactive Channel Support  $hasic
-  TS Parser Support            $hasdataprocessing
-  Component Support            $enable_components
-  Multi Process Support        $enable_multiprocess
+  Interactive Channel          $hasic
+  Interactive Channel (RTP)    $hasicrtp
+  TS Parser                    $hasdataprocessing
+  Component                    $enable_components
+  Multi Process                $enable_multiprocess
 ])

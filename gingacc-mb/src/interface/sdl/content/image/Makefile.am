@@ -28,6 +28,7 @@ libgingaccmbdecsdlimg_so_SOURCES = \
 
 libgingaccmbdecsdlimg_so_LDADD   = \
                                    -lSDL2 \
+                                   -lSDL2_image \
                                    -lgingaccmbsdl \
                                    -lgingaccmb
 endif #SDLSYSTEM

@@ -87,6 +87,51 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-mb" name="libgingaccmbdecsdlap.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libgingaccmbsdl.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <dependency componentName="libSDL2.so" version="2.0.0"/>
+    <dependency componentName="libSDL2_ffmpeg.so" version="2.0.0"/>
+    <symbol object="SDLAudioProvider" creator="createSDLAudioProvider" destroyer="destroySDLAudioProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb/dec"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+  
+  <component package="gingacc-mb" name="libgingaccmbdecsdlimg.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libgingaccmbsdl.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <dependency componentName="libSDL2.so" version="2.0.0"/>
+    <dependency componentName="libSDL2_image.so" version="2.0.0"/>
+    <symbol object="SDLImageProvider" creator="createSDLImageProvider" destroyer="destroySDLImageProvider" interface="IImageProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb/dec"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+  
+  <component package="gingacc-mb" name="libgingaccmbdecsdlf.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libgingaccmbsdl.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <dependency componentName="libSDL2.so" version="2.0.0"/>
+    <dependency componentName="libSDL2_ttf.so" version="2.0.0"/>
+    <symbol object="SDLFontProvider" creator="createSDLFontProvider" destroyer="destroySDLFontProvider" interface="IFontProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb/dec"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingacc-mb" name="libgingaccmbdecsdlav.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libgingaccmbdecsdlap.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmbsdl.so" version="0.13.1"/>
+    <dependency componentName="libgingaccmb.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <dependency componentName="libSDL2.so" version="2.0.0"/>
+    <dependency componentName="libSDL2_ffmpeg.so" version="2.0.0"/>
+    <symbol object="SDLVideoProvider" creator="createSDLVideoProvider" destroyer="destroySDLVideoProvider" interface="IContinuousMediaProvider"/>
+    <location type="local" uri="/usr/local/lib/ginga/mb/dec"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
   <component package="gingacc-mb" name="libgingaccmbterm.so" version="0.13.1" type="dynamic">
     <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
     <dependency componentName="libgingaccmb.so" version="0.13.1"/>

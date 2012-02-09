@@ -61,13 +61,37 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+
+	bool SDLImageProvider::initialized = false;
+	short SDLImageProvider::imageRefs   = 0;
+
 	SDLImageProvider::SDLImageProvider(
 			GingaScreenID screenId, const char* mrl) {
 
+		if (!initialized) {
+			initialized = true;
+			if (IMG_Init(0) < 0) {
+				cout << "SDLFontProvider::SDLFontProvider ";
+				cout << "Couldn't initialize TTF: " << SDL_GetError();
+				cout << endl;
+			}
+		}
+
+		imageRefs++;
+
+		imgUri   = "";
+		myScreen = screenId;
+
+		imgUri.assign(mrl);
 	}
 
 	SDLImageProvider::~SDLImageProvider() {
+		imageRefs--;
 
+		if (imageRefs == 0) {
+			IMG_Quit();
+			initialized = false;
+		}
 	}
 
 	void* SDLImageProvider::getContent() {
@@ -75,11 +99,19 @@ namespace mb {
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
+		SDL_Surface* renderedSurface = IMG_Load(imgUri.c_str());
 
+		surface->setContent((void*)renderedSurface);
 	}
 
 	ISurface* SDLImageProvider::prepare(bool isGif) {
-		return NULL;
+		ISurface* surface;
+		SDL_Surface* renderedSurface = IMG_Load(imgUri.c_str());
+
+		surface = LocalScreenManager::getInstance()->createSurfaceFrom(
+				myScreen, renderedSurface);
+
+		return surface;
 	}
 
 	bool SDLImageProvider::releaseAll() {

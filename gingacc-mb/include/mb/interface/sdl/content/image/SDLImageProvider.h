@@ -52,6 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/IImageProvider.h"
 
+#include "SDL_image.h"
+
 #include <set>
 using namespace std;
 
@@ -63,7 +65,12 @@ namespace core {
 namespace mb {
 	class SDLImageProvider : public IImageProvider {
 		private:
+			static bool initialized;
+			static short imageRefs;
+
 			GingaScreenID myScreen;
+			SDL_Surface* surface;
+			string imgUri;
 
 		public:
 			SDLImageProvider(GingaScreenID screenId, const char* mrl);

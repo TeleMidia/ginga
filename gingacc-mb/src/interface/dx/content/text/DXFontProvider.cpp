@@ -121,16 +121,6 @@ namespace mb {
 		return font;
 	}
 
-	int DXFontProvider::getMaxAdvance() {
-		clog << "DXFontProvider::getMaxAdvance()" << endl;
-		int maxAdvance = 0;
-		TEXTMETRICA mtc;
-
-		font->GetTextMetricsA(&mtc);
-
-		return mtc.tmWeight;
-	}
-
 	int DXFontProvider::getStringWidth(const char* text, int textLength) {
 		clog << "DXFontProvider::getStringWidth()" << endl;
 		TEXTMETRICA mtc;
@@ -149,7 +139,7 @@ namespace mb {
 		return mtc.tmHeight;
 	}
 
-	void DXFontProvider::playOver( void* surface, const char* text, int x, int y, short align) {
+	void DXFontProvider::playOver( ISurface* surface, const char* text, int x, int y, short align) {
 		clog << "DXFontProvider::playOver()" << endl;
 		DX2DSurface*	givenSurface = NULL;
 		IDirect3DSurface9*	texSur = NULL; // Texture Surface

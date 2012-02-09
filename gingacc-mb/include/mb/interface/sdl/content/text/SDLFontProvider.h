@@ -55,6 +55,8 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IFontProvider.h"
 #include "mb/interface/ISurface.h"
 
+#include "SDL_ttf.h"
+
 #include <set>
 using namespace std;
 
@@ -65,8 +67,14 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class SDLFontProvider : public IFontProvider {
-		protected:
+		private:
 			GingaScreenID myScreen;
+			string fontUri;
+			int height;
+			TTF_Font *font;
+
+			static bool initialized;
+			static short fontRefs;
 
 		public:
 			static const short A_LEFT;
@@ -90,11 +98,10 @@ namespace mb {
 
 			virtual ~SDLFontProvider();
 			void* getContent();
-			int getMaxAdvance();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
 			void playOver(
-					void* surface,
+					ISurface* surface,
 					const char* text,
 					int x=0, int y=0, short align=A_TOP_LEFT);
 	};

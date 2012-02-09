@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define IFONTPROVIDER_H_
 
 #include "mb/IMBDefs.h"
+#include "mb/interface/ISurface.h"
 
 namespace br {
 namespace pucrio {
@@ -60,13 +61,14 @@ namespace core {
 namespace mb {
 	class IFontProvider {
 		public:
+			static const short FP_AUTO_WORDWRAP = -10;
+
 			virtual ~IFontProvider(){};
 			virtual void* getContent()=0;
-			virtual int getMaxAdvance()=0;
 			virtual int getStringWidth(const char* text, int textLength=0)=0;
 			virtual int getHeight()=0;
 			virtual void playOver(
-					void* surface,
+					ISurface* surface,
 					const char* text,
 					int x=0, int y=0, short align=0)=0;
 	};

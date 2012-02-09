@@ -58,20 +58,44 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	SDLVideoProvider::SDLVideoProvider(
-			GingaScreenID screenId, const char* mrl) {
+	uint64_t SDLVideoProvider::getSync() {
+		uint64_t _sync = SDLAudioProvider::getSync();
+		if (_sync != 0) {
+			return _sync;
+		}
 
-		myScreen = screenId;
+		if (file != NULL) {
+			if (SDL_ffmpegValidVideo(file)) {
+				return (SDL_GetTicks() % SDL_ffmpegDuration(file));
+			}
+		}
+
+		return 0;
 	}
 
-	SDLVideoProvider::SDLVideoProvider(
-			GingaScreenID screenId, void* dec) {
+	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
+			: SDLAudioProvider(screenId, mrl) {
 
-		myScreen = screenId;
+		videoFrame = NULL;
+		myScreen   = screenId;
+
+		if (file != NULL) {
+			SDL_ffmpegSelectVideoStream(file, 0);
+			SDL_ffmpegGetVideoSize(file, &wRes, &hRes);
+
+			videoFrame = SDL_ffmpegCreateVideoFrame();
+
+			cout << "SDLVideoProvider::SDLVideoProvider";
+		    cout << "'" << mrl << "' with '" << file->videoStreams;
+		    cout << "' video streams" << endl;
+		}
 	}
 
 	SDLVideoProvider::~SDLVideoProvider() {
-
+		if (videoFrame != NULL) {
+			SDL_ffmpegFreeVideoFrame(videoFrame);
+			videoFrame = NULL;
+		}
 	}
 
 	void SDLVideoProvider::setLoadSymbol(string symbol) {
@@ -102,41 +126,49 @@ namespace mb {
 		return false;
 	}
 
-	void SDLVideoProvider::dynamicRenderCallBack(void* rendererContainer) {
-
-	}
-
 	void SDLVideoProvider::getOriginalResolution(int* height, int* width) {
-
+		if (SDL_ffmpegValidVideo(file)) {
+			SDL_ffmpegGetVideoSize(file, width, height);
+		}
 	}
 
 	double SDLVideoProvider::getTotalMediaTime() {
+		if (SDL_ffmpegValidVideo(file)) {
+			return SDL_ffmpegVideoDuration(file);
+		}
 		return 0;
 	}
 
 	double SDLVideoProvider::getMediaTime() {
-		return -1;
+		if (SDL_ffmpegValidVideo(file)) {
+			return SDL_ffmpegGetPosition(file);
+		}
+		return 0;
 	}
 
 	void SDLVideoProvider::setMediaTime(double pos) {
-
+		if (SDL_ffmpegValidVideo(file)) {
+			SDL_ffmpegSeek(file, (uint64_t)pos);
+		}
 	}
 
 	void SDLVideoProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
+		state = ST_PLAYING;
+		Thread::start();
 	}
 
 	void SDLVideoProvider::resume(ISurface* surface, bool hasVisual) {
-
+		state = ST_PLAYING;
 	}
 
 	void SDLVideoProvider::pause() {
-
+		state = ST_PAUSED;
 	}
 
 	void SDLVideoProvider::stop() {
-
+		state = ST_STOPPED;
 	}
 
 	void SDLVideoProvider::setSoundLevel(float level) {
@@ -146,6 +178,44 @@ namespace mb {
 	bool SDLVideoProvider::releaseAll() {
 		//TODO: release all structures
 		return false;
+	}
+
+	void SDLVideoProvider::run() {
+		int i;
+
+		running = true;
+
+		while (running) {
+			if (SDL_ffmpegValidAudio(file)) {
+
+				SDL_LockMutex(mutex);
+
+				for (i = 0; i < BUF_SIZE; i++) {
+					if (!audioFrame[i]->size) {
+						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+					}
+				}
+
+				SDL_UnlockMutex(mutex);
+			}
+
+	        if (videoFrame != NULL) {
+	            if (!videoFrame->ready) {
+	                SDL_ffmpegGetVideoFrame(file, videoFrame);
+
+	            } else {
+	            	if (videoFrame->pts <= getSync()) {
+	            		if (videoFrame->texture) {
+	            			//NOTIFY!
+	            		}
+						videoFrame->ready = 0;
+
+	            	} else {
+	            		SDL_Delay((videoFrame->pts - getSync()));
+	            	}
+	            }
+	        }
+		}
 	}
 }
 }

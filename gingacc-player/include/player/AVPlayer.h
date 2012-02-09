@@ -96,7 +96,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "Player.h"
 #include "PlayersComponentSupport.h"
 
-#if HAVE_CCRTPIC
+#if HAVE_ICRTP
 #include "RTPListener.h"
 #endif
 
@@ -117,7 +117,7 @@ namespace player {
 
 		private:
 			pthread_mutex_t pMutex;
-#if HAVE_CCRTPIC
+#if HAVE_ICRTP
 			RTPListener* icListener;
 #endif
 

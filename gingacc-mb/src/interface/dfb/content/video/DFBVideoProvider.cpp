@@ -83,9 +83,9 @@ namespace mb {
 		dvpRefs++;
 #endif //DFBTM_PATCH
 
-		myScreen   = screenId;
-		rContainer = new DFBRendererContainer;
-		rContainer->dec = NULL;
+		myScreen            = screenId;
+		rContainer          = new DFBRendererContainer;
+		rContainer->dec     = NULL;
 		rContainer->isValid = false;
 
 		if (mrl != NULL) {
@@ -102,16 +102,16 @@ namespace mb {
 	DFBVideoProvider::DFBVideoProvider(
 			GingaScreenID screenId, IDirectFBVideoProvider* dec) {
 
-		myScreen   = screenId;
-		rContainer = new DFBRendererContainer;
-		rContainer->dec = dec;
+		myScreen            = screenId;
+		rContainer          = new DFBRendererContainer;
+		rContainer->dec     = dec;
 		rContainer->isValid = false;
 	}
 
 	DFBVideoProvider::~DFBVideoProvider() {
 		set<IDirectFBVideoProvider*>::iterator i;
 
-		if (rContainer->dec != NULL) {
+		if (rContainer != NULL && rContainer->dec != NULL) {
 			rContainer->dec->Release(rContainer->dec);
 			rContainer->dec      = NULL;
 			rContainer->listener = NULL;
@@ -137,34 +137,54 @@ namespace mb {
 	}
 
 	void* DFBVideoProvider::getContent() {
-		return (void*)(rContainer->dec);
+		if (rContainer != NULL) {
+			return (void*)(rContainer->dec);
+		}
+
+		return NULL;
 	}
 
 	void DFBVideoProvider::feedBuffers() {
 		DFBVideoProviderStatus status;
 
-		do {
-			::usleep(150000);
-			rContainer->dec->GetStatus(rContainer->dec, &status);
-		} while (status == DVSTATE_BUFFERING);
+		if (rContainer != NULL && rContainer->dec != NULL) {
+			do {
+				::usleep(150000);
+				rContainer->dec->GetStatus(rContainer->dec, &status);
+			} while (status == DVSTATE_BUFFERING);
+		}
 	}
 
-	void DFBVideoProvider::getVideoSurfaceDescription(
+	bool DFBVideoProvider::getVideoSurfaceDescription(
 			DFBSurfaceDescription* dsc) {
 
-		DFBCHECK(rContainer->dec->GetSurfaceDescription(
-				rContainer->dec, dsc));
+		bool hasDescription = false;
+
+		if (rContainer != NULL &&
+				rContainer->dec != NULL &&
+				rContainer->dec->GetSurfaceDescription(
+						rContainer->dec, dsc) == DFB_OK) {
+
+			hasDescription = true;
+		}
+
+		return hasDescription;
 	}
 
 	ISurface* DFBVideoProvider::getPerfectSurface() {
+		ISurface* surface = NULL;
 		DFBSurfaceDescription dsc;
 
-		getVideoSurfaceDescription(&dsc);
-		dsc.flags = (DFBSurfaceDescriptionFlags)(DSDESC_WIDTH | DSDESC_HEIGHT);
+		if (getVideoSurfaceDescription(&dsc)) {
+			dsc.flags = (DFBSurfaceDescriptionFlags)(
+					DSDESC_WIDTH | DSDESC_HEIGHT);
 
-		return new DFBSurface(
-				myScreen,
-				DFBDeviceScreen::createUnderlyingSurface(&dsc));
+			surface = new DFBSurface(
+					myScreen,
+					DFBDeviceScreen::createUnderlyingSurface(&dsc));
+		}
+
+		return surface;
 	}
 
 	bool DFBVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -301,7 +321,7 @@ namespace mb {
 	void DFBVideoProvider::getOriginalResolution(int* height, int* width) {
 		DFBSurfaceDescription dsc;
 
-		if (rContainer->dec != NULL) {
+		if (rContainer != NULL && rContainer->dec != NULL) {
 			DFBCHECK(rContainer->dec->GetSurfaceDescription(
 					rContainer->dec, &dsc));
 
@@ -314,7 +334,7 @@ namespace mb {
 		DFBResult res;
 		double size;
 
-		if (rContainer->dec != NULL) {
+		if (rContainer != NULL && rContainer->dec != NULL) {
 			res = rContainer->dec->GetLength(rContainer->dec, &size);
 			if (res == DFB_OK) {
 				return size;
@@ -327,7 +347,7 @@ namespace mb {
 		DFBResult res;
 		double pos;
 
-		if (rContainer->dec!= NULL) {
+		if (rContainer != NULL && rContainer->dec != NULL) {
 			res = rContainer->dec->GetPos(rContainer->dec, &pos);
 			if (res != DFB_EOF) {
 				return pos;
@@ -337,7 +357,7 @@ namespace mb {
 	}
 
 	void DFBVideoProvider::setMediaTime(double pos) {
-		if (rContainer->dec != NULL) {
+		if (rContainer != NULL && rContainer->dec != NULL) {
 			DFBCHECK(rContainer->dec->SeekTo(rContainer->dec, pos));
 		}
 	}
@@ -347,15 +367,17 @@ namespace mb {
 
 		IDirectFBSurface* s;
 
-		s = (IDirectFBSurface*)(surface->getContent());
+		if (rContainer != NULL && rContainer->dec != NULL) {
+			s = (IDirectFBSurface*)(surface->getContent());
 
-		rContainer->listener = listener;
-		rContainer->surface = surface;
-		rContainer->isValid = true;
+			rContainer->listener = listener;
+			rContainer->surface = surface;
+			rContainer->isValid = true;
 
-		DFBCHECK(rContainer->dec->PlayTo(
-				rContainer->dec,
-				s, NULL, dynamicRenderCallBack, (void*)rContainer));
+			DFBCHECK(rContainer->dec->PlayTo(
+					rContainer->dec,
+					s, NULL, dynamicRenderCallBack, (void*)rContainer));
+		}
 	}
 
 	void DFBVideoProvider::resume(ISurface* surface, bool hasVisual) {
@@ -367,8 +389,12 @@ namespace mb {
 	}
 
 	void DFBVideoProvider::stop() {
-		rContainer->isValid = false;
-		DFBCHECK(rContainer->dec->Stop(rContainer->dec));
+		if (rContainer != NULL) {
+			rContainer->isValid = false;
+			if (rContainer->dec != NULL) {
+				DFBCHECK(rContainer->dec->Stop(rContainer->dec));
+			}
+		}
 	}
 
 	void DFBVideoProvider::setSoundLevel(float level) {

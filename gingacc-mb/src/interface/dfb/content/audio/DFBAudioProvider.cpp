@@ -243,6 +243,7 @@ namespace mb {
 
 	void DFBAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
+
 		if (decoder == NULL) {
 			clog << "DFBAudioProvider::playOver decoder = NULL" << endl;
 			return;

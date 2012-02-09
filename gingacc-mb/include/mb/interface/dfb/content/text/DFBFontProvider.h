@@ -100,11 +100,10 @@ namespace mb {
 
 			virtual ~DFBFontProvider();
 			void* getContent();
-			int getMaxAdvance();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
 			void playOver(
-					void* surface,
+					ISurface* surface,
 					const char* text,
 					int x=0, int y=0, short align=A_TOP_LEFT);
 	};

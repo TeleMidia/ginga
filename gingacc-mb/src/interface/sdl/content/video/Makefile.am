@@ -21,17 +21,20 @@ libgingaccmbdecsdlav_so_LDFLAGS = \
                                   -L/usr/local/lib \
                                   -L/usr/local/lib/ginga \
                                   -L$(top_srcdir)/src \
-                                  -L$(top_srcdir)/src/interface/sdl
+                                  -L$(top_srcdir)/src/interface/sdl \
+                                  -L$(top_srcdir)/src/interface/sdl/content/audio
 
 libgingaccmbdecsdlav_so_SOURCES = \
                                   SDLVideoProvider.cpp
 
 libgingaccmbdecsdlav_so_LDADD   = \
                                   -lSDL2 \
+                                  -lSDL2_ffmpeg \
                                   -ltelemidiautil \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
-                                  -lgingaccsystem
+                                  -lgingaccsystem \
+                                  -lgingaccmbdecsdlap
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

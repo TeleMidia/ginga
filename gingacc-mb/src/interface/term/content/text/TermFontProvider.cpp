@@ -70,12 +70,6 @@ namespace mb {
 		return NULL;
 	}
 
-	int TermFontProvider::getMaxAdvance() {
-		int maxAdvance = 0;
-
-		return maxAdvance;
-	}
-
 	int TermFontProvider::getStringWidth(const char* text, int textLength) {
 		int width = 0;
 
@@ -89,7 +83,7 @@ namespace mb {
 	}
 
 	void TermFontProvider::playOver(
-			void* surface, const char* text, int x, int y, short align) {
+			ISurface* surface, const char* text, int x, int y, short align) {
 
 	}
 }
