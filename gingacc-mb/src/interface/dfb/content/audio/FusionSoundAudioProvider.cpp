@@ -154,10 +154,6 @@ namespace mb {
 		return decoder;
 	}
 
-	ISurface* FusionSoundAudioProvider::getPerfectSurface() {
-		return NULL;
-	}
-
 	double FusionSoundAudioProvider::getTotalMediaTime() {
 		double totalTime;
 

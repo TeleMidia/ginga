@@ -125,11 +125,18 @@ namespace mb {
 	void SDLFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
-		SDL_Color black = { 0x00, 0x00, 0x00, 0 };
+		IWindow* parent;
+		SDL_Surface* renderedSurface;
 
-		SDL_Surface* renderedSurface = TTF_RenderText_Solid(font, text, black);
+		SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
 
-		surface->setContent(renderedSurface);
+		renderedSurface = TTF_RenderText_Solid(font, text, white);
+		surface->setContent((void*)renderedSurface);
+
+		parent = (IWindow*)(surface->getParent());
+		if (parent != NULL) {
+			parent->renderFrom(surface);
+		}
 	}
 }
 }

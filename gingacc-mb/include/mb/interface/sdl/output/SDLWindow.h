@@ -153,7 +153,6 @@ namespace mb {
 			void setY(int y);
 			void setW(int w);
 			void setH(int h);
-			void* getContent();
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();
@@ -169,6 +168,9 @@ namespace mb {
 			void setFit(bool fitTo);
 			bool getFit();
 			void clearContent();
+			void* getContent();
+			SDL_Texture* getTexture();
+			void setTexture(SDL_Texture* texture);
 
 		private:
 			bool isMine(ISurface* surface);

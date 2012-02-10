@@ -99,7 +99,6 @@ namespace mb {
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
-			ISurface* getPerfectSurface();
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();

@@ -72,14 +72,13 @@ namespace mb {
 		file     = SDL_ffmpegOpen(mrl);
 
 		if (file != NULL) {
+			file->private_data = this;
 			SDL_ffmpegSelectAudioStream(file, 0);
 
-			cout << "SDLAudioProvider::SDLAudioProvider";
-		    cout << "'" << mrl << "' with '" << file->audioStreams;
-		    cout << "' audio streams" << endl;
-
 			specs = SDL_ffmpegGetAudioSpec(
-					file, 512, SDLAudioProvider::audioCallback);
+					file,
+					512,
+					SDLAudioProvider::audioCallback);
 		}
 	}
 
@@ -110,10 +109,6 @@ namespace mb {
 		return NULL;
 	}
 
-	ISurface* SDLAudioProvider::getPerfectSurface() {
-		return NULL;
-	}
-
 	double SDLAudioProvider::getTotalMediaTime() {
 		if (SDL_ffmpegValidAudio(file)) {
 			return SDL_ffmpegAudioDuration(file);
@@ -136,41 +131,43 @@ namespace mb {
 		}
 	}
 
-	void SDLAudioProvider::playOver(
-			ISurface* surface, bool hasVisual, IProviderListener* listener) {
-
+	bool SDLAudioProvider::prepare(ISurface* surface) {
 		int i;
+		int frameSize;
 
 	    if (SDL_ffmpegValidAudio(file)) {
-	        if (SDL_OpenAudio( &specs, 0 ) < 0) {
-	        	cout << "SDLAudioProvider::playOver Warning! ";
+	    	if (SDL_OpenAudio(&specs, 0) < 0) {
+	        	cout << "SDLAudioProvider::prepare Warning! ";
 	            cout << "Can't open audio: " << SDL_GetError() << endl;
-	            SDL_Quit();
-	            return;
+	            return false;
 	        }
 
-	        for (i = 0; i < BUF_SIZE; i++) {
-	            audioFrame[i] = SDL_ffmpegCreateAudioFrame(
-	            		file,
-	            		specs.channels * specs.samples * 2);
+	        frameSize = specs.channels * specs.samples * 2;
 
+	        for (i = 0; i < BUF_SIZE; i++) {
+	            audioFrame[i] = SDL_ffmpegCreateAudioFrame(file, frameSize);
 	            if (!audioFrame[i]) {
-		        	cout << "SDLAudioProvider::playOver Warning! ";
-		            cout << "Can't create frame" << endl;
-	                return;
+	                return false;
 	            }
 
 	            SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
 	        }
 
-	        SDL_PauseAudio(0);
-
-			state = ST_PLAYING;
-			Thread::start();
+	        return true;
 
 	    } else {
-        	cout << "SDLAudioProvider::playOver Can't play since there is no ";
+        	cout << "SDLAudioProvider::prepare Can't play since there is no ";
             cout << "selected audio stream" << endl;
+	    }
+
+	    return false;
+	}
+
+	void SDLAudioProvider::playOver(
+			ISurface* surface, bool hasVisual, IProviderListener* listener) {
+
+	    if (prepare(surface)) {
+			state = ST_PLAYING;
 	    }
 	}
 
@@ -201,9 +198,15 @@ namespace mb {
 	void SDLAudioProvider::audioCallback(void* data, Uint8* stream, int len) {
 		int i;
 		SDL_ffmpegAudioFrame* auxFrame;
-		SDLAudioProvider* ap = (SDLAudioProvider*)data;
+		SDL_ffmpegFile* _file = (SDL_ffmpegFile*)data;
 
-	    SDL_LockMutex(ap->mutex);
+		SDLAudioProvider* ap = (SDLAudioProvider*)_file->private_data;
+
+		if (ap == NULL) {
+			return;
+		}
+
+		SDL_LockMutex(ap->mutex);
 
 	    if (ap->audioFrame[0]->size == len) {
 	    	ap->sync = ap->audioFrame[0]->pts;
@@ -222,11 +225,9 @@ namespace mb {
 	        ap->audioFrame[BUF_SIZE - 1] = auxFrame;
 
 	    } else {
-	        /* no data available, just set output to zero */
 	        memset((void*)stream, (int)0, (size_t)len);
 	    }
 
-	    /* were done with the audio frame, release lock */
 	    SDL_UnlockMutex(ap->mutex);
 	}
 

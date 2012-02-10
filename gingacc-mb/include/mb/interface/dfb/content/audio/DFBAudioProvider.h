@@ -87,7 +87,11 @@ namespace mb {
 			virtual void feedBuffers(){};
 			void* getContent();
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
-			ISurface* getPerfectSurface();
+
+		private:
+			IDirectFBSurface* getPerfectDFBSurface();
+
+		public:
 			static void dynamicRenderCallBack(void* dec);
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};

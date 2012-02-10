@@ -138,7 +138,6 @@ namespace player {
 
 		if (font != NULL) {
 			s->setColor(fontColor);
-			s->setFont(font);
 
 			width = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));

@@ -153,7 +153,8 @@ namespace player {
 			ISurface* getSurface();
 
 		private:
-			static void* createProvider(void* ptr);
+			void createProvider();
+			static void* createProviderT(void* ptr);
 
 		public:
 			void finished();

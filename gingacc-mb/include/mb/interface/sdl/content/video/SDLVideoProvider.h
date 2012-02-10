@@ -89,7 +89,6 @@ namespace mb {
 			void getVideoSurfaceDescription(void* dsc);
 
 		public:
-			ISurface* getPerfectSurface();
 			bool checkVideoResizeEvent(ISurface* frame);
 
 			void getOriginalResolution(int* height, int* width);
@@ -97,6 +96,11 @@ namespace mb {
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();
 			void setMediaTime(double pos);
+
+		private:
+			virtual bool prepare(ISurface* surface);
+
+		public:
 			void playOver(
 					ISurface* surface,
 					bool hasVisual=true, IProviderListener* listener=NULL);

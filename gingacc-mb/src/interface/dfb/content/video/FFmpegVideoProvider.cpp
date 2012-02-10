@@ -1230,14 +1230,12 @@ namespace mb {
 		}
 	}
 
-	ISurface* FFmpegVideoProvider::getPerfectSurface() {
+	IDirectFBSurface* FFmpegVideoProvider::getPerfectDFBSurface() {
 		DFBSurfaceDescription dsc;
 
 		getVideoSurfaceDescription(&dsc);
 
-		return new DFBSurface(
-				myScreen,
-				DFBDeviceScreen::createUnderlyingSurface(&dsc));
+		return DFBDeviceScreen::createUnderlyingSurface(&dsc);
 	}
 
 	bool FFmpegVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -1425,7 +1423,8 @@ namespace mb {
 			rContainer->video.dest->Release(rContainer->video.dest);
 		}
 
-		dest = (IDirectFBSurface*)(surface->getContent());
+		dest = getPerfectDFBSurface();
+		surface->setContent(dest);
 
 		rContainer->surface    = surface;
 		rContainer->video.dest = dest;

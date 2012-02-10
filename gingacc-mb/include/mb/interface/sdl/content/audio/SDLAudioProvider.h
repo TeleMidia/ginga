@@ -114,11 +114,15 @@ namespace mb {
 			virtual void feedBuffers(){};
 			void* getContent();
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
-			ISurface* getPerfectSurface();
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();
 			void setMediaTime(double pos);
+
+		protected:
+			virtual bool prepare(ISurface* surface);
+
+		public:
 			void playOver(
 					ISurface* surface,
 					bool hasVisual=true, IProviderListener* listener=NULL);

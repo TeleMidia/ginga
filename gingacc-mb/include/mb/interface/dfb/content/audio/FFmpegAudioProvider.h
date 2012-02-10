@@ -224,10 +224,9 @@ namespace mb {
 			void feedBuffers();
 
 		private:
-			void getVideoSurfaceDescription(DFBSurfaceDescription* dsc);
+			IDirectFBSurface* getPerfectDFBSurface();
 
 		public:
-			ISurface* getPerfectSurface();
 			bool checkVideoResizeEvent(ISurface* frame);
 
 			void getOriginalResolution(int* height, int* width);

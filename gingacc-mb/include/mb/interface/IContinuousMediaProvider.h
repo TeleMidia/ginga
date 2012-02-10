@@ -74,7 +74,6 @@ namespace mb {
 			virtual string getLoadSymbol()=0;
 			virtual void setAVPid(int aPid, int vPid)=0;
 			virtual void feedBuffers()=0;
-			virtual ISurface* getPerfectSurface()=0;
 			virtual bool checkVideoResizeEvent(ISurface* frame)=0;
 			virtual double getTotalMediaTime()=0;
 			virtual int64_t getVPts()=0;

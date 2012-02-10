@@ -76,9 +76,9 @@ namespace mb {
 			DXAudioProvider(const char* mrl);
 			virtual ~DXAudioProvider();
 			void* getContent();
-			ISurface* getPerfectSurface();
 
 		private:
+			DX2DSurfaceProp* getPerfectDXSurface();
 			static void dynamicRenderCallBack(void* surface);
 
 		public:

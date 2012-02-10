@@ -179,10 +179,19 @@ namespace mb {
 	void DFBFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
-		IDirectFBSurface* s;
-		s = (IDirectFBSurface*)(surface->getContent());
-		DFBCHECK(s->DrawString(
-				s, text, -1, x, y, (DFBSurfaceTextFlags)(align)));
+		IWindow* win;
+		IDirectFBSurface* s = (IDirectFBSurface*)(surface->getContent());
+
+		if (font != NULL && s != NULL) {
+			s->SetFont(s, font);
+			DFBCHECK(s->DrawString(
+					s, text, -1, x, y, (DFBSurfaceTextFlags)(align)));
+
+			win = (IWindow*)(surface->getParent());
+			if (win != NULL) {
+				win->validate();
+			}
+		}
 	}
 }
 }

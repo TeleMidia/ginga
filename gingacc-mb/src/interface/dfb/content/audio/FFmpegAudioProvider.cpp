@@ -932,18 +932,10 @@ namespace mb {
 		}
 	}
 
-	void FFmpegAudioProvider::getVideoSurfaceDescription(
-			DFBSurfaceDescription* desc) {
-
-	}
-
-	ISurface* FFmpegAudioProvider::getPerfectSurface() {
+	IDirectFBSurface* FFmpegAudioProvider::getPerfectDFBSurface() {
 		DFBSurfaceDescription dsc;
 
-		getVideoSurfaceDescription(&dsc);
-
-		return new DFBSurface(
-				DFBDeviceScreen::createUnderlyingSurface(&dsc));
+		return DFBDeviceScreen::createUnderlyingSurface(&dsc);
 	}
 
 	bool FFmpegAudioProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -1091,17 +1083,23 @@ namespace mb {
 	void FFmpegAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
+		IDirectFBSurface* s;
 		clog << "FFmpegAudioProvider::playOver" << endl;
 
 		pthread_mutex_lock(&rContainer->input.lock);
 		pthread_mutex_lock(&rContainer->audio.lock);
 
 		if (rContainer->surface == NULL) {
+			s = getPerfectDFBSurface();
 			if (surface == NULL) {
-				rContainer->surface = getPerfectSurface();
+				rContainer->surface = LocalScreenManager::getInstance()->
+						createSurface(myScreen);
+
 			} else {
 				rContainer->surface = surface;
 			}
+
+			rContainer->surface->setContent(s);
 		}
 
 		rContainer->callback   = FFmpegAudioProvider::dynamicRenderCallBack;

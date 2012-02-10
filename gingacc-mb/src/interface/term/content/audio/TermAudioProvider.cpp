@@ -84,10 +84,6 @@ namespace mb {
 
 	}
 
-	ISurface* TermAudioProvider::getPerfectSurface() {
-		return NULL;
-	}
-
 	bool TermAudioProvider::checkVideoResizeEvent(ISurface* frame) {
 		return true;
 	}

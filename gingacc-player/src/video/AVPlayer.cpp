@@ -1105,11 +1105,11 @@ namespace player {
 			Thread::start();
 
 			pthread_t _tId;
-			pthread_create(&_tId, NULL, createProvider, this);
+			pthread_create(&_tId, NULL, createProviderT, this);
 			pthread_detach(_tId);
 #endif
 		} else {
-			createProvider(this);
+			createProvider();
 			this->scopeEndTime = getTotalMediaTime();
 		}
 	}
@@ -1143,7 +1143,7 @@ namespace player {
 
 	ISurface* AVPlayer::getSurface() {
 		if (provider == NULL) {
-			createProvider(this);
+			createProvider();
 			if (provider == NULL) {
 				clog << "AVPlayer::getSurface() can't create provider" << endl;
 			}
@@ -1152,31 +1152,37 @@ namespace player {
 		return Player::getSurface();
 	}
 
-	void* AVPlayer::createProvider(void* ptr) {
-		AVPlayer* p = (AVPlayer*)ptr;
+	void AVPlayer::createProvider(void) {
 		bool isRemote = false;
 
-		clog << "AVPlayer::createProvider '" << p->mrl << "'" << endl;
-		pthread_mutex_lock(&(p->pMutex));
+		clog << "AVPlayer::createProvider '" << mrl << "'" << endl;
+		pthread_mutex_lock(&pMutex);
 
-		if (p->mrl.substr(0, 7) == "rtsp://" ||
-				p->mrl.substr(0, 6) == "rtp://" ||
-				p->mrl.substr(0, 7) == "http://" ||
-				p->mrl.substr(0, 8) == "https://") {
+		if (mrl.substr(0, 7) == "rtsp://" ||
+				mrl.substr(0, 6) == "rtp://" ||
+				mrl.substr(0, 7) == "http://" ||
+				mrl.substr(0, 8) == "https://") {
 
 			isRemote = true;
 		}
 
-		if (p->provider == NULL && (fileExists(p->mrl) || isRemote)) {
-			p->provider = dm->createContinuousMediaProvider(
-					p->myScreen, p->mrl.c_str(), p->hasVisual, isRemote);
+		if (provider == NULL && (fileExists(mrl) || isRemote)) {
+			provider = dm->createContinuousMediaProvider(
+					myScreen, mrl.c_str(), hasVisual, isRemote);
 
-			p->surface = p->createFrame();
+			surface = createFrame();
 		}
 
-		pthread_mutex_unlock(&(p->pMutex));
-		clog << "AVPlayer::createProvider '" << p->mrl << "' all done" << endl;
-		return p;
+		pthread_mutex_unlock(&(pMutex));
+		clog << "AVPlayer::createProvider '" << mrl << "' all done" << endl;
+	}
+
+	void* AVPlayer::createProviderT(void* ptr) {
+		AVPlayer* p = (AVPlayer*)ptr;
+
+		p->createProvider();
+
+		return p->provider;
 	}
 
 	void AVPlayer::finished() {
@@ -1221,7 +1227,7 @@ namespace player {
 			delete surface;
 		}
 
-		surface = provider->getPerfectSurface();
+		surface = dm->createSurface(myScreen);
 		if (win != NULL && mainAV) {
 			surface->setParent(win);
 		}

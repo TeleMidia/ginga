@@ -83,8 +83,8 @@ namespace mb {
 		return NULL;
 	}
 
-	ISurface* DXVideoProvider::getPerfectSurface() {
-		clog << "DXVideoProvider::getPerfectSurface()" << endl;
+	ISurface* DXVideoProvider::getPerfectDXSurface() {
+		clog << "DXVideoProvider::getPerfectDXSurface()" << endl;
 		DX2DSurfaceProp surProp;
 
 		//IDirect3DTexture9 * tex = vmr->GetTexture();

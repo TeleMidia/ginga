@@ -156,7 +156,7 @@ namespace mb {
 			title.assign((char*)VERSION);
 			title = "Ginga v" + title;
 
-			if (mbMode == "" && mbMode.find("x") != std::string::npos) {
+			if (mbMode != "" && mbMode.find("x") != std::string::npos) {
 				wRes = (int)stof(mbMode.substr(0, mbMode.find_first_of("x")));
 				hRes = (int)stof(mbMode.substr(
 						mbMode.find_first_of("x") + 1,
@@ -462,7 +462,6 @@ namespace mb {
 				rect.h  = (*i)->getH();
 				texture = (SDL_Texture*)((*i)->getContent());
 
-				cout << "RENDER" << endl;
 				SDL_RenderCopy(renderer, texture, NULL, &rect);
 				++i;
 			}

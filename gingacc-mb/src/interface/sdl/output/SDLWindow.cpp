@@ -372,10 +372,6 @@ namespace mb {
 		this->rect.h = h;
 	}
 
-	void* SDLWindow::getContent() {
-		return texture;
-	}
-
 	void SDLWindow::setGhostWindow(bool ghost) {
 		this->ghost = ghost;
 	}
@@ -454,8 +450,20 @@ namespace mb {
 		return this->fit;
 	}
 
+	void* SDLWindow::getContent() {
+		return getTexture();
+	}
+
 	void SDLWindow::clearContent() {
 
+	}
+
+	SDL_Texture* SDLWindow::getTexture() {
+		return texture;
+	}
+
+	void SDLWindow::setTexture(SDL_Texture* texture) {
+		this->texture = texture;
 	}
 
 	bool SDLWindow::isMine(ISurface* surface) {

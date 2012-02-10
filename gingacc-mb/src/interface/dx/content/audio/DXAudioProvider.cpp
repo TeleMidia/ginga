@@ -93,11 +93,10 @@ namespace mb {
 		return NULL;
 	}
 
-	ISurface* DXAudioProvider::getPerfectSurface() {
-		clog << "DXAudioProvider::getPerfectSurface()" << endl;
+	DX2DSurfaceProp* DXAudioProvider::getPerfectDXSurface() {
+		clog << "DXAudioProvider::getPerfectDXSurface()" << endl;
 		DX2DSurfaceProp surProp;
 
-//		IDirect3DTexture9 * tex = vmr->GetTexture();
 		IDirect3DTexture9 * tex = NULL;
 
 		if(tex != NULL){

@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/content/video/SDLVideoProvider.h"
 #include "mb/interface/sdl/SDLDeviceScreen.h"
 #include "mb/interface/sdl/output/SDLSurface.h"
+#include "mb/interface/sdl/output/SDLWindow.h"
 
 namespace br {
 namespace pucrio {
@@ -76,18 +77,28 @@ namespace mb {
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
 
+		SDL_Renderer* renderer;
+
 		videoFrame = NULL;
 		myScreen   = screenId;
 
 		if (file != NULL) {
 			SDL_ffmpegSelectVideoStream(file, 0);
-			SDL_ffmpegGetVideoSize(file, &wRes, &hRes);
+			getOriginalResolution(&wRes, &hRes);
 
 			videoFrame = SDL_ffmpegCreateVideoFrame();
+		    videoFrame->tempw = wRes;
+		    videoFrame->temph = hRes;
 
-			cout << "SDLVideoProvider::SDLVideoProvider";
-		    cout << "'" << mrl << "' with '" << file->videoStreams;
-		    cout << "' video streams" << endl;
+			renderer = (SDL_Renderer*)(LocalScreenManager::getInstance()->
+					getGfxRoot(myScreen));
+
+			videoFrame->texture = SDL_CreateTexture(
+					renderer,
+					SDL_PIXELFORMAT_YUY2,
+					SDL_TEXTUREACCESS_STREAMING,
+					wRes,
+					hRes);
 		}
 	}
 
@@ -116,10 +127,6 @@ namespace mb {
 
 	void SDLVideoProvider::getVideoSurfaceDescription(void* dsc) {
 
-	}
-
-	ISurface* SDLVideoProvider::getPerfectSurface() {
-		return NULL;
 	}
 
 	bool SDLVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -152,11 +159,76 @@ namespace mb {
 		}
 	}
 
+	bool SDLVideoProvider::prepare(ISurface* surface) {
+		IWindow* parent;
+		SDLWindow* win;
+
+		if (SDLAudioProvider::prepare(surface)) {
+			if (SDL_ffmpegValidVideo(file) && videoFrame != NULL) {
+				parent = (IWindow*)(surface->getParent());
+				if (parent != NULL) {
+					win = dynamic_cast<SDLWindow*>(parent);
+					if (win != NULL) {
+						win->setTexture(videoFrame->texture);
+					}
+				}
+
+				cout << "SDLVideoProvider::prepare OK" << endl;
+				return true;
+			}
+		}
+
+		cout << "SDLVideoProvider::prepare FALSE" << endl;
+		return false;
+	}
+
 	void SDLVideoProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
-		state = ST_PLAYING;
-		Thread::start();
+		int i;
+
+		if (prepare(surface)) {
+			state  = ST_PLAYING;
+			running = true;
+			SDL_PauseAudio(0);
+
+			while (running) {
+				if (SDL_ffmpegValidAudio(file)) {
+
+					SDL_LockMutex(mutex);
+
+					for (i = 0; i < BUF_SIZE; i++) {
+						if (audioFrame[i]->size == 0) {
+							SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+						}
+					}
+
+					SDL_UnlockMutex(mutex);
+
+				} else {
+					cout << "SDLVideoProvider::playOver !VALID" << endl;
+				}
+
+		        if (videoFrame != NULL) {
+		            if (!videoFrame->ready) {
+		                SDL_ffmpegGetVideoFrame(file, videoFrame);
+
+		            } else {
+		            	if (videoFrame->pts <= getSync()) {
+		            		if (videoFrame->texture) {
+		            			LocalScreenManager::getInstance()->refreshScreen(
+		            					myScreen);
+		            		}
+							videoFrame->ready = 0;
+
+		            	} else {
+		            		::usleep((unsigned int)(
+		            				videoFrame->pts - getSync()));
+		            	}
+		            }
+		        }
+			}
+		}
 	}
 
 	void SDLVideoProvider::resume(ISurface* surface, bool hasVisual) {
@@ -181,41 +253,7 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::run() {
-		int i;
 
-		running = true;
-
-		while (running) {
-			if (SDL_ffmpegValidAudio(file)) {
-
-				SDL_LockMutex(mutex);
-
-				for (i = 0; i < BUF_SIZE; i++) {
-					if (!audioFrame[i]->size) {
-						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
-					}
-				}
-
-				SDL_UnlockMutex(mutex);
-			}
-
-	        if (videoFrame != NULL) {
-	            if (!videoFrame->ready) {
-	                SDL_ffmpegGetVideoFrame(file, videoFrame);
-
-	            } else {
-	            	if (videoFrame->pts <= getSync()) {
-	            		if (videoFrame->texture) {
-	            			//NOTIFY!
-	            		}
-						videoFrame->ready = 0;
-
-	            	} else {
-	            		SDL_Delay((videoFrame->pts - getSync()));
-	            	}
-	            }
-	        }
-		}
 	}
 }
 }

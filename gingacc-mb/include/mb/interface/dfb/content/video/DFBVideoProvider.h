@@ -105,9 +105,9 @@ namespace mb {
 
 		private:
 			bool getVideoSurfaceDescription(DFBSurfaceDescription* dsc);
+			IDirectFBSurface* getPerfectDFBSurface();
 
 		public:
-			ISurface* getPerfectSurface();
 			bool checkVideoResizeEvent(ISurface* frame);
 
 		private:

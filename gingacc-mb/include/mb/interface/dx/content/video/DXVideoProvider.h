@@ -75,7 +75,7 @@ namespace mb {
 			DXVideoProvider(const char* mrl);
 			virtual ~DXVideoProvider();
 			void* getContent();
-			ISurface* getPerfectSurface();
+			ISurface* getPerfectDXSurface();
 
 		private:
 			static void dynamicRenderCallBack(void* surface);

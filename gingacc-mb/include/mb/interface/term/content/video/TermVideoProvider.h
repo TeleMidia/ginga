@@ -72,7 +72,6 @@ namespace mb {
 
 			void setAVPid(int aPid, int vPid);
 			void feedBuffers();
-			ISurface* getPerfectSurface();
 			bool checkVideoResizeEvent(ISurface* frame);
 			double getTotalMediaTime();
 			int64_t getVPts();

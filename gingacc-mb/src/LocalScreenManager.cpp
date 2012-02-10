@@ -250,6 +250,9 @@ namespace mb {
 			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
 				mbParent.assign(args[i + 1]);
 			}
+
+			/*cout << "LocalScreenManager::createScreen PARSER argv[";
+			cout << i << "] = '" << args[i] << "'" << endl;*/
 		}
 
 		return createScreen(mbSystem, mbSubSystem, mbMode, mbParent);

@@ -308,7 +308,7 @@ namespace mb {
 		dsc->flags = (DFBSurfaceDescriptionFlags)(DSDESC_WIDTH | DSDESC_HEIGHT);
 	}
 
-	ISurface* XineVideoProvider::getPerfectSurface() {
+	IDirectFBSurface* XineVideoProvider::getPerfectDFBSurface() {
 		DFBSurfaceDescription dsc;
 
 		getVideoSurfaceDescription(&dsc);
@@ -318,8 +318,7 @@ namespace mb {
 			dsc.height = 240;
 		}
 
-		return new DFBSurface(
-				myScreen, DFBDeviceScreen::createUnderlyingSurface(&dsc));
+		return DFBDeviceScreen::createUnderlyingSurface(&dsc);
 	}
 
 	bool XineVideoProvider::checkVideoResizeEvent(ISurface* frame) {
@@ -581,6 +580,11 @@ namespace mb {
 
 	void XineVideoProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
+
+		IDirectFBSurface* s;
+
+		s = getPerfectDFBSurface();
+		surface->setContent(s);
 
 		rContainer->listener = listener;
 		rContainer->surface  = surface;

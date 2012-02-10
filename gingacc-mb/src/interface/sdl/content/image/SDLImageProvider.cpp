@@ -99,9 +99,16 @@ namespace mb {
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
-		SDL_Surface* renderedSurface = IMG_Load(imgUri.c_str());
+		SDL_Surface* renderedSurface;
+		IWindow* parent;
 
+		renderedSurface = IMG_Load(imgUri.c_str());
 		surface->setContent((void*)renderedSurface);
+
+		parent = (IWindow*)(surface->getParent());
+		if (parent != NULL) {
+			parent->renderFrom(surface);
+		}
 	}
 
 	ISurface* SDLImageProvider::prepare(bool isGif) {

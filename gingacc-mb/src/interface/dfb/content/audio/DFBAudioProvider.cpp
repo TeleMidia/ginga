@@ -121,13 +121,12 @@ namespace mb {
 		return decoder;
 	}
 
-	ISurface* DFBAudioProvider::getPerfectSurface() {
+	IDirectFBSurface* DFBAudioProvider::getPerfectDFBSurface() {
 		DFBSurfaceDescription dsc;
 
 		DFBCHECK(decoder->GetSurfaceDescription(decoder, &dsc));
-		return new DFBSurface(
-				myScreen,
-				DFBDeviceScreen::createUnderlyingSurface(&dsc));
+
+		return DFBDeviceScreen::createUnderlyingSurface(&dsc);
 	}
 
 	void DFBAudioProvider::dynamicRenderCallBack(void* dec) {
@@ -251,7 +250,8 @@ namespace mb {
 
 		IDirectFBSurface* s;
 
-		s = (IDirectFBSurface*)(surface->getContent());
+		s = getPerfectDFBSurface();
+		surface->setContent((void*)s);
 		if (hasVisual) {
 			DFBCHECK(decoder->PlayTo(
 					decoder, s, NULL, dynamicRenderCallBack, (void*)surface));
