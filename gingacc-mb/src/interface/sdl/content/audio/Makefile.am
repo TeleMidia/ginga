@@ -28,6 +28,7 @@ libgingaccmbdecsdlap_so_SOURCES = \
 libgingaccmbdecsdlap_so_LDADD   = \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
+                                  -lgingaccsystem \
                                   -lSDL2 -lavformat -lswscale -lSDL2_ffmpeg
 endif #SDLSYSTEM
 

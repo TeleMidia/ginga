@@ -188,6 +188,9 @@ namespace mb {
 			void unlock();
 			void lockChilds();
 			void unlockChilds();
+
+		private:
+			void refresh(bool ifVisible);
 	};
 }
 }

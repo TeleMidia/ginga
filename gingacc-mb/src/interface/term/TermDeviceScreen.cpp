@@ -156,6 +156,10 @@ namespace mb {
 
 	}
 
+	void TermDeviceScreen::refreshScreen() {
+
+	}
+
 
 	/* interfacing content */
 	IContinuousMediaProvider* TermDeviceScreen::createContinuousMediaProvider(

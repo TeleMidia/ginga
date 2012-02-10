@@ -159,6 +159,7 @@ namespace mb {
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
 			void releaseSurface(ISurface* sur);
+			void refreshScreen();
 
 
 			/* interfacing content */

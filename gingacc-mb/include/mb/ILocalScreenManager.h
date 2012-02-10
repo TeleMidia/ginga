@@ -125,6 +125,8 @@ namespace mb {
 			virtual void releaseSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
 
+			virtual void refreshScreen(GingaScreenID screenId)=0;
+
 
 			/* Interfacing content */
 

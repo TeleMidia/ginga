@@ -63,7 +63,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 	SDLAudioProvider::SDLAudioProvider(
-			GingaScreenID screenId, const char* mrl) {
+			GingaScreenID screenId, const char* mrl) : Thread() {
 
 		myScreen = screenId;
 		state    = ST_STOPPED;

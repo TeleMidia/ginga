@@ -327,11 +327,17 @@ namespace mb {
 	}
 
 	void SDLWindow::show() {
-		this->visible = true;
+		if (!visible) {
+			visible = true;
+			refresh(false);
+		}
 	}
 
 	void SDLWindow::hide() {
-		this->visible = false;
+		if (visible) {
+			visible = false;
+			refresh(false);
+		}
 	}
 
 	int SDLWindow::getX() {
@@ -518,9 +524,11 @@ namespace mb {
 	void SDLWindow::renderFrom(ISurface* surface) {
 		SDL_Surface* contentSurface;
 
-		if (texture != NULL && !isMine(surface)) {
+		if (!isMine(surface)) {
 			contentSurface = (SDL_Surface*)(surface->getContent());
 			if (contentSurface == NULL) {
+				cout << "SDLWindow::renderFrom Warning! NULL underlying ";
+				cout << "surface!" << endl;
 				return;
 			}
 
@@ -531,42 +539,19 @@ namespace mb {
 	void SDLWindow::renderFrom(SDL_Surface* contentSurface) {
 		int w, h;
 		ISurface* sur;
-		/*SDL_Surface* s2;
+		SDL_Renderer* renderer;
 
-		SDLCHECK(contentSurface->GetSize(contentSurface, &w, &h));
-		if (winSur != NULL && winSur != contentSurface) {
-			SDLCHECK(winSur->Clear(winSur, 0, 0, 0, 0));
-			if ((w != width || h != height) && fit) {
-				if (stretch) {
-					SDLCHECK(winSur->StretchBlit(
-							winSur, contentSurface, NULL, NULL));
+		if (texture != NULL) {
+			SDLDeviceScreen::releaseTexture(texture);
+			texture = NULL;
+		}
 
-				} else {
-					sur = new SDLSurface(myScreen, width, height);
-					s2 = (SDL_Surface*)(sur->getContent());
+		renderer = (SDL_Renderer*)(
+				LocalScreenManager::getInstance()->getGfxRoot(myScreen));
 
-					SDLCHECK(s2->StretchBlit(
-						    s2,
-						    contentSurface,
-						    NULL,
-						    NULL));
+		texture = SDLDeviceScreen::createTexture(renderer, contentSurface);
 
-					SDLCHECK(s2->Flip(
-							s2, NULL, (SDLSurfaceFlipFlags)DSFLIP_BLIT));
-
-					SDLCHECK(winSur->Blit(winSur, s2, NULL, 0, 0));
-					SDLCHECK(winSur->Flip(
-							winSur,
-							NULL, (SDLSurfaceFlipFlags) DSFLIP_BLIT));
-
-					delete sur;
-				}
-
-			} else {
-				SDLCHECK(winSur->Blit(winSur, contentSurface, NULL, 0, 0));
-			}
-			SDLCHECK(winSur->Flip(winSur, NULL, (SDLSurfaceFlipFlags)0));
-		}*/
+		refresh(true);
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -674,6 +659,15 @@ namespace mb {
 
 	void SDLWindow::unlockChilds() {
 		pthread_mutex_unlock(&mutexC);
+	}
+
+	void SDLWindow::refresh(bool ifVisible) {
+		if (!ifVisible) {
+			LocalScreenManager::getInstance()->refreshScreen(myScreen);
+
+		} else if (visible) {
+			LocalScreenManager::getInstance()->refreshScreen(myScreen);
+		}
 	}
 }
 }

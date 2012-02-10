@@ -74,17 +74,17 @@ namespace mb {
 	IComponentManager* SDLDeviceScreen::cm = IComponentManager::getCMInstance();
 #endif
 
-bool SDLDeviceScreen::initSDL = false;
+	bool SDLDeviceScreen::initSDL = false;
 
-pthread_mutex_t SDLDeviceScreen::ieMutex;
-map<int, int>* SDLDeviceScreen::gingaToSDLCodeMap = NULL;
-map<int, int>* SDLDeviceScreen::sdlToGingaCodeMap = NULL;
+	pthread_mutex_t SDLDeviceScreen::ieMutex;
+	map<int, int>* SDLDeviceScreen::gingaToSDLCodeMap = NULL;
+	map<int, int>* SDLDeviceScreen::sdlToGingaCodeMap = NULL;
 
-unsigned int SDLDeviceScreen::numOfSDLScreens = 0;
+	unsigned int SDLDeviceScreen::numOfSDLScreens = 0;
 
-const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
-const unsigned int SDLDeviceScreen::DSA_4x3     = 1;
-const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
+	const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
+	const unsigned int SDLDeviceScreen::DSA_4x3     = 1;
+	const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 
 	SDLDeviceScreen::SDLDeviceScreen(
 			int argc, char** args,
@@ -102,7 +102,7 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 		im          = NULL;
 		id          = myId;
 		uId         = parentId;
-
+		renderer    = NULL;
 		windowPool  = new set<IWindow*>;
 		surfacePool = new set<ISurface*>;
 
@@ -181,6 +181,8 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 			screen = SDL_CreateWindow(title.c_str(), x, y, wRes, hRes, 0);
 		}
 
+		initCodeMaps();
+
 		if (screen != NULL) {
 			renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_ACCELERATED);
 
@@ -189,11 +191,11 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 						screen, -1, SDL_RENDERER_SOFTWARE);
 			}
 		}
-
-		initCodeMaps();
 	}
 
 	SDLDeviceScreen::~SDLDeviceScreen() {
+		releaseScreen();
+
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
 	}
@@ -201,7 +203,12 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 	void SDLDeviceScreen::releaseScreen() {
 		clearWidgetPools();
 
-		if (uId == NULL) {
+		if (renderer != NULL) {
+			SDL_DestroyRenderer(renderer);
+			renderer = NULL;
+		}
+
+		if (uId == NULL && screen != NULL) {
 			SDL_DestroyWindow(screen);
 			screen = NULL;
 		}
@@ -213,10 +220,7 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 		while (numOfSDLScreens > 1) {
 			::usleep(100000);
 			errCount++;
-			if (errCount > 5) {
-				cout << "SDLDeviceScreen::releaseMB Warning! call to releaseMB";
-				cout << " with undeleted SDLDeviceScreen. Please solve your ";
-				cout << "program." << endl;
+			if (errCount > 5 || numOfSDLScreens <= 1) {
 				break;
 			}
 		}
@@ -438,6 +442,34 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 		} else {
 			pthread_mutex_unlock(&surMutex);
 		}
+	}
+
+	void SDLDeviceScreen::refreshScreen() {
+		vector<IWindow*> renderList;
+		vector<IWindow*>::iterator i;
+		SDL_Texture* texture;
+		SDL_Rect rect;
+
+		pthread_mutex_lock(&winMutex);
+		pthread_mutex_lock(&surMutex);
+		SDL_RenderClear(renderer);
+		if (getRenderList(&renderList)) {
+			i = renderList.begin();
+			while (i != renderList.end()) {
+				rect.x  = (*i)->getX();
+				rect.y  = (*i)->getY();
+				rect.w  = (*i)->getW();
+				rect.h  = (*i)->getH();
+				texture = (SDL_Texture*)((*i)->getContent());
+
+				cout << "RENDER" << endl;
+				SDL_RenderCopy(renderer, texture, NULL, &rect);
+				++i;
+			}
+			SDL_RenderPresent(renderer);
+		}
+		pthread_mutex_unlock(&winMutex);
+		pthread_mutex_unlock(&surMutex);
 	}
 
 
@@ -846,6 +878,29 @@ const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 
 	void SDLDeviceScreen::releaseUnderlyingSurface(SDL_Surface* uSur) {
 		SDL_FreeSurface(uSur);
+	}
+
+	bool SDLDeviceScreen::getRenderList(vector<IWindow*>* renderList) {
+		IWindow* win;
+		set<IWindow*>::iterator i;
+
+		if (windowPool != NULL) {
+			i = windowPool->begin();
+			while (i != windowPool->end()) {
+				win = *i;
+				if (win->isVisible() && win->getContent() != NULL) {
+					renderList->push_back(win);
+
+				} else {
+					cout << "CAN'T ADD: visible = '" << win->isVisible();
+					cout << "' and content = '" << win->getContent();
+					cout << "'" << endl;
+				}
+				++i;
+			}
+		}
+
+		return !renderList->empty();
 	}
 }
 }

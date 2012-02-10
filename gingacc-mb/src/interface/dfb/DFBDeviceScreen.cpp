@@ -177,10 +177,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		while (numOfDFBScreens > 1) {
 			::usleep(100000);
 			errCount++;
-			if (errCount > 5) {
-				cout << "DFBDeviceScreen::releaseMB Warning! call to releaseMB";
-				cout << " with undeleted DFBDeviceScreen. Please solve your ";
-				cout << "program." << endl;
+			if (errCount > 5 || numOfDFBScreens <= 1) {
 				break;
 			}
 		}
@@ -471,6 +468,10 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		} else {
 			pthread_mutex_unlock(&surMutex);
 		}
+	}
+
+	void DFBDeviceScreen::refreshScreen() {
+
 	}
 
 

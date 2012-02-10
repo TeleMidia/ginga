@@ -65,6 +65,9 @@ http://www.telemidia.puc-rio.br
 
 #include <pthread.h>
 
+#include "system/thread/Thread.h"
+using namespace br::pucrio::telemidia::ginga::core::system::thread;
+
 #include <string>
 #include <iostream>
 #include <map>
@@ -168,6 +171,7 @@ namespace mb {
 					GingaScreenID screenId, void* underlyingSurface);
 
 			void releaseSurface(GingaScreenID screenId, ISurface* surface);
+			void refreshScreen(GingaScreenID screenId);
 
 
 			/* Interfacing content */

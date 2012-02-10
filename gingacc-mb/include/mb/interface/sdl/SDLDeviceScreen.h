@@ -67,6 +67,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include <pthread.h>
 
 #include <set>
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -148,6 +149,7 @@ namespace mb {
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
 			void releaseSurface(ISurface* sur);
+			void refreshScreen();
 
 
 			/* interfacing content */
@@ -187,7 +189,7 @@ namespace mb {
 			void* getGfxRoot();
 
 
-			/* libgingaccmbdfb internal use*/
+			/* SDL MB internal use*/
 
 			/* input */
 			static void initCodeMaps();
@@ -203,6 +205,9 @@ namespace mb {
 			static SDL_Surface* createUnderlyingSurface(int width, int height);
 
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
+
+		private:
+			bool getRenderList(vector<IWindow*>* renderList);
 	};
 }
 }

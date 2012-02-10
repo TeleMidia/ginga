@@ -110,6 +110,7 @@ namespace mb {
 			virtual ISurface* createSurface(int w, int h)=0;
 			virtual ISurface* createSurfaceFrom(void* underlyingSurface)=0;
 			virtual void releaseSurface(ISurface* sur)=0;
+			virtual void refreshScreen()=0;
 
 
 			/* interfacing content */

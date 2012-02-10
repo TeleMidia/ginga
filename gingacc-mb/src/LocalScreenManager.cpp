@@ -550,6 +550,15 @@ namespace mb {
 		}
 	}
 
+	void LocalScreenManager::refreshScreen(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->refreshScreen();
+		}
+	}
+
+
 	/* interfacing content */
 
 	IContinuousMediaProvider* LocalScreenManager::createContinuousMediaProvider(
