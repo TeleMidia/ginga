@@ -131,19 +131,6 @@ namespace mb {
 		return this->parent;
 	}
 
-	void TermSurface::setChromaColor(IColor* color) {
-		if (this->chromaColor != NULL) {
-			delete this->chromaColor;
-			chromaColor = NULL;
-		}
-
-		this->chromaColor = color;
-	}
-
-	IColor* TermSurface::getChromaColor() {
-		return this->chromaColor;
-	}
-
 	void TermSurface::clearContent() {
 		if (sur == NULL) {
 			clog << "TermSurface::clearContent Warning! ";
@@ -182,16 +169,36 @@ namespace mb {
 
 	}
 
-	void TermSurface::setBorder(IColor* borderColor) {
+	void TermSurface::setChromaColor(int r, int g, int b, int alpha) {
 
 	}
 
-	void TermSurface::setColor(IColor* writeColor) {
+	IColor* TermSurface::getChromaColor() {
+		return NULL;
+	}
+
+	void TermSurface::setBorderColor(int r, int g, int b, int alpha) {
 
 	}
 
-	void TermSurface::setBgColor(IColor* bgColor) {
+	IColor* TermSurface::getBorderColor() {
+		return NULL;
+	}
 
+	void TermSurface::setBgColor(int r, int g, int b, int alpha) {
+
+	}
+
+	IColor* TermSurface::getBgColor() {
+		return NULL;
+	}
+
+	void TermSurface::setColor(int r, int g, int b, int alpha) {
+
+	}
+
+	IColor* TermSurface::getColor() {
+		return NULL;
 	}
 
 	void TermSurface::setFont(void* font) {

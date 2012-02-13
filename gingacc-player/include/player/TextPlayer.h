@@ -79,9 +79,9 @@ namespace player {
 			int currentLine;
 			int currentColumn;
 			int tabSize;
-			IColor* bgColor;
 			int fontSize;
 			IColor* fontColor;
+			IColor* bgColor;
 			string fontUri;
 			IFontProvider* font;
 

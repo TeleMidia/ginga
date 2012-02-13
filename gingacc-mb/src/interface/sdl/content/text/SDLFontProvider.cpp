@@ -127,10 +127,23 @@ namespace mb {
 
 		IWindow* parent;
 		SDL_Surface* renderedSurface;
+		IColor* fontColor = NULL;
+		SDL_Color sdlColor;
 
-		SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
+		fontColor = surface->getColor();
 
-		renderedSurface = TTF_RenderText_Solid(font, text, white);
+		if (fontColor != NULL) {
+			sdlColor.r = fontColor->getR();
+			sdlColor.g = fontColor->getG();
+			sdlColor.b = fontColor->getB();
+
+		} else {
+			sdlColor.r = 0x00;
+			sdlColor.g = 0x00;
+			sdlColor.b = 0x00;
+		}
+
+		renderedSurface = TTF_RenderText_Solid(font, text, sdlColor);
 		surface->setContent((void*)renderedSurface);
 
 		parent = (IWindow*)(surface->getParent());

@@ -128,7 +128,11 @@ namespace player {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				surface->setBgColor(bgColor);
+				surface->setBgColor(
+						bgColor->getR(),
+						bgColor->getG(),
+						bgColor->getB(),
+						bgColor->getAlpha());
 
 			} else {
 				((IWindow*)(surface->getParent()))->clearContent();
@@ -182,7 +186,11 @@ namespace player {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				surface->setBgColor(bgColor);
+				surface->setBgColor(
+						bgColor->getR(),
+						bgColor->getG(),
+						bgColor->getB(),
+						bgColor->getAlpha());
 
 			} else {
 				((IWindow*)(surface->getParent()))->clearContent();
@@ -252,7 +260,11 @@ namespace player {
 
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				surface->setBgColor(bgColor);
+				surface->setBgColor(
+						bgColor->getR(),
+						bgColor->getG(),
+						bgColor->getB(),
+						bgColor->getAlpha());
 			}
 
 		} else if ((name == "x-rgbBgColor" || name == "rgbBgColor")
@@ -273,7 +285,11 @@ namespace player {
 
 					//this->surface->setCaps(0);
 					surface->clearContent();
-					surface->setBgColor(bgColor);
+					surface->setBgColor(
+							bgColor->getR(),
+							bgColor->getG(),
+							bgColor->getB(),
+							bgColor->getAlpha());
 				}
 
 			} else {

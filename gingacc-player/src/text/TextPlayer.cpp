@@ -95,19 +95,19 @@ namespace player {
    	}
 
 	void TextPlayer::initializePlayer(GingaScreenID screenId) {
-		this->bgColor = NULL;
-		this->fontHeight = 0;
-		this->currentLine = 0;
+		this->fontHeight    = 0;
+		this->currentLine   = 0;
 		this->currentColumn = 0;
-		this->tabSize = 0;
-		this->font = NULL;
+		this->tabSize       = 0;
+		this->font          = NULL;
 #ifdef _WIN32
 		this->fontUri = getUserDocAndSetPath().append("\\config\\decker.ttf");
 #else
 		this->fontUri = "/usr/local/share/directfb-examples/fonts/decker.ttf";
 #endif
+		this->bgColor   = NULL;
 		this->fontColor = NULL;
-		this->fontSize = 12;
+		this->fontSize  = 12;
 
 		this->surface = dm->createSurface(myScreen);
 		if (this->surface != NULL) {
@@ -137,7 +137,11 @@ namespace player {
 		}
 
 		if (font != NULL) {
-			s->setColor(fontColor);
+			s->setColor(
+					fontColor->getR(),
+					fontColor->getG(),
+					fontColor->getB(),
+					fontColor->getAlpha());
 
 			width = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
@@ -192,14 +196,14 @@ namespace player {
 	}
 
 	void TextPlayer::setBgColor(int red, int green, int blue, int alpha) {
-		if (this->bgColor != NULL) {
-			delete this->bgColor;
-			this->bgColor = NULL;
-		}
+   		if (bgColor != NULL) {
+   			delete bgColor;
+   			bgColor = NULL;
+   		}
 
-		this->bgColor = new Color(red, green, blue, alpha);
+   		bgColor = new Color(red, green, blue, alpha);
 		if (this->surface != NULL) {
-			surface->setBgColor(bgColor);
+			surface->setBgColor(red, green, blue, alpha);
 		}
 	}
 
@@ -248,7 +252,12 @@ namespace player {
 			fontColor = new Color("black");
 		}
 
-		surface->setColor(fontColor);
+		surface->setColor(
+				fontColor->getR(),
+				fontColor->getG(),
+				fontColor->getB(),
+				fontColor->getAlpha());
+
 		if (font != NULL && surface != NULL && surface->getContent() != NULL) {
 			surface->getSize(&surWidth, &surHeight);
 			textWidth = font->getStringWidth(

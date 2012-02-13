@@ -55,6 +55,8 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/IFontProvider.h"
 #include "mb/LocalScreenManager.h"
 
+#include "util/Color.h"
+
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK
 #define DFBCHECK(x...)                                            \
@@ -100,10 +102,10 @@ namespace mb {
 	}
 
 	DFBSurface::~DFBSurface() {
-		if (chromaColor != NULL) {
-			delete chromaColor;
-			chromaColor = NULL;
-		}
+		releaseChromaColor();
+		releaseBorderColor();
+		releaseBgColor();
+		releaseSurfaceColor();
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
@@ -123,11 +125,42 @@ namespace mb {
 		}
 	}
 
+	void DFBSurface::releaseChromaColor() {
+		if (this->chromaColor != NULL) {
+			delete this->chromaColor;
+			chromaColor = NULL;
+		}
+	}
+
+	void DFBSurface::releaseBorderColor() {
+		if (this->borderColor != NULL) {
+			delete this->borderColor;
+			this->borderColor = NULL;
+		}
+	}
+
+	void DFBSurface::releaseBgColor() {
+		if (this->bgColor != NULL) {
+			delete this->bgColor;
+			this->bgColor = NULL;
+		}
+	}
+
+	void DFBSurface::releaseSurfaceColor() {
+		if (this->surfaceColor != NULL) {
+			delete this->surfaceColor;
+			this->surfaceColor = NULL;
+		}
+	}
+
 	void DFBSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
 		this->parent        = NULL;
 		this->chromaColor   = NULL;
+		this->borderColor   = NULL;
+		this->bgColor       = NULL;
+		this->surfaceColor  = NULL;
 		this->caps          = 0;
 		this->hasExtHandler = false;
 	}
@@ -222,36 +255,6 @@ namespace mb {
 		return this->parent;
 	}
 
-	void DFBSurface::setChromaColor(IColor* color) {
-		if (this->chromaColor != NULL) {
-			delete this->chromaColor;
-			chromaColor = NULL;
-		}
-
-		this->chromaColor = color;
-
-		if (sur != NULL) {
-			DFBCHECK(sur->SetSrcColorKey(
-					sur,
-				    chromaColor->getR(),
-				    chromaColor->getG(),
-				    chromaColor->getB()));
-
-			DFBCHECK(sur->SetBlittingFlags(sur,
-					(DFBSurfaceBlittingFlags)(
-							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));
-
-		} else {
-			clog << "DFBSurface::setChromaColor Warning! ";
-			clog << "Can't set chroma color: ";
-			clog << "internal surface is NULL" << endl;
-		}
-	}
-
-	IColor* DFBSurface::getChromaColor() {
-		return this->chromaColor;
-	}
-
 	void DFBSurface::clearContent() {
 		if (sur == NULL) {
 			clog << "DFBSurface::clearContent Warning! ";
@@ -322,8 +325,39 @@ namespace mb {
 		}
 	}
 
-	void DFBSurface::setBorder(IColor* borderColor) {
+	void DFBSurface::setChromaColor(int r, int g, int b, int alpha) {
+		releaseChromaColor();
+
+		this->chromaColor = new Color(r, g, b, alpha);
+
+		if (sur != NULL) {
+			DFBCHECK(sur->SetSrcColorKey(
+					sur,
+				    chromaColor->getR(),
+				    chromaColor->getG(),
+				    chromaColor->getB()));
+
+			DFBCHECK(sur->SetBlittingFlags(sur,
+					(DFBSurfaceBlittingFlags)(
+							DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY)));
+
+		} else {
+			clog << "DFBSurface::setChromaColor Warning! ";
+			clog << "Can't set chroma color: ";
+			clog << "internal surface is NULL" << endl;
+		}
+	}
+
+	IColor* DFBSurface::getChromaColor() {
+		return this->chromaColor;
+	}
+
+	void DFBSurface::setBorderColor(int r, int g, int b, int alpha) {
 		int w, h;
+
+		releaseBorderColor();
+
+		this->borderColor = new Color(r, g, b, alpha);
 
 		if (sur == NULL) {
 			clog << "DFBSurface::setBorder Warning! ";
@@ -347,22 +381,15 @@ namespace mb {
 		}
 	}
 
-	void DFBSurface::setColor(IColor* writeColor) {
-		if (sur == NULL) {
-			clog << "DFBSurface::setColor Warning! ";
-			clog << "Can't set color: ";
-			clog << "internal surface is NULL" << endl;
-			return;
-		}
-
-		DFBCHECK(sur->SetColor(sur,
-				writeColor->getR(),
-				writeColor->getG(),
-				writeColor->getB(),
-				writeColor->getAlpha()));
+	IColor* DFBSurface::getBorderColor() {
+		return borderColor;
 	}
 
-	void DFBSurface::setBgColor(IColor* bgColor) {
+	void DFBSurface::setBgColor(int r, int g, int b, int alpha) {
+		releaseBgColor();
+
+		this->bgColor = new Color(r, g, b, alpha);
+
 		if (sur == NULL) {
 			clog << "DFBSurface::setBgColor Warning! ";
 			clog << "Can't set background color: ";
@@ -373,6 +400,29 @@ namespace mb {
 		DFBCHECK(sur->Clear(
 				sur, bgColor->getR(),
 				bgColor->getG(), bgColor->getB(), bgColor->getAlpha()));
+	}
+
+	IColor* DFBSurface::getBgColor() {
+		return bgColor;
+	}
+
+	void DFBSurface::setColor(int r, int g, int b, int alpha) {
+		releaseSurfaceColor();
+
+		this->surfaceColor = new Color(r, g, b, alpha);
+
+		if (sur == NULL) {
+			clog << "DFBSurface::setColor Warning! ";
+			clog << "Can't set color: ";
+			clog << "internal surface is NULL" << endl;
+			return;
+		}
+
+		DFBCHECK(sur->SetColor(sur, r, g, b, alpha));
+	}
+
+	IColor* DFBSurface::getColor() {
+		return surfaceColor;
 	}
 
 	void DFBSurface::setFont(void* font) {

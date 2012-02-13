@@ -78,10 +78,10 @@ namespace mb {
 	}
 
 	SDLSurface::~SDLSurface() {
-		if (chromaColor != NULL) {
-			delete chromaColor;
-			chromaColor = NULL;
-		}
+		releaseChromaColor();
+		releaseBorderColor();
+		releaseBgColor();
+		releaseSurfaceColor();
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
@@ -99,11 +99,42 @@ namespace mb {
 		}
 	}
 
+	void SDLSurface::releaseChromaColor() {
+		if (this->chromaColor != NULL) {
+			delete this->chromaColor;
+			chromaColor = NULL;
+		}
+	}
+
+	void SDLSurface::releaseBorderColor() {
+		if (this->borderColor != NULL) {
+			delete this->borderColor;
+			this->borderColor = NULL;
+		}
+	}
+
+	void SDLSurface::releaseBgColor() {
+		if (this->bgColor != NULL) {
+			delete this->bgColor;
+			this->bgColor = NULL;
+		}
+	}
+
+	void SDLSurface::releaseSurfaceColor() {
+		if (this->surfaceColor != NULL) {
+			delete this->surfaceColor;
+			this->surfaceColor = NULL;
+		}
+	}
+
 	void SDLSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
 		this->parent        = NULL;
 		this->chromaColor   = NULL;
+		this->borderColor   = NULL;
+		this->bgColor       = NULL;
+		this->surfaceColor  = NULL;
 		this->caps          = 0;
 		this->hasExtHandler = false;
 	}
@@ -175,23 +206,6 @@ namespace mb {
 		return this->parent;
 	}
 
-	void SDLSurface::setChromaColor(IColor* color) {
-		if (this->chromaColor != NULL) {
-			delete this->chromaColor;
-			chromaColor = NULL;
-		}
-
-		this->chromaColor = color;
-
-		if (sur != NULL) {
-			SDL_SetColorKey(sur, 1, chromaColor->getRGBA());
-		}
-	}
-
-	IColor* SDLSurface::getChromaColor() {
-		return this->chromaColor;
-	}
-
 	void SDLSurface::clearContent() {
 		if (sur == NULL) {
 			return;
@@ -226,16 +240,44 @@ namespace mb {
 
 	}
 
-	void SDLSurface::setBorder(IColor* borderColor) {
+	void SDLSurface::setChromaColor(int r, int g, int b, int alpha) {
+		releaseChromaColor();
 
+		this->chromaColor = new Color(r, g, b, alpha);
 	}
 
-	void SDLSurface::setColor(IColor* writeColor) {
-
+	IColor* SDLSurface::getChromaColor() {
+		return this->chromaColor;
 	}
 
-	void SDLSurface::setBgColor(IColor* bgColor) {
+	void SDLSurface::setBorderColor(int r, int g, int b, int alpha) {
+		releaseBorderColor();
 
+		this->borderColor = new Color(r, g, b, alpha);
+	}
+
+	IColor* SDLSurface::getBorderColor() {
+		return borderColor;
+	}
+
+	void SDLSurface::setBgColor(int r, int g, int b, int alpha) {
+		releaseBgColor();
+
+		this->bgColor = new Color(r, g, b, alpha);
+	}
+
+	IColor* SDLSurface::getBgColor() {
+		return bgColor;
+	}
+
+	void SDLSurface::setColor(int r, int g, int b, int alpha) {
+		releaseSurfaceColor();
+
+		this->surfaceColor = new Color(r, g, b, alpha);
+	}
+
+	IColor* SDLSurface::getColor() {
+		return surfaceColor;
 	}
 
 	void SDLSurface::setFont(void* font) {

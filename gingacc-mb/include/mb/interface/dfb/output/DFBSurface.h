@@ -73,6 +73,9 @@ namespace mb {
 			IWindow* parent;
 			bool hasExtHandler;
 			IColor* chromaColor;
+			IColor* bgColor;
+			IColor* borderColor;
+			IColor* surfaceColor;
 			int caps;
 
 		public:
@@ -83,6 +86,11 @@ namespace mb {
 			virtual ~DFBSurface();
 
 		private:
+			void releaseChromaColor();
+			void releaseBgColor();
+			void releaseBorderColor();
+			void releaseSurfaceColor();
+
 			void initialize(GingaScreenID screenId);
 
 		public:
@@ -98,17 +106,20 @@ namespace mb {
 			void* getParent();                  //IWindow
 			void* getContent();
 			void setContent(void* surface);
-			void setChromaColor(IColor* color);
-			IColor* getChromaColor();
 			void clearContent();
 			void clearSurface();
 			void drawLine(int x1, int y1, int x2, int y2);
 			void drawRectangle(int x, int y, int w, int h);
 			void fillRectangle(int x, int y, int w, int h);
 			void drawString(int x, int y, const char* txt);
-			void setBorder(IColor* borderColor);
-			void setBgColor(IColor* bgColor);
-			void setColor(IColor* writeColor);
+			void setChromaColor(int r, int g, int b, int alpha);
+			IColor* getChromaColor();
+			void setBorderColor(int r, int g, int b, int alpha);
+			IColor* getBorderColor();
+			void setBgColor(int r, int g, int b, int alpha);
+			IColor* getBgColor();
+			void setColor(int r, int g, int b, int alpha);
+			IColor* getColor();
 			void setFont(void* font);
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();

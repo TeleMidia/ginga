@@ -160,8 +160,7 @@ namespace mb {
 				//alpha channel of gif does not exists anymore, it turn into
 				//black src color key
 				if (isGif) {
-					chromaKey = new Color(0, 0, 0);
-					renderedSurface->setChromaColor(chromaKey);
+					renderedSurface->setChromaColor(0, 0, 0, 0xFF);
 					//outputDisplay->setColorKey(0, 0, 0);
 					//clog << "black color cause it is a gif image" << endl;
 				}
@@ -180,17 +179,17 @@ namespace mb {
 			}
 
 			if (imgDsc.caps & DICAPS_COLORKEY) {
-				chromaKey = new Color(
-					    imgDsc.colorkey_r,
-					    imgDsc.colorkey_g,
-					    imgDsc.colorkey_b);
-
 				DFBCHECK(destination->SetBlittingFlags(destination,
 					    (DFBSurfaceBlittingFlags)(
 					    DSBLIT_BLEND_ALPHACHANNEL |
 					    DSBLIT_SRC_COLORKEY)));
 
-				renderedSurface->setChromaColor(chromaKey);
+				renderedSurface->setChromaColor(
+						imgDsc.colorkey_r,
+					    imgDsc.colorkey_g,
+					    imgDsc.colorkey_b,
+					    0xFF);
+
 				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
 				clog << " setted colorkey: '";
 				clog << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);

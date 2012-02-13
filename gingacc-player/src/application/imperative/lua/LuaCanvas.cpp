@@ -129,7 +129,12 @@ static int l_new (lua_State* L)
 					luaL_checkint(L, 2),
 					luaL_checkint(L, 3));
 
-			sfc->setBgColor(canvas->color);
+			sfc->setBgColor(
+					canvas->color->getR(),
+					canvas->color->getG(),
+					canvas->color->getB(),
+					canvas->color->getAlpha());
+
 			sfc->clearContent();
 
 			break;
@@ -212,7 +217,12 @@ static int l_attrColor (lua_State* L)
 	{
 		canvas->color = new Color(luaL_checkstring(L, -1));
 	}
-	canvas->sfc->setColor(canvas->color);
+	canvas->sfc->setColor(
+			canvas->color->getR(),
+			canvas->color->getG(),
+			canvas->color->getB(),
+			canvas->color->getAlpha());
+
 	return 0;
 }
 
@@ -440,7 +450,12 @@ static int l_clear (lua_State* L)
 {
     // [ ]
 	Canvas* canvas = CHECKCANVAS(L);
-    canvas->sfc->setBgColor(canvas->color);
+    canvas->sfc->setBgColor(
+    		canvas->color->getR(),
+    		canvas->color->getG(),
+    		canvas->color->getB(),
+    		canvas->color->getAlpha());
+
     return 0;
 }
 
@@ -557,7 +572,11 @@ LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect)
 
 	// default color: black
 	canvas->color = new Color("black");
-	canvas->sfc->setColor(canvas->color);
+	canvas->sfc->setColor(
+			canvas->color->getR(),
+			canvas->color->getG(),
+			canvas->color->getB(),
+			canvas->color->getAlpha());
 
 	return 1;
 }
