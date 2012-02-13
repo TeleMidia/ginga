@@ -33,7 +33,6 @@ libgingaccmbdecsdlav_so_LDADD   = \
                                   -ltelemidiautil \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
-                                  -lgingaccsystem \
                                   -lgingaccmbdecsdlap
 endif #SDLSYSTEM
 

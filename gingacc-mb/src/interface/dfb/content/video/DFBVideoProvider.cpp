@@ -391,8 +391,6 @@ namespace mb {
 				rContainer->surface  = surface;
 				rContainer->isValid  = true;
 
-				cout << "DFBVideoProvider::playOver OK";
-				cout << endl;
 				rContainer->dec->PlayTo(
 						rContainer->dec,
 						s, NULL, dynamicRenderCallBack, (void*)rContainer);

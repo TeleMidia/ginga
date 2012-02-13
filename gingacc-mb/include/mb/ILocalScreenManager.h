@@ -111,6 +111,9 @@ namespace mb {
 			virtual IWindow* createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow)=0;
 
+			virtual bool hasWindow(
+					GingaScreenID screenId, IWindow* window)=0;
+
 			virtual void releaseWindow(
 					GingaScreenID screenId, IWindow* window)=0;
 
@@ -122,10 +125,15 @@ namespace mb {
 			virtual ISurface* createSurfaceFrom(
 					GingaScreenID screenId, void* underlyingSurface)=0;
 
+			virtual bool hasSurface(
+					GingaScreenID screenId, ISurface* sur)=0;
+
 			virtual void releaseSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
 
 			virtual void refreshScreen(GingaScreenID screenId)=0;
+			virtual void refreshScreens(float fps)=0;
+			virtual void stopScreenManager()=0;
 
 
 			/* Interfacing content */

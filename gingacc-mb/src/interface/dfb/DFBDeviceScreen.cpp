@@ -164,6 +164,16 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
 
+		if (windowPool != NULL) {
+			delete windowPool;
+			windowPool = NULL;
+		}
+
+		if (surfacePool != NULL) {
+			delete surfacePool;
+			surfacePool = NULL;
+		}
+
 		numOfDFBScreens--;
 	}
 
@@ -400,6 +410,28 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		return iWin;
 	}
 
+	bool DFBDeviceScreen::hasWindow(IWindow* win) {
+		set<IWindow*>::iterator i;
+		bool hasWin = false;
+
+		pthread_mutex_lock(&winMutex);
+		if (windowPool != NULL) {
+			i = windowPool->find(win);
+			if (i != windowPool->end()) {
+				hasWin = true;
+				pthread_mutex_unlock(&winMutex);
+
+			} else {
+				pthread_mutex_unlock(&winMutex);
+			}
+
+		} else {
+			pthread_mutex_unlock(&winMutex);
+		}
+
+		return hasWin;
+	}
+
 	void DFBDeviceScreen::releaseWindow(IWindow* win) {
 		set<IWindow*>::iterator i;
 
@@ -451,6 +483,28 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		return iSur;
 	}
 
+	bool DFBDeviceScreen::hasSurface(ISurface* s) {
+		set<ISurface*>::iterator i;
+		bool hasSur = false;
+
+		pthread_mutex_lock(&surMutex);
+		if (surfacePool != NULL) {
+			i = surfacePool->find(s);
+			if (i != surfacePool->end()) {
+				hasSur = true;
+				pthread_mutex_unlock(&surMutex);
+
+			} else {
+				pthread_mutex_unlock(&surMutex);
+			}
+
+		} else {
+			pthread_mutex_unlock(&surMutex);
+		}
+
+		return hasSur;
+	}
+
 	void DFBDeviceScreen::releaseSurface(ISurface* s) {
 		set<ISurface*>::iterator i;
 
@@ -470,8 +524,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		}
 	}
 
-	void DFBDeviceScreen::refreshScreen() {
-
+	bool DFBDeviceScreen::refreshScreen() {
+		return false;
 	}
 
 

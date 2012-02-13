@@ -107,6 +107,10 @@ namespace mb {
 		sortSys.push_back(GMBST_DFB);
 		sortSys.push_back(GMBST_SDL);
 		sortSys.push_back(GMBST_TERM);
+
+		isWaiting = false;
+		pthread_cond_init(&wsSignal, NULL);
+		pthread_mutex_init(&wsMutex, NULL);
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
@@ -272,8 +276,9 @@ namespace mb {
 		GingaScreenID screenId;
 		char* mbArgs[4];
 
-		string params  = "";
-		string mycmd   = "ginga";
+		string params    = "";
+		string paramsSfx = "";
+		string mycmd     = "ginga";
 
 
 		screenId = getNumOfScreens();
@@ -343,11 +348,14 @@ namespace mb {
 					}
 				}
 
+				paramsSfx = "no-sighandler,force-windowed,quiet,no-banner,";
+				paramsSfx = paramsSfx + "no-debug,fatal-level=NONE";
+
 				if (params == "") {
-					params = "--dfb:no-sighandler,force-windowed";
+					params = "--dfb:" + paramsSfx;
 
 				} else {
-					params = params + ",no-sighandler,force-windowed";
+					params = params + "," + paramsSfx;
 				}
 
 				mbArgs[0] = (char*)mycmd.c_str();
@@ -496,6 +504,19 @@ namespace mb {
 		return window;
 	}
 
+	bool LocalScreenManager::hasWindow(
+			GingaScreenID screenId, IWindow* window) {
+
+		IDeviceScreen* screen;
+		bool hasWin = false;
+
+		if (getScreen(screenId, &screen)) {
+			hasWin = screen->hasWindow(window);
+		}
+
+		return hasWin;
+	}
+
 	void LocalScreenManager::releaseWindow(
 			GingaScreenID screenId, IWindow* win) {
 
@@ -543,6 +564,19 @@ namespace mb {
 		return surface;
 	}
 
+	bool LocalScreenManager::hasSurface(
+			GingaScreenID screenId, ISurface* surface) {
+
+		IDeviceScreen* screen;
+		bool hasSur = false;
+
+		if (getScreen(screenId, &screen)) {
+			hasSur = screen->hasSurface(surface);
+		}
+
+		return hasSur;
+	}
+
 	void LocalScreenManager::releaseSurface(
 			GingaScreenID screenId, ISurface* sur) {
 
@@ -559,6 +593,37 @@ namespace mb {
 		if (getScreen(screenId, &screen)) {
 			screen->refreshScreen();
 		}
+	}
+
+	void LocalScreenManager::refreshScreens(float fps) {
+		map<GingaScreenID, IDeviceScreen*>::iterator i;
+		bool hasRefresh;
+
+		running = true;
+		while (running) {
+			hasRefresh = false;
+			lockScreens();
+			i = screens->begin();
+			while (i != screens->end()) {
+				if (i->second->refreshScreen()) {
+					hasRefresh = true;
+				}
+				++i;
+			}
+			unlockScreens();
+			if (!hasRefresh) {
+				waitForScreens();
+
+			} else {
+				::usleep(1000000/fps);
+			}
+		}
+	}
+
+	void LocalScreenManager::stopScreenManager() {
+		this->running = false;
+		lockScreens();
+		unlockScreens();
 	}
 
 
@@ -735,6 +800,8 @@ namespace mb {
 		lockScreens();
 		(*screens)[screenId] = screen;
 		unlockScreens();
+
+		newScreenAdded();
 	}
 
 	short LocalScreenManager::getNumOfScreens() {
@@ -770,6 +837,22 @@ namespace mb {
 
 	void LocalScreenManager::unlockScreens() {
 		pthread_mutex_unlock(&scrMutex);
+	}
+
+	void LocalScreenManager::waitForScreens() {
+		isWaiting = true;
+		pthread_mutex_lock(&wsMutex);
+		pthread_cond_wait(&wsSignal, &wsMutex);
+		isWaiting = false;
+		pthread_mutex_unlock(&wsMutex);
+	}
+
+	bool LocalScreenManager::newScreenAdded() {
+		if (isWaiting) {
+			pthread_cond_signal(&wsSignal);
+			return true;
+		}
+		return false;
 	}
 }
 }

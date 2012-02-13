@@ -141,14 +141,14 @@ namespace mb {
 
 	double SDLVideoProvider::getTotalMediaTime() {
 		if (SDL_ffmpegValidVideo(file)) {
-			return SDL_ffmpegVideoDuration(file);
+			return SDL_ffmpegVideoDuration(file) / 1000;
 		}
 		return 0;
 	}
 
 	double SDLVideoProvider::getMediaTime() {
 		if (SDL_ffmpegValidVideo(file)) {
-			return SDL_ffmpegGetPosition(file);
+			return SDL_ffmpegGetPosition(file) / 1000;
 		}
 		return 0;
 	}
@@ -188,46 +188,8 @@ namespace mb {
 		int i;
 
 		if (prepare(surface)) {
-			state  = ST_PLAYING;
-			running = true;
+			state = ST_PLAYING;
 			SDL_PauseAudio(0);
-
-			while (running) {
-				if (SDL_ffmpegValidAudio(file)) {
-
-					SDL_LockMutex(mutex);
-
-					for (i = 0; i < BUF_SIZE; i++) {
-						if (audioFrame[i]->size == 0) {
-							SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
-						}
-					}
-
-					SDL_UnlockMutex(mutex);
-
-				} else {
-					cout << "SDLVideoProvider::playOver !VALID" << endl;
-				}
-
-		        if (videoFrame != NULL) {
-		            if (!videoFrame->ready) {
-		                SDL_ffmpegGetVideoFrame(file, videoFrame);
-
-		            } else {
-		            	if (videoFrame->pts <= getSync()) {
-		            		if (videoFrame->texture) {
-		            			LocalScreenManager::getInstance()->refreshScreen(
-		            					myScreen);
-		            		}
-							videoFrame->ready = 0;
-
-		            	} else {
-		            		::usleep((unsigned int)(
-		            				videoFrame->pts - getSync()));
-		            	}
-		            }
-		        }
-			}
 		}
 	}
 
@@ -252,8 +214,35 @@ namespace mb {
 		return false;
 	}
 
-	void SDLVideoProvider::run() {
+	void SDLVideoProvider::refreshDR() {
+		int i;
 
+		if (state == ST_PLAYING) {
+			SDL_LockMutex(mutex);
+			if (SDL_ffmpegValidAudio(file)) {
+
+				for (i = 0; i < BUF_SIZE; i++) {
+					if (audioFrame[i]->size == 0) {
+						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+					}
+				}
+			}
+
+			if (videoFrame != NULL) {
+				if (!videoFrame->ready) {
+					SDL_ffmpegGetVideoFrame(file, videoFrame);
+				} else {
+					if (videoFrame->pts <= getSync()) {
+						/*if (videoFrame->texture) {
+							LocalScreenManager::getInstance()->refreshScreen(
+									myScreen);
+						}*/
+						videoFrame->ready = 0;
+					}
+				}
+			}
+			SDL_UnlockMutex(mutex);
+		}
 	}
 }
 }

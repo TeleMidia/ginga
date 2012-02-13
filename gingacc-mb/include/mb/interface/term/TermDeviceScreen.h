@@ -94,13 +94,16 @@ namespace mb {
 
 			IWindow* createWindow(int x, int y, int w, int h);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
+			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);
 
 			ISurface* createSurface();
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
+			bool hasSurface(ISurface* sur);
 			void releaseSurface(ISurface* sur);
-			void refreshScreen();
+
+			bool refreshScreen();
 
 
 			/* interfacing content */

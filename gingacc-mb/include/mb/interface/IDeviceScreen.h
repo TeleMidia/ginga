@@ -104,13 +104,16 @@ namespace mb {
 
 			virtual IWindow* createWindow(int x, int y, int w, int h)=0;
 			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
+			virtual bool hasWindow(IWindow* win)=0;
 			virtual void releaseWindow(IWindow* win)=0;
 
 			virtual ISurface* createSurface()=0;
 			virtual ISurface* createSurface(int w, int h)=0;
 			virtual ISurface* createSurfaceFrom(void* underlyingSurface)=0;
+			virtual bool hasSurface(ISurface* sur)=0;
 			virtual void releaseSurface(ISurface* sur)=0;
-			virtual void refreshScreen()=0;
+
+			virtual bool refreshScreen()=0;
 
 
 			/* interfacing content */

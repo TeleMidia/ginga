@@ -136,6 +136,10 @@ namespace mb {
 	bool TermVideoProvider::releaseAll() {
 		return true;
 	}
+
+	void TermVideoProvider::refreshDR() {
+
+	}
 }
 }
 }

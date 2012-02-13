@@ -110,7 +110,10 @@ namespace mb {
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
 		if (sur != NULL) {
-			if (parent != NULL) {
+			if (parent != NULL &&
+					LocalScreenManager::getInstance()->hasWindow(
+							myScreen, parent)) {
+
 				if (parent->removeChildSurface(this)) {
 					DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
 					sur->Release(sur);

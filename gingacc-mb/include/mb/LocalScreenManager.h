@@ -108,6 +108,12 @@ namespace mb {
 			map<string, short>* sysNames;
 			pthread_mutex_t sysMutex;
 
+			bool running;
+
+			bool isWaiting;
+			pthread_cond_t wsSignal;
+			pthread_mutex_t wsMutex;
+
 			static LocalScreenManager* _instance;
 
 			LocalScreenManager();
@@ -161,6 +167,7 @@ namespace mb {
 			IWindow* createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow);
 
+			bool hasWindow(GingaScreenID screenId, IWindow* window);
 			void releaseWindow(GingaScreenID screenId, IWindow* window);
 
 			ISurface* createSurface(GingaScreenID screenId);
@@ -170,8 +177,12 @@ namespace mb {
 			ISurface* createSurfaceFrom(
 					GingaScreenID screenId, void* underlyingSurface);
 
+			bool hasSurface(GingaScreenID screenId, ISurface* surface);
 			void releaseSurface(GingaScreenID screenId, ISurface* surface);
+
 			void refreshScreen(GingaScreenID screenId);
+			void refreshScreens(float fps);
+			void stopScreenManager();
 
 
 			/* Interfacing content */
@@ -226,6 +237,9 @@ namespace mb {
 
 			void lockScreens();
 			void unlockScreens();
+
+			void waitForScreens();
+			bool newScreenAdded();
 	};
 }
 }

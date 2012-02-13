@@ -137,6 +137,10 @@ namespace mb {
 	bool TermAudioProvider::releaseAll() {
 		return true;
 	}
+
+	void TermAudioProvider::refreshDR() {
+
+	}
 }
 }
 }

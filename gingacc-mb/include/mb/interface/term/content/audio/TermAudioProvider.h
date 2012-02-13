@@ -87,6 +87,7 @@ namespace mb {
 			void* getContent();
 			void getOriginalResolution(int* height, int* width);
 			bool releaseAll();
+			void refreshDR();
 	};
 }
 }

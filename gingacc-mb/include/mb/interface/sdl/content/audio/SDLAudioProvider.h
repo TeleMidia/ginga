@@ -50,13 +50,11 @@ http://www.telemidia.puc-rio.br
 #ifndef SDLAUDIOPROVIDER_H_
 #define SDLAUDIOPROVIDER_H_
 
-#include "system/thread/Thread.h"
-using namespace br::pucrio::telemidia::ginga::core::system::thread;
-
 #include "mb/interface/IContinuousMediaProvider.h"
 
 /* SDL_ffmpeg cplusplus compat begin */
 extern "C" {
+#include <pthread.h>
 #include <stdint.h>
 }
 
@@ -85,7 +83,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLAudioProvider : public IContinuousMediaProvider, public Thread {
+	class SDLAudioProvider : public IContinuousMediaProvider {
 		protected:
 			static const short ST_PLAYING = 0;
 			static const short ST_PAUSED  = 1;
@@ -94,7 +92,6 @@ namespace mb {
 
 			GingaScreenID myScreen;
 			string symbol;
-			bool running;
 			short state;
 
 			SDL_mutex* mutex;
@@ -138,7 +135,8 @@ namespace mb {
 			static void audioCallback(void* data, Uint8* stream, int len);
 			virtual uint64_t getSync();
 
-			virtual void run();
+		public:
+			virtual void refreshDR();
 	};
 }
 }

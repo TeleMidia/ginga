@@ -63,7 +63,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 	SDLAudioProvider::SDLAudioProvider(
-			GingaScreenID screenId, const char* mrl) : Thread() {
+			GingaScreenID screenId, const char* mrl) {
 
 		myScreen = screenId;
 		state    = ST_STOPPED;
@@ -111,7 +111,7 @@ namespace mb {
 
 	double SDLAudioProvider::getTotalMediaTime() {
 		if (SDL_ffmpegValidAudio(file)) {
-			return SDL_ffmpegAudioDuration(file);
+			return SDL_ffmpegAudioDuration(file) / 1000;
 		}
 
 		return 0;
@@ -119,7 +119,7 @@ namespace mb {
 
 	double SDLAudioProvider::getMediaTime() {
 		if (SDL_ffmpegValidAudio(file)) {
-			return SDL_ffmpegGetPosition(file);
+			return SDL_ffmpegGetPosition(file) / 1000;
 		}
 
 		return 0;
@@ -244,24 +244,19 @@ namespace mb {
 		return 0;
 	}
 
-	void SDLAudioProvider::run() {
+	void SDLAudioProvider::refreshDR() {
 		int i;
 
-		running = true;
+		if (state == ST_PLAYING && SDL_ffmpegValidAudio(file)) {
+			SDL_LockMutex(mutex);
 
-		while (running) {
-			if (SDL_ffmpegValidAudio(file)) {
-
-				SDL_LockMutex(mutex);
-
-				for (i = 0; i < BUF_SIZE; i++) {
-					if (!audioFrame[i]->size) {
-						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
-					}
+			for (i = 0; i < BUF_SIZE; i++) {
+				if (!audioFrame[i]->size) {
+					SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
 				}
-
-				SDL_UnlockMutex(mutex);
 			}
+
+			SDL_UnlockMutex(mutex);
 		}
 	}
 }

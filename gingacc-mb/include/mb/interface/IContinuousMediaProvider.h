@@ -90,6 +90,7 @@ namespace mb {
 			virtual void* getContent()=0;
 			virtual void getOriginalResolution(int* height, int* width)=0;
 			virtual bool releaseAll()=0;
+			virtual void refreshDR()=0;
 	};
 }
 }

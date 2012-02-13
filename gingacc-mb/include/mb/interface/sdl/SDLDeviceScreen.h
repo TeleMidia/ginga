@@ -98,12 +98,15 @@ namespace mb {
 #endif
 			set<IWindow*>* windowPool;
 			set<ISurface*>* surfacePool;
+			set<IContinuousMediaProvider*>* cmpPool;
+
 			GingaScreenID id;
 			GingaWindowID uId;
 			IInputManager* im;
 
 			pthread_mutex_t winMutex;
 			pthread_mutex_t surMutex;
+			pthread_mutex_t cmpMutex;
 
 			SDL_Window* screen;
 			SDL_Renderer* renderer;
@@ -143,13 +146,16 @@ namespace mb {
 
 			IWindow* createWindow(int x, int y, int w, int h);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
+			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);
 
 			ISurface* createSurface();
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
+			bool hasSurface(ISurface* sur);
 			void releaseSurface(ISurface* sur);
-			void refreshScreen();
+
+			bool refreshScreen();
 
 
 			/* interfacing content */

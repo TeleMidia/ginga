@@ -275,6 +275,7 @@ namespace mb {
 			void stop();
 			void setSoundLevel(float level);
 			bool releaseAll();
+			void refreshDR(){};
 	};
 }
 }

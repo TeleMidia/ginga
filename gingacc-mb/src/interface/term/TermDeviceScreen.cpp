@@ -140,6 +140,10 @@ namespace mb {
 
 	}
 
+	bool TermDeviceScreen::hasWindow(IWindow* win) {
+		return false;
+	}
+
 	ISurface* TermDeviceScreen::createSurface() {
 		return NULL;
 	}
@@ -156,8 +160,12 @@ namespace mb {
 
 	}
 
-	void TermDeviceScreen::refreshScreen() {
+	bool TermDeviceScreen::hasSurface(ISurface* sur) {
+		return false;
+	}
 
+	bool TermDeviceScreen::refreshScreen() {
+		return false;
 	}
 
 

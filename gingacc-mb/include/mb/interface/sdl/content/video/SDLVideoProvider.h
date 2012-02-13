@@ -111,8 +111,7 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 
-		protected:
-			void run();
+			void refreshDR();
 	};
 }
 }
