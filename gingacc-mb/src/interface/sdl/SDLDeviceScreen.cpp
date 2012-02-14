@@ -534,14 +534,16 @@ namespace mb {
 		SDL_Texture* texture;
 		SDL_Rect rect;
 
-		pthread_mutex_lock(&winMutex);
-		pthread_mutex_lock(&surMutex);
+
 		pthread_mutex_lock(&cmpMutex);
 		j = cmpPool->begin();
 		while (j != cmpPool->end()) {
 			(*j)->refreshDR();
 			++j;
 		}
+		pthread_mutex_unlock(&cmpMutex);
+
+		pthread_mutex_lock(&winMutex);
 		SDL_RenderClear(renderer);
 		if (getRenderList(&renderList)) {
 			i = renderList.begin();
@@ -558,8 +560,6 @@ namespace mb {
 			SDL_RenderPresent(renderer);
 		}
 		pthread_mutex_unlock(&winMutex);
-		pthread_mutex_unlock(&surMutex);
-		pthread_mutex_unlock(&cmpMutex);
 
 		return true;
 	}
@@ -706,7 +706,7 @@ namespace mb {
 			void* event, const int symbol) {
 
 		if (event != NULL) {
-			return new SDLInputEvent(event);
+			return new SDLInputEvent(*(SDL_Event*)event);
 		}
 
 		if (symbol >= 0) {

@@ -192,7 +192,7 @@ namespace mb {
 			void unlockChilds();
 
 		private:
-			void refresh(bool ifVisible);
+			void refresh(bool checkVisibility);
 	};
 }
 }

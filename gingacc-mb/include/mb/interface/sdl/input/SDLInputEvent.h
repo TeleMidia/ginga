@@ -68,12 +68,12 @@ namespace mb {
 			static const string ET_USEREVENT;
 
 		private:
-			SDL_Event* event;
+			SDL_Event event;
 			int x;
 			int y;
 
 		public:
-			SDLInputEvent(void* event);
+			SDLInputEvent(SDL_Event event);
 			SDLInputEvent(const int keyCode);
 			SDLInputEvent(int type, void* data);
 

@@ -19,8 +19,10 @@ libtool
 ltmain.sh
 missing
 stamp-h1
-test
 *~
+.fuse*
+logFile.txt
+*/test/test
 config.h
 config.h.in
 config.h.in~

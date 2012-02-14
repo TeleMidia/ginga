@@ -97,6 +97,7 @@ namespace mb {
 
 			int currentXAxis;
 			int currentYAxis;
+			int currentZAxis;
 			int maxX;
 			int maxY;
 

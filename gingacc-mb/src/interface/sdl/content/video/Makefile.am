@@ -31,8 +31,9 @@ libgingaccmbdecsdlav_so_LDADD   = \
                                   -lSDL2 \
                                   -lSDL2_ffmpeg \
                                   -ltelemidiautil \
-                                  -lgingaccmbsdl \
+                                  -lgingaccsystem \
                                   -lgingaccmb \
+                                  -lgingaccmbsdl \
                                   -lgingaccmbdecsdlap
 endif #SDLSYSTEM
 

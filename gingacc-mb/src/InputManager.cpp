@@ -572,7 +572,7 @@ namespace mb {
 					mouseY = currentYAxis;
 
 					inputEvent->getAxisValue(
-							&currentXAxis, &currentYAxis, NULL);
+							&currentXAxis, &currentYAxis, &currentZAxis);
 
 					if (currentXAxis == 0) {
 						currentXAxis = mouseX;
@@ -613,7 +613,7 @@ namespace mb {
 						timeStamp) >= declarativeIntervalTime ||
 								lastCode != inputEvent->getKeyCode(myScreen))) {
 
-					lastCode = inputEvent->getKeyCode(myScreen);
+					lastCode  = inputEvent->getKeyCode(myScreen);
 					timeStamp = getCurrentTimeMillis();
 					if (!dispatchEvent(inputEvent)) {
 						delete inputEvent;

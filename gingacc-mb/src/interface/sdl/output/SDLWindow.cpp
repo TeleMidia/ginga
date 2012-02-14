@@ -669,8 +669,8 @@ namespace mb {
 		pthread_mutex_unlock(&mutexC);
 	}
 
-	void SDLWindow::refresh(bool ifVisible) {
-		if (!ifVisible) {
+	void SDLWindow::refresh(bool checkVisibility) {
+		if (!checkVisibility) {
 			LocalScreenManager::getInstance()->refreshScreen(myScreen);
 
 		} else if (visible) {

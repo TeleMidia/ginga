@@ -113,6 +113,7 @@ namespace mb {
 			bool isWaiting;
 			pthread_cond_t wsSignal;
 			pthread_mutex_t wsMutex;
+			GingaScreenID waitingRefreshScreen;
 
 			static LocalScreenManager* _instance;
 
@@ -239,7 +240,8 @@ namespace mb {
 			void unlockScreens();
 
 			void waitForScreens();
-			bool newScreenAdded();
+
+			bool newScreenState();
 	};
 }
 }

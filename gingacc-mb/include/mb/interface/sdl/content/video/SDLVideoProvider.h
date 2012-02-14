@@ -67,6 +67,7 @@ namespace mb {
 	class SDLVideoProvider : public SDLAudioProvider {
 		private:
 			SDL_ffmpegVideoFrame* videoFrame;
+			float frameRate;
 			int wRes;
 			int hRes;
 

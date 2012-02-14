@@ -598,9 +598,12 @@ namespace mb {
 	void LocalScreenManager::refreshScreens(float fps) {
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 		bool hasRefresh;
+		double curTime, sleepTime;
 
+		sleepTime = 1000000 / fps;
 		running = true;
 		while (running) {
+			curTime = getCurrentTimeMillis();
 			hasRefresh = false;
 			lockScreens();
 			i = screens->begin();
@@ -615,7 +618,13 @@ namespace mb {
 				waitForScreens();
 
 			} else {
-				::usleep(1000000/fps);
+				curTime = getCurrentTimeMillis() - curTime;
+				if (curTime > 0 && curTime < sleepTime) {
+					::usleep(curTime);
+
+				} else {
+					::usleep(sleepTime);
+				}
 			}
 		}
 	}
@@ -624,6 +633,7 @@ namespace mb {
 		this->running = false;
 		lockScreens();
 		unlockScreens();
+		newScreenState();
 	}
 
 
@@ -801,7 +811,7 @@ namespace mb {
 		(*screens)[screenId] = screen;
 		unlockScreens();
 
-		newScreenAdded();
+		newScreenState();
 	}
 
 	short LocalScreenManager::getNumOfScreens() {
@@ -847,7 +857,7 @@ namespace mb {
 		pthread_mutex_unlock(&wsMutex);
 	}
 
-	bool LocalScreenManager::newScreenAdded() {
+	bool LocalScreenManager::newScreenState() {
 		if (isWaiting) {
 			pthread_cond_signal(&wsSignal);
 			return true;

@@ -60,10 +60,10 @@ namespace ginga {
 namespace core {
 namespace mb {
 	uint64_t SDLVideoProvider::getSync() {
-		uint64_t _sync = SDLAudioProvider::getSync();
+		/*uint64_t _sync = SDLAudioProvider::getSync();
 		if (_sync != 0) {
 			return _sync;
-		}
+		}*/
 
 		if (file != NULL) {
 			if (SDL_ffmpegValidVideo(file)) {
@@ -95,7 +95,7 @@ namespace mb {
 
 			videoFrame->texture = SDL_CreateTexture(
 					renderer,
-					SDL_PIXELFORMAT_YUY2,
+					SDL_PIXELFORMAT_RGB24,
 					SDL_TEXTUREACCESS_STREAMING,
 					wRes,
 					hRes);
@@ -186,6 +186,7 @@ namespace mb {
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
 		int i;
+		SDL_TimerID rendererTimer;
 
 		if (prepare(surface)) {
 			state = ST_PLAYING;
@@ -216,32 +217,33 @@ namespace mb {
 
 	void SDLVideoProvider::refreshDR() {
 		int i;
+		int sleepTime;
 
 		if (state == ST_PLAYING) {
-			SDL_LockMutex(mutex);
 			if (SDL_ffmpegValidAudio(file)) {
-
+				SDL_LockMutex(mutex);
 				for (i = 0; i < BUF_SIZE; i++) {
 					if (audioFrame[i]->size == 0) {
 						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
 					}
 				}
+				SDL_UnlockMutex(mutex);
 			}
 
 			if (videoFrame != NULL) {
 				if (!videoFrame->ready) {
 					SDL_ffmpegGetVideoFrame(file, videoFrame);
+
 				} else {
 					if (videoFrame->pts <= getSync()) {
-						/*if (videoFrame->texture) {
-							LocalScreenManager::getInstance()->refreshScreen(
-									myScreen);
-						}*/
 						videoFrame->ready = 0;
+
+					} else {
+						sleepTime = videoFrame->pts - getSync();
+						::usleep(sleepTime * 1000);
 					}
 				}
 			}
-			SDL_UnlockMutex(mutex);
 		}
 	}
 }

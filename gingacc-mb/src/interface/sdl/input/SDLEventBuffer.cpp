@@ -58,19 +58,13 @@ namespace core {
 namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
 		pthread_mutex_init(&ebMutex, NULL);
-		eventBuffer = new vector<SDL_Event*>;
 	}
 
 	SDLEventBuffer::~SDLEventBuffer() {
-		vector<SDL_Event*>::iterator i;
+		vector<SDL_Event>::iterator i;
 
 		pthread_mutex_lock(&ebMutex);
-		i = eventBuffer->begin();
-		while (i != eventBuffer->end()) {
-			delete *i;
-			++i;
-		}
-		eventBuffer->clear();
+		eventBuffer.clear();
 		pthread_mutex_unlock(&ebMutex);
 		pthread_mutex_destroy(&ebMutex);
 	}
@@ -104,7 +98,7 @@ namespace mb {
 		SDL_Event event;
 
 		pthread_mutex_lock(&ebMutex);
-		if (!eventBuffer->empty()) {
+		if (!eventBuffer.empty()) {
 			pthread_mutex_unlock(&ebMutex);
 			return;
 		}
@@ -125,23 +119,23 @@ namespace mb {
 			}
 
 			pthread_mutex_lock(&ebMutex);
-			eventBuffer->push_back(&event);
+			eventBuffer.push_back(event);
 			pthread_mutex_unlock(&ebMutex);
 		}
 	}
 
 	IInputEvent* SDLEventBuffer::getNextEvent() {
-		SDL_Event* sdlEvent     = NULL;
+		SDL_Event sdlEvent;
 		IInputEvent* gingaEvent = NULL;
-		vector<SDL_Event*>::iterator i;
+		vector<SDL_Event>::iterator i;
 
 		pthread_mutex_lock(&ebMutex);
-		if (eventBuffer != NULL && !eventBuffer->empty()) {
-			i = eventBuffer->begin();
+		if (!eventBuffer.empty()) {
+			i = eventBuffer.begin();
 			sdlEvent = *i;
-			eventBuffer->erase(i);
+			eventBuffer.erase(i);
 
-			gingaEvent = new SDLInputEvent((void*)sdlEvent);
+			gingaEvent = new SDLInputEvent(sdlEvent);
 		}
 		pthread_mutex_unlock(&ebMutex);
 
@@ -149,7 +143,7 @@ namespace mb {
 	}
 
 	void* SDLEventBuffer::getContent() {
-		return (void*)eventBuffer;
+		return (void*)&eventBuffer;
 	}
 }
 }
