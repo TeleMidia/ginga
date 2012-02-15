@@ -103,9 +103,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 		windowPool  = new set<IWindow*>;
 		surfacePool = new set<ISurface*>;
+		cmpPool     = new set<IContinuousMediaProvider*>;
 
 		pthread_mutex_init(&winMutex, NULL);
 		pthread_mutex_init(&surMutex, NULL);
+		pthread_mutex_init(&cmpMutex, NULL);
 
 		if (DFBDeviceScreen::dfb == NULL) {
 			DFBCHECK(DirectFBInit(&numArgs, &args));
@@ -161,8 +163,13 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 	}
 
 	DFBDeviceScreen::~DFBDeviceScreen() {
+		numOfDFBScreens--;
+
+		releaseScreen();
+
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
+		pthread_mutex_destroy(&cmpMutex);
 
 		if (windowPool != NULL) {
 			delete windowPool;
@@ -174,7 +181,10 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			surfacePool = NULL;
 		}
 
-		numOfDFBScreens--;
+		if (cmpPool != NULL) {
+			delete cmpPool;
+			cmpPool = NULL;
+		}
 	}
 
 	void DFBDeviceScreen::releaseScreen() {
@@ -202,9 +212,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 	void DFBDeviceScreen::clearWidgetPools() {
 		IWindow* iWin;
 		ISurface* iSur;
+		IContinuousMediaProvider* iCmp;
 
 		set<IWindow*>::iterator i;
 		set<ISurface*>::iterator j;
+		set<IContinuousMediaProvider*>::iterator k;
 
 		clog << "DFBDeviceScreen::clearWidgetPools ";
 		clog << "windowPool size = " << windowPool->size();
@@ -248,6 +260,25 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			surfacePool->clear();
 		}
 		pthread_mutex_unlock(&surMutex);
+
+		//Releasing remaining CMP objects in CMP Pool
+		pthread_mutex_lock(&cmpMutex);
+		if (cmpPool != NULL) {
+			k = cmpPool->begin();
+			while (k != cmpPool->end()) {
+				iCmp = (*k);
+
+				cmpPool->erase(k);
+				if (iCmp != NULL) {
+					pthread_mutex_unlock(&cmpMutex);
+					delete iCmp;
+					pthread_mutex_lock(&cmpMutex);
+				}
+				k = cmpPool->begin();
+			}
+			cmpPool->clear();
+		}
+		pthread_mutex_unlock(&cmpMutex);
 	}
 
 	void DFBDeviceScreen::setParentScreen(GingaWindowID parentId) {
@@ -536,12 +567,14 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		IContinuousMediaProvider* provider;
 		string strSym;
 
+		pthread_mutex_lock(&cmpMutex);
+
 #if HAVE_COMPSUPPORT
 		if (hasVisual) {
 			strSym = "DFBVideoProvider";
 
 		} else {
-			strSym = "AudioProvider";
+			strSym = "DFBAudioProvider";
 		}
 
 		if (isRemote) {
@@ -565,20 +598,35 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 #endif
 
 		provider->setLoadSymbol(strSym);
+
+		cmpPool->insert(provider);
+
+		pthread_mutex_unlock(&cmpMutex);
+
 		return provider;
 	}
 
 	void DFBDeviceScreen::releaseContinuousMediaProvider(
 			IContinuousMediaProvider* provider) {
 
-		string strSym = provider->getLoadSymbol();
+		set<IContinuousMediaProvider*>::iterator i;
+		string strSym;
 
-		delete provider;
-		provider = NULL;
+		pthread_mutex_lock(&cmpMutex);
+		i = cmpPool->find(provider);
+		if (i != cmpPool->end()) {
+			cmpPool->erase(i);
+			strSym = provider->getLoadSymbol();
+			provider->stop();
+
+			delete provider;
+			provider = NULL;
 
 #if HAVE_COMPSUPPORT
-		cm->releaseComponentFromObject(strSym);
+			cm->releaseComponentFromObject(strSym);
 #endif
+		}
+		pthread_mutex_unlock(&cmpMutex);
 	}
 
 	IFontProvider* DFBDeviceScreen::createFontProvider(

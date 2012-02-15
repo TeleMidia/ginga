@@ -71,6 +71,8 @@ namespace cm {
 			map<string, set<string>*>* parentObjects;
 			map<string, set<string>*>* unsolvedDependencies;
 
+			bool canUnload;
+
 			pthread_mutex_t mapMutex;
 
 			static ComponentManager* _instance;
@@ -78,6 +80,7 @@ namespace cm {
 			virtual ~ComponentManager();
 
 		public:
+			void setUnloadComponents(bool allowUnload);
 			void release();
 			static ComponentManager* getInstance();
 

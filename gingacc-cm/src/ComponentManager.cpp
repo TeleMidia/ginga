@@ -66,6 +66,7 @@ namespace cm {
 		this->symbols              = NULL;
 		this->parentObjects        = NULL;
 		this->unsolvedDependencies = NULL;
+		this->canUnload            = true;
 
 		pthread_mutex_init(&mapMutex, NULL);
 	}
@@ -74,6 +75,10 @@ namespace cm {
 		if (_instance != NULL) {
 			_instance->release();
 		}
+	}
+
+	void ComponentManager::setUnloadComponents(bool allowUnload) {
+		canUnload = allowUnload;
 	}
 
 	void ComponentManager::release() {
@@ -240,18 +245,21 @@ namespace cm {
 	bool ComponentManager::releaseComponent(void* component) {
 		int ret;
 
-		ret = dlclose(component);
-		const char* dlsym_error = dlerror();
+		if (canUnload) {
+			ret = dlclose(component);
+			const char* dlsym_error = dlerror();
 
-		if (dlsym_error != NULL) {
-			clog << "ComponentManager::releaseComponent Warning! Cant release";
-			clog << " => " << dlsym_error << endl;
+			if (dlsym_error != NULL) {
+				clog << "ComponentManager::releaseComponent Warning! Can't";
+				clog << " release => " << dlsym_error << endl;
 
-			return false;
+				return false;
+			}
+
+			dlerror();
 		}
 
-		dlerror();
-		return true;
+		return canUnload;
 	}
 
 	void ComponentManager::refreshComponentDescription() {

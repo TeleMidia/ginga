@@ -8,7 +8,7 @@ INCLUDES             = \
 LIBS                 =
 
 noinst_PROGRAMS      = \
-                       testInput testScreen
+                       testInput testScreen testAudio
 
 #testScreen
 testScreen_SOURCES   = \
@@ -25,10 +25,7 @@ testScreen_LDFLAGS   = \
                        -L/usr/lib/ \
                        -L/usr/local/lib/ \
                        -L/usr/local/lib/ginga \
-                       -L$(top_srcdir)/src \
-                       -L$(top_srcdir)/src/interface/dfb \
-                       -L$(top_srcdir)/src/interface/term \
-                       -L$(top_srcdir)/src/interface/sdl
+                       -L$(top_srcdir)/src
 
 #testInput
 testInput_SOURCES    = \
@@ -45,10 +42,25 @@ testInput_LDFLAGS    = \
                        -L/usr/lib/ \
                        -L/usr/local/lib/ \
                        -L/usr/local/lib/ginga \
-                       -L$(top_srcdir)/src \
-                       -L$(top_srcdir)/src/interface/dfb \
-                       -L$(top_srcdir)/src/interface/term \
-                       -L$(top_srcdir)/src/interface/sdl
+                       -L$(top_srcdir)/src
+
+#testAudio
+testAudio_SOURCES    = \
+                       testAudio.cpp
+
+testAudio_LDADD      = \
+                       -ldl \
+                       -ltelemidiautil \
+                       -lgingaccsystem \
+                       -lgingaccmb
+
+testAudio_LDFLAGS    = \
+                       -L/lib/ \
+                       -L/usr/lib/ \
+                       -L/usr/local/lib/ \
+                       -L/usr/local/lib/ginga \
+                       -L$(top_srcdir)/src
+
 
 MAINTAINERCLEANFILES = \
                        Makefile.in

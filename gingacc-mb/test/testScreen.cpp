@@ -112,8 +112,7 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	}
 	win1->draw();
 
-	img = dm->createImageProvider(
-			screen, "/root/workspaces/NCL/devel_tests/media/img/spfc.png");
+	img = dm->createImageProvider(screen, "1.png");
 
 	s = dm->createSurface(screen);
 	s->setParent(win1);
@@ -129,8 +128,7 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	}
 	win3->draw();
 
-	ttf = dm->createFontProvider(
-			screen, "/root/workspaces/NCL/devel_tests/media/txt/font.ttf", 14);
+	ttf = dm->createFontProvider(screen, "decker.ttf", 14);
 
 	ttfSur = dm->createSurface(screen);
 	ttfSur->setParent(win3);
@@ -151,10 +149,7 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	vidSur = dm->createSurface(screen);
 	vid    = dm->createContinuousMediaProvider(
-			screen,
-			"/root/workspaces/NCL/devel_tests/media/vid/corrego1.mp4",
-			true,
-			false);
+			screen, "corrego1.mp4", true, false);
 
 	vidSur->setParent(win2);
 	win2->show();
@@ -170,14 +165,16 @@ int main(int argc, char** argv) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
+	ILocalScreenManager* dm;
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();
 
-	ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
+	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
 #else
-	LocalScreenManager* dm = LocalScreenManager::getInstance();
+	cout << "gingacc-mb test works only with enabled component support";
+	cout << endl;
+	exit(0);
 #endif
 
 	cout << "gingacc-mb test has created the screen manager. ";
