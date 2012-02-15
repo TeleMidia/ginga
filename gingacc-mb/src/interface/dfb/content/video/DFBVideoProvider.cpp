@@ -115,7 +115,8 @@ namespace mb {
 
 		if (rContainer != NULL) {
 			if (rContainer->dec != NULL) {
-				rContainer->dec->Release(rContainer->dec);
+				rContainer->dec->Stop(rContainer->dec);
+				//rContainer->dec->Release(rContainer->dec);
 			}
 
 			rContainer->dec      = NULL;
@@ -391,6 +392,9 @@ namespace mb {
 				rContainer->surface  = surface;
 				rContainer->isValid  = true;
 
+				rContainer->dec->DisableEvents(
+						rContainer->dec, (DFBVideoProviderEventType)DWET_ALL);
+
 				rContainer->dec->PlayTo(
 						rContainer->dec,
 						s, NULL, dynamicRenderCallBack, (void*)rContainer);
@@ -410,7 +414,7 @@ namespace mb {
 		if (rContainer != NULL) {
 			rContainer->isValid = false;
 			if (rContainer->dec != NULL) {
-				DFBCHECK(rContainer->dec->Stop(rContainer->dec));
+				rContainer->dec->Stop(rContainer->dec);
 			}
 		}
 	}

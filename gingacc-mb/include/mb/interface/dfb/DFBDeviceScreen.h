@@ -109,11 +109,14 @@ namespace mb {
 #endif
 			set<IWindow*>* windowPool;
 			set<ISurface*>* surfacePool;
+			set<IContinuousMediaProvider*>* cmpPool;
+
 			GingaScreenID id;
 			IInputManager* im;
 
 			pthread_mutex_t winMutex;
 			pthread_mutex_t surMutex;
+			pthread_mutex_t cmpMutex;
 
 			static unsigned int numOfDFBScreens;
 			static IDirectFB* dfb;

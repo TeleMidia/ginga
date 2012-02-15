@@ -1453,17 +1453,8 @@ namespace player {
 	}
 
 	void AVPlayer::release() {
-		if (provider == NULL) {
-			return;
-		}
-
-		provider->stop();
-		delete provider;
+		dm->releaseContinuousMediaProvider(myScreen, provider);
 		provider = NULL;
-
-#if HAVE_COMPSUPPORT
-		cm->releaseComponentFromObject(pSym);
-#endif
 
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {

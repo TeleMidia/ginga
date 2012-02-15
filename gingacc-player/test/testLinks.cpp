@@ -47,78 +47,25 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _IComponentManager_H_
-#define _IComponentManager_H_
+#include "config.h"
 
-#include "component/IComponent.h"
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
 
-#include <dlfcn.h>
-#include <iostream>
-#include <map>
-#include <string>
-using namespace std;
+#include "mb/ILocalScreenManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-typedef void* CMCreator();
+#include "player/PlayersComponentSupport.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace cm {
-	class IComponentManager {
-		public:
-			virtual ~IComponentManager(){};
-
-			virtual void setUnloadComponents(bool allowUnload)=0;
-			virtual void* getObject(string objectName)=0;
-			virtual set<string>* getObjectsFromInterface(
-					string interfaceName)=0;
-
-			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;
-			virtual bool releaseComponentFromObject(string objName)=0;
-			virtual void refreshComponentDescription()=0;
-			virtual map<string, IComponent*>* getComponentDescription()=0;
-			virtual bool isAvailable(string objName)=0;
-
-		private:
-			virtual void* getComponent(string dLibName)=0;
-			virtual void* getSymbol(void* component, string symbolName)=0;
-			virtual bool releaseComponent(void* component)=0;
-
-		public:
-			static IComponentManager* getCMInstance() {
-				void* cmComponent = dlopen("libgingacccm.so", RTLD_LAZY);
-				if (cmComponent == NULL) {
-					cerr << "IComponentManager warning: cant load ";
-					cerr << "component libgingaccm' => ";
-					cerr << dlerror() << endl;
-					return (NULL);
-				}
-
-				dlerror();
-
-				CMCreator* cmCreator = (CMCreator*)(dlsym(
-						cmComponent, "createCM"));
-
-				const char* dlsym_error = dlerror();
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: can't load symbol '";
-					cerr << "createCM' => " << dlsym_error << endl;
-					return (NULL);
-				}
-
-				IComponentManager* icm = (IComponentManager*)(cmCreator());
-
-				dlerror();
-				return (icm);
-			}
-	};
-}
-}
-}
-}
-}
+extern "C" {
+#include <stdio.h>
 }
 
-#endif //_IComponentManager_H_
+int main(int argc, char** argv, char** envp) {
+
+	//TODO: tests
+	cout << "Player test done. press enter to continue" << endl;
+	getchar();
+
+	return 0;
+}

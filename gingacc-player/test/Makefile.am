@@ -1,30 +1,52 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include $(COMPONENTS_INCS) \
-    -I/usr/include/Awesomium/
- 
+INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/include \
+    $(COMPONENTS_INCS) -I/usr/include/Awesomium/
+
 LIBS =
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS = testAudio testAwesomium testImage testLinks testText testVideo
 
-test_SOURCES = test.cpp
-test_CFLAGS = $(top_srcdir)/include
-test_LDADD =  $(COMPONENTS_LIBS) $(TEST_LIBS) -ltelemidiautil \
-    -lgingaccplayer -lgingaccplaavp -lgingaccplaimg -lgingaccplalua \
-    -lgingaccplatxt -lgingaccplasrt -lgingaccplaplt \
-    -lgingaccplacha -lgingaccplapav -lgingaccplawdg \
-    -ldirectfb -llua -lcore \
-    -lgingaccmb -lgingaccsystem $(MULTIPROCESS_LIBS) \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga/mb \
-    -L/usr/local/lib/ginga/mb/dec \
-    -L/usr/local/lib/ginga -L../src/ -L../src/image/ \
-    -L../src/application/declarative/xhtml/links \
-    -L../src/application/declarative/xhtml/berkelium \
-    -L../src/application/declarative/xhtml/awesomium \
-    -L../src/application/imperative/lua \
-    -L../src/text -L../src/text/srt -L../src/text/plain \
-    -L/usr/local/lib/lua/5.1/socket \
-    -L../src/tv -L../src/video -L../src/widget
+#testAudio
+testAudio_SOURCES = testAudio.cpp
+testAudio_CFLAGS  = $(top_srcdir)/include
+testAudio_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+
+#testAwesomium
+testAwesomium_SOURCES = testAwesomium.cpp
+testAwesomium_CFLAGS  = $(top_srcdir)/include
+testAwesomium_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+
+#testImage
+testImage_SOURCES = testImage.cpp
+testImage_CFLAGS  = $(top_srcdir)/include
+testImage_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+
+#testLinks
+testLinks_SOURCES = testLinks.cpp
+testLinks_CFLAGS  = $(top_srcdir)/include
+testLinks_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+
+#testText
+testText_SOURCES = testText.cpp
+testText_CFLAGS  = $(top_srcdir)/include
+testText_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+
+#testVideo
+testVideo_SOURCES = testVideo.cpp
+testVideo_CFLAGS  = $(top_srcdir)/include
+testVideo_LDADD   = -ldl -ltelemidiautil \
+    -lgingaccplayer -lgingaccmb -lgingaccsystem \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
 
 MAINTAINERCLEANFILES = Makefile.in

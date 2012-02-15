@@ -597,21 +597,23 @@ namespace mb {
 			IContinuousMediaProvider* provider) {
 
 		set<IContinuousMediaProvider*>::iterator i;
-		string strSym = provider->getLoadSymbol();
+		string strSym;
 
 		pthread_mutex_lock(&cmpMutex);
 		i = cmpPool->find(provider);
 		if (i != cmpPool->end()) {
 			cmpPool->erase(i);
-		}
-		pthread_mutex_unlock(&cmpMutex);
+			strSym = provider->getLoadSymbol();
+			provider->stop();
 
-		delete provider;
-		provider = NULL;
+			delete provider;
+			provider = NULL;
 
 #if HAVE_COMPSUPPORT
-		cm->releaseComponentFromObject(strSym);
+			cm->releaseComponentFromObject(strSym);
 #endif
+		}
+		pthread_mutex_unlock(&cmpMutex);
 	}
 
 	IFontProvider* SDLDeviceScreen::createFontProvider(
@@ -994,11 +996,6 @@ namespace mb {
 				win = *i;
 				if (win->isVisible() && win->getContent() != NULL) {
 					renderList->push_back(win);
-
-				} else {
-					cout << "CAN'T ADD: visible = '" << win->isVisible();
-					cout << "' and content = '" << win->getContent();
-					cout << "'" << endl;
 				}
 				++i;
 			}

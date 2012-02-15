@@ -136,11 +136,7 @@ namespace mb {
 		int frameSize;
 
 	    if (SDL_ffmpegValidAudio(file)) {
-	    	if (SDL_OpenAudio(&specs, 0) < 0) {
-	        	cout << "SDLAudioProvider::prepare Warning! ";
-	            cout << "Can't open audio: " << SDL_GetError() << endl;
-	            return false;
-	        }
+	    	SDL_OpenAudio(&specs, 0);
 
 	        frameSize = specs.channels * specs.samples * 2;
 
@@ -167,7 +163,8 @@ namespace mb {
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
 	    if (prepare(surface)) {
-			state = ST_PLAYING;
+	    	state = ST_PLAYING;
+	    	SDL_PauseAudio(0);
 	    }
 	}
 
