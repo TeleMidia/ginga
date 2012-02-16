@@ -113,8 +113,6 @@ namespace mb {
 			virtual bool hasSurface(ISurface* sur)=0;
 			virtual void releaseSurface(ISurface* sur)=0;
 
-			virtual bool refreshScreen()=0;
-
 
 			/* interfacing content */
 

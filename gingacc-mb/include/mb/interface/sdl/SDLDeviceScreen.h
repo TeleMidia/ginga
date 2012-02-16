@@ -171,8 +171,6 @@ namespace mb {
 			bool hasSurface(ISurface* sur);
 			void releaseSurface(ISurface* sur);
 
-			bool refreshScreen();
-
 
 			/* interfacing content */
 

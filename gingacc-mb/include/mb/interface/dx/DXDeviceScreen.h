@@ -112,8 +112,6 @@ namespace mb {
 			void releaseScreen();
 			void releaseMB();
 
-			bool refreshScreen(){};
-
 			unsigned int getWidthResolution();
 			void setWidthResolution(unsigned int wRes);
 			unsigned int getHeightResolution();

@@ -164,10 +164,6 @@ namespace mb {
 		return false;
 	}
 
-	bool TermDeviceScreen::refreshScreen() {
-		return false;
-	}
-
 
 	/* interfacing content */
 	IContinuousMediaProvider* TermDeviceScreen::createContinuousMediaProvider(

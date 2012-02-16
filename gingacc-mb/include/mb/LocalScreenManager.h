@@ -181,10 +181,6 @@ namespace mb {
 			bool hasSurface(GingaScreenID screenId, ISurface* surface);
 			void releaseSurface(GingaScreenID screenId, ISurface* surface);
 
-			void refreshScreen(GingaScreenID screenId);
-			void refreshScreens(float fps);
-			void stopScreenManager();
-
 
 			/* Interfacing content */
 			IContinuousMediaProvider* createContinuousMediaProvider(
@@ -238,10 +234,6 @@ namespace mb {
 
 			void lockScreens();
 			void unlockScreens();
-
-			void waitForScreens();
-
-			bool newScreenState();
 	};
 }
 }
