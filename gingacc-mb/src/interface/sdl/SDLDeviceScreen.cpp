@@ -82,6 +82,9 @@ namespace mb {
 	map<int, int>* SDLDeviceScreen::gingaToSDLCodeMap = NULL;
 	map<int, int>* SDLDeviceScreen::sdlToGingaCodeMap = NULL;
 
+	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
+	pthread_mutex_t SDLDeviceScreen::rlMutex;
+
 	const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
 	const unsigned int SDLDeviceScreen::DSA_4x3     = 1;
 	const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
@@ -139,6 +142,8 @@ namespace mb {
 			pthread_mutex_init(&sMutex, NULL);
 			initCodeMaps();
 
+			pthread_mutex_init(&rlMutex, NULL);
+
 			pthread_t tId;
 			pthread_attr_t tattr;
 
@@ -172,6 +177,12 @@ namespace mb {
 			sdlScreens.erase(i);
 		}
 		pthread_mutex_unlock(&sMutex);
+
+		if (sdlScreens.empty()) {
+			hasRenderer = false;
+			pthread_mutex_destroy(&sMutex);
+			pthread_mutex_destroy(&rlMutex);
+		}
 
 		releaseScreen();
 
@@ -443,12 +454,25 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseWindow(IWindow* win) {
 		set<IWindow*>::iterator i;
+		SDLWindow* iWin;
+		SDL_Surface* uSur = NULL;
+		SDL_Texture* uTex = NULL;
 
 		pthread_mutex_lock(&winMutex);
 		if (windowPool != NULL) {
 			i = windowPool->find(win);
 			if (i != windowPool->end()) {
+				iWin = (SDLWindow*)(*i);
 				windowPool->erase(i);
+
+				uSur = (SDL_Surface*)(iWin->getContent());
+				uTex = iWin->getTexture();
+
+				iWin->clearContent();
+				iWin->setTexture(NULL);
+
+				createReleaseContainer(uSur, uTex, NULL);
+
 				pthread_mutex_unlock(&winMutex);
 
 			} else {
@@ -519,12 +543,19 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseSurface(ISurface* s) {
 		set<ISurface*>::iterator i;
+		SDL_Surface* uSur = NULL;
 
 		pthread_mutex_lock(&surMutex);
 		if (surfacePool != NULL) {
 			i = surfacePool->find(s);
 			if (i != surfacePool->end()) {
+				uSur = (SDL_Surface*)((*i)->getContent());
+				(*i)->setContent(NULL);
+
 				surfacePool->erase(i);
+
+				createReleaseContainer(uSur, NULL, NULL);
+
 				pthread_mutex_unlock(&surMutex);
 
 			} else {
@@ -565,21 +596,16 @@ namespace mb {
 			IContinuousMediaProvider* provider) {
 
 		map<IContinuousMediaProvider*, bool>::iterator i;
-		string strSym;
+		IContinuousMediaProvider* cmp;
 
 		pthread_mutex_lock(&cmpMutex);
 		i = cmpPool->find(provider);
 		if (i != cmpPool->end()) {
+			cmp = i->first;
 			cmpPool->erase(i);
-			strSym = provider->getLoadSymbol();
-			provider->stop();
+			cmp->stop();
 
-			delete provider;
-			provider = NULL;
-
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject(strSym);
-#endif
+			createReleaseContainer(NULL, NULL, cmp);
 		}
 		pthread_mutex_unlock(&cmpMutex);
 	}
@@ -607,18 +633,15 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseFontProvider(IFontProvider* provider) {
 		set<IDiscreteMediaProvider*>::iterator i;
+		IDiscreteMediaProvider* dmp;
 
 		pthread_mutex_lock(&dmpMutex);
 		i = dmpPool->find(provider);
 		if (i != dmpPool->end()) {
+			dmp = (*i);
 			dmpPool->erase(i);
 
-			delete provider;
-			provider = NULL;
-
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("SDLFontProvider");
-#endif
+			createReleaseContainer(NULL, NULL, dmp);
 		}
 		pthread_mutex_unlock(&dmpMutex);
 	}
@@ -642,18 +665,16 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseImageProvider(IImageProvider* provider) {
 		set<IDiscreteMediaProvider*>::iterator i;
+		IDiscreteMediaProvider* dmp;
+		ReleaseContainer rc;
 
 		pthread_mutex_lock(&dmpMutex);
 		i = dmpPool->find(provider);
 		if (i != dmpPool->end()) {
+			dmp = (*i);
 			dmpPool->erase(i);
 
-			delete provider;
-			provider = NULL;
-
-#if HAVE_COMPSUPPORT
-			cm->releaseComponentFromObject("SDLImageProvider");
-#endif
+			createReleaseContainer(NULL, NULL, dmp);
 		}
 
 		pthread_mutex_unlock(&dmpMutex);
@@ -674,6 +695,22 @@ namespace mb {
 		releaseImageProvider(provider);
 
 		return iSur;
+	}
+
+	void SDLDeviceScreen::createReleaseContainer(
+			SDL_Surface* uSur,
+			SDL_Texture* uTex,
+			IMediaProvider* iDec) {
+
+		ReleaseContainer rc;
+
+		rc.iDec = iDec;
+		rc.uSur = uSur;
+		rc.uTex = uTex;
+
+		pthread_mutex_lock(&rlMutex);
+		releaseList.insert(&rc);
+		pthread_mutex_unlock(&rlMutex);
 	}
 
 	bool SDLDeviceScreen::checkTasks(SDLDeviceScreen* s) {
@@ -709,6 +746,38 @@ namespace mb {
 		s->surfaceCreator();
 
 		return true;
+	}
+
+	void SDLDeviceScreen::refreshRC(SDLDeviceScreen* s) {
+		set<ReleaseContainer*>::iterator i;
+		string strSym;
+
+		pthread_mutex_lock(&s->rlMutex);
+		i = s->releaseList.begin();
+		while (i != s->releaseList.end()) {
+			if ((*i)->iDec != NULL) {
+				strSym = (*i)->iDec->getLoadSymbol();
+
+				delete (*i)->iDec;
+
+#if HAVE_COMPSUPPORT
+				cm->releaseComponentFromObject(strSym);
+#endif
+			}
+
+			if ((*i)->uSur != NULL) {
+				releaseUnderlyingSurface((*i)->uSur);
+			}
+
+			if ((*i)->uTex != NULL) {
+				releaseTexture((*i)->uTex);
+			}
+
+			++i;
+		}
+
+		s->releaseList.clear();
+		pthread_mutex_unlock(&s->rlMutex);
 	}
 
 	void SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {

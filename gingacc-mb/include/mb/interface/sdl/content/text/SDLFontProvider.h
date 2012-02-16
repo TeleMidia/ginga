@@ -106,6 +106,8 @@ namespace mb {
 					int heightInPixel);
 
 			virtual ~SDLFontProvider();
+
+			string getLoadSymbol() {return "SDLFontProvider";};
 			void* getContent();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();

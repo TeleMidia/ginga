@@ -53,6 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "ISurface.h"
 
 #include "IProviderListener.h"
+#include "IMediaProvider.h"
 
 extern "C" {
 #include <stdint.h>
@@ -67,7 +68,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IContinuousMediaProvider {
+	class IContinuousMediaProvider : public IMediaProvider {
 		public:
 			virtual ~IContinuousMediaProvider(){};
 			virtual void setLoadSymbol(string symbol)=0;

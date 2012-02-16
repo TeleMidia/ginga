@@ -75,6 +75,8 @@ namespace mb {
 		public:
 			DXImageProvider(const char* mrl);
 			virtual ~DXImageProvider();
+
+			string getLoadSymbol() {return "DXImageProvider";};
 			void* getContent();
 			void playOver(ISurface* surface);
 			ISurface* prepare(bool isGif=false);

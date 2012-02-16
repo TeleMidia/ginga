@@ -6,6 +6,7 @@ localInclude_HEADERS = \
                        CodeMap.h \
                        IDiscreteMediaProvider.h \
                        IContinuousMediaProvider.h \
+                       IMediaProvider.h \
                        IDataBuffer.h \
                        IDeviceScreen.h \
                        IEventBuffer.h \

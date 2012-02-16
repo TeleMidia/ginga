@@ -80,6 +80,8 @@ namespace mb {
 		public:
 			DFBImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~DFBImageProvider();
+
+			string getLoadSymbol() {return "DFBImageProvider";};
 			void* getContent();
 			void playOver(ISurface* surface);
 

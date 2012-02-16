@@ -78,6 +78,13 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+
+typedef struct {
+	IMediaProvider* iDec;
+	SDL_Surface* uSur;
+	SDL_Texture* uTex;
+} ReleaseContainer;
+
 	class SDLDeviceScreen : public IDeviceScreen {
 		public:
 			static const unsigned int DSA_UNKNOWN;
@@ -130,6 +137,9 @@ namespace mb {
 			static pthread_mutex_t ieMutex;
 			static map<int, int>* gingaToSDLCodeMap;
 			static map<int, int>* sdlToGingaCodeMap;
+
+			static set<ReleaseContainer*> releaseList;
+			static pthread_mutex_t rlMutex;
 
 		public:
 			SDLDeviceScreen(
@@ -190,8 +200,14 @@ namespace mb {
 
 			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
 
+			static void createReleaseContainer(
+					SDL_Surface* uSur,
+					SDL_Texture* uTex,
+					IMediaProvider* iDec);
+
 		private:
 			static bool checkTasks(SDLDeviceScreen* screen);
+			static void refreshRC(SDLDeviceScreen* screen);
 			static void refreshCMP(SDLDeviceScreen* screen);
 			static void refreshDMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
@@ -236,10 +252,8 @@ namespace mb {
 
 			SDL_Surface* createUnderlyingSurface(int width, int height);
 
-		public:
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 
-		private:
 			bool getRenderList(vector<IWindow*>* renderList);
 
 			void waitSurfaceCreator();

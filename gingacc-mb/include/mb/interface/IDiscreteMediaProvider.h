@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define IDiscreteMediaProvider_H_
 
 #include "ISurface.h"
+#include "IMediaProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -58,9 +59,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IDiscreteMediaProvider {
+	class IDiscreteMediaProvider : public IMediaProvider {
 		public:
 			virtual ~IDiscreteMediaProvider(){};
+
+			virtual string getLoadSymbol()=0;
 
 			virtual void playOver(ISurface* surface)=0;
 
