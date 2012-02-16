@@ -80,6 +80,8 @@ namespace mb {
 			SDLImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~SDLImageProvider();
 
+			string getLoadSymbol() {return "SDLImageProvider";};
+
 			void* getContent();
 
 			void playOver(ISurface* surface);

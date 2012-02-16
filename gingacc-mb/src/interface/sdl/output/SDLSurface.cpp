@@ -72,25 +72,29 @@ namespace mb {
 	}
 
 	SDLSurface::~SDLSurface() {
+		bool mySurface = false;
+
 		releaseChromaColor();
 		releaseBorderColor();
 		releaseBgColor();
 		releaseSurfaceColor();
 
-		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
-
 		if (sur != NULL) {
 			if (parent != NULL) {
 				if (parent->removeChildSurface(this)) {
-					SDLDeviceScreen::releaseUnderlyingSurface(sur);
+					mySurface = true;
 				}
 
 			} else {
-				SDLDeviceScreen::releaseUnderlyingSurface(sur);
+				mySurface = true;
 			}
+		}
 
+		if (!mySurface) {
 			sur = NULL;
 		}
+
+		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 	}
 
 	void SDLSurface::releaseChromaColor() {
@@ -168,7 +172,7 @@ namespace mb {
 	void SDLSurface::setContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
-				SDLDeviceScreen::releaseUnderlyingSurface(sur);
+				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 				sur = NULL;
 			}
 		}

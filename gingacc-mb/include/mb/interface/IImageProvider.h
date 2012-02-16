@@ -64,6 +64,8 @@ namespace mb {
 	class IImageProvider : public IDiscreteMediaProvider {
 		public:
 			virtual ~IImageProvider(){};
+
+			virtual string getLoadSymbol()=0;
 			virtual void* getContent()=0;
 			virtual void playOver(ISurface* surface)=0;
 			virtual bool releaseAll()=0;

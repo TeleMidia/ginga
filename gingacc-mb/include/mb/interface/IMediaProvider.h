@@ -47,13 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef TERMFONTPROVIDER_H_
-#define TERMFONTPROVIDER_H_
+#ifndef IMediaProvider_H_
+#define IMediaProvider_H_
 
-#include "mb/interface/IFontProvider.h"
-#include "mb/interface/ISurface.h"
-
-#include <string.h>
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -61,30 +59,10 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class TermFontProvider : public IFontProvider {
-		private:
-			GingaScreenID myScreen;
-
+	class IMediaProvider {
 		public:
-			TermFontProvider(
-					GingaScreenID screenId,
-					const char* fontUri,
-					int heightInPixel);
-
-			virtual ~TermFontProvider();
-
-			string getLoadSymbol() {return "TermFontProvider";};
-			void* getContent();
-			int getStringWidth(const char* text, int textLength=0);
-			int getHeight();
-			void playOver(
-					ISurface* surface,
-					const char* text,
-					int x=0, int y=0, short align=0);
-
-			void playOver(ISurface* surface);
-
-			void ntsPlayOver(ISurface* surface){};
+			virtual ~IMediaProvider(){};
+			virtual string getLoadSymbol()=0;
 	};
 }
 }
@@ -93,4 +71,4 @@ namespace mb {
 }
 }
 
-#endif /*TERMFONTPROVIDER_H_*/
+#endif /* IMediaProvider_H_ */

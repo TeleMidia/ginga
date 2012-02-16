@@ -65,6 +65,8 @@ namespace mb {
 		public:
 			TermImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~TermImageProvider();
+
+			string getLoadSymbol() {return "TermImageProvider";};
 			void* getContent();
 			void playOver(ISurface* surface);
 			void ntsPlayOver(ISurface* surface){};

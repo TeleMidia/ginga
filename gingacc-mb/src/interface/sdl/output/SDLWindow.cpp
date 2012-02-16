@@ -109,7 +109,7 @@ namespace mb {
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
 		if (winSur != NULL) {
-			SDLDeviceScreen::releaseUnderlyingSurface(winSur);
+			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
 		}
 
 		unlock();
@@ -547,7 +547,7 @@ namespace mb {
 		SDL_Renderer* renderer;
 
 		if (winSur != NULL) {
-			SDLDeviceScreen::releaseUnderlyingSurface(winSur);
+			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
 			winSur = NULL;
 		}
 

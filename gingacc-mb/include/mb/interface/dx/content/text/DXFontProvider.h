@@ -95,6 +95,8 @@ namespace mb {
 
 			DXFontProvider (const char* fontUri, int heightInPixel);
 			virtual ~DXFontProvider ();
+
+			string getLoadSymbol() {return "DXFontProvider";};
 			void* getContent();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
