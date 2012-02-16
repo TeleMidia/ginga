@@ -51,7 +51,7 @@ http://www.telemidia.puc-rio.br
 #define IFONTPROVIDER_H_
 
 #include "mb/IMBDefs.h"
-#include "mb/interface/ISurface.h"
+#include "mb/interface/IDiscreteMediaProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -59,7 +59,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IFontProvider {
+	class IFontProvider : public IDiscreteMediaProvider {
 		public:
 			static const short FP_AUTO_WORDWRAP = -10;
 
@@ -67,6 +67,9 @@ namespace mb {
 			virtual void* getContent()=0;
 			virtual int getStringWidth(const char* text, int textLength=0)=0;
 			virtual int getHeight()=0;
+
+			virtual void playOver(ISurface* surface)=0;
+
 			virtual void playOver(
 					ISurface* surface,
 					const char* text,

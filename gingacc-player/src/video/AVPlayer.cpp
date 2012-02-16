@@ -132,7 +132,7 @@ namespace player {
 		return NULL;
 	}
 
-	void AVPlayer::getOriginalResolution(int* height, int* width) {
+	void AVPlayer::getOriginalResolution(int* width, int* height) {
 		*width = 0;
 		*height = 0;
 	}
@@ -842,7 +842,7 @@ namespace player {
 
 	}
 
-	void AVPlayer::getOriginalResolution(int* height, int* width) {
+	void AVPlayer::getOriginalResolution(int* width, int* height) {
 
 	}
 
@@ -1235,7 +1235,7 @@ namespace player {
 		return surface;
 	}
 
-	void AVPlayer::getOriginalResolution(int* height, int* width) {
+	void AVPlayer::getOriginalResolution(int* width, int* height) {
 		if (provider != NULL) {
 			provider->getOriginalResolution(height, width);
 		}

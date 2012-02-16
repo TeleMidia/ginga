@@ -333,7 +333,7 @@ namespace mb {
 		}*/
 	}
 
-	void DFBVideoProvider::getOriginalResolution(int* height, int* width) {
+	void DFBVideoProvider::getOriginalResolution(int* width, int* height) {
 		DFBSurfaceDescription dsc;
 
 		if (rContainer != NULL && rContainer->dec != NULL) {

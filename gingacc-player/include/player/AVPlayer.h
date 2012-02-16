@@ -173,7 +173,7 @@ namespace player {
 			ISurface* createFrame();
 
 		public:
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
 			int64_t getVPts();
 			void timeShift(string direction);

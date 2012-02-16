@@ -81,29 +81,27 @@ namespace mb {
 
 		videoFrame = NULL;
 		myScreen   = screenId;
+		isWaiting  = false;
+
+		pthread_mutex_init(&cMutex, NULL);
+		pthread_cond_init(&cond, NULL);
 
 		if (file != NULL) {
 			SDL_ffmpegSelectVideoStream(file, 0);
 			getOriginalResolution(&wRes, &hRes);
 
-			videoFrame = SDL_ffmpegCreateVideoFrame();
-		    videoFrame->tempw = wRes;
-		    videoFrame->temph = hRes;
-
-			renderer = (SDL_Renderer*)(LocalScreenManager::getInstance()->
-					getGfxRoot(myScreen));
-
-			videoFrame->texture = SDL_CreateTexture(
-					renderer,
-					SDL_PIXELFORMAT_RGB24,
-					SDL_TEXTUREACCESS_STREAMING,
-					wRes,
-					hRes);
+			videoFrame          = SDL_ffmpegCreateVideoFrame();
+		    videoFrame->tempw   = wRes;
+		    videoFrame->temph   = hRes;
+		    videoFrame->texture = NULL;
 		}
 	}
 
 	SDLVideoProvider::~SDLVideoProvider() {
 		if (videoFrame != NULL) {
+			SDL_DestroyTexture(videoFrame->texture);
+			videoFrame->texture = NULL;
+
 			SDL_ffmpegFreeVideoFrame(videoFrame);
 			videoFrame = NULL;
 		}
@@ -118,7 +116,19 @@ namespace mb {
 	}
 
 	void* SDLVideoProvider::getContent() {
+		if (videoFrame != NULL) {
+			return (void*)(videoFrame->texture);
+		}
+
 		return NULL;
+	}
+
+	void SDLVideoProvider::setContent(void* texture) {
+		if (videoFrame != NULL) {
+			videoFrame->texture = (SDL_Texture*)texture;
+		}
+
+		textureCreated();
 	}
 
 	void SDLVideoProvider::feedBuffers() {
@@ -133,7 +143,7 @@ namespace mb {
 		return false;
 	}
 
-	void SDLVideoProvider::getOriginalResolution(int* height, int* width) {
+	void SDLVideoProvider::getOriginalResolution(int* width, int* height) {
 		if (SDL_ffmpegValidVideo(file)) {
 			SDL_ffmpegGetVideoSize(file, width, height);
 		}
@@ -160,19 +170,8 @@ namespace mb {
 	}
 
 	bool SDLVideoProvider::prepare(ISurface* surface) {
-		IWindow* parent;
-		SDLWindow* win;
-
 		if (SDLAudioProvider::prepare(surface)) {
 			if (SDL_ffmpegValidVideo(file) && videoFrame != NULL) {
-				parent = (IWindow*)(surface->getParent());
-				if (parent != NULL) {
-					win = dynamic_cast<SDLWindow*>(parent);
-					if (win != NULL) {
-						win->setTexture(videoFrame->texture);
-					}
-				}
-
 				cout << "SDLVideoProvider::prepare OK" << endl;
 				return true;
 			}
@@ -186,10 +185,30 @@ namespace mb {
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
 		int i;
-		SDL_TimerID rendererTimer;
+		IWindow* parent;
+		SDLWindow* win;
 
 		if (prepare(surface)) {
 			state = ST_PLAYING;
+			parent = (IWindow*)(surface->getParent());
+			if (parent != NULL) {
+				win = dynamic_cast<SDLWindow*>(parent);
+				if (win != NULL) {
+					if (videoFrame->texture == NULL) {
+						waitTexture();
+					}
+
+					win->setTexture(videoFrame->texture);
+					if (videoFrame->texture != NULL) {
+						cout << "SDLVideoProvider::playOver OK!";
+						cout << endl;
+					}
+
+				} else {
+					cout << "SDLVideoProvider::playOver Warning! NULL win";
+					cout << endl;
+				}
+			}
 			SDL_PauseAudio(0);
 		}
 	}
@@ -237,14 +256,26 @@ namespace mb {
 				} else {
 					if (videoFrame->pts <= getSync()) {
 						videoFrame->ready = 0;
-
-					} else {
-						sleepTime = videoFrame->pts - getSync();
-						::usleep(sleepTime * 1000);
 					}
 				}
 			}
 		}
+	}
+
+	void SDLVideoProvider::waitTexture() {
+		isWaiting = true;
+		pthread_mutex_lock(&cMutex);
+		pthread_cond_wait(&cond, &cMutex);
+		isWaiting = false;
+		pthread_mutex_unlock(&cMutex);
+	}
+
+	bool SDLVideoProvider::textureCreated() {
+		if (isWaiting) {
+			pthread_cond_signal(&cond);
+			return true;
+		}
+		return false;
 	}
 }
 }

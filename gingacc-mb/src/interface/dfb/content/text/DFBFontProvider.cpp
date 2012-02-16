@@ -98,9 +98,13 @@ namespace mb {
 
 		string aux;
 
-		aux      = "";
-		myScreen = screenId;
-		font     = NULL;
+		aux       = "";
+		myScreen  = screenId;
+		font      = NULL;
+		plainText = "";
+		coordX    = 0;
+		coordY    = 0;
+		align     = A_TOP_LEFT;
 
 #ifdef _WIN32
 		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
@@ -179,13 +183,27 @@ namespace mb {
 	void DFBFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
+		plainText   = text;
+		coordX      = x;
+		coordY      = y;
+		this->align = align;
+
+		playOver(surface);
+	}
+
+	void DFBFontProvider::playOver(ISurface* surface) {
 		IWindow* win;
 		IDirectFBSurface* s = (IDirectFBSurface*)(surface->getContent());
 
 		if (font != NULL && s != NULL) {
 			s->SetFont(s, font);
-			DFBCHECK(s->DrawString(
-					s, text, -1, x, y, (DFBSurfaceTextFlags)(align)));
+			s->DrawString(
+					s,
+					plainText.c_str(),
+					-1,
+					coordX,
+					coordY,
+					(DFBSurfaceTextFlags)(align));
 
 			win = (IWindow*)(surface->getParent());
 			if (win != NULL) {

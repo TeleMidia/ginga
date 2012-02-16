@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef IIMAGEPROVIDER_H_
 #define IIMAGEPROVIDER_H_
 
-#include "ISurface.h"
+#include "IDiscreteMediaProvider.h"
 
 #include <set>
 using namespace std;
@@ -61,12 +61,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class IImageProvider {
+	class IImageProvider : public IDiscreteMediaProvider {
 		public:
 			virtual ~IImageProvider(){};
 			virtual void* getContent()=0;
 			virtual void playOver(ISurface* surface)=0;
-			virtual ISurface* prepare(bool isGif=false)=0;
 			virtual bool releaseAll()=0;
 	};
 }

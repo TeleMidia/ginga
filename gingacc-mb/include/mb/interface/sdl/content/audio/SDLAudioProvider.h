@@ -110,6 +110,7 @@ namespace mb {
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			void* getContent();
+			virtual void setContent(void* content){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
@@ -129,7 +130,7 @@ namespace mb {
 			void stop();
 			void setSoundLevel(float level);
 			bool releaseAll();
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 
 		protected:
 			static void audioCallback(void* data, Uint8* stream, int len);

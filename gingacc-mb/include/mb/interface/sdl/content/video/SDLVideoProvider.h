@@ -55,6 +55,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
 
+extern "C" {
+#include <pthread.h>
+}
+
 #include <set>
 using namespace std;
 
@@ -71,6 +75,10 @@ namespace mb {
 			int wRes;
 			int hRes;
 
+			bool isWaiting;
+			pthread_mutex_t cMutex;
+			pthread_cond_t cond;
+
 			uint64_t getSync();
 
 		public:
@@ -78,11 +86,12 @@ namespace mb {
 
 			virtual ~SDLVideoProvider();
 
-
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
 			void* getContent();
+			void setContent(void* texture);
+
 			virtual void setAVPid(int aPid, int vPid){};
 			void feedBuffers();
 
@@ -92,7 +101,7 @@ namespace mb {
 		public:
 			bool checkVideoResizeEvent(ISurface* frame);
 
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();
@@ -113,6 +122,10 @@ namespace mb {
 			bool releaseAll();
 
 			void refreshDR();
+
+		private:
+			void waitTexture();
+			bool textureCreated();
 	};
 }
 }

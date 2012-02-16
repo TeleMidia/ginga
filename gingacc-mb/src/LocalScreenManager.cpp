@@ -596,7 +596,7 @@ namespace mb {
 	}
 
 	void LocalScreenManager::refreshScreens(float fps) {
-		map<GingaScreenID, IDeviceScreen*>::iterator i;
+/*		map<GingaScreenID, IDeviceScreen*>::iterator i;
 		bool hasRefresh;
 		double curTime, sleepTime;
 
@@ -626,7 +626,7 @@ namespace mb {
 					::usleep(sleepTime);
 				}
 			}
-		}
+		}*/
 	}
 
 	void LocalScreenManager::stopScreenManager() {

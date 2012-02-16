@@ -109,8 +109,8 @@ namespace mb {
 		clog << "DXVideoProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
 	}
 
-	void DXVideoProvider::getOriginalResolution(int* height, int* width) {
-		clog << "DXVideoProvider::getOriginalResolution(int* height, int* width)" << endl;
+	void DXVideoProvider::getOriginalResolution(int* width, int* height) {
+		clog << "DXVideoProvider::getOriginalResolution(int* width, int* height)" << endl;
 //		RECT rect =  m_pVideo->getOiginalResolution();
 
 		(*height) = 100; //rect.bottom;

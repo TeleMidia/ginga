@@ -246,6 +246,7 @@ namespace mb {
 
 			void setAVPid(int aPid, int vPid);
 			void* getContent();
+			void setContent(void* content){};
 			void feedBuffers();
 
 		private:
@@ -255,7 +256,7 @@ namespace mb {
 		public:
 			bool checkVideoResizeEvent(ISurface* frame);
 
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
 			int64_t getVPts();
 			double getMediaTime();

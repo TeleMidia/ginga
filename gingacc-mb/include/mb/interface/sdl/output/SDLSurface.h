@@ -74,7 +74,6 @@ namespace mb {
 
 		public:
 			SDLSurface(GingaScreenID screenId);
-			SDLSurface(GingaScreenID screenId, int w, int h);
 			SDLSurface(GingaScreenID screenId, void* underlyingSurface);
 
 			virtual ~SDLSurface();

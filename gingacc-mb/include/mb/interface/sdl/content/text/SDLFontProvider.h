@@ -71,7 +71,16 @@ namespace mb {
 			GingaScreenID myScreen;
 			string fontUri;
 			int height;
-			TTF_Font *font;
+			TTF_Font* font;
+			ISurface* content;
+			string plainText;
+			int coordX;
+			int coordY;
+			short align;
+
+			bool isWaiting;
+			pthread_mutex_t cMutex;
+			pthread_cond_t cond;
 
 			static bool initialized;
 			static short fontRefs;
@@ -104,6 +113,13 @@ namespace mb {
 					ISurface* surface,
 					const char* text,
 					int x=0, int y=0, short align=A_TOP_LEFT);
+
+			void playOver(ISurface* surface);
+			void ntsPlayOver(ISurface* surface);
+
+		private:
+			void waitNTSRenderer();
+			bool ntsRenderer();
 	};
 }
 }

@@ -4,6 +4,7 @@ localIncludedir = /usr/local/include/ginga/mb/interface
 
 localInclude_HEADERS = \
                        CodeMap.h \
+                       IDiscreteMediaProvider.h \
                        IContinuousMediaProvider.h \
                        IDataBuffer.h \
                        IDeviceScreen.h \

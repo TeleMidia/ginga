@@ -100,6 +100,7 @@ namespace mb {
 			string getLoadSymbol();
 
 			void* getContent();
+			void setContent(void* content){};
 			virtual void setAVPid(int aPid, int vPid){};
 			void feedBuffers();
 
@@ -114,7 +115,7 @@ namespace mb {
 			static void dynamicRenderCallBack(void* surface);
 
 		public:
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};
 			double getMediaTime();

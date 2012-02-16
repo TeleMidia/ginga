@@ -96,6 +96,7 @@ namespace mb {
 
 			static void release();
 			void* getContent();
+			void setContent(void* content){};
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
@@ -111,7 +112,7 @@ namespace mb {
 			void pause();
 			void stop();
 			void setSoundLevel(float level);
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			bool releaseAll();
 			void refreshDR(){};
 	};

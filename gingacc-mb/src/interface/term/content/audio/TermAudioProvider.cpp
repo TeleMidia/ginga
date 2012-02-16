@@ -130,7 +130,7 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermAudioProvider::getOriginalResolution(int* height, int* width) {
+	void TermAudioProvider::getOriginalResolution(int* width, int* height) {
 
 	}
 

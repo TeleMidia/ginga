@@ -942,7 +942,7 @@ namespace mb {
 		return false;
 	}
 
-	void FFmpegAudioProvider::getOriginalResolution(int* height, int* width) {
+	void FFmpegAudioProvider::getOriginalResolution(int* width, int* height) {
 
 	}
 

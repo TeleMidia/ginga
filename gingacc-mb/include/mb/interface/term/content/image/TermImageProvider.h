@@ -67,7 +67,7 @@ namespace mb {
 			virtual ~TermImageProvider();
 			void* getContent();
 			void playOver(ISurface* surface);
-			ISurface* prepare(bool isGif=false);
+			void ntsPlayOver(ISurface* surface){};
 			bool releaseAll();
 	};
 }

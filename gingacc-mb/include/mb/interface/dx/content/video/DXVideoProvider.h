@@ -81,7 +81,7 @@ namespace mb {
 			static void dynamicRenderCallBack(void* surface);
 
 		public:
-			void getOriginalResolution(int* height, int* width);
+			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
 			double getMediaTime();
 			void setMediaTime(double pos);

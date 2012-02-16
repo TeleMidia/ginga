@@ -293,7 +293,7 @@ namespace mb {
 		return false;
 	}
 
-	void DFBAudioProvider::getOriginalResolution(int* height, int* width) {
+	void DFBAudioProvider::getOriginalResolution(int* width, int* height) {
 
 	}
 }

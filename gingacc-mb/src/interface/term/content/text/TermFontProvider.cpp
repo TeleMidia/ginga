@@ -86,6 +86,10 @@ namespace mb {
 			ISurface* surface, const char* text, int x, int y, short align) {
 
 	}
+
+	void TermFontProvider::playOver(ISurface* surface) {
+
+	}
 }
 }
 }

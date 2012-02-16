@@ -47,22 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef DFBAUDIOPROVIDER_H_
-#define DFBAUDIOPROVIDER_H_
+#ifndef IDiscreteMediaProvider_H_
+#define IDiscreteMediaProvider_H_
 
-#include "mb/interface/IContinuousMediaProvider.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <directfb.h>
-#include "directfb/direct/interface.h"
-#ifdef __cplusplus
-}
-#endif
-
-#include <set>
-using namespace std;
+#include "ISurface.h"
 
 namespace br {
 namespace pucrio {
@@ -70,45 +58,15 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class DFBAudioProvider : public IContinuousMediaProvider {
-		protected:
-			IDirectFBVideoProvider* decoder;
-			GingaScreenID myScreen;
-			string symbol;
-
+	class IDiscreteMediaProvider {
 		public:
-			DFBAudioProvider(GingaScreenID screenId, const char* mrl);
-			virtual ~DFBAudioProvider();
+			virtual ~IDiscreteMediaProvider(){};
 
-			virtual void setLoadSymbol(string symbol);
-			virtual string getLoadSymbol();
+			virtual void playOver(ISurface* surface)=0;
 
-			virtual void setAVPid(int aPid, int vPid){};
-			virtual void feedBuffers(){};
-			void* getContent();
-			void setContent(void* content){};
-			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
-
-		private:
-			IDirectFBSurface* getPerfectDFBSurface();
-
-		public:
-			static void dynamicRenderCallBack(void* dec);
-			double getTotalMediaTime();
-			virtual int64_t getVPts(){return 0;};
-			double getMediaTime();
-			void setMediaTime(double pos);
-			void playOver(
-					ISurface* surface,
-					bool hasVisual=true, IProviderListener* listener=NULL);
-
-			void resume(ISurface* surface, bool hasVisual=false);
-			void pause();
-			void stop();
-			void setSoundLevel(float level);
-			bool releaseAll();
-			void getOriginalResolution(int* width, int* height);
-			void refreshDR(){};
+			/* Designed for non-thread-safe MB. For instance: SDL */
+			virtual void ntsPlayOver(ISurface* surface)=0;
+			virtual void* getContent()=0;
 	};
 }
 }
@@ -117,4 +75,4 @@ namespace mb {
 }
 }
 
-#endif /*DFBAUDIOPROVIDER_H_*/
+#endif /* IDiscreteMediaProvider_H_ */
