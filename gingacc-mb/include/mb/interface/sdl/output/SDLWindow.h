@@ -169,8 +169,8 @@ namespace mb {
 			bool getFit();
 			void clearContent();
 			void* getContent();
-			SDL_Texture* getTexture();
 			void setTexture(SDL_Texture* texture);
+			SDL_Texture* getTexture();
 
 		private:
 			bool isMine(ISurface* surface);

@@ -207,12 +207,8 @@ namespace player {
 
 		ISurface* renderedSurface = NULL;
 
-		if (mrl.length() > 4 && mrl.substr(mrl.length() - 4, 4) == ".gif") {
-			renderedSurface = provider->prepare(true);
-
-		} else {
-			renderedSurface = provider->prepare(false);
-		}
+		renderedSurface = dm->createSurfaceFrom(myScreen, NULL);
+		provider->playOver(renderedSurface);
 
 		return renderedSurface;
 	}

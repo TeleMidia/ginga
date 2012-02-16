@@ -188,7 +188,7 @@ namespace mb {
 		return false;
 	}
 
-	void SDLAudioProvider::getOriginalResolution(int* height, int* width) {
+	void SDLAudioProvider::getOriginalResolution(int* width, int* height) {
 
 	}
 

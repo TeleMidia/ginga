@@ -1265,7 +1265,7 @@ namespace mb {
 		return false;
 	}
 
-	void FFmpegVideoProvider::getOriginalResolution(int* height, int* width) {
+	void FFmpegVideoProvider::getOriginalResolution(int* width, int* height) {
 		*width  = rContainer->video.ctx->width;
 		*height = rContainer->video.ctx->height;
 	}

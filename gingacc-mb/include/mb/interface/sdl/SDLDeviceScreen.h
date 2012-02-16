@@ -60,6 +60,7 @@ using namespace ::br::pucrio::telemidia::util;
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
 
+#include "mb/interface/IDiscreteMediaProvider.h"
 #include "mb/interface/IDeviceScreen.h"
 
 #include "SDL.h"
@@ -67,7 +68,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include <pthread.h>
 
 #include <set>
-#include <vector>
+#include <map>
 #include <iostream>
 using namespace std;
 
@@ -84,9 +85,12 @@ namespace mb {
 			static const unsigned int DSA_16x9;
 
 		private:
-			static bool initSDL;
-			static unsigned int numOfSDLScreens;
+			static bool hasRenderer;
+			static map<SDLDeviceScreen*, bool> sdlScreens;
+			static pthread_mutex_t sMutex;
 
+			string mbMode;
+			string mbSubSystem;
 			unsigned int aspect;
 			unsigned int hSize;
 			unsigned int vSize;
@@ -98,15 +102,27 @@ namespace mb {
 #endif
 			set<IWindow*>* windowPool;
 			set<ISurface*>* surfacePool;
-			set<IContinuousMediaProvider*>* cmpPool;
+			map<IContinuousMediaProvider*, bool>* cmpPool;
+			set<IDiscreteMediaProvider*>* dmpPool;
 
 			GingaScreenID id;
 			GingaWindowID uId;
 			IInputManager* im;
 
+			SDL_Surface* uSur;
+			int uSurW;
+			int uSurH;
+			pthread_mutex_t uSurMutex;
+			bool uSurPending;
+
+			bool waitingCreator;
+			pthread_mutex_t cMutex;
+			pthread_cond_t cond;
+
 			pthread_mutex_t winMutex;
 			pthread_mutex_t surMutex;
 			pthread_mutex_t cmpMutex;
+			pthread_mutex_t dmpMutex;
 
 			SDL_Window* screen;
 			SDL_Renderer* renderer;
@@ -176,6 +192,17 @@ namespace mb {
 
 			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
 
+		private:
+			static bool checkTasks(SDLDeviceScreen* screen);
+			static void refreshCMP(SDLDeviceScreen* screen);
+			static void refreshDMP(SDLDeviceScreen* screen);
+			static void refreshWin(SDLDeviceScreen* screen);
+			static void* rendererT(void* ptr);
+			static void initScreen(SDLDeviceScreen* screen);
+			static void initCMP(
+					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
+
+		public:
 
 			/* interfacing input */
 
@@ -203,17 +230,22 @@ namespace mb {
 			/* output */
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
+		private:
 			static SDL_Texture* createTexture(
 					SDL_Renderer* renderer, SDL_Surface* surface);
 
-			static void releaseTexture(SDL_Texture* uWin);
+			static void releaseTexture(SDL_Texture* uTex);
 
-			static SDL_Surface* createUnderlyingSurface(int width, int height);
+			SDL_Surface* createUnderlyingSurface(int width, int height);
 
+		public:
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 
 		private:
 			bool getRenderList(vector<IWindow*>* renderList);
+
+			void waitSurfaceCreator();
+			bool surfaceCreator();
 	};
 }
 }

@@ -112,9 +112,6 @@ namespace mb {
 			SDLDeviceScreen::releaseUnderlyingSurface(winSur);
 		}
 
-		if (texture != NULL) {
-			SDLDeviceScreen::releaseTexture(texture);
-		}
 		unlock();
 
 		pthread_mutex_destroy(&mutex);
@@ -450,20 +447,20 @@ namespace mb {
 		return this->fit;
 	}
 
-	void* SDLWindow::getContent() {
-		return getTexture();
-	}
-
 	void SDLWindow::clearContent() {
 
 	}
 
-	SDL_Texture* SDLWindow::getTexture() {
-		return texture;
+	void* SDLWindow::getContent() {
+		return winSur;
 	}
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
 		this->texture = texture;
+	}
+
+	SDL_Texture* SDLWindow::getTexture() {
+		return texture;
 	}
 
 	bool SDLWindow::isMine(ISurface* surface) {
@@ -535,8 +532,8 @@ namespace mb {
 		if (!isMine(surface)) {
 			contentSurface = (SDL_Surface*)(surface->getContent());
 			if (contentSurface == NULL) {
-				cout << "SDLWindow::renderFrom Warning! NULL underlying ";
-				cout << "surface!" << endl;
+				clog << "SDLWindow::renderFrom Warning! NULL underlying ";
+				clog << "surface!" << endl;
 				return;
 			}
 
@@ -549,17 +546,14 @@ namespace mb {
 		ISurface* sur;
 		SDL_Renderer* renderer;
 
-		if (texture != NULL) {
-			SDLDeviceScreen::releaseTexture(texture);
-			texture = NULL;
+		if (winSur != NULL) {
+			SDLDeviceScreen::releaseUnderlyingSurface(winSur);
+			winSur = NULL;
 		}
 
-		renderer = (SDL_Renderer*)(
-				LocalScreenManager::getInstance()->getGfxRoot(myScreen));
+		winSur = contentSurface;
 
-		texture = SDLDeviceScreen::createTexture(renderer, contentSurface);
-
-		refresh(true);
+		//refresh(true);
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -670,12 +664,12 @@ namespace mb {
 	}
 
 	void SDLWindow::refresh(bool checkVisibility) {
-		if (!checkVisibility) {
+		/*if (!checkVisibility) {
 			LocalScreenManager::getInstance()->refreshScreen(myScreen);
 
 		} else if (visible) {
 			LocalScreenManager::getInstance()->refreshScreen(myScreen);
-		}
+		}*/
 	}
 }
 }

@@ -146,7 +146,10 @@ namespace player {
 
 	ISurface* AnimePlayer::prepareSurface(IImageProvider* provider) {
 		ISurface* renderedSurface = NULL;
-		renderedSurface = provider->prepare(false);
+
+		renderedSurface = dm->createSurfaceFrom(myScreen, NULL);
+		provider->playOver(renderedSurface);
+
 		return renderedSurface;
 	}
 

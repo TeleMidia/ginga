@@ -62,6 +62,7 @@ extern "C" {
 #endif
 
 #include <set>
+#include <string>
 using namespace std;
 
 namespace br {
@@ -74,13 +75,20 @@ namespace mb {
 		private:
 			IDirectFBImageProvider* decoder;
 			GingaScreenID myScreen;
+			string mrl;
 
 		public:
 			DFBImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~DFBImageProvider();
 			void* getContent();
 			void playOver(ISurface* surface);
-			ISurface* prepare(bool isGif=false);
+
+			void ntsPlayOver(ISurface* surface){};
+
+		private:
+			IDirectFBSurface* getPerfectUnderlyingSurface(ISurface* surface);
+
+		public:
 			bool releaseAll();
 	};
 }

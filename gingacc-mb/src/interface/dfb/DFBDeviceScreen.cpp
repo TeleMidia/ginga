@@ -681,20 +681,12 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 		ISurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
-		string strMrl            = "";
 
 		provider = createImageProvider(mrl);
 
 		if (provider != NULL) {
-			strMrl.assign(mrl);
-			if (strMrl.length() > 4 &&
-					strMrl.substr(strMrl.length() - 4, 4) == ".gif") {
-
-				iSur = provider->prepare(true);
-
-			} else {
-				iSur = provider->prepare(false);
-			}
+			iSur = createSurfaceFrom(NULL);
+			provider->playOver(iSur);
 		}
 
 		delete provider;

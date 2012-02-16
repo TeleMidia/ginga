@@ -123,8 +123,8 @@ namespace mb {
 		clog << "DXAudioProvider::dynamicRenderCallBack(void* rendererContainer)" << endl;
 	}
 
-	void DXAudioProvider::getOriginalResolution(int* height, int* width) {
-		clog << "DXAudioProvider::getOriginalResolution(int* height, int* width)" << endl;
+	void DXAudioProvider::getOriginalResolution(int* width, int* height) {
+		clog << "DXAudioProvider::getOriginalResolution(int* width, int* height)" << endl;
 		(*height) = 200;
 		(*width) = 200;
 	}

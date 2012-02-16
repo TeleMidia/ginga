@@ -129,7 +129,7 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermVideoProvider::getOriginalResolution(int* height, int* width) {
+	void TermVideoProvider::getOriginalResolution(int* width, int* height) {
 
 	}
 

@@ -77,6 +77,10 @@ namespace mb {
 		protected:
 			IDirectFBFont* font;
 			GingaScreenID myScreen;
+			string plainText;
+			int coordX;
+			int coordY;
+			short align;
 
 		public:
 			static const short A_LEFT;
@@ -106,6 +110,10 @@ namespace mb {
 					ISurface* surface,
 					const char* text,
 					int x=0, int y=0, short align=A_TOP_LEFT);
+
+			void playOver(ISurface* surface);
+
+			void ntsPlayOver(ISurface* surface){};
 	};
 }
 }

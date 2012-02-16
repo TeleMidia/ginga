@@ -68,6 +68,49 @@ namespace mb {
 	SDLImageProvider::SDLImageProvider(
 			GingaScreenID screenId, const char* mrl) {
 
+		isWaiting = false;
+		pthread_mutex_init(&cMutex, NULL);
+		pthread_cond_init(&cond, NULL);
+
+		imageRefs++;
+
+		imgUri   = "";
+		myScreen = screenId;
+		content  = NULL;
+
+		imgUri.assign(mrl);
+	}
+
+	SDLImageProvider::~SDLImageProvider() {
+		imageRefs--;
+		content = NULL;
+
+		isWaiting = false;
+		pthread_mutex_destroy(&cMutex);
+		pthread_cond_destroy(&cond);
+
+		if (imageRefs == 0) {
+			IMG_Quit();
+			initialized = false;
+		}
+	}
+
+	void* SDLImageProvider::getContent() {
+		return (void*)content;
+	}
+
+	void SDLImageProvider::playOver(ISurface* surface) {
+		content = surface;
+
+		if (surface->getContent() == NULL) {
+			waitNTSRenderer();
+		}
+	}
+
+	void SDLImageProvider::ntsPlayOver(ISurface* surface) {
+		SDL_Surface* renderedSurface;
+		IWindow* parent;
+
 		if (!initialized) {
 			initialized = true;
 			if (IMG_Init(0) < 0) {
@@ -77,31 +120,6 @@ namespace mb {
 			}
 		}
 
-		imageRefs++;
-
-		imgUri   = "";
-		myScreen = screenId;
-
-		imgUri.assign(mrl);
-	}
-
-	SDLImageProvider::~SDLImageProvider() {
-		imageRefs--;
-
-		if (imageRefs == 0) {
-			IMG_Quit();
-			initialized = false;
-		}
-	}
-
-	void* SDLImageProvider::getContent() {
-		return NULL;
-	}
-
-	void SDLImageProvider::playOver(ISurface* surface) {
-		SDL_Surface* renderedSurface;
-		IWindow* parent;
-
 		renderedSurface = IMG_Load(imgUri.c_str());
 		surface->setContent((void*)renderedSurface);
 
@@ -109,19 +127,27 @@ namespace mb {
 		if (parent != NULL) {
 			parent->renderFrom(surface);
 		}
-	}
 
-	ISurface* SDLImageProvider::prepare(bool isGif) {
-		ISurface* surface;
-		SDL_Surface* renderedSurface = IMG_Load(imgUri.c_str());
-
-		surface = LocalScreenManager::getInstance()->createSurfaceFrom(
-				myScreen, renderedSurface);
-
-		return surface;
+		ntsRenderer();
 	}
 
 	bool SDLImageProvider::releaseAll() {
+		return false;
+	}
+
+	void SDLImageProvider::waitNTSRenderer() {
+		isWaiting = true;
+		pthread_mutex_lock(&cMutex);
+		pthread_cond_wait(&cond, &cMutex);
+		isWaiting = false;
+		pthread_mutex_unlock(&cMutex);
+	}
+
+	bool SDLImageProvider::ntsRenderer() {
+		if (isWaiting) {
+			pthread_cond_signal(&cond);
+			return true;
+		}
 		return false;
 	}
 }

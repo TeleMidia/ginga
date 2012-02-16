@@ -68,17 +68,28 @@ namespace mb {
 			static bool initialized;
 			static short imageRefs;
 
+			bool isWaiting;
+			pthread_mutex_t cMutex;
+			pthread_cond_t cond;
+
 			GingaScreenID myScreen;
-			SDL_Surface* surface;
+			ISurface* content;
 			string imgUri;
 
 		public:
 			SDLImageProvider(GingaScreenID screenId, const char* mrl);
 			virtual ~SDLImageProvider();
+
 			void* getContent();
+
 			void playOver(ISurface* surface);
-			ISurface* prepare(bool isGif=false);
+			void ntsPlayOver(ISurface* surface);
+
 			bool releaseAll();
+
+		private:
+			void waitNTSRenderer();
+			bool ntsRenderer();
 	};
 }
 }

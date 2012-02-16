@@ -78,10 +78,6 @@ namespace mb {
 
 	}
 
-	ISurface* TermImageProvider::prepare(bool isGif) {
-		return NULL;
-	}
-
 	bool TermImageProvider::releaseAll() {
 		return true;
 	}

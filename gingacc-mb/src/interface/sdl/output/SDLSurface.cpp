@@ -71,12 +71,6 @@ namespace mb {
 		this->sur = (SDL_Surface*)underlyingSurface;
 	}
 
-	SDLSurface::SDLSurface(GingaScreenID screenId, int w, int h) {
-		initialize(screenId);
-
-		this->sur = SDLDeviceScreen::createUnderlyingSurface(w, h);
-	}
-
 	SDLSurface::~SDLSurface() {
 		releaseChromaColor();
 		releaseBorderColor();

@@ -86,8 +86,11 @@ namespace mb {
 		dipRefs++;
 #endif
 
-		myScreen = screenId;
-		decoder  = NULL;
+		this->mrl = "";
+		myScreen  = screenId;
+		decoder   = NULL;
+
+		this->mrl.assign(mrl);
 
 		if (mrl != NULL) {
 			dfb = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
@@ -119,101 +122,74 @@ namespace mb {
 	}
 
 	void DFBImageProvider::playOver(ISurface* surface) {
-		IDirectFBImageProvider* ip;
-		ip = (IDirectFBImageProvider*)decoder;
-
 		IDirectFBSurface* s;
 		s = (IDirectFBSurface*)(surface->getContent());
-		DFBCHECK(ip->RenderTo(ip, s, NULL));
-	}
 
-	ISurface* DFBImageProvider::prepare(bool isGif) {
-		ISurface* renderedSurface  = NULL;
-		IDirectFBImageProvider* ip = NULL;
-
-		if (decoder == NULL) {
-			return NULL;
+		if (s == NULL) {
+			s = getPerfectUnderlyingSurface(surface);
+			surface->setContent(s);
 		}
 
-		ip = (IDirectFBImageProvider*)decoder;
+		if (decoder != NULL) {
+			decoder->RenderTo(decoder, s, NULL);
+		}
+	}
+
+	IDirectFBSurface* DFBImageProvider::getPerfectUnderlyingSurface(
+			ISurface* surface) {
 
 		DFBImageDescription imgDsc;
 		IDirectFBSurface* destination = NULL;
 		DFBSurfaceDescription surDsc;
 		IColor* chromaKey = NULL;
 
+		if (decoder == NULL) {
+			return NULL;
+		}
+
 		//IDirectFBSurface* source;
-		if ((ip->GetImageDescription(ip, &imgDsc) == DFB_OK) &&
-			 (ip->GetSurfaceDescription(ip, &surDsc) == DFB_OK)) {
+		if ((decoder->GetImageDescription(decoder, &imgDsc) == DFB_OK) &&
+			 (decoder->GetSurfaceDescription(decoder, &surDsc) == DFB_OK)) {
 
 			destination = (IDirectFBSurface*)(
 					DFBDeviceScreen::createUnderlyingSurface(&surDsc));
 
-			renderedSurface = new DFBSurface(myScreen, destination);
-
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
-				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				clog << " setted alphachannel: ";*/
+				surface->setCaps(DWCAPS_ALPHACHANNEL);
 
-				renderedSurface->setCaps(DWCAPS_ALPHACHANNEL);
-
-				//alpha channel of gif does not exists anymore, it turn into
-				//black src color key
-				if (isGif) {
-					renderedSurface->setChromaColor(0, 0, 0, 0xFF);
-					//outputDisplay->setColorKey(0, 0, 0);
-					//clog << "black color cause it is a gif image" << endl;
+				if (mrl.find(".gif") != std::string::npos) {
+					surface->setChromaColor(0, 0, 0, 0xFF);
 				}
 
-				//clog << " trying to blit image alpha channel" << endl;
-
-				DFBCHECK(destination->SetBlittingFlags(destination,
-					 (DFBSurfaceBlittingFlags)(DSBLIT_BLEND_ALPHACHANNEL)));
-
-				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				clog << " setted alpha: '";
-				clog << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
-				clog << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
-				clog << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
-				clog << "'" << endl;*/
+				destination->SetBlittingFlags(
+						destination,
+						(DFBSurfaceBlittingFlags)(DSBLIT_BLEND_ALPHACHANNEL));
 			}
 
 			if (imgDsc.caps & DICAPS_COLORKEY) {
-				DFBCHECK(destination->SetBlittingFlags(destination,
+				destination->SetBlittingFlags(
+						destination,
 					    (DFBSurfaceBlittingFlags)(
-					    DSBLIT_BLEND_ALPHACHANNEL |
-					    DSBLIT_SRC_COLORKEY)));
+					    		DSBLIT_BLEND_ALPHACHANNEL |
+					    		DSBLIT_SRC_COLORKEY));
 
-				renderedSurface->setChromaColor(
+				surface->setChromaColor(
 						imgDsc.colorkey_r,
 					    imgDsc.colorkey_g,
 					    imgDsc.colorkey_b,
 					    0xFF);
-
-				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				clog << " setted colorkey: '";
-				clog << (((int)(imgDsc.colorkey_r & 0xFF)) & 0xFF);
-				clog << ", " << (((int)(imgDsc.colorkey_g)) & 0xFF);
-				clog << ", " << (((int)(imgDsc.colorkey_b)) & 0xFF);
-				clog << "'" << endl;*/
 			}
 
 			if (imgDsc.caps & DICAPS_NONE) {
-				DFBCHECK(destination->SetBlittingFlags(destination,
-					    (DFBSurfaceBlittingFlags)DSBLIT_NOFX));
+				destination->SetBlittingFlags(
+						destination,
+						(DFBSurfaceBlittingFlags)DSBLIT_NOFX);
 
-				renderedSurface->setCaps(DWCAPS_NONE);
-				/*clog << "ImagePlayer::ImagePlayer(" << mrl << ")";
-				clog << " NOFX" << endl;*/
+				surface->setCaps(DWCAPS_NONE);
 			}
 		}
 
-		if (destination != NULL && renderedSurface != NULL) {
-			DFBCHECK(ip->RenderTo(
-					ip,
-					(IDirectFBSurface*)(renderedSurface->getContent()), NULL));
-		}
-		return renderedSurface;
+		return destination;
 	}
 
 	bool DFBImageProvider::releaseAll() {
