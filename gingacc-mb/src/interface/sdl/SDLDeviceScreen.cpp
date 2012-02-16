@@ -536,43 +536,6 @@ namespace mb {
 		}
 	}
 
-	bool SDLDeviceScreen::refreshScreen() {
-		/*vector<IWindow*> renderList;
-		vector<IWindow*>::iterator i;
-		set<IContinuousMediaProvider*>::iterator j;
-		SDL_Texture* texture;
-		SDL_Rect rect;
-
-
-		pthread_mutex_lock(&cmpMutex);
-		j = cmpPool->begin();
-		while (j != cmpPool->end()) {
-			(*j)->refreshDR();
-			++j;
-		}
-		pthread_mutex_unlock(&cmpMutex);
-
-		pthread_mutex_lock(&winMutex);
-		SDL_RenderClear(renderer);
-		if (getRenderList(&renderList)) {
-			i = renderList.begin();
-			while (i != renderList.end()) {
-				rect.x  = (*i)->getX();
-				rect.y  = (*i)->getY();
-				rect.w  = (*i)->getW();
-				rect.h  = (*i)->getH();
-				texture = (SDL_Texture*)((*i)->getContent());
-
-				SDL_RenderCopy(renderer, texture, NULL, &rect);
-				++i;
-			}
-			SDL_RenderPresent(renderer);
-		}
-		pthread_mutex_unlock(&winMutex);*/
-
-		return true;
-	}
-
 
 	/* interfacing content */
 	IContinuousMediaProvider* SDLDeviceScreen::createContinuousMediaProvider(

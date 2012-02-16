@@ -587,55 +587,6 @@ namespace mb {
 		}
 	}
 
-	void LocalScreenManager::refreshScreen(GingaScreenID screenId) {
-		IDeviceScreen* screen;
-
-		if (getScreen(screenId, &screen)) {
-			screen->refreshScreen();
-		}
-	}
-
-	void LocalScreenManager::refreshScreens(float fps) {
-/*		map<GingaScreenID, IDeviceScreen*>::iterator i;
-		bool hasRefresh;
-		double curTime, sleepTime;
-
-		sleepTime = 1000000 / fps;
-		running = true;
-		while (running) {
-			curTime = getCurrentTimeMillis();
-			hasRefresh = false;
-			lockScreens();
-			i = screens->begin();
-			while (i != screens->end()) {
-				if (i->second->refreshScreen()) {
-					hasRefresh = true;
-				}
-				++i;
-			}
-			unlockScreens();
-			if (!hasRefresh) {
-				waitForScreens();
-
-			} else {
-				curTime = getCurrentTimeMillis() - curTime;
-				if (curTime > 0 && curTime < sleepTime) {
-					::usleep(curTime);
-
-				} else {
-					::usleep(sleepTime);
-				}
-			}
-		}*/
-	}
-
-	void LocalScreenManager::stopScreenManager() {
-		this->running = false;
-		lockScreens();
-		unlockScreens();
-		newScreenState();
-	}
-
 
 	/* interfacing content */
 
@@ -810,8 +761,6 @@ namespace mb {
 		lockScreens();
 		(*screens)[screenId] = screen;
 		unlockScreens();
-
-		newScreenState();
 	}
 
 	short LocalScreenManager::getNumOfScreens() {
@@ -847,22 +796,6 @@ namespace mb {
 
 	void LocalScreenManager::unlockScreens() {
 		pthread_mutex_unlock(&scrMutex);
-	}
-
-	void LocalScreenManager::waitForScreens() {
-		isWaiting = true;
-		pthread_mutex_lock(&wsMutex);
-		pthread_cond_wait(&wsSignal, &wsMutex);
-		isWaiting = false;
-		pthread_mutex_unlock(&wsMutex);
-	}
-
-	bool LocalScreenManager::newScreenState() {
-		if (isWaiting) {
-			pthread_cond_signal(&wsSignal);
-			return true;
-		}
-		return false;
 	}
 }
 }

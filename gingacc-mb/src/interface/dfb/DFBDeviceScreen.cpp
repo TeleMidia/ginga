@@ -555,10 +555,6 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		}
 	}
 
-	bool DFBDeviceScreen::refreshScreen() {
-		return false;
-	}
-
 
 	/* interfacing content */
 	IContinuousMediaProvider* DFBDeviceScreen::createContinuousMediaProvider(

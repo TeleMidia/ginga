@@ -146,9 +146,7 @@ int main(int argc, char** argv) {
 		im1->addInputEventListener(l1, NULL);
 	}
 
-	dm->refreshScreens(25);
-
-	cout << "gingacc-mb test has stopped refresh screen. ";
+	cout << "gingacc-mb testing input events. ";
 	cout << "press enter to automatic release";
 	cout << endl;
 	getchar();

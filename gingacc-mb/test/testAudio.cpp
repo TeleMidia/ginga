@@ -112,12 +112,6 @@ int main(int argc, char** argv) {
 	testScreen(dm, screen1);
 
 	cout << "gingacc-mb test has shown providers. ";
-	cout << "call refresh";
-	cout << endl;
-
-	dm->refreshScreens(25);
-
-	cout << "gingacc-mb test has stopped refresh screen. ";
 	cout << "press enter to automatic release";
 	cout << endl;
 	getchar();
