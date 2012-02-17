@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "mb/LocalScreenManager.h"
+#include "mb/interface/sdl/SDLDeviceScreen.h"
 #include "mb/interface/sdl/content/text/SDLFontProvider.h"
 #include "mb/interface/sdl/output/SDLWindow.h"
 
@@ -149,9 +150,8 @@ namespace mb {
 	void SDLFontProvider::playOver(ISurface* surface) {
 		this->content = surface;
 
-		if (surface->getContent() == NULL) {
-			waitNTSRenderer();
-		}
+		SDLDeviceScreen::addDMPToRendererList(this);
+		waitNTSRenderer();
 	}
 
 	void SDLFontProvider::ntsPlayOver() {

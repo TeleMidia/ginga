@@ -110,6 +110,7 @@ namespace mb {
 		pthread_mutex_lock(&pMutex);
 		content = surface;
 
+		SDLDeviceScreen::addDMPToRendererList(this);
 		waitNTSRenderer();
 
 		pthread_mutex_unlock(&pMutex);
