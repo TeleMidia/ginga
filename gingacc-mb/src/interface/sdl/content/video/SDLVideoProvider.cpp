@@ -190,6 +190,7 @@ namespace mb {
 
 		if (prepare(surface)) {
 			state = ST_PLAYING;
+			SDLDeviceScreen::addCMPToRendererList(this);
 			parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {
 				win = dynamic_cast<SDLWindow*>(parent);
@@ -199,10 +200,6 @@ namespace mb {
 					}
 
 					win->setTexture(videoFrame->texture);
-					if (videoFrame->texture != NULL) {
-						clog << "SDLVideoProvider::playOver OK!";
-						clog << endl;
-					}
 
 				} else {
 					clog << "SDLVideoProvider::playOver Warning! NULL win";
@@ -222,6 +219,7 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::stop() {
+		SDLDeviceScreen::removeCMPToRendererList(this);
 		state = ST_STOPPED;
 	}
 

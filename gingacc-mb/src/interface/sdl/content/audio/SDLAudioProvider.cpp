@@ -164,6 +164,7 @@ namespace mb {
 
 	    if (prepare(surface)) {
 	    	state = ST_PLAYING;
+	    	SDLDeviceScreen::addCMPToRendererList(this);
 	    	SDL_PauseAudio(0);
 	    }
 	}
@@ -177,6 +178,7 @@ namespace mb {
 	}
 
 	void SDLAudioProvider::stop() {
+		SDLDeviceScreen::removeCMPToRendererList(this);
 		state = ST_STOPPED;
 	}
 

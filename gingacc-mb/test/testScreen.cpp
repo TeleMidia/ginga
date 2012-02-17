@@ -117,6 +117,9 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	s = dm->createSurface(screen);
 	s->setParent(win1);
 	img->playOver(s);
+	delete s;
+	s = NULL;
+
 	win1->show();
 
 	/* FONT PROVIDER */
@@ -137,6 +140,9 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	win3->show();
 
 	ttf->playOver(ttfSur, "Testing font provider!", 10, 100);
+
+	delete ttfSur;
+	ttfSur = NULL;
 
 	/* VIDEO PROVIDER */
 	win2 = dm->createWindow(screen, x2, y2, w2, h2);
@@ -161,7 +167,6 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	/*
 	 * One last test.
-	 * Lets do this in a more ambitious way, deleting some stuffs right away.
 	 */
 	ISurface* iSurLT       = NULL;
 	IWindow* iWinLT        = NULL;
@@ -187,6 +192,8 @@ int main(int argc, char** argv) {
 	char* dfbArgv[5];
 	char* sdlArgv[5];
 	ILocalScreenManager* dm;
+
+	setLogToNullDev();
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();

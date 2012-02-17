@@ -110,7 +110,7 @@ typedef struct {
 #endif
 			set<IWindow*>* windowPool;
 			set<ISurface*>* surfacePool;
-			map<IContinuousMediaProvider*, bool>* cmpPool;
+			set<IContinuousMediaProvider*>* cmpPool;
 			set<IDiscreteMediaProvider*>* dmpPool;
 
 			GingaScreenID id;
@@ -141,6 +141,10 @@ typedef struct {
 
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
+
+			static set<IContinuousMediaProvider*> cmpRenderList;
+			static set<IDiscreteMediaProvider*> dmpRenderList;
+			static pthread_mutex_t mplMutex;
 
 		public:
 			SDLDeviceScreen(
@@ -200,6 +204,12 @@ typedef struct {
 			void releaseImageProvider(IImageProvider* provider);
 
 			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
+
+			static void addCMPToRendererList(IContinuousMediaProvider* cmp);
+			static void removeCMPToRendererList(IContinuousMediaProvider* cmp);
+
+			static void addDMPToRendererList(IDiscreteMediaProvider* dmp);
+			static void removeDMPToRendererList(IDiscreteMediaProvider* dmp);
 
 			static void createReleaseContainer(
 					SDL_Surface* uSur,
