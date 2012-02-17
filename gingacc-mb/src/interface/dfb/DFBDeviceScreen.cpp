@@ -59,6 +59,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/CodeMap.h"
 #include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -722,11 +723,10 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 	/* interfacing input */
 
 	IInputManager* DFBDeviceScreen::getInputManager() {
+		if (im == NULL) {
+			im = new InputManager(id);
+		}
 		return im;
-	}
-
-	void DFBDeviceScreen::setInputManager(IInputManager* im) {
-		this->im = im;
 	}
 
 	IEventBuffer* DFBDeviceScreen::createEventBuffer() {

@@ -59,11 +59,11 @@ namespace ginga {
 namespace core {
 namespace mb {
 	InputManager::InputManager(GingaScreenID screenId) : Thread() {
-		eventListeners         = new map<IInputEventListener*, set<int>*>;
-		actionsToInpListeners  = new vector<LockedAction*>;
+		eventListeners        = new map<IInputEventListener*, set<int>*>;
+		actionsToInpListeners = new vector<LockedAction*>;
 
-		applicationListeners   = new set<IInputEventListener*>;
-		actionsToAppListeners  = new vector<LockedAction*>;
+		applicationListeners  = new set<IInputEventListener*>;
+		actionsToAppListeners = new vector<LockedAction*>;
 
 		currentXAxis  = 0;
 		currentYAxis  = 0;
@@ -153,7 +153,6 @@ namespace mb {
 		}
 		lock();
 		notifying = true;
-		clog << "InputManager::release" << endl;
 
 		if (eventListeners != NULL) {
 			i = eventListeners->begin();
@@ -543,6 +542,10 @@ namespace mb {
 		return currentYAxis;
 	}
 
+	IEventBuffer* InputManager::getEventBuffer() {
+		return eventBuffer;
+	}
+
 	void InputManager::run() {
 		IInputEvent* inputEvent;
 
@@ -553,7 +556,7 @@ namespace mb {
 
 		int mouseX, mouseY;
 
-#ifdef HAVE_KINECTSUPPORT
+#if HAVE_KINECTSUPPORT
 		if (running) {
 			ief->createFactory(InputEventFactory::FT_KINECT, this);
 		}
@@ -622,13 +625,20 @@ namespace mb {
 					}
 				}
 
-				if (inputEvent->isKeyType() || inputEvent->isApplicationType()) {
+				if (inputEvent->isKeyType() ||
+						inputEvent->isApplicationType()) {
+
 					dispatchApplicationEvent(inputEvent);
 				}
 
 				delete inputEvent;
 				inputEvent = eventBuffer->getNextEvent();
 			}
+		}
+
+		if (running && eventBuffer == NULL) {
+			cout << "InputManager::run Warning! Can't receive events: ";
+			cout << "event buffer is NULL" << endl;
 		}
 	}
 }

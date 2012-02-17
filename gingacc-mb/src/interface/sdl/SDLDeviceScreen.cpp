@@ -58,6 +58,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/input/SDLInputEvent.h"
 
 #include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
 
 extern "C" {
 #include <string.h>
@@ -155,10 +156,7 @@ namespace mb {
 		if (!hasRenderer) {
 			hasRenderer = true;
 			pthread_mutex_init(&sMutex, NULL);
-			initCodeMaps();
-
 			pthread_mutex_init(&rlMutex, NULL);
-
 			pthread_mutex_init(&mplMutex, NULL);
 
 			pthread_t tId;
@@ -270,6 +268,14 @@ namespace mb {
 	}
 
 	unsigned int SDLDeviceScreen::getWidthResolution() {
+		/*
+		 * wRes == 0 is an initial state. So pthread_cond_t
+		 * is not necessary here.
+		 */
+		while (wRes == 0) {
+			::usleep(1000000 / SDLDS_FPS);
+		}
+
 		return wRes;
 	}
 
@@ -282,6 +288,13 @@ namespace mb {
 	}
 
 	unsigned int SDLDeviceScreen::getHeightResolution() {
+		/*
+		 * hRes == 0 is an initial state. So pthread_cond_t
+		 * is not necessary here.
+		 */
+		while (hRes == 0) {
+			::usleep(1000000 / SDLDS_FPS);
+		}
 		return hRes;
 	}
 
@@ -803,16 +816,36 @@ namespace mb {
 
 	void* SDLDeviceScreen::rendererT(void* ptr) {
 		map<SDLDeviceScreen*, short>::iterator i;
+		SDL_Event event;
 		int sleepTime, elapsedTime;
 		bool hasSurface;
+		SDLEventBuffer* eventBuffer = NULL;
 
-		sleepTime = (int)(1000000/30);
+		sleepTime = (int)(1000000/SDLDS_FPS);
 
 		SDL_Init((Uint32)(
 				SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE));
 
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
+
+		    while (SDL_PollEvent(&event)) {
+				pthread_mutex_lock(&sMutex);
+				i = sdlScreens.begin();
+				while (i != sdlScreens.end()) {
+					if (i->first->im != NULL) {
+						eventBuffer = (SDLEventBuffer*)(
+								i->first->im->getEventBuffer());
+
+						if (eventBuffer != NULL) {
+							eventBuffer->feed(event);
+						}
+					}
+					++i;
+				}
+				pthread_mutex_unlock(&sMutex);
+	    	}
+
 			pthread_mutex_lock(&sMutex);
 			i = sdlScreens.begin();
 			while (i != sdlScreens.end()) {
@@ -936,6 +969,9 @@ namespace mb {
 						s->screen, -1, SDL_RENDERER_SOFTWARE);
 			}
 		}
+
+		initCodeMaps();
+		s->im = new InputManager(s->id);
 	}
 
 	void SDLDeviceScreen::clearScreen(SDLDeviceScreen* s) {
@@ -1102,11 +1138,14 @@ namespace mb {
 	/* interfacing input */
 
 	IInputManager* SDLDeviceScreen::getInputManager() {
+		/*
+		 * im == NULL is an initial state. So pthread_cond_t
+		 * is not necessary here.
+		 */
+		while (im == NULL) {
+			::usleep(1000000 / SDLDS_FPS);
+		}
 		return im;
-	}
-
-	void SDLDeviceScreen::setInputManager(IInputManager* im) {
-		this->im = im;
 	}
 
 	IEventBuffer* SDLDeviceScreen::createEventBuffer() {

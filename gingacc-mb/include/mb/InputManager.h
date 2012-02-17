@@ -138,6 +138,8 @@ namespace mb {
 			int getCurrentXAxisValue();
 			int getCurrentYAxisValue();
 
+			IEventBuffer* getEventBuffer();
+
 		private:
 			void run();
 	};

@@ -137,7 +137,6 @@ namespace mb {
 			/* interfacing input */
 
 			virtual IInputManager* getInputManager()=0;
-			virtual void setInputManager(IInputManager* im)=0;
 			virtual IEventBuffer* createEventBuffer()=0;
 
 			virtual IInputEvent* createInputEvent(

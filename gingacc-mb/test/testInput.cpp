@@ -102,6 +102,8 @@ int main(int argc, char** argv) {
 	char* dfbArgv[5];
 	char* sdlArgv[5];
 
+	setLogToFile();
+
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();
 
