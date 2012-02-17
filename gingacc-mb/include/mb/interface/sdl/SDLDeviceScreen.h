@@ -96,6 +96,7 @@ typedef struct {
 			static map<SDLDeviceScreen*, bool> sdlScreens;
 			static pthread_mutex_t sMutex;
 
+			string aSystem;
 			string mbMode;
 			string mbSubSystem;
 			unsigned int aspect;

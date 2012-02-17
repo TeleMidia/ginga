@@ -96,14 +96,14 @@ namespace mb {
 			static const unsigned int DSA_4x3;
 			static const unsigned int DSA_16x9;
 
-		protected:
+		private:
+			string aSystem;
 			unsigned int aspect;
 			unsigned int hSize;
 			unsigned int vSize;
 			unsigned int hRes;
 			unsigned int wRes;
 
-		private:
 #if HAVE_COMPSUPPORT
 			static IComponentManager* cm;
 #endif

@@ -86,20 +86,23 @@ IDirectFB* DFBDeviceScreen::dfb                   = NULL;
 IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 	DFBDeviceScreen::DFBDeviceScreen(
-			int numArgs, char** args,
+			int argc, char** argv,
 			GingaScreenID myId, GingaWindowID parentId) {
 
 		DFBDisplayLayerConfig layer_config;
 		DFBResult ret;
+		int i;
 
-		aspect = DSA_UNKNOWN;
-		hSize  = 0;
-		vSize  = 0;
-		hRes   = 0;
-		wRes   = 0;
-		im     = NULL;
-		id     = myId;
 		numOfDFBScreens++;
+
+		aSystem     = "";
+		aspect      = DSA_UNKNOWN;
+		hSize       = 0;
+		vSize       = 0;
+		hRes        = 0;
+		wRes        = 0;
+		im          = NULL;
+		id          = myId;
 
 		windowPool  = new set<IWindow*>;
 		surfacePool = new set<ISurface*>;
@@ -109,8 +112,29 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		pthread_mutex_init(&surMutex, NULL);
 		pthread_mutex_init(&cmpMutex, NULL);
 
+		for (i = 0; i < argc; i++) {
+			if ((strcmp(argv[i], "audio") == 0) && ((i + 1) < argc)) {
+				aSystem.assign(argv[i + 1]);
+			}
+		}
+
+		if (aSystem == "xine") {
+			aSystem = "DFBAudioProvider";
+
+		} else if (aSystem == "fusionsound") {
+			aSystem = "FusionSoundAudioProvider";
+
+		} else {
+			if (aSystem != "") {
+				cout << "DFBDeviceScreen::DFBDeviceScreen Warning! Not ";
+				cout << "supported audio system: '" << aSystem << "'! Using ";
+				cout << "FusionSound instead." << endl;
+			}
+			aSystem = "FusionSoundAudioProvider";
+		}
+
 		if (DFBDeviceScreen::dfb == NULL) {
-			DFBCHECK(DirectFBInit(&numArgs, &args));
+			DFBCHECK(DirectFBInit(&argc, &argv));
 
 			if (parentId != NULL) {
 				setParentScreen(parentId);
@@ -570,7 +594,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			strSym = "DFBVideoProvider";
 
 		} else {
-			strSym = "DFBAudioProvider";
+			strSym = aSystem;
 		}
 
 		if (isRemote) {
@@ -589,7 +613,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			provider = new DFBVideoProvider(id, mrl);
 
 		} else {
-			provider = new FusionSoundAudioProvider(id, mrl);
+			if (aSystem == "DFBAudioProvider") {
+				provider = new DFBAudioProvider(id, mrl);
+			} else {
+				provider = new FusionSoundAudioProvider(id, mrl);
+			}
 		}
 #endif
 
@@ -1018,11 +1046,11 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createDFBScreen(
-				int numArgs, char** args,
+				int argc, char** argv,
 				GingaScreenID myId, GingaWindowID parentId) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBDeviceScreen(numArgs, args, myId, parentId));
+			DFBDeviceScreen(argc, argv, myId, parentId));
 }
 
 extern "C" void destroyDFBScreen(

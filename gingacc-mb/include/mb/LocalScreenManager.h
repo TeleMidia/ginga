@@ -143,10 +143,11 @@ namespace mb {
 
 		private:
 			GingaScreenID createScreen(
-					string mbSystem,
-					string mbSubSystem,
-					string mbMode,
-					string mbParent);
+					string vSystem,
+					string vSubSystem,
+					string vMode,
+					string vParent,
+					string aSystem);
 
 			void getMBSystemType(string mbSystemName, short* mbSystemType);
 
