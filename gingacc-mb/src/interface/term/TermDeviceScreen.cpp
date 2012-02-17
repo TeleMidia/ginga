@@ -208,10 +208,6 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermDeviceScreen::setInputManager(IInputManager* im) {
-
-	}
-
 	IEventBuffer* TermDeviceScreen::createEventBuffer() {
 		return NULL;
 	}

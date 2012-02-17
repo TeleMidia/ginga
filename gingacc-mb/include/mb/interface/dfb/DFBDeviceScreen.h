@@ -188,7 +188,6 @@ namespace mb {
 			/* interfacing input */
 
 			IInputManager* getInputManager();
-			void setInputManager(IInputManager* im);
 
 			IEventBuffer* createEventBuffer();
 			IInputEvent* createInputEvent(void* event, const int symbol);

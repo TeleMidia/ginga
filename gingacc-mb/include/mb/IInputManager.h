@@ -85,6 +85,8 @@ namespace mb {
 		virtual void setAxisBoundaries(int x, int y, int z)=0;
 		virtual int getCurrentXAxisValue()=0;
 		virtual int getCurrentYAxisValue()=0;
+
+		virtual IEventBuffer* getEventBuffer()=0;
   };
 }
 }

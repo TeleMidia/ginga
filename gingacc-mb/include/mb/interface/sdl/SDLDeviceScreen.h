@@ -97,6 +97,8 @@ typedef struct {
 			static const short STP_CLEAR   = 2;
 			static const short STP_RELEASE = 3;
 
+			static const short SDLDS_FPS   = 30;
+
 			static bool hasRenderer;
 			static map<SDLDeviceScreen*, short> sdlScreens;
 			static pthread_mutex_t sMutex;
@@ -239,9 +241,9 @@ typedef struct {
 			/* interfacing input */
 
 			IInputManager* getInputManager();
-			void setInputManager(IInputManager* im);
 
 			IEventBuffer* createEventBuffer();
+
 			IInputEvent* createInputEvent(void* event, const int symbol);
 			IInputEvent* createApplicationEvent(int type, void* data);
 

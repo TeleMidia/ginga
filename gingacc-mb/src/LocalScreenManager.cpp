@@ -704,10 +704,6 @@ namespace mb {
 
 		if (getScreen(screenId, &screen)) {
 			iManager = screen->getInputManager();
-			if (iManager == NULL) {
-				iManager = new InputManager(screenId);
-				screen->setInputManager(iManager);
-			}
 		}
 
 		return iManager;

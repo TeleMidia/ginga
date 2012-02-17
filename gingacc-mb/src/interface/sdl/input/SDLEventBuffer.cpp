@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/input/SDLEventBuffer.h"
 #include "mb/interface/sdl/input/SDLInputEvent.h"
 
+#include "mb/interface/sdl/SDLDeviceScreen.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -58,6 +60,10 @@ namespace core {
 namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
 		pthread_mutex_init(&ebMutex, NULL);
+
+		isWaiting = false;
+		pthread_cond_init(&cond, NULL);
+		pthread_mutex_init(&condMutex, NULL);
 	}
 
 	SDLEventBuffer::~SDLEventBuffer() {
@@ -67,6 +73,18 @@ namespace mb {
 		eventBuffer.clear();
 		pthread_mutex_unlock(&ebMutex);
 		pthread_mutex_destroy(&ebMutex);
+
+		isWaiting = false;
+		pthread_cond_destroy(&cond);
+		pthread_mutex_destroy(&condMutex);
+	}
+
+	void SDLEventBuffer::feed(SDL_Event event) {
+		pthread_mutex_lock(&ebMutex);
+		eventBuffer.push_back(event);
+		pthread_mutex_unlock(&ebMutex);
+
+		eventArrived();
 	}
 
 	void SDLEventBuffer::wakeUp() {
@@ -96,6 +114,7 @@ namespace mb {
 
 	void SDLEventBuffer::waitEvent() {
 		SDL_Event event;
+		vector<SDL_Event>::iterator i;
 
 		pthread_mutex_lock(&ebMutex);
 		if (!eventBuffer.empty()) {
@@ -104,24 +123,26 @@ namespace mb {
 		}
 		pthread_mutex_unlock(&ebMutex);
 
-		if (SDL_WaitEvent(&event)) {
-			if (event.type == SDL_USEREVENT &&
-					event.user.code == SDLK_APPLICATION &&
-					event.user.data1 != NULL &&
-					event.user.data2 == NULL) {
+		waitForEvent();
 
-				if (strcmp(
-						(char*)event.user.data1,
-						SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
+		pthread_mutex_lock(&ebMutex);
+		i = eventBuffer.begin();
+		event = *i;
+		if (event.type == SDL_USEREVENT &&
+				event.user.code == SDLK_APPLICATION &&
+				event.user.data1 != NULL &&
+				event.user.data2 == NULL) {
 
-					return;
-				}
+			if (strcmp(
+					(char*)event.user.data1,
+					SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
+
+				eventBuffer.erase(i);
+				pthread_mutex_unlock(&ebMutex);
+				return;
 			}
-
-			pthread_mutex_lock(&ebMutex);
-			eventBuffer.push_back(event);
-			pthread_mutex_unlock(&ebMutex);
 		}
+		pthread_mutex_unlock(&ebMutex);
 	}
 
 	IInputEvent* SDLEventBuffer::getNextEvent() {
@@ -144,6 +165,22 @@ namespace mb {
 
 	void* SDLEventBuffer::getContent() {
 		return (void*)&eventBuffer;
+	}
+
+	void SDLEventBuffer::waitForEvent() {
+		isWaiting = true;
+		pthread_mutex_lock(&condMutex);
+		pthread_cond_wait(&cond, &condMutex);
+		isWaiting = false;
+		pthread_mutex_unlock(&condMutex);
+	}
+
+	bool SDLEventBuffer::eventArrived() {
+		if (isWaiting) {
+			pthread_cond_signal(&cond);
+			return true;
+		}
+		return false;
 	}
 }
 }

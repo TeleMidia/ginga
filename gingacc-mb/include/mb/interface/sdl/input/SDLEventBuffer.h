@@ -69,14 +69,25 @@ namespace mb {
 			pthread_mutex_t ebMutex;
 			vector<SDL_Event> eventBuffer;
 
+			bool isWaiting;
+			pthread_cond_t cond;
+			pthread_mutex_t condMutex;
+
 		public:
 			SDLEventBuffer(GingaScreenID screen);
-			~SDLEventBuffer();
+			virtual ~SDLEventBuffer();
+
+			void feed(SDL_Event event);
+
 			void wakeUp();
 			void postInputEvent(IInputEvent* event);
 			void waitEvent();
 			IInputEvent* getNextEvent();
 			void* getContent();
+
+		private:
+			void waitForEvent();
+			bool eventArrived();
 	};
 }
 }
