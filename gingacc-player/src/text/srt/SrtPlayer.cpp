@@ -477,9 +477,11 @@ namespace player {
 				}
 
 				if (notifyContentUpdate) {
-					notifyListeners(
+					notifyPlayerListeners(
 							PL_NOTIFY_UPDATECONTENT,
-							"", TYPE_PASSIVEDEVICE);
+							"",
+							TYPE_PASSIVEDEVICE,
+							"");
 				}
 
 				mediaTime = (float)(player->getMediaTime());
@@ -499,9 +501,11 @@ namespace player {
 				unlock();
 
 				if (notifyContentUpdate) {
-					notifyListeners(
+					notifyPlayerListeners(
 							PL_NOTIFY_UPDATECONTENT,
-							"", TYPE_PASSIVEDEVICE);
+							"",
+							TYPE_PASSIVEDEVICE,
+							"");
 				}
 
 				this->currentLine = 0;
@@ -520,7 +524,11 @@ namespace player {
 		if (isPlayingSrt()) { //natural end
 			clog << "SrtPlayer::run natural end" << endl;
 			isPlaying = false;
-			notifyListeners(PL_NOTIFY_STOP, "");
+			notifyPlayerListeners(
+					PL_NOTIFY_STOP,
+					"",
+					IPlayer::TYPE_PRESENTATION,
+					"");
 
 		} else {
 			clog << "SrtPlayer::run stoped" << endl;

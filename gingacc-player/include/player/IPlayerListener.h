@@ -63,7 +63,7 @@ namespace player {
 		public:
 			virtual ~IPlayerListener(){};
 			virtual void updateStatus(
-					short code, string parameter, short type)=0;
+					short code, string parameter, short type, string value)=0;
 	};
 }
 }

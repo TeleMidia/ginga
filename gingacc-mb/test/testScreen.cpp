@@ -158,6 +158,27 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	cout << vid->getTotalMediaTime() << "' as its total media time." << endl;
 
 	vid->playOver(vidSur, true, NULL);
+
+	/*
+	 * One last test.
+	 * Lets do this in a more ambitious way, deleting some stuffs right away.
+	 */
+	ISurface* iSurLT       = NULL;
+	IWindow* iWinLT        = NULL;
+	IImageProvider* iImgLT = NULL;
+
+	iImgLT = dm->createImageProvider(screen, "1.png");
+	iWinLT = dm->createWindow(screen, x2 + x3, y2 + y3, w3, h3);
+
+	iWinLT->draw();
+	iWinLT->show();
+
+	iSurLT = dm->createSurfaceFrom(screen, NULL);
+	iImgLT->playOver(iSurLT);
+	iWinLT->renderFrom(iSurLT);
+
+	delete iSurLT;
+	iSurLT = NULL;
 }
 
 int main(int argc, char** argv) {

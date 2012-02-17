@@ -68,6 +68,8 @@ namespace mb {
 			static bool initialized;
 			static short imageRefs;
 
+			pthread_mutex_t pMutex;
+
 			bool isWaiting;
 			pthread_mutex_t cMutex;
 			pthread_cond_t cond;
@@ -85,7 +87,7 @@ namespace mb {
 			void* getContent();
 
 			void playOver(ISurface* surface);
-			void ntsPlayOver(ISurface* surface);
+			void ntsPlayOver();
 
 			bool releaseAll();
 

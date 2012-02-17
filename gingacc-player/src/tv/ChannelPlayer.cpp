@@ -204,9 +204,9 @@ namespace player {
 	}
 
 	void ChannelPlayer::updateStatus(
-			short code, string parameter, short type) {
+			short code, string parameter, short type, string value) {
 
-		notifyListeners(code, parameter, type);
+		notifyPlayerListeners(code, parameter, type, value);
 	}
 
 	void ChannelPlayer::setPropertyValue(string name, string value) {

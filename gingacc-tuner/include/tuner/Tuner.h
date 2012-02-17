@@ -115,7 +115,7 @@ namespace tuning {
 			void removeListener(ITunerListener* listener);
 
 		private:
-			void notifyListeners(char* buff, unsigned int val);
+			void notifyTunerListeners(char* buff, unsigned int val);
 			void updateListenersStatus(short newStatus, IChannel* channel);
 			virtual void run();
 	};

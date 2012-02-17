@@ -152,8 +152,8 @@ namespace mb {
 	        return true;
 
 	    } else {
-        	cout << "SDLAudioProvider::prepare Can't play since there is no ";
-            cout << "selected audio stream" << endl;
+        	clog << "SDLAudioProvider::prepare Can't play since there is no ";
+            clog << "selected audio stream" << endl;
 	    }
 
 	    return false;

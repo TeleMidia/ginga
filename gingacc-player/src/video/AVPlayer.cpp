@@ -1037,7 +1037,7 @@ namespace player {
 			//setOutputMode(FMPV_VIDEOOUT_VGA);
 			MPEGDriverUnload();
 
-			notifyListeners(PlayerListener::PL_NOTIFY_STOP);
+			notifyPlayerListeners(PlayerListener::PL_NOTIFY_STOP);
 
 		} catch (...) {
 			clog << "Warning! AVPlayer::run" << endl;
@@ -1563,7 +1563,7 @@ namespace player {
 			if (status != STOP && status != PAUSE) {
 				status  = STOP;
 				running = false;
-				notifyListeners(PL_NOTIFY_STOP, "");
+				notifyPlayerListeners(PL_NOTIFY_STOP, "");
 			}
 
 			return;
@@ -1630,9 +1630,11 @@ namespace player {
 					timeRemain = (dur - currentTime) * 1000;
 					if (notifyContentUpdate) {
 						if (timeRemain > 250) {
-							notifyListeners(
+							notifyPlayerListeners(
 									PL_NOTIFY_UPDATECONTENT,
-									"", TYPE_PASSIVEDEVICE);
+									"",
+									TYPE_PASSIVEDEVICE,
+									"");
 						}
 
 						if (!this->usleep(65)) { // 15 fps
@@ -1670,7 +1672,7 @@ namespace player {
 
 			clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
 			unlock();
-			notifyListeners(PL_NOTIFY_STOP, "");
+			notifyPlayerListeners(PL_NOTIFY_STOP, "");
 
 		} else {
 			status = STOP;

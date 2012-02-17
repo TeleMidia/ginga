@@ -85,7 +85,7 @@ namespace um {
 			void abort();
 
 		private:
-			void notifyListeners();
+			void notifyUMListeners();
 	};
 }
 }

@@ -72,6 +72,8 @@ namespace mb {
 		pthread_mutex_init(&cMutex, NULL);
 		pthread_cond_init(&cond, NULL);
 
+		pthread_mutex_init(&pMutex, NULL);
+
 		imageRefs++;
 
 		imgUri   = "";
@@ -83,11 +85,16 @@ namespace mb {
 
 	SDLImageProvider::~SDLImageProvider() {
 		imageRefs--;
+
+		pthread_mutex_lock(&pMutex);
 		content = NULL;
+		pthread_mutex_unlock(&pMutex);
 
 		isWaiting = false;
 		pthread_mutex_destroy(&cMutex);
 		pthread_cond_destroy(&cond);
+
+		pthread_mutex_destroy(&pMutex);
 
 		if (imageRefs == 0) {
 			IMG_Quit();
@@ -100,32 +107,42 @@ namespace mb {
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
+		pthread_mutex_lock(&pMutex);
 		content = surface;
 
-		if (surface->getContent() == NULL) {
-			waitNTSRenderer();
-		}
+		waitNTSRenderer();
+
+		pthread_mutex_unlock(&pMutex);
 	}
 
-	void SDLImageProvider::ntsPlayOver(ISurface* surface) {
+	void SDLImageProvider::ntsPlayOver() {
 		SDL_Surface* renderedSurface;
-		IWindow* parent;
+		SDLWindow* parent;
 
 		if (!initialized) {
 			initialized = true;
 			if (IMG_Init(0) < 0) {
-				cout << "SDLFontProvider::SDLFontProvider ";
-				cout << "Couldn't initialize TTF: " << SDL_GetError();
-				cout << endl;
+				clog << "SDLFontProvider::SDLFontProvider ";
+				clog << "Couldn't initialize TTF: " << SDL_GetError();
+				clog << endl;
 			}
 		}
 
-		renderedSurface = IMG_Load(imgUri.c_str());
-		surface->setContent((void*)renderedSurface);
+		if (content != NULL && LocalScreenManager::getInstance()->hasSurface(
+				myScreen, content)) {
 
-		parent = (IWindow*)(surface->getParent());
-		if (parent != NULL) {
-			parent->renderFrom(surface);
+			renderedSurface = IMG_Load(imgUri.c_str());
+			content->setContent((void*)renderedSurface);
+
+			parent = (SDLWindow*)(content->getParent());
+			if (parent != NULL) {
+//				parent->renderFrom(content);
+				parent->setRenderedSurface(renderedSurface);
+			}
+
+		} else {
+			clog << "SDLImageProvider::ntsPlayOver Warning! NULL content";
+			clog << endl;
 		}
 
 		ntsRenderer();

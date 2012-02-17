@@ -303,8 +303,8 @@ static int l_post (lua_State* L)
                 			GETPLAYER(L));
                 }
 
-				GETPLAYER(L)->notifyListeners(lua_tointeger(L, -2),
-                                              luaL_checkstring(L, -1));
+				GETPLAYER(L)->notifyPlayerListeners(
+						lua_tointeger(L, -2), luaL_checkstring(L, -1));
 			}
 			// ATTRIBUTION event
 			else if ( !strcmp(type, "attribution") )
@@ -322,9 +322,11 @@ static int l_post (lua_State* L)
 				GETPLAYER(L)->unprotectedSetPropertyValue(
 						luaL_checkstring(L,-2), luaL_optstring(L,-1,""));
 
-				GETPLAYER(L)->notifyListeners(lua_tointeger(L, -3),
-                                              luaL_checkstring(L, -2),
-                                              Player::TYPE_ATTRIBUTION);
+				GETPLAYER(L)->notifyPlayerListeners(
+						lua_tointeger(L, -3),
+						luaL_checkstring(L, -2),
+						Player::TYPE_ATTRIBUTION,
+						luaL_optstring(L,-1,""));
 			}
 
 	    // edit
@@ -333,7 +335,8 @@ static int l_post (lua_State* L)
 
 			// [ dst | evt | class | type | command ]
 			strCmd = cmd_to_str(L);
-			GETPLAYER(L)->notifyListeners(Player::PL_NOTIFY_NCLEDIT, strCmd);
+			GETPLAYER(L)->notifyPlayerListeners(
+					Player::PL_NOTIFY_NCLEDIT, strCmd);
 
 		// SI event
 		} else if ( !strcmp(clazz, "si") ){

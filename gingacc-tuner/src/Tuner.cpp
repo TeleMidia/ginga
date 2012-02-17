@@ -229,7 +229,7 @@ namespace tuning {
 					write(debugStream, buff, rval);
 				}*/
 
-				notifyListeners(buff, (unsigned int)rval);
+				notifyTunerListeners(buff, (unsigned int)rval);
 
 			} else if (rval < 0) {
 				//cerr << "Tuner::receive minus rval" << endl;
@@ -338,7 +338,7 @@ namespace tuning {
 		}
 	}
 
-	void Tuner::notifyListeners(char* buff, unsigned int val) {
+	void Tuner::notifyTunerListeners(char* buff, unsigned int val) {
 		ITunerListener* listener;
 		set<ITunerListener*>::iterator i;
 
@@ -357,7 +357,7 @@ namespace tuning {
 		for (i = listeners->begin(); i != listeners->end(); ++i) {
 			listener = *i;
 			if (listener != NULL) {
-				listener->updateStatus(newStatus, channel);
+				listener->updateChannelStatus(newStatus, channel);
 			}
 		}
 	}

@@ -176,10 +176,13 @@ namespace mb {
 		if (i != sdlScreens.end()) {
 			sdlScreens.erase(i);
 		}
-		pthread_mutex_unlock(&sMutex);
 
 		if (sdlScreens.empty()) {
 			hasRenderer = false;
+		}
+		pthread_mutex_unlock(&sMutex);
+
+		if (!hasRenderer) {
 			pthread_mutex_destroy(&sMutex);
 			pthread_mutex_destroy(&rlMutex);
 		}
@@ -735,8 +738,6 @@ namespace mb {
 		clog << "SDLDeviceScreen::checkTasks creating surface with w = '";
 		clog << s->uSurW << "' and h = '" << s->uSurH << endl;
 
-		std::flush(cout);
-
 		s->uSur = SDL_CreateRGBSurface(0, s->uSurW, s->uSurH, 24, 0, 0, 0, 0);
 
 		//s->uSur = SDL_CreateRGBSurface(
@@ -808,10 +809,7 @@ namespace mb {
 		i = s->dmpPool->begin();
 		while (i != s->dmpPool->end()) {
 			dmp = (*i);
-			surface = (ISurface*)(dmp->getContent());
-			if (surface != NULL) {
-				dmp->ntsPlayOver(surface);
-			}
+			dmp->ntsPlayOver();
 			++i;
 		}
 		pthread_mutex_unlock(&s->dmpMutex);
@@ -856,6 +854,9 @@ namespace mb {
 					}
 					uTex = NULL;
 				}
+
+				win->rendered();
+
 				++i;
 			}
 			SDL_RenderPresent(s->renderer);

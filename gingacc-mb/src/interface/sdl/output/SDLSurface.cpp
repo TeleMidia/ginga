@@ -95,6 +95,8 @@ namespace mb {
 		}
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
+
+		clog << "SDLSurface::~SDLSurface all done" << endl;
 	}
 
 	void SDLSurface::releaseChromaColor() {

@@ -155,7 +155,7 @@ namespace um {
 
 	}
 
-	void Update::notifyListeners() {
+	void Update::notifyUMListeners() {
 		set<IUpdateListener*>::iterator i;
 
 		if (listeners == NULL || listeners->empty()) {

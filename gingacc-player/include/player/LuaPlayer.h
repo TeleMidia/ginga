@@ -59,7 +59,7 @@ http://www.telemidia.puc-rio.br
  *   resume().
  *   Propriedades são alteradas pelo método: setProperty().
  *   O NCLua também pode notificar mudanças em suas áreas e propriedades
- *   através do método notifyListeners().
+ *   através do método notifyPlayerListeners().
  * - Controle Remoto:
  *   Eventos de controle remoto chegam através do método userEventReceived().
  *

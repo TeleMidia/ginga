@@ -104,7 +104,7 @@ class PlayerSpawnedProcess : public SpawnedProcess, public IPlayerListener {
 	}
 
 	void updateStatus(
-			short code, string parameter, short type) {
+			short code, string parameter, short type, string value) {
 
 		string param = parameter;
 

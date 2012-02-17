@@ -172,12 +172,12 @@ namespace mb {
 	bool SDLVideoProvider::prepare(ISurface* surface) {
 		if (SDLAudioProvider::prepare(surface)) {
 			if (SDL_ffmpegValidVideo(file) && videoFrame != NULL) {
-				cout << "SDLVideoProvider::prepare OK" << endl;
+				clog << "SDLVideoProvider::prepare OK" << endl;
 				return true;
 			}
 		}
 
-		cout << "SDLVideoProvider::prepare FALSE" << endl;
+		clog << "SDLVideoProvider::prepare FALSE" << endl;
 		return false;
 	}
 
@@ -200,13 +200,13 @@ namespace mb {
 
 					win->setTexture(videoFrame->texture);
 					if (videoFrame->texture != NULL) {
-						cout << "SDLVideoProvider::playOver OK!";
-						cout << endl;
+						clog << "SDLVideoProvider::playOver OK!";
+						clog << endl;
 					}
 
 				} else {
-					cout << "SDLVideoProvider::playOver Warning! NULL win";
-					cout << endl;
+					clog << "SDLVideoProvider::playOver Warning! NULL win";
+					clog << endl;
 				}
 			}
 			SDL_PauseAudio(0);

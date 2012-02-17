@@ -99,6 +99,11 @@ namespace mb {
 		    pthread_mutex_t mutex;
 		    pthread_mutex_t mutexC;
 
+		    bool isWaiting;
+		    pthread_mutex_t rMutex;
+		    pthread_mutex_t cMutex;
+		    pthread_cond_t cond;
+
 		public:
 			SDLWindow(
 					GingaWindowID underlyingWindowID,
@@ -168,6 +173,7 @@ namespace mb {
 			void setFit(bool fitTo);
 			bool getFit();
 			void clearContent();
+			void setRenderedSurface(SDL_Surface* uSur);
 			void* getContent();
 			void setTexture(SDL_Texture* texture);
 			SDL_Texture* getTexture();
@@ -186,13 +192,17 @@ namespace mb {
 			void blit(IWindow* src);
 			void stretchBlit(IWindow* src);
 			string getDumpFileUri(int quality, int dumpW, int dumpH);
+
 			void lock();
 			void unlock();
+
 			void lockChilds();
 			void unlockChilds();
 
+			bool rendered();
+
 		private:
-			void refresh(bool checkVisibility);
+			void waitRenderer();
 	};
 }
 }
