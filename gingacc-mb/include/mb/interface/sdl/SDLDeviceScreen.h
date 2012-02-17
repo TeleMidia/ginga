@@ -92,8 +92,13 @@ typedef struct {
 			static const unsigned int DSA_16x9;
 
 		private:
+			static const short STP_NONE    = 0;
+			static const short STP_INIT    = 1;
+			static const short STP_CLEAR   = 2;
+			static const short STP_RELEASE = 3;
+
 			static bool hasRenderer;
-			static map<SDLDeviceScreen*, bool> sdlScreens;
+			static map<SDLDeviceScreen*, short> sdlScreens;
 			static pthread_mutex_t sMutex;
 
 			string aSystem;
@@ -217,13 +222,15 @@ typedef struct {
 					IMediaProvider* iDec);
 
 		private:
-			static bool checkTasks(SDLDeviceScreen* screen);
 			static void refreshRC(SDLDeviceScreen* screen);
 			static void refreshCMP(SDLDeviceScreen* screen);
 			static void refreshDMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
 			static void* rendererT(void* ptr);
 			static void initScreen(SDLDeviceScreen* screen);
+			static void clearScreen(SDLDeviceScreen* screen);
+			static void releaseScreen(SDLDeviceScreen* screen);
+			static bool initSurface(SDLDeviceScreen* screen);
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
 

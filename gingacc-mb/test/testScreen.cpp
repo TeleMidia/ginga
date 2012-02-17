@@ -69,12 +69,17 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 extern "C" {
 #include "string.h"
+#include "pthread.h"
 }
 
 #include <iostream>
 using namespace std;
 
-void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
+void testScreen(
+		ILocalScreenManager* dm,
+		GingaScreenID screen,
+		set<IWindow*>* windows) {
+
 	IImageProvider* img;
 	IFontProvider* ttf;
 	IContinuousMediaProvider* vid;
@@ -166,8 +171,10 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	vid->playOver(vidSur, true, NULL);
 
 	/*
-	 * One last test.
+	 * Two more tests: createSurfaceFrom and createRenderedSurfaceFromImageFile
 	 */
+
+	/* create surface from */
 	ISurface* iSurLT       = NULL;
 	IWindow* iWinLT        = NULL;
 	IImageProvider* iImgLT = NULL;
@@ -184,9 +191,68 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	delete iSurLT;
 	iSurLT = NULL;
+
+	/* createRenderedSurfaceFromImageFile */
+	ISurface* s2;
+	IWindow* bg;
+
+	bg = dm->createWindow(screen, x1 + x2 + x3, y1 + y2 + y3, w3, h3);
+
+	s2 = dm->createRenderedSurfaceFromImageFile(
+		screen, (char*)("/usr/local/etc/ginga/files/img/roller/loading.png"));
+
+	bg->setCaps(bg->getCap("ALPHACHANNEL"));
+	bg->draw();
+	bg->show();
+	bg->raiseToTop();
+
+	bg->renderFrom(s2);
+
+	delete s2;
+	s2 = NULL;
+
+
+	/* Inserting all windows in windows set */
+	windows->insert(win1);
+	windows->insert(win2);
+	windows->insert(win3);
+	windows->insert(iWinLT);
+}
+
+bool running = false;
+
+void* blinkWindowSet(void* ptr) {
+	set<IWindow*>* windows;
+	set<IWindow*>::iterator i;
+	bool showing = false;
+
+	windows = (set<IWindow*>*)ptr;
+
+	while (running) {
+		i = windows->begin();
+		while (i != windows->end()) {
+			if (showing) {
+				(*i)->hide();
+			} else {
+				(*i)->show();
+			}
+			++i;
+		}
+		::usleep(100000);
+		showing = !showing;
+	}
+
+	i = windows->begin();
+	while (i != windows->end()) {
+		(*i)->show();
+		++i;
+	}
+
+	return NULL;
 }
 
 int main(int argc, char** argv) {
+	set<IWindow*> windows;
 	GingaScreenID screen1, screen2;
 	int fakeArgc = 5;
 	char* dfbArgv[5];
@@ -208,7 +274,19 @@ int main(int argc, char** argv) {
 	cout << "gingacc-mb test has created the screen manager. ";
 	cout << endl;
 
-	if (argc == 1) {
+	int i;
+	bool testAllScreens = false;
+	bool blinkWindows = false;
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--all") == 0)) {
+			testAllScreens = true;
+
+		} else if ((strcmp(argv[i], "--blink") == 0)) {
+			blinkWindows   = true;
+		}
+	}
+
+	if (testAllScreens) {
 		dfbArgv[0] = (char*)"testScreen";
 		dfbArgv[1] = (char*)"--vsystem";
 		dfbArgv[2] = (char*)"dfb";
@@ -224,15 +302,29 @@ int main(int argc, char** argv) {
 		sdlArgv[4] = (char*)"400x300";
 		screen2 = dm->createScreen(fakeArgc, sdlArgv);
 
-		testScreen(dm, screen1);
-		testScreen(dm, screen2);
+		testScreen(dm, screen1, &windows);
+		testScreen(dm, screen2, &windows);
 
 	} else {
 		screen1 = dm->createScreen(argc, argv);
 		cout << "gingacc-mb test has created screen '" << screen1;
 		cout << "'. calling providers";
 		cout << endl;
-		testScreen(dm, screen1);
+		testScreen(dm, screen1, &windows);
+	}
+
+	if (blinkWindows) {
+		pthread_t tid;
+
+		running = true;
+
+		pthread_create(&tid, 0, blinkWindowSet, &windows);
+
+		cout << "gingacc-mb test is blinking windows. ";
+		cout << "press enter to stop it";
+		cout << endl;
+		getchar();
+		running = false;
 	}
 
 	cout << "gingacc-mb test has shown providers. ";
@@ -240,7 +332,7 @@ int main(int argc, char** argv) {
 	cout << endl;
 	getchar();
 
-	if (argc == 1) {
+	if (testAllScreens) {
 		dm->clearWidgetPools(screen1);
 		dm->releaseScreen(screen1);
 		dm->releaseMB(screen1);

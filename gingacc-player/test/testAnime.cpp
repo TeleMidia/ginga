@@ -55,14 +55,19 @@ using namespace ::br::pucrio::telemidia::util;
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "player/IPlayer.h"
+#include "player/AnimePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "player/PlayersComponentSupport.h"
 
 extern "C" {
 #include <stdio.h>
+#include <pthread.h>
 }
+
+AnimePlayer* a1;
+AnimePlayer* a2;
+AnimePlayer* a3;
 
 void testPlayer(
 		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
@@ -72,10 +77,6 @@ void testPlayer(
 	IWindow* www;
 
 	ISurface* s;
-
-	IPlayer* img1;
-	IPlayer* img2;
-	IPlayer* img3;
 
 	w   = dm->createWindow(screen, 10, 10, 100, 100);
 	ww  = dm->createWindow(screen, 90, 90, 150, 150);
@@ -100,34 +101,37 @@ void testPlayer(
 	windows->insert(ww);
 	windows->insert(www);
 
-#if HAVE_COMPSUPPORT
-	img1 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
+	vector<string>* mrls, *mrlsAux;
 
-	img2 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
+	mrls = new vector<string>;
 
-	img3 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
-#endif
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b1.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b2.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b3.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b4.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b5.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b6.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b7.png");
+	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b8.png");
 
-	img1->setOutWindow(w->getId());
-	s = img1->getSurface();
-	if (s != NULL && s->setParent((void*)w)) {
-		w->renderFrom(s);
-	}
+	mrlsAux = new vector<string>(*mrls);
+	a1 = new AnimePlayer(screen, mrlsAux);
+	a1->setVoutWindow(w);
 
-	img2->setOutWindow(ww->getId());
-	s = img2->getSurface();
-	if (s != NULL && s->setParent((void*)ww)) {
-		ww->renderFrom(s);
-	}
+	mrlsAux = new vector<string>(*mrls);
+	a2 = new AnimePlayer(screen, mrlsAux);
+	a2->setVoutWindow(ww);
 
-	img3->setOutWindow(www->getId());
-	s = img3->getSurface();
-	if (s != NULL && s->setParent((void*)www)) {
-		www->renderFrom(s);
-	}
+	mrlsAux = new vector<string>(*mrls);
+	a3 = new AnimePlayer(screen, mrlsAux);
+	a3->setVoutWindow(www);
+
+	delete mrls;
+	mrls = NULL;
+
+	a1->play();
+	a2->play();
+	a3->play();
 }
 
 bool running = false;
@@ -214,6 +218,7 @@ int main(int argc, char** argv, char** envp) {
 		testPlayer(dm, screen2, &windows);
 
 	} else {
+		cout << "gingacc-playet testImage" << endl;
 		screen1 = dm->createScreen(argc, argv);
 		testPlayer(dm, screen1, &windows);
 	}
@@ -232,10 +237,18 @@ int main(int argc, char** argv, char** envp) {
 		running = false;
 	}
 
-	cout << "gingacc-player test has shown ImagePlayers. ";
-	cout << "press enter to automatic release";
+	cout << "gingacc-player test has shown AnimePlayers. ";
+	cout << "press enter to stop AnimePlayers and to an automatic release";
 	cout << endl;
 	getchar();
+
+	a1->stop();
+	a2->stop();
+	a3->stop();
+
+	delete a1;
+	delete a2;
+	delete a3;
 
 	if (testAllScreens) {
 		dm->clearWidgetPools(screen1);

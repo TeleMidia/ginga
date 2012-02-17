@@ -1,52 +1,147 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/include \
-    $(COMPONENTS_INCS) -I/usr/include/Awesomium/
+INCLUDES              = \
+                        $(all_includes) \
+                        -I$(top_srcdir) \
+                        -I$(top_srcdir)/include \
+                        $(COMPONENTS_INCS) \
+                        -I/usr/include/Awesomium/
 
 LIBS =
 
-noinst_PROGRAMS = testAudio testAwesomium testImage testLinks testText testVideo
+noinst_PROGRAMS       = \
+                        testAnime \
+                        testAudio \
+                        testAwesomium \
+                        testImage \
+                        testLinks \
+                        testText \
+                        testVideo
+
+#testAnime
+testAnime_SOURCES     = \
+                        testAnime.cpp
+
+testAnime_CFLAGS      = \
+                        $(top_srcdir)/include
+
+testAnime_LDADD       = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccplaani \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/ \
+                        -L../src/image
 
 #testAudio
-testAudio_SOURCES = testAudio.cpp
-testAudio_CFLAGS  = $(top_srcdir)/include
-testAudio_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testAudio_SOURCES     = \
+                        testAudio.cpp
+                        
+testAudio_CFLAGS      = \
+                        $(top_srcdir)/include
+                        
+testAudio_LDADD       = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 #testAwesomium
-testAwesomium_SOURCES = testAwesomium.cpp
-testAwesomium_CFLAGS  = $(top_srcdir)/include
-testAwesomium_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testAwesomium_SOURCES = \
+                        testAwesomium.cpp
+                        
+testAwesomium_CFLAGS  = \
+                        $(top_srcdir)/include
+                        
+testAwesomium_LDADD   = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ \
+                        -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 #testImage
-testImage_SOURCES = testImage.cpp
-testImage_CFLAGS  = $(top_srcdir)/include
-testImage_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testImage_SOURCES     = \
+                        testImage.cpp
+                        
+testImage_CFLAGS      = \
+                        $(top_srcdir)/include
+                        
+testImage_LDADD       = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ \
+                        -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 #testLinks
-testLinks_SOURCES = testLinks.cpp
-testLinks_CFLAGS  = $(top_srcdir)/include
-testLinks_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testLinks_SOURCES     = \
+                        testLinks.cpp
+
+testLinks_CFLAGS      = \
+                        $(top_srcdir)/include
+
+testLinks_LDADD       = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ \
+                        -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 #testText
-testText_SOURCES = testText.cpp
-testText_CFLAGS  = $(top_srcdir)/include
-testText_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testText_SOURCES      = \
+                        testText.cpp
+
+testText_CFLAGS       = \
+                        $(top_srcdir)/include
+
+testText_LDADD        = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ \
+                        -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 #testVideo
-testVideo_SOURCES = testVideo.cpp
-testVideo_CFLAGS  = $(top_srcdir)/include
-testVideo_LDADD   = -ldl -ltelemidiautil \
-    -lgingaccplayer -lgingaccmb -lgingaccsystem \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ -L../src/
+testVideo_SOURCES     = \
+                        testVideo.cpp
+
+testVideo_CFLAGS      = \
+                        $(top_srcdir)/include
+
+testVideo_LDADD       = \
+                        -ldl \
+                        -ltelemidiautil \
+                        -lgingaccplayer \
+                        -lgingaccmb \
+                        -lgingaccsystem \
+                        -L/lib/ \
+                        -L/usr/lib/ \
+                        -L/usr/local/lib/ \
+                        -L../src/
 
 MAINTAINERCLEANFILES = Makefile.in
