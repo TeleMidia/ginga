@@ -242,7 +242,9 @@ namespace player {
 		pthread_mutex_unlock(&lockedListM);
 	}
 
-	void Player::notifyListeners(short code, string parameter, short type) {
+	void Player::notifyPlayerListeners(
+			short code, string parameter, short type, string value) {
+
 		set<IPlayerListener*>::iterator i, j;
 
 		notifying = true;
@@ -264,7 +266,7 @@ namespace player {
 			i = listeners->begin();
 			while (i != listeners->end()) {
 				if ((*i) != NULL) {
-					(*i)->updateStatus(code, parameter, type);
+					(*i)->updateStatus(code, parameter, type, value);
 				}
 				++i;
 			}
@@ -277,7 +279,7 @@ namespace player {
 			i = listeners->begin();
 			while (i != listeners->end()) {
 				if ((*i) != NULL) {
-					(*i)->updateStatus(code, parameter, type);
+					(*i)->updateStatus(code, parameter, type, value);
 				}
 				++i;
 			}
@@ -551,7 +553,7 @@ namespace player {
 	void Player::forceNaturalEnd(bool forceIt) {
 		forcedNaturalEnd = forceIt;
 		if (forceIt) {
-			notifyListeners(PL_NOTIFY_STOP);
+			notifyPlayerListeners(PL_NOTIFY_STOP);
 		}
 	}
 

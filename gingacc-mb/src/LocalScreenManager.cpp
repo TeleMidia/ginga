@@ -149,8 +149,8 @@ namespace mb {
 
 		if (getScreen(screenId, &screen)) {
 			screen->setParentScreen(parentId);
-			cout << "LocalScreenManager::setParentDevice(" << this << ")";
-			cout << " parent device ID = '" << parentId << "'" << endl;
+			clog << "LocalScreenManager::setParentDevice(" << this << ")";
+			clog << " parent device ID = '" << parentId << "'" << endl;
 		}
 	}
 
@@ -255,8 +255,8 @@ namespace mb {
 				mbParent.assign(args[i + 1]);
 			}
 
-			/*cout << "LocalScreenManager::createScreen PARSER argv[";
-			cout << i << "] = '" << args[i] << "'" << endl;*/
+			/*clog << "LocalScreenManager::createScreen PARSER argv[";
+			clog << i << "] = '" << args[i] << "'" << endl;*/
 		}
 
 		return createScreen(mbSystem, mbSubSystem, mbMode, mbParent);

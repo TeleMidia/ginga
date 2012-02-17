@@ -148,7 +148,7 @@ namespace tsparser {
 
 		private:
 			void receiveData(char* buff, unsigned int size);
-			void updateStatus(short newStatus, IChannel* channel);
+			void updateChannelStatus(short newStatus, IChannel* channel);
 
 		public:
 			static void addPat(Pat* pat);

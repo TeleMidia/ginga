@@ -380,8 +380,8 @@ namespace player {
 /*
 		if (notifyContentUpdate) {
 			while (status == PLAY || status == PAUSE) {
-				notifyListeners(
-						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE);
+				notifyPlayerListeners(
+						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
 
 				this->usleep(65);
 			}

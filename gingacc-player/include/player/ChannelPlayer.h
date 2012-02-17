@@ -99,7 +99,8 @@ namespace player {
 		void updateStatus(
 				short code,
 				string parameter="",
-				short type=TYPE_PRESENTATION);
+				short type=TYPE_PRESENTATION,
+				string value="");
 
 		virtual void timeShift(string direction){};
    };

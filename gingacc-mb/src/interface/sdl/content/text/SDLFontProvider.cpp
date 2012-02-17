@@ -49,6 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/sdl/content/text/SDLFontProvider.h"
+#include "mb/interface/sdl/output/SDLWindow.h"
 
 namespace br {
 namespace pucrio {
@@ -76,6 +77,12 @@ namespace mb {
 	SDLFontProvider::SDLFontProvider(
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
+		isWaiting = false;
+		pthread_mutex_init(&cMutex, NULL);
+		pthread_cond_init(&cond, NULL);
+
+		pthread_mutex_init(&pMutex, NULL);
+
 		fontRefs++;
 
 		this->fontUri   = "";
@@ -94,6 +101,12 @@ namespace mb {
 		fontRefs--;
 
 		content = NULL;
+
+		isWaiting = false;
+		pthread_mutex_destroy(&cMutex);
+		pthread_cond_destroy(&cond);
+
+		pthread_mutex_destroy(&pMutex);
 
 		if (font != NULL) {
 			TTF_CloseFont(font);
@@ -122,20 +135,27 @@ namespace mb {
 	void SDLFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
+		pthread_mutex_lock(&pMutex);
 		plainText   = text;
 		coordX      = x;
 		coordY      = y;
 		this->align = align;
 
 		playOver(surface);
+
+		pthread_mutex_unlock(&pMutex);
 	}
 
 	void SDLFontProvider::playOver(ISurface* surface) {
 		this->content = surface;
+
+		if (surface->getContent() == NULL) {
+			waitNTSRenderer();
+		}
 	}
 
-	void SDLFontProvider::ntsPlayOver(ISurface* surface) {
-		IWindow* parent;
+	void SDLFontProvider::ntsPlayOver() {
+		SDLWindow* parent;
 		SDL_Surface* renderedSurface;
 		IColor* fontColor = NULL;
 		SDL_Color sdlColor;
@@ -143,40 +163,47 @@ namespace mb {
 		if (!initialized) {
 			initialized = true;
 			if (TTF_Init() < 0) {
-				cout << "SDLFontProvider::SDLFontProvider ";
-				cout << "Couldn't initialize TTF: " << SDL_GetError();
-				cout << endl;
+				clog << "SDLFontProvider::SDLFontProvider ";
+				clog << "Couldn't initialize TTF: " << SDL_GetError();
+				clog << endl;
 			}
 		}
 
-		fontColor = surface->getColor();
+		if (content != NULL && LocalScreenManager::getInstance()->hasSurface(
+				myScreen, content)) {
 
-		if (fontColor != NULL) {
-			sdlColor.r = fontColor->getR();
-			sdlColor.g = fontColor->getG();
-			sdlColor.b = fontColor->getB();
+			fontColor = content->getColor();
 
-		} else {
-			sdlColor.r = 0x00;
-			sdlColor.g = 0x00;
-			sdlColor.b = 0x00;
+			if (fontColor != NULL) {
+				sdlColor.r = fontColor->getR();
+				sdlColor.g = fontColor->getG();
+				sdlColor.b = fontColor->getB();
+
+			} else {
+				sdlColor.r = 0x00;
+				sdlColor.g = 0x00;
+				sdlColor.b = 0x00;
+			}
+
+			if (font == NULL) {
+				font = TTF_OpenFont(fontUri.c_str(), height);
+			}
+
+			renderedSurface = TTF_RenderText_Solid(
+					font,
+					plainText.c_str(),
+					sdlColor);
+
+			content->setContent((void*)renderedSurface);
+
+			parent = (SDLWindow*)(content->getParent());
+			if (parent != NULL) {
+	//			parent->renderFrom(content);
+				parent->setRenderedSurface(renderedSurface);
+			}
 		}
 
-		if (font == NULL) {
-			font = TTF_OpenFont(fontUri.c_str(), height);
-		}
-
-		renderedSurface = TTF_RenderText_Solid(
-				font,
-				plainText.c_str(),
-				sdlColor);
-
-		surface->setContent((void*)renderedSurface);
-
-		parent = (IWindow*)(surface->getParent());
-		if (parent != NULL) {
-			parent->renderFrom(surface);
-		}
+		ntsRenderer();
 	}
 
 	void SDLFontProvider::waitNTSRenderer() {

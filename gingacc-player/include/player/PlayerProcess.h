@@ -97,8 +97,8 @@ namespace player {
 			void setNotifyContentUpdate(bool notify);
 			void addListener(IPlayerListener* listener);
 			void removeListener(IPlayerListener* listener);
-			void notifyListeners(
-					short code, string paremeter, short type);
+			void notifyPlayerListeners(
+					short code, string paremeter, short type, string value);
 
 			int64_t getVPts();
 			double getMediaTime();

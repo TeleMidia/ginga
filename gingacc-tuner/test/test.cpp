@@ -80,7 +80,7 @@ class TestTunerListener : public ITunerListener {
 			}
 		}
 
-		void updateStatus(short newStatus, IChannel* channel) {
+		void updateChannelStatus(short newStatus, IChannel* channel) {
 
 		}
 };

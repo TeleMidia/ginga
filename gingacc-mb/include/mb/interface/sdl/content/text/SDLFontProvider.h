@@ -78,6 +78,8 @@ namespace mb {
 			int coordY;
 			short align;
 
+			pthread_mutex_t pMutex;
+
 			bool isWaiting;
 			pthread_mutex_t cMutex;
 			pthread_cond_t cond;
@@ -117,7 +119,7 @@ namespace mb {
 					int x=0, int y=0, short align=A_TOP_LEFT);
 
 			void playOver(ISurface* surface);
-			void ntsPlayOver(ISurface* surface);
+			void ntsPlayOver();
 
 		private:
 			void waitNTSRenderer();

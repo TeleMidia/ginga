@@ -83,7 +83,7 @@ namespace carousel {
 
 			if (mountObject(object)) {
 				clog << "ObjectProcessor::pushObject call notifyLists" << endl;
-				notifyListeners(object);
+				notifyObjectListeners(object);
 
 				objects->erase(i);
 				i = objects->begin();
@@ -230,7 +230,7 @@ namespace carousel {
 	}
 
 
-	void ObjectProcessor::notifyListeners(Object* obj) {
+	void ObjectProcessor::notifyObjectListeners(Object* obj) {
 		set<IObjectListener*>::iterator i;
 		string clientUri = "";
 		string name = "";

@@ -110,7 +110,7 @@ namespace player {
 	}
 
 	void PlayerProcess::receiveProcessSignal(int sigType, int pSig, int ppid) {
-		notifyListeners(PL_NOTIFY_STOP, itos(pSig), TYPE_SIGNAL);
+		notifyPlayerListeners(PL_NOTIFY_STOP, itos(pSig), TYPE_SIGNAL);
 	}
 
 	void PlayerProcess::setMrl(string mrl, bool visible) {
@@ -216,7 +216,7 @@ namespace player {
 				if ((*vMsg)[2] == "NULL") {
 					(*vMsg)[2] = "";
 				}
-				notifyListeners(stof((*vMsg)[1]), (*vMsg)[2], stof((*vMsg)[3]));
+				notifyPlayerListeners(stof((*vMsg)[1]), (*vMsg)[2], stof((*vMsg)[3]));
 			}
 		}
 	}
@@ -233,10 +233,10 @@ namespace player {
 		Player::removeListener(listener);
 	}
 
-	void PlayerProcess::notifyListeners(
-			short code, string parameter, short type) {
+	void PlayerProcess::notifyPlayerListeners(
+			short code, string parameter, short type, string value) {
 
-		Player::notifyListeners(code, parameter, type);
+		Player::notifyPlayerListeners(code, parameter, type, value);
 	}
 
 	int64_t PlayerProcess::getVPts() {

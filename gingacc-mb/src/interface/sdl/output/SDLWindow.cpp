@@ -108,14 +108,20 @@ namespace mb {
 
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
-		if (winSur != NULL) {
-			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
-		}
+//		if (winSur != NULL) {
+//			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
+//		}
 
 		unlock();
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
+
+		this->isWaiting = false;
+	    pthread_mutex_destroy(&cMutex);
+	    pthread_cond_destroy(&cond);
+
+	    pthread_mutex_destroy(&rMutex);
 
 		clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
 	}
@@ -159,6 +165,12 @@ namespace mb {
 
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
+
+		this->isWaiting = false;
+	    pthread_mutex_init(&cMutex, NULL);
+	    pthread_cond_init(&cond, NULL);
+
+	    pthread_mutex_init(&rMutex, NULL);
 	}
 
 	void SDLWindow::releaseBGColor() {
@@ -324,17 +336,11 @@ namespace mb {
 	}
 
 	void SDLWindow::show() {
-		if (!visible) {
-			visible = true;
-			refresh(false);
-		}
+		visible = true;
 	}
 
 	void SDLWindow::hide() {
-		if (visible) {
-			visible = false;
-			refresh(false);
-		}
+		visible = false;
 	}
 
 	int SDLWindow::getX() {
@@ -448,7 +454,11 @@ namespace mb {
 	}
 
 	void SDLWindow::clearContent() {
+		winSur = NULL;
+	}
 
+	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {
+		winSur = uSur;
 	}
 
 	void* SDLWindow::getContent() {
@@ -529,6 +539,7 @@ namespace mb {
 	void SDLWindow::renderFrom(ISurface* surface) {
 		SDL_Surface* contentSurface;
 
+		pthread_mutex_lock(&rMutex);
 		if (!isMine(surface)) {
 			contentSurface = (SDL_Surface*)(surface->getContent());
 			if (contentSurface == NULL) {
@@ -539,6 +550,7 @@ namespace mb {
 
 			renderFrom(contentSurface);
 		}
+		pthread_mutex_unlock(&rMutex);
 	}
 
 	void SDLWindow::renderFrom(SDL_Surface* contentSurface) {
@@ -546,14 +558,14 @@ namespace mb {
 		ISurface* sur;
 		SDL_Renderer* renderer;
 
-		if (winSur != NULL) {
-			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
-			winSur = NULL;
-		}
+//		if (winSur != NULL) {
+//			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
+//			winSur = NULL;
+//		}
 
 		winSur = contentSurface;
 
-		//refresh(true);
+		waitRenderer();
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -663,13 +675,20 @@ namespace mb {
 		pthread_mutex_unlock(&mutexC);
 	}
 
-	void SDLWindow::refresh(bool checkVisibility) {
-		/*if (!checkVisibility) {
-			LocalScreenManager::getInstance()->refreshScreen(myScreen);
+	bool SDLWindow::rendered() {
+		if (isWaiting) {
+			pthread_cond_signal(&cond);
+			return true;
+		}
+		return false;
+	}
 
-		} else if (visible) {
-			LocalScreenManager::getInstance()->refreshScreen(myScreen);
-		}*/
+	void SDLWindow::waitRenderer() {
+		isWaiting = true;
+		pthread_mutex_lock(&cMutex);
+		pthread_cond_wait(&cond, &cMutex);
+		isWaiting = false;
+		pthread_mutex_unlock(&cMutex);
 	}
 }
 }

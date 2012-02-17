@@ -99,7 +99,7 @@ namespace carousel {
 
 		private:
 			bool mountObject(Object* object);
-			void notifyListeners(Object* obj);
+			void notifyObjectListeners(Object* obj);
 	};
 }
 }

@@ -758,7 +758,7 @@ namespace tsparser {
 		}
 	}
 
-	void Demuxer::updateStatus(short newStatus, IChannel* channel) {
+	void Demuxer::updateChannelStatus(short newStatus, IChannel* channel) {
 		INetworkInterface* ni;
 
 		switch (newStatus) {

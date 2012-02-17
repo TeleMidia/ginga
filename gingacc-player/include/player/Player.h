@@ -138,9 +138,11 @@ namespace player {
 			void performLockedListenersRequest();
 
 		public:
-			void notifyListeners(
-					short code, string paremeter="",
-					short type=TYPE_PRESENTATION);
+			void notifyPlayerListeners(
+					short code,
+					string paremeter="",
+					short type=TYPE_PRESENTATION,
+					string value="");
 
 			virtual void setSurface(ISurface* surface);
 			virtual ISurface* getSurface();

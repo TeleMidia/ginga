@@ -109,8 +109,8 @@ namespace player {
 			virtual void setNotifyContentUpdate(bool notify)=0;
 			virtual void addListener(IPlayerListener* listener)=0;
 			virtual void removeListener(IPlayerListener* listener)=0;
-			virtual void notifyListeners(
-					short code, string paremeter, short type)=0;
+			virtual void notifyPlayerListeners(
+					short code, string paremeter, short type, string value)=0;
 
 			virtual void setSurface(ISurface* surface)=0;
 			virtual ISurface* getSurface()=0;

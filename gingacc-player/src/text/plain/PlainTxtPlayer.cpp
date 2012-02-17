@@ -339,8 +339,11 @@ namespace player {
 		if (refresh) {
 			loadTxt();
 			if (notifyContentUpdate) {
-				notifyListeners(
-						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE);
+				notifyPlayerListeners(
+						PL_NOTIFY_UPDATECONTENT,
+						"",
+						TYPE_PASSIVEDEVICE,
+						"");
 			}
 		}
 	}

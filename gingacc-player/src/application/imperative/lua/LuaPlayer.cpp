@@ -801,7 +801,7 @@ void LuaPlayer::load ()
 
     // carrega o NCLua e checa se houve erros
 	if( luaL_loadfile(this->L, this->mrl.c_str()) ) { // [ func ]
-		this->notifyListeners(PL_NOTIFY_ABORT, "");
+		this->notifyPlayerListeners(PL_NOTIFY_ABORT, "");
 		lua_error(this->L);
 		return;
 	}
@@ -949,7 +949,8 @@ bool LuaPlayer::userEventReceived (IInputEvent* evt)
 
 void LuaPlayer::refreshContent() {
 	if (notifyContentUpdate) {
-		notifyListeners(PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE);
+		notifyPlayerListeners(
+				PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
 	}
 }
 

@@ -130,9 +130,9 @@ namespace mb {
 
 		if (event != NULL && event->clazz == DFEC_INPUT) {
 			if (((DFBInputEvent*)event)->type == DIET_BUTTONPRESS) {
-				cout << "DFBGInputEvent::getKeyCode is returning KEY_TAP ";
-				cout << "when keyCode was '";
-				cout << ((DFBInputEvent*)event)->key_symbol << "'" << endl;
+				clog << "DFBGInputEvent::getKeyCode is returning KEY_TAP ";
+				clog << "when keyCode was '";
+				clog << ((DFBInputEvent*)event)->key_symbol << "'" << endl;
 				return CodeMap::KEY_TAP;
 			}
 

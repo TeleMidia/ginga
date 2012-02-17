@@ -85,7 +85,7 @@ namespace mb {
 			void* getContent();
 			void playOver(ISurface* surface);
 
-			void ntsPlayOver(ISurface* surface){};
+			void ntsPlayOver(){};
 
 		private:
 			IDirectFBSurface* getPerfectUnderlyingSurface(ISurface* surface);
