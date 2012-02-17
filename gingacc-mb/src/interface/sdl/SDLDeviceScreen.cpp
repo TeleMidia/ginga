@@ -95,6 +95,7 @@ namespace mb {
 
 		int i;
 
+		aSystem     = "";
 		aspect      = DSA_UNKNOWN;
 		hSize       = 0;
 		vSize       = 0;
@@ -117,8 +118,18 @@ namespace mb {
 
 			} else if ((strcmp(args[i], "mode") == 0) && ((i + 1) < argc)) {
 				mbMode.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "audio") == 0) && ((i + 1) < argc)) {
+				aSystem.assign(args[i + 1]);
 			}
 		}
+
+		if (aSystem != "" && aSystem != "sdlffmpeg") {
+			cout << "SDLDeviceScreen::SDLDeviceScreen Warning! Not ";
+			cout << "supported audio system: '" << aSystem << "'! Using ";
+			cout << "SDL2_ffmpeg instead." << endl;
+		}
+		aSystem = "SDLAudioProvider";
 
 		if (mbSubSystem == "dfb") {
 			mbSubSystem = "directfb";
@@ -583,7 +594,7 @@ namespace mb {
 			strSym = "SDLVideoProvider";
 
 		} else {
-			strSym = "SDLAudioProvider";
+			strSym = aSystem;
 		}
 
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);

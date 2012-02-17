@@ -203,17 +203,17 @@ int main(int argc, char** argv) {
 
 	if (argc == 1) {
 		dfbArgv[0] = (char*)"testScreen";
-		dfbArgv[1] = (char*)"--system";
+		dfbArgv[1] = (char*)"--vsystem";
 		dfbArgv[2] = (char*)"dfb";
-		dfbArgv[3] = (char*)"--mode";
+		dfbArgv[3] = (char*)"--vmode";
 		dfbArgv[4] = (char*)"400x300";
 
 		screen1 = dm->createScreen(fakeArgc, dfbArgv);
 
 		sdlArgv[0] = (char*)"testScreen";
-		sdlArgv[1] = (char*)"--system";
+		sdlArgv[1] = (char*)"--vsystem";
 		sdlArgv[2] = (char*)"sdl";
-		sdlArgv[3] = (char*)"--mode";
+		sdlArgv[3] = (char*)"--vmode";
 		sdlArgv[4] = (char*)"400x300";
 		screen2 = dm->createScreen(fakeArgc, sdlArgv);
 

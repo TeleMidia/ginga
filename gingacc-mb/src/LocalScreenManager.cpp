@@ -237,36 +237,41 @@ namespace mb {
 
 	GingaScreenID LocalScreenManager::createScreen(int argc, char** args) {
 		int i;
-		string mbSystem = "", mbSubSystem = "", mbMode = "", mbParent = "";
+		string vSystem = "", vSubSystem = "", vMode = "", vParent = "";
+		string aSystem = "";
 
 		for (i = 0; i < argc; i++) {
-			if ((strcmp(args[i], "--system") == 0) && ((i + 1) < argc)) {
-				mbSystem.assign(args[i + 1]);
+			if ((strcmp(args[i], "--vsystem") == 0) && ((i + 1) < argc)) {
+				vSystem.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--subsystem") == 0) &&
+			} else if ((strcmp(args[i], "--vsubsystem") == 0) &&
 					((i + 1) < argc)) {
 
-				mbSubSystem.assign(args[i + 1]);
+				vSubSystem.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--mode") == 0) && ((i + 1) < argc)) {
-				mbMode.assign(args[i + 1]);
+			} else if ((strcmp(args[i], "--vmode") == 0) && ((i + 1) < argc)) {
+				vMode.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
-				mbParent.assign(args[i + 1]);
+				vParent.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {
+				aSystem.assign(args[i + 1]);
 			}
 
 			/*clog << "LocalScreenManager::createScreen PARSER argv[";
 			clog << i << "] = '" << args[i] << "'" << endl;*/
 		}
 
-		return createScreen(mbSystem, mbSubSystem, mbMode, mbParent);
+		return createScreen(vSystem, vSubSystem, vMode, vParent, aSystem);
 	}
 
 	GingaScreenID LocalScreenManager::createScreen(
-			string mbSystem,
-			string mbSubSystem,
-			string mbMode,
-			string mbParent) {
+			string vSystem,
+			string vSubSystem,
+			string vMode,
+			string vParent,
+			string aSystem) {
 
 		IDeviceScreen* screen  = NULL;
 		GingaWindowID parentId = NULL;
@@ -280,9 +285,8 @@ namespace mb {
 		string paramsSfx = "";
 		string mycmd     = "ginga";
 
-
 		screenId = getNumOfScreens();
-		getMBSystemType(mbSystem, &sysType);
+		getMBSystemType(vSystem, &sysType);
 
 		switch (sysType) {
 			case GMBST_SDL:
@@ -290,19 +294,27 @@ namespace mb {
 				mbArgs[argc] = (char*)mycmd.c_str();
 				argc++;
 
-				if (mbSubSystem != "") {
+				if (vSubSystem != "") {
 					mbArgs[argc] = (char*)"subsystem";
 					argc++;
 
-					mbArgs[argc] = (char*)mbSubSystem.c_str();
+					mbArgs[argc] = (char*)vSubSystem.c_str();
 					argc++;
 				}
 
-				if (mbMode != "") {
+				if (vMode != "") {
 					mbArgs[argc] = (char*)"mode";
 					argc++;
 
-					mbArgs[argc] = (char*)mbMode.c_str();
+					mbArgs[argc] = (char*)vMode.c_str();
+					argc++;
+				}
+
+				if (aSystem != "") {
+					mbArgs[argc] = (char*)"audio";
+					argc++;
+
+					mbArgs[argc] = (char*)aSystem.c_str();
 					argc++;
 				}
 
@@ -326,25 +338,25 @@ namespace mb {
 				argc   = 2;
 				params = "";
 
-				if (mbSubSystem != "") {
-					params = "--dfb:system=" + mbSubSystem;
+				if (vSubSystem != "") {
+					params = "--dfb:system=" + vSubSystem;
 				}
 
-				if (mbMode != "") {
+				if (vMode != "") {
 					if (params == "") {
-						params = "--dfb:mode=" + mbMode;
+						params = "--dfb:mode=" + vMode;
 
 					} else {
-						params = params + ",mode=" + mbMode;
+						params = params + ",mode=" + vMode;
 					}
 				}
 
-				if (mbParent != "") {
+				if (vParent != "") {
 					if (params == "") {
-						params = "--dfb:x11-root-window=" + mbParent;
+						params = "--dfb:x11-root-window=" + vParent;
 
 					} else {
-						params = params + ",x11-root-window=" + mbParent;
+						params = params + ",x11-root-window=" + vParent;
 					}
 				}
 
@@ -360,6 +372,14 @@ namespace mb {
 
 				mbArgs[0] = (char*)mycmd.c_str();
 				mbArgs[1] = (char*)params.c_str();
+
+				if (aSystem != "") {
+					mbArgs[argc] = (char*)"audio";
+					argc++;
+
+					mbArgs[argc] = (char*)aSystem.c_str();
+					argc++;
+				}
 
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
