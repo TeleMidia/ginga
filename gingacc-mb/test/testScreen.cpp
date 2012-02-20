@@ -92,6 +92,8 @@ void testScreen(
 	int x1, y1, w1, h1;
 	int x2, y2, w2, h2;
 	int x3, y3, w3, h3;
+	int x4, y4, w4, h4;
+	int x5, y5, w5, h5;
 
 	x1 = 25;
 	y1 = 25;
@@ -103,10 +105,20 @@ void testScreen(
 	w2 = 100;
 	h2 = 100;
 
-	x3 = 200;
-	y3 = 25;
+	x3 = 180;
+	y3 = 70;
 	w3 = 100;
 	h3 = 100;
+
+	x4 = 260;
+	y4 = 45;
+	w4 = 100;
+	h4 = 100;
+
+	x5 = 340;
+	y5 = 15;
+	w5 = 100;
+	h5 = 100;
 
 	/* IMAGE PROVIDER */
 	win1 = dm->createWindow(screen, x1, y1, w1, h1);
@@ -126,6 +138,29 @@ void testScreen(
 	s = NULL;
 
 	win1->show();
+	win1->raiseToTop();
+
+	/* VIDEO PROVIDER */
+	win2 = dm->createWindow(screen, x2, y2, w2, h2);
+	if (win2 == NULL) {
+		cout << "gingacc-mb test can't create window. exiting program...";
+		cout << endl;
+		exit(1);
+	}
+	win2->draw();
+
+	vidSur = dm->createSurface(screen);
+	vid    = dm->createContinuousMediaProvider(
+			screen, "corrego1.mp4", true, false);
+
+	vidSur->setParent(win2);
+	win2->show();
+	win2->raiseToTop();
+
+	cout << "gingacc-mb test video for screen '" << screen << "' has '";
+	cout << vid->getTotalMediaTime() << "' as its total media time." << endl;
+
+	vid->playOver(vidSur, true, NULL);
 
 	/* FONT PROVIDER */
 	win3 = dm->createWindow(screen, x3, y3, w3, h3);
@@ -143,32 +178,12 @@ void testScreen(
 	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
 
 	win3->show();
+	win3->raiseToTop();
 
 	ttf->playOver(ttfSur, "Testing font provider!", 10, 100);
 
 	delete ttfSur;
 	ttfSur = NULL;
-
-	/* VIDEO PROVIDER */
-	win2 = dm->createWindow(screen, x2, y2, w2, h2);
-	if (win2 == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win2->draw();
-
-	vidSur = dm->createSurface(screen);
-	vid    = dm->createContinuousMediaProvider(
-			screen, "corrego1.mp4", true, false);
-
-	vidSur->setParent(win2);
-	win2->show();
-
-	cout << "gingacc-mb test video for screen '" << screen << "' has '";
-	cout << vid->getTotalMediaTime() << "' as its total media time." << endl;
-
-	vid->playOver(vidSur, true, NULL);
 
 	/*
 	 * Two more tests: createSurfaceFrom and createRenderedSurfaceFromImageFile
@@ -180,10 +195,11 @@ void testScreen(
 	IImageProvider* iImgLT = NULL;
 
 	iImgLT = dm->createImageProvider(screen, "1.png");
-	iWinLT = dm->createWindow(screen, x2 + x3, y2 + y3, w3, h3);
+	iWinLT = dm->createWindow(screen, x4, y4, w4, h4);
 
 	iWinLT->draw();
 	iWinLT->show();
+	iWinLT->raiseToTop();
 
 	iSurLT = dm->createSurfaceFrom(screen, NULL);
 	iImgLT->playOver(iSurLT);
@@ -196,7 +212,7 @@ void testScreen(
 	ISurface* s2;
 	IWindow* bg;
 
-	bg = dm->createWindow(screen, x1 + x2 + x3, y1 + y2 + y3, w3, h3);
+	bg = dm->createWindow(screen, x5, y5, w5, h5);
 
 	s2 = dm->createRenderedSurfaceFromImageFile(
 		screen, (char*)("/usr/local/etc/ginga/files/img/roller/loading.png"));
@@ -217,6 +233,7 @@ void testScreen(
 	windows->insert(win2);
 	windows->insert(win3);
 	windows->insert(iWinLT);
+	windows->insert(bg);
 }
 
 bool running = false;
@@ -276,13 +293,17 @@ int main(int argc, char** argv) {
 
 	int i;
 	bool testAllScreens = false;
-	bool blinkWindows = false;
+	bool blinkWindows   = false;
+	bool printScreen    = false;
 	for (i = 1; i < argc; i++) {
 		if ((strcmp(argv[i], "--all") == 0)) {
 			testAllScreens = true;
 
 		} else if ((strcmp(argv[i], "--blink") == 0)) {
 			blinkWindows   = true;
+
+		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
+			printScreen    = true;
 		}
 	}
 
@@ -325,6 +346,14 @@ int main(int argc, char** argv) {
 		cout << endl;
 		getchar();
 		running = false;
+	}
+
+	if (printScreen) {
+		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+
+		if (testAllScreens) {
+			dm->blitScreen(screen2, "/root/printscreen2.bmp");
+		}
 	}
 
 	cout << "gingacc-mb test has shown providers. ";

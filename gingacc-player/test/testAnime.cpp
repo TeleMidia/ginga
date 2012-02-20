@@ -85,17 +85,17 @@ void testPlayer(
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();
 	w->show();
+	w->raiseToTop();
 
 	ww->setCaps(w->getCap("ALPHACHANNEL"));
 	ww->draw();
 	ww->show();
+	ww->raiseToTop();
 
 	www->setCaps(w->getCap("ALPHACHANNEL"));
 	www->draw();
 	www->show();
-
-	ww->raiseToTop();
-	w->raiseToTop();
+	www->raiseToTop();
 
 	windows->insert(w);
 	windows->insert(ww);

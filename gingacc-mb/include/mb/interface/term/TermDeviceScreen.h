@@ -88,7 +88,8 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
-
+			void blitScreen(ISurface* destination);
+			void blitScreen(string fileUri);
 
 			/* interfacing output */
 

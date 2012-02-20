@@ -456,11 +456,14 @@ namespace mb {
 	}
 
 	void DFBWindow::hide() {
+		bool updated  = false;
+
 		this->visible = false;
 
 		lock();
 		if (win != NULL) {
 			win->SetOpacity(win, 0x00);
+			updated = true;
 		}
 		unlock();
 	}
@@ -568,7 +571,7 @@ namespace mb {
 	}
 
 	bool DFBWindow::isVisible() {
-		return this->visible;
+		return this->visible && !ghost;
 	}
 
 	void DFBWindow::validate() {

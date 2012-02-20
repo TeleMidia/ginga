@@ -161,6 +161,8 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);
 
+			void blitScreen(GingaScreenID screenId, ISurface* destination);
+			void blitScreen(GingaScreenID screenId, string fileUri);
 
 			/* Interfacing output */
 			IWindow* createWindow(

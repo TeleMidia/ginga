@@ -97,6 +97,17 @@ typedef struct {
 			static const short STP_CLEAR   = 2;
 			static const short STP_RELEASE = 3;
 
+			static const short SPA_NONE    = 0;
+			static const short SPA_CREATE  = 1;
+			static const short SPA_BLIT    = 2;
+
+		public:
+			static const short SUW_SHOW          = 0;
+			static const short SUW_HIDE          = 1;
+			static const short SUW_RAISETOTOP    = 2;
+			static const short SUW_LOWERTOBOTTOM = 3;
+
+		private:
 			static const short SDLDS_FPS   = 30;
 
 			static bool hasRenderer;
@@ -128,7 +139,7 @@ typedef struct {
 			int uSurW;
 			int uSurH;
 			pthread_mutex_t uSurMutex;
-			bool uSurPending;
+			short uSurPendingAction;
 
 			bool waitingCreator;
 			pthread_mutex_t cMutex;
@@ -148,6 +159,9 @@ typedef struct {
 
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
+
+			static map<GingaScreenID, vector<IWindow*>*> windowRenderMap;
+			static pthread_mutex_t wrMutex;
 
 			static set<IContinuousMediaProvider*> cmpRenderList;
 			static set<IDiscreteMediaProvider*> dmpRenderList;
@@ -178,10 +192,15 @@ typedef struct {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
+			void blitScreen(ISurface* destination);
+			void blitScreen(string fileUri);
+
+		private:
+			void blitScreen(SDL_Surface* destination);
 
 
 			/* interfacing output */
-
+		public:
 			IWindow* createWindow(int x, int y, int w, int h);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
@@ -232,9 +251,11 @@ typedef struct {
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
 			static void releaseScreen(SDLDeviceScreen* screen);
-			static bool initSurface(SDLDeviceScreen* screen);
+			static bool surfaceAction(SDLDeviceScreen* screen);
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
+
+			static void blitFromWindow(IWindow* iWin, SDL_Surface* dest);
 
 		public:
 
@@ -257,27 +278,52 @@ typedef struct {
 
 
 			/* SDL MB internal use*/
-
+		private:
 			/* input */
 			static void initCodeMaps();
 
+		public:
 			/* output */
+			static void updateWindowState(
+					GingaScreenID screenId, IWindow* win, short status);
+
+		private:
+			static void updateWindowList(
+					vector<IWindow*>* windows, IWindow* win, short status);
+
+			static void removeFromWindowList(
+					vector<IWindow*>* windows, IWindow* win);
+
+		public:
+
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
 		private:
+			static void insertWindowFromRenderList(
+					IWindow* win, vector<IWindow*>* windows);
+
+			static void removeWindowFromRenderList(
+					IWindow* win, vector<IWindow*>* windows);
+
 			static SDL_Texture* createTexture(
 					SDL_Renderer* renderer, SDL_Surface* surface);
 
 			static void releaseTexture(SDL_Texture* uTex);
 
 			SDL_Surface* createUnderlyingSurface(int width, int height);
+			static SDL_Surface* createUnderlyingSurfaceFromTexture(
+					SDL_Texture* texture);
 
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 
-			bool getRenderList(vector<IWindow*>* renderList);
+			static void getRGBAMask(
+					Uint32* rmask,
+					Uint32* gmask,
+					Uint32* bmask,
+					Uint32* amask);
 
-			void waitSurfaceCreator();
-			bool surfaceCreator();
+			void waitSurfaceAction();
+			bool surfaceActionExecuted();
 	};
 }
 }

@@ -91,9 +91,6 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	www->draw();
 	www->show();
 
-	ww->raiseToTop();
-	w->raiseToTop();
-
 #if HAVE_COMPSUPPORT
 	aud1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 			screen, "rock.mp3", false);
