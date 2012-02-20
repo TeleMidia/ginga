@@ -123,6 +123,14 @@ namespace mb {
 
 	}
 
+	void TermDeviceScreen::blitScreen(ISurface* destination) {
+
+	}
+
+	void TermDeviceScreen::blitScreen(string fileUri) {
+
+	}
+
 
 	/* interfacing output */
 

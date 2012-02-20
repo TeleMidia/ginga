@@ -77,7 +77,7 @@ namespace mb {
 			 *
 			 * If you are exiting from your program or if you are
 			 * removing all screens of a specific multimedia backend, call
-			 * releaseMB() before delete it
+			 * releaseMB() before delete a device screen,
 			 */
 			virtual ~IDeviceScreen(){};
 
@@ -98,6 +98,9 @@ namespace mb {
 
 			virtual void mergeIds(
 					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
+
+			virtual void blitScreen(ISurface* destination)=0;
+			virtual void blitScreen(string fileUri)=0;
 
 
 			/* interfacing output */

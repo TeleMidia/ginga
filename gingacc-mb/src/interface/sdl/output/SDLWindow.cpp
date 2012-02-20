@@ -306,11 +306,13 @@ namespace mb {
 	}
 
 	void SDLWindow::raiseToTop() {
-
+		SDLDeviceScreen::updateWindowState(
+				myScreen, this, SDLDeviceScreen::SUW_RAISETOTOP);
 	}
 
 	void SDLWindow::lowerToBottom() {
-
+		SDLDeviceScreen::updateWindowState(
+				myScreen, this, SDLDeviceScreen::SUW_LOWERTOBOTTOM);
 	}
 
 	void SDLWindow::setCurrentTransparency(int alpha) {
@@ -336,11 +338,15 @@ namespace mb {
 	}
 
 	void SDLWindow::show() {
-		visible = true;
+		this->visible = true;
+		SDLDeviceScreen::updateWindowState(
+				myScreen, this, SDLDeviceScreen::SUW_SHOW);
 	}
 
 	void SDLWindow::hide() {
 		visible = false;
+		SDLDeviceScreen::updateWindowState(
+				myScreen, this, SDLDeviceScreen::SUW_HIDE);
 	}
 
 	int SDLWindow::getX() {

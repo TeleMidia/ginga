@@ -108,6 +108,7 @@ namespace mb {
 			static IComponentManager* cm;
 #endif
 			set<IWindow*>* windowPool;
+			vector<IWindow*> windowRenderList;
 			set<ISurface*>* surfacePool;
 			set<IContinuousMediaProvider*>* cmpPool;
 
@@ -150,6 +151,8 @@ namespace mb {
 			void setColorKey(int r, int g, int b);
 
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
+			void blitScreen(ISurface* destination);
+			void blitScreen(string fileUri);
 
 
 			/* interfacing output */
@@ -217,6 +220,13 @@ namespace mb {
 					DFBSurfaceDescription* desc);
 
 			static void releaseUnderlyingSurface(IDirectFBSurface* uSur);
+
+		private:
+			void insertWindowFromRenderList(
+					IWindow* win, vector<IWindow*>* windows);
+
+			void removeWindowFromRenderList(
+					IWindow* win, vector<IWindow*>* windows);
 	};
 }
 }

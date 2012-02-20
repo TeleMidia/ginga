@@ -245,7 +245,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 		clog << "DFBDeviceScreen::clearWidgetPools ";
 		clog << "windowPool size = " << windowPool->size();
-		clog << ", surfacePool size = " << surfacePool->size() << endl;
+		clog << ", surfacePool size = " << surfacePool->size();
+		clog << endl;
 
 		//Releasing remaining Window objects in Window Pool
 		pthread_mutex_lock(&winMutex);
@@ -437,6 +438,14 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			}
 			++i;
 		}
+	}
+
+	void DFBDeviceScreen::blitScreen(ISurface* destination) {
+
+	}
+
+	void DFBDeviceScreen::blitScreen(string fileUri) {
+
 	}
 
 

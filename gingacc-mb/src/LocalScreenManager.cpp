@@ -492,6 +492,27 @@ namespace mb {
 		}
 	}
 
+	void LocalScreenManager::blitScreen(
+			GingaScreenID screenId, ISurface* destination) {
+
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->blitScreen(destination);
+		}
+	}
+
+	void LocalScreenManager::blitScreen(
+			GingaScreenID screenId, string fileUri) {
+
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->blitScreen(fileUri);
+		}
+	}
+
+
 	/* interfacing output */
 
 	IWindow* LocalScreenManager::createWindow(
