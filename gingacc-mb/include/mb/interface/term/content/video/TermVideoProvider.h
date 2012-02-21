@@ -85,8 +85,8 @@ namespace mb {
 			void pause();
 			void stop();
 			void setSoundLevel(float level);
-			void* getContent();
-			void setContent(void* content){};
+			void* getProviderContent();
+			void setProviderContent(void* content){};
 			void getOriginalResolution(int* width, int* height);
 			bool releaseAll();
 			void refreshDR();

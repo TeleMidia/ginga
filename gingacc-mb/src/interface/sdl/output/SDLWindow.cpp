@@ -143,6 +143,7 @@ namespace mb {
 
 		this->texture           = NULL;
 		this->winSur            = NULL;
+		this->curSur            = NULL;
 		this->myScreen          = screenId;
 
 		this->rect.x            = x;
@@ -396,7 +397,24 @@ namespace mb {
 	}
 
 	void SDLWindow::unprotectedValidate() {
+		ISurface* surface;
 
+/*		lockChilds();
+		if (childSurfaces != NULL && !childSurfaces->empty()) {
+			surface = childSurfaces->at(0);
+			if (surface != NULL && surface->getSurfaceContent() != NULL) {
+				winSur = (SDL_Surface*)(surface->getSurfaceContent());
+			}
+
+		} else {
+			cout << "SDLWindow::unprotectedValidate empty child surface '";
+			cout << childSurfaces << "'" << endl;
+		}
+		unlockChilds();
+*/
+		if (winSur != NULL) {
+			curSur = winSur;
+		}
 	}
 
 	void SDLWindow::addChildSurface(ISurface* s) {
@@ -464,11 +482,11 @@ namespace mb {
 	}
 
 	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {
-		winSur = uSur;
+		curSur = uSur;
 	}
 
 	void* SDLWindow::getContent() {
-		return winSur;
+		return curSur;
 	}
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
@@ -483,8 +501,8 @@ namespace mb {
 		SDL_Surface* contentSurface;
 		bool itIs = false;
 
-		if (surface != NULL && surface->getContent() != NULL) {
-			contentSurface = (SDL_Surface*)(surface->getContent());
+		if (surface != NULL && surface->getSurfaceContent() != NULL) {
+			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
 			if (contentSurface == winSur) {
 				itIs = true;
 			}
@@ -547,7 +565,7 @@ namespace mb {
 
 		pthread_mutex_lock(&rMutex);
 		if (!isMine(surface)) {
-			contentSurface = (SDL_Surface*)(surface->getContent());
+			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
 			if (contentSurface == NULL) {
 				clog << "SDLWindow::renderFrom Warning! NULL underlying ";
 				clog << "surface!" << endl;
@@ -560,18 +578,12 @@ namespace mb {
 	}
 
 	void SDLWindow::renderFrom(SDL_Surface* contentSurface) {
-		int w, h;
-		ISurface* sur;
-		SDL_Renderer* renderer;
+		if (winSur == NULL) {
+			winSur = contentSurface;
+		}
 
-//		if (winSur != NULL) {
-//			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
-//			winSur = NULL;
-//		}
-
-		winSur = contentSurface;
-
-		waitRenderer();
+		curSur = contentSurface;
+		//waitRenderer();
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -581,7 +593,7 @@ namespace mb {
 		lock();
 		if (src != NULL) {
 			src->lock();
-			srcWin = (SDL_Window*)(src->getContent());
+			srcWin = (SDL_Window*)(src->getSurfaceContent());
 			srcWin->GetSurface(srcWin, &srcSur);
 
 			if (winSur != NULL) {
@@ -605,7 +617,7 @@ namespace mb {
 		lock();
 		/*if (src != NULL) {
 			src->lock();
-			srcWin = (SDL_Window*)(src->getContent());
+			srcWin = (SDL_Window*)(src->getSurfaceContent());
 			srcWin->GetSurface(srcWin, &srcSur);
 
 			if (winSur != NULL) {

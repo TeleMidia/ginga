@@ -67,7 +67,7 @@ namespace mb {
 			virtual ~TermImageProvider();
 
 			string getLoadSymbol() {return "TermImageProvider";};
-			void* getContent();
+			void* getProviderContent();
 			void playOver(ISurface* surface);
 			void ntsPlayOver(){};
 			bool releaseAll();

@@ -105,7 +105,7 @@ namespace mb {
 			virtual ~DFBFontProvider();
 
 			string getLoadSymbol() {return "DFBFontProvider";};
-			void* getContent();
+			void* getProviderContent();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
 			void playOver(

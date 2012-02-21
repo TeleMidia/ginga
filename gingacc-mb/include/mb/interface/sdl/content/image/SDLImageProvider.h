@@ -84,7 +84,7 @@ namespace mb {
 
 			string getLoadSymbol() {return "SDLImageProvider";};
 
-			void* getContent();
+			void* getProviderContent();
 
 			void playOver(ISurface* surface);
 			void ntsPlayOver();

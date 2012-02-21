@@ -125,7 +125,7 @@ namespace mb {
 
 	}
 
-	void* TermVideoProvider::getContent() {
+	void* TermVideoProvider::getProviderContent() {
 		return NULL;
 	}
 

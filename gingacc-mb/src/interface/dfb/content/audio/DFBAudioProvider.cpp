@@ -117,7 +117,7 @@ namespace mb {
 		return this->symbol;
 	}
 
-	void* DFBAudioProvider::getContent() {
+	void* DFBAudioProvider::getProviderContent() {
 		return decoder;
 	}
 
@@ -139,7 +139,7 @@ namespace mb {
 		if (someSurface == NULL) {
 			return;
 		}
-		frame = (IDirectFBSurface*)(someSurface->getContent());
+		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
 
 		if (frame == NULL) {
 			return;
@@ -181,7 +181,7 @@ namespace mb {
 							someWindow->getW(),
 							someWindow->getH());
 
-					s2 = (IDirectFBSurface*)(sur->getContent());
+					s2 = (IDirectFBSurface*)(sur->getSurfaceContent());
 
 					DFBCHECK(s2->StretchBlit(
 						    s2,
@@ -251,7 +251,7 @@ namespace mb {
 		IDirectFBSurface* s;
 
 		s = getPerfectDFBSurface();
-		surface->setContent((void*)s);
+		surface->setSurfaceContent((void*)s);
 		if (hasVisual) {
 			DFBCHECK(decoder->PlayTo(
 					decoder, s, NULL, dynamicRenderCallBack, (void*)surface));

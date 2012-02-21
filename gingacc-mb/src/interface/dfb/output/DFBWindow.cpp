@@ -584,20 +584,18 @@ namespace mb {
 		ISurface* surface;
 
 		if (win != NULL && winSur != NULL) {
-			if (winSur != NULL) {
-				lockChilds();
-				if (childSurfaces != NULL && !childSurfaces->empty()) {
-					surface = childSurfaces->at(0);
-					if (surface != NULL) {
-						renderFrom(surface);
-					}
-
-				} else {
-					DFBCHECK(winSur->Flip(
-							winSur, NULL, (DFBSurfaceFlipFlags)0));
+			lockChilds();
+			if (childSurfaces != NULL && !childSurfaces->empty()) {
+				surface = childSurfaces->at(0);
+				if (surface != NULL) {
+					renderFrom(surface);
 				}
-				unlockChilds();
+
+			} else {
+				DFBCHECK(winSur->Flip(
+						winSur, NULL, (DFBSurfaceFlipFlags)0));
 			}
+			unlockChilds();
 		}
 	}
 
@@ -621,6 +619,9 @@ namespace mb {
 		unsigned int i;
 		vector<ISurface*>::iterator j;
 		ISurface* surface;
+
+		cout << "DFBWindow::removeChildSurface '";
+		cout << s << "'" << endl;
 
 		lockChilds();
 		if (releaseListener == s) {
@@ -674,7 +675,7 @@ namespace mb {
 			return false;
 		}
 
-		contentSurface = (IDirectFBSurface*)(surface->getContent());
+		contentSurface = (IDirectFBSurface*)(surface->getSurfaceContent());
 		if (contentSurface == winSur) {
 			return true;
 		}
@@ -734,7 +735,7 @@ namespace mb {
 		IDirectFBSurface* contentSurface;
 
 		if (win != NULL && !isMine(surface)) {
-			contentSurface = (IDirectFBSurface*)(surface->getContent());
+			contentSurface = (IDirectFBSurface*)(surface->getSurfaceContent());
 			if (contentSurface == NULL) {
 				return;
 			}
@@ -758,7 +759,7 @@ namespace mb {
 
 				} else {
 					sur = new DFBSurface(myScreen, width, height);
-					s2 = (IDirectFBSurface*)(sur->getContent());
+					s2 = (IDirectFBSurface*)(sur->getSurfaceContent());
 
 					DFBCHECK(s2->StretchBlit(
 						    s2,

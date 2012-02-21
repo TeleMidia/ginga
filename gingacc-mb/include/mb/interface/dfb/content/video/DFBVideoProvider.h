@@ -99,8 +99,8 @@ namespace mb {
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
-			void* getContent();
-			void setContent(void* content){};
+			void* getProviderContent();
+			void setProviderContent(void* content){};
 			virtual void setAVPid(int aPid, int vPid){};
 			void feedBuffers();
 

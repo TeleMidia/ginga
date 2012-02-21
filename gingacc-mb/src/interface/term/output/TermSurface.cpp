@@ -115,11 +115,11 @@ namespace mb {
 		return this->caps;
 	}
 
-	void* TermSurface::getContent() {
+	void* TermSurface::getSurfaceContent() {
 		return sur;
 	}
 
-	void TermSurface::setContent(void* surface) {
+	void TermSurface::setSurfaceContent(void* surface) {
 		this->sur = surface;
 	}
 

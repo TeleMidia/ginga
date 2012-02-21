@@ -912,7 +912,7 @@ namespace mb {
 
 	}
 
-	void* FFmpegAudioProvider::getContent() {
+	void* FFmpegAudioProvider::getProviderContent() {
 		return NULL;
 	}
 
@@ -996,7 +996,7 @@ namespace mb {
 		}
 
 		someSurface = cont->surface;
-		frame = (IDirectFBSurface*)(someSurface->getContent());
+		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
 		if (frame == NULL) {
 			return;
 		}
@@ -1036,7 +1036,7 @@ namespace mb {
 					sur = new DFBSurface(
 							someWindow->getW(), someWindow->getH());
 
-					s2 = (IDirectFBSurface*)(sur->getContent());
+					s2 = (IDirectFBSurface*)(sur->getSurfaceContent());
 
 					DFBCHECK(s2->StretchBlit(
 							s2,
@@ -1099,7 +1099,7 @@ namespace mb {
 				rContainer->surface = surface;
 			}
 
-			rContainer->surface->setContent(s);
+			rContainer->surface->setSurfaceContent(s);
 		}
 
 		rContainer->callback   = FFmpegAudioProvider::dynamicRenderCallBack;

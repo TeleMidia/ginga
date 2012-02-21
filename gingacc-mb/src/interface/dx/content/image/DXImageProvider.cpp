@@ -170,7 +170,7 @@ namespace mb {
 	void DXImageProvider::playOver(ISurface* surface)
 	{
 		clog << "DXImageProvider::playOver(ISurface* surface)" << endl;
-		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
+		DX2DSurface*	s = (DX2DSurface*)(surface->getSurfaceContent());
 	}
 
 	ISurface* DXImageProvider::prepare(bool isGif)
@@ -190,7 +190,7 @@ namespace mb {
 		renderedSurface = new DXSurface(destination);
 
 		if(destination != NULL && renderedSurface != NULL){
-			((DX2DSurface*)renderedSurface->getContent())->setTexture(imageTex);
+			((DX2DSurface*)renderedSurface->getSurfaceContent())->setTexture(imageTex);
 		}
 		return renderedSurface;
 	}

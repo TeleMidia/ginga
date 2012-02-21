@@ -69,7 +69,7 @@ namespace mb {
 
 			/* Designed for non-thread-safe MB. For instance: SDL */
 			virtual void ntsPlayOver()=0;
-			virtual void* getContent()=0;
+			virtual void* getProviderContent()=0;
 	};
 }
 }

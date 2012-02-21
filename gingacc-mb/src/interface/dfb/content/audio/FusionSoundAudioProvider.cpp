@@ -150,7 +150,7 @@ namespace mb {
 		return this->symbol;
 	}
 
-	void* FusionSoundAudioProvider::getContent() {
+	void* FusionSoundAudioProvider::getProviderContent() {
 		return decoder;
 	}
 

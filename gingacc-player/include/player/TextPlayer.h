@@ -115,9 +115,9 @@ namespace player {
 			void setTabSize(int size);
 			int getTabSize();
 			void drawText(string text, short align=(0x00000004 | 0x00000000));
-			void drawTextLn(string text, short align=(0x00000004 | 0x00000000));
+			bool drawTextLn(string text, short align=(0x00000004 | 0x00000000));
 			void tab();
-			void breakLine();
+			bool breakLine();
 			int getCurrentColumn();
 			int getCurrentLine();
 

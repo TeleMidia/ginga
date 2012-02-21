@@ -126,7 +126,7 @@ namespace mb {
 
 	}
 
-	void* TermAudioProvider::getContent() {
+	void* TermAudioProvider::getProviderContent() {
 		return NULL;
 	}
 

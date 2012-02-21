@@ -86,6 +86,7 @@ namespace mb {
 
 		fontRefs++;
 
+		this->fontInit  = false;
 		this->fontUri   = "";
 		this->myScreen  = screenId;
 		this->height    = heightInPixel;
@@ -119,18 +120,58 @@ namespace mb {
 		}
 	}
 
-	void* SDLFontProvider::getContent() {
-		return (void*)content;
+	bool SDLFontProvider::initializeFont() {
+		if (!initialized) {
+			initialized = true;
+			if (TTF_Init() < 0) {
+				clog << "SDLFontProvider::ntsPlayOver Warning! ";
+				clog << "Couldn't initialize TTF: " << SDL_GetError();
+				clog << endl;
+				ntsRenderer();
+				return false;
+			}
+		}
+
+		font = TTF_OpenFont(fontUri.c_str(), height);
+		if (font == NULL) {
+			ntsRenderer();
+			return false;
+		}
+
+		TTF_SetFontStyle(font, (int)TTF_STYLE_NORMAL);
+		TTF_SetFontOutline(font, 0);
+		TTF_SetFontKerning(font, 1);
+		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
+
+		return true;
+	}
+
+	void* SDLFontProvider::getProviderContent() {
+		return (void*)font;
 	}
 
 	int SDLFontProvider::getStringWidth(const char* text, int textLength) {
-		return FP_AUTO_WORDWRAP;
+		int w = -1, h = -1;
+
+		if (font == NULL) {
+//			fontInit = true;
+//			SDLDeviceScreen::addDMPToRendererList(this);
+//			waitNTSRenderer();
+			initializeFont();
+		}
+
+		if (font != NULL) {
+			TTF_SizeText(font, text, &w, &h);
+
+		} else {
+			clog << "SDLFontProvider::getStringWidth Warning! ";
+			clog << "Can't get text size: font is NULL." << endl;
+		}
+		return w;
 	}
 
 	int SDLFontProvider::getHeight() {
-		int fontHeight = 0;
-
-		return fontHeight;
+		return height;
 	}
 
 	void SDLFontProvider::playOver(
@@ -150,27 +191,50 @@ namespace mb {
 	void SDLFontProvider::playOver(ISurface* surface) {
 		this->content = surface;
 
-		SDLDeviceScreen::addDMPToRendererList(this);
-		waitNTSRenderer();
+/**/	ntsPlayOver();
+
+//		SDLDeviceScreen::addDMPToRendererList(this);
+//		waitNTSRenderer();
 	}
 
 	void SDLFontProvider::ntsPlayOver() {
 		SDLWindow* parent;
-		SDL_Surface* renderedSurface;
+		Uint32 r, g, b, a;
 		IColor* fontColor = NULL;
 		SDL_Color sdlColor;
+		SDL_Rect rect;
+		SDL_Surface* renderedSurface;
+		SDL_Surface* text;
 
-		if (!initialized) {
-			initialized = true;
-			if (TTF_Init() < 0) {
-				clog << "SDLFontProvider::SDLFontProvider ";
-				clog << "Couldn't initialize TTF: " << SDL_GetError();
-				clog << endl;
-			}
+//		if (fontInit) {
+//			fontInit = false;
+//			if (initializeFont()) {
+//				ntsRenderer();
+//			}
+//			return;
+//		}
+
+		if (plainText == "") {
+			clog << "SDLFontProvider::ntsPlayOver Warning! Empty text.";
+			clog << endl;
+			ntsRenderer();
+			return;
 		}
 
-		if (content != NULL && LocalScreenManager::getInstance()->hasSurface(
-				myScreen, content)) {
+		if (LocalScreenManager::getInstance()->hasSurface(myScreen, content)) {
+			parent = (SDLWindow*)(content->getParent());
+
+			if (parent == NULL) {
+				clog << "SDLFontProvider::ntsPlayOver Warning! NULL parent.";
+				clog << endl;
+				ntsRenderer();
+				return;
+			}
+
+			if (coordX >= parent->getW() || coordY >= parent->getH()) {
+				ntsRenderer();
+				return;
+			}
 
 			fontColor = content->getColor();
 
@@ -186,21 +250,43 @@ namespace mb {
 			}
 
 			if (font == NULL) {
-				font = TTF_OpenFont(fontUri.c_str(), height);
+				initializeFont();
 			}
 
-			renderedSurface = TTF_RenderText_Solid(
-					font,
-					plainText.c_str(),
-					sdlColor);
+			text = TTF_RenderText_Solid(
+					font, plainText.c_str(), sdlColor);
 
-			content->setContent((void*)renderedSurface);
+			if (text == NULL) {
+				clog << "SDLFontProvider::ntsPlayOver Warning! Can't create ";
+				clog << "underlying surface from text" << endl;
+				ntsRenderer();
+				return;
+			}
 
-			parent = (SDLWindow*)(content->getParent());
-			if (parent != NULL) {
-	//			parent->renderFrom(content);
+			rect.x = coordX;
+			rect.y = coordY;
+			rect.w = text->w;
+			rect.h = text->h;
+
+			renderedSurface = (SDL_Surface*)(parent->getContent());
+			if (renderedSurface == NULL) {
+				SDLDeviceScreen::getRGBAMask(&r, &g, &b, &a);
+				renderedSurface = SDL_CreateRGBSurface(
+						0,
+						parent->getW(),
+						parent->getH(),
+						24,
+						r, g, b, a);
+
+				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);
 			}
+
+			SDL_UpperBlit(text, NULL, renderedSurface, &rect);
+
+		} else {
+			clog << "SDLFontProvider::ntsPlayOver Warning! Invalid Surface.";
+			clog << endl;
 		}
 
 		ntsRenderer();

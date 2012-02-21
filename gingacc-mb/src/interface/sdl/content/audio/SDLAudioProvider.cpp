@@ -105,7 +105,7 @@ namespace mb {
 		return this->symbol;
 	}
 
-	void* SDLAudioProvider::getContent() {
+	void* SDLAudioProvider::getProviderContent() {
 		return NULL;
 	}
 

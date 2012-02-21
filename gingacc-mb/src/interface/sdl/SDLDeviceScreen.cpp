@@ -332,10 +332,10 @@ namespace mb {
 	void SDLDeviceScreen::blitScreen(ISurface* destination) {
 		SDL_Surface* dest;
 
-		dest = (SDL_Surface*)(destination->getContent());
+		dest = (SDL_Surface*)(destination->getSurfaceContent());
 		if (dest == NULL) {
 			dest = createUnderlyingSurface(wRes, hRes);
-			destination->setContent(dest);
+			destination->setSurfaceContent(dest);
 		}
 
 		blitScreen(dest);
@@ -509,8 +509,8 @@ namespace mb {
 		if (surfacePool != NULL) {
 			i = surfacePool->find(s);
 			if (i != surfacePool->end()) {
-				uSur = (SDL_Surface*)((*i)->getContent());
-				(*i)->setContent(NULL);
+				uSur = (SDL_Surface*)((*i)->getSurfaceContent());
+				(*i)->setSurfaceContent(NULL);
 
 				surfacePool->erase(i);
 
@@ -751,7 +751,7 @@ namespace mb {
 		while (i != cmpRenderList.end()) {
 			j = s->cmpPool->find(*i);
 			if (j != s->cmpPool->end()) {
-				if ((*i)->getContent() == NULL) {
+				if ((*i)->getProviderContent() == NULL) {
 					initCMP(s, (*i));
 				}
 				(*i)->refreshDR();
@@ -1117,7 +1117,7 @@ namespace mb {
 			case SPA_CREATE:
 				getRGBAMask(&rmask, &gmask, &bmask, &amask);
 				s->uSur = SDL_CreateRGBSurface(
-						0, s->uSurW, s->uSurH, 24, 0, 0, 0, 0);
+						0, s->uSurW, s->uSurH, 24, rmask, gmask, bmask, amask);
 
 				break;
 
@@ -1168,7 +1168,7 @@ namespace mb {
 				w,
 				h);
 
-		cmp->setContent((void*)texture);
+		cmp->setProviderContent((void*)texture);
 	}
 
 	void SDLDeviceScreen::blitFromWindow(IWindow* iWin, SDL_Surface* dest) {

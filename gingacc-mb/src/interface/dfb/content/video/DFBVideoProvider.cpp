@@ -143,7 +143,7 @@ namespace mb {
 		return this->symbol;
 	}
 
-	void* DFBVideoProvider::getContent() {
+	void* DFBVideoProvider::getProviderContent() {
 		if (rContainer != NULL) {
 			return (void*)(rContainer->dec);
 		}
@@ -207,7 +207,7 @@ namespace mb {
 			s = (IDirectFBSurface*)(
 					DFBDeviceScreen::createUnderlyingSurface(&dsc));
 
-			frame->setContent(s);
+			frame->setSurfaceContent(s);
 			return true;
 		}
 
@@ -241,7 +241,7 @@ namespace mb {
 			return;
 		}
 
-		frame = (IDirectFBSurface*)(someSurface->getContent());
+		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
 		if (frame == NULL) {
 			cout << "DFBVideoProvider::dynamicRenderCallBack NULL frame";
 			cout << endl;
@@ -289,7 +289,7 @@ namespace mb {
 					sur = new DFBSurface(
 							someWindow->getW(), someWindow->getH());
 
-					s2 = (IDirectFBSurface*)(sur->getContent());
+					s2 = (IDirectFBSurface*)(sur->getSurfaceContent());
 
 					DFBCHECK(s2->StretchBlit(
 						    s2,
@@ -386,7 +386,7 @@ namespace mb {
 			s = getPerfectDFBSurface();
 
 			if (s != NULL) {
-				surface->setContent((void*)s);
+				surface->setSurfaceContent((void*)s);
 
 				rContainer->listener = listener;
 				rContainer->surface  = surface;

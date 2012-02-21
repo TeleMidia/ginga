@@ -109,8 +109,8 @@ namespace mb {
 
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
-			void* getContent();
-			virtual void setContent(void* content){};
+			void* getProviderContent();
+			virtual void setProviderContent(void* content){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
 			double getTotalMediaTime();
 			virtual int64_t getVPts(){return 0;};

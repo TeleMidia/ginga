@@ -117,17 +117,17 @@ namespace mb {
 #endif //DFBTM_PATCH
 	}
 
-	void* DFBImageProvider::getContent() {
+	void* DFBImageProvider::getProviderContent() {
 		return decoder;
 	}
 
 	void DFBImageProvider::playOver(ISurface* surface) {
 		IDirectFBSurface* s;
-		s = (IDirectFBSurface*)(surface->getContent());
+		s = (IDirectFBSurface*)(surface->getSurfaceContent());
 
 		if (s == NULL) {
 			s = getPerfectUnderlyingSurface(surface);
-			surface->setContent(s);
+			surface->setSurfaceContent(s);
 		}
 
 		if (decoder != NULL) {

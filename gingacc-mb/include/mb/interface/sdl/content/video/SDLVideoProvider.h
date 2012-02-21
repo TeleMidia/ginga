@@ -89,8 +89,8 @@ namespace mb {
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
-			void* getContent();
-			void setContent(void* texture);
+			void* getProviderContent();
+			void setProviderContent(void* texture);
 
 			virtual void setAVPid(int aPid, int vPid){};
 			void feedBuffers();

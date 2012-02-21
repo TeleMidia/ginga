@@ -118,13 +118,13 @@ namespace player {
 			lockedListeners = NULL;
 		}
 
-		if (outputWindow != NULL) {
+		if (dm->hasWindow(myScreen, outputWindow)) {
 			outputWindow->revertContent();
 			delete outputWindow;
 			outputWindow = NULL;
 		}
 
-		if (surface != NULL) {
+		if (dm->hasSurface(myScreen, surface)) {
 			delete surface;
 			surface = NULL;
 		}

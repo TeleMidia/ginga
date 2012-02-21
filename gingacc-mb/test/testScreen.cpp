@@ -180,7 +180,7 @@ void testScreen(
 	win3->show();
 	win3->raiseToTop();
 
-	ttf->playOver(ttfSur, "Testing font provider!", 10, 100);
+	ttf->playOver(ttfSur, "Testing font provider!", 10, 20);
 
 	delete ttfSur;
 	ttfSur = NULL;

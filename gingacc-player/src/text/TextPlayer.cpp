@@ -172,9 +172,9 @@ namespace player {
 		}
 
 		font = dm->createFontProvider(myScreen, someUri.c_str(), fontSize);
-		if (font == NULL || font->getContent() == NULL) {
+		if (font == NULL) {
 			clog << "TextPlayer::setFont Warning! Can't create Font '";
-			clog << someUri << "'" << endl;
+			clog << someUri << "': '" << font << "'" << endl;
 			return false;
 		}
 
@@ -258,7 +258,7 @@ namespace player {
 				fontColor->getB(),
 				fontColor->getAlpha());
 
-		if (font != NULL && surface != NULL && surface->getContent() != NULL) {
+		if (font != NULL && surface != NULL) {
 			surface->getSize(&surWidth, &surHeight);
 			textWidth = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
@@ -409,32 +409,36 @@ namespace player {
 		}
 	}
 
-	void TextPlayer::drawTextLn(string text, short align) {
+	bool TextPlayer::drawTextLn(string text, short align) {
 		drawText(text, align);
-		breakLine();
+		return breakLine();
 	}
 
 	void TextPlayer::tab() {
 		currentColumn = currentColumn + (tabSize * 12);
 	}
 
-	void TextPlayer::breakLine() {
+	bool TextPlayer::breakLine() {
 		int w, h;
 		if (font == NULL) {
-			setFont("/usr/local/share/directfb-examples/fonts/decker.ttf");
+			setFont("/usr/local/etc/ginga/files/font/decker.ttf");
 		}
 
 		surface->getSize(&w, &h);
 		if ((currentLine + fontHeight) > h) {
-			clog << "TextPlayer::breakLine() Warning! Exceed surface bounds";
+			clog << "TextPlayer::breakLine() Exceeding surface bounds";
 			clog << " currentLine = '" << currentLine << "'";
 			clog << " fontHeight = '" << fontHeight << "'";
 			clog << " surH = '" << h << "'" << endl;
+
+			currentLine   = currentLine + (int)(0.9 * fontHeight);
 			currentColumn = 0;
+			return false;
 
 		} else {
-			currentLine = currentLine + (int)(0.9 * fontHeight);
+			currentLine   = currentLine + (int)(0.9 * fontHeight);
 			currentColumn = 0;
+			return true;
 		}
 	}
 

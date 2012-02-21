@@ -104,8 +104,8 @@ namespace mb {
 			int getCaps();
 			bool setParent(void* parentWindow); //IWindow
 			void* getParent();                  //IWindow
-			void* getContent();
-			void setContent(void* surface);
+			void* getSurfaceContent();
+			void setSurfaceContent(void* surface);
 			void clearContent();
 			void clearSurface();
 			void drawLine(int x1, int y1, int x2, int y2);
