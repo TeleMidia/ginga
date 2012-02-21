@@ -77,6 +77,7 @@ namespace mb {
 			int coordX;
 			int coordY;
 			short align;
+			bool fontInit;
 
 			pthread_mutex_t pMutex;
 
@@ -109,8 +110,12 @@ namespace mb {
 
 			virtual ~SDLFontProvider();
 
+		private:
+			bool initializeFont();
+
+		public:
 			string getLoadSymbol() {return "SDLFontProvider";};
-			void* getContent();
+			void* getProviderContent();
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
 			void playOver(

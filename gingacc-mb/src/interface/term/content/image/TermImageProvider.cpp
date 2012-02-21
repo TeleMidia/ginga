@@ -70,7 +70,7 @@ namespace mb {
 
 	}
 
-	void* TermImageProvider::getContent() {
+	void* TermImageProvider::getProviderContent() {
 		return NULL;
 	}
 

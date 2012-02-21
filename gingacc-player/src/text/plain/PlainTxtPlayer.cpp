@@ -148,7 +148,11 @@ namespace player {
 					(currentLine + fontHeight) < surfaceH) {
 
 				getline(fis, line);
-				drawTextLn(line);
+				if (line != "") {
+					if (!drawTextLn(line)) {
+						break;
+					}
+				}
 			}
 
 		} else if (content != "") {
@@ -164,7 +168,7 @@ namespace player {
 	}
 
 	void PlainTxtPlayer::play() {
-		if (surface != NULL && surface->getContent() != NULL) {
+		if (surface != NULL) {
 			clog << "PlainTxtPlayer::play ok" << endl;
 			loadTxt();
 
@@ -224,7 +228,7 @@ namespace player {
 		clog << "' value = '" << value.c_str() << "'" << endl;
 		*/
 
-		if (surface == NULL || surface->getContent() == NULL) {
+		if (surface == NULL || surface->getSurfaceContent() == NULL) {
 			refresh = false;
 		}
 

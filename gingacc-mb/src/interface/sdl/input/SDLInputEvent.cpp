@@ -70,10 +70,15 @@ namespace mb {
 	}
 
 	SDLInputEvent::SDLInputEvent(const int keyCode) {
-		event.type       = SDL_USEREVENT;
-		event.user.code  = keyCode;
-		event.user.data1 = (void*)(ET_INPUTEVENT.c_str());
-		event.user.data2 = NULL;
+		SDL_KeyboardEvent fakeEvent;
+
+		fakeEvent.type       = SDL_KEYUP;
+		fakeEvent.state      = SDL_RELEASED;
+		fakeEvent.repeat     = 0;
+		fakeEvent.keysym.sym = keyCode;
+
+		event.type = SDL_KEYUP;
+		event.key  = fakeEvent;
 
 		x = 0;
 		y = 0;
@@ -228,7 +233,7 @@ namespace mb {
 	}
 
 	bool SDLInputEvent::isPressedType() {
-		if (event.type == SDL_KEYDOWN) {
+		if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN) {
 			return true;
 		}
 		return false;

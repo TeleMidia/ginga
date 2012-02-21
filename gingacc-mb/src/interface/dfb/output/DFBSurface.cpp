@@ -110,9 +110,8 @@ namespace mb {
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
 		if (sur != NULL) {
-			if (parent != NULL &&
-					LocalScreenManager::getInstance()->hasWindow(
-							myScreen, parent)) {
+			if (LocalScreenManager::getInstance()->hasWindow(
+					myScreen, parent)) {
 
 				if (parent->removeChildSurface(this)) {
 					DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
@@ -215,17 +214,19 @@ namespace mb {
 		return this->caps;
 	}
 
-	void* DFBSurface::getContent() {
+	void* DFBSurface::getSurfaceContent() {
 		return sur;
 	}
 
-	void DFBSurface::setContent(void* surface) {
+	void DFBSurface::setSurfaceContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
+			cout << "DFBSurface::setSurfaceContent" << endl;
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				DFBDeviceScreen::releaseUnderlyingSurface(sur);
 				sur = NULL;
 			}
 		}
+
 		this->sur = (IDirectFBSurface*)surface;
 	}
 
@@ -432,7 +433,7 @@ namespace mb {
 		IDirectFBFont* f = NULL;
 
 		if (sur != NULL) {
-			f = (IDirectFBFont*)(((IFontProvider*)font)->getContent());
+			f = (IDirectFBFont*)(((IFontProvider*)font)->getProviderContent());
 			if (f != NULL) {
 				DFBCHECK(sur->SetFont(sur, f));
 				return;
@@ -468,7 +469,9 @@ namespace mb {
 
 		/*Copy to a temporary surface*/
 		DFBSurface* sur_temp = new DFBSurface(myScreen, width, height);
-		IDirectFBSurface* temp = (IDirectFBSurface*)(sur_temp->getContent());		
+		IDirectFBSurface* temp = (IDirectFBSurface*)(
+				sur_temp->getSurfaceContent());
+
 		temp->SetBlittingFlags(
 				temp, (DFBSurfaceBlittingFlags)(
 						DSBLIT_BLEND_ALPHACHANNEL | DSBLIT_SRC_COLORKEY));
@@ -525,7 +528,11 @@ namespace mb {
 								DSBLIT_SRC_COLORKEY)));
 
 				DFBCHECK( sur->Blit(
-						sur, (IDirectFBSurface*)(src->getContent()), r, x, y));
+						sur,
+						(IDirectFBSurface*)(src->getSurfaceContent()),
+						r,
+						x,
+						y));
 
 			} else {
 				clog << "DFBSurface::blit Warning! ";

@@ -92,14 +92,14 @@ typedef struct {
 			static const unsigned int DSA_16x9;
 
 		private:
-			static const short STP_NONE    = 0;
-			static const short STP_INIT    = 1;
-			static const short STP_CLEAR   = 2;
-			static const short STP_RELEASE = 3;
+			static const short STP_NONE          = 0;
+			static const short STP_INIT          = 1;
+			static const short STP_CLEAR         = 2;
+			static const short STP_RELEASE       = 3;
 
-			static const short SPA_NONE    = 0;
-			static const short SPA_CREATE  = 1;
-			static const short SPA_BLIT    = 2;
+			static const short SPA_NONE          = 0;
+			static const short SPA_CREATE        = 1;
+			static const short SPA_BLIT          = 2;
 
 		public:
 			static const short SUW_SHOW          = 0;
@@ -107,9 +107,9 @@ typedef struct {
 			static const short SUW_RAISETOTOP    = 2;
 			static const short SUW_LOWERTOBOTTOM = 3;
 
-		private:
-			static const short SDLDS_FPS   = 30;
+			static const short SDLDS_FPS         = 30;
 
+		private:
 			static bool hasRenderer;
 			static map<SDLDeviceScreen*, short> sdlScreens;
 			static pthread_mutex_t sMutex;
@@ -316,12 +316,14 @@ typedef struct {
 
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 
+		public:
 			static void getRGBAMask(
 					Uint32* rmask,
 					Uint32* gmask,
 					Uint32* bmask,
 					Uint32* amask);
 
+		private:
 			void waitSurfaceAction();
 			bool surfaceActionExecuted();
 	};

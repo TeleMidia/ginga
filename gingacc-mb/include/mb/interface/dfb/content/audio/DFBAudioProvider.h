@@ -85,8 +85,8 @@ namespace mb {
 
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
-			void* getContent();
-			void setContent(void* content){};
+			void* getProviderContent();
+			void setProviderContent(void* content){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
 
 		private:

@@ -1137,7 +1137,7 @@ namespace mb {
 
 	}
 
-	void* FFmpegVideoProvider::getContent() {
+	void* FFmpegVideoProvider::getProviderContent() {
 		return NULL;
 	}
 
@@ -1253,7 +1253,7 @@ namespace mb {
 			s = DFBDeviceScreen::createUnderlyingSurface(&dsc);
 
 			rContainer->video.dest = s;
-			frame->setContent(s);
+			frame->setSurfaceContent(s);
 			updateVisualData(frame);
 			return true;
 
@@ -1297,7 +1297,9 @@ namespace mb {
 	}
 
 	bool FFmpegVideoProvider::updateVisualData(ISurface* surface) {
-		rContainer->video.dest = (IDirectFBSurface*)(surface->getContent());
+		rContainer->video.dest = (IDirectFBSurface*)(
+				surface->getSurfaceContent());
+
 		return true;
 	}
 
@@ -1320,7 +1322,7 @@ namespace mb {
 		}
 
 		someSurface = cont->surface;
-		frame = (IDirectFBSurface*)(someSurface->getContent());
+		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
 		if (frame == NULL) {
 			return;
 		}
@@ -1362,7 +1364,7 @@ namespace mb {
 					sur = new DFBSurface(
 							someWindow->getW(), someWindow->getH());
 
-					s2 = (IDirectFBSurface*)(sur->getContent());
+					s2 = (IDirectFBSurface*)(sur->getSurfaceContent());
 
 					DFBCHECK(s2->StretchBlit(
 							s2,
@@ -1424,7 +1426,7 @@ namespace mb {
 		}
 
 		dest = getPerfectDFBSurface();
-		surface->setContent(dest);
+		surface->setSurfaceContent(dest);
 
 		rContainer->surface    = surface;
 		rContainer->video.dest = dest;

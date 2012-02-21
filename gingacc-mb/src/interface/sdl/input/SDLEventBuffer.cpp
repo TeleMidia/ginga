@@ -61,6 +61,8 @@ namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
 		pthread_mutex_init(&ebMutex, NULL);
 
+		myScreen = screen;
+
 		isWaiting = false;
 		pthread_cond_init(&cond, NULL);
 		pthread_mutex_init(&condMutex, NULL);
@@ -82,9 +84,8 @@ namespace mb {
 	void SDLEventBuffer::feed(SDL_Event event) {
 		pthread_mutex_lock(&ebMutex);
 		eventBuffer.push_back(event);
-		pthread_mutex_unlock(&ebMutex);
-
 		eventArrived();
+		pthread_mutex_unlock(&ebMutex);
 	}
 
 	void SDLEventBuffer::wakeUp() {
@@ -95,15 +96,15 @@ namespace mb {
 		event.user.data1 = (void*)(SDLInputEvent::ET_WAKEUP.c_str());
 		event.user.data2 = NULL;
 
-		SDL_PushEvent(&event);
+		feed(event);
 	}
 
 	void SDLEventBuffer::postInputEvent(IInputEvent* event) {
-		SDL_Event* ev;
+		SDL_Event ev;
 
 		if (event != NULL && event->getContent() != NULL) {
-			ev = (SDL_Event*)(event->getContent());
-			SDL_PushEvent(ev);
+			ev = *(SDL_Event*)(event->getContent());
+			feed(ev);
 		}
 
 		if (event != NULL) {
@@ -154,9 +155,10 @@ namespace mb {
 		if (!eventBuffer.empty()) {
 			i = eventBuffer.begin();
 			sdlEvent = *i;
-			eventBuffer.erase(i);
 
 			gingaEvent = new SDLInputEvent(sdlEvent);
+
+			eventBuffer.erase(i);
 		}
 		pthread_mutex_unlock(&ebMutex);
 

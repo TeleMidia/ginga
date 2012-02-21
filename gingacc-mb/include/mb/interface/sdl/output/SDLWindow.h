@@ -74,6 +74,7 @@ namespace mb {
 		private:
 			SDL_Texture* texture;
 			SDL_Surface* winSur;
+			SDL_Surface* curSur;
 
 			GingaScreenID myScreen;
 			GingaWindowID windowId;

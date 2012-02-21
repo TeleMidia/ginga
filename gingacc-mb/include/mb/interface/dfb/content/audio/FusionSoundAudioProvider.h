@@ -95,8 +95,8 @@ namespace mb {
 			virtual string getLoadSymbol();
 
 			static void release();
-			void* getContent();
-			void setContent(void* content){};
+			void* getProviderContent();
+			void setProviderContent(void* content){};
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};

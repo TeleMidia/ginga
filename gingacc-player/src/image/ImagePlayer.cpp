@@ -170,7 +170,7 @@ namespace player {
 
 	void ImagePlayer::play() {
 		if (provider == NULL ||
-				surface == NULL || surface->getContent() == NULL) {
+				surface == NULL || surface->getSurfaceContent() == NULL) {
 
 			return;
 		}

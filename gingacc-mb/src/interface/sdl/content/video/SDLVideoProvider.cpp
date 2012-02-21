@@ -115,7 +115,7 @@ namespace mb {
 		return this->symbol;
 	}
 
-	void* SDLVideoProvider::getContent() {
+	void* SDLVideoProvider::getProviderContent() {
 		if (videoFrame != NULL) {
 			return (void*)(videoFrame->texture);
 		}
@@ -123,7 +123,7 @@ namespace mb {
 		return NULL;
 	}
 
-	void SDLVideoProvider::setContent(void* texture) {
+	void SDLVideoProvider::setProviderContent(void* texture) {
 		if (videoFrame != NULL) {
 			videoFrame->texture = (SDL_Texture*)texture;
 		}

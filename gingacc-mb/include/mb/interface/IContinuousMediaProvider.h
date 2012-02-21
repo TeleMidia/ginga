@@ -88,8 +88,8 @@ namespace mb {
 			virtual void pause()=0;
 			virtual void stop()=0;
 			virtual void setSoundLevel(float level)=0;
-			virtual void setContent(void* content)=0;
-			virtual void* getContent()=0;
+			virtual void setProviderContent(void* content)=0;
+			virtual void* getProviderContent()=0;
 			virtual void getOriginalResolution(int* width, int* height)=0;
 			virtual bool releaseAll()=0;
 			virtual void refreshDR()=0;

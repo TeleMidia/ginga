@@ -157,7 +157,7 @@ namespace mb {
 #endif //DFBTM_PATCH
 	}
 
-	void* DFBFontProvider::getContent() {
+	void* DFBFontProvider::getProviderContent() {
 		return font;
 	}
 
@@ -193,7 +193,7 @@ namespace mb {
 
 	void DFBFontProvider::playOver(ISurface* surface) {
 		IWindow* win;
-		IDirectFBSurface* s = (IDirectFBSurface*)(surface->getContent());
+		IDirectFBSurface* s = (IDirectFBSurface*)(surface->getSurfaceContent());
 
 		if (font != NULL && s != NULL) {
 			s->SetFont(s, font);

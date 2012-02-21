@@ -148,7 +148,7 @@ namespace mb {
 	void DXAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 		clog << "DXAudioProvider::playOver(ISurface* surface, bool hasVisual, IProviderListener* listener)" << endl;
-		DX2DSurface*	s = (DX2DSurface*)(surface->getContent());
+		DX2DSurface*	s = (DX2DSurface*)(surface->getSurfaceContent());
 		// s->setTexture(videoTex);
 		
 		

@@ -245,8 +245,8 @@ namespace mb {
 			string getLoadSymbol();
 
 			void setAVPid(int aPid, int vPid);
-			void* getContent();
-			void setContent(void* content){};
+			void* getProviderContent();
+			void setProviderContent(void* content){};
 			void feedBuffers();
 
 		private:

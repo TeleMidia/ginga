@@ -102,7 +102,7 @@ namespace mb {
 		}
 	}
 
-	void* SDLImageProvider::getContent() {
+	void* SDLImageProvider::getProviderContent() {
 		return (void*)content;
 	}
 
@@ -133,11 +133,10 @@ namespace mb {
 				myScreen, content)) {
 
 			renderedSurface = IMG_Load(imgUri.c_str());
-			content->setContent((void*)renderedSurface);
+			content->setSurfaceContent((void*)renderedSurface);
 
 			parent = (SDLWindow*)(content->getParent());
 			if (parent != NULL) {
-//				parent->renderFrom(content);
 				parent->setRenderedSurface(renderedSurface);
 			}
 

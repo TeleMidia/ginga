@@ -252,7 +252,7 @@ namespace player {
 		provider->RenderTo(provider, destination, NULL);
 		provider->Release(provider);
 
-		surface->setContent(destination);
+		surface->setSurfaceContent(destination);
 
 		if (win != NULL) {
 			surface->setParent(win);

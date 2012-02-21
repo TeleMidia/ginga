@@ -66,6 +66,7 @@ namespace core {
 namespace mb {
 	class SDLEventBuffer : public IEventBuffer {
 		private:
+			GingaScreenID myScreen;
 			pthread_mutex_t ebMutex;
 			vector<SDL_Event> eventBuffer;
 

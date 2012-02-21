@@ -78,9 +78,9 @@ namespace mb {
 		releaseBorderColor();
 		releaseBgColor();
 		releaseSurfaceColor();
-
+/*
 		if (sur != NULL) {
-			if (parent != NULL) {
+			if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
 				if (parent->removeChildSurface(this)) {
 					mySurface = true;
 				}
@@ -93,7 +93,7 @@ namespace mb {
 		if (!mySurface) {
 			sur = NULL;
 		}
-
+*/
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
 		clog << "SDLSurface::~SDLSurface all done" << endl;
@@ -167,16 +167,16 @@ namespace mb {
 		return this->caps;
 	}
 
-	void* SDLSurface::getContent() {
+	void* SDLSurface::getSurfaceContent() {
 		return sur;
 	}
 
-	void SDLSurface::setContent(void* surface) {
+	void SDLSurface::setSurfaceContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
-			if (parent == NULL || (parent)->removeChildSurface(this)) {
+//			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 				sur = NULL;
-			}
+//			}
 		}
 
 		this->sur = (SDL_Surface*)surface;
@@ -185,20 +185,20 @@ namespace mb {
 	bool SDLSurface::setParent(void* parentWindow) {
 		this->parent = (IWindow*)parentWindow;
 
-		if (parent != NULL && chromaColor != NULL) {
+		if (chromaColor != NULL) {
 			parent->setColorKey(
 				    chromaColor->getR(),
 				    chromaColor->getG(),
 				    chromaColor->getB());
 		}
 
-		if (this->sur == NULL && parent != NULL) {
+		/*if (this->sur == NULL && parent != NULL) {
+			sur = (SDL_Surface*)(parent->getContent());
+			parent->setReleaseListener(this);
 			return false;
 		}
 
-		if (parent != NULL) {
-			parent->addChildSurface(this);
-		}
+		parent->addChildSurface(this);*/
 		return true;
 	}
 
