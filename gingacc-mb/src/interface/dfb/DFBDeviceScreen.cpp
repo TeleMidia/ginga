@@ -227,11 +227,15 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 			}
 		}
 
-		gfxLayer->Release(gfxLayer);
-		dfb->Release(dfb);
+		if (gfxLayer != NULL) {
+			gfxLayer->Release(gfxLayer);
+			gfxLayer = NULL;
+		}
 
-		gfxLayer = NULL;
-		dfb      = NULL;
+		if (dfb != NULL) {
+			dfb->Release(dfb);
+			dfb = NULL;
+		}
 	}
 
 	void DFBDeviceScreen::clearWidgetPools() {
