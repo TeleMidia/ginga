@@ -89,8 +89,8 @@ namespace player {
 	class LinksPlayer : public Player,
 			public IInputEventListener, public Thread {
 
-		protected:
-			static IInputManager* im;
+		private:
+			IInputManager* im;
 			struct session* mBrowser;
 			bool hasBrowser;
 			int x, y, w, h;

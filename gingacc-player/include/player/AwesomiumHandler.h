@@ -77,7 +77,6 @@ namespace core {
 namespace player {
 	typedef int AwesomiumHDR;
 
-	static IInputManager* im;
 	static ILocalScreenManager* dm;
 
 	class AwesomiumInfo : public IInputEventListener {
@@ -110,12 +109,18 @@ namespace player {
 
 	class AwesomiumHandler {
 		private:
+			static map<AwesomiumHDR, IInputManager*> _ims;
 			static map<AwesomiumHDR, AwesomiumInfo*> _infos;
 			static AwesomiumHDR _id;
 
 			static bool getAwesomeInfo(
 					AwesomiumHDR id,
 					AwesomiumInfo** aInfo,
+					bool removeInfo=false);
+
+			static bool getAwesomeIM(
+					AwesomiumHDR id,
+					IInputManager** im,
 					bool removeInfo=false);
 
 		public:

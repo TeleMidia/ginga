@@ -141,8 +141,28 @@ namespace player {
 		return hasInfo;
 	}
 
+	bool AwesomiumHandler::getAwesomeIM(
+			AwesomiumHDR id, IInputManager** im, bool removeInfo) {
+
+		map<AwesomiumHDR, IInputManager*>::iterator i;
+		bool hasInfo = false;
+
+		i = _ims.find(id);
+		if (i != _ims.end()) {
+			*im = i->second;
+			hasInfo = true;
+
+			if (removeInfo) {
+				_ims.erase(i);
+			}
+		}
+
+		return hasInfo;
+	}
+
 	AwesomiumHDR AwesomiumHandler::createAwesomium(GingaScreenID screenId) {
 		AwesomiumInfo* aInfo;
+		IInputManager* im;
 
 #if HAVE_COMPSUPPORT
 		if (dm == NULL) {
@@ -164,15 +184,19 @@ namespace player {
 		aInfo->surface = dm->createSurface(screenId);
 
 		_infos[_id] = aInfo;
+		_ims[_id]   = im;
 
 		return _id;
 	}
 
 	void AwesomiumHandler::destroyAwesomium(AwesomiumHDR id) {
 		AwesomiumInfo* aInfo;
+		IInputManager* im;
 
 		if (getAwesomeInfo(id, &aInfo, true)) {
-			im->removeInputEventListener(aInfo);
+			if (getAwesomeIM(id, &im, true)) {
+				im->removeInputEventListener(aInfo);
+			}
 			delete aInfo;
 		}
 	}
@@ -296,6 +320,7 @@ namespace player {
 		int keyCode;
 		int x = 0, y = 0, z = 0;
 		IInputEvent* ev;
+		IInputManager* im;
 
 		ev = aInfo->ev;
 		if (ev == NULL) {
@@ -318,8 +343,10 @@ namespace player {
 	        aInfo->webView->injectKeyboardEvent(keyEvent);
 
 		} else if (ev->isButtonPressType()) {
-			aInfo->mouseX = im->getCurrentXAxisValue();
-			aInfo->mouseY = im->getCurrentYAxisValue();
+			if (getAwesomeIM(aInfo->id, &im, false)) {
+				aInfo->mouseX = im->getCurrentXAxisValue();
+				aInfo->mouseY = im->getCurrentYAxisValue();
+			}
 
 			cout << "AwesomiumHandler::eventHandler MOUSE CLICK on ";
 			cout << aInfo->mouseX << "," << aInfo->mouseY << "'" << endl;
@@ -365,9 +392,13 @@ namespace player {
 	}
 
 	void AwesomiumHandler::setFocus(AwesomiumInfo* aInfo) {
+		IInputManager* im;
+
 		if (aInfo->setFocus && !aInfo->hasFocus) {
 			aInfo->hasFocus = true;
-			im->addInputEventListener(aInfo, NULL);
+			if (getAwesomeIM(aInfo->id, &im, false)) {
+				im->addInputEventListener(aInfo, NULL);
+			}
 			if (aInfo->webView != NULL) {
 				cout << "AwesomiumHandler::setFocus focus" << endl;
 				aInfo->webView->focus();
@@ -375,7 +406,9 @@ namespace player {
 
 		} else if (!aInfo->setFocus && aInfo->hasFocus) {
 			aInfo->hasFocus = false;
-			im->removeInputEventListener(aInfo);
+			if (getAwesomeIM(aInfo->id, &im, false)) {
+				im->removeInputEventListener(aInfo);
+			}
 			if (aInfo->webView != NULL) {
 				cout << "AwesomiumHandler::setFocus unfocus" << endl;
 				aInfo->webView->unfocus();

@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/SDLDeviceScreen.h"
 #include "mb/interface/sdl/content/text/SDLFontProvider.h"
 #include "mb/interface/sdl/output/SDLWindow.h"
+#include "mb/interface/sdl/output/SDLSurface.h"
 
 namespace br {
 namespace pucrio {
@@ -132,6 +133,10 @@ namespace mb {
 			}
 		}
 
+		if (height < 1) {
+			height = 12;
+		}
+
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
 			ntsRenderer();
@@ -150,9 +155,7 @@ namespace mb {
 		return (void*)font;
 	}
 
-	int SDLFontProvider::getStringWidth(const char* text, int textLength) {
-		int w = -1, h = -1;
-
+	void SDLFontProvider::getStringExtents(const char* text, int* w, int* h) {
 		if (font == NULL) {
 //			fontInit = true;
 //			SDLDeviceScreen::addDMPToRendererList(this);
@@ -161,11 +164,25 @@ namespace mb {
 		}
 
 		if (font != NULL) {
-			TTF_SizeText(font, text, &w, &h);
+			TTF_SizeText(font, text, w, h);
 
 		} else {
-			clog << "SDLFontProvider::getStringWidth Warning! ";
+			clog << "SDLFontProvider::getStringExtents Warning! ";
 			clog << "Can't get text size: font is NULL." << endl;
+		}
+	}
+
+	int SDLFontProvider::getStringWidth(const char* text, int textLength) {
+		int w = -1, h = -1;
+		string aux = "";
+
+		if (textLength == 0 || textLength > strlen(text)) {
+			getStringExtents(text, &w, &h);
+
+		} else {
+			aux.assign(text);
+			aux = aux.substr(0, textLength);
+			getStringExtents(aux.c_str(), &w, &h);
 		}
 		return w;
 	}
@@ -199,8 +216,10 @@ namespace mb {
 
 	void SDLFontProvider::ntsPlayOver() {
 		SDLWindow* parent;
-		Uint32 r, g, b, a;
 		IColor* fontColor = NULL;
+		IColor* bgColor   = NULL;
+
+		Uint32 r, g, b, a;
 		SDL_Color sdlColor;
 		SDL_Rect rect;
 		SDL_Surface* renderedSurface;
@@ -253,7 +272,7 @@ namespace mb {
 				initializeFont();
 			}
 
-			text = TTF_RenderText_Solid(
+			text = TTF_RenderText_Blended(
 					font, plainText.c_str(), sdlColor);
 
 			if (text == NULL) {
@@ -271,6 +290,7 @@ namespace mb {
 			renderedSurface = (SDL_Surface*)(parent->getContent());
 			if (renderedSurface == NULL) {
 				SDLDeviceScreen::getRGBAMask(&r, &g, &b, &a);
+
 				renderedSurface = SDL_CreateRGBSurface(
 						0,
 						parent->getW(),
@@ -278,11 +298,19 @@ namespace mb {
 						24,
 						r, g, b, a);
 
+				bgColor = content->getBgColor();
+
+				if (bgColor != NULL) {
+					SDLSurface::fillUnderlyingSurface(renderedSurface, bgColor);
+				}
+
 				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);
 			}
 
 			SDL_UpperBlit(text, NULL, renderedSurface, &rect);
+
+			SDL_FreeSurface(text);
 
 		} else {
 			clog << "SDLFontProvider::ntsPlayOver Warning! Invalid Surface.";

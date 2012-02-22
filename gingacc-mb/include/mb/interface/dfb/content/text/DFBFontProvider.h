@@ -107,6 +107,7 @@ namespace mb {
 			string getLoadSymbol() {return "DFBFontProvider";};
 			void* getProviderContent();
 			int getStringWidth(const char* text, int textLength=0);
+			void getStringExtents(const char* text, int* w, int* h);
 			int getHeight();
 			void playOver(
 					ISurface* surface,

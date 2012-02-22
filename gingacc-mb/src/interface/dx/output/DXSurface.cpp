@@ -278,7 +278,7 @@ namespace mb {
 		clog << "DXSurface::setBgColor(IColor* bgColor)" << endl;
 	}
 
-	void DXSurface::setFont(void* font) {
+	void DXSurface::setSurfaceFont(void* font) {
 		clog << "DXSurface::setFont(void* font)" << endl;
 	}
 

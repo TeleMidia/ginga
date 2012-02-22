@@ -60,22 +60,17 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	IInputManager* LinksPlayer::im = NULL;
-
 	LinksPlayer::LinksPlayer(GingaScreenID screenId, string mrl) :
 			Player(screenId, mrl), Thread::Thread() {
 
 		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
 
 		mBrowser = NULL;
-		this->x = 1;
-		this->y = 1;
-		this->w = 1;
-		this->h = 1;
-
-		if (im == NULL) {
-			im = dm->getInputManager(myScreen);
-		}
+		this->x  = 1;
+		this->y  = 1;
+		this->w  = 1;
+		this->h  = 1;
+		this->im = dm->getInputManager(myScreen);
 
 		setBrowserDFB(dm->getGfxRoot(myScreen));
 		setDisplayMenu(0);

@@ -119,6 +119,8 @@ namespace mb {
 		dmpPool     = new set<IDiscreteMediaProvider*>;
 		mbMode      = "";
 		mbSubSystem = "";
+		screen      = NULL;
+		sdlId       = 0;
 
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "subsystem") == 0) && ((i + 1) < argc)) {
@@ -819,6 +821,8 @@ namespace mb {
 						ownTex = false;
 						uTex   = createTexture(s->renderer, uSur);
 
+						prepareTexture(uTex, win);
+
 					} else {
 						ownTex = true;
 						uTex   = win->getTexture();
@@ -826,6 +830,7 @@ namespace mb {
 
 					if (uTex != NULL) {
 						SDL_RenderCopy(s->renderer, uTex, NULL, &rect);
+						draw(s->renderer, win);
 						if (!ownTex) {
 							releaseTexture(uTex);
 							ownTex = false;
@@ -865,7 +870,9 @@ namespace mb {
 						eventBuffer = (SDLEventBuffer*)(
 								i->first->im->getEventBuffer());
 
-						if (eventBuffer != NULL) {
+						if (eventBuffer != NULL && SDLEventBuffer::checkEvent(
+								i->first->sdlId, event)) {
+
 							eventBuffer->feed(event);
 						}
 					}
@@ -947,6 +954,7 @@ namespace mb {
 			s->screen = SDL_CreateWindowFrom(s->uId);
 			if (s->screen != NULL) {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
+				s->sdlId = SDL_GetWindowID(s->screen);
 			}
 
 		} else {
@@ -981,6 +989,8 @@ namespace mb {
 
 			s->screen = SDL_CreateWindow(
 					title.c_str(), x, y, s->wRes, s->hRes, 0);
+
+			s->sdlId = SDL_GetWindowID(s->screen);
 		}
 
 		if (s->screen != NULL) {
@@ -995,6 +1005,7 @@ namespace mb {
 
 		initCodeMaps();
 		s->im = new InputManager(s->id);
+		s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
 	}
 
 	void SDLDeviceScreen::clearScreen(SDLDeviceScreen* s) {
@@ -1506,6 +1517,49 @@ namespace mb {
 		}
 
 		return window;
+	}
+
+	void SDLDeviceScreen::prepareTexture(SDL_Texture* texture, IWindow* win) {
+		IColor* color;
+		int alpha;
+
+	    if (win != NULL) {
+	    	alpha = win->getTransparencyValue();
+	    	SDL_SetTextureAlphaMod(texture, 255 - alpha);
+	    }
+	}
+
+	void SDLDeviceScreen::draw(SDL_Renderer* renderer, IWindow* win) {
+		SDL_Rect rect;
+		int i, r, g, b, a, bw;
+		Uint8 rr, rg, rb, ra;
+
+	    if (win != NULL) {
+	    	win->getBorder(&r, &g, &b, &a, &bw);
+
+	    	if (bw != 0) {
+	    		SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
+		    	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+
+		    	i = 0;
+		    	while (i != bw) {
+			    	rect.x = win->getX() - i;
+			    	rect.y = win->getY() - i;
+			    	rect.w = win->getW() + 2*i;
+			    	rect.h = win->getH() + 2*i;
+
+		    		SDL_RenderDrawRect(renderer, &rect);
+
+		    		if (bw < 0) {
+		    			i--;
+		    		} else {
+		    			i++;
+		    		}
+		    	}
+
+		    	SDL_SetRenderDrawColor(renderer, rr, rg, rb, ra);
+	    	}
+	    }
 	}
 
 	SDL_Texture* SDLDeviceScreen::createTexture(

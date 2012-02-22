@@ -55,15 +55,264 @@ using namespace ::br::pucrio::telemidia::util;
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
+#include "player/IPlayer.h"
+#include "player/IPlayerListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
 #include "player/PlayersComponentSupport.h"
+
+#include <string>
+using namespace std;
 
 extern "C" {
 #include <stdio.h>
 }
 
-int main(int argc, char** argv, char** envp) {
+class TestPlayerListener : public IPlayerListener {
+	private:
+		string id;
 
-	//TODO: tests
+	public:
+		TestPlayerListener(string id) {
+			this->id = id;
+		};
+
+		~TestPlayerListener() {
+
+		};
+
+		void updateStatus(
+				short code, string parameter, short type, string value) {
+
+			cout << "PlayerListener '" << id << "'";
+			cout << " received the following notification: ";
+
+			switch (code) {
+				case IPlayer::PL_NOTIFY_STOP:
+					cout << "video stop";
+					break;
+
+				default:
+					cout << "code '" << code << "'";
+					break;
+			}
+
+			cout << endl;
+		}
+};
+
+void testPlayer(
+		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
+
+	IWindow* w;
+	IWindow* ww;
+	IWindow* www;
+
+	ISurface* s;
+
+	IPlayer* vid1;
+	IPlayer* vid2;
+	IPlayer* vid3;
+
+	IPlayerListener* l1 = new TestPlayerListener("L1");
+	IPlayerListener* l2 = new TestPlayerListener("L2");
+	IPlayerListener* l3 = new TestPlayerListener("L3");
+
+	w   = dm->createWindow(screen, 10, 10, 100, 100);
+	ww  = dm->createWindow(screen, 90, 90, 150, 150);
+	www = dm->createWindow(screen, 0, 0, 400, 300);
+
+	w->setCaps(w->getCap("ALPHACHANNEL"));
+	w->draw();
+	w->show();
+
+	ww->setCaps(w->getCap("ALPHACHANNEL"));
+	ww->draw();
+	ww->show();
+
+	www->setCaps(w->getCap("ALPHACHANNEL"));
+	www->draw();
+	www->show();
+
+	ww->raiseToTop();
+	w->raiseToTop();
+
+	windows->insert(w);
+	windows->insert(ww);
+	windows->insert(www);
+
+#if HAVE_COMPSUPPORT
+	vid1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+			screen, "corrego1.mp4", true);
+
+	vid2 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+			screen, "corrego1.mp4", true);
+
+	vid3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+			screen, "corrego1.mp4", true);
+#endif
+
+	vid1->addListener(l1);
+	vid1->setOutWindow(w->getId());
+	s = vid1->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)w);
+		vid1->play();
+	}
+
+	vid2->addListener(l2);
+	vid2->setOutWindow(ww->getId());
+	s = vid2->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)ww);
+		vid2->play();
+	}
+
+	vid3->addListener(l3);
+	vid3->setOutWindow(www->getId());
+	s = vid3->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)www);
+		vid3->play();
+	}
+}
+
+bool running = false;
+
+void* blinkWindowSet(void* ptr) {
+	set<IWindow*>* windows;
+	set<IWindow*>::iterator i;
+	bool showing = false;
+
+	windows = (set<IWindow*>*)ptr;
+
+	while (running) {
+		i = windows->begin();
+		while (i != windows->end()) {
+			if (showing) {
+				(*i)->hide();
+			} else {
+				(*i)->show();
+			}
+			++i;
+		}
+		::usleep(100000);
+		showing = !showing;
+	}
+
+	i = windows->begin();
+	while (i != windows->end()) {
+		(*i)->show();
+		++i;
+	}
+
+	return NULL;
+}
+
+int main(int argc, char** argv, char** envp) {
+	GingaScreenID screen1, screen2;
+	int fakeArgc = 5;
+	char* dfbArgv[5];
+	char* sdlArgv[5];
+	ILocalScreenManager* dm;
+
+	setLogToNullDev();
+
+#if HAVE_COMPSUPPORT
+	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
+
+#else
+	cout << "gingacc-player test works only with enabled component support.";
+	cout << endl;
+	exit(0);
+#endif
+
+	int i;
+	bool testAllScreens = false;
+	bool blinkWindows   = false;
+	bool printScreen    = false;
+	set<IWindow*> windows;
+
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--all") == 0)) {
+			testAllScreens = true;
+
+		} else if ((strcmp(argv[i], "--blink") == 0)) {
+			blinkWindows   = true;
+
+		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
+			printScreen    = true;
+		}
+	}
+
+	if (testAllScreens) {
+		dfbArgv[0] = (char*)"testScreen";
+		dfbArgv[1] = (char*)"--vsystem";
+		dfbArgv[2] = (char*)"dfb";
+		dfbArgv[3] = (char*)"--vmode";
+		dfbArgv[4] = (char*)"400x300";
+
+		screen1 = dm->createScreen(fakeArgc, dfbArgv);
+
+		sdlArgv[0] = (char*)"testScreen";
+		sdlArgv[1] = (char*)"--vsystem";
+		sdlArgv[2] = (char*)"sdl";
+		sdlArgv[3] = (char*)"--vmode";
+		sdlArgv[4] = (char*)"400x300";
+		screen2 = dm->createScreen(fakeArgc, sdlArgv);
+
+		testPlayer(dm, screen1, &windows);
+		testPlayer(dm, screen2, &windows);
+
+	} else {
+		screen1 = dm->createScreen(argc, argv);
+		testPlayer(dm, screen1, &windows);
+	}
+
+	if (blinkWindows) {
+		pthread_t tid;
+
+		running = true;
+
+		pthread_create(&tid, 0, blinkWindowSet, &windows);
+
+		cout << "gingacc-mb test is blinking windows. ";
+		cout << "press enter to stop it";
+		cout << endl;
+		getchar();
+		running = false;
+	}
+
+	if (printScreen) {
+		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+
+		if (testAllScreens) {
+			dm->blitScreen(screen2, "/root/printscreen2.bmp");
+		}
+	}
+
+	cout << "gingacc-player test has shown AVPlayers. ";
+	cout << "press enter to automatic release";
+	cout << endl;
+	getchar();
+
+	if (testAllScreens) {
+		dm->clearWidgetPools(screen1);
+		dm->releaseScreen(screen1);
+		dm->releaseMB(screen1);
+
+		dm->clearWidgetPools(screen2);
+		dm->releaseScreen(screen2);
+		dm->releaseMB(screen2);
+
+	} else {
+		dm->clearWidgetPools(screen1);
+		dm->releaseScreen(screen1);
+		dm->releaseMB(screen1);
+	}
+
+	delete dm;
+
 	cout << "Player test done. press enter to continue" << endl;
 	getchar();
 

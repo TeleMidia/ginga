@@ -49,6 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
+#include "mb/interface/CodeMap.h"
 
 #include "config.h"
 
@@ -530,8 +531,10 @@ namespace mb {
 	}
 
 	void InputManager::setAxisBoundaries(int x, int y, int z) {
-		this->maxX = x;
-		this->maxY = y;
+		if (maxX == 0 && maxY == 0) {
+			this->maxX = x;
+			this->maxY = y;
+		}
 	}
 
 	int InputManager::getCurrentXAxisValue() {
@@ -570,6 +573,12 @@ namespace mb {
 
 			inputEvent = eventBuffer->getNextEvent();
 			while (inputEvent != NULL) {
+				if (inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+					delete inputEvent;
+					inputEvent = eventBuffer->getNextEvent();
+					continue;
+				}
+
 				if (inputEvent->isMotionType()) {
 					mouseX = currentXAxis;
 					mouseY = currentYAxis;

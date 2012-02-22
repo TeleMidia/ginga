@@ -144,6 +144,13 @@ namespace mb {
 		this->texture           = NULL;
 		this->winSur            = NULL;
 		this->curSur            = NULL;
+
+		this->borderWidth       = 0;
+		this->bgColor           = NULL;
+		this->borderColor       = NULL;
+		this->winColor          = NULL;
+		this->colorKey          = NULL;
+
 		this->myScreen          = screenId;
 
 		this->rect.x            = x;
@@ -158,11 +165,6 @@ namespace mb {
 		this->stretch           = true;
 		this->caps              = 0;
 		this->transparencyValue = 0x00;
-		this->borderWidth       = 0;
-		this->bgColor           = NULL;
-		this->borderColor       = NULL;
-		this->winColor          = NULL;
-		this->colorKey          = NULL;
 
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
@@ -199,6 +201,81 @@ namespace mb {
 		if (colorKey != NULL) {
 			delete colorKey;
 			colorKey = NULL;
+		}
+	}
+
+	void SDLWindow::setBgColor(int r, int g, int b, int alpha) {
+		releaseBGColor();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		bgColor = new Color(r, g, b, alpha);
+	}
+
+	IColor* SDLWindow::getBgColor() {
+		return bgColor;
+	}
+
+	void SDLWindow::setColorKey(int r, int g, int b) {
+		releaseColorKey();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		colorKey = new Color(r, g, b);
+	}
+
+	IColor* SDLWindow::getColorKey() {
+		return colorKey;
+	}
+
+	void SDLWindow::setWindowColor(int r, int g, int b, int alpha) {
+		releaseWinColor();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		winColor = new Color(r, g, b, alpha);
+	}
+
+	IColor* SDLWindow::getWindowColor() {
+		return winColor;
+	}
+
+	void SDLWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
+		int i;
+
+		releaseBorderColor();
+
+		borderWidth = bWidth;
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		borderColor = new Color(r, g, b, alpha);
+	}
+
+	void SDLWindow::getBorder(
+			int* r, int* g, int* b, int* alpha, int* bWidth) {
+
+		if (borderColor != NULL) {
+			*r      = borderColor->getR();
+			*g      = borderColor->getG();
+			*b      = borderColor->getB();
+			*alpha  = borderColor->getAlpha();
+			*bWidth = borderWidth;
+
+		} else {
+			*r      = 0;
+			*g      = 0;
+			*b      = 0;
+			*alpha  = 0;
+			*bWidth = 0;
 		}
 	}
 
@@ -243,59 +320,6 @@ namespace mb {
 		this->rect.h = h;
 	}
 
-	void SDLWindow::setBackgroundColor(int r, int g, int b, int alpha) {
-		releaseBGColor();
-
-		if (r < 0 || g < 0 || b < 0) {
-			return;
-		}
-
-		bgColor = new Color(r, g, b, alpha);
-	}
-
-	void SDLWindow::setColor(int r, int g, int b, int alpha) {
-		releaseWinColor();
-
-		if (r < 0 || g < 0 || b < 0) {
-			return;
-		}
-
-		winColor = new Color(r, g, b, alpha);
-	}
-
-	void SDLWindow::setColorKey(int r, int g, int b) {
-		releaseColorKey();
-
-		if (r < 0 || g < 0 || b < 0) {
-			return;
-		}
-
-		colorKey = new Color(r, g, b);
-	}
-
-	void SDLWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-		int i;
-
-		releaseBorderColor();
-
-		borderWidth = bWidth;
-
-		if (r < 0 || g < 0 || b < 0) {
-			return;
-		}
-
-		borderColor = new Color(r, g, b, alpha);
-	}
-
-	void SDLWindow::setBorder(IColor* color, int bWidth) {
-		setBorder(
-			    color->getR(),
-			    color->getG(),
-			    color->getB(),
-			    color->getAlpha(),
-			    bWidth);
-	}
-
 	void SDLWindow::moveTo(int posX, int posY) {
 		this->rect.x = posX;
 		this->rect.y = posY;
@@ -325,6 +349,10 @@ namespace mb {
 		}
 
 		transparencyValue = alpha;
+
+		if (texture != NULL) {
+			SDL_SetTextureAlphaMod(texture, 255 - alpha);
+		}
 	}
 
 	int SDLWindow::getTransparencyValue() {
@@ -491,6 +519,7 @@ namespace mb {
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
 		this->texture = texture;
+		SDLDeviceScreen::prepareTexture(texture, this);
 	}
 
 	SDL_Texture* SDLWindow::getTexture() {

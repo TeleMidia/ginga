@@ -151,6 +151,7 @@ typedef struct {
 			pthread_mutex_t dmpMutex;
 
 			SDL_Window* screen;
+			Uint32 sdlId;
 			SDL_Renderer* renderer;
 
 			static pthread_mutex_t ieMutex;
@@ -297,6 +298,8 @@ typedef struct {
 		public:
 
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
+			static void prepareTexture(SDL_Texture* texture, IWindow* win);
+			static void draw(SDL_Renderer* renderer, IWindow* win);
 
 		private:
 			static void insertWindowFromRenderList(

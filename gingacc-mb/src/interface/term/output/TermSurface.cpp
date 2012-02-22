@@ -87,10 +87,6 @@ namespace mb {
 		this->hasExtHandler = false;
 	}
 
-	void TermSurface::write(int x, int y, int w, int h, int pitch, char* buff) {
-
-	}
-
 	void TermSurface::setExternalHandler(bool extHandler) {
 		this->hasExtHandler = extHandler;
 	}
@@ -201,7 +197,7 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermSurface::setFont(void* font) {
+	void TermSurface::setSurfaceFont(void* font) {
 
 	}
 

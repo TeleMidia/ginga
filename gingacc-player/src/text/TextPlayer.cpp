@@ -245,7 +245,7 @@ namespace player {
 			return;
 
 		} else {
-			surface->setFont(font);
+			surface->setSurfaceFont(font);
 		}
 
 		if (fontColor == NULL) {

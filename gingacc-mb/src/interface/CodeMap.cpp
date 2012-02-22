@@ -188,152 +188,151 @@ namespace mb {
 
 	const int CodeMap::KEY_TAP               = 115;
 
+	CodeMap* CodeMap::_instance              = NULL;
+
 	CodeMap::CodeMap() {
-		keyMap = new map<string, int>;
-		(*keyMap)["NO_CODE"]      = KEY_NULL;
-		(*keyMap)["0"]            = KEY_0;
-		(*keyMap)["1"]            = KEY_1;
-		(*keyMap)["2"]            = KEY_2;
-		(*keyMap)["3"]            = KEY_3;
-		(*keyMap)["4"]            = KEY_4;
-		(*keyMap)["5"]            = KEY_5;
-		(*keyMap)["6"]            = KEY_6;
-		(*keyMap)["7"]            = KEY_7;
-		(*keyMap)["8"]            = KEY_8;
-		(*keyMap)["9"]            = KEY_9;
+		map<string,int>::iterator i;
 
-		(*keyMap)["a"]            = KEY_SMALL_A;
-		(*keyMap)["b"]            = KEY_SMALL_B;
-		(*keyMap)["c"]            = KEY_SMALL_C;
-		(*keyMap)["d"]            = KEY_SMALL_D;
-		(*keyMap)["e"]            = KEY_SMALL_E;
-		(*keyMap)["f"]            = KEY_SMALL_F;
-		(*keyMap)["g"]            = KEY_SMALL_G;
-		(*keyMap)["h"]            = KEY_SMALL_H;
-		(*keyMap)["i"]            = KEY_SMALL_I;
-		(*keyMap)["j"]            = KEY_SMALL_J;
-		(*keyMap)["k"]            = KEY_SMALL_K;
-		(*keyMap)["l"]            = KEY_SMALL_L;
-		(*keyMap)["m"]            = KEY_SMALL_M;
-		(*keyMap)["n"]            = KEY_SMALL_N;
-		(*keyMap)["o"]            = KEY_SMALL_O;
-		(*keyMap)["p"]            = KEY_SMALL_P;
-		(*keyMap)["q"]            = KEY_SMALL_Q;
-		(*keyMap)["r"]            = KEY_SMALL_R;
-		(*keyMap)["s"]            = KEY_SMALL_S;
-		(*keyMap)["t"]            = KEY_SMALL_T;
-		(*keyMap)["u"]            = KEY_SMALL_U;
-		(*keyMap)["v"]            = KEY_SMALL_V;
-		(*keyMap)["w"]            = KEY_SMALL_W;
-		(*keyMap)["x"]            = KEY_SMALL_X;
-		(*keyMap)["y"]            = KEY_SMALL_Y;
-		(*keyMap)["z"]            = KEY_SMALL_Z;
+		keyMap["NO_CODE"]      = KEY_NULL;
+		keyMap["0"]            = KEY_0;
+		keyMap["1"]            = KEY_1;
+		keyMap["2"]            = KEY_2;
+		keyMap["3"]            = KEY_3;
+		keyMap["4"]            = KEY_4;
+		keyMap["5"]            = KEY_5;
+		keyMap["6"]            = KEY_6;
+		keyMap["7"]            = KEY_7;
+		keyMap["8"]            = KEY_8;
+		keyMap["9"]            = KEY_9;
 
-		(*keyMap)["A"]            = KEY_CAPITAL_A;
-		(*keyMap)["B"]            = KEY_CAPITAL_B;
-		(*keyMap)["C"]            = KEY_CAPITAL_C;
-		(*keyMap)["D"]            = KEY_CAPITAL_D;
-		(*keyMap)["E"]            = KEY_CAPITAL_E;
-		(*keyMap)["F"]            = KEY_CAPITAL_F;
-		(*keyMap)["G"]            = KEY_CAPITAL_G;
-		(*keyMap)["H"]            = KEY_CAPITAL_H;
-		(*keyMap)["I"]            = KEY_CAPITAL_I;
-		(*keyMap)["J"]            = KEY_CAPITAL_J;
-		(*keyMap)["K"]            = KEY_CAPITAL_K;
-		(*keyMap)["L"]            = KEY_CAPITAL_L;
-		(*keyMap)["M"]            = KEY_CAPITAL_M;
-		(*keyMap)["N"]            = KEY_CAPITAL_N;
-		(*keyMap)["O"]            = KEY_CAPITAL_O;
-		(*keyMap)["P"]            = KEY_CAPITAL_P;
-		(*keyMap)["Q"]            = KEY_CAPITAL_Q;
-		(*keyMap)["R"]            = KEY_CAPITAL_R;
-		(*keyMap)["S"]            = KEY_CAPITAL_S;
-		(*keyMap)["T"]            = KEY_CAPITAL_T;
-		(*keyMap)["U"]            = KEY_CAPITAL_U;
-		(*keyMap)["V"]            = KEY_CAPITAL_V;
-		(*keyMap)["W"]            = KEY_CAPITAL_W;
-		(*keyMap)["X"]            = KEY_CAPITAL_X;
-		(*keyMap)["Y"]            = KEY_CAPITAL_Y;
-		(*keyMap)["Z"]            = KEY_CAPITAL_Z;
+		keyMap["a"]            = KEY_SMALL_A;
+		keyMap["b"]            = KEY_SMALL_B;
+		keyMap["c"]            = KEY_SMALL_C;
+		keyMap["d"]            = KEY_SMALL_D;
+		keyMap["e"]            = KEY_SMALL_E;
+		keyMap["f"]            = KEY_SMALL_F;
+		keyMap["g"]            = KEY_SMALL_G;
+		keyMap["h"]            = KEY_SMALL_H;
+		keyMap["i"]            = KEY_SMALL_I;
+		keyMap["j"]            = KEY_SMALL_J;
+		keyMap["k"]            = KEY_SMALL_K;
+		keyMap["l"]            = KEY_SMALL_L;
+		keyMap["m"]            = KEY_SMALL_M;
+		keyMap["n"]            = KEY_SMALL_N;
+		keyMap["o"]            = KEY_SMALL_O;
+		keyMap["p"]            = KEY_SMALL_P;
+		keyMap["q"]            = KEY_SMALL_Q;
+		keyMap["r"]            = KEY_SMALL_R;
+		keyMap["s"]            = KEY_SMALL_S;
+		keyMap["t"]            = KEY_SMALL_T;
+		keyMap["u"]            = KEY_SMALL_U;
+		keyMap["v"]            = KEY_SMALL_V;
+		keyMap["w"]            = KEY_SMALL_W;
+		keyMap["x"]            = KEY_SMALL_X;
+		keyMap["y"]            = KEY_SMALL_Y;
+		keyMap["z"]            = KEY_SMALL_Z;
 
-		(*keyMap)["*"]            = KEY_ASTERISK;
-		(*keyMap)["#"]            = KEY_NUMBER_SIGN;
+		keyMap["A"]            = KEY_CAPITAL_A;
+		keyMap["B"]            = KEY_CAPITAL_B;
+		keyMap["C"]            = KEY_CAPITAL_C;
+		keyMap["D"]            = KEY_CAPITAL_D;
+		keyMap["E"]            = KEY_CAPITAL_E;
+		keyMap["F"]            = KEY_CAPITAL_F;
+		keyMap["G"]            = KEY_CAPITAL_G;
+		keyMap["H"]            = KEY_CAPITAL_H;
+		keyMap["I"]            = KEY_CAPITAL_I;
+		keyMap["J"]            = KEY_CAPITAL_J;
+		keyMap["K"]            = KEY_CAPITAL_K;
+		keyMap["L"]            = KEY_CAPITAL_L;
+		keyMap["M"]            = KEY_CAPITAL_M;
+		keyMap["N"]            = KEY_CAPITAL_N;
+		keyMap["O"]            = KEY_CAPITAL_O;
+		keyMap["P"]            = KEY_CAPITAL_P;
+		keyMap["Q"]            = KEY_CAPITAL_Q;
+		keyMap["R"]            = KEY_CAPITAL_R;
+		keyMap["S"]            = KEY_CAPITAL_S;
+		keyMap["T"]            = KEY_CAPITAL_T;
+		keyMap["U"]            = KEY_CAPITAL_U;
+		keyMap["V"]            = KEY_CAPITAL_V;
+		keyMap["W"]            = KEY_CAPITAL_W;
+		keyMap["X"]            = KEY_CAPITAL_X;
+		keyMap["Y"]            = KEY_CAPITAL_Y;
+		keyMap["Z"]            = KEY_CAPITAL_Z;
 
-		(*keyMap)["."]            = KEY_PERIOD;
+		keyMap["*"]            = KEY_ASTERISK;
+		keyMap["#"]            = KEY_NUMBER_SIGN;
 
-		(*keyMap)["MENU"]         = KEY_MENU;
-		(*keyMap)["INFO"]         = KEY_INFO;
-		(*keyMap)["GUIDE"]        = KEY_EPG;
+		keyMap["."]            = KEY_PERIOD;
 
-		(*keyMap)["CURSOR_DOWN"]  = KEY_CURSOR_DOWN;
-		(*keyMap)["CURSOR_LEFT"]  = KEY_CURSOR_LEFT;
-		(*keyMap)["CURSOR_RIGHT"] = KEY_CURSOR_RIGHT;
-		(*keyMap)["CURSOR_UP"]    = KEY_CURSOR_UP;
+		keyMap["MENU"]         = KEY_MENU;
+		keyMap["INFO"]         = KEY_INFO;
+		keyMap["GUIDE"]        = KEY_EPG;
 
-		(*keyMap)["CHANNEL_DOWN"] = KEY_CHANNEL_DOWN;
-		(*keyMap)["CHANNEL_UP"]   = KEY_CHANNEL_UP;
+		keyMap["CURSOR_DOWN"]  = KEY_CURSOR_DOWN;
+		keyMap["CURSOR_LEFT"]  = KEY_CURSOR_LEFT;
+		keyMap["CURSOR_RIGHT"] = KEY_CURSOR_RIGHT;
+		keyMap["CURSOR_UP"]    = KEY_CURSOR_UP;
 
-		(*keyMap)["VOLUME_DOWN"]  = KEY_VOLUME_DOWN;
-		(*keyMap)["VOLUME_UP"]    = KEY_VOLUME_UP;
+		keyMap["CHANNEL_DOWN"] = KEY_CHANNEL_DOWN;
+		keyMap["CHANNEL_UP"]   = KEY_CHANNEL_UP;
 
-		(*keyMap)["ENTER"]        = KEY_ENTER;
-		(*keyMap)["OK"]           = KEY_OK;
-		(*keyMap)["TAP"]          = KEY_TAP;
+		keyMap["VOLUME_DOWN"]  = KEY_VOLUME_DOWN;
+		keyMap["VOLUME_UP"]    = KEY_VOLUME_UP;
 
-		(*keyMap)["RED"]          = KEY_RED;
-		(*keyMap)["GREEN"]        = KEY_GREEN;
-		(*keyMap)["YELLOW"]       = KEY_YELLOW;
-		(*keyMap)["BLUE"]         = KEY_BLUE;
+		keyMap["ENTER"]        = KEY_ENTER;
+		keyMap["OK"]           = KEY_OK;
+		keyMap["TAP"]          = KEY_TAP;
 
-		(*keyMap)["BACK"]         = KEY_BACK;
-		(*keyMap)["EXIT"]         = KEY_EXIT;
+		keyMap["RED"]          = KEY_RED;
+		keyMap["GREEN"]        = KEY_GREEN;
+		keyMap["YELLOW"]       = KEY_YELLOW;
+		keyMap["BLUE"]         = KEY_BLUE;
 
-		(*keyMap)["POWER"]        = KEY_POWER;
-		(*keyMap)["REWIND"]       = KEY_REWIND;
-		(*keyMap)["STOP"]         = KEY_STOP;
-		(*keyMap)["EJECT"]        = KEY_EJECT;
-		(*keyMap)["PLAY"]         = KEY_PLAY;
-		(*keyMap)["RECORD"]       = KEY_RECORD;
-		(*keyMap)["PAUSE"]        = KEY_PAUSE;
+		keyMap["BACK"]         = KEY_BACK;
+		keyMap["EXIT"]         = KEY_EXIT;
 
-		valueMap = new map<int, string>;
+		keyMap["POWER"]        = KEY_POWER;
+		keyMap["REWIND"]       = KEY_REWIND;
+		keyMap["STOP"]         = KEY_STOP;
+		keyMap["EJECT"]        = KEY_EJECT;
+		keyMap["PLAY"]         = KEY_PLAY;
+		keyMap["RECORD"]       = KEY_RECORD;
+		keyMap["PAUSE"]        = KEY_PAUSE;
 
-        map<string,int>::iterator it;
-        for (it=keyMap->begin(); it!=keyMap->end(); it++) {
-		    (*valueMap)[it->second] = it->first;
+        for (i = keyMap.begin(); i != keyMap.end(); i++) {
+		    valueMap[i->second] = i->first;
         }
 	}
 
+	CodeMap* CodeMap::getInstance() {
+		if (_instance == NULL) {
+			_instance = new CodeMap();
+		}
+
+		return _instance;
+	}
+
 	int CodeMap::getCode(string codeStr) {
-		if (keyMap->count(codeStr) == 0) {
+		if (keyMap.count(codeStr) == 0) {
 			return KEY_NULL;
 		}
 
-		return (*keyMap)[codeStr];
+		return keyMap[codeStr];
 	}
 
 	string CodeMap::getValue(int code) {
 		map<int, string>::iterator i;
 
-		i = valueMap->find(code);
-		if (i != valueMap->end()) {
+		i = valueMap.find(code);
+		if (i != valueMap.end()) {
 			return i->second;
 		}
 
 		return "";
 	}
 
-	CodeMap* CodeMap::_instance = 0;
-
-	CodeMap* CodeMap::getInstance() {
-		if (CodeMap::_instance == NULL) {
-			CodeMap::_instance = new CodeMap();
-		}
-		return CodeMap::_instance;
-	}
-
 	map<string, int>* CodeMap::cloneKeyMap() {
-		return new map<string, int>(*keyMap);
+		return new map<string, int>(keyMap);
 	}
 }
 }

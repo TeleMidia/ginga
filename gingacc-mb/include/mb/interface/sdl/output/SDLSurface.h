@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "SDL.h"
 
+#include "mb/interface/IFontProvider.h"
 #include "mb/interface/IWindow.h"
 
 namespace br {
@@ -70,6 +71,7 @@ namespace mb {
 			IColor* borderColor;
 			IColor* bgColor;
 			IColor* surfaceColor;
+			IFontProvider* font;
 			int caps;
 
 		public:
@@ -87,7 +89,8 @@ namespace mb {
 			void initialize(GingaScreenID screenId);
 
 		public:
-			void write(int x, int y, int w, int h, int pitch, char* buff);
+			static void fillUnderlyingSurface(SDL_Surface* uSur, IColor* color);
+
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();
 
@@ -113,7 +116,7 @@ namespace mb {
 			IColor* getBgColor();
 			void setColor(int r, int g, int b, int alpha);
 			IColor* getColor();
-			void setFont(void* font);
+			void setSurfaceFont(void* font);
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();
 			void scale(double x, double y);

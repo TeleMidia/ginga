@@ -192,19 +192,13 @@ namespace mb {
 			state = ST_PLAYING;
 			SDLDeviceScreen::addCMPToRendererList(this);
 			parent = (IWindow*)(surface->getParent());
-			if (parent != NULL) {
-				win = dynamic_cast<SDLWindow*>(parent);
-				if (win != NULL) {
-					if (videoFrame->texture == NULL) {
-						waitTexture();
-					}
-
-					win->setTexture(videoFrame->texture);
-
-				} else {
-					clog << "SDLVideoProvider::playOver Warning! NULL win";
-					clog << endl;
+			if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)){
+				win = (SDLWindow*)parent;
+				if (videoFrame->texture == NULL) {
+					waitTexture();
 				}
+
+				win->setTexture(videoFrame->texture);
 			}
 			SDL_PauseAudio(0);
 		}

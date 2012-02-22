@@ -81,6 +81,41 @@ namespace mb {
 		pthread_mutex_destroy(&condMutex);
 	}
 
+	bool SDLEventBuffer::checkEvent(Uint32 winId, SDL_Event event) {
+		switch (event.type) {
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				if (event.key.windowID == winId) {
+					return true;
+				}
+				break;
+
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+				if (event.button.windowID == winId) {
+					return true;
+				}
+				break;
+
+			case SDL_FINGERMOTION:
+			case SDL_FINGERDOWN:
+			case SDL_FINGERUP:
+				if (event.tfinger.windowID == winId) {
+					return true;
+				}
+				break;
+
+			case SDL_TOUCHBUTTONDOWN:
+			case SDL_TOUCHBUTTONUP:
+				if (event.tbutton.windowID == winId) {
+					return true;
+				}
+				break;
+		}
+
+		return false;
+	}
+
 	void SDLEventBuffer::feed(SDL_Event event) {
 		pthread_mutex_lock(&ebMutex);
 		eventBuffer.push_back(event);

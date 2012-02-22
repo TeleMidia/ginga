@@ -105,6 +105,10 @@ namespace player {
 		string line, aux;
 		int surfaceW, surfaceH;
 
+		if (surface != NULL) {
+			surface->clearSurface();
+		}
+
 		if (isXmlStr(mrl)) {
 			mrl = ("/usr/local/lib/ginga/epgfactory/src/" +
 					mrl.substr(mrl.find_last_of("/"),
@@ -228,11 +232,16 @@ namespace player {
 		clog << "' value = '" << value.c_str() << "'" << endl;
 		*/
 
+		if (value == "") {
+			pthread_mutex_unlock(&mutex);
+			return;
+		}
+
 		if (surface == NULL || surface->getSurfaceContent() == NULL) {
 			refresh = false;
 		}
 
-		if (name == "fontColor" && value != "") {
+		if (name == "fontColor") {
 			if (fontColor != NULL) {
 				delete fontColor;
 				fontColor = NULL;
@@ -240,15 +249,14 @@ namespace player {
 
 			fontColor = new Color(value);
 
-		} else if (name == "fontSize" && value != "" &&
-				isNumeric((void*)(value.c_str()))) {
+		} else if (name == "fontSize" && isNumeric((void*)(value.c_str()))) {
 
 			setFontSize((int)(util::stof(value)));
 
-		} else if (name == "fontUri" && value != "") {
+		} else if (name == "fontUri") {
 			setFont(value);
 
-		} else if ((name == "x-bgColor" || name == "bgColor") && value != "") {
+		} else if ((name == "x-bgColor" || name == "bgColor")) {
 			if (surface != NULL) {
 				if (bgColor != NULL) {
 					delete bgColor;
@@ -271,9 +279,7 @@ namespace player {
 						bgColor->getAlpha());
 			}
 
-		} else if ((name == "x-rgbBgColor" || name == "rgbBgColor")
-				&& value != "") {
-
+		} else if (name == "x-rgbBgColor" || name == "rgbBgColor") {
 			params = split(value, ",");
 			if (params->size() == 3) {
 				if (surface != NULL) {
@@ -303,9 +309,7 @@ namespace player {
 			delete params;
 			params = NULL;
 
-		} else if ((name == "x-rgbFontColor" || name == "rgbFontColor")
-				&& value != "") {
-
+		} else if (name == "x-rgbFontColor" || name == "rgbFontColor") {
 			params = split(value, ",");
 			if (params->size() == 3) {
 				if (fontColor != NULL) {
@@ -331,7 +335,7 @@ namespace player {
 			pthread_mutex_lock(&mutex);
 			refresh = false;
 
-		} else if (name == "x-setFile" && value != "") {
+		} else if (name == "x-setFile") {
 			setFile(value);
 			refresh = false;
 		}

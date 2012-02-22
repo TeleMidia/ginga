@@ -171,6 +171,16 @@ namespace mb {
 		return width;
 	}
 
+	void DFBFontProvider::getStringExtents(const char* text, int* w, int* h) {
+		DFBRectangle rect;
+
+		if (font != NULL) {
+			DFBCHECK(font->GetStringExtents(font, text, -1, &rect, NULL));
+			*w = rect.w;
+			*h = rect.h;
+		}
+	}
+
 	int DFBFontProvider::getHeight() {
 		int fontHeight = 0;
 
