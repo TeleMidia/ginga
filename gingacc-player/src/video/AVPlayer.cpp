@@ -1271,6 +1271,9 @@ namespace player {
 
 	double AVPlayer::getCurrentMediaTime() {
 		if (provider == NULL) {
+			clog << "AVPlayer::getCurrentMediaTime returning -1";
+			clog << " cause provider is NULL";
+			clog << endl;
 			this->wakeUp();
 			return -1;
 		}
@@ -1552,6 +1555,8 @@ namespace player {
 		double timeRemain;
 		double totalTime;
 
+		clog << "AVPlayer::run" << endl;
+
 		lock();
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
@@ -1600,6 +1605,10 @@ namespace player {
 				dur = totalTime;
 			}
 
+			clog << "AVPlayer::run total media time that will be considered ";
+			clog << " is '" << dur << "'";
+			clog << endl;
+
 			if (isInfinity(dur)) {
 				clog << "AVPlayer::run duration is INF";
 				clog << " => returning" << endl;
@@ -1613,13 +1622,13 @@ namespace player {
 			Sleep(850);
 #endif
 			currentTime = getCurrentMediaTime();
-			if (currentTime > 0) {
+			if (currentTime >= 0) {
 				while (dur > (currentTime + 0.1)) {
-					/*clog << "AVPlayer::run dur = '" << dur;
+					clog << "AVPlayer::run dur = '" << dur;
 					clog << "' curMediaTime = '";
 					clog << currentTime << "' total = '";
 					clog << getTotalMediaTime();
-					clog << "' for '" << mrl << "'" << endl;*/
+					clog << "' for '" << mrl << "'" << endl;
 
 					if (status != PLAY) {
 						clog << "AVPlayer::run status != play => exiting";
@@ -1654,10 +1663,20 @@ namespace player {
 						break;
 					}
 				}
+
+				clog << "AVPlayer::run has exited from loop cause dur = '";
+				clog << dur << "' and current time = '" << currentTime;
+				clog << "'";
+				clog << endl;
+
+			} else {
+				clog << "AVPlayer::run can't do nothing cause current time is";
+				clog << " '" << currentTime << "'";
+				clog << endl;
 			}
 		}
 
-		/*clog << "AVPlayer::run(" << mrl << ") notifying ... " << endl;*/
+		clog << "AVPlayer::run(" << mrl << ") notifying ... " << endl;
 		if (status != PAUSE) {
 			presented = true;
 		}

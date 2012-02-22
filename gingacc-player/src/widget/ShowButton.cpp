@@ -71,15 +71,6 @@ namespace player {
 		win            = NULL;
 	}
 
-	ShowButton* ShowButton::_instance = NULL;
-
-	ShowButton* ShowButton::getInstance(GingaScreenID screenId) {
-		if (ShowButton::_instance == NULL) {
-			ShowButton::_instance = new ShowButton(screenId);
-		}
-		return ShowButton::_instance;
-	}
-
 	void ShowButton::initializeWindow() {
 		int x = 0, y, w, h;
 
@@ -159,12 +150,7 @@ namespace player {
 		switch (status) {
 			case PAUSE:
 				clog << "ShowButton::run PAUSE" << endl;
-#ifdef _WIN32		
-				render(getUserDocAndSetPath().append(
-						"\\resources\\images\\pauseButton.png"));
-#else
 				render("/usr/local/etc/ginga/files/img/button/pauseButton.png");
-#endif
 				break;
 
 			case STOP:
@@ -173,16 +159,8 @@ namespace player {
 					release();
 				}
 
-#ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resources\\images\\stopButton.png"));
-#else
 				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
-#endif
-#ifndef _WIN32
 				::usleep(1000000);
-#else
-				Sleep(1000);
-#endif
 				release();
 				break;
 
@@ -192,16 +170,8 @@ namespace player {
 					release();
 				}
 
-#ifdef _WIN32		
-				render(getUserDocAndSetPath().append("\\resources\\images\\playButton.png"));
-#else
 				render("/usr/local/etc/ginga/files/img/button/playButton.png");
-#endif
-#ifndef _WIN32
 				::usleep(1000000);
-#else
-				Sleep(1000);
-#endif
 				release();
 				break;
 
@@ -222,8 +192,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::player::IShowButton*
 		createShowButton(GingaScreenID screenId) {
 
 	br::pucrio::telemidia::ginga::core::player::ShowButton* sb;
-	sb = br::pucrio::telemidia::ginga::core::player::ShowButton::getInstance(
-			screenId);
+	sb = new br::pucrio::telemidia::ginga::core::player::ShowButton(screenId);
 
 	return sb;
 }

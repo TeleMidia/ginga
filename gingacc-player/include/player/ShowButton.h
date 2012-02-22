@@ -80,23 +80,19 @@ namespace ginga {
 namespace core {
 namespace player {
 	class ShowButton : public IShowButton, public Thread {
-		protected:
+		private:
 			short status;
 			static const short NONE = 0;
 			static const short PLAY = 1;
 			static const short PAUSE = 2;
 			static const short STOP = 3;
 
-			static ShowButton* _instance;
 			GingaScreenID myScreen;
 			short previousStatus;
 			IWindow* win;
 
-		private:
-			ShowButton(GingaScreenID screenId);
-
 		public:
-			static ShowButton* getInstance(GingaScreenID screenId);
+			ShowButton(GingaScreenID screenId);
 
 			void initializeWindow();
 			void stop();

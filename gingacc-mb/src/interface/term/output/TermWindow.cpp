@@ -118,14 +118,6 @@ namespace mb {
 
 	}
 
-	void TermWindow::setBackgroundColor(int r, int g, int b, int alpha) {
-
-	}
-
-	void TermWindow::setColorKey(int r, int g, int b) {
-
-	}
-
 	void TermWindow::moveTo(int posX, int posY) {
 
 	}
@@ -196,18 +188,6 @@ namespace mb {
 
 	void* TermWindow::getContent() {
 		return NULL;
-	}
-
-	void TermWindow::setColor(int r, int g, int b, int alpha) {
-
-	}
-
-	void TermWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-
-	}
-
-	void TermWindow::setBorder(IColor* color, int bWidth) {
-
 	}
 
 	void TermWindow::setGhostWindow(bool ghost) {

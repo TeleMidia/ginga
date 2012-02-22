@@ -94,7 +94,6 @@ namespace mb {
 			void initialize(GingaScreenID screenId);
 
 		public:
-			void write(int x, int y, int w, int h, int pitch, char* buff);
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();
 
@@ -120,7 +119,7 @@ namespace mb {
 			IColor* getBgColor();
 			void setColor(int r, int g, int b, int alpha);
 			IColor* getColor();
-			void setFont(void* font);
+			void setSurfaceFont(void* font);
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();
 			void scale(double x, double y);

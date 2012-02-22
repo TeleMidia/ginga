@@ -138,6 +138,11 @@ namespace mb {
 		}
 		unlockChilds();
 
+		releaseBGColor();
+		releaseBorderColor();
+		releaseWinColor();
+		releaseColorKey();
+
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
 		if (winSur != NULL) {
@@ -179,6 +184,13 @@ namespace mb {
 
 		this->win             = NULL;
 		this->winSur          = NULL;
+
+		this->borderWidth     = 0;
+		this->bgColor         = NULL;
+		this->borderColor     = NULL;
+		this->winColor        = NULL;
+		this->colorKey        = NULL;
+
 		this->myScreen        = screenId;
 
 		this->x               = x;
@@ -187,10 +199,7 @@ namespace mb {
 		this->height          = h;
 		this->ghost           = false;
 		this->visible         = false;
-		this->r               = -1;
-		this->g               = -1;
-		this->b               = -1;
-		this->alpha           = 0xFF;
+
 		this->childSurfaces   = new vector<ISurface*>;
 		this->releaseListener = NULL;
 		this->fit             = true;
@@ -200,6 +209,185 @@ namespace mb {
 
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
+	}
+
+
+	void DFBWindow::releaseBGColor() {
+		if (bgColor != NULL) {
+			delete bgColor;
+			bgColor = NULL;
+		}
+	}
+
+	void DFBWindow::releaseBorderColor() {
+		if (borderColor != NULL) {
+			delete borderColor;
+			borderColor = NULL;
+		}
+	}
+
+	void DFBWindow::releaseWinColor() {
+		if (winColor != NULL) {
+			delete winColor;
+			winColor = NULL;
+		}
+	}
+
+	void DFBWindow::releaseColorKey() {
+		if (colorKey != NULL) {
+			delete colorKey;
+			colorKey = NULL;
+		}
+	}
+
+	void DFBWindow::setBgColor() {
+		int r, g, b, alpha;
+
+		if (win == NULL) {
+			return;
+		}
+
+		if (winSur != NULL) {
+			if (bgColor == NULL) {
+				if (caps & DWCAPS_ALPHACHANNEL) {
+					DFBCHECK(win->SetOptions(win, (DFBWindowOptions)
+						    (DWOP_ALPHACHANNEL)));
+				}
+				DFBCHECK(winSur->SetColor(winSur, 0x00, 0x00, 0x00, 0x00));
+				DFBCHECK(winSur->Clear(winSur, 0x00, 0x00, 0x00, 0x00));
+
+			} else {
+				r     = bgColor->getR();
+				g     = bgColor->getG();
+				b     = bgColor->getB();
+				alpha = bgColor->getAlpha();
+
+				DFBCHECK(winSur->Clear(winSur, r, g, b, alpha));
+				DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
+			}
+
+			DFBCHECK(winSur->FillRectangle(winSur, 0, 0, width, height));
+			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
+		}
+	}
+
+	void DFBWindow::setBgColor(int r, int g, int b, int alpha) {
+		//clog << this << ">> DFBWindow::setBgColor" << endl;
+
+		releaseBGColor();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		bgColor = new Color(r, g, b, alpha);
+		setBgColor();
+	}
+
+	IColor* DFBWindow::getBgColor() {
+		return bgColor;
+	}
+
+	void DFBWindow::setColorKey(int r, int g, int b) {
+		//clog << this << ">> DFBWindow::setColorKey" << endl;
+		//lock();
+
+		releaseColorKey();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		colorKey = new Color(r, g, b);
+
+		if (win == NULL) {
+			return;
+		}
+
+		DFBCHECK(win->SetColorKey(win, r, g, b));
+		if (caps & DWCAPS_ALPHACHANNEL) {
+			DFBCHECK(win->SetOptions(win, (DFBWindowOptions)
+				    (DWOP_COLORKEYING | DWOP_ALPHACHANNEL)));
+
+		} else {
+			DFBCHECK(win->SetOptions(
+					win, (DFBWindowOptions)(DWOP_COLORKEYING)));
+		}
+
+		//unlock();
+		//setBgColor(r, g, b, alpha);
+	}
+
+	IColor* DFBWindow::getColorKey() {
+		return colorKey;
+	}
+
+	void DFBWindow::setWindowColor(int r, int g, int b, int alpha) {
+		releaseWinColor();
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		winColor = new Color(r, g, b, alpha);
+
+		if (win != NULL && winSur != NULL) {
+			DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
+		}
+	}
+
+	IColor* DFBWindow::getWindowColor() {
+		return winColor;
+	}
+
+	void DFBWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
+		int i;
+
+		releaseBorderColor();
+
+		borderWidth = bWidth;
+
+		if (r < 0 || g < 0 || b < 0) {
+			return;
+		}
+
+		borderColor = new Color(r, g, b, alpha);
+		borderWidth = bWidth;
+
+		//lock();
+		if (win != NULL && winSur != NULL) {
+			DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
+			if (bWidth < 0) {
+				bWidth = bWidth * -1;
+			}
+
+			for (i=0; i < bWidth; i++) {
+				DFBCHECK(winSur->DrawRectangle(
+						winSur, i, i, width - (2*i), height - (2*i)));
+			}
+
+			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
+		}
+		//unlock();
+	}
+
+	void DFBWindow::getBorder(
+			int* r, int* g, int* b, int* alpha, int* bWidth) {
+
+		if (borderColor != NULL) {
+			*r      = borderColor->getR();
+			*g      = borderColor->getG();
+			*b      = borderColor->getB();
+			*alpha  = borderColor->getAlpha();
+			*bWidth = borderWidth;
+
+		} else {
+			*r      = 0;
+			*g      = 0;
+			*b      = 0;
+			*alpha  = 0;
+			*bWidth = 0;
+		}
 	}
 
 	GingaScreenID DFBWindow::getScreen() {
@@ -300,7 +488,7 @@ namespace mb {
 			DFBCHECK(win->SetOptions(win, (DFBWindowOptions)DWOP_ALPHACHANNEL));
 		}
 
-		setBackgroundColor(r, g, b, alpha);
+		setBgColor();
 	}
 
 	void DFBWindow::setBounds(int posX, int posY, int w, int h) {
@@ -315,59 +503,6 @@ namespace mb {
 			unprotectedValidate();
 		}
 		unlock();
-	}
-
-	void DFBWindow::setBackgroundColor(int r, int g, int b, int alpha) {
-		//clog << this << ">> DFBWindow::setBackgroundColor" << endl;
-		if (win == NULL) {
-			return;
-		}
-
-		if (winSur != NULL) {
-			this->r = r;
-			this->g = g;
-			this->b = b;
-			this->alpha = alpha;
-
-			if (r < 0 || g < 0 || b < 0) {
-				if (caps & DWCAPS_ALPHACHANNEL) {
-					DFBCHECK(win->SetOptions(win, (DFBWindowOptions)
-						    (DWOP_ALPHACHANNEL)));
-				}
-				DFBCHECK(winSur->SetColor(winSur, 0x00, 0x00, 0x00, 0x00));
-				DFBCHECK(winSur->Clear(winSur, 0x00, 0x00, 0x00, 0x00));
-
-			} else {
-				//DFBCHECK(win->SetOptions(win, (DFBWindowOptions)(DWOP_OPAQUE_REGION)));
-				DFBCHECK(winSur->Clear(winSur, r, g, b, alpha));
-				DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
-				DFBCHECK(winSur->FillRectangle(winSur, 0, 0, width, height));
-			}
-
-			DFBCHECK(winSur->FillRectangle(winSur, 0, 0, width, height));
-			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
-		}
-	}
-
-	void DFBWindow::setColorKey(int r, int g, int b) {
-		//clog << this << ">> DFBWindow::setColorKey" << endl;
-		//lock();
-		if (win == NULL) {
-			return;
-		}
-
-		DFBCHECK(win->SetColorKey(win, r, g, b));
-		if (caps & DWCAPS_ALPHACHANNEL) {
-			DFBCHECK(win->SetOptions(win, (DFBWindowOptions)
-				    (DWOP_COLORKEYING | DWOP_ALPHACHANNEL)));
-
-		} else {
-			DFBCHECK(win->SetOptions(
-					win, (DFBWindowOptions)(DWOP_COLORKEYING)));
-		}
-
-		//unlock();
-		//setBackgroundColor(r, g, b, alpha);
 	}
 
 	void DFBWindow::moveTo(int posX, int posY) {
@@ -531,40 +666,6 @@ namespace mb {
 		}
 	}
 */
-	void DFBWindow::setColor(int r, int g, int b, int alpha) {
-		if (win != NULL && winSur != NULL) {
-			DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
-		}
-	}
-
-	void DFBWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-		int i;
-
-		//lock();
-		if (win != NULL && winSur != NULL) {
-			DFBCHECK(winSur->SetColor(winSur, r, g, b, alpha));
-			if (bWidth < 0) {
-				bWidth = bWidth * -1;
-			}
-
-			for (i=0; i < bWidth; i++) {
-				DFBCHECK(winSur->DrawRectangle(
-						winSur, i, i, width - (2*i), height - (2*i)));
-			}
-
-			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
-		}
-		//unlock();
-	}
-
-	void DFBWindow::setBorder(IColor* color, int bWidth) {
-		setBorder(
-			    color->getR(),
-			    color->getG(),
-			    color->getB(),
-			    color->getAlpha(),
-			    bWidth);
-	}
 
 	void DFBWindow::setGhostWindow(bool ghost) {
 		this->ghost = ghost;
@@ -619,9 +720,6 @@ namespace mb {
 		unsigned int i;
 		vector<ISurface*>::iterator j;
 		ISurface* surface;
-
-		cout << "DFBWindow::removeChildSurface '";
-		cout << s << "'" << endl;
 
 		lockChilds();
 		if (releaseListener == s) {

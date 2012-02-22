@@ -119,6 +119,7 @@ namespace mb {
 	void SDLImageProvider::ntsPlayOver() {
 		SDL_Surface* renderedSurface;
 		SDLWindow* parent;
+		IColor* bgColor;
 
 		if (!initialized) {
 			initialized = true;
@@ -133,6 +134,12 @@ namespace mb {
 				myScreen, content)) {
 
 			renderedSurface = IMG_Load(imgUri.c_str());
+
+			bgColor = content->getBgColor();
+			if (bgColor != NULL) {
+				SDLSurface::fillUnderlyingSurface(renderedSurface, bgColor);
+			}
+
 			content->setSurfaceContent((void*)renderedSurface);
 
 			parent = (SDLWindow*)(content->getParent());

@@ -76,17 +76,18 @@ namespace mb {
 			SDL_Surface* winSur;
 			SDL_Surface* curSur;
 
+			int borderWidth;
+			IColor* bgColor;
+			IColor* borderColor;
+			IColor* winColor;
+			IColor* colorKey;
+
 			GingaScreenID myScreen;
 			GingaWindowID windowId;
 			GingaWindowID parentId;
 
 			SDL_Rect rect;
 
-			int borderWidth;
-			IColor* bgColor;
-			IColor* borderColor;
-			IColor* winColor;
-			IColor* colorKey;
 			int transparencyValue;
 			bool visible;
 			bool ghost;
@@ -127,6 +128,15 @@ namespace mb {
 			void releaseBorderColor();
 
 		public:
+			void setBgColor(int r, int g, int b, int alpha);
+			IColor* getBgColor();
+			void setColorKey(int r, int g, int b);
+			IColor* getColorKey();
+			void setWindowColor(int r, int g, int b, int alpha);
+			IColor* getWindowColor();
+			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
+			void getBorder(int* r, int* g, int* b, int* alpha, int* bWidth);
+
 			GingaScreenID getScreen();
 			void revertContent();
 			void setReleaseListener(ISurface* listener);
@@ -137,11 +147,6 @@ namespace mb {
 
 			void draw();
 			void setBounds(int x, int y, int width, int height);
-			void setBackgroundColor(int r, int g, int b, int alpha);
-			void setColorKey(int r, int g, int b);
-			void setColor(int r, int g, int b, int alpha=255);
-			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
-			void setBorder(IColor* color, int bWidth=1);
 			void moveTo(int x, int y);
 			void resize(int width, int height);
 			void raiseToTop();

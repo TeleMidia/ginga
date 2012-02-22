@@ -64,6 +64,19 @@ namespace mb {
 	class IWindow {
 		public:
 			virtual ~IWindow(){};
+
+			virtual void setBgColor(int r, int g, int b, int alpha)=0;
+			virtual IColor* getBgColor()=0;
+			virtual void setColorKey(int r, int g, int b)=0;
+			virtual IColor* getColorKey()=0;
+			virtual void setWindowColor(int r, int g, int b, int alpha)=0;
+			virtual IColor* getWindowColor()=0;
+			virtual void setBorder(
+					int r, int g, int b, int alpha=255, int bWidth=1)=0;
+
+			virtual void getBorder(
+					int* r, int* g, int* b, int* alpha, int* bWidth)=0;
+
 			virtual GingaScreenID getScreen()=0;
 			virtual void revertContent()=0;
 			virtual void setReleaseListener(ISurface* listener)=0;
@@ -73,8 +86,6 @@ namespace mb {
 			virtual int getCaps()=0;
 			virtual void draw()=0;
 			virtual void setBounds(int x, int y, int width, int height)=0;
-			virtual void setBackgroundColor(int r, int g, int b, int alpha)=0;
-			virtual void setColorKey(int r, int g, int b)=0;
 			virtual void moveTo(int x, int y)=0;
 			virtual void resize(int width, int height)=0;
 			virtual void raiseToTop()=0;
@@ -93,11 +104,7 @@ namespace mb {
 			virtual void setW(int w)=0;
 			virtual void setH(int h)=0;
 			virtual void* getContent()=0;
-			virtual void setColor(int r, int g, int b, int alpha)=0;
-			virtual void setBorder(
-					int r, int g, int b, int alpha, int bWidth)=0;
 
-			virtual void setBorder(IColor* color, int bWidth)=0;
 			virtual void setGhostWindow(bool ghost)=0;
 			virtual bool isVisible()=0;
 			virtual void validate()=0;

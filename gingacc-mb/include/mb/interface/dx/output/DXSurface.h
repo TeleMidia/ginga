@@ -98,7 +98,7 @@ namespace mb {
 			void setBorder(IColor* borderColor);
 			void setBgColor(IColor* bgColor);
 			void setColor(IColor* writeColor);
-			void setFont(void* font);
+			void setSurfaceFont(void* font);
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();
 			void blit(

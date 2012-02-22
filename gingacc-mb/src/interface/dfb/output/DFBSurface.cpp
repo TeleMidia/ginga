@@ -167,21 +167,6 @@ namespace mb {
 		this->hasExtHandler = false;
 	}
 
-	void DFBSurface::write(int x, int y, int w, int h, int pitch, char* buff) {
-		DFBRectangle* rect = new DFBRectangle;
-
-		if (sur != NULL) {
-			rect->x = x;
-			rect->y = y;
-			rect->w = w;
-			rect->h = h;
-
-			sur->Write(sur, rect, buff, pitch);
-		}
-
-		delete rect;
-	}
-
 	void DFBSurface::setExternalHandler(bool extHandler) {
 		this->hasExtHandler = extHandler;
 	}
@@ -220,7 +205,6 @@ namespace mb {
 
 	void DFBSurface::setSurfaceContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
-			cout << "DFBSurface::setSurfaceContent" << endl;
 			if (parent == NULL || (parent)->removeChildSurface(this)) {
 				DFBDeviceScreen::releaseUnderlyingSurface(sur);
 				sur = NULL;
@@ -429,7 +413,7 @@ namespace mb {
 		return surfaceColor;
 	}
 
-	void DFBSurface::setFont(void* font) {
+	void DFBSurface::setSurfaceFont(void* font) {
 		IDirectFBFont* f = NULL;
 
 		if (sur != NULL) {

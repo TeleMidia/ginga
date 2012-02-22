@@ -78,6 +78,7 @@ namespace mb {
 			SDLEventBuffer(GingaScreenID screen);
 			virtual ~SDLEventBuffer();
 
+			static bool checkEvent(Uint32 winId, SDL_Event event);
 			void feed(SDL_Event event);
 
 			void wakeUp();

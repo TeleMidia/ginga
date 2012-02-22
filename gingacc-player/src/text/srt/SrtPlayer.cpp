@@ -298,7 +298,6 @@ namespace player {
 	}
 
 	void SrtPlayer::setPropertyValue(string name, string value) {
-
 		if (name == "x-setFontUri") {
 		    setFont(value);
 

@@ -259,7 +259,7 @@ static int l_attrFont (lua_State* L)
 			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
 
 	if (font == NULL) luaL_error(L, "invalid font: %s", path);
-	canvas->sfc->setFont((void*)font);
+	canvas->sfc->setSurfaceFont((void*)font);
 	delete font;
 	return 0;
 }

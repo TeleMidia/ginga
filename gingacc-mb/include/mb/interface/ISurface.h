@@ -64,8 +64,6 @@ namespace mb {
 	class ISurface {
 		public:
 			virtual ~ISurface(){};
-			virtual void write(
-					int x, int y, int w, int h, int pitch, char* buff)=0;
 
 			virtual void setExternalHandler(bool extHandler)=0;
 			virtual bool hasExternalHandler()=0;
@@ -91,7 +89,7 @@ namespace mb {
 			virtual IColor* getColor()=0;
 			virtual void setChromaColor(int r, int g, int b, int alpha)=0;
 			virtual IColor* getChromaColor()=0;
-			virtual void setFont(void* font)=0;
+			virtual void setSurfaceFont(void* font)=0;
 			virtual void flip()=0;
 			virtual void scale(double x, double y)=0;
 			virtual void blit(

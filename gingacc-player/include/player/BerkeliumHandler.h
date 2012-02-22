@@ -88,8 +88,8 @@ namespace player {
   class BerkeliumHandler : public WindowDelegate, public IInputEventListener {
 	private:
 		std::string mURL;
-		static IInputManager* im;
 		ILocalScreenManager* dm;
+		IInputManager* im;
 		ISurface* surface;
 		int w, h;
 		Context* context;

@@ -182,7 +182,8 @@ int main(int argc, char** argv, char** envp) {
 
 	int i;
 	bool testAllScreens = false;
-	bool blinkWindows = false;
+	bool blinkWindows   = false;
+	bool printScreen    = false;
 	set<IWindow*> windows;
 
 	for (i = 1; i < argc; i++) {
@@ -191,6 +192,9 @@ int main(int argc, char** argv, char** envp) {
 
 		} else if ((strcmp(argv[i], "--blink") == 0)) {
 			blinkWindows   = true;
+
+		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
+			printScreen    = true;
 		}
 	}
 
@@ -230,6 +234,14 @@ int main(int argc, char** argv, char** envp) {
 		cout << endl;
 		getchar();
 		running = false;
+	}
+
+	if (printScreen) {
+		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+
+		if (testAllScreens) {
+			dm->blitScreen(screen2, "/root/printscreen2.bmp");
+		}
 	}
 
 	cout << "gingacc-player test has shown ImagePlayers. ";

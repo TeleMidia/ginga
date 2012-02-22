@@ -66,8 +66,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	IInputManager* BerkeliumHandler::im = NULL;
-
 	BerkeliumHandler::BerkeliumHandler() {
 #if HAVE_COMPSUPPORT
 		dm = ((LocalScreenManagerCreator*)(

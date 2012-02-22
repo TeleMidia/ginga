@@ -130,6 +130,7 @@ namespace mb {
 	void SDLSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
+		this->font          = NULL;
 		this->parent        = NULL;
 		this->chromaColor   = NULL;
 		this->borderColor   = NULL;
@@ -139,8 +140,14 @@ namespace mb {
 		this->hasExtHandler = false;
 	}
 
-	void SDLSurface::write(int x, int y, int w, int h, int pitch, char* buff) {
+	void SDLSurface::fillUnderlyingSurface(
+			SDL_Surface* uSur, IColor* color) {
 
+		SDL_FillRect(uSur, NULL, SDL_MapRGB(
+				uSur->format,
+				color->getR(),
+				color->getG(),
+				color->getB()));
 	}
 
 	void SDLSurface::setExternalHandler(bool extHandler) {
@@ -211,6 +218,8 @@ namespace mb {
 			return;
 		}
 
+		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
+
 		if (parent != NULL) {
 			parent->clearContent();
 		}
@@ -218,32 +227,64 @@ namespace mb {
 
 	void SDLSurface::clearSurface() {
 		if (sur == NULL) {
+			clog << "DFBSurface::clearContent Warning! ";
+			clog << "Can't clear content: ";
+			clog << "internal surface is NULL" << endl;
 			return;
 		}
 
-		//sur->Clear(sur, 0, 0, 0, 0xFF);
+		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
+
+		if (parent != NULL) {
+			parent->clearContent();
+		}
 	}
 
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
-
+		/*
+		 * TODO: only a SDL_Renderer can draw lines in SDL 2.0
+		 *       create a vector with lines to pass it to the renderer
+		 */
 	}
 
 	void SDLSurface::drawRectangle(int x, int y, int w, int h) {
-
+		/*
+		 * TODO: only a SDL_Renderer can draw non-filled rectangles in SDL 2.0
+		 *       create a vector with rectangles to pass it to the renderer
+		 */
 	}
 
 	void SDLSurface::fillRectangle(int x, int y, int w, int h) {
+		SDL_Rect rect;
 
+		if (sur != NULL && surfaceColor != NULL) {
+			rect.x = x;
+			rect.y = y;
+			rect.w = w;
+			rect.h = h;
+
+			SDL_FillRect(sur, &rect, SDL_MapRGB(
+					sur->format,
+					surfaceColor->getR(),
+					surfaceColor->getG(),
+					surfaceColor->getB()));
+		}
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {
-
+		if (font != NULL) {
+			font->playOver(this, txt, x, y, 0);
+		}
 	}
 
 	void SDLSurface::setChromaColor(int r, int g, int b, int alpha) {
 		releaseChromaColor();
 
 		this->chromaColor = new Color(r, g, b, alpha);
+
+		if (sur != NULL) {
+			SDL_SetColorKey(sur, SDL_TRUE, SDL_MapRGB(sur->format, r, g, b));
+		}
 	}
 
 	IColor* SDLSurface::getChromaColor() {
@@ -258,12 +299,21 @@ namespace mb {
 
 	IColor* SDLSurface::getBorderColor() {
 		return borderColor;
+
+		/*
+		 * TODO: only a SDL_Renderer can draw non-filled rectangles in SDL 2.0
+		 *       create a vector with rectangles to pass it to the renderer
+		 */
 	}
 
 	void SDLSurface::setBgColor(int r, int g, int b, int alpha) {
 		releaseBgColor();
 
 		this->bgColor = new Color(r, g, b, alpha);
+
+		if (sur != NULL) {
+			fillUnderlyingSurface(sur, bgColor);
+		}
 	}
 
 	IColor* SDLSurface::getBgColor() {
@@ -280,8 +330,8 @@ namespace mb {
 		return surfaceColor;
 	}
 
-	void SDLSurface::setFont(void* font) {
-
+	void SDLSurface::setSurfaceFont(void* font) {
+		this->font = (IFontProvider*)font;
 	}
 
 	void SDLSurface::flip() {
@@ -310,32 +360,70 @@ namespace mb {
 			int x, int y, ISurface* src,
 			int srcX, int srcY, int srcW, int srcH) {
 
+		SDL_Rect srcRect;
+		SDL_Rect dstRect;
+		SDL_Surface* uSur;
 
+		if (sur != NULL) {
+			uSur = (SDL_Surface*)(src->getSurfaceContent());
+
+			if (uSur != NULL) {
+				srcRect.x = srcX;
+				srcRect.y = srcY;
+				srcRect.w = srcW;
+				srcRect.h = srcH;
+
+				dstRect.x = x;
+				dstRect.y = y;
+				dstRect.w = srcW;
+				dstRect.h = srcH;
+
+				SDL_UpperBlit(uSur, &srcRect, sur, &dstRect);
+			}
+		}
 	}
 
 	void SDLSurface::getStringExtents(const char* text, int* w, int* h) {
-		/*SDLRectangle rect;
-		IDirectFBFont* font;
-
-		if (sur != NULL) {
-			SDLCHECK( sur->GetFont(sur, &font) );
-			SDLCHECK( font->GetStringExtents(font, text, -1, &rect, NULL) );
-			*w = rect.w;
-			*h = rect.h;
+		if (font != NULL) {
+			font->getStringExtents(text, w, h);
 
 		} else {
 			clog << "SDLSurface::getStringExtends Warning! ";
 			clog << "Can't get string info: ";
-			clog << "internal surface is NULL" << endl;
-		}*/
+			clog << "font provider is NULL" << endl;
+		}
 	}
 
 	void SDLSurface::setClip(int x, int y, int w, int h) {
+		SDL_Rect rect;
 
+		if (sur != NULL) {
+			rect.x = x;
+			rect.y = y;
+			rect.w = w;
+			rect.h = h;
+			SDL_SetClipRect(sur, &rect);
+
+		} else {
+			cout << "SDLSurface::setClip Warning! NULL underlying surface";
+			cout << endl;
+		}
 	}
 
 	void SDLSurface::getSize(int* w, int* h) {
+		if (sur != NULL) {
+			*w = sur->w;
+			*h = sur->h;
 
+		} else if (parent != NULL) {
+			*w = parent->getW();
+			*h = parent->getH();
+
+		} else {
+			cout << "SDLSurface::getSize Warning! NULL underlying surface and";
+			cout << " parent";
+			cout << endl;
+		}
 	}
 
 	string SDLSurface::getDumpFileUri() {

@@ -196,15 +196,17 @@ namespace mb {
 			static const int KEY_TAP;
 
 		private:
+			map<string, int> keyMap;
+			map<int, string> valueMap;
+
 			static CodeMap* _instance;
-			map<string, int>* keyMap;
-			map<int, string>* valueMap;
 			CodeMap();
 
 		public:
+			static CodeMap* getInstance();
+
 			int getCode(string codeStr);
 			string getValue(int value);
-			static CodeMap* getInstance();
 			map<string, int>* cloneKeyMap();
 	};
 }
