@@ -163,19 +163,21 @@ namespace mb {
 
 		pthread_mutex_lock(&ebMutex);
 		i = eventBuffer.begin();
-		event = *i;
-		if (event.type == SDL_USEREVENT &&
-				event.user.code == SDLK_APPLICATION &&
-				event.user.data1 != NULL &&
-				event.user.data2 == NULL) {
+		if (i != eventBuffer.end()) {
+			event = *i;
+			if (event.type == SDL_USEREVENT &&
+					event.user.code == SDLK_APPLICATION &&
+					event.user.data1 != NULL &&
+					event.user.data2 == NULL) {
 
-			if (strcmp(
-					(char*)event.user.data1,
-					SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
+				if (strcmp(
+						(char*)event.user.data1,
+						SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
 
-				eventBuffer.erase(i);
-				pthread_mutex_unlock(&ebMutex);
-				return;
+					eventBuffer.erase(i);
+					pthread_mutex_unlock(&ebMutex);
+					return;
+				}
 			}
 		}
 		pthread_mutex_unlock(&ebMutex);
