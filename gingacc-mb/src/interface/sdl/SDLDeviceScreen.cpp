@@ -1426,7 +1426,7 @@ namespace mb {
 		(*gingaToSDLCodeMap)[CodeMap::KEY_YELLOW]            = SDLK_F19;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BLUE]              = SDLK_F20;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SPACE]             = SDLK_KP_SPACE;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_SPACE]             = SDLK_SPACE;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BACKSPACE]         = SDLK_BACKSPACE;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BACK]              = SDLK_AC_BACK;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_ESCAPE]            = SDLK_ESCAPE;
