@@ -61,7 +61,11 @@ namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
 		pthread_mutex_init(&ebMutex, NULL);
 
-		myScreen = screen;
+		myScreen  = screen;
+
+		//Please, instantiate this class with your Caps Lock at off state :)
+		capsOn    = false;
+		shiftOn   = false;
 
 		isWaiting = false;
 		pthread_cond_init(&cond, NULL);
@@ -83,6 +87,12 @@ namespace mb {
 
 	bool SDLEventBuffer::checkEvent(Uint32 winId, SDL_Event event) {
 		switch (event.type) {
+			case SDL_MOUSEMOTION:
+				if (event.motion.windowID == winId) {
+					return true;
+				}
+				break;
+
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				if (event.key.windowID == winId) {
@@ -116,8 +126,11 @@ namespace mb {
 		return false;
 	}
 
-	void SDLEventBuffer::feed(SDL_Event event) {
+	void SDLEventBuffer::feed(SDL_Event event, bool capsOn, bool shiftOn) {
 		pthread_mutex_lock(&ebMutex);
+		this->capsOn  = capsOn;
+		this->shiftOn = shiftOn;
+
 		eventBuffer.push_back(event);
 		eventArrived();
 		pthread_mutex_unlock(&ebMutex);
@@ -131,7 +144,7 @@ namespace mb {
 		event.user.data1 = (void*)(SDLInputEvent::ET_WAKEUP.c_str());
 		event.user.data2 = NULL;
 
-		feed(event);
+		feed(event, capsOn, shiftOn);
 	}
 
 	void SDLEventBuffer::postInputEvent(IInputEvent* event) {
@@ -139,7 +152,7 @@ namespace mb {
 
 		if (event != NULL && event->getContent() != NULL) {
 			ev = *(SDL_Event*)(event->getContent());
-			feed(ev);
+			feed(ev, capsOn, shiftOn);
 		}
 
 		if (event != NULL) {
@@ -185,7 +198,7 @@ namespace mb {
 
 	IInputEvent* SDLEventBuffer::getNextEvent() {
 		SDL_Event sdlEvent;
-		IInputEvent* gingaEvent = NULL;
+		SDLInputEvent* gingaEvent = NULL;
 		vector<SDL_Event>::iterator i;
 
 		pthread_mutex_lock(&ebMutex);
@@ -194,7 +207,7 @@ namespace mb {
 			sdlEvent = *i;
 
 			gingaEvent = new SDLInputEvent(sdlEvent);
-
+			gingaEvent->setModifiers(capsOn, shiftOn);
 			eventBuffer.erase(i);
 		}
 		pthread_mutex_unlock(&ebMutex);

@@ -519,7 +519,6 @@ namespace mb {
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
 		this->texture = texture;
-		SDLDeviceScreen::prepareTexture(texture, this);
 	}
 
 	SDL_Texture* SDLWindow::getTexture() {
@@ -540,53 +539,20 @@ namespace mb {
 		return itIs;
 	}
 
-	void SDLWindow::renderFrom(string serializedImageUrl) {
-		/*IDirectFB* sdl;
-		IDirectFBImageProvider* ip;
-		SDLImageDescription imgDsc;
-		SDL_Surface* destination = NULL;
-		SDLSurfaceDescription surDsc;
-		IColor* chromaKey = NULL;
+	void SDLWindow::renderImgFile(string serializedImageUrl) {
+		IImageProvider* img;
+		ISurface* s;
 
-		sdl = (IDirectFB*)(LocalScreenManager::getInstance()->getGfxRoot(
-				myScreen));
+		img = LocalScreenManager::getInstance()->createImageProvider(
+				myScreen, serializedImageUrl.c_str());
 
-		SDLCHECK(sdl->CreateImageProvider(
-				sdl, serializedImageUrl.c_str(), &ip));
+		s = LocalScreenManager::getInstance()->createSurface(myScreen);
+		img->playOver(s);
 
-		if ((ip->GetImageDescription(ip, &imgDsc) == SDL_OK) &&
-			 (ip->GetSurfaceDescription(ip, &surDsc) == SDL_OK)) {
+		curSur = (SDL_Surface*)(s->getSurfaceContent());
 
-			destination = SDLDeviceScreen::createUnderlyingSurface(&surDsc);
-
-			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
-				SDLCHECK(destination->SetBlittingFlags(destination,
-					 (SDLSurfaceBlittingFlags)(DSBLIT_BLEND_ALPHACHANNEL)));
-			}
-
-			if (imgDsc.caps & DICAPS_COLORKEY) {
-				SDLCHECK(destination->SetSrcColorKey(
-						destination,
-					    imgDsc.colorkey_r,
-					    imgDsc.colorkey_g,
-					    imgDsc.colorkey_b));
-
-				SDLCHECK(destination->SetBlittingFlags(destination,
-					    (SDLSurfaceBlittingFlags)(
-					    DSBLIT_BLEND_ALPHACHANNEL |
-					    DSBLIT_SRC_COLORKEY)));
-
-			} else if (imgDsc.caps & DICAPS_NONE) {
-				SDLCHECK(destination->SetBlittingFlags(destination,
-					    (SDLSurfaceBlittingFlags)DSBLIT_NOFX));
-			}
-		}
-
-		if (destination != NULL) {
-			SDLCHECK(ip->RenderTo(ip, (SDL_Surface*)(destination), NULL));
-			renderFrom(destination);
-			SDLDeviceScreen::releaseUnderlyingSurface(destination);
-		}*/
+		delete s;
+		delete img;
 	}
 
 	void SDLWindow::renderFrom(ISurface* surface) {

@@ -27,6 +27,8 @@ testAnime_CFLAGS      = \
 
 testAnime_LDADD       = \
                         -ldl \
+                        -lawesomium-1.6.3 \
+                        -lgingaccplaawe \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccplaani \
@@ -34,6 +36,9 @@ testAnime_LDADD       = \
                         -lgingaccsystem \
                         -L/lib/ -L/usr/lib/ \
                         -L/usr/local/lib/ \
+                        -L/usr/lib/awesomium-1.6.3 \
+                        -L/usr/local/lib/ginga \
+                        -L/usr/local/lib/ginga/players \
                         -L../src/ \
                         -L../src/image
 
@@ -63,6 +68,7 @@ testAwesomium_CFLAGS  = \
                         
 testAwesomium_LDADD   = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
@@ -70,6 +76,8 @@ testAwesomium_LDADD   = \
                         -L/lib/ \
                         -L/usr/lib/ \
                         -L/usr/local/lib/ \
+                        -L/usr/local/lib/ginga \
+                        -L/usr/local/lib/ginga/players \
                         -L../src/
 
 #testImage

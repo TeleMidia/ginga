@@ -190,8 +190,16 @@ extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		createAwesomiumPlayer(
 				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
+	string strMrl = "";
+
+	if (mrl == NULL) {
+		return NULL;
+	}
+
+	strMrl.assign(mrl);
+
 	return (new ::br::pucrio::telemidia::ginga::core::player::AwesomiumPlayer(
-			screenId, (string)mrl));
+			screenId, strMrl));
 }
 
 extern "C" void destroyAwesomiumPlayer(

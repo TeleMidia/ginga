@@ -780,7 +780,7 @@ namespace mb {
 		return false;
 	}
 
-	void DFBWindow::renderFrom(string serializedImageUrl) {
+	void DFBWindow::renderImgFile(string serializedImageUrl) {
 		IDirectFB* dfb;
 		IDirectFBImageProvider* ip;
 		DFBImageDescription imgDsc;

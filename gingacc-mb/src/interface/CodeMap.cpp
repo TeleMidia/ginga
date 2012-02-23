@@ -170,23 +170,25 @@ namespace mb {
 	const int CodeMap::KEY_YELLOW            = 100;
 	const int CodeMap::KEY_BLUE              = 101;
 
-	const int CodeMap::KEY_BACKSPACE         = 102;
-	const int CodeMap::KEY_BACK              = 103;
-	const int CodeMap::KEY_ESCAPE            = 104;
-	const int CodeMap::KEY_EXIT              = 105;
+	const int CodeMap::KEY_SPACE             = 102;
+	const int CodeMap::KEY_BACKSPACE         = 103;
+	const int CodeMap::KEY_BACK              = 104;
+	const int CodeMap::KEY_ESCAPE            = 105;
+	const int CodeMap::KEY_EXIT              = 106;
 
-	const int CodeMap::KEY_POWER             = 106;
-	const int CodeMap::KEY_REWIND            = 107;
-	const int CodeMap::KEY_STOP              = 108;
-	const int CodeMap::KEY_EJECT             = 109;
-	const int CodeMap::KEY_PLAY              = 110;
-	const int CodeMap::KEY_RECORD            = 111;
-	const int CodeMap::KEY_PAUSE             = 112;
+	const int CodeMap::KEY_POWER             = 107;
+	const int CodeMap::KEY_REWIND            = 108;
+	const int CodeMap::KEY_STOP              = 109;
+	const int CodeMap::KEY_EJECT             = 110;
+	const int CodeMap::KEY_PLAY              = 111;
+	const int CodeMap::KEY_RECORD            = 112;
+	const int CodeMap::KEY_PAUSE             = 113;
 
-	const int CodeMap::KEY_GREATER_THAN_SIGN = 113;
-	const int CodeMap::KEY_LESS_THAN_SIGN    = 114;
+	const int CodeMap::KEY_GREATER_THAN_SIGN = 114;
+	const int CodeMap::KEY_LESS_THAN_SIGN    = 115;
 
-	const int CodeMap::KEY_TAP               = 115;
+	const int CodeMap::KEY_TAB               = 116;
+	const int CodeMap::KEY_TAP               = 117;
 
 	CodeMap* CodeMap::_instance              = NULL;
 

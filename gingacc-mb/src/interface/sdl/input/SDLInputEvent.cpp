@@ -65,8 +65,10 @@ namespace mb {
 	SDLInputEvent::SDLInputEvent(SDL_Event event) {
 		this->event = event;
 
-		x = 0;
-		y = 0;
+		x       = 0;
+		y       = 0;
+		capsOn  = false;
+		shiftOn = false;
 	}
 
 	SDLInputEvent::SDLInputEvent(const int keyCode) {
@@ -98,6 +100,11 @@ namespace mb {
 
 	}
 
+	void SDLInputEvent::setModifiers(bool capsOn, bool shiftOn) {
+		this->capsOn  = capsOn;
+		this->shiftOn = shiftOn;
+	}
+
 	void SDLInputEvent::clearContent() {
 
 	}
@@ -121,7 +128,8 @@ namespace mb {
 	}
 
 	const int SDLInputEvent::getKeyCode(GingaScreenID screenId) {
-		int result = CodeMap::KEY_NULL;
+		int gingaValue;
+		int sdlValue;
 
 		if (event.type == SDL_FINGERUP ||
 				event.type == SDL_MOUSEBUTTONUP ||
@@ -131,61 +139,69 @@ namespace mb {
 		}
 
 		if (event.type == SDL_USEREVENT) {
-			result = event.user.code;
+			sdlValue = event.user.code;
 
 		} else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
 
-			result = event.key.keysym.sym;
+			sdlValue = event.key.keysym.sym;
 
 		} else {
-			return result;
+			return CodeMap::KEY_NULL;;
 		}
 
-		result = LocalScreenManager::getInstance()->fromMBToGinga(
-				screenId, result);
+		gingaValue = LocalScreenManager::getInstance()->fromMBToGinga(
+				screenId, sdlValue);
+
+		if (gingaValue >= CodeMap::KEY_SMALL_A &&
+				gingaValue <= CodeMap::KEY_SMALL_Z &&
+				((capsOn && !shiftOn) || (!capsOn && shiftOn))) {
+
+			gingaValue = LocalScreenManager::getInstance()->fromMBToGinga(
+					screenId, sdlValue + 5000);
+		}
 
 		//Mapping between keyboard and remote control
-		if (result == CodeMap::KEY_F1) {
-			result = CodeMap::KEY_RED;
+		if (gingaValue == CodeMap::KEY_F1) {
+			gingaValue = CodeMap::KEY_RED;
 
-		} else if (result == CodeMap::KEY_F2) {
-			result = CodeMap::KEY_GREEN;
+		} else if (gingaValue == CodeMap::KEY_F2) {
+			gingaValue = CodeMap::KEY_GREEN;
 
-		} else if (result == CodeMap::KEY_F3) {
-			result = CodeMap::KEY_YELLOW;
+		} else if (gingaValue == CodeMap::KEY_F3) {
+			gingaValue = CodeMap::KEY_YELLOW;
 
-		} else if (result == CodeMap::KEY_F4) {
-			result = CodeMap::KEY_BLUE;
+		} else if (gingaValue == CodeMap::KEY_F4) {
+			gingaValue = CodeMap::KEY_BLUE;
 
-		} else if (result == CodeMap::KEY_F5) {
-			result = CodeMap::KEY_MENU;
+		} else if (gingaValue == CodeMap::KEY_F5) {
+			gingaValue = CodeMap::KEY_MENU;
 
-		} else if (result == CodeMap::KEY_F6) {
-			result = CodeMap::KEY_INFO;
+		} else if (gingaValue == CodeMap::KEY_F6) {
+			gingaValue = CodeMap::KEY_INFO;
 
-		} else if (result == CodeMap::KEY_F7) {
-			result = CodeMap::KEY_EPG;
+		} else if (gingaValue == CodeMap::KEY_F7) {
+			gingaValue = CodeMap::KEY_EPG;
 
-		} else if (result == CodeMap::KEY_PLUS_SIGN) {
-			result = CodeMap::KEY_VOLUME_UP;
+		} else if (gingaValue == CodeMap::KEY_PLUS_SIGN) {
+			gingaValue = CodeMap::KEY_VOLUME_UP;
 
-		} else if (result == CodeMap::KEY_MINUS_SIGN) {
-			result = CodeMap::KEY_VOLUME_DOWN;
+		} else if (gingaValue == CodeMap::KEY_MINUS_SIGN) {
+			gingaValue = CodeMap::KEY_VOLUME_DOWN;
 
-		} else if (result == CodeMap::KEY_PAGE_UP) {
-			result = CodeMap::KEY_CHANNEL_UP;
+		} else if (gingaValue == CodeMap::KEY_PAGE_UP) {
+			gingaValue = CodeMap::KEY_CHANNEL_UP;
 
-		} else if (result == CodeMap::KEY_PAGE_DOWN) {
-			result = CodeMap::KEY_CHANNEL_DOWN;
+		} else if (gingaValue == CodeMap::KEY_PAGE_DOWN) {
+			gingaValue = CodeMap::KEY_CHANNEL_DOWN;
 
-		} else if (result == CodeMap::KEY_BACKSPACE) {
-			result = CodeMap::KEY_BACK;
+		} else if (gingaValue == CodeMap::KEY_BACKSPACE) {
+			gingaValue = CodeMap::KEY_BACK;
 
-		} else if (result == CodeMap::KEY_ESCAPE) {
-			result = CodeMap::KEY_EXIT;
+		} else if (gingaValue == CodeMap::KEY_ESCAPE) {
+			gingaValue = CodeMap::KEY_EXIT;
 		}
 
-		return result;
+		return gingaValue;
 	}
 
 	void* SDLInputEvent::getApplicationData() {
@@ -268,31 +284,27 @@ namespace mb {
 	}
 
 	void SDLInputEvent::getAxisValue(int* x, int* y, int* z) {
-		SDL_MouseMotionEvent* mouseEvent;
-		SDL_TouchFingerEvent* fingerEvent;
-
 		*x = 0;
 		*y = 0;
 
-		if (event.type == SDL_MOUSEMOTION ||
-				event.type == SDL_MOUSEBUTTONUP ||
-				event.type == SDL_MOUSEBUTTONDOWN) {
+		switch (event.type) {
+			case SDL_MOUSEMOTION:
+				*x = event.motion.x;
+				*y = event.motion.y;
+				break;
 
-			mouseEvent = (SDL_MouseMotionEvent*)&event;
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEBUTTONDOWN:
+				*x = event.button.x;
+				*y = event.button.y;
+				break;
 
-			*x = mouseEvent->x;
-			*y = mouseEvent->y;
-
-		} else if (event.type == SDL_FINGERMOTION ||
-				event.type == SDL_FINGERUP ||
-				event.type == SDL_TOUCHBUTTONUP ||
-				event.type == SDL_FINGERDOWN ||
-				event.type == SDL_TOUCHBUTTONDOWN) {
-
-			fingerEvent = (SDL_TouchFingerEvent*)&event;
-
-			*x = fingerEvent->x;
-			*y = fingerEvent->y;
+			case SDL_FINGERUP:
+			case SDL_FINGERDOWN:
+			case SDL_FINGERMOTION:
+				*x = event.tfinger.x;
+				*y = event.tfinger.y;
+				break;
 		}
 	}
 }

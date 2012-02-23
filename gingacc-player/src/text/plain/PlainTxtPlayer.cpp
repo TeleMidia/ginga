@@ -66,7 +66,7 @@ namespace player {
 
 	PlainTxtPlayer::~PlainTxtPlayer() {
 		pthread_mutex_lock(&mutex);
-		if (surface != NULL) {
+		if (dm->hasSurface(myScreen, surface)) {
 			/*
 			 * the surface could never be a child of window
 			 * (it gets the widget surface)
@@ -132,7 +132,7 @@ namespace player {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				surface->setBgColor(
+				((IWindow*)(surface->getParent()))->setBgColor(
 						bgColor->getR(),
 						bgColor->getG(),
 						bgColor->getB(),
@@ -194,7 +194,7 @@ namespace player {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				surface->setBgColor(
+				((IWindow*)(surface->getParent()))->setBgColor(
 						bgColor->getR(),
 						bgColor->getG(),
 						bgColor->getB(),
@@ -270,13 +270,15 @@ namespace player {
 					bgColor = new Color(value);
 				}
 
-				//this->surface->setCaps(0);
-				surface->clearContent();
-				surface->setBgColor(
-						bgColor->getR(),
-						bgColor->getG(),
-						bgColor->getB(),
-						bgColor->getAlpha());
+				if (surface->getParent() != NULL) {
+					//this->surface->setCaps(0);
+					surface->clearContent();
+					((IWindow*)(surface->getParent()))->setBgColor(
+							bgColor->getR(),
+							bgColor->getG(),
+							bgColor->getB(),
+							bgColor->getAlpha());
+				}
 			}
 
 		} else if (name == "x-rgbBgColor" || name == "rgbBgColor") {
@@ -293,13 +295,15 @@ namespace player {
 							(int)util::stof((*params)[1]),
 							(int)util::stof((*params)[2]));
 
-					//this->surface->setCaps(0);
-					surface->clearContent();
-					surface->setBgColor(
-							bgColor->getR(),
-							bgColor->getG(),
-							bgColor->getB(),
-							bgColor->getAlpha());
+					if (surface->getParent() != NULL) {
+						//this->surface->setCaps(0);
+						surface->clearContent();
+						((IWindow*)(surface->getParent()))->setBgColor(
+								bgColor->getR(),
+								bgColor->getG(),
+								bgColor->getB(),
+								bgColor->getAlpha());
+					}
 				}
 
 			} else {

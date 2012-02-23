@@ -66,20 +66,22 @@ namespace mb {
 		applicationListeners  = new set<IInputEventListener*>;
 		actionsToAppListeners = new vector<LockedAction*>;
 
-		currentXAxis  = 0;
-		currentYAxis  = 0;
-		maxX          = 0;
-		maxY          = 0;
-		lastEventTime = 0;
-		myScreen      = screenId;
+		motionListener        = NULL;
 
-		eventBuffer   = LocalScreenManager::getInstance()->createEventBuffer(
-				myScreen);
+		currentXAxis          = 0;
+		currentYAxis          = 0;
+		maxX                  = 0;
+		maxY                  = 0;
+		lastEventTime         = 0;
+		myScreen              = screenId;
 
-		running       = true;
-		notifying     = false;
-		notifyingApp  = false;
-		ief           = new InputEventFactory();
+		eventBuffer           = LocalScreenManager::getInstance()->
+				createEventBuffer(myScreen);
+
+		running               = true;
+		notifying             = false;
+		notifyingApp          = false;
+		ief                   = new InputEventFactory();
 
 		pthread_mutex_init(&actInpMutex, NULL);
 		pthread_mutex_init(&actAppMutex, NULL);
@@ -206,6 +208,10 @@ namespace mb {
 #endif
 
 		unlock();
+	}
+
+	void InputManager::setMotionEventListener(IMotionEventListener* listener) {
+		this->motionListener = listener;
 	}
 
 	void InputManager::addInputEventListener(
@@ -528,6 +534,7 @@ namespace mb {
 	void InputManager::setAxisValues(int x, int y, int z) {
 		this->currentXAxis = x;
 		this->currentYAxis = y;
+		this->currentZAxis = z;
 	}
 
 	void InputManager::setAxisBoundaries(int x, int y, int z) {
@@ -573,12 +580,6 @@ namespace mb {
 
 			inputEvent = eventBuffer->getNextEvent();
 			while (inputEvent != NULL) {
-				if (inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
-					delete inputEvent;
-					inputEvent = eventBuffer->getNextEvent();
-					continue;
-				}
-
 				if (inputEvent->isMotionType()) {
 					mouseX = currentXAxis;
 					mouseY = currentYAxis;
@@ -610,11 +611,30 @@ namespace mb {
 						inputEvent = eventBuffer->getNextEvent();
 					}
 
+					if (motionListener != NULL) {
+						motionListener->motionEventReceived(
+								currentXAxis,
+								currentYAxis,
+								currentZAxis);
+					}
+
+					continue;
+				}
+
+				if (inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+					delete inputEvent;
+					inputEvent = eventBuffer->getNextEvent();
 					continue;
 				}
 
 				if (inputEvent->isButtonPressType()) {
 					inputEvent->setAxisValue(currentXAxis, currentYAxis, 0);
+
+					inputEvent->getAxisValue(
+							&currentXAxis,
+							&currentYAxis,
+							&currentZAxis);
+
 					dispatchEvent(inputEvent);
 					delete inputEvent;
 					inputEvent = eventBuffer->getNextEvent();

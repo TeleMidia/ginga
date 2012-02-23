@@ -60,6 +60,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 #include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
+#include "mb/interface/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 extern "C" {
@@ -83,9 +84,14 @@ public:
 	}
 
 	bool userEventReceived(IInputEvent* ev) {
+		int value = ev->getKeyCode(myScreen);
+
 		cout << "SCREEN(" << myScreen << ") input listener has RECEIVED '";
-		cout << ev->getKeyCode(myScreen) << "'" << endl;
+		cout << value << "' = '";
+		cout << CodeMap::getInstance()->getValue(value) << "'";
+		cout << endl;
 		std::flush(cout);
+
 		return true;
 	}
 };
@@ -115,7 +121,15 @@ int main(int argc, char** argv) {
 	exit(0);
 #endif
 
-	if (argc == 1) {
+	int i;
+	bool testAllScreens = false;
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--all") == 0)) {
+			testAllScreens = true;
+		}
+	}
+
+	if (testAllScreens) {
 		dfbArgv[0] = (char*)"testInput";
 		dfbArgv[1] = (char*)"--vsystem";
 		dfbArgv[2] = (char*)"dfb";
@@ -160,7 +174,7 @@ int main(int argc, char** argv) {
 	dm->releaseScreen(screen1);
 	dm->releaseMB(screen1);
 
-	if (argc == 1) {
+	if (testAllScreens) {
 		im2->release();
 		delete l2;
 

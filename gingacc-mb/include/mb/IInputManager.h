@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "interface/IEventBuffer.h"
 #include "interface/IInputEventListener.h"
+#include "interface/IMotionEventListener.h"
 
 #include <set>
 using namespace std;
@@ -67,6 +68,9 @@ namespace mb {
 		virtual ~IInputManager(){};
 
 		virtual void release()=0;
+
+		virtual void setMotionEventListener(IMotionEventListener* listener)=0;
+
 		virtual void addInputEventListener(
 				IInputEventListener* listener, set<int>* events)=0;
 

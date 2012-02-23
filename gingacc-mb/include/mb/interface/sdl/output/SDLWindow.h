@@ -188,7 +188,7 @@ namespace mb {
 			bool isMine(ISurface* surface);
 
 		public:
-			void renderFrom(string serializedImageUrl);
+			void renderImgFile(string serializedImageUrl);
 			void renderFrom(ISurface* s);
 
 		private:

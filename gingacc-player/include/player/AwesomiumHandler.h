@@ -77,23 +77,26 @@ namespace core {
 namespace player {
 	typedef int AwesomiumHDR;
 
-	static ILocalScreenManager* dm;
-
 	class AwesomiumInfo : public IInputEventListener {
 		public:
+			static const short ET_NONE   = 0;
+			static const short ET_KEY    = 1;
+			static const short ET_BUTTON = 2;
+			static const short ET_MOTION = 3;
+
 			GingaScreenID myScreen;
 			AwesomiumHDR id;
-			WebCore* webCore;
-			WebView* webView;
 			string mURL;
 			ISurface* surface;
 			int mouseX, mouseY;
+			int x, y;
 			int w, h;
 			bool hasFocus;
 			bool setFocus;
 			string rFile;
 			bool update;
-			IInputEvent* ev;
+			int eventCode;
+			short eventType;
 
 			bool _eMVarW;
 			pthread_cond_t _eMVar;
@@ -109,9 +112,19 @@ namespace player {
 
 	class AwesomiumHandler {
 		private:
-			static map<AwesomiumHDR, IInputManager*> _ims;
-			static map<AwesomiumHDR, AwesomiumInfo*> _infos;
-			static AwesomiumHDR _id;
+			static map<int, int> fromGingaToAwesomium;
+			static pthread_mutex_t s_lMutex;
+			static map<AwesomiumHDR, AwesomiumInfo*> s_infos;
+			static AwesomiumHDR s_id;
+			static map<AwesomiumHDR, IInputManager*> s_ims;
+
+			/* static since we have to respect the tab isolation */
+			static Awesomium::WebCore* webCore;
+			static WebView* webView;
+
+			static ILocalScreenManager* dm;
+
+			static void initCodeMap();
 
 			static bool getAwesomeInfo(
 					AwesomiumHDR id,
@@ -135,7 +148,12 @@ namespace player {
 
 		private:
 			static void setFocus(AwesomiumInfo* aInfo);
+
+		public:
 			static void eventHandler(AwesomiumInfo* aInfo);
+
+		private:
+			static void injectKey(AwesomiumInfo* aInfo, int keyCode);
 			static void refresh(AwesomiumHDR id);
 			static void update(AwesomiumInfo* aInfo, double value);
 

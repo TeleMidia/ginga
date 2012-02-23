@@ -135,11 +135,6 @@ namespace mb {
 
 			renderedSurface = IMG_Load(imgUri.c_str());
 
-			bgColor = content->getBgColor();
-			if (bgColor != NULL) {
-				SDLSurface::fillUnderlyingSurface(renderedSurface, bgColor);
-			}
-
 			content->setSurfaceContent((void*)renderedSurface);
 
 			parent = (SDLWindow*)(content->getParent());

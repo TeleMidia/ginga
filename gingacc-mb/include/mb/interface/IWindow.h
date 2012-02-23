@@ -115,7 +115,7 @@ namespace mb {
 			virtual void setFit(bool fitTo)=0;
 			virtual bool getFit()=0;
 			virtual void clearContent()=0;
-			virtual void renderFrom(string serializedImageUrl)=0;
+			virtual void renderImgFile(string serializedImageUrl)=0;
 			virtual void renderFrom(ISurface* s)=0;
 			virtual void blit(IWindow* src)=0;
 			virtual void stretchBlit(IWindow* src)=0;

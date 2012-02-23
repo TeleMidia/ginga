@@ -47,13 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef SDLINPUTEVENT_H_
-#define SDLINPUTEVENT_H_
-
-#include "SDL.h"
-
-#include "mb/interface/IInputEvent.h"
-#include "mb/interface/CodeMap.h"
+#ifndef IMOTIONEVENTLISTENER_H_
+#define IMOTIONEVENTLISTENER_H_
 
 namespace br {
 namespace pucrio {
@@ -61,45 +56,10 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLInputEvent : public IInputEvent {
+	class IMotionEventListener {
 		public:
-			static const string ET_WAKEUP;
-			static const string ET_INPUTEVENT;
-			static const string ET_USEREVENT;
-
-		private:
-			SDL_Event event;
-			int x;
-			int y;
-
-			bool capsOn;
-			bool shiftOn;
-
-		public:
-			SDLInputEvent(SDL_Event event);
-			SDLInputEvent(const int keyCode);
-			SDLInputEvent(int type, void* data);
-
-			virtual ~SDLInputEvent();
-
-			void setModifiers(bool capsOn, bool shiftOn);
-
-			void clearContent();
-			void setKeyCode(GingaScreenID screenId, const int keyCode);
-			const int getKeyCode(GingaScreenID screenId);
-
-			unsigned int getType();
-			void* getApplicationData();
-
-			bool isButtonPressType();
-			bool isMotionType();
-			bool isPressedType();
-			bool isKeyType();
-			bool isApplicationType();
-
-			void setAxisValue(int x, int y, int z);
-			void getAxisValue(int* x, int* y, int* z);
-			void* getContent();
+			virtual ~IMotionEventListener(){};
+			virtual bool motionEventReceived(int x, int y, int z)=0;
 	};
 }
 }
@@ -108,4 +68,4 @@ namespace mb {
 }
 }
 
-#endif /*SDLINPUTEVENT_H_*/
+#endif /*IMOTIONEVENTLISTENER_H_*/

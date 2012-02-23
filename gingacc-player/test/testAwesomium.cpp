@@ -52,12 +52,11 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#if HAVE_AWESOMIUM
-#include "player/AwesomiumPlayer.h"
-#endif //HAVE_AWESOMIUM
-
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "player/IPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "player/PlayersComponentSupport.h"
 
@@ -65,9 +64,207 @@ extern "C" {
 #include <stdio.h>
 }
 
-int main(int argc, char** argv, char** envp) {
+void testAwesomium(
+		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
 
-	//TODO: tests
+	IWindow* w;
+	IWindow* ww;
+
+	ISurface* s;
+
+	IPlayer* awe1;
+	IPlayer* awe2;
+
+	w   = dm->createWindow(screen,  10,  10, 490, 580);
+	ww  = dm->createWindow(screen,  20, 210, 470, 280);
+
+	w->setCaps(w->getCap("ALPHACHANNEL"));
+	w->draw();
+	w->show();
+
+	ww->setCaps(w->getCap("ALPHACHANNEL"));
+	ww->draw();
+	ww->show();
+
+	ww->raiseToTop();
+	w->raiseToTop();
+
+	windows->insert(w);
+	windows->insert(ww);
+
+#if HAVE_COMPSUPPORT
+	void* sym;
+
+	sym  = cm->getObject("AwesomiumPlayer");
+	if (sym == NULL) {
+		cout << "testAwesomium Error! Can't load AwesomiumPlayer.";
+		if (cm->isAvailable("AwesomiumPlayer")) {
+			cout << " (availability was checked)";
+		}
+		cout << endl;
+		return;
+	}
+
+	awe1 = ((PlayerCreator*)(sym))(screen, "www.google.com", true);
+
+	awe2 = ((PlayerCreator*)(cm->getObject("AwesomiumPlayer")))(
+			screen, "www.telemidia.puc-rio.br", true);
+#endif
+
+	awe1->setOutWindow(w->getId());
+	s = awe1->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)w);
+		w->renderFrom(s);
+		awe1->play();
+		awe1->setKeyHandler(true); //necessary if we want to test input events
+	}
+
+	awe2->setOutWindow(ww->getId());
+	s = awe2->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)ww);
+		ww->renderFrom(s);
+		//awe2->play();
+	}
+}
+
+bool running = false;
+
+void* blinkWindowSet(void* ptr) {
+	set<IWindow*>* windows;
+	set<IWindow*>::iterator i;
+	bool showing = false;
+
+	windows = (set<IWindow*>*)ptr;
+
+	while (running) {
+		i = windows->begin();
+		while (i != windows->end()) {
+			if (showing) {
+				(*i)->hide();
+			} else {
+				(*i)->show();
+			}
+			++i;
+		}
+		::usleep(100000);
+		showing = !showing;
+	}
+
+	i = windows->begin();
+	while (i != windows->end()) {
+		(*i)->show();
+		++i;
+	}
+
+	return NULL;
+}
+
+int main(int argc, char** argv, char** envp) {
+	GingaScreenID screen1, screen2;
+	int fakeArgc = 5;
+	char* dfbArgv[5];
+	char* sdlArgv[5];
+	ILocalScreenManager* dm;
+
+	setLogToNullDev();
+
+#if HAVE_COMPSUPPORT
+	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
+
+#else
+	cout << "gingacc-player test works only with enabled component support.";
+	cout << endl;
+	exit(0);
+#endif
+
+	int i;
+	bool testAllScreens = false;
+	bool blinkWindows   = false;
+	bool printScreen    = false;
+	set<IWindow*> windows;
+
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--all") == 0)) {
+			testAllScreens = true;
+
+		} else if ((strcmp(argv[i], "--blink") == 0)) {
+			blinkWindows   = true;
+
+		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
+			printScreen    = true;
+		}
+	}
+
+	if (testAllScreens) {
+		dfbArgv[0] = (char*)"testScreen";
+		dfbArgv[1] = (char*)"--vsystem";
+		dfbArgv[2] = (char*)"dfb";
+		dfbArgv[3] = (char*)"--vmode";
+		dfbArgv[4] = (char*)"400x600";
+
+		screen1 = dm->createScreen(fakeArgc, dfbArgv);
+
+		sdlArgv[0] = (char*)"testScreen";
+		sdlArgv[1] = (char*)"--vsystem";
+		sdlArgv[2] = (char*)"sdl";
+		sdlArgv[3] = (char*)"--vmode";
+		sdlArgv[4] = (char*)"400x600";
+		screen2 = dm->createScreen(fakeArgc, sdlArgv);
+
+		testAwesomium(dm, screen1, &windows);
+		testAwesomium(dm, screen2, &windows);
+
+	} else {
+		screen1 = dm->createScreen(argc, argv);
+		testAwesomium(dm, screen1, &windows);
+	}
+
+	if (blinkWindows) {
+		pthread_t tid;
+
+		running = true;
+
+		pthread_create(&tid, 0, blinkWindowSet, &windows);
+
+		cout << "gingacc-mb test is blinking windows. ";
+		cout << "press enter to stop it";
+		cout << endl;
+		getchar();
+		running = false;
+	}
+
+	if (printScreen) {
+		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+
+		if (testAllScreens) {
+			dm->blitScreen(screen2, "/root/printscreen2.bmp");
+		}
+	}
+
+	cout << "gingacc-player test has shown AwesomiumPlayers. ";
+	cout << "press enter to automatic release";
+	cout << endl;
+	getchar();
+
+	if (testAllScreens) {
+		dm->clearWidgetPools(screen1);
+		dm->releaseScreen(screen1);
+		dm->releaseMB(screen1);
+
+		dm->clearWidgetPools(screen2);
+		dm->releaseScreen(screen2);
+		dm->releaseMB(screen2);
+
+	} else {
+		dm->clearWidgetPools(screen1);
+		dm->releaseScreen(screen1);
+		dm->releaseMB(screen1);
+	}
+
+	delete dm;
+
 	cout << "Player test done. press enter to continue" << endl;
 	getchar();
 

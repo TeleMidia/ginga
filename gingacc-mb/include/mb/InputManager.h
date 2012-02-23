@@ -85,6 +85,9 @@ namespace mb {
 			vector<LockedAction*>* actionsToInpListeners;
 			set<IInputEventListener*>* applicationListeners;
 			vector<LockedAction*>* actionsToAppListeners;
+
+			IMotionEventListener* motionListener;
+
 			bool running;
 			bool notifying;
 			bool notifyingApp;
@@ -113,6 +116,8 @@ namespace mb {
 			void initializeInputIntervalTime();
 
 			void release();
+
+			void setMotionEventListener(IMotionEventListener* listener);
 
 			void addInputEventListener(
 					IInputEventListener* listener, set<int>* events=NULL);
