@@ -143,11 +143,12 @@ namespace mb {
 	void SDLSurface::fillUnderlyingSurface(
 			SDL_Surface* uSur, IColor* color) {
 
-		SDL_FillRect(uSur, NULL, SDL_MapRGB(
+		/*SDL_FillRect(uSur, NULL, SDL_MapRGBA(
 				uSur->format,
 				color->getR(),
 				color->getG(),
-				color->getB()));
+				color->getB(),
+				0x00));*/
 	}
 
 	void SDLSurface::setExternalHandler(bool extHandler) {
@@ -192,11 +193,13 @@ namespace mb {
 	bool SDLSurface::setParent(void* parentWindow) {
 		this->parent = (IWindow*)parentWindow;
 
-		if (chromaColor != NULL) {
-			parent->setColorKey(
-				    chromaColor->getR(),
-				    chromaColor->getG(),
-				    chromaColor->getB());
+		if (parent != NULL) {
+			if (chromaColor != NULL) {
+				parent->setColorKey(
+						chromaColor->getR(),
+						chromaColor->getG(),
+						chromaColor->getB());
+			}
 		}
 
 		/*if (this->sur == NULL && parent != NULL) {

@@ -85,6 +85,7 @@ void testScreen(
 	IContinuousMediaProvider* vid;
 	IWindow* win1;
 	IWindow* win2;
+	IWindow* win2T;
 	IWindow* win3;
 	ISurface* s;
 	ISurface* vidSur;
@@ -128,14 +129,7 @@ void testScreen(
 		exit(1);
 	}
 	win1->draw();
-
-	img = dm->createImageProvider(screen, "1.png");
-
-	s = dm->createSurface(screen);
-	s->setParent(win1);
-	img->playOver(s);
-	delete s;
-	s = NULL;
+	win1->renderImgFile("2.png");
 
 	win1->show();
 	win1->raiseToTop();
@@ -163,6 +157,44 @@ void testScreen(
 	vid->playOver(vidSur, true, NULL);
 
 	/* FONT PROVIDER */
+	/* In front of video */
+	win2T = dm->createWindow(screen, x2, y2, w2, h2);
+	if (win2T == NULL) {
+		cout << "gingacc-mb test can't create window. exiting program...";
+		cout << endl;
+		exit(1);
+	}
+	win2T->draw();
+
+	ttf = dm->createFontProvider(screen, "decker.ttf", 14);
+
+	ttfSur = dm->createSurface(screen);
+	ttfSur->setParent(win2T);
+
+	win2T->show();
+	win2T->raiseToTop();
+
+	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
+	ttf->playOver(ttfSur, "Test White!", 10, 5);
+
+	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
+
+	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Black!", 10, 25);
+
+	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Green!", 10, 35);
+
+	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
+	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
+
+	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Red!", 10, 55);
+
+	delete ttfSur;
+
+	/* right side of video, but this time with background color */
 	win3 = dm->createWindow(screen, x3, y3, w3, h3);
 	if (win3 == NULL) {
 		cout << "gingacc-mb test can't create window. exiting program...";
@@ -171,16 +203,30 @@ void testScreen(
 	}
 	win3->draw();
 
-	ttf = dm->createFontProvider(screen, "decker.ttf", 14);
-
 	ttfSur = dm->createSurface(screen);
 	ttfSur->setParent(win3);
-	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
 
 	win3->show();
 	win3->raiseToTop();
+	win3->setBgColor(255, 255, 0, 0);
 
-	ttf->playOver(ttfSur, "Testing font provider!", 10, 20);
+	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
+	ttf->playOver(ttfSur, "Test White!", 10, 5);
+
+	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
+
+	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Black!", 10, 25);
+
+	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Green!", 10, 35);
+
+	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
+	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
+
+	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
+	ttf->playOver(ttfSur, "Test Red!", 10, 55);
 
 	delete ttfSur;
 	ttfSur = NULL;

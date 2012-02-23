@@ -926,6 +926,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_YELLOW]            = DIKS_YELLOW;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_BLUE]              = DIKS_BLUE;
 
+		(*gingaToDFBCodeMap)[CodeMap::KEY_SPACE]             = DIKS_SPACE;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_BACKSPACE]         = DIKS_BACKSPACE;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_BACK]              = DIKS_BACK;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_ESCAPE]            = DIKS_ESCAPE;
@@ -942,6 +943,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_GREATER_THAN_SIGN] = DIKS_GREATER_THAN_SIGN;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_LESS_THAN_SIGN]    = DIKS_LESS_THAN_SIGN;
 
+		(*gingaToDFBCodeMap)[CodeMap::KEY_TAB]               = DIKS_TAB;
 		(*gingaToDFBCodeMap)[CodeMap::KEY_TAP]               = DIKS_CUSTOM0;
 
         map<int, int>::iterator i;

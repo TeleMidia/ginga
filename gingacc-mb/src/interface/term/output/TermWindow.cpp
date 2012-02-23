@@ -238,7 +238,7 @@ namespace mb {
 		return false;
 	}
 
-	void TermWindow::renderFrom(string serializedImageUrl) {
+	void TermWindow::renderImgFile(string serializedImageUrl) {
 
 	}
 

@@ -143,7 +143,7 @@ namespace mb {
 			return false;
 		}
 
-		TTF_SetFontStyle(font, (int)TTF_STYLE_NORMAL);
+		TTF_SetFontStyle(font, (int)TTF_STYLE_BOLD);
 		TTF_SetFontOutline(font, 0);
 		TTF_SetFontKerning(font, 1);
 		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
@@ -217,7 +217,6 @@ namespace mb {
 	void SDLFontProvider::ntsPlayOver() {
 		SDLWindow* parent;
 		IColor* fontColor = NULL;
-		IColor* bgColor   = NULL;
 
 		Uint32 r, g, b, a;
 		SDL_Color sdlColor;
@@ -272,7 +271,7 @@ namespace mb {
 				initializeFont();
 			}
 
-			text = TTF_RenderText_Blended(
+			text = TTF_RenderText_Solid(
 					font, plainText.c_str(), sdlColor);
 
 			if (text == NULL) {
@@ -289,7 +288,7 @@ namespace mb {
 
 			renderedSurface = (SDL_Surface*)(parent->getContent());
 			if (renderedSurface == NULL) {
-				SDLDeviceScreen::getRGBAMask(&r, &g, &b, &a);
+				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
 
 				renderedSurface = SDL_CreateRGBSurface(
 						0,
@@ -298,11 +297,10 @@ namespace mb {
 						24,
 						r, g, b, a);
 
-				bgColor = content->getBgColor();
-
-				if (bgColor != NULL) {
-					SDLSurface::fillUnderlyingSurface(renderedSurface, bgColor);
-				}
+				SDL_SetColorKey(
+						renderedSurface,
+						1,
+						*((Uint8*)renderedSurface->pixels));
 
 				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);

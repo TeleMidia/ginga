@@ -61,6 +61,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/InputManager.h"
 
 extern "C" {
+#include "SDL_endian.h"
 #include <string.h>
 #include <stdlib.h>
 }
@@ -792,9 +793,8 @@ namespace mb {
 	void SDLDeviceScreen::refreshWin(SDLDeviceScreen* s) {
 		SDL_Surface* uSur;
 		SDL_Texture* uTex;
-		bool ownTex = false;
-		SDL_Rect rect;
 		SDLWindow* win;
+		bool ownTex = false;
 
 		map<GingaScreenID, vector<IWindow*>*>::iterator i;
 		vector<IWindow*>::iterator j;
@@ -811,17 +811,11 @@ namespace mb {
 				if (win->getContent() != NULL ||
 						win->getTexture() != NULL) {
 
-					rect.x = win->getX();
-					rect.y = win->getY();
-					rect.w = win->getW();
-					rect.h = win->getH();
 					uSur   = (SDL_Surface*)(win->getContent());
 
 					if (uSur != NULL) {
 						ownTex = false;
 						uTex   = createTexture(s->renderer, uSur);
-
-						prepareTexture(uTex, win);
 
 					} else {
 						ownTex = true;
@@ -829,8 +823,8 @@ namespace mb {
 					}
 
 					if (uTex != NULL) {
-						SDL_RenderCopy(s->renderer, uTex, NULL, &rect);
-						draw(s->renderer, win);
+						drawWindow(s->renderer, uTex, win);
+
 						if (!ownTex) {
 							releaseTexture(uTex);
 							ownTex = false;
@@ -852,6 +846,8 @@ namespace mb {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDL_Event event;
 		int sleepTime, elapsedTime;
+		bool shiftOn = false;
+		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
 
 		sleepTime = (int)(1000000/SDLDS_FPS);
@@ -863,7 +859,26 @@ namespace mb {
 			elapsedTime = getCurrentTimeMillis();
 
 		    while (SDL_PollEvent(&event)) {
-				pthread_mutex_lock(&sMutex);
+		    	pthread_mutex_lock(&sMutex);
+
+				if (event.type == SDL_KEYDOWN) {
+					if (event.key.keysym.sym == SDLK_LSHIFT ||
+							event.key.keysym.sym == SDLK_RSHIFT) {
+
+						shiftOn = true;
+					}
+
+				} else  if (event.type == SDL_KEYUP) {
+					if (event.key.keysym.sym == SDLK_CAPSLOCK) {
+						capsOn = !capsOn;
+
+					} else if (event.key.keysym.sym == SDLK_LSHIFT ||
+							event.key.keysym.sym == SDLK_RSHIFT) {
+
+						shiftOn = false;
+					}
+				}
+
 				i = sdlScreens.begin();
 				while (i != sdlScreens.end()) {
 					if (i->first->im != NULL) {
@@ -873,7 +888,7 @@ namespace mb {
 						if (eventBuffer != NULL && SDLEventBuffer::checkEvent(
 								i->first->sdlId, event)) {
 
-							eventBuffer->feed(event);
+							eventBuffer->feed(event, capsOn, shiftOn);
 						}
 					}
 					++i;
@@ -1126,7 +1141,7 @@ namespace mb {
 
 		switch (s->uSurPendingAction) {
 			case SPA_CREATE:
-				getRGBAMask(&rmask, &gmask, &bmask, &amask);
+				getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 				s->uSur = SDL_CreateRGBSurface(
 						0, s->uSurW, s->uSurH, 24, rmask, gmask, bmask, amask);
 
@@ -1335,32 +1350,32 @@ namespace mb {
 		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_Y]           = SDLK_y;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_Z]           = SDLK_z;
 
-		/*(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_A]         = SDLK_a;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_B]         = SDLK_b;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_C]         = SDLK_c;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_D]         = SDLK_d;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_E]         = SDLK_e;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_F]         = SDLK_f;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_G]         = SDLK_g;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_H]         = SDLK_h;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_I]         = SDLK_i;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_J]         = SDLK_j;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_K]         = SDLK_k;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_L]         = SDLK_l;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_M]         = SDLK_m;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_N]         = SDLK_n;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_O]         = SDLK_o;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_P]         = SDLK_p;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Q]         = SDLK_q;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_R]         = SDLK_r;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_S]         = SDLK_s;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_T]         = SDLK_t;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_U]         = SDLK_u;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_V]         = SDLK_v;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_W]         = SDLK_w;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_X]         = SDLK_x;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Y]         = SDLK_y;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Z]         = SDLK_z;*/
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_A]         = SDLK_a + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_B]         = SDLK_b + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_C]         = SDLK_c + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_D]         = SDLK_d + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_E]         = SDLK_e + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_F]         = SDLK_f + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_G]         = SDLK_g + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_H]         = SDLK_h + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_I]         = SDLK_i + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_J]         = SDLK_j + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_K]         = SDLK_k + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_L]         = SDLK_l + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_M]         = SDLK_m + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_N]         = SDLK_n + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_O]         = SDLK_o + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_P]         = SDLK_p + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Q]         = SDLK_q + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_R]         = SDLK_r + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_S]         = SDLK_s + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_T]         = SDLK_t + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_U]         = SDLK_u + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_V]         = SDLK_v + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_W]         = SDLK_w + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_X]         = SDLK_x + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Y]         = SDLK_y + 5000;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Z]         = SDLK_z + 5000;
 
 		(*gingaToSDLCodeMap)[CodeMap::KEY_PAGE_DOWN]         = SDLK_PAGEDOWN;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_PAGE_UP]           = SDLK_PAGEUP;
@@ -1411,6 +1426,7 @@ namespace mb {
 		(*gingaToSDLCodeMap)[CodeMap::KEY_YELLOW]            = SDLK_F19;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BLUE]              = SDLK_F20;
 
+		(*gingaToSDLCodeMap)[CodeMap::KEY_SPACE]             = SDLK_KP_SPACE;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BACKSPACE]         = SDLK_BACKSPACE;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_BACK]              = SDLK_AC_BACK;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_ESCAPE]            = SDLK_ESCAPE;
@@ -1427,6 +1443,7 @@ namespace mb {
 		(*gingaToSDLCodeMap)[CodeMap::KEY_GREATER_THAN_SIGN] = SDLK_GREATER;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_LESS_THAN_SIGN]    = SDLK_LESS;
 
+		(*gingaToSDLCodeMap)[CodeMap::KEY_TAB]               = SDLK_TAB;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_TAP]               = SDLK_F23;
 
         map<int, int>::iterator i;
@@ -1519,46 +1536,72 @@ namespace mb {
 		return window;
 	}
 
-	void SDLDeviceScreen::prepareTexture(SDL_Texture* texture, IWindow* win) {
-		IColor* color;
-		int alpha;
+	void SDLDeviceScreen::drawWindow(
+			SDL_Renderer* renderer,
+			SDL_Texture* texture,
+			IWindow* win) {
+
+		SDL_Rect rect;
+		IColor* bgColor;
+		Uint8 rr, rg, rb, ra;
+		int i, r, g, b, a, bw, alpha;
 
 	    if (win != NULL) {
+	    	/* getting renderer previous state */
+	    	SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
+
 	    	alpha = win->getTransparencyValue();
 	    	SDL_SetTextureAlphaMod(texture, 255 - alpha);
-	    }
-	}
 
-	void SDLDeviceScreen::draw(SDL_Renderer* renderer, IWindow* win) {
-		SDL_Rect rect;
-		int i, r, g, b, a, bw;
-		Uint8 rr, rg, rb, ra;
+	    	rect.x = win->getX();
+	    	rect.y = win->getY();
+	    	rect.w = win->getW();
+	    	rect.h = win->getH();
 
-	    if (win != NULL) {
-	    	win->getBorder(&r, &g, &b, &a, &bw);
+	    	/* window background */
+	    	bgColor = win->getBgColor();
+	    	if (bgColor != NULL) {
+	    		SDL_SetRenderTarget(renderer, texture);
 
-	    	if (bw != 0) {
-	    		SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
-		    	SDL_SetRenderDrawColor(renderer, r, g, b, a);
+	    		SDL_SetRenderDrawColor(
+	    				renderer,
+	    				bgColor->getR(),
+	    				bgColor->getG(),
+	    				bgColor->getB(),
+	    				bgColor->getAlpha());
 
-		    	i = 0;
-		    	while (i != bw) {
-			    	rect.x = win->getX() - i;
-			    	rect.y = win->getY() - i;
-			    	rect.w = win->getW() + 2*i;
-			    	rect.h = win->getH() + 2*i;
+	    		SDL_RenderFillRect(renderer, &rect);
 
-		    		SDL_RenderDrawRect(renderer, &rect);
-
-		    		if (bw < 0) {
-		    			i--;
-		    		} else {
-		    			i++;
-		    		}
-		    	}
-
-		    	SDL_SetRenderDrawColor(renderer, rr, rg, rb, ra);
+		    	SDL_SetRenderTarget(renderer, NULL);
 	    	}
+
+	    	/* window rendering */
+	    	SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+	    	/* window border */
+	    	win->getBorder(&r, &g, &b, &a, &bw);
+	    	if (bw != 0) {
+	    		SDL_SetRenderDrawColor(renderer, r, g, b, a);
+
+				i = 0;
+				while (i != bw) {
+					rect.x = win->getX() - i;
+					rect.y = win->getY() - i;
+					rect.w = win->getW() + 2*i;
+					rect.h = win->getH() + 2*i;
+
+					SDL_RenderDrawRect(renderer, &rect);
+
+					if (bw < 0) {
+						i--;
+					} else {
+						i++;
+					}
+				}
+	    	}
+
+	    	/* setting renderer previous state */
+	    	SDL_SetRenderDrawColor(renderer, rr, rg, rb, ra);
 	    }
 	}
 
@@ -1567,7 +1610,7 @@ namespace mb {
 
 		SDL_Texture* texture;
 
-	    texture = SDL_CreateTextureFromSurface(renderer, surface);
+		texture = SDL_CreateTextureFromSurface(renderer, surface);
 	    if (!texture) {
 	        clog << "SDLDeviceScreen::createTexture";
 	        clog << "Couldn't create texture: " << SDL_GetError();
@@ -1614,7 +1657,7 @@ namespace mb {
 
         SDL_QueryTexture(texture, &format, &access, &w, &h);
 		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
-		getRGBAMask(&rmask, &gmask, &bmask, &amask);
+		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 
 		uSur = SDL_CreateRGBSurfaceFrom(
 				pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
@@ -1629,22 +1672,41 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::getRGBAMask(
+			int depth,
 			Uint32* rmask,
 			Uint32* gmask,
 			Uint32* bmask,
 			Uint32* amask) {
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-		*rmask = 0xff000000;
-		*gmask = 0x00ff0000;
-		*bmask = 0x0000ff00;
-		*amask = 0x000000ff;
+		switch (depth) {
+			case 32:
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+				*rmask = 0xff000000;
+				*gmask = 0x00ff0000;
+				*bmask = 0x0000ff00;
+				*amask = 0x000000ff;
 #else
-		*rmask = 0x000000ff;
-		*gmask = 0x0000ff00;
-		*bmask = 0x00ff0000;
-		*amask = 0xff000000;
+				*rmask = 0x000000ff;
+				*gmask = 0x0000ff00;
+				*bmask = 0x00ff0000;
+				*amask = 0xff000000;
 #endif
+				break;
+
+			case 24:
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+				*rmask = 0x00ff0000;
+				*gmask = 0x0000ff00;
+				*bmask = 0x000000ff;
+				*amask = 0x00000000;
+#else
+				*rmask = 0x000000ff;
+				*gmask = 0x0000ff00;
+				*bmask = 0x00ff0000;
+				*amask = 0x00000000;
+#endif
+				break;
+		}
 	}
 
 	void SDLDeviceScreen::waitSurfaceAction() {

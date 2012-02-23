@@ -431,12 +431,12 @@ namespace player {
 			clog << " fontHeight = '" << fontHeight << "'";
 			clog << " surH = '" << h << "'" << endl;
 
-			currentLine   = currentLine + (int)(0.9 * fontHeight);
+			currentLine   = currentLine + (int)(1.15 * fontHeight);
 			currentColumn = 0;
 			return false;
 
 		} else {
-			currentLine   = currentLine + (int)(0.9 * fontHeight);
+			currentLine   = currentLine + (int)(1.15 * fontHeight);
 			currentColumn = 0;
 			return true;
 		}

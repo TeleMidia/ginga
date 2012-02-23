@@ -298,10 +298,13 @@ typedef struct {
 		public:
 
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
-			static void prepareTexture(SDL_Texture* texture, IWindow* win);
-			static void draw(SDL_Renderer* renderer, IWindow* win);
 
 		private:
+			static void drawWindow(
+					SDL_Renderer* renderer,
+					SDL_Texture* texture,
+					IWindow* win);
+
 			static void insertWindowFromRenderList(
 					IWindow* win, vector<IWindow*>* windows);
 
@@ -321,6 +324,7 @@ typedef struct {
 
 		public:
 			static void getRGBAMask(
+					int depth,
 					Uint32* rmask,
 					Uint32* gmask,
 					Uint32* bmask,

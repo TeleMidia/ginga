@@ -177,6 +177,7 @@ namespace mb {
 			static const int KEY_YELLOW;
 			static const int KEY_BLUE;
 
+			static const int KEY_SPACE;
 			static const int KEY_BACKSPACE;
 			static const int KEY_BACK;
 			static const int KEY_ESCAPE;
@@ -193,6 +194,7 @@ namespace mb {
 			static const int KEY_GREATER_THAN_SIGN;
 			static const int KEY_LESS_THAN_SIGN;
 
+			static const int KEY_TAB;
 			static const int KEY_TAP;
 
 		private:

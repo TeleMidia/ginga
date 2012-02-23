@@ -69,6 +69,8 @@ namespace mb {
 			GingaScreenID myScreen;
 			pthread_mutex_t ebMutex;
 			vector<SDL_Event> eventBuffer;
+			bool capsOn;
+			bool shiftOn;
 
 			bool isWaiting;
 			pthread_cond_t cond;
@@ -79,7 +81,7 @@ namespace mb {
 			virtual ~SDLEventBuffer();
 
 			static bool checkEvent(Uint32 winId, SDL_Event event);
-			void feed(SDL_Event event);
+			void feed(SDL_Event event, bool capsOn, bool shiftOn);
 
 			void wakeUp();
 			void postInputEvent(IInputEvent* event);
