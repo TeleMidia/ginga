@@ -187,7 +187,7 @@ namespace player {
 		fromGingaToAwesomium[CodeMap::KEY_SMALL_Y]           = KeyCodes::AK_Y;
 		fromGingaToAwesomium[CodeMap::KEY_SMALL_Z]           = KeyCodes::AK_Z;
 
-		/*fromGingaToAwesomium[CodeMap::KEY_CAPITAL_A]         = KeyCodes::AK_A;
+		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_A]         = KeyCodes::AK_A;
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_B]         = KeyCodes::AK_B;
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_C]         = KeyCodes::AK_C;
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_D]         = KeyCodes::AK_D;
@@ -212,7 +212,7 @@ namespace player {
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_W]         = KeyCodes::AK_W;
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_X]         = KeyCodes::AK_X;
 		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_Y]         = KeyCodes::AK_Y;
-		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_Z]         = KeyCodes::AK_Z;*/
+		fromGingaToAwesomium[CodeMap::KEY_CAPITAL_Z]         = KeyCodes::AK_Z;
 
 		fromGingaToAwesomium[CodeMap::KEY_PAGE_DOWN]         = KeyCodes::AK_DOWN;
 		fromGingaToAwesomium[CodeMap::KEY_PAGE_UP]           = KeyCodes::AK_UP;
@@ -559,11 +559,16 @@ namespace player {
 							keyCode <= CodeMap::KEY_CAPITAL_Z) ||
 							keyCode == CodeMap::KEY_SPACE) {
 
-						keyEvent.text[0] = key;
-						keyEvent.unmodifiedText[0] = key;
+						if (keyCode >= CodeMap::KEY_SMALL_A &&
+								keyCode <= CodeMap::KEY_SMALL_Z) {
+
+							key  = key + ('a' - 'A');
+						}
 						keyEvent.type = Awesomium::WebKeyboardEvent::TYPE_CHAR;
-						keyEvent.virtualKeyCode = key;
-						keyEvent.nativeKeyCode = key;
+						keyEvent.text[0]           = key;
+						keyEvent.unmodifiedText[0] = key;
+						keyEvent.virtualKeyCode    = key;
+						keyEvent.nativeKeyCode     = key;
 						webView->injectKeyboardEvent(keyEvent);
 
 					} else {
