@@ -132,7 +132,7 @@ namespace player {
 
 	bool AwesomiumInfo::userEventReceived(IInputEvent* ev) {
 		int x, y, z;
-		cout << "AwesomiumInfo::userEventReceived " << endl;
+		clog << "AwesomiumInfo::userEventReceived " << endl;
 		this->eventCode = ev->getKeyCode(myScreen);
 
 		if (ev->isKeyType()) {
@@ -438,9 +438,9 @@ namespace player {
 					}
 				}
 
-				cout << "Creating WebView w = '" << aInfo->w << "' and h = '";
-				cout << aInfo->h << "'";
-				cout << endl;
+				clog << "Creating WebView w = '" << aInfo->w << "' and h = '";
+				clog << aInfo->h << "'";
+				clog << endl;
 
 				webView = webCore->createWebView(aInfo->w, aInfo->h);
 			}
@@ -451,7 +451,7 @@ namespace player {
 			}
 
 			if (webView != NULL) {
-				cout << "AwesomiumHandler::loadUrl call loadUrl" << endl;
+				clog << "AwesomiumHandler::loadUrl call loadUrl" << endl;
 
 				if (fileExists(aInfo->mURL)) {
 					string base, file;
@@ -482,8 +482,8 @@ namespace player {
 
 				setFocus(aInfo);
 
-				cout << "AwesomiumHandler::loadUrl call while isloading '";
-				cout << aInfo->mURL << "'" << endl;
+				clog << "AwesomiumHandler::loadUrl call while isloading '";
+				clog << aInfo->mURL << "'" << endl;
 
 				while (webView->isLoadingPage()) {
 					update(aInfo, 50);
@@ -491,14 +491,14 @@ namespace player {
 
 				pthread_mutex_unlock(&s_lMutex);
 
-				cout << "AwesomiumHandler::loadUrl '";
-				cout << aInfo->mURL << "' is loaded" << endl;
+				clog << "AwesomiumHandler::loadUrl '";
+				clog << aInfo->mURL << "' is loaded" << endl;
 				update(aInfo, 300);
 
-				cout << "AwesomiumHandler::loadUrl call refresh" << endl;
+				clog << "AwesomiumHandler::loadUrl call refresh" << endl;
 				refresh(id);
 
-				cout << "AwesomiumHandler::loadUrl refresh OK" << endl;
+				clog << "AwesomiumHandler::loadUrl refresh OK" << endl;
 
 				while (aInfo->update) {
 					update(aInfo, 25);
@@ -510,7 +510,7 @@ namespace player {
 					AwesomiumHandler::eventHandler(aInfo);
 				}
 
-				cout << "AwesomiumHandler::loadUrl call destroy" << endl;
+				clog << "AwesomiumHandler::loadUrl call destroy" << endl;
 				if (webView != NULL) {
 					webView->destroy();
 					webView = NULL;
@@ -555,8 +555,9 @@ namespace player {
 				if (i != fromGingaToAwesomium.end()) {
 					key = i->second;
 
-					if (keyCode >= CodeMap::KEY_0 &&
-							keyCode <= CodeMap::KEY_CAPITAL_Z) {
+					if ((keyCode >= CodeMap::KEY_0 &&
+							keyCode <= CodeMap::KEY_CAPITAL_Z) ||
+							keyCode == CodeMap::KEY_SPACE) {
 
 						keyEvent.text[0] = key;
 						keyEvent.unmodifiedText[0] = key;
@@ -577,8 +578,8 @@ namespace player {
 					aInfo->mouseY = im->getCurrentYAxisValue();
 				}
 
-				cout << "AwesomiumHandler::eventHandler MOUSE CLICK on ";
-				cout << aInfo->mouseX << "," << aInfo->mouseY << "'" << endl;
+				clog << "AwesomiumHandler::eventHandler MOUSE CLICK on ";
+				clog << aInfo->mouseX << "," << aInfo->mouseY << "'" << endl;
 
 				webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
 				update(aInfo, 25);
@@ -651,7 +652,7 @@ namespace player {
 				im->addInputEventListener(aInfo, NULL);
 			}
 			if (webView != NULL) {
-				cout << "AwesomiumHandler::setFocus focus" << endl;
+				clog << "AwesomiumHandler::setFocus focus" << endl;
 				webView->focus();
 			}
 
@@ -661,7 +662,7 @@ namespace player {
 				im->removeInputEventListener(aInfo);
 			}
 			if (webView != NULL) {
-				cout << "AwesomiumHandler::setFocus unfocus" << endl;
+				clog << "AwesomiumHandler::setFocus unfocus" << endl;
 				webView->unfocus();
 			}
 		}
