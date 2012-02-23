@@ -1401,7 +1401,7 @@ namespace mb {
 
 		(*gingaToSDLCodeMap)[CodeMap::KEY_PERIOD]            = SDLK_PERIOD;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SUPER]             = SDLK_F13;
+		(*gingaToSDLCodeMap)[CodeMap::KEY_SUPER]             = SDLK_CAPSLOCK;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_PRINTSCREEN]       = SDLK_PRINTSCREEN;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_MENU]              = SDLK_MENU;
 		(*gingaToSDLCodeMap)[CodeMap::KEY_INFO]              = SDLK_F14;

@@ -290,6 +290,8 @@ namespace mb {
 		keyMap["YELLOW"]       = KEY_YELLOW;
 		keyMap["BLUE"]         = KEY_BLUE;
 
+		keyMap["	"]         = KEY_TAB;
+		keyMap[" "]            = KEY_SPACE;
 		keyMap["BACK"]         = KEY_BACK;
 		keyMap["EXIT"]         = KEY_EXIT;
 
