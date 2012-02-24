@@ -79,6 +79,7 @@ namespace mb {
 			short align;
 			bool fontInit;
 
+			static pthread_mutex_t ntsMutex;
 			pthread_mutex_t pMutex;
 
 			bool isWaiting;
@@ -125,7 +126,10 @@ namespace mb {
 					const char* text,
 					int x=0, int y=0, short align=A_TOP_LEFT);
 
+		private:
 			void playOver(ISurface* surface);
+
+		public:
 			void ntsPlayOver();
 
 		private:

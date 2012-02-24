@@ -506,7 +506,9 @@ namespace mb {
 	}
 
 	void SDLWindow::clearContent() {
-		winSur = NULL;
+		if (curSur != NULL) {
+			SDL_FillRect(curSur, NULL, SDL_MapRGBA(curSur->format, 0, 0, 0, 0));
+		}
 	}
 
 	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {

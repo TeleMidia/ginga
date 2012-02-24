@@ -105,9 +105,9 @@ namespace player {
 		string line, aux;
 		int surfaceW, surfaceH;
 
-		if (surface != NULL) {
-			surface->clearSurface();
-		}
+//		if (surface != NULL) {
+//			surface->clearSurface();
+//		}
 
 		if (isXmlStr(mrl)) {
 			mrl = ("/usr/local/lib/ginga/epgfactory/src/" +
@@ -191,6 +191,8 @@ namespace player {
 		pthread_mutex_lock(&mutex);
 
 		if (surface != NULL && surface->getParent() != NULL) {
+//			surface->clearSurface();
+
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
