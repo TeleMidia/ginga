@@ -64,21 +64,39 @@ extern "C" {
 #include <stdio.h>
 }
 
+typedef struct {
+	ILocalScreenManager* dm;
+	GingaScreenID screen;
+	set<IWindow*>* windows;
+} TestContainer;
+
+bool running = false;
+
 void preparePlayer(
 		IPlayer* txt,
 		string fontUri,
 		string fileUri,
 		string fontSize,
-		string fontColor) {
+		string fontColor,
+		string bgColor,
+		string content) {
 
 	txt->setPropertyValue("x-setFile", fileUri);
 	txt->setPropertyValue("fontUri",   fontUri);
 	txt->setPropertyValue("fontSize",  fontSize);
 	txt->setPropertyValue("fontColor", fontColor);
+	txt->setPropertyValue("bgColor",   bgColor);
+	//txt->setPropertyValue("x-content", content);
 }
 
-void testPlayer(
-		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
+IPlayer* txt1;
+IPlayer* txt2;
+IPlayer* txt3;
+
+void* testPlayer(void* ptr) {
+	ILocalScreenManager* dm;
+	GingaScreenID screen;
+	set<IWindow*>* windows;
 
 	IWindow* w;
 	IWindow* ww;
@@ -86,11 +104,13 @@ void testPlayer(
 
 	ISurface* s;
 
-	IPlayer* txt1;
-	IPlayer* txt2;
-	IPlayer* txt3;
+	TestContainer* tc = (TestContainer*)ptr;
 
 	string fontUri = "/usr/local/etc/ginga/files/font/vera.ttf";
+
+	dm      = tc->dm;
+	screen  = tc->screen;
+	windows = tc->windows;
 
 	w   = dm->createWindow(screen,  10,  10, 100, 100);
 	ww  = dm->createWindow(screen,  90,  90, 150, 150);
@@ -130,7 +150,15 @@ void testPlayer(
 	s = txt1->getSurface();
 	if (s != NULL) {
 		s->setParent((void*)w);
-		preparePlayer(txt1, fontUri, "file.txt", "10", "white");
+		preparePlayer(
+				txt1,
+				fontUri,
+				"file.txt",
+				"10",
+				"white",
+				"black",
+				"f=white bg=black");
+
 		txt1->play();
 	}
 
@@ -138,7 +166,15 @@ void testPlayer(
 	s = txt2->getSurface();
 	if (s != NULL) {
 		s->setParent((void*)ww);
-		preparePlayer(txt2, fontUri, "file.txt", "14", "red");
+		preparePlayer(
+				txt2,
+				fontUri,
+				"file.txt",
+				"14",
+				"red",
+				"white",
+				"f=red bg=white");
+
 		txt2->play();
 	}
 
@@ -146,12 +182,74 @@ void testPlayer(
 	s = txt3->getSurface();
 	if (s != NULL) {
 		s->setParent((void*)www);
-		preparePlayer(txt3, fontUri, "file.txt", "20", "green");
+		preparePlayer(
+				txt3,
+				fontUri,
+				"file.txt",
+				"20",
+				"green",
+				"black",
+				"f=green bg=black");
+
 		txt3->play();
 	}
-}
 
-bool running = false;
+	IPlayer* aux;
+	string auxFile = "";
+
+	while (running) {
+		::usleep(2000000);
+
+		aux  = txt1;
+		txt1 = txt2;
+		txt2 = txt3;
+		txt3 = aux;
+
+		if (auxFile == "") {
+			auxFile = "file.txt";
+
+			preparePlayer(
+					txt1,
+					"",
+					auxFile,
+					"18",
+					"white",
+					"black",
+					"f=white bg=black");
+
+			preparePlayer(
+					txt2,
+					"",
+					auxFile,
+					"16",
+					"red",
+					"white",
+					"f=red bg=white");
+
+			preparePlayer(
+					txt3,
+					"",
+					auxFile,
+					"14",
+					"blue",
+					"yellow",
+					"f=blue bg=yellow");
+
+		} else {
+			auxFile = "";
+
+			txt1->stop();
+			txt2->stop();
+			txt3->stop();
+
+			txt1->play();
+			txt2->play();
+			txt3->play();
+		}
+	}
+
+	return NULL;
+}
 
 void* blinkWindowSet(void* ptr) {
 	set<IWindow*>* windows;
@@ -201,7 +299,13 @@ int main(int argc, char** argv, char** envp) {
 	exit(0);
 #endif
 
+	running = true;
+
 	int i;
+
+	pthread_t ptid;
+	TestContainer tc1;
+	TestContainer tc2;
 	bool testAllScreens = false;
 	bool blinkWindows   = false;
 	bool printScreen    = false;
@@ -235,24 +339,39 @@ int main(int argc, char** argv, char** envp) {
 		sdlArgv[4] = (char*)"400x300";
 		screen2 = dm->createScreen(fakeArgc, sdlArgv);
 
-		testPlayer(dm, screen1, &windows);
-		testPlayer(dm, screen2, &windows);
+		tc1.dm      = dm;
+		tc1.screen  = screen1;
+		tc1.windows = &windows;
+
+		tc2.dm      = dm;
+		tc2.screen  = screen2;
+		tc2.windows = &windows;
+
+		pthread_create(&ptid, 0, testPlayer, &tc1);
+		pthread_create(&ptid, 0, testPlayer, &tc2);
 
 	} else {
-		screen1 = dm->createScreen(argc, argv);
-		testPlayer(dm, screen1, &windows);
+		screen1     = dm->createScreen(argc, argv);
+
+		tc1.dm      = dm;
+		tc1.screen  = screen1;
+		tc1.windows = &windows;
+
+		testPlayer(&tc1);
 	}
 
 	if (blinkWindows) {
 		pthread_t tid;
-
-		running = true;
 
 		pthread_create(&tid, 0, blinkWindowSet, &windows);
 
 		cout << "gingacc-mb test is blinking windows. ";
 		cout << "press enter to stop it";
 		cout << endl;
+		getchar();
+		running = false;
+
+	} else {
 		getchar();
 		running = false;
 	}

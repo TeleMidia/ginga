@@ -237,10 +237,6 @@ namespace mb {
 		}
 
 		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
-
-		if (parent != NULL) {
-			parent->clearContent();
-		}
 	}
 
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {

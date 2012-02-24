@@ -73,6 +73,7 @@ namespace mb {
 	const short SDLFontProvider::A_BOTTOM_LEFT   = 9;
 	const short SDLFontProvider::A_BOTTOM_RIGHT  = 10;
 
+	pthread_mutex_t SDLFontProvider::ntsMutex;
 	bool SDLFontProvider::initialized = false;
 	short SDLFontProvider::fontRefs   = 0;
 
@@ -112,10 +113,13 @@ namespace mb {
 		pthread_mutex_destroy(&pMutex);
 
 		if (font != NULL) {
+			pthread_mutex_lock(&ntsMutex);
 			TTF_CloseFont(font);
+			pthread_mutex_unlock(&ntsMutex);
 		}
 
 		if (fontRefs == 0) {
+			pthread_mutex_destroy(&ntsMutex);
 			TTF_Quit();
 			initialized = false;
 		}
@@ -123,23 +127,29 @@ namespace mb {
 
 	bool SDLFontProvider::initializeFont() {
 		if (!initialized) {
+			pthread_mutex_init(&ntsMutex, NULL);
 			initialized = true;
+			pthread_mutex_lock(&ntsMutex);
 			if (TTF_Init() < 0) {
 				clog << "SDLFontProvider::ntsPlayOver Warning! ";
 				clog << "Couldn't initialize TTF: " << SDL_GetError();
 				clog << endl;
 				ntsRenderer();
+				pthread_mutex_unlock(&ntsMutex);
 				return false;
 			}
+			pthread_mutex_unlock(&ntsMutex);
 		}
 
 		if (height < 1) {
 			height = 12;
 		}
 
+		pthread_mutex_lock(&ntsMutex);
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
 			ntsRenderer();
+			pthread_mutex_unlock(&ntsMutex);
 			return false;
 		}
 
@@ -147,6 +157,8 @@ namespace mb {
 		TTF_SetFontOutline(font, 0);
 		TTF_SetFontKerning(font, 1);
 		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
+
+		pthread_mutex_unlock(&ntsMutex);
 
 		return true;
 	}
@@ -164,7 +176,11 @@ namespace mb {
 		}
 
 		if (font != NULL) {
+			pthread_mutex_lock(&ntsMutex);
+
 			TTF_SizeText(font, text, w, h);
+
+			pthread_mutex_unlock(&ntsMutex);
 
 		} else {
 			clog << "SDLFontProvider::getStringExtents Warning! ";
@@ -195,6 +211,7 @@ namespace mb {
 			ISurface* surface, const char* text, int x, int y, short align) {
 
 		pthread_mutex_lock(&pMutex);
+
 		plainText   = text;
 		coordX      = x;
 		coordY      = y;
@@ -208,7 +225,7 @@ namespace mb {
 	void SDLFontProvider::playOver(ISurface* surface) {
 		this->content = surface;
 
-/**/	ntsPlayOver();
+		ntsPlayOver();
 
 //		SDLDeviceScreen::addDMPToRendererList(this);
 //		waitNTSRenderer();
@@ -232,10 +249,12 @@ namespace mb {
 //			return;
 //		}
 
+		pthread_mutex_lock(&ntsMutex);
 		if (plainText == "") {
 			clog << "SDLFontProvider::ntsPlayOver Warning! Empty text.";
 			clog << endl;
 			ntsRenderer();
+			pthread_mutex_unlock(&ntsMutex);
 			return;
 		}
 
@@ -246,11 +265,13 @@ namespace mb {
 				clog << "SDLFontProvider::ntsPlayOver Warning! NULL parent.";
 				clog << endl;
 				ntsRenderer();
+				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 
 			if (coordX >= parent->getW() || coordY >= parent->getH()) {
 				ntsRenderer();
+				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 
@@ -278,6 +299,7 @@ namespace mb {
 				clog << "SDLFontProvider::ntsPlayOver Warning! Can't create ";
 				clog << "underlying surface from text" << endl;
 				ntsRenderer();
+				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 
@@ -316,6 +338,7 @@ namespace mb {
 		}
 
 		ntsRenderer();
+		pthread_mutex_unlock(&ntsMutex);
 	}
 
 	void SDLFontProvider::waitNTSRenderer() {
