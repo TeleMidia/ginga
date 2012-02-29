@@ -104,42 +104,52 @@ class TestPlayerListener : public IPlayerListener {
 void testPlayer(
 		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
 
-	IWindow* w;
-	IWindow* ww;
-	IWindow* www;
+	IWindow* w1;
+	IWindow* w2;
+	IWindow* w3;
+	IWindow* w4;
 
 	ISurface* s;
 
 	IPlayer* vid1;
 	IPlayer* vid2;
 	IPlayer* vid3;
+	IPlayer* vid4;
 
 	IPlayerListener* l1 = new TestPlayerListener("L1");
 	IPlayerListener* l2 = new TestPlayerListener("L2");
 	IPlayerListener* l3 = new TestPlayerListener("L3");
+	IPlayerListener* l4 = new TestPlayerListener("L4");
 
-	w   = dm->createWindow(screen, 10, 10, 100, 100);
-	ww  = dm->createWindow(screen, 90, 90, 150, 150);
-	www = dm->createWindow(screen, 0, 0, 400, 300);
+	w1 = dm->createWindow(screen, 10, 10, 100, 100, 3);
+	w2 = dm->createWindow(screen, 90, 90, 150, 150, 2);
+	w3 = dm->createWindow(screen, 0, 0, 200, 200, 1);
+	w4 = dm->createWindow(screen, 0, 0, 400, 300, 0);
 
-	w->setCaps(w->getCap("ALPHACHANNEL"));
-	w->draw();
-	w->show();
+	w1->setCaps(w1->getCap("ALPHACHANNEL"));
+	w1->draw();
+	w1->show();
 
-	ww->setCaps(w->getCap("ALPHACHANNEL"));
-	ww->draw();
-	ww->show();
+	w2->setCaps(w2->getCap("ALPHACHANNEL"));
+	w2->draw();
+	w2->show();
 
-	www->setCaps(w->getCap("ALPHACHANNEL"));
-	www->draw();
-	www->show();
+	w3->setCaps(w3->getCap("ALPHACHANNEL"));
+	w3->draw();
+	w3->show();
 
-	ww->raiseToTop();
-	w->raiseToTop();
+	w4->setCaps(w4->getCap("ALPHACHANNEL"));
+	w4->draw();
+	w4->show();
 
-	windows->insert(w);
-	windows->insert(ww);
-	windows->insert(www);
+	w3->raiseToTop();
+	w2->raiseToTop();
+	w1->raiseToTop();
+
+	windows->insert(w1);
+	windows->insert(w2);
+	windows->insert(w3);
+	windows->insert(w4);
 
 #if HAVE_COMPSUPPORT
 	vid1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
@@ -150,30 +160,41 @@ void testPlayer(
 
 	vid3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 			screen, "corrego1.mp4", true);
+
+	vid4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+			screen, "/root/workspaces/NCL/Garrincha/media/animGar.mp4", true);
 #endif
 
 	vid1->addListener(l1);
-	vid1->setOutWindow(w->getId());
+	vid1->setOutWindow(w1->getId());
 	s = vid1->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w);
+		s->setParent((void*)w1);
 		vid1->play();
 	}
 
 	vid2->addListener(l2);
-	vid2->setOutWindow(ww->getId());
+	vid2->setOutWindow(w2->getId());
 	s = vid2->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)ww);
+		s->setParent((void*)w2);
 		vid2->play();
 	}
 
 	vid3->addListener(l3);
-	vid3->setOutWindow(www->getId());
+	vid3->setOutWindow(w3->getId());
 	s = vid3->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)www);
+		s->setParent((void*)w3);
 		vid3->play();
+	}
+
+	vid4->addListener(l4);
+	vid4->setOutWindow(w4->getId());
+	s = vid4->getSurface();
+	if (s != NULL) {
+		s->setParent((void*)w4);
+		vid4->play();
 	}
 }
 

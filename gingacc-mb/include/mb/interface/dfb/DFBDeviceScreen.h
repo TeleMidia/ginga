@@ -157,7 +157,7 @@ namespace mb {
 
 			/* interfacing output */
 
-			IWindow* createWindow(int x, int y, int w, int h);
+			IWindow* createWindow(int x, int y, int w, int h, int z);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);

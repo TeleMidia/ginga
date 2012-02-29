@@ -52,27 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/IContinuousMediaProvider.h"
 
-/* SDL_ffmpeg cplusplus compat begin */
-extern "C" {
-#include <pthread.h>
-#include <stdint.h>
-}
-
-#ifndef INT64_C
-#define INT64_C(c) (c ## LL)
-#endif //INT64_C
-
-#ifndef UINT64_C
-#define UINT64_C(c) (c ## ULL)
-#endif //UINT64_C
-
-/* SDL_ffmpeg cplusplus compat end*/
-
-#include <cmath>
-
-#include "SDL.h"
-#include "SDL_thread.h"
-#include "SDL_ffmpeg.h"
+#include "SDL2ffmpeg.h"
 
 #include <set>
 using namespace std;
@@ -97,13 +77,13 @@ namespace mb {
 			short soundLevel;
 
 			SDL_mutex* mutex;
-			SDL_ffmpegFile* file;
+			SDL2ffmpeg* decoder;
 
 			SDL_AudioCVT* acvt;
 			SDL_AudioSpec desired;
 			SDL_AudioSpec obtained;
 
-			SDL_ffmpegAudioFrame* audioFrame[BUF_SIZE];
+			AudioFrame* audioFrame[BUF_SIZE];
 			uint64_t sync;
 
 			static pthread_mutex_t iMutex;
@@ -150,7 +130,7 @@ namespace mb {
 
 		protected:
 			static void audioCallback(void* data, Uint8* stream, int len);
-			virtual uint64_t getSync();
+			uint64_t getSync();
 
 		public:
 			virtual void refreshDR();

@@ -74,7 +74,7 @@ namespace mb {
 		state      = ST_STOPPED;
 		sync       = 0;
 		this->mrl  = "";
-		file       = SDL_ffmpegOpen(mrl);
+		decoder    = new SDL2ffmpeg(mrl);
 		mutex      = SDL_CreateMutex();
 		soundLevel = SDL_MIX_MAXVOLUME * 0.5;
 
@@ -86,13 +86,11 @@ namespace mb {
 			aps.clear();
 		}
 
-		if (file != NULL) {
-			SDL_ffmpegSelectAudioStream(file, 0);
+		if (decoder != NULL) {
+			decoder->selectAudioStream(0);
 
-			desired = SDL_ffmpegGetAudioSpec(
-					file,
-					512,
-					SDLAudioProvider::audioCallback);
+			desired = decoder->getAudioSpec(
+					512, SDLAudioProvider::audioCallback);
 
 		} else {
 			cout << "SDLAudioProvider::SDLAudioProvider Warning! Invalid ";
@@ -122,15 +120,15 @@ namespace mb {
 		}
 
 		SDL_LockMutex(mutex);
-	    if (SDL_ffmpegValidAudio(file)) {
+	    if (decoder->isAudioValid()) {
 	        for (i = 0; i < BUF_SIZE; i++) {
-	            SDL_ffmpegFreeAudioFrame(audioFrame[i]);
+	        	decoder->releaseAudioFrame(audioFrame[i]);
 	        }
 	    }
 
-		if (file != NULL) {
-			SDL_ffmpegFree(file);
-			file = NULL;
+		if (decoder != NULL) {
+			delete decoder;
+			decoder = NULL;
 		}
 
 		SDL_UnlockMutex(mutex);
@@ -151,24 +149,24 @@ namespace mb {
 	}
 
 	double SDLAudioProvider::getTotalMediaTime() {
-		if (SDL_ffmpegValidAudio(file)) {
-			return SDL_ffmpegAudioDuration(file) / 1000;
+		if (decoder->isAudioValid()) {
+			return decoder->getDuration() / 1000;
 		}
 
 		return 0;
 	}
 
 	double SDLAudioProvider::getMediaTime() {
-		if (SDL_ffmpegValidAudio(file)) {
-			return SDL_ffmpegGetPosition(file) / 1000;
+		if (decoder->isAudioValid()) {
+			return (double)decoder->getPosition() / 1000;
 		}
 
 		return 0;
 	}
 
 	void SDLAudioProvider::setMediaTime(double pos) {
-		if (SDL_ffmpegValidAudio(file)) {
-			SDL_ffmpegSeek(file, (uint64_t)pos);
+		if (decoder->isAudioValid()) {
+			decoder->seek((uint64_t)pos);
 		}
 	}
 
@@ -176,17 +174,16 @@ namespace mb {
 		int i;
 		int frameSize;
 
-	    if (SDL_ffmpegValidAudio(file)) {
-
+	    if (decoder->isAudioValid()) {
 	    	memset(&obtained, 0, sizeof(obtained));
 
-	    	/*cout << "SDLAudioProvider::prepare desired channels = '";
-	    	cout << (short)desired.channels << "', desired samples = '";
-	    	cout << desired.samples << "', format = '";
-	    	cout << desired.format << "', size = '";
-	    	cout << desired.size << "', and freq = '";
-	    	cout << desired.freq << "'";
-	    	cout << endl;*/
+	    	clog << "SDLAudioProvider::prepare desired channels = '";
+	    	clog << (short)desired.channels << "', desired samples = '";
+	    	clog << desired.samples << "', format = '";
+	    	clog << desired.format << "', size = '";
+	    	clog << desired.size << "', and freq = '";
+	    	clog << desired.freq << "'";
+	    	clog << endl;
 
 	    	SDL_OpenAudio(&desired, &obtained);
 
@@ -196,25 +193,25 @@ namespace mb {
 
 	    	frameSize = obtained.channels * obtained.samples * 2;
 
-	    	cout << "SDLAudioProvider::prepare '" << mrl;
-	    	cout << "' obtained channels = '";
-	    	cout << (short)obtained.channels << "', samples = '";
-	    	cout << obtained.samples << "', format = '";
-	    	cout << obtained.format << "', size = '";
-	    	cout << obtained.size << "', and freq = '";
-	    	cout << obtained.freq << "'";
-	    	cout << endl;
+	    	clog << "SDLAudioProvider::prepare '" << mrl;
+	    	clog << "' obtained channels = '";
+	    	clog << (short)obtained.channels << "', samples = '";
+	    	clog << obtained.samples << "', format = '";
+	    	clog << obtained.format << "', size = '";
+	    	clog << obtained.size << "', and freq = '";
+	    	clog << obtained.freq << "'";
+	    	clog << endl;
 
 	        for (i = 0; i < BUF_SIZE; i++) {
-	            audioFrame[i] = SDL_ffmpegCreateAudioFrame(file, frameSize);
+	            audioFrame[i] = decoder->createAudioFrame(frameSize);
 	            if (!audioFrame[i]) {
-	            	cout << "SDLAudioProvider::prepare Can't prepare!";
-	                cout << " Audio Frame was not created with frame size '";
-	                cout << frameSize << "'" << endl;
+	            	clog << "SDLAudioProvider::prepare Can't prepare!";
+	            	clog << " Audio Frame was not created with frame size '";
+	            	clog << frameSize << "'" << endl;
 	                return false;
 	            }
 
-	            SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+	            decoder->getAudioFrame(audioFrame[i]);
 	        }
 
 			pthread_mutex_lock(&iMutex);
@@ -224,8 +221,10 @@ namespace mb {
 	        return true;
 
 	    } else {
-        	clog << "SDLAudioProvider::prepare Can't play since there is no ";
-            clog << "selected audio stream" << endl;
+        	clog << "SDLAudioProvider::prepare Can't play audio: ";
+            clog << "there is no audio stream considering MRL '";
+            clog << mrl << "'";
+            clog << endl;
 	    }
 
 	    return false;
@@ -286,7 +285,7 @@ namespace mb {
 	void SDLAudioProvider::audioCallback(void* data, Uint8* stream, int len) {
 		set<SDLAudioProvider*>::iterator i;
 		SDLAudioProvider* ap;
-		SDL_ffmpegAudioFrame* auxFrame;
+		AudioFrame* auxFrame;
 		int j, k, ret;
 
 		SDL_AudioCVT acvt;
@@ -465,13 +464,13 @@ namespace mb {
 	}
 
 	uint64_t SDLAudioProvider::getSync() {
-		if (file != NULL) {
-			if (SDL_ffmpegValidAudio(file)) {
+		if (decoder != NULL) {
+			if (decoder->isAudioValid()) {
 				return sync;
 			}
 
-			if (SDL_ffmpegValidVideo(file)) {
-				return (SDL_GetTicks() % SDL_ffmpegDuration(file));
+			if (decoder->isVideoValid()) {
+				return (SDL_GetTicks() % decoder->getDuration());
 			}
 		}
 		return 0;
@@ -480,12 +479,12 @@ namespace mb {
 	void SDLAudioProvider::refreshDR() {
 		int i;
 
-		if (state == ST_PLAYING && SDL_ffmpegValidAudio(file)) {
+		if (state == ST_PLAYING && decoder->isAudioValid()) {
 			SDL_LockMutex(mutex);
 
 			for (i = 0; i < BUF_SIZE; i++) {
 				if (!audioFrame[i]->size) {
-					SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+					decoder->getAudioFrame(audioFrame[i]);
 				}
 			}
 

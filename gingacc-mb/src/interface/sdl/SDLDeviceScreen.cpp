@@ -87,7 +87,7 @@ namespace mb {
 	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	pthread_mutex_t SDLDeviceScreen::rlMutex;
 
-	map<GingaScreenID, vector<IWindow*>*> SDLDeviceScreen::windowRenderMap;
+	map<GingaScreenID, map<int, set<IWindow*>*>*> SDLDeviceScreen::renderMap;
 	pthread_mutex_t SDLDeviceScreen::wrMutex;
 
 	set<IContinuousMediaProvider*> SDLDeviceScreen::cmpRenderList;
@@ -184,7 +184,8 @@ namespace mb {
 
 	SDLDeviceScreen::~SDLDeviceScreen() {
 		map<SDLDeviceScreen*, short>::iterator i;
-		map<GingaScreenID, vector<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator j;
+		map<int, set<IWindow*>*>::iterator k;
 
 		waitingCreator = false;
 		pthread_mutex_destroy(&cMutex);
@@ -202,10 +203,15 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 
 		pthread_mutex_lock(&wrMutex);
-		j = windowRenderMap.find(id);
-		if (j != windowRenderMap.end()) {
+		j = renderMap.find(id);
+		if (j != renderMap.end()) {
+			k = j->second->begin();
+			while (k != j->second->end()) {
+				delete k->second;
+				++k;
+			}
 			delete j->second;
-			windowRenderMap.erase(j);
+			renderMap.erase(j);
 		}
 		pthread_mutex_unlock(&wrMutex);
 
@@ -369,12 +375,13 @@ namespace mb {
 
 	/* interfacing output */
 
-	IWindow* SDLDeviceScreen::createWindow(int x, int y, int w, int h) {
+	IWindow* SDLDeviceScreen::createWindow(int x, int y, int w, int h, int z) {
 		IWindow* iWin;
 
 		pthread_mutex_lock(&winMutex);
-		iWin = new SDLWindow(NULL, NULL, id, x, y, w, h);
+		iWin = new SDLWindow(NULL, NULL, id, x, y, w, h, z);
 		windowPool->insert(iWin);
+		renderMapInsertWindow(id, iWin, z);
 		pthread_mutex_unlock(&winMutex);
 
 		return iWin;
@@ -385,8 +392,9 @@ namespace mb {
 
 		if (underlyingWindow != NULL) {
 			pthread_mutex_lock(&winMutex);
-			iWin = new SDLWindow(underlyingWindow, NULL, id, 0, 0, 0, 0);
+			iWin = new SDLWindow(underlyingWindow, NULL, id, 0, 0, 0, 0, 0);
 			windowPool->insert(iWin);
+			renderMapInsertWindow(id, iWin, 0);
 			pthread_mutex_unlock(&winMutex);
 		}
 
@@ -426,6 +434,8 @@ namespace mb {
 			i = windowPool->find(win);
 			if (i != windowPool->end()) {
 				iWin = (SDLWindow*)(*i);
+
+				renderMapRemoveWindow(id, iWin, iWin->getZ());
 				windowPool->erase(i);
 
 				uSur = (SDL_Surface*)(iWin->getContent());
@@ -803,43 +813,50 @@ namespace mb {
 		SDLWindow* win;
 		bool ownTex = false;
 
-		map<GingaScreenID, vector<IWindow*>*>::iterator i;
-		vector<IWindow*>::iterator j;
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
+		map<int, set<IWindow*>*>::iterator j;
+		set<IWindow*>::iterator k;
 
 		pthread_mutex_lock(&s->winMutex);
 		pthread_mutex_lock(&wrMutex);
+
 		SDL_RenderClear(s->renderer);
-		i = windowRenderMap.find(s->id);
-		if (i != windowRenderMap.end()) {
+
+		i = renderMap.find(s->id);
+		if (i != renderMap.end()) {
 			j = i->second->begin();
 			while (j != i->second->end()) {
-				win = (SDLWindow*)(*j);
+				k = j->second->begin();
+				while (k != j->second->end()) {
+					win = (SDLWindow*)(*k);
 
-				if (win->getContent() != NULL ||
-						win->getTexture() != NULL) {
+					if (win->isVisible() && (win->getContent() != NULL ||
+							win->getTexture() != NULL)) {
 
-					uSur   = (SDL_Surface*)(win->getContent());
+						uSur   = (SDL_Surface*)(win->getContent());
 
-					if (uSur != NULL) {
-						ownTex = false;
-						uTex   = createTexture(s->renderer, uSur);
-
-					} else {
-						ownTex = true;
-						uTex   = win->getTexture();
-					}
-
-					if (uTex != NULL) {
-						drawWindow(s->renderer, uTex, win);
-
-						if (!ownTex) {
-							releaseTexture(uTex);
+						if (uSur != NULL) {
 							ownTex = false;
-						}
-						uTex = NULL;
-					}
+							uTex   = createTexture(s->renderer, uSur);
 
-					win->rendered();
+						} else {
+							ownTex = true;
+							uTex   = win->getTexture();
+						}
+
+						if (uTex != NULL) {
+							drawWindow(s->renderer, uTex, win);
+
+							if (!ownTex) {
+								releaseTexture(uTex);
+								ownTex = false;
+							}
+							uTex = NULL;
+						}
+
+						win->rendered();
+					}
+					++k;
 				}
 				++j;
 			}
@@ -1147,8 +1164,9 @@ namespace mb {
 
 	bool SDLDeviceScreen::surfaceAction(SDLDeviceScreen* s) {
 		bool hasAction = true;
-		map<GingaScreenID, vector<IWindow*>*>::iterator i;
-		vector<IWindow*>::iterator j;
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
+		map<int, set<IWindow*>*>::iterator j;
+		set<IWindow*>::iterator k;
 		Uint32 rmask, gmask, bmask, amask;
 
 		switch (s->uSurPendingAction) {
@@ -1162,11 +1180,15 @@ namespace mb {
 			case SPA_BLIT:
 				pthread_mutex_lock(&wrMutex);
 				pthread_mutex_lock(&s->winMutex);
-				i = windowRenderMap.find(s->id);
-				if (i != windowRenderMap.end()) {
+				i = renderMap.find(s->id);
+				if (i != renderMap.end()) {
 					j = i->second->begin();
 					while (j != i->second->end()) {
-						blitFromWindow((*j), s->uSur);
+						k = j->second->begin();
+						while (k != j->second->end()) {
+							blitFromWindow((*k), s->uSur);
+							++k;
+						}
 						++j;
 					}
 				}
@@ -1466,8 +1488,65 @@ namespace mb {
         }
 	}
 
+
 	/* output */
-	void SDLDeviceScreen::updateWindowState(
+	void SDLDeviceScreen::renderMapInsertWindow(
+			GingaScreenID screenId, IWindow* iWin, int z) {
+
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
+		map<int, set<IWindow*>*>::iterator j;
+
+		map<int, set<IWindow*>*>* sortedMap;
+		set<IWindow*>* windows;
+
+		pthread_mutex_lock(&wrMutex);
+		i = renderMap.find(screenId);
+		if (i != renderMap.end()) {
+			sortedMap = i->second;
+		} else {
+			sortedMap = new map<int, set<IWindow*>*>;
+			renderMap[screenId] = sortedMap;
+		}
+
+		j = sortedMap->find(z);
+		if (j != sortedMap->end()) {
+			windows = j->second;
+		} else {
+			windows = new set<IWindow*>;
+			(*sortedMap)[z] = windows;
+		}
+
+		windows->insert(iWin);
+		pthread_mutex_unlock(&wrMutex);
+	}
+
+	void SDLDeviceScreen::renderMapRemoveWindow(
+			GingaScreenID screenId, IWindow* iWin, int z) {
+
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
+		map<int, set<IWindow*>*>::iterator j;
+		set<IWindow*>::iterator k;
+
+		map<int, set<IWindow*>*>* sortedMap;
+		set<IWindow*>* windows;
+
+		pthread_mutex_lock(&wrMutex);
+		i = renderMap.find(screenId);
+		if (i != renderMap.end()) {
+			sortedMap = i->second;
+			j = sortedMap->find(z);
+			if (j != sortedMap->end()) {
+				windows = j->second;
+				k = windows->find(iWin);
+				if (k != windows->end()) {
+					windows->erase(k);
+				}
+			}
+		}
+		pthread_mutex_unlock(&wrMutex);
+	}
+
+	/*void SDLDeviceScreen::updateWindowState(
 			GingaScreenID screenId, IWindow* win, short state) {
 
 		map<GingaScreenID, vector<IWindow*>*>::iterator i;
@@ -1514,7 +1593,7 @@ namespace mb {
 			default:
 				break;
 		}
-	}
+	}*/
 
 	void SDLDeviceScreen::removeFromWindowList(
 			vector<IWindow*>* windows, IWindow* win) {

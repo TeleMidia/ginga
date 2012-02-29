@@ -28,6 +28,7 @@ MAINTAINERCLEANFILES = 	aclocal.m4 \
 			config.log \
 			config.guess \
 			config.h.in \
+			config.h.in~ \
 			config.status \
 			config.sub \
 			configure \

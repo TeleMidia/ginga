@@ -176,23 +176,23 @@ fi
 
 AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
-##############
-# SDL_ffmpeg #
-##############
+#####################
+# ffmpeg for SDL MB #
+#####################
 sdlffmpeg=yes
 
 if test x$enable_sdl = xno; then
 sdlffmpeg=no
 else
-AC_HAVE_LIBRARY(SDL2_ffmpeg, [], sdlffmpeg=no)
+AC_HAVE_LIBRARY(avcodec, [], sdlffmpeg=no)
 fi
 
 if test x$sdlffmpeg = xno; then
-AC_MSG_WARN([*** SDL2_ffmpeg lib not Found, disabling SDL support.])
+AC_MSG_WARN([*** ffmpeg libraries not Found, disabling SDL support.])
 enable_sdl=no
 fi
 
-AM_CONDITIONAL([SDLFFMPEG], [test x$sdlffmpeg = xyes])
+AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
 #############
 # SDL_image #
@@ -211,7 +211,7 @@ enable_sdl=no
 sdlffmpeg=no
 fi
 
-AM_CONDITIONAL([SDLFFMPEG], [test x$sdlimage = xyes])
+AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
 ###########
 # SDL_ttf #
@@ -231,11 +231,11 @@ sdlimage=no
 enable_sdl=no
 fi
 
-AM_CONDITIONAL([SDLFONT], [test x$sdlttf = xyes])
+AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
-#########################################
-# Checking if we have at least 1 system #
-#########################################
+############################################################
+# Checking if we have at least 1 multimedia backend system #
+############################################################
 
 if test x$enable_dfb = xno; then
 if test x$enable_term = xno; then
@@ -490,9 +490,9 @@ Build options:
   
   SDL Providers:
   SDL2_image                       $sdlimage
-  SDL2_ffmpeg                      $sdlffmpeg
   SDL2_ttf                         $sdlttf
-  
+  ffmpeg                           $sdlffmpeg
+
   Component Support                $enable_components
   
   Kinect (input device) Support    $enable_kinect

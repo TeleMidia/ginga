@@ -23,12 +23,17 @@ localLib_PROGRAMS               = \
                                   libgingaccmbdecsdlap.so
 
 libgingaccmbdecsdlap_so_SOURCES = \
-                                  SDLAudioProvider.cpp
+                                  SDLAudioProvider.cpp \
+                                  SDL2ffmpeg.cpp
 
 libgingaccmbdecsdlap_so_LDADD   = \
                                   -lgingaccmbsdl \
                                   -lgingaccmb \
-                                  -lSDL2 -lavformat -lswscale -lSDL2_ffmpeg
+                                  -lSDL2 \
+                                  -lpthread \
+                                  -lavcodec \
+                                  -lavformat \
+                                  -lswscale
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

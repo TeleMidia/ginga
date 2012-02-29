@@ -516,13 +516,13 @@ namespace mb {
 	/* interfacing output */
 
 	IWindow* LocalScreenManager::createWindow(
-			GingaScreenID screenId, int x, int y, int w, int h) {
+			GingaScreenID screenId, int x, int y, int w, int h, int z) {
 
 		IDeviceScreen* screen;
 		IWindow* window = NULL;
 
 		if (getScreen(screenId, &screen)) {
-			window = screen->createWindow(x, y, w, h);
+			window = screen->createWindow(x, y, w, h, z);
 
 		} else {
 			clog << "LocalScreenManager::createWindow Warning! ";

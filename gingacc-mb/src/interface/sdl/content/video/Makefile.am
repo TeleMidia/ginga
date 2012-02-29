@@ -28,13 +28,16 @@ libgingaccmbdecsdlav_so_SOURCES = \
                                   SDLVideoProvider.cpp
 
 libgingaccmbdecsdlav_so_LDADD   = \
-                                  -lSDL2 \
-                                  -lSDL2_ffmpeg \
                                   -ltelemidiautil \
                                   -lgingaccsystem \
                                   -lgingaccmb \
                                   -lgingaccmbsdl \
-                                  -lgingaccmbdecsdlap
+                                  -lgingaccmbdecsdlap \
+                                  -lSDL2 \
+                                  -lpthread \
+                                  -lavcodec \
+                                  -lavformat \
+                                  -lswscale
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

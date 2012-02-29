@@ -75,9 +75,9 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	IPlayer* aud2;
 	IPlayer* aud3;
 
-	w   = dm->createWindow(screen, 10, 10, 100, 100);
-	ww  = dm->createWindow(screen, 90, 90, 150, 150);
-	www = dm->createWindow(screen, 0, 0, 400, 300);
+	w   = dm->createWindow(screen, 10, 10, 100, 100, 32766);
+	ww  = dm->createWindow(screen, 90, 90, 150, 150, 32766);
+	www = dm->createWindow(screen, 0, 0, 400, 300, 32766);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

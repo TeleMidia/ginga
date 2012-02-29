@@ -68,13 +68,15 @@ namespace mb {
 			GingaWindowID windowID,
 			GingaWindowID parentWindowID,
 			GingaScreenID screenId,
-			int x, int y, int width, int height) {
+			int x, int y, int width, int height,
+			int z) {
 
 		initialize(
 				windowID,
 				parentWindowID,
 				screenId,
-				x, y, width, height);
+				x, y, width, height,
+				z);
 	}
 
 	SDLWindow::~SDLWindow() {
@@ -130,7 +132,8 @@ namespace mb {
 			GingaWindowID windowID,
 			GingaWindowID parentWindowID,
 			GingaScreenID screenId,
-			int x, int y, int w, int h) {
+			int x, int y, int w, int h,
+			int z) {
 
 		this->windowId = windowID;
 
@@ -157,6 +160,7 @@ namespace mb {
 		this->rect.y            = y;
 		this->rect.w            = w;
 		this->rect.h            = h;
+		this->z                 = z;
 		this->ghost             = false;
 		this->visible           = false;
 		this->childSurfaces     = new vector<ISurface*>;
@@ -331,13 +335,13 @@ namespace mb {
 	}
 
 	void SDLWindow::raiseToTop() {
-		SDLDeviceScreen::updateWindowState(
-				myScreen, this, SDLDeviceScreen::SUW_RAISETOTOP);
+//		SDLDeviceScreen::updateWindowState(
+//				myScreen, this, SDLDeviceScreen::SUW_RAISETOTOP);
 	}
 
 	void SDLWindow::lowerToBottom() {
-		SDLDeviceScreen::updateWindowState(
-				myScreen, this, SDLDeviceScreen::SUW_LOWERTOBOTTOM);
+//		SDLDeviceScreen::updateWindowState(
+//				myScreen, this, SDLDeviceScreen::SUW_LOWERTOBOTTOM);
 	}
 
 	void SDLWindow::setCurrentTransparency(int alpha) {
@@ -368,14 +372,14 @@ namespace mb {
 
 	void SDLWindow::show() {
 		this->visible = true;
-		SDLDeviceScreen::updateWindowState(
-				myScreen, this, SDLDeviceScreen::SUW_SHOW);
+//		SDLDeviceScreen::updateWindowState(
+//				myScreen, this, SDLDeviceScreen::SUW_SHOW);
 	}
 
 	void SDLWindow::hide() {
 		visible = false;
-		SDLDeviceScreen::updateWindowState(
-				myScreen, this, SDLDeviceScreen::SUW_HIDE);
+//		SDLDeviceScreen::updateWindowState(
+//				myScreen, this, SDLDeviceScreen::SUW_HIDE);
 	}
 
 	int SDLWindow::getX() {
@@ -392,6 +396,10 @@ namespace mb {
 
 	int SDLWindow::getH() {
 		return this->rect.h;
+	}
+
+	int SDLWindow::getZ() {
+		return z;
 	}
 
 	void SDLWindow::setX(int x) {
