@@ -105,7 +105,7 @@ namespace mb {
 
 			/* interfacing output */
 
-			virtual IWindow* createWindow(int x, int y, int w, int h)=0;
+			virtual IWindow* createWindow(int x, int y, int w, int h, int z)=0;
 			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
 			virtual bool hasWindow(IWindow* win)=0;
 			virtual void releaseWindow(IWindow* win)=0;

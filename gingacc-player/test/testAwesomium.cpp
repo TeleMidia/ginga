@@ -75,8 +75,8 @@ void testAwesomium(
 	IPlayer* awe1;
 	IPlayer* awe2;
 
-	w   = dm->createWindow(screen,  10,  10, 490, 580);
-	ww  = dm->createWindow(screen,  20, 210, 470, 280);
+	w   = dm->createWindow(screen,  10,  10, 490, 580, 2);
+	ww  = dm->createWindow(screen,  20, 210, 470, 280, 1);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

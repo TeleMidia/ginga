@@ -71,11 +71,11 @@ namespace mb {
 		pthread_mutex_init(&cMutex, NULL);
 		pthread_cond_init(&cond, NULL);
 
-		if (file != NULL) {
-			SDL_ffmpegSelectVideoStream(file, 0);
+		if (decoder != NULL) {
+			decoder->selectVideoStream(0);
 			getOriginalResolution(&wRes, &hRes);
 
-			videoFrame          = SDL_ffmpegCreateVideoFrame();
+			videoFrame          = decoder->createVideoFrame();
 		    videoFrame->tempw   = wRes;
 		    videoFrame->temph   = hRes;
 		    videoFrame->texture = NULL;
@@ -89,7 +89,7 @@ namespace mb {
 			SDL_DestroyTexture(videoFrame->texture);
 			videoFrame->texture = NULL;
 
-			SDL_ffmpegFreeVideoFrame(videoFrame);
+			decoder->releaseVideoFrame(videoFrame);
 			videoFrame = NULL;
 		}
 	}
@@ -131,40 +131,41 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::getOriginalResolution(int* width, int* height) {
-		if (SDL_ffmpegValidVideo(file)) {
-			SDL_ffmpegGetVideoSize(file, width, height);
+		if (decoder->isVideoValid() && width != NULL && height != NULL) {
+			decoder->getVideoSize(width, height);
 		}
 	}
 
 	double SDLVideoProvider::getTotalMediaTime() {
-		if (SDL_ffmpegValidVideo(file)) {
-			return SDL_ffmpegVideoDuration(file) / 1000;
+		if (decoder->isVideoValid()) {
+			return decoder->getDuration() / 1000;
 		}
 		return 0;
 	}
 
 	double SDLVideoProvider::getMediaTime() {
-		if (SDL_ffmpegValidVideo(file)) {
-			return SDL_ffmpegGetPosition(file) / 1000;
+		if (decoder->isVideoValid()) {
+			return (double)decoder->getPosition() / 1000;
 		}
 		return 0;
 	}
 
 	void SDLVideoProvider::setMediaTime(double pos) {
-		if (SDL_ffmpegValidVideo(file)) {
-			SDL_ffmpegSeek(file, (uint64_t)pos);
+		if (decoder->isVideoValid()) {
+			decoder->seek((uint64_t)pos);
 		}
 	}
 
 	bool SDLVideoProvider::prepare(ISurface* surface) {
-		if (SDLAudioProvider::prepare(surface)) {
-			if (SDL_ffmpegValidVideo(file) && videoFrame != NULL) {
-				clog << "SDLVideoProvider::prepare OK" << endl;
-				return true;
-			}
+		SDLAudioProvider::prepare(surface);
+		if (decoder->isVideoValid() && videoFrame != NULL) {
+			clog << "SDLVideoProvider::prepare OK" << endl;
+			return true;
 		}
 
-		clog << "SDLVideoProvider::prepare FALSE" << endl;
+		clog << "SDLVideoProvider::prepare there is no video stream ";
+		clog << "considering MRL '" << mrl << "'";
+		clog << endl;
 		return false;
 	}
 
@@ -218,42 +219,25 @@ namespace mb {
 		int sleepTime;
 
 		if (state == ST_PLAYING) {
-			if (SDL_ffmpegValidAudio(file)) {
+			if (decoder->isAudioValid()) {
 				SDL_LockMutex(mutex);
 				for (i = 0; i < BUF_SIZE; i++) {
 					if (audioFrame[i]->size == 0) {
-						SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
+						decoder->getAudioFrame(audioFrame[i]);
 					}
 				}
 				SDL_UnlockMutex(mutex);
 			}
 
 			if (videoFrame != NULL) {
-				if (!videoFrame->ready) {
-					SDL_ffmpegGetVideoFrame(file, videoFrame);
+				if (!videoFrame->ready && decoder->isVideoValid()) {
+					decoder->getVideoFrame(videoFrame);
 
-				} else {
-					if (videoFrame->pts <= getSync()) {
-						videoFrame->ready = 0;
-					}
+				} else if (videoFrame->pts <= getSync()) {
+					videoFrame->ready = 0;
 				}
 			}
 		}
-	}
-
-	uint64_t SDLVideoProvider::getSync() {
-		uint64_t _sync = SDLAudioProvider::getSync();
-		if (_sync != 0) {
-			return _sync;
-		}
-
-		if (file != NULL) {
-			if (SDL_ffmpegValidVideo(file)) {
-				return (SDL_GetTicks() % SDL_ffmpegDuration(file));
-			}
-		}
-
-		return 0;
 	}
 
 	void SDLVideoProvider::waitTexture() {

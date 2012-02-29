@@ -60,8 +60,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/IContinuousMediaProvider.h"
-#include "mb/interface/IImageProvider.h"
-#include "mb/interface/IFontProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "mb/interface/CodeMap.h"
@@ -75,21 +73,29 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
-void testScreen(
+void testVideo(
 		ILocalScreenManager* dm,
 		GingaScreenID screen,
 		set<IWindow*>* windows) {
 
-	IImageProvider* img;
-	IFontProvider* ttf;
-	IContinuousMediaProvider* vid;
+	IContinuousMediaProvider* vid1;
+	IContinuousMediaProvider* vid2;
+	IContinuousMediaProvider* vid3;
+	IContinuousMediaProvider* vid4;
+	IContinuousMediaProvider* vid5;
+
 	IWindow* win1;
 	IWindow* win2;
-	IWindow* win2T;
 	IWindow* win3;
-	ISurface* s;
-	ISurface* vidSur;
-	ISurface* ttfSur;
+	IWindow* win4;
+	IWindow* win5;
+
+	ISurface* s1;
+	ISurface* s2;
+	ISurface* s3;
+	ISurface* s4;
+	ISurface* s5;
+
 	int x1, y1, w1, h1, z1;
 	int x2, y2, w2, h2, z2;
 	int x3, y3, w3, h3, z3;
@@ -115,18 +121,18 @@ void testScreen(
 	z3 = 3;
 
 	x4 = 260;
-	y4 = 45;
+	y4 = 25;
 	w4 = 100;
 	h4 = 100;
 	z4 = 4;
 
-	x5 = 340;
-	y5 = 15;
+	x5 = 35;
+	y5 = 90;
 	w5 = 100;
 	h5 = 100;
 	z5 = 5;
 
-	/* IMAGE PROVIDER */
+	/* VIDEO PROVIDER 1 */
 	win1 = dm->createWindow(screen, x1, y1, w1, h1, z1);
 	if (win1 == NULL) {
 		cout << "gingacc-mb test can't create window. exiting program...";
@@ -134,12 +140,26 @@ void testScreen(
 		exit(1);
 	}
 	win1->draw();
-	win1->renderImgFile("2.png");
 
+	s1   = dm->createSurface(screen);
+	vid1 = dm->createContinuousMediaProvider(
+			screen,
+			"/root/ncl/VivaMaisPratos/video/vivamais.mp4",
+			true,
+			false);
+
+	s1->setParent(win1);
 	win1->show();
 	win1->raiseToTop();
 
-	/* VIDEO PROVIDER */
+	cout << "gingacc-mb test video 1 for screen '" << screen << "' has '";
+	cout << vid1->getTotalMediaTime() << "' as its total media time." << endl;
+
+	vid1->setSoundLevel(0.1);
+	//vid1->playOver(s1, true, NULL);
+
+
+	/* VIDEO PROVIDER 2 */
 	win2 = dm->createWindow(screen, x2, y2, w2, h2, z2);
 	if (win2 == NULL) {
 		cout << "gingacc-mb test can't create window. exiting program...";
@@ -148,58 +168,22 @@ void testScreen(
 	}
 	win2->draw();
 
-	vidSur = dm->createSurface(screen);
-	vid    = dm->createContinuousMediaProvider(
-			screen, "corrego1.mp4", true, false);
+	s2   = dm->createSurface(screen);
+	vid2 = dm->createContinuousMediaProvider(
+			screen, "/root/ncl/rio-itu/mainVideo/rio_1280x720.mp4", true, false);
 
-	vidSur->setParent(win2);
+	vid2->setSoundLevel(1.0);
+	s2->setParent(win2);
 	win2->show();
 	win2->raiseToTop();
 
-	cout << "gingacc-mb test video for screen '" << screen << "' has '";
-	cout << vid->getTotalMediaTime() << "' as its total media time." << endl;
+	cout << "gingacc-mb test video 2 for screen '" << screen << "' has '";
+	cout << vid2->getTotalMediaTime() << "' as its total media time." << endl;
 
-	vid->playOver(vidSur, true, NULL);
+	vid2->playOver(s2, true, NULL);
 
-	/* FONT PROVIDER */
-	/* In front of video */
-	win2T = dm->createWindow(screen, x2, y2, w2, h2, z2);
-	if (win2T == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win2T->draw();
 
-	ttf = dm->createFontProvider(screen, "decker.ttf", 14);
-
-	ttfSur = dm->createSurface(screen);
-	ttfSur->setParent(win2T);
-
-	win2T->show();
-	win2T->raiseToTop();
-
-	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test White!", 10, 5);
-
-	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
-
-	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Black!", 10, 25);
-
-	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Green!", 10, 35);
-
-	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
-
-	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Red!", 10, 55);
-
-	delete ttfSur;
-
-	/* right side of video, but this time with background color */
+	/* VIDEO PROVIDER 3 */
 	win3 = dm->createWindow(screen, x3, y3, w3, h3, z3);
 	if (win3 == NULL) {
 		cout << "gingacc-mb test can't create window. exiting program...";
@@ -208,83 +192,83 @@ void testScreen(
 	}
 	win3->draw();
 
-	ttfSur = dm->createSurface(screen);
-	ttfSur->setParent(win3);
+	s3   = dm->createSurface(screen);
+	vid3 = dm->createContinuousMediaProvider(
+			screen,
+			"/root/workspaces/NCL/devel_tests/media/vid/matrix.mpg",
+			true,
+			false);
 
+	s3->setParent(win3);
 	win3->show();
 	win3->raiseToTop();
-	win3->setBgColor(255, 255, 0, 0);
 
-	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test White!", 10, 5);
+	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
+	cout << vid3->getTotalMediaTime() << "' as its total media time." << endl;
 
-	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
+	vid3->setSoundLevel(1.0);
+	vid3->playOver(s3, true, NULL);
 
-	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Black!", 10, 25);
 
-	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Green!", 10, 35);
+	/* VIDEO PROVIDER 4 */
+	win4 = dm->createWindow(screen, x4, y4, w4, h4, z4);
+	if (win4 == NULL) {
+		cout << "gingacc-mb test can't create window. exiting program...";
+		cout << endl;
+		exit(1);
+	}
+	win4->draw();
 
-	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
+	s4   = dm->createSurface(screen);
+	vid4 = dm->createContinuousMediaProvider(
+			screen,
+			"/root/workspaces/NCL/devel_tests/media/vid/pilha.mpg",
+			true,
+			false);
 
-	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Red!", 10, 55);
+	s4->setParent(win4);
+	win4->show();
+	win4->raiseToTop();
 
-	delete ttfSur;
-	ttfSur = NULL;
+	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
+	cout << vid4->getTotalMediaTime() << "' as its total media time." << endl;
 
-	/*
-	 * Two more tests: createSurfaceFrom and createRenderedSurfaceFromImageFile
-	 */
+	vid4->setSoundLevel(1.0);
+	vid4->playOver(s4, true, NULL);
 
-	/* create surface from */
-	ISurface* iSurLT       = NULL;
-	IWindow* iWinLT        = NULL;
-	IImageProvider* iImgLT = NULL;
 
-	iImgLT = dm->createImageProvider(screen, "1.png");
-	iWinLT = dm->createWindow(screen, x4, y4, w4, h4, z4);
+	/* VIDEO PROVIDER 5 */
+	win5 = dm->createWindow(screen, x5, y5, w5, h5, z5);
+	if (win5 == NULL) {
+		cout << "gingacc-mb test can't create window. exiting program...";
+		cout << endl;
+		exit(1);
+	}
+	win5->draw();
 
-	iWinLT->draw();
-	iWinLT->show();
-	iWinLT->raiseToTop();
+	s5   = dm->createSurface(screen);
+	vid5 = dm->createContinuousMediaProvider(
+			screen,
+			"corrego1.mp4",
+			true,
+			false);
 
-	iSurLT = dm->createSurfaceFrom(screen, NULL);
-	iImgLT->playOver(iSurLT);
-	iWinLT->renderFrom(iSurLT);
+	s5->setParent(win5);
+	win5->show();
 
-	delete iSurLT;
-	iSurLT = NULL;
+	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
+	cout << vid5->getTotalMediaTime() << "' as its total media time." << endl;
 
-	/* createRenderedSurfaceFromImageFile */
-	ISurface* s2;
-	IWindow* bg;
-
-	bg = dm->createWindow(screen, x5, y5, w5, h5, z5);
-
-	s2 = dm->createRenderedSurfaceFromImageFile(
-		screen, (char*)("/usr/local/etc/ginga/files/img/roller/loading.png"));
-
-	bg->setCaps(bg->getCap("ALPHACHANNEL"));
-	bg->draw();
-	bg->show();
-	bg->raiseToTop();
-
-	bg->renderFrom(s2);
-
-	delete s2;
-	s2 = NULL;
+	vid5->setSoundLevel(1.0);
+	vid5->playOver(s5, true, NULL);
 
 
 	/* Inserting all windows in windows set */
 	windows->insert(win1);
 	windows->insert(win2);
 	windows->insert(win3);
-	windows->insert(iWinLT);
-	windows->insert(bg);
+	windows->insert(win4);
+	windows->insert(win5);
 }
 
 bool running = false;
@@ -374,15 +358,15 @@ int main(int argc, char** argv) {
 		sdlArgv[4] = (char*)"400x300";
 		screen2 = dm->createScreen(fakeArgc, sdlArgv);
 
-		testScreen(dm, screen1, &windows);
-		testScreen(dm, screen2, &windows);
+		testVideo(dm, screen1, &windows);
+		testVideo(dm, screen2, &windows);
 
 	} else {
 		screen1 = dm->createScreen(argc, argv);
 		cout << "gingacc-mb test has created screen '" << screen1;
 		cout << "'. calling providers";
 		cout << endl;
-		testScreen(dm, screen1, &windows);
+		testVideo(dm, screen1, &windows);
 	}
 
 	if (blinkWindows) {

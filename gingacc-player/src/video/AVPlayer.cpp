@@ -1415,7 +1415,8 @@ namespace player {
 							util::stof((*vals)[0]),
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
-							util::stof((*vals)[3]));
+							util::stof((*vals)[3]),
+							-1);
 
 					win->setCaps(win->getCap("NOSTRUCTURE") |
 							win->getCap("DOUBLEBUFFER"));

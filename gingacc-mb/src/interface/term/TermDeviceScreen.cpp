@@ -134,7 +134,7 @@ namespace mb {
 
 	/* interfacing output */
 
-	IWindow* TermDeviceScreen::createWindow(int x, int y, int w, int h) {
+	IWindow* TermDeviceScreen::createWindow(int x, int y, int w, int h, int z) {
 		return NULL;
 	}
 

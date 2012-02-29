@@ -161,7 +161,7 @@ typedef struct {
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
 
-			static map<GingaScreenID, vector<IWindow*>*> windowRenderMap;
+			static map<GingaScreenID, map<int, set<IWindow*>*>*> renderMap;
 			static pthread_mutex_t wrMutex;
 
 			static set<IContinuousMediaProvider*> cmpRenderList;
@@ -202,7 +202,7 @@ typedef struct {
 
 			/* interfacing output */
 		public:
-			IWindow* createWindow(int x, int y, int w, int h);
+			IWindow* createWindow(int x, int y, int w, int h, int z);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);
@@ -285,12 +285,18 @@ typedef struct {
 
 		public:
 			/* output */
-			static void updateWindowState(
-					GingaScreenID screenId, IWindow* win, short status);
+			static void renderMapInsertWindow(
+					GingaScreenID screenId, IWindow* iWin, int z);
+
+			static void renderMapRemoveWindow(
+					GingaScreenID screenId, IWindow* iWin, int z);
+
+//			static void updateWindowState(
+//					GingaScreenID screenId, IWindow* win, short status);
 
 		private:
-			static void updateWindowList(
-					vector<IWindow*>* windows, IWindow* win, short status);
+//			static void updateWindowList(
+//					vector<IWindow*>* windows, IWindow* win, short status);
 
 			static void removeFromWindowList(
 					vector<IWindow*>* windows, IWindow* win);

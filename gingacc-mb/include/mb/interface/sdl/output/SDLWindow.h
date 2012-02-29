@@ -88,6 +88,7 @@ namespace mb {
 
 			SDL_Rect rect;
 
+			int z;
 			int transparencyValue;
 			bool visible;
 			bool ghost;
@@ -111,7 +112,8 @@ namespace mb {
 					GingaWindowID underlyingWindowID,
 					GingaWindowID parentWindowID,
 					GingaScreenID screenId,
-					int x, int y, int width, int height);
+					int x, int y, int width, int height,
+					int z);
 
 			virtual ~SDLWindow();
 
@@ -120,7 +122,8 @@ namespace mb {
 					GingaWindowID underlyingWindowID,
 					GingaWindowID parentWindowID,
 					GingaScreenID screenId,
-					int x, int y, int width, int height);
+					int x, int y, int width, int height,
+					int z);
 
 			void releaseBGColor();
 			void releaseWinColor();
@@ -160,6 +163,7 @@ namespace mb {
 			int getY();
 			int getW();
 			int getH();
+			int getZ();
 			void setX(int x);
 			void setY(int y);
 			void setW(int w);

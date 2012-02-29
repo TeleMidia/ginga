@@ -455,7 +455,7 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 
 	/* interfacing output */
 
-	IWindow* DFBDeviceScreen::createWindow(int x, int y, int w, int h) {
+	IWindow* DFBDeviceScreen::createWindow(int x, int y, int w, int h, int z) {
 		IWindow* iWin;
 
 		pthread_mutex_lock(&winMutex);

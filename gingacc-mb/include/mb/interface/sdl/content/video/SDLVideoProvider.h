@@ -55,10 +55,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
 
-extern "C" {
-#include <pthread.h>
-}
-
 #include <set>
 using namespace std;
 
@@ -70,7 +66,7 @@ namespace core {
 namespace mb {
 	class SDLVideoProvider : public SDLAudioProvider {
 		private:
-			SDL_ffmpegVideoFrame* videoFrame;
+			VideoFrame* videoFrame;
 			float frameRate;
 			int wRes;
 			int hRes;
@@ -121,10 +117,6 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 
-		protected:
-			uint64_t getSync();
-
-		public:
 			void refreshDR();
 
 		private:

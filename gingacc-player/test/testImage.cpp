@@ -77,9 +77,9 @@ void testPlayer(
 	IPlayer* img2;
 	IPlayer* img3;
 
-	w   = dm->createWindow(screen, 10, 10, 100, 100);
-	ww  = dm->createWindow(screen, 90, 90, 150, 150);
-	www = dm->createWindow(screen, 0, 0, 400, 300);
+	w   = dm->createWindow(screen, 10, 10, 100, 100, 3);
+	ww  = dm->createWindow(screen, 90, 90, 150, 150, 2);
+	www = dm->createWindow(screen, 0, 0, 400, 300, 1);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

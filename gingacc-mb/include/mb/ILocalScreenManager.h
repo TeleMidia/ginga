@@ -111,7 +111,10 @@ namespace mb {
 			/* Interfacing output */
 
 			virtual IWindow* createWindow(
-					GingaScreenID screenId, int x, int y, int w, int h)=0;
+					GingaScreenID screenId,
+					int x, int y,
+					int w, int h,
+					int z)=0;
 
 			virtual IWindow* createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow)=0;
