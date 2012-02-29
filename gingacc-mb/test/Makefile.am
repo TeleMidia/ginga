@@ -8,7 +8,7 @@ INCLUDES             = \
 LIBS                 =
 
 noinst_PROGRAMS      = \
-                       testInput testScreen testAudio
+                       testInput testScreen testAudio testVideo
 
 #testScreen
 testScreen_SOURCES   = \
@@ -16,6 +16,7 @@ testScreen_SOURCES   = \
 
 testScreen_LDADD     = \
                        -ldl \
+                       -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
                        -lgingaccmb
@@ -33,6 +34,7 @@ testInput_SOURCES    = \
 
 testInput_LDADD      = \
                        -ldl \
+                       -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
                        -lgingaccmb
@@ -50,11 +52,30 @@ testAudio_SOURCES    = \
 
 testAudio_LDADD      = \
                        -ldl \
+                       -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
                        -lgingaccmb
 
 testAudio_LDFLAGS    = \
+                       -L/lib/ \
+                       -L/usr/lib/ \
+                       -L/usr/local/lib/ \
+                       -L/usr/local/lib/ginga \
+                       -L$(top_srcdir)/src
+
+#testVideo
+testVideo_SOURCES    = \
+                       testVideo.cpp
+
+testVideo_LDADD      = \
+                       -ldl \
+                       -lpthread \
+                       -ltelemidiautil \
+                       -lgingaccsystem \
+                       -lgingaccmb
+
+testVideo_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L/usr/local/lib/ \

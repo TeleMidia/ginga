@@ -71,6 +71,7 @@ namespace mb {
 	class IContinuousMediaProvider : public IMediaProvider {
 		public:
 			virtual ~IContinuousMediaProvider(){};
+			virtual bool getHasVisual()=0;
 			virtual void setLoadSymbol(string symbol)=0;
 			virtual string getLoadSymbol()=0;
 			virtual void setAVPid(int aPid, int vPid)=0;

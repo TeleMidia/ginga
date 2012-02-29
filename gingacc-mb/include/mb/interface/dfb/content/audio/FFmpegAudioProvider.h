@@ -219,6 +219,7 @@ namespace mb {
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
+			bool getHasVisual(){return false;};
 			void setAVPid(int aPid, int vPid);
 			void* getProviderContent();
 			void setProviderContent(void* content){};

@@ -78,13 +78,21 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	IContinuousMediaProvider* aud3;
 
 	/* AUDIO PROVIDER */
-	aud1 = dm->createContinuousMediaProvider(screen, "rock.mp3", false, false);
+	aud1 = dm->createContinuousMediaProvider(
+			screen,
+			"/root/workspaces/NCL/Garrincha/media/animGar.mp4",
+			false,
+			false);
+
 	aud1->playOver(NULL, true, NULL);
 
 	aud2 = dm->createContinuousMediaProvider(screen, "techno.mp3", false, false);
 	aud2->playOver(NULL, true, NULL);
 
 	aud3 = dm->createContinuousMediaProvider(screen, "choro.mp3", false, false);
+	aud3->playOver(NULL, true, NULL);
+
+	aud3 = dm->createContinuousMediaProvider(screen, "rock.mp3", false, false);
 	aud3->playOver(NULL, true, NULL);
 }
 

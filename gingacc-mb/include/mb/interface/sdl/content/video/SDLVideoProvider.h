@@ -79,8 +79,6 @@ namespace mb {
 			pthread_mutex_t cMutex;
 			pthread_cond_t cond;
 
-			uint64_t getSync();
-
 		public:
 			SDLVideoProvider(GingaScreenID screenId, const char* mrl);
 
@@ -88,6 +86,8 @@ namespace mb {
 
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
+
+			bool getHasVisual(){return true;};
 
 			void* getProviderContent();
 			void setProviderContent(void* texture);
@@ -121,6 +121,10 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 
+		protected:
+			uint64_t getSync();
+
+		public:
 			void refreshDR();
 
 		private:

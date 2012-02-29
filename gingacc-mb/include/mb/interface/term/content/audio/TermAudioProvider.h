@@ -69,6 +69,8 @@ namespace mb {
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
+			virtual bool getHasVisual(){return true;};
+
 			void setAVPid(int aPid, int vPid);
 			void feedBuffers();
 			bool checkVideoResizeEvent(ISurface* frame);

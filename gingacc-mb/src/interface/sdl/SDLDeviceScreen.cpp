@@ -744,17 +744,22 @@ namespace mb {
 		pthread_mutex_unlock(&s->rlMutex);
 	}
 
-	void SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {
+	int SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {
 		set<IContinuousMediaProvider*>::iterator i;
 		set<IContinuousMediaProvider*>::iterator j;
 
+		int size;
+
 		pthread_mutex_lock(&s->cmpMutex);
 		pthread_mutex_lock(&mplMutex);
+		size = cmpRenderList.size();
 		i = cmpRenderList.begin();
 		while (i != cmpRenderList.end()) {
 			j = s->cmpPool->find(*i);
 			if (j != s->cmpPool->end()) {
-				if ((*i)->getProviderContent() == NULL) {
+				if ((*i)->getHasVisual() &&
+						(*i)->getProviderContent() == NULL) {
+
 					initCMP(s, (*i));
 				}
 				(*i)->refreshDR();
@@ -763,6 +768,8 @@ namespace mb {
 		}
 		pthread_mutex_unlock(&mplMutex);
 		pthread_mutex_unlock(&s->cmpMutex);
+
+		return size;
 	}
 
 	void SDLDeviceScreen::refreshDMP(SDLDeviceScreen* s) {
@@ -845,7 +852,7 @@ namespace mb {
 	void* SDLDeviceScreen::rendererT(void* ptr) {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDL_Event event;
-		int sleepTime, elapsedTime;
+		int sleepTime, elapsedTime, decRate;
 		bool shiftOn = false;
 		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
@@ -902,7 +909,7 @@ namespace mb {
 				switch (i->second) {
 					case STP_NONE:
 						surfaceAction(i->first);
-						refreshCMP(i->first);
+						decRate = refreshCMP(i->first);
 						refreshDMP(i->first);
 						refreshWin(i->first);
 
@@ -937,7 +944,12 @@ namespace mb {
 			elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 			if (elapsedTime < sleepTime) {
-				::usleep(sleepTime - elapsedTime);
+				if (decRate == 0) {
+					::usleep(sleepTime - elapsedTime);
+
+				} else {
+					::usleep((sleepTime - elapsedTime) / (10 * decRate));
+				}
 			}
 		}
 
@@ -1496,7 +1508,7 @@ namespace mb {
 
 			case SUW_LOWERTOBOTTOM:
 				removeFromWindowList(windows, win);
-				windows->push_back(win);
+				windows->insert(windows->begin(), win);
 				break;
 
 			default:

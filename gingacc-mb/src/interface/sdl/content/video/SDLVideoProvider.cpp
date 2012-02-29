@@ -59,21 +59,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	uint64_t SDLVideoProvider::getSync() {
-		/*uint64_t _sync = SDLAudioProvider::getSync();
-		if (_sync != 0) {
-			return _sync;
-		}*/
-
-		if (file != NULL) {
-			if (SDL_ffmpegValidVideo(file)) {
-				return (SDL_GetTicks() % SDL_ffmpegDuration(file));
-			}
-		}
-
-		return 0;
-	}
-
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
 
@@ -98,6 +83,8 @@ namespace mb {
 	}
 
 	SDLVideoProvider::~SDLVideoProvider() {
+		state = ST_STOPPED;
+
 		if (videoFrame != NULL) {
 			SDL_DestroyTexture(videoFrame->texture);
 			videoFrame->texture = NULL;
@@ -218,7 +205,7 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::setSoundLevel(float level) {
-
+		SDLAudioProvider::setSoundLevel(level);
 	}
 
 	bool SDLVideoProvider::releaseAll() {
@@ -252,6 +239,21 @@ namespace mb {
 				}
 			}
 		}
+	}
+
+	uint64_t SDLVideoProvider::getSync() {
+		uint64_t _sync = SDLAudioProvider::getSync();
+		if (_sync != 0) {
+			return _sync;
+		}
+
+		if (file != NULL) {
+			if (SDL_ffmpegValidVideo(file)) {
+				return (SDL_GetTicks() % SDL_ffmpegDuration(file));
+			}
+		}
+
+		return 0;
 	}
 
 	void SDLVideoProvider::waitTexture() {

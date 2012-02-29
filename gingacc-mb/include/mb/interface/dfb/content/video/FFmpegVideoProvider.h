@@ -232,6 +232,7 @@ namespace mb {
 			int startPos;
 			static bool _ffmpegInitialized;
 			string symbol;
+			bool getHasVisual(){return true;};
 
 		public:
 			FFmpegVideoProvider(GingaScreenID screenId, const char* mrl);

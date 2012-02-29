@@ -62,29 +62,66 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+
+	pthread_mutex_t SDLAudioProvider::iMutex;
+	set<SDLAudioProvider*> SDLAudioProvider::aps;
+	bool SDLAudioProvider::init   = false;
+
 	SDLAudioProvider::SDLAudioProvider(
 			GingaScreenID screenId, const char* mrl) {
 
-		myScreen = screenId;
-		state    = ST_STOPPED;
-		sync     = 0;
-		mutex    = SDL_CreateMutex();
-		file     = SDL_ffmpegOpen(mrl);
+		myScreen   = screenId;
+		state      = ST_STOPPED;
+		sync       = 0;
+		this->mrl  = "";
+		file       = SDL_ffmpegOpen(mrl);
+		mutex      = SDL_CreateMutex();
+		soundLevel = SDL_MIX_MAXVOLUME * 0.5;
+
+		this->mrl.assign(mrl);
+
+		if (!init) {
+			init = true;
+			pthread_mutex_init(&iMutex, NULL);
+			aps.clear();
+		}
 
 		if (file != NULL) {
-			file->private_data = this;
 			SDL_ffmpegSelectAudioStream(file, 0);
 
-			specs = SDL_ffmpegGetAudioSpec(
+			desired = SDL_ffmpegGetAudioSpec(
 					file,
 					512,
 					SDLAudioProvider::audioCallback);
+
+		} else {
+			cout << "SDLAudioProvider::SDLAudioProvider Warning! Invalid ";
+			cout << "file '" << mrl << "'" << endl;
 		}
 	}
 
 	SDLAudioProvider::~SDLAudioProvider() {
 		int i;
+		set<SDLAudioProvider*>::iterator j;
 
+		state = ST_STOPPED;
+
+		pthread_mutex_lock(&iMutex);
+		j = aps.find(this);
+		if (j != aps.end()) {
+			aps.erase(j);
+			if (aps.empty()) {
+				SDL_PauseAudio(1);
+				init = false;
+			}
+		}
+		pthread_mutex_unlock(&iMutex);
+
+		if (!init) {
+			pthread_mutex_destroy(&iMutex);
+		}
+
+		SDL_LockMutex(mutex);
 	    if (SDL_ffmpegValidAudio(file)) {
 	        for (i = 0; i < BUF_SIZE; i++) {
 	            SDL_ffmpegFreeAudioFrame(audioFrame[i]);
@@ -95,6 +132,10 @@ namespace mb {
 			SDL_ffmpegFree(file);
 			file = NULL;
 		}
+
+		SDL_UnlockMutex(mutex);
+
+		SDL_DestroyMutex(mutex);
 	}
 
 	void SDLAudioProvider::setLoadSymbol(string symbol) {
@@ -136,18 +177,49 @@ namespace mb {
 		int frameSize;
 
 	    if (SDL_ffmpegValidAudio(file)) {
-	    	SDL_OpenAudio(&specs, 0);
 
-	        frameSize = specs.channels * specs.samples * 2;
+	    	memset(&obtained, 0, sizeof(obtained));
+
+	    	/*cout << "SDLAudioProvider::prepare desired channels = '";
+	    	cout << (short)desired.channels << "', desired samples = '";
+	    	cout << desired.samples << "', format = '";
+	    	cout << desired.format << "', size = '";
+	    	cout << desired.size << "', and freq = '";
+	    	cout << desired.freq << "'";
+	    	cout << endl;*/
+
+	    	SDL_OpenAudio(&desired, &obtained);
+
+	    	if (obtained.channels == 0) {
+	    		memcpy(&obtained, &desired, sizeof(desired));
+	    	}
+
+	    	frameSize = obtained.channels * obtained.samples * 2;
+
+	    	cout << "SDLAudioProvider::prepare '" << mrl;
+	    	cout << "' obtained channels = '";
+	    	cout << (short)obtained.channels << "', samples = '";
+	    	cout << obtained.samples << "', format = '";
+	    	cout << obtained.format << "', size = '";
+	    	cout << obtained.size << "', and freq = '";
+	    	cout << obtained.freq << "'";
+	    	cout << endl;
 
 	        for (i = 0; i < BUF_SIZE; i++) {
 	            audioFrame[i] = SDL_ffmpegCreateAudioFrame(file, frameSize);
 	            if (!audioFrame[i]) {
+	            	cout << "SDLAudioProvider::prepare Can't prepare!";
+	                cout << " Audio Frame was not created with frame size '";
+	                cout << frameSize << "'" << endl;
 	                return false;
 	            }
 
 	            SDL_ffmpegGetAudioFrame(file, audioFrame[i]);
 	        }
+
+			pthread_mutex_lock(&iMutex);
+			aps.insert(this);
+			pthread_mutex_unlock(&iMutex);
 
 	        return true;
 
@@ -183,7 +255,12 @@ namespace mb {
 	}
 
 	void SDLAudioProvider::setSoundLevel(float level) {
+		if (level >= 1.0) {
+			soundLevel = SDL_MIX_MAXVOLUME;
 
+		} else {
+			soundLevel = level * SDL_MIX_MAXVOLUME;
+		}
 	}
 
 	bool SDLAudioProvider::releaseAll() {
@@ -194,40 +271,197 @@ namespace mb {
 
 	}
 
-	void SDLAudioProvider::audioCallback(void* data, Uint8* stream, int len) {
+	void SDLAudioProvider::clamp(short* buf, int len) {
 		int i;
+		long value;
+
+		for (i = 0; i < len; i++) {
+			value = (long)buf[i];
+			if (value > 0x7fff) value = 0x7fff;
+			else if (value < -0x7fff) value = -0x7fff;
+			buf[i] = (short)value;
+		}
+	}
+
+	void SDLAudioProvider::audioCallback(void* data, Uint8* stream, int len) {
+		set<SDLAudioProvider*>::iterator i;
+		SDLAudioProvider* ap;
 		SDL_ffmpegAudioFrame* auxFrame;
-		SDL_ffmpegFile* _file = (SDL_ffmpegFile*)data;
+		int j, k, ret;
 
-		SDLAudioProvider* ap = (SDLAudioProvider*)_file->private_data;
+		SDL_AudioCVT acvt;
+		SDL_AudioSpec destSpec;
+		uint32_t capacity = 0;
+		bool cvt = false;
 
-		if (ap == NULL) {
+		int16_t* dest;
+		int16_t* src;
+
+		pthread_mutex_lock(&iMutex);
+		if (aps.empty()) {
+			pthread_mutex_unlock(&iMutex);
 			return;
 		}
 
-		SDL_LockMutex(ap->mutex);
+		i = aps.begin();
+		while (i != aps.end()) {
+			ap = *i;
+			SDL_LockMutex(ap->mutex);
 
-	    if (ap->audioFrame[0]->size == len) {
-	    	ap->sync = ap->audioFrame[0]->pts;
+			if (ap->state == ST_PLAYING) {
+				if (capacity == 0) {
+					capacity = ap->audioFrame[0]->capacity;
 
-	        memcpy(
-	        		(void*)stream,
-	        		(const void*)(ap->audioFrame[0]->buffer),
-	        		(size_t)(ap->audioFrame[0]->size));
+				} else if (capacity < ap->audioFrame[0]->capacity) {
+					cvt = true;
+					capacity = ap->audioFrame[0]->capacity;
+					memcpy(&destSpec, &ap->obtained, sizeof(ap->obtained));
 
-	        ap->audioFrame[0]->size = 0;
-	        auxFrame = ap->audioFrame[0];
-	        for (i = 1; i < BUF_SIZE; i++) {
-	        	ap->audioFrame[i - 1] = ap->audioFrame[i];
-	        }
+				} else if (capacity > ap->audioFrame[0]->capacity) {
+					cvt = true;
+				}
+			}
 
-	        ap->audioFrame[BUF_SIZE - 1] = auxFrame;
+			SDL_UnlockMutex(ap->mutex);
+			++i;
+		}
 
-	    } else {
-	        memset((void*)stream, (int)0, (size_t)len);
-	    }
+		/*if (cvt) {
+			SDL_OpenAudio(&destSpec, NULL);
 
-	    SDL_UnlockMutex(ap->mutex);
+        	cout << "SDLAudioProvider::audioCallback open audio with ";
+			cout << "format '" << destSpec.format;
+			cout << "' channels '";
+			cout << (short)destSpec.channels;
+			cout << "' freq '" << destSpec.freq;
+            cout << "'" << endl;
+		}*/
+
+		memset(stream, 0, len);
+
+		i = aps.begin();
+		while (i != aps.end()) {
+			ret = 1;
+			ap  = *i;
+
+			SDL_LockMutex(ap->mutex);
+
+			if (ap->state == ST_PLAYING &&
+					ap->audioFrame[0]->size == ap->audioFrame[0]->capacity) {
+
+				if (cvt) {
+
+					/*
+					 * FIXME: mix works only when all sources have the
+					 *        same number of channels.
+					 */
+					if (capacity != ap->audioFrame[0]->capacity) {
+						ret = SDL_BuildAudioCVT(
+								&acvt,
+								ap->obtained.format,
+								ap->obtained.channels,
+								ap->obtained.freq,
+								destSpec.format,
+								destSpec.channels,
+								destSpec.freq);
+
+						if (ret != -1) {
+							acvt.len = ap->audioFrame[0]->size;
+							acvt.buf = (Uint8*)malloc(acvt.len * acvt.len_mult);
+
+							if (acvt.buf != NULL) {
+								memset(acvt.buf, 0, acvt.len * acvt.len_mult);
+
+								memcpy(
+										acvt.buf,
+										ap->audioFrame[0]->buffer,
+										ap->audioFrame[0]->size);
+
+								SDL_ConvertAudio(&acvt);
+
+								/*cout << endl;
+								cout << "Converting(stream len = '" << len;
+								cout << "' and Audio instance = '";
+								cout << ap << "')" << endl;
+								cout << "FROM: ";
+								cout << "format '" << ap->obtained.format;
+								cout << "' channels '";
+								cout << (short)ap->obtained.channels;
+								cout << "' freq '" << ap->obtained.freq;
+								cout << "' size '" << ap->audioFrame[0]->size;
+								cout << "'";
+								cout << "' and capacity '";
+								cout << ap->audioFrame[0]->capacity;
+								cout << "'";
+								cout << endl;
+								cout << "TO: ";
+								cout << "format '" << destSpec.format << "' ";
+								cout << "channels '";
+								cout << (short)destSpec.channels;
+								cout << "' freq '" << destSpec.freq << "' ";
+								cout << "size '";
+								cout << acvt.len_cvt;
+								cout << "' and capacity '";
+								cout << capacity;
+								cout << "'";
+								cout << endl;*/
+
+								clamp((short*)acvt.buf, acvt.len_cvt);
+
+								SDL_MixAudioFormat(
+										stream,
+										acvt.buf,
+										acvt.dst_format,
+										acvt.len_cvt,
+										ap->soundLevel);
+
+								free(acvt.buf);
+								acvt.buf = NULL;
+
+								ret = 0;
+
+							} else {
+								ret = -2;
+							}
+						}
+					}
+				}
+
+				if (ret == 1) {
+					SDL_MixAudioFormat(
+							stream,
+							ap->audioFrame[0]->buffer,
+							ap->obtained.format,
+							ap->audioFrame[0]->size,
+							ap->soundLevel);
+				}
+
+				ap->sync = ap->audioFrame[0]->pts;
+
+				ap->audioFrame[0]->size = 0;
+				auxFrame = ap->audioFrame[0];
+				for (j = 1; j < BUF_SIZE; j++) {
+					ap->audioFrame[j - 1] = ap->audioFrame[j];
+				}
+
+				ap->audioFrame[BUF_SIZE - 1] = auxFrame;
+
+			} else if (ap->state == ST_PLAYING) {
+				ret = 0; //not the right time to decode
+			}
+
+			if (ret < 0) {
+				clog << "SDLAudioProvider::audioCallback: can't present ";
+				clog << "audio sample! Exception = '" << ret << "'";
+				clog << endl;
+			}
+
+			SDL_UnlockMutex(ap->mutex);
+
+			++i;
+		}
+
+		pthread_mutex_unlock(&iMutex);
 	}
 
 	uint64_t SDLAudioProvider::getSync() {
