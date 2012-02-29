@@ -83,6 +83,7 @@ namespace mb {
 			virtual void setLoadSymbol(string symbol);
 			virtual string getLoadSymbol();
 
+			virtual bool getHasVisual(){return false;};
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
 			void* getProviderContent();

@@ -95,10 +95,10 @@ namespace mb {
 
 			virtual ~DFBVideoProvider();
 
-
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
+			bool getHasVisual(){return true;};
 			void* getProviderContent();
 			void setProviderContent(void* content){};
 			virtual void setAVPid(int aPid, int vPid){};

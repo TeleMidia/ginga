@@ -92,13 +92,24 @@ namespace mb {
 
 			GingaScreenID myScreen;
 			string symbol;
+			string mrl;
 			short state;
+			short soundLevel;
 
 			SDL_mutex* mutex;
 			SDL_ffmpegFile* file;
-			SDL_AudioSpec specs;
+
+			SDL_AudioCVT* acvt;
+			SDL_AudioSpec desired;
+			SDL_AudioSpec obtained;
+
 			SDL_ffmpegAudioFrame* audioFrame[BUF_SIZE];
 			uint64_t sync;
+
+			static pthread_mutex_t iMutex;
+			static set<SDLAudioProvider*> aps;
+
+			static bool init;
 
 		public:
 			SDLAudioProvider(GingaScreenID screenId, const char* mrl);
@@ -106,6 +117,8 @@ namespace mb {
 
 			virtual void setLoadSymbol(string symbol);
 			virtual string getLoadSymbol();
+
+			virtual bool getHasVisual(){return false;};
 
 			virtual void setAVPid(int aPid, int vPid){};
 			virtual void feedBuffers(){};
@@ -131,6 +144,9 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 			void getOriginalResolution(int* width, int* height);
+
+		private:
+			static void clamp(short* outbuf, int len);
 
 		protected:
 			static void audioCallback(void* data, Uint8* stream, int len);

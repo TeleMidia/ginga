@@ -114,14 +114,21 @@ namespace mb {
 		set<IDirectFBVideoProvider*>::iterator i;
 
 		if (rContainer != NULL) {
+			rContainer->isValid = false;
+
 			if (rContainer->dec != NULL) {
 				rContainer->dec->Stop(rContainer->dec);
-				//rContainer->dec->Release(rContainer->dec);
-			}
 
-			rContainer->dec      = NULL;
-			rContainer->listener = NULL;
-			rContainer->surface  = NULL;
+				rContainer->surface  = NULL;
+				rContainer->listener = NULL;
+
+				rContainer->dec->Release(rContainer->dec);
+				rContainer->dec = NULL;
+
+			} else {
+				rContainer->surface  = NULL;
+				rContainer->listener = NULL;
+			}
 
 			delete rContainer;
 			rContainer = NULL;
@@ -235,14 +242,14 @@ namespace mb {
 		}
 
 		someSurface = cont->surface;
-		if (someSurface == NULL) {
+		if (someSurface == NULL || !cont->isValid) {
 			cout << "DFBVideoProvider::dynamicRenderCallBack NULL surface";
 			cout << endl;
 			return;
 		}
 
 		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
-		if (frame == NULL) {
+		if (frame == NULL || !cont->isValid) {
 			cout << "DFBVideoProvider::dynamicRenderCallBack NULL frame";
 			cout << endl;
 			return;
@@ -265,7 +272,7 @@ namespace mb {
 			}
 
 			//DFBCHECK(w->GetSurface(w, &s));
-			if (w->GetSurface(w, &s) != DFB_OK) {
+			if (w->GetSurface(w, &s) != DFB_OK || !cont->isValid) {
 				cout << "DFBVideoProvider::dynamicRenderCallBack Can't get ";
 				cout << "window surface" << endl;
 				return;

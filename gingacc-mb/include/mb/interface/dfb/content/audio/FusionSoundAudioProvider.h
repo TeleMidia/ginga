@@ -94,6 +94,7 @@ namespace mb {
 			virtual void setLoadSymbol(string symbol);
 			virtual string getLoadSymbol();
 
+			bool getHasVisual(){return false;};
 			static void release();
 			void* getProviderContent();
 			void setProviderContent(void* content){};

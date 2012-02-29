@@ -245,7 +245,7 @@ typedef struct {
 
 		private:
 			static void refreshRC(SDLDeviceScreen* screen);
-			static void refreshCMP(SDLDeviceScreen* screen);
+			static int refreshCMP(SDLDeviceScreen* screen);
 			static void refreshDMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
 			static void* rendererT(void* ptr);
