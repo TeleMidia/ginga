@@ -830,23 +830,21 @@ namespace mb {
 				while (k != j->second->end()) {
 					win = (SDLWindow*)(*k);
 
-					if (win->isVisible() && (win->getContent() != NULL ||
-							win->getTexture() != NULL)) {
-
+					if (win->isVisible()) {
 						uSur   = (SDL_Surface*)(win->getContent());
 
 						if (uSur != NULL) {
 							ownTex = false;
-							uTex   = createTexture(s->renderer, uSur);
+							uTex   = createTextureFromSurface(
+									s->renderer, uSur);
 
 						} else {
 							ownTex = true;
 							uTex   = win->getTexture();
 						}
 
+						drawWindow(s->renderer, uTex, win);
 						if (uTex != NULL) {
-							drawWindow(s->renderer, uTex, win);
-
 							if (!ownTex) {
 								releaseTexture(uTex);
 								ownTex = false;
@@ -1221,13 +1219,7 @@ namespace mb {
 		clog << "SDLDeviceScreen::initCMP creating texture with w = '";
 		clog << w << "' and h = '" << h << "'" << endl;
 
-		texture = SDL_CreateTexture(
-				s->renderer,
-				SDL_PIXELFORMAT_RGB24,
-				SDL_TEXTUREACCESS_STREAMING,
-				w,
-				h);
-
+		texture = createTexture(s->renderer, w, h);
 		cmp->setProviderContent((void*)texture);
 	}
 
@@ -1635,39 +1627,44 @@ namespace mb {
 		SDL_Rect rect;
 		IColor* bgColor;
 		Uint8 rr, rg, rb, ra;
-		int i, r, g, b, a, bw, alpha;
+		int i, r, g, b, a, bw;
+		int alpha = 0;
 
 	    if (win != NULL) {
 	    	/* getting renderer previous state */
 	    	SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
-
-	    	alpha = win->getTransparencyValue();
-	    	SDL_SetTextureAlphaMod(texture, 255 - alpha);
 
 	    	rect.x = win->getX();
 	    	rect.y = win->getY();
 	    	rect.w = win->getW();
 	    	rect.h = win->getH();
 
-	    	/* window background */
+	    	alpha = win->getTransparencyValue();
+	    	if (texture != NULL) {
+	    		SDL_SetTextureAlphaMod(texture, 255 - alpha);
+	    	}
+
+	    	/* setting window background */
 	    	bgColor = win->getBgColor();
 	    	if (bgColor != NULL) {
-	    		SDL_SetRenderTarget(renderer, texture);
+	    		if (alpha == 0) {
+	    			alpha = 255 - bgColor->getAlpha();
+	    		}
 
 	    		SDL_SetRenderDrawColor(
 	    				renderer,
 	    				bgColor->getR(),
 	    				bgColor->getG(),
 	    				bgColor->getB(),
-	    				bgColor->getAlpha());
+	    				255 - alpha);
 
 	    		SDL_RenderFillRect(renderer, &rect);
-
-		    	SDL_SetRenderTarget(renderer, NULL);
 	    	}
 
 	    	/* window rendering */
-	    	SDL_RenderCopy(renderer, texture, NULL, &rect);
+	    	if (texture != NULL) {
+	    		SDL_RenderCopy(renderer, texture, NULL, &rect);
+	    	}
 
 	    	/* window border */
 	    	win->getBorder(&r, &g, &b, &a, &bw);
@@ -1696,14 +1693,14 @@ namespace mb {
 	    }
 	}
 
-	SDL_Texture* SDLDeviceScreen::createTexture(
+	SDL_Texture* SDLDeviceScreen::createTextureFromSurface(
 			SDL_Renderer* renderer, SDL_Surface* surface) {
 
 		SDL_Texture* texture;
 
 		texture = SDL_CreateTextureFromSurface(renderer, surface);
 	    if (!texture) {
-	        clog << "SDLDeviceScreen::createTexture";
+	        clog << "SDLDeviceScreen::createTextureFromSurface";
 	        clog << "Couldn't create texture: " << SDL_GetError();
 	        clog << endl;
 	        return NULL;
@@ -1713,6 +1710,23 @@ namespace mb {
 	    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 		return texture;
+	}
+
+	SDL_Texture* SDLDeviceScreen::createTexture(
+			SDL_Renderer* renderer, int w, int h) {
+
+		SDL_Texture* texture;
+
+		texture = SDL_CreateTexture(
+				renderer,
+				SDL_PIXELFORMAT_RGB24,
+				SDL_TEXTUREACCESS_STREAMING,
+				w, h);
+
+	    /* allowing alpha */
+	    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+	    return texture;
 	}
 
 	void SDLDeviceScreen::releaseTexture(SDL_Texture* texture) {

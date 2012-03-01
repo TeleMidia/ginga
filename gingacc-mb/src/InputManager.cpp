@@ -368,6 +368,7 @@ namespace mb {
 	bool InputManager::dispatchEvent(IInputEvent* inputEvent) {
 		map<IInputEventListener*, set<int>*>::iterator i;
 
+		IInputEventListener* lis;
 		set<int>* evs;
 		int keyCode;
 
@@ -381,7 +382,7 @@ namespace mb {
 
 		performInputLockedActions();
 
-		if (eventListeners->empty() || inputEvent == NULL) {
+		if (eventListeners->empty() || inputEvent == NULL || !running) {
 			unlock();
 			notifying = false;
 
@@ -392,19 +393,20 @@ namespace mb {
 
 		keyCode = inputEvent->getKeyCode(myScreen);
 		i = eventListeners->begin();
-		while (i != eventListeners->end()) {
+		while (i != eventListeners->end() && running) {
+			lis = i->first;
 			evs = i->second;
 			if (evs != NULL) {
 				if (evs->find(keyCode) != evs->end()) {
 					//return false means an event with changed keySymbol
-					if (!i->first->userEventReceived(inputEvent)) {
+					if (!lis->userEventReceived(inputEvent)) {
 						unlock();
 						notifying = false;
 						return false;
 					}
 				}
 
-			} else if (!i->first->userEventReceived(inputEvent)) {
+			} else if (!lis->userEventReceived(inputEvent)) {
 				unlock();
 				notifying = false;
 				return false;

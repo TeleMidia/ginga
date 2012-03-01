@@ -317,8 +317,11 @@ typedef struct {
 			static void removeWindowFromRenderList(
 					IWindow* win, vector<IWindow*>* windows);
 
-			static SDL_Texture* createTexture(
+			static SDL_Texture* createTextureFromSurface(
 					SDL_Renderer* renderer, SDL_Surface* surface);
+
+			static SDL_Texture* createTexture(
+					SDL_Renderer* renderer, int w, int h);
 
 			static void releaseTexture(SDL_Texture* uTex);
 

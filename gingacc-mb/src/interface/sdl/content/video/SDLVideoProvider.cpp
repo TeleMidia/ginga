@@ -229,8 +229,8 @@ namespace mb {
 				SDL_UnlockMutex(mutex);
 			}
 
-			if (videoFrame != NULL) {
-				if (!videoFrame->ready && decoder->isVideoValid()) {
+			if (videoFrame != NULL && decoder->isVideoValid()) {
+				if (!videoFrame->ready) {
 					decoder->getVideoFrame(videoFrame);
 
 				} else if (videoFrame->pts <= getSync()) {
