@@ -342,9 +342,9 @@ namespace mb {
 		}
 
 		while (pack && !frame->ready) {
-			decodeVideoFrame(pack->data, frame );
+			decodeVideoFrame(pack->data, frame);
 
-			av_free_packet( pack->data );
+			av_free_packet(pack->data);
 			delete pack;
 
 			pack = getVideoPacket();
@@ -360,7 +360,7 @@ namespace mb {
 			content.videoStream->buffer = pack;
 
 		} else if (!frame->ready && frame->last) {
-			decodeVideoFrame(0, frame);
+			decodeVideoFrame(NULL, frame);
 		}
 
 		SDL_UnlockMutex(content.videoStream->mutex);

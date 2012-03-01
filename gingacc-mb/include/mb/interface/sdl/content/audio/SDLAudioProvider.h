@@ -70,6 +70,8 @@ namespace mb {
 			static const short ST_STOPPED = 2;
 			static const short BUF_SIZE   = 10;
 
+			static const uint64_t syncSec = 100;
+
 			GingaScreenID myScreen;
 			string symbol;
 			string mrl;

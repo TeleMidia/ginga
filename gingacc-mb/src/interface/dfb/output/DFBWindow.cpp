@@ -849,7 +849,7 @@ namespace mb {
 
 		DFBCHECK(contentSurface->GetSize(contentSurface, &w, &h));
 		if (winSur != NULL && winSur != contentSurface) {
-			DFBCHECK(winSur->Clear(winSur, 0, 0, 0, 0));
+			setBgColor();
 			if ((w != width || h != height) && fit) {
 				if (stretch) {
 					DFBCHECK(winSur->StretchBlit(

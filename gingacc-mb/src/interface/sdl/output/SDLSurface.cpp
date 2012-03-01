@@ -213,7 +213,12 @@ namespace mb {
 	}
 
 	void* SDLSurface::getParent() {
-		return this->parent;
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			return this->parent;
+
+		} else {
+			return NULL;
+		}
 	}
 
 	void SDLSurface::clearContent() {
