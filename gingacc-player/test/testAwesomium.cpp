@@ -65,7 +65,10 @@ extern "C" {
 }
 
 void testAwesomium(
-		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
+		ILocalScreenManager* dm,
+		GingaScreenID screen,
+		set<IWindow*>* windows,
+		bool testStop) {
 
 	IWindow* w;
 	IWindow* ww;
@@ -74,6 +77,12 @@ void testAwesomium(
 
 	IPlayer* awe1;
 	IPlayer* awe2;
+
+	string mrl = "www.telemidia.puc-rio.br";
+
+	if (testStop) {
+		mrl = "www.cwi.nl";
+	}
 
 	w   = dm->createWindow(screen,  10,  10, 490, 580, 2);
 	ww  = dm->createWindow(screen,  20, 210, 470, 280, 1);
@@ -105,7 +114,7 @@ void testAwesomium(
 		return;
 	}
 
-	awe1 = ((PlayerCreator*)(sym))(screen, "www.google.com", true);
+	awe1 = ((PlayerCreator*)(sym))(screen, mrl.c_str(), true);
 
 	awe2 = ((PlayerCreator*)(cm->getObject("AwesomiumPlayer")))(
 			screen, "www.telemidia.puc-rio.br", true);
@@ -118,15 +127,29 @@ void testAwesomium(
 		w->renderFrom(s);
 		awe1->play();
 		awe1->setKeyHandler(true); //necessary if we want to test input events
+
+		if (testStop) {
+			::usleep(2000000);
+			awe1->stop();
+			delete awe1;
+			w->hide();
+
+			delete w;
+
+			ww->hide();
+			delete ww;
+		}
+
+		cout << "testAwesomium has stopped Awesomium Player" << endl;
 	}
 
-	awe2->setOutWindow(ww->getId());
+	/*awe2->setOutWindow(ww->getId());
 	s = awe2->getSurface();
 	if (s != NULL) {
 		s->setParent((void*)ww);
 		ww->renderFrom(s);
-		//awe2->play();
-	}
+		awe2->play();
+	}*/
 }
 
 bool running = false;
@@ -213,12 +236,13 @@ int main(int argc, char** argv, char** envp) {
 		sdlArgv[4] = (char*)"400x600";
 		screen2 = dm->createScreen(fakeArgc, sdlArgv);
 
-		testAwesomium(dm, screen1, &windows);
-		testAwesomium(dm, screen2, &windows);
+		testAwesomium(dm, screen1, &windows, false);
+		testAwesomium(dm, screen2, &windows, false);
 
 	} else {
 		screen1 = dm->createScreen(argc, argv);
-		testAwesomium(dm, screen1, &windows);
+		testAwesomium(dm, screen1, &windows, true);
+		testAwesomium(dm, screen1, &windows, false);
 	}
 
 	if (blinkWindows) {

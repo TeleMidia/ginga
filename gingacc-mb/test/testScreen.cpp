@@ -216,7 +216,8 @@ void testScreen(
 	win3->setBgColor(255, 255, 0, 0);
 
 	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test White!", 10, 5);
+	ttfSur->setSurfaceFont(ttf);
+	ttfSur->drawString(-1, 10, "Test White!");
 
 	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
 	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
@@ -266,7 +267,7 @@ void testScreen(
 	bg = dm->createWindow(screen, x5, y5, w5, h5, z5);
 
 	s2 = dm->createRenderedSurfaceFromImageFile(
-		screen, (char*)("/usr/local/etc/ginga/files/img/roller/loading.png"));
+		screen, (char*)("/root/workspaces/NCL/devel_tests/84/bg.gif"));
 
 	bg->setCaps(bg->getCap("ALPHACHANNEL"));
 	bg->draw();

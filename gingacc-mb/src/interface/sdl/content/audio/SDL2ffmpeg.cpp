@@ -56,6 +56,18 @@ Many thanks to these guys and to the community that support them!
 
 #include "mb/interface/sdl/content/audio/SDL2ffmpeg.h"
 
+/* no AV sync correction is done if below the AV sync threshold */
+#ifdef AV_SYNC_THRESHOLD
+#undef AV_SYNC_THRESHOLD
+#endif
+#define AV_SYNC_THRESHOLD 0.01
+
+/* no AV correction is done if too big error */
+#ifdef AV_NOSYNC_THRESHOLD
+#undef AV_NOSYNC_THRESHOLD
+#endif
+#define AV_NOSYNC_THRESHOLD 10.0
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -67,13 +79,18 @@ namespace mb {
 
 	SDL2ffmpeg::SDL2ffmpeg(const char* mrl) {
 		memset(&content, 0, sizeof(Content));
-		content.streamMutex = SDL_CreateMutex();
+		content.stMutex = SDL_CreateMutex();
 
 		open(mrl);
 	}
 
 	SDL2ffmpeg::~SDL2ffmpeg() {
 		flush();
+
+		if (isVideoValid() &&content.videoSt->convCtx != NULL) {
+			sws_freeContext(content.videoSt->convCtx);
+			content.videoSt->convCtx = NULL;
+		}
 
 		Stream *s = content.vs;
 		while (s != NULL) {
@@ -113,7 +130,7 @@ namespace mb {
 			avformat_close_input(&content._ffmpeg);
 		}
 
-		SDL_DestroyMutex(content.streamMutex);
+		SDL_DestroyMutex(content.stMutex);
 	}
 
 
@@ -164,7 +181,7 @@ namespace mb {
 					if (!codec) {
 						delete stream;
 						cout << "SDL2ffmpeg::open ";
-						cout << "could not find video codec" << endl;
+						cout << "could not find video decoder" << endl;
 
 					} else if (avcodec_open2(
 							content._ffmpeg->streams[i]->codec,
@@ -286,10 +303,10 @@ namespace mb {
 	}
 
 	AudioFrame* SDL2ffmpeg::createAudioFrame(unsigned long int bytes) {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (!content.audioStream || !bytes) {
-			SDL_UnlockMutex(content.streamMutex);
+		if (!content.audioSt || !bytes) {
+			SDL_UnlockMutex(content.stMutex);
 			return NULL;
 		}
 
@@ -297,7 +314,7 @@ namespace mb {
 		AudioFrame *frame = new AudioFrame;
 		memset(frame, 0, sizeof(AudioFrame));
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		frame->capacity = bytes;
 		frame->buffer   = (uint8_t*)av_malloc(bytes);
@@ -322,14 +339,14 @@ namespace mb {
 	}
 
 	int SDL2ffmpeg::getVideoFrame(VideoFrame* frame) {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (!frame || !content.videoStream) {
-			SDL_UnlockMutex(content.streamMutex);
+		if (frame == NULL || !isVideoValid()) {
+			SDL_UnlockMutex(content.stMutex);
 			return 0;
 		}
 
-		SDL_LockMutex(content.videoStream->mutex);
+		SDL_LockMutex(content.videoSt->mutex);
 
 		frame->ready = 0;
 		frame->last  = 0;
@@ -356,15 +373,15 @@ namespace mb {
 		}
 
 		if (pack) {
-			pack->next = content.videoStream->buffer;
-			content.videoStream->buffer = pack;
+			pack->next = content.videoSt->buffer;
+			content.videoSt->buffer = pack;
 
 		} else if (!frame->ready && frame->last) {
 			decodeVideoFrame(NULL, frame);
 		}
 
-		SDL_UnlockMutex(content.videoStream->mutex);
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.videoSt->mutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return frame->ready;
 	}
@@ -389,10 +406,10 @@ namespace mb {
 	int SDL2ffmpeg::selectAudioStream(int audioID) {
 		int i;
 
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
 		if (!content.audioStreams || audioID >= (int)content.audioStreams) {
-			SDL_UnlockMutex(content.streamMutex);
+			SDL_UnlockMutex(content.stMutex);
 
 			cout << "SDL2ffmpeg::selectAudioStream ";
 			cout << "requested audio stream ID is not available in file";
@@ -409,20 +426,61 @@ namespace mb {
 		}
 
 		if (audioID < 0) {
-			content.audioStream = 0;
+			content.audioSt = 0;
 
 		} else {
-			content.audioStream = content.as;
-			for (i = 0; i < audioID && content.audioStream; i++) {
-				content.audioStream = content.audioStream->next;
+			content.audioSt = content.as;
+			for (i = 0; i < audioID && content.audioSt; i++) {
+				content.audioSt = content.audioSt->next;
 			}
 
-			content.audioStream->_ffmpeg->discard = AVDISCARD_DEFAULT;
+			content.audioSt->_ffmpeg->discard = AVDISCARD_DEFAULT;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return 0;
+	}
+
+	void SDL2ffmpeg::refreshVideo(VideoFrame* videoFrame) {
+		if (!videoFrame->ready) {
+			if (content.frame_last_dropped_pts != AV_NOPTS_VALUE &&
+					content.frame_last_dropped_pts > content.frame_last_pts) {
+
+				updateVideoPts(
+						content.frame_last_dropped_pts,
+						content.frame_last_dropped_pos);
+
+				content.frame_last_dropped_pts = AV_NOPTS_VALUE;
+			}
+
+		} else if (videoFrame->pts <= getClock()) {
+			double time, last_duration, duration, delay;
+
+			/* compute nominal last_duration */
+			last_duration = videoFrame->pts - content.frame_last_pts;
+			if (last_duration > 0 && last_duration < 10.0) {
+				/* if duration of the last frame was sane,
+				 * update last_duration in video state
+				 */
+				content.frame_last_duration = last_duration;
+			}
+
+			delay = computeTargetDelay(content.frame_last_duration);
+
+			time = av_gettime()/1000000.0;
+			if (time < content.frame_timer + delay) {
+				return;
+			}
+
+			if (delay > 0) {
+				content.frame_timer += delay *
+						FFMAX(1, floor((time-content.frame_timer) / delay));
+			}
+
+			updateVideoPts(videoFrame->pts, videoFrame->pos);
+			videoFrame->ready = 0;
+		}
 	}
 
 	Stream* SDL2ffmpeg::getVideoStream(uint32_t videoID) {
@@ -451,11 +509,11 @@ namespace mb {
 	int SDL2ffmpeg::selectVideoStream(int videoID) {
 		int i;
 
-		/* when changing audio/video stream, streamMutex should be locked */
-		SDL_LockMutex(content.streamMutex);
+		/* when changing audio/video stream, stMutex should be locked */
+		SDL_LockMutex(content.stMutex);
 
 		if (videoID >= (int)content.videoStreams) {
-			SDL_UnlockMutex(content.streamMutex);
+			SDL_UnlockMutex(content.stMutex);
 
 			cout << "SDL2ffmpeg::selectVideoStream ";
 			cout << "requested video stream ID is not available in file";
@@ -472,21 +530,52 @@ namespace mb {
 		}
 
 		if (videoID < 0) {
-			content.videoStream = 0;
+			content.videoSt = 0;
 
 		} else {
-			content.videoStream = content.vs;
+			content.videoSt = content.vs;
 
-			for (i = 0; i < videoID && content.videoStream; i++) {
-				content.videoStream = content.videoStream->next;
+			for (i = 0; i < videoID && content.videoSt; i++) {
+				content.videoSt = content.videoSt->next;
 			}
 
-			content.videoStream->_ffmpeg->discard = AVDISCARD_DEFAULT;
+			content.videoSt->_ffmpeg->discard = AVDISCARD_DEFAULT;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return 0;
+	}
+
+	void SDL2ffmpeg::play() {
+		av_read_play(content._ffmpeg);
+		SDL_PauseAudio(0);
+	}
+
+	void SDL2ffmpeg::pause() {
+		if (!content.paused) {
+			content.read_pause_return = av_read_pause(content._ffmpeg);
+			content.paused = true;
+		}
+	}
+
+	void SDL2ffmpeg::resume() {
+		if (content.paused) {
+			content.frame_timer += (av_gettime() / 1000000.0 +
+					content.video_cur_pts_drift - content.video_cur_pts);
+
+			if (content.read_pause_return != AVERROR(ENOSYS)) {
+				content.video_cur_pts = (content.video_cur_pts_drift +
+						av_gettime() / 1000000.0);
+			}
+
+			content.video_cur_pts_drift = (content.video_cur_pts -
+					av_gettime() / 1000000.0);
+
+			av_read_play(content._ffmpeg);
+		}
+
+		content.paused = false;
 	}
 
 	int SDL2ffmpeg::seek(uint64_t timestamp ) {
@@ -500,7 +589,7 @@ namespace mb {
 
 		av_seek_frame(content._ffmpeg, -1, seekPos, AVSEEK_FLAG_BACKWARD);
 
-		content.minimalTimestamp = timestamp;
+		content.minTimestamp = timestamp;
 
 		flush();
 
@@ -512,35 +601,12 @@ namespace mb {
 	}
 
 	int SDL2ffmpeg::flush() {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (content.audioStream) {
-			SDL_LockMutex(content.audioStream->mutex);
+		if (content.audioSt) {
+			SDL_LockMutex(content.audioSt->mutex);
 
-			Packet* pack = content.audioStream->buffer;
-
-			while (pack) {
-				Packet* old = pack;
-
-				pack = pack->next;
-
-				av_free(old->data);
-				delete old;
-			}
-
-			content.audioStream->buffer = 0;
-
-			if (content.audioStream->_ffmpeg) {
-				avcodec_flush_buffers(content.audioStream->_ffmpeg->codec);
-			}
-
-			SDL_UnlockMutex(content.audioStream->mutex);
-		}
-
-		if (content.videoStream) {
-			SDL_LockMutex(content.videoStream->mutex);
-
-			Packet* pack = content.videoStream->buffer;
+			Packet* pack = content.audioSt->buffer;
 
 			while (pack) {
 				Packet* old = pack;
@@ -551,16 +617,39 @@ namespace mb {
 				delete old;
 			}
 
-			content.videoStream->buffer = 0;
+			content.audioSt->buffer = 0;
 
-			if (content.videoStream->_ffmpeg) {
-				avcodec_flush_buffers(content.videoStream->_ffmpeg->codec);
+			if (content.audioSt->_ffmpeg) {
+				avcodec_flush_buffers(content.audioSt->_ffmpeg->codec);
 			}
 
-			SDL_UnlockMutex(content.videoStream->mutex);
+			SDL_UnlockMutex(content.audioSt->mutex);
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		if (content.videoSt) {
+			SDL_LockMutex(content.videoSt->mutex);
+
+			Packet* pack = content.videoSt->buffer;
+
+			while (pack) {
+				Packet* old = pack;
+
+				pack = pack->next;
+
+				av_free(old->data);
+				delete old;
+			}
+
+			content.videoSt->buffer = 0;
+
+			if (content.videoSt->_ffmpeg) {
+				avcodec_flush_buffers(content.videoSt->_ffmpeg->codec);
+			}
+
+			SDL_UnlockMutex(content.videoSt->mutex);
+		}
+
+		SDL_UnlockMutex(content.stMutex);
 
 		return 0;
 	}
@@ -570,17 +659,17 @@ namespace mb {
 			return -1;
 		}
 
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (!content.audioStream) {
-			SDL_UnlockMutex(content.streamMutex);
+		if (!content.audioSt) {
+			SDL_UnlockMutex(content.stMutex);
 
 			cout << "SDL2ffmpeg::getAudioFrame ";
 			cout << "no valid audio stream selected" << endl;
 			return 0;
 		}
 
-		SDL_LockMutex(content.audioStream->mutex);
+		SDL_LockMutex(content.audioSt->mutex);
 
 		frame->last = 0;
 		frame->size = 0;
@@ -608,30 +697,30 @@ namespace mb {
 		}
 
 		if (pack) {
-			pack->next = content.audioStream->buffer;
-			content.audioStream->buffer = pack;
+			pack->next = content.audioSt->buffer;
+			content.audioSt->buffer = pack;
 		}
 
-		SDL_UnlockMutex(content.audioStream->mutex);
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.audioSt->mutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return (frame->size == frame->capacity);
 	}
 
 	int64_t SDL2ffmpeg::getPosition() {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
 		int64_t pos = 0;
 
-		if (content.audioStream) {
-			pos = content.audioStream->lastTimeStamp;
+		if (content.audioSt) {
+			pos = content.audioSt->lastTimeStamp;
 		}
 
-		if (content.videoStream && content.videoStream->lastTimeStamp > pos) {
-			pos = content.videoStream->lastTimeStamp;
+		if (content.videoSt && content.videoSt->lastTimeStamp > pos) {
+			pos = content.videoSt->lastTimeStamp;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return pos;
 	}
@@ -674,25 +763,83 @@ namespace mb {
 
 		memset(&spec, 0, sizeof(SDL_AudioSpec));
 
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (content.audioStream) {
+		if (content.audioSt) {
 			spec.format   = AUDIO_S16SYS;
 			spec.samples  = samples;
 			spec.userdata = &content;
 			spec.callback = callback;
-			spec.freq     = content.audioStream->_ffmpeg->codec->sample_rate;
+			spec.freq     = content.audioSt->_ffmpeg->codec->sample_rate;
 			spec.channels = (uint8_t)
-					content.audioStream->_ffmpeg->codec->channels;
+					content.audioSt->_ffmpeg->codec->channels;
 
 		} else {
 			cout << "SDL2ffmpeg::getAudioSpec ";
 			cout << "no valid audio stream selected" << endl;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return spec;
+	}
+
+	double SDL2ffmpeg::getAudioClock() {
+		if (content.paused) {
+			return content.audio_cur_pts;
+
+		} else {
+			return content.audio_cur_pts_drift + av_gettime() / 1000000.0;
+		}
+	}
+
+	double SDL2ffmpeg::getVideoClock() {
+		if (content.paused) {
+			return content.video_cur_pts;
+
+		} else {
+			return content.video_cur_pts_drift + av_gettime() / 1000000.0;
+		}
+	}
+
+	double SDL2ffmpeg::getClock() {
+		double val = -1;
+
+		if (isAudioValid()) {
+			val = getAudioClock();
+
+		} else if (isVideoValid()) {
+			val = getVideoClock();
+		}
+
+		return val;
+	}
+
+	double SDL2ffmpeg::computeTargetDelay(double delay) {
+	    double sync_threshold, diff;
+
+		if (isAudioValid()) {
+			diff = getVideoClock() - getClock();
+
+			sync_threshold = FFMAX(AV_SYNC_THRESHOLD, delay);
+			if (fabs(diff) < AV_NOSYNC_THRESHOLD) {
+				if (diff <= -sync_threshold) {
+					delay = 0;
+				} else if (diff >= sync_threshold) {
+					delay = 2 * delay;
+				}
+			}
+		}
+
+	    return delay;
+	}
+
+	void SDL2ffmpeg::updateVideoPts(double pts, int64_t pos) {
+	    double time                 = av_gettime() / 1000000.0;
+	    content.video_cur_pts       = pts;
+	    content.video_cur_pts_drift = content.video_cur_pts - time;
+	    content.video_cur_pos       = pos;
+	    content.frame_last_pts      = pts;
 	}
 
 	uint64_t SDL2ffmpeg::getDuration() {
@@ -700,43 +847,43 @@ namespace mb {
 	}
 
 	uint64_t SDL2ffmpeg::getAudioDuration() {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
 		uint64_t duration = 0;
 
-		if (!content.audioStream) {
+		if (!content.audioSt) {
 		   duration = av_rescale(
-				   1000 * content.audioStream->_ffmpeg->duration,
-				   content.audioStream->_ffmpeg->time_base.num,
-				   content.audioStream->_ffmpeg->time_base.den);
+				   1000 * content.audioSt->_ffmpeg->duration,
+				   content.audioSt->_ffmpeg->time_base.num,
+				   content.audioSt->_ffmpeg->time_base.den);
 
 		} else {
 			cout << "SDL2ffmpeg::getAudioDuration ";
 			cout << "no valid audio stream selected" << endl;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return duration;
 	}
 
 	uint64_t SDL2ffmpeg::getVideoDuration() {
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
 		uint64_t duration = 0;
 
-		if (content.videoStream) {
+		if (content.videoSt) {
 			duration = av_rescale(
-					1000 * content.videoStream->_ffmpeg->duration,
-					content.videoStream->_ffmpeg->time_base.num,
-					content.videoStream->_ffmpeg->time_base.den);
+					1000 * content.videoSt->_ffmpeg->duration,
+					content.videoSt->_ffmpeg->time_base.num,
+					content.videoSt->_ffmpeg->time_base.den);
 
 		} else {
 			cout << "SDL2ffmpeg::getVideoDuration ";
 			cout << "no valid video stream selected" << endl;
 		}
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return duration;
 	}
@@ -746,13 +893,13 @@ namespace mb {
 			return -1;
 		}
 
-		SDL_LockMutex(content.streamMutex);
+		SDL_LockMutex(content.stMutex);
 
-		if (content.videoStream) {
-			*w = content.videoStream->_ffmpeg->codec->width;
-			*h = content.videoStream->_ffmpeg->codec->height;
+		if (content.videoSt) {
+			*w = content.videoSt->_ffmpeg->codec->width;
+			*h = content.videoSt->_ffmpeg->codec->height;
 
-			SDL_UnlockMutex(content.streamMutex);
+			SDL_UnlockMutex(content.stMutex);
 
 			return 0;
 
@@ -763,17 +910,17 @@ namespace mb {
 		*w = 0;
 		*h = 0;
 
-		SDL_UnlockMutex(content.streamMutex);
+		SDL_UnlockMutex(content.stMutex);
 
 		return -1;
 	}
 
 	bool SDL2ffmpeg::isAudioValid() {
-		return (content.audioStream != NULL);
+		return (content.audioSt != NULL);
 	}
 
 	bool SDL2ffmpeg::isVideoValid() {
-		return (content.videoStream != NULL);
+		return (content.videoSt != NULL);
 	}
 
 	int SDL2ffmpeg::getPacket() {
@@ -793,15 +940,15 @@ namespace mb {
 			av_free_packet( pack );
 
 		} else {
-			if (content.audioStream &&
-					pack->stream_index == content.audioStream->id) {
+			if (content.audioSt &&
+					pack->stream_index == content.audioSt->id) {
 
 				Packet* temp = new Packet;
 
 				temp->data = pack;
 				temp->next = 0;
 
-				Packet** p = &content.audioStream->buffer;
+				Packet** p = &content.audioSt->buffer;
 
 				while (*p) {
 					p = &(*p)->next;
@@ -809,17 +956,17 @@ namespace mb {
 
 				*p = temp;
 
-			} else if (content.videoStream &&
-					pack->stream_index == content.videoStream->id) {
+			} else if (content.videoSt &&
+					pack->stream_index == content.videoSt->id) {
 
 				Packet* temp = new Packet;
 
 				temp->data = pack;
 				temp->next = 0;
 
-//				SDL_LockMutex( content.videoStream->mutex );
+//				SDL_LockMutex( content.videoSt->mutex );
 
-				Packet** p = &content.videoStream->buffer;
+				Packet** p = &content.videoSt->buffer;
 
 				while (*p) {
 					p = &(*p)->next;
@@ -827,7 +974,7 @@ namespace mb {
 
 				*p = temp;
 
-//				SDL_UnlockMutex( content.videoStream->mutex );
+//				SDL_UnlockMutex( content.videoSt->mutex );
 
 			} else {
 				av_free_packet(pack);
@@ -838,30 +985,30 @@ namespace mb {
 	}
 
 	Packet* SDL2ffmpeg::getAudioPacket() {
-		if (!content.audioStream) {
+		if (!content.audioSt) {
 			return 0;
 		}
 
 		Packet* pack = 0;
 
-		if (content.audioStream->buffer) {
-			pack = content.audioStream->buffer;
-			content.audioStream->buffer = pack->next;
+		if (content.audioSt->buffer) {
+			pack = content.audioSt->buffer;
+			content.audioSt->buffer = pack->next;
 		}
 
 		return pack;
 	}
 
 	Packet* SDL2ffmpeg::getVideoPacket() {
-		if (!content.videoStream) {
+		if (!content.videoSt) {
 			return 0;
 		}
 
 		Packet* pack = 0;
 
-		if (content.videoStream->buffer) {
-			pack = content.videoStream->buffer;
-			content.videoStream->buffer = pack->next;
+		if (content.videoSt->buffer) {
+			pack = content.videoSt->buffer;
+			content.videoSt->buffer = pack->next;
 		}
 
 		return pack;
@@ -871,37 +1018,38 @@ namespace mb {
 		uint8_t *data = pack->data;
 		int size      = pack->size;
 		int audioSize = AVCODEC_MAX_AUDIO_FRAME_SIZE * sizeof(int16_t);
+		int len       = 0;
 
-		if (content.audioStream->sampleBufferSize) {
+		if (content.audioSt->sampleBufferSize) {
 			if (!frame->size) {
-				frame->pts = content.audioStream->sampleBufferTime;
+				frame->pts = content.audioSt->sampleBufferTime;
 			}
 
 			int fs = frame->capacity - frame->size;
 
-			if (fs < content.audioStream->sampleBufferSize) {
+			if (fs < content.audioSt->sampleBufferSize) {
 				memcpy(
 						frame->buffer + frame->size,
-						content.audioStream->sampleBuffer +
-								content.audioStream->sampleBufferOffset,
+						content.audioSt->sampleBuffer +
+								content.audioSt->sampleBufferOffset,
 						fs);
 
-				content.audioStream->sampleBufferSize   -= fs;
-				content.audioStream->sampleBufferOffset += fs;
+				content.audioSt->sampleBufferSize   -= fs;
+				content.audioSt->sampleBufferOffset += fs;
 
 				frame->size = frame->capacity;
 
 			} else {
 				memcpy(
 						frame->buffer + frame->size,
-						content.audioStream->sampleBuffer +
-								content.audioStream->sampleBufferOffset,
-						content.audioStream->sampleBufferSize);
+						content.audioSt->sampleBuffer +
+								content.audioSt->sampleBufferOffset,
+						content.audioSt->sampleBufferSize);
 
-				frame->size += content.audioStream->sampleBufferSize;
+				frame->size += content.audioSt->sampleBufferSize;
 
-				content.audioStream->sampleBufferSize   = 0;
-				content.audioStream->sampleBufferOffset = 0;
+				content.audioSt->sampleBufferSize   = 0;
+				content.audioSt->sampleBufferOffset = 0;
 			}
 
 			if (frame->size == frame->capacity) {
@@ -909,23 +1057,23 @@ namespace mb {
 			}
 		}
 
-		content.audioStream->_ffmpeg->codec->skip_frame = (AVDiscard)0;
-		content.audioStream->sampleBufferTime = av_rescale(
-				(pack->dts - content.audioStream->_ffmpeg->start_time) * 1000,
-				content.audioStream->_ffmpeg->time_base.num,
-				content.audioStream->_ffmpeg->time_base.den);
+		content.audioSt->_ffmpeg->codec->skip_frame = (AVDiscard)0;
+		content.audioSt->sampleBufferTime = av_rescale(
+				(pack->dts - content.audioSt->_ffmpeg->start_time) * 1000,
+				content.audioSt->_ffmpeg->time_base.num,
+				content.audioSt->_ffmpeg->time_base.den);
 
-		if (content.audioStream->sampleBufferTime != AV_NOPTS_VALUE &&
-				content.audioStream->sampleBufferTime <
-						content.minimalTimestamp) {
+		if (content.audioSt->sampleBufferTime != AV_NOPTS_VALUE &&
+				content.audioSt->sampleBufferTime <
+						content.minTimestamp) {
 
-			content.audioStream->_ffmpeg->codec->skip_frame = (AVDiscard)1;
+			content.audioSt->_ffmpeg->codec->skip_frame = (AVDiscard)1;
 		}
 
 		while (size > 0) {
-			int len = avcodec_decode_audio3(
-					content.audioStream->_ffmpeg->codec,
-					(int16_t*)content.audioStream->sampleBuffer,
+			len = avcodec_decode_audio3(
+					content.audioSt->_ffmpeg->codec,
+					(int16_t*)content.audioSt->sampleBuffer,
 					&audioSize, pack);
 
 			if (len <= 0 || !audioSize) {
@@ -938,9 +1086,9 @@ namespace mb {
 			size -= len;
 		}
 
-		if (!content.audioStream->_ffmpeg->codec->skip_frame) {
+		if (!content.audioSt->_ffmpeg->codec->skip_frame) {
 			if (!frame->size) {
-				frame->pts = content.audioStream->sampleBufferTime;
+				frame->pts = content.audioSt->sampleBufferTime;
 			}
 
 			int fs = frame->capacity - frame->size;
@@ -949,29 +1097,29 @@ namespace mb {
 				if (fs < audioSize) {
 					memcpy(
 							frame->buffer + frame->size,
-							content.audioStream->sampleBuffer,
+							content.audioSt->sampleBuffer,
 							fs);
 
-					content.audioStream->sampleBufferSize   = audioSize - fs;
-					content.audioStream->sampleBufferOffset = fs;
+					content.audioSt->sampleBufferSize   = audioSize - fs;
+					content.audioSt->sampleBufferOffset = fs;
 
 					frame->size = frame->capacity;
 
 				} else {
 					memcpy(
 							frame->buffer + frame->size,
-							content.audioStream->sampleBuffer,
+							content.audioSt->sampleBuffer,
 							audioSize);
 
-					content.audioStream->sampleBufferSize   = 0;
-					content.audioStream->sampleBufferOffset = 0;
+					content.audioSt->sampleBufferSize   = 0;
+					content.audioSt->sampleBufferOffset = 0;
 
 					frame->size += audioSize;
 				}
 
 			} else {
-				content.audioStream->sampleBufferSize   = audioSize;
-				content.audioStream->sampleBufferOffset = 0;
+				content.audioSt->sampleBufferSize   = audioSize;
+				content.audioSt->sampleBufferOffset = 0;
 			}
 		}
 
@@ -983,30 +1131,31 @@ namespace mb {
 
 		if (pack) {
 			if (pack->dts == AV_NOPTS_VALUE) {
-				frame->pts = content.videoStream->lastTimeStamp + av_rescale(
+				frame->pts = content.videoSt->lastTimeStamp + av_rescale(
 						1000 * pack->duration,
-						content.videoStream->_ffmpeg->time_base.num,
-						content.videoStream->_ffmpeg->time_base.den);
+						content.videoSt->_ffmpeg->time_base.num,
+						content.videoSt->_ffmpeg->time_base.den);
 
 			} else {
 				frame->pts = av_rescale(
-						(pack->dts - content.videoStream->_ffmpeg->
+						(pack->dts - content.videoSt->_ffmpeg->
 								start_time) * 1000,
-						content.videoStream->_ffmpeg->time_base.num,
-						content.videoStream->_ffmpeg->time_base.den);
+						content.videoSt->_ffmpeg->time_base.num,
+						content.videoSt->_ffmpeg->time_base.den);
 			}
 
 			if (frame->pts != AV_NOPTS_VALUE &&
-					frame->pts < content.minimalTimestamp) {
-				content.videoStream->_ffmpeg->codec->skip_frame = (AVDiscard)1;
+					frame->pts < content.minTimestamp) {
+
+				content.videoSt->_ffmpeg->codec->skip_frame = (AVDiscard)1;
 
 			} else {
-				content.videoStream->_ffmpeg->codec->skip_frame = (AVDiscard)0;
+				content.videoSt->_ffmpeg->codec->skip_frame = (AVDiscard)0;
 			}
 
 			avcodec_decode_video2(
-					content.videoStream->_ffmpeg->codec,
-					content.videoStream->decodeFrame,
+					content.videoSt->_ffmpeg->codec,
+					content.videoSt->decodeFrame,
 					&got_frame,
 					pack);
 
@@ -1017,47 +1166,56 @@ namespace mb {
 			temp.data = 0;
 			temp.size = 0;
 
-			temp.stream_index = content.videoStream->_ffmpeg->index;
+			temp.stream_index = content.videoSt->_ffmpeg->index;
 
 			avcodec_decode_video2(
-					content.videoStream->_ffmpeg->codec,
-					content.videoStream->decodeFrame,
+					content.videoSt->_ffmpeg->codec,
+					content.videoSt->decodeFrame,
 					&got_frame,
 					&temp);
 		}
 
-		if (got_frame && !content.videoStream->_ffmpeg->codec->skip_frame) {
+		if (got_frame && !content.videoSt->_ffmpeg->codec->skip_frame) {
+
+			int64_t pts_int = *(int64_t*)av_opt_ptr(
+					avcodec_get_frame_class(),
+					content.videoSt->decodeFrame,
+					"best_effort_timestamp");
+
+			frame->pos = pts_int * av_q2d(content.videoSt->_ffmpeg->time_base);
+
 			if (frame->texture) {
-				//void* pixels;
 				uint8_t* pixels[3];
 				int tpitch[3];
 
 				SDL_LockTexture(
 						frame->texture, NULL, (void**)&pixels, &tpitch[0]);
 
-				if (content.videoStream->conversionContext == NULL) {
-					content.videoStream->conversionContext = createContext(
-							content.videoStream->_ffmpeg->codec->width,
-							content.videoStream->_ffmpeg->codec->height,
-							content.videoStream->_ffmpeg->codec->pix_fmt,
+				if (content.videoSt->convCtx == NULL) {
+					content.videoSt->convCtx = createContext(
+							content.videoSt->_ffmpeg->codec->width,
+							content.videoSt->_ffmpeg->codec->height,
+							content.videoSt->_ffmpeg->codec->pix_fmt,
 							frame->tempw,
 							frame->temph,
 							PIX_FMT_RGB24);
 				}
 
 				sws_scale(
-						content.videoStream->conversionContext,
-						(const uint8_t* const*)content.videoStream->decodeFrame->data,
-						content.videoStream->decodeFrame->linesize,
+						content.videoSt->convCtx,
+						(const uint8_t* const*)(
+								content.videoSt->decodeFrame->data),
+
+						content.videoSt->decodeFrame->linesize,
 						0,
-						content.videoStream->_ffmpeg->codec->height,
+						content.videoSt->_ffmpeg->codec->height,
 						pixels,
 						tpitch);
 
-				SDL_UnlockTexture( frame->texture );
+				SDL_UnlockTexture(frame->texture);
 			}
 
-			content.videoStream->lastTimeStamp = frame->pts;
+			content.videoSt->lastTimeStamp = frame->pts;
 			frame->ready = 1;
 		}
 

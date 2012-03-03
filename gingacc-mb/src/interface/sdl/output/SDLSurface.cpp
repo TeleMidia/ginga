@@ -74,10 +74,18 @@ namespace mb {
 	SDLSurface::~SDLSurface() {
 		bool mySurface = false;
 
+		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
+
 		releaseChromaColor();
 		releaseBorderColor();
 		releaseBgColor();
 		releaseSurfaceColor();
+
+		releaseFont();
+
+		pthread_mutex_lock(&sMutex);
+		pthread_mutex_unlock(&sMutex);
+		pthread_mutex_destroy(&sMutex);
 /*
 		if (sur != NULL) {
 			if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
@@ -94,7 +102,6 @@ namespace mb {
 			sur = NULL;
 		}
 */
-		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
 		clog << "SDLSurface::~SDLSurface all done" << endl;
 	}
@@ -127,10 +134,15 @@ namespace mb {
 		}
 	}
 
+	void SDLSurface::releaseFont() {
+		LocalScreenManager::getInstance()->releaseFontProvider(myScreen, iFont);
+		iFont = NULL;
+	}
+
 	void SDLSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
-		this->font          = NULL;
+		this->iFont         = NULL;
 		this->parent        = NULL;
 		this->chromaColor   = NULL;
 		this->borderColor   = NULL;
@@ -138,17 +150,8 @@ namespace mb {
 		this->surfaceColor  = NULL;
 		this->caps          = 0;
 		this->hasExtHandler = false;
-	}
 
-	void SDLSurface::fillUnderlyingSurface(
-			SDL_Surface* uSur, IColor* color) {
-
-		/*SDL_FillRect(uSur, NULL, SDL_MapRGBA(
-				uSur->format,
-				color->getR(),
-				color->getG(),
-				color->getB(),
-				0x00));*/
+		pthread_mutex_init(&sMutex, NULL);
 	}
 
 	void SDLSurface::setExternalHandler(bool extHandler) {
@@ -272,12 +275,24 @@ namespace mb {
 					surfaceColor->getR(),
 					surfaceColor->getG(),
 					surfaceColor->getB()));
+
+		} else {
+			clog << "SDLSurface::fillRectangle Warning! ";
+			clog << "Can't draw: ";
+			clog << "underlying surface is NULL" << endl;
 		}
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {
-		if (font != NULL) {
-			font->playOver(this, txt, x, y, 0);
+		if (iFont != NULL && txt != NULL) {
+			if (x < 0) {
+				x = 0;
+			}
+
+			if (y < 0) {
+				y = 0;
+			}
+			iFont->playOver(this, txt, x, y, 0);
 		}
 	}
 
@@ -314,10 +329,6 @@ namespace mb {
 		releaseBgColor();
 
 		this->bgColor = new Color(r, g, b, alpha);
-
-		if (sur != NULL) {
-			fillUnderlyingSurface(sur, bgColor);
-		}
 	}
 
 	IColor* SDLSurface::getBgColor() {
@@ -335,7 +346,11 @@ namespace mb {
 	}
 
 	void SDLSurface::setSurfaceFont(void* font) {
-		this->font = (IFontProvider*)font;
+		if (iFont != font) {
+			releaseFont();
+		}
+
+		iFont = (IFontProvider*)font;
 	}
 
 	void SDLSurface::flip() {
@@ -365,31 +380,68 @@ namespace mb {
 			int srcX, int srcY, int srcW, int srcH) {
 
 		SDL_Rect srcRect;
+		SDL_Rect* s = NULL;
 		SDL_Rect dstRect;
 		SDL_Surface* uSur;
+		unsigned int r, g, b, a;
+
+		if (sur == NULL && parent != NULL) {
+			sur = (SDL_Surface*)(parent->getContent());
+			if (sur == NULL) {
+				pthread_mutex_lock(&sMutex);
+				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
+
+				sur = SDL_CreateRGBSurface(
+						0,
+						parent->getW(),
+						parent->getH(),
+						24,
+						r, g, b, a);
+
+				((SDLWindow*)parent)->setRenderedSurface(sur);
+				pthread_mutex_unlock(&sMutex);
+			}
+		}
 
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
 			if (uSur != NULL) {
-				srcRect.x = srcX;
-				srcRect.y = srcY;
-				srcRect.w = srcW;
-				srcRect.h = srcH;
+				if (srcX >= 0) {
+					srcRect.x = srcX;
+					srcRect.y = srcY;
+					srcRect.w = srcW;
+					srcRect.h = srcH;
+
+					s = &srcRect;
+				}
 
 				dstRect.x = x;
 				dstRect.y = y;
-				dstRect.w = srcW;
-				dstRect.h = srcH;
 
-				SDL_UpperBlit(uSur, &srcRect, sur, &dstRect);
+				if (srcW > 0) {
+					dstRect.w = srcW;
+					dstRect.h = srcH;
+
+				} else {
+					dstRect.w = uSur->w;
+					dstRect.h = uSur->h;
+				}
+
+				SDL_UpperBlit(uSur, s, sur, &dstRect);
 			}
+
+		} else {
+			clog << "SDLSurface::blit(" << this << ") Warning! ";
+			clog << "Can't blit: ";
+			clog << "underlying surface is NULL. Destination ISurface ";
+			clog << "address would be '" << src << "'" << endl;
 		}
 	}
 
 	void SDLSurface::getStringExtents(const char* text, int* w, int* h) {
-		if (font != NULL) {
-			font->getStringExtents(text, w, h);
+		if (iFont != NULL) {
+			iFont->getStringExtents(text, w, h);
 
 		} else {
 			clog << "SDLSurface::getStringExtends Warning! ";
@@ -409,8 +461,8 @@ namespace mb {
 			SDL_SetClipRect(sur, &rect);
 
 		} else {
-			cout << "SDLSurface::setClip Warning! NULL underlying surface";
-			cout << endl;
+			clog << "SDLSurface::setClip Warning! NULL underlying surface";
+			clog << endl;
 		}
 	}
 
@@ -424,9 +476,9 @@ namespace mb {
 			*h = parent->getH();
 
 		} else {
-			cout << "SDLSurface::getSize Warning! NULL underlying surface and";
-			cout << " parent";
-			cout << endl;
+			clog << "SDLSurface::getSize Warning! NULL underlying surface and";
+			clog << " parent";
+			clog << endl;
 		}
 	}
 

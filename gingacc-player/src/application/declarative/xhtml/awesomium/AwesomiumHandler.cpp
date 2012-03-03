@@ -392,11 +392,12 @@ namespace player {
 	void AwesomiumHandler::loadUrl(AwesomiumHDR id, string url) {
 		AwesomiumInfo* aInfo;
 
+		pthread_mutex_lock(&s_lMutex);
 		if (webView != NULL) {
+			pthread_mutex_unlock(&s_lMutex);
 			return;
 		}
 
-		pthread_mutex_lock(&s_lMutex);
 		if (getAwesomeInfo(id, &aInfo)) {
 			aInfo->mURL   = url;
 			aInfo->update = true;
@@ -489,8 +490,6 @@ namespace player {
 					update(aInfo, 50);
 				}
 
-				pthread_mutex_unlock(&s_lMutex);
-
 				clog << "AwesomiumHandler::loadUrl '";
 				clog << aInfo->mURL << "' is loaded" << endl;
 				update(aInfo, 300);
@@ -510,7 +509,9 @@ namespace player {
 					AwesomiumHandler::eventHandler(aInfo);
 				}
 
-				clog << "AwesomiumHandler::loadUrl call destroy" << endl;
+				destroyAwesomium(aInfo->id);
+
+				cout << "AwesomiumHandler::loadUrl call destroy" << endl;
 				if (webView != NULL) {
 					webView->destroy();
 					webView = NULL;

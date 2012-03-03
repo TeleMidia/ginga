@@ -76,6 +76,7 @@ namespace mb {
 	class DFBFontProvider : public IFontProvider {
 		protected:
 			IDirectFBFont* font;
+			string dfltFont;
 			GingaScreenID myScreen;
 			string plainText;
 			int coordX;
@@ -105,7 +106,7 @@ namespace mb {
 			virtual ~DFBFontProvider();
 
 			string getLoadSymbol() {return "DFBFontProvider";};
-			void* getProviderContent();
+			void* getFontProviderContent();
 			int getStringWidth(const char* text, int textLength=0);
 			void getStringExtents(const char* text, int* w, int* h);
 			int getHeight();

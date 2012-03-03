@@ -8,20 +8,43 @@ INCLUDES             = \
 LIBS                 =
 
 noinst_PROGRAMS      = \
-                       testInput testScreen testAudio testVideo
+                       testAudio \
+                       testFont \
+                       testInput \
+                       testScreen \
+                       testVideo
 
-#testScreen
-testScreen_SOURCES   = \
-                       testScreen.cpp
 
-testScreen_LDADD     = \
+#testAudio
+testAudio_SOURCES    = \
+                       testAudio.cpp
+
+testAudio_LDADD      = \
                        -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
                        -lgingaccmb
 
-testScreen_LDFLAGS   = \
+testAudio_LDFLAGS    = \
+                       -L/lib/ \
+                       -L/usr/lib/ \
+                       -L/usr/local/lib/ \
+                       -L/usr/local/lib/ginga \
+                       -L$(top_srcdir)/src
+
+#testFont
+testFont_SOURCES    = \
+                       testFont.cpp
+
+testFont_LDADD      = \
+                       -ldl \
+                       -lpthread \
+                       -ltelemidiautil \
+                       -lgingaccsystem \
+                       -lgingaccmb
+
+testFont_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L/usr/local/lib/ \
@@ -46,18 +69,18 @@ testInput_LDFLAGS    = \
                        -L/usr/local/lib/ginga \
                        -L$(top_srcdir)/src
 
-#testAudio
-testAudio_SOURCES    = \
-                       testAudio.cpp
+#testScreen
+testScreen_SOURCES   = \
+                       testScreen.cpp
 
-testAudio_LDADD      = \
+testScreen_LDADD     = \
                        -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
                        -lgingaccmb
 
-testAudio_LDFLAGS    = \
+testScreen_LDFLAGS   = \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L/usr/local/lib/ \

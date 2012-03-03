@@ -82,7 +82,6 @@ namespace mb {
 			virtual ~DFBImageProvider();
 
 			string getLoadSymbol() {return "DFBImageProvider";};
-			void* getProviderContent();
 			void playOver(ISurface* surface);
 
 			void ntsPlayOver(){};

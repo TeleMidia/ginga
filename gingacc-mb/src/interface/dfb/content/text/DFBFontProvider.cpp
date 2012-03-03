@@ -101,23 +101,20 @@ namespace mb {
 		aux       = "";
 		myScreen  = screenId;
 		font      = NULL;
+		dfltFont  = "/usr/local/etc/ginga/files/font/vera.ttf";
 		plainText = "";
 		coordX    = 0;
 		coordY    = 0;
 		align     = A_TOP_LEFT;
 
-#ifdef _WIN32
-		aux = getUserDocAndSetPath().append("\\config\\decker.ttf");
-#else
-		aux = "/usr/local/share/directfb-examples/fonts/decker.ttf";
-#endif
-
 		if (strcmp(fontUri, "") == 0 || !fileExists(fontUri)) {
-			if (!fileExists(aux)) {
+			if (!fileExists(dfltFont)) {
 				clog << "DFBFontProvider Warning! File not found: '";
 				clog << fontUri << "' and '";
 				clog << aux << "'" << endl;
-				aux = "";
+
+			} else {
+				aux = dfltFont;
 			}
 
 		} else {
@@ -138,7 +135,11 @@ namespace mb {
 			desc.height = heightInPixel;
 			desc.attributes = (DFBFontAttributes)0;
 
-			DFBCHECK(dfb->CreateFont(dfb, aux.c_str(), &desc, &font));
+			dfb->CreateFont(dfb, aux.c_str(), &desc, &font);
+
+			cout << "DFBFontProvider::DFBFontProvider '" << aux << "'";
+			cout << " created!";
+			cout << endl;
 		}
 	}
 
@@ -157,7 +158,7 @@ namespace mb {
 #endif //DFBTM_PATCH
 	}
 
-	void* DFBFontProvider::getProviderContent() {
+	void* DFBFontProvider::getFontProviderContent() {
 		return font;
 	}
 

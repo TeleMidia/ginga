@@ -188,21 +188,21 @@ namespace mb {
 
 				win->setTexture(videoFrame->texture);
 			}
-			SDL_PauseAudio(0);
+
+			decoder->play();
 		}
 	}
 
 	void SDLVideoProvider::resume(ISurface* surface, bool hasVisual) {
-		state = ST_PLAYING;
+		SDLAudioProvider::resume(surface, hasVisual);
 	}
 
 	void SDLVideoProvider::pause() {
-		state = ST_PAUSED;
+		SDLAudioProvider::pause();
 	}
 
 	void SDLVideoProvider::stop() {
-		SDLDeviceScreen::removeCMPToRendererList(this);
-		state = ST_STOPPED;
+		SDLAudioProvider::stop();
 	}
 
 	void SDLVideoProvider::setSoundLevel(float level) {
@@ -219,23 +219,24 @@ namespace mb {
 		int sleepTime;
 
 		if (state == ST_PLAYING) {
-			if (decoder->isAudioValid()) {
-				SDL_LockMutex(mutex);
-				for (i = 0; i < BUF_SIZE; i++) {
-					if (audioFrame[i]->size == 0) {
-						decoder->getAudioFrame(audioFrame[i]);
-					}
-				}
-				SDL_UnlockMutex(mutex);
-			}
-
 			if (videoFrame != NULL && decoder->isVideoValid()) {
 				if (!videoFrame->ready) {
+					SDLAudioProvider::refreshDR();
 					decoder->getVideoFrame(videoFrame);
 
 				} else if (videoFrame->pts <= getSync()) {
 					videoFrame->ready = 0;
 				}
+
+				/*decoder->refreshVideo(videoFrame);
+
+				if (!videoFrame->ready) {
+					SDLAudioProvider::refreshDR();
+					decoder->getVideoFrame(videoFrame);
+				}*/
+
+			} else {
+				SDLAudioProvider::refreshDR();
 			}
 		}
 	}

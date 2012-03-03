@@ -73,11 +73,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #define LUAPLAYER_CANVAS  "luaplayer.Canvas"
 #define REFFILL           (-3)
 #define REFFRAME          (-4)
-#ifndef _WIN32
 #define FONTDIR   "/usr/local/etc/ginga/files/font/"
-#else
-#define FONTDIR   (getUserDocAndSetPath().append("\\config\\config\\player\\text\\fonts")).c_str()
-#endif
 #define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
 
 typedef struct Canvas {
@@ -118,6 +114,9 @@ static int l_new (lua_State* L)
 							GETPLAYER(L)->getScreenId(),
 							(char*)luaL_checkstring(L, 2));
 
+			cout << endl;
+			cout << "CANVAS:NEW FROM IMG '" << sfc << "'" << endl;
+			cout << endl;
 			break;
 		}
 
@@ -128,6 +127,10 @@ static int l_new (lua_State* L)
 					GETPLAYER(L)->getScreenId(),
 					luaL_checkint(L, 2),
 					luaL_checkint(L, 3));
+
+			cout << endl;
+			cout << "CANVAS:NEW '" << sfc << "'" << endl;
+			cout << endl;
 
 			sfc->setBgColor(
 					canvas->color->getR(),
@@ -258,9 +261,15 @@ static int l_attrFont (lua_State* L)
 	font = GETPLAYER(L)->getScreenManager()->createFontProvider(
 			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
 
-	if (font == NULL) luaL_error(L, "invalid font: %s", path);
-	canvas->sfc->setSurfaceFont((void*)font);
-	delete font;
+	if (font == NULL) {
+		luaL_error(L, "invalid font: %s", path);
+
+	} else if (canvas->sfc == NULL) {
+		luaL_error(L, "invalid canvas");
+
+	} else {
+		canvas->sfc->setSurfaceFont((void*)font);
+	}
 	return 0;
 }
 
@@ -439,7 +448,7 @@ static int l_drawText (lua_State* L)
  ******************************************************************************/
 
 static int l_flush (lua_State* L)
-{ new Color("black");
+{
 	Canvas* canvas = CHECKCANVAS(L);
 	canvas->sfc->flip();
 	GETPLAYER(L)->refreshContent();

@@ -52,8 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include "SDL.h"
 
-#include "mb/interface/IFontProvider.h"
 #include "mb/interface/IWindow.h"
+#include "mb/interface/IFontProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -71,8 +71,10 @@ namespace mb {
 			IColor* borderColor;
 			IColor* bgColor;
 			IColor* surfaceColor;
-			IFontProvider* font;
+			IFontProvider* iFont;
 			int caps;
+
+			pthread_mutex_t sMutex;
 
 		public:
 			SDLSurface(GingaScreenID screenId);
@@ -86,11 +88,11 @@ namespace mb {
 			void releaseBorderColor();
 			void releaseSurfaceColor();
 
+			void releaseFont();
+
 			void initialize(GingaScreenID screenId);
 
 		public:
-			static void fillUnderlyingSurface(SDL_Surface* uSur, IColor* color);
-
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();
 

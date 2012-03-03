@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define DFBSURFACE_H_
 
 #include "mb/interface/IWindow.h"
+#include "mb/interface/IFontProvider.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,6 +78,7 @@ namespace mb {
 			IColor* borderColor;
 			IColor* surfaceColor;
 			int caps;
+			IFontProvider* iFont;
 
 		public:
 			DFBSurface(GingaScreenID screenId);
@@ -90,6 +92,8 @@ namespace mb {
 			void releaseBgColor();
 			void releaseBorderColor();
 			void releaseSurfaceColor();
+
+			void releaseFont();
 
 			void initialize(GingaScreenID screenId);
 

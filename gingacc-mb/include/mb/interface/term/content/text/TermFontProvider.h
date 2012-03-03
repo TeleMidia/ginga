@@ -74,7 +74,7 @@ namespace mb {
 			virtual ~TermFontProvider();
 
 			string getLoadSymbol() {return "TermFontProvider";};
-			void* getProviderContent();
+			void* getFontProviderContent();
 			void getStringExtents(const char* text, int* w, int* h){};
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
