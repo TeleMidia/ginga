@@ -90,6 +90,7 @@ namespace mb {
 
 		this->fontInit  = false;
 		this->fontUri   = "";
+		this->dfltFont  = "/usr/local/etc/ginga/files/font/vera.ttf";
 		this->myScreen  = screenId;
 		this->height    = heightInPixel;
 		this->font      = NULL;
@@ -163,7 +164,7 @@ namespace mb {
 		return true;
 	}
 
-	void* SDLFontProvider::getProviderContent() {
+	void* SDLFontProvider::getFontProviderContent() {
 		return (void*)font;
 	}
 
@@ -289,7 +290,20 @@ namespace mb {
 			}
 
 			if (font == NULL) {
-				initializeFont();
+				pthread_mutex_unlock(&ntsMutex);
+				if (!initializeFont()) {
+					fontUri = dfltFont;
+					if (!initializeFont()) {
+						clog << "SDLFontProvider::ntsPlayOver Warning! ";
+						clog << "Can't initialize font '" << fontUri << "'";
+						clog << endl;
+					}
+
+					ntsRenderer();
+					return;
+				}
+
+				pthread_mutex_lock(&ntsMutex);
 			}
 
 			text = TTF_RenderText_Solid(

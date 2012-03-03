@@ -70,10 +70,6 @@ namespace mb {
 
 	}
 
-	void* TermImageProvider::getProviderContent() {
-		return NULL;
-	}
-
 	void TermImageProvider::playOver(ISurface* surface) {
 
 	}

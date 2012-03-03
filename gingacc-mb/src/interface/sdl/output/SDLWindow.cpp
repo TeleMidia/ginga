@@ -443,8 +443,8 @@ namespace mb {
 			}
 
 		} else {
-			cout << "SDLWindow::unprotectedValidate empty child surface '";
-			cout << childSurfaces << "'" << endl;
+			clog << "SDLWindow::unprotectedValidate empty child surface '";
+			clog << childSurfaces << "'" << endl;
 		}
 		unlockChilds();
 */
@@ -541,7 +541,7 @@ namespace mb {
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
 			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
-			if (contentSurface == winSur) {
+			if (contentSurface == winSur || contentSurface == curSur) {
 				itIs = true;
 			}
 		}

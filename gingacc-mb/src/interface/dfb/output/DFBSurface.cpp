@@ -155,6 +155,11 @@ namespace mb {
 		}
 	}
 
+	void DFBSurface::releaseFont() {
+		LocalScreenManager::getInstance()->releaseFontProvider(myScreen, iFont);
+		iFont = NULL;
+	}
+
 	void DFBSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
@@ -163,6 +168,7 @@ namespace mb {
 		this->borderColor   = NULL;
 		this->bgColor       = NULL;
 		this->surfaceColor  = NULL;
+		this->iFont         = NULL;
 		this->caps          = 0;
 		this->hasExtHandler = false;
 	}
@@ -417,15 +423,23 @@ namespace mb {
 		IDirectFBFont* f = NULL;
 
 		if (sur != NULL) {
-			f = (IDirectFBFont*)(((IFontProvider*)font)->getProviderContent());
+			f = (IDirectFBFont*)(((IFontProvider*)
+					font)->getFontProviderContent());
+
 			if (f != NULL) {
 				DFBCHECK(sur->SetFont(sur, f));
-				return;
 			}
+
+		} else {
+			clog << "DFBSurface::setFont Warning! Can't set font '" << f << "'";
+			clog << " surface '" << sur << "'" << endl;
 		}
 
-		clog << "DFBSurface::setFont Warning! Can't set font '" << f << "'";
-		clog << " surface '" << sur << "'" << endl;
+		/*if (iFont != font) {
+			releaseFont();
+		}*/
+
+		iFont = (IFontProvider*)font;
 	}
 
 	void DFBSurface::flip() {

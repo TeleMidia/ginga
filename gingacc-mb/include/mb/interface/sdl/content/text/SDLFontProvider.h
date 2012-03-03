@@ -69,6 +69,7 @@ namespace mb {
 	class SDLFontProvider : public IFontProvider {
 		private:
 			GingaScreenID myScreen;
+			string dfltFont;
 			string fontUri;
 			int height;
 			TTF_Font* font;
@@ -116,7 +117,7 @@ namespace mb {
 
 		public:
 			string getLoadSymbol() {return "SDLFontProvider";};
-			void* getProviderContent();
+			void* getFontProviderContent();
 
 			void getStringExtents(const char* text, int* w, int* h);
 			int getStringWidth(const char* text, int textLength=0);

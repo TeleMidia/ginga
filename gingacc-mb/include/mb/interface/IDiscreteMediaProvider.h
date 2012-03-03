@@ -67,9 +67,7 @@ namespace mb {
 
 			virtual void playOver(ISurface* surface)=0;
 
-			/* Designed for non-thread-safe MB. For instance: SDL */
 			virtual void ntsPlayOver()=0;
-			virtual void* getProviderContent()=0;
 	};
 }
 }

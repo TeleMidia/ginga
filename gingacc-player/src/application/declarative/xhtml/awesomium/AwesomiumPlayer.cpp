@@ -60,8 +60,24 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+
+	bool AwesomiumPlayer::init          = false;
+	bool AwesomiumPlayer::isWaitingStop = false;
+	bool AwesomiumPlayer::running       = false;
+	AwesomiumPlayer* AwesomiumPlayer::p = NULL;
+
+	pthread_cond_t AwesomiumPlayer::stopCond;
+	pthread_mutex_t AwesomiumPlayer::stopCondMutex;
+
 	AwesomiumPlayer::AwesomiumPlayer(GingaScreenID screenId, string mrl) :
 			Player(screenId, mrl) {
+
+		if (!init) {
+			init    = true;
+			running = false;
+			pthread_mutex_init(&stopCondMutex, NULL);
+			pthread_cond_init(&stopCond, NULL);
+		}
 
 		awesome = AwesomiumHandler::createAwesomium(screenId);
 	}
@@ -69,6 +85,9 @@ namespace player {
 	AwesomiumPlayer::~AwesomiumPlayer() {
 		clog << "AwesomiumPlayer::~AwesomiumPlayer " << endl;
 
+		if (p == this) {
+			p = NULL;
+		}
 		AwesomiumHandler::destroyAwesomium(awesome);
 	}
 
@@ -99,12 +118,19 @@ namespace player {
 		pthread_t tId;
 		pthread_attr_t tattr;
 
-		pthread_attr_init(&tattr);
-		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
-		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+		if (p == NULL) {
+			p = this;
+		}
 
-		pthread_create(&tId, &tattr, AwesomiumPlayer::_loadUrl, this);
-		pthread_detach(tId);
+		if (!running) {
+			running = true;
+			pthread_attr_init(&tattr);
+			pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
+			pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
+			pthread_create(&tId, &tattr, AwesomiumPlayer::_loadUrl, this);
+			pthread_detach(tId);
+		}
 
 		Player::play();
 	}
@@ -112,6 +138,8 @@ namespace player {
 	void AwesomiumPlayer::stop() {
 		AwesomiumHandler::stopUpdate(awesome);
 		Player::stop();
+
+		waitStop();
 	}
 
 	void AwesomiumPlayer::setPropertyValue(string name, string value) {
@@ -170,14 +198,38 @@ namespace player {
 	}
 
 	void* AwesomiumPlayer::_loadUrl(void* ptr) {
-		AwesomiumPlayer* p = (AwesomiumPlayer*)ptr;
 		/*struct timeval tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 100000;*/
 
-		AwesomiumHandler::loadUrl(p->awesome, p->mrl);
+		while (running) {
+			if (p != NULL) {
+				AwesomiumHandler::loadUrl(p->awesome, p->mrl);
+				p->stopped();
+
+			} else {
+				::usleep(300000);
+			}
+		}
 
 		return (NULL);
+	}
+
+	void AwesomiumPlayer::waitStop() {
+		isWaitingStop = true;
+		pthread_mutex_lock(&stopCondMutex);
+		pthread_cond_wait(&stopCond, &stopCondMutex);
+
+		isWaitingStop = false;
+		pthread_mutex_unlock(&stopCondMutex);
+	}
+
+	bool AwesomiumPlayer::stopped() {
+		if (isWaitingStop) {
+			pthread_cond_signal(&stopCond);
+			return true;
+		}
+		return false;
 	}
 }
 }

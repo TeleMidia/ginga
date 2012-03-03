@@ -102,10 +102,6 @@ namespace mb {
 		}
 	}
 
-	void* SDLImageProvider::getProviderContent() {
-		return (void*)content;
-	}
-
 	void SDLImageProvider::playOver(ISurface* surface) {
 		pthread_mutex_lock(&pMutex);
 		content = surface;

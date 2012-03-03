@@ -72,6 +72,7 @@ extern "C" {
 #define UINT64_C(c) (c ## ULL)
 #endif //UINT64_C
 
+#include "libavutil/opt.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
 #include "libavcodec/avcodec.h"
@@ -96,54 +97,6 @@ namespace ginga {
 namespace core {
 namespace mb {
 	typedef void (*Callback)(void *userdata, Uint8 *stream, int len);
-
-	/* Struct to hold codec values */
-	typedef struct Codec {
-		/* video codec ID */
-		int32_t videoCodecID;
-		/* width of the output stream */
-		int32_t width;
-		/* height of the output stream */
-		int32_t height;
-		/* nominator part of the framerate */
-		int32_t framerateNum;
-		/* denominator part of the framerate */
-		int32_t framerateDen;
-		/* bitrate of video stream in bytes */
-		int32_t videoBitrate;
-
-		/*
-		 * when variable bitrate is desired,
-		 * this holds the minimal video bitrate
-		 */
-		int32_t videoMinRate;
-
-		/*
-		 * when variable bitrate is desired, this holds the maximal
-		 * video bitrate
-		 */
-		int32_t videoMaxRate;
-
-		/* audio codec ID */
-		int32_t audioCodecID;
-		/* number of audio channels in stream */
-		int32_t channels;
-		/* audio samplerate of output stream */
-		int32_t sampleRate;
-		/* bitrate of audio stream in bytes */
-		int32_t audioBitrate;
-
-		/* when variable bitrate is desired,
-		 * this holds the minimal audio bitrate
-		 */
-		int32_t audioMinRate;
-
-		/*
-		 * when variable bitrate is desired,
-		 * this holds the maximal audio bitrate
-		 */
-		int32_t audiooMaxRate;
-	} Codec;
 
 	/* Struct to hold packet buffers */
 	typedef struct Packet {
@@ -170,6 +123,8 @@ namespace mb {
 		/* Presentation timestamp, time at which this data should be used. */
 		int64_t pts;
 
+		int64_t pos;
+
 		/*
 		 * Value indicating if this frame holds data,
 		 * or that it can be overwritten.
@@ -187,11 +142,9 @@ namespace mb {
 	/* This is the basic stream for SDL2ffmpeg */
 	typedef struct Stream {
 		/* Pointer to ffmpeg data, internal use only! */
-		struct AVStream *_ffmpeg;
+		AVStream *_ffmpeg;
 		/* Intermediate frame which will be used when decoding */
-		struct AVFrame *decodeFrame;
-		/* Intermediate frame which will be used when encoding */
-		struct AVFrame *encodeFrame;
+		AVFrame *decodeFrame;
 		int encodeFrameBufferSize;
 		uint8_t *encodeFrameBuffer;
 		int encodeAudioInputSize;
@@ -224,7 +177,8 @@ namespace mb {
 		 * or NULL if current stream is the last one
 		 */
 		struct Stream *next;
-		struct SwsContext* conversionContext;
+
+		struct SwsContext* convCtx;
 	} Stream;
 
 	/* Struct to hold information about file */
@@ -240,20 +194,37 @@ namespace mb {
 		Stream* as;
 
 		/* stream mutex */
-		SDL_mutex* streamMutex;
+		SDL_mutex* stMutex;
 
 		/* Amount of video streams in file */
 		uint32_t videoStreams;
 		/* Amount of audio streams in file */
 		uint32_t audioStreams;
 
-		/* Pointer to active videoStream, NULL if no video stream is active */
-		Stream* videoStream;
-		/* Pointer to active audioStream, NULL if no audio stream is active */
-		Stream* audioStream;
+		/* Pointer to active video stream, NULL if no video stream is active */
+		Stream* videoSt;
+		/* Pointer to active audio stream, NULL if no audio stream is active */
+		Stream* audioSt;
 
 		/* Holds the lowest timestamp which will be decoded */
-		int64_t minimalTimestamp;
+		int64_t minTimestamp;
+
+
+	    double video_cur_pts;
+	    double video_cur_pts_drift;
+	    int64_t video_cur_pos;
+
+	    double audio_cur_pts;
+	    double audio_cur_pts_drift;
+
+	    double frame_last_pts;
+	    double frame_last_duration;
+	    double frame_last_dropped_pts;
+	    int64_t frame_last_dropped_pos;
+	    double frame_timer;
+
+	    bool paused;
+	    int read_pause_return;
 	} Content;
 
 	class SDL2ffmpeg {
@@ -284,8 +255,13 @@ namespace mb {
 			Stream* getAudioStream(uint32_t audioID);
 			int selectAudioStream(int audioID);
 
+			void refreshVideo(VideoFrame* videoFrame);
 			Stream* getVideoStream(uint32_t videoID);
 			int selectVideoStream(int videoID);
+
+			void play();
+			void pause();
+			void resume();
 
 			int seek(uint64_t timestamp);
 			int seekRelative(int64_t timestamp);
@@ -304,6 +280,15 @@ namespace mb {
 			SDL_AudioSpec getAudioSpec(
 					uint16_t samples, Callback callback);
 
+		private:
+			double getAudioClock();
+			double getVideoClock();
+			double getClock();
+
+			double computeTargetDelay(double delay);
+			void updateVideoPts(double pts, int64_t pos);
+
+		public:
 			uint64_t getDuration();
 			uint64_t getAudioDuration();
 			uint64_t getVideoDuration();

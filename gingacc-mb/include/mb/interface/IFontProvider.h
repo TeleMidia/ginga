@@ -66,7 +66,10 @@ namespace mb {
 			virtual ~IFontProvider(){};
 
 			virtual string getLoadSymbol()=0;
-			virtual void* getProviderContent()=0;
+
+			virtual void ntsPlayOver()=0;
+
+			virtual void* getFontProviderContent()=0;
 
 			virtual void getStringExtents(const char* text, int* w, int* h)=0;
 			virtual int getStringWidth(const char* text, int textLength=0)=0;

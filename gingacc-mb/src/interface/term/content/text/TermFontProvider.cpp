@@ -66,7 +66,7 @@ namespace mb {
 
 	}
 
-	void* TermFontProvider::getProviderContent() {
+	void* TermFontProvider::getFontProviderContent() {
 		return NULL;
 	}
 

@@ -69,6 +69,13 @@ namespace player {
 	class AwesomiumPlayer : public Player {
 		private:
 			AwesomiumHDR awesome;
+			static bool running;
+			static AwesomiumPlayer* p;
+
+			static bool init;
+			static bool isWaitingStop;
+			static pthread_cond_t stopCond;
+			static pthread_mutex_t stopCondMutex;
 
 		public:
 			AwesomiumPlayer(GingaScreenID screenId, string mrl);
@@ -88,6 +95,9 @@ namespace player {
 
 		private:
 			static void* _loadUrl(void* ptr);
+
+			static void waitStop();
+			static bool stopped();
 	};
 }
 }

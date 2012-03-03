@@ -236,16 +236,22 @@ namespace mb {
 	    if (prepare(surface)) {
 	    	state = ST_PLAYING;
 	    	SDLDeviceScreen::addCMPToRendererList(this);
-	    	SDL_PauseAudio(0);
+	    	decoder->play();
 	    }
 	}
 
 	void SDLAudioProvider::pause() {
 		state = ST_PAUSED;
+		if (decoder != NULL) {
+			decoder->pause();
+		}
 	}
 
 	void SDLAudioProvider::resume(ISurface* surface, bool hasVisual) {
 		state = ST_PLAYING;
+		if (decoder != NULL) {
+			decoder->resume();
+		}
 	}
 
 	void SDLAudioProvider::stop() {
@@ -444,6 +450,7 @@ namespace mb {
 				}
 
 				ap->audioFrame[BUF_SIZE - 1] = auxFrame;
+
 
 			} else if (ap->state == ST_PLAYING) {
 				ret = 0; //not the right time to decode
