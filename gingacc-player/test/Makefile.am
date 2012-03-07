@@ -37,6 +37,7 @@ testAnime_CFLAGS      = \
 
 testAnime_LDADD       = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccplaani \
@@ -59,6 +60,7 @@ testAudio_CFLAGS      = \
 
 testAudio_LDADD       = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
@@ -100,6 +102,7 @@ testImage_CFLAGS      = \
                         
 testImage_LDADD       = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
@@ -118,6 +121,7 @@ testLinks_CFLAGS      = \
 
 testLinks_LDADD       = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
@@ -136,6 +140,7 @@ testText_CFLAGS       = \
 
 testText_LDADD        = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
@@ -154,6 +159,7 @@ testVideo_CFLAGS      = \
 
 testVideo_LDADD       = \
                         -ldl \
+                        -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccmb \
