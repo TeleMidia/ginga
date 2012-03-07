@@ -230,7 +230,7 @@ void testVideo(
 	win4->show();
 	win4->raiseToTop();
 
-	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
+	cout << "gingacc-mb test video 4 for screen '" << screen << "' has '";
 	cout << vid4->getTotalMediaTime() << "' as its total media time." << endl;
 
 	vid4->setSoundLevel(1.0);
@@ -256,7 +256,7 @@ void testVideo(
 	s5->setParent(win5);
 	win5->show();
 
-	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
+	cout << "gingacc-mb test video 5 for screen '" << screen << "' has '";
 	cout << vid5->getTotalMediaTime() << "' as its total media time." << endl;
 
 	vid5->setSoundLevel(1.0);

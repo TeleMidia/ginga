@@ -27,12 +27,15 @@ libgingaccmbdecsdlap_so_SOURCES = \
                                   SDL2ffmpeg.cpp
 
 libgingaccmbdecsdlap_so_LDADD   = \
-                                  -lgingaccmbsdl \
+                                  -ltelemidiautil \
+                                  -lgingaccsystem \
                                   -lgingaccmb \
+                                  -lgingaccmbsdl \
                                   -lSDL2 \
                                   -lpthread \
                                   -lavcodec \
                                   -lavformat \
+                                  -lswresample \
                                   -lswscale
 endif #SDLSYSTEM
 

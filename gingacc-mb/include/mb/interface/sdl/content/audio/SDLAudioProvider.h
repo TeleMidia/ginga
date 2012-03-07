@@ -65,33 +65,11 @@ namespace core {
 namespace mb {
 	class SDLAudioProvider : public IContinuousMediaProvider {
 		protected:
-			static const short ST_PLAYING = 0;
-			static const short ST_PAUSED  = 1;
-			static const short ST_STOPPED = 2;
-			static const short BUF_SIZE   = 10;
-
-			static const uint64_t syncSec = 100;
-
 			GingaScreenID myScreen;
 			string symbol;
 			string mrl;
-			short state;
-			short soundLevel;
 
-			SDL_mutex* mutex;
 			SDL2ffmpeg* decoder;
-
-			SDL_AudioCVT* acvt;
-			SDL_AudioSpec desired;
-			SDL_AudioSpec obtained;
-
-			AudioFrame* audioFrame[BUF_SIZE];
-			uint64_t sync;
-
-			static pthread_mutex_t iMutex;
-			static set<SDLAudioProvider*> aps;
-
-			static bool init;
 
 		public:
 			SDLAudioProvider(GingaScreenID screenId, const char* mrl);
@@ -112,9 +90,6 @@ namespace mb {
 			double getMediaTime();
 			void setMediaTime(double pos);
 
-		protected:
-			virtual bool prepare(ISurface* surface);
-
 		public:
 			void playOver(
 					ISurface* surface,
@@ -127,14 +102,6 @@ namespace mb {
 			bool releaseAll();
 			void getOriginalResolution(int* width, int* height);
 
-		private:
-			static void clamp(short* outbuf, int len);
-
-		protected:
-			static void audioCallback(void* data, Uint8* stream, int len);
-			uint64_t getSync();
-
-		public:
 			virtual void refreshDR();
 	};
 }

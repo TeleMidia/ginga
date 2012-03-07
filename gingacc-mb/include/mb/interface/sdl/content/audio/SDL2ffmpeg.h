@@ -46,19 +46,18 @@ http://www.ncl.org.br
 http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************
-Part of this file is extracted from SDL_ffmpeg library and ffplay
-SDL_ffmpeg was created by Arjan Houben, but it is a discontinued library
-SDL_ffmpeg was free software licensed under the LGPL
+Part of this file is extracted from ffplay
 ffplay is part of FFmpeg library.
 FFmpeg is free software licensed under the LGPL or GPL
-Many thanks to these guys and to the community that support them!
+Many thanks to ffmpeg developers and to the community that support them!
 *******************************************************************************/
 
 #ifndef SDL2FFMPEG_H
 #define SDL2FFMPEG_H
 
-/* SDL_ffmpeg cplusplus compat begin */
+/* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -72,22 +71,105 @@ extern "C" {
 #define UINT64_C(c) (c ## ULL)
 #endif //UINT64_C
 
-#include "libavutil/opt.h"
+#include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
+#include "libavutil/avstring.h"
+#include "libavutil/opt.h"
+#include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
-#include "libavcodec/avcodec.h"
 
+#include <inttypes.h>
+#include <limits.h>
+#include <math.h>
 #include <pthread.h>
+#include <unistd.h>
 }
 
-/* SDL_ffmpeg cplusplus compat end*/
+#ifndef INT64_MIN
+#define INT64_MIN		(-__INT64_C(9223372036854775807)-1)
+#endif
 
-#include <cmath>
+#ifndef INT64_MAX
+#define INT64_MAX		(__INT64_C(9223372036854775807))
+#endif
 
-#include "SDL.h"
-#include "SDL_thread.h"
+/* SDL2ffmpeg cplusplus compat end*/
 
+
+#include <SDL.h>
+#include <SDL_thread.h>
+
+#define SCALEBITS 10
+#define ONE_HALF  (1 << (SCALEBITS - 1))
+#define FIX(x)    ((int) ((x) * (1<<SCALEBITS) + 0.5))
+
+#define RGB_TO_Y_CCIR(r, g, b) \
+((FIX(0.29900*219.0/255.0) * (r) + FIX(0.58700*219.0/255.0) * (g) + \
+  FIX(0.11400*219.0/255.0) * (b) + (ONE_HALF + (16 << SCALEBITS))) >> SCALEBITS)
+
+#define RGB_TO_U_CCIR(r1, g1, b1, shift)\
+(((- FIX(0.16874*224.0/255.0) * r1 - FIX(0.33126*224.0/255.0) * g1 + \
+		FIX(0.50000*224.0/255.0) * b1 + (ONE_HALF << shift) - 1) >> (SCALEBITS \
+    		 + shift)) + 128)
+
+#define RGB_TO_V_CCIR(r1, g1, b1, shift)\
+(((FIX(0.50000*224.0/255.0) * r1 - FIX(0.41869*224.0/255.0) * g1 - \
+   FIX(0.08131*224.0/255.0) * b1 + (ONE_HALF << shift) - 1) >> (SCALEBITS + \
+		   shift)) + 128)
+
+#define MAX_QUEUE_SIZE (15 * 1024 * 1024)
+#define MIN_AUDIOQ_SIZE (20 * 16 * 1024)
+#define MIN_FRAMES 5
+
+/* SDL audio buffer size, in samples. Should be small to have precise
+   A/V sync as SDL does not have hardware buffer fullness info. */
+#define SDL_AUDIO_BUFFER_SIZE 1024
+
+/* no AV sync correction is done if below the AV sync threshold */
+#define AV_SYNC_THRESHOLD 0.01
+/* no AV correction is done if too big error */
+#define AV_NOSYNC_THRESHOLD 10.0
+
+/* maximum audio speed change to get correct sync */
+#define SAMPLE_CORRECTION_PERCENT_MAX 10
+
+/* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
+#define AUDIO_DIFF_AVG_NB   20
+
+/* the size must be big enough to compensate the hardware audio buffer size */
+#define SAMPLE_ARRAY_SIZE (2*65536)
+
+#define VIDEO_PICTURE_QUEUE_SIZE 2
+#define SUBPICTURE_QUEUE_SIZE 4
+
+#define ALPHA_BLEND(a, oldp, newp, s)\
+		((((oldp << s) * (255 - (a))) + (newp * (a))) / (255 << s))
+
+#define RGBA_IN(r, g, b, a, s) {\
+	unsigned int v = ((const uint32_t *)(s))[0];\
+	a = (v >> 24) & 0xff;\
+	r = (v >> 16) & 0xff;\
+	g = (v >> 8) & 0xff;\
+	b = v & 0xff;\
+}
+
+#define YUVA_IN(y, u, v, a, s, pal) {\
+	unsigned int val = ((const uint32_t *)(pal))[*(const uint8_t*)(s)];\
+	a = (val >> 24) & 0xff;\
+	y = (val >> 16) & 0xff;\
+	u = (val >> 8) & 0xff;\
+	v = val & 0xff;\
+}
+
+#define YUVA_OUT(d, y, u, v, a) {\
+	((uint32_t *)(d))[0] = (a << 24) | (y << 16) | (u << 8) | v;\
+}
+
+#define BPP 1
+
+#include <string>
 #include <iostream>
+#include <set>
 using namespace std;
 
 namespace br {
@@ -96,221 +178,279 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	typedef void (*Callback)(void *userdata, Uint8 *stream, int len);
+	typedef struct PacketQueue {
+		AVPacketList *first_pkt, *last_pkt;
+		int nb_packets;
+		int size;
+		int abort_request;
+	} PacketQueue;
 
-	/* Struct to hold packet buffers */
-	typedef struct Packet {
-		struct AVPacket *data;
-		struct Packet *next;
-	} Packet;
+	typedef struct VideoPicture {
+		double pts;                //presentation time stamp for this picture
+		double duration;           //expected duration of the frame
+		int64_t pos;               //byte position in file
+		int skip;
+		SDL_Texture* tex;
+		int width, height;         // source height & width
+		int allocated;
+		int reallocate;
+		enum PixelFormat pix_fmt;
 
-	/* Struct to hold audio data */
-	typedef struct AudioFrame {
-		/* Presentation timestamp, time at which this data should be used. */
-		int64_t pts;
-		/* Pointer to audio buffer, user adjustable. */
-		uint8_t *buffer;
-		/* Current size of this audio frame. */
-		uint32_t size;
-		/* Size of the complete audio frame. */
-		uint32_t capacity;
-		/* Value indicating wheter or not this is the last frame before EOF */
-		int last;
-	} AudioFrame;
+		AVFrame *src_frame;
+	} VideoPicture;
 
-	/* Struct to hold audio data */
-	typedef struct VideoFrame {
-		/* Presentation timestamp, time at which this data should be used. */
-		int64_t pts;
+	typedef struct SubPicture {
+		double pts; /* presentation time stamp for this picture */
+		AVSubtitle sub;
+	} SubPicture;
 
-		int64_t pos;
-
-		/*
-		 * Value indicating if this frame holds data,
-		 * or that it can be overwritten.
-		 */
-		int ready;
-
-		/* Value indicating whether or not this is the last frame before EOF */
-		int last;
-
-		SDL_Texture* texture;
-		int temph;
-		int tempw;
-	} VideoFrame;
-
-	/* This is the basic stream for SDL2ffmpeg */
-	typedef struct Stream {
-		/* Pointer to ffmpeg data, internal use only! */
-		AVStream *_ffmpeg;
-		/* Intermediate frame which will be used when decoding */
-		AVFrame *decodeFrame;
-		int encodeFrameBufferSize;
-		uint8_t *encodeFrameBuffer;
-		int encodeAudioInputSize;
-		uint64_t frameCount;
-		/* buffer for decoded audio data */
-		int8_t *sampleBuffer;
-		/* amount of data in samplebuffer */
-		int sampleBufferSize;
-		/* position of data in samplebuffer */
-		int sampleBufferOffset;
-		/* timestamp which fits the data in samplebuffer */
-		int64_t sampleBufferTime;
-		/* packet buffer */
-		Packet *buffer;
-		/* mutex for multi threaded access to buffer */
-		SDL_mutex* mutex;
-		/* Id of the stream */
-		int id;
-
-		/*
-		 * This holds the lastTimeStamp calculated,
-		 * usefull when frames don't provide
-		 * a usefull dts/pts, also used for determining at
-		 * what point we are in the file
-		 */
-		int64_t lastTimeStamp;
-
-		/*
-		 * pointer to the next stream,
-		 * or NULL if current stream is the last one
-		 */
-		struct Stream *next;
-
-		struct SwsContext* convCtx;
-	} Stream;
-
-	/* Struct to hold information about file */
-	typedef struct content {
-		void* private_data;
-
-		/* Pointer to ffmpeg data, internal use only! */
-		AVFormatContext* _ffmpeg;
-
-		/* Video streams */
-		Stream* vs;
-		/* Audio streams */
-		Stream* as;
-
-		/* stream mutex */
-		SDL_mutex* stMutex;
-
-		/* Amount of video streams in file */
-		uint32_t videoStreams;
-		/* Amount of audio streams in file */
-		uint32_t audioStreams;
-
-		/* Pointer to active video stream, NULL if no video stream is active */
-		Stream* videoSt;
-		/* Pointer to active audio stream, NULL if no audio stream is active */
-		Stream* audioSt;
-
-		/* Holds the lowest timestamp which will be decoded */
-		int64_t minTimestamp;
-
-
-	    double video_cur_pts;
-	    double video_cur_pts_drift;
-	    int64_t video_cur_pos;
-
-	    double audio_cur_pts;
-	    double audio_cur_pts_drift;
-
-	    double frame_last_pts;
-	    double frame_last_duration;
-	    double frame_last_dropped_pts;
-	    int64_t frame_last_dropped_pos;
-	    double frame_timer;
-
-	    bool paused;
-	    int read_pause_return;
-	} Content;
-
-	class SDL2ffmpeg {
-		private:
-			Content content;
-			static bool initialized;
-
-		public:
-			SDL2ffmpeg(const char* mrl);
-			~SDL2ffmpeg();
-
-		private:
-			void open(const char* mrl);
-			static void init();
-
-		public:
-			void releaseAudioFrame(AudioFrame* frame);
-			void releaseVideoFrame(VideoFrame* frame);
-
-			AudioFrame* createAudioFrame(unsigned long int bytes);
-			VideoFrame* createVideoFrame();
-
-			int getNumOfAudioStreams();
-			int getNumOfVideoStreams();
-
-			int getVideoFrame(VideoFrame* frame);
-
-			Stream* getAudioStream(uint32_t audioID);
-			int selectAudioStream(int audioID);
-
-			void refreshVideo(VideoFrame* videoFrame);
-			Stream* getVideoStream(uint32_t videoID);
-			int selectVideoStream(int videoID);
-
-			void play();
-			void pause();
-			void resume();
-
-			int seek(uint64_t timestamp);
-			int seekRelative(int64_t timestamp);
-
-			int flush();
-
-			int getAudioFrame(AudioFrame *frame);
-
-			int64_t getPosition();
-
-			float getFrameRate(
-					Stream *stream,
-					int *numerator,
-					int *denominator);
-
-			SDL_AudioSpec getAudioSpec(
-					uint16_t samples, Callback callback);
-
-		private:
-			double getAudioClock();
-			double getVideoClock();
-			double getClock();
-
-			double computeTargetDelay(double delay);
-			void updateVideoPts(double pts, int64_t pos);
-
-		public:
-			uint64_t getDuration();
-			uint64_t getAudioDuration();
-			uint64_t getVideoDuration();
-
-			int getVideoSize(int *w, int *h);
-
-			bool isAudioValid();
-			bool isVideoValid();
-
-		private:
-			int getPacket();
-			Packet* getAudioPacket();
-			Packet* getVideoPacket();
-			int decodeAudioFrame(AVPacket* pkt, AudioFrame* frame);
-			int decodeVideoFrame(AVPacket* pkt, VideoFrame* frame);
-
-			static struct SwsContext* createContext(
-					int inWidth, int inHeight,
-					enum PixelFormat inFormat,
-					int outWidth, int outHeight,
-					enum PixelFormat outFormat);
+	enum {
+		AV_SYNC_AUDIO_MASTER, /* default choice */
+		AV_SYNC_VIDEO_MASTER,
+		AV_SYNC_EXTERNAL_CLOCK /* synchronize to an external clock */
 	};
+
+	typedef struct VideoState {
+		int no_background;
+		int abort_request;
+		int paused;
+		int last_paused;
+		int seek_req;
+		int seek_flags;
+		int64_t seek_pos;
+		int64_t seek_rel;
+		int read_pause_return;
+		AVFormatContext *ic;
+
+		int audio_stream;
+
+		int av_sync_type;
+		double external_clock; /* external clock base */
+		int64_t external_clock_time;
+
+		double audio_clock;
+		double audio_diff_cum; /* used for AV difference average computation */
+		double audio_diff_avg_coef;
+		double audio_diff_threshold;
+		int audio_diff_avg_count;
+		AVStream *audio_st;
+		PacketQueue audioq;
+		int audio_hw_buf_size;
+		DECLARE_ALIGNED(16,uint8_t,audio_buf2)[AVCODEC_MAX_AUDIO_FRAME_SIZE * 4];
+		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
+		uint8_t *audio_buf;
+		uint8_t *audio_buf1;
+		unsigned int audio_buf_size; /* in bytes */
+		int audio_write_buf_size;
+		AVPacket audio_pkt_temp;
+		AVPacket audio_pkt;
+		enum AVSampleFormat audio_src_fmt;
+		enum AVSampleFormat audio_tgt_fmt;
+		int audio_src_channels;
+		int audio_tgt_channels;
+		int64_t audio_src_channel_layout;
+		int64_t audio_tgt_channel_layout;
+		int audio_src_freq;
+		int audio_tgt_freq;
+		struct SwrContext *swr_ctx;
+		double audio_current_pts;
+		double audio_current_pts_drift;
+		int frame_drops_early;
+		int frame_drops_late;
+		AVFrame *frame;
+
+		int16_t sample_array[SAMPLE_ARRAY_SIZE];
+		int sample_array_index;
+		int last_i_start;
+		RDFTContext *rdft;
+		int rdft_bits;
+		FFTSample *rdft_data;
+		int xpos;
+
+		SDL_Thread *subtitle_tid;
+		int subtitle_stream;
+		int subtitle_stream_changed;
+		AVStream *subtitle_st;
+		PacketQueue subtitleq;
+		SubPicture subpq[SUBPICTURE_QUEUE_SIZE];
+		int subpq_size, subpq_rindex, subpq_windex;
+
+		double frame_timer;
+		double frame_last_pts;
+		double frame_last_duration;
+		double frame_last_dropped_pts;
+		double frame_last_returned_time;
+		double frame_last_filter_delay;
+		int64_t frame_last_dropped_pos;
+
+		//pts of last decoded frame / predicted pts of next decoded frame
+		double video_clock;
+		int video_stream;
+		AVStream *video_st;
+		PacketQueue videoq;
+
+		/*
+		 * current displayed pts
+		 * (different from video_clock if frame fifos are used)
+		 */
+		double video_current_pts;
+
+		/*
+		 * video_current_pts - time (av_gettime) at which we updated
+		 * video_current_pts - used to have running video pts
+		 */
+		double video_current_pts_drift;
+
+		//current displayed file pos
+		int64_t video_current_pos;
+
+		VideoPicture pictq[VIDEO_PICTURE_QUEUE_SIZE];
+		int pictq_size, pictq_rindex, pictq_windex;
+
+		struct SwsContext *img_convert_ctx;
+
+		char filename[1024];
+		int step;
+
+		int refresh;
+	} VideoState;
+
+  class SDL2ffmpeg {
+	private:
+		static const short ST_PLAYING = 0;
+		static const short ST_PAUSED  = 1;
+		static const short ST_STOPPED = 2;
+
+		int wanted_stream[AVMEDIA_TYPE_NB];
+		int seek_by_bytes;
+		int av_sync_type;
+		int64_t start_time;
+		int64_t duration;
+		int workaround_bugs;
+		int fast;
+		int genpts;
+		int lowres;
+		int idct;
+		enum AVDiscard skip_frame;
+		enum AVDiscard skip_idct;
+		enum AVDiscard skip_loop_filter;
+		int error_recognition;
+		int error_concealment;
+		int decoder_reorder_pts;
+		int framedrop;
+		int rdftspeed;
+
+		AVPacket flush_pkt;
+		VideoState* is;
+
+		static bool init;
+		static pthread_mutex_t iMutex;
+		static set<SDL2ffmpeg*> instances;
+
+		AVFrame vFrame;
+		AVPacket vPkt;
+
+		int audioFreq;
+		Uint8 audioChannels;
+
+		short state;
+		SDL_AudioSpec spec;
+		float soundLevel;
+		SDL_Texture* texture;
+		bool hasPic;
+
+	public:
+		SDL2ffmpeg(const char *filename);
+		~SDL2ffmpeg();
+
+	private:
+		void release();
+		bool prepare();
+
+	public:
+		void play();
+		void stop();
+		void pause();
+		void resume();
+
+		void getOriginalResolution(int* width, int* height);
+
+		double getDuration();
+		double getPosition();
+		void seek(int64_t pos);
+
+		void setTexture(SDL_Texture* texture);
+		bool hasTexture();
+		SDL_Texture* getTexture();
+
+		bool hasPicture();
+        void setSoundLevel(float level);
+
+	private:
+		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
+		void packet_queue_init(PacketQueue *q);
+		void packet_queue_flush(PacketQueue *q);
+		void packet_queue_end(PacketQueue *q);
+		void packet_queue_abort(PacketQueue *q);
+		int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block);
+
+		void alloc_picture();
+		void free_subpicture(SubPicture *sp);
+		void video_image_display();
+		void stream_close();
+
+		void video_display();
+
+		double get_audio_clock();
+		double get_video_clock();
+		double get_external_clock();
+		double get_master_clock();
+
+		void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
+		void stream_toggle_pause();
+		double compute_target_delay(double delay);
+		void pictq_next_picture();
+		void update_video_pts(double pts, int64_t pos);
+
+		int queue_picture(AVFrame *src_frame, double pts1, int64_t pos);
+		int get_video_frame(AVFrame *frame, int64_t *pts, AVPacket* pkt);
+
+		int synchronize_audio(short *samples, int samples_size1, double pts);
+		int audio_decode_frame(double *pts_ptr);
+		int stream_component_open(int stream_index);
+		void stream_component_close(int stream_index);
+
+		void stream_cycle_channel(int codec_type);
+		void toggle_pause();
+		void step_to_next_frame();
+
+	public:
+		void refresh();
+
+	private:
+		int audio_refresh_decoder();
+		int video_refresh_decoder();
+		void video_refresh_content();
+		int read_content();
+
+		bool getAudioSpec(
+				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
+
+		static void clamp(short* buf, int len);
+		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
+
+		static int subtitle_thread(void *arg);
+
+		static int lockmgr(void **mtx, enum AVLockOp op);
+		static int decode_interrupt_cb(void *ctx);
+		static struct SwsContext* createContext(
+				int inWidth,
+				int inHeight,
+				enum PixelFormat inFormat,
+				int outWidth,
+				int outHeight,
+				enum PixelFormat outFormat);
+  };
 }
 }
 }
