@@ -37,7 +37,6 @@ testAnime_CFLAGS      = \
 
 testAnime_LDADD       = \
                         -ldl \
-                        -lawesomium-1.6.3 \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccplaani \
@@ -83,6 +82,7 @@ testAwesomium_LDADD   = \
                         -lgingaccplayer \
                         -lgingaccmb \
                         -lgingaccsystem \
+                        -lawesomium-1.6.3 \
                         -L/lib/ \
                         -L/usr/lib/ \
                         -L/usr/local/lib/ \
