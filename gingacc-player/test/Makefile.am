@@ -9,6 +9,7 @@ INCLUDES              = \
 
 LIBS =
 
+if AWESOMIUMLIB
 noinst_PROGRAMS       = \
                         testAnime \
                         testAudio \
@@ -17,6 +18,15 @@ noinst_PROGRAMS       = \
                         testLinks \
                         testText \
                         testVideo
+else
+noinst_PROGRAMS       = \
+                        testAnime \
+                        testAudio \
+                        testImage \
+                        testLinks \
+                        testText \
+                        testVideo
+endif
 
 #testAnime
 testAnime_SOURCES     = \
@@ -28,7 +38,6 @@ testAnime_CFLAGS      = \
 testAnime_LDADD       = \
                         -ldl \
                         -lawesomium-1.6.3 \
-                        -lgingaccplaawe \
                         -ltelemidiautil \
                         -lgingaccplayer \
                         -lgingaccplaani \
@@ -45,10 +54,10 @@ testAnime_LDADD       = \
 #testAudio
 testAudio_SOURCES     = \
                         testAudio.cpp
-                        
+
 testAudio_CFLAGS      = \
                         $(top_srcdir)/include
-                        
+
 testAudio_LDADD       = \
                         -ldl \
                         -ltelemidiautil \
@@ -59,6 +68,7 @@ testAudio_LDADD       = \
                         -L/usr/local/lib/ \
                         -L../src/
 
+if AWESOMIUMLIB
 #testAwesomium
 testAwesomium_SOURCES = \
                         testAwesomium.cpp
@@ -79,6 +89,7 @@ testAwesomium_LDADD   = \
                         -L/usr/local/lib/ginga \
                         -L/usr/local/lib/ginga/players \
                         -L../src/
+endif
 
 #testImage
 testImage_SOURCES     = \
