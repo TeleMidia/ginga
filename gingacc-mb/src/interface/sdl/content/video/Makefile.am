@@ -37,6 +37,7 @@ libgingaccmbdecsdlav_so_LDADD   = \
                                   -lpthread \
                                   -lavcodec \
                                   -lavformat \
+                                  -lswresample \
                                   -lswscale
 endif #SDLSYSTEM
 

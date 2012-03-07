@@ -64,7 +64,6 @@ namespace mb {
 
 		SDL_Renderer* renderer;
 
-		videoFrame = NULL;
 		myScreen   = screenId;
 		isWaiting  = false;
 
@@ -72,26 +71,12 @@ namespace mb {
 		pthread_cond_init(&cond, NULL);
 
 		if (decoder != NULL) {
-			decoder->selectVideoStream(0);
 			getOriginalResolution(&wRes, &hRes);
-
-			videoFrame          = decoder->createVideoFrame();
-		    videoFrame->tempw   = wRes;
-		    videoFrame->temph   = hRes;
-		    videoFrame->texture = NULL;
 		}
 	}
 
 	SDLVideoProvider::~SDLVideoProvider() {
-		state = ST_STOPPED;
 
-		if (videoFrame != NULL) {
-			SDL_DestroyTexture(videoFrame->texture);
-			videoFrame->texture = NULL;
-
-			decoder->releaseVideoFrame(videoFrame);
-			videoFrame = NULL;
-		}
 	}
 
 	void SDLVideoProvider::setLoadSymbol(string symbol) {
@@ -103,16 +88,16 @@ namespace mb {
 	}
 
 	void* SDLVideoProvider::getProviderContent() {
-		if (videoFrame != NULL) {
-			return (void*)(videoFrame->texture);
+		if (decoder != NULL) {
+			return (void*)(decoder->getTexture());
 		}
 
 		return NULL;
 	}
 
 	void SDLVideoProvider::setProviderContent(void* texture) {
-		if (videoFrame != NULL) {
-			videoFrame->texture = (SDL_Texture*)texture;
+		if (decoder != NULL) {
+			decoder->setTexture((SDL_Texture*)texture);
 		}
 
 		textureCreated();
@@ -131,42 +116,21 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::getOriginalResolution(int* width, int* height) {
-		if (decoder->isVideoValid() && width != NULL && height != NULL) {
-			decoder->getVideoSize(width, height);
+		if (decoder != NULL && width != NULL && height != NULL) {
+			decoder->getOriginalResolution(width, height);
 		}
 	}
 
 	double SDLVideoProvider::getTotalMediaTime() {
-		if (decoder->isVideoValid()) {
-			return decoder->getDuration() / 1000;
-		}
-		return 0;
+		return SDLAudioProvider::getTotalMediaTime();
 	}
 
 	double SDLVideoProvider::getMediaTime() {
-		if (decoder->isVideoValid()) {
-			return (double)decoder->getPosition() / 1000;
-		}
-		return 0;
+		return SDLAudioProvider::getMediaTime();
 	}
 
 	void SDLVideoProvider::setMediaTime(double pos) {
-		if (decoder->isVideoValid()) {
-			decoder->seek((uint64_t)pos);
-		}
-	}
-
-	bool SDLVideoProvider::prepare(ISurface* surface) {
-		SDLAudioProvider::prepare(surface);
-		if (decoder->isVideoValid() && videoFrame != NULL) {
-			clog << "SDLVideoProvider::prepare OK" << endl;
-			return true;
-		}
-
-		clog << "SDLVideoProvider::prepare there is no video stream ";
-		clog << "considering MRL '" << mrl << "'";
-		clog << endl;
-		return false;
+		SDLAudioProvider::setMediaTime(pos);
 	}
 
 	void SDLVideoProvider::playOver(
@@ -176,19 +140,21 @@ namespace mb {
 		IWindow* parent;
 		SDLWindow* win;
 
-		if (prepare(surface)) {
-			state = ST_PLAYING;
-			SDLDeviceScreen::addCMPToRendererList(this);
-			parent = (IWindow*)(surface->getParent());
-			if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)){
-				win = (SDLWindow*)parent;
-				if (videoFrame->texture == NULL) {
+		SDLDeviceScreen::addCMPToRendererList(this);
+		parent = (IWindow*)(surface->getParent());
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			win = (SDLWindow*)parent;
+
+			if (decoder != NULL) {
+				if (!decoder->hasTexture()) {
 					waitTexture();
 				}
 
-				win->setTexture(videoFrame->texture);
+				win->setTexture(decoder->getTexture());
 			}
+		}
 
+		if (decoder != NULL) {
 			decoder->play();
 		}
 	}
@@ -215,30 +181,7 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::refreshDR() {
-		int i;
-		int sleepTime;
-
-		if (state == ST_PLAYING) {
-			if (videoFrame != NULL && decoder->isVideoValid()) {
-				if (!videoFrame->ready) {
-					SDLAudioProvider::refreshDR();
-					decoder->getVideoFrame(videoFrame);
-
-				} else if (videoFrame->pts <= getSync()) {
-					videoFrame->ready = 0;
-				}
-
-				/*decoder->refreshVideo(videoFrame);
-
-				if (!videoFrame->ready) {
-					SDLAudioProvider::refreshDR();
-					decoder->getVideoFrame(videoFrame);
-				}*/
-
-			} else {
-				SDLAudioProvider::refreshDR();
-			}
-		}
+		SDLAudioProvider::refreshDR();
 	}
 
 	void SDLVideoProvider::waitTexture() {

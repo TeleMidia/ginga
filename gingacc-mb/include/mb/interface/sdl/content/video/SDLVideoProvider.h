@@ -66,8 +66,6 @@ namespace core {
 namespace mb {
 	class SDLVideoProvider : public SDLAudioProvider {
 		private:
-			VideoFrame* videoFrame;
-			float frameRate;
 			int wRes;
 			int hRes;
 
@@ -103,10 +101,6 @@ namespace mb {
 			double getMediaTime();
 			void setMediaTime(double pos);
 
-		private:
-			virtual bool prepare(ISurface* surface);
-
-		public:
 			void playOver(
 					ISurface* surface,
 					bool hasVisual=true, IProviderListener* listener=NULL);
