@@ -107,10 +107,10 @@ namespace mb {
 #if HAVE_COMPSUPPORT
 			static IComponentManager* cm;
 #endif
-			set<IWindow*>* windowPool;
+			set<IWindow*> windowPool;
 			vector<IWindow*> windowRenderList;
-			set<ISurface*>* surfacePool;
-			set<IContinuousMediaProvider*>* cmpPool;
+			set<ISurface*> surfacePool;
+			set<IContinuousMediaProvider*> cmpPool;
 
 			GingaScreenID id;
 			IInputManager* im;
@@ -124,8 +124,8 @@ namespace mb {
 			static IDirectFBDisplayLayer* gfxLayer;
 
 			static pthread_mutex_t ieMutex;
-			static map<int, int>* gingaToDFBCodeMap;
-			static map<int, int>* dfbToGingaCodeMap;
+			static map<int, int> gingaToDFBCodeMap;
+			static map<int, int> dfbToGingaCodeMap;
 
 		public:
 			DFBDeviceScreen(

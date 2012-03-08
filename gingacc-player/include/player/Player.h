@@ -74,27 +74,38 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <string>
 using namespace std;
 
-typedef struct lockedPlayerLitenerAction {
-	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* l;
-	bool isAdd;
-} LockedPlayerListener;
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+	typedef struct LockedPlayerLitenerAction {
+		::br::pucrio::telemidia::ginga::core::player::IPlayerListener* l;
+		bool isAdd;
+	} LockedPlayerListener;
+
+	typedef struct PendingNotification {
+		short code;
+		string parameter;
+		short type;
+		string value;
+		set<IPlayerListener*>* clone;
+	} PendingNotification;
+
 	class Player : public IPlayer {
 		private:
 			pthread_mutex_t listM;
 			pthread_mutex_t lockedListM;
 			pthread_mutex_t referM;
-			map<string, string>* properties;
+			pthread_mutex_t pnMutex;
 
 			bool notifying;
-			set<IPlayerListener*>* listeners;
-			vector<LockedPlayerListener*>* lockedListeners;
+
+			map<string, string> properties;
+			set<IPlayerListener*> listeners;
+			vector<LockedPlayerListener*> lockedListeners;
+			vector<PendingNotification*> pendingNotifications;
 
 		protected:
 			GingaScreenID myScreen;
@@ -109,7 +120,7 @@ namespace player {
 			ISurface* surface;
 			IWindow* outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;
-			set<IPlayer*>* referredPlayers;
+			set<IPlayer*> referredPlayers;
 			IPlayer* timeBasePlayer;
 			bool presented;
 			bool visible;
@@ -140,10 +151,17 @@ namespace player {
 		public:
 			void notifyPlayerListeners(
 					short code,
-					string paremeter="",
+					string parameter="",
 					short type=TYPE_PRESENTATION,
 					string value="");
 
+		private:
+			static void* detachedNotifier(void* ptr);
+			static void ntsNotifyPlayerListeners(
+					set<IPlayerListener*>* list,
+					short code, string parameter, short type, string value);
+
+		public:
 			virtual void setSurface(ISurface* surface);
 			virtual ISurface* getSurface();
 

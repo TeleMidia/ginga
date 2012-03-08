@@ -68,6 +68,7 @@ namespace player {
 		pthread_mutex_init(&listM, NULL);
 		pthread_mutex_init(&lockedListM, NULL);
 		pthread_mutex_init(&referM, NULL);
+		pthread_mutex_init(&pnMutex, NULL);
 
 #if HAVE_COMPSUPPORT
 		if (dm == NULL) {
@@ -82,9 +83,6 @@ namespace player {
 
 		this->myScreen            = screenId;
 		this->mrl                 = mrl;
-		this->listeners           = NULL;
-		this->lockedListeners     = NULL;
-		this->referredPlayers     = NULL;
 		this->outputWindow        = NULL;
 		this->surface             = NULL;
 
@@ -98,25 +96,19 @@ namespace player {
 		this->scopeType           = -1;
 		this->scopeInitTime       = -1;
 		this->scopeEndTime        = -1;
-		this->properties          = new map<string, string>;
 		this->notifyContentUpdate = false;
 	}
 
 	Player::~Player() {
 		this->status = STOP;
+
+		performLockedListenersRequest();
+
 		pthread_mutex_lock(&listM);
-		if (listeners != NULL) {
-			listeners->clear();
-			delete listeners;
-			listeners = NULL;
-		}
+		listeners.clear();
 
 		pthread_mutex_lock(&lockedListM);
-		if (lockedListeners != NULL) {
-			lockedListeners->clear();
-			delete lockedListeners;
-			lockedListeners = NULL;
-		}
+		lockedListeners.clear();
 
 		if (dm->hasWindow(myScreen, outputWindow)) {
 			outputWindow->revertContent();
@@ -130,24 +122,22 @@ namespace player {
 		}
 
 		pthread_mutex_lock(&referM);
-		if (referredPlayers != NULL) {
-			referredPlayers->clear();
-			delete referredPlayers;
-			referredPlayers = NULL;
-		}
+		referredPlayers.clear();
 
-		if (properties != NULL) {
-			delete properties;
-			properties = NULL;
-		}
+		properties.clear();
+
+		pthread_mutex_lock(&pnMutex);
+		pendingNotifications.clear();
 
 		pthread_mutex_unlock(&referM);
 		pthread_mutex_unlock(&lockedListM);
 		pthread_mutex_unlock(&listM);
+		pthread_mutex_unlock(&pnMutex);
 
 		pthread_mutex_destroy(&referM);
 		pthread_mutex_destroy(&lockedListM);
 		pthread_mutex_destroy(&listM);
+		pthread_mutex_destroy(&pnMutex);
    	}
 
 	void Player::setMrl(string mrl, bool visible) {
@@ -168,18 +158,12 @@ namespace player {
 			lpl->isAdd = true;
 			lpl->l     = listener;
 
-			if (lockedListeners == NULL) {
-				lockedListeners = new vector<LockedPlayerListener*>;
-			}
-			lockedListeners->push_back(lpl);
+			lockedListeners.push_back(lpl);
 			pthread_mutex_unlock(&lockedListM);
 
 		} else {
 			pthread_mutex_lock(&listM);
-			if (listeners == NULL) {
-				this->listeners = new set<IPlayerListener*>;
-			}
-			listeners->insert(listener);
+			listeners.insert(listener);
 			pthread_mutex_unlock(&listM);
 		}
 	}
@@ -193,19 +177,15 @@ namespace player {
 			lpl        = new LockedPlayerListener;
 			lpl->isAdd = false;
 			lpl->l     = listener;
-			if (lockedListeners == NULL) {
-				lockedListeners = new vector<LockedPlayerListener*>;
-			}
-			lockedListeners->push_back(lpl);
+
+			lockedListeners.push_back(lpl);
 			pthread_mutex_unlock(&lockedListM);
 
 		} else {
 			pthread_mutex_lock(&listM);
-			if (listeners != NULL) {
-				i = listeners->find(listener);
-				if (i != listeners->end()) {
-					listeners->erase(i);
-				}
+			i = listeners.find(listener);
+			if (i != listeners.end()) {
+				listeners.erase(i);
 			}
 			pthread_mutex_unlock(&listM);
 		}
@@ -218,26 +198,24 @@ namespace player {
 		set<IPlayerListener*>::iterator j;
 
 		pthread_mutex_lock(&lockedListM);
-		if (lockedListeners != NULL && listeners != NULL) {
-			i = lockedListeners->begin();
-			while (i != lockedListeners->end()) {
-				lpl      = *i;
-				listener = lpl->l;
+		i = lockedListeners.begin();
+		while (i != lockedListeners.end()) {
+			lpl      = *i;
+			listener = lpl->l;
 
-				if (lpl->isAdd) {
-					listeners->insert(listener);
+			if (lpl->isAdd) {
+				listeners.insert(listener);
 
-				} else {
-					j = listeners->find(listener);
-					if (j != listeners->end()) {
-						listeners->erase(j);
-					}
+			} else {
+				j = listeners.find(listener);
+				if (j != listeners.end()) {
+					listeners.erase(j);
 				}
-
-				delete lpl;
-				++i;
 			}
-			lockedListeners->clear();
+
+			delete lpl;
+			++i;
+			lockedListeners.clear();
 		}
 		pthread_mutex_unlock(&lockedListM);
 	}
@@ -245,7 +223,28 @@ namespace player {
 	void Player::notifyPlayerListeners(
 			short code, string parameter, short type, string value) {
 
-		set<IPlayerListener*>::iterator i, j;
+		PendingNotification* pn;
+		vector<PendingNotification*>::iterator i;
+
+		short c;
+		string p;
+		short t;
+		string v;
+		set<IPlayerListener*>* clone = NULL;
+
+		if (notifying) {
+			pthread_mutex_lock(&pnMutex);
+			pn            = new PendingNotification;
+			pn->code      = code;
+			pn->parameter = parameter;
+			pn->type      = type;
+			pn->value     = value;
+
+			pendingNotifications.push_back(pn);
+			pthread_mutex_unlock(&pnMutex);
+
+			return;
+		}
 
 		notifying = true;
 		pthread_mutex_lock(&listM);
@@ -253,7 +252,7 @@ namespace player {
 
 		performLockedListenersRequest();
 
-		if (listeners == NULL || listeners->empty()) {
+		if (listeners.empty()) {
 			if (code == PL_NOTIFY_STOP) {
 				presented = true;
 			}
@@ -263,30 +262,72 @@ namespace player {
 		}
 
 		if (code == PL_NOTIFY_NCLEDIT) {
-			i = listeners->begin();
-			while (i != listeners->end()) {
-				if ((*i) != NULL) {
-					(*i)->updateStatus(code, parameter, type, value);
-				}
-				++i;
-			}
+			ntsNotifyPlayerListeners(&listeners, code, parameter, type, value);
 
 		} else {
 			if (code == PL_NOTIFY_STOP) {
 				presented = true;
 			}
 
-			i = listeners->begin();
-			while (i != listeners->end()) {
-				if ((*i) != NULL) {
-					(*i)->updateStatus(code, parameter, type, value);
-				}
-				++i;
-			}
+			ntsNotifyPlayerListeners(&listeners, code, parameter, type, value);
+		}
+
+		pthread_mutex_lock(&pnMutex);
+		if (!pendingNotifications.empty()) {
+			clone = new set<IPlayerListener*>(listeners);
 		}
 
 		pthread_mutex_unlock(&listM);
 		notifying = false;
+
+		if (clone != NULL && !clone->empty()) {
+			i = pendingNotifications.begin();
+			while (i != pendingNotifications.end()) {
+				(*i)->clone = new set<IPlayerListener*>(*clone);
+
+				pthread_t tId;
+				pthread_attr_t tattr;
+
+				pthread_attr_init(&tattr);
+				pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
+				pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
+				pthread_create(&tId, &tattr, Player::detachedNotifier, (*i));
+				pthread_detach(tId);
+
+				++i;
+			}
+			pendingNotifications.clear();
+			delete clone;
+		}
+		pthread_mutex_unlock(&pnMutex);
+	}
+
+	void* Player::detachedNotifier(void* ptr) {
+		PendingNotification* pn = (PendingNotification*)ptr;
+
+		ntsNotifyPlayerListeners(
+				pn->clone, pn->code, pn->parameter, pn->type, pn->value);
+
+		delete pn->clone;
+		delete pn;
+
+		return NULL;
+	}
+
+	void Player::ntsNotifyPlayerListeners(
+			set<IPlayerListener*>* list,
+			short code, string parameter, short type, string value) {
+
+		set<IPlayerListener*>::iterator i;
+
+		i = list->begin();
+		while (i != list->end()) {
+			if ((*i) != NULL) {
+				(*i)->updateStatus(code, parameter, type, value);
+			}
+			++i;
+		}
 	}
 
 	void Player::setSurface(ISurface* surface) {
@@ -375,8 +416,8 @@ namespace player {
 	}
 
 	string Player::getPropertyValue(string name) {
-		if (properties->count(name) != 0) {
-			return (*properties)[name];
+		if (properties.count(name) != 0) {
+			return properties[name];
 		}
 
 		return "";
@@ -429,30 +470,22 @@ namespace player {
 				outputWindow->setCurrentTransparency(util::stof(value));
 			}
 		}
-		(*properties)[name] = value;
+		properties[name] = value;
 	}
 
 	void Player::addTimeReferPlayer(IPlayer* referPlayer) {
 		pthread_mutex_lock(&referM);
-		if (referredPlayers == NULL) {
-			referredPlayers = new set<IPlayer*>;
-		}
-
-		referredPlayers->insert(referPlayer);
+		referredPlayers.insert(referPlayer);
 		pthread_mutex_unlock(&referM);
 	}
 
 	void Player::removeTimeReferPlayer(IPlayer* referPlayer) {
-		if (referredPlayers == NULL) {
-			return;
-		}
-
-		pthread_mutex_lock(&referM);
 		set<IPlayer*>::iterator i;
 
-		i = referredPlayers->find(referPlayer);
-		if (i != referredPlayers->end()) {
-			referredPlayers->erase(i);
+		pthread_mutex_lock(&referM);
+		i = referredPlayers.find(referPlayer);
+		if (i != referredPlayers.end()) {
+			referredPlayers.erase(i);
 			pthread_mutex_unlock(&referM);
 			return;
 		}
@@ -463,13 +496,8 @@ namespace player {
 		set<IPlayer*>::iterator i;
 
 		pthread_mutex_lock(&referM);
-		if (referredPlayers == NULL) {
-			pthread_mutex_unlock(&referM);
-			return;
-		}
-
-		i = referredPlayers->begin();
-		while (i != referredPlayers->end()) {
+		i = referredPlayers.begin();
+		while (i != referredPlayers.end()) {
 			(*i)->timebaseObjectTransitionCallback(transition);
 			++i;
 		}
