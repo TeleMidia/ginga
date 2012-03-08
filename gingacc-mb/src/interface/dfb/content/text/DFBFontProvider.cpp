@@ -137,9 +137,9 @@ namespace mb {
 
 			dfb->CreateFont(dfb, aux.c_str(), &desc, &font);
 
-			cout << "DFBFontProvider::DFBFontProvider '" << aux << "'";
-			cout << " created!";
-			cout << endl;
+			clog << "DFBFontProvider::DFBFontProvider '" << aux << "'";
+			clog << " created!";
+			clog << endl;
 		}
 	}
 
