@@ -64,16 +64,31 @@ extern "C" {
 #include <stdio.h>
 }
 
+bool debugging = false;
+
+string updateFileUri(string file) {
+	if (!isAbsolutePath(file)) {
+		if (debugging) {
+			return getCurrentPath() + "gingacc-player/test/" + file;
+
+		} else {
+			return getCurrentPath() + file;
+		}
+	}
+
+	return file;
+}
+
+IPlayer* aud1;
+IPlayer* aud2;
+IPlayer* aud3;
+
 void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	IWindow* w;
 	IWindow* ww;
 	IWindow* www;
 
 	ISurface* s;
-
-	IPlayer* aud1;
-	IPlayer* aud2;
-	IPlayer* aud3;
 
 	w   = dm->createWindow(screen, 10, 10, 100, 100, 32766);
 	ww  = dm->createWindow(screen, 90, 90, 150, 150, 32766);
@@ -137,6 +152,7 @@ int main(int argc, char** argv, char** envp) {
 
 	setLogToNullDev();
 
+
 #if HAVE_COMPSUPPORT
 	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
 
@@ -146,9 +162,60 @@ int main(int argc, char** argv, char** envp) {
 	exit(0);
 #endif
 
+	int i;
+	bool testAllScreens = false;
+	bool printScreen    = false;
+
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--all") == 0)) {
+			testAllScreens = true;
+
+		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
+			printScreen    = true;
+
+		} else if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
+			if (strcmp(argv[i + 1], "stdout") == 0) {
+				setLogToStdoutDev();
+
+			} else if (strcmp(argv[i + 1], "file") == 0) {
+				setLogToFile();
+			}
+
+		} else if ((strcmp(argv[i], "--debug") == 0)) {
+			debugging = true;
+		}
+	}
+
 	cout << "gingacc-player testAudio" << endl;
 	screen1 = dm->createScreen(argc, argv);
 	testPlayer(dm, screen1);
+
+	if (printScreen) {
+		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+	}
+
+	i = 0;
+	while (i < 10) {
+		if (aud1 != NULL) {
+			cout << "Audio 1 media time: '" << aud1->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		if (aud2 != NULL) {
+			cout << "Audio 2 media time: '" << aud2->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		if (aud3 != NULL) {
+			cout << "Audio 3 media time: '" << aud3->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		::usleep(1000000);
+		++i;
+	}
+
+
 	getchar();
 
 	dm->clearWidgetPools(screen1);

@@ -68,6 +68,26 @@ extern "C" {
 #include <stdio.h>
 }
 
+bool debugging = false;
+
+string updateFileUri(string file) {
+	if (!isAbsolutePath(file)) {
+		if (debugging) {
+			return getCurrentPath() + "gingacc-player/test/" + file;
+
+		} else {
+			return getCurrentPath() + file;
+		}
+	}
+
+	return file;
+}
+
+IPlayer* vid1 = NULL;
+IPlayer* vid2 = NULL;
+IPlayer* vid3 = NULL;
+IPlayer* vid4 = NULL;
+
 class TestPlayerListener : public IPlayerListener {
 	private:
 		string id;
@@ -109,12 +129,9 @@ void testPlayer(
 	IWindow* w3;
 	IWindow* w4;
 
-	ISurface* s;
+	string m1, m2, m3, m4;
 
-	IPlayer* vid1;
-	IPlayer* vid2;
-	IPlayer* vid3;
-	IPlayer* vid4;
+	ISurface* s;
 
 	IPlayerListener* l1 = new TestPlayerListener("L1");
 	IPlayerListener* l2 = new TestPlayerListener("L2");
@@ -152,14 +169,17 @@ void testPlayer(
 	windows->insert(w4);
 
 #if HAVE_COMPSUPPORT
+	m1 = updateFileUri("corrego1.mp4");
 	vid1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "corrego1.mp4", true);
+			screen, m1.c_str(), true);
 
+	m2 = updateFileUri("corrego1.mp4");
 	vid2 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "corrego1.mp4", true);
+			screen, m2.c_str(), true);
 
+	m3 = updateFileUri("corrego1.mp4");
 	vid3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "corrego1.mp4", true);
+			screen, m3.c_str(), true);
 
 	vid4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 			screen, "/root/workspaces/NCL/Garrincha/media/animGar.mp4", true);
@@ -263,6 +283,17 @@ int main(int argc, char** argv, char** envp) {
 
 		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
 			printScreen    = true;
+
+		} else if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
+			if (strcmp(argv[i + 1], "stdout") == 0) {
+				setLogToStdoutDev();
+
+			} else if (strcmp(argv[i + 1], "file") == 0) {
+				setLogToFile();
+			}
+
+		} else if ((strcmp(argv[i], "--debug") == 0)) {
+			debugging = true;
 		}
 	}
 
@@ -310,6 +341,32 @@ int main(int argc, char** argv, char** envp) {
 		if (testAllScreens) {
 			dm->blitScreen(screen2, "/root/printscreen2.bmp");
 		}
+	}
+
+	i = 0;
+	while (i < 10) {
+		if (vid1 != NULL) {
+			cout << "Video 1 media time: '" << vid1->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		if (vid2 != NULL) {
+			cout << "Video 2 media time: '" << vid2->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		if (vid3 != NULL) {
+			cout << "Video 3 media time: '" << vid3->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		if (vid4 != NULL) {
+			cout << "Video 4 media time: '" << vid4->getMediaTime() << "'";
+			cout << endl;
+		}
+
+		::usleep(1000000);
+		++i;
 	}
 
 	cout << "gingacc-player test has shown AVPlayers. ";

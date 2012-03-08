@@ -103,7 +103,7 @@ namespace mb {
 
 	double SDLAudioProvider::getMediaTime() {
 		if (decoder != NULL) {
-			return (double)decoder->getPosition() / 1000;
+			return (double)decoder->getPosition();
 		}
 
 		return 0;
