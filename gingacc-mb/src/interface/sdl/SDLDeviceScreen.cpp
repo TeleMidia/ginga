@@ -81,8 +81,8 @@ namespace mb {
 	bool SDLDeviceScreen::hasRenderer                 = false;
 
 	pthread_mutex_t SDLDeviceScreen::ieMutex;
-	map<int, int>* SDLDeviceScreen::gingaToSDLCodeMap = NULL;
-	map<int, int>* SDLDeviceScreen::sdlToGingaCodeMap = NULL;
+	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
+	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
 
 	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	pthread_mutex_t SDLDeviceScreen::rlMutex;
@@ -114,10 +114,6 @@ namespace mb {
 		id          = myId;
 		uId         = parentId;
 		renderer    = NULL;
-		windowPool  = new set<IWindow*>;
-		surfacePool = new set<ISurface*>;
-		cmpPool     = new set<IContinuousMediaProvider*>;
-		dmpPool     = new set<IDiscreteMediaProvider*>;
 		mbMode      = "";
 		mbSubSystem = "";
 		screen      = NULL;
@@ -220,21 +216,6 @@ namespace mb {
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
 		pthread_mutex_destroy(&cmpMutex);
-
-		if (windowPool != NULL) {
-			delete windowPool;
-			windowPool = NULL;
-		}
-
-		if (surfacePool != NULL) {
-			delete surfacePool;
-			surfacePool = NULL;
-		}
-
-		if (cmpPool != NULL) {
-			delete cmpPool;
-			cmpPool = NULL;
-		}
 	}
 
 	void SDLDeviceScreen::releaseScreen() {
@@ -380,7 +361,7 @@ namespace mb {
 
 		pthread_mutex_lock(&winMutex);
 		iWin = new SDLWindow(NULL, NULL, id, x, y, w, h, z);
-		windowPool->insert(iWin);
+		windowPool.insert(iWin);
 		renderMapInsertWindow(id, iWin, z);
 		pthread_mutex_unlock(&winMutex);
 
@@ -393,7 +374,7 @@ namespace mb {
 		if (underlyingWindow != NULL) {
 			pthread_mutex_lock(&winMutex);
 			iWin = new SDLWindow(underlyingWindow, NULL, id, 0, 0, 0, 0, 0);
-			windowPool->insert(iWin);
+			windowPool.insert(iWin);
 			renderMapInsertWindow(id, iWin, 0);
 			pthread_mutex_unlock(&winMutex);
 		}
@@ -406,19 +387,11 @@ namespace mb {
 		bool hasWin = false;
 
 		pthread_mutex_lock(&winMutex);
-		if (windowPool != NULL) {
-			i = windowPool->find(win);
-			if (i != windowPool->end()) {
-				hasWin = true;
-				pthread_mutex_unlock(&winMutex);
-
-			} else {
-				pthread_mutex_unlock(&winMutex);
-			}
-
-		} else {
-			pthread_mutex_unlock(&winMutex);
+		i = windowPool.find(win);
+		if (i != windowPool.end()) {
+			hasWin = true;
 		}
+		pthread_mutex_unlock(&winMutex);
 
 		return hasWin;
 	}
@@ -430,31 +403,23 @@ namespace mb {
 		SDL_Texture* uTex = NULL;
 
 		pthread_mutex_lock(&winMutex);
-		if (windowPool != NULL) {
-			i = windowPool->find(win);
-			if (i != windowPool->end()) {
-				iWin = (SDLWindow*)(*i);
+		i = windowPool.find(win);
+		if (i != windowPool.end()) {
+			iWin = (SDLWindow*)(*i);
 
-				renderMapRemoveWindow(id, iWin, iWin->getZ());
-				windowPool->erase(i);
+			renderMapRemoveWindow(id, iWin, iWin->getZ());
+			windowPool.erase(i);
 
-				uSur = (SDL_Surface*)(iWin->getContent());
-				uTex = iWin->getTexture();
+			uSur = (SDL_Surface*)(iWin->getContent());
+			uTex = iWin->getTexture();
 
-				iWin->clearContent();
-				iWin->setTexture(NULL);
+			iWin->clearContent();
+			iWin->setTexture(NULL);
 
-				createReleaseContainer(uSur, uTex, NULL);
-
-				pthread_mutex_unlock(&winMutex);
-
-			} else {
-				pthread_mutex_unlock(&winMutex);
-			}
-
-		} else {
-			pthread_mutex_unlock(&winMutex);
+			createReleaseContainer(uSur, uTex, NULL);
 		}
+
+		pthread_mutex_unlock(&winMutex);
 	}
 
 	ISurface* SDLDeviceScreen::createSurface() {
@@ -469,7 +434,7 @@ namespace mb {
 
 		pthread_mutex_lock(&surMutex);
 		iSur = new SDLSurface(id, uSur);
-		surfacePool->insert(iSur);
+		surfacePool.insert(iSur);
 		pthread_mutex_unlock(&surMutex);
 
 		return iSur;
@@ -486,7 +451,7 @@ namespace mb {
 			iSur = new SDLSurface(id);
 		}
 
-		surfacePool->insert(iSur);
+		surfacePool.insert(iSur);
 		pthread_mutex_unlock(&surMutex);
 
 		return iSur;
@@ -497,19 +462,11 @@ namespace mb {
 		bool hasSur = false;
 
 		pthread_mutex_lock(&surMutex);
-		if (surfacePool != NULL) {
-			i = surfacePool->find(s);
-			if (i != surfacePool->end()) {
-				hasSur = true;
-				pthread_mutex_unlock(&surMutex);
-
-			} else {
-				pthread_mutex_unlock(&surMutex);
-			}
-
-		} else {
-			pthread_mutex_unlock(&surMutex);
+		i = surfacePool.find(s);
+		if (i != surfacePool.end()) {
+			hasSur = true;
 		}
+		pthread_mutex_unlock(&surMutex);
 
 		return hasSur;
 	}
@@ -519,25 +476,16 @@ namespace mb {
 		SDL_Surface* uSur = NULL;
 
 		pthread_mutex_lock(&surMutex);
-		if (surfacePool != NULL) {
-			i = surfacePool->find(s);
-			if (i != surfacePool->end()) {
-				uSur = (SDL_Surface*)((*i)->getSurfaceContent());
-				(*i)->setSurfaceContent(NULL);
+		i = surfacePool.find(s);
+		if (i != surfacePool.end()) {
+			uSur = (SDL_Surface*)((*i)->getSurfaceContent());
+			(*i)->setSurfaceContent(NULL);
 
-				surfacePool->erase(i);
+			surfacePool.erase(i);
 
-				createReleaseContainer(uSur, NULL, NULL);
-
-				pthread_mutex_unlock(&surMutex);
-
-			} else {
-				pthread_mutex_unlock(&surMutex);
-			}
-
-		} else {
-			pthread_mutex_unlock(&surMutex);
+			createReleaseContainer(uSur, NULL, NULL);
 		}
+		pthread_mutex_unlock(&surMutex);
 	}
 
 
@@ -559,7 +507,7 @@ namespace mb {
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 		provider->setLoadSymbol(strSym);
 
-		cmpPool->insert(provider);
+		cmpPool.insert(provider);
 
 		pthread_mutex_unlock(&cmpMutex);
 		return provider;
@@ -572,10 +520,10 @@ namespace mb {
 		IContinuousMediaProvider* cmp;
 
 		pthread_mutex_lock(&cmpMutex);
-		i = cmpPool->find(provider);
-		if (i != cmpPool->end()) {
+		i = cmpPool.find(provider);
+		if (i != cmpPool.end()) {
 			cmp = (*i);
-			cmpPool->erase(i);
+			cmpPool.erase(i);
 			cmp->stop();
 
 			createReleaseContainer(NULL, NULL, cmp);
@@ -598,7 +546,7 @@ namespace mb {
 		provider = new SDLFontProvider(id, mrl, fontSize);
 #endif
 
-		dmpPool->insert(provider);
+		dmpPool.insert(provider);
 		pthread_mutex_unlock(&cmpMutex);
 
 		return provider;
@@ -609,10 +557,10 @@ namespace mb {
 		IDiscreteMediaProvider* dmp;
 
 		pthread_mutex_lock(&dmpMutex);
-		i = dmpPool->find(provider);
-		if (i != dmpPool->end()) {
+		i = dmpPool.find(provider);
+		if (i != dmpPool.end()) {
 			dmp = (*i);
-			dmpPool->erase(i);
+			dmpPool.erase(i);
 
 			createReleaseContainer(NULL, NULL, dmp);
 		}
@@ -630,7 +578,7 @@ namespace mb {
 		provider = new SDLImageProvider(id, mrl);
 #endif
 
-		dmpPool->insert(provider);
+		dmpPool.insert(provider);
 		pthread_mutex_unlock(&dmpMutex);
 
 		return provider;
@@ -642,10 +590,10 @@ namespace mb {
 		ReleaseContainer rc;
 
 		pthread_mutex_lock(&dmpMutex);
-		i = dmpPool->find(provider);
-		if (i != dmpPool->end()) {
+		i = dmpPool.find(provider);
+		if (i != dmpPool.end()) {
 			dmp = (*i);
-			dmpPool->erase(i);
+			dmpPool.erase(i);
 
 			createReleaseContainer(NULL, NULL, dmp);
 		}
@@ -765,8 +713,8 @@ namespace mb {
 		size = cmpRenderList.size();
 		i = cmpRenderList.begin();
 		while (i != cmpRenderList.end()) {
-			j = s->cmpPool->find(*i);
-			if (j != s->cmpPool->end()) {
+			j = s->cmpPool.find(*i);
+			if (j != s->cmpPool.end()) {
 				if ((*i)->getHasVisual() &&
 						(*i)->getProviderContent() == NULL) {
 
@@ -793,8 +741,8 @@ namespace mb {
 		i = dmpRenderList.begin();
 		while (i != dmpRenderList.end()) {
 			dmp = (*i);
-			j = s->dmpPool->find(dmp);
-			if (j != s->dmpPool->end()) {
+			j = s->dmpPool.find(dmp);
+			if (j != s->dmpPool.end()) {
 				dmp->ntsPlayOver();
 				dmpRenderList.erase(i);
 				i = dmpRenderList.begin();
@@ -1062,83 +1010,75 @@ namespace mb {
 		set<IDiscreteMediaProvider*>::iterator l;
 
 		clog << "SDLDeviceScreen::clearWidgetPools ";
-		clog << "windowPool size = " << s->windowPool->size();
-		clog << ", surfacePool size = " << s->surfacePool->size();
+		clog << "windowPool size = " << s->windowPool.size();
+		clog << ", surfacePool size = " << s->surfacePool.size();
 		clog << endl;
 
 		//Releasing remaining Window objects in Window Pool
 		pthread_mutex_lock(&s->winMutex);
-		if (s->windowPool != NULL) {
-			i = s->windowPool->begin();
-			while (i != s->windowPool->end()) {
-				iWin = (*i);
+		i = s->windowPool.begin();
+		while (i != s->windowPool.end()) {
+			iWin = (*i);
 
-				s->windowPool->erase(i);
-				if (iWin != NULL) {
-					pthread_mutex_unlock(&s->winMutex);
-					delete iWin;
-					pthread_mutex_lock(&s->winMutex);
-				}
-				i = s->windowPool->begin();
+			s->windowPool.erase(i);
+			if (iWin != NULL) {
+				pthread_mutex_unlock(&s->winMutex);
+				delete iWin;
+				pthread_mutex_lock(&s->winMutex);
 			}
+			i = s->windowPool.begin();
 		}
 		pthread_mutex_unlock(&s->winMutex);
 
 		//Releasing remaining Surface objects in Surface Pool
 		pthread_mutex_lock(&s->surMutex);
-		if (s->surfacePool != NULL) {
-			j = s->surfacePool->begin();
-			while (j != s->surfacePool->end()) {
-				iSur = (*j);
+		j = s->surfacePool.begin();
+		while (j != s->surfacePool.end()) {
+			iSur = (*j);
 
-				s->surfacePool->erase(j);
-				if (iSur != NULL) {
-					pthread_mutex_unlock(&s->surMutex);
-					delete iSur;
-					pthread_mutex_lock(&s->surMutex);
-				}
-				j = s->surfacePool->begin();
+			s->surfacePool.erase(j);
+			if (iSur != NULL) {
+				pthread_mutex_unlock(&s->surMutex);
+				delete iSur;
+				pthread_mutex_lock(&s->surMutex);
 			}
-			s->surfacePool->clear();
+			j = s->surfacePool.begin();
 		}
+		s->surfacePool.clear();
 		pthread_mutex_unlock(&s->surMutex);
 
 		//Releasing remaining CMP objects in CMP Pool
 		pthread_mutex_lock(&s->cmpMutex);
-		if (s->cmpPool != NULL) {
-			k = s->cmpPool->begin();
-			while (k != s->cmpPool->end()) {
-				iCmp = (*k);
+		k = s->cmpPool.begin();
+		while (k != s->cmpPool.end()) {
+			iCmp = (*k);
 
-				s->cmpPool->erase(k);
-				if (iCmp != NULL) {
-					pthread_mutex_unlock(&s->cmpMutex);
-					delete iCmp;
-					pthread_mutex_lock(&s->cmpMutex);
-				}
-				k = s->cmpPool->begin();
+			s->cmpPool.erase(k);
+			if (iCmp != NULL) {
+				pthread_mutex_unlock(&s->cmpMutex);
+				delete iCmp;
+				pthread_mutex_lock(&s->cmpMutex);
 			}
-			s->cmpPool->clear();
+			k = s->cmpPool.begin();
 		}
+		s->cmpPool.clear();
 		pthread_mutex_unlock(&s->cmpMutex);
 
 		//Releasing remaining DMP objects in DMP Pool
 		pthread_mutex_lock(&s->dmpMutex);
-		if (s->dmpPool != NULL) {
-			l = s->dmpPool->begin();
-			while (l != s->dmpPool->end()) {
-				iDmp = *l;
+		l = s->dmpPool.begin();
+		while (l != s->dmpPool.end()) {
+			iDmp = *l;
 
-				s->dmpPool->erase(l);
-				if (iDmp != NULL) {
-					pthread_mutex_unlock(&s->dmpMutex);
-					delete iDmp;
-					pthread_mutex_lock(&s->dmpMutex);
-				}
-				l = s->dmpPool->begin();
+			s->dmpPool.erase(l);
+			if (iDmp != NULL) {
+				pthread_mutex_unlock(&s->dmpMutex);
+				delete iDmp;
+				pthread_mutex_lock(&s->dmpMutex);
 			}
-			s->dmpPool->clear();
+			l = s->dmpPool.begin();
 		}
+		s->dmpPool.clear();
 		pthread_mutex_unlock(&s->dmpMutex);
 	}
 
@@ -1295,8 +1235,8 @@ namespace mb {
 		int translated = CodeMap::KEY_NULL;
 
 		pthread_mutex_lock(&ieMutex);
-		i = sdlToGingaCodeMap->find(keyCode);
-		if (i != sdlToGingaCodeMap->end()) {
+		i = sdlToGingaCodeMap.find(keyCode);
+		if (i != sdlToGingaCodeMap.end()) {
 			translated = i->second;
 		}
 		pthread_mutex_unlock(&ieMutex);
@@ -1309,8 +1249,8 @@ namespace mb {
 		int translated = CodeMap::KEY_NULL;
 
 		pthread_mutex_lock(&ieMutex);
-		i = gingaToSDLCodeMap->find(keyCode);
-		if (i != gingaToSDLCodeMap->end()) {
+		i = gingaToSDLCodeMap.find(keyCode);
+		if (i != gingaToSDLCodeMap.end()) {
 			translated = i->second;
 		}
 		pthread_mutex_unlock(&ieMutex);
@@ -1329,153 +1269,151 @@ namespace mb {
 
 	/* input */
 	void SDLDeviceScreen::initCodeMaps() {
-		if (gingaToSDLCodeMap != NULL) {
+		if (!gingaToSDLCodeMap.empty()) {
 			return;
 		}
 
-		gingaToSDLCodeMap = new map<int, int>;
-		sdlToGingaCodeMap = new map<int, int>;
 		pthread_mutex_init(&ieMutex, NULL);
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_NULL]              = SDLK_UNKNOWN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_0]                 = SDLK_0;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_1]                 = SDLK_1;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_2]                 = SDLK_2;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_3]                 = SDLK_3;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_4]                 = SDLK_4;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_5]                 = SDLK_5;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_6]                 = SDLK_6;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_7]                 = SDLK_7;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_8]                 = SDLK_8;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_9]                 = SDLK_9;
+		gingaToSDLCodeMap[CodeMap::KEY_NULL]              = SDLK_UNKNOWN;
+		gingaToSDLCodeMap[CodeMap::KEY_0]                 = SDLK_0;
+		gingaToSDLCodeMap[CodeMap::KEY_1]                 = SDLK_1;
+		gingaToSDLCodeMap[CodeMap::KEY_2]                 = SDLK_2;
+		gingaToSDLCodeMap[CodeMap::KEY_3]                 = SDLK_3;
+		gingaToSDLCodeMap[CodeMap::KEY_4]                 = SDLK_4;
+		gingaToSDLCodeMap[CodeMap::KEY_5]                 = SDLK_5;
+		gingaToSDLCodeMap[CodeMap::KEY_6]                 = SDLK_6;
+		gingaToSDLCodeMap[CodeMap::KEY_7]                 = SDLK_7;
+		gingaToSDLCodeMap[CodeMap::KEY_8]                 = SDLK_8;
+		gingaToSDLCodeMap[CodeMap::KEY_9]                 = SDLK_9;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_A]           = SDLK_a;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_B]           = SDLK_b;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_C]           = SDLK_c;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_D]           = SDLK_d;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_E]           = SDLK_e;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_F]           = SDLK_f;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_G]           = SDLK_g;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_H]           = SDLK_h;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_I]           = SDLK_i;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_J]           = SDLK_j;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_K]           = SDLK_k;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_L]           = SDLK_l;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_M]           = SDLK_m;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_N]           = SDLK_n;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_O]           = SDLK_o;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_P]           = SDLK_p;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_Q]           = SDLK_q;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_R]           = SDLK_r;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_S]           = SDLK_s;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_T]           = SDLK_t;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_U]           = SDLK_u;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_V]           = SDLK_v;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_W]           = SDLK_w;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_X]           = SDLK_x;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_Y]           = SDLK_y;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SMALL_Z]           = SDLK_z;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_A]           = SDLK_a;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_B]           = SDLK_b;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_C]           = SDLK_c;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_D]           = SDLK_d;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_E]           = SDLK_e;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_F]           = SDLK_f;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_G]           = SDLK_g;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_H]           = SDLK_h;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_I]           = SDLK_i;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_J]           = SDLK_j;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_K]           = SDLK_k;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_L]           = SDLK_l;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_M]           = SDLK_m;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_N]           = SDLK_n;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_O]           = SDLK_o;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_P]           = SDLK_p;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_Q]           = SDLK_q;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_R]           = SDLK_r;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_S]           = SDLK_s;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_T]           = SDLK_t;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_U]           = SDLK_u;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_V]           = SDLK_v;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_W]           = SDLK_w;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_X]           = SDLK_x;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_Y]           = SDLK_y;
+		gingaToSDLCodeMap[CodeMap::KEY_SMALL_Z]           = SDLK_z;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_A]         = SDLK_a + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_B]         = SDLK_b + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_C]         = SDLK_c + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_D]         = SDLK_d + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_E]         = SDLK_e + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_F]         = SDLK_f + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_G]         = SDLK_g + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_H]         = SDLK_h + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_I]         = SDLK_i + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_J]         = SDLK_j + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_K]         = SDLK_k + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_L]         = SDLK_l + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_M]         = SDLK_m + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_N]         = SDLK_n + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_O]         = SDLK_o + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_P]         = SDLK_p + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Q]         = SDLK_q + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_R]         = SDLK_r + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_S]         = SDLK_s + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_T]         = SDLK_t + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_U]         = SDLK_u + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_V]         = SDLK_v + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_W]         = SDLK_w + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_X]         = SDLK_x + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Y]         = SDLK_y + 5000;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CAPITAL_Z]         = SDLK_z + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_A]         = SDLK_a + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_B]         = SDLK_b + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_C]         = SDLK_c + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_D]         = SDLK_d + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_E]         = SDLK_e + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_F]         = SDLK_f + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_G]         = SDLK_g + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_H]         = SDLK_h + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_I]         = SDLK_i + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_J]         = SDLK_j + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_K]         = SDLK_k + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_L]         = SDLK_l + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_M]         = SDLK_m + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_N]         = SDLK_n + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_O]         = SDLK_o + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_P]         = SDLK_p + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Q]         = SDLK_q + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_R]         = SDLK_r + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_S]         = SDLK_s + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_T]         = SDLK_t + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_U]         = SDLK_u + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_V]         = SDLK_v + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_W]         = SDLK_w + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_X]         = SDLK_x + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Y]         = SDLK_y + 5000;
+		gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Z]         = SDLK_z + 5000;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PAGE_DOWN]         = SDLK_PAGEDOWN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PAGE_UP]           = SDLK_PAGEUP;
+		gingaToSDLCodeMap[CodeMap::KEY_PAGE_DOWN]         = SDLK_PAGEDOWN;
+		gingaToSDLCodeMap[CodeMap::KEY_PAGE_UP]           = SDLK_PAGEUP;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F1]                = SDLK_F1;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F2]                = SDLK_F2;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F3]                = SDLK_F3;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F4]                = SDLK_F4;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F5]                = SDLK_F5;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F6]                = SDLK_F6;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F7]                = SDLK_F7;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F8]                = SDLK_F8;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F9]                = SDLK_F9;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F10]               = SDLK_F10;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F11]               = SDLK_F11;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_F12]               = SDLK_F12;
+		gingaToSDLCodeMap[CodeMap::KEY_F1]                = SDLK_F1;
+		gingaToSDLCodeMap[CodeMap::KEY_F2]                = SDLK_F2;
+		gingaToSDLCodeMap[CodeMap::KEY_F3]                = SDLK_F3;
+		gingaToSDLCodeMap[CodeMap::KEY_F4]                = SDLK_F4;
+		gingaToSDLCodeMap[CodeMap::KEY_F5]                = SDLK_F5;
+		gingaToSDLCodeMap[CodeMap::KEY_F6]                = SDLK_F6;
+		gingaToSDLCodeMap[CodeMap::KEY_F7]                = SDLK_F7;
+		gingaToSDLCodeMap[CodeMap::KEY_F8]                = SDLK_F8;
+		gingaToSDLCodeMap[CodeMap::KEY_F9]                = SDLK_F9;
+		gingaToSDLCodeMap[CodeMap::KEY_F10]               = SDLK_F10;
+		gingaToSDLCodeMap[CodeMap::KEY_F11]               = SDLK_F11;
+		gingaToSDLCodeMap[CodeMap::KEY_F12]               = SDLK_F12;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PLUS_SIGN]         = SDLK_PLUS;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_MINUS_SIGN]        = SDLK_MINUS;
+		gingaToSDLCodeMap[CodeMap::KEY_PLUS_SIGN]         = SDLK_PLUS;
+		gingaToSDLCodeMap[CodeMap::KEY_MINUS_SIGN]        = SDLK_MINUS;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_ASTERISK]          = SDLK_ASTERISK;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_NUMBER_SIGN]       = SDLK_HASH;
+		gingaToSDLCodeMap[CodeMap::KEY_ASTERISK]          = SDLK_ASTERISK;
+		gingaToSDLCodeMap[CodeMap::KEY_NUMBER_SIGN]       = SDLK_HASH;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PERIOD]            = SDLK_PERIOD;
+		gingaToSDLCodeMap[CodeMap::KEY_PERIOD]            = SDLK_PERIOD;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SUPER]             = SDLK_CAPSLOCK;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PRINTSCREEN]       = SDLK_PRINTSCREEN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_MENU]              = SDLK_MENU;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_INFO]              = SDLK_F14;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_EPG]               = SDLK_QUESTION;
+		gingaToSDLCodeMap[CodeMap::KEY_SUPER]             = SDLK_CAPSLOCK;
+		gingaToSDLCodeMap[CodeMap::KEY_PRINTSCREEN]       = SDLK_PRINTSCREEN;
+		gingaToSDLCodeMap[CodeMap::KEY_MENU]              = SDLK_MENU;
+		gingaToSDLCodeMap[CodeMap::KEY_INFO]              = SDLK_F14;
+		gingaToSDLCodeMap[CodeMap::KEY_EPG]               = SDLK_QUESTION;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CURSOR_DOWN]       = SDLK_DOWN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CURSOR_LEFT]       = SDLK_LEFT;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CURSOR_RIGHT]      = SDLK_RIGHT;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CURSOR_UP]         = SDLK_UP;
+		gingaToSDLCodeMap[CodeMap::KEY_CURSOR_DOWN]       = SDLK_DOWN;
+		gingaToSDLCodeMap[CodeMap::KEY_CURSOR_LEFT]       = SDLK_LEFT;
+		gingaToSDLCodeMap[CodeMap::KEY_CURSOR_RIGHT]      = SDLK_RIGHT;
+		gingaToSDLCodeMap[CodeMap::KEY_CURSOR_UP]         = SDLK_UP;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CHANNEL_DOWN]      = SDLK_F15;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_CHANNEL_UP]        = SDLK_F16;
+		gingaToSDLCodeMap[CodeMap::KEY_CHANNEL_DOWN]      = SDLK_F15;
+		gingaToSDLCodeMap[CodeMap::KEY_CHANNEL_UP]        = SDLK_F16;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_VOLUME_DOWN]       = SDLK_VOLUMEDOWN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_VOLUME_UP]         = SDLK_VOLUMEUP;
+		gingaToSDLCodeMap[CodeMap::KEY_VOLUME_DOWN]       = SDLK_VOLUMEDOWN;
+		gingaToSDLCodeMap[CodeMap::KEY_VOLUME_UP]         = SDLK_VOLUMEUP;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_ENTER]             = SDLK_RETURN;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_OK]                = SDLK_RETURN2;
+		gingaToSDLCodeMap[CodeMap::KEY_ENTER]             = SDLK_RETURN;
+		gingaToSDLCodeMap[CodeMap::KEY_OK]                = SDLK_RETURN2;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_RED]               = SDLK_F17;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_GREEN]             = SDLK_F18;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_YELLOW]            = SDLK_F19;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_BLUE]              = SDLK_F20;
+		gingaToSDLCodeMap[CodeMap::KEY_RED]               = SDLK_F17;
+		gingaToSDLCodeMap[CodeMap::KEY_GREEN]             = SDLK_F18;
+		gingaToSDLCodeMap[CodeMap::KEY_YELLOW]            = SDLK_F19;
+		gingaToSDLCodeMap[CodeMap::KEY_BLUE]              = SDLK_F20;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_SPACE]             = SDLK_SPACE;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_BACKSPACE]         = SDLK_BACKSPACE;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_BACK]              = SDLK_AC_BACK;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_ESCAPE]            = SDLK_ESCAPE;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_EXIT]              = SDLK_OUT;
+		gingaToSDLCodeMap[CodeMap::KEY_SPACE]             = SDLK_SPACE;
+		gingaToSDLCodeMap[CodeMap::KEY_BACKSPACE]         = SDLK_BACKSPACE;
+		gingaToSDLCodeMap[CodeMap::KEY_BACK]              = SDLK_AC_BACK;
+		gingaToSDLCodeMap[CodeMap::KEY_ESCAPE]            = SDLK_ESCAPE;
+		gingaToSDLCodeMap[CodeMap::KEY_EXIT]              = SDLK_OUT;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_POWER]             = SDLK_POWER;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_REWIND]            = SDLK_F21;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_STOP]              = SDLK_STOP;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_EJECT]             = SDLK_EJECT;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PLAY]              = SDLK_EXECUTE;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_RECORD]            = SDLK_F22;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_PAUSE]             = SDLK_PAUSE;
+		gingaToSDLCodeMap[CodeMap::KEY_POWER]             = SDLK_POWER;
+		gingaToSDLCodeMap[CodeMap::KEY_REWIND]            = SDLK_F21;
+		gingaToSDLCodeMap[CodeMap::KEY_STOP]              = SDLK_STOP;
+		gingaToSDLCodeMap[CodeMap::KEY_EJECT]             = SDLK_EJECT;
+		gingaToSDLCodeMap[CodeMap::KEY_PLAY]              = SDLK_EXECUTE;
+		gingaToSDLCodeMap[CodeMap::KEY_RECORD]            = SDLK_F22;
+		gingaToSDLCodeMap[CodeMap::KEY_PAUSE]             = SDLK_PAUSE;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_GREATER_THAN_SIGN] = SDLK_GREATER;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_LESS_THAN_SIGN]    = SDLK_LESS;
+		gingaToSDLCodeMap[CodeMap::KEY_GREATER_THAN_SIGN] = SDLK_GREATER;
+		gingaToSDLCodeMap[CodeMap::KEY_LESS_THAN_SIGN]    = SDLK_LESS;
 
-		(*gingaToSDLCodeMap)[CodeMap::KEY_TAB]               = SDLK_TAB;
-		(*gingaToSDLCodeMap)[CodeMap::KEY_TAP]               = SDLK_F23;
+		gingaToSDLCodeMap[CodeMap::KEY_TAB]               = SDLK_TAB;
+		gingaToSDLCodeMap[CodeMap::KEY_TAP]               = SDLK_F23;
 
         map<int, int>::iterator i;
-        i = gingaToSDLCodeMap->begin();
-        while (i != gingaToSDLCodeMap->end()) {
-		    (*sdlToGingaCodeMap)[i->second] = i->first;
+        i = gingaToSDLCodeMap.begin();
+        while (i != gingaToSDLCodeMap.end()) {
+		    sdlToGingaCodeMap[i->second] = i->first;
 		    ++i;
         }
 	}

@@ -126,10 +126,10 @@ typedef struct {
 #if HAVE_COMPSUPPORT
 			static IComponentManager* cm;
 #endif
-			set<IWindow*>* windowPool;
-			set<ISurface*>* surfacePool;
-			set<IContinuousMediaProvider*>* cmpPool;
-			set<IDiscreteMediaProvider*>* dmpPool;
+			set<IWindow*> windowPool;
+			set<ISurface*> surfacePool;
+			set<IContinuousMediaProvider*> cmpPool;
+			set<IDiscreteMediaProvider*> dmpPool;
 
 			GingaScreenID id;
 			GingaWindowID uId;
@@ -155,8 +155,8 @@ typedef struct {
 			SDL_Renderer* renderer;
 
 			static pthread_mutex_t ieMutex;
-			static map<int, int>* gingaToSDLCodeMap;
-			static map<int, int>* sdlToGingaCodeMap;
+			static map<int, int> gingaToSDLCodeMap;
+			static map<int, int> sdlToGingaCodeMap;
 
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
