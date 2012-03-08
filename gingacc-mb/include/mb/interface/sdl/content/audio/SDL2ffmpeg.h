@@ -326,7 +326,7 @@ namespace mb {
 		int av_sync_type;
 		int64_t start_time;
 		int64_t duration;
-		int workaround_bugs;
+		int workaround_ffmpeg_bugs;
 		int fast;
 		int genpts;
 		int lowres;
@@ -353,6 +353,7 @@ namespace mb {
 		int audioFreq;
 		Uint8 audioChannels;
 
+		int fixedSize;
 		short state;
 		SDL_AudioSpec spec;
 		float soundLevel;

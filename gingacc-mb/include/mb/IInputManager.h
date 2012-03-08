@@ -69,7 +69,9 @@ namespace mb {
 
 		virtual void release()=0;
 
-		virtual void setMotionEventListener(IMotionEventListener* listener)=0;
+		virtual void addMotionEventListener(IMotionEventListener* listener)=0;
+		virtual void removeMotionEventListener(
+				IMotionEventListener* listener)=0;
 
 		virtual void addInputEventListener(
 				IInputEventListener* listener, set<int>* events)=0;

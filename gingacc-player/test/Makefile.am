@@ -87,6 +87,7 @@ testAwesomium_LDADD   = \
                         -lawesomium-1.6.3 \
                         -L/lib/ \
                         -L/usr/lib/ \
+                        -L/usr/lib/awesomium-1.6.3 \
                         -L/usr/local/lib/ \
                         -L/usr/local/lib/ginga \
                         -L/usr/local/lib/ginga/players \
