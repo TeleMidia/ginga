@@ -240,7 +240,10 @@ namespace mb {
 		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
 		uint8_t *audio_buf;
 		uint8_t *audio_buf1;
-		unsigned int audio_buf_size; /* in bytes */
+
+		uint8_t *audio_main_buf[2];
+		unsigned int audio_main_buf_size[2];
+
 		int audio_write_buf_size;
 		AVPacket audio_pkt_temp;
 		AVPacket audio_pkt;
@@ -353,7 +356,6 @@ namespace mb {
 		int audioFreq;
 		Uint8 audioChannels;
 
-		int fixedSize;
 		short state;
 		SDL_AudioSpec spec;
 		float soundLevel;
@@ -442,8 +444,6 @@ namespace mb {
 
 		static int subtitle_thread(void *arg);
 
-		static int lockmgr(void **mtx, enum AVLockOp op);
-		static int decode_interrupt_cb(void *ctx);
 		static struct SwsContext* createContext(
 				int inWidth,
 				int inHeight,

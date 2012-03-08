@@ -72,10 +72,27 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
+bool debugging = false;
+
+string updateFileUri(string file) {
+	if (!isAbsolutePath(file)) {
+		if (debugging) {
+			return getCurrentPath() + "gingacc-mb/test/" + file;
+
+		} else {
+			return getCurrentPath() + file;
+		}
+	}
+
+	return file;
+}
+
 void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	IContinuousMediaProvider* aud1;
 	IContinuousMediaProvider* aud2;
 	IContinuousMediaProvider* aud3;
+	
+	string m1, m2, m3;
 
 	/* AUDIO PROVIDER */
 	aud1 = dm->createContinuousMediaProvider(
@@ -86,19 +103,27 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	aud1->playOver(NULL, true, NULL);
 
-	aud2 = dm->createContinuousMediaProvider(screen, "techno.mp3", false, false);
+	m1 = updateFileUri("techno.mp3");
+	aud2 = dm->createContinuousMediaProvider(screen, m1.c_str(), false, false);
 	aud2->playOver(NULL, true, NULL);
 
-	aud3 = dm->createContinuousMediaProvider(screen, "choro.mp3", false, false);
+	m2 = updateFileUri("choro.mp3");
+	aud3 = dm->createContinuousMediaProvider(screen, m2.c_str(), false, false);
 	aud3->playOver(NULL, true, NULL);
 
-	aud3 = dm->createContinuousMediaProvider(screen, "rock.mp3", false, false);
+	m3 = updateFileUri("rock.mp3");
+	aud3 = dm->createContinuousMediaProvider(screen, m3.c_str(), false, false);
 	aud3->playOver(NULL, true, NULL);
 }
 
 int main(int argc, char** argv) {
 	GingaScreenID screen1;
 	ILocalScreenManager* dm;
+	int i;
+
+	setLogToNullDev();
+	initTimeStamp();
+	initializeCurrentPath();
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();
@@ -109,6 +134,20 @@ int main(int argc, char** argv) {
 	cout << endl;
 	exit(0);
 #endif
+
+	for (i = 1; i < argc; i++) {
+		if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
+			if (strcmp(argv[i + 1], "stdout") == 0) {
+				setLogToStdoutDev();
+
+			} else if (strcmp(argv[i + 1], "file") == 0) {
+				setLogToFile();
+			}
+
+		} else if ((strcmp(argv[i], "--debug") == 0)) {
+			debugging = true;
+		}
+	}
 
 	cout << "gingacc-mb test has created the screen manager. ";
 	cout << endl;

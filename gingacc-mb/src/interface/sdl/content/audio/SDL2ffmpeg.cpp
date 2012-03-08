@@ -94,7 +94,6 @@ namespace mb {
 		texture                              = NULL;
 		hasPic                               = false;
 		state                                = ST_STOPPED;
-		fixedSize                            = 0;
 
 		setSoundLevel(0.5);
 
@@ -118,11 +117,6 @@ namespace mb {
 				avcodec_register_all();
 				av_register_all();
 				avformat_network_init();
-
-				if (av_lockmgr_register(lockmgr)) {
-					fprintf(stderr, "Could not initialize lock manager!\n");
-					release();
-				}
 			}
 			pthread_mutex_unlock(&iMutex);
 
@@ -135,8 +129,6 @@ namespace mb {
 			is->subtitle_stream = -1;
 
 			is->ic = avformat_alloc_context();
-			is->ic->interrupt_callback.callback =
-					SDL2ffmpeg::decode_interrupt_cb;
 
 			is->ic->interrupt_callback.opaque = this;
 
@@ -233,6 +225,8 @@ namespace mb {
 	SDL2ffmpeg::~SDL2ffmpeg() {
 		set<SDL2ffmpeg*>::iterator i;
 
+		cout << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
+
 		release();
 
 		if (texture != NULL) {
@@ -255,6 +249,8 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::release() {
+		cout << "SDL2ffmpeg::release" << endl;
+
 		if (is != NULL) {
 			if (is->ic) {
 				avformat_close_input(&is->ic);
@@ -279,29 +275,21 @@ namespace mb {
 
 			wanted_channel_layout = is->audio_src_channel_layout;
 
+			memset(&obtained, 0, sizeof(obtained));
+			memset(&spec, 0, sizeof(spec));
 			getAudioSpec(&spec, audioFreq, audioChannels);
-
 			if (SDL_OpenAudio(&spec, &obtained) < 0) {
-				memcpy(&spec, &obtained, sizeof(spec));
+				memcpy(&obtained, &spec, sizeof(spec));
+
+			} else if (obtained.channels == 0) {
+				memcpy(&obtained, &spec, sizeof(spec));
 
 			} else {
-				fixedSize = obtained.size;
-
-				if (fixedSize == 0) {
-					fixedSize = obtained.channels * obtained.samples * 2;
-				}
+				memcpy(&spec, &obtained, sizeof(obtained));
 			}
 
-			if (obtained.channels == 0) {
-				memcpy(&obtained, &spec, sizeof(spec));
-				spec.size = fixedSize;
-
-			} else {
-				fixedSize = obtained.size;
-
-				if (fixedSize == 0) {
-					fixedSize = obtained.channels * obtained.samples * 2;
-				}
+			if (spec.size == 0) {
+				spec.size = obtained.channels * obtained.samples * 2;
 			}
 
 			if (spec.format != AUDIO_S16SYS) {
@@ -313,11 +301,12 @@ namespace mb {
 				return false;
 			}
 
-			//is->audio_hw_buf_size = spec.channels * spec.samples * 2;
-			is->audio_hw_buf_size = spec.size;
+			is->audio_hw_buf_size  = spec.size;
+			is->audio_main_buf[0]  = (uint8_t*)malloc(spec.size);
+			is->audio_main_buf[1]  = (uint8_t*)malloc(spec.size);
 
-			is->audio_src_fmt = is->audio_tgt_fmt = AV_SAMPLE_FMT_S16;
-			is->audio_src_freq = is->audio_tgt_freq = spec.freq;
+			is->audio_src_fmt      = is->audio_tgt_fmt = AV_SAMPLE_FMT_S16;
+			is->audio_src_freq     = is->audio_tgt_freq = spec.freq;
 			is->audio_src_channels = is->audio_tgt_channels = spec.channels;
 
 			is->audio_diff_threshold = (
@@ -881,6 +870,8 @@ namespace mb {
 		VideoPicture *vp;
 		int i;
 
+		cout << "SDL2ffmpeg::stream_close" << endl;
+
 		is->abort_request = 1;
 
 		for (i=0;i<VIDEO_PICTURE_QUEUE_SIZE; i++) {
@@ -896,6 +887,8 @@ namespace mb {
 		}
 
 		av_free(is);
+
+		is = NULL;
 	}
 
 	/* display the current picture, if any */
@@ -1295,7 +1288,7 @@ namespace mb {
 		int new_packet = 0;
 		int flush_complete = 0;
 
-		if (is->audio_stream < 0 || !is->audio_st) {
+		if (is->audio_stream < 0 || !is->audio_st || is->paused) {
 			return -1;
 		}
 
@@ -1336,7 +1329,7 @@ namespace mb {
 			if (!got_frame) {
 				/* stop sending empty packets if the decoder is finished */
 				if (!pkt_temp->data &&
-						dec->codec->capabilities & CODEC_CAP_DELAY) {
+						(dec->codec->capabilities & CODEC_CAP_DELAY)) {
 
 					flush_complete = 1;
 				}
@@ -1552,10 +1545,13 @@ namespace mb {
 		ic->streams[stream_index]->discard = AVDISCARD_DEFAULT;
 		switch(avctx->codec_type) {
 			case AVMEDIA_TYPE_AUDIO:
-				is->audio_stream      = stream_index;
-				is->audio_st          = ic->streams[stream_index];
-				is->audio_buf_size    = 0;
-				is->audio_hw_buf_size = 0;
+				is->audio_stream           = stream_index;
+				is->audio_st               = ic->streams[stream_index];
+
+				is->audio_hw_buf_size      = 0;
+
+				is->audio_main_buf_size[0] = 0;
+				is->audio_main_buf_size[1] = 0;
 
 				memset(&is->audio_pkt, 0, sizeof(is->audio_pkt));
 
@@ -1733,7 +1729,14 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::refresh() {
-		read_content();
+		if (is == NULL || state != ST_PLAYING) {
+			return;
+		}
+
+		if (is->video_stream >= 0 || is->audio_stream >= 0) {
+			read_content();
+		}
+
 		if (is->audio_stream >= 0 && is->audio_st != NULL) {
 			audio_refresh_decoder();
 		}
@@ -1748,27 +1751,114 @@ namespace mb {
 	int SDL2ffmpeg::audio_refresh_decoder() {
 		int audio_size;
 		double pts;
+		int len1, offset;
 
 		if (is->audio_stream >= 0 && !is->abort_request &&
 				is->audio_hw_buf_size != 0) {
 
-			if (is->audio_buf_size != 0) {
+			if (is->audio_main_buf_size[0] >= is->audio_hw_buf_size) {
 				return 0;
 			}
 
 			audio_size = audio_decode_frame(&pts);
-
 			if (audio_size < 0) {
 				return -1;
 			}
 
 			audio_size = synchronize_audio(
-					(int16_t *)is->audio_buf + is->audio_buf_size,
+					(int16_t *)is->audio_buf,
 					audio_size,
 					pts);
 
 			if (audio_size > 0) {
-				is->audio_buf_size =+ audio_size;
+				if (is->audio_main_buf_size[0] == 0 &&
+						is->audio_main_buf_size[1] != 0) {
+
+					uint8_t* aux;
+
+					aux = is->audio_main_buf[0];
+					is->audio_main_buf[0] = is->audio_main_buf[1];
+					is->audio_main_buf[1] = aux;
+/*					memcpy(
+							is->audio_main_buf[0],
+							is->audio_main_buf[1],
+							is->audio_main_buf_size[1]);
+*/
+					is->audio_main_buf_size[0] = is->audio_main_buf_size[1];
+					is->audio_main_buf_size[1] = 0;
+				}
+
+				if (is->audio_main_buf_size[0] == 0) {
+					if (audio_size <= is->audio_hw_buf_size) {
+						memcpy(
+								is->audio_main_buf[0],
+								is->audio_buf,
+								audio_size);
+
+						is->audio_main_buf_size[0] = audio_size;
+
+					} else {
+						len1 = audio_size - is->audio_hw_buf_size;
+
+						memcpy(
+								is->audio_main_buf[0],
+								is->audio_buf,
+								is->audio_hw_buf_size);
+
+						is->audio_main_buf_size[0] = is->audio_hw_buf_size;
+
+						if (len1 > is->audio_hw_buf_size) {
+							len1 = is->audio_hw_buf_size;
+						}
+
+						memcpy(
+								is->audio_main_buf[1],
+								is->audio_buf + is->audio_hw_buf_size,
+								len1);
+
+						is->audio_main_buf_size[1] = len1;
+					}
+
+				} else {
+					if (is->audio_main_buf_size[0] + audio_size >
+							is->audio_hw_buf_size) {
+
+						len1 = (is->audio_main_buf_size[0] + audio_size)
+								- is->audio_hw_buf_size;
+
+						offset = is->audio_hw_buf_size -
+								is->audio_main_buf_size[0];
+
+						memcpy(
+								is->audio_main_buf[0] +
+										is->audio_main_buf_size[0],
+								is->audio_buf,
+								offset);
+
+						is->audio_main_buf_size[0] = is->audio_hw_buf_size;
+
+						if (len1 > is->audio_hw_buf_size) {
+							len1 = is->audio_hw_buf_size;
+						}
+
+						memcpy(
+								is->audio_main_buf[1],
+								is->audio_buf + offset,
+								len1);
+
+						is->audio_main_buf_size[1] = len1;
+
+					} else {
+						memcpy(
+								is->audio_main_buf[0] +
+										is->audio_main_buf_size[0],
+								is->audio_buf,
+								audio_size);
+
+						is->audio_main_buf_size[0] = (is->
+								audio_main_buf_size[0] + audio_size);
+					}
+				}
 
 			} else {
 				return -1;
@@ -1782,6 +1872,7 @@ namespace mb {
 	void SDL2ffmpeg::video_refresh_content() {
 		VideoPicture *vp;
 		SubPicture *sp, *sp2;
+		int len2;
 
 		if (is->video_st) {
 			if (is->pictq_size == 0) {
@@ -1947,12 +2038,6 @@ namespace mb {
 		int ret;
 		AVPacket pkt1, *pkt = &pkt1;
 		int pkt_in_play_range = 0;
-
-		if (is->video_stream < 0 && is->audio_stream < 0) {
-			fprintf(stderr, "%s: could not open codecs\n", is->filename);
-			ret = -1;
-			release();
-		}
 
 		if (!is->abort_request) {
 			if (is->paused != is->last_paused) {
@@ -2170,7 +2255,7 @@ namespace mb {
 		pthread_mutex_lock(&iMutex);
 		audio_callback_time = av_gettime();
 
-		/*i = instances.begin();
+		i = instances.begin();
 		while (i != instances.end()) {
 			dec = *i;
 			is  = dec->is;
@@ -2193,7 +2278,7 @@ namespace mb {
 			}
 
 			++i;
-		}*/
+		}
 
 		memset(stream, 0, len);
 
@@ -2204,13 +2289,12 @@ namespace mb {
 			is  = dec->is;
 
 			if (is->audio_stream >= 0 && dec->state == ST_PLAYING) {
-				if (is->audio_buf_size == len) {
-
+				if (is->audio_main_buf_size[0] == is->audio_hw_buf_size) {
 					/*
 					 * FIXME: mixer and converter work only when all
 					 *        sources have the same number of channels.
 					 */
-					if (cvt && capacity != is->audio_buf_size) {
+					if (cvt && capacity != is->audio_hw_buf_size) {
 						ret = SDL_BuildAudioCVT(
 								&acvt,
 								dec->spec.format,
@@ -2221,7 +2305,7 @@ namespace mb {
 								destSpec.freq);
 
 						if (ret != -1) {
-							acvt.len = is->audio_buf_size;
+							acvt.len = is->audio_hw_buf_size;
 							acvt.buf = (Uint8*)malloc(acvt.len * acvt.len_mult);
 
 							if (acvt.buf != NULL) {
@@ -2229,12 +2313,12 @@ namespace mb {
 
 								memcpy(
 										acvt.buf,
-										is->audio_buf,
-										is->audio_buf_size);
+										is->audio_main_buf[0],
+										is->audio_hw_buf_size);
 
 								SDL_ConvertAudio(&acvt);
 
-								cout << endl;
+								/*cout << endl;
 								cout << "Converting(stream len = '" << len;
 								cout << "' and Audio instance = '";
 								cout << dec << "')" << endl;
@@ -2243,7 +2327,7 @@ namespace mb {
 								cout << "' channels '";
 								cout << (short)dec->spec.channels;
 								cout << "' freq '" << dec->spec.freq;
-								cout << "' size '" << is->audio_buf_size;
+								cout << "' size '" << is->audio_hw_buf_size;
 								cout << "'";
 								cout << "' and capacity '";
 								cout << is->audio_hw_buf_size;
@@ -2259,7 +2343,7 @@ namespace mb {
 								cout << "' and capacity '";
 								cout << capacity;
 								cout << "'";
-								cout << endl;
+								cout << endl;*/
 
 								clamp((short*)acvt.buf, acvt.len_cvt);
 
@@ -2284,9 +2368,9 @@ namespace mb {
 					if (ret == 1) {
 						SDL_MixAudioFormat(
 								stream,
-								is->audio_buf,
+								is->audio_main_buf[0],
 								dec->spec.format,
-								is->audio_buf_size,
+								is->audio_hw_buf_size,
 								dec->soundLevel);
 					}
 
@@ -2294,7 +2378,7 @@ namespace mb {
 							is->audio_tgt_channels *
 							av_get_bytes_per_sample(is->audio_tgt_fmt);
 
-					is->audio_write_buf_size = is->audio_buf_size;
+					is->audio_write_buf_size = is->audio_hw_buf_size;
 
 					is->audio_current_pts = is->audio_clock -
 							(double)(2 * is->audio_hw_buf_size +
@@ -2303,19 +2387,20 @@ namespace mb {
 					is->audio_current_pts_drift = is->audio_current_pts -
 							audio_callback_time / 1000000.0;
 
-					is->audio_buf_size = 0;
+					is->audio_main_buf_size[0] = 0;
 
 				} else {
-					cout << endl;
+					/*cout << endl << endl;
 					cout << "SDL2ffmpeg::sdl_audio_callback ";
 					cout << "not this time for " << is->filename;
-					cout << " audio buffer size = " << is->audio_buf_size;
+					cout << " audio buffer size = ";
+					cout << is->audio_main_buf_size[0];
 					cout << " HW buffer size = " << is->audio_hw_buf_size;
 					cout << " len = " << len;
 					cout << " samples = " << dec->spec.samples;
 					cout << " freq = " << dec->spec.freq;
 					cout << " channels = " << (short)dec->spec.channels;
-					cout << endl;
+					cout << endl;*/
 				}
 			}
 			++i;
@@ -2392,36 +2477,6 @@ namespace mb {
 			av_free_packet(pkt);
 		}*/
 		return 0;
-	}
-
-	int SDL2ffmpeg::lockmgr(void **mtx, enum AVLockOp op) {
-		switch(op) {
-			case AV_LOCK_CREATE:
-				*mtx = (void*)SDL_CreateMutex();
-				if (!*mtx) {
-					return 1;
-				}
-
-				return 0;
-
-			case AV_LOCK_OBTAIN:
-				return !!SDL_LockMutex((SDL_mutex*)*mtx);
-
-			case AV_LOCK_RELEASE:
-				return !!SDL_UnlockMutex((SDL_mutex*)*mtx);
-
-			case AV_LOCK_DESTROY:
-				SDL_DestroyMutex((SDL_mutex*)*mtx);
-				return 0;
-		}
-
-		return 1;
-	}
-
-	int SDL2ffmpeg::decode_interrupt_cb(void *ctx) {
-		SDL2ffmpeg* thiz = (SDL2ffmpeg*)ctx;
-
-		return thiz->is->abort_request;
 	}
 
 	struct SwsContext* SDL2ffmpeg::createContext(
