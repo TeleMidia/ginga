@@ -738,6 +738,8 @@ IDirectFBDisplayLayer* DFBDeviceScreen::gfxLayer  = NULL;
 	IInputManager* DFBDeviceScreen::getInputManager() {
 		if (im == NULL) {
 			im = new InputManager(id);
+
+			im->setAxisBoundaries(wRes, hRes, 0);
 		}
 		return im;
 	}
