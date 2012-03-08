@@ -78,7 +78,7 @@ namespace mb {
 		av_sync_type                         = AV_SYNC_AUDIO_MASTER;
 		start_time                           = AV_NOPTS_VALUE;
 		duration                             = AV_NOPTS_VALUE;
-		workaround_bugs                      = 1;
+		workaround_ffmpeg_bugs               = 1;
 		fast                                 = 0;
 		genpts                               = 0;
 		lowres                               = 0;
@@ -94,6 +94,7 @@ namespace mb {
 		texture                              = NULL;
 		hasPic                               = false;
 		state                                = ST_STOPPED;
+		fixedSize                            = 0;
 
 		setSoundLevel(0.5);
 
@@ -280,11 +281,27 @@ namespace mb {
 
 			getAudioSpec(&spec, audioFreq, audioChannels);
 
-			memset(&obtained, 0, sizeof(obtained));
-			SDL_OpenAudio(&spec, &obtained);
+			if (SDL_OpenAudio(&spec, &obtained) < 0) {
+				memcpy(&spec, &obtained, sizeof(spec));
+
+			} else {
+				fixedSize = obtained.size;
+
+				if (fixedSize == 0) {
+					fixedSize = obtained.channels * obtained.samples * 2;
+				}
+			}
 
 			if (obtained.channels == 0) {
 				memcpy(&obtained, &spec, sizeof(spec));
+				spec.size = fixedSize;
+
+			} else {
+				fixedSize = obtained.size;
+
+				if (fixedSize == 0) {
+					fixedSize = obtained.channels * obtained.samples * 2;
+				}
 			}
 
 			if (spec.format != AUDIO_S16SYS) {
@@ -296,7 +313,8 @@ namespace mb {
 				return false;
 			}
 
-			is->audio_hw_buf_size = spec.channels * spec.samples * 2;
+			//is->audio_hw_buf_size = spec.channels * spec.samples * 2;
+			is->audio_hw_buf_size = spec.size;
 
 			is->audio_src_fmt = is->audio_tgt_fmt = AV_SAMPLE_FMT_S16;
 			is->audio_src_freq = is->audio_tgt_freq = spec.freq;
@@ -1473,7 +1491,7 @@ namespace mb {
 			return -1;
 		}
 
-		avctx->workaround_bugs = workaround_bugs;
+		avctx->workaround_bugs = workaround_ffmpeg_bugs;
 		avctx->lowres = lowres;
 		if (avctx->lowres > codec->max_lowres) {
 			avctx->lowres = codec->max_lowres;
@@ -2098,7 +2116,6 @@ namespace mb {
 			spec->callback = SDL2ffmpeg::sdl_audio_callback;
 			spec->freq     = sample_rate;
 			spec->channels = channels;
-			spec->size     = spec->channels * spec->samples * 2;
 
 			audioSpec = true;
 

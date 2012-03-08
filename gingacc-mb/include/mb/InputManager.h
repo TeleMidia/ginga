@@ -81,12 +81,13 @@ namespace core {
 namespace mb {
 	class InputManager : public IInputManager, public Thread {
 		private:
-			map<IInputEventListener*, set<int>*>* eventListeners;
-			vector<LockedAction*>* actionsToInpListeners;
-			set<IInputEventListener*>* applicationListeners;
-			vector<LockedAction*>* actionsToAppListeners;
+			map<IInputEventListener*, set<int>*> eventListeners;
+			vector<LockedAction*> actionsToInpListeners;
+			set<IInputEventListener*> applicationListeners;
+			vector<LockedAction*> actionsToAppListeners;
 
-			IMotionEventListener* motionListener;
+			set<IMotionEventListener*> motionListeners;
+			pthread_mutex_t mlMutex;
 
 			bool running;
 			bool notifying;
@@ -117,8 +118,13 @@ namespace mb {
 
 			void release();
 
-			void setMotionEventListener(IMotionEventListener* listener);
+			void addMotionEventListener(IMotionEventListener* listener);
+			void removeMotionEventListener(IMotionEventListener* listener);
 
+		private:
+			void notifyMotionListeners(int x, int y, int z);
+
+		public:
 			void addInputEventListener(
 					IInputEventListener* listener, set<int>* events=NULL);
 
