@@ -65,22 +65,32 @@ namespace player {
 
 		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
 
-		mBrowser = NULL;
-		this->x  = 1;
-		this->y  = 1;
-		this->w  = 1;
-		this->h  = 1;
-		this->im = dm->getInputManager(myScreen);
+		mBrowser   = NULL;
+		this->x    = 1;
+		this->y    = 1;
+		this->w    = 1;
+		this->h    = 1;
+		this->im   = NULL;
+		screenName = dm->getScreenName(myScreen);
 
-		setBrowserDFB(dm->getGfxRoot(myScreen));
-		setDisplayMenu(0);
+		if (screenName == "dfb") {
+			this->im = dm->getInputManager(myScreen);
+
+			setBrowserDFB(dm->getGfxRoot(myScreen));
+			setDisplayMenu(0);
+		}
 
 		hasBrowser = false;
 	}
 
 	LinksPlayer::~LinksPlayer() {
 		clog << "LinksPlayer::~LinksPlayer " << endl;
-		im->removeInputEventListener(this);
+
+		if (im != NULL) {
+			im->removeInputEventListener(this);
+			im = NULL;
+		}
+
 #if HAVE_COMPSUPPORT
 		if (hasBrowser) {
 			clog << "LinksPlayer::~LinksPlayer hasBrowser" << endl;
@@ -114,8 +124,11 @@ namespace player {
 
 	void LinksPlayer::setNotifyContentUpdate(bool notify) {
 		clog << "LinksPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
-		if (notify) {
-			setGhostBrowser(mBrowser);
+
+		if (hasBrowser) {
+			if (notify) {
+				setGhostBrowser(mBrowser);
+			}
 		}
 		Player::setNotifyContentUpdate(notify);
 	}
@@ -152,7 +165,7 @@ namespace player {
 			clog << endl;
 			browserResizeCoord(mBrowser, x, y, w, h);
 
-		} else {
+		} else if (screenName == "dfb") {
 			clog << "LinksPlayer::setBounds '" << mrl << "' call openBrowser";
 			clog << endl;
 			hasBrowser = true;
@@ -162,23 +175,26 @@ namespace player {
 
 	void LinksPlayer::play() {
 		clog << "LinksPlayer::play(" << mrl << ")" << endl;
-#if !HAVE_MULTIPROCESS
-		if (surface != NULL) {
-			IWindow* parent = (IWindow*)(surface->getParent());
 
-			if (parent != NULL) {
-				browserSetFlipWindow(mBrowser, parent->getContent());
+		if (screenName == "dfb") {
+#if !HAVE_MULTIPROCESS
+			if (surface != NULL) {
+				IWindow* parent = (IWindow*)(surface->getParent());
+
+				if (parent != NULL) {
+					browserSetFlipWindow(mBrowser, parent->getContent());
+				}
 			}
-		}
 #endif
 
-		loadUrlOn(mBrowser, mrl.c_str());
-		browserShow(mBrowser);
+			loadUrlOn(mBrowser, mrl.c_str());
+			browserShow(mBrowser);
 
-		if (notifyContentUpdate) {
-			Thread::start();
+			if (notifyContentUpdate) {
+				Thread::start();
+			}
+			//::usleep(3000000);
 		}
-		//::usleep(3000000);
 
 		Player::play();
 	}
@@ -201,39 +217,41 @@ namespace player {
 		clog << "LinksPlayer::setProperty '" << name << "' value '";
 		clog << value << "'" << endl;
 
-		//TODO: set scrollbar, support...
-		if (name == "transparency") {
-			double val;
+		if (screenName == "dfb") {
+			//TODO: set scrollbar, support...
+			if (name == "transparency") {
+				double val;
 
-			val = stof(value);
-			if (val >= 0.0 && val <= 1.0) {
-				val = 1 - val;
-				browserSetAlpha((int)(val * 0xFF), mBrowser);
-			}
+				val = stof(value);
+				if (val >= 0.0 && val <= 1.0) {
+					val = 1 - val;
+					browserSetAlpha((int)(val * 0xFF), mBrowser);
+				}
 
-		} else if (name == "bounds") {
-			int x, y, w, h;
-			vector<string>* params;
+			} else if (name == "bounds") {
+				int x, y, w, h;
+				vector<string>* params;
 
-			if (value.find("%") != std::string::npos) {
-				return;
-			}
+				if (value.find("%") != std::string::npos) {
+					return;
+				}
 
-			params = split(value, ",");
-			if (params->size() != 4) {
+				params = split(value, ",");
+				if (params->size() != 4) {
+					delete params;
+					return;
+				}
+
+				x = (int)stof((*params)[0]);
+				y = (int)stof((*params)[1]);
+				w = (int)stof((*params)[2]);
+				h = (int)stof((*params)[3]);
+
 				delete params;
+
+				setBounds(x, y, w, h);
 				return;
 			}
-
-			x = (int)stof((*params)[0]);
-			y = (int)stof((*params)[1]);
-			w = (int)stof((*params)[2]);
-			h = (int)stof((*params)[3]);
-
-			delete params;
-
-			setBounds(x, y, w, h);
-			return;
 		}
 
 		Player::setPropertyValue(name, value);
@@ -244,14 +262,17 @@ namespace player {
 		clog << isHandler << "', notifyContentUpdate = '";
 		clog << notifyContentUpdate << "'" << endl;
 
-		if (isHandler && notifyContentUpdate) {
-			im->addInputEventListener(this, NULL);
+		if (screenName == "dfb") {
+			if (isHandler && notifyContentUpdate) {
+				im->addInputEventListener(this, NULL);
 
-		} else {
-			im->removeInputEventListener(this);
+			} else {
+				im->removeInputEventListener(this);
+			}
+
+			browserSetFocusHandler((int)isHandler, mBrowser);
 		}
 
-		browserSetFocusHandler((int)isHandler, mBrowser);
 		return isHandler;
 	}
 
@@ -262,7 +283,10 @@ namespace player {
 		}
 		clog << endl;*/
 
-		browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
+		if (screenName == "dfb") {
+			browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
+		}
+
 		return true;
 	}
 

@@ -70,6 +70,15 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+
+	typedef struct DrawData {
+		int coord1;
+		int coord2;
+		int coord3;
+		int coord4;
+		short dataType;
+	} DrawData;
+
 	class SDLWindow : public IWindow {
 		private:
 			SDL_Texture* texture;
@@ -93,7 +102,7 @@ namespace mb {
 			bool visible;
 			bool ghost;
 
-		    vector<ISurface*>* childSurfaces;
+		    vector<ISurface*> childSurfaces;
 		    ISurface* releaseListener;
 		    bool fit;
 		    bool stretch;
@@ -176,6 +185,7 @@ namespace mb {
 			void unprotectedValidate();
 
 		public:
+			vector<DrawData*>* createDrawDataList();
 			void addChildSurface(ISurface* s);
 			bool removeChildSurface(ISurface* s);
 			void setStretch(bool stretchTo);

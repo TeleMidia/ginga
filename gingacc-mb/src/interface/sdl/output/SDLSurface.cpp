@@ -76,6 +76,12 @@ namespace mb {
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
+		releaseDrawData();
+		pthread_mutex_lock(&ddMutex);
+		this->drawData.clear();
+		pthread_mutex_unlock(&ddMutex);
+		pthread_mutex_destroy(&sMutex);
+
 		releaseChromaColor();
 		releaseBorderColor();
 		releaseBgColor();
@@ -86,9 +92,11 @@ namespace mb {
 		pthread_mutex_lock(&sMutex);
 		pthread_mutex_unlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
-/*
+
 		if (sur != NULL) {
-			if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			if (LocalScreenManager::getInstance()->hasWindow(
+					myScreen, parent)) {
+
 				if (parent->removeChildSurface(this)) {
 					mySurface = true;
 				}
@@ -97,11 +105,6 @@ namespace mb {
 				mySurface = true;
 			}
 		}
-
-		if (!mySurface) {
-			sur = NULL;
-		}
-*/
 
 		clog << "SDLSurface::~SDLSurface all done" << endl;
 	}
@@ -139,6 +142,21 @@ namespace mb {
 		iFont = NULL;
 	}
 
+	void SDLSurface::releaseDrawData() {
+		vector<DrawData*>::iterator i;
+
+		pthread_mutex_lock(&ddMutex);
+		if (!drawData.empty()) {
+			i = drawData.begin();
+			while (i != drawData.end()) {
+				delete (*i);
+				++i;
+			}
+			drawData.clear();
+		}
+		pthread_mutex_unlock(&ddMutex);
+	}
+
 	void SDLSurface::initialize(GingaScreenID screenId) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
@@ -151,6 +169,9 @@ namespace mb {
 		this->caps          = 0;
 		this->hasExtHandler = false;
 
+		this->drawData.clear();
+
+		pthread_mutex_init(&ddMutex, NULL);
 		pthread_mutex_init(&sMutex, NULL);
 	}
 
@@ -205,13 +226,10 @@ namespace mb {
 			}
 		}
 
-		/*if (this->sur == NULL && parent != NULL) {
-			sur = (SDL_Surface*)(parent->getContent());
-			parent->setReleaseListener(this);
-			return false;
+		if (parent != NULL) {
+			parent->addChildSurface(this);
 		}
 
-		parent->addChildSurface(this);*/
 		return true;
 	}
 
@@ -225,6 +243,8 @@ namespace mb {
 	}
 
 	void SDLSurface::clearContent() {
+		releaseDrawData();
+
 		if (sur == NULL) {
 			return;
 		}
@@ -237,6 +257,8 @@ namespace mb {
 	}
 
 	void SDLSurface::clearSurface() {
+		releaseDrawData();
+
 		if (sur == NULL) {
 			clog << "DFBSurface::clearContent Warning! ";
 			clog << "Can't clear content: ";
@@ -247,22 +269,44 @@ namespace mb {
 		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
 	}
 
+	vector<DrawData*>* SDLSurface::createDrawDataList() {
+		vector<DrawData*>* cloneDD = NULL;
+
+		pthread_mutex_lock(&ddMutex);
+		if (!drawData.empty()) {
+			cloneDD = new vector<DrawData*>(drawData);
+		}
+		pthread_mutex_unlock(&ddMutex);
+
+		return cloneDD;
+	}
+
+	void SDLSurface::pushDrawData(int c1, int c2, int c3, int c4, short type) {
+		DrawData* dd;
+
+		pthread_mutex_lock(&ddMutex);
+		dd = new DrawData;
+		dd->coord1   = c1;
+		dd->coord2   = c2;
+		dd->coord3   = c3;
+		dd->coord4   = c4;
+		dd->dataType = type;
+
+		drawData.push_back(dd);
+		pthread_mutex_unlock(&ddMutex);
+	}
+
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
-		/*
-		 * TODO: only a SDL_Renderer can draw lines in SDL 2.0
-		 *       create a vector with lines to pass it to the renderer
-		 */
+		pushDrawData(x1, y1, x2, y2, DDT_LINE);
 	}
 
 	void SDLSurface::drawRectangle(int x, int y, int w, int h) {
-		/*
-		 * TODO: only a SDL_Renderer can draw non-filled rectangles in SDL 2.0
-		 *       create a vector with rectangles to pass it to the renderer
-		 */
+		pushDrawData(x, y, w, h, DDT_RECT);
 	}
 
 	void SDLSurface::fillRectangle(int x, int y, int w, int h) {
-		SDL_Rect rect;
+		/*SDL_Rect rect;
+		int r, g, b;
 
 		if (sur != NULL && surfaceColor != NULL) {
 			rect.x = x;
@@ -270,17 +314,14 @@ namespace mb {
 			rect.w = w;
 			rect.h = h;
 
-			SDL_FillRect(sur, &rect, SDL_MapRGB(
-					sur->format,
-					surfaceColor->getR(),
-					surfaceColor->getG(),
-					surfaceColor->getB()));
+			r = surfaceColor->getR();
+			g = surfaceColor->getG();
+			b = surfaceColor->getB();
 
-		} else {
-			clog << "SDLSurface::fillRectangle Warning! ";
-			clog << "Can't draw: ";
-			clog << "underlying surface is NULL" << endl;
-		}
+			SDL_FillRect(sur, &rect, SDL_MapRGB(sur->format, r, g, b));
+		}*/
+
+		pushDrawData(x, y, w, h, DDT_FILL_RECT);
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {

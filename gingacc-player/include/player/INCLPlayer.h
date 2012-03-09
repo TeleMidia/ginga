@@ -91,6 +91,9 @@ namespace player {
 
 			virtual ~INCLPlayer(){};
 
+			virtual set<string>* createPortIdList()=0;
+			virtual short getMappedInterfaceType(string portId)=0;
+
 			virtual void setMrl(string mrl, bool visible=true)=0;
 			virtual void reset()=0;
 			virtual void rebase()=0;

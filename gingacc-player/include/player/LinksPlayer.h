@@ -94,6 +94,7 @@ namespace player {
 			struct session* mBrowser;
 			bool hasBrowser;
 			int x, y, w, h;
+			string screenName;
 
 		public:
 			LinksPlayer(GingaScreenID screenId, string mrl);

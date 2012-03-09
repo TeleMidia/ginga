@@ -118,7 +118,7 @@ namespace player {
 			static AwesomiumHDR s_id;
 			static map<AwesomiumHDR, IInputManager*> s_ims;
 
-			/* static since we have to respect the tab isolation */
+			/* static since we have to respect browser isolation */
 			static Awesomium::WebCore* webCore;
 			static WebView* webView;
 

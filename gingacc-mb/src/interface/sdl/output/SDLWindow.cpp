@@ -89,18 +89,18 @@ namespace mb {
 			releaseListener->setParent(NULL);
 		}
 
-		if (childSurfaces != NULL) {
-			i = childSurfaces->begin();
-			while (i != childSurfaces->end()) {
-				surface = *i;
-				if (surface != NULL) {
-					surface->setParent(NULL);
-				}
-				++i;
+		i = childSurfaces.begin();
+		while (i != childSurfaces.end()) {
+			surface = *i;
+			if (LocalScreenManager::getInstance()->hasSurface(
+					myScreen, surface)) {
+
+				surface->setParent(NULL);
 			}
-			delete childSurfaces;
-			childSurfaces = NULL;
+			++i;
 		}
+
+		childSurfaces.clear();
 		unlockChilds();
 
 		releaseBGColor();
@@ -163,7 +163,6 @@ namespace mb {
 		this->z                 = z;
 		this->ghost             = false;
 		this->visible           = false;
-		this->childSurfaces     = new vector<ISurface*>;
 		this->releaseListener   = NULL;
 		this->fit               = true;
 		this->stretch           = true;
@@ -436,8 +435,8 @@ namespace mb {
 		ISurface* surface;
 
 /*		lockChilds();
-		if (childSurfaces != NULL && !childSurfaces->empty()) {
-			surface = childSurfaces->at(0);
+		if (!childSurfaces.empty()) {
+			surface = childSurfaces.at(0);
 			if (surface != NULL && surface->getSurfaceContent() != NULL) {
 				winSur = (SDL_Surface*)(surface->getSurfaceContent());
 			}
@@ -453,19 +452,34 @@ namespace mb {
 		}
 	}
 
+	vector<DrawData*>* SDLWindow::createDrawDataList() {
+		SDLSurface* iSur;
+		vector<DrawData*>* dd = NULL;
+
+		lockChilds();
+		if (!childSurfaces.empty()) {
+			iSur = (SDLSurface*)(*childSurfaces.begin());
+
+			dd = iSur->createDrawDataList();
+		}
+		unlockChilds();
+
+		return dd;
+	}
+
 	void SDLWindow::addChildSurface(ISurface* s) {
 		unsigned int i;
 		ISurface* surface;
 
 		lockChilds();
-		for (i = 0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
+		for (i = 0; i < childSurfaces.size(); i++) {
+			surface = childSurfaces.at(i);
 			if (surface == s) {
 				unlockChilds();
 				return;
 			}
 		}
-		childSurfaces->push_back(s);
+		childSurfaces.push_back(s);
 		unlockChilds();
 	}
 
@@ -479,18 +493,13 @@ namespace mb {
 			releaseListener = NULL;
 		}
 
-		if (childSurfaces == NULL) {
-			unlockChilds();
-			return false;
-		}
-
-		for (i = 0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
+		for (i = 0; i < childSurfaces.size(); i++) {
+			surface = childSurfaces.at(i);
 			if (surface == s) {
-				j = childSurfaces->begin() + i;
-				childSurfaces->erase(j);
-				unlockChilds();
-				return true;
+				j = childSurfaces.begin() + i;
+				childSurfaces.erase(j);
+
+				i = 0;
 			}
 		}
 		unlockChilds();

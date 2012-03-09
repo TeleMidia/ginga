@@ -53,7 +53,11 @@ http://www.telemidia.puc-rio.br
 #include "SDL.h"
 
 #include "mb/interface/IWindow.h"
+#include "mb/interface/sdl/output/SDLWindow.h"
 #include "mb/interface/IFontProvider.h"
+
+#include <vector>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -62,6 +66,11 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class SDLSurface : public ISurface {
+		public:
+			static const short DDT_LINE      = 0;
+			static const short DDT_RECT      = 1;
+			static const short DDT_FILL_RECT = 2;
+
 		private:
 			GingaScreenID myScreen;
 			SDL_Surface* sur;
@@ -73,6 +82,9 @@ namespace mb {
 			IColor* surfaceColor;
 			IFontProvider* iFont;
 			int caps;
+
+			vector<DrawData*> drawData;
+			pthread_mutex_t ddMutex;
 
 			pthread_mutex_t sMutex;
 
@@ -89,6 +101,7 @@ namespace mb {
 			void releaseSurfaceColor();
 
 			void releaseFont();
+			void releaseDrawData();
 
 			void initialize(GingaScreenID screenId);
 
@@ -106,6 +119,13 @@ namespace mb {
 			void setSurfaceContent(void* surface);
 			void clearContent();
 			void clearSurface();
+
+			vector<DrawData*>* createDrawDataList();
+
+		private:
+			void pushDrawData(int c1, int c2, int c3, int c4, short type);
+
+		public:
 			void drawLine(int x1, int y1, int x2, int y2);
 			void drawRectangle(int x, int y, int w, int h);
 			void fillRectangle(int x, int y, int w, int h);

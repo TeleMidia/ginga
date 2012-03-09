@@ -181,6 +181,7 @@ typedef struct {
 
 			void clearWidgetPools();
 
+			string getScreenName();
 			void setParentScreen(GingaWindowID parentId);
 
 			void setBackgroundImage(string uri);

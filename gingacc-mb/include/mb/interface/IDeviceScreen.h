@@ -85,6 +85,8 @@ namespace mb {
 			virtual void releaseMB()=0;
 			virtual void clearWidgetPools()=0;
 
+			virtual string getScreenName()=0;
+
 			virtual void setParentScreen(GingaWindowID parentId)=0;
 
 			virtual void setBackgroundImage(string uri)=0;
