@@ -263,6 +263,10 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 	}
 
+	string SDLDeviceScreen::getScreenName() {
+		return "sdl";
+	}
+
 	void SDLDeviceScreen::setParentScreen(GingaWindowID parentId) {
 
 	}
@@ -1030,6 +1034,7 @@ namespace mb {
 			}
 			i = s->windowPool.begin();
 		}
+		s->windowPool.clear();
 		pthread_mutex_unlock(&s->winMutex);
 
 		//Releasing remaining Surface objects in Surface Pool

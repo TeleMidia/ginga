@@ -396,6 +396,17 @@ namespace mb {
 		return screenId;
 	}
 
+	string LocalScreenManager::getScreenName(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+		string screenName = "";
+
+		if (getScreen(screenId, &screen)) {
+			screenName = screen->getScreenName();
+		}
+
+		return screenName;
+	}
+
 	void LocalScreenManager::getMBSystemType(
 			string mbSystemName, short* mbSystemType) {
 

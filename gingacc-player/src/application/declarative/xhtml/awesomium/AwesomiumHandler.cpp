@@ -47,8 +47,6 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "config.h"
-
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -75,7 +73,7 @@ namespace player {
 	ILocalScreenManager* AwesomiumHandler::dm     = NULL;
 	AwesomiumHDR AwesomiumHandler::s_id           = 0;
 
-	/* static since we have to respect the tab isolation */
+	/* static since we have to respect browser isolation */
 	Awesomium::WebCore* AwesomiumHandler::webCore = NULL;
 	WebView* AwesomiumHandler::webView            = NULL;
 

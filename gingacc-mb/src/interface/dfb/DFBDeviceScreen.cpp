@@ -290,6 +290,10 @@ namespace mb {
 		pthread_mutex_unlock(&cmpMutex);
 	}
 
+	string DFBDeviceScreen::getScreenName() {
+		return "dfb";
+	}
+
 	void DFBDeviceScreen::setParentScreen(GingaWindowID parentId) {
 		//unsigned long xid = strtoul(strdup((const char*)devId), NULL, 10);
 #if HAVE_WINDOWLESS

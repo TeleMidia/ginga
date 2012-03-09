@@ -89,6 +89,10 @@ namespace mb {
 		surfacePool.clear();
 	}
 
+	string TermDeviceScreen::getScreenName() {
+		return "term";
+	}
+
 	void TermDeviceScreen::setParentScreen(GingaWindowID parentId) {
 
 	}

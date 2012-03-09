@@ -96,6 +96,7 @@ namespace mb {
 			virtual void clearWidgetPools(GingaScreenID screenId)=0;
 
 			virtual GingaScreenID createScreen(int numArgs, char** args)=0;
+			virtual string getScreenName(GingaScreenID screenId)=0;
 
 			virtual void mergeIds(
 					GingaScreenID screenId,

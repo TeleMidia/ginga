@@ -77,6 +77,7 @@ namespace mb {
 
 			void clearWidgetPools();
 
+			string getScreenName();
 			void setParentScreen(GingaWindowID parentId);
 			void setBackgroundImage(string uri);
 

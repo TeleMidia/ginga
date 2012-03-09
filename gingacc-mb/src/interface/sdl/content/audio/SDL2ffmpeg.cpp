@@ -187,40 +187,40 @@ namespace mb {
 						stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 
 					} else {
-						cout << "SDL2ffmpeg::SDL2ffmpeg ";
-						cout << "Can't select any audio stream in mrl '";
-						cout << is->filename << "'" << endl;
+						clog << "SDL2ffmpeg::SDL2ffmpeg ";
+						clog << "Can't select any audio stream in mrl '";
+						clog << is->filename << "'" << endl;
 					}
 
 					if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
 						stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 
 					} else {
-						cout << "SDL2ffmpeg::SDL2ffmpeg ";
-						cout << "Can't select any video stream in mrl '";
-						cout << is->filename << "'" << endl;
+						clog << "SDL2ffmpeg::SDL2ffmpeg ";
+						clog << "Can't select any video stream in mrl '";
+						clog << is->filename << "'" << endl;
 					}
 
 					if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
 						stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 
 					} else {
-						cout << "SDL2ffmpeg::SDL2ffmpeg ";
-						cout << "Can't select any subtitle stream in mrl '";
-						cout << is->filename << "'" << endl;
+						clog << "SDL2ffmpeg::SDL2ffmpeg ";
+						clog << "Can't select any subtitle stream in mrl '";
+						clog << is->filename << "'" << endl;
 					}
 
 					is->av_sync_type = av_sync_type;
 
 				} else {
-					cout << "SDL2ffmpeg::SDL2ffmpeg ";
-					cout << "Can't find stream info for '" << filename;
-					cout << "'" << endl;
+					clog << "SDL2ffmpeg::SDL2ffmpeg ";
+					clog << "Can't find stream info for '" << filename;
+					clog << "'" << endl;
 				}
 
 			} else {
-				cout << "SDL2ffmpeg::SDL2ffmpeg ";
-				cout << "Can't open '" << filename << "'" << endl;
+				clog << "SDL2ffmpeg::SDL2ffmpeg ";
+				clog << "Can't open '" << filename << "'" << endl;
 			}
 		}
 	}
@@ -228,7 +228,7 @@ namespace mb {
 	SDL2ffmpeg::~SDL2ffmpeg() {
 		set<SDL2ffmpeg*>::iterator i;
 
-		cout << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
+		clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
 
 		release();
 
@@ -252,7 +252,7 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::release() {
-		cout << "SDL2ffmpeg::release" << endl;
+		clog << "SDL2ffmpeg::release" << endl;
 
 		if (is != NULL) {
 			if (is->ic) {
@@ -279,14 +279,14 @@ namespace mb {
 			memset(&spec, 0, sizeof(spec));
 			getAudioSpec(&spec, audioFreq, audioChannels);
 
-			cout << "Audio content has the following specification: ";
-			cout << endl;
-			cout << "Channels: " << (short)spec.channels;
-			cout << endl;
-			cout << "Frequency: " << spec.freq << endl;
-			cout << "Format: " << spec.format << endl;
-			cout << "Samples: " << spec.samples << endl;
-			cout << endl;
+			clog << "Audio content has the following specification: ";
+			clog << endl;
+			clog << "Channels: " << (short)spec.channels;
+			clog << endl;
+			clog << "Frequency: " << spec.freq << endl;
+			clog << "Format: " << spec.format << endl;
+			clog << "Samples: " << spec.samples << endl;
+			clog << endl;
 
 			if (SDL_OpenAudio(&spec, &obtained) < 0) {
 				memcpy(&obtained, &spec, sizeof(spec));
@@ -296,27 +296,27 @@ namespace mb {
 					memcpy(&spec, &obtained, sizeof(obtained));
 				}
 
-				cout << "Audio device opened with the following specification:";
-				cout << endl;
-				cout << "Channels: " << (short)spec.channels;
-				cout << endl;
-				cout << "Frequency: " << spec.freq << endl;
-				cout << "Format: " << spec.format << endl;
-				cout << "Samples: " << spec.samples << endl;
-				cout << "Size: " << spec.size << endl;
-				cout << endl;
+				clog << "Audio device opened with the following specification:";
+				clog << endl;
+				clog << "Channels: " << (short)spec.channels;
+				clog << endl;
+				clog << "Frequency: " << spec.freq << endl;
+				clog << "Format: " << spec.format << endl;
+				clog << "Samples: " << spec.samples << endl;
+				clog << "Size: " << spec.size << endl;
+				clog << endl;
 			}
 
 /*
-			cout << "Opening audio device with the following specification: ";
-			cout << endl;
-			cout << "Channels: " << (short)wantedSpec.channels;
-			cout << endl;
-			cout << "Frequency: " << wantedSpec.freq << endl;
-			cout << "Format: " << wantedSpec.format << endl;
-			cout << "Samples: " << wantedSpec.samples << endl;
-			cout << "Size: " << wantedSpec.size << endl;
-			cout << endl;
+			clog << "Opening audio device with the following specification: ";
+			clog << endl;
+			clog << "Channels: " << (short)wantedSpec.channels;
+			clog << endl;
+			clog << "Frequency: " << wantedSpec.freq << endl;
+			clog << "Format: " << wantedSpec.format << endl;
+			clog << "Samples: " << wantedSpec.samples << endl;
+			clog << "Size: " << wantedSpec.size << endl;
+			clog << endl;
 
 			if (SDL_OpenAudio(&wantedSpec, &obtained) < 0) {
 				memcpy(&obtained, &wantedSpec, sizeof(spec));
@@ -326,15 +326,15 @@ namespace mb {
 					memcpy(&wantedSpec, &obtained, sizeof(obtained));
 				}
 
-				cout << "Audio device opened with the following specification:";
-				cout << endl;
-				cout << "Channels: " << (short)wantedSpec.channels;
-				cout << endl;
-				cout << "Frequency: " << wantedSpec.freq << endl;
-				cout << "Format: " << wantedSpec.format << endl;
-				cout << "Samples: " << wantedSpec.samples << endl;
-				cout << "Size: " << wantedSpec.size << endl;
-				cout << endl;
+				clog << "Audio device opened with the following specification:";
+				clog << endl;
+				clog << "Channels: " << (short)wantedSpec.channels;
+				clog << endl;
+				clog << "Frequency: " << wantedSpec.freq << endl;
+				clog << "Format: " << wantedSpec.format << endl;
+				clog << "Samples: " << wantedSpec.samples << endl;
+				clog << "Size: " << wantedSpec.size << endl;
+				clog << endl;
 			}
 */
 			if (spec.size == 0) {
@@ -342,10 +342,10 @@ namespace mb {
 			}
 
 			if (spec.format != AUDIO_S16SYS) {
-				cout << "SDL2ffmpeg::stream_component_open Warning! ";
-				cout << "audio format '" << spec.format << "' not ";
-				cout << "supported by SDL!";
-				cout << endl;
+				clog << "SDL2ffmpeg::stream_component_open Warning! ";
+				clog << "audio format '" << spec.format << "' not ";
+				clog << "supported by SDL!";
+				clog << endl;
 
 				return false;
 			}
@@ -926,7 +926,7 @@ namespace mb {
 		VideoPicture *vp;
 		int i;
 
-		cout << "SDL2ffmpeg::stream_close" << endl;
+		clog << "SDL2ffmpeg::stream_close" << endl;
 
 		is->abort_request = 1;
 
@@ -1423,15 +1423,15 @@ namespace mb {
 						0, NULL);
 
 				if (!is->swr_ctx || swr_init(is->swr_ctx) < 0) {
-					cout << "SDL2ffmpeg::audio_decode_frame " << stderr;
-					cout << " Can't create sample rate converter for ";
-					cout << dec->sample_rate << "Hz ";
-					cout << av_get_sample_fmt_name(dec->sample_fmt);
-					cout << " " << dec->channels << " channels to ";
-					cout << is->audio_tgt_freq << "Hz ";
-					cout << av_get_sample_fmt_name(is->audio_tgt_fmt);
-					cout << " " << is->audio_tgt_channels << " channels!";
-					cout << endl;
+					clog << "SDL2ffmpeg::audio_decode_frame " << stderr;
+					clog << " Can't create sample rate converter for ";
+					clog << dec->sample_rate << "Hz ";
+					clog << av_get_sample_fmt_name(dec->sample_fmt);
+					clog << " " << dec->channels << " channels to ";
+					clog << is->audio_tgt_freq << "Hz ";
+					clog << av_get_sample_fmt_name(is->audio_tgt_fmt);
+					clog << " " << is->audio_tgt_channels << " channels!";
+					clog << endl;
 					break;
 				}
 
@@ -1530,9 +1530,9 @@ namespace mb {
 		int64_t wanted_channel_layout = 0;
 
 		if (stream_index < 0 || stream_index >= ic->nb_streams) {
-			cout << "SDL2ffmpeg::stream_component_open ";
-			cout << "invalid index";
-			cout << endl;
+			clog << "SDL2ffmpeg::stream_component_open ";
+			clog << "invalid index";
+			clog << endl;
 			return -1;
 		}
 
@@ -1540,9 +1540,9 @@ namespace mb {
 
 		codec = avcodec_find_decoder(avctx->codec_id);
 		if (!codec) {
-			cout << "SDL2ffmpeg::stream_component_open ";
-			cout << "Can't find codec for '" << avctx->codec_type << "'";
-			cout << endl;
+			clog << "SDL2ffmpeg::stream_component_open ";
+			clog << "Can't find codec for '" << avctx->codec_type << "'";
+			clog << endl;
 			return -1;
 		}
 
@@ -1589,18 +1589,18 @@ namespace mb {
 
 			audioFreq = avctx->sample_rate;
 			if (audioFreq <= 0 || audioChannels <= 1) {
-				cout << "SDL2ffmpeg::stream_component_open ";
-				cout << "Invalid sample rate or channel count!";
-				cout << endl;
+				clog << "SDL2ffmpeg::stream_component_open ";
+				clog << "Invalid sample rate or channel count!";
+				clog << endl;
 
 				return -1;
 			}
 		}
 
 		if (avcodec_open2(avctx, codec, NULL) < 0) {
-			cout << "SDL2ffmpeg::stream_component_open ";
-			cout << "can't open codec '" << codec->name << "'";
-			cout << endl;
+			clog << "SDL2ffmpeg::stream_component_open ";
+			clog << "can't open codec '" << codec->name << "'";
+			clog << endl;
 			return -1;
 		}
 
@@ -2267,12 +2267,12 @@ namespace mb {
 			audioSpec = true;
 
 		} else {
-			cout << "SDL2ffmpeg::getAudioSpec ";
-			cout << "invalid parameters: ";
-			cout << "spec address = '" << spec << "' ";
-			cout << "sample rate = '" << sample_rate << "' ";
-			cout << "channels = '" << (short)channels << "' ";
-			cout << endl;
+			clog << "SDL2ffmpeg::getAudioSpec ";
+			clog << "invalid parameters: ";
+			clog << "spec address = '" << spec << "' ";
+			clog << "sample rate = '" << sample_rate << "' ";
+			clog << "channels = '" << (short)channels << "' ";
+			clog << endl;
 
 			audioSpec = false;
 		}
@@ -2376,32 +2376,32 @@ namespace mb {
 
 								SDL_ConvertAudio(&acvt);
 
-								cout << endl;
-								cout << "Converting(stream len = '" << len;
-								cout << "' and Audio instance = '";
-								cout << dec << "')" << endl;
-								cout << "FROM: ";
-								cout << "format '" << dec->spec.format;
-								cout << "' channels '";
-								cout << (short)dec->spec.channels;
-								cout << "' freq '" << dec->spec.freq;
-								cout << "' size '" << is->audio_hw_buf_size;
-								cout << "'";
-								cout << "' and capacity '";
-								cout << is->audio_hw_buf_size;
-								cout << "'";
-								cout << endl;
-								cout << "TO: ";
-								cout << "format '" << wantedSpec.format << "' ";
-								cout << "channels '";
-								cout << (short)wantedSpec.channels;
-								cout << "' freq '" << wantedSpec.freq << "' ";
-								cout << "size '";
-								cout << acvt.len_cvt;
-								cout << "' and capacity '";
-								cout << wantedSpec.size;
-								cout << "'";
-								cout << endl;
+								clog << endl;
+								clog << "Converting(stream len = '" << len;
+								clog << "' and Audio instance = '";
+								clog << dec << "')" << endl;
+								clog << "FROM: ";
+								clog << "format '" << dec->spec.format;
+								clog << "' channels '";
+								clog << (short)dec->spec.channels;
+								clog << "' freq '" << dec->spec.freq;
+								clog << "' size '" << is->audio_hw_buf_size;
+								clog << "'";
+								clog << "' and capacity '";
+								clog << is->audio_hw_buf_size;
+								clog << "'";
+								clog << endl;
+								clog << "TO: ";
+								clog << "format '" << wantedSpec.format << "' ";
+								clog << "channels '";
+								clog << (short)wantedSpec.channels;
+								clog << "' freq '" << wantedSpec.freq << "' ";
+								clog << "size '";
+								clog << acvt.len_cvt;
+								clog << "' and capacity '";
+								clog << wantedSpec.size;
+								clog << "'";
+								clog << endl;
 
 								clamp((short*)acvt.buf, acvt.len_cvt);
 
@@ -2449,17 +2449,17 @@ namespace mb {
 					is->audio_main_buf_size[0] = 0;
 
 				} else {
-					/*cout << endl << endl;
-					cout << "SDL2ffmpeg::sdl_audio_callback ";
-					cout << "not this time for " << is->filename;
-					cout << " audio buffer size = ";
-					cout << is->audio_main_buf_size[0];
-					cout << " HW buffer size = " << is->audio_hw_buf_size;
-					cout << " len = " << len;
-					cout << " samples = " << dec->spec.samples;
-					cout << " freq = " << dec->spec.freq;
-					cout << " channels = " << (short)dec->spec.channels;
-					cout << endl;*/
+					/*clog << endl << endl;
+					clog << "SDL2ffmpeg::sdl_audio_callback ";
+					clog << "not this time for " << is->filename;
+					clog << " audio buffer size = ";
+					clog << is->audio_main_buf_size[0];
+					clog << " HW buffer size = " << is->audio_hw_buf_size;
+					clog << " len = " << len;
+					clog << " samples = " << dec->spec.samples;
+					clog << " freq = " << dec->spec.freq;
+					clog << " channels = " << (short)dec->spec.channels;
+					clog << endl;*/
 				}
 			}
 			++i;

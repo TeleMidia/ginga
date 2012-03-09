@@ -149,6 +149,10 @@ namespace mb {
 					string vParent,
 					string aSystem);
 
+		public:
+			string getScreenName(GingaScreenID screenId);
+
+		private:
 			void getMBSystemType(string mbSystemName, short* mbSystemType);
 
 			bool isAvailable(short mbSysType);
