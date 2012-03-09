@@ -73,6 +73,7 @@ extern "C" {
 using namespace std;
 
 bool debugging = false;
+bool enableChoro = false;
 
 string updateFileUri(string file) {
 	if (!isAbsolutePath(file)) {
@@ -107,9 +108,11 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	aud2 = dm->createContinuousMediaProvider(screen, m1.c_str(), false, false);
 	aud2->playOver(NULL, true, NULL);
 
-	m2 = updateFileUri("choro.mp3");
-	aud3 = dm->createContinuousMediaProvider(screen, m2.c_str(), false, false);
-	aud3->playOver(NULL, true, NULL);
+	if (enableChoro) {
+		m2 = updateFileUri("choro.mp3");
+		aud3 = dm->createContinuousMediaProvider(screen, m2.c_str(), false, false);
+		aud3->playOver(NULL, true, NULL);
+	}
 
 	m3 = updateFileUri("rock.mp3");
 	aud3 = dm->createContinuousMediaProvider(screen, m3.c_str(), false, false);
@@ -146,6 +149,9 @@ int main(int argc, char** argv) {
 
 		} else if ((strcmp(argv[i], "--debug") == 0)) {
 			debugging = true;
+
+		} else if ((strcmp(argv[i], "--enable-choro") == 0)) {
+			enableChoro = true;
 		}
 	}
 

@@ -349,6 +349,7 @@ namespace mb {
 		static bool init;
 		static pthread_mutex_t iMutex;
 		static set<SDL2ffmpeg*> instances;
+		static SDL_AudioSpec wantedSpec;
 
 		AVFrame vFrame;
 		AVPacket vPkt;
