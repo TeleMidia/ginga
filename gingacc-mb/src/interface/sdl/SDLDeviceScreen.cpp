@@ -778,7 +778,9 @@ namespace mb {
 				while (k != j->second->end()) {
 					win = (SDLWindow*)(*k);
 
-					if (win->isVisible()) {
+					if (s->windowPool.find(win) != s->windowPool.end() &&
+							win->isVisible()) {
+
 						uSur   = (SDL_Surface*)(win->getContent());
 
 						if (uSur != NULL) {

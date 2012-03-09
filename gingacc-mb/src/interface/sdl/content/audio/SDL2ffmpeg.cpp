@@ -66,6 +66,7 @@ namespace mb {
 	set<SDL2ffmpeg*> SDL2ffmpeg::instances;
 	pthread_mutex_t SDL2ffmpeg::iMutex;
 	bool SDL2ffmpeg::init = false;
+	SDL_AudioSpec SDL2ffmpeg::wantedSpec;
 
 	SDL2ffmpeg::SDL2ffmpeg(const char *filename) {
 		int st_index[AVMEDIA_TYPE_NB];
@@ -99,6 +100,8 @@ namespace mb {
 
 		if (!init) {
 			init = true;
+			getAudioSpec(&wantedSpec, 44100, 2);
+			wantedSpec.size = wantedSpec.channels * wantedSpec.samples * 2;
 			pthread_mutex_init(&iMutex, NULL);
 		}
 
@@ -263,7 +266,6 @@ namespace mb {
 
 	bool SDL2ffmpeg::prepare() {
 		SDL_AudioSpec obtained;
-		int64_t wanted_channel_layout;
 
 		if (is->audio_stream >= 0) {
 /*			wanted_spec.format   = AUDIO_S16SYS;
@@ -273,38 +275,68 @@ namespace mb {
 			wanted_spec.userdata = this;
 */
 
-			wanted_channel_layout = is->audio_src_channel_layout;
-
 			memset(&obtained, 0, sizeof(obtained));
 			memset(&spec, 0, sizeof(spec));
 			getAudioSpec(&spec, audioFreq, audioChannels);
-			int tmpChannels = spec.channels;
-			int ret;
 
-			spec.channels = 2;
-
-			cout << "Opening audio device with the following specification: ";
+			cout << "Audio content has the following specification: ";
 			cout << endl;
-			cout << "Channels: " << (short)spec.channels << " was ";
-			cout << tmpChannels << endl;
+			cout << "Channels: " << (short)spec.channels;
+			cout << endl;
 			cout << "Frequency: " << spec.freq << endl;
 			cout << "Format: " << spec.format << endl;
 			cout << "Samples: " << spec.samples << endl;
 			cout << endl;
 
-			ret = SDL_OpenAudio(&spec, &obtained);
-			spec.channels = tmpChannels;
-
-			if (ret < 0) {
-				memcpy(&obtained, &spec, sizeof(spec));
-
-			} else if (obtained.channels == 0) {
+			if (SDL_OpenAudio(&spec, &obtained) < 0) {
 				memcpy(&obtained, &spec, sizeof(spec));
 
 			} else {
-				memcpy(&spec, &obtained, sizeof(obtained));
+				if (obtained.channels != 0) {
+					memcpy(&spec, &obtained, sizeof(obtained));
+				}
+
+				cout << "Audio device opened with the following specification:";
+				cout << endl;
+				cout << "Channels: " << (short)spec.channels;
+				cout << endl;
+				cout << "Frequency: " << spec.freq << endl;
+				cout << "Format: " << spec.format << endl;
+				cout << "Samples: " << spec.samples << endl;
+				cout << "Size: " << spec.size << endl;
+				cout << endl;
 			}
 
+/*
+			cout << "Opening audio device with the following specification: ";
+			cout << endl;
+			cout << "Channels: " << (short)wantedSpec.channels;
+			cout << endl;
+			cout << "Frequency: " << wantedSpec.freq << endl;
+			cout << "Format: " << wantedSpec.format << endl;
+			cout << "Samples: " << wantedSpec.samples << endl;
+			cout << "Size: " << wantedSpec.size << endl;
+			cout << endl;
+
+			if (SDL_OpenAudio(&wantedSpec, &obtained) < 0) {
+				memcpy(&obtained, &wantedSpec, sizeof(spec));
+
+			} else {
+				if (obtained.channels != 0) {
+					memcpy(&wantedSpec, &obtained, sizeof(obtained));
+				}
+
+				cout << "Audio device opened with the following specification:";
+				cout << endl;
+				cout << "Channels: " << (short)wantedSpec.channels;
+				cout << endl;
+				cout << "Frequency: " << wantedSpec.freq << endl;
+				cout << "Format: " << wantedSpec.format << endl;
+				cout << "Samples: " << wantedSpec.samples << endl;
+				cout << "Size: " << wantedSpec.size << endl;
+				cout << endl;
+			}
+*/
 			if (spec.size == 0) {
 				spec.size = obtained.channels * obtained.samples * 2;
 			}
@@ -323,9 +355,18 @@ namespace mb {
 			is->audio_main_buf[1]  = (uint8_t*)malloc(spec.size);
 
 			is->audio_src_fmt      = is->audio_tgt_fmt = AV_SAMPLE_FMT_S16;
+
 			is->audio_src_freq     = is->audio_tgt_freq = spec.freq;
 			is->audio_src_channels = is->audio_tgt_channels = spec.channels;
 
+			is->audio_src_channel_layout = is->audio_tgt_channel_layout =
+					av_get_default_channel_layout(spec.channels);
+
+/*			is->audio_tgt_freq           = wantedSpec.freq;
+			is->audio_tgt_channels       = wantedSpec.channels;
+			is->audio_tgt_channel_layout = av_get_default_channel_layout(
+					wantedSpec.channels);
+*/
 			is->audio_diff_threshold = (
 					2.0 * SDL_AUDIO_BUFFER_SIZE / spec.freq);
 
@@ -334,8 +375,6 @@ namespace mb {
 			is->audio_diff_avg_count = 0;
 			/* since we do not have a precise anough audio fifo fullness,
 			   we correct audio sync only if larger than this threshold */
-			is->audio_src_channel_layout = is->audio_tgt_channel_layout =
-					wanted_channel_layout;
 		}
 
 		return true;
@@ -1204,7 +1243,7 @@ namespace mb {
 		int n, samples_size;
 		double ref_clock;
 
-		n = av_get_bytes_per_sample(is->audio_tgt_fmt) * is->audio_tgt_channels;
+		n = av_get_bytes_per_sample(is->audio_src_fmt) * is->audio_src_channels;
 		samples_size = samples_size1;
 
 		/*
@@ -1365,9 +1404,9 @@ namespace mb {
 									av_get_default_channel_layout(
 											dec->channels);
 
-			if (dec->sample_fmt != is->audio_src_fmt ||
-					dec_channel_layout != is->audio_src_channel_layout ||
-					dec->sample_rate != is->audio_src_freq) {
+			if (dec->sample_fmt != is->audio_tgt_fmt ||
+					dec_channel_layout != is->audio_tgt_channel_layout ||
+					dec->sample_rate != is->audio_tgt_freq) {
 
 				if (is->swr_ctx) {
 					swr_free(&is->swr_ctx);
@@ -1378,9 +1417,9 @@ namespace mb {
 						is->audio_tgt_channel_layout,
 						is->audio_tgt_fmt,
 						is->audio_tgt_freq,
-						dec_channel_layout,
-						dec->sample_fmt,
-						dec->sample_rate,
+						is->audio_src_channel_layout,
+						is->audio_src_fmt,
+						is->audio_src_freq,
 						0, NULL);
 
 				if (!is->swr_ctx || swr_init(is->swr_ctx) < 0) {
@@ -1433,16 +1472,22 @@ namespace mb {
 				resampled_data_size = len2 * is->audio_tgt_channels *
 						av_get_bytes_per_sample(is->audio_tgt_fmt);
 
+				pts = is->audio_clock;
+				*pts_ptr = pts;
+				is->audio_clock += (double)resampled_data_size /
+						(is->audio_tgt_channels *
+								is->audio_tgt_freq * av_get_bytes_per_sample(
+										is->audio_tgt_fmt));
+
 			} else {
 				is->audio_buf = is->frame->data[0];
-			}
 
-			/* if no pts, then compute it */
-			pts = is->audio_clock;
-			*pts_ptr = pts;
-			is->audio_clock += (double)data_size / (dec->channels *
-					dec->sample_rate * av_get_bytes_per_sample(
-							dec->sample_fmt));
+				pts = is->audio_clock;
+				*pts_ptr = pts;
+				is->audio_clock += (double)data_size / (dec->channels *
+						dec->sample_rate * av_get_bytes_per_sample(
+								dec->sample_fmt));
+			}
 
 			return resampled_data_size;
 		}
@@ -1543,7 +1588,7 @@ namespace mb {
 					wanted_channel_layout);
 
 			audioFreq = avctx->sample_rate;
-			if (audioFreq <= 0 || audioChannels <= 0) {
+			if (audioFreq <= 0 || audioChannels <= 1) {
 				cout << "SDL2ffmpeg::stream_component_open ";
 				cout << "Invalid sample rate or channel count!";
 				cout << endl;
@@ -2264,7 +2309,6 @@ namespace mb {
 		double pts;
 
 		SDL_AudioCVT acvt;
-		SDL_AudioSpec destSpec;
 		uint32_t capacity = 0;
 		int ret;
 		bool cvt = false;
@@ -2280,25 +2324,11 @@ namespace mb {
 			dec = *i;
 			is  = dec->is;
 
-			if (!is->paused) {
-				if (capacity == 0) {
-					capacity = is->audio_hw_buf_size;
-					memcpy(&destSpec, &dec->spec, sizeof(dec->spec));
-
-				} else if (destSpec.channels >= dec->spec.channels) {
-					if (capacity < is->audio_hw_buf_size) {
-						cvt      = true;
-						capacity = is->audio_hw_buf_size;
-						memcpy(&destSpec, &dec->spec, sizeof(dec->spec));
-
-					} else if (capacity > is->audio_hw_buf_size) {
-						cvt = true;
-
-					} else if (destSpec.freq < dec->spec.freq) {
-						cvt      = true;
-						capacity = is->audio_hw_buf_size;
-						memcpy(&destSpec, &dec->spec, sizeof(dec->spec));
-					}
+			if (dec->state == ST_PLAYING) {
+//				if (dec->spec.channels != wantedSpec.channels ||
+//						dec->spec.freq != wantedSpec.freq) {
+				if (dec->spec.channels != wantedSpec.channels) {
+					cvt = true;
 				}
 			}
 
@@ -2313,22 +2343,24 @@ namespace mb {
 			dec = (*i);
 			is  = dec->is;
 
-			if (is->audio_stream >= 0 && dec->state == ST_PLAYING) {
+			if (is->audio_stream >= 0 && is->audio_st != NULL &&
+					dec->state == ST_PLAYING) {
+
 				if (is->audio_main_buf_size[0] == is->audio_hw_buf_size) {
 					multi++;
 					/*
 					 * FIXME: mixer and converter work only when all
 					 *        sources have the same number of channels.
 					 */
-					if (cvt && capacity != is->audio_hw_buf_size) {
+					/*if (cvt && wantedSpec.size != is->audio_hw_buf_size) {
 						ret = SDL_BuildAudioCVT(
 								&acvt,
 								dec->spec.format,
 								dec->spec.channels,
 								dec->spec.freq,
-								destSpec.format,
-								destSpec.channels,
-								destSpec.freq);
+								wantedSpec.format,
+								wantedSpec.channels,
+								wantedSpec.freq);
 
 						if (ret != -1) {
 							acvt.len = is->audio_hw_buf_size;
@@ -2344,7 +2376,7 @@ namespace mb {
 
 								SDL_ConvertAudio(&acvt);
 
-								/*cout << endl;
+								cout << endl;
 								cout << "Converting(stream len = '" << len;
 								cout << "' and Audio instance = '";
 								cout << dec << "')" << endl;
@@ -2360,16 +2392,16 @@ namespace mb {
 								cout << "'";
 								cout << endl;
 								cout << "TO: ";
-								cout << "format '" << destSpec.format << "' ";
+								cout << "format '" << wantedSpec.format << "' ";
 								cout << "channels '";
-								cout << (short)destSpec.channels;
-								cout << "' freq '" << destSpec.freq << "' ";
+								cout << (short)wantedSpec.channels;
+								cout << "' freq '" << wantedSpec.freq << "' ";
 								cout << "size '";
 								cout << acvt.len_cvt;
 								cout << "' and capacity '";
-								cout << capacity;
+								cout << wantedSpec.size;
 								cout << "'";
-								cout << endl;*/
+								cout << endl;
 
 								clamp((short*)acvt.buf, acvt.len_cvt);
 
@@ -2389,9 +2421,10 @@ namespace mb {
 								ret = -2;
 							}
 						}
-					}
+					}*/
 
-					if (ret == 1) {
+					//if (ret == 1) {
+					if (wantedSpec.channels == dec->spec.channels) {
 						SDL_MixAudioFormat(
 								stream,
 								is->audio_main_buf[0],
