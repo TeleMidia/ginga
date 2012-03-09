@@ -278,7 +278,24 @@ namespace mb {
 			memset(&obtained, 0, sizeof(obtained));
 			memset(&spec, 0, sizeof(spec));
 			getAudioSpec(&spec, audioFreq, audioChannels);
-			if (SDL_OpenAudio(&spec, &obtained) < 0) {
+			int tmpChannels = spec.channels;
+			int ret;
+
+			spec.channels = 2;
+
+			cout << "Opening audio device with the following specification: ";
+			cout << endl;
+			cout << "Channels: " << (short)spec.channels << " was ";
+			cout << tmpChannels << endl;
+			cout << "Frequency: " << spec.freq << endl;
+			cout << "Format: " << spec.format << endl;
+			cout << "Samples: " << spec.samples << endl;
+			cout << endl;
+
+			ret = SDL_OpenAudio(&spec, &obtained);
+			spec.channels = tmpChannels;
+
+			if (ret < 0) {
 				memcpy(&obtained, &spec, sizeof(spec));
 
 			} else if (obtained.channels == 0) {
@@ -2252,6 +2269,9 @@ namespace mb {
 		int ret;
 		bool cvt = false;
 
+		unsigned int sleepTime;
+		int multi = 0;
+
 		pthread_mutex_lock(&iMutex);
 		audio_callback_time = av_gettime();
 
@@ -2265,7 +2285,7 @@ namespace mb {
 					capacity = is->audio_hw_buf_size;
 					memcpy(&destSpec, &dec->spec, sizeof(dec->spec));
 
-				} else if (destSpec.channels > dec->spec.channels) {
+				} else if (destSpec.channels >= dec->spec.channels) {
 					if (capacity < is->audio_hw_buf_size) {
 						cvt      = true;
 						capacity = is->audio_hw_buf_size;
@@ -2273,6 +2293,11 @@ namespace mb {
 
 					} else if (capacity > is->audio_hw_buf_size) {
 						cvt = true;
+
+					} else if (destSpec.freq < dec->spec.freq) {
+						cvt      = true;
+						capacity = is->audio_hw_buf_size;
+						memcpy(&destSpec, &dec->spec, sizeof(dec->spec));
 					}
 				}
 			}
@@ -2290,6 +2315,7 @@ namespace mb {
 
 			if (is->audio_stream >= 0 && dec->state == ST_PLAYING) {
 				if (is->audio_main_buf_size[0] == is->audio_hw_buf_size) {
+					multi++;
 					/*
 					 * FIXME: mixer and converter work only when all
 					 *        sources have the same number of channels.
@@ -2407,7 +2433,12 @@ namespace mb {
 		}
 		pthread_mutex_unlock(&iMutex);
 
-		//::usleep((unsigned int)(30000 - (av_gettime() - audio_callback_time)));
+		sleepTime = (unsigned int)(15000 -
+				(av_gettime() - audio_callback_time));
+
+		if (sleepTime > 0) {
+			::usleep(sleepTime);
+		}
 	}
 
 	int SDL2ffmpeg::subtitle_thread(void *arg) {

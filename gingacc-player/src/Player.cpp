@@ -102,8 +102,6 @@ namespace player {
 	Player::~Player() {
 		this->status = STOP;
 
-		performLockedListenersRequest();
-
 		pthread_mutex_lock(&listM);
 		listeners.clear();
 
