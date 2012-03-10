@@ -89,8 +89,8 @@ namespace player {
 		this->surface   = NULL;
 		this->mouseX    = -1;
 		this->mouseY    = -1;
-		this->w         = 0;
-		this->h         = 0;
+		this->x         = 0;
+		this->y         = 0;
 		this->w         = -1;
 		this->h         = -1;
 		this->hasFocus  = false;
@@ -378,10 +378,14 @@ namespace player {
 		}
 	}
 
-	void AwesomiumHandler::setSize(AwesomiumHDR id, int w, int h) {
+	void AwesomiumHandler::setAwesomiumBounds(
+			AwesomiumHDR id, int x, int y, int w, int h) {
+
 		AwesomiumInfo* aInfo;
 
 		if (getAwesomeInfo(id, &aInfo)) {
+			aInfo->x = x;
+			aInfo->y = y;
 			aInfo->w = w;
 			aInfo->h = h;
 		}
@@ -429,6 +433,13 @@ namespace player {
 
 						aInfo->h = ((IWindow*)(
 								aInfo->surface->getParent()))->getH();
+
+						clog << "Window coords: '";
+						clog << aInfo->x << ", ";
+						clog << aInfo->y << ", ";
+						clog << aInfo->w << ", ";
+						clog << aInfo->h << "' ";
+						clog << endl;
 					}
 
 					if (aInfo->w <= 0 || aInfo->h <= 0) {
@@ -509,7 +520,7 @@ namespace player {
 
 				destroyAwesomium(aInfo->id);
 
-				cout << "AwesomiumHandler::loadUrl call destroy" << endl;
+				clog << "AwesomiumHandler::loadUrl call destroy" << endl;
 				if (webView != NULL) {
 					webView->destroy();
 					webView = NULL;
@@ -535,16 +546,14 @@ namespace player {
 			case AwesomiumInfo::ET_NONE:
 				int tmpX, tmpY;
 				if (getAwesomeIM(aInfo->id, &im, false)) {
-					tmpX = im->getCurrentXAxisValue();
-					tmpY = im->getCurrentYAxisValue();
+					tmpX = im->getCurrentXAxisValue() - aInfo->x;
+					tmpY = im->getCurrentYAxisValue() - aInfo->y;
 
 					if (tmpX != aInfo->mouseX || tmpY != aInfo->mouseY) {
-						aInfo->mouseX = im->getCurrentXAxisValue();
-						aInfo->mouseY = im->getCurrentYAxisValue();
+						aInfo->mouseX = tmpX;
+						aInfo->mouseY = tmpY;
 
-						webView->injectMouseMove(
-								aInfo->mouseX - aInfo->x,
-								aInfo->mouseY - aInfo->y);
+						webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
 					}
 				}
 				break;
@@ -578,18 +587,26 @@ namespace player {
 
 			case AwesomiumInfo::ET_BUTTON:
 				if (getAwesomeIM(aInfo->id, &im, false)) {
-					aInfo->mouseX = im->getCurrentXAxisValue();
-					aInfo->mouseY = im->getCurrentYAxisValue();
+					aInfo->mouseX = im->getCurrentXAxisValue() - aInfo->x;
+					aInfo->mouseY = im->getCurrentYAxisValue() - aInfo->y;
+
+					clog << "AwesomiumHandler::eventHandler MOUSE CLICK on '";
+					clog << im->getCurrentXAxisValue() << ", ";
+					clog << im->getCurrentYAxisValue() << "' window = '";
+					clog << aInfo->x << ", ";
+					clog << aInfo->y << ", ";
+					clog << aInfo->w << ", ";
+					clog << aInfo->h << "' Calculated click on '";
+					clog << aInfo->mouseX;
+					clog << "," << aInfo->mouseY << "'";
+					clog << endl;
+
+					webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
+					update(aInfo, 25);
+					webView->injectMouseDown(Awesomium::LEFT_MOUSE_BTN);
+					update(aInfo, 25);
+					webView->injectMouseUp(Awesomium::LEFT_MOUSE_BTN);
 				}
-
-				clog << "AwesomiumHandler::eventHandler MOUSE CLICK on ";
-				clog << aInfo->mouseX << "," << aInfo->mouseY << "'" << endl;
-
-				webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
-				update(aInfo, 25);
-				webView->injectMouseDown(Awesomium::LEFT_MOUSE_BTN);
-				update(aInfo, 25);
-				webView->injectMouseUp(Awesomium::LEFT_MOUSE_BTN);
 				break;
 		}
 	}

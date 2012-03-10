@@ -76,12 +76,6 @@ namespace mb {
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
-		releaseDrawData();
-		pthread_mutex_lock(&ddMutex);
-		this->drawData.clear();
-		pthread_mutex_unlock(&ddMutex);
-		pthread_mutex_destroy(&sMutex);
-
 		releaseChromaColor();
 		releaseBorderColor();
 		releaseBgColor();
@@ -93,18 +87,17 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
 
-		if (sur != NULL) {
-			if (LocalScreenManager::getInstance()->hasWindow(
-					myScreen, parent)) {
-
-				if (parent->removeChildSurface(this)) {
-					mySurface = true;
-				}
-
-			} else {
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			if (parent->removeChildSurface(this)) {
 				mySurface = true;
 			}
 		}
+
+		releaseDrawData();
+		pthread_mutex_lock(&ddMutex);
+		this->drawData.clear();
+		pthread_mutex_unlock(&ddMutex);
+		pthread_mutex_destroy(&ddMutex);
 
 		clog << "SDLSurface::~SDLSurface all done" << endl;
 	}
@@ -266,7 +259,7 @@ namespace mb {
 			return;
 		}
 
-		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
+		SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, 0, 0, 0, 0));
 	}
 
 	vector<DrawData*>* SDLSurface::createDrawDataList() {
@@ -284,29 +277,52 @@ namespace mb {
 	void SDLSurface::pushDrawData(int c1, int c2, int c3, int c4, short type) {
 		DrawData* dd;
 
-		pthread_mutex_lock(&ddMutex);
-		dd = new DrawData;
-		dd->coord1   = c1;
-		dd->coord2   = c2;
-		dd->coord3   = c3;
-		dd->coord4   = c4;
-		dd->dataType = type;
+		if (surfaceColor != NULL) {
+			pthread_mutex_lock(&ddMutex);
+			dd = new DrawData;
+			dd->coord1   = c1;
+			dd->coord2   = c2;
+			dd->coord3   = c3;
+			dd->coord4   = c4;
+			dd->dataType = type;
+			dd->r        = surfaceColor->getR();
+			dd->g        = surfaceColor->getG();
+			dd->b        = surfaceColor->getB();
+			dd->a        = surfaceColor->getAlpha();
 
-		drawData.push_back(dd);
-		pthread_mutex_unlock(&ddMutex);
+			clog << "SDLSurface::pushDrawData current size = '";
+			clog << drawData.size() << "'" << endl;
+
+			drawData.push_back(dd);
+			pthread_mutex_unlock(&ddMutex);
+		}
 	}
 
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
-		pushDrawData(x1, y1, x2, y2, DDT_LINE);
+		clog << "SDLSurface::drawLine '";
+		clog << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "'";
+		clog << endl;
+
+		pushDrawData(x1, y1, x2, y2, SDLWindow::DDT_LINE);
 	}
 
 	void SDLSurface::drawRectangle(int x, int y, int w, int h) {
-		pushDrawData(x, y, w, h, DDT_RECT);
+		clog << "SDLSurface::drawRectangle '";
+		clog << x << ", " << y << ", " << w << ", " << h << "'";
+		clog << endl;
+
+		pushDrawData(x, y, w, h, SDLWindow::DDT_RECT);
 	}
 
 	void SDLSurface::fillRectangle(int x, int y, int w, int h) {
-		/*SDL_Rect rect;
+		SDL_Rect rect;
 		int r, g, b;
+
+		clog << "SDLSurface::fillRectangle '";
+		clog << x << ", " << y << ", " << w << ", " << h << "'";
+		clog << endl;
+
+		createSurface();
 
 		if (sur != NULL && surfaceColor != NULL) {
 			rect.x = x;
@@ -319,9 +335,9 @@ namespace mb {
 			b = surfaceColor->getB();
 
 			SDL_FillRect(sur, &rect, SDL_MapRGB(sur->format, r, g, b));
-		}*/
+		}
 
-		pushDrawData(x, y, w, h, DDT_FILL_RECT);
+		//pushDrawData(x, y, w, h, SDLWindow::DDT_FILL_RECT);
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {
@@ -344,6 +360,10 @@ namespace mb {
 
 		if (sur != NULL) {
 			SDL_SetColorKey(sur, SDL_TRUE, SDL_MapRGB(sur->format, r, g, b));
+		}
+
+		if (parent != NULL) {
+			parent->setColorKey(r, g, b);
 		}
 	}
 
@@ -416,14 +436,7 @@ namespace mb {
 		Matrix::setMatrix(&matrix, this);
 	}
 
-	void SDLSurface::blit(
-			int x, int y, ISurface* src,
-			int srcX, int srcY, int srcW, int srcH) {
-
-		SDL_Rect srcRect;
-		SDL_Rect* s = NULL;
-		SDL_Rect dstRect;
-		SDL_Surface* uSur;
+	void SDLSurface::createSurface() {
 		unsigned int r, g, b, a;
 
 		if (sur == NULL && parent != NULL) {
@@ -443,7 +456,18 @@ namespace mb {
 				pthread_mutex_unlock(&sMutex);
 			}
 		}
+	}
 
+	void SDLSurface::blit(
+			int x, int y, ISurface* src,
+			int srcX, int srcY, int srcW, int srcH) {
+
+		SDL_Rect srcRect;
+		SDL_Rect* s = NULL;
+		SDL_Rect dstRect;
+		SDL_Surface* uSur;
+
+		createSurface();
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 

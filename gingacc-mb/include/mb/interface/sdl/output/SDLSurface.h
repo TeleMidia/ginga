@@ -66,11 +66,6 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class SDLSurface : public ISurface {
-		public:
-			static const short DDT_LINE      = 0;
-			static const short DDT_RECT      = 1;
-			static const short DDT_FILL_RECT = 2;
-
 		private:
 			GingaScreenID myScreen;
 			SDL_Surface* sur;
@@ -142,6 +137,11 @@ namespace mb {
 			void getStringExtents(const char* text, int* w, int* h);
 			void flip();
 			void scale(double x, double y);
+
+		private:
+			void createSurface();
+
+		public:
 			void blit(
 					int x,
 					int y,

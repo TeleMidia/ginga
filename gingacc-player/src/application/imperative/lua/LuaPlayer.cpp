@@ -711,7 +711,7 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
     this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
 	this->im->addApplicationInputEventListener(this);
 
-	cout << "LuaPlayer::LuaPlayer surface = '" << this->surface << "'" << endl;
+	clog << "LuaPlayer::LuaPlayer surface = '" << this->surface << "'" << endl;
 
     // ESCOPO
     this->currentScope = "";        // escopo global

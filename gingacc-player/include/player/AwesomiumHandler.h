@@ -140,7 +140,10 @@ namespace player {
 			static AwesomiumHDR createAwesomium(GingaScreenID screenId);
 			static void destroyAwesomium(AwesomiumHDR id);
 			static void getSize(AwesomiumHDR id, int* w, int* h);
-			static void setSize(AwesomiumHDR id, int w, int h);
+
+			static void setAwesomiumBounds(
+					AwesomiumHDR id, int x, int y, int w, int h);
+
 			static void loadUrl(AwesomiumHDR id, string url);
 			static string getUrl(AwesomiumHDR id);
 			static ISurface* getSurface(AwesomiumHDR id);

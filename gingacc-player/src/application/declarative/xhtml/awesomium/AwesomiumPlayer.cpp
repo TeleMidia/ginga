@@ -111,7 +111,7 @@ namespace player {
 		clog << y << "', w = '" << w << "', h = '" << h << "'.";
 		clog << endl;
 
-		AwesomiumHandler::setSize(awesome, w - x, h - y);
+		AwesomiumHandler::setAwesomiumBounds(awesome, x, y, w, h);
 	}
 
 	void AwesomiumPlayer::play() {
