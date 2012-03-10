@@ -460,7 +460,9 @@ namespace mb {
 		if (!childSurfaces.empty()) {
 			iSur = (SDLSurface*)(*childSurfaces.begin());
 
-			dd = iSur->createDrawDataList();
+			if (LocalScreenManager::getInstance()->hasSurface(myScreen, iSur)) {
+				dd = iSur->createDrawDataList();
+			}
 		}
 		unlockChilds();
 

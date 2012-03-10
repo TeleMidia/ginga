@@ -77,9 +77,18 @@ namespace mb {
 		int coord3;
 		int coord4;
 		short dataType;
+		int r;
+		int g;
+		int b;
+		int a;
 	} DrawData;
 
 	class SDLWindow : public IWindow {
+		public:
+			static const short DDT_LINE      = 0;
+			static const short DDT_RECT      = 1;
+			static const short DDT_FILL_RECT = 2;
+
 		private:
 			SDL_Texture* texture;
 			SDL_Surface* winSur;

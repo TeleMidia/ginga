@@ -104,20 +104,21 @@ namespace mb {
 
 		int i;
 
-		aSystem     = "";
-		aspect      = DSA_UNKNOWN;
-		hSize       = 0;
-		vSize       = 0;
-		hRes        = 0;
-		wRes        = 0;
-		im          = NULL;
-		id          = myId;
-		uId         = parentId;
-		renderer    = NULL;
-		mbMode      = "";
-		mbSubSystem = "";
-		screen      = NULL;
-		sdlId       = 0;
+		aSystem        = "";
+		aspect         = DSA_UNKNOWN;
+		hSize          = 0;
+		vSize          = 0;
+		hRes           = 0;
+		wRes           = 0;
+		im             = NULL;
+		id             = myId;
+		uId            = parentId;
+		renderer       = NULL;
+		mbMode         = "";
+		mbSubSystem    = "";
+		screen         = NULL;
+		sdlId          = 0;
+		backgroundLayer = NULL;
 
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "subsystem") == 0) && ((i + 1) < argc)) {
@@ -272,7 +273,12 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::setBackgroundImage(string uri) {
+		if (backgroundLayer == NULL) {
+			backgroundLayer = createWindow(0, 0, wRes, hRes, -50000);
+		}
 
+		backgroundLayer->renderImgFile(uri);
+		backgroundLayer->show();
 	}
 
 	unsigned int SDLDeviceScreen::getWidthResolution() {
@@ -1010,6 +1016,8 @@ namespace mb {
 		IContinuousMediaProvider* iCmp;
 		IDiscreteMediaProvider* iDmp;
 
+		set<IWindow*>* winClone;
+
 		set<IWindow*>::iterator i;
 		set<ISurface*>::iterator j;
 		set<IContinuousMediaProvider*>::iterator k;
@@ -1022,20 +1030,19 @@ namespace mb {
 
 		//Releasing remaining Window objects in Window Pool
 		pthread_mutex_lock(&s->winMutex);
-		i = s->windowPool.begin();
-		while (i != s->windowPool.end()) {
-			iWin = (*i);
-
-			s->windowPool.erase(i);
-			if (iWin != NULL) {
-				pthread_mutex_unlock(&s->winMutex);
-				delete iWin;
-				pthread_mutex_lock(&s->winMutex);
-			}
-			i = s->windowPool.begin();
-		}
+		winClone = new set<IWindow*>(s->windowPool);
 		s->windowPool.clear();
 		pthread_mutex_unlock(&s->winMutex);
+
+		i = winClone->begin();
+		while (i != winClone->end()) {
+			iWin = (*i);
+			if (iWin != NULL) {
+				delete iWin;
+			}
+			++i;
+		}
+		delete winClone;
 
 		//Releasing remaining Surface objects in Surface Pool
 		pthread_mutex_lock(&s->surMutex);
@@ -1567,7 +1574,7 @@ namespace mb {
 	void SDLDeviceScreen::drawWindow(
 			SDL_Renderer* renderer,
 			SDL_Texture* texture,
-			IWindow* win) {
+			IWindow* iWin) {
 
 		SDL_Rect rect;
 		IColor* bgColor;
@@ -1575,22 +1582,29 @@ namespace mb {
 		int i, r, g, b, a, bw;
 		int alpha = 0;
 
-	    if (win != NULL) {
+		bool addMode = false;
+
+		DrawData* dd;
+		SDL_Rect dr;
+		vector<DrawData*>* drawData;
+		vector<DrawData*>::iterator it;
+
+	    if (iWin != NULL) {
 	    	/* getting renderer previous state */
 	    	SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
 
-	    	rect.x = win->getX();
-	    	rect.y = win->getY();
-	    	rect.w = win->getW();
-	    	rect.h = win->getH();
+	    	rect.x = iWin->getX();
+	    	rect.y = iWin->getY();
+	    	rect.w = iWin->getW();
+	    	rect.h = iWin->getH();
 
-	    	alpha = win->getTransparencyValue();
+	    	alpha = iWin->getTransparencyValue();
 	    	if (texture != NULL) {
 	    		SDL_SetTextureAlphaMod(texture, 255 - alpha);
 	    	}
 
 	    	/* setting window background */
-	    	bgColor = win->getBgColor();
+	    	bgColor = iWin->getBgColor();
 	    	if (bgColor != NULL) {
 	    		if (alpha == 0) {
 	    			alpha = 255 - bgColor->getAlpha();
@@ -1606,22 +1620,105 @@ namespace mb {
 	    		SDL_RenderFillRect(renderer, &rect);
 	    	}
 
+	    	/* geometric figures (lua only) */
+	    	drawData = ((SDLWindow*)iWin)->createDrawDataList();
+	    	if (drawData != NULL) {
+	    		it = drawData->begin();
+	    		while (it != drawData->end()) {
+	    			dd = (*it);
+		    		SDL_SetRenderDrawColor(
+		    				renderer, dd->r, dd->g, dd->b, dd->a);
+
+	    			switch (dd->dataType) {
+						case SDLWindow::DDT_LINE:
+							if ((dd->coord1 < rect.x) ||
+									(dd->coord2 < rect.y) ||
+									(dd->coord1 > rect.w) ||
+									(dd->coord2 > rect.h) ||
+									(dd->coord3 > rect.w) ||
+									(dd->coord4 > rect.h)) {
+
+								cout << "SDLDeviceScreen::drawWindow ";
+								cout << "invalid line coords: " << endl;
+								cout << dd->coord1 << ", ";
+								cout << dd->coord2 << ", ";
+								cout << dd->coord3 << ", ";
+								cout << dd->coord4 << "'";
+								cout << endl;
+								cout << "Window rect coords: " << endl;
+								cout << rect.x << ", ";
+								cout << rect.y << ", ";
+								cout << rect.w << ", ";
+								cout << rect.h << "'";
+								cout << endl;
+								break;
+							}
+
+							SDL_RenderDrawLine(
+									renderer,
+									dd->coord1 + rect.x,
+									dd->coord2 + rect.y,
+									dd->coord3 + rect.x,
+									dd->coord4 + rect.y);
+
+							break;
+
+						case SDLWindow::DDT_RECT:
+							dr.x = dd->coord1 + rect.x;
+							dr.y = dd->coord2 + rect.y;
+							dr.w = dd->coord3;
+							dr.h = dd->coord4;
+
+							if ((dr.x > + rect.x + rect.w) ||
+									(dr.y >  + rect.y + rect.h) ||
+									(dd->coord1 + dr.w > rect.w) ||
+									(dd->coord2 + dr.h > rect.h)) {
+
+								cout << "SDLDeviceScreen::drawWindow ";
+								cout << "invalid rect coords: " << endl;
+								cout << dr.x << ", ";
+								cout << dr.y << ", ";
+								cout << dr.w << ", ";
+								cout << dr.h << "'";
+								cout << endl;
+								cout << "Window rect coords: " << endl;
+								cout << rect.x << ", ";
+								cout << rect.y << ", ";
+								cout << rect.w << ", ";
+								cout << rect.h << "'";
+								cout << endl;
+								break;
+							}
+
+							if (dd->dataType == SDLWindow::DDT_RECT) {
+								SDL_RenderDrawRect(renderer, &dr);
+
+							} else {
+								SDL_RenderFillRect(renderer, &dr);
+							}
+							break;
+	    			}
+	    			++it;
+	    		}
+	    		delete drawData;
+	    	}
+
 	    	/* window rendering */
 	    	if (texture != NULL) {
 	    		SDL_RenderCopy(renderer, texture, NULL, &rect);
 	    	}
 
 	    	/* window border */
-	    	win->getBorder(&r, &g, &b, &a, &bw);
+	    	iWin->getBorder(&r, &g, &b, &a, &bw);
 	    	if (bw != 0) {
 	    		SDL_SetRenderDrawColor(renderer, r, g, b, a);
 
 				i = 0;
 				while (i != bw) {
-					rect.x = win->getX() - i;
-					rect.y = win->getY() - i;
-					rect.w = win->getW() + 2*i;
-					rect.h = win->getH() + 2*i;
+					rect.x = iWin->getX() - i;
+					rect.y = iWin->getY() - i;
+					rect.w = iWin->getW() + 2*i;
+					rect.h = iWin->getH() + 2*i;
 
 					SDL_RenderDrawRect(renderer, &rect);
 

@@ -150,6 +150,7 @@ typedef struct {
 			pthread_mutex_t cmpMutex;
 			pthread_mutex_t dmpMutex;
 
+			IWindow* backgroundLayer;
 			SDL_Window* screen;
 			Uint32 sdlId;
 			SDL_Renderer* renderer;
@@ -310,7 +311,7 @@ typedef struct {
 			static void drawWindow(
 					SDL_Renderer* renderer,
 					SDL_Texture* texture,
-					IWindow* win);
+					IWindow* iWin);
 
 			static void insertWindowFromRenderList(
 					IWindow* win, vector<IWindow*>* windows);
