@@ -240,6 +240,9 @@ namespace mb {
 		string vSystem = "", vSubSystem = "", vMode = "", vParent = "";
 		string aSystem = "";
 
+		clog << "LocalScreenManager::createScreen argv[";
+		clog << argc << "]" << endl;
+
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "--vsystem") == 0) && ((i + 1) < argc)) {
 				vSystem.assign(args[i + 1]);
@@ -252,15 +255,15 @@ namespace mb {
 			} else if ((strcmp(args[i], "--vmode") == 0) && ((i + 1) < argc)) {
 				vMode.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
+			} else if ((strcmp(args[i], "--embed") == 0) && ((i + 1) < argc)) {
 				vParent.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {
 				aSystem.assign(args[i + 1]);
 			}
 
-			/*clog << "LocalScreenManager::createScreen PARSER argv[";
-			clog << i << "] = '" << args[i] << "'" << endl;*/
+			clog << "LocalScreenManager::createScreen PARSER argv[";
+			clog << i << "] = '" << args[i] << "'" << endl;
 		}
 
 		return createScreen(vSystem, vSubSystem, vMode, vParent, aSystem);
@@ -308,6 +311,14 @@ namespace mb {
 
 					mbArgs[argc] = (char*)vMode.c_str();
 					argc++;
+				}
+
+				if (vParent != "") {
+					parentId = (void*)strtoul(vParent.c_str(), NULL, 10);
+
+					clog << "LocalScreenManager::createScreen parent src = ";
+					clog << vParent << "' and dst = '" << parentId << "'";
+					clog << endl;
 				}
 
 				if (aSystem != "") {
