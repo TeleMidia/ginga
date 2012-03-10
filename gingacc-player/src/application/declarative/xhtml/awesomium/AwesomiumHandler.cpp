@@ -542,6 +542,10 @@ namespace player {
 		aInfo->eventType = AwesomiumInfo::ET_NONE;
 		aInfo->eventUsed();
 
+		if (!aInfo->hasFocus) {
+			return;
+		}
+
 		switch (eventType) {
 			case AwesomiumInfo::ET_NONE:
 				int tmpX, tmpY;
