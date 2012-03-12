@@ -1,23 +1,25 @@
+INCLUDES                             = \
+                                       -I/usr/local/include/ginga/ \
+                                       -I/usr/include/libuser/ \
+                                       -I../include \
+                                       $(all_includes) \
+                                       -I$(top_srcdir)/include/contextmanager
 
-# set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
-    -I/usr/include/libuser/ -I../include $(all_includes) \
-    -I$(top_srcdir)/include/contextmanager
+LIBS                                 =
 
-LIBS =
+libdir                               = \
+                                       /usr/local/lib/ginga
 
-libgingacccontextmanagerdir = /usr/local/lib/ginga
+lib_LTLIBRARIES                      = \
+                                       libgingacccontextmanager.la
 
-# AM_CXXFLAGS = -g
-libgingacccontextmanager_so_CPPFLAGS = -I$(top_srcdir)/include
-libgingacccontextmanager_so_LDFLAGS = -Wl,-soname,libgingacccontextmanager.so \
-    -shared
+libgingacccontextmanager_la_SOURCES  = \
+                                       ContextManager.cpp \
+                                       user/GingaUser.cpp \
+                                       system/SystemInfo.cpp
 
-libgingacccontextmanager_PROGRAMS = libgingacccontextmanager.so
-
-libgingacccontextmanager_so_SOURCES = ContextManager.cpp user/GingaUser.cpp \
-    system/SystemInfo.cpp
-
-libgingacccontextmanager_so_LDADD = -ltelemidiautil $(COMPONENTS_LIBS)
+libgingacccontextmanager_la_LIBADD   = \
+                                       -ltelemidiautil \
+                                       $(COMPONENTS_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

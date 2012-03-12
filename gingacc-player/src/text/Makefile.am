@@ -5,15 +5,13 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-libgingaccplatxtdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplatxt_so_LDFLAGS = -Wl,-soname,libgingaccplatxt.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../
+lib_LTLIBRARIES = libgingaccplatxt.la
 
-libgingaccplatxt_PROGRAMS = libgingaccplatxt.so
+libgingaccplatxt_la_SOURCES = TextPlayer.cpp
 
-libgingaccplatxt_so_SOURCES = TextPlayer.cpp
-
-libgingaccplatxt_so_LDADD = -ltelemidiautil -lgingaccplayer $(COMPONENTS_LIBS)
+libgingaccplatxt_la_LIBADD = -ltelemidiautil -lgingaccplayer \
+$(COMPONENTS_LIBS) -L/usr/local/lib -L/usr/local/lib/ginga -L../
 
 MAINTAINERCLEANFILES = Makefile.in

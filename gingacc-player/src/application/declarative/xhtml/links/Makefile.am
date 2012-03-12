@@ -5,17 +5,15 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/players
+
 if LINKSLIB
-libgingaccplalksdir = /usr/local/lib/ginga/players/
+lib_LTLIBRARIES = libgingaccplalks.la
 
-libgingaccplalks_so_LDFLAGS = -Wl,-soname,libgingaccplalks.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../../../../
+libgingaccplalks_la_SOURCES = LinksPlayer.cpp
 
-libgingaccplalks_PROGRAMS = libgingaccplalks.so
-
-libgingaccplalks_so_SOURCES = LinksPlayer.cpp
-
-libgingaccplalks_so_LDADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystem -lpthread $(COMPONENTS_LIBS)
+libgingaccplalks_la_LIBADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
+    -lgingaccsystem -lpthread $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../../../../
 endif
 MAINTAINERCLEANFILES = Makefile.in

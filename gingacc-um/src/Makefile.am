@@ -1,15 +1,15 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
+INCLUDES = $(all_includes) -I$(top_srcdir)/include \
+-I/usr/local/include/ginga/
 
 LIBS =
 
-libgingaccumdir = /usr/local/lib/ginga
+libdir = /usr/local/lib/ginga
 
-libgingaccum_so_LDFLAGS = -Wl,-soname,libgingaccum.so \
-    -shared -ldl -I/usr/local/include/ginga/
+libgingaccum_la_LIBADD = -ldl 
 
-libgingaccum_PROGRAMS = libgingaccum.so
-libgingaccum_so_SOURCES = Update.cpp
+lib_LTLIBRARIES = libgingaccum.la
+libgingaccum_la_SOURCES = Update.cpp
 
 MAINTAINERCLEANFILES = Makefile.in

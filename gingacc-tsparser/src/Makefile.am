@@ -4,13 +4,10 @@ INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-localLibdir = /usr/local/lib/ginga
+libdir = /usr/local/lib/ginga
 
-libgingacctsparser_so_LDFLAGS = -Wl,-soname,libgingacctsparser.so \
-	-shared -L/usr/local/lib -L/usr/local/lib/ginga
-
-localLib_PROGRAMS = libgingacctsparser.so
-libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
+lib_LTLIBRARIES = libgingacctsparser.la
+libgingacctsparser_la_SOURCES = Demuxer.cpp FrontendFilter.cpp \
     PipeFilter.cpp PSIFilter.cpp \
     PesFilter.cpp TransportSection.cpp TSPacket.cpp \
     si/AIT.cpp si/Application.cpp si/EventInfo.cpp \
@@ -34,7 +31,8 @@ libgingacctsparser_so_SOURCES = Demuxer.cpp FrontendFilter.cpp \
 	si/descriptors/ServiceDescriptor.cpp \
 	si/descriptors/LocalTimeOffsetDescriptor.cpp
 
-libgingacctsparser_so_LDADD = -ltelemidiautil -lpthread -lgingaccsystem \
-    -lgingacctuner
+libgingacctsparser_la_LIBADD = -ltelemidiautil -lpthread -lgingaccsystem \
+    -lgingacctuner \
+    -L/usr/local/lib -L/usr/local/lib/ginga
 
 MAINTAINERCLEANFILES = Makefile.in

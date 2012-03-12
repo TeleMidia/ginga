@@ -5,19 +5,17 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/mb/dec
+
 if TERMSYSTEM
-localLibtermdir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES = libgingaccmbdectermav.la
 
-localLibterm_PROGRAMS = libgingaccmbdectermav.so
+libgingaccmbdectermav_la_SOURCES = TermVideoProvider.cpp
 
-libgingaccmbdectermav_so_LDFLAGS = -Wl,-soname,libgingaccmbdectermav.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga \
+libgingaccmbdectermav_la_LIBADD = -ltelemidiautil \
+    -lgingaccmbterm -lgingaccmb -lgingaccsystem \
+    -L/usr/local/lib -L/usr/local/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/term
-
-libgingaccmbdectermav_so_SOURCES = TermVideoProvider.cpp
-
-libgingaccmbdectermav_so_LDADD = -ltelemidiautil \
-    -lgingaccmbterm -lgingaccmb -lgingaccsystem
 endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

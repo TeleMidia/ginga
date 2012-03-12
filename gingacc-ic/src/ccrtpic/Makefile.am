@@ -6,15 +6,12 @@ $(all_includes) -I$(top_srcdir)/include
 LIBS =
 
 if CCRTPLIB
-libgingaccicccrtpdir = /usr/local/lib/ginga/ic
+libdir = /usr/local/lib/ginga/ic
 
-libgingaccicccrtp_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga -Wl,-soname,libgingaccicccrtp.so -shared
+lib_LTLIBRARIES = libgingaccicccrtp.la
 
-libgingaccicccrtp_PROGRAMS = libgingaccicccrtp.so
+libgingaccicccrtp_la_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
 
-libgingaccicccrtp_so_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
-
-libgingaccicccrtp_so_LDADD = -lccrtp1 $(COMPONENTS_LIBS)
+libgingaccicccrtp_la_LIBADD = -lccrtp1 $(COMPONENTS_LIBS)
 endif
 MAINTAINERCLEANFILES = Makefile.in

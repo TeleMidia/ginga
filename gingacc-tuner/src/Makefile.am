@@ -2,8 +2,8 @@
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
 LIBS =
-localLibdir = /usr/local/lib/ginga
-localLib_PROGRAMS = libgingacctuner.so
+libdir = /usr/local/lib/ginga
+lib_LTLIBRARIES = libgingacctuner.la
 
 TUNERCPPS = providers/Channel.cpp \
     providers/MulticastProvider.cpp \
@@ -14,11 +14,8 @@ if V4LFRONTEND
 TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp providers/frontends/isdbt/ISDBTProvider.cpp
 endif
 
-libgingacctuner_so_SOURCES = $(TUNERCPPS)
+libgingacctuner_la_SOURCES = $(TUNERCPPS)
 
-libgingacctuner_so_LDADD = -lpthread -lgingaccsystem -ltelemidiautil
-
-libgingacctuner_so_LDFLAGS = -L/usr/local/lib/ginga -L/usr/local/lib \
-	-g -shared -Wl,-soname,libgingacctuner.so
+libgingacctuner_la_LIBADD = -lpthread -lgingaccsystem -ltelemidiautil
 
 MAINTAINERCLEANFILES = Makefile.in

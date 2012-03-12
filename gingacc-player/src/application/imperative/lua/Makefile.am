@@ -5,19 +5,17 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/include \
 
 LIBS = 
 
-localLibdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplalua_so_LDFLAGS = -Wl,-E,-soname,libgingaccplalua.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga \
-	-L../../../ -L../../../image/ -L/usr/local/lib/lua/5.1 \
-	-L/usr/local/lib/lua/5.1/socket
+lib_LTLIBRARIES = libgingaccplalua.la
 
-localLib_PROGRAMS = libgingaccplalua.so
+libgingaccplalua_la_SOURCES = LuaEvent.cpp LuaCanvas.cpp LuaPlayer.cpp
 
-libgingaccplalua_so_SOURCES = LuaEvent.cpp LuaCanvas.cpp LuaPlayer.cpp
-
-libgingaccplalua_so_LDADD = -llua -lcore -lpthread -ltelemidiautil \
+libgingaccplalua_la_LIBADD = -llua -lcore -lpthread -ltelemidiautil \
      -lgingaccsystem -lgingaccmb -lgingaccplayer \
-     -lgingaccplaimg $(COMPONENTS_LIBS) $(DATAPROC_LIBS)
+     -lgingaccplaimg $(COMPONENTS_LIBS) $(DATAPROC_LIBS) \
+     -L/usr/local/lib -L/usr/local/lib/ginga \
+	 -L../../../ -L../../../image/ -L/usr/local/lib/lua/5.1 \
+	 -L/usr/local/lib/lua/5.1/socket
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -5,16 +5,11 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-libgingaccmddir = /usr/local/lib/ginga
+libdir = /usr/local/lib/ginga
 
-# AM_CXXFLAGS = -g
+lib_LTLIBRARIES = libgingaccmd.la
 
-libgingaccmd_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga -Wl,-soname,libgingaccmd.so -shared
-
-libgingaccmd_PROGRAMS = libgingaccmd.so
-
-libgingaccmd_so_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
+libgingaccmd_la_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
 	services/RemoteEventService.cpp \
     services/DeviceDomain.cpp \
     services/BaseDeviceDomain.cpp \
@@ -30,7 +25,9 @@ libgingaccmd_so_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
     services/network/TcpSocketService.cpp \
     services/network/TcpClientConnection.cpp
 
-libgingaccmd_so_LDADD = -lpthread -ltelemidiautil -lgingaccsystem \
-    $(COMPONENTS_LIBS)
+libgingaccmd_la_LIBADD = -lpthread -ltelemidiautil -lgingaccsystem \
+    $(COMPONENTS_LIBS) \
+    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
+    -L/usr/local/lib/ginga
 
 MAINTAINERCLEANFILES = Makefile.in

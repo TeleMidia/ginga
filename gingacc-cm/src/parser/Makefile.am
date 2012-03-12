@@ -1,17 +1,23 @@
 
 # set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
+INCLUDES                      = \
+                                $(all_includes) \
+                                -I$(top_srcdir)/include
 
-LIBS =
+LIBS                          =
 
-libgingacccmparserdir = /usr/local/lib/ginga/cm
+libdir                        = \
+                                /usr/local/lib/ginga/cm
 
-libgingacccmparser_so_LDFLAGS = -Wl,-soname,libgingacccmparser.so \
-    -shared -ldl
+lib_LTLIBRARIES               = \
+                                libgingacccmparser.la
 
-libgingacccmparser_so_LDADD=  -lexpat
+libgingacccmparser_la_LIBADD  = \
+                                -lexpat \
+                                -ldl
 
-libgingacccmparser_PROGRAMS = libgingacccmparser.so
-libgingacccmparser_so_SOURCES = ComponentParser.cpp
+libgingacccmparser_la_SOURCES = \
+                                ComponentParser.cpp
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES          = \
+                                Makefile.in

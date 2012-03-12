@@ -3,7 +3,7 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
 LIBS =
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS       = test
 
 test_CPPFLAGS = -I$(top_srcdir)/include
 test_SOURCES = test.cpp

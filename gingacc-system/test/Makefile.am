@@ -5,7 +5,8 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS      = \
+                       test
 
 test_SOURCES = test.cpp
 

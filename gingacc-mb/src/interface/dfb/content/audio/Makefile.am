@@ -5,38 +5,35 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/mb/dec
+
+lib_LTLIBRARIES = 
 if DFBSYSTEM
-localLibdir = /usr/local/lib/ginga/mb/dec/
 
 if FUSIONSOUND
-libgingaccmbdecdfbfs_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbfs.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga \
-	-L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
+lib_LTLIBRARIES += libgingaccmbdecdfbfs.la
 
-localLib_PROGRAMS = libgingaccmbdecdfbfs.so
-
-libgingaccmbdecdfbfs_so_SOURCES = DFBAudioProvider.cpp \
+libgingaccmbdecdfbfs_la_SOURCES = DFBAudioProvider.cpp \
     FusionSoundAudioProvider.cpp
 
-libgingaccmbdecdfbfs_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
-    -lgingaccmbdfb -lgingaccmb
+libgingaccmbdecdfbfs_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
+    -lgingaccmbdfb -lgingaccmb \
+    -L/usr/local/lib -L/usr/local/lib/ginga \
+	-L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
+    
 endif #FUSIONSOUND
 
 if FFMPEGPROVIDER
-localLibffmpegadir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES += libgingaccmbdecdfbffmpega.la
 
-localLibffmpega_PROGRAMS = libgingaccmbdecdfbffmpega.so
+libgingaccmbdecdfbffmpega_la_SOURCES = FFmpegAudioProvider.cpp
 
-libgingaccmbdecdfbffmpega_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbffmpega.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga -L./ \
-    -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-
-libgingaccmbdecdfbffmpega_so_SOURCES = FFmpegAudioProvider.cpp
-
-libgingaccmbdecdfbffmpega_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
+libgingaccmbdecdfbffmpega_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
-    -lgingaccmbdecdfbfs
+    -lgingaccmbdecdfbfs \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L./ \
+    -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
     
 endif #FFMPEGPROVIDER
 

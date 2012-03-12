@@ -6,29 +6,23 @@ INCLUDES = -I/usr/local/include/ginga/ \
 LIBS =
 
 #ChannelPlayer
-libgingaccplachadir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplacha_so_LDFLAGS = -Wl,-soname,libgingaccplacha.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../ -L../video/
+lib_LTLIBRARIES = libgingaccplacha.la
 
-libgingaccplacha_PROGRAMS = libgingaccplacha.so
+libgingaccplacha_la_SOURCES = ChannelPlayer.cpp
 
-libgingaccplacha_so_SOURCES = ChannelPlayer.cpp
-
-libgingaccplacha_so_LDADD = -lgingaccplayer -ltelemidiautil $(COMPONENTS_LIBS)
+libgingaccplacha_la_LIBADD = -lgingaccplayer -ltelemidiautil \
+ $(COMPONENTS_LIBS) -L/usr/local/lib -L/usr/local/lib/ginga -L../ -L../video/
 
 
 #ProgramAV
-libgingaccplapavdir = /usr/local/lib/ginga/players/
+lib_LTLIBRARIES += libgingaccplapav.la
 
-libgingaccplapav_so_LDFLAGS = -Wl,-soname,libgingaccplapav.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../video -L../
+libgingaccplapav_la_SOURCES = ProgramAV.cpp
 
-libgingaccplapav_PROGRAMS = libgingaccplapav.so
-
-libgingaccplapav_so_SOURCES = ProgramAV.cpp
-
-libgingaccplapav_so_LDADD = -lgingaccplayer -lgingaccplaavp \
-    -ltelemidiautil $(COMPONENTS_LIBS)
+libgingaccplapav_la_LIBADD = -lgingaccplayer -lgingaccplaavp \
+    -ltelemidiautil $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../video -L../
 
 MAINTAINERCLEANFILES = Makefile.in

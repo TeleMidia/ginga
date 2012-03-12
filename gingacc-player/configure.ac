@@ -5,10 +5,7 @@ AM_INIT_AUTOMAKE
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
-#AM_PROG_LIBTOOL
-
-CXXFLAGS="-fPIC $CXXFLAGS"
-CFLAGS="-fPIC $CFLAGS"
+AC_PROG_LIBTOOL
 
 ######################
 # Finding pkg-config #

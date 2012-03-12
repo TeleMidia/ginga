@@ -5,7 +5,8 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/include \
 
 LIBS =
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS      = \
+                       test
 
 test_SOURCES = test.cpp
 

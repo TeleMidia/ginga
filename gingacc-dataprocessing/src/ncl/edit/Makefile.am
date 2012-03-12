@@ -1,16 +1,21 @@
+INCLUDES                             = \
+                                       $(all_includes) \
+                                       -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
+LIBS                                 =
 
-LIBS =
+libdir                               = \
+                                       /usr/local/lib/ginga/dp
 
-libgingaccdataprocncleditdir = /usr/local/lib/ginga/dp
+lib_LTLIBRARIES                      = \
+                                       libgingaccdataprocncledit.la
 
-libgingaccdataprocncledit_so_CPPFLAGS = -I${top_srcdir}/include
-libgingaccdataprocncledit_so_LDFLAGS = -Wl,-soname,libgingaccdataprocncledit.so \
-    -shared -ltelemidiautil -L/usr/local/lib/ginga
+libgingaccdataprocncledit_la_LIBADD  = \
+                                       -ltelemidiautil \
+                                       -L/usr/local/lib/ginga
 
-libgingaccdataprocncledit_PROGRAMS = libgingaccdataprocncledit.so
-libgingaccdataprocncledit_so_SOURCES = EventDescriptor.cpp
+libgingaccdataprocncledit_la_SOURCES = \
+                                       EventDescriptor.cpp
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES                 = \
+                                       Makefile.in

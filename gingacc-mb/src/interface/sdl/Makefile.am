@@ -1,5 +1,3 @@
-
-# set the include path found by configure
 INCLUDES                   = \
                              -I/usr/local/include/ginga/ \
                              -I/usr/local/include/SDL2/ \
@@ -8,33 +6,31 @@ INCLUDES                   = \
 
 LIBS                       =
 
+libdir                     = \
+                             /usr/local/lib/ginga/mb
+
 ################
 # gingaccmbsdl #
 ################
 if SDLSYSTEM
-libgingaccmbsdldir         = \
-                             /usr/local/lib/ginga/mb
+lib_LTLIBRARIES            = \
+                             libgingaccmbsdl.la
 
-libgingaccmbsdl_so_LDFLAGS = \
-                             -Wl,-soname,libgingaccmbsdl.so -shared \
-                             -L/usr/local/lib -L/usr/local/lib/ginga \
-                             -L$(top_srcdir)/src
-
-libgingaccmbsdl_PROGRAMS   = \
-                             libgingaccmbsdl.so
-
-libgingaccmbsdl_so_SOURCES = \
+libgingaccmbsdl_la_SOURCES = \
                              SDLDeviceScreen.cpp \
                              input/SDLEventBuffer.cpp \
                              input/SDLInputEvent.cpp \
                              output/SDLSurface.cpp \
                              output/SDLWindow.cpp
 
-libgingaccmbsdl_so_LDADD   = \
+libgingaccmbsdl_la_LIBADD  = \
                              -lSDL2 \
                              -ltelemidiautil \
                              -lpthread \
-                             -lgingaccmb
+                             -lgingaccmb \
+                             -L/usr/local/lib \
+                             -L/usr/local/lib/ginga \
+                             -L$(top_srcdir)/src
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES       = \

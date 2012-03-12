@@ -7,28 +7,25 @@ INCLUDES                       = \
 
 LIBS =
 
-if SDLSYSTEM
-localLibdir                    = \
-                                 /usr/local/lib/ginga/mb/dec/
+libdir                         = \
+                                 /usr/local/lib/ginga/mb/dec
 
-libgingaccmbdecsdlf_so_LDFLAGS = \
-                                 -Wl,-soname,libgingaccmbdecsdlf.so -shared \
+if SDLSYSTEM
+lib_LTLIBRARIES                = \
+                                 libgingaccmbdecsdlf.la
+
+libgingaccmbdecsdlf_la_SOURCES = \
+                                 SDLFontProvider.cpp
+
+libgingaccmbdecsdlf_la_LIBADD  = \
+                                 -lSDL2 \
+                                 -lSDL2_ttf \
+                                 -lgingaccmbsdl \
+                                 -lgingaccmb \
                                  -L/usr/local/lib \
                                  -L/usr/local/lib/ginga \
                                  -L$(top_srcdir)/src \
                                  -L$(top_srcdir)/src/interface/sdl
-
-localLib_PROGRAMS              = \
-                                 libgingaccmbdecsdlf.so
-
-libgingaccmbdecsdlf_so_SOURCES = \
-                                 SDLFontProvider.cpp
-
-libgingaccmbdecsdlf_so_LDADD   = \
-                                 -lSDL2 \
-                                 -lSDL2_ttf \
-                                 -lgingaccmbsdl \
-                                 -lgingaccmb
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES           = \

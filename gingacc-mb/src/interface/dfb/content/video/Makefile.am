@@ -5,51 +5,41 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/mb/dec
+
 if DFBSYSTEM
-localLibdfbdir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES = libgingaccmbdecdfbav.la
 
-localLibdfb_PROGRAMS = libgingaccmbdecdfbav.so
+libgingaccmbdecdfbav_la_SOURCES = DFBVideoProvider.cpp
 
-libgingaccmbdecdfbav_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbav.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga \
+libgingaccmbdecdfbav_la_LIBADD = $(DFB_LIBS) -ltelemidiautil \
+    -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
+    -L/usr/local/lib -L/usr/local/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-
-libgingaccmbdecdfbav_so_SOURCES = DFBVideoProvider.cpp
-
-libgingaccmbdecdfbav_so_LDADD = $(DFB_LIBS) -ltelemidiautil \
-    -lgingaccmbdfb -lgingaccmb -lgingaccsystem
 
 if XINEPROVIDER
-localLibxinedir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES += libgingaccmbdecdfbxineav.la
 
-localLibxine_PROGRAMS = libgingaccmbdecdfbxineav.so
+libgingaccmbdecdfbxineav_la_SOURCES = XineVideoProvider.cpp
 
-libgingaccmbdecdfbxineav_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbxineav.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga \
+libgingaccmbdecdfbxineav_la_LIBADD = $(DFB_LIBS) -ltelemidiautil \
+    -lgingaccmbdfb -lgingaccmb -lgingaccsystem -lxine \
+    -L/usr/local/lib -L/usr/local/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-
-libgingaccmbdecdfbxineav_so_SOURCES = XineVideoProvider.cpp
-
-libgingaccmbdecdfbxineav_so_LDADD = $(DFB_LIBS) -ltelemidiautil \
-    -lgingaccmbdfb -lgingaccmb -lgingaccsystem -lxine
 
 endif #XINEPROVIDER
 
 if FFMPEGPROVIDER
-localLibffmpegavdir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES += libgingaccmbdecdfbffmpegav.la
 
-localLibffmpegav_PROGRAMS = libgingaccmbdecdfbffmpegav.so
+libgingaccmbdecdfbffmpegav_la_SOURCES = FFmpegVideoProvider.cpp
 
-libgingaccmbdecdfbffmpegav_so_LDFLAGS = -Wl,-soname,libgingaccmbdecdfbffmpegav.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga -L../audio/ \
-    -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-
-libgingaccmbdecdfbffmpegav_so_SOURCES = FFmpegVideoProvider.cpp
-
-libgingaccmbdecdfbffmpegav_so_LDADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
+libgingaccmbdecdfbffmpegav_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
-    -lgingaccmbdfbdecfs
+    -lgingaccmbdfbdecfs \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../audio/ \
+    -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
 
 endif #FFMPEGPROVIDER
 endif #DFBSYSTEM

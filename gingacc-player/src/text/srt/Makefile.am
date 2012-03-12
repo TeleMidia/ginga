@@ -5,16 +5,14 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-libgingaccplasrtdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplasrt_so_LDFLAGS = -Wl,-soname,libgingaccplasrt.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../../ -L../
+lib_LTLIBRARIES = libgingaccplasrt.la
 
-libgingaccplasrt_PROGRAMS = libgingaccplasrt.so
+libgingaccplasrt_la_SOURCES = SrtPlayer.cpp
 
-libgingaccplasrt_so_SOURCES = SrtPlayer.cpp
-
-libgingaccplasrt_so_LDADD = -ltelemidiautil -lgingaccsystem \
-    -lgingaccplayer -lgingaccplatxt $(COMPONENTS_LIBS)
+libgingaccplasrt_la_LIBADD = -ltelemidiautil -lgingaccsystem \
+    -lgingaccplayer -lgingaccplatxt $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../../ -L../
 
 MAINTAINERCLEANFILES = Makefile.in

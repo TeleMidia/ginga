@@ -5,14 +5,12 @@ INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 LIBS =
 
 # the library search path.
-localLibdir = /usr/local/lib/ginga
+libdir = /usr/local/lib/ginga
 
 libgingaccdataprocessing_so_CPPFLAGS = -I../include
-libgingaccdataprocessing_so_LDFLAGS = -Wl,-soname,libgingaccdataprocessing.so \
-	-shared -L/usr/local/lib -L/usr/local/lib/ginga
 
-localLib_PROGRAMS = libgingaccdataprocessing.so
-libgingaccdataprocessing_so_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
+lib_LTLIBRARIES = libgingaccdataprocessing.la
+libgingaccdataprocessing_la_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     FilterManager.cpp SectionFilter.cpp \
     dsmcc/StreamEvent.cpp dsmcc/carousel/Binding.cpp dsmcc/carousel/Biop.cpp \
     dsmcc/carousel/Ior.cpp dsmcc/carousel/ServiceDomain.cpp \
@@ -29,7 +27,7 @@ libgingaccdataprocessing_so_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     dsmcc/npt/NPTReference.cpp dsmcc/npt/Stc.cpp dsmcc/npt/StreamMode.cpp \
     dsmcc/npt/TimeBaseClock.cpp
 
-libgingaccdataprocessing_so_LDADD = -ltelemidiautil -lgingaccsystem \
+libgingaccdataprocessing_la_LIBADD = -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS) -L/usr/local/lib/ -L/usr/local/lib/ginga/
 
 MAINTAINERCLEANFILES = Makefile.in

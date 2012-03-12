@@ -1,6 +1,6 @@
 METASOURCES = AUTO
 LIBS =
-miscdir = /usr/local/etc/ginga/files
-misc_DATA = componentDescription.xml
+localLibdir = /usr/local/etc/ginga/files
+localLib_DATA = componentDescription.xml
 
 MAINTAINERCLEANFILES = Makefile.in

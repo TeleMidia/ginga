@@ -7,11 +7,11 @@ INCLUDES                    = \
 
 LIBS                        =
 
-localLibdir                 = \
+libdir                      = \
                               /usr/local/lib/ginga
 
-localLib_PROGRAMS           = \
-                              libgingaccplayer.so
+lib_LTLIBRARIES             = \
+                              libgingaccplayer.la
 
 CPPSRCS                     = \
                               Player.cpp
@@ -21,20 +21,17 @@ CPPSRCS                    += \
                               PlayerProcess.cpp
 endif
 
-libgingaccplayer_so_SOURCES = \
+libgingaccplayer_la_SOURCES = \
                               $(CPPSRCS)
 
-libgingaccplayer_so_LDFLAGS = \
-                              -L/usr/local/lib/ginga \
-                              -L/usr/local/lib \
-                              -shared -Wl,-soname,libgingaccplayer.so
-
-libgingaccplayer_so_LDADD   = \
+libgingaccplayer_la_LIBADD  = \
                               -lpthread \
                               -ltelemidiautil \
                               -lgingaccmb \
                               $(MULTIPROCESS_LIBS) \
-                              $(COMPONENTS_LIBS)
+                              $(COMPONENTS_LIBS) \
+                              -L/usr/local/lib/ginga \
+                              -L/usr/local/lib
 
 MAINTAINERCLEANFILES        = \
                               Makefile.in

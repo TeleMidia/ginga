@@ -8,25 +8,18 @@ INCLUDES                        = \
 
 LIBS                            =
 
+libdir                          = \
+                                  /usr/local/lib/ginga/mb/dec
+
 if SDLSYSTEM
-localLibdir                     = \
-                                  /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES                 = \
+                                  libgingaccmbdecsdlap.la
 
-libgingaccmbdecsdlap_so_LDFLAGS = \
-                                  -Wl,-soname,libgingaccmbdecsdlap.so -shared \
-	                              -L/usr/local/lib \
-	                              -L/usr/local/lib/ginga \
-	                              -L$(top_srcdir)/src \
-	                              -L$(top_srcdir)/src/interface/sdl
-
-localLib_PROGRAMS               = \
-                                  libgingaccmbdecsdlap.so
-
-libgingaccmbdecsdlap_so_SOURCES = \
+libgingaccmbdecsdlap_la_SOURCES = \
                                   SDLAudioProvider.cpp \
                                   SDL2ffmpeg.cpp
 
-libgingaccmbdecsdlap_so_LDADD   = \
+libgingaccmbdecsdlap_la_LIBADD   = \
                                   -ltelemidiautil \
                                   -lgingaccsystem \
                                   -lgingaccmb \
@@ -36,7 +29,11 @@ libgingaccmbdecsdlap_so_LDADD   = \
                                   -lavcodec \
                                   -lavformat \
                                   -lswresample \
-                                  -lswscale
+                                  -lswscale \
+                                  -L/usr/local/lib \
+	                              -L/usr/local/lib/ginga \
+	                              -L$(top_srcdir)/src \
+	                              -L$(top_srcdir)/src/interface/sdl
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

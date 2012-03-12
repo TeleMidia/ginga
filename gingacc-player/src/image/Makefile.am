@@ -8,30 +8,30 @@ LIBS =
 #########
 # IMAGE #
 #########
-libgingaccplaimgdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplaimg_so_LDFLAGS = -Wl,-soname,libgingaccplaimg.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../
+lib_LTLIBRARIES             = \
+                              libgingaccplaimg.la
 
-libgingaccplaimg_PROGRAMS = libgingaccplaimg.so
+libgingaccplaimg_la_SOURCES = \
+                              ImagePlayer.cpp
 
-libgingaccplaimg_so_SOURCES = ImagePlayer.cpp
-
-libgingaccplaimg_so_LDADD = -ltelemidiautil -lgingaccplayer $(COMPONENTS_LIBS)
+libgingaccplaimg_la_LIBADD  = \
+                              -ltelemidiautil \
+                              -lgingaccplayer \
+                              $(COMPONENTS_LIBS) \
+                              -L/usr/local/lib \
+                              -L/usr/local/lib/ginga \
+                              -L../
 
 #########
 # ANIME #
 #########
-libgingaccplaanidir = /usr/local/lib/ginga/players/
+lib_LTLIBRARIES += libgingaccplaani.la
 
-libgingaccplaani_so_LDFLAGS = -Wl,-soname,libgingaccplaani.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../
+libgingaccplaani_la_SOURCES = AnimePlayer.cpp
 
-libgingaccplaani_PROGRAMS = libgingaccplaani.so
-
-libgingaccplaani_so_SOURCES = AnimePlayer.cpp
-
-libgingaccplaani_so_LDADD = -ltelemidiautil -lgingaccsystem \
-    $(COMPONENTS_LIBS)
+libgingaccplaani_la_LIBADD = -ltelemidiautil -lgingaccsystem \
+    $(COMPONENTS_LIBS) -L/usr/local/lib -L/usr/local/lib/ginga -L../
 
 MAINTAINERCLEANFILES = Makefile.in
