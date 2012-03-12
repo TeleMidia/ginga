@@ -5,18 +5,16 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/mb/dec
+
 if TERMSYSTEM
-localLibdir = /usr/local/lib/ginga/mb/dec/
+lib_LTLIBRARIES = libgingaccmbdectermimg.la
 
-libgingaccmbdectermimg_so_LDFLAGS = -Wl,-soname,libgingaccmbdectermimg.so \
-    -shared -L/usr/local/lib -L/usr/local/lib/ginga \
+libgingaccmbdectermimg_la_SOURCES = TermImageProvider.cpp
+
+libgingaccmbdectermimg_la_LIBADD = -lgingaccmbterm -lgingaccmb \
+-L/usr/local/lib -L/usr/local/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/term
-
-localLib_PROGRAMS = libgingaccmbdectermimg.so
-
-libgingaccmbdectermimg_so_SOURCES = TermImageProvider.cpp
-
-libgingaccmbdectermimg_so_LDADD = -lgingaccmbterm -lgingaccmb
 endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

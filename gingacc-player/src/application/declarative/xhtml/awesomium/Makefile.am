@@ -10,32 +10,29 @@ INCLUDES                    = \
 
 LIBS                        =
 
+libdir                      = \
+                              /usr/local/lib/ginga/players
+
 if AWESOMIUMLIB
-libgingaccplaawedir         = \
-                              /usr/local/lib/ginga/players/
+lib_LTLIBRARIES             = \
+                              libgingaccplaawe.la
 
-libgingaccplaawe_so_LDFLAGS = \
-                              -Wl,-soname,libgingaccplaawe.so -shared \
-                              -L/usr/local/lib \
-                              -L/usr/local/lib/ginga \
-                              -L/usr/lib/awesomium-1.6.3 \
-                              -L../../../../
-
-libgingaccplaawe_PROGRAMS   = \
-                              libgingaccplaawe.so
-
-libgingaccplaawe_so_SOURCES = \
+libgingaccplaawe_la_SOURCES = \
                               AwesomiumHandler.cpp \
                               AwesomiumPlayer.cpp
 
-libgingaccplaawe_so_LDADD   = \
+libgingaccplaawe_la_LIBADD  = \
                               -lawesomium-1.6.3 \
                               -ltelemidiautil \
                               -lgingaccmb \
                               -lgingaccplayer \
                               -lgingaccsystem \
                               -lpthread \
-                              $(COMPONENTS_LIBS)
+                              $(COMPONENTS_LIBS) \
+                              -L/usr/local/lib \
+                              -L/usr/local/lib/ginga \
+                              -L/usr/lib/awesomium-1.6.3 \
+                              -L../../../../
 endif
 
 MAINTAINERCLEANFILES        = \

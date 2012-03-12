@@ -5,10 +5,7 @@ AM_INIT_AUTOMAKE
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
-#AM_PROG_LIBTOOL
-
-CXXFLAGS="-fPIC $CXXFLAGS"
-CFLAGS="-fPIC $CFLAGS"
+AC_PROG_LIBTOOL
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default

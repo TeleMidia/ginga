@@ -5,16 +5,14 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-libgingaccplawdgdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplawdg_so_LDFLAGS = -Wl,-soname,libgingaccplawdg.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../ -L../image
+lib_LTLIBRARIES = libgingaccplawdg.la
 
-libgingaccplawdg_PROGRAMS = libgingaccplawdg.so
+libgingaccplawdg_la_SOURCES = ShowButton.cpp
 
-libgingaccplawdg_so_SOURCES = ShowButton.cpp
-
-libgingaccplawdg_so_LDADD = -lgingaccsystem -lgingaccplayer \
-    -lgingaccplaimg $(COMPONENTS_LIBS)
+libgingaccplawdg_la_LIBADD = -lgingaccsystem -lgingaccplayer \
+    -lgingaccplaimg $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../ -L../image
 
 MAINTAINERCLEANFILES = Makefile.in

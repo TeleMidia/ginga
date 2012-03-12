@@ -1,34 +1,34 @@
+INCLUDES                 = \
+                           $(all_includes) \
+                           -I/usr/local/include/ginga/ \
+                           -I$(top_srcdir)/include \
+                           -I$(top_srcdir)/include/mb \
+                           -I$(top_srcdir)/include/mb/interface \
+                           $(KINECT_INCS)
 
-# set the include path found by configure
-INCLUDES = \
-          $(all_includes) \
-          -I/usr/local/include/ginga/ \
-          -I$(top_srcdir)/include \
-	      -I$(top_srcdir)/include/mb \
-	      -I$(top_srcdir)/include/mb/interface \
-	      $(KINECT_INCS)
+LIBS                     =
 
-LIBS =
-
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES     = \
+                           Makefile.in
 
 #############
 # gingaccmb #
 #############
-libgingaccmbdir = /usr/local/lib/ginga
+libdir                   = \
+                           /usr/local/lib/ginga
 
-libgingaccmb_so_LDFLAGS = -Wl,-soname,libgingaccmb.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../thread -L./
+lib_LTLIBRARIES          = \
+                           libgingaccmb.la
 
-libgingaccmb_PROGRAMS = libgingaccmb.so
+libgingaccmb_la_SOURCES  = \
+                           interface/CodeMap.cpp \
+                           interface/InputEventFactory.cpp \
+                           interface/Matrix.cpp \
+                           InputManager.cpp \
+                           LocalScreenManager.cpp
 
-libgingaccmb_so_SOURCES = \
-                          interface/CodeMap.cpp \
-                          interface/InputEventFactory.cpp \
-                          interface/Matrix.cpp \
-                          InputManager.cpp \
-                          LocalScreenManager.cpp
-
-libgingaccmb_so_LDADD   = \
+libgingaccmb_la_LIBADD   = \
                           -ltelemidiautil -lpthread \
-                          -lgingaccsystem $(COMPONENTS_LIBS) $(KINECT_LIBS)
+                          -lgingaccsystem $(COMPONENTS_LIBS) $(KINECT_LIBS) \
+                          -L/usr/local/lib -L/usr/local/lib/ginga \
+                          -L./

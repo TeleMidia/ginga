@@ -5,12 +5,9 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-localLibdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplaavp_so_LDFLAGS = -Wl,-soname,libgingaccplaavp.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../
-
-localLib_PROGRAMS = libgingaccplaavp.so
+lib_LTLIBRARIES = libgingaccplaavp.la
 
 CPPSRCS = AVPlayer.cpp
 
@@ -18,9 +15,10 @@ if ICRTP
 CPPSRCS += RTPListener.cpp
 endif
 
-libgingaccplaavp_so_SOURCES = $(CPPSRCS)
+libgingaccplaavp_la_SOURCES = $(CPPSRCS)
 
-libgingaccplaavp_so_LDADD = -ltelemidiautil -lgingaccsystem \
-    -lgingaccplayer $(COMPONENTS_LIBS)
+libgingaccplaavp_la_LIBADD = -ltelemidiautil -lgingaccsystem \
+    -lgingaccplayer $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../
 
 MAINTAINERCLEANFILES = Makefile.in

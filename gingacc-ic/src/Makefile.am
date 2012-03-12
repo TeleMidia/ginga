@@ -5,18 +5,12 @@ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libgingaccicdir = /usr/local/lib/ginga
+libdir = /usr/local/lib/ginga
 
-# AM_CXXFLAGS = -g
+lib_LTLIBRARIES = libgingaccic.la
 
-libgingaccic_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga -L./curlic -L./ccrtpic \
-    -Wl,-soname,libgingaccic.so -shared
+libgingaccic_la_SOURCES = InteractiveChannelManager.cpp
 
-libgingaccic_PROGRAMS = libgingaccic.so
-
-libgingaccic_so_SOURCES = InteractiveChannelManager.cpp
-
-libgingaccic_so_LDADD = -lpthread $(CCRTP_LIBS) $(CURL_LIBS)
+libgingaccic_la_LIBADD = -lpthread $(CCRTP_LIBS) $(CURL_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

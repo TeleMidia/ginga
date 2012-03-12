@@ -5,17 +5,15 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
+libdir = /usr/local/lib/ginga/players
+
 if BERKELIUMLIB
-libgingaccplabkldir = /usr/local/lib/ginga/players/
+lib_LTLIBRARIES = libgingaccplabkl.la
 
-libgingaccplabkl_so_LDFLAGS = -Wl,-soname,libgingaccplabkl.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../../../../
+libgingaccplabkl_la_SOURCES = BerkeliumHandler.cpp BerkeliumPlayer.cpp
 
-libgingaccplabkl_PROGRAMS = libgingaccplabkl.so
-
-libgingaccplabkl_so_SOURCES = BerkeliumHandler.cpp BerkeliumPlayer.cpp
-
-libgingaccplabkl_so_LDADD = -llibberkelium -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystem -lpthread $(COMPONENTS_LIBS) $(BKL_LIBS)
+libgingaccplabkl_la_LIBADD = -llibberkelium -ltelemidiautil -lgingaccplayer \
+    -lgingaccsystem -lpthread $(COMPONENTS_LIBS) $(BKL_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../../../../
 endif
 MAINTAINERCLEANFILES = Makefile.in

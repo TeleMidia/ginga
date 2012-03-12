@@ -6,16 +6,13 @@ $(all_includes) -I$(top_srcdir)/include
 LIBS =
 
 if CURLLIB
-libgingacciccurlicdir = /usr/local/lib/ginga/ic
+libdir = /usr/local/lib/ginga/ic
 
-libgingacciccurlic_so_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga -Wl,-soname,libgingacciccurlic.so -shared
+lib_LTLIBRARIES = libgingacciccurlic.la
 
-libgingacciccurlic_PROGRAMS = libgingacciccurlic.so
+libgingacciccurlic_la_SOURCES = CurlInteractiveChannel.cpp
 
-libgingacciccurlic_so_SOURCES = CurlInteractiveChannel.cpp
-
-libgingacciccurlic_so_LDADD = -lcurl -ltelemidiautil -lpthread \
+libgingacciccurlic_la_LIBADD = -lcurl -ltelemidiautil -lpthread \
     $(COMPONENTS_LIBS)
 
 endif

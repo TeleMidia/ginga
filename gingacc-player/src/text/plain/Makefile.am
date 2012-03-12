@@ -5,16 +5,14 @@ INCLUDES = -I/usr/local/include/ginga/ \
 
 LIBS =
 
-libgingaccplapltdir = /usr/local/lib/ginga/players/
+libdir = /usr/local/lib/ginga/players
 
-libgingaccplaplt_so_LDFLAGS = -Wl,-soname,libgingaccplaplt.so -shared \
-	-L/usr/local/lib -L/usr/local/lib/ginga -L../../ -L../
+lib_LTLIBRARIES = libgingaccplaplt.la
 
-libgingaccplaplt_PROGRAMS = libgingaccplaplt.so
+libgingaccplaplt_la_SOURCES = PlainTxtPlayer.cpp
 
-libgingaccplaplt_so_SOURCES = PlainTxtPlayer.cpp
-
-libgingaccplaplt_so_LDADD = -ltelemidiautil -lgingaccplayer \
-    -lpthread -lgingaccplatxt $(COMPONENTS_LIBS)
+libgingaccplaplt_la_LIBADD = -ltelemidiautil -lgingaccplayer \
+    -lpthread -lgingaccplatxt $(COMPONENTS_LIBS) \
+    -L/usr/local/lib -L/usr/local/lib/ginga -L../../ -L../
 
 MAINTAINERCLEANFILES = Makefile.in

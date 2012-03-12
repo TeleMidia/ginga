@@ -4,11 +4,12 @@ INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
+bindir = /usr/local/etc/ginga/tools/loaders
+
 if MULTIPROCESS
-playersdir = /usr/local/etc/ginga/tools/loaders
-players_PROGRAMS = players
+bin_PROGRAMS    = players
 players_SOURCES = PlayerLoader.cpp
-players_LDADD = -ltelemidiautil  $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
+players_LDADD   = -ltelemidiautil  $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
 endif
 
 MAINTAINERCLEANFILES = Makefile.in

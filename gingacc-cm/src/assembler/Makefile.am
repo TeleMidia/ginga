@@ -1,15 +1,17 @@
+INCLUDES                         = \
+                                   $(all_includes) \
+                                   -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
+LIBS                             =
 
-LIBS =
+libdir                           = \
+                                   /usr/local/lib/ginga/cm
 
-libgingacccmassemblerdir = /usr/local/lib/ginga/cm
+lib_LTLIBRARIES                  = \
+                                   libgingacccmassembler.la
 
-libgingacccmassembler_so_LDFLAGS = -Wl,-soname,libgingacccmassembler.so \
-    -shared
+libgingacccmassembler_la_SOURCES = \
+                                   ComponentDescription.cpp
 
-libgingacccmassembler_PROGRAMS = libgingacccmassembler.so
-libgingacccmassembler_so_SOURCES = ComponentDescription.cpp
-
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES             = \
+                                   Makefile.in

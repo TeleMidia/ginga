@@ -5,31 +5,30 @@ INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
 
 LIBS =
 
+libdir                     = \
+                             /usr/local/lib/ginga/mb
+
 ################
 # gingaccmbdfb #
 ################
 if DFBSYSTEM
-libgingaccmbdfbdir         = \
-                             /usr/local/lib/ginga/mb
 
-libgingaccmbdfb_so_LDFLAGS = \
-                             -Wl,-soname,libgingaccmbdfb.so -shared \
-                             -L/usr/local/lib -L/usr/local/lib/ginga \
-                             -L$(top_srcdir)/src
+lib_LTLIBRARIES            = \
+                             libgingaccmbdfb.la
 
-libgingaccmbdfb_PROGRAMS   = \
-                             libgingaccmbdfb.so
-
-libgingaccmbdfb_so_SOURCES = \
+libgingaccmbdfb_la_SOURCES = \
                              DFBDeviceScreen.cpp \
                              input/DFBEventBuffer.cpp \
                              input/DFBGInputEvent.cpp \
                              output/DFBSurface.cpp \
                              output/DFBWindow.cpp
 
-libgingaccmbdfb_so_LDADD   = \
+libgingaccmbdfb_la_LIBADD   = \
                              $(DFB_LIBS) -ltelemidiautil -lpthread \
-                             -lgingaccsystem -lgingaccmb
+                             -lgingaccsystem -lgingaccmb \
+                             -L/usr/local/lib -L/usr/local/lib/ginga \
+                             -L$(top_srcdir)/src
+                             
 endif #DFBSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in
