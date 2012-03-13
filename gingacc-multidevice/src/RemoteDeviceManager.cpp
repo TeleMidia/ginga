@@ -206,11 +206,7 @@ namespace multidevice {
 					domainService->postConnectionRequestTask();
 				}
 			}*/
-#ifndef _WIN32
 			::usleep(25000);
-#else
-			Sleep(2500);
-#endif
 		}
 		unlock();
 

@@ -1,11 +1,11 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
 $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 
 lib_LTLIBRARIES = libgingaccic.la
 

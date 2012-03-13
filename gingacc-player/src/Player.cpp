@@ -361,11 +361,7 @@ namespace player {
 
 	bool Player::setKeyHandler(bool isHandler) {
 		if (isHandler) {
-#ifndef _WIN32
 			::usleep(200000);
-#else
-			Sleep(200);
-#endif
 		}
 		return false;
 	}
@@ -564,11 +560,7 @@ namespace player {
 		clog << expectedSleepTime << "'" << endl;
 
 		if (expectedSleepTime > 0) {
-#ifndef _WIN32
 			::usleep(expectedSleepTime * 1000000);
-#else
-			Sleep(expectedSleepTime * 1000);
-#endif
 		}
 
 		p->forceNaturalEnd(true);

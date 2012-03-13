@@ -52,10 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "IGingaUser.h"
 
-#ifdef _WIN32
-#include <io.h>
-#endif
-
 #include <string>
 using namespace std;
 

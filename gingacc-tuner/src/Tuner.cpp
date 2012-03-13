@@ -169,7 +169,7 @@ namespace tuning {
 		string addr;
 
 		fis.open(
-				"/usr/local/etc/ginga/files/tuner/tuner.ini",
+				SystemCompat::appendGingaFilesPrefix("tuner/tuner.ini").c_str(),
 				ifstream::in);
 
 		if (!fis.is_open()) {

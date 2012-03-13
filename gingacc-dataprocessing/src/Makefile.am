@@ -1,11 +1,11 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
+INCLUDES = -I$(prefix)/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
 # the library search path.
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 
 libgingaccdataprocessing_so_CPPFLAGS = -I../include
 
@@ -28,6 +28,6 @@ libgingaccdataprocessing_la_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     dsmcc/npt/TimeBaseClock.cpp
 
 libgingaccdataprocessing_la_LIBADD = -ltelemidiautil -lgingaccsystem \
-    $(COMPONENTS_LIBS) -L/usr/local/lib/ -L/usr/local/lib/ginga/
+    $(COMPONENTS_LIBS) -L$(prefix)/lib/ -L$(prefix)/lib/ginga/
 
 MAINTAINERCLEANFILES = Makefile.in

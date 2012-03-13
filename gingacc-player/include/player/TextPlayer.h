@@ -57,6 +57,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "system/thread/Thread.h"
 
 #include "AVPlayer.h"

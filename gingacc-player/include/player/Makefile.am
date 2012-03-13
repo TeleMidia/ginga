@@ -1,7 +1,7 @@
 METASOURCES = AUTO
 LIBS =
 
-localIncludedir = /usr/local/include/ginga/player
+localIncludedir = $(prefix)/include/ginga/player
 
 HTOINSTALL = IApplicationPlayer.h \
 	IPlayer.h Player.h INCLPlayer.h \

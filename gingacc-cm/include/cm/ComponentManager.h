@@ -50,6 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef _ComponentManager_H_
 #define _ComponentManager_H_
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "IComponentManager.h"
 #include "component/IComponent.h"
 

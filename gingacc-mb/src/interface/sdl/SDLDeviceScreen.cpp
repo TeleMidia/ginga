@@ -1800,9 +1800,9 @@ namespace mb {
 		void* pixels;
 		int tpitch[3];
         Uint32 rmask, gmask, bmask, amask, format;
-        int access, w, h;
+        int textureAccess, w, h;
 
-        SDL_QueryTexture(texture, &format, &access, &w, &h);
+        SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
 		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
 		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 

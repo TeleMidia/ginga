@@ -1,6 +1,6 @@
 INCLUDES                 = \
                            $(all_includes) \
-                           -I/usr/local/include/ginga/ \
+                           -I$(prefix)/include/ginga/ \
                            -I$(top_srcdir)/include \
                            -I$(top_srcdir)/include/mb \
                            -I$(top_srcdir)/include/mb/interface \
@@ -15,7 +15,7 @@ MAINTAINERCLEANFILES     = \
 # gingaccmb #
 #############
 libdir                   = \
-                           /usr/local/lib/ginga
+                           $(prefix)/lib/ginga
 
 lib_LTLIBRARIES          = \
                            libgingaccmb.la
@@ -28,7 +28,11 @@ libgingaccmb_la_SOURCES  = \
                            LocalScreenManager.cpp
 
 libgingaccmb_la_LIBADD   = \
-                          -ltelemidiautil -lpthread \
-                          -lgingaccsystem $(COMPONENTS_LIBS) $(KINECT_LIBS) \
-                          -L/usr/local/lib -L/usr/local/lib/ginga \
+                          -ltelemidiautil \
+                          -lpthread \
+                          -lgingaccsystem \
+                          $(COMPONENTS_LIBS) \
+                          $(KINECT_LIBS) \
+                          -L$(prefix)/lib \
+                          -L$(prefix)/lib/ginga \
                           -L./

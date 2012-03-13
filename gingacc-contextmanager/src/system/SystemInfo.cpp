@@ -79,10 +79,8 @@ namespace contextmanager {
 	static ILocalScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
-#ifndef _WIN32
 		sysinfo(&info);
 		uname(&sn);
-#endif
 
 		initializeClockSpeed();
 		sysTable = NULL;
@@ -102,10 +100,6 @@ namespace contextmanager {
 	}
 
 	void SystemInfo::initializeClockSpeed() {
-
-#ifdef _WIN32
-		clockSpeed = 1000.0;
-#else
 		ifstream fis;
 		string line = "";
 
@@ -131,7 +125,6 @@ namespace contextmanager {
 				}
 			}
 		}
-#endif
 	}
 
 	string SystemInfo::getValue(string attribute) {
@@ -233,21 +226,11 @@ namespace contextmanager {
 	}
 
 	float SystemInfo::getMemorySize() {
-#ifdef _WIN32
-		MEMORYSTATUS ms;
-		GlobalMemoryStatus(&ms);
-		return (float)ms.dwAvailPhys;
-#else
 		return info.totalram;
-#endif
 	}
 
 	string SystemInfo::getOperatingSystem() {
-#ifdef _WIN32
-		return "Windows";
-#else
 		return sn.sysname;
-#endif
 	}
 
 	string SystemInfo::getJavaConfiguration() {

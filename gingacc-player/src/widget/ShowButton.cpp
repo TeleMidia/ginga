@@ -150,7 +150,7 @@ namespace player {
 		switch (status) {
 			case PAUSE:
 				clog << "ShowButton::run PAUSE" << endl;
-				render("/usr/local/etc/ginga/files/img/button/pauseButton.png");
+				render(SystemCompat::appendGingaFilesPrefix("img/button/pauseButton.png"));
 				break;
 
 			case STOP:
@@ -159,7 +159,7 @@ namespace player {
 					release();
 				}
 
-				render("/usr/local/etc/ginga/files/img/button/stopButton.png");
+				render(SystemCompat::appendGingaFilesPrefix("img/button/stopButton.png"));
 				::usleep(1000000);
 				release();
 				break;
@@ -170,7 +170,7 @@ namespace player {
 					release();
 				}
 
-				render("/usr/local/etc/ginga/files/img/button/playButton.png");
+				render(SystemCompat::appendGingaFilesPrefix("img/button/playButton.png"));
 				::usleep(1000000);
 				release();
 				break;

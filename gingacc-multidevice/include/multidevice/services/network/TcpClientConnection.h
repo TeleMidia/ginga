@@ -50,17 +50,6 @@ http://www.telemidia.puc-rio.br
 #ifndef TCPCLIENTCONNECTION_H_
 #define TCPCLIENTCONNECTION_H_
 
-#ifdef _WIN32
-#include "pthread.h"
-//#include <Ws2tcpip.h>
-#ifdef WINSTRUCTS
-#include <Ws2tcpip.h>
-#endif
-#include <io.h>
-#include <iostream>
-#define MSG_DONTWAIT 0
-#define close _close
-#else
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -69,7 +58,6 @@ http://www.telemidia.puc-rio.br
 #include <iostream>
 #include <sstream>
 #include <string.h>
-#endif
 using namespace std;
 
 #include "system/thread/Thread.h"

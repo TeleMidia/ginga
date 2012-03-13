@@ -59,10 +59,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "ITSFilter.h"
 
 #include <sys/stat.h>
-#ifndef _WIN32
 #include <unistd.h>
 #include <fcntl.h>
-#endif
 #include <map>
 #include <string>
 using namespace std;

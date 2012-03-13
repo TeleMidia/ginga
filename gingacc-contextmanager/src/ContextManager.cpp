@@ -52,11 +52,6 @@ http://www.telemidia.puc-rio.br
 #include "contextmanager/user/GingaUser.h"
 #include "contextmanager/system/SystemInfo.h"
 
-#ifdef _WIN32
-#include <io.h>
-#define O_LARGEFILE 0
-#endif
-
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -76,13 +71,9 @@ namespace contextmanager {
 	IContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
-#ifdef _WIN32
-		usersUri    = getUserDocAndSetPath().append("\\config\\context\\users.ini");
-		contextsUri = getUserDocAndSetPath().append("\\config\\context\\contexts.ini");
-#else
-		usersUri    = "/usr/local/etc/ginga/files/contextmanager/users.ini";
-		contextsUri = "/usr/local/etc/ginga/files/contextmanager/contexts.ini";
-#endif
+		usersUri    = SystemCompat::appendGingaFilesPrefix("contextmanager/users.ini");
+		contextsUri = SystemCompat::appendGingaFilesPrefix("contextmanager/contexts.ini");
+
 		users        = new map<int, IGingaUser*>;
 		contexts     = new map<int, map<string, string>*>;
 		curUserId    = -1;

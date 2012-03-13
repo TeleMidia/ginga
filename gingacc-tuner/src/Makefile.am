@@ -2,7 +2,7 @@
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/include
 LIBS =
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 lib_LTLIBRARIES = libgingacctuner.la
 
 TUNERCPPS = providers/Channel.cpp \

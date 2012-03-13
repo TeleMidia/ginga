@@ -1,17 +1,20 @@
 INCLUDES                = \
                           $(all_includes) \
-                          -I$(top_srcdir)/include
+                          -I$(top_srcdir)/include \
+                          -I$(prefix)/include/ginga
 
 LIBS                    =
 
 libdir                  = \
-                          /usr/local/lib/ginga
+                          $(prefix)/lib/ginga
 
 lib_LTLIBRARIES         = \
                           libgingacccm.la
                           
 libgingacccm_la_LIBADD  = \
-                          -ldl
+                          -ldl \
+                          -lgingaccsystem \
+                          -L$(prefix)/lib/ginga
 
 libgingacccm_la_SOURCES = \
                           ComponentManager.cpp

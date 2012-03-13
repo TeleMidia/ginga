@@ -52,12 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "../IInteractiveChannel.h"
 
-#ifdef _WIN32
-#include <io.h>
-#include <pthread.h>
-#define O_LARGEFILE 0 
-#endif
-
 #include "curl/curl.h"
 
 #include <sys/stat.h>

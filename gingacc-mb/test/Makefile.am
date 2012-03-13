@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES             = \
-                       -I/usr/local/include/ginga/ \
+                       -I$(prefix)/include/ginga/ \
                        -I$(top_srcdir)/include \
                        $(all_includes)
 
@@ -29,8 +29,8 @@ testAudio_LDADD      = \
 testAudio_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
-                       -L/usr/local/lib/ \
-                       -L/usr/local/lib/ginga \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
 
 #testFont
@@ -47,8 +47,8 @@ testFont_LDADD      = \
 testFont_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
-                       -L/usr/local/lib/ \
-                       -L/usr/local/lib/ginga \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
 
 #testInput
@@ -65,8 +65,8 @@ testInput_LDADD      = \
 testInput_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
-                       -L/usr/local/lib/ \
-                       -L/usr/local/lib/ginga \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
 
 #testScreen
@@ -83,8 +83,8 @@ testScreen_LDADD     = \
 testScreen_LDFLAGS   = \
                        -L/lib/ \
                        -L/usr/lib/ \
-                       -L/usr/local/lib/ \
-                       -L/usr/local/lib/ginga \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
 
 #testVideo
@@ -101,8 +101,8 @@ testVideo_LDADD      = \
 testVideo_LDFLAGS    = \
                        -L/lib/ \
                        -L/usr/lib/ \
-                       -L/usr/local/lib/ \
-                       -L/usr/local/lib/ginga \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
 
 

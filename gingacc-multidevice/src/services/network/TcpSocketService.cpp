@@ -47,21 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifdef _WIN32
-#include <io.h>
-#include <stdio.h>
-#define MSG_DONTWAIT 0
-#include <iostream>
-#include <limits.h>
-#include <stdlib.h>
-#include <string.h>
-#else
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#endif
 
 #include <pthread.h>
 
@@ -97,12 +87,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 	TCPClientConnection* tcpcc;
 	//unsigned int newDevId;
 
-#ifndef _WIN32
 	asprintf(&portStr,"%d",port);
-#else
-	portStr = new char(8);
-	sprintf_s(portStr, 8,"%d", port);
-#endif
 	pthread_mutex_lock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
 
@@ -156,7 +141,6 @@ void TcpSocketService::postTcpCommand(
 	map<unsigned int, TCPClientConnection*>::iterator i;
 	char* com;
 
-#ifndef _WIN32
 	asprintf(
 			&com,
 			"%d %s %s %d\n%s\n",
@@ -165,10 +149,6 @@ void TcpSocketService::postTcpCommand(
 			payloadDesc,
 			(int)strlen(payload),
 			payload);
-#else
-	com = new char(32);
-	sprintf_s(com, 32,"d %s %s %d\n%s\n", npt, command, payloadDesc, (int)strlen(payload),payload );
-#endif
 
 	//clog << "TcpSocketService::postTcpCommand = ";
 	//clog << com << endl;

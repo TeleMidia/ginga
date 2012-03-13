@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "interface/InputEventFactory.h"
 
 #include "IMBDefs.h"

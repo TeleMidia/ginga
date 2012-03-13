@@ -49,10 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "multidevice/services/device/PassiveDeviceService.h"
 #include "multidevice/services/IDeviceDomain.h"
-#ifdef _WIN32
-#include <io.h>
-#define O_LARGEFILE 0
-#endif
 
 #include <string.h>
 #include <stdlib.h>

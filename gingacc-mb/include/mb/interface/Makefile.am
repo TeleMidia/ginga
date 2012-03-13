@@ -1,6 +1,6 @@
 METASOURCES = AUTO
 LIBS =
-localIncludedir = /usr/local/include/ginga/mb/interface
+localIncludedir = $(prefix)/include/ginga/mb/interface
 
 localInclude_HEADERS = \
                        CodeMap.h \

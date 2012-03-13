@@ -109,12 +109,6 @@ namespace player {
 //			surface->clearSurface();
 //		}
 
-		if (isXmlStr(mrl)) {
-			mrl = ("/usr/local/lib/ginga/epgfactory/src/" +
-					mrl.substr(mrl.find_last_of("/"),
-							mrl.length() - mrl.find_last_of("/")));
-		}
-
 		pthread_mutex_lock(&mutex);
 		fis.open((this->mrl).c_str(), ifstream::in);
 		if (!fis.is_open() && (mrl != "" || content == "")) {

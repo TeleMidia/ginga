@@ -50,16 +50,6 @@ http://www.telemidia.puc-rio.br
 #ifndef LocalScreenManager_H_
 #define LocalScreenManager_H_
 
-#ifdef _WIN32
-#if	_EXP_LOCALSCREENHANDLER_API == 0
-#define LOCALSCREENHANDLER_API	__declspec(dllexport)
-#else
-#define LOCALSCREENHANDLER_API	__declspec(dllimport)
-#endif
-#else
-#define LOCALSCREENHANDLER_API
-#endif
-
 #include "interface/IDeviceScreen.h"
 #include "ILocalScreenManager.h"
 
@@ -79,9 +69,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class LOCALSCREENHANDLER_API LocalScreenManager :
-			public ILocalScreenManager {
-
+	class LocalScreenManager : public ILocalScreenManager {
 		public:
 			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
 										     /* System Description  String   */

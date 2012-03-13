@@ -61,7 +61,7 @@ namespace ginga {
 namespace core {
 namespace tuning {
 	const string ISDBTProvider::iniFileName(
-			"/usr/local/etc/ginga/files/tuner/isdbt.ini");
+			SystemCompat::appendGingaFilesPrefix("tuner/isdbt.ini"));
 
 	ISDBTProvider::ISDBTProvider(string feName) {
 		this->frontend       = NULL;

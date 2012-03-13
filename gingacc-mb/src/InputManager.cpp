@@ -102,11 +102,8 @@ namespace mb {
 		imperativeIntervalTime  = 0;
 		declarativeIntervalTime = 0;
 
-#ifdef _WIN32
-		strVar = getUserDocAndSetPath().append("\\config\\input.cfg");
-#else
-		strVar = "/usr/local/etc/ginga/files/mb/config/input.cfg";
-#endif	
+		strVar = SystemCompat::appendGingaFilesPrefix("mb/config/input.cfg");
+
 		fis.open(strVar.c_str(), ifstream::in);
 		if (!fis.is_open()) {
 			clog << "InputManager: can't open input file:";
@@ -180,12 +177,10 @@ namespace mb {
 		pthread_mutex_unlock(&appMutex);
 		pthread_mutex_destroy(&appMutex);
 
-#ifndef _WIN32
 		if (eventBuffer != NULL) {
 			delete eventBuffer;
 			eventBuffer = NULL;
 		}
-#endif
 
 		pthread_mutex_lock(&mlMutex);
 		motionListeners.clear();

@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -105,14 +108,14 @@ void testPlayer(
 
 	mrls = new vector<string>;
 
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b1.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b2.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b3.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b4.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b5.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b6.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b7.png");
-	mrls->push_back("/usr/local/etc/ginga/files/img/roller/b8.png");
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b1.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b2.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b3.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b4.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b5.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b6.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b7.png"));
+	mrls->push_back(SystemCompat::appendGingaFilesPrefix("img/roller/b8.png"));
 
 	mrlsAux = new vector<string>(*mrls);
 	a1 = new AnimePlayer(screen, mrlsAux);

@@ -278,7 +278,7 @@ namespace cm {
 		cp = ((ComponentParserCreator*)(getSymbol(
 				component, "createComponentParser")))();
 
-		compUri = "/usr/local/etc/ginga/files/componentDescription.xml";
+		compUri = SystemCompat::appendGingaFilesPrefix("componentDescription.xml");
 		cp->parse(compUri);
 
 		this->components = cp->getComponents();
@@ -315,7 +315,7 @@ namespace cm {
 		c = (*symbols)[objName];
 		if (c != NULL) {
 			url = c->getLocation() + "/" + c->getName();
-			if (access(url.c_str(), F_OK) == 0) {
+			if (access(url.c_str(), (int)F_OK) == 0) {
 				pthread_mutex_unlock(&mapMutex);
 				return true;
 

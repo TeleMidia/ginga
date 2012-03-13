@@ -51,6 +51,9 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "config.h"
 
 #if HAVE_COMPSUPPORT
@@ -76,12 +79,12 @@ bool debugging = false;
 bool enableChoro = false;
 
 string updateFileUri(string file) {
-	if (!isAbsolutePath(file)) {
+	if (!SystemCompat::isAbsolutePath(file)) {
 		if (debugging) {
-			return getCurrentPath() + "gingacc-mb/test/" + file;
+			return SystemCompat::getUserCurrentPath() + "gingacc-mb/test/" + file;
 
 		} else {
-			return getCurrentPath() + file;
+			return SystemCompat::getUserCurrentPath() + file;
 		}
 	}
 
@@ -126,7 +129,6 @@ int main(int argc, char** argv) {
 
 	setLogToNullDev();
 	initTimeStamp();
-	initializeCurrentPath();
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();

@@ -90,7 +90,7 @@ namespace mb {
 
 		this->fontInit  = false;
 		this->fontUri   = "";
-		this->dfltFont  = "/usr/local/etc/ginga/files/font/vera.ttf";
+		this->dfltFont  = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
 		this->myScreen  = screenId;
 		this->height    = heightInPixel;
 		this->font      = NULL;

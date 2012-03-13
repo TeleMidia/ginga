@@ -51,11 +51,6 @@ http://www.telemidia.puc-rio.br
 #include "tuner/ITunerListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
-#ifdef _WIN32
-#include <io.h>
-#define O_LARGEFILE 0
-#endif
-
 #include <sys/types.h>
 #include <fcntl.h>
 

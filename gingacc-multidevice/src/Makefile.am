@@ -1,11 +1,11 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
     $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 
 lib_LTLIBRARIES = libgingaccmd.la
 
@@ -27,7 +27,7 @@ libgingaccmd_la_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
 
 libgingaccmd_la_LIBADD = -lpthread -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS) \
-    -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L/usr/local/lib/ginga
+    -L/lib/ -L/usr/lib/ -L$(prefix)/lib/ \
+    -L$(prefix)/lib/ginga
 
 MAINTAINERCLEANFILES = Makefile.in

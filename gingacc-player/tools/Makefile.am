@@ -1,10 +1,10 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
+INCLUDES = -I$(prefix)/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-bindir = /usr/local/etc/ginga/tools/loaders
+bindir = $(prefix)/etc/ginga/tools/loaders
 
 if MULTIPROCESS
 bin_PROGRAMS    = players

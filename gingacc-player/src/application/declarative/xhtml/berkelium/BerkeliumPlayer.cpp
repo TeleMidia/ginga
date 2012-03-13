@@ -366,15 +366,11 @@ namespace player {
 				Berkelium::update();
 			}
 
-#ifdef _WIN32
-			Sleep(10);
-#else
 			struct timeval tv;
 
 			tv.tv_sec = 0;
 			tv.tv_usec = 1000;
 			::select(0, NULL, NULL, NULL, &tv);
-#endif
 	    }
 
 /*

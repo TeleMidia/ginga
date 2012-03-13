@@ -101,7 +101,7 @@ namespace mb {
 		aux       = "";
 		myScreen  = screenId;
 		font      = NULL;
-		dfltFont  = "/usr/local/etc/ginga/files/font/vera.ttf";
+		dfltFont  = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
 		plainText = "";
 		coordX    = 0;
 		coordY    = 0;

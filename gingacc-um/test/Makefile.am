@@ -10,7 +10,7 @@ test_SOURCES = test.cpp
 
 test_LDADD =  -ldl
 
-test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
+test_LDFLAGS = -L/lib/ -L/usr/lib/ -L$(prefix)/lib/ \
     -L../src
 
 MAINTAINERCLEANFILES = Makefile.in

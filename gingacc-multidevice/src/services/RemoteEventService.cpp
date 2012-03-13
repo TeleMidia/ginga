@@ -178,9 +178,11 @@ namespace multidevice {
 		//TODO: ver se eh um ncl ou um media object qq
 		//TODO: ver a parada dos arquivos serem listados num xml
 
-		char *zip_dump = "/tmp/tmpzip.zip";
+		char *zip_dump = (char*)"/tmp/tmpzip.zip";
 
-		string dir_app = getCurrentPath() + getPath(string(name));
+		string dir_app = SystemCompat::getUserCurrentPath() +
+				SystemCompat::getPath(string(name));
+
 		clog << "RemoteEventService::dir app="<<dir_app<<endl;
 
 		zip_directory(zip_dump,(char*)dir_app.c_str());

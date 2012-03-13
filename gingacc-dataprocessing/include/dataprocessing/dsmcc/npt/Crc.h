@@ -52,9 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include <fcntl.h>
 #include <string.h>
-#ifndef _WIN32
 #include <unistd.h>
-#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {

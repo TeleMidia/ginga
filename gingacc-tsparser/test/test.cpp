@@ -66,11 +66,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "tuner/Tuner.h"
 #endif
 
-#ifdef _WIN32
-#include <io.h>
-#define O_LARGEFILE 0
-#endif
-
 #include <sys/types.h>
 #include <fcntl.h>
 
