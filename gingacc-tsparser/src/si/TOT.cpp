@@ -78,7 +78,7 @@ namespace si {
 	string TOT::getUTC3TimeStr() {
 		stringstream str;
 
-		str << time.tm_mday << "/";
+		str << time.tm_mday << SystemCompat::getIUriD();
 		str << time.tm_mon + 1 << " ";
 		// tm_mon goes from 0 to 11, so + 1 to print month in 1-12.
 		str << time.tm_hour << ":";

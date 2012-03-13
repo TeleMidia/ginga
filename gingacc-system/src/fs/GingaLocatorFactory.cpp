@@ -125,27 +125,41 @@ namespace fs {
 			args = NULL;
 		}
 
-		while (providerUri.find("//") != std::string::npos) {
+		string internal = SystemCompat::getIUriD();
+		internal = internal + internal;
+
+		string foreign = SystemCompat::getFUriD();
+		foreign = foreign + foreign;
+
+		while (providerUri.find(internal) != std::string::npos) {
 			providerUri = providerUri.substr(0,
-					providerUri.find_first_of("//") - 1) + "/" +
+					providerUri.find_first_of(internal) - 1) +
+							SystemCompat::getIUriD() +
+
 					providerUri.substr(
-							providerUri.find_first_of("//") + 2,
+							providerUri.find_first_of(internal) + 2,
 							providerUri.length());
 		}
 
-		while (providerUri.find("\\\\") != std::string::npos) {
+		while (providerUri.find(foreign) != std::string::npos) {
 			providerUri = providerUri.substr(0,
-					providerUri.find_first_of("\\\\") - 1) + "\\" +
+					providerUri.find_first_of(foreign) - 1) +
+							SystemCompat::getFUriD() +
+
 					providerUri.substr(
-							providerUri.find_first_of("\\\\") + 2,
+							providerUri.find_first_of(foreign) + 2,
 							providerUri.length());
 		}
 
-		while (providerUri.substr(providerUri.length() - 1, 1) == "/") {
+		while (providerUri.substr(providerUri.length() - 1, 1) ==
+				SystemCompat::getIUriD()) {
+
 			providerUri = providerUri.substr(0, providerUri.length() - 1);
 		}
 
-		while (providerUri.substr(providerUri.length() - 1, 1) == "\\") {
+		while (providerUri.substr(providerUri.length() - 1, 1) ==
+				SystemCompat::getFUriD()) {
+
 			providerUri = providerUri.substr(0, providerUri.length() - 1);
 		}
 
@@ -157,27 +171,41 @@ namespace fs {
 		string clientUri = "";
 		string ior = "-1";
 
-		while (providerUri.find("//") != std::string::npos) {
+		string internal = SystemCompat::getIUriD();
+		internal = internal + internal;
+
+		string foreign = SystemCompat::getFUriD();
+		foreign = foreign + foreign;
+
+		while (providerUri.find(internal) != std::string::npos) {
 			providerUri = providerUri.substr(0,
-					providerUri.find_first_of("//") - 1) + "/" +
+					providerUri.find_first_of(internal) - 1) +
+							SystemCompat::getIUriD() +
+
 					providerUri.substr(
-							providerUri.find_first_of("//") + 2,
+							providerUri.find_first_of(internal) + 2,
 							providerUri.length());
 		}
 
-		while (providerUri.find("\\\\") != std::string::npos) {
+		while (providerUri.find(foreign) != std::string::npos) {
 			providerUri = providerUri.substr(0,
-					providerUri.find_first_of("\\\\") - 1) + "\\" +
+					providerUri.find_first_of(foreign) - 1) +
+							SystemCompat::getFUriD() +
+
 					providerUri.substr(
-							providerUri.find_first_of("\\\\") + 2,
+							providerUri.find_first_of(foreign) + 2,
 							providerUri.length());
 		}
 
-		while (providerUri.substr(providerUri.length() - 1, 1) == "/") {
+		while (providerUri.substr(providerUri.length() - 1, 1) ==
+				SystemCompat::getIUriD()) {
+
 			providerUri = providerUri.substr(0, providerUri.length() - 1);
 		}
 
-		while (providerUri.substr(providerUri.length() - 1, 1) == "\\") {
+		while (providerUri.substr(providerUri.length() - 1, 1) ==
+				SystemCompat::getFUriD()) {
+
 			providerUri = providerUri.substr(0, providerUri.length() - 1);
 		}
 

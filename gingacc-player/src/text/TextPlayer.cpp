@@ -100,10 +100,11 @@ namespace player {
 		this->currentColumn = 0;
 		this->tabSize       = 0;
 		this->font          = NULL;
-		this->fontUri = "/usr/local/share/directfb-examples/fonts/decker.ttf";
-		this->bgColor   = NULL;
-		this->fontColor = NULL;
-		this->fontSize  = 12;
+		this->bgColor       = NULL;
+		this->fontColor     = NULL;
+		this->fontSize      = 12;
+		this->fontUri       = SystemCompat::appendGingaFilesPrefix(
+				"font/vera.ttf");
 
 		this->surface = dm->createSurface(myScreen);
 		if (this->surface != NULL) {

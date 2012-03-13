@@ -137,7 +137,8 @@ namespace carousel {
 				clog << objectId << "'" << endl;*/
 				(*objectNames)[objectId] = (*i)->getId();
 				(*objectPaths)[objectId] = "carousel/" +
-					    itos(object->getCarouselId()) + "/";
+					    itos(object->getCarouselId()) +
+					    SystemCompat::getIUriD();
 			}
 			//clog << "ObjectProcessor::mountObject srg done" << endl;
 			return true;
@@ -154,7 +155,7 @@ namespace carousel {
 			} else {
 				path = (objectPaths->find(object->getObjectId()))->second +
 					    (objectNames->find(object->getObjectId()))->second +
-					    "/";
+					    SystemCompat::getIUriD();
 
 				/*clog << "ObjectProcessor::mountObject create dir '" << path;
 				clog << endl;*/

@@ -54,7 +54,6 @@ extern "C" {
 	#include <unistd.h>
 }
 
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -63,14 +62,107 @@ namespace core {
 namespace system {
 namespace compat {
 	string SystemCompat::filesPref        = "";
+	string SystemCompat::installPref      = "";
 	string SystemCompat::userCurrentPath  = "";
+	string SystemCompat::gingaCurrentPath = "";
+	string SystemCompat::pathD            = "";
+	string SystemCompat::iUriD            = "";
+	string SystemCompat::fUriD            = "";
 	bool SystemCompat::initialized        = false;
 
 	void SystemCompat::checkValues() {
 		if (!initialized) {
 			initialized = true;
-			filesPref   = "/usr/local/etc/ginga/files/";
+			initializeGingaPath();
 			initializeUserCurrentPath();
+			initializeGingaConfigFile();
+		}
+	}
+
+	void SystemCompat::initializeGingaConfigFile() {
+		ifstream fis;
+		string line, key, value;
+		string gingaini = gingaCurrentPath + "ginga.ini";
+
+		fis.open(gingaini.c_str(), ifstream::in);
+
+		if (!fis.is_open()) {
+			clog << "SystemCompat::initializeGingaConfigFile ";
+			clog << "Warning! Can't open input file: '" << gingaini;
+			clog << "' loading default configuration!" << endl;
+
+			pathD            = ":";
+			iUriD            = "/";
+			fUriD            = "\\";
+			gingaCurrentPath = "/usr/local/sbin/";
+			installPref      = "/usr/local";
+			filesPref        = "/usr/local/etc/ginga/files/";
+
+			return;
+		}
+
+		while (fis.good()) {
+			fis >> line;
+			if (line.find("#") == std::string::npos ||
+					line.find("=") != std::string::npos) {
+
+				key = line.substr(0, line.find_last_of("="));
+				value = line.substr(
+						(line.find_first_of("=") + 1),
+						line.length() - (line.find_first_of("=") + 1));
+
+				if (key == "system.internal.delimiter") {
+					iUriD       = value;
+
+				} else if (key == "system.foreign.delimiter") {
+					fUriD       = value;
+
+				} else if (key == "system.files.prefix") {
+					filesPref   = value;
+
+				} else if (key == "system.install.prefix") {
+					installPref = value;
+				}
+			}
+		}
+
+		fis.close();
+	}
+
+	void SystemCompat::initializeGingaPath() {
+		vector<string>* params;
+		vector<string>::iterator i;
+		string path, currentPath;
+
+		path = getenv("PATH");
+		if (path.find(":") != std::string::npos) {
+			pathD = ":";
+			iUriD = "/";
+
+		} else if (path.find(";") != std::string::npos) {
+			pathD = ";";
+			iUriD = "\\";
+		}
+
+		params = split(path, pathD);
+		if (params != NULL) {
+			i = params->begin();
+			while (i != params->end()) {
+				currentPath = (*i) + iUriD + "ginga";
+				if (access((*i).c_str(), (int)X_OK) == 0) {
+					gingaCurrentPath = (*i);
+
+					if (gingaCurrentPath.find_last_of(iUriD) !=
+							gingaCurrentPath.length() - 1) {
+
+						gingaCurrentPath = gingaCurrentPath + iUriD;
+					}
+
+					break;
+				}
+				++i;
+			}
+			delete params;
 		}
 	}
 
@@ -80,10 +172,10 @@ namespace compat {
 
 		userCurrentPath.assign(path, strlen(path));
 
-		if (userCurrentPath.find_last_of("/") !=
+		if (userCurrentPath.find_last_of(iUriD) !=
 				userCurrentPath.length() - 1) {
 
-			userCurrentPath = userCurrentPath + "/";
+			userCurrentPath = userCurrentPath + iUriD;
 		}
 	}
 
@@ -99,21 +191,21 @@ namespace compat {
 		}
 
 		while (true) {
-			pos = dir.find_first_of("\\");
+			pos = dir.find_first_of(fUriD);
 			if (pos == std::string::npos) {
 				break;
 			}
-			dir.replace(pos, 1, "/");
+			dir.replace(pos, 1, iUriD);
 		}
 
-		params = split(dir, "/");
+		params = split(dir, iUriD);
 		newDir = "";
 		it = params->begin();
 		while (it != params->end()) {
 			if ((it + 1) != params->end()) {
 				temp = *(it + 1);
 				if (temp != ".." || found) {
-					newDir = newDir + "/" + (*it);
+					newDir = newDir + iUriD + (*it);
 
 				} else {
 					++it;
@@ -121,7 +213,7 @@ namespace compat {
 				}
 
 			} else if ((*it) != ".") {
-				newDir = newDir + "/" + (*it);
+				newDir = newDir + iUriD + (*it);
 
 			}
 			++it;
@@ -150,27 +242,29 @@ namespace compat {
 	bool SystemCompat::isAbsolutePath(string path) {
 		string::size_type i, len;
 
+		checkValues();
+
 		if (isXmlStr(path)) {
 			return true;
 		}
 
-		i = path.find_first_of("\\");
+		i = path.find_first_of(fUriD);
 		while (i != string::npos) {
-			path.replace(i,1,"/");
-			i = path.find_first_of("\\");
+			path.replace(i, 1, iUriD);
+			i = path.find_first_of(fUriD);
 		}
 
 		len = path.length();
-		if ((len >= 10 && path.substr(0,10) == "x-sbtvdts:")
-				|| (len >= 9 && path.substr(0,9) == "sbtvd-ts:")
-				|| (len >= 7 && path.substr(0,7) == "http://")
-			    || (len >= 6 && path.substr(0,6) == "ftp://")
-			    || (len >= 1 && path.substr(0,1) == "/")
-			    || (len >= 2 && path.substr(1,1) == ":")
-			    || (len >= 7 && path.substr(0,7) == "file://")
-			    || (len >= 6 && path.substr(0,6) == "tcp://")
-			    || (len >= 6 && path.substr(0,6) == "udp://")
-			    || (len >= 6 && path.substr(0,6) == "rtp://")) {
+		if ((len >= 1 && path.substr(0,1) == iUriD) ||
+				(len >= 10 && path.substr(0,10) == "x-sbtvdts:") ||
+				(len >= 9 && path.substr(0,9) == "sbtvd-ts:") ||
+				(len >= 7 && path.substr(0,7) == "http://") ||
+				(len >= 6 && path.substr(0,6) == "ftp://") ||
+				(len >= 2 && path.substr(1,1) == ":") ||
+				(len >= 7 && path.substr(0,7) == "file://") ||
+				(len >= 6 && path.substr(0,6) == "tcp://") ||
+				(len >= 6 && path.substr(0,6) == "udp://") ||
+				(len >= 6 && path.substr(0,6) == "rtp://")) {
 
 			return true;
 		}
@@ -178,13 +272,24 @@ namespace compat {
 		return false;
 	}
 
+	string SystemCompat::getIUriD() {
+		checkValues();
+		return iUriD;
+	}
+
+	string SystemCompat::getFUriD() {
+		checkValues();
+		return fUriD;
+	}
+
 	string SystemCompat::getPath(string filename) {
 		string path;
 		string::size_type i;
 
-		i = filename.find_last_of('/');
+		i = filename.find_last_of(iUriD);
 		if (i != string::npos) {
 			path = filename.substr(0, i);
+
 		} else {
 			path = "";
 		}
@@ -199,9 +304,31 @@ namespace compat {
 	}
 
 	string SystemCompat::appendGingaFilesPrefix(string relUrl) {
+		string absuri;
+
 		checkValues();
 
-		return filesPref + relUrl;
+		absuri = updatePath(filesPref + relUrl);
+		/*cout << "SystemCompat::appendGingaFilesPrefix to relUrl = '";
+		cout << relUrl << "' filesPref = '" << filesPref << "' ";
+		cout << " updated path = '" << absuri << "' ";
+		cout << endl;*/
+
+		return absuri;
+	}
+
+	string SystemCompat::appendGingaInstallPrefix(string relUrl) {
+		string absuri;
+
+		checkValues();
+
+		absuri = updatePath(installPref + relUrl);
+		/*cout << "SystemCompat::appendGingaInstallPrefix to relUrl = '";
+		cout << relUrl << "' installPref = '" << installPref << "' ";
+		cout << " updated path = '" << absuri << "' ";
+		cout << endl;*/
+
+		return absuri;
 	}
 }
 }

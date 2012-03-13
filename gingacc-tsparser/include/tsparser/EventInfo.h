@@ -55,6 +55,9 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "ShortEventDescriptor.h"
 #include "ExtendedEventDescriptor.h"
 #include "ComponentDescriptor.h"
