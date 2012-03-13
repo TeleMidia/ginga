@@ -52,7 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/IMBDefs.h"
 
-#ifndef _WIN32
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -62,8 +61,6 @@ extern "C" {
 	#include <unistd.h>
 #ifdef __cplusplus
 }
-#endif
-
 #endif
 
 #ifdef STx7100

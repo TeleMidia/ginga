@@ -100,11 +100,7 @@ namespace player {
 		this->currentColumn = 0;
 		this->tabSize       = 0;
 		this->font          = NULL;
-#ifdef _WIN32
-		this->fontUri = getUserDocAndSetPath().append("\\config\\decker.ttf");
-#else
 		this->fontUri = "/usr/local/share/directfb-examples/fonts/decker.ttf";
-#endif
 		this->bgColor   = NULL;
 		this->fontColor = NULL;
 		this->fontSize  = 12;
@@ -235,7 +231,7 @@ namespace player {
 		int oldTextWidth;
 		string splited;
 
-		uri = "/usr/local/etc/ginga/files/font/vera.ttf";
+		uri = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
 		if (font == NULL && fileExists(uri)) {
 			setFont(uri);
 		}
@@ -421,7 +417,7 @@ namespace player {
 	bool TextPlayer::breakLine() {
 		int w, h;
 		if (font == NULL) {
-			setFont("/usr/local/etc/ginga/files/font/decker.ttf");
+			setFont(SystemCompat::appendGingaFilesPrefix("font/decker.ttf"));
 		}
 
 		surface->getSize(&w, &h);

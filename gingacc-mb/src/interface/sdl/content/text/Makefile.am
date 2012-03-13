@@ -1,14 +1,14 @@
 # set the include path found by configure
 INCLUDES                       = \
-                                 -I/usr/local/include/ginga/ \
-                                 -I/usr/local/include/SDL2/ \
+                                 -I$(prefix)/include/ginga/ \
+                                 -I$(prefix)/include/SDL2/ \
                                  -I$(top_srcdir)/include \
                                  $(all_includes)
 
 LIBS =
 
 libdir                         = \
-                                 /usr/local/lib/ginga/mb/dec
+                                 $(prefix)/lib/ginga/mb/dec
 
 if SDLSYSTEM
 lib_LTLIBRARIES                = \
@@ -22,8 +22,9 @@ libgingaccmbdecsdlf_la_LIBADD  = \
                                  -lSDL2_ttf \
                                  -lgingaccmbsdl \
                                  -lgingaccmb \
-                                 -L/usr/local/lib \
-                                 -L/usr/local/lib/ginga \
+                                 -lgingaccsystem \
+                                 -L$(prefix)/lib \
+                                 -L$(prefix)/lib/ginga \
                                  -L$(top_srcdir)/src \
                                  -L$(top_srcdir)/src/interface/sdl
 endif #SDLSYSTEM

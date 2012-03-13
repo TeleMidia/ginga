@@ -1,9 +1,9 @@
 METASOURCES = AUTO
 LIBS =
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
 	$(all_includes) -I$(top_srcdir)/include
 
-localIncludedir = /usr/local/include/ginga/mb
+localIncludedir = $(prefix)/include/ginga/mb
 
 localInclude_HEADERS = \
                        IInputManager.h \

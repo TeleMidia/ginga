@@ -1,7 +1,7 @@
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/include \
-    -I/usr/local/include/directfb
+    -I$(prefix)/include/directfb
 
 LIBS =
 
@@ -14,7 +14,7 @@ test_LDADD = -lgingaccsystem -ltelemidiautil -lgingacctuner \
     -lgingacctsparser -lgingaccdataprocessing \
     -lgingaccdataprocncl -lexpat -ldl
 
-test_LDFLAGS = -L/usr/local/lib/ginga -L../src/ -L../src/dsmcc/npt \
-    -L../src/ncl -L/usr/local/lib
+test_LDFLAGS = -L$(prefix)/lib/ginga -L../src/ -L../src/dsmcc/npt \
+    -L../src/ncl -L$(prefix)/lib
 
 MAINTAINERCLEANFILES = Makefile.in

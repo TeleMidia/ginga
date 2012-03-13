@@ -21,7 +21,7 @@ SUBDIRS = 	files \
 			tools \
 			test
 
-INCLUDES = -I/usr/local/include/ -I/usr/local/include/ginga/
+INCLUDES = -I$(prefix)/include/ -I$(prefix)/include/ginga/
 
 MAINTAINERCLEANFILES = 	aclocal.m4 \
 			config.log \

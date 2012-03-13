@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
 #include "mb/interface/IWindow.h"

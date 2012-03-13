@@ -476,7 +476,7 @@ namespace player {
 										aInfo->mURL.find_last_of("/") + 1));
 
 					} else {
-						base = getCurrentPath();
+						base = SystemCompat::getUserCurrentPath();
 						file = aInfo->mURL;
 					}
 

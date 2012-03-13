@@ -52,9 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include <stdint.h>
 #include <iostream>
-#ifndef _WIN32
 #include <sys/resource.h>
-#endif
 using namespace std;
 
 namespace br {

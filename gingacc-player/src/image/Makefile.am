@@ -1,14 +1,15 @@
+INCLUDES                    = \
+                              -I$(prefix)/include/ginga/ \
+                              $(all_includes) \
+                              -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
-	$(all_includes) -I$(top_srcdir)/include
-
-LIBS =
+LIBS                        =
 
 #########
 # IMAGE #
 #########
-libdir = /usr/local/lib/ginga/players
+libdir                      = \
+                              $(prefix)/lib/ginga/players
 
 lib_LTLIBRARIES             = \
                               libgingaccplaimg.la
@@ -18,20 +19,29 @@ libgingaccplaimg_la_SOURCES = \
 
 libgingaccplaimg_la_LIBADD  = \
                               -ltelemidiautil \
+                              -lgingaccsystem \
                               -lgingaccplayer \
                               $(COMPONENTS_LIBS) \
-                              -L/usr/local/lib \
-                              -L/usr/local/lib/ginga \
+                              -L$(prefix)/lib \
+                              -L$(prefix)/lib/ginga \
                               -L../
 
 #########
 # ANIME #
 #########
-lib_LTLIBRARIES += libgingaccplaani.la
+lib_LTLIBRARIES            += \
+                              libgingaccplaani.la
 
-libgingaccplaani_la_SOURCES = AnimePlayer.cpp
+libgingaccplaani_la_SOURCES = \
+                              AnimePlayer.cpp
 
-libgingaccplaani_la_LIBADD = -ltelemidiautil -lgingaccsystem \
-    $(COMPONENTS_LIBS) -L/usr/local/lib -L/usr/local/lib/ginga -L../
+libgingaccplaani_la_LIBADD  = \
+                              -ltelemidiautil \
+                              -lgingaccsystem \
+                              $(COMPONENTS_LIBS) \
+                              -L$(prefix)/lib \
+                              -L$(prefix)/lib/ginga \
+                              -L../
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES        = \
+                              Makefile.in

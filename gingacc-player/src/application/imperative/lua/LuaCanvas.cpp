@@ -73,7 +73,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #define LUAPLAYER_CANVAS  "luaplayer.Canvas"
 #define REFFILL           (-3)
 #define REFFRAME          (-4)
-#define FONTDIR   "/usr/local/etc/ginga/files/font/"
 #define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
 
 typedef struct Canvas {
@@ -249,7 +248,7 @@ static int l_attrFont (lua_State* L)
 	strncpy(canvas->font.style, luaL_optstring(L,4,"normal"), 20);
 
 	char path[255]; path[0] = '\0';
-	strncat(path, FONTDIR, 100);
+	strncat(path, SystemCompat::appendGingaFilesPrefix("font/").c_str(), 100);
 	strncat(path, canvas->font.face, 20);
     //strncat(path, "-", 2);
     //strncat(path, canvas->font.style, 20);

@@ -1,18 +1,34 @@
+INCLUDES                     = \
+                               $(all_includes) \
+                               -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
-LIBS =
-# the library search path.
-libdir = /usr/local/lib/ginga
+LIBS                         =
 
-SYSTEMSOURCES = thread/Thread.cpp fs/GingaLocatorFactory.cpp
+libdir                       = \
+                               $(prefix)/lib/ginga
+
+SYSTEMSOURCES                = \
+                               thread/Thread.cpp \
+                               fs/GingaLocatorFactory.cpp \
+                               compat/SystemCompat.cpp
 
 if MULTIPROCESS
-SYSTEMSOURCES =+ process/Process.cpp process/SpawnedProcess.cpp
+SYSTEMSOURCES               += \
+                               process/Process.cpp \
+                               process/SpawnedProcess.cpp
 endif
 
-lib_LTLIBRARIES              = libgingaccsystem.la
-libgingaccsystem_la_SOURCES  = $(SYSTEMSOURCES)
-libgingaccsystem_la_LIBADD   = -lpthread $(MULTIPROCESS_LIBS) $(COMPONENTS_LIBS)
+lib_LTLIBRARIES              = \
+                               libgingaccsystem.la
 
-MAINTAINERCLEANFILES = Makefile.in
+libgingaccsystem_la_SOURCES  = \
+                               $(SYSTEMSOURCES)
+
+libgingaccsystem_la_LIBADD   = \
+                               -lpthread \
+                               -ltelemidiautil \
+                               $(MULTIPROCESS_LIBS) \
+                               $(COMPONENTS_LIBS)
+
+MAINTAINERCLEANFILES         = \
+                               Makefile.in

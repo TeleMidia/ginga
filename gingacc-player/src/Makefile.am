@@ -1,14 +1,14 @@
 
 # set the include path found by configure
 INCLUDES                    = \
-                              -I/usr/local/include/ginga/ \
+                              -I$(prefix)/include/ginga/ \
                               $(all_includes) \
                               -I$(top_srcdir)/include
 
 LIBS                        =
 
 libdir                      = \
-                              /usr/local/lib/ginga
+                              $(prefix)/lib/ginga
 
 lib_LTLIBRARIES             = \
                               libgingaccplayer.la
@@ -30,8 +30,8 @@ libgingaccplayer_la_LIBADD  = \
                               -lgingaccmb \
                               $(MULTIPROCESS_LIBS) \
                               $(COMPONENTS_LIBS) \
-                              -L/usr/local/lib/ginga \
-                              -L/usr/local/lib
+                              -L$(prefix)/lib/ginga \
+                              -L$(prefix)/lib
 
 MAINTAINERCLEANFILES        = \
                               Makefile.in

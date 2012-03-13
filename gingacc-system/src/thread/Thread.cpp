@@ -47,21 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifdef _WIN32
-#define _EXP_THREAD_API 0
-#endif
-
 #include "system/thread/Thread.h"
-
-#ifdef _WIN32
-void gettimeofday(struct timeval* t,void* timezone)
-{       struct _timeb timebuffer;
-		_ftime64_s(&timebuffer);
-       // _ftime( &timebuffer );
-        t->tv_sec= (long)timebuffer.time;
-        t->tv_usec=1000*timebuffer.millitm;
-}
-#endif
 
 namespace br {
 namespace pucrio {

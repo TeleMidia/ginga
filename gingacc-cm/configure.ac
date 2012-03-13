@@ -35,6 +35,16 @@ Please install libexpat.
 
 ]))
 
+##################
+# gingacc-system #
+##################
+AC_CHECK_HEADER([system/compat/SystemCompat.h], [], AC_MSG_ERROR([
+
+Couldn't find gingacc-system headers.
+Please install gingacc-system.
+
+]))
+
 AC_CONFIG_FILES(
     Makefile
     include/cm/Makefile 

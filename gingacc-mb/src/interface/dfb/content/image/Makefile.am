@@ -1,11 +1,11 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
+INCLUDES = -I$(prefix)/include/ginga/ -I$(prefix)/include/directfb/ \
 	$(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libdir = /usr/local/lib/ginga/mb/dec
+libdir = $(prefix)/lib/ginga/mb/dec
 
 if DFBSYSTEM
 lib_LTLIBRARIES = libgingaccmbdecdfbimg.la
@@ -13,7 +13,7 @@ lib_LTLIBRARIES = libgingaccmbdecdfbimg.la
 libgingaccmbdecdfbimg_la_SOURCES = DFBImageProvider.cpp
 
 libgingaccmbdecdfbimg_la_LIBADD = $(DFB_LIBS) -lgingaccmbdfb \
-    -lgingaccmb -L/usr/local/lib -L/usr/local/lib/ginga \
+    -lgingaccmb -L$(prefix)/lib -L$(prefix)/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
 endif
 

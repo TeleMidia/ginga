@@ -1,5 +1,7 @@
 *.o
 *.so
+*.la
+*.lo
 *.m4
 Makefile.in
 Makefile

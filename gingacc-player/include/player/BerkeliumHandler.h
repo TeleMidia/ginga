@@ -66,13 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <stdio.h>
 #include <sys/types.h>
-#ifdef _WIN32
-#define sleep(x) Sleep(x*1000)
-#include <time.h>
-#include <windows.h>
-#else
 #include <sys/select.h>
-#endif
 #include <sstream>
 #include <iostream>
 #include <memory>

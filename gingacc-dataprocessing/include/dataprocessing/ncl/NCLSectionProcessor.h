@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "INCLSectionProcessor.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <sys/stat.h>
 #include <vector>
 #include <string>

@@ -169,11 +169,7 @@ namespace player {
 					}
 					delete surface;
 					surface = NULL;
-#ifndef _WIN32
 					::usleep(dur);
-#else
-					Sleep(dur/1000);
-#endif
 					++i;
 					if (!running) {
 						unlockConditionSatisfied();

@@ -1,12 +1,12 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
 $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
 if CCRTPLIB
-libdir = /usr/local/lib/ginga/ic
+libdir = $(prefix)/lib/ginga/ic
 
 lib_LTLIBRARIES = libgingaccicccrtp.la
 

@@ -99,8 +99,8 @@ namespace player {
 			provider = dm->createImageProvider(myScreen, mrl.c_str());
 
 		} else {
-			if (!isAbsolutePath(mrl)) {
-				newMrl = getDocumentPath() + mrl;
+			if (!SystemCompat::isAbsolutePath(mrl)) {
+				newMrl = SystemCompat::getUserCurrentPath() + mrl;
 				if (fileExists(newMrl)) {
 					resolved = true;
 					mrl = newMrl;
@@ -151,7 +151,7 @@ namespace player {
 				} else {
 					provider = NULL;
 					clog << "ImagePlayer::ImagePlayer Warning! ";
-					clog << "GLF Component ";
+					clog << "GLF Component NOT";
 					clog << " Found!" << endl;
 				}
 			}

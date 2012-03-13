@@ -55,12 +55,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ISystemInfo.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
-#endif
 
 namespace br {
 namespace pucrio {
@@ -70,12 +66,8 @@ namespace core {
 namespace contextmanager {
 	class SystemInfo : public ISystemInfo {
 		private:
-#ifdef _WIN32
-			LPOSVERSIONINFOA osinfo;
-#else
 			struct utsname sn;
 			struct sysinfo info;
-#endif
 			float clockSpeed;
 			map<string, string>* sysTable;
 

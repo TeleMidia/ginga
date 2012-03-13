@@ -1,13 +1,13 @@
 INCLUDES                   = \
-                             -I/usr/local/include/ginga/ \
-                             -I/usr/local/include/SDL2/ \
+                             -I$(prefix)/include/ginga/ \
+                             -I$(prefix)/include/SDL2/ \
                              -I$(top_srcdir)/include \
                              $(all_includes)
 
 LIBS                       =
 
 libdir                     = \
-                             /usr/local/lib/ginga/mb
+                             $(prefix)/lib/ginga/mb
 
 ################
 # gingaccmbsdl #
@@ -28,8 +28,8 @@ libgingaccmbsdl_la_LIBADD  = \
                              -ltelemidiautil \
                              -lpthread \
                              -lgingaccmb \
-                             -L/usr/local/lib \
-                             -L/usr/local/lib/ginga \
+                             -L$(prefix)/lib \
+                             -L$(prefix)/lib/ginga \
                              -L$(top_srcdir)/src
 endif #SDLSYSTEM
 

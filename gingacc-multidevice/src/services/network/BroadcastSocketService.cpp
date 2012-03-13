@@ -56,11 +56,6 @@ http://www.telemidia.puc-rio.br
 #include <dlfcn.h>
 #include <fcntl.h>
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <io.h>
-#define MSG_DONTWAIT 0
-#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -70,7 +65,7 @@ http://www.telemidia.puc-rio.br
 #include <netdb.h>
 #include <unistd.h>
 #include <net/if.h>
-#endif
+
 
 #ifdef __DARWIN_UNIX03
 #include <ifaddrs.h>
@@ -88,11 +83,7 @@ namespace multidevice {
 	static struct sockaddr_in domain_addr;
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
-#ifndef _WIN32
 	static socklen_t          broadcast_addr_len;
-#else
-	static int          broadcast_addr_len;
-#endif
 
 	BroadcastSocketService::BroadcastSocketService() {
 		interfaceIP  = 0;
@@ -128,14 +119,8 @@ namespace multidevice {
 			return false;
 		}
 
-#ifndef _WIN32
-		#ifndef __DARWIN_UNIX03
+#ifndef __DARWIN_UNIX03
 		setsockopt(sd, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-		#endif
-
-		setsockopt(sd, SOL_SOCKET, SO_BROADCAST, &trueVar, sizeof(trueVar));
-#else
-		setsockopt(sd, SOL_SOCKET, SO_BROADCAST, (char *)&trueVar, sizeof(trueVar));
 #endif
 
 		domain_addr.sin_family       = AF_INET;
@@ -154,9 +139,6 @@ namespace multidevice {
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
-#ifdef _WIN32
-
-#else
 		struct ifconf interfaces;
 		struct ifreq* netInterface;
 		struct sockaddr_in* myAddr;
@@ -170,8 +152,6 @@ namespace multidevice {
 		result = ioctl(sd, SIOCGIFCONF, (char *) &interfaces);
 		netInterface = interfaces.ifc_req;
 		numOfInterfaces = interfaces.ifc_len/sizeof(struct ifreq);
-#endif
-
 
 #ifdef __DARWIN_UNIX03
 		struct ifaddrs *ifaddr, *ifa;
@@ -246,8 +226,6 @@ namespace multidevice {
 		}
 
 		freeifaddrs(ifaddr);
-#elif _WIN32
-
 #else //Linux
 
 		for (i = 0; i < numOfInterfaces; netInterface++) {
@@ -405,9 +383,7 @@ namespace multidevice {
 				if (*size == -1) {
 					if (errno != EAGAIN) {
 						clog << "BroadcastSocketService::checkInputBuffer ";
-#ifndef _WIN32
 						herror("check domain error: ");
-#endif
 						clog << "Warning! receive data ERRNO = " << errno;
 						clog << endl;
 						memset(data, 0, MAX_FRAME_SIZE);

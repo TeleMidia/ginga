@@ -49,12 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "multidevice/services/network/MulticastSocketService.h"
 
-#ifdef _WIN32
-#include <io.h>
-#include <WS2tcpip.h>
-#define MSG_DONTWAIT 0
-#endif
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -130,15 +124,10 @@ namespace multidevice {
 			return false;
 		}
 
-		#ifdef _WIN32
-
-		#else
-		#ifndef __DARWIN_UNIX03
+#ifndef __DARWIN_UNIX03
 		setsockopt(msdR, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 		setsockopt(msdW, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-		#endif
-
-		#endif
+#endif
 
 		return true;
 	}
@@ -172,11 +161,7 @@ namespace multidevice {
 	    		msdR,
 	    		SOL_SOCKET,
 	    		SO_REUSEADDR,
-#ifndef _WIN32
 	    		(int*)&reuse, sizeof(reuse));
-#else
-				(char*)&reuse, sizeof(reuse));
-#endif
 
 		if (ret < 0) {
 			perror("MulticastSocketService::setSocketOptions reuse");
@@ -186,11 +171,7 @@ namespace multidevice {
 				msdW,
 				IPPROTO_IP,
 				IP_MULTICAST_LOOP,
-#ifndef _WIN32
 				&loop, sizeof(loop));
-#else
-				(const char*)&loop, sizeof(loop));
-#endif
 
 		if (ret < 0) {
 			perror("MulticastSocketService::setSocketOptions loop");
@@ -200,12 +181,7 @@ namespace multidevice {
 				msdW,
 				IPPROTO_IP,
 				IP_MULTICAST_TTL,
-#ifndef _WIN32
 				&ttl, sizeof(ttl));
-#else
-				(const char*)&ttl, sizeof(ttl));
-#endif
-
 
 		if (ret < 0) {
 			perror("MulticastSocketService::setSocketOptions TTL");
@@ -328,18 +304,12 @@ namespace multidevice {
 						MAX_FRAME_SIZE,
 						MSG_DONTWAIT,
 						(struct sockaddr*)NULL,
-#ifndef _WIN32
 						(socklen_t*)NULL);
-#else
-						(int *)NULL);
-#endif
 
 				if (*size == -1) {
 					if (errno != EAGAIN) {
 						clog << "MulticastSocketService::checkInputBuffer ";
-#ifndef _WIN32
 						herror("check domain error: ");
-#endif
 						clog << "Warning! receive data ERRNO = " << errno;
 						clog << endl;
 						memset(data, 0, MAX_FRAME_SIZE);

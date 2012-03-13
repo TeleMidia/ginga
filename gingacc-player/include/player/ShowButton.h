@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
@@ -63,11 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system;
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#ifndef _WIN32
 #include "mb/interface/dfb/output/DFBWindow.h"
-#else
-#include "mb/interface/dx/output/DXWindow.h"
-#endif
 #endif
 
 #include "IShowButton.h"

@@ -1,10 +1,10 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ $(all_includes) -I$(top_srcdir)/include
+INCLUDES = -I$(prefix)/include/ginga/ $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 
 lib_LTLIBRARIES = libgingacctsparser.la
 libgingacctsparser_la_SOURCES = Demuxer.cpp FrontendFilter.cpp \
@@ -33,6 +33,6 @@ libgingacctsparser_la_SOURCES = Demuxer.cpp FrontendFilter.cpp \
 
 libgingacctsparser_la_LIBADD = -ltelemidiautil -lpthread -lgingaccsystem \
     -lgingacctuner \
-    -L/usr/local/lib -L/usr/local/lib/ginga
+    -L$(prefix)/lib -L$(prefix)/lib/ginga
 
 MAINTAINERCLEANFILES = Makefile.in

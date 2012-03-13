@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/IInputManager.h"
 
 #include <iostream>

@@ -198,7 +198,7 @@ namespace cm {
 	}
 
 	void ComponentDescription::describeLocation(IComponent* c) {
-		//<location type="local" uri="/usr/local/lib/ginga"/>
+		//<location type="local" uri="libdir"/>
 		*file << "    <location type=\"" << c->getStrLocationType() << "\"";
 		*file << " uri=\"" << c->getLocation() << "\"/>";
 		*file << endl;

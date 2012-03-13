@@ -1,6 +1,6 @@
 METASOURCES = AUTO
 LIBS =
-localIncludedir = /usr/local/include/ginga/cm/component
+localIncludedir = $(prefix)/include/ginga/cm/component
 localInclude_HEADERS = IComponent.h
 
 MAINTAINERCLEANFILES = Makefile.in

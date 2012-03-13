@@ -957,7 +957,7 @@ namespace mb {
 			winSur->Dump(winSur, "/tmp", "dump");
 
 			uri = uri + ".ppm";
-			if (access(uri.c_str(), F_OK) == 0) {
+			if (access(uri.c_str(), (int)F_OK) == 0) {
 				strCmd = ("convert -quality " + itos(quality) + " " +
 						"-resize " + itos(dumpW) + "x" + itos(dumpH) + " " +
 						//"-colors 32 " +

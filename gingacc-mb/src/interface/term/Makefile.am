@@ -1,4 +1,4 @@
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
 	$(all_includes) -I$(top_srcdir)/include
 
 LIBS =
@@ -7,7 +7,7 @@ LIBS =
 # gingaccmbterm #
 #################
 libdir                      = \
-                              /usr/local/lib/ginga/mb
+                              $(prefix)/lib/ginga/mb
 
 if TERMSYSTEM
 lib_LTLIBRARIES             = \
@@ -23,7 +23,7 @@ libgingaccmbterm_la_SOURCES = \
 libgingaccmbterm_la_LIBADD  = \
                               -ltelemidiautil -lpthread \
                               -lgingaccsystem -lgingaccmb \
-                              -L/usr/local/lib -L/usr/local/lib/ginga \
+                              -L$(prefix)/lib -L$(prefix)/lib/ginga \
                               -L$(top_srcdir)/src
 endif #TERMSYSTEM
 

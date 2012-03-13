@@ -1,11 +1,11 @@
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/include \
--I/usr/local/include/ginga/
+-I$(prefix)/include/ginga/
 
 LIBS =
 
-libdir = /usr/local/lib/ginga
+libdir = $(prefix)/lib/ginga
 
 libgingaccum_la_LIBADD = -ldl 
 

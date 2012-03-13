@@ -1,6 +1,6 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ \
+INCLUDES = -I$(prefix)/include/ginga/ \
     $(FFMPEG_CFLAGS) $(all_includes) -I$(top_srcdir)/include
 
 LIBS =
@@ -12,7 +12,7 @@ test_SOURCES = test.cpp
 
 test_LDADD = -ltelemidiautil -lgingaccsystem
 
-test_LDFLAGS = -L/lib/ -L/usr/lib/ -L/usr/local/lib/ \
-    -L../src/ -L/usr/local/lib/ginga 
+test_LDFLAGS = -L/lib/ -L/usr/lib/ -L$(prefix)/lib/ \
+    -L../src/ -L$(prefix)/lib/ginga 
 
 MAINTAINERCLEANFILES = Makefile.in

@@ -1,15 +1,15 @@
 
 # set the include path found by configure
 INCLUDES                        = \
-                                  -I/usr/local/include/ginga/ \
-                                  -I/usr/local/include/SDL2/ \
+                                  -I$(prefix)/include/ginga/ \
+                                  -I$(prefix)/include/SDL2/ \
                                   -I$(top_srcdir)/include \
                                   $(all_includes)
 
 LIBS                            =
 
 libdir                          = \
-                                  /usr/local/lib/ginga/mb/dec
+                                  $(prefix)/lib/ginga/mb/dec
 
 if SDLSYSTEM
 lib_LTLIBRARIES                 = \
@@ -30,8 +30,8 @@ libgingaccmbdecsdlav_la_LIBADD   = \
                                   -lavformat \
                                   -lswresample \
                                   -lswscale \
-                                  -L/usr/local/lib \
-                                  -L/usr/local/lib/ginga \
+                                  -L$(prefix)/lib \
+                                  -L$(prefix)/lib/ginga \
                                   -L$(top_srcdir)/src \
                                   -L$(top_srcdir)/src/interface/sdl \
                                   -L$(top_srcdir)/src/interface/sdl/content/audio

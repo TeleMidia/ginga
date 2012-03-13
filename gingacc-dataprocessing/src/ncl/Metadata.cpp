@@ -93,8 +93,8 @@ namespace ncl {
 
 		if (rootObject != NULL) {
 			rootUri = rootObject->getUri();
-			if (!isAbsolutePath(rootUri)) {
-				rootUri = updatePath(baseUri + "/" + rootUri);
+			if (!SystemCompat::isAbsolutePath(rootUri)) {
+				rootUri = SystemCompat::updatePath(baseUri + "/" + rootUri);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace ncl {
 
 	void Metadata::setBaseUri(string uri) {
 		this->baseUri = uri;
-		this->mdUri   = updatePath(baseUri + "/metadata.xml");
+		this->mdUri   = SystemCompat::updatePath(baseUri + "/metadata.xml");
 	}
 
 	string Metadata::getBaseUri() {
@@ -293,11 +293,11 @@ namespace ncl {
 		int fd, bytes;
 		string absUri;
 
-		if (isAbsolutePath(uri)) {
+		if (SystemCompat::isAbsolutePath(uri)) {
 			absUri = uri;
 
 		} else {
-			absUri = updatePath(baseUri + "/" + uri);
+			absUri = SystemCompat::updatePath(baseUri + "/" + uri);
 		}
 
 		fd = open(absUri.c_str(), O_LARGEFILE | O_RDONLY);

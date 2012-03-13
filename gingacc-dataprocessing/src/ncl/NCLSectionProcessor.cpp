@@ -161,12 +161,12 @@ namespace ncl {
 		structId = (((unsigned char)stream[1]) & 0xFF);
 		df       = metadata->getDataFile(structId);
 		fileUri  = df->getUri();
-		if (!isAbsolutePath(fileUri)) {
+		if (!SystemCompat::isAbsolutePath(fileUri)) {
 			baseUri = metadata->getBaseUri();
 			fileUri = baseUri + "/" + fileUri;
 		}
 
-		fileUri = updatePath(fileUri);
+		fileUri = SystemCompat::updatePath(fileUri);
 		createDirectory(fileUri.substr(0, fileUri.find_last_of("/")));
 
 		clog << "NCLSectionProcessor::processDataFile '" << fileUri;
@@ -287,12 +287,12 @@ namespace ncl {
 
 			structureId++;
 
-			if (isAbsolutePath(fileUri)) {
+			if (SystemCompat::isAbsolutePath(fileUri)) {
 				fileSize = Metadata::getFileSize(fileUri);
 
 			} else {
 				fileSize = Metadata::getFileSize(
-						updatePath(baseUri + "/" + fileUri));
+						SystemCompat::updatePath(baseUri + "/" + fileUri));
 			}
 			clog << "NCLSectionProcessor::createNCLSections file '";
 			clog << fileUri << "' has '" << fileSize << "' bytes (base";

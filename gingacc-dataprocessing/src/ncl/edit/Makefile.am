@@ -5,14 +5,14 @@ INCLUDES                             = \
 LIBS                                 =
 
 libdir                               = \
-                                       /usr/local/lib/ginga/dp
+                                       $(prefix)/lib/ginga/dp
 
 lib_LTLIBRARIES                      = \
                                        libgingaccdataprocncledit.la
 
 libgingaccdataprocncledit_la_LIBADD  = \
                                        -ltelemidiautil \
-                                       -L/usr/local/lib/ginga
+                                       -L$(prefix)/lib/ginga
 
 libgingaccdataprocncledit_la_SOURCES = \
                                        EventDescriptor.cpp

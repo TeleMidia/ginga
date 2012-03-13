@@ -78,6 +78,7 @@ AC_SUBST(MULTIPROCESS_LIBS)
 AC_CONFIG_FILES(
 	Makefile
 	include/system/thread/Makefile
+	include/system/compat/Makefile
 	include/system/fs/Makefile
 	include/system/time/Makefile
 	include/system/process/Makefile 

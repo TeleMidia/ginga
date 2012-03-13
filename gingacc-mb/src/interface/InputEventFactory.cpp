@@ -62,7 +62,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <XnVBroadcaster.h>
 #include <XnVSelectableSlider2D.h>
 
-#define TRACKING_FILE "/usr/local/etc/ginga/files/mb/config/_tracking.xml"
+#define TRACKING_FILE SystemCompat::appendGingaFilesPrefix("mb/config/_tracking.xml")
 
 xn::Context context;
 xn::ScriptNode scriptNode;

@@ -135,18 +135,11 @@ namespace ic {
 			localPath = localUri.substr(0, localUri.find_last_of("/") + 1);
 			clog << "CurlInteractiveChannel::setSourceTarget creating '";
 			clog << localPath << "' local path" << endl;
-#ifdef _WIN32
-			_mkdir(localPath.c_str());
-#else
 			mkdir(localPath.c_str(), 0755);
-#endif
 		}
-#ifndef _WIN32
 		fd = open(localUri.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
-#else
-		fd = open(localUri.c_str(), O_BINARY | O_CREAT | O_RDWR | O_LARGEFILE);
-#endif
 	}
+
 	void CurlInteractiveChannel::setTarget(int fd) {
 		this->fd = fd;
 	}

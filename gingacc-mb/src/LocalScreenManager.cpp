@@ -47,10 +47,6 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifdef _WIN32
-#define	_EXP_LOCALSCREENHANDLER_API 0
-#endif
-
 #include "mb/interface/CodeMap.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/InputManager.h"

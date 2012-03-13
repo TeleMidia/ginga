@@ -680,7 +680,7 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) :
 
 	void* compObj;
 
-    chdir(getPath(mrl).c_str());    // execucao a partir do diretorio fonte
+    chdir(SystemCompat::getPath(mrl).c_str());    // execucao a partir do diretorio fonte
     this->L = luaL_newstate();      // estado Lua
 
 #if HAVE_DATAPROC

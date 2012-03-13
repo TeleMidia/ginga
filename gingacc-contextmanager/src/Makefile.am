@@ -1,5 +1,5 @@
 INCLUDES                             = \
-                                       -I/usr/local/include/ginga/ \
+                                       -I$(prefix)/include/ginga/ \
                                        -I/usr/include/libuser/ \
                                        -I../include \
                                        $(all_includes) \
@@ -8,7 +8,7 @@ INCLUDES                             = \
 LIBS                                 =
 
 libdir                               = \
-                                       /usr/local/lib/ginga
+                                       $(prefix)/lib/ginga
 
 lib_LTLIBRARIES                      = \
                                        libgingacccontextmanager.la
@@ -20,6 +20,7 @@ libgingacccontextmanager_la_SOURCES  = \
 
 libgingacccontextmanager_la_LIBADD   = \
                                        -ltelemidiautil \
+                                       -lgingaccsystem \
                                        $(COMPONENTS_LIBS)
 
 MAINTAINERCLEANFILES = Makefile.in

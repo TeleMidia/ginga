@@ -1,12 +1,12 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
+INCLUDES = -I$(prefix)/include/ginga/ -I$(prefix)/include/directfb/ \
 	$(all_includes) -I$(top_srcdir)/include $(KINECT_INCS)
 
 LIBS =
 
 libdir                     = \
-                             /usr/local/lib/ginga/mb
+                             $(prefix)/lib/ginga/mb
 
 ################
 # gingaccmbdfb #
@@ -26,7 +26,7 @@ libgingaccmbdfb_la_SOURCES = \
 libgingaccmbdfb_la_LIBADD   = \
                              $(DFB_LIBS) -ltelemidiautil -lpthread \
                              -lgingaccsystem -lgingaccmb \
-                             -L/usr/local/lib -L/usr/local/lib/ginga \
+                             -L$(prefix)/lib -L$(prefix)/lib/ginga \
                              -L$(top_srcdir)/src
                              
 endif #DFBSYSTEM

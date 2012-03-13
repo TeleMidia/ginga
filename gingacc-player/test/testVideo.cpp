@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -71,12 +74,12 @@ extern "C" {
 bool debugging = false;
 
 string updateFileUri(string file) {
-	if (!isAbsolutePath(file)) {
+	if (!SystemCompat::isAbsolutePath(file)) {
 		if (debugging) {
-			return getCurrentPath() + "gingacc-player/test/" + file;
+			return SystemCompat::getUserCurrentPath() + "gingacc-player/test/" + file;
 
 		} else {
-			return getCurrentPath() + file;
+			return SystemCompat::getUserCurrentPath() + file;
 		}
 	}
 

@@ -1,11 +1,11 @@
 
 # set the include path found by configure
-INCLUDES = -I/usr/local/include/ginga/ -I/usr/local/include/directfb/ \
+INCLUDES = -I$(prefix)/include/ginga/ -I$(prefix)/include/directfb/ \
 	$(all_includes) -I$(top_srcdir)/include
 
 LIBS =
 
-libdir = /usr/local/lib/ginga/mb/dec
+libdir = $(prefix)/lib/ginga/mb/dec
 
 lib_LTLIBRARIES = 
 if DFBSYSTEM
@@ -18,7 +18,7 @@ libgingaccmbdecdfbfs_la_SOURCES = DFBAudioProvider.cpp \
 
 libgingaccmbdecdfbfs_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdfb -lgingaccmb \
-    -L/usr/local/lib -L/usr/local/lib/ginga \
+    -L$(prefix)/lib -L$(prefix)/lib/ginga \
 	-L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
     
 endif #FUSIONSOUND
@@ -32,7 +32,7 @@ libgingaccmbdecdfbffmpega_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     $(FFMPEG_LIBS) $(DVC_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem \
     -lgingaccmbdecdfbfs \
-    -L/usr/local/lib -L/usr/local/lib/ginga -L./ \
+    -L$(prefix)/lib -L$(prefix)/lib/ginga -L./ \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
     
 endif #FFMPEGPROVIDER

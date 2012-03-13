@@ -44,10 +44,10 @@ testAnime_LDADD       = \
                         -lgingaccmb \
                         -lgingaccsystem \
                         -L/lib/ -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L/usr/lib/awesomium-1.6.3 \
-                        -L/usr/local/lib/ginga \
-                        -L/usr/local/lib/ginga/players \
+                        -L$(prefix)/lib/ginga \
+                        -L$(prefix)/lib/ginga/players \
                         -L../src/ \
                         -L../src/image
 
@@ -66,7 +66,7 @@ testAudio_LDADD       = \
                         -lgingaccmb \
                         -lgingaccsystem \
                         -L/lib/ -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L../src/
 
 if AWESOMIUMLIB
@@ -88,9 +88,9 @@ testAwesomium_LDADD   = \
                         -L/lib/ \
                         -L/usr/lib/ \
                         -L/usr/lib/awesomium-1.6.3 \
-                        -L/usr/local/lib/ \
-                        -L/usr/local/lib/ginga \
-                        -L/usr/local/lib/ginga/players \
+                        -L$(prefix)/lib/ \
+                        -L$(prefix)/lib/ginga \
+                        -L$(prefix)/lib/ginga/players \
                         -L../src/
 endif
 
@@ -110,7 +110,7 @@ testImage_LDADD       = \
                         -lgingaccsystem \
                         -L/lib/ \
                         -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L../src/
 
 #testLinks
@@ -129,7 +129,7 @@ testLinks_LDADD       = \
                         -lgingaccsystem \
                         -L/lib/ \
                         -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L../src/
 
 #testText
@@ -148,7 +148,7 @@ testText_LDADD        = \
                         -lgingaccsystem \
                         -L/lib/ \
                         -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L../src/
 
 #testVideo
@@ -167,7 +167,7 @@ testVideo_LDADD       = \
                         -lgingaccsystem \
                         -L/lib/ \
                         -L/usr/lib/ \
-                        -L/usr/local/lib/ \
+                        -L$(prefix)/lib/ \
                         -L../src/
 
 MAINTAINERCLEANFILES = Makefile.in
