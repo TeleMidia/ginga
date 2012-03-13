@@ -66,24 +66,42 @@ namespace compat {
 	class SystemCompat {
 		private:
 			static string filesPref;
+			static string installPref;
 			static string userCurrentPath;
+			static string gingaCurrentPath;
+			static string pathD;
+			static string iUriD;
+			static string fUriD;
 			static bool initialized;
 
 			static void checkValues();
+			static void initializeGingaPath();
 			static void initializeUserCurrentPath();
+			static void initializeGingaConfigFile();
 
 		public:
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
 			static bool isAbsolutePath(string path);
+
+			static string getIUriD();
+			static string getFUriD();
+
 			static string getPath(string filename);
 
 			static string getUserCurrentPath();
+
 			/*
 			 * updates the URL with specific system delimiter
 			 * and append with ginga config files prefix
 			 */
 			static string appendGingaFilesPrefix(string relUrl);
+
+			/*
+			 * updates the URL with specific system delimiter
+			 * and append with ginga config install prefix
+			 */
+			static string appendGingaInstallPrefix(string relUrl);
 	};
 }
 }

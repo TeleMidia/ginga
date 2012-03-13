@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "../IInteractiveChannel.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "curl/curl.h"
 
 #include <sys/stat.h>

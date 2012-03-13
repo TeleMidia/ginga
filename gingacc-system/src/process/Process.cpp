@@ -122,10 +122,10 @@ namespace process {
 		this->processUri = processUri;
 		this->objName    = objName;
 
-		if (processUri.find("/") != std::string::npos) {
+		if (processUri.find(SystemCompat::getIUriD()) != std::string::npos) {
 			processName = processUri.substr(
-					processUri.find_last_of("/") + 1,
-					processUri.length() - processUri.find_last_of("/") + 1);
+					processUri.find_last_of(SystemCompat::getIUriD()) + 1,
+					processUri.length() - processUri.find_last_of(SystemCompat::getIUriD()) + 1);
 
 		} else {
 			processName = processUri;

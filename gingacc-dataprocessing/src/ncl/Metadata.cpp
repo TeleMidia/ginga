@@ -94,7 +94,7 @@ namespace ncl {
 		if (rootObject != NULL) {
 			rootUri = rootObject->getUri();
 			if (!SystemCompat::isAbsolutePath(rootUri)) {
-				rootUri = SystemCompat::updatePath(baseUri + "/" + rootUri);
+				rootUri = SystemCompat::updatePath(baseUri + SystemCompat::getIUriD() + rootUri);
 			}
 		}
 
@@ -297,7 +297,7 @@ namespace ncl {
 			absUri = uri;
 
 		} else {
-			absUri = SystemCompat::updatePath(baseUri + "/" + uri);
+			absUri = SystemCompat::updatePath(baseUri + SystemCompat::getIUriD() + uri);
 		}
 
 		fd = open(absUri.c_str(), O_LARGEFILE | O_RDONLY);

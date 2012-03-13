@@ -70,7 +70,8 @@ namespace carousel {
 		hasServiceGateway       = false;
 		mountingServiceDomain   = true;
 
-		mountPoint              = "carousel/" + itos(carouselId) + "/";
+		mountPoint              = "carousel/" +
+				itos(carouselId) + SystemCompat::getIUriD();
 
 		remove(mountPoint.c_str());
 

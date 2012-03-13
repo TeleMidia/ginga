@@ -84,7 +84,7 @@ typedef struct Canvas {
 	struct { int x; int y; int w; int h; }
            clip;
 	struct { int w; int h; int inUse;}
-	   scale;
+	       scale;
 	struct { char face[20]; int size; char style[20]; }
            font;
 } Canvas;
@@ -113,9 +113,9 @@ static int l_new (lua_State* L)
 							GETPLAYER(L)->getScreenId(),
 							(char*)luaL_checkstring(L, 2));
 
-			cout << endl;
-			cout << "CANVAS:NEW FROM IMG '" << sfc << "'" << endl;
-			cout << endl;
+			clog << endl;
+			clog << "CANVAS:NEW FROM IMG '" << sfc << "'" << endl;
+			clog << endl;
 			break;
 		}
 
@@ -127,9 +127,9 @@ static int l_new (lua_State* L)
 					luaL_checkint(L, 2),
 					luaL_checkint(L, 3));
 
-			cout << endl;
-			cout << "CANVAS:NEW '" << sfc << "'" << endl;
-			cout << endl;
+			clog << endl;
+			clog << "CANVAS:NEW '" << sfc << "'" << endl;
+			clog << endl;
 
 			sfc->setBgColor(
 					canvas->color->getR(),
@@ -247,21 +247,24 @@ static int l_attrFont (lua_State* L)
 	canvas->font.size = luaL_checkint(L, 3);
 	strncpy(canvas->font.style, luaL_optstring(L,4,"normal"), 20);
 
-	char path[255]; path[0] = '\0';
-	strncat(path, SystemCompat::appendGingaFilesPrefix("font/").c_str(), 100);
-	strncat(path, canvas->font.face, 20);
-    //strncat(path, "-", 2);
-    //strncat(path, canvas->font.style, 20);
-	strncat(path, ".ttf", 5);
-    //clog << "PATH: " << path << endl;
+	string path = SystemCompat::appendGingaFilesPrefix("font") +
+			SystemCompat::getIUriD();
+
+	path.append(canvas->font.face, strlen(canvas->font.face));
+
+	if (path.length() < 4 || path.substr(path.length() - 4, 4) != ".ttf") {
+		path = path + ".ttf";
+	}
+
+	clog << "LuaCanvas::l_attrFont using font '" << path << "'" << endl;
 
 	IFontProvider* font = NULL;
 
 	font = GETPLAYER(L)->getScreenManager()->createFontProvider(
-			GETPLAYER(L)->getScreenId(), path, canvas->font.size);
+			GETPLAYER(L)->getScreenId(), path.c_str(), canvas->font.size);
 
 	if (font == NULL) {
-		luaL_error(L, "invalid font: %s", path);
+		luaL_error(L, "invalid font: %s", path.c_str());
 
 	} else if (canvas->sfc == NULL) {
 		luaL_error(L, "invalid canvas");

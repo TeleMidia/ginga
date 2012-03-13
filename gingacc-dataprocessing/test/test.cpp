@@ -150,7 +150,7 @@ int main(int argc, char** argv) {
 		j = files->begin();
 		while (j != files->end()) {
 			uri = *j;
-			if (uri.substr(0, 1) != "/") {
+			if (uri.substr(0, 1) != SystemCompat::getIUriD()) {
 				uri = baseUri + uri;
 			}
 

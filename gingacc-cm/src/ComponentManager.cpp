@@ -314,7 +314,9 @@ namespace cm {
 
 		c = (*symbols)[objName];
 		if (c != NULL) {
-			url = c->getLocation() + "/" + c->getName();
+			url = SystemCompat::updatePath(
+					c->getLocation() + SystemCompat::getIUriD() + c->getName());
+
 			if (access(url.c_str(), (int)F_OK) == 0) {
 				pthread_mutex_unlock(&mapMutex);
 				return true;

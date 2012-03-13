@@ -122,14 +122,14 @@ namespace ncl {
 		vector<string>::iterator i;
 		string dir = "";
 
-		dirs = split(newDir, "/");
+		dirs = split(newDir, SystemCompat::getIUriD());
 		if (dirs == NULL) {
 			return;
 		}
 
 		i = dirs->begin();
 		while (i != dirs->end()) {
-			dir = dir + "/" + *i;
+			dir = dir + SystemCompat::getIUriD() + *i;
 			mkdir(dir.c_str(), 0777);
 			//clog << "PrefetchManager::createDirectory '";
 			//clog << dir << "'" << endl;
@@ -163,11 +163,11 @@ namespace ncl {
 		fileUri  = df->getUri();
 		if (!SystemCompat::isAbsolutePath(fileUri)) {
 			baseUri = metadata->getBaseUri();
-			fileUri = baseUri + "/" + fileUri;
+			fileUri = baseUri + SystemCompat::getIUriD() + fileUri;
 		}
 
 		fileUri = SystemCompat::updatePath(fileUri);
-		createDirectory(fileUri.substr(0, fileUri.find_last_of("/")));
+		createDirectory(fileUri.substr(0, fileUri.find_last_of(SystemCompat::getIUriD())));
 
 		clog << "NCLSectionProcessor::processDataFile '" << fileUri;
 		clog << "'" << endl;
@@ -292,7 +292,7 @@ namespace ncl {
 
 			} else {
 				fileSize = Metadata::getFileSize(
-						SystemCompat::updatePath(baseUri + "/" + fileUri));
+						SystemCompat::updatePath(baseUri + SystemCompat::getIUriD() + fileUri));
 			}
 			clog << "NCLSectionProcessor::createNCLSections file '";
 			clog << fileUri << "' has '" << fileSize << "' bytes (base";

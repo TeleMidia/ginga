@@ -109,17 +109,22 @@ namespace player {
 			}
 
 			if (!resolved) {
-				if (mrl.find("/") != std::string::npos) {
-					path = mrl.substr(0, mrl.find_last_of("/"));
+				if (mrl.find(SystemCompat::getIUriD()) != std::string::npos) {
+					path = mrl.substr(0, mrl.find_last_of(SystemCompat::getIUriD()));
 					name = mrl.substr(
-							mrl.find_last_of("/") + 1,
-							mrl.length() - mrl.find_last_of("/"));
+							mrl.find_last_of(SystemCompat::getIUriD()) + 1,
+							mrl.length() - mrl.find_last_of(SystemCompat::getIUriD()));
 
-				} else if (mrl.find("\\") != std::string::npos) {
-					path = mrl.substr(0, mrl.find_last_of("\\"));
+				} else if (mrl.find(SystemCompat::getFUriD()) !=
+						std::string::npos) {
+
+					path = mrl.substr(0, mrl.find_last_of(
+							SystemCompat::getFUriD()));
+
 					name = mrl.substr(
-							mrl.find_last_of("\\") + 1,
-							mrl.length() - mrl.find_last_of("\\"));
+							mrl.find_last_of(SystemCompat::getFUriD()) + 1,
+							mrl.length() - mrl.find_last_of(
+									SystemCompat::getFUriD()));
 				}
 
 #if HAVE_COMPSUPPORT

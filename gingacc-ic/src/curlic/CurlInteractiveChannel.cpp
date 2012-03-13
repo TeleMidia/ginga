@@ -131,8 +131,11 @@ namespace ic {
 
 		localUri = url;
 
-		if (localUri.find("/") != std::string::npos) {
-			localPath = localUri.substr(0, localUri.find_last_of("/") + 1);
+		if (localUri.find(SystemCompat::getIUriD()) != std::string::npos) {
+			localPath = localUri.substr(
+					0,
+					localUri.find_last_of(SystemCompat::getIUriD()) + 1);
+
 			clog << "CurlInteractiveChannel::setSourceTarget creating '";
 			clog << localPath << "' local path" << endl;
 			mkdir(localPath.c_str(), 0755);

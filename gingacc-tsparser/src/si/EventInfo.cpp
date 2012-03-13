@@ -192,7 +192,7 @@ namespace si {
 		startTime.tm_sec  = convertBCDtoDecimal((int)startTimeEncoded[4]);
 		/*
 		clog << "EventInfo: setStartTime startTime = " << startTime.tm_mday;
-		clog << "/" << startTime.tm_mon << "/" << startTime.tm_year;
+		clog << SystemCompat::getIUriD() << startTime.tm_mon << SystemCompat::getIUriD() << startTime.tm_year;
 		clog << " " << startTime.tm_hour << ":" << startTime.tm_min << endl;
 		*/
 	}
@@ -286,7 +286,7 @@ namespace si {
 		endTime = calcEndTime(startTime, duration);
 		/*
 		clog << "EventInfo::setDuration endTime = " << endTime.tm_mday;
-		clog << "/" << endTime.tm_mon << "/" << endTime.tm_year;
+		clog << SystemCompat::getIUriD() << endTime.tm_mon << SystemCompat::getIUriD() << endTime.tm_year;
 		clog << " " << endTime.tm_hour << ":" << endTime.tm_min << endl;
 		*/
 	}
@@ -425,7 +425,7 @@ namespace si {
 	string EventInfo::getStartTimeStr() {
 		stringstream str;
 
-		str << startTime.tm_mday << "/";
+		str << startTime.tm_mday << SystemCompat::getIUriD();
 		str << startTime.tm_mon + 1 << " ";
 		// tm_mon goes from 0 to 11, so + 1 to print month in 1-12.
 		str << startTime.tm_hour << ":";
@@ -437,7 +437,7 @@ namespace si {
 	string EventInfo::getEndTimeStr(){
 		stringstream str;
 
-		str << endTime.tm_mday << "/";
+		str << endTime.tm_mday << SystemCompat::getIUriD();
 		str << endTime.tm_mon + 1  << " ";
 		// tm_mon goes from 0 to 11, so + 1 to print month in 1-12.
 		str << endTime.tm_hour << ":";
