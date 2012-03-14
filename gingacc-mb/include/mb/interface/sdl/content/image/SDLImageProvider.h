@@ -52,6 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/interface/IImageProvider.h"
 
+#include <pthread.h>
+
 #include "SDL_image.h"
 
 #include <set>
