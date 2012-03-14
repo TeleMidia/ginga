@@ -61,6 +61,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "lua.h"
 
 #include <fstream>
@@ -79,9 +82,6 @@ namespace contextmanager {
 	static ILocalScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
-		sysinfo(&info);
-		uname(&sn);
-
 		initializeClockSpeed();
 		sysTable = NULL;
 
@@ -226,11 +226,11 @@ namespace contextmanager {
 	}
 
 	float SystemInfo::getMemorySize() {
-		return info.totalram;
+		return SystemCompat::getMemorySize();
 	}
 
 	string SystemInfo::getOperatingSystem() {
-		return sn.sysname;
+		return SystemCompat::getOperatingSystem();
 	}
 
 	string SystemInfo::getJavaConfiguration() {

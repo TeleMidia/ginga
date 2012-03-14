@@ -7,18 +7,6 @@ AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
 AC_PROG_LIBTOOL
 
-######################
-# Finding pkg-config #
-######################
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-if test x$PKG_CONFIG = xno ; then
-AC_MSG_ERROR([*** pkg-config not found. See http://pkgconfig.sourceforge.net])
-fi
-
-if ! pkg-config --atleast-pkgconfig-version 0.9 ; then
-AC_MSG_ERROR([*** pkg-config too old; version 0.9 or better required.])
-fi
-
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
 for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/mb /usr/local/lib/ginga/mb/dec /usr/local/lib/ginga/ic; do

@@ -56,6 +56,8 @@ extern "C" {
 #ifdef linux
 	#include <sys/resource.h>
 	#include <signal.h>
+	#include <sys/utsname.h>
+	#include <sys/sysinfo.h>
 #endif
 
 }
@@ -350,6 +352,24 @@ namespace compat {
 #ifdef linux
 		signal(SIGPIPE, sigpipeHandler);
 #endif //linux
+	}
+
+	string SystemCompat::getOperatingSystem() {
+#ifdef linux
+		return "Linux";
+#elif WIN32
+		return "Windows";
+#endif
+	}
+
+	float SystemCompat::getMemorySize() {
+#ifdef linux
+		struct sysinfo info;
+		sysinfo(&info);
+		return info.totalram;
+#else
+		return 0.0;
+#endif
 	}
 }
 }

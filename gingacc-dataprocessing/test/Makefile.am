@@ -5,7 +5,6 @@ INCLUDES             = \
 
 LIBS                 =
 
-if COMPONENTS
 noinst_PROGRAMS      = \
                        test
 
@@ -27,7 +26,6 @@ test_LDFLAGS         = \
                        -L../src/ \
                        -L../src/dsmcc/npt \
                        -L../src/ncl -L$(prefix)/lib
-endif
 
 MAINTAINERCLEANFILES = \
                        Makefile.in
