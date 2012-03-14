@@ -168,13 +168,16 @@ AC_HAVE_LIBRARY(gingaccicccrtp, hasicrtp=yes, hasicrtp=no)
 if test x$hasicrtp = xno; then
    AC_MSG_WARN([*** Ginga-CC Interactive Channel RTP support will not be built.])
    AC_DEFINE(HAVE_ICRTP, 0, [Def to 0 if you don't have gingaccic RTP support.])
+   IC_LIBS='-L/usr/local/lib/'
 
 else
    AC_MSG_RESULT([*** Ginga-CC Interactive Channel RTP support will be built.])
    AC_DEFINE(HAVE_ICRTP, 1, [Def to 1 if you have gingaccic RTP support.])
+   IC_LIBS='-lgingaccic'
 fi
 fi
 
+AC_SUBST(IC_LIBS)
 AM_CONDITIONAL(ICRTP, test x$hasicrtp = xyes)
 
 ############################
@@ -250,12 +253,16 @@ AC_ARG_ENABLE(components,
   [  --enable-components build project using components [[default=yes]]],
   enable_components="$enableval", enable_components=yes)
 
+AC_CHECK_HEADER(
+  [cm/IComponentManager.h],
+  [],
+  AC_MSG_WARN([*** Component Manager not Found.])
+    enable_components=no
+)
+
 if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-lgingaccmbdecdfbf -lgingaccmbdecdfbfs \
-    -lgingaccmbdecdfbimg -lgingaccmbdecdfbav \
-    -lgingaccmbdecdfbxineav \
-    -lgingaccmb \
-    -lgingaccmbdfb -lgingaccsystem -lgingaccic \
+   COMPONENTS_LIBS='-lgingaccmb \
+    -lgingaccsystem $(IC_LIBS) \
     -L/usr/local/lib/ginga/ -L/usr/local/lib \
     -L/usr/local/lib/ginga/mb/dec/  -L/usr/local/lib/ginga/mb \
     -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'
@@ -270,7 +277,7 @@ else
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AM_CONDITIONAL([COMPONENTS], [test x$enable_components = xyes])
 AC_SUBST(COMPONENTS_LIBS)
 AC_SUBST(COMPONENTS_INCS)
 

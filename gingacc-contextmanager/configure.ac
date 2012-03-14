@@ -57,11 +57,18 @@ AC_ARG_ENABLE(components,
   [  --enable-components build project using components [[default=yes]]],
   enable_components="$enableval", enable_components=yes)
 
+AC_CHECK_HEADER(
+  [cm/IComponentManager.h],
+  [],
+  AC_MSG_WARN([*** Component Manager not Found.])
+    enable_components=no
+)
+
 if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-lgingaccsystem -lgingaccmb -lgingaccmbdfb \
+   COMPONENTS_LIBS='-lgingaccsystem -lgingaccmb \
     -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
    TEST_COMPONENTS_LIBS='-lgingaccmb \
-    -lgingaccmbdfb -lgingaccsystem -lgingacccontextmanager \
+    -lgingaccsystem -lgingacccontextmanager \
     -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
@@ -73,7 +80,7 @@ else
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AM_CONDITIONAL([COMPONENTS], [test x$enable_components = xyes])
 AC_SUBST(COMPONENTS_LIBS)
 AC_SUBST(TEST_COMPONENTS_LIBS)
 

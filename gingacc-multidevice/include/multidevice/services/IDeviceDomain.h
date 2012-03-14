@@ -52,9 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "../IRemoteDeviceListener.h"
 
-#include "dataprocessing/ncl/INCLSectionProcessor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
-
 #include <string>
 #include <set>
 using namespace std;
@@ -98,9 +95,6 @@ namespace multidevice {
 		virtual void checkDomainTasks()=0;
 		virtual void addDeviceListener(IRemoteDeviceListener* listener)=0;
 		virtual void removeDeviceListener(IRemoteDeviceListener* listener)=0;
-
-		virtual void postNclMetadata(
-				int devClass, vector<StreamData*>* streams)=0;
   };
 }
 }

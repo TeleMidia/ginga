@@ -60,13 +60,13 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
-#include "mb/interface/dfb/output/DFBWindow.h"
+#include "mb/LocalScreenManager.h"
 #endif
 
 #include "IShowButton.h"

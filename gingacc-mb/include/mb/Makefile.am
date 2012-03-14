@@ -8,6 +8,7 @@ localIncludedir = $(prefix)/include/ginga/mb
 localInclude_HEADERS = \
                        IInputManager.h \
                        ILocalScreenManager.h \
-                       IMBDefs.h
+                       IMBDefs.h \
+                       LocalScreenManager.h #in case of --disable-components
 
 MAINTAINERCLEANFILES = Makefile.in

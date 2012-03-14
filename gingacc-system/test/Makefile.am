@@ -1,18 +1,26 @@
+INCLUDES             = \
+                       -I$(prefix)/include/ginga/ \
+                       $(all_includes) \
+                       -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = -I$(prefix)/include/ginga/ \
-    $(FFMPEG_CFLAGS) $(all_includes) -I$(top_srcdir)/include
-
-LIBS =
+LIBS                 =
 
 noinst_PROGRAMS      = \
                        test
 
-test_SOURCES = test.cpp
+test_SOURCES         = \
+                       test.cpp
 
-test_LDADD = -ltelemidiautil -lgingaccsystem
+test_LDADD           = \
+                       -ltelemidiautil \
+                       -lgingaccsystem
 
-test_LDFLAGS = -L/lib/ -L/usr/lib/ -L$(prefix)/lib/ \
-    -L../src/ -L$(prefix)/lib/ginga 
+test_LDFLAGS         = \
+                       -L/lib/ \
+                       -L/usr/lib/ \
+                       -L$(prefix)/lib/ \
+                       -L../src/ \
+                       -L$(prefix)/lib/ginga 
 
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES = \
+                       Makefile.in

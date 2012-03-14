@@ -1,13 +1,24 @@
+INCLUDES             = \
+                       $(all_includes) \
+                       -I$(top_srcdir)/include
 
-# set the include path found by configure
-INCLUDES = $(all_includes) -I$(top_srcdir)/include
-LIBS =
+LIBS                 =
 
-noinst_PROGRAMS       = test
+if COMPONENTS
+noinst_PROGRAMS      = \
+                       test
 
-test_CPPFLAGS = -I$(top_srcdir)/include
-test_SOURCES = test.cpp
+test_CPPFLAGS        = \
+                       -I$(top_srcdir)/include
 
-test_LDADD = $(TEST_COMPONENTS_LIBS) -ltelemidiautil -L../src
+test_SOURCES         = \
+                       test.cpp
 
-MAINTAINERCLEANFILES = Makefile.in
+test_LDADD           = \
+                       $(TEST_COMPONENTS_LIBS) \
+                       -ltelemidiautil \
+                       -L../src
+endif
+
+MAINTAINERCLEANFILES = \
+                       Makefile.in

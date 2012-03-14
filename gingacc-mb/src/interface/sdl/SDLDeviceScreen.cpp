@@ -66,6 +66,13 @@ extern "C" {
 #include <stdlib.h>
 }
 
+#if !HAVE_COMPSUPPORT
+#include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
+#include "mb/interface/sdl/content/image/SDLImageProvider.h"
+#include "mb/interface/sdl/content/text/SDLFontProvider.h"
+#include "mb/interface/sdl/content/video/SDLVideoProvider.h"
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -514,8 +521,12 @@ namespace mb {
 			strSym = aSystem;
 		}
 
+#if HAVE_COMPSUPPORT
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 		provider->setLoadSymbol(strSym);
+#else
+		provider = new SDLVideoProvider(id, mrl);
+#endif
 
 		cmpPool.insert(provider);
 
@@ -1279,7 +1290,7 @@ namespace mb {
 		return renderer;
 	}
 
-	/* libgingaccmbdfb internal use*/
+	/* libgingaccmbsdl internal use*/
 
 	/* input */
 	void SDLDeviceScreen::initCodeMaps() {

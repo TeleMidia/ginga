@@ -57,24 +57,19 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 
+#if HAVE_DATAPROC
 #include "dataprocessing/EPGProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+#endif
 
+#if HAVE_IC
 #include "ic/InteractiveChannelManager.h"
+#endif
 
 #include "system/fs/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
-#include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
-#include "mb/interface/dfb/output/DFBSurface.h"
-#include "mb/interface/dfb/output/DFBWindow.h"
-#include "mb/interface/dfb/input/DFBGInputEvent.h"
-#include "mb/interface/dfb/content/text/DFBFontProvider.h"
-#include "mb/interface/dfb/content/image/DFBImageProvider.h"
-#include "mb/interface/dfb/content/video/DFBVideoProvider.h"
-#include "mb/interface/dfb/content/video/XineVideoProvider.h"
-#include "mb/interface/dfb/content/audio/FusionSoundAudioProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #endif

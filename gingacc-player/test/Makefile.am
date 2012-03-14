@@ -9,6 +9,7 @@ INCLUDES              = \
 
 LIBS =
 
+if COMPONENTS
 if AWESOMIUMLIB
 noinst_PROGRAMS       = \
                         testAnime \
@@ -18,7 +19,7 @@ noinst_PROGRAMS       = \
                         testLinks \
                         testText \
                         testVideo
-else
+else #AWESOMIUMLIB
 noinst_PROGRAMS       = \
                         testAnime \
                         testAudio \
@@ -26,7 +27,7 @@ noinst_PROGRAMS       = \
                         testLinks \
                         testText \
                         testVideo
-endif
+endif #AWESOMIUMLIB
 
 #testAnime
 testAnime_SOURCES     = \
@@ -92,7 +93,7 @@ testAwesomium_LDADD   = \
                         -L$(prefix)/lib/ginga \
                         -L$(prefix)/lib/ginga/players \
                         -L../src/
-endif
+endif #AWESOMIUMLIB
 
 #testImage
 testImage_SOURCES     = \
@@ -169,5 +170,5 @@ testVideo_LDADD       = \
                         -L/usr/lib/ \
                         -L$(prefix)/lib/ \
                         -L../src/
-
+endif #COMPONENTS
 MAINTAINERCLEANFILES = Makefile.in

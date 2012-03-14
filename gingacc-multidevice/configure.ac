@@ -60,10 +60,16 @@ AC_ARG_ENABLE(components,
   [  --enable-components build project using components [[default=yes]]],
   enable_components="$enableval", enable_components=yes)
 
+AC_CHECK_HEADER(
+  [cm/IComponentManager.h],
+  [],
+  AC_MSG_WARN([*** Component Manager not Found.])
+    enable_components=no
+)
+
 if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-lgingaccdataprocncl \
-      -L/usr/local/lib/ginga/dp/ -L/usr/local/lib/ -L/usr/local/lib/ginga/'
-   TEST_COMPONENTS_LIBS='-lgingaccmd -lgingaccdataprocncl \
+   COMPONENTS_LIBS='-L/usr/local/lib/ginga/dp/ -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   TEST_COMPONENTS_LIBS='-lgingaccmd \
       -lgingaccsystem -lgingacccontextmanager \
       -L/usr/local/lib/ginga/dp/ -L/usr/local/lib/ -L/usr/local/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
@@ -76,7 +82,7 @@ else
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AM_CONDITIONAL([COMPONENTS], [test x$enable_components = xyes])
 AC_SUBST(COMPONENTS_LIBS)
 AC_SUBST(TEST_COMPONENTS_LIBS)
 
@@ -126,16 +132,6 @@ Please install gingacc-system project.
 
 ]))
 
-############################
-# Ginga CC Context Manager #
-############################
-AC_HAVE_LIBRARY(gingacccontextmanager, , AC_MSG_ERROR([
-
-Couldn't find Ginga CC Context Manager library.
-Please install Ginga CC Context Manager Library.
-
-]))
-
 ############
 # PROGRAMS #
 ############
@@ -144,10 +140,10 @@ Please install Ginga CC Context Manager Library.
 # convert #
 ###########
 
-AC_CHECK_PROG(CONVERT,convert,convert)
+AC_CHECK_PROG(CONVERT, convert, convert)
 
 if test "x$CONVERT" = "x"; then
-	AC_MSG_ERROR(Couldn't find convert. Please install ImageMagick.)
+	AC_MSG_WARN(Couldn't find convert. Please install ImageMagick.)
 fi
 
 AC_CONFIG_FILES(

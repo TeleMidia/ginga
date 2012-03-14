@@ -7,6 +7,7 @@ INCLUDES             = \
 
 LIBS                 =
 
+if COMPONENTS
 noinst_PROGRAMS      = \
                        testAudio \
                        testFont \
@@ -104,7 +105,7 @@ testVideo_LDFLAGS    = \
                        -L$(prefix)/lib/ \
                        -L$(prefix)/lib/ginga \
                        -L$(top_srcdir)/src
-
+endif
 
 MAINTAINERCLEANFILES = \
                        Makefile.in

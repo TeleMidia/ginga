@@ -84,7 +84,6 @@ namespace multidevice {
 		void removeListener(IRemoteDeviceListener* listener);
 		void postEvent(int devClass, int eventType, char* event, int eventSize);
 		bool postMediaContent(int destDevClass, string url);
-		void postNclMetadata(int devClass, vector<StreamData*>* streams);
 
 	private:
 		void run();
