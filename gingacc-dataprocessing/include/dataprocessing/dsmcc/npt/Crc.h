@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _header_dsmcc_crc_
 #define _header_dsmcc_crc_
 
-#include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 

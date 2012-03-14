@@ -61,8 +61,8 @@ namespace system {
 namespace process {
   class SpawnedProcess {
 	protected:
-		int rFd;
-		int wFd;
+		FILE* rFd;
+		FILE* wFd;
 		string objectName;
 		string rCom;
 		string wCom;

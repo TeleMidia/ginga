@@ -98,7 +98,7 @@ namespace contextmanager {
 		void setGlobalVar(string varName, string varValue);
 
 	private:
-		void saveProfile(int fd, int userId, map<string, string>* profile);
+		void saveProfile(FILE* fd, int userId, map<string, string>* profile);
 
 	public:
 		void setCurrentUserId(int userId);

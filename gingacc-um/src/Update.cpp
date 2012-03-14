@@ -107,7 +107,7 @@ namespace um {
 		IInteractiveChannel* ic;
 		IInteractiveChannelManager* icm;
 		string remoteFileName, localFileName;
-		int fd;
+		FILE* fd;
 
 #if HAVE_COMPSUPPORT
 		icm = ((ICMCreator*)(cm->getObject(
@@ -121,12 +121,9 @@ namespace um {
 
 		clog << "Update::start" << endl;
 		mkdir(location.c_str(), 0666);
-		fd = open(
-				localFileName.c_str(),
-				O_CREAT | O_WRONLY | O_LARGEFILE,
-				0644);
+		fd = fopen(localFileName.c_str(), "w+b");
 
-		if (fd > 0) {
+		if (fd != NULL) {
 			ic = icm->createInteractiveChannel(remoteFileName);
 			if (ic != NULL) {
 				ic->setTarget(fd);

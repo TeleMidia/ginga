@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include <fcntl.h>
+#include <stdio.h>
 
 namespace br {
 namespace pucrio {
@@ -62,12 +62,12 @@ namespace ginga {
 namespace core {
 namespace contextmanager {
 	GingaUser::GingaUser(int userId, string userName, string passwd) {
-		this->userId = userId;
-		this->userName = userName;
-		this->userPasswd = passwd;
+		this->userId       = userId;
+		this->userName     = userName;
+		this->userPasswd   = passwd;
 		this->userLocation = "";
-		this->userAge = 0;
-		this->userGenre = 'm';
+		this->userAge      = 0;
+		this->userGenre    = 'm';
 	}
 
 	GingaUser::~GingaUser() {
@@ -130,7 +130,7 @@ namespace contextmanager {
 		}
 	}
 
-	void GingaUser::saveTo(int fd) {
+	void GingaUser::saveTo(FILE* fd) {
 		string genre;
 
 		if (userGenre == 'f') {
@@ -148,9 +148,9 @@ namespace contextmanager {
 		saveString(fd, genre);
 	}
 
-	void GingaUser::saveString(int fd, string bytesToSave) {
-		write(fd, bytesToSave.c_str(), bytesToSave.length());
-		write(fd, " ", 1);
+	void GingaUser::saveString(FILE* fd, string bytesToSave) {
+		fwrite(bytesToSave.c_str(), 1, bytesToSave.length(), fd);
+		fwrite(" ", 1, 1, fd);
 	}
 }
 }

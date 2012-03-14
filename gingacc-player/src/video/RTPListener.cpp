@@ -98,7 +98,7 @@ namespace player {
 
 	void RTPListener::closeFile() {
 		if (fd > -1) {
-			close(fd);
+			fclose(fd);
 			fd = -1;
 		}
 	}
@@ -121,9 +121,9 @@ namespace player {
 	}
 
 	void RTPListener::receiveDataStream(char* buffer, int size) {
-		if ((fd > -1) && (size > 0)) {
+		if ((fd != NULL) && (size > 0)) {
 			try {
-				write(fd, buffer, size);
+				fwrite(buffer, 1, size, fd);
 
 			} catch (const char *except) {
 				clog << "RTPListener::receiveDataStream catch: ";
@@ -136,7 +136,7 @@ namespace player {
 		}
 	}
 
-	void RTPListener::receiveDataPipe(int fd, int size) {
+	void RTPListener::receiveDataPipe(FILE* fd, int size) {
 
 	}
 
@@ -148,7 +148,7 @@ namespace player {
 		if (fd < 0) {
 			mkfifo(this->url.c_str(), S_IFIFO);
 			clog << "RTPListener::RTPListener '" << url << "' CREATEP" << endl;
-			fd = open(this->url.c_str(), O_WRONLY);
+			fd = fopen(this->url.c_str(), "wb");
 			clog << "RTPListener::RTPListener CREATEP OPENED" << endl;
 		}
 	}

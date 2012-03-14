@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include <string.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>

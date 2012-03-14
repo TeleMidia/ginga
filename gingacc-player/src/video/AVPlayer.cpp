@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::util;
 
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 /********/
 /*ST7100*/
@@ -263,7 +263,7 @@ namespace player {
 
 int audio, width, height, x, y;
 DFBRectangle rect;
-int fd;
+FILE* fd;
 double initialTimeStamp;
 int streamtype;
 int bytesread;
@@ -367,28 +367,28 @@ int open_devices()
       int fd_vbi = -1;
       int fd_realmagic = -1;
 
-      fd_video = open("/dev/video", O_RDWR);
+      fd_video = fopen("/dev/video", O_RDWR);
       if(fd_video == -1){
         printf("Error in open /dev/video\n");
         printf("Please check geode_v driver and /dev/video node\n");
         retval = -1;
       }
-      fd_vout = open("/dev/vout", O_RDWR);
+      fd_vout = fopen("/dev/vout", O_RDWR);
       if(fd_vout == -1) {
         printf("Error in open /dev/vout\n");
         printf("Please check geode_v driver and /dev/vout node\n");
         retval = -1;
       }
-      fd_vbi = open("/dev/vbi", O_RDWR);
+      fd_vbi = fopen("/dev/vbi", O_RDWR);
       if(fd_vbi == -1) {
         printf("Error in open /dev/vbi\n");
         printf("Please check geode_v driver and /dev/vbi node\n");
         retval = -1;
       }
       close(fd_vbi);
-      fd_realmagic = open("/dev/realmagic0", O_RDWR);
+      fd_realmagic = fopen("/dev/realmagic0", O_RDWR);
       if(fd_realmagic == -1) {
-         fd_realmagic = open("/dev/realmagic", O_RDWR);
+         fd_realmagic = fopen("/dev/realmagic", O_RDWR);
          if (fd_realmagic == -1){
             printf("Cannot open /dev/realmagic0\n");
              CanDigital = 0;
@@ -803,7 +803,7 @@ namespace player {
 				SetAlphaBlend(alpha1, 150, 150, 80, 80, 0, -1, 0, 0);*/
 
 				//para fazer com que o driver de audio seja carregado
-				audio = open( "/dev/audio", O_RDONLY );
+				audio = fopen( "/dev/audio", "rb");
 				if (audio == -1) {
 					clog << "Warning! Initializing audio device." << endl;
 				}
@@ -828,7 +828,7 @@ namespace player {
 
 	void AVPlayer::loadFile() {
 		if (fd == -1) {
-			fd=open(mrl, O_RDONLY|O_NONBLOCK|O_LARGEFILE);
+			fd=fopen(mrl, "w+b");
 		}
 	}
 
@@ -1031,7 +1031,7 @@ namespace player {
 			FMPStop();
 			FMPClose();
 
-			close(fd);
+			fclose(fd);
 			close_devices();
 
 			//setOutputMode(FMPV_VIDEOOUT_VGA);

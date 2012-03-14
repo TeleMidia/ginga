@@ -79,6 +79,8 @@ namespace compat {
 			static void initializeUserCurrentPath();
 			static void initializeGingaConfigFile();
 
+			static void sigpipeHandler(int x) throw(const char*);
+
 		public:
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
@@ -102,6 +104,8 @@ namespace compat {
 			 * and append with ginga config install prefix
 			 */
 			static string appendGingaInstallPrefix(string relUrl);
+
+			static void initializeSigpipeHandler();
 	};
 }
 }

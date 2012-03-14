@@ -63,7 +63,7 @@ http://www.telemidia.puc-rio.br
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <net/if.h>
-#include <fcntl.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 

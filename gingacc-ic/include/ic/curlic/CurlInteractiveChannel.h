@@ -58,7 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "curl/curl.h"
 
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 
 namespace br {
@@ -69,7 +69,7 @@ namespace core {
 namespace ic {
   class CurlInteractiveChannel : public IInteractiveChannel {
 	private:
-		int fd;
+		FILE* fd;
 		char* buffer;
 		short type;
 		float rate;
@@ -87,7 +87,7 @@ namespace ic {
 		~CurlInteractiveChannel();
 		bool hasConnection();
 		void setSourceTarget(string url);
-		void setTarget(int fd);
+		void setTarget(FILE* fd);
 		void setTarget(char* buffer);
 		short getType();
 		float getRate();
@@ -105,7 +105,7 @@ namespace ic {
 				void* ptr, size_t size, size_t nmemb, void* stream);
 
 		bool positiveResponse(long* respCode);
-		int getLocalFileDescriptor();
+		FILE* getLocalFileDescriptor();
 		IInteractiveChannelListener* getListener();
   };
 }

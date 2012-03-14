@@ -61,7 +61,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <string>
 using namespace std;
@@ -74,7 +74,7 @@ namespace core {
 namespace player {
   class RTPListener : public IInteractiveChannelListener, public Thread {
 	private:
-		int fd;
+		FILE* fd;
 		string url;
 
 		IInteractiveChannelManager* icm;
@@ -97,7 +97,7 @@ namespace player {
 		void releaseIC();
 		void receiveCode(long respCode);
 		void receiveDataStream(char* buffer, int size);
-		void receiveDataPipe(int fd, int size);
+		void receiveDataPipe(FILE* fd, int size);
 		void downloadCompleted(const char* localUri);
 		void run();
   };

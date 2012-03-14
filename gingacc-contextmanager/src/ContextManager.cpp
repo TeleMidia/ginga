@@ -56,7 +56,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::util;
 
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <iostream>
 #include <fstream>
@@ -326,11 +326,11 @@ namespace contextmanager {
 	}
 
 	void ContextManager::saveUsersAccounts() {
-		int fd;
+		FILE* fd;
 		map<int, IGingaUser*>::iterator i;
 
 		remove(usersUri.c_str());
-		fd = open(usersUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+		fd = fopen(usersUri.c_str(), "w+b");
 
 		if (fd <= 0) {
 			return;
@@ -347,15 +347,15 @@ namespace contextmanager {
 			++i;
 		}
 
-		close(fd);
+		fclose(fd);
 	}
 
 	void ContextManager::saveUsersProfiles() {
-		int fd;
+		FILE* fd;
 		map<int, map<string, string>*>::iterator i;
 
 		remove(contextsUri.c_str());
-		fd = open(contextsUri.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+		fd = fopen(contextsUri.c_str(), "w+b");
 
 		if (fd <= 0) {
 			return;
@@ -371,11 +371,11 @@ namespace contextmanager {
 			++i;
 		}
 
-		close(fd);
+		fclose(fd);
 	}
 
 	void ContextManager::saveProfile(
-			int fd, int userId, map<string, string>* profile) {
+			FILE* fd, int userId, map<string, string>* profile) {
 
 		map<string, string>::iterator i;
 

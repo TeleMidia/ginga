@@ -254,7 +254,7 @@ namespace tuning {
 		struct dmx_stc* _stc;
 		int result, fd;
 
-		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR)) < 0) {
+		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR, 644)) < 0) {
 			perror("ISDBTFrontend::getSTCValue FD");
 			return false;
 		}
@@ -375,7 +375,9 @@ namespace tuning {
 			return;
 		}
 
-		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR | O_NONBLOCK)) < 0) {
+		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR | O_NONBLOCK, 0644))
+				< 0) {
+
 			clog << "ISDBTFrontend::attachFilter can't open '";
 			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
 			return;
@@ -437,7 +439,7 @@ namespace tuning {
 		clog << " pesType '" << pesType << "'" << endl;
 		memset(&f, 0, sizeof(f));
 
-		fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR);
+		fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR, 0644);
 		if (fd < 0) {
 			clog << "ISDBTFrontend::createPesFilter can't open '";
 			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
@@ -513,7 +515,8 @@ namespace tuning {
 
 	void ISDBTFrontend::readFilters() {
 		IFrontendFilter* filter;
-		int i = 0, n, recv, fSize, fd;
+		int fd;
+		int i = 0, n, recv, fSize;
 		vector<IFrontendFilter*>::iterator j;
 		vector<ActionsToFilters*>::iterator k;
 		char buf[4096];
@@ -571,8 +574,8 @@ namespace tuning {
 					clog << endl;
 				}
 
-				if (((recv = read(
-						fd, buf, sizeof(buf))) < 0) && errno == EOVERFLOW) {
+				if (((recv = read(fd, buf, sizeof(buf)) < 0)) &&
+						errno == EOVERFLOW) {
 
 					//avoid overflow
 					recv = read(fd, buf, sizeof(buf));

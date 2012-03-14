@@ -140,10 +140,10 @@ namespace ic {
 			clog << localPath << "' local path" << endl;
 			mkdir(localPath.c_str(), 0755);
 		}
-		fd = open(localUri.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
+		fd = fopen(localUri.c_str(), "w+b");
 	}
 
-	void CurlInteractiveChannel::setTarget(int fd) {
+	void CurlInteractiveChannel::setTarget(FILE* fd) {
 		this->fd = fd;
 	}
 
@@ -248,7 +248,7 @@ namespace ic {
 		curl = NULL;
 
 		if (fd > 0) {
-			close(fd);
+			fclose(fd);
 			fd = 0;
 		}
 
@@ -258,7 +258,8 @@ namespace ic {
 	size_t CurlInteractiveChannel::writeCallBack(
 			void* ptr, size_t size, size_t nmemb, void* stream) {
 
-		int w, fd;
+		int w;
+		FILE* fd;
 		CurlInteractiveChannel* channel;
 		IInteractiveChannelListener* l;
 
@@ -267,8 +268,8 @@ namespace ic {
 		fd = channel->getLocalFileDescriptor();
 		w  = 0;
 
-		if (fd > 0) {
-			w = write(fd, ptr, (size * nmemb));
+		if (fd != NULL) {
+			w = fwrite(ptr, 1, (size * nmemb), fd);
 			if (w != (int)(size * nmemb)) {
 				clog << "CurlInteractiveChannel::writeCallBack can't write";
 				clog << endl;
@@ -294,7 +295,7 @@ namespace ic {
 		return false;
 	}
 
-	int CurlInteractiveChannel::getLocalFileDescriptor() {
+	FILE* CurlInteractiveChannel::getLocalFileDescriptor() {
 		return fd;
 	}
 

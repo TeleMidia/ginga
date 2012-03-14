@@ -55,7 +55,7 @@ extern "C" {
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <netdb.h>
-	#include <fcntl.h>
+	#include <stdio.h>
 	#include <stdio.h>
 	#include <strings.h>
 }

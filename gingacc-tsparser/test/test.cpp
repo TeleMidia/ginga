@@ -67,14 +67,16 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
 
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 int main(int argc, char** argv, char** envp) {
-	IAIT* ait = new AIT();
-	IDemuxer* demuxer = NULL;
+	IAIT* ait             = new AIT();
+	IDemuxer* demuxer     = NULL;
 	ITSFilter* pipeFilter = NULL;
-	ITuner* tuner = NULL;
-	int fdPipe = -1, fd = -1, ret;
+	ITuner* tuner         = NULL;
+	FILE* fdPipe          = NULL;
+	FILE* fd              = NULL;
+	int ret;
 	string pipeName, fileName;
 	char buffer[188];
 
@@ -98,13 +100,13 @@ int main(int argc, char** argv, char** envp) {
 	((IDemuxer*)demuxer)->addPesFilter(PFT_DEFAULTTS, pipeFilter);
 
 	if (argc == 2 && strcmp(argv[1], "save-pipe") == 0) {
-		fdPipe = open(pipeName.c_str(), O_RDONLY);
-		fd = open(fileName.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+		fdPipe = fopen(pipeName.c_str(), "rb");
+		fd = fopen(fileName.c_str(), "w+b");
 
 		while (true) {
-			ret = read(fdPipe, buffer, ITSPacket::TS_PACKET_SIZE);
+			ret = fread(buffer, 1, ITSPacket::TS_PACKET_SIZE, fdPipe);
 			if (ret == ITSPacket::TS_PACKET_SIZE) {
-				write(fd, buffer, ITSPacket::TS_PACKET_SIZE);
+				fwrite(buffer, 1, ITSPacket::TS_PACKET_SIZE, fd);
 
 			} else {
 				break;

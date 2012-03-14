@@ -74,7 +74,7 @@ namespace mb {
 			char* data;
 			int dataSize;
 			const char* deviceUri;
-			int deviceFd;
+			FILE* deviceFd;
 			IDirectFBDataBuffer* dataBuffer;
 			GingaScreenID myScreen;
 			DFBDataBufferDescription desc;

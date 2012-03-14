@@ -57,7 +57,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 #include <iostream>
 

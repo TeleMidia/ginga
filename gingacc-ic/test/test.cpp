@@ -69,7 +69,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -77,16 +77,16 @@ using namespace std;
 #if HAVE_CCRTP
 class ICListener : public IInteractiveChannelListener {
 	private:
-		int fd;
+		FILE* fd;
 
 	public:
 		ICListener() {
-			fd = open("recv.ts", O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+			fd = fopen("recv.ts", "w+b");
 		}
 
 		~ICListener() {
 			if (fd > 0) {
-				close(fd);
+				fclose(fd);
 			}
 		}
 
@@ -95,12 +95,12 @@ class ICListener : public IInteractiveChannelListener {
 		}
 
 		void receiveDataStream(char* buffer, int size) {
-			if (fd > 0 && size > 0) {
-				write(fd, buffer, size);
+			if (fd != NULL && size > 0) {
+				fwrite(buffer, 1, size, fd);
 			}
 		}
 
-		void receiveDataPipe(int fd, int size) {
+		void receiveDataPipe(FILE* fd, int size) {
 			clog << "ICListener received write '" << size << "'" << endl;
 		}
 
@@ -121,7 +121,7 @@ int main(int argc, char** argv) {
 #endif
 	IInteractiveChannelManager* icm;
 
-	int fd           = -1;
+	FILE* fd;
 	string localPath = "/tmp/gingaTests/";
 	string localFile = localPath + "CurlInteractiveChannelTest.xml";
 	string remoteUri = "http://apps.club.ncl.org.br/78/main.ncl";
@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
 
 	if (argc == 3 && strcmp(argv[1], "--curl") == 0) {
 		if (strcmp(argv[2], "fd") == 0) {
-			fd = open(localFile.c_str(), O_CREAT | O_WRONLY | O_LARGEFILE, 0644);
+			fd = fopen(localFile.c_str(), "w+b");
 		}
 
 		if (icm != NULL) {

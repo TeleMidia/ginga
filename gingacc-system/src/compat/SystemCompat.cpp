@@ -52,6 +52,12 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 	#include <sys/param.h>
 	#include <unistd.h>
+
+#ifdef linux
+	#include <sys/resource.h>
+	#include <signal.h>
+#endif
+
 }
 
 namespace br {
@@ -178,6 +184,15 @@ namespace compat {
 			userCurrentPath = userCurrentPath + iUriD;
 		}
 	}
+
+	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
+#ifdef linux
+		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
+		fprintf(stderr,"throw: %s\n",strsignal(x));
+		throw strsignal(x);  //throw the exeption
+#endif //linux
+	}
+
 
 	string SystemCompat::updatePath(string dir) {
 		bool found = false;
@@ -329,6 +344,12 @@ namespace compat {
 		cout << endl;*/
 
 		return absuri;
+	}
+
+	void SystemCompat::initializeSigpipeHandler() {
+#ifdef linux
+		signal(SIGPIPE, sigpipeHandler);
+#endif //linux
 	}
 }
 }

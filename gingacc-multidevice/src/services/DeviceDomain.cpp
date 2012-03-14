@@ -56,7 +56,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 namespace br {
 namespace pucrio {

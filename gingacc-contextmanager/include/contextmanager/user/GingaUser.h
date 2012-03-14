@@ -87,8 +87,8 @@ namespace contextmanager {
 		void setUserLocation(string passwd, string userLocation);
 		void setUserGenre(string passwd, char userGenre);
 
-		void saveTo(int fd);
-		static void saveString(int fd, string bytesToSave);
+		void saveTo(FILE* fd);
+		static void saveString(FILE* fd, string bytesToSave);
   };
 }
 }

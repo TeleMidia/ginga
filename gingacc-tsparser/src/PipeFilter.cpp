@@ -191,7 +191,8 @@ namespace tsparser {
 	}
 
 	void PipeFilter::run() {
-		int rval, fd;
+		FILE* fd;
+		int rval;
 		int buffSize = 188 * 1024;
 		char buff[buffSize];
 		string cmd;
@@ -201,10 +202,10 @@ namespace tsparser {
 		if (dvrReader) {
 			clog << "PipeFilter::run(" << this << ") reader" << endl;
 
-			fd = open(dvrName.c_str(), O_RDONLY | O_NONBLOCK);
-			//fd = open(dvrName.c_str(), O_RDONLY);
+			fd = fopen(dvrName.c_str(), "rb");
+			//fd = fopen(dvrName.c_str(), "rb");
 			if (fd < 0) {
-				fd = open(dvrName.c_str(), O_RDONLY);
+				fd = fopen(dvrName.c_str(), "rb");
 				if (fd < 0) {
 					clog << "PipeFilter::run(" << this << ")";
 					clog << " can't open '" << dvrName;
@@ -218,7 +219,7 @@ namespace tsparser {
 			clog << "' OPENED" << endl;
 
 			while (dvrReader) {
-				rval = read(fd, buff, buffSize);
+				rval = fread(buff, 1, buffSize, fd);
 				if (rval > 0) {
 					receivePes(buff, rval, NULL);
 				}

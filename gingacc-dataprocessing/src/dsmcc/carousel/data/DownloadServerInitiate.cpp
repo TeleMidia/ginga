@@ -68,7 +68,8 @@ namespace carousel {
 	}
 
 	void DownloadServerInitiate::processMessage() {
-		int fd, rval;
+		FILE* fd;
+		int rval;
 		unsigned int privateDataLength;
 
 		// dsmccmessageheader = 12
@@ -76,10 +77,10 @@ namespace carousel {
 
 		data = (char*)malloc((header->getMessageLength() + idx));
 
-		fd = open(header->getFileName().c_str(), O_RDONLY|O_LARGEFILE);
+		fd = fopen(header->getFileName().c_str(), "rb");
 		if (fd >= 0) {
-			rval = read(
-					fd, (void*)&(data[0]), header->getMessageLength() + idx);
+			rval = fread(
+					(void*)&(data[0]), 1, header->getMessageLength() + idx, fd);
 
 			//skip serverId
 			idx = idx + 20;
@@ -103,7 +104,7 @@ namespace carousel {
 
 			DownloadServerInitiate::processIor();
 
-			close(fd);
+			fclose(fd);
 //			remove(header->getFileName().c_str());
 
 		} else {

@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _IInteractiveChannelListener_H_
 #define _IInteractiveChannelListener_H_
 
+#include <stdio.h>
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -61,7 +63,7 @@ namespace ic {
 		virtual ~IInteractiveChannelListener(){};
 		virtual void receiveCode(long respCode)=0;
 		virtual void receiveDataStream(char* buffer, int size)=0;
-		virtual void receiveDataPipe(int fd, int size)=0;
+		virtual void receiveDataPipe(FILE* fd, int size)=0;
 		virtual void downloadCompleted(const char* localUri)=0;
   };
 }

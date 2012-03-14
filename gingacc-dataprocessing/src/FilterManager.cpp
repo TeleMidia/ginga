@@ -188,7 +188,7 @@ namespace dataprocessing {
 	//TODO: destroy pid filter
 
 	bool FilterManager::processSection(ITransportSection* section) {
-		int sectionFd;
+		FILE* sectionFd;
 		int bytesSaved;
 		string sectionName;
 		string::size_type len;
@@ -256,8 +256,8 @@ namespace dataprocessing {
 
 		// All sections received.
 		if (secs->size() == (lsn + 1)) {
-			sectionFd = open(sectionName.c_str(),
-					 O_CREAT|O_WRONLY|O_LARGEFILE|O_APPEND|O_SYNC, 0777);
+			sectionFd = fopen(sectionName.c_str(),
+					 "a+");
 
 			if (sectionFd < 0) {
 				clog << "FilterManager Warning! error open file ";
@@ -271,14 +271,13 @@ namespace dataprocessing {
 				if (secs->count(i) == 0) {
 					clog << "FilterManager Warning! cant find pos '";
 					clog << i << "'" << endl;
-					close(sectionFd);
+					fclose(sectionFd);
 					return false;
 				}
 
 				sec = (*secs)[i];
-				bytesSaved = write(
-						sectionFd,
-						sec->getPayload(), sec->getPayloadSize());
+				bytesSaved = fwrite(
+						sec->getPayload(), 1, sec->getPayloadSize(), sectionFd);
 
 				if (bytesSaved != (int)(sec->getPayloadSize())) {
 					clog << "FilterManager Warning! bytesSaved = ";
@@ -290,7 +289,7 @@ namespace dataprocessing {
 				delete sec;
 				sec = NULL;
 			}
-			close(sectionFd);
+			fclose(sectionFd);
 
 			addProcessedSection(sectionName);
 
