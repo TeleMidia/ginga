@@ -56,7 +56,6 @@ http://www.telemidia.puc-rio.br
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <dlfcn.h>
 #include <stdio.h>
 
 #include <sys/types.h>

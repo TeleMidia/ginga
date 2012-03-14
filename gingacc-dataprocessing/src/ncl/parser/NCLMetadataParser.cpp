@@ -53,7 +53,6 @@ http://www.telemidia.puc-rio.br
 #include "dataprocessing/ncl/Metadata.h"
 
 #include <string.h>
-#include <dlfcn.h>
 #include <stdio.h>
 
 typedef struct {

@@ -1,5 +1,3 @@
-
-# set the include path found by configure
 INCLUDES              = \
                         $(all_includes) \
                         -I$(top_srcdir) \
@@ -9,7 +7,6 @@ INCLUDES              = \
 
 LIBS =
 
-if COMPONENTS
 if AWESOMIUMLIB
 noinst_PROGRAMS       = \
                         testAnime \
@@ -170,5 +167,5 @@ testVideo_LDADD       = \
                         -L/usr/lib/ \
                         -L$(prefix)/lib/ \
                         -L../src/
-endif #COMPONENTS
+
 MAINTAINERCLEANFILES = Makefile.in

@@ -4,7 +4,6 @@ INCLUDES             = \
 
 LIBS                 =
 
-if COMPONENTS
 noinst_PROGRAMS      = \
                        test
 
@@ -18,7 +17,6 @@ test_LDADD           = \
                        $(TEST_COMPONENTS_LIBS) \
                        -ltelemidiautil \
                        -L../src
-endif
 
 MAINTAINERCLEANFILES = \
                        Makefile.in

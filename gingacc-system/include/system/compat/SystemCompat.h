@@ -82,6 +82,9 @@ namespace compat {
 			static void sigpipeHandler(int x) throw(const char*);
 
 		public:
+			/********
+			 * URIs *
+			 ********/
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
 			static bool isAbsolutePath(string path);
@@ -105,7 +108,18 @@ namespace compat {
 			 */
 			static string appendGingaInstallPrefix(string relUrl);
 
+
+			/****************
+			 * SIG Handlers *
+			 ****************/
 			static void initializeSigpipeHandler();
+
+
+			/*****************
+			 * Embedded Info *
+			 *****************/
+			static string getOperatingSystem();
+			static float getMemorySize();
 	};
 }
 }

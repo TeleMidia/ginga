@@ -55,9 +55,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ISystemInfo.h"
 
-#include <sys/utsname.h>
-#include <sys/sysinfo.h>
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -66,8 +63,6 @@ namespace core {
 namespace contextmanager {
 	class SystemInfo : public ISystemInfo {
 		private:
-			struct utsname sn;
-			struct sysinfo info;
 			float clockSpeed;
 			map<string, string>* sysTable;
 

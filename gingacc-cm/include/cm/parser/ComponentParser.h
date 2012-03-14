@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 
 #include "IComponentParser.h"
 
+#include <dlfcn.h>
 #include <set>
 #include <iostream>
 using namespace std;

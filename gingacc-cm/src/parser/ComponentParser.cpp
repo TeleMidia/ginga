@@ -50,7 +50,6 @@ http://www.telemidia.puc-rio.br
 #include "cm/parser/ComponentParser.h"
 
 #include <string.h>
-#include <dlfcn.h>
 #include <stdio.h>
 
 typedef struct {

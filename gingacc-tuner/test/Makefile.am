@@ -4,7 +4,6 @@ INCLUDES             = \
 
 LIBS                 =
 
-if COMPONENTS
 noinst_PROGRAMS      = \
                        test
 
@@ -20,7 +19,6 @@ test_LDFLAGS         = \
                        -L../src/ \
                        -L$(prefix)/lib/ginga \
                        -L$(prefix)/lib
-endif
 
 MAINTAINERCLEANFILES = \
                        Makefile.in

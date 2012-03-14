@@ -4,7 +4,6 @@ INCLUDES             = \
 
 LIBS                 =
 
-if COMPONENTS
 noinst_PROGRAMS      = \
                        test
 
@@ -27,6 +26,6 @@ test_LDFLAGS         = \
                        -L../src \
                        -L../src/curlic \
                        -L../src/ccrtpic
-endif
+
 MAINTAINERCLEANFILES = \
                        Makefile.in
