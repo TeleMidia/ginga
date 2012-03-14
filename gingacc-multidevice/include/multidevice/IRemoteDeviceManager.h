@@ -52,9 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "IRemoteDeviceListener.h"
 
-#include "dataprocessing/ncl/INCLSectionProcessor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
-
 #include <set>
 #include <vector>
 
@@ -79,9 +76,6 @@ namespace multidevice {
 				int eventSize)=0;
 
 		virtual bool postMediaContent(int destDevClass, string url)=0;
-
-		virtual void postNclMetadata(
-				int devClass, vector<StreamData*>* streams)=0;
   };
 }
 }

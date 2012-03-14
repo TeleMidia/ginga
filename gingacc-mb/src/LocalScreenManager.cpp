@@ -61,8 +61,20 @@ extern "C" {
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
+
+#if HAVE_DIRECTFB
 #include "mb/interface/dfb/DFBDeviceScreen.h"
-#endif
+#endif //HAVE_DIRECTFB
+
+#if HAVE_SDL
+#include "mb/interface/sdl/SDLDeviceScreen.h"
+#endif //HAVE_SDL
+
+#if HAVE_TERM
+#include "mb/interface/term/TermDeviceScreen.h"
+#endif //HAVE_TERM
+
+#endif //HAVE_COMPSUPPORT
 
 namespace br {
 namespace pucrio {
@@ -328,7 +340,12 @@ namespace mb {
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject(
 						"SDLDeviceScreen")))(argc, mbArgs, screenId, parentId);
-#endif
+
+#else
+#if HAVE_SDL
+				screen = new SDLDeviceScreen(argc, mbArgs, screenId, parentId);
+#endif //HAVE_SDL
+#endif //HAVE_COMPSUPPORT
 				break;
 
 			case GMBST_TERM:
@@ -336,7 +353,11 @@ namespace mb {
 				screen = ((ScreenCreator*)(cm->getObject(
 						"TermDeviceScreen")))(0, NULL, screenId, parentId);
 
-#endif
+#else
+#if HAVE_TERM
+				screen = new TermDeviceScreen(argc, mbArgs, screenId, parentId);
+#endif //HAVE_TERM
+#endif //HAVE_COMPSUPPORT
 				break;
 
 			case GMBST_DFLT:
@@ -393,8 +414,10 @@ namespace mb {
 						argc, mbArgs, screenId, parentId);
 
 #else
+#if HAVE_DIRECTFB
 				screen = new DFBDeviceScreen(argc, mbArgs, screenId, parentId);
-#endif
+#endif //HAVE_DIRECTFB
+#endif //HAVE_COMPSUPPORT
 				break;
 		}
 
@@ -424,9 +447,31 @@ namespace mb {
 		*mbSystemType = GMBST_DFLT;
 
 #if !HAVE_COMPSUPPORT
-		clog << "LocalScreenManager::getMBSystemType no component support! ";
-		clog << "Returning DEFAULT multimedia system";
-		clog << endl;
+		if (mbSystemName == "dfb") {
+#if HAVE_DIRECTFB
+			*mbSystemType = GMBST_DFB;
+#endif
+		} else if (mbSystemName == "sdl") {
+#if HAVE_SDL
+			*mbSystemType = GMBST_SDL;
+#endif
+		} else if (mbSystemName == "term") {
+#if HAVE_TERM
+			*mbSystemType = GMBST_TERM;
+#endif
+		}
+
+		if (*mbSystemType == GMBST_DFLT) {
+#if HAVE_TERM
+			*mbSystemType = GMBST_TERM;
+#endif
+#if HAVE_SDL
+			*mbSystemType = GMBST_SDL;
+#endif
+#if HAVE_DIRECTFB
+			*mbSystemType = GMBST_DFB;
+#endif
+		}
 		return;
 #endif
 

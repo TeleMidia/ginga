@@ -87,7 +87,7 @@ namespace multidevice {
 		IRemoteDevice* dev;
 		string uri;
 		set<IRemoteDeviceListener*>::iterator i;
-		INCLSectionProcessor* nsp = NULL;
+		//INCLSectionProcessor* nsp = NULL;
 		bool hasLists;
 
 		//clog << "ActiveDeviceService::receiveMediaContent" << endl;
@@ -100,7 +100,7 @@ namespace multidevice {
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
 
-			#ifdef	__DARWIN_UNIX03
+#ifdef	__DARWIN_UNIX03
 					i = listeners->begin();
 					while (i != listeners->end()) {
 						(*i)->receiveRemoteContent(
@@ -109,9 +109,9 @@ namespace multidevice {
 					}
 					return true;
 
-			#else
+#else
 
-			if (nsp != NULL) {
+/*			if (nsp != NULL) {
 				nsp->process(stream, streamSize);
 				nsp->mount();
 
@@ -130,10 +130,8 @@ namespace multidevice {
 					pthread_mutex_unlock(&lMutex);
 				}
 				return true;
-
-				#endif
-
-			}
+			}*/
+#endif
 		}
 
 		clog << "ActiveDeviceService::receiveMediaContent Warning! ";

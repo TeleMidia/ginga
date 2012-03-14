@@ -104,9 +104,6 @@ typedef struct {
 		virtual void receiveAnswerTask(char* answerTask){};
 
 	public:
-		virtual void postNclMetadata(
-				int devClass, vector<StreamData*>* streams);
-
 		virtual bool postMediaContentTask(int destDevClass, string url);
 
 	protected:

@@ -105,7 +105,6 @@ DFB_CFLAGS=`$PKG_CONFIG --cflags directfb`
 DFB_LIBS=`$PKG_CONFIG --libs directfb`
 DFB_VERSION=`$PKG_CONFIG --modversion directfb`
 AC_MSG_RESULT([found (version $DFB_VERSION)])
-AC_DEFINE(HAVE_DIRECTFB, 1, [Define to 1 if you have DFB support.])
 AC_DEFINE(DFB_VER, 120, [Version Control.])
 else
 if $PKG_CONFIG --atleast-version $DIRECTFB_MIN_VERSION directfb ; then
@@ -113,7 +112,6 @@ DFB_CFLAGS=`$PKG_CONFIG --cflags directfb`
 DFB_LIBS=`$PKG_CONFIG --libs directfb`
 DFB_VERSION=`$PKG_CONFIG --modversion directfb`
 AC_MSG_RESULT([found (version $DFB_VERSION)])
-AC_DEFINE(HAVE_DIRECTFB, 1, [Define to 1 if you have DFB support.])
 AC_DEFINE(DFB_VER, 100, [Version Control.])
 else
 AC_MSG_WARN([
@@ -134,6 +132,12 @@ Try also "export PKG_CONFIG_PATH=..." and run configure again
 enable_dfb=no
 fi #haspkgconfig
 
+if test x$enable_dfb = xno; then
+AC_DEFINE(HAVE_DIRECTFB, 0, [Define to 0 if you don't have DFB support.])
+else
+AC_DEFINE(HAVE_DIRECTFB, 1, [Define to 1 if you have DFB support.])
+fi
+
 AM_CONDITIONAL([DFBSYSTEM], [test x$enable_dfb = xyes])
 AC_SUBST(DFB_LIBS)
 
@@ -149,7 +153,13 @@ if test x$enable_term = xno; then
 AC_MSG_WARN([
 *** Ginga Terminal support will not be built.
 ])
+
+AC_DEFINE(HAVE_TERM, 0, [Define to 0 if you don't have Term support.])
+else
+
+AC_DEFINE(HAVE_TERM, 1, [Define to 1 if you have Term support.])
 fi
+
 AM_CONDITIONAL([TERMSYSTEM], [test x$enable_term = xyes])
 
 ##############
@@ -228,6 +238,12 @@ sdlimage=no
 enable_sdl=no
 fi
 
+if test x$enable_sdl = xno; then
+AC_DEFINE(HAVE_SDL, 0, [Define to 0 if you don't have SDL support.])
+else
+AC_DEFINE(HAVE_SDL, 1, [Define to 1 if you have SDL support.])
+fi
+
 AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
 ############################################################
@@ -288,6 +304,13 @@ AC_ARG_ENABLE(components,
   [  --enable-components build project using components [[default=yes]]],
   enable_components="$enableval", enable_components=yes)
 
+AC_CHECK_HEADER(
+  [cm/IComponentManager.h],
+  [],
+  AC_MSG_WARN([*** Component Manager not Found.])
+    enable_components=no
+)
+
 if test x$enable_components = xno; then
    TEST_LIBS='-lgingaccmbdfb -lgingaccmbdecdfbimg -lgingaccmbdecdfbav -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
    COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
@@ -302,7 +325,7 @@ else
    AC_MSG_RESULT([*** Component support will be built.])
 fi
 
-AM_CONDITIONAL(COMPONENTS, test "$enable_components" = "no")
+AM_CONDITIONAL([COMPONENTS], [test x$enable_components = xyes])
 AC_SUBST(TEST_LIBS)
 AC_SUBST(COMPONENTS_LIBS)
 

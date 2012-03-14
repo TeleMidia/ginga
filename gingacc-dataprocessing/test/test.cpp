@@ -57,7 +57,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "tsparser/Demuxer.h"
 #include "tsparser/PipeFilter.h"
 #include "dataprocessing/DataProcessor.h"
-#include "mb/interface/dfb/output/DFBWindow.h"
 #endif
 
 #include "tuner/ITuner.h"

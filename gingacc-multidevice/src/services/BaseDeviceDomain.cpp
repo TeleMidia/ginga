@@ -190,7 +190,7 @@ namespace multidevice {
 		taskSize = HEADER_SIZE + answerPayloadSize;
 		broadcastTaskRequest(task, taskSize);
 	}
-
+/*
 	void BaseDeviceDomain::postNclMetadata(
 			int devClass, vector<StreamData*>* streams) {
 
@@ -219,7 +219,7 @@ namespace multidevice {
 			streams->erase(i);
 			i = streams->begin();
 		}
-	}
+	}*/
 
 	bool BaseDeviceDomain::postMediaContentTask(
 			int destDevClass,

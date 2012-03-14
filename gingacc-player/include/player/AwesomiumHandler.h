@@ -50,9 +50,6 @@ http://www.telemidia.puc-rio.br
 #ifndef AwesomiumHandler_h_
 #define AwesomiumHandler_h_
 
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 

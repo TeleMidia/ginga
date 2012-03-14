@@ -118,9 +118,6 @@ namespace multidevice {
 		virtual void receiveAnswerTask(char* answerTask)=0;
 
 	public:
-		virtual void postNclMetadata(
-				int devClass, vector<StreamData*>* streams)=0;
-
 		virtual bool postMediaContentTask(int destDevClass, string url)=0;
 
 	protected:

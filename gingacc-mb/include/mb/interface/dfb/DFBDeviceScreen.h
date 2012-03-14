@@ -80,6 +80,7 @@ extern "C" {
 
 #include <pthread.h>
 
+#include <map>
 #include <set>
 #include <iostream>
 using namespace std;

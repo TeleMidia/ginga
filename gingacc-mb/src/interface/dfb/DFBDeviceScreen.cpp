@@ -61,6 +61,18 @@ http://www.telemidia.puc-rio.br
 #include "mb/ILocalScreenManager.h"
 #include "mb/InputManager.h"
 
+#if !HAVE_COMPSUPPORT
+#include "mb/interface/dfb/content/audio/DFBAudioProvider.h"
+
+#if HAVE_FUSIONSOUND
+#include "mb/interface/dfb/content/audio/FusionSoundAudioProvider.h"
+#endif //HAVE_FUSIONSOUND
+
+#include "mb/interface/dfb/content/image/DFBImageProvider.h"
+#include "mb/interface/dfb/content/text/DFBFontProvider.h"
+#include "mb/interface/dfb/content/video/DFBVideoProvider.h"
+#endif //HAVE_COMPSUPPORT
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -574,7 +586,7 @@ namespace mb {
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 
 #else //!HAVE_COMPSUPPORT
-		if (>hasVisual) {
+		if (hasVisual) {
 			provider = new DFBVideoProvider(id, mrl);
 
 		} else {

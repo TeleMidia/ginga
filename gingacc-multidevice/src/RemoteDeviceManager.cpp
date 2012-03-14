@@ -157,11 +157,11 @@ namespace multidevice {
 		return domainService->postMediaContentTask(destDevClass, url);
 	}
 
-	void RemoteDeviceManager::postNclMetadata(
+	/*void RemoteDeviceManager::postNclMetadata(
 			int devClass, vector<StreamData*>* streams) {
 
 		domainService->postNclMetadata(devClass, streams);
-	}
+	}*/
 
 	void RemoteDeviceManager::run() {
 		double rdmTimer;
