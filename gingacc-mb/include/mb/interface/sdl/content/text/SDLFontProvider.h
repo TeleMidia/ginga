@@ -58,6 +58,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "mb/interface/IFontProvider.h"
 #include "mb/interface/ISurface.h"
 
+#include <pthread.h>
+
 #include "SDL_ttf.h"
 
 #include <set>

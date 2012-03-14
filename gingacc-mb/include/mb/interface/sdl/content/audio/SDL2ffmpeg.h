@@ -337,7 +337,6 @@ namespace mb {
 		enum AVDiscard skip_frame;
 		enum AVDiscard skip_idct;
 		enum AVDiscard skip_loop_filter;
-		int error_recognition;
 		int error_concealment;
 		int decoder_reorder_pts;
 		int framedrop;

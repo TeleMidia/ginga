@@ -87,7 +87,6 @@ namespace mb {
 		skip_frame                           = AVDISCARD_DEFAULT;
 		skip_idct                            = AVDISCARD_DEFAULT;
 		skip_loop_filter                     = AVDISCARD_DEFAULT;
-		error_recognition                    = FF_ER_CAREFUL;
 		error_concealment                    = 3;
 		decoder_reorder_pts                  = -1;
 		framedrop                            = -1;
@@ -246,7 +245,6 @@ namespace mb {
 		if (instances.empty()) {
 			av_lockmgr_register(NULL);
 			avformat_network_deinit();
-			avio_set_interrupt_cb(NULL);
 		}
 		pthread_mutex_unlock(&iMutex);
 	}
@@ -1565,7 +1563,6 @@ namespace mb {
 		avctx->skip_frame        = skip_frame;
 		avctx->skip_idct         = skip_idct;
 		avctx->skip_loop_filter  = skip_loop_filter;
-		avctx->error_recognition = error_recognition;
 		avctx->error_concealment = error_concealment;
 
 		if (codec->capabilities & CODEC_CAP_DR1) {

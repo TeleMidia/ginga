@@ -52,6 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include "SDL.h"
 
+#include <pthread.h>
+
 #include "mb/interface/IWindow.h"
 #include "mb/interface/sdl/output/SDLWindow.h"
 #include "mb/interface/IFontProvider.h"
