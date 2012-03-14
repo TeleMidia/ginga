@@ -86,11 +86,11 @@ namespace process {
 		reader = false;
 
 		if (wFd > 0) {
-			close(wFd);
+			fclose(wFd);
 		}
 
 		if (rFd > 0) {
-			close(rFd);
+			fclose(rFd);
 		}
 
 		pthread_mutex_destroy(&waitSig);

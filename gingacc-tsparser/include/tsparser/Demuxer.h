@@ -64,7 +64,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <map>
 #include <vector>

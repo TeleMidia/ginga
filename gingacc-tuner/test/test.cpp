@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include <sys/types.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <iostream>
 #include <string>
@@ -61,17 +61,17 @@ using namespace std;
 class TestTunerListener : public ITunerListener {
 	private:
 		string url;
-		int fd;
+		FILE* fd;
 
 	public:
 		TestTunerListener(string url) {
 			this->url = url;
-			fd = open(url.c_str(), O_CREAT | O_LARGEFILE | O_WRONLY, 0644);
+			fd = fopen(url.c_str(), "w+b");
 		}
 
 		void receiveData(char* buff, unsigned int size) {
-			if (fd > 0) {
-				write(fd, buff, size);
+			if (fd != NULL) {
+				fwrite(buff, 1, size, fd);
 			}
 		}
 

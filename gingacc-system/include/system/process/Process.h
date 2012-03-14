@@ -57,7 +57,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 #include <spawn.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -99,8 +99,8 @@ namespace process {
 
 		string rCom;
 		string wCom;
-		int wFd;
-		int rFd;
+		FILE* wFd;
+		FILE* rFd;
 
 	protected:
 		string objName;
@@ -126,7 +126,6 @@ namespace process {
 
 	public:
 		void setProcessInfo(string processUri, string objName);
-		static int createShm(string shmName, bool truncateFile, int shmSize);
 		void checkCom();
 
 	private:
@@ -134,11 +133,11 @@ namespace process {
 
 	public:
 		bool sendMsg(string msg);
-		static bool sendMsg(int fd, string msg);
+		static bool sendMsg(FILE* fd, string msg);
 		virtual void messageReceived(string msg);
-		static string receiveMsg(int fd);
-		static int openW(string wName);
-		static int openR(string rName);
+		static string receiveMsg(FILE* fd);
+		static FILE* openW(string wName);
+		static FILE* openR(string rName);
 
 		void setProcessListener(IProcessListener* listener);
 		void run();

@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 	#include <sys/types.h>
 	#include <unistd.h>
-	#include <fcntl.h>
+	#include <stdio.h>
 	#include <stdlib.h>
 	#include <stdio.h>
 	#include <stdint.h>
@@ -74,7 +74,7 @@ namespace tuning {
 	class FileSystemProvider : public IDataProvider {
 		protected:
 			string fileName;
-			int fileDescriptor;
+			FILE* fileDescriptor;
 			short capabilities;
 			ITProviderListener* listener;
 

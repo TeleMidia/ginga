@@ -76,7 +76,7 @@ namespace contextmanager {
 		virtual void setUserLocation(string passwd, string userLocation)=0;
 		virtual void setUserGenre(string passwd, char userGenre)=0;
 
-		virtual void saveTo(int fd)=0;
+		virtual void saveTo(FILE* fd)=0;
   };
 }
 }

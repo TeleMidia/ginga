@@ -57,7 +57,7 @@ http://www.telemidia.puc-rio.br
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <iostream>
 
@@ -153,7 +153,8 @@ namespace ncl {
 	}
 
 	void NCLSectionProcessor::processDataFile(char* stream, int streamSize) {
-		int structId, fd, bw;
+		int structId, bw;
+		FILE* fd;
 		IDataFile* df;
 		string fileUri;
 		string baseUri;
@@ -173,10 +174,10 @@ namespace ncl {
 		clog << "'" << endl;
 
 		remove((char*)(fileUri.c_str()));
-		fd = open(fileUri.c_str(), O_LARGEFILE | O_WRONLY | O_CREAT, 0644);
-		if (fd > 0) {
-			bw = write(fd, stream + 2, df->getSize());
-			close(fd);
+		fd = fopen(fileUri.c_str(), "w+b");
+		if (fd != NULL) {
+			bw = fwrite(stream + 2, 1, df->getSize(), fd);
+			fclose(fd);
 
 		} else {
 			clog << "NCLSectionProcessor::processDataFile Warning! ";

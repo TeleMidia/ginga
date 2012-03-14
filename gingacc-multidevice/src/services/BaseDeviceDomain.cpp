@@ -56,7 +56,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 namespace br {
 namespace pucrio {
@@ -225,7 +225,8 @@ namespace multidevice {
 			int destDevClass,
 			string url) {
 
-		int fd, fileSize, bytesRead, tSize;
+		FILE* fd;
+		int fileSize, bytesRead, tSize;
 		char* task;
 
 		clog << "BaseDeviceDomain::postMediaContentTask file '";
@@ -242,11 +243,12 @@ namespace multidevice {
 			return false;
 		}
 
-		fd = open(url.c_str(), O_RDONLY);
-		if (fd > 0) {
-			fileSize = lseek(fd, 0, SEEK_END);
+		fd = fopen(url.c_str(), "rb");
+		if (fd != NULL) {
+			fseek(fd, 0L, SEEK_END);
+			fileSize = ftell(fd);
 			if (fileSize > 0) {
-				close(fd);
+				fclose(fd);
 
 				if (fileSize > MAX_FRAME_SIZE) {
 					//TODO: frame segmentation support
@@ -257,7 +259,7 @@ namespace multidevice {
 					return false;
 				}
 
-				fd = open(url.c_str(), O_RDONLY);
+				fd = fopen(url.c_str(), "rb");
 				if (fd < 0) {
 					clog << "BaseDeviceDomain::postMediaContentTask ";
 					clog << "Warning! Can't re-open file '" << url;
@@ -270,7 +272,7 @@ namespace multidevice {
 					task = mountFrame(
 							myIP, destDevClass, FT_MEDIACONTENT, fileSize);
 
-					bytesRead = read(fd, task + HEADER_SIZE, fileSize);
+					bytesRead = fread(task + HEADER_SIZE, 1, fileSize, fd);
 					if (bytesRead == fileSize) {
 						tSize = fileSize + HEADER_SIZE;
 						if (lastMediaContentTask.size != 0) {
@@ -297,7 +299,7 @@ namespace multidevice {
 				clog << "Warning! Can't seek file '" << url << "'" << endl;
 			}
 
-			close(fd);
+			fclose(fd);
 
 		} else {
 			clog << "BaseDeviceDomain::postMediaContentTask ";

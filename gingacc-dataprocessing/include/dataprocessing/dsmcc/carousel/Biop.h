@@ -54,7 +54,6 @@ extern "C" {
 	#include <sys/stat.h>
 	#include <errno.h>
 	#include <stdio.h>
-	#include <fcntl.h>
 }
 
 #include "util/functions.h"
@@ -80,7 +79,7 @@ namespace carousel {
 			Module* module;
 			unsigned int idx;
 			unsigned int currentSize;
-			int moduleFd;
+			FILE* moduleFd;
 			bool isValidHdr;
 			bool hasMoreBiopMessage;
 			char* data;

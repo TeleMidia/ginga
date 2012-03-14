@@ -57,16 +57,17 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	DsmccMessageHeader::DsmccMessageHeader(string fileName, unsigned int pid) {
-		int fd, rval;
+		FILE* fd;
+		int rval;
 		char bytes[12];
 
 		this->pid = pid;
 		memset(bytes, 0, sizeof(bytes));
-		fd = open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
-		if (fd >= 0) {
+		fd = fopen(fileName.c_str(), "rb");
+		if (fd != NULL) {
 			this->fileName = fileName;
 
-			rval = read(fd, (void*)&(bytes[0]), 12);
+			rval = fread((void*)&(bytes[0]), 1, 12, fd);
 			if (rval == 12) {
 				this->protocolDiscriminator = (bytes[0] & 0xFF);
 				this->dsmccType = (bytes[1] & 0xFF);
@@ -94,7 +95,7 @@ namespace carousel {
 			clog << "Message header error: could not open file ";
 			clog << fileName.c_str() << endl;
 		}
-		close(fd);
+		fclose(fd);
 	}
 
 	unsigned int DsmccMessageHeader::getESId() {

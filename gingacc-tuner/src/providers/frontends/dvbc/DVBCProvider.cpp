@@ -65,7 +65,7 @@ namespace tuning {
 	}
 
 	bool FileSystemProvider::tune() {
-		fileDescriptor = ::open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
+		fileDescriptor = ::open(fileName.c_str(), "rb");
 		if (fileDescriptor <= 0) {
 			perror("openFile");
 			return false;

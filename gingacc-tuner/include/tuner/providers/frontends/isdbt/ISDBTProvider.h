@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 	#include <sys/types.h>
 	#include <unistd.h>
-	#include <fcntl.h>
+	#include <stdio.h>
 	#include <stdio.h>
 }
 

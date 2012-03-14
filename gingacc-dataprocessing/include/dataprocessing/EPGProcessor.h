@@ -55,7 +55,7 @@ extern "C" {
 #endif
 	#include <sys/stat.h>
 	#include <stdio.h>
-	#include <fcntl.h>
+	#include <stdio.h>
 #ifdef __cplusplus
 }
 #endif

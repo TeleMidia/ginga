@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 namespace br {
 namespace pucrio {
@@ -93,7 +93,7 @@ namespace mb {
 		IDirectFBVideoProvider* dec;
 
 		deviceUri = mrl;
-		deviceFd  = open(deviceUri, O_RDONLY | O_NONBLOCK);
+		deviceFd  = fopen(deviceUri, "rb");
 
 		start();
 
@@ -108,7 +108,7 @@ namespace mb {
 		int rval;
 
 		while(true) {
-			rval = read(deviceFd, data, dataSize);
+			rval = fread(data, 1, dataSize, deviceFd);
 			if (rval > 0) {
 				//clog << "DFBDataBuffer::run " << rval << endl;
 				dataBuffer->PutData(dataBuffer, data, rval);

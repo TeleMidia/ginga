@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 	#include <sys/stat.h>
 	#include <stdio.h>
-	#include <fcntl.h>
+	#include <stdio.h>
 }
 
 #include "util/functions.h"
@@ -75,7 +75,7 @@ namespace carousel {
 		private:
 			//id of es module origin
 			unsigned int pid;
-			int moduleFd;
+			FILE* moduleFd;
 			unsigned int carouselId;
 			unsigned int id;
 			unsigned int size;

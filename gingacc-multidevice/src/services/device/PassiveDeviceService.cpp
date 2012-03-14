@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include <string.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 #include <iostream>
 using namespace std;
@@ -91,7 +91,8 @@ namespace multidevice {
 			char* stream,
 			int streamSize) {
 
-		int remoteDevClass, fd, bytesWrite;
+		int remoteDevClass, bytesWrite;
+		FILE* fd;
 		IRemoteDevice* dev;
 		string uri;
 		set<IRemoteDeviceListener*>::iterator i;
@@ -119,14 +120,11 @@ namespace multidevice {
 			#else
 				uri = "/tmp/render.jpg";
 				remove((char*)(uri.c_str()));
-				fd = open(
-						uri.c_str(),
-						O_LARGEFILE | O_WRONLY | O_CREAT,
-						0644);
+				fd = fopen(uri.c_str(), "w+b");
 
-				if (fd > 0) {
-					bytesWrite = write(fd, stream, streamSize);
-					close(fd);
+				if (fd != NULL) {
+					bytesWrite = fwrite(stream, 1, streamSize, fd);
+					fclose(fd);
 					if (bytesWrite == streamSize) {
 						pthread_mutex_lock(&lMutex);
 						i = listeners->begin();

@@ -66,7 +66,8 @@ namespace carousel {
 	void DownloadDataBlock::processDataBlock(
 			map<unsigned int, Module*>* mods) {
 
-		int fd, rval, trval;
+		FILE* fd;
+		int rval, trval;
 		unsigned int i, blockNumber;
 		unsigned int messageId, adaptationLength, messageLength;
 		char headerBytes[12];
@@ -75,10 +76,10 @@ namespace carousel {
 
 		trval = 0;
 		rval  = 1;
-		fd    = open(header->getFileName().c_str(), O_RDONLY|O_LARGEFILE);
+		fd    = fopen(header->getFileName().c_str(), "rb");
 
-		while (rval > 0 && fd >= 0) {
-			rval = read(fd, (void*)&(headerBytes[0]), 12);
+		while (rval > 0 && fd != NULL) {
+			rval = fread((void*)&(headerBytes[0]), 1, 12, fd);
 			trval = trval + rval;
 
 			if (rval == 0) {
@@ -98,7 +99,7 @@ namespace carousel {
 
 				bytes = new char[messageLength];
 				memset(bytes, 0, messageLength);
-				rval = read(fd, (void*)&(bytes[0]), messageLength);
+				rval = fread((void*)&(bytes[0]), 1, messageLength, fd);
 				trval = trval + rval;
 				if (rval == (int)messageLength) {
 					moduleId = ((bytes[i] & 0xFF) << 8) |
@@ -153,7 +154,7 @@ namespace carousel {
 				clog << hex << messageId << endl;
 			}
 		}
-		close(fd);
+		fclose(fd);
 
 //		remove(header->getFileName().c_str());
 	}

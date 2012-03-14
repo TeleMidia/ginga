@@ -54,7 +54,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 namespace br {
 namespace pucrio {
@@ -290,7 +290,8 @@ namespace ncl {
 	}
 
 	void Metadata::copyContent(string uri, char* stream, int fileSize) {
-		int fd, bytes;
+		FILE* fd;
+		int bytes;
 		string absUri;
 
 		if (SystemCompat::isAbsolutePath(uri)) {
@@ -300,14 +301,15 @@ namespace ncl {
 			absUri = SystemCompat::updatePath(baseUri + SystemCompat::getIUriD() + uri);
 		}
 
-		fd = open(absUri.c_str(), O_LARGEFILE | O_RDONLY);
-		if (fd > 0) {
-			bytes = read(fd, stream, fileSize);
+		fd = fopen(absUri.c_str(), "rb");
+		if (fd != NULL) {
+			bytes = fread(stream, 1, fileSize, fd);
 			if (bytes != fileSize) {
 				clog << "Metadata::copyContent Warning! Can't read '";
 				clog << fileSize << "' from file '" << absUri << "' (";
 				clog << bytes << " bytes read)" << endl;
 			}
+			fclose(fd);
 
 		} else {
 			clog << "Metadata::copyContent Warning! Can't open file '";
@@ -337,13 +339,14 @@ namespace ncl {
 	}
 
 	int Metadata::getFileSize(string uri) {
-		int fd;
+		FILE* fd;
 		int bytes = 0;
 
-		fd = open(uri.c_str(), O_LARGEFILE | O_RDONLY);
+		fd = fopen(uri.c_str(), "rb");
 		if (fd > 0) {
-			bytes = lseek(fd, 0, SEEK_END);
-			close(fd);
+			fseek(fd, 0L, SEEK_END);
+			bytes = ftell(fd);
+			fclose(fd);
 		}
 
 		return bytes;

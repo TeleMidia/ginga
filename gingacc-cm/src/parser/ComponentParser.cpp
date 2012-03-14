@@ -51,7 +51,7 @@ http://www.telemidia.puc-rio.br
 
 #include <string.h>
 #include <dlfcn.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 typedef struct {
 	::br::pucrio::telemidia::ginga::core::cm::IComponentParser* parser;
@@ -79,29 +79,30 @@ namespace cm {
 
 	void ComponentParser::parse(string xmlDocument) {
 		ComponentAndParser* cp;
-		int fd;
+		FILE* fd;
 		int bytes = 1;
 		int fileSize;
 
 		releaseMaps();
 
-		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
+		fd = fopen(xmlDocument.c_str(), "rb");
 		if (fd < 0) {
 			clog << "ComponentParser::parse: can't open file:" << xmlDocument;
 			clog << endl;
 			return;
 		}
 
-		fileSize = lseek(fd, 0, SEEK_END);
-		if (fileSize < 0) {
+		fseek(fd, 0L, SEEK_END);
+		fileSize = ftell(fd);
+		if (fileSize <= 0) {
 			clog << "ComponentParser::parse: file '" << xmlDocument;
 			clog << "' is empty" << endl;
-			close(fd);
+			fclose(fd);
 			return;
 		}
 
-		close(fd);
-		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
+		fclose(fd);
+		fd = fopen(xmlDocument.c_str(), "rb");
 		if (fd < 0) {
 			clog << "ComponentParser::parse2: can't open file:" << xmlDocument;
 			clog << endl;
@@ -129,7 +130,7 @@ namespace cm {
 				ComponentParser::stopElementHandler);
 
 		do {
-			bytes = read(fd, content, fileSize);
+			bytes = fread(content, 1, fileSize, fd);
 			if (bytes <= 0) {
 				break;
 			}
@@ -141,7 +142,7 @@ namespace cm {
 				cerr << XML_ErrorString(XML_GetErrorCode(parser));
 				cerr << "' at line '" << XML_GetCurrentLineNumber(parser);
 				cerr << "'" << endl;
-				close(fd);
+				fclose(fd);
 				delete cp;
 				XML_ParserFree(parser);
 				return;
@@ -149,7 +150,7 @@ namespace cm {
 
 		} while (cp->isParsing);
 
-		close(fd);
+		fclose(fd);
 		delete cp;
 		XML_ParserFree(parser);
 	}

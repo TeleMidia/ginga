@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 
 #include <string.h>
 #include <dlfcn.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 typedef struct {
 	::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::IMetadata* metadata;
@@ -69,19 +69,20 @@ namespace core {
 namespace dataprocessing {
 namespace ncl {
 	IMetadata* NCLMetadataParser::parse(string xmlDocument) {
-		int fd;
+		FILE* fd;
 		int bytes = 1;
 		int fileSize;
 
-		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
+		fd = fopen(xmlDocument.c_str(), "rb");
 		if (fd < 0) {
 			clog << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
 			clog << endl;
 			return NULL;
 		}
 
-		fileSize = lseek(fd, 0, SEEK_END);
-		close(fd);
+		fseek(fd, 0L, SEEK_END);
+		fileSize = ftell(fd);
+		fclose(fd);
 
 		if (fileSize <= 0) {
 			clog << "NCLMetadataParser::parse: file '" << xmlDocument;
@@ -89,15 +90,15 @@ namespace ncl {
 			return NULL;
 		}
 
-		fd = open(xmlDocument.c_str(), O_RDONLY|O_LARGEFILE);
-		if (fd < 0) {
+		fd = fopen(xmlDocument.c_str(), "rb");
+		if (fd == NULL) {
 			clog << "NCLMetadataParser::parse2: can't open file:" << xmlDocument;
 			clog << endl;
 			return NULL;
 		}
 
 		char* content = new char[fileSize];
-		bytes = read(fd, content, fileSize);
+		bytes = fread(content, 1, fileSize, fd);
 		if (bytes != fileSize) {
 			clog << "NCLMetadataParser::parse3: can't read '" << bytes;
 			clog << "' bytes from '" << xmlDocument << "'";
@@ -105,7 +106,7 @@ namespace ncl {
 			return NULL;
 		}
 
-		close(fd);
+		fclose(fd);
 
 		return parse(content, fileSize);
 	}

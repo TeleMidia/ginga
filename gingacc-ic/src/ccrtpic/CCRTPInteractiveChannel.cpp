@@ -117,7 +117,7 @@ namespace ic {
 		return true;
 	}
 
-	void CCRTPInteractiveChannel::setTarget(int fd) {
+	void CCRTPInteractiveChannel::setTarget(FILE* fd) {
 		this->fd = fd;
 	}
 
@@ -153,11 +153,11 @@ namespace ic {
 		while (hasSession) {
 			buffer = rtpClient->getPacketData(&size);
 			if (listener != NULL && size > 0) {
-				if (fd < 0) {
+				if (fd == NULL) {
 					listener->receiveDataStream(buffer, size);
 
 				} else {
-					write(fd, buffer, size);
+					fwrite(buffer, 1, size, fd);
 					listener->receiveDataPipe(fd, size);
 				}
 
@@ -187,7 +187,7 @@ namespace ic {
 		hasSession = false;
 
 		if (fd > 0) {
-			close(fd);
+			fclose(fd);
 			fd = -1;
 		}
 

@@ -740,17 +740,19 @@ namespace epg {
 
 	void EPGProcessor::decodeCdt(string fileName) {
 		char data[4084];
-		int fd, rval, pngSize, totalSize, times, remainder, pos;
+		FILE* fd;
+		int rval, pngSize, totalSize, times, remainder, pos;
 		int originalNetworkId/*, descriptorsLoopLength*/;
 
 		clog << "Decoding CDT stream..." << endl << endl;
 
-		fd = open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
+		fd = fopen(fileName.c_str(), "rb");
 		pngSize = 0;
 		pos = 0;
 
-		totalSize = (int)lseek(fd, 0, SEEK_END);
-		lseek(fd, 0, SEEK_SET);
+		fseek(fd, 0L, SEEK_END);
+		totalSize = ftell(fd);
+		fseek(fd, 0L, SEEK_SET);
 
 		remainder = totalSize % 4084;
 		times = ((totalSize - remainder) / 4084);
@@ -762,7 +764,7 @@ namespace epg {
 		clog << "CDT reading first blocks. pngSize is '" << pngSize << "'";
 		clog << endl;
 		for (int i = 0; i < times; i++) {
-			rval = read(fd, (void*)&(data[0]), 4084);
+			rval = fread((void*)&(data[0]), 1, 4084, fd);
 			if (rval == 4084) {
 				originalNetworkId = (((data[0] << 8) & 0xFF00) |
 					(data[1] & 0xFF));
@@ -783,7 +785,7 @@ namespace epg {
 		}
 
 		clog << "CDT reading remainder." << endl;
-		rval = read(fd, (void*)&(data[0]), remainder);
+		rval = fread((void*)&(data[0]), 1, remainder, fd);
 		if (rval == remainder) {
 			memcpy(pngData+pos, data+5, remainder);
 
@@ -793,7 +795,7 @@ namespace epg {
 			return;
 		}
 
-		close(fd);
+		fclose(fd);
 
 		this->savePNG(pngData, pngSize);
 		clog << "Stream decoded successfully. PngSize is '" << pngSize;

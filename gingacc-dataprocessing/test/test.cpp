@@ -82,7 +82,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <fcntl.h>
+#include <stdio.h>
 
 int main(int argc, char** argv) {
 	vector<StreamData*>* streams;
@@ -99,7 +99,8 @@ int main(int argc, char** argv) {
 	ITuner* tuner;
 	IDemuxer* demuxer;
 	IDataProcessor* dataProcessor;
-	int fd, rval;
+	FILE* fd;
+	int rval;
 	int buffSize = 188;
 	char buf[buffSize];
 
@@ -190,8 +191,8 @@ int main(int argc, char** argv) {
 		clog << argv[2] << "'";
 		clog << endl;
 
-		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
-		if (fd < 0) {
+		fd = fopen(argv[2], "rb");
+		if (fd == NULL) {
 			clog << "gingacc-dataprocessing test (argc = 3) Error! ";
 			clog << " can't find '" << argv[2] << "'";
 			clog << endl;
@@ -201,7 +202,7 @@ int main(int argc, char** argv) {
 		demuxer->setDestination(STREAM_TYPE_DSMCC_TYPE_B);
 
 		do {
-			rval = read(fd, buf, buffSize);
+			rval = fread(buf, 1, buffSize, fd);
 			if (rval != buffSize) {
 				clog << "gingacc-dataprocessing(" << __LINE__ << ")";
 				clog << " Warning! Can't read '" << buffSize << "'";
@@ -217,14 +218,14 @@ int main(int argc, char** argv) {
 		delete demuxer;
 		delete tuner;
 
-		close(fd);
+		fclose(fd);
 
 	} else if (argc == 3 && strcmp(argv[1], "--ait") == 0) {
 		clog << "gingacc-dataprocessing test (argc = 3) decode-oc inside '";
 		clog << argv[2] << "'";
 		clog << endl;
 
-		fd = open(argv[2], O_RDONLY | O_LARGEFILE);
+		fd = fopen(argv[2], "rb");
 		if (fd < 0) {
 			clog << "gingacc-dataprocessing test (argc = 3) Error! ";
 			clog << " can't find '" << argv[2] << "'";
@@ -235,7 +236,7 @@ int main(int argc, char** argv) {
 				STREAM_TYPE_PRIVATE_SECTION);
 
 		do {
-			rval = read(fd, buf, buffSize);
+			rval = fread(buf, 1, buffSize, fd);
 			if (rval != buffSize) {
 				clog << "gingacc-dataprocessing(" << __LINE__ << ")";
 				clog << " Warning! Can't read '" << buffSize << "'";
@@ -251,7 +252,7 @@ int main(int argc, char** argv) {
 		delete demuxer;
 		delete tuner;
 
-		close(fd);
+		fclose(fd);
 	}
 
 	clog << "gingacc-dataprocessing(" << __LINE__ << ")";

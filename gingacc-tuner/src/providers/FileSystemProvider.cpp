@@ -58,7 +58,7 @@ namespace core {
 namespace tuning {
 	FileSystemProvider::FileSystemProvider(string fileName) {
 		this->fileName       = fileName;
-		this->fileDescriptor = -1;
+		this->fileDescriptor = NULL;
 		this->capabilities   = DPC_CAN_FETCHDATA;
 		this->listener       = NULL;
 	}
@@ -76,8 +76,8 @@ namespace tuning {
 	}
 
 	bool FileSystemProvider::tune() {
-		fileDescriptor = ::open(fileName.c_str(), O_RDONLY|O_LARGEFILE);
-		if (fileDescriptor <= 0) {
+		fileDescriptor = fopen(fileName.c_str(), "rb");
+		if (fileDescriptor == NULL) {
 			perror("openFile");
 			return false;
 		}
@@ -113,21 +113,21 @@ namespace tuning {
 	}
 
 	void FileSystemProvider::close() {
-		::close(fileDescriptor);
+		fclose(fileDescriptor);
 	}
 
 	int FileSystemProvider::receiveData(char* buff) {
 		if (fileDescriptor > 0) {
-			int rval = read(fileDescriptor, (void*)buff, BUFFSIZE);
+			int rval = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
 			if (rval < BUFFSIZE) {
 				printf("File is over, set file to begin again!\n");
-				lseek(fileDescriptor, 0, SEEK_SET);
+				fseek(fileDescriptor, 0L, SEEK_SET);
 				if (listener != NULL) {
 					listener->receiveSignal(PST_LOOP);
 				}
 
 			} else {
-				lseek(fileDescriptor, -1, SEEK_CUR);
+				fseek(fileDescriptor, -1, SEEK_CUR);
 			}
 			return rval;
 		}

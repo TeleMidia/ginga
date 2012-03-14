@@ -62,7 +62,7 @@ namespace core {
 namespace ic {
 	class CCRTPInteractiveChannel : public IInteractiveChannel {
 		private:
-			int fd;
+			FILE* fd;
 			string uri;
 			string userAgent;
 			bool hasSession;
@@ -78,7 +78,7 @@ namespace ic {
 		public:
 			bool hasConnection();
 			void setSourceTarget(string url);
-			void setTarget(int fd);
+			void setTarget(FILE* fd);
 			void setTarget(char* buffer);
 			short getType();
 			float getRate();

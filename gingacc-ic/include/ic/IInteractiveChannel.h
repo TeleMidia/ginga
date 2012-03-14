@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _IInteractiveChannel_H_
 #define _IInteractiveChannel_H_
 
+#include <stdio.h>
+
 #include "IInteractiveChannelListener.h"
 
 #include <string>
@@ -66,7 +68,7 @@ namespace ic {
 		virtual ~IInteractiveChannel(){};
 		virtual bool hasConnection()=0;
 		virtual void setSourceTarget(string url)=0;
-		virtual void setTarget(int fd)=0;
+		virtual void setTarget(FILE* fd)=0;
 		virtual void setTarget(char* buffer)=0;
 		virtual short getType()=0;
 		virtual float getRate()=0;

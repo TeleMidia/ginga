@@ -117,7 +117,7 @@ namespace carousel {
 		vector<Binding*>* bindings;
 		vector<Binding*>::iterator i;
 		string objectId, path, strToken;
-		int fd;
+		FILE* fd;
 		char* data;
 		char token[6];
 		unsigned int j, size;
@@ -190,7 +190,7 @@ namespace carousel {
 				path = (objectPaths->find(object->getObjectId()))->second +
 					    (objectNames->find(object->getObjectId()))->second;
 
-				fd = open(path.c_str(), O_CREAT|O_WRONLY|O_LARGEFILE, 0644);
+				fd = fopen(path.c_str(), "w+b");
 				size = object->getDataSize();
 				if (fd > 0) {
 					//TODO: correct BUG in content provider
@@ -209,8 +209,8 @@ namespace carousel {
 						}
 					}
 
-					write(fd, (void*)(object->getData()), size);
-					close(fd);
+					fwrite((void*)(object->getData()), 1, size, fd);
+					fclose(fd);
 
 					clog << "ObjectProcessor::mountObject create fil '";
 					clog << path << "'" << endl;

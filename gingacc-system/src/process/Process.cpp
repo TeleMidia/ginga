@@ -71,8 +71,8 @@ namespace process {
 		this->processStatus = PST_NULL;
 		this->sigListener   = NULL;
 		this->reader        = false;
-		this->wFd           = -1;
-		this->rFd           = -1;
+		this->wFd           = NULL;
+		this->rFd           = NULL;
 		this->hasCom        = false;
 
 		posix_spawnattr_init(&spawnAttr);
@@ -108,8 +108,8 @@ namespace process {
 		isSpawnedReady = false;
 		processStatus  = PST_NULL;
 
-		close(wFd);
-		close(rFd);
+		fclose(wFd);
+		fclose(rFd);
 
 		unlink(wCom.c_str());
 		unlink(rCom.c_str());
@@ -141,23 +141,6 @@ namespace process {
 		pthread_detach(threadId_);
 	}
 
-	int Process::createShm(string shmName, bool truncateFile, int shmSize) {
-		int fd = shm_open(shmName.c_str(), O_CREAT | O_RDWR, S_IRWXU);
-		if (fd == -1) {
-			clog << "Process::createShm can't open shm file" << endl;
-			return fd;
-		}
-
-		if (truncateFile && ftruncate(fd, shmSize) == -1) {
-			clog << "Process::createShm can't truncate shm file" << endl;
-			close(fd);
-			shm_unlink(shmName.c_str());
-			return -1;
-		}
-
-		return fd;
-	}
-
 	void Process::checkCom() {
 		if (wFd > 0 && rFd > 0 && isSpawnedReady) {
 			return;
@@ -180,18 +163,18 @@ namespace process {
 		return sendMsg(wFd, msg);
 	}
 
-	bool Process::sendMsg(int fd, string msg) {
+	bool Process::sendMsg(FILE* fd, string msg) {
 		int rval = -1;
 
-		if (fd >= 0) {
+		if (fd != NULL) {
 
 			try {
-				rval = write(fd, msg.c_str(), msg.length());
+				rval = fwrite(msg.c_str(), 1, msg.length(), fd);
 
 		    } catch (const char *except) {
 		    	clog << "Process::sendMsg catch: " << except << endl;
 		    	::usleep(100000);
-		    	rval = write(fd, msg.c_str(), msg.length());
+		    	rval = fwrite(msg.c_str(), 1, msg.length(), fd);
 		    }
 
 			if (rval == msg.length()) {
@@ -205,18 +188,18 @@ namespace process {
 		clog << "Process::messageReceived '" << msg << "'" << endl;
 	}
 
-	string Process::receiveMsg(int fd) {
+	string Process::receiveMsg(FILE* fd) {
 		int rval = -1;
 		char buff[512];
 		string msg = "";
 
 		try {
-			rval = read(fd, buff, sizeof(buff));
+			rval = fread(buff, 1, sizeof(buff), fd);
 
 	    } catch (const char *except) {
 	    	clog << "Process::receiveMsg catch: " << except << endl;
 	    	::usleep(100000);
-	    	rval = read(fd, buff, sizeof(buff));
+	    	rval = fread(buff, 1, sizeof(buff), fd);
 	    }
 
 		if (rval > 0) {
@@ -226,8 +209,8 @@ namespace process {
 		return msg;
 	}
 
-	int Process::openW(string wName) {
-		int fd = open(wName.c_str(), O_WRONLY);
+	FILE* Process::openW(string wName) {
+		FILE* fd = fopen(wName.c_str(), "wb");
 		if (fd < 0) {
 			clog << "Process::openW Warning! ";
 			clog << "can't open '" << wName << "'";
@@ -237,9 +220,9 @@ namespace process {
 		return fd;
 	}
 
-	int Process::openR(string rName) {
-		int fd = open(rName.c_str(), O_RDONLY);
-		if (fd < 0) {
+	FILE* Process::openR(string rName) {
+		FILE* fd = fopen(rName.c_str(), "rb");
+		if (fd == NULL) {
 			clog << "Process::openR Warning! ";
 			clog << "can't open '" << rName << "'";
 			clog << endl;

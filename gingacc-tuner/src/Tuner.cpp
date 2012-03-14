@@ -216,8 +216,8 @@ namespace tuning {
 		int rval;
 		char* buff;
 
-		/*int debugStream = open(
-				"debugStream.ts", O_CREAT | O_LARGEFILE | O_WRONLY, 0644);*/
+		/*int debugStream = fopen(
+				"debugStream.ts", "w+b");*/
 
 		buff = new char[BUFFSIZE];
 		receiving = true;

@@ -66,10 +66,9 @@ namespace carousel {
 		objects = new map<string, Object*>;
 		this->processor = processor;
 
-		moduleFd = open(module->getModuleFileName().c_str(),
-				    O_RDWR|O_LARGEFILE);
+		moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
 
-		if (moduleFd < 0) {
+		if (moduleFd <= 0) {
 			abortProcess("Cannot open file " + module->getModuleFileName());
 
 		} else {
@@ -80,9 +79,9 @@ namespace carousel {
 	Biop::~Biop() {
 //				clog << "Biop destructor" << endl;
 
-		if (moduleFd >= 0) {
+		if (moduleFd > 0) {
 //					clog << "closing file" << endl;
-			close(moduleFd);
+			fclose(moduleFd);
 		}
 
 		if (data != NULL && sizeof(data) > 0) {
@@ -102,12 +101,12 @@ namespace carousel {
 
 	void Biop::abortProcess(string warningText) {
 		clog << "Warning! " << warningText.c_str() << endl;
-		close(moduleFd);
+		fclose(moduleFd);
 		if (data != NULL && sizeof(data) > 0) {
 			free(data);
 			data = NULL;
 		}
-		moduleFd = -1;
+		moduleFd = NULL;
 	}
 
 	bool Biop::processMessageHeader() {
@@ -121,7 +120,7 @@ namespace carousel {
 		// BIOP::MessageHeader
 
 		// Check magic Field == BIOP
-		rval = read(moduleFd, (void*)&(data[0]), 12);
+		rval = fread((void*)&(data[0]), 1, 12, moduleFd);
 		if (rval != 12) {
 			abortProcess(
 					"Biop::processMessageHeader "
@@ -203,7 +202,7 @@ namespace carousel {
 		data = (char*)malloc(messageSize + 12);
 		memset(data, 0, sizeof(data));
 
-		rval = read(moduleFd, (void*)&(data[0]), messageSize);
+		rval = fread((void*)&(data[0]), 1, messageSize, moduleFd);
 
 		if ((unsigned int)rval != messageSize) {
 			abortProcess("Cant read message on file, " +
@@ -718,7 +717,7 @@ namespace carousel {
 				data = NULL;
 			}
 
-			close(moduleFd);
+			fclose(moduleFd);
 		}
 	}
 

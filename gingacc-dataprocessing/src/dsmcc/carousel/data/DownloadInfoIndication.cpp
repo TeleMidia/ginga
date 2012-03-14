@@ -59,7 +59,8 @@ namespace carousel {
 	DownloadInfoIndication::DownloadInfoIndication(
 			DsmccMessageHeader* message) {
 
-		int fd, rval;
+		FILE* fd;
+		int rval;
 		unsigned int i, moduleId, moduleSize, moduleVersion, moduleInfoLength;
 		Module* module;
 
@@ -71,10 +72,10 @@ namespace carousel {
 
 		char bytes[(header->getMessageLength() + i)];
 
-		fd = open(header->getFileName().c_str(), O_RDONLY|O_LARGEFILE);
-		if (fd >= 0) {
-			rval = read(
-					fd, (void*)&(bytes[0]), header->getMessageLength() + i);
+		fd = fopen(header->getFileName().c_str(), "rb");
+		if (fd != NULL) {
+			rval = fread(
+					(void*)&(bytes[0]), 1, header->getMessageLength() + i, fd);
 
 			this->downloadId = ((bytes[i] & 0xFF) << 24) |
 				    ((bytes[i + 1] & 0xFF) << 16) |
@@ -123,7 +124,7 @@ namespace carousel {
 				i = i + moduleInfoLength;
 				module = NULL;
 			}
-			close(fd);
+			fclose(fd);
 
 //			remove(header->getFileName().c_str());
 

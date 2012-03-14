@@ -72,9 +72,7 @@ namespace carousel {
 	}
 
 	void Module::openFile() {
-		moduleFd = open(
-				getModuleFileName().c_str(),
-				O_CREAT|O_WRONLY|O_LARGEFILE|O_APPEND|O_SYNC, 0777);
+		moduleFd = fopen(getModuleFileName().c_str(), "a+");
 	}
 
 	void Module::setCarouselId(unsigned int id) {
@@ -144,8 +142,8 @@ namespace carousel {
 			}
 
 			blocks.insert(blockNumber);
-			if (moduleFd != -1) {
-				bytesSaved = write(moduleFd, data, dataSize);
+			if (moduleFd != NULL) {
+				bytesSaved = fwrite(data, 1, dataSize, moduleFd);
 				if (bytesSaved != dataSize) {
 					clog << "Module::pushDownloadData Warning!";
 					clog << " size of data is '" << dataSize;
@@ -161,7 +159,7 @@ namespace carousel {
 		}
 
 		if (isConsolidated()) {
-			close(moduleFd);
+			fclose(moduleFd);
 		}
 	}
 
