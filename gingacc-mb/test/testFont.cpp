@@ -155,7 +155,7 @@ void* blinkWindowSet(void* ptr) {
 			}
 			++i;
 		}
-		::usleep(100000);
+		SystemCompat::uSleep(100000);
 		showing = !showing;
 	}
 

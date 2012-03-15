@@ -220,7 +220,7 @@ namespace tuning {
 	}
 
 	bool ISDBTFrontend::isTuned() {
-		::usleep(200000);
+		SystemCompat::uSleep(200000);
 		if (ioctl(feFd, FE_READ_STATUS, &feStatus) == -1) {
 			clog << "ISDBTFrontend::isTuned FE_READ_STATUS failed" << endl;
 			return false;

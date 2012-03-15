@@ -62,9 +62,10 @@ http://www.telemidia.puc-rio.br
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <unistd.h>
 #include <net/if.h>
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #ifdef __DARWIN_UNIX03
 #include <ifaddrs.h>

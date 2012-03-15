@@ -16,6 +16,10 @@ libgingacccmparser_la_LIBADD  = \
                                 -lexpat \
                                 -ldl
 
+libgingacccmparser_la_LDFLAGS = \
+                                -no-undefined \
+                                -version-info 13:1:8
+
 libgingacccmparser_la_SOURCES = \
                                 ComponentParser.cpp
 

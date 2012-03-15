@@ -134,7 +134,7 @@ namespace carousel {
 					}
 
 				} else {
-					/*_debug(
+					/*clog <<
 							"DownloadDataBlock::processDataBlock Warning! "
 							"Reading file (%s), with fd (%d), "
 							"the last call to read bytes (%d) is not equal "
@@ -143,7 +143,7 @@ namespace carousel {
 							fd,
 							rval,
 							messageLength,
-							trval);*/
+							trval;*/
 				}
 
 				delete bytes;

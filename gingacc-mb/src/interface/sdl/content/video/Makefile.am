@@ -35,6 +35,10 @@ libgingaccmbdecsdlav_la_LIBADD   = \
                                   -L$(top_srcdir)/src \
                                   -L$(top_srcdir)/src/interface/sdl \
                                   -L$(top_srcdir)/src/interface/sdl/content/audio
+
+libgingaccmbdecsdlav_la_LDFLAGS = \
+                                  -no-undefined \
+                                  -version-info 13:1:8
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES            = \

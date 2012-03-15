@@ -26,6 +26,10 @@ libgingaccplaimg_la_LIBADD  = \
                               -L$(prefix)/lib/ginga \
                               -L../
 
+libgingaccplaimg_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 #########
 # ANIME #
 #########
@@ -42,6 +46,10 @@ libgingaccplaani_la_LIBADD  = \
                               -L$(prefix)/lib \
                               -L$(prefix)/lib/ginga \
                               -L../
+
+libgingaccplaani_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
 
 MAINTAINERCLEANFILES        = \
                               Makefile.in

@@ -173,7 +173,7 @@ namespace process {
 
 		    } catch (const char *except) {
 		    	clog << "Process::sendMsg catch: " << except << endl;
-		    	::usleep(100000);
+		    	SystemCompat::uSleep(100000);
 		    	rval = fwrite(msg.c_str(), 1, msg.length(), fd);
 		    }
 
@@ -198,7 +198,7 @@ namespace process {
 
 	    } catch (const char *except) {
 	    	clog << "Process::receiveMsg catch: " << except << endl;
-	    	::usleep(100000);
+	    	SystemCompat::uSleep(100000);
 	    	rval = fread(buff, 1, sizeof(buff), fd);
 	    }
 
@@ -241,7 +241,7 @@ namespace process {
 		int rspawn;
 
 		while (!hasCom) {
-			::usleep(10000);
+			SystemCompat::uSleep(10000);
 		}
 
 		if (processStatus == PST_NULL) {

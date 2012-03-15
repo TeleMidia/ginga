@@ -17,6 +17,10 @@ libgingaccmbdecdfbav_la_LIBADD = $(DFB_LIBS) -ltelemidiautil \
     -L$(prefix)/lib -L$(prefix)/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
 
+libgingaccmbdecdfbav_la_LDFLAGS = \
+                                  -no-undefined \
+                                  -version-info 13:1:8
+
 if XINEPROVIDER
 lib_LTLIBRARIES += libgingaccmbdecdfbxineav.la
 
@@ -26,6 +30,10 @@ libgingaccmbdecdfbxineav_la_LIBADD = $(DFB_LIBS) -ltelemidiautil \
     -lgingaccmbdfb -lgingaccmb -lgingaccsystem -lxine \
     -L$(prefix)/lib -L$(prefix)/lib/ginga \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
+
+libgingaccmbdecdfbxineav_la_LDFLAGS = \
+                                      -no-undefined \
+                                      -version-info 13:1:8
 
 endif #XINEPROVIDER
 
@@ -40,6 +48,10 @@ libgingaccmbdecdfbffmpegav_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdfbdecfs \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L../audio/ \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
+
+libgingaccmbdecdfbffmpegav_la_LDFLAGS = \
+                                        -no-undefined \
+                                        -version-info 13:1:8
 
 endif #FFMPEGPROVIDER
 endif #DFBSYSTEM

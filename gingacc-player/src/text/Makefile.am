@@ -25,5 +25,9 @@ libgingaccplatxt_la_LIBADD  = \
                               -L$(prefix)/lib/ginga \
                               -L../
 
+libgingaccplatxt_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 MAINTAINERCLEANFILES        = \
                               Makefile.in

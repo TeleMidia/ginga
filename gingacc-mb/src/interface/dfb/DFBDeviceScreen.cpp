@@ -217,7 +217,7 @@ namespace mb {
 		int errCount = 0;
 
 		while (numOfDFBScreens > 1) {
-			::usleep(100000);
+			SystemCompat::uSleep(100000);
 			errCount++;
 			if (errCount > 5 || numOfDFBScreens <= 1) {
 				break;

@@ -208,7 +208,7 @@ namespace player {
 				p->stopped();
 
 			} else {
-				::usleep(300000);
+				SystemCompat::uSleep(300000);
 			}
 		}
 

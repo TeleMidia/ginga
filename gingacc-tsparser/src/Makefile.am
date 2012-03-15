@@ -35,4 +35,8 @@ libgingacctsparser_la_LIBADD = -ltelemidiautil -lpthread -lgingaccsystem \
     -lgingacctuner \
     -L$(prefix)/lib -L$(prefix)/lib/ginga
 
+libgingacctsparser_la_LDFLAGS = \
+                                -no-undefined \
+                                -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in

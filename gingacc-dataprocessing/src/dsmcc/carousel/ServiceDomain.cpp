@@ -75,7 +75,7 @@ namespace carousel {
 
 		remove(mountPoint.c_str());
 
-		mkdir(mountPoint.c_str(), 0777);
+		SystemCompat::makeDir(mountPoint.c_str(), 0777);
 
 		processor = new ObjectProcessor();
 		sdl       = NULL;
@@ -147,7 +147,7 @@ namespace carousel {
 
 					clog << "ServiceDomain::run waiting srg module" << endl;
 					while (!module->isConsolidated()) {
-						::usleep(1000);
+						SystemCompat::uSleep(1000);
 					}
 					clog << "ServiceDomain::run srg module is consolidated, ";
 					clog << "creating biop";
@@ -192,7 +192,7 @@ namespace carousel {
 //						module = NULL;
 
 					} else {
-						::usleep(1000);
+						SystemCompat::uSleep(1000);
 						++i;
 
 						if (i == info->end())
@@ -201,7 +201,7 @@ namespace carousel {
 				}
 
 			} else {
-				::usleep(1000);
+				SystemCompat::uSleep(1000);
 			}
 		}
 

@@ -49,19 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 
-extern "C" {
-	#include <sys/param.h>
-	#include <unistd.h>
-
-#ifdef linux
-	#include <sys/resource.h>
-	#include <signal.h>
-	#include <sys/utsname.h>
-	#include <sys/sysinfo.h>
-#endif
-
-}
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -188,7 +175,7 @@ namespace compat {
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
-#ifdef linux
+#ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
 		fprintf(stderr,"throw: %s\n",strsignal(x));
 		throw strsignal(x);  //throw the exeption
@@ -349,26 +336,77 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeSigpipeHandler() {
-#ifdef linux
+#ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);
 #endif //linux
 	}
 
 	string SystemCompat::getOperatingSystem() {
-#ifdef linux
+#ifndef WIN32
 		return "Linux";
-#elif WIN32
+#else
 		return "Windows";
 #endif
 	}
 
+	float SystemCompat::getClockSpeed() {
+		float clockSpeed = 1000.0;
+
+#ifndef WIN32
+		ifstream fis;
+		string line = "";
+
+		fis.open("/proc/cpuinfo", ifstream::in);
+
+		if (!fis.is_open()) {
+			clog << "SystemInfo::initializeClockSpeed Warning: can't open ";
+			clog << "file '/proc/cpuinfo'" << endl;
+			return clockSpeed;
+		}
+
+		while (fis.good()) {
+			fis >> line;
+			if (line == "cpu") {
+				fis >> line;
+				if (line == "MHz") {
+					fis >> line;
+					if (line == ":") {
+						fis >> line;
+						clockSpeed = util::stof(line);
+						break;
+					}
+				}
+			}
+		}
+#endif
+		return clockSpeed;
+	}
+
 	float SystemCompat::getMemorySize() {
-#ifdef linux
+#ifndef WIN32
 		struct sysinfo info;
 		sysinfo(&info);
 		return info.totalram;
 #else
-		return 0.0;
+		MEMORYSTATUS ms;
+		GlobalMemoryStatus(&ms);
+		return (float)ms.dwAvailPhys;
+#endif
+	}
+
+	void SystemCompat::makeDir(const char* dirName, unsigned int mode) {
+#ifdef WIN32
+			_mkdir(dirName);
+#else
+			mkdir(dirName, mode);
+#endif
+	}
+
+	void SystemCompat::uSleep(unsigned int sleepTime) {
+#ifndef WIN32
+		::usleep(sleepTime);
+#elif WIN32
+		Sleep(sleepTime/1000);
 #endif
 	}
 }

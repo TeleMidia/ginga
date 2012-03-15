@@ -415,7 +415,7 @@ namespace dataprocessing {
 			handler->section->addData(data, freespace);
 
 		} else {
-			_debug("Trying to add 0 bytes in the section\n");
+			clog << "Trying to add 0 bytes in the section" << endl;
 		}
 
 		/*if (pack->getPid() == 0x384) {
@@ -538,20 +538,22 @@ namespace dataprocessing {
 
 		/* Verifies if the TransportSection has been created! */
 		if (!(handler->section->isConstructionFailed())) {
-			_error("SectionFilter::receiveTSPacket failed to create Section!\n");
+			clog << "SectionFilter::receiveTSPacket failed to create Section!";
+			clog << endl;
+
 			ignore(pack->getPid());
 			return false;
 		}
 
 		handler->section->setESId(pack->getPid());
 
-		_debug(
+		/*clog <<
 				"SectionFilter::setSectionParameters "
 				"Section %s created with secNUm=%d, lasSec=%d and secLen=%d\n",
 				handler->section->getSectionName().c_str(),
 				handler->section->getSectionNumber(),
 				handler->section->getLastSectionNumber(),
-				handler->section->getSectionLength());
+				handler->section->getSectionLength();*/
 
 		if (handler->section->isConsolidated()) {
 			process(handler->section, pack->getPid());

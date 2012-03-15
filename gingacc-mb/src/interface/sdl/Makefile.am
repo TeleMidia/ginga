@@ -31,6 +31,10 @@ libgingaccmbsdl_la_LIBADD  = \
                              -L$(prefix)/lib \
                              -L$(prefix)/lib/ginga \
                              -L$(top_srcdir)/src
+
+libgingaccmbsdl_la_LDFLAGS = \
+                             -no-undefined \
+                             -version-info 13:1:8
 endif #SDLSYSTEM
 
 MAINTAINERCLEANFILES       = \

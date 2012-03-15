@@ -25,6 +25,11 @@ libgingaccmbdecdfbf_la_LIBADD  = \
                                  -L$(prefix)/lib/ginga \
                                  -L$(top_srcdir)/src \
                                  -L$(top_srcdir)/src/interface/dfb
+
+libgingaccmbdecdfbf_la_LDFLAGS = \
+                                 -no-undefined \
+                                 -version-info 13:1:8
+
 endif #DFBSYSTEM
 
 MAINTAINERCLEANFILES           = \

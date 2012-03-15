@@ -18,4 +18,8 @@ libgingacctuner_la_SOURCES = $(TUNERCPPS)
 
 libgingacctuner_la_LIBADD = -lpthread -lgingaccsystem -ltelemidiautil
 
+libgingacctuner_la_LDFLAGS = \
+                             -no-undefined \
+                             -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in

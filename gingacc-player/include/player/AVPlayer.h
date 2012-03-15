@@ -52,13 +52,15 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/IMBDefs.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 	#include <pthread.h>
 	#include <string.h>
 	#include <stdio.h>
-	#include <unistd.h>
 #ifdef __cplusplus
 }
 #endif

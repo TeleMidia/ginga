@@ -103,28 +103,7 @@ namespace contextmanager {
 		ifstream fis;
 		string line = "";
 
-		clockSpeed = 0;
-		fis.open("/proc/cpuinfo", ifstream::in);
-
-		if (!fis.is_open()) {
-			clog << "SystemInfo::initializeClockSpeed Warning: can't open ";
-			clog << "file '/proc/cpuinfo'" << endl;
-			return;
-		}
-
-		while (fis.good()) {
-			fis >> line;
-			if (line == "cpu") {
-				fis >> line;
-				if (line == "MHz") {
-					fis >> line;
-					if (line == ":") {
-						fis >> line;
-						clockSpeed = util::stof(line);
-					}
-				}
-			}
-		}
+		clockSpeed = SystemCompat::getClockSpeed();
 	}
 
 	string SystemInfo::getValue(string attribute) {

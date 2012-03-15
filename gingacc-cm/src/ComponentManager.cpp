@@ -47,13 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include <dlfcn.h>
 #include "cm/ComponentManager.h"
 #include "cm/parser/IComponentParser.h"
-
-extern "C" {
-#include <unistd.h>
-}
 
 namespace br {
 namespace pucrio {

@@ -297,7 +297,7 @@ namespace mb {
 				break;
 			}
 
-			::usleep(150000);
+			SystemCompat::uSleep(150000);
 		}
 	}
 
@@ -524,7 +524,7 @@ namespace mb {
 				break;
 			}
 
-			::usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 
 		return (double)pos / 1000.0;

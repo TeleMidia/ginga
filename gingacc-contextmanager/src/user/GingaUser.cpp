@@ -49,7 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "contextmanager/user/GingaUser.h"
 
-
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 

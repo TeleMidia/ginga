@@ -138,7 +138,7 @@ namespace ic {
 
 			clog << "CurlInteractiveChannel::setSourceTarget creating '";
 			clog << localPath << "' local path" << endl;
-			mkdir(localPath.c_str(), 0755);
+			SystemCompat::makeDir(localPath.c_str(), 0755);
 		}
 		fd = fopen(localUri.c_str(), "w+b");
 	}

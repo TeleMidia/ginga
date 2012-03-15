@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "system/fs/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
 #include "mb/interface/IInputEventListener.h"

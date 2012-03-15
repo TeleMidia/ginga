@@ -47,9 +47,12 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "config.h"
+
 #include "um/Update.h"
 
-#include "config.h"
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
@@ -120,7 +123,7 @@ namespace um {
 		localFileName = location + component->getName();
 
 		clog << "Update::start" << endl;
-		mkdir(location.c_str(), 0666);
+		SystemCompat::makeDir(location.c_str(), 0666);
 		fd = fopen(localFileName.c_str(), "w+b");
 
 		if (fd != NULL) {

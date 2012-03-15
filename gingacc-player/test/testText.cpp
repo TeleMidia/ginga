@@ -201,7 +201,7 @@ void* testPlayer(void* ptr) {
 	string auxFile = "";
 
 	while (running) {
-		::usleep(2000000);
+		SystemCompat::uSleep(2000000);
 
 		aux  = txt1;
 		txt1 = txt2;
@@ -271,7 +271,7 @@ void* blinkWindowSet(void* ptr) {
 			}
 			++i;
 		}
-		::usleep(100000);
+		SystemCompat::uSleep(100000);
 		showing = !showing;
 	}
 

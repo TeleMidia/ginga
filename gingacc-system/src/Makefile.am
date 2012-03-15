@@ -30,5 +30,9 @@ libgingaccsystem_la_LIBADD   = \
                                $(MULTIPROCESS_LIBS) \
                                $(COMPONENTS_LIBS)
 
+libgingaccsystem_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 MAINTAINERCLEANFILES         = \
                                Makefile.in

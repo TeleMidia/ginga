@@ -424,7 +424,7 @@ namespace player {
 //				clog << "show = '" << show << "' mediaTime = '" << mediaTime;
 //				clog << "' sleepTime = '" << sleepTime << "'" << endl;
 				if (sleepTime > 0) {
-					Thread::usleep(sleepTime / 1000);
+					Thread::uSleep(sleepTime / 1000);
 				}
 
 				if (!isPlayingSrt()) {
@@ -486,7 +486,7 @@ namespace player {
 				mediaTime = (float)(player->getMediaTime());
 				sleepTime = (int)(((hide - mediaTime) * 1000000) - 100000);
 				if (sleepTime > 0) {
-					Thread::usleep(sleepTime / 1000);
+					Thread::uSleep(sleepTime / 1000);
 				}
 
 				lock();

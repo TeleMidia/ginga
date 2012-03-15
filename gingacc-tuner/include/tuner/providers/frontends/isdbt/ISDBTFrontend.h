@@ -50,8 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef ISDBTFRONTEND_H_
 #define ISDBTFRONTEND_H_
 
-#include <unistd.h>
-#include <fcntl.h>
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>

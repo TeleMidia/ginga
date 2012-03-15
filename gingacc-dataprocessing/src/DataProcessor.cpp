@@ -93,8 +93,8 @@ namespace dataprocessing {
 
 		pthread_mutex_init(&mutex, NULL);
 
-		mkdir("carousel", 0777);
-		mkdir("carousel/modules", 0777);
+		SystemCompat::makeDir("carousel", 0777);
+		SystemCompat::makeDir("carousel/modules", 0777);
 
 		epgProcessor = EPGProcessor::getInstance();
 		epgProcessor->setDataProcessor(this);

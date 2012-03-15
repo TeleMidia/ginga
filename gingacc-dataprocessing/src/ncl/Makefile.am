@@ -13,6 +13,10 @@ libgingaccdataprocncl_la_LIBADD  = \
                                    -lgingaccsystem \
                                    -L$(prefix)/lib/ginga
 
+libgingaccdataprocncl_la_LDFLAGS = \
+                                   -no-undefined \
+                                   -version-info 13:1:8
+
 lib_LTLIBRARIES                  = \
                                    libgingaccdataprocncl.la
 

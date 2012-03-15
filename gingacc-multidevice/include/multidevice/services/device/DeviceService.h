@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _DeviceService_H_
 #define _DeviceService_H_
 
+#include <pthread.h>
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 

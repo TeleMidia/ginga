@@ -27,6 +27,8 @@ testAudio_LDADD      = \
                        -lgingaccmb
 
 testAudio_LDFLAGS    = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
@@ -45,6 +47,8 @@ testFont_LDADD      = \
                        -lgingaccmb
 
 testFont_LDFLAGS    = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
@@ -63,6 +67,8 @@ testInput_LDADD      = \
                        -lgingaccmb
 
 testInput_LDFLAGS    = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
@@ -81,6 +87,8 @@ testScreen_LDADD     = \
                        -lgingaccmb
 
 testScreen_LDFLAGS   = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
@@ -99,6 +107,8 @@ testVideo_LDADD      = \
                        -lgingaccmb
 
 testVideo_LDFLAGS    = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \

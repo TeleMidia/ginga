@@ -621,7 +621,7 @@ bool NPTProcessor::processNptValues(NPTReference* npt, bool* isNotify) {
 	}
 
 	if (sleepTime > 0.0) {
-		timedOut = Thread::usleep((long int)sleepTime);
+		timedOut = Thread::uSleep((long int)sleepTime);
 		if (!timedOut) {
 			return false;
 		}
@@ -633,7 +633,7 @@ bool NPTProcessor::processNptValues(NPTReference* npt, bool* isNotify) {
 			sleepTime = nextNptValue - clk->getBaseToSecond();
 			if (sleepTime > 0.0) {
 				 //TODO: find error ct
-				Thread::usleep((long int)((sleepTime + 0.1) * 1000));
+				Thread::uSleep((long int)((sleepTime + 0.1) * 1000));
 			}
 		}
 		notifyTimeListeners(cid, nextNptValue);

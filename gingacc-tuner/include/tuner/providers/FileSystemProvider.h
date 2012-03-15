@@ -52,12 +52,13 @@ http://www.telemidia.puc-rio.br
 
 extern "C" {
 	#include <sys/types.h>
-	#include <unistd.h>
 	#include <stdio.h>
 	#include <stdlib.h>
-	#include <stdio.h>
 	#include <stdint.h>
 }
+
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IDataProvider.h"
 

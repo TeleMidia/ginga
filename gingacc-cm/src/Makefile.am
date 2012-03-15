@@ -16,6 +16,10 @@ libgingacccm_la_LIBADD  = \
                           -lgingaccsystem \
                           -L$(prefix)/lib/ginga
 
+libgingacccm_la_LDFLAGS = \
+                          -no-undefined \
+                          -version-info 13:1:8
+
 libgingacccm_la_SOURCES = \
                           ComponentManager.cpp
 

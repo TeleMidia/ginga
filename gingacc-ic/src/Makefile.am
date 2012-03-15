@@ -22,5 +22,9 @@ libgingaccic_la_LIBADD  = \
                           -L$(top_srcdir)/src/curlic \
                           -L$(top_srcdir)/src/ccrtpic
 
+libgingaccic_la_LDFLAGS = \
+                          -no-undefined \
+                          -version-info 13:1:8
+
 MAINTAINERCLEANFILES    = \
                           Makefile.in

@@ -48,9 +48,6 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "cm/assembler/ComponentDescription.h"
-
-#include <unistd.h>
-
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 namespace br {

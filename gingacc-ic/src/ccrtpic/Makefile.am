@@ -13,5 +13,10 @@ lib_LTLIBRARIES = libgingaccicccrtp.la
 libgingaccicccrtp_la_SOURCES = CCRTPInteractiveChannel.cpp CCRTPClient.cpp
 
 libgingaccicccrtp_la_LIBADD = -lccrtp1 $(COMPONENTS_LIBS)
+
+libgingaccicccrtp_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 endif
 MAINTAINERCLEANFILES = Makefile.in

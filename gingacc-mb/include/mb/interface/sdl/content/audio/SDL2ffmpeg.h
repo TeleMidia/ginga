@@ -55,6 +55,9 @@ Many thanks to ffmpeg developers and to the community that support them!
 #ifndef SDL2FFMPEG_H
 #define SDL2FFMPEG_H
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
 
@@ -82,7 +85,6 @@ extern "C" {
 #include <limits.h>
 #include <math.h>
 #include <pthread.h>
-#include <unistd.h>
 }
 
 #ifndef INT64_MIN
