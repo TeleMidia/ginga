@@ -58,9 +58,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "ITSFilter.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <map>
 #include <string>

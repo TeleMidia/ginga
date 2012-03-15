@@ -25,6 +25,10 @@ libgingaccmbterm_la_LIBADD  = \
                               -lgingaccsystem -lgingaccmb \
                               -L$(prefix)/lib -L$(prefix)/lib/ginga \
                               -L$(top_srcdir)/src
+
+libgingaccmbterm_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
 endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES        = \

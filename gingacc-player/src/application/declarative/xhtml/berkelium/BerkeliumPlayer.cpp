@@ -379,7 +379,7 @@ namespace player {
 				notifyPlayerListeners(
 						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
 
-				this->usleep(65);
+				this->uSleep(65);
 			}
 		}*/
 

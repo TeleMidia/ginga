@@ -58,8 +58,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 extern "C" {
 #include <pthread.h>
-#include <unistd.h>
 }
+
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 using namespace Awesomium;
 
@@ -726,7 +728,7 @@ namespace player {
 	}
 
 	void AwesomiumHandler::update(AwesomiumInfo* aInfo, double value) {
-		::usleep(value * 1000);
+		SystemCompat::uSleep(value * 1000);
 		webCore->update();
 	}
 

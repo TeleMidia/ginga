@@ -674,7 +674,7 @@ namespace mb {
 						uri + ".ppm " + uri + ".jpg" + " 2> /dev/null");
 
 				if (::system(strCmd.c_str()) < 0) {
-					::usleep(10000);
+					SystemCompat::uSleep(10000);
 					remove((char*)((uri + ".jpg").c_str()));
 					if (::system(strCmd.c_str()) < 0) {
 						clog << "SDLWindow::getDumpFileUri Warning!!! ";

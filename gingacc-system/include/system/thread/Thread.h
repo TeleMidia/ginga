@@ -50,8 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef __THREAD_H__
 #define __THREAD_H__
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <errno.h>
-#include <sys/time.h>
 #include <pthread.h>
 
 namespace br {
@@ -92,7 +94,7 @@ namespace thread {
 		virtual ~Thread();
 		virtual void start();
 		bool sleep(long int seconds);
-		bool usleep(long int milliseconds);
+		bool uSleep(long int milliseconds);
 		void wakeUp();
 		void lock();
 		void unlock();

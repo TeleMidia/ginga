@@ -241,7 +241,7 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 
 		while (numSDL > 1) {
-			::usleep(100000);
+			SystemCompat::uSleep(100000);
 			errCount++;
 
 			pthread_mutex_lock(&sMutex);
@@ -294,7 +294,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (wRes == 0) {
-			::usleep(1000000 / SDLDS_FPS);
+			SystemCompat::uSleep(1000000 / SDLDS_FPS);
 		}
 
 		return wRes;
@@ -314,7 +314,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (hRes == 0) {
-			::usleep(1000000 / SDLDS_FPS);
+			SystemCompat::uSleep(1000000 / SDLDS_FPS);
 		}
 		return hRes;
 	}
@@ -931,10 +931,10 @@ namespace mb {
 
 			if (elapsedTime < sleepTime) {
 				if (decRate == 0) {
-					::usleep(sleepTime - elapsedTime);
+					SystemCompat::uSleep(sleepTime - elapsedTime);
 
 				} else {
-					::usleep((sleepTime - elapsedTime) / (10 * decRate));
+					SystemCompat::uSleep((sleepTime - elapsedTime) / (10 * decRate));
 				}
 			}
 		}
@@ -1228,7 +1228,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (im == NULL) {
-			::usleep(1000000 / SDLDS_FPS);
+			SystemCompat::uSleep(1000000 / SDLDS_FPS);
 		}
 		return im;
 	}

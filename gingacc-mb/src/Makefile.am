@@ -36,3 +36,7 @@ libgingaccmb_la_LIBADD   = \
                           -L$(prefix)/lib \
                           -L$(prefix)/lib/ginga \
                           -L./
+
+libgingaccmb_la_LDFLAGS = \
+                          -no-undefined \
+                          -version-info 13:1:8

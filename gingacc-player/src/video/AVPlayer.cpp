@@ -1026,7 +1026,7 @@ namespace player {
 					//clog << "initialTimeStamp = " << initialTimeStamp << endl;
 				}
 			}
-			::usleep(2000000);
+			SystemCompat::uSleep(2000000);
 
 			FMPStop();
 			FMPClose();
@@ -1508,7 +1508,7 @@ namespace player {
 
 	void AVPlayer::setAVPid(int aPid, int vPid) {
 		while (!buffered) {
-			::usleep(150000);
+			SystemCompat::uSleep(150000);
 		}
 		provider->setAVPid(aPid, vPid);
 	}
@@ -1531,7 +1531,7 @@ namespace player {
 		if (mainAV) {
 			provider->feedBuffers();
 		} else {
-			::usleep(150000);
+			SystemCompat::uSleep(150000);
 		}
 		hasEvent = provider->checkVideoResizeEvent(surface);
 		setSoundLevel(this->soundLevel);
@@ -1609,7 +1609,7 @@ namespace player {
 				return;
 			}
 
-			::usleep(850000);
+			SystemCompat::uSleep(850000);
 			currentTime = getCurrentMediaTime();
 			if (currentTime >= 0) {
 				while (dur > (currentTime + 0.1)) {
@@ -1635,11 +1635,11 @@ namespace player {
 									"");
 						}
 
-						if (!this->usleep(65)) { // 15 fps
+						if (!this->uSleep(65)) { // 15 fps
 							break;
 						}
 
-					} else if (!this->usleep(timeRemain)) {
+					} else if (!this->uSleep(timeRemain)) {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
 						break;

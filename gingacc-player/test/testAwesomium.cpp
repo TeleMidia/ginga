@@ -52,6 +52,9 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -129,7 +132,7 @@ void testAwesomium(
 		awe1->setKeyHandler(true); //necessary if we want to test input events
 
 		if (testStop) {
-			::usleep(2000000);
+			SystemCompat::uSleep(2000000);
 			awe1->stop();
 			delete awe1;
 			w->hide();
@@ -171,7 +174,7 @@ void* blinkWindowSet(void* ptr) {
 			}
 			++i;
 		}
-		::usleep(100000);
+		SystemCompat::uSleep(100000);
 		showing = !showing;
 	}
 

@@ -50,9 +50,11 @@ http://www.telemidia.puc-rio.br
 #ifndef STC_H_
 #define STC_H_
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <stdint.h>
 #include <iostream>
-#include <sys/resource.h>
 using namespace std;
 
 namespace br {

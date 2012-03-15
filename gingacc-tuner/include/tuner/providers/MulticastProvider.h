@@ -50,8 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef MULTICASTPROVIDER_H_
 #define MULTICASTPROVIDER_H_
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -63,10 +65,8 @@ http://www.telemidia.puc-rio.br
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <net/if.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
 
 #include <iostream>
 #include <fstream>

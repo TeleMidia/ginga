@@ -21,6 +21,11 @@ libgingacciccurlic_la_LIBADD  = \
                                 -lgingaccsystem \
                                 -lpthread \
                                 $(COMPONENTS_LIBS)
+
+libgingacciccurlic_la_LDFLAGS = \
+                                -no-undefined \
+                                -version-info 13:1:8
+
 endif
 
 MAINTAINERCLEANFILES          = \

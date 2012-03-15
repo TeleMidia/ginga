@@ -5,6 +5,7 @@ AM_INIT_AUTOMAKE
 
 AC_LANG_CPLUSPLUS
 AC_PROG_CXX([g++])
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
 # Bring additional directories where things might be found into our

@@ -290,7 +290,7 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 				data->input.buffering = false;
 			}
 			pthread_mutex_unlock(&data->input.lock);
-			::usleep(20000);
+			SystemCompat::uSleep(20000);
 			continue;
 
 		} else if (data->video.queue.size == 0 ||
@@ -470,7 +470,7 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 				!get_packet(&data->video.queue, &pkt )) {
 
 			pthread_mutex_unlock(&data->video.lock);
-			::usleep(100);
+			SystemCompat::uSleep(100);
 			continue;
 		}
 
@@ -542,7 +542,7 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 				pthread_cond_timedwait(
 						&data->video.cond, &data->video.lock, &time);
 */
-				::usleep(1000);
+				SystemCompat::uSleep(1000);
 				drop = false;
 
 			} else {
@@ -675,7 +675,7 @@ namespace mb {
 		startPos   = 0;
 
 		while (!initializeFFmpeg(mrl)) {
-			::usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 	}
 
@@ -1153,7 +1153,7 @@ namespace mb {
 				break;
 			}
 
-			::usleep(150000);
+			SystemCompat::uSleep(150000);
 		}
 	}
 

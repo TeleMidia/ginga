@@ -170,9 +170,8 @@ namespace tsparser {
 
 		// Verifies Invalid Section .. Discard TransportSection
 		if (sectionLength > 4093) {
-			_warn(
-					"TransportSection::new: Invalid section size=%d\n",
-					sectionLength);
+			clog << "TransportSection::new: Invalid section size=";
+			clog << sectionLength << endl;
 			return false;
 		}
 

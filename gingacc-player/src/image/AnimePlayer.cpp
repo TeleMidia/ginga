@@ -169,7 +169,7 @@ namespace player {
 					}
 					delete surface;
 					surface = NULL;
-					::usleep(dur);
+					SystemCompat::uSleep(dur);
 					++i;
 					if (!running) {
 						unlockConditionSatisfied();

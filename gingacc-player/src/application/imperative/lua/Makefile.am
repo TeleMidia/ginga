@@ -18,4 +18,8 @@ libgingaccplalua_la_LIBADD = -llua -lcore -lpthread -ltelemidiautil \
 	 -L../../../ -L../../../image/ -L$(prefix)/lib/lua/5.1 \
 	 -L$(prefix)/lib/lua/5.1/socket
 
+libgingaccplalua_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in

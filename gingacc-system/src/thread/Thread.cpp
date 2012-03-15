@@ -125,10 +125,10 @@ namespace thread {
 	}
 
 	bool Thread::sleep(long int seconds) {
-		return this->usleep(seconds * 1000);
+		return this->uSleep(seconds * 1000);
 	}
 
-	bool Thread::usleep(long int milliseconds) {
+	bool Thread::uSleep(long int milliseconds) {
 		int res;
 		struct timeval time;
 		struct timespec timeOut;
@@ -162,9 +162,7 @@ namespace thread {
 
 	void Thread::wakeUp() {
 		while (isSleeping) {
-			//pthread_mutex_lock(&threadFlagMutex);
 			pthread_cond_signal(&threadFlagConditionVariable);
-			//pthread_mutex_unlock(&threadFlagMutex);
 		}
 	}
 

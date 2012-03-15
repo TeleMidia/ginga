@@ -50,9 +50,11 @@ http://www.telemidia.puc-rio.br
 #ifndef _header_dsmcc_crc_
 #define _header_dsmcc_crc_
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 namespace br {
 namespace pucrio {

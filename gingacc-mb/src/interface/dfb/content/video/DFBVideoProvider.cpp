@@ -163,7 +163,7 @@ namespace mb {
 
 		if (rContainer != NULL && rContainer->dec != NULL) {
 			do {
-				::usleep(150000);
+				SystemCompat::uSleep(150000);
 				rContainer->dec->GetStatus(rContainer->dec, &status);
 			} while (status == DVSTATE_BUFFERING);
 		}

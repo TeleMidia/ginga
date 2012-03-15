@@ -87,7 +87,7 @@ namespace tsparser {
 		Thread::start();
 
 		while (!fifoCreated) {
-			::usleep(10000);
+			SystemCompat::uSleep(10000);
 		}
 	}
 
@@ -154,7 +154,7 @@ namespace tsparser {
 
 		    } catch (const char *except) {
 		    	clog << "PipeFilter::receiveTSPacket catch: " << except << endl;
-		    	::usleep(100000);
+		    	SystemCompat::uSleep(100000);
 		    }
 		}
 	}

@@ -381,7 +381,7 @@ namespace tsparser {
 				} else {
 					//TODO: make possible to have pmt carried in two or more
 					// ts packets
-					/*_warn("Warning! Demuxer::demux - make possible to have "
+					/*clog << "Warning! Demuxer::demux - make possible to have "
 					      "PMT carried in two or more ts packets.\n");*/
 					delete newPmt;
 				}
@@ -729,8 +729,8 @@ namespace tsparser {
 
 				packet = new TSPacket(buff + i);
 				if (packet->isConstructionFailed()) {
-					_warn("Demuxer::receiveData - construction of TSPacket "
-						  "failed!\n");
+					clog << "Demuxer::receiveData - construction of TSPacket ";
+					clog << "failed!" << endl;
 
 					delete packet;
 					packet = NULL;
@@ -848,7 +848,7 @@ namespace tsparser {
 	}
 
 	bool Demuxer::waitBuffers() {
-		::usleep(3000000);
+		SystemCompat::uSleep(3000000);
 		return true;
 	}
 }

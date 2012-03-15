@@ -50,6 +50,40 @@ http://www.telemidia.puc-rio.br
 #ifndef SystemCompat_H_
 #define SystemCompat_H_
 
+extern "C" {
+#ifdef WIN32
+	#include <sys/timeb.h>
+	#include <sys/types.h>
+	#include <time.h>
+	#include <direct.h>
+	#include <io.h>
+	#include <windows.h>
+	#include <winsock2.h>
+#ifdef WINSTRUCTS
+	#include <Ws2tcpip.h>
+#endif
+	#pragma comment(lib,"ws2_32.lib")
+#else
+	#include <dlfcn.h>
+	#include <fcntl.h>
+	#include <sys/param.h>
+	#include <unistd.h>
+	#include <sys/resource.h>
+	#include <signal.h>
+	#include <sys/utsname.h>
+	#include <sys/sysinfo.h>
+
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <sys/ioctl.h>
+	#include <sys/time.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+	#include <netdb.h>
+	#include <net/if.h>
+#endif
+}
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -119,7 +153,15 @@ namespace compat {
 			 * Embedded Info *
 			 *****************/
 			static string getOperatingSystem();
+			static float getClockSpeed();
 			static float getMemorySize();
+
+
+			/**********************
+			 * Specific Functions *
+			 **********************/
+			static void makeDir(const char* dirName, unsigned int mode);
+			static void uSleep(unsigned int sleepTime);
 	};
 }
 }

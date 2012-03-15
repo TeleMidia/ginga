@@ -30,4 +30,8 @@ libgingaccdataprocessing_la_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
 libgingaccdataprocessing_la_LIBADD = -ltelemidiautil -lgingaccsystem \
     $(COMPONENTS_LIBS) -L$(prefix)/lib/ -L$(prefix)/lib/ginga/
 
+libgingaccdataprocessing_la_LDFLAGS = \
+                                      -no-undefined \
+                                      -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in

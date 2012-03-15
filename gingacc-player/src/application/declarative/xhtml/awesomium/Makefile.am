@@ -33,6 +33,10 @@ libgingaccplaawe_la_LIBADD  = \
                               -L$(prefix)/lib/ginga \
                               -L/usr/lib/awesomium-1.6.3 \
                               -L../../../../
+
+libgingaccplaawe_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
 endif
 
 MAINTAINERCLEANFILES        = \

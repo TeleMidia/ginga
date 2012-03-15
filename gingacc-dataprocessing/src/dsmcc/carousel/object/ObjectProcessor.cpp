@@ -159,7 +159,7 @@ namespace carousel {
 
 				/*clog << "ObjectProcessor::mountObject create dir '" << path;
 				clog << endl;*/
-				mkdir(path.c_str(), 0777);
+				SystemCompat::makeDir(path.c_str(), 0777);
 			}
 
 			bindings = object->getBindings();

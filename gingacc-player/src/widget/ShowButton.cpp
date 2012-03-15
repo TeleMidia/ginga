@@ -160,7 +160,7 @@ namespace player {
 				}
 
 				render(SystemCompat::appendGingaFilesPrefix("img/button/stopButton.png"));
-				::usleep(1000000);
+				SystemCompat::uSleep(1000000);
 				release();
 				break;
 
@@ -171,7 +171,7 @@ namespace player {
 				}
 
 				render(SystemCompat::appendGingaFilesPrefix("img/button/playButton.png"));
-				::usleep(1000000);
+				SystemCompat::uSleep(1000000);
 				release();
 				break;
 

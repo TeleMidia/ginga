@@ -51,6 +51,9 @@ http://www.telemidia.puc-rio.br
 
 #include "multidevice/services/RemoteEventService.h"
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
@@ -185,7 +188,11 @@ namespace multidevice {
 
 		clog << "RemoteEventService::dir app="<<dir_app<<endl;
 
-		zip_directory(zip_dump,(char*)dir_app.c_str());
+		zip_directory(
+				zip_dump,
+				(char*)dir_app.c_str(),
+				SystemCompat::getIUriD());
+
 		string zip_base64 = getBase64FromFile(zip_dump);
 
 		remove(zip_dump);

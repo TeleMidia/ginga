@@ -193,7 +193,7 @@ namespace player {
 			if (notifyContentUpdate) {
 				Thread::start();
 			}
-			//::usleep(3000000);
+			//SystemCompat::uSleep(3000000);
 		}
 
 		Player::play();
@@ -294,7 +294,7 @@ namespace player {
 		clog << "LinksPlayer::run '" << mrl << "'" << endl;
 		/*IWindow* parent;
 
-		::usleep(1000000);
+		SystemCompat::uSleep(1000000);
 		if (surface != NULL) {
 			parent = (IWindow*)(surface->getParent());
 			if (parent != NULL) {
@@ -308,7 +308,7 @@ namespace player {
 				notifyPlayerListeners(
 						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
 
-				this->usleep(65);
+				this->uSleep(65);
 			}
 		}
 	}

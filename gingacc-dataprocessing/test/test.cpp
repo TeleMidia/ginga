@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 		while (true) {
 			clog << "stc in seconds: '" << clk->getBaseToSecond() << "'";
 			clog << endl;
-			::usleep(1000000);
+			SystemCompat::uSleep(1000000);
 		}
 
 	} else if (argc == 3 && strcmp(argv[1], "--decode-oc") == 0) {

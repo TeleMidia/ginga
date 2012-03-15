@@ -17,6 +17,8 @@ test_LDADD           = \
                        -ldl
 
 test_LDFLAGS         = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L$(prefix)/lib/ginga \
                        -L../src/ \
                        -L$(prefix)/lib

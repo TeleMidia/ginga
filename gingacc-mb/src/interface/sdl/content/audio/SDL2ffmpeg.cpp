@@ -2467,7 +2467,7 @@ namespace mb {
 				(av_gettime() - audio_callback_time));
 
 		if (sleepTime > 0) {
-			::usleep(sleepTime);
+			SystemCompat::uSleep(sleepTime);
 		}
 	}
 

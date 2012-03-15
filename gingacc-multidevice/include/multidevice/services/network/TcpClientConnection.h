@@ -50,11 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef TCPCLIENTCONNECTION_H_
 #define TCPCLIENTCONNECTION_H_
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <iostream>
 #include <sstream>
 #include <string.h>

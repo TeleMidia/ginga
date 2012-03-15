@@ -214,7 +214,7 @@ int main(int argc, char** argv, char** envp) {
 			cout << endl;
 		}
 
-		::usleep(1000000);
+		SystemCompat::uSleep(1000000);
 		++i;
 	}
 

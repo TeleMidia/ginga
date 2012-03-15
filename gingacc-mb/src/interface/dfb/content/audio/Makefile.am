@@ -20,7 +20,11 @@ libgingaccmbdecdfbfs_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdfb -lgingaccmb \
     -L$(prefix)/lib -L$(prefix)/lib/ginga \
 	-L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-    
+
+libgingaccmbdecdfbfs_la_LDFLAGS = \
+                                  -no-undefined \
+                                  -version-info 13:1:8
+
 endif #FUSIONSOUND
 
 if FFMPEGPROVIDER
@@ -34,7 +38,11 @@ libgingaccmbdecdfbffmpega_la_LIBADD = $(DFB_LIBS) $(FUSIONSOUND_LIBS) \
     -lgingaccmbdecdfbfs \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L./ \
     -L$(top_srcdir)/src -L$(top_srcdir)/src/interface/dfb
-    
+
+libgingaccmbdecdfbffmpega_la_LDFLAGS = \
+                                       -no-undefined \
+                                       -version-info 13:1:8
+
 endif #FFMPEGPROVIDER
 
 endif #DFBSYSTEM

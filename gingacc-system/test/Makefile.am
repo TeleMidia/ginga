@@ -16,6 +16,8 @@ test_LDADD           = \
                        -lgingaccsystem
 
 test_LDFLAGS         = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \

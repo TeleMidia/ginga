@@ -15,6 +15,11 @@ libgingaccmbdectermap_la_SOURCES = TermAudioProvider.cpp
 libgingaccmbdectermap_la_LIBADD = -lgingaccmbterm -lgingaccmb \
     -L$(prefix)/lib -L$(prefix)/lib/ginga \
 	-L$(top_srcdir)/src -L$(top_srcdir)/src/interface/term
+
+libgingaccmbdectermap_la_LDFLAGS = \
+                                   -no-undefined \
+                                   -version-info 13:1:8
+
 endif #TERMSYSTEM
 
 MAINTAINERCLEANFILES = Makefile.in

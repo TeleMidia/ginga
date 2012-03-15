@@ -60,6 +60,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
 #endif
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "ic/IInteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
@@ -128,7 +131,7 @@ int main(int argc, char** argv) {
 
 	clog << "gingacc-ic main test: begin" << endl;
 	setLogToNullDev();
-	mkdir(localPath.c_str(), 0666);
+	SystemCompat::makeDir(localPath.c_str(), 0666);
 
 #if HAVE_COMPSUPPORT
 	cm = IComponentManager::getCMInstance();

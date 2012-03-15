@@ -15,5 +15,9 @@ libgingaccplalks_la_SOURCES = LinksPlayer.cpp
 libgingaccplalks_la_LIBADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
     -lgingaccsystem -lpthread $(COMPONENTS_LIBS) \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L../../../../
+
+libgingaccplalks_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
 endif
 MAINTAINERCLEANFILES = Makefile.in

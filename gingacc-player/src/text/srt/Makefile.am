@@ -15,4 +15,8 @@ libgingaccplasrt_la_LIBADD = -ltelemidiautil -lgingaccsystem \
     -lgingaccplayer -lgingaccplatxt $(COMPONENTS_LIBS) \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L../../ -L../
 
+libgingaccplasrt_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in

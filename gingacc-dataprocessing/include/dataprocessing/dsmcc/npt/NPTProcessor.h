@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "system/thread/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "system/time/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
@@ -65,7 +68,6 @@ using namespace br::pucrio::telemidia::ginga::core::tuning;
 #include "TimeBaseClock.h"
 #include "INPTListener.h"
 
-#include <unistd.h>
 #include <set>
 #include <map>
 #include <iostream>

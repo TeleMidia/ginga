@@ -15,4 +15,8 @@ libgingaccplawdg_la_LIBADD = -lgingaccsystem -lgingaccplayer \
     -lgingaccplaimg $(COMPONENTS_LIBS) \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L../ -L../image
 
+libgingaccplawdg_la_LDFLAGS = \
+                              -no-undefined \
+                              -version-info 13:1:8
+
 MAINTAINERCLEANFILES = Makefile.in
