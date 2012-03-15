@@ -174,6 +174,45 @@ namespace compat {
 		}
 	}
 
+	void* SystemCompat::loadComponent(string libName, string symName) {
+		void* comSym = NULL;
+
+#ifndef WIN32
+		if (libName.find(".so") == std::string::npos) {
+			libName.append(".so");
+		}
+#else
+		if (libName.find(".dll") == std::string::npos) {
+			libName.append(".dll");
+		}
+#endif
+
+#ifndef WIN32
+		void* comp = dlopen(libName.c_str(), RTLD_LAZY);
+		if (comp == NULL) {
+			clog << "SystemCompat::loadComponent Warning: can't load ";
+			clog << "component '" << libName << "' => ";
+			clog << dlerror() << endl;
+			return (NULL);
+		}
+
+		dlerror();
+
+		comSym = dlsym(comp, symName.c_str());
+
+		const char* dlsym_error = dlerror();
+		if (dlsym_error != NULL) {
+			clog << "ComponentManager warning: can't load symbol '";
+			clog << symName << "' from library '" << libName;
+			clog << "' => " << dlsym_error << endl;
+			return (NULL);
+		}
+
+		dlerror();
+#endif
+		return comSym;
+	}
+
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
 #ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler

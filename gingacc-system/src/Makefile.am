@@ -28,7 +28,8 @@ libgingaccsystem_la_LIBADD   = \
                                -lpthread \
                                -ltelemidiautil \
                                $(MULTIPROCESS_LIBS) \
-                               $(COMPONENTS_LIBS)
+                               $(COMPONENTS_LIBS) \
+                               $(DL_LIBS)
 
 libgingaccsystem_la_LDFLAGS = \
                               -no-undefined \

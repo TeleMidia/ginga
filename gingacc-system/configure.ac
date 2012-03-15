@@ -53,6 +53,15 @@ Please install TeleMidia Util Library.
 
 ]))
 
+#######################
+# Dynamic Library Lib #
+#######################
+
+DL_LIBS='-L./'
+
+AC_HAVE_LIBRARY(dl, DL_LIBS='-ldl', AC_MSG_WARN([Couldn't find libdl.]))
+AC_SUBST(DL_LIBS)
+
 ###########################
 # Multple Process Support #
 ###########################

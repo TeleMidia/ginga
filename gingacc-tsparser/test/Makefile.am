@@ -13,8 +13,7 @@ test_LDADD           = \
                        -lgingaccsystem \
                        -ltelemidiautil \
                        -lgingacctuner \
-                       -lgingacctsparser \
-                       -ldl
+                       -lgingacctsparser
 
 test_LDFLAGS         = \
                        -no-undefined \
