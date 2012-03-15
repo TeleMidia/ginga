@@ -52,7 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "component/IComponent.h"
 
-#include <dlfcn.h>
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -88,29 +90,15 @@ namespace cm {
 
 		public:
 			static IComponentManager* getCMInstance() {
-				void* cmComponent = dlopen("libgingacccm.so", RTLD_LAZY);
-				if (cmComponent == NULL) {
-					cerr << "IComponentManager warning: cant load ";
-					cerr << "component libgingaccm' => ";
-					cerr << dlerror() << endl;
-					return (NULL);
+				IComponentManager* icm = NULL;
+
+				CMCreator* cmCreator = (CMCreator*)SystemCompat::loadComponent(
+						"libgingacccm", "createCM");
+
+				if (cmCreator != NULL) {
+					icm = (IComponentManager*)(cmCreator());
 				}
 
-				dlerror();
-
-				CMCreator* cmCreator = (CMCreator*)(dlsym(
-						cmComponent, "createCM"));
-
-				const char* dlsym_error = dlerror();
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: can't load symbol '";
-					cerr << "createCM' => " << dlsym_error << endl;
-					return (NULL);
-				}
-
-				IComponentManager* icm = (IComponentManager*)(cmCreator());
-
-				dlerror();
 				return (icm);
 			}
 	};

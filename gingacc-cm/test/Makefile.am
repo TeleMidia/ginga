@@ -13,7 +13,7 @@ test_SOURCES         = \
                        test.cpp
 
 test_LDADD           = \
-                       -ldl
+                       -lgingaccsystem
 
 test_LDFLAGS         = \
                        -no-undefined \
@@ -21,6 +21,7 @@ test_LDFLAGS         = \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
                        -L../src \
                        -L../src/component \
                        -L../src/parser

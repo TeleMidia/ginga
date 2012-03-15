@@ -12,7 +12,8 @@ test_SOURCES         = \
 
 test_LDADD           = \
                        $(TEST_COMPONENTS_LIBS)\
-                       -ltelemidiautil
+                       -ltelemidiautil \
+                       -lgingaccsystem
 
 test_LDFLAGS         = \
                        -no-undefined \

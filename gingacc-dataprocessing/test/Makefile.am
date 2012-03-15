@@ -18,8 +18,7 @@ test_LDADD           = \
                        -lgingacctsparser \
                        -lgingaccdataprocessing \
                        -lgingaccdataprocncl \
-                       -lexpat \
-                       -ldl
+                       -lexpat
 
 test_LDFLAGS         = \
                        -no-undefined \

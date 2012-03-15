@@ -13,8 +13,7 @@ lib_LTLIBRARIES               = \
                                 libgingacccmparser.la
 
 libgingacccmparser_la_LIBADD  = \
-                                -lexpat \
-                                -ldl
+                                -lexpat
 
 libgingacccmparser_la_LDFLAGS = \
                                 -no-undefined \

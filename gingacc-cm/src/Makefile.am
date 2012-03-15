@@ -12,7 +12,6 @@ lib_LTLIBRARIES         = \
                           libgingacccm.la
                           
 libgingacccm_la_LIBADD  = \
-                          -ldl \
                           -lgingaccsystem \
                           -L$(prefix)/lib/ginga
 

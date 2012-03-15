@@ -34,7 +34,6 @@ testAnime_CFLAGS      = \
                         $(top_srcdir)/include
 
 testAnime_LDADD       = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -57,7 +56,6 @@ testAudio_CFLAGS      = \
                         $(top_srcdir)/include
 
 testAudio_LDADD       = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -76,7 +74,6 @@ testAwesomium_CFLAGS  = \
                         $(top_srcdir)/include
                         
 testAwesomium_LDADD   = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -100,7 +97,6 @@ testImage_CFLAGS      = \
                         $(top_srcdir)/include
                         
 testImage_LDADD       = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -119,7 +115,6 @@ testLinks_CFLAGS      = \
                         $(top_srcdir)/include
 
 testLinks_LDADD       = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -138,7 +133,6 @@ testText_CFLAGS       = \
                         $(top_srcdir)/include
 
 testText_LDADD        = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \
@@ -157,7 +151,6 @@ testVideo_CFLAGS      = \
                         $(top_srcdir)/include
 
 testVideo_LDADD       = \
-                        -ldl \
                         -lpthread \
                         -ltelemidiautil \
                         -lgingaccplayer \

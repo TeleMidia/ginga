@@ -16,7 +16,10 @@ test_SOURCES         = \
 test_LDADD           = \
                        $(TEST_COMPONENTS_LIBS) \
                        -ltelemidiautil \
-                       -L../src
+                       -lgingaccsystem \
+                       -L../src \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga
 
 MAINTAINERCLEANFILES = \
                        Makefile.in

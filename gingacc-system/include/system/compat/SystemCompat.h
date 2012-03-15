@@ -143,6 +143,11 @@ namespace compat {
 			static string appendGingaInstallPrefix(string relUrl);
 
 
+			/******************************
+			 * Handling Dynamic libraries *
+			 ******************************/
+			static void* loadComponent(string libName, string symName);
+
 			/****************
 			 * SIG Handlers *
 			 ****************/

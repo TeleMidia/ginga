@@ -20,11 +20,11 @@ testAudio_SOURCES    = \
                        testAudio.cpp
 
 testAudio_LDADD      = \
-                       -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
-                       -lgingaccmb
+                       -lgingaccmb \
+                       $(TEST_LIBS)
 
 testAudio_LDFLAGS    = \
                        -no-undefined \
@@ -40,11 +40,11 @@ testFont_SOURCES    = \
                        testFont.cpp
 
 testFont_LDADD      = \
-                       -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
-                       -lgingaccmb
+                       -lgingaccmb \
+                       $(TEST_LIBS)
 
 testFont_LDFLAGS    = \
                        -no-undefined \
@@ -60,11 +60,11 @@ testInput_SOURCES    = \
                        testInput.cpp
 
 testInput_LDADD      = \
-                       -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
-                       -lgingaccmb
+                       -lgingaccmb \
+                       $(TEST_LIBS)
 
 testInput_LDFLAGS    = \
                        -no-undefined \
@@ -80,11 +80,11 @@ testScreen_SOURCES   = \
                        testScreen.cpp
 
 testScreen_LDADD     = \
-                       -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
-                       -lgingaccmb
+                       -lgingaccmb \
+                       $(TEST_LIBS)
 
 testScreen_LDFLAGS   = \
                        -no-undefined \
@@ -100,11 +100,11 @@ testVideo_SOURCES    = \
                        testVideo.cpp
 
 testVideo_LDADD      = \
-                       -ldl \
                        -lpthread \
                        -ltelemidiautil \
                        -lgingaccsystem \
-                       -lgingaccmb
+                       -lgingaccmb \
+                       $(TEST_LIBS)
 
 testVideo_LDFLAGS    = \
                        -no-undefined \
