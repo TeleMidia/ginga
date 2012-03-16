@@ -62,6 +62,7 @@ http://www.telemidia.puc-rio.br
 
 extern "C" {
 #include "SDL_endian.h"
+#include "SDL_syswm.h"
 #include <string.h>
 #include <stdlib.h>
 }
@@ -846,7 +847,10 @@ namespace mb {
 		sleepTime = (int)(1000000/SDLDS_FPS);
 
 		SDL_Init((Uint32)(
-				SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE));
+				SDL_INIT_AUDIO |
+				SDL_INIT_VIDEO |
+				SDL_INIT_TIMER |
+				SDL_INIT_NOPARACHUTE));
 
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
@@ -878,7 +882,6 @@ namespace mb {
 						eventBuffer = (SDLEventBuffer*)(
 								i->first->im->getEventBuffer());
 
-						cout << "Event" << endl;
 						if ((SDLEventBuffer::checkEvent(i->first->sdlId, event)
 								|| checkEventFocus(i->first))) {
 
@@ -969,7 +972,48 @@ namespace mb {
 			if (s->screen != NULL) {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
-				SDL_SetWindowGrab(s->screen, SDL_TRUE);
+
+
+				SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
+				SDL_EventState(SDL_WINDOWEVENT, SDL_ENABLE);
+				SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
+				SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
+				SDL_EventState(SDL_MOUSEBUTTONUP, SDL_ENABLE);
+
+#if defined(SDL_VIDEO_DRIVER_X11)
+			    SDL_SysWMinfo info;
+			    XSetWindowAttributes attributes;
+
+			    SDL_VERSION(&info.version);
+			    SDL_GetWindowWMInfo(s->screen, &info);
+
+			    if (info.info.x11.display != NULL &&
+			    		info.info.x11.window != NULL) {
+
+				    attributes.event_mask = (
+				    		KeyPressMask       |
+				    		KeyReleaseMask     |
+				    		PointerMotionMask  |
+				    		ButtonPressMask    |
+				    		ButtonReleaseMask  |
+				    		FocusChangeMask    |
+				    		PropertyChangeMask |
+				    		EnterWindowMask    |
+				    		LeaveWindowMask);
+
+				    XChangeWindowAttributes(
+				    		info.info.x11.display,
+				    		info.info.x11.window,
+				    		CWEventMask,
+				    		&attributes);
+			    }
+
+#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
+			    //TODO: Windows input event configuration
+
+#elif defined(SDL_VIDEO_DRIVER_COCOA)
+			    //TODO: Cocoa input event configuration
+#endif
 			}
 
 		} else {
@@ -1455,14 +1499,8 @@ namespace mb {
 			y = s->im->getCurrentYAxisValue();
 
 			SDL_GetWindowPosition(s->screen, &winX, &winY);
-
-			cout << "SDLDeviceScreen::checkEventFocus ";
-			cout << "mouseXY = '" << x << "," << y << "' and windowXYWH = '";
-			cout << winX << "," << winY << "," << s->wRes << "," << s->hRes;
-			cout << "'";
-			cout << endl;
-			if (x >= winX && x <= s->wRes &&
-					y >= winY && y <= s->hRes) {
+			if (x >= winX && x <= winX + s->wRes &&
+					y >= winY && y <= winY + s->hRes) {
 
 				hasFocus = true;
 			}
