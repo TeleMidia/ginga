@@ -882,7 +882,8 @@ namespace mb {
 						eventBuffer = (SDLEventBuffer*)(
 								i->first->im->getEventBuffer());
 
-						if ((SDLEventBuffer::checkEvent(i->first->sdlId, event)
+						if (((SDLEventBuffer::checkEvent(i->first->sdlId, event)
+								&& i->first->uParentId == NULL)
 								|| checkEventFocus(i->first))) {
 
 							eventBuffer->feed(event, capsOn, shiftOn);
@@ -1490,20 +1491,14 @@ namespace mb {
 	}
 
 	bool SDLDeviceScreen::checkEventFocus(SDLDeviceScreen* s) {
-		int x, y;
-		int winX, winY;
 		bool hasFocus = false;
 
 		if (s->uParentId != NULL) {
-			x = s->im->getCurrentXAxisValue();
-			y = s->im->getCurrentYAxisValue();
-
-			SDL_GetWindowPosition(s->screen, &winX, &winY);
-			if (x >= winX && x <= winX + s->wRes &&
-					y >= winY && y <= winY + s->hRes) {
-
-				hasFocus = true;
-			}
+			/*
+			 * NOTE: in this case, the focus is defined by the application
+			 *       that is embedding Ginga, through keyHandler specs.
+			 */
+			hasFocus = true;
 		}
 
 		return hasFocus;
