@@ -132,7 +132,7 @@ typedef struct {
 			set<IDiscreteMediaProvider*> dmpPool;
 
 			GingaScreenID id;
-			GingaWindowID uId;
+			GingaWindowID uParentId;
 			IInputManager* im;
 
 			SDL_Surface* uSur;
@@ -284,6 +284,7 @@ typedef struct {
 		private:
 			/* input */
 			static void initCodeMaps();
+			static bool checkEventFocus(SDLDeviceScreen* s);
 
 		public:
 			/* output */

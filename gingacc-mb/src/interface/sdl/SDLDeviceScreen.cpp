@@ -119,7 +119,7 @@ namespace mb {
 		wRes           = 0;
 		im             = NULL;
 		id             = myId;
-		uId            = parentId;
+		uParentId      = parentId;
 		renderer       = NULL;
 		mbMode         = "";
 		mbSubSystem    = "";
@@ -878,8 +878,9 @@ namespace mb {
 						eventBuffer = (SDLEventBuffer*)(
 								i->first->im->getEventBuffer());
 
-						if (eventBuffer != NULL && SDLEventBuffer::checkEvent(
-								i->first->sdlId, event)) {
+						cout << "Event" << endl;
+						if ((SDLEventBuffer::checkEvent(i->first->sdlId, event)
+								|| checkEventFocus(i->first))) {
 
 							eventBuffer->feed(event, capsOn, shiftOn);
 						}
@@ -963,11 +964,12 @@ namespace mb {
 			}
 		}
 
-		if (s->uId != NULL) {
-			s->screen = SDL_CreateWindowFrom(s->uId);
+		if (s->uParentId != NULL) {
+			s->screen = SDL_CreateWindowFrom(s->uParentId);
 			if (s->screen != NULL) {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
+				SDL_SetWindowGrab(s->screen, SDL_TRUE);
 			}
 
 		} else {
@@ -1110,7 +1112,7 @@ namespace mb {
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {
 		clearScreen(s);
 
-		if (s->uId == NULL && s->screen != NULL) {
+		if (s->uParentId == NULL && s->screen != NULL) {
 			SDL_HideWindow(s->screen);
 		}
 
@@ -1119,7 +1121,7 @@ namespace mb {
 			s->renderer = NULL;
 		}
 
-		if (s->uId == NULL && s->screen != NULL) {
+		if (s->uParentId == NULL && s->screen != NULL) {
 			SDL_DestroyWindow(s->screen);
 			s->screen = NULL;
 		}
@@ -1441,6 +1443,32 @@ namespace mb {
 		    sdlToGingaCodeMap[i->second] = i->first;
 		    ++i;
         }
+	}
+
+	bool SDLDeviceScreen::checkEventFocus(SDLDeviceScreen* s) {
+		int x, y;
+		int winX, winY;
+		bool hasFocus = false;
+
+		if (s->uParentId != NULL) {
+			x = s->im->getCurrentXAxisValue();
+			y = s->im->getCurrentYAxisValue();
+
+			SDL_GetWindowPosition(s->screen, &winX, &winY);
+
+			cout << "SDLDeviceScreen::checkEventFocus ";
+			cout << "mouseXY = '" << x << "," << y << "' and windowXYWH = '";
+			cout << winX << "," << winY << "," << s->wRes << "," << s->hRes;
+			cout << "'";
+			cout << endl;
+			if (x >= winX && x <= s->wRes &&
+					y >= winY && y <= s->hRes) {
+
+				hasFocus = true;
+			}
+		}
+
+		return hasFocus;
 	}
 
 
