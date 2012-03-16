@@ -56,6 +56,10 @@ Many thanks to these guys and to the community that support them!
 
 #include "mb/interface/sdl/content/audio/SDL2ffmpeg.h"
 
+#ifndef AV_LOG_SKIP_REPEATED
+#define AV_LOG_SKIP_REPEATED 1
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
