@@ -974,13 +974,6 @@ namespace mb {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
 
-
-				SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-				SDL_EventState(SDL_WINDOWEVENT, SDL_ENABLE);
-				SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
-				SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
-				SDL_EventState(SDL_MOUSEBUTTONUP, SDL_ENABLE);
-
 #if defined(SDL_VIDEO_DRIVER_X11)
 			    SDL_SysWMinfo info;
 			    XSetWindowAttributes attributes;
@@ -988,9 +981,7 @@ namespace mb {
 			    SDL_VERSION(&info.version);
 			    SDL_GetWindowWMInfo(s->screen, &info);
 
-			    if (info.info.x11.display != NULL &&
-			    		info.info.x11.window != NULL) {
-
+			    if (info.info.x11.display != NULL) {
 				    attributes.event_mask = (
 				    		KeyPressMask       |
 				    		KeyReleaseMask     |
@@ -1004,9 +995,13 @@ namespace mb {
 
 				    XChangeWindowAttributes(
 				    		info.info.x11.display,
-				    		info.info.x11.window,
+				    		(Window)s->uParentId,
 				    		CWEventMask,
 				    		&attributes);
+			    } else {
+			    	cout << "SDLDeviceScreen::initScreen Warning! ";
+			    	cout << "Can't set input event mask for embedded ";
+			    	cout << "window '" << s->uParentId << "'" << endl;
 			    }
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
