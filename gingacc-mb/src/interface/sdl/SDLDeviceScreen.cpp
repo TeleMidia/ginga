@@ -981,6 +981,10 @@ namespace mb {
 			    SDL_VERSION(&info.version);
 			    SDL_GetWindowWMInfo(s->screen, &info);
 
+			    if (info.info.x11.display == NULL) {
+			    	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
+			    }
+
 			    if (info.info.x11.display != NULL) {
 				    attributes.event_mask = (
 				    		KeyPressMask       |

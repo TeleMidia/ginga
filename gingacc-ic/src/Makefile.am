@@ -16,8 +16,10 @@ libgingaccic_la_SOURCES = \
 
 libgingaccic_la_LIBADD  = \
                           -lpthread \
+                          -lgingaccsystem \
                           $(CCRTP_LIBS) \
                           $(CURL_LIBS) \
+                          -L$(prefix)/lib/ginga \
                           -L$(top_srcdir)/src \
                           -L$(top_srcdir)/src/curlic \
                           -L$(top_srcdir)/src/ccrtpic

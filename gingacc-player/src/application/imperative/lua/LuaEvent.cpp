@@ -395,7 +395,7 @@ static void* sleep_thread (void* data)
 		return NULL;
 	}
 
-	usleep(t->time*1000);
+	SystemCompat::uSleep(t->time*1000);
 
 	if (!t->player->isRunning()) {
 		return NULL;
@@ -715,7 +715,7 @@ static void* tcp_thread (void* data)
     player->tcp_running = true;
 //clog << "TCP STARTED\n";
     while (1) {
-	    usleep(500000);
+    	SystemCompat::uSleep(500000);
         player->lock();
         lua_getfield(player->L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT);  // [ ... | env ]
         lua_rawgeti(player->L, -1, -REFTCPIN);       // [ ... | env | f_in ]
