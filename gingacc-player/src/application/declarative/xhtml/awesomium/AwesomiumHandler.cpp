@@ -690,23 +690,54 @@ namespace player {
 
 	void AwesomiumHandler::injectKey(AwesomiumInfo* aInfo, int keyCode) {
 		char* buf;
-		awe_webkeyboardevent keyEv;
+		/*awe_webkeyboardevent keyEv;
 
-		/*buf = new char[20];
+		buf = new char[20];
 
 		Awesomium::getKeyIdentifierFromVirtualKeyCode(KeyCode, &buf);
 		strcpy(keyEv.keyIdentifier, buf);
-		delete[] buf;*/
+		delete[] buf;
 
 		keyEv.virtual_key_code = keyCode;
 		keyEv.modifiers        = 0;
-		keyEv.native_key_code  = 0;
+		keyEv.native_key_code  = keyCode;
 		keyEv.type             = AWE_WKT_KEYDOWN;
 
 		awe_webview_inject_keyboard_event(webView, keyEv);
 		update(aInfo, 25);
 		keyEv.type = AWE_WKT_KEYUP;
-		awe_webview_inject_keyboard_event(webView, keyEv);
+		awe_webview_inject_keyboard_event(webView, keyEv);*/
+
+		awe_webkeyboardevent e;
+		e.is_system_key      = false;
+		e.modifiers          = 0;
+		e.text[0]            = keyCode;
+		e.text[1]            = 0;
+		e.text[2]            = 0;
+		e.text[3]            = 0;
+		e.unmodified_text[0] = keyCode;
+		e.unmodified_text[1] = 0;
+		e.unmodified_text[2] = 0;
+		e.unmodified_text[3] = 0;
+		e.virtual_key_code   = keyCode;
+		e.native_key_code    = keyCode;
+		e.type               = AWE_WKT_KEYDOWN;
+		awe_webview_inject_keyboard_event(webView, e);
+
+		// Key Char
+		e.unmodified_text[0] = 0;
+		e.virtual_key_code   = 0;
+		e.native_key_code    = 0;
+		e.type               = AWE_WKT_CHAR;
+		awe_webview_inject_keyboard_event(webView, e);
+
+		// Key Up
+		e.text[0]            = keyCode;
+		e.unmodified_text[0] = keyCode;
+		e.virtual_key_code   = keyCode;
+		e.native_key_code    = keyCode;
+		e.type               = AWE_WKT_KEYUP;
+		awe_webview_inject_keyboard_event(webView, e);
 	}
 
 

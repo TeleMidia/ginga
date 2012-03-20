@@ -739,7 +739,7 @@ namespace mb {
 	void* SDLDeviceScreen::rendererT(void* ptr) {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDL_Event event;
-		int sleepTime, elapsedTime, decRate;
+		int elapsedTime, decRate;
 		bool shiftOn = false;
 		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
@@ -834,7 +834,7 @@ namespace mb {
 
 				if (elapsedTime < sleepTime) {
 					if (decRate == 0) {
-						SystemCompat::uSleep(sleepTime - elapsedTime);
+						SystemCompat::uSleep((sleepTime - elapsedTime) / 10);
 
 					} else {
 						SystemCompat::uSleep(

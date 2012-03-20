@@ -319,7 +319,7 @@
   </component>
 
   <component package="gingacc-player" name="libgingaccplaawe.so" version="0.13.1" type="dynamic">
-    <dependency componentName="libawesomium-1.6.3.so" version="1.6.3"/>
+    <dependency componentName="libawesomium.so" version="1.6.3"/>
     <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
     <dependency componentName="libgingaccplayer.so" version="0.13.1"/>
     <symbol object="AwesomiumPlayer" creator="createAwesomiumPlayer" destroyer="destroyAwesomiumPlayer" interface="IPlayer"/>
