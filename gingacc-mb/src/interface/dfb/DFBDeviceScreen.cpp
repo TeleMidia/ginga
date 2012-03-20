@@ -100,7 +100,8 @@ namespace mb {
 
 	DFBDeviceScreen::DFBDeviceScreen(
 			int argc, char** argv,
-			GingaScreenID myId, GingaWindowID parentId) {
+			GingaScreenID myId, GingaWindowID parentId,
+			bool externalRenderer) {
 
 		DFBDisplayLayerConfig layer_config;
 		DFBResult ret;
@@ -1025,10 +1026,11 @@ namespace mb {
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createDFBScreen(
 				int argc, char** argv,
-				GingaScreenID myId, GingaWindowID parentId) {
+				GingaScreenID myId, GingaWindowID parentId,
+				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBDeviceScreen(argc, argv, myId, parentId));
+			DFBDeviceScreen(argc, argv, myId, parentId, externalRenderer));
 }
 
 extern "C" void destroyDFBScreen(

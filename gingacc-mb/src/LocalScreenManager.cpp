@@ -245,6 +245,7 @@ namespace mb {
 
 	GingaScreenID LocalScreenManager::createScreen(int argc, char** args) {
 		int i;
+		bool externalRenderer = false;
 		string vSystem = "", vSubSystem = "", vMode = "", vParent = "";
 		string aSystem = "";
 
@@ -268,13 +269,17 @@ namespace mb {
 
 			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {
 				aSystem.assign(args[i + 1]);
+
+			} else if (strcmp(args[i], "--external-renderer") == 0) {
+				externalRenderer = true;
 			}
 
 			clog << "LocalScreenManager::createScreen PARSER argv[";
 			clog << i << "] = '" << args[i] << "'" << endl;
 		}
 
-		return createScreen(vSystem, vSubSystem, vMode, vParent, aSystem);
+		return createScreen(
+				vSystem, vSubSystem, vMode, vParent, aSystem, externalRenderer);
 	}
 
 	GingaScreenID LocalScreenManager::createScreen(
@@ -282,7 +287,8 @@ namespace mb {
 			string vSubSystem,
 			string vMode,
 			string vParent,
-			string aSystem) {
+			string aSystem,
+			bool externalRenderer) {
 
 		IDeviceScreen* screen  = NULL;
 		GingaWindowID parentId = NULL;
@@ -338,24 +344,26 @@ namespace mb {
 				}
 
 #if HAVE_COMPSUPPORT
-				screen = ((ScreenCreator*)(cm->getObject(
-						"SDLDeviceScreen")))(argc, mbArgs, screenId, parentId);
+				screen = ((ScreenCreator*)(cm->getObject("SDLDeviceScreen")))(
+						argc, mbArgs, screenId, parentId, externalRenderer);
 
 #else
 #if HAVE_SDL
-				screen = new SDLDeviceScreen(argc, mbArgs, screenId, parentId);
+				screen = new SDLDeviceScreen(
+						argc, mbArgs, screenId, parentId, externalRenderer);
 #endif //HAVE_SDL
 #endif //HAVE_COMPSUPPORT
 				break;
 
 			case GMBST_TERM:
 #if HAVE_COMPSUPPORT
-				screen = ((ScreenCreator*)(cm->getObject(
-						"TermDeviceScreen")))(0, NULL, screenId, parentId);
+				screen = ((ScreenCreator*)(cm->getObject("TermDeviceScreen")))(
+						0, NULL, screenId, parentId, externalRenderer);
 
 #else
 #if HAVE_TERM
-				screen = new TermDeviceScreen(argc, mbArgs, screenId, parentId);
+				screen = new TermDeviceScreen(
+						argc, mbArgs, screenId, parentId, externalRenderer);
 #endif //HAVE_TERM
 #endif //HAVE_COMPSUPPORT
 				break;
@@ -411,11 +419,12 @@ namespace mb {
 
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
-						argc, mbArgs, screenId, parentId);
+						argc, mbArgs, screenId, parentId, externalRenderer);
 
 #else
 #if HAVE_DIRECTFB
-				screen = new DFBDeviceScreen(argc, mbArgs, screenId, parentId);
+				screen = new DFBDeviceScreen(
+						argc, mbArgs, screenId, parentId, externalRenderer);
 #endif //HAVE_DIRECTFB
 #endif //HAVE_COMPSUPPORT
 				break;
@@ -576,6 +585,14 @@ namespace mb {
 
 		if (getScreen(screenId, &screen)) {
 			screen->blitScreen(fileUri);
+		}
+	}
+
+	void LocalScreenManager::refreshScreen(GingaScreenID screenId) {
+		IDeviceScreen* screen;
+
+		if (getScreen(screenId, &screen)) {
+			screen->refreshScreen();
 		}
 	}
 

@@ -69,7 +69,11 @@ namespace mb {
 			set<string> surfacePool;
 
 		public:
-			TermDeviceScreen(int numArgs, char** args, GingaWindowID parentId);
+			TermDeviceScreen(
+					int numArgs, char** args,
+					GingaWindowID parentId,
+					bool externalRenderer);
+
 			virtual ~TermDeviceScreen();
 
 			void releaseScreen();
@@ -91,6 +95,7 @@ namespace mb {
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
 			void blitScreen(ISurface* destination);
 			void blitScreen(string fileUri);
+			void refreshScreen(){};
 
 			/* interfacing output */
 

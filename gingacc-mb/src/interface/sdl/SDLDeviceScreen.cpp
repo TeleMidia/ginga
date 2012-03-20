@@ -86,7 +86,8 @@ namespace mb {
 
 	map<SDLDeviceScreen*, short> SDLDeviceScreen::sdlScreens;
 	pthread_mutex_t SDLDeviceScreen::sMutex;
-	bool SDLDeviceScreen::hasRenderer                 = false;
+	bool SDLDeviceScreen::hasRenderer = false;
+	bool SDLDeviceScreen::hasERC      = false;
 
 	pthread_mutex_t SDLDeviceScreen::ieMutex;
 	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
@@ -108,25 +109,30 @@ namespace mb {
 
 	SDLDeviceScreen::SDLDeviceScreen(
 			int argc, char** args,
-			GingaScreenID myId, GingaWindowID parentId) {
+			GingaScreenID myId, GingaWindowID parentId,
+			bool externalRenderer) {
 
 		int i;
 
-		aSystem        = "";
-		aspect         = DSA_UNKNOWN;
-		hSize          = 0;
-		vSize          = 0;
-		hRes           = 0;
-		wRes           = 0;
-		im             = NULL;
-		id             = myId;
-		uParentId      = parentId;
-		renderer       = NULL;
-		mbMode         = "";
-		mbSubSystem    = "";
-		screen         = NULL;
-		sdlId          = 0;
+		aSystem         = "";
+		aspect          = DSA_UNKNOWN;
+		hSize           = 0;
+		vSize           = 0;
+		hRes            = 0;
+		wRes            = 0;
+		im              = NULL;
+		id              = myId;
+		uParentId       = parentId;
+		renderer        = NULL;
+		mbMode          = "";
+		mbSubSystem     = "";
+		screen          = NULL;
+		sdlId           = 0;
 		backgroundLayer = NULL;
+
+		if (externalRenderer) {
+			hasERC = externalRenderer;
+		}
 
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "subsystem") == 0) && ((i + 1) < argc)) {
@@ -166,20 +172,23 @@ namespace mb {
 
 		if (!hasRenderer) {
 			hasRenderer = true;
+
 			pthread_mutex_init(&sMutex, NULL);
 			pthread_mutex_init(&wrMutex, NULL);
 			pthread_mutex_init(&rlMutex, NULL);
 			pthread_mutex_init(&mplMutex, NULL);
 
-			pthread_t tId;
-			pthread_attr_t tattr;
+			if (!hasERC) {
+				pthread_t tId;
+				pthread_attr_t tattr;
 
-			pthread_attr_init(&tattr);
-			pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
-			pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+				pthread_attr_init(&tattr);
+				pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
+				pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
 
-			pthread_create(&tId, &tattr, SDLDeviceScreen::rendererT, this);
-			pthread_detach(tId);
+				pthread_create(&tId, &tattr, SDLDeviceScreen::rendererT, this);
+				pthread_detach(tId);
+			}
 		}
 
 		pthread_mutex_lock(&sMutex);
@@ -371,6 +380,11 @@ namespace mb {
 		pthread_mutex_unlock(&uSurMutex);
 	}
 
+	void SDLDeviceScreen::refreshScreen() {
+		if (hasERC) {
+			rendererT(NULL);
+		}
+	}
 
 	/* interfacing output */
 
@@ -692,6 +706,147 @@ namespace mb {
 		pthread_mutex_unlock(&rlMutex);
 	}
 
+	void SDLDeviceScreen::checkSDLInit() {
+		Uint32 initFlags      = 0;
+		Uint32 subsystem_init = SDL_WasInit(0);
+
+		if (subsystem_init == 0) {
+			SDL_Init((Uint32)(
+					SDL_INIT_AUDIO |
+					SDL_INIT_VIDEO |
+					SDL_INIT_TIMER |
+					SDL_INIT_NOPARACHUTE));
+
+		} else {
+			if (subsystem_init & SDL_INIT_AUDIO == 0) {
+				SDL_InitSubSystem(SDL_INIT_AUDIO);
+			}
+
+			if (subsystem_init & SDL_INIT_VIDEO == 0) {
+				SDL_InitSubSystem(SDL_INIT_VIDEO);
+			}
+
+			if (subsystem_init & SDL_INIT_TIMER == 0) {
+				SDL_InitSubSystem(SDL_INIT_TIMER);
+			}
+		}
+	}
+
+	void SDLDeviceScreen::sdlQuit() {
+		SDL_Quit();
+	}
+
+	void* SDLDeviceScreen::rendererT(void* ptr) {
+		map<SDLDeviceScreen*, short>::iterator i;
+		SDL_Event event;
+		int sleepTime, elapsedTime, decRate;
+		bool shiftOn = false;
+		bool capsOn  = false;
+		SDLEventBuffer* eventBuffer = NULL;
+
+		checkSDLInit();
+
+		while (hasRenderer) {
+			elapsedTime = getCurrentTimeMillis();
+
+		    while (SDL_PollEvent(&event)) {
+		    	pthread_mutex_lock(&sMutex);
+
+				if (event.type == SDL_KEYDOWN) {
+					if (event.key.keysym.sym == SDLK_LSHIFT ||
+							event.key.keysym.sym == SDLK_RSHIFT) {
+
+						shiftOn = true;
+					}
+
+				} else  if (event.type == SDL_KEYUP) {
+					if (event.key.keysym.sym == SDLK_CAPSLOCK) {
+						capsOn = !capsOn;
+
+					} else if (event.key.keysym.sym == SDLK_LSHIFT ||
+							event.key.keysym.sym == SDLK_RSHIFT) {
+
+						shiftOn = false;
+					}
+				}
+
+				i = sdlScreens.begin();
+				while (i != sdlScreens.end()) {
+					if (i->first->im != NULL) {
+						eventBuffer = (SDLEventBuffer*)(
+								i->first->im->getEventBuffer());
+
+						if (((SDLEventBuffer::checkEvent(i->first->sdlId, event)
+								&& i->first->uParentId == NULL)
+								|| checkEventFocus(i->first))) {
+
+							eventBuffer->feed(event, capsOn, shiftOn);
+						}
+					}
+					++i;
+				}
+				pthread_mutex_unlock(&sMutex);
+	    	}
+
+			pthread_mutex_lock(&sMutex);
+			i = sdlScreens.begin();
+			while (i != sdlScreens.end()) {
+				switch (i->second) {
+					case STP_NONE:
+						surfaceAction(i->first);
+						decRate = refreshCMP(i->first);
+						refreshDMP(i->first);
+						refreshWin(i->first);
+
+						++i;
+						break;
+
+					case STP_INIT:
+						initScreen(i->first);
+						sdlScreens[i->first] = STP_NONE;
+						i = sdlScreens.begin();
+						break;
+
+					case STP_CLEAR:
+						clearScreen(i->first);
+						sdlScreens[i->first] = STP_NONE;
+						i = sdlScreens.begin();
+						break;
+
+					case STP_RELEASE:
+						releaseScreen(i->first);
+						sdlScreens.erase(i);
+						i = sdlScreens.begin();
+						break;
+
+					default:
+						++i;
+						break;
+				}
+			}
+			pthread_mutex_unlock(&sMutex);
+
+			if (hasERC) {
+				break;
+
+			} else {
+				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
+
+				if (elapsedTime < sleepTime) {
+					if (decRate == 0) {
+						SystemCompat::uSleep(sleepTime - elapsedTime);
+
+					} else {
+						SystemCompat::uSleep(
+								(sleepTime - elapsedTime) / (10 * decRate));
+					}
+				}
+			}
+		}
+
+		return NULL;
+	}
+
 	void SDLDeviceScreen::refreshRC(SDLDeviceScreen* s) {
 		set<ReleaseContainer*>::iterator i;
 		string strSym;
@@ -834,119 +989,6 @@ namespace mb {
 		SDL_RenderPresent(s->renderer);
 		pthread_mutex_unlock(&wrMutex);
 		pthread_mutex_unlock(&s->winMutex);
-	}
-
-	void* SDLDeviceScreen::rendererT(void* ptr) {
-		map<SDLDeviceScreen*, short>::iterator i;
-		SDL_Event event;
-		int sleepTime, elapsedTime, decRate;
-		bool shiftOn = false;
-		bool capsOn  = false;
-		SDLEventBuffer* eventBuffer = NULL;
-
-		sleepTime = (int)(1000000/SDLDS_FPS);
-
-		SDL_Init((Uint32)(
-				SDL_INIT_AUDIO |
-				SDL_INIT_VIDEO |
-				SDL_INIT_TIMER |
-				SDL_INIT_NOPARACHUTE));
-
-		while (hasRenderer) {
-			elapsedTime = getCurrentTimeMillis();
-
-		    while (SDL_PollEvent(&event)) {
-		    	pthread_mutex_lock(&sMutex);
-
-				if (event.type == SDL_KEYDOWN) {
-					if (event.key.keysym.sym == SDLK_LSHIFT ||
-							event.key.keysym.sym == SDLK_RSHIFT) {
-
-						shiftOn = true;
-					}
-
-				} else  if (event.type == SDL_KEYUP) {
-					if (event.key.keysym.sym == SDLK_CAPSLOCK) {
-						capsOn = !capsOn;
-
-					} else if (event.key.keysym.sym == SDLK_LSHIFT ||
-							event.key.keysym.sym == SDLK_RSHIFT) {
-
-						shiftOn = false;
-					}
-				}
-
-				i = sdlScreens.begin();
-				while (i != sdlScreens.end()) {
-					if (i->first->im != NULL) {
-						eventBuffer = (SDLEventBuffer*)(
-								i->first->im->getEventBuffer());
-
-						if (((SDLEventBuffer::checkEvent(i->first->sdlId, event)
-								&& i->first->uParentId == NULL)
-								|| checkEventFocus(i->first))) {
-
-							eventBuffer->feed(event, capsOn, shiftOn);
-						}
-					}
-					++i;
-				}
-				pthread_mutex_unlock(&sMutex);
-	    	}
-
-			pthread_mutex_lock(&sMutex);
-			i = sdlScreens.begin();
-			while (i != sdlScreens.end()) {
-				switch (i->second) {
-					case STP_NONE:
-						surfaceAction(i->first);
-						decRate = refreshCMP(i->first);
-						refreshDMP(i->first);
-						refreshWin(i->first);
-
-						++i;
-						break;
-
-					case STP_INIT:
-						initScreen(i->first);
-						sdlScreens[i->first] = STP_NONE;
-						i = sdlScreens.begin();
-						break;
-
-					case STP_CLEAR:
-						clearScreen(i->first);
-						sdlScreens[i->first] = STP_NONE;
-						i = sdlScreens.begin();
-						break;
-
-					case STP_RELEASE:
-						releaseScreen(i->first);
-						sdlScreens.erase(i);
-						i = sdlScreens.begin();
-						break;
-
-					default:
-						++i;
-						break;
-				}
-			}
-			pthread_mutex_unlock(&sMutex);
-
-			elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
-
-			if (elapsedTime < sleepTime) {
-				if (decRate == 0) {
-					SystemCompat::uSleep(sleepTime - elapsedTime);
-
-				} else {
-					SystemCompat::uSleep((sleepTime - elapsedTime) / (10 * decRate));
-				}
-			}
-		}
-
-		SDL_Quit();
-
-		return NULL;
 	}
 
 	void SDLDeviceScreen::initScreen(SDLDeviceScreen* s) {
@@ -1952,10 +1994,11 @@ namespace mb {
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createSDLScreen(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID parentId) {
+				GingaScreenID myId, GingaWindowID parentId,
+				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLDeviceScreen(numArgs, args, myId, parentId));
+			SDLDeviceScreen(numArgs, args, myId, parentId, externalRenderer));
 }
 
 extern "C" void destroySDLScreen(

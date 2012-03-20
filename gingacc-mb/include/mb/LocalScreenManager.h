@@ -135,7 +135,8 @@ namespace mb {
 					string vSubSystem,
 					string vMode,
 					string vParent,
-					string aSystem);
+					string aSystem,
+					bool externalRenderer);
 
 		public:
 			string getScreenName(GingaScreenID screenId);
@@ -155,6 +156,8 @@ namespace mb {
 
 			void blitScreen(GingaScreenID screenId, ISurface* destination);
 			void blitScreen(GingaScreenID screenId, string fileUri);
+			void refreshScreen(GingaScreenID screenId);
+
 
 			/* Interfacing output */
 			IWindow* createWindow(

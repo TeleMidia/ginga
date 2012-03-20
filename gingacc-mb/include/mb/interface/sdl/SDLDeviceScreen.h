@@ -155,6 +155,8 @@ typedef struct {
 			Uint32 sdlId;
 			SDL_Renderer* renderer;
 
+			static bool hasERC; //external renderer controller
+
 			static pthread_mutex_t ieMutex;
 			static map<int, int> gingaToSDLCodeMap;
 			static map<int, int> sdlToGingaCodeMap;
@@ -172,7 +174,8 @@ typedef struct {
 		public:
 			SDLDeviceScreen(
 					int numArgs, char** args,
-					GingaScreenID myId, GingaWindowID parentId);
+					GingaScreenID myId, GingaWindowID parentId,
+					bool externalRenderer);
 
 			virtual ~SDLDeviceScreen();
 
@@ -197,6 +200,7 @@ typedef struct {
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
 			void blitScreen(ISurface* destination);
 			void blitScreen(string fileUri);
+			void refreshScreen();
 
 		private:
 			void blitScreen(SDL_Surface* destination);
@@ -246,15 +250,21 @@ typedef struct {
 					IMediaProvider* iDec);
 
 		private:
+			static void checkSDLInit();
+			static void sdlQuit();
+			static void* rendererT(void* ptr);
+
 			static void refreshRC(SDLDeviceScreen* screen);
 			static int refreshCMP(SDLDeviceScreen* screen);
 			static void refreshDMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
-			static void* rendererT(void* ptr);
+
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
 			static void releaseScreen(SDLDeviceScreen* screen);
+
 			static bool surfaceAction(SDLDeviceScreen* screen);
+
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
 
