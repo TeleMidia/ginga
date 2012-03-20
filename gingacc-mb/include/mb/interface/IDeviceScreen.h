@@ -104,6 +104,8 @@ namespace mb {
 			virtual void blitScreen(ISurface* destination)=0;
 			virtual void blitScreen(string fileUri)=0;
 
+			virtual void refreshScreen()=0;
+
 
 			/* interfacing output */
 
@@ -166,7 +168,8 @@ namespace mb {
 typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		ScreenCreator(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID parentId);
+				GingaScreenID myId, GingaWindowID parentId,
+				bool externalRenderer);
 
 typedef void ScreenDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds);

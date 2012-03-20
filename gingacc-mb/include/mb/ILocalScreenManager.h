@@ -107,6 +107,7 @@ namespace mb {
 					GingaScreenID screenId, ISurface* destination)=0;
 
 			virtual void blitScreen(GingaScreenID screenId, string fileUri)=0;
+			virtual void refreshScreen(GingaScreenID screenId)=0;
 
 
 			/* Interfacing output */

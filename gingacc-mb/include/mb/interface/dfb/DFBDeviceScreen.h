@@ -131,7 +131,8 @@ namespace mb {
 		public:
 			DFBDeviceScreen(
 					int numArgs, char** args,
-					GingaScreenID myId, GingaWindowID parentId);
+					GingaScreenID myId, GingaWindowID parentId,
+					bool externalRenderer);
 
 			virtual ~DFBDeviceScreen();
 
@@ -155,6 +156,7 @@ namespace mb {
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
 			void blitScreen(ISurface* destination);
 			void blitScreen(string fileUri);
+			void refreshScreen(){};
 
 
 			/* interfacing output */
