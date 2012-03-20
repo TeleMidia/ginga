@@ -423,6 +423,10 @@ namespace mb {
 
 		addScreen(screenId, screen);
 
+		if (screen == NULL) {
+			screenId = -1;
+		}
+
 		return screenId;
 	}
 
@@ -859,7 +863,13 @@ namespace mb {
 			GingaScreenID screenId, IDeviceScreen* screen) {
 
 		lockScreens();
-		(*screens)[screenId] = screen;
+		if (screen != NULL) {
+			(*screens)[screenId] = screen;
+
+		} else {
+			clog << "LocalScreenManager::addScreen Warning! Trying to add ";
+			clog << "a NULL screen" << endl;
+		}
 		unlockScreens();
 	}
 
