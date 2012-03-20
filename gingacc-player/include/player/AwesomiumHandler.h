@@ -66,7 +66,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <iostream>
 using namespace std;
 
-#include <Awesomium/WebCore.h>
+extern "C" {
+#include <Awesomium/awesomium_capi.h>
+}
+
+#include <Awesomium/KeyboardCodes.h>
 using namespace Awesomium;
 
 namespace br {
@@ -119,8 +123,8 @@ namespace player {
 			static map<AwesomiumHDR, IInputManager*> s_ims;
 
 			/* static since we have to respect browser isolation */
-			static Awesomium::WebCore* webCore;
-			static WebView* webView;
+			static bool initialized;
+			static awe_webview* webView;
 
 			static ILocalScreenManager* dm;
 

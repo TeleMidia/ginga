@@ -72,12 +72,12 @@ namespace ginga {
 namespace core {
 namespace player {
 
-	ILocalScreenManager* AwesomiumHandler::dm     = NULL;
-	AwesomiumHDR AwesomiumHandler::s_id           = 0;
+	ILocalScreenManager* AwesomiumHandler::dm = NULL;
+	AwesomiumHDR AwesomiumHandler::s_id       = 0;
 
 	/* static since we have to respect browser isolation */
-	Awesomium::WebCore* AwesomiumHandler::webCore = NULL;
-	WebView* AwesomiumHandler::webView            = NULL;
+	bool AwesomiumHandler::initialized        = false;
+	awe_webview* AwesomiumHandler::webView    = NULL;
 
 	map<int, int> AwesomiumHandler::fromGingaToAwesomium;
 	map<AwesomiumHDR, AwesomiumInfo*> AwesomiumHandler::s_infos;
@@ -396,6 +396,12 @@ namespace player {
 	void AwesomiumHandler::loadUrl(AwesomiumHDR id, string url) {
 		AwesomiumInfo* aInfo;
 
+		awe_string* awe_custom_css;
+		awe_string* awe_base;
+		awe_string* awe_file;
+
+		string str_custom_css;
+
 		pthread_mutex_lock(&s_lMutex);
 		if (webView != NULL) {
 			pthread_mutex_unlock(&s_lMutex);
@@ -406,19 +412,43 @@ namespace player {
 			aInfo->mURL   = url;
 			aInfo->update = true;
 
-			if (webCore == NULL) {
+			if (!initialized) {
+				initialized = true;
+
 				if (fromGingaToAwesomium.empty()) {
 					initCodeMap();
 				}
-				Awesomium::WebCoreConfig config;
-		        config.setEnablePlugins(true);
-		        config.setSaveCacheAndCookies(true);
-		        config.setEnableJavascript(true);
-		        config.setForceSingleProcess(false);
 
-				config.setCustomCSS("::-webkit-scrollbar { display: none; }");
+				str_custom_css = "::-webkit-scrollbar { display: none; }";
+				awe_custom_css = awe_string_create_from_utf8(
+						str_custom_css.c_str(), str_custom_css.length());
 
-				webCore = new WebCore(config);
+				awe_webcore_initialize(
+						true,               //enable_plugins
+						true,               //enable_javascript
+						false,              //enable_databases
+						awe_string_empty(), //package_path
+						awe_string_empty(), //locale_path
+						awe_string_empty(), //user_data_path
+						awe_string_empty(), //plugin_path
+						awe_string_empty(), //log_path
+						AWE_LL_NORMAL,      //log_level
+						false,              //force_single_process
+						awe_string_empty(), //child_process_path
+						true,               //enable_auto_detect_encoding
+						awe_string_empty(), //accept_language_override
+						awe_string_empty(), //default_charset_override
+						awe_string_empty(), //user_agent_override
+						awe_string_empty(), //proxy_server
+						awe_string_empty(), //proxy_config_script
+						awe_string_empty(), //auth_server_whitelist
+						true,               //save_cache_and_cookies
+						0,                  //max_cache_size
+						false,              //disable_same_origin_policy
+						false,              //disable_win_message_pump
+						awe_custom_css);
+
+				awe_string_destroy(awe_custom_css);
 			}
 
 			if (webView == NULL) {
@@ -454,7 +484,7 @@ namespace player {
 				clog << aInfo->h << "'";
 				clog << endl;
 
-				webView = webCore->createWebView(aInfo->w, aInfo->h);
+				webView = awe_webcore_create_webview(aInfo->w, aInfo->h, false);
 			}
 
 			if (aInfo->rFile == "") {
@@ -486,14 +516,36 @@ namespace player {
 						file = aInfo->mURL;
 					}
 
-					webCore->setBaseDirectory(base);
-					webView->loadFile(file);
+					awe_base = awe_string_create_from_utf8(
+							base.c_str(), base.length());
+
+					awe_webcore_set_base_directory(awe_base);
+
+					awe_file = awe_string_create_from_utf8(
+							file.c_str(), file.length());
+
+					awe_webview_load_file(
+							webView, awe_file, awe_string_empty());
+
+					awe_string_destroy(awe_base);
+					awe_string_destroy(awe_file);
 
 				} else {
 					if (aInfo->mURL.find("://") == std::string::npos) {
 						aInfo->mURL = "http://" + aInfo->mURL;
 					}
-					webView->loadURL(aInfo->mURL);
+
+					awe_file = awe_string_create_from_utf8(
+							aInfo->mURL.c_str(), aInfo->mURL.length());
+
+					awe_webview_load_url(
+							webView,
+							awe_file,
+							awe_string_empty(),
+							awe_string_empty(),
+							awe_string_empty());
+
+					awe_string_destroy(awe_file);
 				}
 
 				setFocus(aInfo);
@@ -501,7 +553,7 @@ namespace player {
 				clog << "AwesomiumHandler::loadUrl call while isloading '";
 				clog << aInfo->mURL << "'" << endl;
 
-				while (webView->isLoadingPage()) {
+				while (awe_webview_is_loading_page(webView)) {
 					update(aInfo, 50);
 				}
 
@@ -517,7 +569,7 @@ namespace player {
 				while (aInfo->update) {
 					update(aInfo, 25);
 					setFocus(aInfo);
-					if (webView->isDirty()) {
+					if (awe_webview_is_dirty(webView)) {
 						refresh(id);
 					}
 
@@ -526,9 +578,18 @@ namespace player {
 
 				destroyAwesomium(aInfo->id);
 
+				/*
+				 *
+				 //XXX: TO CHECK
+				 void awe_webview_set_callback_plugin_crashed(
+                            awe_webview* webview,
+                            void (*callback)(awe_webview* caller,
+							                 const awe_string* plugin_name));
+				 */
+
 				clog << "AwesomiumHandler::loadUrl call destroy" << endl;
 				if (webView != NULL) {
-					webView->destroy();
+					awe_webview_destroy(webView);
 					webView = NULL;
 				}
 			}
@@ -538,7 +599,7 @@ namespace player {
 
 	void AwesomiumHandler::eventHandler(AwesomiumInfo* aInfo) {
 		map<int, int>::iterator i;
-		Awesomium::WebKeyboardEvent keyEvent;
+		awe_webkeyboardevent keyEvent;
 		unsigned char key;
 		IInputManager* im;
 
@@ -563,7 +624,8 @@ namespace player {
 						aInfo->mouseX = tmpX;
 						aInfo->mouseY = tmpY;
 
-						webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
+						awe_webview_inject_mouse_move(
+								webView, aInfo->mouseX, aInfo->mouseY);
 					}
 				}
 				break;
@@ -582,12 +644,14 @@ namespace player {
 
 							key  = key + ('a' - 'A');
 						}
-						keyEvent.type = Awesomium::WebKeyboardEvent::TYPE_CHAR;
-						keyEvent.text[0]           = key;
-						keyEvent.unmodifiedText[0] = key;
-						keyEvent.virtualKeyCode    = key;
-						keyEvent.nativeKeyCode     = key;
-						webView->injectKeyboardEvent(keyEvent);
+
+						keyEvent.type               = AWE_WKT_CHAR;
+						keyEvent.text[0]            = key;
+						keyEvent.unmodified_text[0] = key;
+						keyEvent.virtual_key_code   = key;
+						keyEvent.native_key_code    = key;
+
+						awe_webview_inject_keyboard_event(webView, keyEvent);
 
 					} else {
 						injectKey(aInfo, i->second);
@@ -611,11 +675,14 @@ namespace player {
 					clog << "," << aInfo->mouseY << "'";
 					clog << endl;
 
-					webView->injectMouseMove(aInfo->mouseX, aInfo->mouseY);
+
+					awe_webview_inject_mouse_move(
+							webView, aInfo->mouseX, aInfo->mouseY);
+
 					update(aInfo, 25);
-					webView->injectMouseDown(Awesomium::LEFT_MOUSE_BTN);
+					awe_webview_inject_mouse_down(webView, AWE_MB_LEFT);
 					update(aInfo, 25);
-					webView->injectMouseUp(Awesomium::LEFT_MOUSE_BTN);
+					awe_webview_inject_mouse_up(webView, AWE_MB_LEFT);
 				}
 				break;
 		}
@@ -623,25 +690,23 @@ namespace player {
 
 	void AwesomiumHandler::injectKey(AwesomiumInfo* aInfo, int keyCode) {
 		char* buf;
-		Awesomium::WebKeyboardEvent keyEv;
+		awe_webkeyboardevent keyEv;
 
-		buf = new char[20];
-		keyEv.virtualKeyCode = keyCode;
-		Awesomium::getKeyIdentifierFromVirtualKeyCode(
-				keyEv.virtualKeyCode, &buf);
+		/*buf = new char[20];
 
+		Awesomium::getKeyIdentifierFromVirtualKeyCode(KeyCode, &buf);
 		strcpy(keyEv.keyIdentifier, buf);
-		delete[] buf;
+		delete[] buf;*/
 
-		keyEv.modifiers     = 0;
-		keyEv.nativeKeyCode = 0;
-		keyEv.type          = Awesomium::WebKeyboardEvent::TYPE_KEY_DOWN;
+		keyEv.virtual_key_code = keyCode;
+		keyEv.modifiers        = 0;
+		keyEv.native_key_code  = 0;
+		keyEv.type             = AWE_WKT_KEYDOWN;
 
-		webView->injectKeyboardEvent(keyEv);
+		awe_webview_inject_keyboard_event(webView, keyEv);
 		update(aInfo, 25);
-		keyEv.type = Awesomium::WebKeyboardEvent::TYPE_KEY_UP;
-
-		webView->injectKeyboardEvent(keyEv);
+		keyEv.type = AWE_WKT_KEYUP;
+		awe_webview_inject_keyboard_event(webView, keyEv);
 	}
 
 
@@ -684,7 +749,7 @@ namespace player {
 			}
 			if (webView != NULL) {
 				clog << "AwesomiumHandler::setFocus focus" << endl;
-				webView->focus();
+				awe_webview_focus(webView);
 			}
 
 		} else if (!aInfo->setFocus && aInfo->hasFocus) {
@@ -694,7 +759,7 @@ namespace player {
 			}
 			if (webView != NULL) {
 				clog << "AwesomiumHandler::setFocus unfocus" << endl;
-				webView->unfocus();
+				awe_webview_unfocus(webView);
 			}
 		}
 	}
@@ -702,19 +767,16 @@ namespace player {
 	void AwesomiumHandler::refresh(AwesomiumHDR id) {
 		IWindow* win;
 		AwesomiumInfo* aInfo;
+		awe_string* awe_file;
 
 		if (getAwesomeInfo(id, &aInfo)) {
-			const RenderBuffer* renderBuffer = webView->render();
+			const awe_renderbuffer* renderBuffer = awe_webview_render(webView);
 
 			if (renderBuffer != NULL) {
-				wstring pngFile(aInfo->rFile.length(), L' ');
+				awe_file = awe_string_create_from_utf8(
+						aInfo->rFile.c_str(), aInfo->rFile.length());
 
-				std::copy(
-						aInfo->rFile.begin(),
-						aInfo->rFile.end(),
-						pngFile.begin());
-
-				renderBuffer->saveToPNG(pngFile, true);
+				awe_renderbuffer_save_to_png(renderBuffer, awe_file, true);
 
 				win = (IWindow*)aInfo->surface->getParent();
 				if (win != NULL) {
@@ -722,6 +784,7 @@ namespace player {
 					//win->validate();
 				}
 
+				awe_string_destroy(awe_file);
 				remove(aInfo->rFile.c_str());
 			}
 		}
@@ -729,7 +792,7 @@ namespace player {
 
 	void AwesomiumHandler::update(AwesomiumInfo* aInfo, double value) {
 		SystemCompat::uSleep(value * 1000);
-		webCore->update();
+		awe_webcore_update();
 	}
 
 	void AwesomiumHandler::stopUpdate(AwesomiumHDR id) {
