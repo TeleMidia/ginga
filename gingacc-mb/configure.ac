@@ -163,14 +163,39 @@ fi
 
 AM_CONDITIONAL([TERMSYSTEM], [test x$enable_term = xyes])
 
+###############
+# X11 Support #
+###############
+AC_CHECK_HEADER(
+    [X11/Xlib.h], 
+    [hasX11=yes], 
+    AC_MSG_WARN([
+
+Couldn't find Xlib headers.
+test/testEmbedX11 will not be built.
+
+    ])
+    hasX11=no
+)
+
+if test x$hasX11 = xyes; then
+	X11_LIBS='-lX11'
+	AC_DEFINE(HAVE_X11, 1, [Def to 1 if you have X11 support.])
+else
+	X11_LIBS='-L/usr/local/lib/ginga'
+	AC_DEFINE(HAVE_X11, 0, [Def to 1 if you don't have X11 support.])
+fi
+
+AM_CONDITIONAL([HAS_X11], [test x$hasX11 = xyes])
+
 ##############
 # SDL System #
 ##############
-sdl=no
+sdl=yes
 AC_ARG_ENABLE(sdl,
-  [  --enable-sdl build project with SDL System support [[default=no]]],
-  enable_sdl="$enableval", 
-  enable_sdl=no
+  [  --enable-sdl build project with SDL System support [[default=yes]]],
+  enable_sdl="$enableval",
+  enable_sdl=yes
 )
 
 if test x$enable_sdl = xyes; then

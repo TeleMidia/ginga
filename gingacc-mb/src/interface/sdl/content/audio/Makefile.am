@@ -28,6 +28,7 @@ libgingaccmbdecsdlap_la_LIBADD   = \
                                   -lpthread \
                                   -lavcodec \
                                   -lavformat \
+                                  -lavutil \
                                   -lswresample \
                                   -lswscale \
                                   -L$(prefix)/lib \

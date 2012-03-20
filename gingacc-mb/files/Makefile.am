@@ -1,6 +1,14 @@
-METASOURCES = AUTO
-LIBS =
-localLibdir = $(prefix)/etc/ginga/files/mb/config/
-localLib_DATA = config/input.cfg config/_tracking.xml
+METASOURCES          = \
+                       AUTO
 
-MAINTAINERCLEANFILES = Makefile.in
+LIBS                 =
+
+localLibdir          = \
+                       $(prefix)/etc/ginga/files/mb/config/
+
+localLib_DATA        = \
+                       config/input.cfg \
+                       config/_tracking.xml
+
+MAINTAINERCLEANFILES = \
+                       Makefile.in

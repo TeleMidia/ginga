@@ -13,6 +13,21 @@ libdir                     = \
 # gingaccmbsdl #
 ################
 if SDLSYSTEM
+
+mbsdllibs                  = \
+                             -lSDL2 \
+                             -ltelemidiautil \
+                             -lpthread \
+                             -lgingaccmb \
+                             -L$(prefix)/lib \
+                             -L$(prefix)/lib/ginga \
+                             -L$(top_srcdir)/src
+
+if HAS_X11
+mbsdllibs                 += \
+                             -lX11
+endif
+
 lib_LTLIBRARIES            = \
                              libgingaccmbsdl.la
 
@@ -24,13 +39,7 @@ libgingaccmbsdl_la_SOURCES = \
                              output/SDLWindow.cpp
 
 libgingaccmbsdl_la_LIBADD  = \
-                             -lSDL2 \
-                             -ltelemidiautil \
-                             -lpthread \
-                             -lgingaccmb \
-                             -L$(prefix)/lib \
-                             -L$(prefix)/lib/ginga \
-                             -L$(top_srcdir)/src
+                             $(mbsdllibs)
 
 libgingaccmbsdl_la_LDFLAGS = \
                              -no-undefined \
