@@ -339,7 +339,7 @@ AC_ARG_ENABLE(awesomium,
   enable_awesomium="$enableval", enable_awesomium=yes)
 
 AC_CHECK_HEADER(
-  [Awesomium/WebCore.h],
+  [Awesomium/awesomium_capi.h],
   [],
   AC_MSG_WARN([*** Awesomium header not Found.])
     enable_awesomium=no
@@ -351,15 +351,15 @@ if test x$enable_awesomium = xno; then
 else # enabling awesomium
 if test x$enable_berkelium = xno; then # awesomium without berkelium
 if test x$enable_links = xno; then # awesomium without berkelium/links
-   TEST_LIBS='-lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+   TEST_LIBS='-lgingaccplaawe -lawesomium -L/usr/lib/awesomium'
 else # awesomium with links
-   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplaawe -lawesomium -L/usr/lib/awesomium'
 fi
 else # awesomium with berkelium
 if test x$enable_links = xno; then # awesomium with berkelium without links
-   TEST_LIBS='-lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+   TEST_LIBS='-lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium -L/usr/lib/awesomium'
 else # awesomium with links/berkelium
-   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium-1.6.3 -L/usr/lib/awesomium-1.6.3'
+   TEST_LIBS='-lgingaccplalks -ltelemidialinks -lgingaccplabkl -llibberkelium -lgingaccplaawe -lawesomium -L/usr/lib/awesomium'
 fi
 fi
    AC_MSG_RESULT([*** Ginga Awesomium Player support will be built.])

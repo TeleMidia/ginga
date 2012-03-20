@@ -22,7 +22,7 @@ libgingaccplaawe_la_SOURCES = \
                               AwesomiumPlayer.cpp
 
 libgingaccplaawe_la_LIBADD  = \
-                              -lawesomium-1.6.3 \
+                              -lawesomium \
                               -ltelemidiautil \
                               -lgingaccmb \
                               -lgingaccplayer \
@@ -31,7 +31,7 @@ libgingaccplaawe_la_LIBADD  = \
                               $(COMPONENTS_LIBS) \
                               -L$(prefix)/lib \
                               -L$(prefix)/lib/ginga \
-                              -L/usr/lib/awesomium-1.6.3 \
+                              -L/usr/lib/awesomium \
                               -L../../../../
 
 libgingaccplaawe_la_LDFLAGS = \

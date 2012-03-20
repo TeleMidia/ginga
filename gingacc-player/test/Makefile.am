@@ -42,7 +42,7 @@ testAnime_LDADD       = \
                         -lgingaccsystem \
                         -L/lib/ -L/usr/lib/ \
                         -L$(prefix)/lib/ \
-                        -L/usr/lib/awesomium-1.6.3 \
+                        -L/usr/lib/awesomium \
                         -L$(prefix)/lib/ginga \
                         -L$(prefix)/lib/ginga/players \
                         -L../src/ \
@@ -79,10 +79,10 @@ testAwesomium_LDADD   = \
                         -lgingaccplayer \
                         -lgingaccmb \
                         -lgingaccsystem \
-                        -lawesomium-1.6.3 \
+                        -lawesomium \
                         -L/lib/ \
                         -L/usr/lib/ \
-                        -L/usr/lib/awesomium-1.6.3 \
+                        -L/usr/lib/awesomium \
                         -L$(prefix)/lib/ \
                         -L$(prefix)/lib/ginga \
                         -L$(prefix)/lib/ginga/players \

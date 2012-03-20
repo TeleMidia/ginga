@@ -106,8 +106,8 @@ namespace mb {
 		pthread_mutex_lock(&pMutex);
 		content = surface;
 
-		SDLDeviceScreen::addDMPToRendererList(this);
-		waitNTSRenderer();
+		//SDLDeviceScreen::addDMPToRendererList(this);
+		ntsPlayOver();
 
 		pthread_mutex_unlock(&pMutex);
 	}
