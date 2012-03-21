@@ -738,6 +738,7 @@ namespace mb {
 
 	void* SDLDeviceScreen::rendererT(void* ptr) {
 		map<SDLDeviceScreen*, short>::iterator i;
+		SDLDeviceScreen* s;
 		SDL_Event event;
 		int elapsedTime, decRate;
 		bool shiftOn = false;
@@ -772,7 +773,8 @@ namespace mb {
 
 				i = sdlScreens.begin();
 				while (i != sdlScreens.end()) {
-					if (i->first->im != NULL) {
+					s = i->first;
+					if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
 								i->first->im->getEventBuffer());
 
@@ -820,7 +822,7 @@ namespace mb {
 						break;
 
 					default:
-						++i;
+						i = sdlScreens.end();
 						break;
 				}
 			}
@@ -945,48 +947,50 @@ namespace mb {
 		pthread_mutex_lock(&s->winMutex);
 		pthread_mutex_lock(&wrMutex);
 
-		SDL_RenderClear(s->renderer);
+		if (s->renderer != NULL && !renderMap.empty()) {
+			SDL_RenderClear(s->renderer);
 
-		i = renderMap.find(s->id);
-		if (i != renderMap.end()) {
-			j = i->second->begin();
-			while (j != i->second->end()) {
-				k = j->second->begin();
-				while (k != j->second->end()) {
-					win = (SDLWindow*)(*k);
+			i = renderMap.find(s->id);
+			if (i != renderMap.end()) {
+				j = i->second->begin();
+				while (j != i->second->end()) {
+					k = j->second->begin();
+					while (k != j->second->end()) {
+						win = (SDLWindow*)(*k);
 
-					if (s->windowPool.find(win) != s->windowPool.end() &&
-							win->isVisible()) {
+						if (s->windowPool.find(win) != s->windowPool.end() &&
+								win->isVisible()) {
 
-						uSur   = (SDL_Surface*)(win->getContent());
+							uSur = (SDL_Surface*)(win->getContent());
 
-						if (uSur != NULL) {
-							ownTex = false;
-							uTex   = createTextureFromSurface(
-									s->renderer, uSur);
-
-						} else {
-							ownTex = true;
-							uTex   = win->getTexture();
-						}
-
-						drawWindow(s->renderer, uTex, win);
-						if (uTex != NULL) {
-							if (!ownTex) {
-								releaseTexture(uTex);
+							if (uSur != NULL) {
 								ownTex = false;
-							}
-							uTex = NULL;
-						}
+								uTex   = createTextureFromSurface(
+										s->renderer, uSur);
 
-						win->rendered();
+							} else {
+								ownTex = true;
+								uTex   = win->getTexture();
+							}
+
+							drawWindow(s->renderer, uTex, win);
+							if (uTex != NULL) {
+								if (!ownTex) {
+									releaseTexture(uTex);
+									ownTex = false;
+								}
+								uTex = NULL;
+							}
+
+							win->rendered();
+						}
+						++k;
 					}
-					++k;
+					++j;
 				}
-				++j;
 			}
+			SDL_RenderPresent(s->renderer);
 		}
-		SDL_RenderPresent(s->renderer);
 		pthread_mutex_unlock(&wrMutex);
 		pthread_mutex_unlock(&s->winMutex);
 	}
@@ -1198,6 +1202,7 @@ namespace mb {
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {
 		clearScreen(s);
 
+		pthread_mutex_lock(&s->winMutex);
 		if (s->uParentId == NULL && s->screen != NULL) {
 			SDL_HideWindow(s->screen);
 		}
@@ -1211,6 +1216,8 @@ namespace mb {
 			SDL_DestroyWindow(s->screen);
 			s->screen = NULL;
 		}
+
+		pthread_mutex_unlock(&s->winMutex);
 	}
 
 	bool SDLDeviceScreen::surfaceAction(SDLDeviceScreen* s) {
@@ -1269,8 +1276,8 @@ namespace mb {
 
 		cmp->getOriginalResolution(&w, &h);
 
-		clog << "SDLDeviceScreen::initCMP creating texture with w = '";
-		clog << w << "' and h = '" << h << "'" << endl;
+		/*clog << "SDLDeviceScreen::initCMP creating texture with w = '";
+		clog << w << "' and h = '" << h << "'" << endl;*/
 
 		texture = createTexture(s->renderer, w, h);
 		cmp->setProviderContent((void*)texture);

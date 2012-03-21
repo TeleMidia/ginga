@@ -120,9 +120,9 @@ namespace mb {
 		}
 
 		if (fontRefs == 0) {
+			initialized = false;
 			pthread_mutex_destroy(&ntsMutex);
 			TTF_Quit();
-			initialized = false;
 		}
 	}
 
@@ -210,6 +210,10 @@ namespace mb {
 
 	void SDLFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
+
+		if (font == NULL) {
+			initializeFont();
+		}
 
 		pthread_mutex_lock(&pMutex);
 

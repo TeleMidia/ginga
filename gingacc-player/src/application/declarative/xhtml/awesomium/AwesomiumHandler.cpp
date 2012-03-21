@@ -488,20 +488,20 @@ namespace player {
 			}
 
 			if (aInfo->rFile == "") {
-				aInfo->rFile = "/tmp/awesomium" + itos(
+				aInfo->rFile = SystemCompat::getGingaBinPath() + itos(
 						(long)(void*)aInfo) + ".png";
 			}
 
 			if (webView != NULL) {
-				clog << "AwesomiumHandler::loadUrl call loadUrl" << endl;
+				clog << "AwesomiumHandler::loadUrl call loadUrl '";
+				clog << aInfo->mURL << "'";
+				clog << endl;
 
 				if (fileExists(aInfo->mURL)) {
 					string base, file;
 
-					if (aInfo->mURL.substr(0, 1) == SystemCompat::getIUriD()) {
-						base = aInfo->mURL.substr(
-								0, aInfo->mURL.find_last_of(
-										SystemCompat::getIUriD()));
+					if (SystemCompat::isAbsolutePath(aInfo->mURL)) {
+						base = SystemCompat::getPath(aInfo->mURL);
 
 						file = aInfo->mURL.substr(
 								aInfo->mURL.find_last_of(

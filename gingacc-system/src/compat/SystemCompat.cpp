@@ -360,6 +360,12 @@ namespace compat {
 		return path;
 	}
 
+	string SystemCompat::getGingaBinPath() {
+		checkValues();
+
+		return gingaCurrentPath;
+	}
+
 	string SystemCompat::getUserCurrentPath() {
 		checkValues();
 
