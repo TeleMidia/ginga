@@ -644,18 +644,9 @@ namespace player {
 
 							key  = key + ('a' - 'A');
 						}
-
-						keyEvent.type               = AWE_WKT_CHAR;
-						keyEvent.text[0]            = key;
-						keyEvent.unmodified_text[0] = key;
-						keyEvent.virtual_key_code   = key;
-						keyEvent.native_key_code    = key;
-
-						awe_webview_inject_keyboard_event(webView, keyEvent);
-
-					} else {
-						injectKey(aInfo, i->second);
 			        }
+
+					injectKey(aInfo, key);
 				}
 				break;
 
