@@ -130,13 +130,13 @@ namespace compat {
 		string path, currentPath;
 
 		path = getenv("PATH");
-		if (path.find(":") != std::string::npos) {
-			pathD = ":";
-			iUriD = "/";
-
-		} else if (path.find(";") != std::string::npos) {
+		if (path.find(";") != std::string::npos) {
 			pathD = ";";
 			iUriD = "\\";
+
+		} else if (path.find(":") != std::string::npos) {
+			pathD = ":";
+			iUriD = "/";
 		}
 
 		params = split(path, pathD);
@@ -303,7 +303,7 @@ namespace compat {
 				(len >= 9 && path.substr(0,9) == "sbtvd-ts:") ||
 				(len >= 7 && path.substr(0,7) == "http://") ||
 				(len >= 6 && path.substr(0,6) == "ftp://") ||
-				(len >= 2 && path.substr(1,1) == ":") ||
+				(len >= 2 && path.substr(1,2) == ":" + iUriD) ||
 				(len >= 7 && path.substr(0,7) == "file://") ||
 				(len >= 6 && path.substr(0,6) == "tcp://") ||
 				(len >= 6 && path.substr(0,6) == "udp://") ||

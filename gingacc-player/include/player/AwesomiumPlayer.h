@@ -54,7 +54,6 @@ http://www.telemidia.puc-rio.br
 #include "AwesomiumHandler.h"
 
 #include <pthread.h>
-#include <sys/select.h>
 
 #include <set>
 #include <string>
