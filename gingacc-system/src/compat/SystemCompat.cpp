@@ -128,6 +128,11 @@ namespace compat {
 		vector<string>* params;
 		vector<string>::iterator i;
 		string path, currentPath;
+		string gingaBinary = "ginga";
+
+#ifdef WIN32
+		gingaBinary = "ginga.exe";
+#endif
 
 		path = getenv("PATH");
 		if (path.find(";") != std::string::npos) {
@@ -143,10 +148,14 @@ namespace compat {
 		if (params != NULL) {
 			i = params->begin();
 			while (i != params->end()) {
-				currentPath = (*i) + iUriD + "ginga";
+				currentPath = (*i) + iUriD + gingaBinary;
 				if (access((*i).c_str(), (int)X_OK) == 0) {
 					gingaCurrentPath = (*i);
 
+					clog << "SystemCompat::initializeGingaPath found ";
+					clog << "ginga binary file inside '" << gingaCurrentPath;
+					clog << "'";
+					clog << endl;
 					if (gingaCurrentPath.find_last_of(iUriD) !=
 							gingaCurrentPath.length() - 1) {
 
@@ -229,6 +238,8 @@ namespace compat {
 		vector<string>::iterator it;
 		string::size_type pos;
 
+		checkValues();
+
 		if (dir.find("<") != std::string::npos) {
 			return dir;
 		}
@@ -248,7 +259,16 @@ namespace compat {
 			if ((it + 1) != params->end()) {
 				temp = *(it + 1);
 				if (temp != ".." || found) {
+#ifdef WIN32
+					if (newDir == "") {
+						newDir = (*it); //Drive letter:
+
+					} else {
+						newDir = newDir + iUriD + (*it);
+					}
+#else
 					newDir = newDir + iUriD + (*it);
+#endif //WIN32
 
 				} else {
 					++it;
