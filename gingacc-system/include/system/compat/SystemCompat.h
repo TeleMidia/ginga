@@ -128,6 +128,7 @@ namespace compat {
 
 			static string getPath(string filename);
 
+			static string getGingaBinPath();
 			static string getUserCurrentPath();
 
 			/*

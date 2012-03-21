@@ -203,7 +203,7 @@ namespace player {
 		tv.tv_usec = 100000;*/
 
 		while (running) {
-			if (p != NULL) {
+			if (p != NULL && p->status == PLAY) {
 				AwesomiumHandler::loadUrl(p->awesome, p->mrl);
 				p->stopped();
 
