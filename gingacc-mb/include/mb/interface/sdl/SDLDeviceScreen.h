@@ -201,14 +201,17 @@ typedef struct {
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
 			void blitScreen(ISurface* destination);
 			void blitScreen(string fileUri);
-			void refreshScreen();
 
 		private:
 			void blitScreen(SDL_Surface* destination);
+			void setInitScreenFlag();
+
+		public:
+			void refreshScreen();
 
 
 			/* interfacing output */
-		public:
+
 			IWindow* createWindow(int x, int y, int w, int h, int z);
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
