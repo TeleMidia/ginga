@@ -62,13 +62,12 @@ namespace mb {
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
 
-		SDL_Renderer* renderer;
-
 		myScreen   = screenId;
+		win        = NULL;
 		isWaiting  = false;
 
-		pthread_mutex_init(&cMutex, NULL);
-		pthread_cond_init(&cond, NULL);
+		/*pthread_mutex_init(&cMutex, NULL);
+		pthread_cond_init(&cond, NULL);*/
 
 		if (decoder != NULL) {
 			getOriginalResolution(&wRes, &hRes);
@@ -138,7 +137,6 @@ namespace mb {
 
 		int i;
 		IWindow* parent;
-		SDLWindow* win;
 
 		SDLDeviceScreen::addCMPToRendererList(this);
 		parent = (IWindow*)(surface->getParent());
@@ -149,13 +147,7 @@ namespace mb {
 				if (!decoder->hasTexture()) {
 					waitTexture();
 				}
-
-				win->setTexture(decoder->getTexture());
 			}
-		}
-
-		if (decoder != NULL) {
-			decoder->play();
 		}
 	}
 
@@ -186,15 +178,21 @@ namespace mb {
 
 	void SDLVideoProvider::waitTexture() {
 		isWaiting = true;
-		pthread_mutex_lock(&cMutex);
+		/*pthread_mutex_lock(&cMutex);
 		pthread_cond_wait(&cond, &cMutex);
 		isWaiting = false;
-		pthread_mutex_unlock(&cMutex);
+		pthread_mutex_unlock(&cMutex);*/
 	}
 
 	bool SDLVideoProvider::textureCreated() {
 		if (isWaiting) {
-			pthread_cond_signal(&cond);
+			if (decoder != NULL) {
+				if (win != NULL) {
+					((SDLWindow*)win)->setTexture(decoder->getTexture());
+				}
+				decoder->play();
+			}
+			//pthread_cond_signal(&cond);
 			return true;
 		}
 		return false;

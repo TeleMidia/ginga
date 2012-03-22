@@ -103,8 +103,8 @@ namespace mb {
 
 		if (!init) {
 			init = true;
-			getAudioSpec(&wantedSpec, 44100, 2);
-			wantedSpec.size = wantedSpec.channels * wantedSpec.samples * 2;
+			getAudioSpec(&wantedSpec, ASD_SAMPLE_R, ASD_CHANNELS);
+			wantedSpec.size = ASD_BUF_SIZE;
 			pthread_mutex_init(&iMutex, NULL);
 		}
 
@@ -1829,7 +1829,7 @@ namespace mb {
 			}
 
 			audio_size = synchronize_audio(
-					(int16_t *)is->audio_buf,
+					(short*)(int16_t*)is->audio_buf,
 					audio_size,
 					pts);
 
@@ -2260,7 +2260,7 @@ namespace mb {
 			spec->format   = AUDIO_S16SYS;
 			spec->samples  = SDL_AUDIO_BUFFER_SIZE;
 			spec->silence  = 0;
-			spec->userdata = this;
+			spec->userdata = NULL;
 			spec->callback = SDL2ffmpeg::sdl_audio_callback;
 			spec->freq     = sample_rate;
 			spec->channels = channels;

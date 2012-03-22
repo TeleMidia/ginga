@@ -322,9 +322,21 @@ namespace mb {
 
   class SDL2ffmpeg {
 	private:
+		//decoder status
 		static const short ST_PLAYING = 0;
 		static const short ST_PAUSED  = 1;
 		static const short ST_STOPPED = 2;
+
+		//desired audio specification default values
+		static const int ASD_BUF_SIZE = 4096;
+		static const int ASD_SAMPLE_R = 22050;
+		static const int ASD_CHANNELS = 2;
+
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		static const int ASD_FORMAT   = AUDIO_S16LSB;
+#else
+		static const int ASD_FORMAT   = AUDIO_S16MSB;
+#endif
 
 		int wanted_stream[AVMEDIA_TYPE_NB];
 		int seek_by_bytes;

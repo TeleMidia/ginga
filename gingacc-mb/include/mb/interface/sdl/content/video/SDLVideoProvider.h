@@ -69,9 +69,11 @@ namespace mb {
 			int wRes;
 			int hRes;
 
+			IWindow* win;
+
 			bool isWaiting;
-			pthread_mutex_t cMutex;
-			pthread_cond_t cond;
+			/*pthread_mutex_t cMutex;
+			pthread_cond_t cond;*/
 
 		public:
 			SDLVideoProvider(GingaScreenID screenId, const char* mrl);

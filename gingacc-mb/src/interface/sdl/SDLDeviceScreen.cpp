@@ -179,6 +179,8 @@ namespace mb {
 			pthread_mutex_init(&mplMutex, NULL);
 
 			if (!hasERC) {
+				setInitScreenFlag();
+
 				pthread_t tId;
 				pthread_attr_t tattr;
 
@@ -188,12 +190,15 @@ namespace mb {
 
 				pthread_create(&tId, &tattr, SDLDeviceScreen::rendererT, this);
 				pthread_detach(tId);
-			}
-		}
 
-		pthread_mutex_lock(&sMutex);
-		sdlScreens[this] = STP_INIT;
-		pthread_mutex_unlock(&sMutex);
+			} else {
+				setInitScreenFlag();
+				rendererT(this);
+			}
+
+		} else {
+			setInitScreenFlag();
+		}
 	}
 
 	SDLDeviceScreen::~SDLDeviceScreen() {
@@ -380,11 +385,18 @@ namespace mb {
 		pthread_mutex_unlock(&uSurMutex);
 	}
 
+	void SDLDeviceScreen::setInitScreenFlag() {
+		pthread_mutex_lock(&sMutex);
+		sdlScreens[this] = STP_INIT;
+		pthread_mutex_unlock(&sMutex);
+	}
+
 	void SDLDeviceScreen::refreshScreen() {
 		if (hasERC) {
 			rendererT(NULL);
 		}
 	}
+
 
 	/* interfacing output */
 
@@ -776,11 +788,10 @@ namespace mb {
 					s = i->first;
 					if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
-								i->first->im->getEventBuffer());
+								s->im->getEventBuffer());
 
-						if (((SDLEventBuffer::checkEvent(i->first->sdlId, event)
-								&& i->first->uParentId == NULL)
-								|| checkEventFocus(i->first))) {
+						if (((SDLEventBuffer::checkEvent(s->sdlId, event) &&
+								s->uParentId == NULL) || checkEventFocus(s))) {
 
 							eventBuffer->feed(event, capsOn, shiftOn);
 						}

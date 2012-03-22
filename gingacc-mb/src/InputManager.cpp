@@ -66,11 +66,8 @@ namespace mb {
 		maxY                  = 0;
 		lastEventTime         = 0;
 		myScreen              = screenId;
-
-		eventBuffer           = LocalScreenManager::getInstance()->
-				createEventBuffer(myScreen);
-
-		running               = true;
+		eventBuffer           = NULL;
+		running               = false;
 		notifying             = false;
 		notifyingApp          = false;
 		ief                   = new InputEventFactory();
@@ -83,7 +80,6 @@ namespace mb {
 		pthread_mutex_init(&mlMutex, NULL);
 
 		initializeInputIntervalTime();
-		Thread::start();
 	}
 
 	InputManager::~InputManager() {
@@ -563,6 +559,16 @@ namespace mb {
 	}
 
 	IEventBuffer* InputManager::getEventBuffer() {
+		if (eventBuffer == NULL) {
+			eventBuffer = LocalScreenManager::getInstance()->
+					createEventBuffer(myScreen);
+
+			if (!running) {
+				running = true;
+				Thread::start();
+			}
+		}
+
 		return eventBuffer;
 	}
 
