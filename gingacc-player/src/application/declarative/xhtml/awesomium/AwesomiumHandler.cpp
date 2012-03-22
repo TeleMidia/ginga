@@ -418,8 +418,10 @@ namespace player {
 				if (fromGingaToAwesomium.empty()) {
 					initCodeMap();
 				}
-
 				str_custom_css = "::-webkit-scrollbar { display: none; }";
+				str_custom_css = str_custom_css +
+						"body { font-size: 12px !important; }";
+
 				awe_custom_css = awe_string_create_from_utf8(
 						str_custom_css.c_str(), str_custom_css.length());
 
