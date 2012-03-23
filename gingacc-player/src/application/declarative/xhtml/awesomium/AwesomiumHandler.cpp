@@ -113,7 +113,7 @@ namespace player {
 		pthread_mutex_destroy(&_eM);
 	}
 
-	void AwesomiumInfo::useEvent() {
+	void AwesomiumInfo::waitEvent() {
 		_eMVarW = true;
 		pthread_mutex_lock(&_eM);
 		pthread_cond_wait(&_eMVar, &_eM);
@@ -122,7 +122,7 @@ namespace player {
 		pthread_mutex_unlock(&_eM);
 	}
 
-	bool AwesomiumInfo::eventUsed() {
+	bool AwesomiumInfo::eventArrived() {
 		if (_eMVarW) {
 			pthread_cond_signal(&_eMVar);
 			return true;
@@ -143,6 +143,28 @@ namespace player {
 
 		} else {
 			this->eventType = ET_NONE;
+		}
+
+		eventArrived();
+		return true;
+	}
+
+	bool AwesomiumInfo::motionEventReceived(int x, int y, int z) {
+		int tmpX, tmpY;
+
+		tmpX = x - this->x;
+		tmpY = y - this->y;
+
+		/*clog << "AwesomiumInfo::motionEventReceived (" << x << "," << y;
+		clog << ") current mouse position (" << mouseX << "," << mouseY;
+		clog << ") window position (";
+		clog << this->x << "," << this->y << "," << this->w << "," << this->h;
+		clog << ")" << endl;*/
+
+		if (tmpX <= this->w && tmpY <= this->h &&
+				(tmpX != mouseX || tmpY != mouseY)) {
+
+			eventArrived();
 		}
 
 		return true;
@@ -362,6 +384,7 @@ namespace player {
 		if (getAwesomeInfo(id, &aInfo, true)) {
 			if (getAwesomeIM(id, &im, true)) {
 				im->removeInputEventListener(aInfo);
+				im->removeMotionEventListener(aInfo);
 			}
 			delete aInfo;
 		}
@@ -434,7 +457,7 @@ namespace player {
 						awe_string_empty(), //user_data_path
 						awe_string_empty(), //plugin_path
 						awe_string_empty(), //log_path
-						AWE_LL_NORMAL,      //log_level
+						AWE_LL_VERBOSE,      //log_level
 						false,              //force_single_process
 						awe_string_empty(), //child_process_path
 						true,               //enable_auto_detect_encoding
@@ -495,6 +518,8 @@ namespace player {
 			}
 
 			if (webView != NULL) {
+				awe_webview_activate_ime(webView, false);
+
 				clog << "AwesomiumHandler::loadUrl call loadUrl '";
 				clog << aInfo->mURL << "'";
 				clog << endl;
@@ -550,8 +575,6 @@ namespace player {
 					awe_string_destroy(awe_file);
 				}
 
-				setFocus(aInfo);
-
 				clog << "AwesomiumHandler::loadUrl call while isloading '";
 				clog << aInfo->mURL << "'" << endl;
 
@@ -568,14 +591,21 @@ namespace player {
 
 				clog << "AwesomiumHandler::loadUrl refresh OK" << endl;
 
+				unfocus(aInfo);
+
 				while (aInfo->update) {
-					update(aInfo, 25);
+					do {
+						update(aInfo, 50);
+					} while (awe_webview_is_loading_page(webView));
+
 					setFocus(aInfo);
 					if (awe_webview_is_dirty(webView)) {
 						refresh(id);
 					}
 
 					AwesomiumHandler::eventHandler(aInfo);
+					//refresh(id);
+					//aInfo->waitEvent();
 				}
 
 				destroyAwesomium(aInfo->id);
@@ -609,8 +639,6 @@ namespace player {
 		int keyCode      = aInfo->eventCode;
 
 		aInfo->eventType = AwesomiumInfo::ET_NONE;
-		aInfo->eventUsed();
-
 		if (!aInfo->hasFocus) {
 			return;
 		}
@@ -760,31 +788,47 @@ namespace player {
 
 		if (getAwesomeInfo(id, &aInfo)) {
 			aInfo->setFocus = focus;
+			aInfo->eventArrived();
 		}
 	}
 
 	void AwesomiumHandler::setFocus(AwesomiumInfo* aInfo) {
-		IInputManager* im;
-
 		if (aInfo->setFocus && !aInfo->hasFocus) {
-			aInfo->hasFocus = true;
-			if (getAwesomeIM(aInfo->id, &im, false)) {
-				im->addInputEventListener(aInfo, NULL);
-			}
-			if (webView != NULL) {
-				clog << "AwesomiumHandler::setFocus focus" << endl;
-				awe_webview_focus(webView);
-			}
+			focus(aInfo);
 
 		} else if (!aInfo->setFocus && aInfo->hasFocus) {
-			aInfo->hasFocus = false;
-			if (getAwesomeIM(aInfo->id, &im, false)) {
-				im->removeInputEventListener(aInfo);
-			}
-			if (webView != NULL) {
-				clog << "AwesomiumHandler::setFocus unfocus" << endl;
-				awe_webview_unfocus(webView);
-			}
+			unfocus(aInfo);
+		}
+	}
+
+	void AwesomiumHandler::focus(AwesomiumInfo* aInfo) {
+		IInputManager* im;
+
+		aInfo->hasFocus = true;
+		if (getAwesomeIM(aInfo->id, &im, false)) {
+			im->addInputEventListener(aInfo, NULL);
+			//im->addMotionEventListener(aInfo);
+		}
+		if (webView != NULL) {
+			clog << "AwesomiumHandler::focus" << endl;
+			awe_webview_focus(webView);
+			awe_webview_resume_rendering(webView);
+		}
+	}
+
+	void AwesomiumHandler::unfocus(AwesomiumInfo* aInfo) {
+		IInputManager* im;
+
+		aInfo->hasFocus = false;
+		if (getAwesomeIM(aInfo->id, &im, false)) {
+			im->removeInputEventListener(aInfo);
+			im->removeMotionEventListener(aInfo);
+		}
+
+		if (webView != NULL) {
+			clog << "AwesomiumHandler::unfocus" << endl;
+			awe_webview_unfocus(webView);
+			awe_webview_pause_rendering(webView);
 		}
 	}
 
@@ -824,6 +868,7 @@ namespace player {
 
 		if (getAwesomeInfo(id, &aInfo)) {
 			aInfo->update = false;
+			aInfo->eventArrived();
 		}
 	}
 }

@@ -323,14 +323,13 @@ namespace mb {
 
   class SDL2ffmpeg {
 	private:
-		//decoder status
+		//stream status
 		static const short ST_PLAYING = 0;
 		static const short ST_PAUSED  = 1;
 		static const short ST_STOPPED = 2;
 
 		//desired audio specification default values
-		static const int ASD_BUF_LEN  = 4096;
-		static const int ASD_SAMPLES  = 1024;
+		static const int ASD_SAMPLES  = 4096;
 		static const int ASD_FREQ     = 44100;
 		static const int ASD_CHANNELS = 2;
 
@@ -459,7 +458,7 @@ namespace mb {
 		static void clamp(short* buf, int len);
 		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
 
-		static int subtitle_thread(void *arg);
+		static int subtitle_refresh(void *arg);
 
 		static struct SwsContext* createContext(
 				int inWidth,

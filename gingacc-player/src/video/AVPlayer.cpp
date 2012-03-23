@@ -1340,6 +1340,7 @@ namespace player {
 		}
 
 		Player::play();
+		clog << "AVPlayer::play() calling provider play over" << endl;
 		provider->playOver(surface, hasVisual, this);
 
 		if (!running) {
@@ -1545,6 +1546,7 @@ namespace player {
 	void AVPlayer::run() {
 		double dur;
 		double currentTime;
+		double lastCurrentTime = -1;
 		double timeRemain;
 		double totalTime;
 
@@ -1651,6 +1653,11 @@ namespace player {
 						clog << "' => exiting" << endl;
 						break;
 					}
+
+					if (lastCurrentTime == currentTime && status != PAUSE) {
+						break;
+					}
+					lastCurrentTime = currentTime;
 				}
 
 				clog << "AVPlayer::run has exited from loop cause dur = '";

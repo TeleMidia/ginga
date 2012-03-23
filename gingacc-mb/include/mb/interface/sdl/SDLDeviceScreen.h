@@ -107,7 +107,7 @@ typedef struct {
 			static const short SUW_RAISETOTOP    = 2;
 			static const short SUW_LOWERTOBOTTOM = 3;
 
-			static const short SDLDS_FPS         = 30;
+			static const short SDLDS_FPS         = 35;
 			static const int sleepTime           = (int)(1000000/SDLDS_FPS);
 
 		private:
