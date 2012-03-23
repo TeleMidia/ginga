@@ -125,7 +125,7 @@ extern "C" {
 
 /* SDL audio buffer size, in samples. Should be small to have precise
    A/V sync as SDL does not have hardware buffer fullness info. */
-#define SDL_AUDIO_BUFFER_SIZE 1024
+//#define SDL_AUDIO_BUFFER_SIZE 1024
 
 /* no AV sync correction is done if below the AV sync threshold */
 #define AV_SYNC_THRESHOLD 0.01
@@ -239,7 +239,8 @@ namespace mb {
 		PacketQueue audioq;
 		int audio_hw_buf_size;
 		DECLARE_ALIGNED(16,uint8_t,audio_buf2)[AVCODEC_MAX_AUDIO_FRAME_SIZE * 4];
-		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
+//		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
+		uint8_t silence_buf[4096];
 		uint8_t *audio_buf;
 		uint8_t *audio_buf1;
 
@@ -328,8 +329,9 @@ namespace mb {
 		static const short ST_STOPPED = 2;
 
 		//desired audio specification default values
-		static const int ASD_BUF_SIZE = 4096;
-		static const int ASD_SAMPLE_R = 22050;
+		static const int ASD_BUF_LEN  = 4096;
+		static const int ASD_SAMPLES  = 1024;
+		static const int ASD_FREQ     = 44100;
 		static const int ASD_CHANNELS = 2;
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
@@ -372,6 +374,7 @@ namespace mb {
 
 		short state;
 		SDL_AudioSpec spec;
+		SDL_AudioCVT acvt;
 		float soundLevel;
 		SDL_Texture* texture;
 		bool hasPic;
