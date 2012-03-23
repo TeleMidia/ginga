@@ -57,6 +57,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "mb/IInputManager.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IInputEventListener.h"
+#include "mb/interface/IMotionEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <stdio.h>
@@ -81,7 +82,10 @@ namespace core {
 namespace player {
 	typedef int AwesomiumHDR;
 
-	class AwesomiumInfo : public IInputEventListener {
+	class AwesomiumInfo :
+			public IInputEventListener,
+			public IMotionEventListener {
+
 		public:
 			static const short ET_NONE   = 0;
 			static const short ET_KEY    = 1;
@@ -109,9 +113,11 @@ namespace player {
 			AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id);
 			virtual ~AwesomiumInfo();
 
-			void useEvent();
-			bool eventUsed();
+			void waitEvent();
+			bool eventArrived();
+
 			bool userEventReceived(IInputEvent* ev);
+			bool motionEventReceived(int x, int y, int z);
 	};
 
 	class AwesomiumHandler {
@@ -155,6 +161,8 @@ namespace player {
 
 		private:
 			static void setFocus(AwesomiumInfo* aInfo);
+			static void focus(AwesomiumInfo* aInfo);
+			static void unfocus(AwesomiumInfo* aInfo);
 
 		public:
 			static void eventHandler(AwesomiumInfo* aInfo);

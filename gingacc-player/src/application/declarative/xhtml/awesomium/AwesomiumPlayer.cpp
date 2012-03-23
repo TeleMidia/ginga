@@ -210,6 +210,8 @@ namespace player {
 			} else {
 				SystemCompat::uSleep(300000);
 			}
+
+			clog << "AwesomiumPlayer::_loadUrl" << endl;
 		}
 
 		return (NULL);

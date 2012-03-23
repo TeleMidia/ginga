@@ -118,6 +118,7 @@ namespace mb {
 	void SDLAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
+		clog << "SDLAudioProvider::playOver" << endl;
 		SDLDeviceScreen::addCMPToRendererList(this);
 		if (decoder != NULL) {
 			decoder->play();

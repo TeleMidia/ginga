@@ -98,8 +98,6 @@ namespace mb {
 		this->drawData.clear();
 		pthread_mutex_unlock(&ddMutex);
 		pthread_mutex_destroy(&ddMutex);
-
-		clog << "SDLSurface::~SDLSurface all done" << endl;
 	}
 
 	void SDLSurface::releaseChromaColor() {

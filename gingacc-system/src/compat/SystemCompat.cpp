@@ -311,23 +311,27 @@ namespace compat {
 			return true;
 		}
 
+		len = path.length();
+		if ((len >= 10 && path.substr(0,10) == "x-sbtvdts:")  ||
+				(len >= 9 && path.substr(0,9) == "sbtvd-ts:") ||
+				(len >= 7 && path.substr(0,7) == "http://")   ||
+				(len >= 6 && path.substr(0,6) == "ftp://")    ||
+				(len >= 7 && path.substr(0,7) == "file://")   ||
+				(len >= 6 && path.substr(0,6) == "tcp://")    ||
+				(len >= 6 && path.substr(0,6) == "udp://")    ||
+				(len >= 6 && path.substr(0,6) == "rtp://")) {
+
+			return true;
+		}
+
 		i = path.find_first_of(fUriD);
 		while (i != string::npos) {
 			path.replace(i, 1, iUriD);
 			i = path.find_first_of(fUriD);
 		}
 
-		len = path.length();
 		if ((len >= 1 && path.substr(0,1) == iUriD) ||
-				(len >= 10 && path.substr(0,10) == "x-sbtvdts:") ||
-				(len >= 9 && path.substr(0,9) == "sbtvd-ts:") ||
-				(len >= 7 && path.substr(0,7) == "http://") ||
-				(len >= 6 && path.substr(0,6) == "ftp://") ||
-				(len >= 2 && path.substr(1,2) == ":" + iUriD) ||
-				(len >= 7 && path.substr(0,7) == "file://") ||
-				(len >= 6 && path.substr(0,6) == "tcp://") ||
-				(len >= 6 && path.substr(0,6) == "udp://") ||
-				(len >= 6 && path.substr(0,6) == "rtp://")) {
+				(len >= 2 && path.substr(1,2) == ":" + iUriD)) {
 
 			return true;
 		}

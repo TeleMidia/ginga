@@ -552,7 +552,12 @@ namespace mb {
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 		provider->setLoadSymbol(strSym);
 #else
-		provider = new SDLVideoProvider(id, mrl);
+		if (hasVisual) {
+			provider = new SDLVideoProvider(id, mrl);
+
+		} else {
+			provider = new SDLAudioProvider(id, mrl);
+		}
 #endif
 
 		cmpPool.insert(provider);
@@ -846,13 +851,14 @@ namespace mb {
 				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 				if (elapsedTime < sleepTime) {
-					if (decRate == 0) {
+					SystemCompat::uSleep((sleepTime - elapsedTime) / 100);
+					/*if (decRate == 0) {
 						SystemCompat::uSleep((sleepTime - elapsedTime) / 10);
 
 					} else {
 						SystemCompat::uSleep(
 								(sleepTime - elapsedTime) / (10 * decRate));
-					}
+					}*/
 				}
 			}
 		}
