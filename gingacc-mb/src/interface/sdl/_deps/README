@@ -3,11 +3,11 @@ Ginga SDL Multimedia Backend has the following external dependencies:
 SDL 2.0.0-6302
 http://www.libsdl.org/tmp/
 
-SDL_image 1.2.12
-http://www.libsdl.org/projects/SDL_image/release/
+SDL_image (mercurial version compatible with SDL2)
+http://hg.libsdl.org/SDL_image/
 
-SDL_ttf 2.0.11
-http://www.libsdl.org/projects/SDL_ttf/release/
+SDL_ttf (mercurial version compatible with SDL2)
+http://hg.libsdl.org/SDL_ttf/
 
 ffmpeg 0.9.1
 http://ffmpeg.org/download.html#release_0.9
