@@ -125,10 +125,10 @@ namespace thread {
 	}
 
 	bool Thread::sleep(long int seconds) {
-		return this->uSleep(seconds * 1000);
+		return this->mSleep(seconds * 1000);
 	}
 
-	bool Thread::uSleep(long int milliseconds) {
+	bool Thread::mSleep(long int milliseconds) {
 		int res;
 		struct timeval time;
 		struct timespec timeOut;

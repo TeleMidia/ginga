@@ -119,8 +119,6 @@ namespace mb {
 					int x=0, int y=0, short align=A_TOP_LEFT);
 
 			void playOver(ISurface* surface);
-
-			void ntsPlayOver(){};
 	};
 }
 }

@@ -1637,11 +1637,11 @@ namespace player {
 									"");
 						}
 
-						if (!this->uSleep(65)) { // 15 fps
+						if (!this->mSleep(65)) { // 15 fps
 							break;
 						}
 
-					} else if (!this->uSleep(timeRemain)) {
+					} else if (!this->mSleep(timeRemain)) {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
 						break;

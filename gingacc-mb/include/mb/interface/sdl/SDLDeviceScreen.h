@@ -97,17 +97,13 @@ typedef struct {
 			static const short STP_CLEAR         = 2;
 			static const short STP_RELEASE       = 3;
 
-			static const short SPA_NONE          = 0;
-			static const short SPA_CREATE        = 1;
-			static const short SPA_BLIT          = 2;
-
 		public:
 			static const short SUW_SHOW          = 0;
 			static const short SUW_HIDE          = 1;
 			static const short SUW_RAISETOTOP    = 2;
 			static const short SUW_LOWERTOBOTTOM = 3;
 
-			static const short SDLDS_FPS         = 35;
+			static const short SDLDS_FPS         = 25;
 			static const int sleepTime           = (int)(1000000/SDLDS_FPS);
 
 		private:
@@ -136,12 +132,6 @@ typedef struct {
 			GingaWindowID uParentId;
 			IInputManager* im;
 
-			SDL_Surface* uSur;
-			int uSurW;
-			int uSurH;
-			pthread_mutex_t uSurMutex;
-			short uSurPendingAction;
-
 			bool waitingCreator;
 			pthread_mutex_t cMutex;
 			pthread_cond_t cond;
@@ -162,6 +152,7 @@ typedef struct {
 			static map<int, int> gingaToSDLCodeMap;
 			static map<int, int> sdlToGingaCodeMap;
 
+			static pthread_mutex_t uSurMutex;
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
 
@@ -169,7 +160,6 @@ typedef struct {
 			static pthread_mutex_t wrMutex;
 
 			static set<IContinuousMediaProvider*> cmpRenderList;
-			static set<IDiscreteMediaProvider*> dmpRenderList;
 			static pthread_mutex_t mplMutex;
 
 		public:
@@ -245,9 +235,6 @@ typedef struct {
 			static void addCMPToRendererList(IContinuousMediaProvider* cmp);
 			static void removeCMPToRendererList(IContinuousMediaProvider* cmp);
 
-			static void addDMPToRendererList(IDiscreteMediaProvider* dmp);
-			static void removeDMPToRendererList(IDiscreteMediaProvider* dmp);
-
 			static void createReleaseContainer(
 					SDL_Surface* uSur,
 					SDL_Texture* uTex,
@@ -260,14 +247,11 @@ typedef struct {
 
 			static void refreshRC(SDLDeviceScreen* screen);
 			static int refreshCMP(SDLDeviceScreen* screen);
-			static void refreshDMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
 
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
 			static void releaseScreen(SDLDeviceScreen* screen);
-
-			static bool surfaceAction(SDLDeviceScreen* screen);
 
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
@@ -319,7 +303,6 @@ typedef struct {
 					vector<IWindow*>* windows, IWindow* win);
 
 		public:
-
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
 		private:
@@ -355,10 +338,6 @@ typedef struct {
 					Uint32* gmask,
 					Uint32* bmask,
 					Uint32* amask);
-
-		private:
-			void waitSurfaceAction();
-			bool surfaceActionExecuted();
 	};
 }
 }

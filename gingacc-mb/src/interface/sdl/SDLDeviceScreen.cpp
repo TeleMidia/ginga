@@ -93,6 +93,8 @@ namespace mb {
 	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
 	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
 
+	pthread_mutex_t SDLDeviceScreen::uSurMutex;
+
 	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	pthread_mutex_t SDLDeviceScreen::rlMutex;
 
@@ -100,7 +102,6 @@ namespace mb {
 	pthread_mutex_t SDLDeviceScreen::wrMutex;
 
 	set<IContinuousMediaProvider*> SDLDeviceScreen::cmpRenderList;
-	set<IDiscreteMediaProvider*> SDLDeviceScreen::dmpRenderList;
 	pthread_mutex_t SDLDeviceScreen::mplMutex;
 
 	const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
@@ -161,10 +162,6 @@ namespace mb {
 		pthread_mutex_init(&cMutex, NULL);
 		pthread_cond_init(&cond, NULL);
 
-		uSur              = NULL;
-		uSurPendingAction = SPA_NONE;
-		pthread_mutex_init(&uSurMutex, NULL);
-
 		pthread_mutex_init(&winMutex, NULL);
 		pthread_mutex_init(&surMutex, NULL);
 		pthread_mutex_init(&cmpMutex, NULL);
@@ -172,6 +169,8 @@ namespace mb {
 
 		if (!hasRenderer) {
 			hasRenderer = true;
+
+			pthread_mutex_init(&uSurMutex, NULL);
 
 			pthread_mutex_init(&sMutex, NULL);
 			pthread_mutex_init(&wrMutex, NULL);
@@ -209,10 +208,6 @@ namespace mb {
 		waitingCreator = false;
 		pthread_mutex_destroy(&cMutex);
 		pthread_cond_destroy(&cond);
-
-		uSur              = NULL;
-		uSurPendingAction = SPA_NONE;
-		pthread_mutex_destroy(&uSurMutex);
 
 		pthread_mutex_lock(&sMutex);
 		i = sdlScreens.find(this);
@@ -270,10 +265,10 @@ namespace mb {
 
 		pthread_mutex_lock(&mplMutex);
 		hasRenderer = false;
-		dmpRenderList.clear();
 		cmpRenderList.clear();
 		pthread_mutex_unlock(&mplMutex);
 
+		pthread_mutex_destroy(&uSurMutex);
 		pthread_mutex_destroy(&sMutex);
 		pthread_mutex_destroy(&wrMutex);
 		pthread_mutex_destroy(&rlMutex);
@@ -369,20 +364,32 @@ namespace mb {
 		dest = createUnderlyingSurface(wRes, hRes);
 		blitScreen(dest);
 
+		pthread_mutex_lock(&uSurMutex);
 		SDL_SaveBMP_RW(dest, SDL_RWFromFile(fileUri.c_str(), "wb"), 1);
+		pthread_mutex_unlock(&uSurMutex);
 	}
 
 	void SDLDeviceScreen::blitScreen(SDL_Surface* dest) {
-		pthread_mutex_lock(&uSurMutex);
-		SDL_Surface* newUSur = NULL;
+		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
+		map<int, set<IWindow*>*>::iterator j;
+		set<IWindow*>::iterator k;
 
-		uSurW             = wRes;
-		uSurH             = hRes;
-		uSur              = dest;
-		uSurPendingAction = SPA_BLIT;
-		waitSurfaceAction();
-
-		pthread_mutex_unlock(&uSurMutex);
+		pthread_mutex_lock(&wrMutex);
+		pthread_mutex_lock(&winMutex);
+		i = renderMap.find(id);
+		if (i != renderMap.end()) {
+			j = i->second->begin();
+			while (j != i->second->end()) {
+				k = j->second->begin();
+				while (k != j->second->end()) {
+					blitFromWindow((*k), dest);
+					++k;
+				}
+				++j;
+			}
+		}
+		pthread_mutex_unlock(&winMutex);
+		pthread_mutex_unlock(&wrMutex);
 	}
 
 	void SDLDeviceScreen::setInitScreenFlag() {
@@ -690,23 +697,6 @@ namespace mb {
 		pthread_mutex_unlock(&mplMutex);
 	}
 
-	void SDLDeviceScreen::addDMPToRendererList(IDiscreteMediaProvider* dmp) {
-		pthread_mutex_lock(&mplMutex);
-		dmpRenderList.insert(dmp);
-		pthread_mutex_unlock(&mplMutex);
-	}
-
-	void SDLDeviceScreen::removeDMPToRendererList(IDiscreteMediaProvider* dmp) {
-		set<IDiscreteMediaProvider*>::iterator i;
-
-		pthread_mutex_lock(&mplMutex);
-		i = dmpRenderList.find(dmp);
-		if (i != dmpRenderList.end()) {
-			dmpRenderList.erase(i);
-		}
-		pthread_mutex_unlock(&mplMutex);
-	}
-
 	void SDLDeviceScreen::createReleaseContainer(
 			SDL_Surface* uSur,
 			SDL_Texture* uTex,
@@ -811,9 +801,7 @@ namespace mb {
 			while (i != sdlScreens.end()) {
 				switch (i->second) {
 					case STP_NONE:
-						surfaceAction(i->first);
 						decRate = refreshCMP(i->first);
-						refreshDMP(i->first);
 						refreshWin(i->first);
 
 						++i;
@@ -851,9 +839,9 @@ namespace mb {
 				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 				if (elapsedTime < sleepTime) {
-					SystemCompat::uSleep((sleepTime - elapsedTime) / 100);
+					SystemCompat::uSleep(sleepTime - elapsedTime);
 					/*if (decRate == 0) {
-						SystemCompat::uSleep((sleepTime - elapsedTime) / 10);
+						SystemCompat::uSleep(sleepTime - elapsedTime);
 
 					} else {
 						SystemCompat::uSleep(
@@ -924,31 +912,6 @@ namespace mb {
 		pthread_mutex_unlock(&s->cmpMutex);
 
 		return size;
-	}
-
-	void SDLDeviceScreen::refreshDMP(SDLDeviceScreen* s) {
-		set<IDiscreteMediaProvider*>::iterator i;
-		set<IDiscreteMediaProvider*>::iterator j;
-		IDiscreteMediaProvider* dmp;
-		ISurface* surface;
-
-		pthread_mutex_lock(&s->dmpMutex);
-		pthread_mutex_lock(&mplMutex);
-		i = dmpRenderList.begin();
-		while (i != dmpRenderList.end()) {
-			dmp = (*i);
-			j = s->dmpPool.find(dmp);
-			if (j != s->dmpPool.end()) {
-				dmp->ntsPlayOver();
-				dmpRenderList.erase(i);
-				i = dmpRenderList.begin();
-
-			} else {
-				++i;
-			}
-		}
-		pthread_mutex_unlock(&mplMutex);
-		pthread_mutex_unlock(&s->dmpMutex);
 	}
 
 	void SDLDeviceScreen::refreshWin(SDLDeviceScreen* s) {
@@ -1235,54 +1198,6 @@ namespace mb {
 		}
 
 		pthread_mutex_unlock(&s->winMutex);
-	}
-
-	bool SDLDeviceScreen::surfaceAction(SDLDeviceScreen* s) {
-		bool hasAction = true;
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
-		map<int, set<IWindow*>*>::iterator j;
-		set<IWindow*>::iterator k;
-		Uint32 rmask, gmask, bmask, amask;
-
-		switch (s->uSurPendingAction) {
-			case SPA_CREATE:
-				getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
-				s->uSur = SDL_CreateRGBSurface(
-						0, s->uSurW, s->uSurH, 24, rmask, gmask, bmask, amask);
-
-				break;
-
-			case SPA_BLIT:
-				pthread_mutex_lock(&wrMutex);
-				pthread_mutex_lock(&s->winMutex);
-				i = renderMap.find(s->id);
-				if (i != renderMap.end()) {
-					j = i->second->begin();
-					while (j != i->second->end()) {
-						k = j->second->begin();
-						while (k != j->second->end()) {
-							blitFromWindow((*k), s->uSur);
-							++k;
-						}
-						++j;
-					}
-				}
-				pthread_mutex_unlock(&s->winMutex);
-				pthread_mutex_unlock(&wrMutex);
-				break;
-
-			case SPA_NONE:
-			default:
-				hasAction = false;
-				break;
-		}
-
-		if (hasAction) {
-			s->uSurPendingAction = SPA_NONE;
-			s->surfaceActionExecuted();
-		}
-
-		return hasAction;
 	}
 
 	void SDLDeviceScreen::initCMP(
@@ -1915,16 +1830,15 @@ namespace mb {
 	SDL_Surface* SDLDeviceScreen::createUnderlyingSurface(
 			int width, int height) {
 
+		Uint32 rmask, gmask, bmask, amask;
+
 		pthread_mutex_lock(&uSurMutex);
 		SDL_Surface* newUSur = NULL;
 
-		uSurW             = width;
-		uSurH             = height;
-		uSur              = NULL;
-		uSurPendingAction = SPA_CREATE;
-		waitSurfaceAction();
+		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
+		newUSur = SDL_CreateRGBSurface(
+				0, width, height, 24, rmask, gmask, bmask, amask);
 
-		newUSur = uSur;
 		pthread_mutex_unlock(&uSurMutex);
 
 		return newUSur;
@@ -1991,22 +1905,6 @@ namespace mb {
 #endif
 				break;
 		}
-	}
-
-	void SDLDeviceScreen::waitSurfaceAction() {
-		waitingCreator = true;
-		pthread_mutex_lock(&cMutex);
-		pthread_cond_wait(&cond, &cMutex);
-		waitingCreator = false;
-		pthread_mutex_unlock(&cMutex);
-	}
-
-	bool SDLDeviceScreen::surfaceActionExecuted() {
-		if (waitingCreator) {
-			pthread_cond_signal(&cond);
-			return true;
-		}
-		return false;
 	}
 }
 }

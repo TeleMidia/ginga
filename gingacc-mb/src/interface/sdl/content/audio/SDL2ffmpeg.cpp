@@ -271,8 +271,6 @@ namespace mb {
 	}
 
 	SDL2ffmpeg::~SDL2ffmpeg() {
-		set<SDL2ffmpeg*>::iterator i;
-
 		clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
 
 		release();
@@ -283,11 +281,6 @@ namespace mb {
 		}
 
 		pthread_mutex_lock(&iMutex);
-		i = instances.find(this);
-		if (i != instances.end()) {
-			instances.erase(i);
-		}
-
 		if (instances.empty()) {
 			av_lockmgr_register(NULL);
 			avformat_network_deinit();
@@ -373,12 +366,17 @@ namespace mb {
 			clog << endl << endl;
 
 			SDL_PauseAudio(0);
+
 			instances.insert(this);
 			pthread_mutex_unlock(&iMutex);
+
+			start();
 		}
 	}
 
 	void SDL2ffmpeg::stop() {
+		set<SDL2ffmpeg*>::iterator i;
+
 		clog << "SDL2ffmpeg::stop" << endl;
 
 		is->abort_request           = 1;
@@ -388,7 +386,12 @@ namespace mb {
 
 		state = ST_STOPPED;
 		pthread_mutex_lock(&iMutex);
-		if (instances.size() == 1) {
+		i = instances.find(this);
+		if (i != instances.end()) {
+			instances.erase(i);
+		}
+
+		if (instances.empty()) {
 			SDL_PauseAudio(1);
 		}
 		pthread_mutex_unlock(&iMutex);
@@ -1788,24 +1791,24 @@ namespace mb {
 		is->step = 1;
 	}
 
-	void SDL2ffmpeg::refresh() {
-		if (is == NULL || state != ST_PLAYING) {
-			return;
-		}
+	void SDL2ffmpeg::run() {
+		while (state == ST_PLAYING) {
+			if (is->video_stream >= 0 || is->audio_stream >= 0) {
+				read_content();
+			}
 
-		if (is->video_stream >= 0 || is->audio_stream >= 0) {
-			read_content();
-		}
+			if (is->audio_stream >= 0 && is->audio_st != NULL) {
+				audio_refresh_decoder();
+			}
 
-		if (is->audio_stream >= 0 && is->audio_st != NULL) {
-			audio_refresh_decoder();
-		}
+			if (is->video_stream >= 0 && is->video_st != NULL) {
+				video_refresh_decoder();
+				video_refresh_content();
+			}
+			//subtitle_refresh();
 
-		if (is->video_stream >= 0 && is->video_st != NULL) {
-			video_refresh_decoder();
-			video_refresh_content();
+			//Thread::mSleep(1000/25);
 		}
-		//subtitle_refresh();
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
@@ -1934,7 +1937,7 @@ namespace mb {
 		SubPicture *sp, *sp2;
 		int len2;
 
-		if (is->video_st) {
+		if (is->video_stream >= 0 && is->video_st) {
 			if (is->pictq_size == 0) {
 				if (is->frame_last_dropped_pts != AV_NOPTS_VALUE &&
 						is->frame_last_dropped_pts > is->frame_last_pts) {
@@ -2052,7 +2055,7 @@ namespace mb {
 				}
 
 				/* display picture */
-				video_display();
+				//video_display();
 				pictq_next_picture();
 			}
 		}
@@ -2318,7 +2321,7 @@ namespace mb {
 		int bytes_per_sec;
 		double pts;
 
-		//int64_t uResponseTime;
+		int64_t uResponseTime;
 		int64_t elapsedTime;
 
 		int its_cb_len;
@@ -2455,13 +2458,15 @@ namespace mb {
 
 		pthread_mutex_unlock(&iMutex);
 
-		elapsedTime = (av_gettime() - audio_cb_time) * (multi + 1);
+		/*elapsedTime = (av_gettime() - audio_cb_time) * (multi + 1);
 
-		if (elapsedTime < 15000) {
-			sleepTime = (unsigned int)(15000 - elapsedTime);
+		if (elapsedTime < 30000) {
+			sleepTime = (unsigned int)(30000 - elapsedTime);
 
 			SystemCompat::uSleep(sleepTime);
-		}
+		}*/
+
+		SystemCompat::uSleep(1000000/25);
 
 		/*uResponseTime = ((double)((double)wantedSpec.samples /
 				(double)wantedSpec.freq)) * 100000;

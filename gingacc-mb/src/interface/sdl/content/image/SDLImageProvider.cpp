@@ -63,16 +63,15 @@ namespace core {
 namespace mb {
 
 	bool SDLImageProvider::initialized = false;
-	short SDLImageProvider::imageRefs   = 0;
+	short SDLImageProvider::imageRefs  = 0;
+	pthread_mutex_t SDLImageProvider::pMutex;
 
 	SDLImageProvider::SDLImageProvider(
 			GingaScreenID screenId, const char* mrl) {
 
-		isWaiting = false;
-		pthread_mutex_init(&cMutex, NULL);
-		pthread_cond_init(&cond, NULL);
-
-		pthread_mutex_init(&pMutex, NULL);
+		if (imageRefs == 0) {
+			pthread_mutex_init(&pMutex, NULL);
+		}
 
 		imageRefs++;
 
@@ -90,32 +89,20 @@ namespace mb {
 		content = NULL;
 		pthread_mutex_unlock(&pMutex);
 
-		isWaiting = false;
-		pthread_mutex_destroy(&cMutex);
-		pthread_cond_destroy(&cond);
-
-		pthread_mutex_destroy(&pMutex);
-
 		if (imageRefs == 0) {
 			IMG_Quit();
+			pthread_mutex_destroy(&pMutex);
 			initialized = false;
 		}
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
-		pthread_mutex_lock(&pMutex);
-		content = surface;
-
-		//SDLDeviceScreen::addDMPToRendererList(this);
-		ntsPlayOver();
-
-		pthread_mutex_unlock(&pMutex);
-	}
-
-	void SDLImageProvider::ntsPlayOver() {
 		SDL_Surface* renderedSurface;
 		SDLWindow* parent;
 		IColor* bgColor;
+
+		pthread_mutex_lock(&pMutex);
+		content = surface;
 
 		if (!initialized) {
 			initialized = true;
@@ -143,26 +130,10 @@ namespace mb {
 			clog << endl;
 		}
 
-		ntsRenderer();
+		pthread_mutex_unlock(&pMutex);
 	}
 
 	bool SDLImageProvider::releaseAll() {
-		return false;
-	}
-
-	void SDLImageProvider::waitNTSRenderer() {
-		isWaiting = true;
-		pthread_mutex_lock(&cMutex);
-		pthread_cond_wait(&cond, &cMutex);
-		isWaiting = false;
-		pthread_mutex_unlock(&cMutex);
-	}
-
-	bool SDLImageProvider::ntsRenderer() {
-		if (isWaiting) {
-			pthread_cond_signal(&cond);
-			return true;
-		}
 		return false;
 	}
 }

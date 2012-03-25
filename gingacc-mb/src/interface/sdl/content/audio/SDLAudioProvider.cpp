@@ -160,7 +160,8 @@ namespace mb {
 
 	void SDLAudioProvider::refreshDR() {
 		if (decoder != NULL) {
-			decoder->refresh();
+			//decoder->refresh();
+			decoder->video_display();
 		}
 	}
 }

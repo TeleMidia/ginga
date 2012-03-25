@@ -451,13 +451,13 @@ namespace player {
 				awe_webcore_initialize(
 						true,               //enable_plugins
 						true,               //enable_javascript
-						false,              //enable_databases
+						true,               //enable_databases
 						awe_string_empty(), //package_path
 						awe_string_empty(), //locale_path
 						awe_string_empty(), //user_data_path
 						awe_string_empty(), //plugin_path
 						awe_string_empty(), //log_path
-						AWE_LL_VERBOSE,      //log_level
+						AWE_LL_VERBOSE,     //log_level
 						false,              //force_single_process
 						awe_string_empty(), //child_process_path
 						true,               //enable_auto_detect_encoding

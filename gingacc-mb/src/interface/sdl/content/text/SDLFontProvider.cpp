@@ -80,10 +80,6 @@ namespace mb {
 	SDLFontProvider::SDLFontProvider(
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
-		isWaiting = false;
-		pthread_mutex_init(&cMutex, NULL);
-		pthread_cond_init(&cond, NULL);
-
 		pthread_mutex_init(&pMutex, NULL);
 
 		fontRefs++;
@@ -106,10 +102,6 @@ namespace mb {
 		fontRefs--;
 
 		content = NULL;
-
-		isWaiting = false;
-		pthread_mutex_destroy(&cMutex);
-		pthread_cond_destroy(&cond);
 
 		pthread_mutex_destroy(&pMutex);
 
@@ -135,7 +127,6 @@ namespace mb {
 				clog << "SDLFontProvider::ntsPlayOver Warning! ";
 				clog << "Couldn't initialize TTF: " << SDL_GetError();
 				clog << endl;
-				ntsRenderer();
 				pthread_mutex_unlock(&ntsMutex);
 				return false;
 			}
@@ -149,7 +140,6 @@ namespace mb {
 		pthread_mutex_lock(&ntsMutex);
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
-			ntsRenderer();
 			pthread_mutex_unlock(&ntsMutex);
 			return false;
 		}
@@ -228,15 +218,6 @@ namespace mb {
 	}
 
 	void SDLFontProvider::playOver(ISurface* surface) {
-		this->content = surface;
-
-		ntsPlayOver();
-
-//		SDLDeviceScreen::addDMPToRendererList(this);
-//		waitNTSRenderer();
-	}
-
-	void SDLFontProvider::ntsPlayOver() {
 		SDLWindow* parent;
 		IColor* fontColor = NULL;
 
@@ -246,19 +227,12 @@ namespace mb {
 		SDL_Surface* renderedSurface;
 		SDL_Surface* text;
 
-//		if (fontInit) {
-//			fontInit = false;
-//			if (initializeFont()) {
-//				ntsRenderer();
-//			}
-//			return;
-//		}
+		this->content = surface;
 
 		pthread_mutex_lock(&ntsMutex);
 		if (plainText == "") {
 			clog << "SDLFontProvider::ntsPlayOver Warning! Empty text.";
 			clog << endl;
-			ntsRenderer();
 			pthread_mutex_unlock(&ntsMutex);
 			return;
 		}
@@ -269,13 +243,11 @@ namespace mb {
 			if (parent == NULL) {
 				clog << "SDLFontProvider::ntsPlayOver Warning! NULL parent.";
 				clog << endl;
-				ntsRenderer();
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 
 			if (coordX >= parent->getW() || coordY >= parent->getH()) {
-				ntsRenderer();
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
@@ -303,7 +275,6 @@ namespace mb {
 						clog << endl;
 					}
 
-					ntsRenderer();
 					return;
 				}
 
@@ -316,7 +287,6 @@ namespace mb {
 			if (text == NULL) {
 				clog << "SDLFontProvider::ntsPlayOver Warning! Can't create ";
 				clog << "underlying surface from text" << endl;
-				ntsRenderer();
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
@@ -355,24 +325,7 @@ namespace mb {
 			clog << endl;
 		}
 
-		ntsRenderer();
 		pthread_mutex_unlock(&ntsMutex);
-	}
-
-	void SDLFontProvider::waitNTSRenderer() {
-		isWaiting = true;
-		pthread_mutex_lock(&cMutex);
-		pthread_cond_wait(&cond, &cMutex);
-		isWaiting = false;
-		pthread_mutex_unlock(&cMutex);
-	}
-
-	bool SDLFontProvider::ntsRenderer() {
-		if (isWaiting) {
-			pthread_cond_signal(&cond);
-			return true;
-		}
-		return false;
 	}
 }
 }

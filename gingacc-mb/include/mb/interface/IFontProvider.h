@@ -67,8 +67,6 @@ namespace mb {
 
 			virtual string getLoadSymbol()=0;
 
-			virtual void ntsPlayOver()=0;
-
 			virtual void* getFontProviderContent()=0;
 
 			virtual void getStringExtents(const char* text, int* w, int* h)=0;
