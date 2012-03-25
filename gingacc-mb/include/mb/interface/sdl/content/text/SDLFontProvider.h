@@ -88,10 +88,6 @@ namespace mb {
 			static pthread_mutex_t ntsMutex;
 			pthread_mutex_t pMutex;
 
-			bool isWaiting;
-			pthread_mutex_t cMutex;
-			pthread_cond_t cond;
-
 			static bool initialized;
 			static short fontRefs;
 
@@ -134,13 +130,6 @@ namespace mb {
 
 		private:
 			void playOver(ISurface* surface);
-
-		public:
-			void ntsPlayOver();
-
-		private:
-			void waitNTSRenderer();
-			bool ntsRenderer();
 	};
 }
 }

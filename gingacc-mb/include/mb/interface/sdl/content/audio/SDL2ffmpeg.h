@@ -58,6 +58,9 @@ Many thanks to ffmpeg developers and to the community that support them!
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
 
@@ -321,7 +324,7 @@ namespace mb {
 		int refresh;
 	} VideoState;
 
-  class SDL2ffmpeg {
+  class SDL2ffmpeg : public Thread {
 	private:
 		//stream status
 		static const short ST_PLAYING = 0;
@@ -418,8 +421,10 @@ namespace mb {
 		void video_image_display();
 		void stream_close();
 
+	public:
 		void video_display();
 
+	private:
 		double get_audio_clock();
 		double get_video_clock();
 		double get_external_clock();
@@ -443,10 +448,8 @@ namespace mb {
 		void toggle_pause();
 		void step_to_next_frame();
 
-	public:
-		void refresh();
+		void run();
 
-	private:
 		int audio_refresh_decoder();
 		int video_refresh_decoder();
 		void video_refresh_content();

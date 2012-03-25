@@ -70,11 +70,7 @@ namespace mb {
 			static bool initialized;
 			static short imageRefs;
 
-			pthread_mutex_t pMutex;
-
-			bool isWaiting;
-			pthread_mutex_t cMutex;
-			pthread_cond_t cond;
+			static pthread_mutex_t pMutex;
 
 			GingaScreenID myScreen;
 			ISurface* content;
@@ -87,13 +83,8 @@ namespace mb {
 			string getLoadSymbol() {return "SDLImageProvider";};
 
 			void playOver(ISurface* surface);
-			void ntsPlayOver();
 
 			bool releaseAll();
-
-		private:
-			void waitNTSRenderer();
-			bool ntsRenderer();
 	};
 }
 }

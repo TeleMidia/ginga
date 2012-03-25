@@ -84,8 +84,6 @@ namespace mb {
 			string getLoadSymbol() {return "DFBImageProvider";};
 			void playOver(ISurface* surface);
 
-			void ntsPlayOver(){};
-
 		private:
 			IDirectFBSurface* getPerfectUnderlyingSurface(ISurface* surface);
 

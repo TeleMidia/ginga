@@ -66,8 +66,6 @@ namespace mb {
 			virtual string getLoadSymbol()=0;
 
 			virtual void playOver(ISurface* surface)=0;
-
-			virtual void ntsPlayOver()=0;
 	};
 }
 }

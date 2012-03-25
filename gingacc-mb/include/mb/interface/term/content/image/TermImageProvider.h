@@ -68,7 +68,6 @@ namespace mb {
 
 			string getLoadSymbol() {return "TermImageProvider";};
 			void playOver(ISurface* surface);
-			void ntsPlayOver(){};
 			bool releaseAll();
 	};
 }
