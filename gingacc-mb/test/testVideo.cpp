@@ -73,12 +73,14 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
+IContinuousMediaProvider* vid1 = NULL;
+bool singleVideo = false;
+
 void testVideo(
 		ILocalScreenManager* dm,
 		GingaScreenID screen,
 		set<IWindow*>* windows) {
 
-	IContinuousMediaProvider* vid1;
 	IContinuousMediaProvider* vid2;
 	IContinuousMediaProvider* vid3;
 	IContinuousMediaProvider* vid4;
@@ -144,7 +146,7 @@ void testVideo(
 	s1   = dm->createSurface(screen);
 	vid1 = dm->createContinuousMediaProvider(
 			screen,
-			"/root/ncl/VivaMaisPratos/video/vivamais.mp4",
+			"/root/ncl/rio-itu/mainVideo/rio_1280x720.mp4",
 			true,
 			false);
 
@@ -156,8 +158,12 @@ void testVideo(
 	cout << vid1->getTotalMediaTime() << "' as its total media time." << endl;
 
 	vid1->setSoundLevel(0.1);
-	//vid1->playOver(s1, true, NULL);
+	vid1->playOver(s1, true, NULL);
 
+	if (singleVideo) {
+		windows->insert(win1);
+		return;
+	}
 
 	/* VIDEO PROVIDER 2 */
 	win2 = dm->createWindow(screen, x2, y2, w2, h2, z2);
@@ -170,7 +176,7 @@ void testVideo(
 
 	s2   = dm->createSurface(screen);
 	vid2 = dm->createContinuousMediaProvider(
-			screen, "/root/ncl/rio-itu/mainVideo/rio_1280x720.mp4", true, false);
+			screen, "/root/ncl/VivaMaisPratos/video/vivamais.mp4", true, false);
 
 	vid2->setSoundLevel(1.0);
 	s2->setParent(win2);
@@ -339,6 +345,9 @@ int main(int argc, char** argv) {
 
 		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
 			printScreen    = true;
+
+		} else if ((strcmp(argv[i], "--single-video") == 0)) {
+			singleVideo    = true;
 		}
 	}
 
@@ -389,6 +398,14 @@ int main(int argc, char** argv) {
 		if (testAllScreens) {
 			dm->blitScreen(screen2, "/root/printscreen2.bmp");
 		}
+	}
+
+	if (singleVideo && vid1 != NULL) {
+		cout << "gingacc-mb test has shown providers. ";
+		cout << "press enter to stop single video";
+		cout << endl;
+		getchar();
+		vid1->stop();
 	}
 
 	cout << "gingacc-mb test has shown providers. ";
