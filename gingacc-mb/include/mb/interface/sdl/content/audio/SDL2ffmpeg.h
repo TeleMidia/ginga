@@ -58,12 +58,10 @@ Many thanks to ffmpeg developers and to the community that support them!
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -188,6 +186,8 @@ namespace mb {
 		int nb_packets;
 		int size;
 		int abort_request;
+		SDL_mutex *mutex;
+		SDL_cond *cond;
 	} PacketQueue;
 
 	typedef struct VideoPicture {
@@ -276,7 +276,6 @@ namespace mb {
 		FFTSample *rdft_data;
 		int xpos;
 
-		SDL_Thread *subtitle_tid;
 		int subtitle_stream;
 		int subtitle_stream_changed;
 		AVStream *subtitle_st;
@@ -322,9 +321,15 @@ namespace mb {
 		int step;
 
 		int refresh;
+
+	    SDL_mutex *subpq_mutex;
+	    SDL_cond *subpq_cond;
+	    SDL_mutex *pictq_mutex;
+	    SDL_cond *pictq_cond;
+
 	} VideoState;
 
-  class SDL2ffmpeg : public Thread {
+  class SDL2ffmpeg {
 	private:
 		//stream status
 		static const short ST_PLAYING = 0;
@@ -361,7 +366,7 @@ namespace mb {
 		int rdftspeed;
 
 		AVPacket flush_pkt;
-		VideoState* is;
+		VideoState* vs;
 
 		static bool init;
 		static pthread_mutex_t iMutex;
@@ -374,12 +379,16 @@ namespace mb {
 		int audioFreq;
 		Uint8 audioChannels;
 
-		short state;
+		short status;
 		SDL_AudioSpec spec;
 		SDL_AudioCVT acvt;
 		float soundLevel;
 		SDL_Texture* texture;
+
+		bool hasSDLAudio;
+		bool reof;
 		bool hasPic;
+		//pthread_mutex_t picMutex;
 
 	public:
 		SDL2ffmpeg(const char *filename);
@@ -448,20 +457,23 @@ namespace mb {
 		void toggle_pause();
 		void step_to_next_frame();
 
-		void run();
-
 		int audio_refresh_decoder();
+
+		static void* t_video_refresh_decoder(void* ptr);
 		int video_refresh_decoder();
+
 		void video_refresh_content();
+
+		static void* t_read_content(void* ptr);
 		int read_content();
+
+		static void* subtitle_refresh(void *arg);
 
 		bool getAudioSpec(
 				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
 
 		static void clamp(short* buf, int len);
 		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
-
-		static int subtitle_refresh(void *arg);
 
 		static struct SwsContext* createContext(
 				int inWidth,

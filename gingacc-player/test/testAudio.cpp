@@ -85,17 +85,20 @@ string updateFileUri(string file) {
 IPlayer* aud1;
 IPlayer* aud2;
 IPlayer* aud3;
+IPlayer* aud4;
 
 void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	IWindow* w;
 	IWindow* ww;
 	IWindow* www;
+	IWindow* wwww;
 
 	ISurface* s;
 
-	w   = dm->createWindow(screen, 10, 10, 100, 100, 32766);
-	ww  = dm->createWindow(screen, 90, 90, 150, 150, 32766);
-	www = dm->createWindow(screen, 0, 0, 400, 300, 32766);
+	w    = dm->createWindow(screen, 10, 10, 100, 100, 32766);
+	ww   = dm->createWindow(screen, 90, 90, 150, 150, 32766);
+	www  = dm->createWindow(screen, 0, 0, 400, 300, 32766);
+	wwww = dm->createWindow(screen, 0, 0, 10, 10, 32766);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();
@@ -109,6 +112,10 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	www->draw();
 	www->show();
 
+	wwww->setCaps(w->getCap("ALPHACHANNEL"));
+	wwww->draw();
+	wwww->show();
+
 #if HAVE_COMPSUPPORT
 	aud1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 			screen, "rock.mp3", false);
@@ -117,6 +124,9 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 			screen, "techno.mp3", false);
 
 	aud3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
+			screen, "cartoon.mp3", false);
+
+	aud4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 			screen, "choro.mp3", false);
 #endif
 
@@ -147,6 +157,10 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 	cout << "play audio 3 simultaneously" << endl;
 	getchar();
 	aud3->play();
+	cout << "gingacc-player test is playing audio1 and audio2. press enter to ";
+	cout << "play audio 4 simultaneously" << endl;
+	getchar();
+	aud4->play();
 }
 
 int main(int argc, char** argv, char** envp) {
@@ -198,7 +212,7 @@ int main(int argc, char** argv, char** envp) {
 	}
 
 	i = 0;
-	while (i < 10) {
+	while (i < 5) {
 		if (aud1 != NULL) {
 			cout << "Audio 1 media time: '" << aud1->getMediaTime() << "'";
 			cout << endl;
@@ -214,11 +228,17 @@ int main(int argc, char** argv, char** envp) {
 			cout << endl;
 		}
 
+		if (aud4 != NULL) {
+			cout << "Audio 4 media time: '" << aud4->getMediaTime() << "'";
+			cout << endl;
+		}
+
 		SystemCompat::uSleep(1000000);
 		++i;
 	}
 
-
+	cout << "I'm tired showing media time! Press enter to automatic release";
+	cout << endl;
 	getchar();
 
 	dm->clearWidgetPools(screen1);
