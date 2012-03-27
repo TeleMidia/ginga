@@ -62,7 +62,7 @@ namespace core {
 namespace mb {
 	TermDeviceScreen::TermDeviceScreen(
 			int numArgs, char** args,
-			GingaWindowID parentId,
+			GingaWindowID embedId,
 			bool externalRenderer) {
 
 	}
@@ -93,10 +93,6 @@ namespace mb {
 
 	string TermDeviceScreen::getScreenName() {
 		return "term";
-	}
-
-	void TermDeviceScreen::setParentScreen(GingaWindowID parentId) {
-
 	}
 
 	void TermDeviceScreen::setBackgroundImage(string uri) {
@@ -257,11 +253,11 @@ namespace mb {
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createTermScreen(int numArgs, char** args,
-				GingaWindowID parentId,
+				GingaWindowID embedId,
 				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			TermDeviceScreen(numArgs, args, parentId, externalRenderer));
+			TermDeviceScreen(numArgs, args, embedId, externalRenderer));
 }
 
 extern "C" void destroyTermScreen(

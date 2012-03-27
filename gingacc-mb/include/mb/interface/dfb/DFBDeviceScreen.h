@@ -131,7 +131,7 @@ namespace mb {
 		public:
 			DFBDeviceScreen(
 					int numArgs, char** args,
-					GingaScreenID myId, GingaWindowID parentId,
+					GingaScreenID myId, GingaWindowID embedId,
 					bool externalRenderer);
 
 			virtual ~DFBDeviceScreen();
@@ -141,8 +141,11 @@ namespace mb {
 
 			void clearWidgetPools();
 
+		private:
+			void setUnderlyingRootWindow(GingaWindowID embedId);
+
+		public:
 			string getScreenName();
-			void setParentScreen(GingaWindowID parentId);
 
 			void setBackgroundImage(string uri);
 

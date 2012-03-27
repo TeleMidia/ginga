@@ -71,7 +71,7 @@ namespace mb {
 		public:
 			TermDeviceScreen(
 					int numArgs, char** args,
-					GingaWindowID parentId,
+					GingaWindowID embedId,
 					bool externalRenderer);
 
 			virtual ~TermDeviceScreen();
@@ -82,7 +82,6 @@ namespace mb {
 			void clearWidgetPools();
 
 			string getScreenName();
-			void setParentScreen(GingaWindowID parentId);
 			void setBackgroundImage(string uri);
 
 			unsigned int getWidthResolution();

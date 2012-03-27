@@ -100,7 +100,7 @@ namespace mb {
 
 	DFBDeviceScreen::DFBDeviceScreen(
 			int argc, char** argv,
-			GingaScreenID myId, GingaWindowID parentId,
+			GingaScreenID myId, GingaWindowID embedId,
 			bool externalRenderer) {
 
 		DFBDisplayLayerConfig layer_config;
@@ -146,8 +146,8 @@ namespace mb {
 		if (DFBDeviceScreen::dfb == NULL) {
 			DFBCHECK(DirectFBInit(&argc, &argv));
 
-			if (parentId != NULL) {
-				setParentScreen(parentId);
+			if (embedId != NULL) {
+				setUnderlyingRootWindow(embedId);
 			}
 
 			DFBCHECK(DirectFBCreate(&dfb));
@@ -307,11 +307,11 @@ namespace mb {
 		return "dfb";
 	}
 
-	void DFBDeviceScreen::setParentScreen(GingaWindowID parentId) {
+	void DFBDeviceScreen::setUnderlyingRootWindow(GingaWindowID embedId) {
 		//unsigned long xid = strtoul(strdup((const char*)devId), NULL, 10);
 #if HAVE_WINDOWLESS
 #ifdef DFB_CONFIG_SET_X11_ROOT_WINDOW
-		dfb_config_set_x11_root_window(parentId);
+		dfb_config_set_x11_root_window(embedId);
 #endif //DFB_CONFIG_SET_X11_ROOT_WINDOW
 #endif //HAVE_WINDOWLESS
 	}
@@ -1027,11 +1027,11 @@ namespace mb {
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createDFBScreen(
 				int argc, char** argv,
-				GingaScreenID myId, GingaWindowID parentId,
+				GingaScreenID myId, GingaWindowID embedId,
 				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			DFBDeviceScreen(argc, argv, myId, parentId, externalRenderer));
+			DFBDeviceScreen(argc, argv, myId, embedId, externalRenderer));
 }
 
 extern "C" void destroyDFBScreen(

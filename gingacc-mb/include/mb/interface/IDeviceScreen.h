@@ -87,8 +87,6 @@ namespace mb {
 
 			virtual string getScreenName()=0;
 
-			virtual void setParentScreen(GingaWindowID parentId)=0;
-
 			virtual void setBackgroundImage(string uri)=0;
 
 			virtual unsigned int getWidthResolution()=0;
@@ -168,7 +166,7 @@ namespace mb {
 typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		ScreenCreator(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID parentId,
+				GingaScreenID myId, GingaWindowID embedId,
 				bool externalRenderer);
 
 typedef void ScreenDestroyer(

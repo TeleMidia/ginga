@@ -130,6 +130,7 @@ typedef struct {
 
 			GingaScreenID id;
 			GingaWindowID uParentId;
+			GingaWindowID uEmbedId;
 			IInputManager* im;
 
 			bool waitingCreator;
@@ -165,7 +166,7 @@ typedef struct {
 		public:
 			SDLDeviceScreen(
 					int numArgs, char** args,
-					GingaScreenID myId, GingaWindowID parentId,
+					GingaScreenID myId, GingaWindowID embedId,
 					bool externalRenderer);
 
 			virtual ~SDLDeviceScreen();
@@ -177,8 +178,11 @@ typedef struct {
 			void clearWidgetPools();
 
 			string getScreenName();
-			void setParentScreen(GingaWindowID parentId);
 
+		private:
+			void setEmbedFromParent(string parentCoords);
+
+		public:
 			void setBackgroundImage(string uri);
 
 			unsigned int getWidthResolution();
