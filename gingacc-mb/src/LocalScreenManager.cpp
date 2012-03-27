@@ -150,18 +150,6 @@ namespace mb {
 
 	LocalScreenManager* LocalScreenManager::_instance = NULL;
 
-	void LocalScreenManager::setParentScreen(
-			GingaScreenID screenId, void* parentId) {
-
-		IDeviceScreen* screen;
-
-		if (getScreen(screenId, &screen)) {
-			screen->setParentScreen(parentId);
-			clog << "LocalScreenManager::setParentDevice(" << this << ")";
-			clog << " parent device ID = '" << parentId << "'" << endl;
-		}
-	}
-
 	void LocalScreenManager::releaseHandler() {
 		if (_instance != NULL) {
 			delete _instance;
@@ -246,7 +234,8 @@ namespace mb {
 	GingaScreenID LocalScreenManager::createScreen(int argc, char** args) {
 		int i;
 		bool externalRenderer = false;
-		string vSystem = "", vSubSystem = "", vMode = "", vParent = "";
+		string vSystem = "", vSubSystem = "", vMode = "";
+		string vParent = "", vEmbed = "";
 		string aSystem = "";
 
 		clog << "LocalScreenManager::createScreen argv[";
@@ -264,8 +253,11 @@ namespace mb {
 			} else if ((strcmp(args[i], "--vmode") == 0) && ((i + 1) < argc)) {
 				vMode.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--embed") == 0) && ((i + 1) < argc)) {
+			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
 				vParent.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "--embed") == 0) && ((i + 1) < argc)) {
+				vEmbed.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {
 				aSystem.assign(args[i + 1]);
@@ -279,7 +271,8 @@ namespace mb {
 		}
 
 		return createScreen(
-				vSystem, vSubSystem, vMode, vParent, aSystem, externalRenderer);
+				vSystem, vSubSystem, vMode,
+				vParent, vEmbed, aSystem, externalRenderer);
 	}
 
 	GingaScreenID LocalScreenManager::createScreen(
@@ -287,11 +280,12 @@ namespace mb {
 			string vSubSystem,
 			string vMode,
 			string vParent,
+			string vEmbed,
 			string aSystem,
 			bool externalRenderer) {
 
 		IDeviceScreen* screen  = NULL;
-		GingaWindowID parentId = NULL;
+		GingaWindowID embedWin = NULL;
 		int argc               = 0;
 
 		short sysType;
@@ -328,10 +322,22 @@ namespace mb {
 				}
 
 				if (vParent != "") {
-					parentId = (void*)strtoul(vParent.c_str(), NULL, 10);
+					mbArgs[argc] = (char*)"parent";
+					argc++;
 
-					clog << "LocalScreenManager::createScreen parent src = ";
-					clog << vParent << "' and dst = '" << parentId << "'";
+					mbArgs[argc] = (char*)vParent.c_str();
+					argc++;
+
+					clog << "LocalScreenManager::createScreen parent with ";
+					clog << "following data '" << vParent << "'";
+					clog << endl;
+				}
+
+				if (vEmbed != "") {
+					embedWin = (void*)strtoul(vEmbed.c_str(), NULL, 10);
+
+					clog << "LocalScreenManager::createScreen embed src = ";
+					clog << vEmbed << "' and dst = '" << embedWin << "'";
 					clog << endl;
 				}
 
@@ -345,12 +351,12 @@ namespace mb {
 
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("SDLDeviceScreen")))(
-						argc, mbArgs, screenId, parentId, externalRenderer);
+						argc, mbArgs, screenId, embedWin, externalRenderer);
 
 #else
 #if HAVE_SDL
 				screen = new SDLDeviceScreen(
-						argc, mbArgs, screenId, parentId, externalRenderer);
+						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_SDL
 #endif //HAVE_COMPSUPPORT
 				break;
@@ -358,12 +364,12 @@ namespace mb {
 			case GMBST_TERM:
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("TermDeviceScreen")))(
-						0, NULL, screenId, parentId, externalRenderer);
+						0, NULL, screenId, embedWin, externalRenderer);
 
 #else
 #if HAVE_TERM
 				screen = new TermDeviceScreen(
-						argc, mbArgs, screenId, parentId, externalRenderer);
+						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_TERM
 #endif //HAVE_COMPSUPPORT
 				break;
@@ -387,12 +393,12 @@ namespace mb {
 					}
 				}
 
-				if (vParent != "") {
+				if (vEmbed != "") {
 					if (params == "") {
-						params = "--dfb:x11-root-window=" + vParent;
+						params = "--dfb:x11-root-window=" + vEmbed;
 
 					} else {
-						params = params + ",x11-root-window=" + vParent;
+						params = params + ",x11-root-window=" + vEmbed;
 					}
 				}
 
@@ -419,12 +425,12 @@ namespace mb {
 
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
-						argc, mbArgs, screenId, parentId, externalRenderer);
+						argc, mbArgs, screenId, embedWin, externalRenderer);
 
 #else
 #if HAVE_DIRECTFB
 				screen = new DFBDeviceScreen(
-						argc, mbArgs, screenId, parentId, externalRenderer);
+						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_DIRECTFB
 #endif //HAVE_COMPSUPPORT
 				break;

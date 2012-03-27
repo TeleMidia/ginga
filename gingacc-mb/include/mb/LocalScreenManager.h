@@ -111,8 +111,6 @@ namespace mb {
 		public:
 			void releaseHandler();
 
-			void setParentScreen(GingaScreenID screenId, void* parentId);
-
 			void setBackgroundImage(GingaScreenID screenId, string uri);
 
 			static LocalScreenManager* getInstance();
@@ -135,6 +133,7 @@ namespace mb {
 					string vSubSystem,
 					string vMode,
 					string vParent,
+					string vEmbed,
 					string aSystem,
 					bool externalRenderer);
 

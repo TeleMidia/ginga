@@ -110,9 +110,10 @@ namespace mb {
 
 	SDLDeviceScreen::SDLDeviceScreen(
 			int argc, char** args,
-			GingaScreenID myId, GingaWindowID parentId,
+			GingaScreenID myId, GingaWindowID embedId,
 			bool externalRenderer) {
 
+		string parentCoords = "";
 		int i;
 
 		aSystem         = "";
@@ -123,7 +124,8 @@ namespace mb {
 		wRes            = 0;
 		im              = NULL;
 		id              = myId;
-		uParentId       = parentId;
+		uParentId       = NULL;
+		uEmbedId        = embedId;
 		renderer        = NULL;
 		mbMode          = "";
 		mbSubSystem     = "";
@@ -138,6 +140,9 @@ namespace mb {
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "subsystem") == 0) && ((i + 1) < argc)) {
 				mbSubSystem.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "parent") == 0) && ((i + 1) < argc)) {
+				parentCoords.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "mode") == 0) && ((i + 1) < argc)) {
 				mbMode.assign(args[i + 1]);
@@ -156,6 +161,10 @@ namespace mb {
 
 		if (mbSubSystem == "dfb") {
 			mbSubSystem = "directfb";
+		}
+
+		if (uEmbedId == NULL) {
+			setEmbedFromParent(parentCoords);
 		}
 
 		waitingCreator = false;
@@ -285,8 +294,62 @@ namespace mb {
 		return "sdl";
 	}
 
-	void SDLDeviceScreen::setParentScreen(GingaWindowID parentId) {
+	void SDLDeviceScreen::setEmbedFromParent(string parentCoords) {
+		vector<string>* params;
+		int uEmbedX, uEmbedY, uEmbedW, uEmbedH;
 
+		cout << "SDLDeviceScreen::setEmbedFromParent: '";
+		cout << parentCoords << "'";
+		cout << endl;
+
+		if (parentCoords == "") {
+			return;
+		}
+
+		params = split(parentCoords, ",");
+		if (params->size() == 6) {
+#if defined(SDL_VIDEO_DRIVER_X11)
+			Display* xDisplay;
+			int xScreen;
+			Window parent;
+			int blackColor;
+
+			xDisplay   = XOpenDisplay((*params)[0].c_str());
+			xScreen    = DefaultScreen(xDisplay);
+			uParentId  = (void*)strtoul((*params)[1].c_str(), NULL, 10);
+			uEmbedX    = stof((*params)[2]);
+			uEmbedY    = stof((*params)[3]);
+			uEmbedW    = stof((*params)[4]);
+			uEmbedH    = stof((*params)[5]);
+			blackColor = BlackPixel(xDisplay, xScreen);
+			uEmbedId   = (GingaWindowID)XCreateSimpleWindow(
+		    		xDisplay,          /* display */
+		    		(Window)uParentId, /* parent */
+		    		uEmbedX,           /* x */
+		    		uEmbedY,           /* y */
+		    		uEmbedW,           /* w */
+		    		uEmbedH,           /* h */
+		    		0,                 /* border_width */
+		    		blackColor,        /* border_color */
+		    		blackColor);       /* background_color */
+
+			XMapWindow(xDisplay, (Window)uEmbedId);
+		    XClearWindow(xDisplay, (Window)uEmbedId);
+		    XFlush(xDisplay);
+
+			cout << "SDLDeviceScreen::setEmbedFromParent embed id created: '";
+			cout << (void*)uEmbedId << "'";
+			cout << endl;
+
+#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
+			//TODO: Windows - create a child window from parent window id
+
+#elif defined(SDL_VIDEO_DRIVER_COCOA)
+			//TODO: Cocoa - create a child window from parent window id
+#endif
+		}
+
+		delete params;
 	}
 
 	void SDLDeviceScreen::setBackgroundImage(string uri) {
@@ -786,7 +849,7 @@ namespace mb {
 								s->im->getEventBuffer());
 
 						if (((SDLEventBuffer::checkEvent(s->sdlId, event) &&
-								s->uParentId == NULL) || checkEventFocus(s))) {
+								s->uEmbedId == NULL) || checkEventFocus(s))) {
 
 							eventBuffer->feed(event, capsOn, shiftOn);
 						}
@@ -994,8 +1057,8 @@ namespace mb {
 			}
 		}
 
-		if (s->uParentId != NULL) {
-			s->screen = SDL_CreateWindowFrom(s->uParentId);
+		if (s->uEmbedId != NULL) {
+			s->screen = SDL_CreateWindowFrom(s->uEmbedId);
 			if (s->screen != NULL) {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
@@ -1025,13 +1088,13 @@ namespace mb {
 
 				    XChangeWindowAttributes(
 				    		info.info.x11.display,
-				    		(Window)s->uParentId,
+				    		(Window)s->uEmbedId,
 				    		CWEventMask,
 				    		&attributes);
 			    } else {
 			    	cout << "SDLDeviceScreen::initScreen Warning! ";
 			    	cout << "Can't set input event mask for embedded ";
-			    	cout << "window '" << s->uParentId << "'" << endl;
+			    	cout << "window '" << s->uEmbedId << "'" << endl;
 			    }
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
@@ -1183,7 +1246,7 @@ namespace mb {
 		clearScreen(s);
 
 		pthread_mutex_lock(&s->winMutex);
-		if (s->uParentId == NULL && s->screen != NULL) {
+		if (s->uEmbedId == NULL && s->screen != NULL) {
 			SDL_HideWindow(s->screen);
 		}
 
@@ -1192,7 +1255,7 @@ namespace mb {
 			s->renderer = NULL;
 		}
 
-		if (s->uParentId == NULL && s->screen != NULL) {
+		if (s->uEmbedId == NULL && s->screen != NULL) {
 			SDL_DestroyWindow(s->screen);
 			s->screen = NULL;
 		}
@@ -1473,7 +1536,7 @@ namespace mb {
 	bool SDLDeviceScreen::checkEventFocus(SDLDeviceScreen* s) {
 		bool hasFocus = false;
 
-		if (s->uParentId != NULL) {
+		if (s->uEmbedId != NULL) {
 			/*
 			 * NOTE: in this case, the focus is defined by the application
 			 *       that is embedding Ginga, through keyHandler specs.
@@ -1916,11 +1979,11 @@ namespace mb {
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createSDLScreen(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID parentId,
+				GingaScreenID myId, GingaWindowID embedId,
 				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLDeviceScreen(numArgs, args, myId, parentId, externalRenderer));
+			SDLDeviceScreen(numArgs, args, myId, embedId, externalRenderer));
 }
 
 extern "C" void destroySDLScreen(
