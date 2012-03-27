@@ -473,9 +473,9 @@ namespace compat {
 
 	void SystemCompat::uSleep(unsigned int microseconds) {
 #ifndef WIN32
-		::usleep(sleepTime);
+		::usleep(microseconds);
 #elif WIN32
-		Sleep(sleepTime/1000);
+		Sleep(microseconds/1000);
 #endif
 	}
 }
