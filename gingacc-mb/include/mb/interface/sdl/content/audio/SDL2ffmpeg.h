@@ -369,8 +369,11 @@ namespace mb {
 		VideoState* vs;
 
 		static bool init;
-		static pthread_mutex_t iMutex;
-		static set<SDL2ffmpeg*> instances;
+		static short refCount;
+
+		static pthread_mutex_t aiMutex;
+		static set<SDL2ffmpeg*> aInstances;
+
 		static SDL_AudioSpec wantedSpec;
 
 		AVFrame vFrame;
@@ -388,7 +391,6 @@ namespace mb {
 		bool hasSDLAudio;
 		bool reof;
 		bool hasPic;
-		//pthread_mutex_t picMutex;
 
 	public:
 		SDL2ffmpeg(const char *filename);
