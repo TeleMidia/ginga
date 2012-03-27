@@ -1946,6 +1946,10 @@ namespace mb {
 			}
 
 			while (vs->audio_main_buf_size[0] < vs->audio_hw_buf_size) {
+				if ((reof && vs->audioq.size == 0) || vs->abort_request) {
+					return -1;
+				}
+
 				audio_size = audio_decode_frame(&pts);
 				if (audio_size < 0 || vs->abort_request) {
 					if (vs->abort_request) {

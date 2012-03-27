@@ -74,17 +74,17 @@ extern "C" {
 using namespace std;
 
 IContinuousMediaProvider* vid1 = NULL;
+IContinuousMediaProvider* vid2 = NULL;
+IContinuousMediaProvider* vid3 = NULL;
+IContinuousMediaProvider* vid4 = NULL;
+IContinuousMediaProvider* vid5 = NULL;
+
 bool singleVideo = false;
 
 void testVideo(
 		ILocalScreenManager* dm,
 		GingaScreenID screen,
 		set<IWindow*>* windows) {
-
-	IContinuousMediaProvider* vid2;
-	IContinuousMediaProvider* vid3;
-	IContinuousMediaProvider* vid4;
-	IContinuousMediaProvider* vid5;
 
 	IWindow* win1;
 	IWindow* win2;
@@ -400,12 +400,29 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	if (singleVideo && vid1 != NULL) {
-		cout << "gingacc-mb test has shown providers. ";
-		cout << "press enter to stop single video";
-		cout << endl;
-		getchar();
+	cout << "gingacc-mb test has shown providers. ";
+	cout << "press enter to stop all of them";
+	cout << endl;
+	getchar();
+
+	if (vid1 != NULL) {
 		vid1->stop();
+	}
+
+	if (vid2 != NULL) {
+		vid2->stop();
+	}
+
+	if (vid3 != NULL) {
+		vid3->stop();
+	}
+
+	if (vid4 != NULL) {
+		vid4->stop();
+	}
+
+	if (vid5 != NULL) {
+		vid5->stop();
 	}
 
 	cout << "gingacc-mb test has shown providers. ";
