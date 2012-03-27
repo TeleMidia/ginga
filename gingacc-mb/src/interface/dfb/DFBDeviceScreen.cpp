@@ -704,6 +704,7 @@ namespace mb {
 			im = new InputManager(id);
 
 			im->setAxisBoundaries(wRes, hRes, 0);
+			im->getEventBuffer();
 		}
 		return im;
 	}

@@ -471,7 +471,7 @@ namespace compat {
 #endif
 	}
 
-	void SystemCompat::uSleep(unsigned int sleepTime) {
+	void SystemCompat::uSleep(unsigned int microseconds) {
 #ifndef WIN32
 		::usleep(sleepTime);
 #elif WIN32

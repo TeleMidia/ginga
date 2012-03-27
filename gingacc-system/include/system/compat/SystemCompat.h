@@ -167,7 +167,7 @@ namespace compat {
 			 * Specific Functions *
 			 **********************/
 			static void makeDir(const char* dirName, unsigned int mode);
-			static void uSleep(unsigned int sleepTime);
+			static void uSleep(unsigned int microseconds);
 	};
 }
 }
