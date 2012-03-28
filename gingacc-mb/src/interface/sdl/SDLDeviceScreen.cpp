@@ -74,6 +74,12 @@ extern "C" {
 #include "mb/interface/sdl/content/video/SDLVideoProvider.h"
 #endif
 
+#if defined(SDL_VIDEO_DRIVER_X11)
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -126,6 +132,7 @@ namespace mb {
 		id              = myId;
 		uParentId       = NULL;
 		uEmbedId        = embedId;
+		uEmbedFocused   = false;
 		renderer        = NULL;
 		mbMode          = "";
 		mbSubSystem     = "";
@@ -153,9 +160,9 @@ namespace mb {
 		}
 
 		if (aSystem != "" && aSystem != "sdlffmpeg") {
-			cout << "SDLDeviceScreen::SDLDeviceScreen Warning! Not ";
-			cout << "supported audio system: '" << aSystem << "'! Using ";
-			cout << "SDL2_ffmpeg instead." << endl;
+			clog << "SDLDeviceScreen::SDLDeviceScreen Warning! Not ";
+			clog << "supported audio system: '" << aSystem << "'! Using ";
+			clog << "SDL2_ffmpeg instead." << endl;
 		}
 		aSystem = "SDLAudioProvider";
 
@@ -298,9 +305,9 @@ namespace mb {
 		vector<string>* params;
 		int uEmbedX, uEmbedY, uEmbedW, uEmbedH;
 
-		cout << "SDLDeviceScreen::setEmbedFromParent: '";
-		cout << parentCoords << "'";
-		cout << endl;
+		clog << "SDLDeviceScreen::setEmbedFromParent: '";
+		clog << parentCoords << "'";
+		clog << endl;
 
 		if (parentCoords == "") {
 			return;
@@ -311,7 +318,6 @@ namespace mb {
 #if defined(SDL_VIDEO_DRIVER_X11)
 			Display* xDisplay;
 			int xScreen;
-			Window parent;
 			int blackColor;
 
 			xDisplay   = XOpenDisplay((*params)[0].c_str());
@@ -321,25 +327,33 @@ namespace mb {
 			uEmbedY    = stof((*params)[3]);
 			uEmbedW    = stof((*params)[4]);
 			uEmbedH    = stof((*params)[5]);
+
 			blackColor = BlackPixel(xDisplay, xScreen);
+
 			uEmbedId   = (GingaWindowID)XCreateSimpleWindow(
-		    		xDisplay,          /* display */
-		    		(Window)uParentId, /* parent */
-		    		uEmbedX,           /* x */
-		    		uEmbedY,           /* y */
-		    		uEmbedW,           /* w */
-		    		uEmbedH,           /* h */
-		    		0,                 /* border_width */
-		    		blackColor,        /* border_color */
-		    		blackColor);       /* background_color */
+		    		xDisplay,               /* display */
+		    		(Window)uParentId,      /* parent */
+		    		uEmbedX,                /* x */
+		    		uEmbedY,                /* y */
+		    		uEmbedW,                /* w */
+		    		uEmbedH,                /* h */
+		    		0,                      /* border_width */
+		    		blackColor,             /* border_color */
+		    		blackColor);            /* background_color */
+
+			if (uEmbedId == NULL) {
+				clog << "SDLDeviceScreen::setEmbedFromParent Warning! ";
+				clog << "Can't create child window" << endl;
+				return;
+			}
 
 			XMapWindow(xDisplay, (Window)uEmbedId);
 		    XClearWindow(xDisplay, (Window)uEmbedId);
 		    XFlush(xDisplay);
 
-			cout << "SDLDeviceScreen::setEmbedFromParent embed id created: '";
-			cout << (void*)uEmbedId << "'";
-			cout << endl;
+			clog << "SDLDeviceScreen::setEmbedFromParent embed id created: '";
+			clog << (void*)uEmbedId << "'";
+			clog << endl;
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 			//TODO: Windows - create a child window from parent window id
@@ -820,9 +834,8 @@ namespace mb {
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
 
-		    while (SDL_PollEvent(&event)) {
+			while (SDL_PollEvent(&event)) {
 		    	pthread_mutex_lock(&sMutex);
-
 				if (event.type == SDL_KEYDOWN) {
 					if (event.key.keysym.sym == SDLK_LSHIFT ||
 							event.key.keysym.sym == SDLK_RSHIFT) {
@@ -841,9 +854,122 @@ namespace mb {
 					}
 				}
 
+				clog << "SDLDeviceScreen::rendererT event received ";
+				clog << "type = '" << event.type << "'" << endl;
+
 				i = sdlScreens.begin();
 				while (i != sdlScreens.end()) {
 					s = i->first;
+
+			    	if (s->uEmbedId != NULL) {
+						if (event.type == SDL_WINDOWEVENT &&
+								event.window.windowID == s->sdlId) {
+
+							switch (event.window.event) {
+								case SDL_WINDOWEVENT_SHOWN:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' shown" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_HIDDEN:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' hidden" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_EXPOSED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' exposed" << endl;
+
+									forceInputFocus(s);
+									break;
+
+								case SDL_WINDOWEVENT_MOVED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' moved to '";
+									clog << event.window.data1;
+									clog << "," << event.window.data2 << "'";
+									clog << endl;
+									break;
+
+								case SDL_WINDOWEVENT_RESIZED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' resized to '";
+									clog << event.window.data1;
+									clog << "," << event.window.data2 << "'";
+									clog << endl;
+									break;
+
+								case SDL_WINDOWEVENT_MINIMIZED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' minimized" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_MAXIMIZED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' maximized" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_RESTORED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' restored" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_ENTER:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' Mouse entered" << endl;
+
+									if (!s->uEmbedFocused) {
+										forceInputFocus(s);
+									}
+									break;
+
+								case SDL_WINDOWEVENT_LEAVE:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' Mouse left" << endl;
+									break;
+
+								case SDL_WINDOWEVENT_FOCUS_GAINED:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' gained keyboard focus" << endl;
+
+									s->uEmbedFocused = true;
+									break;
+
+								case SDL_WINDOWEVENT_FOCUS_LOST:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' lost keyboard focus" << endl;
+
+									s->uEmbedFocused = false;
+									break;
+
+								case SDL_WINDOWEVENT_CLOSE:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' closed" << endl;
+									break;
+
+								default:
+									clog << "SDLDeviceScreen::rendererT ";
+									clog << "Window '" << event.window.windowID;
+									clog << "' got unknown event '";
+									clog << event.window.event << "'" << endl;
+									break;
+							}
+						}
+			    	}
+
 					if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
 								s->im->getEventBuffer());
@@ -1038,6 +1164,124 @@ namespace mb {
 		pthread_mutex_unlock(&s->winMutex);
 	}
 
+	void SDLDeviceScreen::initEmbed(SDLDeviceScreen* s) {
+		SDL_SysWMinfo info;
+
+		SDL_VERSION(&info.version);
+		SDL_GetWindowWMInfo(s->screen, &info);
+
+#if defined(SDL_VIDEO_DRIVER_X11)
+		XSetWindowAttributes attributes;
+
+		if (info.info.x11.display == NULL) {
+			info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
+		}
+
+		if (info.info.x11.display != NULL) {
+			attributes.event_mask = (
+					FocusChangeMask       |
+					EnterWindowMask       |
+					LeaveWindowMask       |
+					ExposureMask          |
+					ButtonPressMask       |
+					ButtonReleaseMask     |
+					PointerMotionMask     |
+					KeyPressMask          |
+					KeyReleaseMask        |
+					PropertyChangeMask    |
+					StructureNotifyMask   |
+					KeymapStateMask);
+
+			attributes.override_redirect = False;
+
+			XChangeWindowAttributes(
+					info.info.x11.display,
+					(Window)s->uEmbedId,
+					(CWEventMask | CWOverrideRedirect),
+					&attributes);
+
+			XFlush(info.info.x11.display);
+
+			clog << "SDLDeviceScreen::initEmbed set attributes for '";
+			clog << s->uEmbedId << "'" << endl;
+
+		} else {
+			clog << "SDLDeviceScreen::initEmbed Warning! ";
+			clog << "Can't set input event mask for embedded ";
+			clog << "window '" << s->uEmbedId << "'" << endl;
+		}
+
+#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
+		//TODO: Windows input event configuration
+
+#elif defined(SDL_VIDEO_DRIVER_COCOA)
+		//TODO: Cocoa input event configuration
+#endif
+	}
+
+	void SDLDeviceScreen::forceInputFocus(SDLDeviceScreen* s) {
+
+#if defined(SDL_VIDEO_DRIVER_X11)
+		Window focusedWindow;
+		int revert;
+		SDL_SysWMinfo info;
+
+		SDL_VERSION(&info.version);
+		SDL_GetWindowWMInfo(s->screen, &info);
+
+		if (info.info.x11.display == NULL) {
+			info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
+		}
+
+		if (info.info.x11.display != NULL) {
+			XGetInputFocus(
+					info.info.x11.display,
+					&focusedWindow,
+					&revert);
+
+			if (focusedWindow != (Window)s->uEmbedId) {
+				XSetInputFocus(
+						info.info.x11.display,
+						(Window)s->uEmbedId,
+						RevertToParent,
+						CurrentTime);
+
+			    /*XSelectInput(
+						info.info.x11.display,
+						(Window)s->uEmbedId,
+						FocusChangeMask       |
+						EnterWindowMask       |
+						LeaveWindowMask       |
+						ExposureMask          |
+						ButtonPressMask       |
+						ButtonReleaseMask     |
+						PointerMotionMask     |
+						KeyPressMask          |
+						KeyReleaseMask        |
+						PropertyChangeMask    |
+						StructureNotifyMask   |
+						KeymapStateMask);*/
+
+				XFlush(info.info.x11.display);
+
+				clog << "SDLDeviceScreen::forceInputFocus set input for '";
+				clog << s->uEmbedId << "'" << endl;
+			}
+
+		} else {
+			clog << "SDLDeviceScreen::forceInputFocus Warning! ";
+			clog << "Can't set input event mask for embedded ";
+			clog << "window '" << s->uEmbedId << "'" << endl;
+		}
+
+#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
+		//TODO: Windows input event configuration
+
+#elif defined(SDL_VIDEO_DRIVER_COCOA)
+		//TODO: Cocoa input event configuration
+#endif
+	}
+
 	void SDLDeviceScreen::initScreen(SDLDeviceScreen* s) {
 		SDL_Rect rect;
 		int i, numOfDrivers, x, y;
@@ -1063,46 +1307,7 @@ namespace mb {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
 
-#if defined(SDL_VIDEO_DRIVER_X11)
-			    SDL_SysWMinfo info;
-			    XSetWindowAttributes attributes;
-
-			    SDL_VERSION(&info.version);
-			    SDL_GetWindowWMInfo(s->screen, &info);
-
-			    if (info.info.x11.display == NULL) {
-			    	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
-			    }
-
-			    if (info.info.x11.display != NULL) {
-				    attributes.event_mask = (
-				    		KeyPressMask       |
-				    		KeyReleaseMask     |
-				    		PointerMotionMask  |
-				    		ButtonPressMask    |
-				    		ButtonReleaseMask  |
-				    		FocusChangeMask    |
-				    		PropertyChangeMask |
-				    		EnterWindowMask    |
-				    		LeaveWindowMask);
-
-				    XChangeWindowAttributes(
-				    		info.info.x11.display,
-				    		(Window)s->uEmbedId,
-				    		CWEventMask,
-				    		&attributes);
-			    } else {
-			    	cout << "SDLDeviceScreen::initScreen Warning! ";
-			    	cout << "Can't set input event mask for embedded ";
-			    	cout << "window '" << s->uEmbedId << "'" << endl;
-			    }
-
-#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-			    //TODO: Windows input event configuration
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-			    //TODO: Cocoa input event configuration
-#endif
+				initEmbed(s);
 			}
 
 		} else {
@@ -1753,19 +1958,19 @@ namespace mb {
 									(dd->coord3 > rect.w) ||
 									(dd->coord4 > rect.h)) {
 
-								cout << "SDLDeviceScreen::drawWindow ";
-								cout << "invalid line coords: " << endl;
-								cout << dd->coord1 << ", ";
-								cout << dd->coord2 << ", ";
-								cout << dd->coord3 << ", ";
-								cout << dd->coord4 << "'";
-								cout << endl;
-								cout << "Window rect coords: " << endl;
-								cout << rect.x << ", ";
-								cout << rect.y << ", ";
-								cout << rect.w << ", ";
-								cout << rect.h << "'";
-								cout << endl;
+								clog << "SDLDeviceScreen::drawWindow ";
+								clog << "invalid line coords: " << endl;
+								clog << dd->coord1 << ", ";
+								clog << dd->coord2 << ", ";
+								clog << dd->coord3 << ", ";
+								clog << dd->coord4 << "'";
+								clog << endl;
+								clog << "Window rect coords: " << endl;
+								clog << rect.x << ", ";
+								clog << rect.y << ", ";
+								clog << rect.w << ", ";
+								clog << rect.h << "'";
+								clog << endl;
 								break;
 							}
 
@@ -1789,19 +1994,19 @@ namespace mb {
 									(dd->coord1 + dr.w > rect.w) ||
 									(dd->coord2 + dr.h > rect.h)) {
 
-								cout << "SDLDeviceScreen::drawWindow ";
-								cout << "invalid rect coords: " << endl;
-								cout << dr.x << ", ";
-								cout << dr.y << ", ";
-								cout << dr.w << ", ";
-								cout << dr.h << "'";
-								cout << endl;
-								cout << "Window rect coords: " << endl;
-								cout << rect.x << ", ";
-								cout << rect.y << ", ";
-								cout << rect.w << ", ";
-								cout << rect.h << "'";
-								cout << endl;
+								clog << "SDLDeviceScreen::drawWindow ";
+								clog << "invalid rect coords: " << endl;
+								clog << dr.x << ", ";
+								clog << dr.y << ", ";
+								clog << dr.w << ", ";
+								clog << dr.h << "'";
+								clog << endl;
+								clog << "Window rect coords: " << endl;
+								clog << rect.x << ", ";
+								clog << rect.y << ", ";
+								clog << rect.w << ", ";
+								clog << rect.h << "'";
+								clog << endl;
 								break;
 							}
 

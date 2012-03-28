@@ -226,9 +226,9 @@ namespace mb {
 		map<IInputEventListener*, set<int>*>::iterator i;
 
 		if (!running) {
-			clog << "InputManager::addInputEventListener can't add listener ";
-			clog << "since InputManager thread is not running" << endl;
-			return;
+			clog << "InputManager::addInputEventListener add listener ";
+			clog << "but I am not running. I will notify you though,";
+			clog << "as soon as you start me!" << endl;
 		}
 
 		if (notifying) {
@@ -396,6 +396,12 @@ namespace mb {
 		}
 
 		keyCode = inputEvent->getKeyCode(myScreen);
+
+		if (keyCode == CodeMap::KEY_TAP) {
+			clog << "InputManger::dispatchEvent code '";
+			clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
+		}
+
 		i = eventListeners.begin();
 		while (i != eventListeners.end() && running) {
 			lis = i->first;
@@ -678,8 +684,8 @@ namespace mb {
 		}
 
 		if (running && eventBuffer == NULL) {
-			cout << "InputManager::run Warning! Can't receive events: ";
-			cout << "event buffer is NULL" << endl;
+			clog << "InputManager::run Warning! Can't receive events: ";
+			clog << "event buffer is NULL" << endl;
 		}
 	}
 }
