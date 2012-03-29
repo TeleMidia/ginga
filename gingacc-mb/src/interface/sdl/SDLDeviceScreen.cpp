@@ -351,6 +351,10 @@ namespace mb {
 		    XClearWindow(xDisplay, (Window)uEmbedId);
 		    XFlush(xDisplay);
 
+		    if (!hasRenderer) {
+		    	XInitThreads();
+		    }
+
 			clog << "SDLDeviceScreen::setEmbedFromParent embed id created: '";
 			clog << (void*)uEmbedId << "'";
 			clog << endl;
@@ -1261,6 +1265,10 @@ namespace mb {
 						PropertyChangeMask    |
 						StructureNotifyMask   |
 						KeymapStateMask);*/
+
+				XCirculateSubwindowsUp(
+						info.info.x11.display,
+						(Window)s->uEmbedId);
 
 				XFlush(info.info.x11.display);
 
