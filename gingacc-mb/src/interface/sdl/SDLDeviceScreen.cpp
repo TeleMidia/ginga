@@ -213,6 +213,10 @@ namespace mb {
 
 		} else {
 			setInitScreenFlag();
+
+			if (hasERC) {
+				rendererT(this);
+			}
 		}
 	}
 
