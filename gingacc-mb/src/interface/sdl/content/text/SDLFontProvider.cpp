@@ -281,7 +281,7 @@ namespace mb {
 				pthread_mutex_lock(&ntsMutex);
 			}
 
-			text = TTF_RenderText_Solid(
+			text = TTF_RenderUTF8_Solid(
 					font, plainText.c_str(), sdlColor);
 
 			if (text == NULL) {

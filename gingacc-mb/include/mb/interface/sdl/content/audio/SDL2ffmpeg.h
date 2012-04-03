@@ -392,6 +392,9 @@ namespace mb {
 		bool reof;
 		bool hasPic;
 
+		int64_t mono_cb_time;
+		int monoStep;
+
 	public:
 		SDL2ffmpeg(const char *filename);
 		~SDL2ffmpeg();
@@ -473,6 +476,11 @@ namespace mb {
 
 		bool getAudioSpec(
 				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
+
+		static char* interleave(uint8_t* src, int srcLen, double ratio);
+
+		static char* createCVT(
+				uint8_t* src, int srcLen, double ratio, int sampleSize);
 
 		static void clamp(short* buf, int len);
 		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
