@@ -100,6 +100,7 @@ namespace mb {
 		hasPic                               = false;
 		reof                                 = false;
 		hasSDLAudio                          = false;
+		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
 		setSoundLevel(0.5);
@@ -1710,7 +1711,7 @@ namespace mb {
 					wanted_channel_layout);
 
 			audioFreq = avctx->sample_rate;
-			if (audioFreq <= 0 || audioChannels <= 1) {
+			if (audioFreq <= 0) {
 				clog << "SDL2ffmpeg::stream_component_open ";
 				clog << "Invalid sample rate or channel count!";
 				clog << endl;
@@ -2515,6 +2516,34 @@ namespace mb {
 		return audioSpec;
 	}
 
+	char* SDL2ffmpeg::interleave(uint8_t* src, int srcLen, double ratio) {
+		int i, j;
+		int cvtRatio = ratio + 1;
+		char* cvtbuf = (char*)malloc(cvtRatio * srcLen);
+
+		for (i = 0; i < srcLen; ++i) {
+			for (j = 0; j < cvtRatio; ++j) {
+				memcpy(cvtbuf + (i * cvtRatio) + j, src + i, 1);
+			}
+		}
+
+		return cvtbuf;
+	}
+
+	char* SDL2ffmpeg::createCVT(
+			uint8_t* src, int srcLen, double ratio, int sampleSize) {
+
+		char* cvtbuf = (char*)malloc((ratio + 1) * srcLen);
+		int loop = ratio + 1;
+		int i;
+
+		for (i = 0; i < loop; i++) {
+			memcpy(cvtbuf + (srcLen * i), src, srcLen);
+		}
+
+		return cvtbuf;
+	}
+
 	void SDL2ffmpeg::clamp(short* buf, int len) {
 		int i;
 		long value;
@@ -2547,10 +2576,9 @@ namespace mb {
 		int64_t uResponseTime;
 		int64_t elapsedTime;
 
-		int its_cb_len;
+		int cvt_len;
 
 		unsigned int sleepTime;
-		int multi = 0;
 
 		//clog << "SDL2ffmpeg::sdl_audio_callback begin" << endl;
 
@@ -2575,71 +2603,115 @@ namespace mb {
 
 				dec->audio_refresh_decoder();
 				if (is->audio_main_buf_size[0] == is->audio_hw_buf_size) {
-					multi++;
 
 					if (dec->acvt.needed) {
-						its_cb_len = (int)((double)len / dec->acvt.len_ratio);
+						/*if (dec->monoStep == 0) {
+							dec->acvt.len = is->audio_hw_buf_size;
 
-						if (dec->acvt.len != its_cb_len ) {
+							if (dec->acvt.buf == NULL) {
+								dec->acvt.buf = (Uint8*)malloc(
+										dec->acvt.len * dec->acvt.len_mult);
+							}
+
+							if (dec->acvt.buf != NULL) {
+								SDL_ConvertAudio(&dec->acvt);
+
+								cout << endl;
+								cout << "Converting(cb len = '" << len;
+								cout << "', Dec = '";
+								cout << dec << "', bytes to convert = '";
+								cout << dec->acvt.len << "', soundLevel = '";
+								cout << dec->soundLevel << "')" << endl;
+								cout << "FROM: ";
+								cout << "format '" << dec->spec.format;
+								cout << "' channels '";
+								cout << (short)dec->spec.channels;
+								cout << "' freq '" << dec->spec.freq;
+								cout << "' samples '" << dec->spec.samples;
+								cout << "' bufSize '" << is->audio_hw_buf_size;
+								cout << "'";
+								cout << endl;
+								cout << "TO: ";
+								cout << "format '" << wantedSpec.format << "' ";
+								cout << "channels '";
+								cout << (short)wantedSpec.channels;
+								cout << "' freq '" << wantedSpec.freq << "' ";
+								cout << "' samples '" << wantedSpec.samples;
+								cout << "' converted size '";
+								cout << dec->acvt.len_cvt;
+								cout << "'";
+								cout << "' converted length ratio '";
+								cout << dec->acvt.len_ratio;
+								cout << "'";
+								cout << endl;
+							}
+						}
+
+						cout << "Mixed '" << len << "' bytes" << endl;
+						cout << "Total in this step '" << dec->monoStep;
+						cout << "'" << endl;
+
+						SDL_MixAudio(
+								stream,
+								dec->acvt.buf + dec->monoStep,
+								len,
+								dec->soundLevel);
+
+						dec->monoStep = dec->monoStep + len;
+
+						if (dec->monoStep >=
+								dec->acvt.len_ratio * is->audio_hw_buf_size) {
+
+						if (dec->acvt.buf == NULL) {
+							dec->acvt.buf = (Uint8*)createCVT(
+									is->audio_main_buf[0],
+									is->audio_hw_buf_size,
+									dec->acvt.len_ratio,
+									dec->spec.samples);
+
+							dec->acvt.buf = (Uint8*)interleave(
+									is->audio_main_buf[0],
+									is->audio_hw_buf_size,
+									3);
+						}*/
+
+						SDL_MixAudio(
+								stream,
+								is->audio_main_buf[0],
+								is->audio_hw_buf_size,
+								dec->soundLevel);
+
+						dec->monoStep++;
+
+						if (dec->monoStep >= dec->acvt.len_ratio) {
+							dec->monoStep = 0;
 							if (dec->acvt.buf != NULL) {
 								free(dec->acvt.buf);
 								dec->acvt.buf = NULL;
 							}
 
-							its_cb_len    = its_cb_len * dec->acvt.len_mult;
-							dec->acvt.len = its_cb_len;
-						}
+							cout << "CB_LEN = '" << len << "'" << endl;
+							cout << "MY_LEN = '" << is->audio_write_buf_size;
+							cout << "'" << endl;
+							cout << "MULTI = '" << dec->acvt.len_mult;
+							cout << "'" << endl;
+							cout << "CVT_LEN = '" << dec->acvt.len_cvt;
+							cout << "'" << endl;
 
-						if (dec->acvt.buf == NULL) {
-							dec->acvt.buf = (Uint8*)malloc(its_cb_len);
-						}
+							bytes_per_sec = is->audio_tgt_freq *
+									is->audio_tgt_channels *
+									av_get_bytes_per_sample(is->audio_tgt_fmt);
 
-						if (dec->acvt.buf != NULL) {
-							/*from SDL_Mixer*/
-							if ((dec->acvt.src_format & 0x0010) &&
-									(its_cb_len & 1)) {
+							is->audio_write_buf_size = is->audio_hw_buf_size;
 
-								its_cb_len--;
-							}
+							is->audio_current_pts = is->audio_clock -
+									(double)(2 * is->audio_hw_buf_size +
+											is->audio_write_buf_size) / bytes_per_sec;
 
-							dec->acvt.len = its_cb_len;
+							is->audio_current_pts_drift = is->audio_current_pts -
+									audio_cb_time / 1000000.0;
 
-							SDL_ConvertAudio(&dec->acvt);
-
-							/*clog << endl;
-							clog << "Converting(cb len = '" << len;
-							clog << "', Dec = '";
-							clog << dec << "', bytes to convert = '";
-							clog << dec->acvt.len << "', soundLevel = '";
-							clog << dec->soundLevel << "')" << endl;
-							clog << "FROM: ";
-							clog << "format '" << dec->spec.format;
-							clog << "' channels '";
-							clog << (short)dec->spec.channels;
-							clog << "' freq '" << dec->spec.freq;
-							clog << "' samples '" << dec->spec.samples;
-							clog << "' bufSize '" << is->audio_hw_buf_size;
-							clog << "'";
-							clog << endl;
-							clog << "TO: ";
-							clog << "format '" << wantedSpec.format << "' ";
-							clog << "channels '";
-							clog << (short)wantedSpec.channels;
-							clog << "' freq '" << wantedSpec.freq << "' ";
-							clog << "' samples '" << wantedSpec.samples;
-							clog << "' converted size '";
-							clog << dec->acvt.len_cvt;
-							clog << "'";
-							clog << endl;*/
-
-							SDL_MixAudio(
-									stream,
-									dec->acvt.buf,
-									dec->acvt.len_cvt,
-									dec->soundLevel);
-
-							free(dec->acvt.buf);
-							dec->acvt.buf = NULL;
+							is->audio_main_buf_size[0] = 0;
 						}
 
 					} else {
@@ -2648,22 +2720,22 @@ namespace mb {
 								is->audio_main_buf[0],
 								is->audio_hw_buf_size,
 								dec->soundLevel);
+
+						bytes_per_sec = is->audio_tgt_freq *
+								is->audio_tgt_channels *
+								av_get_bytes_per_sample(is->audio_tgt_fmt);
+
+						is->audio_write_buf_size = is->audio_hw_buf_size;
+
+						is->audio_current_pts = is->audio_clock -
+								(double)(2 * is->audio_hw_buf_size +
+										is->audio_write_buf_size) / bytes_per_sec;
+
+						is->audio_current_pts_drift = is->audio_current_pts -
+								audio_cb_time / 1000000.0;
+
+						is->audio_main_buf_size[0] = 0;
 					}
-
-					bytes_per_sec = is->audio_tgt_freq *
-							is->audio_tgt_channels *
-							av_get_bytes_per_sample(is->audio_tgt_fmt);
-
-					is->audio_write_buf_size = is->audio_hw_buf_size;
-
-					is->audio_current_pts = is->audio_clock -
-							(double)(2 * is->audio_hw_buf_size +
-									is->audio_write_buf_size) / bytes_per_sec;
-
-					is->audio_current_pts_drift = is->audio_current_pts -
-							audio_cb_time / 1000000.0;
-
-					is->audio_main_buf_size[0] = 0;
 
 				} else {
 					/*clog << endl << endl;
