@@ -583,8 +583,10 @@ namespace mb {
 		if (!isMine(surface)) {
 			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
 			if (contentSurface == NULL) {
-				clog << "SDLWindow::renderFrom Warning! NULL underlying ";
+				clog << "SDLWindow::renderFrom(" << this;
+				clog << ") Warning! NULL underlying ";
 				clog << "surface!" << endl;
+				pthread_mutex_unlock(&rMutex);
 				return;
 			}
 

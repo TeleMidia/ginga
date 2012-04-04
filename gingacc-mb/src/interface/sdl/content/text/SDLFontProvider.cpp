@@ -125,9 +125,9 @@ namespace mb {
 			initialized = true;
 			pthread_mutex_lock(&ntsMutex);
 			if (TTF_Init() < 0) {
-				cout << "SDLFontProvider::initializeFont Warning! ";
-				cout << "Couldn't initialize TTF: " << SDL_GetError();
-				cout << endl;
+				clog << "SDLFontProvider::initializeFont Warning! ";
+				clog << "Couldn't initialize TTF: " << SDL_GetError();
+				clog << endl;
 				pthread_mutex_unlock(&ntsMutex);
 				return false;
 			}
@@ -141,9 +141,9 @@ namespace mb {
 		pthread_mutex_lock(&ntsMutex);
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
-			cout << "SDLFontProvider::initializeFont Warning! ";
-			cout << "Couldn't initialize font: " << fontUri;
-			cout << endl;
+			clog << "SDLFontProvider::initializeFont Warning! ";
+			clog << "Couldn't initialize font: " << fontUri;
+			clog << endl;
 			pthread_mutex_unlock(&ntsMutex);
 			return false;
 		}
@@ -175,8 +175,8 @@ namespace mb {
 			pthread_mutex_unlock(&ntsMutex);
 
 		} else {
-			cout << "SDLFontProvider::getStringExtents Warning! ";
-			cout << "Can't get text size: font is NULL." << endl;
+			clog << "SDLFontProvider::getStringExtents Warning! ";
+			clog << "Can't get text size: font is NULL." << endl;
 		}
 	}
 
@@ -232,8 +232,8 @@ namespace mb {
 
 		pthread_mutex_lock(&ntsMutex);
 		if (plainText == "") {
-			cout << "SDLFontProvider::ntsPlayOver Warning! Empty text.";
-			cout << endl;
+			clog << "SDLFontProvider::playOver Warning! Empty text.";
+			clog << endl;
 			pthread_mutex_unlock(&ntsMutex);
 			return;
 		}
@@ -242,15 +242,15 @@ namespace mb {
 			parent = (SDLWindow*)(content->getParent());
 
 			if (parent == NULL) {
-				cout << "SDLFontProvider::ntsPlayOver Warning! NULL parent.";
-				cout << endl;
+				clog << "SDLFontProvider::playOver Warning! NULL parent.";
+				clog << endl;
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 
 			if (coordX >= parent->getW() || coordY >= parent->getH()) {
-				cout << "SDLFontProvider::ntsPlayOver Warning! Invalid coords.";
-				cout << endl;
+				clog << "SDLFontProvider::playOver Warning! Invalid coords.";
+				clog << endl;
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
@@ -272,8 +272,8 @@ namespace mb {
 					font, plainText.c_str(), sdlColor);
 
 			if (text == NULL) {
-				cout << "SDLFontProvider::ntsPlayOver Warning! Can't create ";
-				cout << "underlying surface from text" << endl;
+				clog << "SDLFontProvider::playOver Warning! Can't create ";
+				clog << "underlying surface from text" << endl;
 				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
@@ -301,15 +301,31 @@ namespace mb {
 
 				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);
+
+				clog << "SDLFontProvider::playOver parent = '" << parent;
+				clog << "' bounds = '" << parent->getX() << ",";
+				clog << parent->getY() << ",";
+				clog << parent->getW() << ",";
+				clog << parent->getH() << "' text rectangle = '";
+				clog << rect.x << ", " << rect.y << ", ";
+				clog << rect.w << ", " << rect.h << "'";
+				clog << endl;
 			}
 
-			SDL_UpperBlit(text, NULL, renderedSurface, &rect);
+			if (SDL_UpperBlit(text, NULL, renderedSurface, &rect) < 0) {
+				clog << "SDLFontProvider::playOver Warning! Can't blit ";
+				clog << "text considering rectangle = '";
+				clog << rect.x << ", " << rect.y << ", ";
+				clog << rect.w << ", " << rect.h << "': ";
+				clog << SDL_GetError();
+				clog << endl;
+			}
 
 			SDL_FreeSurface(text);
 
 		} else {
-			cout << "SDLFontProvider::ntsPlayOver Warning! Invalid Surface.";
-			cout << endl;
+			clog << "SDLFontProvider::playOver Warning! Invalid Surface.";
+			clog << endl;
 		}
 
 		pthread_mutex_unlock(&ntsMutex);
