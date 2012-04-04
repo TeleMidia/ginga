@@ -101,7 +101,8 @@ namespace mb {
 
 	LocalScreenManager::LocalScreenManager() {
 		screens  = new map<GingaScreenID, IDeviceScreen*>;
-		pthread_mutex_init(&scrMutex, NULL);
+		pthread_mutex_init(&mapMutex, NULL);
+		pthread_mutex_init(&genMutex, NULL);
 
 		sysNames = new map<string, short>;
 		pthread_mutex_init(&sysMutex, NULL);
@@ -124,7 +125,7 @@ namespace mb {
 	LocalScreenManager::~LocalScreenManager() {
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 
-		lockScreens();
+		lockScreenMap();
 		if (screens != NULL) {
 			i = screens->begin();
 			while (i != screens->end()) {
@@ -135,8 +136,13 @@ namespace mb {
 			delete screens;
 			screens = NULL;
 		}
-		unlockScreens();
-		pthread_mutex_destroy(&scrMutex);
+		unlockScreenMap();
+		pthread_mutex_destroy(&mapMutex);
+
+		lock();
+		unlock();
+		pthread_mutex_destroy(&genMutex);
+
 
 		lockSysNames();
 		if (sysNames != NULL) {
@@ -237,10 +243,12 @@ namespace mb {
 		string vSystem = "", vSubSystem = "", vMode = "";
 		string vParent = "", vEmbed = "";
 		string aSystem = "";
+		GingaScreenID newScreen;
 
 		clog << "LocalScreenManager::createScreen argv[";
 		clog << argc << "]" << endl;
 
+		lock();
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(args[i], "--vsystem") == 0) && ((i + 1) < argc)) {
 				vSystem.assign(args[i + 1]);
@@ -270,9 +278,13 @@ namespace mb {
 			clog << i << "] = '" << args[i] << "'" << endl;
 		}
 
-		return createScreen(
+		newScreen = createScreen(
 				vSystem, vSubSystem, vMode,
 				vParent, vEmbed, aSystem, externalRenderer);
+
+		unlock();
+
+		return newScreen;
 	}
 
 	GingaScreenID LocalScreenManager::createScreen(
@@ -885,7 +897,7 @@ namespace mb {
 	void LocalScreenManager::addScreen(
 			GingaScreenID screenId, IDeviceScreen* screen) {
 
-		lockScreens();
+		lockScreenMap();
 		if (screen != NULL) {
 			(*screens)[screenId] = screen;
 
@@ -893,15 +905,15 @@ namespace mb {
 			clog << "LocalScreenManager::addScreen Warning! Trying to add ";
 			clog << "a NULL screen" << endl;
 		}
-		unlockScreens();
+		unlockScreenMap();
 	}
 
 	short LocalScreenManager::getNumOfScreens() {
 		short numOfScreens;
 
-		lockScreens();
+		lockScreenMap();
 		numOfScreens = screens->size();
-		unlockScreens();
+		unlockScreenMap();
 
 		return numOfScreens;
 	}
@@ -912,23 +924,31 @@ namespace mb {
 		bool hasScreen = false;
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 
-		lockScreens();
+		lockScreenMap();
 		i = screens->find(screenId);
 		if (i != screens->end()) {
 			hasScreen = true;
 			*screen   = i->second;
 		}
-		unlockScreens();
+		unlockScreenMap();
 
 		return hasScreen;
 	}
 
-	void LocalScreenManager::lockScreens() {
-		pthread_mutex_lock(&scrMutex);
+	void LocalScreenManager::lockScreenMap() {
+		pthread_mutex_lock(&mapMutex);
 	}
 
-	void LocalScreenManager::unlockScreens() {
-		pthread_mutex_unlock(&scrMutex);
+	void LocalScreenManager::unlockScreenMap() {
+		pthread_mutex_unlock(&mapMutex);
+	}
+
+	void LocalScreenManager::lock() {
+		pthread_mutex_lock(&genMutex);
+	}
+
+	void LocalScreenManager::unlock() {
+		pthread_mutex_unlock(&genMutex);
 	}
 }
 }

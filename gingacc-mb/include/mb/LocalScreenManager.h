@@ -90,7 +90,8 @@ namespace mb {
 
 		private:
 			map<GingaScreenID, IDeviceScreen*>* screens;
-			pthread_mutex_t scrMutex;
+			pthread_mutex_t mapMutex;
+			pthread_mutex_t genMutex;
 
 			vector<short> sortSys;
 			map<string, short>* sysNames;
@@ -223,6 +224,7 @@ namespace mb {
 			int fromMBToGinga(GingaScreenID screenId, int keyCode);
 			int fromGingaToMB(GingaScreenID screenId, int keyCode);
 
+			/* and finally some private stuff */
 		private:
 			void addScreen(
 					GingaScreenID screenId, IDeviceScreen* screen);
@@ -232,8 +234,11 @@ namespace mb {
 			bool getScreen(
 					GingaScreenID screenId, IDeviceScreen** screen);
 
-			void lockScreens();
-			void unlockScreens();
+			void lockScreenMap();
+			void unlockScreenMap();
+
+			void lock();
+			void unlock();
 	};
 }
 }

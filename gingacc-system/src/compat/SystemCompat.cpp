@@ -149,7 +149,7 @@ namespace compat {
 			i = params->begin();
 			while (i != params->end()) {
 				currentPath = (*i) + iUriD + gingaBinary;
-				if (access((*i).c_str(), (int)X_OK) == 0) {
+				if (access(currentPath.c_str(), (int)X_OK) == 0) {
 					gingaCurrentPath = (*i);
 
 					clog << "SystemCompat::initializeGingaPath found ";
