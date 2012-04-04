@@ -806,7 +806,6 @@ namespace mb {
 			SDL_Init((Uint32)(
 					SDL_INIT_AUDIO |
 					SDL_INIT_VIDEO |
-					SDL_INIT_TIMER |
 					SDL_INIT_NOPARACHUTE));
 
 		} else {
@@ -816,10 +815,6 @@ namespace mb {
 
 			if (subsystem_init & SDL_INIT_VIDEO == 0) {
 				SDL_InitSubSystem(SDL_INIT_VIDEO);
-			}
-
-			if (subsystem_init & SDL_INIT_TIMER == 0) {
-				SDL_InitSubSystem(SDL_INIT_TIMER);
 			}
 		}
 	}
@@ -861,9 +856,6 @@ namespace mb {
 						shiftOn = false;
 					}
 				}
-
-				clog << "SDLDeviceScreen::rendererT event received ";
-				clog << "type = '" << event.type << "'" << endl;
 
 				i = sdlScreens.begin();
 				while (i != sdlScreens.end()) {
