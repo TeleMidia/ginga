@@ -1895,7 +1895,7 @@ namespace mb {
 		return window;
 	}
 
-	void SDLDeviceScreen::drawWindow(
+	bool SDLDeviceScreen::drawWindow(
 			SDL_Renderer* renderer,
 			SDL_Texture* texture,
 			IWindow* iWin) {
@@ -1906,7 +1906,7 @@ namespace mb {
 		int i, r, g, b, a, bw;
 		int alpha = 0;
 
-		bool addMode = false;
+		bool drawing = false;
 
 		DrawData* dd;
 		SDL_Rect dr;
@@ -1930,9 +1930,14 @@ namespace mb {
 	    	/* setting window background */
 	    	bgColor = iWin->getBgColor();
 	    	if (bgColor != NULL) {
+	    		drawing = true;
 	    		if (alpha == 0) {
 	    			alpha = 255 - bgColor->getAlpha();
 	    		}
+
+	    		r = bgColor->getR();
+	    		g = bgColor->getG();
+	    		b = bgColor->getB();
 
 	    		SDL_SetRenderDrawColor(
 	    				renderer,
@@ -1941,12 +1946,18 @@ namespace mb {
 	    				bgColor->getB(),
 	    				255 - alpha);
 
-	    		SDL_RenderFillRect(renderer, &rect);
+	    		if (SDL_RenderFillRect(renderer, &rect) < 0) {
+	    	        clog << "SDLDeviceScreen::drawWindow ";
+	    	        clog << "Warning! Can't use render to fill rect ";
+	    	        clog << SDL_GetError();
+	    	        clog << endl;
+	    		}
 	    	}
 
 	    	/* geometric figures (lua only) */
 	    	drawData = ((SDLWindow*)iWin)->createDrawDataList();
 	    	if (drawData != NULL) {
+	    		drawing = true;
 	    		it = drawData->begin();
 	    		while (it != drawData->end()) {
 	    			dd = (*it);
@@ -1962,8 +1973,8 @@ namespace mb {
 									(dd->coord3 > rect.w) ||
 									(dd->coord4 > rect.h)) {
 
-								clog << "SDLDeviceScreen::drawWindow ";
-								clog << "invalid line coords: " << endl;
+								clog << "SDLDeviceScreen::drawWindow Warning!";
+								clog << " Invalid line coords: " << endl;
 								clog << dd->coord1 << ", ";
 								clog << dd->coord2 << ", ";
 								clog << dd->coord3 << ", ";
@@ -1978,12 +1989,18 @@ namespace mb {
 								break;
 							}
 
-							SDL_RenderDrawLine(
+							if (SDL_RenderDrawLine(
 									renderer,
 									dd->coord1 + rect.x,
 									dd->coord2 + rect.y,
 									dd->coord3 + rect.x,
-									dd->coord4 + rect.y);
+									dd->coord4 + rect.y) < 0) {
+
+				    	        clog << "SDLDeviceScreen::drawWindow ";
+				    	        clog << "Warning! Can't draw line ";
+				    	        clog << SDL_GetError();
+				    	        clog << endl;
+							}
 
 							break;
 
@@ -1998,8 +2015,8 @@ namespace mb {
 									(dd->coord1 + dr.w > rect.w) ||
 									(dd->coord2 + dr.h > rect.h)) {
 
-								clog << "SDLDeviceScreen::drawWindow ";
-								clog << "invalid rect coords: " << endl;
+								clog << "SDLDeviceScreen::drawWindow Warning!";
+								clog << " Invalid rect coords: " << endl;
 								clog << dr.x << ", ";
 								clog << dr.y << ", ";
 								clog << dr.w << ", ";
@@ -2015,10 +2032,20 @@ namespace mb {
 							}
 
 							if (dd->dataType == SDLWindow::DDT_RECT) {
-								SDL_RenderDrawRect(renderer, &dr);
+								if (SDL_RenderDrawRect(renderer, &dr) < 0) {
+					    	        clog << "SDLDeviceScreen::drawWindow ";
+					    	        clog << "Warning! Can't draw rect ";
+					    	        clog << SDL_GetError();
+					    	        clog << endl;
+								}
 
 							} else {
-								SDL_RenderFillRect(renderer, &dr);
+								if (SDL_RenderFillRect(renderer, &dr) < 0) {
+					    	        clog << "SDLDeviceScreen::drawWindow ";
+					    	        clog << "Warning! Can't fill rect ";
+					    	        clog << SDL_GetError();
+					    	        clog << endl;
+								}
 							}
 							break;
 	    			}
@@ -2029,7 +2056,12 @@ namespace mb {
 
 	    	/* window rendering */
 	    	if (texture != NULL) {
-	    		SDL_RenderCopy(renderer, texture, NULL, &rect);
+	    		drawing = true;
+	    		if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
+	    	        clog << "SDLDeviceScreen::drawWindow Warning! ";
+	    	        clog << "can't perform render copy " << SDL_GetError();
+	    	        clog << endl;
+	    		}
 	    	}
 
 	    	/* window border */
@@ -2056,7 +2088,14 @@ namespace mb {
 
 	    	/* setting renderer previous state */
 	    	SDL_SetRenderDrawColor(renderer, rr, rg, rb, ra);
+
+	    } else {
+	        clog << "SDLDeviceScreen::drawWindow Warning! ";
+	        clog << "NULL interface window";
+	        clog << endl;
 	    }
+
+	    return (drawing);
 	}
 
 	SDL_Texture* SDLDeviceScreen::createTextureFromSurface(
@@ -2065,8 +2104,8 @@ namespace mb {
 		SDL_Texture* texture;
 
 		texture = SDL_CreateTextureFromSurface(renderer, surface);
-	    if (!texture) {
-	        clog << "SDLDeviceScreen::createTextureFromSurface";
+	    if (texture == NULL) {
+	        clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
 	        clog << "Couldn't create texture: " << SDL_GetError();
 	        clog << endl;
 	        return NULL;
