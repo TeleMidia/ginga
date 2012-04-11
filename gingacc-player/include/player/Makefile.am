@@ -1,12 +1,23 @@
-METASOURCES = AUTO
-LIBS =
+METASOURCES          = \
+                       AUTO
 
-localIncludedir = $(prefix)/include/ginga/player
+LIBS                 =
 
-HTOINSTALL = IApplicationPlayer.h \
-	IPlayer.h Player.h INCLPlayer.h \
-	IPlayerListener.h IProgramAV.h \
-	IShowButton.h AnimePlayer.h
+localIncludedir      = \
+                       $(prefix)/include/ginga/player
 
-localInclude_HEADERS = $(HTOINSTALL)
-MAINTAINERCLEANFILES = Makefile.in
+HTOINSTALL           = \
+                       IApplicationPlayer.h \
+                       IPlayer.h \
+                       Player.h \
+                       INCLPlayer.h \
+                       IPlayerListener.h \
+                       IProgramAV.h \
+                       IShowButton.h \
+                       AnimePlayer.h
+
+localInclude_HEADERS = \
+                       $(HTOINSTALL)
+
+MAINTAINERCLEANFILES = \
+                       Makefile.in

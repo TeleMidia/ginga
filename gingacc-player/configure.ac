@@ -369,6 +369,43 @@ fi
 AM_CONDITIONAL([AWESOMIUMLIB], [test x$enable_awesomium = xyes])
 AC_SUBST(TEST_LIBS)
 
+
+####################
+# Ambulant Support #
+####################
+smil=no
+AC_ARG_ENABLE(
+  smil,
+  [  --enable-smil build project with Ambulant player [[default=no]]],
+  enable_smil="$enableval", enable_smil=no)
+
+if test x$enable_smil = xyes; then
+AC_HAVE_LIBRARY(ambulant, ,
+  AC_MSG_WARN([*** Ambulant Library not Found.])
+    enable_smil=no
+)
+fi
+
+if test x$enable_smil = xyes; then
+	GTK_LIBS='-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 \
+	          -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 \
+	          -lpng12 -lm -lcairo -lpango-1.0 -lfreetype -lfontconfig \
+	          -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lglib-2.0'
+
+	GTK_INCS='-I/usr/include/gtk-2.0 -I/usr/lib64/gtk-2.0/include \
+	          -I/usr/include/atk-1.0 -I/usr/include/cairo \
+	          -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/pango-1.0 \
+	          -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include \
+	          -I/usr/include/pixman-1 -I/usr/include/freetype2 \
+	          -I/usr/include/libpng12 -I/usr/lib/glib-2.0/include/ \
+	          -I/usr/lib/gtk-2.0/include/'
+fi
+
+AC_SUBST(GTK_LIBS)
+AC_SUBST(GTK_INCS)
+AM_CONDITIONAL([SMILLIB], [test x$enable_smil = xyes])
+
+
 ###########################
 # Multple Process Support #
 ###########################
@@ -398,6 +435,7 @@ AC_CONFIG_FILES(Makefile
 	src/Makefile
 	src/image/Makefile
 	src/application/imperative/lua/Makefile
+	src/application/declarative/smil/Makefile
 	src/application/declarative/xhtml/links/Makefile
 	src/application/declarative/xhtml/berkelium/Makefile
 	src/application/declarative/xhtml/awesomium/Makefile
@@ -418,6 +456,7 @@ Build options:
   Links Player                 $enable_links
   Berkelium Player             $enable_berkelium
   Awesomium Player             $enable_awesomium
+  SMIL Player                  $enable_smil
   NCLET Support                $ncletplayer
   Interactive Channel          $hasic
   Interactive Channel (RTP)    $hasicrtp
