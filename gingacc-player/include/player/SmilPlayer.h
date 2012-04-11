@@ -77,12 +77,36 @@ using namespace std;
 #include "ambulant/lib/logger.h"
 
 /* Workaround to ambulant header files that are needed but not installed */
-#include "ambulant/player_gtk/gtk_gui.h"
 #include "ambulant/player_gtk/gtk_mainloop.h"
 
 //GTK
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
+
+//XXX temp source code from npambulant
+//some fake gtk_gui functions needed by gtk_mainloop
+void gtk_gui::internal_message(int, char*) {}
+GtkWidget* gtk_gui::get_document_container() { return m_documentcontainer; }
+//XXXX FIXME fake gtk_gui constructor 1st arg is used as GtkWindow, 2nd arg as smilfile
+gtk_gui::gtk_gui(const char* s, const char* s2) {
+	memset (this, 0, sizeof(gtk_gui));
+
+	m_toplevelcontainer = (GtkWindow*) s;
+	m_documentcontainer = gtk_drawing_area_new();
+	gtk_widget_hide(m_documentcontainer);
+//XXXX FIXME vbox only needed to give	m_documentcontainer a parent widget at *draw() callback time
+	m_guicontainer = gtk_vbox_new(FALSE, 0);
+	gtk_container_add(GTK_CONTAINER(m_toplevelcontainer), GTK_WIDGET (m_guicontainer));
+	gtk_box_pack_start (GTK_BOX(m_guicontainer), m_documentcontainer, TRUE, TRUE, 0);
+//XXXX not used:  m_guicontainer = menubar = NULL;
+//XXXX FIXME <EMBED src="xxx" ../> attr value is 2nd contructor arg.
+	m_smilfilename = s2;
+	main_loop = g_main_loop_new(NULL, FALSE);
+}
+
+gtk_gui::~gtk_gui() {
+	g_object_unref (G_OBJECT (main_loop));
+}
 
 namespace br {
 namespace pucrio {
