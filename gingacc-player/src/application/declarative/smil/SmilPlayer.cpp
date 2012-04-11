@@ -116,21 +116,41 @@ namespace player {
 
 		prefs->m_prefer_ffmpeg = true;
 		prefs->m_use_plugins   = true;
-		prefs->m_log_level     = ambulant::lib::logger::LEVEL_SHOW;
+		prefs->m_log_level     = ambulant::lib::logger::LEVEL_DEBUG;
 		prefs->m_parser_id     = "expat";
 	}
 
 	void SmilPlayer::initGui() {
+		cout << "SmilPlayer::initGui" << endl;
+
 		GingaWindowID uWin = dm->createUnderlyingSubWindow(
 				myScreen, x, y, w, h, 0);
+
+		if (uWin == NULL) {
+			clog << "SmilPlayer::initGui Warning! Can't create ";
+			clog << "underlying window! With the following coords: ";
+			clog << " '" << x << "," << y << "," << w << "," << h << "'";
+			clog << endl;
+
+			return;
+		}
+
+		cout << "SmilPlayer::initGui underlying window id = '" << uWin << "'";
+		cout << " With the following coords: ";
+		cout << " '" << x << "," << y << "," << w << "," << h << "'";
+		cout << endl;
 
 		long long ll_winid = reinterpret_cast<long long>(uWin);
 		int i_winid        = static_cast<int>(ll_winid);
 
-		gtkwidget      = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)i_winid));
+		gtk_init(0, NULL);
+
+		gtkwidget      = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)uWin));
 		gtk_gui* m_gui = new gtk_gui((char*) gtkwidget, mrl.c_str());
 		mainLoop       = new gtk_mainloop(m_gui);
+
 		ambulantPlayer = mainLoop->get_player();
+		cout << "SmilPlayer::initGui all done" << endl;
 	}
 
 	ISurface* SmilPlayer::getSurface() {

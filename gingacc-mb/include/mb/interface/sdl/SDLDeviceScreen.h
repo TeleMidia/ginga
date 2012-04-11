@@ -219,6 +219,8 @@ typedef struct {
 					string spec,
 					int x, int y, int w, int h, int z);
 
+			GingaWindowID getScreenUnderlyingWindow();
+
 		public:
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
