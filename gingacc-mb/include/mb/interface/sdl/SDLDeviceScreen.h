@@ -209,6 +209,17 @@ typedef struct {
 			/* interfacing output */
 
 			IWindow* createWindow(int x, int y, int w, int h, int z);
+
+			GingaWindowID createUnderlyingSubWindow(
+					int x, int y, int w, int h, int z);
+
+		private:
+			GingaWindowID createUnderlyingSubWindow(
+					GingaWindowID parent,
+					string spec,
+					int x, int y, int w, int h, int z);
+
+		public:
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);

@@ -307,6 +307,7 @@ namespace mb {
 
 	void SDLDeviceScreen::setEmbedFromParent(string parentCoords) {
 		vector<string>* params;
+		string spec;
 		int uEmbedX, uEmbedY, uEmbedW, uEmbedH;
 
 		clog << "SDLDeviceScreen::setEmbedFromParent: '";
@@ -319,56 +320,14 @@ namespace mb {
 
 		params = split(parentCoords, ",");
 		if (params->size() == 6) {
-#if defined(SDL_VIDEO_DRIVER_X11)
-			Display* xDisplay;
-			int xScreen;
-			int blackColor;
-
-			xDisplay   = XOpenDisplay((*params)[0].c_str());
-			xScreen    = DefaultScreen(xDisplay);
+			spec       = (*params)[0];
 			uParentId  = (void*)strtoul((*params)[1].c_str(), NULL, 10);
 			uEmbedX    = stof((*params)[2]);
 			uEmbedY    = stof((*params)[3]);
 			uEmbedW    = stof((*params)[4]);
 			uEmbedH    = stof((*params)[5]);
-
-			blackColor = BlackPixel(xDisplay, xScreen);
-
-			uEmbedId   = (GingaWindowID)XCreateSimpleWindow(
-		    		xDisplay,               /* display */
-		    		(Window)uParentId,      /* parent */
-		    		uEmbedX,                /* x */
-		    		uEmbedY,                /* y */
-		    		uEmbedW,                /* w */
-		    		uEmbedH,                /* h */
-		    		0,                      /* border_width */
-		    		blackColor,             /* border_color */
-		    		blackColor);            /* background_color */
-
-			if (uEmbedId == NULL) {
-				clog << "SDLDeviceScreen::setEmbedFromParent Warning! ";
-				clog << "Can't create child window" << endl;
-				return;
-			}
-
-			XMapWindow(xDisplay, (Window)uEmbedId);
-		    XClearWindow(xDisplay, (Window)uEmbedId);
-		    XFlush(xDisplay);
-
-		    if (!hasRenderer) {
-		    	XInitThreads();
-		    }
-
-			clog << "SDLDeviceScreen::setEmbedFromParent embed id created: '";
-			clog << (void*)uEmbedId << "'";
-			clog << endl;
-
-#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-			//TODO: Windows - create a child window from parent window id
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-			//TODO: Cocoa - create a child window from parent window id
-#endif
+			uEmbedId   = createUnderlyingSubWindow(
+					uParentId, spec, uEmbedX, uEmbedY, uEmbedW, uEmbedH, 0);
 		}
 
 		delete params;
@@ -502,6 +461,79 @@ namespace mb {
 		pthread_mutex_unlock(&winMutex);
 
 		return iWin;
+	}
+
+	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
+			int x, int y, int w, int h, int z) {
+
+		GingaWindowID uWin = NULL;
+
+		if (uEmbedId != NULL) {
+			uWin = createUnderlyingSubWindow(uEmbedId, "", x, y, w, h, z);
+		}
+
+		return uWin;
+	}
+
+	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
+			GingaWindowID parent,
+			string spec,
+			int x, int y, int w, int h, int z) {
+
+		GingaWindowID uWin = NULL;
+
+#if defined(SDL_VIDEO_DRIVER_X11)
+		Display* xDisplay;
+		int xScreen;
+		int blackColor;
+
+		if (spec == "") {
+			xDisplay = XOpenDisplay(NULL);
+
+		} else {
+			xDisplay = XOpenDisplay(spec.c_str());
+		}
+
+		xScreen    = DefaultScreen(xDisplay);
+		blackColor = BlackPixel(xDisplay, xScreen);
+
+		uWin       = (GingaWindowID)XCreateSimpleWindow(
+				xDisplay,               /* display */
+				(Window)parent,         /* parent */
+				x,                      /* x */
+				y,                      /* y */
+				w,                      /* w */
+				h,                      /* h */
+				0,                      /* border_width */
+				blackColor,             /* border_color */
+				blackColor);            /* background_color */
+
+		if (uWin == NULL) {
+			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
+			clog << "Can't create child window" << endl;
+			return NULL;
+		}
+
+		XMapWindow(xDisplay, (Window)uWin);
+		XClearWindow(xDisplay, (Window)uWin);
+		XFlush(xDisplay);
+
+		if (!hasRenderer) {
+			XInitThreads();
+		}
+
+		clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
+		clog << (void*)uWin << "'";
+		clog << endl;
+
+#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
+		//TODO: Windows - create a child window from parent window id
+
+#elif defined(SDL_VIDEO_DRIVER_COCOA)
+		//TODO: Cocoa - create a child window from parent window id
+#endif
+
+		return uWin;
 	}
 
 	IWindow* SDLDeviceScreen::createWindowFrom(GingaWindowID underlyingWindow) {

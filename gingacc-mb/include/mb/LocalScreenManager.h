@@ -166,6 +166,12 @@ namespace mb {
 					int w, int h,
 					int z);
 
+			GingaWindowID createUnderlyingSubWindow(
+					GingaScreenID screenId,
+					int x, int y,
+					int w, int h,
+					int z);
+
 			IWindow* createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow);
 

@@ -8,6 +8,7 @@ SUBDIRS = 	files \
 			include/player \
 			src \
 			src/image \
+			src/application/declarative/smil \
 			src/application/declarative/xhtml/links \
 			src/application/declarative/xhtml/berkelium \
 			src/application/declarative/xhtml/awesomium \

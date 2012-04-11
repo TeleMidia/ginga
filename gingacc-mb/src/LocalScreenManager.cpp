@@ -634,6 +634,23 @@ namespace mb {
 		return window;
 	}
 
+	GingaWindowID LocalScreenManager::createUnderlyingSubWindow(
+			GingaScreenID screenId, int x, int y, int w, int h, int z) {
+
+		IDeviceScreen* screen;
+		GingaWindowID window = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			window = screen->createUnderlyingSubWindow(x, y, w, h, z);
+
+		} else {
+			clog << "LocalScreenManager::createWindow Warning! ";
+			clog << "can't find screen '" << screenId << "'" << endl;
+		}
+
+		return window;
+	}
+
 	IWindow* LocalScreenManager::createWindowFrom(
 			GingaScreenID screenId, GingaWindowID underlyingWindow) {
 
