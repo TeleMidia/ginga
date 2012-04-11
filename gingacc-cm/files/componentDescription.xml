@@ -299,6 +299,16 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-player" name="libgingaccplasml.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libambulant.so" version="2.1.0"/>
+    <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
+    <dependency componentName="libgingaccsystem.so" version="0.13.1"/>
+    <dependency componentName="libgingaccplayer.so" version="0.13.1"/>
+    <symbol object="SmilPlayer" creator="createSmilPlayer" destroyer="destroySmilPlayer" interface="IPlayer"/>
+    <location type="local" uri="/usr/local/lib/ginga/players/"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
   <component package="gingacc-player" name="libgingaccplalks.so" version="0.13.1" type="dynamic">
     <dependency componentName="libtelemidialinks.so" version="2.1.0"/>
     <dependency componentName="libtelemidiautil.so" version="0.13.1"/>
@@ -463,6 +473,16 @@
     <dependency componentName="libginganclmodel.so" version="0.13.1"/>
     <dependency componentName="libgingancladapter.so" version="0.13.1"/>
     <symbol object="NCLPlayerAdapter" creator="createNCLAdapter" destroyer="destroyNCLAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="/usr/local/lib/ginga/adapters"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclsmlpadapter.so" version="0.13.1" type="dynamic">
+    <dependency componentName="libncl30.so" version="0.13.1"/>
+    <dependency componentName="libginganclmodel.so" version="0.13.1"/>
+    <dependency componentName="libgingancladapter.so" version="0.13.1"/>
+    <dependency componentName="libginganclappadapter.so" version="0.13.1"/>
+    <symbol object="SmilPlayerAdapter" creator="createSmilAdapter" destroyer="destroySmilAdapter" interface="IPlayerAdapter"/>
     <location type="local" uri="/usr/local/lib/ginga/adapters"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
