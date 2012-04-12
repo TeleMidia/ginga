@@ -89,6 +89,7 @@ void gtk_gui::internal_message(int, char*) {}
 GtkWidget* gtk_gui::get_document_container() { return m_documentcontainer; }
 //XXXX FIXME fake gtk_gui constructor 1st arg is used as GtkWindow, 2nd arg as smilfile
 gtk_gui::gtk_gui(const char* s, const char* s2) {
+	cout << "gtk_gui::gtk_gui " << endl;
 	memset (this, 0, sizeof(gtk_gui));
 
 	m_toplevelcontainer = (GtkWindow*) s;
@@ -102,6 +103,8 @@ gtk_gui::gtk_gui(const char* s, const char* s2) {
 //XXXX FIXME <EMBED src="xxx" ../> attr value is 2nd contructor arg.
 	m_smilfilename = s2;
 	main_loop = g_main_loop_new(NULL, FALSE);
+
+	cout << "gtk_gui::gtk_gui all done" << endl;
 }
 
 gtk_gui::~gtk_gui() {
@@ -114,7 +117,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class SmilPlayer : public Player, public IInputEventListener {
+	class SmilPlayer :
+			public Player, public IInputEventListener, public Thread {
+
 		private:
 			IInputManager* im;
 			int x, y, w, h;
@@ -123,6 +128,7 @@ namespace player {
 			//TODO: make it independent from GTK
 			gtk_mainloop* mainLoop;
 			GtkWidget* gtkwidget;
+			gtk_gui* gui;
 
 		public:
 			SmilPlayer(GingaScreenID screenId, string mrl);
@@ -150,6 +156,9 @@ namespace player {
 			void setPropertyValue(string name, string value);
 
 			bool setKeyHandler(bool isHandler);
+
+		protected:
+			void run();
 	};
 }
 }
