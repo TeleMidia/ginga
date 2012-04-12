@@ -68,13 +68,17 @@ namespace player {
 
 		initPrefs();
 
-		this->x        = 0;
-		this->y        = 0;
-		this->w        = 0;
-		this->h        = 0;
-		this->im       = NULL;
-		ambulantPlayer = NULL;
-		mainLoop       = NULL;
+		this->x         = 0;
+		this->y         = 0;
+		this->w         = 0;
+		this->h         = 0;
+		this->im        = NULL;
+		ambulantPlayer  = NULL;
+		smilDoc         = NULL;
+		mainLoop        = NULL;
+		smilRootNode    = NULL;
+		smilNodeContext = NULL;
+		smilStateCmp    = NULL;
 	}
 
 	SmilPlayer::~SmilPlayer() {
@@ -118,14 +122,15 @@ namespace player {
 		prefs->m_use_plugins   = true;
 		prefs->m_log_level     = ambulant::lib::logger::LEVEL_DEBUG;
 		prefs->m_parser_id     = "expat";
+		prefs->m_plugin_dir    = "/usr/local/lib/ambulant/";
 	}
 
 	void SmilPlayer::initGui() {
-		cout << "SmilPlayer::initGui" << endl;
+		GingaWindowID uWin;
 
-		GingaWindowID uWin = dm->createUnderlyingSubWindow(
-				myScreen, x, y, w, h, 0);
+		clog << "SmilPlayer::initGui" << endl;
 
+		uWin = dm->createUnderlyingSubWindow(myScreen, x, y, w, h, 0);
 		if (uWin == NULL) {
 			clog << "SmilPlayer::initGui Warning! Can't create ";
 			clog << "underlying window! With the following coords: ";
@@ -135,26 +140,44 @@ namespace player {
 			return;
 		}
 
-		cout << "SmilPlayer::initGui underlying window id = '" << uWin << "'";
-		cout << " With the following coords: ";
-		cout << " '" << x << "," << y << "," << w << "," << h << "'";
-		cout << endl;
+		clog << "SmilPlayer::initGui underlying window id = '" << uWin << "'";
+		clog << " With the following coords: ";
+		clog << " '" << x << "," << y << "," << w << "," << h << "'";
+		clog << endl;
 
 		long long ll_winid = reinterpret_cast<long long>(uWin);
 		int i_winid        = static_cast<int>(ll_winid);
 
 		gtk_init(0, NULL);
 
-		gtkwidget = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)i_winid));
+		//gtkwidget = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)i_winid));
+		gtkwidget = gtk_window_new(GTK_WINDOW_POPUP);
 
+		gtk_widget_show(gtkwidget);
 		gtk_widget_set_visible(gtkwidget, true);
 		gtk_widget_map(gtkwidget);
+		gtk_widget_set_size_request(gtkwidget, w, h);
+
+		XReparentWindow(
+				GDK_WINDOW_XDISPLAY(gtkwidget->window),
+				GDK_WINDOW_XWINDOW(gtkwidget->window),
+				(Window)uWin,
+				0,0);
+
+		clog << "SmilPlayer::initGui checking if gtk has window: ";
+		clog << gtk_widget_get_has_window(gtkwidget);
+		clog << endl;
 
 		gui      = new gtk_gui((char*) gtkwidget, mrl.c_str());
 		mainLoop = new gtk_mainloop(gui);
 
-		ambulantPlayer = mainLoop->get_player();
-		cout << "SmilPlayer::initGui all done" << endl;
+		smilDoc         = mainLoop->get_document();
+		smilRootNode    = smilDoc->get_root();
+		smilNodeContext = smilRootNode->get_context();
+		smilStateCmp    = smilNodeContext->get_state();
+		ambulantPlayer  = mainLoop->get_player();
+
+		clog << "SmilPlayer::initGui all done" << endl;
 	}
 
 	ISurface* SmilPlayer::getSurface() {
@@ -245,6 +268,10 @@ namespace player {
 		clog << "SmilPlayer::setProperty '" << name << "' value '";
 		clog << value << "'" << endl;
 
+		if (smilStateCmp != NULL && value != "") {
+			smilStateCmp->set_value(name.c_str(), value.c_str());
+		}
+
 		//TODO: set scrollbar, support...
 		if (name == "transparency") {
 			double val;
@@ -309,9 +336,9 @@ namespace player {
 	}
 
 	void SmilPlayer::run() {
-		cout << "SmilPlayer::run" << endl;
+		clog << "SmilPlayer::run" << endl;
 		g_main_loop_run(gui->main_loop);
-		cout << "SmilPlayer::run all done" << endl;
+		clog << "SmilPlayer::run all done" << endl;
 	}
 }
 }
