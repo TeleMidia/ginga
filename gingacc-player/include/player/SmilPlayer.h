@@ -130,6 +130,11 @@ namespace player {
 			GtkWidget* gtkwidget;
 			gtk_gui* gui;
 
+			lib::document* smilDoc;
+			lib::node* smilRootNode;
+			const lib::node_context* smilNodeContext;
+			common::state_component* smilStateCmp;
+
 		public:
 			SmilPlayer(GingaScreenID screenId, string mrl);
 			virtual ~SmilPlayer();

@@ -269,7 +269,9 @@ typedef struct {
 			static void refreshWin(SDLDeviceScreen* screen);
 
 			static void initEmbed(SDLDeviceScreen* s, GingaWindowID uWin);
-			static void forceInputFocus(SDLDeviceScreen* screen);
+			static void forceInputFocus(
+					SDLDeviceScreen* screen, GingaWindowID uWin);
+
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
 			static void releaseScreen(SDLDeviceScreen* screen);

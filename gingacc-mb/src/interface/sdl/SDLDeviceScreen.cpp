@@ -479,6 +479,7 @@ namespace mb {
 		uWin = createUnderlyingSubWindow(parent, "", x, y, w, h, z);
 		if (uWin != NULL) {
 			initEmbed(this, uWin);
+			forceInputFocus(this, uWin);
 		}
 
 		return uWin;
@@ -501,6 +502,10 @@ namespace mb {
 
 		} else {
 			xDisplay = XOpenDisplay(spec.c_str());
+		}
+
+		if (parent == NULL) {
+			parent = (GingaWindowID)XDefaultRootWindow(xDisplay);
 		}
 
 		xScreen    = DefaultScreen(xDisplay);
@@ -946,7 +951,7 @@ namespace mb {
 									clog << "Window '" << event.window.windowID;
 									clog << "' exposed" << endl;
 
-									forceInputFocus(s);
+									forceInputFocus(s, s->uEmbedId);
 									break;
 
 								case SDL_WINDOWEVENT_MOVED:
@@ -991,7 +996,7 @@ namespace mb {
 									clog << "' Mouse entered" << endl;
 
 									if (!s->uEmbedFocused) {
-										forceInputFocus(s);
+										forceInputFocus(s, s->uEmbedId);
 									}
 									break;
 
@@ -1284,7 +1289,8 @@ namespace mb {
 #endif
 	}
 
-	void SDLDeviceScreen::forceInputFocus(SDLDeviceScreen* s) {
+	void SDLDeviceScreen::forceInputFocus(
+			SDLDeviceScreen* s, GingaWindowID uWin) {
 
 #if defined(SDL_VIDEO_DRIVER_X11)
 		Window focusedWindow;
@@ -1304,10 +1310,10 @@ namespace mb {
 					&focusedWindow,
 					&revert);
 
-			if (focusedWindow != (Window)s->uEmbedId) {
+			if (focusedWindow != (Window)uWin) {
 				XSetInputFocus(
 						info.info.x11.display,
-						(Window)s->uEmbedId,
+						(Window)uWin,
 						RevertToParent,
 						CurrentTime);
 
@@ -1329,20 +1335,20 @@ namespace mb {
 
 				XCirculateSubwindowsUp(
 						info.info.x11.display,
-						(Window)s->uEmbedId);
+						(Window)uWin);
 
 				XFlush(info.info.x11.display);
 
 				XSync(info.info.x11.display, 1);
 
 				clog << "SDLDeviceScreen::forceInputFocus set input for '";
-				clog << s->uEmbedId << "'" << endl;
+				clog << uWin << "'" << endl;
 			}
 
 		} else {
 			clog << "SDLDeviceScreen::forceInputFocus Warning! ";
 			clog << "Can't set input event mask for embedded ";
-			clog << "window '" << s->uEmbedId << "'" << endl;
+			clog << "window '" << uWin << "'" << endl;
 		}
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
