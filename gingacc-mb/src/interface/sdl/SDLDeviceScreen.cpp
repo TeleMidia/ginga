@@ -477,6 +477,9 @@ namespace mb {
 		}
 
 		uWin = createUnderlyingSubWindow(parent, "", x, y, w, h, z);
+		if (uWin != NULL) {
+			initEmbed(this, uWin);
+		}
 
 		return uWin;
 	}
@@ -494,7 +497,7 @@ namespace mb {
 		int blackColor;
 
 		if (spec == "") {
-			xDisplay = XOpenDisplay(NULL);
+			xDisplay = XOpenDisplay(getenv("DISPLAY"));
 
 		} else {
 			xDisplay = XOpenDisplay(spec.c_str());
@@ -531,6 +534,8 @@ namespace mb {
 		clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
 		clog << (void*)uWin << "'";
 		clog << endl;
+
+		XSync(xDisplay, 1);
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 		//TODO: Windows - create a child window from parent window id
@@ -1222,7 +1227,7 @@ namespace mb {
 		pthread_mutex_unlock(&s->winMutex);
 	}
 
-	void SDLDeviceScreen::initEmbed(SDLDeviceScreen* s) {
+	void SDLDeviceScreen::initEmbed(SDLDeviceScreen* s, GingaWindowID uWin) {
 		SDL_SysWMinfo info;
 
 		SDL_VERSION(&info.version);
@@ -1254,19 +1259,21 @@ namespace mb {
 
 			XChangeWindowAttributes(
 					info.info.x11.display,
-					(Window)s->uEmbedId,
+					(Window)uWin,
 					(CWEventMask | CWOverrideRedirect),
 					&attributes);
 
 			XFlush(info.info.x11.display);
 
+			XSync(info.info.x11.display, 1);
+
 			clog << "SDLDeviceScreen::initEmbed set attributes for '";
-			clog << s->uEmbedId << "'" << endl;
+			clog << uWin << "'" << endl;
 
 		} else {
 			clog << "SDLDeviceScreen::initEmbed Warning! ";
 			clog << "Can't set input event mask for embedded ";
-			clog << "window '" << s->uEmbedId << "'" << endl;
+			clog << "window '" << uWin << "'" << endl;
 		}
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
@@ -1326,6 +1333,8 @@ namespace mb {
 
 				XFlush(info.info.x11.display);
 
+				XSync(info.info.x11.display, 1);
+
 				clog << "SDLDeviceScreen::forceInputFocus set input for '";
 				clog << s->uEmbedId << "'" << endl;
 			}
@@ -1369,7 +1378,7 @@ namespace mb {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
 
-				initEmbed(s);
+				initEmbed(s, s->uEmbedId);
 			}
 
 		} else {
