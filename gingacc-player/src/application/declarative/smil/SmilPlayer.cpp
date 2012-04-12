@@ -145,7 +145,11 @@ namespace player {
 
 		gtk_init(0, NULL);
 
-		gtkwidget      = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)uWin));
+		gtkwidget = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)uWin));
+
+		gtk_widget_set_visible(gtkwidget, true);
+		gtk_widget_map(gtkwidget);
+
 		gtk_gui* m_gui = new gtk_gui((char*) gtkwidget, mrl.c_str());
 		mainLoop       = new gtk_mainloop(m_gui);
 
