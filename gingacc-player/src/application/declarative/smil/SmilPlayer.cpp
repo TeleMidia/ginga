@@ -145,13 +145,13 @@ namespace player {
 
 		gtk_init(0, NULL);
 
-		gtkwidget = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)uWin));
+		gtkwidget = GTK_WIDGET(gtk_plug_new((GdkNativeWindow)i_winid));
 
 		gtk_widget_set_visible(gtkwidget, true);
 		gtk_widget_map(gtkwidget);
 
-		gtk_gui* m_gui = new gtk_gui((char*) gtkwidget, mrl.c_str());
-		mainLoop       = new gtk_mainloop(m_gui);
+		gui      = new gtk_gui((char*) gtkwidget, mrl.c_str());
+		mainLoop = new gtk_mainloop(gui);
 
 		ambulantPlayer = mainLoop->get_player();
 		cout << "SmilPlayer::initGui all done" << endl;
@@ -205,6 +205,7 @@ namespace player {
 		clog << "SmilPlayer::play(" << mrl << ")" << endl;
 
 		if (ambulantPlayer != NULL) {
+			Thread::start();
 			ambulantPlayer->start();
 			gtk_widget_show_all(gtkwidget);
 			gtk_widget_realize(gtkwidget);
@@ -305,6 +306,12 @@ namespace player {
 		clog << endl;*/
 
 		return true;
+	}
+
+	void SmilPlayer::run() {
+		cout << "SmilPlayer::run" << endl;
+		g_main_loop_run(gui->main_loop);
+		cout << "SmilPlayer::run all done" << endl;
 	}
 }
 }

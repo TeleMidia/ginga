@@ -18,7 +18,7 @@ libgingaccplasml_la_SOURCES = \
 
 # TODO: figure how to clean this
 libgingaccplasml_la_LIBADD  = \
-                              /usr/local/src/tries/Ambulant/ambulant/build-i386/src/player_gtk/gtk_mainloop.o \
+                              gtk_mainloop.o \
                               -lambulant \
                               -lambulant_gtk \
                               -lambulant_sdl \
