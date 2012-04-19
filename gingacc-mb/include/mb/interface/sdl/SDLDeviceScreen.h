@@ -92,19 +92,21 @@ typedef struct {
 			static const unsigned int DSA_16x9;
 
 		private:
-			static const short STP_NONE          = 0;
-			static const short STP_INIT          = 1;
-			static const short STP_CLEAR         = 2;
-			static const short STP_RELEASE       = 3;
+			/* SDL Pending Tasks*/
+			static const short SPT_NONE          = 0;
+			static const short SPT_INIT          = 1;
+			static const short SPT_CLEAR         = 2;
+			static const short SPT_RELEASE       = 3;
 
 		public:
+			/* SDL Underlying Window Tasks*/
 			static const short SUW_SHOW          = 0;
 			static const short SUW_HIDE          = 1;
 			static const short SUW_RAISETOTOP    = 2;
 			static const short SUW_LOWERTOBOTTOM = 3;
 
-			static const short SDLDS_FPS         = 25;
-			static const int sleepTime           = (int)(1000000/SDLDS_FPS);
+			static const short SDS_FPS           = 25;
+			static const int sleepTime           = (int)(1000000/SDS_FPS);
 
 		private:
 			static bool hasRenderer;
@@ -132,6 +134,7 @@ typedef struct {
 			GingaWindowID uParentId;
 			GingaWindowID uEmbedId;
 			bool uEmbedFocused;
+			bool mustGainFocus;
 
 			IInputManager* im;
 

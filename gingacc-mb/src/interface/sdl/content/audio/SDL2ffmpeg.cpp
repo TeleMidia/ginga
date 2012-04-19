@@ -100,6 +100,7 @@ namespace mb {
 		hasPic                               = false;
 		reof                                 = false;
 		hasSDLAudio                          = false;
+		abortRequest                         = false;
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
@@ -419,7 +420,7 @@ namespace mb {
 
 		clog << "SDL2ffmpeg::stop(" << vs->filename << ")" << endl;
 
-		vs->abort_request           = 1;
+		abortRequest                = true;
 		vs->videoq.abort_request    = 1;
 		vs->audioq.abort_request    = 1;
 		vs->subtitleq.abort_request = 1;
@@ -1023,7 +1024,7 @@ namespace mb {
 
 		clog << "SDL2ffmpeg::stream_close" << endl;
 
-		vs->abort_request = 1;
+		abortRequest = true;
 
 		for (i=0;i<VIDEO_PICTURE_QUEUE_SIZE; i++) {
 			vp = &vs->pictq[i];
@@ -1466,8 +1467,8 @@ namespace mb {
 		int new_packet = 0;
 		int flush_complete = 0;
 
-		if (vs->audio_stream < 0 || !vs->audio_st || vs->paused ||
-				vs->abort_request) {
+		if (abortRequest ||
+				vs->audio_stream < 0 || !vs->audio_st || vs->paused) {
 
 			return -1;
 		}
@@ -1939,21 +1940,21 @@ namespace mb {
 		double pts;
 		int len1, offset;
 
-		if (vs->audio_stream >= 0 && !vs->abort_request &&
-				vs->audio_hw_buf_size != 0) {
+		if (!abortRequest &&
+				vs->audio_stream >= 0 && vs->audio_hw_buf_size != 0) {
 
 			if (vs->audio_main_buf_size[0] >= vs->audio_hw_buf_size) {
 				return 0;
 			}
 
 			while (vs->audio_main_buf_size[0] < vs->audio_hw_buf_size) {
-				if ((reof && vs->audioq.size == 0) || vs->abort_request) {
+				if (abortRequest || (reof && vs->audioq.size == 0)) {
 					return -1;
 				}
 
 				audio_size = audio_decode_frame(&pts);
-				if (audio_size < 0 || vs->abort_request) {
-					if (vs->abort_request) {
+				if (abortRequest || audio_size < 0) {
+					if (abortRequest) {
 						return -1;
 
 					} else {
@@ -1966,7 +1967,7 @@ namespace mb {
 						audio_size,
 						pts);
 
-				if (audio_size > 0 && !vs->abort_request) {
+				if (!abortRequest && audio_size > 0) {
 					if (vs->audio_main_buf_size[0] == 0 &&
 							vs->audio_main_buf_size[1] != 0) {
 
@@ -2068,11 +2069,11 @@ namespace mb {
 		SubPicture *sp, *sp2;
 		int len2;
 
-		if (vs != NULL &&
-				!vs->abort_request &&
-				vs->video_stream >= 0 &&
-				vs->video_st) {
+		if (abortRequest) {
+			return;
+		}
 
+		if (vs != NULL && vs->video_stream >= 0 && vs->video_st) {
 			if (vs->pictq_size == 0) {
 				SDL_LockMutex(vs->pictq_mutex);
 				if (vs->frame_last_dropped_pts != AV_NOPTS_VALUE &&
@@ -2313,7 +2314,7 @@ namespace mb {
 		AVPacket pkt1, *pkt = &pkt1;
 		int pkt_in_play_range = 0;
 
-		if (!vs->abort_request) {
+		if (!abortRequest) {
 			if (vs->paused != vs->last_paused) {
 				vs->last_paused = vs->paused;
 				if (vs->paused) {

@@ -550,10 +550,8 @@ namespace mb {
 	}
 
 	void InputManager::setAxisBoundaries(int x, int y, int z) {
-		if (maxX == 0 && maxY == 0) {
-			this->maxX = x;
-			this->maxY = y;
-		}
+		this->maxX = x;
+		this->maxY = y;
 	}
 
 	int InputManager::getCurrentXAxisValue() {

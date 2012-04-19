@@ -86,44 +86,47 @@ namespace mb {
 	}
 
 	bool SDLEventBuffer::checkEvent(Uint32 winId, SDL_Event event) {
+		Uint32 windowID = winId + 1;
+
 		switch (event.type) {
 			case SDL_MOUSEMOTION:
-				if (event.motion.windowID == winId) {
-					return true;
-				}
+				windowID = event.motion.windowID;
 				break;
 
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				if (event.key.windowID == winId) {
-					return true;
-				}
+				windowID = event.key.windowID;
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
-				if (event.button.windowID == winId) {
-					return true;
-				}
+				windowID = event.button.windowID;
 				break;
 
 			case SDL_FINGERMOTION:
 			case SDL_FINGERDOWN:
 			case SDL_FINGERUP:
-				if (event.tfinger.windowID == winId) {
-					return true;
-				}
+				windowID = event.tfinger.windowID;
 				break;
 
 			case SDL_TOUCHBUTTONDOWN:
 			case SDL_TOUCHBUTTONUP:
-				if (event.tbutton.windowID == winId) {
-					return true;
-				}
+				windowID = event.tbutton.windowID;
 				break;
 		}
 
-		return false;
+		if (windowID == winId) {
+			//cout << "SDLEventBuffer::checkEvent returning true" << endl;
+			return true;
+
+		} else {
+			/*cout << "SDLEventBuffer::checkEvent returning false because ";
+			cout << "event with type = '";
+			cout << event.type << "' has windowID = '" << windowID;
+			cout << "' and SDL window has id = '";
+			cout << winId << "'" << endl;*/
+			return false;
+		}
 	}
 
 	void SDLEventBuffer::feed(SDL_Event event, bool capsOn, bool shiftOn) {
