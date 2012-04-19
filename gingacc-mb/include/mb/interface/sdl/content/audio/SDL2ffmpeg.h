@@ -217,7 +217,6 @@ namespace mb {
 
 	typedef struct VideoState {
 		int no_background;
-		int abort_request;
 		int paused;
 		int last_paused;
 		int seek_req;
@@ -391,6 +390,8 @@ namespace mb {
 		bool hasSDLAudio;
 		bool reof;
 		bool hasPic;
+
+		bool abortRequest;
 
 		int64_t mono_cb_time;
 		int monoStep;
