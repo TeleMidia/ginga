@@ -82,6 +82,7 @@ namespace mb {
 			void clearWidgetPools();
 
 			string getScreenName();
+			GingaWindowID getScreenUnderlyingWindow(){return NULL;};
 			void setBackgroundImage(string uri);
 
 			unsigned int getWidthResolution();

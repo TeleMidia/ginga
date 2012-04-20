@@ -416,6 +416,10 @@ namespace player {
 		}
 	}
 
+	void AwesomiumHandler::onDOMReady(awe_webview* caller) {
+		clog << "AwesomiumHandler::onDOMReady" << endl;
+	}
+
 	void AwesomiumHandler::loadUrl(AwesomiumHDR id, string url) {
 		AwesomiumInfo* aInfo;
 
@@ -518,7 +522,25 @@ namespace player {
 			}
 
 			if (webView != NULL) {
-				awe_webview_activate_ime(webView, false);
+				/*awe_webview_set_callback_dom_ready(
+						webView, &AwesomiumHandler::onDOMReady);
+
+				awe_webview_activate_ime(webView, false);*/
+
+				string exportAweData = ultostr(
+						(unsigned long)dm->getScreenUnderlyingWindow(
+								aInfo->myScreen));
+
+				exportAweData = "AWE_EMB=" + exportAweData +
+						"," + itos(aInfo->x) +
+						"," + itos(aInfo->y) +
+						"," + itos(aInfo->w) +
+						"," + itos(aInfo->h);
+
+				cout << "AwesomiumHandler::loadUrl putenv '";
+				cout << exportAweData << "'" << endl;
+
+				putenv((char*)exportAweData.c_str());
 
 				clog << "AwesomiumHandler::loadUrl call loadUrl '";
 				clog << aInfo->mURL << "'";

@@ -487,12 +487,7 @@ namespace mb {
 		GingaWindowID uWin   = NULL;
 		GingaWindowID parent = NULL;
 
-		if (uEmbedId != NULL) {
-			parent = uEmbedId;
-
-		} else {
-			parent = getScreenUnderlyingWindow();
-		}
+		parent = getScreenUnderlyingWindow();
 
 		uWin = createUnderlyingSubWindow(parent, "", x, y, w, h, z);
 		if (uWin != NULL) {
@@ -574,18 +569,23 @@ namespace mb {
 		GingaWindowID sUWin = NULL;
 		SDL_SysWMinfo info;
 
-		SDL_VERSION(&info.version);
-		SDL_GetWindowWMInfo(screen, &info);
+		if (uEmbedId != NULL) {
+			sUWin = uEmbedId;
+
+		} else {
+			SDL_VERSION(&info.version);
+			SDL_GetWindowWMInfo(screen, &info);
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-		sUWin = (GingaWindowID)info.info.x11.window;
+			sUWin = (GingaWindowID)info.info.x11.window;
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-		//TODO: Windows input event configuration
+			//TODO: Windows input event configuration
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
-		//TODO: Cocoa input event configuration
+			//TODO: Cocoa input event configuration
 #endif
+		}
 
 		return sUWin;
 	}

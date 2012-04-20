@@ -86,6 +86,7 @@ namespace mb {
 			virtual void clearWidgetPools()=0;
 
 			virtual string getScreenName()=0;
+			virtual GingaWindowID getScreenUnderlyingWindow()=0;
 
 			virtual void setBackgroundImage(string uri)=0;
 
