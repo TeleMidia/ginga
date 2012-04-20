@@ -95,6 +95,9 @@ namespace mb {
 			virtual GingaScreenID createScreen(int numArgs, char** args)=0;
 			virtual string getScreenName(GingaScreenID screenId)=0;
 
+			virtual GingaWindowID getScreenUnderlyingWindow(
+					GingaScreenID screenId)=0;
+
 			virtual void mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,

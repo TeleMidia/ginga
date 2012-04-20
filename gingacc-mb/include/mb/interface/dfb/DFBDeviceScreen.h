@@ -146,6 +146,7 @@ namespace mb {
 
 		public:
 			string getScreenName();
+			GingaWindowID getScreenUnderlyingWindow(){return NULL;};
 
 			void setBackgroundImage(string uri);
 

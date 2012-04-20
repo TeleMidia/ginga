@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
 #include "mb/ILocalScreenManager.h"
 #include "mb/IInputManager.h"
 #include "mb/interface/IWindow.h"
@@ -145,6 +148,8 @@ namespace player {
 					AwesomiumHDR id,
 					IInputManager** im,
 					bool removeInfo=false);
+
+			static void onDOMReady(awe_webview* caller);
 
 		public:
 			static AwesomiumHDR createAwesomium(GingaScreenID screenId);

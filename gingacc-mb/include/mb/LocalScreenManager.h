@@ -140,6 +140,7 @@ namespace mb {
 
 		public:
 			string getScreenName(GingaScreenID screenId);
+			GingaWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
 
 		private:
 			void getMBSystemType(string mbSystemName, short* mbSystemType);

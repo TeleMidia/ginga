@@ -120,6 +120,9 @@ namespace mb {
 		isWaiting = false;
 		pthread_cond_init(&wsSignal, NULL);
 		pthread_mutex_init(&wsMutex, NULL);
+
+		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
+		clog << "all done" << endl;
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
@@ -466,6 +469,19 @@ namespace mb {
 		}
 
 		return screenName;
+	}
+
+	GingaWindowID LocalScreenManager::getScreenUnderlyingWindow(
+			GingaScreenID screenId) {
+
+		IDeviceScreen* screen;
+		GingaWindowID uWin = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			uWin = screen->getScreenUnderlyingWindow();
+		}
+
+		return uWin;
 	}
 
 	void LocalScreenManager::getMBSystemType(
