@@ -75,6 +75,10 @@ extern "C" {
 #define UINT64_C(c) (c ## ULL)
 #endif //UINT64_C
 
+#ifndef __INT64_C
+#define __INT64_C int64_t
+#endif //__INT64_C
+
 #include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
@@ -90,11 +94,11 @@ extern "C" {
 
 #ifndef INT64_MIN
 #define INT64_MIN		(-__INT64_C(9223372036854775807)-1)
-#endif
+#endif //INT64_MIN
 
 #ifndef INT64_MAX
 #define INT64_MAX		(__INT64_C(9223372036854775807))
-#endif
+#endif //INT64_MAX
 
 /* SDL2ffmpeg cplusplus compat end*/
 
