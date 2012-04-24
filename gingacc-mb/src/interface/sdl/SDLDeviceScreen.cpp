@@ -535,6 +535,8 @@ namespace mb {
 				blackColor,             /* border_color */
 				blackColor);            /* background_color */
 
+		XSync(xDisplay, 0);
+
 		if (uWin == NULL) {
 			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
 			clog << "Can't create child window" << endl;
