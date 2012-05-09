@@ -101,12 +101,17 @@ namespace compat {
 		while (fis.good()) {
 			fis >> line;
 			if (line.find("#") == std::string::npos &&
-					line.find("=") != std::string::npos) {
+					(line.find("=") != std::string::npos || value != "")) {
 
-				key = line.substr(0, line.find_last_of("="));
-				partial = line.substr(
-						(line.find_first_of("=") + 1),
-						line.length() - (line.find_first_of("=") + 1));
+				if (value == "") {
+					key     = line.substr(0, line.find_last_of("="));
+					partial = line.substr(
+							(line.find_first_of("=") + 1),
+							line.length() - (line.find_first_of("=") + 1));
+
+				} else {
+					partial = line;
+				}
 
 				value = value + partial;
 
@@ -130,6 +135,12 @@ namespace compat {
 					value = value + " ";
 				}
 			}
+
+			clog << "SystemCompat::initializeGingaConfigFile " << endl;
+			clog << "line    = '" << line << "'" << endl;
+			clog << "key     = '" << key << "'" << endl;
+			clog << "partial = '" << partial << "'" << endl;
+			clog << "value   = '" << value << "'" << endl;
 		}
 
 		fis.close();
