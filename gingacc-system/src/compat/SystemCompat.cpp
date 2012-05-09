@@ -76,7 +76,7 @@ namespace compat {
 
 	void SystemCompat::initializeGingaConfigFile() {
 		ifstream fis;
-		string line, key, value;
+		string line, key, partial, value;
 		string gingaini = gingaCurrentPath + "ginga.ini";
 
 		fis.open(gingaini.c_str(), ifstream::in);
@@ -96,27 +96,38 @@ namespace compat {
 			return;
 		}
 
+		value = "";
+
 		while (fis.good()) {
 			fis >> line;
-			if (line.find("#") == std::string::npos ||
+			if (line.find("#") == std::string::npos &&
 					line.find("=") != std::string::npos) {
 
 				key = line.substr(0, line.find_last_of("="));
-				value = line.substr(
+				partial = line.substr(
 						(line.find_first_of("=") + 1),
 						line.length() - (line.find_first_of("=") + 1));
 
-				if (key == "system.internal.delimiter") {
-					iUriD       = value;
+				value = value + partial;
 
-				} else if (key == "system.foreign.delimiter") {
-					fUriD       = value;
+				if (value.substr(value.length() - 1, 1) == "\"") {
+					if (key == "system.internal.delimiter") {
+						iUriD       = value.substr(1, value.length() - 2);
 
-				} else if (key == "system.files.prefix") {
-					filesPref   = value;
+					} else if (key == "system.foreign.delimiter") {
+						fUriD       = value.substr(1, value.length() - 2);
 
-				} else if (key == "system.install.prefix") {
-					installPref = value;
+					} else if (key == "system.files.prefix") {
+						filesPref   = value.substr(1, value.length() - 2);
+
+					} else if (key == "system.install.prefix") {
+						installPref = value.substr(1, value.length() - 2);
+					}
+
+					value = "";
+
+				} else {
+					value = value + " ";
 				}
 			}
 		}
