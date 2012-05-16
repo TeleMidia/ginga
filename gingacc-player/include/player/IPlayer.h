@@ -78,6 +78,7 @@ namespace player {
 			static const short PL_NOTIFY_ABORT         =  4;
 			static const short PL_NOTIFY_NCLEDIT       =  5;
 			static const short PL_NOTIFY_UPDATECONTENT =  6;
+			static const short PL_NOTIFY_OUTTRANS      =  7;
 
 			static const short TYPE_PRESENTATION       = 10;
 			static const short TYPE_ATTRIBUTION        = 11;
@@ -100,11 +101,13 @@ namespace player {
 
 			virtual int64_t getVPts()=0;
 			virtual double getMediaTime()=0;
+			virtual double getTotalMediaTime()=0;
 			virtual void setMediaTime(double newTime)=0;
 			virtual bool setKeyHandler(bool isHandler)=0;
 			virtual void setScope(
 					string scope,
-					short type, double begin=-1, double end=-1)=0;
+					short type,
+					double begin=-1, double end=-1, double outTransDur=-1)=0;
 
 			virtual void play()=0;
 			virtual void stop()=0;

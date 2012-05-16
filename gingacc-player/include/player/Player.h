@@ -134,6 +134,7 @@ namespace player {
 			short scopeType;
 			double scopeInitTime;
 			double scopeEndTime;
+			double outTransTime;
 
 		public:
 			Player(GingaScreenID screenId, string mrl);
@@ -180,11 +181,13 @@ namespace player {
 			virtual double getMediaTime();
 #endif
 
+			virtual double getTotalMediaTime();
+
 			virtual bool setKeyHandler(bool isHandler);
 			virtual void setScope(
 					string scope,
 					short type=TYPE_PRESENTATION,
-					double begin=-1, double end=-1);
+					double begin=-1, double end=-1, double outTransDur=-1);
 
 			virtual void play();
 			virtual void stop();

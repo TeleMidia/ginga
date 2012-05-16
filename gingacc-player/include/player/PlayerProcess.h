@@ -106,7 +106,8 @@ namespace player {
 			bool setKeyHandler(bool isHandler);
 			void setScope(
 					string scope,
-					short type, double begin=-1, double end=-1);
+					short type,
+					double begin=-1, double end=-1, double outTransDur=-1);
 
 			void play();
 			void stop();

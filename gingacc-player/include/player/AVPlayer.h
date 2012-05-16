@@ -188,7 +188,7 @@ namespace player {
 			void setScope(
 					string scope,
 					short type=TYPE_PRESENTATION,
-					double begin=-1, double end=-1);
+					double begin=-1, double end=-1, double outTransDur=-1);
 
 			void play();
 			void pause();

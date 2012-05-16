@@ -2617,40 +2617,40 @@ namespace mb {
 							if (dec->acvt.buf != NULL) {
 								SDL_ConvertAudio(&dec->acvt);
 
-								cout << endl;
-								cout << "Converting(cb len = '" << len;
-								cout << "', Dec = '";
-								cout << dec << "', bytes to convert = '";
-								cout << dec->acvt.len << "', soundLevel = '";
-								cout << dec->soundLevel << "')" << endl;
-								cout << "FROM: ";
-								cout << "format '" << dec->spec.format;
-								cout << "' channels '";
-								cout << (short)dec->spec.channels;
-								cout << "' freq '" << dec->spec.freq;
-								cout << "' samples '" << dec->spec.samples;
-								cout << "' bufSize '" << is->audio_hw_buf_size;
-								cout << "'";
-								cout << endl;
-								cout << "TO: ";
-								cout << "format '" << wantedSpec.format << "' ";
-								cout << "channels '";
-								cout << (short)wantedSpec.channels;
-								cout << "' freq '" << wantedSpec.freq << "' ";
-								cout << "' samples '" << wantedSpec.samples;
-								cout << "' converted size '";
-								cout << dec->acvt.len_cvt;
-								cout << "'";
-								cout << "' converted length ratio '";
-								cout << dec->acvt.len_ratio;
-								cout << "'";
-								cout << endl;
+								clog << endl;
+								clog << "Converting(cb len = '" << len;
+								clog << "', Dec = '";
+								clog << dec << "', bytes to convert = '";
+								clog << dec->acvt.len << "', soundLevel = '";
+								clog << dec->soundLevel << "')" << endl;
+								clog << "FROM: ";
+								clog << "format '" << dec->spec.format;
+								clog << "' channels '";
+								clog << (short)dec->spec.channels;
+								clog << "' freq '" << dec->spec.freq;
+								clog << "' samples '" << dec->spec.samples;
+								clog << "' bufSize '" << is->audio_hw_buf_size;
+								clog << "'";
+								clog << endl;
+								clog << "TO: ";
+								clog << "format '" << wantedSpec.format << "' ";
+								clog << "channels '";
+								clog << (short)wantedSpec.channels;
+								clog << "' freq '" << wantedSpec.freq << "' ";
+								clog << "' samples '" << wantedSpec.samples;
+								clog << "' converted size '";
+								clog << dec->acvt.len_cvt;
+								clog << "'";
+								clog << "' converted length ratio '";
+								clog << dec->acvt.len_ratio;
+								clog << "'";
+								clog << endl;
 							}
 						}
 
-						cout << "Mixed '" << len << "' bytes" << endl;
-						cout << "Total in this step '" << dec->monoStep;
-						cout << "'" << endl;
+						clog << "Mixed '" << len << "' bytes" << endl;
+						clog << "Total in this step '" << dec->monoStep;
+						clog << "'" << endl;
 
 						SDL_MixAudio(
 								stream,
@@ -2691,13 +2691,13 @@ namespace mb {
 								dec->acvt.buf = NULL;
 							}
 
-							cout << "CB_LEN = '" << len << "'" << endl;
-							cout << "MY_LEN = '" << is->audio_write_buf_size;
-							cout << "'" << endl;
-							cout << "MULTI = '" << dec->acvt.len_mult;
-							cout << "'" << endl;
-							cout << "CVT_LEN = '" << dec->acvt.len_cvt;
-							cout << "'" << endl;
+							clog << "CB_LEN = '" << len << "'" << endl;
+							clog << "MY_LEN = '" << is->audio_write_buf_size;
+							clog << "'" << endl;
+							clog << "MULTI = '" << dec->acvt.len_mult;
+							clog << "'" << endl;
+							clog << "CVT_LEN = '" << dec->acvt.len_cvt;
+							clog << "'" << endl;
 
 							bytes_per_sec = is->audio_tgt_freq *
 									is->audio_tgt_channels *

@@ -282,7 +282,9 @@ namespace player {
 	}
 
 	void PlayerProcess::setScope(
-			string scope, short type, double begin, double end) {
+			string scope,
+			short type,
+			double begin, double end, double outTransDur) {
 
 		sendMsg(
 				"setscope," +
@@ -291,7 +293,7 @@ namespace player {
 				itos(begin) + "," +
 				itos(end)   + "::;::");
 
-		Player::setScope(scope, type, begin, end);
+		Player::setScope(scope, type, begin, end, outTransDur);
 	}
 
 	void PlayerProcess::play() {

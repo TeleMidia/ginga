@@ -512,6 +512,7 @@ namespace mb {
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->MoveTo(win, x, y));
+			unprotectedValidate();
 		}
 		unlock();
 	}
@@ -523,6 +524,7 @@ namespace mb {
 		lock();
 		if (win != NULL) {
 			DFBCHECK(win->Resize(win, width, height));
+			unprotectedValidate();
 		}
 		unlock();
 	}
@@ -694,7 +696,7 @@ namespace mb {
 
 			} else {
 				DFBCHECK(winSur->Flip(
-						winSur, NULL, (DFBSurfaceFlipFlags)0));
+						winSur, NULL, (DFBSurfaceFlipFlags)DSFLIP_NONE));
 			}
 			unlockChilds();
 		}
@@ -849,7 +851,7 @@ namespace mb {
 
 		DFBCHECK(contentSurface->GetSize(contentSurface, &w, &h));
 		if (winSur != NULL && winSur != contentSurface) {
-			setBgColor();
+			//setBgColor(); /* Don't do this here. This is not the place */
 			if ((w != width || h != height) && fit) {
 				if (stretch) {
 					DFBCHECK(winSur->StretchBlit(
