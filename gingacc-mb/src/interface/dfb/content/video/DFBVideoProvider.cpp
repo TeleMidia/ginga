@@ -236,22 +236,22 @@ namespace mb {
 
 		cont = (DFBRendererContainer*)rendererContainer;
 		if (cont == NULL || !cont->isValid) {
-			cout << "DFBVideoProvider::dynamicRenderCallBack not valid";
-			cout << endl;
+			clog << "DFBVideoProvider::dynamicRenderCallBack not valid";
+			clog << endl;
 			return;
 		}
 
 		someSurface = cont->surface;
 		if (someSurface == NULL || !cont->isValid) {
-			cout << "DFBVideoProvider::dynamicRenderCallBack NULL surface";
-			cout << endl;
+			clog << "DFBVideoProvider::dynamicRenderCallBack NULL surface";
+			clog << endl;
 			return;
 		}
 
 		frame = (IDirectFBSurface*)(someSurface->getSurfaceContent());
 		if (frame == NULL || !cont->isValid) {
-			cout << "DFBVideoProvider::dynamicRenderCallBack NULL frame";
-			cout << endl;
+			clog << "DFBVideoProvider::dynamicRenderCallBack NULL frame";
+			clog << endl;
 			return;
 		}
 
@@ -266,15 +266,16 @@ namespace mb {
 
 			if (w == NULL || !cont->isValid) {
 				someWindow->unlock();
-				cout << "DFBVideoProvider::dynamicRenderCallBack NULL window";
-				cout << endl;
+				clog << "DFBVideoProvider::dynamicRenderCallBack NULL window";
+				clog << endl;
 				return;
 			}
 
 			//DFBCHECK(w->GetSurface(w, &s));
 			if (w->GetSurface(w, &s) != DFB_OK || !cont->isValid) {
-				cout << "DFBVideoProvider::dynamicRenderCallBack Can't get ";
-				cout << "window surface" << endl;
+				clog << "DFBVideoProvider::dynamicRenderCallBack Can't get ";
+				clog << "window surface" << endl;
+				someWindow->unlock();
 				return;
 			}
 
@@ -319,6 +320,7 @@ namespace mb {
 			}
 
 			DFBCHECK(s->Flip(s, NULL, (DFBSurfaceFlipFlags)DSFLIP_NONE));
+			someWindow->addChildSurface(someSurface);
 			someWindow->unlock();
 
 		} else if (frame != NULL) {

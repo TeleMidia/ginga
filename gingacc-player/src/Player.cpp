@@ -96,6 +96,7 @@ namespace player {
 		this->scopeType           = -1;
 		this->scopeInitTime       = -1;
 		this->scopeEndTime        = -1;
+		this->outTransTime        = -1;
 		this->notifyContentUpdate = false;
 	}
 
@@ -359,6 +360,10 @@ namespace player {
 		return (mediaTime / 1000);
 	}
 
+	double Player::getTotalMediaTime() {
+		return -1.0;
+	}
+
 	bool Player::setKeyHandler(bool isHandler) {
 		if (isHandler) {
 			SystemCompat::uSleep(200000);
@@ -367,13 +372,16 @@ namespace player {
 	}
 
 	void Player::setScope(
-			string scope, short type, double initTime, double endTime) {
+			string scope,
+			short type,
+			double initTime, double endTime, double outTransDur) {
 
 		clog << "Player::setScope '" << scope << "'" << endl;
 		this->scope         = scope;
 		this->scopeType     = type;
 		this->scopeInitTime = initTime;
 		this->scopeEndTime  = endTime;
+		this->outTransTime  = outTransDur;
 	}
 
 	void Player::play() {
@@ -560,7 +568,23 @@ namespace player {
 		clog << expectedSleepTime << "'" << endl;
 
 		if (expectedSleepTime > 0) {
+			if (p->outTransTime > 0.0) {
+				expectedSleepTime = (
+						p->outTransTime -
+						(p->scopeInitTime + (p->getMediaTime() / 1000)));
+			}
+
 			SystemCompat::uSleep(expectedSleepTime * 1000000);
+
+			if (p->outTransTime > 0.0) {
+				p->notifyPlayerListeners(PL_NOTIFY_OUTTRANS);
+
+				expectedSleepTime = (
+						p->scopeEndTime -
+						(p->scopeInitTime + (p->getMediaTime() / 1000)));
+
+				SystemCompat::uSleep(expectedSleepTime * 1000000);
+			}
 		}
 
 		p->forceNaturalEnd(true);

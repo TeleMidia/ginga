@@ -1038,7 +1038,7 @@ bool LuaPlayer::setKeyHandler(bool isHandler) {
 }
 
 void LuaPlayer::setScope(string scopeId, short type,
-                         double begin, double end)
+                         double begin, double end, double outTransDur)
 {
 	addScope(scopeId, type, begin, end);
 }

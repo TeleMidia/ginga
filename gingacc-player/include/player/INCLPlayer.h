@@ -120,11 +120,13 @@ namespace player {
 			virtual ISurface* getSurface()=0;
 			virtual int64_t getVPts(){return 0;};
 			virtual double getMediaTime()=0;
+			virtual double getTotalMediaTime()=0;
 			virtual void setMediaTime(double newTime)=0;
 			virtual bool setKeyHandler(bool isHandler)=0;
 			virtual void setScope(
 					string scope,
-					short type, double begin=-1, double end=-1)=0;
+					short type,
+					double begin=-1, double end=-1, double outTransDur=-1)=0;
 
 			virtual void play()=0;
 			virtual void stop()=0;

@@ -1318,9 +1318,11 @@ namespace player {
 	}
 
 	void AVPlayer::setScope(
-			string scope, short type, double begin, double end) {
+			string scope,
+			short type,
+			double begin, double end, double outTransDur) {
 
-		Player::setScope(scope, type, begin, end);
+		Player::setScope(scope, type, begin, end, outTransDur);
 		if (type == TYPE_PRESENTATION) {
 			if (scopeInitTime > 0) {
 				setMediaTime(scopeInitTime);
@@ -1628,6 +1630,10 @@ namespace player {
 					}
 
 					timeRemain = (dur - currentTime) * 1000;
+					if (outTransTime > 0.0) {
+						timeRemain = outTransTime - (currentTime * 1000);
+					}
+
 					if (notifyContentUpdate) {
 						if (timeRemain > 250) {
 							notifyPlayerListeners(
@@ -1645,6 +1651,10 @@ namespace player {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
 						break;
+
+					} else if (outTransTime > 0.0) {
+						outTransTime = 0;
+						notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
 					}
 
 					currentTime = getCurrentMediaTime();
