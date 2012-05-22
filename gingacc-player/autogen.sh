@@ -85,7 +85,7 @@ fi
 if test "$DIE" -eq 1; then
 echo
 echo "Please install/upgrade the missing tools and call me again."
-echo	
+echo
 exit 1
 fi
 
