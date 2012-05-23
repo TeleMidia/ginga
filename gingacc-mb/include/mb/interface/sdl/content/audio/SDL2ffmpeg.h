@@ -425,7 +425,26 @@ namespace mb {
 		SDL_Texture* getTexture();
 
 		bool hasPicture();
+
         void setSoundLevel(float level);
+
+		bool getAudioSpec(
+				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
+
+		static char* interleave(uint8_t* src, int srcLen, double ratio);
+
+		static char* createCVT(
+				uint8_t* src, int srcLen, double ratio, int sampleSize);
+
+		static void clamp(short* buf, int len);
+
+		static struct SwsContext* createContext(
+				int inWidth,
+				int inHeight,
+				enum PixelFormat inFormat,
+				int outWidth,
+				int outHeight,
+				enum PixelFormat outFormat);
 
 	private:
 		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
@@ -479,24 +498,7 @@ namespace mb {
 
 		static void* subtitle_refresh(void *arg);
 
-		bool getAudioSpec(
-				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
-
-		static char* interleave(uint8_t* src, int srcLen, double ratio);
-
-		static char* createCVT(
-				uint8_t* src, int srcLen, double ratio, int sampleSize);
-
-		static void clamp(short* buf, int len);
 		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
-
-		static struct SwsContext* createContext(
-				int inWidth,
-				int inHeight,
-				enum PixelFormat inFormat,
-				int outWidth,
-				int outHeight,
-				enum PixelFormat outFormat);
   };
 }
 }
