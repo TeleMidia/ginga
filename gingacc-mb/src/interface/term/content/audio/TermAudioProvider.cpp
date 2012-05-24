@@ -138,7 +138,7 @@ namespace mb {
 		return true;
 	}
 
-	void TermAudioProvider::refreshDR() {
+	void TermAudioProvider::refreshDR(void* data) {
 
 	}
 }

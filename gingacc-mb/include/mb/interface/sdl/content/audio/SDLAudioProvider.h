@@ -102,7 +102,7 @@ namespace mb {
 			bool releaseAll();
 			void getOriginalResolution(int* width, int* height);
 
-			virtual void refreshDR();
+			virtual void refreshDR(void* data);
 	};
 }
 }

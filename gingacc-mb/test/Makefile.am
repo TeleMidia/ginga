@@ -13,6 +13,7 @@ noinst_PROGRAMS      = \
                        testFont \
                        testInput \
                        testScreen \
+                       testSVideo \
                        testVideo
 
 
@@ -88,6 +89,26 @@ testScreen_LDADD     = \
                        $(TEST_LIBS)
 
 testScreen_LDFLAGS   = \
+                       -no-undefined \
+                       -version-info 13:1:8 \
+                       -L/lib/ \
+                       -L/usr/lib/ \
+                       -L$(prefix)/lib/ \
+                       -L$(prefix)/lib/ginga \
+                       -L$(top_srcdir)/src
+
+#testSingleVideo
+testSVideo_SOURCES   = \
+                       testSingleVideo.cpp
+
+testSVideo_LDADD     = \
+                       -lpthread \
+                       -ltelemidiautil \
+                       -lgingaccsystem \
+                       -lgingaccmb \
+                       $(TEST_LIBS)
+
+testSVideo_LDFLAGS   = \
                        -no-undefined \
                        -version-info 13:1:8 \
                        -L/lib/ \

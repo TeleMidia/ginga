@@ -27,6 +27,7 @@ libgingaccmbdecsdlap_la_LIBADD   = \
                                   -lSDL2 \
                                   -lpthread \
                                   -lavcodec \
+                                  -lavdevice \
                                   -lavformat \
                                   -lavutil \
                                   -lswresample \

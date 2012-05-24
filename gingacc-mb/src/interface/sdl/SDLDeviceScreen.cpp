@@ -887,13 +887,13 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::checkSDLInit() {
-		Uint32 initFlags      = 0;
 		Uint32 subsystem_init = SDL_WasInit(0);
 
 		if (subsystem_init == 0) {
 			SDL_Init((Uint32)(
 					SDL_INIT_AUDIO |
 					SDL_INIT_VIDEO |
+					SDL_INIT_TIMER |
 					SDL_INIT_NOPARACHUTE));
 
 		} else {
@@ -903,6 +903,10 @@ namespace mb {
 
 			if (subsystem_init & SDL_INIT_VIDEO == 0) {
 				SDL_InitSubSystem(SDL_INIT_VIDEO);
+			}
+
+			if (subsystem_init & SDL_INIT_TIMER == 0) {
+				SDL_InitSubSystem(SDL_INIT_TIMER);
 			}
 		}
 	}
@@ -1068,7 +1072,24 @@ namespace mb {
 						}
 			    	}
 
-					if (s->im != NULL) {
+			    	if (event.type >= FF_ALLOC_EVENT &&
+							event.type <= FF_QUIT_EVENT) {
+
+						((IContinuousMediaProvider*)event.user.data2)->
+								refreshDR((void*)&event);
+
+					} else if (event.type == SDL_QUIT) {
+						pthread_mutex_unlock(&sMutex);
+						/*
+						 * TODO:
+						 *      1) send a notification to NCL player
+						 *      2) check which screen sent SDL_QUIT.
+						 */
+						releaseAll();
+						sdlQuit();
+						return NULL;
+
+					} else if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
 								s->im->getEventBuffer());
 
@@ -1200,7 +1221,6 @@ namespace mb {
 
 					initCMP(s, (*i));
 				}
-				(*i)->refreshDR();
 			}
 			++i;
 		}
@@ -1550,6 +1570,7 @@ namespace mb {
 			iCmp = (*k);
 
 			if (iCmp != NULL) {
+				iCmp->stop();
 				delete iCmp;
 			}
 			++k;
@@ -1594,6 +1615,19 @@ namespace mb {
 			}
 		}
 		pthread_mutex_unlock(&s->winMutex);
+	}
+
+	void SDLDeviceScreen::releaseAll() {
+		map<SDLDeviceScreen*, short>::iterator i;
+
+		pthread_mutex_lock(&sMutex);
+		i = sdlScreens.begin();
+		while (i != sdlScreens.begin()) {
+			releaseScreen(i->first);
+			++i;
+		}
+		sdlScreens.clear();
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void SDLDeviceScreen::initCMP(
