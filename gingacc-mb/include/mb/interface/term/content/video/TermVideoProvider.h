@@ -91,7 +91,7 @@ namespace mb {
 			void setProviderContent(void* content){};
 			void getOriginalResolution(int* width, int* height);
 			bool releaseAll();
-			void refreshDR();
+			void refreshDR(void* data);
 	};
 }
 }

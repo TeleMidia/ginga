@@ -174,8 +174,8 @@ namespace mb {
 		return false;
 	}
 
-	void SDLVideoProvider::refreshDR() {
-		SDLAudioProvider::refreshDR();
+	void SDLVideoProvider::refreshDR(void* data) {
+		SDLAudioProvider::refreshDR(data);
 	}
 
 	void SDLVideoProvider::waitTexture() {

@@ -70,16 +70,12 @@ extern "C" {
 #include "pthread.h"
 }
 
+#include <string>
 #include <iostream>
 using namespace std;
 
+string videoUri = "";
 IContinuousMediaProvider* vid1 = NULL;
-IContinuousMediaProvider* vid2 = NULL;
-IContinuousMediaProvider* vid3 = NULL;
-IContinuousMediaProvider* vid4 = NULL;
-IContinuousMediaProvider* vid5 = NULL;
-
-bool singleVideo = false;
 
 void testVideo(
 		ILocalScreenManager* dm,
@@ -87,52 +83,16 @@ void testVideo(
 		set<IWindow*>* windows) {
 
 	IWindow* win1;
-	IWindow* win2;
-	IWindow* win3;
-	IWindow* win4;
-	IWindow* win5;
 
 	ISurface* s1;
-	ISurface* s2;
-	ISurface* s3;
-	ISurface* s4;
-	ISurface* s5;
 
 	int x1, y1, w1, h1, z1;
-	int x2, y2, w2, h2, z2;
-	int x3, y3, w3, h3, z3;
-	int x4, y4, w4, h4, z4;
-	int x5, y5, w5, h5, z5;
 
 	x1 = 25;
 	y1 = 25;
 	w1 = 100;
 	h1 = 100;
 	z1 = 1;
-
-	x2 = 100;
-	y2 = 100;
-	w2 = 100;
-	h2 = 100;
-	z2 = 2;
-
-	x3 = 180;
-	y3 = 70;
-	w3 = 100;
-	h3 = 100;
-	z3 = 3;
-
-	x4 = 260;
-	y4 = 25;
-	w4 = 100;
-	h4 = 100;
-	z4 = 4;
-
-	x5 = 35;
-	y5 = 90;
-	w5 = 100;
-	h5 = 100;
-	z5 = 5;
 
 	/* VIDEO PROVIDER 1 */
 	win1 = dm->createWindow(screen, x1, y1, w1, h1, z1);
@@ -146,7 +106,7 @@ void testVideo(
 	s1   = dm->createSurface(screen);
 	vid1 = dm->createContinuousMediaProvider(
 			screen,
-			"/root/ncl/rio-itu/mainVideo/rio_1280x720.mp4",
+			videoUri.c_str(),
 			true,
 			false);
 
@@ -160,121 +120,7 @@ void testVideo(
 	vid1->setSoundLevel(0.1);
 	vid1->playOver(s1, true, NULL);
 
-	if (singleVideo) {
-		windows->insert(win1);
-		return;
-	}
-
-	/* VIDEO PROVIDER 2 */
-	win2 = dm->createWindow(screen, x2, y2, w2, h2, z2);
-	if (win2 == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win2->draw();
-
-	s2   = dm->createSurface(screen);
-	vid2 = dm->createContinuousMediaProvider(
-			screen, "/root/ncl/VivaMaisPratos/video/vivamais-ws.mp4", true, false);
-
-	vid2->setSoundLevel(1.0);
-	s2->setParent(win2);
-	win2->show();
-	win2->raiseToTop();
-
-	cout << "gingacc-mb test video 2 for screen '" << screen << "' has '";
-	cout << vid2->getTotalMediaTime() << "' as its total media time." << endl;
-
-	vid2->playOver(s2, true, NULL);
-
-
-	/* VIDEO PROVIDER 3 */
-	win3 = dm->createWindow(screen, x3, y3, w3, h3, z3);
-	if (win3 == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win3->draw();
-
-	s3   = dm->createSurface(screen);
-	vid3 = dm->createContinuousMediaProvider(
-			screen,
-			"/root/workspaces/NCL/devel_tests/media/vid/matrix.mpg",
-			true,
-			false);
-
-	s3->setParent(win3);
-	win3->show();
-	win3->raiseToTop();
-
-	cout << "gingacc-mb test video 3 for screen '" << screen << "' has '";
-	cout << vid3->getTotalMediaTime() << "' as its total media time." << endl;
-
-	vid3->setSoundLevel(1.0);
-	vid3->playOver(s3, true, NULL);
-
-
-	/* VIDEO PROVIDER 4 */
-	win4 = dm->createWindow(screen, x4, y4, w4, h4, z4);
-	if (win4 == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win4->draw();
-
-	s4   = dm->createSurface(screen);
-	vid4 = dm->createContinuousMediaProvider(
-			screen,
-			"/root/workspaces/NCL/devel_tests/media/vid/pilha.mpg",
-			true,
-			false);
-
-	s4->setParent(win4);
-	win4->show();
-	win4->raiseToTop();
-
-	cout << "gingacc-mb test video 4 for screen '" << screen << "' has '";
-	cout << vid4->getTotalMediaTime() << "' as its total media time." << endl;
-
-	vid4->setSoundLevel(1.0);
-	vid4->playOver(s4, true, NULL);
-
-
-	/* VIDEO PROVIDER 5 */
-	win5 = dm->createWindow(screen, x5, y5, w5, h5, z5);
-	if (win5 == NULL) {
-		cout << "gingacc-mb test can't create window. exiting program...";
-		cout << endl;
-		exit(1);
-	}
-	win5->draw();
-
-	s5   = dm->createSurface(screen);
-	vid5 = dm->createContinuousMediaProvider(
-			screen,
-			"corrego1.mp4",
-			true,
-			false);
-
-	s5->setParent(win5);
-	win5->show();
-
-	cout << "gingacc-mb test video 5 for screen '" << screen << "' has '";
-	cout << vid5->getTotalMediaTime() << "' as its total media time." << endl;
-
-	vid5->setSoundLevel(1.0);
-	vid5->playOver(s5, true, NULL);
-
-
-	/* Inserting all windows in windows set */
 	windows->insert(win1);
-	windows->insert(win2);
-	windows->insert(win3);
-	windows->insert(win4);
-	windows->insert(win5);
 }
 
 bool running = false;
@@ -346,9 +192,14 @@ int main(int argc, char** argv) {
 		} else if ((strcmp(argv[i], "--printscreen") == 0)) {
 			printScreen    = true;
 
-		} else if ((strcmp(argv[i], "--single-video") == 0)) {
-			singleVideo    = true;
+		} else if ((strcmp(argv[i], "--src") == 0) && ((i + 1) < argc)) {
+			videoUri.assign(argv[i + 1]);
 		}
+	}
+
+	if (videoUri == "") {
+		cout << "Please specify the video URI with --src parameter" << endl;
+		exit(0);
 	}
 
 	if (testAllScreens) {
@@ -407,22 +258,6 @@ int main(int argc, char** argv) {
 
 	if (vid1 != NULL) {
 		vid1->stop();
-	}
-
-	if (vid2 != NULL) {
-		vid2->stop();
-	}
-
-	if (vid3 != NULL) {
-		vid3->stop();
-	}
-
-	if (vid4 != NULL) {
-		vid4->stop();
-	}
-
-	if (vid5 != NULL) {
-		vid5->stop();
 	}
 
 	cout << "gingacc-mb test has shown providers. ";

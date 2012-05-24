@@ -67,7 +67,7 @@ namespace mb {
 
 		myScreen   = screenId;
 		this->mrl  = "";
-		decoder    = new SDL2ffmpeg(mrl);
+		decoder    = new SDL2ffmpeg(this, mrl);
 
 		this->mrl.assign(mrl);
 	}
@@ -158,10 +158,21 @@ namespace mb {
 
 	}
 
-	void SDLAudioProvider::refreshDR() {
-		if (decoder != NULL) {
-			//decoder->refresh();
-			decoder->video_display();
+	void SDLAudioProvider::refreshDR(void* data) {
+		SDL_Event* event = (SDL_Event*)data;
+
+		switch (event->type) {
+			case FF_REFRESH_EVENT:
+				/*cout << "SDLAudioProvider::refreshDR call video refresh";
+				cout << endl;*/
+				SDL2ffmpeg::video_refresh(decoder);
+				break;
+
+	        case FF_ALLOC_EVENT:
+				/*cout << "SDLAudioProvider::refreshDR call alloc_picture";
+				cout << endl;*/
+	        	decoder->alloc_picture();
+	            break;
 		}
 	}
 }

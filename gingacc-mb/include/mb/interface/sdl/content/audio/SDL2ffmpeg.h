@@ -58,6 +58,9 @@ Many thanks to ffmpeg developers and to the community that support them!
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "mb/interface/IContinuousMediaProvider.h"
+#include "mb/interface/sdl/SDLDeviceScreen.h"
+
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
 
@@ -85,6 +88,7 @@ extern "C" {
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
+#include "libavdevice/avdevice.h"
 
 #include <inttypes.h>
 #include <limits.h>
@@ -130,7 +134,7 @@ extern "C" {
 
 /* SDL audio buffer size, in samples. Should be small to have precise
    A/V sync as SDL does not have hardware buffer fullness info. */
-//#define SDL_AUDIO_BUFFER_SIZE 1024
+#define SDL_AUDIO_BUFFER_SIZE 1024
 
 /* no AV sync correction is done if below the AV sync threshold */
 #define AV_SYNC_THRESHOLD 0.01
@@ -213,12 +217,6 @@ namespace mb {
 		AVSubtitle sub;
 	} SubPicture;
 
-	enum {
-		AV_SYNC_AUDIO_MASTER, /* default choice */
-		AV_SYNC_VIDEO_MASTER,
-		AV_SYNC_EXTERNAL_CLOCK /* synchronize to an external clock */
-	};
-
 	typedef struct VideoState {
 		int no_background;
 		int paused;
@@ -245,13 +243,15 @@ namespace mb {
 		PacketQueue audioq;
 		int audio_hw_buf_size;
 		DECLARE_ALIGNED(16,uint8_t,audio_buf2)[AVCODEC_MAX_AUDIO_FRAME_SIZE * 4];
-//		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
-		uint8_t silence_buf[4096];
+		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
 		uint8_t *audio_buf;
 		uint8_t *audio_buf1;
 
 		uint8_t *audio_main_buf[2];
 		unsigned int audio_main_buf_size[2];
+
+	    unsigned int audio_buf_size; /* in bytes */
+	    int audio_buf_index; /* in bytes */
 
 		int audio_write_buf_size;
 		AVPacket audio_pkt_temp;
@@ -325,14 +325,24 @@ namespace mb {
 
 		int refresh;
 
-	    SDL_mutex *subpq_mutex;
-	    SDL_cond *subpq_cond;
-	    SDL_mutex *pictq_mutex;
-	    SDL_cond *pictq_cond;
+		SDL_Thread* subtitle_tid;
+	    SDL_Thread* read_tid;
+	    SDL_Thread* video_tid;
+	    SDL_Thread* refresh_tid;
+
+	    SDL_mutex* subpq_mutex;
+	    SDL_cond* subpq_cond;
+	    SDL_mutex* pictq_mutex;
+	    SDL_cond* pictq_cond;
 
 	} VideoState;
 
   class SDL2ffmpeg {
+	public:
+		static const short AV_SYNC_AUDIO_MASTER   = 0;
+		static const short AV_SYNC_VIDEO_MASTER   = 1;
+		static const short AV_SYNC_EXTERNAL_CLOCK = 2;
+
 	private:
 		//stream status
 		static const short ST_PLAYING = 0;
@@ -377,8 +387,6 @@ namespace mb {
 		static pthread_mutex_t aiMutex;
 		static set<SDL2ffmpeg*> aInstances;
 
-		static SDL_AudioSpec wantedSpec;
-
 		AVFrame vFrame;
 		AVPacket vPkt;
 
@@ -386,7 +394,8 @@ namespace mb {
 		Uint8 audioChannels;
 
 		short status;
-		SDL_AudioSpec spec;
+		SDL_AudioSpec wantedSpec;
+		static SDL_AudioSpec spec;
 		SDL_AudioCVT acvt;
 		float soundLevel;
 		SDL_Texture* texture;
@@ -400,12 +409,18 @@ namespace mb {
 		int64_t mono_cb_time;
 		int monoStep;
 
+		IContinuousMediaProvider* cmp;
+
+		AVInputFormat* file_iformat;
+		string mime;
+
 	public:
-		SDL2ffmpeg(const char *filename);
+		SDL2ffmpeg(IContinuousMediaProvider* cmp, const char *filename);
 		~SDL2ffmpeg();
 
 	private:
 		void release();
+		void close(bool quit);
 		bool prepare();
 
 	public:
@@ -454,7 +469,6 @@ namespace mb {
 		void packet_queue_abort(PacketQueue *q);
 		int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block);
 
-		void alloc_picture();
 		void free_subpicture(SubPicture *sp);
 		void video_image_display();
 		void stream_close();
@@ -463,6 +477,8 @@ namespace mb {
 		void video_display();
 
 	private:
+		static int refresh_thread(void *opaque);
+
 		double get_audio_clock();
 		double get_video_clock();
 		double get_external_clock();
@@ -474,31 +490,36 @@ namespace mb {
 		void pictq_next_picture();
 		void update_video_pts(double pts, int64_t pos);
 
+	public:
+		static void video_refresh(void *opaque);
+		void alloc_picture();
+
+	private:
 		int queue_picture(AVFrame *src_frame, double pts1, int64_t pos);
 		int get_video_frame(AVFrame *frame, int64_t *pts, AVPacket* pkt);
 
-		int synchronize_audio(short *samples, int samples_size1, double pts);
+		static int video_thread(void *arg);
+		static int subtitle_thread(void *arg);
+
+		int synchronize_audio(int nb_samples);
+
+		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
+		int audio_refresh_decoder();
+
 		int audio_decode_frame(double *pts_ptr);
 		int stream_component_open(int stream_index);
 		void stream_component_close(int stream_index);
+
+		static int decode_interrupt_cb(void *ctx);
+
+		int read_init();
+		static int read_thread(void *arg);
 
 		void stream_cycle_channel(int codec_type);
 		void toggle_pause();
 		void step_to_next_frame();
 
-		int audio_refresh_decoder();
-
-		static void* t_video_refresh_decoder(void* ptr);
-		int video_refresh_decoder();
-
-		void video_refresh_content();
-
-		static void* t_read_content(void* ptr);
-		int read_content();
-
-		static void* subtitle_refresh(void *arg);
-
-		static void sdl_audio_callback(void *opaque, Uint8 *stream, int len);
+		static int lockmgr(void **mtx, enum AVLockOp op);
   };
 }
 }

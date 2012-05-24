@@ -113,7 +113,7 @@ namespace mb {
 			void setSoundLevel(float level);
 			bool releaseAll();
 
-			void refreshDR();
+			void refreshDR(void* data);
 
 		private:
 			void waitTexture();

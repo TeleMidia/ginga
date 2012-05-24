@@ -72,6 +72,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include <iostream>
 using namespace std;
 
+#define FF_ALLOC_EVENT   (SDL_USEREVENT + 1)
+#define FF_REFRESH_EVENT (SDL_USEREVENT + 2)
+#define FF_QUIT_EVENT    (SDL_USEREVENT + 3)
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -278,6 +282,8 @@ typedef struct {
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
 			static void releaseScreen(SDLDeviceScreen* screen);
+
+			static void releaseAll();
 
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);

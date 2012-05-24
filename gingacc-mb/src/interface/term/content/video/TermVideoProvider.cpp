@@ -137,7 +137,7 @@ namespace mb {
 		return true;
 	}
 
-	void TermVideoProvider::refreshDR() {
+	void TermVideoProvider::refreshDR(void* data) {
 
 	}
 }

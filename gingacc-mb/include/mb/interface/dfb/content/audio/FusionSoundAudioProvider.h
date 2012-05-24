@@ -115,7 +115,7 @@ namespace mb {
 			void setSoundLevel(float level);
 			void getOriginalResolution(int* width, int* height);
 			bool releaseAll();
-			void refreshDR(){};
+			void refreshDR(void* data){};
 	};
 }
 }
