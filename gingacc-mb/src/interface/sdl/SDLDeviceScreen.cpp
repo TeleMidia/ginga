@@ -1081,6 +1081,7 @@ namespace mb {
 						 */
 						releaseAll();
 						sdlQuit();
+						exit(0);
 						return NULL;
 
 					} else if (s->im != NULL) {
