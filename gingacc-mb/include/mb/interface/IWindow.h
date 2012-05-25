@@ -72,7 +72,7 @@ namespace mb {
 			virtual void setWindowColor(int r, int g, int b, int alpha)=0;
 			virtual IColor* getWindowColor()=0;
 			virtual void setBorder(
-					int r, int g, int b, int alpha=255, int bWidth=1)=0;
+					int r, int g, int b, int alpha=255, int bWidth=0)=0;
 
 			virtual void getBorder(
 					int* r, int* g, int* b, int* alpha, int* bWidth)=0;

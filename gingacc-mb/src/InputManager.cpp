@@ -637,7 +637,9 @@ namespace mb {
 					continue;
 				}
 
-				if (inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+				if (!inputEvent->isApplicationType() &&
+						inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+
 					delete inputEvent;
 					inputEvent = eventBuffer->getNextEvent();
 					continue;
