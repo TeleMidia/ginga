@@ -139,6 +139,13 @@ namespace mb {
 		}
 
 		pthread_mutex_lock(&ntsMutex);
+		createFont();
+		pthread_mutex_unlock(&ntsMutex);
+
+		return true;
+	}
+
+	bool SDLFontProvider::createFont() {
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
 			clog << "SDLFontProvider::initializeFont Warning! ";
@@ -152,8 +159,6 @@ namespace mb {
 		TTF_SetFontOutline(font, 0);
 		TTF_SetFontKerning(font, 1);
 		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
-
-		pthread_mutex_unlock(&ntsMutex);
 
 		return true;
 	}
@@ -236,6 +241,14 @@ namespace mb {
 			clog << endl;
 			pthread_mutex_unlock(&ntsMutex);
 			return;
+		}
+
+		if (font == NULL) {
+			if (!createFont()) {
+				clog << "SDLFontProvider::playOver Warning! NULL font.";
+				clog << endl;
+				return;
+			}
 		}
 
 		if (LocalScreenManager::getInstance()->hasSurface(myScreen, content)) {

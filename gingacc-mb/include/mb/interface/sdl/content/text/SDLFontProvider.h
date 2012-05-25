@@ -115,6 +115,7 @@ namespace mb {
 
 		private:
 			bool initializeFont();
+			bool createFont();
 
 		public:
 			string getLoadSymbol() {return "SDLFontProvider";};
