@@ -155,7 +155,7 @@ namespace mb {
 			IColor* getColorKey();
 			void setWindowColor(int r, int g, int b, int alpha);
 			IColor* getWindowColor();
-			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
+			void setBorder(int r, int g, int b, int alpha=255, int bWidth=0);
 			void getBorder(int* r, int* g, int* b, int* alpha, int* bWidth);
 
 			GingaScreenID getScreen();

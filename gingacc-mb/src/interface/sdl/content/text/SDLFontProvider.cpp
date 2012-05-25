@@ -202,11 +202,11 @@ namespace mb {
 	void SDLFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
+		pthread_mutex_lock(&pMutex);
+
 		if (font == NULL) {
 			initializeFont();
 		}
-
-		pthread_mutex_lock(&pMutex);
 
 		plainText   = text;
 		coordX      = x;
