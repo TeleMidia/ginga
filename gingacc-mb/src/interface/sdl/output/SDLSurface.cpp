@@ -234,13 +234,7 @@ namespace mb {
 	}
 
 	void SDLSurface::clearContent() {
-		releaseDrawData();
-
-		if (sur == NULL) {
-			return;
-		}
-
-		SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, 0, 0, 0, 0));
+		clearSurface();
 
 		if (parent != NULL) {
 			parent->clearContent();
@@ -248,6 +242,8 @@ namespace mb {
 	}
 
 	void SDLSurface::clearSurface() {
+		int r = 0, g = 0, b = 0, alpha = 0;
+
 		releaseDrawData();
 
 		if (sur == NULL) {
@@ -257,7 +253,14 @@ namespace mb {
 			return;
 		}
 
-		SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, 0, 0, 0, 0));
+		if (bgColor != NULL) {
+			r     = bgColor->getR();
+			g     = bgColor->getG();
+			b     = bgColor->getB();
+			alpha = bgColor->getAlpha();
+		}
+
+		SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, r, g, b, alpha));
 	}
 
 	vector<DrawData*>* SDLSurface::createDrawDataList() {
@@ -388,6 +391,10 @@ namespace mb {
 		releaseBgColor();
 
 		this->bgColor = new Color(r, g, b, alpha);
+
+		if (sur != NULL) {
+			SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, r, g, b, alpha));
+		}
 	}
 
 	IColor* SDLSurface::getBgColor() {
