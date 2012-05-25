@@ -2071,6 +2071,7 @@ the_end:
 		int bytes_per_sec;
 		int ret;
 		double pts;
+		bool hasTimeRefer = false;
 
 		int64_t uResponseTime;
 		int64_t elapsedTime;
@@ -2099,6 +2100,10 @@ the_end:
 
 			if (dec->status == ST_PLAYING && vs != NULL &&
 					vs->audio_stream >= 0 && vs->audio_st != NULL) {
+
+				if (vs->video_stream >= 0 && vs->video_st != NULL) {
+					hasTimeRefer = true;
+				}
 
 				dec->audio_refresh_decoder();
 				if (vs->audio_main_buf_size[0] == vs->audio_hw_buf_size) {
@@ -2174,11 +2179,13 @@ the_end:
 									3);
 						}*/
 
-						SDL_MixAudio(
-								stream,
-								vs->audio_main_buf[0],
-								vs->audio_hw_buf_size,
-								dec->soundLevel);
+						if (dec->soundLevel > 0) {
+							SDL_MixAudio(
+									stream,
+									vs->audio_main_buf[0],
+									vs->audio_hw_buf_size,
+									dec->soundLevel);
+						}
 
 						dec->monoStep++;
 
@@ -2214,11 +2221,14 @@ the_end:
 						}
 
 					} else {
-						SDL_MixAudio(
-								stream,
-								vs->audio_main_buf[0],
-								vs->audio_hw_buf_size,
-								dec->soundLevel);
+
+						if (dec->soundLevel > 0) {
+							SDL_MixAudio(
+									stream,
+									vs->audio_main_buf[0],
+									vs->audio_hw_buf_size,
+									dec->soundLevel);
+						}
 
 						bytes_per_sec = vs->audio_tgt_freq *
 								vs->audio_tgt_channels *
@@ -2253,7 +2263,14 @@ the_end:
 			++i;
 		}
 
+		elapsedTime = av_gettime() - audio_cb_time;
+		sleepTime   = 1000000/25;
+
 		pthread_mutex_unlock(&aiMutex);
+
+		if (!hasTimeRefer && sleepTime > elapsedTime) {
+			SystemCompat::uSleep(sleepTime - elapsedTime);
+		}
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
