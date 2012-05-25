@@ -6,11 +6,12 @@ lib_LTLIBRARIES = libgingaccplalua.la
 
 libgingaccplalua_la_SOURCES = LuaEvent.cpp LuaCanvas.cpp LuaPlayer.cpp
 
-libgingaccplalua_la_LIBADD = -llua -lpthread -ltelemidiautil \
+libgingaccplalua_la_LIBADD = -llua -lcore -lpthread -ltelemidiautil \
   -lgingaccsystem -lgingaccmb -lgingaccplayer \
   -lgingaccplaimg $(COMPONENTS_LIBS) $(DATAPROC_LIBS) \
   -L$(prefix)/lib -L$(prefix)/lib/ginga \
-  -L../../../ -L../../../image/
+  -L../../../ -L../../../image/ -L/usr/lib64/lua/5.1/socket/ \
+  -L/$(prefix)/lua/5.1/socket/
 
 libgingaccplalua_la_LDFLAGS = \
   -no-undefined \
