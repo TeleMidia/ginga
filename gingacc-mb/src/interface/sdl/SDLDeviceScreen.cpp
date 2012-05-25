@@ -1072,13 +1072,7 @@ namespace mb {
 						}
 			    	}
 
-			    	if (event.type >= FF_ALLOC_EVENT &&
-							event.type <= FF_QUIT_EVENT) {
-
-						((IContinuousMediaProvider*)event.user.data2)->
-								refreshDR((void*)&event);
-
-					} else if (event.type == SDL_QUIT) {
+			    	if (event.type == SDL_QUIT) {
 						pthread_mutex_unlock(&sMutex);
 						/*
 						 * TODO:
@@ -1156,7 +1150,13 @@ namespace mb {
 				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 				if (elapsedTime < sleepTime) {
-					SystemCompat::uSleep(sleepTime - elapsedTime);
+					if (decRate > 0) {
+						SystemCompat::uSleep(5000);
+
+					} else {
+						SystemCompat::uSleep(sleepTime - elapsedTime);
+					}
+
 					/*if (decRate == 0) {
 						SystemCompat::uSleep(sleepTime - elapsedTime);
 
@@ -1216,10 +1216,13 @@ namespace mb {
 		while (i != cmpRenderList.end()) {
 			j = s->cmpPool.find(*i);
 			if (j != s->cmpPool.end()) {
-				if ((*i)->getHasVisual() &&
-						(*i)->getProviderContent() == NULL) {
+				if ((*i)->getHasVisual()) {
+					if ((*i)->getProviderContent() == NULL) {
+						initCMP(s, (*i));
 
-					initCMP(s, (*i));
+					} else {
+						(*i)->refreshDR(NULL);
+					}
 				}
 			}
 			++i;

@@ -414,6 +414,8 @@ namespace mb {
 		AVInputFormat* file_iformat;
 		string mime;
 
+		bool allocate;
+
 	public:
 		SDL2ffmpeg(IContinuousMediaProvider* cmp, const char *filename);
 		~SDL2ffmpeg();
