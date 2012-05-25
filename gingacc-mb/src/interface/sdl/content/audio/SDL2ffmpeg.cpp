@@ -103,6 +103,7 @@ namespace mb {
 		reof                                 = false;
 		hasSDLAudio                          = false;
 		abortRequest                         = false;
+		allocate                             = false;
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
@@ -224,15 +225,6 @@ namespace mb {
 		if (vs->ic) {
 			avformat_close_input(&vs->ic);
 		}
-
-		if (quit) {
-			SDL_Event event;
-
-			event.type = FF_QUIT_EVENT;
-			event.user.data1 = this;
-			event.user.data2 = this->cmp;
-			SDL_PushEvent(&event);
-		}
 	}
 
 	bool SDL2ffmpeg::prepare() {
@@ -292,7 +284,7 @@ namespace mb {
 			}
 		}
 
-		vs->refresh_tid = SDL_CreateThread(
+		/*vs->refresh_tid = SDL_CreateThread(
 				SDL2ffmpeg::refresh_thread, "refresh_thread", this);
 
 		if (!vs->refresh_tid) {
@@ -302,7 +294,7 @@ namespace mb {
 			cout << "Can't create refresh thread" << endl;
 
 			return false;
-		}
+		}*/
 
 		vs->read_tid = SDL_CreateThread(
 				SDL2ffmpeg::read_thread, "read_thread", this);
@@ -1066,7 +1058,7 @@ namespace mb {
 	}
 
 	int SDL2ffmpeg::refresh_thread(void *opaque) {
-		SDL2ffmpeg* dec = (SDL2ffmpeg*)opaque;
+		/*SDL2ffmpeg* dec = (SDL2ffmpeg*)opaque;
 		VideoState* vs  = dec->vs;
 
 		SDL_Event event;
@@ -1077,14 +1069,15 @@ namespace mb {
 			event.user.data2 = dec->cmp;
 			if (!vs->refresh) {
 				vs->refresh = 1;
-				SDL_PushEvent(&event);
+				//SDL_PushEvent(&event);
 			}
+
 			/*
 			 * FIXME: ideally we should wait the correct time but SDLs event
 			 * passing is so slow it would be silly
-			 */
-			SystemCompat::uSleep(30000);
-		}
+			 *
+			SystemCompat::uSleep(5000);
+		}*/
 
 		cout << "SDL2ffmpeg::refresh_thread all done" << endl;
 		return 0;
@@ -1234,6 +1227,12 @@ namespace mb {
 		double time;
 
 		SubPicture *sp, *sp2;
+
+		vs->refresh = 1;
+
+		if (dec->allocate) {
+			dec->alloc_picture();
+		}
 
 		if (vs->video_st) {
 retry:
@@ -1398,6 +1397,7 @@ retry:
 
 	    SDL_LockMutex(vs->pictq_mutex);
 	    vp->allocated = 1;
+	    allocate = false;
 	    SDL_CondSignal(vs->pictq_cond);
 	    SDL_UnlockMutex(vs->pictq_mutex);
 	}
@@ -1457,11 +1457,13 @@ retry:
 			/*
 			 * the allocation must be done in the main thread to avoid
 			 * locking problems
-			 */
+			 *
 			event.type = FF_ALLOC_EVENT;
 			event.user.data1 = this;
 			event.user.data2 = this->cmp;
-			SDL_PushEvent(&event);
+			SDL_PushEvent(&event);*/
+
+			allocate = true;
 
 	        /* wait until the picture is allocated */
 	        SDL_LockMutex(vs->pictq_mutex);
@@ -1472,7 +1474,7 @@ retry:
 	        /*
 	         * if the queue is aborted, we have to pop the pending ALLOC event
 	         * or wait for the allocation to complete
-	         */
+	         *
 	        if (vs->videoq.abort_request &&
 	        		SDL_PeepEvents(
 	        				&event,
@@ -1484,7 +1486,7 @@ retry:
 	            while (!vp->allocated) {
 	                SDL_CondWait(vs->pictq_cond, vs->pictq_mutex);
 	            }
-	        }
+	        }*/
 	        SDL_UnlockMutex(vs->pictq_mutex);
 
 			if (vs->videoq.abort_request) {
@@ -2252,13 +2254,6 @@ the_end:
 		}
 
 		pthread_mutex_unlock(&aiMutex);
-
-		/*elapsedTime = av_gettime() - audio_cb_time;
-		sleepTime   = 1000000/25;
-
-		if (sleepTime > elapsedTime) {
-			SystemCompat::uSleep(sleepTime - elapsedTime);
-		}*/
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
