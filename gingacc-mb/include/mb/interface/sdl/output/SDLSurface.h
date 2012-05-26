@@ -80,6 +80,7 @@ namespace mb {
 			IFontProvider* iFont;
 			int caps;
 			bool owner;
+			bool pendingFill;
 
 			vector<DrawData*> drawData;
 			pthread_mutex_t ddMutex;
@@ -93,6 +94,7 @@ namespace mb {
 			virtual ~SDLSurface();
 
 		private:
+			void fill();
 			void releaseChromaColor();
 			void releaseBgColor();
 			void releaseBorderColor();

@@ -104,6 +104,22 @@ namespace mb {
 		pthread_mutex_destroy(&ddMutex);
 	}
 
+	void SDLSurface::fill() {
+		int r = 0, g = 0, b = 0, alpha = 0;
+
+		pendingFill = false;
+		if (sur != NULL) {
+			if (bgColor != NULL) {
+				r     = bgColor->getR();
+				g     = bgColor->getG();
+				b     = bgColor->getB();
+				alpha = bgColor->getAlpha();
+			}
+
+			SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, r, g, b, alpha));
+		}
+	}
+
 	void SDLSurface::releaseChromaColor() {
 		if (this->chromaColor != NULL) {
 			delete this->chromaColor;
@@ -164,6 +180,7 @@ namespace mb {
 		this->caps          = 0;
 		this->hasExtHandler = false;
 		this->owner         = false;
+		this->pendingFill   = false;
 
 		this->drawData.clear();
 
@@ -249,7 +266,6 @@ namespace mb {
 	}
 
 	void SDLSurface::clearSurface() {
-		int r = 0, g = 0, b = 0, alpha = 0;
 
 		releaseDrawData();
 
@@ -260,14 +276,7 @@ namespace mb {
 			return;
 		}
 
-		if (bgColor != NULL) {
-			r     = bgColor->getR();
-			g     = bgColor->getG();
-			b     = bgColor->getB();
-			alpha = bgColor->getAlpha();
-		}
-
-		SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, r, g, b, alpha));
+		fill();
 	}
 
 	vector<DrawData*>* SDLSurface::createDrawDataList() {
@@ -357,6 +366,11 @@ namespace mb {
 			if (y < 0) {
 				y = 0;
 			}
+
+			if (pendingFill) {
+				fill();
+			}
+
 			iFont->playOver(this, txt, x, y, 0);
 		}
 	}
@@ -387,21 +401,13 @@ namespace mb {
 
 	IColor* SDLSurface::getBorderColor() {
 		return borderColor;
-
-		/*
-		 * TODO: only a SDL_Renderer can draw non-filled rectangles in SDL 2.0
-		 *       create a vector with rectangles to pass it to the renderer
-		 */
 	}
 
 	void SDLSurface::setBgColor(int r, int g, int b, int alpha) {
 		releaseBgColor();
 
 		this->bgColor = new Color(r, g, b, alpha);
-
-		if (sur != NULL) {
-			SDL_FillRect(sur, NULL,SDL_MapRGBA(sur->format, r, g, b, alpha));
-		}
+		pendingFill = true;
 	}
 
 	IColor* SDLSurface::getBgColor() {
@@ -509,6 +515,9 @@ namespace mb {
 					dstRect.h = uSur->h;
 				}
 
+				if (pendingFill) {
+					fill();
+				}
 				SDL_UpperBlit(uSur, s, sur, &dstRect);
 			}
 
