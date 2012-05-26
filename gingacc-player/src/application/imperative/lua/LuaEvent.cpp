@@ -47,73 +47,691 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-//#include <async.h>
-
-#include <string.h>
+extern "C" {
+#include <stdarg.h>
+#include <assert.h>             /* for assert */
+#include <stdio.h>              /* for vfprintf, fflush, fputc */
+#include <stdlib.h>             /* for bsearch */
+#include <string.h>             /* for strcmp */
+}
 
 #include "player/LuaPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "player/PlayersComponentSupport.h"
+/* ---------------------------------------------------------------------- */
 
-// TODO: alter type verification of other modules
-// or try a more generic approach for protection
+/* Uncomment the following line to disable assertions.  */
+/* #define NDEBUG 1 */
 
-// Indices para variaveis locais ao modulo.
-// Deve iniciar de 3 (REFNIL=-1/NOREF=-2)
-#define LUAPLAYER_EVENT "luaplayer.Event"
-enum {
-	  REFLISTENERS = 3 // listeners table
-	, REFNEWLISTENERS  // pending listeners table
-	, REFNCLMAP        // table for ("action"->int | int->"action") mapping
-    , REFTCPIN
-    , REFTCPOUT
+/* Uncomment the following line to disable warning messages.  */
+/* #define NWARNING 1 */
+
+#define nclua_array_size(x) (sizeof (x) / sizeof (x[0]))
+#define nclua_streq(x,y) (*(x) == *(y) && strcmp ((x), (y)) == 0)
+
+/* Error reporting:  */
+
+/* Prints a printf-like message to standard error.  */
+
+static inline void
+nclua_print_error (const char *format, ...)
+{
+  va_list args;
+
+  fflush (stdout);
+  va_start (args, format);
+  vfprintf (stderr, format, args);
+  va_end (args);
+
+  putc ('\n', stderr);
+  fflush (stderr);
+}
+
+/* Warning messages.  */
+#ifndef NWARNING
+# define nclua_warn(fmt, ...)                                           \
+  nclua_print_error ("NCLUA warning:%s:%d:%s: "fmt"\n",                 \
+                     __FILE__, __LINE__, __func__, ## __VA_ARGS__)
+
+# define nclua_warn_ignored_args(L)                                     \
+  nclua_warn("ignoring extra arguments to '%s'", nclua_currlfunc (L))
+#else
+# define nclua_warn(fmt,...)        /* empty */
+# define nclua_warn_ignored_args(L) /* empty */
+#endif
+
+/* Auxiliary Lua stuff: */
+
+/* Pushes onto the stack the value of t[K], where t is the table at INDEX,
+   and set t[K] to nil.  */
+
+#define nclua_fetchfield(L, index, k)                                   \
+  do {                                                                  \
+    lua_getfield ((L), (index), (k));                                   \
+    lua_pushnil ((L));                                                  \
+    lua_setfield ((L), ((index) > 0) ? (index) : (index) - 2, (k));     \
+  } while (0)
+
+/* Returns the name of the current Lua function.  */
+
+static inline const char *
+nclua_currlfunc (lua_State *L)
+{
+  lua_Debug ar;
+
+  lua_getstack (L, 0, &ar);
+  lua_getinfo (L, "n", &ar);
+  return ar.name;
+}
+
+/* Dumps Lua stack.  */
+
+static inline void
+nclua_dump_stack (lua_State *L)
+{
+  int i;
+  int top;
+
+  fflush (stderr);
+  fputs ("NCLUA stack dump: <", stdout);
+
+  top = lua_gettop (L);
+  for (i = 0; i <= top; i++)
+    {
+      int t = lua_type (L, i);
+      switch (t)
+        {
+        case LUA_TSTRING:
+          printf ("'%s'", lua_tostring (L, i));
+          break;
+        case LUA_TBOOLEAN:
+          fputs (lua_toboolean (L, i) ? "true" : "false", stdout);
+          break;
+        case LUA_TNUMBER:
+          printf ("%g", lua_tonumber (L, i));
+          break;
+        default:
+          printf ("%s (%p)", lua_typename (L, t), lua_topointer (L, i));
+          break;
+        }
+      fputs ((i < top) ? ", " : ">", stdout);
+    }
+
+  putc ('\n', stdout);
+  fflush (stdout);
+}
+
+/* ---------------------------------------------------------------------- */
+
+/* Key of the event table in registry.  */
+#define LUAEVENT_TABLE_KEY "LuaPlayer.Event"
+
+/* Index of the hooks queue in registry.  */
+#define LUAEVENT_HOOKSQ_INDEX -1
+
+/* status_t is used to indicate errors.  */
+typedef enum _status_s
+{
+  STATUS_SUCCESS = 0,       /* no error has occurred */
+  STATUS_INVALID_FIELD,     /* invalid event field */
+  STATUS_MISSING_FIELD,     /* required event filed is missing */
+  STATUS_UNKNOWN_ACTION,    /* unknown event action */
+  STATUS_UNKNOWN_CLASS,     /* unknown event class */
+  STATUS_UNKNOWN_TYPE,      /* unknown event type */
+  STATUS_UNSUPPORTED_CLASS, /* unsupported event class */
+  STATUS_UNSUPPORTED_TYPE,  /* unsupported event type */
+
+  /* The following is a special value indicating the
+     number of status values defined in this enumeration.  */
+
+  STATUS_LAST_STATUS
+} status_t;
+
+/* Function prototypes: */
+static const char *status_to_string (status_t status);
+static void push_errmsg (lua_State *L, status_t status, const char *name);
+static int action_to_code (const char *action);
+static const char *code_to_action (int code);
+static lua_CFunction class_to_handler (const char *name);
+static int l_post (lua_State* L);
+static int l_post_edit_event (lua_State *L);
+static int l_post_key_event (lua_State *L);
+static int l_post_ncl_event (lua_State *L);
+static int l_post_pointer_event (lua_State *L);
+static int l_post_si_event (lua_State *L);
+static int l_post_sms_event (lua_State *L);
+static int l_post_tcp_event (lua_State *L);
+static int l_post_user_event (lua_State *L);
+static int l_uptime (lua_State *L);
+static int l_register (lua_State *L);
+
+/* Provides a human-readable description of a nclua_status_t.
+   Returns a string representation of status STATUS.  */
+
+static const char *
+status_to_string (status_t status)
+{
+  switch (status)
+    {
+    case STATUS_SUCCESS:
+      return "no error has occurred";
+
+    case STATUS_INVALID_FIELD:
+      return "invalid value for event field";
+
+    case STATUS_MISSING_FIELD:
+      return "missing required event field";
+
+    case STATUS_UNKNOWN_ACTION:
+      return "unknown event action";
+
+    case STATUS_UNKNOWN_CLASS:
+      return "unknown event class";
+
+    case STATUS_UNKNOWN_TYPE:
+      return "unknown event type";
+
+    case STATUS_UNSUPPORTED_CLASS:
+      return "unsupported event class";
+
+    case STATUS_UNSUPPORTED_TYPE:
+      return "unsupported event type";
+
+    default:
+    case STATUS_LAST_STATUS:
+      return "<unknown error status>";
+    }
+  assert (0);
+}
+
+/* Pushes onto stack the error message associated with STATUS.
+   If NAME is non-NULL then append " 'NAME'" to the pushed message.  */
+
+static inline void
+push_errmsg (lua_State *L, status_t status, const char *name)
+{
+  lua_pushstring (L, status_to_string (status));
+  if (name != NULL)
+    {
+      lua_pushfstring (L, " '%s'", name);
+      lua_concat (L, 2);
+    }
+}
+
+/* Table mapping each action name to its integer code.  */
+static const struct _acttab
+{
+  const char *name;             /* action name */
+  int code;                     /* action code */
+}
+action_table[] =
+{
+  /* KEEP THIS SORTED ALPHABETICALLY */
+  { "abort",  Player::PL_NOTIFY_ABORT },
+  { "pause",  Player::PL_NOTIFY_PAUSE },
+  { "resume", Player::PL_NOTIFY_RESUME },
+  { "start",  Player::PL_NOTIFY_START },
+  { "stop",   Player::PL_NOTIFY_STOP },
 };
 
-// Eventos TCP
-static void* tcp_thread (void* data);
+static int
+_compare__acttab_name (const void *p1, const void *p2)
+{
+  return strcmp (((struct _acttab *) p1)->name,
+                 ((struct _acttab *) p2)->name);
+}
 
-/*******************************************************************************
- * FUNCOES DO MODULO
- ******************************************************************************/
+static int
+_compare__acttab_code (const void *p1, const void *p2)
+{
+  int c1 = ((struct _acttab *) p1)->code;
+  int c2 = ((struct _acttab *) p2)->code;
+  return (c1 < c2) ? -1 : (c1 == c2) ? 0 : 1;
+}
 
-/*******************************************************************************
- * event.post
- * - dst: in/out, default=out
- * - evt: tabela com o  evento
- *
- *   Destino 'in': o evento eh postado na fila interna e o Player eh acordado
- *   (unlockConditionSatisfied()). No caso de um evento de teclado, este deve
- *   ser convertido para Lua (evt_key()).
- *
- *   Destino 'out': cada caso eh tratado de forma especial (tcp, ncl, etc).
- *
- ******************************************************************************/
+/* Returns the positive integer code associated with action name ACTION
+   or -1 if there is no such action.  */
 
-/*********************************************************************
- * event.dispatch
- * - PILHA: [ -1/+0 ]
- * - executa os tratadores registrados passando o evento recebido
- *********************************************************************/
+static int
+action_to_code (const char *action)
+{
+  struct _acttab key;
+  struct _acttab *result;
+
+  key.name = action;
+  result = (struct _acttab *)
+    bsearch (&key, action_table, nclua_array_size (action_table),
+             sizeof (struct _acttab), _compare__acttab_name);
+
+  return (result != NULL) ? result->code : -1;
+}
+
+/* Returns the name associated with action integer code CODE
+   or NULL if there is no such code.  */
+
+static const char *
+code_to_action (int code)
+{
+  struct _acttab key;
+  struct _acttab *result;
+
+  key.code = code;
+  result = (struct _acttab *)
+    bsearch (&key, action_table, nclua_array_size (action_table),
+             sizeof (struct _acttab), _compare__acttab_code);
+
+  return (result != NULL) ? result->name : NULL;
+}
+
+/* Table mapping each event class to its handler.  */
+static const struct _classtab
+{
+  const char *name;             /* class name */
+  lua_CFunction handler;        /* handler function */
+}
+class_table[] =
+{
+  /* KEEP THIS SORTED ALPHABETICALLY */
+  { "edit",    l_post_edit_event },
+  { "key",     l_post_key_event },
+  { "ncl",     l_post_ncl_event },
+  { "pointer", l_post_pointer_event },
+  { "si",      l_post_si_event },
+  { "sms",     l_post_sms_event },
+  { "tcp",     l_post_tcp_event },
+  { "user",    l_post_user_event },
+};
+
+static int _compare__classtab_name (const void *p1, const void *p2)
+{
+  return strcmp (((struct _classtab *) p1)->name,
+                 ((struct _classtab *) p2)->name);
+}
+
+/* Returns the handler function associated with class NAME
+   or NULL if there is no such class.  */
+
+static lua_CFunction class_to_handler (const char *name)
+{
+  struct _classtab key;
+  struct _classtab *result;
+
+  key.name = name;
+  result = (struct _classtab *)
+    bsearch (&key, class_table, nclua_array_size (class_table),
+             sizeof (struct _classtab), _compare__classtab_name);
+
+  return (result != NULL) ? result->handler : NULL;
+}
+
+/* Event API: */
+
+/* event.post ([dst:string], evt:event) -> sent:boolean, errmsg:string
+
+   This function posts event EVT to the NCL player (DST == 'out'), or to the
+   NCLua player itself (DST == 'in').  Returns true if successful.
+   Otherwise, returns false plus error message. */
+
+static int l_post (lua_State* L)
+{
+  const char *dst;           /* destination */
+  const char *cls;           /* event class */
+  lua_CFunction handler;     /* class handler */
+
+  int nargs = lua_gettop (L);
+  if (nargs == 1)
+    {
+      lua_pushstring (L, "out");
+      lua_insert (L, 1);
+    }
+
+  dst = luaL_checkstring (L, 1);
+  luaL_checktype (L, 2, LUA_TTABLE);
+
+  if (nargs > 2)
+    {
+      nclua_warn_ignored_args (L);
+      lua_settop (L, 2);
+    }
+
+  /* Post event to itself.  */
+  if (nclua_streq (dst, "in"))
+    {
+      /* FIXME: Find a sane way to do this.  */
+
+      LuaPlayer *player = GETPLAYER (L);
+      GingaScreenID id = player->getScreenId ();
+      ILocalScreenManager *m = player->getScreenManager ();
+      IInputEvent* evt;
+      int ref;
+
+      ref = luaL_ref (L, LUA_REGISTRYINDEX);
+      evt = m->createApplicationEvent (id, ref, (void *) L);
+      player->im->postInputEvent (evt);
+
+      lua_pushboolean (L, 1);
+      return 1;
+    }
+
+  /* Post event to NCL.  */
+  lua_getfield (L, -1, "class");
+  cls = lua_tostring (L, -1);
+  if (cls == NULL)
+    {
+      push_errmsg (L, STATUS_MISSING_FIELD, "class");
+      goto fail;
+    }
+
+  handler = class_to_handler (cls);
+  if (handler == NULL)
+    {
+      push_errmsg (L, STATUS_UNKNOWN_CLASS, cls);
+      goto fail;
+    }
+
+  lua_pop (L, 1);
+  return handler (L);
+
+ fail:
+  lua_pushboolean (L, 0);
+  lua_insert (L, -2);
+  return 2;
+}
+
+/* Prints warning message if event table at INDEX is not empty.
+   This is used by the l_post_*_event functions below.  */
+
+#ifndef NWARNING
+# define warn_extra_fields_in_event(L, index)                           \
+  do {                                                                  \
+    int saved_top = lua_gettop ((L));                                   \
+    nclua_fetchfield ((L), (index), "class");                           \
+    lua_pop ((L), 1);                                                   \
+    lua_pushnil ((L));                                                  \
+    if (lua_next ((L), ((index) > 0) ? (index) : (index) - 1) != 0)     \
+      nclua_warn ("ignoring extra fields in event table");              \
+    lua_settop ((L), saved_top);                                        \
+  } while (0)
+#else
+# define warn_extra_fields_in_event(L, index) /* empty */
+#endif
+
+/* Posts NCL editing event.  */
+
+static int
+l_post_edit_event (lua_State *L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "edit");
+  return 2;
+}
+
+/* Posts key event.  */
+
+static int
+l_post_key_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "key");
+  return 2;
+}
+
+/* Posts NCL (presentation, attribution, or selection) events.  */
+
+static int
+l_post_ncl_event (lua_State *L)
+{
+  LuaPlayer *player;
+  const char *type;
+  const char *action;
+  int type_code;
+  int action_code;
+
+  nclua_fetchfield (L, -1, "type");
+  type = lua_tostring (L, -1);
+  if (type == NULL)
+    {
+      push_errmsg (L, STATUS_MISSING_FIELD, "type");
+      goto fail;
+    }
+  lua_pop (L, 1);
+
+  /* Get action.  */
+  nclua_fetchfield (L, -1, "action");
+  action = lua_tostring (L, -1);
+  if (action == NULL)
+    {
+      push_errmsg (L, STATUS_INVALID_FIELD, "action");
+      goto fail;
+    }
+  action_code = action_to_code (action);
+  if (action_code < 0)
+    {
+      push_errmsg (L, STATUS_UNKNOWN_ACTION, "action");
+      goto fail;
+    }
+  lua_pop (L, 1);
+
+  /* Get type.  */
+  if (nclua_streq (type, "presentation"))
+    {
+      const char *label;
+
+      type_code = Player::TYPE_PRESENTATION;
+
+      /* Get label.  */
+      nclua_fetchfield (L, -1, "label");
+      label = (!lua_isnil (L, -1)) ? lua_tostring (L, -1) : "";
+      if (label == NULL)
+        {
+          push_errmsg (L, STATUS_INVALID_FIELD, "label");
+          goto fail;
+        }
+      lua_pop (L, 1);
+
+      warn_extra_fields_in_event (L, -1);
+
+      /* Execute presentation event.  */
+      player = GETPLAYER (L);
+      if (action_code == Player::PL_NOTIFY_STOP && *label == '\0')
+        {
+          player->im->removeApplicationInputEventListener (player);
+        }
+      player->notifyPlayerListeners (action_code, label);
+    }
+  else if (nclua_streq (type, "attribution"))
+    {
+      const char *name;
+      const char *value;
+
+      type_code = Player::TYPE_ATTRIBUTION;
+
+      /* Get name.  */
+      nclua_fetchfield (L, -1, "name");
+      name = lua_tostring (L, -1);
+      if (name == NULL)
+        {
+          push_errmsg (L, STATUS_INVALID_FIELD, "name");
+          goto fail;
+        }
+      lua_pop (L, 1);
+
+      /* Get value.  */
+      nclua_fetchfield (L, -1, "value");
+      value = (!lua_isnil (L, -1)) ? lua_tostring (L, -1) : "";
+      if (value == NULL)
+        {
+          push_errmsg (L, STATUS_INVALID_FIELD, "value");
+          goto fail;
+        }
+      lua_pop (L, 1);
+
+      warn_extra_fields_in_event (L, -1);
+
+      /* Execute attribution event.  */
+      player = GETPLAYER (L);
+      player->unprotectedSetPropertyValue (name, value);
+      player->notifyPlayerListeners (action_code, name, type_code, value);
+    }
+  else if (nclua_streq (type, "selection"))
+    {
+      push_errmsg (L, STATUS_UNSUPPORTED_TYPE, "selection");
+      goto fail;
+    }
+  else
+    {
+      push_errmsg (L, STATUS_UNKNOWN_TYPE, type);
+      goto fail;
+    }
+
+  /* Success.  */
+  lua_pushboolean (L, 1);
+  return 1;
+
+ fail:
+  lua_pushboolean (L, 0);
+  lua_insert (L, -2);
+  return 2;
+}
+
+/* Posts pointer (cursor) event.  */
+
+static int
+l_post_pointer_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "pointer");
+  return 2;
+}
+
+/* Posts SI event.  */
+
+static int
+l_post_si_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "si");
+  return 2;
+}
+
+/* Posts SMS event.  */
+
+static int
+l_post_sms_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "sms");
+  return 2;
+}
+
+/* Posts TCP event. */
+
+static int
+l_post_tcp_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "tcp");
+  return 2;
+}
+
+/* Posts user event.  */
+
+static int
+l_post_user_event (lua_State * L)
+{
+  lua_pushboolean (L, 0);
+  push_errmsg (L, STATUS_UNSUPPORTED_CLASS, "user");
+  return 2;
+}
+
+/* event.uptime () -> ms:number
+
+   Returns the number of milliseconds elapsed since last start.  */
+
+static int
+l_uptime (lua_State *L)
+{
+  LuaPlayer *player;
+
+#ifndef NWARNING
+  if (lua_gettop (L) > 0)
+    nclua_warn_ignored_args (L);
+#endif
+
+  player = GETPLAYER (L);
+  lua_pushnumber (L, player->getMediaTime() * 1000);
+  return 1;
+}
+
+/* event.register2 ([pos:number], f:function, [class:string], ...), or
+   event.register2 ([pos:number], f:function, [filter:table])
+
+   Appends the function F to the listeners queue.
+   If POS is given, then F is registered in position POS of listeners queue.
+   If CLASS is given, then F called only for events of the given class.
+
+   In the first form, any additional parameters are treated as class
+   dependent filters.  In the second form, the table FILTER is used instead.
+
+   Returns true if successful, otherwise return false plus error
+   message.  */
+
+static int
+l_register2 (lua_State *L)
+{
+  int pos;
+  int n;
+
+  lua_rawgeti (L, LUA_ENVIRONINDEX, LUAEVENT_HOOKSQ_INDEX);
+  n = lua_objlen (L, -1);
+
+  /* Get pos.  */
+  pos = luaL_optint (L, 1, -1);
+  if (pos < 0 || pos > n + 1)
+    pos = n + 1;
+
+  return 0;
+}
+
+
+/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+
+
+/* Index of the listeners table in event table.  */
+#define LISTENERS_TABLE_INDEX -3
+
+/* Index of the pending listeners table in event table.  */
+#define PENDING_LISTENERS_TABLE_INDEX -4
+
+
+
+/* TODO: REMOVE THIS!  */
+
+enum
+{
+    REFTCPIN=6,
+    REFTCPOUT,
+};
+
+
+// Dispatch event at top of stack.
 
 static void int_dispatch (lua_State* L)
 {
-    // [ ... | evt ]
-
-    lua_getfield(L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT);
+     lua_getfield (L, LUA_REGISTRYINDEX, LUAEVENT_TABLE_KEY);
 
     // [ ... | evt | env ]
 
-    lua_rawgeti(L, -1, -REFNEWLISTENERS);  // [ ... | evt | env | newlst ]
+    lua_rawgeti(L, -1, PENDING_LISTENERS_TABLE_INDEX);  // [ ... | evt | env | newlst ]
     if (!lua_isnil(L, -1)) {
         lua_pushvalue(L, -1);              // [ ... | evt | env | newlst | newlst ]
-        lua_rawseti(L, -3, -REFLISTENERS); // [ ... | evt | env | newlst ]
+        lua_rawseti(L, -3, LISTENERS_TABLE_INDEX); // [ ... | evt | env | newlst ]
         lua_pushnil(L);                    // [ ... | evt | env | newlst | nil ]
-        lua_rawseti(L, -3, -REFNEWLISTENERS); // [  | evt | env | newlst ]
+        lua_rawseti(L, -3, PENDING_LISTENERS_TABLE_INDEX); // [  | evt | env | newlst ]
     }
     else {
         lua_pop(L, 1);                     // [ ... | evt | env ]
-	    lua_rawgeti(L, -1, -REFLISTENERS); // [ ... | evt | env | lst ]
+	    lua_rawgeti(L, -1, LISTENERS_TABLE_INDEX); // [ ... | evt | env | lst ]
     }
 
     // [ ... | evt | env | lst ]
@@ -125,11 +743,7 @@ static void int_dispatch (lua_State* L)
         lua_getfield(L, -1, "__func"); // [ ... | evt | env | lst | t | func ]
 		lua_pushvalue(L, -5);          // [ ... | evt | env | lst | t | func | evt]
 
-		if (lua_pcall(L, 1, 1, 0) != 0) { // [ ... | evt | env | lst | t | ret]
-			clog << "LUAEVENT int_dispatch ERROR:: ";
-			clog << lua_tostring(L, -1) << endl;
-		}
-
+		lua_call(L, 1, 1);
 		if (lua_toboolean(L, -1)) {
             lua_pop(L, 2);             // [ ... | evt | env | lst ]
             break;
@@ -200,178 +814,6 @@ LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt,
     return 0;
 }
 
-static int l_post (lua_State* L)
-{
-    // [ [dst] | evt ]
-    	const char* dst = NULL;
-	if (lua_gettop(L) == 1) {
-		lua_pushstring(L, "out");                 // [ evt | "out" ]
-		lua_insert(L, 1);                         // [ "out" | evt ]
-	}
-	if (!lua_isstring(L, 1)) {
-		fprintf(stderr,"Lua conformity error: event module\n");
-		fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #1 (string expected)\n");
-		fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #1 (string esperado)\n");
-		return 0;
-	}
-	else {
-		dst = luaL_checkstring(L, 1);
-	}
-    // [ dst | evt ]
-
-	// dst == "in"
-	if ( !strcmp(dst, "in") )
-	{
-		// [ dst | evt ]
-        //luaL_checktype(L, 2, LUA_TTABLE);
-	if(!lua_istable(L, 2)){
-
-			fprintf(stderr,"Lua conformity error: event module\n");
-			fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #2 (table expected)\n");
-			fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #2 (table esperado)\n");
-	
-			return 0;
-		}
-        int ref = luaL_ref(L, LUA_REGISTRYINDEX); // [ dst ]
-
-        GETPLAYER(L)->im->postInputEvent(
-        		GETPLAYER(L)->getScreenManager()->createApplicationEvent(
-        				GETPLAYER(L)->getScreenId(), ref, (void*)L));
-	}
-
-	// dst == "out"
-	else if ( !strcmp(dst, "out") )
-	{
-		//luaL_checktype(L, 2, LUA_TTABLE);
-		if(!lua_istable(L, 2)){
-			
-			fprintf(stderr,"Lua conformity error: event module\n");
-			fprintf(stderr,"Call to 'post' does not follow Ginga-NCL standard: bad argument #2 (table expected)\n");
-			fprintf(stderr,"Chamada a 'post' nao segue padrao Ginga-NCL: argumento #2 (table esperado)\n");
-			
-			return 0;
-		}
-		lua_getfield(L, 2, "class");         // [ dst | evt | class ]
-		const char* clazz = luaL_checkstring(L, -1);
-
-		// TCP event
-		if ( !strcmp(clazz, "tcp") )
-		{
-            LuaPlayer* player = GETPLAYER(L);
-            if (!player->tcp_running) {
-                pthread_create(&player->tcp_thread_id, 0, tcp_thread, player);
-                pthread_detach(player->tcp_thread_id);
-            }
-            lua_rawgeti(L, LUA_ENVIRONINDEX, -REFTCPOUT); // [ dst | evt | class | f_out ]
-            lua_pushvalue(L, 2);                          // [ dst | evt | class | f_out | evt ]
-
-            if (lua_pcall(L, 1, 0, 0) != 0) {             // [ dst | evt | class ]
-            	clog << "LUAEVENT l_post ERROR:: ";
-            	clog << lua_tostring(L, -1) << endl;
-            }
-        }
-
-        // NCL event
-		else if ( !strcmp(clazz, "ncl") )
-		{
-			lua_getfield(L, 2, "type");
-                    // [ dst | evt | class | type ]
-			const char* type = luaL_checkstring(L, -1);
-
-			// PRESENTATION event
-			if ( !strcmp(type, "presentation") )
-			{
-				lua_rawgeti(L, LUA_ENVIRONINDEX, -REFNCLMAP);
-                    // [ dst | evt | class | type | ttrans ]
-				lua_getfield(L, 2, "action");
-                    // [ dst | evt | class | type | ttrans | trans ]
-				lua_gettable(L, -2);
-                    // [ dst | evt | class | type | ttrans | TRANS ]
-				lua_getfield(L, 2, "label");
-                    // [ dst | evt | class | type | ttrans | TRANS | label ]
-				if (lua_isnil(L, -1)) {
-					lua_pop(L, 1);
-                    // [ dst | evt | class | type | ttrans | TRANS ]
-					lua_pushstring(L, "");
-                    // [ dst | evt | class | type | ttrans | TRANS | "" ]
-				}
-
-                if ((lua_tointeger(L, -2) == Player::PL_NOTIFY_STOP) &&
-                        (!strcmp(luaL_checkstring(L, -1),""))) {
-
-                	GETPLAYER(L)->im->removeApplicationInputEventListener(
-                			GETPLAYER(L));
-                }
-
-				GETPLAYER(L)->notifyPlayerListeners(
-						lua_tointeger(L, -2), luaL_checkstring(L, -1));
-			}
-			// ATTRIBUTION event
-			else if ( !strcmp(type, "attribution") )
-			{
-				lua_rawgeti(L, LUA_ENVIRONINDEX, -REFNCLMAP);
-                    // [ dst | evt | class | type | ttrans ]
-				lua_getfield(L, 2, "action");
-                    // [ dst | evt | class | type | ttrans | trans ]
-				lua_gettable(L, -2);
-                    // [ dst | evt | class | type | ttrans | TRANS ]
-				lua_getfield(L, 2, "name");
-                    // [ dst | evt | class | type | ttrans | TRANS | prop ]
-				lua_getfield(L, 2, "value");
-                    // [ dst | evt | class | type | ttrans | TRANS | prop | v ]
-				GETPLAYER(L)->unprotectedSetPropertyValue(
-						luaL_checkstring(L,-2), luaL_optstring(L,-1,""));
-
-				GETPLAYER(L)->notifyPlayerListeners(
-						lua_tointeger(L, -3),
-						luaL_checkstring(L, -2),
-						Player::TYPE_ATTRIBUTION,
-						luaL_optstring(L,-1,""));
-			}
-
-	    // edit
-		} else if ( !strcmp(clazz, "edit") ) {
-			string strCmd;
-
-			// [ dst | evt | class | type | command ]
-			strCmd = cmd_to_str(L);
-			GETPLAYER(L)->notifyPlayerListeners(
-					Player::PL_NOTIFY_NCLEDIT, strCmd);
-
-		// SI event
-		} else if ( !strcmp(clazz, "si") ){
-			clog << "LuaEvent::l_post SI EVENT";
-			
-			lua_getfield(L, 2, "type");
-			// [ dst | evt | class | type ]
-			const char* type = luaL_checkstring(L, -1);
-			clog << " with type:" << type << endl;
-
-			//TODO: handle epg request data table properly.
-			if (!strcmp(type, "si")) {
-				GETPLAYER(L)->addAsSIListener(1);
-
-			} else if (!strcmp(type, "epg")) {
-				GETPLAYER(L)->addAsSIListener(2);
-			
-			} else if (!strcmp(type, "mosaic")) {
-
-				GETPLAYER(L)->addAsSIListener(3);
-			} else if (!strcmp(type, "time")) {
-
-				GETPLAYER(L)->addAsSIListener(4);
-			}
-
-		} else {
-			return luaL_error(L, "invalid event class");
-		}
-
-	} else {
-		return luaL_argerror(L, 1, "possible values are: 'in', 'out'");
-	}
-
-	return 0;
-}
 
 /*********************************************************************
  * event.timer
@@ -455,7 +897,7 @@ static int l_timer (lua_State* L)
 		fprintf(stderr,"Lua conformity error: event module\n");
 		fprintf(stderr,"Call to 'timer' does not follow Ginga-NCL standard: bad argument #2 (function expected)\n");
 		fprintf(stderr,"Chamada a 'timer' nao segue padrao Ginga-NCL: argumento #2 (function esperado)\n");
-				
+
 		return 0;
 	}
 	lua_settable(L, LUA_REGISTRYINDEX);     // [ msec | func | t* ]
@@ -471,16 +913,6 @@ static int l_timer (lua_State* L)
 	return 1;
 }
 
-/*********************************************************************
- * event.uptime
- * Retorna o tempo de execucao do Player.
- *********************************************************************/
-
-static int l_uptime (lua_State* L)
-{
-	lua_pushnumber(L, (GETPLAYER(L)->getMediaTime()) * 1000);  // [ msec ]
-	return 1;
-}
 
 /*********************************************************************
  * event.register
@@ -499,14 +931,16 @@ static void int_newlisteners (lua_State* L, int lst)
     // [ ... | newlst ]
 }
 
-// registra duas iguais
-static int l_register (lua_State* L)
+
+#if 1
+static int
+l_register (lua_State *L)
 {
     // [ [i] | func | [filter] ]
 
     // [i] -> i
     if (lua_type(L, 1) == LUA_TFUNCTION) {
-	    lua_rawgeti(L, LUA_ENVIRONINDEX, -REFLISTENERS);
+	    lua_rawgeti(L, LUA_ENVIRONINDEX, LISTENERS_TABLE_INDEX);
             // [ func | [filter] | listeners ]
         lua_pushnumber(L, lua_objlen(L, -1)+1);
             // [ func | [filter] | listeners | #listeners+1 ]
@@ -531,7 +965,7 @@ static int l_register (lua_State* L)
 		fprintf(stderr,"Lua conformity error: event module\n");
 		fprintf(stderr,"Call to 'register' does not follow Ginga-NCL standard: bad argument #1 (number expected)\n");
 		fprintf(stderr,"Chamada a 'register' nao segue padrao Ginga-NCL: argumento #1 (number esperado)\n");
-	    
+
 	    	return 0;
     }
     if(!lua_isfunction(L,2)){
@@ -539,7 +973,7 @@ static int l_register (lua_State* L)
 		fprintf(stderr,"Lua conformity error: event module\n");
 		fprintf(stderr,"Call to 'register' does not follow Ginga-NCL standard: bad argument #2 (function expected)\n");
 		fprintf(stderr,"Chamada a 'register' nao segue padrao Ginga-NCL: argumento #2 (function esperado)\n");
-	    
+
 	    	return 0;
     }
     if(!lua_istable(L,3)){
@@ -555,13 +989,13 @@ static int l_register (lua_State* L)
     lua_setfield(L, -2, "__func"); // [ i | func | filter ]
 
     // creates newlisteners
-    lua_rawgeti(L, LUA_ENVIRONINDEX, -REFLISTENERS);    // [ i | func | filter | lst ]
-    lua_rawgeti(L, LUA_ENVIRONINDEX, -REFNEWLISTENERS); // [ i | func | filter | lst | ? ]
+    lua_rawgeti(L, LUA_ENVIRONINDEX, LISTENERS_TABLE_INDEX);    // [ i | func | filter | lst ]
+    lua_rawgeti(L, LUA_ENVIRONINDEX, PENDING_LISTENERS_TABLE_INDEX); // [ i | func | filter | lst | ? ]
     if (lua_isnil(L, -1)) {
         lua_pop(L, 1);           // [ i | func | filter | lst ]
         int_newlisteners(L, 4);  // [ i | func | filter | lst | newlst ]
         lua_pushvalue(L, -1);    // [ i | func | filter | lst | newlst | newlst ]
-        lua_rawseti(L, LUA_ENVIRONINDEX, -REFNEWLISTENERS); // [ ewlst ]
+        lua_rawseti(L, LUA_ENVIRONINDEX, PENDING_LISTENERS_TABLE_INDEX); // [ ewlst ]
     }
 
     // [ i | func | filter | lst | newlst ]
@@ -578,6 +1012,7 @@ static int l_register (lua_State* L)
 
     // [ i | func | filter | lst | newlst | table ]
     return 0;
+#endif
 }
 
 /*********************************************************************
@@ -593,17 +1028,17 @@ static int l_unregister (lua_State* L)
 		fprintf(stderr,"Lua conformity error: event module\n");
 		fprintf(stderr,"Call to 'unregister' does not follow Ginga-NCL standard: bad argument #1 (function expected)\n");
 		fprintf(stderr,"Chamada a 'unregister' nao segue padrao Ginga-NCL: argumento #1 (function esperado)\n");
-			        
+
 		return 0;
 	}
     // creates newlisteners
-    lua_rawgeti(L, LUA_ENVIRONINDEX, -REFLISTENERS);    // [ func | lst ]
-    lua_rawgeti(L, LUA_ENVIRONINDEX, -REFNEWLISTENERS); // [ func | lst | ? ]
+    lua_rawgeti(L, LUA_ENVIRONINDEX, LISTENERS_TABLE_INDEX);    // [ func | lst ]
+    lua_rawgeti(L, LUA_ENVIRONINDEX, PENDING_LISTENERS_TABLE_INDEX); // [ func | lst | ? ]
     if (lua_isnil(L, -1)) {
         lua_pop(L, 1);                        // [ func | lst ]
         int_newlisteners(L, 4);               // [ func | lst | newlst ]
         lua_pushvalue(L, -1);                 // [ func | lst | newlst | newlst ]
-        lua_rawseti(L, LUA_ENVIRONINDEX, -REFNEWLISTENERS); // [ ewlst ]
+        lua_rawseti(L, LUA_ENVIRONINDEX, PENDING_LISTENERS_TABLE_INDEX); // [ ewlst ]
     }
 
     // [ func | lst | newlst ]
@@ -659,16 +1094,19 @@ LUALIB_API int luaclose_event (lua_State* L)
 
 LUALIB_API int luaopen_event (lua_State* L)
 {
-	// env = {}
-	lua_newtable(L);                                  // [ env ]
-    lua_pushvalue(L, -1);                             // [ env | env ]
-    lua_setfield(L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT); // [ env ]
-	lua_replace(L, LUA_ENVIRONINDEX);                 // [ ]
+     // Create event table and store it in registry.
+     lua_newtable (L);
+     lua_pushvalue (L, -1);
+     lua_setfield (L, LUA_REGISTRYINDEX, LUAEVENT_TABLE_KEY);
 
-    // env[LISTENERS] = {}
-	lua_newtable(L);                                  // [ listeners ]
-	lua_rawseti(L, LUA_ENVIRONINDEX, -REFLISTENERS);  // [ ]
+     // Replace the current environment by the event table.
+     lua_replace (L, LUA_ENVIRONINDEX);
 
+     // Create the listeners table.
+     lua_newtable (L);
+     lua_rawseti (L, LUA_ENVIRONINDEX, LISTENERS_TABLE_INDEX);
+
+#if 0
     // env[NCLMAP] = {
     //     start  = PL_NOTIFY_START,
     //     stop   = PL_NOTIFY_STOP,
@@ -688,6 +1126,7 @@ LUALIB_API int luaopen_event (lua_State* L)
 	lua_pushnumber(L, Player::PL_NOTIFY_ABORT);   // [ nclmap | ABORT ]
 	lua_setfield(L, -2, "abort");                 // [ nclmap ]
 	lua_rawseti(L, LUA_ENVIRONINDEX, -REFNCLMAP); // [ ]
+#endif
 
     // trigger tcp thread
     lua_getglobal(L, "require");                  // [ require ]
@@ -709,6 +1148,7 @@ LUALIB_API int luaopen_event (lua_State* L)
 	return 1;
 }
 
+#if 0
 static void* tcp_thread (void* data)
 {
     LuaPlayer* player = (LuaPlayer*) data;
@@ -717,7 +1157,7 @@ static void* tcp_thread (void* data)
     while (1) {
     	SystemCompat::uSleep(500000);
         player->lock();
-        lua_getfield(player->L, LUA_REGISTRYINDEX, LUAPLAYER_EVENT);  // [ ... | env ]
+        lua_getfield(player->L, LUA_REGISTRYINDEX, LUAEVENT_TABLE_KEY);  // [ ... | env ]
         lua_rawgeti(player->L, -1, -REFTCPIN);       // [ ... | env | f_in ]
 
         if (lua_pcall(player->L, 0, 1, 0) != 0) {          // [ ... | env | count ]
@@ -734,3 +1174,4 @@ static void* tcp_thread (void* data)
     player->tcp_running = false;
     return NULL;
 }
+#endif
