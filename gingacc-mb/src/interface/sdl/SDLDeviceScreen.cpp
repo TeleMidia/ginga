@@ -640,7 +640,7 @@ namespace mb {
 			iWin->clearContent();
 			iWin->setTexture(NULL);
 
-			createReleaseContainer(uSur, uTex, NULL);
+			createReleaseContainer(NULL, uTex, NULL);
 		}
 
 		pthread_mutex_unlock(&winMutex);
@@ -702,12 +702,7 @@ namespace mb {
 		pthread_mutex_lock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
-			uSur = (SDL_Surface*)((*i)->getSurfaceContent());
-			(*i)->setSurfaceContent(NULL);
-
 			surfacePool.erase(i);
-
-			createReleaseContainer(uSur, NULL, NULL);
 		}
 		pthread_mutex_unlock(&surMutex);
 	}
@@ -875,14 +870,16 @@ namespace mb {
 			SDL_Texture* uTex,
 			IMediaProvider* iDec) {
 
-		ReleaseContainer rc;
-
-		rc.iDec = iDec;
-		rc.uSur = uSur;
-		rc.uTex = uTex;
+		ReleaseContainer* rc;
 
 		pthread_mutex_lock(&rlMutex);
-		releaseList.insert(&rc);
+
+		rc = new ReleaseContainer;
+		rc->iDec = iDec;
+		rc->uSur = uSur;
+		rc->uTex = uTex;
+
+		releaseList.insert(rc);
 		pthread_mutex_unlock(&rlMutex);
 	}
 
@@ -1106,6 +1103,7 @@ namespace mb {
 
 				switch (i->second) {
 					case SPT_NONE:
+						refreshRC(s);
 						decRate = refreshCMP(s);
 						refreshWin(s);
 
@@ -1151,12 +1149,7 @@ namespace mb {
 				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 				if (elapsedTime < sleepTime) {
-					if (decRate > 0) {
-						SystemCompat::uSleep(5000);
-
-					} else {
-						SystemCompat::uSleep(sleepTime - elapsedTime);
-					}
+					SystemCompat::uSleep(5000);
 
 					/*if (decRate == 0) {
 						SystemCompat::uSleep(sleepTime - elapsedTime);
@@ -1174,18 +1167,39 @@ namespace mb {
 
 	void SDLDeviceScreen::refreshRC(SDLDeviceScreen* s) {
 		set<ReleaseContainer*>::iterator i;
-		string strSym;
+		IContinuousMediaProvider* cmp;
+		IDiscreteMediaProvider* dmp;
+		string strSym = "";
+
+		set<ReleaseContainer*>* tmp;
 
 		pthread_mutex_lock(&s->rlMutex);
-		i = s->releaseList.begin();
-		while (i != s->releaseList.end()) {
-			if ((*i)->iDec != NULL) {
-				strSym = (*i)->iDec->getLoadSymbol();
+		tmp = new set<ReleaseContainer*>(s->releaseList);
+		s->releaseList.clear();
+		pthread_mutex_unlock(&s->rlMutex);
 
-				delete (*i)->iDec;
+		i = tmp->begin();
+		while (i != tmp->end()) {
+			if ((*i)->iDec != NULL) {
+				cmp = dynamic_cast<IContinuousMediaProvider*>((*i)->iDec);
+
+				if (cmp != NULL) {
+					strSym = cmp->getLoadSymbol();
+					delete cmp;
+
+				} else {
+					dmp = dynamic_cast<IDiscreteMediaProvider*>((*i)->iDec);
+
+					if (dmp != NULL) {
+						strSym = dmp->getLoadSymbol();
+						delete dmp;
+					}
+				}
 
 #if HAVE_COMPSUPPORT
-				cm->releaseComponentFromObject(strSym);
+				if (strSym != "") {
+					cm->releaseComponentFromObject(strSym);
+				}
 #endif
 			}
 
@@ -1197,11 +1211,11 @@ namespace mb {
 				releaseTexture((*i)->uTex);
 			}
 
+			delete (*i);
 			++i;
 		}
 
-		s->releaseList.clear();
-		pthread_mutex_unlock(&s->rlMutex);
+		delete tmp;
 	}
 
 	int SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {
