@@ -79,6 +79,7 @@ namespace mb {
 			IColor* surfaceColor;
 			IFontProvider* iFont;
 			int caps;
+			bool owner;
 
 			vector<DrawData*> drawData;
 			pthread_mutex_t ddMutex;

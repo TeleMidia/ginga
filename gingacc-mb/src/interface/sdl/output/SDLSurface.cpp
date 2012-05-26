@@ -84,6 +84,10 @@ namespace mb {
 		releaseFont();
 
 		pthread_mutex_lock(&sMutex);
+		if (owner && sur != NULL) {
+			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+			sur = NULL;
+		}
 		pthread_mutex_unlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
 
@@ -159,6 +163,7 @@ namespace mb {
 		this->surfaceColor  = NULL;
 		this->caps          = 0;
 		this->hasExtHandler = false;
+		this->owner         = false;
 
 		this->drawData.clear();
 
@@ -195,14 +200,16 @@ namespace mb {
 	}
 
 	void SDLSurface::setSurfaceContent(void* surface) {
-		if (this->sur != NULL && surface != NULL) {
+		if (this->sur != NULL && surface != NULL && this->sur != surface) {
 //			if (parent == NULL || (parent)->removeChildSurface(this)) {
+			if (owner) {
 				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 				sur = NULL;
-//			}
+			}
 		}
 
-		this->sur = (SDL_Surface*)surface;
+		this->owner = false;
+		this->sur   = (SDL_Surface*)surface;
 	}
 
 	bool SDLSurface::setParent(void* parentWindow) {
@@ -447,6 +454,7 @@ namespace mb {
 		if (sur == NULL && parent != NULL) {
 			sur = (SDL_Surface*)(parent->getContent());
 			if (sur == NULL) {
+				this->owner = true;
 				pthread_mutex_lock(&sMutex);
 				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
 
@@ -459,6 +467,9 @@ namespace mb {
 
 				((SDLWindow*)parent)->setRenderedSurface(sur);
 				pthread_mutex_unlock(&sMutex);
+
+			} else {
+				this->owner = false;
 			}
 		}
 	}
