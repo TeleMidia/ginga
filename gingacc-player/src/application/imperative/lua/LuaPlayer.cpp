@@ -807,9 +807,7 @@ void LuaPlayer::load ()
 		lua_error(this->L);
 		return;
 	}
-    if( lua_pcall(this->L, 0, 0, 0) != 0 ) { 	      // [ ]
-    	clog << "LUAPLAYER load ERROR:: " << lua_tostring(this->L, -1) << endl;
-    }
+        lua_call(this->L, 0, 0);
 }
 
 void LuaPlayer::run ()
