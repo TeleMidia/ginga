@@ -62,6 +62,7 @@ namespace core {
 namespace mb {
 	class CodeMap {
 		public:
+			static const int KEY_QUIT;
 			static const int KEY_NULL;
 			static const int KEY_0;
 			static const int KEY_1;

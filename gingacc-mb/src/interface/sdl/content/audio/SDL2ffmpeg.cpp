@@ -159,6 +159,7 @@ namespace mb {
 
 		clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
 
+		abortRequest = true;
 		hasPic = false;
 
 		pthread_mutex_lock(&aiMutex);
@@ -1705,7 +1706,7 @@ retry:
 		double pts;
 		int ret;
 
-		for (;;) {
+		while (!dec->abortRequest) {
 			AVPacket pkt;
 			while (vs->paused && !vs->videoq.abort_request) {
 				SDL_Delay(10);
@@ -3137,6 +3138,7 @@ the_end:
 				return !!SDL_UnlockMutex((SDL_mutex*)*mtx);
 
 			case AV_LOCK_DESTROY:
+				SDL_UnlockMutex((SDL_mutex*)*mtx);
 				SDL_DestroyMutex((SDL_mutex*)*mtx);
 				return 0;
 		}
