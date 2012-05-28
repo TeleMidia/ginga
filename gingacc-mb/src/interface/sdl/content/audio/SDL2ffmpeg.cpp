@@ -114,16 +114,16 @@ namespace mb {
 
 			memset(&spec, 0, sizeof(spec));
 			pthread_mutex_init(&aiMutex, NULL);
+
+			av_log_set_flags(AV_LOG_SKIP_REPEATED);
+
+			avcodec_register_all();
+		    av_register_all();
+		    avformat_network_init();
+		    avdevice_register_all();
+
+		    av_lockmgr_register(SDL2ffmpeg::lockmgr);
 		}
-
-		av_log_set_flags(AV_LOG_SKIP_REPEATED);
-
-		avcodec_register_all();
-	    av_register_all();
-	    avformat_network_init();
-	    avdevice_register_all();
-
-	    av_lockmgr_register(SDL2ffmpeg::lockmgr);
 
 		memset(&vPkt, 0, sizeof(vPkt));
 		memset(&flush_pkt, 0, sizeof(flush_pkt));
@@ -133,7 +133,7 @@ namespace mb {
 			av_strlcpy(vs->filename, filename, sizeof(vs->filename));
 
 			av_init_packet(&flush_pkt);
-		    flush_pkt.data = (uint8_t*)"FLUSH";
+		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
 		    read_init();
 
@@ -143,6 +143,10 @@ namespace mb {
 
 			vs->subpq_mutex = SDL_CreateMutex();
 			vs->subpq_cond  = SDL_CreateCond();
+
+		    packet_queue_init(&vs->videoq);
+		    packet_queue_init(&vs->audioq);
+		    packet_queue_init(&vs->subtitleq);
 
 			vs->av_sync_type = av_sync_type;
 
@@ -430,21 +434,19 @@ namespace mb {
 		status = ST_STOPPED;
 
 		if (vs->video_stream >= 0) {
-			vs->videoq.abort_request = 1;
-			SDL_CondSignal(vs->videoq.cond);
-			SDL_CondSignal(vs->pictq_cond);
-			SDL_CondSignal(vs->subpq_cond);
+			packet_queue_abort(&vs->videoq);
 		}
 
 		if (vs->audio_stream >= 0) {
-			vs->audioq.abort_request = 1;
-			SDL_CondSignal(vs->audioq.cond);
+			packet_queue_abort(&vs->audioq);
 		}
 
 		if (vs->subtitle_stream >= 0) {
-			vs->subtitleq.abort_request = 1;
-			SDL_CondSignal(vs->subtitleq.cond);
+			packet_queue_abort(&vs->subtitleq);
 		}
+
+		SDL_CondSignal(vs->pictq_cond);
+		SDL_CondSignal(vs->subpq_cond);
 
 /*		set<SDL2ffmpeg*>::iterator i;
 		pthread_mutex_lock(&aiMutex);
@@ -685,11 +687,10 @@ namespace mb {
 		return ctx;
 	}
 
-	int SDL2ffmpeg::packet_queue_put(PacketQueue *q, AVPacket *pkt) {
+	int SDL2ffmpeg::nts_packet_queue_put(PacketQueue *q, AVPacket *pkt) {
 		AVPacketList* pkt1;
 
-		/* duplicate the packet */
-		if (pkt != &flush_pkt && av_dup_packet(pkt) < 0) {
+		if (q->abort_request) {
 			return -1;
 		}
 
@@ -702,7 +703,6 @@ namespace mb {
 		pkt1->pkt  = *pkt;
 		pkt1->next = NULL;
 
-		SDL_LockMutex(q->mutex);
 		if (!q->last_pkt) {
 			q->first_pkt = pkt1;
 
@@ -717,8 +717,26 @@ namespace mb {
 		/* XXX: should duplicate packet data in DV case */
 		SDL_CondSignal(q->cond);
 
-		SDL_UnlockMutex(q->mutex);
 		return 0;
+	}
+
+	int SDL2ffmpeg::packet_queue_put(PacketQueue *q, AVPacket *pkt) {
+		int ret;
+
+		/* duplicate the packet */
+		if (pkt != &flush_pkt && av_dup_packet(pkt) < 0) {
+			return -1;
+		}
+
+		SDL_LockMutex(q->mutex);
+		ret = nts_packet_queue_put(q, pkt);
+		SDL_UnlockMutex(q->mutex);
+
+		if (pkt != &flush_pkt && ret < 0) {
+			av_free_packet(pkt);
+		}
+
+		return ret;
 	}
 
 	void SDL2ffmpeg::packet_queue_init(PacketQueue *q) {
@@ -727,7 +745,7 @@ namespace mb {
 		q->mutex = SDL_CreateMutex();
 		q->cond  = SDL_CreateCond();
 
-		packet_queue_put(q, &flush_pkt);
+		q->abort_request = 1;
 	}
 
 	void SDL2ffmpeg::packet_queue_flush(PacketQueue *q) {
@@ -750,7 +768,7 @@ namespace mb {
 		SDL_UnlockMutex(q->mutex);
 	}
 
-	void SDL2ffmpeg::packet_queue_end(PacketQueue *q) {
+	void SDL2ffmpeg::packet_queue_destroy(PacketQueue *q) {
 		packet_queue_flush(q);
 
 		SDL_DestroyMutex(q->mutex);
@@ -763,6 +781,13 @@ namespace mb {
 		q->abort_request = 1;
 		SDL_CondSignal(q->cond);
 
+		SDL_UnlockMutex(q->mutex);
+	}
+
+	void SDL2ffmpeg::packet_queue_start(PacketQueue *q) {
+		SDL_LockMutex(q->mutex);
+		q->abort_request = 0;
+		nts_packet_queue_put(q, &flush_pkt);
 		SDL_UnlockMutex(q->mutex);
 	}
 
@@ -1144,7 +1169,10 @@ namespace mb {
 		/* XXX: use a special url_shutdown call to abort parse cleanly */
 		abortRequest = 1;
 		SDL_WaitThread(vs->read_tid, NULL);
-		SDL_WaitThread(vs->refresh_tid, NULL);
+
+	    packet_queue_destroy(&vs->videoq);
+	    packet_queue_destroy(&vs->audioq);
+	    packet_queue_destroy(&vs->subtitleq);
 
 		/* free all pictures */
 		for (i = 0; i < VIDEO_PICTURE_QUEUE_SIZE; i++) {
@@ -1163,6 +1191,8 @@ namespace mb {
 		}
 
 		av_free(vs);
+
+		clog << "SDL2ffmpeg::stream_close all done" << endl;
 	}
 
 	/* display the current picture, if any */
@@ -1350,6 +1380,9 @@ retry:
 					goto retry;
 				}
 
+				if (vs->paused)
+					goto display;
+
 				/* compute nominal last_duration */
 				last_duration = vp->pts - vs->frame_last_pts;
 				if (last_duration > 0 && last_duration < 10.0) {
@@ -1461,9 +1494,13 @@ retry:
 					}
 				}
 
+display:
 				/* display picture */
 				dec->video_display();
-				dec->pictq_next_picture();
+
+				if (!vs->paused) {
+					dec->pictq_next_picture();
+				}
 			}
 		}
 
@@ -1538,7 +1575,7 @@ retry:
 				vp->width != vs->video_st->codec->width ||
 				vp->height != vs->video_st->codec->height) {
 
-			SDL_Event event;
+			//SDL_Event event;
 
 			vp->allocated  = 0;
 			vp->reallocate = 0;
@@ -1715,6 +1752,9 @@ retry:
 			ret = dec->get_video_frame(frame, &pts_int, &pkt);
 			pos = pkt.pos;
 			av_free_packet(&pkt);
+	        if (ret == 0) {
+	        	continue;
+	        }
 
 			if (ret < 0) {
 				goto the_end;
@@ -1740,6 +1780,7 @@ retry:
 			}
 		}
 the_end:
+		avcodec_flush_buffers(vs->video_st->codec);
 		av_free(frame);
 
 		clog << "SDL2ffmpeg::video_thread all done" << endl;
@@ -2038,9 +2079,10 @@ the_end:
 				/* if no pts, then compute it */
 				pts = vs->audio_clock;
 				*pts_ptr = pts;
-				vs->audio_clock += (double)data_size / (dec->channels *
-						dec->sample_rate * av_get_bytes_per_sample(
-								dec->sample_fmt));
+
+	            vs->audio_clock += (double)data_size / (dec->channels *
+	            		dec->sample_rate * av_get_bytes_per_sample(
+	            				dec->sample_fmt));
 
 				return resampled_data_size;
 			}
@@ -2062,6 +2104,7 @@ the_end:
 
 			if (pkt->data == flush_pkt.data) {
 				avcodec_flush_buffers(dec);
+				flush_complete = 0;
 			}
 
 			*pkt_temp = *pkt;
@@ -2533,6 +2576,7 @@ the_end:
 		}
 
 		if (avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			memset(&vs->audio_pkt_temp, 0, sizeof(vs->audio_pkt_temp));
 			env = SDL_getenv("SDL_AUDIO_CHANNELS");
 			if (env) {
 				wanted_channel_layout = av_get_default_channel_layout(
@@ -2692,20 +2736,20 @@ the_end:
 						SDL_AUDIO_BUFFER_SIZE / wantedSpec.freq;
 
 				memset(&vs->audio_pkt, 0, sizeof(vs->audio_pkt));
-				packet_queue_init(&vs->audioq);
+				packet_queue_start(&vs->audioq);
 				break;
 
 			case AVMEDIA_TYPE_VIDEO:
 				vs->video_stream = stream_index;
 				vs->video_st = ic->streams[stream_index];
 
-				packet_queue_init(&vs->videoq);
+				packet_queue_start(&vs->videoq);
 				break;
 
 			case AVMEDIA_TYPE_SUBTITLE:
 				vs->subtitle_stream = stream_index;
 				vs->subtitle_st = ic->streams[stream_index];
-				packet_queue_init(&vs->subtitleq);
+				packet_queue_start(&vs->subtitleq);
 				break;
 
 			default:
@@ -2728,12 +2772,12 @@ the_end:
 		switch (avctx->codec_type) {
 			case AVMEDIA_TYPE_AUDIO:
 				packet_queue_abort(&vs->audioq);
-				packet_queue_end(&vs->audioq);
+				packet_queue_flush(&vs->audioq);
+				av_free_packet(&vs->audio_pkt);
 				if (vs->swr_ctx) {
 					swr_free(&vs->swr_ctx);
 				}
 
-				av_free_packet(&vs->audio_pkt);
 				av_freep(&vs->audio_buf1);
 				vs->audio_buf = NULL;
 				av_freep(&vs->frame);
@@ -2759,7 +2803,7 @@ the_end:
 
 				SDL_WaitThread(vs->video_tid, NULL);
 
-				packet_queue_end(&vs->videoq);
+				packet_queue_flush(&vs->videoq);
 				break;
 
 			case AVMEDIA_TYPE_SUBTITLE:
@@ -2775,7 +2819,7 @@ the_end:
 
 				SDL_WaitThread(vs->subtitle_tid, NULL);
 
-				packet_queue_end(&vs->subtitleq);
+				packet_queue_flush(&vs->subtitleq);
 				break;
 
 			default:
@@ -2956,11 +3000,15 @@ the_end:
 			/* if the queue are full, no need to read more */
 			if (vs->audioq.size + vs->videoq.size + vs->subtitleq.size >
 				MAX_QUEUE_SIZE ||
-				((vs->audioq.size > MIN_AUDIOQ_SIZE || vs->audio_stream < 0) &&
+				((vs->audioq.nb_packets > MIN_FRAMES ||
+						vs->audio_stream < 0 ||
+						vs->audioq.abort_request) &&
 						(vs->videoq.nb_packets > MIN_FRAMES ||
-								vs->video_stream < 0) &&
+								vs->video_stream < 0 ||
+								vs->videoq.abort_request) &&
 						(vs->subtitleq.nb_packets > MIN_FRAMES ||
-								vs->subtitle_stream < 0))) {
+								vs->subtitle_stream < 0 ||
+								vs->subtitleq.abort_request))) {
 
 				/* wait 10 ms */
 				SDL_Delay(10);
