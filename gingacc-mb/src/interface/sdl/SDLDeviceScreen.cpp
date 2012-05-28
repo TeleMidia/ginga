@@ -230,13 +230,6 @@ namespace mb {
 		pthread_mutex_destroy(&cMutex);
 		pthread_cond_destroy(&cond);
 
-		pthread_mutex_lock(&sMutex);
-		i = sdlScreens.find(this);
-		if (i != sdlScreens.end()) {
-			sdlScreens.erase(i);
-		}
-		pthread_mutex_unlock(&sMutex);
-
 		pthread_mutex_lock(&wrMutex);
 		j = renderMap.find(id);
 		if (j != renderMap.end()) {
@@ -250,11 +243,39 @@ namespace mb {
 		}
 		pthread_mutex_unlock(&wrMutex);
 
+		if (im != NULL) {
+			im->release();
+			delete im;
+			im = NULL;
+		}
+
 		releaseScreen();
+
+		while (this->renderer != NULL) {
+			SystemCompat::uSleep(10000);
+		}
 
 		pthread_mutex_destroy(&winMutex);
 		pthread_mutex_destroy(&surMutex);
 		pthread_mutex_destroy(&cmpMutex);
+
+		pthread_mutex_lock(&sMutex);
+		i = sdlScreens.find(this);
+		if (i != sdlScreens.end()) {
+			sdlScreens.erase(i);
+		}
+
+		if (sdlScreens.empty()) {
+			hasRenderer = false;
+			sdlQuit();
+			pthread_mutex_unlock(&sMutex);
+			pthread_mutex_destroy(&sMutex);
+
+		} else {
+			pthread_mutex_unlock(&sMutex);
+		}
+
+		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
 	void SDLDeviceScreen::releaseScreen() {
@@ -910,6 +931,7 @@ namespace mb {
 
 	void SDLDeviceScreen::sdlQuit() {
 		SDL_Quit();
+		clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
 	}
 
 	void* SDLDeviceScreen::rendererT(void* ptr) {
@@ -1171,6 +1193,8 @@ namespace mb {
 		IDiscreteMediaProvider* dmp;
 		string strSym = "";
 
+		set<IDiscreteMediaProvider*>::iterator j;
+
 		set<ReleaseContainer*>* tmp;
 
 		pthread_mutex_lock(&s->rlMutex);
@@ -1191,6 +1215,13 @@ namespace mb {
 					dmp = dynamic_cast<IDiscreteMediaProvider*>((*i)->iDec);
 
 					if (dmp != NULL) {
+						pthread_mutex_lock(&s->dmpMutex);
+						j = s->dmpPool.find(dmp);
+						if (j != s->dmpPool.end()) {
+							s->dmpPool.erase(j);
+						}
+						pthread_mutex_unlock(&s->dmpMutex);
+
 						strSym = dmp->getLoadSymbol();
 						delete dmp;
 					}
@@ -1601,7 +1632,7 @@ namespace mb {
 		s->dmpPool.clear();
 		pthread_mutex_unlock(&s->dmpMutex);
 
-		l = dmpClone->begin();
+		/*l = dmpClone->begin();
 		while (l != dmpClone->end()) {
 			iDmp = *l;
 
@@ -1610,7 +1641,7 @@ namespace mb {
 			}
 			++l;
 		}
-		delete dmpClone;
+		delete dmpClone;*/
 	}
 
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {
@@ -1775,6 +1806,7 @@ namespace mb {
 
 		pthread_mutex_init(&ieMutex, NULL);
 
+		gingaToSDLCodeMap[CodeMap::KEY_QUIT]              = SDL_QUIT;
 		gingaToSDLCodeMap[CodeMap::KEY_NULL]              = SDLK_UNKNOWN;
 		gingaToSDLCodeMap[CodeMap::KEY_0]                 = SDLK_0;
 		gingaToSDLCodeMap[CodeMap::KEY_1]                 = SDLK_1;

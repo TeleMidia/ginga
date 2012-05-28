@@ -83,12 +83,12 @@ namespace mb {
 	}
 
 	InputManager::~InputManager() {
+		release();
+
 		if (ief != NULL) {
 			delete ief;
 			ief = NULL;
 		}
-
-		release();
 	}
 
 	void InputManager::initializeInputIntervalTime() {
@@ -139,11 +139,39 @@ namespace mb {
 
 	void InputManager::release() {
 		map<IInputEventListener*, set<int>*>::iterator i;
+		bool runDone = false;
 
-		running = false;
+		if (running) {
+			running = false;
+			while (!runDone) {
+				SystemCompat::uSleep(10000);
+				runDone = !(currentXAxis == 0 &&
+						currentYAxis == 0 &&
+						currentZAxis == 0 &&
+						maxX == 0 &&
+						maxY == 0);
+			}
+
+			IInputEvent* ie;
+			int mbKeyCode;
+
+			mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
+					myScreen, CodeMap::KEY_QUIT);
+
+			ie = LocalScreenManager::getInstance()->createInputEvent(
+					myScreen, NULL, mbKeyCode);
+
+			running = true;
+			dispatchEvent(ie);
+			running = false;
+
+			delete ie;
+		}
+
 		if (eventBuffer != NULL) {
 			eventBuffer->wakeUp();
 		}
+
 		lock();
 		notifying = true;
 
@@ -154,6 +182,7 @@ namespace mb {
 			}
 			++i;
 		}
+		eventListeners.clear();
 
 		pthread_mutex_lock(&actInpMutex);
 		actionsToInpListeners.clear();
@@ -687,6 +716,12 @@ namespace mb {
 			clog << "InputManager::run Warning! Can't receive events: ";
 			clog << "event buffer is NULL" << endl;
 		}
+
+		currentXAxis = 0;
+		currentYAxis = 0;
+		currentZAxis = 0;
+		maxX         = 0;
+		maxY         = 0;
 	}
 }
 }

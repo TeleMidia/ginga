@@ -55,6 +55,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+	const int CodeMap::KEY_QUIT              = -1;
 	const int CodeMap::KEY_NULL              = 1;
 	const int CodeMap::KEY_0                 = 2;
 	const int CodeMap::KEY_1                 = 3;
@@ -195,6 +196,7 @@ namespace mb {
 	CodeMap::CodeMap() {
 		map<string,int>::iterator i;
 
+		keyMap["QUIT"]         = KEY_QUIT;
 		keyMap["NO_CODE"]      = KEY_NULL;
 		keyMap["0"]            = KEY_0;
 		keyMap["1"]            = KEY_1;
