@@ -206,6 +206,7 @@ namespace player {
 			if (p != NULL && p->status == PLAY) {
 				AwesomiumHandler::loadUrl(p->awesome, p->mrl);
 				p->stopped();
+				running = false;
 
 			} else {
 				SystemCompat::uSleep(300000);
