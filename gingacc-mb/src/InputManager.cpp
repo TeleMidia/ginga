@@ -151,6 +151,11 @@ namespace mb {
 			return;
 		}
 
+		while (!runDone) {
+			SystemCompat::uSleep(10000);
+			runDone = (maxX == 0 && maxY == 0);
+		}
+
 		mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
 				myScreen, CodeMap::KEY_QUIT);
 
@@ -162,15 +167,6 @@ namespace mb {
 		running = false;
 
 		delete ie;
-
-		while (!runDone) {
-			SystemCompat::uSleep(10000);
-			runDone = (currentXAxis == 0 &&
-					currentYAxis == 0 &&
-					currentZAxis == 0 &&
-					maxX == 0 &&
-					maxY == 0);
-		}
 
 		lock();
 
@@ -728,6 +724,8 @@ namespace mb {
 		currentZAxis = 0;
 		maxX         = 0;
 		maxY         = 0;
+
+		cout << "InputManager::run all done" << endl;
 	}
 }
 }
