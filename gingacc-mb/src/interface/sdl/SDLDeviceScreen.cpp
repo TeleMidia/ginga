@@ -1171,7 +1171,7 @@ namespace mb {
 				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
 
 				if (elapsedTime < sleepTime) {
-					SystemCompat::uSleep(5000);
+					SystemCompat::uSleep(2000);
 
 					/*if (decRate == 0) {
 						SystemCompat::uSleep(sleepTime - elapsedTime);
