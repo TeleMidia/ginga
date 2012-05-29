@@ -2370,14 +2370,14 @@ the_end:
 			++i;
 		}
 
-		elapsedTime = av_gettime() - audio_cb_time;
-		sleepTime   = 1000000/30;
+		/*elapsedTime = av_gettime() - audio_cb_time;
+		sleepTime   = 1000000/30;*/
 
 		pthread_mutex_unlock(&aiMutex);
 
-		if (!hasTimeRefer && sleepTime > elapsedTime) {
+		/*if (!hasTimeRefer && sleepTime > elapsedTime) {
 			SystemCompat::uSleep(sleepTime - elapsedTime);
-		}
+		}*/
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
