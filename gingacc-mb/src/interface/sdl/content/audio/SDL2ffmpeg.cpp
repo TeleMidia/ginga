@@ -1137,15 +1137,20 @@ namespace mb {
 				uint8_t* pixels[AV_NUM_DATA_POINTERS];
 				int pitch[AV_NUM_DATA_POINTERS];
 
-				AVPicture pict;
-
 				SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
 
-				sws_scale(
-						vs->img_convert_ctx,
-						(const uint8_t* const*)vp->src_frame->data,
-						vp->src_frame->linesize,
-						0, vp->height, pixels, pitch);
+				if (vp->tex &&
+						vp->src_frame->data &&
+						vp->src_frame->linesize > 0 &&
+						vp->height > 0 &&
+						vs->img_convert_ctx) {
+
+					sws_scale(
+							vs->img_convert_ctx,
+							(const uint8_t* const*)vp->src_frame->data,
+							vp->src_frame->linesize,
+							0, vp->height, pixels, pitch);
+				}
 
 				SDL_UnlockTexture(vp->tex);
 				hasPic = false;
@@ -2365,14 +2370,14 @@ the_end:
 			++i;
 		}
 
-		/*elapsedTime = av_gettime() - audio_cb_time;
-		sleepTime   = 1000000/25;*/
+		elapsedTime = av_gettime() - audio_cb_time;
+		sleepTime   = 1000000/30;
 
 		pthread_mutex_unlock(&aiMutex);
 
-		/*if (!hasTimeRefer && sleepTime > elapsedTime) {
+		if (!hasTimeRefer && sleepTime > elapsedTime) {
 			SystemCompat::uSleep(sleepTime - elapsedTime);
-		}*/
+		}
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
@@ -2644,6 +2649,26 @@ the_end:
 				} else {
 					wantedSpec.size = spec.size;
 				}
+
+			} else {
+
+				wantedSpec.samples = spec.samples;
+
+				clog << "SDL2ffmpeg::stream_component_open (2nd audio src)";
+				clog << endl;
+				clog << "Desired format = '" << wantedSpec.format;
+				clog << "'" << endl;
+				clog << "Desired silence = '" << wantedSpec.silence;
+				clog << "'" << endl;
+				clog << "Desired samples = '" << wantedSpec.samples;
+				clog << "'" << endl;
+				clog << "Desired size = '" << wantedSpec.size;
+				clog << "'" << endl;
+				clog << "Desired channels = '" << (int)wantedSpec.channels;
+				clog << "'" << endl;
+				clog << "Desired frequency = '" << wantedSpec.freq;
+				clog << "'" << endl;
+				clog << endl;
 			}
 
 			vs->audio_main_buf_size[0] = 0;
