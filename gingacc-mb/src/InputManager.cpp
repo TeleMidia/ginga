@@ -165,7 +165,7 @@ namespace mb {
 
 		while (!runDone) {
 			SystemCompat::uSleep(10000);
-			runDone = !(currentXAxis == 0 &&
+			runDone = (currentXAxis == 0 &&
 					currentYAxis == 0 &&
 					currentZAxis == 0 &&
 					maxX == 0 &&
