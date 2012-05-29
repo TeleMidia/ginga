@@ -244,7 +244,6 @@ namespace mb {
 		pthread_mutex_unlock(&wrMutex);
 
 		if (im != NULL) {
-			im->release();
 			delete im;
 			im = NULL;
 		}
