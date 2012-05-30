@@ -618,7 +618,9 @@ namespace player {
 				while (aInfo->update) {
 					do {
 						update(aInfo, 50);
-					} while (awe_webview_is_loading_page(webView));
+
+					} while (awe_webview_is_loading_page(webView) &&
+							aInfo->update);
 
 					setFocus(aInfo);
 					if (awe_webview_is_dirty(webView)) {
@@ -649,6 +651,8 @@ namespace player {
 			}
 		}
 		pthread_mutex_unlock(&s_lMutex);
+
+		clog << "AwesomiumHandler::loadUrl all done";
 	}
 
 	void AwesomiumHandler::eventHandler(AwesomiumInfo* aInfo) {
@@ -885,13 +889,21 @@ namespace player {
 		awe_webcore_update();
 	}
 
-	void AwesomiumHandler::stopUpdate(AwesomiumHDR id) {
+	bool AwesomiumHandler::stopUpdate(AwesomiumHDR id) {
 		AwesomiumInfo* aInfo;
 
 		if (getAwesomeInfo(id, &aInfo)) {
-			aInfo->update = false;
-			aInfo->eventArrived();
+			if (aInfo->update) {
+				aInfo->update = false;
+				aInfo->eventArrived();
+
+				if (webView != NULL) {
+					return true;
+				}
+			}
 		}
+
+		return false;
 	}
 }
 }

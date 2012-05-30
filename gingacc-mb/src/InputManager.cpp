@@ -725,7 +725,7 @@ namespace mb {
 		maxX         = 0;
 		maxY         = 0;
 
-		cout << "InputManager::run all done" << endl;
+		clog << "InputManager::run all done" << endl;
 	}
 }
 }
