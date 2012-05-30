@@ -136,10 +136,11 @@ namespace player {
 	}
 
 	void AwesomiumPlayer::stop() {
-		AwesomiumHandler::stopUpdate(awesome);
 		Player::stop();
 
-		waitStop();
+		if (AwesomiumHandler::stopUpdate(awesome)) {
+			waitStop();
+		}
 	}
 
 	void AwesomiumPlayer::setPropertyValue(string name, string value) {
@@ -215,6 +216,7 @@ namespace player {
 			clog << "AwesomiumPlayer::_loadUrl" << endl;
 		}
 
+		clog << "AwesomiumPlayer::_loadUrl all done" << endl;
 		return (NULL);
 	}
 

@@ -178,7 +178,7 @@ namespace player {
 			static void update(AwesomiumInfo* aInfo, double value);
 
 		public:
-			static void stopUpdate(AwesomiumHDR id);
+			static bool stopUpdate(AwesomiumHDR id);
 	};
 }
 }
