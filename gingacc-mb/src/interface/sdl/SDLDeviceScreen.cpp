@@ -2263,12 +2263,17 @@ namespace mb {
 
 	    	/* window rendering */
 	    	if (texture != NULL) {
+	    		void* pixels;
+	    		int tpitch[3];
+
+	    		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
 	    		drawing = true;
 	    		if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
 	    	        clog << "SDLDeviceScreen::drawWindow Warning! ";
 	    	        clog << "can't perform render copy " << SDL_GetError();
 	    	        clog << endl;
 	    		}
+	    		SDL_UnlockTexture(texture);
 	    	}
 
 	    	/* window border */
