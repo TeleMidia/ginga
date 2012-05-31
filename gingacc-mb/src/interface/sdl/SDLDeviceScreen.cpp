@@ -1576,77 +1576,84 @@ namespace mb {
 		clog << endl;
 
 		//Releasing remaining Window objects in Window Pool
-		pthread_mutex_lock(&s->winMutex);
-		winClone = new set<IWindow*>(s->windowPool);
-		s->windowPool.clear();
-		pthread_mutex_unlock(&s->winMutex);
+		if (!s->windowPool.empty()) {
+			pthread_mutex_lock(&s->winMutex);
+			winClone = new set<IWindow*>(s->windowPool);
+			s->windowPool.clear();
+			pthread_mutex_unlock(&s->winMutex);
 
-		i = winClone->begin();
-		while (i != winClone->end()) {
-			iWin = (*i);
-			if (iWin != NULL) {
-				delete iWin;
+			i = winClone->begin();
+			while (i != winClone->end()) {
+				iWin = (*i);
+				if (iWin != NULL) {
+					delete iWin;
+				}
+				++i;
 			}
-			++i;
+			delete winClone;
 		}
-		delete winClone;
 
 		//Releasing remaining Surface objects in Surface Pool
-		pthread_mutex_lock(&s->surMutex);
-		surClone = new set<ISurface*>(s->surfacePool);
-		s->surfacePool.clear();
-		pthread_mutex_unlock(&s->surMutex);
+		if (!s->surfacePool.empty()) {
+			pthread_mutex_lock(&s->surMutex);
+			surClone = new set<ISurface*>(s->surfacePool);
+			s->surfacePool.clear();
+			pthread_mutex_unlock(&s->surMutex);
 
-		j = surClone->begin();
-		while (j != surClone->end()) {
-			iSur = (*j);
-			if (iSur != NULL) {
-				delete iSur;
+			j = surClone->begin();
+			while (j != surClone->end()) {
+				iSur = (*j);
+				if (iSur != NULL) {
+					delete iSur;
+				}
+				++j;
 			}
-			++j;
+			delete surClone;
 		}
-		delete surClone;
 
 		//Releasing remaining CMP objects in CMP Pool
-		pthread_mutex_lock(&s->cmpMutex);
-		cmpClone = new set<IContinuousMediaProvider*>(s->cmpPool);
-		s->cmpPool.clear();
-		pthread_mutex_unlock(&s->cmpMutex);
+		if (!s->cmpPool.empty()) {
+			pthread_mutex_lock(&s->cmpMutex);
+			cmpClone = new set<IContinuousMediaProvider*>(s->cmpPool);
+			s->cmpPool.clear();
+			pthread_mutex_unlock(&s->cmpMutex);
 
-		k = cmpClone->begin();
-		while (k != cmpClone->end()) {
-			iCmp = (*k);
+			k = cmpClone->begin();
+			while (k != cmpClone->end()) {
+				iCmp = (*k);
 
-			if (iCmp != NULL) {
-				iCmp->stop();
-				delete iCmp;
+				if (iCmp != NULL) {
+					iCmp->stop();
+					delete iCmp;
+				}
+				++k;
 			}
-			++k;
+			delete cmpClone;
 		}
-		delete cmpClone;
 
 		//Releasing remaining DMP objects in DMP Pool
-		pthread_mutex_lock(&s->dmpMutex);
-		dmpClone = new set<IDiscreteMediaProvider*>(s->dmpPool);
-		s->dmpPool.clear();
-		pthread_mutex_unlock(&s->dmpMutex);
+		if (!s->dmpPool.empty()) {
+			pthread_mutex_lock(&s->dmpMutex);
+			dmpClone = new set<IDiscreteMediaProvider*>(s->dmpPool);
+			s->dmpPool.clear();
+			pthread_mutex_unlock(&s->dmpMutex);
 
-		/*l = dmpClone->begin();
-		while (l != dmpClone->end()) {
-			iDmp = *l;
+			/*l = dmpClone->begin();
+			while (l != dmpClone->end()) {
+				iDmp = *l;
 
-			if (iDmp != NULL) {
-				delete iDmp;
+				if (iDmp != NULL) {
+					delete iDmp;
+				}
+				++l;
 			}
-			++l;
+			delete dmpClone;*/
 		}
-		delete dmpClone;*/
 	}
 
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {
 		clearScreen(s);
 
-		pthread_mutex_lock(&s->winMutex);
 		if (s->uEmbedId == NULL) {
 			if (s->screen != NULL) {
 				SDL_HideWindow(s->screen);
@@ -1662,7 +1669,6 @@ namespace mb {
 				s->screen = NULL;
 			}
 		}
-		pthread_mutex_unlock(&s->winMutex);
 	}
 
 	void SDLDeviceScreen::releaseAll() {
