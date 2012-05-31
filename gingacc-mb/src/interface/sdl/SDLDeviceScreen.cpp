@@ -258,7 +258,7 @@ namespace mb {
 		pthread_mutex_destroy(&surMutex);
 		pthread_mutex_destroy(&cmpMutex);
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		i = sdlScreens.find(this);
 		if (i != sdlScreens.end()) {
 			sdlScreens.erase(i);
@@ -267,37 +267,37 @@ namespace mb {
 		if (sdlScreens.empty()) {
 			hasRenderer = false;
 			sdlQuit();
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 			pthread_mutex_destroy(&sMutex);
 
 		} else {
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 		}
 
 		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
 	void SDLDeviceScreen::releaseScreen() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_RELEASE;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::releaseMB() {
 		int errCount = 0;
 		int numSDL;
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		numSDL = sdlScreens.size();
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 
 		while (numSDL > 1) {
 			SystemCompat::uSleep(100000);
 			errCount++;
 
-			pthread_mutex_lock(&sMutex);
+			lockScreens();
 			numSDL = sdlScreens.size();
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 
 			if (errCount > 5 || numSDL <= 1) {
 				break;
@@ -317,9 +317,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::clearWidgetPools() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_CLEAR;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	string SDLDeviceScreen::getScreenName() {
@@ -475,9 +475,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::setInitScreenFlag() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_INIT;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::refreshScreen() {
@@ -948,7 +948,7 @@ namespace mb {
 			elapsedTime = getCurrentTimeMillis();
 
 			while (SDL_PollEvent(&event)) {
-		    	pthread_mutex_lock(&sMutex);
+		    	lockScreens();
 				if (event.type == SDL_KEYDOWN) {
 					if (event.key.keysym.sym == SDLK_LSHIFT ||
 							event.key.keysym.sym == SDLK_RSHIFT) {
@@ -1091,7 +1091,7 @@ namespace mb {
 			    	}
 
 			    	if (event.type == SDL_QUIT) {
-						pthread_mutex_unlock(&sMutex);
+						unlockScreens();
 						/*
 						 * TODO:
 						 *      1) send a notification to NCL player
@@ -1114,10 +1114,10 @@ namespace mb {
 					}
 					++i;
 				}
-				pthread_mutex_unlock(&sMutex);
+				unlockScreens();
 	    	}
 
-			pthread_mutex_lock(&sMutex);
+			lockScreens();
 			i = sdlScreens.begin();
 			while (i != sdlScreens.end()) {
 				s = i->first;
@@ -1161,7 +1161,7 @@ namespace mb {
 						break;
 				}
 			}
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 
 			if (hasERC) {
 				break;
@@ -1668,14 +1668,14 @@ namespace mb {
 	void SDLDeviceScreen::releaseAll() {
 		map<SDLDeviceScreen*, short>::iterator i;
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		i = sdlScreens.begin();
 		while (i != sdlScreens.begin()) {
 			releaseScreen(i->first);
 			++i;
 		}
 		sdlScreens.clear();
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::initCMP(
@@ -2427,6 +2427,18 @@ namespace mb {
 				*amask = 0x00000000;
 #endif
 				break;
+		}
+	}
+
+	void SDLDeviceScreen::lockScreens() {
+		if (hasRenderer) {
+			pthread_mutex_lock(&sMutex);
+		}
+	}
+
+	void SDLDeviceScreen::unlockScreens() {
+		if (hasRenderer) {
+			pthread_mutex_unlock(&sMutex);
 		}
 	}
 }
