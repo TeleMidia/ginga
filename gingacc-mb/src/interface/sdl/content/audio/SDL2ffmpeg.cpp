@@ -71,7 +71,6 @@ namespace mb {
 	short SDL2ffmpeg::refCount = 0;
 	set<SDL2ffmpeg*> SDL2ffmpeg::aInstances;
 	bool SDL2ffmpeg::init = false;
-	pthread_mutex_t SDL2ffmpeg::swsMutex;
 	pthread_mutex_t SDL2ffmpeg::aiMutex;
 
 	SDL2ffmpeg::SDL2ffmpeg(
@@ -114,7 +113,6 @@ namespace mb {
 			init = true;
 
 			memset(&spec, 0, sizeof(spec));
-			pthread_mutex_init(&swsMutex, NULL);
 			pthread_mutex_init(&aiMutex, NULL);
 
 			av_log_set_flags(AV_LOG_SKIP_REPEATED);
@@ -216,7 +214,6 @@ namespace mb {
 
 		if (refCount == 0) {
 			init = false;
-			pthread_mutex_destroy(&swsMutex);
 			pthread_mutex_destroy(&aiMutex);
 
 			av_lockmgr_register(NULL);
@@ -1153,14 +1150,11 @@ namespace mb {
 						vp->height > 0 &&
 						vs->img_convert_ctx) {
 
-					pthread_mutex_lock(&swsMutex);
 					sws_scale(
 							vs->img_convert_ctx,
 							(const uint8_t* const*)vp->src_frame->data,
 							vp->src_frame->linesize,
 							0, vp->height, pixels, pitch);
-
-					pthread_mutex_unlock(&swsMutex);
 				}
 
 				sws_freeContext(vs->img_convert_ctx);
