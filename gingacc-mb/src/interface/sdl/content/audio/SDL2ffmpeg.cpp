@@ -71,6 +71,7 @@ namespace mb {
 	short SDL2ffmpeg::refCount = 0;
 	set<SDL2ffmpeg*> SDL2ffmpeg::aInstances;
 	bool SDL2ffmpeg::init = false;
+	pthread_mutex_t SDL2ffmpeg::swsMutex;
 	pthread_mutex_t SDL2ffmpeg::aiMutex;
 
 	SDL2ffmpeg::SDL2ffmpeg(
@@ -113,6 +114,7 @@ namespace mb {
 			init = true;
 
 			memset(&spec, 0, sizeof(spec));
+			pthread_mutex_init(&swsMutex, NULL);
 			pthread_mutex_init(&aiMutex, NULL);
 
 			av_log_set_flags(AV_LOG_SKIP_REPEATED);
@@ -214,6 +216,7 @@ namespace mb {
 
 		if (refCount == 0) {
 			init = false;
+			pthread_mutex_destroy(&swsMutex);
 			pthread_mutex_destroy(&aiMutex);
 
 			av_lockmgr_register(NULL);
@@ -1117,40 +1120,51 @@ namespace mb {
 			rect.w = FFMAX(width,  1);
 			rect.h = FFMAX(height, 1);
 
-			if (vs->img_convert_ctx == NULL) {
-				vs->img_convert_ctx = createContext(
-						vp->width,
-						vp->height,
-						vp->pix_fmt,
-						vp->width,
-						vp->height,
-						PIX_FMT_RGB24);
-			}
-
-			if (vs->img_convert_ctx == NULL) {
-				clog << "SDL2ffmpeg::video_image_display Warning! ";
-				clog << "Can't initialize the conversion context" << endl;
-				return;
-			}
-
 			if (vp->src_frame) {
 				uint8_t* pixels[AV_NUM_DATA_POINTERS];
 				int pitch[AV_NUM_DATA_POINTERS];
+		        Uint32 format;
+		        int textureAccess, w, h;
 
-				SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
+		        SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
+		        SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
 
-				if (vp->tex &&
+				if (vs->img_convert_ctx == NULL) {
+					vs->img_convert_ctx = createContext(
+							vp->width,
+							vp->height,
+							vp->pix_fmt,
+							w,
+							h,
+							PIX_FMT_RGB24);
+				}
+
+				if (vs->img_convert_ctx == NULL) {
+					clog << "SDL2ffmpeg::video_image_display Warning! ";
+					clog << "Can't initialize the conversion context" << endl;
+					SDL_UnlockTexture(vp->tex);
+					return;
+				}
+
+				if (!abortRequest &&
+						vp->tex &&
 						vp->src_frame->data &&
 						vp->src_frame->linesize > 0 &&
 						vp->height > 0 &&
 						vs->img_convert_ctx) {
 
+					pthread_mutex_lock(&swsMutex);
 					sws_scale(
 							vs->img_convert_ctx,
 							(const uint8_t* const*)vp->src_frame->data,
 							vp->src_frame->linesize,
 							0, vp->height, pixels, pitch);
+
+					pthread_mutex_unlock(&swsMutex);
 				}
+
+				sws_freeContext(vs->img_convert_ctx);
+				vs->img_convert_ctx = NULL;
 
 				SDL_UnlockTexture(vp->tex);
 				hasPic = false;
@@ -1193,6 +1207,7 @@ namespace mb {
 
 		if (vs->img_convert_ctx) {
 			sws_freeContext(vs->img_convert_ctx);
+			vs->img_convert_ctx = NULL;
 		}
 
 		av_free(vs);

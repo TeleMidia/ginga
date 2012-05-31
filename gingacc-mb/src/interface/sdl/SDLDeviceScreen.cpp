@@ -2376,8 +2376,8 @@ namespace mb {
         Uint32 rmask, gmask, bmask, amask, format;
         int textureAccess, w, h;
 
+        SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
         SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
-		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
 		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 
 		uSur = SDL_CreateRGBSurfaceFrom(

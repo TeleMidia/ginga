@@ -382,6 +382,8 @@ namespace mb {
 		static bool init;
 		static short refCount;
 
+		static pthread_mutex_t swsMutex;
+
 		static pthread_mutex_t aiMutex;
 		static set<SDL2ffmpeg*> aInstances;
 
