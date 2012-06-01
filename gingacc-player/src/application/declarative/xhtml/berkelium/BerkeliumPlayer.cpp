@@ -51,9 +51,6 @@ http://www.telemidia.puc-rio.br
 
 #include "player/PlayersComponentSupport.h"
 
-#include <glib.h>
-#include <glib-object.h>
-
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -133,9 +130,14 @@ namespace player {
 
 			context = Context::create();
 			std::auto_ptr<Window> bwin(Window::create(context));
+			wstring str_css(L"::-webkit-scrollbar { display: none; }");
 
 			bInfo->setContext(context);
 			bInfo->getSize(&w, &h);
+
+			bwin->insertCSS(
+					WideString::point_to(str_css.c_str()),
+					WideString::empty());
 
 			bwin->resize(w, h);
 			bwin->setDelegate(bInfo);
@@ -194,13 +196,14 @@ namespace player {
 		pthread_mutex_unlock(&smutex);
 	}
 
-	BerkeliumPlayer::BerkeliumPlayer(string mrl) : Player(mrl) {
+	BerkeliumPlayer::BerkeliumPlayer(
+			GingaScreenID myScreen, string mrl) : Player(myScreen, mrl) {
 		clog << "BerkeliumPlayer::BerkeliumPlayer '" << mrl << "'" << endl;
 
 		pthread_t tId;
 		pthread_attr_t tattr;
 
-		bInfo = new BerkeliumHandler();
+		bInfo = new BerkeliumHandler(myScreen);
 
 		bInfo->setUrl(mrl);
 
@@ -341,35 +344,32 @@ namespace player {
 
 	bool BerkeliumPlayer::setKeyHandler(bool isHandler) {
 		clog << "BerkeliumPlayer::setKeyHandler '" << mrl << "'" << endl;
-/*		if (isHandler && notifyContentUpdate) {
-			im->addInputEventListener(this, NULL);
-
-		} else {
-			im->removeInputEventListener(this);
+		if (bInfo != NULL) {
+			bInfo->setKeyHandler(isHandler);
 		}
-*/
+
 		//browserSetFocusHandler((int)isHandler, mBrowser);
 		return isHandler;
 	}
 
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
-		if (!Berkelium::init(FileString::empty())) {
+		Berkelium::init(Berkelium::FileString::empty());
+		/*if (!Berkelium::init(Berkelium::FileString::empty())) {
 			clog << "BerkeliumPlayer::mainLoop ";
 			clog << "Failed to initialize berkelium!" << endl;
 			return NULL;
-		}
+		}*/
 
 		clog << "BerkeliumPlayer::mainLoop" << endl;
+		struct timeval tv;
 
+		tv.tv_sec  = 0;
+		tv.tv_usec = 1000;
 		while (berkeliumFactory.isRunning()) {
 			if (berkeliumFactory.hasBrowser()) {
 				Berkelium::update();
 			}
 
-			struct timeval tv;
-
-			tv.tv_sec = 0;
-			tv.tv_usec = 1000;
 			::select(0, NULL, NULL, NULL, &tv);
 	    }
 
@@ -396,10 +396,11 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createBerkeliumPlayer(const char* mrl, bool hasVisual) {
+		createBerkeliumPlayer(
+				GingaScreenID screenId, const char* mrl, bool hasVisual) {
 
 	return new ::br::pucrio::telemidia::ginga::core::player::BerkeliumPlayer(
-			(string)mrl);
+			screenId, (string)mrl);
 }
 
 extern "C" void destroyBerkeliumPlayer(
