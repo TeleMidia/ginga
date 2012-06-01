@@ -258,7 +258,7 @@ namespace mb {
 		pthread_mutex_destroy(&surMutex);
 		pthread_mutex_destroy(&cmpMutex);
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		i = sdlScreens.find(this);
 		if (i != sdlScreens.end()) {
 			sdlScreens.erase(i);
@@ -267,37 +267,37 @@ namespace mb {
 		if (sdlScreens.empty()) {
 			hasRenderer = false;
 			sdlQuit();
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 			pthread_mutex_destroy(&sMutex);
 
 		} else {
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 		}
 
 		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
 	void SDLDeviceScreen::releaseScreen() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_RELEASE;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::releaseMB() {
 		int errCount = 0;
 		int numSDL;
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		numSDL = sdlScreens.size();
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 
 		while (numSDL > 1) {
 			SystemCompat::uSleep(100000);
 			errCount++;
 
-			pthread_mutex_lock(&sMutex);
+			lockScreens();
 			numSDL = sdlScreens.size();
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 
 			if (errCount > 5 || numSDL <= 1) {
 				break;
@@ -317,9 +317,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::clearWidgetPools() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_CLEAR;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	string SDLDeviceScreen::getScreenName() {
@@ -475,9 +475,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::setInitScreenFlag() {
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		sdlScreens[this] = SPT_INIT;
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::refreshScreen() {
@@ -948,7 +948,7 @@ namespace mb {
 			elapsedTime = getCurrentTimeMillis();
 
 			while (SDL_PollEvent(&event)) {
-		    	pthread_mutex_lock(&sMutex);
+		    	lockScreens();
 				if (event.type == SDL_KEYDOWN) {
 					if (event.key.keysym.sym == SDLK_LSHIFT ||
 							event.key.keysym.sym == SDLK_RSHIFT) {
@@ -1091,7 +1091,7 @@ namespace mb {
 			    	}
 
 			    	if (event.type == SDL_QUIT) {
-						pthread_mutex_unlock(&sMutex);
+						unlockScreens();
 						/*
 						 * TODO:
 						 *      1) send a notification to NCL player
@@ -1114,10 +1114,10 @@ namespace mb {
 					}
 					++i;
 				}
-				pthread_mutex_unlock(&sMutex);
+				unlockScreens();
 	    	}
 
-			pthread_mutex_lock(&sMutex);
+			lockScreens();
 			i = sdlScreens.begin();
 			while (i != sdlScreens.end()) {
 				s = i->first;
@@ -1161,7 +1161,7 @@ namespace mb {
 						break;
 				}
 			}
-			pthread_mutex_unlock(&sMutex);
+			unlockScreens();
 
 			if (hasERC) {
 				break;
@@ -1576,77 +1576,84 @@ namespace mb {
 		clog << endl;
 
 		//Releasing remaining Window objects in Window Pool
-		pthread_mutex_lock(&s->winMutex);
-		winClone = new set<IWindow*>(s->windowPool);
-		s->windowPool.clear();
-		pthread_mutex_unlock(&s->winMutex);
+		if (!s->windowPool.empty()) {
+			pthread_mutex_lock(&s->winMutex);
+			winClone = new set<IWindow*>(s->windowPool);
+			s->windowPool.clear();
+			pthread_mutex_unlock(&s->winMutex);
 
-		i = winClone->begin();
-		while (i != winClone->end()) {
-			iWin = (*i);
-			if (iWin != NULL) {
-				delete iWin;
+			i = winClone->begin();
+			while (i != winClone->end()) {
+				iWin = (*i);
+				if (iWin != NULL) {
+					delete iWin;
+				}
+				++i;
 			}
-			++i;
+			delete winClone;
 		}
-		delete winClone;
 
 		//Releasing remaining Surface objects in Surface Pool
-		pthread_mutex_lock(&s->surMutex);
-		surClone = new set<ISurface*>(s->surfacePool);
-		s->surfacePool.clear();
-		pthread_mutex_unlock(&s->surMutex);
+		if (!s->surfacePool.empty()) {
+			pthread_mutex_lock(&s->surMutex);
+			surClone = new set<ISurface*>(s->surfacePool);
+			s->surfacePool.clear();
+			pthread_mutex_unlock(&s->surMutex);
 
-		j = surClone->begin();
-		while (j != surClone->end()) {
-			iSur = (*j);
-			if (iSur != NULL) {
-				delete iSur;
+			j = surClone->begin();
+			while (j != surClone->end()) {
+				iSur = (*j);
+				if (iSur != NULL) {
+					delete iSur;
+				}
+				++j;
 			}
-			++j;
+			delete surClone;
 		}
-		delete surClone;
 
 		//Releasing remaining CMP objects in CMP Pool
-		pthread_mutex_lock(&s->cmpMutex);
-		cmpClone = new set<IContinuousMediaProvider*>(s->cmpPool);
-		s->cmpPool.clear();
-		pthread_mutex_unlock(&s->cmpMutex);
+		if (!s->cmpPool.empty()) {
+			pthread_mutex_lock(&s->cmpMutex);
+			cmpClone = new set<IContinuousMediaProvider*>(s->cmpPool);
+			s->cmpPool.clear();
+			pthread_mutex_unlock(&s->cmpMutex);
 
-		k = cmpClone->begin();
-		while (k != cmpClone->end()) {
-			iCmp = (*k);
+			k = cmpClone->begin();
+			while (k != cmpClone->end()) {
+				iCmp = (*k);
 
-			if (iCmp != NULL) {
-				iCmp->stop();
-				delete iCmp;
+				if (iCmp != NULL) {
+					iCmp->stop();
+					delete iCmp;
+				}
+				++k;
 			}
-			++k;
+			delete cmpClone;
 		}
-		delete cmpClone;
 
 		//Releasing remaining DMP objects in DMP Pool
-		pthread_mutex_lock(&s->dmpMutex);
-		dmpClone = new set<IDiscreteMediaProvider*>(s->dmpPool);
-		s->dmpPool.clear();
-		pthread_mutex_unlock(&s->dmpMutex);
+		if (!s->dmpPool.empty()) {
+			pthread_mutex_lock(&s->dmpMutex);
+			dmpClone = new set<IDiscreteMediaProvider*>(s->dmpPool);
+			s->dmpPool.clear();
+			pthread_mutex_unlock(&s->dmpMutex);
 
-		/*l = dmpClone->begin();
-		while (l != dmpClone->end()) {
-			iDmp = *l;
+			/*l = dmpClone->begin();
+			while (l != dmpClone->end()) {
+				iDmp = *l;
 
-			if (iDmp != NULL) {
-				delete iDmp;
+				if (iDmp != NULL) {
+					delete iDmp;
+				}
+				++l;
 			}
-			++l;
+			delete dmpClone;*/
 		}
-		delete dmpClone;*/
 	}
 
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {
 		clearScreen(s);
 
-		pthread_mutex_lock(&s->winMutex);
 		if (s->uEmbedId == NULL) {
 			if (s->screen != NULL) {
 				SDL_HideWindow(s->screen);
@@ -1662,20 +1669,19 @@ namespace mb {
 				s->screen = NULL;
 			}
 		}
-		pthread_mutex_unlock(&s->winMutex);
 	}
 
 	void SDLDeviceScreen::releaseAll() {
 		map<SDLDeviceScreen*, short>::iterator i;
 
-		pthread_mutex_lock(&sMutex);
+		lockScreens();
 		i = sdlScreens.begin();
 		while (i != sdlScreens.begin()) {
 			releaseScreen(i->first);
 			++i;
 		}
 		sdlScreens.clear();
-		pthread_mutex_unlock(&sMutex);
+		unlockScreens();
 	}
 
 	void SDLDeviceScreen::initCMP(
@@ -2376,8 +2382,8 @@ namespace mb {
         Uint32 rmask, gmask, bmask, amask, format;
         int textureAccess, w, h;
 
+        SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
         SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
-		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
 		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 
 		uSur = SDL_CreateRGBSurfaceFrom(
@@ -2427,6 +2433,18 @@ namespace mb {
 				*amask = 0x00000000;
 #endif
 				break;
+		}
+	}
+
+	void SDLDeviceScreen::lockScreens() {
+		if (hasRenderer) {
+			pthread_mutex_lock(&sMutex);
+		}
+	}
+
+	void SDLDeviceScreen::unlockScreens() {
+		if (hasRenderer) {
+			pthread_mutex_unlock(&sMutex);
 		}
 	}
 }
