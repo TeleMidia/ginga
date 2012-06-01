@@ -52,21 +52,13 @@ http://www.telemidia.puc-rio.br
 #include "player/BerkeliumHandler.h"
 #include "player/PlayersComponentSupport.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <directfb.h>
-#ifdef __cplusplus
-}
-#endif
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	BerkeliumHandler::BerkeliumHandler() {
+	BerkeliumHandler::BerkeliumHandler(GingaScreenID myScreen) {
 #if HAVE_COMPSUPPORT
 		dm = ((LocalScreenManagerCreator*)(
 				cm->getObject("LocalScreenManager")))();
@@ -75,11 +67,10 @@ namespace player {
 		dm = LocalScreenManager::getInstance();
 #endif
 
-		if (im == NULL) {
-			im = dm->getInputManager(0);
-		}
+		this->myScreen = myScreen;
 
-		surface = dm->createSurface(0);
+		im = dm->getInputManager(myScreen);
+		surface = dm->createSurface(myScreen);
 
 		w = 0;
 		h = 0;
@@ -101,8 +92,26 @@ namespace player {
 			context = NULL;
 		}
 
-		im->removeInputEventListener(this);
+		if (im != NULL) {
+			im->removeInputEventListener(this);
+		}
 		//Caution: Surface is deleted by Player
+	}
+
+	void BerkeliumHandler::setKeyHandler(bool handler) {
+		if (im != NULL && isValid) {
+			if (handler) {
+				bWindow->focus();
+
+				im->addInputEventListener(this, NULL);
+				im->addMotionEventListener(this);
+
+			} else {
+				bWindow->unfocus();
+				im->removeInputEventListener(this);
+				im->removeMotionEventListener(this);
+			}
+		}
 	}
 
 	void BerkeliumHandler::setContext(Context* context) {
@@ -142,7 +151,23 @@ namespace player {
 
 	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
 		clog << "BerkeliumHandler::userEventReceived " << endl;
+
 		//browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
+
+		if (isValid && userEvent->isButtonPressType()) {
+			bWindow->mouseButton(1, true);
+		}
+
+		return true;
+	}
+
+	bool BerkeliumHandler::motionEventReceived(int x, int y, int z) {
+		clog << "BerkeliumHandler::motionEventReceived " << endl;
+
+		if (isValid) {
+			bWindow->mouseMoved(x, y);
+		}
+
 		return true;
 	}
 
@@ -150,20 +175,30 @@ namespace player {
         std::string x = "hi";
         x+= newURL;
         mURL = newURL.get<std::string>();
-        clog << "*** onAddressChanged to " << newURL << endl;
+        clog << "BerkeliumHandler::onAddressChanged to " << newURL << endl;
 	}
 
 	void BerkeliumHandler::onStartLoading(Window *win, URLString newURL) {
-		clog << "*** Start loading " << newURL << " from " << mURL << endl;
+		clog << "BerkeliumHandler::Start loading " << newURL << " from " << mURL << endl;
+
+		wstring str_css(L"::-webkit-scrollbar { display: none; }");
+
+		win->insertCSS(
+				WideString::point_to(str_css.c_str()),
+				WideString::empty());
 	}
 
 	void BerkeliumHandler::onLoadingStateChanged(Window *win, bool isLoading) {
-		clog << "*** Loading state changed ";
+		clog << "BerkeliumHandler::Loading state changed ";
 		clog << mURL << " to " << (isLoading?"loading":"stopped") << endl;
 	}
 
 	void BerkeliumHandler::onLoad(Window *win) {
+		wstring str_css(L"::-webkit-scrollbar { display: none; }");
 
+		win->insertCSS(
+				WideString::point_to(str_css.c_str()),
+				WideString::empty());
 	}
 
 	void BerkeliumHandler::onLoadError(Window *win, WideString error) {
@@ -172,11 +207,11 @@ namespace player {
 	}
 
 	void BerkeliumHandler::onResponsive(Window *win) {
-		clog << "*** onResponsive " << mURL << endl;
+		clog << "BerkeliumHandler::onResponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onUnresponsive(Window *win) {
-		clog << "*** onUnresponsive " << mURL << endl;
+		clog << "BerkeliumHandler::onUnresponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onPaint(
@@ -189,21 +224,16 @@ namespace player {
 			int dy,
 			const Rect &scroll_rect) {
 
-		/*string str;
+		string str;
 		static int call_count = 0;
 		IWindow* win;
 
-		IDirectFB* dfb = NULL;
-		IDirectFBImageProvider* provider;
-		IDirectFBSurface* destination;
-		DFBSurfaceDescription sDesc;
-
-		clog << "*** onPaint " << mURL << endl;
+		clog << "BerkeliumHandler::onPaint " << mURL << endl;
 
 		if (bitmap_rect.left() != 0 || bitmap_rect.top() != 0 ||
 				bitmap_rect.right() != w || bitmap_rect.bottom() != h) {
 
-			clog << "*** onPaint '" << mURL << "' not full" << endl;
+			clog << "BerkeliumHandler::onPaint '" << mURL << "' not full" << endl;
 			return;
 		}
 
@@ -238,35 +268,22 @@ namespace player {
 
 		win = (IWindow*)(surface->getParent());
 		if (win != NULL) {
-			surface->setParent(NULL);
+			win->renderImgFile(str);
+			clog << "BerkeliumHandler::onPaint rendered" << endl;
 		}
 
-		dfb = (IDirectFB*)(dm->getGfxRoot());
-		dfb->CreateImageProvider(dfb, str.c_str(), &provider);
-
-		provider->GetSurfaceDescription(provider, &sDesc);
-		destination = (IDirectFBSurface*)(dm->createSurface(&sDesc));
-
-		provider->RenderTo(provider, destination, NULL);
-		provider->Release(provider);
-
-		surface->setSurfaceContent(destination);
-
-		if (win != NULL) {
-			surface->setParent(win);
-			win->renderFrom(surface);
-			clog << "BerkeliumHandler::onPaint rendered" << endl;
-		}*/
+		clog << "BerkeliumHandler::onPaint all done" << endl;
 	}
 
 	void BerkeliumHandler::onCrashed(Window *win) {
-		clog << "*** onCrashed " << mURL << endl;
+		clog << "BerkeliumHandler::onCrashed " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onCreatedWindow(
 			Window *win, Window *newWindow, const Rect &initialRect) {
 
-		clog << "*** onCreatedWindow from source " << mURL << endl;
+		clog << "BerkeliumHandler::onCreatedWindow from source ";
+		clog << mURL << endl;
         //newWindow->setDelegate(new BerkeliumHandler);
 	}
 
@@ -276,8 +293,9 @@ namespace player {
 			URLString origin,
 			URLString target) {
 
-		clog << "*** onChromeSend at URL " << mURL << " from " << origin;
-		clog << " to " << target << ":" << endl;
+		clog << "BerkeliumHandler::onChromeSend at URL ";
+		clog << mURL << " from " << origin;
+		clog << " to " << target << ": ";
 		clog << message << endl;
 	}
 
@@ -287,30 +305,33 @@ namespace player {
 			const std::vector<Rect> srcRects,
 			const Rect &destRect) {
 
-		clog << "*** onPaintPluginTexture from source " << mURL << endl;
+		clog << "BerkeliumHandler::onPaintPluginTexture from source ";
+		clog << mURL << endl;
 
 	}
 
 	void BerkeliumHandler::onWidgetCreated(
 			Window *win, Widget *newWidget, int zIndex) {
 
-		clog << "*** onWidgetCreated from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetCreated from source " << mURL;
+		clog << endl;
 	}
 
 	void BerkeliumHandler::onWidgetDestroyed(Window *win, Widget *newWidget) {
-		clog << "*** onWidgetDestroyed from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetDestroyed from source ";
+		clog << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetResize(
 			Window *win, Widget *wid, int newWidth, int newHeight) {
 
-		clog << "*** onWidgetResize from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetMove(
 			Window *win, Widget *wid, int newX, int newY) {
 
-		clog << "*** onWidgetMove from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetPaint(
@@ -324,7 +345,7 @@ namespace player {
 			int dy,
 			const Rect &scrollRect) {
 
-		clog << "*** onWidgetPaint from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 	}
 }
 }

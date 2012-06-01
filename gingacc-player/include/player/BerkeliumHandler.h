@@ -79,10 +79,15 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-  class BerkeliumHandler : public WindowDelegate, public IInputEventListener {
+  class BerkeliumHandler :
+	  public WindowDelegate,
+	  public IInputEventListener,
+	  public IMotionEventListener {
+
 	private:
 		std::string mURL;
 		ILocalScreenManager* dm;
+		GingaScreenID myScreen;
 		IInputManager* im;
 		ISurface* surface;
 		int w, h;
@@ -91,8 +96,10 @@ namespace player {
 		bool isValid;
 
 	public:
-		BerkeliumHandler();
+		BerkeliumHandler(GingaScreenID myScreen);
 		virtual ~BerkeliumHandler();
+
+		void setKeyHandler(bool handler);
 
 		void setContext(Context* context);
 		void setWindow(std::auto_ptr<Window> window);
@@ -102,6 +109,7 @@ namespace player {
 		string getUrl();
 		ISurface* getSurface();
 		bool userEventReceived(IInputEvent* ev);
+		bool motionEventReceived(int x, int y, int z);
 
 		virtual void onAddressBarChanged(Window *win, URLString newURL);
 		virtual void onStartLoading(Window *win, URLString newURL);

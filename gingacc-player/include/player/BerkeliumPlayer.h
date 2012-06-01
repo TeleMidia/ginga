@@ -109,7 +109,7 @@ namespace player {
 			BerkeliumHandler* bInfo;
 
 		public:
-			BerkeliumPlayer(string mrl);
+			BerkeliumPlayer(GingaScreenID myScreen, string mrl);
 			virtual ~BerkeliumPlayer();
 
 			ISurface* getSurface();
