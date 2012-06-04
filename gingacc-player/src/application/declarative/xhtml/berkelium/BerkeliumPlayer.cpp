@@ -118,7 +118,10 @@ namespace player {
 	void BBrowserFactory::updateSets() {
 		Context* context;
 		BerkeliumHandler* bInfo;
+		string mrl;
+
 		set<BerkeliumHandler*>::iterator i, j;
+
 		int w, h;
 
 		lockCSet();
@@ -141,7 +144,18 @@ namespace player {
 
 			bwin->resize(w, h);
 			bwin->setDelegate(bInfo);
-			bwin->navigateTo(URLString::point_to(bInfo->getUrl()));
+
+			mrl = bInfo->getUrl();
+
+			if (fileExists(mrl)) {
+				mrl = "file://" + mrl;
+			}
+
+			bwin->navigateTo(URLString::point_to(mrl));
+
+			bwin->insertCSS(
+					WideString::point_to(str_css.c_str()),
+					WideString::empty());
 
 			bInfo->setWindow(bwin);
 
@@ -170,6 +184,14 @@ namespace player {
 		}
 		dBSet.clear();
 		unlockDSet();
+
+		i = bSet.begin();
+		while (i != bSet.end()) {
+			bInfo = *i;
+			bInfo->updateEvents();
+
+			++i;
+		}
 	}
 
 	void BBrowserFactory::lockCSet() {
@@ -198,14 +220,12 @@ namespace player {
 
 	BerkeliumPlayer::BerkeliumPlayer(
 			GingaScreenID myScreen, string mrl) : Player(myScreen, mrl) {
-		clog << "BerkeliumPlayer::BerkeliumPlayer '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::BerkeliumPlayer '" << mrl << "'" << endl;
 
 		pthread_t tId;
 		pthread_attr_t tattr;
 
-		bInfo = new BerkeliumHandler(myScreen);
-
-		bInfo->setUrl(mrl);
+		bInfo = NULL;
 
 		if (!berkeliumFactory.isRunning()) {
 			berkeliumFactory.start();
@@ -220,18 +240,21 @@ namespace player {
 	}
 
 	BerkeliumPlayer::~BerkeliumPlayer() {
-		clog << "BerkeliumPlayer::~BerkeliumPlayer " << endl;
+		cout << "BerkeliumPlayer::~BerkeliumPlayer " << endl;
 	}
 
 	ISurface* BerkeliumPlayer::getSurface() {
-		clog << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
 
-		surface = bInfo->getSurface();
+		if (bInfo != NULL) {
+			surface = bInfo->getSurface();
+		}
+
 		return Player::getSurface();
 	}
 
 	void BerkeliumPlayer::setNotifyContentUpdate(bool notify) {
-		clog << "BerkeliumPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
 		/*if (notify) {
 			setGhostBrowser(mBrowser);
 		}*/
@@ -239,12 +262,12 @@ namespace player {
 	}
 
 	bool BerkeliumPlayer::setOutWindow(GingaWindowID windowId) {
-		clog << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
 		Player::setOutWindow(windowId);
 /*
 		if (hasBrowser && outputWindow != NULL) {
-			clog << "BerkeliumPlayer::setOutWindow '" << mrl << "' call ";
-			clog << "browserSetFlipWindow" << endl;
+			cout << "BerkeliumPlayer::setOutWindow '" << mrl << "' call ";
+			cout << "browserSetFlipWindow" << endl;
 			browserSetFlipWindow(mBrowser, outputWindow->getContent());
 			return true;
 		}
@@ -253,29 +276,17 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::setBounds(int x, int y, int w, int h) {
-		clog << "BerkeliumPlayer::setBounds x = '" << x << "', y = ";
-		clog << y << "', w = '" << w << "', h = '" << h << "'.";
-		clog << endl;
+		cout << "BerkeliumPlayer::setBounds x = '" << x << "', y = ";
+		cout << y << "', w = '" << w << "', h = '" << h << "'.";
+		cout << endl;
 
-		bInfo->setSize(w, h);
-/*
-		this->x = x;
-		this->y = y;
-		this->w = w;
-		this->h = h;
-
-		if (hasBrowser) {
-			clog << "BerkeliumPlayer::setBounds '" << mrl;
-			clog << "' call browserResizeCoord";
-			clog << endl;
-			browserResizeCoord(mBrowser, x, y, w, h);
+		if (bInfo == NULL) {
+			bInfo = new BerkeliumHandler(myScreen, x, y, w, h);
+			bInfo->setUrl(mrl);
 
 		} else {
-			clog << "BerkeliumPlayer::setBounds '" << mrl << "' call openBrowser";
-			clog << endl;
-			hasBrowser = true;
-			mBrowser   = openBrowser(x, y, w, h);
-		}*/
+			bInfo->setBounds(x, y, w, h);
+		}
 	}
 
 	void BerkeliumPlayer::play() {
@@ -284,7 +295,7 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::stop() {
-		clog << "BerkeliumPlayer::stop '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::stop '" << mrl << "'" << endl;
 		berkeliumFactory.destroyBrowser(bInfo);
 		Player::stop();
 	}
@@ -294,8 +305,8 @@ namespace player {
 		int x, y, w, h;
 		vector<string>* params;
 
-		clog << "BerkeliumPlayer::setProperty '" << name << "' value '";
-		clog << value << "'" << endl;
+		cout << "BerkeliumPlayer::setProperty '" << name << "' value '";
+		cout << value << "'" << endl;
 
 		//TODO: set transparency, scrollbar, support...
 		if (name == "bounds") {
@@ -343,7 +354,7 @@ namespace player {
 	}
 
 	bool BerkeliumPlayer::setKeyHandler(bool isHandler) {
-		clog << "BerkeliumPlayer::setKeyHandler '" << mrl << "'" << endl;
+		cout << "BerkeliumPlayer::setKeyHandler '" << mrl << "'" << endl;
 		if (bInfo != NULL) {
 			bInfo->setKeyHandler(isHandler);
 		}
@@ -355,37 +366,32 @@ namespace player {
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
 		Berkelium::init(Berkelium::FileString::empty());
 		/*if (!Berkelium::init(Berkelium::FileString::empty())) {
-			clog << "BerkeliumPlayer::mainLoop ";
-			clog << "Failed to initialize berkelium!" << endl;
+			cout << "BerkeliumPlayer::mainLoop ";
+			cout << "Failed to initialize berkelium!" << endl;
 			return NULL;
 		}*/
 
-		clog << "BerkeliumPlayer::mainLoop" << endl;
-		struct timeval tv;
+		cout << "BerkeliumPlayer::mainLoop" << endl;
 
-		tv.tv_sec  = 0;
-		tv.tv_usec = 1000;
 		while (berkeliumFactory.isRunning()) {
 			if (berkeliumFactory.hasBrowser()) {
 				Berkelium::update();
+
+				/*if (notifyContentUpdate) {
+					if (status == PLAY || status == PAUSE) {
+						notifyPlayerListeners(
+								PL_NOTIFY_UPDATECONTENT, "",
+								TYPE_PASSIVEDEVICE, "");
+					}
+				}*/
 			}
 
-			::select(0, NULL, NULL, NULL, &tv);
+			SystemCompat::uSleep(30000);
 	    }
-
-/*
-		if (notifyContentUpdate) {
-			while (status == PLAY || status == PAUSE) {
-				notifyPlayerListeners(
-						PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
-
-				this->mSleep(65);
-			}
-		}*/
 
 		Berkelium::destroy();
 
-		clog << "BerkeliumPlayer::mainLoop all done!" << endl;
+		cout << "BerkeliumPlayer::mainLoop all done!" << endl;
 		return NULL;
 	}
 }

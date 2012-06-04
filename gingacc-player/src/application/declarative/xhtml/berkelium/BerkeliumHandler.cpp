@@ -58,7 +58,12 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	BerkeliumHandler::BerkeliumHandler(GingaScreenID myScreen) {
+
+	map<int, int> BerkeliumHandler::fromGingaToBklm;
+
+	BerkeliumHandler::BerkeliumHandler(
+			GingaScreenID myScreen, int x, int y, int w, int h) {
+
 #if HAVE_COMPSUPPORT
 		dm = ((LocalScreenManagerCreator*)(
 				cm->getObject("LocalScreenManager")))();
@@ -67,19 +72,28 @@ namespace player {
 		dm = LocalScreenManager::getInstance();
 #endif
 
+		im = dm->getInputManager(myScreen);
+
 		this->myScreen = myScreen;
 
-		im = dm->getInputManager(myScreen);
-		surface = dm->createSurface(myScreen);
+		surface    = dm->createSurface(myScreen, w, h);
+		xOffset    = x;
+		yOffset    = y;
+		this->w    = w;
+		this->h    = h;
+		mouseClick = false;
+		mouseMoved = false;
+		textEvent  = false;
+		keyCode    = -1;
+		isValid    = false;
 
-		w = 0;
-		h = 0;
-
-		isValid = false;
+		if (fromGingaToBklm.empty()) {
+			initInputMap();
+		}
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {
-		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
+		cout << "BerkeliumHandler::~BerkeliumHandler " << endl;
 		if (isValid) {
 			isValid = false;
 			bWindow->stop();
@@ -94,8 +108,90 @@ namespace player {
 
 		if (im != NULL) {
 			im->removeInputEventListener(this);
+			im = NULL;
 		}
 		//Caution: Surface is deleted by Player
+	}
+
+	void BerkeliumHandler::initInputMap() {
+		fromGingaToBklm[CodeMap::KEY_0]                 = '0';
+		fromGingaToBklm[CodeMap::KEY_1]                 = '1';
+		fromGingaToBklm[CodeMap::KEY_2]                 = '2';
+		fromGingaToBklm[CodeMap::KEY_3]                 = '3';
+		fromGingaToBklm[CodeMap::KEY_4]                 = '4';
+		fromGingaToBklm[CodeMap::KEY_5]                 = '5';
+		fromGingaToBklm[CodeMap::KEY_6]                 = '6';
+		fromGingaToBklm[CodeMap::KEY_7]                 = '7';
+		fromGingaToBklm[CodeMap::KEY_8]                 = '8';
+		fromGingaToBklm[CodeMap::KEY_9]                 = '9';
+
+		fromGingaToBklm[CodeMap::KEY_SMALL_A]           = 'a';
+		fromGingaToBklm[CodeMap::KEY_SMALL_B]           = 'b';
+		fromGingaToBklm[CodeMap::KEY_SMALL_C]           = 'c';
+		fromGingaToBklm[CodeMap::KEY_SMALL_D]           = 'd';
+		fromGingaToBklm[CodeMap::KEY_SMALL_E]           = 'e';
+		fromGingaToBklm[CodeMap::KEY_SMALL_F]           = 'f';
+		fromGingaToBklm[CodeMap::KEY_SMALL_G]           = 'g';
+		fromGingaToBklm[CodeMap::KEY_SMALL_H]           = 'h';
+		fromGingaToBklm[CodeMap::KEY_SMALL_I]           = 'i';
+		fromGingaToBklm[CodeMap::KEY_SMALL_J]           = 'j';
+		fromGingaToBklm[CodeMap::KEY_SMALL_K]           = 'k';
+		fromGingaToBklm[CodeMap::KEY_SMALL_L]           = 'l';
+		fromGingaToBklm[CodeMap::KEY_SMALL_M]           = 'm';
+		fromGingaToBklm[CodeMap::KEY_SMALL_N]           = 'n';
+		fromGingaToBklm[CodeMap::KEY_SMALL_O]           = 'o';
+		fromGingaToBklm[CodeMap::KEY_SMALL_P]           = 'p';
+		fromGingaToBklm[CodeMap::KEY_SMALL_Q]           = 'q';
+		fromGingaToBklm[CodeMap::KEY_SMALL_R]           = 'r';
+		fromGingaToBklm[CodeMap::KEY_SMALL_S]           = 's';
+		fromGingaToBklm[CodeMap::KEY_SMALL_T]           = 't';
+		fromGingaToBklm[CodeMap::KEY_SMALL_U]           = 'u';
+		fromGingaToBklm[CodeMap::KEY_SMALL_V]           = 'v';
+		fromGingaToBklm[CodeMap::KEY_SMALL_W]           = 'w';
+		fromGingaToBklm[CodeMap::KEY_SMALL_X]           = 'x';
+		fromGingaToBklm[CodeMap::KEY_SMALL_Y]           = 'y';
+		fromGingaToBklm[CodeMap::KEY_SMALL_Z]           = 'z';
+
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_A]         = 'A';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_B]         = 'B';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_C]         = 'C';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_D]         = 'D';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_E]         = 'E';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_F]         = 'F';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_G]         = 'G';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_H]         = 'H';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_I]         = 'I';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_J]         = 'J';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_K]         = 'K';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_L]         = 'L';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_M]         = 'M';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_N]         = 'N';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_O]         = 'O';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_P]         = 'P';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_Q]         = 'Q';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_R]         = 'R';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_S]         = 'S';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_T]         = 'T';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_U]         = 'U';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_V]         = 'V';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_W]         = 'W';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_X]         = 'X';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_Y]         = 'Y';
+		fromGingaToBklm[CodeMap::KEY_CAPITAL_Z]         = 'Z';
+
+		fromGingaToBklm[CodeMap::KEY_SPACE]             = ' ';
+		fromGingaToBklm[CodeMap::KEY_BACKSPACE]         = '\b';
+		fromGingaToBklm[CodeMap::KEY_BACK]              = '\b';
+		fromGingaToBklm[CodeMap::KEY_ESCAPE]            = 27;
+		fromGingaToBklm[CodeMap::KEY_EXIT]              = 27;
+		fromGingaToBklm[CodeMap::KEY_ENTER]             = '\n';
+
+
+		fromGingaToBklm[CodeMap::KEY_GREATER_THAN_SIGN] = 'UNKNOWN';
+		fromGingaToBklm[CodeMap::KEY_LESS_THAN_SIGN]    = 'UNKNOWN';
+
+		fromGingaToBklm[CodeMap::KEY_TAB]               = 9;
+		fromGingaToBklm[CodeMap::KEY_TAP]               = '\n';
 	}
 
 	void BerkeliumHandler::setKeyHandler(bool handler) {
@@ -128,7 +224,9 @@ namespace player {
 		*h = this->h;
 	}
 
-	void BerkeliumHandler::setSize(int w, int h) {
+	void BerkeliumHandler::setBounds(int x, int y, int w, int h) {
+		xOffset = x;
+		yOffset = y;
 		this->w = w;
 		this->h = h;
 
@@ -149,13 +247,91 @@ namespace player {
 		return surface;
 	}
 
+	void BerkeliumHandler::updateEvents() {
+		if (isValid) {
+			if (mouseMoved) {
+				bWindow->mouseMoved(x, y);
+				cout << "BerkeliumHandler::updateEvents ";
+				cout << "mouse moved to (" << x << ", " << y << ")";
+				cout << endl;
+				mouseMoved = false;
+			}
+
+			if (mouseClick) {
+				bWindow->mouseMoved(x, y);
+				bWindow->mouseButton(0, true);
+				bWindow->mouseButton(0, false);
+				cout << "BerkeliumHandler::updateEvents ";
+				cout << "mouse click on (" << x << ", " << y << ")";
+				cout << endl;
+				mouseClick = false;
+			}
+
+			if (textEvent) {
+				bool specialKey = false;
+
+				if (keyCode == CodeMap::KEY_CURSOR_LEFT) {
+					bWindow->mouseWheel(20, 0);
+					keyCode = fromGingaToBklm[CodeMap::KEY_BACKSPACE];
+
+				} else if (keyCode == CodeMap::KEY_CURSOR_RIGHT) {
+					bWindow->mouseWheel(-20, 0);
+					specialKey = true;
+
+				} else if (keyCode == CodeMap::KEY_CURSOR_UP) {
+					bWindow->mouseWheel(0, 20);
+					specialKey = true;
+
+				} else if (keyCode == CodeMap::KEY_CURSOR_DOWN) {
+					bWindow->mouseWheel(0, -20);
+					specialKey = true;
+				}
+
+				string txt = "";
+				wchar_t outchars[2];
+				outchars[0] = keyCode;
+				outchars[1] = 0;
+
+				bWindow->keyEvent(true, 0, keyCode, 0);
+				if (!specialKey) {
+					bWindow->textEvent(outchars, 1);
+				}
+				bWindow->keyEvent(false, 0, keyCode, 0);
+
+				cout << "BerkeliumHandler::updateEvents ";
+				cout << "text event '" << (char)keyCode;
+				cout << "' on (" << x << ", " << y << ")";
+				cout << endl;
+
+				textEvent = false;
+			}
+		}
+	}
+
 	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
-		clog << "BerkeliumHandler::userEventReceived " << endl;
+		map<int, int>::iterator i;
+
+		cout << "BerkeliumHandler::userEventReceived " << endl;
 
 		//browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
 
-		if (isValid && userEvent->isButtonPressType()) {
-			bWindow->mouseButton(1, true);
+		if (userEvent->getKeyCode(myScreen) == CodeMap::KEY_QUIT) {
+			im = NULL;
+
+		} else if (userEvent->isButtonPressType()) {
+			/*if (isValid) {
+				bWindow->mouseButton(1, true);
+			}*/
+			mouseClick = true;
+
+		} else if (userEvent->isKeyType()) {
+			keyCode   = userEvent->getKeyCode(myScreen);
+			i = fromGingaToBklm.find(keyCode);
+			if (i != fromGingaToBklm.end()) {
+				keyCode = i->second;
+			}
+
+			textEvent = true;
 		}
 
 		return true;
@@ -164,9 +340,24 @@ namespace player {
 	bool BerkeliumHandler::motionEventReceived(int x, int y, int z) {
 		clog << "BerkeliumHandler::motionEventReceived " << endl;
 
-		if (isValid) {
-			bWindow->mouseMoved(x, y);
+		this->x = x - xOffset;
+		this->y = y - yOffset;
+
+		if (this->x < 0) {
+			this->x = 0;
+
+		} else if (this->x + 20 > this->w) {
+			this->x = this->w - 20;
 		}
+
+		if (this->y < 0) {
+			this->y = 0;
+
+		} else if (this->y + 20 > this->h) {
+			this->y = this->h - 20;
+		}
+
+		mouseMoved = true;
 
 		return true;
 	}
@@ -175,11 +366,12 @@ namespace player {
         std::string x = "hi";
         x+= newURL;
         mURL = newURL.get<std::string>();
-        clog << "BerkeliumHandler::onAddressChanged to " << newURL << endl;
+        cout << "BerkeliumHandler::onAddressChanged to " << newURL << endl;
 	}
 
 	void BerkeliumHandler::onStartLoading(Window *win, URLString newURL) {
-		clog << "BerkeliumHandler::Start loading " << newURL << " from " << mURL << endl;
+		cout << "BerkeliumHandler::Start loading " << newURL;
+		cout << " from " << mURL << endl;
 
 		wstring str_css(L"::-webkit-scrollbar { display: none; }");
 
@@ -189,8 +381,8 @@ namespace player {
 	}
 
 	void BerkeliumHandler::onLoadingStateChanged(Window *win, bool isLoading) {
-		clog << "BerkeliumHandler::Loading state changed ";
-		clog << mURL << " to " << (isLoading?"loading":"stopped") << endl;
+		cout << "BerkeliumHandler::Loading state changed ";
+		cout << mURL << " to " << (isLoading?"loading":"stopped") << endl;
 	}
 
 	void BerkeliumHandler::onLoad(Window *win) {
@@ -202,16 +394,16 @@ namespace player {
 	}
 
 	void BerkeliumHandler::onLoadError(Window *win, WideString error) {
-        clog << L"*** onLoadError " << mURL << ": ";
-        clog << error << endl;
+        cout << L"*** onLoadError " << mURL << ": ";
+        cout << error << endl;
 	}
 
 	void BerkeliumHandler::onResponsive(Window *win) {
-		clog << "BerkeliumHandler::onResponsive " << mURL << endl;
+		cout << "BerkeliumHandler::onResponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onUnresponsive(Window *win) {
-		clog << "BerkeliumHandler::onUnresponsive " << mURL << endl;
+		cout << "BerkeliumHandler::onUnresponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onPaint(
@@ -227,15 +419,12 @@ namespace player {
 		string str;
 		static int call_count = 0;
 		IWindow* win;
+		IImageProvider* img;
+		ISurface* s;
+
+		int left, top, right, bottom;
 
 		clog << "BerkeliumHandler::onPaint " << mURL << endl;
-
-		if (bitmap_rect.left() != 0 || bitmap_rect.top() != 0 ||
-				bitmap_rect.right() != w || bitmap_rect.bottom() != h) {
-
-			clog << "BerkeliumHandler::onPaint '" << mURL << "' not full" << endl;
-			return;
-		}
 
 		FILE *outfile;
 		{
@@ -266,24 +455,41 @@ namespace player {
 		}
 		fclose(outfile);
 
-		win = (IWindow*)(surface->getParent());
-		if (win != NULL) {
-			win->renderImgFile(str);
-			clog << "BerkeliumHandler::onPaint rendered" << endl;
-		}
+		left   = bitmap_rect.left();
+		top    = bitmap_rect.top();
+		right  = bitmap_rect.right();
+		bottom = bitmap_rect.bottom();
+
+		clog << "BerkeliumHandler::onPaint '" << mURL << "'" << endl;
+		clog << " left   = '" << left << "'" << endl;
+		clog << " top    = '" << top << "'" << endl;
+		clog << " right  = '" << right << "'" << endl;
+		clog << " bottom = '" << bottom << "'" << endl;
+		clog << " dx     = '" << dx << "'" << endl;
+		clog << " dy     = '" << dy << "'" << endl;
+		clog << endl;
+
+		img = dm->createImageProvider(myScreen, str.c_str());
+		s   = dm->createSurface(myScreen);
+
+		img->playOver(s);
+		surface->blit(left, top, s, 0, 0, right - left, bottom - top);
+
+		delete s;
+		delete img;
 
 		clog << "BerkeliumHandler::onPaint all done" << endl;
 	}
 
 	void BerkeliumHandler::onCrashed(Window *win) {
-		clog << "BerkeliumHandler::onCrashed " << mURL << endl;
+		cout << "BerkeliumHandler::onCrashed " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onCreatedWindow(
 			Window *win, Window *newWindow, const Rect &initialRect) {
 
-		clog << "BerkeliumHandler::onCreatedWindow from source ";
-		clog << mURL << endl;
+		cout << "BerkeliumHandler::onCreatedWindow from source ";
+		cout << mURL << endl;
         //newWindow->setDelegate(new BerkeliumHandler);
 	}
 
@@ -293,10 +499,10 @@ namespace player {
 			URLString origin,
 			URLString target) {
 
-		clog << "BerkeliumHandler::onChromeSend at URL ";
-		clog << mURL << " from " << origin;
-		clog << " to " << target << ": ";
-		clog << message << endl;
+		cout << "BerkeliumHandler::onChromeSend at URL ";
+		cout << mURL << " from " << origin;
+		cout << " to " << target << ": ";
+		cout << message << endl;
 	}
 
 	void BerkeliumHandler::onPaintPluginTexture(
@@ -305,33 +511,33 @@ namespace player {
 			const std::vector<Rect> srcRects,
 			const Rect &destRect) {
 
-		clog << "BerkeliumHandler::onPaintPluginTexture from source ";
-		clog << mURL << endl;
+		cout << "BerkeliumHandler::onPaintPluginTexture from source ";
+		cout << mURL << endl;
 
 	}
 
 	void BerkeliumHandler::onWidgetCreated(
 			Window *win, Widget *newWidget, int zIndex) {
 
-		clog << "BerkeliumHandler::onWidgetCreated from source " << mURL;
-		clog << endl;
+		cout << "BerkeliumHandler::onWidgetCreated from source " << mURL;
+		cout << endl;
 	}
 
 	void BerkeliumHandler::onWidgetDestroyed(Window *win, Widget *newWidget) {
-		clog << "BerkeliumHandler::onWidgetDestroyed from source ";
-		clog << mURL << endl;
+		cout << "BerkeliumHandler::onWidgetDestroyed from source ";
+		cout << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetResize(
 			Window *win, Widget *wid, int newWidth, int newHeight) {
 
-		clog << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
+		cout << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetMove(
 			Window *win, Widget *wid, int newX, int newY) {
 
-		clog << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
+		cout << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetPaint(
@@ -345,7 +551,7 @@ namespace player {
 			int dy,
 			const Rect &scrollRect) {
 
-		clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
+		cout << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 	}
 }
 }

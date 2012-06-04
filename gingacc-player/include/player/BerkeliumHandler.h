@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define BerkeliumHandler_h_
 
 #include "mb/IInputManager.h"
+#include "mb/interface/CodeMap.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -85,29 +86,45 @@ namespace player {
 	  public IMotionEventListener {
 
 	private:
+		static map<int, int> fromGingaToBklm;
 		std::string mURL;
 		ILocalScreenManager* dm;
 		GingaScreenID myScreen;
 		IInputManager* im;
 		ISurface* surface;
+		int xOffset, yOffset;
+		int x, y;
 		int w, h;
 		Context* context;
 		std::auto_ptr<Window> bWindow;
 		bool isValid;
+		bool mouseClick;
+		bool mouseMoved;
+		bool textEvent;
+		int keyCode;
 
 	public:
-		BerkeliumHandler(GingaScreenID myScreen);
+		BerkeliumHandler(
+				GingaScreenID myScreen, int x, int y, int w, int h);
+
 		virtual ~BerkeliumHandler();
 
+	private:
+		void initInputMap();
+
+	public:
 		void setKeyHandler(bool handler);
 
 		void setContext(Context* context);
 		void setWindow(std::auto_ptr<Window> window);
 		void getSize(int* w, int* h);
-		void setSize(int w, int h);
+		void setBounds(int x, int y, int w, int h);
 		void setUrl(string url);
 		string getUrl();
 		ISurface* getSurface();
+
+		void updateEvents();
+
 		bool userEventReceived(IInputEvent* ev);
 		bool motionEventReceived(int x, int y, int z);
 
