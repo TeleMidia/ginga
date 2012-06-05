@@ -86,6 +86,7 @@ namespace player {
 			void stop();
 			bool isRunning();
 			bool hasBrowser();
+			bool isPending();
 			void createBrowser(BerkeliumHandler* bInfo);
 			void destroyBrowser(BerkeliumHandler* bInfo);
 
