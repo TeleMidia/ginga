@@ -492,15 +492,14 @@ namespace player {
 				}
 
 				// Copy the data out of the texture
-				/*
-				 * TODO: check if this data must be rendered as well
-				 */
+				strFile = createFile(
+						(const unsigned char*)inputBuffer,
+						wid, hig);
 
-//				glGetTexImage(
-//						GL_TEXTURE_2D, 0,
-//						GL_BGRA, GL_UNSIGNED_BYTE,
-//						inputBuffer
-//				);
+				s = createRenderedSurface(strFile);
+				remove(strFile.c_str());
+				surface->blit(0, 0, s);
+				delete s;
 
 				// copy out the region to the beginning of the buffer
 				for(; jj < hig && jj >= 0; jj+=inc) {
@@ -541,12 +540,11 @@ namespace player {
 				memcpy(
 						scroll_buffer + jj*wid*kBytesPerPixel,
 						bitmap_in + (left + (jj+top)*bitmap_rect.width())*kBytesPerPixel,
-						wid*kBytesPerPixel
-				);
+						wid*kBytesPerPixel);
 			}
 
-			// Finally, we perform the main update, just copying the rect that is
-			// marked as dirty but not from scrolled data.
+			// Finally, we perform the main update, just copying the rect that
+			// is marked as dirty but not from scrolled data.
 			strFile = createFile(
 					(const unsigned char*)scroll_buffer, wid, hig);
 
