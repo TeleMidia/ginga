@@ -133,29 +133,29 @@ namespace player {
 
 			context = Context::create();
 			std::auto_ptr<Window> bwin(Window::create(context));
-			wstring str_css(L"::-webkit-scrollbar { display: none; }");
 
 			bInfo->setContext(context);
 			bInfo->getSize(&w, &h);
-
-			bwin->insertCSS(
-					WideString::point_to(str_css.c_str()),
-					WideString::empty());
 
 			bwin->resize(w, h);
 			bwin->setDelegate(bInfo);
 
 			mrl = bInfo->getUrl();
 
-			if (fileExists(mrl)) {
+			if (mrl.find("file://") == std::string::npos && fileExists(mrl)) {
 				mrl = "file://" + mrl;
 			}
 
 			bwin->navigateTo(URLString::point_to(mrl));
 
+			wstring str_css(L"::-webkit-scrollbar { display: none; }");
+			wstring str_js(L"document.body.style.overflow='hidden'");
+
 			bwin->insertCSS(
 					WideString::point_to(str_css.c_str()),
 					WideString::empty());
+
+			bwin->executeJavascript(WideString::point_to(str_js.c_str()));
 
 			bInfo->setWindow(bwin);
 
@@ -220,7 +220,7 @@ namespace player {
 
 	BerkeliumPlayer::BerkeliumPlayer(
 			GingaScreenID myScreen, string mrl) : Player(myScreen, mrl) {
-		cout << "BerkeliumPlayer::BerkeliumPlayer '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::BerkeliumPlayer '" << mrl << "'" << endl;
 
 		pthread_t tId;
 		pthread_attr_t tattr;
@@ -240,11 +240,11 @@ namespace player {
 	}
 
 	BerkeliumPlayer::~BerkeliumPlayer() {
-		cout << "BerkeliumPlayer::~BerkeliumPlayer " << endl;
+		clog << "BerkeliumPlayer::~BerkeliumPlayer " << endl;
 	}
 
 	ISurface* BerkeliumPlayer::getSurface() {
-		cout << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
 
 		if (bInfo != NULL) {
 			surface = bInfo->getSurface();
@@ -254,7 +254,7 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::setNotifyContentUpdate(bool notify) {
-		cout << "BerkeliumPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::setNotifyContentUpdate '" << mrl << "'" << endl;
 		/*if (notify) {
 			setGhostBrowser(mBrowser);
 		}*/
@@ -262,12 +262,12 @@ namespace player {
 	}
 
 	bool BerkeliumPlayer::setOutWindow(GingaWindowID windowId) {
-		cout << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
 		Player::setOutWindow(windowId);
 /*
 		if (hasBrowser && outputWindow != NULL) {
-			cout << "BerkeliumPlayer::setOutWindow '" << mrl << "' call ";
-			cout << "browserSetFlipWindow" << endl;
+			clog << "BerkeliumPlayer::setOutWindow '" << mrl << "' call ";
+			clog << "browserSetFlipWindow" << endl;
 			browserSetFlipWindow(mBrowser, outputWindow->getContent());
 			return true;
 		}
@@ -276,9 +276,9 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::setBounds(int x, int y, int w, int h) {
-		cout << "BerkeliumPlayer::setBounds x = '" << x << "', y = ";
-		cout << y << "', w = '" << w << "', h = '" << h << "'.";
-		cout << endl;
+		clog << "BerkeliumPlayer::setBounds x = '" << x << "', y = ";
+		clog << y << "', w = '" << w << "', h = '" << h << "'.";
+		clog << endl;
 
 		if (bInfo == NULL) {
 			bInfo = new BerkeliumHandler(myScreen, x, y, w, h);
@@ -295,7 +295,7 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::stop() {
-		cout << "BerkeliumPlayer::stop '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::stop '" << mrl << "'" << endl;
 		berkeliumFactory.destroyBrowser(bInfo);
 		Player::stop();
 	}
@@ -305,8 +305,8 @@ namespace player {
 		int x, y, w, h;
 		vector<string>* params;
 
-		cout << "BerkeliumPlayer::setProperty '" << name << "' value '";
-		cout << value << "'" << endl;
+		clog << "BerkeliumPlayer::setProperty '" << name << "' value '";
+		clog << value << "'" << endl;
 
 		//TODO: set transparency, scrollbar, support...
 		if (name == "bounds") {
@@ -354,7 +354,7 @@ namespace player {
 	}
 
 	bool BerkeliumPlayer::setKeyHandler(bool isHandler) {
-		cout << "BerkeliumPlayer::setKeyHandler '" << mrl << "'" << endl;
+		clog << "BerkeliumPlayer::setKeyHandler '" << mrl << "'" << endl;
 		if (bInfo != NULL) {
 			bInfo->setKeyHandler(isHandler);
 		}
@@ -366,12 +366,12 @@ namespace player {
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
 		Berkelium::init(Berkelium::FileString::empty());
 		/*if (!Berkelium::init(Berkelium::FileString::empty())) {
-			cout << "BerkeliumPlayer::mainLoop ";
-			cout << "Failed to initialize berkelium!" << endl;
+			clog << "BerkeliumPlayer::mainLoop ";
+			clog << "Failed to initialize berkelium!" << endl;
 			return NULL;
 		}*/
 
-		cout << "BerkeliumPlayer::mainLoop" << endl;
+		clog << "BerkeliumPlayer::mainLoop" << endl;
 
 		while (berkeliumFactory.isRunning()) {
 			if (berkeliumFactory.hasBrowser()) {
@@ -391,7 +391,7 @@ namespace player {
 
 		Berkelium::destroy();
 
-		cout << "BerkeliumPlayer::mainLoop all done!" << endl;
+		clog << "BerkeliumPlayer::mainLoop all done!" << endl;
 		return NULL;
 	}
 }
