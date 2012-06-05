@@ -60,6 +60,7 @@ namespace core {
 namespace player {
 
 	map<int, int> BerkeliumHandler::fromGingaToBklm;
+	int BerkeliumHandler::callCount  = 0;
 
 	BerkeliumHandler::BerkeliumHandler(
 			GingaScreenID myScreen, int x, int y, int w, int h) {
@@ -90,10 +91,13 @@ namespace player {
 		if (fromGingaToBklm.empty()) {
 			initInputMap();
 		}
+
+		scroll_buffer      = new unsigned char[w*(h+1)*4];
+		needs_full_refresh = false;
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {
-		cout << "BerkeliumHandler::~BerkeliumHandler " << endl;
+		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
 		if (isValid) {
 			isValid = false;
 			bWindow->stop();
@@ -187,8 +191,8 @@ namespace player {
 		fromGingaToBklm[CodeMap::KEY_ENTER]             = '\n';
 
 
-		fromGingaToBklm[CodeMap::KEY_GREATER_THAN_SIGN] = 'UNKNOWN';
-		fromGingaToBklm[CodeMap::KEY_LESS_THAN_SIGN]    = 'UNKNOWN';
+		fromGingaToBklm[CodeMap::KEY_GREATER_THAN_SIGN] = '>';
+		fromGingaToBklm[CodeMap::KEY_LESS_THAN_SIGN]    = '<';
 
 		fromGingaToBklm[CodeMap::KEY_TAB]               = 9;
 		fromGingaToBklm[CodeMap::KEY_TAP]               = '\n';
@@ -251,9 +255,6 @@ namespace player {
 		if (isValid) {
 			if (mouseMoved) {
 				bWindow->mouseMoved(x, y);
-				cout << "BerkeliumHandler::updateEvents ";
-				cout << "mouse moved to (" << x << ", " << y << ")";
-				cout << endl;
 				mouseMoved = false;
 			}
 
@@ -261,29 +262,30 @@ namespace player {
 				bWindow->mouseMoved(x, y);
 				bWindow->mouseButton(0, true);
 				bWindow->mouseButton(0, false);
-				cout << "BerkeliumHandler::updateEvents ";
-				cout << "mouse click on (" << x << ", " << y << ")";
-				cout << endl;
+				clog << "BerkeliumHandler::updateEvents ";
+				clog << "mouse click on (" << x << ", " << y << ")";
+				clog << endl;
 				mouseClick = false;
 			}
 
 			if (textEvent) {
 				bool specialKey = false;
+				int mods = 0;
 
 				if (keyCode == CodeMap::KEY_CURSOR_LEFT) {
-					bWindow->mouseWheel(20, 0);
 					keyCode = fromGingaToBklm[CodeMap::KEY_BACKSPACE];
 
-				} else if (keyCode == CodeMap::KEY_CURSOR_RIGHT) {
-					bWindow->mouseWheel(-20, 0);
+				} else if (keyCode == CodeMap::KEY_CURSOR_DOWN) {
+					keyCode = fromGingaToBklm[CodeMap::KEY_TAB];
 					specialKey = true;
 
 				} else if (keyCode == CodeMap::KEY_CURSOR_UP) {
-					bWindow->mouseWheel(0, 20);
+					keyCode = fromGingaToBklm[CodeMap::KEY_TAB];
+					mods    = Berkelium::SHIFT_MOD;
 					specialKey = true;
 
-				} else if (keyCode == CodeMap::KEY_CURSOR_DOWN) {
-					bWindow->mouseWheel(0, -20);
+				} else if (keyCode == CodeMap::KEY_CURSOR_RIGHT) {
+					keyCode    = 0;
 					specialKey = true;
 				}
 
@@ -292,16 +294,16 @@ namespace player {
 				outchars[0] = keyCode;
 				outchars[1] = 0;
 
-				bWindow->keyEvent(true, 0, keyCode, 0);
+				bWindow->keyEvent(true, mods, keyCode, 0);
 				if (!specialKey) {
 					bWindow->textEvent(outchars, 1);
 				}
-				bWindow->keyEvent(false, 0, keyCode, 0);
+				bWindow->keyEvent(false, mods, keyCode, 0);
 
-				cout << "BerkeliumHandler::updateEvents ";
-				cout << "text event '" << (char)keyCode;
-				cout << "' on (" << x << ", " << y << ")";
-				cout << endl;
+				clog << "BerkeliumHandler::updateEvents ";
+				clog << "text event '" << (char)keyCode;
+				clog << "' on (" << x << ", " << y << ")";
+				clog << endl;
 
 				textEvent = false;
 			}
@@ -311,7 +313,7 @@ namespace player {
 	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
 		map<int, int>::iterator i;
 
-		cout << "BerkeliumHandler::userEventReceived " << endl;
+		clog << "BerkeliumHandler::userEventReceived " << endl;
 
 		//browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
 
@@ -366,86 +368,236 @@ namespace player {
         std::string x = "hi";
         x+= newURL;
         mURL = newURL.get<std::string>();
-        cout << "BerkeliumHandler::onAddressChanged to " << newURL << endl;
+        clog << "BerkeliumHandler::onAddressChanged to " << newURL << endl;
 	}
 
 	void BerkeliumHandler::onStartLoading(Window *win, URLString newURL) {
-		cout << "BerkeliumHandler::Start loading " << newURL;
-		cout << " from " << mURL << endl;
+		clog << "BerkeliumHandler::Start loading " << newURL;
+		clog << " from " << mURL << endl;
 
 		wstring str_css(L"::-webkit-scrollbar { display: none; }");
+		wstring str_js(L"document.body.style.overflow='hidden'");
 
 		win->insertCSS(
 				WideString::point_to(str_css.c_str()),
 				WideString::empty());
+
+		win->executeJavascript(WideString::point_to(str_js.c_str()));
 	}
 
 	void BerkeliumHandler::onLoadingStateChanged(Window *win, bool isLoading) {
-		cout << "BerkeliumHandler::Loading state changed ";
-		cout << mURL << " to " << (isLoading?"loading":"stopped") << endl;
+		clog << "BerkeliumHandler::Loading state changed ";
+		clog << mURL << " to " << (isLoading?"loading":"stopped") << endl;
 	}
 
 	void BerkeliumHandler::onLoad(Window *win) {
 		wstring str_css(L"::-webkit-scrollbar { display: none; }");
+		wstring str_js(L"document.body.style.overflow='hidden'");
 
 		win->insertCSS(
 				WideString::point_to(str_css.c_str()),
 				WideString::empty());
+
+		win->executeJavascript(WideString::point_to(str_js.c_str()));
 	}
 
 	void BerkeliumHandler::onLoadError(Window *win, WideString error) {
-        cout << L"*** onLoadError " << mURL << ": ";
-        cout << error << endl;
+        clog << L"*** onLoadError " << mURL << ": ";
+        clog << error << endl;
 	}
 
 	void BerkeliumHandler::onResponsive(Window *win) {
-		cout << "BerkeliumHandler::onResponsive " << mURL << endl;
+		clog << "BerkeliumHandler::onResponsive " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onUnresponsive(Window *win) {
-		cout << "BerkeliumHandler::onUnresponsive " << mURL << endl;
+		clog << "BerkeliumHandler::onUnresponsive " << mURL << endl;
 	}
 
-	void BerkeliumHandler::onPaint(
-			Window *wini,
-			const unsigned char *bitmap_in,
-			const Rect &bitmap_rect,
+	bool BerkeliumHandler::mapOnPaintToTexture(
+			Berkelium::Window *wini,
+			const unsigned char* bitmap_in,
+			const Berkelium::Rect& bitmap_rect,
 			size_t num_copy_rects,
-			const Rect *copy_rects,
-			int dx,
-			int dy,
-			const Rect &scroll_rect) {
+			const Berkelium::Rect *copy_rects,
+			int dx, int dy,
+			const Berkelium::Rect& scroll_rect,
+			unsigned int dest_texture_width,
+			unsigned int dest_texture_height,
+			bool ignore_partial,
+			unsigned char* scroll_buffer) {
+
+		string strFile;
+		ISurface* s;
+		const int kBytesPerPixel = 4;
+
+		// If we've reloaded the page and need a full update, ignore updates
+		// until a full one comes in. This handles out of date updates due to
+		// delays in event processing.
+		if (ignore_partial) {
+			if (bitmap_rect.left() != 0 ||
+					bitmap_rect.top() != 0 ||
+					bitmap_rect.right() != dest_texture_width ||
+					bitmap_rect.bottom() != dest_texture_height) {
+
+				return false;
+			}
+
+			strFile = createFile(
+					bitmap_in, dest_texture_width, dest_texture_height);
+
+			s = createRenderedSurface(strFile);
+			remove(strFile.c_str());
+
+			surface->blit(0, 0, s);
+			delete s;
+
+			ignore_partial = false;
+			return true;
+		}
+
+		// Now, we first handle scrolling. We need to do this first since it
+		// requires shifting existing data, some of which will be overwritten by
+		// the regular dirty rect update.
+		if (dx != 0 || dy != 0) {
+			// scroll_rect contains the Rect we need to move
+			// First we figure out where the the data is moved to by translating it
+			Berkelium::Rect scrolled_rect = scroll_rect.translate(-dx, -dy);
+			// Next we figure out where they intersect, giving the scrolled
+			// region
+			Berkelium::Rect scrolled_shared_rect = scroll_rect.intersect(scrolled_rect);
+			// Only do scrolling if they have non-zero intersection
+			if (scrolled_shared_rect.width() > 0 && scrolled_shared_rect.height() > 0) {
+				// And the scroll is performed by moving shared_rect by (dx,dy)
+				Berkelium::Rect shared_rect = scrolled_shared_rect.translate(dx, dy);
+
+				int wid = scrolled_shared_rect.width();
+				int hig = scrolled_shared_rect.height();
+				int inc = 1;
+				unsigned char *outputBuffer = scroll_buffer;
+				// source data is offset by 1 line to prevent memcpy aliasing
+				// In this case, it can happen if dy==0 and dx!=0.
+				unsigned char *inputBuffer = scroll_buffer+(dest_texture_width*1*kBytesPerPixel);
+				int jj = 0;
+				if (dy > 0) {
+					// Here, we need to shift the buffer around so that we start in the
+					// extra row at the end, and then copy in reverse so that we
+					// don't clobber source data before copying it.
+					outputBuffer = scroll_buffer+(
+							(scrolled_shared_rect.top()+hig+1)*dest_texture_width
+							- hig*wid)*kBytesPerPixel;
+					inputBuffer = scroll_buffer;
+					inc = -1;
+					jj = hig-1;
+				}
+
+				// Copy the data out of the texture
+				/*
+				 * TODO: check if this data must be rendered as well
+				 */
+
+//				glGetTexImage(
+//						GL_TEXTURE_2D, 0,
+//						GL_BGRA, GL_UNSIGNED_BYTE,
+//						inputBuffer
+//				);
+
+				// copy out the region to the beginning of the buffer
+				for(; jj < hig && jj >= 0; jj+=inc) {
+					memcpy(
+							outputBuffer + (jj*wid) * kBytesPerPixel,
+							//scroll_buffer + (jj*wid * kBytesPerPixel),
+							inputBuffer + (
+									(scrolled_shared_rect.top()+jj)*dest_texture_width
+									+ scrolled_shared_rect.left()) * kBytesPerPixel,
+									wid*kBytesPerPixel
+					);
+				}
+
+				// And finally, we push it back into the texture in the right
+				// location
+				strFile = createFile(
+						(const unsigned char*)outputBuffer,
+						wid, hig);
+
+				s = createRenderedSurface(strFile);
+				remove(strFile.c_str());
+
+				surface->blit(
+						shared_rect.left(), shared_rect.top(),
+						s, 0, 0, shared_rect.width(), shared_rect.height());
+
+				delete s;
+			}
+		}
+
+		for (size_t i = 0; i < num_copy_rects; i++) {
+			int wid = copy_rects[i].width();
+			int hig = copy_rects[i].height();
+			int top = copy_rects[i].top() - bitmap_rect.top();
+			int left = copy_rects[i].left() - bitmap_rect.left();
+
+			for(int jj = 0; jj < hig; jj++) {
+				memcpy(
+						scroll_buffer + jj*wid*kBytesPerPixel,
+						bitmap_in + (left + (jj+top)*bitmap_rect.width())*kBytesPerPixel,
+						wid*kBytesPerPixel
+				);
+			}
+
+			// Finally, we perform the main update, just copying the rect that is
+			// marked as dirty but not from scrolled data.
+			strFile = createFile(
+					(const unsigned char*)scroll_buffer, wid, hig);
+
+			s = createRenderedSurface(strFile);
+			remove(strFile.c_str());
+
+			surface->blit(
+					copy_rects[i].left(), copy_rects[i].top(),
+					s, 0, 0, wid, hig);
+
+			delete s;
+		}
+
+		return true;
+	}
+
+	ISurface* BerkeliumHandler::createRenderedSurface(string fileName) {
+		ISurface* s;
+		IImageProvider* img;
+
+		img = dm->createImageProvider(myScreen, fileName.c_str());
+		s   = dm->createSurface(myScreen);
+
+		img->playOver(s);
+		delete img;
+
+		return s;
+	}
+
+	string BerkeliumHandler::createFile(
+			const unsigned char *sourceBuffer,
+			int width, int height) {
 
 		string str;
-		static int call_count = 0;
-		IWindow* win;
-		IImageProvider* img;
-		ISurface* s;
-
-		int left, top, right, bottom;
-
-		clog << "BerkeliumHandler::onPaint " << mURL << endl;
-
 		FILE *outfile;
 		{
 			std::ostringstream os;
-			os << "/tmp/bh_r_" << time(NULL) << "_" << (call_count++) << ".ppm";
+			os << "/tmp/bh_r_" << time(NULL) << "_" << (callCount++) << ".ppm";
 			str = os.str();
 			outfile = fopen(str.c_str(), "wb");
 		}
-
-		const int width = bitmap_rect.width();
-		const int height = bitmap_rect.height();
 
 		fprintf(outfile, "P6 %d %d 255\n", width, height);
 		for (int y = 0; y < height; ++y) {
 			for (int x = 0; x < width; ++x) {
 				unsigned char r,g,b,a;
 
-				b = *(bitmap_in++);
-				g = *(bitmap_in++);
-				r = *(bitmap_in++);
-				a = *(bitmap_in++);
+				b = *(sourceBuffer++);
+				g = *(sourceBuffer++);
+				r = *(sourceBuffer++);
+				a = *(sourceBuffer++);
 				fputc(r, outfile);  // Red
 				//fputc(255-a, outfile);  // Alpha
 				fputc(g, outfile);  // Green
@@ -455,41 +607,60 @@ namespace player {
 		}
 		fclose(outfile);
 
-		left   = bitmap_rect.left();
-		top    = bitmap_rect.top();
-		right  = bitmap_rect.right();
-		bottom = bitmap_rect.bottom();
+		return str;
+	}
 
-		clog << "BerkeliumHandler::onPaint '" << mURL << "'" << endl;
-		clog << " left   = '" << left << "'" << endl;
-		clog << " top    = '" << top << "'" << endl;
-		clog << " right  = '" << right << "'" << endl;
-		clog << " bottom = '" << bottom << "'" << endl;
-		clog << " dx     = '" << dx << "'" << endl;
-		clog << " dy     = '" << dy << "'" << endl;
-		clog << endl;
+	void BerkeliumHandler::onPaint(
+			Window *wini,
+			const unsigned char *sourceBuffer,
+			const Rect &sourceBufferRect,
+			size_t numCopyRects,
+			const Rect *copyRects,
+			int dx,
+			int dy,
+			const Rect &scrollRect) {
+
+		IWindow* win;
+		IImageProvider* img;
+		ISurface* s;
+
+		int siL, fLeft;
+		int siT, fTop;
+		int siW;
+		int siH;
+
+		int left, top;
+		int cWid, cHig, cTop, cLef;
+
+		string str;
+
+		bool updated = mapOnPaintToTexture(
+				wini, sourceBuffer, sourceBufferRect, numCopyRects, copyRects,
+				dx, dy, scrollRect,
+				w, h, needs_full_refresh, scroll_buffer);
+
+		if (updated) {
+			needs_full_refresh = false;
+		}
 
 		img = dm->createImageProvider(myScreen, str.c_str());
 		s   = dm->createSurface(myScreen);
 
 		img->playOver(s);
-		surface->blit(left, top, s, 0, 0, right - left, bottom - top);
-
-		delete s;
 		delete img;
-
+		delete s;
 		clog << "BerkeliumHandler::onPaint all done" << endl;
 	}
 
 	void BerkeliumHandler::onCrashed(Window *win) {
-		cout << "BerkeliumHandler::onCrashed " << mURL << endl;
+		clog << "BerkeliumHandler::onCrashed " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onCreatedWindow(
 			Window *win, Window *newWindow, const Rect &initialRect) {
 
-		cout << "BerkeliumHandler::onCreatedWindow from source ";
-		cout << mURL << endl;
+		clog << "BerkeliumHandler::onCreatedWindow from source ";
+		clog << mURL << endl;
         //newWindow->setDelegate(new BerkeliumHandler);
 	}
 
@@ -499,10 +670,10 @@ namespace player {
 			URLString origin,
 			URLString target) {
 
-		cout << "BerkeliumHandler::onChromeSend at URL ";
-		cout << mURL << " from " << origin;
-		cout << " to " << target << ": ";
-		cout << message << endl;
+		clog << "BerkeliumHandler::onChromeSend at URL ";
+		clog << mURL << " from " << origin;
+		clog << " to " << target << ": ";
+		clog << message << endl;
 	}
 
 	void BerkeliumHandler::onPaintPluginTexture(
@@ -511,33 +682,33 @@ namespace player {
 			const std::vector<Rect> srcRects,
 			const Rect &destRect) {
 
-		cout << "BerkeliumHandler::onPaintPluginTexture from source ";
-		cout << mURL << endl;
+		clog << "BerkeliumHandler::onPaintPluginTexture from source ";
+		clog << mURL << endl;
 
 	}
 
 	void BerkeliumHandler::onWidgetCreated(
 			Window *win, Widget *newWidget, int zIndex) {
 
-		cout << "BerkeliumHandler::onWidgetCreated from source " << mURL;
-		cout << endl;
+		clog << "BerkeliumHandler::onWidgetCreated from source " << mURL;
+		clog << endl;
 	}
 
 	void BerkeliumHandler::onWidgetDestroyed(Window *win, Widget *newWidget) {
-		cout << "BerkeliumHandler::onWidgetDestroyed from source ";
-		cout << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetDestroyed from source ";
+		clog << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetResize(
 			Window *win, Widget *wid, int newWidth, int newHeight) {
 
-		cout << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetMove(
 			Window *win, Widget *wid, int newX, int newY) {
 
-		cout << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
 	}
 
 	void BerkeliumHandler::onWidgetPaint(
@@ -551,7 +722,7 @@ namespace player {
 			int dy,
 			const Rect &scrollRect) {
 
-		cout << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
+		clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 	}
 }
 }
