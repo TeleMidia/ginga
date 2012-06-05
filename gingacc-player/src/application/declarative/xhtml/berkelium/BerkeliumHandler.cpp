@@ -102,7 +102,7 @@ namespace player {
 			isValid = false;
 			bWindow->stop();
 			bWindow->setDelegate(NULL);
-			bWindow->del();
+			bWindow->destroy();
 		}
 
 		if (context != NULL) {
@@ -115,6 +115,8 @@ namespace player {
 			im = NULL;
 		}
 		//Caution: Surface is deleted by Player
+
+		cout << "BerkeliumHandler::~BerkeliumHandler all done" << endl;
 	}
 
 	void BerkeliumHandler::initInputMap() {

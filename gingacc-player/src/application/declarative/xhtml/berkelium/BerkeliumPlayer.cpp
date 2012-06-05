@@ -101,9 +101,23 @@ namespace player {
 		return hasIt;
 	}
 
-	void BBrowserFactory::createBrowser(BerkeliumHandler* bInfo) {
-		Context* context;
+	bool BBrowserFactory::isPending() {
+		bool isPending;
 
+		lockSet();
+		lockCSet();
+		lockDSet();
+
+		isPending = (!bSet.empty() || !cBSet.empty() || !dBSet.empty());
+
+		unlockSet();
+		unlockCSet();
+		unlockDSet();
+
+		return isPending;
+	}
+
+	void BBrowserFactory::createBrowser(BerkeliumHandler* bInfo) {
 		lockCSet();
 		cBSet.insert(bInfo);
 		unlockCSet();
@@ -384,14 +398,20 @@ namespace player {
 								TYPE_PASSIVEDEVICE, "");
 					}
 				}*/
-			}
 
-			SystemCompat::uSleep(30000);
+				SystemCompat::uSleep(30000);
+
+			} else if (!berkeliumFactory.isPending()) {
+				berkeliumFactory.stop();
+
+			} else {
+				SystemCompat::uSleep(1000);
+			}
 	    }
 
 		Berkelium::destroy();
 
-		clog << "BerkeliumPlayer::mainLoop all done!" << endl;
+		cout << "BerkeliumPlayer::mainLoop all done!" << endl;
 		return NULL;
 	}
 }

@@ -2,7 +2,6 @@ INCLUDES                    = \
                               -I$(prefix)/include/ginga/ \
                               -I$(prefix)/include/ \
                               -I$(prefix)/include/ \
-                              $(BKL_CFLAGS) \
                               $(all_includes) \
                               -I$(top_srcdir)/include
 
@@ -21,7 +20,6 @@ libgingaccplabkl_la_SOURCES = \
 
 libgingaccplabkl_la_LIBADD = \
                               -llibberkelium \
-                              $(BKL_LIBS) \
                               -ltelemidiautil \
                               -lgingaccmb \
                               -lgingaccplayer \
