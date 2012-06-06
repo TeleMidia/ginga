@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _IComponentParser_H_
 #define _IComponentParser_H_
 
-#include "../component/IComponent.h"
+#include "cm/component/IComponent.h"
 
 #include <set>
 #include <map>

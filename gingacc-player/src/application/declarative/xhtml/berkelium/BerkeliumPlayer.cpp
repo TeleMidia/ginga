@@ -61,17 +61,14 @@ namespace ginga {
 namespace core {
 namespace player {
 	BBrowserFactory BerkeliumPlayer::berkeliumFactory;
+	bool BerkeliumPlayer::mainLoopDone = false;
 
 	BBrowserFactory::BBrowserFactory() {
 		pthread_mutex_init(&smutex, NULL);
-		pthread_mutex_init(&cmutex, NULL);
-		pthread_mutex_init(&dmutex, NULL);
 	}
 
 	BBrowserFactory::~BBrowserFactory() {
 		pthread_mutex_destroy(&smutex);
-		pthread_mutex_destroy(&cmutex);
-		pthread_mutex_destroy(&dmutex);
 
 		stop();
 	}
@@ -92,136 +89,125 @@ namespace player {
 		bool hasIt;
 
 		lockSet();
-		updateSets();
+		updateMap();
 
-		hasIt = !bSet.empty();
+		hasIt = !bMap.empty();
 
 		unlockSet();
 
 		return hasIt;
 	}
 
-	bool BBrowserFactory::isPending() {
-		bool isPending;
+	bool BBrowserFactory::hasRunningBrowser() {
+		bool bRunning = false;
+
+		map<BerkeliumHandler*, short>::iterator i;
 
 		lockSet();
-		lockCSet();
-		lockDSet();
-
-		isPending = (!bSet.empty() || !cBSet.empty() || !dBSet.empty());
+		i = bMap.begin();
+		while (i != bMap.end()) {
+			if (i->second != BPT_RELEASE) {
+				bRunning = true;
+				break;
+			}
+			++i;
+		}
 
 		unlockSet();
-		unlockCSet();
-		unlockDSet();
 
-		return isPending;
+		return bRunning;
 	}
 
 	void BBrowserFactory::createBrowser(BerkeliumHandler* bInfo) {
-		lockCSet();
-		cBSet.insert(bInfo);
-		unlockCSet();
+		lockSet();
+		bMap[bInfo] = BPT_INIT;
+		unlockSet();
+	}
+
+	void BBrowserFactory::stopBrowser(BerkeliumHandler* bInfo) {
+		lockSet();
+		bMap[bInfo] = BPT_STOP;
+		unlockSet();
 	}
 
 	void BBrowserFactory::destroyBrowser(BerkeliumHandler* bInfo) {
-		lockDSet();
-		dBSet.insert(bInfo);
-		unlockDSet();
+		lockSet();
+		bMap[bInfo] = BPT_RELEASE;
+		unlockSet();
 	}
 
-	void BBrowserFactory::updateSets() {
+	void BBrowserFactory::initBrowser(BerkeliumHandler* bInfo) {
 		Context* context;
-		BerkeliumHandler* bInfo;
 		string mrl;
-
-		set<BerkeliumHandler*>::iterator i, j;
-
 		int w, h;
 
-		lockCSet();
-		i = cBSet.begin();
-		while (i != cBSet.end()) {
-			bInfo = (*i);
+		context = Context::create();
+		std::auto_ptr<Window> bwin(Window::create(context));
 
-			bSet.insert(bInfo);
+		bInfo->setContext(context);
+		bInfo->getSize(&w, &h);
 
-			context = Context::create();
-			std::auto_ptr<Window> bwin(Window::create(context));
+		bwin->resize(w, h);
+		bwin->setDelegate(bInfo);
 
-			bInfo->setContext(context);
-			bInfo->getSize(&w, &h);
+		mrl = bInfo->getUrl();
 
-			bwin->resize(w, h);
-			bwin->setDelegate(bInfo);
+		if (mrl.find("file://") == std::string::npos &&
+				fileExists(mrl)) {
 
-			mrl = bInfo->getUrl();
+			mrl = "file://" + mrl;
+		}
 
-			if (mrl.find("file://") == std::string::npos && fileExists(mrl)) {
-				mrl = "file://" + mrl;
+		bwin->navigateTo(URLString::point_to(mrl));
+
+		wstring str_css(L"::-webkit-scrollbar { display: none; }");
+		wstring str_js(L"document.body.style.overflow='hidden'");
+
+		bwin->insertCSS(
+				WideString::point_to(str_css.c_str()),
+				WideString::empty());
+
+		bwin->executeJavascript(
+				WideString::point_to(str_js.c_str()));
+
+		bInfo->setWindow(bwin);
+	}
+
+	void BBrowserFactory::updateMap() {
+		BerkeliumHandler* bInfo;
+		map<BerkeliumHandler*, short>::iterator i, j;
+
+		i = bMap.begin();
+		while (i != bMap.end()) {
+			bInfo = i->first;
+
+			switch (i->second) {
+				case BPT_INIT:
+					initBrowser(bInfo);
+					bMap[bInfo] = BPT_UPDATE;
+					break;
+
+				case BPT_UPDATE:
+					bInfo->updateEvents();
+					break;
+
+				case BPT_STOP:
+					bInfo->stop();
+					bMap[bInfo] = BPT_NONE;
+					break;
+
+				case BPT_RELEASE:
+					delete bInfo;
+					bMap.erase(i);
+					i = bMap.begin();
+					continue;
+
+				default:
+					break;
 			}
 
-			bwin->navigateTo(URLString::point_to(mrl));
-
-			wstring str_css(L"::-webkit-scrollbar { display: none; }");
-			wstring str_js(L"document.body.style.overflow='hidden'");
-
-			bwin->insertCSS(
-					WideString::point_to(str_css.c_str()),
-					WideString::empty());
-
-			bwin->executeJavascript(WideString::point_to(str_js.c_str()));
-
-			bInfo->setWindow(bwin);
-
 			++i;
 		}
-		cBSet.clear();
-		unlockCSet();
-
-		lockDSet();
-		i = dBSet.begin();
-		while (i != dBSet.end()) {
-			bInfo = (*i);
-
-			j = bSet.find(bInfo);
-			if (j != bSet.end()) {
-				bSet.erase(j);
-
-				delete bInfo;
-
-				if (bSet.empty()) {
-					stop();
-				}
-			}
-
-			++i;
-		}
-		dBSet.clear();
-		unlockDSet();
-
-		i = bSet.begin();
-		while (i != bSet.end()) {
-			bInfo = *i;
-			bInfo->updateEvents();
-
-			++i;
-		}
-	}
-
-	void BBrowserFactory::lockCSet() {
-		pthread_mutex_lock(&cmutex);
-	}
-
-	void BBrowserFactory::unlockCSet() {
-		pthread_mutex_unlock(&cmutex);
-	}
-
-	void BBrowserFactory::lockDSet() {
-		pthread_mutex_lock(&dmutex);
-	}
-
-	void BBrowserFactory::unlockDSet() {
-		pthread_mutex_unlock(&dmutex);
 	}
 
 	void BBrowserFactory::lockSet() {
@@ -255,6 +241,15 @@ namespace player {
 
 	BerkeliumPlayer::~BerkeliumPlayer() {
 		clog << "BerkeliumPlayer::~BerkeliumPlayer " << endl;
+		berkeliumFactory.destroyBrowser(bInfo);
+
+		if (!berkeliumFactory.hasRunningBrowser()) {
+			while (!mainLoopDone) {
+				SystemCompat::uSleep(30000);
+			}
+		}
+
+		clog << "BerkeliumPlayer::~BerkeliumPlayer all done" << endl;
 	}
 
 	ISurface* BerkeliumPlayer::getSurface() {
@@ -310,7 +305,7 @@ namespace player {
 
 	void BerkeliumPlayer::stop() {
 		clog << "BerkeliumPlayer::stop '" << mrl << "'" << endl;
-		berkeliumFactory.destroyBrowser(bInfo);
+		berkeliumFactory.stopBrowser(bInfo);
 		Player::stop();
 	}
 
@@ -378,12 +373,17 @@ namespace player {
 	}
 
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
-		Berkelium::init(Berkelium::FileString::empty());
-		/*if (!Berkelium::init(Berkelium::FileString::empty())) {
+		string hDir = SystemCompat::getGingaBinPath() + "/Berkelium";
+
+		mainLoopDone = false;
+
+	    if (!Berkelium::init(Berkelium::FileString::point_to(hDir.c_str()))) {
 			clog << "BerkeliumPlayer::mainLoop ";
 			clog << "Failed to initialize berkelium!" << endl;
+
+			mainLoopDone = true;
 			return NULL;
-		}*/
+		}
 
 		clog << "BerkeliumPlayer::mainLoop" << endl;
 
@@ -401,17 +401,24 @@ namespace player {
 
 				SystemCompat::uSleep(30000);
 
-			} else if (!berkeliumFactory.isPending()) {
-				berkeliumFactory.stop();
-
 			} else {
-				SystemCompat::uSleep(1000);
+				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;
+				berkeliumFactory.stop();
 			}
 	    }
 
+		clog << "BerkeliumPlayer::mainLoop exit from factory!" << endl;
+		Berkelium::update();
+
+		clog << "BerkeliumPlayer::mainLoop stopping berkelium!" << endl;
+		Berkelium::stopRunning();
+
+		clog << "BerkeliumPlayer::mainLoop destroying berkelium!" << endl;
 		Berkelium::destroy();
 
-		cout << "BerkeliumPlayer::mainLoop all done!" << endl;
+		clog << "BerkeliumPlayer::mainLoop all done!" << endl;
+
+		mainLoopDone = true;
 		return NULL;
 	}
 }

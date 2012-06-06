@@ -116,6 +116,7 @@ namespace player {
 		void initInputMap();
 
 	public:
+		void stop();
 		void setKeyHandler(bool handler);
 
 		void setContext(Context* context);
