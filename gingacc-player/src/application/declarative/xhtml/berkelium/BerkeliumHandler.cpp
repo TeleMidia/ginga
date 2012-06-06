@@ -98,25 +98,33 @@ namespace player {
 
 	BerkeliumHandler::~BerkeliumHandler() {
 		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
+
 		if (isValid) {
 			isValid = false;
-			bWindow->stop();
+
+			setKeyHandler(false);
+
 			bWindow->setDelegate(NULL);
+/*
+			clog << "BerkeliumHandler::~BerkeliumHandler deleting win" << endl;
+			bWindow->del();
+
+			clog << "BerkeliumHandler::~BerkeliumHandler destroying win";
+			clog << endl;
 			bWindow->destroy();
+*/
 		}
 
 		if (context != NULL) {
+			clog << "BerkeliumHandler::~BerkeliumHandler destroying context";
+			clog << endl;
 			context->destroy();
 			context = NULL;
 		}
 
-		if (im != NULL) {
-			im->removeInputEventListener(this);
-			im = NULL;
-		}
 		//Caution: Surface is deleted by Player
 
-		cout << "BerkeliumHandler::~BerkeliumHandler all done" << endl;
+		clog << "BerkeliumHandler::~BerkeliumHandler all done" << endl;
 	}
 
 	void BerkeliumHandler::initInputMap() {
@@ -198,6 +206,16 @@ namespace player {
 
 		fromGingaToBklm[CodeMap::KEY_TAB]               = 9;
 		fromGingaToBklm[CodeMap::KEY_TAP]               = '\n';
+	}
+
+	void BerkeliumHandler::stop() {
+		if (isValid) {
+			bWindow->mouseMoved(-1, -1);
+			bWindow->mouseButton(0, true);
+			bWindow->mouseButton(0, false);
+		}
+
+		clog << "BerkeliumHandler::stop all done" << endl;
 	}
 
 	void BerkeliumHandler::setKeyHandler(bool handler) {

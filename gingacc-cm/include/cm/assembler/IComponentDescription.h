@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef _IComponentDescription_H_
 #define _IComponentDescription_H_
 
-#include "../component/IComponent.h"
+#include "cm/component/IComponent.h"
 
 #include <map>
 #include <string>
