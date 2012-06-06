@@ -67,7 +67,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/select.h>
 #include <sstream>
 #include <iostream>
 #include <memory>
