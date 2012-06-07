@@ -1,0 +1,3 @@
+system=x11
+no-sighandler
+no-deinit-check
