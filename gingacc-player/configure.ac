@@ -435,6 +435,7 @@ AC_CONFIG_FILES(Makefile
 	src/Makefile
 	src/image/Makefile
 	src/application/imperative/lua/Makefile
+	src/application/imperative/lua/tests/Makefile
 	src/application/declarative/smil/Makefile
 	src/application/declarative/xhtml/links/Makefile
 	src/application/declarative/xhtml/berkelium/Makefile

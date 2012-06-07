@@ -1,4 +1,5 @@
-# Makefile.am -- Template for generating Makefile via Automake.
+#! /bin/sh -
+# run.sh -- Run NCL wrapper.
 #
 # Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 #
@@ -16,24 +17,5 @@
 # with this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-SUBDIRS= tests
-
-AM_CPPFLAGS= -I$(top_srcdir)/include -I$(prefix)/include/ginga/
-AM_CFLAGS= -Wall -Wextra
-AM_CXXFLAGS= $(AM_CFLAGS)
-
-libdir= $(prefix)/lib/ginga/players
-lib_LTLIBRARIES= libgingaccplalua.la
-
-libgingaccplalua_la_CFLAGS= $(AM_CFLAGS) $(AM_CXXFLAGS)
-libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
-  -L$(prefix)/lib/ginga -llua -lgingaccplayer
-
-libgingaccplalua_la_SOURCES= \
-  LuaCanvas.cpp              \
-  LuaPlayer.cpp              \
-  nclua-event.cpp            \
-  nclua-internal.c           \
-  nclua-internal.h
-
-MAINTAINERCLEANFILES= Makefile.in
+export LD_LIBRARY_PATH=/usr/local/lib/ginga:/usr/local/lib/ginga/adapters:/usr/local/lib/ginga/cm:/usr/local/lib/ginga/epgfactory:/usr/local/lib/ginga/epgfactory/src:/usr/local/lib/ginga/mb:/usr/local/lib/ginga/mb/dec:/usr/local/lib/ginga/ic:/usr/local/lib/ginga/converters:/usr/local/lib/ginga/dp:/usr/local/lib/ginga/players:/usr/lib/lua/5.1/socket:/usr/local/lib/lua/5.1/socket
+exec /usr/local/sbin/ginga --disable-gfx --ncl "$@" 1>/dev/null
