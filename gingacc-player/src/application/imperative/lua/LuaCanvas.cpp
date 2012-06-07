@@ -131,12 +131,6 @@ static int l_new (lua_State* L)
 			clog << "CANVAS:NEW '" << sfc << "'" << endl;
 			clog << endl;
 
-			sfc->setBgColor(
-					canvas->color->getR(),
-					canvas->color->getG(),
-					canvas->color->getB(),
-					canvas->color->getAlpha());
-
 			sfc->clearContent();
 
 			break;
@@ -461,11 +455,7 @@ static int l_clear (lua_State* L)
 {
     // [ ]
 	Canvas* canvas = CHECKCANVAS(L);
-    canvas->sfc->setBgColor(
-    		canvas->color->getR(),
-    		canvas->color->getG(),
-    		canvas->color->getB(),
-    		canvas->color->getAlpha());
+    canvas->sfc->clearContent();
 
     return 0;
 }

@@ -104,6 +104,19 @@ namespace mb {
 		pthread_mutex_destroy(&ddMutex);
 	}
 
+	void SDLSurface::checkPendingSurface() {
+		if (pending != NULL) {
+			if (parent != NULL && parent->getContent() == sur) {
+				((SDLWindow*)parent)->setRenderedSurface(pending);
+			}
+
+			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+			sur = pending;
+			pending = NULL;
+			releaseDrawData();
+		}
+	}
+
 	void SDLSurface::fill() {
 		int r = 0, g = 0, b = 0, alpha = 0;
 
@@ -116,7 +129,18 @@ namespace mb {
 				alpha = bgColor->getAlpha();
 			}
 
-			SDL_FillRect(sur, NULL, SDL_MapRGBA(sur->format, r, g, b, alpha));
+			if (parent != NULL && parent->getContent() == sur) {
+				pending = createSurface();
+				SDL_FillRect(
+						pending,
+						NULL,
+						SDL_MapRGBA(pending->format, r, g, b, alpha));
+
+			} else {
+				releaseDrawData();
+				SDL_FillRect(
+						sur, NULL, SDL_MapRGBA(sur->format, r, g, b, alpha));
+			}
 		}
 	}
 
@@ -181,11 +205,16 @@ namespace mb {
 		this->hasExtHandler = false;
 		this->owner         = false;
 		this->pendingFill   = false;
+		this->pending       = NULL;
 
 		this->drawData.clear();
 
 		pthread_mutex_init(&ddMutex, NULL);
 		pthread_mutex_init(&sMutex, NULL);
+	}
+
+	SDL_Surface* SDLSurface::getPendingSurface() {
+		return pending;
 	}
 
 	void SDLSurface::setExternalHandler(bool extHandler) {
@@ -259,24 +288,15 @@ namespace mb {
 
 	void SDLSurface::clearContent() {
 		clearSurface();
-
-		if (parent != NULL) {
-			parent->clearContent();
-		}
 	}
 
 	void SDLSurface::clearSurface() {
-
-		releaseDrawData();
-
 		if (sur == NULL) {
-			clog << "DFBSurface::clearContent Warning! ";
-			clog << "Can't clear content: ";
-			clog << "internal surface is NULL" << endl;
-			return;
-		}
+			releaseDrawData();
 
-		fill();
+		} else {
+			fill();
+		}
 	}
 
 	vector<DrawData*>* SDLSurface::createDrawDataList() {
@@ -339,7 +359,7 @@ namespace mb {
 		clog << x << ", " << y << ", " << w << ", " << h << "'";
 		clog << endl;
 
-		createSurface();
+		initContentSurface();
 
 		if (sur != NULL && surfaceColor != NULL) {
 			rect.x = x;
@@ -358,6 +378,8 @@ namespace mb {
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {
+		SDL_Surface* tmp;
+
 		if (iFont != NULL && txt != NULL) {
 			if (x < 0) {
 				x = 0;
@@ -372,6 +394,8 @@ namespace mb {
 			}
 
 			iFont->playOver(this, txt, x, y, 0);
+
+			checkPendingSurface();
 		}
 	}
 
@@ -454,23 +478,14 @@ namespace mb {
 		Matrix::setMatrix(&matrix, this);
 	}
 
-	void SDLSurface::createSurface() {
-		unsigned int r, g, b, a;
-
+	void SDLSurface::initContentSurface() {
 		if (sur == NULL && parent != NULL) {
 			sur = (SDL_Surface*)(parent->getContent());
 			if (sur == NULL) {
 				this->owner = true;
+
 				pthread_mutex_lock(&sMutex);
-				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
-
-				sur = SDL_CreateRGBSurface(
-						0,
-						parent->getW(),
-						parent->getH(),
-						24,
-						r, g, b, a);
-
+				sur = createSurface();
 				((SDLWindow*)parent)->setRenderedSurface(sur);
 				pthread_mutex_unlock(&sMutex);
 
@@ -478,6 +493,26 @@ namespace mb {
 				this->owner = false;
 			}
 		}
+	}
+
+	SDL_Surface* SDLSurface::createSurface() {
+		unsigned int r, g, b, a;
+		SDL_Surface* sdlSurface;
+
+		SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
+
+		sdlSurface = SDL_CreateRGBSurface(
+				0,
+				parent->getW(),
+				parent->getH(),
+				24,
+				r, g, b, a);
+
+		if (bgColor == NULL) {
+			SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
+		}
+
+		return sdlSurface;
 	}
 
 	void SDLSurface::blit(
@@ -489,7 +524,7 @@ namespace mb {
 		SDL_Rect dstRect;
 		SDL_Surface* uSur;
 
-		createSurface();
+		initContentSurface();
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
@@ -519,6 +554,7 @@ namespace mb {
 					fill();
 				}
 				SDL_UpperBlit(uSur, s, sur, &dstRect);
+				checkPendingSurface();
 			}
 
 		} else {
