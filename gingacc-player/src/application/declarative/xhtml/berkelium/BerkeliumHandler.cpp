@@ -347,15 +347,21 @@ namespace player {
 			mouseClick = true;
 
 		} else if (userEvent->isKeyType()) {
-			keyCode   = userEvent->getKeyCode(myScreen);
+			keyCode = userEvent->getKeyCode(myScreen);
+
 			i = fromGingaToBklm.find(keyCode);
 			if (i != fromGingaToBklm.end()) {
+				clog << "BerkeliumHandler::userEventReceived MB key = '";
+				clog << keyCode << "' translated to '" << i->second << "'";
+				clog << " (" << (char)i->second << ")";
+				clog << endl;
 				keyCode = i->second;
 			}
 
 			textEvent = true;
 		}
 
+		clog << "BerkeliumHandler::userEventReceived all done" << endl;
 		return true;
 	}
 
@@ -472,6 +478,10 @@ namespace player {
 			surface->blit(0, 0, s);
 			delete s;
 
+			if (surface->getParent() != NULL) {
+				((IWindow*)(surface->getParent()))->validate();
+			}
+
 			ignore_partial = false;
 			return true;
 		}
@@ -521,6 +531,10 @@ namespace player {
 				surface->blit(0, 0, s);
 				delete s;
 
+				if (surface->getParent() != NULL) {
+					((IWindow*)(surface->getParent()))->validate();
+				}
+
 				// copy out the region to the beginning of the buffer
 				for(; jj < hig && jj >= 0; jj+=inc) {
 					memcpy(
@@ -547,6 +561,10 @@ namespace player {
 						s, 0, 0, shared_rect.width(), shared_rect.height());
 
 				delete s;
+
+				if (surface->getParent() != NULL) {
+					((IWindow*)(surface->getParent()))->validate();
+				}
 			}
 		}
 
@@ -576,6 +594,10 @@ namespace player {
 					s, 0, 0, wid, hig);
 
 			delete s;
+
+			if (surface->getParent() != NULL) {
+				((IWindow*)(surface->getParent()))->validate();
+			}
 		}
 
 		return true;
@@ -638,20 +660,6 @@ namespace player {
 			int dy,
 			const Rect &scrollRect) {
 
-		IWindow* win;
-		IImageProvider* img;
-		ISurface* s;
-
-		int siL, fLeft;
-		int siT, fTop;
-		int siW;
-		int siH;
-
-		int left, top;
-		int cWid, cHig, cTop, cLef;
-
-		string str;
-
 		bool updated = mapOnPaintToTexture(
 				wini, sourceBuffer, sourceBufferRect, numCopyRects, copyRects,
 				dx, dy, scrollRect,
@@ -661,12 +669,6 @@ namespace player {
 			needs_full_refresh = false;
 		}
 
-		img = dm->createImageProvider(myScreen, str.c_str());
-		s   = dm->createSurface(myScreen);
-
-		img->playOver(s);
-		delete img;
-		delete s;
 		clog << "BerkeliumHandler::onPaint all done" << endl;
 	}
 
