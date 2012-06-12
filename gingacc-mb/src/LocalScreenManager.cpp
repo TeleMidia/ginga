@@ -220,7 +220,9 @@ namespace mb {
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {
+			removeScreen(screenId);
 			screen->releaseScreen();
+			delete screen;
 		}
 	}
 
@@ -962,6 +964,20 @@ namespace mb {
 		if (i != screens->end()) {
 			hasScreen = true;
 			*screen   = i->second;
+		}
+		unlockScreenMap();
+
+		return hasScreen;
+	}
+
+	bool LocalScreenManager::removeScreen(GingaScreenID screenId) {
+		bool hasScreen = false;
+		map<GingaScreenID, IDeviceScreen*>::iterator i;
+
+		lockScreenMap();
+		i = screens->find(screenId);
+		if (i != screens->end()) {
+			screens->erase(i);
 		}
 		unlockScreenMap();
 

@@ -241,6 +241,8 @@ namespace mb {
 			bool getScreen(
 					GingaScreenID screenId, IDeviceScreen** screen);
 
+			bool removeScreen(GingaScreenID screenId);
+
 			void lockScreenMap();
 			void unlockScreenMap();
 

@@ -71,6 +71,7 @@ namespace mb {
 		private:
 			GingaScreenID myScreen;
 			SDL_Surface* sur;
+			SDL_Surface* pending;
 			IWindow* parent;
 			bool hasExtHandler;
 			IColor* chromaColor;
@@ -94,6 +95,7 @@ namespace mb {
 			virtual ~SDLSurface();
 
 		private:
+			void checkPendingSurface();
 			void fill();
 			void releaseChromaColor();
 			void releaseBgColor();
@@ -106,6 +108,8 @@ namespace mb {
 			void initialize(GingaScreenID screenId);
 
 		public:
+			SDL_Surface* getPendingSurface();
+
 			void setExternalHandler(bool extHandler);
 			bool hasExternalHandler();
 
@@ -144,7 +148,8 @@ namespace mb {
 			void scale(double x, double y);
 
 		private:
-			void createSurface();
+			void initContentSurface();
+			SDL_Surface* createSurface();
 
 		public:
 			void blit(

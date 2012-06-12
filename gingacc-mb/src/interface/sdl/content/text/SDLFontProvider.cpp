@@ -230,7 +230,7 @@ namespace mb {
 		Uint32 r, g, b, a;
 		SDL_Color sdlColor;
 		SDL_Rect rect;
-		SDL_Surface* renderedSurface;
+		SDL_Surface* renderedSurface = NULL;
 		SDL_Surface* text;
 
 		this->content = surface;
@@ -296,7 +296,12 @@ namespace mb {
 			rect.w = text->w;
 			rect.h = text->h;
 
-			renderedSurface = (SDL_Surface*)(parent->getContent());
+			renderedSurface = ((SDLSurface*)content)->getPendingSurface();
+
+			if (renderedSurface == NULL) {
+				renderedSurface = (SDL_Surface*)(parent->getContent());
+			}
+
 			if (renderedSurface == NULL) {
 				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
 
