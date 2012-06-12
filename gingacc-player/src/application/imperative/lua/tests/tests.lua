@@ -53,7 +53,7 @@ function qf(i) return queue[i][1] end
 function qt(i) return queue[i][2] end
 
 -- Returns true if the contents of qt(i) is the same as t.
-function qcmp (i, t)
+function qeq (i, t)
    for k,v in pairs (qt (i)) do
       if t[k] ~= v then return false end
    end
@@ -61,4 +61,12 @@ function qcmp (i, t)
       if qt (i)[k] ~= v then return false end
    end
    return true
+end
+
+-- Time threshold used in time comparisons.
+TEQ_THRESHOLD = 10 -- ms
+
+-- Check if millisecond times t1 and t2 are equal.
+function teq (t1, t2)
+   return math.abs (t1 - t2) <= TEQ_THRESHOLD
 end

@@ -25,11 +25,7 @@ local t1 = {1}
 local t2 = {1,2}
 local t3 = {1,2,3}
 
-
-----------------------------------------------------------------------------
--- Invalid calls
-----------------------------------------------------------------------------
-
+-- Invalid calls.
 assert (pcall (event.register) == false)
 assert (pcall (event.register, 0) == false)
 assert (pcall (event.register, {}, {}) == false)
@@ -39,7 +35,8 @@ assert (pcall (event.register, nil, f, f) == false)
 
 
 ----------------------------------------------------------------------------
--- event.register (pos, f, {filter}) -> status, errmsg
+-- event.register ([pos:number], f:function, [filter:table])
+--     -> status:boolean, [errmsg:string]
 ----------------------------------------------------------------------------
 
 -- Check sanity.
@@ -97,4 +94,15 @@ assert (qf (7) == f and qt (7) == t3)
 assert (qf (8) == f and qt (8) == t1)
 assert (qf (9) == g and #qt (9) == 0)
 
+
+----------------------------------------------------------------------------
+-- event.register ([pos:number], f:function, [class:string], ...)
+--     -> status:boolean, [errmsg:string]
+----------------------------------------------------------------------------
+
+-- Unknown class.
+assert (bad_argument (event.register (f, 'x')))
+assert (bad_argument (event.register (f, 'y')))
+
+-- Each class is checked by separated test-file.
 done ()

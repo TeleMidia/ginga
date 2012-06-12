@@ -30,10 +30,7 @@ local function register5 ()
    assert (qsz () == 5)
 end
 
-
-----------------------------------------------------------------------------
 -- Invalid calls.
-----------------------------------------------------------------------------
 assert (pcall (event.unregister, 0) == false)
 assert (pcall (event.unregister, {}, 0, {}) == false)
 assert (pcall (event.unregister, {}, f, f) == false)

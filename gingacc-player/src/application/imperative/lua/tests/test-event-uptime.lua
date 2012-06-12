@@ -17,11 +17,6 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
 require 'tests'
 
-
-----------------------------------------------------------------------------
--- event.uptime () -> ms:number
-----------------------------------------------------------------------------
-
 assert (event.uptime () - event.uptime () == 0)
 
 -- Warning: ignoring extra argument.

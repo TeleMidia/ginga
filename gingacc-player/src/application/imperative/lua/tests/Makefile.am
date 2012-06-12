@@ -19,6 +19,7 @@
 TESTS=                            \
   test-event-register.ncl         \
   test-event-register-edit.ncl    \
+  test-event-register-key.ncl     \
   test-event-register-ncl.ncl     \
   test-event-register-pointer.ncl \
   test-event-register-si.ncl      \
@@ -26,8 +27,9 @@ TESTS=                            \
   test-event-register-tcp.ncl     \
   test-event-register-user.ncl    \
   test-event-unregister.ncl       \
-  test-event-uptime.ncl           \
-  test-event-timer.ncl
+  test-event-timer.ncl            \
+  test-event-timer-cancel.ncl     \
+  test-event-uptime.ncl
 
 XFAIL_TESTS=
 TESTS_ENVIRONMENT= $(srcdir)/run.sh
