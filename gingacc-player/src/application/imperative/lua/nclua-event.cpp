@@ -1,4 +1,4 @@
-/* nclua-event.cpp -- The NCLua event API.
+/* nclua-event.cpp -- The NCLua Event API.
    Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -15,22 +15,49 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#include <limits.h>
+#include <pthread.h>
 #include "nclua-internal.h"
 
 #include "player/LuaPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-/* Key of the module table in registry.  */
+/* Key of the Event table in registry.  This table contains the internal
+   structures of the NCLua Event module.  Unless said otherwise, we shall
+   use the expression "Event table" to refer to this table.  */
 #define NCLUAEVENT_REGISTRY_KEY "NCLua.Event"
 
-/* Index of the empty table (used as filter) in module table.  */
-#define NCLUAEVENT_EMPTY_TABLE_INDEX -1
+/* Event table contents.  */
+enum
+{
+  NCLUAEVENT_INDEX_EMPTY_TABLE = INT_MIN, /* empty table */
+  NCLUAEVENT_INDEX_LISTENERS_QUEUE,       /* listeners queue */
+  NCLUAEVENT_INDEX_TIMERS_TABLE,          /* active timers table */
 
-/* Index of the listeners queue in module table.  */
-#define NCLUAEVENT_LISTENERS_QUEUE_INDEX -2
+  /* The following is a special value indicating the
+     number of index values defined in this enumeration.  */
 
-/* Index of the timers table in module table.  */
-#define NCLUAEVENT_TIMERS_TABLE_INDEX -3
+  NCLUAEVENT_INDEX_LAST,
+};
+
+/* Gets the index of symbol SYM in Event table.  */
+#define indexof(sym) NCLUA_CONCAT (NCLUAEVENT_INDEX_, sym)
+NCLUA_COMPILE_TIME_ASSERT(indexof (LAST) < 0);
+
+/* Pushes onto stack the object at index INDEX in Event table.  */
+#define _pushenv(L, index)                                              \
+  NCLUA_STMT_BEGIN                                                      \
+  {                                                                     \
+    lua_getfield (L, LUA_REGISTRYINDEX, NCLUAEVENT_REGISTRY_KEY);       \
+    lua_rawgeti (L, -1, index);                                         \
+    lua_replace (L, -2);                                                \
+  }                                                                     \
+  NCLUA_STMT_END
+
+/* Pushes onto stack the specified object.  */
+#define push_empty_table(L)     _pushenv (L, indexof (EMPTY_TABLE))
+#define push_listeners_queue(L) _pushenv (L, indexof (LISTENERS_QUEUE))
+#define push_timers_table(L)    _pushenv (L, indexof (TIMERS_TABLE))
 
 /* Function prototypes: */
 static int l_post (lua_State* L);
@@ -42,6 +69,7 @@ static int l_post_si_event (lua_State *L);
 static int l_post_sms_event (lua_State *L);
 static int l_post_tcp_event (lua_State *L);
 static int l_post_user_event (lua_State *L);
+static int l_register (lua_State *L);
 static int l_register_edit_event (lua_State *L);
 static int l_register_key_event (lua_State *L);
 static int l_register_ncl_event (lua_State *L);
@@ -50,6 +78,7 @@ static int l_register_si_event (lua_State *L);
 static int l_register_sms_event (lua_State *L);
 static int l_register_tcp_event (lua_State *L);
 static int l_register_user_event (lua_State *L);
+static int l_unregister (lua_State *L);
 static int l_uptime (lua_State *L);
 static int l_timer (lua_State *L);
 static int l_cancel (lua_State *L);
@@ -173,7 +202,6 @@ static int l_post (lua_State* L)
   const char *dst;              /* destination */
   const char *cls;              /* event class */
   lua_CFunction handler;        /* class handler */
-
 
   if (lua_type (L, 1) == LUA_TSTRING)
     {
@@ -462,9 +490,6 @@ l_uptime (lua_State *L)
  * This function is an extension to the ABNT standard.
  */
 
-#define push_listeners_queue(L) \
-  lua_rawgeti (L, LUA_ENVIRONINDEX, NCLUAEVENT_LISTENERS_QUEUE_INDEX)
-
 static int
 l_get_listeners_queue (lua_State *L)
 {
@@ -477,8 +502,8 @@ l_get_listeners_queue (lua_State *L)
   return 1;
 }
 
-/* event.unregister (f:function) -> n:number, or
- * event.unregister (f1:function, f2:function, ...) -> n:number, or
+/* event.unregister (f:function) -> n:number; or
+ * event.unregister (f1:function, f2:function, ...) -> n:number; or
  * event.unregister () -> n:number
  *
  * Remove all entries indexed by function F from listeners queue.
@@ -556,8 +581,11 @@ l_unregister (lua_State *L)
   return 1;
 }
 
-/* event.register ([pos:number], f:function, [class:string], ...) -> b:boolean, or
- * event.register ([pos:number], f:function, [filter:table]) -> b:boolean
+/* event.register ([pos:number], f:function, [class:string], ...)
+ *     -> status:boolean, [errmsg:string]; or
+ *
+ * event.register ([pos:number], f:function, [filter:table])
+ *     -> status:boolean, [errmsg:string]
  *
  * Appends the function F to the listeners queue.
  * If POS is given, then F is registered in position POS of listeners queue.
@@ -601,7 +629,7 @@ l_register (lua_State *L)
     {
     case LUA_TNIL:
     case LUA_TNONE:
-      lua_rawgeti (L, LUA_ENVIRONINDEX, NCLUAEVENT_EMPTY_TABLE_INDEX);
+      push_empty_table (L);
       lua_insert (L, 3);
 
       /* fall-through */
@@ -666,8 +694,16 @@ l_register (lua_State *L)
   goto error;
 }
 
-/* Collects NCL edit event starting at index 3.  Returns the resulting
-   table, if successful; otherwise, returns false plus error message.  */
+/* The following l_register_*_event() functions are used by l_register() to
+   create a filter table from the given varargs parameters.  There is a
+   function for each event class.  If the call is successful, the function
+   pushes the resulting filter table onto stack.  Otherwise, it pushes false
+   plus error message.  */
+
+/* event.register (pos:number, f:function, 'edit', ...)
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for NCL edit events with the given parameters.  */
 
 static int
 l_register_edit_event (lua_State *L)
@@ -677,13 +713,25 @@ l_register_edit_event (lua_State *L)
   return 2;
 }
 
-/* Collects key event.  */
+/* event.register (pos:number, f:function, 'key',
+                   [type:string], [key:string])
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for key events with the given parameters.
+
+   The TYPE parameter is a string denoting the awaited status of the key:
+   'press' if key was pressed, or 'release' if key was released.  If TYPE is
+   nil, matches both.
+
+   The KEY parameter is a string denoting the pressed (or released) key, or
+   nil (matches any key).  The event.keys table stores the available
+   keys.  */
 
 static int
 l_register_key_event (lua_State *L)
 {
-  const char *type;
-  const char *key;
+  const char *type = NULL;
+  const char *key = NULL;
 
   if (unlikely (lua_gettop (L) > 5))
     {
@@ -691,26 +739,43 @@ l_register_key_event (lua_State *L)
       lua_settop (L, 5);
     }
 
-  type = lua_tostring (L, 4);
-  if (unlikely (type == NULL))
-    goto error_bad_argument;    /* invalid type */
+  /* Get type.  */
+  if (!lua_isnoneornil (L, 4))
+    {
+      type = lua_tostring (L, 4);
+      if (unlikely (type == NULL))
+        goto error_bad_argument; /* invalid type */
 
-  if (unlikely (!streq (type, "press") && (!streq (type, "release"))))
-    goto error_bad_argument;    /* unknown type */
+      if (unlikely (!streq (type, "press") && !streq (type, "release")))
+        goto error_bad_argument; /* unknown type */
+    }
 
-  key = lua_tostring (L, 5);
-  if (unlikely (key == NULL))
-    goto error_bad_argument;    /* invalid key */
+  /* Get key.  */
+  if (!lua_isnoneornil (L, 5))
+    {
+      key = lua_tostring (L, 5);
+      if (unlikely (key == NULL))
+        goto error_bad_argument; /* invalid key */
 
+      /* TODO: Check if key is in event.keys.  */
+    }
+
+  /* Create the resulting table.  */
   lua_createtable (L, 0, 3);
   lua_pushvalue (L, 3);
   lua_setfield (L, -2, "class");
 
-  lua_pushvalue (L, 4);
-  lua_setfield (L, -2, "type");
+  if (type != NULL)
+    {
+      lua_pushstring (L, type);
+      lua_setfield (L, -2, "type");
+    }
 
-  lua_pushvalue (L, 5);
-  lua_setfield (L, -2, "key");
+  if (key != NULL)
+    {
+      lua_pushstring (L, key);
+      lua_setfield (L, -2, "key");
+    }
 
   /* Success.  */
   return 1;
@@ -722,15 +787,33 @@ l_register_key_event (lua_State *L)
   return 2;
 }
 
-/* Collects NCL (presentation, attribution, or selection) event.  */
+/* event.register (pos:number, f:function, 'ncl', [type:string],
+                   [label or name:string], [action:string])
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for NCL events with the given parameters.
+
+   The TYPE parameter is a string denoting the type of the awaited NCL
+   event: 'presentation', 'selection', or 'attribution'.  If TYPE is nil,
+   matches any of the previous.
+
+   If TYPE == 'presentation' or TYPE == 'selection', then the 4th parameter
+   is treated as the label of a child anchor of the NCLua node.
+
+   If TYPE == 'attribution', then the 4th parameter is treated as the name
+   of child property of the NCLua node.
+
+   The ACTION para meter is a string denoting the awaited action: 'abort',
+   'pause', 'resume', 'start', or 'stop'.  If ACTION is not given, matches
+   any of the previous.  */
 
 static int
 l_register_ncl_event (lua_State *L)
 {
-  const char *type = NULL;      /* given type */
+  const char *type = NULL;
   const char *specname = NULL;  /* "label" or "name" */
-  const char *specvalue = NULL; /* given label (or name) */
-  const char *action = NULL;    /* given action */
+  const char *specvalue = NULL; /* label (or name) */
+  const char *action = NULL;
 
   if (unlikely (lua_gettop (L) > 6))
     {
@@ -820,7 +903,15 @@ l_register_ncl_event (lua_State *L)
   return 2;
 }
 
-/* Collects pointer (cursor) event.  */
+/* event.register (pos:number, f:function, 'pointer', [type:string])
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for pointer events with the given parameters.
+
+   The TYPE parameter is a string denoting the type of the awaited pointer
+   event: 'press', if pointer was pressed, 'release' if pointer was
+   released, or 'move if pointer moved.  If TYPE is nil, matches any of the
+   previous.  */
 
 static int
 l_register_pointer_event (lua_State *L)
@@ -830,7 +921,10 @@ l_register_pointer_event (lua_State *L)
   return 2;
 }
 
-/* Collects SI event.  */
+/* event.register (pos:number, f:function, 'si', ...)
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for SI events with the given parameters.  */
 
 static int
 l_register_si_event (lua_State *L)
@@ -840,7 +934,10 @@ l_register_si_event (lua_State *L)
   return 2;
 }
 
-/* Collects SMS event.  */
+/* event.register (pos:number, f:function, 'sms', ...)
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for SMS events with the given parameters.  */
 
 static int
 l_register_sms_event (lua_State *L)
@@ -850,7 +947,13 @@ l_register_sms_event (lua_State *L)
   return 2;
 }
 
-/* Collects TCP event.  */
+/* event.register (pos:number, f:function, 'tcp', [connection:any])
+       -> filter:table or false, [errmsg:string]
+
+   Creates a filter for TCP events with the given parameters.
+
+   The CONNECTION parameter is the connection identifier, returned by the
+   'connect' event.  If CONNECTION is nil, matches any connection.  */
 
 static int
 l_register_tcp_event (lua_State *L)
@@ -860,14 +963,26 @@ l_register_tcp_event (lua_State *L)
   return 2;
 }
 
-/* Collects user event. */
+/* event.register (pos:number, f:function, 'user')
+       -> filter:table or false:boolean, [errmsg:string]
+
+   Creates a filter for user events with the given parameters.  */
 
 static int
 l_register_user_event (lua_State *L)
 {
-  lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
-  return 2;
+
+  if (unlikely (lua_gettop (L) > 3))
+    {
+      nclua_lwarn_extra_args (L);
+      lua_settop (L, 3);
+    }
+
+  lua_createtable (L, 0, 1);
+  lua_pushvalue (L, 3);
+  lua_setfield (L, -2, "class");
+
+  return 1;
 }
 
 /* event.timer (ms:number, f:function) -> cancel:function
@@ -877,15 +992,6 @@ l_register_user_event (lua_State *L)
  *
  * Returns a 'cancel' function that can be used to cancel the timer.
  */
-
-#define push_timers_table(L)                                            \
-  NCLUA_STMT_BEGIN                                                      \
-  {                                                                     \
-    lua_getfield (L, LUA_REGISTRYINDEX, NCLUAEVENT_REGISTRY_KEY);       \
-    lua_rawgeti (L, -1, NCLUAEVENT_TIMERS_TABLE_INDEX);                 \
-    lua_replace (L, -2);                                                \
-  }                                                                     \
-  NCLUA_STMT_END
 
 typedef struct _nclua_event_timer_s
 {
@@ -958,7 +1064,6 @@ l_cancel (lua_State *L)
   lua_rawget (L, -2);
   if (!lua_isnil (L, -1))
     pthread_cancel (timer->tid);
-
   return 0;
 }
 
@@ -969,6 +1074,7 @@ cleanup_timer_thread (void *data)
 {
   nclua_event_timer_t *timer = (nclua_event_timer_t *) data;
   lua_State *L = timer->L;
+
   push_timers_table (L);
   lua_pushlightuserdata (L, (void *) timer);
   lua_pushnil (L);
@@ -1005,7 +1111,7 @@ timer_thread (void *data)
   lua_call (L, 0, 0);
   player->unlock ();
 
-  tail:
+ tail:
   pthread_cleanup_pop (1);
   return NULL;
 }
@@ -1068,13 +1174,7 @@ notify (lua_State *L, int index)
 
   event = luax_absindex (L, index);
 
-  /* Since only the l_* functions have an environment,
-     we cannot use push_listeners_queue() here.  */
-
-  lua_getfield (L, LUA_REGISTRYINDEX, NCLUAEVENT_REGISTRY_KEY);
-  lua_rawgeti (L, -1, NCLUAEVENT_LISTENERS_QUEUE_INDEX);
-  lua_replace (L, -2);
-
+  push_listeners_queue (L);
   queue = luax_absindex (L, -1);
   n = lua_objlen (L, queue);
 
@@ -1296,22 +1396,22 @@ LUALIB_API int luaclose_event (lua_State* L)
 
 LUALIB_API int luaopen_event (lua_State* L)
 {
-  /* Create module table and store it in registry.  */
+  /* Create Event table and store it in registry.  */
   lua_newtable (L);
   lua_pushvalue (L, -1);
   lua_setfield (L, LUA_REGISTRYINDEX, NCLUAEVENT_REGISTRY_KEY);
 
-  /* Replace the current environment by the event table.  */
+  /* Replace the current Lua environment by the Event table.  */
   lua_replace (L, LUA_ENVIRONINDEX);
 
   lua_newtable (L);
-  lua_rawseti (L, LUA_ENVIRONINDEX, NCLUAEVENT_EMPTY_TABLE_INDEX);
+  lua_rawseti (L, LUA_ENVIRONINDEX, indexof (EMPTY_TABLE));
 
   lua_newtable (L);
-  lua_rawseti (L, LUA_ENVIRONINDEX, NCLUAEVENT_LISTENERS_QUEUE_INDEX);
+  lua_rawseti (L, LUA_ENVIRONINDEX, indexof (LISTENERS_QUEUE));
 
   lua_newtable (L);
-  lua_rawseti (L, LUA_ENVIRONINDEX, NCLUAEVENT_TIMERS_TABLE_INDEX);
+  lua_rawseti (L, LUA_ENVIRONINDEX, indexof (TIMERS_TABLE));
 
   // trigger tcp thread
   lua_getglobal(L, "require");                  // [ require ]

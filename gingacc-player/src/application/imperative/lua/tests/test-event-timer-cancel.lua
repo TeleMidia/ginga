@@ -1,4 +1,4 @@
---[[ test-event-register-user.lua -- Check event.register 'user' class.
+--[[ test-event-timer-cancel.lua -- Check event.timer cancel.
      Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -17,16 +17,25 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
 require 'tests'
 
-local f = function () end
-local g = function () end
+local DUR = 500                 -- test duration in ms
 
--- Check sanity.
-assert (event.register (f, 'user'))
-for k,v in pairs (queue) do print (k,v) end
-assert (qf (1) == f and qeq (1, {class='user'}))
+local EOT = false               -- end-of-timer: true if timer's
+                                --   function was called;
+                                --   that is, the timer was not canceled
 
--- Warning: ignoring extra arguments.
-assert (event.register (g, 'user', 'x'))
-assert (qf (2) == g and qeq (2, {class='user'}))
+local THRESHOLD = TEQ_THRESHOLD
 
-done ()
+function handler(e)
+   assert (not EOT)
+   done ()
+end
+event.register (handler, 'user')
+
+local cancel = event.timer (DUR, function () EOT = true end)
+assert (cancel)
+
+-- Cancel timer.
+assert (event.timer (DUR - THRESHOLD - 1, cancel))
+
+-- Call handler.
+assert (event.timer (DUR + THRESHOLD + 1, function () event.post ('in', {class='user'}) end))

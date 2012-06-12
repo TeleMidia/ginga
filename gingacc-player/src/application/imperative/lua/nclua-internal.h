@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef _NCLUA_INTERNAL_H
-#define _NCLUA_INTERNAL_H
+#define _NCLUA_INTERNAL_H 1
 
 #ifdef __cplusplus
 # define NCLUA_BEGIN_DECLS  extern "C" {
@@ -42,7 +42,7 @@ NCLUA_BEGIN_DECLS
 #include <lualib.h>
 #include <lauxlib.h>
 
-/* Compiler features.  */
+/* Compiler Features  */
 
 #if defined __GNUC__ && !defined __STRICT_ANSI__ && !defined __cplusplus
 # define NCLUA_STMT_BEGIN  (void)(
@@ -109,7 +109,7 @@ NCLUA_BEGIN_DECLS
 # define NCLUA_USE_RESULT
 #endif
 
-/* Pre-processor token manipulation.  */
+/* Pre-Processor Token Manipulation */
 
 #define _NCLUA_STRINGIFY(arg)   #arg
 #define NCLUA_STRINGIFY(arg)    _NCLUA_STRINGIFY (arg)
@@ -117,7 +117,7 @@ NCLUA_BEGIN_DECLS
 #define _NCLUA_CONCAT(a, b)     a##b
 #define NCLUA_CONCAT(a, b)      _NCLUA_CONCAT (a, b)
 
-/* Compile-time assertions.  */
+/* Compile-time Assertions */
 
 #define _NCLUA_COMPILE_TIME_ASSERT1(cond, line) \
   typedef int tm_compile_time_assertion_at_line_##line##_failed[(cond)?1:-1]
@@ -126,7 +126,7 @@ NCLUA_BEGIN_DECLS
 #define NCLUA_COMPILE_TIME_ASSERT(cond) \
   _NCLUA_COMPILE_TIME_ASSERT0 (cond, __LINE__)
 
-/* Miscellanea.  */
+/* Miscellanea  */
 
 typedef int nclua_bool_t;
 
@@ -158,18 +158,18 @@ typedef int nclua_bool_t;
 #define likely(x)           NCLUA_LIKELY (x)
 #define unlikely(x)         NCLUA_UNLIKELY (x)
 
-/* Error handling.  */
+/* Error Handling */
 
 /* nclua_status_t is used to indicate errors.  */
 typedef enum _nclua_status_s
 {
-  NCLUA_STATUS_SUCCESS = 0,     /* No error has occurred.  */
-  NCLUA_STATUS_NO_MEMORY,       /* Out of memory.  */
-  NCLUA_STATUS_NULL_POINTER,    /* NULL pointer.  */
-  NCLUA_STATUS_BAD_ARGUMENT,    /* Bad argument. */
-  NCLUA_STATUS_NOT_IMPLEMENTED, /* Not implemented. */
-  NCLUA_STATUS_FILE_NOT_FOUND,  /* File not found.  */
-  NCLUA_STATUS_INVALID_STATUS,  /* Invalid value for nclua_status_t.  */
+  NCLUA_STATUS_SUCCESS = 0,     /* no error has occurred */
+  NCLUA_STATUS_NO_MEMORY,       /* out of memory */
+  NCLUA_STATUS_NULL_POINTER,    /* NULL pointer */
+  NCLUA_STATUS_BAD_ARGUMENT,    /* bad argument */
+  NCLUA_STATUS_NOT_IMPLEMENTED, /* not implemented */
+  NCLUA_STATUS_FILE_NOT_FOUND,  /* file not found */
+  NCLUA_STATUS_INVALID_STATUS,  /* invalid value for nclua_status_t */
 
   /* The following is a special value indicating the
      number of status values defined in this enumeration.  */
@@ -186,7 +186,7 @@ nclua_status_to_string (nclua_status_t status);
 #define nclua_pushstatus(L, status) \
   lua_pushstring (L, nclua_status_to_string (status))
 
-/* Message logging.  */
+/* Message Logging */
 
 #define NCLUA_ERROR_PREFIX  "NCLUA ERROR\t"
 #define NCLUA_WARN_PREFIX   "NCLUA Warning\t"
@@ -227,7 +227,7 @@ _nclua_lerror_at_line (lua_State *L, int level, const char *prefix,
 #define nclua_lwarn_extra_args(L) \
   nclua_lwarn (L, 1, "ignoring extra arguments to function")
 
-/* Lua-stack manipulation.  */
+/* Stack Manipulation */
 
 extern const char *
 luax_currlfunc (lua_State *L);
