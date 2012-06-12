@@ -54,7 +54,6 @@ http://www.telemidia.puc-rio.br
 #include "BerkeliumHandler.h"
 
 #include <pthread.h>
-#include <sys/select.h>
 
 #include <set>
 #include <string>
@@ -70,14 +69,15 @@ namespace player {
 		private:
 			bool running;
 
-			set<BerkeliumHandler*> bSet;
+			/* Browser Pending Tasks*/
+			static const short BPT_INIT          = 0;
+			static const short BPT_UPDATE        = 1;
+			static const short BPT_STOP          = 2;
+			static const short BPT_RELEASE       = 3;
+			static const short BPT_NONE          = 4;
+
+			map<BerkeliumHandler*, short> bMap;
 			pthread_mutex_t smutex;
-
-			set<BerkeliumHandler*> cBSet;
-			pthread_mutex_t cmutex;
-
-			set<BerkeliumHandler*> dBSet;
-			pthread_mutex_t dmutex;
 
 		public:
 			BBrowserFactory();
@@ -87,17 +87,14 @@ namespace player {
 			void stop();
 			bool isRunning();
 			bool hasBrowser();
+			bool hasRunningBrowser();
 			void createBrowser(BerkeliumHandler* bInfo);
+			void stopBrowser(BerkeliumHandler* bInfo);
 			void destroyBrowser(BerkeliumHandler* bInfo);
 
 		private:
-			void updateSets();
-
-			void lockCSet();
-			void unlockCSet();
-
-			void lockDSet();
-			void unlockDSet();
+			void initBrowser(BerkeliumHandler* bInfo);
+			void updateMap();
 
 			void lockSet();
 			void unlockSet();
@@ -106,10 +103,11 @@ namespace player {
 	class BerkeliumPlayer : public Player {
 		private:
 			static BBrowserFactory berkeliumFactory;
+			static bool mainLoopDone;
 			BerkeliumHandler* bInfo;
 
 		public:
-			BerkeliumPlayer(string mrl);
+			BerkeliumPlayer(GingaScreenID myScreen, string mrl);
 			virtual ~BerkeliumPlayer();
 
 			ISurface* getSurface();

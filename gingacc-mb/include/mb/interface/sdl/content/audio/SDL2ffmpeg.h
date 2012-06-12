@@ -129,7 +129,6 @@ extern "C" {
 		   shift)) + 128)
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MIN_AUDIOQ_SIZE (20 * 16 * 1024)
 #define MIN_FRAMES 5
 
 /* SDL audio buffer size, in samples. Should be small to have precise
@@ -328,7 +327,6 @@ namespace mb {
 		SDL_Thread* subtitle_tid;
 	    SDL_Thread* read_tid;
 	    SDL_Thread* video_tid;
-	    SDL_Thread* refresh_tid;
 
 	    SDL_mutex* subpq_mutex;
 	    SDL_cond* subpq_cond;
@@ -465,11 +463,13 @@ namespace mb {
 				enum PixelFormat outFormat);
 
 	private:
+		int nts_packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		void packet_queue_init(PacketQueue *q);
 		void packet_queue_flush(PacketQueue *q);
-		void packet_queue_end(PacketQueue *q);
+		void packet_queue_destroy(PacketQueue *q);
 		void packet_queue_abort(PacketQueue *q);
+		void packet_queue_start(PacketQueue *q);
 		int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block);
 
 		void free_subpicture(SubPicture *sp);

@@ -366,6 +366,10 @@ typedef struct {
 					Uint32* gmask,
 					Uint32* bmask,
 					Uint32* amask);
+
+		private:
+			static void lockScreens();
+			static void unlockScreens();
 	};
 }
 }

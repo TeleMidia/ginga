@@ -1349,6 +1349,8 @@ namespace player {
 			running = true;
 			Thread::start();
 		}
+
+		clog << "AVPlayer::play("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::pause() {
@@ -1366,6 +1368,8 @@ namespace player {
 		/*if (hasVisual) {
 			Window::dynamicRenderCallBack((void*)(this->surface));
 		}*/
+
+		clog << "AVPlayer::pause("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::stop() {
@@ -1381,6 +1385,8 @@ namespace player {
 		}
 		provider->stop();
 		this->wakeUp();
+
+		clog << "AVPlayer::stop("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::resume() {
@@ -1647,7 +1653,7 @@ namespace player {
 							break;
 						}
 
-					} else if (!this->mSleep(timeRemain)) {
+					} else if (status != PLAY || !this->mSleep(timeRemain)) {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
 						break;

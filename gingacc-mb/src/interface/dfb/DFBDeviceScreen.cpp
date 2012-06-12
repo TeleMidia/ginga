@@ -776,6 +776,7 @@ namespace mb {
 
 		pthread_mutex_init(&ieMutex, NULL);
 
+		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_CUSTOM1;
 		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_NULL;
 		gingaToDFBCodeMap[CodeMap::KEY_0]                 = DIKS_0;
 		gingaToDFBCodeMap[CodeMap::KEY_1]                 = DIKS_1;

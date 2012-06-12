@@ -290,16 +290,12 @@ if test x$enable_berkelium = xno; then
    AC_DEFINE(HAVE_BERKELIUM, 0, [Def to 0 if you don't have ginga berkelium support.])
 
 else
-   BKL_CFLAGS=`$PKG_CONFIG --cflags glib-2.0`
-   BKL_LIBS=`$PKG_CONFIG --libs glib-2.0`
    TEST_LIBS='-lgingaccplabkl -llibberkelium'
    AC_MSG_RESULT([*** Ginga Berkelium Player support will be built.])
    AC_DEFINE(HAVE_BERKELIUM, 1, [Def to 1 if you have ginga berkelium support.])
 fi
 
 AM_CONDITIONAL([BERKELIUMLIB], [test x$enable_berkelium = xyes])
-AC_SUBST(BKL_LIBS)
-AC_SUBST(BKL_CFLAGS)
 
 #################
 # Links Support #

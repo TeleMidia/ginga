@@ -136,10 +136,11 @@ namespace player {
 	}
 
 	void AwesomiumPlayer::stop() {
-		AwesomiumHandler::stopUpdate(awesome);
 		Player::stop();
 
-		waitStop();
+		if (AwesomiumHandler::stopUpdate(awesome)) {
+			waitStop();
+		}
 	}
 
 	void AwesomiumPlayer::setPropertyValue(string name, string value) {
@@ -206,6 +207,7 @@ namespace player {
 			if (p != NULL && p->status == PLAY) {
 				AwesomiumHandler::loadUrl(p->awesome, p->mrl);
 				p->stopped();
+				running = false;
 
 			} else {
 				SystemCompat::uSleep(300000);
@@ -214,6 +216,7 @@ namespace player {
 			clog << "AwesomiumPlayer::_loadUrl" << endl;
 		}
 
+		clog << "AwesomiumPlayer::_loadUrl all done" << endl;
 		return (NULL);
 	}
 
