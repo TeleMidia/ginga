@@ -244,8 +244,10 @@ namespace player {
 		void unprotectedSetPropertyValue(string name, string value);
 		virtual void setPropertyValue(string name, string value);
 
+#if HAVE_DATAPROC
 		void pushSIEvent(map<string, struct SIField> event, unsigned char type);
 		void addAsSIListener(unsigned char type);
+#endif
 
         // TECLADO
 		bool userEventReceived(IInputEvent* evt);
