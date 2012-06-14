@@ -196,6 +196,7 @@ namespace compat {
 			 **********************/
 			static void makeDir(const char* dirName, unsigned int mode);
 			static void uSleep(unsigned int microseconds);
+			static string getTemporaryDir();
 
 
 			/**********************
