@@ -329,10 +329,10 @@ namespace player {
 				return;
 			}
 
-			x = (int)stof((*params)[0]);
-			y = (int)stof((*params)[1]);
-			w = (int)stof((*params)[2]);
-			h = (int)stof((*params)[3]);
+			x = (int)util::stof((*params)[0]);
+			y = (int)util::stof((*params)[1]);
+			w = (int)util::stof((*params)[2]);
+			h = (int)util::stof((*params)[3]);
 
 			delete params;
 
@@ -350,8 +350,8 @@ namespace player {
 				return;
 			}
 
-			w = (int)stof((*params)[2]);
-			h = (int)stof((*params)[3]);
+			w = (int)util::stof((*params)[2]);
+			h = (int)util::stof((*params)[3]);
 
 			delete params;
 
@@ -373,11 +373,20 @@ namespace player {
 	}
 
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
+#ifdef _WIN32
+		string hDir = SystemCompat::getGingaBinPath() + "Berkelium";
+#else
+		//FIXME: I think we do not need "/" here too
 		string hDir = SystemCompat::getGingaBinPath() + "/Berkelium";
+#endif
+
+		//Convert hDir to wstring
+		std::wstring wstr_hDir (hDir.length(),L' ');
+		std::copy(hDir.begin(), hDir.end(), wstr_hDir.begin());
 
 		mainLoopDone = false;
 
-	    if (!Berkelium::init(Berkelium::FileString::point_to(hDir.c_str()))) {
+		if (!Berkelium::init(Berkelium::FileString::point_to(wstr_hDir))) {
 			clog << "BerkeliumPlayer::mainLoop ";
 			clog << "Failed to initialize berkelium!" << endl;
 
@@ -402,8 +411,12 @@ namespace player {
 				SystemCompat::uSleep(30000);
 
 			} else {
+#ifdef _WIN32
+				Sleep(10);
+#else
 				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;
 				berkeliumFactory.stop();
+#endif
 			}
 	    }
 
