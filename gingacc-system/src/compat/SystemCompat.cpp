@@ -558,7 +558,7 @@ namespace compat {
 		}
 		return 0;
 #else
-		return gettimeofday(tv, tz);
+		return ::gettimeofday(tv, tz);
 #endif
 	}
 
@@ -578,6 +578,16 @@ namespace compat {
 #else
 		return ::rint(x);
 #endif
+	}
+
+	string SystemCompat::getTemporaryDir() {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		//TODO: Use the WIN32 API to return the temporary directory
+		return "C:\\Temp\\";
+#else
+		return "/tmp/";
+#endif
+	
 	}
 }
 }
