@@ -956,18 +956,16 @@ void LuaPlayer::refreshContent() {
 	}
 }
 
-void LuaPlayer::addAsSIListener (unsigned char type) {
 #if HAVE_DATAPROC
+void LuaPlayer::addAsSIListener (unsigned char type) {
 	if (epgProc) {
 		this->epgProc->addEPGListener(this, "all", type);
 	}
-#endif //HAVE_DATAPROC
 }
 
 //TODO: generalize to pushSIEvent
 void LuaPlayer::pushSIEvent (map<string, struct SIField> event, unsigned char type)
 {
-#if HAVE_DATAPROC
 	struct Field field;
 	//map<string, struct SIField> data;
 	map<string, struct Field> evt;
@@ -1000,8 +998,8 @@ void LuaPlayer::pushSIEvent (map<string, struct SIField> event, unsigned char ty
 
 		ext_postHashRec(this->L, evt, true);
 	}
-#endif //HAVE_DATAPROC
 }
+#endif //HAVE_DATAPROC
 
 /*
 string LuaPlayer::getPropertyValue (string name) {

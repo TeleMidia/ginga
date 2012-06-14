@@ -349,17 +349,30 @@ static int l_post (lua_State* L)
 
 			//TODO: handle epg request data table properly.
 			if (!strcmp(type, "si")) {
+#if HAVE_DATAPROC
 				GETPLAYER(L)->addAsSIListener(1);
-
+#else
+				//TODO: Generate a Warning
+#endif
 			} else if (!strcmp(type, "epg")) {
+#if HAVE_DATAPROC
 				GETPLAYER(L)->addAsSIListener(2);
+#else
+				//TODO: Generate a Warning
+#endif
 			
 			} else if (!strcmp(type, "mosaic")) {
-
+#if HAVE_DATAPROC
 				GETPLAYER(L)->addAsSIListener(3);
+#else
+				//TODO: Generate a Warning
+#endif
 			} else if (!strcmp(type, "time")) {
-
+#if HAVE_DATAPROC
 				GETPLAYER(L)->addAsSIListener(4);
+#else
+				//TODO: Generate a Warning
+#endif
 			}
 
 		} else {
