@@ -187,6 +187,14 @@ namespace compat {
 											   currentPath.find_last_of(iUriD)+1);
 
 #else
+		// This commented solution should be the correct way to find the executable name on Unix
+		/* char buf[256];
+		readlink("/proc/self/exe", buf, sizeof(buf));
+		currentPath = buf;
+		gingaCurrentPath = gingaCurrentPath = currentPath.substr( 0,
+											   currentPath.find_last_of(iUriD)+1);
+		*/
+		
 		params = split(path, pathD);
 		if (params != NULL) {
 			i = params->begin();

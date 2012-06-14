@@ -396,7 +396,18 @@ namespace player {
 
 		clog << "BerkeliumPlayer::mainLoop" << endl;
 
+#ifdef _WIN32
+		int first = true;
+#endif
+
 		while (berkeliumFactory.isRunning()) {
+#ifdef _WIN32
+			if(first)
+			{
+				Sleep(500);
+				first = false;
+			}
+#endif
 			if (berkeliumFactory.hasBrowser()) {
 				Berkelium::update();
 
@@ -411,12 +422,8 @@ namespace player {
 				SystemCompat::uSleep(30000);
 
 			} else {
-#ifdef _WIN32
-				Sleep(10);
-#else
 				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;
 				berkeliumFactory.stop();
-#endif
 			}
 	    }
 
