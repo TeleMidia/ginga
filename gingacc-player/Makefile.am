@@ -1,6 +1,7 @@
 # not a GNU package. You can remove this line, if
 # have all needed files, that a GNU package needs
 AUTOMAKE_OPTIONS = foreign 1.4
+ACLOCAL_AMFLAGS= -Im4
 
 LIBS =
 
@@ -26,21 +27,17 @@ INCLUDES = -I$(prefix)/include/ -I$(prefix)/include/ginga/
 
 MAINTAINERCLEANFILES = 	aclocal.m4 \
 			config.log \
-			config.guess \
 			config.h.in \
+			config.h.in~ \
 			config.status \
-			config.sub \
 			configure \
-			depcomp \
-			install-sh \
-			libtool \
-			ltmain.sh \
 			Makefile.in \
-			missing \
-			mkinstalldirs \
-			autom4te.cache/* \
-			.deps/*
+			m4/libtool.m4 \
+			m4/ltoptions.m4 \
+			m4/ltsugar.m4 \
+			m4/ltversion.m4 \
+			m4/lt~obsolete.m4
 
 maintainer-clean-local:
-	rm -rf .deps
+	rm -rf build-aux
 	rm -rf autom4te.cache

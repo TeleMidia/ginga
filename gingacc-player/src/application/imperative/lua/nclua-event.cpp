@@ -15,16 +15,19 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#include <config.h>
 #include <limits.h>
 #include <pthread.h>
-#include "nclua-internal.h"
+
+#include "nclua-luax-private.h"
+#include "nclua-util-private.h"
 
 #include "player/LuaPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-/* Key of the Event table in registry.  This table contains the internal
+/* Key of the module table in registry.  This table contains the internal
    structures of the NCLua Event module.  Unless said otherwise, we shall
-   use the expression "Event table" to refer to this table.  */
+   use the expression *Event table* to refer to this table.  */
 #define NCLUAEVENT_REGISTRY_KEY "NCLua.Event"
 
 /* Event table contents.  */
@@ -54,7 +57,7 @@ NCLUA_COMPILE_TIME_ASSERT(indexof (LAST) < 0);
   }                                                                     \
   NCLUA_STMT_END
 
-/* Pushes onto stack the specified object.  */
+/* Pushes the specified object onto stack.  */
 #define push_empty_table(L)     _pushenv (L, indexof (EMPTY_TABLE))
 #define push_listeners_queue(L) _pushenv (L, indexof (LISTENERS_QUEUE))
 #define push_timers_table(L)    _pushenv (L, indexof (TIMERS_TABLE))
@@ -227,7 +230,7 @@ static int l_post (lua_State* L)
 
   if (unlikely (lua_gettop (L) > 2))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 2);
     }
 
@@ -250,7 +253,7 @@ static int l_post (lua_State* L)
     }
 
   /* Post event to NCL.  */
-  if (unlikely (!luax_getstringfield (L, -1, "class", &cls)))
+  if (unlikely (!ncluax_getstringfield (L, -1, "class", &cls)))
     goto error_bad_argument;    /* invalid class */
 
   handler = class_to_handler (cls, POST_HANDLER);
@@ -261,47 +264,34 @@ static int l_post (lua_State* L)
 
  error_bad_argument:
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_BAD_ARGUMENT);
+  ncluax_push_status_string (L, NCLUA_STATUS_BAD_ARGUMENT);
   return 2;
-}
-
-#ifndef NWARNINGS
-static nclua_bool_t
-_warn_extra_fields_in_event (lua_State *L, int index, ...)
-{
-  nclua_bool_t status = false;
-  int saved_top = lua_gettop (L);
-  int t = luax_absindex (L, index);
-
-  va_list ap;
-  const char *k;
-
-  va_start (ap, index);
-  while ((k = va_arg (ap, char *)) != NULL)
-    luax_unsetfield (L, t, k);
-  va_end (ap);
-
-  lua_pushnil (L);
-  if (unlikely (lua_next (L, t)) != 0)
-    status = true;
-
-  lua_settop (L, saved_top);
-  return status;
 }
 
 /* Prints warning message if event table at INDEX is not empty.
    Before performing the check, removes from table all fields indexed by
    strings in the NULL-terminated varargs (...) argument.  */
-# define warn_extra_fields_in_event(L, index, ...)                      \
-  NCLUA_STMT_BEGIN                                                      \
-  {                                                                     \
-    if (_warn_extra_fields_in_event (L, index, ## __VA_ARGS__, NULL))   \
-      nclua_lwarn (L, 1, "ignoring extra fields in event");             \
-  }                                                                     \
-  NCLUA_STMT_END
-#else
-# define warn_extra_fields_in_event(L, index, ...)
-#endif /* !NWARNINGS */
+
+static void
+warn_extra_fields_in_event (lua_State *L, int index, ...)
+{
+  va_list args;
+  const char *k;
+  int saved_top;
+  int t;
+
+  saved_top = lua_gettop (L);
+  t = ncluax_abs (L, index);
+
+  while ((k = va_arg (args, char *)) != NULL)
+    ncluax_unsetfield (L, t, k);
+
+  lua_pushnil (L);
+  if (unlikely (lua_next (L, t)) != 0)
+    ncluax_warning (L, 1, "ignoring extra fields in event");
+
+  lua_settop (L, saved_top);
+}
 
 /* Posts NCL edit event at index 2.  Returns true if successful.
    Otherwise, returns false plus error message.  */
@@ -310,7 +300,7 @@ static int
 l_post_edit_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -320,7 +310,7 @@ static int
 l_post_key_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -335,10 +325,10 @@ l_post_ncl_event (lua_State *L)
   const char *action;
   int action_code;
 
-  if (unlikely (!luax_getstringfield (L, 2, "type", &type)))
+  if (unlikely (!ncluax_getstringfield (L, 2, "type", &type)))
     goto error_bad_argument;    /* invalid type */
 
-  if (unlikely (!luax_getstringfield (L, 2, "action", &action)))
+  if (unlikely (!ncluax_getstringfield (L, 2, "action", &action)))
     goto error_bad_argument;    /* invalid action */
 
   action_code = action_to_code (action);
@@ -355,7 +345,8 @@ l_post_ncl_event (lua_State *L)
         goto error_bad_argument; /* invalid label */
       lua_pop (L, 1);
 
-      warn_extra_fields_in_event (L, 2, "class", "type", "action", "label");
+      warn_extra_fields_in_event (L, 2, "class", "type",
+                                  "action", "label", NULL);
 
       /* Execute presentation event.  */
 
@@ -372,14 +363,14 @@ l_post_ncl_event (lua_State *L)
       const char *name;
       const char *value;
 
-      if (unlikely (!luax_getstringfield (L, 2, "name", &name)))
+      if (unlikely (!ncluax_getstringfield (L, 2, "name", &name)))
         goto error_bad_argument; /* invalid name */
 
-      if (unlikely (!luax_getstringfield (L, 2, "value", &value)))
+      if (unlikely (!ncluax_getstringfield (L, 2, "value", &value)))
         goto error_bad_argument; /* invalid value */
 
-      warn_extra_fields_in_event (L, 2, "class", "type", "action",
-                                  "name", "value");
+      warn_extra_fields_in_event (L, 2, "class", "type",
+                                  "action", "name", "value", NULL);
 
       /* Execute attribution event.  */
 
@@ -409,11 +400,11 @@ l_post_ncl_event (lua_State *L)
   return 2;
 
  error_bad_argument:
-  nclua_pushstatus (L, NCLUA_STATUS_BAD_ARGUMENT);
+  ncluax_push_status_string (L, NCLUA_STATUS_BAD_ARGUMENT);
   goto error;
 
  error_not_implemented:
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   goto error;
 }
 
@@ -423,7 +414,7 @@ static int
 l_post_pointer_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -433,7 +424,7 @@ static int
 l_post_si_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -443,7 +434,7 @@ static int
 l_post_sms_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -453,7 +444,7 @@ static int
 l_post_tcp_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -463,7 +454,7 @@ static int
 l_post_user_event (lua_State * L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -475,10 +466,8 @@ l_post_user_event (lua_State * L)
 static int
 l_uptime (lua_State *L)
 {
-#ifndef NWARNINGS
   if (unlikely (lua_gettop (L) > 0))
-    nclua_lwarn_extra_args (L);
-#endif
+    ncluax_warning_extra_arguments (L, 1);
 
   lua_pushnumber (L, GETPLAYER (L)->getMediaTime() * 1000);
   return 1;
@@ -493,10 +482,8 @@ l_uptime (lua_State *L)
 static int
 l_get_listeners_queue (lua_State *L)
 {
-#ifndef NWARNINGS
   if (unlikely (lua_gettop (L) > 0))
-    nclua_lwarn_extra_args (L);
-#endif
+    ncluax_warning_extra_arguments (L, 1);
 
   push_listeners_queue (L);
   return 1;
@@ -550,7 +537,7 @@ l_unregister (lua_State *L)
       luaL_checktype (L, 1, LUA_TFUNCTION);
 
       push_listeners_queue (L);
-      q = luax_absindex (L, -1);
+      q = ncluax_abs (L, -1);
       saved_n = n = lua_objlen (L, q);
 
       i = 1;
@@ -564,7 +551,7 @@ l_unregister (lua_State *L)
               /* Remove function from listeners queue
                  shifting down other elements to close space.  */
 
-              luax_tableremove (L, q, i);
+              ncluax_tableremove (L, q, i);
               n--;
               continue;
             }
@@ -637,7 +624,7 @@ l_register (lua_State *L)
     case LUA_TTABLE:
       if (unlikely (lua_gettop (L) > 3))
         {
-          nclua_lwarn_extra_args (L);
+          ncluax_warning_extra_arguments (L, 1);
           lua_settop (L, 3);
         }
       break;
@@ -677,7 +664,7 @@ l_register (lua_State *L)
   /* Insert {f, {filter}} into listeners queue,
      shifting up any other elements, if necessary.  */
 
-  luax_tableinsert (L, -2, pos);
+  ncluax_tableinsert (L, -2, pos);
 
   /* Success.  */
   lua_pushboolean (L, TRUE);
@@ -690,7 +677,7 @@ l_register (lua_State *L)
   return 2;
 
  error_bad_argument:
-  nclua_pushstatus (L, NCLUA_STATUS_BAD_ARGUMENT);
+  ncluax_push_status_string (L, NCLUA_STATUS_BAD_ARGUMENT);
   goto error;
 }
 
@@ -709,7 +696,7 @@ static int
 l_register_edit_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -735,7 +722,7 @@ l_register_key_event (lua_State *L)
 
   if (unlikely (lua_gettop (L) > 5))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 5);
     }
 
@@ -783,7 +770,7 @@ l_register_key_event (lua_State *L)
   /* Failure.  */
  error_bad_argument:
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_BAD_ARGUMENT);
+  ncluax_push_status_string (L, NCLUA_STATUS_BAD_ARGUMENT);
   return 2;
 }
 
@@ -817,7 +804,7 @@ l_register_ncl_event (lua_State *L)
 
   if (unlikely (lua_gettop (L) > 6))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 6);
     }
 
@@ -899,7 +886,7 @@ l_register_ncl_event (lua_State *L)
   /* Failure.  */
  error_bad_argument:
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_BAD_ARGUMENT);
+  ncluax_push_status_string (L, NCLUA_STATUS_BAD_ARGUMENT);
   return 2;
 }
 
@@ -917,7 +904,7 @@ static int
 l_register_pointer_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -930,7 +917,7 @@ static int
 l_register_si_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -943,7 +930,7 @@ static int
 l_register_sms_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -959,7 +946,7 @@ static int
 l_register_tcp_event (lua_State *L)
 {
   lua_pushboolean (L, FALSE);
-  nclua_pushstatus (L, NCLUA_STATUS_NOT_IMPLEMENTED);
+  ncluax_push_status_string (L, NCLUA_STATUS_NOT_IMPLEMENTED);
   return 2;
 }
 
@@ -974,7 +961,7 @@ l_register_user_event (lua_State *L)
 
   if (unlikely (lua_gettop (L) > 3))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 3);
     }
 
@@ -1015,7 +1002,7 @@ l_timer (lua_State *L)
 
   if (unlikely (lua_gettop (L) > 2))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 2);
     }
 
@@ -1045,7 +1032,7 @@ l_cancel (lua_State *L)
 
   if (unlikely (lua_gettop (L) > 0))
     {
-      nclua_lwarn_extra_args (L);
+      ncluax_warning_extra_arguments (L, 1);
       lua_settop (L, 0);
     }
 
@@ -1134,8 +1121,8 @@ match (lua_State *L, int event, int filter)
   nclua_bool_t status = TRUE;
   int top = lua_gettop (L);
 
-  event = luax_absindex (L, event);
-  filter = luax_absindex (L, filter);
+  event = ncluax_abs (L, event);
+  filter = ncluax_abs (L, filter);
 
   lua_pushnil (L);
   while (lua_next (L, filter) != 0)
@@ -1172,10 +1159,10 @@ notify (lua_State *L, int index)
   int n;                        /* queue size */
   int i;
 
-  event = luax_absindex (L, index);
+  event = ncluax_abs (L, index);
 
   push_listeners_queue (L);
-  queue = luax_absindex (L, -1);
+  queue = ncluax_abs (L, -1);
   n = lua_objlen (L, queue);
 
   result = 0;
