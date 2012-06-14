@@ -1104,10 +1104,10 @@ namespace mb {
 
 			/* XXX: we suppose the screen has a 1.0 pixel ratio */
 			height = vp->height;
-			width = ((int)rint(height * aspect_ratio)) & ~1;
+			width = ((int)SystemCompat::rint(height * aspect_ratio)) & ~1;
 			if (width > vp->width) {
 				width = vp->width;
-				height = ((int)rint(width / aspect_ratio)) & ~1;
+				height = ((int)SystemCompat::rint(width / aspect_ratio)) & ~1;
 			}
 			x = (vp->width - width) / 2;
 			y = (vp->height - height) / 2;
