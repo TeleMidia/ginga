@@ -47,75 +47,18 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-/*
- * O player Lua é responsável por intermediar a comunicação entre o ambiente
- * externo e o script NCLua do usuário.
- *
- * O ambiente externo é caracterizado por:
- * - Formatador:
- *   A comunicação se faz através de elos no documento NCL que relacionam áreas
- *   e propriedades do NCLua.
- *   Áreas são disparadas pelos métodos: play(), stop(), abort(), pause() e
- *   resume().
- *   Propriedades são alteradas pelo método: setProperty().
- *   O NCLua também pode notificar mudanças em suas áreas e propriedades
- *   através do método notifyPlayerListeners().
- * - Controle Remoto:
- *   Eventos de controle remoto chegam através do método userEventReceived().
- *
- * Arquivos auxiliares:
- * - LuaEvent.cpp: comunicação com o ambiente
- * - LuaCanvas.cpp: acesso à superfície gráfica do NCLua
- *
- * Também é responsabilidade do Player:
- * - Manter o lua_State associado ao NCLua.
- * - Manter a região do documento NCL associado ao NCLua.
- * - Inicializar as bibliotecas disponíveis ao NCLua:
- *   - biblioteca padrão
- *   - módulo event      (ver LuaEvent.cpp)
- *   - módulo canvas     (ver LuaCanvas.cpp)
- *   - módulo settings   (não implementado)
- *   - módulo persistent (não implementado)
- *
- * O Player é executado em uma thread separada, o sincronismo com o sistema é
- * feito através de chamdas ao método this->lock().
- *
- * ESCOPO: controle de qual propriedade ou área está participando de um elo no
- * NCL.
- *
- * PILHA DE LUA:
- * Funções que mexem na pilha possuem um comentário subsequente indicando o
- * estado da pilha de Lua, por exemplo:
- * lua_pushnil(L);       // [ nil ]
- * lua_pushnumber(L, 1); // [ nil | 1 ]
- * lua_pop(L, 2);        // [ ]
- *
- */
-
-/*
- * TODO:
- * - remover strcmp dos módulos
- *
- * LuaEvent:
- * - eliminar REFNCLMAP
- * - funcao para timer
- * - problemas libasync
- *
- * LuaPlayer:
- * - testar sucesso de atribuicao nos this->*
- */
-
 #ifndef LUAPLAYER_H_
 #define LUAPLAYER_H_
 
 #include "config.h"
 
 extern "C" {
-	//#include <ctrace.h>
-	#include <lua.h>
-	#include <lualib.h>
-	#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 }
+
+#include "nclua.h"
 
 #include <map>
 #include <string>
@@ -133,32 +76,16 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#if HAVE_DATAPROC
-#include "dataprocessing/IEPGProcessor.h"
-#include "dataprocessing/IEPGListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
-#endif //HAVE_DATAPROC
-
 #include "Player.h"
 
 struct Field {
-	string str;
-	map<string, struct Field> table;
+  string str;
+  map<string, struct Field> table;
 };
 
-#define LUAPLAYER_PLAYER    "luaplayer.Player"
-#define LUAPLAYER_TCP       "luaplayer.TCP"
+#define LUAPLAYER_TCP "luaplayer.TCP"
 
-string cmd_to_str(lua_State* L);
-void l_dump (lua_State* L, char* point);
-void t_dump (lua_State* L, int idx);
-
-// FUNCOES C AUXILIARES
-
-// Converte uma HashTable C++ para uma tabela Lua.
-LUALIB_API int ext_postHashRec (
-		lua_State* L, map<string, struct Field> evt, bool dispatch);
-
+LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt, bool dispatch);
 LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt);
 LUALIB_API int ext_postRef (lua_State* L, int ref);
 
@@ -169,13 +96,11 @@ LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect);
 
 #define GETPLAYER(L) (LuaPlayer::getPlayer(L))
 
-
-// ESCOPO
 struct scopeInfo {
-    short type;
-	string scopeId;
-	double initTime;
-	double endTime;
+  short type;
+  string scopeId;
+  double initTime;
+  double endTime;
 };
 
 namespace br {
@@ -185,81 +110,63 @@ namespace ginga {
 namespace core {
 namespace player {
 
-#if HAVE_DATAPROC
-  class LuaPlayer :
-	  public Player, public Thread, public IInputEventListener,
-	  	  public IEPGListener {
-#else
-  class LuaPlayer :
-	  public Player, public Thread, public IInputEventListener {
-#endif //HAVE_DATAPROC
+  class LuaPlayer:
+    public Player, public Thread, public IInputEventListener
+  {
 
-	private:
-		bool loaded;     // se o script ja foi carregado (executado)
-		bool played;     // se o player ja foi executado
-		bool running;    // se o player esta em execucao
+  private:
+    bool loaded;                  /* true if script was loaded */
+    bool played;                  /* true if script was executed */
+    bool running;                 /* true if script is executing */
 
-        // ESCOPO
-		string currentScope;
-		map<string, struct scopeInfo*>* scopes;
-		void addScope(string scope, short type, double begin=-1, double end=-1);
-		void load ();
-		void dispatch ();
-        void post (string action);
+    string currentScope;
+    map<string, struct scopeInfo*>* scopes;
+    void addScope(string scope, short type, double begin=-1, double end=-1);
+    void load ();
+    void dispatch ();
+    void post (string action);
 
-	public:
-		lua_State* L;    // estado Lua
-        pthread_t tcp_thread_id;
-        bool tcp_running;
+  public:
+    nclua_t *nc;
+    lua_State* L;    // estado Lua
+    pthread_t tcp_thread_id;
+    bool tcp_running;
 
-	    IInputManager* im;
-        bool isHandler;  // se o player esta com o foco
+    IInputManager* im;
+    bool isHandler;             /* true if player has the focus */
 
-#if HAVE_DATAPROC
-		IEPGProcessor* epgProc;
-#endif //HAVE_DATAPROC
 
-		LuaPlayer (GingaScreenID screenId, string mrl);
-		virtual ~LuaPlayer ();
+    LuaPlayer (GingaScreenID screenId, string mrl);
+    virtual ~LuaPlayer ();
 
-		GingaScreenID getScreenId();
-		ILocalScreenManager* getScreenManager();
-		void run();
-		virtual bool hasPresented();
+    GingaScreenID getScreenId();
+    ILocalScreenManager* getScreenManager();
+    void run();
+    virtual bool hasPresented();
+    static LuaPlayer* getPlayer (lua_State* L);
 
-        // A partir de um estado Lua, eh possivel chegar ao Player associado.
-		static LuaPlayer* getPlayer (lua_State* L);
+    bool isRunning()
+    {
+      return running;
+    }
 
-		bool isRunning() {
-			return running;
-		}
-        // COMUNICACAO COM O FORMATADOR
-		void play();
-		void stop();
-		void abort();
-		void pause();
-		void resume();
-        //string getPropertyValue (string name);
+    void play();
+    void stop();
+    void abort();
+    void pause();
+    void resume();
 
-		void unprotectedSetPropertyValue(string name, string value);
-		virtual void setPropertyValue(string name, string value);
+    void unprotectedSetPropertyValue(string name, string value);
+    virtual void setPropertyValue(string name, string value);
 
-		void pushSIEvent(map<string, struct SIField> event, unsigned char type);
-		void addAsSIListener(unsigned char type);
+    bool userEventReceived(IInputEvent* evt);
+    void refreshContent();
 
-        // TECLADO
-		bool userEventReceived(IInputEvent* evt);
-		void refreshContent();
-
-        // ESCOPO
-		bool setKeyHandler(bool isHandler);
-		void setScope(
-				string scope,
-				short type=TYPE_PRESENTATION,
-				double begin=-1, double end=-1, double outTransDur=-1);
-
-		void setCurrentScope(string scopeId);
+    bool setKeyHandler(bool isHandler);
+    void setScope(string scope, short type=TYPE_PRESENTATION, double begin=-1, double end=-1, double outTransDur=-1);
+    void setCurrentScope(string scopeId);
   };
+
 } } } } } }
 
 #endif /* LUAPLAYER_H_ */

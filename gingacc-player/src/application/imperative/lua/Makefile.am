@@ -18,22 +18,28 @@
 
 SUBDIRS= tests
 
-AM_CPPFLAGS= -I$(top_srcdir)/include -I$(prefix)/include/ginga/
-AM_CFLAGS= -Wall -Wextra
-AM_CXXFLAGS= $(AM_CFLAGS)
+AM_CPPFLAGS= -DLIBNCLUA_BUILDING -I$(top_srcdir)/include -I$(prefix)/include/ginga/
+AM_CFLAGS= $(CFLAG_VISIBILITY) -Wall -Wextra
+AM_CXXFLAGS= -Wall -Wextra
 
 libdir= $(prefix)/lib/ginga/players
 lib_LTLIBRARIES= libgingaccplalua.la
 
 libgingaccplalua_la_CFLAGS= $(AM_CFLAGS) $(AM_CXXFLAGS)
+libgingaccplalua_la_CPPFLAGS= $(AM_CPPFLAGS) $(LUA_INCLUDE)
 libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
-  -L$(prefix)/lib/ginga -llua -lgingaccplayer
+  $(LUA_LIB) -lgingaccplayer
 
 libgingaccplalua_la_SOURCES= \
   LuaCanvas.cpp              \
   LuaPlayer.cpp              \
+  nclua-compiler-private.h   \
   nclua-event.cpp            \
-  nclua-internal.c           \
-  nclua-internal.h
+  nclua-luax-private.h       \
+  nclua-luax.c               \
+  nclua-status.c             \
+  nclua-util-private.h       \
+  nclua.c                    \
+  nclua.h
 
 MAINTAINERCLEANFILES= Makefile.in

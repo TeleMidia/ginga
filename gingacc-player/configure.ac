@@ -1,97 +1,75 @@
-AC_INIT(gingaccplayer, 0.13.1)
+AC_PREREQ([2.13])
+AC_INIT([gingaccplayer], [0.13.1])
 
-AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_SRCDIR([src/Player.cpp])
 
-AC_LANG_CPLUSPLUS
-AC_PROG_CXX([g++])
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+AM_INIT_AUTOMAKE([1.4])
+AC_PROG_CC
+AC_PROG_CXX
+AC_LANG([C++])
 
-# Bring additional directories where things might be found into our
-# search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/ /usr/local/lib/ginga/mb /usr/local/lib/ginga/mb/dec /usr/local/lib/ginga/ic; do
-if test -d ${spfx}; then
-LDFLAGS="-L${spfx} $LDFLAGS"
-fi
-done
+LT_PREREQ([2.2])
+LT_INIT([shared dlopen win32-dll])
 
-for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/ /usr/local/include/ginga/mb /usr/local/include/ginga/mb/dec; do
-if test -d ${spfx}; then
-CPPFLAGS="-I${spfx} $CPPFLAGS"
-fi
-done
-#TODO: Search telemidia-util, gingacc-sytem, ... include paths 
-CPPFLAGS='-I${top_srcdir}'"/../../telemidia-util/include $CPPFLAGS"
-CPPFLAGS='-I${top_srcdir}'"/../gingacc-system/include $CPPFLAGS"
+# NCLua-specific stuff.
+AC_HEADER_STDC
+AC_C_CONST
+AC_TYPE_SIZE_T
+NCLUA_USE_GCC_PIPE_OPTION
+NCLUA_VISIBILITY
 
-###########
-# HEADERS #
-###########
+# Check for the Lua headers and library.
+AX_LUA_HEADERS
+AX_LUA_HEADERS_VERSION([501])
+AX_LUA_LIBS
+AC_SUBST([LUA_INCLUDE])
+AC_SUBST([LUA_LIB])
 
-##################
-# TeleMidia Util #
-##################
-AC_CHECK_HEADER([util/functions.h], [], AC_MSG_ERROR([
+# FIXME: Hack required by some Ginga headers and libraries.
+ginga_prefix=/usr/local
+CPPFLAGS=-I${ginga_prefix}/include/ginga
+LDFLAGS=`find ${ginga_prefix}/lib/ginga -type d |
+         sed 's/^\(.*\)$/-L\1 /' | tr -d '\n'`
 
-Couldn't find TeleMidia Util headers.
-Please install TeleMidia Util Headers.
+# TeleMidia Util.
+AC_CHECK_HEADERS([ginga/util/functions.h], [],
+  [AC_MSG_ERROR([
+***
+*** Couldn't find TeleMidia Util headers.
+*** Please install TeleMidia Util Headers.
+***])])
 
-]))
+AC_HAVE_LIBRARY([telemidiautil], [],
+  [AC_MSG_ERROR([
+***
+*** Couldn't find TeleMidia Util library.
+*** Please install TeleMidia Util Library.
+***])])
 
-##########################
-# Ginga CC System Thread #
-##########################
-AC_CHECK_HEADER([system/thread/Thread.h], [], AC_MSG_ERROR([
+# Ginga-CC System.
+AC_CHECK_HEADERS([ginga/system/thread/Thread.h], [],
+  [AC_MSG_ERROR([
+***
+*** Couldn't find Ginga CC System Thread headers.
+*** Please install gingacc-system project.
+***])])
 
-Couldn't find Ginga CC System Thread headers.
-Please install gingacc-system project.
+AC_CHECK_HEADERS([ginga/mb/interface/IWindow.h], [],
+  [AC_MSG_ERROR([
+***
+*** Couldn't find Ginga Common Core System I/O headers.
+*** Please install gingacc-system project.
+***])])
 
-]))
-
-#######
-# Lua #
-#######
-AC_CHECK_HEADER([lua.h], [], AC_MSG_ERROR([
-
-Couldn't find Lua headers.
-Please install Lua 5.1.2 or later.
-
-]))
-
-###############################
-# Ginga CC Multimedia Backend #
-###############################
-AC_CHECK_HEADER([mb/interface/IWindow.h], [], AC_MSG_ERROR([
-
-Couldn't find Ginga Common Core System I/O headers.
-Please install gingacc-system project.
-
-]))
-
-########
-# LIBS #
-########
-
-##################
-# TeleMidia Util #
-##################
-AC_HAVE_LIBRARY(telemidiautil, , AC_MSG_ERROR([
-
-Couldn't find TeleMidia Util library.
-Please install TeleMidia Util Library.
-
-]))
-
-##########################
-# Ginga CC System Thread #
-##########################
-AC_HAVE_LIBRARY(gingaccsystem, , AC_MSG_ERROR([
-
-Couldn't find Ginga CC System Thread library.
-Please install gingacc-system Project.
-
-]))
+AC_HAVE_LIBRARY(gingaccsystem, [],
+AC_MSG_ERROR([
+***
+*** Couldn't find Ginga CC System Thread library.
+*** Please install gingacc-system Project.
+***]))
 
 ########################
 # XineProvider Support #
@@ -446,7 +424,7 @@ AC_CONFIG_FILES(Makefile
 AC_OUTPUT
 
 AC_MSG_RESULT([
-Build options: 
+Build options:
   Module directory             $MODULEDIR
   Xine Provider                $hasxinep
   FFmpeg Provider              $hasffmpegp

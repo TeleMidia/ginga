@@ -44,6 +44,7 @@ config.log
 config.status
 config.sub
 configure
+core
 depcomp
 install-sh
 libtool
