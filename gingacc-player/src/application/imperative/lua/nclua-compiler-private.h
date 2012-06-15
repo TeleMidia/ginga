@@ -95,4 +95,16 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 # define NCLUA_PRIVATE extern
 #endif
 
+#ifdef _MSC_VER
+#ifndef __cplusplus
+#undef inline
+#define inline __inline
+#endif
+#endif
+
+#ifdef __STRICT_ANSI__
+#undef inline
+#define inline __inline__
+#endif
+
 #endif /* NCLUA_COMPILER_PRIVATE_H */

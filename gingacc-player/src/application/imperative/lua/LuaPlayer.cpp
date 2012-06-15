@@ -60,16 +60,26 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "mb/IInputManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+LUAPLAYER_BEGIN_DECLS
 
-LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl)
-  : Player(screenId, mrl), Thread()
+#define LOCK()   assert (pthread_mutex_lock (&this->mutex) == 0)
+#define UNLOCK() assert (pthread_mutex_unlock (&this->mutex) == 0)
+
+#define mutex_init(m)                                                   \
+  do                                                                    \
+    {                                                                   \
+      pthread_mutexattr_t attr;                                         \
+      pthread_mutexattr_init (&attr);                                   \
+      pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);       \
+      pthread_mutex_init (m, &attr);                                    \
+      pthread_mutexattr_destroy (&attr);                                \
+    }                                                                   \
+  while (0)
+
+LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) : Player (screenId, mrl)
 {
+  lua_State *L;
+
   chdir (SystemCompat::getPath (mrl).c_str ());
   this->im = dm->getInputManager (myScreen);
   this->im->addApplicationInputEventListener (this);
@@ -78,33 +88,21 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl)
   this->surface->setCaps(this->surface->getCap("ALPHACHANNEL"));
 
   this->currentScope = "";        /* whole content anchor */
-  this->scopes = new map<string, struct scopeInfo*>;
-  addScope("", TYPE_PRESENTATION, -1, -1);
+  this->scopes = new map<string, scopeinfo_t *>;
+  this->setScope ("", TYPE_PRESENTATION, -1, -1);
+
+  mutex_init (&this->mutex);
 
   this->nc = nclua_create ();
   assert (this->nc != NULL);
   nclua_set_user_data (this->nc, (void *) this, NULL);
 
   /* FIXME: Cleanup this mess.  */
-  this->L = (lua_State *) nclua_get_lua_state (nc);
+  L = (lua_State *) nclua_get_lua_state (nc);
 
-  lua_pushcfunction (this->L, luaopen_event);
-  if (lua_pcall (this->L, 0, 0, 0) != 0)
-    {
-      cout << "LUAPLAYER ERROR\t" << lua_tostring (this->L, -1) << endl;
-      assert (0);
-    }
+  lua_pushcfunction(L, luaopen_canvas);
+  lua_call(L, 0, 0);
 
-  this->lock();
-  lua_pushcfunction(this->L, luaopen_canvas);
-  if (lua_pcall(this->L, 0, 0, 0) != 0)
-    {
-      cout << "LUAPLAYER ERROR\t" << lua_tostring (this->L, -1) << endl;
-      assert (0);
-    }
-  this->unlock();
-
-  this->tcp_running = false;
   this->running = true;
   this->played = false;
   this->loaded = false;
@@ -113,93 +111,127 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl)
 
 LuaPlayer::~LuaPlayer ()
 {
-  this->lock();
+  LOCK();
+
   this->running = false;
   nclua_destroy (this->nc);
-  this->L = NULL;
-  this->unlock();
+  pthread_mutex_destroy (&this->mutex);
+
+  UNLOCK();
 }
 
-GingaScreenID LuaPlayer::getScreenId() {
-  return myScreen;
+GingaScreenID LuaPlayer::getScreenId ()
+{
+  GingaScreenID screen;
+
+  LOCK ();
+  screen = this->myScreen;
+  UNLOCK ();
+
+  return screen;
 }
 
-ILocalScreenManager* LuaPlayer::getScreenManager() {
+ILocalScreenManager *LuaPlayer::getScreenManager()
+{
+  ILocalScreenManager *dm;
+
+  LOCK ();
+  dm = this->dm;
+  UNLOCK ();
+
   return dm;
 }
 
-LuaPlayer* LuaPlayer::getPlayer (lua_State *L) {
-  nclua_t *nc;
-  nc = nclua_get_nclua_state ((void *) L);
-  return (LuaPlayer *) nclua_get_user_data (nc);
+bool
+LuaPlayer::isRunning ()
+{
+  bool running;
+
+  LOCK ();
+  running = this->running;
+  UNLOCK ();
+
+  return running;
 }
 
 void LuaPlayer::load ()
 {
-    if (this->loaded)
-      return;
+  lua_State *L;
+  ISurface *surface;
 
-    this->loaded = true;
+  LOCK ();
 
-    ISurface *s = this->getSurface();
-    if (s != NULL) {
-      lua_createcanvas (this->L, s, 0);
-      lua_setglobal (this->L, "canvas");
+  if (this->loaded)
+    goto tail;
+
+  L = (lua_State *) nclua_get_lua_state (this->nc);
+
+  this->loaded = true;
+
+  surface = this->getSurface ();
+  if (surface != NULL)
+    {
+      lua_createcanvas (L, surface, 0);
+      lua_setglobal (L, "canvas");
     }
 
-    if(luaL_loadfile(this->L, this->mrl.c_str()) ) {
+  if(luaL_loadfile (L, this->mrl.c_str ()))
+    {
       this->notifyPlayerListeners(PL_NOTIFY_ABORT, "");
-      lua_error(this->L);
-      return;
+      goto tail;
     }
-    lua_call(this->L, 0, 0);
-}
+  lua_call(L, 0, 0);
 
-void LuaPlayer::run ()
-{
-    this->lock();
-    this->load();
-    this->unlock();
+ tail:
+  UNLOCK ();
 }
 
 void LuaPlayer::post (string action)
 {
-    struct scopeInfo* scope = (*this->scopes)[this->currentScope];
+  lua_State *L;
+  scopeinfo_t *scope;
 
-    // PRESENTATION
-    if (scope->type == TYPE_PRESENTATION)
-      {
-        map<string,string> evt;
-        evt["class"]     = "ncl";
-        evt["type"]      = "presentation";
-        evt["action"]    = action;
+  LOCK ();
 
-        //TODO: Is an interval anchor id a label?
-        evt["label"]     = currentScope;
+  L  = (lua_State *) nclua_get_lua_state (this->nc);
+  scope = (*this->scopes)[this->currentScope];
+  if (scope->type == TYPE_PRESENTATION)
+    {
+      lua_newtable (L);
 
-        if (scope->initTime != -1) {
-          evt["begin"] = scope->initTime; //TODO: tostring?
-          evt["end"]   = scope->endTime; //TODO: tostring?
-        }
-        ext_postHash(this->L, evt);
-      }
-    else
-      {
-      }
+      lua_pushstring (L, "ncl");
+      lua_setfield (L, -2, "class");
+
+      lua_pushstring (L, "presentation");
+      lua_setfield (L, -2, "type");
+
+      lua_pushstring (L, action.c_str ());
+      lua_setfield (L, -2, "action");
+
+      lua_pushstring (L, currentScope.c_str ());
+      lua_setfield (L, -2, "label");
+      nclua_send (nc, -1);
+    }
+  else
+    {
+    }
+
+  UNLOCK ();
 }
 
 void LuaPlayer::play()
 {
-  this->lock();
+  LOCK ();
   Player::play();
   this->load();
   this->post("start");
-  this->unlock();
+  UNLOCK ();
 }
 
 void LuaPlayer::stop ()
 {
-  this->lock();
+  LOCK ();
+
   this->post("stop");
 
   if (this->currentScope == "")
@@ -210,124 +242,196 @@ void LuaPlayer::stop ()
     }
 
   Player::stop();
-  this->unlock();
+
+  UNLOCK ();
 }
 
-void LuaPlayer::pause()
+void 
+LuaPlayer::pause()
 {
-    this->lock();
-    this->post("pause");
-    Player::pause();
-    this->unlock();
+  LOCK ();
+
+  this->post("pause");
+  Player::pause();
+
+  UNLOCK ();
 }
 
-void LuaPlayer::resume ()
+void 
+LuaPlayer::resume ()
 {
-    this->lock();
-    Player::resume();
-    this->post("resume");
-    this->unlock();
+  LOCK ();
+
+  Player::resume();
+  this->post("resume");
+
+  UNLOCK ();
 }
 
-void LuaPlayer::abort()
+void
+LuaPlayer::abort()
 {
-    this->lock();
-    this->post("abort");
-    this->played = true;
-    this->unlock();
-    Player::abort();
+  LOCK ();
+  this->post("abort");
+  this->played = true;
+  UNLOCK ();
+
+  Player::abort();
 }
 
-void LuaPlayer::unprotectedSetPropertyValue(string name, string value) {
-  Player::setPropertyValue(name, value);
-}
-
-void LuaPlayer::setPropertyValue(string name, string value) {
-
-  this->lock();
-  Player::setPropertyValue(name, value);
-
-  map<string,string> evt;
-  evt["class"]  = "ncl";
-  evt["type"]   = "attribution";
-  evt["action"] = "start";
-  evt["name"]   = name;
-  evt["value"]  = value;
-
-  ext_postHash(this->L, evt);
-  this->unlock();
-}
-
-bool LuaPlayer::userEventReceived (IInputEvent* evt)
+void 
+LuaPlayer::doSetPropertyValue(string name, string value)
 {
-  this->lock();
+  LOCK ();
+  Player::setPropertyValue (name, value);
+  UNLOCK ();
+}
 
-  if (evt->isApplicationType()) {
-    lua_State* srcL = (lua_State*) evt->getApplicationData();
-    if (srcL == L) {
-      ext_postRef(this->L, evt->getType());
+void
+LuaPlayer::setPropertyValue(string name, string value)
+{
+  lua_State *L;
+
+  LOCK ();
+
+  L = (lua_State *) nclua_get_lua_state (this->nc);
+  this->doSetPropertyValue (name, value);
+
+  lua_newtable (L);
+
+  lua_pushstring (L, "ncl");
+  lua_setfield (L, -2, "class");
+
+  lua_pushstring (L, "presentation");
+  lua_setfield (L, -2, "type");
+
+  lua_pushstring (L, "start");
+  lua_setfield (L, -2, "action");
+
+  lua_pushstring (L, name.c_str ());
+  lua_setfield (L, -2, "name");
+
+  lua_pushstring (L, value.c_str ());
+  lua_setfield (L, -2, "value");
+
+  nclua_send (nc, -1);
+  UNLOCK ();
+}
+
+bool
+LuaPlayer::userEventReceived (IInputEvent* evt)
+{
+  lua_State *L;
+
+  LOCK ();
+
+  L = (lua_State *) nclua_get_lua_state (this->nc);
+
+  if (evt->isApplicationType ())
+    {
+      lua_State* srcL = (lua_State*) evt->getApplicationData();
+      if (srcL == L) 
+        {
+          int ref = evt->getType ();
+          lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+          luaL_unref(L, LUA_REGISTRYINDEX, ref);
+          nclua_send (nc, -1);
+        }
+    } 
+  else if (evt->isKeyType() && this->isHandler)
+    {
+      string key_str = CodeMap::getInstance()->getValue(evt->getKeyCode(myScreen));
+      lua_newtable (L);
+
+      lua_pushstring (L, "key");
+      lua_setfield (L, -2, "class");
+
+      lua_pushstring (L, evt->isPressedType() ? "press" : "release");
+      lua_setfield (L, -2, "type");
+
+      lua_pushstring (L, key_str.c_str ());
+      lua_setfield (L, -2, "key");
+      nclua_send (nc, -1);
     }
 
-  } else if (evt->isKeyType() && this->isHandler) {
-    string key_str = CodeMap::getInstance()->getValue(evt->getKeyCode(myScreen));
-    map<string,string> lua_evt;
-    lua_evt["class"] = "key";
-    lua_evt["type"]  = evt->isPressedType() ? "press" : "release";
-    lua_evt["key"]   = key_str;
-    ext_postHash(this->L, lua_evt);
-  }
-  this->unlock();
+  UNLOCK ();
+
   return true;
 }
 
 void LuaPlayer::refreshContent() {
-  if (notifyContentUpdate) {
+  LOCK ();
+  if (notifyContentUpdate)
     notifyPlayerListeners(PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
-  }
+  UNLOCK ();
 }
 
-bool LuaPlayer::hasPresented() {
+bool LuaPlayer::hasPresented()
+{
+  bool played;
+
+  LOCK ();
+  played = this->played;
+  UNLOCK ();
+
   return played;
 }
 
-bool LuaPlayer::setKeyHandler(bool isHandler) {
-    this->isHandler = isHandler;
-    return this->isHandler;
+bool
+LuaPlayer::setKeyHandler (bool isHandler)
+{
+  LOCK ();  
+  this->isHandler = isHandler;
+  UNLOCK ();
+
+  return isHandler;
 }
 
 void LuaPlayer::setScope(string scopeId, short type,
                          double begin, double end, double outTransDur)
 {
-  addScope (scopeId, type, begin, end);
-}
+  scopeinfo_t *scope;
 
-void LuaPlayer::addScope(string scopeId, short type, double begin, double end)
-{
-  struct scopeInfo* newScope;
+  LOCK ();
 
   if (this->scopes->count(scopeId) != 0)
-    return;
+    goto tail;
 
-  newScope = new struct scopeInfo;
-  (*this->scopes)[scopeId] = newScope;
-  newScope->type     = type;
-  newScope->scopeId  = scopeId;
-  newScope->initTime = begin;
-  newScope->endTime  = end;
+  scope = new scopeinfo_t;
+  scope->type     = type;
+  scope->scopeId  = scopeId;
+  scope->initTime = begin;
+  scope->endTime  = end;
+
+  (*this->scopes)[scopeId] = scope;
+
+ tail:
+  UNLOCK ();
 }
 
-void LuaPlayer::setCurrentScope(string scopeId) {
-  this->currentScope = scopeId;
-}
-
-} } } } } }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-createLuaPlayer(GingaScreenID screenId, const char* mrl, bool hasVisual) {
-  return new ::br::pucrio::telemidia::ginga::core::player::LuaPlayer(screenId, (string)mrl);
-}
-
-extern "C" void destroyLuaPlayer(::br::pucrio::telemidia::ginga::core::player::IPlayer* p)
+void LuaPlayer::setCurrentScope (string scopeId)
 {
-  delete p;
+  LOCK ();
+  this->currentScope = scopeId;
+  UNLOCK ();
 }
+
+// Component manager interface.
+
+extern "C"
+{
+  IPlayer *
+  createLuaPlayer(GingaScreenID screenId, const char* mrl, bool hasVisual)
+  {
+    string s = mrl;
+    return new LuaPlayer (screenId, s);
+  }
+
+  void
+  destroyLuaPlayer (IPlayer *p)
+  {
+    delete p;
+  }
+}
+
+LUAPLAYER_END_DECLS

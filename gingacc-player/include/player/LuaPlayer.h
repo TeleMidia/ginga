@@ -47,10 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef LUAPLAYER_H_
-#define LUAPLAYER_H_
-
-#include "config.h"
+#ifndef LUAPLAYER_H
+#define LUAPLAYER_H
 
 extern "C" {
 #include <lua.h>
@@ -58,6 +56,9 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#include "util/functions.h"
+
+#include <pthread.h>
 #include "nclua.h"
 
 #include <map>
@@ -73,9 +74,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
 #include "Player.h"
 
 struct Field {
@@ -85,88 +83,70 @@ struct Field {
 
 #define LUAPLAYER_TCP "luaplayer.TCP"
 
-LUALIB_API int ext_postHashRec (lua_State* L, map<string, struct Field> evt, bool dispatch);
-LUALIB_API int ext_postHash (lua_State* L, map<string,string>evt);
-LUALIB_API int ext_postRef (lua_State* L, int ref);
-
-LUALIB_API int luaopen_event (lua_State* L);
-LUALIB_API int luaclose_event (lua_State* L);
 LUALIB_API int luaopen_canvas (lua_State* L);
 LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect);
 
-#define GETPLAYER(L) (LuaPlayer::getPlayer(L))
+#define LUAPLAYER_BEGIN_DECLS NAMESPACE_GINGA_CORE_PLAYER_BEGIN
+#define LUAPLAYER_END_DECLS   NAMESPACE_GINGA_CORE_PLAYER_END
 
-struct scopeInfo {
+LUAPLAYER_BEGIN_DECLS
+
+typedef struct _scopeinfo_t
+{
   short type;
   string scopeId;
   double initTime;
   double endTime;
+} scopeinfo_t;
+
+class LuaPlayer:
+public Player, public IInputEventListener
+{
+
+ private:
+  nclua_t *nc;                /* the NCLua state */
+  pthread_mutex_t mutex;      /* sync access to player */
+
+  bool isHandler;             /* true if player has the focus */
+  bool loaded;                /* true if script was loaded */
+  bool played;                /* true if script was executed */
+  bool running;               /* true if script is executing */
+
+  string currentScope;
+  map<string, scopeinfo_t *> *scopes;
+  void load ();
+  void dispatch ();
+  void post (string action);
+
+ public:
+
+  LuaPlayer (GingaScreenID screenId, string mrl);
+  virtual ~LuaPlayer ();
+
+  // Player interface.
+  void play ();
+  void stop ();
+  void abort ();
+  void pause ();
+  void resume ();
+  virtual bool hasPresented ();
+  virtual void setPropertyValue (string name, string value);
+  bool setKeyHandler(bool isHandler);
+  void setScope(string scope, short type=TYPE_PRESENTATION, double begin=-1, double end=-1, double outTransDur=-1);
+  void setCurrentScope(string scopeId);
+
+  // IInputEventListener.
+  bool userEventReceived(IInputEvent* evt);
+
+  // TODO: Make private.
+  IInputManager* im;
+  bool isRunning ();
+  void doSetPropertyValue (string name, string value);
+  GingaScreenID getScreenId ();
+  ILocalScreenManager *getScreenManager ();
+  void refreshContent();
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+LUAPLAYER_END_DECLS
 
-  class LuaPlayer:
-    public Player, public Thread, public IInputEventListener
-  {
-
-  private:
-    bool loaded;                  /* true if script was loaded */
-    bool played;                  /* true if script was executed */
-    bool running;                 /* true if script is executing */
-
-    string currentScope;
-    map<string, struct scopeInfo*>* scopes;
-    void addScope(string scope, short type, double begin=-1, double end=-1);
-    void load ();
-    void dispatch ();
-    void post (string action);
-
-  public:
-    nclua_t *nc;
-    lua_State* L;    // estado Lua
-    pthread_t tcp_thread_id;
-    bool tcp_running;
-
-    IInputManager* im;
-    bool isHandler;             /* true if player has the focus */
-
-
-    LuaPlayer (GingaScreenID screenId, string mrl);
-    virtual ~LuaPlayer ();
-
-    GingaScreenID getScreenId();
-    ILocalScreenManager* getScreenManager();
-    void run();
-    virtual bool hasPresented();
-    static LuaPlayer* getPlayer (lua_State* L);
-
-    bool isRunning()
-    {
-      return running;
-    }
-
-    void play();
-    void stop();
-    void abort();
-    void pause();
-    void resume();
-
-    void unprotectedSetPropertyValue(string name, string value);
-    virtual void setPropertyValue(string name, string value);
-
-    bool userEventReceived(IInputEvent* evt);
-    void refreshContent();
-
-    bool setKeyHandler(bool isHandler);
-    void setScope(string scope, short type=TYPE_PRESENTATION, double begin=-1, double end=-1, double outTransDur=-1);
-    void setCurrentScope(string scopeId);
-  };
-
-} } } } } }
-
-#endif /* LUAPLAYER_H_ */
+#endif /* LUAPLAYER_H */

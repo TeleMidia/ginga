@@ -61,6 +61,8 @@ http://www.telemidia.puc-rio.br
  * funcoes DFB correspondentes.
  ******************************************************************************/
 
+#include "nclua-private.h"
+
 #include "player/LuaPlayer.h"
 #include "player/ImagePlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
@@ -74,6 +76,16 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #define REFFILL           (-3)
 #define REFFRAME          (-4)
 #define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
+
+static inline LuaPlayer *
+GETPLAYER (lua_State *L)
+{
+  nclua_t *nc;
+  LuaPlayer *player;
+  nc = _nclua_get_nclua_state (L);
+  player = (LuaPlayer *) nclua_get_user_data (nc);
+  return player;
+}
 
 typedef struct Canvas {
 	ISurface* sfc;
