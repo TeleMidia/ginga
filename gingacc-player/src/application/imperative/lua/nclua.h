@@ -45,8 +45,6 @@ typedef enum _nclua_status_s
   NCLUA_STATUS_SUCCESS = 0,     /* no error has occurred */
   NCLUA_STATUS_NO_MEMORY,       /* out of memory */
   NCLUA_STATUS_NULL_POINTER,    /* NULL pointer */
-  NCLUA_STATUS_BAD_ARGUMENT,    /* bad argument */
-  NCLUA_STATUS_NOT_IMPLEMENTED, /* not implemented */
   NCLUA_STATUS_FILE_NOT_FOUND,  /* file not found */
   NCLUA_STATUS_INVALID_STATUS,  /* invalid value for nclua_status_t */
   NCLUA_STATUS_LAST_STATUS      /* total number of status values */
@@ -71,12 +69,6 @@ NCLUA_PUBLIC int
 nclua_get_reference_count (nclua_t *nc);
 
 NCLUA_PUBLIC void
-nclua_lock (nclua_t *nc);
-
-NCLUA_PUBLIC void
-nclua_unlock (nclua_t *nc);
-
-NCLUA_PUBLIC void
 nclua_set_user_data (nclua_t *nc, void *user_data,
                      nclua_destroy_func_t destroy);
 
@@ -90,6 +82,9 @@ nclua_get_lua_state (nclua_t *nc);
 
 NCLUA_PUBLIC nclua_t *
 nclua_get_nclua_state (void *L);
+
+NCLUA_PUBLIC void
+nclua_send (nclua_t *nc, int index);
 
 NCLUA_END_DECLS
 

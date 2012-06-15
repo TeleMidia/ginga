@@ -37,8 +37,7 @@ libgingaccplalua_la_SOURCES= \
   nclua-event.cpp            \
   nclua-luax-private.h       \
   nclua-luax.c               \
-  nclua-status.c             \
-  nclua-util-private.h       \
+  nclua-private.h            \
   nclua.c                    \
   nclua.h
 

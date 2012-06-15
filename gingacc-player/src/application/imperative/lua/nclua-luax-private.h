@@ -22,18 +22,13 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include "nclua.h"
 #include "nclua-compiler-private.h"
-#include "nclua-util-private.h"
 
 NCLUA_BEGIN_DECLS
 
 #include <lua.h>
 
-/* Pushes onto stack the description of status STATUS.  */
-#define ncluax_push_status_string(L, status) \
-  lua_pushstring (L, nclua_status_to_string (status))
-
 /* Returns the absolute value of index INDEX in stack.  */
-static inline int
+static NCLUA_ALWAYS_INLINE int
 ncluax_abs (lua_State *L, int index)
 {
   int n = lua_gettop (L);
@@ -45,13 +40,13 @@ ncluax_abs (lua_State *L, int index)
 NCLUA_PRIVATE void
 ncluax_unsetfield (lua_State *L, int index, const char *k);
 
-NCLUA_PRIVATE nclua_status_t
+NCLUA_PRIVATE nclua_bool_t
 ncluax_getintfield (lua_State *L, int index, const char *k, int *v);
 
-NCLUA_PRIVATE nclua_status_t
+NCLUA_PRIVATE nclua_bool_t
 ncluax_getnumberfield (lua_State *L, int index, const char *k, double *v);
 
-NCLUA_PRIVATE nclua_status_t
+NCLUA_PRIVATE nclua_bool_t
 ncluax_getstringfield (lua_State *L, int index, const char *k,
                        const char **v);
 
@@ -75,10 +70,10 @@ ncluax_error (lua_State *L, int level, const char *format, ...);
 NCLUA_PRIVATE void
 ncluax_warning (lua_State *L, int level, const char *format, ...);
 
-#define ncluax_warning_extra_arguments(L, level) \
-  ncluax_warning (L, level, "ignoring extra arguments");
-
 /* Debug.  */
+
+NCLUA_PRIVATE const char *
+ncluax_get_function_name (lua_State *L, int level);
 
 NCLUA_PRIVATE void
 ncluax_dump_table (lua_State *L, int index, int depth);

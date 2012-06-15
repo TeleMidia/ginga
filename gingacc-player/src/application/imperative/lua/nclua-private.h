@@ -1,4 +1,4 @@
-/* nclua-util-private.h -- Utility functions.
+/* nclua-private.h -- Exported private declarations.
    Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -15,22 +15,71 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#ifndef NCLUA_UTIL_PRIVATE_H
-#define NCLUA_UTIL_PRIVATE_H
-
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#ifndef NCLUA_PRIVATE_H
+#define NCLUA_PRIVATE_H
 
 #include <assert.h>
+#include <stdarg.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "nclua.h"
 #include "nclua-compiler-private.h"
 
 NCLUA_BEGIN_DECLS
+
+#include <lua.h>
+
+#define __nclua_magic(m) _nclua_##m##_magic
+#define _NCLUA_MAGIC(m)  const int __nclua_magic(m)
+
+/* Sets the value on top of stack as module M registry data.
+   This macro pops the value from stack.  */
+#define _NCLUA_SET_MODULE_DATA(L, m)                            \
+  NCLUA_STMT_BEGIN                                              \
+  {                                                             \
+    lua_pushvalue (L, LUA_REGISTRYINDEX);                       \
+    lua_pushlightuserdata (L, (void *) &__nclua_magic(m));      \
+    lua_pushvalue (L, -3);                                      \
+    lua_rawset (L, -3);                                         \
+    lua_pop (L, 2);                                             \
+  }                                                             \
+  NCLUA_STMT_END
+
+/* Pushes module M registry data onto stack.  */
+#define _NCLUA_GET_MODULE_DATA(L, m)                            \
+  NCLUA_STMT_BEGIN                                              \
+  {                                                             \
+    lua_pushvalue (L, LUA_REGISTRYINDEX);                       \
+    lua_pushlightuserdata (L, (void *) &__nclua_magic (m));     \
+    lua_rawget (L, -2);                                         \
+    lua_remove (L, -2);                                         \
+  }                                                             \
+  NCLUA_STMT_END
+
+/* nclua.c */
+
+NCLUA_PRIVATE lua_State *
+_nclua_get_lua_state (nclua_t *nc);
+
+NCLUA_PRIVATE nclua_t *
+_nclua_get_nclua_state (lua_State *L);
+
+NCLUA_PRIVATE void
+_nclua_error (lua_State *L, int level, const char *format, ...);
+
+NCLUA_PRIVATE void
+_nclua_warning (lua_State *L, int level, const char *format, ...);
+
+/* nclua-event.c */
+
+NCLUA_PRIVATE nclua_status_t
+_nclua_event_open (lua_State *L);
+
+NCLUA_PRIVATE void
+_nclua_event_close (lua_State *L);
+
+/* Miscellanea.  */
 
 #undef  FALSE
 #define FALSE 0
@@ -80,14 +129,14 @@ NCLUA_BEGIN_DECLS
 #undef  strneq
 #define streneq(a, b)    (!streq (a, b))
 
-#undef  deconst
-#define deconst(t, x)    ((t)(size_t)(const void *)(x))
+#undef  DECONST
+#define DECONST(t, x)    ((t)(size_t)(const void *)(x))
 
-#undef  devolatile
-#define devolatile(t, x) ((t)(size_t)(volatile void *)(x))
+#undef  DEVOLATILE
+#define DEVOLATILE(t, x) ((t)(size_t)(volatile void *)(x))
 
-#undef  dequalify
-#define dequalify(t, x)  ((t)(size_t)(const volatile void *)(x))
+#undef  DEQUALIFY
+#define DEQUALIFY(t, x)  ((t)(size_t)(const volatile void *)(x))
 
 #define _NCLUA_STRINGIFY(arg) #arg
 #define NCLUA_STRINGIFY(arg)  _NCLUA_STRINGIFY (arg)
@@ -95,12 +144,7 @@ NCLUA_BEGIN_DECLS
 #define _NCLUA_CONCAT(a, b)   a##b
 #define NCLUA_CONCAT(a, b)    _NCLUA_CONCAT (a, b)
 
-#define ASSERT_NOT_REACHED                      \
-  NCLUA_STMT_BEGIN                              \
-  {                                             \
-    assert (!"reached");                        \
-  }                                             \
-  NCLUA_STMT_END
+#define ASSERT_NOT_REACHED    assert (!"reached")
 
 #define _NCLUA_COMPILE_TIME_ASSERT1(cond, line) \
   typedef int tm_compile_time_assertion_at_line_##line##_failed[(cond)?1:-1]
@@ -111,4 +155,4 @@ NCLUA_BEGIN_DECLS
 
 NCLUA_END_DECLS
 
-#endif /* NCLUA_UTIL_PRIVATE_H */
+#endif /* NCLUA_PRIVATE_H */

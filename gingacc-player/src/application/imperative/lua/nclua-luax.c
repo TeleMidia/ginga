@@ -17,11 +17,12 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include <assert.h>
 #include <stdio.h>
+
 #include <lua.h>
 #include <lauxlib.h>
 
 #include "nclua.h"
-#include "nclua-util-private.h"
+#include "nclua-private.h"
 #include "nclua-luax-private.h"
 
 /* Sets t[K] to nil, where t is the table at index INDEX.  */
@@ -33,51 +34,51 @@ ncluax_unsetfield (lua_State *L, int index, const char *k)
   lua_setfield (L, ncluax_abs (L, index), k);
 }
 
-#define NCLUAX_GETXFIELD_BODY(lua_isx, lua_tox) \
-  {                                             \
-    nclua_bool_t status = FALSE;                \
-    lua_getfield (L, ncluax_abs (L, index), k); \
-    if (likely (lua_isx (L, -1)))               \
-      {                                         \
-        status = TRUE;                          \
-        *v = lua_tox (L, -1);                   \
-      }                                         \
-    lua_pop (L, 1);                             \
-    return status;                              \
+#define _NCLUAX_GETXFIELD_BODY(lua_isx, lua_tox)        \
+  {                                                     \
+    nclua_bool_t status = FALSE;                        \
+    lua_getfield (L, ncluax_abs (L, index), k);         \
+    if (likely (lua_isx (L, -1)))                       \
+      {                                                 \
+        status = TRUE;                                  \
+        *v = lua_tox (L, -1);                           \
+      }                                                 \
+    lua_pop (L, 1);                                     \
+    return status;                                      \
   }
 
 /* If t[K] is an integer, stores it in *V and returns true.
    Otherwise, returns false.  */
 
-nclua_status_t
+nclua_bool_t
 ncluax_getintfield (lua_State *L, int index, const char *k, int *v)
 {
-  NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tointeger)
+  _NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tointeger)
 }
 
 /* If t[K] is a number, stores it in *V and returns true.
    Otherwise, returns false.  */
 
-nclua_status_t
+nclua_bool_t
 ncluax_getnumberfield (lua_State *L, int index, const char *k, double *v)
 {
-  NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tonumber)
+  _NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tonumber)
 }
 
 /* If t[K] is a string, stores it in *V and returns true.
    Otherwise, returns false.  */
 
-nclua_status_t
+nclua_bool_t
 ncluax_getstringfield (lua_State *L, int index, const char *k,
                        const char **v)
 {
-  NCLUAX_GETXFIELD_BODY (lua_isstring, lua_tostring)
+  _NCLUAX_GETXFIELD_BODY (lua_isstring, lua_tostring)
 }
 
 static void
 ncluax_tableinsert_tail (lua_State *L, int index, int pos,
-                         void (*lua_gettable_fn) (lua_State *, int),
-                         void (*lua_settable_fn) (lua_State *, int))
+                         void (*lua_gettable_func) (lua_State *, int),
+                         void (*lua_settable_func) (lua_State *, int))
 {
   int t = ncluax_abs (L, index);
   int n = lua_objlen (L, t);
@@ -90,18 +91,18 @@ ncluax_tableinsert_tail (lua_State *L, int index, int pos,
       for (i = n; i >= pos; i--)
         {
           lua_pushinteger (L, i);
-          lua_gettable_fn (L, t);
+          lua_gettable_func (L, t);
 
           lua_pushinteger (L, i + 1);
           lua_insert (L, -2);
-          lua_settable_fn (L, t);
+          lua_settable_func (L, t);
         }
     }
 
   /* Insert the new element into table.  */
   lua_pushinteger (L, pos);
   lua_pushvalue (L, -2);
-  lua_settable_fn (L, t);
+  lua_settable_func (L, t);
 }
 
 /* Inserts the element at top of stack in position POS of table at index
@@ -124,8 +125,8 @@ ncluax_rawinsert (lua_State *L, int index, int pos)
 
 static void
 ncluax_tableremove_tail (lua_State *L, int index, int pos,
-                         void (*lua_gettable_fn) (lua_State *, int),
-                         void (*lua_settable_fn) (lua_State *, int))
+                         void (*lua_gettable_func) (lua_State *, int),
+                         void (*lua_settable_func) (lua_State *, int))
 {
   int i;
   int t = ncluax_abs (L, index);
@@ -137,11 +138,11 @@ ncluax_tableremove_tail (lua_State *L, int index, int pos,
   for (i = pos; i <= n; i++)
     {
       lua_pushinteger (L, i + 1);
-      lua_gettable_fn (L, t);
+      lua_gettable_func (L, t);
 
       lua_pushinteger (L, i);
       lua_insert (L, -2);
-      lua_settable_fn (L, t);
+      lua_settable_func (L, t);
     }
 }
 
@@ -163,55 +164,15 @@ ncluax_rawremove (lua_State *L, int index, int pos)
   ncluax_tableremove_tail (L, index, pos, lua_rawget, lua_rawset);
 }
 
-static void
-ncluax_print_error (lua_State *L, int level, const char *prefix,
-                    const char *format, va_list args)
+/* Returns the name of the current Lua function.  */
+
+const char *
+ncluax_get_function_name (lua_State *L, int level)
 {
-  nclua_bool_t space = FALSE;
-  const char *where;
-
-  fflush (stdout);
-
-  if (prefix != NULL)
-    {
-      fputs (prefix, stderr);
-      space = TRUE;
-    }
-
-  luaL_where (L, level);
-  where = lua_tostring (L, -1);
-  lua_pop (L, 1);
-  if (where != NULL)
-    {
-      fputs (where, stderr);
-      space = TRUE;
-    }
-
-  vfprintf (stderr, format, args);
-  fputc ('\n', stderr);
-  fflush (stderr);
-}
-
-/* Outputs Lua error message at level LEVEL to standard error.  */
-
-void
-ncluax_error (lua_State *L, int level, const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  ncluax_print_error (L, level, "NCLUA ERROR\t", format, args);
-  va_end (args);
-}
-
-/* Outputs Lua warning at level LEVEL to standard error.  */
-
-void
-ncluax_warning (lua_State *L, int level, const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  ncluax_print_error (L, level, "NCLUA Warning\t", format, args);
-  va_end (args);
+  lua_Debug ar;
+  assert (lua_getstack (L, level, &ar));
+  assert (lua_getinfo (L, "n", &ar));
+  return ar.name;
 }
 
 /* Do a shallow dump of value at index INDEX to standard error.  */
