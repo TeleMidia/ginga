@@ -343,10 +343,10 @@ namespace mb {
 		if (params->size() == 6) {
 			spec       = (*params)[0];
 			uParentId  = (void*)strtoul((*params)[1].c_str(), NULL, 10);
-			uEmbedX    = stof((*params)[2]);
-			uEmbedY    = stof((*params)[3]);
-			uEmbedW    = stof((*params)[4]);
-			uEmbedH    = stof((*params)[5]);
+			uEmbedX    = util::stof((*params)[2]);
+			uEmbedY    = util::stof((*params)[3]);
+			uEmbedW    = util::stof((*params)[4]);
+			uEmbedH    = util::stof((*params)[5]);
 			uEmbedId   = createUnderlyingSubWindow(
 					uParentId, spec, uEmbedX, uEmbedY, uEmbedW, uEmbedH, 0);
 		}
@@ -1499,10 +1499,10 @@ namespace mb {
 			title = "Ginga v" + title;
 
 			if (s->mbMode != "" && s->mbMode.find("x") != std::string::npos) {
-				s->wRes = (int)stof(
+				s->wRes = (int)util::stof(
 						s->mbMode.substr(0, s->mbMode.find_first_of("x")));
 
-				s->hRes = (int)stof(
+				s->hRes = (int)util::stof(
 						s->mbMode.substr(
 								s->mbMode.find_first_of("x") + 1,
 								(s->mbMode.length() -

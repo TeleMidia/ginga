@@ -104,7 +104,7 @@ namespace compat {
 		value = "";
 
 		while (fis.good()) {
-			fis >> line;
+			getline(fis, line);
 			if (line.find("#") == std::string::npos &&
 					(line.find("=") != std::string::npos || value != "")) {
 
@@ -171,11 +171,36 @@ namespace compat {
 			iUriD = "/";
 		}
 
+#if defined(_WIN32) && !defined(__MINGW32__)
+		// Get the current executable path
+		HMODULE hModule = GetModuleHandleW(NULL);
+		WCHAR wexepath[300];
+		GetModuleFileNameW(hModule, wexepath, 300);
+
+		char DefChar = ' ';
+		char exepath[300];
+		WideCharToMultiByte(CP_ACP, 0, wexepath,-1, exepath, 260, &DefChar, NULL);
+
+		currentPath = exepath;
+
+		gingaCurrentPath = currentPath.substr( 0,
+											   currentPath.find_last_of(iUriD)+1);
+
+#else
+		// This commented solution should be the correct way to find the executable name on Unix
+		/* char buf[256];
+		readlink("/proc/self/exe", buf, sizeof(buf));
+		currentPath = buf;
+		gingaCurrentPath = gingaCurrentPath = currentPath.substr( 0,
+											   currentPath.find_last_of(iUriD)+1);
+		*/
+		
 		params = split(path, pathD);
 		if (params != NULL) {
 			i = params->begin();
 			while (i != params->end()) {
 				currentPath = (*i) + iUriD + gingaBinary;
+
 				if (access(currentPath.c_str(), (int)X_OK) == 0) {
 					gingaCurrentPath = (*i);
 
@@ -195,6 +220,7 @@ namespace compat {
 			}
 			delete params;
 		}
+#endif //WIN32
 	}
 
 	void SystemCompat::initializeUserCurrentPath() {
@@ -501,9 +527,75 @@ namespace compat {
 	void SystemCompat::uSleep(unsigned int microseconds) {
 #ifndef WIN32
 		::usleep(microseconds);
-#elif WIN32
+#else
 		Sleep(microseconds/1000);
 #endif
+	}
+
+#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
+ #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
+#else
+ #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
+#endif
+
+	int SystemCompat::gettimeofday(struct timeval *tv, struct timezone *tz) {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		FILETIME ft;
+		unsigned __int64 tmpres = 0;
+		static int tzflag;
+		if (NULL != tv) {
+			GetSystemTimeAsFileTime(&ft);
+			tmpres |= ft.dwHighDateTime;
+			tmpres <<= 32;
+			tmpres |= ft.dwLowDateTime;
+			/*converting file time to unix epoch*/
+			tmpres /= 10;  /*convert into microseconds*/
+			tmpres -= DELTA_EPOCH_IN_MICROSECS;
+			tv->tv_sec = (long)(tmpres / 1000000UL);
+			tv->tv_usec = (long)(tmpres % 1000000UL);
+		}
+
+		if (NULL != tz) {
+			if (!tzflag) {
+				_tzset();
+				tzflag++;
+			}
+
+			tz->tz_minuteswest = _timezone / 60;
+			tz->tz_dsttime = _daylight;
+		}
+		return 0;
+#else
+		return ::gettimeofday(tv, tz);
+#endif
+	}
+
+	/* replacement of Unix rint() for Windows */
+	int SystemCompat::rint (double x) {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		char *buf;
+		int i,dec,sig;
+
+		buf = _fcvt(x, 0, &dec, &sig);
+		i = atoi(buf);
+		if(sig == 1) {
+			i = i * -1;
+		}
+
+		return(i);
+#else
+		return ::rint(x);
+#endif
+	}
+
+	string SystemCompat::getTemporaryDir() {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		//TODO: Use the WIN32 API to return the temporary directory
+		return "C:\\Temp\\";
+#else
+		return "/tmp/";
+#endif
+	
 	}
 }
 }

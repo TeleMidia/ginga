@@ -51,7 +51,10 @@ http://www.telemidia.puc-rio.br
 #define SystemCompat_H_
 
 extern "C" {
-#ifdef WIN32
+#include <dlfcn.h>
+#include <fcntl.h>
+
+#ifdef _WIN32
 	#include <sys/timeb.h>
 	#include <sys/types.h>
 	#include <time.h>
@@ -64,8 +67,6 @@ extern "C" {
 #endif
 	#pragma comment(lib,"ws2_32.lib")
 #else
-	#include <dlfcn.h>
-	#include <fcntl.h>
 	#include <sys/param.h>
 	#include <unistd.h>
 	#include <sys/resource.h>
@@ -89,6 +90,33 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include <string>
 using namespace std;
+
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+struct timezone
+{
+ int  tz_minuteswest; /* minutes W of Greenwich */
+ int  tz_dsttime;     /* type of dst correction */
+};
+#endif
+
+// If access modes (F_OK, X_OK, W_OK or R_OK) is not defined we must define 
+// then. This will usually occur on Windows.
+#ifndef F_OK
+#define F_OK 0
+#endif
+
+#ifndef X_OK
+#define X_OK 1
+#endif
+
+#ifndef W_OK
+#define W_OK 2
+#endif
+
+#ifndef R_OK
+#define R_OK 4
+#endif
 
 namespace br {
 namespace pucrio {
@@ -168,6 +196,18 @@ namespace compat {
 			 **********************/
 			static void makeDir(const char* dirName, unsigned int mode);
 			static void uSleep(unsigned int microseconds);
+			static string getTemporaryDir();
+
+
+			/**********************
+			 * Time functions *
+			 **********************/
+			static int gettimeofday(struct timeval *tv, struct timezone *tz);
+
+			/**********************
+			 * Math functions *
+			 **********************/
+			static int rint (double x);
 	};
 }
 }
