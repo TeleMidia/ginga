@@ -99,10 +99,10 @@ namespace mb {
 
 			/* interfacing output */
 
-			IWindow* createWindow(int x, int y, int w, int h, int z);
+			IWindow* createWindow(int x, int y, int w, int h, float z);
 
 			GingaWindowID createUnderlyingSubWindow(
-					int x, int y, int w, int h, int z) {return NULL;};
+					int x, int y, int w, int h, float z) {return NULL;};
 
 			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);

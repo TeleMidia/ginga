@@ -91,7 +91,7 @@ namespace player {
 		w = 60;
 		h = 60;
 
-		win = dm->createWindow(myScreen, x, y, w, h, 32767);
+		win = dm->createWindow(myScreen, x, y, w, h, 4.0);
 		win->setCaps(win->getCap("ALPHACHANNEL"));
 		win->draw();
 	}

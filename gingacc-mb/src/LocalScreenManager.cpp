@@ -636,7 +636,7 @@ namespace mb {
 	/* interfacing output */
 
 	IWindow* LocalScreenManager::createWindow(
-			GingaScreenID screenId, int x, int y, int w, int h, int z) {
+			GingaScreenID screenId, int x, int y, int w, int h, float z) {
 
 		IDeviceScreen* screen;
 		IWindow* window = NULL;
@@ -653,7 +653,7 @@ namespace mb {
 	}
 
 	GingaWindowID LocalScreenManager::createUnderlyingSubWindow(
-			GingaScreenID screenId, int x, int y, int w, int h, int z) {
+			GingaScreenID screenId, int x, int y, int w, int h, float z) {
 
 		IDeviceScreen* screen;
 		GingaWindowID window = NULL;

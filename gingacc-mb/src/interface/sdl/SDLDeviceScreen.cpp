@@ -104,7 +104,7 @@ namespace mb {
 	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	pthread_mutex_t SDLDeviceScreen::rlMutex;
 
-	map<GingaScreenID, map<int, set<IWindow*>*>*> SDLDeviceScreen::renderMap;
+	map<GingaScreenID, map<float, set<IWindow*>*>*> SDLDeviceScreen::renderMap;
 	pthread_mutex_t SDLDeviceScreen::wrMutex;
 
 	set<IContinuousMediaProvider*> SDLDeviceScreen::cmpRenderList;
@@ -223,8 +223,8 @@ namespace mb {
 
 	SDLDeviceScreen::~SDLDeviceScreen() {
 		map<SDLDeviceScreen*, short>::iterator i;
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator j;
-		map<int, set<IWindow*>*>::iterator k;
+		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator j;
+		map<float, set<IWindow*>*>::iterator k;
 
 		waitingCreator = false;
 		pthread_mutex_destroy(&cMutex);
@@ -348,7 +348,7 @@ namespace mb {
 			uEmbedW    = util::stof((*params)[4]);
 			uEmbedH    = util::stof((*params)[5]);
 			uEmbedId   = createUnderlyingSubWindow(
-					uParentId, spec, uEmbedX, uEmbedY, uEmbedW, uEmbedH, 0);
+					uParentId, spec, uEmbedX, uEmbedY, uEmbedW, uEmbedH, 1.0);
 		}
 
 		delete params;
@@ -356,7 +356,7 @@ namespace mb {
 
 	void SDLDeviceScreen::setBackgroundImage(string uri) {
 		if (backgroundLayer == NULL) {
-			backgroundLayer = createWindow(0, 0, wRes, hRes, -50000);
+			backgroundLayer = createWindow(0, 0, wRes, hRes, 0.0);
 		}
 
 		backgroundLayer->renderImgFile(uri);
@@ -452,8 +452,8 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::blitScreen(SDL_Surface* dest) {
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
-		map<int, set<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
+		map<float, set<IWindow*>*>::iterator j;
 		set<IWindow*>::iterator k;
 
 		pthread_mutex_lock(&wrMutex);
@@ -489,7 +489,9 @@ namespace mb {
 
 	/* interfacing output */
 
-	IWindow* SDLDeviceScreen::createWindow(int x, int y, int w, int h, int z) {
+	IWindow* SDLDeviceScreen::createWindow(
+			int x, int y, int w, int h, float z) {
+
 		IWindow* iWin;
 
 		pthread_mutex_lock(&winMutex);
@@ -502,7 +504,7 @@ namespace mb {
 	}
 
 	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
-			int x, int y, int w, int h, int z) {
+			int x, int y, int w, int h, float z) {
 
 		GingaWindowID uWin   = NULL;
 		GingaWindowID parent = NULL;
@@ -521,7 +523,7 @@ namespace mb {
 	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
 			GingaWindowID parent,
 			string spec,
-			int x, int y, int w, int h, int z) {
+			int x, int y, int w, int h, float z) {
 
 		GingaWindowID uWin = NULL;
 
@@ -619,7 +621,7 @@ namespace mb {
 			pthread_mutex_lock(&winMutex);
 			iWin = new SDLWindow(underlyingWindow, NULL, id, 0, 0, 0, 0, 0);
 			windowPool.insert(iWin);
-			renderMapInsertWindow(id, iWin, 0);
+			renderMapInsertWindow(id, iWin, 2.0);
 			pthread_mutex_unlock(&winMutex);
 		}
 
@@ -1284,8 +1286,8 @@ namespace mb {
 		SDLWindow* win;
 		bool ownTex = false;
 
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
-		map<int, set<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
+		map<float, set<IWindow*>*>::iterator j;
 		set<IWindow*>::iterator k;
 
 		pthread_mutex_lock(&s->winMutex);
@@ -1972,12 +1974,12 @@ namespace mb {
 
 	/* output */
 	void SDLDeviceScreen::renderMapInsertWindow(
-			GingaScreenID screenId, IWindow* iWin, int z) {
+			GingaScreenID screenId, IWindow* iWin, float z) {
 
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
-		map<int, set<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
+		map<float, set<IWindow*>*>::iterator j;
 
-		map<int, set<IWindow*>*>* sortedMap;
+		map<float, set<IWindow*>*>* sortedMap;
 		set<IWindow*>* windows;
 
 		pthread_mutex_lock(&wrMutex);
@@ -1985,7 +1987,7 @@ namespace mb {
 		if (i != renderMap.end()) {
 			sortedMap = i->second;
 		} else {
-			sortedMap = new map<int, set<IWindow*>*>;
+			sortedMap = new map<float, set<IWindow*>*>;
 			renderMap[screenId] = sortedMap;
 		}
 
@@ -2002,13 +2004,13 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::renderMapRemoveWindow(
-			GingaScreenID screenId, IWindow* iWin, int z) {
+			GingaScreenID screenId, IWindow* iWin, float z) {
 
-		map<GingaScreenID, map<int, set<IWindow*>*>*>::iterator i;
-		map<int, set<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
+		map<float, set<IWindow*>*>::iterator j;
 		set<IWindow*>::iterator k;
 
-		map<int, set<IWindow*>*>* sortedMap;
+		map<float, set<IWindow*>*>* sortedMap;
 		set<IWindow*>* windows;
 
 		pthread_mutex_lock(&wrMutex);
