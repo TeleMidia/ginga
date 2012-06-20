@@ -95,10 +95,10 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	ISurface* s;
 
-	w    = dm->createWindow(screen, 10, 10, 100, 100, 32766);
-	ww   = dm->createWindow(screen, 90, 90, 150, 150, 32766);
-	www  = dm->createWindow(screen, 0, 0, 400, 300, 32766);
-	wwww = dm->createWindow(screen, 0, 0, 10, 10, 32766);
+	w    = dm->createWindow(screen, 10, 10, 100, 100, 4.0);
+	ww   = dm->createWindow(screen, 90, 90, 150, 150, 4.0);
+	www  = dm->createWindow(screen, 0, 0, 400, 300, 4.0);
+	wwww = dm->createWindow(screen, 0, 0, 10, 10, 4.0);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

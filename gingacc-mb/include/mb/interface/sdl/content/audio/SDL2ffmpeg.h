@@ -217,7 +217,6 @@ namespace mb {
 	} SubPicture;
 
 	typedef struct VideoState {
-		int no_background;
 		int paused;
 		int last_paused;
 		int seek_req;

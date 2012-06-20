@@ -451,7 +451,9 @@ namespace mb {
 
 	/* interfacing output */
 
-	IWindow* DFBDeviceScreen::createWindow(int x, int y, int w, int h, int z) {
+	IWindow* DFBDeviceScreen::createWindow(
+			int x, int y, int w, int h, float z) {
+
 		IWindow* iWin;
 
 		pthread_mutex_lock(&winMutex);

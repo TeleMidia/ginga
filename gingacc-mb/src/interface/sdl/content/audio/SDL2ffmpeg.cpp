@@ -1111,7 +1111,6 @@ namespace mb {
 			}
 			x = (vp->width - width) / 2;
 			y = (vp->height - height) / 2;
-			vs->no_background = 0;
 			rect.x = x;
 			rect.y = y;
 			rect.w = FFMAX(width,  1);

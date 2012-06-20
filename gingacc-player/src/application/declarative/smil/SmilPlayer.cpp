@@ -130,7 +130,7 @@ namespace player {
 
 		clog << "SmilPlayer::initGui" << endl;
 
-		uWin = dm->createUnderlyingSubWindow(myScreen, x, y, w, h, 0);
+		uWin = dm->createUnderlyingSubWindow(myScreen, x, y, w, h, 2.0);
 		if (uWin == NULL) {
 			clog << "SmilPlayer::initGui Warning! Can't create ";
 			clog << "underlying window! With the following coords: ";
