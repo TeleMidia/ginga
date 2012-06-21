@@ -1657,7 +1657,7 @@ namespace player {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
 
-						if (status == PLAY) {
+						if (status == PLAY && outTransTime > 0.0) {
 							outTransTime = 0;
 							notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
 
