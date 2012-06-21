@@ -1659,6 +1659,10 @@ namespace player {
 						break;
 
 					} else if (outTransTime > 0.0) {
+						clog << "AVPlayer::run notify transition at '";
+						clog << currentTime << "' (out transition time is '";
+						clog << outTransTime << "')" << endl;
+
 						outTransTime = 0;
 						notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
 					}
