@@ -115,9 +115,9 @@ void* testPlayer(void* ptr) {
 	screen  = tc->screen;
 	windows = tc->windows;
 
-	w   = dm->createWindow(screen,  10,  10, 100, 100, 3);
-	ww  = dm->createWindow(screen,  90,  90, 150, 150, 2);
-	www = dm->createWindow(screen, 220, 220, 400, 300, 1);
+	w   = dm->createWindow(screen,  10,  10, 100, 100, 3.3);
+	ww  = dm->createWindow(screen,  90,  90, 150, 150, 3.2);
+	www = dm->createWindow(screen, 220, 220, 400, 300, 3.1);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

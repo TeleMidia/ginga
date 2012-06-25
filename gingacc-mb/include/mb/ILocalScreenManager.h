@@ -116,13 +116,13 @@ namespace mb {
 					GingaScreenID screenId,
 					int x, int y,
 					int w, int h,
-					int z)=0;
+					float z)=0;
 
 			virtual GingaWindowID createUnderlyingSubWindow(
 					GingaScreenID screenId,
 					int x, int y,
 					int w, int h,
-					int z)=0;
+					float z)=0;
 
 			virtual IWindow* createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow)=0;
