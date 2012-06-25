@@ -89,7 +89,6 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) : Player (screenId, mr
 
   this->currentScope = "";        /* whole content anchor */
   this->scopes = new map<string, scopeinfo_t *>;
-  this->setScope ("", TYPE_PRESENTATION, -1, -1);
 
   mutex_init (&this->mutex);
 
@@ -107,6 +106,9 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) : Player (screenId, mr
   this->played = false;
   this->loaded = false;
   this->isHandler = false;
+
+  /* Initial scope is the whole content anchor.  */
+  this->setScope ("", TYPE_PRESENTATION, -1, -1);
 }
 
 LuaPlayer::~LuaPlayer ()
@@ -222,9 +224,11 @@ void LuaPlayer::post (string action)
 void LuaPlayer::play()
 {
   LOCK ();
-  Player::play();
+
   this->load();
   this->post("start");
+
+  Player::play();
   UNLOCK ();
 }
 
@@ -246,7 +250,7 @@ void LuaPlayer::stop ()
   UNLOCK ();
 }
 
-void 
+void
 LuaPlayer::pause()
 {
   LOCK ();
@@ -257,7 +261,7 @@ LuaPlayer::pause()
   UNLOCK ();
 }
 
-void 
+void
 LuaPlayer::resume ()
 {
   LOCK ();
@@ -279,7 +283,7 @@ LuaPlayer::abort()
   Player::abort();
 }
 
-void 
+void
 LuaPlayer::doSetPropertyValue(string name, string value)
 {
   LOCK ();
@@ -330,14 +334,14 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
   if (evt->isApplicationType ())
     {
       lua_State* srcL = (lua_State*) evt->getApplicationData();
-      if (srcL == L) 
+      if (srcL == L)
         {
           int ref = evt->getType ();
           lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
           luaL_unref(L, LUA_REGISTRYINDEX, ref);
           nclua_send (nc, -1);
         }
-    } 
+    }
   else if (evt->isKeyType() && this->isHandler)
     {
       string key_str = CodeMap::getInstance()->getValue(evt->getKeyCode(myScreen));
@@ -359,7 +363,8 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
   return true;
 }
 
-void LuaPlayer::refreshContent() {
+void LuaPlayer::refreshContent()
+{
   LOCK ();
   if (notifyContentUpdate)
     notifyPlayerListeners(PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
@@ -380,7 +385,7 @@ bool LuaPlayer::hasPresented()
 bool
 LuaPlayer::setKeyHandler (bool isHandler)
 {
-  LOCK ();  
+  LOCK ();
   this->isHandler = isHandler;
   UNLOCK ();
 
