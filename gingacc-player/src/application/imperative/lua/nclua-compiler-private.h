@@ -89,22 +89,23 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 # define NCLUA_USE_RESULT
 #endif
 
-#if defined __GNUC__ && defined HAVE_VISIBILITY
+#if NCLUA_GNUC_PREREQ (3,3) \
+  && (defined (__ELF__) || defined (__APPLE__)) && !defined (__sun)
 # define NCLUA_PRIVATE extern __attribute__((__visibility__("hidden")))
+#elif defined (__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+# define NCLUA_PRIVATE extern __hidden
 #else
 # define NCLUA_PRIVATE extern
 #endif
 
-#ifdef _MSC_VER
-#ifndef __cplusplus
-#undef inline
-#define inline __inline
-#endif
+#if defined (_MSC_VER) && !defined (__cplusplus)
+# undef  inline
+# define inline __inline
 #endif
 
 #ifdef __STRICT_ANSI__
-#undef inline
-#define inline __inline__
+# undef  inline
+# define inline __inline__
 #endif
 
 #endif /* NCLUA_COMPILER_PRIVATE_H */
