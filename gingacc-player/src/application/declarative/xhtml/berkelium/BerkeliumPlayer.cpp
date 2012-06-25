@@ -373,20 +373,9 @@ namespace player {
 	}
 
 	void* BerkeliumPlayer::mainLoop(void* ptr) {
-#ifdef _WIN32
-		string hDir = SystemCompat::getGingaBinPath() + "Berkelium";
-#else
-		//FIXME: I think we do not need "/" here too
-		string hDir = SystemCompat::getGingaBinPath() + "/Berkelium";
-#endif
-
-		//Convert hDir to wstring
-		std::wstring wstr_hDir (hDir.length(),L' ');
-		std::copy(hDir.begin(), hDir.end(), wstr_hDir.begin());
-
 		mainLoopDone = false;
 
-		if (!Berkelium::init(Berkelium::FileString::point_to(wstr_hDir))) {
+		if (!Berkelium::init(Berkelium::FileString::empty())) {
 			clog << "BerkeliumPlayer::mainLoop ";
 			clog << "Failed to initialize berkelium!" << endl;
 
@@ -396,18 +385,14 @@ namespace player {
 
 		clog << "BerkeliumPlayer::mainLoop" << endl;
 
-#ifdef _WIN32
-		int first = true;
-#endif
+		bool first = true;
 
 		while (berkeliumFactory.isRunning()) {
-#ifdef _WIN32
-			if(first)
-			{
-				Sleep(500);
+			if (first) {
 				first = false;
+				SystemCompat::uSleep(500000);
 			}
-#endif
+
 			if (berkeliumFactory.hasBrowser()) {
 				Berkelium::update();
 

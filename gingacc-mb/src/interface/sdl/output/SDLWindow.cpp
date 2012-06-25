@@ -69,7 +69,7 @@ namespace mb {
 			GingaWindowID parentWindowID,
 			GingaScreenID screenId,
 			int x, int y, int width, int height,
-			int z) {
+			float z) {
 
 		initialize(
 				windowID,
@@ -133,7 +133,7 @@ namespace mb {
 			GingaWindowID parentWindowID,
 			GingaScreenID screenId,
 			int x, int y, int w, int h,
-			int z) {
+			float z) {
 
 		this->windowId = windowID;
 
@@ -397,7 +397,7 @@ namespace mb {
 		return this->rect.h;
 	}
 
-	int SDLWindow::getZ() {
+	float SDLWindow::getZ() {
 		return z;
 	}
 

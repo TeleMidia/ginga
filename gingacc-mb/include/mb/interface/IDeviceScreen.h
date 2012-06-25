@@ -108,10 +108,11 @@ namespace mb {
 
 			/* interfacing output */
 
-			virtual IWindow* createWindow(int x, int y, int w, int h, int z)=0;
+			virtual IWindow* createWindow(
+					int x, int y, int w, int h, float z)=0;
 
 			virtual GingaWindowID createUnderlyingSubWindow(
-					int x, int y, int w, int h, int z)=0;
+					int x, int y, int w, int h, float z)=0;
 
 			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
 			virtual bool hasWindow(IWindow* win)=0;

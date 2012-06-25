@@ -1425,7 +1425,7 @@ namespace player {
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
 							util::stof((*vals)[3]),
-							-1);
+							1.0);
 
 					win->setCaps(win->getCap("NOSTRUCTURE") |
 							win->getCap("DOUBLEBUFFER"));
@@ -1656,9 +1656,20 @@ namespace player {
 					} else if (status != PLAY || !this->mSleep(timeRemain)) {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
-						break;
+
+						if (status == PLAY && outTransTime > 0.0) {
+							outTransTime = 0;
+							notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
+
+						} else {
+							break;
+						}
 
 					} else if (outTransTime > 0.0) {
+						clog << "AVPlayer::run notify transition at '";
+						clog << currentTime << "' (out transition time is '";
+						clog << outTransTime << "')" << endl;
+
 						outTransTime = 0;
 						notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
 					}
