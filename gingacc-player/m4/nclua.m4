@@ -79,14 +79,14 @@ m4_changequote([,])dnl
 ])
 
 # NCLUA_VISIBILITY
-# -------------
+# ----------------
 # Tests whether the compiler supports the command-line option
 # -fvisibility=hidden and the function and variable attributes
 # __attribute__((__visibility__("hidden"))) and
 # __attribute__((__visibility__("default"))).
 # Does *not* test for __visibility__("protected") - which has tricky
 # semantics (see the 'vismain' test in glibc) and does not exist e.g. on
-# MacOS X.
+# Mac OS X.
 # Does *not* test for __visibility__("internal") - which has processor
 # dependent semantics.
 # Does *not* test for #pragma GCC visibility push(hidden) - which is
@@ -94,7 +94,7 @@ m4_changequote([,])dnl
 # Set the variable CFLAG_VISIBILITY.
 # Defines and sets the variable HAVE_VISIBILITY.
 
-# Adapted from Gnulib visibility.m4 (serial 4) code.
+# Adapted from Gnulib visibility.m4 (serial 5) code.
 dnl Copyright (C) 2005, 2008, 2010-2011 Free Software Foundation, Inc.
 dnl From Bruno Haible.
 
