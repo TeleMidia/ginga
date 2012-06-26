@@ -38,21 +38,32 @@ NCLUA_PRIVATE const int _nclua_magic;
 /* Keys for data in store table.  */
 enum
 {
+  _NCLUA_STORE_EMPTY_TABLE_KEY, /* key of an empty table */
   _NCLUA_STORE_STATE_KEY,       /* key of NCLua state */
   _NCLUA_STORE_USER_DATA_KEY,   /* key of table with attached user data */
   _NCLUA_STORE_EVENT_KEY,       /* key of the NCLua Event store table */
   _NCLUA_STORE_LAST_KEY,        /* total number of key values */
 };
 
-/* Creates a new store table and inserts it into Lua registry.  */
-#define _nclua_create_and_set_store(L)                  \
+/* Sets the value on top of stack as the new store table.
+   This macro pops the value from stack.  */
+#define _nclua_set_store(L)                             \
   NCLUA_STMT_BEGIN                                      \
   {                                                     \
     lua_pushvalue (L, LUA_REGISTRYINDEX);               \
     lua_pushlightuserdata (L, (void *) &_nclua_magic);  \
-    lua_createtable (L, _NCLUA_STORE_LAST_KEY, 0);      \
+    lua_pushvalue (L, -3);                              \
     lua_rawset (L, -3);                                 \
-    lua_pop (L, 1);                                     \
+    lua_pop (L, 2);                                     \
+  }                                                     \
+  NCLUA_STMT_END
+
+/* Creates a new store table and inserts it into Lua registry.  */
+#define _nclua_create_and_set_store(L)                  \
+  NCLUA_STMT_BEGIN                                      \
+  {                                                     \
+    lua_createtable (L, _NCLUA_STORE_LAST_KEY, 0);      \
+    _nclua_set_store (L);                               \
   }                                                     \
   NCLUA_STMT_END
 
