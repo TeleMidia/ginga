@@ -418,14 +418,6 @@ namespace dataprocessing {
 			clog << "Trying to add 0 bytes in the section" << endl;
 		}
 
-		/*if (pack->getPid() == 0x384) {
-			printf("NEW ====================%d\n", pack->getPayloadSize());
-			for (int j = 0; j < pack->getPayloadSize(); j++) {
-				printf("%02hhX ", (char) data[j]);
-			}
-			printf("\n====================\n");
-		}*/
-
 		if (handler->section->isConsolidated()) {
 			process(handler->section, pack->getPid());
 		}

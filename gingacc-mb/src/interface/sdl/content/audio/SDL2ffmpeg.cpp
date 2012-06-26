@@ -2024,14 +2024,10 @@ the_end:
 							0, NULL);
 
 					if (!vs->swr_ctx || swr_init(vs->swr_ctx) < 0) {
-						fprintf(stderr,
-								"Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!\n",
-								dec->sample_rate,
-								av_get_sample_fmt_name(dec->sample_fmt),
-								dec->channels,
-								vs->audio_tgt_freq,
-								av_get_sample_fmt_name(vs->audio_tgt_fmt),
-								vs->audio_tgt_channels);
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "Cannot create sample rate converter for";
+						clog << " conversion of '" << dec->sample_rate << "'";
+						clog << endl;
 						break;
 					}
 
@@ -2055,7 +2051,8 @@ the_end:
 										* vs->audio_tgt_freq /
 										dec->sample_rate) < 0) {
 
-							fprintf(stderr, "swr_set_compensation() failed\n");
+							clog << "SDL2ffmpeg::audio_decode_frame ";
+							clog << "swr_set_compensation() failed" << endl;
 							break;
 						}
 					}
@@ -2069,7 +2066,8 @@ the_end:
 							in, vs->frame->nb_samples);
 
 					if (len2 < 0) {
-						fprintf(stderr, "audio_resample() failed\n");
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "audio_resample() failed" << endl;
 						break;
 					}
 
@@ -2077,7 +2075,10 @@ the_end:
 							vs->audio_buf2) / vs->audio_tgt_channels /
 							av_get_bytes_per_sample(vs->audio_tgt_fmt)) {
 
-						fprintf(stderr, "warning: audio buffer is probably too small\n");
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "Warning! audio buffer is probably too small";
+						clog << endl;
+
 						swr_init(vs->swr_ctx);
 					}
 
@@ -2975,10 +2976,9 @@ the_end:
 						vs->seek_flags);
 
 				if (ret < 0) {
-					fprintf(
-							stderr,
-							"%s: error while seeking\n",
-							vs->ic->filename);
+					clog << "SDL2ffmpeg::read_thread ";
+					clog << "error while seeking '" << vs->ic->filename << "'";
+					clog << endl;
 
 				} else {
 					if (vs->audio_stream >= 0) {
