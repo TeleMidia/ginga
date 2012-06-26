@@ -82,8 +82,8 @@ GETPLAYER (lua_State *L)
 {
   nclua_t *nc;
   LuaPlayer *player;
-  nc = _nclua_get_nclua_state (L);
-  player = (LuaPlayer *) nclua_get_user_data (nc);
+  nc = nclua_get_nclua_state (L);
+  player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
   return player;
 }
 

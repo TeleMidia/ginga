@@ -38,6 +38,7 @@ libgingaccplalua_la_SOURCES= \
   nclua-luax-private.h       \
   nclua-luax.c               \
   nclua-private.h            \
+  nclua-status.c             \
   nclua.c                    \
   nclua.h
 
