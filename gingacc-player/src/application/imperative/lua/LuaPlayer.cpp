@@ -94,7 +94,7 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) : Player (screenId, mr
 
   this->nc = nclua_create ();
   assert (this->nc != NULL);
-  nclua_set_user_data (this->nc, (void *) this, NULL);
+  nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
 
   /* FIXME: Cleanup this mess.  */
   L = (lua_State *) nclua_get_lua_state (nc);

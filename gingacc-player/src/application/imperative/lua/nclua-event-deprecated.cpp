@@ -162,8 +162,8 @@ static int l_post (lua_State* L)
   if (streq (dst, "in"))
     {
       /* TODO: Move this to the LuaPlayer.  */
-      nclua_t *nc = _nclua_get_nclua_state (L);
-      LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc);
+      nclua_t *nc = nclua_get_nclua_state (L);
+      LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
       GingaScreenID id = player->getScreenId ();
       ILocalScreenManager *m = player->getScreenManager ();
       IInputEvent* evt;
@@ -259,10 +259,10 @@ l_post_ncl_event (lua_State *L)
   const char *action;
   int action_code;
 
-  nc = _nclua_get_nclua_state (L);
+  nc = nclua_get_nclua_state (L);
   assert (nc != NULL);
 
-  player = (LuaPlayer *) nclua_get_user_data (nc);
+  player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
 
   if (unlikely (!ncluax_getstringfield (L, 2, "type", &type)))
     goto error_bad_argument;    /* invalid type */
@@ -403,8 +403,8 @@ l_post_user_event (lua_State * L)
 static int
 l_uptime (lua_State *L)
 {
-  nclua_t *nc = _nclua_get_nclua_state (L);
-  LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc);
+  nclua_t *nc = nclua_get_nclua_state (L);
+  LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
 
   if (unlikely (lua_gettop (L) > 0))
     _nclua_warning_extra_arguments (L);

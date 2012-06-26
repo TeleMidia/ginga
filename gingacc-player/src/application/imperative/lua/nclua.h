@@ -38,9 +38,11 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 NCLUA_BEGIN_DECLS
 
+#include <lua.h>
+
 typedef int nclua_bool_t;
 
-typedef enum _nclua_status_s
+typedef enum
 {
   NCLUA_STATUS_SUCCESS = 0,     /* no error has occurred */
   NCLUA_STATUS_NO_MEMORY,       /* out of memory */
@@ -54,13 +56,25 @@ NCLUA_PUBLIC const char *
 nclua_status_to_string (nclua_status_t status);
 
 typedef struct _nclua_t nclua_t;
+
+typedef struct
+{
+  int unused;
+} nclua_user_data_key_t;
+
 typedef void (*nclua_destroy_func_t) (void *);
 
 NCLUA_PUBLIC nclua_t *
 nclua_create (void);
 
+NCLUA_PUBLIC nclua_t *
+nclua_create_for_lua_state (lua_State *L);
+
 NCLUA_PUBLIC void
 nclua_destroy (nclua_t *nc);
+
+NCLUA_PUBLIC nclua_status_t
+nclua_status (nclua_t *nc);
 
 NCLUA_PUBLIC nclua_t *
 nclua_reference (nclua_t *nc);
@@ -69,19 +83,30 @@ NCLUA_PUBLIC int
 nclua_get_reference_count (nclua_t *nc);
 
 NCLUA_PUBLIC void
-nclua_set_user_data (nclua_t *nc, void *user_data,
-                     nclua_destroy_func_t destroy);
+nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
+                     void *user_data, nclua_destroy_func_t destroy);
 
 NCLUA_PUBLIC void *
-nclua_get_user_data (nclua_t *nc);
+nclua_get_user_data (nclua_t *nc, nclua_user_data_key_t *key);
 
-/* DEPRECATED */
-
-NCLUA_PUBLIC void *
+NCLUA_PUBLIC lua_State *
 nclua_get_lua_state (nclua_t *nc);
 
 NCLUA_PUBLIC nclua_t *
-nclua_get_nclua_state (void *L);
+nclua_get_nclua_state (lua_State *L);
+
+#if 0
+NCLUA_PUBLIC nclua_status_t
+nclua_send (nclua_t *nc, lua_State *L, int index);
+
+NCLUA_PUBLIC void
+nclua_receive (nclua_t *nc, lua_State *L);
+
+NCLUA_PUBLIC void
+nclua_cycle (nclua_t *nc);
+#endif
+
+/* DEPRECATED */
 
 NCLUA_PUBLIC void
 nclua_send (nclua_t *nc, int index);

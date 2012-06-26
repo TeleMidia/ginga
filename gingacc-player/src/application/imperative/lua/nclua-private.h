@@ -30,40 +30,66 @@ NCLUA_BEGIN_DECLS
 
 #include <lua.h>
 
-#define __nclua_magic(m) _nclua_##m##_magic
-#define _NCLUA_MAGIC(m)  const int __nclua_magic(m)
+/* The Lua structures used by the NCLua engine are kept in an internal table
+   called the "NCLua Store", or "store" for short.  This table is stored in
+   the Lua registry, indexed by the address of the following global.  */
+NCLUA_PRIVATE const int _nclua_magic;
 
-/* Sets the value on top of stack as module M registry data.
-   This macro pops the value from stack.  */
-#define _NCLUA_SET_MODULE_DATA(L, m)                            \
-  NCLUA_STMT_BEGIN                                              \
-  {                                                             \
-    lua_pushvalue (L, LUA_REGISTRYINDEX);                       \
-    lua_pushlightuserdata (L, (void *) &__nclua_magic(m));      \
-    lua_pushvalue (L, -3);                                      \
-    lua_rawset (L, -3);                                         \
-    lua_pop (L, 2);                                             \
-  }                                                             \
+/* Keys for data in store table.  */
+enum
+{
+  _NCLUA_STORE_STATE_KEY,       /* key of NCLua state */
+  _NCLUA_STORE_USER_DATA_KEY,   /* key of table with attached user data */
+  _NCLUA_STORE_EVENT_KEY,       /* key of the NCLua Event store table */
+  _NCLUA_STORE_LAST_KEY,        /* total number of key values */
+};
+
+/* Creates a new store table and inserts it into Lua registry.  */
+#define _nclua_create_and_set_store(L)                  \
+  NCLUA_STMT_BEGIN                                      \
+  {                                                     \
+    lua_pushvalue (L, LUA_REGISTRYINDEX);               \
+    lua_pushlightuserdata (L, (void *) &_nclua_magic);  \
+    lua_createtable (L, _NCLUA_STORE_LAST_KEY, 0);      \
+    lua_rawset (L, -3);                                 \
+    lua_pop (L, 1);                                     \
+  }                                                     \
   NCLUA_STMT_END
 
-/* Pushes module M registry data onto stack.  */
-#define _NCLUA_GET_MODULE_DATA(L, m)                            \
-  NCLUA_STMT_BEGIN                                              \
-  {                                                             \
-    lua_pushvalue (L, LUA_REGISTRYINDEX);                       \
-    lua_pushlightuserdata (L, (void *) &__nclua_magic (m));     \
-    lua_rawget (L, -2);                                         \
-    lua_remove (L, -2);                                         \
-  }                                                             \
+/* Pushes onto stack the store table.  */
+#define _nclua_get_store(L)                             \
+  NCLUA_STMT_BEGIN                                      \
+  {                                                     \
+    lua_pushvalue (L, LUA_REGISTRYINDEX);               \
+    lua_pushlightuserdata (L, (void *) &_nclua_magic);  \
+    lua_rawget (L, -2);                                 \
+    lua_remove (L, -2);                                 \
+  }                                                     \
+  NCLUA_STMT_END
+
+/* Pushes onto stack the value store[KEY] */
+#define _nclua_get_store_data(L, key)           \
+  NCLUA_STMT_BEGIN                              \
+  {                                             \
+    _nclua_get_store (L);                       \
+    lua_rawgeti (L, -1, key);                   \
+    lua_remove (L, -2);                         \
+  }                                             \
+  NCLUA_STMT_END
+
+/* Sets store[KEY] to the value at top of stack.
+   This macro pops the value from stack.  */
+#define _nclua_set_store_data(L, key)           \
+  NCLUA_STMT_BEGIN                              \
+  {                                             \
+    _nclua_get_store (L);                       \
+    lua_pushvalue (L, -2);                      \
+    lua_rawseti (L, -2, key);                   \
+    lua_pop (L, 2);                             \
+  }                                             \
   NCLUA_STMT_END
 
 /* nclua.c */
-
-NCLUA_PRIVATE lua_State *
-_nclua_get_lua_state (nclua_t *nc);
-
-NCLUA_PRIVATE nclua_t *
-_nclua_get_nclua_state (lua_State *L);
 
 NCLUA_PRIVATE void
 _nclua_error (lua_State *L, int level, const char *format, ...);
