@@ -278,11 +278,11 @@ namespace compat {
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
 #ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
-		fprintf(stderr,"throw: %s\n",strsignal(x));
+		clog << "SystemCompat::sigpipeHandler ";
+		clog << "throw: " << strsignal(x) << endl;
 		throw strsignal(x);  //throw the exeption
 #endif //linux
 	}
-
 
 	string SystemCompat::updatePath(string dir) {
 		bool found = false;
