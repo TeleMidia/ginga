@@ -629,20 +629,22 @@ namespace player {
 			outfile = fopen(str.c_str(), "wb");
 		}
 
-		fprintf(outfile, "P6 %d %d 255\n", width, height);
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x) {
-				unsigned char r,g,b,a;
+		if (width > 0 && height > 0) {
+			fprintf(outfile, "P6 %d %d 255\n", width, height);
+			for (int y = 0; y < height; ++y) {
+				for (int x = 0; x < width; ++x) {
+					unsigned char r,g,b,a;
 
-				b = *(sourceBuffer++);
-				g = *(sourceBuffer++);
-				r = *(sourceBuffer++);
-				a = *(sourceBuffer++);
-				fputc(r, outfile);  // Red
-				//fputc(255-a, outfile);  // Alpha
-				fputc(g, outfile);  // Green
-				fputc(b, outfile);  // Blue
-				//(pixel >> 24) & 0xff;  // Alpha
+					b = *(sourceBuffer++);
+					g = *(sourceBuffer++);
+					r = *(sourceBuffer++);
+					a = *(sourceBuffer++);
+					fputc(r, outfile);  // Red
+					//fputc(255-a, outfile);  // Alpha
+					fputc(g, outfile);  // Green
+					fputc(b, outfile);  // Blue
+					//(pixel >> 24) & 0xff;  // Alpha
+				}
 			}
 		}
 		fclose(outfile);
