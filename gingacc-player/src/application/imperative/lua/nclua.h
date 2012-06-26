@@ -44,12 +44,12 @@ typedef int nclua_bool_t;
 
 typedef enum
 {
-  NCLUA_STATUS_SUCCESS = 0,     /* no error has occurred */
-  NCLUA_STATUS_NO_MEMORY,       /* out of memory */
-  NCLUA_STATUS_NULL_POINTER,    /* NULL pointer */
-  NCLUA_STATUS_FILE_NOT_FOUND,  /* file not found */
-  NCLUA_STATUS_INVALID_STATUS,  /* invalid value for nclua_status_t */
-  NCLUA_STATUS_LAST_STATUS      /* total number of status values */
+  NCLUA_STATUS_SUCCESS = 0,       /* no error has occurred */
+  NCLUA_STATUS_NO_MEMORY,         /* out of memory */
+  NCLUA_STATUS_NULL_POINTER,      /* NULL pointer */
+  NCLUA_STATUS_INVALID_LUA_STATE, /* invalid lua_State */
+  NCLUA_STATUS_INVALID_STATUS,    /* invalid value for nclua_status_t */
+  NCLUA_STATUS_LAST_STATUS        /* total number of status values */
 } nclua_status_t;
 
 NCLUA_PUBLIC const char *
@@ -95,7 +95,6 @@ nclua_get_lua_state (nclua_t *nc);
 NCLUA_PUBLIC nclua_t *
 nclua_get_nclua_state (lua_State *L);
 
-#if 0
 NCLUA_PUBLIC nclua_status_t
 nclua_send (nclua_t *nc, lua_State *L, int index);
 
@@ -104,12 +103,11 @@ nclua_receive (nclua_t *nc, lua_State *L);
 
 NCLUA_PUBLIC void
 nclua_cycle (nclua_t *nc);
-#endif
 
 /* DEPRECATED */
 
 NCLUA_PUBLIC void
-nclua_send (nclua_t *nc, int index);
+nclua_sendx (nclua_t *nc, int index);
 
 NCLUA_END_DECLS
 

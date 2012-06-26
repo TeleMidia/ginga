@@ -93,7 +93,7 @@ LuaPlayer::LuaPlayer (GingaScreenID screenId, string mrl) : Player (screenId, mr
   mutex_init (&this->mutex);
 
   this->nc = nclua_create ();
-  assert (this->nc != NULL);
+  assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
   nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
 
   /* FIXME: Cleanup this mess.  */
@@ -212,7 +212,7 @@ void LuaPlayer::post (string action)
 
       lua_pushstring (L, currentScope.c_str ());
       lua_setfield (L, -2, "label");
-      nclua_send (nc, -1);
+      nclua_sendx (nc, -1);
     }
   else
     {
@@ -318,7 +318,7 @@ LuaPlayer::setPropertyValue(string name, string value)
   lua_pushstring (L, value.c_str ());
   lua_setfield (L, -2, "value");
 
-  nclua_send (nc, -1);
+  nclua_sendx (nc, -1);
   UNLOCK ();
 }
 
@@ -339,7 +339,7 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
           int ref = evt->getType ();
           lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
           luaL_unref(L, LUA_REGISTRYINDEX, ref);
-          nclua_send (nc, -1);
+          nclua_sendx (nc, -1);
         }
     }
   else if (evt->isKeyType() && this->isHandler)
@@ -355,7 +355,7 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
 
       lua_pushstring (L, key_str.c_str ());
       lua_setfield (L, -2, "key");
-      nclua_send (nc, -1);
+      nclua_sendx (nc, -1);
     }
 
   UNLOCK ();

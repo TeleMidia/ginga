@@ -35,8 +35,8 @@ nclua_status_to_string (nclua_status_t status)
     case NCLUA_STATUS_NULL_POINTER:
       return "NULL pointer";
 
-    case NCLUA_STATUS_FILE_NOT_FOUND:
-      return "file not found";
+    case NCLUA_STATUS_INVALID_LUA_STATE:
+      return "invalid lua_State";
 
     case NCLUA_STATUS_INVALID_STATUS:
       return "invalid value for nclua_status_t";
