@@ -57,13 +57,13 @@ enum
 NCLUA_COMPILE_TIME_ASSERT (NCLUA_EVENT_INDEX_LAST < 0);
 
 /* Pushes onto stack the object at index INDEX in Event table.  */
-#define _event_pushenv(L, index)                        \
-  NCLUA_STMT_BEGIN                                      \
-  {                                                     \
-    _nclua_get_store_data (L, _NCLUA_STORE_EVENT_KEY);  \
-    lua_rawgeti (L, -1, index);                         \
-    lua_replace (L, -2);                                \
-  }                                                     \
+#define _event_pushenv(L, index)                                \
+  NCLUA_STMT_BEGIN                                              \
+  {                                                             \
+    _nclua_get_registry_data (L, _NCLUA_REGISTRY_EVENT);        \
+    lua_rawgeti (L, -1, index);                                 \
+    lua_replace (L, -2);                                        \
+  }                                                             \
   NCLUA_STMT_END
 
 /* Pushes the specified object onto stack.  */
@@ -133,7 +133,7 @@ _nclua_event_open (lua_State *L)
 
   lua_newtable (L);
   lua_pushvalue (L, -1);
-  _nclua_set_store_data (L, _NCLUA_STORE_EVENT_KEY);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_EVENT);
 
   lua_newtable (L);
   lua_rawseti (L, -2, NCLUA_EVENT_INDEX_EMPTY_TABLE);
@@ -157,7 +157,7 @@ _nclua_event_close (lua_State *L)
 {
   int t;
 
-  _nclua_get_store_data (L, _NCLUA_STORE_EVENT_KEY);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_EVENT);
   if (unlikely (lua_isnil (L, -1)))
     {
       lua_pop (L, 1);
@@ -180,7 +180,7 @@ _nclua_event_close (lua_State *L)
 
   /* Cleanup Event registry data.  */
   lua_pushnil (L);
-  _nclua_set_store_data (L, _NCLUA_STORE_EVENT_KEY);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_EVENT);
 }
 
 
