@@ -254,7 +254,7 @@ nclua_destroy (nclua_t *nc)
 
   /* Release user data */
   lua_pushnil (L);
-  while (lua_next (L, -1) != 0)
+  while (lua_next (L, -2) != 0)
     {
       void *user_data;
       nclua_destroy_func_t destroy;
@@ -262,7 +262,7 @@ nclua_destroy (nclua_t *nc)
       lua_rawgeti (L, -1, 1);
       user_data = lua_touserdata (L, -1);
 
-      lua_rawgeti (L, -2, 1);
+      lua_rawgeti (L, -2, 2);
       destroy = lua_touserdata (L, -1);
 
       if (user_data != NULL && destroy != NULL)
@@ -270,6 +270,7 @@ nclua_destroy (nclua_t *nc)
 
       lua_pop (L, 3);
     }
+  lua_pop (L, 1);
 
   /* Release store table.  */
   lua_pushnil (L);

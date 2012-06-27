@@ -472,12 +472,14 @@ match (lua_State *L, int event, int filter)
 static int
 notify (lua_State *L, int index)
 {
+  int saved_top;
   int result;                   /* number of handlers called */
   int event;                    /* index of event */
   int queue;                    /* index of queue */
   int size;                     /* queue size */
   int i;
 
+  saved_top = lua_gettop (L);
   event = ncluax_abs (L, index);
 
   push_listeners_queue (L);
@@ -500,6 +502,7 @@ notify (lua_State *L, int index)
         }
     }
 
+  lua_settop (L, saved_top);
   return result;
 }
 
