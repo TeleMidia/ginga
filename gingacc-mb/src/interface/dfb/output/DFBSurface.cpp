@@ -523,17 +523,45 @@ namespace mb {
 						sur,
 						(DFBSurfaceBlittingFlags)(0)));
 
-				DFBCHECK( sur->Blit(
+				DFBResult err;
+
+				err = sur->Blit(
 						sur,
 						(IDirectFBSurface*)(src->getSurfaceContent()),
 						r,
 						x,
-						y));
+						y);
+
+				if (err != DFB_OK) {
+					clog << "DFBSurface::blit Warning! ";
+					clog << "Can't blit surface: ";
+					clog << "internal surface address '" << sur << "'";
+					clog << "blit FROM '";
+
+					if (r == NULL) {
+						clog << "ALL'";
+
+					} else {
+						clog << rect.x << ",";
+						clog << rect.y << ",";
+						clog << rect.w << ",";
+						clog << rect.h << "'";
+					}
+
+					clog << " TO '" << x << "," << y << "'";
+					clog << endl;
+				}
 
 			} else {
 				clog << "DFBSurface::blit Warning! ";
 				clog << "Can't blit surface: ";
-				clog << "internal surface is NULL" << endl;
+				clog << "internal surface address '" << sur << "'";
+				clog << "blit on '";
+				clog << rect.x << ",";
+				clog << rect.y << ",";
+				clog << rect.w << ",";
+				clog << rect.h << "'";
+				clog << endl;
 			}
 
 		} else {

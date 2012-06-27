@@ -69,12 +69,12 @@ extern "C" {
 
 /* macro for a safe call to DirectFB functions */
 #ifndef DFBCHECK
-#define DFBCHECK(x...)                                            \
-{                                                                 \
-	DFBResult err = x;                                            \
-	if (err != DFB_OK) {                                          \
-		fprintf( stderr, "%s <%d>:\n\t", __FILE__, __LINE__ );    \
-	}                                                             \
+#define DFBCHECK(x...)                                                \
+{                                                                     \
+	DFBResult err = x;                                                \
+	if (err != DFB_OK) {                                              \
+		fprintf( stderr, "%s <%d>:%d\n\t", __FILE__, __LINE__, err ); \
+	}                                                                 \
 }
 #endif /*DFBCHECK*/
 
