@@ -421,8 +421,8 @@ l_uptime (lua_State *L)
  * event.register ([pos:number], f:function, [filter:table])
  *     -> status:boolean, [errmsg:string]
  *
- * Appends the function F to the listeners queue.
- * If POS is given, then F is registered in position POS of listeners queue.
+ * Appends the function F to the handler list.
+ * If POS is given, then F is registered in position POS of handler list.
  * If CLASS is given, then F called only for events of the given class.
  *
  * In the first form, any additional parameters are treated as class
@@ -440,7 +440,7 @@ l_register (lua_State *L)
   int pos;
   int n;
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   n = lua_objlen (L, -1);
   lua_pop (L, 1);
 
@@ -464,7 +464,7 @@ l_register (lua_State *L)
     {
     case LUA_TNIL:
     case LUA_TNONE:
-      push_empty_table (L);
+      _nclua_get_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
       lua_insert (L, 3);
 
       /* fall-through */
@@ -500,7 +500,7 @@ l_register (lua_State *L)
       }
     }
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
 
   /* Creates {f, {filter}}.  */
   lua_createtable (L, 2, 0);
@@ -509,7 +509,7 @@ l_register (lua_State *L)
   lua_pushvalue (L, 3);
   lua_rawseti (L, -2, 2);
 
-  /* Insert {f, {filter}} into listeners queue,
+  /* Insert {f, {filter}} into handler list,
      shifting up any other elements, if necessary.  */
 
   ncluax_tableinsert (L, -2, pos);

@@ -46,7 +46,7 @@ function fail ()
 end
 
 -- We assume the following is working.
-queue = assert (event.get_listeners_queue ())
+queue = assert (event.get_handler_list ())
 assert (#queue == 0)
 function qsz() return #queue end
 function qf(i) return queue[i][1] end
