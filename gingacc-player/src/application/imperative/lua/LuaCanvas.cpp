@@ -481,6 +481,16 @@ static int l_compose (lua_State* L)
 	int y = luaL_checkint(L, 3);
 
 	if (src->crop.inUse == 1) {
+		if (x < 0 || y < 0 || src->crop.x < 0 || src->crop.y < 0 ||
+				src->crop.w < 0 || src->crop.h < 0) {
+
+			clog << "LuaCanvas::l_compose Warning! Trying to blit using";
+			clog << " awkward dimensions: FROM '";
+			clog << src->crop.x << "," << src->crop.y << "," << src->crop.w;
+			clog << "," << src->crop.h << "' TO '" << x << "," << y << "'";
+			clog << endl;
+		}
+
 		canvas->sfc->blit(
 				x, y,
 				src->sfc, src->crop.x, src->crop.y, src->crop.w, src->crop.h);

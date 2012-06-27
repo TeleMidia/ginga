@@ -10,6 +10,7 @@ libdir                       = \
 SYSTEMSOURCES                = \
                                thread/Thread.cpp \
                                fs/GingaLocatorFactory.cpp \
+                               compat/PracticalSocket.cpp \
                                compat/SystemCompat.cpp
 
 if MULTIPROCESS
