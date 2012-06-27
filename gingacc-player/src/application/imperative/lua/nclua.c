@@ -16,7 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include <assert.h>
-#include <limits.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -176,7 +175,7 @@ nclua_create_for_lua_state (lua_State *L)
   _nclua_set_registry_data (L, _NCLUA_REGISTRY_STATE);
 
   lua_newtable (L);
-  _nclua_set_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
 
   status = _nclua_event_open (L);
   if (unlikely (status != NCLUA_STATUS_SUCCESS))
@@ -248,7 +247,7 @@ nclua_destroy (nclua_t *nc)
   /* Release NCLua Event data.  */
   _nclua_event_close (L);
 
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
   assert (lua_istable (L, -1));
 
   /* Release user data */
@@ -264,6 +263,7 @@ nclua_destroy (nclua_t *nc)
       lua_rawgeti (L, -2, 2);
       destroy = lua_touserdata (L, -1);
 
+
       if (user_data != NULL && destroy != NULL)
         destroy (user_data);
 
@@ -272,6 +272,9 @@ nclua_destroy (nclua_t *nc)
   lua_pop (L, 1);
 
   /* Release registry table.  */
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_STATE);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
   _nclua_destroy_registry (L);
 
   if (nc->close_lua_state)
@@ -341,7 +344,7 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
   L = nclua_get_lua_state (nc);
   saved_top = lua_gettop (L);
 
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
   lua_pushlightuserdata (L, (void *) key);
   lua_rawget (L, -2);
 
@@ -442,7 +445,7 @@ nclua_get_user_data (nclua_t *nc, nclua_user_data_key_t *key)
   L = nclua_get_lua_state (nc);
   saved_top = lua_gettop (L);
 
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
   lua_pushlightuserdata (L, (void *) key);
   lua_rawget (L, -2);
   if (unlikely (lua_isnil (L, -1)))

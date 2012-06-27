@@ -39,11 +39,14 @@ NCLUA_PRIVATE const int _nclua_magic;
 /* Indexes for data in the NCLua registry.  */
 enum
 {
-  _NCLUA_REGISTRY_EMPTY_TABLE, /* index of an empty table */
-  _NCLUA_REGISTRY_STATE,       /* index of NCLua state */
-  _NCLUA_REGISTRY_USER_DATA,   /* index of table with attached user data */
-  _NCLUA_REGISTRY_EVENT,       /* index of the NCLua Event registry */
-  _NCLUA_REGISTRY_LAST_INDEX,  /* total number of index values */
+  _NCLUA_REGISTRY_EMPTY_TABLE,     /* index of an empty table */
+  _NCLUA_REGISTRY_STATE,           /* index of nclua_t */
+  _NCLUA_REGISTRY_USER_DATA_TABLE, /* index of user data table */
+  _NCLUA_REGISTRY_INPUT_QUEUE,     /* index of the input queue */
+  _NCLUA_REGISTRY_OUTPUT_QUEUE,    /* index of the output queue */
+  _NCLUA_REGISTRY_HANDLER_LIST,    /* index of the handler list */
+  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer table */
+  _NCLUA_REGISTRY_LAST_INDEX,      /* total number of index values */
 };
 
 /* Creates a new registry table and inserts it into Lua registry.  */
@@ -108,6 +111,16 @@ enum
     lua_pushvalue (L, -2);                      \
     lua_rawseti (L, -2, key);                   \
     lua_pop (L, 2);                             \
+  }                                             \
+  NCLUA_STMT_END
+
+/* Sets registry[KEY] to nil.
+   This macro pops the value from stack.  */
+#define _nclua_unset_registry_data(L, key)      \
+  NCLUA_STMT_BEGIN                              \
+  {                                             \
+    lua_pushnil (L);                            \
+    _nclua_set_registry_data (L, key);          \
   }                                             \
   NCLUA_STMT_END
 

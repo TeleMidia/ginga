@@ -19,8 +19,6 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 # include "config.h"
 #endif
 
-#include <limits.h>
-
 extern "C"{
 #include <lua.h>
 #include <lauxlib.h>
@@ -38,48 +36,13 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 /* END_DEPRECATED */
 
 /* Timer thread data.  */
-typedef struct _nclua_event_timer_t
+typedef struct
 {
-  lua_State *L;                 /* lua_state */
+  lua_State *L;                 /* Lua state */
   pthread_t tid;                /* thread id */
   pthread_mutex_t mutex;        /* associated mutex */
   unsigned int delay;           /* delay in milliseconds */
 } nclua_event_timer_t;
-
-/* Event table contents.  */
-enum
-{
-  NCLUA_EVENT_INDEX_EMPTY_TABLE = INT_MIN, /* an empty table */
-  NCLUA_EVENT_INDEX_LISTENERS_QUEUE,       /* queue of listeners */
-  NCLUA_EVENT_INDEX_TIMERS_TABLE,          /* table of active timers */
-  NCLUA_EVENT_INDEX_LAST                   /* total number of index values */
-};
-NCLUA_COMPILE_TIME_ASSERT (NCLUA_EVENT_INDEX_LAST < 0);
-
-/* Pushes onto stack the object at index INDEX in Event table.  */
-#define _event_pushenv(L, index)                                \
-  NCLUA_STMT_BEGIN                                              \
-  {                                                             \
-    _nclua_get_registry_data (L, _NCLUA_REGISTRY_EVENT);        \
-    lua_rawgeti (L, -1, index);                                 \
-    lua_replace (L, -2);                                        \
-  }                                                             \
-  NCLUA_STMT_END
-
-/* Pushes the specified object onto stack.  */
-#define push_empty_table(L) \
-  _event_pushenv (L, NCLUA_EVENT_INDEX_EMPTY_TABLE)
-
-#define push_listeners_queue(L) \
-  _event_pushenv (L, NCLUA_EVENT_INDEX_LISTENERS_QUEUE)
-
-#define push_timers_table(L) \
-  _event_pushenv (L, NCLUA_EVENT_INDEX_TIMERS_TABLE)
-
-/* Common warnings:  */
-#define _nclua_warning_extra_arguments(L)                       \
-  _nclua_warning (L, 1, "ignoring extra arguments to '%s'",     \
-                  ncluax_get_function_name (L, 0))
 
 /* Mutex.  */
 #define mutex_init(m)                                           \
@@ -96,8 +59,13 @@ NCLUA_COMPILE_TIME_ASSERT (NCLUA_EVENT_INDEX_LAST < 0);
 #define mutex_lock(m)   assert (pthread_mutex_lock (m) == 0)
 #define mutex_unlock(m) while (pthread_mutex_unlock (m) == 0)
 
+/* Common warnings:  */
+#define _nclua_warning_extra_arguments(L)                       \
+  _nclua_warning (L, 1, "ignoring extra arguments to '%s'",     \
+                  ncluax_get_function_name (L, 0))
+
 /* Function prototypes: */
-static int l_get_listeners_queue (lua_State *L);
+static int l_get_handler_list (lua_State *L);
 static int l_post (lua_State* L);
 static int l_register (lua_State *L);
 static int l_unregister (lua_State *L);
@@ -108,15 +76,18 @@ static void *timer_thread (void *data);
 static nclua_bool_t match (lua_State *L, int event, int filter);
 static int notify (lua_State *L, int index);
 
+#define DEFINE_LUA_FUNCTION(name) \
+  { NCLUA_STRINGIFY (name), NCLUA_CONCAT (l_, name) }
+
 /* Lua functions registered by the NCLua Event module.  */
 static const struct luaL_Reg _nclua_event_functions[] =
 {
-  { "get_listeners_queue", l_get_listeners_queue },
-  { "post",                l_post },
-  { "register",            l_register },
-  { "timer",               l_timer },
-  { "unregister",          l_unregister },
-  { "uptime",              l_uptime },
+  DEFINE_LUA_FUNCTION (get_handler_list),
+  DEFINE_LUA_FUNCTION (post),
+  DEFINE_LUA_FUNCTION (register),
+  DEFINE_LUA_FUNCTION (timer),
+  DEFINE_LUA_FUNCTION (unregister),
+  DEFINE_LUA_FUNCTION (uptime),
   { NULL, NULL }
 };
 
@@ -129,24 +100,15 @@ static const struct luaL_Reg _nclua_event_functions[] =
 nclua_status_t
 _nclua_event_open (lua_State *L)
 {
-  int saved_top = ncluax_abs (L, -1);
+  lua_newtable (L);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
 
   lua_newtable (L);
-  lua_pushvalue (L, -1);
-  _nclua_set_registry_data (L, _NCLUA_REGISTRY_EVENT);
-
-  lua_newtable (L);
-  lua_rawseti (L, -2, NCLUA_EVENT_INDEX_EMPTY_TABLE);
-
-  lua_newtable (L);
-  lua_rawseti (L, -2, NCLUA_EVENT_INDEX_LISTENERS_QUEUE);
-
-  lua_newtable (L);
-  lua_rawseti (L, -2, NCLUA_EVENT_INDEX_TIMERS_TABLE);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
 
   luaL_register (L, "event", _nclua_event_functions);
+  lua_pop (L, 1);
 
-  lua_settop (L, saved_top);
   return NCLUA_STATUS_SUCCESS;
 }
 
@@ -155,49 +117,44 @@ _nclua_event_open (lua_State *L)
 void
 _nclua_event_close (lua_State *L)
 {
-  int t;
-
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_EVENT);
-  if (unlikely (lua_isnil (L, -1)))
-    {
-      lua_pop (L, 1);
-      return;                   /* nothing to do */
-    }
-  lua_pop (L, 1);
-
   /* Traverse timers table canceling active timers.  */
-  push_timers_table (L);
-  t = ncluax_abs (L, -1);
-  lua_pushnil (L);
-  while (lua_next (L, t) != 0)
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+  if (unlikely (!lua_isnil (L, -1)))
     {
-      nclua_event_timer_t *timer;
-      timer = (nclua_event_timer_t *) lua_touserdata (L, -2);
-      pthread_cancel (timer->tid);
-      lua_pop (L, 1);
+      int t = ncluax_abs (L, -1);
+      lua_pushnil (L);
+      while (lua_next (L, t) != 0)
+        {
+          nclua_event_timer_t *timer;
+          timer = (nclua_event_timer_t *) lua_touserdata (L, -2);
+          pthread_cancel (timer->tid);
+          lua_pop (L, 1);
+        }
     }
   lua_pop (L, 1);
 
-  /* Cleanup Event registry data.  */
-  lua_pushnil (L);
-  _nclua_set_registry_data (L, _NCLUA_REGISTRY_EVENT);
+  /* Cleanup registry data.  */
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
 }
 
 
 /* The NCLua Event API (part i -- from Lua to C).  */
 
-/* event.get_listeners_queue () -> queue:table
+/* event.get_handler_list () -> list:table
 
-   Returns the listeners queue.
+   Returns the handler list.
    This function is an extension to the ABNT standard. */
 
 static int
-l_get_listeners_queue (lua_State *L)
+l_get_handler_list (lua_State *L)
 {
   if (unlikely (lua_gettop (L) > 0))
     _nclua_warning_extra_arguments (L);
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   return 1;
 }
 
@@ -205,10 +162,10 @@ l_get_listeners_queue (lua_State *L)
    event.unregister (f1:function, f2:function, ...) -> n:number; or
    event.unregister () -> n:number
 
-   Remove all entries indexed by function F from listeners queue.
+   Remove all entries indexed by function F from handler list.
 
-   In the second form, remove all given functions from listeners queue.
-   In the third form, remove all functions from listeners queue.
+   In the second form, remove all given functions from handler list.
+   In the third form, remove all functions from handler list.
    The second and third forms are extensions to the ABNT standard.
 
    Returns the number of entries removed from queue.
@@ -226,7 +183,7 @@ l_unregister (lua_State *L)
   /* 3rd form: Remove all entries from queue.  */
   if (lua_isnoneornil (L, 1) && lua_gettop (L) <= 1)
     {
-      push_listeners_queue (L);
+      _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
       size = lua_objlen (L, -1);
 
       for (i = 1; i <= size; i++)
@@ -247,7 +204,7 @@ l_unregister (lua_State *L)
 
       luaL_checktype (L, 1, LUA_TFUNCTION);
 
-      push_listeners_queue (L);
+      _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
       queue = ncluax_abs (L, -1);
       saved_size = size = lua_objlen (L, queue);
 
@@ -259,7 +216,7 @@ l_unregister (lua_State *L)
 
           if (lua_equal (L, -1, 1))
             {
-              /* Remove function from listeners queue
+              /* Remove function from handler list
                  shifting down other elements to close space.  */
 
               ncluax_tableremove (L, queue, i);
@@ -321,7 +278,7 @@ l_timer (lua_State *L)
   mutex_init (&timer->mutex);
 
   /* Store callback in timers table, indexed by the timer structure.  */
-  push_timers_table (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
   lua_pushlightuserdata (L, (void *) timer);
   lua_pushvalue (L, 2);
   lua_rawset (L, -3);
@@ -363,7 +320,7 @@ l_cancel (lua_State *L)
      memory errors, since malloc() might return some old, already freed,
      address to a new timer.  */
 
-  push_timers_table (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
   lua_pushlightuserdata (L, (void *) timer);
   lua_rawget (L, -2);
   if (!lua_isnil (L, -1))
@@ -387,7 +344,7 @@ cleanup_timer_thread (void *data)
 
   mutex_lock (&timer->mutex);
 
-  push_timers_table (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
   lua_pushlightuserdata (L, (void *) timer);
   lua_pushnil (L);
   lua_rawset (L, -3);
@@ -417,7 +374,7 @@ timer_thread (void *data)
      the Lua callback function in a different thread.  */
   mutex_lock (&timer->mutex);
 
-  push_timers_table (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
   lua_pushlightuserdata (L, (void *) timer);
   lua_rawget (L, -2);
   lua_call (L, 0, 0);
@@ -462,7 +419,7 @@ match (lua_State *L, int event, int filter)
   return status;
 }
 
-/* For each function in listeners queue, if its filter matches event at
+/* For each function in handler list, if its filter matches event at
    INDEX, call it passing the event at INDEX as argument.  If the function
    returns true, stop processing (event handled).  Otherwise, continue until
    all functions have been called.
@@ -482,7 +439,7 @@ notify (lua_State *L, int index)
   saved_top = lua_gettop (L);
   event = ncluax_abs (L, index);
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   queue = ncluax_abs (L, -1);
   size = lua_objlen (L, queue);
 
