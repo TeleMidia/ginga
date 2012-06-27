@@ -183,7 +183,15 @@ int main(int argc, char** argv) {
 	bool blinkWindows   = false;
 	bool printScreen    = false;
 	for (i = 1; i < argc; i++) {
-		if ((strcmp(argv[i], "--all") == 0)) {
+		if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
+			if (strcmp(argv[i + 1], "stdout") == 0) {
+				setLogToStdoutDev();
+
+			} else if (strcmp(argv[i + 1], "file") == 0) {
+				setLogToFile();
+			}
+
+		} else if ((strcmp(argv[i], "--all") == 0)) {
 			testAllScreens = true;
 
 		} else if ((strcmp(argv[i], "--blink") == 0)) {

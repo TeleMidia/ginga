@@ -83,12 +83,12 @@ namespace mb {
 	}
 
 	InputManager::~InputManager() {
+		release();
+
 		if (ief != NULL) {
 			delete ief;
 			ief = NULL;
 		}
-
-		release();
 	}
 
 	void InputManager::initializeInputIntervalTime() {
@@ -139,13 +139,36 @@ namespace mb {
 
 	void InputManager::release() {
 		map<IInputEventListener*, set<int>*>::iterator i;
+		bool runDone = false;
+		IInputEvent* ie;
+		int mbKeyCode;
 
 		running = false;
 		if (eventBuffer != NULL) {
 			eventBuffer->wakeUp();
+
+		} else {
+			return;
 		}
+
+		while (!runDone) {
+			SystemCompat::uSleep(10000);
+			runDone = (maxX == 0 && maxY == 0);
+		}
+
+		mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
+				myScreen, CodeMap::KEY_QUIT);
+
+		ie = LocalScreenManager::getInstance()->createInputEvent(
+				myScreen, NULL, mbKeyCode);
+
+		running = true;
+		dispatchEvent(ie);
+		running = false;
+
+		delete ie;
+
 		lock();
-		notifying = true;
 
 		i = eventListeners.begin();
 		while (i != eventListeners.end()) {
@@ -154,23 +177,29 @@ namespace mb {
 			}
 			++i;
 		}
+		eventListeners.clear();
 
-		pthread_mutex_lock(&actInpMutex);
-		actionsToInpListeners.clear();
-		pthread_mutex_unlock(&actInpMutex);
+		if (!actionsToInpListeners.empty()) {
+			pthread_mutex_lock(&actInpMutex);
+			actionsToInpListeners.clear();
+			pthread_mutex_unlock(&actInpMutex);
+		}
 		pthread_mutex_destroy(&actInpMutex);
 
-		pthread_mutex_lock(&appMutex);
-		notifyingApp = true;
 
-		applicationListeners.clear();
+		if (!applicationListeners.empty()) {
+			pthread_mutex_lock(&appMutex);
+			applicationListeners.clear();
 
-		pthread_mutex_lock(&actAppMutex);
-		actionsToAppListeners.clear();
-		pthread_mutex_unlock(&actAppMutex);
+			if (!actionsToAppListeners.empty()) {
+				pthread_mutex_lock(&actAppMutex);
+				actionsToAppListeners.clear();
+				pthread_mutex_unlock(&actAppMutex);
+			}
+
+			pthread_mutex_unlock(&appMutex);
+		}
 		pthread_mutex_destroy(&actAppMutex);
-
-		pthread_mutex_unlock(&appMutex);
 		pthread_mutex_destroy(&appMutex);
 
 		if (eventBuffer != NULL) {
@@ -178,9 +207,11 @@ namespace mb {
 			eventBuffer = NULL;
 		}
 
-		pthread_mutex_lock(&mlMutex);
-		motionListeners.clear();
-		pthread_mutex_unlock(&mlMutex);
+		if (!motionListeners.empty()) {
+			pthread_mutex_lock(&mlMutex);
+			motionListeners.clear();
+			pthread_mutex_unlock(&mlMutex);
+		}
 		pthread_mutex_destroy(&mlMutex);
 
 		unlock();
@@ -637,7 +668,9 @@ namespace mb {
 					continue;
 				}
 
-				if (inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+				if (!inputEvent->isApplicationType() &&
+						inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+
 					delete inputEvent;
 					inputEvent = eventBuffer->getNextEvent();
 					continue;
@@ -685,6 +718,14 @@ namespace mb {
 			clog << "InputManager::run Warning! Can't receive events: ";
 			clog << "event buffer is NULL" << endl;
 		}
+
+		currentXAxis = 0;
+		currentYAxis = 0;
+		currentZAxis = 0;
+		maxX         = 0;
+		maxY         = 0;
+
+		clog << "InputManager::run all done" << endl;
 	}
 }
 }

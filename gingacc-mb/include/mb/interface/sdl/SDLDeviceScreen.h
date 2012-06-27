@@ -162,7 +162,7 @@ typedef struct {
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
 
-			static map<GingaScreenID, map<int, set<IWindow*>*>*> renderMap;
+			static map<GingaScreenID, map<float, set<IWindow*>*>*> renderMap;
 			static pthread_mutex_t wrMutex;
 
 			static set<IContinuousMediaProvider*> cmpRenderList;
@@ -211,16 +211,16 @@ typedef struct {
 
 			/* interfacing output */
 
-			IWindow* createWindow(int x, int y, int w, int h, int z);
+			IWindow* createWindow(int x, int y, int w, int h, float z);
 
 			GingaWindowID createUnderlyingSubWindow(
-					int x, int y, int w, int h, int z);
+					int x, int y, int w, int h, float z);
 
 		private:
 			GingaWindowID createUnderlyingSubWindow(
 					GingaWindowID parent,
 					string spec,
-					int x, int y, int w, int h, int z);
+					int x, int y, int w, int h, float z);
 
 		public:
 			GingaWindowID getScreenUnderlyingWindow();
@@ -315,10 +315,10 @@ typedef struct {
 		public:
 			/* output */
 			static void renderMapInsertWindow(
-					GingaScreenID screenId, IWindow* iWin, int z);
+					GingaScreenID screenId, IWindow* iWin, float z);
 
 			static void renderMapRemoveWindow(
-					GingaScreenID screenId, IWindow* iWin, int z);
+					GingaScreenID screenId, IWindow* iWin, float z);
 
 //			static void updateWindowState(
 //					GingaScreenID screenId, IWindow* win, short status);
@@ -366,6 +366,10 @@ typedef struct {
 					Uint32* gmask,
 					Uint32* bmask,
 					Uint32* amask);
+
+		private:
+			static void lockScreens();
+			static void unlockScreens();
 	};
 }
 }

@@ -214,8 +214,9 @@ namespace player {
 
 			delete lpl;
 			++i;
-			lockedListeners.clear();
 		}
+
+		lockedListeners.clear();
 		pthread_mutex_unlock(&lockedListM);
 	}
 

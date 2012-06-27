@@ -127,8 +127,8 @@ namespace mb {
 			int getH();
 			void* getContent();
 			void setColor(int r, int g, int b, int alpha=255);
-			void setBorder(int r, int g, int b, int alpha=255, int bWidth=1);
-			void setBorder(IColor* color, int bWidth=1);
+			void setBorder(int r, int g, int b, int alpha=255, int bWidth=0);
+			void setBorder(IColor* color, int bWidth=0);
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();

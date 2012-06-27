@@ -139,6 +139,13 @@ namespace mb {
 		}
 
 		pthread_mutex_lock(&ntsMutex);
+		createFont();
+		pthread_mutex_unlock(&ntsMutex);
+
+		return true;
+	}
+
+	bool SDLFontProvider::createFont() {
 		font = TTF_OpenFont(fontUri.c_str(), height);
 		if (font == NULL) {
 			clog << "SDLFontProvider::initializeFont Warning! ";
@@ -152,8 +159,6 @@ namespace mb {
 		TTF_SetFontOutline(font, 0);
 		TTF_SetFontKerning(font, 1);
 		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
-
-		pthread_mutex_unlock(&ntsMutex);
 
 		return true;
 	}
@@ -202,11 +207,11 @@ namespace mb {
 	void SDLFontProvider::playOver(
 			ISurface* surface, const char* text, int x, int y, short align) {
 
+		pthread_mutex_lock(&pMutex);
+
 		if (font == NULL) {
 			initializeFont();
 		}
-
-		pthread_mutex_lock(&pMutex);
 
 		plainText   = text;
 		coordX      = x;
@@ -225,7 +230,7 @@ namespace mb {
 		Uint32 r, g, b, a;
 		SDL_Color sdlColor;
 		SDL_Rect rect;
-		SDL_Surface* renderedSurface;
+		SDL_Surface* renderedSurface = NULL;
 		SDL_Surface* text;
 
 		this->content = surface;
@@ -236,6 +241,14 @@ namespace mb {
 			clog << endl;
 			pthread_mutex_unlock(&ntsMutex);
 			return;
+		}
+
+		if (font == NULL) {
+			if (!createFont()) {
+				clog << "SDLFontProvider::playOver Warning! NULL font.";
+				clog << endl;
+				return;
+			}
 		}
 
 		if (LocalScreenManager::getInstance()->hasSurface(myScreen, content)) {
@@ -283,7 +296,12 @@ namespace mb {
 			rect.w = text->w;
 			rect.h = text->h;
 
-			renderedSurface = (SDL_Surface*)(parent->getContent());
+			renderedSurface = ((SDLSurface*)content)->getPendingSurface();
+
+			if (renderedSurface == NULL) {
+				renderedSurface = (SDL_Surface*)(parent->getContent());
+			}
+
 			if (renderedSurface == NULL) {
 				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
 

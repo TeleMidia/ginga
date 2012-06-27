@@ -89,9 +89,11 @@ namespace player {
 			GingaScreenID myScreen;
 			short previousStatus;
 			IWindow* win;
+			bool running;
 
 		public:
 			ShowButton(GingaScreenID screenId);
+			virtual ~ShowButton();
 
 			void initializeWindow();
 			void stop();

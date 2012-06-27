@@ -133,7 +133,7 @@ namespace mb {
 			av_strlcpy(vs->filename, filename, sizeof(vs->filename));
 
 			av_init_packet(&flush_pkt);
-		    flush_pkt.data = (uint8_t*)"FLUSH";
+		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
 		    read_init();
 
@@ -144,7 +144,15 @@ namespace mb {
 			vs->subpq_mutex = SDL_CreateMutex();
 			vs->subpq_cond  = SDL_CreateCond();
 
+		    packet_queue_init(&vs->videoq);
+		    packet_queue_init(&vs->audioq);
+		    packet_queue_init(&vs->subtitleq);
+
 			vs->av_sync_type = av_sync_type;
+
+			pthread_mutex_lock(&aiMutex);
+			openStreams();
+			pthread_mutex_unlock(&aiMutex);
 		}
 
 	    refCount++;
@@ -153,8 +161,9 @@ namespace mb {
 	SDL2ffmpeg::~SDL2ffmpeg() {
 		set<SDL2ffmpeg*>::iterator i;
 
-		cout << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
+		clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
 
+		abortRequest = true;
 		hasPic = false;
 
 		pthread_mutex_lock(&aiMutex);
@@ -164,15 +173,32 @@ namespace mb {
 			aInstances.erase(i);
 		}
 
-		if (aInstances.empty() && hasSDLAudio) {
-			cout << endl;
-			cout << "SDL2ffmpeg::~SDL2ffmpeg calling SDL_PauseAudio(1)";
-			cout << endl << endl;
+		if (aInstances.empty()) {
+			clog << endl;
+			clog << "SDL2ffmpeg::~SDL2ffmpeg calling SDL_PauseAudio(1)";
+			clog << endl << endl;
 
-			memset(&spec, 0, sizeof(spec));
-			hasSDLAudio = false;
 			SDL_PauseAudio(1);
-			SDL_CloseAudio();
+
+			if (spec.size != 0) {
+				memset(&spec, 0, sizeof(spec));
+
+				SystemCompat::uSleep(10000);
+
+				/*
+				 * TODO: check why SDL_CloseAudio is causing SIGABRT for
+				 *       fc16 pulse audio (closing 2nd time).
+				 */
+				try {
+					SDL_CloseAudio();
+
+				} catch ( const std::exception& ex ) {
+					clog << "Caught exception: " << ex.what() << std::endl;
+
+				} catch ( ... ) {
+					clog << "unknown exception" << std::endl;
+				}
+			}
 		}
 
 		pthread_mutex_unlock(&aiMutex);
@@ -196,7 +222,7 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::release() {
-		cout << "SDL2ffmpeg::release" << endl;
+		clog << "SDL2ffmpeg::release" << endl;
 
 		if (vs != NULL) {
 			if (vs->ic) {
@@ -212,37 +238,113 @@ namespace mb {
 		/* close each stream */
 		if (vs->audio_stream >= 0) {
 			stream_component_close(vs->audio_stream);
+			vs->audio_stream = -1;
 		}
 
 		if (vs->video_stream >= 0) {
 			stream_component_close(vs->video_stream);
+			vs->video_stream = -1;
 		}
 
 		if (vs->subtitle_stream >= 0) {
 			stream_component_close(vs->subtitle_stream);
+			vs->subtitle_stream = -1;
+		}
+	}
+
+	string SDL2ffmpeg::ffmpegErr(int err) {
+		string strErr = "";
+		char* errmsg = (char*)malloc(250);
+		av_strerror(err, errmsg, 250);
+
+		strErr.assign(errmsg);
+
+		free(errmsg);
+
+		return strErr;
+	}
+
+	void SDL2ffmpeg::openStreams() {
+		int st_index[AVMEDIA_TYPE_NB];
+
+		memset(st_index, -1, sizeof(st_index));
+
+		st_index[AVMEDIA_TYPE_VIDEO] = av_find_best_stream(
+				vs->ic,
+				AVMEDIA_TYPE_VIDEO,
+				wanted_stream[AVMEDIA_TYPE_VIDEO],
+				-1,
+				NULL,
+				0);
+
+		st_index[AVMEDIA_TYPE_AUDIO] = av_find_best_stream(
+				vs->ic,
+				AVMEDIA_TYPE_AUDIO,
+				wanted_stream[AVMEDIA_TYPE_AUDIO],
+				st_index[AVMEDIA_TYPE_VIDEO],
+				NULL,
+				0);
+
+		st_index[AVMEDIA_TYPE_SUBTITLE] = av_find_best_stream(
+				vs->ic,
+				AVMEDIA_TYPE_SUBTITLE,
+				wanted_stream[AVMEDIA_TYPE_SUBTITLE],
+				(st_index[AVMEDIA_TYPE_AUDIO] >= 0 ? st_index
+						[AVMEDIA_TYPE_AUDIO] :
+						st_index[AVMEDIA_TYPE_VIDEO]),
+				NULL,
+				0);
+
+		/* open the streams */
+		if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
+			stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
+
+		} else {
+			clog << "SDL2ffmpeg::read_init '";
+			clog << vs->filename << "' doesn't have any audio stream!";
+			clog << endl;
 		}
 
-		if (vs->ic) {
-			avformat_close_input(&vs->ic);
+		if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
+			stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
+
+		} else {
+			clog << "SDL2ffmpeg::read_init '";
+			clog << vs->filename << "' doesn't have any video stream!";
+			clog << endl;
+		}
+
+		if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
+			stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
+
+		} else {
+			clog << "SDL2ffmpeg::read_init '";
+			clog << vs->filename << "' doesn't have any subtitle stream!";
+			clog << endl;
 		}
 	}
 
 	bool SDL2ffmpeg::prepare() {
-		if (vs->audio_st != NULL) {
+		bool wasEmpty = false;
+
+		if (vs->audio_stream >= 0 && vs->audio_st != NULL) {
 			pthread_mutex_lock(&aiMutex);
+			wasEmpty = aInstances.empty();
 			aInstances.insert(this);
 			pthread_mutex_unlock(&aiMutex);
 
 			if (vs->audio_hw_buf_size == 0) {
-				cout << "SDL2ffmpeg::prepare Warning! buffer size = 0" << endl;
+				clog << "SDL2ffmpeg::prepare Warning! buffer size = 0" << endl;
 			}
 
-			vs->audio_main_buf[0]  = (uint8_t*)malloc(vs->audio_hw_buf_size);
-			vs->audio_main_buf[1]  = (uint8_t*)malloc(vs->audio_hw_buf_size);
+			vs->audio_main_buf[0] = (uint8_t*)malloc(vs->audio_hw_buf_size);
+			vs->audio_main_buf[1] = (uint8_t*)malloc(vs->audio_hw_buf_size);
 
 			hasSDLAudio = true;
 
-			SDL_PauseAudio(0);
+			if (wasEmpty) {
+				SDL_PauseAudio(0);
+			}
 
 		} else if (vs->video_st != NULL) {
 			vs->av_sync_type = AV_SYNC_VIDEO_MASTER;
@@ -253,24 +355,24 @@ namespace mb {
 
 		if (vs->video_st != NULL) {
 
-			cout << "SDL2ffmpeg::prepare Video frame rate is '";
-			cout << vs->video_st->r_frame_rate.num << "/";
-			cout << vs->video_st->r_frame_rate.den << "'" << endl;
+			clog << "SDL2ffmpeg::prepare Video frame rate is '";
+			clog << vs->video_st->r_frame_rate.num << "/";
+			clog << vs->video_st->r_frame_rate.den << "'" << endl;
 
-			cout << "SDL2ffmpeg::prepare Video average frame rate is '";
-			cout << vs->video_st->avg_frame_rate.num << "/";
-			cout << vs->video_st->avg_frame_rate.den << "'" << endl;
+			clog << "SDL2ffmpeg::prepare Video average frame rate is '";
+			clog << vs->video_st->avg_frame_rate.num << "/";
+			clog << vs->video_st->avg_frame_rate.den << "'" << endl;
 
-			cout << "SDL2ffmpeg::prepare Video time base frame rate is '";
-			cout << vs->video_st->time_base.num << "/";
-			cout << vs->video_st->time_base.den << "'" << endl;
+			clog << "SDL2ffmpeg::prepare Video time base frame rate is '";
+			clog << vs->video_st->time_base.num << "/";
+			clog << vs->video_st->time_base.den << "'" << endl;
 
 			vs->video_tid = SDL_CreateThread(
 					SDL2ffmpeg::video_thread, "video_thread", this);
 
 			if (!vs->video_tid) {
-				cout << "SDL2ffmpeg::prepare Warning! ";
-				cout << "Can't create video thread" << endl;
+				clog << "SDL2ffmpeg::prepare Warning! ";
+				clog << "Can't create video thread" << endl;
 			}
 		}
 
@@ -279,8 +381,8 @@ namespace mb {
 					SDL2ffmpeg::subtitle_thread, "subtitle_thread", this);
 
 			if (!vs->subtitle_tid) {
-				cout << "SDL2ffmpeg::prepare Warning! ";
-				cout << "Can't create subtitle thread" << endl;
+				clog << "SDL2ffmpeg::prepare Warning! ";
+				clog << "Can't create subtitle thread" << endl;
 			}
 		}
 
@@ -290,8 +392,8 @@ namespace mb {
 		if (!vs->refresh_tid) {
 			av_free(vs);
 
-			cout << "SDL2ffmpeg::prepare Warning! ";
-			cout << "Can't create refresh thread" << endl;
+			clog << "SDL2ffmpeg::prepare Warning! ";
+			clog << "Can't create refresh thread" << endl;
 
 			return false;
 		}*/
@@ -302,8 +404,8 @@ namespace mb {
 		if (!vs->read_tid) {
 			av_free(vs);
 
-			cout << "SDL2ffmpeg::prepare Warning! ";
-			cout << "Can't create read thread" << endl;
+			clog << "SDL2ffmpeg::prepare Warning! ";
+			clog << "Can't create read thread" << endl;
 
 			return false;
 		}
@@ -317,7 +419,7 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::play() {
-		cout << "SDL2ffmpeg::play called" << endl;
+		clog << "SDL2ffmpeg::play called" << endl;
 		if (status == ST_STOPPED) {
 			if (prepare()) {
 				status = ST_PLAYING;
@@ -326,34 +428,47 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::stop() {
-		cout << "SDL2ffmpeg::stop(" << vs->filename << ")" << endl;
+		clog << "SDL2ffmpeg::stop(" << vs->filename << ")" << endl;
 
-		abortRequest                = true;
-		vs->videoq.abort_request    = 1;
-		vs->audioq.abort_request    = 1;
-		vs->subtitleq.abort_request = 1;
-
+		abortRequest = true;
 		status = ST_STOPPED;
 
 		if (vs->video_stream >= 0) {
-			SDL_CondSignal(vs->videoq.cond);
-			SDL_CondSignal(vs->pictq_cond);
-			SDL_CondSignal(vs->subpq_cond);
+			packet_queue_abort(&vs->videoq);
 		}
 
 		if (vs->audio_stream >= 0) {
-			SDL_CondSignal(vs->audioq.cond);
+			packet_queue_abort(&vs->audioq);
 		}
 
 		if (vs->subtitle_stream >= 0) {
-			SDL_CondSignal(vs->subtitleq.cond);
+			packet_queue_abort(&vs->subtitleq);
 		}
 
-		cout << "SDL2ffmpeg::stop(" << vs->filename << ") all done" << endl;
+		SDL_CondSignal(vs->pictq_cond);
+		SDL_CondSignal(vs->subpq_cond);
+
+/*		set<SDL2ffmpeg*>::iterator i;
+		pthread_mutex_lock(&aiMutex);
+
+		i = aInstances.find(this);
+		if (i != aInstances.end()) {
+			aInstances.erase(i);
+
+			if (aInstances.empty()) {
+				clog << endl;
+				clog << "SDL2ffmpeg::stop calling SDL_PauseAudio(1)";
+				clog << endl << endl;
+
+				SDL_PauseAudio(1);
+			}
+		}
+		pthread_mutex_unlock(&aiMutex);*/
+		clog << "SDL2ffmpeg::stop(" << vs->filename << ") all done" << endl;
 	}
 
 	void SDL2ffmpeg::pause() {
-		cout << "SDL2ffmpeg::pause" << endl;
+		clog << "SDL2ffmpeg::pause" << endl;
 
 		if (status == ST_PLAYING) {
 			status = ST_PAUSED;
@@ -364,7 +479,7 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::resume() {
-		cout << "SDL2ffmpeg::resume" << endl;
+		clog << "SDL2ffmpeg::resume" << endl;
 
 		if (status == ST_PAUSED) {
 			status = ST_PLAYING;
@@ -375,24 +490,24 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::getOriginalResolution(int* w, int* h) {
-		if (vs->video_st && vs->video_st->codec->width){
+		if (vs->video_st && vs->video_st->codec->width) {
 			*w = vs->video_st->codec->width;
 			*h = vs->video_st->codec->height;
 
 		} else {
 
-			cout << "SDL2ffmpeg::getOriginalResolution Warning!";
-			cout << "Can't get video data. video_st = '" << vs->video_st;
-			cout << "'";
+			clog << "SDL2ffmpeg::getOriginalResolution(" << vs->filename;
+			clog << "Can't get video data. video_st = '" << vs->video_st;
+			clog << "'";
 
 			if (vs->video_st != NULL) {
-				cout << ". Width = '" << vs->video_st->codec->width;
-				cout << "'. Height = '" << vs->video_st->codec->height;
-				cout << "'. Codec = '" << vs->video_st->codec;
-				cout << "'. Codec name = '" << vs->video_st->codec->codec_name;
-				cout << "'";
+				clog << ". Width = '" << vs->video_st->codec->width;
+				clog << "'. Height = '" << vs->video_st->codec->height;
+				clog << "'. Codec = '" << vs->video_st->codec;
+				clog << "'. Codec name = '" << vs->video_st->codec->codec_name;
+				clog << "'";
 			}
-			cout << endl;
+			clog << endl;
 
 			*w = 0;
 			*h = 0;
@@ -410,13 +525,15 @@ namespace mb {
 	double SDL2ffmpeg::getPosition() {
 		double position = 0.0;
 
-		cout << "SDL2ffmpeg::getPosition master_clock = '";
-		cout << get_master_clock() << "' (duration = '" << getDuration();
-		cout << "')" << endl;
+		clog << "SDL2ffmpeg::getPosition(" << vs->filename;
+		clog << ") master_clock = '";
+		clog << get_master_clock() << "' (duration = '" << getDuration();
+		clog << "')" << endl;
 
-		cout << "SDL2ffmpeg::getPosition current_pts = '";
-		cout << vs->video_current_pts << "' (duration = '" << getDuration();
-		cout << "')" << endl;
+		clog << "SDL2ffmpeg::getPosition(" << vs->filename;
+		clog << ") current_pts = '";
+		clog << vs->video_current_pts << "' (duration = '" << getDuration();
+		clog << "')" << endl;
 
 		if (vs->audio_stream >= 0 && vs->audio_st != NULL) {
 			position = vs->audio_current_pts;
@@ -490,12 +607,12 @@ namespace mb {
 			audioSpec = true;
 
 		} else {
-			cout << "SDL2ffmpeg::getAudioSpec ";
-			cout << "invalid parameters: ";
-			cout << "spec address = '" << spec << "' ";
-			cout << "sample rate = '" << sample_rate << "' ";
-			cout << "channels = '" << (short)channels << "' ";
-			cout << endl;
+			clog << "SDL2ffmpeg::getAudioSpec ";
+			clog << "invalid parameters: ";
+			clog << "spec address = '" << spec << "' ";
+			clog << "sample rate = '" << sample_rate << "' ";
+			clog << "channels = '" << (short)channels << "' ";
+			clog << endl;
 
 			audioSpec = false;
 		}
@@ -570,11 +687,10 @@ namespace mb {
 		return ctx;
 	}
 
-	int SDL2ffmpeg::packet_queue_put(PacketQueue *q, AVPacket *pkt) {
+	int SDL2ffmpeg::nts_packet_queue_put(PacketQueue *q, AVPacket *pkt) {
 		AVPacketList* pkt1;
 
-		/* duplicate the packet */
-		if (pkt != &flush_pkt && av_dup_packet(pkt) < 0) {
+		if (q->abort_request) {
 			return -1;
 		}
 
@@ -587,7 +703,6 @@ namespace mb {
 		pkt1->pkt  = *pkt;
 		pkt1->next = NULL;
 
-		SDL_LockMutex(q->mutex);
 		if (!q->last_pkt) {
 			q->first_pkt = pkt1;
 
@@ -602,8 +717,26 @@ namespace mb {
 		/* XXX: should duplicate packet data in DV case */
 		SDL_CondSignal(q->cond);
 
-		SDL_UnlockMutex(q->mutex);
 		return 0;
+	}
+
+	int SDL2ffmpeg::packet_queue_put(PacketQueue *q, AVPacket *pkt) {
+		int ret;
+
+		/* duplicate the packet */
+		if (pkt != &flush_pkt && av_dup_packet(pkt) < 0) {
+			return -1;
+		}
+
+		SDL_LockMutex(q->mutex);
+		ret = nts_packet_queue_put(q, pkt);
+		SDL_UnlockMutex(q->mutex);
+
+		if (pkt != &flush_pkt && ret < 0) {
+			av_free_packet(pkt);
+		}
+
+		return ret;
 	}
 
 	void SDL2ffmpeg::packet_queue_init(PacketQueue *q) {
@@ -612,7 +745,7 @@ namespace mb {
 		q->mutex = SDL_CreateMutex();
 		q->cond  = SDL_CreateCond();
 
-		packet_queue_put(q, &flush_pkt);
+		q->abort_request = 1;
 	}
 
 	void SDL2ffmpeg::packet_queue_flush(PacketQueue *q) {
@@ -635,7 +768,7 @@ namespace mb {
 		SDL_UnlockMutex(q->mutex);
 	}
 
-	void SDL2ffmpeg::packet_queue_end(PacketQueue *q) {
+	void SDL2ffmpeg::packet_queue_destroy(PacketQueue *q) {
 		packet_queue_flush(q);
 
 		SDL_DestroyMutex(q->mutex);
@@ -648,6 +781,13 @@ namespace mb {
 		q->abort_request = 1;
 		SDL_CondSignal(q->cond);
 
+		SDL_UnlockMutex(q->mutex);
+	}
+
+	void SDL2ffmpeg::packet_queue_start(PacketQueue *q) {
+		SDL_LockMutex(q->mutex);
+		q->abort_request = 0;
+		nts_packet_queue_put(q, &flush_pkt);
 		SDL_UnlockMutex(q->mutex);
 	}
 
@@ -964,61 +1104,73 @@ namespace mb {
 
 			/* XXX: we suppose the screen has a 1.0 pixel ratio */
 			height = vp->height;
-			width = ((int)rint(height * aspect_ratio)) & ~1;
+			width = ((int)SystemCompat::rint(height * aspect_ratio)) & ~1;
 			if (width > vp->width) {
 				width = vp->width;
-				height = ((int)rint(width / aspect_ratio)) & ~1;
+				height = ((int)SystemCompat::rint(width / aspect_ratio)) & ~1;
 			}
 			x = (vp->width - width) / 2;
 			y = (vp->height - height) / 2;
-			vs->no_background = 0;
 			rect.x = x;
 			rect.y = y;
 			rect.w = FFMAX(width,  1);
 			rect.h = FFMAX(height, 1);
 
-			if (vs->img_convert_ctx == NULL) {
-				vs->img_convert_ctx = createContext(
-						vp->width,
-						vp->height,
-						vp->pix_fmt,
-						vp->width,
-						vp->height,
-						PIX_FMT_RGB24);
-			}
-
-			if (vs->img_convert_ctx == NULL) {
-				cout << "SDL2ffmpeg::video_image_display Warning! ";
-				cout << "Can't initialize the conversion context" << endl;
-				return;
-			}
-
 			if (vp->src_frame) {
 				uint8_t* pixels[AV_NUM_DATA_POINTERS];
 				int pitch[AV_NUM_DATA_POINTERS];
+		        Uint32 format;
+		        int textureAccess, w, h;
 
-				AVPicture pict;
+		        SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
+		        SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
 
-				SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
+				if (vs->img_convert_ctx == NULL) {
+					vs->img_convert_ctx = createContext(
+							vp->width,
+							vp->height,
+							vp->pix_fmt,
+							w,
+							h,
+							PIX_FMT_RGB24);
+				}
 
-				sws_scale(
-						vs->img_convert_ctx,
-						(const uint8_t* const*)vp->src_frame->data,
-						vp->src_frame->linesize,
-						0, vp->height, pixels, pitch);
+				if (vs->img_convert_ctx == NULL) {
+					clog << "SDL2ffmpeg::video_image_display Warning! ";
+					clog << "Can't initialize the conversion context" << endl;
+					SDL_UnlockTexture(vp->tex);
+					return;
+				}
+
+				if (!abortRequest &&
+						vp->tex &&
+						vp->src_frame->data &&
+						vp->src_frame->linesize > 0 &&
+						vp->height > 0 &&
+						vs->img_convert_ctx) {
+
+					sws_scale(
+							vs->img_convert_ctx,
+							(const uint8_t* const*)vp->src_frame->data,
+							vp->src_frame->linesize,
+							0, vp->height, pixels, pitch);
+				}
+
+				sws_freeContext(vs->img_convert_ctx);
+				vs->img_convert_ctx = NULL;
 
 				SDL_UnlockTexture(vp->tex);
 				hasPic = false;
 
 			} else {
-				cout << "SDL2ffmpeg::video_image_display Warning! ";
-				cout << "No source frame" << endl;
+				clog << "SDL2ffmpeg::video_image_display Warning! ";
+				clog << "No source frame" << endl;
 				return;
 			}
 
 		} else {
-			cout << "SDL2ffmpeg::video_image_display Can't display video ";
-			cout << "(NULL texture)" << endl;
+			clog << "SDL2ffmpeg::video_image_display Can't display video ";
+			clog << "(NULL texture)" << endl;
 		}
 	}
 
@@ -1029,7 +1181,10 @@ namespace mb {
 		/* XXX: use a special url_shutdown call to abort parse cleanly */
 		abortRequest = 1;
 		SDL_WaitThread(vs->read_tid, NULL);
-		SDL_WaitThread(vs->refresh_tid, NULL);
+
+	    packet_queue_destroy(&vs->videoq);
+	    packet_queue_destroy(&vs->audioq);
+	    packet_queue_destroy(&vs->subtitleq);
 
 		/* free all pictures */
 		for (i = 0; i < VIDEO_PICTURE_QUEUE_SIZE; i++) {
@@ -1045,9 +1200,12 @@ namespace mb {
 
 		if (vs->img_convert_ctx) {
 			sws_freeContext(vs->img_convert_ctx);
+			vs->img_convert_ctx = NULL;
 		}
 
 		av_free(vs);
+
+		clog << "SDL2ffmpeg::stream_close all done" << endl;
 	}
 
 	/* display the current picture, if any */
@@ -1055,32 +1213,6 @@ namespace mb {
 		if (vs->video_st) {
 			video_image_display();
 		}
-	}
-
-	int SDL2ffmpeg::refresh_thread(void *opaque) {
-		/*SDL2ffmpeg* dec = (SDL2ffmpeg*)opaque;
-		VideoState* vs  = dec->vs;
-
-		SDL_Event event;
-
-		while (!dec->abortRequest) {
-			event.type       = FF_REFRESH_EVENT;
-			event.user.data1 = opaque;
-			event.user.data2 = dec->cmp;
-			if (!vs->refresh) {
-				vs->refresh = 1;
-				//SDL_PushEvent(&event);
-			}
-
-			/*
-			 * FIXME: ideally we should wait the correct time but SDLs event
-			 * passing is so slow it would be silly
-			 *
-			SystemCompat::uSleep(5000);
-		}*/
-
-		cout << "SDL2ffmpeg::refresh_thread all done" << endl;
-		return 0;
 	}
 
 	/* get the current audio clock value */
@@ -1261,6 +1393,9 @@ retry:
 					goto retry;
 				}
 
+				if (vs->paused)
+					goto display;
+
 				/* compute nominal last_duration */
 				last_duration = vp->pts - vs->frame_last_pts;
 				if (last_duration > 0 && last_duration < 10.0) {
@@ -1372,9 +1507,13 @@ retry:
 					}
 				}
 
+display:
 				/* display picture */
 				dec->video_display();
-				dec->pictq_next_picture();
+
+				if (!vs->paused) {
+					dec->pictq_next_picture();
+				}
 			}
 		}
 
@@ -1449,7 +1588,7 @@ retry:
 				vp->width != vs->video_st->codec->width ||
 				vp->height != vs->video_st->codec->height) {
 
-			SDL_Event event;
+			//SDL_Event event;
 
 			vp->allocated  = 0;
 			vp->reallocate = 0;
@@ -1617,7 +1756,7 @@ retry:
 		double pts;
 		int ret;
 
-		for (;;) {
+		while (!dec->abortRequest) {
 			AVPacket pkt;
 			while (vs->paused && !vs->videoq.abort_request) {
 				SDL_Delay(10);
@@ -1626,6 +1765,9 @@ retry:
 			ret = dec->get_video_frame(frame, &pts_int, &pkt);
 			pos = pkt.pos;
 			av_free_packet(&pkt);
+	        if (ret == 0) {
+	        	continue;
+	        }
 
 			if (ret < 0) {
 				goto the_end;
@@ -1651,9 +1793,10 @@ retry:
 			}
 		}
 the_end:
+		avcodec_flush_buffers(vs->video_st->codec);
 		av_free(frame);
 
-		cout << "SDL2ffmpeg::video_thread all done" << endl;
+		clog << "SDL2ffmpeg::video_thread all done" << endl;
 		return 0;
 	}
 
@@ -1726,7 +1869,7 @@ the_end:
 	        av_free_packet(pkt);
 	    }*/
 
-		cout << "SDL2ffmpeg::subtitle_thread all done" << endl;
+		clog << "SDL2ffmpeg::subtitle_thread all done" << endl;
 		return 0;
 	}
 
@@ -1807,7 +1950,7 @@ the_end:
 		pkt = &vs->audio_pkt;
 		dec = vs->audio_st->codec;
 
-		for (;;) {
+		while (!abortRequest) {
 			/* NOTE: the audio packet can contain several frames */
 			while (pkt_temp->size > 0 || (!pkt_temp->data && new_packet)) {
 				if (!vs->frame) {
@@ -1881,14 +2024,10 @@ the_end:
 							0, NULL);
 
 					if (!vs->swr_ctx || swr_init(vs->swr_ctx) < 0) {
-						fprintf(stderr,
-								"Cannot create sample rate converter for conversion of %d Hz %s %d channels to %d Hz %s %d channels!\n",
-								dec->sample_rate,
-								av_get_sample_fmt_name(dec->sample_fmt),
-								dec->channels,
-								vs->audio_tgt_freq,
-								av_get_sample_fmt_name(vs->audio_tgt_fmt),
-								vs->audio_tgt_channels);
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "Cannot create sample rate converter for";
+						clog << " conversion of '" << dec->sample_rate << "'";
+						clog << endl;
 						break;
 					}
 
@@ -1912,7 +2051,8 @@ the_end:
 										* vs->audio_tgt_freq /
 										dec->sample_rate) < 0) {
 
-							fprintf(stderr, "swr_set_compensation() failed\n");
+							clog << "SDL2ffmpeg::audio_decode_frame ";
+							clog << "swr_set_compensation() failed" << endl;
 							break;
 						}
 					}
@@ -1926,7 +2066,8 @@ the_end:
 							in, vs->frame->nb_samples);
 
 					if (len2 < 0) {
-						fprintf(stderr, "audio_resample() failed\n");
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "audio_resample() failed" << endl;
 						break;
 					}
 
@@ -1934,7 +2075,10 @@ the_end:
 							vs->audio_buf2) / vs->audio_tgt_channels /
 							av_get_bytes_per_sample(vs->audio_tgt_fmt)) {
 
-						fprintf(stderr, "warning: audio buffer is probably too small\n");
+						clog << "SDL2ffmpeg::audio_decode_frame ";
+						clog << "Warning! audio buffer is probably too small";
+						clog << endl;
+
 						swr_init(vs->swr_ctx);
 					}
 
@@ -1949,9 +2093,10 @@ the_end:
 				/* if no pts, then compute it */
 				pts = vs->audio_clock;
 				*pts_ptr = pts;
-				vs->audio_clock += (double)data_size / (dec->channels *
-						dec->sample_rate * av_get_bytes_per_sample(
-								dec->sample_fmt));
+
+	            vs->audio_clock += (double)data_size / (dec->channels *
+	            		dec->sample_rate * av_get_bytes_per_sample(
+	            				dec->sample_fmt));
 
 				return resampled_data_size;
 			}
@@ -1973,6 +2118,7 @@ the_end:
 
 			if (pkt->data == flush_pkt.data) {
 				avcodec_flush_buffers(dec);
+				flush_complete = 0;
 			}
 
 			*pkt_temp = *pkt;
@@ -2071,6 +2217,7 @@ the_end:
 		int bytes_per_sec;
 		int ret;
 		double pts;
+		bool hasTimeRefer = false;
 
 		int64_t uResponseTime;
 		int64_t elapsedTime;
@@ -2079,11 +2226,13 @@ the_end:
 
 		unsigned int sleepTime;
 
-		//cout << "SDL2ffmpeg::sdl_audio_callback begin" << endl;
+		bool presented = false;
+
+		//clog << "SDL2ffmpeg::sdl_audio_callback begin" << endl;
 
 		/*if (wantedSpec.freq == 0 || wantedSpec.samples == 0) {
-			cout << "SDL2ffmpeg::sdl_audio_callback Warning frequency is 0!";
-			cout << " Exiting" << endl;
+			clog << "SDL2ffmpeg::sdl_audio_callback Warning frequency is 0!";
+			clog << " Exiting" << endl;
 			return;
 		}*/
 
@@ -2100,160 +2249,144 @@ the_end:
 			if (dec->status == ST_PLAYING && vs != NULL &&
 					vs->audio_stream >= 0 && vs->audio_st != NULL) {
 
+				if (vs->video_stream >= 0 && vs->video_st != NULL) {
+					hasTimeRefer = true;
+				}
+
 				dec->audio_refresh_decoder();
 				if (vs->audio_main_buf_size[0] == vs->audio_hw_buf_size) {
 
-					if (dec->acvt.needed) {
-						/*if (dec->monoStep == 0) {
-							dec->acvt.len = is->audio_hw_buf_size;
+					if (dec->acvt.needed &&
+							dec->wantedSpec.channels <= spec.channels) {
 
-							if (dec->acvt.buf == NULL) {
-								dec->acvt.buf = (Uint8*)malloc(
-										dec->acvt.len * dec->acvt.len_mult);
-							}
-
-							if (dec->acvt.buf != NULL) {
-								SDL_ConvertAudio(&dec->acvt);
-
-								cout << endl;
-								cout << "Converting(cb len = '" << len;
-								cout << "', Dec = '";
-								cout << dec << "', bytes to convert = '";
-								cout << dec->acvt.len << "', soundLevel = '";
-								cout << dec->soundLevel << "')" << endl;
-								cout << "FROM: ";
-								cout << "format '" << dec->spec.format;
-								cout << "' channels '";
-								cout << (short)dec->spec.channels;
-								cout << "' freq '" << dec->spec.freq;
-								cout << "' samples '" << dec->spec.samples;
-								cout << "' bufSize '" << is->audio_hw_buf_size;
-								cout << "'";
-								cout << endl;
-								cout << "TO: ";
-								cout << "format '" << wantedSpec.format << "' ";
-								cout << "channels '";
-								cout << (short)wantedSpec.channels;
-								cout << "' freq '" << wantedSpec.freq << "' ";
-								cout << "' samples '" << wantedSpec.samples;
-								cout << "' converted size '";
-								cout << dec->acvt.len_cvt;
-								cout << "'";
-								cout << "' converted length ratio '";
-								cout << dec->acvt.len_ratio;
-								cout << "'";
-								cout << endl;
-							}
-						}
-
-						cout << "Mixed '" << len << "' bytes" << endl;
-						cout << "Total in this step '" << dec->monoStep;
-						cout << "'" << endl;
-
-						SDL_MixAudio(
-								stream,
-								dec->acvt.buf + dec->monoStep,
-								len,
-								dec->soundLevel);
-
-						dec->monoStep = dec->monoStep + len;
-
-						if (dec->monoStep >=
-								dec->acvt.len_ratio * is->audio_hw_buf_size) {
+						dec->acvt.len = vs->audio_hw_buf_size;
 
 						if (dec->acvt.buf == NULL) {
-							dec->acvt.buf = (Uint8*)createCVT(
-									is->audio_main_buf[0],
-									is->audio_hw_buf_size,
-									dec->acvt.len_ratio,
-									dec->spec.samples);
+							dec->acvt.buf = (Uint8*)malloc(
+									dec->acvt.len * dec->acvt.len_mult);
+						}
 
-							dec->acvt.buf = (Uint8*)interleave(
-									is->audio_main_buf[0],
-									is->audio_hw_buf_size,
-									3);
-						}*/
+						if (dec->acvt.buf != NULL) {
+							memcpy(
+									dec->acvt.buf,
+									vs->audio_main_buf[0],
+									vs->audio_hw_buf_size);
 
-						SDL_MixAudio(
-								stream,
-								vs->audio_main_buf[0],
-								vs->audio_hw_buf_size,
-								dec->soundLevel);
+							SDL_ConvertAudio(&dec->acvt);
 
-						dec->monoStep++;
+							/*clog << endl;
+							clog << "Converting(cb len = '" << len;
+							clog << "', Dec = '";
+							clog << dec << "', bytes to convert = '";
+							clog << dec->acvt.len << "', soundLevel = '";
+							clog << dec->soundLevel << "')" << endl;
+							clog << "FROM: ";
+							clog << "format '" << dec->wantedSpec.format << "' ";
+							clog << "channels '";
+							clog << (short)dec->wantedSpec.channels;
+							clog << "' freq '" << dec->wantedSpec.freq << "' ";
+							clog << "' samples '" << dec->wantedSpec.samples;
+							clog << "' bufSize '" << vs->audio_hw_buf_size;
+							clog << "'";
+							clog << endl;
+							clog << "TO: ";
+							clog << "format '" << dec->spec.format;
+							clog << "' channels '";
+							clog << (short)dec->spec.channels;
+							clog << "' freq '" << dec->spec.freq;
+							clog << "' samples '" << dec->spec.samples;
+							clog << "' converted size '";
+							clog << dec->acvt.len_cvt;
+							clog << "'";
+							clog << "' converted length ratio '";
+							clog << dec->acvt.len_ratio;
+							clog << "'";
+							clog << endl;
 
-						if (dec->monoStep >= dec->acvt.len_ratio) {
-							dec->monoStep = 0;
-							if (dec->acvt.buf != NULL) {
-								free(dec->acvt.buf);
-								dec->acvt.buf = NULL;
+							clog << "Mixed '" << len << "' bytes" << endl;
+							clog << "Total in this step '" << dec->monoStep;
+							clog << "'" << endl;*/
+
+							if (dec->soundLevel > 0) {
+								SDL_MixAudio(
+										stream,
+										dec->acvt.buf,
+										len,
+										dec->soundLevel);
 							}
 
-							cout << "CB_LEN = '" << len << "'" << endl;
-							cout << "MY_LEN = '" << vs->audio_write_buf_size;
-							cout << "'" << endl;
-							cout << "MULTI = '" << dec->acvt.len_mult;
-							cout << "'" << endl;
-							cout << "CVT_LEN = '" << dec->acvt.len_cvt;
-							cout << "'" << endl;
+							free(dec->acvt.buf);
+							dec->acvt.buf = NULL;
 
-							bytes_per_sec = vs->audio_tgt_freq *
-									vs->audio_tgt_channels *
-									av_get_bytes_per_sample(vs->audio_tgt_fmt);
+							/*clog << "CB_LEN = '" << len << "'" << endl;
+							clog << "MY_LEN = '" << vs->audio_write_buf_size;
+							clog << "'" << endl;
+							clog << "MULTI = '" << dec->acvt.len_mult;
+							clog << "'" << endl;
+							clog << "CVT_LEN = '" << dec->acvt.len_cvt;
+							clog << "'" << endl;*/
 
-							vs->audio_write_buf_size = vs->audio_hw_buf_size;
-
-							vs->audio_current_pts = vs->audio_clock -
-									(double)(2 * vs->audio_hw_buf_size +
-											vs->audio_write_buf_size) / bytes_per_sec;
-
-							vs->audio_current_pts_drift = vs->audio_current_pts -
-									audio_cb_time / 1000000.0;
-
-							vs->audio_main_buf_size[0] = 0;
+							presented = true;
 						}
 
 					} else {
-						SDL_MixAudio(
-								stream,
-								vs->audio_main_buf[0],
-								vs->audio_hw_buf_size,
-								dec->soundLevel);
 
-						bytes_per_sec = vs->audio_tgt_freq *
-								vs->audio_tgt_channels *
-								av_get_bytes_per_sample(vs->audio_tgt_fmt);
+						if (dec->soundLevel > 0) {
+							SDL_MixAudio(
+									stream,
+									vs->audio_main_buf[0],
+									vs->audio_hw_buf_size,
+									dec->soundLevel);
+						}
 
-						vs->audio_write_buf_size = vs->audio_hw_buf_size;
-
-						vs->audio_current_pts = vs->audio_clock -
-								(double)(2 * vs->audio_hw_buf_size +
-										vs->audio_write_buf_size) / bytes_per_sec;
-
-						vs->audio_current_pts_drift = vs->audio_current_pts -
-								audio_cb_time / 1000000.0;
-
-						vs->audio_main_buf_size[0] = 0;
+						presented = true;
 					}
 
-				} else {
-					cout << endl << endl;
-					cout << "SDL2ffmpeg::sdl_audio_callback ";
-					cout << "not this time for " << vs->filename;
-					cout << " audio buffer size = ";
-					cout << vs->audio_main_buf_size[0];
-					cout << " HW buffer size = " << vs->audio_hw_buf_size;
-					cout << " len = " << len;
-					cout << " samples = " << dec->wantedSpec.samples;
-					cout << " freq = " << dec->wantedSpec.freq;
-					cout << " channels = " << (short)dec->wantedSpec.channels;
-					cout << endl;
-				}
+				}/* else {
+					clog << endl << endl;
+					clog << "SDL2ffmpeg::sdl_audio_callback ";
+					clog << "not this time for " << vs->filename;
+					clog << " audio buffer size = ";
+					clog << vs->audio_main_buf_size[0];
+					clog << " HW buffer size = " << vs->audio_hw_buf_size;
+					clog << " len = " << len;
+					clog << " samples = " << dec->wantedSpec.samples;
+					clog << " freq = " << dec->wantedSpec.freq;
+					clog << " channels = " << (short)dec->wantedSpec.channels;
+					clog << endl;
+				}*/
 			}
+
+			if (presented) {
+				presented = false;
+
+				bytes_per_sec = vs->audio_tgt_freq *
+						vs->audio_tgt_channels *
+						av_get_bytes_per_sample(vs->audio_tgt_fmt);
+
+				vs->audio_write_buf_size = vs->audio_hw_buf_size;
+
+				vs->audio_current_pts = vs->audio_clock -
+						(double)(2 * vs->audio_hw_buf_size +
+								vs->audio_write_buf_size) / bytes_per_sec;
+
+				vs->audio_current_pts_drift = vs->audio_current_pts -
+						audio_cb_time / 1000000.0;
+
+				vs->audio_main_buf_size[0] = 0;
+			}
+
 			++i;
 		}
 
+		/*elapsedTime = av_gettime() - audio_cb_time;
+		sleepTime   = 1000000/30;*/
+
 		pthread_mutex_unlock(&aiMutex);
+
+		/*if (!hasTimeRefer && sleepTime > elapsedTime) {
+			SystemCompat::uSleep(sleepTime - elapsedTime);
+		}*/
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
@@ -2371,8 +2504,8 @@ the_end:
 					}
 
 				} else if (audio_size <= 0) {
-					cout << "SDL2ffmpeg::audio_refresh_decoder exception";
-					cout << endl;
+					clog << "SDL2ffmpeg::audio_refresh_decoder exception";
+					clog << endl;
 				}
 			}
 		}
@@ -2391,8 +2524,8 @@ the_end:
 		const char *env;
 
 		if (stream_index < 0 || stream_index >= ic->nb_streams) {
-			cout << "SDL2ffmpeg::stream_component_open Warning! Invalid ";
-			cout << "index '" << stream_index << "'" << endl;
+			clog << "SDL2ffmpeg::stream_component_open Warning! Invalid ";
+			clog << "index '" << stream_index << "'" << endl;
 			return -1;
 		}
 
@@ -2400,8 +2533,8 @@ the_end:
 
 		codec = avcodec_find_decoder(avctx->codec_id);
 		if (!codec) {
-			cout << "SDL2ffmpeg::stream_component_open Warning! Can't ";
-			cout << " find codec with id '" << avctx->codec_id << "'" << endl;
+			clog << "SDL2ffmpeg::stream_component_open Warning! Can't ";
+			clog << " find codec with id '" << avctx->codec_id << "'" << endl;
 			return -1;
 		}
 
@@ -2427,6 +2560,7 @@ the_end:
 		}
 
 		if (avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			memset(&vs->audio_pkt_temp, 0, sizeof(vs->audio_pkt_temp));
 			env = SDL_getenv("SDL_AUDIO_CHANNELS");
 			if (env) {
 				wanted_channel_layout = av_get_default_channel_layout(
@@ -2462,15 +2596,15 @@ the_end:
 
 			wantedSpec.freq = avctx->sample_rate;
 			if (wantedSpec.freq <= 0 || wantedSpec.channels <= 0) {
-				cout << "SDL2ffmpeg::stream_component_open Warning! ";
-				cout << "Invalid sample rate or channel count!" << endl;
+				clog << "SDL2ffmpeg::stream_component_open Warning! ";
+				clog << "Invalid sample rate or channel count!" << endl;
 				return -1;
 			}
 		}
 
 		if (!codec || avcodec_open2(avctx, codec, NULL) < 0) {
-			cout << "SDL2ffmpeg::stream_component_open Warning! ";
-			cout << "Can't open codec" << endl;
+			clog << "SDL2ffmpeg::stream_component_open Warning! ";
+			clog << "Can't open codec" << endl;
 			return -1;
 		}
 
@@ -2485,38 +2619,38 @@ the_end:
 
 			if (spec.size == 0) {
 				if (SDL_OpenAudio(&wantedSpec, &spec) < 0) {
-					cout << "SDL2ffmpeg::stream_component_open Warning! ";
-					cout << "Can't open audio: ";
-					cout << SDL_GetError() << endl;
+					clog << "SDL2ffmpeg::stream_component_open Warning! ";
+					clog << "Can't open audio: ";
+					clog << SDL_GetError() << endl;
 					return -1;
 				}
 
-				cout << "SDL2ffmpeg::stream_component_open " << endl;
-				cout << "Desired format = '" << wantedSpec.format;
-				cout << "'" << endl;
-				cout << "Desired silence = '" << wantedSpec.silence;
-				cout << "'" << endl;
-				cout << "Desired samples = '" << wantedSpec.samples;
-				cout << "'" << endl;
-				cout << "Desired size = '" << wantedSpec.size;
-				cout << "'" << endl;
-				cout << "Desired channels = '" << (int)wantedSpec.channels;
-				cout << "'" << endl;
-				cout << "Desired frequency = '" << wantedSpec.freq;
-				cout << "'" << endl;
-				cout << endl;
-				cout << "Obtained format = '" << spec.format;
-				cout << "'" << endl;
-				cout << "Obtained silence = '" << spec.silence;
-				cout << "'" << endl;
-				cout << "Obtained samples = '" << spec.samples;
-				cout << "'" << endl;
-				cout << "Obtained size = '" << spec.size;
-				cout << "'" << endl;
-				cout << "Obtained channels = '" << (int)spec.channels;
-				cout << "'" << endl;
-				cout << "Obtained frequency = '" << spec.freq;
-				cout << "'" << endl;
+				clog << "SDL2ffmpeg::stream_component_open " << endl;
+				clog << "Desired format = '" << wantedSpec.format;
+				clog << "'" << endl;
+				clog << "Desired silence = '" << wantedSpec.silence;
+				clog << "'" << endl;
+				clog << "Desired samples = '" << wantedSpec.samples;
+				clog << "'" << endl;
+				clog << "Desired size = '" << wantedSpec.size;
+				clog << "'" << endl;
+				clog << "Desired channels = '" << (int)wantedSpec.channels;
+				clog << "'" << endl;
+				clog << "Desired frequency = '" << wantedSpec.freq;
+				clog << "'" << endl;
+				clog << endl;
+				clog << "Obtained format = '" << spec.format;
+				clog << "'" << endl;
+				clog << "Obtained silence = '" << spec.silence;
+				clog << "'" << endl;
+				clog << "Obtained samples = '" << spec.samples;
+				clog << "'" << endl;
+				clog << "Obtained size = '" << spec.size;
+				clog << "'" << endl;
+				clog << "Obtained channels = '" << (int)spec.channels;
+				clog << "'" << endl;
+				clog << "Obtained frequency = '" << spec.freq;
+				clog << "'" << endl;
 
 				if (spec.size == 0) {
 					spec.size = wantedSpec.channels * wantedSpec.samples * 2;
@@ -2524,6 +2658,26 @@ the_end:
 				} else {
 					wantedSpec.size = spec.size;
 				}
+
+			} else {
+
+				wantedSpec.samples = spec.samples;
+
+				clog << "SDL2ffmpeg::stream_component_open (2nd audio src)";
+				clog << endl;
+				clog << "Desired format = '" << wantedSpec.format;
+				clog << "'" << endl;
+				clog << "Desired silence = '" << wantedSpec.silence;
+				clog << "'" << endl;
+				clog << "Desired samples = '" << wantedSpec.samples;
+				clog << "'" << endl;
+				clog << "Desired size = '" << wantedSpec.size;
+				clog << "'" << endl;
+				clog << "Desired channels = '" << (int)wantedSpec.channels;
+				clog << "'" << endl;
+				clog << "Desired frequency = '" << wantedSpec.freq;
+				clog << "'" << endl;
+				clog << endl;
 			}
 
 			vs->audio_main_buf_size[0] = 0;
@@ -2537,13 +2691,13 @@ the_end:
 						wantedSpec.samples * 2;
 			}
 
-			cout << "SDL2ffmpeg::stream_component_open buffer size = '";
-			cout << vs->audio_hw_buf_size << "'" << endl;
+			clog << "SDL2ffmpeg::stream_component_open buffer size = '";
+			clog << vs->audio_hw_buf_size << "'" << endl;
 
 			if (spec.format != AUDIO_S16SYS) {
-				cout << "SDL2ffmpeg::stream_component_open Warning! ";
-				cout << "SDL advised audio format '" << spec.format << "'";
-				cout << " is not supported!";
+				clog << "SDL2ffmpeg::stream_component_open Warning! ";
+				clog << "SDL advised audio format '" << spec.format << "'";
+				clog << " is not supported!";
 
 				return -1;
 			}
@@ -2553,9 +2707,9 @@ the_end:
 						spec.channels);
 
 				if (!wanted_channel_layout) {
-					cout << "SDL2ffmpeg::stream_component_open Warning! ";
-					cout << "SDL advised channel count '" << spec.channels;
-					cout << "' is not supported!" << endl;
+					clog << "SDL2ffmpeg::stream_component_open Warning! ";
+					clog << "SDL advised channel count '" << spec.channels;
+					clog << "' is not supported!" << endl;
 
 					return -1;
 				}
@@ -2586,20 +2740,20 @@ the_end:
 						SDL_AUDIO_BUFFER_SIZE / wantedSpec.freq;
 
 				memset(&vs->audio_pkt, 0, sizeof(vs->audio_pkt));
-				packet_queue_init(&vs->audioq);
+				packet_queue_start(&vs->audioq);
 				break;
 
 			case AVMEDIA_TYPE_VIDEO:
 				vs->video_stream = stream_index;
 				vs->video_st = ic->streams[stream_index];
 
-				packet_queue_init(&vs->videoq);
+				packet_queue_start(&vs->videoq);
 				break;
 
 			case AVMEDIA_TYPE_SUBTITLE:
 				vs->subtitle_stream = stream_index;
 				vs->subtitle_st = ic->streams[stream_index];
-				packet_queue_init(&vs->subtitleq);
+				packet_queue_start(&vs->subtitleq);
 				break;
 
 			default:
@@ -2622,12 +2776,12 @@ the_end:
 		switch (avctx->codec_type) {
 			case AVMEDIA_TYPE_AUDIO:
 				packet_queue_abort(&vs->audioq);
-				packet_queue_end(&vs->audioq);
+				packet_queue_flush(&vs->audioq);
+				av_free_packet(&vs->audio_pkt);
 				if (vs->swr_ctx) {
 					swr_free(&vs->swr_ctx);
 				}
 
-				av_free_packet(&vs->audio_pkt);
 				av_freep(&vs->audio_buf1);
 				vs->audio_buf = NULL;
 				av_freep(&vs->frame);
@@ -2643,16 +2797,18 @@ the_end:
 			case AVMEDIA_TYPE_VIDEO:
 				packet_queue_abort(&vs->videoq);
 
-				/* note: we also signal this mutex to make sure we deblock the
-				   video thread in all cases */
-				   SDL_LockMutex(vs->pictq_mutex);
-				   SDL_CondSignal(vs->pictq_cond);
-				   SDL_UnlockMutex(vs->pictq_mutex);
+				/*
+				 * Note: we also signal this mutex to make sure we unblock the
+				 * video thread in all cases
+				 */
+				SDL_LockMutex(vs->pictq_mutex);
+				SDL_CondSignal(vs->pictq_cond);
+				SDL_UnlockMutex(vs->pictq_mutex);
 
-				   SDL_WaitThread(vs->video_tid, NULL);
+				SDL_WaitThread(vs->video_tid, NULL);
 
-				   packet_queue_end(&vs->videoq);
-				   break;
+				packet_queue_flush(&vs->videoq);
+				break;
 
 			case AVMEDIA_TYPE_SUBTITLE:
 				packet_queue_abort(&vs->subtitleq);
@@ -2667,7 +2823,7 @@ the_end:
 
 				SDL_WaitThread(vs->subtitle_tid, NULL);
 
-				packet_queue_end(&vs->subtitleq);
+				packet_queue_flush(&vs->subtitleq);
 				break;
 
 			default:
@@ -2703,12 +2859,7 @@ the_end:
 	}
 
 	int SDL2ffmpeg::read_init() {
-		int st_index[AVMEDIA_TYPE_NB];
-		int err, i, ret;
-
-		ret = 0;
-
-		memset(st_index, -1, sizeof(st_index));
+		int err, i, ret = 0;
 
 		vs->video_stream    = -1;
 		vs->audio_stream    = -1;
@@ -2718,23 +2869,12 @@ the_end:
 		vs->ic->interrupt_callback.callback = SDL2ffmpeg::decode_interrupt_cb;
 		vs->ic->interrupt_callback.opaque = this;
 
-		mime.assign(vs->filename);
-		mime = mime.substr(mime.length() - 3, 3);
-
-		file_iformat = av_find_input_format(mime.c_str());
-		if (file_iformat) {
-			cout << "SDL2ffmpeg::read_init format name is '";
-			cout << file_iformat->name << "'" << endl;
-		}
-
-	    vs->ic->iformat = file_iformat;
-
-		err = avformat_open_input(
-				&vs->ic, vs->filename, vs->ic->iformat, NULL);
-
+		err = avformat_open_input(&vs->ic, vs->filename, NULL, NULL);
 		if (err < 0) {
-			cout << "SDL2ffmpeg::read_init Warning! Can't open '";
-			cout << vs->filename << "'" << endl;
+			clog << "SDL2ffmpeg::read_init Warning! Problems with '";
+			clog << vs->filename << "': '";
+			clog << ffmpegErr(err) << "'" << endl;
+
 			close(true);
 			return -1;
 		}
@@ -2743,13 +2883,15 @@ the_end:
 			vs->ic->flags |= AVFMT_FLAG_GENPTS;
 		}
 
-		cout << "SDL2ffmpeg::read_init context flags = '" << vs->ic->flags;
-		cout << "'" << endl;
+		clog << "SDL2ffmpeg::read_init context flags = '" << vs->ic->flags;
+		clog << "'" << endl;
 
 		err = avformat_find_stream_info(vs->ic, NULL);
 		if (err < 0) {
-			cout << "SDL2ffmpeg::read_init Warning! Can't find stream info ";
-			cout << "for '" << vs->filename << "'" << endl;
+			clog << "SDL2ffmpeg::read_init Warning! Can't find stream info ";
+			clog << "for '" << vs->filename << "': '";
+			clog << ffmpegErr(err) << "'" << endl;
+
 			close(true);
 			return -1;
 		}
@@ -2769,61 +2911,6 @@ the_end:
 			vs->ic->streams[i]->discard = AVDISCARD_ALL;
 		}
 
-		st_index[AVMEDIA_TYPE_VIDEO] = av_find_best_stream(
-				vs->ic,
-				AVMEDIA_TYPE_VIDEO,
-				wanted_stream[AVMEDIA_TYPE_VIDEO],
-				-1,
-				NULL,
-				0);
-
-		st_index[AVMEDIA_TYPE_AUDIO] = av_find_best_stream(
-				vs->ic,
-				AVMEDIA_TYPE_AUDIO,
-				wanted_stream[AVMEDIA_TYPE_AUDIO],
-				st_index[AVMEDIA_TYPE_VIDEO],
-				NULL,
-				0);
-
-		st_index[AVMEDIA_TYPE_SUBTITLE] = av_find_best_stream(
-				vs->ic,
-				AVMEDIA_TYPE_SUBTITLE,
-				wanted_stream[AVMEDIA_TYPE_SUBTITLE],
-				(st_index[AVMEDIA_TYPE_AUDIO] >= 0 ? st_index
-						[AVMEDIA_TYPE_AUDIO] :
-						st_index[AVMEDIA_TYPE_VIDEO]),
-				NULL,
-				0);
-
-		/* open the streams */
-		if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-			stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
-
-		} else {
-			cout << "SDL2ffmpeg::read_init '";
-			cout << vs->filename << "' doesn't have any audio stream!";
-			cout << endl;
-		}
-
-		ret = -1;
-		if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-			ret = stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
-
-		} else {
-			cout << "SDL2ffmpeg::read_init '";
-			cout << vs->filename << "' doesn't have any video stream!";
-			cout << endl;
-		}
-
-		if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-			stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
-
-		} else {
-			cout << "SDL2ffmpeg::read_init '";
-			cout << vs->filename << "' doesn't have any subtitle stream!";
-			cout << endl;
-		}
-
 		return ret;
 	}
 
@@ -2837,18 +2924,15 @@ the_end:
 		int pkt_in_play_range = 0;
 
 		if (vs->video_stream < 0 && vs->audio_stream < 0) {
-			cout << "SDL2ffmpeg::read_thread Warning! ";
-			cout << "Could not open codecs for " << vs->filename << endl;
+			clog << "SDL2ffmpeg::read_thread exiting: no streams in '";
+			clog << vs->filename << "'";
+			clog << endl;
 
 			dec->close(true);
 			return -1;
 		}
 
-		for (;;) {
-			if (dec->abortRequest) {
-				break;
-			}
-
+		while (!dec->abortRequest) {
 			if (vs->paused != vs->last_paused) {
 				vs->last_paused = vs->paused;
 				if (vs->paused) {
@@ -2892,10 +2976,9 @@ the_end:
 						vs->seek_flags);
 
 				if (ret < 0) {
-					fprintf(
-							stderr,
-							"%s: error while seeking\n",
-							vs->ic->filename);
+					clog << "SDL2ffmpeg::read_thread ";
+					clog << "error while seeking '" << vs->ic->filename << "'";
+					clog << endl;
 
 				} else {
 					if (vs->audio_stream >= 0) {
@@ -2920,11 +3003,15 @@ the_end:
 			/* if the queue are full, no need to read more */
 			if (vs->audioq.size + vs->videoq.size + vs->subtitleq.size >
 				MAX_QUEUE_SIZE ||
-				((vs->audioq.size > MIN_AUDIOQ_SIZE || vs->audio_stream < 0) &&
+				((vs->audioq.nb_packets > MIN_FRAMES ||
+						vs->audio_stream < 0 ||
+						vs->audioq.abort_request) &&
 						(vs->videoq.nb_packets > MIN_FRAMES ||
-								vs->video_stream < 0) &&
+								vs->video_stream < 0 ||
+								vs->videoq.abort_request) &&
 						(vs->subtitleq.nb_packets > MIN_FRAMES ||
-								vs->subtitle_stream < 0))) {
+								vs->subtitle_stream < 0 ||
+								vs->subtitleq.abort_request))) {
 
 				/* wait 10 ms */
 				SDL_Delay(10);
@@ -2955,8 +3042,9 @@ the_end:
 				if (vs->audioq.size + vs->videoq.size +
 						vs->subtitleq.size == 0) {
 
-					dec->close(true);
-					cout << "SDL2ffmpeg::read_thread all done" << endl;
+					dec->status = ST_STOPPED;
+					clog << "SDL2ffmpeg::read_thread(" << vs->filename;
+					clog << ") all done (EOF)" << endl;
 					return AVERROR_EOF;
 				}
 
@@ -3008,14 +3096,8 @@ the_end:
 			}
 		}
 
-		/* wait until the end */
-		while (!dec->abortRequest) {
-			SDL_Delay(100);
-		}
-
-		dec->close(false);
-
-		cout << "SDL2ffmpeg::read_thread all done" << endl;
+		clog << "SDL2ffmpeg::read_thread(" << vs->filename;
+		clog << ") all done" << endl;
 		return 0;
 	}
 
@@ -3107,6 +3189,7 @@ the_end:
 				return !!SDL_UnlockMutex((SDL_mutex*)*mtx);
 
 			case AV_LOCK_DESTROY:
+				SDL_UnlockMutex((SDL_mutex*)*mtx);
 				SDL_DestroyMutex((SDL_mutex*)*mtx);
 				return 0;
 		}
