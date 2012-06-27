@@ -31,7 +31,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "nclua-private.h"
 #include "nclua-luax-private.h"
 
-/* Define the registry key for the NCLua Store (cf. nclua-private.h).  */
+/* Define the registry key for the NCLua registry (cf. nclua-private.h).  */
 const int _nclua_magic;
 
 /* The NCLua State structure.  */
@@ -151,7 +151,7 @@ nclua_create_for_lua_state (lua_State *L)
     return __nclua_create_in_error (NCLUA_STATUS_NULL_POINTER);
 
   /* Check if the Lua state is valid.  */
-  _nclua_get_store (L);
+  _nclua_get_registry (L);
   if (unlikely (!lua_isnil (L, -1)))
     {
       lua_pop (L, 1);
@@ -166,23 +166,22 @@ nclua_create_for_lua_state (lua_State *L)
 
   memset (nc, 0, sizeof (*nc));
 
-  /* Create and initialize the NCLua store table.  */
-  _nclua_create_and_set_store (L);
+  /* Create and initialize the NCLua registry table.  */
+  _nclua_create_registry (L);
 
   lua_createtable (L, 0, 0);
-  _nclua_set_store_data (L, _NCLUA_STORE_EMPTY_TABLE_KEY);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
 
   lua_pushlightuserdata (L, (void *) nc);
-  _nclua_set_store_data (L, _NCLUA_STORE_STATE_KEY);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_STATE);
 
   lua_newtable (L);
-  _nclua_set_store_data (L, _NCLUA_STORE_USER_DATA_KEY);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
 
   status = _nclua_event_open (L);
   if (unlikely (status != NCLUA_STATUS_SUCCESS))
     {
-      lua_pushnil (L);
-      _nclua_set_store (L);
+      _nclua_destroy_registry (L);
       free (nc);
       return __nclua_create_in_error (status);
     }
@@ -249,7 +248,7 @@ nclua_destroy (nclua_t *nc)
   /* Release NCLua Event data.  */
   _nclua_event_close (L);
 
-  _nclua_get_store_data (L, _NCLUA_STORE_USER_DATA_KEY);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
   assert (lua_istable (L, -1));
 
   /* Release user data */
@@ -272,9 +271,8 @@ nclua_destroy (nclua_t *nc)
     }
   lua_pop (L, 1);
 
-  /* Release store table.  */
-  lua_pushnil (L);
-  _nclua_set_store (L);
+  /* Release registry table.  */
+  _nclua_destroy_registry (L);
 
   if (nc->close_lua_state)
     lua_close (L);
@@ -343,7 +341,7 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
   L = nclua_get_lua_state (nc);
   saved_top = lua_gettop (L);
 
-  _nclua_get_store_data (L, _NCLUA_STORE_USER_DATA_KEY);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
   lua_pushlightuserdata (L, (void *) key);
   lua_rawget (L, -2);
 
@@ -444,7 +442,7 @@ nclua_get_user_data (nclua_t *nc, nclua_user_data_key_t *key)
   L = nclua_get_lua_state (nc);
   saved_top = lua_gettop (L);
 
-  _nclua_get_store_data (L, _NCLUA_STORE_USER_DATA_KEY);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA);
   lua_pushlightuserdata (L, (void *) key);
   lua_rawget (L, -2);
   if (unlikely (lua_isnil (L, -1)))
@@ -480,7 +478,7 @@ nclua_get_nclua_state (lua_State *L)
 
   saved_top = lua_gettop (L);
 
-  _nclua_get_store_data (L, _NCLUA_STORE_STATE_KEY);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_STATE);
   assert (lua_islightuserdata (L, -1));
 
   nc = (nclua_t *) lua_touserdata (L, -1);

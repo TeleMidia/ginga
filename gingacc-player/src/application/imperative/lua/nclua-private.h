@@ -30,24 +30,44 @@ NCLUA_BEGIN_DECLS
 
 #include <lua.h>
 
-/* The Lua structures used by the NCLua engine are kept in an internal table
-   called the "NCLua Store", or "store" for short.  This table is stored in
-   the Lua registry, indexed by the address of the following global.  */
+/* The Lua structures used by the NCLua engine are kept in an internal
+   table, analogous to the Lua registry, called the "NCLua Registry".  This
+   table is stored in the Lua registry, indexed by the address of the
+   following global variable.  */
 NCLUA_PRIVATE const int _nclua_magic;
 
-/* Keys for data in store table.  */
+/* Indexes for data in the NCLua registry.  */
 enum
 {
-  _NCLUA_STORE_EMPTY_TABLE_KEY, /* key of an empty table */
-  _NCLUA_STORE_STATE_KEY,       /* key of NCLua state */
-  _NCLUA_STORE_USER_DATA_KEY,   /* key of table with attached user data */
-  _NCLUA_STORE_EVENT_KEY,       /* key of the NCLua Event store table */
-  _NCLUA_STORE_LAST_KEY,        /* total number of key values */
+  _NCLUA_REGISTRY_EMPTY_TABLE, /* index of an empty table */
+  _NCLUA_REGISTRY_STATE,       /* index of NCLua state */
+  _NCLUA_REGISTRY_USER_DATA,   /* index of table with attached user data */
+  _NCLUA_REGISTRY_EVENT,       /* index of the NCLua Event registry */
+  _NCLUA_REGISTRY_LAST_INDEX,  /* total number of index values */
 };
 
-/* Sets the value on top of stack as the new store table.
+/* Creates a new registry table and inserts it into Lua registry.  */
+#define _nclua_create_registry(L)                       \
+  NCLUA_STMT_BEGIN                                      \
+  {                                                     \
+    lua_createtable (L, _NCLUA_REGISTRY_LAST_INDEX, 0); \
+    _nclua_set_registry (L);                               \
+  }                                                     \
+  NCLUA_STMT_END
+
+/* Destroys the current registry table.
+   This macro doesn't releases the table contents.  */
+#define _nclua_destroy_registry(L)              \
+  NCLUA_STMT_BEGIN                              \
+  {                                             \
+    lua_pushnil (L);                            \
+    _nclua_set_registry (L);                    \
+  }                                             \
+  NCLUA_STMT_END
+
+/* Sets the value on top of stack as the new registry table.
    This macro pops the value from stack.  */
-#define _nclua_set_store(L)                             \
+#define _nclua_set_registry(L)                          \
   NCLUA_STMT_BEGIN                                      \
   {                                                     \
     lua_pushvalue (L, LUA_REGISTRYINDEX);               \
@@ -58,17 +78,8 @@ enum
   }                                                     \
   NCLUA_STMT_END
 
-/* Creates a new store table and inserts it into Lua registry.  */
-#define _nclua_create_and_set_store(L)                  \
-  NCLUA_STMT_BEGIN                                      \
-  {                                                     \
-    lua_createtable (L, _NCLUA_STORE_LAST_KEY, 0);      \
-    _nclua_set_store (L);                               \
-  }                                                     \
-  NCLUA_STMT_END
-
-/* Pushes onto stack the store table.  */
-#define _nclua_get_store(L)                             \
+/* Pushes the registry table onto stack.  */
+#define _nclua_get_registry(L)                          \
   NCLUA_STMT_BEGIN                                      \
   {                                                     \
     lua_pushvalue (L, LUA_REGISTRYINDEX);               \
@@ -78,22 +89,22 @@ enum
   }                                                     \
   NCLUA_STMT_END
 
-/* Pushes onto stack the value store[KEY] */
-#define _nclua_get_store_data(L, key)           \
+/* Pushes registry[KEY] onto stack.  */
+#define _nclua_get_registry_data(L, key)        \
   NCLUA_STMT_BEGIN                              \
   {                                             \
-    _nclua_get_store (L);                       \
+    _nclua_get_registry (L);                    \
     lua_rawgeti (L, -1, key);                   \
     lua_remove (L, -2);                         \
   }                                             \
   NCLUA_STMT_END
 
-/* Sets store[KEY] to the value at top of stack.
+/* Sets registry[KEY] to the value at top of stack.
    This macro pops the value from stack.  */
-#define _nclua_set_store_data(L, key)           \
+#define _nclua_set_registry_data(L, key)        \
   NCLUA_STMT_BEGIN                              \
   {                                             \
-    _nclua_get_store (L);                       \
+    _nclua_get_registry (L);                    \
     lua_pushvalue (L, -2);                      \
     lua_rawseti (L, -2, key);                   \
     lua_pop (L, 2);                             \
