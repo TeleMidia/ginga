@@ -212,7 +212,7 @@ void LuaPlayer::post (string action)
 
       lua_pushstring (L, currentScope.c_str ());
       lua_setfield (L, -2, "label");
-      nclua_sendx (nc, -1);
+      nclua_sendx (nc);
     }
   else
     {
@@ -306,7 +306,7 @@ LuaPlayer::setPropertyValue(string name, string value)
   lua_pushstring (L, "ncl");
   lua_setfield (L, -2, "class");
 
-  lua_pushstring (L, "presentation");
+  lua_pushstring (L, "attribution");
   lua_setfield (L, -2, "type");
 
   lua_pushstring (L, "start");
@@ -318,7 +318,7 @@ LuaPlayer::setPropertyValue(string name, string value)
   lua_pushstring (L, value.c_str ());
   lua_setfield (L, -2, "value");
 
-  nclua_sendx (nc, -1);
+  nclua_sendx (nc);
   UNLOCK ();
 }
 
@@ -339,7 +339,7 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
           int ref = evt->getType ();
           lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
           luaL_unref(L, LUA_REGISTRYINDEX, ref);
-          nclua_sendx (nc, -1);
+          nclua_sendx (nc);
         }
     }
   else if (evt->isKeyType() && this->isHandler)
@@ -355,7 +355,7 @@ LuaPlayer::userEventReceived (IInputEvent* evt)
 
       lua_pushstring (L, key_str.c_str ());
       lua_setfield (L, -2, "key");
-      nclua_sendx (nc, -1);
+      nclua_sendx (nc);
     }
 
   UNLOCK ();

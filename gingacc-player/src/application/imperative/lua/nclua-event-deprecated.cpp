@@ -827,8 +827,9 @@ l_register_user_event (lua_State *L)
 /* DEPRECATED */
 
 void
-nclua_sendx (nclua_t *nc, int index)
+nclua_sendx (nclua_t *nc)
 {
   lua_State *L = (lua_State *) nclua_get_lua_state (nc);
-  notify (L, index);
+  notify (L, -1);
+  lua_pop (L, 1);
 }

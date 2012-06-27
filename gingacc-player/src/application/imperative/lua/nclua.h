@@ -96,7 +96,7 @@ NCLUA_PUBLIC nclua_t *
 nclua_get_nclua_state (lua_State *L);
 
 NCLUA_PUBLIC nclua_status_t
-nclua_send (nclua_t *nc, lua_State *L, int index);
+nclua_send (nclua_t *nc, lua_State *L);
 
 NCLUA_PUBLIC void
 nclua_receive (nclua_t *nc, lua_State *L);
@@ -107,7 +107,7 @@ nclua_cycle (nclua_t *nc);
 /* DEPRECATED */
 
 NCLUA_PUBLIC void
-nclua_sendx (nclua_t *nc, int index);
+nclua_sendx (nclua_t *nc);
 
 NCLUA_END_DECLS
 
