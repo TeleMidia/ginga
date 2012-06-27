@@ -141,10 +141,10 @@ void testPlayer(
 	IPlayerListener* l3 = new TestPlayerListener("L3");
 	IPlayerListener* l4 = new TestPlayerListener("L4");
 
-	w1 = dm->createWindow(screen, 10, 10, 100, 100, 3);
-	w2 = dm->createWindow(screen, 90, 90, 150, 150, 2);
-	w3 = dm->createWindow(screen, 0, 0, 200, 200, 1);
-	w4 = dm->createWindow(screen, 0, 0, 400, 300, 0);
+	w1 = dm->createWindow(screen, 10, 10, 100, 100, 3.3);
+	w2 = dm->createWindow(screen, 90, 90, 150, 150, 3.2);
+	w3 = dm->createWindow(screen, 0, 0, 200, 200, 3.1);
+	w4 = dm->createWindow(screen, 0, 0, 400, 300, 3.0);
 
 	w1->setCaps(w1->getCap("ALPHACHANNEL"));
 	w1->draw();

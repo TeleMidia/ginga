@@ -117,10 +117,12 @@ namespace mb {
 			InputManager(GingaScreenID screenId);
 			virtual ~InputManager();
 
+		private:
 			void initializeInputIntervalTime();
 
 			void release();
 
+		public:
 			void addMotionEventListener(IMotionEventListener* listener);
 			void removeMotionEventListener(IMotionEventListener* listener);
 

@@ -87,8 +87,8 @@ void testAwesomium(
 		mrl = "www.cwi.nl";
 	}
 
-	w   = dm->createWindow(screen,  10,  10, 490, 580, 2);
-	ww  = dm->createWindow(screen,  20, 210, 470, 280, 1);
+	w   = dm->createWindow(screen,  10,  10, 490, 580, 3.2);
+	ww  = dm->createWindow(screen,  20, 210, 470, 280, 3.1);
 
 	w->setCaps(w->getCap("ALPHACHANNEL"));
 	w->draw();

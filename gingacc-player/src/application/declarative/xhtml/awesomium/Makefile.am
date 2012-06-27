@@ -1,5 +1,3 @@
-
-# set the include path found by configure
 INCLUDES                    = \
                               -I$(prefix)/include/ginga/ \
                               -I$(prefix)/include/ \

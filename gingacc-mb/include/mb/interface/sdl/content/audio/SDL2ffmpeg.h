@@ -129,7 +129,6 @@ extern "C" {
 		   shift)) + 128)
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MIN_AUDIOQ_SIZE (20 * 16 * 1024)
 #define MIN_FRAMES 5
 
 /* SDL audio buffer size, in samples. Should be small to have precise
@@ -218,7 +217,6 @@ namespace mb {
 	} SubPicture;
 
 	typedef struct VideoState {
-		int no_background;
 		int paused;
 		int last_paused;
 		int seek_req;
@@ -328,7 +326,6 @@ namespace mb {
 		SDL_Thread* subtitle_tid;
 	    SDL_Thread* read_tid;
 	    SDL_Thread* video_tid;
-	    SDL_Thread* refresh_tid;
 
 	    SDL_mutex* subpq_mutex;
 	    SDL_cond* subpq_cond;
@@ -411,9 +408,6 @@ namespace mb {
 
 		IContinuousMediaProvider* cmp;
 
-		AVInputFormat* file_iformat;
-		string mime;
-
 		bool allocate;
 
 	public:
@@ -423,6 +417,10 @@ namespace mb {
 	private:
 		void release();
 		void close(bool quit);
+
+		string ffmpegErr(int err);
+
+		void openStreams();
 		bool prepare();
 
 	public:
@@ -464,11 +462,13 @@ namespace mb {
 				enum PixelFormat outFormat);
 
 	private:
+		int nts_packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		void packet_queue_init(PacketQueue *q);
 		void packet_queue_flush(PacketQueue *q);
-		void packet_queue_end(PacketQueue *q);
+		void packet_queue_destroy(PacketQueue *q);
 		void packet_queue_abort(PacketQueue *q);
+		void packet_queue_start(PacketQueue *q);
 		int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block);
 
 		void free_subpicture(SubPicture *sp);
@@ -479,8 +479,6 @@ namespace mb {
 		void video_display();
 
 	private:
-		static int refresh_thread(void *opaque);
-
 		double get_audio_clock();
 		double get_video_clock();
 		double get_external_clock();

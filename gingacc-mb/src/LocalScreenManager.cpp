@@ -220,7 +220,9 @@ namespace mb {
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {
+			removeScreen(screenId);
 			screen->releaseScreen();
+			delete screen;
 		}
 	}
 
@@ -634,7 +636,7 @@ namespace mb {
 	/* interfacing output */
 
 	IWindow* LocalScreenManager::createWindow(
-			GingaScreenID screenId, int x, int y, int w, int h, int z) {
+			GingaScreenID screenId, int x, int y, int w, int h, float z) {
 
 		IDeviceScreen* screen;
 		IWindow* window = NULL;
@@ -651,7 +653,7 @@ namespace mb {
 	}
 
 	GingaWindowID LocalScreenManager::createUnderlyingSubWindow(
-			GingaScreenID screenId, int x, int y, int w, int h, int z) {
+			GingaScreenID screenId, int x, int y, int w, int h, float z) {
 
 		IDeviceScreen* screen;
 		GingaWindowID window = NULL;
@@ -962,6 +964,20 @@ namespace mb {
 		if (i != screens->end()) {
 			hasScreen = true;
 			*screen   = i->second;
+		}
+		unlockScreenMap();
+
+		return hasScreen;
+	}
+
+	bool LocalScreenManager::removeScreen(GingaScreenID screenId) {
+		bool hasScreen = false;
+		map<GingaScreenID, IDeviceScreen*>::iterator i;
+
+		lockScreenMap();
+		i = screens->find(screenId);
+		if (i != screens->end()) {
+			screens->erase(i);
 		}
 		unlockScreenMap();
 

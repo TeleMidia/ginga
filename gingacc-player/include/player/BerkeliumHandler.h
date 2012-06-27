@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define BerkeliumHandler_h_
 
 #include "mb/IInputManager.h"
+#include "mb/interface/CodeMap.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -66,7 +67,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/select.h>
 #include <sstream>
 #include <iostream>
 #include <memory>
@@ -79,29 +79,57 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-  class BerkeliumHandler : public WindowDelegate, public IInputEventListener {
+  class BerkeliumHandler :
+	  public WindowDelegate,
+	  public IInputEventListener,
+	  public IMotionEventListener {
+
 	private:
+		static map<int, int> fromGingaToBklm;
 		std::string mURL;
 		ILocalScreenManager* dm;
+		GingaScreenID myScreen;
 		IInputManager* im;
 		ISurface* surface;
+		int xOffset, yOffset;
+		int x, y;
 		int w, h;
 		Context* context;
 		std::auto_ptr<Window> bWindow;
 		bool isValid;
+		bool mouseClick;
+		bool mouseMoved;
+		bool textEvent;
+		int keyCode;
+		static int callCount;
+		bool needs_full_refresh;
+		unsigned char* scroll_buffer;
 
 	public:
-		BerkeliumHandler();
+		BerkeliumHandler(
+				GingaScreenID myScreen, int x, int y, int w, int h);
+
 		virtual ~BerkeliumHandler();
+
+	private:
+		void initInputMap();
+
+	public:
+		void stop();
+		void setKeyHandler(bool handler);
 
 		void setContext(Context* context);
 		void setWindow(std::auto_ptr<Window> window);
 		void getSize(int* w, int* h);
-		void setSize(int w, int h);
+		void setBounds(int x, int y, int w, int h);
 		void setUrl(string url);
 		string getUrl();
 		ISurface* getSurface();
+
+		void updateEvents();
+
 		bool userEventReceived(IInputEvent* ev);
+		bool motionEventReceived(int x, int y, int z);
 
 		virtual void onAddressBarChanged(Window *win, URLString newURL);
 		virtual void onStartLoading(Window *win, URLString newURL);
@@ -110,6 +138,26 @@ namespace player {
 		virtual void onLoadError(Window *win, WideString error);
 		virtual void onResponsive(Window *win);
 		virtual void onUnresponsive(Window *win);
+
+	private:
+		bool mapOnPaintToTexture(
+				Berkelium::Window *wini,
+				const unsigned char* bitmap_in, const Berkelium::Rect& bitmap_rect,
+				size_t num_copy_rects, const Berkelium::Rect *copy_rects,
+				int dx, int dy,
+				const Berkelium::Rect& scroll_rect,
+				unsigned int dest_texture_width,
+				unsigned int dest_texture_height,
+				bool ignore_partial,
+				unsigned char* scroll_buffer);
+
+		ISurface* createRenderedSurface(string fileName);
+
+		string createFile(
+				const unsigned char *sourceBuffer,
+				int width, int height);
+
+	public:
 		virtual void onPaint(
 				Window *wini,
 				const unsigned char *bitmap_in,

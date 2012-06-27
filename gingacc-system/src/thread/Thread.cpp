@@ -133,7 +133,8 @@ namespace thread {
 		struct timeval time;
 		struct timespec timeOut;
 
-		gettimeofday(&time, NULL);
+		SystemCompat::gettimeofday(&time, NULL);
+
 		timeOut.tv_sec = time.tv_sec + (long int)(milliseconds / 1000);
 		long int micro;
 		micro = ((milliseconds%1000) * 1000) + time.tv_usec;

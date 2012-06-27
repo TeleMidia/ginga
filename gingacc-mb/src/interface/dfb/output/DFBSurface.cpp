@@ -521,9 +521,7 @@ namespace mb {
 			if (sur != NULL) {
 				DFBCHECK(sur->SetBlittingFlags(
 						sur,
-						(DFBSurfaceBlittingFlags)(
-								DSBLIT_BLEND_ALPHACHANNEL |
-								DSBLIT_SRC_COLORKEY)));
+						(DFBSurfaceBlittingFlags)(0)));
 
 				DFBCHECK( sur->Blit(
 						sur,

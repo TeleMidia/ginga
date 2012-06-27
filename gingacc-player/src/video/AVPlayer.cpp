@@ -1349,6 +1349,8 @@ namespace player {
 			running = true;
 			Thread::start();
 		}
+
+		clog << "AVPlayer::play("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::pause() {
@@ -1366,6 +1368,8 @@ namespace player {
 		/*if (hasVisual) {
 			Window::dynamicRenderCallBack((void*)(this->surface));
 		}*/
+
+		clog << "AVPlayer::pause("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::stop() {
@@ -1381,6 +1385,8 @@ namespace player {
 		}
 		provider->stop();
 		this->wakeUp();
+
+		clog << "AVPlayer::stop("<< mrl << ") all done!" << endl;
 	}
 
 	void AVPlayer::resume() {
@@ -1419,7 +1425,7 @@ namespace player {
 							util::stof((*vals)[1]),
 							util::stof((*vals)[2]),
 							util::stof((*vals)[3]),
-							-1);
+							1.0);
 
 					win->setCaps(win->getCap("NOSTRUCTURE") |
 							win->getCap("DOUBLEBUFFER"));
@@ -1647,12 +1653,23 @@ namespace player {
 							break;
 						}
 
-					} else if (!this->mSleep(timeRemain)) {
+					} else if (status != PLAY || !this->mSleep(timeRemain)) {
 						clog << "AVPlayer::run can't sleep '" << timeRemain;
 						clog << "' => exiting" << endl;
-						break;
+
+						if (status == PLAY && outTransTime > 0.0) {
+							outTransTime = 0;
+							notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
+
+						} else {
+							break;
+						}
 
 					} else if (outTransTime > 0.0) {
+						clog << "AVPlayer::run notify transition at '";
+						clog << currentTime << "' (out transition time is '";
+						clog << outTransTime << "')" << endl;
+
 						outTransTime = 0;
 						notifyPlayerListeners(PL_NOTIFY_OUTTRANS, "");
 					}

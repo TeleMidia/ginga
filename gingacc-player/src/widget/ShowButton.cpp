@@ -69,6 +69,15 @@ namespace player {
 		status         = NONE;
 		previousStatus = NONE;
 		win            = NULL;
+		running        = false;
+	}
+
+	ShowButton::~ShowButton() {
+		isDeleting = true;
+
+		while (running) {
+			SystemCompat::uSleep(50000);
+		}
 	}
 
 	void ShowButton::initializeWindow() {
@@ -82,7 +91,7 @@ namespace player {
 		w = 60;
 		h = 60;
 
-		win = dm->createWindow(myScreen, x, y, w, h, 32767);
+		win = dm->createWindow(myScreen, x, y, w, h, 4.0);
 		win->setCaps(win->getCap("ALPHACHANNEL"));
 		win->draw();
 	}
@@ -147,38 +156,50 @@ namespace player {
 
 	void ShowButton::run() {
 		//lock();
-		switch (status) {
-			case PAUSE:
-				clog << "ShowButton::run PAUSE" << endl;
-				render(SystemCompat::appendGingaFilesPrefix("img/button/pauseButton.png"));
-				break;
+		running = true;
 
-			case STOP:
-				clog << "ShowButton::run STOP" << endl;
-				if (previousStatus == PAUSE) {
+		if (!isDeleting) {
+			switch (status) {
+				case PAUSE:
+					clog << "ShowButton::run PAUSE" << endl;
+					render(SystemCompat::appendGingaFilesPrefix(
+							"img/button/pauseButton.png"));
+
+					break;
+
+				case STOP:
+					clog << "ShowButton::run STOP" << endl;
+					if (previousStatus == PAUSE) {
+						release();
+					}
+
+					render(SystemCompat::appendGingaFilesPrefix(
+							"img/button/stopButton.png"));
+
+					SystemCompat::uSleep(1000000);
 					release();
-				}
+					break;
 
-				render(SystemCompat::appendGingaFilesPrefix("img/button/stopButton.png"));
-				SystemCompat::uSleep(1000000);
-				release();
-				break;
+				case PLAY:
+					clog << "ShowButton::run PLAY" << endl;
+					if (previousStatus == PAUSE) {
+						release();
+					}
 
-			case PLAY:
-				clog << "ShowButton::run PLAY" << endl;
-				if (previousStatus == PAUSE) {
+					render(SystemCompat::appendGingaFilesPrefix(
+							"img/button/playButton.png"));
+
+					SystemCompat::uSleep(1000000);
 					release();
-				}
+					break;
 
-				render(SystemCompat::appendGingaFilesPrefix("img/button/playButton.png"));
-				SystemCompat::uSleep(1000000);
-				release();
-				break;
-
-			default:
-				clog << "ShowButton::run DEFAULT" << endl;
-				break;
+				default:
+					clog << "ShowButton::run DEFAULT" << endl;
+					break;
+			}
 		}
+
+		running = false;
 		//unlock();
 	}
 }
