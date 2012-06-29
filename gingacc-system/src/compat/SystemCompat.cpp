@@ -598,7 +598,14 @@ namespace compat {
 	string SystemCompat::getTemporaryDir() {
 #if defined(_WIN32) && !defined(__MINGW32__)
 		//TODO: Use the WIN32 API to return the temporary directory
-		return "C:\\Temp\\";
+		TCHAR lpTempPathBuffer[MAX_PATH];
+		int dwRetVal = GetTempPath(	MAX_PATH,          // length of the buffer
+									lpTempPathBuffer); // buffer for path 
+		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
+		{
+			return gingaCurrentPath + "Temp\\";
+		}
+		return lpTempPathBuffer;
 #else
 		return "/tmp/";
 #endif
