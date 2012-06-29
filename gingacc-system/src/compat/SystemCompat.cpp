@@ -77,12 +77,18 @@ namespace compat {
 	void SystemCompat::initializeGingaConfigFile() {
 		ifstream fis;
 		string line, key, partial, value;
-		string gingaini = gingaCurrentPath +
-#ifdef WIN32
-			"ginga.win.ini";
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		filesPref = gingaCurrentPath + "files\\";
+		installPref = gingaCurrentPath;
+
+		pathD = ";";
+		iUriD = "\\";
+		fUriD = "/";
+
+		return;
 #else
-			"ginga.ini";
-#endif
+		string gingaini = gingaCurrentPath + "ginga.ini";
 
 		fis.open(gingaini.c_str(), ifstream::in);
 
@@ -149,6 +155,7 @@ namespace compat {
 		}
 
 		fis.close();
+#endif
 	}
 
 	void SystemCompat::initializeGingaPath() {
