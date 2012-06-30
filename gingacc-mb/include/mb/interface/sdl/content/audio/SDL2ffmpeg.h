@@ -85,6 +85,7 @@ extern "C" {
 #include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
+#include "libavutil/time.h"
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
@@ -133,7 +134,7 @@ extern "C" {
 
 /* SDL audio buffer size, in samples. Should be small to have precise
    A/V sync as SDL does not have hardware buffer fullness info. */
-#define SDL_AUDIO_BUFFER_SIZE 1024
+#define SDL_AUDIO_BUFFER_SIZE 8096
 
 /* no AV sync correction is done if below the AV sync threshold */
 #define AV_SYNC_THRESHOLD 0.01
@@ -199,7 +200,6 @@ namespace mb {
 
 	typedef struct VideoPicture {
 		double pts;                //presentation time stamp for this picture
-		double duration;           //expected duration of the frame
 		int64_t pos;               //byte position in file
 		int skip;
 		SDL_Texture* tex;
@@ -215,6 +215,13 @@ namespace mb {
 		double pts; /* presentation time stamp for this picture */
 		AVSubtitle sub;
 	} SubPicture;
+
+	typedef struct AudioParams {
+		int freq;
+		int channels;
+		int channel_layout;
+		enum AVSampleFormat fmt;
+	} AudioParams;
 
 	typedef struct VideoState {
 		int paused;
@@ -254,14 +261,8 @@ namespace mb {
 		int audio_write_buf_size;
 		AVPacket audio_pkt_temp;
 		AVPacket audio_pkt;
-		enum AVSampleFormat audio_src_fmt;
-		enum AVSampleFormat audio_tgt_fmt;
-		int audio_src_channels;
-		int audio_tgt_channels;
-		int64_t audio_src_channel_layout;
-		int64_t audio_tgt_channel_layout;
-		int audio_src_freq;
-		int audio_tgt_freq;
+		struct AudioParams audio_src;
+		struct AudioParams audio_tgt;
 		struct SwrContext *swr_ctx;
 		double audio_current_pts;
 		double audio_current_pts_drift;
@@ -507,6 +508,13 @@ namespace mb {
 		int audio_refresh_decoder();
 
 		int audio_decode_frame(double *pts_ptr);
+
+		int audio_open(
+				int64_t wanted_channel_layout,
+				int wanted_nb_channels,
+				int wanted_sample_rate,
+				struct AudioParams *audio_hw_params);
+
 		int stream_component_open(int stream_index);
 		void stream_component_close(int stream_index);
 
