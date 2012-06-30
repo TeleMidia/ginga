@@ -491,3 +491,30 @@ nclua_get_nclua_state (lua_State *L)
 
   return nc;
 }
+
+/* Cycle the NCLua engine once.  */
+
+void
+nclua_cycle (nclua_t *nc)
+{
+  lua_State *L;
+  int i;
+  int n;
+
+  L = nclua_get_lua_state (nc);
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  n = lua_objlen (L, -1);
+
+  /* Cleanup input queue to avoid handling
+     the events generated in the current cycle.  */
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+
+  for (i = 1; i < n; i++)
+    {
+      lua_rawgeti (L, -1, i);
+      _nclua_notify (L);
+      lua_pop (L, 1);
+    }
+  lua_pop (L, 1);
+}

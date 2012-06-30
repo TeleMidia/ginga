@@ -73,8 +73,6 @@ static int l_uptime (lua_State *L);
 static int l_timer (lua_State *L);
 static int l_cancel (lua_State *L);
 static void *timer_thread (void *data);
-static nclua_bool_t match (lua_State *L, int event, int filter);
-static int notify (lua_State *L, int index);
 
 #define DEFINE_LUA_FUNCTION(name) \
   { NCLUA_STRINGIFY (name), NCLUA_CONCAT (l_, name) }
@@ -100,6 +98,12 @@ static const struct luaL_Reg _nclua_event_functions[] =
 nclua_status_t
 _nclua_event_open (lua_State *L)
 {
+  lua_newtable (L);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+
+  lua_newtable (L);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
+
   lua_newtable (L);
   _nclua_set_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
 
@@ -138,6 +142,81 @@ _nclua_event_close (lua_State *L)
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+}
+
+/* Returns true if event at index EVENT matches filter at index FILTER.
+   Otherwise, returns false.  */
+
+static inline nclua_bool_t
+match (lua_State *L, int event, int filter)
+{
+  nclua_bool_t status = TRUE;
+  int top = lua_gettop (L);
+
+  event = ncluax_abs (L, event);
+  filter = ncluax_abs (L, filter);
+
+  lua_pushnil (L);
+  while (lua_next (L, filter) != 0)
+    {
+      lua_pushvalue (L, -2);
+      lua_gettable (L, event);
+
+      if (lua_isnil (L, -1) || !lua_equal (L, -1, -2))
+        {
+          status = FALSE;
+          break;                /* mismatch */
+        }
+
+      lua_pop (L, 2);
+    }
+
+  lua_settop (L, top);
+  return status;
+}
+
+/* For each function in handler list, if its filter matches event at top of
+   stack, call it passing the event as argument.  If the function returns
+   true, stop processing (event handled).  Otherwise, continue until all
+   functions have been called.
+
+   Returns the number of handlers called.  */
+
+int
+_nclua_notify (lua_State *L)
+{
+  int saved_top;
+  int result;                   /* number of handlers called */
+  int event;                    /* index of event */
+  int queue;                    /* index of queue */
+  int size;                     /* queue size */
+  int i;
+
+  saved_top = lua_gettop (L);
+  event = ncluax_abs (L, -1);
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
+  queue = ncluax_abs (L, -1);
+  size = lua_objlen (L, queue);
+
+  result = 0;
+  for (i = 1; i <= size; i++)
+    {
+      lua_rawgeti (L, queue, i);
+      lua_rawgeti (L, -1, 2);
+      if (match (L, event, -1))
+        {
+          lua_rawgeti (L, -2, 1);
+          lua_pushvalue (L, event);
+          lua_call (L, 1, 1);
+          result++;
+          if (lua_toboolean (L, -1))
+            break;
+        }
+    }
+
+  lua_settop (L, saved_top);
+  return result;
 }
 
 
@@ -388,79 +467,47 @@ timer_thread (void *data)
 
 /* The NCLua Event API (part ii -- from C to Lua).  */
 
-/* Returns true if event at index EVENT matches filter at index FILTER.
-   Otherwise, returns false.  */
+/* Enqueues the event at top of stack into input queue.
+   This function pops the event from stack.  */
 
-static nclua_bool_t
-match (lua_State *L, int event, int filter)
+void
+nclua_send (nclua_t *nc, lua_State *L)
 {
-  nclua_bool_t status = TRUE;
-  int top = lua_gettop (L);
+  int n;
 
-  event = ncluax_abs (L, event);
-  filter = ncluax_abs (L, filter);
+  assert (nclua_get_lua_state (nc) == L);
+  assert (lua_istable (L, -1));
 
-  lua_pushnil (L);
-  while (lua_next (L, filter) != 0)
-    {
-      lua_pushvalue (L, -2);
-      lua_gettable (L, event);
-
-      if (lua_isnil (L, -1) || !lua_equal (L, -1, -2))
-        {
-          status = FALSE;
-          break;                /* mismatch */
-        }
-
-      lua_pop (L, 2);
-    }
-
-  lua_settop (L, top);
-  return status;
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  n = lua_objlen (L, -1);
+  lua_pushvalue (L, -2);
+  ncluax_rawinsert (L, -2, n + 1);
+  lua_pop (L, 3);
 }
 
-/* For each function in handler list, if its filter matches event at
-   INDEX, call it passing the event at INDEX as argument.  If the function
-   returns true, stop processing (event handled).  Otherwise, continue until
-   all functions have been called.
+/* Dequeues one event from the output queue and pushes it onto stack.
+   If the output queue is empty, pushes nil onto stack.  */
 
-   Returns the number of handlers called.  */
-
-static int
-notify (lua_State *L, int index)
+void
+nclua_receive (nclua_t *nc, lua_State *L)
 {
-  int saved_top;
-  int result;                   /* number of handlers called */
-  int event;                    /* index of event */
-  int queue;                    /* index of queue */
-  int size;                     /* queue size */
-  int i;
+  int n;
 
-  saved_top = lua_gettop (L);
-  event = ncluax_abs (L, index);
+  assert (nclua_get_lua_state (nc) == L);
 
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
-  queue = ncluax_abs (L, -1);
-  size = lua_objlen (L, queue);
-
-  result = 0;
-  for (i = 1; i <= size; i++)
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
+  n = lua_objlen (L, -1);
+  if (n == 0)
     {
-      lua_rawgeti (L, queue, i);
-      lua_rawgeti (L, -1, 2);
-      if (match (L, event, -1))
-        {
-          lua_rawgeti (L, -2, 1);
-          lua_pushvalue (L, event);
-          lua_call (L, 1, 1);
-          result++;
-          if (lua_toboolean (L, -1))
-            break;
-        }
+      lua_pop (L, 1);
+      lua_pushnil (L);
+      return;
     }
 
-  lua_settop (L, saved_top);
-  return result;
+  ncluax_rawremove (L, -1, 1);
+  lua_remove (L, -2);
 }
+
+/* DEPRECATED */
 
 #include "nclua-event-deprecated.cpp"

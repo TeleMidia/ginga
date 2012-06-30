@@ -68,7 +68,7 @@ enum
   }                                             \
   NCLUA_STMT_END
 
-/* Sets the value on top of stack as the new registry table.
+/* Sets the value at top of stack as the new registry table.
    This macro pops the value from stack.  */
 #define _nclua_set_registry(L)                          \
   NCLUA_STMT_BEGIN                                      \
@@ -139,6 +139,9 @@ _nclua_event_open (lua_State *L);
 
 NCLUA_PRIVATE void
 _nclua_event_close (lua_State *L);
+
+NCLUA_PRIVATE int
+_nclua_notify (lua_State *L);
 
 /* Miscellanea.  */
 
