@@ -64,6 +64,7 @@ using namespace::br::pucrio::telemidia::util;
 
 LUAPLAYER_BEGIN_DECLS
 
+// Uncomment the following line to enable module-level debugging messages.
 // #define ENABLE_DEBUG
 #if defined (__GNUC__) && defined (ENABLE_DEBUG)
 extern "C" { static int __trace_counter = 0; }
@@ -78,8 +79,10 @@ extern "C" { static int __trace_counter = 0; }
 
 # define DEBUG(fmt, ...)                                                \
      do {                                                               \
+          fflush (stdout);                                              \
           fprintf (stderr, "%s:%d:%s: "fmt"\n",                         \
-                   __FILE__, __LINE__, __func__ ## __VA_ARGS__);        \
+                   __FILE__, __LINE__, __func__, ## __VA_ARGS__);       \
+          fflush (stderr);                                              \
      } while (0)
 #else
 # define TRACE()
@@ -209,7 +212,8 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           {
                Player::setPropertyValue (name, value);
           }
-          this->notifyPlayerListeners (action, name, type, value);
+          // FIXME: This causes and infinite loop of setPropertyValue().
+          // this->notifyPlayerListeners (action, name, type, value);
           break;
 
      case TYPE_PRESENTATION:
@@ -220,10 +224,6 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           {
                switch (action)
                {
-               case PL_NOTIFY_ABORT:
-                    this->has_presented = true;
-                    Player::abort ();
-                    break;
                case PL_NOTIFY_PAUSE:
                     Player::pause ();
                     break;
@@ -233,6 +233,7 @@ void LuaPlayer::exec (int type, int action, string name, string value)
                case PL_NOTIFY_START:
                     Player::play ();
                     break;
+               case PL_NOTIFY_ABORT:
                case PL_NOTIFY_STOP:
                     nclua_destroy (this->nc);
                     this->nc = NULL;
@@ -286,7 +287,7 @@ void LuaPlayer::play ()
 
      LOCK ();
 
-     if (this->status == STOP || this->status == NONE)
+     if (this->scope == "" && this->status == STOP)
      {
           this->im->addApplicationInputEventListener (this);
 
@@ -310,7 +311,8 @@ void LuaPlayer::play ()
           if (luaL_loadfile (L, this->mrl.c_str ()) != 0
               || lua_pcall (L, 0, 0, 0) != 0)
           {
-               this->abort ();
+               DEBUG ("%s", lua_tostring (L, -1));
+               this->exec (TYPE_PRESENTATION, PL_NOTIFY_ABORT, this->scope);
                goto tail;
           }
 
@@ -338,8 +340,17 @@ void LuaPlayer::resume ()
 void LuaPlayer::stop ()
 {
      LOCK ();
+
+     // FIXME: stop() gets called even if the player is not running.
+     if (this->nc == NULL)
+     {
+          goto tail;
+     }
+
      this->send_ncl_presentation_event ("stop", this->scope);
      this->exec (TYPE_PRESENTATION, PL_NOTIFY_STOP, this->scope);
+
+tail:
      UNLOCK ();
 }
 
@@ -373,8 +384,17 @@ bool LuaPlayer::setKeyHandler (bool b)
 void LuaPlayer::setPropertyValue (string name, string value)
 {
      LOCK ();
-     this->send_ncl_attribution_event ("start", name, value);
-     this->send_ncl_attribution_event ("stop", name, value);
+     if (this->nc != NULL)
+       {
+         // FIXME: Before calling play(), FormatterPlayerAdapter calls
+         // setPropertyValue() to initialize the object's properties.  We
+         // need to work around this bogus behavior, since it is the play()
+         // call that creates the NCLua engine.  By the way, this workaround
+         // is far from perfect.
+         this->send_ncl_attribution_event ("start", name, value);
+         this->send_ncl_attribution_event ("stop", name, value);
+       }
+
      this->exec (TYPE_ATTRIBUTION, PL_NOTIFY_START, name, value);
      this->exec (TYPE_ATTRIBUTION, PL_NOTIFY_STOP, name, value);
      UNLOCK ();
