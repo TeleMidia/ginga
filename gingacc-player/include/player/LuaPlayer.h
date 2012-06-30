@@ -50,103 +50,80 @@ http://www.telemidia.puc-rio.br
 #ifndef LUAPLAYER_H
 #define LUAPLAYER_H
 
+#include <pthread.h>
+#include <string>
+
 extern "C" {
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-}
-
-#include "util/functions.h"
-
-#include <pthread.h>
 #include "nclua.h"
-
-#include <map>
-#include <string>
-#include <iostream>
+}
+#include "Player.h"
+#include "util/functions.h"
 using namespace std;
 
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IFontProvider.h"
 #include "mb/IInputManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "Player.h"
-
-struct Field {
-  string str;
-  map<string, struct Field> table;
-};
-
-#define LUAPLAYER_TCP "luaplayer.TCP"
-
-LUALIB_API int luaopen_canvas (lua_State* L);
-LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect);
+extern "C" {
+LUALIB_API int luaopen_canvas (lua_State *);
+LUALIB_API int lua_createcanvas (lua_State *, ISurface *, int);
+}
 
 #define LUAPLAYER_BEGIN_DECLS NAMESPACE_GINGA_CORE_PLAYER_BEGIN
 #define LUAPLAYER_END_DECLS   NAMESPACE_GINGA_CORE_PLAYER_END
 
 LUAPLAYER_BEGIN_DECLS
 
-typedef struct _scopeinfo_t
+class LuaPlayer : public Player, public IInputEventListener
 {
-  short type;
-  string scopeId;
-  double initTime;
-  double endTime;
-} scopeinfo_t;
+private:
+     nclua_t *nc;               // the NCLua state
+     pthread_mutex_t mutex;     // sync access to player
 
-class LuaPlayer:
-public Player, public IInputEventListener
-{
+     bool has_presented;        // true if script was executed
+     bool is_key_handler;       // true if player has the focus
 
- private:
-  nclua_t *nc;                /* the NCLua state */
-  pthread_mutex_t mutex;      /* sync access to player */
+     string scope;              // the label of the active anchor
+     unsigned long epoch;       // system time (ms) when play() was called
 
-  bool isHandler;             /* true if player has the focus */
-  bool loaded;                /* true if script was loaded */
-  bool played;                /* true if script was executed */
-  bool running;               /* true if script is executing */
+     void send_ncl_presentation_event (string action, string label);
+     void send_ncl_attribution_event (string action, string name,
+                                      string value);
 
-  string currentScope;
-  map<string, scopeinfo_t *> *scopes;
-  void load ();
-  void dispatch ();
-  void post (string action);
+public:
+     LuaPlayer (GingaScreenID screenId, string mrl);
+     virtual ~LuaPlayer ();
 
- public:
+     // Helper function.
+     void exec (int type, int action, string name, string value="");
 
-  LuaPlayer (GingaScreenID screenId, string mrl);
-  virtual ~LuaPlayer ();
+     // Player interface.
+     void abort ();
+     void pause ();
+     void play ();
+     void resume ();
+     void stop ();
+     virtual bool hasPresented ();
+     void setCurrentScope (string scopeId);
+     bool setKeyHandler (bool isHandler);
+     virtual void setPropertyValue (string name, string value);
 
-  // Player interface.
-  void play ();
-  void stop ();
-  void abort ();
-  void pause ();
-  void resume ();
-  virtual bool hasPresented ();
-  virtual void setPropertyValue (string name, string value);
-  bool setKeyHandler(bool isHandler);
-  void setScope(string scope, short type=TYPE_PRESENTATION, double begin=-1, double end=-1, double outTransDur=-1);
-  void setCurrentScope(string scopeId);
+     // Input event callback.
+     bool userEventReceived (IInputEvent * evt);
 
-  // IInputEventListener.
-  bool userEventReceived(IInputEvent* evt);
-
-  // TODO: Make private.
-  IInputManager* im;
-  bool isRunning ();
-  void doSetPropertyValue (string name, string value);
-  GingaScreenID getScreenId ();
-  ILocalScreenManager *getScreenManager ();
-  void refreshContent();
+     // Extra public stuff.
+     IInputManager *im;
+     GingaScreenID getScreenId ();
+     ILocalScreenManager *getScreenManager ();
+     void refreshContent ();
 };
 
 LUAPLAYER_END_DECLS
-
-#endif /* LUAPLAYER_H */
+#endif                          /* LUAPLAYER_H */
