@@ -1,65 +1,19 @@
-/******************************************************************************
-Este arquivo eh parte da implementacao do ambiente declarativo do middleware
-Ginga (Ginga-NCL).
+/* LuaCanvas.cpp -- The NCLua Canvas API.
+   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
 
-Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
-os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
-Software Foundation.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
 
-Este programa eh distribuido na expectativa de que seja util, porem, SEM
-NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
-ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
-GNU versao 2 para mais detalhes.
-
-Voce deve ter recebido uma copia da Licenca Publica Geral do GNU versao 2 junto
-com este programa; se nao, escreva para a Free Software Foundation, Inc., no
-endereco 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
-
-Para maiores informacoes:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-******************************************************************************
-This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
-
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License version 2 as published by
-the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License version 2 for more
-details.
-
-You should have received a copy of the GNU General Public License version 2
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-
-For further information contact:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-*******************************************************************************/
-
-/*******************************************************************************
- * CANVAS
- * A estrutura abaixo mantem um ponteiro para a superficie do DFB e atributos
- * configurados atraves de chamadas a `attr*()`.
- *
- * Os metodos com prefixo `attr` sao usado para ler e alterar atributos,
- * portanto sao sempre divididos em duas partes (GET e SET).
- * A parte GET acessa a estrutura e retorna os valores correntes.
- * A parte SET altera a estrutura e chama a funcao DFB correspondente.
- *
- * As funcoes de `draw*()` (primitivas graficas) e miscelanea apenas chamam as
- * funcoes DFB correspondentes.
- ******************************************************************************/
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include "nclua-private.h"
 
@@ -75,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #define LUAPLAYER_CANVAS  "luaplayer.Canvas"
 #define REFFILL           (-3)
 #define REFFRAME          (-4)
-#define CHECKCANVAS(L) ((Canvas*) luaL_checkudata(L, 1, LUAPLAYER_CANVAS))
+#define CHECKCANVAS(L) ((Canvas*) luaL_checkudata (L, 1, LUAPLAYER_CANVAS))
 
 static inline LuaPlayer *
 GETPLAYER (lua_State *L)
@@ -87,519 +41,467 @@ GETPLAYER (lua_State *L)
   return player;
 }
 
-typedef struct Canvas {
-	ISurface* sfc;
-	int    collect;
-	Color* color;
-	struct { int x; int y; int w; int h; int inUse; }
-           crop;
-	struct { int x; int y; int w; int h; }
-           clip;
-	struct { int w; int h; int inUse;}
-	       scale;
-	struct { char face[20]; int size; char style[20]; }
-           font;
+typedef struct
+{
+  ISurface *sfc;
+  int    collect;
+  Color *color;
+  struct { int x; int y; int w; int h; int inUse; } crop;
+  struct { int x; int y; int w; int h; } clip;
+  struct { int w; int h; int inUse;} scale;
+  struct { char face[20]; int size; char style[20]; } font;
 } Canvas;
 
-/*******************************************************************************
- * canvas:new()
- * - Imagem: retorna um novo canvas com a imagem renderizada.
- * - Dimensoes: retorna um novo canvas com as dimensoes passadas.
- ******************************************************************************/
 
-LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc,
-                                 int collect);
-static int l_new (lua_State* L)
+/* Function prototypes:  */
+int lua_createcanvas (lua_State *L, ISurface *sfc, int collect);
+
+static int
+l_new (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
-	ISurface* sfc = NULL;
-	int type = lua_type(L, 2);
+  Canvas *canvas = CHECKCANVAS (L);
+  LuaPlayer *player = GETPLAYER (L);
+  GingaScreenID id = player->getScreenId ();
+  ILocalScreenManager *sm = player->getScreenManager ();
+  ISurface *sfc;
 
-	switch (type)
-	{
-		// IMAGE
-		// [ canvas | img_path ]
-		case LUA_TSTRING: {
-			sfc = GETPLAYER(L)->getScreenManager()->
-					createRenderedSurfaceFromImageFile(
-							GETPLAYER(L)->getScreenId(),
-							(char*)luaL_checkstring(L, 2));
+  switch (lua_type (L, 2))
+    {
+    case LUA_TSTRING:
+      {
+        const char *path = luaL_checkstring (L, 2);
+        sfc = sm->createRenderedSurfaceFromImageFile (id, path);
+        break;
+      }
+    case LUA_TNUMBER:
+      {
+        int width = luaL_checkint (L, 2);
+        int height = luaL_checkint (L, 3);
+        sfc = sm->createSurface (id, width, height);
+        sfc->clearContent ();
+        break;
+      }
+    default:
+      luaL_argerror (L, 2, NULL);
+    }
 
-			clog << endl;
-			clog << "CANVAS:NEW FROM IMG '" << sfc << "'" << endl;
-			clog << endl;
-			break;
-		}
-
-		// NEW { w, h }
-		// [ canvas | w | h ]
-		case LUA_TNUMBER: {
-			sfc = GETPLAYER(L)->getScreenManager()->createSurface(
-					GETPLAYER(L)->getScreenId(),
-					luaL_checkint(L, 2),
-					luaL_checkint(L, 3));
-
-			clog << endl;
-			clog << "CANVAS:NEW '" << sfc << "'" << endl;
-			clog << endl;
-
-			sfc->clearContent();
-
-			break;
-		}
-
-		default:
-			return luaL_argerror(L, 2, NULL);
-	}
-
-	return lua_createcanvas(L, sfc, 1);  // [ ... | canvas ] -> canvas
+  return lua_createcanvas (L, sfc, 1);
 }
 
-/*******************************************************************************
- * ATRIBUTOS
- * - canvas:attrFont()
- * - canvas:attrCrop()
- * - canvas:attrClip()
- * - canvas:attrScale() 
- ******************************************************************************/
+/* canvas:attrSize () -> width, height: number
+ */
 
-/*******************************************************************************
- * canvas:attrSize () -> width, height: number 
- ******************************************************************************/
-
-static int l_attrSize (lua_State* L)
+static int
+l_attrSize (lua_State * L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		int width, height;
-		canvas->sfc->getSize(&width, &height);
-		lua_pushnumber(L, width);   // [ canvas | width ]
-		lua_pushnumber(L, height);  // [ canvas | width | height ]
-		return 2;                   // -> width, height
-	}
+  if (lua_gettop (L) == 1)
+    {
+      int width;
+      int height;
+      canvas->sfc->getSize (&width, &height);
 
-	// SET
-	return luaL_error(L, "not supported");
+      lua_pushnumber (L, width);
+      lua_pushnumber (L, height);
+      return 2;
+    }
+
+  return luaL_error (L, "not supported"); /* set */
 }
 
-/*******************************************************************************
- * canvas:attrColor (R, G, B, A: number)
+/* canvas:attrColor (R, G, B, A: number)
  * canvas:attrColor (clr_name: string)
  * canvas:attrColor () -> R, G, B, A: number
- ******************************************************************************/
-static int l_attrColor (lua_State* L)
+ */
+
+static int
+l_attrColor (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
+  int r;
+  int g;
+  int b;
+  int a;
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		lua_pushnumber(L, canvas->color->getR());     // [ canvas|R ]
-		lua_pushnumber(L, canvas->color->getG());     // [ canvas|R|G ]
-		lua_pushnumber(L, canvas->color->getB());     // [ canvas|R|G|B ]
-		lua_pushnumber(L, canvas->color->getAlpha()); // [ canvas|R|G|B|A ]
-		return 4;                                     // -> R, G, B, A
-	}
+  if (lua_gettop (L) == 1)      /* get */
+    {
+      lua_pushinteger (L, canvas->color->getR ());
+      lua_pushinteger (L, canvas->color->getG ());
+      lua_pushinteger (L, canvas->color->getB ());
+      lua_pushinteger (L, canvas->color->getAlpha ());
+      return 4;
+    }
 
-	// SET
+  /* set */
 
-	if (canvas->color != NULL) {
-		delete canvas->color;
-		canvas->color = NULL;
-	}
+  if (canvas->color != NULL)
+    {
+      delete canvas->color;
+      canvas->color = NULL;
+    }
 
-	// [ canvas | R | G | B | A ]
-	if (lua_type(L, -1) == LUA_TNUMBER)
-	{
-		// TODO: teste limites de r,g,b,a
-		canvas->color = new Color(luaL_checkint(L, 2),
-		                          luaL_checkint(L, 3),
-								  luaL_checkint(L, 4),
-								  luaL_checkint(L, 5));
-	}
-	// [ canvas | 'color' ]
-	else
-	{
-		canvas->color = new Color(luaL_checkstring(L, -1));
-	}
-	canvas->sfc->setColor(
-			canvas->color->getR(),
-			canvas->color->getG(),
-			canvas->color->getB(),
-			canvas->color->getAlpha());
+  if (lua_type (L, -1) == LUA_TNUMBER)
+    {
+#     define tocolor(n) max (min (n, 255), 0)
+      r = tocolor (luaL_checkint (L, 2));
+      g = tocolor (luaL_checkint (L, 3));
+      b = tocolor (luaL_checkint (L, 4));
+      a = tocolor (luaL_checkint (L, 5));
+      canvas->color = new Color (r, g, b, a);
+    }
+  else
+    {
+      const char *name = luaL_checkstring (L, -1);
+      canvas->color = new Color (name);
+    }
 
-	return 0;
+  r = canvas->color->getR ();
+  g = canvas->color->getG ();
+  b = canvas->color->getB ();
+  a = canvas->color->getAlpha ();
+  canvas->sfc->setColor (r, g, b, a);
+
+  return 0;
 }
 
-static int l_attrFont (lua_State* L)
+static int
+l_attrFont (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		lua_pushstring(L, canvas->font.face);   // [ canvas|face ]
-		lua_pushnumber(L, canvas->font.size);   // [ canvas|face|size ]
-		lua_pushstring(L, canvas->font.style);  // [ canvas|face|size|style ]
-		return 3;                               // -> face, size, style
-	}
+  if (lua_gettop (L) == 1)      /* get */
+    {
+      lua_pushstring (L, canvas->font.face);
+      lua_pushinteger (L, canvas->font.size);
+      lua_pushstring (L, canvas->font.style);
+      return 3;
+    }
 
-	// SET
-	// [ canvas | face | size | style ]
-	strncpy(canvas->font.face, luaL_checkstring(L,2), 20);
-	canvas->font.size = luaL_checkint(L, 3);
-	strncpy(canvas->font.style, luaL_optstring(L,4,"normal"), 20);
+  /* set */
+  strncpy (canvas->font.face, luaL_checkstring (L,2),
+           nelementsof (canvas->font.face));
 
-	string path = SystemCompat::appendGingaFilesPrefix("font") +
-			SystemCompat::getIUriD();
+  canvas->font.size = luaL_checkint (L, 3);
 
-	path.append(canvas->font.face, strlen(canvas->font.face));
+  strncpy (canvas->font.style, luaL_optstring (L, 4, "normal"),
+           nelementsof (canvas->font.style));
 
-	if (path.length() < 4 || path.substr(path.length() - 4, 4) != ".ttf") {
-		path = path + ".ttf";
-	}
+  string path = SystemCompat::appendGingaFilesPrefix ("font")
+    + SystemCompat::getIUriD ();
 
-	clog << "LuaCanvas::l_attrFont using font '" << path << "'" << endl;
+  path.append (canvas->font.face, strlen (canvas->font.face));
 
-	IFontProvider* font = NULL;
+  if (path.length () < 4 || path.substr (path.length () - 4, 4) != ".ttf")
+    {
+      path = path + ".ttf";
+    }
 
-	font = GETPLAYER(L)->getScreenManager()->createFontProvider(
-			GETPLAYER(L)->getScreenId(), path.c_str(), canvas->font.size);
+  IFontProvider *font = NULL;
+  LuaPlayer *player = GETPLAYER (L);
+  GingaScreenID id = player->getScreenId ();
+  ILocalScreenManager *sm = player->getScreenManager ();
+  font = sm->createFontProvider (id, path.c_str (), canvas->font.size);
 
-	if (font == NULL) {
-		luaL_error(L, "invalid font: %s", path.c_str());
+  if (font == NULL)
+    {
+      luaL_error (L, "invalid font: %s", path.c_str ());
+    }
 
-	} else if (canvas->sfc == NULL) {
-		luaL_error(L, "invalid canvas");
+  if (canvas->sfc == NULL)
+    {
+      luaL_error (L, "invalid canvas");
+    }
 
-	} else {
-		canvas->sfc->setSurfaceFont((void*)font);
-	}
-	return 0;
+  canvas->sfc->setSurfaceFont ((void *) font);
+  return 0;
 }
 
-static int l_attrCrop (lua_State* L)
+static int
+l_attrCrop (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		lua_pushnumber(L, canvas->crop.x);  // [ canvas | x ]
-		lua_pushnumber(L, canvas->crop.y);  // [ canvas | x | y ]
-		lua_pushnumber(L, canvas->crop.w);  // [ canvas | x | y | w ]
-		lua_pushnumber(L, canvas->crop.h);  // [ canvas | x | y | w | h ]
-		return 4;                           // -> x, y, w, h
-	}
+  if (lua_gettop (L) == 1)      /* get */
+    {
+      lua_pushinteger (L, canvas->crop.x);
+      lua_pushinteger (L, canvas->crop.y);
+      lua_pushinteger (L, canvas->crop.w);
+      lua_pushinteger (L, canvas->crop.h);
+      return 4;
+    }
 
-	// SET
-	// [ canvas | x | y | w | h ]
-    canvas->crop.inUse = 1;
-	canvas->crop.x = luaL_checkint(L, 2);
-	canvas->crop.y = luaL_checkint(L, 3);
-	canvas->crop.w = luaL_checkint(L, 4);
-	canvas->crop.h = luaL_checkint(L, 5);
-	return 0;
+  /* set */
+
+  canvas->crop.inUse = 1;
+  canvas->crop.x = luaL_checkint (L, 2);
+  canvas->crop.y = luaL_checkint (L, 3);
+  canvas->crop.w = luaL_checkint (L, 4);
+  canvas->crop.h = luaL_checkint (L, 5);
+  return 0;
 }
 
-static int l_attrClip (lua_State* L)
+static int
+l_attrClip (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		lua_pushnumber(L, canvas->clip.x);  // [ canvas | x ]
-		lua_pushnumber(L, canvas->clip.y);  // [ canvas | x | y ]
-		lua_pushnumber(L, canvas->clip.w);  // [ canvas | x | y | w ]
-		lua_pushnumber(L, canvas->clip.h);  // [ canvas | x | y | w | h ]
-		return 4;                           // -> x, y, w, h
-	}
+  if (lua_gettop (L) == 1)       /* get */
+    {
+      lua_pushinteger (L, canvas->clip.x);
+      lua_pushinteger (L, canvas->clip.y);
+      lua_pushinteger (L, canvas->clip.w);
+      lua_pushinteger (L, canvas->clip.h);
+      return 4;
+    }
 
-	// SET
-	// [ canvas | x | y | w | h ]
-	canvas->clip.x = luaL_checkint(L, 2);
-	canvas->clip.y = luaL_checkint(L, 3);
-	canvas->clip.w = luaL_checkint(L, 4);
-	canvas->clip.h = luaL_checkint(L, 5);
+  /* set */
 
-	canvas->sfc->setClip(
-			canvas->clip.x, canvas->clip.y, canvas->clip.w, canvas->clip.h);
+  canvas->clip.x = luaL_checkint (L, 2);
+  canvas->clip.y = luaL_checkint (L, 3);
+  canvas->clip.w = luaL_checkint (L, 4);
+  canvas->clip.h = luaL_checkint (L, 5);
 
-	return 0;
+  canvas->sfc->setClip (canvas->clip.x, canvas->clip.y,
+                       canvas->clip.w, canvas->clip.h);
+  return 0;
 }
 
-/*******************************************************************************
- * canvas:attrScale (w,h: number|boolean)
+/* canvas:attrScale (w,h: number|boolean)
  * canvas:attrScale () -> w, h: number
- ******************************************************************************/
-static int l_attrScale (lua_State* L)
+ */
+static int
+l_attrScale (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
+  Canvas *canvas = CHECKCANVAS (L);
 
-	// GET
-	// [ canvas ]
-	if (lua_gettop(L) == 1) {
-		lua_pushnumber(L, canvas->scale.w);
-		lua_pushnumber(L, canvas->scale.h);
-		return 2;                          
-	}
+  if (lua_gettop (L) == 1)       /* get */
+    {
+      lua_pushnumber (L, canvas->scale.w);
+      lua_pushnumber (L, canvas->scale.h);
+      return 2;
+    }
 
-	//SET
-	int width, height;
-	canvas->sfc->getSize(&width, &height);
-	
-	// For some reason DFB is using not the original size of the canvas
-	// but the scaled size, if a scale was applied before.
-	int scalew = width;
-	int scaleh = height;
-	if(canvas->scale.inUse) {
-		scalew = canvas->scale.w;
-		scaleh = canvas->scale.h;
-	}
+  /* set */
+  int width;
+  int height;
+  canvas->sfc->getSize (&width, &height);
 
-	if(lua_isboolean(L, 2)) {
-		int new_height = luaL_checkint(L, 3);		
-		width = ((double)new_height/height) * width;
-		height = new_height;
-	
-	} else if (lua_isboolean(L, 3)) {
-		int new_width = luaL_checkint(L, 2);
-		height = ((double)new_width/width) * height;
-		width = new_width;
-	} else {
-		width = luaL_checkint(L, 2);
-		height = luaL_checkint(L, 3);
-	}
+  // For some reason DFB is using not the original size of the canvas
+  // but the scaled size, if a scale was applied before.
+  int scalew = width;
+  int scaleh = height;
 
-	double x = ((double)width/scalew);
-	double y = ((double)height/scaleh);
+  if (canvas->scale.inUse)
+    {
+      scalew = canvas->scale.w;
+      scaleh = canvas->scale.h;
+    }
 
-	canvas->scale.w = width;
-	canvas->scale.h = height;
+  if (lua_isboolean (L, 2))
+    {
+      int new_height = luaL_checkint (L, 3);
+      height = new_height;
+      width = ((double) new_height / height) * width;
 
-	canvas->sfc->scale(x, y);
-	canvas->scale.inUse = 1;
+    }
+  else if (lua_isboolean (L, 3))
+    {
+      int new_width = luaL_checkint (L, 2);
+      height = ((double) new_width / width) * height;
+      width = new_width;
+    }
+  else
+    {
+      width = luaL_checkint (L, 2);
+      height = luaL_checkint (L, 3);
+    }
 
-	return 0;
+  double x = ((double) width / scalew);
+  double y = ((double) height / scaleh);
+
+  canvas->scale.w = width;
+  canvas->scale.h = height;
+
+  canvas->sfc->scale (x, y);
+  canvas->scale.inUse = 1;
+
+  return 0;
 }
 
-/******************************************************************************
- * PRIMITIVAS GRAFICAS:
- * - canvas:drawLine()
- * - canvas:drawRect()
- * - canvas:drawText()
- ******************************************************************************/
-
-static int l_drawLine (lua_State* L)
+static int
+l_drawLine (lua_State *L)
 {
-	// [ canvas | x1 | y1 | x2 | y2 ]
-	Canvas* canvas = CHECKCANVAS(L);
-	canvas->sfc->drawLine(
-			luaL_checkint(L, 2),
-			luaL_checkint(L, 3),
-			luaL_checkint(L, 4),
-			luaL_checkint(L, 5));
+  Canvas *canvas = CHECKCANVAS (L);
+  int x1 = luaL_checkint (L, 2);
+  int y1 = luaL_checkint (L, 3);
+  int x2 = luaL_checkint (L, 4);
+  int y2 = luaL_checkint (L, 5);
 
-	return 0;
+  canvas->sfc->drawLine (x1, y1, x2, y2);
+  return 0;
 }
 
-static int l_drawRect (lua_State* L)
+static int
+l_drawRect (lua_State *L)
 {
-	// [ canvas | mode | x | y | w | h ]
-	Canvas* canvas = CHECKCANVAS(L);
-	lua_settop(L, 6);
+  Canvas *canvas = CHECKCANVAS (L);
+  int x = luaL_checkint (L, 3);
+  int y = luaL_checkint (L, 4);
+  int w = luaL_checkint (L, 5);
+  int h = luaL_checkint (L, 6);
 
-	// FILL
-    // [ canvas | mode | x | y | w | h | "fill" ]
-	lua_rawgeti(L, LUA_ENVIRONINDEX, REFFILL);
-	if (lua_equal(L, 2, -1)) {
-		canvas->sfc->fillRectangle(luaL_checkint(L, 3),
-                                             luaL_checkint(L, 4),
-                                             luaL_checkint(L, 5),
-                                             luaL_checkint(L, 6));
-		return 0;
-	}
+  lua_settop (L, 6);
+  lua_rawgeti (L, LUA_ENVIRONINDEX, REFFILL);
+  if (lua_equal (L, 2, -1))     /* fill */
+    {
+      canvas->sfc->fillRectangle (x, y, w, h);
+      return 0;
+    }
 
-	// FRAME
-    // [ canvas | mode | x | y | w | h | "fill" | "frame" ]
-	lua_rawgeti(L, LUA_ENVIRONINDEX, REFFRAME);
-	if (lua_equal(L, 2, -1)) {
-		canvas->sfc->drawRectangle(luaL_checkint(L, 3),
-                                             luaL_checkint(L, 4),
-                                             luaL_checkint(L, 5),
-                                             luaL_checkint(L, 6));
-		return 0;
-	}
+  lua_rawgeti (L, LUA_ENVIRONINDEX, REFFRAME);
+  if (lua_equal (L, 2, -1))     /* frame */
+    {
+      canvas->sfc->drawRectangle (x, y, w, h);
+      return 0;
+    }
 
-	return luaL_argerror(L, 2, "invalid mode");
+  luaL_argerror (L, 2, "invalid mode");
+  return 0;
 }
 
-static int l_drawText (lua_State* L)
+static int
+l_drawText (lua_State *L)
 {
-    // [ canvas | x | y | text ]
-	Canvas* canvas = CHECKCANVAS(L);
-	canvas->sfc->drawString(luaL_checkint(L,2),
-                            luaL_checkint(L,3), luaL_checkstring(L, 4));
-
-	return 0;
+  Canvas *canvas = CHECKCANVAS (L);
+  int x = luaL_checkint (L,2);
+  int y = luaL_checkint (L,3);
+  const char *text = luaL_checkstring (L, 4);
+  canvas->sfc->drawString (x, y, text);
+  return 0;
 }
 
-/*******************************************************************************
- * MISCELANEA:
- * - canvas:flush()
- * - canvas:compose()
- * - canvas:measureText()
- ******************************************************************************/
-
-static int l_flush (lua_State* L)
+static int
+l_flush (lua_State *L)
 {
-	Canvas* canvas = CHECKCANVAS(L);
-	canvas->sfc->flip();
-	GETPLAYER(L)->refreshContent();
-	return 0;
+  Canvas *canvas = CHECKCANVAS (L);
+  canvas->sfc->flip ();
+  GETPLAYER (L)->refreshContent ();
+  return 0;
 }
 
-static int l_clear (lua_State* L)
+static int
+l_clear (lua_State *L)
 {
-    // [ ]
-	Canvas* canvas = CHECKCANVAS(L);
-    canvas->sfc->clearContent();
-
-    return 0;
+  Canvas *canvas = CHECKCANVAS (L);
+  canvas->sfc->clearContent ();
+  return 0;
 }
 
-static int l_compose (lua_State* L)
+static int
+l_compose (lua_State *L)
 {
-    // [ canvas | x | y | src ]
-	Canvas* canvas = CHECKCANVAS(L);
-	Canvas* src    = (Canvas*) luaL_checkudata(L, 4, LUAPLAYER_CANVAS);
-	int x = luaL_checkint(L, 2);
-	int y = luaL_checkint(L, 3);
+  Canvas *canvas = CHECKCANVAS (L);
+  Canvas *src = (Canvas *) luaL_checkudata (L, 4, LUAPLAYER_CANVAS);
+  int x = luaL_checkint (L, 2);
+  int y = luaL_checkint (L, 3);
 
-	if (src->crop.inUse == 1) {
-		if (x < 0 || y < 0 || src->crop.x < 0 || src->crop.y < 0 ||
-				src->crop.w < 0 || src->crop.h < 0) {
-
-			clog << "LuaCanvas::l_compose Warning! Trying to blit using";
-			clog << " awkward dimensions: FROM '";
-			clog << src->crop.x << "," << src->crop.y << "," << src->crop.w;
-			clog << "," << src->crop.h << "' TO '" << x << "," << y << "'";
-			clog << endl;
-		}
-
-		canvas->sfc->blit(
-				x, y,
-				src->sfc, src->crop.x, src->crop.y, src->crop.w, src->crop.h);
-
-	} else {
-		canvas->sfc->blit(x, y, src->sfc);
-	}
-
-	return 0;
+  if (src->crop.inUse == 1)
+    {
+      canvas->sfc->blit (x, y,src->sfc, src->crop.x, src->crop.y,
+                         src->crop.w, src->crop.h);
+    }
+  else
+    {
+      canvas->sfc->blit (x, y, src->sfc);
+    }
+  return 0;
 }
 
-static int l_measureText (lua_State* L)
+static int
+l_measureText (lua_State *L)
 {
-	// [ canvas | text ]
-	int w, h;
-	Canvas* canvas = CHECKCANVAS(L);
-
-	canvas->sfc->getStringExtents(luaL_checkstring(L,2), &w, &h);
-
-	lua_pushnumber(L, w);  // [ canvas | text | w ]
-	lua_pushnumber(L, h);  // [ canvas | text | w | h ]
-	return 2;
+  Canvas *canvas = CHECKCANVAS (L);
+  int w;
+  int h;
+  canvas->sfc->getStringExtents (luaL_checkstring (L,2), &w, &h);
+  lua_pushnumber (L, w);
+  lua_pushnumber (L, h);
+  return 2;
 }
 
-static int l_gc (lua_State* L)
+static int
+l_gc (lua_State *L)
 {
-	// [ canvas ]
-	Canvas* canvas = CHECKCANVAS(L);
-	delete canvas->color;
+  Canvas *canvas = CHECKCANVAS (L);
+  delete canvas->color;
 
-	if (canvas->collect) {
-		delete canvas->sfc;
-		canvas->sfc = NULL;
-	}
-
-	return 0;
+  if (canvas->collect)
+    {
+      delete canvas->sfc;
+      canvas->sfc = NULL;
+    }
+  return 0;
 }
 
-/*********************************************************************
- * Funcoes exportadas pelo modulo.
- ********************************************************************/
 
 static const struct luaL_Reg meths[] = {
-	{ "new",         l_new         },
-	{ "attrSize",    l_attrSize    },
-	{ "attrColor",   l_attrColor   },
-	{ "attrFont",    l_attrFont    },
-	{ "attrCrop",    l_attrCrop    },
-	{ "attrClip",    l_attrClip    },
-	{ "attrScale",   l_attrScale   },
-	{ "drawLine",    l_drawLine    },
-	{ "drawRect",    l_drawRect    },
-	{ "drawText",    l_drawText    },
-	{ "flush",       l_flush       },
-	{ "clear",       l_clear       },
-	{ "compose",     l_compose     },
-	{ "measureText", l_measureText },
-	{ "__gc",        l_gc          },
-	{ NULL,          NULL          }
+  { "new",         l_new         },
+  { "attrSize",    l_attrSize    },
+  { "attrColor",   l_attrColor   },
+  { "attrFont",    l_attrFont    },
+  { "attrCrop",    l_attrCrop    },
+  { "attrClip",    l_attrClip    },
+  { "attrScale",   l_attrScale   },
+  { "drawLine",    l_drawLine    },
+  { "drawRect",    l_drawRect    },
+  { "drawText",    l_drawText    },
+  { "flush",       l_flush       },
+  { "clear",       l_clear       },
+  { "compose",     l_compose     },
+  { "measureText", l_measureText },
+  { "__gc",        l_gc          },
+  { NULL,          NULL          }
 };
 
-/*********************************************************************
- * Funcao que carrega o modulo.
- * - cria as variaveis locais ao modulo
- ********************************************************************/
-
-LUALIB_API int luaopen_canvas (lua_State* L)
+int
+luaopen_canvas (lua_State *L)
 {
-	// [ ... ]
-	lua_pushstring(L, "fill");                       // [ ... | 1 ]
-	lua_pushstring(L, "frame");                      // [ ... | 2 ]
-	lua_rawseti(L, LUA_ENVIRONINDEX, REFFRAME);      // [ ... | 1 ]
-	lua_rawseti(L, LUA_ENVIRONINDEX, REFFILL);       // [ ... ]
+  lua_pushstring (L, "fill");
+  lua_pushstring (L, "frame");
+  lua_rawseti (L, LUA_ENVIRONINDEX, REFFRAME);
+  lua_rawseti (L, LUA_ENVIRONINDEX, REFFILL);
 
-	// meta = { __index=meta }
-	luaL_newmetatable(L, LUAPLAYER_CANVAS);          // [ ... | meta ]
-	lua_pushvalue(L, -1);                            // [ ... | meta | meta ]
-	lua_setfield(L, -2, "__index");                  // [ ... | meta ]
+  /* meta = { __index=meta } */
+  luaL_newmetatable (L, LUAPLAYER_CANVAS);
+  lua_pushvalue (L, -1);
+  lua_setfield (L, -2, "__index");
+  luaL_register (L, NULL, meths);
+  lua_pop (L, 1);
+  lua_pushnil (L);
 
-	luaL_register(L, NULL, meths);                   // [ ... | meta ]
-	lua_pop(L, 1);                                   // [ ... ]
-	lua_pushnil(L);                                  // [ ... | nil ]
-	return 1;
+  return 1;
 }
 
-/*********************************************************************
- * FUNCOES INTERNAS
- ********************************************************************/
-
-LUALIB_API int lua_createcanvas (lua_State* L, ISurface* sfc, int collect)
+int
+lua_createcanvas (lua_State *L, ISurface *sfc, int collect)
 {
-	// [ ... ]
-	Canvas* canvas = (Canvas*) lua_newuserdata(L, sizeof(Canvas));
-                                               // [ ... | canvas ]
-	canvas->sfc = sfc;
-	canvas->collect = collect;
-	luaL_getmetatable(L, LUAPLAYER_CANVAS);    // [ ... | canvas | meta ]
-	lua_setmetatable(L, -2);                   // [ ... | canvas ]
+  Canvas *canvas = (Canvas*) lua_newuserdata (L, sizeof (Canvas));
+  canvas->sfc = sfc;
+  canvas->collect = collect;
+  luaL_getmetatable (L, LUAPLAYER_CANVAS);
+  lua_setmetatable (L, -2);
 
-    // default crop: none
-    canvas->crop.inUse = 0;
+  // default crop: none
+  canvas->crop.inUse = 0;
 
-	// default color: black
-	canvas->color = new Color("black");
-	canvas->sfc->setColor(
-			canvas->color->getR(),
-			canvas->color->getG(),
-			canvas->color->getB(),
-			canvas->color->getAlpha());
+  // default color: black
+  canvas->color = new Color ("black");
+  int r = canvas->color->getR ();
+  int g = canvas->color->getG ();
+  int b = canvas->color->getB ();
+  int a = canvas->color->getAlpha ();
+  canvas->sfc->setColor (r, g, b, a);
 
-	return 1;
+  return 1;
 }
