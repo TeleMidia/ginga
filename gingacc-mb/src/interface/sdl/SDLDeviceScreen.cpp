@@ -1216,6 +1216,10 @@ namespace mb {
 		set<ReleaseContainer*>* tmp;
 
 		pthread_mutex_lock(&s->rlMutex);
+		if (s->releaseList.empty()) {
+			pthread_mutex_unlock(&s->rlMutex);
+			return;
+		}
 		tmp = new set<ReleaseContainer*>(s->releaseList);
 		s->releaseList.clear();
 		pthread_mutex_unlock(&s->rlMutex);
