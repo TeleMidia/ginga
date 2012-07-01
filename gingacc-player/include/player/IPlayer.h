@@ -84,6 +84,7 @@ namespace player {
 			static const short TYPE_ATTRIBUTION        = 11;
 			static const short TYPE_SIGNAL             = 12;
 			static const short TYPE_PASSIVEDEVICE      = 13;
+			static const short TYPE_SELECTION          = 14;
 
 			virtual ~IPlayer(){};
 

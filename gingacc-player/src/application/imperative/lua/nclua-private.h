@@ -39,11 +39,14 @@ NCLUA_PRIVATE const int _nclua_magic;
 /* Indexes for data in the NCLua registry.  */
 enum
 {
-  _NCLUA_REGISTRY_EMPTY_TABLE, /* index of an empty table */
-  _NCLUA_REGISTRY_STATE,       /* index of NCLua state */
-  _NCLUA_REGISTRY_USER_DATA,   /* index of table with attached user data */
-  _NCLUA_REGISTRY_EVENT,       /* index of the NCLua Event registry */
-  _NCLUA_REGISTRY_LAST_INDEX,  /* total number of index values */
+  _NCLUA_REGISTRY_EMPTY_TABLE,     /* index of an empty table */
+  _NCLUA_REGISTRY_STATE,           /* index of nclua_t */
+  _NCLUA_REGISTRY_USER_DATA_TABLE, /* index of user data table */
+  _NCLUA_REGISTRY_INPUT_QUEUE,     /* index of the input queue */
+  _NCLUA_REGISTRY_OUTPUT_QUEUE,    /* index of the output queue */
+  _NCLUA_REGISTRY_HANDLER_LIST,    /* index of the handler list */
+  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer table */
+  _NCLUA_REGISTRY_LAST_INDEX,      /* total number of index values */
 };
 
 /* Creates a new registry table and inserts it into Lua registry.  */
@@ -65,7 +68,7 @@ enum
   }                                             \
   NCLUA_STMT_END
 
-/* Sets the value on top of stack as the new registry table.
+/* Sets the value at top of stack as the new registry table.
    This macro pops the value from stack.  */
 #define _nclua_set_registry(L)                          \
   NCLUA_STMT_BEGIN                                      \
@@ -111,6 +114,16 @@ enum
   }                                             \
   NCLUA_STMT_END
 
+/* Sets registry[KEY] to nil.
+   This macro pops the value from stack.  */
+#define _nclua_unset_registry_data(L, key)      \
+  NCLUA_STMT_BEGIN                              \
+  {                                             \
+    lua_pushnil (L);                            \
+    _nclua_set_registry_data (L, key);          \
+  }                                             \
+  NCLUA_STMT_END
+
 /* nclua.c */
 
 NCLUA_PRIVATE void
@@ -126,6 +139,9 @@ _nclua_event_open (lua_State *L);
 
 NCLUA_PRIVATE void
 _nclua_event_close (lua_State *L);
+
+NCLUA_PRIVATE int
+_nclua_notify (lua_State *L);
 
 /* Miscellanea.  */
 
