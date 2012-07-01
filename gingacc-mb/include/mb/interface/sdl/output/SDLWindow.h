@@ -94,6 +94,9 @@ namespace mb {
 			SDL_Surface* winSur;
 			SDL_Surface* curSur;
 
+			bool textureUpdate;
+			bool textureOwner;
+
 			int borderWidth;
 			IColor* bgColor;
 			IColor* borderColor;
@@ -205,7 +208,7 @@ namespace mb {
 			void setRenderedSurface(SDL_Surface* uSur);
 			void* getContent();
 			void setTexture(SDL_Texture* texture);
-			SDL_Texture* getTexture();
+			SDL_Texture* getTexture(SDL_Renderer* renderer);
 
 		private:
 			bool isMine(ISurface* surface);
