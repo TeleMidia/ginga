@@ -943,6 +943,7 @@ namespace mb {
 		bool shiftOn = false;
 		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
+		int renderCounter = 0;
 
 		checkSDLInit();
 
@@ -1128,7 +1129,13 @@ namespace mb {
 					case SPT_NONE:
 						refreshRC(s);
 						decRate = refreshCMP(s);
-						refreshWin(s);
+
+						if (renderCounter > 14) {
+							renderCounter = -1;
+							refreshWin(s);
+						}
+
+						renderCounter++;
 
 						if (s->mustGainFocus) {
 							if (!s->uEmbedFocused) {
@@ -1169,19 +1176,15 @@ namespace mb {
 				break;
 
 			} else {
-				elapsedTime = (getCurrentTimeMillis() - elapsedTime) * 1000;
-
-				if (elapsedTime < sleepTime) {
-					SystemCompat::uSleep(2000);
-
-					/*if (decRate == 0) {
-						SystemCompat::uSleep(sleepTime - elapsedTime);
-
-					} else {
-						SystemCompat::uSleep(
-								(sleepTime - elapsedTime) / (10 * decRate));
-					}*/
-				}
+#if defined(SDL_VIDEO_DRIVER_WINDOWS)
+				/*
+				 * TODO: we have to set windows to sleep less than 20ms
+				 *       (we're sleeping 2ms on linux)
+				 */
+				Sleep(0);
+#else
+				SystemCompat::uSleep(2000);
+#endif
 			}
 		}
 
