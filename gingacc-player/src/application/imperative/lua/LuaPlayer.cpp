@@ -212,7 +212,7 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           {
                Player::setPropertyValue (name, value);
           }
-          // FIXME: This causes and infinite loop of setPropertyValue().
+          // FIXME: This causes an infinite loop of setPropertyValue().
           // this->notifyPlayerListeners (action, name, type, value);
           break;
 
@@ -488,7 +488,6 @@ ILocalScreenManager *LuaPlayer::getScreenManager ()
 
      return dm;
 }
-
 
 void LuaPlayer::refreshContent (void)
 {
