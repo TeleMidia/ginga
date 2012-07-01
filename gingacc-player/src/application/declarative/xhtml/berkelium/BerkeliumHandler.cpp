@@ -198,7 +198,8 @@ namespace player {
 		fromGingaToBklm[CodeMap::KEY_BACK]              = '\b';
 		fromGingaToBklm[CodeMap::KEY_ESCAPE]            = 27;
 		fromGingaToBklm[CodeMap::KEY_EXIT]              = 27;
-		fromGingaToBklm[CodeMap::KEY_ENTER]             = '\n';
+		fromGingaToBklm[CodeMap::KEY_ENTER]             = '\r';
+		fromGingaToBklm[CodeMap::KEY_OK]                = '\r';
 
 
 		fromGingaToBklm[CodeMap::KEY_GREATER_THAN_SIGN] = '>';
@@ -307,6 +308,7 @@ namespace player {
 				} else if (keyCode == CodeMap::KEY_CURSOR_RIGHT) {
 					keyCode    = 0;
 					specialKey = true;
+
 				}
 
 				string txt = "";
@@ -318,6 +320,7 @@ namespace player {
 				if (!specialKey) {
 					bWindow->textEvent(outchars, 1);
 				}
+
 				bWindow->keyEvent(false, mods, keyCode, 0);
 
 				clog << "BerkeliumHandler::updateEvents ";

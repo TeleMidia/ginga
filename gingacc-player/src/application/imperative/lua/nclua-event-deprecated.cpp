@@ -161,7 +161,6 @@ static int l_post (lua_State* L)
   /* Post event to itself.  */
   if (streq (dst, "in"))
     {
-      /* TODO: Move this to the LuaPlayer.  */
       nclua_t *nc = nclua_get_nclua_state (L);
       LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
       GingaScreenID id = player->getScreenId ();
@@ -287,14 +286,7 @@ l_post_ncl_event (lua_State *L)
       warn_extra_fields_in_event (L, 2, "class", "type",
                                   "action", "label", NULL);
 
-      /* Execute presentation event.  */
-
-      /* TODO: Move this to the LuaPlayer.  */
-      if (action_code == Player::PL_NOTIFY_STOP && *label == '\0')
-        {
-          player->im->removeApplicationInputEventListener (player);
-        }
-      player->notifyPlayerListeners (action_code, label);
+      player->exec (Player::TYPE_PRESENTATION, action_code, string (label));
     }
   else if (streq (type, "attribution"))
     {
@@ -310,12 +302,8 @@ l_post_ncl_event (lua_State *L)
       warn_extra_fields_in_event (L, 2, "class", "type",
                                   "action", "name", "value", NULL);
 
-      /* Execute attribution event.  */
-
-      /* TODO: Move this to the LuaPlayer.  */
-      player->doSetPropertyValue (name, value);
-      player->notifyPlayerListeners (action_code, name,
-                                     Player::TYPE_ATTRIBUTION, value);
+      player->exec (Player::TYPE_ATTRIBUTION, action_code,
+                    string (name), string (value));
     }
   else if (streq (type, "selection"))
     {
@@ -421,8 +409,8 @@ l_uptime (lua_State *L)
  * event.register ([pos:number], f:function, [filter:table])
  *     -> status:boolean, [errmsg:string]
  *
- * Appends the function F to the listeners queue.
- * If POS is given, then F is registered in position POS of listeners queue.
+ * Appends the function F to the handler list.
+ * If POS is given, then F is registered in position POS of handler list.
  * If CLASS is given, then F called only for events of the given class.
  *
  * In the first form, any additional parameters are treated as class
@@ -440,7 +428,7 @@ l_register (lua_State *L)
   int pos;
   int n;
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   n = lua_objlen (L, -1);
   lua_pop (L, 1);
 
@@ -464,7 +452,7 @@ l_register (lua_State *L)
     {
     case LUA_TNIL:
     case LUA_TNONE:
-      push_empty_table (L);
+      _nclua_get_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
       lua_insert (L, 3);
 
       /* fall-through */
@@ -500,7 +488,7 @@ l_register (lua_State *L)
       }
     }
 
-  push_listeners_queue (L);
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
 
   /* Creates {f, {filter}}.  */
   lua_createtable (L, 2, 0);
@@ -509,7 +497,7 @@ l_register (lua_State *L)
   lua_pushvalue (L, 3);
   lua_rawseti (L, -2, 2);
 
-  /* Insert {f, {filter}} into listeners queue,
+  /* Insert {f, {filter}} into handler list,
      shifting up any other elements, if necessary.  */
 
   ncluax_tableinsert (L, -2, pos);
@@ -830,6 +818,6 @@ void
 nclua_sendx (nclua_t *nc)
 {
   lua_State *L = (lua_State *) nclua_get_lua_state (nc);
-  notify (L, -1);
+  _nclua_notify (L);
   lua_pop (L, 1);
 }

@@ -95,7 +95,7 @@ nclua_get_lua_state (nclua_t *nc);
 NCLUA_PUBLIC nclua_t *
 nclua_get_nclua_state (lua_State *L);
 
-NCLUA_PUBLIC nclua_status_t
+NCLUA_PUBLIC void
 nclua_send (nclua_t *nc, lua_State *L);
 
 NCLUA_PUBLIC void
