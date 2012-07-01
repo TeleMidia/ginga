@@ -563,6 +563,7 @@ namespace mb {
 		if (renderer != NULL) {
 			if (textureOwner && textureUpdate && texture != NULL) {
 				SDLDeviceScreen::releaseTexture(texture);
+				textureUpdate = false;
 				texture = NULL;
 			}
 
