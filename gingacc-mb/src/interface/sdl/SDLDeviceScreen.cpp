@@ -947,6 +947,14 @@ namespace mb {
 
 		checkSDLInit();
 
+#if defined(SDL_VIDEO_DRIVER_WINDOWS)
+		HANDLE _t = GetCurrentThread();
+
+		//Enabling priority boost (yes the parameter must be FALSE RTFM)
+		SetThreadPriorityBoost(_t, FALSE);
+		SetThreadPriority(_t, THREAD_PRIORITY_HIGHEST);
+#endif
+
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
 
@@ -1184,7 +1192,10 @@ namespace mb {
 				 * TODO: we have to set windows to sleep less than 20ms
 				 *       (we're sleeping 2ms on linux)
 				 */
-				Sleep(0);
+				//Sleep(0);
+				double currentTime = getCurrentTimeMillis();
+
+				while(getCurrentTimeMillis() - currentTime < 0.002){}
 #else
 				SystemCompat::uSleep(2000);
 #endif
