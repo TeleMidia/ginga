@@ -369,7 +369,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (wRes <= 0) {
-			SystemCompat::uSleep(sleepTime);
+			SystemCompat::uSleep(uSleepTime);
 		}
 
 		clog << "SDLDeviceScreen::getWidthResolution returns '";
@@ -397,7 +397,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (hRes <= 0) {
-			SystemCompat::uSleep(sleepTime);
+			SystemCompat::uSleep(uSleepTime);
 		}
 
 		clog << "SDLDeviceScreen::getHeightResolution returns '";
@@ -943,7 +943,7 @@ namespace mb {
 		bool shiftOn = false;
 		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
-		int renderCounter = 0;
+		double lastRender = 0;
 
 		checkSDLInit();
 
@@ -1130,12 +1130,15 @@ namespace mb {
 						refreshRC(s);
 						decRate = refreshCMP(s);
 
-						if (renderCounter > 14) {
-							renderCounter = -1;
+						if (lastRender == 0) {
 							refreshWin(s);
-						}
+							lastRender = getCurrentTimeMillis() * 1000;
 
-						renderCounter++;
+						} else if ((getCurrentTimeMillis() * 1000) -
+								lastRender > uSleepTime) {
+
+							lastRender = 0;
+						}
 
 						if (s->mustGainFocus) {
 							if (!s->uEmbedFocused) {

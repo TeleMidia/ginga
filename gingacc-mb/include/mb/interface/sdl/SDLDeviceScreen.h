@@ -105,8 +105,8 @@ typedef struct {
 			static const short SUW_RAISETOTOP    = 2;
 			static const short SUW_LOWERTOBOTTOM = 3;
 
-			static const short SDS_FPS           = 25;
-			static const int sleepTime           = (int)(1000000/SDS_FPS);
+			static const short SDS_FPS           = 35;
+			static const int uSleepTime          = (int)(1000000/SDS_FPS);
 
 		private:
 			static bool hasRenderer;
