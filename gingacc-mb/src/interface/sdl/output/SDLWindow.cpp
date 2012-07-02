@@ -148,6 +148,9 @@ namespace mb {
 		this->winSur            = NULL;
 		this->curSur            = NULL;
 
+		this->textureUpdate     = false;
+		this->textureOwner      = true;
+
 		this->borderWidth       = 0;
 		this->bgColor           = NULL;
 		this->borderColor       = NULL;
@@ -449,6 +452,7 @@ namespace mb {
 */
 		if (winSur != NULL) {
 			curSur = winSur;
+			textureUpdate = true;
 		}
 	}
 
@@ -527,11 +531,13 @@ namespace mb {
 	void SDLWindow::clearContent() {
 		if (curSur != NULL) {
 			SDL_FillRect(curSur, NULL, SDL_MapRGBA(curSur->format, 0, 0, 0, 0));
+			textureUpdate = true;
 		}
 	}
 
 	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {
 		curSur = uSur;
+		textureUpdate = true;
 	}
 
 	void* SDLWindow::getContent() {
@@ -539,10 +545,34 @@ namespace mb {
 	}
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
+		if (textureOwner && this->texture != NULL) {
+			SDLDeviceScreen::createReleaseContainer(NULL, this->texture, NULL);
+		}
+
+		if (texture == NULL) {
+			textureOwner = true;
+
+		} else {
+			textureOwner = false;
+		}
+
 		this->texture = texture;
 	}
 
-	SDL_Texture* SDLWindow::getTexture() {
+	SDL_Texture* SDLWindow::getTexture(SDL_Renderer* renderer) {
+		if (renderer != NULL) {
+			if (textureOwner && textureUpdate && texture != NULL) {
+				SDLDeviceScreen::releaseTexture(texture);
+				textureUpdate = false;
+				texture = NULL;
+			}
+
+			if (texture == NULL && curSur != NULL) {
+				texture = SDLDeviceScreen::createTextureFromSurface(
+						renderer, curSur);
+			}
+		}
+
 		return texture;
 	}
 
@@ -571,6 +601,7 @@ namespace mb {
 		img->playOver(s);
 
 		curSur = (SDL_Surface*)(s->getSurfaceContent());
+		textureUpdate = true;
 
 		delete s;
 		delete img;
@@ -601,6 +632,7 @@ namespace mb {
 		}
 
 		curSur = contentSurface;
+		textureUpdate = true;
 		//waitRenderer();
 	}
 

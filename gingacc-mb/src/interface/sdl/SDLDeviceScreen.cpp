@@ -645,7 +645,6 @@ namespace mb {
 	void SDLDeviceScreen::releaseWindow(IWindow* win) {
 		set<IWindow*>::iterator i;
 		SDLWindow* iWin;
-		SDL_Surface* uSur = NULL;
 		SDL_Texture* uTex = NULL;
 
 		pthread_mutex_lock(&winMutex);
@@ -656,8 +655,7 @@ namespace mb {
 			renderMapRemoveWindow(id, iWin, iWin->getZ());
 			windowPool.erase(i);
 
-			uSur = (SDL_Surface*)(iWin->getContent());
-			uTex = iWin->getTexture();
+			uTex = iWin->getTexture(NULL);
 
 			iWin->clearContent();
 			iWin->setTexture(NULL);
@@ -1328,25 +1326,9 @@ namespace mb {
 						if (s->windowPool.find(win) != s->windowPool.end() &&
 								win->isVisible()) {
 
-							uSur = (SDL_Surface*)(win->getContent());
-
-							if (uSur != NULL) {
-								ownTex = false;
-								uTex   = createTextureFromSurface(
-										s->renderer, uSur);
-
-							} else {
-								ownTex = true;
-								uTex   = win->getTexture();
-							}
-
-							drawWindow(s->renderer, uTex, win);
+							uTex = win->getTexture(s->renderer);
 							if (uTex != NULL) {
-								if (!ownTex) {
-									releaseTexture(uTex);
-									ownTex = false;
-								}
-								uTex = NULL;
+								drawWindow(s->renderer, uTex, win);
 							}
 
 							win->rendered();
@@ -1729,7 +1711,7 @@ namespace mb {
 
 		bool freeSurface = false;
 
-		tmpTex = ((SDLWindow*)iWin)->getTexture();
+		tmpTex = ((SDLWindow*)iWin)->getTexture(NULL);
 		if (tmpTex != NULL) {
 			tmpSur = createUnderlyingSurfaceFromTexture(tmpTex);
 			freeSurface = true;
