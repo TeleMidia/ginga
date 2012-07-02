@@ -66,23 +66,44 @@ LUAPLAYER_BEGIN_DECLS
 
 // Uncomment the following line to enable module-level debugging messages.
 // #define ENABLE_DEBUG
-#if defined (__GNUC__) && defined (ENABLE_DEBUG)
-extern "C" { static int __trace_counter = 0; }
-# define TRACE()                                                        \
-     do {                                                               \
-          __trace_counter++;                                            \
-          fprintf (stderr, "#%d\t%lums\t%s:%d\t%s()\n",                 \
-                   __trace_counter,                                     \
-                   ((unsigned long) getCurrentTimeMillis ())            \
-                   - this->epoch, __FILE__, __LINE__, __func__);        \
+
+#if defined (ENABLE_DEBUG) && (defined (__GNUC__) || defined (_MSC_VER))
+
+/* Define __func__ if it is not already defined.  */
+# ifdef _MSC_VER
+#  define __func__ __FUNCTION__
+# endif
+
+/* The stream to which messages will be written to.  */
+# define __debug_stream stderr
+
+/* Prints the current location in source-file.  */
+#define __print_location()                              \
+     do {                                               \
+          fprintf (__debug_stream, "%s:%d:%s()\n",      \
+                   __FILE__, __LINE__, __func__);       \
      } while (0)
 
-# define DEBUG(fmt, ...)                                                \
-     do {                                                               \
-          fflush (stdout);                                              \
-          fprintf (stderr, "%s:%d:%s: "fmt"\n",                         \
-                   __FILE__, __LINE__, __func__, ## __VA_ARGS__);       \
-          fflush (stderr);                                              \
+/* Prints execution trace message.  */
+extern "C" { static int __trace_counter = 0; }
+# define TRACE()                                                \
+     do {                                                       \
+          __trace_counter++;                                    \
+          fflush (stdout);                                      \
+          fprintf (__debug_stream, "#%d\t", __trace_counter);   \
+          __print_location ();                                  \
+          fflush (stderr);                                      \
+     } while (0)
+
+/* Prints debug message.  */
+# define DEBUG(fmt, ...)                                        \
+     do {                                                       \
+          fflush (stdout);                                      \
+          __print_location ();                                  \
+          fputc (':', __debug_stream);                          \
+          fprintf (__debug_stream, fmt, ## __VA_ARGS__);        \
+          fputc ('\n', __debug_stream);                         \
+          fflush (stderr);                                      \
      } while (0)
 #else
 # define TRACE()
