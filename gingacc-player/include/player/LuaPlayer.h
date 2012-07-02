@@ -101,8 +101,9 @@ public:
      LuaPlayer (GingaScreenID screenId, string mrl);
      virtual ~LuaPlayer ();
 
-     // Helper function.
+     // Helper methods.
      void exec (int type, int action, string name, string value="");
+     unsigned long getEpoch ();
 
      // Player interface.
      void abort ();

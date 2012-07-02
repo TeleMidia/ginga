@@ -393,15 +393,20 @@ l_uptime (lua_State *L)
 {
   nclua_t *nc = nclua_get_nclua_state (L);
   LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
+  unsigned long now;
+  unsigned long epoch;
 
   if (unlikely (lua_gettop (L) > 0))
     _nclua_warning_extra_arguments (L);
 
-  lua_pushnumber (L, player->getMediaTime() * 1000);
+  now = (unsigned long) getCurrentTimeMillis ();
+  epoch = player->getEpoch ();
+  assert (now >= epoch);
+
+  lua_pushinteger (L, now - epoch);
 
   return 1;
 }
-
 
 /* event.register ([pos:number], f:function, [class:string], ...)
  *     -> status:boolean, [errmsg:string]; or

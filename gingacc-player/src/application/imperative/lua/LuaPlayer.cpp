@@ -194,6 +194,8 @@ LuaPlayer::~LuaPlayer ()
 }
 
 
+// Helper public methods.
+
 void LuaPlayer::exec (int type, int action, string name, string value)
 {
      LOCK ();
@@ -259,6 +261,17 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           ASSERT_NOT_REACHED;
      }
      UNLOCK ();
+}
+
+unsigned long LuaPlayer::getEpoch (void)
+{
+     unsigned long epoch;
+
+     LOCK ();
+     epoch = this->epoch;
+     UNLOCK ();
+
+     return epoch;
 }
 
 
