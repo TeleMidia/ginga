@@ -345,14 +345,20 @@ typedef struct {
 			static void removeWindowFromRenderList(
 					IWindow* win, vector<IWindow*>* windows);
 
+		public:
+			/* CAUTION: call this method only from main SDL thread */
 			static SDL_Texture* createTextureFromSurface(
 					SDL_Renderer* renderer, SDL_Surface* surface);
 
+		private:
 			static SDL_Texture* createTexture(
 					SDL_Renderer* renderer, int w, int h);
 
+		public:
+			/* CAUTION: call this method only from main SDL thread */
 			static void releaseTexture(SDL_Texture* uTex);
 
+		private:
 			SDL_Surface* createUnderlyingSurface(int width, int height);
 			static SDL_Surface* createUnderlyingSurfaceFromTexture(
 					SDL_Texture* texture);
