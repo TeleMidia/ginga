@@ -392,18 +392,13 @@ static int
 l_uptime (lua_State *L)
 {
   nclua_t *nc = nclua_get_nclua_state (L);
-  LuaPlayer *player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
-  unsigned long now;
-  unsigned long epoch;
+  unsigned int uptime;
 
   if (unlikely (lua_gettop (L) > 0))
     _nclua_warning_extra_arguments (L);
 
-  now = (unsigned long) getCurrentTimeMillis ();
-  epoch = player->getEpoch ();
-  assert (now >= epoch);
-
-  lua_pushinteger (L, now - epoch);
+  uptime = _nclua_get_uptime (nc);
+  lua_pushinteger (L, uptime);
 
   return 1;
 }

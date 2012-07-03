@@ -50,19 +50,13 @@ http://www.telemidia.puc-rio.br
 #ifndef LUAPLAYER_H
 #define LUAPLAYER_H
 
-#include <pthread.h>
 #include <string>
-
-extern "C" {
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
 #include "nclua.h"
-}
-#include "Player.h"
-#include "util/functions.h"
+
 using namespace std;
 
+#include "Player.h"
+#include "util/functions.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IFontProvider.h"
 #include "mb/IInputManager.h"
@@ -70,11 +64,6 @@ using namespace::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/compat/SystemCompat.h"
 using namespace::br::pucrio::telemidia::ginga::core::system::compat;
-
-extern "C" {
-LUALIB_API int luaopen_canvas (lua_State *);
-LUALIB_API int lua_createcanvas (lua_State *, ISurface *, int);
-}
 
 #define LUAPLAYER_BEGIN_DECLS NAMESPACE_GINGA_CORE_PLAYER_BEGIN
 #define LUAPLAYER_END_DECLS   NAMESPACE_GINGA_CORE_PLAYER_END
@@ -86,16 +75,12 @@ class LuaPlayer : public Player, public IInputEventListener
 private:
      nclua_t *nc;               // the NCLua state
      pthread_mutex_t mutex;     // sync access to player
-
      bool has_presented;        // true if script was executed
      bool is_key_handler;       // true if player has the focus
-
      string scope;              // the label of the active anchor
-     unsigned long epoch;       // system time (ms) when play() was called
 
      void send_ncl_presentation_event (string action, string label);
-     void send_ncl_attribution_event (string action, string name,
-                                      string value);
+     void send_ncl_attribution_event (string action, string name, string value);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
@@ -103,7 +88,6 @@ public:
 
      // Helper methods.
      void exec (int type, int action, string name, string value="");
-     unsigned long getEpoch ();
 
      // Player interface.
      void abort ();

@@ -22,6 +22,20 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+# include <mmsystem.h>
+# define __nclua_epoch_t          DWORD
+# define __nclua_epoch_null       0
+# define __nclua_epoch_setnull(e) (e = 0)
+# define __nclua_epoch_isnull(e)  (e == 0)
+#else
+# include <sys/time.h>
+# define __nclua_epoch_t          struct timeval
+# define __nclua_epoch_null       {0, 0}
+# define __nclua_epoch_setnull(e) ((e).tv_sec = 0, (e).tv_usec = 0)
+# define __nclua_epoch_isnull(e)  ((e).tv_sec == 0 && (e).tv_usec == 0)
+#endif
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -38,16 +52,18 @@ struct _nclua_t
 {
   nclua_status_t status;        /* current status */
   int ref_count;                /* reference counter */
+  __nclua_epoch_t epoch;        /* tick value of the first cycle */
   lua_State *lua_state;         /* associated Lua state */
   nclua_bool_t close_lua_state; /* true if lua_state must be closed */
 };
 
-#define DEFINE_NIL_STATE(status)                      \
-  {                                                   \
-    status,                     /* status */          \
-    -1,                         /* ref_count */       \
-    NULL,                       /* lua_state */       \
-    FALSE,                      /* close_lua_state */ \
+#define DEFINE_NIL_STATE(status)                        \
+  {                                                     \
+    status,                     /* status */            \
+    -1,                         /* ref_count */         \
+    __nclua_epoch_null,         /* epoch */             \
+    NULL,                       /* lua_state */         \
+    FALSE,                      /* close_lua_state */   \
   }
 
 static const nclua_t __nclua_nil[] =
@@ -127,6 +143,50 @@ _nclua_warning (lua_State *L, int level, const char *format, ...)
   va_end (args);
 }
 
+/* Resets the uptime value for NCLua state.  */
+
+void
+_nclua_reset_uptime (nclua_t *nc)
+{
+#ifdef _MSC_VER
+  timeBeginPeriod (1);
+  nc->epoch = timeGetTime ();
+#else
+  gettimeofday (&nc->epoch, NULL);
+#endif
+}
+
+/* Returns the time delay (in ms) since the first nclua_cycle call.  */
+
+unsigned int
+_nclua_get_uptime (nclua_t *nc)
+{
+#ifdef _MSC_VER
+  DWORD now;
+  DWORD start;
+  DOWRD uptime;
+  start = nc->epoch;
+  now = timeGetTime ();
+  if (now < start)
+    {
+      uptime = ((~(DWORD) 0) - start) + now;
+    }
+  else
+    {
+      uptime = now - start;
+    }
+  return (unsigned long) uptime;
+#else
+  unsigned int uptime;
+  struct timeval now;
+  struct timeval start = nc->epoch;
+  assert (gettimeofday (&now, NULL) == 0);
+  uptime = (unsigned int) ((now.tv_sec - start.tv_sec) * 1000
+                           + (now.tv_usec - start.tv_usec) / 1000);
+  return uptime;
+#endif
+}
+
 
 /* The NCLua API.  */
 
@@ -187,6 +247,7 @@ nclua_create_for_lua_state (lua_State *L)
 
   nc->status = NCLUA_STATUS_SUCCESS;
   nc->ref_count = 1;
+  __nclua_epoch_setnull (nc->epoch);
   nc->lua_state = L;
   nc->close_lua_state = FALSE;
 
@@ -262,7 +323,6 @@ nclua_destroy (nclua_t *nc)
 
       lua_rawgeti (L, -2, 2);
       destroy = lua_touserdata (L, -1);
-
 
       if (user_data != NULL && destroy != NULL)
         destroy (user_data);
@@ -501,10 +561,17 @@ nclua_cycle (nclua_t *nc)
   int i;
   int n;
 
+  if (unlikely (__nclua_epoch_isnull (nc->epoch)))
+    {
+      _nclua_reset_uptime (nc); /* first cycle */
+    }
+
   L = nclua_get_lua_state (nc);
 
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
   n = lua_objlen (L, -1);
+  if (n == 0)
+    goto tail;                  /* nothing to do */
 
   /* Cleanup input queue to avoid handling
      the events generated in the current cycle.  */
@@ -516,5 +583,7 @@ nclua_cycle (nclua_t *nc)
       _nclua_notify (L);
       lua_pop (L, 1);
     }
+
+ tail:
   lua_pop (L, 1);
 }
