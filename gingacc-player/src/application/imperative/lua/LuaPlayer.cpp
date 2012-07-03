@@ -311,6 +311,7 @@ bool LuaPlayer::play ()
 {
      lua_State *L;
      ISurface *surface;
+     bool status = true;
 
      LOCK ();
 
@@ -339,6 +340,7 @@ bool LuaPlayer::play ()
               || lua_pcall (L, 0, 0, 0) != 0)
           {
                DEBUG ("%s", lua_tostring (L, -1));
+               status = false;
                goto tail;
           }
 
@@ -349,16 +351,12 @@ bool LuaPlayer::play ()
 
      // TODO: Should we post also the start of
      // the whole content anchor?
-
-     if (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS) {
-    	 this->send_ncl_presentation_event ("start", this->scope);
-    	 this->exec (TYPE_PRESENTATION, PL_NOTIFY_START, this->scope);
-     }
+     this->send_ncl_presentation_event ("start", this->scope);
+     this->exec (TYPE_PRESENTATION, PL_NOTIFY_START, this->scope);
 
 tail:
      UNLOCK ();
-
-     return (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
+     return status;
 }
 
 void LuaPlayer::resume ()

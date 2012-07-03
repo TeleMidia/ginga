@@ -25,13 +25,13 @@ local a1_start  = nil           -- tick value when a1 start was received
 local a2_start  = nil           -- tick value when a2 start was received
 
 -- Uncomment this to enable debug.
--- event.register (
---    function (e)
---       print ('--')
---       for k,v in pairs (e) do
---          print (k,v)
---       end
---    end)
+event.register (
+   function (e)
+      print ('--')
+      for k,v in pairs (e) do
+         print (k,v)
+      end
+   end)
 
 event.register (
    function (e)
