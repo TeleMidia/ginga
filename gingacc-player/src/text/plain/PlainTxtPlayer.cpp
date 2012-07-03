@@ -165,16 +165,16 @@ namespace player {
 		pthread_mutex_unlock(&mutex);
 	}
 
-	void PlainTxtPlayer::play() {
+	bool PlainTxtPlayer::play() {
 		if (surface != NULL) {
 			clog << "PlainTxtPlayer::play ok" << endl;
 			loadTxt();
+			return Player::play();
 
 		} else {
 			clog << "PlainTxtPlayer::play warning" << endl;
+			return false;
 		}
-
-		Player::play();
 	}
 
 	void PlainTxtPlayer::stop() {

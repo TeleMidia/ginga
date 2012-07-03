@@ -82,7 +82,7 @@ namespace player {
 		public:
 			ImagePlayer(GingaScreenID screenId, string mrl);
 			virtual ~ImagePlayer();
-			void play();
+			bool play();
 			void stop();
 			void resume();
 

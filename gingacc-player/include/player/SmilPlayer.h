@@ -150,7 +150,7 @@ namespace player {
 
 			void setNotifyContentUpdate(bool notify);
 
-			void play();
+			bool play();
 			void stop();
 			void pause();
 			void resume();

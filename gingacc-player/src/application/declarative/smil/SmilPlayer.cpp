@@ -224,7 +224,7 @@ namespace player {
 		}
 	}
 
-	void SmilPlayer::play() {
+	bool SmilPlayer::play() {
 		clog << "SmilPlayer::play(" << mrl << ")" << endl;
 
 		if (ambulantPlayer != NULL) {
@@ -232,9 +232,12 @@ namespace player {
 			ambulantPlayer->start();
 			gtk_widget_show_all(gtkwidget);
 			gtk_widget_realize(gtkwidget);
-		}
 
-		Player::play();
+			return Player::play();
+
+		} else {
+			return false;
+		}
 	}
 
 	void SmilPlayer::stop() {

@@ -85,7 +85,7 @@ namespace player {
 			double getMediaTotalTime();
 			double getMediaTime();
 
-			void play();
+			bool play();
 			void stop();
 			void pause();
 			void resume();

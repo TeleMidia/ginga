@@ -189,7 +189,7 @@ namespace player {
 					short type=TYPE_PRESENTATION,
 					double begin=-1, double end=-1, double outTransDur=-1);
 
-			virtual void play();
+			virtual bool play();
 			virtual void stop();
 			virtual void abort();
 			virtual void pause();

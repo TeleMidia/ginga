@@ -1334,11 +1334,11 @@ namespace player {
 		}
 	}
 
-	void AVPlayer::play() {
+	bool AVPlayer::play() {
 		if (provider == NULL) {
 			clog << "AVPlayer::play() can't play, provider is NULL" << endl;
 			this->wakeUp();
-			return;
+			return false;
 		}
 
 		Player::play();
@@ -1351,6 +1351,7 @@ namespace player {
 		}
 
 		clog << "AVPlayer::play("<< mrl << ") all done!" << endl;
+		return true;
 	}
 
 	void AVPlayer::pause() {
