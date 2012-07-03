@@ -23,6 +23,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include <string.h>
 
 #ifdef _MSC_VER
+# include <windows.h>
 # include <mmsystem.h>
 # define __nclua_epoch_t          DWORD
 # define __nclua_epoch_null       0
@@ -164,7 +165,7 @@ _nclua_get_uptime (nclua_t *nc)
 #ifdef _MSC_VER
   DWORD now;
   DWORD start;
-  DOWRD uptime;
+  DWORD uptime;
   start = nc->epoch;
   now = timeGetTime ();
   if (now < start)
