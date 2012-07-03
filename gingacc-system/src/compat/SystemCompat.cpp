@@ -611,6 +611,14 @@ namespace compat {
 #endif
 	
 	}
+
+	void SystemCompat::exit(short status) {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		ExitProcess(status);
+#else
+		exit(status);
+#endif
+	}
 }
 }
 }
