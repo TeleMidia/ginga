@@ -89,7 +89,7 @@ namespace player {
 		ISurface* getSurface();
 
 	public:
-		void play();
+		bool play();
 		void pause();
 		void resume();
 		void stop();

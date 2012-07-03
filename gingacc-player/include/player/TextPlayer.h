@@ -103,7 +103,7 @@ namespace player {
 					string fontUri = "",
 					int fontSize = 12, IColor* fontColor = NULL);
 
-			virtual void play(){Player::play();};
+			virtual bool play(){return Player::play();};
 			virtual void stop(){Player::stop();};
 			virtual void abort(){Player::abort();};
 			virtual void pause(){Player::pause();};

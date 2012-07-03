@@ -114,7 +114,7 @@ namespace player {
 		AwesomiumHandler::setAwesomiumBounds(awesome, x, y, w, h);
 	}
 
-	void AwesomiumPlayer::play() {
+	bool AwesomiumPlayer::play() {
 		pthread_t tId;
 		pthread_attr_t tattr;
 
@@ -132,7 +132,7 @@ namespace player {
 			pthread_detach(tId);
 		}
 
-		Player::play();
+		return Player::play();
 	}
 
 	void AwesomiumPlayer::stop() {

@@ -173,7 +173,7 @@ namespace player {
 		}
 	}
 
-	void LinksPlayer::play() {
+	bool LinksPlayer::play() {
 		clog << "LinksPlayer::play(" << mrl << ")" << endl;
 
 		if (screenName == "dfb") {
@@ -196,7 +196,7 @@ namespace player {
 			//SystemCompat::uSleep(3000000);
 		}
 
-		Player::play();
+		return Player::play();
 	}
 
 	void LinksPlayer::stop() {

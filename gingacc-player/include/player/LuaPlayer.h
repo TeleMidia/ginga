@@ -108,7 +108,7 @@ public:
      // Player interface.
      void abort ();
      void pause ();
-     void play ();
+     bool play ();
      void resume ();
      void stop ();
      virtual bool hasPresented ();

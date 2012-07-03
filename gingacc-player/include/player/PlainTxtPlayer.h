@@ -74,7 +74,7 @@ namespace player {
 			void setContent(string content);
 
 		public:
-			void play();
+			bool play();
 			void stop();
 			virtual void setPropertyValue(string name, string value);
 	};

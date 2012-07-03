@@ -173,15 +173,15 @@ namespace player {
 		}
 	}
 
-	void ImagePlayer::play() {
+	bool ImagePlayer::play() {
 		if (provider == NULL ||
 				surface == NULL || surface->getSurfaceContent() == NULL) {
 
-			return;
+			return false;
 		}
 
 		provider->playOver(surface);
-		Player::play();
+		return Player::play();
 	}
 
 	void ImagePlayer::stop() {

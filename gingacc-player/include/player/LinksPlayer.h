@@ -109,7 +109,7 @@ namespace player {
 
 			void setNotifyContentUpdate(bool notify);
 
-			void play();
+			bool play();
 			void stop();
 			bool setOutWindow(GingaWindowID windowId);
 			void setBounds(int x, int y, int w, int h);
