@@ -79,7 +79,7 @@ namespace player {
 		public:
 			AnimePlayer(GingaScreenID screenId, vector<string>* mrl);
 			virtual ~AnimePlayer();
-			void play();
+			bool play();
 			void stop();
 			void setVoutWindow(IWindow* win);
 			void setDur(double dur);

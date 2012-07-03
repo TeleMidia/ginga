@@ -385,7 +385,7 @@ namespace player {
 		this->outTransTime  = outTransDur;
 	}
 
-	void Player::play() {
+	bool Player::play() {
 		this->forcedNaturalEnd = false;
 		this->status = PLAY;
 		if (scopeInitTime > 0) {
@@ -396,6 +396,8 @@ namespace player {
 		}
 		elapsedPause = 0;
 		initTime = getCurrentTimeMillis();
+
+		return true;
 	}
 
 	void Player::stop() {

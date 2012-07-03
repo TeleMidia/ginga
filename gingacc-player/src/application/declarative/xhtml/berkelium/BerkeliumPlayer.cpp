@@ -298,9 +298,9 @@ namespace player {
 		}
 	}
 
-	void BerkeliumPlayer::play() {
+	bool BerkeliumPlayer::play() {
 		berkeliumFactory.createBrowser(bInfo);
-		Player::play();
+		return Player::play();
 	}
 
 	void BerkeliumPlayer::stop() {

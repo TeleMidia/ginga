@@ -262,7 +262,7 @@ namespace player {
 		return 0;
 	}
 
-	void SrtPlayer::play() {
+	bool SrtPlayer::play() {
 		Player::play();
 		if (!isPlaying) {
 			if (player == NULL) {
@@ -271,6 +271,11 @@ namespace player {
 			}
 			isPlaying = true;
 			Thread::start();
+
+			return true;
+
+		} else {
+			return false;
 		}
 	}
 

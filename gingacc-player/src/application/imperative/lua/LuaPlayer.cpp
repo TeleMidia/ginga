@@ -241,8 +241,7 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           {
                Player::setPropertyValue (name, value);
           }
-          // FIXME: This causes an infinite loop of setPropertyValue().
-          // this->notifyPlayerListeners (action, name, type, value);
+          this->notifyPlayerListeners (action, name, type, value);
           break;
 
      case TYPE_PRESENTATION:
@@ -308,7 +307,7 @@ void LuaPlayer::pause ()
      UNLOCK ();
 }
 
-void LuaPlayer::play ()
+bool LuaPlayer::play ()
 {
      lua_State *L;
      ISurface *surface;
@@ -340,7 +339,6 @@ void LuaPlayer::play ()
               || lua_pcall (L, 0, 0, 0) != 0)
           {
                DEBUG ("%s", lua_tostring (L, -1));
-               this->exec (TYPE_PRESENTATION, PL_NOTIFY_ABORT, this->scope);
                goto tail;
           }
 
@@ -352,11 +350,15 @@ void LuaPlayer::play ()
      // TODO: Should we post also the start of
      // the whole content anchor?
 
-     this->send_ncl_presentation_event ("start", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_START, this->scope);
+     if (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS) {
+    	 this->send_ncl_presentation_event ("start", this->scope);
+    	 this->exec (TYPE_PRESENTATION, PL_NOTIFY_START, this->scope);
+     }
 
 tail:
      UNLOCK ();
+
+     return (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
 }
 
 void LuaPlayer::resume ()
