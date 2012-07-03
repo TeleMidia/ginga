@@ -50,7 +50,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
 
   <media id="exit" src="exit.lua"/>
   <link xconnector="conn#onEndStart">
-    <bind role="onAbort" component="lua"/>
+    <bind role="onEnd" component="lua"/>
     <bind role="start" component="exit"/>
   </link>
 </body>
