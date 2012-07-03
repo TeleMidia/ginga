@@ -128,7 +128,7 @@ namespace player {
 					short type,
 					double begin=-1, double end=-1, double outTransDur=-1)=0;
 
-			virtual void play()=0;
+			virtual bool play()=0;
 			virtual void stop()=0;
 			virtual void abort()=0;
 			virtual void pause()=0;

@@ -159,7 +159,7 @@ namespace player {
 		return NULL;
 	}
 
-	void ChannelPlayer::play() {
+	bool ChannelPlayer::play() {
 		ISurface* s;
 
 		if (selectedPlayer != NULL) {
@@ -172,7 +172,8 @@ namespace player {
 				selectedPlayer->play();
 			}
 		}
-		Player::play();
+
+		return Player::play();
 	}
 
 	void ChannelPlayer::pause() {

@@ -124,9 +124,11 @@ namespace player {
 		}
 	}
 
-	void AnimePlayer::play() {
+	bool AnimePlayer::play() {
 		running = true;
 		Thread::start();
+
+		return true;
 	}
 
 	void AnimePlayer::stop() {

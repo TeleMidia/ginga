@@ -109,7 +109,7 @@ namespace player {
 					short type,
 					double begin=-1, double end=-1, double outTransDur=-1);
 
-			void play();
+			bool play();
 			void stop();
 			void abort();
 			void pause();
