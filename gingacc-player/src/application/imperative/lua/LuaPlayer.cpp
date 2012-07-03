@@ -47,20 +47,24 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+extern "C"
+{
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
-
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
 #include "nclua.h"
-
-#include "player/LuaPlayer.h"
+}
 
 #include "player/PlayersComponentSupport.h"
-
+#include "mb/IInputManager.h"
 #include "util/functions.h"
 using namespace::br::pucrio::telemidia::util;
 
-#include "mb/IInputManager.h"
+#include "player/LuaPlayer.h"
+
+int luaopen_canvas (lua_State *);
+int lua_createcanvas (lua_State *, ISurface *, int);
 
 LUAPLAYER_BEGIN_DECLS
 
@@ -68,6 +72,9 @@ LUAPLAYER_BEGIN_DECLS
 // #define ENABLE_DEBUG
 
 #if defined (ENABLE_DEBUG) && (defined (__GNUC__) || defined (_MSC_VER))
+
+/* For fprintf, fputs, etc. */
+#include <stdio.h>
 
 /* Define __func__ if it is not already defined.  */
 # ifdef _MSC_VER
@@ -78,7 +85,7 @@ LUAPLAYER_BEGIN_DECLS
 # define __debug_stream stderr
 
 /* Prints the current location in source-file.  */
-#define __print_location()                              \
+# define __print_location()                             \
      do {                                               \
           fprintf (__debug_stream, "%s:%d:%s()\n",      \
                    __FILE__, __LINE__, __func__);       \
@@ -133,7 +140,7 @@ extern "C" { static int __trace_counter = 0; }
 #define ASSERT_NOT_REACHED assert (!"reached")
 
 
-// Private methods.
+// Private methods -- these should not call LOCK/UNLOCK.
 
 void LuaPlayer::send_ncl_presentation_event (string action, string label)
 {
@@ -203,7 +210,6 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
      this->has_presented = false;
      this->is_key_handler = false;
      this->scope = "";
-     this->epoch = 0;
 }
 
 LuaPlayer::~LuaPlayer ()
@@ -263,7 +269,6 @@ void LuaPlayer::exec (int type, int action, string name, string value)
                     this->im->removeApplicationInputEventListener (this);
                     this->forcedNaturalEnd = true;
                     this->has_presented = true;
-                    this->epoch = 0;
                     Player::stop ();
                     break;
                default:
@@ -282,17 +287,6 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           ASSERT_NOT_REACHED;
      }
      UNLOCK ();
-}
-
-unsigned long LuaPlayer::getEpoch (void)
-{
-     unsigned long epoch;
-
-     LOCK ();
-     epoch = this->epoch;
-     UNLOCK ();
-
-     return epoch;
 }
 
 
@@ -350,7 +344,9 @@ void LuaPlayer::play ()
                goto tail;
           }
 
-          this->epoch = (unsigned long) getCurrentTimeMillis ();
+          // Cycle once to initialize clock.
+          // FIXME: This is temporary.
+          nclua_cycle (nc);
      }
 
      // TODO: Should we post also the start of
@@ -450,24 +446,40 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 
      L = nclua_get_lua_state (this->nc);
 
-     // User event.
-     if (evt->isApplicationType ())
+     if (evt->isApplicationType ()
+         && ((lua_State *) evt->getApplicationData ()) == L)
      {
-          int ref;
-
-          if ((lua_State *) evt->getApplicationData () != L)
-          {
-               goto tail;       // nothing to do.
-          }
-
-          ref = evt->getType ();
+          int ref = evt->getType ();
           lua_rawgeti (L, LUA_REGISTRYINDEX, ref);
           luaL_unref (L, LUA_REGISTRYINDEX, ref);
-
           lua_pushvalue (L, -1);
           nclua_sendx (nc);
           nclua_send (nc, L);
      }
+
+#if 0
+     // Cycle event.
+     if (evt->isApplicationType ()
+         && ((nclua_t *) evt->getApplicationData ()) != this->nc)
+     {
+
+          int n;
+
+          nclua_cycle (this->nc);
+
+          nclua_receive (this->nc, L);
+          while (!lua_isnil (L, -1))
+          {
+               // Handle the received event.
+               lua_pop (L, 1);
+               nclua_receive (this->nc, L);
+          }
+          lua_pop (L, 1);
+
+          // Schedule the next update.
+          player->im->postInputEvent (evt);
+     }
+#endif
 
      // Selection event.
      else if (evt->isKeyType () && this->is_key_handler)
@@ -556,3 +568,8 @@ extern "C"
 }
 
 LUAPLAYER_END_DECLS
+
+// Local variables:
+// mode: c++
+// c-file-style: "k&r"
+// End:

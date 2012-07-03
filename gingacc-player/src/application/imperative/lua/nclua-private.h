@@ -132,6 +132,12 @@ _nclua_error (lua_State *L, int level, const char *format, ...);
 NCLUA_PRIVATE void
 _nclua_warning (lua_State *L, int level, const char *format, ...);
 
+NCLUA_PRIVATE void
+_nclua_reset_uptime (nclua_t *nc);
+
+NCLUA_PRIVATE unsigned int
+_nclua_get_uptime (nclua_t *nc);
+
 /* nclua-event.c */
 
 NCLUA_PRIVATE nclua_status_t
