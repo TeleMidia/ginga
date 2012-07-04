@@ -68,54 +68,51 @@ int lua_createcanvas (lua_State *, ISurface *, int);
 
 LUAPLAYER_BEGIN_DECLS
 
-// Uncomment the following line to enable module-level debugging messages.
-// #define ENABLE_DEBUG
+#define ARRAY_SIZE(x) (sizeof (x) / sizeof (x[0]))
 
-#if defined (ENABLE_DEBUG) && (defined (__GNUC__) || defined (_MSC_VER))
-
-/* For fprintf, fputs, etc. */
-#include <stdio.h>
-
-/* Define __func__ if it is not already defined.  */
-# ifdef _MSC_VER
-#  define __func__ __FUNCTION__
-# endif
-
-/* The stream to which messages will be written to.  */
-# define __debug_stream stderr
-
-/* Prints the current location in source-file.  */
-# define __print_location()                             \
-     do {                                               \
-          fprintf (__debug_stream, "%s:%d:%s()\n",      \
-                   __FILE__, __LINE__, __func__);       \
+// Uncomment the following line to enable trace messages.
+#define ENABLE_TRACE
+#ifdef ENABLE_TRACE
+# include <stdio.h>
+#ifdef _MSC_VER
+# define __func__ __FUNCTION__
+# define SNPRINTF _snprintf
+#else
+# define SNPRINTF snprintf
+#endif
+// Outputs printf-like message to clog stream.
+# define CLOG(format, ...)                                              \
+     do {                                                               \
+          char buf[1024];                                               \
+          SNPRINTF (buf, ARRAY_SIZE (buf), format, ## __VA_ARGS__);     \
+          clog << buf;                                                  \
      } while (0)
-
-/* Prints execution trace message.  */
-extern "C" { static int __trace_counter = 0; }
-# define TRACE()                                                \
+// Outputs the current location in source to clog stream.
+# define TRACE_LOCATION()                                       \
      do {                                                       \
-          __trace_counter++;                                    \
-          fflush (stdout);                                      \
-          fprintf (__debug_stream, "#%d\t", __trace_counter);   \
-          __print_location ();                                  \
-          fflush (stderr);                                      \
+         CLOG ("%s:%d:%s", __FILE__, __LINE__, __func__);       \
      } while (0)
-
-/* Prints debug message.  */
-# define DEBUG(fmt, ...)                                        \
-     do {                                                       \
-          fflush (stdout);                                      \
-          __print_location ();                                  \
-          fputc (':', __debug_stream);                          \
-          fprintf (__debug_stream, fmt, ## __VA_ARGS__);        \
-          fputc ('\n', __debug_stream);                         \
-          fflush (stderr);                                      \
+// Outputs trace message to clog stream
+# define TRACE0(format, ...)                    \
+     do{                                        \
+        TRACE_LOCATION ();                      \
+        clog << endl;                           \
+        clog.flush ();                          \
+     } while (0)
+// Outputs printf-like trace message to clog stream.
+# define TRACE(format, ...)                     \
+     do{                                        \
+        TRACE_LOCATION ();                      \
+        CLOG (": "format, ## __VA_ARGS__);      \
+        clog << endl;                           \
+        clog.flush ();                          \
      } while (0)
 #else
-# define TRACE()
-# define DEBUG(fmt, ...)
-#endif
+# define CLOG(format, ...)
+# define TRACE_LOCATION
+# define TRACE0
+# define TRACE(format, ...)
+#endif // ENABLE_TRACE
 
 #define INIT_MUTEX(m)                                                   \
      do {                                                               \
@@ -128,7 +125,6 @@ extern "C" { static int __trace_counter = 0; }
 
 #define LOCK()                                                  \
      do {                                                       \
-          TRACE ();                                             \
           assert (pthread_mutex_lock (&this->mutex) == 0);      \
      } while (0)
 
@@ -195,7 +191,7 @@ void LuaPlayer::send_ncl_attribution_event (string action, string name,
 
 LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
 {
-     TRACE ();
+     TRACE ("id=%d, mrl='%s'", id, mrl.c_str ());
 
      // FIXME: This is *WRONG*; chdir() changes the working directory
      // of the whole process.
@@ -215,7 +211,10 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
 LuaPlayer::~LuaPlayer ()
 {
      LOCK ();
+
+     TRACE0 ();
      nclua_destroy (this->nc);
+
      UNLOCK ();
      pthread_mutex_destroy (&this->mutex);
 }
@@ -225,20 +224,14 @@ LuaPlayer::~LuaPlayer ()
 
 void LuaPlayer::exec (int type, int action, string name, string value)
 {
-     LOCK ();
+     TRACE ("type=%d, action=%d, name='%s', string='%s'",
+            type, action, name.c_str (), value.c_str ());
 
      assert (action == PL_NOTIFY_ABORT
              || action == PL_NOTIFY_PAUSE
              || action == PL_NOTIFY_RESUME
              || action == PL_NOTIFY_START
              || action == PL_NOTIFY_STOP);
-
-     clog << "LuaPlayer::exec ";
-     clog << "type = '"   << type   << "' ";
-     clog << "action = '" << action << "' ";
-     clog << "name = '"   << name   << "' ";
-     clog << "value = '"  << value  << "' ";
-     clog << endl;
 
      switch (type)
      {
@@ -257,8 +250,6 @@ void LuaPlayer::exec (int type, int action, string name, string value)
      default:
           ASSERT_NOT_REACHED;
      }
-
-     UNLOCK ();
 }
 
 
@@ -267,6 +258,7 @@ void LuaPlayer::exec (int type, int action, string name, string value)
 void LuaPlayer::abort ()
 {
      LOCK ();
+     TRACE0 ();
      this->send_ncl_presentation_event ("abort", this->scope);
      this->stop ();
      UNLOCK ();
@@ -275,6 +267,7 @@ void LuaPlayer::abort ()
 void LuaPlayer::pause ()
 {
      LOCK ();
+     TRACE0 ();
      this->send_ncl_presentation_event ("pause", this->scope);
      Player::pause ();
      UNLOCK ();
@@ -287,6 +280,7 @@ bool LuaPlayer::play ()
      bool status = true;
 
      LOCK ();
+     TRACE0 ();
 
      if (this->scope == "" && this->status == STOP)
      {
@@ -312,7 +306,6 @@ bool LuaPlayer::play ()
           if (luaL_loadfile (L, this->mrl.c_str ()) != 0
               || lua_pcall (L, 0, 0, 0) != 0)
           {
-               DEBUG ("%s", lua_tostring (L, -1));
                status = false;
                goto tail;
           }
@@ -335,6 +328,7 @@ tail:
 void LuaPlayer::resume ()
 {
      LOCK ();
+     TRACE0 ();
      this->send_ncl_presentation_event ("resume", this->scope);
      Player::resume ();
      UNLOCK ();
@@ -343,6 +337,7 @@ void LuaPlayer::resume ()
 void LuaPlayer::stop ()
 {
      LOCK ();
+     TRACE0 ();
 
      // FIXME: stop() gets called even if the player is not running.
      if (this->nc == NULL)
@@ -376,6 +371,7 @@ bool LuaPlayer::hasPresented (void)
 void LuaPlayer::setCurrentScope (string name)
 {
      LOCK ();
+     TRACE ("name='%s'", name.c_str ());
      this->scope = name;
      UNLOCK ();
 }
@@ -383,6 +379,7 @@ void LuaPlayer::setCurrentScope (string name)
 bool LuaPlayer::setKeyHandler (bool b)
 {
      LOCK ();
+     TRACE ("b=%s", (b) ? "true" : "false");
      this->is_key_handler = b;
      UNLOCK ();
 
@@ -392,6 +389,7 @@ bool LuaPlayer::setKeyHandler (bool b)
 void LuaPlayer::setPropertyValue (string name, string value)
 {
      LOCK ();
+     TRACE ("name='%s', value='%s'", name.c_str (), value.c_str ());
 
      if (this->status != PLAY)  // initialization "set"
      {

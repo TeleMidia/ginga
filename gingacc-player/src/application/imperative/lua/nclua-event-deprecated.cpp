@@ -201,7 +201,7 @@ static int l_post (lua_State* L)
 /* Prints warning message if event table at INDEX is not empty.  Before
    performing the check, removes from table all fields indexed by the
    strings in the NULL-terminated varargs argument.  */
-
+#if 0
 static void
 warn_extra_fields_in_event (lua_State *L, int index, ...)
 {
@@ -224,6 +224,7 @@ warn_extra_fields_in_event (lua_State *L, int index, ...)
 
   lua_settop (L, saved_top);
 }
+#endif
 
 /* Posts NCL edit event at index 2.  Returns true if successful.
    Otherwise, returns false plus error message.  */
@@ -282,10 +283,6 @@ l_post_ncl_event (lua_State *L)
       if (unlikely (label == NULL))
         goto error_bad_argument; /* invalid label */
       lua_pop (L, 1);
-
-      warn_extra_fields_in_event (L, 2, "class", "type",
-                                  "action", "label", NULL);
-
       player->exec (Player::TYPE_PRESENTATION, action_code, string (label));
     }
   else if (streq (type, "attribution"))
@@ -298,9 +295,6 @@ l_post_ncl_event (lua_State *L)
 
       if (unlikely (!ncluax_getstringfield (L, 2, "value", &value)))
         goto error_bad_argument; /* invalid value */
-
-      warn_extra_fields_in_event (L, 2, "class", "type",
-                                  "action", "name", "value", NULL);
 
       player->exec (Player::TYPE_ATTRIBUTION, action_code,
                     string (name), string (value));
