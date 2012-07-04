@@ -233,6 +233,13 @@ void LuaPlayer::exec (int type, int action, string name, string value)
              || action == PL_NOTIFY_START
              || action == PL_NOTIFY_STOP);
 
+     clog << "LuaPlayer::exec ";
+     clog << "type = '"   << type   << "' ";
+     clog << "action = '" << action << "' ";
+     clog << "name = '"   << name   << "' ";
+     clog << "value = '"  << value  << "' ";
+     clog << endl;
+
      switch (type)
      {
      case TYPE_ATTRIBUTION:
