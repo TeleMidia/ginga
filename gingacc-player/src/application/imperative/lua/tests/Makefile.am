@@ -31,6 +31,7 @@ TESTS=                             \
   test-event-timer-cancel.xncl     \
   test-event-uptime.xncl           \
   test-property-attribution-0.ncl  \
+  test-property-attribution-1.ncl  \
   test-bad-lua-0.ncl               \
   test-bad-lua-1.ncl
 

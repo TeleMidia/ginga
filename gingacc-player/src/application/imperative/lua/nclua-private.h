@@ -45,7 +45,7 @@ enum
   _NCLUA_REGISTRY_INPUT_QUEUE,     /* index of the input queue */
   _NCLUA_REGISTRY_OUTPUT_QUEUE,    /* index of the output queue */
   _NCLUA_REGISTRY_HANDLER_LIST,    /* index of the handler list */
-  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer table */
+  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer list */
   _NCLUA_REGISTRY_LAST_INDEX,      /* total number of index values */
 };
 
@@ -158,55 +158,58 @@ _nclua_notify (lua_State *L);
 #define TRUE  1
 
 #undef  likely
-#define likely           NCLUA_LIKELY
+#define likely                NCLUA_LIKELY
 
 #undef  unlikely
-#define unlikely         NCLUA_UNLIKELY
+#define unlikely              NCLUA_UNLIKELY
 
 #undef  arg_unused
-#define arg_unused       NCLUA_ARG_UNUSED
+#define arg_unused            NCLUA_ARG_UNUSED
 
 #undef  arg_nonnull
-#define arg_nonnull      NCLUA_NONNULL
+#define arg_nonnull           NCLUA_NONNULL
 
 #undef  nelementsof
-#define nelementsof(x)   (sizeof (x) / sizeof (x[0]))
+#define nelementsof(x)        (sizeof (x) / sizeof (x[0]))
 
 #undef  integralof
-#define integralof(x)    (((char *)(x)) - ((char *) 0))
+#define integralof(x)         (((char *)(x)) - ((char *) 0))
 
 #undef  pointerof
-#define pointerof(x)     ((void *)((char *) 0 + (x)))
+#define pointerof(x)          ((void *)((char *) 0 + (x)))
+
+#undef  ssizeof
+#define ssizeof(x)            ((int) sizeof (x))
 
 #undef  isodd
-#define isodd(n)         ((n) & 1)
+#define isodd(n)              ((n) & 1)
 
 #undef  iseven
-#define iseven(n)        (!isodd (n))
+#define iseven(n)             (!isodd (n))
 
 #undef  sign
-#define sign(x)          ((x) >= 0.0 ? 1 : -1)
+#define sign(x)               ((x) >= 0.0 ? 1 : -1)
 
 #undef  max
-#define max(a, b)        (((a) > (b)) ? (a) : (b))
+#define max(a, b)             ((a) > (b)) ? (a) : (b)
 
 #undef  min
-#define min(a, b)        (((a) < (b)) ? (a) : (b))
+#define min(a, b)             ((a) < (b)) ? (a) : (b)
+
+#undef  range
+#define range(x, _min, _max)  (min (max (x, _min), _max))
 
 #undef  streq
-#define streq(a, b)      ((*(a) == *(b)) && strcmp (a, b) == 0)
-
-#undef  strneq
-#define streneq(a, b)    (!streq (a, b))
+#define streq(a, b)           ((*(a) == *(b)) && strcmp (a, b) == 0)
 
 #undef  DECONST
-#define DECONST(t, x)    ((t)(size_t)(const void *)(x))
+#define DECONST(t, x)         ((t)(size_t)(const void *)(x))
 
 #undef  DEVOLATILE
-#define DEVOLATILE(t, x) ((t)(size_t)(volatile void *)(x))
+#define DEVOLATILE(t, x)      ((t)(size_t)(volatile void *)(x))
 
 #undef  DEQUALIFY
-#define DEQUALIFY(t, x)  ((t)(size_t)(const volatile void *)(x))
+#define DEQUALIFY(t, x)       ((t)(size_t)(const volatile void *)(x))
 
 #define _NCLUA_STRINGIFY(arg) #arg
 #define NCLUA_STRINGIFY(arg)  _NCLUA_STRINGIFY (arg)
