@@ -144,7 +144,7 @@ _nclua_warning (lua_State *L, int level, const char *format, ...)
   va_end (args);
 }
 
-/* Resets the uptime value for NCLua state.  */
+/* Resets the up-time value for NCLua state.  */
 
 void
 _nclua_reset_uptime (nclua_t *nc)
