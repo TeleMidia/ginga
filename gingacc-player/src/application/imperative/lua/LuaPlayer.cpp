@@ -236,47 +236,12 @@ void LuaPlayer::exec (int type, int action, string name, string value)
      switch (type)
      {
      case TYPE_ATTRIBUTION:
-          // TODO: Handle attributions with non-zero duration.
-          if (action == PL_NOTIFY_START)
-          {
-               Player::setPropertyValue (name, value);
-          }
           this->notifyPlayerListeners (action, name, type, value);
           break;
 
      case TYPE_PRESENTATION:
-     {
-          string label = name;
-
-          if (label == "")
-          {
-               switch (action)
-               {
-               case PL_NOTIFY_PAUSE:
-                    Player::pause ();
-                    break;
-               case PL_NOTIFY_RESUME:
-                    Player::resume ();
-                    break;
-               case PL_NOTIFY_START:
-                    Player::play ();
-                    break;
-               case PL_NOTIFY_ABORT:
-               case PL_NOTIFY_STOP:
-                    nclua_destroy (this->nc);
-                    this->nc = NULL;
-                    this->im->removeApplicationInputEventListener (this);
-                    this->forcedNaturalEnd = true;
-                    this->has_presented = true;
-                    Player::stop ();
-                    break;
-               default:
-                    ASSERT_NOT_REACHED;
-               }
-          }
-          this->notifyPlayerListeners (action, label);
+          this->notifyPlayerListeners (action, name);
           break;
-     }
 
      case TYPE_SELECTION:
           // TODO: Not implemented.
@@ -285,6 +250,7 @@ void LuaPlayer::exec (int type, int action, string name, string value)
      default:
           ASSERT_NOT_REACHED;
      }
+
      UNLOCK ();
 }
 
@@ -295,7 +261,7 @@ void LuaPlayer::abort ()
 {
      LOCK ();
      this->send_ncl_presentation_event ("abort", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_ABORT, this->scope);
+     this->stop ();
      UNLOCK ();
 }
 
@@ -303,7 +269,7 @@ void LuaPlayer::pause ()
 {
      LOCK ();
      this->send_ncl_presentation_event ("pause", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_PAUSE, this->scope);
+     Player::pause ();
      UNLOCK ();
 }
 
@@ -352,7 +318,7 @@ bool LuaPlayer::play ()
      // TODO: Should we post also the start of
      // the whole content anchor?
      this->send_ncl_presentation_event ("start", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_START, this->scope);
+     Player::play ();
 
 tail:
      UNLOCK ();
@@ -363,7 +329,7 @@ void LuaPlayer::resume ()
 {
      LOCK ();
      this->send_ncl_presentation_event ("resume", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_RESUME, this->scope);
+     Player::resume ();
      UNLOCK ();
 }
 
@@ -378,7 +344,12 @@ void LuaPlayer::stop ()
      }
 
      this->send_ncl_presentation_event ("stop", this->scope);
-     this->exec (TYPE_PRESENTATION, PL_NOTIFY_STOP, this->scope);
+     nclua_destroy (this->nc);
+     this->nc = NULL;
+     this->im->removeApplicationInputEventListener (this);
+     this->forcedNaturalEnd = true;
+     this->has_presented = true;
+     Player::stop ();
 
 tail:
      UNLOCK ();
@@ -414,6 +385,13 @@ bool LuaPlayer::setKeyHandler (bool b)
 void LuaPlayer::setPropertyValue (string name, string value)
 {
      LOCK ();
+
+     if (this->status != PLAY)  // initialization "set"
+     {
+          Player::setPropertyValue (name, value);
+          goto tail;
+     }
+
      if (this->nc != NULL)
        {
          // FIXME: Before calling play(), FormatterPlayerAdapter calls
@@ -425,8 +403,9 @@ void LuaPlayer::setPropertyValue (string name, string value)
          this->send_ncl_attribution_event ("stop", name, value);
        }
 
-     this->exec (TYPE_ATTRIBUTION, PL_NOTIFY_START, name, value);
-     this->exec (TYPE_ATTRIBUTION, PL_NOTIFY_STOP, name, value);
+     Player::setPropertyValue (name, value);
+
+tail:
      UNLOCK ();
 }
 
