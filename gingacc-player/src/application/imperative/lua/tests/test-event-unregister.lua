@@ -1,5 +1,5 @@
 --[[ test-event-unregister.lua -- Check event.unregister.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -22,15 +22,16 @@ local g = function () end
 local h = function () end
 
 local function register5 ()
-   assert (event.register (f))
-   assert (event.register (g))
-   assert (event.register (h))
-   assert (event.register (f))
-   assert (event.register (g))                    -- Q=<f,g,h,f,g>
+   event.register (f)
+   event.register (g)
+   event.register (h)
+   event.register (f)
+   event.register (g)                             -- Q=<f,g,h,f,g>
    assert (qsz () == 5)
 end
 
 -- Invalid calls.
+assert (pcall (event.unregister, nil) == false)
 assert (pcall (event.unregister, 0) == false)
 assert (pcall (event.unregister, {}, 0, {}) == false)
 assert (pcall (event.unregister, {}, f, f) == false)
@@ -81,10 +82,7 @@ assert (qsz () == 0)
 register5 ()
 assert (event.unregister () == 5)
 assert (qsz () == 0)
-
-register5 ()
-assert (event.unregister (nil) == 5)
 assert (qsz () == 0)
 
-assert (event.unregister () == 0)
+register5 ()
 done ()

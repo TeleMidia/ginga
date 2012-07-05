@@ -1,5 +1,5 @@
 /* nclua-private.h -- Exported private declarations.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -45,8 +45,8 @@ enum
   _NCLUA_REGISTRY_INPUT_QUEUE,     /* index of the input queue */
   _NCLUA_REGISTRY_OUTPUT_QUEUE,    /* index of the output queue */
   _NCLUA_REGISTRY_HANDLER_LIST,    /* index of the handler list */
-  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer list */
-  _NCLUA_REGISTRY_LAST_INDEX,      /* total number of index values */
+  _NCLUA_REGISTRY_TIMER_LIST,      /* index of the timer list */
+  _NCLUA_REGISTRY_LAST_INDEX       /* total number of index values */
 };
 
 /* Creates a new registry table and inserts it into Lua registry.  */
@@ -54,7 +54,7 @@ enum
   NCLUA_STMT_BEGIN                                      \
   {                                                     \
     lua_createtable (L, _NCLUA_REGISTRY_LAST_INDEX, 0); \
-    _nclua_set_registry (L);                               \
+    _nclua_set_registry (L);                            \
   }                                                     \
   NCLUA_STMT_END
 
@@ -125,12 +125,6 @@ enum
   NCLUA_STMT_END
 
 /* nclua.c */
-
-NCLUA_PRIVATE void
-_nclua_error (lua_State *L, int level, const char *format, ...);
-
-NCLUA_PRIVATE void
-_nclua_warning (lua_State *L, int level, const char *format, ...);
 
 NCLUA_PRIVATE void
 _nclua_reset_uptime (nclua_t *nc);

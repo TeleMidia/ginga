@@ -1,5 +1,5 @@
 /* nclua.c -- NCLua state.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -58,6 +58,7 @@ struct _nclua_t
   nclua_bool_t close_lua_state; /* true if lua_state must be closed */
 };
 
+/* Error states.  */
 #define DEFINE_NIL_STATE(status)                        \
   {                                                     \
     status,                     /* status */            \
@@ -93,57 +94,6 @@ __nclua_create_in_error (nclua_status_t status)
 
 /* Exported private functions.  */
 
-static void
-__nclua_print_error (lua_State *L, int level, const char *prefix,
-                     const char *format, va_list args)
-{
-  nclua_bool_t space = FALSE;
-  const char *where;
-
-  fflush (stdout);
-
-  if (prefix != NULL)
-    {
-      fputs (prefix, stderr);
-      space = TRUE;
-    }
-
-  luaL_where (L, level);
-  where = lua_tostring (L, -1);
-  lua_pop (L, 1);
-  if (where != NULL)
-    {
-      fputs (where, stderr);
-      space = TRUE;
-    }
-
-  vfprintf (stderr, format, args);
-  fputc ('\n', stderr);
-  fflush (stderr);
-}
-
-/* Outputs Lua error message at level LEVEL to standard error.  */
-
-void
-_nclua_error (lua_State *L, int level, const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  __nclua_print_error (L, level, "NCLUA ERROR\t", format, args);
-  va_end (args);
-}
-
-/* Outputs Lua warning at level LEVEL to standard error.  */
-
-void
-_nclua_warning (lua_State *L, int level, const char *format, ...)
-{
-  va_list args;
-  va_start (args, format);
-  __nclua_print_error (L, level, "NCLUA Warning\t", format, args);
-  va_end (args);
-}
-
 /* Resets the up-time value for NCLua state.  */
 
 void
@@ -157,7 +107,7 @@ _nclua_reset_uptime (nclua_t *nc)
 #endif
 }
 
-/* Returns the time delay (in ms) since the first nclua_cycle call.  */
+/* Returns the time delay (in ms) since the first nclua_cycle() call.  */
 
 unsigned int
 _nclua_get_uptime (nclua_t *nc)
@@ -211,6 +161,7 @@ nclua_create_for_lua_state (lua_State *L)
     return __nclua_create_in_error (NCLUA_STATUS_NULL_POINTER);
 
   /* Check if the Lua state is valid.  */
+
   _nclua_get_registry (L);
   if (unlikely (!lua_isnil (L, -1)))
     {
@@ -219,7 +170,8 @@ nclua_create_for_lua_state (lua_State *L)
     }
   lua_pop (L, 1);
 
-  /* Allocate the NCLua state.  */
+  /* Create the NCLua state.  */
+
   nc = (nclua_t *) malloc (sizeof (*nc));
   if (unlikely (nc == NULL))
     return __nclua_create_in_error (NCLUA_STATUS_NO_MEMORY);
@@ -227,6 +179,7 @@ nclua_create_for_lua_state (lua_State *L)
   memset (nc, 0, sizeof (*nc));
 
   /* Create and initialize the NCLua registry table.  */
+
   _nclua_create_registry (L);
 
   lua_createtable (L, 0, 0);
@@ -245,6 +198,8 @@ nclua_create_for_lua_state (lua_State *L)
       free (nc);
       return __nclua_create_in_error (status);
     }
+
+  /* Initialize NCLua state data.  */
 
   nc->status = NCLUA_STATUS_SUCCESS;
   nc->ref_count = 1;
@@ -276,8 +231,6 @@ nclua_create (void)
   if (unlikely (L == NULL))
     return __nclua_create_in_error (NCLUA_STATUS_NO_MEMORY);
 
-  luaL_openlibs (L);
-
   nc = nclua_create_for_lua_state (L);
   if (unlikely (nclua_status (nc) != NCLUA_STATUS_SUCCESS))
     {
@@ -288,6 +241,17 @@ nclua_create (void)
   nc->close_lua_state = TRUE;
 
   return nc;
+}
+
+/* Resets or (initializes) the up-time of NCLua state NC.  */
+
+void
+nclua_reset_uptime (nclua_t *nc)
+{
+  if (unlikely (__nclua_is_invalid (nc)))
+    return;
+
+  _nclua_reset_uptime (nc);
 }
 
 /* Decreases the reference count of NCLua state NC by one.
@@ -307,12 +271,12 @@ nclua_destroy (nclua_t *nc)
   L = nclua_get_lua_state (nc);
 
   /* Release NCLua Event data.  */
+
   _nclua_event_close (L);
 
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
-  assert (lua_istable (L, -1));
-
   /* Release user data */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
   lua_pushnil (L);
   while (lua_next (L, -2) != 0)
     {
@@ -323,8 +287,8 @@ nclua_destroy (nclua_t *nc)
       user_data = lua_touserdata (L, -1);
 
       lua_rawgeti (L, -2, 2);
-      destroy = lua_touserdata (L, -1);
 
+      destroy = (nclua_destroy_func_t) integralof (lua_touserdata (L, -1));
       if (user_data != NULL && destroy != NULL)
         destroy (user_data);
 
@@ -333,6 +297,7 @@ nclua_destroy (nclua_t *nc)
   lua_pop (L, 1);
 
   /* Release registry table.  */
+
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_STATE);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_USER_DATA_TABLE);
@@ -410,6 +375,7 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
   lua_rawget (L, -2);
 
   /* Delete current user data.  */
+
   if (user_data == NULL)
     {
       if (lua_isnil (L, -1))
@@ -423,7 +389,7 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
         goto tail;              /* nothing to do */
 
       lua_rawgeti (L, -1, 2);
-      destroy = lua_touserdata (L, -1);
+      destroy = (nclua_destroy_func_t) integralof (lua_touserdata (L, -1));
       lua_pop (L, 1);
 
       if (destroy == NULL)
@@ -434,6 +400,7 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
 
   /* Replace current user data by USER_DATA
      and the associated destroy function by DESTROY.  */
+
   else if (lua_istable (L, -1))
     {
       void *prev_user_data;
@@ -447,7 +414,8 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
           nclua_destroy_func_t prev_destroy;
 
           lua_rawgeti (L, -1, 2);
-          prev_destroy = lua_touserdata (L, -1);
+          prev_destroy = (nclua_destroy_func_t)
+            integralof (lua_touserdata (L, -1));
           lua_pop (L, 1);
 
           if (prev_destroy)
@@ -457,12 +425,13 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
       lua_pushlightuserdata (L, (void *) user_data);
       lua_rawseti (L, -2, 1);
 
-      lua_pushlightuserdata (L, (void *) destroy);
+      lua_pushlightuserdata (L, pointerof ((ptrdiff_t) destroy));
       lua_rawseti (L, -2, 2);
     }
 
   /* No previous user data.  Attach the new user data USER_DATA
      and the associated destroy function DESTROY.  */
+
   else if (lua_isnil (L, -1))
     {
       lua_pop (L, 1);
@@ -476,11 +445,12 @@ nclua_set_user_data (nclua_t *nc, nclua_user_data_key_t *key,
       lua_pushlightuserdata (L, user_data);
       lua_rawseti (L, -2, 1);
 
-      lua_pushlightuserdata (L, destroy);
+      lua_pushlightuserdata (L, pointerof ((ptrdiff_t) destroy));
       lua_rawseti (L, -2, 2);
     }
 
   /* Oops...  */
+
   else
     {
       ASSERT_NOT_REACHED;
@@ -528,6 +498,9 @@ nclua_get_user_data (nclua_t *nc, nclua_user_data_key_t *key)
 lua_State *
 nclua_get_lua_state (nclua_t *nc)
 {
+  if (unlikely (__nclua_is_invalid (nc)))
+    return NULL;
+
   assert (nc->lua_state != NULL);
   return nc->lua_state;
 }
@@ -537,20 +510,71 @@ nclua_get_lua_state (nclua_t *nc)
 nclua_t *
 nclua_get_nclua_state (lua_State *L)
 {
-  int saved_top;
   nclua_t *nc;
 
-  saved_top = lua_gettop (L);
-
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_STATE);
-  assert (lua_islightuserdata (L, -1));
-
   nc = (nclua_t *) lua_touserdata (L, -1);
   assert (nc != NULL);
 
-  lua_settop (L, saved_top);
+  lua_pop (L, 2);
 
   return nc;
+}
+
+/* Enqueues event at top of stack into input queue.
+   This function pops the event from stack.  */
+
+void
+nclua_send (nclua_t *nc, lua_State *L)
+{
+  int queue;
+  int size;
+
+  if (unlikely (__nclua_is_invalid (nc)))
+    return;
+
+  assert (nc->lua_state == L);
+
+  if (unlikely (!lua_istable (L, -1)))
+    return;                     /* nothing to do */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  queue = ncluax_abs (L, -1);
+  size = lua_objlen (L, -1);
+
+  lua_pushvalue (L, -2);
+  ncluax_rawinsert (L, queue, size + 1);
+
+  lua_pop (L, 2);
+}
+
+/* Dequeues one event from the output queue and pushes it onto stack.
+   If the output queue is empty, pushes nil onto stack.  */
+
+void
+nclua_receive (nclua_t *nc, lua_State *L)
+{
+  int queue;
+  int size;
+
+  if (unlikely (__nclua_is_invalid (nc)))
+    return;
+
+  assert (nc->lua_state == L);
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
+  queue = ncluax_abs (L, -1);
+  size = lua_objlen (L, -1);
+
+  if (size == 0)
+    {
+      lua_pop (L, 1);
+      lua_pushnil (L);          /* empty queue */
+      return;
+    }
+
+  ncluax_rawremove (L, queue, 1);
+  lua_remove (L, -2);
 }
 
 /* Cycle the NCLua engine once.  */
@@ -559,32 +583,36 @@ void
 nclua_cycle (nclua_t *nc)
 {
   lua_State *L;
+  int queue;                    /* input queue */
+  int n;                        /* number of events we'll process */
   int i;
-  int n;
+
+  if (unlikely (__nclua_is_invalid (nc)))
+    return;
+
+  /* Initialize up-time on the first cycle,
+     if it was not initialized by the user.  */
 
   if (unlikely (__nclua_epoch_isnull (nc->epoch)))
     {
-      _nclua_reset_uptime (nc); /* first cycle */
+      _nclua_reset_uptime (nc);
     }
 
+  /* Get input queue.  */
+
   L = nclua_get_lua_state (nc);
-
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  queue = ncluax_abs (L, -1);
   n = lua_objlen (L, -1);
-  if (n == 0)
-    goto tail;                  /* nothing to do */
 
-  /* Cleanup input queue to avoid handling
-     the events generated in the current cycle.  */
-  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  /* Process current events.  */
 
-  for (i = 1; i < n; i++)
+  for (i = 1; i <= n; i++)
     {
-      lua_rawgeti (L, -1, i);
+      ncluax_rawremove (L, queue, 1);
       _nclua_notify (L);
       lua_pop (L, 1);
     }
 
- tail:
   lua_pop (L, 1);
 }

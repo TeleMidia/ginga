@@ -1,5 +1,5 @@
---[[ test-event-register.lua -- Check event.register with table parameter.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+--[[ test-event-register.lua -- Check event.register.
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -31,54 +31,52 @@ assert (pcall (event.register, 0) == false)
 assert (pcall (event.register, {}, {}) == false)
 assert (pcall (event.register, {}, f) == false)
 assert (pcall (event.register, '', f) == false)
-assert (pcall (event.register, nil, f, f) == false)
 
 
 ----------------------------------------------------------------------------
--- event.register ([pos:number], f:function, [filter:table])
---     -> status:boolean, [errmsg:string]
+-- event.register ([position:number], function:function, [filter:table])
 ----------------------------------------------------------------------------
 
 -- Check sanity.
-assert (event.register (f, t1))                   -- Q=<f>
+event.register (f, t1)                            -- Q=<f>
 assert (qsz () == 1 and qf (1) == f and qt (1) == t1)
 
-assert (event.register (g, t2))                   -- Q=<f,g>
+event.register (g, t2)                            -- Q=<f,g>
 assert (qsz () == 2)                              --      ^
 assert (qf (2) == g and qt (2) == t2)
 
--- Warning: ignoring extra argument.
-assert (event.register (1, h, t3, 0))             -- Q=<h,f,g>
+-- extra argument: ignore.
+event.register (1, h, t3, 0)                      -- Q=<h,f,g>
 assert (qf (1) == h and qt (1) == t3)             --    ^
 assert (qf (2) == f and qt (2) == t1)
 assert (qf (3) == g and qt (3) == t2)
 
 -- pos < 1: assume pos == 1.
-assert (event.register (-5, h, t1))               -- Q=<h,h,f,g>
+event.register (-5, h, t1)                        -- Q=<h,h,f,g>
 assert (qsz () == 4)                              --    ^
 assert (qf (1) == h and qt (1) == t1)
 
 -- pos == n: insert before the last element.
-assert (event.register (qsz (), h, t2))           -- Q=<h,h,f,h,g>
+event.register (qsz (), h, t2)                    -- Q=<h,h,f,h,g>
 assert (qsz () == 5)                              --          ^
 assert (qf (3) == f and qt (3) == t1)
 assert (qf (4) == h and qt (4) == t2)
 assert (qf (5) == g and qt (5) == t2)
 
 -- pos > n + 1: assume pos == n + 1.
-assert (event.register (10, f, t3))               -- Q=<h,h,f,h,g,f>
+event.register (10, f, t3)                        -- Q=<h,h,f,h,g,f>
 assert (qsz () == 6)                              --              ^
 assert (qf (5) == g and qt (5) == t2)
 assert (qf (6) == f and qt (6) == t3)
 
 -- pos == nil: assume pos == n + 1.
-assert (event.register (nil, f, t1))              -- Q=<h,h,f,h,g,f,f>
+event.register (nil, f, t1)                       -- Q=<h,h,f,h,g,f,f>
 assert (qsz () == 7)                              --                ^
 assert (qf (7) == f and qt (7) == t1)
 
 -- filter == nil: assume the empty filter.
-assert (event.register (g))
-assert (event.register (6, h))                    -- Q=<h,h,f,h,g,h,f,f,g>
+event.register (g)
+event.register (6, h)                             -- Q=<h,h,f,h,g,h,f,f,g>
                                                   --              ^     ^
 assert (qsz () == 9)
 assert (#qt (9) == 0 and qt (6) == qt (9))
@@ -94,15 +92,5 @@ assert (qf (7) == f and qt (7) == t3)
 assert (qf (8) == f and qt (8) == t1)
 assert (qf (9) == g and #qt (9) == 0)
 
-
-----------------------------------------------------------------------------
--- event.register ([pos:number], f:function, [class:string], ...)
---     -> status:boolean, [errmsg:string]
-----------------------------------------------------------------------------
-
--- Unknown class.
-assert (bad_argument (event.register (f, 'x')))
-assert (bad_argument (event.register (f, 'y')))
-
--- Each class is checked by separated test-file.
+-- Success.
 done ()

@@ -79,6 +79,9 @@ private:
      bool is_key_handler;       // true if player has the focus
      string scope;              // the label of the active anchor
 
+     IInputManager *im;
+
+     void schedule_update (void);
      void send_ncl_presentation_event (string action, string label);
      void send_ncl_attribution_event (string action, string name, string value);
 
@@ -103,8 +106,6 @@ public:
      // Input event callback.
      bool userEventReceived (IInputEvent * evt);
 
-     // Extra public stuff.
-     IInputManager *im;
      GingaScreenID getScreenId ();
      ILocalScreenManager *getScreenManager ();
      void refreshContent ();

@@ -16,24 +16,38 @@
 # with this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-TESTS=                             \
-  test-event-register.xncl         \
-  test-event-register-edit.xncl    \
-  test-event-register-key.xncl     \
-  test-event-register-ncl.xncl     \
-  test-event-register-pointer.xncl \
-  test-event-register-si.xncl      \
-  test-event-register-sms.xncl     \
-  test-event-register-tcp.xncl     \
-  test-event-register-user.xncl    \
-  test-event-unregister.xncl       \
-  test-event-timer.xncl            \
-  test-event-timer-cancel.xncl     \
-  test-event-uptime.xncl           \
-  test-property-attribution-0.ncl  \
-  test-property-attribution-1.ncl  \
-  test-bad-lua-0.ncl               \
-  test-bad-lua-1.ncl
+
+AM_LDFLAGS= -static
+AM_CPPFLAGS= -I..
+LDADD= ../libnclua.la
+
+check_PROGRAMS= test-nclua-status-to-string
+
+TESTS=                       \
+  $(check_PROGRAMS)          \
+  test-event-register.xncl   \
+  test-event-unregister.xncl \
+  test-event-uptime-0.xncl   \
+  test-event-uptime-1.xncl
+
+# TESTS=                             \
+#   test-event-register.xncl         \
+#   test-event-register-edit.xncl    \
+#   test-event-register-key.xncl     \
+#   test-event-register-ncl.xncl     \
+#   test-event-register-pointer.xncl \
+#   test-event-register-si.xncl      \
+#   test-event-register-sms.xncl     \
+#   test-event-register-tcp.xncl     \
+#   test-event-register-user.xncl    \
+#   test-event-unregister.xncl       \
+#   test-event-timer.xncl            \
+#   test-event-timer-cancel.xncl     \
+#   test-event-uptime.xncl           \
+#   test-property-attribution-0.ncl  \
+#   test-property-attribution-1.ncl  \
+#   test-bad-lua-0.ncl               \
+#   test-bad-lua-1.ncl
 
 XFAIL_TESTS=
 TESTS_ENVIRONMENT= $(srcdir)/run.sh
@@ -41,6 +55,7 @@ TESTS_ENVIRONMENT= $(srcdir)/run.sh
 EXTRA_DIST=    \
   connbase.ncl \
   exit.lua     \
+  tests.h      \
   tests.lua
 
 # Generate the NCL wrappers.
