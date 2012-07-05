@@ -50,9 +50,9 @@ http://www.telemidia.puc-rio.br
 extern "C"
 {
 #include <assert.h>
-#include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <lauxlib.h>
 #include "nclua.h"
 }
 
@@ -142,6 +142,14 @@ extern "C" { static int __trace_counter = 0; }
 
 // Private methods -- these should not call LOCK/UNLOCK.
 
+void LuaPlayer::schedule_update (void)
+{
+     IInputEvent *evt;
+     void *data = (void *) this->nc;
+     evt = this->dm->createApplicationEvent (this->myScreen, 0, data);
+     this->im->postInputEvent (evt);
+}
+
 void LuaPlayer::send_ncl_presentation_event (string action, string label)
 {
      lua_State *L = nclua_get_lua_state (this->nc);
@@ -159,8 +167,6 @@ void LuaPlayer::send_ncl_presentation_event (string action, string label)
      lua_pushstring (L, label.c_str ());
      lua_setfield (L, -2, "label");
 
-     lua_pushvalue (L, -1);
-     nclua_sendx (nc);
      nclua_send (nc, L);
 }
 
@@ -185,8 +191,6 @@ void LuaPlayer::send_ncl_attribution_event (string action, string name,
      lua_pushstring (L, value.c_str ());
      lua_setfield (L, -2, "value");
 
-     lua_pushvalue (L, -1);
-     nclua_sendx (nc);
      nclua_send (nc, L);
 }
 
@@ -214,8 +218,17 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
 
 LuaPlayer::~LuaPlayer ()
 {
+
      LOCK ();
-     nclua_destroy (this->nc);
+
+     if (this->nc != NULL)
+     {
+          lua_State *L;
+          L = nclua_get_lua_state (this->nc);
+          nclua_destroy (this->nc);
+          lua_close (L);
+     }
+
      UNLOCK ();
      pthread_mutex_destroy (&this->mutex);
 }
@@ -225,8 +238,6 @@ LuaPlayer::~LuaPlayer ()
 
 void LuaPlayer::exec (int type, int action, string name, string value)
 {
-     LOCK ();
-
      assert (action == PL_NOTIFY_ABORT
              || action == PL_NOTIFY_PAUSE
              || action == PL_NOTIFY_RESUME
@@ -244,14 +255,11 @@ void LuaPlayer::exec (int type, int action, string name, string value)
           break;
 
      case TYPE_SELECTION:
-          // TODO: Not implemented.
-          break;
+          break;                // not implemented
 
      default:
           ASSERT_NOT_REACHED;
      }
-
-     UNLOCK ();
 }
 
 
@@ -275,48 +283,54 @@ void LuaPlayer::pause ()
 
 bool LuaPlayer::play ()
 {
-     lua_State *L;
-     ISurface *surface;
      bool status = true;
 
      LOCK ();
 
      if (this->scope == "" && this->status == STOP)
      {
-          this->im->addApplicationInputEventListener (this);
+          lua_State *L;
+          ISurface *surface;
 
           assert (this->nc == NULL);
-          this->nc = nclua_create ();
-          assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
-          nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
 
-          L = nclua_get_lua_state (this->nc);
-          lua_pushcfunction (L, luaopen_canvas);
-          lua_call (L, 0, 0);
+          // Create Lua state and open extra libraries.
+
+          L = luaL_newstate ();
+          assert (L != NULL);
+
+          luaL_openlibs (L);
 
           surface = this->getSurface ();
           surface->clearContent ();
-
+          lua_pushcfunction (L, luaopen_canvas);
+          lua_call (L, 0, 0);
           lua_createcanvas (L, surface, 0);
           lua_setglobal (L, "canvas");
 
-          luaL_loadfile (L, this->mrl.c_str ());
+          // Create the associated NCLua state.
 
-          if (luaL_loadfile (L, this->mrl.c_str ()) != 0
-              || lua_pcall (L, 0, 0, 0) != 0)
+          this->nc = nclua_create_for_lua_state (L);
+          assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
+          nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
+          nclua_reset_uptime (this->nc);
+
+          // Run script.
+
+          if (luaL_dofile (L, this->mrl.c_str ()) != 0)
           {
                DEBUG ("%s", lua_tostring (L, -1));
                status = false;
                goto tail;
           }
 
-          // Cycle once to initialize clock.
-          // FIXME: This is temporary.
-          nclua_cycle (nc);
+          this->im->addApplicationInputEventListener (this);
+          this->schedule_update ();
      }
 
      // TODO: Should we post also the start of
      // the whole content anchor?
+
      this->send_ncl_presentation_event ("start", this->scope);
      Player::play ();
 
@@ -335,20 +349,28 @@ void LuaPlayer::resume ()
 
 void LuaPlayer::stop ()
 {
+     lua_State *L;
+
      LOCK ();
 
-     // FIXME: stop() gets called even if the player is not running.
      if (this->nc == NULL)
      {
+          // FIXME: stop() gets called even if the player is not running.
           goto tail;
      }
 
      this->send_ncl_presentation_event ("stop", this->scope);
+
+     // Destroy both states, Lua and NCLua.
+     L = nclua_get_lua_state (this->nc);
      nclua_destroy (this->nc);
+     lua_close (L);
      this->nc = NULL;
+
      this->im->removeApplicationInputEventListener (this);
      this->forcedNaturalEnd = true;
      this->has_presented = true;
+
      Player::stop ();
 
 tail:
@@ -425,42 +447,27 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 
      L = nclua_get_lua_state (this->nc);
 
+     // "Cycle" event.
+
      if (evt->isApplicationType ()
-         && ((lua_State *) evt->getApplicationData ()) == L)
+         && ((nclua_t *) evt->getApplicationData ()) == this->nc)
      {
-          int ref = evt->getType ();
-          lua_rawgeti (L, LUA_REGISTRYINDEX, ref);
-          luaL_unref (L, LUA_REGISTRYINDEX, ref);
-          lua_pushvalue (L, -1);
-          nclua_sendx (nc);
-          nclua_send (nc, L);
-     }
-
-#if 0
-     // Cycle event.
-     if (evt->isApplicationType ()
-         && ((nclua_t *) evt->getApplicationData ()) != this->nc)
-     {
-
-          int n;
-
           nclua_cycle (this->nc);
 
           nclua_receive (this->nc, L);
           while (!lua_isnil (L, -1))
           {
-               // Handle the received event.
+               // TODO: Handle output event.
+
                lua_pop (L, 1);
                nclua_receive (this->nc, L);
           }
           lua_pop (L, 1);
-
-          // Schedule the next update.
-          player->im->postInputEvent (evt);
+          this->schedule_update ();
      }
-#endif
 
      // Selection event.
+
      else if (evt->isKeyType () && this->is_key_handler)
      {
           string key_str;
@@ -478,8 +485,6 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
           lua_pushstring (L, key_str.c_str ());
           lua_setfield (L, -2, "key");
 
-          lua_pushvalue (L, -1);
-          nclua_sendx (nc);
           nclua_send (nc, L);
      }
 

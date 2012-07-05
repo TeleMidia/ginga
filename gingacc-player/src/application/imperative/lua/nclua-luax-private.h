@@ -1,5 +1,5 @@
 /* nclua-luax-private.h -- Auxiliary Lua functions.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -21,6 +21,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include <stdarg.h>
 
 #include "nclua.h"
+#include "nclua-private.h"
 #include "nclua-compiler-private.h"
 
 NCLUA_BEGIN_DECLS

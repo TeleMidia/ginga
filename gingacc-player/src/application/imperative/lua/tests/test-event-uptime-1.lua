@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- test-bad-lua-0.ncl - Check graceful termination.
+--[[ test-event-uptime-1.lua -- Check event.uptime.
      Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -14,21 +13,26 @@ for more details.
 
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc., 51
-Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. -->
+Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
-<ncl id="test-bad-lua-0">
-<head>
-  <connectorBase>
-    <importBase documentURI="connbase.ncl" alias="conn"/>
-  </connectorBase>
-</head>
-<body>
-  <port id="start" component="lua"/>
-  <media id="lua" src="test-bad-lua-0.lua"/>
-  <media id="exit" src="exit.lua"/>
-  <link xconnector="conn#onAbortStart">
-    <bind role="onAbort" component="lua"/>
-    <bind role="start" component="exit"/>
-  </link>
-</body>
-</ncl>
+require 'tests'
+local start = event.uptime ()
+
+event.register (
+   function (e)
+      event.post ('in', {class='user', uptime=event.uptime ()})
+      return true
+   end,
+   {class='ncl', type='presentation', action='start', label=''})
+
+event.register (
+   function (e)
+      assert (e.uptime >= start)
+      done ()
+   end,
+   {class='user'})
+
+event.register (
+   function (e)
+      fail ()
+   end)
