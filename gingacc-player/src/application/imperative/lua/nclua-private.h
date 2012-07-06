@@ -45,7 +45,8 @@ enum
   _NCLUA_REGISTRY_INPUT_QUEUE,     /* index of the input queue */
   _NCLUA_REGISTRY_OUTPUT_QUEUE,    /* index of the output queue */
   _NCLUA_REGISTRY_HANDLER_LIST,    /* index of the handler list */
-  _NCLUA_REGISTRY_TIMER_LIST,      /* index of the timer list */
+  _NCLUA_REGISTRY_TIMER_TABLE,     /* index of the timer table */
+  _NCLUA_REGISTRY_TIMER_CLEANUP,   /* index of the list of dead timers */
   _NCLUA_REGISTRY_LAST_INDEX       /* total number of index values */
 };
 

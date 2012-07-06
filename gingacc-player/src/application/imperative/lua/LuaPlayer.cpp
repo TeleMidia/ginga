@@ -319,6 +319,7 @@ bool LuaPlayer::play ()
 
           if (luaL_dofile (L, this->mrl.c_str ()) != 0)
           {
+               // FIXME: Abort player.
                DEBUG ("%s", lua_tostring (L, -1));
                status = false;
                goto tail;

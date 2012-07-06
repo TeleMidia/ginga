@@ -29,6 +29,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 static int l_get_handler_list (lua_State *L);
 static int l_post (lua_State *L);
 static int l_register (lua_State *L);
+static int l_timer (lua_State *L);
 static int l_unregister (lua_State *L);
 static int l_uptime (lua_State *L);
 
@@ -38,6 +39,7 @@ static const struct luaL_Reg __nclua_event_function_list[] =
   { "get_handler_list", l_get_handler_list },
   { "post",             l_post             },
   { "register",         l_register         },
+  { "timer",            l_timer            },
   { "unregister",       l_unregister       },
   { "uptime",           l_uptime           },
   { NULL,               NULL               }
@@ -62,7 +64,10 @@ _nclua_event_open (lua_State *L)
   _nclua_set_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
 
   lua_newtable (L);
-  _nclua_set_registry_data (L, _NCLUA_REGISTRY_TIMER_LIST);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+
+  lua_newtable (L);
+  _nclua_set_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
 
   luaL_register (L, "event", __nclua_event_function_list);
   lua_pop (L, 1);
@@ -78,7 +83,8 @@ _nclua_event_close (lua_State *L)
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_OUTPUT_QUEUE);
   _nclua_unset_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
-  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_TIMER_LIST);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+  _nclua_unset_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
 }
 
 /* Returns true if event at index EVENT matches filter at index FILTER.
@@ -251,7 +257,7 @@ l_register (lua_State *L)
       _nclua_get_registry_data (L, _NCLUA_REGISTRY_EMPTY_TABLE);
       lua_insert (L, 3);
     }
-
+  luaL_checktype (L, 3, LUA_TTABLE);
   lua_settop (L, 3);
 
   /* Insert {f, filter} into the given position in handler list.  */
@@ -269,6 +275,88 @@ l_register (lua_State *L)
 
   ncluax_rawinsert (L, list, position);
   return 0;
+}
+
+/* event.timer (delay:number, function:function) -> cancel:function
+
+   Creates a timer calls function FUNCTION after DELAY milliseconds.
+   Returns a function that can be used to cancel the timer.  */
+
+static int
+l_cancel (lua_State *L)
+{
+  int table;                    /* timer table */
+  int t;                        /* {end, function, cancel} up-value */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+  table = ncluax_abs (L, -1);
+
+  lua_pushvalue (L, lua_upvalueindex (1));
+  t = ncluax_abs (L, -1);
+
+  lua_pushvalue (L, t);
+  lua_rawget (L, table);
+
+  if (unlikely (lua_isnil (L, -1)))
+    return 0;                   /* nothing to do */
+
+  assert (lua_isboolean (L, -1) && lua_toboolean (L, -1));
+  lua_pop (L, 1);
+
+  /* Remove t from timer table.  */
+
+  lua_pushvalue (L, t);
+  lua_pushnil (L);
+  lua_rawset (L, table);
+
+  return 0;
+}
+
+static int
+l_timer (lua_State *L)
+{
+  int delay;                    /* delay parameter */
+  int table;                    /* timer table */
+  int end;                      /* up-time value when timer ends  */
+
+  nclua_t *nc;
+  int t;
+
+  delay = max (luaL_checkint (L, 1), 0);
+  luaL_checktype (L, 2, LUA_TFUNCTION);
+
+  nc = nclua_get_nclua_state (L);
+  end = _nclua_get_uptime (nc) + delay;
+
+  /* Create the cancel closure with the table
+     t={end, function, cancel} as up-value.  */
+
+  lua_createtable (L, 3, 0);
+  t = ncluax_abs (L, -1);
+
+  lua_pushinteger (L, end);
+  lua_rawseti (L, t, 1);
+  lua_pushvalue (L, 2);
+  lua_rawseti (L, t, 2);
+
+  lua_pushvalue (L, -1);
+  lua_pushcclosure (L, l_cancel, 1);
+  lua_pushvalue (L, -1);
+  lua_rawseti (L, t, 3);
+
+  /* Insert t into timer table (i.e., make table[t]=true).  */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+  table = ncluax_abs (L, -1);
+
+  lua_pushvalue (L, t);
+  lua_pushboolean (L, TRUE);
+  lua_rawset (L, table);
+
+  /* Returns the cancel closure.  */
+
+  lua_pop (L, 1);
+  return 1;
 }
 
 /* event.unregister (function:function)
