@@ -26,8 +26,8 @@ local function register5 ()
    event.register (g)
    event.register (h)
    event.register (f)
-   event.register (g)                             -- Q=<f,g,h,f,g>
-   assert (qsz () == 5)
+   event.register (g)                             -- H=<f,g,h,f,g>
+   assert (hsz () == 5)
 end
 
 -- Invalid calls.
@@ -42,37 +42,37 @@ assert (pcall (event.unregister, nil, f, f) == false)
 -- event.unregister (f:function) -> n:number
 ----------------------------------------------------------------------------
 
-register5 ()                                      -- Q=<f,g,h,f,g>
+register5 ()                                      -- H=<f,g,h,f,g>
 
-assert (event.unregister (f) == 2)                -- Q=<g,h,g>
-assert (qsz () == 3)
-assert (qf (1) == g and qf (2) == h and qf (3) == g)
+assert (event.unregister (f) == 2)                -- H=<g,h,g>
+assert (hsz () == 3)
+assert (hf (1) == g and hf (2) == h and hf (3) == g)
 
-assert (event.unregister (h) == 1)                -- Q=<g,g>
-assert (qsz () == 2)
-assert (qf (1) == g and qf (2) == g)
+assert (event.unregister (h) == 1)                -- H=<g,g>
+assert (hsz () == 2)
+assert (hf (1) == g and hf (2) == g)
 
 -- Function not registered; do nothing.
 assert (event.unregister (f) == 0)
-assert (qsz () == 2)
-assert (qf (1) == g and qf (2) == g)
+assert (hsz () == 2)
+assert (hf (1) == g and hf (2) == g)
 
-assert (event.unregister (g) == 2)                -- Q=<>
-assert (qsz () == 0)
+assert (event.unregister (g) == 2)                -- H=<>
+assert (hsz () == 0)
 
 
 ----------------------------------------------------------------------------
 -- event.unregister (f1:function, f2:function, ...) -> n:number
 ----------------------------------------------------------------------------
 
-register5 ()                                      -- Q=<f,g,h,f,g>
+register5 ()                                      -- H=<f,g,h,f,g>
 
-assert (event.unregister (g, g, g, g) == 2)       -- Q=<f,h,f>
-assert (qsz () == 3)
-assert (qf (1) == f and qf (2) == h and qf (3) == f)
+assert (event.unregister (g, g, g, g) == 2)       -- H=<f,h,f>
+assert (hsz () == 3)
+assert (hf (1) == f and hf (2) == h and hf (3) == f)
 
 assert (event.unregister (h, f) == 3)
-assert (qsz () == 0)
+assert (hsz () == 0)
 
 
 ----------------------------------------------------------------------------
@@ -81,8 +81,8 @@ assert (qsz () == 0)
 
 register5 ()
 assert (event.unregister () == 5)
-assert (qsz () == 0)
-assert (qsz () == 0)
+assert (hsz () == 0)
+assert (hsz () == 0)
 
 register5 ()
 done ()

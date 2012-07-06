@@ -46,27 +46,27 @@ function fail ()
 end
 
 -- We assume the following is working.
-queue = assert (event.get_handler_list ())
-assert (#queue == 0)
-function qsz() return #queue end
-function qf(i) return queue[i][1] end
-function qt(i) return queue[i][2] end
+handlers = assert (event.get_handler_list ())
+assert (#handlers == 0)
+function hsz() return #handlers end
+function hf(i) return handlers[i][1] end
+function ht(i) return handlers[i][2] end
 
--- Returns true if the contents of qt(i) is the same as t.
-function qeq (i, t)
-   for k,v in pairs (qt (i)) do
+-- Returns true if the contents of ht(i) is the same as t.
+function heq (i, t)
+   for k,v in pairs (ht (i)) do
       if t[k] ~= v then return false end
    end
    for k,v in pairs (t) do
-      if qt (i)[k] ~= v then return false end
+      if ht (i)[k] ~= v then return false end
    end
    return true
 end
 
 -- Time threshold used in time comparisons.
-TEQ_THRESHOLD = 10 -- ms
+TIMEEQ_THRESHOLD = 10 -- ms
 
 -- Check if millisecond times t1 and t2 are equal.
-function teq (t1, t2)
-   return math.abs (t1 - t2) <= TEQ_THRESHOLD
+function timeeq (t1, t2)
+   return math.abs (t1 - t2) <= TIMEEQ_THRESHOLD
 end

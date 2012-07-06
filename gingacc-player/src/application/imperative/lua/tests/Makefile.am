@@ -28,10 +28,11 @@ TESTS=                       \
   test-event-register.xncl   \
   test-event-unregister.xncl \
   test-event-uptime-0.xncl   \
-  test-event-uptime-1.xncl
+  test-event-uptime-1.xncl   \
+  test-event-timer-0.xncl    \
+  test-event-timer-1.xncl
 
 # TESTS=                             \
-#   test-event-register.xncl         \
 #   test-event-register-edit.xncl    \
 #   test-event-register-key.xncl     \
 #   test-event-register-ncl.xncl     \
@@ -40,10 +41,6 @@ TESTS=                       \
 #   test-event-register-sms.xncl     \
 #   test-event-register-tcp.xncl     \
 #   test-event-register-user.xncl    \
-#   test-event-unregister.xncl       \
-#   test-event-timer.xncl            \
-#   test-event-timer-cancel.xncl     \
-#   test-event-uptime.xncl           \
 #   test-property-attribution-0.ncl  \
 #   test-property-attribution-1.ncl  \
 #   test-bad-lua-0.ncl               \

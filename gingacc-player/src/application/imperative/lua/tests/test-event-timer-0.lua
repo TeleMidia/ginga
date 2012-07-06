@@ -1,4 +1,4 @@
---[[ test-event-timer.lua -- Check event.timer.
+--[[ test-event-timer-0.lua -- Check event.timer.
      Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -26,10 +26,11 @@ assert (pcall (event.timer, 0, {}) == false)
 local DUR = 500
 
 local function handler (e)
-   assert (e.dt and teq (e.dt, DUR))
+   print ('timer called at '..event.uptime ()..'ms')
+   assert (e.dt and timeeq (e.dt, DUR))
    done ()
 end
-event.register (handler, 'user')
+event.register (handler, {class='user'})
 
 -- Create timer.
 local t0 = event.uptime ()
