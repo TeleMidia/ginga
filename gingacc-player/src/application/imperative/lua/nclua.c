@@ -515,8 +515,7 @@ nclua_get_nclua_state (lua_State *L)
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_STATE);
   nc = (nclua_t *) lua_touserdata (L, -1);
   assert (nc != NULL);
-
-  lua_pop (L, 2);
+  lua_pop (L, 1);
 
   return nc;
 }
@@ -582,9 +581,11 @@ nclua_receive (nclua_t *nc, lua_State *L)
 void
 nclua_cycle (nclua_t *nc)
 {
+  int timers;                   /* table with active timers */
+  int input;                    /* input event queue */
+
   lua_State *L;
-  int queue;                    /* input queue */
-  int n;                        /* number of events we'll process */
+  int n;
   int i;
 
   if (unlikely (__nclua_is_invalid (nc)))
@@ -598,18 +599,65 @@ nclua_cycle (nclua_t *nc)
       _nclua_reset_uptime (nc);
     }
 
-  /* Get input queue.  */
-
   L = nclua_get_lua_state (nc);
-  _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
-  queue = ncluax_abs (L, -1);
-  n = lua_objlen (L, -1);
 
-  /* Process current events.  */
+  /* Traverse timer table triggering the finished timers.  */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_TABLE);
+  timers = ncluax_abs (L, -1);
+  lua_pushnil (L);
+
+  while (lua_next (L, timers) != 0)
+    {
+      int t = ncluax_abs (L, -2);
+      unsigned int end;
+
+      lua_rawgeti (L, t, 1);
+      assert (lua_isnumber (L, -1));
+      end = (unsigned int) max (lua_tointeger (L, -1), 0);
+      lua_pop (L, 1);
+
+      if (_nclua_get_uptime (nc) >= end)
+        {
+          /* Call the associated function.  */
+          lua_rawgeti (L, t, 2);
+          assert (lua_isfunction (L, -1));
+          lua_call (L, 0, 0);
+
+          /* Schedule timer for cleanup.  */
+          _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
+          n = lua_objlen (L, -1);
+          lua_rawgeti (L, t, 3);
+          assert (lua_isfunction (L, -1));
+          ncluax_rawinsert (L, -2, n + 1);
+          lua_pop (L, 1);
+        }
+
+      lua_pop (L, 1);
+    }
+  lua_pop (L, 1);
+
+  /* Collect "dead" timers.  */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
+  n = lua_objlen (L, -1);
+  while (n-- > 0)
+    {
+      ncluax_rawremove (L, -1, 1);
+      assert (lua_isfunction (L, -1));
+      lua_call (L, 0, 0);
+    }
+  lua_pop (L, 1);
+
+  /* Process the first n events in input queue.  */
+
+  _nclua_get_registry_data (L, _NCLUA_REGISTRY_INPUT_QUEUE);
+  input = ncluax_abs (L, -1);
+  n = lua_objlen (L, -1);
 
   for (i = 1; i <= n; i++)
     {
-      ncluax_rawremove (L, queue, 1);
+      ncluax_rawremove (L, input, 1);
       _nclua_notify (L);
       lua_pop (L, 1);
     }
