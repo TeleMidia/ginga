@@ -25,6 +25,9 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "nclua-private.h"
 #include "nclua-luax-private.h"
 
+
+/* Table.  */
+
 /* Sets t[KEY] to nil, where t is the table at index INDEX.  */
 
 void
@@ -174,6 +177,52 @@ ncluax_rawremove (lua_State *L, int index, int position)
 {
   ncluax_tableremove_tail (L, index, position, lua_rawget, lua_rawset);
 }
+
+/* Pushes a shallow copy of the element at the given index onto stack.  */
+
+void
+ncluax_pushcopy (lua_State *L, int index)
+{
+  index = ncluax_abs (L, index);
+  switch (lua_type (L, index))
+    {
+    case LUA_TNONE:
+    case LUA_TNIL:
+    case LUA_TBOOLEAN:
+    case LUA_TLIGHTUSERDATA:
+    case LUA_TNUMBER:
+    case LUA_TSTRING:
+    case LUA_TFUNCTION:
+      lua_pushvalue (L, index);
+      break;
+
+    case LUA_TTABLE:
+      {
+        int t;
+        lua_newtable (L);
+        t = ncluax_abs (L, -1);
+        lua_pushnil (L);
+        while (lua_next (L, index) != 0)
+          {
+            lua_pushvalue (L, -2);
+            lua_insert (L, -2);
+            lua_rawset (L, t);
+          }
+      }
+      break;
+
+    case LUA_TUSERDATA:
+    case LUA_TTHREAD:
+      lua_pushnil (L);
+      break;
+
+    default:
+      ASSERT_NOT_REACHED;
+    }
+}
+
+
+/* Debug.  */
 
 /* Returns the name of the current Lua function.  */
 

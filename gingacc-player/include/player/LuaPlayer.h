@@ -80,17 +80,11 @@ private:
      string scope;              // the label of the active anchor
 
      IInputManager *im;
-
      void schedule_update (void);
-     void send_ncl_presentation_event (string action, string label);
-     void send_ncl_attribution_event (string action, string name, string value);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
      virtual ~LuaPlayer ();
-
-     // Helper methods.
-     void exec (int type, int action, string name, string value="");
 
      // Player interface.
      void abort ();
@@ -106,10 +100,12 @@ public:
      // Input event callback.
      bool userEventReceived (IInputEvent * evt);
 
+     // Required by LuaCanvas.cpp.
      GingaScreenID getScreenId ();
      ILocalScreenManager *getScreenManager ();
      void refreshContent ();
 };
 
 LUAPLAYER_END_DECLS
-#endif                          /* LUAPLAYER_H */
+
+#endif // LUAPLAYER_H

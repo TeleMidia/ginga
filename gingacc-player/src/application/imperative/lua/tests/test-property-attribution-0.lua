@@ -41,27 +41,29 @@ event.register (
 event.register (
    function (e)
       start = tick
-   end, 'ncl', 'presentation', '', 'start')
+   end, {class='ncl', type='presentation', label='', action='start'})
 
 event.register (
    function (e)
       set_start = tick
-   end, 'ncl', 'attribution', 'P', 'start')
+   end, {class='ncl', type='attribution', label='P', action='start'})
 
 event.register (
    function (e)
       set_stop = tick
-   end, 'ncl', 'attribution', 'P', 'stop')
+   end, {class='ncl', type='attribution', label='P', action='stop'})
 
 event.register (
    function (e)
       a1_start = tick
-   end, 'ncl', 'presentation', 'onBeginAttribution-triggered', 'start')
+   end, {class='ncl', type='presentation',
+         label='onBeginAttribution-triggered', action='start'})
 
 event.register (
    function (e)
       a2_start = tick
-   end, 'ncl', 'presentation', 'onEndAttribution-triggered', 'start')
+   end, {class='ncl', type='presentation',
+         label='onEndAttribution-triggered', action='start'})
 
 event.register (
    function (e)
@@ -72,4 +74,4 @@ event.register (
       assert (a2_start == 5)
       assert (tick == 6)
       done ()
-   end, 'ncl', 'presentation', '', 'stop')
+   end, {class='ncl', type='presentation', label='', action='stop'})

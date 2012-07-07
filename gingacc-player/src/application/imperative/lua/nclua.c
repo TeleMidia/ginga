@@ -268,7 +268,7 @@ nclua_destroy (nclua_t *nc)
   if (--nc->ref_count > 0)
     return;
 
-  L = nclua_get_lua_state (nc);
+  L = nc->lua_state;
 
   /* Release NCLua Event data.  */
 
@@ -541,7 +541,7 @@ nclua_send (nclua_t *nc, lua_State *L)
   queue = ncluax_abs (L, -1);
   size = lua_objlen (L, -1);
 
-  lua_pushvalue (L, -2);
+  ncluax_pushcopy (L, -2);
   ncluax_rawinsert (L, queue, size + 1);
 
   lua_pop (L, 2);
