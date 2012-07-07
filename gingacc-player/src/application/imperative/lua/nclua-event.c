@@ -69,7 +69,7 @@ _nclua_event_open (lua_State *L)
   lua_newtable (L);
   _nclua_set_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
 
-  luaL_register (L, "event", __nclua_event_function_list);
+  luaL_register (L, NCLUA_EVENT_LIBNAME, __nclua_event_function_list);
   lua_pop (L, 1);
 
   return NCLUA_STATUS_SUCCESS;
@@ -166,7 +166,7 @@ _nclua_notify (lua_State *L)
 }
 
 
-/* The NCLua Event API -- From Lua to C.  */
+/* The NCLua Event API.  */
 
 /* event.get_handler_list () -> list:table
 
@@ -223,7 +223,7 @@ l_post (lua_State *L)
       size = lua_objlen (L, -1);
     }
 
-  lua_pushvalue (L, 2);
+  ncluax_pushcopy (L, 2);
   ncluax_rawinsert (L, queue, size + 1);
 
   lua_pushboolean (L, TRUE);
@@ -317,7 +317,7 @@ l_timer (lua_State *L)
 {
   int delay;                    /* delay parameter */
   int table;                    /* timer table */
-  int end;                      /* up-time value when timer ends  */
+  int end;                      /* up-time value when timer finishes  */
 
   nclua_t *nc;
   int t;

@@ -40,6 +40,8 @@ NCLUA_BEGIN_DECLS
 
 #include <lua.h>
 
+#define NCLUA_EVENT_LIBNAME "event"
+
 typedef int nclua_bool_t;
 
 typedef enum

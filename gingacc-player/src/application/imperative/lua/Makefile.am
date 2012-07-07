@@ -53,6 +53,7 @@ libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
 libgingaccplalua_la_LIBADD= libnclua.la
 
 libgingaccplalua_la_SOURCES= \
+  Event.h                    \
   LuaCanvas.cpp              \
   LuaPlayer.cpp
 
