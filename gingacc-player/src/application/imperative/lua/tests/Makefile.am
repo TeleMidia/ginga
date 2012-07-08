@@ -23,26 +23,19 @@ LDADD= ../libnclua.la
 
 check_PROGRAMS= test-nclua-status-to-string
 
-TESTS=                       \
-  $(check_PROGRAMS)          \
-  test-event-register.xncl   \
-  test-event-unregister.xncl \
-  test-event-uptime-0.xncl   \
-  test-event-uptime-1.xncl   \
-  test-event-timer-0.xncl    \
+TESTS=                          \
+  $(check_PROGRAMS)             \
+  test-event-register.xncl      \
+  test-event-unregister.xncl    \
+  test-event-register-key.xncl  \
+  test-event-register-ncl.xncl  \
+  test-event-register-user.xncl \
+  test-event-uptime-0.xncl      \
+  test-event-uptime-1.xncl      \
+  test-event-timer-0.xncl       \
   test-event-timer-1.xncl
 
 # TESTS=                             \
-#   test-event-register-edit.xncl    \
-#   test-event-register-key.xncl     \
-#   test-event-register-ncl.xncl     \
-#   test-event-register-pointer.xncl \
-#   test-event-register-si.xncl      \
-#   test-event-register-sms.xncl     \
-#   test-event-register-tcp.xncl     \
-#   test-event-register-user.xncl    \
-#   test-property-attribution-0.ncl  \
-#   test-property-attribution-1.ncl  \
 #   test-bad-lua-0.ncl               \
 #   test-bad-lua-1.ncl
 
