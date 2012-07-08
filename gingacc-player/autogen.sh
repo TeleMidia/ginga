@@ -1,3 +1,2 @@
 #!/bin/sh
-`which autoreconf` -i
-./configure "$@"
+`which autoreconf` -i && ./configure "$@"
