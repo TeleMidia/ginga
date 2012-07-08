@@ -78,6 +78,16 @@ l_new (lua_State *L)
     case LUA_TSTRING:
       {
         const char *path = luaL_checkstring (L, 2);
+        if (!fileExists (path))
+          {
+            fflush (NULL);
+            fprintf (stderr, "LuaPlayer ERROR: no such file: %s\n", path);
+            fflush (stderr);
+            clog << "LuaPlayer ERROR: no such file: "
+                 << string (path) << endl;
+            clog.flush ();
+
+          }
         sfc = sm->createRenderedSurfaceFromImageFile (id, path);
         break;
       }

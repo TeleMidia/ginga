@@ -120,7 +120,7 @@ LUAPLAYER_BEGIN_DECLS
      } while (0)
 # endif
 // Print execution trace.
-# define __where    __FILE__, __LINE__, __FUNCTION__
+# define __where       __FILE__, __LINE__, __FUNCTION__
 # define trace0()      __trace ("%s:%d:%s ()", __where)
 # define trace(f, ...) __trace ("%s:%d:%s ("f")", __where, ## __VA_ARGS__)
 #else
