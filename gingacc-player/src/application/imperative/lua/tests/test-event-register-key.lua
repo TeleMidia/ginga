@@ -21,59 +21,53 @@ local f = function () end
 local g = function () end
 local h = function () end
 
+-- Invalid calls.
+assert (pcall (event.register, f, 'key', {}) == false)
+assert (pcall (event.register, f, 'key', 'press', {}) == false)
+
 
 ----------------------------------------------------------------------------
--- event.register (pos:number, f:function, 'key',
+-- event.register (position:number, function:function, 'key',
 --                 [type:string], [key:string])
---     -> filter:table or false, [errmsg:string]
+--   -> true or false, [errmsg:string]
 ----------------------------------------------------------------------------
 
--- Invalid type.
-assert (bad_argument (event.register (f, 'key', {})))
-
--- Unknown type.
-assert (bad_argument (event.register (f, 'key', 'x')))
-
--- Invalid key.
-assert (bad_argument (event.register (f, 'key', nil, {})))
-
--- Unknown key.
--- TODO: Check if KEY exists in event.keys array.
+assert (event.register (f, 'key', 'x') == false)  -- unknown type
 
 -- Check sanity.
 assert (event.register (f, 'key'))                -- Q=<f>
-assert (qf (1) == f and qeq (1, {class='key'}))
+assert (hf (1) == f and heq (1, {class='key'}))
 
 assert (event.register (g, 'key', 'press'))       -- Q=<f,g>
-assert (qsz () == 2)                              --      ^
-assert (qf (2) == g and qeq (2, {class='key', type='press'}))
+assert (hsz () == 2)                              --      ^
+assert (hf (2) == g and heq (2, {class='key', type='press'}))
 
 assert (event.register (h, 'key', 'release'))     -- Q=<f,g,h>
-assert (qsz () == 3)                              --        ^
-assert (qf (3) == h and qeq (3, {class='key', type='release'}))
+assert (hsz () == 3)                              --        ^
+assert (hf (3) == h and heq (3, {class='key', type='release'}))
 
 assert (event.register (2, h, 'key', nil, '1'))   -- Q=<f,h,g,h>
-assert (qsz () == 4)                              --      ^
-assert (qf (2) == h and qeq (2, {class='key', key='1'}))
+assert (hsz () == 4)                              --      ^
+assert (hf (2) == h and heq (2, {class='key', key='1'}))
 
 assert (event.register (f, 'key', 'press', 'RED'))
-assert (qsz () == 5)                              -- Q=<f,h,g,h,f>
-assert (qf (5) == f)                              --            ^
-assert (qeq (5, {class='key', type='press', key='RED'}))
+assert (hsz () == 5)                              -- Q=<f,h,g,h,f>
+assert (hf (5) == f)                              --            ^
+assert (heq (5, {class='key', type='press', key='RED'}))
 
--- Warning: ignoring extra arguments.
+-- Extra arguments: ignore.
 assert (event.register (g, 'key', 'release', 'GREEN', 0))
-assert (qsz () == 6)                              -- Q=<f,h,g,h,f,g>
-assert (qf (6) == g)                              --              ^
-assert (qeq (6, {class='key', type='release', key='GREEN'}))
+assert (hsz () == 6)                              -- Q=<f,h,g,h,f,g>
+assert (hf (6) == g)                              --              ^
+assert (heq (6, {class='key', type='release', key='GREEN'}))
 
 -- Check whole queue.
 
-assert (qf (1) == f and qeq (1, {class='key'}))
-assert (qf (2) == h and qeq (2, {class='key', key='1'}))
-assert (qf (3) == g and qeq (3, {class='key', type='press'}))
-assert (qf (4) == h and qeq (4, {class='key', type='release'}))
-assert (qf (5) == f and qeq (5, {class='key', type='press', key='RED'}))
-assert (qf (6) == g and qeq (6, {class='key', type='release', key='GREEN'}))
+assert (hf (1) == f and heq (1, {class='key'}))
+assert (hf (2) == h and heq (2, {class='key', key='1'}))
+assert (hf (3) == g and heq (3, {class='key', type='press'}))
+assert (hf (4) == h and heq (4, {class='key', type='release'}))
+assert (hf (5) == f and heq (5, {class='key', type='press', key='RED'}))
+assert (hf (6) == g and heq (6, {class='key', type='release', key='GREEN'}))
 
 done ()

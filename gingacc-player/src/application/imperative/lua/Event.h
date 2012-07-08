@@ -57,6 +57,7 @@ http://www.telemidia.puc-rio.br
 
 #include <lua.h>
 #include <lauxlib.h>
+#include "nclua.h"
 
 #include "player/LuaPlayer.h"
 
@@ -216,6 +217,11 @@ static int event_check_ncl_event (lua_State *L)
      const char *type;
      const char *action;
 
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_NCL_CLASS));
+     lua_pop (L, 1);
+
      lua_getfield (L, -1, EVENT_NCL_FIELD_TYPE);
      if (!lua_isstring (L, -1))
      {
@@ -258,6 +264,7 @@ static int event_check_ncl_event (lua_State *L)
                event_errpush_invalid_field (L, EVENT_NCL_FIELD_NAME);
                return 2;
           }
+          // TODO: Check if name is a known property.
           lua_pop (L, 1);
 
           lua_getfield (L, -1, EVENT_NCL_FIELD_VALUE);
@@ -279,6 +286,7 @@ static int event_check_ncl_event (lua_State *L)
                event_errpush_invalid_field (L, EVENT_NCL_FIELD_LABEL);
                return 2;
           }
+          // TODO: Check if label is a valid label.
           lua_pop (L, 1);
      }
      else
@@ -287,6 +295,78 @@ static int event_check_ncl_event (lua_State *L)
      }
 
      lua_pushboolean (L, 1);
+     return 1;
+}
+
+// Creates and pushes onto stack an NCL filter with the given parameters.
+// If successful, pushes the resulting table onto stack.
+// Otherwise, pushes false plus error message.
+
+static int event_get_ncl_filter (lua_State *L)
+{
+     const char *cls;
+     const char *type;
+     const char *name;
+     const char *action;
+
+     cls = luaL_checkstring (L, 1);
+     assert (STREQ (cls, EVENT_NCL_CLASS));
+
+     type = luaL_optstring (L, 2, NULL);
+     if (type != NULL && !event_ncl_check_type (type))
+     {
+          lua_pushboolean (L, 0);
+          event_errpush_unknown_field (L, EVENT_NCL_FIELD_TYPE, type);
+          return 2;
+     }
+
+     name = luaL_optstring (L, 3, NULL);
+     // TODO: Check if name is a known property or label.
+
+     action = luaL_optstring (L, 4, NULL);
+     if (action != NULL && !event_ncl_check_action (action))
+     {
+          lua_pushboolean (L, 0);
+          event_errpush_unknown_field (L, EVENT_NCL_FIELD_ACTION, action);
+          return 2;
+     }
+
+     // Create the corresponding filter table.
+
+     lua_createtable (L, 0, 4);
+     lua_pushstring (L, cls);
+     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+
+     if (type != NULL)
+     {
+          lua_pushstring (L, type);
+          lua_setfield (L, -2, EVENT_NCL_FIELD_TYPE);
+
+          if (name != NULL)
+          {
+               lua_pushstring (L, name);
+               if (STREQ (type, EVENT_NCL_TYPE_ATTRIBUTION))
+               {
+                    lua_setfield (L, -2, EVENT_NCL_FIELD_NAME);
+               }
+               else if (STREQ (type, EVENT_NCL_TYPE_PRESENTATION)
+                        || STREQ (type, EVENT_NCL_TYPE_SELECTION))
+               {
+                    lua_setfield (L, -2, EVENT_NCL_FIELD_LABEL);
+               }
+               else
+               {
+                    ASSERT_NOT_REACHED;
+               }
+          }
+     }
+
+     if (action != NULL)
+     {
+          lua_pushstring (L, action);
+          lua_setfield (L, -2, EVENT_NCL_FIELD_ACTION);
+     }
+
      return 1;
 }
 
@@ -308,6 +388,11 @@ static int event_receive_ncl_event (lua_State *L)
 
      nc = nclua_get_nclua_state (L);
      player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
+
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_NCL_CLASS));
+     lua_pop (L, 1);
 
      lua_getfield (L, -1, EVENT_NCL_FIELD_TYPE);
      type = event_ncl_get_type_value (lua_tostring (L, -1));
@@ -405,6 +490,11 @@ static void event_send_ncl_event (nclua_t *nc, int type, int action,
 
 // Key class.
 
+// Returns true if TYPE is a valid key event type.
+#define event_key_check_type(type)              \
+     (STREQ (type, EVENT_KEY_TYPE_PRESS)        \
+      || STREQ (type, EVENT_KEY_TYPE_RELEASE))
+
 // Checks if the event at top of stack is a valid key event.
 // If successful, pushes true onto stack.
 // Otherwise, pushes false plus error message.
@@ -413,6 +503,11 @@ static int event_check_key_event (lua_State *L)
 {
      const char *type;
      const char *key;
+
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_KEY_CLASS));
+     lua_pop (L, 1);
 
      lua_getfield (L, -1, EVENT_KEY_FIELD_TYPE);
      if (!lua_isstring (L, -1))
@@ -423,8 +518,7 @@ static int event_check_key_event (lua_State *L)
      }
 
      type = lua_tostring (L, -1);
-     if (!STREQ (type, EVENT_KEY_TYPE_PRESS)
-         && !STREQ (type, EVENT_KEY_TYPE_RELEASE))
+     if (!event_key_check_type (type))
      {
           lua_pushboolean (L, 0);
           event_errpush_unknown_field (L, EVENT_KEY_FIELD_TYPE, type);
@@ -449,6 +543,51 @@ static int event_check_key_event (lua_State *L)
      return 1;
 }
 
+// Creates and pushes onto stack an key filter with the given parameters.
+// If successful, pushes the resulting table onto stack.
+// Otherwise, pushes false plus error message.
+
+static int event_get_key_filter (lua_State *L)
+{
+     const char *cls;
+     const char *type;
+     const char *key;
+
+     cls = luaL_checkstring (L, 1);
+     assert (STREQ (cls, EVENT_KEY_CLASS));
+
+     type = luaL_optstring (L, 2, NULL);
+     if (type != NULL && !event_key_check_type (type))
+     {
+          lua_pushboolean (L, 0);
+          event_errpush_unknown_field (L, EVENT_KEY_FIELD_TYPE, type);
+          return 2;
+     }
+
+     key = luaL_optstring (L, 3, NULL);
+     // TODO: Check if key is a known key.
+
+     // Create the corresponding filter table.
+
+     lua_createtable (L, 0, 3);
+     lua_pushstring (L, cls);
+     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+
+     if (type != NULL)
+     {
+          lua_pushstring (L, type);
+          lua_setfield (L, -2, EVENT_KEY_FIELD_TYPE);
+     }
+
+     if (key != NULL)
+     {
+          lua_pushstring (L, key);
+          lua_setfield (L, -2, EVENT_KEY_FIELD_KEY);
+     }
+
+     return 1;
+}
+
 // Receives the key event at top of stack.
 // If successful, pushes true onto stack.
 // Otherwise, pushes false plus error message.
@@ -457,7 +596,13 @@ static int event_check_key_event (lua_State *L)
 
 static int event_receive_key_event (lua_State *L)
 {
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_KEY_CLASS));
+     lua_pop (L, 1);
+
      // TODO: not implemented.
+
      lua_pushboolean (L, 1);
      return 1;
 }
@@ -495,7 +640,31 @@ static void event_send_key_event (nclua_t *nc, const char *key, int press)
 
 static int event_check_user_event (lua_State *L)
 {
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_USER_CLASS));
+     lua_pop (L, 1);
      lua_pushboolean (L, 1);
+     return 1;
+}
+
+// Creates and pushes onto stack a user filter with the given parameters.
+// If successful, pushes the resulting table onto stack.
+// Otherwise, pushes false plus error message.
+
+static int event_get_user_filter (lua_State *L)
+{
+     const char *cls;
+
+     cls = luaL_checkstring (L, 1);
+     assert (STREQ (cls, EVENT_USER_CLASS));
+
+     // Create the corresponding filter table.
+
+     lua_createtable (L, 0, 1);
+     lua_pushstring (L, cls);
+     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+
      return 1;
 }
 
@@ -505,7 +674,11 @@ static int event_check_user_event (lua_State *L)
 
 static int event_receive_user_event (lua_State *L)
 {
-     // TODO: not implemented
+     lua_getfield (L, -1, EVENT_FIELD_CLASS);
+     assert (lua_isstring (L, -1)
+             && STREQ (lua_tostring (L, -1), EVENT_USER_CLASS));
+     lua_pop (L, 1);
+
      lua_pushboolean (L, 1);
      return 1;
 }
@@ -515,17 +688,33 @@ static int event_receive_user_event (lua_State *L)
 
 typedef struct
 {
-     const char *cls;            // event class
-     lua_CFunction check_func;   // pointer to check function
-     lua_CFunction receive_func; // pointer receive function
+     const char *cls;                  // event class
+     lua_CFunction check_func;         // pointer to check function
+     lua_CFunction receive_func;       // pointer to receive function
+     lua_CFunction get_filter_func; // pointer to the get_filter function
 } event_class_map_t;
 
 static const event_class_map_t event_class_map[] =
 {
      // KEEP THIS SORTED ALPHABETICALLY.
-     { EVENT_KEY_CLASS,  event_check_key_event,  event_receive_key_event  },
-     { EVENT_NCL_CLASS,  event_check_ncl_event,  event_receive_ncl_event  },
-     { EVENT_USER_CLASS, event_check_user_event, event_receive_user_event },
+
+     { EVENT_KEY_CLASS,         // key
+       event_check_key_event,
+       event_receive_key_event,
+       event_get_key_filter
+     },
+
+     { EVENT_NCL_CLASS,         // ncl
+       event_check_ncl_event,
+       event_receive_ncl_event,
+       event_get_ncl_filter
+     },
+
+     { EVENT_USER_CLASS,        // user
+       event_check_user_event,
+       event_receive_user_event,
+       event_get_user_filter
+     },
 };
 
 static int event_class_map_compare (const void *p1, const void *p2)
@@ -536,7 +725,7 @@ static int event_class_map_compare (const void *p1, const void *p2)
 
 static const event_class_map_t *event_class_map_get (const char *cls)
 {
-     event_class_map_t key = {cls, NULL, NULL};
+     event_class_map_t key = {cls, NULL, NULL, NULL};
      return (const event_class_map_t *)
           bsearch (&key, event_class_map, ARRAY_SIZE (event_class_map),
                    sizeof (event_class_map_t), event_class_map_compare);
@@ -583,6 +772,27 @@ static int event_check_event (lua_State *L)
                                              check_func));
 }
 
+// Creates and pushes onto stack a filter with the given parameters.
+// If successful, pushes the resulting table onto stack.
+// Otherwise, pushes false plus error message.
+
+static int event_get_filter (lua_State *L)
+{
+     const event_class_map_t *entry;
+     const char *cls;
+
+     cls = luaL_checkstring (L, 1);
+     entry = event_class_map_get (cls);
+     if (entry == NULL)
+     {
+          lua_pushboolean (L, 0);
+          event_errpush_unknown_field (L, EVENT_FIELD_CLASS, cls);
+          return 1;
+     }
+
+     return entry->get_filter_func (L);
+}
+
 // Receives the event at top of stack.
 // If successful, pushes true onto stack.
 // Otherwise, pushes false plus error message.
@@ -591,6 +801,93 @@ static int event_receive_event (lua_State *L)
 {
      return event_handle_event (L, offsetof (event_class_map_t,
                                              receive_func));
+}
+
+
+// NCLua event.register wrapper.
+
+// Registry key for the original event.register function.
+static int _event_orig_register_key;
+
+// event.register ([pos:number], function:function, [class:string], ...)
+//
+// Similar to the original event.register, but uses the class string and
+// extra (class dependent) parameters to create the event filter table.
+
+static int event_register_wrapper (lua_State *L)
+{
+     int cls = 3;               // index of class parameter
+     int n;
+
+     if (lua_isfunction (L, 1))
+     {
+          cls = 2;
+     }
+
+     if (!lua_isstring (L, cls))
+     {
+          goto tail;
+     }
+
+     // Create and pushes a filter table with the given parameters.
+
+     n = lua_gettop (L);
+     lua_pushcfunction (L, event_get_filter);
+     lua_insert (L, cls);
+     lua_call (L, n - cls + 1, LUA_MULTRET);
+     if (!lua_istable (L, -1))
+     {
+          return 2;
+     }
+
+     // Call the original event.register.
+tail:
+     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
+     lua_rawget (L, LUA_REGISTRYINDEX);
+     lua_insert (L, 1);
+     lua_call (L, lua_gettop (L) - 1, LUA_MULTRET);
+     lua_pushboolean (L, 1);
+     return 1;
+}
+
+// Replace the original event.register by event_register_wrapper.
+
+static void event_install_register_wrapper (lua_State *L)
+{
+     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+
+     // Save the original event.register into Lua registry.
+
+     lua_getfield (L, -1, "register");
+     assert (lua_isfunction (L, -1));
+
+     lua_pushlightuserdata (L, (void*) &_event_orig_register_key);
+     lua_insert (L, -2);
+
+     lua_rawset (L, LUA_REGISTRYINDEX);
+
+     // Replace event.register by the wrapper function.
+
+     lua_pushcfunction (L, event_register_wrapper);
+     lua_setfield (L, -2, "register");
+     lua_pop (L, 1);
+}
+
+// Replace the current event.register by the original function.
+
+static void event_uninstall_register_wrapper (lua_State *L)
+{
+     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+
+     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
+     lua_rawget (L, LUA_REGISTRYINDEX);
+
+     lua_setfield (L, -2, "register");
+     lua_pop (L, 1);
+
+     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
+     lua_pushnil (L);
+     lua_rawset (L, LUA_REGISTRYINDEX);
 }
 
 #endif // LUAPLAYER_EVENT_H

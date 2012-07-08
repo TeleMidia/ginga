@@ -22,11 +22,10 @@ local g = function () end
 
 -- Check sanity.
 assert (event.register (f, 'user'))
-for k,v in pairs (queue) do print (k,v) end
-assert (qf (1) == f and qeq (1, {class='user'}))
+assert (hf (1) == f and heq (1, {class='user'}))
 
 -- Warning: ignoring extra arguments.
 assert (event.register (g, 'user', 'x'))
-assert (qf (2) == g and qeq (2, {class='user'}))
+assert (hf (2) == g and heq (2, {class='user'}))
 
 done ()

@@ -144,6 +144,7 @@ void LuaPlayer::doStop (void)
 {
      lua_State *L;
      L = nclua_get_lua_state (this->nc);
+     event_uninstall_register_wrapper (L);
      nclua_destroy (this->nc);
      lua_close (L);
      this->nc = NULL;
@@ -245,6 +246,7 @@ bool LuaPlayer::play (void)
 
           this->nc = nclua_create_for_lua_state (L);
           assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
+          event_install_register_wrapper (L);
           nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
           nclua_reset_uptime (this->nc);
 
@@ -252,12 +254,15 @@ bool LuaPlayer::play (void)
 
           if (luaL_dofile (L, this->mrl.c_str ()) != 0)
           {
+               if (lua_gettop (L) > 0 && lua_isstring (L, -1))
+               {
+                    fprintf (stderr, "%s\n", lua_tostring (L, -1));
+               }
+
                this->doStop ();
                Player::abort ();
                this->notifyPlayerListeners (Player::PL_NOTIFY_ABORT, "");
                status = false;
-
-               fprintf (stderr, "%s\n", lua_tostring (L, -1));
 
                goto tail;
           }

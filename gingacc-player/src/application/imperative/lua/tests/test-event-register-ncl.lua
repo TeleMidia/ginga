@@ -21,79 +21,69 @@ local f = function () end
 local g = function () end
 local h = function () end
 
+-- Invalid calls.
+assert (pcall (event.register, f, 'ncl', {}) == false)
+assert (pcall (event.register, f, 'ncl', 'presentation', f) == false)
+assert (pcall (event.register, f, 'ncl', 'presentation', 'x', {}) == false)
+
 
 ----------------------------------------------------------------------------
--- event.register ([pos:number], f:function, 'ncl', [type:string],
---                 [label or action:string], [action:string])
---     -> filter:table or false, [errmsg:string]
+-- event.register ([position:number], function:function, 'ncl',
+--                 [type:string, [label:string]], [action:string])
+--   -> true or false, [errmsg:string]
 ----------------------------------------------------------------------------
 
--- Invalid type.
-assert (bad_argument (event.register (f, 'ncl', {})))
-
--- Unknown type.
-assert (bad_argument (event.register (f, 'ncl', 'x')))
-
--- Invalid action.
-assert (bad_argument (event.register (-32, g, 'ncl', nil, nil, {})))
-
--- Unknown action.
-assert (bad_argument (event.register (-32, g, 'ncl', nil, nil, 'x')))
-
--- Missing type; label (or name) requires a type.
-assert (bad_argument (event.register (h, 'ncl', nil, 'x')))
-
--- Invalid name (type == 'attribution' requires a name).
-assert (bad_argument (event.register (f, 'ncl', 'attribution')))
+assert (event.register (f, 'ncl', 'x') == false)           -- unknown type
+assert (event.register (f, 'ncl', nil, nil, 'x') == false) -- unknown action
 
 -- Check sanity.
-assert (event.register (f, 'ncl'))                        -- Q=<f>
-assert (qsz () == 1)
-assert (qf (1) == f and qeq (1, {class='ncl'}))
+assert (event.register (f, 'ncl'))                        -- H=<f>
+assert (hsz () == 1)
+assert (hf (1) == f and heq (1, {class='ncl'}))
 
-assert (event.register (g, 'ncl', 'presentation'))        -- Q=<f,g>
-assert (qsz () == 2)                                      --      ^
-assert (qf (2) == g and qeq (2, {class='ncl', type='presentation'}))
+assert (event.register (g, 'ncl', 'presentation'))        -- H=<f,g>
+assert (hsz () == 2)                                      --      ^
+assert (hf (2) == g and heq (2, {class='ncl', type='presentation'}))
 
-assert (event.register (1, h, 'ncl', 'selection'))        -- Q=<h,f,g>
-assert (qsz () == 3)                                      --    ^
-assert (qf (1) == h and qeq (1, {class='ncl', type='selection'}))
+assert (event.register (1, h, 'ncl', 'selection'))        -- H=<h,f,g>
+assert (hsz () == 3)                                      --    ^
+assert (hf (1) == h and heq (1, {class='ncl', type='selection'}))
 
 -- Insert at position 3.
-assert (event.register (3, f, 'ncl', nil, nil, 'start'))  -- Q=<h,f,f,g>
-assert (qsz () == 4)                                      --        ^
-assert (qf (3) == f and qeq (3, {class='ncl', action='start'}))
+assert (event.register (3, f, 'ncl', nil, nil, 'start'))  -- H=<h,f,f,g>
+assert (hsz () == 4)                                      --        ^
+assert (hf (3) == f and heq (3, {class='ncl', action='start'}))
 
-assert (event.register (g, 'ncl', 'presentation', 'x'))   -- Q=<h,f,f,g,g>
-assert (qsz () == 5)                                      --            ^
-assert (qf (5) == g)
-assert (qeq (5, {class='ncl', type='presentation', label='x'}))
+assert (event.register (g, 'ncl', 'presentation', 'x'))   -- H=<h,f,f,g,g>
+assert (hsz () == 5)                                      --            ^
+assert (hf (5) == g)
+assert (heq (5, {class='ncl', type='presentation', label='x'}))
 
 assert (event.register (f, 'ncl', 'presentation', 'y', 'abort'))
-assert (qsz () == 6)                                      -- Q=<h,f,f,g,g,f>
-assert (qf (6) == f)                                      --              ^
-assert (qeq (6, {class='ncl', type='presentation', label='y', action='abort'}))
+assert (hsz () == 6)                                      -- H=<h,f,f,g,g,f>
+assert (hf (6) == f)                                      --              ^
+assert (heq (6, {class='ncl', type='presentation', label='y', action='abort'}))
 
 -- Insert at position 2.
-assert (event.register (2, h, 'ncl', 'attribution', 'x')) -- Q=<h,h,f,f,g,g,f>
-assert (qsz () == 7)                                      --      ^
-assert (qf (2) == h)
-assert (qeq (2, {class='ncl', type='attribution', name='x'}))
+assert (event.register (2, h, 'ncl', 'attribution', 'x')) -- H=<h,h,f,f,g,g,f>
+assert (hsz () == 7)                                      --      ^
+assert (hf (2) == h)
+assert (heq (2, {class='ncl', type='attribution', name='x'}))
 
--- Warning: ignoring extra arguments.
+-- Extra arguments: ignore.
 assert (event.register (g, 'ncl', 'attribution', 'y', 'stop', 'z'))
-assert (qsz () == 8)                                      -- Q=<h,h,f,f,g,g,f,g>
-assert (qf (8) == g)                                      --                  ^
-assert (qeq (8, {class='ncl', type='attribution', name='y', action='stop'}))
+assert (hsz () == 8)                                      -- H=<h,h,f,f,g,g,f,g>
+assert (hf (8) == g)                                      --                  ^
+assert (heq (8, {class='ncl', type='attribution', name='y', action='stop'}))
 
--- Check whole queue.
-assert (qf (1) == h and qeq (1, {class='ncl', type='selection'}))
-assert (qf (2) == h and qeq (2, {class='ncl', type='attribution', name='x'}))
-assert (qf (3) == f and qeq (3, {class='ncl'}))
-assert (qf (4) == f and qeq (4, {class='ncl', action='start'}))
-assert (qf (5) == g and qeq (5, {class='ncl', type='presentation'}))
-assert (qf (6) == g and qeq (6, {class='ncl', type='presentation', label='x'}))
-assert (qf (7) == f and qeq (7, {class='ncl', type='presentation', label='y', action='abort'}))
-assert (qf (8) == g and qeq (8, {class='ncl', type='attribution', name='y', action='stop'}))
+-- Check whole list.
+assert (hf (1) == h and heq (1, {class='ncl', type='selection'}))
+assert (hf (2) == h and heq (2, {class='ncl', type='attribution', name='x'}))
+assert (hf (3) == f and heq (3, {class='ncl'}))
+assert (hf (4) == f and heq (4, {class='ncl', action='start'}))
+assert (hf (5) == g and heq (5, {class='ncl', type='presentation'}))
+assert (hf (6) == g and heq (6, {class='ncl', type='presentation', label='x'}))
+assert (hf (7) == f and heq (7, {class='ncl', type='presentation', label='y', action='abort'}))
+assert (hf (8) == g and heq (8, {class='ncl', type='attribution', name='y', action='stop'}))
 
 done ()
