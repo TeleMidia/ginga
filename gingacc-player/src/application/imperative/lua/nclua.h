@@ -1,5 +1,5 @@
 /* nclua.h -- The NCLua engine.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -29,8 +29,8 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #endif
 
 #ifdef __cplusplus
-# define NCLUA_BEGIN_DECLS  extern "C" {
-# define NCLUA_END_DECLS    }
+# define NCLUA_BEGIN_DECLS extern "C" {
+# define NCLUA_END_DECLS   }
 #else
 # define NCLUA_BEGIN_DECLS
 # define NCLUA_END_DECLS
@@ -39,6 +39,8 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 NCLUA_BEGIN_DECLS
 
 #include <lua.h>
+
+#define NCLUA_EVENT_LIBNAME "event"
 
 typedef int nclua_bool_t;
 
@@ -96,6 +98,9 @@ NCLUA_PUBLIC nclua_t *
 nclua_get_nclua_state (lua_State *L);
 
 NCLUA_PUBLIC void
+nclua_reset_uptime (nclua_t *nc);
+
+NCLUA_PUBLIC void
 nclua_send (nclua_t *nc, lua_State *L);
 
 NCLUA_PUBLIC void
@@ -103,11 +108,6 @@ nclua_receive (nclua_t *nc, lua_State *L);
 
 NCLUA_PUBLIC void
 nclua_cycle (nclua_t *nc);
-
-/* DEPRECATED */
-
-NCLUA_PUBLIC void
-nclua_sendx (nclua_t *nc);
 
 NCLUA_END_DECLS
 

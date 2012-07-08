@@ -18,28 +18,43 @@
 
 SUBDIRS= tests
 
-AM_CPPFLAGS= -DLIBNCLUA_BUILDING -I$(top_srcdir)/include -I$(prefix)/include/ginga/
-AM_CFLAGS= $(CFLAG_VISIBILITY) -Wall -Wextra
-AM_CXXFLAGS= -Wall -Wextra
-
 libdir= $(prefix)/lib/ginga/players
 lib_LTLIBRARIES= libgingaccplalua.la
+noinst_LTLIBRARIES= libnclua.la
 
-libgingaccplalua_la_CFLAGS= $(AM_CFLAGS) $(AM_CXXFLAGS)
-libgingaccplalua_la_CPPFLAGS= $(AM_CPPFLAGS) $(LUA_INCLUDE)
+# libnclua:
+
+libnclua_la_CFLAGS= $(CFLAG_VISIBILITY) -Wall -Wextra -Werror -ansi -pedantic
+
+libnclua_la_CPPFLAGS= -DLIBNCLUA_BUILDING $(LUA_INCLUDE)
+
+libnclua_la_LDFLAGS= -static
+
+libnclua_la_SOURCES=       \
+  nclua-compiler-private.h \
+  nclua-event.c            \
+  nclua-luax-private.h     \
+  nclua-luax.c             \
+  nclua-private.h          \
+  nclua-status.c           \
+  nclua.c                  \
+  nclua.h
+
+# libgingaccplalua:
+
+libgingaccplalua_la_CXXFLAGS= -Wall -Wextra
+
+libgingaccplalua_la_CPPFLAGS= -DENABLE_TRACE \
+  -I$(top_srcdir)/include -I$(prefix)/include/ginga/ $(LUA_INCLUDE)
+
 libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
   $(LUA_LIB) -lgingaccplayer
 
+libgingaccplalua_la_LIBADD= libnclua.la
+
 libgingaccplalua_la_SOURCES= \
+  Event.h                    \
   LuaCanvas.cpp              \
-  LuaPlayer.cpp              \
-  nclua-compiler-private.h   \
-  nclua-event.cpp            \
-  nclua-luax-private.h       \
-  nclua-luax.c               \
-  nclua-private.h            \
-  nclua-status.c             \
-  nclua.c                    \
-  nclua.h
+  LuaPlayer.cpp
 
 MAINTAINERCLEANFILES= Makefile.in

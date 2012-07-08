@@ -1,5 +1,5 @@
 --[[ test-property-attribution-1.lua -- Check attribution events.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -39,17 +39,19 @@ event.register (
    function (e)
       start = tick
 
-      e = {class='ncl', type='attribution', action='start', name='P', value='abc'}
+      e = {class='ncl', type='attribution', action='start',
+           name='P', value='abc'}
       event.post (e)
 
       e.action = 'stop'
       event.post (e)
-   end, 'ncl', 'presentation', '', 'start')
+   end, {class='ncl', type='presentation', label='', action='start'})
 
 event.register (
    function (e)
       a1_start = tick
-   end, 'ncl', 'presentation', 'onBeginAttribution-triggered', 'start')
+   end, {class='ncl', type='presentation',
+         label='onBeginAttribution-triggered', action='start'})
 
 event.register (
    function (e)
@@ -57,6 +59,8 @@ event.register (
       assert (a1_start == 2)
       assert (tick == 3)
       e.label = ''
-      e.action = stop
+      e.action = 'stop'
       event.post (e)
-   end, 'ncl', 'presentation', 'onEndAttribution-triggered', 'start')
+      print ('DONE')
+   end, {class='ncl', type='presentation',
+         label='onEndAttribution-triggered', action='start'})

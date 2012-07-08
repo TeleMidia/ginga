@@ -1,5 +1,5 @@
 /* nclua-luax-private.h -- Auxiliary Lua functions.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -18,9 +18,8 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #ifndef NCLUA_LUAX_PRIVATE_H
 #define NCLUA_LUAX_PRIVATE_H
 
-#include <stdarg.h>
-
 #include "nclua.h"
+#include "nclua-private.h"
 #include "nclua-compiler-private.h"
 
 NCLUA_BEGIN_DECLS
@@ -38,37 +37,33 @@ ncluax_abs (lua_State *L, int index)
 /* Table.  */
 
 NCLUA_PRIVATE void
-ncluax_unsetfield (lua_State *L, int index, const char *k);
+ncluax_unsetfield (lua_State *L, int index, const char *key);
 
 NCLUA_PRIVATE nclua_bool_t
-ncluax_getintfield (lua_State *L, int index, const char *k, int *v);
+ncluax_getintfield (lua_State *L, int index, const char *key,int *value);
 
 NCLUA_PRIVATE nclua_bool_t
-ncluax_getnumberfield (lua_State *L, int index, const char *k, double *v);
+ncluax_getnumberfield (lua_State *L, int index, const char *key,
+                       double *value);
 
 NCLUA_PRIVATE nclua_bool_t
-ncluax_getstringfield (lua_State *L, int index, const char *k,
-                       const char **v);
+ncluax_getstringfield (lua_State *L, int index, const char *key,
+                       const char **value);
 
 NCLUA_PRIVATE void
-ncluax_tableinsert (lua_State *L, int index, int pos);
+ncluax_tableinsert (lua_State *L, int index, int position);
 
 NCLUA_PRIVATE void
-ncluax_tableremove (lua_State *L, int index, int pos);
+ncluax_tableremove (lua_State *L, int index, int position);
 
 NCLUA_PRIVATE void
-ncluax_rawinsert (lua_State *L, int index, int pos);
+ncluax_rawinsert (lua_State *L, int index, int position);
 
 NCLUA_PRIVATE void
-ncluax_rawremove (lua_State *L, int index, int pos);
-
-/* Error logging.  */
+ncluax_rawremove (lua_State *L, int index, int position);
 
 NCLUA_PRIVATE void
-ncluax_error (lua_State *L, int level, const char *format, ...);
-
-NCLUA_PRIVATE void
-ncluax_warning (lua_State *L, int level, const char *format, ...);
+ncluax_pushcopy (lua_State *L, int index);
 
 /* Debug.  */
 

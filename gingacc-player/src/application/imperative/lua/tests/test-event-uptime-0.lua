@@ -1,5 +1,5 @@
---[[ test-event-uptime.lua -- Check event.uptime.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+--[[ test-event-uptime-0.lua -- Check event.uptime.
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -19,7 +19,7 @@ require 'tests'
 
 assert (event.uptime () - event.uptime () == 0)
 
--- Warning: ignoring extra argument.
+-- extra argument: ignore.
 assert (event.uptime ({}) ~= nil)
 
 done ()
