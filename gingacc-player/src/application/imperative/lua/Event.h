@@ -60,9 +60,14 @@ http://www.telemidia.puc-rio.br
 
 #include "player/LuaPlayer.h"
 
-#define ARRAY_SIZE(x)      (sizeof (x) / sizeof (x[0]))
+#undef  ARRAY_SIZE
+#define ARRAY_SIZE(x) (sizeof (x) / sizeof (x[0]))
+
+#undef  ASSERT_NOT_REACHED
 #define ASSERT_NOT_REACHED assert (!"reached")
-#define STREQ(x,y)         (strcmp (x, y) == 0)
+
+#undef  STREQ
+#define STREQ(x,y) (strcmp (x, y) == 0)
 
 
 // Constants.
@@ -452,9 +457,9 @@ static int event_check_key_event (lua_State *L)
 
 static int event_receive_key_event (lua_State *L)
 {
-     (void) L;
-     ASSERT_NOT_REACHED;        // TODO: not implemented
-     return 0;
+     // TODO: not implemented.
+     lua_pushboolean (L, 1);
+     return 1;
 }
 
 // Sends key event with the given parameters to the NCLua state NC.
@@ -500,9 +505,9 @@ static int event_check_user_event (lua_State *L)
 
 static int event_receive_user_event (lua_State *L)
 {
-     (void) L;
-     ASSERT_NOT_REACHED;        // TODO: not implemented
-     return 0;
+     // TODO: not implemented
+     lua_pushboolean (L, 1);
+     return 1;
 }
 
 

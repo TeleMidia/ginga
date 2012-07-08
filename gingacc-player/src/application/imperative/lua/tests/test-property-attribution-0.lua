@@ -73,5 +73,6 @@ event.register (
       assert (a1_start == 4)
       assert (a2_start == 5)
       assert (tick == 6)
+      print ('DONE')
       done ()
    end, {class='ncl', type='presentation', label='', action='stop'})
