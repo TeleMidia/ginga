@@ -46,7 +46,7 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "nclua-luax-private.h"
 
 /* Registry key for the NCLua registry.  */
-const int _nclua_magic;
+const int _nclua_magic = 0;
 
 /* NCLua State data.  */
 struct _nclua_t
