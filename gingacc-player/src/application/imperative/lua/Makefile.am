@@ -24,8 +24,8 @@ noinst_LTLIBRARIES= libnclua.la
 
 # libnclua:
 
-libnclua_la_CFLAGS= $(CFLAG_VISIBILITY) -Wall -Wextra -Werror -ansi -pedantic \
-                    -fPIC
+libnclua_la_CFLAGS= $(CFLAG_VISIBILITY) -Wall -Wextra -Werror \
+  -ansi -pedantic -fPIC
 
 libnclua_la_CPPFLAGS= -DLIBNCLUA_BUILDING $(LUA_INCLUDE)
 
@@ -49,7 +49,7 @@ libgingaccplalua_la_CPPFLAGS= -DENABLE_TRACE \
   -I$(top_srcdir)/include -I$(prefix)/include/ginga/ $(LUA_INCLUDE)
 
 libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
-  $(LUA_LIB) -L../../.. -lgingaccplayer
+  $(LUA_LIB) -L$(top_builddir)/src -lgingaccplayer
 
 libgingaccplalua_la_LIBADD= libnclua.la
 
