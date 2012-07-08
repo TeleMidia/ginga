@@ -51,6 +51,7 @@ extern "C"
 {
 #include <assert.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -91,18 +92,20 @@ LUAPLAYER_BEGIN_DECLS
 #define LOCK()   assert (pthread_mutex_lock (&this->mutex) == 0)
 #define UNLOCK() assert (pthread_mutex_unlock (&this->mutex) == 0)
 
-// Execution trace.
-#ifdef ENABLE_TRACE
-extern "C" {
-#include <stdio.h>
-}
-# ifdef TRACE_TO_STDERR
-#  define __trace(format, ...)                          \
+// Error logging.
+#define __errprint(format, ...)                         \
      do {                                               \
           fflush (stdout);                              \
           fprintf (stderr, format"\n", ## __VA_ARGS__); \
           fflush (stderr);                              \
      } while (0)
+#define error(f, ...)   __errprint ("LuaPlayer ERROR: "f, ## __VA_ARGS__)
+#define warning(f, ...) __errprint ("LuaPlayer Warning: "f, ## __VA_ARGS__)
+
+// Execution trace.
+#ifdef ENABLE_TRACE
+# ifdef TRACE_TO_STDERR
+#  define __trace __errprint
 # else
 #  ifdef _MSC_VER
 #   define snprintf _snprintf
@@ -256,7 +259,7 @@ bool LuaPlayer::play (void)
           {
                if (lua_gettop (L) > 0 && lua_isstring (L, -1))
                {
-                    fprintf (stderr, "%s\n", lua_tostring (L, -1));
+                    error ("%s", lua_tostring (L, -1));
                }
 
                this->doStop ();
@@ -407,7 +410,7 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
                assert (lua_pcall (L, 1, LUA_MULTRET, 0) == 0);
                if (lua_isstring (L, -1))
                {
-                    fprintf (stderr, "Warning: %s", lua_tostring (L, -1));
+                    warning ("%s", lua_tostring (L, -1));
                     lua_pop (L, 1);
                }
                lua_pop (L, 1);
