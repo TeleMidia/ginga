@@ -173,11 +173,11 @@ static const event_map_t event_ncl_action_map[] =
 
 // Gets the type value associated with type name TYPE.
 #define event_ncl_get_type_value(type) \
-     ((int)(_event_ncl_get_type_entry (type))->value)
+     ((long)(_event_ncl_get_type_entry (type))->value)
 
 // Gets the action value associated with type name ACTION.
 #define event_ncl_get_action_value(action) \
-     ((int)(_event_ncl_get_action_entry (action))->value)
+     ((long)(_event_ncl_get_action_entry (action))->value)
 
 // Gets the type name associated with type value TYPE.
 static const char *event_ncl_get_type_name (int type)
