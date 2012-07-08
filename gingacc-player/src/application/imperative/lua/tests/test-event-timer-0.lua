@@ -1,4 +1,4 @@
---[[ test-event-register-user.lua -- Check event.register 'user' class.
+--[[ test-event-timer-0.lua -- Check event.timer.
      Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -17,16 +17,24 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
 require 'tests'
 
-local f = function () end
-local g = function () end
+-- Invalid calls.
+assert (pcall (event.timer) == false)
+assert (pcall (event.timer, {}, nil) == false)
+assert (pcall (event.timer, 0, {}) == false)
 
--- Check sanity.
-assert (event.register (f, 'user'))
-for k,v in pairs (queue) do print (k,v) end
-assert (qf (1) == f and qeq (1, {class='user'}))
+-- Check timer termination after DUR ms.
+local DUR = 500
 
--- Warning: ignoring extra arguments.
-assert (event.register (g, 'user', 'x'))
-assert (qf (2) == g and qeq (2, {class='user'}))
+local function handler (e)
+   print ('timer called at '..event.uptime ()..'ms')
+   assert (e.dt and timeeq (e.dt, DUR))
+   done ()
+end
+event.register (handler, {class='user'})
 
-done ()
+-- Create timer.
+local t0 = event.uptime ()
+local function postdt ()
+   assert (event.post ('in', {class='user', dt=event.uptime () - t0}))
+end
+assert (event.timer (DUR, postdt))

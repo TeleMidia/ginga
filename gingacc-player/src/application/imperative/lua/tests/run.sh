@@ -1,7 +1,7 @@
 #! /bin/sh -
-# run.sh -- Run NCL wrapper.
+# run.sh -- Run tests.
 #
-# Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+# Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -17,5 +17,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-export LD_LIBRARY_PATH=/usr/local/lib/ginga:/usr/local/lib/ginga/adapters:/usr/local/lib/ginga/cm:/usr/local/lib/ginga/epgfactory:/usr/local/lib/ginga/epgfactory/src:/usr/local/lib/ginga/mb:/usr/local/lib/ginga/mb/dec:/usr/local/lib/ginga/ic:/usr/local/lib/ginga/converters:/usr/local/lib/ginga/dp:/usr/local/lib/ginga/players:/usr/lib/lua/5.1/socket:/usr/local/lib/lua/5.1/socket
-exec /usr/local/sbin/ginga --disable-gfx --ncl "$@" 1>/dev/null
+if test -x "$1"; then
+  exec "$1"
+else
+  export LD_LIBRARY_PATH=/usr/local/lib/ginga:/usr/local/lib/ginga/adapters:/usr/local/lib/ginga/cm:/usr/local/lib/ginga/epgfactory:/usr/local/lib/ginga/epgfactory/src:/usr/local/lib/ginga/mb:/usr/local/lib/ginga/mb/dec:/usr/local/lib/ginga/ic:/usr/local/lib/ginga/converters:/usr/local/lib/ginga/dp:/usr/local/lib/ginga/players:/usr/lib/lua/5.1/socket:/usr/local/lib/lua/5.1/socket
+  exec /usr/local/sbin/ginga --disable-gfx --ncl "$@" 1>/dev/null
+fi

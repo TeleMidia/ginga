@@ -2,7 +2,7 @@
 Este arquivo eh parte da implementacao do ambiente declarativo do middleware
 Ginga (Ginga-NCL).
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+Direitos Autorais Reservados (c) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
 Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
 os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
@@ -25,7 +25,7 @@ http://www.telemidia.puc-rio.br
 ******************************************************************************
 This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
 
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+Copyright: 2006-2012 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License version 2 as published by
@@ -75,27 +75,25 @@ class LuaPlayer : public Player, public IInputEventListener
 private:
      nclua_t *nc;               // the NCLua state
      pthread_mutex_t mutex;     // sync access to player
-     bool has_presented;        // true if script was executed
-     bool is_key_handler;       // true if player has the focus
+     bool hasExecuted;          // true if script was executed
+     bool isKeyHandler;         // true if player has the focus
      string scope;              // the label of the active anchor
 
-     void send_ncl_presentation_event (string action, string label);
-     void send_ncl_attribution_event (string action, string name, string value);
+     IInputManager *im;
+     void scheduleUpdate (void);
+     void doStop (void);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
-     virtual ~LuaPlayer ();
-
-     // Helper methods.
-     void exec (int type, int action, string name, string value="");
+     virtual ~LuaPlayer (void);
 
      // Player interface.
-     void abort ();
-     void pause ();
-     bool play ();
-     void resume ();
-     void stop ();
-     virtual bool hasPresented ();
+     void abort (void);
+     void pause (void);
+     bool play (void);
+     void resume (void);
+     void stop (void);
+     virtual bool hasPresented (void);
      void setCurrentScope (string scopeId);
      bool setKeyHandler (bool isHandler);
      virtual void setPropertyValue (string name, string value);
@@ -103,12 +101,12 @@ public:
      // Input event callback.
      bool userEventReceived (IInputEvent * evt);
 
-     // Extra public stuff.
-     IInputManager *im;
-     GingaScreenID getScreenId ();
-     ILocalScreenManager *getScreenManager ();
-     void refreshContent ();
+     // Required by LuaCanvas.cpp.
+     GingaScreenID getScreenId (void);
+     ILocalScreenManager *getScreenManager (void);
+     void refreshContent (void);
 };
 
 LUAPLAYER_END_DECLS
-#endif                          /* LUAPLAYER_H */
+
+#endif // LUAPLAYER_H

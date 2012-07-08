@@ -1,5 +1,5 @@
 /* nclua-luax.c -- Auxiliary Lua functions.
-   Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -25,144 +25,204 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include "nclua-private.h"
 #include "nclua-luax-private.h"
 
-/* Sets t[K] to nil, where t is the table at index INDEX.  */
+
+/* Table.  */
+
+/* Sets t[KEY] to nil, where t is the table at index INDEX.  */
 
 void
-ncluax_unsetfield (lua_State *L, int index, const char *k)
+ncluax_unsetfield (lua_State *L, int index, const char *key)
 {
   lua_pushnil (L);
-  lua_setfield (L, ncluax_abs (L, index), k);
+  lua_setfield (L, ncluax_abs (L, index), key);
 }
 
 #define _NCLUAX_GETXFIELD_BODY(lua_isx, lua_tox)        \
   {                                                     \
     nclua_bool_t status = FALSE;                        \
-    lua_getfield (L, ncluax_abs (L, index), k);         \
+    lua_getfield (L, ncluax_abs (L, index), key);       \
     if (likely (lua_isx (L, -1)))                       \
       {                                                 \
         status = TRUE;                                  \
-        *v = lua_tox (L, -1);                           \
+        *value = lua_tox (L, -1);                       \
       }                                                 \
     lua_pop (L, 1);                                     \
     return status;                                      \
   }
 
-/* If t[K] is an integer, stores it in *V and returns true.
+/* If t[KEY] is an integer, stores it in *VALUE and returns true.
    Otherwise, returns false.  */
 
 nclua_bool_t
-ncluax_getintfield (lua_State *L, int index, const char *k, int *v)
+ncluax_getintfield (lua_State *L, int index, const char *key, int *value)
 {
   _NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tointeger)
 }
 
-/* If t[K] is a number, stores it in *V and returns true.
+/* If t[KEY] is a number, stores it in *VALUE and returns true.
    Otherwise, returns false.  */
 
 nclua_bool_t
-ncluax_getnumberfield (lua_State *L, int index, const char *k, double *v)
+ncluax_getnumberfield (lua_State *L, int index,
+                       const char *key, double *value)
 {
   _NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tonumber)
 }
 
-/* If t[K] is a string, stores it in *V and returns true.
+/* If t[KEY] is a string, stores it in *VALUE and returns true.
    Otherwise, returns false.  */
 
 nclua_bool_t
-ncluax_getstringfield (lua_State *L, int index, const char *k,
-                       const char **v)
+ncluax_getstringfield (lua_State *L, int index, const char *key,
+                       const char **value)
 {
   _NCLUAX_GETXFIELD_BODY (lua_isstring, lua_tostring)
 }
 
 static void
-ncluax_tableinsert_tail (lua_State *L, int index, int pos,
+ncluax_tableinsert_tail (lua_State *L, int index, int position,
                          void (*lua_gettable_func) (lua_State *, int),
                          void (*lua_settable_func) (lua_State *, int))
 {
-  int t = ncluax_abs (L, index);
-  int n = lua_objlen (L, t);
-  pos = min (max (pos, 1), n + 1);
+  int table = ncluax_abs (L, index);
+  int size = lua_objlen (L, table);
+  position = range (position, 1, size + 1);
 
   /* Shift up other elements, before inserting.  */
-  if (pos <= n)
+
+  if (position <= size)
     {
       int i;
-      for (i = n; i >= pos; i--)
+      for (i = size; i >= position; i--)
         {
           lua_pushinteger (L, i);
-          lua_gettable_func (L, t);
+          lua_gettable_func (L, table);
 
           lua_pushinteger (L, i + 1);
           lua_insert (L, -2);
-          lua_settable_func (L, t);
+          lua_settable_func (L, table);
         }
     }
 
   /* Insert the new element into table.  */
-  lua_pushinteger (L, pos);
-  lua_pushvalue (L, -2);
-  lua_settable_func (L, t);
+
+  lua_pushinteger (L, position);
+  lua_insert (L, -2);
+  lua_settable_func (L, table);
 }
 
-/* Inserts the element at top of stack in position POS of table at index
-   INDEX.  Other elements are shifted up to open space, if necessary.  */
+/* Inserts the value at top of stack in position POSITION of table at
+   index INDEX.  Other elements are shifted up to open space, if
+   necessary.  This function pops the value from stack.  */
 
 void
-ncluax_tableinsert (lua_State *L, int index, int pos)
+ncluax_tableinsert (lua_State *L, int index, int position)
 {
-  ncluax_tableinsert_tail (L, index, pos, lua_gettable, lua_settable);
+  ncluax_tableinsert_tail (L, index, position, lua_gettable, lua_settable);
 }
 
 /* Similar to ncluax_tableinsert(), but does a raw access;
    i.e., without metamethods.  */
 
 void
-ncluax_rawinsert (lua_State *L, int index, int pos)
+ncluax_rawinsert (lua_State *L, int index, int position)
 {
-  ncluax_tableinsert_tail (L, index, pos, lua_rawget, lua_rawset);
+  ncluax_tableinsert_tail (L, index, position, lua_rawget, lua_rawset);
 }
 
 static void
-ncluax_tableremove_tail (lua_State *L, int index, int pos,
+ncluax_tableremove_tail (lua_State *L, int index, int position,
                          void (*lua_gettable_func) (lua_State *, int),
                          void (*lua_settable_func) (lua_State *, int))
 {
   int i;
-  int t = ncluax_abs (L, index);
-  int n = lua_objlen (L, t);
+  int table = ncluax_abs (L, index);
+  int size = lua_objlen (L, table);
 
-  if (unlikely (pos < 1 || pos > n))
-    return;                     /* nothing to do */
+  if (unlikely (position < 1 || position > size))
+    {
+      lua_pushnil (L);
+      return;                   /* nothing to do */
+    }
 
-  for (i = pos; i <= n; i++)
+  lua_pushinteger (L, position);
+  lua_gettable_func (L, table);
+
+  for (i = position; i <= size; i++)
     {
       lua_pushinteger (L, i + 1);
-      lua_gettable_func (L, t);
+      lua_gettable_func (L, table);
 
       lua_pushinteger (L, i);
       lua_insert (L, -2);
-      lua_settable_func (L, t);
+      lua_settable_func (L, table);
     }
 }
 
-/* Removes the element in position POS of table at index INDEX.
-   Other elements are shifted down to close the space, if necessary.  */
+/* Removes the element in position POSITION of table at index INDEX.
+   Other elements are shifted down to close the space, if necessary.
+   This function pushes onto stack the removed value.  */
 
 void
-ncluax_tableremove (lua_State *L, int index, int pos)
+ncluax_tableremove (lua_State *L, int index, int position)
 {
-  ncluax_tableremove_tail (L, index, pos, lua_gettable, lua_settable);
+  ncluax_tableremove_tail (L, index, position, lua_gettable, lua_settable);
 }
 
 /* Similar to ncluax_tableremove(), but does a raw access;
    i.e., without metamethods.  */
 
 void
-ncluax_rawremove (lua_State *L, int index, int pos)
+ncluax_rawremove (lua_State *L, int index, int position)
 {
-  ncluax_tableremove_tail (L, index, pos, lua_rawget, lua_rawset);
+  ncluax_tableremove_tail (L, index, position, lua_rawget, lua_rawset);
 }
+
+/* Pushes a shallow copy of the element at the given index onto stack.  */
+
+void
+ncluax_pushcopy (lua_State *L, int index)
+{
+  index = ncluax_abs (L, index);
+  switch (lua_type (L, index))
+    {
+    case LUA_TNONE:
+    case LUA_TNIL:
+    case LUA_TBOOLEAN:
+    case LUA_TLIGHTUSERDATA:
+    case LUA_TNUMBER:
+    case LUA_TSTRING:
+    case LUA_TFUNCTION:
+      lua_pushvalue (L, index);
+      break;
+
+    case LUA_TTABLE:
+      {
+        int t;
+        lua_newtable (L);
+        t = ncluax_abs (L, -1);
+        lua_pushnil (L);
+        while (lua_next (L, index) != 0)
+          {
+            lua_pushvalue (L, -2);
+            lua_insert (L, -2);
+            lua_rawset (L, t);
+          }
+      }
+      break;
+
+    case LUA_TUSERDATA:
+    case LUA_TTHREAD:
+      lua_pushnil (L);
+      break;
+
+    default:
+      ASSERT_NOT_REACHED;
+    }
+}
+
+
+/* Debug.  */
 
 /* Returns the name of the current Lua function.  */
 
@@ -219,14 +279,14 @@ void
 ncluax_dump_table (lua_State *L, int index, int depth)
 {
   nclua_bool_t first = TRUE;
-  int t = ncluax_abs (L, index);
+  int table = ncluax_abs (L, index);
 
   fflush (stdout);
   fprintf (stderr, "<%s:%p:{", lua_typename (L, LUA_TTABLE),
-           lua_topointer (L, t));
+           lua_topointer (L, table));
 
   lua_pushnil (L);
-  while (lua_next (L, t) != 0)
+  while (lua_next (L, table) != 0)
     {
       if (likely (!first))
         fputc (',', stderr);

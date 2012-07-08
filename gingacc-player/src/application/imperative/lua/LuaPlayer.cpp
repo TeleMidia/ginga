@@ -2,7 +2,7 @@
 Este arquivo eh parte da implementacao do ambiente declarativo do middleware
 Ginga (Ginga-NCL).
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+Direitos Autorais Reservados (c) 2006-2012 PUC-Rio/Laboratorio TeleMidia
 
 Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
 os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
@@ -25,7 +25,7 @@ http://www.telemidia.puc-rio.br
 ******************************************************************************
 This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
 
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+Copyright: 2006-2012 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License version 2 as published by
@@ -50,9 +50,13 @@ http://www.telemidia.puc-rio.br
 extern "C"
 {
 #include <assert.h>
-#include <lauxlib.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <lua.h>
 #include <lualib.h>
+#include <lauxlib.h>
 #include "nclua.h"
 }
 
@@ -63,57 +67,17 @@ using namespace::br::pucrio::telemidia::util;
 
 #include "player/LuaPlayer.h"
 
+extern "C"
+{
+#include "Event.h"
+}
+
 int luaopen_canvas (lua_State *);
 int lua_createcanvas (lua_State *, ISurface *, int);
 
 LUAPLAYER_BEGIN_DECLS
 
-#define ARRAY_SIZE(x) (sizeof (x) / sizeof (x[0]))
-
-// Uncomment the following line to enable trace messages.
-#define ENABLE_TRACE
-#ifdef ENABLE_TRACE
-# include <stdio.h>
-#ifdef _MSC_VER
-# define __func__ __FUNCTION__
-# define SNPRINTF _snprintf
-#else
-# define SNPRINTF snprintf
-#endif
-// Outputs printf-like message to clog stream.
-# define CLOG(format, ...)                                              \
-     do {                                                               \
-          char buf[1024];                                               \
-          SNPRINTF (buf, ARRAY_SIZE (buf), format, ## __VA_ARGS__);     \
-          clog << buf;                                                  \
-     } while (0)
-// Outputs the current location in source to clog stream.
-# define TRACE_LOCATION()                                       \
-     do {                                                       \
-         CLOG ("%s:%d:%s", __FILE__, __LINE__, __func__);       \
-     } while (0)
-// Outputs trace message to clog stream
-# define TRACE0(format, ...)                    \
-     do{                                        \
-        TRACE_LOCATION ();                      \
-        clog << endl;                           \
-        clog.flush ();                          \
-     } while (0)
-// Outputs printf-like trace message to clog stream.
-# define TRACE(format, ...)                     \
-     do{                                        \
-        TRACE_LOCATION ();                      \
-        CLOG (": "format, ## __VA_ARGS__);      \
-        clog << endl;                           \
-        clog.flush ();                          \
-     } while (0)
-#else
-# define CLOG(format, ...)
-# define TRACE_LOCATION
-# define TRACE0
-# define TRACE(format, ...)
-#endif // ENABLE_TRACE
-
+// Initialize mutex m with recursive attribute.
 #define INIT_MUTEX(m)                                                   \
      do {                                                               \
           pthread_mutexattr_t attr;                                     \
@@ -123,78 +87,80 @@ LUAPLAYER_BEGIN_DECLS
           pthread_mutexattr_destroy (&attr);                            \
      } while (0)
 
-#define LOCK()                                                  \
-     do {                                                       \
-          assert (pthread_mutex_lock (&this->mutex) == 0);      \
-     } while (0)
+// Locks/unlocks player mutex.
+#define LOCK()   assert (pthread_mutex_lock (&this->mutex) == 0)
+#define UNLOCK() assert (pthread_mutex_unlock (&this->mutex) == 0)
 
-#define UNLOCK()                                                \
-     do {                                                       \
-          assert (pthread_mutex_unlock (&this->mutex) == 0);    \
+// Execution trace.
+#ifdef ENABLE_TRACE
+extern "C" {
+#include <stdio.h>
+}
+# ifdef TRACE_TO_STDERR
+#  define __trace(format, ...)                          \
+     do {                                               \
+          fflush (stdout);                              \
+          fprintf (stderr, format"\n", ## __VA_ARGS__); \
+          fflush (stderr);                              \
      } while (0)
-
-#define ASSERT_NOT_REACHED assert (!"reached")
+# else
+#  ifdef _MSC_VER
+#   define snprintf _snprintf
+#  endif
+#  define __trace(format, ...)                                  \
+     do {                                                       \
+          char buf[1024];                                       \
+          fflush (NULL);                                        \
+          snprintf (buf, sizeof (buf), format, ## __VA_ARGS__); \
+          clog << buf << endl;                                  \
+          clog.flush ();                                        \
+     } while (0)
+# endif
+// Print execution trace.
+# define __where    __FILE__, __LINE__, __FUNCTION__
+# define trace0()      __trace ("%s:%d:%s ()", __where)
+# define trace(f, ...) __trace ("%s:%d:%s ("f")", __where, ## __VA_ARGS__)
+#else
+# define trace0()
+# define trace(f, ...)
+#endif // ENABLE_TRACE
 
 
 // Private methods -- these should not call LOCK/UNLOCK.
 
-void LuaPlayer::send_ncl_presentation_event (string action, string label)
+// Schedules a new NCLua "cycle".
+
+void LuaPlayer::scheduleUpdate (void)
 {
-     lua_State *L = nclua_get_lua_state (this->nc);
-     lua_newtable (L);
-
-     lua_pushstring (L, "ncl");
-     lua_setfield (L, -2, "class");
-
-     lua_pushstring (L, "presentation");
-     lua_setfield (L, -2, "type");
-
-     lua_pushstring (L, action.c_str ());
-     lua_setfield (L, -2, "action");
-
-     lua_pushstring (L, label.c_str ());
-     lua_setfield (L, -2, "label");
-
-     lua_pushvalue (L, -1);
-     nclua_sendx (nc);
-     nclua_send (nc, L);
+     IInputEvent *evt;
+     void *data = (void *) this->nc;
+     evt = this->dm->createApplicationEvent (this->myScreen, 0, data);
+     this->im->postInputEvent (evt);
 }
 
-void LuaPlayer::send_ncl_attribution_event (string action, string name,
-                                            string value)
+// Destroys the associated NCLua engine and stops the player.
+
+void LuaPlayer::doStop (void)
 {
-     lua_State *L = nclua_get_lua_state (this->nc);
-     lua_newtable (L);
-
-     lua_pushstring (L, "ncl");
-     lua_setfield (L, -2, "class");
-
-     lua_pushstring (L, "attribution");
-     lua_setfield (L, -2, "type");
-
-     lua_pushstring (L, action.c_str ());
-     lua_setfield (L, -2, "action");
-
-     lua_pushstring (L, name.c_str ());
-     lua_setfield (L, -2, "name");
-
-     lua_pushstring (L, value.c_str ());
-     lua_setfield (L, -2, "value");
-
-     lua_pushvalue (L, -1);
-     nclua_sendx (nc);
-     nclua_send (nc, L);
+     lua_State *L;
+     L = nclua_get_lua_state (this->nc);
+     nclua_destroy (this->nc);
+     lua_close (L);
+     this->nc = NULL;
+     this->im->removeApplicationInputEventListener (this);
+     this->forcedNaturalEnd = true;
+     this->hasExecuted = true;
 }
 
 
 // Constructor and destructor.
 
-LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
+LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 {
-     TRACE ("id=%d, mrl='%s'", id, mrl.c_str ());
+     trace ("id=%d, mrl='%s'", id, mrl.c_str ());
 
-     // FIXME: This is *WRONG*; chdir() changes the working directory
-     // of the whole process.
+     // FIXME: This is *WRONG*: the chdir() call changes the working
+     // directory of the whole process.
      chdir (SystemCompat::getPath (mrl).c_str ());
 
      this->im = dm->getInputManager (this->myScreen);
@@ -203,121 +169,107 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl):Player (id, mrl)
 
      this->nc = NULL;           // created by start()
      INIT_MUTEX (&this->mutex);
-     this->has_presented = false;
-     this->is_key_handler = false;
+     this->hasExecuted = false;
+     this->isKeyHandler = false;
      this->scope = "";
 }
 
-LuaPlayer::~LuaPlayer ()
+LuaPlayer::~LuaPlayer (void)
 {
      LOCK ();
+     trace0 ();
 
-     TRACE0 ();
-     nclua_destroy (this->nc);
+     if (this->nc != NULL)
+          this->doStop ();
 
      UNLOCK ();
      pthread_mutex_destroy (&this->mutex);
 }
 
 
-// Helper public methods.
-
-void LuaPlayer::exec (int type, int action, string name, string value)
-{
-     TRACE ("type=%d, action=%d, name='%s', string='%s'",
-            type, action, name.c_str (), value.c_str ());
-
-     assert (action == PL_NOTIFY_ABORT
-             || action == PL_NOTIFY_PAUSE
-             || action == PL_NOTIFY_RESUME
-             || action == PL_NOTIFY_START
-             || action == PL_NOTIFY_STOP);
-
-     switch (type)
-     {
-     case TYPE_ATTRIBUTION:
-          this->notifyPlayerListeners (action, name, type, value);
-          break;
-
-     case TYPE_PRESENTATION:
-          this->notifyPlayerListeners (action, name);
-          break;
-
-     case TYPE_SELECTION:
-          // TODO: Not implemented.
-          break;
-
-     default:
-          ASSERT_NOT_REACHED;
-     }
-}
-
-
 // Inherited from Player.
 
-void LuaPlayer::abort ()
+void LuaPlayer::abort (void)
 {
      LOCK ();
-     TRACE0 ();
-     this->send_ncl_presentation_event ("abort", this->scope);
+     trace0 ();
+
+     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_ABORT,
+                                        this->scope.c_str ());
      this->stop ();
+
      UNLOCK ();
 }
 
-void LuaPlayer::pause ()
+void LuaPlayer::pause (void)
 {
      LOCK ();
-     TRACE0 ();
-     this->send_ncl_presentation_event ("pause", this->scope);
+     trace0 ();
+
+     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_PAUSE,
+                                        this->scope.c_str ());
      Player::pause ();
+
      UNLOCK ();
 }
 
-bool LuaPlayer::play ()
+bool LuaPlayer::play (void)
 {
-     lua_State *L;
-     ISurface *surface;
      bool status = true;
 
      LOCK ();
-     TRACE0 ();
+     trace0 ();
 
      if (this->scope == "" && this->status == STOP)
      {
-          this->im->addApplicationInputEventListener (this);
+          lua_State *L;
+          ISurface *surface;
 
           assert (this->nc == NULL);
-          this->nc = nclua_create ();
-          assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
-          nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
 
-          L = nclua_get_lua_state (this->nc);
-          lua_pushcfunction (L, luaopen_canvas);
-          lua_call (L, 0, 0);
+          // Create Lua state and open extra libraries.
+
+          L = luaL_newstate ();
+          assert (L != NULL);
+
+          luaL_openlibs (L);
 
           surface = this->getSurface ();
           surface->clearContent ();
-
+          lua_pushcfunction (L, luaopen_canvas);
+          lua_call (L, 0, 0);
           lua_createcanvas (L, surface, 0);
           lua_setglobal (L, "canvas");
 
-          luaL_loadfile (L, this->mrl.c_str ());
+          // Create the associated NCLua state.
 
-          if (luaL_loadfile (L, this->mrl.c_str ()) != 0
-              || lua_pcall (L, 0, 0, 0) != 0)
+          this->nc = nclua_create_for_lua_state (L);
+          assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
+          nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
+          nclua_reset_uptime (this->nc);
+
+          // Run script.
+
+          if (luaL_dofile (L, this->mrl.c_str ()) != 0)
           {
+               this->doStop ();
+               Player::abort ();
+               this->notifyPlayerListeners (Player::PL_NOTIFY_ABORT, "");
                status = false;
+
+               fprintf (stderr, "%s\n", lua_tostring (L, -1));
+
                goto tail;
           }
 
-          // Cycle once to initialize clock.
-          // FIXME: This is temporary.
-          nclua_cycle (nc);
+          this->im->addApplicationInputEventListener (this);
+          this->scheduleUpdate ();
      }
 
-     // TODO: Should we post also the start of
-     // the whole content anchor?
-     this->send_ncl_presentation_event ("start", this->scope);
+     // TODO: Should we post also the start of the whole content anchor?
+
+     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_START,
+                                        this->scope.c_str ());
      Player::play ();
 
 tail:
@@ -325,53 +277,55 @@ tail:
      return status;
 }
 
-void LuaPlayer::resume ()
+void LuaPlayer::resume (void)
 {
      LOCK ();
-     TRACE0 ();
-     this->send_ncl_presentation_event ("resume", this->scope);
+     trace0 ();
+
+     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_RESUME,
+                                        this->scope.c_str ());
      Player::resume ();
+
      UNLOCK ();
 }
 
-void LuaPlayer::stop ()
+void LuaPlayer::stop (void)
 {
      LOCK ();
-     TRACE0 ();
+     trace0 ();
 
      // FIXME: stop() gets called even if the player is not running.
-     if (this->nc == NULL)
+     if (this->nc != NULL)
      {
-          goto tail;
+          event_send_ncl_presentation_event (this->nc,
+                                             Player::PL_NOTIFY_STOP,
+                                             this->scope.c_str ());
+          this->doStop ();
+          Player::stop ();
      }
 
-     this->send_ncl_presentation_event ("stop", this->scope);
-     nclua_destroy (this->nc);
-     this->nc = NULL;
-     this->im->removeApplicationInputEventListener (this);
-     this->forcedNaturalEnd = true;
-     this->has_presented = true;
-     Player::stop ();
-
-tail:
      UNLOCK ();
 }
 
 bool LuaPlayer::hasPresented (void)
 {
-     bool has_presented;
+     bool hasExecuted;
 
      LOCK ();
-     has_presented = this->has_presented;
+     trace0 ();
+
+     hasExecuted = this->hasExecuted;
+
      UNLOCK ();
 
-     return has_presented;
+     return hasExecuted;
 }
 
 void LuaPlayer::setCurrentScope (string name)
 {
      LOCK ();
-     TRACE ("name='%s'", name.c_str ());
+     trace ("name='%s'", name.c_str ());
+
      this->scope = name;
      UNLOCK ();
 }
@@ -379,8 +333,10 @@ void LuaPlayer::setCurrentScope (string name)
 bool LuaPlayer::setKeyHandler (bool b)
 {
      LOCK ();
-     TRACE ("b=%s", (b) ? "true" : "false");
-     this->is_key_handler = b;
+     trace ("b=%s", b ? "true" : "false");
+
+     this->isKeyHandler = b;
+
      UNLOCK ();
 
      return b;
@@ -389,28 +345,28 @@ bool LuaPlayer::setKeyHandler (bool b)
 void LuaPlayer::setPropertyValue (string name, string value)
 {
      LOCK ();
-     TRACE ("name='%s', value='%s'", name.c_str (), value.c_str ());
+     trace ("name='%s', value='%s'", name.c_str (), value.c_str ());
 
-     if (this->status != PLAY)  // initialization "set"
-     {
-          Player::setPropertyValue (name, value);
-          goto tail;
-     }
 
-     if (this->nc != NULL)
+     // FIXME: Before calling play(), FormatterPlayerAdapter calls
+     // setPropertyValue() to initialize the object's properties.  We
+     // need to work around this bogus behavior, since it is the play()
+     // call that creates the NCLua engine.  By the way, this workaround
+     // is far from perfect.
+
+     if (this->nc != NULL && this->status == PLAY)
        {
-         // FIXME: Before calling play(), FormatterPlayerAdapter calls
-         // setPropertyValue() to initialize the object's properties.  We
-         // need to work around this bogus behavior, since it is the play()
-         // call that creates the NCLua engine.  By the way, this workaround
-         // is far from perfect.
-         this->send_ncl_attribution_event ("start", name, value);
-         this->send_ncl_attribution_event ("stop", name, value);
+            const char *cname = name.c_str ();
+            const char *cvalue = value.c_str ();
+
+            event_send_ncl_attribution_event
+                 (this->nc, Player::PL_NOTIFY_START, cname, cvalue);
+            event_send_ncl_attribution_event
+                 (this->nc, Player::PL_NOTIFY_STOP, cname, cvalue);
        }
 
      Player::setPropertyValue (name, value);
 
-tail:
      UNLOCK ();
 }
 
@@ -422,6 +378,7 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
      lua_State *L;
 
      LOCK ();
+     // trace ("evt=%p", (void *) evt);
 
      if (this->nc == NULL)
      {
@@ -430,62 +387,44 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 
      L = nclua_get_lua_state (this->nc);
 
+     // "Cycle" event.
+
      if (evt->isApplicationType ()
-         && ((lua_State *) evt->getApplicationData ()) == L)
+         && ((nclua_t *) evt->getApplicationData ()) == this->nc)
      {
-          int ref = evt->getType ();
-          lua_rawgeti (L, LUA_REGISTRYINDEX, ref);
-          luaL_unref (L, LUA_REGISTRYINDEX, ref);
-          lua_pushvalue (L, -1);
-          nclua_sendx (nc);
-          nclua_send (nc, L);
-     }
-
-#if 0
-     // Cycle event.
-     if (evt->isApplicationType ()
-         && ((nclua_t *) evt->getApplicationData ()) != this->nc)
-     {
-
-          int n;
-
           nclua_cycle (this->nc);
 
           nclua_receive (this->nc, L);
           while (!lua_isnil (L, -1))
           {
-               // Handle the received event.
+               lua_pushcfunction (L, event_receive_event);
+               lua_insert (L, -2);
+               assert (lua_pcall (L, 1, LUA_MULTRET, 0) == 0);
+               if (lua_isstring (L, -1))
+               {
+                    fprintf (stderr, "Warning: %s", lua_tostring (L, -1));
+                    lua_pop (L, 1);
+               }
                lua_pop (L, 1);
+
                nclua_receive (this->nc, L);
           }
           lua_pop (L, 1);
-
-          // Schedule the next update.
-          player->im->postInputEvent (evt);
+          this->scheduleUpdate ();
      }
-#endif
 
-     // Selection event.
-     else if (evt->isKeyType () && this->is_key_handler)
+     // Key event.
+
+     else if (evt->isKeyType () && this->isKeyHandler)
      {
-          string key_str;
+          string key;
+          int press;
 
-          key_str = CodeMap::getInstance ()
+          key = CodeMap::getInstance ()
                ->getValue (evt->getKeyCode (myScreen));
-          lua_newtable (L);
+          press = evt->isPressedType ();
 
-          lua_pushstring (L, "key");
-          lua_setfield (L, -2, "class");
-
-          lua_pushstring (L, evt->isPressedType () ? "press" : "release");
-          lua_setfield (L, -2, "type");
-
-          lua_pushstring (L, key_str.c_str ());
-          lua_setfield (L, -2, "key");
-
-          lua_pushvalue (L, -1);
-          nclua_sendx (nc);
-          nclua_send (nc, L);
+          event_send_key_event (this->nc, key.c_str (), press);
      }
 
 tail:
@@ -495,25 +434,31 @@ tail:
 }
 
 
-// Extra public stuff.
+// Extra public stuff (required by LuaCanvas).
 
-GingaScreenID LuaPlayer::getScreenId ()
+GingaScreenID LuaPlayer::getScreenId (void)
 {
      GingaScreenID screen;
 
      LOCK ();
+     trace0 ();
+
      screen = this->myScreen;
+
      UNLOCK ();
 
      return screen;
 }
 
-ILocalScreenManager *LuaPlayer::getScreenManager ()
+ILocalScreenManager *LuaPlayer::getScreenManager (void)
 {
      ILocalScreenManager *dm;
 
      LOCK ();
+     trace0 ();
+
      dm = this->dm;
+
      UNLOCK ();
 
      return dm;
@@ -522,6 +467,7 @@ ILocalScreenManager *LuaPlayer::getScreenManager ()
 void LuaPlayer::refreshContent (void)
 {
      LOCK ();
+     trace0 ();
 
      if (!this->notifyContentUpdate)
      {
@@ -539,17 +485,18 @@ tail:
 
 extern "C"
 {
-     IPlayer *createLuaPlayer (GingaScreenID id, const char *mrl,
-                               bool has_visual)
-     {
-          return new LuaPlayer (id, string (mrl));
-     }
 
-     void destroyLuaPlayer (IPlayer * player)
-     {
-          delete player;
-     }
+IPlayer *createLuaPlayer (GingaScreenID id, const char *mrl, bool b)
+{
+     return new LuaPlayer (id, string (mrl));
 }
+
+void destroyLuaPlayer (IPlayer * player)
+{
+     delete player;
+}
+
+} // extern "C"
 
 LUAPLAYER_END_DECLS
 

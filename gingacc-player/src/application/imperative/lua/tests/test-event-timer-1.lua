@@ -1,5 +1,5 @@
---[[ test-event-timer-cancel.lua -- Check event.timer cancel.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+--[[ test-event-timer-1.lua -- Check event.timer cancel.
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -22,20 +22,24 @@ local DUR = 500                 -- test duration in ms
 local EOT = false               -- end-of-timer: true if timer's
                                 --   function was called;
                                 --   that is, the timer was not canceled
-
-local THRESHOLD = TEQ_THRESHOLD
-
 function handler(e)
+   print ('check called at '..event.uptime ()..'ms')
    assert (not EOT)
    done ()
 end
-event.register (handler, 'user')
+event.register (handler, {class='user'})
 
 local cancel = event.timer (DUR, function () EOT = true end)
 assert (cancel)
 
+local function docancel ()
+   print ('timer canceled at '..event.uptime ()..'ms')
+   cancel ()
+end
+
 -- Cancel timer.
-assert (event.timer (DUR - THRESHOLD - 1, cancel))
+assert (event.timer (DUR - TIMEEQ_THRESHOLD, docancel))
 
 -- Call handler.
-assert (event.timer (DUR + THRESHOLD + 1, function () event.post ('in', {class='user'}) end))
+assert (event.timer (DUR + TIMEEQ_THRESHOLD,
+                     function () event.post ('in', {class='user'}) end))

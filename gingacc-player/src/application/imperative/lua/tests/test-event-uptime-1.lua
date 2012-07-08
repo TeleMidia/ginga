@@ -1,5 +1,5 @@
---[[ test-event-timer.lua -- Check event.timer.
-     Copyright (C) 2006-2012 PUC-Rio/Laboratorio TeleMidia
+--[[ test-event-uptime-1.lua -- Check event.uptime.
+     Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the Free
@@ -16,24 +16,23 @@ with this program; if not, write to the Free Software Foundation, Inc., 51
 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
 require 'tests'
+local start = event.uptime ()
 
--- Invalid calls.
-assert (pcall (event.timer) == false)
-assert (pcall (event.timer, {}, nil) == false)
-assert (pcall (event.timer, 0, {}) == false)
+event.register (
+   function (e)
+      event.post ('in', {class='user', uptime=event.uptime ()})
+      return true
+   end,
+   {class='ncl', type='presentation', action='start', label=''})
 
--- Check timer termination after DUR ms.
-local DUR = 500
+event.register (
+   function (e)
+      assert (e.uptime >= start)
+      done ()
+   end,
+   {class='user'})
 
-local function handler (e)
-   assert (e.dt and teq (e.dt, DUR))
-   done ()
-end
-event.register (handler, 'user')
-
--- Create timer.
-local t0 = event.uptime ()
-local function postdt ()
-   assert (event.post ('in', {class='user', dt=event.uptime () - t0}))
-end
-assert (event.timer (DUR, postdt))
+event.register (
+   function (e)
+      fail ()
+   end)
