@@ -443,6 +443,8 @@ namespace player {
 		clog << "BerkeliumHandler::onUnresponsive " << mURL << endl;
 	}
 
+#define BERKELIUM_SCROLL_NEW 1
+
 	bool BerkeliumHandler::mapOnPaintToTexture(
 			Berkelium::Window *wini,
 			const unsigned char* bitmap_in,
@@ -507,6 +509,28 @@ namespace player {
 				int wid = scrolled_shared_rect.width();
 				int hig = scrolled_shared_rect.height();
 				int inc = 1;
+
+#if BERKELIUM_SCROLL_NEW
+				int top = scrolled_rect.top();
+				int left = scrolled_rect.left();
+
+				wid = scrolled_rect.width();
+				hig = scrolled_rect.height();
+				
+				if(dy > 0) { // TODO: Check this!
+					surface->blit(left+wid, top+hig, 
+						surface,
+						0, 0, dest_texture_width+left, dest_texture_height+top);
+				}
+				else {
+					surface->blit(0, 0, surface,
+						left, top, wid, hig);
+				}
+
+				if (surface->getParent() != NULL) {
+					((IWindow*)(surface->getParent()))->validate();
+				}
+#else
 				unsigned char *outputBuffer = scroll_buffer;
 				// source data is offset by 1 line to prevent memcpy aliasing
 				// In this case, it can happen if dy==0 and dx!=0.
@@ -568,6 +592,7 @@ namespace player {
 				if (surface->getParent() != NULL) {
 					((IWindow*)(surface->getParent()))->validate();
 				}
+#endif
 			}
 		}
 
@@ -577,21 +602,36 @@ namespace player {
 			int top = copy_rects[i].top() - bitmap_rect.top();
 			int left = copy_rects[i].left() - bitmap_rect.left();
 
+#if BERKELIUM_SCROLL_NEW
+			unsigned char *tmp_buffer = new unsigned char[wid*hig*kBytesPerPixel];
+#endif
 			for(int jj = 0; jj < hig; jj++) {
 				memcpy(
+#if BERKELIUM_SCROLL_NEW
+						tmp_buffer + jj*wid*kBytesPerPixel,
+#else
 						scroll_buffer + jj*wid*kBytesPerPixel,
+#endif
 						bitmap_in + (left + (jj+top)*bitmap_rect.width())*kBytesPerPixel,
 						wid*kBytesPerPixel);
 			}
 
 			// Finally, we perform the main update, just copying the rect that
 			// is marked as dirty but not from scrolled data.
+#if BERKELIUM_SCROLL_NEW
 			strFile = createFile(
-					(const unsigned char*)scroll_buffer, wid, hig);
+				(const unsigned char*) tmp_buffer, wid, hig);
+#else
+			strFile = createFile(
+				(const unsigned char*)scroll_buffer, wid, hig);
+#endif
 
 			s = createRenderedSurface(strFile);
 			remove(strFile.c_str());
 
+#if BERKELIUM_SCROLL_NEW
+			delete [] tmp_buffer;
+#endif
 			surface->blit(
 					copy_rects[i].left(), copy_rects[i].top(),
 					s, 0, 0, wid, hig);
