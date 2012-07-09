@@ -465,6 +465,7 @@ namespace player {
 		// If we've reloaded the page and need a full update, ignore updates
 		// until a full one comes in. This handles out of date updates due to
 		// delays in event processing.
+
 		if (ignore_partial) {
 			if (bitmap_rect.left() != 0 ||
 					bitmap_rect.top() != 0 ||
@@ -517,10 +518,34 @@ namespace player {
 				wid = scrolled_rect.width();
 				hig = scrolled_rect.height();
 				
-				if(dy > 0) { // TODO: Check this!
-					surface->blit(left+wid, top+hig, 
+				if(dx > 0) {
+					surface->blit((-1)*scrolled_rect.left(), 
+						(-1)*scrolled_rect.top(),
 						surface,
-						0, 0, dest_texture_width+left, dest_texture_height+top);
+						0,
+						0,
+						wid + scrolled_rect.left(),
+						hig + scrolled_rect.top());
+				}
+				else if(dy > 0)
+				{
+					int surface_w, surface_h;
+					surface->getSize(&surface_w, &surface_h);
+					s = dm->createSurface(myScreen, w, h);
+
+					/* I don't now why but it only work if I create
+					a temporary surface. */
+					s->blit(0, dy,
+						surface,
+						0, 0,
+						wid, hig);
+
+					surface->blit(0, dy,
+						s,
+						0, dy,
+						wid, hig);
+
+					delete s;
 				}
 				else {
 					surface->blit(0, 0, surface,
@@ -627,11 +652,14 @@ namespace player {
 #endif
 
 			s = createRenderedSurface(strFile);
-			remove(strFile.c_str());
+			// remove(strFile.c_str());
 
 #if BERKELIUM_SCROLL_NEW
 			delete [] tmp_buffer;
 #endif
+			left =  copy_rects[i].left();
+			top = copy_rects[i].top();
+
 			surface->blit(
 					copy_rects[i].left(), copy_rects[i].top(),
 					s, 0, 0, wid, hig);
