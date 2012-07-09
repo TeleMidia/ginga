@@ -131,6 +131,7 @@ namespace player {
 			IContinuousMediaProvider* provider;
 			bool hasResized;
 			bool mainAV;
+			bool isRemote;
 			bool hasData;
 			IWindow* win;
 

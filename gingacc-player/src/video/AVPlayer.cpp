@@ -1069,6 +1069,7 @@ namespace player {
 		this->provider    = NULL;
 		this->mainAV      = false;
 		this->buffered    = false;
+		this->isRemote    = false;
 
 		this->status      = STOP;
 		this->running     = false;
@@ -1153,8 +1154,6 @@ namespace player {
 	}
 
 	void AVPlayer::createProvider(void) {
-		bool isRemote = false;
-
 		clog << "AVPlayer::createProvider '" << mrl << "'" << endl;
 		pthread_mutex_lock(&pMutex);
 
@@ -1596,6 +1595,9 @@ namespace player {
 			provider->playOver(surface, hasVisual);
 			checkVideoResizeEvent();
 			buffered = true;
+			waitForUnlockCondition();
+
+		} else if (isRemote) {
 			waitForUnlockCondition();
 
 		} else {
