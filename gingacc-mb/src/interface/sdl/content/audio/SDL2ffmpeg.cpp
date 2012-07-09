@@ -135,24 +135,25 @@ namespace mb {
 			av_init_packet(&flush_pkt);
 		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
-		    read_init();
+		    if (read_init() >=0) {
 
-			/* start video display */
-			vs->pictq_mutex = SDL_CreateMutex();
-			vs->pictq_cond  = SDL_CreateCond();
+				/* start video display */
+				vs->pictq_mutex = SDL_CreateMutex();
+				vs->pictq_cond  = SDL_CreateCond();
 
-			vs->subpq_mutex = SDL_CreateMutex();
-			vs->subpq_cond  = SDL_CreateCond();
+				vs->subpq_mutex = SDL_CreateMutex();
+				vs->subpq_cond  = SDL_CreateCond();
 
-		    packet_queue_init(&vs->videoq);
-		    packet_queue_init(&vs->audioq);
-		    packet_queue_init(&vs->subtitleq);
+				packet_queue_init(&vs->videoq);
+				packet_queue_init(&vs->audioq);
+				packet_queue_init(&vs->subtitleq);
 
-			vs->av_sync_type = av_sync_type;
+				vs->av_sync_type = av_sync_type;
 
-			pthread_mutex_lock(&aiMutex);
-			openStreams();
-			pthread_mutex_unlock(&aiMutex);
+				pthread_mutex_lock(&aiMutex);
+				openStreams();
+				pthread_mutex_unlock(&aiMutex);
+		    }
 		}
 
 	    refCount++;
@@ -300,7 +301,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any audio stream!";
 			clog << endl;
 		}
@@ -309,7 +310,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any video stream!";
 			clog << endl;
 		}
@@ -318,7 +319,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any subtitle stream!";
 			clog << endl;
 		}
