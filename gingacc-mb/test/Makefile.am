@@ -1,3 +1,5 @@
+if SDLSYSTEM
+
 TEST_LIBS=-L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec -lgingaccmbsdl -lgingaccmbdecsdlap -lgingaccmbdecsdlav -lgingaccmbdecsdlf -lgingaccmbdecsdlimg
 
 # set the include path found by configure
@@ -30,7 +32,6 @@ testAudio_LDADD      = \
 
 testAudio_LDFLAGS    = \
                        -no-undefined \
-                       -version-info 13:1:8 \
                        -L/lib/ \
                        -L/usr/lib/ \
                        -L$(prefix)/lib/ \
@@ -139,3 +140,5 @@ testVideo_LDFLAGS    = \
 
 MAINTAINERCLEANFILES = \
                        Makefile.in
+
+endif
