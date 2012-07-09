@@ -542,12 +542,12 @@ namespace mb {
 				dstRect.y = y;
 
 				if (srcW > 0) {
-					dstRect.w = srcW;
-					dstRect.h = srcH;
+					dstRect.w = srcW - x;
+					dstRect.h = srcH - y;
 
 				} else {
-					dstRect.w = uSur->w;
-					dstRect.h = uSur->h;
+					dstRect.w = uSur->w - x;
+					dstRect.h = uSur->h - y;
 				}
 
 				if (pendingFill) {
