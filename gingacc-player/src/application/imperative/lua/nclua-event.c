@@ -137,7 +137,6 @@ _nclua_notify (lua_State *L)
 
   event = ncluax_abs (L, -1);
 
-
   /* Handlers may use event.register to modify the handler list.
      This means that the handler list may be modified while we're
      traversing it.  To avoid corruption, we use a snapshot copy
