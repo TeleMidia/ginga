@@ -2249,13 +2249,16 @@ the_end:
 				dec->audio_refresh_decoder();
 				if (vs->audio_main_buf_size[0] == vs->audio_hw_buf_size) {
 
-					if (dec->acvt.needed &&
-							dec->wantedSpec.channels <= spec.channels) {
-
+					if (dec->acvt.needed) {
 						dec->acvt.len = vs->audio_hw_buf_size;
 
 						if (dec->acvt.buf == NULL) {
 							dec->acvt.buf = (Uint8*)malloc(
+									dec->acvt.len * dec->acvt.len_mult);
+
+							memset(
+									dec->acvt.buf,
+									0,
 									dec->acvt.len * dec->acvt.len_mult);
 						}
 
@@ -2560,7 +2563,7 @@ the_end:
 						wantedSpec.channels);
 			}
 
-			clog << "SDL2ffmpeg::audio_open " << endl;
+			clog << "SDL2ffmpeg::audio_open '" << vs->filename << "'" << endl;
 			clog << "Desired format = '" << wantedSpec.format;
 			clog << "'" << endl;
 			clog << "Desired silence = '" << wantedSpec.silence;
@@ -2598,7 +2601,8 @@ the_end:
 
 			wantedSpec.samples = spec.samples;
 
-			clog << "SDL2ffmpeg::stream_component_open (2nd audio src)";
+			clog << "SDL2ffmpeg::stream_component_open (2nd audio src = '";
+			clog << vs->filename << ")";
 			clog << endl;
 			clog << "Desired format = '" << wantedSpec.format;
 			clog << "'" << endl;
