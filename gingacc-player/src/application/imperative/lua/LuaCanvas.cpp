@@ -420,9 +420,20 @@ l_compose (lua_State *L)
   int x = luaL_checkint (L, 2);
   int y = luaL_checkint (L, 3);
 
-  if (src->crop.inUse == 1)
+
+  if (lua_gettop (L) > 4)
     {
-      canvas->sfc->blit (x, y,src->sfc, src->crop.x, src->crop.y,
+      int src_x = luaL_checkint (L, 5);
+      int src_y = luaL_checkint (L, 6);
+      int src_w = luaL_checkint (L, 7);
+      int src_h = luaL_checkint (L, 8);
+
+      canvas->sfc->blit (x, y, src->sfc, src_x, src_y, src_w, src_h);
+
+    }
+  else if (src->crop.inUse == 1)
+    {
+      canvas->sfc->blit (x, y, src->sfc, src->crop.x, src->crop.y,
                          src->crop.w, src->crop.h);
     }
   else
