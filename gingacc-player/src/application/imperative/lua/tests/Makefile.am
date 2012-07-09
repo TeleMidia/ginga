@@ -30,13 +30,17 @@ TESTS=                          \
   test-event-register-key.xncl  \
   test-event-register-ncl.xncl  \
   test-event-register-user.xncl \
+  test-event-post.xncl          \
+  test-event-post-key.xncl      \
+  test-event-post-ncl.xncl      \
+  test-event-post-user.xncl     \
   test-event-uptime-0.xncl      \
   test-event-uptime-1.xncl      \
   test-event-timer-0.xncl       \
   test-event-timer-1.xncl
 
-# TESTS=                             \
-#   test-bad-lua-0.ncl               \
+# TESTS=                        \
+#   test-bad-lua-0.ncl          \
 #   test-bad-lua-1.ncl
 
 XFAIL_TESTS=
@@ -44,7 +48,9 @@ TESTS_ENVIRONMENT= $(srcdir)/run.sh
 
 EXTRA_DIST=    \
   connbase.ncl \
+  directfbrc   \
   exit.lua     \
+  gdbinit      \
   tests.h      \
   tests.lua
 

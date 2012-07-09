@@ -180,14 +180,10 @@ l_get_handler_list (lua_State *L)
 }
 
 /* event.post ([destination:string], event:table)
-     -> status:boolean, error_message:string
 
    Posts event into one of the state queues.  If DESTINATION != "in"
    or if DESTINATION is not given, inserts event EVENT into output queue.
-   Otherwise, inserts event into input queue.
-
-   Returns true if successful.
-   Otherwise, returns false plus error message.  */
+   Otherwise, inserts event into input queue.  */
 
 static int
 l_post (lua_State *L)
@@ -226,8 +222,7 @@ l_post (lua_State *L)
   ncluax_pushcopy (L, 2);
   ncluax_rawinsert (L, queue, size + 1);
 
-  lua_pushboolean (L, TRUE);
-  return 1;
+  return 0;
 }
 
 /* event.register ([position:number], function:function, [filter:table])

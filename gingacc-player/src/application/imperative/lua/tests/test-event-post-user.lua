@@ -1,4 +1,4 @@
---[[ test-event-register-user.lua -- Check event.register for 'user' class.
+--[[ test-event-post-user.lua -- Check event.post for 'user' class.
      Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it
@@ -17,15 +17,9 @@ Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. --]]
 
 require 'tests'
 
-local f = function () end
-local g = function () end
-
--- Check sanity.
-assert (event.register (f, 'user'))
-assert (hf (1) == f and heq (1, {class='user'}))
-
--- Warning: ignoring extra arguments.
-assert (event.register (g, 'user', 'x'))
-assert (hf (2) == g and heq (2, {class='user'}))
+-- Post event and check if it made it to the output queue.
+-- TODO: Check output queue.
+assert (event.post ({class='user'}))
+assert (event.post ({class='user', value='y', x='y', z={}}))
 
 done ()

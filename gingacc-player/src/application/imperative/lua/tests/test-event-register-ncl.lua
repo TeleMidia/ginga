@@ -1,4 +1,4 @@
---[[ test-event-register-ncl.lua -- Check event.register 'ncl' class.
+--[[ test-event-register-ncl.lua -- Check event.register for 'ncl' class.
      Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
 This program is free software; you can redistribute it and/or modify it

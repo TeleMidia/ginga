@@ -147,7 +147,7 @@ void LuaPlayer::doStop (void)
 {
      lua_State *L;
      L = nclua_get_lua_state (this->nc);
-     event_uninstall_register_wrapper (L);
+     event_uninstall_wrappers (L);
      nclua_destroy (this->nc);
      lua_close (L);
      this->nc = NULL;
@@ -249,7 +249,7 @@ bool LuaPlayer::play (void)
 
           this->nc = nclua_create_for_lua_state (L);
           assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
-          event_install_register_wrapper (L);
+          event_install_wrappers (L);
           nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
           nclua_reset_uptime (this->nc);
 
