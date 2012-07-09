@@ -855,13 +855,19 @@ namespace mb {
 		ISurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
 
-		provider = createImageProvider(mrl);
-		if (provider != NULL) {
-			iSur = createSurfaceFrom(NULL);
-			provider->playOver(iSur);
-		}
+		if (fileExists(mrl)) {
+			provider = createImageProvider(mrl);
+			if (provider != NULL) {
+				iSur = createSurfaceFrom(NULL);
+				provider->playOver(iSur);
 
-		releaseImageProvider(provider);
+				releaseImageProvider(provider);
+			}
+
+		} else {
+			clog << "SDLDeviceScreen::createRenderedSurfaceFromImageFile ";
+			clog << "Warning! '" << mrl << "' file not found" << endl;
+		}
 
 		return iSur;
 	}
