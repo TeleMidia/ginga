@@ -379,7 +379,8 @@ namespace compat {
 				(len >= 7 && path.substr(0,7) == "file://")   ||
 				(len >= 6 && path.substr(0,6) == "tcp://")    ||
 				(len >= 6 && path.substr(0,6) == "udp://")    ||
-				(len >= 6 && path.substr(0,6) == "rtp://")) {
+				(len >= 6 && path.substr(0,6) == "rtp://")    ||
+				(len >= 7 && path.substr(0,7) == "rtsp://")) {
 
 			return true;
 		}

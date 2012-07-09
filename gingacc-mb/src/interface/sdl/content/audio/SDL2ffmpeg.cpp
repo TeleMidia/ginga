@@ -135,24 +135,25 @@ namespace mb {
 			av_init_packet(&flush_pkt);
 		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
-		    read_init();
+		    if (read_init() >=0) {
 
-			/* start video display */
-			vs->pictq_mutex = SDL_CreateMutex();
-			vs->pictq_cond  = SDL_CreateCond();
+				/* start video display */
+				vs->pictq_mutex = SDL_CreateMutex();
+				vs->pictq_cond  = SDL_CreateCond();
 
-			vs->subpq_mutex = SDL_CreateMutex();
-			vs->subpq_cond  = SDL_CreateCond();
+				vs->subpq_mutex = SDL_CreateMutex();
+				vs->subpq_cond  = SDL_CreateCond();
 
-		    packet_queue_init(&vs->videoq);
-		    packet_queue_init(&vs->audioq);
-		    packet_queue_init(&vs->subtitleq);
+				packet_queue_init(&vs->videoq);
+				packet_queue_init(&vs->audioq);
+				packet_queue_init(&vs->subtitleq);
 
-			vs->av_sync_type = av_sync_type;
+				vs->av_sync_type = av_sync_type;
 
-			pthread_mutex_lock(&aiMutex);
-			openStreams();
-			pthread_mutex_unlock(&aiMutex);
+				pthread_mutex_lock(&aiMutex);
+				openStreams();
+				pthread_mutex_unlock(&aiMutex);
+		    }
 		}
 
 	    refCount++;
@@ -300,7 +301,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any audio stream!";
 			clog << endl;
 		}
@@ -309,7 +310,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any video stream!";
 			clog << endl;
 		}
@@ -318,7 +319,7 @@ namespace mb {
 			stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
 
 		} else {
-			clog << "SDL2ffmpeg::read_init '";
+			clog << "SDL2ffmpeg::openStreams '";
 			clog << vs->filename << "' doesn't have any subtitle stream!";
 			clog << endl;
 		}
@@ -2248,13 +2249,16 @@ the_end:
 				dec->audio_refresh_decoder();
 				if (vs->audio_main_buf_size[0] == vs->audio_hw_buf_size) {
 
-					if (dec->acvt.needed &&
-							dec->wantedSpec.channels <= spec.channels) {
-
+					if (dec->acvt.needed) {
 						dec->acvt.len = vs->audio_hw_buf_size;
 
 						if (dec->acvt.buf == NULL) {
 							dec->acvt.buf = (Uint8*)malloc(
+									dec->acvt.len * dec->acvt.len_mult);
+
+							memset(
+									dec->acvt.buf,
+									0,
 									dec->acvt.len * dec->acvt.len_mult);
 						}
 
@@ -2559,7 +2563,7 @@ the_end:
 						wantedSpec.channels);
 			}
 
-			clog << "SDL2ffmpeg::audio_open " << endl;
+			clog << "SDL2ffmpeg::audio_open '" << vs->filename << "'" << endl;
 			clog << "Desired format = '" << wantedSpec.format;
 			clog << "'" << endl;
 			clog << "Desired silence = '" << wantedSpec.silence;
@@ -2597,7 +2601,8 @@ the_end:
 
 			wantedSpec.samples = spec.samples;
 
-			clog << "SDL2ffmpeg::stream_component_open (2nd audio src)";
+			clog << "SDL2ffmpeg::stream_component_open (2nd audio src = '";
+			clog << vs->filename << ")";
 			clog << endl;
 			clog << "Desired format = '" << wantedSpec.format;
 			clog << "'" << endl;
