@@ -252,6 +252,7 @@ static int event_check_ncl_event (lua_State *L)
      {
           lua_pushboolean (L, 0);
           event_errpush_unknown_field (L, EVENT_NCL_FIELD_ACTION, action);
+          return 2;
      }
      lua_pop (L, 1);
 
@@ -731,20 +732,19 @@ static const event_class_map_t *event_class_map_get (const char *cls)
                    sizeof (event_class_map_t), event_class_map_compare);
 }
 
-static int event_handle_event (lua_State *L, ptrdiff_t offset)
+static int event_call_handler (lua_State *L, ptrdiff_t offset)
 {
      const event_class_map_t *entry;
      const char *cls;
      lua_CFunction handler;
 
-     luaL_checktype (L, -1, LUA_TTABLE);
+     luaL_checktype (L, 1, LUA_TTABLE);
 
      lua_getfield (L, -1, EVENT_FIELD_CLASS);
      if (!lua_isstring (L, -1))
      {
-          lua_pushboolean (L, 0);
-          event_errpush_invalid_field (L, EVENT_FIELD_CLASS);
-          return 2;
+          lua_pushboolean (L, 1);
+          return 1;             // unknown class
      }
 
      cls = lua_tostring (L, -1);
@@ -753,9 +753,8 @@ static int event_handle_event (lua_State *L, ptrdiff_t offset)
      entry = event_class_map_get (cls);
      if (entry == NULL)
      {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_FIELD_CLASS, cls);
-          return 2;
+          lua_pushboolean (L, 1);
+          return 1;             // unknown class
      }
 
      handler = *(lua_CFunction *)((char *) entry + offset);
@@ -767,8 +766,9 @@ static int event_handle_event (lua_State *L, ptrdiff_t offset)
 // Otherwise, pushes false plus error message.
 
 static int event_check_event (lua_State *L)
+
 {
-     return event_handle_event (L, offsetof (event_class_map_t,
+     return event_call_handler (L, offsetof (event_class_map_t,
                                              check_func));
 }
 
@@ -799,95 +799,216 @@ static int event_get_filter (lua_State *L)
 
 static int event_receive_event (lua_State *L)
 {
-     return event_handle_event (L, offsetof (event_class_map_t,
+     return event_call_handler (L, offsetof (event_class_map_t,
                                              receive_func));
 }
 
 
-// NCLua event.register wrapper.
+// NCLua Event wrappers.
 
-// Registry key for the original event.register function.
-static int _event_orig_register_key;
+static int event_post_wrapper (lua_State *L);
+static int event_register_wrapper (lua_State *L);
 
-// event.register ([pos:number], function:function, [class:string], ...)
+typedef struct
+{
+     const char *name;          // function name
+     lua_CFunction wrapper;     // pointer to wrapper function
+} event_wrapper_map_t;
+
+static const event_wrapper_map_t event_wrapper_map[] =
+{
+     { "post",     event_post_wrapper     },
+     { "register", event_register_wrapper },
+};
+
+static int event_wrapper_map_compare (const void *p1, const void *p2)
+{
+     return strcmp (((event_wrapper_map_t *) p1)->name,
+                    ((event_wrapper_map_t *) p2)->name);
+}
+
+static const event_wrapper_map_t *event_wrapper_map_get (const char *name)
+{
+     event_wrapper_map_t key = {name, NULL};
+     return (const event_wrapper_map_t *)
+          bsearch (&key, event_wrapper_map, ARRAY_SIZE (event_wrapper_map),
+                   sizeof (event_wrapper_map_t), event_wrapper_map_compare);
+}
+
+// Replaces the functions listed in event_wrapper_map by the corresponding
+// wrapper functions.
+
+static void event_install_wrappers (lua_State *L)
+{
+     size_t i;
+
+     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+
+     for (i = 0; i < ARRAY_SIZE (event_wrapper_map); i++)
+     {
+          const char *name = event_wrapper_map[i].name;
+          lua_CFunction wrapper = event_wrapper_map[i].wrapper;
+
+          // Save the original function into Lua registry.
+
+          lua_getfield (L, -1, name);
+          assert (lua_isfunction (L, -1));
+          lua_pushlightuserdata (L, (void *) &event_wrapper_map[i]);
+          lua_insert (L, -2);
+          lua_rawset (L, LUA_REGISTRYINDEX);
+
+          // Replace original function by wrapper.
+
+          lua_pushcfunction (L, wrapper);
+          lua_setfield (L, -2, name);
+     }
+
+     lua_pop (L, 1);
+}
+
+// Replaces the wrappers listed in event_wrapper_map by the corresponding
+// original functions.
+
+static void event_uninstall_wrappers (lua_State *L)
+{
+     size_t i;
+
+     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+
+     for (i = 0; i < ARRAY_SIZE (event_wrapper_map); i++)
+     {
+          const char *name = event_wrapper_map[i].name;
+
+          // Replace wrapper by the original function.
+
+          lua_pushlightuserdata (L, (void *) &event_wrapper_map[i]);
+          lua_pushvalue (L, -1);
+          lua_rawget (L, LUA_REGISTRYINDEX);
+          lua_setfield (L, -3, name);
+
+          // Cleanup registry.
+
+          lua_pushnil (L);
+          lua_rawset (L, LUA_REGISTRYINDEX);
+     }
+
+     lua_pop (L, 1);
+}
+
+// event.post ([destination:string], event:table)
+//   -> status:boolean, [error_message:string]
 //
-// Similar to the original event.register, but uses the class string and
-// extra (class dependent) parameters to create the event filter table.
+// Similar to the original event.post, but checks if event is valid before
+// posting it.
+
+static int event_post_wrapper (lua_State *L)
+{
+     int event;                 // index of event parameter
+     void *key;
+     int saved_top;
+     int n;
+
+     event = 2;
+     if (lua_istable (L, 1))
+     {
+          event = 1;
+     }
+     luaL_checktype (L, event, LUA_TTABLE);
+
+     // Check if event is valid.
+
+     saved_top = lua_gettop (L);
+     lua_pushcfunction (L, event_check_event);
+     lua_pushvalue (L, event);
+     lua_call (L, 1, LUA_MULTRET);
+
+     n = lua_gettop (L) - saved_top;
+     assert (n == 1 || n == 2);
+
+     if (n == 2)
+     {
+          assert (lua_isstring (L, -1));
+          assert (!lua_toboolean (L, -2));
+          return 2;
+     }
+
+     if (!lua_toboolean (L, -1))
+     {
+          return 1;
+     }
+
+     lua_pop (L, 1);
+
+     // Call the original event.post.
+
+     assert ((key = (void *) event_wrapper_map_get ("post")) != NULL);
+     lua_pushlightuserdata (L, key);
+     lua_rawget (L, LUA_REGISTRYINDEX);
+     lua_insert (L, 1);
+     lua_call (L, lua_gettop (L) - 1, 0);
+
+     lua_pushboolean (L, 1);
+     return 1;
+}
+
+// event.register ([position:number], function:function,
+//                 [class:string], ...)
+//   -> status:boolean, [error_message:string]
+//
+// Similar to the original event.register, but uses the class and extra
+// parameters to create the event filter table.
 
 static int event_register_wrapper (lua_State *L)
 {
-     int cls = 3;               // index of class parameter
-     int n;
+     int cls;                   // event of class parameter
+     void *key;
 
+     cls = 3;
      if (lua_isfunction (L, 1))
      {
           cls = 2;
      }
 
-     if (!lua_isstring (L, cls))
+     if (lua_isstring (L, cls))
      {
-          goto tail;
-     }
+          int n;
 
-     // Create and pushes a filter table with the given parameters.
+          // Creates filter table from the given parameters.
 
-     n = lua_gettop (L);
-     lua_pushcfunction (L, event_get_filter);
-     lua_insert (L, cls);
-     lua_call (L, n - cls + 1, LUA_MULTRET);
-     if (!lua_istable (L, -1))
-     {
-          return 2;
+          lua_pushcfunction (L, event_get_filter);
+          lua_insert (L, cls);
+
+          n = lua_gettop (L) - cls;
+          lua_call (L, n, LUA_MULTRET);
+
+          n = lua_gettop (L) - cls + 1;
+          assert (n == 1 || n == 2);
+
+          if (n == 2)
+          {
+               assert (lua_isstring (L, -1));
+               assert (!lua_toboolean (L, -2));
+               return 2;
+          }
+
+          if (!lua_toboolean (L, -1))
+          {
+               return 1;
+          }
+
+          assert (lua_istable (L, -1));
      }
 
      // Call the original event.register.
-tail:
-     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
+
+     assert ((key = (void *) event_wrapper_map_get ("register")) != NULL);
+     lua_pushlightuserdata (L, key);
      lua_rawget (L, LUA_REGISTRYINDEX);
      lua_insert (L, 1);
      lua_call (L, lua_gettop (L) - 1, LUA_MULTRET);
+
      lua_pushboolean (L, 1);
      return 1;
-}
-
-// Replace the original event.register by event_register_wrapper.
-
-static void event_install_register_wrapper (lua_State *L)
-{
-     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
-
-     // Save the original event.register into Lua registry.
-
-     lua_getfield (L, -1, "register");
-     assert (lua_isfunction (L, -1));
-
-     lua_pushlightuserdata (L, (void*) &_event_orig_register_key);
-     lua_insert (L, -2);
-
-     lua_rawset (L, LUA_REGISTRYINDEX);
-
-     // Replace event.register by the wrapper function.
-
-     lua_pushcfunction (L, event_register_wrapper);
-     lua_setfield (L, -2, "register");
-     lua_pop (L, 1);
-}
-
-// Replace the current event.register by the original function.
-
-static void event_uninstall_register_wrapper (lua_State *L)
-{
-     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
-
-     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
-     lua_rawget (L, LUA_REGISTRYINDEX);
-
-     lua_setfield (L, -2, "register");
-     lua_pop (L, 1);
-
-     lua_pushlightuserdata (L, (void *) &_event_orig_register_key);
-     lua_pushnil (L);
-     lua_rawset (L, LUA_REGISTRYINDEX);
 }
 
 #endif // LUAPLAYER_EVENT_H

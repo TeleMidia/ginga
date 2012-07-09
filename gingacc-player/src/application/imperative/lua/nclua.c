@@ -243,17 +243,6 @@ nclua_create (void)
   return nc;
 }
 
-/* Resets or (initializes) the up-time of NCLua state NC.  */
-
-void
-nclua_reset_uptime (nclua_t *nc)
-{
-  if (unlikely (__nclua_is_invalid (nc)))
-    return;
-
-  _nclua_reset_uptime (nc);
-}
-
 /* Decreases the reference count of NCLua state NC by one.
    If the result is zero, frees NC and all associated resources.  */
 
@@ -520,6 +509,17 @@ nclua_get_nclua_state (lua_State *L)
   return nc;
 }
 
+/* Resets or (initializes) the up-time of NCLua state NC.  */
+
+void
+nclua_reset_uptime (nclua_t *nc)
+{
+  if (unlikely (__nclua_is_invalid (nc)))
+    return;
+
+  _nclua_reset_uptime (nc);
+}
+
 /* Enqueues event at top of stack into input queue.
    This function pops the event from stack.  */
 
@@ -621,14 +621,12 @@ nclua_cycle (nclua_t *nc)
         {
           /* Call the associated function.  */
           lua_rawgeti (L, t, 2);
-          assert (lua_isfunction (L, -1));
           lua_call (L, 0, 0);
 
           /* Schedule timer for cleanup.  */
           _nclua_get_registry_data (L, _NCLUA_REGISTRY_TIMER_CLEANUP);
           n = lua_objlen (L, -1);
           lua_rawgeti (L, t, 3);
-          assert (lua_isfunction (L, -1));
           ncluax_rawinsert (L, -2, n + 1);
           lua_pop (L, 1);
         }
@@ -644,7 +642,6 @@ nclua_cycle (nclua_t *nc)
   while (n-- > 0)
     {
       ncluax_rawremove (L, -1, 1);
-      assert (lua_isfunction (L, -1));
       lua_call (L, 0, 0);
     }
   lua_pop (L, 1);
