@@ -133,22 +133,28 @@ _nclua_notify (lua_State *L)
   int list;                     /* handler list */
   int size;                     /* handler list size */
   int n_called;                 /* number of handlers called */
-
-  int saved_top;
   int i;
 
-  saved_top = lua_gettop (L);
   event = ncluax_abs (L, -1);
 
+  /* Handlers may use event.register to modify the handler list.
+     This means that the handler list may be modified while we're
+     traversing it.  To avoid corruption, we use a snapshot copy
+     instead of the original list. */
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
+  ncluax_pushcopy (L, -1);
+  lua_replace (L, -2);
+
   list = ncluax_abs (L, -1);
   size = lua_objlen (L, list);
 
   n_called = 0;
   for (i = 1; i <= size; i++)
     {
+      int saved_top = lua_gettop (L);
       lua_rawgeti (L, list, i);
       lua_rawgeti (L, -1, 2);
+
       if (match (L, event, -1))
         {
           lua_rawgeti (L, -2, 1);
@@ -156,11 +162,16 @@ _nclua_notify (lua_State *L)
           lua_call (L, 1, 1);
           n_called++;
           if (lua_toboolean (L, -1))
-            break;
+            {
+              lua_settop (L, saved_top);
+              break;
+            }
         }
+
+      lua_settop (L, saved_top);
     }
 
-  lua_settop (L, saved_top);
+  lua_pop (L, 1);
 
   return n_called;
 }
