@@ -191,6 +191,7 @@ namespace mb {
 			void setH(int h);
 			void setGhostWindow(bool ghost);
 			bool isVisible();
+			void needRedraw();
 			void validate();
 
 		private:
