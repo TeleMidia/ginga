@@ -428,6 +428,10 @@ namespace mb {
 		return this->visible;
 	}
 
+	void SDLWindow::needRedraw() {
+		textureUpdate = true;
+	}
+
 	void SDLWindow::validate() {
 		lock();
 		unprotectedValidate();
@@ -437,19 +441,20 @@ namespace mb {
 	void SDLWindow::unprotectedValidate() {
 		ISurface* surface;
 
-/*		lockChilds();
+		lockChilds();
 		if (!childSurfaces.empty()) {
 			surface = childSurfaces.at(0);
-			if (surface != NULL && surface->getSurfaceContent() != NULL) {
+			if (surface != NULL) {
+				surface->flip();
 				winSur = (SDL_Surface*)(surface->getSurfaceContent());
 			}
 
 		} else {
-			clog << "SDLWindow::unprotectedValidate empty child surface '";
-			clog << childSurfaces << "'" << endl;
+			clog << "SDLWindow::unprotectedValidate empty child surface";
+			clog << endl;
 		}
 		unlockChilds();
-*/
+
 		if (winSur != NULL) {
 			curSur = winSur;
 			textureUpdate = true;

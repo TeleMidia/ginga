@@ -81,12 +81,12 @@ namespace mb {
 			IFontProvider* iFont;
 			int caps;
 			bool owner;
-			bool pendingFill;
 
 			vector<DrawData*> drawData;
 			pthread_mutex_t ddMutex;
 
 			pthread_mutex_t sMutex;
+			pthread_mutex_t pMutex;
 
 		public:
 			SDLSurface(GingaScreenID screenId);
@@ -96,6 +96,7 @@ namespace mb {
 
 		private:
 			void checkPendingSurface();
+			void createPendingSurface();
 			void fill();
 			void releaseChromaColor();
 			void releaseBgColor();
