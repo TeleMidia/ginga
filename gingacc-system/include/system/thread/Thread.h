@@ -92,7 +92,7 @@ namespace thread {
 	public:
 		Thread();
 		virtual ~Thread();
-		virtual void start();
+		virtual void startThread();
 		bool sleep(long int seconds);
 		bool mSleep(long int milliseconds);
 		void wakeUp();

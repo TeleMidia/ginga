@@ -882,7 +882,7 @@ namespace player {
 	}
 
 	void AVPlayer::play() {
-		Thread::Thread::start();
+		Thread::Thread::startThread();
 	}
 
 	void AVPlayer::pause() {
@@ -1103,7 +1103,7 @@ namespace player {
 			icListener = new RTPListener(mrl);
 			this->mrl  = icListener->getUrl();
 
-			Thread::start();
+			Thread::startThread();
 
 			pthread_t _tId;
 			pthread_create(&_tId, NULL, createProviderT, this);
@@ -1291,7 +1291,7 @@ namespace player {
 			provider->setMediaTime(pos);
 			status = PLAY;
 			running = true;
-			Thread::start();
+			Thread::startThread();
 
 		} else if (provider != NULL) {
 			provider->setMediaTime(pos);
@@ -1305,7 +1305,7 @@ namespace player {
 			scopeEndTime = pos;
 			status = PLAY;
 			running = true;
-			Thread::start();
+			Thread::startThread();
 
 		} else {
 			scopeEndTime = pos;
@@ -1346,7 +1346,7 @@ namespace player {
 
 		if (!running) {
 			running = true;
-			Thread::start();
+			Thread::startThread();
 		}
 
 		clog << "AVPlayer::play("<< mrl << ") all done!" << endl;
@@ -1397,7 +1397,7 @@ namespace player {
 
 		if (!running) {
 			running = true;
-			Thread::start();
+			Thread::startThread();
 		}
 	}
 
@@ -1436,7 +1436,7 @@ namespace player {
 				delete vals;
 
 				if (!running) {
-					Thread::start();
+					Thread::startThread();
 				}
 
 			} else if (name == "bounds" && win != NULL) {
@@ -1505,7 +1505,7 @@ namespace player {
 			win = dm->createWindowFrom(myScreen, windowId);
 
 			if (!running) {
-				Thread::start();
+				Thread::startThread();
 			}
 			return true;
 

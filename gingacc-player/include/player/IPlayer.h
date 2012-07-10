@@ -71,14 +71,14 @@ namespace core {
 namespace player {
 	class IPlayer {
 		public:
-			static const short PL_NOTIFY_START         =  0;
-			static const short PL_NOTIFY_STOP          =  1;
+			static const short PL_NOTIFY_START         =  1;
 			static const short PL_NOTIFY_PAUSE         =  2;
 			static const short PL_NOTIFY_RESUME        =  3;
-			static const short PL_NOTIFY_ABORT         =  4;
-			static const short PL_NOTIFY_NCLEDIT       =  5;
-			static const short PL_NOTIFY_UPDATECONTENT =  6;
-			static const short PL_NOTIFY_OUTTRANS      =  7;
+			static const short PL_NOTIFY_STOP          =  4;
+			static const short PL_NOTIFY_ABORT         =  5;
+			static const short PL_NOTIFY_NCLEDIT       =  6;
+			static const short PL_NOTIFY_UPDATECONTENT =  7;
+			static const short PL_NOTIFY_OUTTRANS      =  8;
 
 			static const short TYPE_PRESENTATION       = 10;
 			static const short TYPE_ATTRIBUTION        = 11;

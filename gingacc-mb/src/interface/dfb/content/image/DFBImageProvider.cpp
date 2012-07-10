@@ -123,7 +123,6 @@ namespace mb {
 
 		if (s == NULL) {
 			s = getPerfectUnderlyingSurface(surface);
-			surface->setSurfaceContent(s);
 		}
 
 		if (decoder != NULL) {
@@ -150,6 +149,8 @@ namespace mb {
 			destination = (IDirectFBSurface*)(
 					DFBDeviceScreen::createUnderlyingSurface(&surDsc));
 
+			surface->setSurfaceContent(destination);
+
 			if (imgDsc.caps & DICAPS_ALPHACHANNEL) {
 				surface->setCaps(DWCAPS_ALPHACHANNEL);
 
@@ -163,6 +164,8 @@ namespace mb {
 			}
 
 			if (imgDsc.caps & DICAPS_COLORKEY) {
+				surface->setCaps(DWCAPS_ALPHACHANNEL);
+
 				destination->SetBlittingFlags(
 						destination,
 					    (DFBSurfaceBlittingFlags)(

@@ -74,7 +74,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 
 	pthread_mutex_init(&loopMutex, NULL);
 
-	start();
+	startThread();
 }
 
 NPTProcessor::~NPTProcessor() {

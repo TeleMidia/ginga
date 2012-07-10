@@ -159,6 +159,7 @@ typedef struct {
 			static map<int, int> sdlToGingaCodeMap;
 
 			static pthread_mutex_t uSurMutex;
+			static set<SDL_Surface*> uSurPool;
 			static set<ReleaseContainer*> releaseList;
 			static pthread_mutex_t rlMutex;
 
@@ -358,8 +359,9 @@ typedef struct {
 			/* CAUTION: call this method only from main SDL thread */
 			static void releaseTexture(SDL_Texture* uTex);
 
+			static SDL_Surface* createUnderlyingSurface(int width, int height);
+
 		private:
-			SDL_Surface* createUnderlyingSurface(int width, int height);
 			static SDL_Surface* createUnderlyingSurfaceFromTexture(
 					SDL_Texture* texture);
 

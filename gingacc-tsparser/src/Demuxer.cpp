@@ -669,7 +669,7 @@ namespace tsparser {
 							true,
 							ni->getPesFilterOutput());
 
-					((PipeFilter*)filter)->start();
+					((PipeFilter*)filter)->startThread();
 				}
 
 				(*pesFilters)[pat->getFirstProgramNumber()] = filter;

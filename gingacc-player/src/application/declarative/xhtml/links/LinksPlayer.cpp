@@ -191,7 +191,7 @@ namespace player {
 			browserShow(mBrowser);
 
 			if (notifyContentUpdate) {
-				Thread::start();
+				Thread::startThread();
 			}
 			//SystemCompat::uSleep(3000000);
 		}

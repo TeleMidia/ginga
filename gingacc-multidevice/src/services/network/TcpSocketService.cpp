@@ -99,7 +99,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 						portStr,
 						(IRemoteDeviceListener*)res);
 		(*connections)[deviceId] = tcpcc;
-		tcpcc->start();
+		tcpcc->startThread();
 
 	} else if (connections != NULL) {
 		clog << "TcpSocketService::warning - connection already registered";
@@ -116,7 +116,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 						(IRemoteDeviceListener*) res);
 
 		(*connections)[deviceId] = tcpcc;	
-		tcpcc->start();
+		tcpcc->startThread();
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}

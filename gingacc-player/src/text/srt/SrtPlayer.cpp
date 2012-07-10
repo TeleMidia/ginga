@@ -270,7 +270,7 @@ namespace player {
 				clog << "warning! referenceTimePlayer is NULL!!" << endl;
 			}
 			isPlaying = true;
-			Thread::start();
+			Thread::startThread();
 
 			return true;
 
@@ -298,7 +298,7 @@ namespace player {
 				clog << " warning! referenceTimePlayer is NULL!!" << endl;
 			}
 			isPlaying = true;
-			Thread::start();
+			Thread::startThread();
 		}
 	}
 

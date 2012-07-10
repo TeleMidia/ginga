@@ -126,7 +126,7 @@ namespace player {
 
 	bool AnimePlayer::play() {
 		running = true;
-		Thread::start();
+		Thread::startThread();
 
 		return true;
 	}

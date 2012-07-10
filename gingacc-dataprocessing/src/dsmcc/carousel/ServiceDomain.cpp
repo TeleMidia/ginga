@@ -80,7 +80,7 @@ namespace carousel {
 		processor = new ObjectProcessor();
 		sdl       = NULL;
 
-		start();
+		startThread();
 	}
 
 	void ServiceDomain::setServiceDomainListener(IServiceDomainListener* sdl) {

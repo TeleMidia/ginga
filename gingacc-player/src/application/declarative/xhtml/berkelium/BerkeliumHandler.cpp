@@ -88,6 +88,8 @@ namespace player {
 		keyCode    = -1;
 		isValid    = false;
 
+		surface->setCaps(0);
+
 		if (fromGingaToBklm.empty()) {
 			initInputMap();
 		}
