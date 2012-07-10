@@ -227,7 +227,6 @@ namespace mb {
 		SDLWindow* parent;
 		IColor* fontColor = NULL;
 
-		Uint32 r, g, b, a;
 		SDL_Color sdlColor;
 		SDL_Rect rect;
 		SDL_Surface* renderedSurface = NULL;
@@ -303,14 +302,9 @@ namespace mb {
 			}
 
 			if (renderedSurface == NULL) {
-				SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
-
-				renderedSurface = SDL_CreateRGBSurface(
-						0,
+				renderedSurface = SDLDeviceScreen::createUnderlyingSurface(
 						parent->getW(),
-						parent->getH(),
-						24,
-						r, g, b, a);
+						parent->getH());
 
 				SDL_SetColorKey(
 						renderedSurface,
@@ -339,7 +333,7 @@ namespace mb {
 				clog << endl;
 			}
 
-			SDL_FreeSurface(text);
+			SDLDeviceScreen::createReleaseContainer(text, NULL, NULL);
 
 		} else {
 			clog << "SDLFontProvider::playOver Warning! Invalid Surface.";

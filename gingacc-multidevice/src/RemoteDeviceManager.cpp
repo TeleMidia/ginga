@@ -120,7 +120,7 @@ namespace multidevice {
 		if (domainService != NULL) {
 			domainService->setDeviceInfo(width, height);
 			if ((!running)&&(!released)) {
-				start();
+				startThread();
 			}
 		}
 	}

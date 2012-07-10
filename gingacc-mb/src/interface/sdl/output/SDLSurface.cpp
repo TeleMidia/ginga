@@ -85,7 +85,9 @@ namespace mb {
 
 		pthread_mutex_lock(&sMutex);
 		if (owner && sur != NULL) {
-			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+			if (parent == NULL || parent->getContent() != sur) {
+				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+			}
 			sur = NULL;
 		}
 		pthread_mutex_unlock(&sMutex);
@@ -122,12 +124,14 @@ namespace mb {
 	void SDLSurface::checkPendingSurface() {
 		pthread_mutex_lock(&pMutex);
 		if (pending != NULL) {
+			pthread_mutex_lock(&sMutex);
 			if (parent != NULL && parent->getContent() == sur) {
 				((SDLWindow*)parent)->setRenderedSurface(pending);
 			}
 
 			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 			sur = pending;
+			pthread_mutex_unlock(&sMutex);
 			pending = NULL;
 			pthread_mutex_unlock(&pMutex);
 			releaseDrawData();
@@ -140,6 +144,7 @@ namespace mb {
 	void SDLSurface::fill() {
 		int r = 0, g = 0, b = 0, alpha = 0;
 
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			if (bgColor != NULL) {
 				r     = bgColor->getR();
@@ -164,6 +169,7 @@ namespace mb {
 
 			releaseDrawData();
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void SDLSurface::releaseChromaColor() {
@@ -223,7 +229,7 @@ namespace mb {
 		this->borderColor   = NULL;
 		this->bgColor       = NULL;
 		this->surfaceColor  = NULL;
-		this->caps          = 0;
+		this->caps          = 1;
 		this->hasExtHandler = false;
 		this->owner         = false;
 		this->pending       = NULL;
@@ -256,7 +262,7 @@ namespace mb {
 	}
 
 	int SDLSurface::getCap(string cap) {
-		return 0;
+		return 1;
 	}
 
 	int SDLSurface::getCaps() {
@@ -268,6 +274,7 @@ namespace mb {
 	}
 
 	void SDLSurface::setSurfaceContent(void* surface) {
+		pthread_mutex_lock(&sMutex);
 		if (this->sur != NULL && surface != NULL && this->sur != surface) {
 //			if (parent == NULL || (parent)->removeChildSurface(this)) {
 			if (owner) {
@@ -278,6 +285,7 @@ namespace mb {
 
 		this->owner = false;
 		this->sur   = (SDL_Surface*)surface;
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	bool SDLSurface::setParent(void* parentWindow) {
@@ -313,10 +321,13 @@ namespace mb {
 	}
 
 	void SDLSurface::clearSurface() {
+		pthread_mutex_lock(&sMutex);
 		if (sur == NULL) {
 			releaseDrawData();
+			pthread_mutex_unlock(&sMutex);
 
 		} else {
+			pthread_mutex_unlock(&sMutex);
 			fill();
 		}
 	}
@@ -383,6 +394,7 @@ namespace mb {
 
 		initContentSurface();
 
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL && surfaceColor != NULL) {
 			rect.x = x;
 			rect.y = y;
@@ -399,6 +411,7 @@ namespace mb {
 			SDL_FillRect(pending, &rect, SDL_MapRGB(pending->format, r, g, b));
 			pthread_mutex_unlock(&pMutex);
 		}
+		pthread_mutex_unlock(&sMutex);
 
 		//pushDrawData(x, y, w, h, SDLWindow::DDT_FILL_RECT);
 	}
@@ -428,6 +441,7 @@ namespace mb {
 
 		this->chromaColor = new Color(r, g, b, alpha);
 
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			pthread_mutex_lock(&pMutex);
 			createPendingSurface();
@@ -437,6 +451,7 @@ namespace mb {
 
 			pthread_mutex_unlock(&pMutex);
 		}
+		pthread_mutex_unlock(&sMutex);
 
 		if (parent != NULL) {
 			parent->setColorKey(r, g, b);
@@ -493,10 +508,12 @@ namespace mb {
 	void SDLSurface::scale(double x, double y) {
 		int width, height;
 
+		pthread_mutex_lock(&sMutex);
 		if (sur == NULL) {
 			clog << "SDLSurface::scale Warning! ";
 			clog << "Can't scale surface: ";
 			clog << "internal surface is NULL" << endl;
+			pthread_mutex_unlock(&sMutex);
 			return;
 		}
 
@@ -509,38 +526,32 @@ namespace mb {
 	}
 
 	void SDLSurface::initContentSurface() {
+		pthread_mutex_lock(&sMutex);
 		if (sur == NULL && parent != NULL) {
 			sur = (SDL_Surface*)(parent->getContent());
 			if (sur == NULL) {
 				this->owner = true;
 
-				pthread_mutex_lock(&sMutex);
 				sur = createSurface();
 				((SDLWindow*)parent)->setRenderedSurface(sur);
-				pthread_mutex_unlock(&sMutex);
 
 			} else {
 				this->owner = false;
 			}
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	SDL_Surface* SDLSurface::createSurface() {
-		unsigned int r, g, b, a;
 		SDL_Surface* sdlSurface = NULL;
 
-		SDLDeviceScreen::getRGBAMask(24, &r, &g, &b, &a);
-
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
-			sdlSurface = SDL_CreateRGBSurface(
-					0,
+			sdlSurface = SDLDeviceScreen::createUnderlyingSurface(
 					parent->getW(),
-					parent->getH(),
-					24,
-					r, g, b, a);
+					parent->getH());
 
-			if (bgColor == NULL) {
-				//SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
+			if (bgColor == NULL && caps != 0) {
+				SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
 			}
 		}
 
@@ -557,6 +568,8 @@ namespace mb {
 		SDL_Surface* uSur;
 
 		initContentSurface();
+
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
@@ -595,6 +608,8 @@ namespace mb {
 			clog << "underlying surface is NULL. Destination ISurface ";
 			clog << "address would be '" << src << "'" << endl;
 		}
+
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void SDLSurface::getStringExtents(const char* text, int* w, int* h) {
@@ -611,6 +626,7 @@ namespace mb {
 	void SDLSurface::setClip(int x, int y, int w, int h) {
 		SDL_Rect rect;
 
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			rect.x = x;
 			rect.y = y;
@@ -627,9 +643,11 @@ namespace mb {
 			clog << "SDLSurface::setClip Warning! NULL underlying surface";
 			clog << endl;
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void SDLSurface::getSize(int* w, int* h) {
+		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			*w = sur->w;
 			*h = sur->h;
@@ -643,6 +661,7 @@ namespace mb {
 			clog << " parent";
 			clog << endl;
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	string SDLSurface::getDumpFileUri() {

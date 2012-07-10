@@ -89,7 +89,7 @@ namespace dataprocessing {
 		demux           = NULL;
 		ait             = NULL;
 
-		start();
+		startThread();
 
 		pthread_mutex_init(&mutex, NULL);
 

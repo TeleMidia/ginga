@@ -228,7 +228,7 @@ namespace player {
 		clog << "SmilPlayer::play(" << mrl << ")" << endl;
 
 		if (ambulantPlayer != NULL) {
-			Thread::start();
+			Thread::startThread();
 			ambulantPlayer->start();
 			gtk_widget_show_all(gtkwidget);
 			gtk_widget_realize(gtkwidget);

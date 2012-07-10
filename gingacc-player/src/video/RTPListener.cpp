@@ -76,7 +76,7 @@ namespace player {
 			ic = icm->createInteractiveChannel(url);
 			if (ic != NULL) {
 				ic->reserveUrl(url, this);
-				Thread::start();
+				Thread::startThread();
 
 			} else {
 				clog << "RTPListener::RTPListener Warning! Can't create ";

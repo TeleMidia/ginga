@@ -100,6 +100,7 @@ namespace mb {
 	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
 
 	pthread_mutex_t SDLDeviceScreen::uSurMutex;
+	set<SDL_Surface*> SDLDeviceScreen::uSurPool;
 
 	set<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	pthread_mutex_t SDLDeviceScreen::rlMutex;
@@ -2370,14 +2371,16 @@ namespace mb {
 	SDL_Surface* SDLDeviceScreen::createUnderlyingSurface(
 			int width, int height) {
 
+		SDL_Surface* newUSur = NULL;
 		Uint32 rmask, gmask, bmask, amask;
 
 		pthread_mutex_lock(&uSurMutex);
-		SDL_Surface* newUSur = NULL;
 
 		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 		newUSur = SDL_CreateRGBSurface(
 				0, width, height, 24, rmask, gmask, bmask, amask);
+
+		uSurPool.insert(newUSur);
 
 		pthread_mutex_unlock(&uSurMutex);
 
@@ -2406,7 +2409,15 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::releaseUnderlyingSurface(SDL_Surface* uSur) {
-		SDL_FreeSurface(uSur);
+		set<SDL_Surface*>::iterator i;
+
+		pthread_mutex_lock(&uSurMutex);
+		i = uSurPool.find(uSur);
+		if (i != uSurPool.end()) {
+			uSurPool.erase(i);
+			SDL_FreeSurface(uSur);
+		}
+		pthread_mutex_unlock(&uSurMutex);
 	}
 
 	void SDLDeviceScreen::getRGBAMask(

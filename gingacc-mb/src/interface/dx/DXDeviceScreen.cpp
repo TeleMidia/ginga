@@ -102,7 +102,7 @@ namespace mb {
 
 		pthread_cond_init(&init_cond, NULL);
 
-		Thread::start();
+		Thread::startThread();
 
 		pthread_mutex_lock(&init_lock);
 		while (init != 1) {

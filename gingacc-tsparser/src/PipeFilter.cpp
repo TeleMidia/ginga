@@ -84,7 +84,7 @@ namespace tsparser {
 
 	void PipeFilter::setDestName(string name) {
 		fifoName = name;
-		Thread::start();
+		Thread::startThread();
 
 		while (!fifoCreated) {
 			SystemCompat::uSleep(10000);

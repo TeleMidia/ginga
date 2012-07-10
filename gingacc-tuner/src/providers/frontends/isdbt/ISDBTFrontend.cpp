@@ -422,7 +422,7 @@ namespace tuning {
 
 		if (firstFilter) {
 			firstFilter = false;
-			start();
+			startThread();
 		}
 	}
 

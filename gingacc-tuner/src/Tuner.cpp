@@ -270,7 +270,7 @@ namespace tuning {
 	}
 
 	void Tuner::tune() {
-		start();
+		startThread();
 	}
 
 	INetworkInterface* Tuner::getCurrentInterface() {
@@ -322,7 +322,7 @@ namespace tuning {
 		}
 
 		clog << "Tuner::changeChannel start new thread" << endl;
-		start();
+		startThread();
 	}
 
 	void Tuner::addListener(ITunerListener* listener) {

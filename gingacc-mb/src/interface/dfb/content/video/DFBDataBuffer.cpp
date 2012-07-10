@@ -95,7 +95,7 @@ namespace mb {
 		deviceUri = mrl;
 		deviceFd  = fopen(deviceUri, "rb");
 
-		start();
+		startThread();
 
 		dataBuffer->WaitForData(dataBuffer, 188 * 1024 * 8);
 		dataBuffer->CreateVideoProvider(dataBuffer, &dec);

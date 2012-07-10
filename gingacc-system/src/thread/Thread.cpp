@@ -115,7 +115,7 @@ namespace thread {
 		return NULL;
 	}
 
-	void Thread::start() {
+	void Thread::startThread() {
 		if (!isDeleting) {
 			pthread_mutex_lock(&threadIdMutex);
 			pthread_create(&threadId_, &tattr, Thread::function, this);

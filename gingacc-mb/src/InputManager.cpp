@@ -600,7 +600,7 @@ namespace mb {
 
 			if (!running) {
 				running = true;
-				Thread::start();
+				Thread::startThread();
 			}
 		}
 
