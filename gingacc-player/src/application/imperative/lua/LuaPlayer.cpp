@@ -104,8 +104,8 @@ LUAPLAYER_BEGIN_DECLS
 #define warning(f, ...) __errprint ("LuaPlayer Warning: "f, ## __VA_ARGS__)
 
 // Execution trace.
-#ifdef ENABLE_TRACE
-# ifdef TRACE_TO_STDERR
+#ifdef LUAPLAYER_ENABLE_TRACE
+# ifdef LUAPLAYER_TRACE_TO_STDERR
 #  define __trace __errprint
 # else
 #  ifdef _MSC_VER
