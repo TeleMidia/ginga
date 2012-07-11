@@ -111,14 +111,16 @@ namespace mb {
 		pthread_mutex_destroy(&ddMutex);
 	}
 
-	void SDLSurface::createPendingSurface() {
+	bool SDLSurface::createPendingSurface() {
 		if (pending == NULL) {
 			pending = createSurface();
 
-			if (sur != NULL) {
+			if (sur != NULL && pending != NULL) {
 				SDL_UpperBlit(sur, NULL, pending, NULL);
 			}
 		}
+
+		return (pending != NULL);
 	}
 
 	void SDLSurface::checkPendingSurface() {
@@ -160,10 +162,13 @@ namespace mb {
 			}
 
 			pending = createSurface();
-			SDL_FillRect(
+
+			if (pending != NULL) {
+				SDL_FillRect(
 					pending,
 					NULL,
 					SDL_MapRGBA(pending->format, r, g, b, alpha));
+			}
 
 			pthread_mutex_unlock(&pMutex);
 
@@ -406,9 +411,10 @@ namespace mb {
 			b = surfaceColor->getB();
 
 			pthread_mutex_lock(&pMutex);
-			createPendingSurface();
-
-			SDL_FillRect(pending, &rect, SDL_MapRGB(pending->format, r, g, b));
+			if (createPendingSurface()) {
+				SDL_FillRect(
+						pending, &rect, SDL_MapRGB(pending->format, r, g, b));
+			}
 			pthread_mutex_unlock(&pMutex);
 		}
 		pthread_mutex_unlock(&sMutex);
@@ -429,9 +435,9 @@ namespace mb {
 			}
 
 			pthread_mutex_lock(&pMutex);
-			createPendingSurface();
-
-			iFont->playOver(this, txt, x, y, 0);
+			if (createPendingSurface()) {
+				iFont->playOver(this, txt, x, y, 0);
+			}
 			pthread_mutex_unlock(&pMutex);
 		}
 	}
@@ -444,11 +450,12 @@ namespace mb {
 		pthread_mutex_lock(&sMutex);
 		if (sur != NULL) {
 			pthread_mutex_lock(&pMutex);
-			createPendingSurface();
-
-			SDL_SetColorKey(
-					pending, SDL_TRUE, SDL_MapRGB(pending->format, r, g, b));
-
+			if (createPendingSurface()) {
+				SDL_SetColorKey(
+						pending,
+						SDL_TRUE,
+						SDL_MapRGB(pending->format, r, g, b));
+			}
 			pthread_mutex_unlock(&pMutex);
 		}
 		pthread_mutex_unlock(&sMutex);
@@ -596,9 +603,9 @@ namespace mb {
 				}
 
 				pthread_mutex_lock(&pMutex);
-				createPendingSurface();
-
-				SDL_UpperBlit(uSur, s, pending, &dstRect);
+				if (createPendingSurface()) {
+					SDL_UpperBlit(uSur, s, pending, &dstRect);
+				}
 				pthread_mutex_unlock(&pMutex);
 			}
 
@@ -634,9 +641,9 @@ namespace mb {
 			rect.h = h;
 
 			pthread_mutex_lock(&pMutex);
-			createPendingSurface();
-
-			SDL_SetClipRect(pending, &rect);
+			if (createPendingSurface()) {
+				SDL_SetClipRect(pending, &rect);
+			}
 			pthread_mutex_unlock(&pMutex);
 
 		} else {
