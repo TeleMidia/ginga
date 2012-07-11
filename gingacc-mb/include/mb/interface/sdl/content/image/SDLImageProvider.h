@@ -67,6 +67,7 @@ namespace core {
 namespace mb {
 	class SDLImageProvider : public IImageProvider {
 		private:
+			static bool mutexInit;
 			static bool initialized;
 			static short imageRefs;
 
