@@ -163,7 +163,7 @@ namespace mb {
 
 			pending = createSurface();
 
-			if (pending != NULL) {
+			if (pending != NULL && bgColor != NULL) {
 				SDL_FillRect(
 					pending,
 					NULL,
@@ -236,7 +236,6 @@ namespace mb {
 		this->surfaceColor  = NULL;
 		this->caps          = 1;
 		this->hasExtHandler = false;
-		this->owner         = false;
 		this->isDeleting    = false;
 		this->pending       = NULL;
 
@@ -281,16 +280,19 @@ namespace mb {
 
 	void SDLSurface::setSurfaceContent(void* surface) {
 		pthread_mutex_lock(&sMutex);
-		if (this->sur != NULL && surface != NULL && this->sur != surface) {
-//			if (parent == NULL || (parent)->removeChildSurface(this)) {
-			if (owner) {
-				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
-				sur = NULL;
+		if (sur != NULL && surface == sur) {
+			pthread_mutex_unlock(&sMutex);
+			return;
+		}
+
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			if (parent->getContent() == sur && sur != NULL) {
+				((SDLWindow*)parent)->setRenderedSurface((SDL_Surface*)surface);
 			}
 		}
 
-		this->owner = false;
-		this->sur   = (SDL_Surface*)surface;
+		SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+		this->sur = (SDL_Surface*)surface;
 		pthread_mutex_unlock(&sMutex);
 	}
 
@@ -425,8 +427,6 @@ namespace mb {
 	}
 
 	void SDLSurface::drawString(int x, int y, const char* txt) {
-		SDL_Surface* tmp;
-
 		if (iFont != NULL && txt != NULL) {
 			if (x < 0) {
 				x = 0;
@@ -533,6 +533,8 @@ namespace mb {
 		Matrix::scale(&matrix, x, y);
 
 		Matrix::setMatrix(&matrix, this);
+
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void SDLSurface::initContentSurface() {
@@ -540,13 +542,8 @@ namespace mb {
 		if (sur == NULL && parent != NULL) {
 			sur = (SDL_Surface*)(parent->getContent());
 			if (sur == NULL) {
-				this->owner = true;
-
 				sur = createSurface();
 				((SDLWindow*)parent)->setRenderedSurface(sur);
-
-			} else {
-				this->owner = false;
 			}
 		}
 		pthread_mutex_unlock(&sMutex);
