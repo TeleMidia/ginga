@@ -45,7 +45,7 @@ libnclua_la_SOURCES=       \
 
 libgingaccplalua_la_CXXFLAGS= -Wall -Wextra
 
-libgingaccplalua_la_CPPFLAGS= -DENABLE_TRACE \
+libgingaccplalua_la_CPPFLAGS= -DLUAPLAYER_ENABLE_TRACE \
   -I$(top_srcdir)/include -I$(prefix)/include/ginga/ $(LUA_INCLUDE)
 
 libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
