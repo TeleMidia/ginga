@@ -81,6 +81,7 @@ namespace mb {
 			IFontProvider* iFont;
 			int caps;
 			bool owner;
+			bool isDeleting;
 
 			vector<DrawData*> drawData;
 			pthread_mutex_t ddMutex;

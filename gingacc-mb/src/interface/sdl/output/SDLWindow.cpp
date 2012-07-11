@@ -491,8 +491,7 @@ namespace mb {
 	}
 
 	bool SDLWindow::removeChildSurface(ISurface* s) {
-		unsigned int i;
-		vector<ISurface*>::iterator j;
+		vector<ISurface*>::iterator i;
 		ISurface* surface;
 
 		lockChilds();
@@ -500,16 +499,18 @@ namespace mb {
 			releaseListener = NULL;
 		}
 
-		for (i = 0; i < childSurfaces.size(); i++) {
-			surface = childSurfaces.at(i);
-			if (surface == s) {
-				j = childSurfaces.begin() + i;
-				childSurfaces.erase(j);
+		i = childSurfaces.begin();
+		while (i != childSurfaces.end()) {
+			if (s == *i) {
+				childSurfaces.erase(i);
+				i = childSurfaces.begin();
 
-				i = 0;
+			} else {
+				++i;
 			}
 		}
 		unlockChilds();
+
 		return false;
 	}
 

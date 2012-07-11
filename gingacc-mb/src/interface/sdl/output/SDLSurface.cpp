@@ -72,7 +72,9 @@ namespace mb {
 	}
 
 	SDLSurface::~SDLSurface() {
-		bool mySurface = false;
+		isDeleting = true;
+		pthread_mutex_lock(&sMutex);
+		pthread_mutex_lock(&pMutex);
 
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
@@ -83,30 +85,28 @@ namespace mb {
 
 		releaseFont();
 
-		pthread_mutex_lock(&sMutex);
-		if (owner && sur != NULL) {
-			if (parent == NULL || parent->getContent() != sur) {
-				SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+			if (parent->getContent() == sur) {
+				((SDLWindow*)parent)->setRenderedSurface(NULL);
 			}
-			sur = NULL;
+			parent->removeChildSurface(this);
 		}
+
+		if (sur != NULL) {
+			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+		}
+
+		sur = NULL;
+
 		pthread_mutex_unlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
 
-		pthread_mutex_lock(&pMutex);
 		pending = NULL;
 		pthread_mutex_unlock(&pMutex);
 		pthread_mutex_destroy(&pMutex);
 
-		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
-			if (parent->removeChildSurface(this)) {
-				mySurface = true;
-			}
-		}
-
 		releaseDrawData();
 		pthread_mutex_lock(&ddMutex);
-		this->drawData.clear();
 		pthread_mutex_unlock(&ddMutex);
 		pthread_mutex_destroy(&ddMutex);
 	}
@@ -237,6 +237,7 @@ namespace mb {
 		this->caps          = 1;
 		this->hasExtHandler = false;
 		this->owner         = false;
+		this->isDeleting    = false;
 		this->pending       = NULL;
 
 		this->drawData.clear();
@@ -294,6 +295,7 @@ namespace mb {
 	}
 
 	bool SDLSurface::setParent(void* parentWindow) {
+		pthread_mutex_lock(&sMutex);
 		this->parent = (IWindow*)parentWindow;
 
 		if (parent != NULL) {
@@ -303,11 +305,11 @@ namespace mb {
 						chromaColor->getG(),
 						chromaColor->getB());
 			}
-		}
 
-		if (parent != NULL) {
 			parent->addChildSurface(this);
 		}
+
+		pthread_mutex_unlock(&sMutex);
 
 		return true;
 	}
@@ -458,11 +460,12 @@ namespace mb {
 			}
 			pthread_mutex_unlock(&pMutex);
 		}
-		pthread_mutex_unlock(&sMutex);
 
 		if (parent != NULL) {
 			parent->setColorKey(r, g, b);
 		}
+
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	IColor* SDLSurface::getChromaColor() {
@@ -551,11 +554,16 @@ namespace mb {
 
 	SDL_Surface* SDLSurface::createSurface() {
 		SDL_Surface* sdlSurface = NULL;
+		int w;
+		int h;
 
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
-			sdlSurface = SDLDeviceScreen::createUnderlyingSurface(
-					parent->getW(),
-					parent->getH());
+			w = parent->getW();
+			h = parent->getH();
+
+			if (!isDeleting) {
+				sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
+			}
 
 			if (bgColor == NULL && caps != 0) {
 				SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
