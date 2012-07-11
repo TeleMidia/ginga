@@ -586,7 +586,6 @@ nclua_cycle (nclua_t *nc)
 
   lua_State *L;
   int n;
-  int i;
 
   if (unlikely (__nclua_is_invalid (nc)))
     return;
@@ -652,11 +651,11 @@ nclua_cycle (nclua_t *nc)
   input = ncluax_abs (L, -1);
   n = lua_objlen (L, -1);
 
-  for (i = 1; i <= n; i++)
+  while (n-- > 0)
     {
+      lua_pushcfunction (L, _nclua_notify);
       ncluax_rawremove (L, input, 1);
-      _nclua_notify (L);
-      lua_pop (L, 1);
+      lua_call (L, 1, 0);
     }
 
   lua_pop (L, 1);
