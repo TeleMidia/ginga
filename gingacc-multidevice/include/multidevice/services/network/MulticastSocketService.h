@@ -53,11 +53,11 @@ http://www.telemidia.puc-rio.br
 #include "ISocketService.h"
 
 #include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdio.h>
 #include <errno.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -82,8 +82,9 @@ namespace multidevice {
 		unsigned int port;
 		char* gAddr;
 
+		//TODO: use PracticalSocket
 		int msdR, msdW;  // msd = multicast socket descriptor
-		sockaddr_in mss; // mss = multicast socket struct
+		//sockaddr_in mss; // mss = multicast socket struct
 
 		pthread_mutex_t mutexBuffer;
 		vector<struct frame*>* outputBuffer;
