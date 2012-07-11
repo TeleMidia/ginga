@@ -339,6 +339,16 @@ public:
    */
   void leaveGroup(const string &multicastGroup) throw(SocketException);
 
+  /**
+   * Returns the broadcast address for the first connected interface
+   */
+  string getBroadcastAddress() throw(SocketException);
+
+  /**
+   * Returns the IP address for the first connected interface (omg, int)
+   */
+  unsigned int getLocalIPAddress() throw(SocketException);
+
 private:
   void setBroadcast();
 };

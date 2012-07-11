@@ -67,6 +67,8 @@ namespace multidevice {
 	private:
 		static const int port           = 41000;
 		unsigned int interfaceIP;
+		string broadcastIPAddr;
+		string localIPAddr;
 
 		pthread_mutex_t mutexBuffer;
 		vector<struct frame*>* outputBuffer;
