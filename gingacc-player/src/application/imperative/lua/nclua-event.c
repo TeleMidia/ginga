@@ -119,8 +119,10 @@ match (lua_State *L, int event, int filter)
   return status;
 }
 
-/* For each function in handler list, if its filter matches event at top of
-   stack, call it passing the event as argument.  If the function returns
+/* _nclua_notify (event:table) -> n_called:number
+
+   For each function in handler list, if its filter matches event EVENT,
+   call it passing a copy of event as argument.  If the function returns
    true, stop processing (event handled).  Otherwise, continue until all
    functions have been called.
 
@@ -133,9 +135,11 @@ _nclua_notify (lua_State *L)
   int list;                     /* handler list */
   int size;                     /* handler list size */
   int n_called;                 /* number of handlers called */
+
   int i;
 
-  event = ncluax_abs (L, -1);
+  luaL_checktype (L, 1, LUA_TTABLE);
+  event = 1;
 
   /* Handlers may use event.register to modify the handler list.
      This means that the handler list may be modified while we're
@@ -152,34 +156,37 @@ _nclua_notify (lua_State *L)
   n_called = 0;
   for (i = 1; i <= size; i++)
     {
-      int saved_top = lua_gettop (L);
       lua_rawgeti (L, list, i);
       lua_rawgeti (L, -1, 2);         /* push the associated filter */
 
       if (match (L, event, -1))
         {
+          nclua_bool_t status;
 
           /* Handlers may modify the event.  Again, to avoid corruption, we
-             pass to each handler a snapshot copy of the original event.  */
+             pass to each handler a copy of the original event.  */
 
           lua_rawgeti (L, -2, 1);     /* push handler function */
           ncluax_pushcopy (L, event); /* push a copy of event */
           lua_call (L, 1, 1);
 
           n_called++;
-          if (lua_toboolean (L, -1))
+          status = lua_toboolean (L, -1);
+          lua_pop (L, 1);
+
+          if (status)
             {
-              lua_settop (L, saved_top);
+              lua_pop (L, 2);
               break;
             }
         }
 
-      lua_settop (L, saved_top);
+      lua_pop (L, 2);
     }
 
   lua_pop (L, 1);
-
-  return n_called;
+  lua_pushinteger (L, n_called);
+  return 1;
 }
 
 
