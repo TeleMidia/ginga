@@ -81,11 +81,14 @@ private:
 
      IInputManager *im;
      void scheduleUpdate (void);
-     void doStop (void);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
      virtual ~LuaPlayer (void);
+
+     // Used by stop() and  ev_receive_ncl_event().
+     // TODO: In the future, make it private.
+     void doStop (void);
 
      // Player interface.
      void abort (void);

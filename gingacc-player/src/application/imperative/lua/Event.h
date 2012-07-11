@@ -1,51 +1,19 @@
-/******************************************************************************
-Este arquivo eh parte da implementacao do ambiente declarativo do middleware
-Ginga (Ginga-NCL).
+/* Event.h -- The semantics of NCL 3.0 events.
+   Copyright (C) 2012 PUC-Rio/Laboratorio TeleMidia
 
-Direitos Autorais Reservados (c) 2012 PUC-Rio/Laboratorio TeleMidia
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
 
-Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
-os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
-Software Foundation.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
 
-Este programa eh distribuido na expectativa de que seja util, porem, SEM
-NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
-ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
-GNU versao 2 para mais detalhes.
-
-Voce deve ter recebido uma copia da Licenca Publica Geral do GNU versao 2 junto
-com este programa; se nao, escreva para a Free Software Foundation, Inc., no
-endereco 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
-
-Para maiores informacoes:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-******************************************************************************
-This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
-
-Copyright: 2012 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License version 2 as published by
-the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License version 2 for more
-details.
-
-You should have received a copy of the GNU General Public License version 2
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-
-For further information contact:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-*******************************************************************************/
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc., 51
+Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef LUAPLAYER_EVENT_H
 #define LUAPLAYER_EVENT_H
@@ -61,959 +29,882 @@ http://www.telemidia.puc-rio.br
 
 #include "player/LuaPlayer.h"
 
-#undef  ARRAY_SIZE
-#define ARRAY_SIZE(x) (sizeof (x) / sizeof (x[0]))
-
-#undef  ASSERT_NOT_REACHED
 #define ASSERT_NOT_REACHED assert (!"reached")
 
-#undef  STREQ
-#define STREQ(x,y) (strcmp (x, y) == 0)
+#define integralof(x)  (((char *)(x)) - ((char *) 0))
+#define nelementsof(x) (sizeof (x) / sizeof (x[0]))
+#define pointerof(x)   ((void *)((char *) 0 + (x)))
+#define streq(x,y)     (strcmp (x, y) == 0)
 
 
-// Constants.
+/* Constants.  */
 
-#define EVENT_FIELD_CLASS           "class"
+#define EV_FIELD_CLASS           "class"
 
-// NCL
-#define EVENT_NCL_CLASS             "ncl"
-#define EVENT_NCL_FIELD_ACTION      "action"
-#define EVENT_NCL_FIELD_LABEL       "label"
-#define EVENT_NCL_FIELD_NAME        "name"
-#define EVENT_NCL_FIELD_TYPE        "type"
-#define EVENT_NCL_FIELD_VALUE       "value"
-#define EVENT_NCL_TYPE_ATTRIBUTION  "attribution"
-#define EVENT_NCL_TYPE_PRESENTATION "presentation"
-#define EVENT_NCL_TYPE_SELECTION    "selection"
-#define EVENT_NCL_ACTION_ABORT      "abort"
-#define EVENT_NCL_ACTION_PAUSE      "pause"
-#define EVENT_NCL_ACTION_RESUME     "resume"
-#define EVENT_NCL_ACTION_START      "start"
-#define EVENT_NCL_ACTION_STOP       "stop"
+/* NCL */
+#define EV_NCL_CLASS             "ncl"
+#define EV_NCL_FIELD_ACTION      "action"
+#define EV_NCL_FIELD_LABEL       "label"
+#define EV_NCL_FIELD_NAME        "name"
+#define EV_NCL_FIELD_TYPE        "type"
+#define EV_NCL_FIELD_VALUE       "value"
+#define EV_NCL_TYPE_ATTRIBUTION  "attribution"
+#define EV_NCL_TYPE_PRESENTATION "presentation"
+#define EV_NCL_TYPE_SELECTION    "selection"
+#define EV_NCL_ACTION_ABORT      "abort"
+#define EV_NCL_ACTION_PAUSE      "pause"
+#define EV_NCL_ACTION_RESUME     "resume"
+#define EV_NCL_ACTION_START      "start"
+#define EV_NCL_ACTION_STOP       "stop"
 
-// Key
-#define EVENT_KEY_CLASS             "key"
-#define EVENT_KEY_FIELD_KEY         "key"
-#define EVENT_KEY_FIELD_TYPE        "type"
-#define EVENT_KEY_TYPE_PRESS        "press"
-#define EVENT_KEY_TYPE_RELEASE      "release"
+/* Key */
+#define EV_KEY_CLASS             "key"
+#define EV_KEY_FIELD_KEY         "key"
+#define EV_KEY_FIELD_TYPE        "type"
+#define EV_KEY_TYPE_PRESS        "press"
+#define EV_KEY_TYPE_RELEASE      "release"
 
-// User
-#define EVENT_USER_CLASS            "user"
+/* TCP */
+#define EV_TCP_CLASS             "tcp"
+#define EV_TCP_FIELD_CONNECTION  "connection"
+#define EV_TCP_FIELD_ERROR       "error"
+#define EV_TCP_FIELD_HOST        "host"
+#define EV_TCP_FIELD_PORT        "port"
+#define EV_TCP_FIELD_TIMEOUT     "timeout"
+#define EV_TCP_FIELD_TYPE        "type"
+#define EV_TCP_FIELD_VALUE       "value"
+#define EV_TCP_TYPE_CONNECT      "connect"
+#define EV_TCP_TYPE_DATA         "data"
+#define EV_TCP_TYPE_DISCONNECT   "disconnect"
+
+/* User */
+#define EV_USER_CLASS            "user"
 
 
-// Error messages.
+/* Error messages.  */
 
-#define event_errpush_invalid_field(L, f) \
-     lua_pushfstring (L, "invalid event %s", f)
+#define _ev_error(L, format, ...) \
+  (lua_pushboolean (L, 0), lua_pushfstring (L, format, ## __VA_ARGS__), 2)
 
-#define event_errpush_unknown_field(L, f, v) \
-     lua_pushfstring (L, "unknown event %s '%s'", f, v)
+#define ev_error_bad(L, field) \
+  _ev_error (L, "bad event %s", field)
+
+#define ev_error_invalid(L, field, value) \
+  _ev_error (L, "invalid event %s '%s'", field, value)
 
 
-// Auxiliary functions.
+/* Auxiliary functions.  */
 
 typedef struct
 {
-     const char *key;
-     void *value;
-} event_map_t;
+  const char *key;              /* map key */
+  void *value;                  /* map value */
+} ev_map_t;
 
-static int event_map_compare (const void *p1, const void *p2)
+static int
+ev_map_compare (const void *p1, const void *p2)
 {
-     return strcmp (((event_map_t *) p1)->key,
-                    ((event_map_t *) p2)->key);
+  return strcmp (((ev_map_t *) p1)->key, ((ev_map_t *) p2)->key);
 }
 
-static const event_map_t *event_map_get (const event_map_t map[],
-                                         size_t size, const char *key)
+static const ev_map_t *
+ev_map_get (const ev_map_t map[], size_t size, const char *key)
 {
-     event_map_t e = {key, NULL};
-     return (const event_map_t *)
-          bsearch (&e, map, size, sizeof (event_map_t), event_map_compare);
+  ev_map_t e = {key, NULL};
+  return (const ev_map_t *)
+    bsearch (&e, map, size, sizeof (ev_map_t), ev_map_compare);
+}
+
+/* Gets the string value associated with key FIELD in table at INDEX.
+   If successful, stores value into *VALUE and returns true.
+   Otherwise, returns false.  */
+
+static int
+ev_getstringfield (lua_State *L, int index,
+                   const char *field, const char **value)
+{
+  lua_getfield (L, index, field);
+  if (!lua_isstring (L, -1))
+    {
+      lua_pop (L, 1);
+      return 0;
+    }
+
+  *value = lua_tostring (L, -1);
+  lua_pop (L, 1);
+  return 1;
 }
 
 
-// NCL class.
+/* NCL class.  */
 
-// Type name to code.
-static const event_map_t event_ncl_type_map[] =
+/* Type name to code.  */
+static const ev_map_t ev_ncl_type_map[] =
 {
-     // KEEP THIS SORTED ALPHABETICALLY.
-     { EVENT_NCL_TYPE_ATTRIBUTION,  (void *) Player::TYPE_ATTRIBUTION  },
-     { EVENT_NCL_TYPE_PRESENTATION, (void *) Player::TYPE_PRESENTATION },
-     { EVENT_NCL_TYPE_SELECTION,    (void *) Player::TYPE_SELECTION    },
+  /* KEEP THIS SORTED ALPHABETICALLY */
+  { EV_NCL_TYPE_ATTRIBUTION,  (void *) Player::TYPE_ATTRIBUTION  },
+  { EV_NCL_TYPE_PRESENTATION, (void *) Player::TYPE_PRESENTATION },
+  { EV_NCL_TYPE_SELECTION,    (void *) Player::TYPE_SELECTION    },
 };
 
-// Action name to code.
-static const event_map_t event_ncl_action_map[] =
+/* Action name to code.  */
+static const ev_map_t ev_ncl_action_map[] =
 {
-     // KEEP THIS SORTED ALPHABETICALLY.
-     { EVENT_NCL_ACTION_ABORT,  (void *) Player::PL_NOTIFY_ABORT  },
-     { EVENT_NCL_ACTION_PAUSE,  (void *) Player::PL_NOTIFY_PAUSE  },
-     { EVENT_NCL_ACTION_RESUME, (void *) Player::PL_NOTIFY_RESUME },
-     { EVENT_NCL_ACTION_START,  (void *) Player::PL_NOTIFY_START  },
-     { EVENT_NCL_ACTION_STOP,   (void *) Player::PL_NOTIFY_STOP   },
+  /* KEEP THIS SORTED ALPHABETICALLY */
+  { EV_NCL_ACTION_ABORT,  (void *) Player::PL_NOTIFY_ABORT  },
+  { EV_NCL_ACTION_PAUSE,  (void *) Player::PL_NOTIFY_PAUSE  },
+  { EV_NCL_ACTION_RESUME, (void *) Player::PL_NOTIFY_RESUME },
+  { EV_NCL_ACTION_START,  (void *) Player::PL_NOTIFY_START  },
+  { EV_NCL_ACTION_STOP,   (void *) Player::PL_NOTIFY_STOP   },
 };
 
-#define _event_ncl_get_type_entry(type)                         \
-     event_map_get (event_ncl_type_map,                         \
-                    ARRAY_SIZE (event_ncl_type_map), type)
+#define _ev_ncl_get_type(type) \
+  ev_map_get (ev_ncl_type_map, nelementsof (ev_ncl_type_map), type)
 
-#define _event_ncl_get_action_entry(action)                     \
-     event_map_get (event_ncl_action_map,                       \
-                    ARRAY_SIZE (event_ncl_action_map), action)
+#define _ev_ncl_get_action(action) \
+  ev_map_get (ev_ncl_action_map, nelementsof (ev_ncl_action_map), action)
 
-// Returns true if type name TYPE is valid.
-#define event_ncl_check_type(type) \
-     (_event_ncl_get_type_entry (type) != NULL)
+/* Gets the type value associated with type name TYPE.  */
+#define ev_ncl_get_type_value(type) \
+  ((ptrdiff_t)(_ev_ncl_get_type (type))->value)
 
-// Returns true if action name ACTION is value.
-#define event_ncl_check_action(action) \
-     (_event_ncl_get_action_entry (action) != NULL)
+/* Gets the action value associated with type name ACTION.  */
+#define ev_ncl_get_action_value(action) \
+  ((ptrdiff_t)(_ev_ncl_get_action (action))->value)
 
-// Gets the type value associated with type name TYPE.
-#define event_ncl_get_type_value(type) \
-     ((ptrdiff_t)(_event_ncl_get_type_entry (type))->value)
+/* Gets the type name associated with type value TYPE.  */
 
-// Gets the action value associated with type name ACTION.
-#define event_ncl_get_action_value(action) \
-     ((ptrdiff_t)(_event_ncl_get_action_entry (action))->value)
-
-// Gets the type name associated with type value TYPE.
-static const char *event_ncl_get_type_name (int type)
+static const char *
+ev_ncl_get_type_name (int type)
 {
-     switch (type)
-     {
-     case Player::TYPE_ATTRIBUTION:  return EVENT_NCL_TYPE_ATTRIBUTION;
-     case Player::TYPE_PRESENTATION: return EVENT_NCL_TYPE_PRESENTATION;
-     case Player::TYPE_SELECTION:    return EVENT_NCL_TYPE_SELECTION;
-     }
-     ASSERT_NOT_REACHED;
-     return NULL;
+  switch (type)
+    {
+    case Player::TYPE_ATTRIBUTION:  return EV_NCL_TYPE_ATTRIBUTION;
+    case Player::TYPE_PRESENTATION: return EV_NCL_TYPE_PRESENTATION;
+    case Player::TYPE_SELECTION:    return EV_NCL_TYPE_SELECTION;
+    }
+  ASSERT_NOT_REACHED;
+  return NULL;
 }
 
-// Gets the action name associated with action value ACTION.
-static const char *event_ncl_get_action_name (int action)
+/* Gets the action name associated with action value ACTION.  */
+
+static const char *
+ev_ncl_get_action_name (int action)
 {
-     switch (action)
-     {
-     case Player::PL_NOTIFY_ABORT:  return EVENT_NCL_ACTION_ABORT;
-     case Player::PL_NOTIFY_PAUSE:  return EVENT_NCL_ACTION_PAUSE;
-     case Player::PL_NOTIFY_RESUME: return EVENT_NCL_ACTION_RESUME;
-     case Player::PL_NOTIFY_START:  return EVENT_NCL_ACTION_START;
-     case Player::PL_NOTIFY_STOP:   return EVENT_NCL_ACTION_STOP;
-     }
-     ASSERT_NOT_REACHED;
-     return NULL;
+  switch (action)
+    {
+    case Player::PL_NOTIFY_ABORT:  return EV_NCL_ACTION_ABORT;
+    case Player::PL_NOTIFY_PAUSE:  return EV_NCL_ACTION_PAUSE;
+    case Player::PL_NOTIFY_RESUME: return EV_NCL_ACTION_RESUME;
+    case Player::PL_NOTIFY_START:  return EV_NCL_ACTION_START;
+    case Player::PL_NOTIFY_STOP:   return EV_NCL_ACTION_STOP;
+    }
+  ASSERT_NOT_REACHED;
+  return NULL;
 }
 
-// Checks if the event at top of stack is valid NCL event.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
+#define ev_ncl_class_is_valid(c)  (streq (c, EV_NCL_CLASS))
+#define ev_ncl_type_is_valid(t)   (_ev_ncl_get_type (t) != NULL)
+#define ev_ncl_action_is_valid(a) (_ev_ncl_get_action (action) != NULL)
 
-static int event_check_ncl_event (lua_State *L)
+/* ev_check_ncl_event (event:table)
+   -> status:boolean, [error_message:string]
+
+   Checks if event EVENT is a valid NCL event.  Returns true if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_check_ncl_event (lua_State *L)
 {
-     const char *type;
-     const char *action;
+  const char *cls;
+  const char *type;
+  const char *action;
 
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_NCL_CLASS));
-     lua_pop (L, 1);
+  luaL_checktype (L, 1, LUA_TTABLE);
 
-     lua_getfield (L, -1, EVENT_NCL_FIELD_TYPE);
-     if (!lua_isstring (L, -1))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_invalid_field (L, EVENT_NCL_FIELD_TYPE);
-          return 2;
-     }
+  if (!ev_getstringfield (L, 1, EV_FIELD_CLASS, &cls))
+    return ev_error_bad (L, EV_FIELD_CLASS);
 
-     type = lua_tostring (L, -1);
-     if (!event_ncl_check_type (type))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_NCL_FIELD_TYPE, type);
-          return 2;
-     }
-     lua_pop (L, 1);
+  if (!streq (cls, EV_NCL_CLASS))
+    return ev_error_invalid (L, EV_FIELD_CLASS, cls);
 
-     lua_getfield (L, -1, EVENT_NCL_FIELD_ACTION);
-     if (!lua_isstring (L, -1))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_invalid_field (L, EVENT_NCL_FIELD_ACTION);
-          return 2;
-     }
+  if (!ev_getstringfield (L, 1, EV_NCL_FIELD_TYPE, &type))
+    return ev_error_bad (L, EV_NCL_FIELD_TYPE);
 
-     action = lua_tostring (L, -1);
-     if (!event_ncl_check_action (action))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_NCL_FIELD_ACTION, action);
-          return 2;
-     }
-     lua_pop (L, 1);
+  if (!ev_ncl_type_is_valid (type))
+    return ev_error_invalid (L, EV_NCL_FIELD_TYPE, type);
 
-     if (STREQ (type, EVENT_NCL_TYPE_ATTRIBUTION))
-     {
-          lua_getfield (L, -1, EVENT_NCL_FIELD_NAME);
-          if (!lua_isstring (L, -1))
-          {
-               lua_pushboolean (L, 0);
-               event_errpush_invalid_field (L, EVENT_NCL_FIELD_NAME);
-               return 2;
-          }
-          // TODO: Check if name is a known property.
-          lua_pop (L, 1);
+  if (!ev_getstringfield (L, 1, EV_NCL_FIELD_ACTION, &action))
+    return ev_error_bad (L, EV_NCL_FIELD_ACTION);
 
-          lua_getfield (L, -1, EVENT_NCL_FIELD_VALUE);
-          if (!lua_isstring (L, -1))
-          {
-               lua_pushboolean (L, 0);
-               event_errpush_invalid_field (L, EVENT_NCL_FIELD_VALUE);
-               return 2;
-          }
-          lua_pop (L, 1);
-     }
-     else if (STREQ (type, EVENT_NCL_TYPE_PRESENTATION)
-              || STREQ (type, EVENT_NCL_TYPE_SELECTION))
-     {
-          lua_getfield (L, -1, EVENT_NCL_FIELD_LABEL);
-          if (!lua_isstring (L, -1))
-          {
-               lua_pushboolean (L, 0);
-               event_errpush_invalid_field (L, EVENT_NCL_FIELD_LABEL);
-               return 2;
-          }
-          // TODO: Check if label is a valid label.
-          lua_pop (L, 1);
-     }
-     else
-     {
-          ASSERT_NOT_REACHED;
-     }
+  if (!ev_ncl_action_is_valid (action))
+    return ev_error_invalid (L, EV_NCL_FIELD_ACTION, action);
 
-     lua_pushboolean (L, 1);
-     return 1;
+  if (streq (type, EV_NCL_TYPE_ATTRIBUTION))
+    {
+      const char *name;
+      const char *value;
+
+      if (!ev_getstringfield (L, 1, EV_NCL_FIELD_NAME, &name))
+        return ev_error_bad (L, EV_NCL_FIELD_NAME);
+
+      if (!ev_getstringfield (L, 1, EV_NCL_FIELD_VALUE, &value))
+        return ev_error_bad (L, EV_NCL_FIELD_VALUE);
+    }
+  else if (streq (type, EV_NCL_TYPE_PRESENTATION)
+           || streq (type, EV_NCL_TYPE_SELECTION))
+    {
+      const char *label;
+
+      if (!ev_getstringfield (L, 1, EV_NCL_FIELD_LABEL, &label))
+        return ev_error_bad (L, EV_NCL_FIELD_LABEL);
+    }
+  else
+    {
+      ASSERT_NOT_REACHED;
+    }
+
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// Creates and pushes onto stack an NCL filter with the given parameters.
-// If successful, pushes the resulting table onto stack.
-// Otherwise, pushes false plus error message.
+/* ev_get_ncl_filter (class:string, [type, name, action:string])
+   -> filter:table or status:boolean, [error_message:string]
 
-static int event_get_ncl_filter (lua_State *L)
+   Creates a filter table for NCL events with the given parameters.
+   Returns the resulting filter table if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_get_ncl_filter (lua_State *L)
 {
-     const char *cls;
-     const char *type;
-     const char *name;
-     const char *action;
+  const char *cls;
+  const char *type;
+  const char *name;
+  const char *action;
 
-     cls = luaL_checkstring (L, 1);
-     assert (STREQ (cls, EVENT_NCL_CLASS));
+  cls = luaL_checkstring (L, 1);
+  if (!streq (cls, EV_NCL_CLASS))
+    return ev_error_invalid (L, EV_NCL_CLASS, cls);
 
-     type = luaL_optstring (L, 2, NULL);
-     if (type != NULL && !event_ncl_check_type (type))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_NCL_FIELD_TYPE, type);
-          return 2;
-     }
+  type = luaL_optstring (L, 2, NULL);
+  if (type != NULL && !ev_ncl_type_is_valid (type))
+    return ev_error_invalid (L, EV_NCL_FIELD_TYPE, type);
 
-     name = luaL_optstring (L, 3, NULL);
-     // TODO: Check if name is a known property or label.
+  name = luaL_optstring (L, 3, NULL);
 
-     action = luaL_optstring (L, 4, NULL);
-     if (action != NULL && !event_ncl_check_action (action))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_NCL_FIELD_ACTION, action);
-          return 2;
-     }
+  action = luaL_optstring (L, 4, NULL);
+  if (action != NULL && !ev_ncl_action_is_valid (action))
+    return ev_error_invalid (L, EV_NCL_FIELD_ACTION, action);
 
-     // Create the corresponding filter table.
+  /* Create filter table.  */
 
-     lua_createtable (L, 0, 4);
-     lua_pushstring (L, cls);
-     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+  lua_createtable (L, 0, 4);
+  lua_pushstring (L, EV_NCL_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
 
-     if (type != NULL)
-     {
-          lua_pushstring (L, type);
-          lua_setfield (L, -2, EVENT_NCL_FIELD_TYPE);
+  if (type != NULL)
+    {
+      lua_pushstring (L, type);
+      lua_setfield (L, -2, EV_NCL_FIELD_TYPE);
 
-          if (name != NULL)
-          {
-               lua_pushstring (L, name);
-               if (STREQ (type, EVENT_NCL_TYPE_ATTRIBUTION))
-               {
-                    lua_setfield (L, -2, EVENT_NCL_FIELD_NAME);
-               }
-               else if (STREQ (type, EVENT_NCL_TYPE_PRESENTATION)
-                        || STREQ (type, EVENT_NCL_TYPE_SELECTION))
-               {
-                    lua_setfield (L, -2, EVENT_NCL_FIELD_LABEL);
-               }
-               else
-               {
-                    ASSERT_NOT_REACHED;
-               }
-          }
-     }
-
-     if (action != NULL)
-     {
-          lua_pushstring (L, action);
-          lua_setfield (L, -2, EVENT_NCL_FIELD_ACTION);
-     }
-
-     return 1;
-}
-
-// Receives the NCL event at top of stack.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
-//
-// This function assumes that event is a valid NCL event.
-
-static int event_receive_ncl_event (lua_State *L)
-{
-     int type;
-     int action;
-     const char *name;
-     const char *value;
-
-     nclua_t *nc;
-     LuaPlayer *player;
-
-     nc = nclua_get_nclua_state (L);
-     player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
-
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_NCL_CLASS));
-     lua_pop (L, 1);
-
-     lua_getfield (L, -1, EVENT_NCL_FIELD_TYPE);
-     type = event_ncl_get_type_value (lua_tostring (L, -1));
-     lua_pop (L, 1);
-
-     lua_getfield (L, -1, EVENT_NCL_FIELD_ACTION);
-     action = event_ncl_get_action_value (lua_tostring (L, -1));
-     lua_pop (L, 1);
-
-     switch (type)
-     {
-     case Player::TYPE_ATTRIBUTION:
-          lua_getfield (L, -1, EVENT_NCL_FIELD_NAME);
-          name = lua_tostring (L, -1);
-          lua_pop (L, 1);
-
-          lua_getfield (L, -1, EVENT_NCL_FIELD_VALUE);
-          value = lua_tostring (L, -1);
-          lua_pop (L, 1);
-
-          player->notifyPlayerListeners (action, string (name),
-                                         type, string (value));
-          break;
-
-     case Player::TYPE_PRESENTATION:
-          lua_getfield (L, -1, EVENT_NCL_FIELD_LABEL);
-          name = lua_tostring (L, -1);
-          lua_pop (L, 1);
-
-          player->notifyPlayerListeners (action, string (name));
-          break;
-
-     case Player::TYPE_SELECTION:
-          ASSERT_NOT_REACHED;
-          break;                // TODO: not implemented
-     }
-
-     lua_pushboolean (L, 1);
-     return 1;
-}
-
-// Sends NCL event with the given parameters to NCLua state NC.
-
-#define event_send_ncl_presentation_event(nc, action, label)    \
-     event_send_ncl_event (nc, Player::TYPE_PRESENTATION,       \
-                           action, label, NULL)
-
-#define event_send_ncl_attribution_event(nc, action, name, value)       \
-     event_send_ncl_event (nc, Player::TYPE_ATTRIBUTION,                \
-                           action, name, value)
-
-static void event_send_ncl_event (nclua_t *nc, int type, int action,
-                                  const char *name, const char *value)
-{
-     lua_State *L;
-
-     L = nclua_get_lua_state (nc);
-
-     lua_createtable (L, 0, 5);
-
-     lua_pushstring (L, EVENT_NCL_CLASS);
-     lua_setfield (L, -2, EVENT_FIELD_CLASS);
-
-     lua_pushstring (L, event_ncl_get_type_name (type));
-     lua_setfield (L, -2, EVENT_NCL_FIELD_TYPE);
-
-     lua_pushstring (L, event_ncl_get_action_name (action));
-     lua_setfield (L, -2, EVENT_NCL_FIELD_ACTION);
-
-     switch (type)
-     {
-     case Player::TYPE_ATTRIBUTION:
-          assert (name != NULL);
+      if (name != NULL)
+        {
           lua_pushstring (L, name);
-          lua_setfield (L, -2, EVENT_NCL_FIELD_NAME);
+          if (streq (type, EV_NCL_TYPE_ATTRIBUTION))
+            {
+              lua_setfield (L, -2, EV_NCL_FIELD_NAME);
+            }
+          else if (streq (type, EV_NCL_TYPE_PRESENTATION)
+                   || streq (type, EV_NCL_TYPE_SELECTION))
+            {
+              lua_setfield (L, -2, EV_NCL_FIELD_LABEL);
+            }
+          else
+            {
+              ASSERT_NOT_REACHED;
+            }
+        }
+    }
 
-          assert (value != NULL);
-          lua_pushstring (L, value);
-          lua_setfield (L, -2, EVENT_NCL_FIELD_VALUE);
-          break;
+  if (action != NULL)
+    {
+      lua_pushstring (L, action);
+      lua_setfield (L, -2, EV_NCL_FIELD_ACTION);
+    }
 
-     case Player::TYPE_PRESENTATION:
-     case Player::TYPE_SELECTION:
-          assert (name != NULL);
-          lua_pushstring (L, name);
-          lua_setfield (L, -2, EVENT_NCL_FIELD_LABEL);
-          break;
-     default:
-          ASSERT_NOT_REACHED;
-     }
+  return 1;
+}
 
-     nclua_send (nc, L);
+/* ev_receive_ncl_event (event:table)
+
+   Receives the NCL event EVENT.
+   This function assumes that event is a valid NCL event.  */
+
+static int
+ev_receive_ncl_event (lua_State *L)
+{
+  const char *type;
+  const char *action;
+  const char *name;
+  const char *value;
+
+  nclua_t *nc;
+  LuaPlayer *player;
+  int type_value;
+  int action_value;
+
+  int n = ev_check_ncl_event (L);
+  if (n > 1)
+    {
+      lua_pop (L, n);
+    }
+  assert (lua_toboolean (L, -1));
+  lua_pop (L, 1);
+
+  /* Receive event.  */
+
+  nc = nclua_get_nclua_state (L);
+  player = (LuaPlayer *) nclua_get_user_data (nc, NULL);
+
+  assert (ev_getstringfield (L, 1, EV_NCL_FIELD_TYPE, &type));
+  assert (ev_getstringfield (L, 1, EV_NCL_FIELD_ACTION, &action));
+
+  type_value = ev_ncl_get_type_value (type);
+  action_value = ev_ncl_get_action_value (action);
+
+  switch (type_value)
+    {
+    case Player::TYPE_ATTRIBUTION:
+      assert (ev_getstringfield (L, 1, EV_NCL_FIELD_NAME, &name));
+      assert (ev_getstringfield (L, 1, EV_NCL_FIELD_VALUE, &value));
+      player->notifyPlayerListeners (action_value, string (name),
+                                     type_value, string (value));
+      break;
+
+    case Player::TYPE_PRESENTATION:
+      assert (ev_getstringfield (L, 1, EV_NCL_FIELD_LABEL, &name));
+
+      if (streq (name, "") && action_value == Player::PL_NOTIFY_STOP)
+        {
+
+          /* If the NCLua script posted a "stop" event, we have to destroy
+             the NCLua state immediately.  Otherwise, the
+             notifyPlayerListeners() call below will cause this event to
+             echoes back to the NCLua engine.  */
+
+          player->doStop ();
+        }
+
+      player->notifyPlayerListeners (action_value, string (name));
+      break;
+
+    case Player::TYPE_SELECTION:
+      break;                    /* TODO: not implemented */
+    }
+
+  return 0;
+}
+
+/* Sends NCL event with the given parameters to NCLua state NC.  */
+
+#define ev_send_ncl_presentation_event(nc, action, label) \
+  ev_send_ncl_event (nc, Player::TYPE_PRESENTATION, action, label, NULL)
+
+#define ev_send_ncl_attribution_event(nc, action, name, value)  \
+  ev_send_ncl_event (nc, Player::TYPE_ATTRIBUTION, action, name, value)
+
+static void
+ev_send_ncl_event (nclua_t *nc, int type, int action,
+                   const char *name, const char *value)
+{
+  lua_State *L;
+
+  L = nclua_get_lua_state (nc);
+
+  lua_createtable (L, 0, 5);
+
+  lua_pushstring (L, EV_NCL_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
+
+  lua_pushstring (L, ev_ncl_get_type_name (type));
+  lua_setfield (L, -2, EV_NCL_FIELD_TYPE);
+
+  lua_pushstring (L, ev_ncl_get_action_name (action));
+  lua_setfield (L, -2, EV_NCL_FIELD_ACTION);
+
+  switch (type)
+    {
+    case Player::TYPE_ATTRIBUTION:
+      assert (name != NULL);
+      lua_pushstring (L, name);
+      lua_setfield (L, -2, EV_NCL_FIELD_NAME);
+
+      assert (value != NULL);
+      lua_pushstring (L, value);
+      lua_setfield (L, -2, EV_NCL_FIELD_VALUE);
+      break;
+
+    case Player::TYPE_PRESENTATION:
+    case Player::TYPE_SELECTION:
+      assert (name != NULL);
+      lua_pushstring (L, name);
+      lua_setfield (L, -2, EV_NCL_FIELD_LABEL);
+      break;
+    default:
+      ASSERT_NOT_REACHED;
+    }
+
+  nclua_send (nc, L);
 }
 
 
-// Key class.
+/* Key class.  */
 
-// Returns true if TYPE is a valid key event type.
-#define event_key_check_type(type)              \
-     (STREQ (type, EVENT_KEY_TYPE_PRESS)        \
-      || STREQ (type, EVENT_KEY_TYPE_RELEASE))
+/* Returns true if type TYPE is valid.  */
+#define ev_key_type_is_valid(type) \
+  (streq (type, EV_KEY_TYPE_PRESS) || streq (type, EV_KEY_TYPE_RELEASE))
 
-// Checks if the event at top of stack is a valid key event.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
+/* ev_check_key_event (event:table)
+   -> status:boolean, [error_message:string]
 
-static int event_check_key_event (lua_State *L)
+   Checks if event EVENT is a valid key event.  Returns true if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_check_key_event (lua_State *L)
 {
-     const char *type;
-     const char *key;
+  const char *cls;
+  const char *type;
+  const char *key;
 
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_KEY_CLASS));
-     lua_pop (L, 1);
+  luaL_checktype (L, 1, LUA_TTABLE);
 
-     lua_getfield (L, -1, EVENT_KEY_FIELD_TYPE);
-     if (!lua_isstring (L, -1))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_invalid_field (L, EVENT_KEY_FIELD_TYPE);
-          return 2;
-     }
+  if (!ev_getstringfield (L, 1, EV_FIELD_CLASS, &cls))
+    return ev_error_bad (L, EV_FIELD_CLASS);
 
-     type = lua_tostring (L, -1);
-     if (!event_key_check_type (type))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_KEY_FIELD_TYPE, type);
-          return 2;
-     }
-     lua_pop (L, 1);
+  if (!streq (cls, EV_KEY_CLASS))
+    return ev_error_invalid (L, EV_FIELD_CLASS, cls);
 
-     lua_getfield (L, -1, EVENT_KEY_FIELD_KEY);
-     if (!lua_isstring (L, -1))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_invalid_field (L, EVENT_KEY_FIELD_KEY);
-          return 2;
-     }
+  if (!ev_getstringfield (L, 1, EV_KEY_FIELD_TYPE, &type))
+    return ev_error_bad (L, EV_KEY_FIELD_TYPE);
 
-     // TODO: Check if key is valid.
+  if (!ev_key_type_is_valid (type))
+    return ev_error_invalid (L, EV_KEY_FIELD_TYPE, type);
 
-     key = lua_tostring (L, -1);
-     lua_pop (L, 1);
+  if (!ev_getstringfield (L, 1, EV_KEY_FIELD_KEY, &key))
+    return ev_error_bad (L, EV_KEY_FIELD_KEY);
 
-     lua_pushboolean (L, 1);
-     return 1;
+  /* TODO: Check if key is valid.  */
+
+  key = lua_tostring (L, -1);
+  lua_pop (L, 1);
+
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// Creates and pushes onto stack an key filter with the given parameters.
-// If successful, pushes the resulting table onto stack.
-// Otherwise, pushes false plus error message.
+/* ev_get_key_filter (class:string, [type, key:string])
+   -> filter:table or status:boolean, [error_message:string]
 
-static int event_get_key_filter (lua_State *L)
+   Creates a filter table for key events with the given parameters.
+   Returns the resulting filter table if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_get_key_filter (lua_State *L)
 {
-     const char *cls;
-     const char *type;
-     const char *key;
+  const char *cls;
+  const char *type;
+  const char *key;
 
-     cls = luaL_checkstring (L, 1);
-     assert (STREQ (cls, EVENT_KEY_CLASS));
+  cls = luaL_checkstring (L, 1);
+  if (!streq (cls, EV_KEY_CLASS))
+    return ev_error_invalid (L, EV_KEY_CLASS, cls);
 
-     type = luaL_optstring (L, 2, NULL);
-     if (type != NULL && !event_key_check_type (type))
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_KEY_FIELD_TYPE, type);
-          return 2;
-     }
+  type = luaL_optstring (L, 2, NULL);
+  if (type != NULL && !ev_key_type_is_valid (type))
+    return ev_error_invalid (L, EV_KEY_FIELD_TYPE, type);
 
-     key = luaL_optstring (L, 3, NULL);
-     // TODO: Check if key is a known key.
+  key = luaL_optstring (L, 3, NULL);
 
-     // Create the corresponding filter table.
+  /* Create push filter table.  */
 
-     lua_createtable (L, 0, 3);
-     lua_pushstring (L, cls);
-     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+  lua_createtable (L, 0, 3);
+  lua_pushstring (L, EV_KEY_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
 
-     if (type != NULL)
-     {
-          lua_pushstring (L, type);
-          lua_setfield (L, -2, EVENT_KEY_FIELD_TYPE);
-     }
+  if (type != NULL)
+    {
+      lua_pushstring (L, type);
+      lua_setfield (L, -2, EV_KEY_FIELD_TYPE);
+    }
 
-     if (key != NULL)
-     {
-          lua_pushstring (L, key);
-          lua_setfield (L, -2, EVENT_KEY_FIELD_KEY);
-     }
+  if (key != NULL)
+    {
+      lua_pushstring (L, key);
+      lua_setfield (L, -2, EV_KEY_FIELD_KEY);
+    }
 
-     return 1;
+  return 1;
 }
 
-// Receives the key event at top of stack.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
-//
-// This function assumes that event is a valid key event.
+/* Sends key event with the given parameters to the NCLua state NC.  */
 
-static int event_receive_key_event (lua_State *L)
+static void
+ev_send_key_event (nclua_t *nc, const char *key, int press)
 {
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_KEY_CLASS));
-     lua_pop (L, 1);
+  lua_State *L;
+  const char *type;
 
-     // TODO: not implemented.
+  L = nclua_get_lua_state (nc);
 
-     lua_pushboolean (L, 1);
-     return 1;
-}
+  lua_createtable (L, 0, 3);
 
-// Sends key event with the given parameters to the NCLua state NC.
+  lua_pushstring (L, EV_KEY_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
 
-static void event_send_key_event (nclua_t *nc, const char *key, int press)
-{
-     lua_State *L;
-     const char *type;
+  lua_pushstring (L, key);
+  lua_setfield (L, -2, EV_KEY_FIELD_KEY);
 
-     L = nclua_get_lua_state (nc);
+  type = (press) ? EV_KEY_TYPE_PRESS : EV_KEY_TYPE_RELEASE;
+  lua_pushstring (L, type);
+  lua_setfield (L, -2, EV_KEY_FIELD_TYPE);
 
-     lua_createtable (L, 0, 3);
-
-     lua_pushstring (L, EVENT_KEY_CLASS);
-     lua_setfield (L, -2, EVENT_FIELD_CLASS);
-
-     lua_pushstring (L, key);
-     lua_setfield (L, -2, EVENT_KEY_FIELD_KEY);
-
-     type = (press) ? EVENT_KEY_TYPE_PRESS : EVENT_KEY_TYPE_RELEASE;
-     lua_pushstring (L, type);
-     lua_setfield (L, -2, EVENT_KEY_FIELD_TYPE);
-
-     nclua_send (nc, L);
+  nclua_send (nc, L);
 }
 
 
-// User class
+/* User class.  */
 
-// Checks if the event at top of stack is a valid user event.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
+/* ev_check_user_event (event:table)
+   -> status:boolean, [error_message:string]
 
-static int event_check_user_event (lua_State *L)
+   Checks if event EVENT is a valid user event.  Returns true if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_check_user_event (lua_State *L)
 {
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_USER_CLASS));
-     lua_pop (L, 1);
-     lua_pushboolean (L, 1);
-     return 1;
+  const char *cls;
+
+  luaL_checktype (L, 1, LUA_TTABLE);
+
+  if (!ev_getstringfield (L, 1, EV_FIELD_CLASS, &cls))
+    return ev_error_bad (L, EV_FIELD_CLASS);
+
+  if (!streq (cls, EV_USER_CLASS))
+    return ev_error_invalid (L, EV_FIELD_CLASS, cls);
+
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// Creates and pushes onto stack a user filter with the given parameters.
-// If successful, pushes the resulting table onto stack.
-// Otherwise, pushes false plus error message.
+/* ev_get_user_filter (class:string)
+   -> filter:table or status:boolean, [error_message:string]
 
-static int event_get_user_filter (lua_State *L)
+   Creates a filter table for user events with the given parameters.
+   Returns the resulting filter table if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_get_user_filter (lua_State *L)
 {
-     const char *cls;
+  const char *cls;
 
-     cls = luaL_checkstring (L, 1);
-     assert (STREQ (cls, EVENT_USER_CLASS));
+  cls = luaL_checkstring (L, 1);
+  if (!streq (cls, EV_USER_CLASS))
+    return ev_error_invalid (L, EV_USER_CLASS, cls);
 
-     // Create the corresponding filter table.
+  /* Create filter table.  */
 
-     lua_createtable (L, 0, 1);
-     lua_pushstring (L, cls);
-     lua_setfield (L, -2, EVENT_FIELD_CLASS);
+  lua_createtable (L, 0, 1);
+  lua_pushstring (L, EV_USER_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
 
-     return 1;
-}
-
-// Receives the user event at top of stack.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
-
-static int event_receive_user_event (lua_State *L)
-{
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     assert (lua_isstring (L, -1)
-             && STREQ (lua_tostring (L, -1), EVENT_USER_CLASS));
-     lua_pop (L, 1);
-
-     lua_pushboolean (L, 1);
-     return 1;
+  return 1;
 }
 
 
-// Generic event handling.
+/* Generic event handling.  */
 
 typedef struct
 {
-     const char *cls;                  // event class
-     lua_CFunction check_func;         // pointer to check function
-     lua_CFunction receive_func;       // pointer to receive function
-     lua_CFunction get_filter_func; // pointer to the get_filter function
-} event_class_map_t;
+  const char *cls;               /* event class */
+  lua_CFunction check_func;      /* pointer to check function */
+  lua_CFunction get_filter_func; /* pointer to the get_filter function */
+  lua_CFunction receive_func;    /* pointer to receive function */
+} ev_class_map_t;
 
-static const event_class_map_t event_class_map[] =
+static const ev_class_map_t ev_class_map[] =
 {
-     // KEEP THIS SORTED ALPHABETICALLY.
-
-     { EVENT_KEY_CLASS,         // key
-       event_check_key_event,
-       event_receive_key_event,
-       event_get_key_filter
-     },
-
-     { EVENT_NCL_CLASS,         // ncl
-       event_check_ncl_event,
-       event_receive_ncl_event,
-       event_get_ncl_filter
-     },
-
-     { EVENT_USER_CLASS,        // user
-       event_check_user_event,
-       event_receive_user_event,
-       event_get_user_filter
-     },
+  /* KEEP THIS SORTED ALPHABETICALLY */
+  { EV_KEY_CLASS,  ev_check_key_event,  ev_get_key_filter,  NULL },
+  { EV_NCL_CLASS,  ev_check_ncl_event,  ev_get_ncl_filter,  ev_receive_ncl_event },
+  { EV_USER_CLASS, ev_check_user_event, ev_get_user_filter, NULL },
 };
 
-static int event_class_map_compare (const void *p1, const void *p2)
+static int
+ev_class_map_compare (const void *p1, const void *p2)
 {
-     return strcmp (((event_class_map_t *) p1)->cls,
-                    ((event_class_map_t *) p2)->cls);
+  return strcmp (((ev_class_map_t *) p1)->cls,
+                 ((ev_class_map_t *) p2)->cls);
 }
 
-static const event_class_map_t *event_class_map_get (const char *cls)
+static const
+ev_class_map_t *ev_class_map_get (const char *cls)
 {
-     event_class_map_t key = {cls, NULL, NULL, NULL};
-     return (const event_class_map_t *)
-          bsearch (&key, event_class_map, ARRAY_SIZE (event_class_map),
-                   sizeof (event_class_map_t), event_class_map_compare);
+  ev_class_map_t key = {cls, NULL, NULL, NULL};
+  return (const ev_class_map_t *)
+    bsearch (&key, ev_class_map, nelementsof (ev_class_map),
+             sizeof (ev_class_map_t), ev_class_map_compare);
 }
 
-static int event_call_handler (lua_State *L, ptrdiff_t offset)
+static int
+ev_call_handler (lua_State *L, ptrdiff_t offset)
 {
-     const event_class_map_t *entry;
-     const char *cls;
-     lua_CFunction handler;
+  const ev_class_map_t *entry;
+  lua_CFunction handler;
+  const char *cls;
 
-     luaL_checktype (L, 1, LUA_TTABLE);
+  luaL_checktype (L, 1, LUA_TTABLE);
 
-     lua_getfield (L, -1, EVENT_FIELD_CLASS);
-     if (!lua_isstring (L, -1))
-     {
-          lua_pushboolean (L, 1);
-          return 1;             // unknown class
-     }
+  lua_getfield (L, -1, EV_FIELD_CLASS);
+  if (!lua_isstring (L, -1))
+    goto done;                  /* unknown class */
 
-     cls = lua_tostring (L, -1);
-     lua_pop (L, 1);
+  cls = lua_tostring (L, -1);
+  lua_pop (L, 1);
 
-     entry = event_class_map_get (cls);
-     if (entry == NULL)
-     {
-          lua_pushboolean (L, 1);
-          return 1;             // unknown class
-     }
+  entry = ev_class_map_get (cls);
+  if (entry == NULL)
+    goto done;                  /* unknown class */
 
-     handler = *(lua_CFunction *)((char *) entry + offset);
-     return handler (L);
+  handler = *(lua_CFunction *)((char *) entry + offset);
+  if (handler == NULL)
+    goto done;                  /* empty handler */
+
+  return handler (L);
+
+ done:
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// Checks if event at top of stack is valid.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
+/* Generic handlers.  */
 
-static int event_check_event (lua_State *L)
-
+static int
+ev_check_event (lua_State *L)
 {
-     return event_call_handler (L, offsetof (event_class_map_t,
-                                             check_func));
+  return ev_call_handler (L, offsetof (ev_class_map_t, check_func));
 }
 
-// Creates and pushes onto stack a filter with the given parameters.
-// If successful, pushes the resulting table onto stack.
-// Otherwise, pushes false plus error message.
-
-static int event_get_filter (lua_State *L)
+static int
+ev_get_filter (lua_State *L)
 {
-     const event_class_map_t *entry;
-     const char *cls;
+  const ev_class_map_t *entry;
+  const char *cls;
 
-     cls = luaL_checkstring (L, 1);
-     entry = event_class_map_get (cls);
-     if (entry == NULL)
-     {
-          lua_pushboolean (L, 0);
-          event_errpush_unknown_field (L, EVENT_FIELD_CLASS, cls);
-          return 1;
-     }
+  cls = luaL_checkstring (L, 1);
+  entry = ev_class_map_get (cls);
+  if (entry == NULL)
+    return ev_error_invalid (L, EV_FIELD_CLASS, cls);
 
-     return entry->get_filter_func (L);
+  return entry->get_filter_func (L);
 }
 
-// Receives the event at top of stack.
-// If successful, pushes true onto stack.
-// Otherwise, pushes false plus error message.
-
-static int event_receive_event (lua_State *L)
+static int
+ev_receive_event (lua_State *L)
 {
-     return event_call_handler (L, offsetof (event_class_map_t,
-                                             receive_func));
+  return ev_call_handler (L, offsetof (ev_class_map_t, receive_func));
 }
 
 
-// NCLua Event wrappers.
+/* NCLua Event wrappers.  */
 
-static int event_post_wrapper (lua_State *L);
-static int event_register_wrapper (lua_State *L);
+static int ev_post_wrapper (lua_State *L);
+static int ev_register_wrapper (lua_State *L);
 
-typedef struct
+static const ev_map_t ev_wrapper_map[] =
 {
-     const char *name;          // function name
-     lua_CFunction wrapper;     // pointer to wrapper function
-} event_wrapper_map_t;
-
-static const event_wrapper_map_t event_wrapper_map[] =
-{
-     { "post",     event_post_wrapper     },
-     { "register", event_register_wrapper },
+  { "post",     pointerof ((ptrdiff_t) ev_post_wrapper)     },
+  { "register", pointerof ((ptrdiff_t) ev_register_wrapper) },
 };
 
-static int event_wrapper_map_compare (const void *p1, const void *p2)
+static const ev_map_t *
+ev_wrapper_map_get (const char *key)
 {
-     return strcmp (((event_wrapper_map_t *) p1)->name,
-                    ((event_wrapper_map_t *) p2)->name);
+  return ev_map_get (ev_wrapper_map, nelementsof (ev_wrapper_map), key);
 }
 
-static const event_wrapper_map_t *event_wrapper_map_get (const char *name)
+/* Replaces the functions listed in ev_wrapper_map by the corresponding
+   wrapper functions.  */
+
+static void
+ev_install_wrappers (lua_State *L)
 {
-     event_wrapper_map_t key = {name, NULL};
-     return (const event_wrapper_map_t *)
-          bsearch (&key, event_wrapper_map, ARRAY_SIZE (event_wrapper_map),
-                   sizeof (event_wrapper_map_t), event_wrapper_map_compare);
+  size_t i;
+
+  lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+
+  for (i = 0; i < nelementsof (ev_wrapper_map); i++)
+    {
+      const char *name = ev_wrapper_map[i].key;
+      lua_CFunction wrapper = (lua_CFunction)
+        integralof (ev_wrapper_map[i].value);
+
+      /* Save the original function into Lua registry.  */
+
+      lua_getfield (L, -1, name);
+      assert (lua_isfunction (L, -1));
+      lua_pushlightuserdata (L, (void *) &ev_wrapper_map[i]);
+      lua_insert (L, -2);
+      lua_rawset (L, LUA_REGISTRYINDEX);
+
+      /* Replace original function by wrapper.  */
+
+      lua_pushcfunction (L, wrapper);
+      lua_setfield (L, -2, name);
+    }
+
+  lua_pop (L, 1);
 }
 
-// Replaces the functions listed in event_wrapper_map by the corresponding
-// wrapper functions.
+/* Replaces the wrappers listed in ev_wrapper_map by the corresponding
+   original functions.  */
 
-static void event_install_wrappers (lua_State *L)
+static void
+ev_uninstall_wrappers (lua_State *L)
 {
-     size_t i;
+  size_t i;
 
-     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+  lua_getglobal (L, NCLUA_EVENT_LIBNAME);
 
-     for (i = 0; i < ARRAY_SIZE (event_wrapper_map); i++)
-     {
-          const char *name = event_wrapper_map[i].name;
-          lua_CFunction wrapper = event_wrapper_map[i].wrapper;
+  for (i = 0; i < nelementsof (ev_wrapper_map); i++)
+    {
+      const char *name = ev_wrapper_map[i].key;
 
-          // Save the original function into Lua registry.
+      /* Replace wrapper by the original function.  */
 
-          lua_getfield (L, -1, name);
-          assert (lua_isfunction (L, -1));
-          lua_pushlightuserdata (L, (void *) &event_wrapper_map[i]);
-          lua_insert (L, -2);
-          lua_rawset (L, LUA_REGISTRYINDEX);
+      lua_pushlightuserdata (L, (void *) &ev_wrapper_map[i]);
+      lua_pushvalue (L, -1);
+      lua_rawget (L, LUA_REGISTRYINDEX);
+      lua_setfield (L, -3, name);
 
-          // Replace original function by wrapper.
+      /* Cleanup registry.  */
 
-          lua_pushcfunction (L, wrapper);
-          lua_setfield (L, -2, name);
-     }
+      lua_pushnil (L);
+      lua_rawset (L, LUA_REGISTRYINDEX);
+    }
 
-     lua_pop (L, 1);
+  lua_pop (L, 1);
 }
 
-// Replaces the wrappers listed in event_wrapper_map by the corresponding
-// original functions.
+/* event.post ([destination:string], event:table)
+   -> status:boolean, [error_message:string]
 
-static void event_uninstall_wrappers (lua_State *L)
+   Similar to the original event.post, but checks if event is valid before
+   posting it.  */
+
+static int
+ev_post_wrapper (lua_State *L)
 {
-     size_t i;
+  int event;                 /* event parameter */
 
-     lua_getglobal (L, NCLUA_EVENT_LIBNAME);
+  void *key;
+  int saved_top;
+  int n;
 
-     for (i = 0; i < ARRAY_SIZE (event_wrapper_map); i++)
-     {
-          const char *name = event_wrapper_map[i].name;
+  event = lua_istable (L, 1) ? 1 : 2;
+  luaL_checktype (L, event, LUA_TTABLE);
 
-          // Replace wrapper by the original function.
+  /* Check if event is valid.  */
 
-          lua_pushlightuserdata (L, (void *) &event_wrapper_map[i]);
-          lua_pushvalue (L, -1);
-          lua_rawget (L, LUA_REGISTRYINDEX);
-          lua_setfield (L, -3, name);
+  saved_top = lua_gettop (L);
+  lua_pushcfunction (L, ev_check_event);
+  lua_pushvalue (L, event);
+  lua_call (L, 1, LUA_MULTRET);
 
-          // Cleanup registry.
+  n = lua_gettop (L) - saved_top;
+  assert (n == 1 || n == 2);
 
-          lua_pushnil (L);
-          lua_rawset (L, LUA_REGISTRYINDEX);
-     }
+  if (n == 2)
+    {
+      assert (lua_isstring (L, -1));
+      assert (!lua_toboolean (L, -2));
+      return 2;
+    }
 
-     lua_pop (L, 1);
+  if (!lua_toboolean (L, -1))
+    return 1;
+
+  lua_pop (L, 1);
+
+  /* Call the original event.post.  */
+
+  assert ((key = (void *) ev_wrapper_map_get ("post")) != NULL);
+  lua_pushlightuserdata (L, key);
+  lua_rawget (L, LUA_REGISTRYINDEX);
+  lua_insert (L, 1);
+  lua_call (L, lua_gettop (L) - 1, 0);
+
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// event.post ([destination:string], event:table)
-//   -> status:boolean, [error_message:string]
-//
-// Similar to the original event.post, but checks if event is valid before
-// posting it.
+/* event.register ([position:number], function:function,
+                   [class:string], ...)
+   -> status:boolean, [error_message:string]
 
-static int event_post_wrapper (lua_State *L)
+   Similar to the original event.register, but uses the class and extra
+   parameters to create the event filter table.  */
+
+static int
+ev_register_wrapper (lua_State *L)
 {
-     int event;                 // index of event parameter
-     void *key;
-     int saved_top;
-     int n;
+  int cls;                      /* class parameter */
+  void *key;
 
-     event = 2;
-     if (lua_istable (L, 1))
-     {
-          event = 1;
-     }
-     luaL_checktype (L, event, LUA_TTABLE);
+  cls = lua_isfunction (L, 1) ? 2 : 3;
+  if (lua_isstring (L, cls))
+    {
+      int n;
 
-     // Check if event is valid.
+      /* Creates filter table from the given parameters.  */
 
-     saved_top = lua_gettop (L);
-     lua_pushcfunction (L, event_check_event);
-     lua_pushvalue (L, event);
-     lua_call (L, 1, LUA_MULTRET);
+      lua_pushcfunction (L, ev_get_filter);
+      lua_insert (L, cls);
 
-     n = lua_gettop (L) - saved_top;
-     assert (n == 1 || n == 2);
+      n = lua_gettop (L) - cls;
+      lua_call (L, n, LUA_MULTRET);
 
-     if (n == 2)
-     {
+      n = lua_gettop (L) - cls + 1;
+      assert (n == 1 || n == 2);
+
+      if (n == 2)
+        {
           assert (lua_isstring (L, -1));
           assert (!lua_toboolean (L, -2));
           return 2;
-     }
+        }
 
-     if (!lua_toboolean (L, -1))
-     {
-          return 1;
-     }
+      if (!lua_toboolean (L, -1))
+        return 1;
 
-     lua_pop (L, 1);
+      assert (lua_istable (L, -1));
+    }
 
-     // Call the original event.post.
+  /* Call the original event.register.  */
 
-     assert ((key = (void *) event_wrapper_map_get ("post")) != NULL);
-     lua_pushlightuserdata (L, key);
-     lua_rawget (L, LUA_REGISTRYINDEX);
-     lua_insert (L, 1);
-     lua_call (L, lua_gettop (L) - 1, 0);
+  assert ((key = (void *) ev_wrapper_map_get ("register")) != NULL);
+  lua_pushlightuserdata (L, key);
+  lua_rawget (L, LUA_REGISTRYINDEX);
+  lua_insert (L, 1);
+  lua_call (L, lua_gettop (L) - 1, LUA_MULTRET);
 
-     lua_pushboolean (L, 1);
-     return 1;
+  lua_pushboolean (L, 1);
+  return 1;
 }
 
-// event.register ([position:number], function:function,
-//                 [class:string], ...)
-//   -> status:boolean, [error_message:string]
-//
-// Similar to the original event.register, but uses the class and extra
-// parameters to create the event filter table.
-
-static int event_register_wrapper (lua_State *L)
-{
-     int cls;                   // event of class parameter
-     void *key;
-
-     cls = 3;
-     if (lua_isfunction (L, 1))
-     {
-          cls = 2;
-     }
-
-     if (lua_isstring (L, cls))
-     {
-          int n;
-
-          // Creates filter table from the given parameters.
-
-          lua_pushcfunction (L, event_get_filter);
-          lua_insert (L, cls);
-
-          n = lua_gettop (L) - cls;
-          lua_call (L, n, LUA_MULTRET);
-
-          n = lua_gettop (L) - cls + 1;
-          assert (n == 1 || n == 2);
-
-          if (n == 2)
-          {
-               assert (lua_isstring (L, -1));
-               assert (!lua_toboolean (L, -2));
-               return 2;
-          }
-
-          if (!lua_toboolean (L, -1))
-          {
-               return 1;
-          }
-
-          assert (lua_istable (L, -1));
-     }
-
-     // Call the original event.register.
-
-     assert ((key = (void *) event_wrapper_map_get ("register")) != NULL);
-     lua_pushlightuserdata (L, key);
-     lua_rawget (L, LUA_REGISTRYINDEX);
-     lua_insert (L, 1);
-     lua_call (L, lua_gettop (L) - 1, LUA_MULTRET);
-
-     lua_pushboolean (L, 1);
-     return 1;
-}
-
-#endif // LUAPLAYER_EVENT_H
-
-// Local variables:
-// mode: c++
-// c-file-style: "k&r"
-// End:
+#endif /* LUAPLAYER_EVENT_H */

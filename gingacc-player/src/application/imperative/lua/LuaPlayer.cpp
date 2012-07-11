@@ -129,7 +129,7 @@ LUAPLAYER_BEGIN_DECLS
 #endif // ENABLE_TRACE
 
 
-// Private methods -- these should not call LOCK/UNLOCK.
+// Private (or almost private) methods -- these should not call LOCK/UNLOCK.
 
 // Schedules a new NCLua "cycle".
 
@@ -147,7 +147,7 @@ void LuaPlayer::doStop (void)
 {
      lua_State *L;
      L = nclua_get_lua_state (this->nc);
-     event_uninstall_wrappers (L);
+     ev_uninstall_wrappers (L);
      nclua_destroy (this->nc);
      lua_close (L);
      this->nc = NULL;
@@ -198,8 +198,8 @@ void LuaPlayer::abort (void)
      LOCK ();
      trace0 ();
 
-     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_ABORT,
-                                        this->scope.c_str ());
+     ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_ABORT,
+                                     this->scope.c_str ());
      this->stop ();
 
      UNLOCK ();
@@ -210,8 +210,8 @@ void LuaPlayer::pause (void)
      LOCK ();
      trace0 ();
 
-     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_PAUSE,
-                                        this->scope.c_str ());
+     ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_PAUSE,
+                                     this->scope.c_str ());
      Player::pause ();
 
      UNLOCK ();
@@ -224,7 +224,7 @@ bool LuaPlayer::play (void)
      LOCK ();
      trace0 ();
 
-     if (this->scope == "" && this->status == STOP)
+     if (this->nc == NULL)
      {
           lua_State *L;
           ISurface *surface;
@@ -249,7 +249,7 @@ bool LuaPlayer::play (void)
 
           this->nc = nclua_create_for_lua_state (L);
           assert (nclua_status (this->nc) == NCLUA_STATUS_SUCCESS);
-          event_install_wrappers (L);
+          ev_install_wrappers (L);
           nclua_set_user_data (this->nc, NULL, (void *) this, NULL);
           nclua_reset_uptime (this->nc);
 
@@ -276,8 +276,8 @@ bool LuaPlayer::play (void)
 
      // TODO: Should we post also the start of the whole content anchor?
 
-     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_START,
-                                        this->scope.c_str ());
+     ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_START,
+                                     this->scope.c_str ());
      Player::play ();
 
 tail:
@@ -290,8 +290,8 @@ void LuaPlayer::resume (void)
      LOCK ();
      trace0 ();
 
-     event_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_RESUME,
-                                        this->scope.c_str ());
+     ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_RESUME,
+                                     this->scope.c_str ());
      Player::resume ();
 
      UNLOCK ();
@@ -302,13 +302,16 @@ void LuaPlayer::stop (void)
      LOCK ();
      trace0 ();
 
-     // FIXME: stop() gets called even if the player is not running.
      if (this->nc != NULL)
      {
-          event_send_ncl_presentation_event (this->nc,
-                                             Player::PL_NOTIFY_STOP,
-                                             this->scope.c_str ());
+          ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_STOP,
+                                          this->scope.c_str ());
+          nclua_cycle (this->nc);
           this->doStop ();
+     }
+
+     if (this->status != STOP)
+     {
           Player::stop ();
      }
 
@@ -367,9 +370,9 @@ void LuaPlayer::setPropertyValue (string name, string value)
             const char *cname = name.c_str ();
             const char *cvalue = value.c_str ();
 
-            event_send_ncl_attribution_event
+            ev_send_ncl_attribution_event
                  (this->nc, Player::PL_NOTIFY_START, cname, cvalue);
-            event_send_ncl_attribution_event
+            ev_send_ncl_attribution_event
                  (this->nc, Player::PL_NOTIFY_STOP, cname, cvalue);
        }
 
@@ -405,7 +408,7 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
           nclua_receive (this->nc, L);
           while (!lua_isnil (L, -1))
           {
-               lua_pushcfunction (L, event_receive_event);
+               lua_pushcfunction (L, ev_receive_event);
                lua_insert (L, -2);
                assert (lua_pcall (L, 1, LUA_MULTRET, 0) == 0);
                if (lua_isstring (L, -1))
@@ -413,7 +416,11 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
                     warning ("%s", lua_tostring (L, -1));
                     lua_pop (L, 1);
                }
-               lua_pop (L, 1);
+
+               if (this->nc == NULL)
+               {
+                    goto tail;  // stop was received
+               }
 
                nclua_receive (this->nc, L);
           }
@@ -432,7 +439,7 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
                ->getValue (evt->getKeyCode (myScreen));
           press = evt->isPressedType ();
 
-          event_send_key_event (this->nc, key.c_str (), press);
+          ev_send_key_event (this->nc, key.c_str (), press);
      }
 
 tail:
@@ -496,6 +503,7 @@ extern "C"
 
 IPlayer *createLuaPlayer (GingaScreenID id, const char *mrl, bool b)
 {
+     (void) b;
      return new LuaPlayer (id, string (mrl));
 }
 
