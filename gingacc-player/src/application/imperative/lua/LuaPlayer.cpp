@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 extern "C"
 {
 #include <assert.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -165,7 +166,14 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 
      // FIXME: This is *WRONG*: the chdir() call changes the working
      // directory of the whole process.
-     chdir (SystemCompat::getPath (mrl).c_str ());
+
+     string cwd = SystemCompat::getPath (mrl);
+     if (chdir (cwd.c_str ()) < 0)
+     {
+          int saved_errno = errno;
+          warning ("%s: %s", strerror (errno), cwd.c_str ());
+          errno = saved_errno;
+     }
 
      this->im = dm->getInputManager (this->myScreen);
      this->surface = dm->createSurface (myScreen);
