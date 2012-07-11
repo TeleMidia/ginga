@@ -55,45 +55,31 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
+	const static int MAX_MSG_SIZE = 1024;
+
 	TCPClientConnection::TCPClientConnection(
 			unsigned int devid,
 			char* hostname,
 			char *port_str,
 			IRemoteDeviceListener* srv) {
 
-		struct addrinfo hints, *res;
-		int set;
-
-		deviceId     = devid;
-		srv_hostname = hostname;
-		portno       = port_str;
-		resrv        = srv;
-		counter      = 0;
-		running      = true;
-
-		memset(&hints, 0, sizeof hints);
-
-		hints.ai_family   = AF_INET;
-		hints.ai_socktype = SOCK_STREAM;
-
-		getaddrinfo(srv_hostname, port_str, &hints, &res);
-
-		sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-		if (sockfd < 0) {
-			clog << "TCPClientConnection::ERROR opening socket";
-
-		} else {
-			set = 1;
-			setsockopt(
-					sockfd, SOL_SOCKET, SO_KEEPALIVE, (void*)&set, sizeof(int));
-
-			connect(sockfd, res->ai_addr, res->ai_addrlen);
+		try {
+			deviceId = devid;
+			tcpSocket = new TCPSocket(string(hostname),atoi(port_str));
 		}
+		catch (SocketException &e) {
+			clog << "TCPClientConnection:: creation error" << endl;
+			clog << e.what() << endl;
+
+		}
+
 	}
 
 	TCPClientConnection::~TCPClientConnection() {
-		running = false;
-		close(sockfd);
+		this->release();
+		if (tcpSocket != NULL) {
+			delete tcpSocket;
+		}
 	}
 
 	/**
@@ -103,98 +89,80 @@ namespace multidevice {
 	 */
 	bool TCPClientConnection::post(char* str) {
 		char* com;
-		//int nr;
-		int nw;
 
+		if (tcpSocket == NULL) {
+			return false;
+		}
+		//TODO: port asprintf for windows
 		asprintf(&com, "%d %s", counter, str);
 		counter++;
 
-		if (sockfd < 0) {
-			return false;
-		}
-
-		nw = send(sockfd,com,strlen(com), MSG_NOSIGNAL);
-		if (nw != strlen(com)) {
-			perror("TCPClientConnection::post send error");
-			this->end();
-
-		} else {
+		try {
+			tcpSocket->send(com, strlen(com));
 			return true;
-			/*
-			nr = recv(sockfd,buf,5,0);
-			if (nr > 0) {
-				if (strcmp(buf,"OK\n")==0) {
-					return true;
-
-				} else {
-					return false;
-				}
-			}
-			*/
 		}
+		catch (SocketException &e) {
+			clog << "TCPClientConnection::post send error" << endl;
+			clog << e.what() << endl;
+			this->release();
+			return false;
 
+		}
 		return false;
 	}
 
 	void TCPClientConnection::run() {
-		char buf[100]; //max event string size
+		char buf[MAX_MSG_SIZE]; //max event string size
 		char msgType[4];
 		char evtType[5];
 		int nr;
-
+		//TODO: tcpSocket
 		while (running) {
-			memset(buf, 0, 100); //max event string size
+
+			memset(buf, 0, MAX_MSG_SIZE);
 			memset(msgType, 0, 4);
 			memset(evtType, 0, 5);
-
-			nr = recv(sockfd, buf, 100, 0);
+			try {
+				nr = tcpSocket->recv(buf,MAX_MSG_SIZE);
+			}
+			catch (SocketException &e) {
+				clog << e.what() << endl;
+				this->release();
+			}
 
 			if (nr > 3) {
-				if (nr > 100) {
-					buf[99] = '\0';
-
-				} else {
 					buf[nr] = '\0';
-				}
-
-				//clog << "TCPClientConnection:run buf= " << buf << endl;
-
-				strncpy(msgType,buf,3);
-				msgType[3] = '\0';
-
-				strncpy(buf,buf+4,nr);
-
-				if ((strcmp(msgType,"EVT")) == 0) {
-					strncpy(evtType,buf,4);
-					evtType[4] = '\0';
-					strncpy(buf,buf+5,nr);
-
-					if ((strcmp(evtType,"ATTR")) == 0) {
-						//clog << " new buf: " << buf << endl;
-						resrv->receiveRemoteEvent(
-								2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
-					}
-				}
-
-			} else {
-				if (nr < 0) {
-					clog << "TCPClientConnection::run end()!";
-					clog << " reason: nr=" << nr;
-					clog << " buf=" << buf << endl;
-					this->end();
-				}
 			}
-		}
+			else {
+				break;
+			}
+
+			strncpy(msgType,buf,3);
+			msgType[3] = '\0';
+
+			strncpy(buf,buf+4,nr);
+
+			if ((strcmp(msgType,"EVT")) == 0) {
+				strncpy(evtType,buf,4);
+				evtType[4] = '\0';
+				strncpy(buf,buf+5,nr);
+
+				if ((strcmp(evtType,"ATTR")) == 0) {
+					//clog << " new buf: " << buf << endl;
+					resrv->receiveRemoteEvent(
+							2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
+				}
+			}//end if strcmp(msgtype)
+
+		}//end while running
+
+
 	}
 
 	void TCPClientConnection::release() {
 		running = false;
 	}
 
-	void TCPClientConnection::end() {
-		release();
-		close(sockfd);
-	}
 }
 }
 }

@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define TCPCLIENTCONNECTION_H_
 
 #include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <iostream>
@@ -72,6 +73,7 @@ namespace core {
 namespace multidevice {
 	class TCPClientConnection : public Thread  {
 		private:
+			TCPSocket* tcpSocket;
 			int sockfd;
 			int counter;
 			char* srv_hostname;

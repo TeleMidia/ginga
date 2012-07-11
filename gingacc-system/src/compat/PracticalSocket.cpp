@@ -383,7 +383,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
         pAddress = (sockaddr_in *) & (interfaceList[i].iiBroadcastAddress);
         u_long nFlags = interfaceList[i].iiFlags;
 		if ((nFlags & IFF_UP) && (nFlags & IFF_BROADCAST)) {
-			return inet_ntoa(pAddress->sin_addr);
+			return string(inet_ntoa(pAddress->sin_addr));
 		}
     }
 
@@ -440,18 +440,22 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
 			sizeof(interfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
     	throw SocketException("getLocalIPAddress failed", true);
-		return 0;//TODO: throw exception
+		return 0;
     }
 
     int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
 
     for (int i = 0; i < nNumInterfaces; ++i) {
-        cout << endl;
+        clog << endl;
 
         sockaddr_in *pAddress;
         pAddress = (sockaddr_in *) & (interfaceList[i].iiAddress);
-		return inet_ntoa(pAddress->sin_addr);
+        if (pAddress->sin_family == AF_INET) {
+        	return (unsigned int) pAddress->sin_addr.S_addr;
+        }
+
     }
+    return -1;
 #else
 	struct ifconf interfaces;
 	struct ifreq* netInterface;
@@ -486,6 +490,7 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
 		i++;
 	}
 	throw SocketException("getLocalIPAddress failed", true);
+	return -1;
 #endif
 
 }

@@ -55,7 +55,6 @@ http://www.telemidia.puc-rio.br
 #include <stdlib.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <netinet/in.h>
@@ -143,7 +142,7 @@ namespace multidevice {
 			return true;
 		}
 		catch (SocketException &e) {
-			cerr << e.what() << endl;
+			clog << e.what() << endl;
 			clog << "BroadcastSocketService::buildClientAddress Warning!";
 			return false;
 		}
