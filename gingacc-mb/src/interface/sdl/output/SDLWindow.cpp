@@ -428,10 +428,6 @@ namespace mb {
 		return this->visible;
 	}
 
-	void SDLWindow::needRedraw() {
-		textureUpdate = true;
-	}
-
 	void SDLWindow::validate() {
 		lock();
 		unprotectedValidate();
