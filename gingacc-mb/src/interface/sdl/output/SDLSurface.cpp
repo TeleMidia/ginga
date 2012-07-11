@@ -171,9 +171,9 @@ namespace mb {
 			}
 
 			pthread_mutex_unlock(&pMutex);
-
-			releaseDrawData();
 		}
+
+		releaseDrawData();
 		pthread_mutex_unlock(&sMutex);
 	}
 
