@@ -80,7 +80,6 @@ namespace mb {
 			IColor* surfaceColor;
 			IFontProvider* iFont;
 			int caps;
-			bool owner;
 			bool isDeleting;
 
 			vector<DrawData*> drawData;

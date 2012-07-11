@@ -836,7 +836,6 @@ namespace mb {
 	void SDLDeviceScreen::releaseImageProvider(IImageProvider* provider) {
 		set<IDiscreteMediaProvider*>::iterator i;
 		IDiscreteMediaProvider* dmp;
-		ReleaseContainer rc;
 
 		pthread_mutex_lock(&dmpMutex);
 		i = dmpPool.find(provider);
@@ -921,15 +920,15 @@ namespace mb {
 					SDL_INIT_NOPARACHUTE));
 
 		} else {
-			if (subsystem_init & SDL_INIT_AUDIO == 0) {
+			if ((subsystem_init & SDL_INIT_AUDIO) == 0) {
 				SDL_InitSubSystem(SDL_INIT_AUDIO);
 			}
 
-			if (subsystem_init & SDL_INIT_VIDEO == 0) {
+			if ((subsystem_init & SDL_INIT_VIDEO) == 0) {
 				SDL_InitSubSystem(SDL_INIT_VIDEO);
 			}
 
-			if (subsystem_init & SDL_INIT_TIMER == 0) {
+			if ((subsystem_init & SDL_INIT_TIMER) == 0) {
 				SDL_InitSubSystem(SDL_INIT_TIMER);
 			}
 		}
@@ -1307,7 +1306,6 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::refreshWin(SDLDeviceScreen* s) {
-		SDL_Surface* uSur;
 		SDL_Texture* uTex;
 		SDLWindow* win;
 		bool ownTex = false;
@@ -1570,7 +1568,6 @@ namespace mb {
 		IWindow* iWin;
 		ISurface* iSur;
 		IContinuousMediaProvider* iCmp;
-		IDiscreteMediaProvider* iDmp;
 
 		set<IWindow*>* winClone;
 		set<ISurface*>* surClone;
