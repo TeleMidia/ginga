@@ -58,20 +58,26 @@ namespace multidevice {
 	MulticastSocketService::MulticastSocketService(
 			char* groupAddr, unsigned int portNumber) {
 
+		//TODO: use PracticalSocket
+
 		outputBuffer = new vector<struct frame*>;
 		port         = portNumber;
 		gAddr        = groupAddr;
-
+		/*
 		memset(&mss, 0, sizeof(mss));
 		mss.sin_family      = AF_INET;
 		mss.sin_port        = htons(port);
 		mss.sin_addr.s_addr = inet_addr(gAddr);
 
 		pthread_mutex_init(&mutexBuffer, NULL);
+		*/
 		createMulticastGroup();
 	}
 
 	MulticastSocketService::~MulticastSocketService() {
+		//TODO: use PracticalSocket
+		//unjoin abaixo
+		/*
 		if (msdR > 0) {
 			setsockopt(
 					msdR,
@@ -85,7 +91,7 @@ namespace multidevice {
 		if (msdW > 0) {
 			close(msdW);
 		}
-
+		*/
 		if (outputBuffer != NULL) {
 			delete outputBuffer;
 			outputBuffer = NULL;
@@ -95,6 +101,8 @@ namespace multidevice {
 	}
 
 	int MulticastSocketService::createMulticastGroup() {
+		//TODO: use PracticalSocket
+		/*
 		if (createSocket()) {
 			if (setSocketOptions()) {
 				if (tryToBind()) {
@@ -103,13 +111,14 @@ namespace multidevice {
 					}
 				}
 			}
-		}
+		}*/
 		return -1;
 	}
 
 	bool MulticastSocketService::createSocket() {
+		//TODO: use PracticalSocket
 		unsigned char trueVar = 1;
-
+		/*
 		msdW = socket(AF_INET, SOCK_DGRAM, 0);
 		//msdW = socket(AF_INET, SOCK_STREAM, 0);
 		if (msdW < 0){
@@ -123,16 +132,18 @@ namespace multidevice {
 			perror("MulticastSocketService::createSocket msdR");
 			return false;
 		}
-
+		*/
 #ifndef __DARWIN_UNIX03
 		setsockopt(msdR, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 		setsockopt(msdW, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 #endif
-
-		return true;
+		return false; //TODO: PracticalSocket
+		//return true;
 	}
 
 	bool MulticastSocketService::addToGroup() {
+		//TODO: use PracticalSocket
+		/*
 		int ret;
 		struct ip_mreq stIpMreq;
 
@@ -149,11 +160,14 @@ namespace multidevice {
 			perror("MulticastSocketService::addToGroup msdR");
 			return false;
 		}
-
-		return true;
+		*/
+		return false; //TODO: use PracticalSocket
+		//return true;
 	}
 
 	bool MulticastSocketService::setSocketOptions() {
+		//TODO: use PracticalSocket
+		/*
 		unsigned char loop = 0;
 		unsigned char ttl  = MCAST_TTL;
 	    int reuse = 1;
@@ -186,18 +200,22 @@ namespace multidevice {
 		if (ret < 0) {
 			perror("MulticastSocketService::setSocketOptions TTL");
 		}
-
-		return true;
+		*/
+		return false;//TODO: use PracticalSocket
+		//return true;
 	}
 
 	bool MulticastSocketService::tryToBind() {
+		//TODO: use PracticalSocket
+		/*
 		int ret = bind(msdR, (struct sockaddr*)&mss, sizeof(struct sockaddr));
 		if (ret < 0) {
 			perror ("MulticastSocketService::tryToBind bind");
 			return false;
 		}
-
-		return true;
+		*/
+		return false; //TODO: use PracticalSocket
+		//return true;
 	}
 
 	int MulticastSocketService::getServicePort() {
@@ -219,6 +237,8 @@ namespace multidevice {
 	}
 
 	bool MulticastSocketService::sendData(struct frame* f) {
+		//TODO: use PracticalSocket
+
 		char* data;
 		int taskSize, result, i;
 
@@ -229,6 +249,7 @@ namespace multidevice {
 		clog << " taskSize = '" << taskSize  << "'" << endl;*/
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
+			/*
 			result = sendto(
 					msdW,
 					data,
@@ -242,13 +263,10 @@ namespace multidevice {
 				clog << " TASKSIZE = '" << taskSize << "'" << endl;
 				return false;
 			}
-
-			/*if (!f->repeat) {
-				return true;
-			}*/
+			*/
 		}
-
-		return true;
+		return false;//TODO: use PracticalSocket
+		//return true;
 	}
 
 	bool MulticastSocketService::checkOutputBuffer() {
@@ -268,8 +286,8 @@ namespace multidevice {
 			}
 
 		} else {
-			/*clog << "MulticastSocketService::checkOutputBuffer ";
-			clog << "empty buffer" << endl;*/
+			clog << "MulticastSocketService::checkOutputBuffer ";
+			clog << "empty buffer" << endl;
 		}
 		pthread_mutex_unlock(&mutexBuffer);
 
@@ -277,6 +295,9 @@ namespace multidevice {
 	}
 
 	bool MulticastSocketService::checkInputBuffer(char* data, int* size) {
+		//TODO: use PracticalSocket
+		//TODO: implementar timeout no practicalsocket recv (versao do mesmo metodo, so q com timeout)
+		/*
 		int nfds, res, recvFrom;
 		fd_set fdset;
 		struct timeval tv_timeout;
@@ -343,8 +364,9 @@ namespace multidevice {
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-
-		return true;
+		*/
+		return false;//TODO: use practicalsocket
+		//return true;
 	}
 }
 }
