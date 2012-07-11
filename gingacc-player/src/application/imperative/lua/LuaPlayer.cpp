@@ -453,7 +453,10 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 tail:
      UNLOCK ();
 
-     return true;
+     // We return false here to indicate that the
+     // event should be deleted by the caller.
+
+     return false;
 }
 
 
@@ -515,7 +518,7 @@ IPlayer *createLuaPlayer (GingaScreenID id, const char *mrl, bool b)
      return new LuaPlayer (id, string (mrl));
 }
 
-void destroyLuaPlayer (IPlayer * player)
+void destroyLuaPlayer (IPlayer *player)
 {
      delete player;
 }
