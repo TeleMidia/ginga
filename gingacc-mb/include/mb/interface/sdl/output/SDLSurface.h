@@ -96,7 +96,7 @@ namespace mb {
 
 		private:
 			void checkPendingSurface();
-			void createPendingSurface();
+			bool createPendingSurface();
 			void fill();
 			void releaseChromaColor();
 			void releaseBgColor();
