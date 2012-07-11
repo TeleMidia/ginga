@@ -62,5 +62,6 @@ event.register (
       e.action = 'stop'
       event.post (e)
       print ('DONE')
+      done ()
    end, {class='ncl', type='presentation',
          label='onEndAttribution-triggered', action='start'})

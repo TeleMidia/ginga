@@ -46,12 +46,12 @@ event.register (
 event.register (
    function (e)
       set_start = tick
-   end, {class='ncl', type='attribution', label='P', action='start'})
+   end, {class='ncl', type='attribution', name='P', action='start'})
 
 event.register (
    function (e)
       set_stop = tick
-   end, {class='ncl', type='attribution', label='P', action='stop'})
+   end, {class='ncl', type='attribution', name='P', action='stop'})
 
 event.register (
    function (e)
