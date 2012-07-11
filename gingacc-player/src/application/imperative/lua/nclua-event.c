@@ -141,6 +141,7 @@ _nclua_notify (lua_State *L)
      This means that the handler list may be modified while we're
      traversing it.  To avoid corruption, we use a snapshot copy
      instead of the original list. */
+
   _nclua_get_registry_data (L, _NCLUA_REGISTRY_HANDLER_LIST);
   ncluax_pushcopy (L, -1);
   lua_replace (L, -2);
@@ -153,13 +154,18 @@ _nclua_notify (lua_State *L)
     {
       int saved_top = lua_gettop (L);
       lua_rawgeti (L, list, i);
-      lua_rawgeti (L, -1, 2);
+      lua_rawgeti (L, -1, 2);         /* push the associated filter */
 
       if (match (L, event, -1))
         {
-          lua_rawgeti (L, -2, 1);
-          lua_pushvalue (L, event);
+
+          /* Handlers may modify the event.  Again, to avoid corruption, we
+             pass to each handler a snapshot copy of the original event.  */
+
+          lua_rawgeti (L, -2, 1);     /* push handler function */
+          ncluax_pushcopy (L, event); /* push a copy of event */
           lua_call (L, 1, 1);
+
           n_called++;
           if (lua_toboolean (L, -1))
             {
@@ -366,9 +372,9 @@ l_timer (lua_State *L)
 }
 
 /* event.unregister (function:function)
-   event.unregister (function1:function, function2:function, ...)
+   event.unregister (function1, function2:function, ...)
    event.unregister ()
-     -> n_removed:number
+   -> n_removed:number
 
    Removes all entries indexed by function FUNCTION from handler list.
    In the second form, removes the given functions from handler list.
