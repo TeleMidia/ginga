@@ -509,156 +509,54 @@ namespace player {
 				// And the scroll is performed by moving shared_rect by (dx,dy)
 				Berkelium::Rect shared_rect = scrolled_shared_rect.translate(dx, dy);
 
-				int wid = scrolled_shared_rect.width();
-				int hig = scrolled_shared_rect.height();
-				int inc = 1;
-
-#if BERKELIUM_SCROLL_NEW
-				int top = scrolled_rect.top();
+				int wid  = scrolled_shared_rect.width();
+				int hig  = scrolled_shared_rect.height();
+				int top  = scrolled_rect.top();
 				int left = scrolled_rect.left();
 
 				wid = scrolled_rect.width();
 				hig = scrolled_rect.height();
-				
-				if(dx > 0) {
-					surface->blit((-1)*scrolled_rect.left(), 
-						(-1)*scrolled_rect.top(),
-						surface,
-						0,
-						0,
-						wid + scrolled_rect.left(),
-						hig + scrolled_rect.top());
-				}
-				else if(dy > 0)
-				{
-					int surface_w, surface_h;
-					surface->getSize(&surface_w, &surface_h);
-					s = dm->createSurface(myScreen, w, h);
 
-					/* I don't now why but it only work if I create
-					a temporary surface. */
-					s->blit(0, dy,
-						surface,
-						0, 0,
-						wid, hig);
+				if (dx > 0) {
+					surface->blit(dx, 0, surface, 0, 0, wid, hig);
 
-					surface->blit(0, dy,
-						s,
-						0, dy,
-						wid, hig);
+				} else if(dy > 0) {
+					surface->blit(0, dy, surface, 0, 0, wid, hig);
 
-					delete s;
-				}
-				else {
-					surface->blit(0, 0, surface,
-						left, top, wid, hig);
+				} else {
+					surface->blit(0, 0, surface, left, top, wid, hig);
 				}
 
 				if (surface->getParent() != NULL) {
 					((IWindow*)(surface->getParent()))->validate();
 				}
-#else
-				unsigned char *outputBuffer = scroll_buffer;
-				// source data is offset by 1 line to prevent memcpy aliasing
-				// In this case, it can happen if dy==0 and dx!=0.
-				unsigned char *inputBuffer = scroll_buffer+(dest_texture_width*1*kBytesPerPixel);
-				int jj = 0;
-				if (dy > 0) {
-					// Here, we need to shift the buffer around so that we start in the
-					// extra row at the end, and then copy in reverse so that we
-					// don't clobber source data before copying it.
-					outputBuffer = scroll_buffer+(
-							(scrolled_shared_rect.top()+hig+1)*dest_texture_width
-							- hig*wid)*kBytesPerPixel;
-					inputBuffer = scroll_buffer;
-					inc = -1;
-					jj = hig-1;
-				}
-
-				// Copy the data out of the texture
-				strFile = createFile(
-						(const unsigned char*)inputBuffer,
-						wid, hig);
-
-				s = createRenderedSurface(strFile);
-				remove(strFile.c_str());
-				surface->blit(0, 0, s);
-				delete s;
-
-				if (surface->getParent() != NULL) {
-					((IWindow*)(surface->getParent()))->validate();
-				}
-
-				// copy out the region to the beginning of the buffer
-				for(; jj < hig && jj >= 0; jj+=inc) {
-					memcpy(
-							outputBuffer + (jj*wid) * kBytesPerPixel,
-							//scroll_buffer + (jj*wid * kBytesPerPixel),
-							inputBuffer + (
-									(scrolled_shared_rect.top()+jj)*dest_texture_width
-									+ scrolled_shared_rect.left()) * kBytesPerPixel,
-									wid*kBytesPerPixel
-					);
-				}
-
-				// And finally, we push it back into the texture in the right
-				// location
-				strFile = createFile(
-						(const unsigned char*)outputBuffer,
-						wid, hig);
-
-				s = createRenderedSurface(strFile);
-				remove(strFile.c_str());
-
-				surface->blit(
-						shared_rect.left(), shared_rect.top(),
-						s, 0, 0, shared_rect.width(), shared_rect.height());
-
-				delete s;
-
-				if (surface->getParent() != NULL) {
-					((IWindow*)(surface->getParent()))->validate();
-				}
-#endif
 			}
 		}
 
 		for (size_t i = 0; i < num_copy_rects; i++) {
-			int wid = copy_rects[i].width();
-			int hig = copy_rects[i].height();
-			int top = copy_rects[i].top() - bitmap_rect.top();
+			int wid  = copy_rects[i].width();
+			int hig  = copy_rects[i].height();
+			int top  = copy_rects[i].top() - bitmap_rect.top();
 			int left = copy_rects[i].left() - bitmap_rect.left();
 
-#if BERKELIUM_SCROLL_NEW
 			unsigned char *tmp_buffer = new unsigned char[wid*hig*kBytesPerPixel];
-#endif
+
 			for(int jj = 0; jj < hig; jj++) {
 				memcpy(
-#if BERKELIUM_SCROLL_NEW
 						tmp_buffer + jj*wid*kBytesPerPixel,
-#else
-						scroll_buffer + jj*wid*kBytesPerPixel,
-#endif
 						bitmap_in + (left + (jj+top)*bitmap_rect.width())*kBytesPerPixel,
 						wid*kBytesPerPixel);
 			}
 
 			// Finally, we perform the main update, just copying the rect that
 			// is marked as dirty but not from scrolled data.
-#if BERKELIUM_SCROLL_NEW
 			strFile = createFile(
 				(const unsigned char*) tmp_buffer, wid, hig);
-#else
-			strFile = createFile(
-				(const unsigned char*)scroll_buffer, wid, hig);
-#endif
 
 			s = createRenderedSurface(strFile);
-			// remove(strFile.c_str());
+			remove(strFile.c_str());
 
-#if BERKELIUM_SCROLL_NEW
 			delete [] tmp_buffer;
-#endif
 			left =  copy_rects[i].left();
 			top = copy_rects[i].top();
 
