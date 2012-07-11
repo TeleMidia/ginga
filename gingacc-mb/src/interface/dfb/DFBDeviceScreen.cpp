@@ -686,14 +686,19 @@ namespace mb {
 		ISurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
 
-		provider = createImageProvider(mrl);
+		if (fileExists(mrl)) {
+			provider = createImageProvider(mrl);
+			if (provider != NULL) {
+				iSur = createSurfaceFrom(NULL);
+				provider->playOver(iSur);
 
-		if (provider != NULL) {
-			iSur = createSurfaceFrom(NULL);
-			provider->playOver(iSur);
+				releaseImageProvider(provider);
+			}
+
+		} else {
+			clog << "DFBDeviceScreen::createRenderedSurfaceFromImageFile ";
+			clog << "Warning! '" << mrl << "' file not found" << endl;
 		}
-
-		delete provider;
 
 		return iSur;
 	}
