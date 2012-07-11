@@ -23,7 +23,8 @@
 #include <stdlib.h>
 
 #ifdef WIN32
-  #include <winsock.h>         // For socket(), connect(), send(), and recv()
+  #include <winsock2.h>         // For socket(), connect(), send(), and recv()
+  #include <ws2tcpip.h>
   typedef int socklen_t;
   typedef char raw_type;       // Type used for raw data on this platform
 #else
@@ -33,6 +34,9 @@
   #include <arpa/inet.h>       // For inet_addr()
   #include <unistd.h>          // For close()
   #include <netinet/in.h>      // For sockaddr_in
+  #include <net/if.h> 		   // For ifconf e ifreq
+  #include <sys/ioctl.h>	   // For ioctl()
+
   typedef void raw_type;       // Type used for raw data on this platform
 #endif
 
@@ -359,6 +363,133 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
 
   return rtn;
 }
+
+string UDPSocket::getBroadcastAddress() throw(SocketException) {
+#ifdef WIN32
+    INTERFACE_INFO interfaceList[20];
+    unsigned long nBytesReturned;
+    if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
+			sizeof(interfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
+    	throw SocketException("getBroadcastAddress failed", true);
+		return 0;//TODO: throw exception
+    }
+
+    int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
+
+    for (int i = 0; i < nNumInterfaces; ++i) {
+        cout << endl;
+
+        sockaddr_in *pAddress;
+        pAddress = (sockaddr_in *) & (interfaceList[i].iiBroadcastAddress);
+        u_long nFlags = interfaceList[i].iiFlags;
+		if ((nFlags & IFF_UP) && (nFlags & IFF_BROADCAST)) {
+			return inet_ntoa(pAddress->sin_addr);
+		}
+    }
+
+#else
+	struct ifconf interfaces;
+	struct ifreq* netInterface;
+	struct sockaddr_in* myAddr;
+	int numOfInterfaces, result, i;
+	string interfaceName;
+	bool validInterface;
+	char buffer[1024000];
+	///
+	struct sockaddr_in domain_addr;
+	int                domain_addr_len;
+	struct sockaddr_in broadcast_addr;
+	socklen_t          broadcast_addr_len;
+	///
+
+	interfaces.ifc_len = sizeof(buffer);
+	interfaces.ifc_buf = buffer;
+	result = ioctl(sockDesc, SIOCGIFCONF, (char *) &interfaces);
+	netInterface = interfaces.ifc_req;
+	numOfInterfaces = interfaces.ifc_len/sizeof(struct ifreq);
+
+	for (i = 0; i < numOfInterfaces; netInterface++) {
+		interfaceName = netInterface->ifr_name;
+
+		//TODO: Change the ATS bellow
+		validInterface = (("eth0" == interfaceName) ||
+				("wlan0" == interfaceName));
+
+		if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
+			    && (netInterface->ifr_flags & IFF_BROADCAST)) {
+
+//			result = ioctl(sockDesc, SIOCGIFBRDADDR, (char *) netInterface);
+			result = ioctl(sockDesc, SIOCGIFBRDADDR, netInterface);
+
+			if (result >= 0) {
+				myAddr = (struct sockaddr_in*)&(netInterface->ifr_broadaddr);
+				return inet_ntoa(myAddr->sin_addr);
+			}
+		}
+		i++;
+	}
+	throw SocketException("getBroadcastAddress failed", true);
+#endif
+
+}
+
+unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
+#ifdef WIN32
+    INTERFACE_INFO interfaceList[20];
+    unsigned long nBytesReturned;
+    if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
+			sizeof(interfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
+    	throw SocketException("getLocalIPAddress failed", true);
+		return 0;//TODO: throw exception
+    }
+
+    int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
+
+    for (int i = 0; i < nNumInterfaces; ++i) {
+        cout << endl;
+
+        sockaddr_in *pAddress;
+        pAddress = (sockaddr_in *) & (interfaceList[i].iiAddress);
+		return inet_ntoa(pAddress->sin_addr);
+    }
+#else
+	struct ifconf interfaces;
+	struct ifreq* netInterface;
+	struct sockaddr_in* myAddr;
+	int numOfInterfaces, result, i;
+	string interfaceName;
+	bool validInterface;
+	char buffer[1024000];
+
+	interfaces.ifc_len = sizeof(buffer);
+	interfaces.ifc_buf = buffer;
+	result = ioctl(sockDesc, SIOCGIFCONF, (char *) &interfaces);
+	netInterface = interfaces.ifc_req;
+	numOfInterfaces = interfaces.ifc_len/sizeof(struct ifreq);
+
+	for (i = 0; i < numOfInterfaces; netInterface++) {
+		interfaceName = netInterface->ifr_name;
+
+		//TODO: Change the ATS bellow
+		validInterface = (("eth0" == interfaceName) ||
+				("wlan0" == interfaceName));
+
+		if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
+			    && (netInterface->ifr_flags & IFF_BROADCAST)) {
+
+			result = ioctl(sockDesc, SIOCGIFADDR, netInterface);
+			if (result >= 0) {
+				myAddr = (struct sockaddr_in*)&(netInterface->ifr_addr);
+				return (unsigned int)(myAddr->sin_addr.s_addr);
+			}
+		}
+		i++;
+	}
+	throw SocketException("getLocalIPAddress failed", true);
+#endif
+
+}
+
 
 void UDPSocket::setMulticastTTL(unsigned char multicastTTL) throw(SocketException) {
   if (setsockopt(sockDesc, IPPROTO_IP, IP_MULTICAST_TTL,

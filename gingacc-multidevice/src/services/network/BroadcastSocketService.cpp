@@ -53,7 +53,6 @@ http://www.telemidia.puc-rio.br
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -65,6 +64,7 @@ http://www.telemidia.puc-rio.br
 #include <net/if.h>
 
 #include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #ifdef __DARWIN_UNIX03
@@ -79,25 +79,54 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 
+//TODO: #ifdef __DARWIN_UNIX03 (use practicalsocket otherwise)
 	static int sd = -1;
 	static struct sockaddr_in domain_addr;
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
 	static socklen_t          broadcast_addr_len;
+////////////////
+
+	static UDPSocket* udpSocket;
+
 
 	BroadcastSocketService::BroadcastSocketService() {
 		interfaceIP  = 0;
+		broadcastIPAddr = "0.0.0.0";
 		outputBuffer = new vector<struct frame*>;
 
 		pthread_mutex_init(&mutexBuffer, NULL);
+
 		if (buildDomainAddress()) {
+#ifdef __DARWIN_UNIX03
 			interfaceIP = discoverBroadcastAddress();
+#else
+
+			try {
+				broadcastIPAddr = udpSocket->getBroadcastAddress();
+				interfaceIP = udpSocket->getLocalIPAddress();
+				clog << endl << "broadcastIPAddr= " << broadcastIPAddr << endl;
+				clog << "interfaceIP= " << interfaceIP << endl;
+
+			}
+			catch (SocketException &e) {
+				clog << e.what() << endl;
+				clog << " BroadcastSocketService::getBroadcastAddress() error! " << endl;
+			}
+#endif
 		}
 	}
 
 	BroadcastSocketService::~BroadcastSocketService() {
+#ifdef __DARWIN_UNIX03
 		if (sd > 0) {
 			close(sd);
+		}
+#endif
+		if (udpSocket != NULL) {
+			udpSocket->disconnect();
+			udpSocket->cleanUp();
+			delete udpSocket;
 		}
 
 		if (outputBuffer != NULL) {
@@ -109,6 +138,18 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::buildDomainAddress() {
+		try {
+			udpSocket = new UDPSocket(port);
+			return true;
+		}
+		catch (SocketException &e) {
+			cerr << e.what() << endl;
+			clog << "BroadcastSocketService::buildClientAddress Warning!";
+			return false;
+		}
+
+
+#ifdef __DARWIN_UNIX03
 		int ret;
 		int trueVar = 1;
 
@@ -119,9 +160,9 @@ namespace multidevice {
 			return false;
 		}
 
-#ifndef __DARWIN_UNIX03
+//#ifndef __DARWIN_UNIX03
 		setsockopt(sd, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-#endif
+//#endif
 
 		domain_addr.sin_family       = AF_INET;
 		domain_addr.sin_port         = htons(port);
@@ -136,6 +177,8 @@ namespace multidevice {
 		}
 
 		return true;
+#endif
+
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
@@ -226,10 +269,11 @@ namespace multidevice {
 		}
 
 		freeifaddrs(ifaddr);
-#else //Linux
+#else //Linux & Windows (?)
 
 		for (i = 0; i < numOfInterfaces; netInterface++) {
 			interfaceName = netInterface->ifr_name;
+
 			validInterface = ((INTERFACE_NAME_A == interfaceName) ||
 					(INTERFACE_NAME_B == interfaceName));
 
@@ -289,16 +333,29 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::sendData(struct frame* f) {
+
 		char* data;
 		int taskSize, result, i;
 
 		data     = f->data;
 		taskSize = f->size;
 
-		/*clog << "BroadcastSocketService::sendData Sending";
-		clog << " taskSize = '" << taskSize  << "' and headerSize = '";
-		clog << headerSize << "'" << endl;*/
+		clog << "BroadcastSocketService::sendData Sending to "<< broadcastIPAddr;
+		clog << " taskSize = " << taskSize << endl; //<< "' and headerSize = '";
+		//clog << headerSize << "'" << endl;
 
+#ifndef __DARWIN_UNIX03
+		try {
+			for (i = 0; i < NUM_OF_COPIES; i++) {
+				udpSocket->sendTo(data,taskSize,broadcastIPAddr,port);
+			}
+		}
+		catch (SocketException &e) {
+			clog << e.what() << endl;
+			clog << "BroadcastSocketService::sendData Error!!";
+			return false;
+		}
+#else
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			result = sendto(
 					sd,
@@ -309,7 +366,7 @@ namespace multidevice {
 					broadcast_addr_len);
 
 			if (result == -1) {
-				perror("BaseDeviceDomain::taskRequest sendto");
+				perror("BroadcastSocketService::taskRequest sendto");
 				return false;
 			}
 
@@ -319,6 +376,7 @@ namespace multidevice {
 		}
 
 		return true;
+#endif
 	}
 
 	bool BroadcastSocketService::checkOutputBuffer() {
@@ -347,6 +405,11 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
+#ifndef __DARWIN_UNIX03
+
+		//TODO: udpSocket->recvFrom() with tv_timeout (select)
+		return true;
+#else
 		int nfds, res, recvFrom;
 		fd_set fdset;
 		struct timeval tv_timeout;
@@ -419,6 +482,7 @@ namespace multidevice {
 		}
 
 		return true;
+#endif
 	}
 }
 }
