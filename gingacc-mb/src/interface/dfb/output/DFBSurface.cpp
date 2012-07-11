@@ -169,7 +169,7 @@ namespace mb {
 		this->bgColor       = NULL;
 		this->surfaceColor  = NULL;
 		this->iFont         = NULL;
-		this->caps          = 0;
+		this->caps          = 1;
 		this->hasExtHandler = false;
 	}
 
@@ -519,9 +519,13 @@ namespace mb {
 			}
 
 			if (sur != NULL) {
-				DFBCHECK(sur->SetBlittingFlags(
-						sur,
-						(DFBSurfaceBlittingFlags)(0)));
+				if (caps != 0) {
+					sur->SetBlittingFlags(
+							sur,
+							(DFBSurfaceBlittingFlags)(
+									DSBLIT_BLEND_ALPHACHANNEL |
+									DSBLIT_SRC_COLORKEY));
+				}
 
 				DFBResult err;
 
