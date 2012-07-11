@@ -62,6 +62,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 
+	bool SDLImageProvider::mutexInit   = false;
 	bool SDLImageProvider::initialized = false;
 	short SDLImageProvider::imageRefs  = 0;
 	pthread_mutex_t SDLImageProvider::pMutex;
@@ -69,11 +70,14 @@ namespace mb {
 	SDLImageProvider::SDLImageProvider(
 			GingaScreenID screenId, const char* mrl) {
 
-		if (imageRefs == 0) {
+		if (!mutexInit) {
+			mutexInit = true;
 			pthread_mutex_init(&pMutex, NULL);
 		}
 
+		pthread_mutex_lock(&pMutex);
 		imageRefs++;
+		pthread_mutex_unlock(&pMutex);
 
 		imgUri   = "";
 		myScreen = screenId;
@@ -83,17 +87,16 @@ namespace mb {
 	}
 
 	SDLImageProvider::~SDLImageProvider() {
-		imageRefs--;
-
 		pthread_mutex_lock(&pMutex);
+		imageRefs--;
 		content = NULL;
-		pthread_mutex_unlock(&pMutex);
 
 		if (imageRefs == 0) {
 			IMG_Quit();
-			pthread_mutex_destroy(&pMutex);
 			initialized = false;
 		}
+
+		pthread_mutex_unlock(&pMutex);
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
@@ -107,8 +110,8 @@ namespace mb {
 		if (!initialized) {
 			initialized = true;
 			if (IMG_Init(0) < 0) {
-				clog << "SDLFontProvider::SDLFontProvider ";
-				clog << "Couldn't initialize TTF: " << SDL_GetError();
+				clog << "SDLFontProvider::SDLImageProvider ";
+				clog << "Couldn't initialize IMG: " << SDL_GetError();
 				clog << endl;
 			}
 		}
@@ -118,12 +121,12 @@ namespace mb {
 
 			renderedSurface = IMG_Load(imgUri.c_str());
 
-			content->setSurfaceContent((void*)renderedSurface);
-
 			parent = (SDLWindow*)(content->getParent());
 			if (parent != NULL) {
 				parent->setRenderedSurface(renderedSurface);
 			}
+
+			content->setSurfaceContent((void*)renderedSurface);
 
 		} else {
 			clog << "SDLImageProvider::ntsPlayOver Warning! NULL content";
