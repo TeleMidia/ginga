@@ -109,12 +109,14 @@ namespace mb {
 		releaseColorKey();
 
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
+		unlock();
 
+		lockTexture();
 		if (texture != NULL) {
 			SDLDeviceScreen::createReleaseContainer(NULL, texture, NULL);
+			texture = NULL;
 		}
-
-		unlock();
+		unlockTexture();
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
@@ -174,6 +176,7 @@ namespace mb {
 
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
+		pthread_mutex_init(&texMutex, NULL);
 
 		this->isWaiting = false;
 	    pthread_mutex_init(&cMutex, NULL);
@@ -356,9 +359,11 @@ namespace mb {
 
 		transparencyValue = alpha;
 
+		lockTexture();
 		if (texture != NULL) {
 			SDL_SetTextureAlphaMod(texture, 255 - alpha);
 		}
+		unlockTexture();
 	}
 
 	int SDLWindow::getTransparencyValue() {
@@ -547,6 +552,7 @@ namespace mb {
 	}
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
+		lockTexture();
 		if (textureOwner && this->texture != NULL) {
 			SDLDeviceScreen::createReleaseContainer(NULL, this->texture, NULL);
 		}
@@ -559,9 +565,13 @@ namespace mb {
 		}
 
 		this->texture = texture;
+		unlockTexture();
 	}
 
 	SDL_Texture* SDLWindow::getTexture(SDL_Renderer* renderer) {
+		SDL_Texture* uTex;
+
+		lockTexture();
 		if (renderer != NULL) {
 			if (textureOwner && textureUpdate && texture != NULL) {
 				SDLDeviceScreen::releaseTexture(texture);
@@ -576,7 +586,10 @@ namespace mb {
 			}
 		}
 
-		return texture;
+		uTex = texture;
+		unlockTexture();
+
+		return uTex;
 	}
 
 	bool SDLWindow::isMine(ISurface* surface) {
@@ -760,6 +773,14 @@ namespace mb {
 		pthread_cond_wait(&cond, &cMutex);
 		isWaiting = false;
 		pthread_mutex_unlock(&cMutex);
+	}
+
+	void SDLWindow::lockTexture() {
+		pthread_mutex_lock(&texMutex);
+	}
+
+	void SDLWindow::unlockTexture() {
+		pthread_mutex_unlock(&texMutex);
 	}
 }
 }
