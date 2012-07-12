@@ -249,7 +249,7 @@ namespace mb {
 	}
 
 	bool SDLInputEvent::isPressedType() {
-		if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN) {
+		if (event.type == SDL_KEYDOWN) {
 			return true;
 		}
 		return false;
