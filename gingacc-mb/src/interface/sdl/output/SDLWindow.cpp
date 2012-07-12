@@ -110,9 +110,9 @@ namespace mb {
 
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
-//		if (winSur != NULL) {
-//			SDLDeviceScreen::createReleaseContainer(winSur, NULL, NULL);
-//		}
+		if (texture != NULL) {
+			SDLDeviceScreen::createReleaseContainer(NULL, texture, NULL);
+		}
 
 		unlock();
 
@@ -570,6 +570,7 @@ namespace mb {
 			}
 
 			if (texture == NULL && curSur != NULL) {
+				textureOwner = true;
 				texture = SDLDeviceScreen::createTextureFromSurface(
 						renderer, curSur);
 			}
