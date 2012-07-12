@@ -9,7 +9,6 @@ LIBS =
 
 if AWESOMIUMLIB
 noinst_PROGRAMS       = \
-                        testAnime \
                         testAudio \
                         testAwesomium \
                         testImage \
@@ -18,35 +17,12 @@ noinst_PROGRAMS       = \
                         testVideo
 else #AWESOMIUMLIB
 noinst_PROGRAMS       = \
-                        testAnime \
                         testAudio \
                         testImage \
                         testLinks \
                         testText \
                         testVideo
 endif #AWESOMIUMLIB
-
-#testAnime
-testAnime_SOURCES     = \
-                        testAnime.cpp
-
-testAnime_CFLAGS      = \
-                        $(top_srcdir)/include
-
-testAnime_LDADD       = \
-                        -lpthread \
-                        -ltelemidiautil \
-                        -lgingaccplayer \
-                        -lgingaccplaani \
-                        -lgingaccmb \
-                        -lgingaccsystem \
-                        -L/lib/ -L/usr/lib/ \
-                        -L$(prefix)/lib/ \
-                        -L/usr/lib/awesomium \
-                        -L$(prefix)/lib/ginga \
-                        -L$(prefix)/lib/ginga/players \
-                        -L../src/ \
-                        -L../src/image
 
 #testAudio
 testAudio_SOURCES     = \

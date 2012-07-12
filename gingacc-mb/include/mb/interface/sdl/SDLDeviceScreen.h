@@ -177,6 +177,10 @@ typedef struct {
 
 			virtual ~SDLDeviceScreen();
 
+			static void updateRenderMap(
+					GingaScreenID screenId, IWindow* window,
+					float oldZIndex, float newZIndex);
+
 			void releaseScreen();
 
 			void releaseMB();
@@ -359,11 +363,14 @@ typedef struct {
 			/* CAUTION: call this method only from main SDL thread */
 			static void releaseTexture(SDL_Texture* uTex);
 
+			static void addUnderlyingSurface(SDL_Surface* uSur);
 			static SDL_Surface* createUnderlyingSurface(int width, int height);
 
 		private:
 			static SDL_Surface* createUnderlyingSurfaceFromTexture(
 					SDL_Texture* texture);
+
+			static bool hasUnderlyingSurface(SDL_Surface* uSur);
 
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 

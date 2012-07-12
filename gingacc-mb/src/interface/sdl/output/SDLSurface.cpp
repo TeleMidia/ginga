@@ -246,6 +246,10 @@ namespace mb {
 		pthread_mutex_init(&pMutex, NULL);
 	}
 
+	void SDLSurface::takeOwnership() {
+		sur = NULL;
+	}
+
 	SDL_Surface* SDLSurface::getPendingSurface() {
 		return pending;
 	}

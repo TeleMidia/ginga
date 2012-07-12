@@ -150,8 +150,6 @@ namespace player {
 		win->show();
 		win->raiseToTop();
 		unlock();
-		delete surface;
-		surface = NULL;
 	}
 
 	void ShowButton::run() {
