@@ -50,7 +50,10 @@ http://www.telemidia.puc-rio.br
 #ifndef LUAPLAYER_H
 #define LUAPLAYER_H
 
+#include <list>
 #include <string>
+
+#include <pthread.h>
 #include "nclua.h"
 
 using namespace std;
@@ -73,21 +76,30 @@ LUAPLAYER_BEGIN_DECLS
 class LuaPlayer : public Player, public IInputEventListener
 {
 private:
-     nclua_t *nc;               // the NCLua state
-     pthread_mutex_t mutex;     // sync access to player
-     bool hasExecuted;          // true if script was executed
-     bool isKeyHandler;         // true if player has the focus
-     string scope;              // the label of the active anchor
 
+     nclua_t *nc;                 // the NCLua state
+     bool hasExecuted;            // true if script was executed
+     bool isKeyHandler;           // true if player has the focus
+     string scope;                // the label of the active anchor
+     pthread_mutex_t mutex;       // sync access to player
      IInputManager *im;
-     void scheduleUpdate (void);
+
+     // NCLua update thread.
+     static list <nclua_t *> *nc_update_list;
+     static pthread_mutex_t nc_update_mutex;
+     static pthread_t nc_update_tid;
+     static void *nc_update_thread (void *data);
+     static void nc_update_insert (nclua_t *nc);
+     static void nc_update_remove (nclua_t *nc);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
      virtual ~LuaPlayer (void);
 
-     // Used by stop() and  ev_receive_ncl_event().
-     // TODO: In the future, make it private.
+     // TODO: Make it private.
+     void lock (void);
+     void unlock (void);
+     bool doPlay  (void);
      void doStop (void);
 
      // Player interface.
@@ -113,3 +125,8 @@ public:
 LUAPLAYER_END_DECLS
 
 #endif // LUAPLAYER_H
+
+// Local variables:
+// mode: c++
+// c-file-style: "k&r"
+// End:
