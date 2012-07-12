@@ -13,8 +13,7 @@ HTOINSTALL           = \
                        INCLPlayer.h \
                        IPlayerListener.h \
                        IProgramAV.h \
-                       IShowButton.h \
-                       AnimePlayer.h
+                       IShowButton.h
 
 localInclude_HEADERS = \
                        $(HTOINSTALL)

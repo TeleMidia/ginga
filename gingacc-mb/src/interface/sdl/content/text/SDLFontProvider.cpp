@@ -290,6 +290,8 @@ namespace mb {
 				return;
 			}
 
+			SDLDeviceScreen::addUnderlyingSurface(text);
+
 			rect.x = coordX;
 			rect.y = coordY;
 			rect.w = text->w;

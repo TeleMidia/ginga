@@ -74,7 +74,6 @@ namespace mb {
 			static pthread_mutex_t pMutex;
 
 			GingaScreenID myScreen;
-			ISurface* content;
 			string imgUri;
 
 		public:

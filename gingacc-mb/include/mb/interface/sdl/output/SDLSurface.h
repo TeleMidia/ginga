@@ -109,6 +109,8 @@ namespace mb {
 			void initialize(GingaScreenID screenId);
 
 		public:
+			void takeOwnership();
+
 			SDL_Surface* getPendingSurface();
 
 			void setExternalHandler(bool extHandler);
