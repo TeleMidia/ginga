@@ -122,6 +122,7 @@ namespace mb {
 
 		    pthread_mutex_t mutex;
 		    pthread_mutex_t mutexC;
+		    pthread_mutex_t texMutex;
 
 		    bool isWaiting;
 		    pthread_mutex_t rMutex;
@@ -235,6 +236,9 @@ namespace mb {
 
 		private:
 			void waitRenderer();
+
+			void lockTexture();
+			void unlockTexture();
 	};
 }
 }
