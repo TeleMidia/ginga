@@ -21,8 +21,9 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <iostream>
 
-#ifdef WIN32
+#ifdef _MSC_VER
   #include <winsock2.h>         // For socket(), connect(), send(), and recv()
   #include <ws2tcpip.h>
   typedef int socklen_t;
@@ -451,7 +452,11 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
         sockaddr_in *pAddress;
         pAddress = (sockaddr_in *) & (interfaceList[i].iiAddress);
         if (pAddress->sin_family == AF_INET) {
-        	return (unsigned int) pAddress->sin_addr.S_addr;
+#ifdef _WIN32
+			return (unsigned int) pAddress->sin_addr.S_un.S_addr;
+#else
+			return (unsigned int) pAddress->sin_addr.S_addr;
+#endif
         }
 
     }

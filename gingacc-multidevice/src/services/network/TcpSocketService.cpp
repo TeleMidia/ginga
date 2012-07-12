@@ -49,11 +49,19 @@ http://www.telemidia.puc-rio.br
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
+
+#ifdef _MSC_VER
+extern "C" {
+# include "asprintf.h"
+}
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netdb.h>
+#endif
 
 #include <pthread.h>
+#include <stdio.h>
 
 #include "multidevice/services/network/TcpSocketService.h"
 

@@ -57,7 +57,10 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#ifndef _WIN32
 #include <sys/ioctl.h>
+#endif
+
 #include <stdio.h>
 
 namespace br {
