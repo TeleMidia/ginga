@@ -83,6 +83,10 @@ namespace mb {
 		ISurface* surface;
 		vector<ISurface*>::iterator i;
 
+		lockSurface();
+		curSur = NULL;
+		unlockSurface();
+
 		lock();
 		lockChilds();
 		if (releaseListener != NULL) {
@@ -96,6 +100,7 @@ namespace mb {
 					myScreen, surface)) {
 
 				surface->setParent(NULL);
+				delete surface;
 			}
 			++i;
 		}
@@ -177,6 +182,7 @@ namespace mb {
 		pthread_mutex_init(&mutex, NULL);
 		pthread_mutex_init(&mutexC, NULL);
 		pthread_mutex_init(&texMutex, NULL);
+		pthread_mutex_init(&surMutex, NULL);
 
 		this->isWaiting = false;
 	    pthread_mutex_init(&cMutex, NULL);
@@ -447,7 +453,10 @@ namespace mb {
 			surface = childSurfaces.at(0);
 			if (surface != NULL) {
 				surface->flip();
+
+				lockSurface();
 				winSur = (SDL_Surface*)(surface->getSurfaceContent());
+				unlockSurface();
 			}
 
 		} else {
@@ -456,10 +465,12 @@ namespace mb {
 		}
 		unlockChilds();
 
+		lockSurface();
 		if (winSur != NULL) {
 			curSur = winSur;
 			textureUpdate = true;
 		}
+		unlockSurface();
 	}
 
 	vector<DrawData*>* SDLWindow::createDrawDataList() {
@@ -536,15 +547,19 @@ namespace mb {
 	}
 
 	void SDLWindow::clearContent() {
+		lockSurface();
 		if (curSur != NULL) {
 			SDL_FillRect(curSur, NULL, SDL_MapRGBA(curSur->format, 0, 0, 0, 0));
 			textureUpdate = true;
 		}
+		unlockSurface();
 	}
 
 	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {
-		curSur = uSur;
+		lockSurface();
+		curSur        = uSur;
 		textureUpdate = true;
+		unlockSurface();
 	}
 
 	void* SDLWindow::getContent() {
@@ -579,11 +594,13 @@ namespace mb {
 				texture = NULL;
 			}
 
+			lockSurface();
 			if (texture == NULL && curSur != NULL) {
 				textureOwner = true;
 				texture = SDLDeviceScreen::createTextureFromSurface(
 						renderer, curSur);
 			}
+			unlockSurface();
 		}
 
 		uTex = texture;
@@ -598,9 +615,11 @@ namespace mb {
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
 			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
+			lockSurface();
 			if (contentSurface == winSur || contentSurface == curSur) {
 				itIs = true;
 			}
+			unlockSurface();
 		}
 
 		return itIs;
@@ -616,10 +635,13 @@ namespace mb {
 		s = LocalScreenManager::getInstance()->createSurface(myScreen);
 		img->playOver(s);
 
+		lockSurface();
 		curSur = (SDL_Surface*)(s->getSurfaceContent());
-		textureUpdate = true;
+		unlockSurface();
 
-		delete s;
+		textureUpdate = true;
+		s->setParent(this);
+
 		delete img;
 	}
 
@@ -643,11 +665,15 @@ namespace mb {
 	}
 
 	void SDLWindow::renderFrom(SDL_Surface* contentSurface) {
+		lockSurface();
+
 		if (winSur == NULL) {
 			winSur = contentSurface;
 		}
 
 		curSur = contentSurface;
+		unlockSurface();
+
 		textureUpdate = true;
 		//waitRenderer();
 	}
@@ -781,6 +807,14 @@ namespace mb {
 
 	void SDLWindow::unlockTexture() {
 		pthread_mutex_unlock(&texMutex);
+	}
+
+	void SDLWindow::lockSurface() {
+		pthread_mutex_lock(&surMutex);
+	}
+
+	void SDLWindow::unlockSurface() {
+		pthread_mutex_unlock(&surMutex);
 	}
 }
 }
