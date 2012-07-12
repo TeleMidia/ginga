@@ -91,8 +91,8 @@ namespace mb {
 
 		private:
 			SDL_Texture* texture;
-			SDL_Surface* winSur;
 			SDL_Surface* curSur;
+			SDL_Surface* winSur;
 
 			bool textureUpdate;
 			bool textureOwner;
@@ -120,13 +120,14 @@ namespace mb {
 		    bool stretch;
 		    int caps;
 
-		    pthread_mutex_t mutex;
-		    pthread_mutex_t mutexC;
-		    pthread_mutex_t texMutex;
+		    pthread_mutex_t mutex;    //external mutex
+		    pthread_mutex_t mutexC;   //childs mutex
+		    pthread_mutex_t texMutex; //texture mutex
+		    pthread_mutex_t surMutex; //underlying surface mutex
 
 		    bool isWaiting;
-		    pthread_mutex_t rMutex;
-		    pthread_mutex_t cMutex;
+		    pthread_mutex_t rMutex; //render mutex
+		    pthread_mutex_t cMutex; //condition mutex
 		    pthread_cond_t cond;
 
 		public:
@@ -181,15 +182,19 @@ namespace mb {
 			GingaWindowID getId();
 			void show();
 			void hide();
+
 			int getX();
 			int getY();
 			int getW();
 			int getH();
 			float getZ();
+
 			void setX(int x);
 			void setY(int y);
 			void setW(int w);
 			void setH(int h);
+			void setZ(float z);
+
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();
@@ -239,6 +244,9 @@ namespace mb {
 
 			void lockTexture();
 			void unlockTexture();
+
+			void lockSurface();
+			void unlockSurface();
 	};
 }
 }

@@ -30,26 +30,5 @@ libgingaccplaimg_la_LDFLAGS = \
                               -no-undefined \
                               -version-info 13:1:8
 
-#########
-# ANIME #
-#########
-lib_LTLIBRARIES            += \
-                              libgingaccplaani.la
-
-libgingaccplaani_la_SOURCES = \
-                              AnimePlayer.cpp
-
-libgingaccplaani_la_LIBADD  = \
-                              -ltelemidiautil \
-                              -lgingaccsystem \
-                              $(COMPONENTS_LIBS) \
-                              -L$(prefix)/lib \
-                              -L$(prefix)/lib/ginga \
-                              -L../
-
-libgingaccplaani_la_LDFLAGS = \
-                              -no-undefined \
-                              -version-info 13:1:8
-
 MAINTAINERCLEANFILES        = \
                               Makefile.in

@@ -278,6 +278,14 @@ namespace mb {
 		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
+	void SDLDeviceScreen::updateRenderMap(
+			GingaScreenID screenId, IWindow* window,
+			float oldZIndex, float newZIndex) {
+
+		renderMapRemoveWindow(screenId, window, oldZIndex);
+		renderMapInsertWindow(screenId, window, newZIndex);
+	}
+
 	void SDLDeviceScreen::releaseScreen() {
 		lockScreens();
 		sdlScreens[this] = SPT_RELEASE;
@@ -2328,18 +2336,20 @@ namespace mb {
 	SDL_Texture* SDLDeviceScreen::createTextureFromSurface(
 			SDL_Renderer* renderer, SDL_Surface* surface) {
 
-		SDL_Texture* texture;
+		SDL_Texture* texture = NULL;
 
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
-	    if (texture == NULL) {
-	        clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
-	        clog << "Couldn't create texture: " << SDL_GetError();
-	        clog << endl;
-	        return NULL;
-	    }
+		if (SDLDeviceScreen::hasUnderlyingSurface(surface)) {
+			texture = SDL_CreateTextureFromSurface(renderer, surface);
+			if (texture == NULL) {
+				clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
+				clog << "Couldn't create texture: " << SDL_GetError();
+				clog << endl;
 
-	    /* allowing alpha */
-	    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+			} else {
+				/* allowing alpha */
+				SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+			}
+		}
 
 		return texture;
 	}
@@ -2363,6 +2373,12 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseTexture(SDL_Texture* texture) {
 		SDL_DestroyTexture(texture);
+	}
+
+	void SDLDeviceScreen::addUnderlyingSurface(SDL_Surface* uSur) {
+		pthread_mutex_lock(&uSurMutex);
+		uSurPool.insert(uSur);
+		pthread_mutex_unlock(&uSurMutex);
 	}
 
 	SDL_Surface* SDLDeviceScreen::createUnderlyingSurface(
@@ -2403,6 +2419,20 @@ namespace mb {
 		SDL_UnlockTexture(texture);
 
 		return uSur;
+	}
+
+	bool SDLDeviceScreen::hasUnderlyingSurface(SDL_Surface* uSur) {
+		set<SDL_Surface*>::iterator i;
+		bool hasIt = false;
+
+		pthread_mutex_lock(&uSurMutex);
+		i = uSurPool.find(uSur);
+		if (i != uSurPool.end()) {
+			hasIt = true;
+		}
+		pthread_mutex_unlock(&uSurMutex);
+
+		return hasIt;
 	}
 
 	void SDLDeviceScreen::releaseUnderlyingSurface(SDL_Surface* uSur) {

@@ -81,7 +81,6 @@ namespace mb {
 
 		imgUri   = "";
 		myScreen = screenId;
-		content  = NULL;
 
 		imgUri.assign(mrl);
 	}
@@ -89,7 +88,6 @@ namespace mb {
 	SDLImageProvider::~SDLImageProvider() {
 		pthread_mutex_lock(&pMutex);
 		imageRefs--;
-		content = NULL;
 
 		if (imageRefs == 0) {
 			IMG_Quit();
@@ -105,31 +103,34 @@ namespace mb {
 		IColor* bgColor;
 
 		pthread_mutex_lock(&pMutex);
-		content = surface;
 
 		if (!initialized) {
 			initialized = true;
 			if (IMG_Init(0) < 0) {
-				clog << "SDLFontProvider::SDLImageProvider ";
+				clog << "SDLFontProvider::playOver ";
 				clog << "Couldn't initialize IMG: " << SDL_GetError();
 				clog << endl;
 			}
 		}
 
-		if (content != NULL && LocalScreenManager::getInstance()->hasSurface(
-				myScreen, content)) {
+		if (surface != NULL && LocalScreenManager::getInstance()->hasSurface(
+				myScreen, surface)) {
 
 			renderedSurface = IMG_Load(imgUri.c_str());
 
-			parent = (SDLWindow*)(content->getParent());
-			if (parent != NULL) {
-				parent->setRenderedSurface(renderedSurface);
+			if (renderedSurface != NULL) {
+				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
+
+				parent = (SDLWindow*)(surface->getParent());
+				if (parent != NULL) {
+					parent->setRenderedSurface(renderedSurface);
+				}
+
+				surface->setSurfaceContent((void*)renderedSurface);
 			}
 
-			content->setSurfaceContent((void*)renderedSurface);
-
 		} else {
-			clog << "SDLImageProvider::ntsPlayOver Warning! NULL content";
+			clog << "SDLImageProvider::playOver Warning! NULL content";
 			clog << endl;
 		}
 
