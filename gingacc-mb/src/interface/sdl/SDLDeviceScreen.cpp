@@ -278,6 +278,14 @@ namespace mb {
 		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
+	void SDLDeviceScreen::updateRenderMap(
+			GingaScreenID screenId, IWindow* window,
+			float oldZIndex, float newZIndex) {
+
+		renderMapRemoveWindow(screenId, window, oldZIndex);
+		renderMapInsertWindow(screenId, window, newZIndex);
+	}
+
 	void SDLDeviceScreen::releaseScreen() {
 		lockScreens();
 		sdlScreens[this] = SPT_RELEASE;
