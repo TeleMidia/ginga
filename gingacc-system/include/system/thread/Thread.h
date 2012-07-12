@@ -69,7 +69,7 @@ namespace thread {
 
 		pthread_mutex_t threadMutex;
 
-		bool isSleeping;
+		bool isThreadSleeping;
 		pthread_mutex_t threadFlagMutex;
 		pthread_cond_t threadFlagConditionVariable;
 
