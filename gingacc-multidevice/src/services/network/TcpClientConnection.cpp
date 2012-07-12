@@ -48,6 +48,11 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "../../../include/multidevice/services/network/TcpClientConnection.h"
+#ifdef _MSC_VER
+extern "C" {
+#include "asprintf.h"
+}
+#endif
 
 namespace br {
 namespace pucrio {
@@ -161,6 +166,10 @@ namespace multidevice {
 
 	void TCPClientConnection::release() {
 		running = false;
+	}
+
+	void TCPClientConnection::end() {
+		//TODO: All
 	}
 
 }

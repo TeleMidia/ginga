@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+
 #include "multidevice/services/network/BroadcastSocketService.h"
 
 #include <stdio.h>
@@ -55,12 +56,19 @@ http://www.telemidia.puc-rio.br
 #include <stdlib.h>
 
 #include <sys/types.h>
+
+#ifndef _MSC_VER
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <net/if.h>
+#endif
+
+#ifdef _MSC_VER
+typedef int socklen_t;
+#endif
 
 #include "system/compat/SystemCompat.h"
 #include "system/compat/PracticalSocket.h"
@@ -77,7 +85,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-
+	
 //TODO: #ifdef __DARWIN_UNIX03 (use practicalsocket otherwise)
 	static int sd = -1;
 	static struct sockaddr_in domain_addr;
@@ -181,6 +189,7 @@ namespace multidevice {
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
+#ifndef _MSC_VER
 		struct ifconf interfaces;
 		struct ifreq* netInterface;
 		struct sockaddr_in* myAddr;
@@ -268,8 +277,7 @@ namespace multidevice {
 		}
 
 		freeifaddrs(ifaddr);
-#else //Linux & Windows (?)
-
+#else // Linux
 		for (i = 0; i < numOfInterfaces; netInterface++) {
 			interfaceName = netInterface->ifr_name;
 
@@ -304,6 +312,13 @@ namespace multidevice {
 			}
 			i++;
 		}
+#endif
+
+#else
+
+// Windows (?)
+
+
 #endif
 		clog << "BroadcastSocketService::discoverBroadcastAddress Warning!";
 		clog << " can't discover broadcast address" << endl;

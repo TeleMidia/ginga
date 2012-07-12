@@ -133,7 +133,7 @@ namespace multidevice {
 			return false;
 		}
 		*/
-#ifndef __DARWIN_UNIX03
+#if !defined(__DARWIN_UNIX03) && !defined(_MSC_VER)
 		setsockopt(msdR, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 		setsockopt(msdW, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 #endif
