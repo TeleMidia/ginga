@@ -61,7 +61,7 @@ namespace thread {
 
 		pthread_mutex_init(&threadMutex, NULL);
 
-		isSleeping = false;
+		isThreadSleeping = false;
 		pthread_mutex_init(&threadFlagMutex, NULL);
 		pthread_mutex_init(&threadFlagMutexLockUntilSignal, NULL);
 		pthread_mutex_init(&threadIdMutex, NULL);
@@ -150,19 +150,19 @@ namespace thread {
 			    (long int)(milliseconds % 1000);*/
 
 		pthread_mutex_lock(&threadFlagMutex);
-		isSleeping = true;
+		isThreadSleeping = true;
 		res = pthread_cond_timedwait(
 			    &threadFlagConditionVariable,
 			    &threadFlagMutex,
 			    (const struct timespec*)(&timeOut));
 
-		isSleeping = false;
+		isThreadSleeping = false;
 		pthread_mutex_unlock(&threadFlagMutex);
 		return (res == ETIMEDOUT);
 	}
 
 	void Thread::wakeUp() {
-		while (isSleeping) {
+		while (isThreadSleeping) {
 			pthread_cond_signal(&threadFlagConditionVariable);
 		}
 	}
