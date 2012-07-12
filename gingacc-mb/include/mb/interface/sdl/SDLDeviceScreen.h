@@ -177,6 +177,10 @@ typedef struct {
 
 			virtual ~SDLDeviceScreen();
 
+			static void updateRenderMap(
+					GingaScreenID screenId, IWindow* window,
+					float oldZIndex, float newZIndex);
+
 			void releaseScreen();
 
 			void releaseMB();

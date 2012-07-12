@@ -431,6 +431,14 @@ namespace mb {
 		this->rect.h = h;
 	}
 
+	void SDLWindow::setZ(float z) {
+		float oldZ = this->z;
+
+		this->z = z;
+
+		SDLDeviceScreen::updateRenderMap(myScreen, this, oldZ, z);
+	}
+
 	void SDLWindow::setGhostWindow(bool ghost) {
 		this->ghost = ghost;
 	}

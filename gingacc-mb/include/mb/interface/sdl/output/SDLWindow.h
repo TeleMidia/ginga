@@ -182,15 +182,19 @@ namespace mb {
 			GingaWindowID getId();
 			void show();
 			void hide();
+
 			int getX();
 			int getY();
 			int getW();
 			int getH();
 			float getZ();
+
 			void setX(int x);
 			void setY(int y);
 			void setW(int w);
 			void setH(int h);
+			void setZ(float z);
+
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();

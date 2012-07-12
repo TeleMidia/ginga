@@ -95,14 +95,19 @@ namespace mb {
 			virtual GingaWindowID getId()=0;
 			virtual void show()=0;
 			virtual void hide()=0;
+
 			virtual int getX()=0;
 			virtual int getY()=0;
 			virtual int getW()=0;
 			virtual int getH()=0;
+			virtual float getZ()=0;
+
 			virtual void setX(int x)=0;
 			virtual void setY(int y)=0;
 			virtual void setW(int w)=0;
 			virtual void setH(int h)=0;
+			virtual void setZ(float h)=0;
+
 			virtual void* getContent()=0;
 
 			virtual void setGhostWindow(bool ghost)=0;
