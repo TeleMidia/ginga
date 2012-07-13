@@ -162,6 +162,11 @@ void *LuaPlayer::nc_update_thread (void *data)
 
           MUTEX_LOCK (&nc_update_mutex);
 
+          if (nc_update_list == NULL) {
+        	  MUTEX_UNLOCK (&nc_update_mutex);
+        	  return NULL;
+          }
+
           list <nclua_t *> :: iterator i;
           list <nclua_t *> lst = *nc_update_list;
 
