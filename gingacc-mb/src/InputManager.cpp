@@ -610,10 +610,11 @@ namespace mb {
 	void InputManager::run() {
 		IInputEvent* inputEvent;
 
-		int pLastCode     = -1;
-		int lastCode      = -1;
-		double pTimeStamp = 0;
-		double timeStamp  = 0;
+		int pLastCode         = -1;
+		int lastCode          = -1;
+		double pTimeStamp     = 0;
+		double timeStamp      = 0;
+		double clickTimeStamp = 0;
 
 		int mouseX, mouseY;
 
@@ -676,7 +677,12 @@ namespace mb {
 					continue;
 				}
 
-				if (inputEvent->isButtonPressType()) {
+				if (inputEvent->isButtonPressType() &&
+						((getCurrentTimeMillis() - clickTimeStamp) >=
+								declarativeIntervalTime)) {
+
+					clickTimeStamp = getCurrentTimeMillis();
+
 					inputEvent->setAxisValue(currentXAxis, currentYAxis, 0);
 
 					inputEvent->getAxisValue(
