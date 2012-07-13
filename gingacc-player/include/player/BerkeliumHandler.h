@@ -105,6 +105,8 @@ namespace player {
 		bool needs_full_refresh;
 		unsigned char* scroll_buffer;
 
+		pthread_mutex_t sMutex; //surface mutex
+
 	public:
 		BerkeliumHandler(
 				GingaScreenID myScreen, int x, int y, int w, int h);

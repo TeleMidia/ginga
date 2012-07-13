@@ -96,17 +96,22 @@ namespace player {
 
 		scroll_buffer      = new unsigned char[w*(h+1)*4];
 		needs_full_refresh = false;
+
+		pthread_mutex_init(&sMutex, NULL);
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {
 		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
+
 
 		if (isValid) {
 			isValid = false;
 
 			setKeyHandler(false);
 
+			pthread_mutex_lock(&sMutex);
 			bWindow->setDelegate(NULL);
+			pthread_mutex_unlock(&sMutex);
 /*
 			clog << "BerkeliumHandler::~BerkeliumHandler deleting win" << endl;
 			bWindow->del();
@@ -117,6 +122,7 @@ namespace player {
 */
 		}
 
+		pthread_mutex_lock(&sMutex);
 		if (context != NULL) {
 			clog << "BerkeliumHandler::~BerkeliumHandler destroying context";
 			clog << endl;
@@ -126,6 +132,9 @@ namespace player {
 
 		//Caution: Surface is deleted by Player
 
+		pthread_mutex_unlock(&sMutex);
+
+		pthread_mutex_destroy(&sMutex);
 		clog << "BerkeliumHandler::~BerkeliumHandler all done" << endl;
 	}
 
@@ -213,15 +222,17 @@ namespace player {
 
 	void BerkeliumHandler::stop() {
 		if (isValid) {
+			pthread_mutex_lock(&sMutex);
 			bWindow->mouseMoved(-1, -1);
 			bWindow->mouseButton(0, true);
 			bWindow->mouseButton(0, false);
+			pthread_mutex_unlock(&sMutex);
 		}
-
 		clog << "BerkeliumHandler::stop all done" << endl;
 	}
 
 	void BerkeliumHandler::setKeyHandler(bool handler) {
+		pthread_mutex_lock(&sMutex);
 		if (im != NULL && isValid) {
 			if (handler) {
 				bWindow->focus();
@@ -235,15 +246,20 @@ namespace player {
 				im->removeMotionEventListener(this);
 			}
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void BerkeliumHandler::setContext(Context* context) {
+		pthread_mutex_lock(&sMutex);
 		this->context = context;
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void BerkeliumHandler::setWindow(std::auto_ptr<Window> window) {
+		pthread_mutex_lock(&sMutex);
 		bWindow = window;
 		isValid = true;
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void BerkeliumHandler::getSize(int* w, int* h) {
@@ -252,6 +268,7 @@ namespace player {
 	}
 
 	void BerkeliumHandler::setBounds(int x, int y, int w, int h) {
+		pthread_mutex_lock(&sMutex);
 		xOffset = x;
 		yOffset = y;
 		this->w = w;
@@ -260,6 +277,7 @@ namespace player {
 		if (isValid) {
 			bWindow->resize(w, h);
 		}
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	void BerkeliumHandler::setUrl(string url) {
@@ -275,6 +293,7 @@ namespace player {
 	}
 
 	void BerkeliumHandler::updateEvents() {
+		pthread_mutex_lock(&sMutex);
 		if (isValid) {
 			if (mouseMoved) {
 				bWindow->mouseMoved(x, y);
@@ -333,6 +352,8 @@ namespace player {
 				textEvent = false;
 			}
 		}
+
+		pthread_mutex_unlock(&sMutex);
 	}
 
 	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
@@ -342,6 +363,7 @@ namespace player {
 
 		//browserReceiveEvent(mBrowser, (void*)(userEvent->getContent()));
 
+		pthread_mutex_lock(&sMutex);
 		if (userEvent->getKeyCode(myScreen) == CodeMap::KEY_QUIT) {
 			im = NULL;
 
@@ -365,6 +387,8 @@ namespace player {
 
 			textEvent = true;
 		}
+
+		pthread_mutex_unlock(&sMutex);
 
 		clog << "BerkeliumHandler::userEventReceived all done" << endl;
 		return true;
@@ -445,8 +469,6 @@ namespace player {
 		clog << "BerkeliumHandler::onUnresponsive " << mURL << endl;
 	}
 
-#define BERKELIUM_SCROLL_NEW 1
-
 	bool BerkeliumHandler::mapOnPaintToTexture(
 			Berkelium::Window *wini,
 			const unsigned char* bitmap_in,
@@ -468,12 +490,14 @@ namespace player {
 		// until a full one comes in. This handles out of date updates due to
 		// delays in event processing.
 
+		pthread_mutex_lock(&sMutex);
 		if (ignore_partial) {
 			if (bitmap_rect.left() != 0 ||
 					bitmap_rect.top() != 0 ||
 					bitmap_rect.right() != dest_texture_width ||
 					bitmap_rect.bottom() != dest_texture_height) {
 
+				pthread_mutex_unlock(&sMutex);
 				return false;
 			}
 
@@ -484,13 +508,16 @@ namespace player {
 			remove(strFile.c_str());
 
 			surface->blit(0, 0, s);
-			delete s;
 
 			if (surface->getParent() != NULL) {
 				((IWindow*)(surface->getParent()))->validate();
 			}
 
 			ignore_partial = false;
+
+			delete s;
+
+			pthread_mutex_unlock(&sMutex);
 			return true;
 		}
 
@@ -564,13 +591,14 @@ namespace player {
 					copy_rects[i].left(), copy_rects[i].top(),
 					s, 0, 0, wid, hig);
 
-			delete s;
-
 			if (surface->getParent() != NULL) {
 				((IWindow*)(surface->getParent()))->validate();
 			}
+
+			delete s;
 		}
 
+		pthread_mutex_unlock(&sMutex);
 		return true;
 	}
 
