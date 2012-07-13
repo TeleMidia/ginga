@@ -113,15 +113,9 @@ namespace mb {
 		releaseWinColor();
 		releaseColorKey();
 
+		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 		unlock();
-
-		lockTexture();
-		if (texture != NULL) {
-			SDLDeviceScreen::createReleaseContainer(NULL, texture, NULL);
-			texture = NULL;
-		}
-		unlockTexture();
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
@@ -565,8 +559,10 @@ namespace mb {
 
 	void SDLWindow::setRenderedSurface(SDL_Surface* uSur) {
 		lockSurface();
-		curSur        = uSur;
-		textureUpdate = true;
+		curSur = uSur;
+		if (curSur != NULL) {
+			textureUpdate = true;
+		}
 		unlockSurface();
 	}
 
@@ -576,6 +572,12 @@ namespace mb {
 
 	void SDLWindow::setTexture(SDL_Texture* texture) {
 		lockTexture();
+
+		if (this->texture == texture) {
+			unlockTexture();
+			return;
+		}
+
 		if (textureOwner && this->texture != NULL) {
 			SDLDeviceScreen::createReleaseContainer(NULL, this->texture, NULL);
 		}

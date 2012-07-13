@@ -85,7 +85,10 @@ namespace mb {
 
 		releaseFont();
 
-		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+		if (parent != NULL &&
+				LocalScreenManager::getInstance()->hasWindow(
+						myScreen, parent)) {
+
 			if (parent->getContent() == sur) {
 				((SDLWindow*)parent)->setRenderedSurface(NULL);
 			}
