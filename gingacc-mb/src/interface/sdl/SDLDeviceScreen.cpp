@@ -1204,10 +1204,8 @@ namespace mb {
 				 * TODO: we have to set windows to sleep less than 20ms
 				 *       (we're sleeping 2ms on linux)
 				 */
-				//Sleep(0);
-				double currentTime = getCurrentTimeMillis();
+				Sleep(0);
 
-				while(getCurrentTimeMillis() - currentTime < 0.002){}
 #else
 				SystemCompat::uSleep(2000);
 #endif
@@ -2338,17 +2336,15 @@ namespace mb {
 
 		SDL_Texture* texture = NULL;
 
-		if (SDLDeviceScreen::hasUnderlyingSurface(surface)) {
-			texture = SDL_CreateTextureFromSurface(renderer, surface);
-			if (texture == NULL) {
-				clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
-				clog << "Couldn't create texture: " << SDL_GetError();
-				clog << endl;
+		texture = SDL_CreateTextureFromSurface(renderer, surface);
+		if (texture == NULL) {
+			clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
+			clog << "Couldn't create texture: " << SDL_GetError();
+			clog << endl;
 
-			} else {
-				/* allowing alpha */
-				SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-			}
+		} else {
+			/* allowing alpha */
+			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 		}
 
 		return texture;
