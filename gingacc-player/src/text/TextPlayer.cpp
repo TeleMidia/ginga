@@ -77,13 +77,13 @@ namespace player {
    		}
 
    		/* release window and surface first; then, release font */
-		if (outputWindow != NULL) {
+		if (outputWindow != NULL && dm->hasWindow(myScreen, outputWindow)) {
 			outputWindow->revertContent();
 			delete outputWindow;
 			outputWindow = NULL;
 		}
 
-		if (surface != NULL) {
+		if (surface != NULL && dm->hasSurface(myScreen, surface)) {
 			delete surface;
 			surface = NULL;
 		}
