@@ -74,12 +74,12 @@ namespace mb {
 	SDLInputEvent::SDLInputEvent(const int keyCode) {
 		SDL_KeyboardEvent fakeEvent;
 
-		fakeEvent.type       = SDL_KEYUP;
-		fakeEvent.state      = SDL_RELEASED;
+		fakeEvent.type       = SDL_KEYDOWN;
+		fakeEvent.state      = SDL_PRESSED;
 		fakeEvent.repeat     = 0;
 		fakeEvent.keysym.sym = keyCode;
 
-		event.type = SDL_KEYUP;
+		event.type = SDL_KEYDOWN;
 		event.key  = fakeEvent;
 
 		x = 0;
