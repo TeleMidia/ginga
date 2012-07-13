@@ -310,7 +310,6 @@ namespace player {
 	}
 
 	void BerkeliumPlayer::setPropertyValue(string name, string value) {
-		double val;
 		int x, y, w, h;
 		vector<string>* params;
 
@@ -390,7 +389,12 @@ namespace player {
 		while (berkeliumFactory.isRunning()) {
 			if (firstTime) {
 				firstTime = false;
-				SystemCompat::uSleep(1000000);
+				int waitFactory = 0;
+				while (waitFactory < 500000) {
+					Berkelium::update();
+					SystemCompat::uSleep(30000);
+					waitFactory = waitFactory + 30000;
+				}
 			}
 
 			if (berkeliumFactory.hasBrowser()) {
@@ -404,7 +408,7 @@ namespace player {
 					}
 				}*/
 
-				SystemCompat::uSleep(50000);
+				SystemCompat::uSleep(30000);
 
 			} else {
 				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;
