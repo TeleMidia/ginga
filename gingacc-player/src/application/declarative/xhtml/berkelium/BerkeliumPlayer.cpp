@@ -385,12 +385,12 @@ namespace player {
 
 		clog << "BerkeliumPlayer::mainLoop" << endl;
 
-		bool first = true;
+		bool firstTime = true;
 
 		while (berkeliumFactory.isRunning()) {
-			if (first) {
-				first = false;
-				SystemCompat::uSleep(500000);
+			if (firstTime) {
+				firstTime = false;
+				SystemCompat::uSleep(1000000);
 			}
 
 			if (berkeliumFactory.hasBrowser()) {
@@ -404,7 +404,7 @@ namespace player {
 					}
 				}*/
 
-				SystemCompat::uSleep(30000);
+				SystemCompat::uSleep(50000);
 
 			} else {
 				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;
