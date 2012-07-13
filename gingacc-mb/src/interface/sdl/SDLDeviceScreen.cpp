@@ -2336,15 +2336,17 @@ namespace mb {
 
 		SDL_Texture* texture = NULL;
 
-		texture = SDL_CreateTextureFromSurface(renderer, surface);
-		if (texture == NULL) {
-			clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
-			clog << "Couldn't create texture: " << SDL_GetError();
-			clog << endl;
+		if (SDLDeviceScreen::hasUnderlyingSurface(surface)) {
+			texture = SDL_CreateTextureFromSurface(renderer, surface);
+			if (texture == NULL) {
+				clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
+				clog << "Couldn't create texture: " << SDL_GetError();
+				clog << endl;
 
-		} else {
-			/* allowing alpha */
-			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+			} else {
+				/* allowing alpha */
+				SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+			}
 		}
 
 		return texture;
