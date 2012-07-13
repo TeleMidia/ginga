@@ -157,10 +157,15 @@ void *LuaPlayer::nc_update_thread (void *data)
 {
      while (true)
      {
-          pthread_testcancel ();
           SystemCompat::uSleep ((NC_UPDATE_DELAY) * 1000);
 
           MUTEX_LOCK (&nc_update_mutex);
+
+          if (nc_update_list == NULL) // end of cycle process
+          {
+               MUTEX_UNLOCK (&nc_update_mutex);
+               return NULL;
+          }
 
           list <nclua_t *> :: iterator i;
           list <nclua_t *> lst = *nc_update_list;
@@ -215,10 +220,8 @@ void LuaPlayer::nc_update_insert (nclua_t *nc)
           MUTEX_INIT (&nc_update_mutex);
           MUTEX_LOCK (&nc_update_mutex);
           nc_update_list = new list <nclua_t *> ();
-
           assert (pthread_create (&nc_update_tid, 0,
                                   nc_update_thread, NULL) == 0);
-          assert (pthread_detach (nc_update_tid) == 0);
      }
      else
      {
@@ -241,10 +244,12 @@ void LuaPlayer::nc_update_remove (nclua_t *nc)
 
      if (nc_update_list->empty ())
      {
-          pthread_cancel (nc_update_tid);
           delete nc_update_list;
-          nc_update_list = NULL;
+          nc_update_list = NULL; // signal end of cycle process
+
           MUTEX_UNLOCK (&nc_update_mutex);
+          assert (pthread_join (nc_update_tid, NULL) == 0);
+
           MUTEX_FINI (&nc_update_mutex);
      }
      else
