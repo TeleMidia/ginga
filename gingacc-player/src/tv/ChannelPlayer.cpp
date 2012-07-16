@@ -144,8 +144,8 @@ namespace player {
 		while (players != objectMap->end()) {
 			avPlayer = players->second;
 			s = ((Player*)avPlayer)->getSurface();
-			if (s != NULL && s->getParent() != parent) {
-				s->setParent(parent);
+			if (s != NULL && s->getParentWindow() != parent) {
+				s->setParentWindow(parent);
 			}
 			++players;
 		}
@@ -164,8 +164,8 @@ namespace player {
 
 		if (selectedPlayer != NULL) {
 			s = ((Player*)selectedPlayer)->getSurface();
-			if (!hasParent && s != NULL && s->getParent() != NULL) {
-				setSurfacesParent(s->getParent());
+			if (!hasParent && s != NULL && s->getParentWindow() != NULL) {
+				setSurfacesParent(s->getParentWindow());
 				selectedPlayer->play();
 
 			} else if (!hasVisual) {

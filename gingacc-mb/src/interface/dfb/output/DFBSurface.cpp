@@ -110,20 +110,9 @@ namespace mb {
 		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
 
 		if (sur != NULL) {
-			if (LocalScreenManager::getInstance()->hasWindow(
-					myScreen, parent)) {
-
-				if (parent->removeChildSurface(this)) {
-					DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-					sur->Release(sur);
-					sur = NULL;
-				}
-
-			} else {
-				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-				sur->Release(sur);
-				sur = NULL;
-			}
+			DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
+			sur->Release(sur);
+			sur = NULL;
 		}
 	}
 
@@ -211,41 +200,46 @@ namespace mb {
 
 	void DFBSurface::setSurfaceContent(void* surface) {
 		if (this->sur != NULL && surface != NULL) {
-			if (parent == NULL || (parent)->removeChildSurface(this)) {
-				DFBDeviceScreen::releaseUnderlyingSurface(sur);
-				sur = NULL;
-			}
+			DFBDeviceScreen::releaseUnderlyingSurface(sur);
+			sur = NULL;
 		}
 
 		this->sur = (IDirectFBSurface*)surface;
 	}
 
-	bool DFBSurface::setParent(void* parentWindow) {
+	bool DFBSurface::setParentWindow(void* parentWindow) {
+		if (parent != NULL) {
+			parent->setChildSurface(NULL);
+		}
+
 		this->parent = (IWindow*)parentWindow;
-		if (parent != NULL && chromaColor != NULL) {
-			parent->setColorKey(
-				    chromaColor->getR(),
-				    chromaColor->getG(),
-				    chromaColor->getB());
-		}
-
-		if (this->sur == NULL && parent != NULL) {
-			IDirectFBWindow* wgWin;
-
-			wgWin = (IDirectFBWindow*)(parent->getContent());
-			DFBCHECK(wgWin->GetSurface(wgWin, &sur));
-			DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
-			parent->setReleaseListener(this);
-			return false;
-		}
 
 		if (parent != NULL) {
-			parent->addChildSurface(this);
+			if (chromaColor != NULL) {
+				parent->setColorKey(
+						chromaColor->getR(),
+						chromaColor->getG(),
+						chromaColor->getB());
+			}
+
+			if (this->sur == NULL) {
+				IDirectFBWindow* wgWin;
+
+				wgWin = (IDirectFBWindow*)(parent->getContent());
+				DFBCHECK(wgWin->GetSurface(wgWin, &sur));
+				DFBCHECK(sur->Clear(sur, 0, 0, 0, 0x00));
+
+				parent->setChildSurface(this);
+				return false;
+			}
+
+			parent->setChildSurface(this);
 		}
+
 		return true;
 	}
 
-	void* DFBSurface::getParent() {
+	void* DFBSurface::getParentWindow() {
 		return this->parent;
 	}
 

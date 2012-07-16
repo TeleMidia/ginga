@@ -145,7 +145,7 @@ namespace mb {
 			return;
 		}
 
-		IWindow* someWindow = (IWindow*)(someSurface->getParent());
+		IWindow* someWindow = (IWindow*)(someSurface->getParentWindow());
 		if (someWindow != NULL) {
 			bool fitTo;
 			bool stretchTo;

@@ -96,8 +96,7 @@ namespace mb {
 			bool visible;
 			bool ghost;
 
-		    vector<ISurface*>* childSurfaces;
-		    ISurface* releaseListener;
+		    ISurface* childSurface;
 		    bool fit;
 		    bool stretch;
 		    int caps;
@@ -140,7 +139,7 @@ namespace mb {
 
 			GingaScreenID getScreen();
 			void revertContent();
-			void setReleaseListener(ISurface* listener);
+			void setChildSurface(ISurface* iSur);
 			int getCap(string cap);
 			void setCaps(int caps);
 			void addCaps(int capability);
@@ -179,8 +178,6 @@ namespace mb {
 			void unprotectedValidate();
 
 		public:
-			void addChildSurface(ISurface* s);
-			bool removeChildSurface(ISurface* s);
 			void setStretch(bool stretchTo);
 			bool getStretch();
 			void setFit(bool fitTo);

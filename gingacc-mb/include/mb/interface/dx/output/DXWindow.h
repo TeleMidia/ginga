@@ -90,7 +90,6 @@ namespace mb {
 			bool visible;
 			bool ghost;
 
-		    vector<ISurface*>* childSurfaces;
 		    ISurface* releaseListener;
 		    bool fit;
 		    bool stretch;
@@ -103,7 +102,7 @@ namespace mb {
 			DXWindow(int x, int y, int width, int height);
 			virtual ~DXWindow();
 
-			void setReleaseListener(ISurface* listener);
+			void setChildSurface(ISurface* listener);
 			int getCap(string cap);
 			void setCaps(int caps);
 			void addCaps(int capability);
@@ -132,8 +131,6 @@ namespace mb {
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();
-			void addChildSurface(ISurface* s);
-			bool removeChildSurface(ISurface* s);
 			void setStretch(bool stretchTo);
 			bool getStretch();
 			void setFit(bool fitTo);

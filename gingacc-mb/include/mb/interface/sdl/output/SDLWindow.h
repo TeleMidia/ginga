@@ -92,7 +92,8 @@ namespace mb {
 		private:
 			SDL_Texture* texture;
 			SDL_Surface* curSur;
-			SDL_Surface* winSur;
+
+			ISurface* winISur;
 
 			bool textureUpdate;
 			bool textureOwner;
@@ -114,8 +115,7 @@ namespace mb {
 			bool visible;
 			bool ghost;
 
-		    vector<ISurface*> childSurfaces;
-		    ISurface* releaseListener;
+		    ISurface* childSurface;
 		    bool fit;
 		    bool stretch;
 		    int caps;
@@ -148,6 +148,7 @@ namespace mb {
 					int x, int y, int width, int height,
 					float z);
 
+			void releaseWinISur();
 			void releaseBGColor();
 			void releaseWinColor();
 			void releaseColorKey();
@@ -165,7 +166,7 @@ namespace mb {
 
 			GingaScreenID getScreen();
 			void revertContent();
-			void setReleaseListener(ISurface* listener);
+			void setChildSurface(ISurface* iSur);
 			int getCap(string cap);
 			void setCaps(int caps);
 			void addCaps(int capability);
@@ -204,8 +205,6 @@ namespace mb {
 
 		public:
 			vector<DrawData*>* createDrawDataList();
-			void addChildSurface(ISurface* s);
-			bool removeChildSurface(ISurface* s);
 			void setStretch(bool stretchTo);
 			bool getStretch();
 			void setFit(bool fitTo);
@@ -223,10 +222,6 @@ namespace mb {
 			void renderImgFile(string serializedImageUrl);
 			void renderFrom(ISurface* s);
 
-		private:
-			void renderFrom(SDL_Surface* contentSurface);
-
-		public:
 			void blit(IWindow* src);
 			void stretchBlit(IWindow* src);
 			string getDumpFileUri(int quality, int dumpW, int dumpH);

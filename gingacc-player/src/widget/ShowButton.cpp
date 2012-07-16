@@ -144,7 +144,7 @@ namespace player {
 			initializeWindow();
 		}
 
-		if (surface->setParent((void*)win)) {
+		if (surface->setParentWindow((void*)win)) {
 			win->renderFrom(surface);
 		}
 		win->show();
