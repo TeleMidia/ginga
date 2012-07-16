@@ -152,7 +152,7 @@ void* testPlayer(void* ptr) {
 	txt1->setOutWindow(w->getId());
 	s = txt1->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w);
+		s->setParentWindow((void*)w);
 		preparePlayer(
 				txt1,
 				fontUri,
@@ -168,7 +168,7 @@ void* testPlayer(void* ptr) {
 	txt2->setOutWindow(ww->getId());
 	s = txt2->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)ww);
+		s->setParentWindow((void*)ww);
 		preparePlayer(
 				txt2,
 				fontUri,
@@ -184,7 +184,7 @@ void* testPlayer(void* ptr) {
 	txt3->setOutWindow(www->getId());
 	s = txt3->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)www);
+		s->setParentWindow((void*)www);
 		preparePlayer(
 				txt3,
 				fontUri,

@@ -361,7 +361,7 @@ namespace player {
 		lock();
 		IWindow* parent = NULL;
 		if (surface != NULL) {
-			parent = (IWindow*)(surface->getParent());
+			parent = (IWindow*)(surface->getParentWindow());
 
 		} else {
 			clog << "SrtPlayer::run warning! surface == NULL" << endl;
@@ -456,7 +456,7 @@ namespace player {
 
 				lock();
 				if (surface != NULL) {
-					parent = (IWindow*)(surface->getParent());
+					parent = (IWindow*)(surface->getParentWindow());
 					if (parent != NULL && isPlayingSrt()) {
 						if (controlParentVisibility) {
 							clog << "SrtPlayer::run show";
@@ -497,7 +497,7 @@ namespace player {
 				lock();
 				if (surface != NULL) {
 					surface->clearSurface();
-					parent = (IWindow*)(surface->getParent());
+					parent = (IWindow*)(surface->getParentWindow());
 					if (parent != NULL && controlParentVisibility) {
 						parent->hide();
 					}

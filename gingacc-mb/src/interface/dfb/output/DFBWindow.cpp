@@ -120,22 +120,10 @@ namespace mb {
 
 		lock();
 		lockChilds();
-		if (releaseListener != NULL) {
-			releaseListener->setParent(NULL);
+		if (childSurface != NULL) {
+			childSurface->setParentWindow(NULL);
 		}
 
-		if (childSurfaces != NULL) {
-			i = childSurfaces->begin();
-			while (i != childSurfaces->end()) {
-				surface = *i;
-				if (surface != NULL) {
-					surface->setParent(NULL);
-				}
-				++i;
-			}
-			delete childSurfaces;
-			childSurfaces = NULL;
-		}
 		unlockChilds();
 
 		releaseBGColor();
@@ -200,8 +188,7 @@ namespace mb {
 		this->ghost           = false;
 		this->visible         = false;
 
-		this->childSurfaces   = new vector<ISurface*>;
-		this->releaseListener = NULL;
+		this->childSurface    = NULL;
 		this->fit             = true;
 		this->stretch         = true;
 		this->caps            = DWCAPS_NODECORATION;
@@ -401,8 +388,8 @@ namespace mb {
 		unlock();
 	}
 
-	void DFBWindow::setReleaseListener(ISurface* listener) {
-		this->releaseListener = listener;
+	void DFBWindow::setChildSurface(ISurface* iSur) {
+		this->childSurface = iSur;
 	}
 
 	int DFBWindow::getCap(string cap) {
@@ -688,62 +675,13 @@ namespace mb {
 
 		if (win != NULL && winSur != NULL) {
 			lockChilds();
-			if (childSurfaces != NULL && !childSurfaces->empty()) {
-				surface = childSurfaces->at(0);
-				if (surface != NULL) {
-					renderFrom(surface);
-				}
-
-			} else {
-				DFBCHECK(winSur->Flip(
-						winSur, NULL, (DFBSurfaceFlipFlags)DSFLIP_NONE));
+			if (childSurface != NULL) {
+				renderFrom(childSurface);
 			}
+			DFBCHECK(winSur->Flip(
+					winSur, NULL, (DFBSurfaceFlipFlags)DSFLIP_NONE));
 			unlockChilds();
 		}
-	}
-
-	void DFBWindow::addChildSurface(ISurface* s) {
-		unsigned int i;
-		ISurface* surface;
-
-		lockChilds();
-		for (i = 0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
-			if (surface == s) {
-				unlockChilds();
-				return;
-			}
-		}
-		childSurfaces->push_back(s);
-		unlockChilds();
-	}
-
-	bool DFBWindow::removeChildSurface(ISurface* s) {
-		unsigned int i;
-		vector<ISurface*>::iterator j;
-		ISurface* surface;
-
-		lockChilds();
-		if (releaseListener == s) {
-			releaseListener = NULL;
-		}
-
-		if (childSurfaces == NULL) {
-			unlockChilds();
-			return false;
-		}
-
-		for (i = 0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
-			if (surface == s) {
-				j = childSurfaces->begin() + i;
-				childSurfaces->erase(j);
-				unlockChilds();
-				return true;
-			}
-		}
-		unlockChilds();
-		return false;
 	}
 
 	void DFBWindow::setStretch(bool stretchTo) {
@@ -850,7 +788,7 @@ namespace mb {
 		IDirectFBSurface* s2;
 
 		DFBCHECK(contentSurface->GetSize(contentSurface, &w, &h));
-		if (winSur != NULL && winSur != contentSurface) {
+		if (winSur != NULL) {
 			//setBgColor(); /* Don't do this here. This is not the place */
 			if ((w != width || h != height) && fit) {
 				if (stretch) {
@@ -871,9 +809,6 @@ namespace mb {
 							s2, NULL, (DFBSurfaceFlipFlags)DSFLIP_BLIT));
 
 					DFBCHECK(winSur->Blit(winSur, s2, NULL, 0, 0));
-					DFBCHECK(winSur->Flip(
-							winSur,
-							NULL, (DFBSurfaceFlipFlags) DSFLIP_BLIT));
 
 					delete sur;
 				}
@@ -881,7 +816,10 @@ namespace mb {
 			} else {
 				DFBCHECK(winSur->Blit(winSur, contentSurface, NULL, 0, 0));
 			}
-			DFBCHECK(winSur->Flip(winSur, NULL, (DFBSurfaceFlipFlags)0));
+
+			DFBCHECK(winSur->Flip(
+					winSur,
+					NULL, (DFBSurfaceFlipFlags) DSFLIP_BLIT));
 		}
 	}
 

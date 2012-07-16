@@ -614,7 +614,6 @@ namespace mb {
 		int lastCode          = -1;
 		double pTimeStamp     = 0;
 		double timeStamp      = 0;
-		double clickTimeStamp = 0;
 
 		int mouseX, mouseY;
 
@@ -677,12 +676,7 @@ namespace mb {
 					continue;
 				}
 
-				if (inputEvent->isButtonPressType() &&
-						((getCurrentTimeMillis() - clickTimeStamp) >=
-								declarativeIntervalTime)) {
-
-					clickTimeStamp = getCurrentTimeMillis();
-
+				if (inputEvent->isButtonPressType()) {
 					inputEvent->setAxisValue(currentXAxis, currentYAxis, 0);
 
 					inputEvent->getAxisValue(

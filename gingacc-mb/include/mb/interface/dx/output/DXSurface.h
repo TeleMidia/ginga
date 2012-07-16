@@ -83,8 +83,8 @@ namespace mb {
 			void setCaps(int caps);
 			int getCap(string cap);
 			int getCaps();
-			bool setParent(void* parentWindow); //IWindow
-			void* getParent();                  //IWindow
+			bool setParentWindow(void* parentWindow); //IWindow
+			void* getParentWindow();                  //IWindow
 			void* getContent();
 			void setContent(void* surface);
 			void setChromaColor(IColor* color);

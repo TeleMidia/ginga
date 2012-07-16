@@ -104,7 +104,7 @@ namespace mb {
 		lock();
 		lockChilds();
 		if (releaseListener != NULL) {
-			releaseListener->setParent(NULL);
+			releaseListener->setParentWindow(NULL);
 		}
 
 		if (childSurfaces != NULL) {
@@ -112,7 +112,7 @@ namespace mb {
 			while (i != childSurfaces->end()) {
 				surface = *i;
 				if (surface != NULL) {
-					surface->setParent(NULL);
+					surface->setParentWindow(NULL);
 				}
 				++i;
 			}
@@ -139,7 +139,7 @@ namespace mb {
 		pthread_mutex_destroy(&mutexC);
 	}
 
-	void DXWindow::setReleaseListener(ISurface* listener) {
+	void DXWindow::setChildSurface(ISurface* listener) {
 		clog << "XWindow::setReleaseListener(ISurface* listener)" << endl;
 		this->releaseListener = listener;
 	}
@@ -340,52 +340,6 @@ namespace mb {
 				unlockChilds();
 			}
 		}
-	}
-
-	void DXWindow::addChildSurface(ISurface* s) {
-		clog << "DXWindow::addChildSurface(ISurface* s)" << endl;
-		int i;
-		ISurface* surface;
-
-		lockChilds();
-		for (i = 0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
-			if (surface == s) {
-				unlockChilds();
-				return;
-			}
-		}
-		childSurfaces->push_back(s);
-		unlockChilds();
-	}
-
-	bool DXWindow::removeChildSurface(ISurface* s) {
-		clog << "DXWindow::removeChildSurface(ISurface* s)" << endl;
-		int i;
-		vector<ISurface*>::iterator j;
-		ISurface* surface;
-
-		lockChilds();
-		if (releaseListener == s) {
-			releaseListener = NULL;
-		}
-
-		if (childSurfaces == NULL) {
-			unlockChilds();
-			return false;
-		}
-
-		for (i=0; i < childSurfaces->size(); i++) {
-			surface = childSurfaces->at(i);
-			if (surface == s) {
-				j = childSurfaces->begin() + i;
-				childSurfaces->erase(j);
-				unlockChilds();
-				return true;
-			}
-		}
-		unlockChilds();
-		return false;
 	}
 
 	void DXWindow::setStretch(bool stretchTo) {

@@ -132,19 +132,19 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 
 	aud1->setOutWindow(w->getId());
 	s = aud1->getSurface();
-	if (s != NULL && s->setParent((void*)w)) {
+	if (s != NULL && s->setParentWindow((void*)w)) {
 		w->renderFrom(s);
 	}
 
 	aud2->setOutWindow(ww->getId());
 	s = aud2->getSurface();
-	if (s != NULL && s->setParent((void*)ww)) {
+	if (s != NULL && s->setParentWindow((void*)ww)) {
 		ww->renderFrom(s);
 	}
 
 	aud3->setOutWindow(www->getId());
 	s = aud3->getSurface();
-	if (s != NULL && s->setParent((void*)www)) {
+	if (s != NULL && s->setParentWindow((void*)www)) {
 		www->renderFrom(s);
 	}
 

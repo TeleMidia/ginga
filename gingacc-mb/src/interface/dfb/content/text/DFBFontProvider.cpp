@@ -216,7 +216,7 @@ namespace mb {
 					coordY,
 					(DFBSurfaceTextFlags)(align));
 
-			win = (IWindow*)(surface->getParent());
+			win = (IWindow*)(surface->getParentWindow());
 			if (win != NULL) {
 				win->validate();
 			}
