@@ -91,7 +91,6 @@ namespace multidevice {
 					    IRemoteDeviceListener* srv);
 			virtual ~TCPClientConnection();
 			bool post(char* str);
-			void end();
 			void release();
 	};
 }

@@ -98,7 +98,6 @@ namespace multidevice {
 		if (tcpSocket == NULL) {
 			return false;
 		}
-		//TODO: port asprintf for windows
 		asprintf(&com, "%d %s", counter, str);
 		counter++;
 
@@ -121,7 +120,6 @@ namespace multidevice {
 		char msgType[4];
 		char evtType[5];
 		int nr;
-		//TODO: tcpSocket
 		while (running) {
 
 			memset(buf, 0, MAX_MSG_SIZE);
@@ -166,10 +164,6 @@ namespace multidevice {
 
 	void TCPClientConnection::release() {
 		running = false;
-	}
-
-	void TCPClientConnection::end() {
-		//TODO: All
 	}
 
 }
