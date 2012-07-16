@@ -691,8 +691,7 @@ namespace mb {
 				}
 
 				if (inputEvent->isPressedType() && ((getCurrentTimeMillis() -
-						timeStamp) >= declarativeIntervalTime ||
-								lastCode != inputEvent->getKeyCode(myScreen))) {
+						timeStamp) >= declarativeIntervalTime)) {
 
 					lastCode  = inputEvent->getKeyCode(myScreen);
 					timeStamp = getCurrentTimeMillis();
