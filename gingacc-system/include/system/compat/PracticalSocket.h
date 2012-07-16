@@ -340,17 +340,49 @@ public:
   void leaveGroup(const string &multicastGroup) throw(SocketException);
 
   /**
-   * Returns the broadcast address for the first connected interface
+   *   Returns the broadcast address for the first connected interface
    */
   string getBroadcastAddress() throw(SocketException);
 
   /**
-   * Returns the IP address for the first connected interface (omg, int)
+   *   Returns the IP address for the first connected interface
+   *   @return int for the local IP address
    */
   unsigned int getLocalIPAddress() throw(SocketException);
 
+  /**
+   *   Sets the Reuse Address option for the socket (sockopt SO_REUSEADDR)
+   *   @param reuse boolean value for the reuse parameter
+   *   @exception SocketException thrown if unable set socket option
+   */
+  void setReuseAddr(bool reuse) throw(SocketException);
+
+  /**
+   *   Sets the IP Multicast Loop option for the socket (sockopt IP_MULTICAST_LOOP)
+   *   @param loop boolean value for the loop parameter
+   *   @exception SocketException thrown if unable set socket option
+   */
+  void setMulticastLoop(bool loop) throw(SocketException);
+
+  /**
+   *   Applies select() with the given timeout value
+   *   @param sec int value for the sec portion of timeval structure (select)
+   *   @param usec int value for the usec portion of timeval structure (select)
+   *   @return int with the select() value
+   */
+  int select_t(int sec, int usec);
+
+  /**
+   *   Defines socket blocking mode
+   *   @param bool nonblock (true = nonblocking mode, false = blocking mode)
+   */
+  void setNonBlocking(bool nonblock);
+
+
+
 private:
   void setBroadcast();
+  int BLOCKING_MODE;
 };
 
 }

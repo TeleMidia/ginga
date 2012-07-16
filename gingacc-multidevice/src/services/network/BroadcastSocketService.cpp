@@ -114,6 +114,7 @@ namespace multidevice {
 				interfaceIP = udpSocket->getLocalIPAddress();
 				clog << endl << "broadcastIPAddr= " << broadcastIPAddr << endl;
 				clog << "interfaceIP= " << interfaceIP << endl;
+				//udpSocket->setLocalAddressAndPort(broadcastIPAddr,port);
 
 			}
 			catch (SocketException &e) {
@@ -132,7 +133,7 @@ namespace multidevice {
 #endif
 		if (udpSocket != NULL) {
 			udpSocket->disconnect();
-			udpSocket->cleanUp();
+			//udpSocket->cleanUp();
 			delete udpSocket;
 		}
 
@@ -147,6 +148,7 @@ namespace multidevice {
 	bool BroadcastSocketService::buildDomainAddress() {
 		try {
 			udpSocket = new UDPSocket(port);
+			udpSocket->setNonBlocking(true);
 			return true;
 		}
 		catch (SocketException &e) {
@@ -354,8 +356,8 @@ namespace multidevice {
 		data     = f->data;
 		taskSize = f->size;
 
-		clog << "BroadcastSocketService::sendData Sending to "<< broadcastIPAddr;
-		clog << " taskSize = " << taskSize << endl; //<< "' and headerSize = '";
+		//clog << "BroadcastSocketService::sendData Sending to "<< broadcastIPAddr;
+		//clog << " taskSize = " << taskSize << endl; //<< "' and headerSize = '";
 		//clog << headerSize << "'" << endl;
 
 #ifndef __DARWIN_UNIX03
@@ -420,8 +422,79 @@ namespace multidevice {
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
 #ifndef __DARWIN_UNIX03
+		int res, recvFrom;
+		int sz;
+		char recvString[MAX_FRAME_SIZE + 1];
+	    string sourceAddress;
+	    unsigned short sourcePort;
+	    //TODO: checkInput loop fix
+	    res = 0;
+		sourceAddress = "";
+		sourcePort = 0;
+		sz = 0;
 
-		//TODO: udpSocket->recvFrom() with tv_timeout (select)
+	    res = udpSocket->select_t(0,0);
+
+		switch (res) {
+			case -1:
+				clog << "BroadcastSocketService::checkInputBuffer ERROR res=-1"<<endl;
+				//clog << "Warning! select ERRNO = " << errno << endl;
+				memset(data, 0, MAX_FRAME_SIZE);
+				return false;
+
+			case 1: {
+					clog << "BroadcastSocketService::checkInputBuffer ";
+					clog << "receiving data ..." << endl;
+
+					memset(data, 0, MAX_FRAME_SIZE);
+					memset(recvString, 0, MAX_FRAME_SIZE);
+					try {
+						sz = udpSocket->recvFrom(recvString, MAX_FRAME_SIZE, sourceAddress, sourcePort);
+						recvString[sz] = '\0';
+						clog << "BroadcastSocketService::udpSocket->recvFrom " << sourceAddress;
+						clog << " " << sz << " bytes" << endl;
+						//if (sourceAddress == interfaceIP)
+
+					}
+					catch (SocketException &e) {
+						clog << e.what() << endl;
+						memset(data, 0, MAX_FRAME_SIZE);
+						memset(recvString, 0, MAX_FRAME_SIZE);
+						return false;
+					}
+					if (sz <= HEADER_SIZE) {
+						clog << "BroadcastSocketService::checkInputBuffer ";
+						clog << "Warning! Received invalid frame: ";
+						clog << "bytes received = '" << sz << "' ";
+						clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+						clog << endl;
+						memset(data, 0, MAX_FRAME_SIZE);
+						memset(recvString, 0, MAX_FRAME_SIZE);
+						return false;
+					}
+
+					*size = sz;
+					memcpy(data, recvString, (int)(*size));
+
+					recvFrom = getUIntFromStream(data + 1);
+
+					if (!isValidRecvFrame(recvFrom, data)) {
+						clog << "BroadcastSocketService::checkInputBuffer if (!isValidRecvFrame())" << endl;
+						memset(data, 0, MAX_FRAME_SIZE);
+						memset(recvString, 0, MAX_FRAME_SIZE);
+
+						return false;
+					}
+					break;
+				}
+
+
+			default:
+				memset(data, 0, MAX_FRAME_SIZE);
+				memset(recvString, 0, MAX_FRAME_SIZE);
+				return false;
+		}
+
 		return true;
 #else
 		int nfds, res, recvFrom;

@@ -80,11 +80,14 @@ namespace multidevice {
   class MulticastSocketService : public ISocketService {
 	private:
 		unsigned int port;
-		char* gAddr;
+		char* groupAddress;
 
 		//TODO: use PracticalSocket
 		int msdR, msdW;  // msd = multicast socket descriptor
 		//sockaddr_in mss; // mss = multicast socket struct
+
+		UDPSocket* readSocket;
+		UDPSocket* writeSocket;
 
 		pthread_mutex_t mutexBuffer;
 		vector<struct frame*>* outputBuffer;

@@ -45,7 +45,7 @@
 
 using namespace std;
 
-#ifdef WIN32
+#ifdef _WIN32
 static bool initialized = false;
 #endif
 
@@ -94,7 +94,7 @@ static void fillAddr(const string &address, unsigned short port,
 // Socket Code
 
 Socket::Socket(int type, int protocol) throw(SocketException) {
-  #ifdef WIN32
+  #ifdef _WIN32
     if (!initialized) {
       WORD wVersionRequested;
       WSADATA wsaData;
@@ -118,7 +118,7 @@ Socket::Socket(int sockDesc) {
 }
 
 Socket::~Socket() {
-  #ifdef WIN32
+  #ifdef _WIN32
     ::closesocket(sockDesc);
   #else
     ::close(sockDesc);
@@ -171,7 +171,7 @@ void Socket::setLocalAddressAndPort(const string &localAddress,
 }
 
 void Socket::cleanUp() throw(SocketException) {
-  #ifdef WIN32
+  #ifdef _WIN32
     if (WSACleanup() != 0) {
       throw SocketException("WSACleanup() failed");
     }
@@ -298,18 +298,21 @@ void TCPServerSocket::setListen(int queueLen) throw(SocketException) {
 UDPSocket::UDPSocket() throw(SocketException) : CommunicatingSocket(SOCK_DGRAM,
     IPPROTO_UDP) {
   setBroadcast();
+  setNonBlocking(false);
 }
 
 UDPSocket::UDPSocket(unsigned short localPort)  throw(SocketException) :
     CommunicatingSocket(SOCK_DGRAM, IPPROTO_UDP) {
   setLocalPort(localPort);
   setBroadcast();
+  setNonBlocking(false);
 }
 
 UDPSocket::UDPSocket(const string &localAddress, unsigned short localPort)
      throw(SocketException) : CommunicatingSocket(SOCK_DGRAM, IPPROTO_UDP) {
   setLocalAddressAndPort(localAddress, localPort);
   setBroadcast();
+  setNonBlocking(false);
 }
 
 void UDPSocket::setBroadcast() {
@@ -327,7 +330,7 @@ void UDPSocket::disconnect() throw(SocketException) {
 
   // Try to disconnect
   if (::connect(sockDesc, (sockaddr *) &nullAddr, sizeof(nullAddr)) < 0) {
-   #ifdef WIN32
+   #ifdef _WIN32
     if (errno != WSAEAFNOSUPPORT) {
    #else
     if (errno != EAFNOSUPPORT) {
@@ -355,10 +358,18 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
   sockaddr_in clntAddr;
   socklen_t addrLen = sizeof(clntAddr);
   int rtn;
+#ifdef _WIN32
   if ((rtn = recvfrom(sockDesc, (raw_type *) buffer, bufferLen, 0,
                       (sockaddr *) &clntAddr, (socklen_t *) &addrLen)) < 0) {
     throw SocketException("Receive failed (recvfrom())", true);
   }
+#else
+  if ((rtn = recvfrom(sockDesc, (raw_type *) buffer, bufferLen, this->BLOCKING_MODE,
+                      (sockaddr *) &clntAddr, (socklen_t *) &addrLen)) < 0) {
+    throw SocketException("Receive failed (recvfrom())", true);
+  }
+#endif
+
   sourceAddress = inet_ntoa(clntAddr.sin_addr);
   sourcePort = ntohs(clntAddr.sin_port);
 
@@ -366,7 +377,7 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
 }
 
 string UDPSocket::getBroadcastAddress() throw(SocketException) {
-#ifdef WIN32
+#ifdef _WIN32
     INTERFACE_INFO interfaceList[20];
     unsigned long nBytesReturned;
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
@@ -435,7 +446,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
 }
 
 unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
-#ifdef WIN32
+#ifdef _WIN32
     INTERFACE_INFO interfaceList[20];
     unsigned long nBytesReturned;
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
@@ -452,11 +463,14 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
         sockaddr_in *pAddress;
         pAddress = (sockaddr_in *) & (interfaceList[i].iiAddress);
         if (pAddress->sin_family == AF_INET) {
-#ifdef _WIN32
+
 			return (unsigned int) pAddress->sin_addr.S_un.S_addr;
+/*
 #else
 			return (unsigned int) pAddress->sin_addr.S_addr;
+
 #endif
+*/
         }
 
     }
@@ -531,6 +545,60 @@ void UDPSocket::leaveGroup(const string &multicastGroup) throw(SocketException) 
     throw SocketException("Multicast group leave failed (setsockopt())", true);
   }
 }
+
+void UDPSocket::setReuseAddr(bool reuse) throw(SocketException) {
+    int value = (reuse)?1:0;
+
+    int ret = setsockopt(
+    		sockDesc,
+    		SOL_SOCKET,
+    		SO_REUSEADDR,
+    		(raw_type *)&value, sizeof(value));
+
+    if (ret < 0) {
+    	throw SocketException("Set Reused Addr failed (setsockopt())", true);
+    }
+}
+
+void UDPSocket::setMulticastLoop(bool loop) throw(SocketException) {
+	int value = (loop)?1:0;
+
+	int ret = setsockopt(
+			sockDesc,
+			IPPROTO_IP,
+			IP_MULTICAST_LOOP,
+			(raw_type *)&value, sizeof(value));
+
+    if (ret < 0) {
+    	throw SocketException("Set Multicast loop failed (setsockopt())", true);
+    }
+}
+
+int UDPSocket::select_t(int sec, int usec) {
+	int nfds;
+	fd_set fdset;
+	struct timeval tv_timeout;
+
+	FD_ZERO(&fdset);
+	FD_SET(sockDesc, &fdset);
+
+	nfds               = sockDesc + 1;
+	tv_timeout.tv_sec  = sec;
+	tv_timeout.tv_usec = usec;
+
+	return select(nfds, &fdset, NULL, NULL, &tv_timeout);
+}
+
+void UDPSocket::setNonBlocking(bool nonblock) {
+#ifdef _WIN32
+	u_long iMode=nonblock?1:0;
+	ioctlsocket(sockDesc,FIONBIO,&iMode);
+#else
+	this->BLOCKING_MODE = (nonblock?MSG_DONTWAIT:0);
+#endif
+
+}
+
 
 }
 }

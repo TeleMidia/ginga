@@ -136,7 +136,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 
 void TcpSocketService::removeConnection(unsigned int deviceId) {
 	TCPClientConnection *con = (*connections)[deviceId];
-	con->end();
+	delete con;
 	(*connections)[deviceId] = NULL;
 }
 
