@@ -40,7 +40,8 @@ NCLUA_PRIVATE void
 ncluax_unsetfield (lua_State *L, int index, const char *key);
 
 NCLUA_PRIVATE nclua_bool_t
-ncluax_getintfield (lua_State *L, int index, const char *key,int *value);
+ncluax_getintegerfield (lua_State *L, int index, const char *key,
+                        int *value);
 
 NCLUA_PRIVATE nclua_bool_t
 ncluax_getnumberfield (lua_State *L, int index, const char *key,
@@ -49,6 +50,10 @@ ncluax_getnumberfield (lua_State *L, int index, const char *key,
 NCLUA_PRIVATE nclua_bool_t
 ncluax_getstringfield (lua_State *L, int index, const char *key,
                        const char **value);
+
+NCLUA_PRIVATE nclua_bool_t
+ncluax_getuserdatafield (lua_State *L, int index, const char *key,
+                         void **value);
 
 NCLUA_PRIVATE void
 ncluax_tableinsert (lua_State *L, int index, int position);
