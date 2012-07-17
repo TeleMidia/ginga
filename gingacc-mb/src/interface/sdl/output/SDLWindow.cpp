@@ -89,25 +89,13 @@ namespace mb {
 
 		lock();
 		lockChilds();
-		if (releaseListener != NULL) {
-			releaseListener->setParent(NULL);
+		if (childSurface != NULL) {
+			childSurface->setParentWindow(NULL);
 		}
 
-		i = childSurfaces.begin();
-		while (i != childSurfaces.end()) {
-			surface = *i;
-			if (LocalScreenManager::getInstance()->hasSurface(
-					myScreen, surface)) {
-
-				surface->setParent(NULL);
-				delete surface;
-			}
-			++i;
-		}
-
-		childSurfaces.clear();
 		unlockChilds();
 
+		releaseWinISur();
 		releaseBGColor();
 		releaseBorderColor();
 		releaseWinColor();
@@ -146,7 +134,7 @@ namespace mb {
 		}
 
 		this->texture           = NULL;
-		this->winSur            = NULL;
+		this->winISur           = NULL;
 		this->curSur            = NULL;
 
 		this->textureUpdate     = false;
@@ -167,7 +155,7 @@ namespace mb {
 		this->z                 = z;
 		this->ghost             = false;
 		this->visible           = false;
-		this->releaseListener   = NULL;
+		this->childSurface      = NULL;
 		this->fit               = true;
 		this->stretch           = true;
 		this->caps              = 0;
@@ -183,6 +171,13 @@ namespace mb {
 	    pthread_cond_init(&cond, NULL);
 
 	    pthread_mutex_init(&rMutex, NULL);
+	}
+
+	void SDLWindow::releaseWinISur() {
+		if (winISur != NULL) {
+			delete winISur;
+			winISur = NULL;
+		}
 	}
 
 	void SDLWindow::releaseBGColor() {
@@ -294,12 +289,13 @@ namespace mb {
 
 	void SDLWindow::revertContent() {
 		lock();
-		winSur = NULL;
+		releaseWinISur();
 		unlock();
 	}
 
-	void SDLWindow::setReleaseListener(ISurface* listener) {
-		this->releaseListener = listener;
+	void SDLWindow::setChildSurface(ISurface* iSur) {
+		releaseWinISur();
+		this->childSurface = iSur;
 	}
 
 	int SDLWindow::getCap(string cap) {
@@ -450,86 +446,35 @@ namespace mb {
 	void SDLWindow::unprotectedValidate() {
 		ISurface* surface;
 
-		lockChilds();
-		if (!childSurfaces.empty()) {
-			surface = childSurfaces.at(0);
-			if (surface != NULL) {
-				surface->flip();
+		/*if (childSurface != NULL) {
+			childSurface->flip();
+			releaseWinISur();
+		}*/
 
-				lockSurface();
-				winSur = (SDL_Surface*)(surface->getSurfaceContent());
-				unlockSurface();
-			}
+		if (winISur != NULL) {
+			winISur->flip();
+			curSur = (SDL_Surface*)(winISur->getSurfaceContent());
+			textureUpdate = true;
 
-		} else {
-			clog << "SDLWindow::unprotectedValidate empty child surface";
-			clog << endl;
-		}
-		unlockChilds();
-
-		lockSurface();
-		if (winSur != NULL) {
-			curSur = winSur;
+		} else if (childSurface != NULL) {
+			childSurface->flip();
 			textureUpdate = true;
 		}
-		unlockSurface();
 	}
 
 	vector<DrawData*>* SDLWindow::createDrawDataList() {
-		SDLSurface* iSur;
 		vector<DrawData*>* dd = NULL;
 
 		lockChilds();
-		if (!childSurfaces.empty()) {
-			iSur = (SDLSurface*)(*childSurfaces.begin());
+		if (childSurface != NULL &&
+				LocalScreenManager::getInstance()->hasSurface(
+						myScreen, childSurface)) {
 
-			if (LocalScreenManager::getInstance()->hasSurface(myScreen, iSur)) {
-				dd = iSur->createDrawDataList();
-			}
+			dd = ((SDLSurface*)childSurface)->createDrawDataList();
 		}
 		unlockChilds();
 
 		return dd;
-	}
-
-	void SDLWindow::addChildSurface(ISurface* s) {
-		unsigned int i;
-		ISurface* surface;
-
-		lockChilds();
-		for (i = 0; i < childSurfaces.size(); i++) {
-			surface = childSurfaces.at(i);
-			if (surface == s) {
-				unlockChilds();
-				return;
-			}
-		}
-		childSurfaces.push_back(s);
-		unlockChilds();
-	}
-
-	bool SDLWindow::removeChildSurface(ISurface* s) {
-		vector<ISurface*>::iterator i;
-		ISurface* surface;
-
-		lockChilds();
-		if (releaseListener == s) {
-			releaseListener = NULL;
-		}
-
-		i = childSurfaces.begin();
-		while (i != childSurfaces.end()) {
-			if (s == *i) {
-				childSurfaces.erase(i);
-				i = childSurfaces.begin();
-
-			} else {
-				++i;
-			}
-		}
-		unlockChilds();
-
-		return false;
 	}
 
 	void SDLWindow::setStretch(bool stretchTo) {
@@ -624,9 +569,8 @@ namespace mb {
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
-			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
 			lockSurface();
-			if (contentSurface == winSur || contentSurface == curSur) {
+			if (surface == winISur || surface == childSurface) {
 				itIs = true;
 			}
 			unlockSurface();
@@ -650,42 +594,41 @@ namespace mb {
 		unlockSurface();
 
 		textureUpdate = true;
-		s->setParent(this);
 
 		delete img;
+		delete s;
 	}
 
 	void SDLWindow::renderFrom(ISurface* surface) {
 		SDL_Surface* contentSurface;
 
 		pthread_mutex_lock(&rMutex);
+		contentSurface = (SDL_Surface*)surface->getSurfaceContent();
+		if (contentSurface == NULL) {
+			clog << "SDLWindow::renderFrom(" << this;
+			clog << ") Warning! NULL underlying ";
+			clog << "surface!" << endl;
+			pthread_mutex_unlock(&rMutex);
+			return;
+		}
+
 		if (!isMine(surface)) {
-			contentSurface = (SDL_Surface*)(surface->getSurfaceContent());
-			if (contentSurface == NULL) {
-				clog << "SDLWindow::renderFrom(" << this;
-				clog << ") Warning! NULL underlying ";
-				clog << "surface!" << endl;
-				pthread_mutex_unlock(&rMutex);
-				return;
-			}
+			releaseWinISur();
+			winISur = LocalScreenManager::getInstance()->createSurface(
+					myScreen, contentSurface->w, contentSurface->h);
 
-			renderFrom(contentSurface);
+			winISur->blit(0, 0, surface);
+			winISur->flip();
+
+			curSur = (SDL_Surface*)winISur->getSurfaceContent();
+			textureUpdate = true;
+
+		} else {
+			curSur = (SDL_Surface*)surface->getSurfaceContent();
+			textureUpdate = true;
 		}
+
 		pthread_mutex_unlock(&rMutex);
-	}
-
-	void SDLWindow::renderFrom(SDL_Surface* contentSurface) {
-		lockSurface();
-
-		if (winSur == NULL) {
-			winSur = contentSurface;
-		}
-
-		curSur = contentSurface;
-		unlockSurface();
-
-		textureUpdate = true;
-		//waitRenderer();
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -738,7 +681,7 @@ namespace mb {
 		string uri, strCmd;
 
 		lock();
-		if (winSur == NULL) {
+		if (winISur == NULL) {
 			uri = "";
 
 		} else {

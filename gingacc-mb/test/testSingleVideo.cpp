@@ -110,7 +110,7 @@ void testVideo(
 			true,
 			false);
 
-	s1->setParent(win1);
+	s1->setParentWindow(win1);
 	win1->show();
 	win1->raiseToTop();
 

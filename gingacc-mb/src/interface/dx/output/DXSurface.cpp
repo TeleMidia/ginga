@@ -125,12 +125,6 @@ namespace mb {
 
 		if (sur != NULL) {
 			if (parent != NULL) {
-				if (parent->removeChildSurface(this)) {
-					LocalScreenManager::getInstance()->releaseSurface(sur);
-					sur = NULL;
-				}
-
-			} else {
 				LocalScreenManager::getInstance()->releaseSurface(sur);
 				sur = NULL;
 			}
@@ -165,15 +159,13 @@ namespace mb {
 	void DXSurface::setContent(void* surface) {
 		clog << "DXSurface::setContent(void* surface)" << endl;
 		if (this->sur != NULL && surface != NULL) {
-			if (parent == NULL || (parent)->removeChildSurface(this)) {
-				LocalScreenManager::getInstance()->releaseSurface(sur);
-				sur = NULL;
-			}
+			LocalScreenManager::getInstance()->releaseSurface(sur);
+			sur = NULL;
 		}
 		this->sur = (DX2DSurface*)surface;
 	}
 
-	bool DXSurface::setParent(void* parentWindow) {
+	bool DXSurface::setParentWindow(void* parentWindow) {
 		clog << "DXSurface::setParent(void* parentWindow)" << endl;
 		this->parent = (IWindow*)parentWindow;
 		if (parent != NULL && chromaColor != NULL) {
@@ -188,17 +180,14 @@ namespace mb {
 
 			wgWin = (DX2DSurface*)(parent->getContent());
 			sur = wgWin;
-			parent->setReleaseListener(this);
+			parent->setChildSurface(this);
 			return false;
 		}
 
-		if (parent != NULL) {
-			parent->addChildSurface(this);
-		}
 		return true;
 	}
 
-	void* DXSurface::getParent() {
+	void* DXSurface::getParentWindow() {
 		clog << "DXSurface::getParent()" << endl;
 		return this->parent;
 	}

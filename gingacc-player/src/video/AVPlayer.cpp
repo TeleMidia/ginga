@@ -1126,7 +1126,7 @@ namespace player {
 		unlockConditionSatisfied();
 		lock();
 		if (surface != NULL && mainAV) {
-			surface->setParent(NULL);
+			surface->setParentWindow(NULL);
 		}
 
 		if (mainAV) {
@@ -1221,14 +1221,14 @@ namespace player {
 			clog << "AVPlayer::createFrame Warning! surface != NULL";
 			clog << endl;
 			if (mainAV) {
-				surface->setParent(NULL);
+				surface->setParentWindow(NULL);
 			}
 			delete surface;
 		}
 
 		surface = dm->createSurface(myScreen);
 		if (win != NULL && mainAV) {
-			surface->setParent(win);
+			surface->setParentWindow(win);
 		}
 		unlock();
 		return surface;
@@ -1588,8 +1588,8 @@ namespace player {
 			this->surface = createFrame();
 			lock();
 
-			if (this->win != NULL && surface->getParent() == NULL) {
-				this->surface->setParent((void*)win);
+			if (this->win != NULL && surface->getParentWindow() == NULL) {
+				this->surface->setParentWindow((void*)win);
 			}
 
 			provider->playOver(surface, hasVisual);

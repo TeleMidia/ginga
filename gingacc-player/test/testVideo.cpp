@@ -192,7 +192,7 @@ void testPlayer(
 	vid1->setOutWindow(w1->getId());
 	s = vid1->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w1);
+		s->setParentWindow((void*)w1);
 		vid1->play();
 	}
 
@@ -200,7 +200,7 @@ void testPlayer(
 	vid2->setOutWindow(w2->getId());
 	s = vid2->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w2);
+		s->setParentWindow((void*)w2);
 		vid2->play();
 	}
 
@@ -208,7 +208,7 @@ void testPlayer(
 	vid3->setOutWindow(w3->getId());
 	s = vid3->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w3);
+		s->setParentWindow((void*)w3);
 		vid3->play();
 	}
 
@@ -216,7 +216,7 @@ void testPlayer(
 	vid4->setOutWindow(w4->getId());
 	s = vid4->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w4);
+		s->setParentWindow((void*)w4);
 		vid4->play();
 	}
 }

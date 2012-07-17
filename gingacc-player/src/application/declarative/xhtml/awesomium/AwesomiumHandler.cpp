@@ -482,18 +482,18 @@ namespace player {
 
 			if (webView == NULL) {
 				if (aInfo->w <= 0 || aInfo->h <= 0) {
-					if (aInfo->surface->getParent() != NULL) {
+					if (aInfo->surface->getParentWindow() != NULL) {
 						aInfo->x = ((IWindow*)(
-								aInfo->surface->getParent()))->getX();
+								aInfo->surface->getParentWindow()))->getX();
 
 						aInfo->y = ((IWindow*)(
-								aInfo->surface->getParent()))->getY();
+								aInfo->surface->getParentWindow()))->getY();
 
 						aInfo->w = ((IWindow*)(
-								aInfo->surface->getParent()))->getW();
+								aInfo->surface->getParentWindow()))->getW();
 
 						aInfo->h = ((IWindow*)(
-								aInfo->surface->getParent()))->getH();
+								aInfo->surface->getParentWindow()))->getH();
 
 						clog << "Window coords: '";
 						clog << aInfo->x << ", ";
@@ -872,7 +872,7 @@ namespace player {
 
 				awe_renderbuffer_save_to_png(renderBuffer, awe_file, true);
 
-				win = (IWindow*)aInfo->surface->getParent();
+				win = (IWindow*)aInfo->surface->getParentWindow();
 				if (win != NULL) {
 					win->renderImgFile(aInfo->rFile);
 					//win->validate();

@@ -251,7 +251,7 @@ namespace mb {
 		}
 
 		if (LocalScreenManager::getInstance()->hasSurface(myScreen, content)) {
-			parent = (SDLWindow*)(content->getParent());
+			parent = (SDLWindow*)(content->getParentWindow());
 
 			if (parent == NULL) {
 				clog << "SDLFontProvider::playOver Warning! NULL parent.";

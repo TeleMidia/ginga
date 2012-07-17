@@ -119,11 +119,11 @@ namespace mb {
 		this->sur = surface;
 	}
 
-	bool TermSurface::setParent(void* parentWindow) {
+	bool TermSurface::setParentWindow(void* parentWindow) {
 		return true;
 	}
 
-	void* TermSurface::getParent() {
+	void* TermSurface::getParentWindow() {
 		return this->parent;
 	}
 

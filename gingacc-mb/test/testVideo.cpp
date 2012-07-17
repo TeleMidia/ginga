@@ -150,7 +150,7 @@ void testVideo(
 			true,
 			false);
 
-	s1->setParent(win1);
+	s1->setParentWindow(win1);
 	win1->show();
 	win1->raiseToTop();
 
@@ -179,7 +179,7 @@ void testVideo(
 			screen, "/root/ncl/VivaMaisPratos/video/vivamais-ws.mp4", true, false);
 
 	vid2->setSoundLevel(1.0);
-	s2->setParent(win2);
+	s2->setParentWindow(win2);
 	win2->show();
 	win2->raiseToTop();
 
@@ -205,7 +205,7 @@ void testVideo(
 			true,
 			false);
 
-	s3->setParent(win3);
+	s3->setParentWindow(win3);
 	win3->show();
 	win3->raiseToTop();
 
@@ -232,7 +232,7 @@ void testVideo(
 			true,
 			false);
 
-	s4->setParent(win4);
+	s4->setParentWindow(win4);
 	win4->show();
 	win4->raiseToTop();
 
@@ -259,7 +259,7 @@ void testVideo(
 			true,
 			false);
 
-	s5->setParent(win5);
+	s5->setParentWindow(win5);
 	win5->show();
 
 	cout << "gingacc-mb test video 5 for screen '" << screen << "' has '";

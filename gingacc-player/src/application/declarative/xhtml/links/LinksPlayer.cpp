@@ -179,7 +179,7 @@ namespace player {
 		if (screenName == "dfb") {
 #if !HAVE_MULTIPROCESS
 			if (surface != NULL) {
-				IWindow* parent = (IWindow*)(surface->getParent());
+				IWindow* parent = (IWindow*)(surface->getParentWindow());
 
 				if (parent != NULL) {
 					browserSetFlipWindow(mBrowser, parent->getContent());

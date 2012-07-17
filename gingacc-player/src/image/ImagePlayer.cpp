@@ -198,7 +198,7 @@ namespace player {
 		IWindow* win;
 
 		if (surface != NULL) {
-			win = (IWindow*)(surface->getParent());
+			win = (IWindow*)(surface->getParentWindow());
 			if (win != NULL) {
 				win->renderFrom(surface);
 			}
