@@ -67,14 +67,14 @@ local function f_in ()
         if t and t.connection then
             local ret, err, partial = conn:receive('*a')
             ret = assert(ret or partial)
---print('RECVT',conn, ret, err, partial)
+--print('RECVT:', ret, err, partial)
             if str_len(ret) > 0 then
-                _G.event.post('in', {
+                assert (_G.event.post('in', {
                     class      = 'tcp',
                     type       = 'data',
                     value      = ret,
                     connection = conn,
-                })
+                }))
             end
             if err == 'closed' then
                 f_disconnect(conn)
