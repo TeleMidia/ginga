@@ -54,7 +54,8 @@ ncluax_unsetfield (lua_State *L, int index, const char *key)
    Otherwise, returns false.  */
 
 nclua_bool_t
-ncluax_getintfield (lua_State *L, int index, const char *key, int *value)
+ncluax_getintegerfield (lua_State *L, int index, const char *key,
+                        int *value)
 {
   _NCLUAX_GETXFIELD_BODY (lua_isnumber, lua_tointeger)
 }
@@ -77,6 +78,16 @@ ncluax_getstringfield (lua_State *L, int index, const char *key,
                        const char **value)
 {
   _NCLUAX_GETXFIELD_BODY (lua_isstring, lua_tostring)
+}
+
+/* If t[KEY] is a user data, stores it in *VALUE and returns true.
+   Otherwise, returns false.  */
+
+nclua_bool_t
+ncluax_getuserdatafield (lua_State *L, int index, const char *key,
+                         void **value)
+{
+  _NCLUAX_GETXFIELD_BODY (lua_isuserdata, lua_touserdata)
 }
 
 static void
