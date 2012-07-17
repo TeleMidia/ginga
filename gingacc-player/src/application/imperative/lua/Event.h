@@ -115,24 +115,58 @@ ev_map_get (const ev_map_t map[], size_t size, const char *key)
     bsearch (&e, map, size, sizeof (ev_map_t), ev_map_compare);
 }
 
-/* Gets the string value associated with key FIELD in table at INDEX.
+#define _EV_GETXFIELD_BODY(lua_isx, lua_tox)            \
+  {                                                     \
+    int status = 0;                                     \
+    lua_getfield (L, index, key);                       \
+    if (lua_isx (L, -1))                                \
+      {                                                 \
+        status = 1;                                     \
+        *value = lua_tox (L, -1);                       \
+      }                                                 \
+    lua_pop (L, 1);                                     \
+    return status;                                      \
+  }
+
+/* Gets the integer value associated with key KEY in table at INDEX.
+   If successful, stores value into *VALUE and returns true.
+   Otherwise, returns false.  */
+
+static int
+ev_getintegerfield (lua_State *L, int index, const char *key, int *value)
+{
+  _EV_GETXFIELD_BODY (lua_isnumber, lua_tointeger);
+}
+
+/* Gets the number value associated with key KEY in table at INDEX.
+   If successful, stores the value into *VALUE and returns true.
+   Otherwise, returns false.  */
+
+static int
+ev_getnumberfield (lua_State *L, int index, const char *key, double *value)
+{
+  _EV_GETXFIELD_BODY (lua_isnumber, lua_tonumber);
+}
+
+/* Gets the string value associated with key KEY in table at INDEX.
    If successful, stores value into *VALUE and returns true.
    Otherwise, returns false.  */
 
 static int
 ev_getstringfield (lua_State *L, int index,
-                   const char *field, const char **value)
+                   const char *key, const char **value)
 {
-  lua_getfield (L, index, field);
-  if (!lua_isstring (L, -1))
-    {
-      lua_pop (L, 1);
-      return 0;
-    }
+  _EV_GETXFIELD_BODY (lua_isstring, lua_tostring)
+}
 
-  *value = lua_tostring (L, -1);
-  lua_pop (L, 1);
-  return 1;
+/* Gets the user data value associated with key KEY in table at INDEX.
+   If successful, stores value into *VALUE and returns true.
+   Otherwise, returns false.  */
+
+static int
+ev_getuserdatafield (lua_State *L, int index, const char *key, void **value)
+{
+  _EV_GETXFIELD_BODY (lua_isuserdata, lua_touserdata);
 }
 
 
@@ -389,11 +423,12 @@ ev_receive_ncl_event (lua_State *L)
       if (streq (name, "") && action_value == Player::PL_NOTIFY_STOP)
         {
 
-          /* If the NCLua script posted a "stop" event, we have to destroy
-             the NCLua state immediately.  Otherwise, the
-             notifyPlayerListeners() call below will cause this event to
-             echoes back to the NCLua engine.  */
+          /* FIXME (The "Stop" Mess - Part I): If the NCLua script posted a
+             "stop" event, we have to destroy the NCLua state immediately.
+             Otherwise, notifyPlayerListeners() will cause the event to be
+             sent back to the NCLua engine.  */
 
+          LuaPlayer::nc_update_remove (nc);
           player->doStop ();
         }
 
@@ -576,6 +611,233 @@ ev_send_key_event (nclua_t *nc, const char *key, int press)
 }
 
 
+/* TCP class.  */
+
+/* Registry key of the TCP input function.  */
+static int ev_tcp_in_key;
+
+/* Registry key of the TCP output function.  */
+static int ev_tcp_out_key;
+
+/* Opens the TCP module.  */
+
+static void
+ev_tcp_open (lua_State *L)
+{
+  lua_getglobal (L, "require");
+  lua_pushstring (L, "tcp_event");
+  lua_call (L, 1, 1);
+
+  lua_pushlightuserdata (L, (void *) &ev_tcp_in_key);
+  lua_rawgeti (L, -2, 1);
+  lua_rawset (L, LUA_REGISTRYINDEX);
+
+  lua_pushlightuserdata (L, (void *) &ev_tcp_out_key);
+  lua_rawgeti (L, -2, 2);
+  lua_rawset (L, LUA_REGISTRYINDEX);
+
+  lua_pop (L, 1);
+}
+
+/* Closes the TCP module.  */
+
+static void
+ev_tcp_close (lua_State *L)
+{
+  lua_pushlightuserdata (L, (void *) &ev_tcp_in_key);
+  lua_pushnil (L);
+  lua_rawset (L, LUA_REGISTRYINDEX);
+
+  lua_pushlightuserdata (L, (void *) &ev_tcp_out_key);
+  lua_pushnil (L);
+  lua_rawset (L, LUA_REGISTRYINDEX);
+}
+
+/* Pushes the TCP input function onto stack.  */
+
+static void
+ev_tcp_push_input_function (lua_State *L)
+{
+  lua_pushlightuserdata (L, (void *) &ev_tcp_in_key);
+  lua_rawget (L, LUA_REGISTRYINDEX);
+}
+
+/* Pushes the TCP output function onto stack.  */
+
+static void
+ev_tcp_push_output_function (lua_State *L)
+{
+  lua_pushlightuserdata (L, (void *) &ev_tcp_out_key);
+  lua_rawget (L, LUA_REGISTRYINDEX);
+}
+
+/* Pushes pending TCP events onto input queue.
+   This function calls event.post directly.  */
+
+static void
+ev_tcp_cycle (lua_State *L)
+{
+  ev_tcp_push_input_function (L);
+  lua_call (L, 0, 0);
+}
+
+/* Returns true if type TYPE is valid.  */
+#define ev_tcp_type_is_valid(type)              \
+  (streq (type, EV_TCP_TYPE_CONNECT)            \
+   || streq (type, EV_TCP_TYPE_DATA)            \
+   || streq (type, EV_TCP_TYPE_DISCONNECT))
+
+/* ev_check_tcp_event (event:table)
+   -> status:boolean, [error_message:string]
+
+   Checks if event EVENT is a valid TCP event.  Returns true if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_check_tcp_event (lua_State *L)
+{
+  const char *cls;
+  const char *type;
+
+  luaL_checktype (L, 1, LUA_TTABLE);
+
+  if (!ev_getstringfield (L, 1, EV_FIELD_CLASS, &cls))
+    return ev_error_bad (L, EV_FIELD_CLASS);
+
+  if (!streq (cls, EV_TCP_CLASS))
+    return ev_error_invalid (L, EV_FIELD_CLASS, cls);
+
+  if (!ev_getstringfield (L, 1, EV_TCP_FIELD_TYPE, &type))
+    return ev_error_bad (L, EV_TCP_FIELD_TYPE);
+
+  /* connect */
+
+  if (streq (type, EV_TCP_TYPE_CONNECT))
+    {
+      const char *host;
+      int port;
+
+      if (!ev_getstringfield (L, 1, EV_TCP_FIELD_HOST, &host))
+        return ev_error_bad (L, EV_TCP_FIELD_HOST);
+
+      if (!ev_getintegerfield (L, 1, EV_TCP_FIELD_PORT, &port))
+        return ev_error_bad (L, EV_TCP_FIELD_PORT);
+
+      lua_getfield (L, 1, EV_TCP_FIELD_TIMEOUT);
+      if (!lua_isnil (L, -1) && !lua_isnumber (L, -1))
+        return ev_error_bad (L, EV_TCP_FIELD_TIMEOUT);
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, EV_TCP_FIELD_CONNECTION);
+      if (!lua_isnil (L, -1) && !lua_isuserdata (L, -1))
+        return ev_error_bad (L, EV_TCP_FIELD_CONNECTION);
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, EV_TCP_FIELD_ERROR);
+      if (!lua_isnil (L, -1) && !lua_isstring (L, -1))
+        return ev_error_bad (L, EV_TCP_FIELD_ERROR);
+      lua_pop (L, 1);
+    }
+
+  /* data */
+
+  else if (streq (type, EV_TCP_TYPE_DATA))
+    {
+      void *connection;
+      const char *value;
+
+      if (!ev_getuserdatafield (L, 1, EV_TCP_FIELD_CONNECTION, &connection))
+        return ev_error_bad (L, EV_TCP_FIELD_CONNECTION);
+
+      if (!ev_getstringfield (L, 1, EV_TCP_FIELD_VALUE, &value))
+        return ev_error_bad (L, EV_TCP_FIELD_VALUE);
+
+      lua_getfield (L, 1, EV_TCP_FIELD_TIMEOUT);
+      if (!lua_isnil (L, -1) && !lua_isnumber (L, -1))
+        return ev_error_bad (L, EV_TCP_FIELD_TIMEOUT);
+      lua_pop (L, 1);
+
+      lua_getfield (L, 1, EV_TCP_FIELD_ERROR);
+      if (!lua_isnil (L, -1) && !lua_isstring (L, -1))
+        return ev_error_bad (L, EV_TCP_FIELD_ERROR);
+      lua_pop (L, 1);
+    }
+
+  /* disconnect */
+
+  else if (streq (type, EV_TCP_TYPE_DISCONNECT))
+    {
+      void *connection;
+
+      if (!ev_getuserdatafield (L, 1, EV_TCP_FIELD_CONNECTION, &connection))
+        return ev_error_bad (L, EV_TCP_FIELD_CONNECTION);
+    }
+
+  /* oops... */
+
+  else
+    {
+      return ev_error_invalid (L, EV_TCP_FIELD_TYPE, type);
+    }
+
+  lua_pushboolean (L, 1);
+  return 1;
+}
+
+/* ev_get_ncl_filter (class:string, [connection:userdata])
+   -> filter:table or status:boolean, [error_message:string]
+
+   Creates a filter table for TCP events with the given parameters.
+   Returns the resulting filter table if successful,
+   otherwise returns false plus error message.  */
+
+static int
+ev_get_tcp_filter (lua_State *L)
+{
+  const char *cls;
+  void *connection = NULL;
+
+  cls = luaL_checkstring (L, 1);
+  if (!streq (cls, EV_TCP_CLASS))
+    return ev_error_invalid (L, EV_NCL_CLASS, cls);
+
+  if (!lua_isnoneornil (L, 2))
+    {
+      if (!lua_isuserdata (L, 2))
+        return ev_error_bad (L, EV_TCP_FIELD_CONNECTION);
+      connection = lua_touserdata (L, 2);
+    }
+
+  /* Create filter table.  */
+
+  lua_createtable (L, 0, 4);
+  lua_pushstring (L, EV_TCP_CLASS);
+  lua_setfield (L, -2, EV_FIELD_CLASS);
+
+  if (connection != NULL)
+    {
+      lua_pushlightuserdata (L, connection);
+      lua_setfield (L, -2, EV_TCP_FIELD_CONNECTION);
+    }
+
+  return 1;
+}
+
+/* ev_receive_tcp_event (event:table)
+
+   Receives the TCP event EVENT.
+   This function assumes that event is a valid TCP event.  */
+
+static int
+ev_receive_tcp_event (lua_State *L)
+{
+  ev_tcp_push_output_function (L);
+  lua_pushvalue (L, 1);
+  lua_call (L, 1, 0);
+  return 0;
+}
+
+
 /* User class.  */
 
 /* ev_check_user_event (event:table)
@@ -642,6 +904,7 @@ static const ev_class_map_t ev_class_map[] =
   /* KEEP THIS SORTED ALPHABETICALLY */
   { EV_KEY_CLASS,  ev_check_key_event,  ev_get_key_filter,  NULL },
   { EV_NCL_CLASS,  ev_check_ncl_event,  ev_get_ncl_filter,  ev_receive_ncl_event },
+  { EV_TCP_CLASS,  ev_check_tcp_event,  ev_get_tcp_filter,  ev_receive_tcp_event },
   { EV_USER_CLASS, ev_check_user_event, ev_get_user_filter, NULL },
 };
 

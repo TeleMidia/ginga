@@ -139,7 +139,7 @@ LUAPLAYER_BEGIN_DECLS
 // List of active NCLua states.
 list <nclua_t *> *LuaPlayer::nc_update_list = NULL;
 
-// Synchronize access to the nc_update_list.
+// Synchronize access to nc_update_list.
 pthread_mutex_t LuaPlayer::nc_update_mutex;
 
 // Id of the update thread.
@@ -180,6 +180,7 @@ void *LuaPlayer::nc_update_thread (void *data)
 
                L = nclua_get_lua_state (*i);
                nclua_cycle (*i);
+               ev_tcp_cycle (L);
 
                nclua_receive (*i, L);
                while (!lua_isnil (L, -1))
@@ -193,7 +194,8 @@ void *LuaPlayer::nc_update_thread (void *data)
                          lua_pop (L, 1);
                     }
 
-                    if (*i == NULL)
+                    // Check if NCLua state was destroyed by doStop().
+                    if (player->nc == NULL)
                     {
                          break;
                     }
@@ -242,7 +244,13 @@ void LuaPlayer::nc_update_remove (nclua_t *nc)
      assert (nc_update_list != NULL);
      nc_update_list->remove (nc);
 
-     if (nc_update_list->empty ())
+     // FIXME (The "Stop" Mess - Part II): If a "stop" was posted by the
+     // NCLua script, this function will be called in the update thread.  At
+     // this point, the player mutex is locked and the NCLua state is about
+     // to be destroyed.  To avoid corruption, we postpone the destruction
+     // of nc_update_list until the player's destructor is called.
+
+     if (nc_update_list->empty () && pthread_self () != nc_update_tid)
      {
           delete nc_update_list;
           nc_update_list = NULL; // signal end of cycle process
@@ -291,6 +299,7 @@ bool LuaPlayer::doPlay (void)
      assert (L != NULL);
 
      luaL_openlibs (L);
+     ev_tcp_open (L);
 
      surface = this->getSurface ();
      surface->clearContent ();
@@ -335,6 +344,7 @@ void LuaPlayer::doStop (void)
 
      L = nclua_get_lua_state (this->nc);
      ev_uninstall_wrappers (L);
+     ev_tcp_close (L);
      nclua_destroy (this->nc);
      lua_close (L);
 
@@ -378,9 +388,19 @@ LuaPlayer::~LuaPlayer (void)
      this->lock ();
      TRACE0 ();
 
+     if (nc_update_list != NULL && nc_update_list->empty ())
+     {
+          // FIXME (The "Stop" Mess - Part III): If this->nc is NULL but
+          // nc_update_list is non-NULL, then the '"Stop" Mess' is in
+          // course.  Thus, we must call nc_update_remove to eventually
+          // destroy the nc_update_list -- which, at this point, should be
+          // empty.
+
+          LuaPlayer::nc_update_remove (this->nc);
+     }
+
      if (this->nc != NULL)
      {
-          nc_update_remove (this->nc);
           this->doStop ();
      }
 
@@ -463,7 +483,7 @@ void LuaPlayer::stop (void)
 
      if (this->nc != NULL)
      {
-          nc_update_remove (this->nc);
+          LuaPlayer::nc_update_remove (this->nc);
           ev_send_ncl_presentation_event (this->nc, Player::PL_NOTIFY_STOP,
                                           this->scope.c_str ());
           nclua_cycle (this->nc);
@@ -518,8 +538,7 @@ void LuaPlayer::setPropertyValue (string name, string value)
      // FIXME: Before calling play(), FormatterPlayerAdapter calls
      // setPropertyValue() to initialize the object's properties.  We
      // need to work around this bogus behavior, since it is the play()
-     // call that creates the NCLua engine.  By the way, this workaround
-     // is far from perfect.
+     // call that creates the NCLua engine.
 
      if (this->nc != NULL && this->status == PLAY)
        {

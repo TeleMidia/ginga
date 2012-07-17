@@ -39,7 +39,8 @@ TESTS=                            \
   test-event-timer-0.xncl         \
   test-event-timer-1.xncl         \
   test-property-attribution-0.ncl \
-  test-property-attribution-1.ncl
+  test-property-attribution-1.ncl \
+  test-tcp-0.xncl
 
 XFAIL_TESTS=
 TESTS_ENVIRONMENT= $(srcdir)/run.sh

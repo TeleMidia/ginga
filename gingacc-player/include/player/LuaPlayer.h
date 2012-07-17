@@ -90,6 +90,8 @@ private:
      static pthread_t nc_update_tid;
      static void *nc_update_thread (void *data);
      static void nc_update_insert (nclua_t *nc);
+
+public:
      static void nc_update_remove (nclua_t *nc);
 
 public:
