@@ -126,7 +126,7 @@ void testAwesomium(
 	awe1->setOutWindow(w->getId());
 	s = awe1->getSurface();
 	if (s != NULL) {
-		s->setParent((void*)w);
+		s->setParentWindow((void*)w);
 		w->renderFrom(s);
 		awe1->play();
 		awe1->setKeyHandler(true); //necessary if we want to test input events

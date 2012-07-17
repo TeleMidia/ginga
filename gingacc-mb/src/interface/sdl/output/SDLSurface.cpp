@@ -92,7 +92,6 @@ namespace mb {
 			if (parent->getContent() == sur) {
 				((SDLWindow*)parent)->setRenderedSurface(NULL);
 			}
-			parent->removeChildSurface(this);
 		}
 
 		if (sur != NULL) {
@@ -104,7 +103,7 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
 
-		pending = NULL;
+		releasePendingSurface();
 		pthread_mutex_unlock(&pMutex);
 		pthread_mutex_destroy(&pMutex);
 
@@ -112,6 +111,13 @@ namespace mb {
 		pthread_mutex_lock(&ddMutex);
 		pthread_mutex_unlock(&ddMutex);
 		pthread_mutex_destroy(&ddMutex);
+	}
+
+	void SDLSurface::releasePendingSurface() {
+		if (pending != NULL) {
+			SDLDeviceScreen::createReleaseContainer(pending, NULL, NULL);
+			pending = NULL;
+		}
 	}
 
 	bool SDLSurface::createPendingSurface() {
@@ -159,10 +165,7 @@ namespace mb {
 			}
 
 			pthread_mutex_lock(&pMutex);
-			if (pending != NULL) {
-				SDLDeviceScreen::createReleaseContainer(pending, NULL, NULL);
-				pending = NULL;
-			}
+			releasePendingSurface();
 
 			pending = createSurface();
 
@@ -303,8 +306,12 @@ namespace mb {
 		pthread_mutex_unlock(&sMutex);
 	}
 
-	bool SDLSurface::setParent(void* parentWindow) {
+	bool SDLSurface::setParentWindow(void* parentWindow) {
 		pthread_mutex_lock(&sMutex);
+		if (parent != NULL) {
+			parent->setChildSurface(NULL);
+		}
+
 		this->parent = (IWindow*)parentWindow;
 
 		if (parent != NULL) {
@@ -315,7 +322,7 @@ namespace mb {
 						chromaColor->getB());
 			}
 
-			parent->addChildSurface(this);
+			parent->setChildSurface(this);
 		}
 
 		pthread_mutex_unlock(&sMutex);
@@ -323,7 +330,7 @@ namespace mb {
 		return true;
 	}
 
-	void* SDLSurface::getParent() {
+	void* SDLSurface::getParentWindow() {
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
 			return this->parent;
 
@@ -565,13 +572,17 @@ namespace mb {
 			w = parent->getW();
 			h = parent->getH();
 
-			if (!isDeleting) {
-				sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
-			}
+		} else if (sur != NULL) {
+			w = sur->w;
+			h = sur->h;
 
-			if (bgColor == NULL && caps != 0) {
-				SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
-			}
+		} else {
+			return NULL;
+		}
+
+		sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
+		if (bgColor == NULL && caps != 0) {
+			SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
 		}
 
 		return sdlSurface;
@@ -582,7 +593,7 @@ namespace mb {
 			int srcX, int srcY, int srcW, int srcH) {
 
 		SDL_Rect srcRect;
-		SDL_Rect* s = NULL;
+		SDL_Rect* srcPtr = NULL;
 		SDL_Rect dstRect;
 		SDL_Surface* uSur;
 
@@ -599,24 +610,24 @@ namespace mb {
 					srcRect.w = srcW;
 					srcRect.h = srcH;
 
-					s = &srcRect;
+					srcPtr = &srcRect;
 				}
 
 				dstRect.x = x;
 				dstRect.y = y;
 
 				if (srcW > 0) {
-					dstRect.w = srcW - x;
-					dstRect.h = srcH - y;
+					dstRect.w = srcW;
+					dstRect.h = srcH;
 
 				} else {
-					dstRect.w = uSur->w - x;
-					dstRect.h = uSur->h - y;
+					dstRect.w = uSur->w;
+					dstRect.h = uSur->h;
 				}
 
 				pthread_mutex_lock(&pMutex);
 				if (createPendingSurface()) {
-					SDL_UpperBlit(uSur, s, pending, &dstRect);
+					SDL_UpperBlit(uSur, srcPtr, pending, &dstRect);
 				}
 				pthread_mutex_unlock(&pMutex);
 			}

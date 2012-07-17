@@ -103,7 +103,6 @@ namespace player {
 	BerkeliumHandler::~BerkeliumHandler() {
 		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
 
-
 		if (isValid) {
 			isValid = false;
 
@@ -509,8 +508,8 @@ namespace player {
 
 			surface->blit(0, 0, s);
 
-			if (surface->getParent() != NULL) {
-				((IWindow*)(surface->getParent()))->validate();
+			if (surface->getParentWindow() != NULL) {
+				((IWindow*)(surface->getParentWindow()))->validate();
 			}
 
 			ignore_partial = false;
@@ -554,8 +553,8 @@ namespace player {
 					surface->blit(0, 0, surface, left, top, wid, hig);
 				}
 
-				if (surface->getParent() != NULL) {
-					((IWindow*)(surface->getParent()))->validate();
+				if (surface->getParentWindow() != NULL) {
+					((IWindow*)(surface->getParentWindow()))->validate();
 				}
 			}
 		}
@@ -591,8 +590,8 @@ namespace player {
 					copy_rects[i].left(), copy_rects[i].top(),
 					s, 0, 0, wid, hig);
 
-			if (surface->getParent() != NULL) {
-				((IWindow*)(surface->getParent()))->validate();
+			if (surface->getParentWindow() != NULL) {
+				((IWindow*)(surface->getParentWindow()))->validate();
 			}
 
 			delete s;

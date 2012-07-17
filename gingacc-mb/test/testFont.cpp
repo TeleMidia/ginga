@@ -121,7 +121,7 @@ void testScreen(
 
 	ttf1   = dm->createFontProvider(screen, "decker.ttf", 14);
 	ttfSur = dm->createSurface(screen);
-	ttfSur->setParent(win1);
+	ttfSur->setParentWindow(win1);
 
 	win1->show();
 	win1->raiseToTop();

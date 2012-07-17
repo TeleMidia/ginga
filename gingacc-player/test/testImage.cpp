@@ -116,19 +116,19 @@ void testPlayer(
 
 	img1->setOutWindow(w->getId());
 	s = img1->getSurface();
-	if (s != NULL && s->setParent((void*)w)) {
+	if (s != NULL && s->setParentWindow((void*)w)) {
 		w->renderFrom(s);
 	}
 
 	img2->setOutWindow(ww->getId());
 	s = img2->getSurface();
-	if (s != NULL && s->setParent((void*)ww)) {
+	if (s != NULL && s->setParentWindow((void*)ww)) {
 		ww->renderFrom(s);
 	}
 
 	img3->setOutWindow(www->getId());
 	s = img3->getSurface();
-	if (s != NULL && s->setParent((void*)www)) {
+	if (s != NULL && s->setParentWindow((void*)www)) {
 		www->renderFrom(s);
 	}
 }

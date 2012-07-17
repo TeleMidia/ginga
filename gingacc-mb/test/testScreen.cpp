@@ -152,7 +152,7 @@ void testScreen(
 	vid    = dm->createContinuousMediaProvider(
 			screen, "corrego1.mp4", true, false);
 
-	vidSur->setParent(win2);
+	vidSur->setParentWindow(win2);
 	win2->show();
 	win2->raiseToTop();
 
@@ -174,7 +174,7 @@ void testScreen(
 	ttf = dm->createFontProvider(screen, "decker.ttf", 14);
 
 	ttfSur = dm->createSurface(screen);
-	ttfSur->setParent(win2T);
+	ttfSur->setParentWindow(win2T);
 
 	win2T->show();
 	win2T->raiseToTop();
@@ -209,7 +209,7 @@ void testScreen(
 	win3->draw();
 
 	ttfSur = dm->createSurface(screen);
-	ttfSur->setParent(win3);
+	ttfSur->setParentWindow(win3);
 
 	win3->show();
 	win3->raiseToTop();

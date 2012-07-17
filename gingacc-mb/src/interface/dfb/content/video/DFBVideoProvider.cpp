@@ -255,7 +255,7 @@ namespace mb {
 			return;
 		}
 
-		someWindow = (IWindow*)(someSurface->getParent());
+		someWindow = (IWindow*)(someSurface->getParentWindow());
 		if (someWindow != NULL && cont->isValid) {
 			DFBCHECK(frame->GetSize(frame, &surWidth, &surHeight));
 
@@ -320,7 +320,6 @@ namespace mb {
 			}
 
 			DFBCHECK(s->Flip(s, NULL, (DFBSurfaceFlipFlags)DSFLIP_NONE));
-			someWindow->addChildSurface(someSurface);
 			someWindow->unlock();
 
 		} else if (frame != NULL) {

@@ -90,7 +90,7 @@ namespace mb {
 
 	}
 
-	void TermWindow::setReleaseListener(ISurface* listener) {
+	void TermWindow::setChildSurface(ISurface* listener) {
 
 	}
 
@@ -204,14 +204,6 @@ namespace mb {
 
 	void TermWindow::unprotectedValidate() {
 
-	}
-
-	void TermWindow::addChildSurface(ISurface* s) {
-
-	}
-
-	bool TermWindow::removeChildSurface(ISurface* s) {
-		return false;
 	}
 
 	void TermWindow::setStretch(bool stretchTo) {

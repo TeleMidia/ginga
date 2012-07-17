@@ -71,8 +71,8 @@ namespace mb {
 			virtual void setCaps(int caps)=0;
 			virtual int getCap(string cap)=0;
 			virtual int getCaps()=0;
-			virtual bool setParent(void* parentWindow)=0; //Window
-			virtual void* getParent()=0;                  //Window
+			virtual bool setParentWindow(void* parentWindow)=0;
+			virtual void* getParentWindow()=0;
 			virtual void* getSurfaceContent()=0;
 			virtual void setSurfaceContent(void* surface)=0;
 			virtual void clearContent()=0;

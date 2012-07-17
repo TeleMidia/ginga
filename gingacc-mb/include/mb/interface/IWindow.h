@@ -79,7 +79,7 @@ namespace mb {
 
 			virtual GingaScreenID getScreen()=0;
 			virtual void revertContent()=0;
-			virtual void setReleaseListener(ISurface* listener)=0;
+			virtual void setChildSurface(ISurface* listener)=0;
 			virtual int getCap(string capName)=0;
 			virtual void setCaps(int caps)=0;
 			virtual void addCaps(int capability)=0;
@@ -113,8 +113,6 @@ namespace mb {
 			virtual void setGhostWindow(bool ghost)=0;
 			virtual bool isVisible()=0;
 			virtual void validate()=0;
-			virtual void addChildSurface(ISurface* s)=0;
-			virtual bool removeChildSurface(ISurface* s)=0;
 			virtual void setStretch(bool stretchTo)=0;
 			virtual bool getStretch()=0;
 			virtual void setFit(bool fitTo)=0;

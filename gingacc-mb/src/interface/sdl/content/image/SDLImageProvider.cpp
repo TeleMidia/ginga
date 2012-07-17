@@ -121,7 +121,7 @@ namespace mb {
 			if (renderedSurface != NULL) {
 				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
 
-				parent = (SDLWindow*)(surface->getParent());
+				parent = (SDLWindow*)(surface->getParentWindow());
 				if (parent != NULL) {
 					parent->setRenderedSurface(renderedSurface);
 				}

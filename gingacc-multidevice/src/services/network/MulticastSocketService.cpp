@@ -58,12 +58,11 @@ namespace multidevice {
 	MulticastSocketService::MulticastSocketService(
 			char* groupAddr, unsigned int portNumber) {
 
-		//TODO: use PracticalSocket
-
 		outputBuffer = new vector<struct frame*>;
 		port         = portNumber;
-		gAddr        = groupAddr;
+		groupAddress = groupAddr;
 		/*
+		TODO: ios fix
 		memset(&mss, 0, sizeof(mss));
 		mss.sin_family      = AF_INET;
 		mss.sin_port        = htons(port);
@@ -75,9 +74,29 @@ namespace multidevice {
 	}
 
 	MulticastSocketService::~MulticastSocketService() {
-		//TODO: use PracticalSocket
-		//unjoin abaixo
+		if (readSocket != NULL) {
+			try {
+				readSocket->leaveGroup(groupAddress);
+				readSocket->disconnect();
+				delete readSocket;
+			}
+			catch (SocketException &e) {
+				clog << e.what() << endl;
+			}
+
+		}
+		if (writeSocket != NULL) {
+			try {
+				writeSocket->disconnect();
+				delete writeSocket;
+			}
+			catch (SocketException &e) {
+				clog << e.what() << endl;
+			}
+
+		}
 		/*
+		TODO: fix for ios
 		if (msdR > 0) {
 			setsockopt(
 					msdR,
@@ -101,48 +120,64 @@ namespace multidevice {
 	}
 
 	int MulticastSocketService::createMulticastGroup() {
-		//TODO: use PracticalSocket
-		/*
 		if (createSocket()) {
 			if (setSocketOptions()) {
 				if (tryToBind()) {
 					if (addToGroup()) {
-						return msdR;
+						return 1;
 					}
 				}
 			}
-		}*/
+		}
 		return -1;
 	}
 
 	bool MulticastSocketService::createSocket() {
-		//TODO: use PracticalSocket
 		unsigned char trueVar = 1;
-		/*
+		try {
+			writeSocket = new UDPSocket();
+			readSocket = new UDPSocket();
+			readSocket->setNonBlocking(true);
+		}
+		catch (SocketException &e) {
+			clog << "MulticastSocketService::createSocket()" << endl;
+			clog << e.what() << endl;
+			return false;
+		}
+
+/*
+TODO: fix for ios
+#if !defined(__DARWIN_UNIX03) && !defined(_MSC_VER)
 		msdW = socket(AF_INET, SOCK_DGRAM, 0);
-		//msdW = socket(AF_INET, SOCK_STREAM, 0);
 		if (msdW < 0){
 			perror("MulticastSocketService::createSocket msdW");
 			return false;
 		}
 
 		msdR = socket(AF_INET, SOCK_DGRAM, 0);
-		//msdR = socket(AF_INET, SOCK_STREAM, 0);
 		if (msdR < 0){
 			perror("MulticastSocketService::createSocket msdR");
 			return false;
 		}
-		*/
-#if !defined(__DARWIN_UNIX03) && !defined(_MSC_VER)
+
 		setsockopt(msdR, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 		setsockopt(msdW, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
 #endif
-		return false; //TODO: PracticalSocket
-		//return true;
+*/
+		return true;
 	}
 
 	bool MulticastSocketService::addToGroup() {
-		//TODO: use PracticalSocket
+		try {
+			readSocket->joinGroup(groupAddress);
+			return true;
+		}
+		catch (SocketException &e) {
+			clog << "MulticastSocketService::addToGroup" << endl;
+			clog << e.what() << endl;
+		}
+
+		//TODO: ios fix
 		/*
 		int ret;
 		struct ip_mreq stIpMreq;
@@ -161,52 +196,32 @@ namespace multidevice {
 			return false;
 		}
 		*/
-		return false; //TODO: use PracticalSocket
-		//return true;
+		return true;
 	}
 
 	bool MulticastSocketService::setSocketOptions() {
-		//TODO: use PracticalSocket
-		/*
-		unsigned char loop = 0;
-		unsigned char ttl  = MCAST_TTL;
-	    int reuse = 1;
-	    int ret = setsockopt(
-	    		msdR,
-	    		SOL_SOCKET,
-	    		SO_REUSEADDR,
-	    		(int*)&reuse, sizeof(reuse));
-
-		if (ret < 0) {
-			perror("MulticastSocketService::setSocketOptions reuse");
+		try {
+			writeSocket->setMulticastTTL(MCAST_TTL);
+			writeSocket->setMulticastLoop(false);
+			readSocket->setReuseAddr(true);
+		}
+		catch (SocketException &e) {
+			clog << "MulticastSocketService::setSocketOptions()" << endl;
+			clog << e.what() << endl;
+			return false;
 		}
 
-		ret = setsockopt(
-				msdW,
-				IPPROTO_IP,
-				IP_MULTICAST_LOOP,
-				&loop, sizeof(loop));
-
-		if (ret < 0) {
-			perror("MulticastSocketService::setSocketOptions loop");
-		}
-
-		ret = setsockopt(
-				msdW,
-				IPPROTO_IP,
-				IP_MULTICAST_TTL,
-				&ttl, sizeof(ttl));
-
-		if (ret < 0) {
-			perror("MulticastSocketService::setSocketOptions TTL");
-		}
-		*/
-		return false;//TODO: use PracticalSocket
-		//return true;
+		return true;
 	}
 
 	bool MulticastSocketService::tryToBind() {
-		//TODO: use PracticalSocket
+		try {
+			readSocket->setLocalAddressAndPort(groupAddress,port);
+		}
+		catch (SocketException &e) {
+			clog << "MulticastSocketService::tryToBind" << endl;
+			return false;
+		}
 		/*
 		int ret = bind(msdR, (struct sockaddr*)&mss, sizeof(struct sockaddr));
 		if (ret < 0) {
@@ -214,8 +229,7 @@ namespace multidevice {
 			return false;
 		}
 		*/
-		return false; //TODO: use PracticalSocket
-		//return true;
+		return true;
 	}
 
 	int MulticastSocketService::getServicePort() {
@@ -237,8 +251,6 @@ namespace multidevice {
 	}
 
 	bool MulticastSocketService::sendData(struct frame* f) {
-		//TODO: use PracticalSocket
-
 		char* data;
 		int taskSize, result, i;
 
@@ -249,7 +261,18 @@ namespace multidevice {
 		clog << " taskSize = '" << taskSize  << "'" << endl;*/
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
+			try {
+				writeSocket->sendTo(data,taskSize,groupAddress,port);
+
+			}
+			catch (SocketException &e) {
+				clog << "MulticastSocketService::sendData msdW sendTo";
+				clog << " TASKSIZE = '" << taskSize << "'" << endl;
+				clog << e.what() << endl;
+				return false;
+			}
 			/*
+			TODO: ios fix
 			result = sendto(
 					msdW,
 					data,
@@ -265,8 +288,8 @@ namespace multidevice {
 			}
 			*/
 		}
-		return false;//TODO: use PracticalSocket
-		//return true;
+
+		return true;
 	}
 
 	bool MulticastSocketService::checkOutputBuffer() {
@@ -286,8 +309,8 @@ namespace multidevice {
 			}
 
 		} else {
-			clog << "MulticastSocketService::checkOutputBuffer ";
-			clog << "empty buffer" << endl;
+			//clog << "MulticastSocketService::checkOutputBuffer ";
+			//clog << "empty buffer" << endl;
 		}
 		pthread_mutex_unlock(&mutexBuffer);
 
@@ -295,8 +318,77 @@ namespace multidevice {
 	}
 
 	bool MulticastSocketService::checkInputBuffer(char* data, int* size) {
-		//TODO: use PracticalSocket
-		//TODO: implementar timeout no practicalsocket recv (versao do mesmo metodo, so q com timeout)
+
+		int res, recvFrom;
+		string null_string;
+		unsigned short null_short;
+
+		if (readSocket == NULL) {
+			clog << "MulticastSocketService::checkInputBuffer readSocket == NULL" << endl;
+			return false;
+		}
+
+		res = readSocket->select_t(0,0);
+
+		switch (res) {
+			case -1:
+				clog << "MulticastSocketService::checkInputBuffer ";
+				clog << "Warning! select ERRNO = " << errno << endl;
+				memset(data, 0, MAX_FRAME_SIZE);
+				return false;
+			case 1:{
+				memset(data, 0, MAX_FRAME_SIZE);
+				try {
+					*size = readSocket->recvFrom((void *)data,
+							MAX_FRAME_SIZE,null_string,null_short);
+				}
+				catch (SocketException &e) {
+					memset(data, 0, MAX_FRAME_SIZE);
+					clog << e.what() << endl;
+					return false;
+				}
+
+
+/*
+				if (*size == -1) {
+					if (errno != EAGAIN) {
+						clog << "MulticastSocketService::checkInputBuffer ";
+						herror("check domain error: ");
+						clog << "Warning! receive data ERRNO = " << errno;
+						clog << endl;
+						memset(data, 0, MAX_FRAME_SIZE);
+						return false;
+
+					} else {
+						memset(data, 0, MAX_FRAME_SIZE);
+						return false;
+					}
+*/
+
+				if (*size <= HEADER_SIZE) {
+					clog << "MulticastSocketService::checkInputBuffer ";
+					clog << "Warning! Received invalid frame: ";
+					clog << "bytes received = '" << *size << "' ";
+					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
+					clog << endl;
+
+					memset(data, 0, MAX_FRAME_SIZE);
+					return false;
+				}
+
+				recvFrom = getUIntFromStream(data + 1);
+				if (!isValidRecvFrame(recvFrom, data)) {
+					memset(data, 0, MAX_FRAME_SIZE);
+					return false;
+				}
+				break;
+
+			}
+
+			default:
+				memset(data, 0, MAX_FRAME_SIZE);
+				return false;
+		}
 		/*
 		int nfds, res, recvFrom;
 		fd_set fdset;
@@ -365,8 +457,7 @@ namespace multidevice {
 				return false;
 		}
 		*/
-		return false;//TODO: use practicalsocket
-		//return true;
+		return true;
 	}
 }
 }

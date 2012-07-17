@@ -71,7 +71,7 @@ namespace player {
 			 * the surface could never be a child of window
 			 * (it gets the widget surface)
 			 */
-			surface->setParent(NULL);
+			surface->setParentWindow(NULL);
 		}
 		pthread_mutex_unlock(&mutex);
 		pthread_mutex_destroy(&mutex);
@@ -122,18 +122,18 @@ namespace player {
 			fontColor = new Color(255, 255, 255, 255);
 		}
 
-		if (surface != NULL && surface->getParent() != NULL) {
+		if (surface != NULL && surface->getParentWindow() != NULL) {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				((IWindow*)(surface->getParent()))->setBgColor(
+				((IWindow*)(surface->getParentWindow()))->setBgColor(
 						bgColor->getR(),
 						bgColor->getG(),
 						bgColor->getB(),
 						bgColor->getAlpha());
 
 			} else {
-				((IWindow*)(surface->getParent()))->clearContent();
+				((IWindow*)(surface->getParentWindow()))->clearContent();
 			}
 		}
 
@@ -157,8 +157,8 @@ namespace player {
 			drawTextLn(content);
 		}
 
-		if (surface != NULL && surface->getParent() != NULL) {
-			((IWindow*)(surface->getParent()))->validate();
+		if (surface != NULL && surface->getParentWindow() != NULL) {
+			((IWindow*)(surface->getParentWindow()))->validate();
 		}
 
 		fis.close();
@@ -184,20 +184,20 @@ namespace player {
 	void PlainTxtPlayer::setContent(string content) {
 		pthread_mutex_lock(&mutex);
 
-		if (surface != NULL && surface->getParent() != NULL) {
+		if (surface != NULL && surface->getParentWindow() != NULL) {
 //			surface->clearSurface();
 
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				surface->clearContent();
-				((IWindow*)(surface->getParent()))->setBgColor(
+				((IWindow*)(surface->getParentWindow()))->setBgColor(
 						bgColor->getR(),
 						bgColor->getG(),
 						bgColor->getB(),
 						bgColor->getAlpha());
 
 			} else {
-				((IWindow*)(surface->getParent()))->clearContent();
+				((IWindow*)(surface->getParentWindow()))->clearContent();
 			}
 		}
 
@@ -210,8 +210,8 @@ namespace player {
 			mrl = "";
 		}
 
-		if (surface != NULL && surface->getParent() != NULL) {
-			((IWindow*)(surface->getParent()))->validate();
+		if (surface != NULL && surface->getParentWindow() != NULL) {
+			((IWindow*)(surface->getParentWindow()))->validate();
 		}
 
 		pthread_mutex_unlock(&mutex);
@@ -266,10 +266,10 @@ namespace player {
 					bgColor = new Color(value);
 				}
 
-				if (surface->getParent() != NULL) {
+				if (surface->getParentWindow() != NULL) {
 					//this->surface->setCaps(0);
 					surface->clearContent();
-					((IWindow*)(surface->getParent()))->setBgColor(
+					((IWindow*)(surface->getParentWindow()))->setBgColor(
 							bgColor->getR(),
 							bgColor->getG(),
 							bgColor->getB(),
@@ -291,10 +291,10 @@ namespace player {
 							(int)util::stof((*params)[1]),
 							(int)util::stof((*params)[2]));
 
-					if (surface->getParent() != NULL) {
+					if (surface->getParentWindow() != NULL) {
 						//this->surface->setCaps(0);
 						surface->clearContent();
-						((IWindow*)(surface->getParent()))->setBgColor(
+						((IWindow*)(surface->getParentWindow()))->setBgColor(
 								bgColor->getR(),
 								bgColor->getG(),
 								bgColor->getB(),
