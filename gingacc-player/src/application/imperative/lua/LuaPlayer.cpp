@@ -250,7 +250,7 @@ void LuaPlayer::nc_update_remove (nclua_t *nc)
      // to be destroyed.  To avoid corruption, we postpone the destruction
      // of nc_update_list until the player's destructor is called.
 
-     if (nc_update_list->empty () && pthread_self () != nc_update_tid)
+     if (nc_update_list->empty () && !pthread_equal(pthread_self (), nc_update_tid))
      {
           delete nc_update_list;
           nc_update_list = NULL; // signal end of cycle process
