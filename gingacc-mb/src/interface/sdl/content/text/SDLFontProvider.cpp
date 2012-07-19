@@ -101,8 +101,10 @@ namespace mb {
 	SDLFontProvider::~SDLFontProvider() {
 		fontRefs--;
 
+		pthread_mutex_lock(&pMutex);
 		content = NULL;
-
+		plainText = "";
+		pthread_mutex_unlock(&pMutex);
 		pthread_mutex_destroy(&pMutex);
 
 		if (font != NULL) {
@@ -146,21 +148,24 @@ namespace mb {
 	}
 
 	bool SDLFontProvider::createFont() {
-		font = TTF_OpenFont(fontUri.c_str(), height);
-		if (font == NULL) {
-			clog << "SDLFontProvider::initializeFont Warning! ";
-			clog << "Couldn't initialize font: " << fontUri;
-			clog << endl;
-			pthread_mutex_unlock(&ntsMutex);
-			return false;
+		if (fileExists(fontUri)) {
+			font = TTF_OpenFont(fontUri.c_str(), height);
+			if (font == NULL) {
+				clog << "SDLFontProvider::initializeFont Warning! ";
+				clog << "Couldn't initialize font: " << fontUri;
+				clog << endl;
+				return false;
+			}
+
+			TTF_SetFontStyle(font, (int)TTF_STYLE_BOLD);
+			TTF_SetFontOutline(font, 0);
+			TTF_SetFontKerning(font, 1);
+			TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
+
+			return true;
 		}
 
-		TTF_SetFontStyle(font, (int)TTF_STYLE_BOLD);
-		TTF_SetFontOutline(font, 0);
-		TTF_SetFontKerning(font, 1);
-		TTF_SetFontHinting(font, (int)TTF_HINTING_NORMAL);
-
-		return true;
+		return false;
 	}
 
 	void* SDLFontProvider::getFontProviderContent() {
@@ -213,7 +218,7 @@ namespace mb {
 			initializeFont();
 		}
 
-		plainText   = text;
+		plainText.assign(text);
 		coordX      = x;
 		coordY      = y;
 		this->align = align;
@@ -246,6 +251,8 @@ namespace mb {
 			if (!createFont()) {
 				clog << "SDLFontProvider::playOver Warning! NULL font.";
 				clog << endl;
+
+				pthread_mutex_unlock(&ntsMutex);
 				return;
 			}
 		}
