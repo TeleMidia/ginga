@@ -524,6 +524,25 @@ namespace compat {
 #endif
 	}
 
+     void SystemCompat::strError (int err, char *buf, size_t size) {
+		int saved_errno = errno;
+#ifdef WIN32
+		strerror_s (buf, size, err);
+#else
+		strerror_r (err, buf, size);
+#endif
+		errno = saved_errno;
+	}
+
+
+	int SystemCompat::changeDir (const char *path) {
+#ifdef WIN32
+			return _chdir (path);
+#else
+			return chdir (path);
+#endif
+	}
+
 	void SystemCompat::makeDir(const char* dirName, unsigned int mode) {
 #ifdef WIN32
 			_mkdir(dirName);

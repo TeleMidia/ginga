@@ -52,7 +52,9 @@ http://www.telemidia.puc-rio.br
 
 extern "C" {
 #include <dlfcn.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 
 #ifdef _WIN32
 	#include <sys/timeb.h>
@@ -194,6 +196,8 @@ namespace compat {
 			/**********************
 			 * Specific Functions *
 			 **********************/
+			static void strError (int err, char *buf, size_t size);
+			static int changeDir (const char *path);
 			static void makeDir(const char* dirName, unsigned int mode);
 			static void uSleep(unsigned int microseconds);
 			static string getTemporaryDir();
