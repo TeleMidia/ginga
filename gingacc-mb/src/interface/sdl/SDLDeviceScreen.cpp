@@ -867,6 +867,7 @@ namespace mb {
 		ISurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
 
+		pthread_mutex_lock(&sMutex);
 		if (fileExists(mrl)) {
 			provider = createImageProvider(mrl);
 			if (provider != NULL) {
@@ -881,6 +882,7 @@ namespace mb {
 			clog << "Warning! '" << mrl << "' file not found" << endl;
 		}
 
+		pthread_mutex_unlock(&sMutex);
 		return iSur;
 	}
 
