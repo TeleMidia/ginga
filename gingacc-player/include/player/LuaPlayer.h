@@ -84,15 +84,15 @@ private:
      pthread_mutex_t mutex;       // sync access to player
      IInputManager *im;
 
-     // NCLua update thread.
-     static list <nclua_t *> *nc_update_list;
+     // Update thread.
+     static list <LuaPlayer *> *nc_update_list;
      static pthread_mutex_t nc_update_mutex;
      static pthread_t nc_update_tid;
      static void *nc_update_thread (void *data);
-     static void nc_update_insert (nclua_t *nc);
+     static void nc_update_insert (LuaPlayer *player);
 
 public:
-     static void nc_update_remove (nclua_t *nc);
+     static void nc_update_remove (LuaPlayer *player);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);

@@ -428,7 +428,7 @@ ev_receive_ncl_event (lua_State *L)
              Otherwise, notifyPlayerListeners() will cause the event to be
              sent back to the NCLua engine.  */
 
-          LuaPlayer::nc_update_remove (nc);
+          LuaPlayer::nc_update_remove (player);
           player->doStop ();
         }
 
