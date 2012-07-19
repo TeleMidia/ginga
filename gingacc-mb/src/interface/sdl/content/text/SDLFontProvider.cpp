@@ -99,26 +99,29 @@ namespace mb {
 	}
 
 	SDLFontProvider::~SDLFontProvider() {
+		pthread_mutex_lock(&ntsMutex);
+		pthread_mutex_lock(&pMutex);
+
 		fontRefs--;
 
-		pthread_mutex_lock(&pMutex);
-		content = NULL;
+		content   = NULL;
 		plainText = "";
-		pthread_mutex_unlock(&pMutex);
-		pthread_mutex_destroy(&pMutex);
+		fontUri   = "";
+		dfltFont  = "";
 
 		if (font != NULL) {
-			pthread_mutex_lock(&ntsMutex);
 			TTF_CloseFont(font);
 			font = NULL;
-			pthread_mutex_unlock(&ntsMutex);
 		}
 
 		if (fontRefs == 0) {
 			initialized = false;
-			pthread_mutex_destroy(&ntsMutex);
 			TTF_Quit();
 		}
+
+		pthread_mutex_unlock(&pMutex);
+		pthread_mutex_destroy(&pMutex);
+		pthread_mutex_unlock(&ntsMutex);
 	}
 
 	bool SDLFontProvider::initializeFont() {
