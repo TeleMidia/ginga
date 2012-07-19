@@ -724,16 +724,20 @@ namespace mb {
 		return hasSur;
 	}
 
-	void SDLDeviceScreen::releaseSurface(ISurface* s) {
+	bool SDLDeviceScreen::releaseSurface(ISurface* s) {
 		set<ISurface*>::iterator i;
 		SDL_Surface* uSur = NULL;
+		bool released = false;
 
 		pthread_mutex_lock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
 			surfacePool.erase(i);
+			released = true;
 		}
 		pthread_mutex_unlock(&surMutex);
+
+		return released;
 	}
 
 

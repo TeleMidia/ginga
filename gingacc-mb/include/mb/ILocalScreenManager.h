@@ -144,7 +144,7 @@ namespace mb {
 			virtual bool hasSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
 
-			virtual void releaseSurface(
+			virtual bool releaseSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
 
 

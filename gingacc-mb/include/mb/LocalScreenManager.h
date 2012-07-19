@@ -187,7 +187,7 @@ namespace mb {
 					GingaScreenID screenId, void* underlyingSurface);
 
 			bool hasSurface(GingaScreenID screenId, ISurface* surface);
-			void releaseSurface(GingaScreenID screenId, ISurface* surface);
+			bool releaseSurface(GingaScreenID screenId, ISurface* surface);
 
 
 			/* Interfacing content */

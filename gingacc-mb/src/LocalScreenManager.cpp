@@ -755,14 +755,16 @@ namespace mb {
 		return hasSur;
 	}
 
-	void LocalScreenManager::releaseSurface(
+	bool LocalScreenManager::releaseSurface(
 			GingaScreenID screenId, ISurface* sur) {
 
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {
-			screen->releaseSurface(sur);
+			return screen->releaseSurface(sur);
 		}
+
+		return false;
 	}
 
 

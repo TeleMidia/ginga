@@ -168,8 +168,8 @@ namespace mb {
 		return NULL;
 	}
 
-	void TermDeviceScreen::releaseSurface(ISurface* sur) {
-
+	bool TermDeviceScreen::releaseSurface(ISurface* sur) {
+		return false;
 	}
 
 	bool TermDeviceScreen::hasSurface(ISurface* sur) {
