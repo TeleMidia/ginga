@@ -72,7 +72,7 @@ namespace mb {
 
 		if (!mutexInit) {
 			mutexInit = true;
-			pthread_mutex_init(&pMutex, NULL);
+			Thread::mutexInit(&pMutex);
 		}
 
 		pthread_mutex_lock(&pMutex);

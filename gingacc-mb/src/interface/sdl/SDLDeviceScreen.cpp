@@ -177,23 +177,23 @@ namespace mb {
 		}
 
 		waitingCreator = false;
-		pthread_mutex_init(&cMutex, NULL);
+		Thread::mutexInit(&cMutex);
 		pthread_cond_init(&cond, NULL);
 
-		pthread_mutex_init(&winMutex, NULL);
-		pthread_mutex_init(&surMutex, NULL);
-		pthread_mutex_init(&cmpMutex, NULL);
-		pthread_mutex_init(&dmpMutex, NULL);
+		Thread::mutexInit(&winMutex);
+		Thread::mutexInit(&surMutex);
+		Thread::mutexInit(&cmpMutex);
+		Thread::mutexInit(&dmpMutex);
 
 		if (!hasRenderer) {
 			hasRenderer = true;
 
-			pthread_mutex_init(&uSurMutex, NULL);
+			Thread::mutexInit(&uSurMutex);
 
-			pthread_mutex_init(&sMutex, NULL);
-			pthread_mutex_init(&wrMutex, NULL);
-			pthread_mutex_init(&rlMutex, NULL);
-			pthread_mutex_init(&mplMutex, NULL);
+			Thread::mutexInit(&sMutex);
+			Thread::mutexInit(&wrMutex);
+			Thread::mutexInit(&rlMutex);
+			Thread::mutexInit(&mplMutex);
 
 			if (!hasERC) {
 				setInitScreenFlag();
@@ -1842,7 +1842,7 @@ namespace mb {
 			return;
 		}
 
-		pthread_mutex_init(&ieMutex, NULL);
+		Thread::mutexInit(&ieMutex);
 
 		gingaToSDLCodeMap[CodeMap::KEY_QUIT]              = SDL_QUIT;
 		gingaToSDLCodeMap[CodeMap::KEY_NULL]              = SDLK_UNKNOWN;

@@ -1111,11 +1111,11 @@ namespace mb {
 		clog << "Initialing mutexes";
 		clog << endl;*/
 
-		direct_util_recursive_pthread_mutex_init(&rContainer->input.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->video.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->audio.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->video.queue.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->audio.queue.lock);
+		Thread::mutexInit(&rContainer->input.lock);
+		Thread::mutexInit(&rContainer->video.lock);
+		Thread::mutexInit(&rContainer->audio.lock);
+		Thread::mutexInit(&rContainer->video.queue.lock);
+		Thread::mutexInit(&rContainer->audio.queue.lock);
 		pthread_cond_init (&rContainer->video.cond, NULL);
 		pthread_cond_init (&rContainer->audio.cond, NULL);
 

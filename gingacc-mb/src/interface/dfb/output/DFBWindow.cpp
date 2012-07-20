@@ -194,8 +194,8 @@ namespace mb {
 		this->caps            = DWCAPS_NODECORATION;
 		transparencyValue     = 0x00;
 
-		pthread_mutex_init(&mutex, NULL);
-		pthread_mutex_init(&mutexC, NULL);
+		Thread::mutexInit(&mutex);
+		Thread::mutexInit(&mutexC);
 	}
 
 

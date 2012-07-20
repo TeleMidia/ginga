@@ -96,9 +96,9 @@ namespace mb {
 		windowPool = new set<DX2DSurface*>;
 		surfacePool = new set<DX2DSurface*>;
 
-		pthread_mutex_init(&winMutex, NULL);
-		pthread_mutex_init(&surMutex, NULL);
-		pthread_mutex_init(&init_lock, NULL);
+		Thread::mutexInit(&winMutex, NULL);
+		Thread::mutexInit(&surMutex, NULL);
+		Thread::mutexInit(&init_lock, NULL);
 
 		pthread_cond_init(&init_cond, NULL);
 

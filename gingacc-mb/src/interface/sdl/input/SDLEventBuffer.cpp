@@ -59,7 +59,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 	SDLEventBuffer::SDLEventBuffer(GingaScreenID screen) {
-		pthread_mutex_init(&ebMutex, NULL);
+		Thread::mutexInit(&ebMutex);
 
 		myScreen  = screen;
 
@@ -69,7 +69,7 @@ namespace mb {
 
 		isWaiting = false;
 		pthread_cond_init(&cond, NULL);
-		pthread_mutex_init(&condMutex, NULL);
+		Thread::mutexInit(&condMutex);
 	}
 
 	SDLEventBuffer::~SDLEventBuffer() {

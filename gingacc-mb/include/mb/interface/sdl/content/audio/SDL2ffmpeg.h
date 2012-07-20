@@ -58,6 +58,9 @@ Many thanks to ffmpeg developers and to the community that support them!
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "mb/interface/IContinuousMediaProvider.h"
 #include "mb/interface/sdl/SDLDeviceScreen.h"
 

@@ -80,7 +80,7 @@ namespace mb {
 	SDLFontProvider::SDLFontProvider(
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
-		pthread_mutex_init(&pMutex, NULL);
+		Thread::mutexInit(&pMutex);
 
 		fontRefs++;
 
@@ -126,7 +126,7 @@ namespace mb {
 
 	bool SDLFontProvider::initializeFont() {
 		if (!initialized) {
-			pthread_mutex_init(&ntsMutex, NULL);
+			Thread::mutexInit(&ntsMutex);
 			initialized = true;
 			pthread_mutex_lock(&ntsMutex);
 			if (TTF_Init() < 0) {

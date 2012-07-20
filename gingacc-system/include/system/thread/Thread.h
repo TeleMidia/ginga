@@ -100,6 +100,8 @@ namespace thread {
 		void unlock();
 		void waitForUnlockCondition();
 		bool unlockConditionSatisfied();
+
+		static void mutexInit(pthread_mutex_t* mutex);
   };
 }
 }

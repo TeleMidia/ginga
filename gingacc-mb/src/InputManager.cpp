@@ -72,12 +72,12 @@ namespace mb {
 		notifyingApp          = false;
 		ief                   = new InputEventFactory();
 
-		pthread_mutex_init(&actInpMutex, NULL);
-		pthread_mutex_init(&actAppMutex, NULL);
+		Thread::mutexInit(&actInpMutex);
+		Thread::mutexInit(&actAppMutex);
 
-		pthread_mutex_init(&appMutex, NULL);
+		Thread::mutexInit(&appMutex);
 
-		pthread_mutex_init(&mlMutex, NULL);
+		Thread::mutexInit(&mlMutex);
 
 		initializeInputIntervalTime();
 	}

@@ -192,6 +192,15 @@ namespace thread {
 		}
 		return false;
 	}
+
+	void Thread::mutexInit(pthread_mutex_t* mutex) {
+        pthread_mutexattr_t attr;
+
+        assert(pthread_mutexattr_init (&attr) == 0);
+        assert(pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE) == 0);
+        assert(pthread_mutex_init (mutex, &attr) == 0);
+        assert(pthread_mutexattr_destroy (&attr) == 0);
+	}
 }
 }
 }

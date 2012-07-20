@@ -55,6 +55,7 @@ extern "C" {
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <assert.h>
 
 #ifdef _WIN32
 	#include <sys/timeb.h>
