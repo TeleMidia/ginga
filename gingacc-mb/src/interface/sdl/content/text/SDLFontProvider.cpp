@@ -241,9 +241,8 @@ namespace mb {
 		SDL_Surface* renderedSurface = NULL;
 		SDL_Surface* text;
 
-		this->content = surface;
-
 		pthread_mutex_lock(&ntsMutex);
+		this->content = surface;
 		if (plainText == "") {
 			clog << "SDLFontProvider::playOver Warning! Empty text.";
 			clog << endl;
