@@ -368,8 +368,10 @@ namespace mb {
 			backgroundLayer = createWindow(0, 0, wRes, hRes, 0.0);
 		}
 
+		backgroundLayer->lock();
 		backgroundLayer->renderImgFile(uri);
 		backgroundLayer->show();
+		backgroundLayer->unlock();
 	}
 
 	unsigned int SDLDeviceScreen::getWidthResolution() {
@@ -1355,11 +1357,13 @@ namespace mb {
 						if (s->windowPool.find(win) != s->windowPool.end() &&
 								win->isVisible()) {
 
+							win->lock();
 							uTex = win->getTexture(s->renderer);
 							if (uTex != NULL) {
 								drawWindow(s->renderer, uTex, win);
 							}
 
+							win->unlock();
 							win->rendered();
 						}
 						++k;
@@ -1739,6 +1743,7 @@ namespace mb {
 
 		bool freeSurface = false;
 
+		iWin->lock();
 		tmpTex = ((SDLWindow*)iWin)->getTexture(NULL);
 		if (tmpTex != NULL) {
 			tmpSur = createUnderlyingSurfaceFromTexture(tmpTex);
@@ -1761,6 +1766,8 @@ namespace mb {
 			freeSurface = false;
 			releaseUnderlyingSurface(tmpSur);
 		}
+
+		iWin->unlock();
 	}
 
 
@@ -2409,7 +2416,7 @@ namespace mb {
 		newUSur = SDL_CreateRGBSurface(
 				0, width, height, 24, rmask, gmask, bmask, amask);
 
-		if(newUSur != NULL) {
+		if (newUSur != NULL) {
 			uSurPool.insert(newUSur);
 		}
 
@@ -2426,6 +2433,7 @@ namespace mb {
         Uint32 rmask, gmask, bmask, amask, format;
         int textureAccess, w, h;
 
+        pthread_mutex_lock(&uSurMutex);
         SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
         SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
 		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
@@ -2434,6 +2442,12 @@ namespace mb {
 				pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
 
 		SDL_UnlockTexture(texture);
+
+		if (uSur != NULL) {
+			uSurPool.insert(uSur);
+		}
+
+		pthread_mutex_unlock(&uSurMutex);
 
 		return uSur;
 	}
