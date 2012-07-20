@@ -165,7 +165,7 @@ namespace mb {
 		Thread::mutexInit(&mutex);
 		Thread::mutexInit(&mutexC);
 		Thread::mutexInit(&texMutex);
-		Thread::mutexInit(&surMutex);
+		Thread::mutexInit(&surMutex, true);
 
 		this->isWaiting = false;
 	    Thread::mutexInit(&cMutex);
