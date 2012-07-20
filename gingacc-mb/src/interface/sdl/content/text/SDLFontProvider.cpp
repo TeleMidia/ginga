@@ -222,7 +222,7 @@ namespace mb {
 			initializeFont();
 		}
 
-		plainText.assign(text);
+		plainText.assign(text, strlen(text));
 		coordX      = x;
 		coordY      = y;
 		this->align = align;
@@ -290,6 +290,7 @@ namespace mb {
 				sdlColor.b = 0x00;
 			}
 
+			assert(font != NULL);
 			text = TTF_RenderUTF8_Solid(
 					font, plainText.c_str(), sdlColor);
 
