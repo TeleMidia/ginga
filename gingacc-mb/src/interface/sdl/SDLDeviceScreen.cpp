@@ -797,7 +797,7 @@ namespace mb {
 
 		IFontProvider* provider = NULL;
 
-		pthread_mutex_lock(&cmpMutex);
+		pthread_mutex_lock(&dmpMutex);
 
 #if HAVE_COMPSUPPORT
 		provider = ((FontProviderCreator*)(cm->getObject("SDLFontProvider")))(
@@ -808,7 +808,7 @@ namespace mb {
 #endif
 
 		dmpPool.insert(provider);
-		pthread_mutex_unlock(&cmpMutex);
+		pthread_mutex_unlock(&dmpMutex);
 
 		return provider;
 	}
