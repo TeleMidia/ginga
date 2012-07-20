@@ -1223,34 +1223,52 @@ namespace mb {
 
 	void SDLDeviceScreen::refreshRC(SDLDeviceScreen* s) {
 		set<ReleaseContainer*>::iterator i;
+		ReleaseContainer* rc;
+		IMediaProvider* dec;
+		SDL_Surface* sur;
+		SDL_Texture* tex;
 		IContinuousMediaProvider* cmp;
 		IDiscreteMediaProvider* dmp;
 		string strSym = "";
 
 		set<IDiscreteMediaProvider*>::iterator j;
 
-		set<ReleaseContainer*>* tmp;
-
 		pthread_mutex_lock(&s->rlMutex);
 		if (s->releaseList.empty()) {
 			pthread_mutex_unlock(&s->rlMutex);
 			return;
 		}
-		tmp = new set<ReleaseContainer*>(s->releaseList);
-		s->releaseList.clear();
-		pthread_mutex_unlock(&s->rlMutex);
 
-		i = tmp->begin();
-		while (i != tmp->end()) {
-			if ((*i)->iDec != NULL) {
-				cmp = dynamic_cast<IContinuousMediaProvider*>((*i)->iDec);
+		i = s->releaseList.begin();
+		while (i != s->releaseList.end()) {
+			rc = (*i);
+
+			dec = rc->iDec;
+			sur = rc->uSur;
+			tex = rc->uTex;
+
+			delete rc;
+			s->releaseList.erase(i);
+
+			if (sur != NULL) {
+				releaseUnderlyingSurface(sur);
+			}
+
+			if (tex != NULL) {
+				releaseTexture(tex);
+			}
+
+			if (dec != NULL) {
+				strSym = "";
+				pthread_mutex_unlock(&s->rlMutex);
+				cmp = dynamic_cast<IContinuousMediaProvider*>(dec);
 
 				if (cmp != NULL) {
 					strSym = cmp->getLoadSymbol();
 					delete cmp;
 
 				} else {
-					dmp = dynamic_cast<IDiscreteMediaProvider*>((*i)->iDec);
+					dmp = dynamic_cast<IDiscreteMediaProvider*>(dec);
 
 					if (dmp != NULL) {
 						pthread_mutex_lock(&s->dmpMutex);
@@ -1270,21 +1288,15 @@ namespace mb {
 					cm->releaseComponentFromObject(strSym);
 				}
 #endif
+
+				pthread_mutex_lock(&s->rlMutex);
 			}
 
-			if ((*i)->uSur != NULL) {
-				releaseUnderlyingSurface((*i)->uSur);
-			}
-
-			if ((*i)->uTex != NULL) {
-				releaseTexture((*i)->uTex);
-			}
-
-			delete (*i);
-			++i;
+			i = s->releaseList.begin();
 		}
 
-		delete tmp;
+		s->releaseList.clear();
+		pthread_mutex_unlock(&s->rlMutex);
 	}
 
 	int SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {
