@@ -83,15 +83,15 @@ namespace mb {
 		ISurface* surface;
 		vector<ISurface*>::iterator i;
 
-		lockSurface();
-		curSur = NULL;
-
 		lockChilds();
 		if (childSurface != NULL) {
 			childSurface->setParentWindow(NULL);
 		}
 
 		unlockChilds();
+
+		lockSurface();
+		curSur = NULL;
 
 		releaseWinISur();
 		unlockSurface();
