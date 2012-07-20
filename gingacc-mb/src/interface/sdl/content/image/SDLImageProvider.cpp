@@ -90,8 +90,9 @@ namespace mb {
 		imageRefs--;
 
 		if (imageRefs == 0) {
-			IMG_Quit();
-			initialized = false;
+			// FIXME: Find a better way to do this!
+			// IMG_Quit();
+			// initialized = false;
 		}
 
 		pthread_mutex_unlock(&pMutex);
