@@ -548,15 +548,19 @@ namespace mb {
 		return hasSur;
 	}
 
-	void DFBDeviceScreen::releaseSurface(ISurface* s) {
+	bool DFBDeviceScreen::releaseSurface(ISurface* s) {
 		set<ISurface*>::iterator i;
+		bool released = false;
 
 		pthread_mutex_lock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
 			surfacePool.erase(i);
+			released = true;
 		}
 		pthread_mutex_unlock(&surMutex);
+
+		return released;
 	}
 
 

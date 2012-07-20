@@ -76,7 +76,11 @@ namespace mb {
 		pthread_mutex_lock(&sMutex);
 		pthread_mutex_lock(&pMutex);
 
-		LocalScreenManager::getInstance()->releaseSurface(myScreen, this);
+		if (!LocalScreenManager::getInstance()->releaseSurface(
+				myScreen, this)) {
+
+			clog << "SDLSurface::~SDLSurface Warning! Can't find ISur" << endl;
+		}
 
 		releaseChromaColor();
 		releaseBorderColor();
