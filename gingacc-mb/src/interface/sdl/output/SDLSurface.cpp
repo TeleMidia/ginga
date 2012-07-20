@@ -607,7 +607,7 @@ namespace mb {
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
-			if (uSur != NULL) {
+			if (uSur != NULL && SDLDeviceScreen::hasUnderlyingSurface(uSur)) {
 				if (srcX >= 0) {
 					srcRect.x = srcX;
 					srcRect.y = srcY;

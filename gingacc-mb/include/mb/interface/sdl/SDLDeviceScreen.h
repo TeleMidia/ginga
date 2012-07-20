@@ -370,8 +370,10 @@ typedef struct {
 			static SDL_Surface* createUnderlyingSurfaceFromTexture(
 					SDL_Texture* texture);
 
+		public:
 			static bool hasUnderlyingSurface(SDL_Surface* uSur);
 
+		private:
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 
 		public:
