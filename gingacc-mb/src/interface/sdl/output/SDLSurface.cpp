@@ -572,7 +572,10 @@ namespace mb {
 		int w;
 		int h;
 
-		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
+		if (parent != NULL &&
+				LocalScreenManager::getInstance()->hasWindow(
+						myScreen, parent)) {
+
 			w = parent->getW();
 			h = parent->getH();
 
