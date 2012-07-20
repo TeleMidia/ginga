@@ -115,8 +115,9 @@ namespace mb {
 		}
 
 		if (fontRefs == 0) {
-			initialized = false;
-			TTF_Quit();
+			// FIXME: Find a better way to do this!
+			// initialized = false;
+			// TTF_Quit();
 		}
 
 		pthread_mutex_unlock(&pMutex);

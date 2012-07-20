@@ -2409,10 +2409,11 @@ namespace mb {
 		newUSur = SDL_CreateRGBSurface(
 				0, width, height, 24, rmask, gmask, bmask, amask);
 
-		uSurPool.insert(newUSur);
+		if(newUSur != NULL) {
+			uSurPool.insert(newUSur);
+		}
 
 		pthread_mutex_unlock(&uSurMutex);
-
 		return newUSur;
 	}
 

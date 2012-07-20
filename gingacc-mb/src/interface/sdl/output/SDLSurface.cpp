@@ -398,15 +398,15 @@ namespace mb {
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
 		clog << "SDLSurface::drawLine '";
 		clog << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "'";
-		clog << endl;
+		clog << endl; 
 
 		pushDrawData(x1, y1, x2, y2, SDLWindow::DDT_LINE);
 	}
 
 	void SDLSurface::drawRectangle(int x, int y, int w, int h) {
-		clog << "SDLSurface::drawRectangle '";
+		/* clog << "SDLSurface::drawRectangle '";
 		clog << x << ", " << y << ", " << w << ", " << h << "'";
-		clog << endl;
+		clog << endl; */
 
 		pushDrawData(x, y, w, h, SDLWindow::DDT_RECT);
 	}
@@ -415,9 +415,9 @@ namespace mb {
 		SDL_Rect rect;
 		int r, g, b;
 
-		clog << "SDLSurface::fillRectangle '";
+		/* clog << "SDLSurface::fillRectangle '";
 		clog << x << ", " << y << ", " << w << ", " << h << "'";
-		clog << endl;
+		clog << endl; */
 
 		initContentSurface();
 
@@ -585,7 +585,7 @@ namespace mb {
 		}
 
 		sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
-		if (bgColor == NULL && caps != 0) {
+		if (sdlSurface != NULL && bgColor == NULL && caps != 0) {
 			SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
 		}
 
