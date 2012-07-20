@@ -347,6 +347,7 @@ namespace mb {
 			}
 
 			SDLDeviceScreen::createReleaseContainer(text, NULL, NULL);
+			text = NULL;
 
 		} else {
 			clog << "SDLFontProvider::playOver Warning! Invalid Surface.";

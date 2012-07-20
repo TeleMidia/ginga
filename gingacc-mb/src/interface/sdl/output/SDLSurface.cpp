@@ -146,8 +146,8 @@ namespace mb {
 			pthread_mutex_lock(&sMutex);
 			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 			sur = pending;
-			pthread_mutex_unlock(&sMutex);
 			pending = NULL;
+			pthread_mutex_unlock(&sMutex);
 			pthread_mutex_unlock(&pMutex);
 			releaseDrawData();
 
@@ -305,7 +305,9 @@ namespace mb {
 			}
 		}
 
-		SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+		if (sur != NULL) {
+			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
+		}
 		this->sur = (SDL_Surface*)surface;
 		pthread_mutex_unlock(&sMutex);
 	}
