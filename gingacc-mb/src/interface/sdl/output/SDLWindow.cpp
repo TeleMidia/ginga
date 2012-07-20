@@ -80,9 +80,9 @@ namespace mb {
 	}
 
 	SDLWindow::~SDLWindow() {
-		ISurface* surface;
 		vector<ISurface*>::iterator i;
 
+		lock();
 		lockChilds();
 		if (childSurface != NULL) {
 			childSurface->setParentWindow(NULL);
@@ -104,7 +104,6 @@ namespace mb {
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
-		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
 
 		this->isWaiting = false;
@@ -112,6 +111,9 @@ namespace mb {
 	    pthread_cond_destroy(&cond);
 
 	    pthread_mutex_destroy(&rMutex);
+
+	    unlock();
+	    pthread_mutex_destroy(&mutex);
 
 		clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
 	}
@@ -250,8 +252,6 @@ namespace mb {
 	}
 
 	void SDLWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-		int i;
-
 		releaseBorderColor();
 
 		borderWidth = bWidth;
@@ -559,7 +559,6 @@ namespace mb {
 	}
 
 	bool SDLWindow::isMine(ISurface* surface) {
-		SDL_Surface* contentSurface;
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
@@ -646,8 +645,8 @@ namespace mb {
 
 	void SDLWindow::stretchBlit(IWindow* src) {
 		//SDLRectangle rect, *r = NULL;
-		SDL_Window* srcWin;
-		SDL_Surface* srcSur;
+		//SDL_Window* srcWin;
+		//SDL_Surface* srcSur;
 
 		/*if (src != NULL) {
 			srcWin = (SDL_Window*)(src->getSurfaceContent());
