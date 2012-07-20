@@ -57,7 +57,7 @@ typedef struct
   struct { int x; int y; int w; int h; int inUse; } crop;
   struct { int x; int y; int w; int h; } clip;
   struct { int w; int h; int inUse;} scale;
-  struct { char face[20]; int size; char style[20]; } font;
+  struct { char *face; int size; char *style; } font;
 } Canvas;
 
 
@@ -67,7 +67,6 @@ int lua_createcanvas (lua_State *L, ISurface *sfc, int collect);
 static int
 l_new (lua_State *L)
 {
-  Canvas *canvas = CHECKCANVAS (L);
   LuaPlayer *player = GETPLAYER (L);
   GingaScreenID id = player->getScreenId ();
   ILocalScreenManager *sm = player->getScreenManager ();
@@ -183,6 +182,11 @@ static int
 l_attrFont (lua_State *L)
 {
   Canvas *canvas = CHECKCANVAS (L);
+  string path;
+
+#ifdef _MSC_VER
+# define strdup _strdup
+#endif
 
   if (lua_gettop (L) == 1)      /* get */
     {
@@ -193,22 +197,25 @@ l_attrFont (lua_State *L)
     }
 
   /* set */
-  strncpy (canvas->font.face, luaL_checkstring (L,2),
-           nelementsof (canvas->font.face));
-
   canvas->font.size = luaL_checkint (L, 3);
 
-  strncpy (canvas->font.style, luaL_optstring (L, 4, "normal"),
-           nelementsof (canvas->font.style));
+  if (canvas->font.face != NULL)
+    free (canvas->font.face);
+  canvas->font.face = strdup (luaL_checkstring (L, 2));
 
-  string path = SystemCompat::appendGingaFilesPrefix ("font")
-    + SystemCompat::getIUriD ();
+  if (canvas->font.style != NULL)
+    free (canvas->font.style);
+  canvas->font.style = strdup (luaL_optstring (L, 4, "normal"));
 
-  path.append (canvas->font.face, strlen (canvas->font.face));
-
-  if (path.length () < 4 || path.substr (path.length () - 4, 4) != ".ttf")
+  path = canvas->font.face;
+  if (!fileExists (path))
     {
-      path = path + ".ttf";
+      string prefix = SystemCompat::appendGingaFilesPrefix ("font")
+        + SystemCompat::getIUriD ();
+      path = prefix + path;
+
+      if (!fileExists (path))
+        path = prefix + "vera.ttf";
     }
 
   IFontProvider *font = NULL;
@@ -461,6 +468,12 @@ l_gc (lua_State *L)
   Canvas *canvas = CHECKCANVAS (L);
   delete canvas->color;
 
+  if (canvas->font.face != NULL)
+    free (canvas->font.face);
+
+  if (canvas->font.style != NULL)
+    free (canvas->font.style);
+
   if (canvas->collect)
     {
       delete canvas->sfc;
@@ -512,6 +525,8 @@ int
 lua_createcanvas (lua_State *L, ISurface *sfc, int collect)
 {
   Canvas *canvas = (Canvas*) lua_newuserdata (L, sizeof (Canvas));
+  memset (canvas, 0, sizeof (Canvas));
+
   canvas->sfc = sfc;
   canvas->collect = collect;
   luaL_getmetatable (L, LUAPLAYER_CANVAS);
