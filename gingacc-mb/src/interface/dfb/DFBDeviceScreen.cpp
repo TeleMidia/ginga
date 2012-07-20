@@ -785,7 +785,7 @@ namespace mb {
 			return;
 		}
 
-		Thread::mutexInit(&ieMutex, NULL);
+		Thread::mutexInit(&ieMutex);
 
 		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_CUSTOM1;
 		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_NULL;

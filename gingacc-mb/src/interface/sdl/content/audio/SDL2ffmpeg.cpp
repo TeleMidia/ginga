@@ -431,8 +431,9 @@ namespace mb {
 	void SDL2ffmpeg::stop() {
 		clog << "SDL2ffmpeg::stop(" << vs->filename << ")" << endl;
 
+		soundLevel   = 0;
 		abortRequest = true;
-		status = ST_STOPPED;
+		status       = ST_STOPPED;
 
 		if (vs->video_stream >= 0) {
 			packet_queue_abort(&vs->videoq);
