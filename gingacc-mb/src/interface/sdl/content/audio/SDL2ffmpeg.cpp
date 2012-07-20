@@ -113,7 +113,7 @@ namespace mb {
 			init = true;
 
 			memset(&spec, 0, sizeof(spec));
-			pthread_mutex_init(&aiMutex, NULL);
+			Thread::mutexInit(&aiMutex);
 
 			av_log_set_flags(AV_LOG_SKIP_REPEATED);
 

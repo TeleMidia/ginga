@@ -251,9 +251,9 @@ namespace mb {
 
 		this->drawData.clear();
 
-		pthread_mutex_init(&ddMutex, NULL);
-		pthread_mutex_init(&sMutex, NULL);
-		pthread_mutex_init(&pMutex, NULL);
+		Thread::mutexInit(&ddMutex);
+		Thread::mutexInit(&sMutex);
+		Thread::mutexInit(&pMutex);
 	}
 
 	void SDLSurface::takeOwnership() {

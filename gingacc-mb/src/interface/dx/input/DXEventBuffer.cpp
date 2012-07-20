@@ -77,8 +77,8 @@ namespace mb {
 		m_scrWidth	= 0;
 		m_scrHeight = 0;
 
-		pthread_mutex_init(&m_mtxInput, NULL);
-		pthread_mutex_init(&evt_lock, NULL);
+		Thread::mutexInit(&m_mtxInput);
+		Thread::mutexInit(&evt_lock);
 
 		//pthread_cond_init(&evt_cond, NULL);
 

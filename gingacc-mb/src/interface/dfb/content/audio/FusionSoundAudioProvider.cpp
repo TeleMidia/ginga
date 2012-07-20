@@ -79,7 +79,7 @@ namespace mb {
 			initialize();
 		}
 
-		pthread_mutex_init(&decMutex, NULL);
+		Thread::mutexInit(&decMutex);
 
 		_fsSound->CreateMusicProvider(_fsSound, mrl, &(decoder));
 		decoder->GetStreamDescription(decoder, &s_desc);

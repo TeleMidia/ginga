@@ -85,9 +85,7 @@ namespace mb {
 
 		lockSurface();
 		curSur = NULL;
-		unlockSurface();
 
-		lock();
 		lockChilds();
 		if (childSurface != NULL) {
 			childSurface->setParentWindow(NULL);
@@ -96,6 +94,8 @@ namespace mb {
 		unlockChilds();
 
 		releaseWinISur();
+		unlockSurface();
+
 		releaseBGColor();
 		releaseBorderColor();
 		releaseWinColor();
@@ -103,7 +103,6 @@ namespace mb {
 
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
-		unlock();
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
@@ -161,16 +160,16 @@ namespace mb {
 		this->caps              = 0;
 		this->transparencyValue = 0x00;
 
-		pthread_mutex_init(&mutex, NULL);
-		pthread_mutex_init(&mutexC, NULL);
-		pthread_mutex_init(&texMutex, NULL);
-		pthread_mutex_init(&surMutex, NULL);
+		Thread::mutexInit(&mutex);
+		Thread::mutexInit(&mutexC);
+		Thread::mutexInit(&texMutex);
+		Thread::mutexInit(&surMutex);
 
 		this->isWaiting = false;
-	    pthread_mutex_init(&cMutex, NULL);
+	    Thread::mutexInit(&cMutex);
 	    pthread_cond_init(&cond, NULL);
 
-	    pthread_mutex_init(&rMutex, NULL);
+	    Thread::mutexInit(&rMutex);
 	}
 
 	void SDLWindow::releaseWinISur() {
@@ -288,14 +287,16 @@ namespace mb {
 	}
 
 	void SDLWindow::revertContent() {
-		lock();
+		lockSurface();
 		releaseWinISur();
-		unlock();
+		unlockSurface();
 	}
 
 	void SDLWindow::setChildSurface(ISurface* iSur) {
+		lockSurface();
 		releaseWinISur();
 		this->childSurface = iSur;
+		unlockSurface();
 	}
 
 	int SDLWindow::getCap(string cap) {
@@ -438,19 +439,12 @@ namespace mb {
 	}
 
 	void SDLWindow::validate() {
-		lock();
+		lockSurface();
 		unprotectedValidate();
-		unlock();
+		unlockSurface();
 	}
 
 	void SDLWindow::unprotectedValidate() {
-		ISurface* surface;
-
-		/*if (childSurface != NULL) {
-			childSurface->flip();
-			releaseWinISur();
-		}*/
-
 		if (winISur != NULL) {
 			winISur->flip();
 			curSur = (SDL_Surface*)(winISur->getSurfaceContent());
@@ -569,11 +563,9 @@ namespace mb {
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
-			lockSurface();
 			if (surface == winISur || surface == childSurface) {
 				itIs = true;
 			}
-			unlockSurface();
 		}
 
 		return itIs;
@@ -612,6 +604,7 @@ namespace mb {
 			return;
 		}
 
+		lockSurface();
 		if (!isMine(surface)) {
 			releaseWinISur();
 			winISur = LocalScreenManager::getInstance()->createSurface(
@@ -624,9 +617,10 @@ namespace mb {
 			textureUpdate = true;
 
 		} else {
-			curSur = (SDL_Surface*)surface->getSurfaceContent();
+			curSur = contentSurface;
 			textureUpdate = true;
 		}
+		unlockSurface();
 
 		pthread_mutex_unlock(&rMutex);
 	}
@@ -635,9 +629,7 @@ namespace mb {
 		/*SDL_Window* srcWin;
 		SDL_Surface* srcSur;
 
-		lock();
 		if (src != NULL) {
-			src->lock();
 			srcWin = (SDL_Window*)(src->getSurfaceContent());
 			srcWin->GetSurface(srcWin, &srcSur);
 
@@ -649,9 +641,7 @@ namespace mb {
 				SDLCHECK(winSur->Blit(
 						winSur, srcSur, NULL, src->getX(), src->getY()));
 			}
-			src->unlock();
-		}
-		unlock();*/
+		}*/
 	}
 
 	void SDLWindow::stretchBlit(IWindow* src) {
@@ -659,9 +649,7 @@ namespace mb {
 		SDL_Window* srcWin;
 		SDL_Surface* srcSur;
 
-		lock();
 		/*if (src != NULL) {
-			src->lock();
 			srcWin = (SDL_Window*)(src->getSurfaceContent());
 			srcWin->GetSurface(srcWin, &srcSur);
 
@@ -672,15 +660,13 @@ namespace mb {
 
 				SDLCHECK(winSur->StretchBlit(winSur, srcSur, NULL, NULL));
 			}
-			src->unlock();
 		}*/
-		unlock();
 	}
 
 	string SDLWindow::getDumpFileUri(int quality, int dumpW, int dumpH) {
 		string uri, strCmd;
 
-		lock();
+		lockSurface();
 		if (winISur == NULL) {
 			uri = "";
 
@@ -708,17 +694,17 @@ namespace mb {
 					if (::system(strCmd.c_str()) < 0) {
 						clog << "SDLWindow::getDumpFileUri Warning!!! ";
 						clog << " Can't create JPEG file" << endl;
-						unlock();
+						unlockSurface();
 						return uri + ".ppm";
 					}
 				}
 
-				unlock();
+				unlockSurface();
 				return uri + ".jpg";
 			}
 		}
 
-		unlock();
+		unlockSurface();
 		return "";
 	}
 

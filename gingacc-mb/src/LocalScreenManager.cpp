@@ -101,11 +101,11 @@ namespace mb {
 
 	LocalScreenManager::LocalScreenManager() {
 		screens  = new map<GingaScreenID, IDeviceScreen*>;
-		pthread_mutex_init(&mapMutex, NULL);
-		pthread_mutex_init(&genMutex, NULL);
+		Thread::mutexInit(&mapMutex);
+		Thread::mutexInit(&genMutex);
 
 		sysNames = new map<string, short>;
-		pthread_mutex_init(&sysMutex, NULL);
+		Thread::mutexInit(&sysMutex);
 
 		(*sysNames)["dflt" ] = GMBST_DFLT;
 		(*sysNames)["dfb"  ] = GMBST_DFB;
@@ -119,7 +119,7 @@ namespace mb {
 
 		isWaiting = false;
 		pthread_cond_init(&wsSignal, NULL);
-		pthread_mutex_init(&wsMutex, NULL);
+		Thread::mutexInit(&wsMutex);
 
 		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
 		clog << "all done" << endl;

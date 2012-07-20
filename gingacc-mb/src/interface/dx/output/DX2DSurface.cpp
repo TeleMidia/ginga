@@ -90,8 +90,8 @@ namespace mb {
 		this->pTexCanvas = NULL;
 		this->pTexFont = NULL;
 
-		pthread_mutex_init(&visible_lock, NULL);
-		pthread_mutex_init(&tex_lock, NULL);
+		Thread::mutexInit(&visible_lock, NULL);
+		Thread::mutexInit(&tex_lock, NULL);
 		
 		if(FAILED(pD3ddev->CreateTexture( width, height, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &(pTex), NULL))){
 			clog << "erro" << endl;

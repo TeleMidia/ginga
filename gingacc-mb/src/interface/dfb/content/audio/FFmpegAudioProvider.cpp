@@ -888,10 +888,10 @@ namespace mb {
 		clog << "Initialing mutexes";
 		clog << endl;
 
-		direct_util_recursive_pthread_mutex_init(&rContainer->input.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->audio.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->audio.queue.lock);
-		direct_util_recursive_pthread_mutex_init(&rContainer->events_lock);
+		Thread::mutexInit(&rContainer->input.lock);
+		Thread::mutexInit(&rContainer->audio.lock);
+		Thread::mutexInit(&rContainer->audio.queue.lock);
+		Thread::mutexInit(&rContainer->events_lock);
 		pthread_cond_init (&rContainer->audio.cond, NULL);
 
 		clog << "FFmpegAudioProvider::initializeFFmpeg ALL DONE";

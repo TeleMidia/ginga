@@ -66,7 +66,7 @@ namespace mb {
 		win        = NULL;
 		isWaiting  = false;
 
-		/*pthread_mutex_init(&cMutex, NULL);
+		/*Thread::mutexInit(&cMutex);
 		pthread_cond_init(&cond, NULL);*/
 
 		if (decoder != NULL) {

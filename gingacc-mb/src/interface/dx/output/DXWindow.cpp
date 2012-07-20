@@ -92,8 +92,8 @@ namespace mb {
 
 		((*depthMap)[1.0000f]).push_back(this);
 
-		pthread_mutex_init(&mutex, NULL);
-		pthread_mutex_init(&mutexC, NULL);
+		Thread::mutexInit(&mutex, NULL);
+		Thread::mutexInit(&mutexC, NULL);
 	}
 
 	DXWindow::~DXWindow() {

@@ -118,9 +118,9 @@ namespace mb {
 		im          = NULL;
 		id          = myId;
 
-		pthread_mutex_init(&winMutex, NULL);
-		pthread_mutex_init(&surMutex, NULL);
-		pthread_mutex_init(&cmpMutex, NULL);
+		Thread::mutexInit(&winMutex);
+		Thread::mutexInit(&surMutex);
+		Thread::mutexInit(&cmpMutex);
 
 		for (i = 0; i < argc; i++) {
 			if ((strcmp(argv[i], "audio") == 0) && ((i + 1) < argc)) {
@@ -785,7 +785,7 @@ namespace mb {
 			return;
 		}
 
-		pthread_mutex_init(&ieMutex, NULL);
+		Thread::mutexInit(&ieMutex, NULL);
 
 		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_CUSTOM1;
 		gingaToDFBCodeMap[CodeMap::KEY_NULL]              = DIKS_NULL;
