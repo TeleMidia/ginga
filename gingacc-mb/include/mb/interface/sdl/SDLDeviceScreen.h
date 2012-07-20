@@ -238,7 +238,7 @@ typedef struct {
 			ISurface* createSurface(int w, int h);
 			ISurface* createSurfaceFrom(void* underlyingSurface);
 			bool hasSurface(ISurface* sur);
-			void releaseSurface(ISurface* sur);
+			bool releaseSurface(ISurface* sur);
 
 
 			/* interfacing content */

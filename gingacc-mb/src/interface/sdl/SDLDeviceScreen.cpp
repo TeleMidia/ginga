@@ -724,16 +724,20 @@ namespace mb {
 		return hasSur;
 	}
 
-	void SDLDeviceScreen::releaseSurface(ISurface* s) {
+	bool SDLDeviceScreen::releaseSurface(ISurface* s) {
 		set<ISurface*>::iterator i;
 		SDL_Surface* uSur = NULL;
+		bool released = false;
 
 		pthread_mutex_lock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
 			surfacePool.erase(i);
+			released = true;
 		}
 		pthread_mutex_unlock(&surMutex);
+
+		return released;
 	}
 
 
@@ -793,7 +797,7 @@ namespace mb {
 
 		IFontProvider* provider = NULL;
 
-		pthread_mutex_lock(&cmpMutex);
+		pthread_mutex_lock(&dmpMutex);
 
 #if HAVE_COMPSUPPORT
 		provider = ((FontProviderCreator*)(cm->getObject("SDLFontProvider")))(
@@ -804,7 +808,7 @@ namespace mb {
 #endif
 
 		dmpPool.insert(provider);
-		pthread_mutex_unlock(&cmpMutex);
+		pthread_mutex_unlock(&dmpMutex);
 
 		return provider;
 	}
@@ -863,6 +867,7 @@ namespace mb {
 		ISurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
 
+		pthread_mutex_lock(&sMutex);
 		if (fileExists(mrl)) {
 			provider = createImageProvider(mrl);
 			if (provider != NULL) {
@@ -877,6 +882,7 @@ namespace mb {
 			clog << "Warning! '" << mrl << "' file not found" << endl;
 		}
 
+		pthread_mutex_unlock(&sMutex);
 		return iSur;
 	}
 
