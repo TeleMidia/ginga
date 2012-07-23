@@ -104,7 +104,7 @@ namespace player {
 
 		this->_eMVarW  = false;
 		pthread_cond_init(&_eMVar, NULL);
-		pthread_mutex_init(&_eM, NULL);
+		Thread::mutexInit(&_eM, NULL);
 	}
 
 	AwesomiumInfo::~AwesomiumInfo() {
@@ -115,11 +115,11 @@ namespace player {
 
 	void AwesomiumInfo::waitEvent() {
 		_eMVarW = true;
-		pthread_mutex_lock(&_eM);
+		Thread::mutexLock(&_eM);
 		pthread_cond_wait(&_eMVar, &_eM);
 
 		_eMVarW = false;
-		pthread_mutex_unlock(&_eM);
+		Thread::mutexUnlock(&_eM);
 	}
 
 	bool AwesomiumInfo::eventArrived() {
@@ -353,7 +353,7 @@ namespace player {
 		IInputManager* im;
 
 		if (dm == NULL) {
-			pthread_mutex_init(&s_lMutex, NULL);
+			Thread::mutexInit(&s_lMutex, NULL);
 
 #if HAVE_COMPSUPPORT
 			dm = ((LocalScreenManagerCreator*)(
@@ -429,9 +429,9 @@ namespace player {
 
 		string str_custom_css;
 
-		pthread_mutex_lock(&s_lMutex);
+		Thread::mutexLock(&s_lMutex);
 		if (webView != NULL) {
-			pthread_mutex_unlock(&s_lMutex);
+			Thread::mutexUnlock(&s_lMutex);
 			return;
 		}
 
@@ -504,7 +504,7 @@ namespace player {
 					}
 
 					if (aInfo->w <= 0 || aInfo->h <= 0) {
-						pthread_mutex_unlock(&s_lMutex);
+						Thread::mutexUnlock(&s_lMutex);
 						return;
 					}
 				}
@@ -650,7 +650,7 @@ namespace player {
 				}
 			}
 		}
-		pthread_mutex_unlock(&s_lMutex);
+		Thread::mutexUnlock(&s_lMutex);
 
 		clog << "AwesomiumHandler::loadUrl all done";
 	}

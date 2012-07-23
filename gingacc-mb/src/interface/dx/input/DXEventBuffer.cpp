@@ -88,7 +88,7 @@ namespace mb {
 	DXEventBuffer::~DXEventBuffer() {
 		clog << "DXEventBuffer::~DXEventBuffer()" << endl;
 
-		pthread_mutex_lock(&m_mtxInput);
+		Thread::mutexLock(&m_mtxInput);
 		if(m_dInput){
 
 			m_dInputKeyBoard->Unacquire();
@@ -102,16 +102,16 @@ namespace mb {
 			m_dInput->Release();
 			m_dInput = NULL;
 		}
-		pthread_mutex_unlock(&m_mtxInput);
+		Thread::mutexUnlock(&m_mtxInput);
 		pthread_mutex_destroy(&m_mtxInput);
 
-		pthread_mutex_unlock(&evt_lock);
+		Thread::mutexUnlock(&evt_lock);
 		pthread_mutex_destroy(&evt_lock);
 	}
 
 	void DXEventBuffer::wakeUp() {
 		clog << "DXEventBuffer::wakeUp()" << endl;
-		pthread_mutex_lock(&evt_lock);
+		Thread::mutexLock(&evt_lock);
 	}
 
 	void DXEventBuffer::postInputEvent(IInputEvent* evt) {
@@ -130,9 +130,9 @@ namespace mb {
 
 	void DXEventBuffer::waitEvent() {
 		//clog << "DXEventBuffer::waitEvent()" << endl;
-		pthread_mutex_lock(&evt_lock);
+		Thread::mutexLock(&evt_lock);
 		Sleep(80);
-		pthread_mutex_unlock(&evt_lock);
+		Thread::mutexUnlock(&evt_lock);
 	}
 
 	IInputEvent* DXEventBuffer::getNextEvent() {
@@ -141,7 +141,7 @@ namespace mb {
 		DWORD dwElements = 1;
 		HRESULT hr = 0;
 
-		pthread_mutex_lock(&m_mtxInput);
+		Thread::mutexLock(&m_mtxInput);
 
 		ZeroMemory( &tmp_mouse, sizeof(tmp_mouse) );
 		std::auto_ptr<DIDEVICEOBJECTDATA> pDidod (new DIDEVICEOBJECTDATA());
@@ -152,7 +152,7 @@ namespace mb {
 			it = userEventsPool->begin();
 			evt = ((IInputEvent*)(*it));
 			userEventsPool->erase(userEventsPool->begin());
-			pthread_mutex_unlock(&m_mtxInput);
+			Thread::mutexUnlock(&m_mtxInput);
 			return (evt);
 		}
 
@@ -173,11 +173,11 @@ namespace mb {
 
 				if(pDidod->dwOfs != NULL){
 					printf( "---> 0x%02x [%s] \n", pDidod->dwOfs, (pDidod->dwData & 0x80) ? "D" : "U");
-					pthread_mutex_unlock(&m_mtxInput);
+					Thread::mutexUnlock(&m_mtxInput);
 					return new DXInputEvent(pDidod.release());
 				}
 			}
-			pthread_mutex_unlock(&m_mtxInput);
+			Thread::mutexUnlock(&m_mtxInput);
 		}
 
 		if( m_dInputMouse != NULL){
@@ -211,24 +211,24 @@ namespace mb {
 
 			if(m_cursorPos.x < 0){
 				m_dInputMouse->Unacquire();
-				pthread_mutex_unlock(&m_mtxInput);
+				Thread::mutexUnlock(&m_mtxInput);
 				return NULL;
 			}else{
 				if(m_cursorPos.x > m_scrWidth){
 					m_dInputMouse->Unacquire();
-					pthread_mutex_unlock(&m_mtxInput);
+					Thread::mutexUnlock(&m_mtxInput);
 					return NULL;
 				}
 			}
 
 			if(m_cursorPos.y < 0){
 				m_dInputMouse->Unacquire();
-				pthread_mutex_unlock(&m_mtxInput);
+				Thread::mutexUnlock(&m_mtxInput);
 				return NULL;
 			}else{
 				if(m_cursorPos.y > m_scrHeight){
 					m_dInputMouse->Unacquire();
-					pthread_mutex_unlock(&m_mtxInput);
+					Thread::mutexUnlock(&m_mtxInput);
 					return NULL;
 				}
 			}
@@ -239,18 +239,18 @@ namespace mb {
 			if(((tmp_mouse.rgbButtons[0] & 0x80) || (tmp_mouse.rgbButtons[1] & 0x80)) ){
 				if(!m_mouseHolding){
 					m_mouseHolding = true;
-					pthread_mutex_unlock(&m_mtxInput);
+					Thread::mutexUnlock(&m_mtxInput);
 					return new DXInputEvent(tmp_mouse); // button (left/right) pressed
 				}
 			}else{
 				m_mouseHolding = false;
-				pthread_mutex_unlock(&m_mtxInput);
+				Thread::mutexUnlock(&m_mtxInput);
 				return new DXInputEvent(tmp_mouse); // just xy axis moving
 			}
-			pthread_mutex_unlock(&m_mtxInput);
+			Thread::mutexUnlock(&m_mtxInput);
 		}
 
-		pthread_mutex_unlock(&m_mtxInput);
+		Thread::mutexUnlock(&m_mtxInput);
 
 		return NULL;
 	}

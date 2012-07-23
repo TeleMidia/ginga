@@ -95,7 +95,7 @@ namespace mb {
 	}
 
 	FusionSoundAudioProvider::~FusionSoundAudioProvider() {
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder != NULL) {
 			decoder->Stop(decoder);
 			decoder->Release(decoder);
@@ -119,7 +119,7 @@ namespace mb {
 			sound = NULL;
 		}*/
 
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 		pthread_mutex_destroy(&decMutex);
 
 #if DFBTM_PATCH
@@ -157,54 +157,54 @@ namespace mb {
 	double FusionSoundAudioProvider::getTotalMediaTime() {
 		double totalTime;
 
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return 0;
 		}
 
 		decoder->GetLength(decoder, &totalTime);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 		return totalTime;
 	}
 
 	double FusionSoundAudioProvider::getMediaTime() {
 		double currentTime;
 
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return -1;
 		}
 
 		decoder->GetPos(decoder, &currentTime);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 		return currentTime;
 	}
 
 	void FusionSoundAudioProvider::setMediaTime(double pos) {
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return;
 		}
 
 		decoder->SeekTo(decoder, pos);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 	}
 
 	void FusionSoundAudioProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
 			clog << "FusionSoundAudioProvider::playOver decoder = NULL" << endl;
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return;
 		}
 
 		decoder->PlayToStream(decoder, stream);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 	}
 
 	void FusionSoundAudioProvider::pause() {
@@ -212,37 +212,37 @@ namespace mb {
 	}
 
 	void FusionSoundAudioProvider::resume(ISurface* surface, bool hasVisual) {
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return;
 		}
 
 		decoder->PlayToStream(decoder, stream);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 	}
 
 	void FusionSoundAudioProvider::stop() {
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (decoder == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return;
 		}
 
 		clog << "FusionSoundAudioProvider::stop(" << this << ")" << endl;
 		decoder->Stop(decoder);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 	}
 
 	void FusionSoundAudioProvider::setSoundLevel(float level) {
-		pthread_mutex_lock(&decMutex);
+		Thread::mutexLock(&decMutex);
 		if (playback == NULL) {
-			pthread_mutex_unlock(&decMutex);
+			Thread::mutexUnlock(&decMutex);
 			return;
 		}
 
 		playback->SetVolume(playback, level);
-		pthread_mutex_unlock(&decMutex);
+		Thread::mutexUnlock(&decMutex);
 	}
 
 	void FusionSoundAudioProvider::getOriginalResolution(

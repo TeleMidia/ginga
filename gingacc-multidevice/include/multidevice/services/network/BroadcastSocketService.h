@@ -52,7 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "ISocketService.h"
 
-#include <pthread.h>
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include <vector>
 #include <string>
 using namespace std;

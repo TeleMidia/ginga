@@ -56,6 +56,9 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>

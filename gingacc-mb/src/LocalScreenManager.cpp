@@ -585,11 +585,11 @@ namespace mb {
 	}
 
 	void LocalScreenManager::lockSysNames() {
-		pthread_mutex_lock(&sysMutex);
+		Thread::mutexLock(&sysMutex);
 	}
 
 	void LocalScreenManager::unlockSysNames() {
-		pthread_mutex_unlock(&sysMutex);
+		Thread::mutexUnlock(&sysMutex);
 	}
 
 	void LocalScreenManager::mergeIds(
@@ -987,19 +987,19 @@ namespace mb {
 	}
 
 	void LocalScreenManager::lockScreenMap() {
-		pthread_mutex_lock(&mapMutex);
+		Thread::mutexLock(&mapMutex);
 	}
 
 	void LocalScreenManager::unlockScreenMap() {
-		pthread_mutex_unlock(&mapMutex);
+		Thread::mutexUnlock(&mapMutex);
 	}
 
 	void LocalScreenManager::lock() {
-		pthread_mutex_lock(&genMutex);
+		Thread::mutexLock(&genMutex);
 	}
 
 	void LocalScreenManager::unlock() {
-		pthread_mutex_unlock(&genMutex);
+		Thread::mutexUnlock(&genMutex);
 	}
 }
 }

@@ -76,13 +76,13 @@ namespace multidevice {
 
 		addDevice(domainAddr, IDeviceDomain::CT_BASE, 0, 0);
 
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		i = listeners->begin();
 		while (i != listeners->end()) {
 			(*i)->connectedToBaseDevice(domainAddr);
 			++i;
 		}
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 	}
 
 	bool PassiveDeviceService::receiveMediaContent(
@@ -100,9 +100,9 @@ namespace multidevice {
 		//clog << "PassiveDeviceService::receiveMediaContent" << endl;
 
 		dev = getDevice(devAddr);
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		hasLists = !listeners->empty();
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
@@ -125,13 +125,13 @@ namespace multidevice {
 					bytesWrite = fwrite(stream, 1, streamSize, fd);
 					fclose(fd);
 					if (bytesWrite == streamSize) {
-						pthread_mutex_lock(&lMutex);
+						Thread::mutexLock(&lMutex);
 						i = listeners->begin();
 						while (i != listeners->end()) {
 							(*i)->receiveRemoteContent(remoteDevClass, uri);
 							++i;
 						}
-						pthread_mutex_unlock(&lMutex);
+						Thread::mutexUnlock(&lMutex);
 						return true;
 
 					} else {

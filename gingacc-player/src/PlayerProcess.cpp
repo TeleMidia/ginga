@@ -66,10 +66,10 @@ namespace player {
 
 		msgs = new map<string, string>;
 
-		pthread_mutex_init(&msgMutex, NULL);
+		Thread::mutexInit(&msgMutex, NULL);
 
 		isWaitingAns = false;
-		pthread_mutex_init(&ansMutex, NULL);
+		Thread::mutexInit(&ansMutex, NULL);
 		pthread_cond_init(&ansCond, NULL);
 
 		init(objName);
@@ -90,13 +90,13 @@ namespace player {
 		pthread_mutex_destroy(&ansMutex);
 		pthread_cond_destroy(&ansCond);
 
-		pthread_mutex_lock(&msgMutex);
+		Thread::mutexLock(&msgMutex);
 		if (msgs != NULL) {
 			delete msgs;
 			msgs = NULL;
 		}
 
-		pthread_mutex_unlock(&msgMutex);
+		Thread::mutexUnlock(&msgMutex);
 		pthread_mutex_destroy(&msgMutex);
 	}
 
@@ -150,16 +150,16 @@ namespace player {
 
 		clog << "PlayerProcess::getAnswer '" << token << "'" << endl;
 		while (reader) {
-			pthread_mutex_lock(&msgMutex);
+			Thread::mutexLock(&msgMutex);
 			i = msgs->find(token);
 			if (i != msgs->end()) {
 				ans = i->second;
 				msgs->erase(i);
-				pthread_mutex_unlock(&msgMutex);
+				Thread::mutexUnlock(&msgMutex);
 				return ans;
 
 			} else {
-				pthread_mutex_unlock(&msgMutex);
+				Thread::mutexUnlock(&msgMutex);
 				waitAnswer(howPatient);
 			}
 		}
@@ -183,13 +183,13 @@ namespace player {
 
 		timeOut.tv_nsec = micro * 1000;
 
-		pthread_mutex_lock(&ansMutex);
+		Thread::mutexLock(&ansMutex);
 		isWaitingAns = true;
 		pthread_cond_timedwait(
 				&ansCond, &ansMutex, (const struct timespec*)(&timeOut));
 
 		isWaitingAns = false;
-		pthread_mutex_unlock(&ansMutex);
+		Thread::mutexUnlock(&ansMutex);
 	}
 
 	void PlayerProcess::messageReceived(string msg) {
@@ -203,9 +203,9 @@ namespace player {
 					msg.find_first_of("=") + 1,
 					msg.length() - msg.find_first_of("=") + 1);
 
-			pthread_mutex_lock(&msgMutex);
+			Thread::mutexLock(&msgMutex);
 			(*msgs)[key] = value;
-			pthread_mutex_unlock(&msgMutex);
+			Thread::mutexUnlock(&msgMutex);
 			if (isWaitingAns) {
 				pthread_cond_signal(&ansCond);
 			}

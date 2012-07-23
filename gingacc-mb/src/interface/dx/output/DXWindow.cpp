@@ -132,8 +132,8 @@ namespace mb {
 		}
 		unlock();
 
-		pthread_mutex_unlock(&mutex);
-		pthread_mutex_unlock(&mutexC);
+		Thread::mutexUnlock(&mutex);
+		Thread::mutexUnlock(&mutexC);
 
 		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
@@ -436,22 +436,22 @@ namespace mb {
 
 	void DXWindow::lock() {
 		clog << "DXWindow::lock()" << endl;
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 	}
 
 	void DXWindow::unlock() {
 		clog << "DXWindow::unlock()" << endl;
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	void DXWindow::lockChilds() {
 		clog << "DXWindow::lockChilds()" << endl;
-		pthread_mutex_lock(&mutexC);
+		Thread::mutexLock(&mutexC);
 	}
 
 	void DXWindow::unlockChilds() {
 		clog << "DXWindow::unlockChilds()" << endl;
-		pthread_mutex_unlock(&mutexC);
+		Thread::mutexUnlock(&mutexC);
 	}
 
 	void DXWindow::setMaxTransparencyValue(int maxValue){

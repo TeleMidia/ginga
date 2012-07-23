@@ -102,7 +102,7 @@ namespace multidevice {
 		broadcastIPAddr = "0.0.0.0";
 		outputBuffer = new vector<struct frame*>;
 
-		pthread_mutex_init(&mutexBuffer, NULL);
+		Thread::mutexInit(&mutexBuffer, NULL);
 
 		if (buildDomainAddress()) {
 #ifdef __DARWIN_UNIX03
@@ -339,13 +339,13 @@ namespace multidevice {
 			char* data, int taskSize, bool repeat) {
 
 		struct frame* f;
-		pthread_mutex_lock(&mutexBuffer);
+		Thread::mutexLock(&mutexBuffer);
 		f = new struct frame;
 		f->data      = data;
 		f->size      = taskSize;
 		f->repeat    = repeat;
 		outputBuffer->push_back(f);
-		pthread_mutex_unlock(&mutexBuffer);
+		Thread::mutexUnlock(&mutexBuffer);
 	}
 
 	bool BroadcastSocketService::sendData(struct frame* f) {
@@ -400,7 +400,7 @@ namespace multidevice {
 		bool sent = false;
 		struct frame* f;
 
-		pthread_mutex_lock(&mutexBuffer);
+		Thread::mutexLock(&mutexBuffer);
 		i = outputBuffer->begin();
 		if (i != outputBuffer->end()) {
 			f = *i;
@@ -415,7 +415,7 @@ namespace multidevice {
 			/*clog << "BroadcastSocketService::checkOutputBuffer ";
 			clog << "empty buffer" << endl;*/
 		}
-		pthread_mutex_unlock(&mutexBuffer);
+		Thread::mutexUnlock(&mutexBuffer);
 
 		return sent;
 	}

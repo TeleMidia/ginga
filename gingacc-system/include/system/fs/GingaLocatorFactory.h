@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "IGingaLocatorFactory.h"
 
 #include <pthread.h>

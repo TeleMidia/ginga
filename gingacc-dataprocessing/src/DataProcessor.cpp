@@ -91,7 +91,7 @@ namespace dataprocessing {
 
 		startThread();
 
-		pthread_mutex_init(&mutex, NULL);
+		Thread::mutexInit(&mutex, NULL);
 
 		SystemCompat::makeDir("carousel", 0777);
 		SystemCompat::makeDir("carousel/modules", 0777);
@@ -276,7 +276,7 @@ namespace dataprocessing {
 		delete data;
 		data = NULL;
 
-		pthread_mutex_unlock(mtx);
+		Thread::mutexUnlock(mtx);
 
 		listener->receiveStreamEvent(se);
 		return NULL;
@@ -297,7 +297,7 @@ namespace dataprocessing {
 			j = listeners->begin();
 			while (j != listeners->end()) {
 				//(*j)->receiveStreamEvent(se);
-				pthread_mutex_lock(&mutex);
+				Thread::mutexLock(&mutex);
 				data = new struct notifyData;
 				data->listener = *j;
 				data->se = se;

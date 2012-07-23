@@ -62,26 +62,26 @@ namespace multidevice {
 		devices      = new map<unsigned int, IRemoteDevice*>;
 		listeners    = new set<IRemoteDeviceListener*>;
 
-		pthread_mutex_init(&lMutex, NULL);
-		pthread_mutex_init(&dMutex, NULL);
+		Thread::mutexInit(&lMutex, NULL);
+		Thread::mutexInit(&dMutex, NULL);
 		serviceClass = -1;
 	}
 
 	DeviceService::~DeviceService() {
-		pthread_mutex_lock(&dMutex);
+		Thread::mutexLock(&dMutex);
 		if (devices != NULL) {
 			delete devices;
 			devices = NULL;
 		}
-		pthread_mutex_unlock(&dMutex);
+		Thread::mutexUnlock(&dMutex);
 		pthread_mutex_destroy(&dMutex);
 
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		if (listeners != NULL) {
 			delete listeners;
 			listeners = NULL;
 		}
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 		pthread_mutex_destroy(&lMutex);
 	}
 
@@ -89,33 +89,33 @@ namespace multidevice {
 		map<unsigned int, IRemoteDevice*>::iterator i;
 		IRemoteDevice* remoteDev;
 
-		pthread_mutex_lock(&dMutex);
+		Thread::mutexLock(&dMutex);
 		i = devices->find(devAddr);
 		if (i != devices->end()) {
 			remoteDev = i->second;
-			pthread_mutex_unlock(&dMutex);
+			Thread::mutexUnlock(&dMutex);
 			return remoteDev;
 		}
 
-		pthread_mutex_unlock(&dMutex);
+		Thread::mutexUnlock(&dMutex);
 		return NULL;
 	}
 
 	void DeviceService::addListener(IRemoteDeviceListener* listener) {
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		listeners->insert(listener);
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 	}
 
 	void DeviceService::removeListener(IRemoteDeviceListener* listener) {
 		set<IRemoteDeviceListener*>::iterator i;
 
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		i = listeners->find(listener);
 		if (i != listeners->end()) {
 			listeners->erase(i);
 		}
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 	}
 
 	bool DeviceService::addDevice(
@@ -131,9 +131,9 @@ namespace multidevice {
 			device = new RemoteDevice(deviceAddress, newDevClass);
 			device->setDeviceResolution(width, height);
 
-			pthread_mutex_lock(&dMutex);
+			Thread::mutexLock(&dMutex);
 			(*devices)[deviceAddress] = device;
-			pthread_mutex_unlock(&dMutex);
+			Thread::mutexUnlock(&dMutex);
 
 		} else {
 			device->getDeviceResolution(&w, &h);
@@ -151,9 +151,9 @@ namespace multidevice {
 	bool DeviceService::hasDevices() {
 		bool hasDev;
 
-		pthread_mutex_lock(&dMutex);
+		Thread::mutexLock(&dMutex);
 		hasDev = !devices->empty();
-		pthread_mutex_unlock(&dMutex);
+		Thread::mutexUnlock(&dMutex);
 
 		return hasDev;
 	}

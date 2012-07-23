@@ -68,7 +68,7 @@ namespace multidevice {
 		mss.sin_port        = htons(port);
 		mss.sin_addr.s_addr = inet_addr(gAddr);
 
-		pthread_mutex_init(&mutexBuffer, NULL);
+		Thread::mutexInit(&mutexBuffer, NULL);
 		*/
 		createMulticastGroup();
 	}
@@ -241,13 +241,13 @@ TODO: fix for ios
 
 		struct frame* f;
 
-		pthread_mutex_lock(&mutexBuffer);
+		Thread::mutexLock(&mutexBuffer);
 		f = new struct frame;
 		f->data      = data;
 		f->size      = taskSize;
 		f->repeat    = repeat;
 		outputBuffer->push_back(f);
-		pthread_mutex_unlock(&mutexBuffer);
+		Thread::mutexUnlock(&mutexBuffer);
 	}
 
 	bool MulticastSocketService::sendData(struct frame* f) {
@@ -297,7 +297,7 @@ TODO: fix for ios
 		bool sent = false;
 		struct frame* f;
 
-		pthread_mutex_lock(&mutexBuffer);
+		Thread::mutexLock(&mutexBuffer);
 		i = outputBuffer->begin();
 		if (i != outputBuffer->end()) {
 			f = *i;
@@ -312,7 +312,7 @@ TODO: fix for ios
 			//clog << "MulticastSocketService::checkOutputBuffer ";
 			//clog << "empty buffer" << endl;
 		}
-		pthread_mutex_unlock(&mutexBuffer);
+		Thread::mutexUnlock(&mutexBuffer);
 
 		return sent;
 	}
