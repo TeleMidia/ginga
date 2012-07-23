@@ -69,13 +69,13 @@ namespace multidevice {
 
 		addDevice(domainAddr, IDeviceDomain::CT_BASE, 0, 0);
 
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		i = listeners->begin();
 		while (i != listeners->end()) {
 			(*i)->connectedToBaseDevice(domainAddr);
 			++i;
 		}
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 	}
 
 	bool ActiveDeviceService::receiveMediaContent(
@@ -93,9 +93,9 @@ namespace multidevice {
 		//clog << "ActiveDeviceService::receiveMediaContent" << endl;
 
 		dev = getDevice(devAddr);
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		hasLists = !listeners->empty();
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
@@ -117,7 +117,7 @@ namespace multidevice {
 
 				if (nsp != NULL && nsp->isConsolidated()) {
 					//TODO: mount according to NCL sections
-					pthread_mutex_lock(&lMutex);
+					Thread::mutexLock(&lMutex);
 					i = listeners->begin();
 					while (i != listeners->end()) {
 						(*i)->receiveRemoteContentInfo(
@@ -127,7 +127,7 @@ namespace multidevice {
 								remoteDevClass, nsp->getRootUri());
 						++i;
 					}
-					pthread_mutex_unlock(&lMutex);
+					Thread::mutexUnlock(&lMutex);
 				}
 				return true;
 			}*/

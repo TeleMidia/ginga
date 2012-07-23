@@ -77,16 +77,16 @@ TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
 	port = p;
 
 	connections = new map<unsigned int, TCPClientConnection*>;
-	pthread_mutex_init(&connMutex, NULL);
+	Thread::mutexInit(&connMutex, NULL);
 }
 
 TcpSocketService::~TcpSocketService() {
-	pthread_mutex_lock(&connMutex);
+	Thread::mutexLock(&connMutex);
 	if (connections != NULL) {
 		delete connections;
 		connections = NULL;
 	}
-	pthread_mutex_unlock(&connMutex);
+	Thread::mutexUnlock(&connMutex);
 	pthread_mutex_destroy(&connMutex);
 }
 
@@ -96,7 +96,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 	//unsigned int newDevId;
 
 	asprintf(&portStr,"%d",port);
-	pthread_mutex_lock(&connMutex);
+	Thread::mutexLock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
 
 //	if (connections != NULL) {
@@ -129,7 +129,7 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}
 
-	pthread_mutex_unlock(&connMutex);
+	Thread::mutexUnlock(&connMutex);
 
 	clog << "TcpSocketService::addConnection all done" << endl;
 }
@@ -161,7 +161,7 @@ void TcpSocketService::postTcpCommand(
 	//clog << "TcpSocketService::postTcpCommand = ";
 	//clog << com << endl;
 
-	pthread_mutex_lock(&connMutex);
+	Thread::mutexLock(&connMutex);
 	i = connections->begin();
 
 	while (i != connections->end()) {
@@ -169,7 +169,7 @@ void TcpSocketService::postTcpCommand(
 		++i;
 	}
 
-	pthread_mutex_unlock(&connMutex);
+	Thread::mutexUnlock(&connMutex);
 }
 
 }

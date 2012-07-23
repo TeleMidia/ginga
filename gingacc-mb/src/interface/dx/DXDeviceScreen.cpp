@@ -104,11 +104,11 @@ namespace mb {
 
 		Thread::startThread();
 
-		pthread_mutex_lock(&init_lock);
+		Thread::mutexLock(&init_lock);
 		while (init != 1) {
 			pthread_cond_wait(&init_cond, &init_lock);
 		}
-		pthread_mutex_unlock(&init_lock);
+		Thread::mutexUnlock(&init_lock);
 
 	}
 
@@ -137,7 +137,7 @@ namespace mb {
 		windowPool->clear();
 		delete windowPool;
 		windowPool = NULL;
-		pthread_mutex_unlock(&winMutex);
+		Thread::mutexUnlock(&winMutex);
 		pthread_mutex_destroy(&winMutex);
 
 		//Releasing still Surface objects in Surface Pool
@@ -150,7 +150,7 @@ namespace mb {
 		surfacePool->clear();
 		delete surfacePool;
 		surfacePool = NULL;
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 		pthread_mutex_destroy(&surMutex);
 
 	}
@@ -187,9 +187,9 @@ namespace mb {
 			
 			window = new DX2DSurface(surProp->x, surProp->y, surProp->width, surProp->height, pD3dDev);
 
-			pthread_mutex_lock(&winMutex);
+			Thread::mutexLock(&winMutex);
 			windowPool->insert(window);
-			pthread_mutex_unlock(&winMutex);
+			Thread::mutexUnlock(&winMutex);
 		}
 
 		return (void*)window;
@@ -201,14 +201,14 @@ namespace mb {
 		DX2DSurface* w;
 		w = (DX2DSurface*)win;
 
-		pthread_mutex_lock(&winMutex);
+		Thread::mutexLock(&winMutex);
 		i = windowPool->find(w);
 		if (i != windowPool->end()) {
 			windowPool->erase(i);
-			pthread_mutex_unlock(&winMutex);
+			Thread::mutexUnlock(&winMutex);
 
 		} else {
-			pthread_mutex_unlock(&winMutex);
+			Thread::mutexUnlock(&winMutex);
 			return;
 		}
 
@@ -225,9 +225,9 @@ namespace mb {
 
 			surface = new DX2DSurface(surProp->x, surProp->y, surProp->width, surProp->height, pD3dDev);
 
-			pthread_mutex_lock(&surMutex);
+			Thread::mutexLock(&surMutex);
 			surfacePool->insert(surface);
-			pthread_mutex_unlock(&surMutex);
+			Thread::mutexUnlock(&surMutex);
 		}
 		return (void*)surface;
 	}
@@ -238,14 +238,14 @@ namespace mb {
 		DX2DSurface* s;
 		s = (DX2DSurface*)sur;
 
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		i = surfacePool->find(s);
 		if (i != surfacePool->end()) {
 			surfacePool->erase(i);
-			pthread_mutex_unlock(&surMutex);
+			Thread::mutexUnlock(&surMutex);
 
 		} else {
-			pthread_mutex_unlock(&surMutex);
+			Thread::mutexUnlock(&surMutex);
 			return;
 		}
 
@@ -299,9 +299,9 @@ namespace mb {
 
 		clog << "DXDeviceScreen::run() -> " << dxHwnd << endl;
 
-		pthread_mutex_lock(&init_lock);
+		Thread::mutexLock(&init_lock);
 		init = 1;
-		pthread_mutex_unlock(&init_lock);
+		Thread::mutexUnlock(&init_lock);
 
 		pthread_cond_broadcast(&init_cond);
 
@@ -369,7 +369,7 @@ namespace mb {
 		srand ( time(NULL) );
 		
 		if(SUCCEEDED((this->pD3dDev)->BeginScene())){
-			pthread_mutex_lock(&winMutex);
+			Thread::mutexLock(&winMutex);
 			if( (windowPool != NULL) && !windowPool->empty()){
 				for (k = windowPool->begin(); k != windowPool->end(); ++k) {
 					
@@ -379,9 +379,9 @@ namespace mb {
 					
 				}
 			}
-			pthread_mutex_unlock(&winMutex);
+			Thread::mutexUnlock(&winMutex);
 			
-			pthread_mutex_lock(&surMutex);
+			Thread::mutexLock(&surMutex);
 			if(!surfacePool->empty()){
 				for (w = surfacePool->begin(); w != surfacePool->end(); ++w) {
 					
@@ -391,7 +391,7 @@ namespace mb {
 					
 				}
 			}
-			pthread_mutex_unlock(&surMutex);
+			Thread::mutexUnlock(&surMutex);
 			
 			(this->pD3dDev)->EndScene();
 		}

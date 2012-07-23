@@ -60,12 +60,12 @@ namespace player {
 	PlainTxtPlayer::PlainTxtPlayer(GingaScreenID screenId, string mrl) :
 			TextPlayer(screenId) {
 
-		pthread_mutex_init(&mutex, NULL);
+		Thread::mutexInit(&mutex, NULL);
 		content = "";
 	}
 
 	PlainTxtPlayer::~PlainTxtPlayer() {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 		if (dm->hasSurface(myScreen, surface)) {
 			/*
 			 * the surface could never be a child of window
@@ -73,7 +73,7 @@ namespace player {
 			 */
 			surface->setParentWindow(NULL);
 		}
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 		pthread_mutex_destroy(&mutex);
    	}
 
@@ -109,12 +109,12 @@ namespace player {
 //			surface->clearSurface();
 //		}
 
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 		fis.open((this->mrl).c_str(), ifstream::in);
 		if (!fis.is_open() && (mrl != "" || content == "")) {
 			clog << "PlainTxtPlayer::loadFile Warning! can't open input ";
 			clog << "file: '" << this->mrl << "'" << endl;
-			pthread_mutex_unlock(&mutex);
+			Thread::mutexUnlock(&mutex);
 			return;
 		}
 
@@ -162,7 +162,7 @@ namespace player {
 		}
 
 		fis.close();
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	bool PlainTxtPlayer::play() {
@@ -182,7 +182,7 @@ namespace player {
 	}
 
 	void PlainTxtPlayer::setContent(string content) {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 
 		if (surface != NULL && surface->getParentWindow() != NULL) {
 //			surface->clearSurface();
@@ -214,11 +214,11 @@ namespace player {
 			((IWindow*)(surface->getParentWindow()))->validate();
 		}
 
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	void PlainTxtPlayer::setPropertyValue(string name, string value) {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 
 		vector<string>* params;
 		bool refresh = true;
@@ -229,7 +229,7 @@ namespace player {
 		*/
 
 		if (value == "") {
-			pthread_mutex_unlock(&mutex);
+			Thread::mutexUnlock(&mutex);
 			return;
 		}
 
@@ -330,9 +330,9 @@ namespace player {
 			params = NULL;
 
 		} else if (name == "x-content") {
-			pthread_mutex_unlock(&mutex);
+			Thread::mutexUnlock(&mutex);
 			setContent(value);
-			pthread_mutex_lock(&mutex);
+			Thread::mutexLock(&mutex);
 			refresh = false;
 
 		} else if (name == "x-setFile") {
@@ -341,7 +341,7 @@ namespace player {
 		}
 
 		Player::setPropertyValue(name, value);
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 
 		// refreshing changes
 		if (refresh) {

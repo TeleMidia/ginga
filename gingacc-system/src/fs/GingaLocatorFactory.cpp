@@ -65,7 +65,7 @@ namespace fs {
 
 		isWaiting = false;
 		pthread_cond_init(&flagCondSignal, NULL);
-		pthread_mutex_init(&flagMutexSignal, NULL);
+		Thread::mutexInit(&flagMutexSignal, NULL);
 	}
 
 	GingaLocatorFactory::~GingaLocatorFactory() {
@@ -293,10 +293,10 @@ namespace fs {
 
 	void GingaLocatorFactory::waitNewLocatorCondition() {
 		isWaiting = true;
-		pthread_mutex_lock(&flagMutexSignal);
+		Thread::mutexLock(&flagMutexSignal);
 		pthread_cond_wait(&flagCondSignal, &flagMutexSignal);
 		isWaiting = false;
-		pthread_mutex_unlock(&flagMutexSignal);
+		Thread::mutexUnlock(&flagMutexSignal);
 	}
 
 	bool GingaLocatorFactory::newLocatorConditionSatisfied() {

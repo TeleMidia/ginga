@@ -929,19 +929,19 @@ namespace mb {
 	}
 
 	void DFBWindow::lock() {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 	}
 
 	void DFBWindow::unlock() {
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	void DFBWindow::lockChilds() {
-		pthread_mutex_lock(&mutexC);
+		Thread::mutexLock(&mutexC);
 	}
 
 	void DFBWindow::unlockChilds() {
-		pthread_mutex_unlock(&mutexC);
+		Thread::mutexUnlock(&mutexC);
 	}
 }
 }

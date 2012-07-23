@@ -73,8 +73,8 @@ namespace mb {
 
 	SDLSurface::~SDLSurface() {
 		isDeleting = true;
-		pthread_mutex_lock(&sMutex);
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&sMutex);
+		Thread::mutexLock(&pMutex);
 
 		if (!LocalScreenManager::getInstance()->releaseSurface(
 				myScreen, this)) {
@@ -104,16 +104,16 @@ namespace mb {
 
 		sur = NULL;
 
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 		pthread_mutex_destroy(&sMutex);
 
 		releasePendingSurface();
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 		pthread_mutex_destroy(&pMutex);
 
 		releaseDrawData();
-		pthread_mutex_lock(&ddMutex);
-		pthread_mutex_unlock(&ddMutex);
+		Thread::mutexLock(&ddMutex);
+		Thread::mutexUnlock(&ddMutex);
 		pthread_mutex_destroy(&ddMutex);
 	}
 
@@ -137,29 +137,29 @@ namespace mb {
 	}
 
 	void SDLSurface::checkPendingSurface() {
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 		if (pending != NULL) {
 			if (parent != NULL && parent->getContent() == sur) {
 				((SDLWindow*)parent)->setRenderedSurface(pending);
 			}
 
-			pthread_mutex_lock(&sMutex);
+			Thread::mutexLock(&sMutex);
 			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 			sur = pending;
 			pending = NULL;
-			pthread_mutex_unlock(&sMutex);
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&sMutex);
+			Thread::mutexUnlock(&pMutex);
 			releaseDrawData();
 
 		} else {
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 		}
 	}
 
 	void SDLSurface::fill() {
 		int r = 0, g = 0, b = 0, alpha = 0;
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur != NULL) {
 			if (bgColor != NULL) {
 				r     = bgColor->getR();
@@ -168,7 +168,7 @@ namespace mb {
 				alpha = bgColor->getAlpha();
 			}
 
-			pthread_mutex_lock(&pMutex);
+			Thread::mutexLock(&pMutex);
 			releasePendingSurface();
 
 			pending = createSurface();
@@ -180,11 +180,11 @@ namespace mb {
 					SDL_MapRGBA(pending->format, r, g, b, alpha));
 			}
 
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 		}
 
 		releaseDrawData();
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	void SDLSurface::releaseChromaColor() {
@@ -223,7 +223,7 @@ namespace mb {
 	void SDLSurface::releaseDrawData() {
 		vector<DrawData*>::iterator i;
 
-		pthread_mutex_lock(&ddMutex);
+		Thread::mutexLock(&ddMutex);
 		if (!drawData.empty()) {
 			i = drawData.begin();
 			while (i != drawData.end()) {
@@ -232,7 +232,7 @@ namespace mb {
 			}
 			drawData.clear();
 		}
-		pthread_mutex_unlock(&ddMutex);
+		Thread::mutexUnlock(&ddMutex);
 	}
 
 	void SDLSurface::initialize(GingaScreenID screenId) {
@@ -293,9 +293,9 @@ namespace mb {
 	}
 
 	void SDLSurface::setSurfaceContent(void* surface) {
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur != NULL && surface == sur) {
-			pthread_mutex_unlock(&sMutex);
+			Thread::mutexUnlock(&sMutex);
 			return;
 		}
 
@@ -309,11 +309,11 @@ namespace mb {
 			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
 		}
 		this->sur = (SDL_Surface*)surface;
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	bool SDLSurface::setParentWindow(void* parentWindow) {
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (parent != NULL) {
 			parent->setChildSurface(NULL);
 		}
@@ -331,7 +331,7 @@ namespace mb {
 			parent->setChildSurface(this);
 		}
 
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 
 		return true;
 	}
@@ -345,13 +345,13 @@ namespace mb {
 	}
 
 	void SDLSurface::clearSurface() {
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur == NULL) {
 			releaseDrawData();
-			pthread_mutex_unlock(&sMutex);
+			Thread::mutexUnlock(&sMutex);
 
 		} else {
-			pthread_mutex_unlock(&sMutex);
+			Thread::mutexUnlock(&sMutex);
 			fill();
 		}
 	}
@@ -359,11 +359,11 @@ namespace mb {
 	vector<DrawData*>* SDLSurface::createDrawDataList() {
 		vector<DrawData*>* cloneDD = NULL;
 
-		pthread_mutex_lock(&ddMutex);
+		Thread::mutexLock(&ddMutex);
 		if (!drawData.empty()) {
 			cloneDD = new vector<DrawData*>(drawData);
 		}
-		pthread_mutex_unlock(&ddMutex);
+		Thread::mutexUnlock(&ddMutex);
 
 		return cloneDD;
 	}
@@ -372,7 +372,7 @@ namespace mb {
 		DrawData* dd;
 
 		if (surfaceColor != NULL) {
-			pthread_mutex_lock(&ddMutex);
+			Thread::mutexLock(&ddMutex);
 			dd = new DrawData;
 			dd->coord1   = c1;
 			dd->coord2   = c2;
@@ -388,7 +388,7 @@ namespace mb {
 			clog << drawData.size() << "'" << endl;
 
 			drawData.push_back(dd);
-			pthread_mutex_unlock(&ddMutex);
+			Thread::mutexUnlock(&ddMutex);
 		}
 	}
 
@@ -416,7 +416,7 @@ namespace mb {
 		clog << x << ", " << y << ", " << w << ", " << h << "'";
 		clog << endl; */
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		initContentSurface();
 
 		if (sur != NULL && surfaceColor != NULL) {
@@ -429,14 +429,14 @@ namespace mb {
 			g = surfaceColor->getG();
 			b = surfaceColor->getB();
 
-			pthread_mutex_lock(&pMutex);
+			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
 				SDL_FillRect(
 						pending, &rect, SDL_MapRGB(pending->format, r, g, b));
 			}
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 		}
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 
 		//pushDrawData(x, y, w, h, SDLWindow::DDT_FILL_RECT);
 	}
@@ -451,11 +451,11 @@ namespace mb {
 				y = 0;
 			}
 
-			pthread_mutex_lock(&pMutex);
+			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
 				iFont->playOver(this, txt, x, y, 0);
 			}
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 		}
 	}
 
@@ -464,23 +464,23 @@ namespace mb {
 
 		this->chromaColor = new Color(r, g, b, alpha);
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur != NULL) {
-			pthread_mutex_lock(&pMutex);
+			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
 				SDL_SetColorKey(
 						pending,
 						SDL_TRUE,
 						SDL_MapRGB(pending->format, r, g, b));
 			}
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 		}
 
 		if (parent != NULL) {
 			parent->setColorKey(r, g, b);
 		}
 
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	IColor* SDLSurface::getChromaColor() {
@@ -533,12 +533,12 @@ namespace mb {
 	void SDLSurface::scale(double x, double y) {
 		int width, height;
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur == NULL) {
 			clog << "SDLSurface::scale Warning! ";
 			clog << "Can't scale surface: ";
 			clog << "internal surface is NULL" << endl;
-			pthread_mutex_unlock(&sMutex);
+			Thread::mutexUnlock(&sMutex);
 			return;
 		}
 
@@ -549,7 +549,7 @@ namespace mb {
 
 		Matrix::setMatrix(&matrix, this);
 
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	void SDLSurface::initContentSurface() {
@@ -599,7 +599,7 @@ namespace mb {
 		SDL_Rect dstRect;
 		SDL_Surface* uSur;
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		initContentSurface();
 
 		if (sur != NULL) {
@@ -627,11 +627,11 @@ namespace mb {
 					dstRect.h = uSur->h;
 				}
 
-				pthread_mutex_lock(&pMutex);
+				Thread::mutexLock(&pMutex);
 				if (createPendingSurface()) {
 					SDL_UpperBlit(uSur, srcPtr, pending, &dstRect);
 				}
-				pthread_mutex_unlock(&pMutex);
+				Thread::mutexUnlock(&pMutex);
 			}
 
 		} else {
@@ -641,7 +641,7 @@ namespace mb {
 			clog << "address would be '" << src << "'" << endl;
 		}
 
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	void SDLSurface::getStringExtents(const char* text, int* w, int* h) {
@@ -658,28 +658,28 @@ namespace mb {
 	void SDLSurface::setClip(int x, int y, int w, int h) {
 		SDL_Rect rect;
 
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur != NULL) {
 			rect.x = x;
 			rect.y = y;
 			rect.w = w;
 			rect.h = h;
 
-			pthread_mutex_lock(&pMutex);
+			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
 				SDL_SetClipRect(pending, &rect);
 			}
-			pthread_mutex_unlock(&pMutex);
+			Thread::mutexUnlock(&pMutex);
 
 		} else {
 			clog << "SDLSurface::setClip Warning! NULL underlying surface";
 			clog << endl;
 		}
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	void SDLSurface::getSize(int* w, int* h) {
-		pthread_mutex_lock(&sMutex);
+		Thread::mutexLock(&sMutex);
 		if (sur != NULL) {
 			*w = sur->w;
 			*h = sur->h;
@@ -693,7 +693,7 @@ namespace mb {
 			clog << " parent";
 			clog << endl;
 		}
-		pthread_mutex_unlock(&sMutex);
+		Thread::mutexUnlock(&sMutex);
 	}
 
 	string SDLSurface::getDumpFileUri() {

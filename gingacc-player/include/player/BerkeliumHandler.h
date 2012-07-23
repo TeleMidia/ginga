@@ -54,11 +54,13 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/CodeMap.h"
 #include "mb/interface/IWindow.h"
 #include "mb/interface/IInputEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "mb/ILocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "berkelium/Berkelium.hpp"
 #include "berkelium/Window.hpp"

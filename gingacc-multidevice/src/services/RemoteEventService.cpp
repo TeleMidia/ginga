@@ -84,14 +84,14 @@ namespace multidevice {
 		clog << "RemoteEventService::new RemoteEventService()" << endl;
 
 		groups = new map<int,TcpSocketService*>;
-		pthread_mutex_init(&groupsMutex, NULL);
+		Thread::mutexInit(&groupsMutex, NULL);
 	}
 
 	RemoteEventService::~RemoteEventService() {
 		map<int,TcpSocketService*>::iterator i;
 
 		// TODO Auto-generated destructor stub
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		if (groups != NULL) {
 			i = groups->begin();
 			while (i != groups->end()) {
@@ -101,7 +101,7 @@ namespace multidevice {
 			delete groups;
 			groups = NULL;
 		}
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 		pthread_mutex_destroy(&groupsMutex);
 	}
 
@@ -113,7 +113,7 @@ namespace multidevice {
 	}
 
 	void RemoteEventService::addDeviceClass(unsigned int id) {
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		if (groups->count(id) == 0) {
 			(*groups)[id] = new TcpSocketService(
 							RemoteEventService::DEFAULT_PORT,
@@ -122,7 +122,7 @@ namespace multidevice {
 			clog << "RemoteEventService::addDeviceClass Warning! Trying to ";
 			clog << "add the same device class '" << id << "' twice!" << endl;
 		}
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	void RemoteEventService::addDevice(
@@ -131,10 +131,10 @@ namespace multidevice {
 		map<int, TcpSocketService*>::iterator i;
 		TcpSocketService* tss;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		i = groups->find(device_class);
 		if (i == groups->end()) {
-			pthread_mutex_unlock(&groupsMutex);
+			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
@@ -143,7 +143,7 @@ namespace multidevice {
 		clog << "RemoteEventService :: TcpSocketService->addConnection";
 		clog << "devie_id="<<device_id<<endl;
 
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	void RemoteEventService::addDocument(
@@ -151,15 +151,15 @@ namespace multidevice {
 
 		TcpSocketService* tss;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		if (groups->count(device_class) == 0) {
-			pthread_mutex_unlock(&groupsMutex);
+			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
 		tss = (*groups)[device_class];
 		tss->postTcpCommand((char*)"ADD", 0, name, body);
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 		//TODO: prefetch will be here. add without start
 		//TODO: change method signature to be equal to startdoc
 	}
@@ -169,9 +169,9 @@ namespace multidevice {
 
 		TcpSocketService* tss;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		if (groups->count(device_class) == 0) {
-			pthread_mutex_unlock(&groupsMutex);
+			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
@@ -209,7 +209,7 @@ namespace multidevice {
 		tss->postTcpCommand((char*)"START", 0, name, (char*)zip_base64.c_str());
 		clog << "RemoteEventService:: START name="<<name<<endl;
 
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	void RemoteEventService::stopDocument(
@@ -217,16 +217,16 @@ namespace multidevice {
 
 		TcpSocketService* tss;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		if (groups->count(device_class) == 0) {
-			pthread_mutex_unlock(&groupsMutex);
+			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
 		tss = (*groups)[device_class];
 		clog << "RemoteEventService::stopDocument "<< name << endl;
 		tss->postTcpCommand((char*)"STOP", 0, name, (char*)"");
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	/***/

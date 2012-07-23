@@ -79,7 +79,7 @@ namespace ic {
 
 		if (!mutexInit) {
 			mutexInit = true;
-			pthread_mutex_init(&mutex, NULL);
+			Thread::mutexInit(&mutex, NULL);
 		}
 	}
 
@@ -90,7 +90,7 @@ namespace ic {
 	bool CurlInteractiveChannel::hasConnection() {
 		CURLcode res;
 
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 		if (curl != NULL) {
 			clog << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
 			clog << endl;
@@ -107,7 +107,7 @@ namespace ic {
 				clog << "CurlInteractiveChannel::hasConnection Warning! ";
 				clog << "cant connect, code '" << res << "'" << endl;
 				releaseUrl();
-				pthread_mutex_unlock(&mutex);
+				Thread::mutexUnlock(&mutex);
 				return false;
 			}
 
@@ -118,11 +118,11 @@ namespace ic {
 			clog << "CurlInteractiveChannel::hasConnection OK!" << endl;
 			clog << endl;
 
-			pthread_mutex_unlock(&mutex);
+			Thread::mutexUnlock(&mutex);
 			return true;
 		}
 
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 		return false;
 	}
 
@@ -184,7 +184,7 @@ namespace ic {
 
 		clog << "CurlInteractiveChannel::performUrl '" << uri << "'" << endl;
 
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 		if (curl != NULL) {
 			clog << "CurlInteractiveChannel::hasConnection Warning CURL!NULL";
 			clog << endl;
@@ -239,7 +239,7 @@ namespace ic {
 
 		clog << "CurlInteractiveChannel::performUrl '" << uri << "'";
 		clog << " all done!!!" << endl;
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 		return success;
 	}
 

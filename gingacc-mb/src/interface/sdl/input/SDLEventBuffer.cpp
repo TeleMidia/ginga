@@ -75,9 +75,9 @@ namespace mb {
 	SDLEventBuffer::~SDLEventBuffer() {
 		vector<SDL_Event>::iterator i;
 
-		pthread_mutex_lock(&ebMutex);
+		Thread::mutexLock(&ebMutex);
 		eventBuffer.clear();
-		pthread_mutex_unlock(&ebMutex);
+		Thread::mutexUnlock(&ebMutex);
 		pthread_mutex_destroy(&ebMutex);
 
 		isWaiting = false;
@@ -130,13 +130,13 @@ namespace mb {
 	}
 
 	void SDLEventBuffer::feed(SDL_Event event, bool capsOn, bool shiftOn) {
-		pthread_mutex_lock(&ebMutex);
+		Thread::mutexLock(&ebMutex);
 		this->capsOn  = capsOn;
 		this->shiftOn = shiftOn;
 
 		eventBuffer.push_back(event);
 		eventArrived();
-		pthread_mutex_unlock(&ebMutex);
+		Thread::mutexUnlock(&ebMutex);
 	}
 
 	void SDLEventBuffer::wakeUp() {
@@ -168,16 +168,16 @@ namespace mb {
 		SDL_Event event;
 		vector<SDL_Event>::iterator i;
 
-		pthread_mutex_lock(&ebMutex);
+		Thread::mutexLock(&ebMutex);
 		if (!eventBuffer.empty()) {
-			pthread_mutex_unlock(&ebMutex);
+			Thread::mutexUnlock(&ebMutex);
 			return;
 		}
-		pthread_mutex_unlock(&ebMutex);
+		Thread::mutexUnlock(&ebMutex);
 
 		waitForEvent();
 
-		pthread_mutex_lock(&ebMutex);
+		Thread::mutexLock(&ebMutex);
 		i = eventBuffer.begin();
 		if (i != eventBuffer.end()) {
 			event = *i;
@@ -191,12 +191,12 @@ namespace mb {
 						SDLInputEvent::ET_WAKEUP.c_str()) == 0) {
 
 					eventBuffer.erase(i);
-					pthread_mutex_unlock(&ebMutex);
+					Thread::mutexUnlock(&ebMutex);
 					return;
 				}
 			}
 		}
-		pthread_mutex_unlock(&ebMutex);
+		Thread::mutexUnlock(&ebMutex);
 	}
 
 	IInputEvent* SDLEventBuffer::getNextEvent() {
@@ -204,7 +204,7 @@ namespace mb {
 		SDLInputEvent* gingaEvent = NULL;
 		vector<SDL_Event>::iterator i;
 
-		pthread_mutex_lock(&ebMutex);
+		Thread::mutexLock(&ebMutex);
 		if (!eventBuffer.empty()) {
 			i = eventBuffer.begin();
 			sdlEvent = *i;
@@ -213,7 +213,7 @@ namespace mb {
 			gingaEvent->setModifiers(capsOn, shiftOn);
 			eventBuffer.erase(i);
 		}
-		pthread_mutex_unlock(&ebMutex);
+		Thread::mutexUnlock(&ebMutex);
 
 		return gingaEvent;
 	}
@@ -224,10 +224,10 @@ namespace mb {
 
 	void SDLEventBuffer::waitForEvent() {
 		isWaiting = true;
-		pthread_mutex_lock(&condMutex);
+		Thread::mutexLock(&condMutex);
 		pthread_cond_wait(&cond, &condMutex);
 		isWaiting = false;
-		pthread_mutex_unlock(&condMutex);
+		Thread::mutexUnlock(&condMutex);
 	}
 
 	bool SDLEventBuffer::eventArrived() {

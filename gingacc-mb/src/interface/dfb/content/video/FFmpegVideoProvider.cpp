@@ -143,10 +143,10 @@ static bool put_packet(PacketQueue *queue, AVPacket *packet) {
 	av_dup_packet(packet);
 	p->packet = *packet;
 
-	pthread_mutex_lock(&queue->lock);
+	Thread::mutexLock(&queue->lock);
 	direct_list_append((DirectLink**)&queue->list, &p->link);
 	queue->size += packet->size;
-	pthread_mutex_unlock(&queue->lock);
+	Thread::mutexUnlock(&queue->lock);
 
 	return true;
 }
@@ -154,7 +154,7 @@ static bool put_packet(PacketQueue *queue, AVPacket *packet) {
 static bool get_packet(PacketQueue *queue, AVPacket *packet) {
 	PacketLink *p = NULL;
 
-	pthread_mutex_lock(&queue->lock);
+	Thread::mutexLock(&queue->lock);
 	p = queue->list;
 	if (p != NULL) {
 		direct_list_remove((DirectLink**)&queue->list, &p->link);
@@ -162,7 +162,7 @@ static bool get_packet(PacketQueue *queue, AVPacket *packet) {
 		*packet = p->packet;
 		delete p;
 	}
-	pthread_mutex_unlock(&queue->lock);
+	Thread::mutexUnlock(&queue->lock);
 
 	return (p != NULL);
 }
@@ -231,8 +231,8 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 	data = (IDirectFBVideoProvider_FFmpeg_data*)arg;
 	if (url_is_streamed(data->context->pb)) {
 		data->input.buffering = true;
-		pthread_mutex_lock(&data->video.queue.lock);
-		pthread_mutex_lock(&data->audio.queue.lock);
+		Thread::mutexLock(&data->video.queue.lock);
+		Thread::mutexLock(&data->audio.queue.lock);
 	}
 
 	data->audio.pts = -1;
@@ -241,7 +241,7 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 		AVPacket packet;
 		direct_thread_is_canceled(self);
 
-		pthread_mutex_lock(&data->input.lock);
+		Thread::mutexLock(&data->input.lock);
 
 		if (data->input.seeked) {
 			if (av_seek_frame(
@@ -250,8 +250,8 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 					data->input.seek_time,
 					data->input.seek_flag ) >= 0) {
 
-				pthread_mutex_lock(&data->video.lock);
-				pthread_mutex_lock(&data->audio.lock);
+				Thread::mutexLock(&data->video.lock);
+				Thread::mutexLock(&data->audio.lock);
 
 				flush_packets(&data->video.queue);
 				flush_packets(&data->audio.queue);
@@ -259,8 +259,8 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 						url_is_streamed(data->context->pb)) {
 
 					data->input.buffering = true;
-					pthread_mutex_lock(&data->video.queue.lock);
-					pthread_mutex_lock(&data->audio.queue.lock);
+					Thread::mutexLock(&data->video.queue.lock);
+					Thread::mutexLock(&data->audio.queue.lock);
 				}
 
 				if (data->status == DVSTATE_FINISHED) {
@@ -275,8 +275,8 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 					pthread_cond_signal(&data->video.cond);
 				}
 
-				pthread_mutex_unlock(&data->audio.lock);
-				pthread_mutex_unlock(&data->video.lock);
+				Thread::mutexUnlock(&data->audio.lock);
+				Thread::mutexUnlock(&data->video.lock);
 			}
 			data->input.seeked = false;
 		}
@@ -285,11 +285,11 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 				queue_is_full(&data->audio.queue )) {
 
 			if (data->input.buffering) {
-				pthread_mutex_unlock(&data->audio.queue.lock);
-				pthread_mutex_unlock(&data->video.queue.lock);
+				Thread::mutexUnlock(&data->audio.queue.lock);
+				Thread::mutexUnlock(&data->video.queue.lock);
 				data->input.buffering = false;
 			}
-			pthread_mutex_unlock(&data->input.lock);
+			Thread::mutexUnlock(&data->input.lock);
 			SystemCompat::uSleep(20000);
 			continue;
 
@@ -300,16 +300,16 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 					url_is_streamed(data->context->pb)) {
 
 				data->input.buffering = true;
-				pthread_mutex_lock(&data->video.queue.lock);
-				pthread_mutex_lock(&data->audio.queue.lock);
+				Thread::mutexLock(&data->video.queue.lock);
+				Thread::mutexLock(&data->audio.queue.lock);
 			}
 		}
 
 		if (av_read_frame(data->context, &packet) < 0) {
 			if (url_feof(data->context->pb)) {
 				if (data->input.buffering) {
-					pthread_mutex_unlock(&data->audio.queue.lock);
-					pthread_mutex_unlock(&data->video.queue.lock);
+					Thread::mutexUnlock(&data->audio.queue.lock);
+					Thread::mutexUnlock(&data->video.queue.lock);
 					data->input.buffering = false;
 				}
 				if (data->video.queue.size == 0 &&
@@ -324,7 +324,7 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 					}
 				}
 			}
-			pthread_mutex_unlock(&data->input.lock);
+			Thread::mutexUnlock(&data->input.lock);
 			usleep(100);
 			continue;
 		}
@@ -341,12 +341,12 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 			av_free_packet(&packet);
 		}
 
-		pthread_mutex_unlock(&data->input.lock);
+		Thread::mutexUnlock(&data->input.lock);
 	}
 
 	if (data->input.buffering) {
-		pthread_mutex_unlock(&data->audio.queue.lock);
-		pthread_mutex_unlock(&data->video.queue.lock);
+		Thread::mutexUnlock(&data->audio.queue.lock);
+		Thread::mutexUnlock(&data->video.queue.lock);
 		data->input.buffering = false;
 	}
 
@@ -464,12 +464,12 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 
 		direct_thread_testcancel(self);
 
-		pthread_mutex_lock(&data->video.lock);
+		Thread::mutexLock(&data->video.lock);
 
 		if (data->input.buffering ||
 				!get_packet(&data->video.queue, &pkt )) {
 
-			pthread_mutex_unlock(&data->video.lock);
+			Thread::mutexUnlock(&data->video.lock);
 			SystemCompat::uSleep(100);
 			continue;
 		}
@@ -553,7 +553,7 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 			}
 		}
 
-		pthread_mutex_unlock(&data->video.lock);
+		Thread::mutexUnlock(&data->video.lock);
 
 		if (framecnt++ == 0) {
 			firtspts = data->video.pts;
@@ -583,16 +583,16 @@ static void* FFmpegAudio(DirectThread *self, void *arg) {
 
 		direct_thread_testcancel(self);
 
-		pthread_mutex_lock(&data->audio.lock);
+		Thread::mutexLock(&data->audio.lock);
 
 		if (!data->speed) {
 			pthread_cond_wait(&data->audio.cond, &data->audio.lock);
-			pthread_mutex_unlock(&data->audio.lock);
+			Thread::mutexUnlock(&data->audio.lock);
 			continue;
 		}
 
 		if (data->input.buffering || !get_packet(&data->audio.queue, &pkt)) {
-			pthread_mutex_unlock(&data->audio.lock);
+			Thread::mutexUnlock(&data->audio.lock);
 			usleep(100);
 			continue;
 		}
@@ -643,7 +643,7 @@ static void* FFmpegAudio(DirectThread *self, void *arg) {
 		}
 
 		av_free_packet(&pkt);
-		pthread_mutex_unlock(&data->audio.lock);
+		Thread::mutexUnlock(&data->audio.lock);
 
 		if (size) {
 			data->audio.stream->Write(data->audio.stream, buf, size);
@@ -1417,9 +1417,9 @@ namespace mb {
 
 		clog << "FFmpegVideoProvider::playOver" << endl;
 
-		pthread_mutex_lock(&rContainer->input.lock);
-		pthread_mutex_lock(&rContainer->video.lock);
-		pthread_mutex_lock(&rContainer->audio.lock);
+		Thread::mutexLock(&rContainer->input.lock);
+		Thread::mutexLock(&rContainer->video.lock);
+		Thread::mutexLock(&rContainer->audio.lock);
 
 		if (rContainer->video.dest) {
 			rContainer->video.dest->Release(rContainer->video.dest);
@@ -1468,9 +1468,9 @@ namespace mb {
 					"FFmpeg Video");
 		}
 
-		pthread_mutex_unlock(&rContainer->audio.lock);
-		pthread_mutex_unlock(&rContainer->video.lock);
-		pthread_mutex_unlock(&rContainer->input.lock);
+		Thread::mutexUnlock(&rContainer->audio.lock);
+		Thread::mutexUnlock(&rContainer->video.lock);
+		Thread::mutexUnlock(&rContainer->input.lock);
 	}
 
 	void FFmpegVideoProvider::resume(ISurface* surface, bool hasVisual) {
@@ -1485,7 +1485,7 @@ namespace mb {
 		if (rContainer->status == DVSTATE_STOP)
 			return;
 
-		pthread_mutex_lock(&rContainer->input.lock);
+		Thread::mutexLock(&rContainer->input.lock);
 
 		rContainer->status = DVSTATE_STOP;
 
@@ -1496,18 +1496,18 @@ namespace mb {
 		}
 
 		if (rContainer->video.thread) {
-			pthread_mutex_lock(&rContainer->video.lock);
+			Thread::mutexLock(&rContainer->video.lock);
 			pthread_cond_signal(&rContainer->video.cond);
-			pthread_mutex_unlock(&rContainer->video.lock);
+			Thread::mutexUnlock(&rContainer->video.lock);
 			direct_thread_join(rContainer->video.thread);
 			direct_thread_destroy(rContainer->video.thread);
 			rContainer->video.thread = NULL;
 		}
 
 		if (rContainer->audio.thread) {
-			pthread_mutex_lock(&rContainer->audio.lock);
+			Thread::mutexLock(&rContainer->audio.lock);
 			pthread_cond_signal(&rContainer->audio.cond);
-			pthread_mutex_unlock(&rContainer->audio.lock);
+			Thread::mutexUnlock(&rContainer->audio.lock);
 			direct_thread_join(rContainer->audio.thread);
 			direct_thread_destroy(rContainer->audio.thread);
 			rContainer->audio.thread = NULL;
@@ -1518,7 +1518,7 @@ namespace mb {
 			rContainer->video.dest = NULL;
 		}
 
-		pthread_mutex_unlock(&rContainer->input.lock);
+		Thread::mutexUnlock(&rContainer->input.lock);
 	}
 
 	void FFmpegVideoProvider::setSoundLevel(float level) {

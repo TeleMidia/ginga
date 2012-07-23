@@ -75,9 +75,9 @@ namespace mb {
 			Thread::mutexInit(&pMutex);
 		}
 
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 		imageRefs++;
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 
 		imgUri   = "";
 		myScreen = screenId;
@@ -86,7 +86,7 @@ namespace mb {
 	}
 
 	SDLImageProvider::~SDLImageProvider() {
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 		imageRefs--;
 
 		if (imageRefs == 0) {
@@ -95,7 +95,7 @@ namespace mb {
 			// initialized = false;
 		}
 
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {
@@ -103,7 +103,7 @@ namespace mb {
 		SDLWindow* parent;
 		IColor* bgColor;
 
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 
 		if (!initialized) {
 			initialized = true;
@@ -135,7 +135,7 @@ namespace mb {
 			clog << endl;
 		}
 
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 	}
 
 	bool SDLImageProvider::releaseAll() {

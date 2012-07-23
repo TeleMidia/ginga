@@ -64,7 +64,7 @@ namespace player {
 	bool BerkeliumPlayer::mainLoopDone = false;
 
 	BBrowserFactory::BBrowserFactory() {
-		pthread_mutex_init(&smutex, NULL);
+		Thread::mutexInit(&smutex, NULL);
 	}
 
 	BBrowserFactory::~BBrowserFactory() {
@@ -211,11 +211,11 @@ namespace player {
 	}
 
 	void BBrowserFactory::lockSet() {
-		pthread_mutex_lock(&smutex);
+		Thread::mutexLock(&smutex);
 	}
 
 	void BBrowserFactory::unlockSet() {
-		pthread_mutex_unlock(&smutex);
+		Thread::mutexUnlock(&smutex);
 	}
 
 	BerkeliumPlayer::BerkeliumPlayer(

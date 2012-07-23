@@ -85,14 +85,14 @@ namespace contextmanager {
 
 		systemInfo->setSystemTable(getUserProfile(getCurrentUserId()));
 
-		pthread_mutex_init(&groupsMutex, NULL);
+		Thread::mutexInit(&groupsMutex, NULL);
 	}
 
 	ContextManager::~ContextManager() {
 		map<int, IGingaUser*>::iterator i;
 		set<IContextListener*>::iterator j;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		i = users->begin();
 		while (i != users->end()) {
 			delete i->second;
@@ -103,7 +103,7 @@ namespace contextmanager {
 			delete ctxListeners;
 			ctxListeners = NULL;
 		}
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 		pthread_mutex_destroy(&groupsMutex);
 	}
 
@@ -479,21 +479,21 @@ namespace contextmanager {
 
 	void ContextManager::addContextListener(IContextListener* listener) {
 		clog << "ContextManager::addContextListener" << endl;
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		ctxListeners->insert(listener);
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	void ContextManager::removeContextListener(IContextListener* listener) {
 		set<IContextListener*>::iterator i;
 
 		clog << "ContextManager::removeContextListener" << endl;
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		i = ctxListeners->find(listener);
 		if (i != ctxListeners->end()) {
 			ctxListeners->erase(i);
 		}
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 
 	void ContextManager::setGlobalVar(string varName, string varValue) {
@@ -502,13 +502,13 @@ namespace contextmanager {
 		clog << "ContextManager::setGlobalVar(" << varName << ", ";
 		clog << varValue << ") " << endl;
 
-		pthread_mutex_lock(&groupsMutex);
+		Thread::mutexLock(&groupsMutex);
 		i = ctxListeners->begin();
 		while (i != ctxListeners->end()) {
 			(*i)->receiveGlobalAttribution(varName, varValue);
 			++i;
 		}
-		pthread_mutex_unlock(&groupsMutex);
+		Thread::mutexUnlock(&groupsMutex);
 	}
 }
 }
