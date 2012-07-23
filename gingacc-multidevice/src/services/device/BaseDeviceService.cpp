@@ -75,13 +75,13 @@ namespace multidevice {
 			dev->getDeviceResolution(&w, &h);
 			newDevClass = dev->getDeviceClass();
 
-			pthread_mutex_lock(&lMutex);
+			Thread::mutexLock(&lMutex);
 			i = listeners->begin();
 			while (i != listeners->end()) {
 				(*i)->newDeviceConnected(newDevClass, w, h);
 				++i;
 			}
-			pthread_mutex_unlock(&lMutex);
+			Thread::mutexUnlock(&lMutex);
 		}
 	}
 
@@ -99,9 +99,9 @@ namespace multidevice {
 
 		dev = getDevice(devAddr);
 
-		pthread_mutex_lock(&lMutex);
+		Thread::mutexLock(&lMutex);
 		hasLists = !listeners->empty();
-		pthread_mutex_unlock(&lMutex);
+		Thread::mutexUnlock(&lMutex);
 
 		if (dev != NULL && hasLists) {
 			strStream.append(stream, streamSize);
@@ -110,13 +110,13 @@ namespace multidevice {
 			clog << endl;*/
 			devClass = dev->getDeviceClass();
 
-			pthread_mutex_lock(&lMutex);
+			Thread::mutexLock(&lMutex);
 			it = listeners->begin();
 			while (it != listeners->end()) {
 				(*it)->receiveRemoteEvent(devClass, eventType, strStream);
 				++it;
 			}
-			pthread_mutex_unlock(&lMutex);
+			Thread::mutexUnlock(&lMutex);
 
 			return true;
 		}

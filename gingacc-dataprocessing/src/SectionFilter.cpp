@@ -79,7 +79,7 @@ namespace dataprocessing {
 		this->hFilteredSections = new map<int, ITransportSection*>;
 		this->lastPid           = -1;
 
-		pthread_mutex_init(&stlMutex, NULL);
+		Thread::mutexInit(&stlMutex, NULL);
 	}
 
 	SectionFilter::~SectionFilter() {
@@ -87,7 +87,7 @@ namespace dataprocessing {
 		map<unsigned int, SectionHandler*>::iterator j;
 
 		clog << "SectionFilter::~SectionFilter" << endl;
-		pthread_mutex_lock(&stlMutex);
+		Thread::mutexLock(&stlMutex);
 
 		if (processedSections != NULL) {
 			delete processedSections;
@@ -113,7 +113,7 @@ namespace dataprocessing {
 			++j;
 		}
 
-		pthread_mutex_unlock(&stlMutex);
+		Thread::mutexUnlock(&stlMutex);
 		pthread_mutex_destroy(&stlMutex);
 	}
 
@@ -126,41 +126,41 @@ namespace dataprocessing {
 	bool SectionFilter::checkProcessedSections(string sectionName) {
 		bool checked;
 
-		pthread_mutex_lock(&stlMutex);
+		Thread::mutexLock(&stlMutex);
 		if (processedSections->count(sectionName) == 0) {
 			checked = false;
 
 		} else {
 			checked = true;
 		}
-		pthread_mutex_unlock(&stlMutex);
+		Thread::mutexUnlock(&stlMutex);
 
 		return checked;
 	}
 
 	void SectionFilter::addProcessedSection(string sectionName) {
-		pthread_mutex_lock(&stlMutex);
+		Thread::mutexLock(&stlMutex);
 		if (processedSections != NULL) {
 			processedSections->insert(sectionName);
 		}
-		pthread_mutex_unlock(&stlMutex);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void SectionFilter::removeProcessedSection(string sectionName) {
 		set<string>::iterator i;
 
-		pthread_mutex_lock(&stlMutex);
+		Thread::mutexLock(&stlMutex);
 		i = processedSections->find(sectionName);
 		if (i != processedSections->end()) {
 			processedSections->erase(i);
 		}
-		pthread_mutex_unlock(&stlMutex);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void SectionFilter::clearProcessedSections() {
-		pthread_mutex_lock(&stlMutex);
+		Thread::mutexLock(&stlMutex);
 		processedSections->clear();
-		pthread_mutex_unlock(&stlMutex);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	bool SectionFilter::checkSectionVersion(ITransportSection* section) {

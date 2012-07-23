@@ -88,7 +88,7 @@ namespace tsparser {
 		debugPackCount = 1;
 		debugDest      = 0;
 		pthread_cond_init(&flagCondSignal, NULL);
-		pthread_mutex_init(&flagLockUntilSignal, NULL);
+		Thread::mutexInit(&flagLockUntilSignal, NULL);
 	}
 
 	Demuxer::~Demuxer() {
@@ -840,10 +840,10 @@ namespace tsparser {
 
 	bool Demuxer::waitProgramInformation() {
 		isWaitingPI = true;
-		pthread_mutex_lock(&flagLockUntilSignal);
+		Thread::mutexLock(&flagLockUntilSignal);
 		pthread_cond_wait(&flagCondSignal, &flagLockUntilSignal);
 		isWaitingPI = false;
-		pthread_mutex_unlock(&flagLockUntilSignal);
+		Thread::mutexUnlock(&flagLockUntilSignal);
 		return true;
 	}
 

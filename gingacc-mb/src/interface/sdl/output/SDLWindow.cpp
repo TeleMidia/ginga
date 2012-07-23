@@ -80,9 +80,9 @@ namespace mb {
 	}
 
 	SDLWindow::~SDLWindow() {
-		ISurface* surface;
 		vector<ISurface*>::iterator i;
 
+		lock();
 		lockChilds();
 		if (childSurface != NULL) {
 			childSurface->setParentWindow(NULL);
@@ -104,7 +104,6 @@ namespace mb {
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
-		pthread_mutex_destroy(&mutex);
 		pthread_mutex_destroy(&mutexC);
 
 		this->isWaiting = false;
@@ -112,6 +111,9 @@ namespace mb {
 	    pthread_cond_destroy(&cond);
 
 	    pthread_mutex_destroy(&rMutex);
+
+	    unlock();
+	    pthread_mutex_destroy(&mutex);
 
 		clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
 	}
@@ -163,7 +165,7 @@ namespace mb {
 		Thread::mutexInit(&mutex);
 		Thread::mutexInit(&mutexC);
 		Thread::mutexInit(&texMutex);
-		Thread::mutexInit(&surMutex);
+		Thread::mutexInit(&surMutex, true);
 
 		this->isWaiting = false;
 	    Thread::mutexInit(&cMutex);
@@ -250,8 +252,6 @@ namespace mb {
 	}
 
 	void SDLWindow::setBorder(int r, int g, int b, int alpha, int bWidth) {
-		int i;
-
 		releaseBorderColor();
 
 		borderWidth = bWidth;
@@ -559,7 +559,6 @@ namespace mb {
 	}
 
 	bool SDLWindow::isMine(ISurface* surface) {
-		SDL_Surface* contentSurface;
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
@@ -594,13 +593,13 @@ namespace mb {
 	void SDLWindow::renderFrom(ISurface* surface) {
 		SDL_Surface* contentSurface;
 
-		pthread_mutex_lock(&rMutex);
+		Thread::mutexLock(&rMutex);
 		contentSurface = (SDL_Surface*)surface->getSurfaceContent();
 		if (contentSurface == NULL) {
 			clog << "SDLWindow::renderFrom(" << this;
 			clog << ") Warning! NULL underlying ";
 			clog << "surface!" << endl;
-			pthread_mutex_unlock(&rMutex);
+			Thread::mutexUnlock(&rMutex);
 			return;
 		}
 
@@ -622,7 +621,7 @@ namespace mb {
 		}
 		unlockSurface();
 
-		pthread_mutex_unlock(&rMutex);
+		Thread::mutexUnlock(&rMutex);
 	}
 
 	void SDLWindow::blit(IWindow* src) {
@@ -646,8 +645,8 @@ namespace mb {
 
 	void SDLWindow::stretchBlit(IWindow* src) {
 		//SDLRectangle rect, *r = NULL;
-		SDL_Window* srcWin;
-		SDL_Surface* srcSur;
+		//SDL_Window* srcWin;
+		//SDL_Surface* srcSur;
 
 		/*if (src != NULL) {
 			srcWin = (SDL_Window*)(src->getSurfaceContent());
@@ -709,19 +708,19 @@ namespace mb {
 	}
 
 	void SDLWindow::lock() {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 	}
 
 	void SDLWindow::unlock() {
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	void SDLWindow::lockChilds() {
-		pthread_mutex_lock(&mutexC);
+		Thread::mutexLock(&mutexC);
 	}
 
 	void SDLWindow::unlockChilds() {
-		pthread_mutex_unlock(&mutexC);
+		Thread::mutexUnlock(&mutexC);
 	}
 
 	bool SDLWindow::rendered() {
@@ -734,26 +733,26 @@ namespace mb {
 
 	void SDLWindow::waitRenderer() {
 		isWaiting = true;
-		pthread_mutex_lock(&cMutex);
+		Thread::mutexLock(&cMutex);
 		pthread_cond_wait(&cond, &cMutex);
 		isWaiting = false;
-		pthread_mutex_unlock(&cMutex);
+		Thread::mutexUnlock(&cMutex);
 	}
 
 	void SDLWindow::lockTexture() {
-		pthread_mutex_lock(&texMutex);
+		Thread::mutexLock(&texMutex);
 	}
 
 	void SDLWindow::unlockTexture() {
-		pthread_mutex_unlock(&texMutex);
+		Thread::mutexUnlock(&texMutex);
 	}
 
 	void SDLWindow::lockSurface() {
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 	}
 
 	void SDLWindow::unlockSurface() {
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 	}
 }
 }

@@ -63,7 +63,7 @@ namespace cm {
 		this->unsolvedDependencies = NULL;
 		this->canUnload            = true;
 
-		pthread_mutex_init(&mapMutex, NULL);
+		Thread::mutexInit(&mapMutex, NULL);
 	}
 
 	ComponentManager::~ComponentManager() {
@@ -80,7 +80,7 @@ namespace cm {
 		set<string>* childs;
 		map<string, set<string>*>::iterator i;
 
-		pthread_mutex_lock(&mapMutex);
+		Thread::mutexLock(&mapMutex);
 		if (parentObjects != NULL) {
 			i = parentObjects->begin();
 			while (i != parentObjects->end()) {
@@ -114,7 +114,7 @@ namespace cm {
 			unsolvedDependencies = NULL;
 		}
 
-		pthread_mutex_unlock(&mapMutex);
+		Thread::mutexUnlock(&mapMutex);
 		pthread_mutex_destroy(&mapMutex);
 	}
 
@@ -158,7 +158,7 @@ namespace cm {
 		void* comp;
 		void* symbol;
 
-		pthread_mutex_lock(&mapMutex);
+		Thread::mutexLock(&mapMutex);
 		if (symbols == NULL || components == NULL) {
 			refreshComponentDescription();
 		}
@@ -167,12 +167,12 @@ namespace cm {
 			clog << "ComponentManager::getObject warning! '" << objectName;
 			clog << "' symbol not found!" << endl;
 
-			pthread_mutex_unlock(&mapMutex);
+			Thread::mutexUnlock(&mapMutex);
 			return NULL;
 		}
 
 		c = (*symbols)[objectName];
-		pthread_mutex_unlock(&mapMutex);
+		Thread::mutexUnlock(&mapMutex);
 
 		if (c != NULL) {
 			comp = this->getComponent(c->getName());
@@ -288,9 +288,9 @@ namespace cm {
 	map<string, IComponent*>* ComponentManager::getComponentDescription() {
 		map<string, IComponent*>* compdesc;
 
-		pthread_mutex_lock(&mapMutex);
+		Thread::mutexLock(&mapMutex);
 		compdesc = new map<string,IComponent*>(*components);
-		pthread_mutex_unlock(&mapMutex);
+		Thread::mutexUnlock(&mapMutex);
 
 		return compdesc;
 	}
@@ -299,9 +299,9 @@ namespace cm {
 		IComponent* c;
 		string url;
 
-		pthread_mutex_lock(&mapMutex);
+		Thread::mutexLock(&mapMutex);
 		if (symbols->count(objName) == 0) {
-			pthread_mutex_unlock(&mapMutex);
+			Thread::mutexUnlock(&mapMutex);
 			clog << "ComponentManager::isAvailable Can't find symbol for '";
 			clog << objName << "'! Returning false" << endl;
 			return false;
@@ -313,7 +313,7 @@ namespace cm {
 					c->getLocation() + SystemCompat::getIUriD() + c->getName());
 
 			if (access(url.c_str(), (int)F_OK) == 0) {
-				pthread_mutex_unlock(&mapMutex);
+				Thread::mutexUnlock(&mapMutex);
 				return true;
 
 			} else {
@@ -327,7 +327,7 @@ namespace cm {
 			clog << objName << "'! Returgning false" << endl;
 		}
 
-		pthread_mutex_unlock(&mapMutex);
+		Thread::mutexUnlock(&mapMutex);
 		return false;
 	}
 }

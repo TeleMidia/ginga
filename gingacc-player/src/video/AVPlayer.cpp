@@ -1078,7 +1078,7 @@ namespace player {
 		this->win         = NULL;
 		this->pSym        = "";
 
-		pthread_mutex_init(&pMutex, NULL);
+		Thread::mutexInit(&pMutex, NULL);
 
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		this->icListener  = NULL;
@@ -1120,8 +1120,8 @@ namespace player {
 			stop();
 		}
 
-		pthread_mutex_lock(&pMutex);
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexLock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 		pthread_mutex_destroy(&pMutex);
 		unlockConditionSatisfied();
 		lock();
@@ -1155,7 +1155,7 @@ namespace player {
 
 	void AVPlayer::createProvider(void) {
 		clog << "AVPlayer::createProvider '" << mrl << "'" << endl;
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 
 		if (mrl.substr(0, 7) == "rtsp://" ||
 				mrl.substr(0, 6) == "rtp://" ||
@@ -1172,7 +1172,7 @@ namespace player {
 			surface = createFrame();
 		}
 
-		pthread_mutex_unlock(&(pMutex));
+		Thread::mutexUnlock(&(pMutex));
 		clog << "AVPlayer::createProvider '" << mrl << "' all done" << endl;
 	}
 
@@ -1747,12 +1747,12 @@ extern "C" IPlayer* createAVPlayer(
 	AVPlayer* player;
 	if (!avpmInit) {
 		avpmInit = true;
-		pthread_mutex_init(&avpm, NULL);
+		Thread::mutexInit(&avpm, NULL);
 	}
 
-	pthread_mutex_lock(&avpm);
+	Thread::mutexLock(&avpm);
 	player = new AVPlayer(screenId, mrl, hasVisual);
-	pthread_mutex_unlock(&avpm);
+	Thread::mutexUnlock(&avpm);
 
 	return player;
 }

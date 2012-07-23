@@ -251,19 +251,19 @@ namespace mb {
 	}
 
 	void TermWindow::lock() {
-		pthread_mutex_lock(&mutex);
+		Thread::mutexLock(&mutex);
 	}
 
 	void TermWindow::unlock() {
-		pthread_mutex_unlock(&mutex);
+		Thread::mutexUnlock(&mutex);
 	}
 
 	void TermWindow::lockChilds() {
-		pthread_mutex_lock(&mutexC);
+		Thread::mutexLock(&mutexC);
 	}
 
 	void TermWindow::unlockChilds() {
-		pthread_mutex_unlock(&mutexC);
+		Thread::mutexUnlock(&mutexC);
 	}
 }
 }

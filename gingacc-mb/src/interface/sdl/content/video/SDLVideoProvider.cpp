@@ -180,10 +180,10 @@ namespace mb {
 
 	void SDLVideoProvider::waitTexture() {
 		isWaiting = true;
-		/*pthread_mutex_lock(&cMutex);
+		/*Thread::mutexLock(&cMutex);
 		pthread_cond_wait(&cond, &cMutex);
 		isWaiting = false;
-		pthread_mutex_unlock(&cMutex);*/
+		Thread::mutexUnlock(&cMutex);*/
 	}
 
 	bool SDLVideoProvider::textureCreated() {

@@ -75,7 +75,7 @@ namespace process {
 			clog << "Can't openR '" << rCom << "'" << endl;
 		}
 
-		pthread_mutex_init(&waitSig, NULL);
+		Thread::mutexInit(&waitSig, NULL);
 
 		reader = true;
 		pthread_create(&threadId_, 0, SpawnedProcess::detachReceive, this);
@@ -119,8 +119,8 @@ namespace process {
 	}
 
 	void SpawnedProcess::waitSignal() {
-		pthread_mutex_lock(&waitSig);
-		pthread_mutex_lock(&waitSig);
+		Thread::mutexLock(&waitSig);
+		Thread::mutexLock(&waitSig);
 	}
 }
 }

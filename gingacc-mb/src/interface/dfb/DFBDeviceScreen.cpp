@@ -251,7 +251,7 @@ namespace mb {
 		clog << endl;
 
 		//Releasing remaining Window objects in Window Pool
-		pthread_mutex_lock(&winMutex);
+		Thread::mutexLock(&winMutex);
 		i = windowPool.begin();
 		while (i != windowPool.end()) {
 			iWin = (*i);
@@ -260,15 +260,15 @@ namespace mb {
 			i = windowPool.begin();
 
 			if (iWin != NULL) {
-				pthread_mutex_unlock(&winMutex);
+				Thread::mutexUnlock(&winMutex);
 				delete iWin;
-				pthread_mutex_lock(&winMutex);
+				Thread::mutexLock(&winMutex);
 			}
 		}
-		pthread_mutex_unlock(&winMutex);
+		Thread::mutexUnlock(&winMutex);
 
 		//Releasing remaining Surface objects in Surface Pool
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		j = surfacePool.begin();
 		while (j != surfacePool.end()) {
 			iSur = (*j);
@@ -277,30 +277,30 @@ namespace mb {
 			j = surfacePool.begin();
 
 			if (iSur != NULL) {
-				pthread_mutex_unlock(&surMutex);
+				Thread::mutexUnlock(&surMutex);
 				delete iSur;
-				pthread_mutex_lock(&surMutex);
+				Thread::mutexLock(&surMutex);
 			}
 		}
 		surfacePool.clear();
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 
 		//Releasing remaining CMP objects in CMP Pool
-		pthread_mutex_lock(&cmpMutex);
+		Thread::mutexLock(&cmpMutex);
 		k = cmpPool.begin();
 		while (k != cmpPool.end()) {
 			iCmp = (*k);
 
 			cmpPool.erase(k);
 			if (iCmp != NULL) {
-				pthread_mutex_unlock(&cmpMutex);
+				Thread::mutexUnlock(&cmpMutex);
 				delete iCmp;
-				pthread_mutex_lock(&cmpMutex);
+				Thread::mutexLock(&cmpMutex);
 			}
 			k = cmpPool.begin();
 		}
 		cmpPool.clear();
-		pthread_mutex_unlock(&cmpMutex);
+		Thread::mutexUnlock(&cmpMutex);
 	}
 
 	string DFBDeviceScreen::getScreenName() {
@@ -456,10 +456,10 @@ namespace mb {
 
 		IWindow* iWin;
 
-		pthread_mutex_lock(&winMutex);
+		Thread::mutexLock(&winMutex);
 		iWin = new DFBWindow(NULL, NULL, id, x, y, w, h);
 		windowPool.insert(iWin);
-		pthread_mutex_unlock(&winMutex);
+		Thread::mutexUnlock(&winMutex);
 
 		return iWin;
 	}
@@ -468,10 +468,10 @@ namespace mb {
 		IWindow* iWin = NULL;
 
 		if (underlyingWindow != NULL) {
-			pthread_mutex_lock(&winMutex);
+			Thread::mutexLock(&winMutex);
 			iWin = new DFBWindow(NULL, NULL, id, 0, 0, 0, 0);
 			windowPool.insert(iWin);
-			pthread_mutex_unlock(&winMutex);
+			Thread::mutexUnlock(&winMutex);
 		}
 
 		return iWin;
@@ -481,12 +481,12 @@ namespace mb {
 		set<IWindow*>::iterator i;
 		bool hasWin = false;
 
-		pthread_mutex_lock(&winMutex);
+		Thread::mutexLock(&winMutex);
 		i = windowPool.find(win);
 		if (i != windowPool.end()) {
 			hasWin = true;
 		}
-		pthread_mutex_unlock(&winMutex);
+		Thread::mutexUnlock(&winMutex);
 
 		return hasWin;
 	}
@@ -494,12 +494,12 @@ namespace mb {
 	void DFBDeviceScreen::releaseWindow(IWindow* win) {
 		set<IWindow*>::iterator i;
 
-		pthread_mutex_lock(&winMutex);
+		Thread::mutexLock(&winMutex);
 		i = windowPool.find(win);
 		if (i != windowPool.end()) {
 			windowPool.erase(i);
 		}
-		pthread_mutex_unlock(&winMutex);
+		Thread::mutexUnlock(&winMutex);
 	}
 
 	ISurface* DFBDeviceScreen::createSurface() {
@@ -509,10 +509,10 @@ namespace mb {
 	ISurface* DFBDeviceScreen::createSurface(int w, int h) {
 		ISurface* iSur = NULL;
 
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		iSur = new DFBSurface(id, w, h);
 		surfacePool.insert(iSur);
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 
 		return iSur;
 	}
@@ -520,7 +520,7 @@ namespace mb {
 	ISurface* DFBDeviceScreen::createSurfaceFrom(void* uSur) {
 		ISurface* iSur = NULL;
 
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		if (uSur != NULL) {
 			iSur = new DFBSurface(id, uSur);
 
@@ -529,7 +529,7 @@ namespace mb {
 		}
 
 		surfacePool.insert(iSur);
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 
 		return iSur;
 	}
@@ -538,12 +538,12 @@ namespace mb {
 		set<ISurface*>::iterator i;
 		bool hasSur = false;
 
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
 			hasSur = true;
 		}
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 
 		return hasSur;
 	}
@@ -552,13 +552,13 @@ namespace mb {
 		set<ISurface*>::iterator i;
 		bool released = false;
 
-		pthread_mutex_lock(&surMutex);
+		Thread::mutexLock(&surMutex);
 		i = surfacePool.find(s);
 		if (i != surfacePool.end()) {
 			surfacePool.erase(i);
 			released = true;
 		}
-		pthread_mutex_unlock(&surMutex);
+		Thread::mutexUnlock(&surMutex);
 
 		return released;
 	}
@@ -571,7 +571,7 @@ namespace mb {
 		IContinuousMediaProvider* provider;
 		string strSym;
 
-		pthread_mutex_lock(&cmpMutex);
+		Thread::mutexLock(&cmpMutex);
 
 #if HAVE_COMPSUPPORT
 		if (hasVisual) {
@@ -609,7 +609,7 @@ namespace mb {
 
 		cmpPool.insert(provider);
 
-		pthread_mutex_unlock(&cmpMutex);
+		Thread::mutexUnlock(&cmpMutex);
 
 		return provider;
 	}
@@ -620,7 +620,7 @@ namespace mb {
 		set<IContinuousMediaProvider*>::iterator i;
 		string strSym;
 
-		pthread_mutex_lock(&cmpMutex);
+		Thread::mutexLock(&cmpMutex);
 		i = cmpPool.find(provider);
 		if (i != cmpPool.end()) {
 			cmpPool.erase(i);
@@ -634,7 +634,7 @@ namespace mb {
 			cm->releaseComponentFromObject(strSym);
 #endif
 		}
-		pthread_mutex_unlock(&cmpMutex);
+		Thread::mutexUnlock(&cmpMutex);
 	}
 
 	IFontProvider* DFBDeviceScreen::createFontProvider(
@@ -746,12 +746,12 @@ namespace mb {
 		map<int, int>::iterator i;
 		int translated = CodeMap::KEY_NULL;
 
-		pthread_mutex_lock(&ieMutex);
+		Thread::mutexLock(&ieMutex);
 		i = dfbToGingaCodeMap.find(keyCode);
 		if (i != dfbToGingaCodeMap.end()) {
 			translated = i->second;
 		}
-		pthread_mutex_unlock(&ieMutex);
+		Thread::mutexUnlock(&ieMutex);
 
 		return translated;
 	}
@@ -760,12 +760,12 @@ namespace mb {
 		map<int, int>::iterator i;
 		int translated = CodeMap::KEY_NULL;
 
-		pthread_mutex_lock(&ieMutex);
+		Thread::mutexLock(&ieMutex);
 		i = gingaToDFBCodeMap.find(keyCode);
 		if (i != gingaToDFBCodeMap.end()) {
 			translated = i->second;
 		}
-		pthread_mutex_unlock(&ieMutex);
+		Thread::mutexUnlock(&ieMutex);
 
 		return translated;
 	}

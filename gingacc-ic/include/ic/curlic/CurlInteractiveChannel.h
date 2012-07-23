@@ -55,6 +55,9 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "curl/curl.h"
 
 #include <sys/stat.h>
