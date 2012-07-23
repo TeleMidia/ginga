@@ -386,11 +386,11 @@ namespace player {
 
 		bool firstTime = true;
 
-		while (berkeliumFactory.isRunning()) {
+		while (berkeliumFactory.isRunning() || firstTime) {
 			if (firstTime) {
 				firstTime = false;
 				int waitFactory = 0;
-				while (waitFactory < 500000) {
+				while (waitFactory < 1000000) {
 					Berkelium::update();
 					SystemCompat::uSleep(30000);
 					waitFactory = waitFactory + 30000;
