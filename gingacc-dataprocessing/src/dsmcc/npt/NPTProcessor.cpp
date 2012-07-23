@@ -72,7 +72,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 	loopControlMax      = false;
 	loopControlMin      = false;
 
-	pthread_mutex_init(&loopMutex, NULL);
+	Thread::mutexInit(&loopMutex, NULL);
 
 	startThread();
 }
@@ -113,12 +113,12 @@ NPTProcessor::~NPTProcessor() {
 		cidListeners = NULL;
 	}
 
-	pthread_mutex_lock(&loopMutex);
+	Thread::mutexLock(&loopMutex);
 	if (loopListeners != NULL) {
 		delete loopListeners;
 		loopListeners = NULL;
 	}
-	pthread_mutex_unlock(&loopMutex);
+	Thread::mutexUnlock(&loopMutex);
 	pthread_mutex_destroy(&loopMutex);
 }
 
@@ -140,7 +140,7 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 
 	clog << "NPTProcessor::addLoopListener " << endl;
 
-	pthread_mutex_lock(&loopMutex);
+	Thread::mutexLock(&loopMutex);
 	i = loopListeners->find(cid);
 	if (i != loopListeners->end()) {
 		listeners = i->second;
@@ -151,7 +151,7 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 	}
 
 	listeners->insert((INPTListener*)ltn);
-	pthread_mutex_unlock(&loopMutex);
+	Thread::mutexUnlock(&loopMutex);
 
 	return true;
 }
@@ -302,7 +302,7 @@ void NPTProcessor::notifyLoopToTimeListeners(unsigned char cid) {
 	clog << "NPTProcessor::notifyLoopToTimeListeners ";
 	clog << endl;
 
-	pthread_mutex_lock(&loopMutex);
+	Thread::mutexLock(&loopMutex);
 	i = loopListeners->find(cid);
 	if (i != loopListeners->end()) {
 		j = i->second->begin();
@@ -313,7 +313,7 @@ void NPTProcessor::notifyLoopToTimeListeners(unsigned char cid) {
 			++j;
 		}
 	}
-	pthread_mutex_unlock(&loopMutex);
+	Thread::mutexUnlock(&loopMutex);
 }
 
 void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {

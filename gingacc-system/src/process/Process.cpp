@@ -79,7 +79,7 @@ namespace process {
 		posix_spawn_file_actions_init(&fileActions);
 
 		isCheckingCom = false;
-		pthread_mutex_init(&comMutex, NULL);
+		Thread::mutexInit(&comMutex, NULL);
 		pthread_cond_init(&comCond, NULL);
 
 		isSpawnedReady = false;
@@ -147,10 +147,10 @@ namespace process {
 		}
 
 		isCheckingCom = true;
-		pthread_mutex_lock(&comMutex);
+		Thread::mutexLock(&comMutex);
 		pthread_cond_wait(&comCond, &comMutex);
 		isCheckingCom = false;
-		pthread_mutex_unlock(&comMutex);
+		Thread::mutexUnlock(&comMutex);
 	}
 
 	void Process::tryCom() {

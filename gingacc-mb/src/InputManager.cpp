@@ -180,24 +180,24 @@ namespace mb {
 		eventListeners.clear();
 
 		if (!actionsToInpListeners.empty()) {
-			pthread_mutex_lock(&actInpMutex);
+			Thread::mutexLock(&actInpMutex);
 			actionsToInpListeners.clear();
-			pthread_mutex_unlock(&actInpMutex);
+			Thread::mutexUnlock(&actInpMutex);
 		}
 		pthread_mutex_destroy(&actInpMutex);
 
 
 		if (!applicationListeners.empty()) {
-			pthread_mutex_lock(&appMutex);
+			Thread::mutexLock(&appMutex);
 			applicationListeners.clear();
 
 			if (!actionsToAppListeners.empty()) {
-				pthread_mutex_lock(&actAppMutex);
+				Thread::mutexLock(&actAppMutex);
 				actionsToAppListeners.clear();
-				pthread_mutex_unlock(&actAppMutex);
+				Thread::mutexUnlock(&actAppMutex);
 			}
 
-			pthread_mutex_unlock(&appMutex);
+			Thread::mutexUnlock(&appMutex);
 		}
 		pthread_mutex_destroy(&actAppMutex);
 		pthread_mutex_destroy(&appMutex);
@@ -208,9 +208,9 @@ namespace mb {
 		}
 
 		if (!motionListeners.empty()) {
-			pthread_mutex_lock(&mlMutex);
+			Thread::mutexLock(&mlMutex);
 			motionListeners.clear();
-			pthread_mutex_unlock(&mlMutex);
+			Thread::mutexUnlock(&mlMutex);
 		}
 		pthread_mutex_destroy(&mlMutex);
 
@@ -218,9 +218,9 @@ namespace mb {
 	}
 
 	void InputManager::addMotionEventListener(IMotionEventListener* listener) {
-		pthread_mutex_lock(&mlMutex);
+		Thread::mutexLock(&mlMutex);
 		motionListeners.insert(listener);
-		pthread_mutex_unlock(&mlMutex);
+		Thread::mutexUnlock(&mlMutex);
 	}
 
 	void InputManager::removeMotionEventListener(
@@ -228,25 +228,25 @@ namespace mb {
 
 		set<IMotionEventListener*>::iterator i;
 
-		pthread_mutex_lock(&mlMutex);
+		Thread::mutexLock(&mlMutex);
 		i = motionListeners.find(listener);
 		if (i != motionListeners.end()) {
 			motionListeners.erase(i);
 		}
-		pthread_mutex_unlock(&mlMutex);
+		Thread::mutexUnlock(&mlMutex);
 	}
 
 	void InputManager::notifyMotionListeners(int x, int y, int z) {
 
 		set<IMotionEventListener*>::iterator i;
 
-		pthread_mutex_lock(&mlMutex);
+		Thread::mutexLock(&mlMutex);
 		i = motionListeners.begin();
 		while (i != motionListeners.end()) {
 			(*i)->motionEventReceived(x, y, z);
 			++i;
 		}
-		pthread_mutex_unlock(&mlMutex);
+		Thread::mutexUnlock(&mlMutex);
 	}
 
 	void InputManager::addInputEventListener(
@@ -263,14 +263,14 @@ namespace mb {
 		}
 
 		if (notifying) {
-			pthread_mutex_lock(&actInpMutex);
+			Thread::mutexLock(&actInpMutex);
 			action = new LockedAction;
 			action->l      = listener;
 			action->isAdd  = true;
 			action->events = evs;
 
 			actionsToInpListeners.push_back(action);
-			pthread_mutex_unlock(&actInpMutex);
+			Thread::mutexUnlock(&actInpMutex);
 
 		} else {
 			lock();
@@ -299,14 +299,14 @@ namespace mb {
 		}
 
 		if (notifying) {
-			pthread_mutex_lock(&actInpMutex);
+			Thread::mutexLock(&actInpMutex);
 			action = new LockedAction;
 			action->l      = listener;
 			action->isAdd  = false;
 			action->events = NULL;
 
 			actionsToInpListeners.push_back(action);
-			pthread_mutex_unlock(&actInpMutex);
+			Thread::mutexUnlock(&actInpMutex);
 
 		} else {
 			lock();
@@ -338,7 +338,7 @@ namespace mb {
 			return;
 		}
 
-		pthread_mutex_lock(&actInpMutex);
+		Thread::mutexLock(&actInpMutex);
 		j = actionsToInpListeners.begin();
 		while (j != actionsToInpListeners.end()) {
 			action   = *j;
@@ -362,7 +362,7 @@ namespace mb {
 		}
 
 		actionsToInpListeners.clear();
-		pthread_mutex_unlock(&actInpMutex);
+		Thread::mutexUnlock(&actInpMutex);
 	}
 
 	void InputManager::performApplicationLockedActions() {
@@ -376,7 +376,7 @@ namespace mb {
 			return;
 		}
 
-		pthread_mutex_lock(&actAppMutex);
+		Thread::mutexLock(&actAppMutex);
 		j = actionsToAppListeners.begin();
 		while (j != actionsToAppListeners.end()) {
 			action = *j;
@@ -397,7 +397,7 @@ namespace mb {
 		}
 
 		actionsToAppListeners.clear();
-		pthread_mutex_unlock(&actAppMutex);
+		Thread::mutexUnlock(&actAppMutex);
 	}
 
 	bool InputManager::dispatchEvent(IInputEvent* inputEvent) {
@@ -468,12 +468,12 @@ namespace mb {
 		}
 
 		notifyingApp = true;
-		pthread_mutex_lock(&appMutex);
+		Thread::mutexLock(&appMutex);
 
 		performApplicationLockedActions();
 
 		if (applicationListeners.empty() || inputEvent == NULL) {
-			pthread_mutex_unlock(&appMutex);
+			Thread::mutexUnlock(&appMutex);
 			notifyingApp = false;
 			return true;
 		}
@@ -482,14 +482,14 @@ namespace mb {
 		while (i != applicationListeners.end()) {
 			if (*i != NULL) {
 				if (!(*i)->userEventReceived(inputEvent)) {
-					pthread_mutex_unlock(&appMutex);
+					Thread::mutexUnlock(&appMutex);
 					notifyingApp = false;
 					return false;
 				}
 			}
 			++i;
 		}
-		pthread_mutex_unlock(&appMutex);
+		Thread::mutexUnlock(&appMutex);
 		notifyingApp = false;
 		return true;
 	}
@@ -504,20 +504,20 @@ namespace mb {
 		}
 
 		if (notifyingApp) {
-			pthread_mutex_lock(&actAppMutex);
+			Thread::mutexLock(&actAppMutex);
 			action         = new LockedAction;
 			action->l      = listener;
 			action->isAdd  = true;
 			action->events = NULL;
 
 			actionsToAppListeners.push_back(action);
-			pthread_mutex_unlock(&actAppMutex);
+			Thread::mutexUnlock(&actAppMutex);
 
 		} else {
-			pthread_mutex_lock(&appMutex);
+			Thread::mutexLock(&appMutex);
 			performApplicationLockedActions();
 			applicationListeners.insert(listener);
-			pthread_mutex_unlock(&appMutex);
+			Thread::mutexUnlock(&appMutex);
 		}
 	}
 
@@ -532,23 +532,23 @@ namespace mb {
 		}
 
 		if (notifyingApp) {
-			pthread_mutex_lock(&actAppMutex);
+			Thread::mutexLock(&actAppMutex);
 			action         = new LockedAction;
 			action->l      = listener;
 			action->isAdd  = false;
 			action->events = NULL;
 
 			actionsToAppListeners.push_back(action);
-			pthread_mutex_unlock(&actAppMutex);
+			Thread::mutexUnlock(&actAppMutex);
 
 		} else {
-			pthread_mutex_lock(&appMutex);
+			Thread::mutexLock(&appMutex);
 			performApplicationLockedActions();
 			i = applicationListeners.find(listener);
 			if (i != applicationListeners.end()) {
 				applicationListeners.erase(i);
 			}
-			pthread_mutex_unlock(&appMutex);
+			Thread::mutexUnlock(&appMutex);
 		}
 	}
 

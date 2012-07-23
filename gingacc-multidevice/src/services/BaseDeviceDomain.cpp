@@ -68,7 +68,7 @@ namespace multidevice {
 	BaseDeviceDomain::BaseDeviceDomain() : DeviceDomain() {
 		timerCount    = 0;
 
-		pthread_mutex_init(&pMutex, NULL);
+		Thread::mutexInit(&pMutex, NULL);
 		hasNewPassiveTask = false;
 		passiveTimestamp  = 0;
 		lastMediaContentTask.size = 0;
@@ -99,10 +99,10 @@ namespace multidevice {
 				task->size = taskSize;
 				task->timestamp = getCurrentTimeMillis();
 				//hasNewPassiveTask = true;
-				pthread_mutex_lock(&pMutex);
+				Thread::mutexLock(&pMutex);
 				passiveTasks.push_back(task);
 				//hasNewPassiveTask = false;
-				pthread_mutex_unlock(&pMutex);
+				Thread::mutexUnlock(&pMutex);
 				return true;
 
 			case CT_ACTIVE:
@@ -459,7 +459,7 @@ namespace multidevice {
 		char* data;
 		int taskSize;
 
-		pthread_mutex_lock(&pMutex);
+		Thread::mutexLock(&pMutex);
 		i = passiveTasks.begin();
 		if (i != passiveTasks.end()) {
 			remoteTask = *i;
@@ -487,7 +487,7 @@ namespace multidevice {
 
 			delete remoteTask;
 		}
-		pthread_mutex_unlock(&pMutex);
+		Thread::mutexUnlock(&pMutex);
 	}
 
 	void BaseDeviceDomain::checkDomainTasks() {

@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
 #include "mb/interface/IInputEventListener.h"

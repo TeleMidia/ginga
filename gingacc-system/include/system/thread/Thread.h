@@ -102,6 +102,8 @@ namespace thread {
 		bool unlockConditionSatisfied();
 
 		static void mutexInit(pthread_mutex_t* mutex, bool recursive=false);
+		static void mutexLock(pthread_mutex_t* mutex);
+		static void mutexUnlock(pthread_mutex_t* mutex);
   };
 }
 }

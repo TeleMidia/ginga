@@ -63,13 +63,13 @@ namespace dataprocessing {
 		this->pidFilters        = new map<int, SectionFilter*>;
 		this->reading           = false;
 
-		pthread_mutex_init(&filterMutex, NULL);
+		Thread::mutexInit(&filterMutex, NULL);
 	}
 
 	FilterManager::~FilterManager() {
 		//TODO: delete maps content
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		if (streamTypeFilters != NULL) {
 			delete streamTypeFilters;
 			streamTypeFilters = NULL;
@@ -85,7 +85,7 @@ namespace dataprocessing {
 			sections = NULL;
 		}
 
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 		pthread_mutex_destroy(&filterMutex);
 	}
 
@@ -95,7 +95,7 @@ namespace dataprocessing {
 		SectionFilter* sf = NULL;
 		int tId;
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		if (streamTypeFilters->count(streamType) == 0) {
 			sf = new SectionFilter();
 			sf->setListener(listener);
@@ -115,7 +115,7 @@ namespace dataprocessing {
 			}
 		}
 
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 
 		return sf;
 	}
@@ -125,7 +125,7 @@ namespace dataprocessing {
 
 		SectionFilter* sf = NULL;
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		if (pidFilters->count(pid) == 0) {
 			sf = new SectionFilter();
 			sf->setListener(listener);
@@ -143,7 +143,7 @@ namespace dataprocessing {
 			}
 		}
 
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 		return sf;
 	}
 
@@ -154,7 +154,7 @@ namespace dataprocessing {
 		clog << "FilterManager::destroyFilter type '";
 		clog << streamType << "'" << endl;
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		i = streamTypeFilters->find(streamType);
 		if (i != streamTypeFilters->end()) {
 			sf = i->second;
@@ -162,7 +162,7 @@ namespace dataprocessing {
 			demux->removeFilter(sf);
 		}
 
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 	}
 
 	void FilterManager::destroyFilter(IDemuxer* demux, ITSFilter* filter) {
@@ -171,7 +171,7 @@ namespace dataprocessing {
 		clog << "FilterManager::destroyFilter filter '";
 		clog << filter << "'" << endl;
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		i = streamTypeFilters->begin();
 		while (i != streamTypeFilters->end()) {
 			if (filter == i->second) {
@@ -182,7 +182,7 @@ namespace dataprocessing {
 
 		demux->removeFilter(filter);
 
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 	}
 
 	//TODO: destroy pid filter
@@ -227,7 +227,7 @@ namespace dataprocessing {
 			return false;
 		}
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		if (sections->count(sectionName) == 0) {
 			clog << "FilterManager::processSection creating map for section '";
 			clog << sectionName << "'" << endl;
@@ -237,7 +237,7 @@ namespace dataprocessing {
 		} else {
 			secs = (*sections)[sectionName];
 		}
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 
 		sn = section->getSectionNumber();
 		lsn = section->getLastSectionNumber();
@@ -311,7 +311,7 @@ namespace dataprocessing {
 		map<int, SectionFilter*>::iterator j;
 		SectionFilter* sf;
 
-		pthread_mutex_lock(&filterMutex);
+		Thread::mutexLock(&filterMutex);
 		i = streamTypeFilters->begin();
 		while (i != streamTypeFilters->end()) {
 			clog << "FilterManager::addProcessedSection '";
@@ -330,7 +330,7 @@ namespace dataprocessing {
 		if (sections->count(sectionName) != 0) {
 			sections->erase(sections->find(sectionName));
 		}
-		pthread_mutex_unlock(&filterMutex);
+		Thread::mutexUnlock(&filterMutex);
 		/*clog << "FilterManager::addProcessedSection '" << sectionName << "'";
 		clog << " done!" << endl;*/
 	}

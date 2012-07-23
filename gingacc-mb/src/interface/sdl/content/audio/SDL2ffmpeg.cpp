@@ -150,9 +150,9 @@ namespace mb {
 
 				vs->av_sync_type = av_sync_type;
 
-				pthread_mutex_lock(&aiMutex);
+				Thread::mutexLock(&aiMutex);
 				openStreams();
-				pthread_mutex_unlock(&aiMutex);
+				Thread::mutexUnlock(&aiMutex);
 		    }
 		}
 
@@ -167,7 +167,7 @@ namespace mb {
 		abortRequest = true;
 		hasPic = false;
 
-		pthread_mutex_lock(&aiMutex);
+		Thread::mutexLock(&aiMutex);
 
 		i = aInstances.find(this);
 		if (i != aInstances.end()) {
@@ -202,7 +202,7 @@ namespace mb {
 			}
 		}
 
-		pthread_mutex_unlock(&aiMutex);
+		Thread::mutexUnlock(&aiMutex);
 
 		release();
 
@@ -329,10 +329,10 @@ namespace mb {
 		bool wasEmpty = false;
 
 		if (vs->audio_stream >= 0 && vs->audio_st != NULL) {
-			pthread_mutex_lock(&aiMutex);
+			Thread::mutexLock(&aiMutex);
 			wasEmpty = aInstances.empty();
 			aInstances.insert(this);
-			pthread_mutex_unlock(&aiMutex);
+			Thread::mutexUnlock(&aiMutex);
 
 			if (vs->audio_hw_buf_size == 0) {
 				clog << "SDL2ffmpeg::prepare Warning! buffer size = 0" << endl;
@@ -451,7 +451,7 @@ namespace mb {
 		SDL_CondSignal(vs->subpq_cond);
 
 /*		set<SDL2ffmpeg*>::iterator i;
-		pthread_mutex_lock(&aiMutex);
+		Thread::mutexLock(&aiMutex);
 
 		i = aInstances.find(this);
 		if (i != aInstances.end()) {
@@ -465,7 +465,7 @@ namespace mb {
 				SDL_PauseAudio(1);
 			}
 		}
-		pthread_mutex_unlock(&aiMutex);*/
+		Thread::mutexUnlock(&aiMutex);*/
 		clog << "SDL2ffmpeg::stop(" << vs->filename << ") all done" << endl;
 	}
 
@@ -2138,7 +2138,7 @@ the_end:
 
 		set<SDL2ffmpeg*>::iterator i;
 
-		pthread_mutex_lock(&aiMutex);
+		Thread::mutexLock(&aiMutex);
 
 		i = aInstances.begin();
 		while (i != aInstances.end()) {
@@ -2197,7 +2197,7 @@ the_end:
 
 			++i;
 		}
-		pthread_mutex_unlock(&aiMutex);
+		Thread::mutexUnlock(&aiMutex);
 	}
 */
 
@@ -2230,7 +2230,7 @@ the_end:
 			return;
 		}*/
 
-		pthread_mutex_lock(&aiMutex);
+		Thread::mutexLock(&aiMutex);
 		audio_cb_time = av_gettime();
 
 		memset(stream, 0, len);
@@ -2379,7 +2379,7 @@ the_end:
 		/*elapsedTime = av_gettime() - audio_cb_time;
 		sleepTime   = 1000000/30;*/
 
-		pthread_mutex_unlock(&aiMutex);
+		Thread::mutexUnlock(&aiMutex);
 
 		/*if (!hasTimeRefer && sleepTime > elapsedTime) {
 			SystemCompat::uSleep(sleepTime - elapsedTime);

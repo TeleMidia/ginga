@@ -229,15 +229,15 @@ namespace mb {
 	}
 
 	void DX2DSurface::show(){
-		pthread_mutex_lock(&visible_lock);
+		Thread::mutexLock(&visible_lock);
 		this->visible = true;
-		pthread_mutex_unlock(&visible_lock);
+		Thread::mutexUnlock(&visible_lock);
 	}
 
 	void DX2DSurface::hide(){
-		pthread_mutex_lock(&visible_lock);
+		Thread::mutexLock(&visible_lock);
 		this->visible = false;
-		pthread_mutex_unlock(&visible_lock);
+		Thread::mutexUnlock(&visible_lock);
 	}
 
 	LPDIRECT3DTEXTURE9 DX2DSurface::getTexture(){
@@ -265,14 +265,14 @@ namespace mb {
 		}
 
 
-		pthread_mutex_lock(&tex_lock);
+		Thread::mutexLock(&tex_lock);
 
 		DXCHECK( pD3ddev->StretchRect(pSSur, NULL, pDSur, NULL, D3DTEXF_NONE), "DX2DSurface::setTexture", "erro" );
 
 
 		//pTex = tex;
 		
-		pthread_mutex_unlock(&tex_lock);
+		Thread::mutexUnlock(&tex_lock);
 		pSSur->Release();
 		pDSur->Release();
 
@@ -280,11 +280,11 @@ namespace mb {
 
 	void DX2DSurface::replaceTex(LPDIRECT3DTEXTURE9 newTex){
 		if(pTex != newTex){
-			pthread_mutex_lock(&tex_lock);
+			Thread::mutexLock(&tex_lock);
 			pTex->Release();
 			pTex = NULL;
 			pTex = newTex;
-			pthread_mutex_unlock(&tex_lock);
+			Thread::mutexUnlock(&tex_lock);
 		}else{
 			clog << "same tex" << endl; 
 		}
@@ -293,8 +293,8 @@ namespace mb {
 	void DX2DSurface::draw2DSurface(){
 		HRESULT hr;
 
-		pthread_mutex_lock(&tex_lock);
-		pthread_mutex_lock(&visible_lock);
+		Thread::mutexLock(&tex_lock);
+		Thread::mutexLock(&visible_lock);
 		if(pTex != NULL && (visible == true )){
 			hr = pD3ddev->SetFVF(SURFACEFVF);
 			hr = pD3ddev->SetIndices(pIndexBuffer);
@@ -304,8 +304,8 @@ namespace mb {
 			hr = pD3ddev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
 			hr = 0;
 		}
-		pthread_mutex_unlock(&visible_lock);
-		pthread_mutex_unlock(&tex_lock);
+		Thread::mutexUnlock(&visible_lock);
+		Thread::mutexUnlock(&tex_lock);
 	}
 
 	void DX2DSurface::blit(int x, int y, DX2DSurface* src,
