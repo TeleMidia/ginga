@@ -111,7 +111,6 @@ typedef struct {
 		private:
 			static bool hasRenderer;
 			static map<SDLDeviceScreen*, short> sdlScreens;
-			static pthread_mutex_t sMutex;
 
 			string aSystem;
 			string mbMode;
@@ -139,13 +138,8 @@ typedef struct {
 			IInputManager* im;
 
 			bool waitingCreator;
-			pthread_mutex_t cMutex;
+			pthread_mutex_t condMutex;
 			pthread_cond_t cond;
-
-			pthread_mutex_t winMutex;
-			pthread_mutex_t surMutex;
-			pthread_mutex_t cmpMutex;
-			pthread_mutex_t dmpMutex;
 
 			IWindow* backgroundLayer;
 			SDL_Window* screen;
@@ -154,20 +148,16 @@ typedef struct {
 
 			static bool hasERC; //external renderer controller
 
-			static pthread_mutex_t ieMutex;
 			static map<int, int> gingaToSDLCodeMap;
 			static map<int, int> sdlToGingaCodeMap;
 
-			static pthread_mutex_t uSurMutex;
 			static set<SDL_Surface*> uSurPool;
 			static set<ReleaseContainer*> releaseList;
-			static pthread_mutex_t rlMutex;
-
 			static map<GingaScreenID, map<float, set<IWindow*>*>*> renderMap;
-			static pthread_mutex_t wrMutex;
-
 			static set<IContinuousMediaProvider*> cmpRenderList;
-			static pthread_mutex_t mplMutex;
+
+			static pthread_mutex_t sdlMutex; //mutex for SDL structures
+			static pthread_mutex_t cstMutex; //mutex for C++ STL structures
 
 		public:
 			SDLDeviceScreen(
@@ -383,10 +373,6 @@ typedef struct {
 					Uint32* gmask,
 					Uint32* bmask,
 					Uint32* amask);
-
-		private:
-			static void lockScreens();
-			static void unlockScreens();
 	};
 }
 }

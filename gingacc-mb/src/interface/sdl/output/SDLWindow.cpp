@@ -543,13 +543,15 @@ namespace mb {
 				texture = NULL;
 			}
 
-			lockSurface();
-			if (texture == NULL && curSur != NULL) {
-				textureOwner = true;
-				texture = SDLDeviceScreen::createTextureFromSurface(
-						renderer, curSur);
+			if (texture == NULL) {
+				lockSurface();
+				if (curSur != NULL) {
+					textureOwner = true;
+					texture = SDLDeviceScreen::createTextureFromSurface(
+							renderer, curSur);
+				}
+				unlockSurface();
 			}
-			unlockSurface();
 		}
 
 		uTex = texture;

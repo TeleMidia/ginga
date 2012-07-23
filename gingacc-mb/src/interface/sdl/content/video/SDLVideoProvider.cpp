@@ -135,7 +135,6 @@ namespace mb {
 	void SDLVideoProvider::playOver(
 			ISurface* surface, bool hasVisual, IProviderListener* listener) {
 
-		int i;
 		IWindow* parent;
 
 		clog << "SDLVideoProvider::playOver" << endl;

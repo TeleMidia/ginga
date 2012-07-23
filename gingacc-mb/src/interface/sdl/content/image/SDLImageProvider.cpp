@@ -101,7 +101,6 @@ namespace mb {
 	void SDLImageProvider::playOver(ISurface* surface) {
 		SDL_Surface* renderedSurface;
 		SDLWindow* parent;
-		IColor* bgColor;
 
 		Thread::mutexLock(&pMutex);
 

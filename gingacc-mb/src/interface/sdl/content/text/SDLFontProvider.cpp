@@ -198,7 +198,7 @@ namespace mb {
 		int w = -1, h = -1;
 		string aux = "";
 
-		if (textLength == 0 || textLength > strlen(text)) {
+		if (textLength == 0 || textLength > (int)strlen(text)) {
 			getStringExtents(text, &w, &h);
 
 		} else {
