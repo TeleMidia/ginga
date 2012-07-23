@@ -156,7 +156,7 @@ l_attrColor (lua_State *L)
 
   if (lua_type (L, -1) == LUA_TNUMBER)
     {
-#     define tocolor(n) max (min (n, 255), 0)
+#define tocolor(n) max (min (n, 255), 0)
       r = tocolor (luaL_checkint (L, 2));
       g = tocolor (luaL_checkint (L, 3));
       b = tocolor (luaL_checkint (L, 4));
@@ -188,6 +188,10 @@ l_attrFont (lua_State *L)
 # define strdup _strdup
 #endif
 
+#define DEFAULT_FONT_SIZE  12
+#define DEFAULT_FONT_STYLE "normal"
+#define DEFAULT_FONT_FACE  "vera.ttf"
+
   if (lua_gettop (L) == 1)      /* get */
     {
       lua_pushstring (L, canvas->font.face);
@@ -197,15 +201,15 @@ l_attrFont (lua_State *L)
     }
 
   /* set */
-  canvas->font.size = luaL_checkint (L, 3);
+  canvas->font.size = luaL_optint (L, 3, DEFAULT_FONT_SIZE);
 
   if (canvas->font.face != NULL)
     free (canvas->font.face);
-  canvas->font.face = strdup (luaL_checkstring (L, 2));
+  canvas->font.face = strdup (luaL_optstring (L, 2, DEFAULT_FONT_FACE));
 
   if (canvas->font.style != NULL)
     free (canvas->font.style);
-  canvas->font.style = strdup (luaL_optstring (L, 4, "normal"));
+  canvas->font.style = strdup (luaL_optstring (L, 4, DEFAULT_FONT_STYLE));
 
   path = canvas->font.face;
   if (!fileExists (path))
@@ -215,7 +219,7 @@ l_attrFont (lua_State *L)
       path = prefix + path;
 
       if (!fileExists (path))
-        path = prefix + "vera.ttf";
+        path = prefix + DEFAULT_FONT_FACE;
     }
 
   IFontProvider *font = NULL;
@@ -398,6 +402,15 @@ l_drawText (lua_State *L)
   int x = luaL_checkint (L,2);
   int y = luaL_checkint (L,3);
   const char *text = luaL_checkstring (L, 4);
+
+  if (canvas->font.face == NULL)
+    {
+      lua_pushcfunction (L, l_attrFont);
+      lua_pushvalue (L, 1);
+      lua_pushnil (L);
+      lua_call (L, 2, 0);
+    }
+
   canvas->sfc->drawString (x, y, text);
   return 0;
 }
@@ -536,12 +549,10 @@ lua_createcanvas (lua_State *L, ISurface *sfc, int collect)
   canvas->crop.inUse = 0;
 
   // default color: black
-  canvas->color = new Color ("black");
-  int r = canvas->color->getR ();
-  int g = canvas->color->getG ();
-  int b = canvas->color->getB ();
-  int a = canvas->color->getAlpha ();
-  canvas->sfc->setColor (r, g, b, a);
+  lua_pushcfunction (L, l_attrColor);
+  lua_pushvalue (L, -2);
+  lua_pushstring (L, "black");
+  lua_call (L, 2, 0);
 
   return 1;
 }
