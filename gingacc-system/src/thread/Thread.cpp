@@ -59,12 +59,12 @@ namespace thread {
 	Thread::Thread() {
 		isDeleting = false;
 
-		Thread::mutexInit(&threadMutex, NULL);
+		Thread::mutexInit(&threadMutex);
 
 		isThreadSleeping = false;
-		Thread::mutexInit(&threadFlagMutex, NULL);
-		Thread::mutexInit(&threadFlagMutexLockUntilSignal, NULL);
-		Thread::mutexInit(&threadIdMutex, NULL);
+		Thread::mutexInit(&threadFlagMutex);
+		Thread::mutexInit(&threadFlagMutexLockUntilSignal);
+		Thread::mutexInit(&threadIdMutex);
 
 		isWaiting = false;
 		pthread_cond_init(&threadFlagConditionVariable, NULL);
