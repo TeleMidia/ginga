@@ -152,12 +152,16 @@ typedef struct {
 			static map<int, int> sdlToGingaCodeMap;
 
 			static set<SDL_Surface*> uSurPool;
-			static set<ReleaseContainer*> releaseList;
+			static vector<ReleaseContainer*> releaseList;
 			static map<GingaScreenID, map<float, set<IWindow*>*>*> renderMap;
 			static set<IContinuousMediaProvider*> cmpRenderList;
 
 			static pthread_mutex_t sdlMutex; //mutex for SDL structures
-			static pthread_mutex_t cstMutex; //mutex for C++ STL structures
+			static pthread_mutex_t renMutex; //mutex for C++ STL SDL Render Map
+			static pthread_mutex_t scrMutex; //mutex for C++ STL SDL Screens
+			static pthread_mutex_t recMutex; //mutex for C++ STL release structures
+			static pthread_mutex_t pooMutex; //mutex for C++ STL Pool structures
+			static pthread_mutex_t cstMutex; //mutex for the others C++ STL structures
 
 		public:
 			SDLDeviceScreen(
