@@ -13,7 +13,7 @@ lib_LTLIBRARIES = libgingaccplalks.la
 libgingaccplalks_la_SOURCES = LinksPlayer.cpp
 
 libgingaccplalks_la_LIBADD = -ltelemidialinks -ltelemidiautil -lgingaccplayer \
-    -lgingaccsystem -lpthread $(COMPONENTS_LIBS) \
+    -lgingaccsystem -lgingaccmb -lpthread $(COMPONENTS_LIBS) \
     -L$(prefix)/lib -L$(prefix)/lib/ginga -L../../../../
 
 libgingaccplalks_la_LDFLAGS = \

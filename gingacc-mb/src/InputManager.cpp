@@ -439,11 +439,14 @@ namespace mb {
 			evs = i->second;
 			if (evs != NULL) {
 				if (evs->find(keyCode) != evs->end()) {
-					//return false means an event with changed keySymbol
-					if (!lis->userEventReceived(inputEvent)) {
-						unlock();
-						notifying = false;
-						return false;
+
+					if (LocalScreenManager::hasListenerInstance(lis)) {
+						//return false means an event with changed keySymbol
+						if (!lis->userEventReceived(inputEvent)) {
+							unlock();
+							notifying = false;
+							return false;
+						}
 					}
 				}
 

@@ -85,6 +85,7 @@ namespace player {
 	pthread_mutex_t AwesomiumHandler::s_lMutex;
 
 	AwesomiumInfo::AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id) {
+		LocalScreenManager::addListenerInstance(this);
 		this->myScreen  = screenId;
 		this->id        = id;
 		this->mURL      = "";
@@ -108,6 +109,7 @@ namespace player {
 	}
 
 	AwesomiumInfo::~AwesomiumInfo() {
+		LocalScreenManager::removeListenerInstance(this);
 		pthread_cond_signal(&_eMVar);
 		pthread_cond_destroy(&_eMVar);
 		pthread_mutex_destroy(&_eM);

@@ -50,7 +50,7 @@ libgingaccplalua_la_CPPFLAGS= -DLUAPLAYER_ENABLE_TRACE \
 
 libgingaccplalua_la_LDFLAGS= -no-undefined -export-dynamic \
   $(LUA_LIB) -L$(top_builddir)/src -L/usr/local/lib/lua/5.1/socket/ \
-  -lgingaccplayer -lcore
+  -lgingaccmb -lgingaccplayer -lcore
 
 libgingaccplalua_la_LIBADD= libnclua.la
 
