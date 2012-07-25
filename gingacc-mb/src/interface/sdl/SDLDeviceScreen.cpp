@@ -449,7 +449,10 @@ namespace mb {
 		dest = createUnderlyingSurface(wRes, hRes);
 		blitScreen(dest);
 
-		SDL_SaveBMP_RW(dest, SDL_RWFromFile(fileUri.c_str(), "wb"), 1);
+		if (SDL_SaveBMP_RW(dest, SDL_RWFromFile(fileUri.c_str(), "wb"), 1) < 0) {
+			clog << "SDLDeviceScreen::blitScreen SDL error: '";
+			clog << SDL_GetError() << "'" << endl;
+		}
 		Thread::mutexUnlock(&sdlMutex);
 	}
 
@@ -1786,7 +1789,10 @@ namespace mb {
 			rect.w = iWin->getW();
 			rect.h = iWin->getH();
 
-			SDL_UpperBlitScaled(tmpSur, NULL, dest, &rect);
+			if (SDL_UpperBlitScaled(tmpSur, NULL, dest, &rect) < 0) {
+				clog << "SDLDeviceScreen::blitFromWIndow SDL error: '";
+				clog << SDL_GetError() << "'" << endl;
+			}
 		}
 
 		if (freeSurface) {
@@ -2360,13 +2366,13 @@ namespace mb {
 	    		int tpitch[3];
 
 	    		SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
-	    		drawing = true;
-	    		if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
-	    	        clog << "SDLDeviceScreen::drawWindow Warning! ";
-	    	        clog << "can't perform render copy " << SDL_GetError();
-	    	        clog << endl;
-	    		}
-	    		SDL_UnlockTexture(texture);
+				drawing = true;
+				if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
+					clog << "SDLDeviceScreen::drawWindow Warning! ";
+					clog << "can't perform render copy " << SDL_GetError();
+					clog << endl;
+				}
+				SDL_UnlockTexture(texture);
 	    	}
 
 	    	/* window border */
@@ -2381,7 +2387,10 @@ namespace mb {
 					rect.w = iWin->getW() + 2*i;
 					rect.h = iWin->getH() + 2*i;
 
-					SDL_RenderDrawRect(renderer, &rect);
+					if (SDL_RenderDrawRect(renderer, &rect) < 0) {
+						clog << "SDLDeviceScreen::drawWindow SDL error: '";
+						clog << SDL_GetError() << "'" << endl;
+					}
 
 					if (bw < 0) {
 						i--;
@@ -2443,9 +2452,14 @@ namespace mb {
 				SDL_TEXTUREACCESS_STREAMING,
 				w, h);
 
-	    /* allowing alpha */
-	    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		if (texture != NULL) {
+			/* allowing alpha */
+			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
+		} else {
+			clog << "SDLDeviceScreen::createTexture SDL error: '";
+			clog << SDL_GetError() << "'" << endl;
+		}
 	    Thread::mutexUnlock(&sdlMutex);
 
 	    return texture;
@@ -2480,6 +2494,10 @@ namespace mb {
 		Thread::mutexLock(&surMutex);
 		if (newUSur != NULL) {
 			uSurPool.insert(newUSur);
+
+		} else {
+			clog << "SDLDeviceScreen::createUnderlyingSurface SDL error: '";
+			clog << SDL_GetError() << "'" << endl;
 		}
 		Thread::mutexUnlock(&surMutex);
 
@@ -2496,14 +2514,19 @@ namespace mb {
         int textureAccess, w, h;
 
         Thread::mutexLock(&sdlMutex);
-        SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
-        SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
-		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
+        if (SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]) == 0) {
+			SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
+			getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 
-		uSur = SDL_CreateRGBSurfaceFrom(
-				pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
+			uSur = SDL_CreateRGBSurfaceFrom(
+					pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
 
-		SDL_UnlockTexture(texture);
+        } else {
+			clog << "SDLDeviceScreen::createUnderlyingSurfaceFromTexture SDL error: '";
+			clog << SDL_GetError() << "'" << endl;
+        }
+
+        SDL_UnlockTexture(texture);
 
 		Thread::mutexUnlock(&sdlMutex);
 

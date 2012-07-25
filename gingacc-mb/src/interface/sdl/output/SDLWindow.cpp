@@ -358,7 +358,10 @@ namespace mb {
 
 		lockTexture();
 		if (texture != NULL) {
-			SDL_SetTextureAlphaMod(texture, 255 - alpha);
+			if (SDL_SetTextureAlphaMod(texture, 255 - alpha) < 0) {
+				clog << "SDLWindow::setCurrentTransparency SDL error: '";
+				clog << SDL_GetError() << "'" << endl;
+			}
 		}
 		unlockTexture();
 	}
@@ -490,7 +493,12 @@ namespace mb {
 	void SDLWindow::clearContent() {
 		lockSurface();
 		if (curSur != NULL) {
-			SDL_FillRect(curSur, NULL, SDL_MapRGBA(curSur->format, 0, 0, 0, 0));
+			if (SDL_FillRect(
+					curSur, NULL, SDL_MapRGBA(curSur->format, 0, 0, 0, 0)) < 0) {
+
+				clog << "SDLWindow::clearContent SDL error: '";
+				clog << SDL_GetError() << "'" << endl;
+			}
 			textureUpdate = true;
 		}
 		unlockSurface();

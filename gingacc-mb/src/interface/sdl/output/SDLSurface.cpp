@@ -129,7 +129,10 @@ namespace mb {
 			pending = createSurface();
 
 			if (sur != NULL && pending != NULL) {
-				SDL_UpperBlit(sur, NULL, pending, NULL);
+				if (SDL_UpperBlit(sur, NULL, pending, NULL) < 0) {
+					clog << "SDLSurface::createPendingSurface SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 			}
 		}
 
@@ -174,10 +177,14 @@ namespace mb {
 			pending = createSurface();
 
 			if (pending != NULL && bgColor != NULL) {
-				SDL_FillRect(
+				if (SDL_FillRect(
 					pending,
 					NULL,
-					SDL_MapRGBA(pending->format, r, g, b, alpha));
+					SDL_MapRGBA(pending->format, r, g, b, alpha)) < 0) {
+
+					clog << "SDLSurface::fill SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 			}
 
 			Thread::mutexUnlock(&pMutex);
@@ -431,8 +438,12 @@ namespace mb {
 
 			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
-				SDL_FillRect(
-						pending, &rect, SDL_MapRGB(pending->format, r, g, b));
+				if (SDL_FillRect(
+						pending, &rect, SDL_MapRGB(pending->format, r, g, b)) < 0) {
+
+					clog << "SDLSurface::fillRectangle SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 			}
 			Thread::mutexUnlock(&pMutex);
 		}
@@ -468,10 +479,14 @@ namespace mb {
 		if (sur != NULL) {
 			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
-				SDL_SetColorKey(
+				if (SDL_SetColorKey(
 						pending,
 						SDL_TRUE,
-						SDL_MapRGB(pending->format, r, g, b));
+						SDL_MapRGB(pending->format, r, g, b)) < 0) {
+
+					clog << "SDLSurface::setChromaColor SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 			}
 			Thread::mutexUnlock(&pMutex);
 		}
@@ -584,7 +599,10 @@ namespace mb {
 
 		sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
 		if (sdlSurface != NULL && bgColor == NULL && caps != 0) {
-			SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
+			if (SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels)) < 0) {
+				clog << "SDLSurface::createSurface SDL error: '";
+				clog << SDL_GetError() << "'" << endl;
+			}
 		}
 
 		return sdlSurface;
@@ -605,7 +623,7 @@ namespace mb {
 		if (sur != NULL) {
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
-			if (uSur != NULL && SDLDeviceScreen::hasUnderlyingSurface(uSur)) {
+			if (uSur != NULL) {
 				if (srcX >= 0) {
 					srcRect.x = srcX;
 					srcRect.y = srcY;
@@ -629,7 +647,12 @@ namespace mb {
 
 				Thread::mutexLock(&pMutex);
 				if (createPendingSurface()) {
-					SDL_UpperBlit(uSur, srcPtr, pending, &dstRect);
+					if (SDLDeviceScreen::hasUnderlyingSurface(uSur)) {
+						if (SDL_UpperBlit(uSur, srcPtr, pending, &dstRect) < 0) {
+							clog << "SDLSurface::blit SDL error: '";
+							clog << SDL_GetError() << "'" << endl;
+						}
+					}
 				}
 				Thread::mutexUnlock(&pMutex);
 			}
