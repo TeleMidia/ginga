@@ -319,10 +319,14 @@ namespace mb {
 						parent->getW(),
 						parent->getH());
 
-				SDL_SetColorKey(
+				if (SDL_SetColorKey(
 						renderedSurface,
 						1,
-						*((Uint8*)renderedSurface->pixels));
+						*((Uint8*)renderedSurface->pixels)) < 0) {
+
+					clog << "SDLFontProvider::playOver SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 
 				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);
