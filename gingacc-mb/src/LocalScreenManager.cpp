@@ -92,6 +92,8 @@ namespace mb {
 	set<IMotionEventListener*> LocalScreenManager::mListeners;
 	pthread_mutex_t LocalScreenManager::mlMutex;
 
+	bool LocalScreenManager::initMutex = false;
+
 	const short LocalScreenManager::GMBST_DFLT   = 0;
 	const short LocalScreenManager::GMBST_DFB    = 1;
 	const short LocalScreenManager::GMBST_DX     = 2;
@@ -126,12 +128,6 @@ namespace mb {
 		isWaiting = false;
 		pthread_cond_init(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
-
-		Thread::mutexInit(&ilMutex);
-		iListeners.clear();
-
-		Thread::mutexInit(&mlMutex);
-		mListeners.clear();
 
 		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
 		clog << "all done" << endl;
@@ -171,6 +167,18 @@ namespace mb {
 
 	LocalScreenManager* LocalScreenManager::_instance = NULL;
 
+	void LocalScreenManager::checkInitMutex() {
+		if (!initMutex) {
+			initMutex = true;
+
+			Thread::mutexInit(&ilMutex);
+			iListeners.clear();
+
+			Thread::mutexInit(&mlMutex);
+			mListeners.clear();
+		}
+	}
+
 	void LocalScreenManager::releaseHandler() {
 		if (_instance != NULL) {
 			delete _instance;
@@ -181,6 +189,7 @@ namespace mb {
 	void LocalScreenManager::addIEListenerInstance(
 			IInputEventListener* listener) {
 
+		checkInitMutex();
 		Thread::mutexLock(&ilMutex);
 		iListeners.insert(listener);
 		Thread::mutexUnlock(&ilMutex);
@@ -191,6 +200,7 @@ namespace mb {
 
 		set<IInputEventListener*>::iterator i;
 
+		checkInitMutex();
 		Thread::mutexLock(&ilMutex);
 		i = iListeners.find(listener);
 		if (i != iListeners.end()) {
@@ -205,6 +215,7 @@ namespace mb {
 		set<IInputEventListener*>::iterator i;
 		bool hasListener = false;
 
+		checkInitMutex();
 		Thread::mutexLock(&ilMutex);
 		i = iListeners.find(listener);
 		if (i != iListeners.end()) {
@@ -223,6 +234,7 @@ namespace mb {
 	void LocalScreenManager::addMEListenerInstance(
 			IMotionEventListener* listener) {
 
+		checkInitMutex();
 		Thread::mutexLock(&mlMutex);
 		mListeners.insert(listener);
 		Thread::mutexUnlock(&mlMutex);
@@ -233,6 +245,7 @@ namespace mb {
 
 		set<IMotionEventListener*>::iterator i;
 
+		checkInitMutex();
 		Thread::mutexLock(&mlMutex);
 		i = mListeners.find(listener);
 		if (i != mListeners.end()) {
@@ -247,6 +260,7 @@ namespace mb {
 		set<IMotionEventListener*>::iterator i;
 		bool hasListener = false;
 
+		checkInitMutex();
 		Thread::mutexLock(&mlMutex);
 		i = mListeners.find(listener);
 		if (i != mListeners.end()) {

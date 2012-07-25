@@ -100,6 +100,8 @@ namespace mb {
 			static set<IMotionEventListener*> mListeners;
 			static pthread_mutex_t mlMutex;
 
+			static bool initMutex;
+
 			vector<short> sortSys;
 			map<string, short>* sysNames;
 			pthread_mutex_t sysMutex;
@@ -115,6 +117,8 @@ namespace mb {
 
 			LocalScreenManager();
 			virtual ~LocalScreenManager();
+
+			static void checkInitMutex();
 
 		public:
 			void releaseHandler();
