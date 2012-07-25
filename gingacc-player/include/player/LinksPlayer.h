@@ -74,7 +74,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "mb/interface/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
