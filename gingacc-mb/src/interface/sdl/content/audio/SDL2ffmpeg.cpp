@@ -76,8 +76,6 @@ namespace mb {
 	SDL2ffmpeg::SDL2ffmpeg(
 			IContinuousMediaProvider* cmp, const char *filename) {
 
-		int err, i;
-
 		this->cmp                            = cmp;
 		wanted_stream[AVMEDIA_TYPE_AUDIO]    = -1;
 		wanted_stream[AVMEDIA_TYPE_VIDEO]    = -1;
@@ -202,8 +200,6 @@ namespace mb {
 			}
 		}
 
-		Thread::mutexUnlock(&aiMutex);
-
 		release();
 
 		if (texture != NULL) {
@@ -212,6 +208,8 @@ namespace mb {
 		}
 
 		refCount--;
+
+		Thread::mutexUnlock(&aiMutex);
 
 		if (refCount == 0) {
 			init = false;
@@ -1053,11 +1051,9 @@ namespace mb {
 	void SDL2ffmpeg::video_image_display() {
 		VideoPicture *vp;
 		SubPicture *sp;
-		AVPicture pict;
 		float aspect_ratio;
 		int width, height, x, y;
 		SDL_Rect rect;
-		int i;
 
 		vp = &vs->pictq[vs->pictq_rindex];
 		if (vp->tex) {
@@ -1118,7 +1114,7 @@ namespace mb {
 			rect.w = FFMAX(width,  1);
 			rect.h = FFMAX(height, 1);
 
-			if (vp->src_frame) {
+			if (vp->src_frame && !abortRequest) {
 				uint8_t* pixels[AV_NUM_DATA_POINTERS];
 				int pitch[AV_NUM_DATA_POINTERS];
 		        Uint32 format;
@@ -1144,29 +1140,30 @@ namespace mb {
 					return;
 				}
 
-				if (!abortRequest &&
-						vp->tex &&
-						vp->src_frame->data &&
-						vp->src_frame->linesize > 0 &&
-						vp->height > 0 &&
-						vs->img_convert_ctx) {
+				if (!abortRequest) {
+					if (vp->tex &&
+							vp->src_frame->data &&
+							vp->src_frame->linesize > 0 &&
+							vp->height > 0 &&
+							vs->img_convert_ctx) {
 
-					sws_scale(
-							vs->img_convert_ctx,
-							(const uint8_t* const*)vp->src_frame->data,
-							vp->src_frame->linesize,
-							0, vp->height, pixels, pitch);
+						sws_scale(
+								vs->img_convert_ctx,
+								(const uint8_t* const*)vp->src_frame->data,
+								vp->src_frame->linesize,
+								0, vp->height, pixels, pitch);
+					}
+
+					sws_freeContext(vs->img_convert_ctx);
+					vs->img_convert_ctx = NULL;
+
+					SDL_UnlockTexture(vp->tex);
+					hasPic = false;
 				}
 
-				sws_freeContext(vs->img_convert_ctx);
-				vs->img_convert_ctx = NULL;
-
-				SDL_UnlockTexture(vp->tex);
-				hasPic = false;
-
 			} else {
-				clog << "SDL2ffmpeg::video_image_display Warning! ";
-				clog << "No source frame" << endl;
+				clog << "SDL2ffmpeg::video_image_display aborting";
+				clog << endl;
 				return;
 			}
 
@@ -2207,18 +2204,16 @@ the_end:
 		VideoState* vs;
 
 		int64_t audio_cb_time;
-		int audio_size;
+		//int audio_size;
 		int bytes_per_sec;
-		int ret;
-		double pts;
 		bool hasTimeRefer = false;
 
-		int64_t uResponseTime;
-		int64_t elapsedTime;
+		//int64_t uResponseTime;
+		//int64_t elapsedTime;
 
-		int cvt_len;
+		//int cvt_len;
 
-		unsigned int sleepTime;
+		//unsigned int sleepTime;
 
 		bool presented = false;
 
@@ -2902,7 +2897,7 @@ the_end:
 		SDL2ffmpeg* dec = (SDL2ffmpeg*)arg;
 		VideoState* vs  = dec->vs;
 
-		int err, i, ret;
+		int ret;
 		AVPacket pkt1, *pkt = &pkt1;
 		int eof = 0;
 		int pkt_in_play_range = 0;

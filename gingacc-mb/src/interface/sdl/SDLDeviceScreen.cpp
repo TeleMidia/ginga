@@ -111,7 +111,7 @@ namespace mb {
 	pthread_mutex_t SDLDeviceScreen::recMutex;
 	pthread_mutex_t SDLDeviceScreen::winMutex;
 	pthread_mutex_t SDLDeviceScreen::surMutex;
-	pthread_mutex_t SDLDeviceScreen::prpMutex;
+	pthread_mutex_t SDLDeviceScreen::proMutex;
 	pthread_mutex_t SDLDeviceScreen::cstMutex;
 
 	SDLDeviceScreen::SDLDeviceScreen(
@@ -188,7 +188,7 @@ namespace mb {
 			Thread::mutexInit(&recMutex, true);
 			Thread::mutexInit(&winMutex, true);
 			Thread::mutexInit(&surMutex, true);
-			Thread::mutexInit(&prpMutex, true);
+			Thread::mutexInit(&proMutex, true);
 			Thread::mutexInit(&cstMutex, true);
 
 			if (!hasERC) {
@@ -300,9 +300,9 @@ namespace mb {
 		Thread::mutexUnlock(&scrMutex);
 
 		hasRenderer = false;
-		Thread::mutexLock(&cstMutex);
+		Thread::mutexLock(&proMutex);
 		cmpRenderList.clear();
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&proMutex);
 	}
 
 	void SDLDeviceScreen::clearWidgetPools() {
@@ -782,9 +782,9 @@ namespace mb {
 
 		Thread::mutexUnlock(&sdlMutex);
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		cmpPool.insert(provider);
-		Thread::mutexUnlock(&prpMutex);
+		Thread::mutexUnlock(&proMutex);
 
 		return provider;
 	}
@@ -795,18 +795,18 @@ namespace mb {
 		set<IContinuousMediaProvider*>::iterator i;
 		IContinuousMediaProvider* cmp;
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		i = cmpPool.find(provider);
 		if (i != cmpPool.end()) {
 			cmp = (*i);
 			cmpPool.erase(i);
 			cmp->stop();
 
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 			createReleaseContainer(NULL, NULL, cmp);
 
 		} else {
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 		}
 	}
 
@@ -827,9 +827,9 @@ namespace mb {
 
 		Thread::mutexUnlock(&sdlMutex);
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		dmpPool.insert(provider);
-		Thread::mutexUnlock(&prpMutex);
+		Thread::mutexUnlock(&proMutex);
 
 		return provider;
 	}
@@ -838,17 +838,17 @@ namespace mb {
 		set<IDiscreteMediaProvider*>::iterator i;
 		IDiscreteMediaProvider* dmp;
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		i = dmpPool.find(provider);
 		if (i != dmpPool.end()) {
 			dmp = (*i);
 			dmpPool.erase(i);
 
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 			createReleaseContainer(NULL, NULL, dmp);
 
 		} else {
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 		}
 	}
 
@@ -866,9 +866,9 @@ namespace mb {
 
 		Thread::mutexUnlock(&sdlMutex);
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		dmpPool.insert(provider);
-		Thread::mutexUnlock(&prpMutex);
+		Thread::mutexUnlock(&proMutex);
 
 		return provider;
 	}
@@ -877,17 +877,17 @@ namespace mb {
 		set<IDiscreteMediaProvider*>::iterator i;
 		IDiscreteMediaProvider* dmp;
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		i = dmpPool.find(provider);
 		if (i != dmpPool.end()) {
 			dmp = (*i);
 			dmpPool.erase(i);
 
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 			createReleaseContainer(NULL, NULL, dmp);
 
 		} else {
-			Thread::mutexUnlock(&prpMutex);
+			Thread::mutexUnlock(&proMutex);
 		}
 	}
 
@@ -915,9 +915,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::addCMPToRendererList(IContinuousMediaProvider* cmp) {
-		Thread::mutexLock(&cstMutex);
+		Thread::mutexLock(&proMutex);
 		cmpRenderList.insert(cmp);
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&proMutex);
 	}
 
 	void SDLDeviceScreen::removeCMPToRendererList(
@@ -925,12 +925,12 @@ namespace mb {
 
 		set<IContinuousMediaProvider*>::iterator i;
 
-		Thread::mutexLock(&cstMutex);
+		Thread::mutexLock(&proMutex);
 		i = cmpRenderList.find(cmp);
 		if (i != cmpRenderList.end()) {
 			cmpRenderList.erase(i);
 		}
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&proMutex);
 	}
 
 	void SDLDeviceScreen::createReleaseContainer(
@@ -1305,12 +1305,12 @@ namespace mb {
 					dmp = dynamic_cast<IDiscreteMediaProvider*>(dec);
 
 					if (dmp != NULL) {
-						Thread::mutexLock(&prpMutex);
+						Thread::mutexLock(&proMutex);
 						j = s->dmpPool.find(dmp);
 						if (j != s->dmpPool.end()) {
 							s->dmpPool.erase(j);
 						}
-						Thread::mutexUnlock(&prpMutex);
+						Thread::mutexUnlock(&proMutex);
 
 						strSym = dmp->getLoadSymbol();
 						delete dmp;
@@ -1338,8 +1338,7 @@ namespace mb {
 
 		int size;
 
-		Thread::mutexLock(&cstMutex);
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 		size = cmpRenderList.size();
 		i = cmpRenderList.begin();
 		while (i != cmpRenderList.end()) {
@@ -1356,8 +1355,7 @@ namespace mb {
 			}
 			++i;
 		}
-		Thread::mutexUnlock(&prpMutex);
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&proMutex);
 
 		return size;
 	}
@@ -1676,7 +1674,7 @@ namespace mb {
 
 		Thread::mutexUnlock(&surMutex);
 
-		Thread::mutexLock(&prpMutex);
+		Thread::mutexLock(&proMutex);
 
 		//Releasing remaining CMP objects in CMP Pool
 		if (!s->cmpPool.empty()) {
@@ -1707,7 +1705,7 @@ namespace mb {
 			s->dmpPool.clear();
 		}
 
-		Thread::mutexUnlock(&prpMutex);
+		Thread::mutexUnlock(&proMutex);
 	}
 
 	void SDLDeviceScreen::releaseScreen(SDLDeviceScreen* s) {

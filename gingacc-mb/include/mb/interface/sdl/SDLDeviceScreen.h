@@ -162,7 +162,7 @@ typedef struct {
 			static pthread_mutex_t recMutex; //mutex for C++ STL release structures
 			static pthread_mutex_t winMutex; //mutex for C++ STL Window
 			static pthread_mutex_t surMutex; //mutex for C++ STL Surface
-			static pthread_mutex_t prpMutex; //mutex for C++ STL Providers Pools
+			static pthread_mutex_t proMutex; //mutex for C++ STL Providers
 			static pthread_mutex_t cstMutex; //mutex for the others C++ STL structures
 
 		public:
