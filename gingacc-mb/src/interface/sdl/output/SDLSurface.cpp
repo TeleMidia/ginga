@@ -423,6 +423,11 @@ namespace mb {
 		clog << x << ", " << y << ", " << w << ", " << h << "'";
 		clog << endl; */
 
+		assert(x >= 0);
+		assert(y >= 0);
+		assert(w > 0);
+		assert(h > 0);
+
 		Thread::mutexLock(&sMutex);
 		initContentSurface();
 
@@ -647,11 +652,9 @@ namespace mb {
 
 				Thread::mutexLock(&pMutex);
 				if (createPendingSurface()) {
-					if (SDLDeviceScreen::hasUnderlyingSurface(uSur)) {
-						if (SDL_UpperBlit(uSur, srcPtr, pending, &dstRect) < 0) {
-							clog << "SDLSurface::blit SDL error: '";
-							clog << SDL_GetError() << "'" << endl;
-						}
+					if (SDL_UpperBlit(uSur, srcPtr, pending, &dstRect) < 0) {
+						clog << "SDLSurface::blit SDL error: '";
+						clog << SDL_GetError() << "'" << endl;
 					}
 				}
 				Thread::mutexUnlock(&pMutex);
