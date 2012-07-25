@@ -65,7 +65,7 @@ namespace player {
 
 		clog << "LinksPlayer::LinksPlayer '" << mrl << "'" << endl;
 
-		LocalScreenManager::addListenerInstance(this);
+		LocalScreenManager::addIEListenerInstance(this);
 
 		mBrowser   = NULL;
 		this->x    = 1;
@@ -88,7 +88,7 @@ namespace player {
 	LinksPlayer::~LinksPlayer() {
 		clog << "LinksPlayer::~LinksPlayer " << endl;
 
-		LocalScreenManager::removeListenerInstance(this);
+		LocalScreenManager::removeIEListenerInstance(this);
 
 		if (im != NULL) {
 			im->removeInputEventListener(this);

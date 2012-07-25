@@ -89,6 +89,9 @@ namespace mb {
 	set<IInputEventListener*> LocalScreenManager::iListeners;
 	pthread_mutex_t LocalScreenManager::ilMutex;
 
+	set<IMotionEventListener*> LocalScreenManager::mListeners;
+	pthread_mutex_t LocalScreenManager::mlMutex;
+
 	const short LocalScreenManager::GMBST_DFLT   = 0;
 	const short LocalScreenManager::GMBST_DFB    = 1;
 	const short LocalScreenManager::GMBST_DX     = 2;
@@ -126,6 +129,9 @@ namespace mb {
 
 		Thread::mutexInit(&ilMutex);
 		iListeners.clear();
+
+		Thread::mutexInit(&mlMutex);
+		mListeners.clear();
 
 		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
 		clog << "all done" << endl;
@@ -172,7 +178,7 @@ namespace mb {
 		}
 	}
 
-	void LocalScreenManager::addListenerInstance(
+	void LocalScreenManager::addIEListenerInstance(
 			IInputEventListener* listener) {
 
 		Thread::mutexLock(&ilMutex);
@@ -180,7 +186,7 @@ namespace mb {
 		Thread::mutexUnlock(&ilMutex);
 	}
 
-	void LocalScreenManager::removeListenerInstance(
+	void LocalScreenManager::removeIEListenerInstance(
 			IInputEventListener* listener) {
 
 		set<IInputEventListener*>::iterator i;
@@ -193,7 +199,7 @@ namespace mb {
 		Thread::mutexUnlock(&ilMutex);
 	}
 
-	bool LocalScreenManager::hasListenerInstance(
+	bool LocalScreenManager::hasIEListenerInstance(
 			IInputEventListener* listener, bool removeInstance) {
 
 		set<IInputEventListener*>::iterator i;
@@ -209,6 +215,48 @@ namespace mb {
 			}
 		}
 		Thread::mutexUnlock(&ilMutex);
+
+		return hasListener;
+	}
+
+
+	void LocalScreenManager::addMEListenerInstance(
+			IMotionEventListener* listener) {
+
+		Thread::mutexLock(&mlMutex);
+		mListeners.insert(listener);
+		Thread::mutexUnlock(&mlMutex);
+	}
+
+	void LocalScreenManager::removeMEListenerInstance(
+			IMotionEventListener* listener) {
+
+		set<IMotionEventListener*>::iterator i;
+
+		Thread::mutexLock(&mlMutex);
+		i = mListeners.find(listener);
+		if (i != mListeners.end()) {
+			mListeners.erase(i);
+		}
+		Thread::mutexUnlock(&mlMutex);
+	}
+
+	bool LocalScreenManager::hasMEListenerInstance(
+			IMotionEventListener* listener, bool removeInstance) {
+
+		set<IMotionEventListener*>::iterator i;
+		bool hasListener = false;
+
+		Thread::mutexLock(&mlMutex);
+		i = mListeners.find(listener);
+		if (i != mListeners.end()) {
+			hasListener = true;
+
+			if (removeInstance) {
+				mListeners.erase(i);
+			}
+		}
+		Thread::mutexUnlock(&mlMutex);
 
 		return hasListener;
 	}

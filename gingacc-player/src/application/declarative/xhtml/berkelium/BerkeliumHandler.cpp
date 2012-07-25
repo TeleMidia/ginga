@@ -68,7 +68,8 @@ namespace player {
 	BerkeliumHandler::BerkeliumHandler(
 			GingaScreenID myScreen, int x, int y, int w, int h) {
 
-		LocalScreenManager::addListenerInstance(this);
+		LocalScreenManager::addIEListenerInstance(this);
+		LocalScreenManager::addMEListenerInstance(this);
 
 		dm = LocalScreenManager::getInstance();
 		im = dm->getInputManager(myScreen);
@@ -101,7 +102,8 @@ namespace player {
 	BerkeliumHandler::~BerkeliumHandler() {
 		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
 
-		LocalScreenManager::removeListenerInstance(this);
+		LocalScreenManager::removeIEListenerInstance(this);
+		LocalScreenManager::removeMEListenerInstance(this);
 		if (isValid) {
 			isValid = false;
 

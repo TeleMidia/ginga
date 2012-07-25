@@ -374,7 +374,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
           warning ("%s: %s", buf, cwd.c_str ());
      }
 
-     LocalScreenManager::addListenerInstance(this);
+     LocalScreenManager::addIEListenerInstance(this);
      this->im = dm->getInputManager (this->myScreen);
      this->surface = dm->createSurface (myScreen);
      this->surface->setCaps (this->surface->getCap ("ALPHACHANNEL"));
@@ -389,7 +389,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 LuaPlayer::~LuaPlayer (void)
 {
      this->lock ();
-     LocalScreenManager::removeListenerInstance(this);
+     LocalScreenManager::removeIEListenerInstance(this);
      TRACE0 ();
 
      if (nc_update_list != NULL && nc_update_list->empty ())

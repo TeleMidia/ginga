@@ -440,7 +440,7 @@ namespace mb {
 			if (evs != NULL) {
 				if (evs->find(keyCode) != evs->end()) {
 
-					if (LocalScreenManager::hasListenerInstance(lis)) {
+					if (LocalScreenManager::hasIEListenerInstance(lis)) {
 						//return false means an event with changed keySymbol
 						if (!lis->userEventReceived(inputEvent)) {
 							unlock();
