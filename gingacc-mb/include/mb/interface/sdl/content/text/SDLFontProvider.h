@@ -86,6 +86,8 @@ namespace mb {
 			bool fontInit;
 
 			static pthread_mutex_t ntsMutex;
+			static bool initNTSMutex;
+
 			pthread_mutex_t pMutex;
 
 			static bool initialized;

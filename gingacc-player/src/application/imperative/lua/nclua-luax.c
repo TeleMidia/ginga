@@ -195,6 +195,7 @@ void
 ncluax_pushcopy (lua_State *L, int index)
 {
   index = ncluax_abs (L, index);
+  assert (index > 0);
   switch (lua_type (L, index))
     {
     case LUA_TNONE:

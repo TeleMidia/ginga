@@ -74,6 +74,8 @@ namespace mb {
 	const short SDLFontProvider::A_BOTTOM_RIGHT  = 10;
 
 	pthread_mutex_t SDLFontProvider::ntsMutex;
+	bool SDLFontProvider::initNTSMutex = false;
+
 	bool SDLFontProvider::initialized = false;
 	short SDLFontProvider::fontRefs   = 0;
 
@@ -81,6 +83,11 @@ namespace mb {
 			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
 
 		Thread::mutexInit(&pMutex);
+
+		if (!initNTSMutex) {
+			initNTSMutex = true;
+			Thread::mutexInit(&ntsMutex);
+		}
 
 		fontRefs++;
 
@@ -127,7 +134,7 @@ namespace mb {
 
 	bool SDLFontProvider::initializeFont() {
 		if (!initialized) {
-			Thread::mutexInit(&ntsMutex);
+
 			initialized = true;
 			Thread::mutexLock(&ntsMutex);
 			if (TTF_Init() < 0) {
@@ -291,6 +298,7 @@ namespace mb {
 			}
 
 			assert(font != NULL);
+
 			text = TTF_RenderUTF8_Solid(
 					font, plainText.c_str(), sdlColor);
 

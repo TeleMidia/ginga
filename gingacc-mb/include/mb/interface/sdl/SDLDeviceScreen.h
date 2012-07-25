@@ -110,6 +110,7 @@ typedef struct {
 
 		private:
 			static bool hasRenderer;
+			static bool mutexInit;
 			static map<SDLDeviceScreen*, short> sdlScreens;
 
 			string aSystem;
@@ -173,6 +174,10 @@ typedef struct {
 
 			virtual ~SDLDeviceScreen();
 
+		private:
+			static void checkMutexInit();
+
+		public:
 			static void updateRenderMap(
 					GingaScreenID screenId, IWindow* window,
 					float oldZIndex, float newZIndex);

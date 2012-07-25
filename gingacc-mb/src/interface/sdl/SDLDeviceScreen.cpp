@@ -93,6 +93,7 @@ namespace mb {
 	map<SDLDeviceScreen*, short> SDLDeviceScreen::sdlScreens;
 	bool SDLDeviceScreen::hasRenderer = false;
 	bool SDLDeviceScreen::hasERC      = false;
+	bool SDLDeviceScreen::mutexInit   = false;
 
 	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
 	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
@@ -179,17 +180,10 @@ namespace mb {
 		Thread::mutexInit(&condMutex);
 		pthread_cond_init(&cond, NULL);
 
+		checkMutexInit();
+
 		if (!hasRenderer) {
 			hasRenderer = true;
-
-			Thread::mutexInit(&sdlMutex, true);
-			Thread::mutexInit(&renMutex, true);
-			Thread::mutexInit(&scrMutex, true);
-			Thread::mutexInit(&recMutex, true);
-			Thread::mutexInit(&winMutex, true);
-			Thread::mutexInit(&surMutex, true);
-			Thread::mutexInit(&proMutex, true);
-			Thread::mutexInit(&cstMutex, true);
 
 			if (!hasERC) {
 				setInitScreenFlag();
@@ -266,9 +260,26 @@ namespace mb {
 		clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
 	}
 
+	void SDLDeviceScreen::checkMutexInit() {
+		if (!mutexInit) {
+			mutexInit = true;
+
+			Thread::mutexInit(&sdlMutex, true);
+			Thread::mutexInit(&renMutex, true);
+			Thread::mutexInit(&scrMutex, true);
+			Thread::mutexInit(&recMutex, true);
+			Thread::mutexInit(&winMutex, true);
+			Thread::mutexInit(&surMutex, true);
+			Thread::mutexInit(&proMutex, true);
+			Thread::mutexInit(&cstMutex, true);
+		}
+	}
+
 	void SDLDeviceScreen::updateRenderMap(
 			GingaScreenID screenId, IWindow* window,
 			float oldZIndex, float newZIndex) {
+
+		checkMutexInit();
 
 		renderMapRemoveWindow(screenId, window, oldZIndex);
 		renderMapInsertWindow(screenId, window, newZIndex);
@@ -918,6 +929,8 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::addCMPToRendererList(IContinuousMediaProvider* cmp) {
+		checkMutexInit();
+
 		Thread::mutexLock(&proMutex);
 		cmpRenderList.insert(cmp);
 		Thread::mutexUnlock(&proMutex);
@@ -927,6 +940,8 @@ namespace mb {
 			IContinuousMediaProvider* cmp) {
 
 		set<IContinuousMediaProvider*>::iterator i;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&proMutex);
 		i = cmpRenderList.find(cmp);
@@ -942,6 +957,8 @@ namespace mb {
 			IMediaProvider* iDec) {
 
 		ReleaseContainer* rc;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&recMutex);
 
@@ -2066,6 +2083,8 @@ namespace mb {
 		map<float, set<IWindow*>*>* sortedMap;
 		set<IWindow*>* windows;
 
+		checkMutexInit();
+
 		Thread::mutexLock(&renMutex);
 		i = renderMap.find(screenId);
 		if (i != renderMap.end()) {
@@ -2097,6 +2116,8 @@ namespace mb {
 
 		map<float, set<IWindow*>*>* sortedMap;
 		set<IWindow*>* windows;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&renMutex);
 		i = renderMap.find(screenId);
@@ -2182,6 +2203,8 @@ namespace mb {
 	SDL_Window* SDLDeviceScreen::getUnderlyingWindow(GingaWindowID winId) {
 		SDL_Window* window = NULL;
 		Uint32 wid;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&sdlMutex);
 
@@ -2419,6 +2442,8 @@ namespace mb {
 
 		SDL_Texture* texture = NULL;
 
+		checkMutexInit();
+
 		Thread::mutexLock(&sdlMutex);
 
 		if (SDLDeviceScreen::hasUnderlyingSurface(surface)) {
@@ -2466,12 +2491,16 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::releaseTexture(SDL_Texture* texture) {
+		checkMutexInit();
+
 		Thread::mutexLock(&sdlMutex);
 		SDL_DestroyTexture(texture);
 		Thread::mutexUnlock(&sdlMutex);
 	}
 
 	void SDLDeviceScreen::addUnderlyingSurface(SDL_Surface* uSur) {
+		checkMutexInit();
+
 		Thread::mutexLock(&surMutex);
 		uSurPool.insert(uSur);
 		Thread::mutexUnlock(&surMutex);
@@ -2482,6 +2511,8 @@ namespace mb {
 
 		SDL_Surface* newUSur = NULL;
 		Uint32 rmask, gmask, bmask, amask;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&sdlMutex);
 
@@ -2543,6 +2574,8 @@ namespace mb {
 		set<SDL_Surface*>::iterator i;
 		bool hasIt = false;
 
+		checkMutexInit();
+
 		Thread::mutexLock(&surMutex);
 		i = uSurPool.find(uSur);
 		if (i != uSurPool.end()) {
@@ -2555,6 +2588,8 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseUnderlyingSurface(SDL_Surface* uSur) {
 		set<SDL_Surface*>::iterator i;
+
+		checkMutexInit();
 
 		Thread::mutexLock(&surMutex);
 		i = uSurPool.find(uSur);
