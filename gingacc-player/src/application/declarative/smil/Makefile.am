@@ -23,6 +23,7 @@ libgingaccplasml_la_LIBADD  = \
                               -lambulant_gtk \
                               -lambulant_sdl \
                               -ltelemidiautil \
+                              -lgingaccmb \
                               -lgingaccplayer \
                               -lgingaccsystem \
                               -lpthread \

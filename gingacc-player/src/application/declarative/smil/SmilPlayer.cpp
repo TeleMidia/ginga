@@ -68,6 +68,8 @@ namespace player {
 
 		initPrefs();
 
+		LocalScreenManager::addListenerInstance(this);
+
 		this->x         = 0;
 		this->y         = 0;
 		this->w         = 0;
@@ -83,6 +85,8 @@ namespace player {
 
 	SmilPlayer::~SmilPlayer() {
 		clog << "SmilPlayer::~SmilPlayer " << endl;
+
+		LocalScreenManager::removeListenerInstance(this);
 
 		if (im != NULL) {
 			im->removeInputEventListener(this);

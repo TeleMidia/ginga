@@ -86,6 +86,9 @@ namespace mb {
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
+	set<IInputEventListener*> LocalScreenManager::iListeners;
+	pthread_mutex_t LocalScreenManager::ilMutex;
+
 	const short LocalScreenManager::GMBST_DFLT   = 0;
 	const short LocalScreenManager::GMBST_DFB    = 1;
 	const short LocalScreenManager::GMBST_DX     = 2;
@@ -120,6 +123,9 @@ namespace mb {
 		isWaiting = false;
 		pthread_cond_init(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
+
+		Thread::mutexInit(&ilMutex);
+		iListeners.clear();
 
 		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
 		clog << "all done" << endl;
@@ -164,6 +170,47 @@ namespace mb {
 			delete _instance;
 			_instance = NULL;
 		}
+	}
+
+	void LocalScreenManager::addListenerInstance(
+			IInputEventListener* listener) {
+
+		Thread::mutexLock(&ilMutex);
+		iListeners.insert(listener);
+		Thread::mutexUnlock(&ilMutex);
+	}
+
+	void LocalScreenManager::removeListenerInstance(
+			IInputEventListener* listener) {
+
+		set<IInputEventListener*>::iterator i;
+
+		Thread::mutexLock(&ilMutex);
+		i = iListeners.find(listener);
+		if (i != iListeners.end()) {
+			iListeners.erase(i);
+		}
+		Thread::mutexUnlock(&ilMutex);
+	}
+
+	bool LocalScreenManager::hasListenerInstance(
+			IInputEventListener* listener, bool removeInstance) {
+
+		set<IInputEventListener*>::iterator i;
+		bool hasListener = false;
+
+		Thread::mutexLock(&ilMutex);
+		i = iListeners.find(listener);
+		if (i != iListeners.end()) {
+			hasListener = true;
+
+			if (removeInstance) {
+				iListeners.erase(i);
+			}
+		}
+		Thread::mutexUnlock(&ilMutex);
+
+		return hasListener;
 	}
 
 	void LocalScreenManager::setBackgroundImage(

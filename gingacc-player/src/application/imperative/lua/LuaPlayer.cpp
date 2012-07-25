@@ -68,6 +68,7 @@ extern "C"
 
 #include "player/PlayersComponentSupport.h"
 #include "mb/IInputManager.h"
+#include "mb/LocalScreenManager.h"
 #include "util/functions.h"
 using namespace::br::pucrio::telemidia::util;
 
@@ -373,6 +374,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
           warning ("%s: %s", buf, cwd.c_str ());
      }
 
+     LocalScreenManager::addListenerInstance(this);
      this->im = dm->getInputManager (this->myScreen);
      this->surface = dm->createSurface (myScreen);
      this->surface->setCaps (this->surface->getCap ("ALPHACHANNEL"));
@@ -387,6 +389,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 LuaPlayer::~LuaPlayer (void)
 {
      this->lock ();
+     LocalScreenManager::removeListenerInstance(this);
      TRACE0 ();
 
      if (nc_update_list != NULL && nc_update_list->empty ())

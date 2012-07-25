@@ -49,6 +49,9 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
+#include "mb/LocalScreenManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
 #include "player/BerkeliumHandler.h"
 #include "player/PlayersComponentSupport.h"
 
@@ -65,14 +68,9 @@ namespace player {
 	BerkeliumHandler::BerkeliumHandler(
 			GingaScreenID myScreen, int x, int y, int w, int h) {
 
-#if HAVE_COMPSUPPORT
-		dm = ((LocalScreenManagerCreator*)(
-				cm->getObject("LocalScreenManager")))();
+		LocalScreenManager::addListenerInstance(this);
 
-#else
 		dm = LocalScreenManager::getInstance();
-#endif
-
 		im = dm->getInputManager(myScreen);
 
 		this->myScreen = myScreen;
@@ -103,6 +101,7 @@ namespace player {
 	BerkeliumHandler::~BerkeliumHandler() {
 		clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
 
+		LocalScreenManager::removeListenerInstance(this);
 		if (isValid) {
 			isValid = false;
 

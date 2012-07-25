@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "interface/IDeviceScreen.h"
 #include "ILocalScreenManager.h"
+#include "IInputManager.h"
 
 #include <pthread.h>
 
@@ -93,6 +94,9 @@ namespace mb {
 			pthread_mutex_t mapMutex;
 			pthread_mutex_t genMutex;
 
+			static set<IInputEventListener*> iListeners;
+			static pthread_mutex_t ilMutex;
+
 			vector<short> sortSys;
 			map<string, short>* sysNames;
 			pthread_mutex_t sysMutex;
@@ -111,6 +115,15 @@ namespace mb {
 
 		public:
 			void releaseHandler();
+
+			static void addListenerInstance(
+					IInputEventListener* listener);
+
+			static void removeListenerInstance(
+					IInputEventListener* listener);
+
+			static bool hasListenerInstance(
+					IInputEventListener* listener, bool removeInstance=false);
 
 			void setBackgroundImage(GingaScreenID screenId, string uri);
 
