@@ -97,6 +97,9 @@ namespace mb {
 			static set<IInputEventListener*> iListeners;
 			static pthread_mutex_t ilMutex;
 
+			static set<IMotionEventListener*> mListeners;
+			static pthread_mutex_t mlMutex;
+
 			vector<short> sortSys;
 			map<string, short>* sysNames;
 			pthread_mutex_t sysMutex;
@@ -116,14 +119,23 @@ namespace mb {
 		public:
 			void releaseHandler();
 
-			static void addListenerInstance(
+			static void addIEListenerInstance(
 					IInputEventListener* listener);
 
-			static void removeListenerInstance(
+			static void removeIEListenerInstance(
 					IInputEventListener* listener);
 
-			static bool hasListenerInstance(
+			static bool hasIEListenerInstance(
 					IInputEventListener* listener, bool removeInstance=false);
+
+			static void addMEListenerInstance(
+					IMotionEventListener* listener);
+
+			static void removeMEListenerInstance(
+					IMotionEventListener* listener);
+
+			static bool hasMEListenerInstance(
+					IMotionEventListener* listener, bool removeInstance=false);
 
 			void setBackgroundImage(GingaScreenID screenId, string uri);
 
