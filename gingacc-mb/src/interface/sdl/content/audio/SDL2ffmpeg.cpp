@@ -2395,6 +2395,7 @@ the_end:
 
 			while (vs->audio_main_buf_size[0] < vs->audio_hw_buf_size) {
 				if (abortRequest || (reof && vs->audioq.size == 0)) {
+					soundLevel = 0;
 					return -1;
 				}
 
@@ -3029,6 +3030,7 @@ the_end:
 				if (vs->audioq.size + vs->videoq.size +
 						vs->subtitleq.size == 0) {
 
+					dec->soundLevel = 0;
 					dec->status = ST_STOPPED;
 					clog << "SDL2ffmpeg::read_thread(" << vs->filename;
 					clog << ") all done (EOF)" << endl;
