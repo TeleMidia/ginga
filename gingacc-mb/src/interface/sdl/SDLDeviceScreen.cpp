@@ -2628,11 +2628,15 @@ namespace mb {
 		i = uSurPool.find(uSur);
 		if (i != uSurPool.end()) {
 			uSurPool.erase(i);
+			Thread::mutexUnlock(&surMutex);
 
+			Thread::mutexLock(&sdlMutex);
 			SDL_FreeSurface(uSur);
-		}
+			Thread::mutexUnlock(&sdlMutex);
 
-		Thread::mutexUnlock(&surMutex);
+		} else {
+			Thread::mutexUnlock(&surMutex);
+		}
 	}
 
 	void SDLDeviceScreen::getRGBAMask(
