@@ -285,7 +285,7 @@ namespace multidevice {
 
 						taskRequest(destDevClass, task, tSize);
 
-					} else {
+						} else {
 						clog << "BaseDeviceDomain::";
 						clog << "postMediaContentTask ";
 						clog << "Warning! Can't read '" << fileSize;
@@ -323,8 +323,9 @@ namespace multidevice {
 	}
 
 	bool BaseDeviceDomain::runControlTask() {
-		char* task;
-		clog << "BaseDeviceDomain::runControlTask :: " << endl;
+		char* task = NULL;
+
+		//clog << "BaseDeviceDomain::runControlTask :: " << endl;
 
 		if (taskIndicationFlag) {
 			task = taskReceive();
@@ -334,10 +335,11 @@ namespace multidevice {
 			}
 
 			if (myIP == sourceIp) {
-				/*clog << "DeviceDomain::runControlTask got my own task ";
-				clog << "(size = '" << frameSize << "')" << endl;*/
+				clog << "DeviceDomain::runControlTask got my own task ";
+				clog << "(size = '" << frameSize << "')" << endl;
 
 				delete[] task;
+				task = NULL;
 				taskIndicationFlag = false;
 				return false;
 			}
@@ -347,12 +349,14 @@ namespace multidevice {
 				clog << endl;
 
 				delete[] task;
+				task = NULL;
 				taskIndicationFlag = false;
 				return false;
 			}
 
 			if (frameSize + HEADER_SIZE != bytesRecv) {
 				delete[] task;
+				task = NULL;
 				taskIndicationFlag = false;
 				clog << "DeviceDomain::runControlTask Warning! Invalid task ";
 				clog << "size '" << frameSize + HEADER_SIZE << "' (received '";
@@ -386,11 +390,13 @@ namespace multidevice {
 					clog << "DeviceDomain::runControlTask frame type ";
 					clog << "WHAT?" << endl;
 					delete[] task;
+					task = NULL;
 					taskIndicationFlag = false;
 					return false;
 			}
 
 			delete[] task;
+			task = NULL;
 
 		} else {
 			clog << "DeviceDomain::runControlTask Warning! Trying to control";
@@ -419,7 +425,7 @@ namespace multidevice {
 
 		if (destClass != deviceClass) {
 			clog << "BaseDeviceDomain::runDataTask";
-			clog << " should never reaches here (receiving wrong destination";
+			clog << " should never reach here (receiving wrong destination";
 			clog << " class '" << destClass << "')";
 			clog << endl;
 

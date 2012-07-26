@@ -86,16 +86,15 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	
-//TODO: #ifdef __DARWIN_UNIX03 (use practicalsocket otherwise)
+#ifdef __DARWIN_UNIX03
 	static int sd = -1;
 	static struct sockaddr_in domain_addr;
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
 	static socklen_t          broadcast_addr_len;
-////////////////
-
+#else
 	static UDPSocket* udpSocket;
-
+#endif
 
 	BroadcastSocketService::BroadcastSocketService() {
 		interfaceIP  = 0;
@@ -108,7 +107,6 @@ namespace multidevice {
 #ifdef __DARWIN_UNIX03
 			interfaceIP = discoverBroadcastAddress();
 #else
-
 			try {
 				broadcastIPAddr = udpSocket->getBroadcastAddress();
 				interfaceIP = udpSocket->getLocalIPAddress();
@@ -146,6 +144,7 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::buildDomainAddress() {
+#ifndef __DARWIN_UNIX03
 		try {
 			udpSocket = new UDPSocket(port);
 			udpSocket->setNonBlocking(true);
@@ -156,9 +155,7 @@ namespace multidevice {
 			clog << "BroadcastSocketService::buildClientAddress Warning!";
 			return false;
 		}
-
-
-#ifdef __DARWIN_UNIX03
+#else
 		int ret;
 		int trueVar = 1;
 
@@ -168,11 +165,7 @@ namespace multidevice {
 			clog << " can't create socket (sd == -1)" << endl;
 			return false;
 		}
-
-//#ifndef __DARWIN_UNIX03
 		setsockopt(sd, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-//#endif
-
 		domain_addr.sin_family       = AF_INET;
 		domain_addr.sin_port         = htons(port);
 		domain_addr.sin_addr.s_addr  = INADDR_ANY;
@@ -185,13 +178,12 @@ namespace multidevice {
 			return false;
 		}
 
-		return true;
 #endif
-
+		return true;
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
-#ifndef _MSC_VER
+#ifdef __DARWIN_UNIX03
 		struct ifconf interfaces;
 		struct ifreq* netInterface;
 		struct sockaddr_in* myAddr;
@@ -206,7 +198,6 @@ namespace multidevice {
 		netInterface = interfaces.ifc_req;
 		numOfInterfaces = interfaces.ifc_len/sizeof(struct ifreq);
 
-#ifdef __DARWIN_UNIX03
 		struct ifaddrs *ifaddr, *ifa;
 		int family, s;
 		char host[NI_MAXHOST];
@@ -279,48 +270,6 @@ namespace multidevice {
 		}
 
 		freeifaddrs(ifaddr);
-#else // Linux
-		for (i = 0; i < numOfInterfaces; netInterface++) {
-			interfaceName = netInterface->ifr_name;
-
-			validInterface = ((INTERFACE_NAME_A == interfaceName) ||
-					(INTERFACE_NAME_B == interfaceName));
-
-			if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
-				    && (netInterface->ifr_flags & IFF_BROADCAST)) {
-
-				result = ioctl(sd, SIOCGIFBRDADDR, (char *) netInterface);
-				if (result >= 0) {
-					memcpy(
-							(char *)&broadcast_addr,
-							(char *)(&(netInterface->ifr_broadaddr)),
-							sizeof(netInterface->ifr_broadaddr));
-
-					broadcast_addr.sin_port = htons(port);
-					broadcast_addr_len      = sizeof(broadcast_addr);
-
-					result = ioctl(sd, SIOCGIFADDR, netInterface);
-					if (result >= 0) {
-						myAddr = (struct sockaddr_in*)&(netInterface->ifr_addr);
-
-						clog << "BroadcastSocketService::";
-						clog << "discoverBroadcastAddress interfaceName: '";
-						clog << netInterface->ifr_name;
-						clog << endl;
-
-						return (unsigned int)(myAddr->sin_addr.s_addr);
-					}
-				}
-			}
-			i++;
-		}
-#endif
-
-#else
-
-// Windows (?)
-
-
 #endif
 		clog << "BroadcastSocketService::discoverBroadcastAddress Warning!";
 		clog << " can't discover broadcast address" << endl;
@@ -391,14 +340,14 @@ namespace multidevice {
 			}*/
 		}
 
-		return true;
 #endif
+		return true;
 	}
 
 	bool BroadcastSocketService::checkOutputBuffer() {
 		vector<struct frame*>::iterator i;
 		bool sent = false;
-		struct frame* f;
+		struct frame* f = NULL;
 
 		Thread::mutexLock(&mutexBuffer);
 		i = outputBuffer->begin();
@@ -408,7 +357,9 @@ namespace multidevice {
 			if (sent) {
 				outputBuffer->erase(i);
 				delete[] f->data;
+				f->data = NULL;
 				delete f;
+				f = NULL;
 			}
 
 		} else {
@@ -422,16 +373,13 @@ namespace multidevice {
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
 #ifndef __DARWIN_UNIX03
-		int res, recvFrom;
-		int sz;
+		int res = 0;
+		int recvFrom = 0;
+		int sz = 0;
 		char recvString[MAX_FRAME_SIZE + 1];
-	    string sourceAddress;
-	    unsigned short sourcePort;
+	    string sourceAddress = "";
+	    unsigned short sourcePort = 0;
 	    //TODO: checkInput loop fix
-	    res = 0;
-		sourceAddress = "";
-		sourcePort = 0;
-		sz = 0;
 
 	    res = udpSocket->select_t(0,0);
 
@@ -445,14 +393,19 @@ namespace multidevice {
 			case 1: {
 					clog << "BroadcastSocketService::checkInputBuffer ";
 					clog << "receiving data ..." << endl;
-
-					memset(data, 0, MAX_FRAME_SIZE);
 					memset(recvString, 0, MAX_FRAME_SIZE);
+					memset(data, 0, MAX_FRAME_SIZE);
 					try {
 						sz = udpSocket->recvFrom(recvString, MAX_FRAME_SIZE, sourceAddress, sourcePort);
+
+						if (sz > 0) {
 						recvString[sz] = '\0';
 						clog << "BroadcastSocketService::udpSocket->recvFrom " << sourceAddress;
 						clog << " " << sz << " bytes" << endl;
+						}
+						else {
+							return false;
+						}
 						//if (sourceAddress == interfaceIP)
 
 					}
@@ -462,6 +415,7 @@ namespace multidevice {
 						memset(recvString, 0, MAX_FRAME_SIZE);
 						return false;
 					}
+
 					if (sz <= HEADER_SIZE) {
 						clog << "BroadcastSocketService::checkInputBuffer ";
 						clog << "Warning! Received invalid frame: ";
@@ -476,6 +430,8 @@ namespace multidevice {
 					*size = sz;
 					memcpy(data, recvString, (int)(*size));
 
+					memset(recvString, 0, MAX_FRAME_SIZE);
+
 					recvFrom = getUIntFromStream(data + 1);
 
 					if (!isValidRecvFrame(recvFrom, data)) {
@@ -488,14 +444,11 @@ namespace multidevice {
 					break;
 				}
 
-
 			default:
 				memset(data, 0, MAX_FRAME_SIZE);
 				memset(recvString, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-
-		return true;
 #else
 		int nfds, res, recvFrom;
 		fd_set fdset;
@@ -568,8 +521,9 @@ namespace multidevice {
 				return false;
 		}
 
-		return true;
 #endif
+		return true;
+
 	}
 }
 }

@@ -54,10 +54,6 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 # include "asprintf.h"
 }
-#else
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
 #endif
 
 #include <pthread.h>
