@@ -97,6 +97,7 @@ namespace mb {
 
 	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
 	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
+	set<SDL_Texture*> SDLDeviceScreen::uTexPool;
 	set<SDL_Surface*> SDLDeviceScreen::uSurPool;
 	vector<ReleaseContainer*> SDLDeviceScreen::releaseList;
 	map<GingaScreenID, map<float, set<IWindow*>*>*> SDLDeviceScreen::renderMap;
@@ -976,12 +977,19 @@ namespace mb {
 		Uint32 subsystem_init = SDL_WasInit(0);
 
 		if (subsystem_init == 0) {
+#if defined(SDL_VIDEO_DRIVER_WINDOWS)
+			SDL_Init((Uint32)(
+					SDL_INIT_AUDIO |
+					SDL_INIT_VIDEO |
+					SDL_INIT_TIMER));
+
+#else
 			SDL_Init((Uint32)(
 					SDL_INIT_AUDIO |
 					SDL_INIT_VIDEO |
 					SDL_INIT_TIMER |
 					SDL_INIT_NOPARACHUTE));
-
+#endif
 		} else {
 			if ((subsystem_init & SDL_INIT_AUDIO) == 0) {
 				SDL_InitSubSystem(SDL_INIT_AUDIO);
@@ -2454,6 +2462,8 @@ namespace mb {
 				clog << endl;
 
 			} else {
+				uTexPool.insert(texture);
+
 				/* allowing alpha */
 				SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 			}
@@ -2478,6 +2488,8 @@ namespace mb {
 				w, h);
 
 		if (texture != NULL) {
+			uTexPool.insert(texture);
+
 			/* allowing alpha */
 			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
@@ -2491,10 +2503,16 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::releaseTexture(SDL_Texture* texture) {
+		set<SDL_Texture*>::iterator i;
+
 		checkMutexInit();
 
 		Thread::mutexLock(&sdlMutex);
-		SDL_DestroyTexture(texture);
+		i = uTexPool.find(texture);
+		if (i != uTexPool.end()) {
+			uTexPool.erase(i);
+			SDL_DestroyTexture(texture);
+		}
 		Thread::mutexUnlock(&sdlMutex);
 	}
 

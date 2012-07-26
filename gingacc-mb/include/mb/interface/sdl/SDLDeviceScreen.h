@@ -153,6 +153,7 @@ typedef struct {
 			static map<int, int> sdlToGingaCodeMap;
 
 			static set<SDL_Surface*> uSurPool;
+			static set<SDL_Texture*> uTexPool;
 			static vector<ReleaseContainer*> releaseList;
 			static map<GingaScreenID, map<float, set<IWindow*>*>*> renderMap;
 			static set<IContinuousMediaProvider*> cmpRenderList;
