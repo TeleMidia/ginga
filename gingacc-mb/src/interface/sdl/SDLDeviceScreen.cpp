@@ -2629,10 +2629,7 @@ namespace mb {
 		if (i != uSurPool.end()) {
 			uSurPool.erase(i);
 
-			Thread::mutexLock(&sdlMutex);
 			SDL_FreeSurface(uSur);
-			Thread::mutexUnlock(&sdlMutex);
-
 		}
 
 		Thread::mutexUnlock(&surMutex);
