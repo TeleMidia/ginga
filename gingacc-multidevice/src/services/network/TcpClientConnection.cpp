@@ -71,6 +71,8 @@ namespace multidevice {
 		try {
 			deviceId = devid;
 			tcpSocket = new TCPSocket(string(hostname),atoi(port_str));
+			running = true;
+			resrv = srv;
 		}
 		catch (SocketException &e) {
 			clog << "TCPClientConnection:: creation error" << endl;
@@ -87,11 +89,6 @@ namespace multidevice {
 		}
 	}
 
-	/**
-	 * Posts a command through the TCP connection.
-	 * Returns true or false, whether the command is successful or not.
-	 *
-	 */
 	bool TCPClientConnection::post(char* str) {
 		char* com;
 
@@ -116,6 +113,7 @@ namespace multidevice {
 	}
 
 	void TCPClientConnection::run() {
+		//TODO: verify memcpy for windows (windows has memcpy_s)
 		char buf[MAX_MSG_SIZE]; //max event string size
 		char msgType[4];
 		char evtType[5];
@@ -127,6 +125,7 @@ namespace multidevice {
 			memset(evtType, 0, 5);
 			try {
 				nr = tcpSocket->recv(buf,MAX_MSG_SIZE);
+
 			}
 			catch (SocketException &e) {
 				clog << e.what() << endl;
@@ -140,20 +139,24 @@ namespace multidevice {
 				break;
 			}
 
-			strncpy(msgType,buf,3);
+			//strncpy(msgType,buf,3);
+			memcpy(msgType,buf,3);
 			msgType[3] = '\0';
 
-			strncpy(buf,buf+4,nr);
-
+			//strncpy(buf,buf+4,nr);
+			memcpy(buf,buf+4,nr);
 			if ((strcmp(msgType,"EVT")) == 0) {
-				strncpy(evtType,buf,4);
+				//strncpy(evtType,buf,4);
+				memcpy(evtType,buf,4);
 				evtType[4] = '\0';
-				strncpy(buf,buf+5,nr);
+				//strncpy(buf,buf+5,nr);
+				memcpy(buf,buf+5,nr);
 
 				if ((strcmp(evtType,"ATTR")) == 0) {
-					//clog << " new buf: " << buf << endl;
+					if (resrv != NULL) {
 					resrv->receiveRemoteEvent(
 							2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
+					}
 				}
 			}//end if strcmp(msgtype)
 
