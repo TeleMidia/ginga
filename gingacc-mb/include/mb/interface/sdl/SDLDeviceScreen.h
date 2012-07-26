@@ -179,6 +179,9 @@ typedef struct {
 			static void checkMutexInit();
 
 		public:
+			static void lockSDL();
+			static void unlockSDL();
+
 			static void updateRenderMap(
 					GingaScreenID screenId, IWindow* window,
 					float oldZIndex, float newZIndex);

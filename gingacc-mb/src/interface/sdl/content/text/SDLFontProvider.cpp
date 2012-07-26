@@ -349,6 +349,7 @@ namespace mb {
 				clog << endl;
 			}
 
+			SDLDeviceScreen::lockSDL();
 			if (SDL_UpperBlit(text, NULL, renderedSurface, &rect) < 0) {
 				clog << "SDLFontProvider::playOver Warning! Can't blit ";
 				clog << "text considering rectangle = '";
@@ -357,6 +358,7 @@ namespace mb {
 				clog << SDL_GetError();
 				clog << endl;
 			}
+			SDLDeviceScreen::unlockSDL();
 
 			SDLDeviceScreen::createReleaseContainer(text, NULL, NULL);
 			text = NULL;
