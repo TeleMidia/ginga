@@ -108,6 +108,7 @@ namespace mb {
 	const unsigned int SDLDeviceScreen::DSA_16x9    = 2;
 
 	pthread_mutex_t SDLDeviceScreen::sdlMutex;
+	pthread_mutex_t SDLDeviceScreen::sieMutex;
 	pthread_mutex_t SDLDeviceScreen::renMutex;
 	pthread_mutex_t SDLDeviceScreen::scrMutex;
 	pthread_mutex_t SDLDeviceScreen::recMutex;
@@ -266,6 +267,7 @@ namespace mb {
 			mutexInit = true;
 
 			Thread::mutexInit(&sdlMutex, true);
+			Thread::mutexInit(&sieMutex, true);
 			Thread::mutexInit(&renMutex, true);
 			Thread::mutexInit(&scrMutex, true);
 			Thread::mutexInit(&recMutex, true);
@@ -1879,7 +1881,9 @@ namespace mb {
 		map<int, int>::iterator i;
 		int translated;
 
-		Thread::mutexLock(&cstMutex);
+		checkMutexInit();
+
+		Thread::mutexLock(&sieMutex);
 
 		translated = CodeMap::KEY_NULL;
 		i = sdlToGingaCodeMap.find(keyCode);
@@ -1887,7 +1891,7 @@ namespace mb {
 			translated = i->second;
 		}
 
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&sieMutex);
 
 		return translated;
 	}
@@ -1896,14 +1900,16 @@ namespace mb {
 		map<int, int>::iterator i;
 		int translated = CodeMap::KEY_NULL;
 
-		Thread::mutexLock(&cstMutex);
+		checkMutexInit();
+
+		Thread::mutexLock(&sieMutex);
 
 		i = gingaToSDLCodeMap.find(keyCode);
 		if (i != gingaToSDLCodeMap.end()) {
 			translated = i->second;
 		}
 
-		Thread::mutexUnlock(&cstMutex);
+		Thread::mutexUnlock(&sieMutex);
 
 		return translated;
 	}
@@ -1919,9 +1925,11 @@ namespace mb {
 
 	/* input */
 	void SDLDeviceScreen::initCodeMaps() {
-		Thread::mutexLock(&cstMutex);
+		checkMutexInit();
+
+		Thread::mutexLock(&sieMutex);
 		if (!gingaToSDLCodeMap.empty()) {
-			Thread::mutexUnlock(&cstMutex);
+			Thread::mutexUnlock(&sieMutex);
 			return;
 		}
 
@@ -2068,7 +2076,7 @@ namespace mb {
 		    ++i;
         }
 
-        Thread::mutexUnlock(&cstMutex);
+        Thread::mutexUnlock(&sieMutex);
 	}
 
 	bool SDLDeviceScreen::checkEventFocus(SDLDeviceScreen* s) {
