@@ -1184,6 +1184,7 @@ namespace mb {
 			    	}
 
 			    	if (event.type == SDL_QUIT) {
+#if !defined(SDL_VIDEO_DRIVER_WINDOWS)
 						/*
 						 * TODO:
 						 *      1) send a notification to NCL player
@@ -1195,6 +1196,7 @@ namespace mb {
 						sdlQuit();
 						exit(0);
 						return NULL;
+#endif
 
 					} else if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
