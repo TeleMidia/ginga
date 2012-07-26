@@ -159,6 +159,7 @@ typedef struct {
 			static set<IContinuousMediaProvider*> cmpRenderList;
 
 			static pthread_mutex_t sdlMutex; //mutex for SDL structures
+			static pthread_mutex_t sieMutex; //mutex for SDL input event Map
 			static pthread_mutex_t renMutex; //mutex for C++ STL SDL Render Map
 			static pthread_mutex_t scrMutex; //mutex for C++ STL SDL Screens
 			static pthread_mutex_t recMutex; //mutex for C++ STL release structures

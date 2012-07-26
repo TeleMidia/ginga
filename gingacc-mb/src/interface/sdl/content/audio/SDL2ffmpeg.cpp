@@ -1156,10 +1156,10 @@ namespace mb {
 
 					sws_freeContext(vs->img_convert_ctx);
 					vs->img_convert_ctx = NULL;
-
-					SDL_UnlockTexture(vp->tex);
-					hasPic = false;
 				}
+
+				SDL_UnlockTexture(vp->tex);
+				hasPic = false;
 
 			} else {
 				clog << "SDL2ffmpeg::video_image_display aborting";
