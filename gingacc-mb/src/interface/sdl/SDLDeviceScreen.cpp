@@ -276,6 +276,18 @@ namespace mb {
 		}
 	}
 
+	void SDLDeviceScreen::lockSDL() {
+		checkMutexInit();
+
+		Thread::mutexLock(&sdlMutex);
+	}
+
+	void SDLDeviceScreen::unlockSDL() {
+		checkMutexInit();
+
+		Thread::mutexUnlock(&sdlMutex);
+	}
+
 	void SDLDeviceScreen::updateRenderMap(
 			GingaScreenID screenId, IWindow* window,
 			float oldZIndex, float newZIndex) {
@@ -977,19 +989,12 @@ namespace mb {
 		Uint32 subsystem_init = SDL_WasInit(0);
 
 		if (subsystem_init == 0) {
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-			SDL_Init((Uint32)(
-					SDL_INIT_AUDIO |
-					SDL_INIT_VIDEO |
-					SDL_INIT_TIMER));
-
-#else
 			SDL_Init((Uint32)(
 					SDL_INIT_AUDIO |
 					SDL_INIT_VIDEO |
 					SDL_INIT_TIMER |
 					SDL_INIT_NOPARACHUTE));
-#endif
+
 		} else {
 			if ((subsystem_init & SDL_INIT_AUDIO) == 0) {
 				SDL_InitSubSystem(SDL_INIT_AUDIO);
@@ -2453,6 +2458,7 @@ namespace mb {
 		checkMutexInit();
 
 		Thread::mutexLock(&sdlMutex);
+		Thread::mutexLock(&surMutex);
 
 		if (SDLDeviceScreen::hasUnderlyingSurface(surface)) {
 			texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -2469,6 +2475,7 @@ namespace mb {
 			}
 		}
 
+		Thread::mutexUnlock(&surMutex);
 		Thread::mutexUnlock(&sdlMutex);
 
 		return texture;
@@ -2613,15 +2620,14 @@ namespace mb {
 		i = uSurPool.find(uSur);
 		if (i != uSurPool.end()) {
 			uSurPool.erase(i);
-			Thread::mutexUnlock(&surMutex);
 
 			Thread::mutexLock(&sdlMutex);
 			SDL_FreeSurface(uSur);
 			Thread::mutexUnlock(&sdlMutex);
 
-		} else {
-			Thread::mutexUnlock(&surMutex);
 		}
+
+		Thread::mutexUnlock(&surMutex);
 	}
 
 	void SDLDeviceScreen::getRGBAMask(

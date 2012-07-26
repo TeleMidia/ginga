@@ -129,10 +129,12 @@ namespace mb {
 			pending = createSurface();
 
 			if (sur != NULL && pending != NULL) {
+				SDLDeviceScreen::lockSDL();
 				if (SDL_UpperBlit(sur, NULL, pending, NULL) < 0) {
 					clog << "SDLSurface::createPendingSurface SDL error: '";
 					clog << SDL_GetError() << "'" << endl;
 				}
+				SDLDeviceScreen::unlockSDL();
 			}
 		}
 
@@ -652,10 +654,12 @@ namespace mb {
 
 				Thread::mutexLock(&pMutex);
 				if (createPendingSurface()) {
+					SDLDeviceScreen::lockSDL();
 					if (SDL_UpperBlit(uSur, srcPtr, pending, &dstRect) < 0) {
 						clog << "SDLSurface::blit SDL error: '";
 						clog << SDL_GetError() << "'" << endl;
 					}
+					SDLDeviceScreen::unlockSDL();
 				}
 				Thread::mutexUnlock(&pMutex);
 			}
