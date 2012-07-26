@@ -212,6 +212,10 @@ l_attrFont (lua_State *L)
   canvas->font.style = strdup (luaL_optstring (L, 4, DEFAULT_FONT_STYLE));
 
   path = canvas->font.face;
+
+  if (path.length() > 4 && path.substr(path.length() - 4, 4) != ".ttf")
+    path = path + ".ttf";
+
   if (!fileExists (path))
     {
       string prefix = SystemCompat::appendGingaFilesPrefix ("font")
