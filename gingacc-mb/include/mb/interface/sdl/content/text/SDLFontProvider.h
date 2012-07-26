@@ -63,6 +63,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "SDL_ttf.h"
 
 #include <set>
+#include <map>
 using namespace std;
 
 namespace br {
@@ -85,10 +86,9 @@ namespace mb {
 			short align;
 			bool fontInit;
 
+			static map<string, TTF_Font*> fonts;
 			static pthread_mutex_t ntsMutex;
 			static bool initNTSMutex;
-
-			pthread_mutex_t pMutex;
 
 			static bool initialized;
 			static short fontRefs;
@@ -116,6 +116,7 @@ namespace mb {
 			virtual ~SDLFontProvider();
 
 		private:
+			void releaseFonts();
 			bool initializeFont();
 			bool createFont();
 

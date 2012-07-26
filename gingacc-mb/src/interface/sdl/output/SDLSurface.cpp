@@ -628,6 +628,13 @@ namespace mb {
 		initContentSurface();
 
 		if (sur != NULL) {
+			Thread::mutexLock(&pMutex);
+
+			if (src != this) {
+				Thread::mutexLock(&((SDLSurface*)src)->sMutex);
+				Thread::mutexLock(&((SDLSurface*)src)->pMutex);
+			}
+
 			uSur = (SDL_Surface*)(src->getSurfaceContent());
 
 			if (uSur != NULL) {
@@ -652,7 +659,6 @@ namespace mb {
 					dstRect.h = uSur->h;
 				}
 
-				Thread::mutexLock(&pMutex);
 				if (createPendingSurface()) {
 					SDLDeviceScreen::lockSDL();
 					if (SDL_UpperBlit(uSur, srcPtr, pending, &dstRect) < 0) {
@@ -661,7 +667,13 @@ namespace mb {
 					}
 					SDLDeviceScreen::unlockSDL();
 				}
-				Thread::mutexUnlock(&pMutex);
+			}
+
+			Thread::mutexUnlock(&pMutex);
+
+			if (src != this) {
+				Thread::mutexUnlock(&((SDLSurface*)src)->sMutex);
+				Thread::mutexUnlock(&((SDLSurface*)src)->pMutex);
 			}
 
 		} else {
