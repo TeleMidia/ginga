@@ -72,17 +72,18 @@ namespace mb {
 
 		if (!mutexInit) {
 			mutexInit = true;
-			Thread::mutexInit(&pMutex);
+			Thread::mutexInit(&pMutex, true);
 		}
 
 		Thread::mutexLock(&pMutex);
 		imageRefs++;
-		Thread::mutexUnlock(&pMutex);
 
 		imgUri   = "";
 		myScreen = screenId;
 
 		imgUri.assign(mrl);
+
+		Thread::mutexUnlock(&pMutex);
 	}
 
 	SDLImageProvider::~SDLImageProvider() {
@@ -116,6 +117,7 @@ namespace mb {
 		if (surface != NULL && LocalScreenManager::getInstance()->hasSurface(
 				myScreen, surface)) {
 
+			SDLDeviceScreen::lockSDL();
 			renderedSurface = IMG_Load(imgUri.c_str());
 
 			if (renderedSurface != NULL) {
@@ -128,6 +130,8 @@ namespace mb {
 
 				surface->setSurfaceContent((void*)renderedSurface);
 			}
+
+			SDLDeviceScreen::unlockSDL();
 
 		} else {
 			clog << "SDLImageProvider::playOver Warning! NULL content";
