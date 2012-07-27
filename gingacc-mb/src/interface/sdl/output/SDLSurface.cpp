@@ -179,10 +179,11 @@ namespace mb {
 			pending = createSurface();
 
 			if (pending != NULL && bgColor != NULL) {
+				//TODO: check why we have to set BGR instead of RGB
 				if (SDL_FillRect(
 					pending,
 					NULL,
-					SDL_MapRGBA(pending->format, r, g, b, alpha)) < 0) {
+					SDL_MapRGB(pending->format, b, g, r)) < 0) {
 
 					clog << "SDLSurface::fill SDL error: '";
 					clog << SDL_GetError() << "'" << endl;
@@ -445,8 +446,11 @@ namespace mb {
 
 			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
+				//TODO: check why we have to set BGR instead of RGB
 				if (SDL_FillRect(
-						pending, &rect, SDL_MapRGB(pending->format, r, g, b)) < 0) {
+						pending,
+						&rect,
+						SDL_MapRGB(pending->format, b, g, r)) < 0) {
 
 					clog << "SDLSurface::fillRectangle SDL error: '";
 					clog << SDL_GetError() << "'" << endl;
