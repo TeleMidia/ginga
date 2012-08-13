@@ -366,7 +366,7 @@ typedef struct {
 					SDL_Renderer* renderer, int w, int h);
 
 		public:
-			/* CAUTION: call this method only from main SDL thread */
+			static bool hasTexture(SDL_Texture* uTex);
 			static void releaseTexture(SDL_Texture* uTex);
 
 			static void addUnderlyingSurface(SDL_Surface* uSur);

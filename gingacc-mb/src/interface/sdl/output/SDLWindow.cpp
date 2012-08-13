@@ -568,6 +568,15 @@ namespace mb {
 		return uTex;
 	}
 
+	bool SDLWindow::isTextureOwner(SDL_Texture* texture) {
+		bool itIs = false;
+		if (texture != NULL && this->texture == texture && textureOwner) {
+			itIs = true;
+		}
+
+		return itIs;
+	}
+
 	bool SDLWindow::isMine(ISurface* surface) {
 		bool itIs = false;
 
