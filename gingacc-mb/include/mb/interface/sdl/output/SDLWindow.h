@@ -214,6 +214,7 @@ namespace mb {
 			void* getContent();
 			void setTexture(SDL_Texture* texture);
 			SDL_Texture* getTexture(SDL_Renderer* renderer);
+			bool isTextureOwner(SDL_Texture* texture);
 
 		private:
 			bool isMine(ISurface* surface);

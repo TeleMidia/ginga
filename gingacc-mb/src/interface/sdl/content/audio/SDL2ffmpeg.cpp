@@ -135,12 +135,16 @@ namespace mb {
 
 		    if (read_init() >=0) {
 
+		    	SDLDeviceScreen::lockSDL();
+
 				/* start video display */
 				vs->pictq_mutex = SDL_CreateMutex();
 				vs->pictq_cond  = SDL_CreateCond();
 
 				vs->subpq_mutex = SDL_CreateMutex();
 				vs->subpq_cond  = SDL_CreateCond();
+
+				SDLDeviceScreen::unlockSDL();
 
 				packet_queue_init(&vs->videoq);
 				packet_queue_init(&vs->audioq);
@@ -173,10 +177,13 @@ namespace mb {
 		}
 
 		if (aInstances.empty()) {
+			Thread::mutexUnlock(&aiMutex);
+
 			clog << endl;
 			clog << "SDL2ffmpeg::~SDL2ffmpeg calling SDL_PauseAudio(1)";
 			clog << endl << endl;
 
+			SDLDeviceScreen::lockSDL();
 			SDL_PauseAudio(1);
 
 			if (spec.size != 0) {
@@ -198,26 +205,18 @@ namespace mb {
 					clog << "unknown exception" << std::endl;
 				}
 			}
+			SDLDeviceScreen::unlockSDL();
+
+		} else {
+			Thread::mutexUnlock(&aiMutex);
 		}
 
 		release();
 
-		if (texture != NULL) {
-			SDL_DestroyTexture(texture);
-			texture = NULL;
-		}
+		SDLDeviceScreen::releaseTexture(texture);
+		texture = NULL;
 
 		refCount--;
-
-		Thread::mutexUnlock(&aiMutex);
-
-		if (refCount == 0) {
-			init = false;
-			pthread_mutex_destroy(&aiMutex);
-
-			av_lockmgr_register(NULL);
-			avformat_network_deinit();
-		}
 	}
 
 	void SDL2ffmpeg::release() {
@@ -366,8 +365,11 @@ namespace mb {
 			clog << vs->video_st->time_base.num << "/";
 			clog << vs->video_st->time_base.den << "'" << endl;
 
+			SDLDeviceScreen::lockSDL();
 			vs->video_tid = SDL_CreateThread(
 					SDL2ffmpeg::video_thread, "video_thread", this);
+
+			SDLDeviceScreen::unlockSDL();
 
 			if (!vs->video_tid) {
 				clog << "SDL2ffmpeg::prepare Warning! ";
@@ -376,8 +378,12 @@ namespace mb {
 		}
 
 		if (vs->subtitle_st != NULL) {
+			SDLDeviceScreen::lockSDL();
+
 			vs->subtitle_tid = SDL_CreateThread(
 					SDL2ffmpeg::subtitle_thread, "subtitle_thread", this);
+
+			SDLDeviceScreen::unlockSDL();
 
 			if (!vs->subtitle_tid) {
 				clog << "SDL2ffmpeg::prepare Warning! ";
@@ -397,8 +403,11 @@ namespace mb {
 			return false;
 		}*/
 
+		SDLDeviceScreen::lockSDL();
 		vs->read_tid = SDL_CreateThread(
 				SDL2ffmpeg::read_thread, "read_thread", this);
+
+		SDLDeviceScreen::unlockSDL();
 
 		if (!vs->read_tid) {
 			av_free(vs);
@@ -409,10 +418,13 @@ namespace mb {
 			return false;
 		}
 
+		SDLDeviceScreen::lockSDL();
 		SDL_BuildAudioCVT(
 				&acvt,
 				wantedSpec.format, wantedSpec.channels, wantedSpec.freq,
 				spec.format, spec.channels, spec.freq);
+
+		SDLDeviceScreen::unlockSDL();
 
 		return true;
 	}
@@ -678,8 +690,7 @@ namespace mb {
 		ctx = sws_getContext(
 				inWidth, inHeight, inFormat,
 				outWidth, outHeight, outFormat,
-				//SWS_BILINEAR,
-				SWS_BICUBIC,
+				SWS_BILINEAR,
 				0,
 				0,
 				0);
@@ -742,8 +753,10 @@ namespace mb {
 	void SDL2ffmpeg::packet_queue_init(PacketQueue *q) {
 		memset(q, 0, sizeof(PacketQueue));
 
+		SDLDeviceScreen::lockSDL();
 		q->mutex = SDL_CreateMutex();
 		q->cond  = SDL_CreateCond();
+		SDLDeviceScreen::unlockSDL();
 
 		q->abort_request = 1;
 	}
@@ -771,8 +784,10 @@ namespace mb {
 	void SDL2ffmpeg::packet_queue_destroy(PacketQueue *q) {
 		packet_queue_flush(q);
 
+		SDLDeviceScreen::lockSDL();
 		SDL_DestroyMutex(q->mutex);
 		SDL_DestroyCond(q->cond);
+		SDLDeviceScreen::unlockSDL();
 	}
 
 	void SDL2ffmpeg::packet_queue_abort(PacketQueue *q) {
@@ -1119,11 +1134,32 @@ namespace mb {
 				int pitch[AV_NUM_DATA_POINTERS];
 		        Uint32 format;
 		        int textureAccess, w, h;
+		        bool locked = true;
 
-		        SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0]);
-		        SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
+		        if (SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0])
+		        		!= 0) {
+
+					clog << "SDL2ffmpeg::video_image_display(" << vs->filename;
+					clog << ") Warning! ";
+					clog << "Can't lock texture: " << SDL_GetError() << endl;
+					if (!SDLDeviceScreen::hasTexture(vp->tex)) {
+						clog << "SDL2ffmpeg::video_image_display(";
+						clog << vs->filename << ") Warning! ";
+						clog << "vp->tex(" << vp->tex << ") ";
+						clog << "is out of scope " << endl;
+						return;
+					}
+					locked = false;
+		        }
+
+		        SDL_QueryTexture(vp->tex, &format, &textureAccess, &w, &h);
 
 				if (vs->img_convert_ctx == NULL) {
+					if (w == 0 || h == 0) {
+						w = vp->width;
+						h = vp->height;
+					}
+
 					vs->img_convert_ctx = createContext(
 							vp->width,
 							vp->height,
@@ -1135,8 +1171,15 @@ namespace mb {
 
 				if (vs->img_convert_ctx == NULL) {
 					clog << "SDL2ffmpeg::video_image_display Warning! ";
-					clog << "Can't initialize the conversion context" << endl;
-					SDL_UnlockTexture(vp->tex);
+					clog << "Can't initialize the conversion context FROM";
+					clog << " w = '" << vp->width << "' ";
+					clog << " h = '" << vp->height << "' TO ";
+					clog << " w = '" << w << "' ";
+					clog << " h = '" << h << "' ";
+					clog << endl;
+					if (locked) {
+						SDL_UnlockTexture(vp->tex);
+					}
 					return;
 				}
 
@@ -1158,7 +1201,10 @@ namespace mb {
 					vs->img_convert_ctx = NULL;
 				}
 
-				SDL_UnlockTexture(vp->tex);
+				if (locked) {
+					SDL_UnlockTexture(vp->tex);
+				}
+
 				hasPic = false;
 
 			} else {
@@ -1192,10 +1238,13 @@ namespace mb {
 				vp->tex = NULL;
 			}
 		}
+
+		SDLDeviceScreen::lockSDL();
 		SDL_DestroyMutex(vs->pictq_mutex);
 		SDL_DestroyCond(vs->pictq_cond);
 		SDL_DestroyMutex(vs->subpq_mutex);
 		SDL_DestroyCond(vs->subpq_cond);
+		SDLDeviceScreen::unlockSDL();
 
 		if (vs->img_convert_ctx) {
 			sws_freeContext(vs->img_convert_ctx);
@@ -1522,7 +1571,7 @@ display:
 	    vp->width   = vs->video_st->codec->width;
 	    vp->height  = vs->video_st->codec->height;
 	    vp->pix_fmt = vs->video_st->codec->pix_fmt;
-	    vp->tex       = texture;
+	    vp->tex     = texture;
 
 	    SDL_LockMutex(vs->pictq_mutex);
 	    vp->allocated = 1;
