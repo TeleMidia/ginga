@@ -52,6 +52,10 @@ http://www.telemidia.puc-rio.br
 
 #include "ISocketService.h"
 
+#include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
@@ -72,6 +76,8 @@ namespace multidevice {
 		string broadcastIPAddr;
 		string localIPAddr;
 
+		UDPSocket* udpSocket;
+
 		pthread_mutex_t mutexBuffer;
 		vector<struct frame*>* outputBuffer;
 
@@ -80,8 +86,8 @@ namespace multidevice {
 		virtual ~BroadcastSocketService();
 
 	private:
-		static bool buildDomainAddress();
-		static unsigned int discoverBroadcastAddress();
+		bool buildDomainAddress();
+		unsigned int discoverBroadcastAddress();
 
 	public:
 		unsigned int getInterfaceIPAddress();
