@@ -91,11 +91,14 @@ namespace multidevice {
 		broadcastService = new BroadcastSocketService();
 		myIP = broadcastService->getInterfaceIPAddress();
 
-		/* MUDAR */
+		/*
+		 * TODO: change remote event service constructor in order to
+		 *       accomplish the addition of the device classes based on
+		 *       a configuration file
+		 */
 		res = new RemoteEventService();
 		res->addDeviceClass(1);
 		res->addDeviceClass(2);
-		/* MUDAR */
 	}
 
 	DeviceDomain::~DeviceDomain() {

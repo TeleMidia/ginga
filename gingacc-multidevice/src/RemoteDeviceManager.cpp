@@ -68,6 +68,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	RemoteDeviceManager* RemoteDeviceManager::_instance = NULL;
+
 	RemoteDeviceManager::RemoteDeviceManager() : Thread() {
 		domainService = NULL;
 		connecting    = false;

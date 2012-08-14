@@ -67,9 +67,9 @@ namespace multidevice {
 		mss.sin_family      = AF_INET;
 		mss.sin_port        = htons(port);
 		mss.sin_addr.s_addr = inet_addr(gAddr);
+		*/
 
 		Thread::mutexInit(&mutexBuffer, NULL);
-		*/
 		createMulticastGroup();
 	}
 

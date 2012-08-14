@@ -70,10 +70,10 @@ namespace multidevice {
 		IDeviceDomain* domainService;
 		static RemoteDeviceManager* _instance;
 
-
-	public:
 		RemoteDeviceManager();
 		~RemoteDeviceManager();
+
+	public:
 		void release();
 		static RemoteDeviceManager* getInstance();
 

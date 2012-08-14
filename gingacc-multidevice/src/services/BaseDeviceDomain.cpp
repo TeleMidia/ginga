@@ -68,7 +68,7 @@ namespace multidevice {
 	BaseDeviceDomain::BaseDeviceDomain() : DeviceDomain() {
 		timerCount    = 0;
 
-		Thread::mutexInit(&pMutex, NULL);
+		Thread::mutexInit(&pMutex, false);
 		hasNewPassiveTask = false;
 		passiveTimestamp  = 0;
 		lastMediaContentTask.size = 0;
