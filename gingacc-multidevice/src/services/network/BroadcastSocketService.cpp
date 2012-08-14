@@ -70,10 +70,6 @@ http://www.telemidia.puc-rio.br
 typedef int socklen_t;
 #endif
 
-#include "system/compat/SystemCompat.h"
-#include "system/compat/PracticalSocket.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
 #ifdef __DARWIN_UNIX03
 #include <ifaddrs.h>
 #define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
@@ -92,14 +88,13 @@ namespace multidevice {
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
 	static socklen_t          broadcast_addr_len;
-#else
-	static UDPSocket* udpSocket;
 #endif
 
 	BroadcastSocketService::BroadcastSocketService() {
-		interfaceIP  = 0;
+		interfaceIP     = 0;
 		broadcastIPAddr = "0.0.0.0";
-		outputBuffer = new vector<struct frame*>;
+		outputBuffer    = new vector<struct frame*>;
+		udpSocket       = NULL;
 
 		Thread::mutexInit(&mutexBuffer, NULL);
 
@@ -380,6 +375,11 @@ namespace multidevice {
 	    string sourceAddress = "";
 	    unsigned short sourcePort = 0;
 	    //TODO: checkInput loop fix
+
+	    if (udpSocket == NULL) {
+	    	//socket already in use
+	    	return false;
+	    }
 
 	    res = udpSocket->select_t(0,0);
 
