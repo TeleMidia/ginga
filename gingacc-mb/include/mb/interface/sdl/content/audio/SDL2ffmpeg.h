@@ -229,6 +229,7 @@ namespace mb {
 	typedef struct VideoState {
 		int paused;
 		int last_paused;
+		int que_attachments_req;
 		int seek_req;
 		int seek_flags;
 		int64_t seek_pos;
@@ -376,6 +377,7 @@ namespace mb {
 		enum AVDiscard skip_loop_filter;
 		int error_concealment;
 		int decoder_reorder_pts;
+		int infinite_buffer;
 		int framedrop;
 		int rdftspeed;
 
