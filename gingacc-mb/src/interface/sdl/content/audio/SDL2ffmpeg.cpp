@@ -95,6 +95,7 @@ namespace mb {
 		error_concealment                    = 3;
 		decoder_reorder_pts                  = -1;
 		framedrop                            = -1;
+		infinite_buffer                      = 0;
 		rdftspeed                            = 20;
 		texture                              = NULL;
 		hasPic                               = false;
@@ -1785,6 +1786,7 @@ display:
 	}
 
 	int SDL2ffmpeg::video_thread(void *arg) {
+		AVPacket pkt    = { 0 };
 		SDL2ffmpeg* dec = (SDL2ffmpeg*)arg;
 		VideoState* vs  = dec->vs;
 		AVFrame* frame  = avcodec_alloc_frame();
@@ -1802,19 +1804,19 @@ display:
 #endif
 
 		while (!dec->abortRequest) {
-			AVPacket pkt;
 			while (vs->paused && !vs->videoq.abort_request) {
 				SDL_Delay(10);
 			}
 
 			avcodec_get_frame_defaults(frame);
+			av_free_packet(&pkt);
+
 			ret = dec->get_video_frame(frame, &pts_int, &pkt);
 			if (ret < 0) {
 				goto the_end;
 			}
 
 			if (!ret) {
-				av_free_packet(&pkt);
 				continue;
 			}
 
@@ -1831,6 +1833,7 @@ display:
 		}
 the_end:
 		avcodec_flush_buffers(vs->video_st->codec);
+		av_free_packet(&pkt);
 		av_free(frame);
 
 		clog << "SDL2ffmpeg::video_thread all done" << endl;
@@ -2078,8 +2081,14 @@ the_end:
 				}
 
 				if (vs->swr_ctx) {
-					const uint8_t *in[] = { vs->frame->data[0] };
+					const uint8_t **in = (const uint8_t **)(
+							vs->frame->extended_data);
+
 					uint8_t *out[] = {vs->audio_buf2};
+
+					int out_count = sizeof(vs->audio_buf2) /
+							vs->audio_tgt.channels /
+							av_get_bytes_per_sample(vs->audio_tgt.fmt);
 
 					if (wanted_nb_samples != vs->frame->nb_samples) {
 						if (swr_set_compensation(
@@ -2099,9 +2108,7 @@ the_end:
 					len2 = swr_convert(
 							vs->swr_ctx,
 							out,
-							sizeof(vs->audio_buf2) /
-									vs->audio_tgt.channels /
-									av_get_bytes_per_sample(vs->audio_tgt.fmt),
+							out_count,
 							in, vs->frame->nb_samples);
 
 					if (len2 < 0) {
@@ -2110,10 +2117,7 @@ the_end:
 						break;
 					}
 
-					if (len2 == sizeof(
-							vs->audio_buf2) / vs->audio_tgt.channels /
-							av_get_bytes_per_sample(vs->audio_tgt.fmt)) {
-
+					if (len2 == out_count) {
 						clog << "SDL2ffmpeg::audio_decode_frame ";
 						clog << "Warning! audio buffer is probably too small";
 						clog << endl;
@@ -2315,7 +2319,7 @@ the_end:
 
 							SDL_ConvertAudio(&dec->acvt);
 
-							/*clog << endl;
+							clog << endl;
 							clog << "Converting(cb len = '" << len;
 							clog << "', Dec = '";
 							clog << dec << "', bytes to convert = '";
@@ -2346,7 +2350,7 @@ the_end:
 
 							clog << "Mixed '" << len << "' bytes" << endl;
 							clog << "Total in this step '" << dec->monoStep;
-							clog << "'" << endl;*/
+							clog << "'" << endl;
 
 							if (dec->soundLevel > 0) {
 								SDL_MixAudio(
@@ -2359,20 +2363,28 @@ the_end:
 							free(dec->acvt.buf);
 							dec->acvt.buf = NULL;
 
-							/*clog << "CB_LEN = '" << len << "'" << endl;
+							clog << "CB_LEN = '" << len << "'" << endl;
 							clog << "MY_LEN = '" << vs->audio_write_buf_size;
 							clog << "'" << endl;
 							clog << "MULTI = '" << dec->acvt.len_mult;
 							clog << "'" << endl;
 							clog << "CVT_LEN = '" << dec->acvt.len_cvt;
-							clog << "'" << endl;*/
+							clog << "'" << endl;
 
 							presented = true;
 						}
 
 					} else {
-
 						if (dec->soundLevel > 0) {
+							if (len != vs->audio_hw_buf_size) {
+								clog << "SDL2ffmpeg::sdl_audio_callback(";
+								clog << vs->filename << ")";
+								clog << "len = '" << len << "' and ";
+								clog << "buffSize = '";
+								clog << vs->audio_hw_buf_size << "'";
+								clog << endl;
+							}
+
 							SDL_MixAudio(
 									stream,
 									vs->audio_main_buf[0],
@@ -3037,18 +3049,23 @@ the_end:
 				eof = 0;
 			}
 
+			if (vs->que_attachments_req) {
+				//avformat_queue_attached_pictures(ic);
+				vs->que_attachments_req = 0;
+			}
+
 			/* if the queue are full, no need to read more */
-			if (vs->audioq.size + vs->videoq.size + vs->subtitleq.size >
-				MAX_QUEUE_SIZE ||
-				((vs->audioq.nb_packets > MIN_FRAMES ||
+			if (!dec->infinite_buffer &&
+					(vs->audioq.size + vs->videoq.size + vs->subtitleq.size >
+					MAX_QUEUE_SIZE || ((vs->audioq.nb_packets > MIN_FRAMES ||
 						vs->audio_stream < 0 ||
 						vs->audioq.abort_request) &&
 						(vs->videoq.nb_packets > MIN_FRAMES ||
 								vs->video_stream < 0 ||
 								vs->videoq.abort_request) &&
-						(vs->subtitleq.nb_packets > MIN_FRAMES ||
-								vs->subtitle_stream < 0 ||
-								vs->subtitleq.abort_request))) {
+								(vs->subtitleq.nb_packets > MIN_FRAMES ||
+										vs->subtitle_stream < 0 ||
+										vs->subtitleq.abort_request)))) {
 
 				/* wait 10 ms */
 				SDL_Delay(10);
@@ -3196,6 +3213,9 @@ the_end:
 the_end:
 		stream_component_close(start_index);
 		stream_component_open(stream_index);
+		if (codec_type == AVMEDIA_TYPE_VIDEO) {
+			vs->que_attachments_req = 1;
+		}
 	}
 
 	void SDL2ffmpeg::toggle_pause() {
