@@ -2268,7 +2268,7 @@ the_end:
 
 		//unsigned int sleepTime;
 
-		bool presented = false;
+		bool presented;
 
 		//clog << "SDL2ffmpeg::sdl_audio_callback begin" << endl;
 
@@ -2288,6 +2288,7 @@ the_end:
 			dec = (*i);
 			vs  = dec->vs;
 
+			presented = false;
 			if (dec->status == ST_PLAYING && vs != NULL &&
 					vs->audio_stream >= 0 && vs->audio_st != NULL) {
 
@@ -2411,8 +2412,6 @@ the_end:
 			}
 
 			if (presented) {
-				presented = false;
-
 				bytes_per_sec = vs->audio_tgt.freq *
 						vs->audio_tgt.channels *
 						av_get_bytes_per_sample(vs->audio_tgt.fmt);
@@ -3096,8 +3095,8 @@ the_end:
 				if (vs->audioq.size + vs->videoq.size +
 						vs->subtitleq.size == 0) {
 
-					dec->soundLevel = 0;
-					dec->status = ST_STOPPED;
+					dec->stop();
+
 					clog << "SDL2ffmpeg::read_thread(" << vs->filename;
 					clog << ") all done (EOF)" << endl;
 					return AVERROR_EOF;
