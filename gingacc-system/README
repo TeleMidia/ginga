@@ -9,7 +9,7 @@ DEPENDENCIES
 -> autoconf >= 2.13
 -> automake >= 1.4
 -> directfb >= 1.0 (www.directfb.org)
--> telemidia-util-cpp >= 0.13.1
+-> telemidia-util-cpp >= 0.13.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
 
 INSTALLATION
