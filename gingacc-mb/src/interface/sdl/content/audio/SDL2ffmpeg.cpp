@@ -337,7 +337,10 @@ namespace mb {
 			}
 
 			vs->audio_main_buf[0] = (uint8_t*)malloc(vs->audio_hw_buf_size);
-			vs->audio_main_buf[1] = (uint8_t*)malloc(vs->audio_hw_buf_size);
+			vs->audio_main_buf[1] = NULL;
+
+			vs->audio_main_buf_size[0] = 0;
+			vs->audio_main_buf_size[1] = 0;
 
 			hasSDLAudio = true;
 
@@ -2444,7 +2447,7 @@ the_end:
 	int SDL2ffmpeg::audio_refresh_decoder() {
 		int audio_size;
 		double pts;
-		int len1, offset;
+		int bytesToCpy, offset;
 
 		if (!abortRequest &&
 				vs->audio_stream >= 0 && vs->audio_hw_buf_size != 0) {
@@ -2459,6 +2462,49 @@ the_end:
 					return -1;
 				}
 
+				bytesToCpy = vs->audio_hw_buf_size - vs->audio_main_buf_size[0];
+
+				if (vs->audio_main_buf_size[1] != 0) {
+					uint8_t* newBuff = NULL;
+					int newSize = 0;
+
+					if (vs->audio_main_buf_size[1] > bytesToCpy) {
+						memcpy(vs->audio_main_buf[0] + vs->audio_main_buf_size[0],
+								vs->audio_main_buf[1],
+								bytesToCpy);
+
+						vs->audio_main_buf_size[0] = vs->audio_hw_buf_size;
+
+						newSize = vs->audio_main_buf_size[1] - bytesToCpy;
+						newBuff = (uint8_t*)malloc(newSize);
+
+						memcpy(
+								newBuff,
+								vs->audio_main_buf[1] + bytesToCpy,
+								newSize);
+
+					} else {
+						memcpy(vs->audio_main_buf[0] + vs->audio_main_buf_size[0],
+								vs->audio_main_buf[1],
+								vs->audio_main_buf_size[1]);
+
+						vs->audio_main_buf_size[0] = vs->audio_main_buf_size[0] +
+								vs->audio_main_buf_size[1];
+					}
+
+					delete vs->audio_main_buf[1];
+
+					vs->audio_main_buf[1]      = newBuff;
+					vs->audio_main_buf_size[1] = newSize;
+
+					if (vs->audio_main_buf_size[0] >= vs->audio_hw_buf_size) {
+						return 0;
+					}
+				}
+
+				assert(vs->audio_main_buf[1]      == NULL);
+				assert(vs->audio_main_buf_size[1] == 0);
+
 				audio_size = audio_decode_frame(&pts);
 				if (abortRequest || audio_size < 0) {
 					if (abortRequest) {
@@ -2471,19 +2517,6 @@ the_end:
 
 				audio_size = synchronize_audio(audio_size);
 				if (!abortRequest && audio_size > 0) {
-					if (vs->audio_main_buf_size[0] == 0 &&
-							vs->audio_main_buf_size[1] != 0) {
-
-						uint8_t* aux;
-
-						aux = vs->audio_main_buf[0];
-						vs->audio_main_buf[0] = vs->audio_main_buf[1];
-						vs->audio_main_buf[1] = aux;
-
-						vs->audio_main_buf_size[0] = vs->audio_main_buf_size[1];
-						vs->audio_main_buf_size[1] = 0;
-					}
-
 					if (vs->audio_main_buf_size[0] == 0) {
 						if (audio_size <= vs->audio_hw_buf_size) {
 							memcpy(
@@ -2494,7 +2527,7 @@ the_end:
 							vs->audio_main_buf_size[0] = audio_size;
 
 						} else {
-							len1 = audio_size - vs->audio_hw_buf_size;
+							bytesToCpy = audio_size - vs->audio_hw_buf_size;
 
 							memcpy(
 									vs->audio_main_buf[0],
@@ -2503,24 +2536,22 @@ the_end:
 
 							vs->audio_main_buf_size[0] = vs->audio_hw_buf_size;
 
-							if (len1 > vs->audio_hw_buf_size) {
-								len1 = vs->audio_hw_buf_size;
-							}
+							vs->audio_main_buf[1] = (uint8_t*)malloc(bytesToCpy);
 
 							memcpy(
 									vs->audio_main_buf[1],
 									vs->audio_buf + vs->audio_hw_buf_size,
-									len1);
+									bytesToCpy);
 
-							vs->audio_main_buf_size[1] = len1;
+							vs->audio_main_buf_size[1] = bytesToCpy;
 						}
 
 					} else {
 						if (vs->audio_main_buf_size[0] + audio_size >
 								vs->audio_hw_buf_size) {
 
-							len1 = (vs->audio_main_buf_size[0] + audio_size)
-									- vs->audio_hw_buf_size;
+							bytesToCpy = (vs->audio_main_buf_size[0] +
+									audio_size) - vs->audio_hw_buf_size;
 
 							offset = vs->audio_hw_buf_size -
 									vs->audio_main_buf_size[0];
@@ -2533,16 +2564,14 @@ the_end:
 
 							vs->audio_main_buf_size[0] = vs->audio_hw_buf_size;
 
-							if (len1 > vs->audio_hw_buf_size) {
-								len1 = vs->audio_hw_buf_size;
-							}
+							vs->audio_main_buf[1] = (uint8_t*)malloc(bytesToCpy);
 
 							memcpy(
 									vs->audio_main_buf[1],
 									vs->audio_buf + offset,
-									len1);
+									bytesToCpy);
 
-							vs->audio_main_buf_size[1] = len1;
+							vs->audio_main_buf_size[1] = bytesToCpy;
 
 						} else {
 							memcpy(
