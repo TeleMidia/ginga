@@ -143,6 +143,7 @@ namespace mb {
 		screen          = NULL;
 		sdlId           = 0;
 		backgroundLayer = NULL;
+		fullScreen      = false;
 
 		if (externalRenderer) {
 			hasERC = externalRenderer;
@@ -157,6 +158,9 @@ namespace mb {
 
 			} else if ((strcmp(args[i], "mode") == 0) && ((i + 1) < argc)) {
 				mbMode.assign(args[i + 1]);
+				if (mbMode == "fullscreen") {
+					fullScreen = true;
+				}
 
 			} else if ((strcmp(args[i], "audio") == 0) && ((i + 1) < argc)) {
 				aSystem.assign(args[i + 1]);
@@ -164,8 +168,8 @@ namespace mb {
 		}
 
 		if (aSystem != "" && aSystem != "sdlffmpeg") {
-			clog << "SDLDeviceScreen::SDLDeviceScreen Warning! Not ";
-			clog << "supported audio system: '" << aSystem << "'! Using ";
+			clog << "SDLDeviceScreen::SDLDeviceScreen Warning! Audio ";
+			clog << "system not supported: '" << aSystem << "'! Using ";
 			clog << "SDL2_ffmpeg instead." << endl;
 		}
 		aSystem = "SDLAudioProvider";
@@ -1641,8 +1645,18 @@ namespace mb {
 			x = (rect.w - s->wRes) / 2;
 			y = (rect.h - s->hRes) / 2;
 
-			s->screen = SDL_CreateWindow(
-					title.c_str(), x, y, s->wRes, s->hRes, 0);
+			if (s->fullScreen) {
+				s->screen = SDL_CreateWindow(
+						title.c_str(),
+						x, y, s->wRes, s->hRes,
+						SDL_WINDOW_FULLSCREEN);
+
+			} else {
+				s->screen = SDL_CreateWindow(
+						title.c_str(),
+						x, y, s->wRes, s->hRes,
+						0);
+			}
 
 			s->sdlId = SDL_GetWindowID(s->screen);
 		}

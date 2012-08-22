@@ -143,6 +143,7 @@ typedef struct {
 			pthread_cond_t cond;
 
 			IWindow* backgroundLayer;
+			bool fullScreen;
 			SDL_Window* screen;
 			Uint32 sdlId;
 			SDL_Renderer* renderer;
