@@ -1,4 +1,4 @@
-AC_INIT(gingacc-contextmanager, 0.13.1)
+AC_INIT(gingacc-contextmanager, 0.13.2)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE

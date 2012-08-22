@@ -8,9 +8,9 @@ DEPENDENCIES
 -> libtool    >= 1.3.4
 -> autoconf   >= 2.13
 -> automake   >= 1.4
--> telemidia-util-cpp >= 0.13.1
+-> telemidia-util-cpp >= 0.13.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
--> gingacc-cm (from gingacc-cpp) >= 0.13.1
+-> gingacc-cm (from gingacc-cpp) >= 0.13.2
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 
 INSTALLATION
