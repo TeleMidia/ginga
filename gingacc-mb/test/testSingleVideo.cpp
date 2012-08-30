@@ -88,6 +88,8 @@ void testVideo(
 
 	int x1, y1, w1, h1, z1;
 
+	bool notFalse = true;
+
 	x1 = 25;
 	y1 = 25;
 	w1 = 100;
@@ -107,7 +109,7 @@ void testVideo(
 	vid1 = dm->createContinuousMediaProvider(
 			screen,
 			videoUri.c_str(),
-			true,
+			&notFalse,
 			false);
 
 	s1->setParentWindow(win1);

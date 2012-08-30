@@ -179,7 +179,7 @@ namespace mb {
 
 	/* interfacing content */
 	IContinuousMediaProvider* TermDeviceScreen::createContinuousMediaProvider(
-			const char* mrl, bool hasVisual, bool isRemote) {
+			const char* mrl, bool* hasVisual, bool isRemote) {
 
 		return NULL;
 	}

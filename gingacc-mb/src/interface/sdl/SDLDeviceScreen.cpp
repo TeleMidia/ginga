@@ -793,13 +793,13 @@ namespace mb {
 
 	/* interfacing content */
 	IContinuousMediaProvider* SDLDeviceScreen::createContinuousMediaProvider(
-			const char* mrl, bool hasVisual, bool isRemote) {
+			const char* mrl, bool* hasVisual, bool isRemote) {
 
 		IContinuousMediaProvider* provider;
 		string strSym;
 
 		lockSDL();
-		if (hasVisual) {
+		if (*hasVisual) {
 			strSym = "SDLVideoProvider";
 
 		} else {
@@ -810,13 +810,20 @@ namespace mb {
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 		provider->setLoadSymbol(strSym);
 #else
-		if (hasVisual) {
+		if (*hasVisual) {
 			provider = new SDLVideoProvider(id, mrl);
 
 		} else {
 			provider = new SDLAudioProvider(id, mrl);
 		}
 #endif
+
+		if (*hasVisual != provider->getHasVisual()) {
+			*hasVisual = provider->getHasVisual();
+			delete provider;
+
+			provider = createContinuousMediaProvider(mrl, hasVisual, isRemote);
+		}
 
 		unlockSDL();
 

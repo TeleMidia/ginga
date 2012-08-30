@@ -566,7 +566,7 @@ namespace mb {
 
 	/* interfacing content */
 	IContinuousMediaProvider* DFBDeviceScreen::createContinuousMediaProvider(
-			const char* mrl, bool hasVisual, bool isRemote) {
+			const char* mrl, bool* hasVisual, bool isRemote) {
 
 		IContinuousMediaProvider* provider;
 		string strSym;
@@ -574,7 +574,7 @@ namespace mb {
 		Thread::mutexLock(&cmpMutex);
 
 #if HAVE_COMPSUPPORT
-		if (hasVisual) {
+		if (*hasVisual) {
 			strSym = "DFBVideoProvider";
 
 		} else {
@@ -593,7 +593,7 @@ namespace mb {
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 
 #else //!HAVE_COMPSUPPORT
-		if (hasVisual) {
+		if (*hasVisual) {
 			provider = new DFBVideoProvider(id, mrl);
 
 		} else {

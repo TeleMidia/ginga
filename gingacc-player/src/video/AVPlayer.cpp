@@ -1167,7 +1167,7 @@ namespace player {
 
 		if (provider == NULL && (fileExists(mrl) || isRemote)) {
 			provider = dm->createContinuousMediaProvider(
-					myScreen, mrl.c_str(), hasVisual, isRemote);
+					myScreen, mrl.c_str(), &hasVisual, isRemote);
 
 			surface = createFrame();
 		}
@@ -1581,8 +1581,9 @@ namespace player {
 		if (mainAV) {
 			running = true;
 
+			hasVisual = true;
 			this->provider = dm->createContinuousMediaProvider(
-					myScreen, mrl.c_str(), true, true);
+					myScreen, mrl.c_str(), &hasVisual, true);
 
 			unlock();
 			this->surface = createFrame();

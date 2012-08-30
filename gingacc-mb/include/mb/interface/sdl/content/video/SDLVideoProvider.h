@@ -83,7 +83,7 @@ namespace mb {
 			void setLoadSymbol(string symbol);
 			string getLoadSymbol();
 
-			bool getHasVisual(){return true;};
+			bool getHasVisual();
 
 			void* getProviderContent();
 			void setProviderContent(void* texture);

@@ -96,6 +96,8 @@ void testScreen(
 	int x4, y4, w4, h4, z4;
 	int x5, y5, w5, h5, z5;
 
+	bool notFalse = true;
+
 	x1 = 25;
 	y1 = 25;
 	w1 = 100;
@@ -150,7 +152,7 @@ void testScreen(
 
 	vidSur = dm->createSurface(screen);
 	vid    = dm->createContinuousMediaProvider(
-			screen, "corrego1.mp4", true, false);
+			screen, "corrego1.mp4", &notFalse, false);
 
 	vidSur->setParentWindow(win2);
 	win2->show();

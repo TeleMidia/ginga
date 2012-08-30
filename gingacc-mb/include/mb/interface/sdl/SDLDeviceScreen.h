@@ -251,7 +251,7 @@ typedef struct {
 			/* interfacing content */
 
 			IContinuousMediaProvider* createContinuousMediaProvider(
-					const char* mrl, bool hasVisual, bool isRemote);
+					const char* mrl, bool* hasVisual, bool isRemote);
 
 			void releaseContinuousMediaProvider(
 					IContinuousMediaProvider* provider);

@@ -97,28 +97,29 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 	IContinuousMediaProvider* aud3;
 	
 	string m1, m2, m3;
+	bool notTrue = false;
 
 	/* AUDIO PROVIDER */
 	aud1 = dm->createContinuousMediaProvider(
 			screen,
 			"/root/workspaces/NCL/Garrincha/media/animGar.mp4",
-			false,
+			&notTrue,
 			false);
 
 	aud1->playOver(NULL, true, NULL);
 
 	m1 = updateFileUri("techno.mp3");
-	aud2 = dm->createContinuousMediaProvider(screen, m1.c_str(), false, false);
+	aud2 = dm->createContinuousMediaProvider(screen, m1.c_str(), &notTrue, false);
 	aud2->playOver(NULL, true, NULL);
 
 	if (enableChoro) {
 		m2 = updateFileUri("choro.mp3");
-		aud3 = dm->createContinuousMediaProvider(screen, m2.c_str(), false, false);
+		aud3 = dm->createContinuousMediaProvider(screen, m2.c_str(), &notTrue, false);
 		aud3->playOver(NULL, true, NULL);
 	}
 
 	m3 = updateFileUri("rock.mp3");
-	aud3 = dm->createContinuousMediaProvider(screen, m3.c_str(), false, false);
+	aud3 = dm->createContinuousMediaProvider(screen, m3.c_str(), &notTrue, false);
 	aud3->playOver(NULL, true, NULL);
 }
 

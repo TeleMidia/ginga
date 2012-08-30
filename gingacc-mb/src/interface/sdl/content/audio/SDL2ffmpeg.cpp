@@ -433,6 +433,14 @@ namespace mb {
 		return true;
 	}
 
+	bool SDL2ffmpeg::hasVideoStream() {
+		if (vs == NULL || vs->video_stream < 0) {
+			return false;
+		}
+
+		return true;
+	}
+
 	void SDL2ffmpeg::play() {
 		clog << "SDL2ffmpeg::play called" << endl;
 		if (status == ST_STOPPED) {

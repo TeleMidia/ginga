@@ -74,6 +74,8 @@ void testPlayer(
 	IWindow* ww;
 	IWindow* www;
 
+	bool notFalse = true;
+
 	ISurface* s;
 
 	IPlayer* img1;
@@ -105,13 +107,13 @@ void testPlayer(
 
 #if HAVE_COMPSUPPORT
 	img1 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
+			screen, "1.png", &notFalse);
 
 	img2 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
+			screen, "1.png", &notFalse);
 
 	img3 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", true);
+			screen, "1.png", &notFalse);
 #endif
 
 	img1->setOutWindow(w->getId());

@@ -105,6 +105,8 @@ void* testPlayer(void* ptr) {
 	IWindow* ww;
 	IWindow* www;
 
+	bool notFalse = true;
+
 	ISurface* s;
 
 	TestContainer* tc = (TestContainer*)ptr;
@@ -140,13 +142,13 @@ void* testPlayer(void* ptr) {
 
 #if HAVE_COMPSUPPORT
 	txt1 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", true);
+			screen, "file.txt", &notFalse);
 
 	txt2 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", true);
+			screen, "file.txt", &notFalse);
 
 	txt3 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", true);
+			screen, "file.txt", &notFalse);
 #endif
 
 	txt1->setOutWindow(w->getId());
