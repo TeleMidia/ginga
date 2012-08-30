@@ -153,7 +153,7 @@ namespace mb {
 			virtual IContinuousMediaProvider* createContinuousMediaProvider(
 					GingaScreenID screenId,
 					const char* mrl,
-					bool hasVisual,
+					bool* hasVisual,
 					bool isRemote)=0;
 
 			virtual void releaseContinuousMediaProvider(

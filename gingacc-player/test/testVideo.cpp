@@ -135,6 +135,7 @@ void testPlayer(
 	string m1, m2, m3, m4;
 
 	ISurface* s;
+	bool notFalse=true;
 
 	IPlayerListener* l1 = new TestPlayerListener("L1");
 	IPlayerListener* l2 = new TestPlayerListener("L2");
@@ -174,18 +175,18 @@ void testPlayer(
 #if HAVE_COMPSUPPORT
 	m1 = updateFileUri("corrego1.mp4");
 	vid1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m1.c_str(), true);
+			screen, m1.c_str(), &notFalse);
 
 	m2 = updateFileUri("corrego1.mp4");
 	vid2 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m2.c_str(), true);
+			screen, m2.c_str(), &notFalse);
 
 	m3 = updateFileUri("corrego1.mp4");
 	vid3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m3.c_str(), true);
+			screen, m3.c_str(), &notFalse);
 
 	vid4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "/root/workspaces/NCL/Garrincha/media/animGar.mp4", true);
+			screen, "/root/workspaces/NCL/Garrincha/media/animGar.mp4", &notFalse);
 #endif
 
 	vid1->addListener(l1);

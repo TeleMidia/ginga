@@ -430,6 +430,7 @@ namespace mb {
 		bool prepare();
 
 	public:
+		bool hasVideoStream();
 		void play();
 		void stop();
 		void pause();

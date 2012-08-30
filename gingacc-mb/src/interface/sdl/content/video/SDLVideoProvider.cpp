@@ -86,6 +86,14 @@ namespace mb {
 		return this->symbol;
 	}
 
+	bool SDLVideoProvider::getHasVisual() {
+		if (decoder == NULL) {
+			return false;
+		}
+
+		return decoder->hasVideoStream();
+	}
+
 	void* SDLVideoProvider::getProviderContent() {
 		if (decoder != NULL) {
 			return (void*)(decoder->getTexture());

@@ -104,6 +104,8 @@ void testVideo(
 	int x4, y4, w4, h4, z4;
 	int x5, y5, w5, h5, z5;
 
+	bool notFalse = true;
+
 	x1 = 25;
 	y1 = 25;
 	w1 = 100;
@@ -147,7 +149,7 @@ void testVideo(
 	vid1 = dm->createContinuousMediaProvider(
 			screen,
 			"/root/ncl/rio-itu/mainVideo/rio_1280x720.mp4",
-			true,
+			&notFalse,
 			false);
 
 	s1->setParentWindow(win1);
@@ -176,7 +178,10 @@ void testVideo(
 
 	s2   = dm->createSurface(screen);
 	vid2 = dm->createContinuousMediaProvider(
-			screen, "/root/ncl/VivaMaisPratos/video/vivamais-ws.mp4", true, false);
+			screen,
+			"/root/ncl/VivaMaisPratos/video/vivamais-ws.mp4",
+			&notFalse,
+			false);
 
 	vid2->setSoundLevel(1.0);
 	s2->setParentWindow(win2);
@@ -202,7 +207,7 @@ void testVideo(
 	vid3 = dm->createContinuousMediaProvider(
 			screen,
 			"/root/workspaces/NCL/devel_tests/media/vid/matrix.mpg",
-			true,
+			&notFalse,
 			false);
 
 	s3->setParentWindow(win3);
@@ -229,7 +234,7 @@ void testVideo(
 	vid4 = dm->createContinuousMediaProvider(
 			screen,
 			"/root/workspaces/NCL/devel_tests/media/vid/pilha.mpg",
-			true,
+			&notFalse,
 			false);
 
 	s4->setParentWindow(win4);
@@ -256,7 +261,7 @@ void testVideo(
 	vid5 = dm->createContinuousMediaProvider(
 			screen,
 			"corrego1.mp4",
-			true,
+			&notFalse,
 			false);
 
 	s5->setParentWindow(win5);
