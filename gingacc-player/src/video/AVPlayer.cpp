@@ -1743,7 +1743,7 @@ static pthread_mutex_t avpm;
 static bool avpmInit = false;
 
 extern "C" IPlayer* createAVPlayer(
-		GingaScreenID screenId, const char* mrl, bool hasVisual) {
+		GingaScreenID screenId, const char* mrl, bool* hasVisual) {
 
 	AVPlayer* player;
 	if (!avpmInit) {
@@ -1752,7 +1752,8 @@ extern "C" IPlayer* createAVPlayer(
 	}
 
 	Thread::mutexLock(&avpm);
-	player = new AVPlayer(screenId, mrl, hasVisual);
+	player = new AVPlayer(screenId, mrl, *hasVisual);
+	*hasVisual = player->getHasVisual();
 	Thread::mutexUnlock(&avpm);
 
 	return player;
