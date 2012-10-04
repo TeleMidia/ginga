@@ -131,6 +131,7 @@ namespace compat {
 	class SystemCompat {
 		private:
 			static string filesPref;
+			static string ctxFilesPref;
 			static string installPref;
 			static string userCurrentPath;
 			static string gingaCurrentPath;
@@ -163,10 +164,15 @@ namespace compat {
 			static string getUserCurrentPath();
 
 			/*
-			 * defines a new base directory to ginga files
+			 * defines a new base directory to ginga context files
 			 * use it carefully
 			 */
-			static void setGingaFilesPrefix(string newBaseDir);
+			static void setGingaContextPrefix(string newBaseDir);
+
+			/*
+			 * get base directory to ginga context files
+			 */
+			static string getGingaContextPrefix();
 
 			/*
 			 * updates the URL with specific system delimiter

@@ -71,8 +71,11 @@ namespace contextmanager {
 	IContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
-		usersUri    = SystemCompat::appendGingaFilesPrefix("contextmanager/users.ini");
-		contextsUri = SystemCompat::appendGingaFilesPrefix("contextmanager/contexts.ini");
+		usersUri = SystemCompat::getGingaContextPrefix() +
+				SystemCompat::getIUriD() + "users.ini";
+
+		contextsUri = SystemCompat::getGingaContextPrefix() +
+				SystemCompat::getIUriD() + "contexts.ini";
 
 		users        = new map<int, IGingaUser*>;
 		contexts     = new map<int, map<string, string>*>;
