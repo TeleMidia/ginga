@@ -57,6 +57,7 @@ namespace core {
 namespace system {
 namespace compat {
 	string SystemCompat::filesPref        = "";
+	string SystemCompat::ctxFilesPref     = "";
 	string SystemCompat::installPref      = "";
 	string SystemCompat::userCurrentPath  = "";
 	string SystemCompat::gingaCurrentPath = "";
@@ -437,8 +438,17 @@ namespace compat {
 		return userCurrentPath;
 	}
 
-	void SystemCompat::setGingaFilesPrefix(string newBaseDir) {
-		filesPref = updatePath(newBaseDir);
+	void SystemCompat::setGingaContextPrefix(string newBaseDir) {
+		ctxFilesPref = newBaseDir;
+	}
+
+	string SystemCompat::getGingaContextPrefix() {
+		if (ctxFilesPref == "") {
+			checkValues();
+			ctxFilesPref = filesPref + iUriD + "contextmanager" + iUriD;
+		}
+
+		return updatePath(ctxFilesPref);
 	}
 
 	string SystemCompat::appendGingaFilesPrefix(string relUrl) {
