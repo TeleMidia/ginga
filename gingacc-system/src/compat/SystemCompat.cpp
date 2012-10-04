@@ -437,6 +437,10 @@ namespace compat {
 		return userCurrentPath;
 	}
 
+	void SystemCompat::setGingaFilesPrefix(string newBaseDir) {
+		filesPref = updatePath(newBaseDir);
+	}
+
 	string SystemCompat::appendGingaFilesPrefix(string relUrl) {
 		string absuri;
 
