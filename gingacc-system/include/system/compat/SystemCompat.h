@@ -163,6 +163,12 @@ namespace compat {
 			static string getUserCurrentPath();
 
 			/*
+			 * defines a new base directory to ginga files
+			 * use it carefully
+			 */
+			static void setGingaFilesPrefix(string newBaseDir);
+
+			/*
 			 * updates the URL with specific system delimiter
 			 * and append with ginga config files prefix
 			 */
