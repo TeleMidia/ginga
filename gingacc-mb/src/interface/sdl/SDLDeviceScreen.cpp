@@ -1045,14 +1045,6 @@ namespace mb {
 
 		checkSDLInit();
 
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-		HANDLE _t = GetCurrentThread();
-
-		//Enabling priority boost (yes the parameter must be FALSE RTFM)
-		SetThreadPriorityBoost(_t, FALSE);
-		SetThreadPriority(_t, THREAD_PRIORITY_HIGHEST);
-#endif
-
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
 

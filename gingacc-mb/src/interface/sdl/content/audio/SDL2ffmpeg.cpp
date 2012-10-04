@@ -1806,14 +1806,6 @@ display:
 		double pts;
 		int ret;
 
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-		HANDLE _t = GetCurrentThread();
-
-		//Enabling priority boost (yes the parameter must be FALSE RTFM)
-		SetThreadPriorityBoost(_t, FALSE);
-		SetThreadPriority(_t, THREAD_PRIORITY_HIGHEST);
-#endif
-
 		while (!dec->abortRequest) {
 			while (vs->paused && !vs->videoq.abort_request) {
 				SDL_Delay(10);
@@ -3008,14 +3000,6 @@ the_end:
 			dec->close(true);
 			return -1;
 		}
-
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-		HANDLE _t = GetCurrentThread();
-
-		//Enabling priority boost (yes the parameter must be FALSE RTFM)
-		SetThreadPriorityBoost(_t, FALSE);
-		SetThreadPriority(_t, THREAD_PRIORITY_HIGHEST);
-#endif
 
 		while (!dec->abortRequest) {
 			if (vs->paused != vs->last_paused) {
