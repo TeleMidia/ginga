@@ -1212,6 +1212,8 @@ namespace mb {
 						sdlQuit();
 						exit(0);
 						return NULL;
+#else
+						exit(0);
 #endif
 
 					} else if (s->im != NULL) {
