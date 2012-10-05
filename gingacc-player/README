@@ -10,9 +10,9 @@ DEPENDENCIES
 -> automake >= 1.4
 -> directfb >= 1.0 (www.directfb.org)
 -> lua >= 5.1.2 (www.lua.org)
--> telemidia-util-cpp >= 0.13.2
+-> telemidia-util-cpp >= 0.13.3
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-util-cpp)
--> gingacc-system (from gingacc-cpp) >= 0.13.2
+-> gingacc-system (from gingacc-cpp) >= 0.13.3
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/gingacc-cpp)
 -> telemidia-links-cpp
    (http://svn.softwarepublico.gov.br/trac/ginga/browser/telemidia-links-cpp)
