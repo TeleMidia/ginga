@@ -1,4 +1,4 @@
-AC_INIT(gingacc-um, 0.13.2)
+AC_INIT(gingacc-um, 0.13.3)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
