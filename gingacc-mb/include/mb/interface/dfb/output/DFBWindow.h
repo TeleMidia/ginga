@@ -170,6 +170,8 @@ namespace mb {
 			void setZ(float z){};
 
 			void* getContent();
+
+			bool isGhostWindow();
 			void setGhostWindow(bool ghost);
 			bool isVisible();
 			void validate();

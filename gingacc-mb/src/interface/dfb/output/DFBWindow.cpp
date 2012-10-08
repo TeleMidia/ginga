@@ -656,6 +656,10 @@ namespace mb {
 	}
 */
 
+	bool DFBWindow::isGhostWindow() {
+		return ghost;
+	}
+
 	void DFBWindow::setGhostWindow(bool ghost) {
 		this->ghost = ghost;
 	}

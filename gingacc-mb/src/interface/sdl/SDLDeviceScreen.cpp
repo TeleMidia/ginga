@@ -822,6 +822,7 @@ namespace mb {
 			*hasVisual = provider->getHasVisual();
 			delete provider;
 
+			SystemCompat::uSleep(300000);
 			provider = createContinuousMediaProvider(mrl, hasVisual, isRemote);
 		}
 
@@ -1430,7 +1431,7 @@ namespace mb {
 					while (k != j->second->end()) {
 						win = (SDLWindow*)(*k);
 
-						if (win->isVisible()) {
+						if (win->isVisible() && !win->isGhostWindow()) {
 							uTex = win->getTexture(s->renderer);
 							if (uTex != NULL) {
 								drawWindow(s->renderer, uTex, win);

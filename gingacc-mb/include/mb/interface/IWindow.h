@@ -110,6 +110,7 @@ namespace mb {
 
 			virtual void* getContent()=0;
 
+			virtual bool isGhostWindow()=0;
 			virtual void setGhostWindow(bool ghost)=0;
 			virtual bool isVisible()=0;
 			virtual void validate()=0;
