@@ -106,7 +106,7 @@ namespace mb {
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
-		setSoundLevel(0.5);
+		setSoundLevel(1.0);
 
 		if (!init) {
 			init = true;

@@ -433,6 +433,10 @@ namespace mb {
 		SDLDeviceScreen::updateRenderMap(myScreen, this, oldZ, z);
 	}
 
+	bool SDLWindow::isGhostWindow() {
+		return ghost;
+	}
+
 	void SDLWindow::setGhostWindow(bool ghost) {
 		this->ghost = ghost;
 	}
