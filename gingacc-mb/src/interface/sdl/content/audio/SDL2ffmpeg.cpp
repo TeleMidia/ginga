@@ -423,10 +423,16 @@ namespace mb {
 		}
 
 		SDLDeviceScreen::lockSDL();
-		SDL_BuildAudioCVT(
-				&acvt,
-				wantedSpec.format, wantedSpec.channels, wantedSpec.freq,
-				spec.format, spec.channels, spec.freq);
+		if ((unsigned int)wantedSpec.channels > 0 &&
+				(unsigned int)wantedSpec.channels < 8 &&
+				(unsigned int)spec.channels > 0 &&
+				(unsigned int)spec.channels < 8) {
+
+			SDL_BuildAudioCVT(
+					&acvt,
+					wantedSpec.format, wantedSpec.channels, wantedSpec.freq,
+					spec.format, spec.channels, spec.freq);
+		}
 
 		SDLDeviceScreen::unlockSDL();
 
