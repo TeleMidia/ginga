@@ -144,6 +144,7 @@ namespace mb {
 		sdlId           = 0;
 		backgroundLayer = NULL;
 		fullScreen      = false;
+		winIdRefCounter = 0;
 
 		if (externalRenderer) {
 			hasERC = externalRenderer;
@@ -455,6 +456,33 @@ namespace mb {
 	void SDLDeviceScreen::mergeIds(
 			GingaWindowID destId, vector<GingaWindowID>* srcIds) {
 
+		map<GingaWindowID, IWindow*>::iterator i;
+		vector<GingaWindowID>::iterator j;
+		SDLWindow* destWin;
+		SDL_Surface* destSur;
+
+		lockSDL();
+		destSur = createUnderlyingSurface(wRes, hRes);
+
+		Thread::mutexLock(&winMutex);
+		i = windowRefs.find(destId);
+		if (i != windowRefs.end()) {
+			destWin = i->second;
+
+			j = srcIds->begin();
+			while (j != srcIds->end()) {
+				i = windowRefs.find(*j);
+				if (i != windowRefs.end()) {
+					blitFromWindow(i->second, destSur);
+				}
+				++j;
+			}
+
+			destWin->setRenderedSurface(destSur);
+		}
+
+		Thread::mutexUnlock(&winMutex);
+		unlockSDL();
 	}
 
 	void SDLDeviceScreen::blitScreen(ISurface* destination) {
@@ -529,7 +557,15 @@ namespace mb {
 
 		Thread::mutexLock(&winMutex);
 
-		iWin = new SDLWindow(NULL, NULL, id, x, y, w, h, z);
+		iWin = new SDLWindow(
+				(GingaWindowID)winIdRefCounter,
+				NULL,
+				id,
+				x, y, w, h, z);
+
+		windowRefs[winIdRefCounter] = iWin;
+
+		winIdRefCounter++;
 		windowPool.insert(iWin);
 		renderMapInsertWindow(id, iWin, z);
 
@@ -689,6 +725,7 @@ namespace mb {
 
 	void SDLDeviceScreen::releaseWindow(IWindow* win) {
 		set<IWindow*>::iterator i;
+		map<GingaWindowID, IWindow*>::iterator j;
 		SDLWindow* iWin;
 		SDL_Texture* uTex = NULL;
 		bool uTexOwn;
@@ -698,7 +735,13 @@ namespace mb {
 		if (i != windowPool.end()) {
 			iWin = (SDLWindow*)(*i);
 
+			j = windowRefs.find(iWin->getId());
+			if (j != windowRefs.end()) {
+				windowRefs.erase(j);
+			}
+
 			renderMapRemoveWindow(id, iWin, iWin->getZ());
+
 			windowPool.erase(i);
 
 			uTex = iWin->getTexture(NULL);
