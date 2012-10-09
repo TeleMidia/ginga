@@ -1,7 +1,8 @@
 INCLUDES                = \
                           -I$(prefix)/include/ginga/ \
                           $(all_includes) \
-                          -I$(top_srcdir)/include
+                          -I$(top_srcdir)/include \
+                          -I$(top_srcdir)
 
 LIBS                    =
 

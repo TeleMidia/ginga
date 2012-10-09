@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "ic/InteractiveChannelManager.h"
 #include "ic/IInteractiveChannel.h"
 
-#include "../config.h"
+#include "config.h"
 
 #if HAVE_COMPSUPPORT
 #include "cm/IComponentManager.h"
