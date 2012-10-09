@@ -467,7 +467,7 @@ namespace mb {
 		Thread::mutexLock(&winMutex);
 		i = windowRefs.find(destId);
 		if (i != windowRefs.end()) {
-			destWin = i->second;
+			destWin = (SDLWindow*)(i->second);
 
 			j = srcIds->begin();
 			while (j != srcIds->end()) {
@@ -563,7 +563,7 @@ namespace mb {
 				id,
 				x, y, w, h, z);
 
-		windowRefs[winIdRefCounter] = iWin;
+		windowRefs[(GingaWindowID)winIdRefCounter] = iWin;
 
 		winIdRefCounter++;
 		windowPool.insert(iWin);
