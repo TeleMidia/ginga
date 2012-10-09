@@ -122,6 +122,9 @@ typedef struct {
 			int hRes;
 			int wRes;
 
+			unsigned long winIdRefCounter;
+			map<GingaWindowID, IWindow*> windowRefs;
+
 #if HAVE_COMPSUPPORT
 			static IComponentManager* cm;
 #endif
