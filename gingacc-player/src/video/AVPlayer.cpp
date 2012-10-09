@@ -154,8 +154,9 @@ namespace player {
 	}
 
 	void AVPlayer::createProvider(void) {
-		clog << "AVPlayer::createProvider '" << mrl << "'" << endl;
 		Thread::mutexLock(&pMutex);
+		clog << "AVPlayer::createProvider '" << mrl << "' has visual = '";
+		clog << hasVisual << "'" << endl;
 
 		if (mrl.substr(0, 7) == "rtsp://" ||
 				mrl.substr(0, 6) == "rtp://" ||
