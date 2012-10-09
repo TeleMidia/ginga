@@ -58,7 +58,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	ActiveDeviceDomain::ActiveDeviceDomain() : DeviceDomain() {
+	ActiveDeviceDomain::ActiveDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
 		clog << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
 		deviceClass   = CT_ACTIVE;
 		deviceService = NULL;
@@ -69,13 +69,20 @@ namespace multidevice {
 	}
 
 	void ActiveDeviceDomain::postConnectionRequestTask(int w, int h) {
+
 		char* task;
-		int connReqPayloadSize = 5;
+		int connReqPayloadSize = 7;
 		int taskSize;
 
-		//TODO: offer a configure way in requests connection to CT_ACTIVE devs
-		/*clog << "ActiveDeviceDomain::postConnectionRequestTask";
-		clog << endl;*/
+
+		if (!deviceSearch)
+			return;
+
+		//TODO: offer configuration parameters during requests connection to CT_ACTIVE devs
+
+		//clog << "ActiveDeviceDomain::postConnectionRequestTask";
+		//clog << " myIP = " << myIP << endl;
+		//clog << endl;
 
 		//prepare frame
 		task = mountFrame(
@@ -88,6 +95,9 @@ namespace multidevice {
 
 		task[HEADER_SIZE + 3] = h & 0xFF;
 		task[HEADER_SIZE + 4] = (h & 0xFF00) >> 8;
+
+		task[HEADER_SIZE + 5] = servicePort & 0xFF;
+		task[HEADER_SIZE + 6] = (servicePort & 0xFF00) >> 8;
 
 		taskSize = HEADER_SIZE + connReqPayloadSize;
 		broadcastTaskRequest(task, taskSize);

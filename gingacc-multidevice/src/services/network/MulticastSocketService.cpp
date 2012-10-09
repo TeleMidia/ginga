@@ -61,6 +61,8 @@ namespace multidevice {
 		outputBuffer = new vector<struct frame*>;
 		port         = portNumber;
 		groupAddress = groupAddr;
+		interfaceIP = 0;
+
 		/*
 		TODO: ios fix
 		memset(&mss, 0, sizeof(mss));
@@ -96,7 +98,7 @@ namespace multidevice {
 
 		}
 		/*
-		TODO: fix for ios
+		TODO: fix for ios?
 		if (msdR > 0) {
 			setsockopt(
 					msdR,
@@ -202,8 +204,11 @@ TODO: fix for ios
 	bool MulticastSocketService::setSocketOptions() {
 		try {
 			writeSocket->setMulticastTTL(MCAST_TTL);
-			writeSocket->setMulticastLoop(false);
+			writeSocket->setMulticastLoop(true);
+			writeSocket->setReuseAddr(true);
+
 			readSocket->setReuseAddr(true);
+			readSocket->setMulticastLoop(true);
 		}
 		catch (SocketException &e) {
 			clog << "MulticastSocketService::setSocketOptions()" << endl;
@@ -217,6 +222,8 @@ TODO: fix for ios
 	bool MulticastSocketService::tryToBind() {
 		try {
 			readSocket->setLocalAddressAndPort(groupAddress,port);
+			interfaceIP = readSocket->getLocalIPAddress();
+
 		}
 		catch (SocketException &e) {
 			clog << "MulticastSocketService::tryToBind" << endl;
@@ -257,16 +264,15 @@ TODO: fix for ios
 		data     = f->data;
 		taskSize = f->size;
 
-		/*clog << "MulticastSocketService::sendData Sending";
-		clog << " taskSize = '" << taskSize  << "'" << endl;*/
+		clog << "MulticastSocketService::sendData Sending";
+		clog << " taskSize = '" << taskSize  << "'" << endl;
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			try {
 				writeSocket->sendTo(data,taskSize,groupAddress,port);
-
 			}
 			catch (SocketException &e) {
-				clog << "MulticastSocketService::sendData msdW sendTo";
+				clog << "MulticastSocketService::sendData writeSocket sendTo";
 				clog << " TASKSIZE = '" << taskSize << "'" << endl;
 				clog << e.what() << endl;
 				return false;
@@ -329,6 +335,7 @@ TODO: fix for ios
 		}
 
 		res = readSocket->select_t(0,0);
+		//clog << "MulticastSocketService::checkInputBuffer readSocket->select_t(0,0)" << endl;
 
 		switch (res) {
 			case -1:
@@ -347,7 +354,6 @@ TODO: fix for ios
 					clog << e.what() << endl;
 					return false;
 				}
-
 
 /*
 				if (*size == -1) {
@@ -377,7 +383,10 @@ TODO: fix for ios
 				}
 
 				recvFrom = getUIntFromStream(data + 1);
-				if (!isValidRecvFrame(recvFrom, data)) {
+
+//				if (!isValidRecvFrame(recvFrom, getUIntFromStream(groupAddress), data)) {
+				if (!isValidRecvFrame(recvFrom, interfaceIP, data)) {
+					clog << "MulticastSocketService::checkInputBuffer() !isValidRecvFrame"<<endl;
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;
 				}

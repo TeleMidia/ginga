@@ -64,13 +64,23 @@ namespace multidevice {
 
 	TCPClientConnection::TCPClientConnection(
 			unsigned int devid,
+			unsigned int index,
 			char* hostname,
 			char *port_str,
 			IRemoteDeviceListener* srv) {
 
 		try {
 			deviceId = devid;
+			orderId = index;
+			counter = 0;
 			tcpSocket = new TCPSocket(string(hostname),atoi(port_str));
+			////
+			//TODO: improve (create setIndex e getIndex methods) so index does not change
+
+			char* set_index;
+			asprintf(&set_index,"%d %s %s=%d\n",0,"SET","child.index",orderId);
+			this->post(set_index);
+			////
 			running = true;
 			resrv = srv;
 		}

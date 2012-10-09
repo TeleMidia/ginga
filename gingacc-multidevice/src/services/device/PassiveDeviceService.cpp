@@ -82,6 +82,7 @@ namespace multidevice {
 			(*i)->connectedToBaseDevice(domainAddr);
 			++i;
 		}
+		clog << "PassiveDeviceService::connectedToBaseDevice("<<domainAddr<<") "<<endl;
 		Thread::mutexUnlock(&lMutex);
 	}
 
@@ -97,7 +98,7 @@ namespace multidevice {
 		set<IRemoteDeviceListener*>::iterator i;
 		bool hasLists;
 
-		//clog << "PassiveDeviceService::receiveMediaContent" << endl;
+		clog << "PassiveDeviceService::receiveMediaContent" << endl;
 
 		dev = getDevice(devAddr);
 		Thread::mutexLock(&lMutex);
@@ -117,7 +118,7 @@ namespace multidevice {
 					return true;
 
 			#else
-				uri = "/tmp/render.jpg";
+				uri = SystemCompat::getTemporaryDir()+"render.jpg";
 				remove((char*)(uri.c_str()));
 				fd = fopen(uri.c_str(), "w+b");
 

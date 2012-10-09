@@ -71,7 +71,8 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	bool isValidRecvFrame(int recvFrom, char* frame) {
+	bool isValidRecvFrame(int recvFrom, int myIP, char* frame) {
+		//ATS: if the recvFrom = myIP the frame is sent along, in order to be validated based on its destClass
 		map<int, char>::iterator i;
 		int frameType;
 		char frameId;
@@ -83,10 +84,21 @@ namespace multidevice {
 			i = _rcf.find(recvFrom);
 			if (i != _rcf.end()) {
 				if (frameId == i->second) {
-					return false;
+					//TODO: improve the //ATS section code
+					//ATS BEGIN
+					if (recvFrom == myIP) {
+						clog << "NetworkUtil::isValidRecvFrame():isControlFrame(frameType) and (recvFrom == myIP)" << endl;
+						_rcf[recvFrom] = frameId;
+						return true;
+					}
+					else {
+						clog << "NetworkUtil::isValidRecvFrame():isControlFrame(frameType) error" << endl;
+						return false;
+					}
+					//ATS END
 				}
 			}
-
+			clog << "NetworkUtil::isValidRecvFrame():isControlFrame == true"<<endl;
 			_rcf[recvFrom] = frameId;
 			/*if ((frameId == 0 && receivedControlFrameId > 110) ||
 					(frameId > receivedControlFrameId) ||

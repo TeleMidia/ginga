@@ -72,6 +72,8 @@ TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
 	res = r;
 	port = p;
 
+	connection_counter = 0;
+
 	connections = new map<unsigned int, TCPClientConnection*>;
 	Thread::mutexInit(&connMutex, NULL);
 }
@@ -86,41 +88,59 @@ TcpSocketService::~TcpSocketService() {
 	pthread_mutex_destroy(&connMutex);
 }
 
-void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
+void TcpSocketService::addConnection(unsigned int deviceId,
+									char* addr,
+									int srvPort,
+									bool isLocalConnection) {
 	char* portStr;
 	TCPClientConnection* tcpcc;
 	//unsigned int newDevId;
 
-	asprintf(&portStr,"%d",port);
+	asprintf(&portStr,"%d",srvPort);
+
 	Thread::mutexLock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
 
 //	if (connections != NULL) {
 	//(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
+		connection_counter++;
 		tcpcc = new TCPClientConnection(
 						deviceId,
+						connection_counter,
 						addr,
 						portStr,
 						(IRemoteDeviceListener*)res);
+
 		(*connections)[deviceId] = tcpcc;
+
 		tcpcc->startThread();
 
 	} else if (connections != NULL) {
 		clog << "TcpSocketService::warning - connection already registered";
 		clog << endl;
 
-		clog << "TcpSocketService::warning - removing and adding it again (";
-		clog << deviceId << ")" << endl;
+		if (!isLocalConnection) {
+			//TODO: maintain index when connection is created again for the same device
+			//TODO: defining a getIndex method for the TCPClientConn class
+			//configurable: stick (based on address+port), slot (like videogames)
+			//and continuous (index in not regained, keeps increasing)
 
-		this->removeConnection(deviceId);
-		tcpcc = new TCPClientConnection(
-						deviceId,
-						addr,
-						portStr,
-						(IRemoteDeviceListener*) res);
+			connection_counter++;
+			clog << "TcpSocketService::warning - not a local connection,";
+			clog << " removing and adding it again (";
+			clog << deviceId << ")" << endl;
 
-		(*connections)[deviceId] = tcpcc;	
-		tcpcc->startThread();
+			this->removeConnection(deviceId);
+			tcpcc = new TCPClientConnection(
+							deviceId,
+							connection_counter,
+							addr,
+							portStr,
+							(IRemoteDeviceListener*) res);
+
+			(*connections)[deviceId] = tcpcc;
+			tcpcc->startThread();
+		}
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}
@@ -132,9 +152,11 @@ void TcpSocketService::addConnection(unsigned int deviceId, char* addr) {
 
 void TcpSocketService::removeConnection(unsigned int deviceId) {
 	TCPClientConnection *con = (*connections)[deviceId];
+	con->release();
 	delete con;
 	(*connections)[deviceId] = NULL;
 }
+//TODO: create postTcpCommand with deviceId arg
 
 void TcpSocketService::postTcpCommand(
 		char* command,
@@ -153,9 +175,6 @@ void TcpSocketService::postTcpCommand(
 			payloadDesc,
 			(int)strlen(payload),
 			payload);
-
-	//clog << "TcpSocketService::postTcpCommand = ";
-	//clog << com << endl;
 
 	Thread::mutexLock(&connMutex);
 	i = connections->begin();

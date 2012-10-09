@@ -426,6 +426,18 @@ namespace compat {
 		return path;
 	}
 
+	string SystemCompat::convertRelativePath(string relPath) {
+#ifdef WIN32
+		string _str;
+		_str = relPath;
+
+		_str.replace( relPath.begin(), relPath.end(), '/', '\\');
+		return _str;
+#else
+		return relPath;
+#endif
+	}
+
 	string SystemCompat::getGingaBinPath() {
 		checkValues();
 

@@ -75,12 +75,12 @@ namespace multidevice {
 	RemoteEventService* RemoteEventService::_instance = NULL;
 
 	RemoteEventService::RemoteEventService() {
-		#if HAVE_COMPSUPPORT
+#if HAVE_COMPSUPPORT
 		RemoteEventService::contextManager = ((ContextManagerCreator*)(cm->getObject(
 						"ContextManager")))();
-		#else
+#else
 		RemoteEventService::contextManager = ContextManager::getInstance();
-		#endif
+#endif
 		clog << "RemoteEventService::new RemoteEventService()" << endl;
 
 		groups = new map<int,TcpSocketService*>;
@@ -90,7 +90,6 @@ namespace multidevice {
 	RemoteEventService::~RemoteEventService() {
 		map<int,TcpSocketService*>::iterator i;
 
-		// TODO Auto-generated destructor stub
 		Thread::mutexLock(&groupsMutex);
 		if (groups != NULL) {
 			i = groups->begin();
@@ -126,7 +125,8 @@ namespace multidevice {
 	}
 
 	void RemoteEventService::addDevice(
-			unsigned int device_class, unsigned int device_id, char* addr) {
+			unsigned int device_class, unsigned int device_id,
+			char* addr, int srvPort, bool isLocalConnection) {
 
 		map<int, TcpSocketService*>::iterator i;
 		TcpSocketService* tss;
@@ -139,7 +139,7 @@ namespace multidevice {
 		}
 
 		tss = i->second;
-		tss->addConnection(device_id, addr);
+		tss->addConnection(device_id, addr, srvPort, isLocalConnection);
 		clog << "RemoteEventService :: TcpSocketService->addConnection";
 		clog << "devie_id="<<device_id<<endl;
 
@@ -160,8 +160,7 @@ namespace multidevice {
 		tss = (*groups)[device_class];
 		tss->postTcpCommand((char*)"ADD", 0, name, body);
 		Thread::mutexUnlock(&groupsMutex);
-		//TODO: prefetch will be here. add without start
-		//TODO: change method signature to be equal to startdoc
+		//ADD without start will be used by prefetch mechanisms
 	}
 
 	void RemoteEventService::startDocument(
@@ -178,15 +177,19 @@ namespace multidevice {
 		tss = (*groups)[device_class];
 
 		clog << "RemoteEventService::startDocument "<<name<<endl; 
-		//TODO: ver se eh um ncl ou um media object qq
-		//TODO: ver a parada dos arquivos serem listados num xml
+		//TODO: start individual media objects
+		//TODO: MANIFEST
 
-		char *zip_dump = (char*)"/tmp/tmpzip.zip";
+		string zipDumpStr = SystemCompat::getTemporaryDir() + "basetmp.zip";
+		char *zip_dump = (char*)zipDumpStr.c_str();
+
+		//char *zip_dump = (char*)"/tmp/basetmp.zip";
 
 		string dir_app = SystemCompat::getUserCurrentPath() +
 				SystemCompat::getPath(string(name));
 
 		clog << "RemoteEventService::dir app="<<dir_app<<endl;
+		//clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
 
 		zip_directory(
 				zip_dump,
@@ -196,8 +199,7 @@ namespace multidevice {
 		string zip_base64 = getBase64FromFile(zip_dump);
 
 		remove(zip_dump);
-		//TODO: prefetch. add sem start
-		//TODO: remote node start. start sem add.
+		//TODO: prefetch. add w/o start
 
 //		clog << "RemoteEventService::zipb64="<<endl;
 //		clog << zip_base64 <<endl;

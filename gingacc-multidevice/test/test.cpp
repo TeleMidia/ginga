@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
 #if HAVE_COMPSUPPORT
 	rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-			"RemoteDeviceManager")))(deviceClass);
+			"RemoteDeviceManager")))(deviceClass, false, 22222);
 #else
 	rdm = RemoteDeviceManager::getInstance();
 #endif

@@ -85,7 +85,8 @@ namespace multidevice {
 		unsigned int port;
 		char* groupAddress;
 
-		//TODO: use PracticalSocket
+		unsigned int interfaceIP;
+
 		int msdR, msdW;  // msd = multicast socket descriptor
 		//sockaddr_in mss; // mss = multicast socket struct
 

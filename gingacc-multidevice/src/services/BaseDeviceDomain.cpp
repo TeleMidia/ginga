@@ -65,7 +65,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	BaseDeviceDomain::BaseDeviceDomain() : DeviceDomain() {
+	BaseDeviceDomain::BaseDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
 		timerCount    = 0;
 
 		Thread::mutexInit(&pMutex, false);
@@ -132,8 +132,7 @@ namespace multidevice {
 	}
 
 	void BaseDeviceDomain::receiveConnectionRequest(char* task) {
-		int reqDevClass, width, height;
-
+		int reqDevClass, width, height, srvPort;
 		clog << "BaseDeviceDomain::receiveConnectionRequest " << endl;
 
 		reqDevClass = (int)(unsigned char)task[0];
@@ -143,7 +142,10 @@ namespace multidevice {
 		height = ((((unsigned char)task[3]) & 0xFF) |
 				((((unsigned char)task[4]) << 8) & 0xFF00));
 
-		if (addDevice(reqDevClass, width, height)) {
+		srvPort = ((((unsigned char)task[5]) & 0xFF) |
+				((((unsigned char)task[6]) << 8) & 0xFF00));
+
+		if (addDevice(reqDevClass, width, height, srvPort)) {
 			schedDevClass = reqDevClass;
 			schedulePost  = FT_ANSWERTOREQUEST;
 
@@ -189,7 +191,10 @@ namespace multidevice {
 		task[pos+1] = (broadcastPort & 0xFF00) >> 8;
 
 		taskSize = HEADER_SIZE + answerPayloadSize;
+		clog << "BaseDeviceDomain::answer with taskSize="<<taskSize<<endl;
 		broadcastTaskRequest(task, taskSize);
+		clog << "BaseDeviceDomain::called broadcastTaskRequest()"<<endl;
+
 	}
 /*
 	void BaseDeviceDomain::postNclMetadata(
@@ -333,7 +338,7 @@ namespace multidevice {
 				taskIndicationFlag = false;
 				return false;
 			}
-
+/*
 			if (myIP == sourceIp) {
 				clog << "DeviceDomain::runControlTask got my own task ";
 				clog << "(size = '" << frameSize << "')" << endl;
@@ -343,7 +348,7 @@ namespace multidevice {
 				taskIndicationFlag = false;
 				return false;
 			}
-
+*/
 			if (destClass != deviceClass) {
 				clog << "DeviceDomain::runControlTask Task isn't for me!";
 				clog << endl;
@@ -369,7 +374,8 @@ namespace multidevice {
 
 			switch (frameType) {
 				case FT_CONNECTIONREQUEST:
-					if (frameSize != 5) {
+					//TODO: fix passive connection request - use 7 bytes as well (add port field)
+					if ((frameSize != 5)&&(frameSize != 7)) {
 						clog << "25BaseDeviceDomain::runControlTask Warning!";
 						clog << "received a connection request frame with";
 						clog << " wrong size: '" << frameSize << "'" << endl;
@@ -414,15 +420,15 @@ namespace multidevice {
 		if (task == NULL) {
 			return false;
 		}
-
+/*
 		if (myIP == sourceIp) {
-			/*clog << "BaseDeviceDomain::runDataTask receiving my own task";
-			clog << endl;*/
+			clog << "BaseDeviceDomain::runDataTask receiving my own task";
+			clog << endl;
 
 			delete[] task;
 			return false;
 		}
-
+*/
 		if (destClass != deviceClass) {
 			clog << "BaseDeviceDomain::runDataTask";
 			clog << " should never reach here (receiving wrong destination";

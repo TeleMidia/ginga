@@ -74,7 +74,7 @@ namespace multidevice {
 	unsigned int DeviceDomain::myIP       = 0;
 	bool DeviceDomain::taskIndicationFlag = false;
 
-	DeviceDomain::DeviceDomain() {
+	DeviceDomain::DeviceDomain(bool devSearch, int srvPort) {
 		deviceClass       = -1;
 		deviceWidth       = -1;
 		deviceHeight      = -1;
@@ -85,6 +85,9 @@ namespace multidevice {
 		deviceService     = NULL;
 		newAnswerPosted   = false;
 		connected         = false;
+		deviceSearch      = devSearch;
+		servicePort       = srvPort;
+
 
 		clearHeader();
 
@@ -125,7 +128,8 @@ namespace multidevice {
 	}
 
 	bool DeviceDomain::broadcastTaskRequest(char* data, int taskSize) {
-		broadcastService->dataRequest(data, taskSize);
+	//	if (deviceSearch)
+			broadcastService->dataRequest(data, taskSize);
 		return true;
 	}
 
@@ -195,7 +199,7 @@ namespace multidevice {
 	}
 
 	bool DeviceDomain::addDevice(
-			int reqDeviceClass, int width, int height) {
+			int reqDeviceClass, int width, int height, int srvPort) {
 
 		bool added = false;
 
@@ -205,8 +209,8 @@ namespace multidevice {
 
 			res->addDevice(
 					reqDeviceClass,
-					sourceIp,
-					(char*)getStrIP(sourceIp).c_str());
+					(sourceIp+srvPort),
+					(char*)getStrIP(sourceIp).c_str(), srvPort, (sourceIp==myIP));
 		}
 
 
@@ -249,6 +253,9 @@ namespace multidevice {
 			}
 
 		} else {
+			if (frameType == IDeviceDomain::FT_SELECTIONEVENT) {
+				clog << "DeviceDomain frameType == IDeviceDomain::FT_SELECTIONEVENT"<<endl;
+			}
 			task = mountFrame(myIP, destDevClass, frameType, payloadSize);
 
 			memcpy(task + HEADER_SIZE, payload, payloadSize);
@@ -297,7 +304,7 @@ namespace multidevice {
 			}
 		}
 
-		if (!taskIndicationFlag) {
+		if ((!taskIndicationFlag)) {
 			if (broadcastService->checkInputBuffer(mdFrame, &bytesRecv)) {
 				taskIndicationFlag = true;
 				if (runControlTask()) {
@@ -305,36 +312,13 @@ namespace multidevice {
 				}
 			}
 
-		} else {
+		} else if (deviceSearch) {
 			clog << "DeviceDomain::checkDomainTasks can't process input ";
 			clog << "buffer: task indication flag is true" << endl;
 		}
 
+		//if (deviceSearch)
 		broadcastService->checkOutputBuffer();
-
-		/*} else {
-			receivedElapsedTime = getCurrentTimeMillis() - receivedTimeStamp;
- 			if (receivedElapsedTime > IFS || receivedTimeStamp == -1) {
- 				if (getCurrentTimeMillis() - sentTimeStamp > IFS ||
- 						sentTimeStamp == -1) {
-
- 					if (broadcastService->checkOutputBuffer()) {
- 						sentTimeStamp = getCurrentTimeMillis();
- 					}
-
- 				} else {
- 	 				clog << "DeviceDomain::checkDomainTasks waiting IFS by ";
- 	 				clog << "sentElapsedTime '";
- 	 				clog << getCurrentTimeMillis() - sentTimeStamp;
- 	 				clog << "' when sentTimeStamp = '" << sentTimeStamp;
- 	 				clog << "'" << endl;
- 				}
-
- 			} else {
- 				clog << "DeviceDomain::checkDomainTasks waiting IFS by ";
- 				clog << "reveivedElapsedTime" << endl;
- 			}
-		}*/
 	}
 
 	void DeviceDomain::addDeviceListener(IRemoteDeviceListener* listener) {

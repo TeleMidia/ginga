@@ -64,7 +64,7 @@ namespace multidevice {
 		MulticastSocketService* passiveMulticast;
 
 	public:
-		PassiveDeviceDomain();
+		PassiveDeviceDomain(bool deviceSearch, int srvPort);
 		virtual ~PassiveDeviceDomain();
 
 	protected:

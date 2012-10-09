@@ -686,48 +686,33 @@ namespace mb {
 	}
 
 	string SDLWindow::getDumpFileUri(int quality, int dumpW, int dumpH) {
-		string uri, strCmd;
+		string uri;
+		string uriJpeg;
 
 		lockSurface();
 		if (winISur == NULL) {
 			uri = "";
 
 		} else {
-			uri = "/tmp/dump_0000";
-			remove((char*)((uri + ".ppm").c_str()));
+			uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
+
+			remove((char*)(uri.c_str()));
 			remove((char*)((uri + ".jpg").c_str()));
-			remove((char*)((uri + ".pgm").c_str()));
-			//winSur->Dump(winSur, "/tmp", "dump");
 
-			if (fileExists(uri + ".ppm")) {
-				strCmd = ("convert -quality " + itos(quality) + " " +
-						"-resize " + itos(dumpW) + "x" + itos(dumpH) + " " +
-						//"-colors 32 " +
-						"-depth 4 " +
-						"-interlace None " +
-						"-compress BZip " +
-						"-colorspace RGB " +
-						//"-mask " + uri + ".pgm" + " " +
-						uri + ".ppm " + uri + ".jpg" + " 2> /dev/null");
+			SDL_SaveBMP(winISur,uri.c_str());
 
-				if (::system(strCmd.c_str()) < 0) {
-					SystemCompat::uSleep(10000);
-					remove((char*)((uri + ".jpg").c_str()));
-					if (::system(strCmd.c_str()) < 0) {
-						clog << "SDLWindow::getDumpFileUri Warning!!! ";
-						clog << " Can't create JPEG file" << endl;
-						unlockSurface();
-						return uri + ".ppm";
-					}
+			uriJpeg = uri + ".jpg";
+
+			if (fileExists(uri)) {
+				if (bmpToJpeg((char*)uri.c_str(),(char*)uriJpeg.c_str(),quality)) {
+					unlockSurface();
+					return uriJpeg;
 				}
-
-				unlockSurface();
-				return uri + ".jpg";
 			}
 		}
 
 		unlockSurface();
-		return "";
+		return uri;
 	}
 
 	void SDLWindow::lock() {

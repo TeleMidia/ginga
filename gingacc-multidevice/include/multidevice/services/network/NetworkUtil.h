@@ -78,10 +78,10 @@ namespace multidevice {
 	static const int MCAST_TTL               = 31;
 	static const int HEADER_SIZE             = 11;
 	static const int MAX_FRAME_SIZE          = 400000;
-	static const int NUM_OF_COPIES           = 2;
+	static const int NUM_OF_COPIES           = 1;
 	static const double IFS                  = 1;
 
-	bool isValidRecvFrame(int recvFrom, char* frame);
+	bool isValidRecvFrame(int recvFrom, int myIP, char* frame);
 	bool isControlFrame(int frameType);
 	char getFrameId(char* frame);
 	int getFrameType(char* frame);

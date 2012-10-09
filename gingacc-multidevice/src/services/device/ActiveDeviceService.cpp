@@ -116,7 +116,6 @@ namespace multidevice {
 				nsp->mount();
 
 				if (nsp != NULL && nsp->isConsolidated()) {
-					//TODO: mount according to NCL sections
 					Thread::mutexLock(&lMutex);
 					i = listeners->begin();
 					while (i != listeners->end()) {

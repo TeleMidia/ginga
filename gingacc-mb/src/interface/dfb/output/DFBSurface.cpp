@@ -626,10 +626,10 @@ namespace mb {
 			uri = "";
 
 		} else {
-			uri = "/tmp/dump_0000";
+			uri = SystemCompat::getTemporaryDir() + "dump_0000";
 			remove((char*)((uri + ".ppm").c_str()));
 			remove((char*)((uri + ".pgm").c_str()));
-			sur->Dump(sur, "/tmp", "dump");
+			sur->Dump(sur, SystemCompat::getTemporaryDir().c_str(), "dump");
 		}
 
 		return uri + ".ppm";
