@@ -690,7 +690,7 @@ namespace mb {
 		string uriJpeg;
 
 		lockSurface();
-		if (winISur == NULL) {
+		if (curSur == NULL) {
 			uri = "";
 
 		} else {
@@ -699,7 +699,7 @@ namespace mb {
 			remove((char*)(uri.c_str()));
 			remove((char*)((uri + ".jpg").c_str()));
 
-			SDL_SaveBMP(winISur,uri.c_str());
+			SDL_SaveBMP(curSur,uri.c_str());
 
 			uriJpeg = uri + ".jpg";
 
