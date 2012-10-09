@@ -607,7 +607,7 @@ namespace mb {
 
 		bool audioSpec = false;
 
-		if (sample_rate > 0 && channels > 0) {
+		if (sample_rate > 0 && (unsigned int)channels > 0) {
 			spec->format   = AUDIO_S16SYS;
 			spec->userdata = NULL;
 			spec->callback = SDL2ffmpeg::sdl_audio_callback;
@@ -2621,11 +2621,13 @@ the_end:
 			wanted_channel_layout &= ~AV_CH_LAYOUT_STEREO_DOWNMIX;
 		}
 
-		wantedSpec.channels = av_get_channel_layout_nb_channels(
+		wantedSpec.channels = (unsigned int)av_get_channel_layout_nb_channels(
 				wanted_channel_layout);
 
 		wantedSpec.freq = wanted_sample_rate;
-		if (wantedSpec.freq <= 0 || wantedSpec.channels <= 0) {
+		if (wantedSpec.freq <= 0 || (unsigned int)wantedSpec.channels == 0 ||
+				(unsigned int)wantedSpec.channels > 7) {
+
 			fprintf(stderr, "Invalid sample rate or channel count!\n");
 			return -1;
 		}
@@ -2638,15 +2640,17 @@ the_end:
 
 		if (spec.size == 0) {
 			while (SDL_OpenAudio(&wantedSpec, &spec) < 0) {
-				wantedSpec.channels = next_nb_channels[FFMIN(
+				wantedSpec.channels = (unsigned int)next_nb_channels[FFMIN(
 						7, wantedSpec.channels)];
 
-				if (!wantedSpec.channels) {
+				if ((unsigned int)wantedSpec.channels == 0 ||
+						(unsigned int)wantedSpec.channels > 7) {
+
 					return -1;
 				}
 
 				wanted_channel_layout = av_get_default_channel_layout(
-						wantedSpec.channels);
+						(int)wantedSpec.channels);
 			}
 
 			clog << "SDL2ffmpeg::audio_open '" << vs->filename << "'" << endl;
@@ -2671,13 +2675,14 @@ the_end:
 			clog << "'" << endl;
 			clog << "Obtained size = '" << spec.size;
 			clog << "'" << endl;
-			clog << "Obtained channels = '" << (int)spec.channels;
+			clog << "Obtained channels = '" << (unsigned int)spec.channels;
 			clog << "'" << endl;
 			clog << "Obtained frequency = '" << spec.freq;
 			clog << "'" << endl;
 
 			if (spec.size == 0) {
-				spec.size = wantedSpec.channels * wantedSpec.samples * 2;
+				spec.size = (unsigned int)wantedSpec.channels *
+						(unsigned int)wantedSpec.samples * 2;
 
 			} else {
 				wantedSpec.size = spec.size;
@@ -2698,7 +2703,7 @@ the_end:
 			clog << "'" << endl;
 			clog << "Desired size = '" << wantedSpec.size;
 			clog << "'" << endl;
-			clog << "Desired channels = '" << (int)wantedSpec.channels;
+			clog << "Desired channels = '" << (unsigned int)wantedSpec.channels;
 			clog << "'" << endl;
 			clog << "Desired frequency = '" << wantedSpec.freq;
 			clog << "'" << endl;
@@ -2710,7 +2715,9 @@ the_end:
 		}
 
 		if (spec.channels != wantedSpec.channels) {
-			wanted_channel_layout = av_get_default_channel_layout(spec.channels);
+			wanted_channel_layout = av_get_default_channel_layout(
+					(int)spec.channels);
+
 			if (!wanted_channel_layout) {
 				return -1;
 			}
@@ -2719,7 +2726,7 @@ the_end:
 		audio_hw_params->fmt            = AV_SAMPLE_FMT_S16;
 		audio_hw_params->freq           = spec.freq;
 		audio_hw_params->channel_layout = wanted_channel_layout;
-		audio_hw_params->channels       = spec.channels;
+		audio_hw_params->channels       = (int)spec.channels;
 
 		return spec.size;
 	}
