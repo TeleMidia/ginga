@@ -797,6 +797,7 @@ namespace mb {
 
 		IContinuousMediaProvider* provider;
 		string strSym;
+		bool providerHasVisual;
 
 		lockSDL();
 		if (*hasVisual) {
@@ -818,11 +819,17 @@ namespace mb {
 		}
 #endif
 
-		if (*hasVisual != provider->getHasVisual()) {
-			*hasVisual = provider->getHasVisual();
+		providerHasVisual = provider->getHasVisual();
+		if (*hasVisual != providerHasVisual) {
+			clog << "SDLDeviceScreen::createContinuousMediaProvider ";
+			clog << "mime has visual = '" << *hasVisual << "' and ";
+			clog << "content has visual = '" << providerHasVisual << "'! ";
+			clog << "Trying to recreate provider with new data";
+			clog << endl;
+
+			*hasVisual = providerHasVisual;
 			delete provider;
 
-			SystemCompat::uSleep(300000);
 			provider = createContinuousMediaProvider(mrl, hasVisual, isRemote);
 		}
 
