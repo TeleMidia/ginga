@@ -257,7 +257,8 @@ namespace player {
 				myScreen, mrl.c_str(), &hasVisual);
 
 #else
-		currentPlayer = new AVPlayer(myScreen, mrl.c_str(), &hasVisual);
+		currentPlayer = new AVPlayer(myScreen, mrl.c_str(), hasVisual);
+		hasVisual = ((AVPlayer*)currentPlayer)->getHasVisual();
 #endif
 
 		if (fullScreenBounds != "") {
