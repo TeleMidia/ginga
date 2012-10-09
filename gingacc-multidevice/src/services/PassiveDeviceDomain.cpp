@@ -57,7 +57,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	PassiveDeviceDomain::PassiveDeviceDomain() : DeviceDomain() {
+	PassiveDeviceDomain::PassiveDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
 		deviceClass      = CT_PASSIVE;
 		deviceService    = new PassiveDeviceService();
 
@@ -79,7 +79,7 @@ namespace multidevice {
 	}
 
 	bool PassiveDeviceDomain::passiveTaskRequest(char* data, int taskSize) {
-		//clog << "PassiveDeviceDomain::passiveTaskRequest" << endl;
+		clog << "PassiveDeviceDomain::passiveTaskRequest" << endl;
 		passiveMulticast->dataRequest(data, taskSize);
 		return true;
 	}
@@ -90,6 +90,9 @@ namespace multidevice {
 		int taskSize;
 
 		if (connected)
+			return;
+
+		if (!deviceSearch)
 			return;
 
 		clog << "PassiveDeviceDomain::postConnectionRequestTask";
@@ -116,14 +119,16 @@ namespace multidevice {
 
 		taskIP = getUIntFromStream(task);
 		if (taskIP != myIP) {
+			clog << "PassiveDeviceDomain::receiveAnswerTask (taskIP != myIP) "<<endl;
 			return; //this is'nt a warning
 		}
-
-		deviceService->connectedToBaseDevice(sourceIp);
 
 		if (connected) {
 			clog << "PassiveDeviceDomain::receiveAnswerTask Warning! ";
 			clog << "received an answer task in connected state" << endl;
+		}
+		else {
+			deviceService->connectedToBaseDevice(sourceIp);
 		}
 
 		//TODO: check if central domain IP + port received in task is correct
@@ -133,8 +138,8 @@ namespace multidevice {
 	}
 
 	bool PassiveDeviceDomain::receiveMediaContentTask(char* task) {
-		/*clog << "PassiveDeviceDomain::receiveMediaContentTask ";
-		clog << "destcass = '" << destClass << "'" << endl;*/
+		clog << "PassiveDeviceDomain::receiveMediaContentTask ";
+		clog << "destcass = '" << destClass << "'" << endl;
 		return deviceService->receiveMediaContent(
 				sourceIp, task, this->frameSize);
 	}
@@ -155,7 +160,7 @@ namespace multidevice {
 				clog << "received a NULL task" << endl;
 				return false;
 			}
-
+			/*
 			if (myIP == sourceIp) {
 				clog << "PassiveDeviceDomain::runControlTask got my own task ";
 				clog << "(size = '" << frameSize << "')" << endl;
@@ -164,6 +169,7 @@ namespace multidevice {
 				taskIndicationFlag = false;
 				return false;
 			}
+			*/
 
 			if (destClass != deviceClass) {
 				clog << "PassiveDeviceDomain::runControlTask Task isn't for me!";
@@ -227,7 +233,7 @@ namespace multidevice {
 		if (task == NULL) {
 			return false;
 		}
-
+		/*
 		if (myIP == sourceIp) {
 			clog << "PassiveDeviceDomain::runDataTask receiving my own task";
 			clog << endl;
@@ -235,13 +241,15 @@ namespace multidevice {
 			delete[] task;
 			return false;
 		}
+		*/
 
 		if (destClass != deviceClass) {
+			/*
 			clog << "PassiveDeviceDomain::runDataTask";
-			clog << " should never reaches here (receiving wrong destination";
+			clog << " should never reach here (receiving wrong destination";
 			clog << " class '" << destClass << "')";
 			clog << endl;
-
+			*/
 			delete[] task;
 			taskIndicationFlag = false;
 			return false;

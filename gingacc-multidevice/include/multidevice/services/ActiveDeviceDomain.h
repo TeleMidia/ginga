@@ -60,7 +60,7 @@ namespace core {
 namespace multidevice {
   class ActiveDeviceDomain : public DeviceDomain {
 	public:
-		ActiveDeviceDomain();
+		ActiveDeviceDomain(bool deviceSearch, int srvPort);
 		virtual ~ActiveDeviceDomain();
 
 	protected:

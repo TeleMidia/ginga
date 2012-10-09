@@ -593,6 +593,7 @@ void UDPSocket::setNonBlocking(bool nonblock) {
 #ifdef _WIN32
 	u_long iMode=nonblock?1:0;
 	ioctlsocket(sockDesc,FIONBIO,&iMode);
+	this->BLOCKING_MODE = (nonblock?1:0);
 #else
 	this->BLOCKING_MODE = (nonblock?MSG_DONTWAIT:0);
 #endif

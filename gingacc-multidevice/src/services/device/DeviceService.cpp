@@ -128,6 +128,7 @@ namespace multidevice {
 		IRemoteDevice* device = getDevice(deviceAddress);
 
 		if (device == NULL) {
+			clog << "DeviceService::addDevice() new RemoteDevice() " << endl;
 			device = new RemoteDevice(deviceAddress, newDevClass);
 			device->setDeviceResolution(width, height);
 

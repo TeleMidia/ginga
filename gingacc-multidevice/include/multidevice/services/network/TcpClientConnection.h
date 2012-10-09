@@ -84,8 +84,11 @@ namespace multidevice {
 			void run();
 			bool running;
 			unsigned int deviceId;
+			unsigned int orderId;
+
 		public:
 			TCPClientConnection(unsigned int devid,
+						unsigned int index,
 					    char* hostname,
 					    char* port_str,
 					    IRemoteDeviceListener* srv);

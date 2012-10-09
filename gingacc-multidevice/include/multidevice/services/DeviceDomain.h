@@ -90,9 +90,11 @@ namespace multidevice {
 		unsigned int frameSize;
 		bool connected;
 		bool newAnswerPosted;
+		bool deviceSearch;
+		int servicePort;
 
 	public:
-		DeviceDomain();
+		DeviceDomain(bool devSearch, int srvPort);
 		virtual ~DeviceDomain();
 
 		bool isConnected();
@@ -106,7 +108,7 @@ namespace multidevice {
 		char* taskReceive();
 		void parseTaskHeader();
 		void printTaskHeader();
-		bool addDevice(int reqDeviceClass, int width, int height);
+		bool addDevice(int reqDeviceClass, int width, int height, int srvPort);
 
 	public:
 		void postConnectionRequestTask();

@@ -91,7 +91,7 @@ typedef struct {
 	  double passiveTimestamp;
 
 	public:
-		BaseDeviceDomain();
+		BaseDeviceDomain(bool deviceSearch, int srvPort);
 		virtual ~BaseDeviceDomain();
 
 	protected:

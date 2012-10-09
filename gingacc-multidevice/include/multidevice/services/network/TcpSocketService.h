@@ -67,13 +67,14 @@ namespace multidevice {
 		private:
 			map<unsigned int, TCPClientConnection*>* connections;
 			unsigned int port;
+			int connection_counter;
 			pthread_mutex_t connMutex;
 			IRemoteDeviceListener* res;
 
 		public:
 			TcpSocketService(unsigned int p, IRemoteDeviceListener* r);
 			virtual ~TcpSocketService();
-			void addConnection(unsigned int deviceId, char* addr);
+			void addConnection(unsigned int deviceId, char* addr, int srvPort, bool isLocalConnection);
 			void removeConnection(unsigned int deviceId);
 			void postTcpCommand(
 					char* command,

@@ -887,20 +887,32 @@ namespace mb {
 	}
 
 	string DFBWindow::getDumpFileUri(int quality, int dumpW, int dumpH) {
-		string uri, strCmd;
+		string uri;
+		string uriJpeg;
 
 		lock();
 		if (winSur == NULL) {
 			uri = "";
 
 		} else {
-			uri = "/tmp/dump_0000";
+			uri = SystemCompat::getTemporaryDir() + "dump_0000";
+
 			remove((char*)((uri + ".ppm").c_str()));
 			remove((char*)((uri + ".jpg").c_str()));
 			remove((char*)((uri + ".pgm").c_str()));
-			winSur->Dump(winSur, "/tmp", "dump");
 
+			winSur->Dump(winSur, SystemCompat::getTemporaryDir().c_str(), "dump");
+
+			uriJpeg = uri + ".jpg";
 			uri = uri + ".ppm";
+
+			if (fileExists(uri)) {
+				if (ppmToJpeg((char*)uri.c_str(),(char*)uriJpeg.c_str(),quality)) {
+					unlock();
+					return uriJpeg;
+				}
+			}
+/*
 			if (access(uri.c_str(), (int)F_OK) == 0) {
 				strCmd = ("convert -quality " + itos(quality) + " " +
 						"-resize " + itos(dumpW) + "x" + itos(dumpH) + " " +
@@ -926,10 +938,11 @@ namespace mb {
 				unlock();
 				return uri + ".jpg";
 			}
+*/
 		}
 
 		unlock();
-		return "";
+		return uri;
 	}
 
 	void DFBWindow::lock() {

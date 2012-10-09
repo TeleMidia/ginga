@@ -92,7 +92,9 @@ namespace multidevice {
 			void addDevice(
 					unsigned int device_class,
 					unsigned int device_id,
-					char* addr);
+					char* addr,
+					int srvPort,
+					bool isLocalConnection);
 
 			void addDocument(unsigned int device_class, char* name, char* body);
 			void startDocument(unsigned int device_class, char* name);

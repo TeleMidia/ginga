@@ -159,6 +159,7 @@ namespace compat {
 			static string getFUriD();
 
 			static string getPath(string filename);
+			static string convertRelativePath(string relPath);
 
 			static string getGingaBinPath();
 			static string getUserCurrentPath();

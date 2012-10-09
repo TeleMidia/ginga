@@ -743,23 +743,32 @@ namespace mb {
 	}
 
 	string SDLSurface::getDumpFileUri() {
-		string uri = "";
-
-		/*if (sur == NULL) {
-			clog << "SDLSurface::getDumpFileUri Warning! ";
+		string uri;
+		Thread::mutexLock(&sMutex);
+		if (sur == NULL) {
+			clog << "DFBSurface::getDumpFileUri Warning! ";
 			clog << "Can't dump surface bitmap: ";
 			clog << "internal surface is NULL" << endl;
 
 			uri = "";
 
 		} else {
-			uri = "/tmp/dump_0000";
+			/*
+			uri = SystemCompat::getTemporaryDir() + "dump_0000";
 			remove((char*)((uri + ".ppm").c_str()));
 			remove((char*)((uri + ".pgm").c_str()));
-			sur->Dump(sur, "/tmp", "dump");
-		}*/
+			sur->Dump(sur, SystemCompat::getTemporaryDir().c_str(), "dump");
+			*/
+			uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
 
-		return uri + ".ppm";
+			remove((char*)(uri.c_str()));
+
+			//winSur->Dump(winSur, SystemCompat::getTemporaryDir().c_str(), "dump");
+
+			SDL_SaveBMP(sur,uri.c_str());
+		}
+		Thread::mutexUnlock(&sMutex);
+		return uri;
 	}
 
 	void SDLSurface::setMatrix(void* matrix) {

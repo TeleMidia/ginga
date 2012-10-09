@@ -182,12 +182,12 @@ namespace multidevice {
 			/*clog << "RemoteDeviceManager::run postConnectionRequestTask";
 			clog << endl;*/
 
-			//TODO: correct this code urgently
+			//TODO: improve this loop
 			if (domainService != NULL) {
-				domainService->checkDomainTasks();
 				if (domainService->getDeviceClass() != 0) {
 					domainService->postConnectionRequestTask();
 				}
+				domainService->checkDomainTasks();
 
 			} else if (notifyWarning) {
 				notifyWarning = false;
@@ -207,7 +207,8 @@ namespace multidevice {
 					domainService->postConnectionRequestTask();
 				}
 			}*/
-			SystemCompat::uSleep(25000);
+			//SystemCompat::uSleep(25000);
+			SystemCompat::uSleep(80000);
 		}
 		unlock();
 
@@ -220,19 +221,19 @@ namespace multidevice {
 }
 }
 
-extern "C" IRemoteDeviceManager* createRemoteDeviceManager(int devClass) {
+extern "C" IRemoteDeviceManager* createRemoteDeviceManager(int devClass, bool deviceSearch, int srvPort) {
 	IDeviceDomain* domain = NULL;
 
 	RemoteDeviceManager* rdm = RemoteDeviceManager::getInstance();
 
 	if (devClass == IDeviceDomain::CT_BASE) {
-		domain = new BaseDeviceDomain();
+		domain = new BaseDeviceDomain(deviceSearch, srvPort);
 
 	} else if (devClass == IDeviceDomain::CT_PASSIVE) {
-		domain = new PassiveDeviceDomain();
+		domain = new PassiveDeviceDomain(deviceSearch, srvPort);
 
 	} else if (devClass == IDeviceDomain::CT_ACTIVE) {
-		domain = new ActiveDeviceDomain();
+		domain = new ActiveDeviceDomain(deviceSearch, srvPort);
 	}
 
 	rdm->setDeviceDomain(domain);

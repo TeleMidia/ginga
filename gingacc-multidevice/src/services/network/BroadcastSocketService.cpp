@@ -70,6 +70,10 @@ http://www.telemidia.puc-rio.br
 typedef int socklen_t;
 #endif
 
+#include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #ifdef __DARWIN_UNIX03
 #include <ifaddrs.h>
 #define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
@@ -88,20 +92,22 @@ namespace multidevice {
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
 	static socklen_t          broadcast_addr_len;
+#else
+	static UDPSocket* udpSocket;
 #endif
 
 	BroadcastSocketService::BroadcastSocketService() {
-		interfaceIP     = 0;
+		interfaceIP  = 0;
 		broadcastIPAddr = "0.0.0.0";
-		outputBuffer    = new vector<struct frame*>;
-		udpSocket       = NULL;
+		outputBuffer = new vector<struct frame*>;
 
-		Thread::mutexInit(&mutexBuffer, NULL);
+		pthread_mutex_init(&mutexBuffer, NULL);
 
 		if (buildDomainAddress()) {
 #ifdef __DARWIN_UNIX03
 			interfaceIP = discoverBroadcastAddress();
 #else
+
 			try {
 				broadcastIPAddr = udpSocket->getBroadcastAddress();
 				interfaceIP = udpSocket->getLocalIPAddress();
@@ -139,7 +145,6 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::buildDomainAddress() {
-#ifndef __DARWIN_UNIX03
 		try {
 			udpSocket = new UDPSocket(port);
 			udpSocket->setNonBlocking(true);
@@ -150,7 +155,8 @@ namespace multidevice {
 			clog << "BroadcastSocketService::buildClientAddress Warning!";
 			return false;
 		}
-#else
+
+#ifdef __DARWIN_UNIX03
 		int ret;
 		int trueVar = 1;
 
@@ -160,7 +166,11 @@ namespace multidevice {
 			clog << " can't create socket (sd == -1)" << endl;
 			return false;
 		}
+
+//#ifndef __DARWIN_UNIX03
 		setsockopt(sd, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
+//#endif
+
 		domain_addr.sin_family       = AF_INET;
 		domain_addr.sin_port         = htons(port);
 		domain_addr.sin_addr.s_addr  = INADDR_ANY;
@@ -175,10 +185,14 @@ namespace multidevice {
 
 #endif
 		return true;
+
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
+//kept for compatibility with the iOS passive device client
+//TODO: organize/clean ios defines
 #ifdef __DARWIN_UNIX03
+
 		struct ifconf interfaces;
 		struct ifreq* netInterface;
 		struct sockaddr_in* myAddr;
@@ -283,13 +297,13 @@ namespace multidevice {
 			char* data, int taskSize, bool repeat) {
 
 		struct frame* f;
-		Thread::mutexLock(&mutexBuffer);
+		pthread_mutex_lock(&mutexBuffer);
 		f = new struct frame;
 		f->data      = data;
 		f->size      = taskSize;
 		f->repeat    = repeat;
 		outputBuffer->push_back(f);
-		Thread::mutexUnlock(&mutexBuffer);
+		pthread_mutex_unlock(&mutexBuffer);
 	}
 
 	bool BroadcastSocketService::sendData(struct frame* f) {
@@ -330,13 +344,10 @@ namespace multidevice {
 				return false;
 			}
 
-			/*if (!f->repeat) {
-				return true;
-			}*/
 		}
-
 #endif
-		return true;
+	return true;
+
 	}
 
 	bool BroadcastSocketService::checkOutputBuffer() {
@@ -344,7 +355,7 @@ namespace multidevice {
 		bool sent = false;
 		struct frame* f = NULL;
 
-		Thread::mutexLock(&mutexBuffer);
+		pthread_mutex_lock(&mutexBuffer);
 		i = outputBuffer->begin();
 		if (i != outputBuffer->end()) {
 			f = *i;
@@ -352,7 +363,6 @@ namespace multidevice {
 			if (sent) {
 				outputBuffer->erase(i);
 				delete[] f->data;
-				f->data = NULL;
 				delete f;
 				f = NULL;
 			}
@@ -361,25 +371,20 @@ namespace multidevice {
 			/*clog << "BroadcastSocketService::checkOutputBuffer ";
 			clog << "empty buffer" << endl;*/
 		}
-		Thread::mutexUnlock(&mutexBuffer);
+		pthread_mutex_unlock(&mutexBuffer);
 
 		return sent;
 	}
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
 #ifndef __DARWIN_UNIX03
-		int res = 0;
-		int recvFrom = 0;
-		int sz = 0;
+		int res, recvFrom;
+		int sz;
 		char recvString[MAX_FRAME_SIZE + 1];
 	    string sourceAddress = "";
 	    unsigned short sourcePort = 0;
-	    //TODO: checkInput loop fix
-
-	    if (udpSocket == NULL) {
-	    	//socket already in use
-	    	return false;
-	    }
+	    res = 0;
+		sz = 0;
 
 	    res = udpSocket->select_t(0,0);
 
@@ -393,19 +398,14 @@ namespace multidevice {
 			case 1: {
 					clog << "BroadcastSocketService::checkInputBuffer ";
 					clog << "receiving data ..." << endl;
-					memset(recvString, 0, MAX_FRAME_SIZE);
+
 					memset(data, 0, MAX_FRAME_SIZE);
+					memset(recvString, 0, MAX_FRAME_SIZE);
 					try {
 						sz = udpSocket->recvFrom(recvString, MAX_FRAME_SIZE, sourceAddress, sourcePort);
-
-						if (sz > 0) {
 						recvString[sz] = '\0';
 						clog << "BroadcastSocketService::udpSocket->recvFrom " << sourceAddress;
 						clog << " " << sz << " bytes" << endl;
-						}
-						else {
-							return false;
-						}
 						//if (sourceAddress == interfaceIP)
 
 					}
@@ -415,7 +415,6 @@ namespace multidevice {
 						memset(recvString, 0, MAX_FRAME_SIZE);
 						return false;
 					}
-
 					if (sz <= HEADER_SIZE) {
 						clog << "BroadcastSocketService::checkInputBuffer ";
 						clog << "Warning! Received invalid frame: ";
@@ -430,8 +429,6 @@ namespace multidevice {
 					*size = sz;
 					memcpy(data, recvString, (int)(*size));
 
-					memset(recvString, 0, MAX_FRAME_SIZE);
-
 					recvFrom = getUIntFromStream(data + 1);
 
 					if (!isValidRecvFrame(recvFrom, data)) {
@@ -441,8 +438,13 @@ namespace multidevice {
 
 						return false;
 					}
+					else {
+						clog << "BroadcastSocketService::checkInputBuffer if (isValidRecvFrame())" << endl;
+						memset(recvString, 0, MAX_FRAME_SIZE);
+					}
 					break;
 				}
+
 
 			default:
 				memset(data, 0, MAX_FRAME_SIZE);
@@ -523,7 +525,6 @@ namespace multidevice {
 
 #endif
 		return true;
-
 	}
 }
 }
