@@ -821,13 +821,13 @@ namespace mb {
 
 		providerHasVisual = provider->getHasVisual();
 		if (*hasVisual != providerHasVisual) {
-			*hasVisual = providerHasVisual;
-
 			clog << "SDLDeviceScreen::createContinuousMediaProvider ";
 			clog << "mime has visual = '" << *hasVisual << "' and ";
 			clog << "content has visual = '" << providerHasVisual << "'! ";
 			clog << "Trying to recreate provider with new data";
 			clog << endl;
+
+			*hasVisual = providerHasVisual;
 			delete provider;
 
 			provider = createContinuousMediaProvider(mrl, hasVisual, isRemote);
