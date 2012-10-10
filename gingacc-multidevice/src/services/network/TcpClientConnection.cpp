@@ -105,11 +105,14 @@ namespace multidevice {
 		if (tcpSocket == NULL) {
 			return false;
 		}
-		asprintf(&com, "%d %s", counter, str);
+		asprintf(&com, "%d", counter);
+		string s_com = string(com) + " " + string(str);
+
 		counter++;
 
 		try {
-			tcpSocket->send(com, strlen(com));
+			//tcpSocket->send(com, strlen(com));
+			tcpSocket->send((char*)s_com.c_str(),(int)s_com.size());
 			return true;
 		}
 		catch (SocketException &e) {
