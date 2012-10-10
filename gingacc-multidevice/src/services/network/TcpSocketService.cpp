@@ -166,7 +166,7 @@ void TcpSocketService::postTcpCommand(
 
 	map<unsigned int, TCPClientConnection*>::iterator i;
 	char* com;
-
+/*
 	asprintf(
 			&com,
 			"%d %s %s %d\n%s\n",
@@ -175,12 +175,24 @@ void TcpSocketService::postTcpCommand(
 			payloadDesc,
 			(int)strlen(payload),
 			payload);
+*/
+	asprintf(
+				&com,
+				"%d %s %s %d\n",
+				npt,
+				command,
+				payloadDesc,
+				(int)strlen(payload));
+
+	string s_com;
+	s_com = string(com) + "\n" + string(payload);
 
 	Thread::mutexLock(&connMutex);
 	i = connections->begin();
 
 	while (i != connections->end()) {
-		i->second->post(com);
+		i->second->post((char *)s_com.c_str());
+		//i->second->post(com);
 		++i;
 	}
 

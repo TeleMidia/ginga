@@ -185,8 +185,12 @@ namespace multidevice {
 
 		//char *zip_dump = (char*)"/tmp/basetmp.zip";
 
+		/* string dir_app = SystemCompat::getUserCurrentPath() +
+				SystemCompat::getPath(string(name)); */
+
 		string dir_app = SystemCompat::getUserCurrentPath() +
-				SystemCompat::getPath(string(name));
+				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
+
 
 		clog << "RemoteEventService::dir app="<<dir_app<<endl;
 		//clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
