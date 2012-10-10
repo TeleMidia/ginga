@@ -689,6 +689,7 @@ namespace mb {
 		string uri;
 		string uriJpeg;
 		SDL_Surface* dumpUSur;
+		bool freeSurface = false;
 
 		lockSurface();
 		if (curSur != NULL) {
@@ -698,10 +699,14 @@ namespace mb {
 			dumpUSur = SDLDeviceScreen::createUnderlyingSurfaceFromTexture(
 					texture);
 
+			freeSurface = true;
+
 		} else {
+			unlockSurface();
 			return "";
 		}
 
+		SDLDeviceScreen::lockSDL();
 		uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
 
 		remove((char*)(uri.c_str()));
@@ -713,14 +718,17 @@ namespace mb {
 
 		if (fileExists(uri)) {
 			if (bmpToJpeg(
-					(char*)uri.c_str(),
-					(char*)uriJpeg.c_str(),quality)) {
+					(char*)uri.c_str(), (char*)uriJpeg.c_str(), quality)) {
 
-				unlockSurface();
-				return uriJpeg;
+				uri = uriJpeg;
 			}
 		}
 
+		if (freeSurface) {
+			SDLDeviceScreen::createReleaseContainer(dumpUSur, NULL, NULL);
+		}
+
+		SDLDeviceScreen::unlockSDL();
 		unlockSurface();
 		return uri;
 	}

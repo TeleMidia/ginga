@@ -299,7 +299,7 @@ typedef struct {
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
 
-			static void blitFromWindow(IWindow* iWin, SDL_Surface* dest);
+			static bool blitFromWindow(IWindow* iWin, SDL_Surface* dest);
 
 		public:
 

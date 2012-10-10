@@ -474,7 +474,16 @@ namespace mb {
 			while (j != srcIds->end()) {
 				i = windowRefs.find(*j);
 				if (i != windowRefs.end()) {
-					blitFromWindow(i->second, destSur);
+					if (blitFromWindow(i->second, destSur)) {
+						clog << "SDLDeviceScreen::mergeIds merged '";
+						clog << (unsigned long)(*j) << "' on destination '";
+						clog << (unsigned long)destId << "'" << endl;
+
+					} else {
+						clog << "SDLDeviceScreen::mergeIds can't merge '";
+						clog << (unsigned long)(*j) << "' on destination '";
+						clog << (unsigned long)destId << "'" << endl;
+					}
 				}
 				++j;
 			}
@@ -1871,22 +1880,24 @@ namespace mb {
 		cmp->setProviderContent((void*)texture);
 	}
 
-	void SDLDeviceScreen::blitFromWindow(IWindow* iWin, SDL_Surface* dest) {
+	bool SDLDeviceScreen::blitFromWindow(IWindow* iWin, SDL_Surface* dest) {
 		SDL_Surface* tmpSur;
 		SDL_Texture* tmpTex;
 		SDL_Rect rect;
 
+		bool blitted = false;
 		bool freeSurface = false;
 
 		lockSDL();
 		iWin->lock();
-		tmpTex = ((SDLWindow*)iWin)->getTexture(NULL);
-		if (tmpTex != NULL) {
-			tmpSur = createUnderlyingSurfaceFromTexture(tmpTex);
-			freeSurface = true;
+		tmpSur = (SDL_Surface*)(iWin->getContent());
 
-		} else {
-			tmpSur = (SDL_Surface*)(iWin->getContent());
+		if (tmpSur == NULL) {
+			tmpTex = ((SDLWindow*)iWin)->getTexture(NULL);
+			if (hasTexture(tmpTex)) {
+				tmpSur = createUnderlyingSurfaceFromTexture(tmpTex);
+				freeSurface = true;
+			}
 		}
 
 		if (tmpSur != NULL) {
@@ -1896,9 +1907,16 @@ namespace mb {
 			rect.h = iWin->getH();
 
 			if (SDL_UpperBlitScaled(tmpSur, NULL, dest, &rect) < 0) {
-				clog << "SDLDeviceScreen::blitFromWIndow SDL error: '";
+				clog << "SDLDeviceScreen::blitFromWindow SDL error: '";
 				clog << SDL_GetError() << "'" << endl;
+
+			} else {
+				blitted = true;
 			}
+
+		} else {
+			clog << "SDLDeviceScreen::blitFromWindow can't blit from '";
+			clog << (unsigned long)iWin->getId() << "' null texture" << endl;
 		}
 
 		if (freeSurface) {
@@ -1908,6 +1926,8 @@ namespace mb {
 
 		iWin->unlock();
 		unlockSDL();
+
+		return blitted;
 	}
 
 
@@ -2673,21 +2693,18 @@ namespace mb {
 		int tpitch[3];
 		Uint32 rmask, gmask, bmask, amask, format;
 		int textureAccess, w, h;
-		bool locked;
 
 		lockSDL();
 
-		//trying to lock texture
-		locked = SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]) == 0;
-
 		SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
-		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
+		if (textureAccess & SDL_TEXTUREACCESS_STREAMING) {
+			//trying to lock texture
+			SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
 
-		uSur = SDL_CreateRGBSurfaceFrom(
-				pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
+			getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
 
-		if (locked) {
-			SDL_UnlockTexture(texture);
+			uSur = SDL_CreateRGBSurfaceFrom(
+					pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
 		}
 
 		unlockSDL();
@@ -2745,31 +2762,17 @@ namespace mb {
 
 		switch (depth) {
 			case 32:
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-				*rmask = 0xff000000;
-				*gmask = 0x00ff0000;
-				*bmask = 0x0000ff00;
-				*amask = 0x000000ff;
-#else
 				*rmask = 0x000000ff;
 				*gmask = 0x0000ff00;
 				*bmask = 0x00ff0000;
 				*amask = 0xff000000;
-#endif
 				break;
 
 			case 24:
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-				*rmask = 0x00ff0000;
-				*gmask = 0x0000ff00;
-				*bmask = 0x000000ff;
-				*amask = 0x00000000;
-#else
 				*rmask = 0x000000ff;
 				*gmask = 0x0000ff00;
 				*bmask = 0x00ff0000;
 				*amask = 0x00000000;
-#endif
 				break;
 		}
 	}
