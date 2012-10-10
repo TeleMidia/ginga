@@ -691,32 +691,33 @@ namespace mb {
 		SDL_Surface* dumpUSur;
 
 		lockSurface();
-		if (texture != NULL) {
+		if (curSur != NULL) {
+			dumpUSur = curSur;
+
+		} else if (texture != NULL) {
 			dumpUSur = SDLDeviceScreen::createUnderlyingSurfaceFromTexture(
 					texture);
 
-			if (dumpUSur == NULL) {
-				uri = "";
+		} else {
+			return "";
+		}
 
-			} else {
-				uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
+		uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
 
-				remove((char*)(uri.c_str()));
-				remove((char*)((uri + ".jpg").c_str()));
+		remove((char*)(uri.c_str()));
+		remove((char*)((uri + ".jpg").c_str()));
 
-				SDL_SaveBMP(dumpUSur, uri.c_str());
+		SDL_SaveBMP(dumpUSur, uri.c_str());
 
-				uriJpeg = uri + ".jpg";
+		uriJpeg = uri + ".jpg";
 
-				if (fileExists(uri)) {
-					if (bmpToJpeg(
-							(char*)uri.c_str(),
-							(char*)uriJpeg.c_str(),quality)) {
+		if (fileExists(uri)) {
+			if (bmpToJpeg(
+					(char*)uri.c_str(),
+					(char*)uriJpeg.c_str(),quality)) {
 
-						unlockSurface();
-						return uriJpeg;
-					}
-				}
+				unlockSurface();
+				return uriJpeg;
 			}
 		}
 
