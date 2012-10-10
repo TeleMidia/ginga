@@ -462,12 +462,13 @@ namespace mb {
 		SDL_Surface* destSur;
 
 		lockSDL();
-		destSur = createUnderlyingSurface(wRes, hRes);
 
 		Thread::mutexLock(&winMutex);
 		i = windowRefs.find(destId);
 		if (i != windowRefs.end()) {
 			destWin = (SDLWindow*)(i->second);
+
+			destSur = createUnderlyingSurface(wRes, hRes);
 
 			j = srcIds->begin();
 			while (j != srcIds->end()) {
