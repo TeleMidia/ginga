@@ -707,7 +707,8 @@ namespace mb {
 		}
 
 		SDLDeviceScreen::lockSDL();
-		uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
+		uri = SystemCompat::getTemporaryDir() +
+				"dump_" + itos((unsigned long)windowId) + ".bmp";
 
 		remove((char*)(uri.c_str()));
 		remove((char*)((uri + ".jpg").c_str()));

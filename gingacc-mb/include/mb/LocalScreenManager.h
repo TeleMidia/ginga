@@ -179,6 +179,9 @@ namespace mb {
 			void unlockSysNames();
 
 		public:
+			IWindow* getIWindowFromId(
+					GingaScreenID screenId, GingaWindowID winId);
+
 			void mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,

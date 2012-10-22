@@ -701,6 +701,19 @@ namespace mb {
 		Thread::mutexUnlock(&sysMutex);
 	}
 
+	IWindow* LocalScreenManager::getIWindowFromId(
+			GingaScreenID screenId, GingaWindowID winId) {
+
+		IDeviceScreen* screen;
+		IWindow* window = NULL;
+
+		if (getScreen(screenId, &screen)) {
+			window = screen->getIWindowFromId(winId);
+		}
+
+		return window;
+	}
+
 	void LocalScreenManager::mergeIds(
 			GingaScreenID screenId,
 			GingaWindowID destId,

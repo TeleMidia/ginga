@@ -212,6 +212,7 @@ typedef struct {
 
 			void setColorKey(int r, int g, int b);
 
+			IWindow* getIWindowFromId(GingaWindowID winId);
 			void mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
 			void blitScreen(ISurface* destination);
 			void blitScreen(string fileUri);

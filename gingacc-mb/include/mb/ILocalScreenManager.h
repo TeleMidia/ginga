@@ -98,6 +98,9 @@ namespace mb {
 			virtual GingaWindowID getScreenUnderlyingWindow(
 					GingaScreenID screenId)=0;
 
+			virtual IWindow* getIWindowFromId(
+					GingaScreenID screenId, GingaWindowID winId)=0;
+
 			virtual void mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,
