@@ -1925,8 +1925,31 @@ namespace mb {
 			rect.h = iWin->getH();
 
 			if (SDL_UpperBlitScaled(tmpSur, NULL, dest, &rect) < 0) {
+				SDL_Surface* tmpSur2;
+
 				clog << "SDLDeviceScreen::blitFromWindow SDL error: '";
-				clog << SDL_GetError() << "'" << endl;
+				clog << SDL_GetError() << "'! Trying to convert source surface";
+				clog << endl;
+
+				tmpSur2 = SDL_ConvertSurface(tmpSur, dest->format, 0);
+
+				if (tmpSur2 != NULL) {
+					if (SDL_UpperBlitScaled(tmpSur2, NULL, dest, &rect) < 0) {
+						clog << "SDLDeviceScreen::blitFromWindow ";
+						clog << "BLIT from converted surface SDL error: '";
+						clog << SDL_GetError() << "'";
+						clog << endl;
+
+					} else {
+						blitted = true;
+					}
+					createReleaseContainer(tmpSur2, NULL, NULL);
+
+				} else {
+					clog << "SDLDeviceScreen::blitFromWindow convert surface";
+					clog << " SDL error: '";
+					clog << SDL_GetError() << "'" << endl;
+				}
 
 			} else {
 				blitted = true;
