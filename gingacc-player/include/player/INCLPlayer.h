@@ -91,6 +91,7 @@ namespace player {
 
 			virtual ~INCLPlayer(){};
 
+			virtual void printGingaWindows()=0;
 			virtual set<string>* createPortIdList()=0;
 			virtual short getMappedInterfaceType(string portId)=0;
 

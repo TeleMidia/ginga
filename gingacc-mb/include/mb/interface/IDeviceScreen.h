@@ -97,6 +97,8 @@ namespace mb {
 
 			virtual void setColorKey(int r, int g, int b)=0;
 
+			virtual IWindow* getIWindowFromId(GingaWindowID winId)=0;
+
 			virtual void mergeIds(
 					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
 
