@@ -703,9 +703,9 @@ namespace mb {
 
 		} else {
 			unlockSurface();
-			cout << "SDLWindow::getDumpFileUri window '";
-			cout << (unsigned long)getId() << "' can't dump: ";
-			cout << "NULL surface and NULL texture" << endl;
+			clog << "SDLWindow::getDumpFileUri window '";
+			clog << (unsigned long)getId() << "' can't dump: ";
+			clog << "NULL surface and NULL texture" << endl;
 			return "";
 		}
 

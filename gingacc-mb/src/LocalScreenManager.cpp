@@ -714,7 +714,7 @@ namespace mb {
 		return window;
 	}
 
-	void LocalScreenManager::mergeIds(
+	bool LocalScreenManager::mergeIds(
 			GingaScreenID screenId,
 			GingaWindowID destId,
 			vector<GingaWindowID>* srcIds) {
@@ -722,8 +722,10 @@ namespace mb {
 		IDeviceScreen* screen;
 
 		if (getScreen(screenId, &screen)) {
-			screen->mergeIds(destId, srcIds);
+			return screen->mergeIds(destId, srcIds);
 		}
+
+		return false;
 	}
 
 	void LocalScreenManager::blitScreen(

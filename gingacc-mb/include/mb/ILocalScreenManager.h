@@ -101,7 +101,7 @@ namespace mb {
 			virtual IWindow* getIWindowFromId(
 					GingaScreenID screenId, GingaWindowID winId)=0;
 
-			virtual void mergeIds(
+			virtual bool mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds)=0;

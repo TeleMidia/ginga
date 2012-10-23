@@ -99,7 +99,7 @@ namespace mb {
 
 			virtual IWindow* getIWindowFromId(GingaWindowID winId)=0;
 
-			virtual void mergeIds(
+			virtual bool mergeIds(
 					GingaWindowID destId, vector<GingaWindowID>* srcIds)=0;
 
 			virtual void blitScreen(ISurface* destination)=0;

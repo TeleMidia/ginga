@@ -119,10 +119,10 @@ namespace mb {
 
 	}
 
-	void TermDeviceScreen::mergeIds(
+	bool TermDeviceScreen::mergeIds(
 			GingaWindowID destId, vector<GingaWindowID>* srcIds) {
 
-
+		return true;
 	}
 
 	void TermDeviceScreen::blitScreen(ISurface* destination) {
