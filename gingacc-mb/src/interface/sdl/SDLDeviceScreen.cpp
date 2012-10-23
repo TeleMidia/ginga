@@ -144,7 +144,7 @@ namespace mb {
 		sdlId           = 0;
 		backgroundLayer = NULL;
 		fullScreen      = false;
-		winIdRefCounter = 0;
+		winIdRefCounter = 1;
 
 		if (externalRenderer) {
 			hasERC = externalRenderer;
@@ -471,13 +471,14 @@ namespace mb {
 		return iWin;
 	}
 
-	void SDLDeviceScreen::mergeIds(
+	bool SDLDeviceScreen::mergeIds(
 			GingaWindowID destId, vector<GingaWindowID>* srcIds) {
 
 		map<GingaWindowID, IWindow*>::iterator i;
 		vector<GingaWindowID>::iterator j;
 		SDLWindow* destWin;
 		SDL_Surface* destSur;
+		bool merged = false;
 
 		lockSDL();
 
@@ -497,6 +498,8 @@ namespace mb {
 						clog << (unsigned long)(*j) << "' on destination '";
 						clog << (unsigned long)destId << "'" << endl;
 
+						merged = true;
+
 					} else {
 						clog << "SDLDeviceScreen::mergeIds can't merge '";
 						clog << (unsigned long)(*j) << "' on destination '";
@@ -509,12 +512,14 @@ namespace mb {
 			destWin->setRenderedSurface(destSur);
 
 		} else {
-			cout << "SDLDeviceScreen::mergeIds can't find destination window '";
-			cout << (unsigned long)destId << "'" << endl;
+			clog << "SDLDeviceScreen::mergeIds can't find destination window '";
+			clog << (unsigned long)destId << "'" << endl;
 		}
 
 		Thread::mutexUnlock(&winMutex);
 		unlockSDL();
+
+		return merged;
 	}
 
 	void SDLDeviceScreen::blitScreen(ISurface* destination) {

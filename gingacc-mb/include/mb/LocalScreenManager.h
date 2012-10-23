@@ -182,7 +182,7 @@ namespace mb {
 			IWindow* getIWindowFromId(
 					GingaScreenID screenId, GingaWindowID winId);
 
-			void mergeIds(
+			bool mergeIds(
 					GingaScreenID screenId,
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);

@@ -124,7 +124,7 @@ namespace mb {
 			void* getGfxRoot();
 			void setBackgroundImage(string uri);
 	
-			void mergeIds(int destId, vector<int>* srcIds){};
+			bool mergeIds(int destId, vector<int>* srcIds){};
 
 			HWND getHwnd();
 		private:

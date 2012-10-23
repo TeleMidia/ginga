@@ -409,7 +409,7 @@ namespace mb {
 		}
 	}
 
-	void DFBDeviceScreen::mergeIds(
+	bool DFBDeviceScreen::mergeIds(
 			GingaWindowID destId, vector<GingaWindowID>* srcIds) {
 
 		IDirectFBWindow* srcWin  = NULL;
@@ -418,10 +418,11 @@ namespace mb {
 		IDirectFBSurface* dstSur = NULL;
 		vector<void*>::iterator i;
 		int x, y;
+		bool merged = false;
 
 		dstWin = getUnderlyingWindow(destId);
 		if (dstWin == NULL) {
-			return;
+			return merged;
 		}
 
 		dstWin->GetSurface(dstWin, &dstSur);
@@ -435,9 +436,13 @@ namespace mb {
 				srcWin->GetPosition(srcWin, &x, &y);
 				srcWin->GetSurface(srcWin, &srcSur);
 				DFBCHECK(dstSur->Blit(dstSur, srcSur, NULL, x, y));
+
+				merged = true;
 			}
 			++i;
 		}
+
+		return merged;
 	}
 
 	void DFBDeviceScreen::blitScreen(ISurface* destination) {
