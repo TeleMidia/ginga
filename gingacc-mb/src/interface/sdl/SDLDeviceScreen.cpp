@@ -509,15 +509,18 @@ namespace mb {
 				++j;
 			}
 
+			Thread::mutexUnlock(&winMutex);
+			unlockSDL();
+
 			destWin->setRenderedSurface(destSur);
 
 		} else {
 			clog << "SDLDeviceScreen::mergeIds can't find destination window '";
 			clog << (unsigned long)destId << "'" << endl;
-		}
 
-		Thread::mutexUnlock(&winMutex);
-		unlockSDL();
+			Thread::mutexUnlock(&winMutex);
+			unlockSDL();
+		}
 
 		return merged;
 	}
