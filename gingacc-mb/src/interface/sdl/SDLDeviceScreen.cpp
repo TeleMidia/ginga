@@ -507,6 +507,10 @@ namespace mb {
 			}
 
 			destWin->setRenderedSurface(destSur);
+
+		} else {
+			cout << "SDLDeviceScreen::mergeIds can't find destination window '";
+			cout << (unsigned long)destId << "'" << endl;
 		}
 
 		Thread::mutexUnlock(&winMutex);
