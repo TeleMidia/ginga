@@ -383,7 +383,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
 			sizeof(interfaceList), &nBytesReturned, 0, 0) == SOCKET_ERROR) {
     	throw SocketException("getBroadcastAddress failed", true);
-		return 0;//TODO: throw exception
+		return "";//TODO: throw exception
     }
 
     int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
@@ -441,7 +441,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
 	}
 	throw SocketException("getBroadcastAddress failed", true);
 #endif
-
+	return "";
 }
 
 unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
