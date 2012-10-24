@@ -424,8 +424,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
 		interfaceName = netInterface->ifr_name;
 
 		//TODO: Change the ATS bellow
-		validInterface = (("eth0" == interfaceName) ||
-				("wlan0" == interfaceName));
+		validInterface = ("lo" != interfaceName);
 
 		if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
 			    && (netInterface->ifr_flags & IFF_BROADCAST)) {
@@ -494,8 +493,7 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
 		interfaceName = netInterface->ifr_name;
 
 		//TODO: Change the ATS bellow
-		validInterface = (("eth0" == interfaceName) ||
-				("wlan0" == interfaceName));
+		validInterface = ("lo" != interfaceName);
 
 		if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
 			    && (netInterface->ifr_flags & IFF_BROADCAST)) {
