@@ -60,10 +60,16 @@ namespace multidevice {
 	PassiveDeviceDomain::PassiveDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
 		deviceClass      = CT_PASSIVE;
 		deviceService    = new PassiveDeviceService();
-
+/*
 		passiveMulticast = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
+				*/
+		passiveMulticast = new MulticastSocketService(
+				(char*)(SECO_WRITE_MCAST_ADDR.c_str()),
+				(char*)(BASE_WRITE_MCAST_ADDR.c_str()),
+				BROADCAST_PORT + CT_PASSIVE);
+
 	}
 
 	PassiveDeviceDomain::~PassiveDeviceDomain() {

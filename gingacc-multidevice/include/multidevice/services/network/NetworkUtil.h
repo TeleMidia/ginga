@@ -70,8 +70,8 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	static const unsigned int BROADCAST_PORT = 41000;
-	static const string PASSIVE_MCAST_ADDR   = "239.10.10.3";
-	static const string ACTIVE_MCAST_ADDR    = "239.10.10.4";
+	static const string BASE_WRITE_MCAST_ADDR   = "239.10.10.3";
+	static const string SECO_WRITE_MCAST_ADDR   = "239.10.10.4";
 	static const string INTERFACE_NAME_A     = "eth0";
 	static const string INTERFACE_NAME_B     = "wlan0";
 	static const int PASSIVE_FPS             = 15;

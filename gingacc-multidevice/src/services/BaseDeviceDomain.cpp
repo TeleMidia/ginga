@@ -76,9 +76,15 @@ namespace multidevice {
 		deviceClass   = CT_BASE;
 		deviceService = new BaseDeviceService();
 
+		passiveMulticast = new MulticastSocketService(
+						(char*)(BASE_WRITE_MCAST_ADDR.c_str()),
+						(char*)(SECO_WRITE_MCAST_ADDR.c_str()),
+						BROADCAST_PORT + CT_PASSIVE);
+/*
 		passiveMulticast  = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
+				*/
 	}
 
 	BaseDeviceDomain::~BaseDeviceDomain() {

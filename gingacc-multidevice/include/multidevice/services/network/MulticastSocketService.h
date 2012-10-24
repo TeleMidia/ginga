@@ -83,7 +83,9 @@ namespace multidevice {
   class MulticastSocketService : public ISocketService {
 	private:
 		unsigned int port;
-		char* groupAddress;
+
+		char* readGroupAddress;
+		char* writeGroupAddress;
 
 		unsigned int interfaceIP;
 
@@ -97,7 +99,9 @@ namespace multidevice {
 		vector<struct frame*>* outputBuffer;
 
 	public:
-		MulticastSocketService(char*, unsigned int portNumber);
+		MulticastSocketService(
+					char* readGroupAddr, char* writeGroupAddr,
+					unsigned int portNumber);
 		~MulticastSocketService();
 
 	private:
