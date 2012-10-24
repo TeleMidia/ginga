@@ -56,11 +56,13 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	MulticastSocketService::MulticastSocketService(
-			char* groupAddr, unsigned int portNumber) {
+			char* readGroupAddr, char* writeGroupAddr,
+			unsigned int portNumber) {
 
 		outputBuffer = new vector<struct frame*>;
 		port         = portNumber;
-		groupAddress = groupAddr;
+		readGroupAddress = readGroupAddr;
+		writeGroupAddress = writeGroupAddr;
 		interfaceIP = 0;
 
 		/*
@@ -78,7 +80,7 @@ namespace multidevice {
 	MulticastSocketService::~MulticastSocketService() {
 		if (readSocket != NULL) {
 			try {
-				readSocket->leaveGroup(groupAddress);
+				readSocket->leaveGroup(readGroupAddress);
 				readSocket->disconnect();
 				delete readSocket;
 			}
@@ -171,7 +173,7 @@ TODO: fix for ios
 
 	bool MulticastSocketService::addToGroup() {
 		try {
-			readSocket->joinGroup(groupAddress);
+			readSocket->joinGroup(readGroupAddress);
 			return true;
 		}
 		catch (SocketException &e) {
@@ -221,7 +223,7 @@ TODO: fix for ios
 
 	bool MulticastSocketService::tryToBind() {
 		try {
-			readSocket->setLocalAddressAndPort(groupAddress,port);
+			readSocket->setLocalAddressAndPort(readGroupAddress,port);
 			interfaceIP = readSocket->getLocalIPAddress();
 
 		}
@@ -269,7 +271,7 @@ TODO: fix for ios
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			try {
-				writeSocket->sendTo(data,taskSize,groupAddress,port);
+				writeSocket->sendTo(data,taskSize,writeGroupAddress,port);
 			}
 			catch (SocketException &e) {
 				clog << "MulticastSocketService::sendData writeSocket sendTo";
