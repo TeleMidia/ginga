@@ -119,7 +119,7 @@ NPTProcessor::~NPTProcessor() {
 		loopListeners = NULL;
 	}
 	Thread::mutexUnlock(&loopMutex);
-	pthread_mutex_destroy(&loopMutex);
+	Thread::mutexDestroy(&loopMutex);
 }
 
 uint64_t NPTProcessor::getSTCValue() {

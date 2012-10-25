@@ -67,8 +67,8 @@ namespace thread {
 		Thread::mutexInit(&threadIdMutex);
 
 		isWaiting = false;
-		pthread_cond_init(&threadFlagConditionVariable, NULL);
-		pthread_cond_init(&threadFlagCVLockUntilSignal, NULL);
+		Thread::condInit(&threadFlagConditionVariable, NULL);
+		Thread::condInit(&threadFlagCVLockUntilSignal, NULL);
 
 		pthread_attr_init(&tattr);
 		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
@@ -79,28 +79,28 @@ namespace thread {
 		isDeleting = true;
 
 		wakeUp();
-		pthread_cond_signal(&threadFlagConditionVariable);
-		pthread_cond_destroy(&threadFlagConditionVariable);
+		Thread::condSignal(&threadFlagConditionVariable);
+		Thread::condDestroy(&threadFlagConditionVariable);
 
 		unlockConditionSatisfied();
-		pthread_cond_signal(&threadFlagCVLockUntilSignal);
-		pthread_cond_destroy(&threadFlagCVLockUntilSignal);
+		Thread::condSignal(&threadFlagCVLockUntilSignal);
+		Thread::condDestroy(&threadFlagCVLockUntilSignal);
 
 		Thread::mutexLock(&threadMutex);
 		Thread::mutexUnlock(&threadMutex);
-		pthread_mutex_destroy(&threadMutex);
+		Thread::mutexDestroy(&threadMutex);
 
 		Thread::mutexLock(&threadFlagMutex);
 		Thread::mutexUnlock(&threadFlagMutex);
-		pthread_mutex_destroy(&threadFlagMutex);
+		Thread::mutexDestroy(&threadFlagMutex);
 
 		Thread::mutexLock(&threadFlagMutexLockUntilSignal);
 		Thread::mutexUnlock(&threadFlagMutexLockUntilSignal);
-		pthread_mutex_destroy(&threadFlagMutexLockUntilSignal);
+		Thread::mutexDestroy(&threadFlagMutexLockUntilSignal);
 
 		Thread::mutexLock(&threadIdMutex);
 		Thread::mutexUnlock(&threadIdMutex);
-		pthread_mutex_destroy(&threadIdMutex);
+		Thread::mutexDestroy(&threadIdMutex);
 
 		pthread_attr_destroy(&tattr);
 	}
@@ -163,7 +163,7 @@ namespace thread {
 
 	void Thread::wakeUp() {
 		while (isThreadSleeping) {
-			pthread_cond_signal(&threadFlagConditionVariable);
+			Thread::condSignal(&threadFlagConditionVariable);
 		}
 	}
 
@@ -178,7 +178,7 @@ namespace thread {
 	void Thread::waitForUnlockCondition() {
 		isWaiting = true;
 		Thread::mutexLock(&threadFlagMutexLockUntilSignal);
-		pthread_cond_wait(
+		Thread::condWait(
 			    &threadFlagCVLockUntilSignal, &threadFlagMutexLockUntilSignal);
 
 		isWaiting = false;
@@ -187,7 +187,7 @@ namespace thread {
 
 	bool Thread::unlockConditionSatisfied() {
 		if (isWaiting) {
-			pthread_cond_signal(&threadFlagCVLockUntilSignal);
+			Thread::condSignal(&threadFlagCVLockUntilSignal);
 			return true;
 		}
 		return false;
@@ -197,16 +197,21 @@ namespace thread {
         pthread_mutexattr_t attr;
 
         if (recursive) {
-        	assert(pthread_mutexattr_init (&attr) == 0);
+        	assert(pthread_mutexattr_init(&attr) == 0);
         	assert(pthread_mutexattr_settype(
         			&attr, PTHREAD_MUTEX_RECURSIVE) == 0);
 
-            assert(pthread_mutex_init (mutex, &attr) == 0);
+            assert(pthread_mutex_init(mutex, &attr) == 0);
             assert(pthread_mutexattr_destroy (&attr) == 0);
 
         } else {
-            assert(pthread_mutex_init (mutex, NULL) == 0);
+            assert(pthread_mutex_init(mutex, NULL) == 0);
         }
+	}
+
+	void Thread::mutexDestroy(pthread_mutex_t* mutex) {
+		assert(mutex != NULL);
+		assert(pthread_mutex_destroy(mutex) == 0);
 	}
 
 	void Thread::mutexLock(pthread_mutex_t* mutex) {
@@ -217,6 +222,29 @@ namespace thread {
 	void Thread::mutexUnlock(pthread_mutex_t* mutex) {
 		assert(mutex != NULL);
 		assert(pthread_mutex_unlock(mutex) == 0);
+	}
+
+	void Thread::condInit(
+			pthread_cond_t* cond, const pthread_condattr_t * attr) {
+
+		assert(cond != NULL);
+		assert(pthread_cond_init(cond, NULL) == 0);
+	}
+
+	void Thread::condDestroy(pthread_cond_t* cond) {
+		assert(cond != NULL);
+		assert(pthread_cond_destroy(cond) == 0);
+	}
+
+	void Thread::condWait(pthread_cond_t* cond, pthread_mutex_t* mutex) {
+		assert(cond != NULL);
+		assert(mutex != NULL);
+		assert(pthread_cond_wait(cond, mutex) == 0);
+	}
+
+	void Thread::condSignal(pthread_cond_t* cond) {
+		assert(cond != NULL);
+		assert(pthread_cond_signal(cond) == 0);
 	}
 }
 }

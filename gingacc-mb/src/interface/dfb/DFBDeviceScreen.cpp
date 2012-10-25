@@ -201,9 +201,9 @@ namespace mb {
 
 		releaseScreen();
 
-		pthread_mutex_destroy(&winMutex);
-		pthread_mutex_destroy(&surMutex);
-		pthread_mutex_destroy(&cmpMutex);
+		Thread::mutexDestroy(&winMutex);
+		Thread::mutexDestroy(&surMutex);
+		Thread::mutexDestroy(&cmpMutex);
 
 		windowPool.clear();
 		surfacePool.clear();

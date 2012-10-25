@@ -87,7 +87,7 @@ namespace tsparser {
 		isWaitingPI    = false;
 		debugPackCount = 1;
 		debugDest      = 0;
-		pthread_cond_init(&flagCondSignal, NULL);
+		Thread::condInit(&flagCondSignal, NULL);
 		Thread::mutexInit(&flagLockUntilSignal, NULL);
 	}
 
@@ -331,7 +331,7 @@ namespace tsparser {
 				if(!pat->hasUnprocessedPmt()){
 					if (isWaitingPI) {
 						/* Free the mutex that is waiting for the PAT */
-						pthread_cond_signal(&flagCondSignal);
+						Thread::condSignal(&flagCondSignal);
 					}
 				}
 				//TODO: handle pat updates
@@ -617,7 +617,7 @@ namespace tsparser {
 						clog << endl;
 
 						if (isWaitingPI) {
-							pthread_cond_signal(&flagCondSignal);
+							Thread::condSignal(&flagCondSignal);
 						}
 
 						setupUnsolvedFilters();
@@ -841,7 +841,7 @@ namespace tsparser {
 	bool Demuxer::waitProgramInformation() {
 		isWaitingPI = true;
 		Thread::mutexLock(&flagLockUntilSignal);
-		pthread_cond_wait(&flagCondSignal, &flagLockUntilSignal);
+		Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
 		isWaitingPI = false;
 		Thread::mutexUnlock(&flagLockUntilSignal);
 		return true;

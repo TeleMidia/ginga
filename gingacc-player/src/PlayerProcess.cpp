@@ -70,7 +70,7 @@ namespace player {
 
 		isWaitingAns = false;
 		Thread::mutexInit(&ansMutex, NULL);
-		pthread_cond_init(&ansCond, NULL);
+		Thread::condInit(&ansCond, NULL);
 
 		init(objName);
 		setProcessListener(this);
@@ -83,12 +83,12 @@ namespace player {
 		reader = false;
 
 		if (isWaitingAns) {
-			pthread_cond_signal(&ansCond);
+			Thread::condSignal(&ansCond);
 		}
 
 		isWaitingAns = false;
-		pthread_mutex_destroy(&ansMutex);
-		pthread_cond_destroy(&ansCond);
+		Thread::mutexDestroy(&ansMutex);
+		Thread::condDestroy(&ansCond);
 
 		Thread::mutexLock(&msgMutex);
 		if (msgs != NULL) {
@@ -97,7 +97,7 @@ namespace player {
 		}
 
 		Thread::mutexUnlock(&msgMutex);
-		pthread_mutex_destroy(&msgMutex);
+		Thread::mutexDestroy(&msgMutex);
 	}
 
 	void PlayerProcess::init(const char* objName) {
@@ -207,7 +207,7 @@ namespace player {
 			(*msgs)[key] = value;
 			Thread::mutexUnlock(&msgMutex);
 			if (isWaitingAns) {
-				pthread_cond_signal(&ansCond);
+				Thread::condSignal(&ansCond);
 			}
 
 		} else if (msg.find(",") != std::string::npos) {

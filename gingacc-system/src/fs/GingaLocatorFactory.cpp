@@ -64,7 +64,7 @@ namespace fs {
 		iorNames = new map<string, string>;
 
 		isWaiting = false;
-		pthread_cond_init(&flagCondSignal, NULL);
+		Thread::condInit(&flagCondSignal, NULL);
 		Thread::mutexInit(&flagMutexSignal, NULL);
 	}
 
@@ -84,8 +84,8 @@ namespace fs {
 			iorNames = NULL;
 		}
 
-		pthread_cond_destroy(&flagCondSignal);
-		pthread_mutex_destroy(&flagMutexSignal);
+		Thread::condDestroy(&flagCondSignal);
+		Thread::mutexDestroy(&flagMutexSignal);
 	}
 
 	void GingaLocatorFactory::release() {
@@ -294,14 +294,14 @@ namespace fs {
 	void GingaLocatorFactory::waitNewLocatorCondition() {
 		isWaiting = true;
 		Thread::mutexLock(&flagMutexSignal);
-		pthread_cond_wait(&flagCondSignal, &flagMutexSignal);
+		Thread::condWait(&flagCondSignal, &flagMutexSignal);
 		isWaiting = false;
 		Thread::mutexUnlock(&flagMutexSignal);
 	}
 
 	bool GingaLocatorFactory::newLocatorConditionSatisfied() {
 		if (isWaiting) {
-			pthread_cond_signal(&flagCondSignal);
+			Thread::condSignal(&flagCondSignal);
 			return true;
 		}
 		return false;

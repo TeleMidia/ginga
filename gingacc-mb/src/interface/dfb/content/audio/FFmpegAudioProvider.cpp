@@ -459,7 +459,7 @@ static void* FFmpegAudio(DirectThread *self, void *arg) {
 		Thread::mutexLock(&data->audio.lock);
 
 		if (!data->speed) {
-			pthread_cond_wait(&data->audio.cond, &data->audio.lock);
+			Thread::condWait(&data->audio.cond, &data->audio.lock);
 			Thread::mutexUnlock(&data->audio.lock);
 			continue;
 		}
@@ -591,12 +591,12 @@ namespace mb {
 		flush_packets(&rContainer->audio.queue);
 
 		pthread_cond_destroy (&rContainer->audio.cond);
-		pthread_mutex_destroy(&rContainer->audio.queue.lock);
-		pthread_mutex_destroy(&rContainer->audio.lock);
-		pthread_mutex_destroy(&rContainer->input.lock);
+		Thread::mutexDestroy(&rContainer->audio.queue.lock);
+		Thread::mutexDestroy(&rContainer->audio.lock);
+		Thread::mutexDestroy(&rContainer->input.lock);
 
 		release_events(rContainer);
-		pthread_mutex_destroy(&rContainer->events_lock);
+		Thread::mutexDestroy(&rContainer->events_lock);
 	}
 
 	bool FFmpegAudioProvider::initializeFFmpeg(const char* mrl) {
@@ -1159,7 +1159,7 @@ namespace mb {
 
 		if (rContainer->audio.thread) {
 			Thread::mutexLock(&rContainer->audio.lock);
-			pthread_cond_signal(&rContainer->audio.cond);
+			Thread::condSignal(&rContainer->audio.cond);
 			Thread::mutexUnlock(&rContainer->audio.lock);
 			direct_thread_join(rContainer->audio.thread);
 			direct_thread_destroy(rContainer->audio.thread);

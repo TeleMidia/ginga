@@ -135,8 +135,8 @@ namespace mb {
 		Thread::mutexUnlock(&mutex);
 		Thread::mutexUnlock(&mutexC);
 
-		pthread_mutex_destroy(&mutex);
-		pthread_mutex_destroy(&mutexC);
+		Thread::mutexDestroy(&mutex);
+		Thread::mutexDestroy(&mutexC);
 	}
 
 	void DXWindow::setChildSurface(ISurface* listener) {

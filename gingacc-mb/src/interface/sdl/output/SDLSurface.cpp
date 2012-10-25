@@ -105,16 +105,16 @@ namespace mb {
 		sur = NULL;
 
 		Thread::mutexUnlock(&sMutex);
-		pthread_mutex_destroy(&sMutex);
+		Thread::mutexDestroy(&sMutex);
 
 		releasePendingSurface();
 		Thread::mutexUnlock(&pMutex);
-		pthread_mutex_destroy(&pMutex);
+		Thread::mutexDestroy(&pMutex);
 
 		releaseDrawData();
 		Thread::mutexLock(&ddMutex);
 		Thread::mutexUnlock(&ddMutex);
-		pthread_mutex_destroy(&ddMutex);
+		Thread::mutexDestroy(&ddMutex);
 	}
 
 	void SDLSurface::releasePendingSurface() {

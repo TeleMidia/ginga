@@ -105,22 +105,22 @@ namespace player {
 		this->eventType = ET_NONE;
 
 		this->_eMVarW  = false;
-		pthread_cond_init(&_eMVar, NULL);
+		Thread::condInit(&_eMVar, NULL);
 		Thread::mutexInit(&_eM, NULL);
 	}
 
 	AwesomiumInfo::~AwesomiumInfo() {
 		LocalScreenManager::removeIEListenerInstance(this);
 		LocalScreenManager::removeMEListenerInstance(this);
-		pthread_cond_signal(&_eMVar);
-		pthread_cond_destroy(&_eMVar);
-		pthread_mutex_destroy(&_eM);
+		Thread::condSignal(&_eMVar);
+		Thread::condDestroy(&_eMVar);
+		Thread::mutexDestroy(&_eM);
 	}
 
 	void AwesomiumInfo::waitEvent() {
 		_eMVarW = true;
 		Thread::mutexLock(&_eM);
-		pthread_cond_wait(&_eMVar, &_eM);
+		Thread::condWait(&_eMVar, &_eM);
 
 		_eMVarW = false;
 		Thread::mutexUnlock(&_eM);
@@ -128,7 +128,7 @@ namespace player {
 
 	bool AwesomiumInfo::eventArrived() {
 		if (_eMVarW) {
-			pthread_cond_signal(&_eMVar);
+			Thread::condSignal(&_eMVar);
 			return true;
 		}
 		return false;

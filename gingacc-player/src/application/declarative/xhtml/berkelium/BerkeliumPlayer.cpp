@@ -68,7 +68,7 @@ namespace player {
 	}
 
 	BBrowserFactory::~BBrowserFactory() {
-		pthread_mutex_destroy(&smutex);
+		Thread::mutexDestroy(&smutex);
 
 		stop();
 	}

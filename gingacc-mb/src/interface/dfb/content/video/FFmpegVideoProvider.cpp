@@ -272,7 +272,7 @@ static void* FFmpegInput(DirectThread *self, void *arg) {
 				data->audio.seeked = true;
 
 				if (data->video.thread) {
-					pthread_cond_signal(&data->video.cond);
+					Thread::condSignal(&data->video.cond);
 				}
 
 				Thread::mutexUnlock(&data->audio.lock);
@@ -509,7 +509,7 @@ static void* FFmpegVideo(DirectThread *self, void *arg) {
 
 		if (!data->speed) {
 			/* paused */
-			pthread_cond_wait(&data->video.cond, &data->video.lock);
+			Thread::condWait(&data->video.cond, &data->video.lock);
 
 		} else {
 			long length, delay;
@@ -586,7 +586,7 @@ static void* FFmpegAudio(DirectThread *self, void *arg) {
 		Thread::mutexLock(&data->audio.lock);
 
 		if (!data->speed) {
-			pthread_cond_wait(&data->audio.cond, &data->audio.lock);
+			Thread::condWait(&data->audio.cond, &data->audio.lock);
 			Thread::mutexUnlock(&data->audio.lock);
 			continue;
 		}
@@ -747,11 +747,11 @@ namespace mb {
 
 		pthread_cond_destroy (&rContainer->audio.cond);
 		pthread_cond_destroy (&rContainer->video.cond);
-		pthread_mutex_destroy(&rContainer->audio.queue.lock);
-		pthread_mutex_destroy(&rContainer->video.queue.lock);
-		pthread_mutex_destroy(&rContainer->audio.lock);
-		pthread_mutex_destroy(&rContainer->video.lock);
-		pthread_mutex_destroy(&rContainer->input.lock);
+		Thread::mutexDestroy(&rContainer->audio.queue.lock);
+		Thread::mutexDestroy(&rContainer->video.queue.lock);
+		Thread::mutexDestroy(&rContainer->audio.lock);
+		Thread::mutexDestroy(&rContainer->video.lock);
+		Thread::mutexDestroy(&rContainer->input.lock);
 	}
 
 	bool FFmpegVideoProvider::initializeFFmpeg(const char* mrl) {
@@ -1497,7 +1497,7 @@ namespace mb {
 
 		if (rContainer->video.thread) {
 			Thread::mutexLock(&rContainer->video.lock);
-			pthread_cond_signal(&rContainer->video.cond);
+			Thread::condSignal(&rContainer->video.cond);
 			Thread::mutexUnlock(&rContainer->video.lock);
 			direct_thread_join(rContainer->video.thread);
 			direct_thread_destroy(rContainer->video.thread);
@@ -1506,7 +1506,7 @@ namespace mb {
 
 		if (rContainer->audio.thread) {
 			Thread::mutexLock(&rContainer->audio.lock);
-			pthread_cond_signal(&rContainer->audio.cond);
+			Thread::condSignal(&rContainer->audio.cond);
 			Thread::mutexUnlock(&rContainer->audio.lock);
 			direct_thread_join(rContainer->audio.thread);
 			direct_thread_destroy(rContainer->audio.thread);

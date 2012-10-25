@@ -107,7 +107,7 @@ namespace contextmanager {
 			ctxListeners = NULL;
 		}
 		Thread::mutexUnlock(&groupsMutex);
-		pthread_mutex_destroy(&groupsMutex);
+		Thread::mutexDestroy(&groupsMutex);
 	}
 
 	IContextManager* ContextManager::getInstance() {

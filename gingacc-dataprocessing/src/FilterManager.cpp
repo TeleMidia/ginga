@@ -86,7 +86,7 @@ namespace dataprocessing {
 		}
 
 		Thread::mutexUnlock(&filterMutex);
-		pthread_mutex_destroy(&filterMutex);
+		Thread::mutexDestroy(&filterMutex);
 	}
 
 	ITSFilter* FilterManager::createStreamTypeSectionFilter(

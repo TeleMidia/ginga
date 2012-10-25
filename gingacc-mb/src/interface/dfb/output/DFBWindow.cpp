@@ -144,8 +144,8 @@ namespace mb {
 		}
 		unlock();
 
-		pthread_mutex_destroy(&mutex);
-		pthread_mutex_destroy(&mutexC);
+		Thread::mutexDestroy(&mutex);
+		Thread::mutexDestroy(&mutexC);
 
 		clog << "DFBWindow::~DFBWindow(" << this << ") all done" << endl;
 	}

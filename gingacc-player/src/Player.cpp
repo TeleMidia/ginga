@@ -133,10 +133,10 @@ namespace player {
 		Thread::mutexUnlock(&listM);
 		Thread::mutexUnlock(&pnMutex);
 
-		pthread_mutex_destroy(&referM);
-		pthread_mutex_destroy(&lockedListM);
-		pthread_mutex_destroy(&listM);
-		pthread_mutex_destroy(&pnMutex);
+		Thread::mutexDestroy(&referM);
+		Thread::mutexDestroy(&lockedListM);
+		Thread::mutexDestroy(&listM);
+		Thread::mutexDestroy(&pnMutex);
    	}
 
 	void Player::setMrl(string mrl, bool visible) {

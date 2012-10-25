@@ -93,7 +93,7 @@ namespace process {
 			fclose(rFd);
 		}
 
-		pthread_mutex_destroy(&waitSig);
+		Thread::mutexDestroy(&waitSig);
 	}
 
 	void* SpawnedProcess::detachReceive(void* ptr) {

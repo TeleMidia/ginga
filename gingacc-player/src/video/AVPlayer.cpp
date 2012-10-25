@@ -122,7 +122,7 @@ namespace player {
 
 		Thread::mutexLock(&pMutex);
 		Thread::mutexUnlock(&pMutex);
-		pthread_mutex_destroy(&pMutex);
+		Thread::mutexDestroy(&pMutex);
 		unlockConditionSatisfied();
 		lock();
 		if (surface != NULL && mainAV) {

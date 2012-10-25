@@ -114,7 +114,7 @@ namespace dataprocessing {
 		}
 
 		Thread::mutexUnlock(&stlMutex);
-		pthread_mutex_destroy(&stlMutex);
+		Thread::mutexDestroy(&stlMutex);
 	}
 
 	void SectionFilter::setListener(IFilterListener* listener) {

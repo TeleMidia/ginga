@@ -68,7 +68,7 @@ namespace mb {
 		shiftOn   = false;
 
 		isWaiting = false;
-		pthread_cond_init(&cond, NULL);
+		Thread::condInit(&cond, NULL);
 		Thread::mutexInit(&condMutex);
 	}
 
@@ -78,11 +78,11 @@ namespace mb {
 		Thread::mutexLock(&ebMutex);
 		eventBuffer.clear();
 		Thread::mutexUnlock(&ebMutex);
-		pthread_mutex_destroy(&ebMutex);
+		Thread::mutexDestroy(&ebMutex);
 
 		isWaiting = false;
-		pthread_cond_destroy(&cond);
-		pthread_mutex_destroy(&condMutex);
+		Thread::condDestroy(&cond);
+		Thread::mutexDestroy(&condMutex);
 	}
 
 	bool SDLEventBuffer::checkEvent(Uint32 winId, SDL_Event event) {
@@ -225,14 +225,14 @@ namespace mb {
 	void SDLEventBuffer::waitForEvent() {
 		isWaiting = true;
 		Thread::mutexLock(&condMutex);
-		pthread_cond_wait(&cond, &condMutex);
+		Thread::condWait(&cond, &condMutex);
 		isWaiting = false;
 		Thread::mutexUnlock(&condMutex);
 	}
 
 	bool SDLEventBuffer::eventArrived() {
 		if (isWaiting) {
-			pthread_cond_signal(&cond);
+			Thread::condSignal(&cond);
 			return true;
 		}
 		return false;

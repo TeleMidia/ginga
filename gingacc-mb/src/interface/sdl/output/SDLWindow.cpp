@@ -104,16 +104,16 @@ namespace mb {
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
-		pthread_mutex_destroy(&mutexC);
+		Thread::mutexDestroy(&mutexC);
 
 		this->isWaiting = false;
-	    pthread_mutex_destroy(&cMutex);
-	    pthread_cond_destroy(&cond);
+	    Thread::mutexDestroy(&cMutex);
+	    Thread::condDestroy(&cond);
 
-	    pthread_mutex_destroy(&rMutex);
+	    Thread::mutexDestroy(&rMutex);
 
 	    unlock();
-	    pthread_mutex_destroy(&mutex);
+	    Thread::mutexDestroy(&mutex);
 
 		clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
 	}
@@ -169,7 +169,7 @@ namespace mb {
 
 		this->isWaiting = false;
 	    Thread::mutexInit(&cMutex);
-	    pthread_cond_init(&cond, NULL);
+	    Thread::condInit(&cond, NULL);
 
 	    Thread::mutexInit(&rMutex);
 	}
@@ -755,7 +755,7 @@ namespace mb {
 
 	bool SDLWindow::rendered() {
 		if (isWaiting) {
-			pthread_cond_signal(&cond);
+			Thread::condSignal(&cond);
 			return true;
 		}
 		return false;
@@ -764,7 +764,7 @@ namespace mb {
 	void SDLWindow::waitRenderer() {
 		isWaiting = true;
 		Thread::mutexLock(&cMutex);
-		pthread_cond_wait(&cond, &cMutex);
+		Thread::condWait(&cond, &cMutex);
 		isWaiting = false;
 		Thread::mutexUnlock(&cMutex);
 	}

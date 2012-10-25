@@ -121,8 +121,8 @@ namespace mb {
 
 		pTex->Release();
 		pTex = NULL;
-		pthread_mutex_destroy(&tex_lock);
-		pthread_mutex_destroy(&visible_lock);
+		Thread::mutexDestroy(&tex_lock);
+		Thread::mutexDestroy(&visible_lock);
 	}
 
 	void DX2DSurface::initGraphics()
