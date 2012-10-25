@@ -134,7 +134,7 @@ namespace player {
 
 		Thread::mutexUnlock(&sMutex);
 
-		pthread_mutex_destroy(&sMutex);
+		Thread::mutexDestroy(&sMutex);
 		clog << "BerkeliumHandler::~BerkeliumHandler all done" << endl;
 	}
 

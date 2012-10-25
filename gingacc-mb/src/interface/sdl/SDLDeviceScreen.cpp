@@ -185,7 +185,7 @@ namespace mb {
 
 		waitingCreator = false;
 		Thread::mutexInit(&condMutex);
-		pthread_cond_init(&cond, NULL);
+		Thread::condInit(&cond, NULL);
 
 		checkMutexInit();
 
@@ -225,8 +225,8 @@ namespace mb {
 		map<float, set<IWindow*>*>::iterator k;
 
 		waitingCreator = false;
-		pthread_mutex_destroy(&condMutex);
-		pthread_cond_destroy(&cond);
+		Thread::mutexDestroy(&condMutex);
+		Thread::condDestroy(&cond);
 
 		Thread::mutexLock(&renMutex);
 		j = renderMap.find(id);

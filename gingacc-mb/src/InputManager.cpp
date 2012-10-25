@@ -184,7 +184,7 @@ namespace mb {
 			actionsToInpListeners.clear();
 			Thread::mutexUnlock(&actInpMutex);
 		}
-		pthread_mutex_destroy(&actInpMutex);
+		Thread::mutexDestroy(&actInpMutex);
 
 
 		if (!applicationListeners.empty()) {
@@ -199,8 +199,8 @@ namespace mb {
 
 			Thread::mutexUnlock(&appMutex);
 		}
-		pthread_mutex_destroy(&actAppMutex);
-		pthread_mutex_destroy(&appMutex);
+		Thread::mutexDestroy(&actAppMutex);
+		Thread::mutexDestroy(&appMutex);
 
 		if (eventBuffer != NULL) {
 			delete eventBuffer;
@@ -212,7 +212,7 @@ namespace mb {
 			motionListeners.clear();
 			Thread::mutexUnlock(&mlMutex);
 		}
-		pthread_mutex_destroy(&mlMutex);
+		Thread::mutexDestroy(&mlMutex);
 
 		unlock();
 	}

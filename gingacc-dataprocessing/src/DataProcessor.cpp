@@ -148,7 +148,7 @@ namespace dataprocessing {
 			epgProcessor = NULL;
 		}
 
-		pthread_mutex_destroy(&mutex);
+		Thread::mutexDestroy(&mutex);
 	}
 
 	void DataProcessor::applicationInfoMounted(IAIT* ait) {

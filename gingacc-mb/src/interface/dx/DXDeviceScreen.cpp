@@ -100,13 +100,13 @@ namespace mb {
 		Thread::mutexInit(&surMutex, NULL);
 		Thread::mutexInit(&init_lock, NULL);
 
-		pthread_cond_init(&init_cond, NULL);
+		Thread::condInit(&init_cond, NULL);
 
 		Thread::startThread();
 
 		Thread::mutexLock(&init_lock);
 		while (init != 1) {
-			pthread_cond_wait(&init_cond, &init_lock);
+			Thread::condWait(&init_cond, &init_lock);
 		}
 		Thread::mutexUnlock(&init_lock);
 
@@ -138,7 +138,7 @@ namespace mb {
 		delete windowPool;
 		windowPool = NULL;
 		Thread::mutexUnlock(&winMutex);
-		pthread_mutex_destroy(&winMutex);
+		Thread::mutexDestroy(&winMutex);
 
 		//Releasing still Surface objects in Surface Pool
 		set<DX2DSurface*>::iterator s;
@@ -151,7 +151,7 @@ namespace mb {
 		delete surfacePool;
 		surfacePool = NULL;
 		Thread::mutexUnlock(&surMutex);
-		pthread_mutex_destroy(&surMutex);
+		Thread::mutexDestroy(&surMutex);
 
 	}
 

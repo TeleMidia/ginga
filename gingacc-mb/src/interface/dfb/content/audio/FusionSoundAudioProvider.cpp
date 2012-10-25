@@ -120,7 +120,7 @@ namespace mb {
 		}*/
 
 		Thread::mutexUnlock(&decMutex);
-		pthread_mutex_destroy(&decMutex);
+		Thread::mutexDestroy(&decMutex);
 
 #if DFBTM_PATCH
 		fspRefs--;

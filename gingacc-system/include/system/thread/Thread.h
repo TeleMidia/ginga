@@ -101,9 +101,19 @@ namespace thread {
 		void waitForUnlockCondition();
 		bool unlockConditionSatisfied();
 
+		/* Mutex functions*/
 		static void mutexInit(pthread_mutex_t* mutex, bool recursive=false);
+		static void mutexDestroy(pthread_mutex_t* mutex);
 		static void mutexLock(pthread_mutex_t* mutex);
 		static void mutexUnlock(pthread_mutex_t* mutex);
+
+		/* Cond functions */
+		static void condInit(
+				pthread_cond_t* cond, const pthread_condattr_t * attr);
+
+		static void condDestroy(pthread_cond_t* cond);
+		static void condWait(pthread_cond_t* cond, pthread_mutex_t* mutex);
+		static void condSignal(pthread_cond_t* cond);
   };
 }
 }

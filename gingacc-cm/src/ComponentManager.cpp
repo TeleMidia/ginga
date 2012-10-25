@@ -115,7 +115,7 @@ namespace cm {
 		}
 
 		Thread::mutexUnlock(&mapMutex);
-		pthread_mutex_destroy(&mapMutex);
+		Thread::mutexDestroy(&mapMutex);
 	}
 
 	ComponentManager* ComponentManager::_instance = NULL;

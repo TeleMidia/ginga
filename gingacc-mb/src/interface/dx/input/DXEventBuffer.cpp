@@ -80,7 +80,7 @@ namespace mb {
 		Thread::mutexInit(&m_mtxInput);
 		Thread::mutexInit(&evt_lock);
 
-		//pthread_cond_init(&evt_cond, NULL);
+		//Thread::condInit(&evt_cond, NULL);
 
 		initDirectInput();
 	}
@@ -103,10 +103,10 @@ namespace mb {
 			m_dInput = NULL;
 		}
 		Thread::mutexUnlock(&m_mtxInput);
-		pthread_mutex_destroy(&m_mtxInput);
+		Thread::mutexDestroy(&m_mtxInput);
 
 		Thread::mutexUnlock(&evt_lock);
-		pthread_mutex_destroy(&evt_lock);
+		Thread::mutexDestroy(&evt_lock);
 	}
 
 	void DXEventBuffer::wakeUp() {

@@ -74,7 +74,7 @@ namespace multidevice {
 			devices = NULL;
 		}
 		Thread::mutexUnlock(&dMutex);
-		pthread_mutex_destroy(&dMutex);
+		Thread::mutexDestroy(&dMutex);
 
 		Thread::mutexLock(&lMutex);
 		if (listeners != NULL) {
@@ -82,7 +82,7 @@ namespace multidevice {
 			listeners = NULL;
 		}
 		Thread::mutexUnlock(&lMutex);
-		pthread_mutex_destroy(&lMutex);
+		Thread::mutexDestroy(&lMutex);
 	}
 
 	IRemoteDevice* DeviceService::getDevice(unsigned int devAddr) {

@@ -159,7 +159,7 @@ namespace multidevice {
 			outputBuffer = NULL;
 		}
 
-		pthread_mutex_destroy(&mutexBuffer);
+		Thread::mutexDestroy(&mutexBuffer);
 	}
 
 	bool BroadcastSocketService::buildDomainAddress() {

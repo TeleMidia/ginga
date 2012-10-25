@@ -67,7 +67,7 @@ namespace mb {
 		isWaiting  = false;
 
 		/*Thread::mutexInit(&cMutex);
-		pthread_cond_init(&cond, NULL);*/
+		Thread::condInit(&cond, NULL);*/
 
 		if (decoder != NULL) {
 			getOriginalResolution(&wRes, &hRes);
@@ -188,7 +188,7 @@ namespace mb {
 	void SDLVideoProvider::waitTexture() {
 		isWaiting = true;
 		/*Thread::mutexLock(&cMutex);
-		pthread_cond_wait(&cond, &cMutex);
+		Thread::condWait(&cond, &cMutex);
 		isWaiting = false;
 		Thread::mutexUnlock(&cMutex);*/
 	}
@@ -201,7 +201,7 @@ namespace mb {
 				}
 				decoder->play();
 			}
-			//pthread_cond_signal(&cond);
+			//Thread::condSignal(&cond);
 			return true;
 		}
 		return false;

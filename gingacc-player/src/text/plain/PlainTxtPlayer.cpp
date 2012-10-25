@@ -74,7 +74,7 @@ namespace player {
 			surface->setParentWindow(NULL);
 		}
 		Thread::mutexUnlock(&mutex);
-		pthread_mutex_destroy(&mutex);
+		Thread::mutexDestroy(&mutex);
    	}
 
 	void PlainTxtPlayer::setFile(string mrl) {

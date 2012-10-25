@@ -76,7 +76,7 @@ namespace player {
 			init    = true;
 			running = false;
 			Thread::mutexInit(&stopCondMutex, NULL);
-			pthread_cond_init(&stopCond, NULL);
+			Thread::condInit(&stopCond, NULL);
 		}
 
 		awesome = AwesomiumHandler::createAwesomium(screenId);
@@ -223,7 +223,7 @@ namespace player {
 	void AwesomiumPlayer::waitStop() {
 		isWaitingStop = true;
 		Thread::mutexLock(&stopCondMutex);
-		pthread_cond_wait(&stopCond, &stopCondMutex);
+		Thread::condWait(&stopCond, &stopCondMutex);
 
 		isWaitingStop = false;
 		Thread::mutexUnlock(&stopCondMutex);
@@ -231,7 +231,7 @@ namespace player {
 
 	bool AwesomiumPlayer::stopped() {
 		if (isWaitingStop) {
-			pthread_cond_signal(&stopCond);
+			Thread::condSignal(&stopCond);
 			return true;
 		}
 		return false;

@@ -80,7 +80,7 @@ namespace process {
 
 		isCheckingCom = false;
 		Thread::mutexInit(&comMutex, NULL);
-		pthread_cond_init(&comCond, NULL);
+		Thread::condInit(&comCond, NULL);
 
 		isSpawnedReady = false;
 	}
@@ -93,8 +93,8 @@ namespace process {
 
 		release();
 
-		pthread_mutex_destroy(&comMutex);
-		pthread_cond_destroy(&comCond);
+		Thread::mutexDestroy(&comMutex);
+		Thread::condDestroy(&comCond);
 
 		posix_spawnattr_destroy(&spawnAttr);
 		posix_spawn_file_actions_destroy(&fileActions);
@@ -148,14 +148,14 @@ namespace process {
 
 		isCheckingCom = true;
 		Thread::mutexLock(&comMutex);
-		pthread_cond_wait(&comCond, &comMutex);
+		Thread::condWait(&comCond, &comMutex);
 		isCheckingCom = false;
 		Thread::mutexUnlock(&comMutex);
 	}
 
 	void Process::tryCom() {
 		if (wFd > 0 && rFd > 0 && isSpawnedReady && isCheckingCom) {
-			pthread_cond_signal(&comCond);
+			Thread::condSignal(&comCond);
 		}
 	}
 

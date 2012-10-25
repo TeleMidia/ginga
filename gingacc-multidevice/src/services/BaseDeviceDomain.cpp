@@ -88,7 +88,7 @@ namespace multidevice {
 	}
 
 	BaseDeviceDomain::~BaseDeviceDomain() {
-		pthread_mutex_destroy(&pMutex);
+		Thread::mutexDestroy(&pMutex);
 	}
 
 	bool BaseDeviceDomain::taskRequest(

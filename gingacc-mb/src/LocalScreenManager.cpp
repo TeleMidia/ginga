@@ -126,7 +126,7 @@ namespace mb {
 		sortSys.push_back(GMBST_TERM);
 
 		isWaiting = false;
-		pthread_cond_init(&wsSignal, NULL);
+		Thread::condInit(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
 
 		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
@@ -148,11 +148,11 @@ namespace mb {
 			screens = NULL;
 		}
 		unlockScreenMap();
-		pthread_mutex_destroy(&mapMutex);
+		Thread::mutexDestroy(&mapMutex);
 
 		lock();
 		unlock();
-		pthread_mutex_destroy(&genMutex);
+		Thread::mutexDestroy(&genMutex);
 
 
 		lockSysNames();
@@ -162,7 +162,7 @@ namespace mb {
 			sysNames = NULL;
 		}
 		unlockSysNames();
-		pthread_mutex_destroy(&sysMutex);
+		Thread::mutexDestroy(&sysMutex);
 	}
 
 	LocalScreenManager* LocalScreenManager::_instance = NULL;

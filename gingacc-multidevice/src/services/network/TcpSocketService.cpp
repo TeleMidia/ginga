@@ -85,7 +85,7 @@ TcpSocketService::~TcpSocketService() {
 		connections = NULL;
 	}
 	Thread::mutexUnlock(&connMutex);
-	pthread_mutex_destroy(&connMutex);
+	Thread::mutexDestroy(&connMutex);
 }
 
 void TcpSocketService::addConnection(unsigned int deviceId,
