@@ -86,7 +86,7 @@ namespace player {
 			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
 			newMrl = itos((long int)this);
 			ic->setSourceTarget(newMrl);
-			ic->reserveUrl(mrl, NULL, "GingaNCL/0.13.3");
+			ic->reserveUrl(mrl, NULL, "GingaNCL/0.13.4");
 			ic->performUrl();
 
 			icm->releaseInteractiveChannel(ic);

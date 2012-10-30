@@ -1,5 +1,5 @@
 AC_PREREQ([2.13])
-AC_INIT([gingaccplayer], [0.13.3])
+AC_INIT([gingaccplayer], [0.13.4])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
