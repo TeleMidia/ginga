@@ -47,12 +47,32 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _PassiveDeviceDomain_H_
-#define _PassiveDeviceDomain_H_
+#ifndef _BroadcastDualSocketService_H_
+#define _BroadcastDualSocketService_H_
 
-#include "DeviceDomain.h"
-#include "network/MulticastSocketService.h"
-#include "network/BroadcastDualSocketService.h"
+#include "ISocketService.h"
+
+#include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifdef __DARWIN_UNIX03
+#include <ifaddrs.h>
+#define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
+#endif
+
+#include <pthread.h>
+#include <vector>
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -60,29 +80,46 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class PassiveDeviceDomain : public DeviceDomain {
+  class BroadcastDualSocketService : public ISocketService {
 	private:
-		ISocketService* passiveSocket;
+
+	    string broadcastIPAddr;
+		unsigned int interfaceIP;
+
+	    unsigned int broadcastReadPort;
+		unsigned int broadcastWritePort;
+
+
+		UDPSocket* readSocket;
+		UDPSocket* writeSocket;
+
+
+		pthread_mutex_t mutexBuffer;
+		vector<struct frame*>* outputBuffer;
 
 	public:
-		PassiveDeviceDomain(bool useMulticast, int srvPort);
-		virtual ~PassiveDeviceDomain();
+		BroadcastDualSocketService(
+				unsigned int readPort, unsigned int writePort);
 
-	protected:
-		bool taskRequest(int destDevClass, char* data, int taskSize);
-		bool passiveTaskRequest(char* data, int taskSize);
-		bool activeTaskRequest(char* data, int taskSize){return false;};
-		void postConnectionRequestTask(int width, int height);
-		void receiveConnectionRequest(char* task){};
-		void postAnswerTask(int reqDeviceClass, int answer){};
-		void receiveAnswerTask(char* answerTask);
-		bool postMediaContentTask(int destDevClass, string url){return false;};
-		bool receiveMediaContentTask(char* task);
-		bool receiveEventTask(char* task){return false;};
-		void setDeviceInfo(int width, int height);
-		bool runControlTask();
-		bool runDataTask();
-		void checkDomainTasks();
+		~BroadcastDualSocketService();
+
+	private:
+		bool createSocket();
+		bool addToGroup();
+		bool setSocketOptions();
+		bool tryToBind();
+
+	public:
+		unsigned int getInterfaceIPAddress(){return 0;};
+		int getServicePort();
+		void dataRequest(char* data, int taskSize, bool repeat=true);
+
+	private:
+		bool sendData(struct frame* f);
+
+	public:
+		bool checkOutputBuffer();
+		bool checkInputBuffer(char* data, int* size);
   };
 }
 }
@@ -91,4 +128,4 @@ namespace multidevice {
 }
 }
 
-#endif /*_PassiveDeviceDomain_H_*/
+#endif /*_BroadcastDualSocketService_H_*/

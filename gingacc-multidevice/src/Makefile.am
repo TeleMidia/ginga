@@ -22,6 +22,7 @@ libgingaccmd_la_SOURCES = RemoteDeviceManager.cpp RemoteDevice.cpp \
     services/network/NetworkUtil.cpp \
     services/network/BroadcastSocketService.cpp \
     services/network/MulticastSocketService.cpp \
+    services/network/BroadcastDualSocketService.cpp \
     services/network/TcpSocketService.cpp \
     services/network/TcpClientConnection.cpp
 

@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "multidevice/services/network/MulticastSocketService.h"
+#include "multidevice/services/network/BroadcastDualSocketService.h"
 
 namespace br {
 namespace pucrio {
@@ -55,24 +55,25 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	MulticastSocketService::MulticastSocketService(
-			char* groupAddr,
-			unsigned int portNumber) {
+BroadcastDualSocketService::BroadcastDualSocketService(
+		unsigned int readPort, unsigned int writePort) {
 
 		outputBuffer = new vector<struct frame*>;
-		port         = portNumber;
-		groupAddress = groupAddr;
+
+		interfaceIP = 0;
+
+		broadcastReadPort = readPort;
+		broadcastWritePort = writePort;
 
 		interfaceIP = 0;
 
 		Thread::mutexInit(&mutexBuffer, NULL);
-		createMulticastGroup();
-	}
+		createSocket();
+}
 
-	MulticastSocketService::~MulticastSocketService() {
+BroadcastDualSocketService::~BroadcastDualSocketService() {
 		if (readSocket != NULL) {
 			try {
-				readSocket->leaveGroup(groupAddress);
 				readSocket->disconnect();
 				delete readSocket;
 			}
@@ -99,85 +100,46 @@ namespace multidevice {
 		Thread::mutexDestroy(&mutexBuffer);
 	}
 
-	int MulticastSocketService::createMulticastGroup() {
-		if (createSocket()) {
-			if (setSocketOptions()) {
-				if (tryToBind()) {
-					if (addToGroup()) {
-						return 1;
-					}
-				}
-			}
-		}
-		return -1;
-	}
 
-	bool MulticastSocketService::createSocket() {
+	bool BroadcastDualSocketService::createSocket() {
 		unsigned char trueVar = 1;
+
 		try {
 			writeSocket = new UDPSocket();
-			readSocket = new UDPSocket();
+			readSocket = new UDPSocket(broadcastReadPort);
 			readSocket->setNonBlocking(true);
-		}
-		catch (SocketException &e) {
-			clog << "MulticastSocketService::createSocket()" << endl;
-			clog << e.what() << endl;
-			return false;
-		}
 
-		return true;
-	}
-
-	bool MulticastSocketService::addToGroup() {
-		try {
-			readSocket->joinGroup(groupAddress);
-			return true;
-		}
-		catch (SocketException &e) {
-			clog << "MulticastSocketService::addToGroup" << endl;
-			clog << e.what() << endl;
-		}
-
-		return true;
-	}
-
-	bool MulticastSocketService::setSocketOptions() {
-		try {
-			writeSocket->setMulticastTTL(MCAST_TTL);
-			writeSocket->setMulticastLoop(true);
 			writeSocket->setReuseAddr(true);
-
 			readSocket->setReuseAddr(true);
-			readSocket->setMulticastLoop(true);
-		}
-		catch (SocketException &e) {
-			clog << "MulticastSocketService::setSocketOptions()" << endl;
-			clog << e.what() << endl;
-			return false;
-		}
 
-		return true;
-	}
+			broadcastIPAddr = readSocket->getBroadcastAddress();
 
-	bool MulticastSocketService::tryToBind() {
-		try {
-			readSocket->setLocalAddressAndPort(groupAddress,port);
+			clog << "Network info: "<<endl;
+			clog << "broadcastIPAddr: " << broadcastIPAddr << endl;
+			clog << "broadcast read port: " << broadcastReadPort;
+
 			interfaceIP = readSocket->getLocalIPAddress();
 
+			clog << "interfaceIP: " << interfaceIP << endl;
+
+			readSocket->setReuseAddr(true);
+
 		}
+
 		catch (SocketException &e) {
-			clog << "MulticastSocketService::tryToBind" << endl;
+			clog << "BroadcastDualSocketService::createSocket()" << endl;
+			clog << e.what() << endl;
 			return false;
 		}
 
 		return true;
 	}
 
-	int MulticastSocketService::getServicePort() {
-		return port;
+	int BroadcastDualSocketService::getServicePort() {
+		return 0;
 	}
 
-	void MulticastSocketService::dataRequest(
+	void BroadcastDualSocketService::dataRequest(
 			char* data, int taskSize, bool repeat) {
 
 		struct frame* f;
@@ -191,22 +153,22 @@ namespace multidevice {
 		Thread::mutexUnlock(&mutexBuffer);
 	}
 
-	bool MulticastSocketService::sendData(struct frame* f) {
+	bool BroadcastDualSocketService::sendData(struct frame* f) {
 		char* data;
 		int taskSize, result, i;
 
 		data     = f->data;
 		taskSize = f->size;
 
-		clog << "MulticastSocketService::sendData Sending";
+		clog << "BroadcastDualSocketService::sendData Sending";
 		clog << " taskSize = '" << taskSize  << "'" << endl;
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			try {
-				writeSocket->sendTo(data,taskSize,groupAddress,port);
+				writeSocket->sendTo(data,taskSize,broadcastIPAddr,broadcastWritePort);
 			}
 			catch (SocketException &e) {
-				clog << "MulticastSocketService::sendData writeSocket sendTo";
+				clog << "BroadcastDualSocketService::sendData writeSocket sendTo";
 				clog << " TASKSIZE = '" << taskSize << "'" << endl;
 				clog << e.what() << endl;
 				return false;
@@ -216,7 +178,7 @@ namespace multidevice {
 		return true;
 	}
 
-	bool MulticastSocketService::checkOutputBuffer() {
+	bool BroadcastDualSocketService::checkOutputBuffer() {
 		vector<struct frame*>::iterator i;
 		bool sent = false;
 		struct frame* f;
@@ -233,7 +195,7 @@ namespace multidevice {
 			}
 
 		} else {
-			//clog << "MulticastSocketService::checkOutputBuffer ";
+			//clog << "BroadcastDualSocketService::checkOutputBuffer ";
 			//clog << "empty buffer" << endl;
 		}
 		Thread::mutexUnlock(&mutexBuffer);
@@ -241,23 +203,23 @@ namespace multidevice {
 		return sent;
 	}
 
-	bool MulticastSocketService::checkInputBuffer(char* data, int* size) {
+	bool BroadcastDualSocketService::checkInputBuffer(char* data, int* size) {
 
 		int res, recvFrom;
 		string null_string;
 		unsigned short null_short;
 
 		if (readSocket == NULL) {
-			clog << "MulticastSocketService::checkInputBuffer readSocket == NULL" << endl;
+			clog << "BroadcastDualSocketService::checkInputBuffer readSocket == NULL" << endl;
 			return false;
 		}
 
 		res = readSocket->select_t(0,0);
-		//clog << "MulticastSocketService::checkInputBuffer readSocket->select_t(0,0)" << endl;
+		//clog << "BroadcastDualSocketService::checkInputBuffer readSocket->select_t(0,0)" << endl;
 
 		switch (res) {
 			case -1:
-				clog << "MulticastSocketService::checkInputBuffer ";
+				clog << "BroadcastDualSocketService::checkInputBuffer ";
 				clog << "Warning! select ERRNO = " << errno << endl;
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
@@ -273,24 +235,9 @@ namespace multidevice {
 					return false;
 				}
 
-/*
-				if (*size == -1) {
-					if (errno != EAGAIN) {
-						clog << "MulticastSocketService::checkInputBuffer ";
-						herror("check domain error: ");
-						clog << "Warning! receive data ERRNO = " << errno;
-						clog << endl;
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-
-					} else {
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-					}
-*/
 
 				if (*size <= HEADER_SIZE) {
-					clog << "MulticastSocketService::checkInputBuffer ";
+					clog << "BroadcastDualSocketService::checkInputBuffer ";
 					clog << "Warning! Received invalid frame: ";
 					clog << "bytes received = '" << *size << "' ";
 					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
@@ -304,7 +251,7 @@ namespace multidevice {
 
 //				if (!isValidRecvFrame(recvFrom, getUIntFromStream(groupAddress), data)) {
 				if (!isValidRecvFrame(recvFrom, interfaceIP, data)) {
-					clog << "MulticastSocketService::checkInputBuffer() !isValidRecvFrame"<<endl;
+					clog << "BroadcastDualSocketService::checkInputBuffer() !isValidRecvFrame"<<endl;
 					memset(data, 0, MAX_FRAME_SIZE);
 					return false;
 				}

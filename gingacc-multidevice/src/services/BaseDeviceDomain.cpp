@@ -65,7 +65,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	BaseDeviceDomain::BaseDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
+	BaseDeviceDomain::BaseDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		timerCount    = 0;
 
 		Thread::mutexInit(&pMutex, false);
@@ -76,11 +76,16 @@ namespace multidevice {
 		deviceClass   = CT_BASE;
 		deviceService = new BaseDeviceService();
 
-		passiveMulticast = new MulticastSocketService(
-						(char*)(BASE_WRITE_MCAST_ADDR.c_str()),
-						(char*)(SECO_WRITE_MCAST_ADDR.c_str()),
-						BROADCAST_PORT + CT_PASSIVE);
-/*
+		if (useMulticast) {
+			passiveSocket = new MulticastSocketService(
+							(char*)(PASSIVE_MCAST_ADDR.c_str()),
+							BROADCAST_PORT + CT_PASSIVE);
+		}
+		else {
+			passiveSocket = new BroadcastDualSocketService(
+							BASE_WRITE_BCAST_PORT, SECO_WRITE_BCAST_PORT);
+		}
+			/*
 		passiveMulticast  = new MulticastSocketService(
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
@@ -126,7 +131,7 @@ namespace multidevice {
 			//repeat = false;
 		}
 
-		passiveMulticast->dataRequest(data, taskSize, repeat);
+		passiveSocket->dataRequest(data, taskSize, repeat);
 		return true;
 	}
 
@@ -517,12 +522,12 @@ namespace multidevice {
 			deviceService->newDeviceConnected(sourceIp);
 		}
 
-		if (passiveMulticast->checkInputBuffer(mdFrame, &bytesRecv)) {
+		if (passiveSocket->checkInputBuffer(mdFrame, &bytesRecv)) {
  			runDataTask();
 		}
 
 		checkPassiveTasks();
-		if (!passiveMulticast->checkOutputBuffer()) {
+		if (!passiveSocket->checkOutputBuffer()) {
 			if (lastMediaContentTask.size != 0) {
 				timerCount++;
 				if (timerCount > 5) {
