@@ -221,19 +221,19 @@ namespace multidevice {
 }
 }
 
-extern "C" IRemoteDeviceManager* createRemoteDeviceManager(int devClass, bool deviceSearch, int srvPort) {
+extern "C" IRemoteDeviceManager* createRemoteDeviceManager(int devClass, bool useMulticast, int srvPort) {
 	IDeviceDomain* domain = NULL;
 
 	RemoteDeviceManager* rdm = RemoteDeviceManager::getInstance();
 
 	if (devClass == IDeviceDomain::CT_BASE) {
-		domain = new BaseDeviceDomain(deviceSearch, srvPort);
+		domain = new BaseDeviceDomain(useMulticast, srvPort);
 
 	} else if (devClass == IDeviceDomain::CT_PASSIVE) {
-		domain = new PassiveDeviceDomain(deviceSearch, srvPort);
+		domain = new PassiveDeviceDomain(useMulticast, srvPort);
 
 	} else if (devClass == IDeviceDomain::CT_ACTIVE) {
-		domain = new ActiveDeviceDomain(deviceSearch, srvPort);
+		domain = new ActiveDeviceDomain(useMulticast, srvPort);
 	}
 
 	rdm->setDeviceDomain(domain);

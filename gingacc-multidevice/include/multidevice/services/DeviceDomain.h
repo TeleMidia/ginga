@@ -90,11 +90,11 @@ namespace multidevice {
 		unsigned int frameSize;
 		bool connected;
 		bool newAnswerPosted;
-		bool deviceSearch;
+		bool enableMulticast;
 		int servicePort;
 
 	public:
-		DeviceDomain(bool devSearch, int srvPort);
+		DeviceDomain(bool useMulticast, int srvPort);
 		virtual ~DeviceDomain();
 
 		bool isConnected();

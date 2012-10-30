@@ -76,6 +76,7 @@ typedef struct {
 	float transparency;
 	void* focusManager;
 	void* privateBaseManager;
+    bool enableMulticast;
 	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* editListener;
 } NclPlayerData;
 

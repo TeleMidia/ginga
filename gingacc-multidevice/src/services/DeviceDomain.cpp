@@ -74,7 +74,7 @@ namespace multidevice {
 	unsigned int DeviceDomain::myIP       = 0;
 	bool DeviceDomain::taskIndicationFlag = false;
 
-	DeviceDomain::DeviceDomain(bool devSearch, int srvPort) {
+	DeviceDomain::DeviceDomain(bool useMulticast, int srvPort) {
 		deviceClass       = -1;
 		deviceWidth       = -1;
 		deviceHeight      = -1;
@@ -85,7 +85,7 @@ namespace multidevice {
 		deviceService     = NULL;
 		newAnswerPosted   = false;
 		connected         = false;
-		deviceSearch      = devSearch;
+		enableMulticast   = useMulticast;
 		servicePort       = srvPort;
 
 
@@ -102,6 +102,7 @@ namespace multidevice {
 		res = new RemoteEventService();
 		res->addDeviceClass(1);
 		res->addDeviceClass(2);
+
 	}
 
 	DeviceDomain::~DeviceDomain() {
@@ -312,10 +313,10 @@ namespace multidevice {
 				}
 			}
 
-		} else if (deviceSearch) {
+		} /*else if (deviceSearch) {
 			clog << "DeviceDomain::checkDomainTasks can't process input ";
 			clog << "buffer: task indication flag is true" << endl;
-		}
+		}*/
 
 		//if (deviceSearch)
 		broadcastService->checkOutputBuffer();

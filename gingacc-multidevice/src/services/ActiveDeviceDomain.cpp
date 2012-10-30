@@ -58,7 +58,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	ActiveDeviceDomain::ActiveDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
+	ActiveDeviceDomain::ActiveDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		clog << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
 		deviceClass   = CT_ACTIVE;
 		deviceService = NULL;
@@ -73,10 +73,6 @@ namespace multidevice {
 		char* task;
 		int connReqPayloadSize = 7;
 		int taskSize;
-
-
-		if (!deviceSearch)
-			return;
 
 		//TODO: offer configuration parameters during requests connection to CT_ACTIVE devs
 
