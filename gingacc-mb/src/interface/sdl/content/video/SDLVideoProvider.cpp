@@ -145,10 +145,10 @@ namespace mb {
 
 		IWindow* parent;
 
-		clog << "SDLVideoProvider::playOver" << endl;
-
 		SDLDeviceScreen::addCMPToRendererList(this);
 		parent = (IWindow*)(surface->getParentWindow());
+
+		clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
 			win = (SDLWindow*)parent;
 
