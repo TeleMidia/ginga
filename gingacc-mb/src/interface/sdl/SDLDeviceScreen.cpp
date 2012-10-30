@@ -2298,6 +2298,10 @@ namespace mb {
 				if (k != windows->end()) {
 					windows->erase(k);
 				}
+				if (windows->empty()) {
+					delete windows;
+					sortedMap->erase(j);
+				}
 			}
 		}
 		Thread::mutexUnlock(&renMutex);
