@@ -111,7 +111,7 @@ namespace mb {
 
 	void SDLAudioProvider::setMediaTime(double pos) {
 		if (decoder != NULL) {
-			decoder->seek((int64_t)pos);
+			decoder->seek(((int64_t)pos) * 1000000);
 		}
 	}
 
