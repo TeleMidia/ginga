@@ -580,6 +580,10 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::seek(int64_t pos) {
+        if (vs->ic->start_time != AV_NOPTS_VALUE) {
+        	pos += vs->ic->start_time;
+        }
+
 		stream_seek(pos, 0, 0);
 	}
 
@@ -1339,10 +1343,14 @@ namespace mb {
 		if (!vs->seek_req) {
 			vs->seek_pos = pos;
 			vs->seek_rel = rel;
-			vs->seek_flags &= ~AVSEEK_FLAG_BYTE;
+
 			if (seek_by_bytes) {
 				vs->seek_flags |= AVSEEK_FLAG_BYTE;
+
+			} else {
+				vs->seek_flags &= ~AVSEEK_FLAG_BYTE;
 			}
+
 			vs->seek_req = 1;
 		}
 	}
