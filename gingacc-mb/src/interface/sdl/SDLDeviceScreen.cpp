@@ -913,7 +913,8 @@ namespace mb {
 			*hasVisual = providerHasVisual;
 			delete provider;
 
-			provider = createContinuousMediaProvider(mrl, hasVisual, isRemote);
+			unlockSDL();
+			return createContinuousMediaProvider(mrl, hasVisual, isRemote);
 		}
 
 		unlockSDL();
