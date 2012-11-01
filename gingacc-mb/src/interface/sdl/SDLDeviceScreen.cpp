@@ -479,6 +479,7 @@ namespace mb {
 		SDLWindow* destWin;
 		SDL_Surface* destSur;
 		bool merged = false;
+		int w, h;
 
 		lockSDL();
 
@@ -487,7 +488,10 @@ namespace mb {
 		if (i != windowRefs.end()) {
 			destWin = (SDLWindow*)(i->second);
 
-			destSur = createUnderlyingSurface(wRes, hRes);
+			w = destWin->getW();
+			h = destWin->getH();
+
+			destSur = createUnderlyingSurface(w, h);
 
 			j = srcIds->begin();
 			while (j != srcIds->end()) {
