@@ -229,7 +229,7 @@ namespace multidevice {
 
 		if (getifaddrs(&ifaddr) == -1) {
 			perror("getifaddrs");
-			exit(EXIT_FAILURE);
+			SystemCompat::gingaProcessExit(EXIT_FAILURE);
 		}
 
 		/* Walk through linked list, maintaining head pointer so we

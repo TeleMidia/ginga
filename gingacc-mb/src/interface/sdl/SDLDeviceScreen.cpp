@@ -1124,6 +1124,22 @@ namespace mb {
 		}
 	}
 
+	void SDLDeviceScreen::notifyQuit() {
+		map<SDLDeviceScreen*, short>::iterator i;
+		SDLDeviceScreen* s;
+
+		Thread::mutexLock(&scrMutex);
+		i = sdlScreens.begin();
+		while (i != sdlScreens.end()) {
+			s = i->first;
+			s->im->postInputEvent(CodeMap::KEY_QUIT);
+			++i;
+		}
+		Thread::mutexUnlock(&scrMutex);
+
+		cout << "SDLDeviceScreen::notifyQuit all done!" << endl;
+	}
+
 	void SDLDeviceScreen::sdlQuit() {
 		SDL_Quit();
 		clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
@@ -1288,21 +1304,10 @@ namespace mb {
 			    	}
 
 			    	if (event.type == SDL_QUIT) {
-#if !defined(SDL_VIDEO_DRIVER_WINDOWS)
-						/*
-						 * TODO:
-						 *      1) send a notification to NCL player
-						 *      2) check which screen sent SDL_QUIT.
-						 */
-
-			    		Thread::mutexUnlock(&scrMutex);
-						releaseAll();
-						sdlQuit();
-						exit(0);
-						return NULL;
-#else
-						exit(0);
-#endif
+			    		notifyQuit();
+			    		sdlQuit();
+			    		hasRenderer = false;
+			    		return NULL;
 
 					} else if (s->im != NULL) {
 						eventBuffer = (SDLEventBuffer*)(
