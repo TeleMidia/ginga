@@ -280,6 +280,7 @@ typedef struct {
 
 		private:
 			static void checkSDLInit();
+			static void notifyQuit();
 			static void sdlQuit();
 			static void* rendererT(void* ptr);
 

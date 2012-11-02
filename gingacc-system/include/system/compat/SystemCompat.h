@@ -216,7 +216,7 @@ namespace compat {
 			static void uSleep(unsigned int microseconds);
 			static string getTemporaryDir();
 
-			static void exit(short status);
+			static void gingaProcessExit(short status);
 
 
 			/**********************

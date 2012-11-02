@@ -448,6 +448,14 @@ namespace mb {
 							return false;
 						}
 					}
+
+				} else if (keyCode == CodeMap::KEY_QUIT) {
+					cout << "InputManger::dispatchEvent QUIT" << endl;
+					if (!lis->userEventReceived(inputEvent)) {
+						unlock();
+						notifying = false;
+						return false;
+					}
 				}
 
 			} else if (!lis->userEventReceived(inputEvent)) {
