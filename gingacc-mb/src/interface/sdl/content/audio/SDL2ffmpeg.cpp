@@ -2274,26 +2274,7 @@ the_end:
 		VideoState* vs;
 
 		int64_t audio_cb_time;
-		//int audio_size;
 		int bytes_per_sec;
-		bool hasTimeRefer = false;
-
-		//int64_t uResponseTime;
-		//int64_t elapsedTime;
-
-		//int cvt_len;
-
-		//unsigned int sleepTime;
-
-		bool presented;
-
-		//clog << "SDL2ffmpeg::sdl_audio_callback begin" << endl;
-
-		/*if (wantedSpec.freq == 0 || wantedSpec.samples == 0) {
-			clog << "SDL2ffmpeg::sdl_audio_callback Warning frequency is 0!";
-			clog << " Exiting" << endl;
-			return;
-		}*/
 
 		Thread::mutexLock(&aiMutex);
 		audio_cb_time = av_gettime();
@@ -2305,113 +2286,43 @@ the_end:
 			dec = (*i);
 			vs  = dec->vs;
 
-			presented = false;
 			if (dec->status == ST_PLAYING && vs != NULL &&
 					vs->audio_stream >= 0 && vs->audio_st != NULL) {
-
-				if (vs->video_stream >= 0 && vs->video_st != NULL) {
-					hasTimeRefer = true;
-				}
 
 				dec->audio_refresh_decoder();
 				if (vs->audio_main_buf_size[0] == vs->audio_hw_buf_size) {
 
-					if (dec->acvt.needed) {
-						dec->acvt.len = vs->audio_hw_buf_size;
-
-						if (dec->acvt.buf == NULL) {
-							dec->acvt.buf = (Uint8*)malloc(
-									dec->acvt.len * dec->acvt.len_mult);
-
-							memset(
-									dec->acvt.buf,
-									0,
-									dec->acvt.len * dec->acvt.len_mult);
+					if (dec->soundLevel > 0) {
+						if (len != vs->audio_hw_buf_size) {
+							clog << "SDL2ffmpeg::sdl_audio_callback(";
+							clog << vs->filename << ")";
+							clog << "len = '" << len << "' and ";
+							clog << "buffSize = '";
+							clog << vs->audio_hw_buf_size << "'";
+							clog << endl;
 						}
 
-						if (dec->acvt.buf != NULL) {
-							memcpy(
-									dec->acvt.buf,
-									vs->audio_main_buf[0],
-									vs->audio_hw_buf_size);
-
-							SDL_ConvertAudio(&dec->acvt);
-
-							clog << endl;
-							clog << "Converting(cb len = '" << len;
-							clog << "', Dec = '";
-							clog << dec << "', bytes to convert = '";
-							clog << dec->acvt.len << "', soundLevel = '";
-							clog << dec->soundLevel << "')" << endl;
-							clog << "FROM: ";
-							clog << "format '" << dec->wantedSpec.format << "' ";
-							clog << "channels '";
-							clog << (short)dec->wantedSpec.channels;
-							clog << "' freq '" << dec->wantedSpec.freq << "' ";
-							clog << "' samples '" << dec->wantedSpec.samples;
-							clog << "' bufSize '" << vs->audio_hw_buf_size;
-							clog << "'";
-							clog << endl;
-							clog << "TO: ";
-							clog << "format '" << dec->spec.format;
-							clog << "' channels '";
-							clog << (short)dec->spec.channels;
-							clog << "' freq '" << dec->spec.freq;
-							clog << "' samples '" << dec->spec.samples;
-							clog << "' converted size '";
-							clog << dec->acvt.len_cvt;
-							clog << "'";
-							clog << "' converted length ratio '";
-							clog << dec->acvt.len_ratio;
-							clog << "'";
-							clog << endl;
-
-							clog << "Mixed '" << len << "' bytes" << endl;
-							clog << "Total in this step '" << dec->monoStep;
-							clog << "'" << endl;
-
-							if (dec->soundLevel > 0) {
-								SDL_MixAudio(
-										stream,
-										dec->acvt.buf,
-										len,
-										dec->soundLevel);
-							}
-
-							free(dec->acvt.buf);
-							dec->acvt.buf = NULL;
-
-							clog << "CB_LEN = '" << len << "'" << endl;
-							clog << "MY_LEN = '" << vs->audio_write_buf_size;
-							clog << "'" << endl;
-							clog << "MULTI = '" << dec->acvt.len_mult;
-							clog << "'" << endl;
-							clog << "CVT_LEN = '" << dec->acvt.len_cvt;
-							clog << "'" << endl;
-
-							presented = true;
-						}
-
-					} else {
-						if (dec->soundLevel > 0) {
-							if (len != vs->audio_hw_buf_size) {
-								clog << "SDL2ffmpeg::sdl_audio_callback(";
-								clog << vs->filename << ")";
-								clog << "len = '" << len << "' and ";
-								clog << "buffSize = '";
-								clog << vs->audio_hw_buf_size << "'";
-								clog << endl;
-							}
-
-							SDL_MixAudio(
-									stream,
-									vs->audio_main_buf[0],
-									vs->audio_hw_buf_size,
-									dec->soundLevel);
-						}
-
-						presented = true;
+						SDL_MixAudio(
+								stream,
+								vs->audio_main_buf[0],
+								vs->audio_hw_buf_size,
+								dec->soundLevel);
 					}
+
+					bytes_per_sec = vs->audio_tgt.freq *
+							vs->audio_tgt.channels *
+							av_get_bytes_per_sample(vs->audio_tgt.fmt);
+
+					vs->audio_write_buf_size = vs->audio_hw_buf_size;
+
+					vs->audio_current_pts = vs->audio_clock -
+							(double)(2 * vs->audio_hw_buf_size +
+									vs->audio_write_buf_size) / bytes_per_sec;
+
+					vs->audio_current_pts_drift = vs->audio_current_pts -
+							audio_cb_time / 1000000.0;
+
+					vs->audio_main_buf_size[0] = 0;
 
 				}/* else {
 					clog << endl << endl;
@@ -2428,34 +2339,10 @@ the_end:
 				}*/
 			}
 
-			if (presented) {
-				bytes_per_sec = vs->audio_tgt.freq *
-						vs->audio_tgt.channels *
-						av_get_bytes_per_sample(vs->audio_tgt.fmt);
-
-				vs->audio_write_buf_size = vs->audio_hw_buf_size;
-
-				vs->audio_current_pts = vs->audio_clock -
-						(double)(2 * vs->audio_hw_buf_size +
-								vs->audio_write_buf_size) / bytes_per_sec;
-
-				vs->audio_current_pts_drift = vs->audio_current_pts -
-						audio_cb_time / 1000000.0;
-
-				vs->audio_main_buf_size[0] = 0;
-			}
-
 			++i;
 		}
 
-		/*elapsedTime = av_gettime() - audio_cb_time;
-		sleepTime   = 1000000/30;*/
-
 		Thread::mutexUnlock(&aiMutex);
-
-		/*if (!hasTimeRefer && sleepTime > elapsedTime) {
-			SystemCompat::uSleep(sleepTime - elapsedTime);
-		}*/
 	}
 
 	int SDL2ffmpeg::audio_refresh_decoder() {
@@ -2615,6 +2502,9 @@ the_end:
 			int wanted_sample_rate,
 			struct AudioParams *audio_hw_params) {
 
+		Uint8 tmpChannels;
+		int tmpFreq;
+
 		const char *env;
 		const int next_nb_channels[] = {0, 0, 1, 6, 2, 6, 4, 6};
 
@@ -2635,12 +2525,12 @@ the_end:
 			wanted_channel_layout &= ~AV_CH_LAYOUT_STEREO_DOWNMIX;
 		}
 
-		wantedSpec.channels = (unsigned int)av_get_channel_layout_nb_channels(
+		tmpChannels = (unsigned int)av_get_channel_layout_nb_channels(
 				wanted_channel_layout);
 
-		wantedSpec.freq = wanted_sample_rate;
-		if (wantedSpec.freq <= 0 || (unsigned int)wantedSpec.channels == 0 ||
-				(unsigned int)wantedSpec.channels > 7) {
+		tmpFreq = wanted_sample_rate;
+		if (tmpFreq <= 0 || (unsigned int)tmpChannels == 0 ||
+				(unsigned int)tmpChannels > 7) {
 
 			fprintf(stderr, "Invalid sample rate or channel count!\n");
 			return -1;
@@ -2651,6 +2541,8 @@ the_end:
 		wantedSpec.samples  = SDL_AUDIO_BUFFER_SIZE;
 		wantedSpec.callback = sdl_audio_callback;
 		wantedSpec.userdata = NULL;
+		wantedSpec.freq     = 44100;
+		wantedSpec.channels = 2;
 
 		if (spec.size == 0) {
 			while (SDL_OpenAudio(&wantedSpec, &spec) < 0) {
@@ -2666,33 +2558,6 @@ the_end:
 				wanted_channel_layout = av_get_default_channel_layout(
 						(int)wantedSpec.channels);
 			}
-
-			clog << "SDL2ffmpeg::audio_open '" << vs->filename << "'" << endl;
-			clog << "Desired format = '" << wantedSpec.format;
-			clog << "'" << endl;
-			clog << "Desired silence = '" << wantedSpec.silence;
-			clog << "'" << endl;
-			clog << "Desired samples = '" << wantedSpec.samples;
-			clog << "'" << endl;
-			clog << "Desired size = '" << wantedSpec.size;
-			clog << "'" << endl;
-			clog << "Desired channels = '" << (int)wantedSpec.channels;
-			clog << "'" << endl;
-			clog << "Desired frequency = '" << wantedSpec.freq;
-			clog << "'" << endl;
-			clog << endl;
-			clog << "Obtained format = '" << spec.format;
-			clog << "'" << endl;
-			clog << "Obtained silence = '" << spec.silence;
-			clog << "'" << endl;
-			clog << "Obtained samples = '" << spec.samples;
-			clog << "'" << endl;
-			clog << "Obtained size = '" << spec.size;
-			clog << "'" << endl;
-			clog << "Obtained channels = '" << (unsigned int)spec.channels;
-			clog << "'" << endl;
-			clog << "Obtained frequency = '" << spec.freq;
-			clog << "'" << endl;
 
 			if (spec.size == 0) {
 				spec.size = (unsigned int)wantedSpec.channels *
@@ -2727,6 +2592,9 @@ the_end:
 		if (spec.format != AUDIO_S16SYS) {
 			return -1;
 		}
+
+		wantedSpec.freq     = tmpFreq;
+		wantedSpec.channels = tmpChannels;
 
 		if (spec.channels != wantedSpec.channels) {
 			wanted_channel_layout = av_get_default_channel_layout(
