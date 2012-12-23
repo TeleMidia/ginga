@@ -384,8 +384,11 @@ namespace player {
 			this->wakeUp();
 			return;
 		}
-		provider->stop();
-		this->wakeUp();
+
+		if (status != STOP) {
+			provider->stop();
+			this->wakeUp();
+		}
 
 		clog << "AVPlayer::stop("<< mrl << ") all done!" << endl;
 	}
