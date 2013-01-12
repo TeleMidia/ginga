@@ -378,7 +378,9 @@ namespace mb {
 			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
 				vParent.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--embed") == 0) && ((i + 1) < argc)) {
+			} else if ((strcmp(args[i], "--embed") == 0 ||
+					strcmp(args[i], "--wid") == 0) && ((i + 1) < argc)) {
+
 				vEmbed.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {

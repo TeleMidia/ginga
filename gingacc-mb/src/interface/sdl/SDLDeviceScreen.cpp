@@ -723,7 +723,7 @@ namespace mb {
 			sUWin = (GingaWindowID)info.info.x11.window;
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-			//TODO: Windows input event configuration
+			sUWin = (GingaWindowID)info.info.win.window;
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
 			//TODO: Cocoa input event configuration
@@ -1307,6 +1307,9 @@ namespace mb {
 			    		notifyQuit();
 			    		sdlQuit();
 			    		hasRenderer = false;
+			    		clog << "SDLDeviceScreen::rendererT QUIT" << endl;
+
+			    		Thread::mutexUnlock(&scrMutex);
 			    		return NULL;
 
 					} else if (s->im != NULL) {
@@ -1397,6 +1400,7 @@ namespace mb {
 			}
 		}
 
+		clog << "SDLDeviceScreen::rendererT ALL DONE" << endl;
 		return NULL;
 	}
 
@@ -1678,7 +1682,10 @@ namespace mb {
 		}
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-		//TODO: Windows input event configuration
+		SetFocus((HWND)uWin);
+		clog << "SDLDeviceScreen::forceInputFocus(";
+		clog << (unsigned long)uWin << ") DONE";
+		clog << endl;
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
 		//TODO: Cocoa input event configuration

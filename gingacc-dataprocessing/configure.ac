@@ -1,4 +1,4 @@
-AC_INIT(gingaccdataprocessing, 0.13.4)
+AC_INIT(gingaccdataprocessing, 0.13.5)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
