@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Data Processing 0.13.4"
+PROJECT="Ginga Common Core Data Processing 0.13.5"
 TEST_TYPE=-f
 FILE=include/dataprocessing/DataProcessor.h
 

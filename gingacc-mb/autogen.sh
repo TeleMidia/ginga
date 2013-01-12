@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Multimedia Backend 0.13.4"
+PROJECT="Ginga Common Core Multimedia Backend 0.13.5"
 TEST_TYPE=-f
 FILE=include/mb/interface/IWindow.h
 
