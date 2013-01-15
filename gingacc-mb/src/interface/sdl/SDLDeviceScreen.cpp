@@ -1378,13 +1378,6 @@ namespace mb {
 						initScreen(s);
 						sdlScreens[s] = SPT_NONE;
 						i = sdlScreens.begin();
-
-						if (!s->mustGainFocus) {
-							clog << "SDLDeviceScreen::renderT forcing focus";
-							clog << endl;
-							s->mustGainFocus = true;
-							s->uEmbedFocused = false;
-						}
 						break;
 
 					case SPT_CLEAR:
