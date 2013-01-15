@@ -282,6 +282,9 @@ typedef struct {
 			static void checkSDLInit();
 			static void notifyQuit();
 			static void sdlQuit();
+
+			static void checkWindowFocus(SDLDeviceScreen* s, SDL_Event* event);
+			static bool checkEvents();
 			static void* rendererT(void* ptr);
 
 			static void refreshRC(SDLDeviceScreen* screen);
