@@ -1137,7 +1137,7 @@ namespace mb {
 		}
 		Thread::mutexUnlock(&scrMutex);
 
-		cout << "SDLDeviceScreen::notifyQuit all done!" << endl;
+		clog << "SDLDeviceScreen::notifyQuit all done!" << endl;
 	}
 
 	void SDLDeviceScreen::sdlQuit() {
@@ -1145,14 +1145,194 @@ namespace mb {
 		clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
 	}
 
-	void* SDLDeviceScreen::rendererT(void* ptr) {
+	void SDLDeviceScreen::checkWindowFocus(
+			SDLDeviceScreen* s, SDL_Event* event) {
+
+    	if (s->uEmbedId != NULL) {
+			if (event->type == SDL_WINDOWEVENT &&
+					event->window.windowID == s->sdlId) {
+
+				switch (event->window.event) {
+					case SDL_WINDOWEVENT_SHOWN:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' shown" << endl;
+						break;
+
+					case SDL_WINDOWEVENT_HIDDEN:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' hidden" << endl;
+						break;
+
+					case SDL_WINDOWEVENT_EXPOSED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' exposed" << endl;
+
+						s->mustGainFocus = true;
+						break;
+
+					case SDL_WINDOWEVENT_MOVED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' moved to '";
+						clog << event->window.data1;
+						clog << "," << event->window.data2 << "'";
+						clog << endl;
+						break;
+
+					case SDL_WINDOWEVENT_RESIZED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' resized to '";
+						clog << event->window.data1;
+						clog << "," << event->window.data2 << "'";
+						clog << endl;
+
+						s->wRes = event->window.data1;
+						s->hRes = event->window.data2;
+
+						if (s->im != NULL) {
+							s->im->setAxisBoundaries(
+									s->wRes, s->hRes, 0);
+						}
+
+						break;
+
+					case SDL_WINDOWEVENT_MINIMIZED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' minimized" << endl;
+						break;
+
+					case SDL_WINDOWEVENT_MAXIMIZED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' maximized" << endl;
+						break;
+
+					case SDL_WINDOWEVENT_RESTORED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' restored to '";
+						clog << event->window.data1;
+						clog << ", " << event->window.data2 << "'";
+						clog << endl;
+						break;
+
+					case SDL_WINDOWEVENT_ENTER:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' Mouse entered" << endl;
+
+						s->mustGainFocus = true;
+						break;
+
+					case SDL_WINDOWEVENT_LEAVE:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' Mouse left" << endl;
+						break;
+
+					case SDL_WINDOWEVENT_FOCUS_GAINED:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' gained keyboard focus" << endl;
+
+						s->uEmbedFocused = true;
+						break;
+
+					case SDL_WINDOWEVENT_FOCUS_LOST:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' lost keyboard focus" << endl;
+
+						s->uEmbedFocused = false;
+						break;
+
+					case SDL_WINDOWEVENT_CLOSE:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' closed" << endl;
+						break;
+
+					default:
+						clog << "SDLDeviceScreen::checkWindowFocus ";
+						clog << "Window '" << event->window.windowID;
+						clog << "' got unknown event '";
+						clog << event->window.event << "'" << endl;
+						break;
+				}
+			}
+    	}
+	}
+
+	bool SDLDeviceScreen::checkEvents() {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDLDeviceScreen* s;
 		SDL_Event event;
-		int elapsedTime, decRate;
 		bool shiftOn = false;
 		bool capsOn  = false;
 		SDLEventBuffer* eventBuffer = NULL;
+
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.sym == SDLK_LSHIFT ||
+						event.key.keysym.sym == SDLK_RSHIFT) {
+
+					shiftOn = true;
+				}
+
+			} else  if (event.type == SDL_KEYUP) {
+				if (event.key.keysym.sym == SDLK_CAPSLOCK) {
+					capsOn = !capsOn;
+
+				} else if (event.key.keysym.sym == SDLK_LSHIFT ||
+						event.key.keysym.sym == SDLK_RSHIFT) {
+
+					shiftOn = false;
+				}
+
+			} else if (event.type == SDL_QUIT) {
+	    		notifyQuit();
+	    		sdlQuit();
+	    		hasRenderer = false;
+	    		clog << "SDLDeviceScreen::checkEvents QUIT" << endl;
+
+	    		return false;
+			}
+
+			Thread::mutexLock(&scrMutex);
+			i = sdlScreens.begin();
+			while (i != sdlScreens.end()) {
+				s = i->first;
+
+				checkWindowFocus(s, &event);
+
+		    	if (s->im != NULL) {
+					eventBuffer = (SDLEventBuffer*)(
+							s->im->getEventBuffer());
+
+					if (((SDLEventBuffer::checkEvent(s->sdlId, event) &&
+							s->uEmbedId == NULL) || checkEventFocus(s))) {
+
+						eventBuffer->feed(event, capsOn, shiftOn);
+					}
+				}
+				++i;
+			}
+
+			Thread::mutexUnlock(&scrMutex);
+    	}
+
+		return true;
+	}
+
+	void* SDLDeviceScreen::rendererT(void* ptr) {
+		map<SDLDeviceScreen*, short>::iterator i;
+		SDLDeviceScreen* s;
+		int elapsedTime, decRate;
 		double lastRender = 0;
 
 		checkSDLInit();
@@ -1160,173 +1340,9 @@ namespace mb {
 		while (hasRenderer) {
 			elapsedTime = getCurrentTimeMillis();
 
-			while (SDL_PollEvent(&event)) {
-				if (event.type == SDL_KEYDOWN) {
-					if (event.key.keysym.sym == SDLK_LSHIFT ||
-							event.key.keysym.sym == SDLK_RSHIFT) {
-
-						shiftOn = true;
-					}
-
-				} else  if (event.type == SDL_KEYUP) {
-					if (event.key.keysym.sym == SDLK_CAPSLOCK) {
-						capsOn = !capsOn;
-
-					} else if (event.key.keysym.sym == SDLK_LSHIFT ||
-							event.key.keysym.sym == SDLK_RSHIFT) {
-
-						shiftOn = false;
-					}
-				}
-
-				Thread::mutexLock(&scrMutex);
-				i = sdlScreens.begin();
-				while (i != sdlScreens.end()) {
-					s = i->first;
-
-			    	if (s->uEmbedId != NULL) {
-						if (event.type == SDL_WINDOWEVENT &&
-								event.window.windowID == s->sdlId) {
-
-							switch (event.window.event) {
-								case SDL_WINDOWEVENT_SHOWN:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' shown" << endl;
-									break;
-
-								case SDL_WINDOWEVENT_HIDDEN:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' hidden" << endl;
-									break;
-
-								case SDL_WINDOWEVENT_EXPOSED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' exposed" << endl;
-
-									s->mustGainFocus = true;
-									break;
-
-								case SDL_WINDOWEVENT_MOVED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' moved to '";
-									clog << event.window.data1;
-									clog << "," << event.window.data2 << "'";
-									clog << endl;
-									break;
-
-								case SDL_WINDOWEVENT_RESIZED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' resized to '";
-									clog << event.window.data1;
-									clog << "," << event.window.data2 << "'";
-									clog << endl;
-
-									s->wRes = event.window.data1;
-									s->hRes = event.window.data2;
-
-									if (s->im != NULL) {
-										s->im->setAxisBoundaries(
-												s->wRes, s->hRes, 0);
-									}
-
-									break;
-
-								case SDL_WINDOWEVENT_MINIMIZED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' minimized" << endl;
-									break;
-
-								case SDL_WINDOWEVENT_MAXIMIZED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' maximized" << endl;
-									break;
-
-								case SDL_WINDOWEVENT_RESTORED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' restored to '";
-									clog << event.window.data1;
-									clog << ", " << event.window.data2 << "'";
-									clog << endl;
-									break;
-
-								case SDL_WINDOWEVENT_ENTER:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' Mouse entered" << endl;
-
-									s->mustGainFocus = true;
-									break;
-
-								case SDL_WINDOWEVENT_LEAVE:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' Mouse left" << endl;
-									break;
-
-								case SDL_WINDOWEVENT_FOCUS_GAINED:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' gained keyboard focus" << endl;
-
-									s->uEmbedFocused = true;
-									break;
-
-								case SDL_WINDOWEVENT_FOCUS_LOST:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' lost keyboard focus" << endl;
-
-									s->uEmbedFocused = false;
-									break;
-
-								case SDL_WINDOWEVENT_CLOSE:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' closed" << endl;
-									break;
-
-								default:
-									clog << "SDLDeviceScreen::rendererT ";
-									clog << "Window '" << event.window.windowID;
-									clog << "' got unknown event '";
-									clog << event.window.event << "'" << endl;
-									break;
-							}
-						}
-			    	}
-
-			    	if (event.type == SDL_QUIT) {
-			    		notifyQuit();
-			    		sdlQuit();
-			    		hasRenderer = false;
-			    		clog << "SDLDeviceScreen::rendererT QUIT" << endl;
-
-			    		Thread::mutexUnlock(&scrMutex);
-			    		return NULL;
-
-					} else if (s->im != NULL) {
-						eventBuffer = (SDLEventBuffer*)(
-								s->im->getEventBuffer());
-
-						if (((SDLEventBuffer::checkEvent(s->sdlId, event) &&
-								s->uEmbedId == NULL) || checkEventFocus(s))) {
-
-							eventBuffer->feed(event, capsOn, shiftOn);
-						}
-					}
-					++i;
-				}
-
-				Thread::mutexUnlock(&scrMutex);
-	    	}
+			if (!checkEvents()) {
+				return NULL;
+			}
 
 			Thread::mutexLock(&scrMutex);
 			i = sdlScreens.begin();
@@ -1362,6 +1378,13 @@ namespace mb {
 						initScreen(s);
 						sdlScreens[s] = SPT_NONE;
 						i = sdlScreens.begin();
+
+						if (!s->mustGainFocus) {
+							clog << "SDLDeviceScreen::renderT forcing focus";
+							clog << endl;
+							s->mustGainFocus = true;
+							s->uEmbedFocused = false;
+						}
 						break;
 
 					case SPT_CLEAR:

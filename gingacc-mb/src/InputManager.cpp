@@ -621,12 +621,14 @@ namespace mb {
 	void InputManager::run() {
 		IInputEvent* inputEvent;
 
-		int pLastCode         = -1;
-		int lastCode          = -1;
-		double pTimeStamp     = 0;
-		double timeStamp      = 0;
+		int pLastCode     = -1;
+		int lastCode      = -1;
+		double pTimeStamp = 0;
+		double timeStamp  = 0;
 
 		int mouseX, mouseY;
+
+		clog << "InputManager::run main loop" << endl;
 
 #if HAVE_KINECTSUPPORT
 		if (running) {
@@ -663,10 +665,9 @@ namespace mb {
 						currentYAxis = maxY;
 					}
 
-					/*
 					clog << "InputManager::run new currentX = '";
 					clog << currentXAxis << "' currentY = '";
-					clog << currentYAxis << "'" << endl;*/
+					clog << currentYAxis << "'" << endl;
 
 					delete inputEvent;
 					if (eventBuffer != NULL) {
@@ -705,6 +706,10 @@ namespace mb {
 						timeStamp) >= declarativeIntervalTime)) {
 
 					lastCode  = inputEvent->getKeyCode(myScreen);
+
+					clog << "InputManager::run event code = '";
+					clog << lastCode << "'" << endl;
+
 					timeStamp = getCurrentTimeMillis();
 					if (!dispatchEvent(inputEvent)) {
 						delete inputEvent;
