@@ -10,13 +10,13 @@ AC_PROG_LIBTOOL
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga; do
+for spfx in /usr/lib /usr/local/lib ${prefix}/lib/ginga/; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga; do
+for spfx in /usr/include /usr/local/include ${prefix}/include/ginga/; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -125,12 +125,12 @@ AC_ARG_ENABLE(multiprocess,
   enable_multiprocess="$enableval", enable_multiprocess=no)
 
 if test x$enable_multiprocess = xno; then
-   MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 0, [Def to 0 if you don't have Multiple Process support.])
    AC_MSG_WARN([*** Multiple process support will not be built.])
 
 else
-   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi

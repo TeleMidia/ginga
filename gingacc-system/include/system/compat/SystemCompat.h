@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define SystemCompat_H_
 
 extern "C" {
+// For Linux, Mac OS Snow Leopard (10.6) and Win32
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -65,26 +66,56 @@ extern "C" {
 	#include <io.h>
 	#include <windows.h>
 	#include <winsock2.h>
-#ifdef WINSTRUCTS
+  #ifdef WINSTRUCTS
 	#include <Ws2tcpip.h>
-#endif
+  #endif
 	#pragma comment(lib,"ws2_32.lib")
-#else
+#else // For Linux and Mac OS Snow Leopard (10.6)
+	#include <stdio.h>
+
+  #if (defined __APPLE__ || defined HAVE_MACH_SL_H ) // For Mac OS Snow Leopard (10.6)
+	#include <mach/mach.h>
+	#include <mach/mach_host.h>
+	#include <mach/mach_types.h>
+	#include <mach/vm_statistics.h>
+	#include <sys/sysctl.h>
+	#include <sys/types.h>
+  #elif (HAVE_SYS_SYSINFO_H) // For Linux only
+	#include <sys/sysinfo.h>
+  #endif
+
+  #if (defined HAVE_SYS_SOCKET_H || defined HAVE_IF_H)
+    #ifdef STDC_HEADERS
+	#include <stdlib.h>
+	#include <stddef.h>
+    #else
+      #ifdef HAVE_STDLIB_H
+	#include <stdlib.h>
+      #endif
+    #endif
+  #endif
+
 	#include <sys/param.h>
 	#include <unistd.h>
 	#include <sys/resource.h>
 	#include <signal.h>
 	#include <sys/utsname.h>
-	#include <sys/sysinfo.h>
 
 	#include <sys/types.h>
-	#include <sys/socket.h>
 	#include <sys/ioctl.h>
 	#include <sys/time.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <net/if.h>
+  #ifdef HAVE_SYS_SOCKET_H                                                                                                                                                                                                                                     
+	#include <sys/socket.h>
+  #endif
+
+  #ifdef HAVE_IF_H
+	#include <net/if.h>
+  #endif
+
 #endif
 }
 

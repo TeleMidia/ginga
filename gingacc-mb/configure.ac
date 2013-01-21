@@ -24,13 +24,13 @@ AC_SUBST(DIRECTFB_VERSION)
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga; do
+for spfx in /usr/lib /usr/local/lib /usr/X11/lib ${prefix}/lib ${prefix}/lib/ginga/; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga /usr/local/include/directfb /usr/local/include/SDL2; do
+for spfx in /usr/include /usr/local/include ${prefix}/include/ginga /usr/local/include/directfb ${prefix}/include ${prefix}/include/ginga/ ${prefix}/include/SDL2; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -84,7 +84,7 @@ fi
 ###################
 # DirectFB System #
 ###################
-DFB_LIBS='-L/usr/local/lib/ginga'
+DFB_LIBS='-L${prefix}/lib/ginga'
 
 if test x$haspkgconfig = xyes; then
 dfb=yes
@@ -182,7 +182,7 @@ if test x$hasX11 = xyes; then
 	X11_LIBS='-lX11'
 	AC_DEFINE(HAVE_X11, 1, [Def to 1 if you have X11 support.])
 else
-	X11_LIBS='-L/usr/local/lib/ginga'
+	X11_LIBS='-L${prefix}/lib/ginga'
 	AC_DEFINE(HAVE_X11, 0, [Def to 1 if you don't have X11 support.])
 fi
 
@@ -209,6 +209,32 @@ fi
 
 AM_CONDITIONAL([SDLSYSTEM], [test x$enable_sdl = xyes])
 
+######################################################################
+# ffmpeg                                                             #
+# If the ffmpeg version used is 0.10.4, libavformat/avformat.h must  #
+# be included in include/mb/interface/sdl/content/audio/SDL2ffmpeg.h #
+######################################################################
+is_ffmpeg_version_0_10_4=no
+
+AC_PROG_AWK
+AC_CHECK_PROG(FFMPEG_CHECK,ffmpeg,[yes],[no],[${prefix}/bin])
+if test x"$FFMPEG_CHECK" != x"yes" ; then
+	AC_MSG_ERROR([Please install ffmpeg berfore installing.]) ;
+else
+	is_ffmpeg_version_0_10_4=`${prefix}/bin/ffmpeg -version | ${AWK} '{if ($3 == "0.10.4") print "yes"}'`
+fi
+
+if test x"$is_ffmpeg_version_0_10_4" = x"yes" ; then
+	AC_CHECK_HEADER([libavformat/avformat.h],
+			[AC_DEFINE([HAVE_LIBAVFORMAT_AVFORMAT_H], [1],
+				   [Define to 1 if you have libavformat/avformat.h])],
+			[AC_MSG_ERROR([
+				       Couldn't find libavformat/avformat.h
+				      ])]
+		       )
+fi
+
+
 #####################
 # ffmpeg for SDL MB #
 #####################
@@ -217,7 +243,7 @@ sdlffmpeg=yes
 if test x$enable_sdl = xno; then
 sdlffmpeg=no
 else
-AC_HAVE_LIBRARY(avcodec, [], sdlffmpeg=no)
+AC_HAVE_LIBRARY([avcodec], [], sdlffmpeg=no)
 fi
 
 if test x$sdlffmpeg = xno; then
@@ -306,7 +332,7 @@ AC_HAVE_LIBRARY(
 )
 
 if test x$enable_fusionsound = xno; then
-   FUSIONSOUND_LIBS='-L/usr/local/lib/ginga'
+   FUSIONSOUND_LIBS='-L${prefix}/lib/ginga'
    AC_DEFINE(HAVE_FUSIONSOUND, 0, [Define to 0 if you don't have FusionSound support.])
    AC_MSG_WARN([*** Ginga FusionSound support will not be built.])
 else
@@ -338,15 +364,15 @@ AC_CHECK_HEADER(
 )
 
 if test x$enable_components = xno; then
-   TEST_LIBS='-lgingaccmbdfb -lgingaccmbdecdfbimg -lgingaccmbdecdfbav -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
-   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
+   TEST_LIBS='-lgingaccmbdfb -lgingaccmbdecdfbimg -lgingaccmbdecdfbav -L${prefix}/lib/ginga/mb -L${prefix}//lib/ginga/mb/dec'
+   COMPONENTS_LIBS='-L/usr/local/lib/ -L${prefix}/lib/ginga/ -L${prefix}/lib/ginga/mb -L${prefix}/lib/ginga/mb/dec'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
    force_xineprovider=yes
    AC_MSG_WARN([*** Xine provider will be forced in a non-componentized built.])
 else
-   TEST_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec'
-   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   TEST_LIBS='-ldl -L/usr/local/lib/ -L${prefix}/lib/ginga/ -L${prefix}/lib/ginga/mb -L${prefix}/lib/ginga/mb/dec'
+   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
    AC_MSG_RESULT([*** Component support will be built.])
 fi
@@ -448,8 +474,8 @@ AC_ARG_ENABLE(kinect,
   [  --enable-kinect build project with kinect support (kinect as an input device) [[default=no]]],
   enable_kinect="$enableval", enable_kinect=no)
    
-KINECT_LIBS='-L/usr/local/lib/ginga/'
-KINECT_INCS='-L/usr/local/include/ginga/'
+KINECT_LIBS='-L${prefix}/lib/ginga/'
+KINECT_INCS='-L${prefix}/include/ginga/'
 
 if test x$enable_kinect = xno; then
    AC_DEFINE(HAVE_KINECTSUPPORT, 0, [Def to 0 if you don't have Kinect support.])

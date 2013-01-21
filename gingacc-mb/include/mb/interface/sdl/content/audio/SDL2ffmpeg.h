@@ -88,7 +88,11 @@ extern "C" {
 #include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
+
+#ifndef HAVE_LIBAVFORMAT_AVFORMAT_H
 #include "libavutil/time.h"
+#endif
+
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"

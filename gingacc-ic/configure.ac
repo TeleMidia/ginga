@@ -10,13 +10,13 @@ AC_PROG_LIBTOOL
 
 # Bring additional directories where things might be found into our
 # search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/; do
+for spfx in /usr/lib/ /usr/local/lib/ ${prefix}/lib/ginga/; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/; do
+for spfx in /usr/include/ /usr/local/include/ ${prefix}/include/ginga/; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -68,12 +68,12 @@ AC_CHECK_HEADER(
 if test x$enable_curl = xno; then
    AC_MSG_WARN([*** Ginga CURL IC support will not be built.])
    AC_DEFINE(HAVE_CURL, 0, [Def to 0 if you don't have ginga curl support.])
-   CURL_LIBS='-L/usr/local/lib/ginga'
+   CURL_LIBS='-L${prefix}/lib/ginga/'
 
 else
    AC_MSG_RESULT([*** Ginga CURL IC support will be built.])
    AC_DEFINE(HAVE_CURL, 1, [Def to 1 if you have ginga curl support.])
-   CURL_LIBS='-lgingacciccurlic -L/usr/local/lib/ginga/'
+   CURL_LIBS='-lgingacciccurlic -L${prefix}/lib/ginga/'
 fi
 
 AM_CONDITIONAL([CURLLIB], [test x$enable_curl = xyes])
@@ -96,12 +96,12 @@ AC_CHECK_HEADER(
 if test x$enable_ccrtp = xno; then
    AC_MSG_WARN([*** Ginga CCRTP IC support will not be built.])
    AC_DEFINE(HAVE_CCRTP, 0, [Def to 0 if you don't have ginga ccrtp support.])
-   CCRTP_LIBS='-L/usr/local/lib/ginga/'
+   CCRTP_LIBS='-L${prefix}/lib/ginga/'
 
 else
    AC_MSG_RESULT([*** Ginga CCRTP IC support will be built.])
    AC_DEFINE(HAVE_CCRTP, 1, [Def to 1 if you have ginga ccrtp support.])
-   CCRTP_LIBS='-lgingaccicccrtp -L/usr/local/lib/ginga/'
+   CCRTP_LIBS='-lgingaccicccrtp -L${prefix}/lib/ginga/'
 fi
 
 AM_CONDITIONAL([CCRTPLIB], [test x$enable_ccrtp = xyes])
@@ -122,14 +122,14 @@ AC_CHECK_HEADER(
 )
 
 if test x$enable_components = xno; then
-   COMPONENTS_LIBS='-L/usr/local/lib/ -L/usr/local/lib/ginga/ -lgingaccsystem'
-   TEST_COMPONENTS_LIBS='-lgingaccic -L/usr/local/lib/ -L/usr/local/lib/ginga/ -lgingaccsystem'
+   COMPONENTS_LIBS='-L/usr/local/lib/ -L${prefix}/lib/ginga/ -lgingaccsystem'
+   TEST_COMPONENTS_LIBS='-lgingaccic -L/usr/local/lib/ -L${prefix}/lib/ginga/ -lgingaccsystem'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
 
 else
-   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
-   TEST_COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
+   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L${prefix}/lib/ginga/'
+   TEST_COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
    AC_MSG_RESULT([*** Component support will be built.])
 fi

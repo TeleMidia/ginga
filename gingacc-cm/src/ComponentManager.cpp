@@ -268,8 +268,13 @@ namespace cm {
 			return;
 		}
 
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
+		component = getComponent("libgingacccmparser.dylib");
+  #endif
+#else
 		component = getComponent("libgingacccmparser.so");
-
+#endif
 		cp = ((ComponentParserCreator*)(getSymbol(
 				component, "createComponentParser")))();
 

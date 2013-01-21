@@ -211,10 +211,10 @@ namespace cm {
 			}
 		}
 
-		void* comp = dlopen("libgingacccmcomponent.so", RTLD_LAZY);
+		void* comp = dlopen("libgingacccmcomponent.dylib", RTLD_LAZY);
 		if (comp == NULL) {
 			cerr << "ComponentParser warning: cant load component '";
-			cerr << "libgingacccmcomponent.so' => " << dlerror() << endl;
+			cerr << "libgingacccmcomponent.dylib' => " << dlerror() << endl;
 			return;
 		}
 
