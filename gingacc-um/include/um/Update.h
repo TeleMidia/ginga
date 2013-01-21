@@ -52,8 +52,8 @@ http://www.telemidia.puc-rio.br
 
 #include "IUpdate.h"
 
-#include "ginga/ic/IInteractiveChannelManager.h"
-#include "ginga/ic/IInteractiveChannel.h"
+#include "ic/IInteractiveChannelManager.h"
+#include "ic/IInteractiveChannel.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
 #include <sys/stat.h>

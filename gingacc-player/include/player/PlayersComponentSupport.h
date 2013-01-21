@@ -53,7 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "config.h"
 
 #if HAVE_COMPSUPPORT
-#include "ginga/cm/IComponentManager.h"
+#include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 

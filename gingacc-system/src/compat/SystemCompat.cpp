@@ -49,6 +49,8 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 
+extern "C" float machInfo(const char *name);
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -167,7 +169,7 @@ namespace compat {
 
 #ifdef WIN32
 		gingaBinary = "ginga.exe";
-#endif
+#endif //WIN32
 
 		path = getenv("PATH");
 		if (path.find(";") != std::string::npos) {
@@ -192,7 +194,7 @@ namespace compat {
 		currentPath = exepath;
 
 		gingaCurrentPath = currentPath.substr( 0,
-											   currentPath.find_last_of(iUriD)+1);
+						   currentPath.find_last_of(iUriD)+1);
 
 #else
 		// This commented solution should be the correct way to find the executable name on Unix
@@ -247,13 +249,19 @@ namespace compat {
 	void* SystemCompat::loadComponent(string libName, string symName) {
 		void* comSym = NULL;
 
-#ifndef WIN32
-		if (libName.find(".so") == std::string::npos) {
-			libName.append(".so");
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
+		if (libName.find(".dylib") == std::string::npos) {
+			libName.append(".dylib");
 		}
-#else
+  #endif
+#elif WIN32
 		if (libName.find(".dll") == std::string::npos) {
 			libName.append(".dll");
+		}
+#else
+		if (libName.find(".so") == std::string::npos) {
+			libName.append(".so");
 		}
 #endif
 
@@ -284,12 +292,12 @@ namespace compat {
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
-#ifndef WIN32
+#ifndef WIN32 // Linux and Mac OS Snow Leopard (10.6)
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
 		clog << "SystemCompat::sigpipeHandler ";
 		clog << "throw: " << strsignal(x) << endl;
 		throw strsignal(x);  //throw the exeption
-#endif //linux
+#endif // Linux and Mac OS Snow Leopard (10.6)
 	}
 
 	string SystemCompat::updatePath(string dir) {
@@ -427,15 +435,14 @@ namespace compat {
 	}
 
 	string SystemCompat::convertRelativePath(string relPath) {
-#ifdef WIN32
+
 		string _str;
 		_str = relPath;
 
+#ifdef WIN32
 		_str.replace( relPath.begin(), relPath.end(), '/', '\\');
-		return _str;
-#else
-		return relPath;
 #endif
+		return _str;
 	}
 
 	string SystemCompat::getGingaBinPath() {
@@ -492,23 +499,29 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeSigpipeHandler() {
-#ifndef WIN32
+#ifndef WIN32 // Linux and Mac OS Snow Leopard (10.6)
 		signal(SIGPIPE, sigpipeHandler);
-#endif //linux
+#endif // Linux and Mac OS Snow Leopard (10.6) 
 	}
 
 	string SystemCompat::getOperatingSystem() {
-#ifndef WIN32
-		return "Linux";
-#else
-		return "Windows";
+
+		string _ops;
+
+#ifdef HAV_SYS_SYSINFO_H
+		_ops = "Linux";
+#elif (__MACH__ || HAVE_MACH_SL_H)
+		_ops = "Mach";
+#elif WIN32
+		_ops = "Windows";
 #endif
+		return _ops;
 	}
 
 	float SystemCompat::getClockSpeed() {
 		float clockSpeed = 1000.0;
 
-#ifndef WIN32
+#ifdef HAVE_SYS_SYSINFO_H
 		ifstream fis;
 		string line = "";
 
@@ -534,20 +547,46 @@ namespace compat {
 				}
 			}
 		}
+#elif (__MACH__ || HAVE_MACH_SL_H)
+		/**
+		 * Date: 18.01.2013
+		 * Author: Ricardo Rios
+		 * E-mail: rrios@telemidia.puc-rio.br
+		 **/
+		float cpuFreq = machInfo("hw.cpufrequency");
+		if (cpuFreq > 0.0) {
+			clockSpeed = cpuFreq;
+		}
 #endif
 		return clockSpeed;
 	}
 
 	float SystemCompat::getMemorySize() {
-#ifndef WIN32
+
+		float memSize = 0.0;
+
+#ifdef WIN32
+	MEMORYSTATUS ms;
+	GlobalMemoryStatus(&ms);
+	memSize = (float)ms.dwAvailPhys;
+#elif HAVE_SYS_SYSINFO_H
 		struct sysinfo info;
 		sysinfo(&info);
-		return info.totalram;
-#else
-		MEMORYSTATUS ms;
-		GlobalMemoryStatus(&ms);
-		return (float)ms.dwAvailPhys;
+		memSize = info.totalram;
+#elif (__MACH__ || HAVE_MACH_SL_H) // Mac Snow Leopard (10.6)
+		/**
+                  * Date: 18.01.2013
+                  * Author: Ricardo Rios
+                  * E-mail: rrios@telemidia.puc-rio.br
+                  **/
+		float machMemSize = machInfo("hw.memsize");
+
+		if (machMemSize > 0.0) {
+			memSize = machMemSize;
+		}
 #endif
+
+		return (memSize);
 	}
 
      void SystemCompat::strError (int err, char *buf, size_t size) {
@@ -645,8 +684,8 @@ namespace compat {
 #if defined(_WIN32) && !defined(__MINGW32__)
 		//TODO: Use the WIN32 API to return the temporary directory
 		TCHAR lpTempPathBuffer[MAX_PATH];
-		int dwRetVal = GetTempPath(	MAX_PATH,          // length of the buffer
-									lpTempPathBuffer); // buffer for path 
+		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+					   lpTempPathBuffer); // buffer for path 
 		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
 		{
 			return gingaCurrentPath + "Temp\\";
@@ -668,3 +707,22 @@ namespace compat {
 }
 }
 }
+
+#if (__MACH__ || HAVE_MACH_SL_H)
+
+extern "C" float machInfo(const char *name) {
+	// If the CPU frequency can not be obtained, returns 0.0 (zero) for unknown.
+	float var = 0.0;
+	uint64_t uVar;
+	size_t len = sizeof(uint64_t);
+
+	if ( sysctlbyname(name, &uVar, &len, NULL, 0) )
+	{
+		perror("sysctl");
+	} else {
+		var = (float) (uVar / 1000000) ;
+	}
+
+	return (var);
+}
+#endif

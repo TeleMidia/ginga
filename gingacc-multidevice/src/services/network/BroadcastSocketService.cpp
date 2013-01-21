@@ -74,9 +74,11 @@ typedef int socklen_t;
 #include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#ifdef __DARWIN_UNIX03
-#include <ifaddrs.h>
-#define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
+    #include <ifaddrs.h>
+    #define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
+  #endif
 #endif
 
 namespace br {
@@ -85,13 +87,15 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	
-#ifdef __DARWIN_UNIX03
+
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
 	static int sd = -1;
 	static struct sockaddr_in domain_addr;
 	static int                domain_addr_len;
 	static struct sockaddr_in broadcast_addr;
 	static socklen_t          broadcast_addr_len;
+  #endif
 #else
 	static UDPSocket* udpSocket;
 #endif
@@ -143,11 +147,13 @@ namespace multidevice {
 	}
 
 	BroadcastSocketService::~BroadcastSocketService() {
-#ifdef __DARWIN_UNIX03
+#if __APPLE__
+  #ifdef __DARWIN_UNIX03
 		if (sd > 0) {
 			close(sd);
 		}
-#endif
+  #endif
+#else
 		if (udpSocket != NULL) {
 			udpSocket->disconnect();
 			//udpSocket->cleanUp();
@@ -158,7 +164,7 @@ namespace multidevice {
 			delete outputBuffer;
 			outputBuffer = NULL;
 		}
-
+#endif
 		Thread::mutexDestroy(&mutexBuffer);
 	}
 
@@ -176,7 +182,8 @@ namespace multidevice {
 			clog << "BroadcastSocketService::buildClientAddress Warning!" << endl;
 			return false;
 		}
-#else
+#elif __APPLE__
+  #ifdef __DARWIN_UNIX03
 		int ret;
 		int trueVar = 1;
 
@@ -198,7 +205,7 @@ namespace multidevice {
 			clog << " can't bind socket (ret == -1)" << endl;
 			return false;
 		}
-
+  #endif
 #endif
 		return true;
 
@@ -207,7 +214,8 @@ namespace multidevice {
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
 //kept for compatibility with the iOS passive device client
 //TODO: organize/clean ios defines
-#ifdef __DARWIN_UNIX03
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
 
 		struct ifconf interfaces;
 		struct ifreq* netInterface;
@@ -295,6 +303,7 @@ namespace multidevice {
 		}
 
 		freeifaddrs(ifaddr);
+  #endif
 #endif
 		clog << "BroadcastSocketService::discoverBroadcastAddress Warning!";
 		clog << " can't discover broadcast address" << endl;
@@ -345,7 +354,8 @@ namespace multidevice {
 			clog << "BroadcastSocketService::sendData Error!!";
 			return false;
 		}
-#else
+#elif __APPLE__
+  #ifdef __DARWIN_UNIX03
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			result = sendto(
 					sd,
@@ -361,6 +371,7 @@ namespace multidevice {
 			}
 
 		}
+  #endif
 #endif
 	return true;
 
@@ -479,7 +490,8 @@ namespace multidevice {
 				memset(recvString, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-#else
+#elif __APPLE__
+  #ifdef __DARWIN_UNIX03
 		int nfds, res, recvFrom;
 		fd_set fdset;
 		struct timeval tv_timeout;
@@ -550,7 +562,7 @@ namespace multidevice {
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-
+  #endif
 #endif
 		return true;
 	}
