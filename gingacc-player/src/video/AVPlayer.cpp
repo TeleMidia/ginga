@@ -78,7 +78,8 @@ namespace player {
 		this->win         = NULL;
 		this->pSym        = "";
 
-		Thread::mutexInit(&pMutex, NULL);
+		Thread::mutexInit(&pMutex, true);
+		Thread::mutexInit(&tMutex, true);
 
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		this->icListener  = NULL;
@@ -120,11 +121,13 @@ namespace player {
 			stop();
 		}
 
-		Thread::mutexLock(&pMutex);
-		Thread::mutexUnlock(&pMutex);
-		Thread::mutexDestroy(&pMutex);
 		unlockConditionSatisfied();
-		lock();
+
+		if (running) {
+			wakeUp();
+		}
+
+		Thread::mutexLock(&tMutex);
 		if (surface != NULL && mainAV) {
 			surface->setParentWindow(NULL);
 		}
@@ -136,10 +139,16 @@ namespace player {
 			}
 		}
 
+		Thread::mutexLock(&pMutex);
 		if (this->provider != NULL) {
 			release();
 		}
-		unlock();
+
+		Thread::mutexUnlock(&pMutex);
+		Thread::mutexDestroy(&pMutex);
+
+		Thread::mutexUnlock(&tMutex);
+		Thread::mutexDestroy(&tMutex);
 	}
 
 	ISurface* AVPlayer::getSurface() {
@@ -217,7 +226,8 @@ namespace player {
 
 	ISurface* AVPlayer::createFrame() {
 		//clog << "AVPlayer::createFrame()" << endl;
-		lock();
+
+		Thread::mutexLock(&tMutex);
 		if (surface != NULL) {
 			clog << "AVPlayer::createFrame Warning! surface != NULL";
 			clog << endl;
@@ -231,7 +241,9 @@ namespace player {
 		if (win != NULL && mainAV) {
 			surface->setParentWindow(win);
 		}
-		unlock();
+
+		Thread::mutexUnlock(&tMutex);
+
 		return surface;
 	}
 
@@ -374,6 +386,8 @@ namespace player {
 	}
 
 	void AVPlayer::stop() {
+		short previousStatus = status;
+
 		Player::stop();
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
@@ -385,7 +399,7 @@ namespace player {
 			return;
 		}
 
-		if (status != STOP) {
+		if (previousStatus != STOP) {
 			provider->stop();
 			this->wakeUp();
 		}
@@ -564,11 +578,14 @@ namespace player {
 
 		clog << "AVPlayer::run" << endl;
 
-		lock();
+		Thread::mutexLock(&tMutex);
+
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
 			running = true;
-			unlock();
+
+			Thread::mutexUnlock(&tMutex);
+
 			clog << "AVPlayer::run call performIC" << endl;
 			icListener->performIC();
 			clog << "AVPlayer::run call performIC done" << endl;
@@ -589,9 +606,7 @@ namespace player {
 			this->provider = dm->createContinuousMediaProvider(
 					myScreen, mrl.c_str(), &hasVisual, true);
 
-			unlock();
 			this->surface = createFrame();
-			lock();
 
 			if (this->win != NULL && surface->getParentWindow() == NULL) {
 				this->surface->setParentWindow((void*)win);
@@ -623,7 +638,8 @@ namespace player {
 			if (isInfinity(dur)) {
 				clog << "AVPlayer::run duration is INF";
 				clog << " => returning" << endl;
-				unlock();
+
+				Thread::mutexUnlock(&tMutex);
 				return;
 			}
 
@@ -721,13 +737,13 @@ namespace player {
 			}
 
 			clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
-			unlock();
+			Thread::mutexUnlock(&tMutex);
 			notifyPlayerListeners(PL_NOTIFY_STOP, "");
 
 		} else {
 			status = STOP;
 			running = false;
-			unlock();
+			Thread::mutexUnlock(&tMutex);
 		}
 
 		clog << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
