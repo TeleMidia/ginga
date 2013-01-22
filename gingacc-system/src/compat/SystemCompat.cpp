@@ -280,7 +280,7 @@ namespace compat {
 
 		const char* dlsym_error = dlerror();
 		if (dlsym_error != NULL) {
-			clog << "ComponentManager warning: can't load symbol '";
+			clog << "SystemCompat::loadComponent warning: can't load symbol '";
 			clog << symName << "' from library '" << libName;
 			clog << "' => " << dlsym_error << endl;
 			return (NULL);

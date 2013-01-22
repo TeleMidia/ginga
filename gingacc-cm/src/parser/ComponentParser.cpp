@@ -211,10 +211,17 @@ namespace cm {
 			}
 		}
 
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
 		void* comp = dlopen("libgingacccmcomponent.dylib", RTLD_LAZY);
+  #endif
+#else
+		void* comp = dlopen("libgingacccmcomponent.so", RTLD_LAZY);
+#endif
+
 		if (comp == NULL) {
 			cerr << "ComponentParser warning: cant load component '";
-			cerr << "libgingacccmcomponent.dylib' => " << dlerror() << endl;
+			cerr << "libgingacccmcomponent' => " << dlerror() << endl;
 			return;
 		}
 

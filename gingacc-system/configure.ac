@@ -8,15 +8,13 @@ AC_PROG_CXX([g++])
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-# Bring additional directories where things might be found into our
-# search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib /usr/local/lib ${prefix}/lib/ginga; do
+for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga ${prefix}/lib/ginga; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include ${prefix}/include/ginga; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -44,15 +42,15 @@ AC_CHECK_HEADERS([sys/sysinfo])
 # Mac OS 10.6 only #
 ####################
 
-AC_CHECK_HEADERS([mach/mach.h] [mach/mach_host.h] [mach/mach_init.h] [mach/mach_types.h] [mach/vm_statistics.h] [sys/sysctl.h],
-		 [AC_DEFINE([HAVE_MACH_SL_H], [1],
-			    [Define to 1 if you have <mach/mach.h>, <mach/mach_host.h>, <mach/mack_init.h>, <mach/mach_types.h>, <mach/vm_statistics.h> and <sys/sysctl.h>])],
-		 [AC_MSG_ERROR([
-
-				Couldn't find <mach/mach.h>, <mac/mach_host.h>, <mach/mack_init.h>, <mach/mach_types.h>, <mach/vm_statistics.h> and <sys/sysctl.h>.
-				Please install Mac OS SDK headers.
-			       ])],
-			      [])
+#AC_CHECK_HEADERS([mach/mach.h] [mach/mach_host.h] [mach/mach_init.h] [mach/mach_types.h] [mach/vm_statistics.h] [sys/sysctl.h],
+#		 [AC_DEFINE([HAVE_MACH_SL_H], [1],
+#			    [Define to 1 if you have <mach/mach.h>, <mach/mach_host.h>, <mach/mack_init.h>, <mach/mach_types.h>, <mach/vm_statistics.h> and <sys/sysctl.h>])],
+#		 [AC_MSG_ERROR([
+#
+#				Couldn't find <mach/mach.h>, <mac/mach_host.h>, <mach/mack_init.h>, <mach/mach_types.h>, <mach/vm_statistics.h> and <sys/sysctl.h>.
+#				Please install Mac OS SDK headers.
+#			       ])],
+#			      [])
 
 
 ##################
