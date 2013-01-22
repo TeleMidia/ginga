@@ -29,21 +29,36 @@ AC_SUBST([LUA_INCLUDE])
 AC_SUBST([LUA_LIB])
 
 # FIXME: Hack required by some Ginga headers and libraries.
-ginga_prefix=${prefix}
-CPPFLAGS="-I${ginga_prefix}/include/ginga -I${ginga_prefix}/berkelium/include/"
-LDFLAGS=`find ${ginga_prefix}/lib/ginga -type d |
-         sed 's/^\(.*\)$/-L\1 /' | tr -d '\n'`
-LDFLAGS="-L${ginga_prefix}/berkelium/lib $LDFLAGS"
+if test x${prefix} = xNONE; then
+   ginga_prefix=/usr/local
+else
+   ginga_prefix=${prefix}
+fi
+
+for spfx in /usr/lib /usr/local/lib /usr/X11/lib /usr/local/lib/ginga ${prefix}/lib ${prefix}/lib/ginga/; do
+if test -d ${spfx}; then
+LDFLAGS="-L${spfx} $LDFLAGS"
+fi
+done
+
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga /usr/local/include/directfb ${prefix}/include ${prefix}/include/ginga/ ${prefix}/include/SDL2 /usr/local/include/berkelium/include ${prefix}/berkelium/include; do
+if test -d ${spfx}; then
+CPPFLAGS="-I${spfx} $CPPFLAGS"
+fi
+done
+
+
+
 
 # TeleMidia Util.
-AC_CHECK_HEADERS([util/functions.h], [],
+AC_CHECK_HEADER([util/functions.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find TeleMidia Util headers.
 *** Please install TeleMidia Util Headers.
 ***])])
 
-AC_HAVE_LIBRARY([telemidiautil], [],
+AC_HAVE_LIBRARY(telemidiautil, [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find TeleMidia Util library.
@@ -51,14 +66,14 @@ AC_HAVE_LIBRARY([telemidiautil], [],
 ***])])
 
 # Ginga-CC System.
-AC_CHECK_HEADERS([system/thread/Thread.h], [],
+AC_CHECK_HEADER([system/thread/Thread.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find Ginga CC System Thread headers.
 *** Please install gingacc-system project.
 ***])])
 
-AC_CHECK_HEADERS([mb/interface/IWindow.h], [],
+AC_CHECK_HEADER([mb/interface/IWindow.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find Ginga Common Core System I/O headers.
@@ -68,7 +83,7 @@ AC_CHECK_HEADERS([mb/interface/IWindow.h], [],
 AC_HAVE_LIBRARY(gingaccsystem, [],
 AC_MSG_ERROR([
 ***
-*** Couldn't find Ginga CC System Thread library.
+*** Couldn't find Ginga CC System library.
 *** Please install gingacc-system Project.
 ***]))
 
