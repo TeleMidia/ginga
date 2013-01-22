@@ -254,16 +254,18 @@ namespace compat {
 		if (libName.find(".dylib") == std::string::npos) {
 			libName.append(".dylib");
 		}
-  #endif
-#elif WIN32
+  #endif //__DARWIN_UNIX03
+#else //!__APPLE__
+#ifdef WIN32
 		if (libName.find(".dll") == std::string::npos) {
 			libName.append(".dll");
 		}
-#else
+#else //!WIN32
 		if (libName.find(".so") == std::string::npos) {
 			libName.append(".so");
 		}
-#endif
+#endif //WIN32
+#endif//__APPLE__
 
 #ifndef WIN32
 		void* comp = dlopen(libName.c_str(), RTLD_LAZY);
@@ -508,13 +510,18 @@ namespace compat {
 
 		string _ops;
 
-#ifdef HAV_SYS_SYSINFO_H
-		_ops = "Linux";
-#elif (__MACH__ || HAVE_MACH_SL_H)
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
 		_ops = "Mach";
-#elif WIN32
+  #endif //__DARWIN_UNIX03
+#else //!__APPLE__
+#ifdef WIN32
 		_ops = "Windows";
-#endif
+#else //!WIN32
+		_ops = "Linux";
+#endif //WIN32
+#endif //__APPLE__
+
 		return _ops;
 	}
 

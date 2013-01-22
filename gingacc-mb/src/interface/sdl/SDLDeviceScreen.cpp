@@ -97,6 +97,8 @@ namespace mb {
 
 	map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
 	map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
+	map<string, int> SDLDeviceScreen::sdlStrToSdlCode;
+
 	set<SDL_Texture*> SDLDeviceScreen::uTexPool;
 	set<SDL_Surface*> SDLDeviceScreen::uSurPool;
 	vector<ReleaseContainer*> SDLDeviceScreen::releaseList;
@@ -125,6 +127,13 @@ namespace mb {
 		string parentCoords = "";
 		int i;
 
+		pthread_t tId;
+		pthread_attr_t tattr;
+
+		pthread_attr_init(&tattr);
+		pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
+		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
 		aSystem         = "";
 		aspect          = DSA_UNKNOWN;
 		hSize           = 0;
@@ -132,6 +141,7 @@ namespace mb {
 		hRes            = 0;
 		wRes            = 0;
 		im              = NULL;
+		useStdin        = false;
 		id              = myId;
 		uParentId       = NULL;
 		uEmbedId        = embedId;
@@ -165,6 +175,9 @@ namespace mb {
 
 			} else if ((strcmp(args[i], "audio") == 0) && ((i + 1) < argc)) {
 				aSystem.assign(args[i + 1]);
+
+			} else if ((strcmp(args[i], "poll-stdin") == 0)) {
+				useStdin = true;
 			}
 		}
 
@@ -195,13 +208,6 @@ namespace mb {
 			if (!hasERC) {
 				setInitScreenFlag();
 
-				pthread_t tId;
-				pthread_attr_t tattr;
-
-				pthread_attr_init(&tattr);
-				pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
-				pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
-
 				pthread_create(&tId, &tattr, SDLDeviceScreen::rendererT, this);
 				pthread_detach(tId);
 
@@ -216,6 +222,11 @@ namespace mb {
 			if (hasERC) {
 				rendererT(this);
 			}
+		}
+
+		if (useStdin) {
+			pthread_create(&tId, &tattr, SDLDeviceScreen::checkStdin, this);
+			pthread_detach(tId);
 		}
 	}
 
@@ -1268,23 +1279,98 @@ namespace mb {
     	}
 	}
 
+	bool SDLDeviceScreen::notifyEvent(
+			SDLDeviceScreen* s,
+			SDL_Event* event,
+			bool capsOn,
+			bool shiftOn) {
+
+		SDLEventBuffer* eventBuffer = NULL;
+
+		checkWindowFocus(s, event);
+
+    	if (s->im != NULL) {
+			eventBuffer = (SDLEventBuffer*)(s->im->getEventBuffer());
+			if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
+					s->uEmbedId == NULL) || checkEventFocus(s))) {
+
+				clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+				clog << endl;
+				eventBuffer->feed(*event, capsOn, shiftOn);
+				return true;
+			}
+		}
+
+    	return false;
+	}
+
+	void* SDLDeviceScreen::checkStdin(void* ptr) {
+		SDLDeviceScreen* s;
+		string strEvent;
+		int intEvent;
+
+		SDL_Event ie;
+
+		Thread::mutexLock(&scrMutex);
+		s = (SDLDeviceScreen*)ptr;
+		assert(s->useStdin);
+		if (s->uEmbedId != NULL) {
+			ie.window.windowID = (Uint32)(unsigned long)s->uEmbedId;
+		}
+		Thread::mutexUnlock(&scrMutex);
+
+		clog << "SDLDeviceScreen::checkStdin calling cin" << endl;
+
+		while (cin >> strEvent) {
+			intEvent = convertEventCodeStrToInt(strEvent);
+			if (intEvent >= 0) {
+				ie.type           = SDL_KEYDOWN;
+				ie.key.type       = SDL_KEYDOWN;
+				ie.key.state      = SDL_PRESSED;
+				ie.key.repeat     = 0;
+				ie.key.keysym.sym = intEvent;
+
+				lockSDL();
+				clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
+				clog << strEvent << "' (" << intEvent << ")" << endl;
+				SDL_PushEvent(&ie);
+				unlockSDL();
+			}
+
+			strEvent = "";
+		}
+
+		clog << "SDLDeviceScreen::checkStdin all done" << endl;
+
+		return NULL;
+	}
+
 	bool SDLDeviceScreen::checkEvents() {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDLDeviceScreen* s;
 		SDL_Event event;
 		bool shiftOn = false;
 		bool capsOn  = false;
-		SDLEventBuffer* eventBuffer = NULL;
+		bool hasEvent;
 
-		while (SDL_PollEvent(&event)) {
+		lockSDL();
+		hasEvent = SDL_PollEvent(&event);
+		unlockSDL();
+
+		while (hasEvent) {
+			clog << "SDLDeviceScreen::checkEvents poll event" << endl;
+
 			if (event.type == SDL_KEYDOWN) {
+				clog << "SDLDeviceScreen::checkEvents poll event '";
+				clog << event.key.keysym.sym << "'" << endl;
+
 				if (event.key.keysym.sym == SDLK_LSHIFT ||
 						event.key.keysym.sym == SDLK_RSHIFT) {
 
 					shiftOn = true;
 				}
 
-			} else  if (event.type == SDL_KEYUP) {
+			} else if (event.type == SDL_KEYUP) {
 				if (event.key.keysym.sym == SDLK_CAPSLOCK) {
 					capsOn = !capsOn;
 
@@ -1307,23 +1393,14 @@ namespace mb {
 			i = sdlScreens.begin();
 			while (i != sdlScreens.end()) {
 				s = i->first;
-
-				checkWindowFocus(s, &event);
-
-		    	if (s->im != NULL) {
-					eventBuffer = (SDLEventBuffer*)(
-							s->im->getEventBuffer());
-
-					if (((SDLEventBuffer::checkEvent(s->sdlId, event) &&
-							s->uEmbedId == NULL) || checkEventFocus(s))) {
-
-						eventBuffer->feed(event, capsOn, shiftOn);
-					}
-				}
+				notifyEvent(s, &event, capsOn, shiftOn);
 				++i;
 			}
-
 			Thread::mutexUnlock(&scrMutex);
+
+			lockSDL();
+			hasEvent = SDL_PollEvent(&event);
+			unlockSDL();
     	}
 
 		return true;
@@ -2069,6 +2146,10 @@ namespace mb {
 		i = sdlToGingaCodeMap.find(keyCode);
 		if (i != sdlToGingaCodeMap.end()) {
 			translated = i->second;
+
+		} else {
+			clog << "SDLDeviceScreen::fromMBToGinga can't find code '";
+			clog << keyCode << "' returning KEY_NULL" << endl;
 		}
 
 		Thread::mutexUnlock(&sieMutex);
@@ -2078,15 +2159,20 @@ namespace mb {
 
 	int SDLDeviceScreen::fromGingaToMB(int keyCode) {
 		map<int, int>::iterator i;
-		int translated = CodeMap::KEY_NULL;
+		int translated;
 
 		checkMutexInit();
 
 		Thread::mutexLock(&sieMutex);
 
+		translated = CodeMap::KEY_NULL;
 		i = gingaToSDLCodeMap.find(keyCode);
 		if (i != gingaToSDLCodeMap.end()) {
 			translated = i->second;
+
+		} else {
+			clog << "SDLDeviceScreen::fromGingaToMB can't find code '";
+			clog << keyCode << "' returning KEY_NULL" << endl;
 		}
 
 		Thread::mutexUnlock(&sieMutex);
@@ -2104,6 +2190,18 @@ namespace mb {
 	/* libgingaccmbsdl internal use*/
 
 	/* input */
+	int SDLDeviceScreen::convertEventCodeStrToInt(string strEvent) {
+		int intEvent = -1;
+		map<string, int>::iterator i;
+
+		i = sdlStrToSdlCode.find(strEvent);
+		if (i != sdlStrToSdlCode.end()) {
+			intEvent = i->second;
+		}
+
+		return intEvent;
+	}
+
 	void SDLDeviceScreen::initCodeMaps() {
 		checkMutexInit();
 
@@ -2113,6 +2211,144 @@ namespace mb {
 			return;
 		}
 
+		//sdlStrToSdlCode
+		sdlStrToSdlCode["SDL_QUIT"]               = SDL_QUIT;
+		sdlStrToSdlCode["SDLK_UNKNOWN"]           = SDLK_UNKNOWN;
+		sdlStrToSdlCode["SDLK_0"]                 = SDLK_0;
+		sdlStrToSdlCode["SDLK_1"]                 = SDLK_1;
+		sdlStrToSdlCode["SDLK_2"]                 = SDLK_2;
+		sdlStrToSdlCode["SDLK_3"]                 = SDLK_3;
+		sdlStrToSdlCode["SDLK_4"]                 = SDLK_4;
+		sdlStrToSdlCode["SDLK_5"]                 = SDLK_5;
+		sdlStrToSdlCode["SDLK_6"]                 = SDLK_6;
+		sdlStrToSdlCode["SDLK_7"]                 = SDLK_7;
+		sdlStrToSdlCode["SDLK_8"]                 = SDLK_8;
+		sdlStrToSdlCode["SDLK_9"]                 = SDLK_9;
+
+		sdlStrToSdlCode["SDLK_a"]                 = SDLK_a;
+		sdlStrToSdlCode["SDLK_b"]                 = SDLK_b;
+		sdlStrToSdlCode["SDLK_c"]                 = SDLK_c;
+		sdlStrToSdlCode["SDLK_d"]                 = SDLK_d;
+		sdlStrToSdlCode["SDLK_e"]                 = SDLK_e;
+		sdlStrToSdlCode["SDLK_f"]                 = SDLK_f;
+		sdlStrToSdlCode["SDLK_g"]                 = SDLK_g;
+		sdlStrToSdlCode["SDLK_h"]                 = SDLK_h;
+		sdlStrToSdlCode["SDLK_i"]                 = SDLK_i;
+		sdlStrToSdlCode["SDLK_j"]                 = SDLK_j;
+		sdlStrToSdlCode["SDLK_k"]                 = SDLK_k;
+		sdlStrToSdlCode["SDLK_l"]                 = SDLK_l;
+		sdlStrToSdlCode["SDLK_m"]                 = SDLK_m;
+		sdlStrToSdlCode["SDLK_n"]                 = SDLK_n;
+		sdlStrToSdlCode["SDLK_o"]                 = SDLK_o;
+		sdlStrToSdlCode["SDLK_p"]                 = SDLK_p;
+		sdlStrToSdlCode["SDLK_q"]                 = SDLK_q;
+		sdlStrToSdlCode["SDLK_r"]                 = SDLK_r;
+		sdlStrToSdlCode["SDLK_s"]                 = SDLK_s;
+		sdlStrToSdlCode["SDLK_t"]                 = SDLK_t;
+		sdlStrToSdlCode["SDLK_u"]                 = SDLK_u;
+		sdlStrToSdlCode["SDLK_v"]                 = SDLK_v;
+		sdlStrToSdlCode["SDLK_w"]                 = SDLK_w;
+		sdlStrToSdlCode["SDLK_x"]                 = SDLK_x;
+		sdlStrToSdlCode["SDLK_y"]                 = SDLK_y;
+		sdlStrToSdlCode["SDLK_z"]                 = SDLK_z;
+
+		sdlStrToSdlCode["SDLK_A"]                 = SDLK_a + 5000;
+		sdlStrToSdlCode["SDLK_B"]                 = SDLK_b + 5000;
+		sdlStrToSdlCode["SDLK_C"]                 = SDLK_c + 5000;
+		sdlStrToSdlCode["SDLK_D"]                 = SDLK_d + 5000;
+		sdlStrToSdlCode["SDLK_E"]                 = SDLK_e + 5000;
+		sdlStrToSdlCode["SDLK_F"]                 = SDLK_f + 5000;
+		sdlStrToSdlCode["SDLK_G"]                 = SDLK_g + 5000;
+		sdlStrToSdlCode["SDLK_H"]                 = SDLK_h + 5000;
+		sdlStrToSdlCode["SDLK_I"]                 = SDLK_i + 5000;
+		sdlStrToSdlCode["SDLK_J"]                 = SDLK_j + 5000;
+		sdlStrToSdlCode["SDLK_K"]                 = SDLK_k + 5000;
+		sdlStrToSdlCode["SDLK_L"]                 = SDLK_l + 5000;
+		sdlStrToSdlCode["SDLK_M"]                 = SDLK_m + 5000;
+		sdlStrToSdlCode["SDLK_N"]                 = SDLK_n + 5000;
+		sdlStrToSdlCode["SDLK_O"]                 = SDLK_o + 5000;
+		sdlStrToSdlCode["SDLK_P"]                 = SDLK_p + 5000;
+		sdlStrToSdlCode["SDLK_Q"]                 = SDLK_q + 5000;
+		sdlStrToSdlCode["SDLK_R"]                 = SDLK_r + 5000;
+		sdlStrToSdlCode["SDLK_S"]                 = SDLK_s + 5000;
+		sdlStrToSdlCode["SDLK_T"]                 = SDLK_t + 5000;
+		sdlStrToSdlCode["SDLK_U"]                 = SDLK_u + 5000;
+		sdlStrToSdlCode["SDLK_V"]                 = SDLK_v + 5000;
+		sdlStrToSdlCode["SDLK_W"]                 = SDLK_w + 5000;
+		sdlStrToSdlCode["SDLK_X"]                 = SDLK_x + 5000;
+		sdlStrToSdlCode["SDLK_Y"]                 = SDLK_y + 5000;
+		sdlStrToSdlCode["SDLK_Z"]                 = SDLK_z + 5000;
+
+		sdlStrToSdlCode["SDLK_PAGEDOWN"]         = SDLK_PAGEDOWN;
+		sdlStrToSdlCode["SDLK_PAGEUP"]           = SDLK_PAGEUP;
+
+		sdlStrToSdlCode["SDLK_F1"]                = SDLK_F1;
+		sdlStrToSdlCode["SDLK_F2"]                = SDLK_F2;
+		sdlStrToSdlCode["SDLK_F3"]                = SDLK_F3;
+		sdlStrToSdlCode["SDLK_F4"]                = SDLK_F4;
+		sdlStrToSdlCode["SDLK_F5"]                = SDLK_F5;
+		sdlStrToSdlCode["SDLK_F6"]                = SDLK_F6;
+		sdlStrToSdlCode["SDLK_F7"]                = SDLK_F7;
+		sdlStrToSdlCode["SDLK_F8"]                = SDLK_F8;
+		sdlStrToSdlCode["SDLK_F9"]                = SDLK_F9;
+		sdlStrToSdlCode["SDLK_F10"]               = SDLK_F10;
+		sdlStrToSdlCode["SDLK_F11"]               = SDLK_F11;
+		sdlStrToSdlCode["SDLK_F12"]               = SDLK_F12;
+
+		sdlStrToSdlCode["SDLK_PLUS"]              = SDLK_PLUS;
+		sdlStrToSdlCode["SDLK_MINUS"]             = SDLK_MINUS;
+
+		sdlStrToSdlCode["SDLK_ASTERISK"]          = SDLK_ASTERISK;
+		sdlStrToSdlCode["SDLK_HASH"]              = SDLK_HASH;
+
+		sdlStrToSdlCode["SDLK_PERIOD"]            = SDLK_PERIOD;
+
+		sdlStrToSdlCode["SDLK_CAPSLOCK"]          = SDLK_CAPSLOCK;
+		sdlStrToSdlCode["SDLK_PRINTSCREEN"]       = SDLK_PRINTSCREEN;
+		sdlStrToSdlCode["SDLK_MENU"]              = SDLK_MENU;
+		sdlStrToSdlCode["SDLK_F14"]               = SDLK_F14;
+		sdlStrToSdlCode["SDLK_QUESTION"]          = SDLK_QUESTION;
+
+		sdlStrToSdlCode["SDLK_DOWN"]              = SDLK_DOWN;
+		sdlStrToSdlCode["SDLK_LEFT"]              = SDLK_LEFT;
+		sdlStrToSdlCode["SDLK_RIGHT"]             = SDLK_RIGHT;
+		sdlStrToSdlCode["SDLK_UP"]                = SDLK_UP;
+
+		sdlStrToSdlCode["SDLK_F15"]               = SDLK_F15;
+		sdlStrToSdlCode["SDLK_F16"]               = SDLK_F16;
+
+		sdlStrToSdlCode["SDLK_VOLUMEDOWN"]        = SDLK_VOLUMEDOWN;
+		sdlStrToSdlCode["SDLK_VOLUMEUP"]          = SDLK_VOLUMEUP;
+
+		sdlStrToSdlCode["SDLK_RETURN"]            = SDLK_RETURN2;
+		sdlStrToSdlCode["SDLK_RETURN2"]           = SDLK_RETURN2;
+
+		sdlStrToSdlCode["SDLK_F17"]               = SDLK_F17;
+		sdlStrToSdlCode["SDLK_F18"]               = SDLK_F18;
+		sdlStrToSdlCode["SDLK_F19"]               = SDLK_F19;
+		sdlStrToSdlCode["SDLK_F20"]               = SDLK_F20;
+
+		sdlStrToSdlCode["SDLK_SPACE"]             = SDLK_SPACE;
+		sdlStrToSdlCode["SDLK_BACKSPACE"]         = SDLK_BACKSPACE;
+		sdlStrToSdlCode["SDLK_AC_BACK"]           = SDLK_AC_BACK;
+		sdlStrToSdlCode["SDLK_ESCAPE"]            = SDLK_ESCAPE;
+		sdlStrToSdlCode["SDLK_OUT"]               = SDLK_OUT;
+
+		sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
+		sdlStrToSdlCode["SDLK_F21"]               = SDLK_F21;
+		sdlStrToSdlCode["SDLK_STOP"]              = SDLK_STOP;
+		sdlStrToSdlCode["SDLK_EJECT"]             = SDLK_EJECT;
+		sdlStrToSdlCode["SDLK_EXECUTE"]           = SDLK_EXECUTE;
+		sdlStrToSdlCode["SDLK_F22"]               = SDLK_F22;
+		sdlStrToSdlCode["SDLK_PAUSE"]             = SDLK_PAUSE;
+
+		sdlStrToSdlCode["SDLK_GREATER"]           = SDLK_GREATER;
+		sdlStrToSdlCode["SDLK_LESS"]              = SDLK_LESS;
+
+		sdlStrToSdlCode["SDLK_TAB"]               = SDLK_TAB;
+		sdlStrToSdlCode["SDLK_F23"]               = SDLK_F23;
+
+		//gingaToSDLCodeMap
 		gingaToSDLCodeMap[CodeMap::KEY_QUIT]              = SDL_QUIT;
 		gingaToSDLCodeMap[CodeMap::KEY_NULL]              = SDLK_UNKNOWN;
 		gingaToSDLCodeMap[CodeMap::KEY_0]                 = SDLK_0;
@@ -2249,6 +2485,7 @@ namespace mb {
 		gingaToSDLCodeMap[CodeMap::KEY_TAB]               = SDLK_TAB;
 		gingaToSDLCodeMap[CodeMap::KEY_TAP]               = SDLK_F23;
 
+		//sdlToGingaCodeMap
         map<int, int>::iterator i;
         i = gingaToSDLCodeMap.begin();
         while (i != gingaToSDLCodeMap.end()) {
