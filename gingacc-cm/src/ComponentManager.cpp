@@ -127,32 +127,6 @@ namespace cm {
 		return ComponentManager::_instance;
 	}
 
-	void* ComponentManager::getComponent(string dLibName) {
-		void* component = dlopen(dLibName.c_str(), RTLD_LAZY);
-		if (component == NULL) {
-			clog << "ComponentManager warning: cant load component '";
-			clog << dLibName.c_str() << "' => " << dlerror() << endl;
-			return NULL;
-		}
-
-		dlerror();
-		return component;
-	}
-
-	void* ComponentManager::getSymbol(void* component, string sym) {
-		void* symbol = dlsym(component, sym.c_str());
-		const char* dlsym_error = dlerror();
-
-		if (dlsym_error != NULL) {
-			clog << "ComponentManager::getSymbol warning: cant load symbol '";
-			clog << sym.c_str() << "' => " << dlsym_error << endl;
-			return NULL;
-		}
-
-		dlerror();
-		return symbol;
-	}
-
 	void* ComponentManager::getObject(string objectName) {
 		IComponent* c;
 		void* comp;
@@ -175,16 +149,17 @@ namespace cm {
 		Thread::mutexUnlock(&mapMutex);
 
 		if (c != NULL) {
-			comp = this->getComponent(c->getName());
+			symbol = SystemCompat::loadComponent(
+					c->getName(), &comp, c->getCreatorSymbol(objectName));
+
 			if (comp != NULL) {
 				c->setComponent(comp);
-				symbol = getSymbol(comp, c->getCreatorSymbol(objectName));
 				return symbol;
 			}
 
 		} else {
 			clog << "ComponentManager::getObject warning! Component for '";
-			clog << objectName << "' was not descripted" << endl;
+			clog << objectName << "' was not described" << endl;
 			return NULL;
 		}
 
@@ -238,20 +213,8 @@ namespace cm {
 	}
 
 	bool ComponentManager::releaseComponent(void* component) {
-		int ret;
-
 		if (canUnload) {
-			ret = dlclose(component);
-			const char* dlsym_error = dlerror();
-
-			if (dlsym_error != NULL) {
-				clog << "ComponentManager::releaseComponent Warning! Can't";
-				clog << " release => " << dlsym_error << endl;
-
-				return false;
-			}
-
-			dlerror();
+			return SystemCompat::releaseComponent(component);
 		}
 
 		return canUnload;
@@ -260,7 +223,11 @@ namespace cm {
 	void ComponentManager::refreshComponentDescription() {
 		IComponentParser* cp;
 		void* component;
+		void* symbol;
 		string compUri;
+
+		string lName = "libgingacccmparser";
+		string sName = "createComponentParser";
 
 		if (components != NULL && !components->empty()) {
 			clog << "ComponentManager::refreshComponentDescription already ";
@@ -268,22 +235,24 @@ namespace cm {
 			return;
 		}
 
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-		component = getComponent("libgingacccmparser.dylib");
-  #endif
-#else
-		component = getComponent("libgingacccmparser.so");
-#endif
-		cp = ((ComponentParserCreator*)(getSymbol(
-				component, "createComponentParser")))();
+		symbol = SystemCompat::loadComponent(lName, &component, sName);
+		if (symbol == NULL) {
+			clog << "ComponentManager::refreshComponentDescription Warning!";
+			clog << "Can't find symbol '" << sName << "' using library '";
+			clog << lName << "'" << endl;
+			return;
+		}
 
-		compUri = SystemCompat::appendGingaFilesPrefix("componentDescription.xml");
+		cp = ((ComponentParserCreator*)symbol)();
+
+		compUri = SystemCompat::appendGingaFilesPrefix(
+				"componentDescription.xml");
+
 		cp->parse(compUri);
 
-		this->components = cp->getComponents();
-		this->symbols = cp->getSymbols();
-		this->parentObjects = cp->getParentObjects();
+		this->components           = cp->getComponents();
+		this->symbols              = cp->getSymbols();
+		this->parentObjects        = cp->getParentObjects();
 		this->unsolvedDependencies = cp->getUnsolvedDependencies();
 
 		delete cp;

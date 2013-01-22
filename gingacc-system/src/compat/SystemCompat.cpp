@@ -67,6 +67,7 @@ namespace compat {
 	string SystemCompat::iUriD            = "";
 	string SystemCompat::fUriD            = "";
 	bool SystemCompat::initialized        = false;
+	void* SystemCompat::cmInstance        = NULL;
 
 	void SystemCompat::checkValues() {
 		if (!initialized) {
@@ -246,7 +247,17 @@ namespace compat {
 		}
 	}
 
-	void* SystemCompat::loadComponent(string libName, string symName) {
+	void* SystemCompat::getComponentManagerInstance() {
+		return cmInstance;
+	}
+
+	void SystemCompat::setComponentManagerInstance(void* cmInstance) {
+		SystemCompat::cmInstance = cmInstance;
+	}
+
+	void* SystemCompat::loadComponent(
+			string libName, void** llib, string symName) {
+
 		void* comSym = NULL;
 
 #ifdef __APPLE__
@@ -285,21 +296,48 @@ namespace compat {
 			clog << "SystemCompat::loadComponent warning: can't load symbol '";
 			clog << symName << "' from library '" << libName;
 			clog << "' => " << dlsym_error << endl;
+			dlclose(comp);
+			*llib = NULL;
+
 			return (NULL);
 		}
 
+		*llib = comp;
 		dlerror();
-#endif
+#endif //!WIN32
 		return comSym;
 	}
 
+	bool SystemCompat::releaseComponent(void* component) {
+		bool released = false;
+
+#ifndef WIN32
+		int ret = dlclose(component);
+		const char* dlsym_error = dlerror();
+
+		if (dlsym_error != NULL) {
+			clog << "SystemCompat::releaseComponent Warning! Can't";
+			clog << " release => " << dlsym_error << endl;
+
+			released = false;
+
+		} else {
+			released = true;
+		}
+
+		dlerror();
+#endif //!WIN32
+
+		return released;
+	}
+
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
-#ifndef WIN32 // Linux and Mac OS Snow Leopard (10.6)
+#ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
 		clog << "SystemCompat::sigpipeHandler ";
 		clog << "throw: " << strsignal(x) << endl;
-		throw strsignal(x);  //throw the exeption
-#endif // Linux and Mac OS Snow Leopard (10.6)
+		throw strsignal(x);  //throw the exception
+#endif //!WIN32
 	}
 
 	string SystemCompat::updatePath(string dir) {

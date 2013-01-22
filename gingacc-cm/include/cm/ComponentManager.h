@@ -90,11 +90,6 @@ namespace cm {
 			void release();
 			static ComponentManager* getInstance();
 
-		private:
-			void* getComponent(string dLibName);
-			void* getSymbol(void* component, string sym);
-
-		public:
 			void* getObject(string objectName);
 			set<string>* getObjectsFromInterface(string interfaceName);
 			map<string, set<string>*>* getUnsolvedDependencies();

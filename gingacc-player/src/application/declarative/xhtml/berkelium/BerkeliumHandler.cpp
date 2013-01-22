@@ -610,7 +610,7 @@ namespace player {
 		s   = dm->createSurface(myScreen);
 
 		img->playOver(s);
-		delete img;
+		dm->releaseImageProvider(myScreen, img);
 
 		return s;
 	}
