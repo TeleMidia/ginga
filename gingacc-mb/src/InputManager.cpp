@@ -408,6 +408,7 @@ namespace mb {
 		int keyCode;
 
 		if (!running) {
+			clog << "InputManger::dispatchEvent !running" << endl;
 			return false;
 		}
 
@@ -432,6 +433,9 @@ namespace mb {
 			clog << "InputManger::dispatchEvent code '";
 			clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
 		}
+
+		clog << "InputManger::dispatchEvent code '";
+		clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
 
 		i = eventListeners.begin();
 		while (i != eventListeners.end() && running) {
@@ -665,10 +669,6 @@ namespace mb {
 						currentYAxis = maxY;
 					}
 
-					clog << "InputManager::run new currentX = '";
-					clog << currentXAxis << "' currentY = '";
-					clog << currentYAxis << "'" << endl;
-
 					delete inputEvent;
 					if (eventBuffer != NULL) {
 						inputEvent = eventBuffer->getNextEvent();
@@ -706,11 +706,11 @@ namespace mb {
 						timeStamp) >= declarativeIntervalTime)) {
 
 					lastCode  = inputEvent->getKeyCode(myScreen);
+					timeStamp = getCurrentTimeMillis();
 
 					clog << "InputManager::run event code = '";
 					clog << lastCode << "'" << endl;
 
-					timeStamp = getCurrentTimeMillis();
 					if (!dispatchEvent(inputEvent)) {
 						delete inputEvent;
 						inputEvent = eventBuffer->getNextEvent();
@@ -720,6 +720,8 @@ namespace mb {
 
 				if (inputEvent->isKeyType() ||
 						inputEvent->isApplicationType()) {
+
+					clog << "InputManager::run key or application" << endl;
 
 					dispatchApplicationEvent(inputEvent);
 				}

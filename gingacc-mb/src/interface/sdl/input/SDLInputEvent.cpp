@@ -72,15 +72,11 @@ namespace mb {
 	}
 
 	SDLInputEvent::SDLInputEvent(const int keyCode) {
-		SDL_KeyboardEvent fakeEvent;
-
-		fakeEvent.type       = SDL_KEYDOWN;
-		fakeEvent.state      = SDL_PRESSED;
-		fakeEvent.repeat     = 0;
-		fakeEvent.keysym.sym = keyCode;
-
-		event.type = SDL_KEYDOWN;
-		event.key  = fakeEvent;
+		event.type           = SDL_KEYDOWN;
+		event.key.type       = SDL_KEYDOWN;
+		event.key.state      = SDL_PRESSED;
+		event.key.repeat     = 0;
+		event.key.keysym.sym = keyCode;
 
 		x = 0;
 		y = 0;
@@ -139,13 +135,17 @@ namespace mb {
 		}
 
 		if (event.type == SDL_USEREVENT) {
+			clog << "SDLInputEvent::getKeyCode user event" << endl;
 			sdlValue = event.user.code;
 
 		} else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-
 			sdlValue = event.key.keysym.sym;
+			clog << "SDLInputEvent::getKeyCode key pressed event sdlValue = '";
+			clog << sdlValue << "'" << endl;
 
 		} else {
+			clog << "SDLInputEvent::getKeyCode unknown event type.";
+			clog << "Returning KEY_NULL" << endl;
 			return CodeMap::KEY_NULL;;
 		}
 

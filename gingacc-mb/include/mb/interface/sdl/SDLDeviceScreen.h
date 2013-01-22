@@ -140,6 +140,7 @@ typedef struct {
 			bool mustGainFocus;
 
 			IInputManager* im;
+			bool useStdin;
 
 			bool waitingCreator;
 			pthread_mutex_t condMutex;
@@ -155,6 +156,7 @@ typedef struct {
 
 			static map<int, int> gingaToSDLCodeMap;
 			static map<int, int> sdlToGingaCodeMap;
+			static map<string, int> sdlStrToSdlCode;
 
 			static set<SDL_Surface*> uSurPool;
 			static set<SDL_Texture*> uTexPool;
@@ -284,6 +286,14 @@ typedef struct {
 			static void sdlQuit();
 
 			static void checkWindowFocus(SDLDeviceScreen* s, SDL_Event* event);
+			static bool notifyEvent(
+					SDLDeviceScreen* screen,
+					SDL_Event* event,
+					bool capsOn,
+					bool shiftOn);
+
+			static void* checkStdin(void* ptr);
+
 			static bool checkEvents();
 			static void* rendererT(void* ptr);
 
@@ -329,6 +339,7 @@ typedef struct {
 			/* SDL MB internal use*/
 		private:
 			/* input */
+			static int convertEventCodeStrToInt(string strEvent);
 			static void initCodeMaps();
 			static bool checkEventFocus(SDLDeviceScreen* s);
 
