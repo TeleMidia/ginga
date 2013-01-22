@@ -170,6 +170,7 @@ namespace compat {
 			static string iUriD;
 			static string fUriD;
 			static bool initialized;
+			static void* cmInstance;
 
 			static void checkValues();
 			static void initializeGingaPath();
@@ -222,7 +223,13 @@ namespace compat {
 			/******************************
 			 * Handling Dynamic libraries *
 			 ******************************/
-			static void* loadComponent(string libName, string symName);
+			static void* getComponentManagerInstance();
+			static void setComponentManagerInstance(void* cmInstance);
+
+			static void* loadComponent(
+					string libName, void** llib, string symName);
+
+			static bool releaseComponent(void* component);
 
 			/****************
 			 * SIG Handlers *
