@@ -482,7 +482,7 @@ namespace mb {
 				}
 
 				if (useStdin) {
-					mbArgs[argc] = (char*)"pool-stdin";
+					mbArgs[argc] = (char*)"poll-stdin";
 					argc++;
 				}
 
