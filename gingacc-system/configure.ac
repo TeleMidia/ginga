@@ -20,6 +20,13 @@ CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
 done
 
+STR_PREFIX=${prefix}
+
+####################
+# exporting prefix #
+####################
+AC_DEFINE_UNQUOTED(STR_PREFIX, "${prefix}", [Defining prefix (make install directory)])
+
 ###########
 # HEADERS #
 ###########
@@ -28,14 +35,14 @@ done
 # Linux and Mac OS 10.6 #
 #########################
 
-AC_CHECK_HEADERS([sys/socket.h])
-AC_CHECK_HEADERS([net/if.h])
+AC_CHECK_HEADER([sys/socket.h])
+AC_CHECK_HEADER([net/if.h])
 
 ##############
 # Linux only #
 ##############
 
-AC_CHECK_HEADERS([sys/sysinfo])
+AC_CHECK_HEADER([sys/sysinfo])
 
 
 ####################
