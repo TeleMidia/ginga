@@ -49,6 +49,8 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 
+#include "config.h"
+
 extern "C" float machInfo(const char *name);
 
 namespace br {
@@ -66,6 +68,7 @@ namespace compat {
 	string SystemCompat::pathD            = "";
 	string SystemCompat::iUriD            = "";
 	string SystemCompat::fUriD            = "";
+	string SystemCompat::gingaPrefix      = "";
 	bool SystemCompat::initialized        = false;
 	void* SystemCompat::cmInstance        = NULL;
 
@@ -73,8 +76,17 @@ namespace compat {
 		if (!initialized) {
 			initialized = true;
 			initializeGingaPath();
+			initializeGingaPrefix();
 			initializeUserCurrentPath();
 			initializeGingaConfigFile();
+		}
+	}
+
+	void SystemCompat::initializeGingaPrefix() {
+		SystemCompat::gingaPrefix = STR_PREFIX;
+
+		if (gingaPrefix == "NONE") {
+			gingaPrefix =  iUriD + "usr" + iUriD + "local" + iUriD;
 		}
 	}
 
@@ -101,12 +113,10 @@ namespace compat {
 			clog << "Warning! Can't open input file: '" << gingaini;
 			clog << "' loading default configuration!" << endl;
 
-			pathD            = ":";
-			iUriD            = "/";
-			fUriD            = "\\";
-			gingaCurrentPath = "/usr/local/sbin/";
-			installPref      = "/usr/local";
-			filesPref        = "/usr/local/etc/ginga/files/";
+			gingaCurrentPath = gingaPrefix + iUriD + "sbin" + iUriD;
+			installPref      = gingaPrefix;
+			filesPref        = gingaPrefix + iUriD + "etc" +
+					 iUriD + "ginga" + iUriD + "files" + iUriD;
 
 			return;
 		}
@@ -168,18 +178,27 @@ namespace compat {
 		string path, currentPath;
 		string gingaBinary = "ginga";
 
-#ifdef WIN32
+#ifndef WIN32
+		pathD            = ";";
+		iUriD            = "/";
+		fUriD            = "\\";
+#else
+		pathD            = ":";
+		iUriD            = "\\";
+		fUriD            = "/";
 		gingaBinary = "ginga.exe";
-#endif //WIN32
+#endif
 
 		path = getenv("PATH");
 		if (path.find(";") != std::string::npos) {
 			pathD = ";";
 			iUriD = "\\";
+			fUriD = "/";
 
 		} else if (path.find(":") != std::string::npos) {
 			pathD = ":";
 			iUriD = "/";
+			fUriD = "\\";
 		}
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -255,28 +274,36 @@ namespace compat {
 		SystemCompat::cmInstance = cmInstance;
 	}
 
-	void* SystemCompat::loadComponent(
-			string libName, void** llib, string symName) {
-
-		void* comSym = NULL;
+	string SystemCompat::appendLibExt(string libName) {
+		string newLibName = libName;
 
 #ifdef __APPLE__
   #ifdef __DARWIN_UNIX03
 		if (libName.find(".dylib") == std::string::npos) {
-			libName.append(".dylib");
+			newLibName = libName + ".dylib";
 		}
   #endif //__DARWIN_UNIX03
 #else //!__APPLE__
 #ifdef WIN32
 		if (libName.find(".dll") == std::string::npos) {
-			libName.append(".dll");
+			newLibName = libName + ".dll";
 		}
 #else //!WIN32
 		if (libName.find(".so") == std::string::npos) {
-			libName.append(".so");
+			newLibName = libName + ".so";
 		}
 #endif //WIN32
 #endif//__APPLE__
+
+		return newLibName;
+	}
+
+	void* SystemCompat::loadComponent(
+			string libName, void** llib, string symName) {
+
+		void* comSym = NULL;
+
+		libName = appendLibExt(libName);
 
 #ifndef WIN32
 		void* comp = dlopen(libName.c_str(), RTLD_LAZY);
@@ -338,6 +365,10 @@ namespace compat {
 		clog << "throw: " << strsignal(x) << endl;
 		throw strsignal(x);  //throw the exception
 #endif //!WIN32
+	}
+
+	string SystemCompat::getGingaPrefix() {
+		return SystemCompat::gingaPrefix;
 	}
 
 	string SystemCompat::updatePath(string dir) {

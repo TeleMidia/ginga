@@ -367,6 +367,11 @@ namespace cm {
 
 			} else if (strcmp(attrs[i], "uri") == 0) {
 				uri = attrs[i + 1];
+
+				if (uri.find("${prefix}") != std::string::npos) {
+					uri = SystemCompat::getGingaPrefix() +
+							uri.substr(9, uri.length() - 9);
+				}
 			}
 		}
 

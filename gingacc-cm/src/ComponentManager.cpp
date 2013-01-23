@@ -286,6 +286,8 @@ namespace cm {
 			url = SystemCompat::updatePath(
 					c->getLocation() + SystemCompat::getIUriD() + c->getName());
 
+			url = SystemCompat::appendLibExt(url);
+
 			if (access(url.c_str(), (int)F_OK) == 0) {
 				Thread::mutexUnlock(&mapMutex);
 				return true;

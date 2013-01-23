@@ -169,10 +169,12 @@ namespace compat {
 			static string pathD;
 			static string iUriD;
 			static string fUriD;
+			static string gingaPrefix;
 			static bool initialized;
 			static void* cmInstance;
 
 			static void checkValues();
+			static void initializeGingaPrefix();
 			static void initializeGingaPath();
 			static void initializeUserCurrentPath();
 			static void initializeGingaConfigFile();
@@ -183,6 +185,7 @@ namespace compat {
 			/********
 			 * URIs *
 			 ********/
+			static string getGingaPrefix();
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
 			static bool isAbsolutePath(string path);
@@ -225,6 +228,8 @@ namespace compat {
 			 ******************************/
 			static void* getComponentManagerInstance();
 			static void setComponentManagerInstance(void* cmInstance);
+
+			static string appendLibExt(string libName);
 
 			static void* loadComponent(
 					string libName, void** llib, string symName);
