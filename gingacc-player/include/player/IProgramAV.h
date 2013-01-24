@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef IPROGRAMAV_H_
 #define IPROGRAMAV_H_
 
+#include "mb/IMBDefs.h"
+
 #include "IPlayer.h"
 
 namespace br {
@@ -75,7 +77,7 @@ namespace player {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		ProgramHandlerCreator();
+		ProgramHandlerCreator(GingaScreenID screenId);
 
 typedef void ProgramHandlerDestroyer(
 		::br::pucrio::telemidia::ginga::core::player::IPlayer* ipav);
