@@ -14,7 +14,7 @@ LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga/ ${prefix}/include/ginga/; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
