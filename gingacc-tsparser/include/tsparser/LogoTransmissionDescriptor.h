@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 
 //#include "ILogoTransmissionDescriptor.h"
 
-#include "IMpegDescriptor.h"
+#include "tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <string.h>
@@ -90,7 +90,7 @@ namespace descriptors {
 			unsigned short getDownloadDataId();
 			void setName(string name);
 			string getName();
-			unsigned char getNameLength();
+			unsigned int getNameLength();
 			unsigned char getDescriptorTag();
 			void print();
 			size_t process (char* data, size_t pos);

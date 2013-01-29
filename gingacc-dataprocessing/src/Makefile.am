@@ -22,7 +22,7 @@ libgingaccdataprocessing_la_SOURCES = DataProcessor.cpp EPGProcessor.cpp \
     dsmcc/carousel/data/Module.cpp \
     dsmcc/carousel/object/Object.cpp \
     dsmcc/carousel/object/ObjectProcessor.cpp \
-    dsmcc/npt/Crc.cpp dsmcc/npt/Descriptor.cpp \
+    dsmcc/npt/Crc.cpp dsmcc/npt/MpegDescriptor.cpp \
     dsmcc/npt/DSMCCSectionPayload.cpp dsmcc/npt/NPTProcessor.cpp \
     dsmcc/npt/NPTReference.cpp dsmcc/npt/Stc.cpp dsmcc/npt/StreamMode.cpp \
     dsmcc/npt/TimeBaseClock.cpp

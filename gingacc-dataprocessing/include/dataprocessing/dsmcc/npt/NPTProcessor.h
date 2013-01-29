@@ -63,7 +63,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "DSMCCSectionPayload.h"
-#include "Descriptor.h"
+#include "MpegDescriptor.h"
 #include "NPTReference.h"
 #include "TimeBaseClock.h"
 #include "INPTListener.h"
@@ -131,7 +131,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 				string function, TimeBaseClock* clk, NPTReference* npt);
 
 	public:
-		int decodeNPT(vector<Descriptor*>* list);
+		int decodeNPT(vector<MpegDescriptor*>* list);
 		double getNPTValue(unsigned char contentId);
 
 	private:

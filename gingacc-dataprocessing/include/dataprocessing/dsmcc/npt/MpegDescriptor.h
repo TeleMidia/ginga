@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef DESCRIPTOR_H_
-#define DESCRIPTOR_H_
+#ifndef MPEGDESCRIPTOR_H_
+#define MPEGDESCRIPTOR_H_
 
 #include <string.h>
 #include <iostream>
@@ -64,7 +64,7 @@ namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
 
-class Descriptor {
+class MpegDescriptor {
 	public:
 		static const unsigned short MAX_DESCRIPTOR_SIZE = 257;
 
@@ -83,9 +83,9 @@ class Descriptor {
 		virtual unsigned int calculateDescriptorSize();
 
 	public:
-		Descriptor();
-		Descriptor(unsigned char tag);
-		virtual ~Descriptor();
+		MpegDescriptor();
+		MpegDescriptor(unsigned char tag);
+		virtual ~MpegDescriptor();
 
 		char addData(char* data, unsigned short length);
 		unsigned char isConsolidated();
@@ -98,13 +98,13 @@ class Descriptor {
 
 		void setDescriptorTag(unsigned char tag);
 
-		static Descriptor* getDescriptor(
-				vector<Descriptor*>* descriptors, unsigned char Tag);
+		static MpegDescriptor* getDescriptor(
+				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
 
-		static vector<Descriptor*>* getDescriptors(
-				vector<Descriptor*>* descriptors, unsigned char Tag);
+		static vector<MpegDescriptor*>* getDescriptors(
+				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
 
-		static int getDescriptorsLength(vector<Descriptor*>* descriptors);
+		static int getDescriptorsLength(vector<MpegDescriptor*>* descriptors);
 };
 
 }
@@ -116,4 +116,4 @@ class Descriptor {
 }
 }
 
-#endif /*DESCRIPTOR_H_*/
+#endif /*MPEGDESCRIPTOR_H_*/

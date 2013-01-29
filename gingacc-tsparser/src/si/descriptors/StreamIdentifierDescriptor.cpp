@@ -64,18 +64,23 @@ namespace descriptors {
 		componentTag     = 0;
 
 	}
+
 	StreamIdentifierDescriptor::~StreamIdentifierDescriptor() {
 
 	}
+
 	unsigned char StreamIdentifierDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
-	unsigned char StreamIdentifierDescriptor::getDescriptorLength() {
+
+	unsigned int StreamIdentifierDescriptor::getDescriptorLength() {
 		return descriptorLength;
 	}
+
 	void StreamIdentifierDescriptor::print() {
 		clog << "StreamIdentifierDescriptor::print printing..." << endl;
 	}
+
 	size_t StreamIdentifierDescriptor::process(char* data, size_t pos) {
 		descriptorLength =  data[pos+1];
 		pos += 2;

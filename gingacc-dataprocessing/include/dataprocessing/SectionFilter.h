@@ -105,7 +105,6 @@ namespace dataprocessing {
 			SectionFilter();
 			virtual ~SectionFilter();
 
-			void setDestName(string name){};
 			void addPid(int pid){};
 
 		private:
@@ -127,7 +126,6 @@ namespace dataprocessing {
 			void receiveTSPacket(ITSPacket* pack);
 			void receiveSection(char* buf, int len, IFrontendFilter* filter);
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
-			bool addDestination(unsigned int dest){return false;};
 	};
 }
 }

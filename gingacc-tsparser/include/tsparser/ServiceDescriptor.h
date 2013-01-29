@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "IServiceDescriptor.h"
 
-#include <string.h>
+#include <string>
 
 namespace br {
 namespace pucrio {

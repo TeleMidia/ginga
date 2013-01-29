@@ -60,7 +60,7 @@ namespace dataprocessing {
 namespace carousel {
 	ServiceDomain::ServiceDomain(
 		    DownloadServerInitiate* dsi,
-		    DownloadInfoIndication* dii) : Thread::Thread() {
+		    DownloadInfoIndication* dii) : Thread() {
 
 		this->serviceGatewayIor = dsi->getServiceGatewayIor();
 		this->info              = dii->getInfo();

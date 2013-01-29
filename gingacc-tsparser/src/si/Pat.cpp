@@ -271,10 +271,10 @@ namespace si {
 			return false;
 		}
 
-		char sectionPayload[sectionLength - 9];
+		char* sectionPayload = new char[sectionLength - 9];
 
 		payload = (char*)getPayload();
-		memcpy((void*)(&sectionPayload[0]), payload, sectionLength - 9);
+		memcpy((void*)sectionPayload, payload, sectionLength - 9);
 		delete payload;
 
 		unsigned int n;
@@ -313,6 +313,8 @@ namespace si {
 				unprocessedPmts->push_back(pid);
 			}
 		}
+
+		delete sectionPayload;
 		return true;
 	}
 

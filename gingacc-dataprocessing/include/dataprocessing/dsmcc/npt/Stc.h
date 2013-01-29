@@ -87,7 +87,7 @@ class Stc {
 
 		static int timevalSubtract(
 				struct timeval *result, struct timeval *x, struct timeval *y);
-		static int userClock(struct timeval* usrClk);
+
 		static uint64_t baseExtToStc(uint64_t base, uint64_t ext);
 		static uint64_t stcToBase(uint64_t stc);
 		static uint64_t stcToExt(uint64_t stc);

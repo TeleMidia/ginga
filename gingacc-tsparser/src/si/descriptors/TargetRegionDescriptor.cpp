@@ -67,15 +67,19 @@ namespace descriptors {
 	TargetRegionDescriptor::~TargetRegionDescriptor() {
 
 	}
+
 	unsigned char TargetRegionDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
-	unsigned char TargetRegionDescriptor::getDescriptorLength() {
+
+	unsigned int TargetRegionDescriptor::getDescriptorLength() {
 		return descriptorLength;
 	}
+
 	void TargetRegionDescriptor::print() {
 		clog << "StreamIdentifierDescriptor::print printing..." << endl;
 	}
+
 	size_t TargetRegionDescriptor::process(char* data, size_t pos) {
 		descriptorLength =  data[pos+1];
 		pos += 2;

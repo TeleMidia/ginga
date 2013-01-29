@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef STREAMMODE_H_
 #define STREAMMODE_H_
 
-#include "Descriptor.h"
+#include "MpegDescriptor.h"
 
 using namespace std;
 
@@ -63,7 +63,7 @@ namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
 
-class StreamMode : public Descriptor {
+class StreamMode : public MpegDescriptor {
 	private:
 
 	protected:
