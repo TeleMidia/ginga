@@ -50,15 +50,14 @@ http://www.telemidia.puc-rio.br
 #ifndef IFILTERLISTENER_H_
 #define IFILTERLISTENER_H_
 
-#include "tsparser/ITransportSection.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+#include "ITransportSection.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
+namespace tsparser {
 	class IFilterListener {
 		public:
 			virtual ~IFilterListener(){};

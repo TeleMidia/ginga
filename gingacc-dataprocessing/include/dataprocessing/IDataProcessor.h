@@ -57,6 +57,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "tsparser/IDemuxer.h"
+#include "tsparser/IFilterListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "dsmcc/IStreamEventListener.h"
@@ -68,8 +69,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
-
-#include "IFilterListener.h"
 
 #include <map>
 #include <set>
