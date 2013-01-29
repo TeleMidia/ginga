@@ -738,6 +738,30 @@ namespace compat {
 #endif
 	}
 
+	int SystemCompat::getUserClock(struct timeval* usrClk) {
+		int rval = 0;
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		double temp;
+
+		temp            = clock() / CLOCKS_PER_SEC;
+		usrClk->tv_sec  = (long) temp;
+		usrClk->tv_usec = 1000000*(temp - usrClk->tv_sec);
+#else
+		struct rusage usage;
+
+		if (getrusage(RUSAGE_SELF, &usage) != 0) {
+			clog << "SystemCompat::getUserClock getrusage error." << endl;
+			rval = -1;
+
+		} else {
+			usrClk->tv_sec  = usage.ru_utime.tv_sec;
+			usrClk->tv_usec = usage.ru_utime.tv_usec;
+		}
+#endif
+		return rval;
+	}
+
 	/* replacement of Unix rint() for Windows */
 	int SystemCompat::rint (double x) {
 #if defined(_WIN32) && !defined(__MINGW32__)

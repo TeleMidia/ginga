@@ -70,12 +70,12 @@ namespace carousel {
 		// dsmccmessageheader = 12
 		i = header->getAdaptationLength() + 12;
 
-		char bytes[(header->getMessageLength() + i)];
+		char* bytes = new char[(header->getMessageLength() + i)];
 
 		fd = fopen(header->getFileName().c_str(), "rb");
 		if (fd != NULL) {
 			rval = fread(
-					(void*)&(bytes[0]), 1, header->getMessageLength() + i, fd);
+					(void*)bytes, 1, header->getMessageLength() + i, fd);
 
 			this->downloadId = ((bytes[i] & 0xFF) << 24) |
 				    ((bytes[i + 1] & 0xFF) << 16) |
@@ -132,6 +132,8 @@ namespace carousel {
 			clog << "Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
 		}
+
+		delete bytes;
 	}
 
 	unsigned int DownloadInfoIndication::getDonwloadId() {

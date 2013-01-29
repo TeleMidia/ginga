@@ -69,12 +69,12 @@ namespace descriptors {
 
 	LDTLinkageDescriptor::~LDTLinkageDescriptor() {
 		if(descriptions != NULL){
-			for(int i = 0; i < descriptionsLength; ++i){
-				if(*(descriptions[i])!= NULL){
-					delete (*(descriptions[i]));
+			for(int i = 0; i < descriptorLength; ++i){
+				if((*descriptions)[i] != NULL) {
+					delete (*descriptions)[i];
 				}
 				delete descriptions;
-				descriptions == NULL;
+				descriptions = NULL;
 			}
 		}
 	}
@@ -155,7 +155,7 @@ namespace descriptors {
 				//descriptions = new struct Description[descriptionCount];
 				descriptions = new vector<Description*>;
 			}
-			description = new struct description;
+			description = new Description;
 
 			pos++;
 			description->descriptionId = (((data[pos] << 8) & 0xFF00) ||
@@ -167,7 +167,7 @@ namespace descriptors {
 			description->userDefined = data[pos];
 
 			//descriptions[i] =  description;
-			descriptions.push_back(description);
+			descriptions->push_back(description);
 		}
 		return pos;
 	}

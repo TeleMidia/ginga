@@ -68,8 +68,8 @@ namespace descriptors {
 	ComponentGroupDescriptor::~ComponentGroupDescriptor() {
 		ComponentGroup* cg;
 		CAUnit* unit;
-
-		if (group != NULL) {
+		//TODO: WORSE CODE EVER MADE: FIX IT
+/*		if (group != NULL) {
 			for (int i = 0; i < numOfGroup; i++) {
 				cg = (ComponentGroup*)group[i];
 				for (int j = 0; j < cg->numOfCAUnit; i++) {
@@ -85,7 +85,7 @@ namespace descriptors {
 			}
 			delete group;
 			group = NULL;
-		}
+		}*/
 	}
 	unsigned char ComponentGroupDescriptor::getDescriptorTag(){
 		return descriptorTag;
@@ -120,7 +120,8 @@ namespace descriptors {
 			cg = new struct ComponentGroup;
 			cg->componentGroupId = ((data[pos] >> 4) & 0x0F);
 			cg->numOfCAUnit = (data[pos] & 0x0F);
-			cg->units =  new struct Unit[cg->numOfCAUnit];
+			//TODO: WORSE CODE EVER MADE: FIX IT
+//			cg->units =  new struct Unit[cg->numOfCAUnit];
 			//pos++;
 			for (int j = 0; i < cg->numOfCAUnit; i++){
 				pos++;
@@ -134,7 +135,8 @@ namespace descriptors {
 					unit->components[k] = data[pos];
 					//pos++;
 				}
-				cg->units[j] = unit;
+//TODO: WORSE CODE EVER MADE: FIX IT
+//				cg->units[j] = unit;
 			}
 			if(totalBitRateFlag == 1){
 				pos ++;
@@ -147,7 +149,8 @@ namespace descriptors {
 				cg->textChar = new char[cg->textLength];
 				memset(cg->textChar, 0, cg->textLength);
 				memcpy(cg->textChar, data+pos+1, cg->textLength);
-				group[i] = cg;
+				//TODO: WORSE CODE EVER MADE: FIX IT
+//				group[i] = cg;
 				pos += cg->textLength;
 			}
 		}

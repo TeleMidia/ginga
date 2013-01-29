@@ -81,15 +81,19 @@ namespace descriptors {
 		delete cells;
 		cells == NULL;
 	}
-	unsigned char MosaicDescriptor::getDescriptorLength() {
+
+	unsigned int MosaicDescriptor::getDescriptorLength() {
 		return descriptorLength;
 	}
+
 	unsigned char MosaicDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
+
 	void MosaicDescriptor::print() {
 		clog << "MosaicDescriptor::print printing..." << endl;
 	}
+
 	size_t MosaicDescriptor::process(char* data, size_t pos) {
 		size_t remainingBytes;
 		struct Cell* cell;
@@ -103,7 +107,7 @@ namespace descriptors {
 		numberVerticalCells = (data[pos] & 0x07);
 
 		remainingBytes = descriptorLength - 1;
-		cells = new vector<Cell*>;;
+		cells = new vector<Cell*>;
 		while(remainingBytes) {
 			pos++;
 			cell = new struct Cell;

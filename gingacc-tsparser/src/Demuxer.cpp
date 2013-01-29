@@ -431,7 +431,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 
 		return pat->getDefaultMainVideoPid();
@@ -442,7 +442,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 
 		return pat->getDefaultMainAudioPid();
@@ -662,15 +662,6 @@ namespace tsparser {
 				ni->createPesFilter(pPid, PFT_OTHER, true);
 				ni->createPesFilter(aPid, PFT_AUDIO, true);
 				ni->createPesFilter(vPid, PFT_VIDEO, true);
-
-				if (!((PipeFilter*)filter)->isDVRReader()) {
-					((PipeFilter*)filter)->setDVRReader(
-							0,
-							true,
-							ni->getPesFilterOutput());
-
-					((PipeFilter*)filter)->startThread();
-				}
 
 				(*pesFilters)[pat->getFirstProgramNumber()] = filter;
 

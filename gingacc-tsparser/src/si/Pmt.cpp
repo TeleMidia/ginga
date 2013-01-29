@@ -199,8 +199,8 @@ namespace si {
 			clog << " idExtension." << endl;
 		}
 
-		char sectionPayload[sectionLength - 9];
-		memcpy((void*)(&sectionPayload[0]), getPayload(), sectionLength - 9);
+		char* sectionPayload = new char[sectionLength - 9];
+		memcpy((void*)sectionPayload, getPayload(), sectionLength - 9);
 
 		pcrPid = ((sectionPayload[0] & 0x1F) << 8) |
 			    (sectionPayload[1] & 0xFF);
@@ -231,6 +231,8 @@ namespace si {
 		}
 
 		processed = true;
+
+		delete sectionPayload;
 		return processed;
 	}
 

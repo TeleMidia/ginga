@@ -57,7 +57,7 @@ namespace core {
 namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
-NPTReference::NPTReference() : Descriptor(0x01) {
+NPTReference::NPTReference() : MpegDescriptor(0x01) {
 	postDiscontinuityIndicator = 0;
 	contentId = 0;
 	stcRef = 0;
@@ -72,7 +72,7 @@ NPTReference::~NPTReference() {
 }
 
 int NPTReference::process() {
-	int pos = Descriptor::process();
+	int pos = MpegDescriptor::process();
 
 	postDiscontinuityIndicator = (stream[pos] >> 7) & 0x01;
 	contentId = stream[pos++] & 0x3F;
@@ -112,7 +112,7 @@ int NPTReference::process() {
 }
 
 int NPTReference::updateStream() {
-	Descriptor::updateStream();
+	MpegDescriptor::updateStream();
 	stream[2] = stream[2] & 0x7F;
 	stream[2] = stream[2] |	((postDiscontinuityIndicator << 7) & 0x80);
 	stream[2] = stream[2] & 0x80;
@@ -145,7 +145,7 @@ int NPTReference::updateStream() {
 }
 
 unsigned int NPTReference::calculateDescriptorSize() {
-	int pos = Descriptor::calculateDescriptorSize();
+	int pos = MpegDescriptor::calculateDescriptorSize();
 	return pos + 18;
 }
 

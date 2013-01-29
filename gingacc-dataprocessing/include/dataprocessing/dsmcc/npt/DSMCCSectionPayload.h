@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include <stdint.h>
 
 #include "Crc.h"
-#include "Descriptor.h"
+#include "MpegDescriptor.h"
 
 #include "NPTReference.h"
 #include "StreamMode.h"
@@ -76,7 +76,7 @@ class DSMCCSectionPayload {
 		unsigned short privateDataLength;
 		char* privateDataByte;
 
-		vector<Descriptor*>* dsmccDescritorList;
+		vector<MpegDescriptor*>* dsmccDescritorList;
 		unsigned int checksum;
 
 		char* payload;
@@ -87,7 +87,7 @@ class DSMCCSectionPayload {
 		int calculateSectionSize();
 
 		void clearDsmccDescritor();
-		void deleteDescriptor(Descriptor* desc);
+		void deleteDescriptor(MpegDescriptor* desc);
 
 		/*
 		 * if (tableId == 3D) {
@@ -98,13 +98,13 @@ class DSMCCSectionPayload {
 		DSMCCSectionPayload(char* data, unsigned int length);
 		virtual ~DSMCCSectionPayload();
 
-		vector<Descriptor*>* getDsmccDescritorList();
+		vector<MpegDescriptor*>* getDsmccDescritorList();
 		unsigned int getChecksum();
 		void setChecksum(unsigned int cs);
 		int getPrivateDataByte(char** dataStream);
 		int setPrivateDataByte(char* data, unsigned short length);
 
-		void addDsmccDescriptor(Descriptor* d);
+		void addDsmccDescriptor(MpegDescriptor* d);
 		void removeDsmccDescriptor(unsigned char descriptorTag);
 };
 

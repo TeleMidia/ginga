@@ -467,13 +467,13 @@ bool NPTProcessor::checkTimeBaseArgs(
 	return true;
 }
 
-int NPTProcessor::decodeNPT(vector<Descriptor*>* list) {
-	vector<Descriptor*>::iterator it;
+int NPTProcessor::decodeNPT(vector<MpegDescriptor*>* list) {
+	vector<MpegDescriptor*>::iterator it;
 	TimeBaseClock* clk;
 	map<unsigned char, TimeBaseClock*>::iterator itBase;
 	vector<pair<bool, NPTReference*>*>::iterator itEvent;
 	NPTReference* npt = NULL;
-	Descriptor* desc = NULL;
+	MpegDescriptor* desc = NULL;
 
 	if (list == NULL) {
 		return -1;

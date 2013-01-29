@@ -61,7 +61,7 @@ DSMCCSectionPayload::DSMCCSectionPayload(char* data, unsigned int length) {
 	payload            = data;
 	payloadSize        = length;
 	privateDataByte    = NULL;
-	dsmccDescritorList = new vector<Descriptor*>;
+	dsmccDescritorList = new vector<MpegDescriptor*>;
 	privateDataLength  = 0;
 	checksum           = 0;
 
@@ -109,7 +109,7 @@ int DSMCCSectionPayload::processSectionPayload() {
 
 			default:
 				clog << "DSMCCSectionPayload::processSectionPayload";
-				clog << "Descriptor unrecognized. ";
+				clog << "MpegDescriptor unrecognized. ";
 				clog << (descriptorTag & 0xFF) << endl;
 				break;
 		}
@@ -130,7 +130,7 @@ int DSMCCSectionPayload::updateStream() {
 
 	pos = PrivateSection::updateStream();
 
-	Descriptor* desc;
+	MpegDescriptor* desc;
 	int streamLen;
 	char* dataStream;
 
@@ -141,7 +141,7 @@ int DSMCCSectionPayload::updateStream() {
 	} else if (tableId == 0x3C) {
 		//downloadDataMessage()
 	} else if (tableId == 0x3D) {
-		vector<Descriptor*>::iterator i;
+		vector<MpegDescriptor*>::iterator i;
 		if ((dsmccDescritorList != NULL) &&
 				(!dsmccDescritorList->empty())) {
 			i = dsmccDescritorList->begin();
@@ -183,7 +183,7 @@ int DSMCCSectionPayload::updateStream() {
 
 int DSMCCSectionPayload::calculateSectionSize() {
 	/*unsigned int pos = PrivateSection::calculateSectionSize();
-	Descriptor* desc;
+	MpegDescriptor* desc;
 	int streamLen;
 	if (tableId == 0x3A) {
 		//LLCSNAP()
@@ -192,7 +192,7 @@ int DSMCCSectionPayload::calculateSectionSize() {
 	} else if (tableId == 0x3C) {
 		//downloadDataMessage()
 	} else if (tableId == 0x3D) {
-		vector<Descriptor*>::iterator i;
+		vector<MpegDescriptor*>::iterator i;
 		if ((dsmccDescritorList != NULL) &&
 				(!dsmccDescritorList->empty())) {
 			i = dsmccDescritorList->begin();
@@ -214,7 +214,7 @@ int DSMCCSectionPayload::calculateSectionSize() {
 	return 0;
 }
 
-vector<Descriptor*>* DSMCCSectionPayload::getDsmccDescritorList() {
+vector<MpegDescriptor*>* DSMCCSectionPayload::getDsmccDescritorList() {
 	return dsmccDescritorList;
 }
 
@@ -250,13 +250,13 @@ int DSMCCSectionPayload::setPrivateDataByte(char* data, unsigned short length) {
 	return privateDataLength;
 }
 
-void DSMCCSectionPayload::addDsmccDescriptor(Descriptor* d) {
+void DSMCCSectionPayload::addDsmccDescriptor(MpegDescriptor* d) {
 	dsmccDescritorList->push_back(d);
 }
 
 void DSMCCSectionPayload::removeDsmccDescriptor(unsigned char descriptorTag) {
-	Descriptor* desc;
-	vector<Descriptor*>::iterator i;
+	MpegDescriptor* desc;
+	vector<MpegDescriptor*>::iterator i;
 	if ((dsmccDescritorList != NULL) && (!dsmccDescritorList->empty())) {
 		i = dsmccDescritorList->begin();
 		while (i != dsmccDescritorList->end()) {
@@ -272,8 +272,8 @@ void DSMCCSectionPayload::removeDsmccDescriptor(unsigned char descriptorTag) {
 }
 
 void DSMCCSectionPayload::clearDsmccDescritor() {
-	Descriptor* desc;
-	vector<Descriptor*>::iterator i;
+	MpegDescriptor* desc;
+	vector<MpegDescriptor*>::iterator i;
 	if ((dsmccDescritorList != NULL) && (!dsmccDescritorList->empty())) {
 		i = dsmccDescritorList->begin();
 		while (i != dsmccDescritorList->end()) {

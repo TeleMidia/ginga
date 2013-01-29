@@ -92,19 +92,6 @@ int Stc::timevalSubtract(
 	return x->tv_sec < y->tv_sec;
 }
 
-int Stc::userClock(struct timeval* usrClk) {
-	struct rusage usage;
-
-	if (getrusage(RUSAGE_SELF, &usage) != 0) {
-		clog << "Stc::userClock getrusage error." << endl;
-		return -1;
-	}
-
-	usrClk->tv_sec  = usage.ru_utime.tv_sec;
-	usrClk->tv_usec = usage.ru_utime.tv_usec;
-	return 0;
-}
-
 uint64_t Stc::baseExtToStc(uint64_t base, uint64_t ext) {
 	return ((base * 300) + ext);
 }
@@ -145,7 +132,7 @@ void Stc::refreshStcSample() {
 	struct timeval result;
 	uint64_t clockedSec, clockedUsec;
 
-	userClock(&currentRef);
+	SystemCompat::getUserClock(&currentRef);
 	timevalSubtract(&result, &currentRef, &clockRef);
 	clockedSec  = result.tv_sec * 27000000;
 	clockedUsec = result.tv_usec * 27;
@@ -158,12 +145,12 @@ uint64_t Stc::getReference() {
 
 void Stc::setReference(uint64_t pcr) {
 	reference = pcr;
-	userClock(&clockRef);
+	SystemCompat::getUserClock(&clockRef);
 }
 
 void Stc::setReference(uint64_t base, uint64_t ext) {
 	reference = ((base * 300) + ext);
-	userClock(&clockRef);
+	SystemCompat::getUserClock(&clockRef);
 }
 
 uint64_t Stc::getStc() {

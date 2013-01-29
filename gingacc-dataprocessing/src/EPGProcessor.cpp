@@ -759,7 +759,7 @@ namespace epg {
 
 		pngSize = (times * 4079) + (remainder - 5);
 
-		char pngData[pngSize];
+		char* pngData = new char[pngSize];
 
 		clog << "CDT reading first blocks. pngSize is '" << pngSize << "'";
 		clog << endl;
@@ -780,6 +780,8 @@ namespace epg {
 			} else {
 				clog << "CDT Warning! Can't read 4079 block of bytes.";
 				clog << " pos = '" << pos << "'" << endl;
+
+				delete pngData;
 				return;
 			}
 		}
@@ -792,6 +794,8 @@ namespace epg {
 		} else {
 			clog << "CDT Warning! Can't read remaining of '" << remainder;
 			clog << "' bytes. pos = '" << pos << "'" << endl;
+
+			delete pngData;
 			return;
 		}
 
@@ -800,6 +804,8 @@ namespace epg {
 		this->savePNG(pngData, pngSize);
 		clog << "Stream decoded successfully. PngSize is '" << pngSize;
 		clog << "', pos is '" << pos + remainder << "'" << endl;
+
+		delete pngData;
 	}
 
 	int EPGProcessor::savePNG(char* pngData, int pngSize) {

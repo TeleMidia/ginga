@@ -83,7 +83,8 @@ namespace descriptors {
 			~LDTLinkageDescriptor();
 			unsigned char getDescriptorTag();
 			unsigned int getDescriptorLength();
-			size_t process(char* data, size_pos);
+			void print();
+			size_t process(char* data, size_t pos);
 			unsigned short getTSId();
 			unsigned short getOriginalNetworkId();
 			unsigned short getOriginalServideId();

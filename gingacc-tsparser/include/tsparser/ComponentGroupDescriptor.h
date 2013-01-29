@@ -64,7 +64,7 @@ struct CAUnit{
 struct ComponentGroup{
 	unsigned char componentGroupId;
 	unsigned char numOfCAUnit;
-	CAunit* units;
+	struct CAunit* units;
 	unsigned char totalBitRate;
 	unsigned char textLength;
 	char* textChar;
