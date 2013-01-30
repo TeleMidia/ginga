@@ -1794,6 +1794,9 @@ namespace mb {
 
 		lockSDL();
 
+		clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
+		clog << "'" << endl;
+
 		SDL_GetDisplayBounds(0, &rect);
 
 		if (s->mbSubSystem != "") {
@@ -1887,6 +1890,10 @@ namespace mb {
 		s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
 
 		unlockSDL();
+
+		clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
+		clog << "': '" << s->wRes << "x" << s->hRes << "' all done";
+		clog << endl;
 	}
 
 	void SDLDeviceScreen::clearScreen(SDLDeviceScreen* s) {

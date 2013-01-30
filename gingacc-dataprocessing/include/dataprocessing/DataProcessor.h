@@ -103,14 +103,14 @@ namespace dataprocessing {
 		private:
 			EPGProcessor* epgProcessor;
 			FilterManager* filterManager;
-			map<unsigned int, MessageProcessor*>* processors;
-			map<string, set<IStreamEventListener*>*>* eventListeners;
-			set<IObjectListener*>* objectListeners;
+			map<unsigned int, MessageProcessor*> processors;
+			map<string, set<IStreamEventListener*>*> eventListeners;
+			set<IObjectListener*> objectListeners;
 			IServiceDomainListener* sdl;
-			set<unsigned int>* processedIds;
+			set<unsigned int> processedIds;
 			pthread_mutex_t mutex;
 			NPTProcessor* nptProcessor;
-			vector<ITransportSection*>* sections;
+			vector<ITransportSection*> sections;
 			IDemuxer* demux;
 			IAIT* ait;
 			bool running;

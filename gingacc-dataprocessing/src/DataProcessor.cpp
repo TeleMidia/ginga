@@ -74,24 +74,16 @@ namespace dataprocessing {
 #endif
 
 	DataProcessor::DataProcessor() : Thread() {
-		eventListeners  = new map<string, set<IStreamEventListener*>*>;
-		objectListeners = new set<IObjectListener*>;
 		filterManager   = new FilterManager();
-		processedIds    = new set<unsigned int>;
-
-		processors      = new map<unsigned int, MessageProcessor*>;
 		nptProcessor    = NULL;
 		sdl             = NULL;
-
-		sections        = new vector<ITransportSection*>;
-
 		removeOCFilter  = false;
 		demux           = NULL;
 		ait             = NULL;
 
-		startThread();
+		Thread::mutexInit(&mutex, true);
 
-		Thread::mutexInit(&mutex, NULL);
+		startThread();
 
 		SystemCompat::makeDir("carousel", 0777);
 		SystemCompat::makeDir("carousel/modules", 0777);
@@ -103,40 +95,23 @@ namespace dataprocessing {
 	DataProcessor::~DataProcessor() {
 		running = false;
 
-		if (eventListeners != NULL) {
-			delete eventListeners;
-			eventListeners = NULL;
-		}
-
-		if (objectListeners != NULL) {
-			delete objectListeners;
-			objectListeners = NULL;
-		}
+		eventListeners.clear();
+		objectListeners.clear();
 
 		if (filterManager != NULL) {
 			delete filterManager;
 			filterManager = NULL;
 		}
 
-		if (processors != NULL) {
-			delete processors;
-			processors = NULL;
-		}
-
-		if (processedIds != NULL) {
-			delete processedIds;
-			processedIds = NULL;
-		}
+		processors.clear();
+		processedIds.clear();
 
 		if (nptProcessor != NULL) {
 			delete nptProcessor;
 			nptProcessor = NULL;
 		}
 
-		if (sections != NULL) {
-			delete sections;
-			sections = NULL;
-		}
+		sections.clear();
 
 		if (ait != NULL) {
 			delete ait;
@@ -209,18 +184,20 @@ namespace dataprocessing {
 		set<IStreamEventListener*>* listeners;
 
 		clog << "DataProcessor::addSEListener" << endl;
-		i = eventListeners->find(eventType);
-		if (i != eventListeners->end()) {
+		i = eventListeners.find(eventType);
+		if (i != eventListeners.end()) {
 			listeners = i->second;
-			if (listeners == NULL)
+			if (listeners == NULL) {
 				listeners = new set<IStreamEventListener*>;
+				eventListeners[eventType] = listeners;
+			}
 
 			listeners->insert(listener);
 
 		} else {
 			listeners = new set<IStreamEventListener*>;
 			listeners->insert(listener);
-			(*eventListeners)[eventType] = listeners;
+			eventListeners[eventType] = listeners;
 		}
 	}
 
@@ -231,8 +208,8 @@ namespace dataprocessing {
 		set<IStreamEventListener*>::iterator j;
 		set<IStreamEventListener*>* listeners;
 
-		i = eventListeners->find(eventType);
-		if (i != eventListeners->end()) {
+		i = eventListeners.find(eventType);
+		if (i != eventListeners.end()) {
 			listeners = i->second;
 			if (listeners != NULL) {
 				j = listeners->find(listener);
@@ -250,15 +227,15 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::addObjectListener(IObjectListener* l) {
-		objectListeners->insert(l);
+		objectListeners.insert(l);
 	}
 
 	void DataProcessor::removeObjectListener(IObjectListener* l) {
 		set<IObjectListener*>::iterator i;
 
-		i = objectListeners->find(l);
-		if (i != objectListeners->end()) {
-			objectListeners->erase(i);
+		i = objectListeners.find(l);
+		if (i != objectListeners.end()) {
+			objectListeners.erase(i);
 		}
 	}
 
@@ -292,8 +269,8 @@ namespace dataprocessing {
 
 		clog << "DataProcessor::notifySEListeners for eventName '";
 		clog << eventName << "'" << endl;
-		if (eventListeners->count(eventName) != 0) {
-			listeners = (*eventListeners)[eventName];
+		if (eventListeners.count(eventName) != 0) {
+			listeners = eventListeners[eventName];
 			j = listeners->begin();
 			while (j != listeners->end()) {
 				//(*j)->receiveStreamEvent(se);
@@ -342,11 +319,11 @@ namespace dataprocessing {
 					se = new StreamEvent(
 							section->getPayload(), section->getPayloadSize());
 
-					//i = processedIds->find(se->getId());
-					//if (i == processedIds->end()) {377
+					//i = processedIds.find(se->getId());
+					//if (i == processedIds.end()) {377
 						//clog << "DataProcessor::receiveSection STE" << endl;
 
-						processedIds->insert(se->getId());
+						processedIds.insert(se->getId());
 						//TODO: get stream event object from oc
 						se->setEventName("gingaEditingCommands");
 
@@ -378,7 +355,7 @@ namespace dataprocessing {
 			} else if (tableId == OCI_TID || tableId == OCD_TID) {
 				lock();
 				//clog << "DataProcessor::receiveSection OC" << endl;
-				sections->push_back(section);
+				sections.push_back(section);
 				unlock();
 				unlockConditionSatisfied();
 
@@ -457,13 +434,13 @@ namespace dataprocessing {
 		while (running) {
 			//clog << "DataProcessor::run checking tasks" << endl;
 			lock();
-			if (sections->empty()) {
+			if (sections.empty()) {
 				unlock();
 				waitForUnlockCondition();
 
 			} else {
-				section = *(sections->begin());
-				sections->erase(sections->begin());
+				section = *(sections.begin());
+				sections.erase(sections.begin());
 				unlock();
 
 				do {
@@ -476,27 +453,27 @@ namespace dataprocessing {
 
 					if (filterManager->processSection(section)) {
 						message = new DsmccMessageHeader(sectionName, pid);
-						if (processors->count(pid) == 0) {
+						if (processors.count(pid) == 0) {
 							processor = new MessageProcessor();
-							(*processors)[pid] = processor;
+							processors[pid] = processor;
 
 						} else {
-							processor = (*processors)[pid];
+							processor = processors[pid];
 						}
 
 						sd = processor->pushMessage(message);
 						if (sd != NULL) {
-							sd->setObjectsListeners(objectListeners);
+							sd->setObjectsListeners(&objectListeners);
 							sd->setServiceDomainListener(this);
 							processor->checkTasks();
 						}
 					}
 
 					lock();
-					hasSection = !sections->empty();
+					hasSection = !sections.empty();
 					if (hasSection) {
-						section = *(sections->begin());
-						sections->erase(sections->begin());
+						section = *(sections.begin());
+						sections.erase(sections.begin());
 					}
 					unlock();
 

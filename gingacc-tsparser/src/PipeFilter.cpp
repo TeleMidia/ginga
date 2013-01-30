@@ -62,41 +62,23 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tsparser {
-	PipeFilter::PipeFilter(unsigned int pid) {
+	PipeFilter::PipeFilter(unsigned int pid) : Thread() {
 		this->pid             = pid;
 		this->dataReceived    = false;
 		this->packetsReceived = 0;
 
+		this->srcIsAPipe      = false;
+		this->srcUri          = "";
+		this->dstUri          = "";
+
+		this->running         = false;
+
 		this->pids.clear();
-		this->buffers.clear();
+		clog << "PipeFilter::PipeFilter all done" << endl;
 	}
 
 	PipeFilter::~PipeFilter() {
-		vector<TSBuffer*>::iterator i;
-
 		pids.clear();
-
-		i = buffers.begin();
-		while (i != buffers.end()) {
-			PipeFilter::releaseTSBuffer(*i);
-			++i;
-		}
-		buffers.clear();
-	}
-
-	void PipeFilter::releaseTSBuffer(TSBuffer* buffer) {
-		delete buffer->data;
-		delete buffer;
-	}
-
-	TSBuffer* PipeFilter::createTSBuffer(char* data, int dataSize) {
-		TSBuffer* buffer = new TSBuffer;
-		buffer->data     = new char[dataSize];
-		buffer->dataSize = dataSize;
-
-		memcpy(buffer->data, data, dataSize);
-
-		return buffer;
 	}
 
 	void PipeFilter::addPid(int pid) {
@@ -137,10 +119,10 @@ namespace tsparser {
 			Pat::resetPayload(packData + 4, pack->getPayloadSize());
 		}
 
-		buffers.push_back(PipeFilter::createTSBuffer(
-				packData, ITSPacket::TS_PACKET_SIZE));
-
 		dataReceived = true;
+		clog << "PipeFilter::receiveTSPacket write pipe..." << endl;
+		SystemCompat::writePipe(dstPd, packData, ITSPacket::TS_PACKET_SIZE);
+		clog << "PipeFilter::receiveTSPacket all done" << endl;
 	}
 
 	void PipeFilter::receiveSection(
@@ -149,7 +131,69 @@ namespace tsparser {
 	}
 
 	void PipeFilter::receivePes(char* buf, int len, IFrontendFilter* filter) {
-		buffers.push_back(PipeFilter::createTSBuffer(buf, len));
+
+	}
+
+	void PipeFilter::setSourceUri(string srcUri, bool isPipe) {
+		this->srcUri     = srcUri;
+		this->srcIsAPipe = isPipe;
+	}
+
+	void PipeFilter::setDestinationUri(string dstUri) {
+		this->dstUri = dstUri;
+
+		if (!running) {
+			Thread::startThread();
+		}
+	}
+
+	void PipeFilter::run() {
+		FILE* fd;
+		int rval;
+		int buffSize = 188 * 1024;
+		char* buff = new char[buffSize];
+		string cmd;
+
+		running = true;
+		clog << "PipeFilter::run(" << this << ")" << endl;
+
+		if (!SystemCompat::createPipe(dstUri, &dstPd)) {
+			clog << "PipeFilter::run(" << this << ")";
+			clog << " can't create '" << dstUri;
+			clog << "'" << endl;
+
+			running = false;
+			delete buff;
+			return;
+		}
+
+		if (srcIsAPipe) {
+			clog << "PipeFilter::run(" << this << ") reader" << endl;
+
+			if (!SystemCompat::openPipe(srcUri, &srcPd)) {
+				clog << "PipeFilter::run(" << this << ")";
+				clog << " can't open '" << srcUri;
+				clog << "'" << endl;
+
+				delete buff;
+				return;
+			}
+
+			clog << "PipeFilter::run(" << this << ") '" << srcUri;
+			clog << "' OPENED" << endl;
+
+			while (srcIsAPipe) {
+				rval = SystemCompat::readPipe(srcPd, buff, buffSize);
+				if (rval > 0) {
+					SystemCompat::writePipe(dstPd, buff, rval);
+				}
+			}
+
+			clog << "PipeFilter::run(" << this << ") reader all done!" << endl;
+		}
+
+		running = false;
+		delete buff;
 	}
 }
 }

@@ -71,8 +71,7 @@ namespace tuning {
 			virtual void changeChannel(int factor)=0;
 			virtual void setSpec(string ni, string ch)=0;
 			virtual void tune()=0;
-			virtual void addListener(ITunerListener* listener)=0;
-			virtual void removeListener(ITunerListener* listener)=0;
+			virtual void setTunerListener(ITunerListener* listener)=0;
 			virtual bool hasSignal()=0;
 	};
 }

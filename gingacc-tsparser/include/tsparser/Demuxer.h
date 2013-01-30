@@ -84,17 +84,17 @@ namespace tsparser {
 	class Demuxer : public IDemuxer {
 		private:
 			Pat* pat;
-			map<unsigned int, Pmt*>* pmts;
-			map<unsigned int, ITSFilter*>* pidFilters;
-			map<short, ITSFilter*>* stFilters;
-			map<unsigned int, ITSFilter*>* pesFilters;
+			map<unsigned int, Pmt*> pmts;
+			map<unsigned int, ITSFilter*> pidFilters;
+			map<short, ITSFilter*> stFilters;
+			map<unsigned int, ITSFilter*> pesFilters;
 			IFrontendFilter* audioFilter;
 			IFrontendFilter* videoFilter;
-			set<IFrontendFilter*>* feFilters;
-			set<IFrontendFilter*>* feFiltersToSetup;
-			static vector<Pat*>* pats;
+			set<IFrontendFilter*> feFilters;
+			set<IFrontendFilter*> feFiltersToSetup;
+			static vector<Pat*> pats;
 			static unsigned int sectionPid; //debug only
-			static set<unsigned int>* knownSectionPids;
+			static set<unsigned int> knownSectionPids;
 			ITuner* tuner;
 
 			int debugPackCount;
@@ -115,7 +115,7 @@ namespace tsparser {
 		private:
 			void createPSI();
 			void clearPSI();
-			void createMaps();
+			void initMaps();
 			void clearMaps();
 			void resetDemuxer();
 			void setDestination(short streamType); //debug purpose only

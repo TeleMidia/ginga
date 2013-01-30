@@ -800,6 +800,156 @@ namespace compat {
 	void SystemCompat::gingaProcessExit(short status) {
 		_exit(status);
 	}
+
+	void SystemCompat::checkPipeName(string pipeName) {
+		assert(pipeName != "");
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
+			pipeName = "\\\\.\\pipe\\" + pipeName;
+		}
+#endif
+	}
+
+	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		assert(pd > 0);
+#else
+		assert(pd >= 0);
+#endif
+	}
+
+	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
+		checkPipeName(pipeName);		
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		*pd = CreateNamedPipe(
+				pipeName.c_str(), // name of the pipe
+				PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, // 2-ways pipe
+				PIPE_TYPE_BYTE, // send data as a byte stream
+				1, // only allow 1 instance of this pipe
+				0, // no outbound buffer
+				0, // no inbound buffer
+				0, // use default wait time
+				NULL); // use default security attributes);
+
+		if (*pd == NULL || *pd == INVALID_HANDLE_VALUE) {
+			clog << "SystemCompat::createPipe Warning! Failed to create '";
+			clog << pipeName << "' pipe instance.";
+			clog << endl;
+			// TODO: look up error code: GetLastError()
+			return false;
+		}
+
+		// This call blocks until a client process connects to the pipe
+		bool result = ConnectNamedPipe(*pd, NULL);
+		if (!result) {
+			clog << "SystemCompat::createPipe Warning! Failed to make ";
+			clog << "connection on " << pipeName << endl;
+			// TODO: look up error code: GetLastError()
+			CloseHandle(*pd); // close the pipe
+			return false;
+		}
+#else
+		mkfifo(pipeName.c_str(), S_IFIFO);
+
+		*pd = open(pipeName.c_str(), O_WRONLY);
+		if (*pd == -1) {
+			clog << "SystemCompat::createPipe Warning! Failed to make ";
+			clog << "connection on " << pipeName << endl;
+
+			return false;
+		}
+#endif
+		return true;
+	}
+
+	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
+		checkPipeName(pipeName);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		*pd = CreateFile(
+				pipeName.c_str(),
+				GENERIC_READ,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				NULL,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
+
+		if (*pd == INVALID_HANDLE_VALUE) {
+			clog << "SystemCompat::openPipe Failed to open '";
+			clog << pipeName << "'" << endl;
+			// TODO: look up error code: GetLastError()
+			return false;
+		}
+#else
+		pd = fopen(pipeName.c_str(), "rb");
+		if (pd < 0) {
+			clog << "SystemCompat::openPipe Warning! ";
+			clog << "Can't open '" << pipeName;
+			clog << "'" << endl;
+			perror("SystemCompat::openPipe can't open pipe");
+			return false;
+		}
+#endif
+		return true;
+	}
+
+	void SystemCompat::closePipe(PipeDescriptor pd) {
+		checkPipeDescriptor(pd);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		CloseHandle(pd);
+#else
+		close(pd);
+#endif
+	}
+
+	int SystemCompat::readPipe(PipeDescriptor pd, char* buffer, int buffSize) {
+		int bytesRead = 0;
+
+		checkPipeDescriptor(pd);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		DWORD bRead = 0;
+		bool result = ReadFile(
+				pd,
+				buffer,
+				buffSize,
+				&bRead,
+				NULL);
+
+		bytesRead = (int)bRead;
+#else
+		bytesRead = fread(buffer, 1, buffSize, pd);
+#endif
+
+		return bytesRead;
+	}
+
+	int SystemCompat::writePipe(PipeDescriptor pd, char* data, int dataSize) {
+		int bytesWritten = 0;
+
+		assert(pd > 0);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		// This call blocks until a client process reads all the data
+		DWORD bWritten = 0;
+		bool result = WriteFile(
+				pd,
+				data,
+				dataSize,
+				&bWritten,
+				NULL); // not using overlapped IO
+
+		bytesWritten = (int)bWritten;
+#else
+		bytesWritten = write(pd, (void*data, dataSize);
+#endif
+
+		return bytesWritten;
+	}
 }
 }
 }

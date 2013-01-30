@@ -57,7 +57,7 @@ extern "C" {
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
-
+#include <stdio.h>
 #ifdef _WIN32
 	#include <sys/timeb.h>
 	#include <sys/types.h>
@@ -65,14 +65,13 @@ extern "C" {
 	#include <direct.h>
 	#include <io.h>
 	#include <windows.h>
+	#include <winbase.h>
 	#include <winsock2.h>
   #ifdef WINSTRUCTS
 	#include <Ws2tcpip.h>
   #endif
 	#pragma comment(lib,"ws2_32.lib")
 #else // For Linux and Mac OS Snow Leopard (10.6)
-	#include <stdio.h>
-
   #if (defined __APPLE__ || defined HAVE_MACH_SL_H ) // For Mac OS Snow Leopard (10.6)
 	#include <mach/mach.h>
 	#include <mach/mach_host.h>
@@ -122,6 +121,7 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -132,6 +132,11 @@ struct timezone
  int  tz_minuteswest; /* minutes W of Greenwich */
  int  tz_dsttime;     /* type of dst correction */
 };
+
+typedef HANDLE PipeDescriptor;
+
+#else
+typedef int PipeDescriptor;
 #endif
 
 // If access modes (F_OK, X_OK, W_OK or R_OK) is not defined we must define 
@@ -262,16 +267,32 @@ namespace compat {
 			static void gingaProcessExit(short status);
 
 
-			/**********************
+			/******************
 			 * Time functions *
-			 **********************/
+			 ******************/
 			static int gettimeofday(struct timeval *tv, struct timezone *tz);
 			static int getUserClock(struct timeval* usrClk);
 
-			/**********************
+
+			/******************
 			 * Math functions *
-			 **********************/
+			 ******************/
 			static int rint (double x);
+
+
+			/******************
+			 * Pipe Functions *
+			 ******************/
+		private:
+			static void checkPipeName(string pipeName);
+			static void checkPipeDescriptor(PipeDescriptor pd);
+
+		public:
+			static bool createPipe(string pipeName, PipeDescriptor* pd);
+			static bool openPipe(string pipeName, PipeDescriptor* pd);
+			static void closePipe(PipeDescriptor pd);
+			static int readPipe(PipeDescriptor pd, char* buffer, int buffSize);
+			static int writePipe(PipeDescriptor pd, char* data, int dataSize);
 	};
 }
 }

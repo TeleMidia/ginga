@@ -120,7 +120,8 @@ namespace tuning {
 		if (fileDescriptor > 0) {
 			int rval = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
 			if (rval < BUFFSIZE) {
-				printf("File is over, set file to begin again!\n");
+				clog << "FileSystemProvider::receiveData" << endl;
+				clog << "File is over, set file to begin again!" << endl;
 				fseek(fileDescriptor, 0L, SEEK_SET);
 				if (listener != NULL) {
 					listener->receiveSignal(PST_LOOP);
