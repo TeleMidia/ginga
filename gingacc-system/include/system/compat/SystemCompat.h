@@ -101,6 +101,7 @@ extern "C" {
 	#include <sys/utsname.h>
 
 	#include <sys/types.h>
+	#include <sys/stat.h>
 	#include <sys/ioctl.h>
 	#include <sys/time.h>
 	#include <netinet/in.h>
@@ -283,8 +284,9 @@ namespace compat {
 			/******************
 			 * Pipe Functions *
 			 ******************/
+			static string checkPipeName(string pipeName);
+
 		private:
-			static void checkPipeName(string pipeName);
 			static void checkPipeDescriptor(PipeDescriptor pd);
 
 		public:

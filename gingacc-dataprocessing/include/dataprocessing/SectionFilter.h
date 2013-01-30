@@ -107,7 +107,7 @@ namespace dataprocessing {
 			void addPid(int pid){};
 
 		private:
-			void setDestinationUri(string dstUri){};
+			string setDestinationUri(string dstUri){return dstUri;};
 			void setSourceUri(string srcUri, bool isPipe){};
 
 			void resetHandler(SectionHandler* handler);

@@ -79,6 +79,7 @@ namespace tsparser {
 			bool dataReceived;
 			bool running;
 			unsigned int packetsReceived;
+			unsigned long debugBytesWritten;
 			map<int, int> pids;
 
 			bool srcIsAPipe;
@@ -100,7 +101,7 @@ namespace tsparser {
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
 
 			void setSourceUri(string srcUri, bool isPipe);
-			void setDestinationUri(string dstUri);
+			string setDestinationUri(string dstUri);
 
 		private:
 			void run();
