@@ -828,8 +828,8 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		*pd = CreateNamedPipe(
-				pipeName.c_str(), // name of the pipe
-				PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, // 2-ways pipe
+				pipeName.c_str(),
+				PIPE_ACCESS_OUTBOUND, // 1-way pipe
 				PIPE_TYPE_BYTE, // send data as a byte stream
 				1, // only allow 1 instance of this pipe
 				0, // no outbound buffer

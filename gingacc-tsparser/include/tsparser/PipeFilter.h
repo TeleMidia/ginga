@@ -83,6 +83,7 @@ namespace tsparser {
 			map<int, int> pids;
 
 			bool srcIsAPipe;
+			bool dstPipeCreated;
 			string srcUri;
 			string dstUri;
 
