@@ -63,9 +63,6 @@ namespace ginga {
 namespace core {
 namespace player {
 	ProgramAV::ProgramAV(GingaScreenID screenId) : Player(screenId, "") {
-		players          = new map<int, IPlayer*>;
-		playerBounds     = new map<int, string>;
-		namePids         = new map<string, int>;
 		currentPid       = -1;
 		currentPlayer    = NULL;
 		fullScreenBounds = "";
@@ -74,30 +71,19 @@ namespace player {
 	ProgramAV::~ProgramAV() {
 		map<int, IPlayer*>::iterator i;
 
-		if (players != NULL) {
-			i = players->begin();
-			while (i != players->end()) {
-				i->second->stop();
-				if (i->second == currentPlayer) {
-					currentPlayer = NULL;
-				}
-				delete i->second;
-				++i;
+		i = players.begin();
+		while (i != players.end()) {
+			i->second->stop();
+			if (i->second == currentPlayer) {
+				currentPlayer = NULL;
 			}
-
-			delete players;
-			players = NULL;
+			delete i->second;
+			++i;
 		}
 
-		if (namePids != NULL) {
-			delete namePids;
-			namePids = NULL;
-		}
-
-		if (playerBounds != NULL) {
-			delete playerBounds;
-			playerBounds = NULL;
-		}
+		players.clear();
+		namePids.clear();
+		playerBounds.clear();
 
 		if (currentPlayer != NULL) {
 			delete currentPlayer;
@@ -149,14 +135,14 @@ namespace player {
 	void ProgramAV::addPidName(string name, int pid) {
 		clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
 		clog << "'" << endl;
-		(*namePids)[name] = pid;
+		namePids[name] = pid;
 	}
 
 	int ProgramAV::getPidByName(string name) {
 		map<string, int>::iterator i;
 
-		i = namePids->find(name);
-		if (i != namePids->end()) {
+		i = namePids.find(name);
+		if (i != namePids.end()) {
 			return i->second;
 		}
 
@@ -262,7 +248,7 @@ namespace player {
 #endif
 
 		if (fullScreenBounds != "") {
-			(*playerBounds)[pid] = fullScreenBounds;
+			playerBounds[pid] = fullScreenBounds;
 			currentPlayer->setPropertyValue("createWindow", fullScreenBounds);
 			fullScreenBounds = "";
 		}
@@ -276,13 +262,13 @@ namespace player {
 		map<int, IPlayer*>::iterator i;
 		IPlayer* ePlayer;
 
-		i = players->find(pid);
-		if (i == players->end()) {
-			(*players)[pid] = player;
+		i = players.find(pid);
+		if (i == players.end()) {
+			players[pid] = player;
 
 		} else {
-			ePlayer = (*players)[pid];
-			(*players)[pid] = player;
+			ePlayer = players[pid];
+			players[pid] = player;
 			delete ePlayer;
 			ePlayer = NULL;
 		}
@@ -306,8 +292,8 @@ namespace player {
 	IPlayer* ProgramAV::getPlayer(int pid) {
 		map<int, IPlayer*>::iterator i;
 
-		i = players->find(pid);
-		if (i != players->end()) {
+		i = players.find(pid);
+		if (i != players.end()) {
 			return i->second;
 		}
 
@@ -339,9 +325,9 @@ namespace player {
 		} else if (currentPlayer != NULL) {
 			if (pName == "bounds") {
 				if (pValue == "") {
-					if (playerBounds->count(currentPid) != 0) {
+					if (playerBounds.count(currentPid) != 0) {
 						currentPlayer->setPropertyValue(
-								pName, (*playerBounds)[currentPid]);
+								pName, playerBounds[currentPid]);
 					}
 
 				} else {

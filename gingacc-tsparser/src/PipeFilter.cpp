@@ -66,6 +66,7 @@ namespace tsparser {
 		this->pid             = pid;
 		this->dataReceived    = false;
 		this->packetsReceived = 0;
+		debugBytesWritten     = 0;
 
 		this->srcIsAPipe      = false;
 		this->srcUri          = "";
@@ -93,6 +94,7 @@ namespace tsparser {
 	void PipeFilter::receiveTSPacket(ITSPacket* pack) {
 		int ppid;
 		int contCounter;
+		int bytesWritten;
 		char packData[ITSPacket::TS_PACKET_SIZE];
 
 		ppid = pack->getPid();
@@ -120,9 +122,24 @@ namespace tsparser {
 		}
 
 		dataReceived = true;
-		clog << "PipeFilter::receiveTSPacket write pipe..." << endl;
-		SystemCompat::writePipe(dstPd, packData, ITSPacket::TS_PACKET_SIZE);
-		clog << "PipeFilter::receiveTSPacket all done" << endl;
+
+		bytesWritten = SystemCompat::writePipe(
+				dstPd, packData, ITSPacket::TS_PACKET_SIZE);
+
+		if (bytesWritten != ITSPacket::TS_PACKET_SIZE) {
+			clog << "PipeFilter::receiveTSPacket Warning! Can't write ";
+			clog << ITSPacket::TS_PACKET_SIZE << "' bytes ('";
+			clog << bytesWritten << "' bytes written)'";
+			clog << endl;
+
+		} else {
+			debugBytesWritten += bytesWritten;
+
+			if (debugBytesWritten % (188 * 1000) == 0) {
+				clog << "PipeFilter::receiveTSPacket '" << debugBytesWritten;
+				clog << "' bytes written" << endl;
+			}
+		}
 	}
 
 	void PipeFilter::receiveSection(
@@ -139,12 +156,14 @@ namespace tsparser {
 		this->srcIsAPipe = isPipe;
 	}
 
-	void PipeFilter::setDestinationUri(string dstUri) {
-		this->dstUri = dstUri;
+	string PipeFilter::setDestinationUri(string dstUri) {
+		this->dstUri = SystemCompat::checkPipeName(dstUri);
 
 		if (!running) {
 			Thread::startThread();
 		}
+
+		return this->dstUri;
 	}
 
 	void PipeFilter::run() {
@@ -166,6 +185,9 @@ namespace tsparser {
 			delete buff;
 			return;
 		}
+
+		clog << "PipeFilter::run(" << this << ") pipe '";
+		clog << dstUri << "' created" << endl;
 
 		if (srcIsAPipe) {
 			clog << "PipeFilter::run(" << this << ") reader" << endl;

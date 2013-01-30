@@ -801,14 +801,18 @@ namespace compat {
 		_exit(status);
 	}
 
-	void SystemCompat::checkPipeName(string pipeName) {
+	string SystemCompat::checkPipeName(string pipeName) {
+		string newPipeName = pipeName;
+
 		assert(pipeName != "");
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
-			pipeName = "\\\\.\\pipe\\" + pipeName;
+			newPipeName = "\\\\.\\pipe\\" + pipeName;
 		}
 #endif
+
+		return newPipeName;
 	}
 
 	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
@@ -820,7 +824,7 @@ namespace compat {
 	}
 
 	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
-		checkPipeName(pipeName);		
+		pipeName = checkPipeName(pipeName);
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		*pd = CreateNamedPipe(
@@ -865,7 +869,7 @@ namespace compat {
 	}
 
 	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
-		checkPipeName(pipeName);
+		pipeName = checkPipeName(pipeName);
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		*pd = CreateFile(
