@@ -71,6 +71,7 @@ namespace tsparser {
 		this->srcIsAPipe      = false;
 		this->srcUri          = "";
 		this->dstUri          = "";
+		this->dstPipeCreated  = false;
 
 		this->running         = false;
 
@@ -123,6 +124,16 @@ namespace tsparser {
 
 		dataReceived = true;
 
+		if (!dstPipeCreated) {
+			if (!running && dstUri != "") {
+				Thread::startThread();
+			}
+
+			while (!dstPipeCreated) {
+				SystemCompat::uSleep(10000);
+			}
+		}
+
 		bytesWritten = SystemCompat::writePipe(
 				dstPd, packData, ITSPacket::TS_PACKET_SIZE);
 
@@ -132,14 +143,14 @@ namespace tsparser {
 			clog << bytesWritten << "' bytes written)'";
 			clog << endl;
 
-		} else {
+		}/* else {
 			debugBytesWritten += bytesWritten;
 
 			if (debugBytesWritten % (188 * 1000) == 0) {
 				clog << "PipeFilter::receiveTSPacket '" << debugBytesWritten;
 				clog << "' bytes written" << endl;
 			}
-		}
+		}*/
 	}
 
 	void PipeFilter::receiveSection(
@@ -185,6 +196,8 @@ namespace tsparser {
 			delete buff;
 			return;
 		}
+
+		dstPipeCreated  = true;
 
 		clog << "PipeFilter::run(" << this << ") pipe '";
 		clog << dstUri << "' created" << endl;
