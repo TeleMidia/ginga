@@ -57,10 +57,11 @@ namespace core {
 namespace tuning {
 	Tuner::Tuner(string network, string protocol, string address) : Thread() {
 		receiving        = false;
-		listeners        = new set<ITunerListener*>;
-		interfaces       = new map<int, INetworkInterface*>;
 		currentInterface = -1;
 		firstTune        = true;
+		listener         = NULL;
+
+		interfaces.clear();
 
 		if (network == "" && protocol == "" && address == "") {
 			initializeInterfaces();
@@ -68,21 +69,17 @@ namespace tuning {
 		} else {
 			createInterface(network, protocol, address);
 		}
+
+		clog << "Tuner::Tuner all done" << endl;
 	}
 
 	Tuner::~Tuner() {
-		if (listeners != NULL) {
-			delete listeners;
-			listeners = NULL;
-		}
+		clog << "Tuner::~Tuner" << endl;
+
+		listener = NULL;
 
 		clearInterfaces();
-		lock();
-		if (interfaces != NULL) {
-			delete interfaces;
-			interfaces = NULL;
-		}
-		unlock();
+		clog << "Tuner::~Tuner all done" << endl;
 	}
 
 	void Tuner::clearInterfaces() {
@@ -90,15 +87,14 @@ namespace tuning {
 		INetworkInterface* ni;
 
 		lock();
-		if (interfaces != NULL) {
-			i = interfaces->begin();
-			while (i != interfaces->end()) {
-				ni = i->second;
-				delete ni;
-				interfaces->erase(i);
-				i = interfaces->begin();
-			}
+		i = interfaces.begin();
+		while (i != interfaces.end()) {
+			ni = i->second;
+			delete ni;
+			interfaces.erase(i);
+			i = interfaces.begin();
 		}
+		interfaces.clear();
 		currentInterface = -1;
 		unlock();
 	}
@@ -106,7 +102,7 @@ namespace tuning {
 	void Tuner::receiveSignal(short signalCode) {
 		switch (signalCode) {
 			case PST_LOOP:
-				updateListenersStatus(TS_LOOP_DETECTED, NULL);
+				notifyStatus(TS_LOOP_DETECTED, NULL);
 				break;
 
 			default:
@@ -195,15 +191,15 @@ namespace tuning {
 				currentInterface, network, protocol, address);
 
 		lock();
-		(*interfaces)[currentInterface] = newInterface;
+		interfaces[currentInterface] = newInterface;
 		unlock();
 	}
 
-	bool Tuner::listen(INetworkInterface* interface) {
+	bool Tuner::listenInterface(INetworkInterface* nInterface) {
 		IDataProvider* provider;
 		bool tuned = false;
 
-		provider = interface->tune();
+		provider = nInterface->tune();
 		if (provider != NULL) {
 			tuned = true;
 			provider->setListener(this);
@@ -212,7 +208,7 @@ namespace tuning {
 		return tuned;
 	}
 
-	void Tuner::receive(INetworkInterface* interface) {
+	void Tuner::receiveInterface(INetworkInterface* nInterface) {
 		int rval;
 		char* buff;
 
@@ -223,13 +219,13 @@ namespace tuning {
 		receiving = true;
 
 		do {
-			rval = interface->receiveData(buff);
+			rval = nInterface->receiveData(buff);
 			if (rval > 0) {
 				/*if (debugStream > 0) {
 					write(debugStream, buff, rval);
 				}*/
 
-				notifyTunerListeners(buff, (unsigned int)rval);
+				notifyData(buff, (unsigned int)rval);
 
 			} else if (rval < 0) {
 				//cerr << "Tuner::receive minus rval" << endl;
@@ -241,7 +237,7 @@ namespace tuning {
 
 		//close(debugStream);
 
-		interface->close();
+		nInterface->close();
 		unlockConditionSatisfied();
 		clog << "Tuner::receive ALL DONE!" << endl;
 	}
@@ -278,8 +274,8 @@ namespace tuning {
 		INetworkInterface* ni;
 
 		lock();
-		i = interfaces->find(currentInterface);
-		if (i != interfaces->end()) {
+		i = interfaces.find(currentInterface);
+		if (i != interfaces.end()) {
 			ni = i->second;
 			unlock();
 			return ni;
@@ -298,7 +294,7 @@ namespace tuning {
 	}
 
 	void Tuner::changeChannel(int factor) {
-		INetworkInterface* interface;
+		INetworkInterface* nInterface;
 		IChannel* channel;
 
 		if (receiving) {
@@ -307,17 +303,17 @@ namespace tuning {
 			waitForUnlockCondition();
 		}
 
-		interface = getCurrentInterface();
-		if (interface != NULL) {
-			channel = interface->getCurrentChannel();
-			updateListenersStatus(TS_SWITCHING_CHANNEL, channel);
-			if (!interface->changeChannel(factor)) {
+		nInterface = getCurrentInterface();
+		if (nInterface != NULL) {
+			channel = nInterface->getCurrentChannel();
+			notifyStatus(TS_SWITCHING_CHANNEL, channel);
+			if (!nInterface->changeChannel(factor)) {
 				clog << "Tuner::changeChannel can't find channel '";
 				clog << factor << "'" << endl;
 
 			} else {
-				channel = interface->getCurrentChannel();
-				updateListenersStatus(TS_NEW_CHANNEL_TUNED, channel);
+				channel = nInterface->getCurrentChannel();
+				notifyStatus(TS_NEW_CHANNEL_TUNED, channel);
 			}
 		}
 
@@ -325,45 +321,24 @@ namespace tuning {
 		startThread();
 	}
 
-	void Tuner::addListener(ITunerListener* listener) {
-		listeners->insert(listener);
+	void Tuner::setTunerListener(ITunerListener* listener) {
+		this->listener = listener;
 	}
 
-	void Tuner::removeListener(ITunerListener* listener) {
-		set<ITunerListener*>::iterator i;
-
-		i = listeners->find(listener);
-		if (i != listeners->end()) {
-			listeners->erase(i);
+	void Tuner::notifyData(char* buff, unsigned int val) {
+		if (listener != NULL) {
+			listener->receiveData(buff, val);
 		}
 	}
 
-	void Tuner::notifyTunerListeners(char* buff, unsigned int val) {
-		ITunerListener* listener;
-		set<ITunerListener*>::iterator i;
-
-		for (i = listeners->begin(); i != listeners->end(); ++i) {
-			listener = *i;
-			if (listener != NULL) {
-				listener->receiveData(buff, val);
-			}
-		}
-	}
-
-	void Tuner::updateListenersStatus(short newStatus, IChannel* channel) {
-		ITunerListener* listener;
-		set<ITunerListener*>::iterator i;
-
-		for (i = listeners->begin(); i != listeners->end(); ++i) {
-			listener = *i;
-			if (listener != NULL) {
-				listener->updateChannelStatus(newStatus, channel);
-			}
+	void Tuner::notifyStatus(short newStatus, IChannel* channel) {
+		if (listener != NULL) {
+			listener->updateChannelStatus(newStatus, channel);
 		}
 	}
 
 	void Tuner::run() {
-		INetworkInterface* interface = NULL, *curInt = NULL;
+		INetworkInterface* nInterface = NULL, *curInt = NULL;
 		map<int, INetworkInterface*>::iterator i;
 		bool tuned = false;
 		int intIx = -1;
@@ -376,9 +351,9 @@ namespace tuning {
 			clog << "Tuner::run current interface not found" << endl;
 
 		} else {
-			tuned = listen(curInt);
+			tuned = listenInterface(curInt);
 			if (tuned) {
-				interface = curInt;
+				nInterface = curInt;
 			}
 		}
 
@@ -387,13 +362,13 @@ namespace tuning {
 			clog << " trying other interfaces" << endl;
 
 			lock();
-			i = interfaces->begin();
-			while (i != interfaces->end()) {
+			i = interfaces.begin();
+			while (i != interfaces.end()) {
 				intIx     = i->first;
-				interface = i->second;
+				nInterface = i->second;
 
-				if (curInt != interface) {
-					tuned = listen(interface);
+				if (curInt != nInterface) {
+					tuned = listenInterface(nInterface);
 					if (tuned) {
 						break;
 					}
@@ -406,15 +381,15 @@ namespace tuning {
 
 		if (tuned && firstTune) {
 			firstTune = false;
-			channel = interface->getCurrentChannel();
-			updateListenersStatus(TS_NEW_CHANNEL_TUNED, channel);
+			channel = nInterface->getCurrentChannel();
+			notifyStatus(TS_NEW_CHANNEL_TUNED, channel);
 		}
 
-		if (tuned && interface != NULL &&
-				!(interface->getCaps() & DPC_CAN_DEMUXBYHW)) {
+		if (tuned && nInterface != NULL &&
+				!(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
 
 			clog << "Tuner::run() call receive" << endl;
-			receive(interface);
+			receiveInterface(nInterface);
 		}
 
 		clog << "Tuner::run done " << endl;

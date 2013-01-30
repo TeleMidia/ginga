@@ -107,6 +107,7 @@ namespace dataprocessing {
 
 		virtual void removeObjectListener(IObjectListener* listener)=0;
 		virtual void receiveSection(ITransportSection* section)=0;
+		virtual void receiveData(char* data, int dataSize){};
   };
 }
 }

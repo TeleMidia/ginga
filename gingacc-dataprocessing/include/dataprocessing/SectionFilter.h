@@ -107,6 +107,9 @@ namespace dataprocessing {
 			void addPid(int pid){};
 
 		private:
+			void setDestinationUri(string dstUri){};
+			void setSourceUri(string srcUri, bool isPipe){};
+
 			void resetHandler(SectionHandler* handler);
 			void ignore(unsigned int pid);
 			SectionHandler* getSectionHandler(unsigned int pid);

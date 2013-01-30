@@ -75,11 +75,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Tuner : public Thread, public ITProviderListener, public ITuner {
+	class Tuner : public ITuner, public ITProviderListener, public Thread {
 		private:
 			bool receiving;
-			set<ITunerListener*>* listeners;
-			map<int, INetworkInterface*>* interfaces;
+			ITunerListener* listener;
+			map<int, INetworkInterface*> interfaces;
 			int currentInterface;
 			bool firstTune;
 
@@ -101,8 +101,8 @@ namespace tuning {
 			void createInterface(
 					string network, string protocol, string address);
 
-			bool listen(INetworkInterface* interface);
-			void receive(INetworkInterface* interface);
+			bool listenInterface(INetworkInterface* nInterface);
+			void receiveInterface(INetworkInterface* nInterface);
 
 		public:
 			void setSpec(string ni, string ch);
@@ -114,12 +114,11 @@ namespace tuning {
 			bool hasSignal();
 
 		public:
-			void addListener(ITunerListener* listener);
-			void removeListener(ITunerListener* listener);
+			void setTunerListener(ITunerListener* listener);
 
 		private:
-			void notifyTunerListeners(char* buff, unsigned int val);
-			void updateListenersStatus(short newStatus, IChannel* channel);
+			void notifyData(char* buff, unsigned int val);
+			void notifyStatus(short newStatus, IChannel* channel);
 			virtual void run();
 	};
 }

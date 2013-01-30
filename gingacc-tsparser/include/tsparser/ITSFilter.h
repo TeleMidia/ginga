@@ -76,6 +76,9 @@ namespace tsparser {
 
 			virtual void receivePes(
 					char* buf, int len, IFrontendFilter* filter)=0;
+
+			virtual void setDestinationUri(string dstUri)=0;
+			virtual void setSourceUri(string srcUri, bool isPipe)=0;
 	};
 }
 }
