@@ -888,8 +888,8 @@ namespace compat {
 			return false;
 		}
 #else
-		pd = fopen(pipeName.c_str(), "rb");
-		if (pd < 0) {
+		*pd = open(pipeName.c_str(), O_RDONLY);
+		if (*pd < 0) {
 			clog << "SystemCompat::openPipe Warning! ";
 			clog << "Can't open '" << pipeName;
 			clog << "'" << endl;
@@ -926,7 +926,7 @@ namespace compat {
 
 		bytesRead = (int)bRead;
 #else
-		bytesRead = fread(buffer, 1, buffSize, pd);
+		bytesRead = read(pd, buffer, buffSize);
 #endif
 
 		return bytesRead;
@@ -949,7 +949,7 @@ namespace compat {
 
 		bytesWritten = (int)bWritten;
 #else
-		bytesWritten = write(pd, (void*data, dataSize);
+		bytesWritten = write(pd, (void*)data, dataSize);
 #endif
 
 		return bytesWritten;
