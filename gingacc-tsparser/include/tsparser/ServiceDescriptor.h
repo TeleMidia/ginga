@@ -54,6 +54,10 @@ http://www.telemidia.puc-rio.br
 
 #include <string>
 
+extern "C" {
+	#include <string.h>
+}
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
