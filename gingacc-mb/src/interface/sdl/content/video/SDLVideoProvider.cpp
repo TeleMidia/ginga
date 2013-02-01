@@ -62,12 +62,9 @@ namespace mb {
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
 
-		myScreen   = screenId;
-		win        = NULL;
-		isWaiting  = false;
-
-		/*Thread::mutexInit(&cMutex);
-		Thread::condInit(&cond, NULL);*/
+		myScreen = screenId;
+		win      = NULL;
+		hasTex   = false;
 
 		if (decoder != NULL) {
 			getOriginalResolution(&wRes, &hRes);
@@ -75,7 +72,7 @@ namespace mb {
 	}
 
 	SDLVideoProvider::~SDLVideoProvider() {
-
+		hasTex = false;
 	}
 
 	void SDLVideoProvider::setLoadSymbol(string symbol) {
@@ -87,26 +84,22 @@ namespace mb {
 	}
 
 	bool SDLVideoProvider::getHasVisual() {
-		if (decoder == NULL) {
-			return false;
-		}
+		assert(decoder != NULL);
 
 		return decoder->hasVideoStream();
 	}
 
 	void* SDLVideoProvider::getProviderContent() {
-		if (decoder != NULL) {
-			return (void*)(decoder->getTexture());
-		}
+		assert(decoder != NULL);
 
-		return NULL;
+		return (void*)(decoder->getTexture());
 	}
 
 	void SDLVideoProvider::setProviderContent(void* texture) {
-		if (decoder != NULL) {
-			decoder->setTexture((SDL_Texture*)texture);
-		}
+		assert(decoder != NULL);
+		assert(texture != NULL);
 
+		decoder->setTexture((SDL_Texture*)texture);
 		textureCreated();
 	}
 
@@ -123,9 +116,11 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::getOriginalResolution(int* width, int* height) {
-		if (decoder != NULL && width != NULL && height != NULL) {
-			decoder->getOriginalResolution(width, height);
-		}
+		assert(decoder != NULL);
+		assert(width != NULL);
+		assert(height != NULL);
+
+		decoder->getOriginalResolution(width, height);
 	}
 
 	double SDLVideoProvider::getTotalMediaTime() {
@@ -152,11 +147,9 @@ namespace mb {
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
 			win = (SDLWindow*)parent;
 
-			if (decoder != NULL) {
-				if (!decoder->hasTexture()) {
-					waitTexture();
-				}
-			}
+		} else {
+			clog << "SDLVideoProvider::playOver parent(" << parent << ") ";
+			clog << "Warning! hasWindow(parent) has returned false" << endl;
 		}
 	}
 
@@ -185,25 +178,20 @@ namespace mb {
 		SDLAudioProvider::refreshDR(data);
 	}
 
-	void SDLVideoProvider::waitTexture() {
-		isWaiting = true;
-		/*Thread::mutexLock(&cMutex);
-		Thread::condWait(&cond, &cMutex);
-		isWaiting = false;
-		Thread::mutexUnlock(&cMutex);*/
-	}
-
 	bool SDLVideoProvider::textureCreated() {
-		if (isWaiting) {
-			if (decoder != NULL) {
-				if (win != NULL) {
-					((SDLWindow*)win)->setTexture(decoder->getTexture());
-				}
-				decoder->play();
+		assert(decoder != NULL);
+
+		if (!hasTex) {
+			while (win == NULL) {
+				SystemCompat::uSleep(10000);
 			}
-			//Thread::condSignal(&cond);
+
+			((SDLWindow*)win)->setTexture(decoder->getTexture());
+			hasTex = true;
+			decoder->play();
 			return true;
 		}
+
 		return false;
 	}
 }
