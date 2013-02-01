@@ -50,6 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef STC_H_
 #define STC_H_
 
+#define SYSTEM_CLOCK_FREQUENCY 27000000
+#define	SYSTEM_CLOCK_FREQUENCY_90 90000
+
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
@@ -62,50 +65,42 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+namespace system {
+namespace time {
+	class Stc {
+		protected:
+			uint64_t stc;
+			struct timeval clockRef;
 
-class Stc {
+			uint64_t reference;
 
-	#define SYSTEM_CLOCK_FREQUENCY 27000000
-	#define	SYSTEM_CLOCK_FREQUENCY_90 90000
+			virtual void refreshStcSample();
 
-	private:
+		public:
+			Stc();
+			virtual ~Stc();
 
-	protected:
-		uint64_t stc;
-		struct timeval clockRef;
+			static int timevalSubtract(
+					struct timeval *result,
+					struct timeval *x,
+					struct timeval *y);
 
-		uint64_t reference;
+			static uint64_t baseExtToStc(uint64_t base, uint64_t ext);
+			static uint64_t stcToBase(uint64_t stc);
+			static uint64_t stcToExt(uint64_t stc);
+			static double stcToSecond(uint64_t stc);
+			static double baseToSecond(uint64_t base);
+			static uint64_t secondToStc(double seconds);
+			static uint64_t secondToBase(double seconds);
 
-		virtual void refreshStcSample();
-
-	public:
-		Stc();
-		virtual ~Stc();
-
-		static int timevalSubtract(
-				struct timeval *result, struct timeval *x, struct timeval *y);
-
-		static uint64_t baseExtToStc(uint64_t base, uint64_t ext);
-		static uint64_t stcToBase(uint64_t stc);
-		static uint64_t stcToExt(uint64_t stc);
-		static double stcToSecond(uint64_t stc);
-		static double baseToSecond(uint64_t base);
-		static uint64_t secondToStc(double seconds);
-		static uint64_t secondToBase(double seconds);
-
-		uint64_t getReference();
-		void setReference(uint64_t pcr);
-		void setReference(uint64_t base, uint64_t ext);
-		uint64_t getStc();
-		uint64_t getStcBase();
-		uint64_t getStcExt();
-		double getBaseToSecond();
-};
-
-}
+			uint64_t getReference();
+			void setReference(uint64_t pcr);
+			void setReference(uint64_t base, uint64_t ext);
+			uint64_t getStc();
+			uint64_t getStcBase();
+			uint64_t getStcExt();
+			double getBaseToSecond();
+	};
 }
 }
 }
