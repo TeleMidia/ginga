@@ -1,6 +1,13 @@
-METASOURCES = AUTO
-LIBS =
-localIncludedir = $(prefix)/include/ginga/dataprocessing/dsmcc/npt/
-localInclude_HEADERS = INPTListener.h
+METASOURCES          = \
+                       AUTO
 
-MAINTAINERCLEANFILES = Makefile.in
+LIBS                 =
+
+localIncludedir      = \
+                       $(prefix)/include/ginga/dataprocessing/dsmcc/npt/
+
+localInclude_HEADERS = \
+                       INPTListener.h
+
+MAINTAINERCLEANFILES = \
+                       Makefile.in
