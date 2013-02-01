@@ -50,7 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef TIMEBASECLOCK_H_
 #define TIMEBASECLOCK_H_
 
-#include "Stc.h"
+#include "system/time/Stc.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 namespace br {
 namespace pucrio {
