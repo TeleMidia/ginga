@@ -89,8 +89,6 @@ namespace tsparser {
 
 			PipeDescriptor srcPd;
 			PipeDescriptor dstPd;
-			HANDLE hFile;
-			HRESULT OpenFile();
 
 		public:
 			PipeFilter(unsigned int pid);

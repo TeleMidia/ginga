@@ -62,26 +62,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tsparser {
-
-	HRESULT PipeFilter::OpenFile() {
-
-    hFile = CreateFile("e:\\pipeoutput.ts",
-                        GENERIC_WRITE,
-                        FILE_SHARE_READ,
-                        NULL,                // Security
-                        CREATE_ALWAYS,
-                        (DWORD) 0,
-                        NULL);               // Template
-
-    if (hFile == INVALID_HANDLE_VALUE) {
-        DWORD dwErr = GetLastError();
-		cout << "The output file could not be opened." << endl;
-        return HRESULT_FROM_WIN32(dwErr);
-    }
-
-    return S_OK;
-}
-
 	PipeFilter::PipeFilter(unsigned int pid) : Thread() {
 		this->pid             = pid;
 		this->dataReceived    = false;
@@ -94,8 +74,6 @@ namespace tsparser {
 		this->dstPipeCreated  = false;
 
 		this->running         = false;
-
-		OpenFile();
 
 		this->pids.clear();
 		clog << "PipeFilter::PipeFilter all done" << endl;
@@ -120,13 +98,11 @@ namespace tsparser {
 		int bytesWritten = 0;
 		char packData[ITSPacket::TS_PACKET_SIZE];
 
-		lock();
 		memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
 		ppid = pack->getPid();
 
 		if (!pids.empty()) {
 			if (pids.count(ppid) == 0) {
-				unlock();
 				return;
 			}
 
@@ -158,15 +134,8 @@ namespace tsparser {
 
 		bytesWritten = SystemCompat::writePipe(
 				dstPd, packData, ITSPacket::TS_PACKET_SIZE);
-		
-		DWORD dwWritten;
-		WriteFile(hFile, (PVOID)packData, (DWORD)ITSPacket::TS_PACKET_SIZE, &dwWritten, NULL);
-		bytesWritten = (int)dwWritten;
-		if (bytesWritten != ITSPacket::TS_PACKET_SIZE) {
-			cout << endl;
-		}
+
 		assert(bytesWritten == ITSPacket::TS_PACKET_SIZE);
-		unlock();
 	}
 
 	void PipeFilter::receiveSection(
