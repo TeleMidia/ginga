@@ -74,11 +74,8 @@ namespace tsparser {
 		protected:
 			// ISO/IEC 13818-1 TS SECTION HEADER
 			unsigned int tableId;
-
-		private:
 			bool sectionSyntaxIndicator;
 
-		protected:
 			/*
 			 * Number of bytes of the section, starting immediately following
 			 * the sectionLength field, and including CRC32. Thus, 9 bytes
@@ -91,10 +88,8 @@ namespace tsparser {
 			 * program_number for PMT
 			 * table_id_extension for DSM_CC Section
 			 */
-		protected:
 			unsigned int idExtention;
 
-		private:
 			unsigned int versionNumber;
 			bool currentNextIndicator;
 			unsigned int sectionNumber;

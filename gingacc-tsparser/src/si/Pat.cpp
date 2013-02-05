@@ -69,6 +69,11 @@ namespace si {
 		currentPid = 150;
 		currentCarouselId = 15;
 		carouselComponentTag = 0x21;
+		stream = new char[4096];
+	}
+
+	Pat::~Pat() {
+		delete (stream);
 	}
 
 	unsigned int Pat::getNextPid() {
@@ -167,7 +172,7 @@ namespace si {
 			}
 		}
 
-		if (programs->count(program->getPid() != 0)) {
+		if (programs->count(program->getPid())) {
 
 			clog << "Pat::addPmt Warning! Trying to override an existent";
 			clog << " program. Pid = '" << program->getPid() << "'";
@@ -319,7 +324,7 @@ namespace si {
 	}
 
 	void Pat::resetPayload(char* payload, int size) {
-		int pointerField = 1;
+		int pointerField = 0;
 		int offset;
 		unsigned long crcValue;
 
@@ -329,9 +334,9 @@ namespace si {
 			return;
 		}
 
-		if (payload[0] != 0x0) {
+		/*if (payload[0] != 0x0) {
 			pointerField = payload[0] & 0xFF;
-		}
+		}*/
 
 		offset = pointerField;
 
@@ -354,6 +359,7 @@ namespace si {
 
 		} else {
 			payload[offset + 2] = ((defaultProgramPid & 0x0000FF00) | 0xE0) >> 8;
+			payload[offset + 2] = payload[offset + 2] | 0xE0;
 		}
 
 		payload[offset + 3] = (defaultProgramPid) & 0x000000FF;
@@ -438,6 +444,57 @@ namespace si {
 
 		pmt = programs->begin()->second;
 		return pmt->getDefaultMainAudioPid();
+	}
+
+	unsigned short Pat::createPatStreamByProgramPid(unsigned short pid, char** dataStream) {
+		map<unsigned int, unsigned int>::iterator i;
+		int pos = 0;
+		
+		memset(stream, 0xFF, 4096);
+		stream[pos++] = tableId;
+		stream[pos] = 0xB0;
+
+		stream[pos] = stream[pos] |	((sectionLength >> 8) & 0x03);
+		pos++;
+		stream[pos++] = sectionLength & 0xFF;
+
+		stream[pos++] = (idExtention >> 8) & 0xFF;
+		stream[pos++] = idExtention & 0xFF;
+
+		stream[pos] = 0xC0;
+
+		stream[pos] = stream[pos] |	((versionNumber << 1) & 0x3E);
+		stream[pos] = stream[pos] |	(currentNextIndicator & 0x01);
+		pos++;
+		stream[pos++] = sectionNumber & 0xFF;
+		stream[pos++] = lastSectionNumber & 0xFF;
+
+		if ((pat != NULL) && (!pat->empty())) {
+			i = pat->begin();
+			while (i != pat->end()) {
+				if (i->first == pid) {
+					stream[pos++] = (i->second >> 8) & 0xFF;
+					stream[pos++] = i->second & 0xFF;
+					stream[pos] = 0xE0;
+					stream[pos] = stream[pos] | ((i->first >> 8) & 0x1F);
+					pos++;
+					stream[pos++] = i->first & 0xFF;
+					break;
+				}
+				++i;
+			}
+		}
+
+		unsigned int crcValue = TransportSection::crc32(stream, pos);
+
+		stream[pos++] = (crcValue & 0xFF000000) >> 24;
+		stream[pos++] = (crcValue & 0x00FF0000) >> 16;
+		stream[pos++] = (crcValue & 0x0000FF00) >> 8;
+		stream[pos++] = (crcValue & 0x000000FF);
+
+		*dataStream = stream;
+
+		return pos;
 	}
 
 	void Pat::print() {
