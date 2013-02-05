@@ -110,7 +110,7 @@ namespace tsparser {
 		memcpy(stream, data, TS_PACKET_SIZE);
 		syncByte = (data[0] & 0xFF);
 		if (syncByte != TS_PACKET_SYNC_BYTE) {
-			cout << "TSPacket::process warning! syncByte != 0x47" << endl;
+			cout << "TSPacket::create warning! syncByte != 0x47" << endl;
 			return false;
 		}
 
@@ -139,14 +139,22 @@ namespace tsparser {
 			if (isSectionType) {
 				if (payloadUnitStartIndicator) {
 					pointerField = (data[4] & 0xFF);
-					if (pointerField > (TS_PACKET_SIZE - payloadOffset))
+					if (pointerField > (TS_PACKET_SIZE - payloadOffset)) {
+						cout << "TSPacket::create pointer field" << endl;
 						return false;
+					}
 
 					payloadSize = TS_PAYLOAD_SIZE - pointerField - 1;
-					if (payloadSize > TS_PAYLOAD_SIZE) return false;
+					if (payloadSize > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create TS_PAYLOAD_SIZE" << endl;
+						return false;
+					}
 					memcpy(payload, data + pointerField + 5, payloadSize);
 					payloadSize2 = TS_PAYLOAD_SIZE - payloadSize - 1;
-					if (payloadSize2 > TS_PAYLOAD_SIZE) return false;
+					if (payloadSize2 > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create TS_PAYLOAD_SIZE 2" << endl;
+						return false;
+					}
 					memcpy(payload2, data + 5, payloadSize2);
 					if ((payload[0] & 0xFF) == 0xFF) {
 						payloadSize = 0;
@@ -173,6 +181,7 @@ namespace tsparser {
 					pointerFieldPos = tsaf->getAdaptationFieldLength() + 5;
 					pointerField = data[pointerFieldPos] & 0xFF;
 					if (pointerField > (TS_PACKET_SIZE - payloadOffset)) {
+						cout << "TSPacket::create pointerField (adptationField)" << endl;
 						delete tsaf;
 						tsaf = NULL;
 						return false;
@@ -180,6 +189,7 @@ namespace tsparser {
 					payloadSize = TS_PACKET_SIZE - pointerField -
 						pointerFieldPos - 1;
 					if (payloadSize > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create payloadSize-pusi (adptationField)" << endl;
 						delete tsaf;
 						tsaf = NULL;
 						return false;
@@ -190,6 +200,7 @@ namespace tsparser {
 
 					payloadSize2 = pointerField;
 					if (payloadSize2 > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create payloadSize 2-pusi (adptationField)" << endl;
 						delete tsaf;
 						tsaf = NULL;
 						return false;
@@ -204,6 +215,7 @@ namespace tsparser {
 					payloadSize = TS_PACKET_SIZE -
 						(tsaf->getAdaptationFieldLength() + 5);
 					if (payloadSize > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create payloadSize (adptationField)" << endl;
 						delete tsaf;
 						tsaf = NULL;
 						return false;
@@ -216,6 +228,7 @@ namespace tsparser {
 			} else {
 				payloadSize = TS_PACKET_SIZE - (tsaf->getAdaptationFieldLength() + 5);
 				if (payloadSize > TS_PAYLOAD_SIZE) {
+					cout << "TSPacket::create payloadSize pes (adptationField)" << endl;
 					delete tsaf;
 					tsaf = NULL;
 					return false;
@@ -344,6 +357,7 @@ namespace tsparser {
 				}
 			}
 		}
+		return -1;
 	}
 
 	char TSPacket::getPacketData(char** dataStream) {

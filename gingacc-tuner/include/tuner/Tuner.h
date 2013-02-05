@@ -82,6 +82,8 @@ namespace tuning {
 			map<int, INetworkInterface*> interfaces;
 			int currentInterface;
 			bool firstTune;
+			int skipSize;
+			unsigned char packetSize;
 
 		public:
 			Tuner(
@@ -112,6 +114,8 @@ namespace tuning {
 			void channelDown();
 			void changeChannel(int factor);
 			bool hasSignal();
+			void setSkipSize(int size);
+			void setPacketSize(unsigned char size);
 
 		public:
 			void setTunerListener(ITunerListener* listener);

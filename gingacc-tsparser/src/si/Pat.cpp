@@ -297,7 +297,7 @@ namespace si {
 
 			/* Ignoring NIT_PIDs */
 			if (pid != (unsigned int)NIT_PID ||
-					(pid == (unsigned int)NIT_PID && ((n / 4) < 2))) {
+					(pid == (unsigned int)NIT_PID && (n==1))) {
 
 				if (defaultProgramNumber == -1 ||
 						programNumber < defaultProgramNumber) {

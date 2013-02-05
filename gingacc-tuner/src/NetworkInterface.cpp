@@ -231,9 +231,10 @@ namespace tuning {
 		return provider->getCurrentChannel();
 	}
 
-	int NetworkInterface::receiveData(char* buff) {
+	int NetworkInterface::receiveData(char* buff, int skipSize,
+							unsigned char packetSize) {
 		if (provider != NULL) {
-			return provider->receiveData(buff);
+			return provider->receiveData(buff, skipSize, packetSize);
 		}
 
 		return -1;
