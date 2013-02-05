@@ -136,8 +136,11 @@ namespace tsparser {
 		// itself.
 		unsigned char pointerField;
 
+		bool streamUpdated;
+
 		// Packet payload data.  (184 bytes) If pointerField
 		// is present, then the payload size is 183 bytes.
+		char* stream;
 		char payload[TS_PAYLOAD_SIZE];
 		char payload2[TS_PAYLOAD_SIZE];
 		TSAdaptationField* tsaf;
@@ -160,11 +163,12 @@ namespace tsparser {
 
 	protected:
 		bool create(char data[TS_PACKET_SIZE]);
+		char updateStream();
 
 	public:
 		bool isConstructionFailed();
 		unsigned short getPid();
-		char getPacketData(char streamData[TS_PACKET_SIZE]);
+		char getPacketData(char** dataStream);
 		void getPayload(char streamData[TS_PAYLOAD_SIZE]);
 		void getPayload2(char streamData[TS_PAYLOAD_SIZE]);
 		unsigned char getPayloadSize();

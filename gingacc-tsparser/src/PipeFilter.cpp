@@ -96,9 +96,9 @@ namespace tsparser {
 		int ppid;
 		int contCounter;
 		int bytesWritten = 0;
-		char packData[ITSPacket::TS_PACKET_SIZE];
+		char* packData;
 
-		memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
+		//memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
 		ppid = pack->getPid();
 
 		if (!pids.empty()) {
@@ -118,7 +118,7 @@ namespace tsparser {
 			}
 		}
 
-		pack->getPacketData(packData);
+		pack->getPacketData(&packData);
 
 		dataReceived = true;
 

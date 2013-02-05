@@ -64,7 +64,7 @@ namespace tsparser {
 		virtual ~ITSPacket(){};
 		virtual bool isConstructionFailed()=0;
 		virtual unsigned short getPid()=0;
-		virtual char getPacketData(char streamData[TS_PACKET_SIZE])=0;
+		virtual char getPacketData(char **dataStream)=0;
 		virtual void getPayload(char streamData[TS_PAYLOAD_SIZE])=0;
 		virtual unsigned char getPayloadSize()=0;
 		virtual void getPayload2(char streamData[TS_PAYLOAD_SIZE])=0;
