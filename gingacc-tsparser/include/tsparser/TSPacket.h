@@ -144,17 +144,23 @@ namespace tsparser {
 		unsigned char payloadSize;
 		unsigned char payloadSize2;
 		bool isSectionType;
+		bool constructionFailed;
 
 	public:
+		//Constructor to read a TS packet
 		TSPacket(char* packetData);
-		TSPacket(bool sectionType, char* payload,
-			unsigned char payloadSize,
+
+		//Constructor to encode a TS packet
+		TSPacket(
+				bool sectionType,
+				char* payload,
+				unsigned char payloadSize,
 				TSAdaptationField* tsaf);
+
 		virtual ~TSPacket();
 
 	protected:
 		bool create(char data[TS_PACKET_SIZE]);
-		bool constructionFailed;
 
 	public:
 		bool isConstructionFailed();
