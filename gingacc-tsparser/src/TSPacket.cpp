@@ -85,6 +85,8 @@ namespace tsparser {
 		this->tsaf = tsaf;
 		this->payloadSize = payloadSize;
 		payloadSize2 = 0;
+
+		memset(this->payload, 0, ITSPacket::TS_PAYLOAD_SIZE);
 		memcpy(this->payload, payload, payloadSize);
 	}
 
