@@ -154,8 +154,7 @@ namespace tsparser {
 		TSPacket(
 				bool sectionType,
 				char* payload,
-				unsigned char payloadSize,
-				TSAdaptationField* tsaf);
+				unsigned char payloadSize);
 
 		virtual ~TSPacket();
 

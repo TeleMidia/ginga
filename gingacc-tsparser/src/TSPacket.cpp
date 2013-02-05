@@ -62,29 +62,26 @@ namespace tsparser {
 		constructionFailed = !create(packetData);
 	}
 
-	TSPacket::TSPacket(bool sectionType, char* payload,
-			unsigned char payloadSize,
-				TSAdaptationField* tsaf) {
+	TSPacket::TSPacket(
+			bool sectionType,
+			char* payload,
+			unsigned char payloadSize) {
 
-		if (tsaf != NULL) {
-			if (payloadSize) {
-				adaptationFieldControl = ADAPT_PAYLOAD;
-			} else {
-				adaptationFieldControl = NO_PAYLOAD;
-			}
-		} else if (payloadSize) {
+		if (payloadSize > 0) {
 			adaptationFieldControl = PAYLOAD_ONLY;
+
 		} else {
 			adaptationFieldControl = FUTURE_USE;
 		}
-		transportErrorIndication = 0;
-		transportPriority = 0;
+
+		transportErrorIndication   = 0;
+		transportPriority          = 0;
 		transportScramblingControl = 0;
-		isSectionType = (sectionType > 0);
-		payloadUnitStartIndicator = (isSectionType > 0);
-		this->tsaf = tsaf;
-		this->payloadSize = payloadSize;
-		payloadSize2 = 0;
+		isSectionType              = (sectionType > 0);
+		payloadUnitStartIndicator  = isSectionType;
+		this->tsaf                 = NULL;
+		this->payloadSize          = payloadSize;
+		payloadSize2               = 0;
 
 		memset(this->payload, 0, ITSPacket::TS_PAYLOAD_SIZE);
 		memcpy(this->payload, payload, payloadSize);
@@ -93,6 +90,7 @@ namespace tsparser {
 	TSPacket::~TSPacket() {
 		if (tsaf != NULL) {
 			delete tsaf;
+			tsaf = NULL;
 		}
 	}
 
@@ -141,11 +139,13 @@ namespace tsparser {
 					if ((payload[0] & 0xFF) == 0xFF) {
 						payloadSize = 0;
 					}
+
 				} else {
 					payloadSize = TS_PAYLOAD_SIZE;
 					memcpy(payload, data + 4, payloadSize);
 					payloadSize2 = 0;
 				}
+
 			} else {
 				payloadSize = TS_PAYLOAD_SIZE;
 				memcpy(payload, data + 4, payloadSize);
@@ -161,14 +161,19 @@ namespace tsparser {
 			if (isSectionType) {
 				if (payloadUnitStartIndicator) {
 					pointerFieldPos = tsaf->getAdaptationFieldLength() + 5;
-					pointerField = data[pointerFieldPos] & 0xFF;
-					payloadSize = TS_PACKET_SIZE - pointerField -
-						pointerFieldPos - 1;
-					if (payloadSize > 184) payloadSize = 184 - //Checar isso!!!
-							tsaf->getAdaptationFieldLength() - 1;
+					pointerField    = data[pointerFieldPos] & 0xFF;
+					payloadSize     = (
+							TS_PACKET_SIZE - pointerField - pointerFieldPos - 1);
 
-					memcpy(payload, data + pointerField + pointerFieldPos + 1,
-						payloadSize);
+					if (payloadSize > 184) {
+						//TODO: check this code
+						payloadSize = (
+								184 - tsaf->getAdaptationFieldLength() - 1);
+					}
+
+					memcpy(
+							payload, data + pointerField + pointerFieldPos + 1,
+							payloadSize);
 
 					payloadSize2 = pointerField;
 					memcpy(payload2, data + pointerFieldPos + 1,
@@ -177,14 +182,18 @@ namespace tsparser {
 					if ((payload[0] & 0xFF) == 0xFF) {
 						payloadSize = 0;
 					}
+
 				} else {
 					payloadSize = TS_PACKET_SIZE -
 						(tsaf->getAdaptationFieldLength() + 5);
+
 					memcpy(payload,
 						data + tsaf->getAdaptationFieldLength() + 5,
 						payloadSize);
+
 					payloadSize2 = 0;
 				}
+
 			} else {
 				payloadSize = TS_PACKET_SIZE - (tsaf->getAdaptationFieldLength() + 5);
 				memcpy(payload,
@@ -248,6 +257,7 @@ namespace tsparser {
 				streamData[4] = 0;
 				memcpy(streamData + 5, payload, len);
 				return len;
+
 			} else if (adaptationFieldControl == NO_PAYLOAD) {
 				//adaptation field only
 				if (tsaf != NULL) {
@@ -258,6 +268,7 @@ namespace tsparser {
 				} else {
 					cout << "Error - TSPacket: No adaptation field." << endl;
 				}
+
 			} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
 				//adaptation field followed by payload
 				if (tsaf != NULL) {
@@ -271,16 +282,20 @@ namespace tsparser {
 					}
 					memcpy(streamData + len + 5, payload, plen);
 					return plen;
+
 				} else {
 					cout << "Error: No adaptation field." << endl;
 				}
 			}
+
 		} else if ((!isSectionType) ||
 				(isSectionType && (!payloadUnitStartIndicator))) {
+
 			if (adaptationFieldControl == PAYLOAD_ONLY) {
 				//payload only
 				memcpy(streamData + 4, payload, payloadSize);
 				return payloadSize;
+
 			} else if (adaptationFieldControl == NO_PAYLOAD) {
 				//adaptation field only
 				if (tsaf != NULL) {
@@ -291,6 +306,7 @@ namespace tsparser {
 				} else {
 					cout << "Error: No adaptation field." << endl;
 				}
+
 			} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
 				//adaptation field followed by payload
 				if (tsaf != NULL) {
@@ -353,7 +369,6 @@ namespace tsparser {
 	void TSPacket::setPid(unsigned short pid) {
 		this->pid = pid;
 	}
-
 
 	void TSPacket::setContinuityCounter(unsigned int counter) {
 		continuityCounter = counter;

@@ -307,10 +307,10 @@ namespace tsparser {
 
 		pid = packet->getPid();
 
-		/*
 		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
 			Thread::condSignal(&flagCondSignal);
-		}*/
+			isWaitingPI = false;
+		}
 
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
@@ -401,7 +401,7 @@ namespace tsparser {
 				char *patStream;
 				unsigned short slen;
 				slen = pat->createPatStreamByProgramPid(pat->getDefaultProgramPid(), &patStream);
-				TSPacket* patPacket = new TSPacket(true, patStream, slen, NULL);
+				TSPacket* patPacket = new TSPacket(true, patStream, slen);
 				patPacket->setPid(0);
 				pesFilters[0]->receiveTSPacket(patPacket);
 				delete patPacket;
