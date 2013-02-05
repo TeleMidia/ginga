@@ -908,6 +908,9 @@ namespace compat {
 #else
 		close(pd);
 #endif
+
+		clog << "SystemCompat::closePipe '";
+		clog << pd << "'" << endl;
 	}
 
 	int SystemCompat::readPipe(PipeDescriptor pd, char* buffer, int buffSize) {
@@ -947,6 +950,10 @@ namespace compat {
 				&bWritten,
 				NULL); // not using overlapped IO
 
+		if (!result) {
+			clog << "SystemCompat::writePipe error: '";
+			clog << GetLastError() << "' pd = " << pd << endl;
+		}
 		bytesWritten = (int)bWritten;
 #else
 		bytesWritten = write(pd, (void*)data, dataSize);

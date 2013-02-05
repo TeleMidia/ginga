@@ -85,9 +85,11 @@ namespace si {
 			//PMT Pid TO PMT
 			map<unsigned int, Pmt*>* programs;
 
+			char* stream;
+
 		public:
 			Pat();
-			virtual ~Pat(){};
+			virtual ~Pat();
 			unsigned int getNextPid();
 			unsigned int getNextCarouselId();
 			unsigned int getCarouselComponentTag();
@@ -115,6 +117,9 @@ namespace si {
 			unsigned int getDefaultProgramPid();
 			unsigned int getDefaultMainVideoPid();
 			unsigned int getDefaultMainAudioPid();
+
+			unsigned short createPatStreamByProgramPid(unsigned short pid, char** dataStream);
+
 			void print();
 	 };
 }

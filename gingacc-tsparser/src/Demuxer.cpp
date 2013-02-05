@@ -307,6 +307,11 @@ namespace tsparser {
 
 		pid = packet->getPid();
 
+		/*
+		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
+			Thread::condSignal(&flagCondSignal);
+		}*/
+
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
@@ -315,6 +320,7 @@ namespace tsparser {
 					if (isWaitingPI) {
 						/* Free the mutex that is waiting for the PAT */
 						Thread::condSignal(&flagCondSignal);
+						cout << "Demuxer: PAT is available." << endl;
 					}
 				}
 				//TODO: handle pat updates
@@ -373,6 +379,7 @@ namespace tsparser {
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->processSectionPayload()) {
 					pat->addPmt(pmt);
+					cout << "Demuxer: PMT is available." << endl;
 				}
 			}
 
@@ -390,7 +397,17 @@ namespace tsparser {
 		}
 
 		if (pesFilters.count(0) != 0) {
-			pesFilters[0]->receiveTSPacket(packet);
+			if (pid == 0) {
+				char *patStream;
+				unsigned short slen;
+				slen = pat->createPatStreamByProgramPid(pat->getDefaultProgramPid(), &patStream);
+				TSPacket* patPacket = new TSPacket(true, patStream, slen, NULL);
+				patPacket->setPid(0);
+				pesFilters[0]->receiveTSPacket(patPacket);
+				delete patPacket;
+			} else {
+				pesFilters[0]->receiveTSPacket(packet);
+			}
 		}
 
 		delete packet;
@@ -612,6 +629,7 @@ namespace tsparser {
 
 	void Demuxer::addPidFilter(unsigned int pid, ITSFilter* filter) {
 		pidFilters[pid] = filter;
+		cout << "pidFilters = " << pid << endl;
 	}
 
 	void Demuxer::addSectionFilter(unsigned int tid, ITSFilter* filter) {
