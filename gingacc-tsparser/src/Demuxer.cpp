@@ -70,6 +70,8 @@ namespace tsparser {
 		Thread::condInit(&flagCondSignal, NULL);
 		Thread::mutexInit(&flagLockUntilSignal, false);
 
+		packetSize = ITSPacket::TS_PACKET_SIZE;
+
 		createPSI();
 
 		initMaps();
@@ -308,6 +310,7 @@ namespace tsparser {
 		pid = packet->getPid();
 
 		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
+			cout << "Demuxer: PAT is available." << endl;
 			Thread::condSignal(&flagCondSignal);
 			isWaitingPI = false;
 		}
@@ -717,7 +720,7 @@ namespace tsparser {
 		while (i < size) {
 			// Check TS packet boundaries.
 			if (((buff[i] & 0xFF) == 0x47) &&
-					((i + 188 == size) || ((buff[i + 188] & 0xFF) == 0x47))) {
+					((i + packetSize == size) || ((buff[i + packetSize] & 0xFF) == 0x47))) {
 
 				packet = new TSPacket(buff + i);
 				if (packet->isConstructionFailed()) {
@@ -730,21 +733,31 @@ namespace tsparser {
 				} else {
 					demux(packet);
 				}
-				i = i + 188;
+				i = i + packetSize;
 
-			} else if (i + 188 < size) {
+			} else if (i + packetSize < size) {
 				/*clog << "Demuxer::receiveData hunting when i = '";
 				clog << i << "' and size = '" << size << "'";
 				clog << " current byte value = '" << (buff[i] & 0xFF);
 				clog << "' next sync = '" << (buff[i + 188] & 0xFF);
 				clog << "'" << endl;*/
-
+				int diff = i;
 				i++;
 				i = i + hunt(buff + i, size - i);
+				diff = i - diff;
+				if (diff > 188) {
+					packetSize = 204;
+					tuner->setPacketSize(packetSize);
+				}
+				else {
+					packetSize = 188;
+					tuner->setPacketSize(packetSize);
+				}
 
 			} else {
 				/*clog << "Demuxer::receiveData breaking when i = '";
 				clog << i << "' and size = '" << size << "'" << endl;*/
+				tuner->setSkipSize((packetSize-((size-i-1)%packetSize))%packetSize);
 				break;
 			}
 		}

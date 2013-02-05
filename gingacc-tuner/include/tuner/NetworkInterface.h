@@ -103,7 +103,8 @@ namespace tuning {
 			IChannel* getCurrentChannel();
 			int createPesFilter(int pid, int pesType, bool compositeFiler);
 			string getPesFilterOutput();
-			int receiveData(char* buff);
+			int receiveData(char* buff, int skipSize,
+							unsigned char packetSize);
 			void close();
 	};
 }

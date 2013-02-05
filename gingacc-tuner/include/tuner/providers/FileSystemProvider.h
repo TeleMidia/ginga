@@ -97,7 +97,8 @@ namespace tuning {
 			int createPesFilter(int pid, int pesType, bool compositeFiler);
 			string getPesFilterOutput();
 			void close();
-			int receiveData(char* buff);
+			int receiveData(char* buff, int skipSize,
+							unsigned char packetSize);
 	};
 }
 }

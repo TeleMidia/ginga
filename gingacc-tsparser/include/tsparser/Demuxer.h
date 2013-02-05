@@ -103,6 +103,8 @@ namespace tsparser {
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
 
+			unsigned char packetSize;
+
 		public:
 			//defs
 			static const short NB_PID_MAX = 0x1FFF; //8191

@@ -73,6 +73,8 @@ namespace tuning {
 			virtual void tune()=0;
 			virtual void setTunerListener(ITunerListener* listener)=0;
 			virtual bool hasSignal()=0;
+			virtual void setSkipSize(int size)=0;
+			virtual void setPacketSize(unsigned char size)=0;
 	};
 }
 }
