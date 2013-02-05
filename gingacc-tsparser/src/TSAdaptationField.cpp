@@ -54,7 +54,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tsparser {
-
 	TSAdaptationField::TSAdaptationField() {
 		init();
 		pcrFlag = 0;
@@ -67,8 +66,9 @@ namespace tsparser {
 		this->pcrExtension = Stc::stcToExt(pcr);
 	}
 
-	TSAdaptationField::TSAdaptationField(uint64_t pcrBase,
-			uint64_t pcrExtension) {
+	TSAdaptationField::TSAdaptationField(
+			uint64_t pcrBase, uint64_t pcrExtension) {
+
 		init();
 		pcrFlag = 1;
 		this->pcrBase = pcrBase;
@@ -77,6 +77,7 @@ namespace tsparser {
 
 	TSAdaptationField::TSAdaptationField(
 			char adapField[MAX_ADAPTATION_FIELD_SIZE]) {
+
 		privateDataStream = NULL;
 		streamUpdated = true;
 		fixedSize = false;
@@ -85,7 +86,14 @@ namespace tsparser {
 	}
 
 	TSAdaptationField::~TSAdaptationField() {
-		if (privateDataStream) delete privateDataStream;
+		releasePrivateDataStream();
+	}
+
+	void TSAdaptationField::releasePrivateDataStream() {
+		if (privateDataStream != NULL) {
+			delete privateDataStream;
+			privateDataStream = NULL;
+		}
 	}
 
 	void TSAdaptationField::init() {
@@ -151,7 +159,7 @@ namespace tsparser {
 		}
 		if (transportPrivateDataFlag) {
 			transportPrivateDataLength = adapFieldStream[pos++] & 0xFF;
-			if (privateDataStream) delete privateDataStream;
+			releasePrivateDataStream();
 			privateDataStream = new char[transportPrivateDataLength];
 			memcpy(privateDataStream, adapFieldStream + pos, transportPrivateDataLength);
 			pos = pos + transportPrivateDataLength;
@@ -441,7 +449,9 @@ namespace tsparser {
 	}
 
 	void TSAdaptationField::setTransportPrivateDataStream(char* stream, unsigned char length) {
-		if (privateDataStream) delete privateDataStream;
+		assert(stream != privateDataStream);
+
+		releasePrivateDataStream();
 		privateDataStream = new char[length];
 		memcpy(privateDataStream, stream, length);
 		transportPrivateDataLength = length;
@@ -511,8 +521,10 @@ namespace tsparser {
 			adapFieldStream[++pos] = transportPrivateDataLength & 0xFF;
 			if ((transportPrivateDataLength > 0) && (privateDataStream)) {
 				pos++;
-				memcpy(adapFieldStream + pos, privateDataStream,
-									transportPrivateDataLength);
+				memcpy(
+						adapFieldStream + pos,
+						privateDataStream,
+						transportPrivateDataLength);
 			}
 			pos = pos + transportPrivateDataLength - 1;
 		}

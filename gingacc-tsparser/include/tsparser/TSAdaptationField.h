@@ -108,6 +108,10 @@ namespace tsparser {
 			TSAdaptationField(char adapField[MAX_ADAPTATION_FIELD_SIZE]);
 			~TSAdaptationField();
 
+		private:
+			void releasePrivateDataStream();
+
+		public:
 			unsigned char getAdaptationFieldLength();
 			void setAdaptationFieldLength(unsigned char afl);
 			void noFixedSize();
