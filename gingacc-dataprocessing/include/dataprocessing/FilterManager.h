@@ -68,9 +68,9 @@ namespace core {
 namespace dataprocessing {
 	class FilterManager {
 		private:
-			map<short, SectionFilter*>* streamTypeFilters;
-			map<int, SectionFilter*>* pidFilters;
-			map<string, map<unsigned int, ITransportSection*>*>* sections;
+			map<short, SectionFilter*> streamTypeFilters;
+			map<int, SectionFilter*> pidFilters;
+			map<string, map<unsigned int, ITransportSection*>*> sections;
 			bool reading;
 			pthread_mutex_t filterMutex;
 
