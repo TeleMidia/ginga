@@ -114,9 +114,9 @@ namespace tsparser {
 		//   01    no adaptation field (payload only)
 		//   10    adaptation field only (no payload)
 		//   11    adaptation field followed by payload
-		static const unsigned int FUTURE_USE = 0;
-		static const unsigned int PAYLOAD_ONLY = 1;
-		static const unsigned int NO_PAYLOAD = 2;
+		static const unsigned int FUTURE_USE    = 0;
+		static const unsigned int PAYLOAD_ONLY  = 1;
+		static const unsigned int NO_PAYLOAD    = 2;
 		static const unsigned int ADAPT_PAYLOAD = 3;
 		unsigned int adaptationFieldControl;
 
@@ -160,6 +160,10 @@ namespace tsparser {
 				unsigned char payloadSize);
 
 		virtual ~TSPacket();
+
+	private:
+		void releaseTSAF();
+		void releaseStream();
 
 	protected:
 		bool create(char data[TS_PACKET_SIZE]);
