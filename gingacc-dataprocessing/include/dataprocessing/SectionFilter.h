@@ -94,10 +94,10 @@ namespace dataprocessing {
 			map<unsigned int, SectionHandler*> sectionPidSelector;
 
 			IFilterListener* listener;
-			set<string>* processedSections;
+			set<string> processedSections;
 
 			int lastPid;
-			map<int, ITransportSection*>* hFilteredSections;
+			map<int, ITransportSection*> hFilteredSections;
 			pthread_mutex_t stlMutex;
 
 		public:

@@ -74,12 +74,10 @@ namespace dataprocessing {
 #endif
 
 	SectionFilter::SectionFilter() {
-		this->processedSections = new set<string>;
-		this->listener          = NULL;
-		this->hFilteredSections = new map<int, ITransportSection*>;
-		this->lastPid           = -1;
+		this->listener = NULL;
+		this->lastPid  = -1;
 
-		Thread::mutexInit(&stlMutex, NULL);
+		Thread::mutexInit(&stlMutex, true);
 	}
 
 	SectionFilter::~SectionFilter() {
@@ -89,21 +87,14 @@ namespace dataprocessing {
 		clog << "SectionFilter::~SectionFilter" << endl;
 		Thread::mutexLock(&stlMutex);
 
-		if (processedSections != NULL) {
-			delete processedSections;
-			processedSections = NULL;
-		}
+		processedSections.clear();
 
-		if (hFilteredSections != NULL) {
-			i = hFilteredSections->begin();
-			while (i != hFilteredSections->end()) {
-				delete i->second;
-				++i;
-			}
-
-			delete hFilteredSections;
-			hFilteredSections = NULL;
+		i = hFilteredSections.begin();
+		while (i != hFilteredSections.end()) {
+			delete i->second;
+			++i;
 		}
+		hFilteredSections.clear();
 
 		/*Clear the allocated structs */
 		j = sectionPidSelector.begin();
@@ -112,6 +103,7 @@ namespace dataprocessing {
 			delete j->second;
 			++j;
 		}
+		sectionPidSelector.clear();
 
 		Thread::mutexUnlock(&stlMutex);
 		Thread::mutexDestroy(&stlMutex);
@@ -127,7 +119,7 @@ namespace dataprocessing {
 		bool checked;
 
 		Thread::mutexLock(&stlMutex);
-		if (processedSections->count(sectionName) == 0) {
+		if (processedSections.count(sectionName) == 0) {
 			checked = false;
 
 		} else {
@@ -140,9 +132,7 @@ namespace dataprocessing {
 
 	void SectionFilter::addProcessedSection(string sectionName) {
 		Thread::mutexLock(&stlMutex);
-		if (processedSections != NULL) {
-			processedSections->insert(sectionName);
-		}
+		processedSections.insert(sectionName);
 		Thread::mutexUnlock(&stlMutex);
 	}
 
@@ -150,16 +140,16 @@ namespace dataprocessing {
 		set<string>::iterator i;
 
 		Thread::mutexLock(&stlMutex);
-		i = processedSections->find(sectionName);
-		if (i != processedSections->end()) {
-			processedSections->erase(i);
+		i = processedSections.find(sectionName);
+		if (i != processedSections.end()) {
+			processedSections.erase(i);
 		}
 		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void SectionFilter::clearProcessedSections() {
 		Thread::mutexLock(&stlMutex);
-		processedSections->clear();
+		processedSections.clear();
 		Thread::mutexUnlock(&stlMutex);
 	}
 
@@ -302,8 +292,8 @@ namespace dataprocessing {
 		pid     = filter->getPid();
 		lastPid = pid;
 
-		i = hFilteredSections->find(pid);
-		if (i == hFilteredSections->end()) {
+		i = hFilteredSections.find(pid);
+		if (i == hFilteredSections.end()) {
 #if HAVE_COMPSUPPORT
 			filteredSection = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(buf, len);
@@ -312,8 +302,8 @@ namespace dataprocessing {
 			filteredSection = new TransportSection(buf, len);
 #endif
 			filteredSection->setESId(pid);
-			(*hFilteredSections)[pid] = filteredSection;
-			i = hFilteredSections->find(pid);
+			hFilteredSections[pid] = filteredSection;
+			i = hFilteredSections.find(pid);
 
 		} else {
 			filteredSection = i->second;
@@ -321,8 +311,8 @@ namespace dataprocessing {
 		}
 
 		if (filteredSection->isConsolidated()) {
-			if (i != hFilteredSections->end()) {
-				hFilteredSections->erase(i);
+			if (i != hFilteredSections.end()) {
+				hFilteredSections.erase(i);
 			}
 
 			if (!checkProcessedSections(filteredSection->getSectionName())) {

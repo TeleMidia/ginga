@@ -56,34 +56,45 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 	FilterManager::FilterManager() {
-		this->sections          = new
-				map<string, map<unsigned int, ITransportSection*>*>;
-
-		this->streamTypeFilters = new map<short, SectionFilter*>;
-		this->pidFilters        = new map<int, SectionFilter*>;
-		this->reading           = false;
-
+		this->reading = false;
 		Thread::mutexInit(&filterMutex, NULL);
 	}
 
 	FilterManager::~FilterManager() {
-		//TODO: delete maps content
+		map<short, SectionFilter*>::iterator i;
+		map<int, SectionFilter*>::iterator j;
+		map<string, map<unsigned int, ITransportSection*>*>::iterator k;
+		map<unsigned int, ITransportSection*>::iterator l;
 
 		Thread::mutexLock(&filterMutex);
-		if (streamTypeFilters != NULL) {
-			delete streamTypeFilters;
-			streamTypeFilters = NULL;
+		i = streamTypeFilters.begin();
+		while (i != streamTypeFilters.end()) {
+			delete i->second;
+			++i;
 		}
+		streamTypeFilters.clear();
 
-		if (pidFilters != NULL) {
-			delete pidFilters;
-			pidFilters = NULL;
+		j = pidFilters.begin();
+		while (j != pidFilters.end()) {
+			delete j->second;
+			++j;
 		}
+		pidFilters.clear();
 
-		if (sections != NULL) {
-			delete sections;
-			sections = NULL;
+		k = sections.begin();
+		while (k != sections.end()) {
+			if (k->second != NULL) {
+				l = k->second->begin();
+				while (l != k->second->end()) {
+					delete l->second;
+					++l;
+				}
+
+				delete k->second;
+			}
+			++k;
 		}
+		sections.clear();
 
 		Thread::mutexUnlock(&filterMutex);
 		Thread::mutexDestroy(&filterMutex);
@@ -96,11 +107,11 @@ namespace dataprocessing {
 		int tId;
 
 		Thread::mutexLock(&filterMutex);
-		if (streamTypeFilters->count(streamType) == 0) {
+		if (streamTypeFilters.count(streamType) == 0) {
 			sf = new SectionFilter();
 			sf->setListener(listener);
 
-			(*streamTypeFilters)[streamType] = sf;
+			streamTypeFilters[streamType] = sf;
 			if ((demux->getCaps() & DPC_CAN_DEMUXBYHW) &&
 					(demux->getCaps() & DPC_CAN_FILTERPID) &&
 					(demux->getCaps() & DPC_CAN_FILTERTID)) {
@@ -126,11 +137,11 @@ namespace dataprocessing {
 		SectionFilter* sf = NULL;
 
 		Thread::mutexLock(&filterMutex);
-		if (pidFilters->count(pid) == 0) {
+		if (pidFilters.count(pid) == 0) {
 			sf = new SectionFilter();
 			sf->setListener(listener);
 
-			(*pidFilters)[pid] = sf;
+			pidFilters[pid] = sf;
 
 			if ((demux->getCaps() & DPC_CAN_DEMUXBYHW) &&
 					(demux->getCaps() & DPC_CAN_FILTERPID) &&
@@ -155,10 +166,10 @@ namespace dataprocessing {
 		clog << streamType << "'" << endl;
 
 		Thread::mutexLock(&filterMutex);
-		i = streamTypeFilters->find(streamType);
-		if (i != streamTypeFilters->end()) {
+		i = streamTypeFilters.find(streamType);
+		if (i != streamTypeFilters.end()) {
 			sf = i->second;
-			streamTypeFilters->erase(i);
+			streamTypeFilters.erase(i);
 			demux->removeFilter(sf);
 		}
 
@@ -172,10 +183,10 @@ namespace dataprocessing {
 		clog << filter << "'" << endl;
 
 		Thread::mutexLock(&filterMutex);
-		i = streamTypeFilters->begin();
-		while (i != streamTypeFilters->end()) {
+		i = streamTypeFilters.begin();
+		while (i != streamTypeFilters.end()) {
 			if (filter == i->second) {
-				streamTypeFilters->erase(i);
+				streamTypeFilters.erase(i);
 				break;
 			}
 		}
@@ -228,14 +239,14 @@ namespace dataprocessing {
 		}
 
 		Thread::mutexLock(&filterMutex);
-		if (sections->count(sectionName) == 0) {
+		if (sections.count(sectionName) == 0) {
 			clog << "FilterManager::processSection creating map for section '";
 			clog << sectionName << "'" << endl;
 			secs = new map<unsigned int, ITransportSection*>;
-			(*sections)[sectionName] = secs;
+			sections[sectionName] = secs;
 
 		} else {
-			secs = (*sections)[sectionName];
+			secs = sections[sectionName];
 		}
 		Thread::mutexUnlock(&filterMutex);
 
@@ -312,8 +323,8 @@ namespace dataprocessing {
 		SectionFilter* sf;
 
 		Thread::mutexLock(&filterMutex);
-		i = streamTypeFilters->begin();
-		while (i != streamTypeFilters->end()) {
+		i = streamTypeFilters.begin();
+		while (i != streamTypeFilters.end()) {
 			clog << "FilterManager::addProcessedSection '";
 			clog << sectionName << "'" << endl;
 			sf = i->second;
@@ -321,14 +332,14 @@ namespace dataprocessing {
 			++i;
 		}
 
-		j = pidFilters->begin();
-		while (j != pidFilters->end()) {
+		j = pidFilters.begin();
+		while (j != pidFilters.end()) {
 			(j->second)->addProcessedSection(sectionName);
 			++j;
 		}
 
-		if (sections->count(sectionName) != 0) {
-			sections->erase(sections->find(sectionName));
+		if (sections.count(sectionName) != 0) {
+			sections.erase(sections.find(sectionName));
 		}
 		Thread::mutexUnlock(&filterMutex);
 		/*clog << "FilterManager::addProcessedSection '" << sectionName << "'";
