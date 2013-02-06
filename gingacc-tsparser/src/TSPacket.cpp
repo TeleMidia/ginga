@@ -57,48 +57,58 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 	TSPacket::TSPacket(char* packetData) {
-		isSectionType = false;
-		tsaf = NULL;
-		stream = new char[TS_PACKET_SIZE];
-		streamUpdated = true;
+		isSectionType      = false;
+		tsaf               = NULL;
+		stream             = new char[TS_PACKET_SIZE];
+		streamUpdated      = true;
 		constructionFailed = !create(packetData);
 	}
 
-	TSPacket::TSPacket(bool sectionType, char* payload,
+	TSPacket::TSPacket(
+			bool sectionType,
+			char* payload,
 			unsigned char payloadSize) {
 
-		tsaf = NULL;
-		stream = new char[TS_PACKET_SIZE];
+		tsaf          = NULL;
+		stream        = new char[TS_PACKET_SIZE];
 		streamUpdated = false;
-		if (tsaf != NULL) {
-			if (payloadSize) {
-				adaptationFieldControl = ADAPT_PAYLOAD;
-			} else {
-				adaptationFieldControl = NO_PAYLOAD;
-			}
-		} else if (payloadSize) {
+
+		if (payloadSize > 0) {
 			adaptationFieldControl = PAYLOAD_ONLY;
+
 		} else {
 			adaptationFieldControl = FUTURE_USE;
 		}
-		transportErrorIndication = 0;
-		transportPriority = 0;
+
+		transportErrorIndication   = 0;
+		transportPriority          = 0;
 		transportScramblingControl = 0;
-		isSectionType = (sectionType > 0);
-		payloadUnitStartIndicator = (isSectionType > 0);
-		this->tsaf = tsaf;
-		this->payloadSize = payloadSize;
-		payloadSize2 = 0;
+		isSectionType              = (sectionType > 0);
+		payloadUnitStartIndicator  = (isSectionType > 0);
+		this->payloadSize          = payloadSize;
+		payloadSize2               = 0;
 
 		memset(this->payload, 0, ITSPacket::TS_PAYLOAD_SIZE);
 		memcpy(this->payload, payload, payloadSize);
 	}
 
 	TSPacket::~TSPacket() {
+		releaseTSAF();
+		releaseStream();
+	}
+
+	void TSPacket::releaseTSAF() {
 		if (tsaf != NULL) {
 			delete tsaf;
+			tsaf = NULL;
 		}
-		if (stream) delete stream;
+	}
+
+	void TSPacket::releaseStream() {
+		if (stream != NULL) {
+			delete stream;
+			stream = NULL;
+		}
 	}
 
 	bool TSPacket::isConstructionFailed() {
@@ -106,30 +116,36 @@ namespace tsparser {
 	}
 
 	bool TSPacket::create(char* data) {
-		unsigned char pointerField, pointerFieldPos, payloadOffset, aflen = 0;
+		unsigned char pointerField;
+		unsigned char pointerFieldPos;
+		unsigned char payloadOffset;
+		unsigned char aflen = 0;
+		unsigned int pesStartCode;
+
 		memcpy(stream, data, TS_PACKET_SIZE);
+
 		syncByte = (data[0] & 0xFF);
 		if (syncByte != TS_PACKET_SYNC_BYTE) {
 			cout << "TSPacket::create warning! syncByte != 0x47" << endl;
 			return false;
 		}
 
-		transportErrorIndication = (data[1] & 0x80) >> 7;
-		payloadUnitStartIndicator = (data[1] & 0x40) >> 6;
-		transportPriority = (data[1] & 0x20) >> 5;
-		pid = (((data[1] & 0x1F) << 8) | (data[2] & 0xFF));
+		transportErrorIndication   = (data[1] & 0x80) >> 7;
+		payloadUnitStartIndicator  = (data[1] & 0x40) >> 6;
+		transportPriority          = (data[1] & 0x20) >> 5;
+		pid                        = (((data[1] & 0x1F) << 8) | (data[2] & 0xFF));
 		transportScramblingControl = (data[3] & 0xC0) >> 6;
-		adaptationFieldControl = (data[3] & 0x30) >> 4;
-		continuityCounter = (data[3] & 0x0F);
+		adaptationFieldControl     = (data[3] & 0x30) >> 4;
+		continuityCounter          = (data[3] & 0x0F);
 
-		payloadOffset = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
+		payloadOffset              = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
 
 		if (adaptationFieldControl == ADAPT_PAYLOAD) {
 			aflen = data[4] & 0xFF;
 			payloadOffset += (aflen + 1);
 		}
 
-		unsigned int pesStartCode = (((data[payloadOffset] & 0xFF) << 16) |
+		pesStartCode = (((data[payloadOffset] & 0xFF) << 16) |
 				((data[payloadOffset + 1] & 0xFF) << 8) |
 				(data[payloadOffset + 2] & 0xFF));
 
@@ -149,21 +165,25 @@ namespace tsparser {
 						cout << "TSPacket::create TS_PAYLOAD_SIZE" << endl;
 						return false;
 					}
+
 					memcpy(payload, data + pointerField + 5, payloadSize);
 					payloadSize2 = TS_PAYLOAD_SIZE - payloadSize - 1;
 					if (payloadSize2 > TS_PAYLOAD_SIZE) {
 						cout << "TSPacket::create TS_PAYLOAD_SIZE 2" << endl;
 						return false;
 					}
+
 					memcpy(payload2, data + 5, payloadSize2);
 					if ((payload[0] & 0xFF) == 0xFF) {
 						payloadSize = 0;
 					}
+
 				} else {
 					payloadSize = TS_PAYLOAD_SIZE;
 					memcpy(payload, data + 4, payloadSize);
 					payloadSize2 = 0;
 				}
+
 			} else {
 				payloadSize = TS_PAYLOAD_SIZE;
 				memcpy(payload, data + 4, payloadSize);
@@ -171,9 +191,7 @@ namespace tsparser {
 			}
 
 		} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
-			if (tsaf != NULL) {
-				delete tsaf;
-			}
+			releaseTSAF();
 
 			tsaf = new TSAdaptationField(data + 4); 
 			if (isSectionType) {
@@ -181,70 +199,91 @@ namespace tsparser {
 					pointerFieldPos = tsaf->getAdaptationFieldLength() + 5;
 					pointerField = data[pointerFieldPos] & 0xFF;
 					if (pointerField > (TS_PACKET_SIZE - payloadOffset)) {
-						cout << "TSPacket::create pointerField (adptationField)" << endl;
-						delete tsaf;
-						tsaf = NULL;
-						return false;
-					}
-					payloadSize = TS_PACKET_SIZE - pointerField -
-						pointerFieldPos - 1;
-					if (payloadSize > TS_PAYLOAD_SIZE) {
-						cout << "TSPacket::create payloadSize-pusi (adptationField)" << endl;
-						delete tsaf;
-						tsaf = NULL;
+						clog << "TSPacket::create pointerField ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
 						return false;
 					}
 
-					memcpy(payload, data + pointerField + pointerFieldPos + 1,
-						payloadSize);
+					payloadSize = (TS_PACKET_SIZE - pointerField -
+							pointerFieldPos - 1);
+
+					if (payloadSize > TS_PAYLOAD_SIZE) {
+						clog << "TSPacket::create payloadSize-pusi ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
+						return false;
+					}
+
+					memcpy(
+							payload,
+							data + pointerField + pointerFieldPos + 1,
+							payloadSize);
 
 					payloadSize2 = pointerField;
 					if (payloadSize2 > TS_PAYLOAD_SIZE) {
-						cout << "TSPacket::create payloadSize 2-pusi (adptationField)" << endl;
-						delete tsaf;
-						tsaf = NULL;
+						clog << "TSPacket::create payloadSize 2-pusi ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
 						return false;
 					}
-					memcpy(payload2, data + pointerFieldPos + 1,
+
+					memcpy(
+							payload2,
+							data + pointerFieldPos + 1,
 							payloadSize2);
 
 					if ((payload[0] & 0xFF) == 0xFF) {
 						payloadSize = 0;
 					}
+
 				} else {
-					payloadSize = TS_PACKET_SIZE -
-						(tsaf->getAdaptationFieldLength() + 5);
+					payloadSize = (TS_PACKET_SIZE -
+							(tsaf->getAdaptationFieldLength() + 5));
+
 					if (payloadSize > TS_PAYLOAD_SIZE) {
-						cout << "TSPacket::create payloadSize (adptationField)" << endl;
-						delete tsaf;
-						tsaf = NULL;
+						clog << "TSPacket::create payloadSize ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
 						return false;
 					}
-					memcpy(payload,
-						data + tsaf->getAdaptationFieldLength() + 5,
-						payloadSize);
+
+					memcpy(
+							payload,
+							data + tsaf->getAdaptationFieldLength() + 5,
+							payloadSize);
+
 					payloadSize2 = 0;
 				}
+
 			} else {
-				payloadSize = TS_PACKET_SIZE - (tsaf->getAdaptationFieldLength() + 5);
+				payloadSize = (TS_PACKET_SIZE -
+						(tsaf->getAdaptationFieldLength() + 5));
+
 				if (payloadSize > TS_PAYLOAD_SIZE) {
-					cout << "TSPacket::create payloadSize pes (adptationField)" << endl;
-					delete tsaf;
-					tsaf = NULL;
+					clog << "TSPacket::create payloadSize pes ";
+					clog << "(adptationField)" << endl;
+
+					releaseTSAF();
 					return false;
 				}
-				memcpy(payload,
-					data + tsaf->getAdaptationFieldLength() + 5,
-					payloadSize);
+
+				memcpy(
+						payload,
+						data + tsaf->getAdaptationFieldLength() + 5,
+						payloadSize);
+
 				payloadSize2 = 0;
 			}
 
 		} else if (adaptationFieldControl == NO_PAYLOAD) {
 			payloadSize = 0;
 			payloadSize2 = 0;
-			if (tsaf != NULL) {
-				delete tsaf;
-			}
+			releaseTSAF();
 			tsaf = new TSAdaptationField(data + 4);
 		}
 		return true;
@@ -261,7 +300,8 @@ namespace tsparser {
 			unsigned int len, plen;
 
 			if (adaptationFieldControl == 0) {
-				cout << "Error - TSPacket: adaptationFieldControl == 0" << endl;
+				clog << "TSPacket::updateStream Error: Can't create packet - ";
+				clog << "adaptationFieldControl == 0" << endl;
 				return -1;
 			}
 
@@ -291,72 +331,75 @@ namespace tsparser {
 				if (adaptationFieldControl == PAYLOAD_ONLY) {
 					//payload only
 					len = payloadSize;
-					if (payloadSize > 183) len = 183;
+					if (payloadSize > 183) {
+						len = 183;
+					}
+
 					stream[4] = 0;
 					memcpy(stream + 5, payload, len);
 					return len;
+
 				} else if (adaptationFieldControl == NO_PAYLOAD) {
 					//adaptation field only
-					if (tsaf != NULL) {
-						tsaf->setAdaptationFieldLength(183);
-						len = tsaf->getStream(afbuffer);
-						memcpy(stream + 4, afbuffer, len);
-						return 0;
-					} else {
-						cout << "Error - TSPacket: No adaptation field." << endl;
-					}
+					assert(tsaf != NULL);
+
+					tsaf->setAdaptationFieldLength(183);
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					return 0;
+
 				} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
 					//adaptation field followed by payload
-					if (tsaf != NULL) {
-						plen = TS_PAYLOAD_SIZE -
-							(tsaf->getAdaptationFieldLength() + 2); //available
-						len = tsaf->getStream(afbuffer);
-						memcpy(stream + 4, afbuffer, len);
-						stream[len + 4] = 0;
-						if (plen > payloadSize) {
-							plen = payloadSize;
-						}
-						memcpy(stream + len + 5, payload, plen);
-						return plen;
-					} else {
-						cout << "Error: No adaptation field." << endl;
+					assert(tsaf != NULL);
+
+					plen = (TS_PAYLOAD_SIZE -
+							(tsaf->getAdaptationFieldLength() + 2)); //available
+
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					stream[len + 4] = 0;
+					if (plen > payloadSize) {
+						plen = payloadSize;
 					}
+					memcpy(stream + len + 5, payload, plen);
+					return plen;
 				}
+
 			} else if ((!isSectionType) ||
 					(isSectionType && (!payloadUnitStartIndicator))) {
+
 				if (adaptationFieldControl == PAYLOAD_ONLY) {
 					//payload only
 					memcpy(stream + 4, payload, payloadSize);
 					return payloadSize;
+
 				} else if (adaptationFieldControl == NO_PAYLOAD) {
 					//adaptation field only
-					if (tsaf != NULL) {
-						tsaf->setAdaptationFieldLength(183);
-						len = tsaf->getStream(afbuffer);
-						memcpy(stream + 4, afbuffer, len);
-						return 0;
-					} else {
-						cout << "Error: No adaptation field." << endl;
-					}
+					assert(tsaf != NULL);
+
+					tsaf->setAdaptationFieldLength(183);
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					return 0;
+
 				} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
 					//adaptation field followed by payload
-					if (tsaf != NULL) {
-						plen = TS_PAYLOAD_SIZE -
-							(tsaf->getAdaptationFieldLength() + 1);
+					assert(tsaf != NULL);
 
-						len = tsaf->getStream(afbuffer);
-						memcpy(stream + 4, afbuffer, len);
-						if (plen > payloadSize) {
-							plen = payloadSize;
-						}
-						memcpy(stream + len + 4, payload, plen);
-						return plen;
-					} else {
-						cout << "Error: No adaptation field." << endl;
+					plen = (TS_PAYLOAD_SIZE -
+							(tsaf->getAdaptationFieldLength() + 1));
+
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					if (plen > payloadSize) {
+						plen = payloadSize;
 					}
+					memcpy(stream + len + 4, payload, plen);
+					return plen;
 				}
 			}
 		}
+
 		return -1;
 	}
 
