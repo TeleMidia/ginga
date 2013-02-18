@@ -296,26 +296,28 @@ namespace si {
 				    (sectionPayload[((i*4) + 3)] & 0xFF);
 
 			/* Ignoring NIT_PIDs */
-			if (pid != (unsigned int)NIT_PID ||
-					(pid == (unsigned int)NIT_PID && (n==1))) {
+			if (programNumber != 0) {
+				if ((pid != (unsigned int)NIT_PID) ||
+						((pid == (unsigned int)NIT_PID) && (n==1))) {
 
-				if (defaultProgramNumber == -1 ||
-						programNumber < defaultProgramNumber) {
+					if (defaultProgramNumber == -1 ||
+							programNumber < defaultProgramNumber) {
 
-					/*clog << "Pat::process ";
-					clog << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
-					clog << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
-					clog << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
-					clog << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
-					clog << "' sectionLength = '" << getSectionLength();
-					clog << "'" << endl;*/
+						/*clog << "Pat::process ";
+						clog << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] & 0x1F);
+						clog << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] & 0xFF);
+						clog << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] & 0x1F);
+						clog << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] & 0xFF);
+						clog << "' sectionLength = '" << getSectionLength();
+						clog << "'" << endl;*/
 
-					defaultProgramNumber = programNumber;
-					defaultProgramPid    = pid;
+						defaultProgramNumber = programNumber;
+						defaultProgramPid    = pid;
+					}
+
+					(*pat)[pid] = programNumber;
+					unprocessedPmts->push_back(pid);
 				}
-
-				(*pat)[pid] = programNumber;
-				unprocessedPmts->push_back(pid);
 			}
 		}
 
