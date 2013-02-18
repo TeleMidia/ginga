@@ -88,8 +88,9 @@ namespace dataprocessing {
 		SystemCompat::makeDir("carousel", 0777);
 		SystemCompat::makeDir("carousel/modules", 0777);
 
-		epgProcessor = EPGProcessor::getInstance();
-		epgProcessor->setDataProcessor(this);
+		//TODO: remove all garbage from epg processor before start using it
+		//epgProcessor = EPGProcessor::getInstance();
+		//epgProcessor->setDataProcessor(this);
 	}
 
 	DataProcessor::~DataProcessor() {
@@ -118,10 +119,11 @@ namespace dataprocessing {
 			ait = NULL;
 		}
 
-		if (epgProcessor != NULL) {
+		//TODO: remove all garbage from epg processor before start using it
+		/*if (epgProcessor != NULL) {
 			epgProcessor->release();
 			epgProcessor = NULL;
-		}
+		}*/
 
 		Thread::mutexDestroy(&mutex);
 	}
@@ -391,7 +393,8 @@ namespace dataprocessing {
 			//SDT
 			} else if (tableId == SDT_TID) {
 				//clog << "DataProcessor::receiveSection SDT" << endl;
-				epgProcessor->decodeSdtSection(section);
+				//TODO: remove all garbage from epg processor before start using it
+				//epgProcessor->decodeSdtSection(section);
 				delete section;
 				section = NULL;
 
@@ -404,7 +407,8 @@ namespace dataprocessing {
 				 (schedule)
 				*/
 				
-				epgProcessor->decodeEitSection(section);
+				//TODO: remove all garbage from epg processor before start using it
+				//epgProcessor->decodeEitSection(section);
 				delete section;
 				section = NULL;
 
@@ -416,7 +420,8 @@ namespace dataprocessing {
 
 			} else if (tableId == 0x73) {
 				clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
-				epgProcessor->decodeTot(section);
+				//TODO: remove all garbage from epg processor before start using it
+				//epgProcessor->decodeTot(section);
 			}
 		}
 	}
