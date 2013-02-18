@@ -80,7 +80,7 @@ namespace tsparser {
 
 		privateDataStream = NULL;
 		streamUpdated = true;
-		fixedSize = false;
+		fixedSize = true;
 		memcpy(adapFieldStream, adapField, MAX_ADAPTATION_FIELD_SIZE);
 		process();
 	}

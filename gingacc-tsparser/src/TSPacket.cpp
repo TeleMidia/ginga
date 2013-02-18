@@ -116,7 +116,6 @@ namespace tsparser {
 	}
 
 	bool TSPacket::create(char* data) {
-		unsigned char pointerField;
 		unsigned char pointerFieldPos;
 		unsigned char payloadOffset;
 		unsigned char aflen = 0;
@@ -150,6 +149,8 @@ namespace tsparser {
 				(data[payloadOffset + 2] & 0xFF));
 
 		isSectionType = !((pesStartCode == 0x01) && (pid != 0x00));
+
+		pointerField = 0;
 
 		if (adaptationFieldControl == PAYLOAD_ONLY) {
 			if (isSectionType) {
