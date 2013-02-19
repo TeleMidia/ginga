@@ -86,7 +86,7 @@ namespace mb {
 			virtual void setProviderContent(void* content){};
 			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
 			double getTotalMediaTime();
-			virtual int64_t getVPts(){return 0;};
+			virtual int64_t getVPts();
 			double getMediaTime();
 			void setMediaTime(double pos);
 

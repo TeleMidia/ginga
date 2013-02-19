@@ -101,6 +101,16 @@ namespace mb {
 		return 0;
 	}
 
+	int64_t SDLAudioProvider::getVPts() {
+		int64_t vpts = 0;
+
+		if (decoder != NULL) {
+			vpts = decoder->get_master_clock();
+		}
+
+		return vpts;
+	}
+
 	double SDLAudioProvider::getMediaTime() {
 		if (decoder != NULL) {
 			return (double)decoder->getPosition();
