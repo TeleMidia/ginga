@@ -97,7 +97,7 @@ namespace mb {
 
 			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
-			virtual int64_t getVPts(){return 0;};
+			virtual int64_t getVPts();
 			double getMediaTime();
 			void setMediaTime(double pos);
 

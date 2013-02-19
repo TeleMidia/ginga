@@ -127,6 +127,10 @@ namespace mb {
 		return SDLAudioProvider::getTotalMediaTime();
 	}
 
+	int64_t SDLVideoProvider::getVPts() {
+		return SDLAudioProvider::getVPts();
+	}
+
 	double SDLVideoProvider::getMediaTime() {
 		return SDLAudioProvider::getMediaTime();
 	}
