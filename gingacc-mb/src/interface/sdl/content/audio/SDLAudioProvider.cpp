@@ -105,7 +105,7 @@ namespace mb {
 		int64_t vpts = 0;
 
 		if (decoder != NULL) {
-			vpts = decoder->get_master_clock();
+			vpts = (uint64_t)(decoder->getPosition() * 90000);
 		}
 
 		return vpts;

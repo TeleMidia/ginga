@@ -85,6 +85,12 @@ namespace dsmcc {
 namespace npt {
 
 class NPTProcessor : public Thread, public ITimeBaseProvider {
+	
+	struct TimeControl {
+		double time;
+		bool notified;
+	};
+
 	private:
 		ISTCProvider* stcProvider;
 		bool running;
@@ -95,16 +101,23 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 
 		map<unsigned char, NPTReference*>* scheduledNpts;
 		map<unsigned char, TimeBaseClock*>* timeBaseClock;
+		map<unsigned char, Stc*>* timeBaseLife;
 		map<unsigned char, set<INPTListener*>*>* loopListeners;
-		map<unsigned char, map<double, set<INPTListener*>*>*>* timeListeners;
+		map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>* timeListeners;
 		set<INPTListener*>* cidListeners;
+		bool reScheduleIt;
 
 	public:
 		NPTProcessor(ISTCProvider* stcProvider);
 		virtual ~NPTProcessor();
 
 	private:
+		uint64_t firstStc;
+		bool isFirstStc;
 		uint64_t getSTCValue();
+		void clearUnusedTimebase();
+		void clearTables();
+		void detectLoop();
 
 	public:
 		bool addLoopListener(unsigned char cid, ITimeBaseListener* ltn);
@@ -118,30 +131,25 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		bool removeIdListener(ITimeBaseListener* ltn);
 
 		unsigned char getCurrentTimeBaseId();
-		double getCurrentTimeValue(unsigned char timeBaseId);
 
 	private:
-		void notifyLoopToTimeListeners(unsigned char cid);
+		void notifyLoopToTimeListeners();
 		void notifyTimeListeners(unsigned char cid, double nptValue);
 		void notifyIdListeners(unsigned char oldCid, unsigned char newCid);
 		TimeBaseClock* getTimeBaseClock(unsigned char cid);
 		int updateTimeBase(TimeBaseClock* clk, NPTReference* npt);
-		int scheduleTimeBase(NPTReference* npt);
-		bool checkTimeBaseArgs(
-				string function, TimeBaseClock* clk, NPTReference* npt);
+		TimeBaseClock* getCurrentTimebase();
+		double getCurrentTimeValue(unsigned char timeBaseId);
+		void resetListenersNotifications();
 
 	public:
-		int decodeNPT(vector<MpegDescriptor*>* list);
+		int decodeDescriptors(vector<MpegDescriptor*>* list);
 		double getNPTValue(unsigned char contentId);
 
 	private:
-		bool getNextNptValue(
-				double* nextNptValue,
-				NPTReference* npt,
-				unsigned char* cid,
-				double* sleepTime);
+		char getNextNptValue(char cid, double *nextNptValue, double* sleepTime);
 
-		bool processNptValues(NPTReference* npt, bool* isNotify);
+		bool processNptValues();
 		void run();
 };
 

@@ -57,6 +57,7 @@ http://www.telemidia.puc-rio.br
 #include "MpegDescriptor.h"
 
 #include "NPTReference.h"
+#include "NPTEndpoint.h"
 #include "StreamMode.h"
 
 #include <map>
