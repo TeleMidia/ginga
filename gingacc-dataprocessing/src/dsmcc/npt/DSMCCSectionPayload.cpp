@@ -80,6 +80,7 @@ int DSMCCSectionPayload::processSectionPayload() {
 	unsigned char descriptorTag;
 	unsigned short descriptorSize;
 	NPTReference* nptRef;
+	NPTEndpoint* epRef;
 	StreamMode* strMode;
 
 	pos = 0;
@@ -94,6 +95,12 @@ int DSMCCSectionPayload::processSectionPayload() {
 				nptRef = new NPTReference();
 				nptRef->addData(payload + pos, descriptorSize);
 				addDsmccDescriptor(nptRef);
+				break;
+
+			case 0x02: // NPT Endpoint
+				epRef = new NPTEndpoint();
+				epRef->addData(payload + pos, descriptorSize);
+				addDsmccDescriptor(epRef);
 				break;
 
 			case 0x03: // Stream Mode

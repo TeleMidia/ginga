@@ -114,7 +114,8 @@ namespace mb {
 			memset(&spec, 0, sizeof(spec));
 			Thread::mutexInit(&aiMutex);
 
-			av_log_set_flags(AV_LOG_SKIP_REPEATED);
+			av_log_set_flags(AV_LOG_QUIET);
+			av_log_set_level(0);
 
 			avcodec_register_all();
 		    av_register_all();
@@ -554,7 +555,7 @@ namespace mb {
 
 	double SDL2ffmpeg::getPosition() {
 		double position = 0.0;
-
+		/*
 		clog << "SDL2ffmpeg::getPosition(" << vs->filename;
 		clog << ") master_clock = '";
 		clog << get_master_clock() << "' (duration = '" << getDuration();
@@ -564,7 +565,7 @@ namespace mb {
 		clog << ") current_pts = '";
 		clog << vs->video_current_pts << "' (duration = '" << getDuration();
 		clog << "')" << endl;
-
+		*/
 		if (vs->audio_stream >= 0 && vs->audio_st != NULL) {
 			position = vs->audio_current_pts;
 

@@ -58,28 +58,101 @@ namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
 NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
+
 	this->stcProvider   = stcProvider;
 	this->scheduledNpts = new map<unsigned char, NPTReference*>;
 	this->timeBaseClock = new map<unsigned char, TimeBaseClock*>;
+	timeBaseLife = new map<unsigned char, Stc*>;
 
 	this->loopListeners = new map<unsigned char, set<INPTListener*>*>;
 	this->timeListeners = new map<
-			unsigned char, map<double, set<INPTListener*>*>*>;
+			unsigned char, map<TimeControl*, set<INPTListener*>*>*>;
+			
+	isFirstStc = true;
 
 	this->cidListeners  = new set<INPTListener*>;
 	this->running       = true;
 	this->currentCid    = INPTListener::INVALID_CID;
 	loopControlMax      = false;
 	loopControlMin      = false;
+	reScheduleIt		= false;
 
-	Thread::mutexInit(&loopMutex, NULL);
+	Thread::mutexInit(&loopMutex, true);
 
 	startThread();
 }
 
 NPTProcessor::~NPTProcessor() {
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	set<INPTListener*>::iterator k;
+
+	clearTables();
+	delete scheduledNpts;
+	delete timeBaseClock;
+	delete timeBaseLife;
+	
+	lock();
+
+	if (timeListeners != NULL) {
+		i = timeListeners->begin();
+		while (i != timeListeners->end()) {
+			j = i->second->begin();
+			while (j != i->second->end()) {
+				assert (j->first != NULL);
+				assert (j->second != NULL);
+				
+				delete j->first;
+				delete j->second;
+				
+				++j;
+			}
+			delete i->second;
+			++i;
+		}
+		delete timeListeners;
+	}
+	unlock();
+
+	if (cidListeners != NULL) {
+		delete cidListeners;
+	}
+
+	Thread::mutexLock(&loopMutex);
+	if (loopListeners != NULL) {
+		delete loopListeners;
+	}
+	Thread::mutexUnlock(&loopMutex);
+	Thread::mutexDestroy(&loopMutex);
+}
+
+void NPTProcessor::clearTables() {
 	map<unsigned char, NPTReference*>::iterator  i;
 	map<unsigned char, TimeBaseClock*>::iterator j;
+	map<unsigned char, Stc*>::iterator k;
+
+	lock();
+
+	if (timeListeners != NULL) {
+		map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator a;
+		map<TimeControl*, set<INPTListener*>*>::iterator b;
+		a = timeListeners->begin();
+		while (a != timeListeners->end()) {
+			b = a->second->begin();
+			while (b != a->second->end()) {
+				assert (b->first != NULL);
+				assert (b->second != NULL);
+				
+				delete b->first;
+				delete b->second;
+				
+				++b;
+			}
+			delete a->second;
+			++a;
+		}
+		timeListeners->clear();
+	}
 
 	if (scheduledNpts != NULL) {
 		i = scheduledNpts->begin();
@@ -87,9 +160,10 @@ NPTProcessor::~NPTProcessor() {
 			delete i->second;
 			++i;
 		}
-		delete scheduledNpts;
-		scheduledNpts = NULL;
+		scheduledNpts->clear();
 	}
+
+	unlock();
 
 	if (timeBaseClock != NULL) {
 		j = timeBaseClock->begin();
@@ -97,29 +171,56 @@ NPTProcessor::~NPTProcessor() {
 			delete j->second;
 			++j;
 		}
-		delete timeBaseClock;
-		timeBaseClock = NULL;
+		timeBaseClock->clear();
+	}
+	if (timeBaseLife != NULL) {
+		k = timeBaseLife->begin();
+		while (k != timeBaseLife->end()) {
+			delete k->second;
+			++k;
+		}
+		timeBaseLife->clear();
+	}
+}
+
+void NPTProcessor::clearUnusedTimebase() {
+	map<unsigned char, Stc*>::iterator itLife;
+	map<unsigned char, TimeBaseClock*>::iterator i;
+	TimeBaseClock* clk;
+	bool restart = true;
+
+	while (restart) {
+		restart = false;
+		i = timeBaseClock->begin();
+		while (i != timeBaseClock->end()) {
+			clk = i->second;
+			if ((clk->getEndpointAvailable()) && (clk->getStcBase() >= clk->getStopNpt())) {
+				clog << "NPTProcessor::clearUnusedTimebase - Deleted by endpoint: CID = " <<
+					(clk->getContentId() & 0xFF) << endl;
+				delete i->second;
+				timeBaseClock->erase(i);
+				restart = true;
+			}
+			++i;
+		}
 	}
 
-	lock();
-	if (timeListeners != NULL) {
-		delete timeListeners;
-		timeListeners = NULL;
-	}
-	unlock();
+	restart = true;
 
-	if (cidListeners != NULL) {
-		delete cidListeners;
-		cidListeners = NULL;
+	while (restart) {
+		restart = false;
+		itLife = timeBaseLife->begin();
+		if (itLife != timeBaseLife->end()) {
+			if (itLife->second->getStcBase() > 5400000) {// 1 minute
+				clog << "NPTProcessor::clearUnusedTimebase - Deleted by lifetime: CID = "
+					<< (clk->getContentId() & 0xFF) << endl;
+				delete itLife->second;
+				timeBaseLife->erase(itLife);
+				restart = true;
+			}
+			++itLife;
+		}
 	}
-
-	Thread::mutexLock(&loopMutex);
-	if (loopListeners != NULL) {
-		delete loopListeners;
-		loopListeners = NULL;
-	}
-	Thread::mutexUnlock(&loopMutex);
-	Thread::mutexDestroy(&loopMutex);
 }
 
 uint64_t NPTProcessor::getSTCValue() {
@@ -138,7 +239,7 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 	map<unsigned char, set<INPTListener*>*>::iterator i;
 	set<INPTListener*>* listeners;
 
-	clog << "NPTProcessor::addLoopListener " << endl;
+	clog << "NPTProcessor::addLoopListener" << endl;
 
 	Thread::mutexLock(&loopMutex);
 	i = loopListeners->find(cid);
@@ -159,30 +260,41 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 bool NPTProcessor::addTimeListener(
 		unsigned char cid, double nptValue, ITimeBaseListener* ltn) {
 
-	map<unsigned char, map<double, set<INPTListener*>*>*>::iterator i;
-	map<double, set<INPTListener*>*>::iterator j;
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
 	set<INPTListener*>::iterator k;
 
-	map<double, set<INPTListener*>*>* valueListeners;
+	map<TimeControl*, set<INPTListener*>*>* valueListeners;
 	set<INPTListener*>* setListeners;
 	bool added;
+	TimeControl* tc;
 
 	clog << "NPTProcessor::addTimeListener TIME = " << nptValue << endl;
 
 	lock();
 	i = timeListeners->find(cid);
 	if (i == timeListeners->end()) {
-		valueListeners = new map<double, set<INPTListener*>*>;
+		valueListeners = new map<TimeControl*, set<INPTListener*>*>;
 		(*timeListeners)[cid] = valueListeners;
 
 	} else {
 		valueListeners = i->second;
 	}
 
-	j = valueListeners->find(nptValue);
+	j = valueListeners->begin();
+	while (j != valueListeners->end()) {
+		if (j->first->time == nptValue) {
+			break;
+		}		
+		++j;
+	}
+
 	if (j == valueListeners->end()) {
 		setListeners = new set<INPTListener*>;
-		(*valueListeners)[nptValue] = setListeners;
+		tc = new TimeControl();
+		tc->time = nptValue;
+		tc->notified = false;
+		(*valueListeners)[tc] = setListeners;
 
 	} else {
 		setListeners = j->second;
@@ -191,19 +303,21 @@ bool NPTProcessor::addTimeListener(
 	k = setListeners->find((INPTListener*)ltn);
 	added = (k == setListeners->end());
 	setListeners->insert((INPTListener*)ltn);
+	unlock();
 
 	unlockConditionSatisfied();
 	wakeUp();
-	unlock();
 	return added;
 }
 
 bool NPTProcessor::removeTimeListener(
 		unsigned char cid, ITimeBaseListener* ltn) {
 
-	map<unsigned char, map<double, set<INPTListener*>*>*>::iterator i;
-	map<double, set<INPTListener*>*>::iterator j;
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
 	set<INPTListener*>::iterator k;
+
+	clog << "NPTProcessor::removeTimeListener()" << endl;
 
 	lock();
 	i = timeListeners->find(cid);
@@ -235,26 +349,24 @@ bool NPTProcessor::addIdListener(ITimeBaseListener* ltn) {
 	set<INPTListener*>::iterator i;
 	bool added;
 
-	//lock();
 	i = cidListeners->find((INPTListener*)ltn);
 	added = (i == cidListeners->end());
 	cidListeners->insert((INPTListener*)ltn);
 
 	unlockConditionSatisfied();
 	wakeUp();
-	//unlock();
 
-	//clog << "NPTProcessor::addIdListener" << endl;
+	clog << "NPTProcessor::addIdListener" << endl;
 	return added;
 }
 
 bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
 	set<INPTListener*>::iterator i;
 
-	//lock();
+	clog << "NPTProcessor::removeIdListener()" << endl;
+
 	i = cidListeners->find((INPTListener*)ltn);
 	if (i == cidListeners->end()) {
-		//unlock();
 		return false;
 	}
 
@@ -262,7 +374,7 @@ bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
 
 	unlockConditionSatisfied();
 	wakeUp();
-	//unlock();
+
 	return true;
 }
 
@@ -282,28 +394,28 @@ unsigned char NPTProcessor::getCurrentTimeBaseId() {
 	return INPTListener::INVALID_CID;
 }
 
-double NPTProcessor::getCurrentTimeValue(unsigned char timeBaseId) {
+TimeBaseClock* NPTProcessor::getCurrentTimebase() {
 	map<unsigned char, TimeBaseClock*>::iterator i;
 	TimeBaseClock* clk;
 
-	i = timeBaseClock->find(timeBaseId);
-	if (i != timeBaseClock->end()) {
+	i = timeBaseClock->begin();
+	while (i != timeBaseClock->end()) {
 		clk = i->second;
-		return clk->getBaseToSecond();
+		if (clk->getScaleNumerator()) {
+			return i->second;
+		}
+		++i;
 	}
 
-	return 0;
+	return NULL;
 }
 
-void NPTProcessor::notifyLoopToTimeListeners(unsigned char cid) {
+void NPTProcessor::notifyLoopToTimeListeners() {
 	map<unsigned char, set<INPTListener*>*>::iterator i;
 	set<INPTListener*>::iterator j;
 
-	clog << "NPTProcessor::notifyLoopToTimeListeners ";
-	clog << endl;
-
 	Thread::mutexLock(&loopMutex);
-	i = loopListeners->find(cid);
+	i = loopListeners->begin();
 	if (i != loopListeners->end()) {
 		j = i->second->begin();
 		while (j != i->second->end()) {
@@ -312,24 +424,28 @@ void NPTProcessor::notifyLoopToTimeListeners(unsigned char cid) {
 			((ITimeBaseListener*)(*j))->loopDetected();
 			++j;
 		}
+		++i;
 	}
 	Thread::mutexUnlock(&loopMutex);
 }
 
 void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
-	map<unsigned char, map<double, set<INPTListener*>*>*>::iterator i;
-	map<double, set<INPTListener*>*>::iterator j;
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
 	set<INPTListener*>::iterator k;
 
-	clog << "NPTProcessor::notifyTimeListeners ";
-	clog << "cid '" << (cid & 0xFF);
-	clog << "' nptvalue '" << nptValue;
-	clog << "'" << endl;
+	clog << "NPTProcessor::notifyTimeListeners " << "cid '" << (cid & 0xFF);
+	clog << "' nptvalue '" << nptValue << "'" << endl;
 
-	lock();
 	i = timeListeners->find(cid);
 	if (i != timeListeners->end()) {
-		j = i->second->find(nptValue);
+		j = i->second->begin();
+		while (j != i->second->end()) {
+			if (j->first->time == nptValue) {
+				break;
+			}		
+			++j;
+		}
 		if (j != i->second->end()) {
 			k = j->second->begin();
 			while (k != j->second->end()) {
@@ -338,7 +454,6 @@ void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
 			}
 		}
 	}
-	unlock();
 }
 
 void NPTProcessor::notifyIdListeners(
@@ -346,14 +461,12 @@ void NPTProcessor::notifyIdListeners(
 
 	set<INPTListener*>::iterator i;
 
-	//lock();
 	i = cidListeners->begin();
 	while (i != cidListeners->end()) {
 		clog << "NPTProcessor::notifyIdListeners" << endl;
 		((ITimeBaseListener*)(*i))->updateTimeBaseId(oldCid, newCid);
 		++i;
 	}
-	//unlock();
 }
 
 TimeBaseClock* NPTProcessor::getTimeBaseClock(unsigned char cid) {
@@ -368,157 +481,187 @@ TimeBaseClock* NPTProcessor::getTimeBaseClock(unsigned char cid) {
 }
 
 int NPTProcessor::updateTimeBase(TimeBaseClock* clk, NPTReference* npt) {
-	int64_t value;
-	uint64_t newNpt;
-	uint64_t stcValue;
-	double nptSecs;
+	uint64_t value, stcValue;
 
-	if (!checkTimeBaseArgs("updateTimeBase", clk, npt)) {
+	if ((!clk) || (!npt)) {
 		return -1;
 	}
 
 	stcValue = getSTCValue();
-
-	value = stcValue - npt->getStcRef();
-	value = TimeBaseClock::convertToNpt(
-			value,
-			npt->getScaleNumerator(),
-			npt->getScaleDenominator());
-
-	newNpt = npt->getNptRef() + value;
-
-	clk->setReference(newNpt, 0);
+	if (stcValue >= npt->getStcRef()) {
+		value = stcValue - npt->getStcRef();
+		value = TimeBaseClock::convertToNpt(value,
+				npt->getScaleNumerator(),
+				npt->getScaleDenominator());
+		value = npt->getNptRef() + value;
+	} else {
+		value = npt->getStcRef() - stcValue;
+		value = TimeBaseClock::convertToNpt(value,
+				npt->getScaleNumerator(),
+				npt->getScaleDenominator());
+		if (npt->getNptRef() >= value) {
+			value = npt->getNptRef() - value;
+		} else {
+			value = npt->getNptRef();
+		}
+	}
+	clk->setContentId(npt->getContentId());
 	clk->setScaleNumerator(npt->getScaleNumerator());
 	clk->setScaleDenominator(npt->getScaleDenominator());
+	clk->setReference(value, 0);
 
-	if (npt->getScaleNumerator() != 0 && npt->getContentId() != currentCid) {
-		notifyIdListeners(currentCid, npt->getContentId());
-		currentCid = npt->getContentId();
-	}
-
-	//TODO: find a clean way to do this
-	nptSecs = Stc::baseToSecond(newNpt);
-	if (nptSecs > 0.0 && nptSecs < 3.0) {
-		if (!loopControlMin && loopControlMax) {
-			clog << endl << endl << endl;
-			clog << "NPTProcessor::updateTimeBase LOOP !!!!!!!!!!";
-			clog << endl << endl << endl;
-			notifyLoopToTimeListeners(npt->getContentId());
-			loopControlMin = true;
-		}
-
-	} else {
-		loopControlMax = true;
-		loopControlMin = false;
-	}
-
-	/*clog << "NPTProcessor::updateTimeBase ";
-	clog << "Clock '" << (clk->getContentId() & 0xFF);
-	clog << "' set to '" << nptSecs;
-	clog << "' STC = '" << stcValue << "'";
-	clog << endl;*/
 	return 0;
 }
 
-int NPTProcessor::scheduleTimeBase(NPTReference* npt) {
-	map<unsigned char, NPTReference*>::iterator i;
-	NPTReference* oldNpt;
+double NPTProcessor::getCurrentTimeValue(unsigned char timeBaseId) {
+	map<unsigned char, TimeBaseClock*>::iterator i;
+	TimeBaseClock* clk;
 
-	//lock();
-	i = scheduledNpts->find(npt->getContentId());
-	if (i != scheduledNpts->end()) {
-		oldNpt = i->second;
+	i = timeBaseClock->find(timeBaseId);
+	if (i != timeBaseClock->end()) {
+		clk = i->second;
+		return clk->getBaseToSecond();
+	}
 
-		if (oldNpt->getScaleNumerator() != npt->getScaleNumerator() ||
-				oldNpt->getScaleDenominator() != npt->getScaleDenominator() ||
-				oldNpt->getStcRef() != npt->getStcRef()) {
+	return 0;
+}
 
-			delete oldNpt;
-			scheduledNpts->erase(i);
+void NPTProcessor::resetListenersNotifications() {
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	
+	i = timeListeners->begin();
+	if (i != timeListeners->end()) {
+		j = i->second->begin();
+		while (j != i->second->end()) {
+			j->first->notified = false;
+			++j;
+		}
+		++i;
+	}
+}
+
+void NPTProcessor::detectLoop() {
+	if (getSTCValue()) {
+		if (isFirstStc) {
+			isFirstStc = false;
+			firstStc = getSTCValue();
+		} else {
+			if ((firstStc + 70000) > getSTCValue()) {
+				//possible loop in TS
+				isFirstStc = true;
+				clearTables();
+				if (loopListeners->size()) {
+					notifyLoopToTimeListeners();
+				}
+			}
 		}
 	}
-
-	(*scheduledNpts)[npt->getContentId()] = npt;
-
-	unlockConditionSatisfied();
-	wakeUp();
-	//unlock();
-	return 1;
 }
 
-bool NPTProcessor::checkTimeBaseArgs(
-		string function, TimeBaseClock* clk, NPTReference* npt) {
-
-	if (clk == NULL || npt == NULL) {
-		clog << "NPTProcessor::" << function << " Warning!";
-		clog << " clk(" << clk << ") npt(" << npt << ")";
-		clog << endl;
-		return false;
-	}
-
-	if (clk->getContentId() != npt->getContentId()) {
-		clog << "NPTProcessor::" << function << " Warning! DIFF CIDS";
-		clog << " clk->cid = '" << (clk->getContentId() & 0xFF) << "'";
-		clog << " npt->cid = '" << (npt->getContentId() & 0xFF) << "'";
-		clog << endl;
-		return false;
-	}
-
-	return true;
-}
-
-int NPTProcessor::decodeNPT(vector<MpegDescriptor*>* list) {
+int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 	vector<MpegDescriptor*>::iterator it;
-	TimeBaseClock* clk;
+	TimeBaseClock* clk = NULL;
 	map<unsigned char, TimeBaseClock*>::iterator itBase;
+	map<unsigned char, Stc*>::iterator itLife;
 	vector<pair<bool, NPTReference*>*>::iterator itEvent;
+	NPTEndpoint* nptEP = NULL;
 	NPTReference* npt = NULL;
+	NPTReference* newNpt;
+	int nptLen;
+	char* stream;
 	MpegDescriptor* desc = NULL;
 
 	if (list == NULL) {
 		return -1;
 	}
 
+	detectLoop();
+
 	it = list->begin();
 	while (it != list->end()) {
 		desc = *it;
 		if (desc->getDescriptorTag() == 0x01) {
-			//Analyzing NPT reference
+			if (getNPTValue(getCurrentTimeBaseId()) != 0.0) {
+				clog << "NPTProcessor::decodeDescriptors - cmp = "
+					<< getNPTValue(getCurrentTimeBaseId()) << endl;
+			}
+			//NPT reference
 			npt = (NPTReference*) desc;
-			clk = getTimeBaseClock(npt->getContentId());
 
-			if (clk == NULL) {
-				//Time base not exists, creating a new one
-				clk = new TimeBaseClock();
-				clk->setContentId(npt->getContentId());
-				clk->setReference(npt->getNptRef(), 0);
-				clk->setScaleNumerator(npt->getScaleNumerator());
-				clk->setScaleDenominator(npt->getScaleDenominator());
-				(*timeBaseClock)[npt->getContentId()] = clk;
+			//Search for existing time base
+			itBase = timeBaseClock->find(npt->getContentId());
 
-				//first NPT reference, send to thread
-				updateTimeBase(clk, npt);
-
-			} else {//if (npt->getStcRef() > getSTCValue()) {
-				//Time base already exists. Checking NPT change status
-				if ((clk->getScaleNumerator() != npt->getScaleNumerator()) ||
-						(clk->getScaleDenominator() !=
-								npt->getScaleDenominator())) {
-
-					//It's a change
-					scheduleTimeBase(npt);
-
+			if (itBase == timeBaseClock->end()) {
+				//Time base not exists
+				newNpt = new NPTReference();
+				nptLen = npt->getStream(&stream);
+				newNpt->addData(stream, nptLen);
+				if (scheduledNpts->count(npt->getContentId()))
+					delete (*scheduledNpts)[npt->getContentId()];
+				(*scheduledNpts)[npt->getContentId()] = newNpt;
+				wakeUp();
+				unlockConditionSatisfied();
+				if (newNpt->getScaleNumerator()) {
+					clog << "NPTProcessor::decodeDescriptors - Scheduling new timebase: Transition to "
+						<< (newNpt->getContentId() & 0xFF) << endl;
 				} else {
-					//It's not a change. Just update the clock
+					clog << "NPTProcessor::decodeDescriptors - Scheduling new timebase: CID "
+						<< (newNpt->getContentId() & 0xFF) << " will be kept as paused." << endl;
+				}
+			} else {
+				//time base exists
+				clk = itBase->second;
+
+				if ((clk->getScaleNumerator() != npt->getScaleNumerator()) ||
+					(clk->getScaleDenominator() != npt->getScaleDenominator()) ||
+					(clk->getContentId() != npt->getContentId())) {
+						//It's a future change
+						newNpt = new NPTReference();
+						nptLen = npt->getStream(&stream);
+						newNpt->addData(stream, nptLen);
+						if (scheduledNpts->count(npt->getContentId()))
+							delete (*scheduledNpts)[npt->getContentId()];
+						(*scheduledNpts)[npt->getContentId()] = newNpt;
+						unlockConditionSatisfied();
+						wakeUp();
+						if (npt->getScaleNumerator()) {
+							clog << "NPTProcessor::decodeDescriptors - Scheduling existent timebase: Transition to "
+								<< (newNpt->getContentId() & 0xFF) << endl;
+						} else {
+							clog << "Scheduling existent timebase: CID "
+								<< (newNpt->getContentId() & 0xFF) << " will be paused." << endl;
+						}
+				} else {
+					//Just an update
 					updateTimeBase(clk, npt);
+				}
+				//else it's just the current NPT value and should be ignored
+				itLife = timeBaseLife->find(npt->getContentId());
+				if (itLife != timeBaseLife->end()) {
+					//redefine time base lifetime
+					itLife->second->setReference(0);
+				}
+			}
+		} else if (desc->getDescriptorTag() == 0x02) {
+			//NPT endpoint
+			nptEP = (NPTEndpoint*) desc;
+			clk = getCurrentTimebase();
+			//set NPT start and stop
+			if (clk != NULL) {
+				if (!clk->getEndpointAvailable()) {
+					clk->setStartNpt(nptEP->getStartNPT());
+					clk->setStopNpt(nptEP->getStopNPT());
+					clk->setEndpointAvailable(true);
+					clog << "NPTProcessor::decodeDescriptors - CID "
+						<< (clk->getContentId() & 0xFF) << " starts at " <<
+						Stc::stcToSecond(clk->getStartNpt()*300) << " and stops at " <<
+						Stc::stcToSecond(clk->getStopNpt()*300) << endl;
 				}
 			}
 		}
 		++it;
 	}
-
-	/*clog << "NPTProcessor::decodeNPT processed '" << list->size() << "'";
-	clog << " descriptors" << endl;*/
 
 	return timeBaseClock->size();
 }
@@ -534,131 +677,183 @@ double NPTProcessor::getNPTValue(unsigned char contentId) {
 	return 0;
 }
 
-bool NPTProcessor::getNextNptValue(
-		double* nextNptValue,
-		NPTReference* npt,
-		unsigned char* cid,
-		double* sleepTime) {
+char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleepTime) {
 
-	map<unsigned char, map<double, set<INPTListener*>*>*>::iterator i;
-	map<double, set<INPTListener*>*>::iterator j;
-	double nptValue, minor;
+	map<unsigned char, NPTReference*>::iterator it;
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	double remaining1 = INPTListener::MAX_NPT_VALUE;
+	double remaining2 = INPTListener::MAX_NPT_VALUE;
+	double value, minor, r;
 	TimeBaseClock* clk;
-	bool isListener = true;
+	bool isListener = false;
+	bool firstTime = true;
 	uint64_t stcValue;
-	unsigned char currentcid;
 
-	lock();
+	stcValue = getSTCValue();
+	if (stcValue) {
+		it = scheduledNpts->begin();
+		while (it != scheduledNpts->end()) {
+			if (firstTime) {
+				firstTime = false;
+				remaining1 = Stc::baseToSecond(it->second->getStcRef() - stcValue);
+				if (remaining1 < 0) {
+					remaining1 = 0.0;
+					break;
+				} else {
+					++it;
+					continue;
+				}
+			}
+			r = Stc::baseToSecond(it->second->getStcRef() - stcValue);
+			if (r < 0) r = 0.0;
+			if (r < remaining1) {
+				remaining1 = r;
+			}
+			++it;
+		} //remaining time for future changes in NPT or a new timebase.
+	}
 
-	*nextNptValue = INPTListener::MAX_NPT_VALUE;
-	minor         = INPTListener::MAX_NPT_VALUE;
-	currentcid    = getCurrentTimeBaseId();
-	clk           = getTimeBaseClock(currentcid);
-
-	if (clk != NULL) {
-		i = timeListeners->find(currentcid);
+	clk = getTimeBaseClock(cid);
+	if (clk) {
+		value = clk->getBaseToSecond();
+		lock();
+		i = timeListeners->find(cid);
 		if (i != timeListeners->end()) {
 			j = i->second->begin();
 			while (j != i->second->end()) {
-				nptValue = j->first;
-				if (nptValue > clk->getBaseToSecond()) {
-					*nextNptValue = nptValue;
-					*cid = i->first;
-					break;
+				if (!j->first->notified) {
+					if ((j->first->time - value) < 0) {
+						++j;
+						continue;
+					}
+					r = j->first->time - value;
+					if (r < 0) r = 0.0;
+					if (r < remaining2) {
+						remaining2 = r;
+						*nextNptValue = j->first->time;
+					}
 				}
 				++j;
 			}
 		}
-	}
+		unlock();
+	} //remaining time for future events.
 
-	if (!timeListeners->empty() &&
-			(*nextNptValue != INPTListener::MAX_NPT_VALUE)) {
-
-		nptValue = clk->getBaseToSecond();
-		if (*nextNptValue > nptValue) {
-			minor = *nextNptValue - nptValue;
+	if (scheduledNpts->empty() && !clk) minor = 0.0; else {
+		if (!scheduledNpts->empty() && clk) {
+			if (remaining1 > remaining2) {
+				minor = remaining2;
+				isListener = true;
+			} else {
+				minor = remaining1;
+			} //which one is lower?
+		} else if (!scheduledNpts->empty()) {
+			if (stcValue) minor = remaining1; else
+				minor = 0.0;
 		} else {
-			minor = 0;
-		}
-	}
-	unlock();
-
-	if (npt == NULL) {
-		isListener = true;
-
-	} else {
-		stcValue = getSTCValue();
-		// next cid change value
-		if (npt->getStcRef() > stcValue) {
-			nptValue = Stc::baseToSecond(npt->getStcRef() - stcValue);
-		} else {
-			nptValue = 0;
-		}
-
-		//Comparison between remaining time of listener and CID change
-		// if next event is cid change
-		if (nptValue < minor) {
-			*cid       = npt->getContentId();
-			minor      = nptValue;
-			isListener = false;
+			minor = remaining2;
+			isListener = true;
 		}
 	}
 
-	*sleepTime = minor * 1000;
+	if (minor > 45000) {
+		*sleepTime = 0.0;
+		return -1;
+	}
+
+	*sleepTime = minor * 1000; //convert to milliseconds
+
 	return isListener;
 }
 
-bool NPTProcessor::processNptValues(NPTReference* npt, bool* isNotify) {
-	double nextNptValue;
-	unsigned char cid;
-	double sleepTime;
-	bool timedOut, notify;
+bool NPTProcessor::processNptValues() {
+	double nextNptValue, nptValue, sleepTime;
+	bool timedOut;
+	char notify;
+	bool restart = true;
+	char cid;
 	TimeBaseClock* clk;
+	Stc* tblife;
+	NPTReference* npt;
+	map<unsigned char, TimeBaseClock*>::iterator itClk;
+	map<unsigned char, NPTReference*>::iterator it;
+	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
+	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	double sleeper;
 
-	notify = getNextNptValue(&nextNptValue, npt, &cid, &sleepTime);
-	if (isNotify != NULL) {
-		*isNotify = notify;
-	}
+	cid = getCurrentTimeBaseId();
 
+	notify = getNextNptValue(cid, &nextNptValue, &sleepTime);
 	if (sleepTime > 0.0) {
+		sleeper = getCurrentTimeMillis();
 		timedOut = Thread::mSleep((long int)sleepTime);
 		if (!timedOut) {
 			return false;
 		}
 	}
 
-	if (notify) {
-		clk = getTimeBaseClock(cid);
-		if (clk != NULL) {
-			sleepTime = nextNptValue - clk->getBaseToSecond();
-			if (sleepTime > 0.0) {
-				 //TODO: find error ct
-				Thread::mSleep((long int)((sleepTime + 0.1) * 1000));
+	clearUnusedTimebase();
+
+	if (notify > 0) {
+		lock();
+		i = timeListeners->find(cid);
+		if (i != timeListeners->end()) {
+			j = i->second->begin();
+			while (j != i->second->end()) {
+				if (!j->first->notified) {
+					if (j->first->time == nextNptValue) {
+						notifyTimeListeners(cid, nextNptValue);
+						j->first->notified = true;
+						reScheduleIt = true;
+					}
+				}
+				++j;
 			}
 		}
-		notifyTimeListeners(cid, nextNptValue);
-
-	} else if (npt != NULL) {
-		clk = getTimeBaseClock(cid);
-		updateTimeBase(clk, npt);
-
-	} else {
-		clog << "NPTProcessor::processNptValues Warning! NULL npt && !notify";
-		clog << endl;
-		return false;
+		unlock();
+	} else if (notify == 0) {
+		while (restart) {
+			restart = false;
+			it = scheduledNpts->begin();
+			while (it != scheduledNpts->end()) {
+				npt = it->second;
+				if (getSTCValue() >= npt->getStcRef()) {
+					itClk = timeBaseClock->find(npt->getContentId());
+					if (itClk == timeBaseClock->end()) {
+						clk = new TimeBaseClock();
+						(*timeBaseClock)[npt->getContentId()] = clk;
+						tblife = new Stc();
+						tblife->setReference(0);
+						(*timeBaseLife)[npt->getContentId()] = tblife;
+						clog << "NPTProcessor::processNptValues - Added CID: "
+							<< (npt->getContentId() & 0xFF) << endl;
+					} else {
+						clk = (*timeBaseClock)[npt->getContentId()];
+					}
+					updateTimeBase(clk, npt);
+					delete it->second;
+					scheduledNpts->erase(it);
+					restart = true;
+					lock();
+					notifyIdListeners(currentCid, clk->getContentId());
+					unlock();
+					currentCid = clk->getContentId();
+					reScheduleIt = true;
+					clog << "NPTProcessor::processNptValues - Executing scheduled NPT: "
+						<< (clk->getContentId() & 0xFF) <<
+						" as " << clk->getScaleNumerator() << endl;
+					break;
+				}
+				++it;
+			}
+		}
 	}
 
 	return true;
 }
 
 void NPTProcessor::run() {
-	map<unsigned char, NPTReference*>::iterator i;
-	bool pastNpt, processed;
-	NPTReference* npt;
-	TimeBaseClock* clk;
-	uint64_t stcValue;
-	bool isNotify;
-	unsigned char cid;
 	bool hasTimeListeners = false;
 
 	while (running) {
@@ -666,52 +861,14 @@ void NPTProcessor::run() {
 		hasTimeListeners = !timeListeners->empty();
 		unlock();
 		if (scheduledNpts->empty() && !hasTimeListeners) {
-			waitForUnlockCondition();
-
+			if (reScheduleIt) {
+				reScheduleIt = false;
+				processNptValues();
+			} else {
+				waitForUnlockCondition();
+			}
 		} else {
-			if (!scheduledNpts->empty()) {
-				i = scheduledNpts->begin();
-				while (i != scheduledNpts->end()) {
-					npt = i->second;
-					stcValue = getSTCValue();
-					if (npt->getStcRef() <= stcValue) {
-						pastNpt = true;
-
-					} else {
-						pastNpt = false;
-
-						processed = processNptValues(npt, &isNotify);
-						if (!processed) {
-							continue;
-
-						} else if (!isNotify) {
-							delete npt;
-							scheduledNpts->erase(i);
-							i = scheduledNpts->begin();
-						}
-					}
-
-					if (pastNpt) {
-						cid = npt->getContentId();
-						clk = getTimeBaseClock(cid);
-						updateTimeBase(clk, npt);
-
-						delete npt;
-						scheduledNpts->erase(i);
-						i = scheduledNpts->begin();
-
-					} else if (isNotify) {
-						++i;
-					}
-				}
-			}
-
-			lock();
-			hasTimeListeners = !timeListeners->empty();
-			unlock();
-			if (hasTimeListeners) {
-				processNptValues(NULL, NULL);
-			}
+			processNptValues();
 		}
 	}
 }

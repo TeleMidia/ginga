@@ -66,8 +66,8 @@ namespace dsmcc {
 namespace npt {
 	class INPTListener : public ITimeBaseListener {
 		public:
-			static const short MAX_NPT_VALUE       = 47722;
-			static const unsigned char INVALID_CID = 255;
+			static const unsigned short MAX_NPT_VALUE       = 47721;
+			static const char INVALID_CID		   = -1;
 			static const short NPT_ST_OCCURRING    = 0;
 			static const short NPT_ST_PAUSED       = 1;
 

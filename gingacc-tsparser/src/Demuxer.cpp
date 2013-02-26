@@ -310,7 +310,7 @@ namespace tsparser {
 		pid = packet->getPid();
 
 		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
-			cout << "Demuxer: PAT is available." << endl;
+
 			Thread::condSignal(&flagCondSignal);
 			isWaitingPI = false;
 		}
@@ -323,7 +323,7 @@ namespace tsparser {
 					if (isWaitingPI) {
 						/* Free the mutex that is waiting for the PAT */
 						Thread::condSignal(&flagCondSignal);
-						cout << "Demuxer: PAT is available." << endl;
+
 					}
 				}
 				//TODO: handle pat updates
@@ -382,7 +382,7 @@ namespace tsparser {
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->processSectionPayload()) {
 					pat->addPmt(pmt);
-					cout << "Demuxer: PMT is available." << endl;
+
 				}
 			}
 

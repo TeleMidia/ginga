@@ -346,7 +346,7 @@ namespace dataprocessing {
 					dsmccSection = new DSMCCSectionPayload(
 							payload, section->getPayloadSize());
 
-					nptProcessor->decodeNPT(
+					nptProcessor->decodeDescriptors(
 							dsmccSection->getDsmccDescritorList());
 				}
 

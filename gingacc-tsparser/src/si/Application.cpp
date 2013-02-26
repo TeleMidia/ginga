@@ -177,7 +177,7 @@ namespace si {
 					break;
 
 				case DT_APPLICATION_NAME:
-					cout <<" ApplicationNameDescriptor" << endl;
+					clog <<" ApplicationNameDescriptor" << endl;
 					descriptor = new ApplicationNameDescriptor();
 					descriptor->process(data, pos);
 					descriptors->push_back(descriptor);
@@ -205,7 +205,7 @@ namespace si {
 					break;
 
 				case DT_PREFETCH:
-					cout <<" PrefetchDescriptor" << endl;
+					clog <<" PrefetchDescriptor" << endl;
 					descriptor = new PrefetchDescriptor();
 					descriptor->process(data, pos);
 					descriptors->push_back(descriptor);
