@@ -4,7 +4,6 @@ AUTOMAKE_OPTIONS = foreign 1.4
 LIBS =
 SUBDIRS =	include/dataprocessing \
 		include/dataprocessing/dsmcc \
-		include/dataprocessing/dsmcc/npt \
 		include/dataprocessing/dsmcc/carousel/object \
 		include/dataprocessing/ncl \
 		include/dataprocessing/ncl/edit \

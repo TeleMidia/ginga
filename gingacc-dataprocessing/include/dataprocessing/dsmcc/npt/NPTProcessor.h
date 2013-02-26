@@ -66,7 +66,6 @@ using namespace br::pucrio::telemidia::ginga::core::tuning;
 #include "MpegDescriptor.h"
 #include "NPTReference.h"
 #include "TimeBaseClock.h"
-#include "INPTListener.h"
 
 #include <set>
 #include <map>
@@ -92,19 +91,26 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 	};
 
 	private:
+		static const unsigned short MAX_NPT_VALUE       = 47721;
+		static const char INVALID_CID		   = -1;
+		static const short NPT_ST_OCCURRING    = 0;
+		static const short NPT_ST_PAUSED       = 1;
+
 		ISTCProvider* stcProvider;
 		bool running;
 		bool loopControlMin;
 		bool loopControlMax;
 		unsigned char currentCid;
+
 		pthread_mutex_t loopMutex;
+		pthread_mutex_t schedMutex;
 
 		map<unsigned char, NPTReference*>* scheduledNpts;
 		map<unsigned char, TimeBaseClock*>* timeBaseClock;
 		map<unsigned char, Stc*>* timeBaseLife;
-		map<unsigned char, set<INPTListener*>*>* loopListeners;
-		map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>* timeListeners;
-		set<INPTListener*>* cidListeners;
+		map<unsigned char, set<ITimeBaseProvider*>*>* loopListeners;
+		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>* timeListeners;
+		set<ITimeBaseProvider*>* cidListeners;
 		bool reScheduleIt;
 
 	public:

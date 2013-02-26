@@ -64,28 +64,29 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 	this->timeBaseClock = new map<unsigned char, TimeBaseClock*>;
 	timeBaseLife = new map<unsigned char, Stc*>;
 
-	this->loopListeners = new map<unsigned char, set<INPTListener*>*>;
+	this->loopListeners = new map<unsigned char, set<ITimeBaseProvider*>*>;
 	this->timeListeners = new map<
-			unsigned char, map<TimeControl*, set<INPTListener*>*>*>;
+			unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>;
 			
 	isFirstStc = true;
 
-	this->cidListeners  = new set<INPTListener*>;
+	this->cidListeners  = new set<ITimeBaseProvider*>;
 	this->running       = true;
-	this->currentCid    = INPTListener::INVALID_CID;
+	this->currentCid    = INVALID_CID;
 	loopControlMax      = false;
 	loopControlMin      = false;
 	reScheduleIt		= false;
 
-	Thread::mutexInit(&loopMutex, true);
+	Thread::mutexInit(&loopMutex, false);
+	Thread::mutexInit(&schedMutex, false);
 
 	startThread();
 }
 
 NPTProcessor::~NPTProcessor() {
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
-	set<INPTListener*>::iterator k;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	set<ITimeBaseProvider*>::iterator k;
 
 	clearTables();
 	delete scheduledNpts;
@@ -124,6 +125,10 @@ NPTProcessor::~NPTProcessor() {
 	}
 	Thread::mutexUnlock(&loopMutex);
 	Thread::mutexDestroy(&loopMutex);
+
+	Thread::mutexLock(&schedMutex);
+	Thread::mutexUnlock(&schedMutex);
+	Thread::mutexDestroy(&schedMutex);
 }
 
 void NPTProcessor::clearTables() {
@@ -134,8 +139,8 @@ void NPTProcessor::clearTables() {
 	lock();
 
 	if (timeListeners != NULL) {
-		map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator a;
-		map<TimeControl*, set<INPTListener*>*>::iterator b;
+		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator a;
+		map<TimeControl*, set<ITimeBaseProvider*>*>::iterator b;
 		a = timeListeners->begin();
 		while (a != timeListeners->end()) {
 			b = a->second->begin();
@@ -154,6 +159,9 @@ void NPTProcessor::clearTables() {
 		timeListeners->clear();
 	}
 
+	unlock();
+
+	Thread::mutexLock(&schedMutex);
 	if (scheduledNpts != NULL) {
 		i = scheduledNpts->begin();
 		while (i != scheduledNpts->end()) {
@@ -162,8 +170,7 @@ void NPTProcessor::clearTables() {
 		}
 		scheduledNpts->clear();
 	}
-
-	unlock();
+	Thread::mutexUnlock(&schedMutex);
 
 	if (timeBaseClock != NULL) {
 		j = timeBaseClock->begin();
@@ -236,8 +243,8 @@ uint64_t NPTProcessor::getSTCValue() {
 }
 
 bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
-	map<unsigned char, set<INPTListener*>*>::iterator i;
-	set<INPTListener*>* listeners;
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>* listeners;
 
 	clog << "NPTProcessor::addLoopListener" << endl;
 
@@ -247,11 +254,11 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 		listeners = i->second;
 
 	} else {
-		listeners = new set<INPTListener*>;
+		listeners = new set<ITimeBaseProvider*>;
 		(*loopListeners)[cid] = listeners;
 	}
 
-	listeners->insert((INPTListener*)ltn);
+	listeners->insert((ITimeBaseProvider*)ltn);
 	Thread::mutexUnlock(&loopMutex);
 
 	return true;
@@ -260,12 +267,12 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 bool NPTProcessor::addTimeListener(
 		unsigned char cid, double nptValue, ITimeBaseListener* ltn) {
 
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
-	set<INPTListener*>::iterator k;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	set<ITimeBaseProvider*>::iterator k;
 
-	map<TimeControl*, set<INPTListener*>*>* valueListeners;
-	set<INPTListener*>* setListeners;
+	map<TimeControl*, set<ITimeBaseProvider*>*>* valueListeners;
+	set<ITimeBaseProvider*>* setListeners;
 	bool added;
 	TimeControl* tc;
 
@@ -274,7 +281,7 @@ bool NPTProcessor::addTimeListener(
 	lock();
 	i = timeListeners->find(cid);
 	if (i == timeListeners->end()) {
-		valueListeners = new map<TimeControl*, set<INPTListener*>*>;
+		valueListeners = new map<TimeControl*, set<ITimeBaseProvider*>*>;
 		(*timeListeners)[cid] = valueListeners;
 
 	} else {
@@ -290,7 +297,7 @@ bool NPTProcessor::addTimeListener(
 	}
 
 	if (j == valueListeners->end()) {
-		setListeners = new set<INPTListener*>;
+		setListeners = new set<ITimeBaseProvider*>;
 		tc = new TimeControl();
 		tc->time = nptValue;
 		tc->notified = false;
@@ -300,9 +307,9 @@ bool NPTProcessor::addTimeListener(
 		setListeners = j->second;
 	}
 
-	k = setListeners->find((INPTListener*)ltn);
+	k = setListeners->find((ITimeBaseProvider*)ltn);
 	added = (k == setListeners->end());
-	setListeners->insert((INPTListener*)ltn);
+	setListeners->insert((ITimeBaseProvider*)ltn);
 	unlock();
 
 	unlockConditionSatisfied();
@@ -313,9 +320,9 @@ bool NPTProcessor::addTimeListener(
 bool NPTProcessor::removeTimeListener(
 		unsigned char cid, ITimeBaseListener* ltn) {
 
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
-	set<INPTListener*>::iterator k;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	set<ITimeBaseProvider*>::iterator k;
 
 	clog << "NPTProcessor::removeTimeListener()" << endl;
 
@@ -324,7 +331,7 @@ bool NPTProcessor::removeTimeListener(
 	if (i != timeListeners->end()) {
 		j = i->second->begin();
 		while (j != i->second->end()) {
-			k = j->second->find((INPTListener*)ltn);
+			k = j->second->find((ITimeBaseProvider*)ltn);
 			if (k != j->second->end()) {
 				j->second->erase(k);
 				if (j->second->empty()) {
@@ -346,12 +353,12 @@ bool NPTProcessor::removeTimeListener(
 }
 
 bool NPTProcessor::addIdListener(ITimeBaseListener* ltn) {
-	set<INPTListener*>::iterator i;
+	set<ITimeBaseProvider*>::iterator i;
 	bool added;
 
-	i = cidListeners->find((INPTListener*)ltn);
+	i = cidListeners->find((ITimeBaseProvider*)ltn);
 	added = (i == cidListeners->end());
-	cidListeners->insert((INPTListener*)ltn);
+	cidListeners->insert((ITimeBaseProvider*)ltn);
 
 	unlockConditionSatisfied();
 	wakeUp();
@@ -361,11 +368,11 @@ bool NPTProcessor::addIdListener(ITimeBaseListener* ltn) {
 }
 
 bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
-	set<INPTListener*>::iterator i;
+	set<ITimeBaseProvider*>::iterator i;
 
 	clog << "NPTProcessor::removeIdListener()" << endl;
 
-	i = cidListeners->find((INPTListener*)ltn);
+	i = cidListeners->find((ITimeBaseProvider*)ltn);
 	if (i == cidListeners->end()) {
 		return false;
 	}
@@ -391,7 +398,7 @@ unsigned char NPTProcessor::getCurrentTimeBaseId() {
 		++i;
 	}
 
-	return INPTListener::INVALID_CID;
+	return INVALID_CID;
 }
 
 TimeBaseClock* NPTProcessor::getCurrentTimebase() {
@@ -411,8 +418,8 @@ TimeBaseClock* NPTProcessor::getCurrentTimebase() {
 }
 
 void NPTProcessor::notifyLoopToTimeListeners() {
-	map<unsigned char, set<INPTListener*>*>::iterator i;
-	set<INPTListener*>::iterator j;
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>::iterator j;
 
 	Thread::mutexLock(&loopMutex);
 	i = loopListeners->begin();
@@ -430,9 +437,9 @@ void NPTProcessor::notifyLoopToTimeListeners() {
 }
 
 void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
-	set<INPTListener*>::iterator k;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	set<ITimeBaseProvider*>::iterator k;
 
 	clog << "NPTProcessor::notifyTimeListeners " << "cid '" << (cid & 0xFF);
 	clog << "' nptvalue '" << nptValue << "'" << endl;
@@ -459,7 +466,7 @@ void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
 void NPTProcessor::notifyIdListeners(
 		unsigned char oldCid, unsigned char newCid) {
 
-	set<INPTListener*>::iterator i;
+	set<ITimeBaseProvider*>::iterator i;
 
 	i = cidListeners->begin();
 	while (i != cidListeners->end()) {
@@ -527,8 +534,8 @@ double NPTProcessor::getCurrentTimeValue(unsigned char timeBaseId) {
 }
 
 void NPTProcessor::resetListenersNotifications() {
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
 	
 	i = timeListeners->begin();
 	if (i != timeListeners->end()) {
@@ -597,9 +604,15 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 				newNpt = new NPTReference();
 				nptLen = npt->getStream(&stream);
 				newNpt->addData(stream, nptLen);
-				if (scheduledNpts->count(npt->getContentId()))
+
+				Thread::mutexLock(&schedMutex);
+				if (scheduledNpts->count(npt->getContentId())) {
 					delete (*scheduledNpts)[npt->getContentId()];
+				}
+
 				(*scheduledNpts)[npt->getContentId()] = newNpt;
+				Thread::mutexUnlock(&schedMutex);
+
 				wakeUp();
 				unlockConditionSatisfied();
 				if (newNpt->getScaleNumerator()) {
@@ -620,9 +633,15 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 						newNpt = new NPTReference();
 						nptLen = npt->getStream(&stream);
 						newNpt->addData(stream, nptLen);
-						if (scheduledNpts->count(npt->getContentId()))
+
+						Thread::mutexLock(&schedMutex);
+						if (scheduledNpts->count(npt->getContentId())) {
 							delete (*scheduledNpts)[npt->getContentId()];
+						}
+
 						(*scheduledNpts)[npt->getContentId()] = newNpt;
+						Thread::mutexUnlock(&schedMutex);
+
 						unlockConditionSatisfied();
 						wakeUp();
 						if (npt->getScaleNumerator()) {
@@ -680,10 +699,10 @@ double NPTProcessor::getNPTValue(unsigned char contentId) {
 char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleepTime) {
 
 	map<unsigned char, NPTReference*>::iterator it;
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
-	double remaining1 = INPTListener::MAX_NPT_VALUE;
-	double remaining2 = INPTListener::MAX_NPT_VALUE;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	double remaining1 = MAX_NPT_VALUE;
+	double remaining2 = MAX_NPT_VALUE;
 	double value, minor, r;
 	TimeBaseClock* clk;
 	bool isListener = false;
@@ -692,6 +711,7 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 
 	stcValue = getSTCValue();
 	if (stcValue) {
+		Thread::mutexLock(&schedMutex);
 		it = scheduledNpts->begin();
 		while (it != scheduledNpts->end()) {
 			if (firstTime) {
@@ -712,6 +732,7 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 			}
 			++it;
 		} //remaining time for future changes in NPT or a new timebase.
+		Thread::mutexUnlock(&schedMutex);
 	}
 
 	clk = getTimeBaseClock(cid);
@@ -740,6 +761,7 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 		unlock();
 	} //remaining time for future events.
 
+	Thread::mutexLock(&schedMutex);
 	if (scheduledNpts->empty() && !clk) minor = 0.0; else {
 		if (!scheduledNpts->empty() && clk) {
 			if (remaining1 > remaining2) {
@@ -756,7 +778,9 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 			isListener = true;
 		}
 	}
+	Thread::mutexUnlock(&schedMutex);
 
+	//TODO: check this code
 	if (minor > 45000) {
 		*sleepTime = 0.0;
 		return -1;
@@ -778,8 +802,8 @@ bool NPTProcessor::processNptValues() {
 	NPTReference* npt;
 	map<unsigned char, TimeBaseClock*>::iterator itClk;
 	map<unsigned char, NPTReference*>::iterator it;
-	map<unsigned char, map<TimeControl*, set<INPTListener*>*>*>::iterator i;
-	map<TimeControl*, set<INPTListener*>*>::iterator j;
+	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
+	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
 	double sleeper;
 
 	cid = getCurrentTimeBaseId();
@@ -815,6 +839,7 @@ bool NPTProcessor::processNptValues() {
 	} else if (notify == 0) {
 		while (restart) {
 			restart = false;
+			Thread::mutexLock(&schedMutex);
 			it = scheduledNpts->begin();
 			while (it != scheduledNpts->end()) {
 				npt = it->second;
@@ -847,6 +872,7 @@ bool NPTProcessor::processNptValues() {
 				}
 				++it;
 			}
+			Thread::mutexUnlock(&schedMutex);
 		}
 	}
 
@@ -860,14 +886,20 @@ void NPTProcessor::run() {
 		lock();
 		hasTimeListeners = !timeListeners->empty();
 		unlock();
+
+		Thread::mutexLock(&schedMutex);
 		if (scheduledNpts->empty() && !hasTimeListeners) {
+			Thread::mutexUnlock(&schedMutex);
 			if (reScheduleIt) {
 				reScheduleIt = false;
 				processNptValues();
+
 			} else {
 				waitForUnlockCondition();
 			}
+
 		} else {
+			Thread::mutexUnlock(&schedMutex);
 			processNptValues();
 		}
 	}
