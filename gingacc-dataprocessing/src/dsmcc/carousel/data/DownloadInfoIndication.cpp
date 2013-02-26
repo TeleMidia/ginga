@@ -64,7 +64,6 @@ namespace carousel {
 		unsigned int i, moduleId, moduleSize, moduleVersion, moduleInfoLength;
 		Module* module;
 
-		modules = new map<unsigned int, Module*>;
 		header = message;
 
 		// dsmccmessageheader = 12
@@ -118,7 +117,7 @@ namespace carousel {
 				module->setInfoLength(moduleInfoLength);
 				module->setCarouselId(downloadId);
 				module->openFile();
-				(*modules)[moduleId] = module;
+				modules[moduleId] = module;
 
 				i = i + 8;
 				i = i + moduleInfoLength;
@@ -148,23 +147,21 @@ namespace carousel {
 		return numberOfModules;
 	}
 
-	map<unsigned int, Module*>* DownloadInfoIndication::getInfo() {
-		if (modules->empty()) {
-			return NULL;
-		}
-
-		return modules;
+	void DownloadInfoIndication::getInfo(map<unsigned int, Module*>* ocInfo) {
+		ocInfo->insert(modules.begin(), modules.end());
 	}
 
 	vector<Module*>* DownloadInfoIndication::getParameters() {
-		if (modules->empty())
-			return NULL;
-
 		vector<Module*>* parameters;
+
+		if (modules.empty()) {
+			return NULL;
+		}
+
 		parameters = new vector<Module*>;
 
 		map<unsigned int, Module*>::iterator i;
-		for (i=modules->begin(); i!=modules->end(); ++i) {
+		for (i = modules.begin(); i != modules.end(); ++i) {
 			parameters->push_back(i->second);
 		}
 		return parameters;

@@ -85,7 +85,7 @@ namespace carousel {
 			unsigned int carouselId;
 
 			//mapping moduleId in module
-			map<unsigned int, Module*>* info;
+			map<unsigned int, Module*> info;
 
 			ObjectProcessor* processor;
 			string mountPoint;

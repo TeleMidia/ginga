@@ -63,8 +63,9 @@ namespace carousel {
 		    DownloadInfoIndication* dii) : Thread() {
 
 		this->serviceGatewayIor = dsi->getServiceGatewayIor();
-		this->info              = dii->getInfo();
 		this->carouselId        = dii->getDonwloadId();
+
+		dii->getInfo(&this->info);
 
 		mounted                 = false;
 		hasServiceGateway       = false;
@@ -92,13 +93,13 @@ namespace carousel {
 	}
 
 	void ServiceDomain::receiveDDB(DownloadDataBlock* ddb) {
-		ddb->processDataBlock(info);
+		ddb->processDataBlock(&info);
 		clog << "ddb done!" << endl;
 	}
 
 	Module* ServiceDomain::getModuleById(unsigned int id) {
-		if (info->count(id) != 0) {
-			return (*info)[id];
+		if (info.count(id) != 0) {
+			return info[id];
 		}
 
 		return NULL;
@@ -109,7 +110,7 @@ namespace carousel {
 	}
 
 	bool ServiceDomain::hasModules() {
-		if (info->empty()) {
+		if (info.empty()) {
 			if (!processor->hasObjects()) {
 				mountingServiceDomain = false;
 			}
@@ -118,7 +119,7 @@ namespace carousel {
 		}
 
 		map<unsigned int, Module*>::iterator i;
-		for (i=info->begin(); i!=info->end(); ++i) {
+		for (i=info.begin(); i!=info.end(); ++i) {
 			if ((i->second)->isConsolidated()) {
 				return true;
 			}
@@ -132,17 +133,17 @@ namespace carousel {
 		map<unsigned int, Module*>::iterator i;
 		unsigned int modId;
 
-		i = info->begin();
+		i = info.begin();
 		while (mountingServiceDomain) {
 			if (hasModules()) {
 				if (!hasServiceGateway) {
 					modId = serviceGatewayIor->getModuleId();
-					if (info->count(modId) == 0) {
+					if (info.count(modId) == 0) {
 						break;
 
 					} else {
-						i = info->find(modId);
-						module = (*info)[modId];
+						i = info.find(modId);
+						module = info[modId];
 					}
 
 					clog << "ServiceDomain::run waiting srg module" << endl;
@@ -168,8 +169,8 @@ namespace carousel {
 					biop = new Biop(module, processor);
 					biop->process();
 
-					info->erase(i);
-					i = info->begin();
+					info.erase(i);
+					i = info.begin();
 
 					clog << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
 
@@ -180,8 +181,8 @@ namespace carousel {
 						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
-						info->erase(i);
-						i = info->begin();
+						info.erase(i);
+						i = info.begin();
 
 						clog << "ServiceDomain::run BIOP->process DONE!";
 						clog << endl;
@@ -195,8 +196,8 @@ namespace carousel {
 						SystemCompat::uSleep(1000);
 						++i;
 
-						if (i == info->end())
-							i = info->begin();
+						if (i == info.end())
+							i = info.begin();
 					}
 				}
 

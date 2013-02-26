@@ -140,7 +140,6 @@ AC_CONFIG_FILES(Makefile
     include/dataprocessing/ncl/Makefile
     include/dataprocessing/ncl/edit/Makefile
     include/dataprocessing/dsmcc/Makefile
-    include/dataprocessing/dsmcc/npt/Makefile
     include/dataprocessing/dsmcc/carousel/object/Makefile
     include/dataprocessing/Makefile
     src/ncl/Makefile

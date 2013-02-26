@@ -76,7 +76,7 @@ namespace carousel {
 			unsigned int numberOfModules;
 
 			//moduleId to module
-			map<unsigned int, Module*>* modules;
+			map<unsigned int, Module*> modules;
 
 			DsmccMessageHeader* header;
 
@@ -85,7 +85,7 @@ namespace carousel {
 			unsigned int getDonwloadId();
 			unsigned int getBlockSize();
 			unsigned int getNumberOfModules();
-			map<unsigned int, Module*>* getInfo();
+			void getInfo(map<unsigned int, Module*>* ocInfo);
 			vector<Module*>* getParameters();
 			void print();
 	};
