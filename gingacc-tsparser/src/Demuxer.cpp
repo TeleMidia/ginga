@@ -63,12 +63,15 @@ namespace core {
 namespace tsparser {
 	vector<Pat*> Demuxer::pats;
 	unsigned int Demuxer::sectionPid = 0;
+	pthread_mutex_t Demuxer::stlMutex;
 
 	set<unsigned int> Demuxer::knownSectionPids;
 
 	Demuxer::Demuxer(ITuner* tuner) {
 		Thread::condInit(&flagCondSignal, NULL);
 		Thread::mutexInit(&flagLockUntilSignal, false);
+
+		Thread::mutexInit(&stlMutex, true);
 
 		packetSize = ITSPacket::TS_PACKET_SIZE;
 
@@ -98,6 +101,8 @@ namespace tsparser {
 	Demuxer::~Demuxer() {
 		clearPSI();
 		clearMaps();
+
+		Thread::mutexDestroy(&stlMutex);
 	}
 
 	void Demuxer::createPSI() {
@@ -112,21 +117,27 @@ namespace tsparser {
 			pat = NULL;
 		}
 
+		Thread::mutexLock(&stlMutex);
 		i = pmts.begin();
 		while (i != pmts.end()) {
 			delete i->second;
 			++i;
 		}
 		pmts.clear();
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::initMaps() {
+		Thread::mutexLock(&stlMutex);
+
 		this->pidFilters.clear();
 		this->stFilters.clear();
 		this->pesFilters.clear();
 		this->feFilters.clear();
 		this->feFiltersToSetup.clear();
 		this->pmts.clear();
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::clearMaps() {
@@ -134,6 +145,7 @@ namespace tsparser {
 		map<short, ITSFilter*>::iterator j;
 		set<IFrontendFilter*>::iterator k;
 
+		Thread::mutexLock(&stlMutex);
 		j = stFilters.begin();
 		while (j != stFilters.end()) {
 			delete j->second;
@@ -173,6 +185,8 @@ namespace tsparser {
 		}
 
 		feFiltersToSetup.clear();
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::resetDemuxer() {
@@ -196,6 +210,7 @@ namespace tsparser {
 		IFrontendFilter* filter;
 		int aPid, vPid;
 
+		Thread::mutexLock(&stlMutex);
 		i = feFiltersToSetup.begin();
 		while (i != feFiltersToSetup.end()) {
 			filter = *i;
@@ -208,6 +223,7 @@ namespace tsparser {
 				++i;
 			}
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		if (audioFilter != NULL && videoFilter != NULL) {
 			aPid = pat->getDefaultMainAudioPid();
@@ -226,8 +242,10 @@ namespace tsparser {
 					ni->attachFilter(audioFilter);
 					ni->attachFilter(videoFilter);
 
+					Thread::mutexLock(&stlMutex);
 					feFilters.insert(audioFilter);
 					feFilters.insert(videoFilter);
+					Thread::mutexUnlock(&stlMutex);
 
 					audioFilter = NULL;
 					videoFilter = NULL;
@@ -248,12 +266,14 @@ namespace tsparser {
 		int tid;
 		bool attached = false;
 
+		Thread::mutexLock(&stlMutex);
 		if (pmts.empty()) {
 			pmt = NULL;
 
 		} else {
 			pmt = pmts.begin()->second;
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		if (pmt != NULL) {
 			tid = filter->getTid();
@@ -266,7 +286,11 @@ namespace tsparser {
 					if (filter != NULL) {
 						filter->setPid(pid);
 						filter->setTid(-1);
+
+						Thread::mutexLock(&stlMutex);
 						feFilters.insert(filter);
+						Thread::mutexUnlock(&stlMutex);
+
 						attachFilter(filter);
 
 					} else {
@@ -315,6 +339,7 @@ namespace tsparser {
 			isWaitingPI = false;
 		}
 
+		Thread::mutexLock(&stlMutex);
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
@@ -403,15 +428,20 @@ namespace tsparser {
 			if (pid == 0) {
 				char *patStream;
 				unsigned short slen;
-				slen = pat->createPatStreamByProgramPid(pat->getDefaultProgramPid(), &patStream);
+				slen = pat->createPatStreamByProgramPid(
+						pat->getDefaultProgramPid(), &patStream);
+
 				TSPacket* patPacket = new TSPacket(true, patStream, slen);
 				patPacket->setPid(0);
 				pesFilters[0]->receiveTSPacket(patPacket);
+
 				delete patPacket;
+
 			} else {
 				pesFilters[0]->receiveTSPacket(packet);
 			}
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		delete packet;
 		packet = NULL;
@@ -460,6 +490,8 @@ namespace tsparser {
 		FrontendFilter* filter;
 		set<IFrontendFilter*>::iterator i;
 
+		Thread::mutexLock(&stlMutex);
+
 		i = feFilters.begin();
 		while (i != feFilters.end()) {
 			filter = (FrontendFilter*)(*i);
@@ -471,6 +503,8 @@ namespace tsparser {
 			}
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addFilter(ITSFilter* tsFilter, int pid, int tid) {
@@ -492,11 +526,18 @@ namespace tsparser {
 	void Demuxer::addFilter(IFrontendFilter* filter) {
 		if (filter->getPid() != -1) {
 			filter->setTid(-1);
+
+			Thread::mutexLock(&stlMutex);
 			feFilters.insert(filter);
+			Thread::mutexUnlock(&stlMutex);
+
 			attachFilter(filter);
 
 		} else if (!setupFilter(filter)) {
+
+			Thread::mutexLock(&stlMutex);
 			feFiltersToSetup.insert(filter);
+			Thread::mutexUnlock(&stlMutex);
 		}
 	}
 
@@ -517,14 +558,20 @@ namespace tsparser {
 		ff->setTid(PAT_TID);
 
 		ni->attachFilter(ff);
+
+		Thread::mutexLock(&stlMutex);
 		feFilters.insert(ff);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::createPmtFilter(INetworkInterface* ni) {
 		IFrontendFilter* ff;
 		map<unsigned int, Pmt*>::iterator i;
 
+		Thread::mutexLock(&stlMutex);
+
 		if (pmts.empty()) {
+			Thread::mutexUnlock(&stlMutex);
 			return;
 		}
 
@@ -538,6 +585,8 @@ namespace tsparser {
 			feFilters.insert(ff);
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::receiveSection(
@@ -549,6 +598,7 @@ namespace tsparser {
 		Pmt* pmt, * newPmt;
 		INetworkInterface* ni;
 
+		Thread::mutexLock(&stlMutex);
 		pid = f->getPid();
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
@@ -628,11 +678,14 @@ namespace tsparser {
 				}
 			}
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addPidFilter(unsigned int pid, ITSFilter* filter) {
+		Thread::mutexLock(&stlMutex);
 		pidFilters[pid] = filter;
-		cout << "pidFilters = " << pid << endl;
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addSectionFilter(unsigned int tid, ITSFilter* filter) {
@@ -640,7 +693,10 @@ namespace tsparser {
 	}
 
 	void Demuxer::addStreamTypeFilter(short streamType, ITSFilter* filter) {
+		Thread::mutexLock(&stlMutex);
 		stFilters[streamType] = filter;
+		Thread::mutexUnlock(&stlMutex);
+
 		clog << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
 	}
 
@@ -667,9 +723,12 @@ namespace tsparser {
 				ni->createPesFilter(aPid, PFT_AUDIO, true);
 				ni->createPesFilter(vPid, PFT_VIDEO, true);
 
+				Thread::mutexLock(&stlMutex);
 				pesFilters[pat->getFirstProgramNumber()] = filter;
+				Thread::mutexUnlock(&stlMutex);
 
 			} else {
+				Thread::mutexLock(&stlMutex);
 				if (pesFilters.find(0) == pesFilters.end()) {
 					filter->addPid(0x00);
 					filter->addPid(pPid);
@@ -682,6 +741,7 @@ namespace tsparser {
 				} else {
 					delete filter;
 				}
+				Thread::mutexUnlock(&stlMutex);
 			}
 
 		} else if (type == PFT_PCR) {
@@ -710,7 +770,10 @@ namespace tsparser {
 		ff->setPid(convPid);
 
 		ni->attachFilter(ff);
+
+		Thread::mutexLock(&stlMutex);
 		feFilters.insert(ff);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::receiveData(char* buff, unsigned int size) {
@@ -720,7 +783,8 @@ namespace tsparser {
 		while (i < size) {
 			// Check TS packet boundaries.
 			if (((buff[i] & 0xFF) == 0x47) &&
-					((i + packetSize == size) || ((buff[i + packetSize] & 0xFF) == 0x47))) {
+					((i + packetSize == size) ||
+							((buff[i + packetSize] & 0xFF) == 0x47))) {
 
 				packet = new TSPacket(buff + i);
 				if (packet->isConstructionFailed()) {
@@ -757,7 +821,9 @@ namespace tsparser {
 			} else {
 				/*clog << "Demuxer::receiveData breaking when i = '";
 				clog << i << "' and size = '" << size << "'" << endl;*/
-				tuner->setSkipSize((packetSize-((size-i-1)%packetSize))%packetSize);
+				tuner->setSkipSize(
+						(packetSize-((size-i-1)%packetSize))%packetSize);
+
 				break;
 			}
 		}
@@ -796,23 +862,30 @@ namespace tsparser {
 	}
 
 	void Demuxer::addPat(Pat* pat) {
+		Thread::mutexLock(&stlMutex);
 		pats.push_back(pat);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	bool Demuxer::isSectionStream(unsigned int pid) {
 		vector<Pat*>::iterator i;
 
+		Thread::mutexLock(&stlMutex);
 		if (pid == Demuxer::sectionPid || knownSectionPids.count(pid) != 0) {
+			Thread::mutexUnlock(&stlMutex);
 			return true;
 		}
 
 		i = pats.begin();
 		while (i != pats.end()) {
 			if ((*i)->isSectionType(pid)) {
+				Thread::mutexUnlock(&stlMutex);
 				return true;
 			}
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 		return false;
 	}
 

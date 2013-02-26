@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "Pmt.h"
 #include "Pat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
@@ -100,8 +103,11 @@ namespace tsparser {
 			int debugPackCount;
 			short debugDest;
 			bool isWaitingPI;
+
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
+
+			static pthread_mutex_t stlMutex;
 
 			unsigned char packetSize;
 
