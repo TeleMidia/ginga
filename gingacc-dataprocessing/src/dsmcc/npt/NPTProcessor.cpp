@@ -80,6 +80,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 
 	Thread::mutexInit(&loopMutex, false);
 	Thread::mutexInit(&schedMutex, false);
+	Thread::mutexInit(&tbEndMutex, false);
 
 	startThread();
 }
@@ -115,15 +116,6 @@ NPTProcessor::~NPTProcessor() {
 		}
 		delete timeListeners;
 	}
-	
-	if (timeBaseNaturalEnd) {
-		l = timeBaseNaturalEnd->begin();
-		while (l != timeBaseNaturalEnd->end()) {
-			delete l->second;
-			++l;
-		}
-		delete timeBaseNaturalEnd;
-	}
 
 	unlock();
 
@@ -141,6 +133,18 @@ NPTProcessor::~NPTProcessor() {
 	Thread::mutexLock(&schedMutex);
 	Thread::mutexUnlock(&schedMutex);
 	Thread::mutexDestroy(&schedMutex);
+
+	Thread::mutexLock(&tbEndMutex);
+	if (timeBaseNaturalEnd) {
+		l = timeBaseNaturalEnd->begin();
+		while (l != timeBaseNaturalEnd->end()) {
+			delete l->second;
+			++l;
+		}
+		delete timeBaseNaturalEnd;
+	}
+	Thread::mutexUnlock(&tbEndMutex);
+	Thread::mutexDestroy(&tbEndMutex);
 }
 
 void NPTProcessor::clearTables() {
@@ -282,6 +286,33 @@ bool NPTProcessor::addLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
 	return true;
 }
 
+bool NPTProcessor::removeLoopListener(unsigned char cid, ITimeBaseListener* ltn) {
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>::iterator j;
+
+	clog << "NPTProcessor::removeLoopListener() - cid = " << (cid & 0xFF) << endl;
+
+	Thread::mutexLock(&loopMutex);
+
+	i = loopListeners->find(cid);
+	if (i != loopListeners->end()) {
+		j = i->second->find((ITimeBaseProvider*)ltn);
+		if (j == i->second->end()) {
+			Thread::mutexUnlock(&loopMutex);
+			return false;
+		} else {
+			i->second->erase(j);
+		}
+	}
+
+	Thread::mutexUnlock(&loopMutex);
+
+	unlockConditionSatisfied();
+	wakeUp();
+
+	return true;
+}
+
 bool NPTProcessor::addTimeListener(
 		unsigned char cid, double nptValue, ITimeBaseListener* ltn) {
 
@@ -411,6 +442,8 @@ bool NPTProcessor::addTimeBaseNaturalEndListener(unsigned char contentId,
 	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
 	set<ITimeBaseProvider*>* listeners;
 
+	Thread::mutexLock(&tbEndMutex);
+
 	i = timeBaseNaturalEnd->find(contentId);
 	if (i != timeBaseNaturalEnd->end()) {
 		listeners = i->second;
@@ -421,6 +454,11 @@ bool NPTProcessor::addTimeBaseNaturalEndListener(unsigned char contentId,
 	}
 
 	listeners->insert((ITimeBaseProvider*)ltn);
+	
+	Thread::mutexUnlock(&tbEndMutex);
+
+	unlockConditionSatisfied();
+	wakeUp();
 
 	return true;
 }
@@ -432,15 +470,20 @@ bool NPTProcessor::removeTimeBaseNaturalEndListener(unsigned char cid,
 
 	clog << "NPTProcessor::removeTimeBaseNaturalEndListener()" << endl;
 
+	Thread::mutexLock(&tbEndMutex);
+
 	i = timeBaseNaturalEnd->find(cid);
 	if (i != timeBaseNaturalEnd->end()) {
 		j = i->second->find((ITimeBaseProvider*)ltn);
 		if (j == i->second->end()) {
+			Thread::mutexUnlock(&tbEndMutex);
 			return false;
+		} else {
+			i->second->erase(j);
 		}
 	}
 
-	timeBaseNaturalEnd->erase(i);
+	Thread::mutexUnlock(&tbEndMutex);
 
 	unlockConditionSatisfied();
 	wakeUp();
@@ -502,6 +545,9 @@ void NPTProcessor::notifyLoopToTimeListeners() {
 void NPTProcessor::notifyNaturalEndListeners(unsigned char cid, double nptValue) {
 	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
 	set<ITimeBaseProvider*>::iterator j;
+
+	Thread::mutexLock(&tbEndMutex);
+
 	if (timeBaseNaturalEnd) {
 		i = timeBaseNaturalEnd->find(cid);
 		while (i != timeBaseNaturalEnd->end()) {
@@ -514,6 +560,8 @@ void NPTProcessor::notifyNaturalEndListeners(unsigned char cid, double nptValue)
 			}
 		}
 	}
+
+	Thread::mutexUnlock(&tbEndMutex);
 }
 
 void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
@@ -776,10 +824,10 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
 	double remaining1 = MAX_NPT_VALUE;
 	double remaining2 = MAX_NPT_VALUE;
+	double remaining3 = MAX_NPT_VALUE;
 	double value, minor, r;
 	TimeBaseClock* clk;
 	bool isListener = false;
-	bool firstTime = true;
 	uint64_t stcValue;
 
 	stcValue = getSTCValue();
@@ -787,17 +835,6 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 		Thread::mutexLock(&schedMutex);
 		it = scheduledNpts->begin();
 		while (it != scheduledNpts->end()) {
-			if (firstTime) {
-				firstTime = false;
-				remaining1 = Stc::baseToSecond(it->second->getStcRef() - stcValue);
-				if (remaining1 < 0) {
-					remaining1 = 0.0;
-					break;
-				} else {
-					++it;
-					continue;
-				}
-			}
 			r = Stc::baseToSecond(it->second->getStcRef() - stcValue);
 			if (r < 0) r = 0.0;
 			if (r < remaining1) {
@@ -817,10 +854,6 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 			j = i->second->begin();
 			while (j != i->second->end()) {
 				if (!j->first->notified) {
-					if ((j->first->time - value) < 0) {
-						++j;
-						continue;
-					}
 					r = j->first->time - value;
 					if (r < 0) r = 0.0;
 					if (r < remaining2) {
