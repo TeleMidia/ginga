@@ -104,7 +104,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 
 		pthread_mutex_t loopMutex;
 		pthread_mutex_t schedMutex;
-		pthread_mutex_t tbEndMutex;
+		pthread_mutex_t lifeMutex;
 
 		map<unsigned char, NPTReference*>* scheduledNpts;
 		map<unsigned char, TimeBaseClock*>* timeBaseClock;
@@ -112,7 +112,6 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		map<unsigned char, set<ITimeBaseProvider*>*>* loopListeners;
 		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>* timeListeners;
 		set<ITimeBaseProvider*>* cidListeners;
-		map<unsigned char, set<ITimeBaseProvider*>*> *timeBaseNaturalEnd;
 		bool reScheduleIt;
 
 	public:
@@ -138,11 +137,6 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 
 		bool addIdListener(ITimeBaseListener* ltn);
 		bool removeIdListener(ITimeBaseListener* ltn);
-
-		bool addTimeBaseNaturalEndListener(unsigned char contentId,
-					ITimeBaseListener* ltn);
-		bool removeTimeBaseNaturalEndListener(unsigned char cid,
-					ITimeBaseListener* ltn);
 
 		unsigned char getCurrentTimeBaseId();
 
