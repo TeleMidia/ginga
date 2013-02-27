@@ -104,6 +104,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 
 		pthread_mutex_t loopMutex;
 		pthread_mutex_t schedMutex;
+		pthread_mutex_t tbEndMutex;
 
 		map<unsigned char, NPTReference*>* scheduledNpts;
 		map<unsigned char, TimeBaseClock*>* timeBaseClock;
@@ -128,6 +129,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 
 	public:
 		bool addLoopListener(unsigned char cid, ITimeBaseListener* ltn);
+		bool removeLoopListener(unsigned char cid, ITimeBaseListener* ltn);
 
 		bool addTimeListener(
 				unsigned char cid, double nptValue, ITimeBaseListener* ltn);
