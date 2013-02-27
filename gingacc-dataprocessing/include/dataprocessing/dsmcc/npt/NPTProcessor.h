@@ -111,6 +111,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		map<unsigned char, set<ITimeBaseProvider*>*>* loopListeners;
 		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>* timeListeners;
 		set<ITimeBaseProvider*>* cidListeners;
+		map<unsigned char, set<ITimeBaseProvider*>*> *timeBaseNaturalEnd;
 		bool reScheduleIt;
 
 	public:
@@ -136,17 +137,22 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		bool addIdListener(ITimeBaseListener* ltn);
 		bool removeIdListener(ITimeBaseListener* ltn);
 
+		bool addTimeBaseNaturalEndListener(unsigned char contentId,
+					ITimeBaseListener* ltn);
+		bool removeTimeBaseNaturalEndListener(unsigned char cid,
+					ITimeBaseListener* ltn);
+
 		unsigned char getCurrentTimeBaseId();
 
 	private:
 		void notifyLoopToTimeListeners();
 		void notifyTimeListeners(unsigned char cid, double nptValue);
+		void notifyNaturalEndListeners(unsigned char cid, double nptValue);
 		void notifyIdListeners(unsigned char oldCid, unsigned char newCid);
 		TimeBaseClock* getTimeBaseClock(unsigned char cid);
 		int updateTimeBase(TimeBaseClock* clk, NPTReference* npt);
 		TimeBaseClock* getCurrentTimebase();
 		double getCurrentTimeValue(unsigned char timeBaseId);
-		void resetListenersNotifications();
 
 	public:
 		int decodeDescriptors(vector<MpegDescriptor*>* list);
