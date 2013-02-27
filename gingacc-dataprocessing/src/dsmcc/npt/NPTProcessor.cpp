@@ -63,6 +63,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 	this->scheduledNpts = new map<unsigned char, NPTReference*>;
 	this->timeBaseClock = new map<unsigned char, TimeBaseClock*>;
 	timeBaseLife = new map<unsigned char, Stc*>;
+	timeBaseNaturalEnd = new map<unsigned char, set<ITimeBaseProvider*>*>;
 
 	this->loopListeners = new map<unsigned char, set<ITimeBaseProvider*>*>;
 	this->timeListeners = new map<
@@ -87,6 +88,7 @@ NPTProcessor::~NPTProcessor() {
 	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
 	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
 	set<ITimeBaseProvider*>::iterator k;
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator l;
 
 	clearTables();
 	delete scheduledNpts;
@@ -113,6 +115,16 @@ NPTProcessor::~NPTProcessor() {
 		}
 		delete timeListeners;
 	}
+	
+	if (timeBaseNaturalEnd) {
+		l = timeBaseNaturalEnd->begin();
+		while (l != timeBaseNaturalEnd->end()) {
+			delete l->second;
+			++l;
+		}
+		delete timeBaseNaturalEnd;
+	}
+
 	unlock();
 
 	if (cidListeners != NULL) {
@@ -202,6 +214,7 @@ void NPTProcessor::clearUnusedTimebase() {
 		while (i != timeBaseClock->end()) {
 			clk = i->second;
 			if ((clk->getEndpointAvailable()) && (clk->getStcBase() >= clk->getStopNpt())) {
+				notifyNaturalEndListeners(clk->getContentId(), clk->getStopNpt());
 				clog << "NPTProcessor::clearUnusedTimebase - Deleted by endpoint: CID = " <<
 					(clk->getContentId() & 0xFF) << endl;
 				delete i->second;
@@ -214,11 +227,16 @@ void NPTProcessor::clearUnusedTimebase() {
 
 	restart = true;
 
+	//TODO: Timebase should still be incremented after 1 second without no
+	//      NPT Reference updates?
 	while (restart) {
 		restart = false;
 		itLife = timeBaseLife->begin();
 		if (itLife != timeBaseLife->end()) {
 			if (itLife->second->getStcBase() > 5400000) {// 1 minute
+				clk = getTimeBaseClock(itLife->first);
+				notifyNaturalEndListeners(clk->getContentId(),
+					clk->getBaseToSecond());
 				clog << "NPTProcessor::clearUnusedTimebase - Deleted by lifetime: CID = "
 					<< (clk->getContentId() & 0xFF) << endl;
 				delete itLife->second;
@@ -385,6 +403,51 @@ bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
 	return true;
 }
 
+bool NPTProcessor::addTimeBaseNaturalEndListener(unsigned char contentId,
+			ITimeBaseListener* ltn) {
+
+	clog << "NPTProcessor::addTimeBaseNaturalEndListener cid = " << contentId << endl;
+
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>* listeners;
+
+	i = timeBaseNaturalEnd->find(contentId);
+	if (i != timeBaseNaturalEnd->end()) {
+		listeners = i->second;
+
+	} else {
+		listeners = new set<ITimeBaseProvider*>;
+		(*timeBaseNaturalEnd)[contentId] = listeners;
+	}
+
+	listeners->insert((ITimeBaseProvider*)ltn);
+
+	return true;
+}
+
+bool NPTProcessor::removeTimeBaseNaturalEndListener(unsigned char cid,
+			ITimeBaseListener* ltn) {
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>::iterator j;
+
+	clog << "NPTProcessor::removeTimeBaseNaturalEndListener()" << endl;
+
+	i = timeBaseNaturalEnd->find(cid);
+	if (i != timeBaseNaturalEnd->end()) {
+		j = i->second->find((ITimeBaseProvider*)ltn);
+		if (j == i->second->end()) {
+			return false;
+		}
+	}
+
+	timeBaseNaturalEnd->erase(i);
+
+	unlockConditionSatisfied();
+	wakeUp();
+
+	return true;
+}
+
 unsigned char NPTProcessor::getCurrentTimeBaseId() {
 	map<unsigned char, TimeBaseClock*>::iterator i;
 	TimeBaseClock* clk;
@@ -434,6 +497,23 @@ void NPTProcessor::notifyLoopToTimeListeners() {
 		++i;
 	}
 	Thread::mutexUnlock(&loopMutex);
+}
+
+void NPTProcessor::notifyNaturalEndListeners(unsigned char cid, double nptValue) {
+	map<unsigned char, set<ITimeBaseProvider*>*>::iterator i;
+	set<ITimeBaseProvider*>::iterator j;
+	if (timeBaseNaturalEnd) {
+		i = timeBaseNaturalEnd->find(cid);
+		while (i != timeBaseNaturalEnd->end()) {
+			j = i->second->begin();
+			while (j != i->second->end()) {
+				clog << "NPTProcessor::notifyNaturalEndListeners " << "cid '" << (cid & 0xFF) <<
+					", nptValue = " << nptValue << endl;
+				((ITimeBaseListener*)(*j))->timeBaseNaturalEnd(cid, nptValue);
+				++j;
+			}
+		}
+	}
 }
 
 void NPTProcessor::notifyTimeListeners(unsigned char cid, double nptValue) {
@@ -533,28 +613,21 @@ double NPTProcessor::getCurrentTimeValue(unsigned char timeBaseId) {
 	return 0;
 }
 
-void NPTProcessor::resetListenersNotifications() {
-	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
-	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
-	
-	i = timeListeners->begin();
-	if (i != timeListeners->end()) {
-		j = i->second->begin();
-		while (j != i->second->end()) {
-			j->first->notified = false;
-			++j;
-		}
-		++i;
-	}
-}
-
 void NPTProcessor::detectLoop() {
+	map<unsigned char, Stc*>::iterator i;
+
 	if (getSTCValue()) {
 		if (isFirstStc) {
 			isFirstStc = false;
 			firstStc = getSTCValue();
 		} else {
 			if ((firstStc + 70000) > getSTCValue()) {
+				i = timeBaseLife->begin();
+				while (i != timeBaseLife->end()) {
+					notifyNaturalEndListeners(i->first,
+						getTimeBaseClock(i->first)->getBaseToSecond());
+					++i;
+				}
 				//possible loop in TS
 				isFirstStc = true;
 				clearTables();
