@@ -822,13 +822,20 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 	map<unsigned char, NPTReference*>::iterator it;
 	map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>::iterator i;
 	map<TimeControl*, set<ITimeBaseProvider*>*>::iterator j;
+	map<unsigned char, Stc*>::iterator k;
+	map<unsigned char, TimeBaseClock*>::iterator l;
 	double remaining1 = MAX_NPT_VALUE;
 	double remaining2 = MAX_NPT_VALUE;
 	double remaining3 = MAX_NPT_VALUE;
-	double value, minor, r;
+	double value, r, minor = 0.0;
 	TimeBaseClock* clk;
-	bool isListener = false;
+	char ret = 0; //0 == schedNpt, 1 == listener
 	uint64_t stcValue;
+	Stc* cstc;
+
+	*sleepTime = 0.0;
+
+	if (timeBaseLife->empty()) return -1;
 
 	stcValue = getSTCValue();
 	if (stcValue) {
@@ -867,34 +874,54 @@ char NPTProcessor::getNextNptValue(char cid, double *nextNptValue, double* sleep
 		unlock();
 	} //remaining time for future events.
 
-	Thread::mutexLock(&schedMutex);
-	if (scheduledNpts->empty() && !clk) minor = 0.0; else {
-		if (!scheduledNpts->empty() && clk) {
-			if (remaining1 > remaining2) {
-				minor = remaining2;
-				isListener = true;
-			} else {
-				minor = remaining1;
-			} //which one is lower?
-		} else if (!scheduledNpts->empty()) {
-			if (stcValue) minor = remaining1; else
-				minor = 0.0;
-		} else {
-			minor = remaining2;
-			isListener = true;
+	k = timeBaseLife->begin();
+	while (k != timeBaseLife->end()) {
+		cstc = k->second;
+		l = timeBaseClock->find(k->first);
+		value = 60.0 - cstc->getBaseToSecond();
+		if (value < 0) value = 0.0;
+		if (value < remaining3) {
+			remaining3 = value;
 		}
+		if (l->second->getScaleNumerator() && l->second->getEndpointAvailable()) {
+			r = Stc::baseToSecond(l->second->getStopNpt()) - l->second->getBaseToSecond();
+			if (r < 0) r = 0.0;
+			if (r < remaining3) {
+				remaining3 = r;
+				*nextNptValue = j->first->time;
+			}
+		}
+		++k;
 	}
-	Thread::mutexUnlock(&schedMutex);
 
-	//TODO: check this code
-	if (minor > 45000) {
-		*sleepTime = 0.0;
-		return -1;
+	if ((remaining3 < remaining1) && (remaining3 < remaining2)) {
+		minor = remaining3;
+	} else {
+		Thread::mutexLock(&schedMutex);
+		if (scheduledNpts->empty() && !clk) {
+			minor = 0.0;
+		} else {
+			if (!scheduledNpts->empty() && clk) {
+				if (remaining1 > remaining2) {
+					minor = remaining2;
+					ret = 1;
+				} else {
+					minor = remaining1;
+				} //which one is lower?
+			} else if (!scheduledNpts->empty()) {
+				if (stcValue) minor = remaining1; else
+					minor = 0.0;
+			} else {
+				minor = remaining2;
+				ret = 1;
+			}
+		}
+		Thread::mutexUnlock(&schedMutex);
 	}
 
 	*sleepTime = minor * 1000; //convert to milliseconds
 
-	return isListener;
+	return ret;
 }
 
 bool NPTProcessor::processNptValues() {
@@ -923,9 +950,7 @@ bool NPTProcessor::processNptValues() {
 		}
 	}
 
-	clearUnusedTimebase();
-
-	if (notify > 0) {
+	if (notify == 1) {
 		lock();
 		i = timeListeners->find(cid);
 		if (i != timeListeners->end()) {
@@ -942,45 +967,47 @@ bool NPTProcessor::processNptValues() {
 			}
 		}
 		unlock();
-	} else if (notify == 0) {
-		while (restart) {
-			restart = false;
-			Thread::mutexLock(&schedMutex);
-			it = scheduledNpts->begin();
-			while (it != scheduledNpts->end()) {
-				npt = it->second;
-				if (getSTCValue() >= npt->getStcRef()) {
-					itClk = timeBaseClock->find(npt->getContentId());
-					if (itClk == timeBaseClock->end()) {
-						clk = new TimeBaseClock();
-						(*timeBaseClock)[npt->getContentId()] = clk;
-						tblife = new Stc();
-						tblife->setReference(0);
-						(*timeBaseLife)[npt->getContentId()] = tblife;
-						clog << "NPTProcessor::processNptValues - Added CID: "
-							<< (npt->getContentId() & 0xFF) << endl;
-					} else {
-						clk = (*timeBaseClock)[npt->getContentId()];
-					}
-					updateTimeBase(clk, npt);
-					delete it->second;
-					scheduledNpts->erase(it);
-					restart = true;
-					lock();
-					notifyIdListeners(currentCid, clk->getContentId());
-					unlock();
-					currentCid = clk->getContentId();
-					reScheduleIt = true;
-					clog << "NPTProcessor::processNptValues - Executing scheduled NPT: "
-						<< (clk->getContentId() & 0xFF) <<
-						" as " << clk->getScaleNumerator() << endl;
-					break;
-				}
-				++it;
-			}
-			Thread::mutexUnlock(&schedMutex);
-		}
 	}
+	
+	while (restart) {
+		restart = false;
+		Thread::mutexLock(&schedMutex);
+		it = scheduledNpts->begin();
+		while (it != scheduledNpts->end()) {
+			npt = it->second;
+			if (getSTCValue() >= npt->getStcRef()) {
+				itClk = timeBaseClock->find(npt->getContentId());
+				if (itClk == timeBaseClock->end()) {
+					clk = new TimeBaseClock();
+					(*timeBaseClock)[npt->getContentId()] = clk;
+					tblife = new Stc();
+					tblife->setReference(0);
+					(*timeBaseLife)[npt->getContentId()] = tblife;
+					clog << "NPTProcessor::processNptValues - Added CID: "
+						<< (npt->getContentId() & 0xFF) << endl;
+				} else {
+					clk = (*timeBaseClock)[npt->getContentId()];
+				}
+				updateTimeBase(clk, npt);
+				delete it->second;
+				scheduledNpts->erase(it);
+				restart = true;
+				lock();
+				notifyIdListeners(currentCid, clk->getContentId());
+				unlock();
+				currentCid = clk->getContentId();
+				reScheduleIt = true;
+				clog << "NPTProcessor::processNptValues - Executing scheduled NPT: "
+					<< (clk->getContentId() & 0xFF) <<
+					" as " << clk->getScaleNumerator() << endl;
+				break;
+			}
+			++it;
+		}
+		Thread::mutexUnlock(&schedMutex);
+	}
+
+	clearUnusedTimebase();
 
 	return true;
 }
