@@ -106,12 +106,12 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		pthread_mutex_t schedMutex;
 		pthread_mutex_t lifeMutex;
 
-		map<unsigned char, NPTReference*>* scheduledNpts;
-		map<unsigned char, TimeBaseClock*>* timeBaseClock;
-		map<unsigned char, Stc*>* timeBaseLife;
-		map<unsigned char, set<ITimeBaseProvider*>*>* loopListeners;
-		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*>* timeListeners;
-		set<ITimeBaseProvider*>* cidListeners;
+		map<unsigned char, NPTReference*> scheduledNpts;
+		map<unsigned char, TimeBaseClock*> timeBaseClock;
+		map<unsigned char, Stc*> timeBaseLife;
+		map<unsigned char, set<ITimeBaseProvider*>*> loopListeners;
+		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*> timeListeners;
+		set<ITimeBaseProvider*> cidListeners;
 		bool reScheduleIt;
 
 	public:
