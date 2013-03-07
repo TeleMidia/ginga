@@ -76,7 +76,7 @@ namespace carousel {
 			string name;
 
 			//bindings (srg and dir only)
-			vector<Binding*>* bindings;
+			vector<Binding*> bindings;
 
 			//data (fil only)
 			char* data;
@@ -84,6 +84,9 @@ namespace carousel {
 
 		public:
 			Object();
+
+			virtual ~Object();
+
 			void setCarouselId(unsigned int objectCarouselId);
 			void setModuleId(unsigned int objectModuleId);
 			void setKey(unsigned int objectKey);

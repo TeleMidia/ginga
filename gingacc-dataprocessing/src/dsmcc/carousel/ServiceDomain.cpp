@@ -88,6 +88,11 @@ namespace carousel {
 
 	ServiceDomain::~ServiceDomain() {
 		Thread::mutexDestroy(&stlMutex);
+
+		if (processor != NULL) {
+			delete processor;
+			processor = NULL;
+		}
 	}
 
 	void ServiceDomain::setServiceDomainListener(IServiceDomainListener* sdl) {

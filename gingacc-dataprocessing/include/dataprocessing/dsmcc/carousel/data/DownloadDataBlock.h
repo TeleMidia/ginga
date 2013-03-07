@@ -70,15 +70,13 @@ namespace carousel {
 		private:
 			unsigned int moduleId;
 			unsigned int moduleVersion;
-			char* data;
-
 			DsmccMessageHeader* header;
 
 		public:
 			DownloadDataBlock(DsmccMessageHeader* message);
-			void processDataBlock(
-					map<unsigned int, Module*>* mods);
+			virtual ~DownloadDataBlock();
 
+			void processDataBlock(map<unsigned int, Module*>* mods);
 			unsigned int getModuleId();
 			unsigned int getModuleVersion();
 			void print();

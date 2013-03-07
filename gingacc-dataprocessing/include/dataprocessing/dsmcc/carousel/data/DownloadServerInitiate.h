@@ -77,6 +77,8 @@ namespace carousel {
 
 		public:
 			DownloadServerInitiate(DsmccMessageHeader* message);
+			virtual ~DownloadServerInitiate();
+
 			Ior* getServiceGatewayIor();
 
 		private:

@@ -57,7 +57,18 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	Object::Object() {
-		bindings = new vector<Binding*>;
+
+	}
+
+	Object::~Object() {
+		vector<Binding*>::iterator i;
+
+		i = bindings.begin();
+		while (i != bindings.end()) {
+			delete (*i);
+
+			++i;
+		}
 	}
 
 	void Object::setCarouselId(unsigned int objectCarouselId) {
@@ -77,7 +88,7 @@ namespace carousel {
 	}
 
 	void Object::addBinding(Binding* binding) {
-		bindings->push_back(binding);
+		bindings.push_back(binding);
 	}
 
 	void Object::setData(char* fileData) {
@@ -109,7 +120,7 @@ namespace carousel {
 	}
 
 	vector<Binding*>* Object::getBindings() {
-		return bindings;
+		return &bindings;
 	}
 
 	char* Object::getData() {

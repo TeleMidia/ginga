@@ -82,18 +82,20 @@ namespace carousel {
 	class ObjectProcessor {
 		private:
 			//mapping object location to known name
-			map<string, string>* objectNames;
+			map<string, string> objectNames;
 
 			//mapping object location to known path
-			map<string, string>* objectPaths;
+			map<string, string> objectPaths;
 
 			//mapping object location in Object
-			map<string, Object*>* objects;
+			map<string, Object*> objects;
 
-			set<IObjectListener*>* listeners;
+			set<IObjectListener*> listeners;
 
 		public:
 			ObjectProcessor();
+			virtual ~ObjectProcessor();
+
 			void setObjectsListeners(set<IObjectListener*>* l);
 			void pushObject(Object* object);
 			bool hasObjects();
