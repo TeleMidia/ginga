@@ -57,14 +57,14 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	Biop::Biop(Module* module, ObjectProcessor* processor) {
-		this->module = module;
-		currentSize = 0;
-		isValidHdr = false;
+		this->module       = module;
+		currentSize        = 0;
+		isValidHdr         = false;
 		hasMoreBiopMessage = false;
-		objectKind = "";
-		objectInfo = "";
-		objects = new map<string, Object*>;
-		this->processor = processor;
+		objectKind         = "";
+		objectInfo         = "";
+		this->processor    = processor;
+		data               = NULL;
 
 		moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
 
@@ -77,18 +77,28 @@ namespace carousel {
 	}
 
 	Biop::~Biop() {
-//				clog << "Biop destructor" << endl;
-
 		if (moduleFd > 0) {
-//					clog << "closing file" << endl;
 			fclose(moduleFd);
 		}
 
-		if (data != NULL && sizeof(data) > 0) {
-//					clog << "free data memory" << endl;
-			free(data);
+		if (data != NULL) {
+			delete data;
 			data = NULL;
 		}
+	}
+
+	string Biop::getStringFromData(unsigned int offset, unsigned int len) {
+		string strData = "";
+
+		assert(len > 0);
+
+		char* field = new char[len];
+		memcpy(field, (void*)&(data[offset]), len);
+		strData = (string)field;
+
+		delete field;
+
+		return strData;
 	}
 
 	string Biop::getObjectKind() {
@@ -102,10 +112,11 @@ namespace carousel {
 	void Biop::abortProcess(string warningText) {
 		clog << "Warning! " << warningText.c_str() << endl;
 		fclose(moduleFd);
-		if (data != NULL && sizeof(data) > 0) {
-			free(data);
+		if (data != NULL) {
+			delete data;
 			data = NULL;
 		}
+
 		moduleFd = NULL;
 	}
 
@@ -185,21 +196,23 @@ namespace carousel {
 			hasMoreBiopMessage = true;
 		}
 
-		if (data != NULL && sizeof(data) > 0) {
-			delete data;
-			data = NULL;
-		}
+		delete data;
+		data = NULL;
+
 		return true;
 	}
 
 	void Biop::processMessageSubHeader() {
 		int rval;
 		unsigned int len;
-		char* field;
 
 		clog << "Biop::processMessageSubHeader" << endl;
 
-		data = (char*)malloc(messageSize + 12);
+		if (data != NULL) {
+			delete data;
+		}
+
+		data = new char[messageSize + 12];
 		memset(data, 0, sizeof(data));
 
 		rval = fread((void*)&(data[0]), 1, messageSize, moduleFd);
@@ -256,15 +269,12 @@ namespace carousel {
 		idx = idx + 4;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			this->objectKind = (string)field;
-			free(field);
+			this->objectKind = getStringFromData(idx, len);
 			idx = idx + len;
 			clog << "objectKind: " << objectKind << endl;
 
 		} else {
-			clog << "Warning! No kind never reaches here!" << endl;
+			clog << "Warning! No kind. Should never reaches here!" << endl;
 			objectKind = "";
 		}
 
@@ -273,10 +283,8 @@ namespace carousel {
 		idx = idx + 2;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			objectInfo = (string)field;
-			free(field);
+			this->objectInfo = getStringFromData(idx, len);
+
 			clog << "objectInfo: " << objectInfo << endl;
 			idx = idx + len;
 
@@ -356,11 +364,9 @@ namespace carousel {
 	}
 
 	Binding* Biop::processBinding() {
-		Binding* binding;
-		binding = new Binding();
-
+		Binding* binding = new Binding();
 		unsigned int numberOfComponents, len;
-		char* field;
+		string strField;
 
 		clog << "Biop::processingBinding" << endl;
 
@@ -368,9 +374,10 @@ namespace carousel {
 		idx++;
 		clog << "Number of components = " << numberOfComponents << endl;
 
-		if (numberOfComponents > 1)
-			clog << "Warning: numberOfComponents, Never reach here!!! NOC = "
-				    << numberOfComponents << endl;
+		if (numberOfComponents > 1) {
+			clog << "Warning: numberOfComponents, Never reach here!!! NOC = ";
+			clog << numberOfComponents << endl;
+		}
 
 		//binding
 		//id_length
@@ -378,11 +385,8 @@ namespace carousel {
 		idx++;
 
 		//id
-		field = (char*)malloc(len);
-		memcpy(field, (void*)&(data[idx]), len);
-		binding->setId((string)field);
-		free(field);
-		field = NULL;
+		strField = getStringFromData(idx, len);
+		binding->setId(strField);
 		clog << "bindingId = " << binding->getId() << endl;
 		idx = idx + len;
 
@@ -391,10 +395,9 @@ namespace carousel {
 		idx++;
 
 		//kind
-		field = (char*)malloc(len);
-		memcpy(field, (void*)&(data[idx]), len);
-		binding->setKind((string)field);
-		free(field);
+		strField = getStringFromData(idx, len);
+		binding->setKind(strField);
+
 		clog << "bindingKind = " << binding->getKind() << endl;
 		idx = idx + len;
 
@@ -411,10 +414,9 @@ namespace carousel {
 		idx = idx + 2;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			binding->setObjectInfo((string)field);
-			free(field);
+			strField = getStringFromData(idx, len);
+			binding->setObjectInfo(strField);
+
 			clog << "bindingsObjectInfo = " << binding->getObjectInfo() << endl;
 			idx = idx + len;
 		}
@@ -425,7 +427,7 @@ namespace carousel {
 	void Biop::processIor(Binding* binding) {
 		Ior* ior;
 		unsigned int len, n1;
-		char* field;
+		string strField;
 
 		ior = new Ior();
 
@@ -438,10 +440,8 @@ namespace carousel {
 		idx = idx + 4;
 
 		//type_id
-		field = (char*)malloc(n1);
-		memcpy(field, (void*)&(data[idx]), n1);
-		ior->setTypeId((string)field);
-		free(field);
+		strField = getStringFromData(idx, n1);
+		ior->setTypeId(strField);
 		clog << "Ior typeId = " << ior->getTypeId() << endl;
 		idx = idx + n1;
 
@@ -588,6 +588,7 @@ namespace carousel {
 
 			idx = idx + len;
 		}
+
 		binding->setIor(ior);
 	}
 
@@ -712,8 +713,8 @@ namespace carousel {
 
 			} while (!processed);
 
-			if (data != NULL && sizeof(data) > 0) {
-				free(data);
+			if (data != NULL) {
+				delete data;
 				data = NULL;
 			}
 
@@ -722,7 +723,7 @@ namespace carousel {
 	}
 
 	map<string, Object*>* Biop::getObjects() {
-		return objects;
+		return &objects;
 	}
 }
 }

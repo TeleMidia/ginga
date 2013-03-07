@@ -93,13 +93,17 @@ namespace carousel {
 			string objectInfo;
 
 			// MessageBody
-			map<string, Object*>* objects;
+			map<string, Object*> objects;
 
 			ObjectProcessor* processor;
 
 		public:
 			Biop(Module* module, ObjectProcessor* processor);
 			virtual ~Biop();
+
+		private:
+			string getStringFromData(unsigned int offset, unsigned int len);
+
 			string getObjectKind();
 			string getObjectInfo();
 

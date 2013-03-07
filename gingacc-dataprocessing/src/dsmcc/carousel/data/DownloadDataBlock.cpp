@@ -57,10 +57,16 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	DownloadDataBlock::DownloadDataBlock(DsmccMessageHeader* message) {
-		header = message;
-		moduleId = 0;
+		header        = message;
+		moduleId      = 0;
 		moduleVersion = 0;
-		data = NULL;
+	}
+
+	DownloadDataBlock::~DownloadDataBlock() {
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
 	}
 
 	void DownloadDataBlock::processDataBlock(

@@ -82,11 +82,13 @@ namespace carousel {
 
 		public:
 			DownloadInfoIndication(DsmccMessageHeader* message);
+			virtual ~DownloadInfoIndication();
+
 			unsigned int getDonwloadId();
 			unsigned int getBlockSize();
 			unsigned int getNumberOfModules();
 			void getInfo(map<unsigned int, Module*>* ocInfo);
-			vector<Module*>* getParameters();
+
 			void print();
 	};
 }

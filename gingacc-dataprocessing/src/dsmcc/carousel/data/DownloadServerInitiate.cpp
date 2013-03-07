@@ -59,8 +59,26 @@ namespace carousel {
 	DownloadServerInitiate::DownloadServerInitiate(DsmccMessageHeader* message) {
 		header = message;
 		srgIor = NULL;
-		data = NULL;
+		data   = NULL;
+
 		processMessage();
+	}
+
+	DownloadServerInitiate::~DownloadServerInitiate() {
+		if (data != NULL) {
+			delete data;
+			data = NULL;
+		}
+
+		if (srgIor != NULL) {
+			delete srgIor;
+			srgIor = NULL;
+		}
+
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
 	}
 
 	Ior* DownloadServerInitiate::getServiceGatewayIor() {
@@ -75,7 +93,7 @@ namespace carousel {
 		// dsmccmessageheader = 12
 		idx = header->getAdaptationLength() + 12;
 
-		data = (char*)malloc((header->getMessageLength() + idx));
+		data = new char[header->getMessageLength() + idx];
 
 		fd = fopen(header->getFileName().c_str(), "rb");
 		if (fd >= 0) {
@@ -113,7 +131,6 @@ namespace carousel {
 		}
 	}
 
-
 	void DownloadServerInitiate::processIor() {
 		unsigned int len;
 		char* field;
@@ -124,11 +141,11 @@ namespace carousel {
 
 		idx = idx + 4;
 
-		field = (char*)malloc(len);
+		field = new char[len];
 		memcpy(field, (void*)&(data[idx]), len);
 		srgIor = new Ior();
 		srgIor->setTypeId((string)field);
-		free(field);
+		delete field;
 		idx = idx + len;
 
 		//check Number of TaggedProfiles
@@ -258,9 +275,10 @@ namespace carousel {
 			idx++;
 
 			idx = idx + len;
-
-			free(data);
 		}
+
+		delete data;
+		data = NULL;
 	}
 }
 }

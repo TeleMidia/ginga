@@ -135,6 +135,19 @@ namespace carousel {
 		delete bytes;
 	}
 
+	DownloadInfoIndication::~DownloadInfoIndication() {
+		map<unsigned int, Module*>::iterator i;
+
+		i = modules.begin();
+		while (i != modules.end()) {
+			delete i->second;
+
+			++i;
+		}
+
+		modules.clear();
+	}
+
 	unsigned int DownloadInfoIndication::getDonwloadId() {
 		return downloadId;
 	}
@@ -149,22 +162,6 @@ namespace carousel {
 
 	void DownloadInfoIndication::getInfo(map<unsigned int, Module*>* ocInfo) {
 		ocInfo->insert(modules.begin(), modules.end());
-	}
-
-	vector<Module*>* DownloadInfoIndication::getParameters() {
-		vector<Module*>* parameters;
-
-		if (modules.empty()) {
-			return NULL;
-		}
-
-		parameters = new vector<Module*>;
-
-		map<unsigned int, Module*>::iterator i;
-		for (i = modules.begin(); i != modules.end(); ++i) {
-			parameters->push_back(i->second);
-		}
-		return parameters;
 	}
 
 	void DownloadInfoIndication::print() {
