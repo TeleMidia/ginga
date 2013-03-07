@@ -50,6 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef MESSAGEPROCESSOR_H_
 #define MESSAGEPROCESSOR_H_
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "tsparser/ITransportSection.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
@@ -74,10 +77,13 @@ namespace carousel {
 			ServiceDomain* sd;
 			DownloadServerInitiate* dsi;
 			DownloadInfoIndication* dii;
-			vector<DsmccMessageHeader*>* msgs;
+			vector<DsmccMessageHeader*> msgs;
+			pthread_mutex_t msgMutex;
 
 		public:
 			MessageProcessor();
+			virtual ~MessageProcessor();
+
 			ServiceDomain* pushMessage(DsmccMessageHeader* hdr);
 
 		private:
