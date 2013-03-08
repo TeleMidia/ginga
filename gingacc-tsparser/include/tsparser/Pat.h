@@ -78,18 +78,20 @@ namespace si {
 
 			//Program association table (pmt pid x program number)
 			// if i->first == 0 i->second = networkPid
-			map<unsigned int, unsigned int>* pat;
+			map<unsigned int, unsigned int> pat;
 
-			vector<unsigned int>* unprocessedPmts;
+			vector<unsigned int> unprocessedPmts;
 
 			//PMT Pid TO PMT
-			map<unsigned int, Pmt*>* programs;
+			map<unsigned int, Pmt*> programs;
 
 			char* stream;
 
 		public:
 			Pat();
 			virtual ~Pat();
+
+			bool hasStreamType(short streamType);
 			unsigned int getNextPid();
 			unsigned int getNextCarouselId();
 			unsigned int getCarouselComponentTag();

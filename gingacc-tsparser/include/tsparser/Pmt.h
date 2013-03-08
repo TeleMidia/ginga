@@ -69,9 +69,8 @@ namespace tsparser {
 namespace si {
 	class Pmt : public TransportSection {
 		protected:
-			map<unsigned int, short>* streams;
-			map<short, string>* streamTypeNames;
-			//map<unsigned int, AITInfo*>* aits;
+			map<unsigned int, short> streams;
+			map<short, string> streamTypeNames;
 
 			unsigned int pid;
 			unsigned int programNumber;
@@ -80,11 +79,14 @@ namespace si {
 
 		public:
 			Pmt(unsigned int pid, unsigned int programNumber);
+			virtual ~Pmt();
+
+			bool hasStreamType(short streamType);
 			void addElementaryStream(unsigned int pid, short esType);
 			//void addAITInfo(unsigned int pid, AITInfo* info);
 			unsigned int getPid();
 			void setPid(unsigned int pid);
-			vector<unsigned int>* getPidsByTid(unsigned int tid);
+			vector<unsigned int>* copyPidsByTid(unsigned int tid);
 			unsigned int getProgramNumber();
 			void setProgramNumber(unsigned int programNumber);
 			bool hasPid(unsigned int somePid);

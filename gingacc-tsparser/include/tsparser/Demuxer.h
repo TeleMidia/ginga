@@ -120,6 +120,9 @@ namespace tsparser {
 			Demuxer(ITuner* tuner);
 			virtual ~Demuxer();
 
+			bool hasStreamType(short streamType);
+			void printPat();
+
 		private:
 			void createPSI();
 			void clearPSI();

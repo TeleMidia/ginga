@@ -61,8 +61,8 @@ namespace tsparser {
 
 	TSAdaptationField::TSAdaptationField(uint64_t pcr) {
 		init();
-		pcrFlag = 1;
-		this->pcrBase = Stc::stcToBase(pcr);
+		this->pcrFlag      = 1;
+		this->pcrBase      = Stc::stcToBase(pcr);
 		this->pcrExtension = Stc::stcToExt(pcr);
 	}
 
@@ -70,8 +70,9 @@ namespace tsparser {
 			uint64_t pcrBase, uint64_t pcrExtension) {
 
 		init();
-		pcrFlag = 1;
-		this->pcrBase = pcrBase;
+
+		this->pcrFlag      = 1;
+		this->pcrBase      = pcrBase;
 		this->pcrExtension = pcrExtension;
 	}
 
@@ -79,8 +80,9 @@ namespace tsparser {
 			char adapField[MAX_ADAPTATION_FIELD_SIZE]) {
 
 		privateDataStream = NULL;
-		streamUpdated = true;
-		fixedSize = true;
+		streamUpdated     = true;
+		fixedSize         = true;
+
 		memcpy(adapFieldStream, adapField, MAX_ADAPTATION_FIELD_SIZE);
 		process();
 	}
@@ -97,31 +99,37 @@ namespace tsparser {
 	}
 
 	void TSAdaptationField::init() {
-		streamUpdated = false;
-		fixedSize = false;
-		discontinuityIndicator = 0;
-		randomAccessIndicator = 0;
+		streamUpdated                     = false;
+		fixedSize                         = false;
+		discontinuityIndicator            = 0;
+		randomAccessIndicator             = 0;
 		elementaryStreamPriorityIndicator = 0;
-		oPCRFlag = 0;
-		splicingPointFlag = 0;
-		transportPrivateDataFlag = 0;
-		adaptationFieldExtensionFlag = 0;
-		ltwFlag = 0;
-		piecewiseRateFlag = 0;
-		seamlessSpliceFlag = 0;
-		ltwValidFlag = 0;
-		originalPcrBase = 0;
-		originalPcrExtension = 0;
-		privateDataStream = NULL;
+		oPCRFlag                          = 0;
+		splicingPointFlag                 = 0;
+		transportPrivateDataFlag          = 0;
+		adaptationFieldExtensionFlag      = 0;
+		ltwFlag                           = 0;
+		piecewiseRateFlag                 = 0;
+		seamlessSpliceFlag                = 0;
+		ltwValidFlag                      = 0;
+		originalPcrBase                   = 0;
+		originalPcrExtension              = 0;
+		privateDataStream                 = NULL;
 	}
 
 	void TSAdaptationField::process() { //decode stream
 		int pos = 2;
 
 		adaptationFieldLength = adapFieldStream[0] & 0xFF;
-		if (adaptationFieldLength == 0) {
+		if (adaptationFieldLength == 0 ||
+				adaptationFieldLength > MAX_ADAPTATION_FIELD_SIZE) {
+
+			clog << "TSAdaptationField::process Warning! Invalid adaptation ";
+			clog << "field length: "  << (adaptationFieldLength & 0xFF);
+			clog << endl;
 			return;
 		}
+
 		discontinuityIndicator = (adapFieldStream[1] & 0x80) >> 7;
 		randomAccessIndicator = (adapFieldStream[1] & 0x40) >> 6;
 		elementaryStreamPriorityIndicator = (adapFieldStream[1] & 0x20) >> 5;

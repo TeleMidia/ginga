@@ -66,6 +66,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 	this->loopControlMax = false;
 	this->loopControlMin = false;
 	this->reScheduleIt   = false;
+	this->nptPrinter     = false;
 
 	Thread::mutexInit(&loopMutex, false);
 	Thread::mutexInit(&schedMutex, false);
@@ -117,6 +118,10 @@ NPTProcessor::~NPTProcessor() {
 	Thread::mutexLock(&lifeMutex);
 	Thread::mutexUnlock(&lifeMutex);
 	Thread::mutexDestroy(&lifeMutex);
+}
+
+void NPTProcessor::setNptPrinter(bool nptPrinter) {
+	this->nptPrinter = nptPrinter;
 }
 
 void NPTProcessor::clearTables() {
@@ -624,7 +629,12 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 	char* stream;
 	MpegDescriptor* desc = NULL;
 
-	if (list == NULL) {
+	assert(list != NULL);
+
+	if (list->empty()) {
+		if (nptPrinter) {
+			cout << "Can't decode NPT: 0 NPT descriptors found" << endl;
+		}
 		return -1;
 	}
 
@@ -641,6 +651,19 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 
 			//NPT reference
 			npt = (NPTReference*) desc;
+
+			if (nptPrinter) {
+				cout << "FOUND NEW NPT REFERENCE DESCRIPTOR" << endl;
+				cout << "CONTENTID: " << (npt->getContentId() & 0xFF) << endl;
+				cout << "NPT REFERENCE: " << npt->getNptRef() << endl;
+				cout << "STC REFERENCE: " << npt->getStcRef() << endl;
+				cout << "DISCONTINUITY INDICATOR: ";
+				cout << (npt->getPostDiscontinuityIndicator() & 0xFF) << endl;
+				cout << "NPT SCALE NUMERATOR: ";
+				cout << npt->getScaleNumerator() << endl;
+				cout << "NPT SCALE DENOMINATOR: ";
+				cout << npt->getScaleDenominator() << endl;
+			}
 
 			//Search for existing time base
 			itBase = timeBaseClock.find(npt->getContentId());
@@ -726,6 +749,14 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 		} else if (desc->getDescriptorTag() == 0x02) {
 			//NPT endpoint
 			nptEP = (NPTEndpoint*) desc;
+
+			if (nptPrinter) {
+				cout << "FOUND NEW NPT ENDPOINT DESCRIPTOR" << endl;
+				cout << "CONTENTID: " << (currentCid & 0xFF) << endl;
+				cout << "START NPT: " << nptEP->getStartNPT() << endl;
+				cout << "STOP NPT: " << nptEP->getStopNPT() << endl;
+			}
+
 			clk = getCurrentTimebase();
 			//set NPT start and stop
 			if (clk != NULL) {
@@ -739,6 +770,15 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 					clog << " and stops at ";
 					clog << Stc::stcToSecond(clk->getStopNpt()*300) << endl;
 				}
+			}
+
+		} else {
+			clog << "NPTProcessor::decodeDescriptors unknown NPT descriptor ";
+			clog << "tag: " << desc->getDescriptorTag() << endl;
+
+			if (nptPrinter) {
+				cout << "NPTProcessor::decodeDescriptors unknown NPT ";
+				cout << "descriptor tag: " << desc->getDescriptorTag() << endl;
 			}
 		}
 		++it;

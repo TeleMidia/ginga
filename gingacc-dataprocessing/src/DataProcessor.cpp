@@ -80,6 +80,7 @@ namespace dataprocessing {
 		removeOCFilter  = false;
 		demux           = NULL;
 		ait             = NULL;
+		nptPrinter      = false;
 
 		Thread::mutexInit(&mutex, true);
 
@@ -140,6 +141,18 @@ namespace dataprocessing {
 		Thread::mutexDestroy(&mutex);
 	}
 
+	void DataProcessor::setNptPrinter(bool nptPrinter) {
+		this->nptPrinter = nptPrinter;
+
+		if (nptProcessor != NULL) {
+			nptProcessor->setNptPrinter(nptPrinter);
+
+		} else {
+			cout << "DataProcessor::printNpt Warning! NULL nptProcessor";
+			cout << endl;
+		}
+	}
+
 	void DataProcessor::applicationInfoMounted(IAIT* ait) {
 		if (sdl != NULL) {
 			sdl->applicationInfoMounted(ait);
@@ -171,6 +184,8 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::setSTCProvider(ISTCProvider* stcProvider) {
+		assert(nptProcessor == NULL);
+
 		nptProcessor = new NPTProcessor(stcProvider);
 	}
 
@@ -315,127 +330,135 @@ namespace dataprocessing {
 		//TODO: clean this mess
 		DSMCCSectionPayload* dsmccSection;
 
-		if (section != NULL) {
-			tableId = section->getTableId();
+		assert(section != NULL);
 
-			//stream event
-			if (tableId == DDE_TID) {
-				//filterManager->addProcessedSection(section->getSectionName());
+		tableId = section->getTableId();
 
-				payload = (char*)(section->getPayload());
+		//stream event
+		if (tableId == DDE_TID) {
+			//filterManager->addProcessedSection(section->getSectionName());
 
-				/*clog << "DataProcessor::receiveSection DSM-CC descriptor";
-				clog << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
+			payload = (char*)(section->getPayload());
 
-				if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
-						(payload[0] & 0xFF) == 0x1a) {
+			/*clog << "DataProcessor::receiveSection DSM-CC descriptor";
+			clog << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
 
-					se = new StreamEvent(
-							section->getPayload(), section->getPayloadSize());
+			if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
+					(payload[0] & 0xFF) == 0x1a) {
 
-					//i = processedIds.find(se->getId());
-					//if (i == processedIds.end()) {377
-						//clog << "DataProcessor::receiveSection STE" << endl;
+				se = new StreamEvent(
+						section->getPayload(), section->getPayloadSize());
 
-						processedIds.insert(se->getId());
-						//TODO: get stream event object from oc
-						se->setEventName("gingaEditingCommands");
+				//i = processedIds.find(se->getId());
+				//if (i == processedIds.end()) {377
+					//clog << "DataProcessor::receiveSection STE" << endl;
 
-						// notify event listeners
-						notifySEListeners(se);
+					processedIds.insert(se->getId());
+					//TODO: get stream event object from oc
+					se->setEventName("gingaEditingCommands");
 
-					//} else {
-						//delete se;
-					//}
+					// notify event listeners
+					notifySEListeners(se);
 
-				} else if ((payload[0] & 0xFF) ==
-								IMpegDescriptor::NPT_REFERENCE_TAG ||
+				//} else {
+					//delete se;
+				//}
 
-						(payload[0] & 0xFF) ==
-								IMpegDescriptor::NPT_ENDPOINT_TAG) {
+			} else if ((payload[0] & 0xFF) ==
+							IMpegDescriptor::NPT_REFERENCE_TAG ||
+					(payload[0] & 0xFF) == IMpegDescriptor::NPT_ENDPOINT_TAG) {
 
-					//TODO: we have to organize this mess
-					dsmccSection = new DSMCCSectionPayload(
-							payload, section->getPayloadSize());
-
-					nptProcessor->decodeDescriptors(
-							dsmccSection->getDsmccDescritorList());
-					delete dsmccSection;
+				if (nptPrinter) {
+					cout << "FOUND NEW NPT DSM-CC SECTION" << endl;
 				}
 
-				delete section;
-				section = NULL;
+				//TODO: we have to organize this mess
+				dsmccSection = new DSMCCSectionPayload(
+						payload, section->getPayloadSize());
 
-			//object carousel 0x3B = MSG, 0x3C = DDB
-			} else if (tableId == OCI_TID || tableId == OCD_TID) {
-				lock();
-				//clog << "DataProcessor::receiveSection OC" << endl;
-				sections.push_back(section);
-				unlock();
-				unlockConditionSatisfied();
+				nptProcessor->decodeDescriptors(
+						dsmccSection->getDsmccDescritorList());
 
-			//AIT
-			} else if (tableId == AIT_TID) {
-				//clog << "DataProcessor::receiveSection AIT" << endl;
+				delete dsmccSection;
+			}
 
-				if (ait != NULL &&
-						ait->getSectionName() == section->getSectionName()) {
+			delete section;
+			section = NULL;
 
-					return;
-				}
+		//object carousel 0x3B = MSG, 0x3C = DDB
+		} else if (tableId == OCI_TID || tableId == OCD_TID) {
+			lock();
+			//clog << "DataProcessor::receiveSection OC" << endl;
+			sections.push_back(section);
+			unlock();
+			unlockConditionSatisfied();
 
-				if (ait != NULL) {
-					delete ait;
-					ait = NULL;
-				}
+		//AIT
+		} else if (tableId == AIT_TID) {
+			//clog << "DataProcessor::receiveSection AIT" << endl;
+
+			if (ait != NULL &&
+					ait->getSectionName() == section->getSectionName()) {
+
+				return;
+			}
+
+			if (ait != NULL) {
+				delete ait;
+				ait = NULL;
+			}
 
 #if HAVE_COMPSUPPORT
-				ait = ((AITCreator*)(cm->getObject("AIT")))();
+			ait = ((AITCreator*)(cm->getObject("AIT")))();
 #else
-				ait = new AIT();
+			ait = new AIT();
 #endif
 
-				ait->setSectionName(section->getSectionName());
-				ait->setApplicationType(section->getExtensionId());
-				clog << "DataProcessor::receiveSection AIT calling process";
-				clog << endl;
-				ait->process(section->getPayload(), section->getPayloadSize());
+			ait->setSectionName(section->getSectionName());
+			ait->setApplicationType(section->getExtensionId());
+			clog << "DataProcessor::receiveSection AIT calling process";
+			clog << endl;
+			ait->process(section->getPayload(), section->getPayloadSize());
 
-				applicationInfoMounted(ait);
+			applicationInfoMounted(ait);
 
-			//SDT
-			} else if (tableId == SDT_TID) {
-				//clog << "DataProcessor::receiveSection SDT" << endl;
-				//TODO: remove all garbage from epg processor before start using it
-				//epgProcessor->decodeSdtSection(section);
-				delete section;
-				section = NULL;
+		//SDT
+		} else if (tableId == SDT_TID) {
+			//clog << "DataProcessor::receiveSection SDT" << endl;
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeSdtSection(section);
+			delete section;
+			section = NULL;
 
-			// EIT present/following and schedule 
-			} else if ( tableId == EIT_TID || //EIT present/following in actual TS
-						(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
-					
-				/*TODO: TS files don't have EITs p/f and sched in other TS.
-				 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F
-				 (schedule)
-				*/
+		// EIT present/following and schedule
+		} else if ( tableId == EIT_TID || //EIT present/following in actual TS
+					(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
 				
-				//TODO: remove all garbage from epg processor before start using it
-				//epgProcessor->decodeEitSection(section);
-				delete section;
-				section = NULL;
+			/*TODO: TS files don't have EITs p/f and sched in other TS.
+			 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F
+			 (schedule)
+			*/
 
-			//CDT
-			} else if (tableId == CDT_TID) {
-				clog << "DataProcessor::receiveSection CDT" << endl;
-				sectionName = section->getSectionName();
-				//TODO: TS files don't have any CDT sections.
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeEitSection(section);
+			delete section;
+			section = NULL;
 
-			} else if (tableId == 0x73) {
-				clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
-				//TODO: remove all garbage from epg processor before start using it
-				//epgProcessor->decodeTot(section);
-			}
+		//CDT
+		} else if (tableId == CDT_TID) {
+			clog << "DataProcessor::receiveSection CDT" << endl;
+			sectionName = section->getSectionName();
+			//TODO: TS files don't have any CDT sections.
+
+		} else if (tableId == 0x73) {
+			clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeTot(section);
+
+		} else if (nptPrinter) {
+			cout << "NPT PRINTER WARNING! FOUND '" << tableId << "TABLE ID! ";
+			cout << "EXPECTING SECTION WITH TABLE ID '";
+			cout << DDE_TID << "'! ";
 		}
 	}
 

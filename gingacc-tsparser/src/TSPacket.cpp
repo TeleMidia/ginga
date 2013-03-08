@@ -469,32 +469,53 @@ namespace tsparser {
 	void TSPacket::print() {
 		unsigned int i;
 		clog << "TS PACK" << endl;
-		clog << "sync = " << hex << (syncByte & 0xFF) << endl;
-		clog << "pid = " << hex << pid << endl;
+		clog << "sync = 0x" << hex << (syncByte & 0xFF) << endl;
+		clog << "pid = 0x" << hex << pid << dec << " (" << pid << ")" << endl;
 
-		clog << "payloadSize = " << payloadSize << endl;
+		clog << "payloadSize = " << dec << (payloadSize & 0xFF);
 
-		clog << "transportErrorIndication = "
-		     << transportErrorIndication << endl;
+		if (payloadSize > TS_PAYLOAD_SIZE) {
+			clog << " (WARNING!)" << endl;
 
-		clog << "payloadUnitStartIndicator = "
-		     << hex << payloadUnitStartIndicator << endl;
+		} else {
+			clog << endl;
+		}
+
+		clog << "transportErrorIndication = " << transportErrorIndication;
+		clog << endl;
+
+		clog << "payloadUnitStartIndicator = ";
+		clog << payloadUnitStartIndicator << endl;
 
 		clog << "transportPriority = " << transportPriority << endl;
 
-		clog << "transportScramblingControl = "
-		     << hex << transportScramblingControl << endl;
+		clog << "transportScramblingControl = ";
+		clog << (transportScramblingControl & 0xFF) << endl;
 
-		clog << "adaptationFieldControl = " << hex
-		     << adaptationFieldControl << endl;
+		clog << "adaptationFieldControl = ";
+		clog << adaptationFieldControl << ": ";
 
-		clog << "continuityCounter = " << hex << continuityCounter
-		     << endl;
+		if (adaptationFieldControl == FUTURE_USE) {
+			clog << "ISO future use; packet must be discarded";
+
+		} else if (adaptationFieldControl == PAYLOAD_ONLY) {
+			clog << "no adaptation field (payload only)";
+
+		} else if (adaptationFieldControl == NO_PAYLOAD) {
+			clog << "adaptation field only (no payload)";
+
+		} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
+			clog << "adaptation field followed by payload";
+		}
+		clog << endl;
+
+		clog << "continuityCounter = " << (continuityCounter & 0xFF) << endl;
 
 		clog << "payload: " << endl;
 		for (i=0; i < 184; i++) {
-			clog << (payload[i] & 0xFF) << " ";
+			clog << "0x" << hex << (payload[i] & 0xFF) << " ";
 		}
+
 		clog << endl << endl;
 	}
 }

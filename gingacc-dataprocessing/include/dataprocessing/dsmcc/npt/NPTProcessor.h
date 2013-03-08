@@ -113,14 +113,17 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*> timeListeners;
 		set<ITimeBaseProvider*> cidListeners;
 		bool reScheduleIt;
+		uint64_t firstStc;
+		bool isFirstStc;
+		bool nptPrinter;
 
 	public:
 		NPTProcessor(ISTCProvider* stcProvider);
 		virtual ~NPTProcessor();
 
+		void setNptPrinter(bool nptPrinter);
+
 	private:
-		uint64_t firstStc;
-		bool isFirstStc;
 		uint64_t getSTCValue();
 		void clearUnusedTimebase();
 		void clearTables();
