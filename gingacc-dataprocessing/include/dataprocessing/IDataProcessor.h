@@ -85,6 +85,7 @@ namespace dataprocessing {
 	public:
 		virtual ~IDataProcessor(){};
 
+		virtual void setNptPrinter(bool nptPrinter)=0;
 		virtual void setDemuxer(IDemuxer* demux)=0;
 		virtual void removeOCFilterAfterMount(bool removeIt)=0;
 

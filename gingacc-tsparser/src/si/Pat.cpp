@@ -63,17 +63,29 @@ namespace si {
 	int Pat::defaultProgramPid    = -1;
 
 	Pat::Pat() : TransportSection() {
-		programs = new map<unsigned int, Pmt*>;
-		pat = new map<unsigned int, unsigned int>;
-		unprocessedPmts = new vector<unsigned int>;
-		currentPid = 150;
-		currentCarouselId = 15;
+		currentPid           = 150;
+		currentCarouselId    = 15;
 		carouselComponentTag = 0x21;
-		stream = new char[4096];
+		stream               = new char[4096];
 	}
 
 	Pat::~Pat() {
-		delete (stream);
+		if (stream != NULL) {
+			delete (stream);
+			stream = NULL;
+		}
+	}
+
+	bool Pat::hasStreamType(short streamType) {
+		map<unsigned int, Pmt*>::iterator i;
+
+		for (i = programs.begin(); i != programs.end(); ++i) {
+			if (i->second->hasStreamType(streamType)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	unsigned int Pat::getNextPid() {
@@ -96,8 +108,9 @@ namespace si {
 
 	bool Pat::hasProgramNumber(unsigned int programNumber) {
 		map<unsigned int, unsigned int>::iterator i;
-		i = pat->begin();
-		while (i != pat->end()) {
+
+		i = pat.begin();
+		while (i != pat.end()) {
 			if (i->second == programNumber) {
 				return true;
 			}
@@ -110,8 +123,8 @@ namespace si {
 		map<unsigned int, Pmt*>::iterator i;
 		Pmt* pmt;
 
-		i = programs->begin();
-		while (i != programs->end()) {
+		i = programs.begin();
+		while (i != programs.end()) {
 			pmt = i->second;
 			if (pmt->hasPid(pid)) {
 				return true;
@@ -124,11 +137,11 @@ namespace si {
 	Pmt* Pat::getPmtByProgramNumber(unsigned int programNumber) {
 		map<unsigned int, unsigned int>::iterator i;
 
-		i = pat->begin();
-		while (i != pat->end()) {
+		i = pat.begin();
+		while (i != pat.end()) {
 			if (i->second == programNumber) {
-				if (programs->count(i->first) != 0) {
-					return (*programs)[i->first];
+				if (programs.count(i->first) != 0) {
+					return programs[i->first];
 				}
 			}
 			++i;
@@ -145,17 +158,17 @@ namespace si {
 	}
 
 	unsigned int Pat::getNumOfPrograms() {
-		return programs->size();
+		return programs.size();
 	}
 
 	void Pat::addProgram(unsigned int pid, unsigned int programNumber) {
-		if (pat->count(pid) != 0) {
+		if (pat.count(pid) != 0) {
 
 			clog << "Pat::addProgram Warning! Trying to override an existent";
 			clog << " program. Pid = '" << pid << "'" << endl;
 
 		} else {
-			(*pat)[pid] = programNumber;
+			pat[pid] = programNumber;
 		}
 	}
 
@@ -165,57 +178,57 @@ namespace si {
 		}
 
 		vector<unsigned int>::iterator i;
-		for (i = unprocessedPmts->begin(); i != unprocessedPmts->end(); ++i) {
+		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
 			if (*i == program->getPid()) {
-				unprocessedPmts->erase(i);
+				unprocessedPmts.erase(i);
 				break;
 			}
 		}
 
-		if (programs->count(program->getPid())) {
+		if (programs.count(program->getPid())) {
 
 			clog << "Pat::addPmt Warning! Trying to override an existent";
 			clog << " program. Pid = '" << program->getPid() << "'";
 			clog << endl;
 
 		} else {
-			(*programs)[program->getPid()] = program;
+			programs[program->getPid()] = program;
 		}
 	}
 
 	void Pat::replacePmt(unsigned int pid, Pmt* newPmt) {
 		Pmt* oldPmt;
-		if (programs->count(pid) != 0) {
-			oldPmt = (*programs)[pid];
+		if (programs.count(pid) != 0) {
+			oldPmt = programs[pid];
 			delete oldPmt;
-			(*programs)[pid] = newPmt;
+			programs[pid] = newPmt;
 		}
 	}
 
 	unsigned int Pat::getFirstProgramNumber() {
-		if (pat->empty()) {
+		if (pat.empty()) {
 			return 0;
 		}
-		return pat->begin()->second;
+		return pat.begin()->second;
 	}
 
 	unsigned int Pat::getProgramNumberByPid(unsigned int pid) {
-		if (pat->count(pid) != 0) {
-			return (*pat)[pid];
+		if (pat.count(pid) != 0) {
+			return pat[pid];
 		}
 		return 0;
 	}
 
 	short Pat::getStreamType(unsigned int pid) {
-		if (programs->empty()) {
+		if (programs.empty()) {
 			return 0;
 		}
 
 		map<unsigned int, Pmt*>::iterator i;
 
 		Pmt* program = NULL;
-		i = programs->begin();
-		while (i != programs->end()) {
+		i = programs.begin();
+		while (i != programs.end()) {
 			program = i->second;
 			if (program->hasPid(pid)) {
 				break;
@@ -234,14 +247,14 @@ namespace si {
 
 	bool Pat::isSectionType(unsigned int pid) {
 		if (pid == 0x00 || pid == 0x01 || pid == 0x03 ||
-			    programs->count(pid) != 0) {
+			    programs.count(pid) != 0) {
 
 			return true;
 		}
 
 		vector<unsigned int>::iterator it;
-		for (it = unprocessedPmts->begin();
-			    it != unprocessedPmts->end(); ++it) {
+		for (it = unprocessedPmts.begin();
+			    it != unprocessedPmts.end(); ++it) {
 
 			if (*it == pid) {
 				return true;
@@ -251,8 +264,8 @@ namespace si {
 		map<unsigned int, Pmt*>::iterator i;
 
 		Pmt* program = NULL;
-		i = programs->begin();
-		while (i != programs->end()) {
+		i = programs.begin();
+		while (i != programs.end()) {
 			program = i->second;
 			if (program->hasPid(pid)) {
 				break;
@@ -315,8 +328,8 @@ namespace si {
 						defaultProgramPid    = pid;
 					}
 
-					(*pat)[pid] = programNumber;
-					unprocessedPmts->push_back(pid);
+					pat[pid] = programNumber;
+					unprocessedPmts.push_back(pid);
 				}
 			}
 		}
@@ -383,31 +396,31 @@ namespace si {
 	}
 
 	bool Pat::hasUnprocessedPmt() {
-		if (unprocessedPmts->empty()) {
+		if (unprocessedPmts.empty()) {
 			return false;
 		}
 		return true;
 	}
 
 	vector<unsigned int>* Pat::getUnprocessedPmtPids() {
-		return unprocessedPmts;
+		return &unprocessedPmts;
 	}
 
 	map<unsigned int, Pmt*>* Pat::getProgramsInfo() {
-		return this->programs;
+		return &this->programs;
 	}
 
 	void Pat::checkConsistency() {
 		map<unsigned int, unsigned int>::iterator i;
 
-		i = pat->begin();
-		while (i != pat->end()) {
-			if (programs->count(i->first) == 0) {
-				pat->erase(i);
-				if (pat->empty()) {
+		i = pat.begin();
+		while (i != pat.end()) {
+			if (programs.count(i->first) == 0) {
+				pat.erase(i);
+				if (pat.empty()) {
 					return;
 				}
-				i = pat->begin();
+				i = pat.begin();
 
 			} else {
 				++i;
@@ -418,33 +431,33 @@ namespace si {
 	unsigned int Pat::getDefaultProgramPid() {
 		Pmt* pmt;
 
-		if (programs->empty()) {
+		if (programs.empty()) {
 			return 0;
 		}
 
-		pmt = programs->begin()->second;
+		pmt = programs.begin()->second;
 		return pmt->getPid();
 	}
 
 	unsigned int Pat::getDefaultMainVideoPid() {
 		Pmt* pmt;
 
-		if (programs->empty()) {
+		if (programs.empty()) {
 			return 0;
 		}
 
-		pmt = programs->begin()->second;
+		pmt = programs.begin()->second;
 		return pmt->getDefaultMainVideoPid();
 	}
 
 	unsigned int Pat::getDefaultMainAudioPid() {
 		Pmt* pmt;
 
-		if (programs->empty()) {
+		if (programs.empty()) {
 			return 0;
 		}
 
-		pmt = programs->begin()->second;
+		pmt = programs.begin()->second;
 		return pmt->getDefaultMainAudioPid();
 	}
 
@@ -471,20 +484,18 @@ namespace si {
 		stream[pos++] = sectionNumber & 0xFF;
 		stream[pos++] = lastSectionNumber & 0xFF;
 
-		if ((pat != NULL) && (!pat->empty())) {
-			i = pat->begin();
-			while (i != pat->end()) {
-				if (i->first == pid) {
-					stream[pos++] = (i->second >> 8) & 0xFF;
-					stream[pos++] = i->second & 0xFF;
-					stream[pos] = 0xE0;
-					stream[pos] = stream[pos] | ((i->first >> 8) & 0x1F);
-					pos++;
-					stream[pos++] = i->first & 0xFF;
-					break;
-				}
-				++i;
+		i = pat.begin();
+		while (i != pat.end()) {
+			if (i->first == pid) {
+				stream[pos++] = (i->second >> 8) & 0xFF;
+				stream[pos++] = i->second & 0xFF;
+				stream[pos] = 0xE0;
+				stream[pos] = stream[pos] | ((i->first >> 8) & 0x1F);
+				pos++;
+				stream[pos++] = i->first & 0xFF;
+				break;
 			}
+			++i;
 		}
 
 		unsigned int crcValue = TransportSection::crc32(stream, pos);
@@ -500,13 +511,19 @@ namespace si {
 	}
 
 	void Pat::print() {
-		clog << "Pat::print" << endl;
-		clog << "TS id = " << idExtention << endl;
-		clog << "programs:" << endl;
 		map<unsigned int, unsigned int>::iterator i;
-		for (i = pat->begin(); i != pat->end(); ++i) {
-			clog << "programNumber '" << hex << i->second << "' ";
-			clog << " has pid = '" << hex << i->first << "'" << endl;
+		map<unsigned int, Pmt*>::iterator j;
+
+		cout << "Pat::print" << endl;
+		cout << "TS id = " << idExtention << endl;
+
+		for (i = pat.begin(); i != pat.end(); ++i) {
+			cout << "programNumber '" << i->second << "' ";
+			cout << " has pid = '" << i->first << "'" << endl;
+		}
+
+		for (j = programs.begin(); j != programs.end(); ++j) {
+			j->second->print();
 		}
 	}
 }

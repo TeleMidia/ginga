@@ -60,49 +60,62 @@ namespace si {
 	Pmt::Pmt(unsigned int pid, unsigned int programNumber) :
 			TransportSection() {
 
-		streams = new map<unsigned int, short>;
-		streamTypeNames = new map<short, string>;
-		//aits = new map<unsigned int, AITInfo*>;
 		processed = false;
 
-		(*streamTypeNames)[STREAM_TYPE_VIDEO_MPEG1] = "ISO/IEC 11172-2 Video";
-		(*streamTypeNames)[STREAM_TYPE_VIDEO_MPEG2] = "ISO/IEC 13818-2 Video";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_MPEG1] = "ISO/IEC 11172-3 Audio";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_MPEG2] = "ISO/IEC 13818-3 Audio";
-		(*streamTypeNames)[STREAM_TYPE_PRIVATE_SECTION] =
+		streamTypeNames[STREAM_TYPE_VIDEO_MPEG1] = "ISO/IEC 11172-2 Video";
+		streamTypeNames[STREAM_TYPE_VIDEO_MPEG2] = "ISO/IEC 13818-2 Video";
+		streamTypeNames[STREAM_TYPE_AUDIO_MPEG1] = "ISO/IEC 11172-3 Audio";
+		streamTypeNames[STREAM_TYPE_AUDIO_MPEG2] = "ISO/IEC 13818-3 Audio";
+		streamTypeNames[STREAM_TYPE_PRIVATE_SECTION] =
 			    "ISO/IEC 13818 Private Sections";
 
-		(*streamTypeNames)[STREAM_TYPE_PRIVATE_DATA] =
+		streamTypeNames[STREAM_TYPE_PRIVATE_DATA] =
 			    "ISO/IEC 13818 Private Data";
 
-		(*streamTypeNames)[STREAM_TYPE_MHEG] = "ISO/IEC 13522 MHEG";
-		(*streamTypeNames)[STREAM_TYPE_DSMCC_TYPE_A] = "ISO/IEC 13818-6 type A";
-		(*streamTypeNames)[STREAM_TYPE_DSMCC_TYPE_B] = "ISO/IEC 13818-6 type B";
-		(*streamTypeNames)[STREAM_TYPE_DSMCC_TYPE_C] = "ISO/IEC 13818-6 type C";
-		(*streamTypeNames)[STREAM_TYPE_DSMCC_TYPE_D] = "ISO/IEC 13818-6 type D";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_AAC] = "ISO/IEC 13818-7 Audio AAC";
-		(*streamTypeNames)[STREAM_TYPE_VIDEO_MPEG4] = "ISO/IEC 14496-2 Visual";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_MPEG4] = "ISO/IEC 14496-3 Audio";
-		(*streamTypeNames)[STREAM_TYPE_VIDEO_H264] = "ISO/IEC 14496-10 h.264";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_AC3] = "audio AC3";
-		(*streamTypeNames)[STREAM_TYPE_AUDIO_DTS] = "audio DTS";
+		streamTypeNames[STREAM_TYPE_MHEG] = "ISO/IEC 13522 MHEG";
+		streamTypeNames[STREAM_TYPE_DSMCC_TYPE_A] = "ISO/IEC 13818-6 type A";
+		streamTypeNames[STREAM_TYPE_DSMCC_TYPE_B] = "ISO/IEC 13818-6 type B";
+		streamTypeNames[STREAM_TYPE_DSMCC_TYPE_C] = "ISO/IEC 13818-6 type C";
+		streamTypeNames[STREAM_TYPE_DSMCC_TYPE_D] = "ISO/IEC 13818-6 type D";
+		streamTypeNames[STREAM_TYPE_AUDIO_AAC] = "ISO/IEC 13818-7 Audio AAC";
+		streamTypeNames[STREAM_TYPE_VIDEO_MPEG4] = "ISO/IEC 14496-2 Visual";
+		streamTypeNames[STREAM_TYPE_AUDIO_MPEG4] = "ISO/IEC 14496-3 Audio";
+		streamTypeNames[STREAM_TYPE_VIDEO_H264] = "ISO/IEC 14496-10 h.264";
+		streamTypeNames[STREAM_TYPE_AUDIO_AC3] = "audio AC3";
+		streamTypeNames[STREAM_TYPE_AUDIO_DTS] = "audio DTS";
 
 		this->pid = pid;
 		this->programNumber = programNumber;
 		this->pcrPid = 0;
 	}
 
+	Pmt::~Pmt() {
+
+	}
+
+	bool Pmt::hasStreamType(short streamType) {
+		map<unsigned int, short>::iterator i;
+
+		for (i = streams.begin(); i != streams.end(); ++i) {
+			if (i->second == streamType) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void Pmt::addElementaryStream(unsigned int pid, short esType) {
 		clog << "pid = '" << pid << "' esType = '" << esType;
 		clog << "' " << endl;
-		(*streams)[pid] = esType;
+		streams[pid] = esType;
 	}
 
 	unsigned int Pmt::getPid() {
 		return this->pid;
 	}
 
-	vector<unsigned int>* Pmt::getPidsByTid(unsigned int tid) {
+	vector<unsigned int>* Pmt::copyPidsByTid(unsigned int tid) {
 		vector<unsigned int>* pids;
 		map<unsigned int, short>::iterator i;
 		short streamType;
@@ -110,8 +123,8 @@ namespace si {
 		streamType = IDemuxer::getStreamTypeFromTableId(tid);
 
 		pids = new vector<unsigned int>;
-		i = streams->begin();
-		while (i != streams->end()) {
+		i = streams.begin();
+		while (i != streams.end()) {
 			if (streamType == i->second) {
 				pids->push_back(i->first);
 			}
@@ -138,23 +151,23 @@ namespace si {
 			return true;
 		}
 
-		return (streams->count(somePid) != 0);
+		return (streams.count(somePid) != 0);
 	}
 
 	short Pmt::getStreamTypeValue(unsigned int somePid) {
-		if (streams->count(somePid) == 0) {
+		if (streams.count(somePid) == 0) {
 			return -1;
 		}
 
-		return (*streams)[somePid];
+		return streams[somePid];
 	}
 
 	string Pmt::getStreamType(unsigned int somePid) {
-		if (streams->count(somePid) == 0) {
+		if (streams.count(somePid) == 0) {
 			return "";
 		}
 
-		return getStreamTypeName((*streams)[somePid]);
+		return getStreamTypeName(streams[somePid]);
 	}
 
 	bool Pmt::isSectionType(unsigned int pid) {
@@ -172,18 +185,16 @@ namespace si {
 	}
 
 	string Pmt::getStreamTypeName(short streamType) {
-		if (streamTypeNames == NULL ||
-			    streamTypeNames->count(streamType) == 0) {
-
+		if (streamTypeNames.count(streamType) == 0) {
 			return "unknown type '" + intToStrHexa(streamType) + "'";
 		}
-		return (*streamTypeNames)[streamType];
+		return streamTypeNames[streamType];
 	}
 
 	bool Pmt::processSectionPayload() {
 		if (processed) {
-			clog << "Warning! Pmt::processSectionPayload() - Try to process a "
-				 << "already processed PMT " << endl;
+			clog << "Warning! Pmt::processSectionPayload() - Try to process a ";
+			clog << "already processed PMT " << endl;
 			return false;
 		}
 
@@ -221,7 +232,7 @@ namespace si {
 			elementaryPid = ((sectionPayload[i] & 0x1F) << 8) |
 			    (sectionPayload[i + 1] & 0xFF);
 
-			(*streams)[elementaryPid] = streamType;
+			streams[elementaryPid] = streamType;
 
 			i += 2;
 			esInfoLength = ((sectionPayload[i] & 0x0F) << 8) |
@@ -241,7 +252,7 @@ namespace si {
 	}
 
 	map<unsigned int, short>* Pmt::getStreamsInformation() {
-		return streams;
+		return &streams;
 	}
 
 	unsigned int Pmt::getPCRPid() {
@@ -251,8 +262,8 @@ namespace si {
 	unsigned int Pmt::getDefaultMainVideoPid() {
 		map<unsigned int, short>::iterator i;
 
-		i = streams->begin();
-		while (i != streams->end()) {
+		i = streams.begin();
+		while (i != streams.end()) {
 			switch (i->second) {
 				case STREAM_TYPE_VIDEO_MPEG1:
 				case STREAM_TYPE_VIDEO_MPEG2:
@@ -272,8 +283,8 @@ namespace si {
 	unsigned int Pmt::getDefaultMainAudioPid() {
 		map<unsigned int, short>::iterator i;
 
-		i = streams->begin();
-		while (i != streams->end()) {
+		i = streams.begin();
+		while (i != streams.end()) {
 			switch (i->second) {
 				case STREAM_TYPE_AUDIO_MPEG1:
 				case STREAM_TYPE_AUDIO_MPEG2:
@@ -293,13 +304,13 @@ namespace si {
 	}
 
 	void Pmt::print() {
-		clog << "Pmt::print" << endl;
-		clog << "Program number = " << idExtention << endl;
-		clog << "streams:" << endl;
+		cout << "Pmt::print" << endl;
+		cout << "Program number = " << idExtention << endl;
+		cout << "streams:" << endl;
 		map<unsigned int, short>::iterator i;
-		for (i = streams->begin(); i != streams->end(); ++i) {
-			clog << "streamType '" << getStreamTypeName(i->second) << "' ";
-			clog << " has pid = '" << i->first << "'" << endl;
+		for (i = streams.begin(); i != streams.end(); ++i) {
+			cout << "streamType '" << getStreamTypeName(i->second) << "' ";
+			cout << " has pid = '" << i->first << "'" << endl;
 		}
 	}
 }

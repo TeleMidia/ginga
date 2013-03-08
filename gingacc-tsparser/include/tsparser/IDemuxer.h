@@ -108,6 +108,10 @@ namespace tsparser {
   class IDemuxer : public ITunerListener {
 	public:
 		virtual ~IDemuxer(){};
+
+		virtual bool hasStreamType(short streamType)=0;
+		virtual void printPat()=0;
+
 		virtual unsigned int getTSId()=0;
 
 		static int getTableIdFromStreamType(short streamType) {

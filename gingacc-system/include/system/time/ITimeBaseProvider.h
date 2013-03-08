@@ -63,6 +63,8 @@ namespace time {
 		public:
 			virtual ~ITimeBaseProvider(){};
 
+			virtual void setNptPrinter(bool nptPrinter)=0;
+
 			virtual bool addLoopListener(
 					unsigned char timeBaseId,
 					ITimeBaseListener* ltn)=0;

@@ -115,10 +115,13 @@ namespace dataprocessing {
 			IAIT* ait;
 			bool running;
 			bool removeOCFilter;
+			bool nptPrinter;
 
 		public:
 			DataProcessor();
 			virtual ~DataProcessor();
+
+			void setNptPrinter(bool nptPrinter);
 
 			void applicationInfoMounted(IAIT* ait);
 			void serviceDomainMounted(

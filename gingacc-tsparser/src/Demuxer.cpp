@@ -105,6 +105,29 @@ namespace tsparser {
 		Thread::mutexDestroy(&stlMutex);
 	}
 
+	bool Demuxer::hasStreamType(short streamType) {
+		bool hasST = false;
+
+		if (pat == NULL) {
+			clog << "Demuxer::hasStreamType Warning! ";
+			clog << "PAT was not parsed yet." << endl;
+
+		} else {
+			hasST = pat->hasStreamType(streamType);
+		}
+
+		return hasST;
+	}
+
+	void Demuxer::printPat() {
+		if (pat == NULL) {
+			cout << "Demuxer::printPat PAT was not parsed yet." << endl;
+
+		} else {
+			pat->print();
+		}
+	}
+
 	void Demuxer::createPSI() {
 		this->pat = new Pat();
 	}
@@ -276,8 +299,9 @@ namespace tsparser {
 		Thread::mutexUnlock(&stlMutex);
 
 		if (pmt != NULL) {
+
 			tid = filter->getTid();
-			pids = pmt->getPidsByTid(tid);
+			pids = pmt->copyPidsByTid(tid);
 
 			i = pids->begin();
 			while (i != pids->end()) {
@@ -292,22 +316,22 @@ namespace tsparser {
 						Thread::mutexUnlock(&stlMutex);
 
 						attachFilter(filter);
-
-					} else {
-
 					}
+
 					attached = true;
 
-				} else {
-					/*clog << "Demuxer::setupFilter can't getPidByTid pid = '";
+				}/* else {
+					clog << "Demuxer::setupFilter can't getPidByTid pid = '";
 					clog << pid << "' tid = '" << filter->getTid() << "'";
 
 					clog << " PMT print: " << endl;
-					pmt->print();*/
-				}
+					pmt->print();
+				}*/
 
 				++i;
 			}
+
+			delete pids;
 
 		} else {
 			//clog << "Demuxer::setupFilter can't get pmt" << endl;

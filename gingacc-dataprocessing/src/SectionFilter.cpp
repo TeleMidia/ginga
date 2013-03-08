@@ -311,9 +311,7 @@ namespace dataprocessing {
 		}
 
 		if (filteredSection->isConsolidated()) {
-			if (i != hFilteredSections.end()) {
-				hFilteredSections.erase(i);
-			}
+			hFilteredSections.erase(i);
 
 			if (!checkProcessedSections(filteredSection->getSectionName())) {
 				listener->receiveSection(filteredSection);
@@ -345,9 +343,13 @@ namespace dataprocessing {
 		SectionHandler* handler;
 
 		handler = getSectionHandler(pid);
-		if (handler != NULL && listener != NULL) {
+		assert(handler != NULL);
+		assert(handler->section != NULL);
+
+		if (listener != NULL) {
 			if (!checkProcessedSections(handler->section->getSectionName())) {
 				listener->receiveSection(handler->section);
+				handler->section = NULL;
 			}
 		}
 
@@ -355,6 +357,10 @@ namespace dataprocessing {
 	}
 
 	void SectionFilter::resetHandler(SectionHandler* handler) {
+		if (handler->section != NULL) {
+			delete handler->section;
+		}
+
 		handler->section               = NULL;
 		handler->lastContinuityCounter = -1;
 		handler->headerSize            = 0;
@@ -373,9 +379,6 @@ namespace dataprocessing {
 		i = sectionPidSelector.find(pid);
 		if (i != sectionPidSelector.end()) {
 			resetHandler(i->second);
-			if (i->second->section != NULL) {
-				delete i->second->section;
-			}
 		}
 	}
 
@@ -386,9 +389,9 @@ namespace dataprocessing {
 		unsigned int freespace;
 
 		handler = getSectionHandler(pack->getPid());
-		if (handler == NULL) {
-			return;
-		}
+
+		assert(handler != NULL);
+		assert(handler->section != NULL);
 
 		freespace = handler->section->getSectionLength() + 3 -
 				handler->section->getCurrentSize();
@@ -401,12 +404,9 @@ namespace dataprocessing {
 		memset(data, 0, sizeof(data));
 
 		pack->getPayload(data);
-		if (freespace > 0) {
-			handler->section->addData(data, freespace);
 
-		} else {
-			clog << "Trying to add 0 bytes in the section" << endl;
-		}
+		assert(freespace > 0);
+		handler->section->addData(data, freespace);
 
 		if (handler->section->isConsolidated()) {
 			process(handler->section, pack->getPid());
@@ -416,19 +416,27 @@ namespace dataprocessing {
 	bool SectionFilter::verifyAndCreateSection(ITSPacket* pack) {
 		unsigned int offset;
 		unsigned int diff;
-		char data[184];
+		unsigned int payloadSize;
+		char data[ITSPacket::TS_PAYLOAD_SIZE];
 		char* buffer;
 		SectionHandler* handler;
 
 		handler = getSectionHandler(pack->getPid());
-		if (handler == NULL) {
-			return false;
-		}
+		assert(handler != NULL);
 
-		offset = pack->getPointerField();
+		offset      = pack->getPointerField();
+		payloadSize = pack->getPayloadSize();
 
 		/* What is the real payload */
-		diff   = pack->getPayloadSize() - offset;
+		diff = payloadSize - offset;
+
+		if (diff > ITSPacket::TS_PAYLOAD_SIZE) {
+			clog << "SectionFilter::verifyAndCreateSection Warning! ";
+			clog << "invalid TS Packet" << endl;
+			pack->print();
+
+			return false;
+		}
 
 		pack->getPayload(data);
 		/* The payload has only a part of the header */
@@ -504,6 +512,8 @@ namespace dataprocessing {
 			clog << handler->section << "' TS packet: ";
 			pack->print();
 			clog << endl;*/
+
+			return false;
 		}
 
 		return setSectionParameters(pack);
@@ -513,10 +523,9 @@ namespace dataprocessing {
 		SectionHandler* handler;
 
 		handler = getSectionHandler(pack->getPid());
-		/* First of all verifies if the currentSection is OK */
-		if (handler == NULL || handler->section == NULL) {
-			return false;
-		}
+
+		assert(handler != NULL);
+		assert(handler->section != NULL);
 
 		/* Verifies if the TransportSection has been created! */
 		if (!(handler->section->isConstructionFailed())) {
