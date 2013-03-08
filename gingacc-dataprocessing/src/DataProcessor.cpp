@@ -96,6 +96,18 @@ namespace dataprocessing {
 	DataProcessor::~DataProcessor() {
 		running = false;
 
+		map<string, set<IStreamEventListener*>*>::iterator it;
+		set<IStreamEventListener*>::iterator its;
+		it = eventListeners.begin();
+		while (it != eventListeners.end()) {
+			its = it->second->begin();
+			while (its != it->second->end()) {
+				delete *its;
+				++its;
+			}
+			delete it->second;
+			++it;
+		}
 		eventListeners.clear();
 		objectListeners.clear();
 
@@ -348,6 +360,7 @@ namespace dataprocessing {
 
 					nptProcessor->decodeDescriptors(
 							dsmccSection->getDsmccDescritorList());
+					delete dsmccSection;
 				}
 
 				delete section;

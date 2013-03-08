@@ -240,6 +240,8 @@ namespace carousel {
 
 					biop = new Biop(module, processor);
 					biop->process();
+					delete biop;
+					biop = NULL;
 
 					Thread::mutexLock(&stlMutex);
 					i = info.find(modId);
@@ -265,8 +267,8 @@ namespace carousel {
 
 						clog << "ServiceDomain::run BIOP->process DONE!";
 						clog << endl;
-//						delete biop;
-//						biop = NULL;
+						delete biop;
+						biop = NULL;
 
 //						delete module;
 //						module = NULL;
