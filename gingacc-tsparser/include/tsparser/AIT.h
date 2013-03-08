@@ -78,9 +78,9 @@ namespace si {
 		private:
 			unsigned int applicationType;
 			unsigned short commonDescriptorsLength;
-			vector<IMpegDescriptor*>* descriptors;
+			vector<IMpegDescriptor*> descriptors;
 			unsigned short applicationLoopLength;
-			vector<IApplication*>* applications;
+			vector<IApplication*> applications;
 			string secName;
 
 		public:
@@ -90,8 +90,8 @@ namespace si {
 			void setSectionName(string secName);
 			void setApplicationType(unsigned int type);
 			void process(void* payloadBytes, unsigned int payloadSize);
-			vector<IMpegDescriptor*>* getDescriptors();
-			vector<IApplication*>* getApplications();
+			vector<IMpegDescriptor*>* copyDescriptors();
+			vector<IApplication*>* copyApplications();
 	};
 
 }
