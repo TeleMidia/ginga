@@ -144,6 +144,11 @@ namespace carousel {
 
 			++i;
 		}
+		
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
 
 		modules.clear();
 	}

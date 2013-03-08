@@ -69,7 +69,7 @@ DSMCCSectionPayload::DSMCCSectionPayload(char* data, unsigned int length) {
 }
 
 DSMCCSectionPayload::~DSMCCSectionPayload() {
-	//clearDsmccDescritor();
+	clearDsmccDescritor();
 	if (dsmccDescritorList != NULL) {
 		delete (dsmccDescritorList);
 	}

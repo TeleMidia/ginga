@@ -88,6 +88,12 @@ namespace carousel {
 		}
 
 		Thread::mutexLock(&msgMutex);
+		vector<DsmccMessageHeader*>::iterator it;
+		it = msgs.begin();
+		while (it != msgs.end()) {
+			delete *it;
+			++it;
+		}
 		Thread::mutexUnlock(&msgMutex);
 		Thread::mutexDestroy(&msgMutex);
 	}
