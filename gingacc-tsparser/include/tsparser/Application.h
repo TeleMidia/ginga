@@ -83,7 +83,7 @@ namespace si {
 			ApplicationIdentifier applicationId;
 			unsigned short applicationControlCode;
 			unsigned short appDescriptorsLoopLength;
-			vector<IMpegDescriptor*>* descriptors;
+			vector<IMpegDescriptor*> descriptors;
 			unsigned short applicationLength;
 
 		public:
@@ -94,7 +94,6 @@ namespace si {
 			string getInitialClass();
 			unsigned short getControlCode();
 			unsigned short getLength();
-			vector<IMpegDescriptor*>* getDescriptors();
 			size_t process(char* data, size_t pos);
 		};
 
