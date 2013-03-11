@@ -74,7 +74,7 @@ namespace si {
 
 	class ApplicationNameDescriptor : public IMpegDescriptor {
 		private:
-			vector<struct AppName*>* appNames;
+			vector<struct AppName*> appNames;
 
 		public:
 			ApplicationNameDescriptor();

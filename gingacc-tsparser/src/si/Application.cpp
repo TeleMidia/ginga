@@ -62,21 +62,18 @@ namespace si {
 		applicationId.organizationId = 0;
 		appDescriptorsLoopLength     = 0;
 		applicationLength			 = 0;
-		descriptors                  = new vector<IMpegDescriptor*>;
 	}
 
 	Application::~Application() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		if (descriptors != NULL) {
-			i = descriptors->begin();
-			while (i != descriptors->end()) {
-				delete (*i);
-				++i;
-			}
-			delete descriptors;
-			descriptors = NULL;
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
+			delete (*i);
+			++i;
 		}
+
+		descriptors.clear();
 	}
 
 	string Application::getBaseDirectory() {
@@ -84,8 +81,8 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
-		i = descriptors->begin();
-		while (i != descriptors->end()) {
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
 			if (descTag == DT_GINGANCL_APPLICATION_LOCATION ||
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
@@ -104,8 +101,8 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
-		i = descriptors->begin();
-		while (i != descriptors->end()) {
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
 			if (descTag == DT_GINGANCL_APPLICATION_LOCATION ||
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
@@ -125,10 +122,6 @@ namespace si {
 
 	unsigned short Application::getLength() {
 		return applicationLength;
-	}
-
-	vector<IMpegDescriptor*>* Application::getDescriptors() {
-		return descriptors;
 	}
 
 	size_t Application::process(char *data, size_t pos) {
@@ -173,42 +166,42 @@ namespace si {
 				case DT_APPLICATION:
 					descriptor = new ApplicationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_APPLICATION_NAME:
 					clog <<" ApplicationNameDescriptor" << endl;
 					descriptor = new ApplicationNameDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_TRANSPORT_PROTOCOL:
 					clog << " TransportProtocolDescriptor" << endl;
 					descriptor = new TransportProtocolDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGAJ_APPLICATION_LOCATION:
 					clog << " GingaJApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGANCL_APPLICATION_LOCATION:
 					clog << " GingaNCLApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_PREFETCH:
 					clog <<" PrefetchDescriptor" << endl;
 					descriptor = new PrefetchDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				default:
