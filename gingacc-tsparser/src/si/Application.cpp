@@ -62,11 +62,14 @@ namespace si {
 		applicationId.organizationId = 0;
 		appDescriptorsLoopLength     = 0;
 		applicationLength			 = 0;
+
+		Thread::mutexInit(&stlMutex, false);
 	}
 
 	Application::~Application() {
 		vector<IMpegDescriptor*>::iterator i;
 
+		Thread::mutexLock(&stlMutex);
 		i = descriptors.begin();
 		while (i != descriptors.end()) {
 			delete (*i);
@@ -74,6 +77,8 @@ namespace si {
 		}
 
 		descriptors.clear();
+		Thread::mutexUnlock(&stlMutex);
+		Thread::mutexDestroy(&stlMutex);
 	}
 
 	string Application::getBaseDirectory() {
@@ -81,6 +86,8 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
+
+		Thread::mutexLock(&stlMutex);
 		i = descriptors.begin();
 		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
@@ -88,11 +95,14 @@ namespace si {
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
 
 				location = (ApplicationLocationDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
 				return location->getBaseDirectory();
 			}
 			++i;
 		}
 
+		Thread::mutexUnlock(&stlMutex);
 		return "";
 	}
 
@@ -101,6 +111,7 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
+		Thread::mutexLock(&stlMutex);
 		i = descriptors.begin();
 		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
@@ -108,11 +119,14 @@ namespace si {
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
 
 				location = (ApplicationLocationDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
 				return location->getInitialClass();
 			}
 			++i;
 		}
 
+		Thread::mutexUnlock(&stlMutex);
 		return "";
 	}
 
@@ -129,6 +143,7 @@ namespace si {
 		unsigned short descriptorTag, value;
 		IMpegDescriptor* descriptor;
 
+		Thread::mutexLock(&stlMutex);
 		applicationId.organizationId = (
 				(((data[pos] & 0xFF)   << 24) & 0xFF000000) |
 				(((data[pos+1] & 0xFF) << 16) & 0x00FF0000) |
@@ -210,6 +225,8 @@ namespace si {
 			}
 			pos += value;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 		return pos;
 	}
 

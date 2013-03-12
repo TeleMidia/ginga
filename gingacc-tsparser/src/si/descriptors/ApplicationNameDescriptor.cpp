@@ -101,17 +101,17 @@ namespace si {
 			memcpy(appName->languageCode, data + pos, 3);
 			pos+= 3;
 
-			appName->applicationNameLentgh = data[pos];
+			appName->applicationNameLength = data[pos];
 			appName->applicationNameChar =
-					new char[appName->applicationNameLentgh];
+					new char[appName->applicationNameLength];
 
 			memcpy(
 					appName->applicationNameChar,
 					data + pos + 1,
-					appName->applicationNameLentgh);
+					appName->applicationNameLength);
 
-			pos+= appName->applicationNameLentgh ;
-			remainingBytes-= appName->applicationNameLentgh - 4;
+			pos+= appName->applicationNameLength;
+			remainingBytes-= appName->applicationNameLength - 4;
 			appNames.push_back(appName);
 		}
 
