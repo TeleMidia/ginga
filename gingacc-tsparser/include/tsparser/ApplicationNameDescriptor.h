@@ -68,7 +68,7 @@ namespace si {
 
 	struct AppName {
 		char languageCode[3];
-		unsigned char applicationNameLentgh;
+		unsigned char applicationNameLength;
 		char* applicationNameChar;
 	};
 
