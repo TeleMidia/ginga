@@ -752,7 +752,6 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 
 			if (nptPrinter) {
 				cout << "FOUND NEW NPT ENDPOINT DESCRIPTOR" << endl;
-				cout << "CONTENTID: " << (currentCid & 0xFF) << endl;
 				cout << "START NPT: " << nptEP->getStartNPT() << endl;
 				cout << "STOP NPT: " << nptEP->getStopNPT() << endl;
 			}
