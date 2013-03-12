@@ -111,7 +111,7 @@ namespace si {
 					appName->applicationNameLength);
 
 			pos+= appName->applicationNameLength;
-			remainingBytes-= appName->applicationNameLength - 4;
+			remainingBytes-= (appName->applicationNameLength + 4);
 			appNames.push_back(appName);
 		}
 
