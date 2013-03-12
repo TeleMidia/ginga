@@ -87,12 +87,34 @@ namespace carousel {
 	}
 
 	ServiceDomain::~ServiceDomain() {
-		Thread::mutexDestroy(&stlMutex);
+		map<unsigned int, Module*>::iterator i;
+		set<Module*>::iterator j;
+
+		Thread::mutexLock(&stlMutex);
 
 		if (processor != NULL) {
 			delete processor;
 			processor = NULL;
 		}
+
+		i = info.begin();
+		while (i != info.end()) {
+			if (toRelease.find(i->second) == toRelease.end()) {
+				delete i->second;
+			}
+			++i;
+		}
+		info.clear();
+
+		j = toRelease.begin();
+		while (j != toRelease.end()) {
+			delete (*j);
+			++j;
+		}
+		toRelease.clear();
+
+		Thread::mutexUnlock(&stlMutex);
+		Thread::mutexDestroy(&stlMutex);
 	}
 
 	void ServiceDomain::setServiceDomainListener(IServiceDomainListener* sdl) {
@@ -213,7 +235,6 @@ namespace carousel {
 
 					} else {
 						module = info[modId];
-						Thread::mutexUnlock(&stlMutex);
 					}
 
 					clog << "ServiceDomain::run waiting srg module" << endl;
@@ -233,17 +254,16 @@ namespace carousel {
 					hasServiceGateway = true;
 					clog << "ServiceDomain::run SRG PROCESSED!" << endl;
 
-					delete biop;
-					biop = NULL;
+//					delete biop;
+//					biop = NULL;
 
 					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 
-					biop = new Biop(module, processor);
+//					biop = new Biop(module, processor);
 					biop->process();
 					delete biop;
 					biop = NULL;
 
-					Thread::mutexLock(&stlMutex);
 					i = info.find(modId);
 					info.erase(i);
 					Thread::mutexUnlock(&stlMutex);
@@ -270,8 +290,9 @@ namespace carousel {
 						delete biop;
 						biop = NULL;
 
-//						delete module;
-//						module = NULL;
+						Thread::mutexLock(&stlMutex);
+						toRelease.insert(module);
+						Thread::mutexUnlock(&stlMutex);
 
 					} else {
 						SystemCompat::uSleep(1000);
