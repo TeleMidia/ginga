@@ -151,16 +151,16 @@ namespace si {
 
 		pos+=2;
 		applicationLength = appDescriptorsLoopLength + 9;
-		remainingBytes = appDescriptorsLoopLength;
-		descriptorTag = data[pos];
+		remainingBytes    = appDescriptorsLoopLength;
+		descriptorTag     = data[pos];
 
 		value = ((data[pos+1] & 0xFF) + 2);
 
-		while (remainingBytes) {
+		while (remainingBytes > 0) {
 			descriptorTag = data[pos];
 
 			value = ((data[pos+1] & 0xFF) + 2);
-			remainingBytes -= value;
+			remainingBytes-= value;
 
 			switch (descriptorTag) {
 				case DT_APPLICATION:
