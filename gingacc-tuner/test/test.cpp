@@ -118,7 +118,7 @@ int main(int argc, char** argv, char** envp) {
 	tuner = new Tuner(name, protocol, address);
 
 	if (ttl != NULL) {
-		tuner->addListener(ttl);
+		tuner->setTunerListener(ttl);
 	}
 
 	tuner->tune();
@@ -132,7 +132,7 @@ int main(int argc, char** argv, char** envp) {
 	getchar();
 
 	if (ttl != NULL) {
-		tuner->removeListener(ttl);
+		tuner->setTunerListener(NULL);
 		delete ttl;
 	}
 

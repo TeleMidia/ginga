@@ -47,7 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "dataprocessing/dsmcc/npt/Descriptor.h"
+#include "dataprocessing/dsmcc/npt/MpegDescriptor.h"
 
 namespace br {
 namespace pucrio {
@@ -58,27 +58,27 @@ namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
 
-Descriptor::Descriptor() {
+MpegDescriptor::MpegDescriptor() {
 	stream = NULL;
 	descriptorTag = 0;
 	descriptorLength = 0;
 	currentSize = 0;
 }
 
-Descriptor::~Descriptor() {
+MpegDescriptor::~MpegDescriptor() {
 	if (stream != NULL) {
 		delete (stream);
 	}
 }
 
-Descriptor::Descriptor(unsigned char tag) {
+MpegDescriptor::MpegDescriptor(unsigned char tag) {
 	stream = NULL;
 	descriptorTag = tag;
 	descriptorLength = 0;
 	currentSize = 0;
 }
 
-char Descriptor::addData(char* data, unsigned short length) {
+char MpegDescriptor::addData(char* data, unsigned short length) {
 	unsigned short rbytes;
 
 	if (currentSize == 0) {
@@ -120,11 +120,11 @@ char Descriptor::addData(char* data, unsigned short length) {
 	}
 }
 
-int Descriptor::process() {
+int MpegDescriptor::process() {
 	return 2;
 }
 
-int Descriptor::updateStream() {
+int MpegDescriptor::updateStream() {
 	unsigned int len;
 
 	if (stream != NULL) {
@@ -144,32 +144,32 @@ int Descriptor::updateStream() {
 	return 2;
 }
 
-unsigned int Descriptor::calculateDescriptorSize() {
+unsigned int MpegDescriptor::calculateDescriptorSize() {
 	return 2;
 }
 
-unsigned char Descriptor::isConsolidated() {
+unsigned char MpegDescriptor::isConsolidated() {
 	unsigned short len = descriptorLength + 2;
 	return (len <= currentSize);
 }
 
-unsigned char Descriptor::getDescriptorTag() {
+unsigned char MpegDescriptor::getDescriptorTag() {
 	return descriptorTag;
 }
 
-unsigned char Descriptor::getDescriptorLength() {
+unsigned char MpegDescriptor::getDescriptorLength() {
 	return descriptorLength;
 }
 
-void Descriptor::setDescriptorTag(unsigned char tag) {
+void MpegDescriptor::setDescriptorTag(unsigned char tag) {
 	descriptorTag = tag;
 }
 
-int Descriptor::getStreamSize() {
+int MpegDescriptor::getStreamSize() {
 	return calculateDescriptorSize();
 }
 
-int Descriptor::getStream(char** dataStream) {
+int MpegDescriptor::getStream(char** dataStream) {
 	int slen = updateStream();
 	if (slen >= 0) {
 		*dataStream = stream;
@@ -179,9 +179,9 @@ int Descriptor::getStream(char** dataStream) {
 	}
 }
 
-Descriptor* Descriptor::getDescriptor(
-		vector<Descriptor*>* descriptors, unsigned char Tag) {
-	vector<Descriptor*>::iterator dit;
+MpegDescriptor* MpegDescriptor::getDescriptor(
+		vector<MpegDescriptor*>* descriptors, unsigned char Tag) {
+	vector<MpegDescriptor*>::iterator dit;
 	dit = descriptors->begin();
 	while (dit != descriptors->end()) {
 		if ((*dit)->getDescriptorTag() == Tag) {
@@ -192,11 +192,11 @@ Descriptor* Descriptor::getDescriptor(
 	return NULL;
 }
 
-vector<Descriptor*>* Descriptor::getDescriptors(
-		vector<Descriptor*>* descriptors, unsigned char Tag) {
-	vector<Descriptor*>* result;
-	vector<Descriptor*>::iterator dit;
-	result = new vector<Descriptor*>;
+vector<MpegDescriptor*>* MpegDescriptor::getDescriptors(
+		vector<MpegDescriptor*>* descriptors, unsigned char Tag) {
+	vector<MpegDescriptor*>* result;
+	vector<MpegDescriptor*>::iterator dit;
+	result = new vector<MpegDescriptor*>;
 	dit = descriptors->begin();
 	while (dit != descriptors->end()) {
 		if ((*dit)->getDescriptorTag() == Tag) {
@@ -211,9 +211,9 @@ vector<Descriptor*>* Descriptor::getDescriptors(
 	return result;
 }
 
-int Descriptor::getDescriptorsLength(vector<Descriptor*>* descriptors) {
+int MpegDescriptor::getDescriptorsLength(vector<MpegDescriptor*>* descriptors) {
 	int len = 0;
-	vector<Descriptor*>::iterator dit;
+	vector<MpegDescriptor*>::iterator dit;
 	dit = descriptors->begin();
 	while (dit != descriptors->end()) {
 		len = len + (*dit)->getDescriptorLength() + 2;

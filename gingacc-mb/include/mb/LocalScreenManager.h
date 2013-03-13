@@ -165,7 +165,8 @@ namespace mb {
 					string vParent,
 					string vEmbed,
 					string aSystem,
-					bool externalRenderer);
+					bool externalRenderer,
+					bool useStdin);
 
 		public:
 			string getScreenName(GingaScreenID screenId);

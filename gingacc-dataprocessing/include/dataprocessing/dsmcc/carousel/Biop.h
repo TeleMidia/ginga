@@ -59,6 +59,10 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+
 #include "object/ObjectProcessor.h"
 #include "data/Module.h"
 
@@ -93,17 +97,25 @@ namespace carousel {
 			string objectInfo;
 
 			// MessageBody
-			map<string, Object*>* objects;
+			map<string, Object*> objects;
 
 			ObjectProcessor* processor;
+
+			pthread_mutex_t dataMutex;
 
 		public:
 			Biop(Module* module, ObjectProcessor* processor);
 			virtual ~Biop();
+
+		private:
+			void createData(unsigned int dataSize);
+			void releaseData();
+
+			string getStringFromData(unsigned int offset, unsigned int len);
+
 			string getObjectKind();
 			string getObjectInfo();
 
-		private:
 			void abortProcess(string warningText);
 			bool processServiceContext();
 			bool processMessageHeader();
@@ -128,7 +140,6 @@ namespace carousel {
 
 		public:
 			void process();
-			map<string, Object*>* getObjects();
 	};
 }
 }

@@ -57,6 +57,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "tsparser/IDemuxer.h"
+#include "tsparser/IFilterListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "dsmcc/IStreamEventListener.h"
@@ -68,8 +69,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
-
-#include "IFilterListener.h"
 
 #include <map>
 #include <set>
@@ -86,6 +85,7 @@ namespace dataprocessing {
 	public:
 		virtual ~IDataProcessor(){};
 
+		virtual void setNptPrinter(bool nptPrinter)=0;
 		virtual void setDemuxer(IDemuxer* demux)=0;
 		virtual void removeOCFilterAfterMount(bool removeIt)=0;
 
@@ -108,6 +108,7 @@ namespace dataprocessing {
 
 		virtual void removeObjectListener(IObjectListener* listener)=0;
 		virtual void receiveSection(ITransportSection* section)=0;
+		virtual void receiveData(char* data, int dataSize){};
   };
 }
 }

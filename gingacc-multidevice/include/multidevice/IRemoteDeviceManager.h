@@ -85,7 +85,7 @@ namespace multidevice {
 }
 
 typedef ::br::pucrio::telemidia::ginga::core::multidevice::IRemoteDeviceManager*
-		IRemoteDeviceManagerCreator(int devClass, bool deviceSearch, int srvPort);
+		IRemoteDeviceManagerCreator(int devClass, bool useMulticast, int srvPort);
 
 typedef void IRemoteDeviceManagerDestroyer(
 		::br::pucrio::telemidia::ginga::core::multidevice::

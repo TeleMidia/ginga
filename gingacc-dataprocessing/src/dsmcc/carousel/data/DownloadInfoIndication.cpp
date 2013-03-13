@@ -64,18 +64,17 @@ namespace carousel {
 		unsigned int i, moduleId, moduleSize, moduleVersion, moduleInfoLength;
 		Module* module;
 
-		modules = new map<unsigned int, Module*>;
 		header = message;
 
 		// dsmccmessageheader = 12
 		i = header->getAdaptationLength() + 12;
 
-		char bytes[(header->getMessageLength() + i)];
+		char* bytes = new char[(header->getMessageLength() + i)];
 
 		fd = fopen(header->getFileName().c_str(), "rb");
 		if (fd != NULL) {
 			rval = fread(
-					(void*)&(bytes[0]), 1, header->getMessageLength() + i, fd);
+					(void*)bytes, 1, header->getMessageLength() + i, fd);
 
 			this->downloadId = ((bytes[i] & 0xFF) << 24) |
 				    ((bytes[i + 1] & 0xFF) << 16) |
@@ -118,7 +117,7 @@ namespace carousel {
 				module->setInfoLength(moduleInfoLength);
 				module->setCarouselId(downloadId);
 				module->openFile();
-				(*modules)[moduleId] = module;
+				modules[moduleId] = module;
 
 				i = i + 8;
 				i = i + moduleInfoLength;
@@ -132,6 +131,26 @@ namespace carousel {
 			clog << "Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
 		}
+
+		delete bytes;
+	}
+
+	DownloadInfoIndication::~DownloadInfoIndication() {
+		map<unsigned int, Module*>::iterator i;
+
+		i = modules.begin();
+		while (i != modules.end()) {
+			delete i->second;
+
+			++i;
+		}
+		
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
+
+		modules.clear();
 	}
 
 	unsigned int DownloadInfoIndication::getDonwloadId() {
@@ -146,26 +165,8 @@ namespace carousel {
 		return numberOfModules;
 	}
 
-	map<unsigned int, Module*>* DownloadInfoIndication::getInfo() {
-		if (modules->empty()) {
-			return NULL;
-		}
-
-		return modules;
-	}
-
-	vector<Module*>* DownloadInfoIndication::getParameters() {
-		if (modules->empty())
-			return NULL;
-
-		vector<Module*>* parameters;
-		parameters = new vector<Module*>;
-
-		map<unsigned int, Module*>::iterator i;
-		for (i=modules->begin(); i!=modules->end(); ++i) {
-			parameters->push_back(i->second);
-		}
-		return parameters;
+	void DownloadInfoIndication::getInfo(map<unsigned int, Module*>* ocInfo) {
+		ocInfo->insert(modules.begin(), modules.end());
 	}
 
 	void DownloadInfoIndication::print() {

@@ -50,7 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef TIMEBASECLOCK_H_
 #define TIMEBASECLOCK_H_
 
-#include "Stc.h"
+#include "system/time/Stc.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 namespace br {
 namespace pucrio {
@@ -69,6 +70,9 @@ class TimeBaseClock : public Stc {
 		unsigned char contentId;
 		short numerator;
 		unsigned short denominator;
+		bool endpointAvailable;
+		uint64_t startNpt;
+		uint64_t stopNpt;
 
 		void refreshStcSample();
 
@@ -83,8 +87,14 @@ class TimeBaseClock : public Stc {
 		void setContentId(unsigned char id);
 		short getScaleNumerator();
 		unsigned short getScaleDenominator();
+		uint64_t getStartNpt();
+		uint64_t getStopNpt();
+		bool getEndpointAvailable();
 		void setScaleNumerator(short num);
 		void setScaleDenominator(unsigned short den);
+		void setStartNpt(uint64_t start);
+		void setStopNpt(uint64_t stop);
+		void setEndpointAvailable(bool epa);
 };
 
 }

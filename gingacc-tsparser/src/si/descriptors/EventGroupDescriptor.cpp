@@ -69,7 +69,8 @@ namespace descriptors {
 	}
 
 	EventGroupDescriptor::~EventGroupDescriptor() {
-		vector<Event*>::iterator i;
+		//TODO: WORSE CODE EVER MADE: FIX IT
+		/*vector<struct MultipleEvent*>::iterator i;
 		if(events != NULL){
 			for(i = events->begin(); i != events->end(); ++i){
 				delete (*i);
@@ -82,8 +83,8 @@ namespace descriptors {
 				delete (*i);
 			}
 			delete multiEvents;
-			multiEvents == NULL;
-		}
+			multiEvents = NULL;
+		}*/
 	}
 	unsigned char EventGroupDescriptor::getDescriptorTag(){
 		return descriptorTag;
@@ -106,7 +107,7 @@ namespace descriptors {
 		eventCount = (data[pos] & 0x0F);
 
 		pos++;
-		events = new struct Event[eventCount];
+//		events = new struct Event[eventCount];
 		for(int i = 0; i < eventCount; i++){
 
 			//pos ++;
@@ -150,7 +151,7 @@ namespace descriptors {
 				pos += 2;
 
 				multiEvents->push_back(multiEvent);
-				remainingBytes - 8;
+				remainingBytes -= 8;
 			}
 		}
 		else{

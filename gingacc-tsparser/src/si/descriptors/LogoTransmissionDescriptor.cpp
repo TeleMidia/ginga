@@ -128,18 +128,18 @@ namespace descriptors {
 		return logoName;
 	}
 
-	unsigned char LogoTransmissionDescriptor::getNameLength() {
+	unsigned int LogoTransmissionDescriptor::getNameLength() {
 		return logoName.length();
 	}
 
 	unsigned char LogoTransmissionDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
-	void LogoTransmissionDescriptor::print(){
-		clog << "LogoTransmissionDescriptor::print printing..." << endl;
-		clog << " -logoName =  " << logoName << endl;
+
+	void LogoTransmissionDescriptor::print() {
 
 	}
+
 	size_t LogoTransmissionDescriptor::process (char* data, size_t pos){
 		descriptorLength = data[pos+1];
 		//clog << "Descriptor length: ";
@@ -167,10 +167,9 @@ namespace descriptors {
 			pos += 2;
 		}
 		else if (logoType == 0x03) { // simple logo system
-			char str[descriptorLength];
-			memcpy(str, data+pos, descriptorLength-1);
-			str[descriptorLength] = 0;
-			logoName = ((string) str);
+
+			logoName = "";
+			logoName.append(data+pos, descriptorLength-1);
 			pos += (descriptorLength - 1);
 			//clog << "Simple logo system: " << ltd->getName() << endl;
 		}

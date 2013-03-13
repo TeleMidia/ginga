@@ -89,11 +89,11 @@ namespace si {
 			static const unsigned char CC_UNBOUND                       = 0x07;
 
 			virtual ~IApplication(){};
+
 			virtual string getBaseDirectory()=0;
 			virtual string getInitialClass()=0;
 			virtual unsigned short getControlCode()=0;
 			virtual unsigned short getLength()=0;
-			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
 			virtual size_t process(char* data, size_t pos)=0;
 		};
 

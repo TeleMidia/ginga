@@ -62,21 +62,23 @@ namespace si {
 		applicationId.organizationId = 0;
 		appDescriptorsLoopLength     = 0;
 		applicationLength			 = 0;
-		descriptors                  = new vector<IMpegDescriptor*>;
+
+		Thread::mutexInit(&stlMutex, false);
 	}
 
 	Application::~Application() {
 		vector<IMpegDescriptor*>::iterator i;
 
-		if (descriptors != NULL) {
-			i = descriptors->begin();
-			while (i != descriptors->end()) {
-				delete (*i);
-				++i;
-			}
-			delete descriptors;
-			descriptors = NULL;
+		Thread::mutexLock(&stlMutex);
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
+			delete (*i);
+			++i;
 		}
+
+		descriptors.clear();
+		Thread::mutexUnlock(&stlMutex);
+		Thread::mutexDestroy(&stlMutex);
 	}
 
 	string Application::getBaseDirectory() {
@@ -84,18 +86,23 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
-		i = descriptors->begin();
-		while (i != descriptors->end()) {
+
+		Thread::mutexLock(&stlMutex);
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
 			if (descTag == DT_GINGANCL_APPLICATION_LOCATION ||
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
 
 				location = (ApplicationLocationDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
 				return location->getBaseDirectory();
 			}
 			++i;
 		}
 
+		Thread::mutexUnlock(&stlMutex);
 		return "";
 	}
 
@@ -104,18 +111,22 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
-		i = descriptors->begin();
-		while (i != descriptors->end()) {
+		Thread::mutexLock(&stlMutex);
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
 			descTag = (*i)->getDescriptorTag();
 			if (descTag == DT_GINGANCL_APPLICATION_LOCATION ||
 					descTag == DT_GINGAJ_APPLICATION_LOCATION) {
 
 				location = (ApplicationLocationDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
 				return location->getInitialClass();
 			}
 			++i;
 		}
 
+		Thread::mutexUnlock(&stlMutex);
 		return "";
 	}
 
@@ -127,15 +138,12 @@ namespace si {
 		return applicationLength;
 	}
 
-	vector<IMpegDescriptor*>* Application::getDescriptors() {
-		return descriptors;
-	}
-
 	size_t Application::process(char *data, size_t pos) {
 		unsigned short remainingBytes;
 		unsigned short descriptorTag, value;
 		IMpegDescriptor* descriptor;
 
+		Thread::mutexLock(&stlMutex);
 		applicationId.organizationId = (
 				(((data[pos] & 0xFF)   << 24) & 0xFF000000) |
 				(((data[pos+1] & 0xFF) << 16) & 0x00FF0000) |
@@ -158,57 +166,57 @@ namespace si {
 
 		pos+=2;
 		applicationLength = appDescriptorsLoopLength + 9;
-		remainingBytes = appDescriptorsLoopLength;
-		descriptorTag = data[pos];
+		remainingBytes    = appDescriptorsLoopLength;
+		descriptorTag     = data[pos];
 
 		value = ((data[pos+1] & 0xFF) + 2);
 
-		while (remainingBytes) {
+		while (remainingBytes > 0) {
 			descriptorTag = data[pos];
 
 			value = ((data[pos+1] & 0xFF) + 2);
-			remainingBytes -= value;
+			remainingBytes-= value;
 
 			switch (descriptorTag) {
 				case DT_APPLICATION:
 					descriptor = new ApplicationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_APPLICATION_NAME:
-					cout <<" ApplicationNameDescriptor" << endl;
+					clog <<" ApplicationNameDescriptor" << endl;
 					descriptor = new ApplicationNameDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_TRANSPORT_PROTOCOL:
 					clog << " TransportProtocolDescriptor" << endl;
 					descriptor = new TransportProtocolDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGAJ_APPLICATION_LOCATION:
 					clog << " GingaJApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGANCL_APPLICATION_LOCATION:
 					clog << " GingaNCLApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case DT_PREFETCH:
-					cout <<" PrefetchDescriptor" << endl;
+					clog <<" PrefetchDescriptor" << endl;
 					descriptor = new PrefetchDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				default:
@@ -217,6 +225,8 @@ namespace si {
 			}
 			pos += value;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 		return pos;
 	}
 

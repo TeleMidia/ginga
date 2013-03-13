@@ -19,6 +19,7 @@ mbsdllibs                  = \
                              -ltelemidiautil \
                              -lpthread \
                              -lgingaccmb \
+                             -L/usr/local/lib \
                              -L$(prefix)/lib \
                              -L$(prefix)/lib/ginga \
                              -L$(top_srcdir)/src

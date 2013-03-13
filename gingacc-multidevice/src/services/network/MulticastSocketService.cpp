@@ -56,22 +56,14 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	MulticastSocketService::MulticastSocketService(
-			char* readGroupAddr, char* writeGroupAddr,
+			char* groupAddr,
 			unsigned int portNumber) {
 
 		outputBuffer = new vector<struct frame*>;
 		port         = portNumber;
-		readGroupAddress = readGroupAddr;
-		writeGroupAddress = writeGroupAddr;
-		interfaceIP = 0;
+		groupAddress = groupAddr;
 
-		/*
-		TODO: ios fix
-		memset(&mss, 0, sizeof(mss));
-		mss.sin_family      = AF_INET;
-		mss.sin_port        = htons(port);
-		mss.sin_addr.s_addr = inet_addr(gAddr);
-		*/
+		interfaceIP = 0;
 
 		Thread::mutexInit(&mutexBuffer, NULL);
 		createMulticastGroup();
@@ -80,7 +72,7 @@ namespace multidevice {
 	MulticastSocketService::~MulticastSocketService() {
 		if (readSocket != NULL) {
 			try {
-				readSocket->leaveGroup(readGroupAddress);
+				readSocket->leaveGroup(groupAddress);
 				readSocket->disconnect();
 				delete readSocket;
 			}
@@ -99,22 +91,6 @@ namespace multidevice {
 			}
 
 		}
-		/*
-		TODO: fix for ios?
-		if (msdR > 0) {
-			setsockopt(
-					msdR,
-					IPPROTO_IP,
-					IP_DROP_MEMBERSHIP,
-					(char*)&mss, sizeof(mss));
-
-			close(msdR);
-		}
-
-		if (msdW > 0) {
-			close(msdW);
-		}
-		*/
 		if (outputBuffer != NULL) {
 			delete outputBuffer;
 			outputBuffer = NULL;
@@ -149,31 +125,12 @@ namespace multidevice {
 			return false;
 		}
 
-/*
-TODO: fix for ios
-#if !defined(__DARWIN_UNIX03) && !defined(_MSC_VER)
-		msdW = socket(AF_INET, SOCK_DGRAM, 0);
-		if (msdW < 0){
-			perror("MulticastSocketService::createSocket msdW");
-			return false;
-		}
-
-		msdR = socket(AF_INET, SOCK_DGRAM, 0);
-		if (msdR < 0){
-			perror("MulticastSocketService::createSocket msdR");
-			return false;
-		}
-
-		setsockopt(msdR, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-		setsockopt(msdW, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-#endif
-*/
 		return true;
 	}
 
 	bool MulticastSocketService::addToGroup() {
 		try {
-			readSocket->joinGroup(readGroupAddress);
+			readSocket->joinGroup(groupAddress);
 			return true;
 		}
 		catch (SocketException &e) {
@@ -181,25 +138,6 @@ TODO: fix for ios
 			clog << e.what() << endl;
 		}
 
-		//TODO: ios fix
-		/*
-		int ret;
-		struct ip_mreq stIpMreq;
-
-		stIpMreq.imr_multiaddr.s_addr = inet_addr(gAddr);
-		stIpMreq.imr_interface.s_addr = htonl(INADDR_ANY);
-
-		ret = setsockopt(
-				msdR,
-				IPPROTO_IP,
-				IP_ADD_MEMBERSHIP,
-				(char*)&stIpMreq, sizeof(struct ip_mreq));
-
-		if (ret < 0) {
-			perror("MulticastSocketService::addToGroup msdR");
-			return false;
-		}
-		*/
 		return true;
 	}
 
@@ -223,7 +161,7 @@ TODO: fix for ios
 
 	bool MulticastSocketService::tryToBind() {
 		try {
-			readSocket->setLocalAddressAndPort(readGroupAddress,port);
+			readSocket->setLocalAddressAndPort(groupAddress,port);
 			interfaceIP = readSocket->getLocalIPAddress();
 
 		}
@@ -231,13 +169,7 @@ TODO: fix for ios
 			clog << "MulticastSocketService::tryToBind" << endl;
 			return false;
 		}
-		/*
-		int ret = bind(msdR, (struct sockaddr*)&mss, sizeof(struct sockaddr));
-		if (ret < 0) {
-			perror ("MulticastSocketService::tryToBind bind");
-			return false;
-		}
-		*/
+
 		return true;
 	}
 
@@ -271,7 +203,7 @@ TODO: fix for ios
 
 		for (i = 0; i < NUM_OF_COPIES; i++) {
 			try {
-				writeSocket->sendTo(data,taskSize,writeGroupAddress,port);
+				writeSocket->sendTo(data,taskSize,groupAddress,port);
 			}
 			catch (SocketException &e) {
 				clog << "MulticastSocketService::sendData writeSocket sendTo";
@@ -279,22 +211,6 @@ TODO: fix for ios
 				clog << e.what() << endl;
 				return false;
 			}
-			/*
-			TODO: ios fix
-			result = sendto(
-					msdW,
-					data,
-					taskSize,
-					0,
-					(struct sockaddr*)&mss,
-					sizeof(mss));
-
-			if (result == -1) {
-				perror ("MulticastSocketService::sendData msdW sendTo");
-				clog << " TASKSIZE = '" << taskSize << "'" << endl;
-				return false;
-			}
-			*/
 		}
 
 		return true;
@@ -400,74 +316,6 @@ TODO: fix for ios
 				memset(data, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-		/*
-		int nfds, res, recvFrom;
-		fd_set fdset;
-		struct timeval tv_timeout;
-
-		FD_ZERO(&fdset);
-		FD_SET(msdR, &fdset);
-
-		nfds               = msdR + 1;
-		tv_timeout.tv_sec  = 0;
-		tv_timeout.tv_usec = 0;
-
-		res = select(nfds, &fdset, NULL, NULL, &tv_timeout);
-		switch (res) {
-			case -1:
-				clog << "MulticastSocketService::checkInputBuffer ";
-				clog << "Warning! select ERRNO = " << errno << endl;
-				memset(data, 0, MAX_FRAME_SIZE);
-				return false;
-
-			case 1:
-				memset(data, 0, MAX_FRAME_SIZE);
-				*size = recvfrom(
-						msdR,
-						data,
-						MAX_FRAME_SIZE,
-						MSG_DONTWAIT,
-						(struct sockaddr*)NULL,
-						(socklen_t*)NULL);
-
-				if (*size == -1) {
-					if (errno != EAGAIN) {
-						clog << "MulticastSocketService::checkInputBuffer ";
-						herror("check domain error: ");
-						clog << "Warning! receive data ERRNO = " << errno;
-						clog << endl;
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-
-					} else {
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-					}
-				}
-
-				if (*size <= HEADER_SIZE) {
-					clog << "MulticastSocketService::checkInputBuffer ";
-					clog << "Warning! Received invalid frame: ";
-					clog << "bytes received = '" << *size << "' ";
-					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
-					clog << endl;
-
-					memset(data, 0, MAX_FRAME_SIZE);
-					return false;
-				}
-
-				recvFrom = getUIntFromStream(data + 1);
-				if (!isValidRecvFrame(recvFrom, data)) {
-					memset(data, 0, MAX_FRAME_SIZE);
-					return false;
-				}
-				break;
-
-			default:
-				memset(data, 0, MAX_FRAME_SIZE);
-				return false;
-		}
-		*/
 		return true;
 	}
 }

@@ -73,35 +73,36 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tsparser {
-	class PipeFilter : public ITSFilter, public Thread {
+	class PipeFilter : public ITSFilter, Thread {
 		private:
 			unsigned int pid;
-			unsigned int secondPid;
-			int pipeFd;
-			int secondFd;
-			int readerFd;
 			bool dataReceived;
-			bool fifoCreated;
+			bool running;
 			unsigned int packetsReceived;
-			bool dvrReader;
-			string fifoName;
-			string dvrName;
-			map<int, int>* pids;
+			unsigned long debugBytesWritten;
+			map<int, int> pids;
+
+			bool srcIsAPipe;
+			bool dstPipeCreated;
+			string srcUri;
+			string dstUri;
+
+			PipeDescriptor srcPd;
+			PipeDescriptor dstPd;
 
 		public:
 			PipeFilter(unsigned int pid);
 			virtual ~PipeFilter();
 
-			void setDestName(string name);
 			void addPid(int pid);
 			bool hasData();
 
-			bool isDVRReader();
-			void setDVRReader(int fd, bool reader, string dvrName);
 			void receiveTSPacket(ITSPacket* pack);
 			void receiveSection(char* buf, int len, IFrontendFilter* filter);
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
-			bool addDestination(unsigned int dest);
+
+			void setSourceUri(string srcUri, bool isPipe);
+			string setDestinationUri(string dstUri);
 
 		private:
 			void run();

@@ -11,7 +11,8 @@ SYSTEMSOURCES                = \
                                thread/Thread.cpp \
                                fs/GingaLocatorFactory.cpp \
                                compat/PracticalSocket.cpp \
-                               compat/SystemCompat.cpp
+                               compat/SystemCompat.cpp \
+                               time/Stc.cpp
 
 if MULTIPROCESS
 SYSTEMSOURCES               += \

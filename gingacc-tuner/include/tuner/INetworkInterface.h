@@ -85,7 +85,8 @@ namespace tuning {
 					int pid, int pesType, bool compositeFiler)=0;
 
 			virtual string getPesFilterOutput()=0;
-			virtual int receiveData(char* buff)=0;
+			virtual int receiveData(char* buff, int skipSize,
+							unsigned char packetSize)=0;
 			virtual void close()=0;
 	};
 }

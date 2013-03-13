@@ -57,7 +57,18 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	Binding::Binding() {
+		ior = NULL;
+	}
 
+	Binding::~Binding() {
+		releaseIor();
+	}
+
+	void Binding::releaseIor() {
+		if (ior != NULL) {
+			delete ior;
+			ior = NULL;
+		}
 	}
 
 	void Binding::setId(string id) {
@@ -85,6 +96,8 @@ namespace carousel {
 	}
 
 	void Binding::setIor(Ior* ior) {
+		releaseIor();
+
 		this->ior = ior;
 	}
 

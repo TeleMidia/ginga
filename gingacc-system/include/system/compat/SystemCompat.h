@@ -51,12 +51,13 @@ http://www.telemidia.puc-rio.br
 #define SystemCompat_H_
 
 extern "C" {
+// For Linux, Mac OS Snow Leopard (10.6) and Win32
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
-
+#include <stdio.h>
 #ifdef _WIN32
 	#include <sys/timeb.h>
 	#include <sys/types.h>
@@ -64,33 +65,64 @@ extern "C" {
 	#include <direct.h>
 	#include <io.h>
 	#include <windows.h>
+	#include <winbase.h>
 	#include <winsock2.h>
-#ifdef WINSTRUCTS
+  #ifdef WINSTRUCTS
 	#include <Ws2tcpip.h>
-#endif
+  #endif
 	#pragma comment(lib,"ws2_32.lib")
-#else
+#else // For Linux and Mac OS Snow Leopard (10.6)
+  #if (defined __APPLE__ || defined HAVE_MACH_SL_H ) // For Mac OS Snow Leopard (10.6)
+	#include <mach/mach.h>
+	#include <mach/mach_host.h>
+	#include <mach/mach_types.h>
+	#include <mach/vm_statistics.h>
+	#include <sys/sysctl.h>
+	#include <sys/types.h>
+  #elif (HAVE_SYS_SYSINFO_H) // For Linux only
+	#include <sys/sysinfo.h>
+  #endif
+
+  #if (defined HAVE_SYS_SOCKET_H || defined HAVE_IF_H)
+    #ifdef STDC_HEADERS
+	#include <stdlib.h>
+	#include <stddef.h>
+    #else
+      #ifdef HAVE_STDLIB_H
+	#include <stdlib.h>
+      #endif
+    #endif
+  #endif
+
 	#include <sys/param.h>
 	#include <unistd.h>
 	#include <sys/resource.h>
 	#include <signal.h>
 	#include <sys/utsname.h>
-	#include <sys/sysinfo.h>
 
 	#include <sys/types.h>
-	#include <sys/socket.h>
+	#include <sys/stat.h>
 	#include <sys/ioctl.h>
 	#include <sys/time.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <net/if.h>
+  #ifdef HAVE_SYS_SOCKET_H                                                                                                                                                                                                                                     
+	#include <sys/socket.h>
+  #endif
+
+  #ifdef HAVE_IF_H
+	#include <net/if.h>
+  #endif
+
 #endif
 }
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -101,6 +133,11 @@ struct timezone
  int  tz_minuteswest; /* minutes W of Greenwich */
  int  tz_dsttime;     /* type of dst correction */
 };
+
+typedef HANDLE PipeDescriptor;
+
+#else
+typedef int PipeDescriptor;
 #endif
 
 // If access modes (F_OK, X_OK, W_OK or R_OK) is not defined we must define 
@@ -138,9 +175,12 @@ namespace compat {
 			static string pathD;
 			static string iUriD;
 			static string fUriD;
+			static string gingaPrefix;
 			static bool initialized;
+			static void* cmInstance;
 
 			static void checkValues();
+			static void initializeGingaPrefix();
 			static void initializeGingaPath();
 			static void initializeUserCurrentPath();
 			static void initializeGingaConfigFile();
@@ -151,6 +191,7 @@ namespace compat {
 			/********
 			 * URIs *
 			 ********/
+			static string getGingaPrefix();
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
 			static bool isAbsolutePath(string path);
@@ -191,7 +232,15 @@ namespace compat {
 			/******************************
 			 * Handling Dynamic libraries *
 			 ******************************/
-			static void* loadComponent(string libName, string symName);
+			static void* getComponentManagerInstance();
+			static void setComponentManagerInstance(void* cmInstance);
+
+			static string appendLibExt(string libName);
+
+			static void* loadComponent(
+					string libName, void** llib, string symName);
+
+			static bool releaseComponent(void* component);
 
 			/****************
 			 * SIG Handlers *
@@ -216,18 +265,36 @@ namespace compat {
 			static void uSleep(unsigned int microseconds);
 			static string getTemporaryDir();
 
-			static void exit(short status);
+			static void gingaProcessExit(short status);
 
 
-			/**********************
+			/******************
 			 * Time functions *
-			 **********************/
+			 ******************/
 			static int gettimeofday(struct timeval *tv, struct timezone *tz);
+			static int getUserClock(struct timeval* usrClk);
 
-			/**********************
+
+			/******************
 			 * Math functions *
-			 **********************/
+			 ******************/
 			static int rint (double x);
+
+
+			/******************
+			 * Pipe Functions *
+			 ******************/
+			static string checkPipeName(string pipeName);
+
+		private:
+			static void checkPipeDescriptor(PipeDescriptor pd);
+
+		public:
+			static bool createPipe(string pipeName, PipeDescriptor* pd);
+			static bool openPipe(string pipeName, PipeDescriptor* pd);
+			static void closePipe(PipeDescriptor pd);
+			static int readPipe(PipeDescriptor pd, char* buffer, int buffSize);
+			static int writePipe(PipeDescriptor pd, char* data, int dataSize);
 	};
 }
 }

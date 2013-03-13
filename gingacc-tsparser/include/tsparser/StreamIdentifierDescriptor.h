@@ -50,6 +50,9 @@ http://www.telemidia.puc-rio.br
 #ifndef STREAMIDENTIFIERDESCRIPTOR_H_
 #define STREAMIDENTIFIERDESCRIPTOR_H_
 
+#include "IMpegDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -65,7 +68,7 @@ namespace descriptors {
 			StreamIdentifierDescriptor();
 			virtual ~StreamIdentifierDescriptor();
 			unsigned char getDescriptorTag();
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
 			void print();
 			size_t process(char* data, size_t pos);
 	};

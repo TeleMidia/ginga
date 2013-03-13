@@ -63,10 +63,9 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "DSMCCSectionPayload.h"
-#include "Descriptor.h"
+#include "MpegDescriptor.h"
 #include "NPTReference.h"
 #include "TimeBaseClock.h"
-#include "INPTListener.h"
 
 #include <set>
 #include <map>
@@ -85,29 +84,54 @@ namespace dsmcc {
 namespace npt {
 
 class NPTProcessor : public Thread, public ITimeBaseProvider {
+	
+	struct TimeControl {
+		double time;
+		bool notified;
+	};
+
 	private:
+		static const unsigned short MAX_NPT_VALUE       = 47721;
+		static const char INVALID_CID		   = -1;
+		static const short NPT_ST_OCCURRING    = 0;
+		static const short NPT_ST_PAUSED       = 1;
+
 		ISTCProvider* stcProvider;
 		bool running;
 		bool loopControlMin;
 		bool loopControlMax;
 		unsigned char currentCid;
-		pthread_mutex_t loopMutex;
 
-		map<unsigned char, NPTReference*>* scheduledNpts;
-		map<unsigned char, TimeBaseClock*>* timeBaseClock;
-		map<unsigned char, set<INPTListener*>*>* loopListeners;
-		map<unsigned char, map<double, set<INPTListener*>*>*>* timeListeners;
-		set<INPTListener*>* cidListeners;
+		pthread_mutex_t loopMutex;
+		pthread_mutex_t schedMutex;
+		pthread_mutex_t lifeMutex;
+
+		map<unsigned char, NPTReference*> scheduledNpts;
+		map<unsigned char, TimeBaseClock*> timeBaseClock;
+		map<unsigned char, Stc*> timeBaseLife;
+		map<unsigned char, set<ITimeBaseProvider*>*> loopListeners;
+		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*> timeListeners;
+		set<ITimeBaseProvider*> cidListeners;
+		bool reScheduleIt;
+		uint64_t firstStc;
+		bool isFirstStc;
+		bool nptPrinter;
 
 	public:
 		NPTProcessor(ISTCProvider* stcProvider);
 		virtual ~NPTProcessor();
 
+		void setNptPrinter(bool nptPrinter);
+
 	private:
 		uint64_t getSTCValue();
+		void clearUnusedTimebase();
+		void clearTables();
+		void detectLoop();
 
 	public:
 		bool addLoopListener(unsigned char cid, ITimeBaseListener* ltn);
+		bool removeLoopListener(unsigned char cid, ITimeBaseListener* ltn);
 
 		bool addTimeListener(
 				unsigned char cid, double nptValue, ITimeBaseListener* ltn);
@@ -118,30 +142,25 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		bool removeIdListener(ITimeBaseListener* ltn);
 
 		unsigned char getCurrentTimeBaseId();
-		double getCurrentTimeValue(unsigned char timeBaseId);
 
 	private:
-		void notifyLoopToTimeListeners(unsigned char cid);
+		void notifyLoopToTimeListeners();
 		void notifyTimeListeners(unsigned char cid, double nptValue);
+		void notifyNaturalEndListeners(unsigned char cid, double nptValue);
 		void notifyIdListeners(unsigned char oldCid, unsigned char newCid);
 		TimeBaseClock* getTimeBaseClock(unsigned char cid);
 		int updateTimeBase(TimeBaseClock* clk, NPTReference* npt);
-		int scheduleTimeBase(NPTReference* npt);
-		bool checkTimeBaseArgs(
-				string function, TimeBaseClock* clk, NPTReference* npt);
+		TimeBaseClock* getCurrentTimebase();
+		double getCurrentTimeValue(unsigned char timeBaseId);
 
 	public:
-		int decodeNPT(vector<Descriptor*>* list);
+		int decodeDescriptors(vector<MpegDescriptor*>* list);
 		double getNPTValue(unsigned char contentId);
 
 	private:
-		bool getNextNptValue(
-				double* nextNptValue,
-				NPTReference* npt,
-				unsigned char* cid,
-				double* sleepTime);
+		char getNextNptValue(char cid, double *nextNptValue, double* sleepTime);
 
-		bool processNptValues(NPTReference* npt, bool* isNotify);
+		bool processNptValues();
 		void run();
 };
 

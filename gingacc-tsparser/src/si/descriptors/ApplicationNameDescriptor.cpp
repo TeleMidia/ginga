@@ -58,23 +58,21 @@ namespace tsparser {
 namespace si {
 	ApplicationNameDescriptor::ApplicationNameDescriptor() {
 		descriptorLength = 0;
-		descriptorTag = 0x01;
-		appNames = new vector<struct AppName*>;
+		descriptorTag    = 0x01;
 	}
 
 	ApplicationNameDescriptor::~ApplicationNameDescriptor() {
 		vector<struct AppName*>::iterator i;
-		if(appNames != NULL){
-			i = appNames->begin();
-			while(i != appNames->end()){
-				delete (*i);
-				++i;
-			}
-			delete appNames;
-			appNames = NULL;
-		}
 
+		i = appNames.begin();
+		while (i != appNames.end()) {
+			delete (*i)->applicationNameChar;
+			delete (*i);
+			++i;
+		}
+		appNames.clear();
 	}
+
 	unsigned char ApplicationNameDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
@@ -83,37 +81,40 @@ namespace si {
 		return descriptorLength;
 	}
 
-	void ApplicationNameDescriptor::print(){
+	void ApplicationNameDescriptor::print() {
 
 	}
 
-	size_t ApplicationNameDescriptor::process (char* data, size_t pos) {
+	size_t ApplicationNameDescriptor::process(char* data, size_t pos) {
 		unsigned char remainingBytes;
 		struct AppName* appName;
 
-		descriptorTag = data[pos];
+		descriptorTag    = data[pos];
 		descriptorLength = data[pos+1];
-		pos ++;
+		pos++;
 
 		remainingBytes = descriptorLength;
-		while (remainingBytes) {
+		while (remainingBytes > 0) {
 			appName = new struct AppName;
-			pos ++;
+			pos++;
 
-			memcpy(appName->languageCode, data+pos, 3);
-			pos += 3;
+			memcpy(appName->languageCode, data + pos, 3);
+			pos+= 3;
 
-			appName->applicationNameLentgh = data[pos];
+			appName->applicationNameLength = data[pos];
 			appName->applicationNameChar =
-					new char[appName->applicationNameLentgh];
+					new char[appName->applicationNameLength];
 
-			memcpy(appName->applicationNameChar, data+pos+1,
-					appName->applicationNameLentgh);
+			memcpy(
+					appName->applicationNameChar,
+					data + pos + 1,
+					appName->applicationNameLength);
 
-			pos += appName->applicationNameLentgh ;
-			remainingBytes -= appName->applicationNameLentgh - 4;
-			appNames->push_back(appName);
+			pos+= appName->applicationNameLength;
+			remainingBytes-= (appName->applicationNameLength + 4);
+			appNames.push_back(appName);
 		}
+
 		return pos;
 	}
 }

@@ -1,4 +1,4 @@
-AC_INIT(gingacc-contextmanager, 0.13.3)
+AC_INIT(gingacc-contextmanager, 0.13.5)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
@@ -8,15 +8,13 @@ AC_PROG_CXX([g++])
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-# Bring additional directories where things might be found into our
-# search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/; do
+for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga ${prefix}/lib/ginga; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -67,16 +65,16 @@ AC_CHECK_HEADER(
 
 if test x$enable_components = xno; then
    COMPONENTS_LIBS='-lgingaccsystem -lgingaccmb \
-    -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
+    -L/usr/local/lib/ -L${prefix}/lib/ginga/ -L${prefix}/lib/ginga/mb'
    TEST_COMPONENTS_LIBS='-lgingaccmb \
     -lgingaccsystem -lgingacccontextmanager \
-    -L/usr/local/lib/ -L/usr/local/lib/ginga/ -L/usr/local/lib/ginga/mb'
+    -L/usr/local/lib/ -L${prefix}/lib/ginga/ -L${prefix}/lib/ginga/mb'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
 
 else
-   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ginga/'
-   TEST_COMPONENTS_LIBS='-ldl -L/usr/local/lib/ginga/'
+   COMPONENTS_LIBS='-ldl -L${prefix}/lib/ginga/'
+   TEST_COMPONENTS_LIBS='-ldl -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
    AC_MSG_RESULT([*** Component support will be built.])
 fi

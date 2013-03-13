@@ -69,7 +69,8 @@ namespace descriptors {
 			virtual ~TargetRegionDescriptor();
 			void print();
 			unsigned char getDescriptorTag();
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
+			size_t process (char* data, size_t pos);
 
 	};
 

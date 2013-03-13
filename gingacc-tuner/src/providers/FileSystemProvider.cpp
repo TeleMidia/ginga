@@ -116,11 +116,15 @@ namespace tuning {
 		fclose(fileDescriptor);
 	}
 
-	int FileSystemProvider::receiveData(char* buff) {
+	int FileSystemProvider::receiveData(char* buff,  int skipSize,
+									    unsigned char packetSize) {
+		int bufSize = (packetSize * 100) + 1;
 		if (fileDescriptor > 0) {
-			int rval = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
-			if (rval < BUFFSIZE) {
-				printf("File is over, set file to begin again!\n");
+			if (skipSize) fseek(fileDescriptor, skipSize, SEEK_CUR);
+			int rval = fread((void*)buff, 1, bufSize, fileDescriptor);
+			if (rval < bufSize) {
+				clog << "FileSystemProvider::receiveData" << endl;
+				clog << "File is over, set file to begin again!" << endl;
 				fseek(fileDescriptor, 0L, SEEK_SET);
 				if (listener != NULL) {
 					listener->receiveSignal(PST_LOOP);

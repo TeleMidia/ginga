@@ -84,19 +84,25 @@ namespace cm {
 			virtual bool isAvailable(string objName)=0;
 
 		private:
-			virtual void* getComponent(string dLibName)=0;
-			virtual void* getSymbol(void* component, string symbolName)=0;
 			virtual bool releaseComponent(void* component)=0;
 
 		public:
 			static IComponentManager* getCMInstance() {
+				void* comp;
 				IComponentManager* icm = NULL;
+				CMCreator* cmCreator;
 
-				CMCreator* cmCreator = (CMCreator*)SystemCompat::loadComponent(
-						"libgingacccm", "createCM");
+				icm = (IComponentManager*)(
+						SystemCompat::getComponentManagerInstance());
 
-				if (cmCreator != NULL) {
-					icm = (IComponentManager*)(cmCreator());
+				if (icm == NULL) {
+					cmCreator = (CMCreator*)SystemCompat::loadComponent(
+							"libgingacccm", &comp, "createCM");
+
+					if (cmCreator != NULL) {
+						icm = (IComponentManager*)(cmCreator());
+						SystemCompat::setComponentManagerInstance(icm);
+					}
 				}
 
 				return (icm);

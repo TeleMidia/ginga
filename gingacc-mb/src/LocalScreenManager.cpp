@@ -354,6 +354,7 @@ namespace mb {
 	GingaScreenID LocalScreenManager::createScreen(int argc, char** args) {
 		int i;
 		bool externalRenderer = false;
+		bool useStdin  = false;
 		string vSystem = "", vSubSystem = "", vMode = "";
 		string vParent = "", vEmbed = "";
 		string aSystem = "";
@@ -378,7 +379,9 @@ namespace mb {
 			} else if ((strcmp(args[i], "--parent") == 0) && ((i + 1) < argc)) {
 				vParent.assign(args[i + 1]);
 
-			} else if ((strcmp(args[i], "--embed") == 0) && ((i + 1) < argc)) {
+			} else if ((strcmp(args[i], "--embed") == 0 ||
+					strcmp(args[i], "--wid") == 0) && ((i + 1) < argc)) {
+
 				vEmbed.assign(args[i + 1]);
 
 			} else if ((strcmp(args[i], "--asystem") == 0) && ((i + 1) < argc)) {
@@ -386,6 +389,9 @@ namespace mb {
 
 			} else if (strcmp(args[i], "--external-renderer") == 0) {
 				externalRenderer = true;
+
+			} else if (strcmp(args[i], "--poll-stdin") == 0) {
+				useStdin = true;
 			}
 
 			clog << "LocalScreenManager::createScreen PARSER argv[";
@@ -394,7 +400,7 @@ namespace mb {
 
 		newScreen = createScreen(
 				vSystem, vSubSystem, vMode,
-				vParent, vEmbed, aSystem, externalRenderer);
+				vParent, vEmbed, aSystem, externalRenderer, useStdin);
 
 		unlock();
 
@@ -408,7 +414,8 @@ namespace mb {
 			string vParent,
 			string vEmbed,
 			string aSystem,
-			bool externalRenderer) {
+			bool externalRenderer,
+			bool useStdin) {
 
 		IDeviceScreen* screen  = NULL;
 		GingaWindowID embedWin = NULL;
@@ -427,7 +434,6 @@ namespace mb {
 
 		switch (sysType) {
 			case GMBST_SDL:
-				argc         = 0;
 				mbArgs[argc] = (char*)mycmd.c_str();
 				argc++;
 
@@ -475,6 +481,11 @@ namespace mb {
 					argc++;
 				}
 
+				if (useStdin) {
+					mbArgs[argc] = (char*)"poll-stdin";
+					argc++;
+				}
+
 #if HAVE_COMPSUPPORT
 				screen = ((ScreenCreator*)(cm->getObject("SDLDeviceScreen")))(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
@@ -503,7 +514,6 @@ namespace mb {
 			case GMBST_DFLT:
 			case GMBST_DFB:
 			default:
-				argc   = 2;
 				params = "";
 
 				if (vSubSystem != "") {
@@ -538,8 +548,10 @@ namespace mb {
 					params = params + "," + paramsSfx;
 				}
 
-				mbArgs[0] = (char*)mycmd.c_str();
-				mbArgs[1] = (char*)params.c_str();
+				mbArgs[argc] = (char*)mycmd.c_str();
+				argc++;
+				mbArgs[argc] = (char*)params.c_str();
+				argc++;
 
 				if (aSystem != "") {
 					mbArgs[argc] = (char*)"audio";

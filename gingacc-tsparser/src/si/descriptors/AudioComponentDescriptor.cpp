@@ -165,11 +165,12 @@ namespace descriptors{
 	}
 
 	void AudioComponentDescriptor::print() {
-		clog << "AudioComponentDescriptor::print" << endl;
+		//TODO: WORSE CODE EVER MADE: FIX IT
+/*		clog << "AudioComponentDescriptor::print" << endl;
 		clog << " -languageCode = " << getLanguageCode() << endl;
 		if (ESMultiLingualFlag) {
 			clog << " -languageCode2 = " << getLanguageCode2() << endl;
-		}
+		}*/
 	}
 
 	size_t AudioComponentDescriptor::process(char* data, size_t pos) {

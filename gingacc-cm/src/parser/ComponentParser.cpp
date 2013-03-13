@@ -192,9 +192,11 @@ namespace cm {
 	void ComponentParser::parseComponent(void* data, const XML_Char** attrs) {
 		IComponentParser* cp = ((ComponentAndParser*)data)->parser;
 		IComponent* component;
-		string name = "";
+
+		string lName   = "libgingacccmcomponent";
+		string name    = "";
 		string version = "";
-		string type = "";
+		string type    = "";
 
 		for (int i = 0; i < 8; i = i + 2) {
 			if (strcmp(attrs[i], "package") == 0) {
@@ -211,36 +213,27 @@ namespace cm {
 			}
 		}
 
-		void* comp = dlopen("libgingacccmcomponent.so", RTLD_LAZY);
-		if (comp == NULL) {
-			cerr << "ComponentParser warning: cant load component '";
-			cerr << "libgingacccmcomponent.so' => " << dlerror() << endl;
-			return;
-		}
+		if (name != "" && version != "" && type != "") {
+			void* comp;
+			void* symb = SystemCompat::loadComponent(
+					lName, &comp, "createComponent");
 
-		dlerror();
-		if (comp != NULL) {
-			if (name != "" && version != "" && type != "") {
-				component = ((ComponentCreator*)(
-						dlsym(comp, "createComponent")))(name, version, type);
-
-				const char* dlsym_error = dlerror();
-
-				if (dlsym_error != NULL) {
-					cerr << "ComponentManager warning: cant load symbol '";
-					cerr << "createComponent' => " << dlsym_error << endl;
-					return;
-				}
-
-				dlerror();
-				clog << "ComponentParser::parseComponent create component '";
-				clog << name.c_str() << "' version '";
-				clog << version.c_str() << "' type '";
-				clog << type.c_str() << "'" << endl;
-
-				((ComponentAndParser*)data)->currentComponent = component;
-				((ComponentParser*)cp)->addComponent(name, component);
+			if (symb == NULL) {
+				clog << "ComponentManager warning: can't load symbol '";
+				clog << "createComponent' using library '" << lName << "'";
+				clog << endl;
+				return;
 			}
+
+			component = ((ComponentCreator*)symb)(name, version, type);
+
+			clog << "ComponentParser::parseComponent create component '";
+			clog << name.c_str() << "' version '";
+			clog << version.c_str() << "' type '";
+			clog << type.c_str() << "'" << endl;
+
+			((ComponentAndParser*)data)->currentComponent = component;
+			((ComponentParser*)cp)->addComponent(name, component);
 		}
 	}
 
@@ -374,6 +367,11 @@ namespace cm {
 
 			} else if (strcmp(attrs[i], "uri") == 0) {
 				uri = attrs[i + 1];
+
+				if (uri.find("${prefix}") != std::string::npos) {
+					uri = SystemCompat::getGingaPrefix() +
+							uri.substr(9, uri.length() - 9);
+				}
 			}
 		}
 

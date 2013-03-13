@@ -101,6 +101,16 @@ namespace mb {
 		return 0;
 	}
 
+	int64_t SDLAudioProvider::getVPts() {
+		int64_t vpts = 0;
+
+		if (decoder != NULL) {
+			vpts = (uint64_t)(decoder->getPosition() * 90000);
+		}
+
+		return vpts;
+	}
+
 	double SDLAudioProvider::getMediaTime() {
 		if (decoder != NULL) {
 			return (double)decoder->getPosition();
@@ -111,7 +121,7 @@ namespace mb {
 
 	void SDLAudioProvider::setMediaTime(double pos) {
 		if (decoder != NULL) {
-			decoder->seek((int64_t)pos);
+			decoder->seek(((int64_t)pos) * 1000000);
 		}
 	}
 

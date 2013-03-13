@@ -57,7 +57,7 @@ namespace core {
 namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
-StreamMode::StreamMode() : Descriptor(0x03) {
+StreamMode::StreamMode() : MpegDescriptor(0x03) {
 	streamMode = 0;
 	descriptorLength = 2;
 }
@@ -67,13 +67,13 @@ StreamMode::~StreamMode() {
 }
 
 int StreamMode::process() {
-	int pos = Descriptor::process();
+	int pos = MpegDescriptor::process();
 	streamMode = stream[pos++] & 0xFF;
 	return 0;
 }
 
 int StreamMode::updateStream() {
-	int pos = Descriptor::updateStream();
+	int pos = MpegDescriptor::updateStream();
 
 	stream[pos++] = streamMode & 0xFF;
 	stream[pos++] = 0xFF;
@@ -82,7 +82,7 @@ int StreamMode::updateStream() {
 }
 
 unsigned int StreamMode::calculateDescriptorSize() {
-	int pos = Descriptor::calculateDescriptorSize();
+	int pos = MpegDescriptor::calculateDescriptorSize();
 	return pos + 2;
 }
 

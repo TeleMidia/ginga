@@ -57,7 +57,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-	PassiveDeviceDomain::PassiveDeviceDomain(bool deviceSearch, int srvPort) : DeviceDomain(deviceSearch, srvPort) {
+	PassiveDeviceDomain::PassiveDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		deviceClass      = CT_PASSIVE;
 		deviceService    = new PassiveDeviceService();
 /*
@@ -65,10 +65,17 @@ namespace multidevice {
 				(char*)(PASSIVE_MCAST_ADDR.c_str()),
 				BROADCAST_PORT + CT_PASSIVE);
 				*/
-		passiveMulticast = new MulticastSocketService(
-				(char*)(SECO_WRITE_MCAST_ADDR.c_str()),
-				(char*)(BASE_WRITE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_PASSIVE);
+
+		if (useMulticast) {
+			passiveSocket = new MulticastSocketService(
+					(char*)(PASSIVE_MCAST_ADDR.c_str()),
+					BROADCAST_PORT + CT_PASSIVE);
+
+		}
+		else {
+			passiveSocket = new BroadcastDualSocketService(
+			SECO_WRITE_BCAST_PORT,BASE_WRITE_BCAST_PORT);
+		}
 
 	}
 
@@ -86,7 +93,7 @@ namespace multidevice {
 
 	bool PassiveDeviceDomain::passiveTaskRequest(char* data, int taskSize) {
 		clog << "PassiveDeviceDomain::passiveTaskRequest" << endl;
-		passiveMulticast->dataRequest(data, taskSize);
+		passiveSocket->dataRequest(data, taskSize);
 		return true;
 	}
 
@@ -96,9 +103,6 @@ namespace multidevice {
 		int taskSize;
 
 		if (connected)
-			return;
-
-		if (!deviceSearch)
 			return;
 
 		clog << "PassiveDeviceDomain::postConnectionRequestTask";
@@ -293,11 +297,11 @@ namespace multidevice {
 	void PassiveDeviceDomain::checkDomainTasks() {
 		DeviceDomain::checkDomainTasks();
 
-		if (passiveMulticast->checkInputBuffer(mdFrame, &bytesRecv)) {
+		if (passiveSocket->checkInputBuffer(mdFrame, &bytesRecv)) {
  			runDataTask();
 		}
 
-		passiveMulticast->checkOutputBuffer();
+		passiveSocket->checkOutputBuffer();
 	}
 }
 }

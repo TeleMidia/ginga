@@ -60,33 +60,25 @@ namespace si {
 		secName                 = "";
 		applicationType         = 0;
 		commonDescriptorsLength = 0;
-		descriptors             = new vector<IMpegDescriptor*>;
-		applications            = new vector<IApplication*>;
 	}
 
 	AIT::~AIT() {
 		vector<IMpegDescriptor*>::iterator i;
 		vector<IApplication*>:: iterator j;
 
-		if (descriptors != NULL) {
-			i = descriptors->begin();
-			while (i != descriptors->end()) {
-				delete (*i);
-				++i;
-			}
-			delete descriptors;
-			descriptors = NULL;
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
+			delete (*i);
+			++i;
 		}
+		descriptors.clear();
 
-		if (applications != NULL) {
-			j = applications->begin();
-			while(j != applications->end()){
-				delete (*j);
-				++j;
-			}
-			delete applications;
-			applications = NULL;
+		j = applications.begin();
+		while(j != applications.end()){
+			delete (*j);
+			++j;
 		}
+		applications.clear();
 	}
 
 	string AIT::getSectionName() {
@@ -101,12 +93,20 @@ namespace si {
 		applicationType = type;
 	}
 
-	vector<IMpegDescriptor*>* AIT::getDescriptors() {
-		return descriptors;
+	vector<IMpegDescriptor*>* AIT::copyDescriptors() {
+		vector<IMpegDescriptor*>* descs;
+
+		descs = new vector<IMpegDescriptor*>(descriptors);
+
+		return descs;
 	}
 
-	vector<IApplication*>* AIT::getApplications() {
-		return applications;
+	vector<IApplication*>* AIT::copyApplications() {
+		vector<IApplication*>* apps;
+
+		apps = new vector<IApplication*>(applications);
+
+		return apps;
 	}
 
 	void AIT::process(void* payloadBytes, unsigned int payloadSize) {
@@ -121,17 +121,11 @@ namespace si {
 		data = new char[payloadSize];
 		memcpy((void*)&(data[0]), payloadBytes, payloadSize);
 
-		/*
-		pos = 3;
-		applicationType  = (((section[pos] & 0xFF) << 8)
-				| (section[pos+1] & 0xFF));
-		pos = 8; // jumping to payload (heard has 8 bytes)
-*/
 		pos = 0;
 		commonDescriptorsLength = ((((data[pos] & 0x0F) << 8) & 0xFF00) |
 				(data[pos+1] & 0xFF));
 
-		//handle Descriptors!
+		//handling MPEG descriptors
 		pos += 2;
 		descpos = pos;
 		remainingBytes = commonDescriptorsLength;
@@ -144,37 +138,37 @@ namespace si {
 				case IApplication::DT_APPLICATION:
 					descriptor = new ApplicationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case IApplication::DT_APPLICATION_NAME:
 					descriptor = new ApplicationNameDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case IApplication::DT_TRANSPORT_PROTOCOL:
 					descriptor = new TransportProtocolDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case IApplication::DT_GINGAJ_APPLICATION_LOCATION:
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case IApplication::DT_GINGANCL_APPLICATION_LOCATION:
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				case IApplication::DT_PREFETCH:
 					descriptor = new PrefetchDescriptor();
 					descriptor->process(data, pos);
-					descriptors->push_back(descriptor);
+					descriptors.push_back(descriptor);
 					break;
 
 				default:
@@ -193,13 +187,11 @@ namespace si {
 			application = new Application();
 			application->process(data, pos);
 			pos += application->getLength();
-			applications->push_back(application);
+			applications.push_back(application);
 		}
 
 		delete data;
 	}
-
-
 }
 }
 }

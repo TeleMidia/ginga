@@ -60,6 +60,7 @@ namespace npt {
 TimeBaseClock::TimeBaseClock() : Stc() {
 	numerator   = 1;
 	denominator = 1;
+	endpointAvailable = false;
 }
 
 TimeBaseClock::~TimeBaseClock() {
@@ -73,7 +74,7 @@ int64_t TimeBaseClock::convertToNpt(
 
 	double scale, ret;
 
-	scale = numerator / denominator;
+	scale = ((double) numerator) / denominator;
 	ret   = base;
 	ret   = ret * scale;
 
@@ -104,6 +105,30 @@ void TimeBaseClock::setScaleDenominator(unsigned short den) {
 	denominator = den;
 }
 
+uint64_t TimeBaseClock::getStartNpt() {
+	return startNpt;
+}
+
+uint64_t TimeBaseClock::getStopNpt() {
+	return stopNpt;
+}
+
+void TimeBaseClock::setStartNpt(uint64_t start) {
+	startNpt = start;
+}
+
+void TimeBaseClock::setStopNpt(uint64_t stop) {
+	stopNpt = stop;
+}
+
+void TimeBaseClock::setEndpointAvailable(bool epa) {
+	endpointAvailable = epa;
+}
+
+bool TimeBaseClock::getEndpointAvailable() {
+	return endpointAvailable;
+}
+
 void TimeBaseClock::refreshStcSample() {
 	// future problem: never returns a negative value!
 	double doubleStc;
@@ -111,7 +136,7 @@ void TimeBaseClock::refreshStcSample() {
 
 	Stc::refreshStcSample();
 
-	scale     = numerator / denominator;
+	scale     = ((double) numerator) / denominator;
 	doubleStc = stc;
 	doubleStc = doubleStc * scale;
 	stc       = (uint64_t) doubleStc;

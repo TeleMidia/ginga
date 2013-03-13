@@ -75,28 +75,28 @@ namespace mb {
 			Thread::mutexInit(&pMutex, true);
 		}
 
-		Thread::mutexLock(&pMutex);
-		imageRefs++;
+		//Thread::mutexLock(&pMutex);
+		//imageRefs++;
 
 		imgUri   = "";
 		myScreen = screenId;
 
 		imgUri.assign(mrl);
 
-		Thread::mutexUnlock(&pMutex);
+		//Thread::mutexUnlock(&pMutex);
 	}
 
 	SDLImageProvider::~SDLImageProvider() {
-		Thread::mutexLock(&pMutex);
-		imageRefs--;
+		//Thread::mutexLock(&pMutex);
+		//imageRefs--;
 
-		if (imageRefs == 0) {
+		//if (imageRefs == 0) {
 			// FIXME: Find a better way to do this!
 			// IMG_Quit();
 			// initialized = false;
-		}
+		//}
 
-		Thread::mutexUnlock(&pMutex);
+		//Thread::mutexUnlock(&pMutex);
 	}
 
 	void SDLImageProvider::playOver(ISurface* surface) {

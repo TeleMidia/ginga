@@ -66,6 +66,9 @@ struct MultipleEvent{
 	struct Event* event;
 };
 
+#include <vector>
+using namespace std;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -79,9 +82,8 @@ namespace descriptors {
 		protected:
 			unsigned char groupType;
 			unsigned char eventCount;
-			//vector<Event*>* events;
-			struct Event* events;
-			vector<MultipleEvent*>* multiEvents;
+			vector<struct Event*>* events;
+			vector<struct MultipleEvent*>* multiEvents;
 
 		public:
 			EventGroupDescriptor();

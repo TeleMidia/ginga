@@ -74,81 +74,83 @@ namespace dataprocessing {
 #endif
 
 	DataProcessor::DataProcessor() : Thread() {
-		eventListeners  = new map<string, set<IStreamEventListener*>*>;
-		objectListeners = new set<IObjectListener*>;
 		filterManager   = new FilterManager();
-		processedIds    = new set<unsigned int>;
-
-		processors      = new map<unsigned int, MessageProcessor*>;
 		nptProcessor    = NULL;
 		sdl             = NULL;
-
-		sections        = new vector<ITransportSection*>;
-
 		removeOCFilter  = false;
 		demux           = NULL;
 		ait             = NULL;
+		nptPrinter      = false;
+
+		Thread::mutexInit(&mutex, true);
 
 		startThread();
-
-		Thread::mutexInit(&mutex, NULL);
 
 		SystemCompat::makeDir("carousel", 0777);
 		SystemCompat::makeDir("carousel/modules", 0777);
 
-		epgProcessor = EPGProcessor::getInstance();
-		epgProcessor->setDataProcessor(this);
+		//TODO: remove all garbage from epg processor before start using it
+		//epgProcessor = EPGProcessor::getInstance();
+		//epgProcessor->setDataProcessor(this);
 	}
 
 	DataProcessor::~DataProcessor() {
 		running = false;
 
-		if (eventListeners != NULL) {
-			delete eventListeners;
-			eventListeners = NULL;
+		map<string, set<IStreamEventListener*>*>::iterator it;
+		set<IStreamEventListener*>::iterator its;
+		it = eventListeners.begin();
+		while (it != eventListeners.end()) {
+			its = it->second->begin();
+			while (its != it->second->end()) {
+				delete *its;
+				++its;
+			}
+			delete it->second;
+			++it;
 		}
-
-		if (objectListeners != NULL) {
-			delete objectListeners;
-			objectListeners = NULL;
-		}
+		eventListeners.clear();
+		objectListeners.clear();
 
 		if (filterManager != NULL) {
 			delete filterManager;
 			filterManager = NULL;
 		}
 
-		if (processors != NULL) {
-			delete processors;
-			processors = NULL;
-		}
-
-		if (processedIds != NULL) {
-			delete processedIds;
-			processedIds = NULL;
-		}
+		processors.clear();
+		processedIds.clear();
 
 		if (nptProcessor != NULL) {
 			delete nptProcessor;
 			nptProcessor = NULL;
 		}
 
-		if (sections != NULL) {
-			delete sections;
-			sections = NULL;
-		}
+		sections.clear();
 
 		if (ait != NULL) {
 			delete ait;
 			ait = NULL;
 		}
 
-		if (epgProcessor != NULL) {
+		//TODO: remove all garbage from epg processor before start using it
+		/*if (epgProcessor != NULL) {
 			epgProcessor->release();
 			epgProcessor = NULL;
-		}
+		}*/
 
 		Thread::mutexDestroy(&mutex);
+	}
+
+	void DataProcessor::setNptPrinter(bool nptPrinter) {
+		this->nptPrinter = nptPrinter;
+
+		if (nptProcessor != NULL) {
+			nptProcessor->setNptPrinter(nptPrinter);
+
+		} else {
+			cout << "DataProcessor::printNpt Warning! NULL nptProcessor";
+			cout << endl;
+		}
 	}
 
 	void DataProcessor::applicationInfoMounted(IAIT* ait) {
@@ -182,6 +184,8 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::setSTCProvider(ISTCProvider* stcProvider) {
+		assert(nptProcessor == NULL);
+
 		nptProcessor = new NPTProcessor(stcProvider);
 	}
 
@@ -209,18 +213,20 @@ namespace dataprocessing {
 		set<IStreamEventListener*>* listeners;
 
 		clog << "DataProcessor::addSEListener" << endl;
-		i = eventListeners->find(eventType);
-		if (i != eventListeners->end()) {
+		i = eventListeners.find(eventType);
+		if (i != eventListeners.end()) {
 			listeners = i->second;
-			if (listeners == NULL)
+			if (listeners == NULL) {
 				listeners = new set<IStreamEventListener*>;
+				eventListeners[eventType] = listeners;
+			}
 
 			listeners->insert(listener);
 
 		} else {
 			listeners = new set<IStreamEventListener*>;
 			listeners->insert(listener);
-			(*eventListeners)[eventType] = listeners;
+			eventListeners[eventType] = listeners;
 		}
 	}
 
@@ -231,8 +237,8 @@ namespace dataprocessing {
 		set<IStreamEventListener*>::iterator j;
 		set<IStreamEventListener*>* listeners;
 
-		i = eventListeners->find(eventType);
-		if (i != eventListeners->end()) {
+		i = eventListeners.find(eventType);
+		if (i != eventListeners.end()) {
 			listeners = i->second;
 			if (listeners != NULL) {
 				j = listeners->find(listener);
@@ -250,15 +256,15 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::addObjectListener(IObjectListener* l) {
-		objectListeners->insert(l);
+		objectListeners.insert(l);
 	}
 
 	void DataProcessor::removeObjectListener(IObjectListener* l) {
 		set<IObjectListener*>::iterator i;
 
-		i = objectListeners->find(l);
-		if (i != objectListeners->end()) {
-			objectListeners->erase(i);
+		i = objectListeners.find(l);
+		if (i != objectListeners.end()) {
+			objectListeners.erase(i);
 		}
 	}
 
@@ -292,8 +298,8 @@ namespace dataprocessing {
 
 		clog << "DataProcessor::notifySEListeners for eventName '";
 		clog << eventName << "'" << endl;
-		if (eventListeners->count(eventName) != 0) {
-			listeners = (*eventListeners)[eventName];
+		if (eventListeners.count(eventName) != 0) {
+			listeners = eventListeners[eventName];
 			j = listeners->begin();
 			while (j != listeners->end()) {
 				//(*j)->receiveStreamEvent(se);
@@ -324,123 +330,135 @@ namespace dataprocessing {
 		//TODO: clean this mess
 		DSMCCSectionPayload* dsmccSection;
 
-		if (section != NULL) {
-			tableId = section->getTableId();
+		assert(section != NULL);
 
-			//stream event
-			if (tableId == DDE_TID) {
-				//filterManager->addProcessedSection(section->getSectionName());
+		tableId = section->getTableId();
 
-				payload = (char*)(section->getPayload());
+		//stream event
+		if (tableId == DDE_TID) {
+			//filterManager->addProcessedSection(section->getSectionName());
 
-				/*clog << "DataProcessor::receiveSection DSM-CC descriptor";
-				clog << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
+			payload = (char*)(section->getPayload());
 
-				if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
-						(payload[0] & 0xFF) == 0x1a) {
+			/*clog << "DataProcessor::receiveSection DSM-CC descriptor";
+			clog << "tag = '" << (payload[0] & 0xFF) << "'" << endl;*/
 
-					se = new StreamEvent(
-							section->getPayload(), section->getPayloadSize());
+			if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
+					(payload[0] & 0xFF) == 0x1a) {
 
-					//i = processedIds->find(se->getId());
-					//if (i == processedIds->end()) {377
-						//clog << "DataProcessor::receiveSection STE" << endl;
+				se = new StreamEvent(
+						section->getPayload(), section->getPayloadSize());
 
-						processedIds->insert(se->getId());
-						//TODO: get stream event object from oc
-						se->setEventName("gingaEditingCommands");
+				//i = processedIds.find(se->getId());
+				//if (i == processedIds.end()) {377
+					//clog << "DataProcessor::receiveSection STE" << endl;
 
-						// notify event listeners
-						notifySEListeners(se);
+					processedIds.insert(se->getId());
+					//TODO: get stream event object from oc
+					se->setEventName("gingaEditingCommands");
 
-					//} else {
-						//delete se;
-					//}
+					// notify event listeners
+					notifySEListeners(se);
 
-				} else if ((payload[0] & 0xFF) ==
-								IMpegDescriptor::NPT_REFERENCE_TAG ||
+				//} else {
+					//delete se;
+				//}
 
-						(payload[0] & 0xFF) ==
-								IMpegDescriptor::NPT_ENDPOINT_TAG) {
+			} else if ((payload[0] & 0xFF) ==
+							IMpegDescriptor::NPT_REFERENCE_TAG ||
+					(payload[0] & 0xFF) == IMpegDescriptor::NPT_ENDPOINT_TAG) {
 
-					//TODO: we have to organize this mess
-					dsmccSection = new DSMCCSectionPayload(
-							payload, section->getPayloadSize());
-
-					nptProcessor->decodeNPT(
-							dsmccSection->getDsmccDescritorList());
+				if (nptPrinter) {
+					cout << "FOUND NEW NPT DSM-CC SECTION" << endl;
 				}
 
-				delete section;
-				section = NULL;
+				//TODO: we have to organize this mess
+				dsmccSection = new DSMCCSectionPayload(
+						payload, section->getPayloadSize());
 
-			//object carousel 0x3B = MSG, 0x3C = DDB
-			} else if (tableId == OCI_TID || tableId == OCD_TID) {
-				lock();
-				//clog << "DataProcessor::receiveSection OC" << endl;
-				sections->push_back(section);
-				unlock();
-				unlockConditionSatisfied();
+				nptProcessor->decodeDescriptors(
+						dsmccSection->getDsmccDescritorList());
 
-			//AIT
-			} else if (tableId == AIT_TID) {
-				//clog << "DataProcessor::receiveSection AIT" << endl;
+				delete dsmccSection;
+			}
 
-				if (ait != NULL &&
-						ait->getSectionName() == section->getSectionName()) {
+			delete section;
+			section = NULL;
 
-					return;
-				}
+		//object carousel 0x3B = MSG, 0x3C = DDB
+		} else if (tableId == OCI_TID || tableId == OCD_TID) {
+			lock();
+			//clog << "DataProcessor::receiveSection OC" << endl;
+			sections.push_back(section);
+			unlock();
+			unlockConditionSatisfied();
 
-				if (ait != NULL) {
-					delete ait;
-					ait = NULL;
-				}
+		//AIT
+		} else if (tableId == AIT_TID) {
+			//clog << "DataProcessor::receiveSection AIT" << endl;
+
+			if (ait != NULL &&
+					ait->getSectionName() == section->getSectionName()) {
+
+				return;
+			}
+
+			if (ait != NULL) {
+				delete ait;
+				ait = NULL;
+			}
 
 #if HAVE_COMPSUPPORT
-				ait = ((AITCreator*)(cm->getObject("AIT")))();
+			ait = ((AITCreator*)(cm->getObject("AIT")))();
 #else
-				ait = new AIT();
+			ait = new AIT();
 #endif
 
-				ait->setSectionName(section->getSectionName());
-				ait->setApplicationType(section->getExtensionId());
-				clog << "DataProcessor::receiveSection AIT calling process";
-				clog << endl;
-				ait->process(section->getPayload(), section->getPayloadSize());
+			ait->setSectionName(section->getSectionName());
+			ait->setApplicationType(section->getExtensionId());
+			clog << "DataProcessor::receiveSection AIT calling process";
+			clog << endl;
+			ait->process(section->getPayload(), section->getPayloadSize());
 
-				applicationInfoMounted(ait);
+			applicationInfoMounted(ait);
 
-			//SDT
-			} else if (tableId == SDT_TID) {
-				//clog << "DataProcessor::receiveSection SDT" << endl;
-				epgProcessor->decodeSdtSection(section);
-				delete section;
-				section = NULL;
+		//SDT
+		} else if (tableId == SDT_TID) {
+			//clog << "DataProcessor::receiveSection SDT" << endl;
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeSdtSection(section);
+			delete section;
+			section = NULL;
 
-			// EIT present/following and schedule 
-			} else if ( tableId == EIT_TID || //EIT present/following in actual TS
-						(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
-					
-				/*TODO: TS files don't have EITs p/f and sched in other TS.
-				 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F
-				 (schedule)
-				*/
+		// EIT present/following and schedule
+		} else if ( tableId == EIT_TID || //EIT present/following in actual TS
+					(tableId >= 0x50 && tableId <= 0x5F)) { //EIT schedule in actual TS
 				
-				epgProcessor->decodeEitSection(section);
-				delete section;
-				section = NULL;
+			/*TODO: TS files don't have EITs p/f and sched in other TS.
+			 tableId == 0x4F (p/f) and tableId >= 0x60 && tableId <= 0x6F
+			 (schedule)
+			*/
 
-			//CDT
-			} else if (tableId == CDT_TID) {
-				clog << "DataProcessor::receiveSection CDT" << endl;
-				sectionName = section->getSectionName();
-				//TODO: TS files don't have any CDT sections.
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeEitSection(section);
+			delete section;
+			section = NULL;
 
-			} else if (tableId == 0x73) {
-				clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
-				epgProcessor->decodeTot(section);
-			}
+		//CDT
+		} else if (tableId == CDT_TID) {
+			clog << "DataProcessor::receiveSection CDT" << endl;
+			sectionName = section->getSectionName();
+			//TODO: TS files don't have any CDT sections.
+
+		} else if (tableId == 0x73) {
+			clog << "DataProcessor::receiveSection TOT FOUND!!!" << endl;
+			//TODO: remove all garbage from epg processor before start using it
+			//epgProcessor->decodeTot(section);
+
+		} else if (nptPrinter) {
+			cout << "NPT PRINTER WARNING! FOUND '" << tableId << "TABLE ID! ";
+			cout << "EXPECTING SECTION WITH TABLE ID '";
+			cout << DDE_TID << "'! ";
 		}
 	}
 
@@ -457,13 +475,13 @@ namespace dataprocessing {
 		while (running) {
 			//clog << "DataProcessor::run checking tasks" << endl;
 			lock();
-			if (sections->empty()) {
+			if (sections.empty()) {
 				unlock();
 				waitForUnlockCondition();
 
 			} else {
-				section = *(sections->begin());
-				sections->erase(sections->begin());
+				section = *(sections.begin());
+				sections.erase(sections.begin());
 				unlock();
 
 				do {
@@ -476,27 +494,27 @@ namespace dataprocessing {
 
 					if (filterManager->processSection(section)) {
 						message = new DsmccMessageHeader(sectionName, pid);
-						if (processors->count(pid) == 0) {
+						if (processors.count(pid) == 0) {
 							processor = new MessageProcessor();
-							(*processors)[pid] = processor;
+							processors[pid] = processor;
 
 						} else {
-							processor = (*processors)[pid];
+							processor = processors[pid];
 						}
 
 						sd = processor->pushMessage(message);
 						if (sd != NULL) {
-							sd->setObjectsListeners(objectListeners);
+							sd->setObjectsListeners(&objectListeners);
 							sd->setServiceDomainListener(this);
 							processor->checkTasks();
 						}
 					}
 
 					lock();
-					hasSection = !sections->empty();
+					hasSection = !sections.empty();
 					if (hasSection) {
-						section = *(sections->begin());
-						sections->erase(sections->begin());
+						section = *(sections.begin());
+						sections.erase(sections.begin());
 					}
 					unlock();
 

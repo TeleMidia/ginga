@@ -59,6 +59,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "dataprocessing/DataProcessor.h"
 #endif
 
+#include "system/time/Stc.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+
 #include "tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
@@ -75,7 +78,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
 #include "dataprocessing/dsmcc/npt/DSMCCSectionPayload.h"
 #include "dataprocessing/dsmcc/npt/NPTProcessor.h"
-#include "dataprocessing/dsmcc/npt/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
 #include <sys/types.h>

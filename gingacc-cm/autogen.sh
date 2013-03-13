@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Component Manager 0.13.3"
+PROJECT="Ginga Common Core Component Manager 0.13.5"
 TEST_TYPE=-f
 FILE=include/cm/IComponentManager.h
 

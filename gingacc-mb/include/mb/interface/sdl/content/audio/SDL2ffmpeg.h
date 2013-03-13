@@ -88,7 +88,11 @@ extern "C" {
 #include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
+
+#ifndef HAVE_LIBAVFORMAT_AVFORMAT_H
 #include "libavutil/time.h"
+#endif
+
 #include "libavutil/opt.h"
 #include "libswresample/swresample.h"
 #include "libswscale/swscale.h"
@@ -489,8 +493,11 @@ namespace mb {
 		double get_audio_clock();
 		double get_video_clock();
 		double get_external_clock();
+
+	public:
 		double get_master_clock();
 
+	private:
 		void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 		void stream_toggle_pause();
 		double compute_target_delay(double delay);

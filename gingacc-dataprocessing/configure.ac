@@ -1,4 +1,4 @@
-AC_INIT(gingaccdataprocessing, 0.13.3)
+AC_INIT(gingaccdataprocessing, 0.13.5)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
@@ -8,15 +8,13 @@ AC_PROG_CXX([g++])
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-# Bring additional directories where things might be found into our
-# search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga; do
+for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga ${prefix}/lib/ginga; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include /usr/local/include /usr/local/include/ginga; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi
@@ -125,12 +123,12 @@ AC_ARG_ENABLE(multiprocess,
   enable_multiprocess="$enableval", enable_multiprocess=no)
 
 if test x$enable_multiprocess = xno; then
-   MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 0, [Def to 0 if you don't have Multiple Process support.])
    AC_MSG_WARN([*** Multiple process support will not be built.])
 
 else
-   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi
@@ -142,7 +140,6 @@ AC_CONFIG_FILES(Makefile
     include/dataprocessing/ncl/Makefile
     include/dataprocessing/ncl/edit/Makefile
     include/dataprocessing/dsmcc/Makefile
-    include/dataprocessing/dsmcc/npt/Makefile
     include/dataprocessing/dsmcc/carousel/object/Makefile
     include/dataprocessing/Makefile
     src/ncl/Makefile

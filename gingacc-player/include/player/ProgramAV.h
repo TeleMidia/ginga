@@ -66,9 +66,9 @@ namespace player {
 	class ProgramAV : public Player {
 		private:
 			static ProgramAV* _instance;
-			map<int, IPlayer*>* players;
-			map<int, string>* playerBounds;
-			map<string, int>* namePids;
+			map<int, IPlayer*> players;
+			map<int, string> playerBounds;
+			map<string, int> namePids;
 			IPlayer* currentPlayer;
 			int currentPid;
 			string fullScreenBounds;

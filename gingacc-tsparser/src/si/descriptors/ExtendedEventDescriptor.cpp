@@ -149,8 +149,8 @@ namespace descriptors {
 		clog << "ExtendedEventDescriptor::print" << endl;
 		clog << " -descriptorNumber = "     << getDescriptorNumber()    << endl;
 		clog << " -lastDescriptorNumber = " << getLastDescriptorNumber()<< endl;
-		clog << " -languageCode = "         << getLanguageCode()        << endl;
-		clog << " -textChar = "             << getTextChar()            << endl;
+		//clog << " -languageCode = "         << getLanguageCode()        << endl;
+		//clog << " -textChar = "             << getTextChar()            << endl;
 
 		if (lengthOfItems > 0) {
 			vector<Item*>::iterator i;
@@ -159,9 +159,9 @@ namespace descriptors {
 			for (i = items->begin(); i!= items->end(); ++i){
 				item = ((Item*)(*i));
 				clog << " -Item: ";
-				clog << "itemDescriptionChar = " <<
+				/*clog << "itemDescriptionChar = " <<
 						getItemDescriptionChar(item);
-				clog << " -itemChar = " << getItemChar(item);
+				clog << " -itemChar = " << getItemChar(item);*/
 			}
 			clog << endl;
 		}

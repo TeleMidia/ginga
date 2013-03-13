@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "DeviceDomain.h"
 #include "network/MulticastSocketService.h"
+#include "network/BroadcastDualSocketService.h"
 
 namespace br {
 namespace pucrio {
@@ -61,10 +62,10 @@ namespace core {
 namespace multidevice {
   class PassiveDeviceDomain : public DeviceDomain {
 	private:
-		MulticastSocketService* passiveMulticast;
+		ISocketService* passiveSocket;
 
 	public:
-		PassiveDeviceDomain(bool deviceSearch, int srvPort);
+		PassiveDeviceDomain(bool useMulticast, int srvPort);
 		virtual ~PassiveDeviceDomain();
 
 	protected:

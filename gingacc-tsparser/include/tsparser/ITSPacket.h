@@ -58,19 +58,21 @@ namespace core {
 namespace tsparser {
 	class ITSPacket {
 	public:
-		static const short TS_PACKET_SIZE = 188;
-		static const short TS_PAYLOAD_SIZE = TS_PACKET_SIZE - 4;
-		static const short TS_PACKET_SYNC_BYTE = 0x47;
+		static const unsigned char TS_PACKET_SIZE = 188;
+		static const unsigned char TS_PAYLOAD_SIZE = TS_PACKET_SIZE - 4;
+		static const unsigned char TS_PACKET_SYNC_BYTE = 0x47;
 		virtual ~ITSPacket(){};
 		virtual bool isConstructionFailed()=0;
-		virtual unsigned int getPid()=0;
-		virtual void getPacketData(char streamData[TS_PACKET_SIZE])=0;
+		virtual unsigned short getPid()=0;
+		virtual char getPacketData(char **dataStream)=0;
 		virtual void getPayload(char streamData[TS_PAYLOAD_SIZE])=0;
-		virtual unsigned int getPayloadSize()=0;
+		virtual unsigned char getPayloadSize()=0;
+		virtual void getPayload2(char streamData[TS_PAYLOAD_SIZE])=0;
+		virtual unsigned char getPayloadSize2()=0;
 		virtual bool getStartIndicator()=0;
-		virtual unsigned int getPointerField()=0;
-		virtual unsigned int getAdaptationFieldControl()=0;
-		virtual unsigned int getContinuityCounter()=0;
+		virtual unsigned char getPointerField()=0;
+		virtual unsigned char getAdaptationFieldControl()=0;
+		virtual unsigned char getContinuityCounter()=0;
 		virtual void setContinuityCounter(unsigned int counter)=0;
 		virtual void print()=0;
 	};

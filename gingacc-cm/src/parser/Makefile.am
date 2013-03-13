@@ -13,7 +13,9 @@ lib_LTLIBRARIES               = \
                                 libgingacccmparser.la
 
 libgingacccmparser_la_LIBADD  = \
-                                -lexpat
+                                -lexpat \
+                                -lgingaccsystem \
+                                -L$(prefix)/lib/ginga/
 
 libgingacccmparser_la_LDFLAGS = \
                                 -no-undefined \
