@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef ISERVICEDESCRIPTOR_H_
 #define ISERVICEDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
+#include "tsparser/IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {

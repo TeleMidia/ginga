@@ -64,71 +64,49 @@ namespace core {
 namespace tsparser {
 	PipeFilter::PipeFilter(unsigned int pid) : Thread() {
 		this->pid             = pid;
-		this->secondPid       = 0;
 		this->dataReceived    = false;
-		this->pipeFd          = 0;
-		this->secondFd        = 0;
 		this->packetsReceived = 0;
-		this->fifoCreated     = false;
-		this->dvrReader       = false;
-		this->dvrName         = "";
-		this->pids            = new map<int, int>;
+		debugBytesWritten     = 0;
+
+		this->srcIsAPipe      = false;
+		this->srcUri          = "";
+		this->dstUri          = "";
+		this->dstPipeCreated  = false;
+
+		this->running         = false;
+
+		this->pids.clear();
+		clog << "PipeFilter::PipeFilter all done" << endl;
 	}
 
 	PipeFilter::~PipeFilter() {
-		if (pids != NULL) {
-			delete pids;
-			pids = NULL;
-		}
-	}
-
-	void PipeFilter::setDestName(string name) {
-		fifoName = name;
-		Thread::startThread();
-
-		while (!fifoCreated) {
-			SystemCompat::uSleep(10000);
-		}
+		pids.clear();
 	}
 
 	void PipeFilter::addPid(int pid) {
 		clog << "PipeFilter::addPid '" << pid << "'" << endl;
-		lock();
-		(*pids)[pid] = 0;
-		unlock();
+		pids[pid] = 0;
 	}
 
 	bool PipeFilter::hasData() {
 		return dataReceived;
 	}
 
-	bool PipeFilter::isDVRReader() {
-		return dvrReader;
-	}
-
-	void PipeFilter::setDVRReader(int fd, bool reader, string dvrName) {
-		this->readerFd  = fd;
-		this->dvrReader = reader;
-		this->dvrName   = dvrName;
-	}
-
 	void PipeFilter::receiveTSPacket(ITSPacket* pack) {
-		int ret;
 		int ppid;
 		int contCounter;
-		char packData[ITSPacket::TS_PACKET_SIZE];
+		int bytesWritten = 0;
+		char* packData;
 
+		//memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
 		ppid = pack->getPid();
 
-		if (!pids->empty()) {
-			lock();
-			if (pids->count(ppid) == 0) {
-				unlock();
+		if (!pids.empty()) {
+			if (pids.count(ppid) == 0) {
 				return;
 			}
-			unlock();
 
-			contCounter = (*pids)[ppid];
+			contCounter = pids[ppid];
 			pack->setContinuityCounter(contCounter);
 			if (pack->getAdaptationFieldControl() != 2 &&
 					pack->getAdaptationFieldControl() != 0) {
@@ -136,27 +114,28 @@ namespace tsparser {
 				if (contCounter == 15) {
 					contCounter = -1;
 				}
-				(*pids)[ppid] = contCounter + 1;
+				pids[ppid] = contCounter + 1;
 			}
 		}
 
-		pack->getPacketData(packData);
-		if (ppid == 0x00 && !pids->empty()) {
-			Pat::resetPayload(packData + 4, pack->getPayloadSize());
+		pack->getPacketData(&packData);
+
+		dataReceived = true;
+
+		if (!dstPipeCreated) {
+			if (!running && dstUri != "") {
+				Thread::startThread();
+			}
+
+			while (!dstPipeCreated) {
+				SystemCompat::uSleep(10000);
+			}
 		}
 
-		if (pipeFd > 0) {
-		    try {
-				ret = write(pipeFd, (void*)packData, ITSPacket::TS_PACKET_SIZE);
-				if (ret == ITSPacket::TS_PACKET_SIZE) {
-					dataReceived = true;
-				}
+		bytesWritten = SystemCompat::writePipe(
+				dstPd, packData, ITSPacket::TS_PACKET_SIZE);
 
-		    } catch (const char *except) {
-		    	clog << "PipeFilter::receiveTSPacket catch: " << except << endl;
-		    	SystemCompat::uSleep(100000);
-		    }
-		}
+		assert(bytesWritten == ITSPacket::TS_PACKET_SIZE);
 	}
 
 	void PipeFilter::receiveSection(
@@ -165,88 +144,76 @@ namespace tsparser {
 	}
 
 	void PipeFilter::receivePes(char* buf, int len, IFrontendFilter* filter) {
-		if (secondFd > 0) {
-			try {
-				write(secondFd, buf, len);
 
-		    } catch (const char *except) {
-		    	clog << "PipeFilter::receivePes p2 catch: " << except << endl;
-		    }
-		}
-
-		if (pipeFd > 0) {
-			try {
-				write(pipeFd, buf, len);
-
-			} catch (const char *except) {
-				clog << "PipeFilter::receivePes p1 catch: " << except << endl;
-			}
-		}
 	}
 
-	bool PipeFilter::addDestination(unsigned int dest) {
-		clog << "PipeFilter::addDestination '" << dest << "'" << endl;
-		secondPid = dest;
-		return true;
+	void PipeFilter::setSourceUri(string srcUri, bool isPipe) {
+		this->srcUri     = srcUri;
+		this->srcIsAPipe = isPipe;
+	}
+
+	string PipeFilter::setDestinationUri(string dstUri) {
+		this->dstUri = SystemCompat::checkPipeName(dstUri);
+
+		if (!running) {
+			Thread::startThread();
+		}
+
+		return this->dstUri;
 	}
 
 	void PipeFilter::run() {
 		FILE* fd;
 		int rval;
 		int buffSize = 188 * 1024;
-		char buff[buffSize];
+		char* buff = new char[buffSize];
 		string cmd;
 
+		running = true;
 		clog << "PipeFilter::run(" << this << ")" << endl;
 
-		if (dvrReader) {
+		if (!SystemCompat::createPipe(dstUri, &dstPd)) {
+			clog << "PipeFilter::run(" << this << ")";
+			clog << " can't create '" << dstUri;
+			clog << "'" << endl;
+
+			running = false;
+			delete buff;
+			return;
+		}
+
+		dstPipeCreated  = true;
+
+		clog << "PipeFilter::run(" << this << ") pipe '";
+		clog << dstUri << "' created" << endl;
+
+		if (srcIsAPipe) {
 			clog << "PipeFilter::run(" << this << ") reader" << endl;
 
-			fd = fopen(dvrName.c_str(), "rb");
-			//fd = fopen(dvrName.c_str(), "rb");
-			if (fd < 0) {
-				fd = fopen(dvrName.c_str(), "rb");
-				if (fd < 0) {
-					clog << "PipeFilter::run(" << this << ")";
-					clog << " can't open '" << dvrName;
-					clog << "'" << endl;
-					perror("PipeFilter::run can't open file");
-					return;
-				}
+			if (!SystemCompat::openPipe(srcUri, &srcPd)) {
+				clog << "PipeFilter::run(" << this << ")";
+				clog << " can't open '" << srcUri;
+				clog << "'" << endl;
+
+				delete buff;
+				return;
 			}
 
-			clog << "PipeFilter::run(" << this << ") '" << dvrName;
+			clog << "PipeFilter::run(" << this << ") '" << srcUri;
 			clog << "' OPENED" << endl;
 
-			while (dvrReader) {
-				rval = fread(buff, 1, buffSize, fd);
+			while (srcIsAPipe) {
+				rval = SystemCompat::readPipe(srcPd, buff, buffSize);
 				if (rval > 0) {
-					receivePes(buff, rval, NULL);
+					SystemCompat::writePipe(dstPd, buff, rval);
 				}
 			}
 
 			clog << "PipeFilter::run(" << this << ") reader all done!" << endl;
-
-		} else {
-			rval = mkfifo(fifoName.c_str(), S_IFIFO);
-			fifoCreated = true;
-
-			pipeFd = open(fifoName.c_str(), O_WRONLY);
-			if (pipeFd == -1) {
-				clog << "PipeFilter::run error opening pipe '";
-				clog << fifoName << "'";
-				clog << endl;
-
-			} else {
-				if (secondPid > 0) {
-					fifoName = "dvr" + itos(secondPid) + ".ts";
-					mkfifo(fifoName.c_str(), S_IFIFO);
-					secondFd = open(fifoName.c_str(), O_WRONLY);
-					clog << "secpipe '" << fifoName << "' opened" << endl;
-				}
-				fifoCreated = true;
-			}
 		}
+
+		running = false;
+		delete buff;
 	}
 }
 }

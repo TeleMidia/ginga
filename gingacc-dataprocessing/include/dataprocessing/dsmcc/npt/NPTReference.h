@@ -51,7 +51,7 @@ http://www.telemidia.puc-rio.br
 #define NPTREFERENCE_H_
 
 #include <stdint.h>
-#include "Descriptor.h"
+#include "MpegDescriptor.h"
 
 using namespace std;
 
@@ -64,7 +64,7 @@ namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
 
-class NPTReference : public Descriptor {
+class NPTReference : public MpegDescriptor {
 	private:
 
 	protected:

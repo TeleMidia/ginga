@@ -84,8 +84,7 @@ namespace multidevice {
 	private:
 		unsigned int port;
 
-		char* readGroupAddress;
-		char* writeGroupAddress;
+		char* groupAddress;
 
 		unsigned int interfaceIP;
 
@@ -100,7 +99,7 @@ namespace multidevice {
 
 	public:
 		MulticastSocketService(
-					char* readGroupAddr, char* writeGroupAddr,
+					char* groupAddr,
 					unsigned int portNumber);
 		~MulticastSocketService();
 

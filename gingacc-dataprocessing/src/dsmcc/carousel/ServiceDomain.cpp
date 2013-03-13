@@ -60,11 +60,14 @@ namespace dataprocessing {
 namespace carousel {
 	ServiceDomain::ServiceDomain(
 		    DownloadServerInitiate* dsi,
-		    DownloadInfoIndication* dii) : Thread::Thread() {
+		    DownloadInfoIndication* dii) : Thread() {
+
+		Thread::mutexInit(&stlMutex, true);
 
 		this->serviceGatewayIor = dsi->getServiceGatewayIor();
-		this->info              = dii->getInfo();
 		this->carouselId        = dii->getDonwloadId();
+
+		dii->getInfo(&this->info);
 
 		mounted                 = false;
 		hasServiceGateway       = false;
@@ -83,6 +86,37 @@ namespace carousel {
 		startThread();
 	}
 
+	ServiceDomain::~ServiceDomain() {
+		map<unsigned int, Module*>::iterator i;
+		set<Module*>::iterator j;
+
+		Thread::mutexLock(&stlMutex);
+
+		if (processor != NULL) {
+			delete processor;
+			processor = NULL;
+		}
+
+		i = info.begin();
+		while (i != info.end()) {
+			if (toRelease.find(i->second) == toRelease.end()) {
+				delete i->second;
+			}
+			++i;
+		}
+		info.clear();
+
+		j = toRelease.begin();
+		while (j != toRelease.end()) {
+			delete (*j);
+			++j;
+		}
+		toRelease.clear();
+
+		Thread::mutexUnlock(&stlMutex);
+		Thread::mutexDestroy(&stlMutex);
+	}
+
 	void ServiceDomain::setServiceDomainListener(IServiceDomainListener* sdl) {
 		this->sdl = sdl;
 	}
@@ -92,57 +126,115 @@ namespace carousel {
 	}
 
 	void ServiceDomain::receiveDDB(DownloadDataBlock* ddb) {
-		ddb->processDataBlock(info);
+		ddb->processDataBlock(&info);
 		clog << "ddb done!" << endl;
 	}
 
 	Module* ServiceDomain::getModuleById(unsigned int id) {
-		if (info->count(id) != 0) {
-			return (*info)[id];
-		}
+		Module* mod = NULL;
 
-		return NULL;
+		Thread::mutexLock(&stlMutex);
+		if (info.count(id) != 0) {
+			mod = info[id];
+		}
+		Thread::mutexUnlock(&stlMutex);
+
+		return mod;
 	}
 
 	bool ServiceDomain::isMounted() {
 		return mounted;
 	}
 
+	Module* ServiceDomain::getModule(int pos) {
+		Module* module = NULL;
+		int i;
+		map<unsigned int, Module*>::iterator j;
+
+		Thread::mutexLock(&stlMutex);
+
+		j = info.begin();
+		for (i = 0; i < pos; i++) {
+			j++;
+
+			if (j == info.end()) {
+				Thread::mutexUnlock(&stlMutex);
+				return NULL;
+			}
+		}
+
+		module = j->second;
+
+		Thread::mutexUnlock(&stlMutex);
+
+		return module;
+	}
+
+	void ServiceDomain::eraseModule(Module* module) {
+		map<unsigned int, Module*>::iterator i;
+
+		Thread::mutexLock(&stlMutex);
+
+		i = info.begin();
+		while (i != info.end()) {
+			if (i->second == module) {
+				info.erase(i);
+
+				Thread::mutexUnlock(&stlMutex);
+				return;
+			}
+
+			++i;
+		}
+
+		Thread::mutexUnlock(&stlMutex);
+	}
+
 	bool ServiceDomain::hasModules() {
-		if (info->empty()) {
+
+		Thread::mutexLock(&stlMutex);
+
+		if (info.empty()) {
 			if (!processor->hasObjects()) {
 				mountingServiceDomain = false;
 			}
 
+			Thread::mutexUnlock(&stlMutex);
 			return false;
 		}
 
 		map<unsigned int, Module*>::iterator i;
-		for (i=info->begin(); i!=info->end(); ++i) {
+		for (i=info.begin(); i!=info.end(); ++i) {
 			if ((i->second)->isConsolidated()) {
+				Thread::mutexUnlock(&stlMutex);
 				return true;
 			}
 		}
+
+		Thread::mutexUnlock(&stlMutex);
+
 		return false;
 	}
 
 	void ServiceDomain::run() {
-		Module* module;
+		Module* module = NULL;
 		Biop* biop;
 		map<unsigned int, Module*>::iterator i;
 		unsigned int modId;
+		int j = 0;
 
-		i = info->begin();
 		while (mountingServiceDomain) {
 			if (hasModules()) {
 				if (!hasServiceGateway) {
 					modId = serviceGatewayIor->getModuleId();
-					if (info->count(modId) == 0) {
+
+					Thread::mutexLock(&stlMutex);
+					if (info.count(modId) == 0) {
+						Thread::mutexUnlock(&stlMutex);
 						break;
 
 					} else {
-						i = info->find(modId);
-						module = (*info)[modId];
+						module = info[modId];
 					}
 
 					clog << "ServiceDomain::run waiting srg module" << endl;
@@ -155,48 +247,57 @@ namespace carousel {
 
 					biop = new Biop(module, processor);
 					clog << "ServiceDomain::run BIOP processing SRG" << endl;
+
 					biop->processServiceGateway(
 							serviceGatewayIor->getObjectKey());
 
 					hasServiceGateway = true;
 					clog << "ServiceDomain::run SRG PROCESSED!" << endl;
 
+					//TODO: why do we have to delete and create?
 					delete biop;
 					biop = NULL;
 
 					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
+
 					biop = new Biop(module, processor);
 					biop->process();
+					delete biop;
+					biop = NULL;
 
-					info->erase(i);
-					i = info->begin();
+					i = info.find(modId);
+					info.erase(i);
+					Thread::mutexUnlock(&stlMutex);
 
+					j = 0;
 					clog << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
 
 				} else {
-					module = i->second;
+					module = getModule(j);
+					if (module == NULL) {
+						j = 0;
+						continue;
+					}
+
 					if (module->isConsolidated()) {
 						biop = new Biop(module, processor);
 						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
-						info->erase(i);
-						i = info->begin();
+						eraseModule(module);
 
 						clog << "ServiceDomain::run BIOP->process DONE!";
 						clog << endl;
-//						delete biop;
-//						biop = NULL;
+						delete biop;
+						biop = NULL;
 
-//						delete module;
-//						module = NULL;
+						Thread::mutexLock(&stlMutex);
+						toRelease.insert(module);
+						Thread::mutexUnlock(&stlMutex);
 
 					} else {
 						SystemCompat::uSleep(1000);
-						++i;
-
-						if (i == info->end())
-							i = info->begin();
+						j++;
 					}
 				}
 

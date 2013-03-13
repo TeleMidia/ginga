@@ -72,6 +72,12 @@ namespace carousel {
 
 		public:
 			Binding();
+			virtual ~Binding();
+
+		private:
+			void releaseIor();
+
+		public:
 			void setId(string id);
 			string getId();
 			void setKind(string kind);

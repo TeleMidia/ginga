@@ -1,4 +1,4 @@
-AC_INIT(gingacc-cm, 0.13.3)
+AC_INIT(gingacc-cm, 0.13.5)
 
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
@@ -8,15 +8,13 @@ AC_PROG_CXX([g++])
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-# Bring additional directories where things might be found into our
-# search path. I don't know why autoconf doesn't do this by default
-for spfx in /usr/lib/ /usr/local/lib/ /usr/local/lib/ginga/; do
+for spfx in /usr/lib /usr/local/lib /usr/local/lib/ginga ${prefix}/lib/ginga; do
 if test -d ${spfx}; then
 LDFLAGS="-L${spfx} $LDFLAGS"
 fi
 done
 
-for spfx in /usr/include/ /usr/local/include/ /usr/local/include/ginga/; do
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga/ ${prefix}/include/ginga/; do
 if test -d ${spfx}; then
 CPPFLAGS="-I${spfx} $CPPFLAGS"
 fi

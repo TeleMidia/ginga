@@ -3,6 +3,7 @@
 INCLUDES                        = \
                                   -I$(prefix)/include/ginga/ \
                                   -I$(prefix)/include/SDL2/ \
+                                  -I${prefix}/include/ \
                                   -I$(top_srcdir)/include \
                                   $(all_includes)
 

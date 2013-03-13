@@ -57,14 +57,16 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	Biop::Biop(Module* module, ObjectProcessor* processor) {
-		this->module = module;
-		currentSize = 0;
-		isValidHdr = false;
+		this->module       = module;
+		currentSize        = 0;
+		isValidHdr         = false;
 		hasMoreBiopMessage = false;
-		objectKind = "";
-		objectInfo = "";
-		objects = new map<string, Object*>;
-		this->processor = processor;
+		objectKind         = "";
+		objectInfo         = "";
+		this->processor    = processor;
+		data               = NULL;
+
+		Thread::mutexInit(&dataMutex, true);
 
 		moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
 
@@ -77,18 +79,47 @@ namespace carousel {
 	}
 
 	Biop::~Biop() {
-//				clog << "Biop destructor" << endl;
-
+		Thread::mutexLock(&dataMutex);
 		if (moduleFd > 0) {
-//					clog << "closing file" << endl;
 			fclose(moduleFd);
 		}
 
-		if (data != NULL && sizeof(data) > 0) {
-//					clog << "free data memory" << endl;
-			free(data);
+		releaseData();
+		Thread::mutexUnlock(&dataMutex);
+		Thread::mutexDestroy(&dataMutex);
+	}
+
+	void Biop::createData(unsigned int dataSize) {
+		assert(dataSize > 0);
+
+		Thread::mutexLock(&dataMutex);
+		releaseData();
+		data = new char[dataSize];
+		memset(data, 0, dataSize);
+		Thread::mutexUnlock(&dataMutex);
+	}
+
+	void Biop::releaseData() {
+		Thread::mutexLock(&dataMutex);
+		if (data != NULL) {
+			delete data;
 			data = NULL;
 		}
+		Thread::mutexUnlock(&dataMutex);
+	}
+
+	string Biop::getStringFromData(unsigned int offset, unsigned int len) {
+		string strData = "";
+
+		assert(len > 0);
+
+		char* field = new char[len];
+		memcpy(field, (void*)&(data[offset]), len);
+		strData = (string)field;
+
+		delete field;
+
+		return strData;
 	}
 
 	string Biop::getObjectKind() {
@@ -102,23 +133,19 @@ namespace carousel {
 	void Biop::abortProcess(string warningText) {
 		clog << "Warning! " << warningText.c_str() << endl;
 		fclose(moduleFd);
-		if (data != NULL && sizeof(data) > 0) {
-			free(data);
-			data = NULL;
-		}
 		moduleFd = NULL;
+
+		releaseData();
 	}
 
 	bool Biop::processMessageHeader() {
 		int rval;
 		unsigned int i;
 
-		data = new char[12];
-		memset(data, 0, 12);
+		createData(12);
 		i = 0;
 
 		// BIOP::MessageHeader
-
 		// Check magic Field == BIOP
 		rval = fread((void*)&(data[0]), 1, 12, moduleFd);
 		if (rval != 12) {
@@ -148,6 +175,7 @@ namespace carousel {
 		// Check biop_version field
 		if ((data[i] & 0xFF) != 0x01 || (data[i + 1] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong biop_version");
+
 			return false;
 		}
 		i = i + 2;
@@ -155,6 +183,7 @@ namespace carousel {
 		// check byte_order field
 		if ((data[i] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong byte_order");
+
 			return false;
 		}
 		i++;
@@ -162,6 +191,7 @@ namespace carousel {
 		// check message_type field
 		if ((data[i] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong message_type");
+
 			return false;
 		}
 		i++;
@@ -185,22 +215,17 @@ namespace carousel {
 			hasMoreBiopMessage = true;
 		}
 
-		if (data != NULL && sizeof(data) > 0) {
-			delete data;
-			data = NULL;
-		}
+		releaseData();
 		return true;
 	}
 
 	void Biop::processMessageSubHeader() {
 		int rval;
 		unsigned int len;
-		char* field;
 
 		clog << "Biop::processMessageSubHeader" << endl;
 
-		data = (char*)malloc(messageSize + 12);
-		memset(data, 0, sizeof(data));
+		createData(messageSize + 12);
 
 		rval = fread((void*)&(data[0]), 1, messageSize, moduleFd);
 
@@ -256,15 +281,12 @@ namespace carousel {
 		idx = idx + 4;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			this->objectKind = (string)field;
-			free(field);
+			this->objectKind = getStringFromData(idx, len);
 			idx = idx + len;
 			clog << "objectKind: " << objectKind << endl;
 
 		} else {
-			clog << "Warning! No kind never reaches here!" << endl;
+			clog << "Warning! No kind. Should never reaches here!" << endl;
 			objectKind = "";
 		}
 
@@ -273,10 +295,8 @@ namespace carousel {
 		idx = idx + 2;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			objectInfo = (string)field;
-			free(field);
+			this->objectInfo = getStringFromData(idx, len);
+
 			clog << "objectInfo: " << objectInfo << endl;
 			idx = idx + len;
 
@@ -314,6 +334,8 @@ namespace carousel {
 		unsigned int i, len;
 		Binding* binding;
 		Object* carouselObject;
+
+		Thread::mutexLock(&dataMutex);
 
 		clog << "Biop::processServiceGateway" << endl;
 		if (!isValidHdr) {
@@ -353,14 +375,14 @@ namespace carousel {
 		}
 
 		processor->pushObject(carouselObject);
+
+		Thread::mutexUnlock(&dataMutex);
 	}
 
 	Binding* Biop::processBinding() {
-		Binding* binding;
-		binding = new Binding();
-
+		Binding* binding = new Binding();
 		unsigned int numberOfComponents, len;
-		char* field;
+		string strField;
 
 		clog << "Biop::processingBinding" << endl;
 
@@ -368,9 +390,10 @@ namespace carousel {
 		idx++;
 		clog << "Number of components = " << numberOfComponents << endl;
 
-		if (numberOfComponents > 1)
-			clog << "Warning: numberOfComponents, Never reach here!!! NOC = "
-				    << numberOfComponents << endl;
+		if (numberOfComponents > 1) {
+			clog << "Warning: numberOfComponents, Never reach here!!! NOC = ";
+			clog << numberOfComponents << endl;
+		}
 
 		//binding
 		//id_length
@@ -378,11 +401,8 @@ namespace carousel {
 		idx++;
 
 		//id
-		field = (char*)malloc(len);
-		memcpy(field, (void*)&(data[idx]), len);
-		binding->setId((string)field);
-		free(field);
-		field = NULL;
+		strField = getStringFromData(idx, len);
+		binding->setId(strField);
 		clog << "bindingId = " << binding->getId() << endl;
 		idx = idx + len;
 
@@ -391,10 +411,9 @@ namespace carousel {
 		idx++;
 
 		//kind
-		field = (char*)malloc(len);
-		memcpy(field, (void*)&(data[idx]), len);
-		binding->setKind((string)field);
-		free(field);
+		strField = getStringFromData(idx, len);
+		binding->setKind(strField);
+
 		clog << "bindingKind = " << binding->getKind() << endl;
 		idx = idx + len;
 
@@ -411,10 +430,9 @@ namespace carousel {
 		idx = idx + 2;
 
 		if (len > 0) {
-			field = (char*)malloc(len);
-			memcpy(field, (void*)&(data[idx]), len);
-			binding->setObjectInfo((string)field);
-			free(field);
+			strField = getStringFromData(idx, len);
+			binding->setObjectInfo(strField);
+
 			clog << "bindingsObjectInfo = " << binding->getObjectInfo() << endl;
 			idx = idx + len;
 		}
@@ -425,7 +443,7 @@ namespace carousel {
 	void Biop::processIor(Binding* binding) {
 		Ior* ior;
 		unsigned int len, n1;
-		char* field;
+		string strField;
 
 		ior = new Ior();
 
@@ -438,10 +456,8 @@ namespace carousel {
 		idx = idx + 4;
 
 		//type_id
-		field = (char*)malloc(n1);
-		memcpy(field, (void*)&(data[idx]), n1);
-		ior->setTypeId((string)field);
-		free(field);
+		strField = getStringFromData(idx, n1);
+		ior->setTypeId(strField);
 		clog << "Ior typeId = " << ior->getTypeId() << endl;
 		idx = idx + n1;
 
@@ -588,6 +604,7 @@ namespace carousel {
 
 			idx = idx + len;
 		}
+
 		binding->setIor(ior);
 	}
 
@@ -626,6 +643,7 @@ namespace carousel {
 
 		clog << "BIOP processFIL" << endl;
 
+		Thread::mutexLock(&dataMutex);
 		carouselObject = new Object();
 		carouselObject->setCarouselId(module->getCarouselId());
 		carouselObject->setModuleId(module->getId());
@@ -644,7 +662,7 @@ namespace carousel {
 		//get file data
 		char* fileData;
 
-		fileData = (char*)malloc(len);
+		fileData = new char[len];
 		memcpy((void*)&(fileData[0]), (void*)&(data[idx]), len);
 		carouselObject->setData(fileData);
 		carouselObject->setDataSize(len);
@@ -653,12 +671,18 @@ namespace carousel {
 
 		//skip file data
 		idx = idx + len;
+
+		Thread::mutexUnlock(&dataMutex);
 	}
 
 	void Biop::print() {
+		Thread::mutexLock(&dataMutex);
+
 		clog << "BIOP" << endl;
 		clog << "objectKind = " << objectKind.c_str() << endl;
 		clog << "objectInfo = " << objectInfo.c_str() << endl;
+
+		Thread::mutexUnlock(&dataMutex);
 	}
 
 	void Biop::processObject() {
@@ -682,9 +706,12 @@ namespace carousel {
 	void Biop::process() {
 		bool processed;
 
+		Thread::mutexLock(&dataMutex);
+
 		clog << "Biop::process" << endl;
 		if (moduleFd >= 0) {
 			processed = false;
+
 			do {
 				if (isValidHdr) {
 					clog << "Biop::process processing sub hdr" << endl;
@@ -695,10 +722,7 @@ namespace carousel {
 
 				if (hasMoreBiopMessage) {
 					clog << "Biop::process processing has more msgs" << endl;
-					if (data != NULL && sizeof(data) > 0) {
-						free(data);
-						data = NULL;
-					}
+					releaseData();
 
 					clog << "processing another BIOP message from file ";
 					clog << module->getModuleFileName() << endl;
@@ -712,17 +736,12 @@ namespace carousel {
 
 			} while (!processed);
 
-			if (data != NULL && sizeof(data) > 0) {
-				free(data);
-				data = NULL;
-			}
+			releaseData();
 
 			fclose(moduleFd);
 		}
-	}
 
-	map<string, Object*>* Biop::getObjects() {
-		return objects;
+		Thread::mutexUnlock(&dataMutex);
 	}
 }
 }

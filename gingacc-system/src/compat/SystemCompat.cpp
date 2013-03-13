@@ -49,6 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 
+#include "config.h"
+
+extern "C" float machInfo(const char *name);
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -64,14 +68,25 @@ namespace compat {
 	string SystemCompat::pathD            = "";
 	string SystemCompat::iUriD            = "";
 	string SystemCompat::fUriD            = "";
+	string SystemCompat::gingaPrefix      = "";
 	bool SystemCompat::initialized        = false;
+	void* SystemCompat::cmInstance        = NULL;
 
 	void SystemCompat::checkValues() {
 		if (!initialized) {
 			initialized = true;
 			initializeGingaPath();
+			initializeGingaPrefix();
 			initializeUserCurrentPath();
 			initializeGingaConfigFile();
+		}
+	}
+
+	void SystemCompat::initializeGingaPrefix() {
+		SystemCompat::gingaPrefix = STR_PREFIX;
+
+		if (gingaPrefix == "NONE") {
+			gingaPrefix =  iUriD + "usr" + iUriD + "local" + iUriD;
 		}
 	}
 
@@ -98,12 +113,10 @@ namespace compat {
 			clog << "Warning! Can't open input file: '" << gingaini;
 			clog << "' loading default configuration!" << endl;
 
-			pathD            = ":";
-			iUriD            = "/";
-			fUriD            = "\\";
-			gingaCurrentPath = "/usr/local/sbin/";
-			installPref      = "/usr/local";
-			filesPref        = "/usr/local/etc/ginga/files/";
+			gingaCurrentPath = gingaPrefix + iUriD + "sbin" + iUriD;
+			installPref      = gingaPrefix;
+			filesPref        = gingaPrefix + iUriD + "etc" +
+					 iUriD + "ginga" + iUriD + "files" + iUriD;
 
 			return;
 		}
@@ -165,7 +178,14 @@ namespace compat {
 		string path, currentPath;
 		string gingaBinary = "ginga";
 
-#ifdef WIN32
+#ifndef WIN32
+		pathD            = ";";
+		iUriD            = "/";
+		fUriD            = "\\";
+#else
+		pathD            = ":";
+		iUriD            = "\\";
+		fUriD            = "/";
 		gingaBinary = "ginga.exe";
 #endif
 
@@ -173,10 +193,12 @@ namespace compat {
 		if (path.find(";") != std::string::npos) {
 			pathD = ";";
 			iUriD = "\\";
+			fUriD = "/";
 
 		} else if (path.find(":") != std::string::npos) {
 			pathD = ":";
 			iUriD = "/";
+			fUriD = "\\";
 		}
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -192,7 +214,7 @@ namespace compat {
 		currentPath = exepath;
 
 		gingaCurrentPath = currentPath.substr( 0,
-											   currentPath.find_last_of(iUriD)+1);
+						   currentPath.find_last_of(iUriD)+1);
 
 #else
 		// This commented solution should be the correct way to find the executable name on Unix
@@ -244,18 +266,44 @@ namespace compat {
 		}
 	}
 
-	void* SystemCompat::loadComponent(string libName, string symName) {
+	void* SystemCompat::getComponentManagerInstance() {
+		return cmInstance;
+	}
+
+	void SystemCompat::setComponentManagerInstance(void* cmInstance) {
+		SystemCompat::cmInstance = cmInstance;
+	}
+
+	string SystemCompat::appendLibExt(string libName) {
+		string newLibName = libName;
+
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
+		if (libName.find(".dylib") == std::string::npos) {
+			newLibName = libName + ".dylib";
+		}
+  #endif //__DARWIN_UNIX03
+#else //!__APPLE__
+#ifdef WIN32
+		if (libName.find(".dll") == std::string::npos) {
+			newLibName = libName + ".dll";
+		}
+#else //!WIN32
+		if (libName.find(".so") == std::string::npos) {
+			newLibName = libName + ".so";
+		}
+#endif //WIN32
+#endif//__APPLE__
+
+		return newLibName;
+	}
+
+	void* SystemCompat::loadComponent(
+			string libName, void** llib, string symName) {
+
 		void* comSym = NULL;
 
-#ifndef WIN32
-		if (libName.find(".so") == std::string::npos) {
-			libName.append(".so");
-		}
-#else
-		if (libName.find(".dll") == std::string::npos) {
-			libName.append(".dll");
-		}
-#endif
+		libName = appendLibExt(libName);
 
 #ifndef WIN32
 		void* comp = dlopen(libName.c_str(), RTLD_LAZY);
@@ -272,15 +320,42 @@ namespace compat {
 
 		const char* dlsym_error = dlerror();
 		if (dlsym_error != NULL) {
-			clog << "ComponentManager warning: can't load symbol '";
+			clog << "SystemCompat::loadComponent warning: can't load symbol '";
 			clog << symName << "' from library '" << libName;
 			clog << "' => " << dlsym_error << endl;
+			dlclose(comp);
+			*llib = NULL;
+
 			return (NULL);
 		}
 
+		*llib = comp;
 		dlerror();
-#endif
+#endif //!WIN32
 		return comSym;
+	}
+
+	bool SystemCompat::releaseComponent(void* component) {
+		bool released = false;
+
+#ifndef WIN32
+		int ret = dlclose(component);
+		const char* dlsym_error = dlerror();
+
+		if (dlsym_error != NULL) {
+			clog << "SystemCompat::releaseComponent Warning! Can't";
+			clog << " release => " << dlsym_error << endl;
+
+			released = false;
+
+		} else {
+			released = true;
+		}
+
+		dlerror();
+#endif //!WIN32
+
+		return released;
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
@@ -288,8 +363,12 @@ namespace compat {
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
 		clog << "SystemCompat::sigpipeHandler ";
 		clog << "throw: " << strsignal(x) << endl;
-		throw strsignal(x);  //throw the exeption
-#endif //linux
+		throw strsignal(x);  //throw the exception
+#endif //!WIN32
+	}
+
+	string SystemCompat::getGingaPrefix() {
+		return SystemCompat::gingaPrefix;
 	}
 
 	string SystemCompat::updatePath(string dir) {
@@ -427,15 +506,14 @@ namespace compat {
 	}
 
 	string SystemCompat::convertRelativePath(string relPath) {
-#ifdef WIN32
+
 		string _str;
 		_str = relPath;
 
+#ifdef WIN32
 		_str.replace( relPath.begin(), relPath.end(), '/', '\\');
-		return _str;
-#else
-		return relPath;
 #endif
+		return _str;
 	}
 
 	string SystemCompat::getGingaBinPath() {
@@ -492,23 +570,34 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeSigpipeHandler() {
-#ifndef WIN32
+#ifndef WIN32 // Linux and Mac OS Snow Leopard (10.6)
 		signal(SIGPIPE, sigpipeHandler);
-#endif //linux
+#endif // Linux and Mac OS Snow Leopard (10.6) 
 	}
 
 	string SystemCompat::getOperatingSystem() {
-#ifndef WIN32
-		return "Linux";
-#else
-		return "Windows";
-#endif
+
+		string _ops;
+
+#ifdef __APPLE__
+  #ifdef __DARWIN_UNIX03
+		_ops = "Mach";
+  #endif //__DARWIN_UNIX03
+#else //!__APPLE__
+#ifdef WIN32
+		_ops = "Windows";
+#else //!WIN32
+		_ops = "Linux";
+#endif //WIN32
+#endif //__APPLE__
+
+		return _ops;
 	}
 
 	float SystemCompat::getClockSpeed() {
 		float clockSpeed = 1000.0;
 
-#ifndef WIN32
+#ifdef HAVE_SYS_SYSINFO_H
 		ifstream fis;
 		string line = "";
 
@@ -534,20 +623,46 @@ namespace compat {
 				}
 			}
 		}
+#elif (__MACH__ || HAVE_MACH_SL_H)
+		/**
+		 * Date: 18.01.2013
+		 * Author: Ricardo Rios
+		 * E-mail: rrios@telemidia.puc-rio.br
+		 **/
+		float cpuFreq = machInfo("hw.cpufrequency");
+		if (cpuFreq > 0.0) {
+			clockSpeed = cpuFreq;
+		}
 #endif
 		return clockSpeed;
 	}
 
 	float SystemCompat::getMemorySize() {
-#ifndef WIN32
+
+		float memSize = 0.0;
+
+#ifdef WIN32
+	MEMORYSTATUS ms;
+	GlobalMemoryStatus(&ms);
+	memSize = (float)ms.dwAvailPhys;
+#elif HAVE_SYS_SYSINFO_H
 		struct sysinfo info;
 		sysinfo(&info);
-		return info.totalram;
-#else
-		MEMORYSTATUS ms;
-		GlobalMemoryStatus(&ms);
-		return (float)ms.dwAvailPhys;
+		memSize = info.totalram;
+#elif (__MACH__ || HAVE_MACH_SL_H) // Mac Snow Leopard (10.6)
+		/**
+                  * Date: 18.01.2013
+                  * Author: Ricardo Rios
+                  * E-mail: rrios@telemidia.puc-rio.br
+                  **/
+		float machMemSize = machInfo("hw.memsize");
+
+		if (machMemSize > 0.0) {
+			memSize = machMemSize;
+		}
 #endif
+
+		return (memSize);
 	}
 
      void SystemCompat::strError (int err, char *buf, size_t size) {
@@ -623,6 +738,30 @@ namespace compat {
 #endif
 	}
 
+	int SystemCompat::getUserClock(struct timeval* usrClk) {
+		int rval = 0;
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		double temp;
+
+		temp            = clock() / CLOCKS_PER_SEC;
+		usrClk->tv_sec  = (long) temp;
+		usrClk->tv_usec = 1000000*(temp - usrClk->tv_sec);
+#else
+		struct rusage usage;
+
+		if (getrusage(RUSAGE_SELF, &usage) != 0) {
+			clog << "SystemCompat::getUserClock getrusage error." << endl;
+			rval = -1;
+
+		} else {
+			usrClk->tv_sec  = usage.ru_utime.tv_sec;
+			usrClk->tv_usec = usage.ru_utime.tv_usec;
+		}
+#endif
+		return rval;
+	}
+
 	/* replacement of Unix rint() for Windows */
 	int SystemCompat::rint (double x) {
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -645,8 +784,8 @@ namespace compat {
 #if defined(_WIN32) && !defined(__MINGW32__)
 		//TODO: Use the WIN32 API to return the temporary directory
 		TCHAR lpTempPathBuffer[MAX_PATH];
-		int dwRetVal = GetTempPath(	MAX_PATH,          // length of the buffer
-									lpTempPathBuffer); // buffer for path 
+		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+					   lpTempPathBuffer); // buffer for path 
 		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
 		{
 			return gingaCurrentPath + "Temp\\";
@@ -658,12 +797,169 @@ namespace compat {
 	
 	}
 
-	void SystemCompat::exit(short status) {
+	void SystemCompat::gingaProcessExit(short status) {
+		_exit(status);
+	}
+
+	string SystemCompat::checkPipeName(string pipeName) {
+		string newPipeName = pipeName;
+
+		assert(pipeName != "");
+
 #if defined(_WIN32) && !defined(__MINGW32__)
-		ExitProcess(status);
-#else
-		exit(status);
+		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
+			newPipeName = "\\\\.\\pipe\\" + pipeName;
+		}
 #endif
+
+		return newPipeName;
+	}
+
+	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
+#if defined(_WIN32) && !defined(__MINGW32__)
+		assert(pd > 0);
+#else
+		assert(pd >= 0);
+#endif
+	}
+
+	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
+		pipeName = checkPipeName(pipeName);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		*pd = CreateNamedPipe(
+				pipeName.c_str(),
+				PIPE_ACCESS_OUTBOUND, // 1-way pipe
+				PIPE_TYPE_BYTE, // send data as a byte stream
+				1, // only allow 1 instance of this pipe
+				0, // no outbound buffer
+				0, // no inbound buffer
+				0, // use default wait time
+				NULL); // use default security attributes);
+
+		if (*pd == NULL || *pd == INVALID_HANDLE_VALUE) {
+			clog << "SystemCompat::createPipe Warning! Failed to create '";
+			clog << pipeName << "' pipe instance.";
+			clog << endl;
+			// TODO: look up error code: GetLastError()
+			return false;
+		}
+
+		// This call blocks until a client process connects to the pipe
+		bool result = ConnectNamedPipe(*pd, NULL);
+		if (!result) {
+			clog << "SystemCompat::createPipe Warning! Failed to make ";
+			clog << "connection on " << pipeName << endl;
+			// TODO: look up error code: GetLastError()
+			CloseHandle(*pd); // close the pipe
+			return false;
+		}
+#else
+		mkfifo(pipeName.c_str(), S_IFIFO);
+
+		*pd = open(pipeName.c_str(), O_WRONLY);
+		if (*pd == -1) {
+			clog << "SystemCompat::createPipe Warning! Failed to make ";
+			clog << "connection on " << pipeName << endl;
+
+			return false;
+		}
+#endif
+		return true;
+	}
+
+	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
+		pipeName = checkPipeName(pipeName);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		*pd = CreateFile(
+				pipeName.c_str(),
+				GENERIC_READ,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				NULL,
+				OPEN_EXISTING,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
+
+		if (*pd == INVALID_HANDLE_VALUE) {
+			clog << "SystemCompat::openPipe Failed to open '";
+			clog << pipeName << "'" << endl;
+			// TODO: look up error code: GetLastError()
+			return false;
+		}
+#else
+		*pd = open(pipeName.c_str(), O_RDONLY);
+		if (*pd < 0) {
+			clog << "SystemCompat::openPipe Warning! ";
+			clog << "Can't open '" << pipeName;
+			clog << "'" << endl;
+			perror("SystemCompat::openPipe can't open pipe");
+			return false;
+		}
+#endif
+		return true;
+	}
+
+	void SystemCompat::closePipe(PipeDescriptor pd) {
+		checkPipeDescriptor(pd);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		CloseHandle(pd);
+#else
+		close(pd);
+#endif
+
+		clog << "SystemCompat::closePipe '";
+		clog << pd << "'" << endl;
+	}
+
+	int SystemCompat::readPipe(PipeDescriptor pd, char* buffer, int buffSize) {
+		int bytesRead = 0;
+
+		checkPipeDescriptor(pd);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		DWORD bRead = 0;
+		bool result = ReadFile(
+				pd,
+				buffer,
+				buffSize,
+				&bRead,
+				NULL);
+
+		bytesRead = (int)bRead;
+#else
+		bytesRead = read(pd, buffer, buffSize);
+#endif
+
+		return bytesRead;
+	}
+
+	int SystemCompat::writePipe(PipeDescriptor pd, char* data, int dataSize) {
+		int bytesWritten = 0;
+
+		assert(pd > 0);
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		// This call blocks until a client process reads all the data
+		DWORD bWritten = 0;
+		bool result = WriteFile(
+				pd,
+				data,
+				dataSize,
+				&bWritten,
+				NULL); // not using overlapped IO
+
+		if (!result) {
+			clog << "SystemCompat::writePipe error: '";
+			clog << GetLastError() << "' pd = " << pd << endl;
+		}
+		bytesWritten = (int)bWritten;
+#else
+		bytesWritten = write(pd, (void*)data, dataSize);
+#endif
+
+		return bytesWritten;
 	}
 }
 }
@@ -672,3 +968,22 @@ namespace compat {
 }
 }
 }
+
+#if (__MACH__ || HAVE_MACH_SL_H)
+
+extern "C" float machInfo(const char *name) {
+	// If the CPU frequency can not be obtained, returns 0.0 (zero) for unknown.
+	float var = 0.0;
+	uint64_t uVar;
+	size_t len = sizeof(uint64_t);
+
+	if ( sysctlbyname(name, &uVar, &len, NULL, 0) )
+	{
+		perror("sysctl");
+	} else {
+		var = (float) (uVar / 1000000) ;
+	}
+
+	return (var);
+}
+#endif

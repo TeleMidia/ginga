@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef PARTIALRECEPTIONDESCRIPTOR_H_
 #define PARTIALRECEPTIONDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
+#include "tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
@@ -63,13 +63,13 @@ namespace si {
 namespace descriptors {
 	class PartialReceptionDescriptor : public IMpegDescriptor {
 		protected:
-			unsigned short* services;
+			unsigned char* services;
 
 		public:
 			PartialReceptionDescriptor();
 			virtual ~PartialReceptionDescriptor();
 			unsigned char getDescriptorTag();
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
 			void print();
 			size_t process(char* data, size_t pos);
 	};

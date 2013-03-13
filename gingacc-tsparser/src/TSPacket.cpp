@@ -57,194 +57,465 @@ namespace ginga {
 namespace core {
 namespace tsparser {
 	TSPacket::TSPacket(char* packetData) {
-		//DEBUG
-		/*printf("NEW ====================\n");
-			for (int j = 0; j <= 188; j++) {
-					printf("%02hhX ", (char) packetData[j]);
-			}
-		printf("\n====================\n");*/
-		memset(payload, 0, sizeof(payload));
+		isSectionType      = false;
+		tsaf               = NULL;
+		stream             = new char[TS_PACKET_SIZE];
+		streamUpdated      = true;
 		constructionFailed = !create(packetData);
 	}
 
+	TSPacket::TSPacket(
+			bool sectionType,
+			char* payload,
+			unsigned char payloadSize) {
+
+		tsaf          = NULL;
+		stream        = new char[TS_PACKET_SIZE];
+		streamUpdated = false;
+
+		if (payloadSize > 0) {
+			adaptationFieldControl = PAYLOAD_ONLY;
+
+		} else {
+			adaptationFieldControl = FUTURE_USE;
+		}
+
+		transportErrorIndication   = 0;
+		transportPriority          = 0;
+		transportScramblingControl = 0;
+		isSectionType              = (sectionType > 0);
+		payloadUnitStartIndicator  = (isSectionType > 0);
+		this->payloadSize          = payloadSize;
+		payloadSize2               = 0;
+
+		memset(this->payload, 0, ITSPacket::TS_PAYLOAD_SIZE);
+		memcpy(this->payload, payload, payloadSize);
+	}
+
 	TSPacket::~TSPacket() {
-		// Nothing to do.
+		releaseTSAF();
+		releaseStream();
+	}
+
+	void TSPacket::releaseTSAF() {
+		if (tsaf != NULL) {
+			delete tsaf;
+			tsaf = NULL;
+		}
+	}
+
+	void TSPacket::releaseStream() {
+		if (stream != NULL) {
+			delete stream;
+			stream = NULL;
+		}
 	}
 
 	bool TSPacket::isConstructionFailed() {
 		return constructionFailed;
 	}
 
-	// Create TSPacket.  Returs true if successful, otherwise returns
-	// false.
 	bool TSPacket::create(char* data) {
-		unsigned int aflen;
+		unsigned char pointerFieldPos;
+		unsigned char payloadOffset;
+		unsigned char aflen = 0;
+		unsigned int pesStartCode;
 
-		payloadOffset = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
+		memcpy(stream, data, TS_PACKET_SIZE);
 
-		// Header data.
-		if ((syncByte = (data[0] & 0xFF)) != TS_PACKET_SYNC_BYTE) {
-			clog << "TSPacket::create: Warning! syncByte != 0x47";
-			clog << endl;
+		syncByte = (data[0] & 0xFF);
+		if (syncByte != TS_PACKET_SYNC_BYTE) {
+			cout << "TSPacket::create warning! syncByte != 0x47" << endl;
 			return false;
 		}
 
 		transportErrorIndication   = (data[1] & 0x80) >> 7;
 		payloadUnitStartIndicator  = (data[1] & 0x40) >> 6;
 		transportPriority          = (data[1] & 0x20) >> 5;
-		pid                        = ((data[1] & 0x1F) << 8) |(data[2] & 0xFF);
+		pid                        = (((data[1] & 0x1F) << 8) | (data[2] & 0xFF));
 		transportScramblingControl = (data[3] & 0xC0) >> 6;
 		adaptationFieldControl     = (data[3] & 0x30) >> 4;
 		continuityCounter          = (data[3] & 0x0F);
-		payloadSize                = 0;
-		pointerField               = 0;
 
-		// No adaptation field (payload only).
-		if (getAdaptationFieldControl() == PAYLOAD_ONLY) {
-			// Nothing to do.
+		payloadOffset              = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
 
-		// Adaptation field followed by payload.
-		} else if (getAdaptationFieldControl() == ADAPT_PAYLOAD) {
-			// Specifies the number of bytes in the adaptationField
-			// following this byte.  Maximum value 183 (184 minus
-			// adaptation field length byte)
+		if (adaptationFieldControl == ADAPT_PAYLOAD) {
 			aflen = data[4] & 0xFF;
-			if (aflen < 0 || aflen > 183) {
-				clog << "TSPacket::create: Warning! ";
-				clog << "Invalid adaptationFieldLength: ";
-				clog << aflen << endl;
-				return false;
-			}
-
-			// adaptation field length is 0 then we have to skip it
-			if (aflen == 0) {
-				aflen = 1;
-			}
-			payloadOffset += aflen;
-
-		// Adaptation field only.
-		} else if (getAdaptationFieldControl() == NO_PAYLOAD) {
-			// Nothing to do.
+			payloadOffset += (aflen + 1);
 		}
 
-		if (getStartIndicator()) {
-			//checking if it is section or pes
-			unsigned int pesStartCode = (((data[payloadOffset] & 0xFF) << 16) |
-					((data[payloadOffset + 1] & 0xFF) << 8) |
-					(data[payloadOffset + 2] & 0xFF));
+		pesStartCode = (((data[payloadOffset] & 0xFF) << 16) |
+				((data[payloadOffset + 1] & 0xFF) << 8) |
+				(data[payloadOffset + 2] & 0xFF));
 
-			if (pesStartCode == 0x01 && pid != 0x00) {
-				pointerField = 0;
+		isSectionType = !((pesStartCode == 0x01) && (pid != 0x00));
+
+		pointerField = 0;
+
+		if (adaptationFieldControl == PAYLOAD_ONLY) {
+			if (isSectionType) {
+				if (payloadUnitStartIndicator) {
+					pointerField = (data[4] & 0xFF);
+					if (pointerField > (TS_PACKET_SIZE - payloadOffset)) {
+						cout << "TSPacket::create pointer field" << endl;
+						return false;
+					}
+
+					payloadSize = TS_PAYLOAD_SIZE - pointerField - 1;
+					if (payloadSize > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create TS_PAYLOAD_SIZE" << endl;
+						return false;
+					}
+
+					memcpy(payload, data + pointerField + 5, payloadSize);
+					payloadSize2 = TS_PAYLOAD_SIZE - payloadSize - 1;
+					if (payloadSize2 > TS_PAYLOAD_SIZE) {
+						cout << "TSPacket::create TS_PAYLOAD_SIZE 2" << endl;
+						return false;
+					}
+
+					memcpy(payload2, data + 5, payloadSize2);
+					if ((payload[0] & 0xFF) == 0xFF) {
+						payloadSize = 0;
+					}
+
+				} else {
+					payloadSize = TS_PAYLOAD_SIZE;
+					memcpy(payload, data + 4, payloadSize);
+					payloadSize2 = 0;
+				}
 
 			} else {
-				// Update pointerField (the first payload byte).
-				pointerField = (data[payloadOffset] & 0xFF);
-
-				// TODO: Pat, Pmp and SectionFilter code
-				// cannot handle pointerField as the first payload
-				// byte.  For compatibility we're removing the
-				// pointerField from the payload before this ``bad''
-				// code is called.  This is only a workaround, the real
-				// solution is fix all external code.
-				payloadOffset++;
+				payloadSize = TS_PAYLOAD_SIZE;
+				memcpy(payload, data + 4, payloadSize);
+				payloadSize2 = 0;
 			}
+
+		} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
+			releaseTSAF();
+
+			tsaf = new TSAdaptationField(data + 4); 
+			if (isSectionType) {
+				if (payloadUnitStartIndicator) {
+					pointerFieldPos = tsaf->getAdaptationFieldLength() + 5;
+					pointerField = data[pointerFieldPos] & 0xFF;
+					if (pointerField > (TS_PACKET_SIZE - payloadOffset)) {
+						clog << "TSPacket::create pointerField ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
+						return false;
+					}
+
+					payloadSize = (TS_PACKET_SIZE - pointerField -
+							pointerFieldPos - 1);
+
+					if (payloadSize > TS_PAYLOAD_SIZE) {
+						clog << "TSPacket::create payloadSize-pusi ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
+						return false;
+					}
+
+					memcpy(
+							payload,
+							data + pointerField + pointerFieldPos + 1,
+							payloadSize);
+
+					payloadSize2 = pointerField;
+					if (payloadSize2 > TS_PAYLOAD_SIZE) {
+						clog << "TSPacket::create payloadSize 2-pusi ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
+						return false;
+					}
+
+					memcpy(
+							payload2,
+							data + pointerFieldPos + 1,
+							payloadSize2);
+
+					if ((payload[0] & 0xFF) == 0xFF) {
+						payloadSize = 0;
+					}
+
+				} else {
+					payloadSize = (TS_PACKET_SIZE -
+							(tsaf->getAdaptationFieldLength() + 5));
+
+					if (payloadSize > TS_PAYLOAD_SIZE) {
+						clog << "TSPacket::create payloadSize ";
+						clog << "(adptationField)" << endl;
+
+						releaseTSAF();
+						return false;
+					}
+
+					memcpy(
+							payload,
+							data + tsaf->getAdaptationFieldLength() + 5,
+							payloadSize);
+
+					payloadSize2 = 0;
+				}
+
+			} else {
+				payloadSize = (TS_PACKET_SIZE -
+						(tsaf->getAdaptationFieldLength() + 5));
+
+				if (payloadSize > TS_PAYLOAD_SIZE) {
+					clog << "TSPacket::create payloadSize pes ";
+					clog << "(adptationField)" << endl;
+
+					releaseTSAF();
+					return false;
+				}
+
+				memcpy(
+						payload,
+						data + tsaf->getAdaptationFieldLength() + 5,
+						payloadSize);
+
+				payloadSize2 = 0;
+			}
+
+		} else if (adaptationFieldControl == NO_PAYLOAD) {
+			payloadSize = 0;
+			payloadSize2 = 0;
+			releaseTSAF();
+			tsaf = new TSAdaptationField(data + 4);
 		}
-
-		payloadSize = TS_PACKET_SIZE - payloadOffset;
-		memcpy(
-				(void*)(&payload[0]),
-				(void*)(&data[TS_PACKET_SIZE - TS_PAYLOAD_SIZE]),
-				TS_PAYLOAD_SIZE);
-
 		return true;
 	}
 
-	unsigned int TSPacket::getPid() {
+	unsigned short TSPacket::getPid() {
 		return pid;
 	}
 
-	void TSPacket::getPacketData(char streamData[TS_PACKET_SIZE]) {
-		int payload_offset = TS_PACKET_SIZE - TS_PAYLOAD_SIZE;
+	char TSPacket::updateStream() {
+		if (!streamUpdated) {
+			char value;
+			char afbuffer[MAX_ADAPTATION_FIELD_SIZE];
+			unsigned int len, plen;
 
-		// Header data.
-		streamData[0] = TS_PACKET_SYNC_BYTE;
-		streamData[1] = ((transportErrorIndication << 7) & 0x80) |
-				((payloadUnitStartIndicator << 6) & 0x40) |
-				((transportPriority << 5) & 0x20) |
-				(((pid & 0xFF00) >> 8) & 0x1F);
+			if (adaptationFieldControl == 0) {
+				clog << "TSPacket::updateStream Error: Can't create packet - ";
+				clog << "adaptationFieldControl == 0" << endl;
+				return -1;
+			}
 
-		streamData[2] = (pid & 0x00FF);
-		streamData[3] = ((transportScramblingControl << 6) & 0xC0) |
-				((adaptationFieldControl << 4) & 0x30) |
-				(continuityCounter & 0x0F);
+			memset(stream, 0xFF, TS_PACKET_SIZE);
 
-		// Payload.
-		memcpy(
-				(void*)(&streamData[payload_offset]),
-				(void*)(&payload[0]),
-				TS_PAYLOAD_SIZE);
+			stream[0] = TS_PACKET_SYNC_BYTE;
+			value = transportErrorIndication;
+			stream[1] = stream[1] & 0x7F;
+			stream[1] = stream[1] | ((value << 7) & 0x80);
+			stream[1] = stream[1] & 0xBF;
+			value = payloadUnitStartIndicator;
+			stream[1] = stream[1] | ((value << 6) & 0x40);
+			stream[1] = stream[1] & 0xDF;
+			value = transportPriority;
+			stream[1] = stream[1] | ((value << 5) & 0x20);
+			stream[1] = stream[1] & 0xE0;
+			stream[1] = stream[1] | ((pid & 0x1F00) >> 8);
+			stream[2] = pid & 0x00FF;
+			stream[3] = stream[3] & 0x3F;
+			stream[3] = stream[3] | ((transportScramblingControl << 6) & 0xC0);
+			stream[3] = stream[3] & 0xCF;
+			stream[3] = stream[3] | ((adaptationFieldControl << 4) & 0x30);
+			stream[3] = stream[3] & 0xF0;
+			stream[3] = stream[3] | (continuityCounter & 0x0F);
+
+			if (isSectionType && payloadUnitStartIndicator) {
+				if (adaptationFieldControl == PAYLOAD_ONLY) {
+					//payload only
+					len = payloadSize;
+					if (payloadSize > 183) {
+						len = 183;
+					}
+
+					stream[4] = 0;
+					memcpy(stream + 5, payload, len);
+					return len;
+
+				} else if (adaptationFieldControl == NO_PAYLOAD) {
+					//adaptation field only
+					assert(tsaf != NULL);
+
+					tsaf->setAdaptationFieldLength(183);
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					return 0;
+
+				} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
+					//adaptation field followed by payload
+					assert(tsaf != NULL);
+
+					plen = (TS_PAYLOAD_SIZE -
+							(tsaf->getAdaptationFieldLength() + 2)); //available
+
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					stream[len + 4] = 0;
+					if (plen > payloadSize) {
+						plen = payloadSize;
+					}
+					memcpy(stream + len + 5, payload, plen);
+					return plen;
+				}
+
+			} else if ((!isSectionType) ||
+					(isSectionType && (!payloadUnitStartIndicator))) {
+
+				if (adaptationFieldControl == PAYLOAD_ONLY) {
+					//payload only
+					memcpy(stream + 4, payload, payloadSize);
+					return payloadSize;
+
+				} else if (adaptationFieldControl == NO_PAYLOAD) {
+					//adaptation field only
+					assert(tsaf != NULL);
+
+					tsaf->setAdaptationFieldLength(183);
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					return 0;
+
+				} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
+					//adaptation field followed by payload
+					assert(tsaf != NULL);
+
+					plen = (TS_PAYLOAD_SIZE -
+							(tsaf->getAdaptationFieldLength() + 1));
+
+					len = tsaf->getStream(afbuffer);
+					memcpy(stream + 4, afbuffer, len);
+					if (plen > payloadSize) {
+						plen = payloadSize;
+					}
+					memcpy(stream + len + 4, payload, plen);
+					return plen;
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	char TSPacket::getPacketData(char** dataStream) {
+		updateStream();
+		*dataStream = stream;
+		return -1;
 	}
 
 	void TSPacket::getPayload(char streamData[184]) {
 		memcpy(
-				(void*)(&streamData[0]),
-				(void*)(&payload[payloadOffset - 4]),
+				(void*)(streamData),
+				(void*)(payload),
 				payloadSize);
 	}
 
-	unsigned int TSPacket::getPayloadSize() {
+	void TSPacket::getPayload2(char streamData[184]) {
+		memcpy(
+				(void*)(streamData),
+				(void*)(payload2),
+				payloadSize);
+	}
+
+	unsigned char TSPacket::getPayloadSize() {
 		return payloadSize;
+	}
+
+	unsigned char TSPacket::getPayloadSize2() {
+		return payloadSize2;
 	}
 
 	bool TSPacket::getStartIndicator() {
 		return payloadUnitStartIndicator;
 	}
 
-	unsigned int TSPacket::getPointerField() {
+	unsigned char TSPacket::getPointerField() {
 		return pointerField;
 	}
 
-	unsigned int TSPacket::getAdaptationFieldControl() {
+	unsigned char TSPacket::getAdaptationFieldControl() {
 		return adaptationFieldControl;
 	}
 
-	unsigned int TSPacket::getContinuityCounter() {
+	unsigned char TSPacket::getContinuityCounter() {
 		return continuityCounter;
 	}
+	
+	void TSPacket::setPid(unsigned short pid) {
+		this->pid = pid;
+		if (streamUpdated) {
+			stream[1] = stream[1] & 0xE0;
+			stream[1] = stream[1] | ((pid & 0x1F00) >> 8);
+			stream[2] = pid & 0x00FF;
+		}
+	}
+
 
 	void TSPacket::setContinuityCounter(unsigned int counter) {
 		continuityCounter = counter;
+		if (streamUpdated) {
+			stream[3] = stream[3] & 0xF0;
+			stream[3] = stream[3] | (continuityCounter & 0x0F);
+		}
 	}
 
 	void TSPacket::print() {
 		unsigned int i;
 		clog << "TS PACK" << endl;
-		clog << "sync = " << hex << (syncByte & 0xFF) << endl;
-		clog << "pid = " << hex << pid << endl;
+		clog << "sync = 0x" << hex << (syncByte & 0xFF) << endl;
+		clog << "pid = 0x" << hex << pid << dec << " (" << pid << ")" << endl;
 
-		clog << "payloadSize = " << payloadSize << endl;
+		clog << "payloadSize = " << dec << (payloadSize & 0xFF);
 
-		clog << "transportErrorIndication = "
-		     << transportErrorIndication << endl;
+		if (payloadSize > TS_PAYLOAD_SIZE) {
+			clog << " (WARNING!)" << endl;
 
-		clog << "payloadUnitStartIndicator = "
-		     << hex << payloadUnitStartIndicator << endl;
+		} else {
+			clog << endl;
+		}
+
+		clog << "transportErrorIndication = " << transportErrorIndication;
+		clog << endl;
+
+		clog << "payloadUnitStartIndicator = ";
+		clog << payloadUnitStartIndicator << endl;
 
 		clog << "transportPriority = " << transportPriority << endl;
 
-		clog << "transportScramblingControl = "
-		     << hex << transportScramblingControl << endl;
+		clog << "transportScramblingControl = ";
+		clog << (transportScramblingControl & 0xFF) << endl;
 
-		clog << "adaptationFieldControl = " << hex
-		     << adaptationFieldControl << endl;
+		clog << "adaptationFieldControl = ";
+		clog << adaptationFieldControl << ": ";
 
-		clog << "continuityCounter = " << hex << continuityCounter
-		     << endl;
+		if (adaptationFieldControl == FUTURE_USE) {
+			clog << "ISO future use; packet must be discarded";
+
+		} else if (adaptationFieldControl == PAYLOAD_ONLY) {
+			clog << "no adaptation field (payload only)";
+
+		} else if (adaptationFieldControl == NO_PAYLOAD) {
+			clog << "adaptation field only (no payload)";
+
+		} else if (adaptationFieldControl == ADAPT_PAYLOAD) {
+			clog << "adaptation field followed by payload";
+		}
+		clog << endl;
+
+		clog << "continuityCounter = " << (continuityCounter & 0xFF) << endl;
 
 		clog << "payload: " << endl;
 		for (i=0; i < 184; i++) {
-			clog << (payload[i] & 0xFF) << " ";
+			clog << "0x" << hex << (payload[i] & 0xFF) << " ";
 		}
+
 		clog << endl << endl;
 	}
 }

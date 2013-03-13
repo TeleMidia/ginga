@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #ifndef MOSAICDESCRIPTOR_H_
 #define MOSAICDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
+#include "tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 struct Cell{
@@ -66,6 +66,9 @@ struct Cell{
 	unsigned short eventId;
 
 };
+
+#include <vector>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -86,7 +89,7 @@ namespace descriptors {
 			MosaicDescriptor();
 			virtual ~MosaicDescriptor();
 			unsigned char getDescriptorTag();
-			unsigned char getDescriptorLength();
+			unsigned int getDescriptorLength();
 			size_t process(char* data, size_t pos);
 			void print();
 	};

@@ -57,6 +57,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "network/BroadcastSocketService.h"
+#include "network/BroadcastDualSocketService.h"
 
 #include "device/BaseDeviceService.h"
 
@@ -81,7 +82,7 @@ typedef struct {
 
   class BaseDeviceDomain : public DeviceDomain {
 	protected:
-	  ISocketService* passiveMulticast;
+	  ISocketService* passiveSocket;
 
 	  pthread_mutex_t pMutex;
 	  vector<RemoteTask*> passiveTasks;
@@ -91,7 +92,7 @@ typedef struct {
 	  double passiveTimestamp;
 
 	public:
-		BaseDeviceDomain(bool deviceSearch, int srvPort);
+		BaseDeviceDomain(bool useMulticast, int srvPort);
 		virtual ~BaseDeviceDomain();
 
 	protected:

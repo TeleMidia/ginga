@@ -50,14 +50,14 @@ http://www.telemidia.puc-rio.br
 #ifndef EXTENDEDEVENTDESCRIPTOR_H_
 #define EXTENDEDEVENTDESCRIPTOR_H_
 
-#include "IMpegDescriptor.h"
+#include "tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <string.h>
 #include <vector>
 using namespace std;
 
-#include "IExtendedEventDescriptor.h"
+#include "tsparser/IExtendedEventDescriptor.h"
 
 /*
 struct Item {

@@ -67,13 +67,42 @@ namespace carousel {
 		sd = NULL;
 		dii = NULL;
 		dsi = NULL;
-		msgs = new vector<DsmccMessageHeader*>;
+
+		Thread::mutexInit(&msgMutex, true);
+	}
+
+	MessageProcessor::~MessageProcessor() {
+		if (sd != NULL) {
+			delete sd;
+			sd = NULL;
+		}
+
+		if (dii != NULL) {
+			delete dii;
+			dii = NULL;
+		}
+
+		if (dsi != NULL) {
+			delete dsi;
+			dsi = NULL;
+		}
+
+		Thread::mutexLock(&msgMutex);
+		vector<DsmccMessageHeader*>::iterator it;
+		it = msgs.begin();
+		while (it != msgs.end()) {
+			delete *it;
+			++it;
+		}
+		Thread::mutexUnlock(&msgMutex);
+		Thread::mutexDestroy(&msgMutex);
 	}
 
 	ServiceDomain* MessageProcessor::pushMessage(DsmccMessageHeader* message) {
 		unsigned int messageId;
 
 		if (message == NULL) {
+			clog << "MessageProcessor::pushMessage " << endl;
 			clog << "Warning! Try to push NULL message" << endl;
 
 		} else {
@@ -85,9 +114,12 @@ namespace carousel {
 				return processDIIMessage(message);
 
 			} else if (messageId == DDB_MESSAGE) {
-				msgs->push_back(message);
+				Thread::mutexLock(&msgMutex);
+				msgs.push_back(message);
+				Thread::mutexUnlock(&msgMutex);
 			}
 		}
+
 		processDDBMessages();
 		return NULL;
 	}
@@ -125,6 +157,7 @@ namespace carousel {
 			if (dsi != NULL && sd == NULL) {
 				clog << "Creating SD" << endl;
 				sd = new ServiceDomain(dsi, dii);
+
 				return sd;
 			}
 
@@ -139,13 +172,16 @@ namespace carousel {
 		DownloadDataBlock* ddb;
 
 		if (sd != NULL) {
-			while (!msgs->empty()) {
-				clog << "call sd receive ddb" << endl;
-				msg = *(msgs->begin());
+			Thread::mutexLock(&msgMutex);
+			while (!msgs.empty()) {
+				msg = *(msgs.begin());
 				ddb = new DownloadDataBlock(msg);
 				sd->receiveDDB(ddb);
-				msgs->erase(msgs->begin());
+				delete ddb;
+
+				msgs.erase(msgs.begin());
 			}
+			Thread::mutexUnlock(&msgMutex);
 		}
 	}
 

@@ -127,11 +127,11 @@ namespace descriptors {
 			for(i = countryRatings->begin(); i != countryRatings->end();++i){
 				parental = ((Parental*)(*i));
 
-				clog << " -country = "     << getCountryCode(parental);
+				/*clog << " -country = "     << getCountryCode(parental);
 				clog << " -age = "         << getAge(parental);
 				clog << " -description = ";
 				clog << getContentDescription(parental);
-				clog << endl;
+				clog << endl;*/
 			}
 		}
 	}

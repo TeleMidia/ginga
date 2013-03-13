@@ -53,6 +53,12 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "Pmt.h"
 #include "Pat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
@@ -81,24 +87,29 @@ namespace tsparser {
 	class Demuxer : public IDemuxer {
 		private:
 			Pat* pat;
-			map<unsigned int, Pmt*>* pmts;
-			map<unsigned int, ITSFilter*>* pidFilters;
-			map<short, ITSFilter*>* stFilters;
-			map<unsigned int, ITSFilter*>* pesFilters;
+			map<unsigned int, Pmt*> pmts;
+			map<unsigned int, ITSFilter*> pidFilters;
+			map<short, ITSFilter*> stFilters;
+			map<unsigned int, ITSFilter*> pesFilters;
 			IFrontendFilter* audioFilter;
 			IFrontendFilter* videoFilter;
-			set<IFrontendFilter*>* feFilters;
-			set<IFrontendFilter*>* feFiltersToSetup;
-			static vector<Pat*>* pats;
+			set<IFrontendFilter*> feFilters;
+			set<IFrontendFilter*> feFiltersToSetup;
+			static vector<Pat*> pats;
 			static unsigned int sectionPid; //debug only
-			static set<unsigned int>* knownSectionPids;
+			static set<unsigned int> knownSectionPids;
 			ITuner* tuner;
 
 			int debugPackCount;
 			short debugDest;
 			bool isWaitingPI;
+
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
+
+			static pthread_mutex_t stlMutex;
+
+			unsigned char packetSize;
 
 		public:
 			//defs
@@ -109,10 +120,13 @@ namespace tsparser {
 			Demuxer(ITuner* tuner);
 			virtual ~Demuxer();
 
+			bool hasStreamType(short streamType);
+			void printPat();
+
 		private:
 			void createPSI();
 			void clearPSI();
-			void createMaps();
+			void initMaps();
 			void clearMaps();
 			void resetDemuxer();
 			void setDestination(short streamType); //debug purpose only

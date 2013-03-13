@@ -1,6 +1,6 @@
 if SDLSYSTEM
 
-TEST_LIBS=-L/usr/local/lib/ginga/mb -L/usr/local/lib/ginga/mb/dec -lgingaccmbsdl -lgingaccmbdecsdlap -lgingaccmbdecsdlav -lgingaccmbdecsdlf -lgingaccmbdecsdlimg
+TEST_LIBS=-L${prefix}/lib/ginga/mb -L${prefix}/lib/ginga/mb/dec -lgingaccmbsdl -lgingaccmbdecsdlap -lgingaccmbdecsdlav -lgingaccmbdecsdlf -lgingaccmbdecsdlimg
 
 # set the include path found by configure
 INCLUDES             = \

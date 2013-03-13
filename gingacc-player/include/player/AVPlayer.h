@@ -115,7 +115,9 @@ namespace player {
 			public IProviderListener {
 
 		private:
-			pthread_mutex_t pMutex;
+			pthread_mutex_t pMutex; //provider mutex
+			pthread_mutex_t tMutex; //AV player thread mutex
+
 #if HAVE_ICRTP
 			RTPListener* icListener;
 #endif

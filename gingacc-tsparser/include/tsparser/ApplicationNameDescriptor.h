@@ -68,13 +68,13 @@ namespace si {
 
 	struct AppName {
 		char languageCode[3];
-		unsigned char applicationNameLentgh;
+		unsigned char applicationNameLength;
 		char* applicationNameChar;
 	};
 
 	class ApplicationNameDescriptor : public IMpegDescriptor {
 		private:
-			vector<struct AppName*>* appNames;
+			vector<struct AppName*> appNames;
 
 		public:
 			ApplicationNameDescriptor();

@@ -63,6 +63,10 @@ namespace time {
 		public:
 			virtual ~ITimeBaseListener(){};
 
+			virtual void timeBaseNaturalEnd(
+					unsigned char contentId,
+					int64_t timeValue)=0;
+
 			virtual void updateTimeBaseId(
 					unsigned char oldContentId,
 					unsigned char newContentId)=0;

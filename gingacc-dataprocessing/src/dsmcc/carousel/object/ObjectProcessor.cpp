@@ -57,39 +57,48 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	ObjectProcessor::ObjectProcessor() {
-		objects     = new map<string, Object*>;
-		objectNames = new map<string, string>;
-		objectPaths = new map<string, string>;
-		listeners   = NULL;
+
+	}
+
+	ObjectProcessor::~ObjectProcessor() {
+		map<string, Object*>::iterator i;
+
+		i = objects.begin();
+		while (i != objects.end()) {
+			delete i->second;
+			++i;
+		}
+
+		objects.clear();
+
+		objectNames.clear();
+		objectPaths.clear();
+		listeners.clear();
 	}
 
 	void ObjectProcessor::setObjectsListeners(set<IObjectListener*>* l) {
-		if (listeners != NULL) {
-			delete listeners;
-			listeners = NULL;
-		}
-
-		listeners = new set<IObjectListener*>(*l);
+		listeners.clear();
+		listeners.insert(l->begin(), l->end());
 	}
 
 	void ObjectProcessor::pushObject(Object* object) {
 		map<string, Object*>::iterator i;
 
-		(*objects)[object->getObjectId()] = object;
+		objects[object->getObjectId()] = object;
 
-		i = objects->begin();
-		while (i != objects->end()) {
+		i = objects.begin();
+		while (i != objects.end()) {
 			object = i->second;
 
 			if (mountObject(object)) {
 				clog << "ObjectProcessor::pushObject call notifyLists" << endl;
 				notifyObjectListeners(object);
 
-				objects->erase(i);
-				i = objects->begin();
+				objects.erase(i);
+				i = objects.begin();
 
-//				delete object;
-//				object = NULL;
+				delete object;
+				object = NULL;
 
 			} else {
 				++i;
@@ -98,7 +107,7 @@ namespace carousel {
 	}
 
 	bool ObjectProcessor::hasObjects() {
-		if (objects->empty()) {
+		if (objects.empty()) {
 			return false;
 		}
 
@@ -106,11 +115,11 @@ namespace carousel {
 	}
 
 	map<string, string>* ObjectProcessor::getSDNames() {
-		return objectNames;
+		return &objectNames;
 	}
 
 	map<string, string>* ObjectProcessor::getSDPaths() {
-		return objectPaths;
+		return &objectPaths;
 	}
 
 	bool ObjectProcessor::mountObject(Object* object) {
@@ -135,26 +144,27 @@ namespace carousel {
 
 				/*clog << "ObjectProcessor::mountObject srg adding objId '";
 				clog << objectId << "'" << endl;*/
-				(*objectNames)[objectId] = (*i)->getId();
-				(*objectPaths)[objectId] = "carousel/" +
+				objectNames[objectId] = (*i)->getId();
+				objectPaths[objectId] = "carousel/" +
 					    itos(object->getCarouselId()) +
 					    SystemCompat::getIUriD();
 			}
+
 			//clog << "ObjectProcessor::mountObject srg done" << endl;
 			return true;
 
 		} else if (object->getKind() == "dir" ||
 			    object->getKind() == "DSM::Directory") {
 
-			if (objectPaths->count(object->getObjectId()) == 0) {
+			if (objectPaths.count(object->getObjectId()) == 0) {
 				/*clog << "ObjectProcessor::mountObject Warning!";
 				clog << "cant find object id '" << object->getObjectId();
 				clog << endl;*/
 				return false;
 
 			} else {
-				path = (objectPaths->find(object->getObjectId()))->second +
-					    (objectNames->find(object->getObjectId()))->second +
+				path = (objectPaths.find(object->getObjectId()))->second +
+					    (objectNames.find(object->getObjectId()))->second +
 					    SystemCompat::getIUriD();
 
 				/*clog << "ObjectProcessor::mountObject create dir '" << path;
@@ -171,8 +181,8 @@ namespace carousel {
 				/*clog << "ObjectProcessor::mountObject dir adding objId '";
 				clog << objectId << "'" << endl;*/
 
-				(*objectNames)[objectId] = (*i)->getId();
-				(*objectPaths)[objectId] = path;
+				objectNames[objectId] = (*i)->getId();
+				objectPaths[objectId] = path;
 			}
 			//clog << "ObjectProcessor::mountObject dir done" << endl;
 			return true;
@@ -180,15 +190,15 @@ namespace carousel {
 		} else if (object->getKind() == "fil" ||
 			    object->getKind() == "DSM::File") {
 
-			if (objectPaths->count(object->getObjectId()) == 0) {
+			if (objectPaths.count(object->getObjectId()) == 0) {
 				/*clog << "ObjectProcessor::mountObject Warning! ";
 				clog << "cant find object id '" << object->getObjectId();
 				clog << "" << endl;*/
 				return false;
 
 			} else {
-				path = (objectPaths->find(object->getObjectId()))->second +
-					    (objectNames->find(object->getObjectId()))->second;
+				path = (objectPaths.find(object->getObjectId()))->second +
+					    (objectNames.find(object->getObjectId()))->second;
 
 				fd = fopen(path.c_str(), "w+b");
 				size = object->getDataSize();
@@ -238,22 +248,20 @@ namespace carousel {
 		string objectId;
 
 		objectId = obj->getObjectId();
-		if (objectPaths->count(objectId) != 0) {
-			clientUri = (*objectPaths)[objectId];
+		if (objectPaths.count(objectId) != 0) {
+			clientUri = objectPaths[objectId];
 		}
 
-		if (objectNames->count(objectId) != 0) {
-			name = (*objectNames)[objectId];
+		if (objectNames.count(objectId) != 0) {
+			name = objectNames[objectId];
 		}
 
-		if (listeners != NULL) {
-			i = listeners->begin();
-			while (i != listeners->end()) {
-				clog << "ObjectProcessor::notifyListeners call objectmounted";
-				clog << " for '" << objectId << "'" << endl;
-				(*i)->objectMounted(objectId, clientUri, name);
-				++i;
-			}
+		i = listeners.begin();
+		while (i != listeners.end()) {
+			clog << "ObjectProcessor::notifyListeners call objectmounted";
+			clog << " for '" << objectId << "'" << endl;
+			(*i)->objectMounted(objectId, clientUri, name);
+			++i;
 		}
 	}
 }

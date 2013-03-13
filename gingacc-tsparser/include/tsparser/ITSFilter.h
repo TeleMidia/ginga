@@ -68,7 +68,6 @@ namespace tsparser {
 		public:
 			virtual ~ITSFilter(){};
 
-			virtual void setDestName(string name)=0;
 			virtual void addPid(int pid)=0;
 			virtual void receiveTSPacket(ITSPacket* pack)=0;
 
@@ -78,7 +77,8 @@ namespace tsparser {
 			virtual void receivePes(
 					char* buf, int len, IFrontendFilter* filter)=0;
 
-			virtual bool addDestination(unsigned int dest)=0;
+			virtual string setDestinationUri(string dstUri)=0;
+			virtual void setSourceUri(string srcUri, bool isPipe)=0;
 	};
 }
 }

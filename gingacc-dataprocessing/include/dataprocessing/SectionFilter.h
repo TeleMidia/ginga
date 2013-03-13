@@ -65,9 +65,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "tsparser/IDemuxer.h"
 #include "tsparser/ITSPacket.h"
 #include "tsparser/ITransportSection.h"
+#include "tsparser/IFilterListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
-
-#include "IFilterListener.h"
 
 #include <string>
 #include <map>
@@ -95,20 +94,22 @@ namespace dataprocessing {
 			map<unsigned int, SectionHandler*> sectionPidSelector;
 
 			IFilterListener* listener;
-			set<string>* processedSections;
+			set<string> processedSections;
 
 			int lastPid;
-			map<int, ITransportSection*>* hFilteredSections;
+			map<int, ITransportSection*> hFilteredSections;
 			pthread_mutex_t stlMutex;
 
 		public:
 			SectionFilter();
 			virtual ~SectionFilter();
 
-			void setDestName(string name){};
 			void addPid(int pid){};
 
 		private:
+			string setDestinationUri(string dstUri){return dstUri;};
+			void setSourceUri(string srcUri, bool isPipe){};
+
 			void resetHandler(SectionHandler* handler);
 			void ignore(unsigned int pid);
 			SectionHandler* getSectionHandler(unsigned int pid);
@@ -127,7 +128,6 @@ namespace dataprocessing {
 			void receiveTSPacket(ITSPacket* pack);
 			void receiveSection(char* buf, int len, IFrontendFilter* filter);
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
-			bool addDestination(unsigned int dest){return false;};
 	};
 }
 }

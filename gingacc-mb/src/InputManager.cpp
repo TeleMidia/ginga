@@ -408,6 +408,7 @@ namespace mb {
 		int keyCode;
 
 		if (!running) {
+			clog << "InputManger::dispatchEvent !running" << endl;
 			return false;
 		}
 
@@ -433,6 +434,9 @@ namespace mb {
 			clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
 		}
 
+		clog << "InputManger::dispatchEvent code '";
+		clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
+
 		i = eventListeners.begin();
 		while (i != eventListeners.end() && running) {
 			lis = i->first;
@@ -447,6 +451,14 @@ namespace mb {
 							notifying = false;
 							return false;
 						}
+					}
+
+				} else if (keyCode == CodeMap::KEY_QUIT) {
+					cout << "InputManger::dispatchEvent QUIT" << endl;
+					if (!lis->userEventReceived(inputEvent)) {
+						unlock();
+						notifying = false;
+						return false;
 					}
 				}
 
@@ -613,12 +625,14 @@ namespace mb {
 	void InputManager::run() {
 		IInputEvent* inputEvent;
 
-		int pLastCode         = -1;
-		int lastCode          = -1;
-		double pTimeStamp     = 0;
-		double timeStamp      = 0;
+		int pLastCode     = -1;
+		int lastCode      = -1;
+		double pTimeStamp = 0;
+		double timeStamp  = 0;
 
 		int mouseX, mouseY;
+
+		clog << "InputManager::run main loop" << endl;
 
 #if HAVE_KINECTSUPPORT
 		if (running) {
@@ -654,11 +668,6 @@ namespace mb {
 					} else if (currentYAxis > maxY && maxY != 0) {
 						currentYAxis = maxY;
 					}
-
-					/*
-					clog << "InputManager::run new currentX = '";
-					clog << currentXAxis << "' currentY = '";
-					clog << currentYAxis << "'" << endl;*/
 
 					delete inputEvent;
 					if (eventBuffer != NULL) {
@@ -698,6 +707,10 @@ namespace mb {
 
 					lastCode  = inputEvent->getKeyCode(myScreen);
 					timeStamp = getCurrentTimeMillis();
+
+					clog << "InputManager::run event code = '";
+					clog << lastCode << "'" << endl;
+
 					if (!dispatchEvent(inputEvent)) {
 						delete inputEvent;
 						inputEvent = eventBuffer->getNextEvent();
@@ -707,6 +720,8 @@ namespace mb {
 
 				if (inputEvent->isKeyType() ||
 						inputEvent->isApplicationType()) {
+
+					clog << "InputManager::run key or application" << endl;
 
 					dispatchApplicationEvent(inputEvent);
 				}

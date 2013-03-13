@@ -70,16 +70,20 @@ namespace descriptors {
 			services == NULL;
 		}
 	}
-	unsigned char PartialReceptionDescriptor::getDescriptorLength() {
+
+	unsigned int PartialReceptionDescriptor::getDescriptorLength() {
 		return descriptorLength;
 	}
+
 	unsigned char PartialReceptionDescriptor::getDescriptorTag() {
 		return descriptorTag;
 	}
-	void ParentalRatingDescriptor::print() {
+
+	void PartialReceptionDescriptor::print() {
 		clog << "ParentalRatingDescriptor::print printing..." << endl;
 	}
-	size_t ParentalRatingDescriptor::process(char* data, size_t pos) {
+
+	size_t PartialReceptionDescriptor::process(char* data, size_t pos) {
 		size_t servicesNumber;
 
 		descriptorLength = data[pos+1];
@@ -89,12 +93,11 @@ namespace descriptors {
 		services = new unsigned char[servicesNumber];
 		for (int i = 0 ; i < servicesNumber; ++i) {
 			pos ++;
-			services[i] = (((data[pos] << 8)& 0xFF00) ||
-					(data[pos+1] & OxFF));
+			services[i] = (((data[pos] << 8)& 0xff00) ||
+					(data[pos+1] & 0xff));
 			pos++;
 		}
 		return pos;
-
 	}
 }
 }

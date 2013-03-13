@@ -61,44 +61,75 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tsparser {
-	vector<Pat*>* Demuxer::pats = new vector<Pat*>;
+	vector<Pat*> Demuxer::pats;
 	unsigned int Demuxer::sectionPid = 0;
+	pthread_mutex_t Demuxer::stlMutex;
 
-	set<unsigned int>* Demuxer::knownSectionPids = new set<unsigned int>;
+	set<unsigned int> Demuxer::knownSectionPids;
 
 	Demuxer::Demuxer(ITuner* tuner) {
+		Thread::condInit(&flagCondSignal, NULL);
+		Thread::mutexInit(&flagLockUntilSignal, false);
+
+		Thread::mutexInit(&stlMutex, true);
+
+		packetSize = ITSPacket::TS_PACKET_SIZE;
+
 		createPSI();
-		createMaps();
+
+		initMaps();
 
 		this->tuner = tuner;
-		this->tuner->addListener(this);
-
 		audioFilter = NULL;
 		videoFilter = NULL;
 
-		knownSectionPids->insert(PAT_PID);
-		knownSectionPids->insert(CAT_PID);
-		knownSectionPids->insert(TSDT_PID);
-		knownSectionPids->insert(NIT_PID);
-		knownSectionPids->insert(SDT_PID);
-		knownSectionPids->insert(EIT_PID);
-		knownSectionPids->insert(CDT_PID);
+		knownSectionPids.insert(PAT_PID);
+		knownSectionPids.insert(CAT_PID);
+		knownSectionPids.insert(TSDT_PID);
+		knownSectionPids.insert(NIT_PID);
+		knownSectionPids.insert(SDT_PID);
+		knownSectionPids.insert(EIT_PID);
+		knownSectionPids.insert(CDT_PID);
 
 		isWaitingPI    = false;
 		debugPackCount = 1;
 		debugDest      = 0;
-		Thread::condInit(&flagCondSignal, NULL);
-		Thread::mutexInit(&flagLockUntilSignal, NULL);
+
+		this->tuner->setTunerListener(this);
 	}
 
 	Demuxer::~Demuxer() {
 		clearPSI();
 		clearMaps();
+
+		Thread::mutexDestroy(&stlMutex);
+	}
+
+	bool Demuxer::hasStreamType(short streamType) {
+		bool hasST = false;
+
+		if (pat == NULL) {
+			clog << "Demuxer::hasStreamType Warning! ";
+			clog << "PAT was not parsed yet." << endl;
+
+		} else {
+			hasST = pat->hasStreamType(streamType);
+		}
+
+		return hasST;
+	}
+
+	void Demuxer::printPat() {
+		if (pat == NULL) {
+			cout << "Demuxer::printPat PAT was not parsed yet." << endl;
+
+		} else {
+			pat->print();
+		}
 	}
 
 	void Demuxer::createPSI() {
-		this->pat  = new Pat();
-		this->pmts = new map<unsigned int, Pmt*>;
+		this->pat = new Pat();
 	}
 
 	void Demuxer::clearPSI() {
@@ -109,25 +140,27 @@ namespace tsparser {
 			pat = NULL;
 		}
 
-		if (pmts != NULL) {
-			i = pmts->begin();
-			while (i != pmts->end()) {
-				delete i->second;
-				++i;
-			}
-
-			delete pmts;
-			pmts = NULL;
+		Thread::mutexLock(&stlMutex);
+		i = pmts.begin();
+		while (i != pmts.end()) {
+			delete i->second;
+			++i;
 		}
+		pmts.clear();
+		Thread::mutexUnlock(&stlMutex);
 	}
 
-	void Demuxer::createMaps() {
-		this->pidFilters       = new map<unsigned int, ITSFilter*>;
-		this->stFilters        = new map<short, ITSFilter*>;
-		this->pesFilters       = new map<unsigned int, ITSFilter*>;
+	void Demuxer::initMaps() {
+		Thread::mutexLock(&stlMutex);
 
-		this->feFilters        = new set<IFrontendFilter*>;
-		this->feFiltersToSetup = new set<IFrontendFilter*>;
+		this->pidFilters.clear();
+		this->stFilters.clear();
+		this->pesFilters.clear();
+		this->feFilters.clear();
+		this->feFiltersToSetup.clear();
+		this->pmts.clear();
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::clearMaps() {
@@ -135,67 +168,55 @@ namespace tsparser {
 		map<short, ITSFilter*>::iterator j;
 		set<IFrontendFilter*>::iterator k;
 
-		if (stFilters != NULL) {
-			j = stFilters->begin();
-			while (j != stFilters->end()) {
-				delete j->second;
-				++j;
-			}
-
-			delete stFilters;
-			stFilters = NULL;
+		Thread::mutexLock(&stlMutex);
+		j = stFilters.begin();
+		while (j != stFilters.end()) {
+			delete j->second;
+			++j;
 		}
 
-		if (pidFilters != NULL) {
-			i = pidFilters->begin();
-			while (i != pidFilters->end()) {
-				delete i->second;
-				++i;
-			}
+		stFilters.clear();
 
-			delete pidFilters;
-			pidFilters = NULL;
+		i = pidFilters.begin();
+		while (i != pidFilters.end()) {
+			delete i->second;
+			++i;
 		}
 
-		if (pesFilters != NULL) {
-			i = pesFilters->begin();
-			while (i != pesFilters->end()) {
-				delete i->second;
-				++i;
-			}
+		pidFilters.clear();
 
-			delete pesFilters;
-			pesFilters = NULL;
+		i = pesFilters.begin();
+		while (i != pesFilters.end()) {
+			delete i->second;
+			++i;
 		}
 
-		if (feFilters != NULL) {
-			k = feFilters->begin();
-			while (k != feFilters->end()) {
-				removeFilter(*k);
-				++k;
-			}
+		pesFilters.clear();
 
-			delete feFilters;
-			feFilters = NULL;
+		k = feFilters.begin();
+		while (k != feFilters.end()) {
+			removeFilter(*k);
+			++k;
 		}
 
-		if (feFiltersToSetup != NULL) {
-			k = feFiltersToSetup->begin();
-			while (k != feFiltersToSetup->end()) {
-				delete (*k);
-				++k;
-			}
+		feFilters.clear();
 
-			delete feFiltersToSetup;
-			feFiltersToSetup = NULL;
+		k = feFiltersToSetup.begin();
+		while (k != feFiltersToSetup.end()) {
+			delete (*k);
+			++k;
 		}
+
+		feFiltersToSetup.clear();
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::resetDemuxer() {
 		clearPSI();
 		clearMaps();
 		createPSI();
-		createMaps();
+		initMaps();
 	}
 
 	void Demuxer::removeFilter(IFrontendFilter* filter) {
@@ -212,18 +233,20 @@ namespace tsparser {
 		IFrontendFilter* filter;
 		int aPid, vPid;
 
-		i = feFiltersToSetup->begin();
-		while (i != feFiltersToSetup->end()) {
+		Thread::mutexLock(&stlMutex);
+		i = feFiltersToSetup.begin();
+		while (i != feFiltersToSetup.end()) {
 			filter = *i;
 
 			if (setupFilter(filter)) {
-				feFiltersToSetup->erase(i);
-				i = feFiltersToSetup->begin();
+				feFiltersToSetup.erase(i);
+				i = feFiltersToSetup.begin();
 
 			} else {
 				++i;
 			}
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		if (audioFilter != NULL && videoFilter != NULL) {
 			aPid = pat->getDefaultMainAudioPid();
@@ -242,8 +265,10 @@ namespace tsparser {
 					ni->attachFilter(audioFilter);
 					ni->attachFilter(videoFilter);
 
-					feFilters->insert(audioFilter);
-					feFilters->insert(videoFilter);
+					Thread::mutexLock(&stlMutex);
+					feFilters.insert(audioFilter);
+					feFilters.insert(videoFilter);
+					Thread::mutexUnlock(&stlMutex);
 
 					audioFilter = NULL;
 					videoFilter = NULL;
@@ -264,15 +289,19 @@ namespace tsparser {
 		int tid;
 		bool attached = false;
 
-		if (pmts->empty()) {
+		Thread::mutexLock(&stlMutex);
+		if (pmts.empty()) {
 			pmt = NULL;
+
 		} else {
-			pmt = pmts->begin()->second;
+			pmt = pmts.begin()->second;
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		if (pmt != NULL) {
+
 			tid = filter->getTid();
-			pids = pmt->getPidsByTid(tid);
+			pids = pmt->copyPidsByTid(tid);
 
 			i = pids->begin();
 			while (i != pids->end()) {
@@ -281,24 +310,28 @@ namespace tsparser {
 					if (filter != NULL) {
 						filter->setPid(pid);
 						filter->setTid(-1);
-						feFilters->insert(filter);
+
+						Thread::mutexLock(&stlMutex);
+						feFilters.insert(filter);
+						Thread::mutexUnlock(&stlMutex);
+
 						attachFilter(filter);
-
-					} else {
-
 					}
+
 					attached = true;
 
-				} else {
-					/*clog << "Demuxer::setupFilter can't getPidByTid pid = '";
+				}/* else {
+					clog << "Demuxer::setupFilter can't getPidByTid pid = '";
 					clog << pid << "' tid = '" << filter->getTid() << "'";
 
 					clog << " PMT print: " << endl;
-					pmt->print();*/
-				}
+					pmt->print();
+				}*/
 
 				++i;
 			}
+
+			delete pids;
 
 		} else {
 			//clog << "Demuxer::setupFilter can't get pmt" << endl;
@@ -324,14 +357,22 @@ namespace tsparser {
 
 		pid = packet->getPid();
 
+		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
+
+			Thread::condSignal(&flagCondSignal);
+			isWaitingPI = false;
+		}
+
+		Thread::mutexLock(&stlMutex);
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
 				/* Verifies if the PAT is OK */
-				if(!pat->hasUnprocessedPmt()){
+				if (!pat->hasUnprocessedPmt()) {
 					if (isWaitingPI) {
 						/* Free the mutex that is waiting for the PAT */
 						Thread::condSignal(&flagCondSignal);
+
 					}
 				}
 				//TODO: handle pat updates
@@ -348,16 +389,16 @@ namespace tsparser {
 					i = pids->begin();
 					while (i != pids->end()) { /* Create each PMT */
 						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						(*pmts)[*i] = pmt;
+						pmts[*i] = pmt;
 						++i;
 					}
 				}
 			}
 
 		/* If is not a PAT, verifies if it is a PMT */
-		} else if (pmts->count(pid) != 0) {
+		} else if (pmts.count(pid) != 0) {
 			packet->getPayload(tsPacketPayload);
-			pmt = (*pmts)[pid];
+			pmt = pmts[pid];
 			if (pmt->isConsolidated()) { /* If the PMT is OK, try update it */
 				newPmt = new Pmt(pid, pmt->getProgramNumber());
 				newPmt->addData(tsPacketPayload, 184);
@@ -366,13 +407,13 @@ namespace tsparser {
 					currVer = pmt->getVersionNumber();
 					/* If the version is different update */
 					if (newVer != currVer) {
-						/*clog << "demuxer replace pmt id = '" << pid << "'";
+						clog << "demuxer replace pmt id = '" << pid << "'";
 						clog << " newVer = '" << newVer;
 						clog << "' currVer = '" << currVer << "': ";
 						newPmt->print();
-						clog << endl;*/
+						clog << endl;
 						pat->replacePmt(pid, newPmt);
-						(*pmts)[pid] = newPmt;
+						pmts[pid] = newPmt;
 
 					} else { /* If the version is the same ignores */
 						delete newPmt;
@@ -390,25 +431,41 @@ namespace tsparser {
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->processSectionPayload()) {
 					pat->addPmt(pmt);
+
 				}
 			}
 
-		} else if (pidFilters->count(pid) != 0) { /* Its not a PAT or PMT */
-			pidFilters->find(pid)->second->receiveTSPacket(packet);
+		} else if (pidFilters.count(pid) != 0) { /* Its not a PAT or PMT */
+			pidFilters.find(pid)->second->receiveTSPacket(packet);
 
-		} else if (stFilters->size() > 0) { /* Its not a PAT or PMT */
+		} else if (stFilters.size() > 0) { /* Its not a PAT or PMT */
 			streamType = pat->getStreamType(pid);
-			if (stFilters->count(streamType) != 0) {
-				stFilters->find(streamType)->second->receiveTSPacket(packet);
+			if (stFilters.count(streamType) != 0) {
+				stFilters.find(streamType)->second->receiveTSPacket(packet);
 
-			} else if (stFilters->count(debugDest) != 0) {
-				stFilters->find(debugDest)->second->receiveTSPacket(packet);
+			} else if (stFilters.count(debugDest) != 0) {
+				stFilters.find(debugDest)->second->receiveTSPacket(packet);
 			}
 		}
 
-		if (pesFilters->count(0) != 0) {
-			(*pesFilters)[0]->receiveTSPacket(packet);
+		if (pesFilters.count(0) != 0) {
+			if (pid == 0) {
+				char *patStream;
+				unsigned short slen;
+				slen = pat->createPatStreamByProgramPid(
+						pat->getDefaultProgramPid(), &patStream);
+
+				TSPacket* patPacket = new TSPacket(true, patStream, slen);
+				patPacket->setPid(0);
+				pesFilters[0]->receiveTSPacket(patPacket);
+
+				delete patPacket;
+
+			} else {
+				pesFilters[0]->receiveTSPacket(packet);
+			}
 		}
+		Thread::mutexUnlock(&stlMutex);
 
 		delete packet;
 		packet = NULL;
@@ -431,7 +488,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 
 		return pat->getDefaultMainVideoPid();
@@ -442,7 +499,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			usleep(1000);
+			SystemCompat::uSleep(1000);
 		}
 
 		return pat->getDefaultMainAudioPid();
@@ -457,17 +514,21 @@ namespace tsparser {
 		FrontendFilter* filter;
 		set<IFrontendFilter*>::iterator i;
 
-		i = feFilters->begin();
-		while (i != feFilters->end()) {
+		Thread::mutexLock(&stlMutex);
+
+		i = feFilters.begin();
+		while (i != feFilters.end()) {
 			filter = (FrontendFilter*)(*i);
 			if (filter->getTSFilter() == tsFilter) {
-				feFilters->erase(i);
+				feFilters.erase(i);
 				removeFilter(filter);
 				//delete tsFilter;
 				break;
 			}
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addFilter(ITSFilter* tsFilter, int pid, int tid) {
@@ -489,11 +550,18 @@ namespace tsparser {
 	void Demuxer::addFilter(IFrontendFilter* filter) {
 		if (filter->getPid() != -1) {
 			filter->setTid(-1);
-			feFilters->insert(filter);
+
+			Thread::mutexLock(&stlMutex);
+			feFilters.insert(filter);
+			Thread::mutexUnlock(&stlMutex);
+
 			attachFilter(filter);
 
 		} else if (!setupFilter(filter)) {
-			feFiltersToSetup->insert(filter);
+
+			Thread::mutexLock(&stlMutex);
+			feFiltersToSetup.insert(filter);
+			Thread::mutexUnlock(&stlMutex);
 		}
 	}
 
@@ -514,27 +582,35 @@ namespace tsparser {
 		ff->setTid(PAT_TID);
 
 		ni->attachFilter(ff);
-		feFilters->insert(ff);
+
+		Thread::mutexLock(&stlMutex);
+		feFilters.insert(ff);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::createPmtFilter(INetworkInterface* ni) {
 		IFrontendFilter* ff;
 		map<unsigned int, Pmt*>::iterator i;
 
-		if (pmts == NULL || pmts->empty()) {
+		Thread::mutexLock(&stlMutex);
+
+		if (pmts.empty()) {
+			Thread::mutexUnlock(&stlMutex);
 			return;
 		}
 
-		i = pmts->begin();
-		while (i != pmts->end()) {
+		i = pmts.begin();
+		while (i != pmts.end()) {
 			ff = new PSIFilter(this);
 			ff->setPid(i->first);
 			ff->setTid(PMT_TID);
 
 			ni->attachFilter(ff);
-			feFilters->insert(ff);
+			feFilters.insert(ff);
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::receiveSection(
@@ -546,6 +622,7 @@ namespace tsparser {
 		Pmt* pmt, * newPmt;
 		INetworkInterface* ni;
 
+		Thread::mutexLock(&stlMutex);
 		pid = f->getPid();
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
@@ -559,7 +636,7 @@ namespace tsparser {
 					i = pids->begin();
 					while (i != pids->end()) {
 						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						(*pmts)[*i] = pmt;
+						pmts[*i] = pmt;
 						++i;
 					}
 					//clog << "Demuxer::receiveSection PAT mounted" << endl;
@@ -571,8 +648,8 @@ namespace tsparser {
 				}
 			}
 
-		} else if (pmts->count(pid) != 0) {
-			pmt = (*pmts)[pid];
+		} else if (pmts.count(pid) != 0) {
+			pmt = pmts[pid];
 			if (pmt->isConsolidated()) {
 				newPmt = new Pmt(pid, pmt->getProgramNumber());
 				newPmt->addData(section, secLen);
@@ -587,7 +664,7 @@ namespace tsparser {
 						newPmt->print();
 						clog << endl;*/
 						pat->replacePmt(pid, newPmt);
-						(*pmts)[pid] = newPmt;
+						pmts[pid] = newPmt;
 
 					} else {
 						delete newPmt;
@@ -625,10 +702,14 @@ namespace tsparser {
 				}
 			}
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addPidFilter(unsigned int pid, ITSFilter* filter) {
-		(*pidFilters)[pid] = filter;
+		Thread::mutexLock(&stlMutex);
+		pidFilters[pid] = filter;
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::addSectionFilter(unsigned int tid, ITSFilter* filter) {
@@ -636,7 +717,10 @@ namespace tsparser {
 	}
 
 	void Demuxer::addStreamTypeFilter(short streamType, ITSFilter* filter) {
-		(*stFilters)[streamType] = filter;
+		Thread::mutexLock(&stlMutex);
+		stFilters[streamType] = filter;
+		Thread::mutexUnlock(&stlMutex);
+
 		clog << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
 	}
 
@@ -663,30 +747,25 @@ namespace tsparser {
 				ni->createPesFilter(aPid, PFT_AUDIO, true);
 				ni->createPesFilter(vPid, PFT_VIDEO, true);
 
-				if (!((PipeFilter*)filter)->isDVRReader()) {
-					((PipeFilter*)filter)->setDVRReader(
-							0,
-							true,
-							ni->getPesFilterOutput());
-
-					((PipeFilter*)filter)->startThread();
-				}
-
-				(*pesFilters)[pat->getFirstProgramNumber()] = filter;
+				Thread::mutexLock(&stlMutex);
+				pesFilters[pat->getFirstProgramNumber()] = filter;
+				Thread::mutexUnlock(&stlMutex);
 
 			} else {
-				if (pesFilters->find(0) == pesFilters->end()) {
+				Thread::mutexLock(&stlMutex);
+				if (pesFilters.find(0) == pesFilters.end()) {
 					filter->addPid(0x00);
 					filter->addPid(pPid);
 					filter->addPid(aPid);
 					filter->addPid(vPid);
 
 					clog << "Demuxer::addPesFilter created" << endl;
-					(*pesFilters)[0] = filter;
+					pesFilters[0] = filter;
 
 				} else {
 					delete filter;
 				}
+				Thread::mutexUnlock(&stlMutex);
 			}
 
 		} else if (type == PFT_PCR) {
@@ -715,7 +794,10 @@ namespace tsparser {
 		ff->setPid(convPid);
 
 		ni->attachFilter(ff);
-		feFilters->insert(ff);
+
+		Thread::mutexLock(&stlMutex);
+		feFilters.insert(ff);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	void Demuxer::receiveData(char* buff, unsigned int size) {
@@ -725,7 +807,8 @@ namespace tsparser {
 		while (i < size) {
 			// Check TS packet boundaries.
 			if (((buff[i] & 0xFF) == 0x47) &&
-					((i + 188 == size) || ((buff[i + 188] & 0xFF) == 0x47))) {
+					((i + packetSize == size) ||
+							((buff[i + packetSize] & 0xFF) == 0x47))) {
 
 				packet = new TSPacket(buff + i);
 				if (packet->isConstructionFailed()) {
@@ -738,21 +821,33 @@ namespace tsparser {
 				} else {
 					demux(packet);
 				}
-				i = i + 188;
+				i = i + packetSize;
 
-			} else if (i + 188 < size) {
+			} else if (i + packetSize < size) {
 				/*clog << "Demuxer::receiveData hunting when i = '";
 				clog << i << "' and size = '" << size << "'";
 				clog << " current byte value = '" << (buff[i] & 0xFF);
 				clog << "' next sync = '" << (buff[i + 188] & 0xFF);
 				clog << "'" << endl;*/
-
+				int diff = i;
 				i++;
 				i = i + hunt(buff + i, size - i);
+				diff = i - diff;
+				if (diff > 188) {
+					packetSize = 204;
+					tuner->setPacketSize(packetSize);
+				}
+				else {
+					packetSize = 188;
+					tuner->setPacketSize(packetSize);
+				}
 
 			} else {
 				/*clog << "Demuxer::receiveData breaking when i = '";
 				clog << i << "' and size = '" << size << "'" << endl;*/
+				tuner->setSkipSize(
+						(packetSize-((size-i-1)%packetSize))%packetSize);
+
 				break;
 			}
 		}
@@ -773,6 +868,9 @@ namespace tsparser {
 				ni = tuner->getCurrentInterface();
 				if (ni->getCaps() & DPC_CAN_FILTERPID) {
 					createPatFilter(ni);
+					clog << "Demuxer::updateChannelStatus ";
+					clog << "PAT filter created ";
+					clog << endl;
 				}
 				break;
 
@@ -788,23 +886,30 @@ namespace tsparser {
 	}
 
 	void Demuxer::addPat(Pat* pat) {
-		pats->push_back(pat);
+		Thread::mutexLock(&stlMutex);
+		pats.push_back(pat);
+		Thread::mutexUnlock(&stlMutex);
 	}
 
 	bool Demuxer::isSectionStream(unsigned int pid) {
 		vector<Pat*>::iterator i;
 
-		if (pid == Demuxer::sectionPid || knownSectionPids->count(pid) != 0) {
+		Thread::mutexLock(&stlMutex);
+		if (pid == Demuxer::sectionPid || knownSectionPids.count(pid) != 0) {
+			Thread::mutexUnlock(&stlMutex);
 			return true;
 		}
 
-		i = pats->begin();
-		while (i != pats->end()) {
+		i = pats.begin();
+		while (i != pats.end()) {
 			if ((*i)->isSectionType(pid)) {
+				Thread::mutexUnlock(&stlMutex);
 				return true;
 			}
 			++i;
 		}
+
+		Thread::mutexUnlock(&stlMutex);
 		return false;
 	}
 

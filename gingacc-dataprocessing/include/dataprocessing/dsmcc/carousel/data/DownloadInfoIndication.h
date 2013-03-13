@@ -76,17 +76,19 @@ namespace carousel {
 			unsigned int numberOfModules;
 
 			//moduleId to module
-			map<unsigned int, Module*>* modules;
+			map<unsigned int, Module*> modules;
 
 			DsmccMessageHeader* header;
 
 		public:
 			DownloadInfoIndication(DsmccMessageHeader* message);
+			virtual ~DownloadInfoIndication();
+
 			unsigned int getDonwloadId();
 			unsigned int getBlockSize();
 			unsigned int getNumberOfModules();
-			map<unsigned int, Module*>* getInfo();
-			vector<Module*>* getParameters();
+			void getInfo(map<unsigned int, Module*>* ocInfo);
+
 			void print();
 	};
 }

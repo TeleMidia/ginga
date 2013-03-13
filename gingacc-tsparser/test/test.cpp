@@ -96,7 +96,6 @@ int main(int argc, char** argv, char** envp) {
 	((IDemuxer*)demuxer)->waitProgramInformation();
 
 	pipeFilter = new PipeFilter(0);
-	pipeFilter->setDestName(pipeName);
 	((IDemuxer*)demuxer)->addPesFilter(PFT_DEFAULTTS, pipeFilter);
 
 	if (argc == 2 && strcmp(argv[1], "save-pipe") == 0) {

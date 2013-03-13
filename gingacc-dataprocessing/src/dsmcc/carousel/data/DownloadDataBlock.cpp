@@ -57,14 +57,20 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	DownloadDataBlock::DownloadDataBlock(DsmccMessageHeader* message) {
-		header = message;
-		moduleId = 0;
+		header        = message;
+		moduleId      = 0;
 		moduleVersion = 0;
-		data = NULL;
+	}
+
+	DownloadDataBlock::~DownloadDataBlock() {
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
 	}
 
 	void DownloadDataBlock::processDataBlock(
-			map<unsigned int, Module*>* mods) {
+			map<unsigned int, Module*>* ocModules) {
 
 		FILE* fd;
 		int rval, trval;
@@ -73,6 +79,10 @@ namespace carousel {
 		char headerBytes[12];
 		char* bytes;
 		Module* mod;
+
+		map<unsigned int, Module*> mods;
+
+		mods.insert(ocModules->begin(), ocModules->end());
 
 		trval = 0;
 		rval  = 1;
@@ -105,8 +115,8 @@ namespace carousel {
 					moduleId = ((bytes[i] & 0xFF) << 8) |
 						    (bytes[i + 1] & 0xFF);
 
-					if (mods->count(moduleId) != 0) {
-						mod = (*mods)[moduleId];
+					if (mods.count(moduleId) != 0) {
+						mod = mods[moduleId];
 						if (!(mod->isConsolidated())) {
 							//TODO: offer update version support
 							moduleVersion = (bytes[i + 2] & 0xFF);

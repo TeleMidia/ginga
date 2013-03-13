@@ -71,9 +71,7 @@ namespace mb {
 
 			IWindow* win;
 
-			bool isWaiting;
-			/*pthread_mutex_t cMutex;
-			pthread_cond_t cond;*/
+			bool hasTex;
 
 		public:
 			SDLVideoProvider(GingaScreenID screenId, const char* mrl);
@@ -99,7 +97,7 @@ namespace mb {
 
 			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
-			virtual int64_t getVPts(){return 0;};
+			virtual int64_t getVPts();
 			double getMediaTime();
 			void setMediaTime(double pos);
 
@@ -116,7 +114,6 @@ namespace mb {
 			void refreshDR(void* data);
 
 		private:
-			void waitTexture();
 			bool textureCreated();
 	};
 }

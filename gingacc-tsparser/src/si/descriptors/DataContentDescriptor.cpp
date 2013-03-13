@@ -103,8 +103,6 @@ namespace descriptors{
 	void DataContentDescriptor::print() {
 		clog << "DataContentDescriptor::print printing..." << endl;
 		clog << " -descriptorLenght = "  << getDescriptorLength() << endl;
-		clog << " -languageCode = "      << getLanguageCode()     << endl;
-		clog << " -textChar = "          << getTextChar()         << endl;
 	}
 	size_t DataContentDescriptor::process (char* data, size_t pos){
 		//clog << "DataContentDescriptor process with pos = " << pos;

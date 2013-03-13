@@ -609,7 +609,7 @@ namespace mb {
 
 		textureUpdate = true;
 
-		delete img;
+		LocalScreenManager::getInstance()->releaseImageProvider(myScreen, img);
 		delete s;
 	}
 

@@ -47,13 +47,12 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef INPTLISTENER_H_
-#define INPTLISTENER_H_
+#ifndef MPEGDESCRIPTOR_H_
+#define MPEGDESCRIPTOR_H_
 
-#include "system/time/ITimeBaseListener.h"
-using namespace br::pucrio::telemidia::ginga::core::system;
-
-#include <string>
+#include <string.h>
+#include <iostream>
+#include <vector>
 using namespace std;
 
 namespace br {
@@ -64,24 +63,50 @@ namespace core {
 namespace dataprocessing {
 namespace dsmcc {
 namespace npt {
-	class INPTListener : public ITimeBaseListener {
-		public:
-			static const double MAX_NPT_VALUE      = 47722;
-			static const unsigned char INVALID_CID = 255;
-			static const short NPT_ST_OCCURRING    = 0;
-			static const short NPT_ST_PAUSED       = 1;
 
-			//TODO: to implement NPT stream_mode (table 8.6 ISO/IEC 13818-6)
+class MpegDescriptor {
+	public:
+		static const unsigned short MAX_DESCRIPTOR_SIZE = 257;
 
-			virtual ~INPTListener(){};
+	private:
 
-			virtual void updateTimeBaseId(
-					unsigned char oldContentId,
-					unsigned char newContentId)=0;
+	protected:
+		unsigned char descriptorTag;
+		unsigned char descriptorLength;
+		char* stream;
 
-			virtual void valueReached(unsigned char cid, int64_t nptValue)=0;
-			virtual void loopDetected()=0;
-	};
+		unsigned short currentSize;
+
+		virtual int process();
+		virtual int updateStream();
+
+		virtual unsigned int calculateDescriptorSize();
+
+	public:
+		MpegDescriptor();
+		MpegDescriptor(unsigned char tag);
+		virtual ~MpegDescriptor();
+
+		char addData(char* data, unsigned short length);
+		unsigned char isConsolidated();
+
+		unsigned char getDescriptorTag();
+		unsigned char getDescriptorLength();
+
+		int getStreamSize();
+		int getStream(char** dataStream);
+
+		void setDescriptorTag(unsigned char tag);
+
+		static MpegDescriptor* getDescriptor(
+				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
+
+		static vector<MpegDescriptor*>* getDescriptors(
+				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
+
+		static int getDescriptorsLength(vector<MpegDescriptor*>* descriptors);
+};
+
 }
 }
 }
@@ -91,4 +116,4 @@ namespace npt {
 }
 }
 
-#endif /*INPTLISTENER_H_*/
+#endif /*MPEGDESCRIPTOR_H_*/

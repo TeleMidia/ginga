@@ -85,16 +85,21 @@ namespace carousel {
 			unsigned int carouselId;
 
 			//mapping moduleId in module
-			map<unsigned int, Module*>* info;
+			map<unsigned int, Module*> info;
+			set<Module*> toRelease;
 
 			ObjectProcessor* processor;
 			string mountPoint;
 			IServiceDomainListener* sdl;
 			bool mounted;
 
+			pthread_mutex_t stlMutex;
+
 		public:
 			ServiceDomain(
 					DownloadServerInitiate* dsi, DownloadInfoIndication* dii);
+
+			virtual ~ServiceDomain();
 
 			void setServiceDomainListener(IServiceDomainListener* sdl);
 			void setObjectsListeners(set<IObjectListener*>* l);
@@ -104,6 +109,8 @@ namespace carousel {
 			bool isMounted();
 
 		private:
+			Module* getModule(int position);
+			void eraseModule(Module* module);
 			bool hasModules();
 
 		protected:

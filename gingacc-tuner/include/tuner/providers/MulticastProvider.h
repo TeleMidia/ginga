@@ -51,20 +51,14 @@ http://www.telemidia.puc-rio.br
 #define MULTICASTPROVIDER_H_
 
 #include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/ioctl.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <net/if.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 

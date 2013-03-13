@@ -47,14 +47,31 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef STC_H_
-#define STC_H_
+#ifndef _BroadcastDualSocketService_H_
+#define _BroadcastDualSocketService_H_
+
+#include "ISocketService.h"
 
 #include "system/compat/SystemCompat.h"
+#include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <stdint.h>
-#include <iostream>
+#include "system/thread/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#ifdef __DARWIN_UNIX03
+#include <ifaddrs.h>
+#define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
+#endif
+
+#include <pthread.h>
+#include <vector>
+#include <string>
 using namespace std;
 
 namespace br {
@@ -62,51 +79,48 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
-
-class Stc {
-
-	#define SYSTEM_CLOCK_FREQUENCY 27000000
-	#define	SYSTEM_CLOCK_FREQUENCY_90 90000
-
+namespace multidevice {
+  class BroadcastDualSocketService : public ISocketService {
 	private:
 
-	protected:
-		uint64_t stc;
-		struct timeval clockRef;
+	    string broadcastIPAddr;
+		unsigned int interfaceIP;
 
-		uint64_t reference;
+	    unsigned int broadcastReadPort;
+		unsigned int broadcastWritePort;
 
-		virtual void refreshStcSample();
+
+		UDPSocket* readSocket;
+		UDPSocket* writeSocket;
+
+
+		pthread_mutex_t mutexBuffer;
+		vector<struct frame*>* outputBuffer;
 
 	public:
-		Stc();
-		virtual ~Stc();
+		BroadcastDualSocketService(
+				unsigned int readPort, unsigned int writePort);
 
-		static int timevalSubtract(
-				struct timeval *result, struct timeval *x, struct timeval *y);
-		static int userClock(struct timeval* usrClk);
-		static uint64_t baseExtToStc(uint64_t base, uint64_t ext);
-		static uint64_t stcToBase(uint64_t stc);
-		static uint64_t stcToExt(uint64_t stc);
-		static double stcToSecond(uint64_t stc);
-		static double baseToSecond(uint64_t base);
-		static uint64_t secondToStc(double seconds);
-		static uint64_t secondToBase(double seconds);
+		~BroadcastDualSocketService();
 
-		uint64_t getReference();
-		void setReference(uint64_t pcr);
-		void setReference(uint64_t base, uint64_t ext);
-		uint64_t getStc();
-		uint64_t getStcBase();
-		uint64_t getStcExt();
-		double getBaseToSecond();
-};
+	private:
+		bool createSocket();
+		bool addToGroup();
+		bool setSocketOptions();
+		bool tryToBind();
 
-}
-}
+	public:
+		unsigned int getInterfaceIPAddress(){return 0;};
+		int getServicePort();
+		void dataRequest(char* data, int taskSize, bool repeat=true);
+
+	private:
+		bool sendData(struct frame* f);
+
+	public:
+		bool checkOutputBuffer();
+		bool checkInputBuffer(char* data, int* size);
+  };
 }
 }
 }
@@ -114,4 +128,4 @@ class Stc {
 }
 }
 
-#endif /* STC_H_ */
+#endif /*_BroadcastDualSocketService_H_*/

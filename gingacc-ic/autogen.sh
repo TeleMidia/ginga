@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PROJECT="Ginga Common Core Interactive Channel 0.13.3"
+PROJECT="Ginga Common Core Interactive Channel 0.13.5"
 TEST_TYPE=-f
 FILE=include/ic/IInteractiveChannelManager.h
 

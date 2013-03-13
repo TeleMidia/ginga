@@ -1,5 +1,5 @@
 AC_PREREQ([2.13])
-AC_INIT([gingaccplayer], [0.13.3])
+AC_INIT([gingaccplayer], [0.13.5])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADERS([config.h])
@@ -29,20 +29,36 @@ AC_SUBST([LUA_INCLUDE])
 AC_SUBST([LUA_LIB])
 
 # FIXME: Hack required by some Ginga headers and libraries.
-ginga_prefix=/usr/local
-CPPFLAGS=-I${ginga_prefix}/include/ginga
-LDFLAGS=`find ${ginga_prefix}/lib/ginga -type d |
-         sed 's/^\(.*\)$/-L\1 /' | tr -d '\n'`
+if test x${prefix} = xNONE; then
+   ginga_prefix=/usr/local
+else
+   ginga_prefix=${prefix}
+fi
+
+for spfx in /usr/lib /usr/local/lib /usr/X11/lib /usr/local/lib/ginga ${prefix}/lib ${prefix}/lib/ginga/; do
+if test -d ${spfx}; then
+LDFLAGS="-L${spfx} $LDFLAGS"
+fi
+done
+
+for spfx in /usr/include /usr/local/include /usr/local/include/ginga ${prefix}/include/ginga /usr/local/include/directfb ${prefix}/include ${prefix}/include/ginga/ ${prefix}/include/SDL2 /usr/local/include/berkelium/include ${prefix}/berkelium/include; do
+if test -d ${spfx}; then
+CPPFLAGS="-I${spfx} $CPPFLAGS"
+fi
+done
+
+
+
 
 # TeleMidia Util.
-AC_CHECK_HEADERS([ginga/util/functions.h], [],
+AC_CHECK_HEADER([util/functions.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find TeleMidia Util headers.
 *** Please install TeleMidia Util Headers.
 ***])])
 
-AC_HAVE_LIBRARY([telemidiautil], [],
+AC_HAVE_LIBRARY(telemidiautil, [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find TeleMidia Util library.
@@ -50,14 +66,14 @@ AC_HAVE_LIBRARY([telemidiautil], [],
 ***])])
 
 # Ginga-CC System.
-AC_CHECK_HEADERS([ginga/system/thread/Thread.h], [],
+AC_CHECK_HEADER([system/thread/Thread.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find Ginga CC System Thread headers.
 *** Please install gingacc-system project.
 ***])])
 
-AC_CHECK_HEADERS([ginga/mb/interface/IWindow.h], [],
+AC_CHECK_HEADER([mb/interface/IWindow.h], [],
   [AC_MSG_ERROR([
 ***
 *** Couldn't find Ginga Common Core System I/O headers.
@@ -67,7 +83,7 @@ AC_CHECK_HEADERS([ginga/mb/interface/IWindow.h], [],
 AC_HAVE_LIBRARY(gingaccsystem, [],
 AC_MSG_ERROR([
 ***
-*** Couldn't find Ginga CC System Thread library.
+*** Couldn't find Ginga CC System library.
 *** Please install gingacc-system Project.
 ***]))
 
@@ -161,7 +177,7 @@ if test x$hasdataprocessing = xno; then
 else
    AC_MSG_RESULT([*** Ginga-CC TS Parser support will be built.])
    AC_DEFINE(HAVE_DATAPROC, 1, [Def to 1 if you have gingaccdataprocessing support.])
-   DATAPROC_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/ -lgingacctsparser -lgingaccdataprocessing'
+   DATAPROC_LIBS='-ldl -L/usr/local/lib/ -L${ginga_prefix}/lib/ginga/ -lgingacctsparser -lgingaccdataprocessing'
 fi
 
 AC_SUBST(DATAPROC_LIBS)
@@ -230,16 +246,16 @@ AC_CHECK_HEADER(
 if test x$enable_components = xno; then
    COMPONENTS_LIBS='-lgingaccmb \
     -lgingaccsystem $(IC_LIBS) \
-    -L/usr/local/lib/ginga/ -L/usr/local/lib \
-    -L/usr/local/lib/ginga/mb/dec/  -L/usr/local/lib/ginga/mb \
+    -L${ginga_prefix}/lib/ginga/ -L/usr/local/lib \
+    -L${ginga_prefix}/lib/ginga/mb/dec/  -L${ginga_prefix}/lib/ginga/mb \
     -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'
-   COMPONENTS_INCS='-I/usr/local/include/ginga -I/usr/local/include/directfb/'
+   COMPONENTS_INCS='-I${ginga_prefix}/include/ginga -I/usr/local/include/directfb/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])
 
 else
-   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L/usr/local/lib/ginga/'
-   COMPONENTS_INCS='-I/usr/local/include/ginga'
+   COMPONENTS_LIBS='-ldl -L/usr/local/lib/ -L${ginga_prefix}/lib/ginga/'
+   COMPONENTS_INCS='-I${ginga_prefix}/include/ginga'
    AC_DEFINE(HAVE_COMPSUPPORT, 1, [Def to 1 if you have Component support.])
    AC_MSG_RESULT([*** Component support will be built.])
 fi
@@ -389,12 +405,12 @@ AC_ARG_ENABLE(multiprocess,
   enable_multiprocess="$enableval", enable_multiprocess=no)
 
 if test x$enable_multiprocess = xno; then
-   MULTIPROCESS_LIBS='-L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-L${ginga_prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 0, [Def to 0 if you don't have Multiple Process support.])
    AC_MSG_WARN([*** Multiple process support will not be built.])
 
 else
-   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L/usr/local/lib/ginga/'
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L${ginga_prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi

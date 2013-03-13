@@ -54,6 +54,7 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include "ITSPacket.h"
+#include "tsparser/TSAdaptationField.h"
 
 #include <iostream>
 using namespace std;
@@ -97,7 +98,7 @@ namespace tsparser {
 		//   0x01    CAT
 		//   0x02    TS description table
 		//   0x03    IPMP control
-		unsigned int pid;
+		unsigned short pid;
 
 		// Indicates the scrambling mode of the TS packet.
 		// (2 bits)
@@ -105,7 +106,7 @@ namespace tsparser {
 		//   01    User Defined
 		//   10    User Defined
 		//   11    User Defined
-		unsigned int transportScramblingControl;
+		unsigned char transportScramblingControl;
 
 		// Indicates whether this TS packet header is followed
 		// by an adaptation field and/or payload. (2 bits)
@@ -113,16 +114,16 @@ namespace tsparser {
 		//   01    no adaptation field (payload only)
 		//   10    adaptation field only (no payload)
 		//   11    adaptation field followed by payload
-		static const unsigned int FUTURE_USE = 0;
-		static const unsigned int PAYLOAD_ONLY = 1;
-		static const unsigned int NO_PAYLOAD = 2;
+		static const unsigned int FUTURE_USE    = 0;
+		static const unsigned int PAYLOAD_ONLY  = 1;
+		static const unsigned int NO_PAYLOAD    = 2;
 		static const unsigned int ADAPT_PAYLOAD = 3;
 		unsigned int adaptationFieldControl;
 
 		// Incrementing with each TS packet with the same PID.
 		// This field shall not be incremented when the
 		// adaptationFieldControl is set to 00 or 10. (4 bits)
-		unsigned int continuityCounter;
+		unsigned char continuityCounter;
 
 		// TODO: AdaptationField?
 
@@ -133,33 +134,54 @@ namespace tsparser {
 		// payloadUnitStartIndicator is set to 1, then the
 		// first byte of the payload is the pointerField
 		// itself.
-		unsigned int pointerField;
+		unsigned char pointerField;
+
+		bool streamUpdated;
 
 		// Packet payload data.  (184 bytes) If pointerField
 		// is present, then the payload size is 183 bytes.
+		char* stream;
 		char payload[TS_PAYLOAD_SIZE];
-		unsigned int payloadSize;
-
-		unsigned int payloadOffset;
-
-	public:
-		TSPacket(char* packetData);
-		virtual ~TSPacket();
-
-	protected:
-		bool create(char data[TS_PACKET_SIZE]);
+		char payload2[TS_PAYLOAD_SIZE];
+		TSAdaptationField* tsaf;
+		unsigned char payloadSize;
+		unsigned char payloadSize2;
+		bool isSectionType;
 		bool constructionFailed;
 
 	public:
+		//Constructor to read a TS packet
+		TSPacket(char* packetData);
+
+		//Constructor to encode a TS packet
+		TSPacket(
+				bool sectionType,
+				char* payload,
+				unsigned char payloadSize);
+
+		virtual ~TSPacket();
+
+	private:
+		void releaseTSAF();
+		void releaseStream();
+
+	protected:
+		bool create(char data[TS_PACKET_SIZE]);
+		char updateStream();
+
+	public:
 		bool isConstructionFailed();
-		unsigned int getPid();
-		void getPacketData(char streamData[TS_PACKET_SIZE]);
+		unsigned short getPid();
+		char getPacketData(char** dataStream);
 		void getPayload(char streamData[TS_PAYLOAD_SIZE]);
-		unsigned int getPayloadSize();
+		void getPayload2(char streamData[TS_PAYLOAD_SIZE]);
+		unsigned char getPayloadSize();
+		unsigned char getPayloadSize2();
 		bool getStartIndicator();
-		unsigned int getPointerField();
-		unsigned int getAdaptationFieldControl();
-		unsigned int getContinuityCounter();
+		unsigned char getPointerField();
+		unsigned char getAdaptationFieldControl();
+		unsigned char getContinuityCounter();
+		void setPid(unsigned short pid);
 		void setContinuityCounter(unsigned int counter);
 		void print();
 	};
