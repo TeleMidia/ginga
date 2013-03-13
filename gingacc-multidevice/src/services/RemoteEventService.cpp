@@ -141,7 +141,7 @@ namespace multidevice {
 		tss = i->second;
 		tss->addConnection(device_id, addr, srvPort, isLocalConnection);
 		clog << "RemoteEventService :: TcpSocketService->addConnection";
-		clog << "devie_id="<<device_id<<endl;
+		clog << "device_id=" << device_id << endl;
 
 		Thread::mutexUnlock(&groupsMutex);
 	}
@@ -168,6 +168,8 @@ namespace multidevice {
 
 		TcpSocketService* tss;
 
+        string str_name = string(name);
+
 		Thread::mutexLock(&groupsMutex);
 		if (groups->count(device_class) == 0) {
 			Thread::mutexUnlock(&groupsMutex);
@@ -176,7 +178,22 @@ namespace multidevice {
 
 		tss = (*groups)[device_class];
 
-		clog << "RemoteEventService::startDocument "<<name<<endl; 
+		clog << "RemoteEventService::startDocument " << name << endl; 
+        
+        int pos_fname = str_name.find_last_of("/\\");
+
+        string doc_name = string(str_name.substr(pos_fname));
+        
+        string str_path = string(str_name.substr(0,pos_fname));
+
+        int pos_fdir = str_path.find_last_of("/\\");
+
+        string last_dir_name = string(str_path.substr(pos_fdir+1));
+
+        string doc_rel_path = last_dir_name + doc_name;
+
+        //clog << "RES::start " << doc_rel_path << endl;
+        
 		//TODO: start individual media objects
 		//TODO: MANIFEST
 
@@ -186,8 +203,8 @@ namespace multidevice {
 		//char *zip_dump = (char*)"/tmp/basetmp.zip";
 
 		/* string dir_app = SystemCompat::getUserCurrentPath() +
-				SystemCompat::getPath(string(name)); */
-
+				SystemCompat::getPath(string(name));
+*/
 		string dir_app = SystemCompat::getUserCurrentPath() +
 				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
 
@@ -205,15 +222,17 @@ namespace multidevice {
 		remove(zip_dump);
 		//TODO: prefetch. add w/o start
 
-//		clog << "RemoteEventService::zipb64="<<endl;
-//		clog << zip_base64 <<endl;
+		clog << "RemoteEventService::zipb64.len = ";
+		clog << strlen(zip_base64.c_str()) << endl;
 
 //		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
 //		clog << "RemoteEventService:: ADD name="<<name<<endl;
 
 //		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
-		tss->postTcpCommand((char*)"START", 0, name, (char*)zip_base64.c_str());
-		clog << "RemoteEventService:: START name="<<name<<endl;
+//
+		tss->postTcpCommand((char*)"START", 0,(char*) doc_rel_path.c_str(), (char*)zip_base64.c_str());
+		
+        clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
 
 		Thread::mutexUnlock(&groupsMutex);
 	}
