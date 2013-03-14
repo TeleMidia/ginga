@@ -166,7 +166,7 @@ namespace carousel {
 		}
 		fclose(fd);
 
-//		remove(header->getFileName().c_str());
+		remove(header->getFileName().c_str());
 	}
 
 	unsigned int DownloadDataBlock::getModuleId() {
