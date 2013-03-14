@@ -123,7 +123,7 @@ namespace carousel {
 			DownloadServerInitiate::processIor();
 
 			fclose(fd);
-//			remove(header->getFileName().c_str());
+			remove(header->getFileName().c_str());
 
 		} else {
 			clog << "Message header error: could not open file ";

@@ -254,10 +254,6 @@ namespace carousel {
 					hasServiceGateway = true;
 					clog << "ServiceDomain::run SRG PROCESSED!" << endl;
 
-					//TODO: why do we have to delete and create?
-					delete biop;
-					biop = NULL;
-
 					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 
 					biop = new Biop(module, processor);
@@ -284,6 +280,7 @@ namespace carousel {
 						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
+						remove(module->getModuleFileName().c_str());
 						eraseModule(module);
 
 						clog << "ServiceDomain::run BIOP->process DONE!";
