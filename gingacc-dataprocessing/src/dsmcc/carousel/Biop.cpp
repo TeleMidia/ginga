@@ -240,8 +240,8 @@ namespace carousel {
 			return;
 		}
 
-		clog << rval << " bytes readed from ";
-		cout  << module->getModuleFileName() << endl;
+		clog << rval << " bytes read from ";
+		clog  << module->getModuleFileName() << endl;
 
 		// BIOP::MessageSubHeader
 
