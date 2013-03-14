@@ -97,21 +97,8 @@ namespace carousel {
 			processor = NULL;
 		}
 
-		i = info.begin();
-		while (i != info.end()) {
-			if (toRelease.find(i->second) == toRelease.end()) {
-				delete i->second;
-			}
-			++i;
-		}
+		//modules are deleted in DII destructor
 		info.clear();
-
-		j = toRelease.begin();
-		while (j != toRelease.end()) {
-			delete (*j);
-			++j;
-		}
-		toRelease.clear();
 
 		Thread::mutexUnlock(&stlMutex);
 		Thread::mutexDestroy(&stlMutex);
@@ -180,10 +167,10 @@ namespace carousel {
 			if (i->second == module) {
 				info.erase(i);
 
+				remove(module->getModuleFileName().c_str());
 				Thread::mutexUnlock(&stlMutex);
 				return;
 			}
-
 			++i;
 		}
 
@@ -261,8 +248,7 @@ namespace carousel {
 					delete biop;
 					biop = NULL;
 
-					i = info.find(modId);
-					info.erase(i);
+					eraseModule(module);
 					Thread::mutexUnlock(&stlMutex);
 
 					j = 0;
@@ -280,17 +266,12 @@ namespace carousel {
 						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
-						remove(module->getModuleFileName().c_str());
 						eraseModule(module);
 
 						clog << "ServiceDomain::run BIOP->process DONE!";
 						clog << endl;
 						delete biop;
 						biop = NULL;
-
-						Thread::mutexLock(&stlMutex);
-						toRelease.insert(module);
-						Thread::mutexUnlock(&stlMutex);
 
 					} else {
 						SystemCompat::uSleep(1000);

@@ -32,8 +32,10 @@ libgingaccdataprocessing_la_SOURCES  = \
                                        dsmcc/carousel/data/Module.cpp \
                                        dsmcc/carousel/object/Object.cpp \
                                        dsmcc/carousel/object/ObjectProcessor.cpp \
-                                       dsmcc/npt/Crc.cpp dsmcc/npt/MpegDescriptor.cpp \
+                                       dsmcc/npt/Crc.cpp \
                                        dsmcc/npt/DSMCCSectionPayload.cpp \
+                                       dsmcc/npt/MpegDescriptor.cpp \
+                                       dsmcc/npt/NPTEndpoint.cpp \
                                        dsmcc/npt/NPTProcessor.cpp \
                                        dsmcc/npt/NPTReference.cpp \
                                        dsmcc/npt/StreamMode.cpp \

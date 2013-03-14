@@ -108,6 +108,7 @@ namespace carousel {
 			virtual ~Biop();
 
 		private:
+			void closeModule();
 			void createData(unsigned int dataSize);
 			void releaseData();
 

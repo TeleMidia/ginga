@@ -85,8 +85,10 @@ namespace tuning {
 			virtual void setListener(ITProviderListener* listener)=0;
 			virtual void attachFilter(IFrontendFilter* filter)=0;
 			virtual void removeFilter(IFrontendFilter* filter)=0;
-			virtual int receiveData(char* buff, int skipSize,
-									unsigned char packetSize)=0;
+
+			virtual int receiveData(
+					char* buff, int skipSize, unsigned char packetSize)=0;
+
 			virtual bool tune()=0;
 			virtual IChannel* getCurrentChannel()=0;
 			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
