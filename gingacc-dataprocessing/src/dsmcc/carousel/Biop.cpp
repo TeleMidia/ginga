@@ -68,25 +68,29 @@ namespace carousel {
 
 		Thread::mutexInit(&dataMutex, true);
 
-		moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
-
-		if (moduleFd <= 0) {
-			abortProcess("Cannot open file " + module->getModuleFileName());
+		if (fileExists(module->getModuleFileName())) {
+			moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
+			this->isValidHdr = processMessageHeader();
 
 		} else {
-			this->isValidHdr = processMessageHeader();
+			abortProcess("Cannot open file " + module->getModuleFileName());
 		}
 	}
 
 	Biop::~Biop() {
 		Thread::mutexLock(&dataMutex);
-		if (moduleFd > 0) {
-			fclose(moduleFd);
-		}
 
+		closeModule();
 		releaseData();
 		Thread::mutexUnlock(&dataMutex);
 		Thread::mutexDestroy(&dataMutex);
+	}
+
+	void Biop::closeModule() {
+		if (moduleFd != NULL) {
+			fclose(moduleFd);
+			moduleFd = NULL;
+		}
 	}
 
 	void Biop::createData(unsigned int dataSize) {
@@ -132,9 +136,8 @@ namespace carousel {
 
 	void Biop::abortProcess(string warningText) {
 		clog << "Warning! " << warningText.c_str() << endl;
-		fclose(moduleFd);
-		moduleFd = NULL;
 
+		closeModule();
 		releaseData();
 	}
 
@@ -709,37 +712,34 @@ namespace carousel {
 		Thread::mutexLock(&dataMutex);
 
 		clog << "Biop::process" << endl;
-		if (moduleFd >= 0) {
-			processed = false;
+		processed = false;
 
-			do {
-				if (isValidHdr) {
-					clog << "Biop::process processing sub hdr" << endl;
-					processMessageSubHeader();
-					clog << "Biop::process processing obj" << endl;
-					processObject();
-				}
+		do {
+			if (isValidHdr) {
+				clog << "Biop::process processing sub hdr" << endl;
+				processMessageSubHeader();
+				clog << "Biop::process processing obj" << endl;
+				processObject();
+			}
 
-				if (hasMoreBiopMessage) {
-					clog << "Biop::process processing has more msgs" << endl;
-					releaseData();
+			if (hasMoreBiopMessage) {
+				clog << "Biop::process processing has more msgs" << endl;
+				releaseData();
 
-					clog << "processing another BIOP message from file ";
-					clog << module->getModuleFileName() << endl;
+				clog << "processing another BIOP message from file ";
+				clog << module->getModuleFileName() << endl;
 
-					isValidHdr = processMessageHeader();
+				isValidHdr = processMessageHeader();
 
-				} else {
-					clog << "Biop::process processing done" << endl;
-					processed = true;
-				}
+			} else {
+				clog << "Biop::process processing done" << endl;
+				processed = true;
+			}
 
-			} while (!processed);
+		} while (!processed);
 
-			releaseData();
-
-			fclose(moduleFd);
-		}
+		releaseData();
+		closeModule();
 
 		Thread::mutexUnlock(&dataMutex);
 	}

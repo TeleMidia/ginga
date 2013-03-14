@@ -328,9 +328,11 @@ namespace tuning {
 		}
 	}
 
-	int ISDBTProvider::receiveData(char* buff) {
+	int ISDBTProvider::receiveData(
+			char* buff, int skipSize, unsigned char packetSize) {
+
 		if (feDescriptor > 0) {
-			return read(feDescriptor, (void*)buff, BUFFSIZE);
+			return read(feDescriptor, (void*)buff, packetSize);
 		}
 
 		return 0;
