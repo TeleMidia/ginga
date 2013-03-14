@@ -99,7 +99,7 @@ namespace dataprocessing {
 		/*Clear the allocated structs */
 		j = sectionPidSelector.begin();
 		while (j != sectionPidSelector.end()) {
-			//TODO - verify if needs to delete the internal allocated memory
+			delete j->second->section;
 			delete j->second;
 			++j;
 		}

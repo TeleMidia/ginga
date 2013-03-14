@@ -166,8 +166,9 @@ namespace carousel {
 		while (i != info.end()) {
 			if (i->second == module) {
 				info.erase(i);
-
-				remove(module->getModuleFileName().c_str());
+				if (remove(module->getModuleFileName().c_str()) == -1) {
+					cout << errno << endl;
+				}
 				Thread::mutexUnlock(&stlMutex);
 				return;
 			}
@@ -243,7 +244,6 @@ namespace carousel {
 
 					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 
-					biop = new Biop(module, processor);
 					biop->process();
 					delete biop;
 					biop = NULL;
