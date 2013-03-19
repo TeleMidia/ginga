@@ -100,8 +100,8 @@ namespace tsparser {
 			static set<unsigned int> knownSectionPids;
 			ITuner* tuner;
 
-			int debugPackCount;
 			short debugDest;
+			unsigned int debugPacketCounter;
 			bool isWaitingPI;
 
 			pthread_mutex_t flagLockUntilSignal;
