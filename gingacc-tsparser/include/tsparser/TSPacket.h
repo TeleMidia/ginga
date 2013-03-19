@@ -137,6 +137,7 @@ namespace tsparser {
 		unsigned char pointerField;
 
 		bool streamUpdated;
+		unsigned int packetCount;
 
 		// Packet payload data.  (184 bytes) If pointerField
 		// is present, then the payload size is 183 bytes.
@@ -184,6 +185,7 @@ namespace tsparser {
 		void setPid(unsigned short pid);
 		void setContinuityCounter(unsigned int counter);
 		void print();
+		void setPacketCount(unsigned int count);
 	};
 }
 }

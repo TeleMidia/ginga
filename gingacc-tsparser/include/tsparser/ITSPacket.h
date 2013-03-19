@@ -75,6 +75,7 @@ namespace tsparser {
 		virtual unsigned char getContinuityCounter()=0;
 		virtual void setContinuityCounter(unsigned int counter)=0;
 		virtual void print()=0;
+		virtual void setPacketCount(unsigned int count)=0;
 	};
 }
 }

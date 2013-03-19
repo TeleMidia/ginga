@@ -92,7 +92,7 @@ namespace tsparser {
 		knownSectionPids.insert(CDT_PID);
 
 		isWaitingPI    = false;
-		debugPackCount = 1;
+		debugPacketCounter = 0;
 		debugDest      = 0;
 
 		this->tuner->setTunerListener(this);
@@ -348,12 +348,8 @@ namespace tsparser {
 		Pmt* pmt, * newPmt;
 		char tsPacketPayload[184];
 
-		/*if (packet->getStartIndicator()) {
-			clog << "Demuxer::demux filtred packet number '";
-			clog << debugPackCount;
-			clog << "'" << endl;
-		}*/
-		debugPackCount++;
+		debugPacketCounter++;
+		packet->setPacketCount(debugPacketCounter);
 
 		pid = packet->getPid();
 

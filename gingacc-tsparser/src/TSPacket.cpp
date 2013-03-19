@@ -466,6 +466,10 @@ namespace tsparser {
 		}
 	}
 
+	void TSPacket::setPacketCount(unsigned int count) {
+		packetCount = count;
+	}
+
 	void TSPacket::print() {
 		unsigned int i;
 		clog << "TS PACK" << endl;
@@ -510,10 +514,11 @@ namespace tsparser {
 		clog << endl;
 
 		clog << "continuityCounter = " << (continuityCounter & 0xFF) << endl;
+		clog << "packet number is near " << packetCount << endl;
 
-		clog << "payload: " << endl;
-		for (i=0; i < 184; i++) {
-			clog << "0x" << hex << (payload[i] & 0xFF) << " ";
+		clog << "packet content: " << endl;
+		for (i=0; i < 188; i++) {
+			clog << "0x" << hex << (stream[i] & 0xFF) << " ";
 		}
 
 		clog << endl << endl;
