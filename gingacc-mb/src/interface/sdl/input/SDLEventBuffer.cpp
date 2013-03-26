@@ -106,7 +106,8 @@ namespace mb {
 			case SDL_FINGERMOTION:
 			case SDL_FINGERDOWN:
 			case SDL_FINGERUP:
-				windowID = event.tfinger.windowID;
+				//TODO: how to get windowID from new SDL tfinger structure
+				//windowID = event.tfinger.windowID;
 				break;
 		}
 
