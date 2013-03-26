@@ -517,6 +517,7 @@ namespace tsparser {
 		clog << "packet number is near " << packetCount << endl;
 
 		clog << "packet content: " << endl;
+
 		for (i=0; i < 188; i++) {
 			clog << "0x" << hex << (stream[i] & 0xFF) << " ";
 		}

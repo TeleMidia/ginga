@@ -116,6 +116,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		uint64_t firstStc;
 		bool isFirstStc;
 		bool nptPrinter;
+		map<char,NPTReference*> lastNptList;
 
 	public:
 		NPTProcessor(ISTCProvider* stcProvider);

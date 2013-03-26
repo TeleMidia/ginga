@@ -105,6 +105,18 @@ namespace si {
 		return false;
 	}
 
+	int Pmt::getPidByStreamType(short streamType) {
+		map<unsigned int, short>::iterator i;
+
+		for (i = streams.begin(); i != streams.end(); ++i) {
+			if (i->second == streamType) {
+				return i->first;
+			}
+		}
+
+		return -1;
+	}
+
 	void Pmt::addElementaryStream(unsigned int pid, short esType) {
 		clog << "pid = '" << pid << "' esType = '" << esType;
 		clog << "' " << endl;

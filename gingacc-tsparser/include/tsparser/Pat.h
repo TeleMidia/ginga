@@ -92,6 +92,7 @@ namespace si {
 			virtual ~Pat();
 
 			bool hasStreamType(short streamType);
+			int getPidByStreamType(short streamType);
 			unsigned int getNextPid();
 			unsigned int getNextCarouselId();
 			unsigned int getCarouselComponentTag();

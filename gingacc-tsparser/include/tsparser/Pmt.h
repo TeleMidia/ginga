@@ -82,6 +82,7 @@ namespace si {
 			virtual ~Pmt();
 
 			bool hasStreamType(short streamType);
+			int getPidByStreamType(short streamType);
 			void addElementaryStream(unsigned int pid, short esType);
 			//void addAITInfo(unsigned int pid, AITInfo* info);
 			unsigned int getPid();
