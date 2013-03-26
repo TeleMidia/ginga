@@ -128,8 +128,7 @@ namespace mb {
 		int sdlValue;
 
 		if (event.type == SDL_FINGERUP ||
-				event.type == SDL_MOUSEBUTTONUP ||
-				event.type == SDL_TOUCHBUTTONUP) {
+				event.type == SDL_MOUSEBUTTONUP) {
 
 			return CodeMap::KEY_TAP;
 		}
@@ -228,10 +227,8 @@ namespace mb {
 	bool SDLInputEvent::isButtonPressType() {
 		if (event.type == SDL_FINGERUP ||
 				event.type == SDL_MOUSEBUTTONUP ||
-				event.type == SDL_TOUCHBUTTONUP ||
 				event.type == SDL_FINGERDOWN ||
-				event.type == SDL_MOUSEBUTTONDOWN ||
-				event.type == SDL_TOUCHBUTTONDOWN) {
+				event.type == SDL_MOUSEBUTTONDOWN) {
 
 			return true;
 		}
