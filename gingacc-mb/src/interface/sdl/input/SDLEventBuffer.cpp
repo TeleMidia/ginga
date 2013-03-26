@@ -108,11 +108,6 @@ namespace mb {
 			case SDL_FINGERUP:
 				windowID = event.tfinger.windowID;
 				break;
-
-			case SDL_TOUCHBUTTONDOWN:
-			case SDL_TOUCHBUTTONUP:
-				windowID = event.tbutton.windowID;
-				break;
 		}
 
 		if (windowID == winId) {
