@@ -110,6 +110,8 @@ namespace tsparser {
 			static pthread_mutex_t stlMutex;
 
 			unsigned char packetSize;
+			bool nptPrinter;
+			int nptPid;
 
 		public:
 			//defs
@@ -122,6 +124,7 @@ namespace tsparser {
 
 			bool hasStreamType(short streamType);
 			void printPat();
+			void setNptPrinter(bool nptPrinter);
 
 		private:
 			void createPSI();

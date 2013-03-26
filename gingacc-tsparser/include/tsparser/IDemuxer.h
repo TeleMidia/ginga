@@ -111,6 +111,7 @@ namespace tsparser {
 
 		virtual bool hasStreamType(short streamType)=0;
 		virtual void printPat()=0;
+		virtual void setNptPrinter(bool nptPrinter)=0;
 
 		virtual unsigned int getTSId()=0;
 

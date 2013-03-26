@@ -93,7 +93,10 @@ namespace tsparser {
 
 		isWaitingPI    = false;
 		debugPacketCounter = 0;
+
 		debugDest      = 0;
+		nptPrinter	   = false;
+		nptPid		   = -1;
 
 		this->tuner->setTunerListener(this);
 	}
@@ -126,6 +129,10 @@ namespace tsparser {
 		} else {
 			pat->print();
 		}
+	}
+
+	void Demuxer::setNptPrinter(bool nptPrinter) {
+		this->nptPrinter = nptPrinter;
 	}
 
 	void Demuxer::createPSI() {
@@ -357,6 +364,27 @@ namespace tsparser {
 
 			Thread::condSignal(&flagCondSignal);
 			isWaitingPI = false;
+		}
+
+		if (nptPrinter) {
+			if (nptPid == -1) {
+				if (pat) nptPid = pat->getPidByStreamType(STREAM_TYPE_DSMCC_TYPE_C);
+			}
+			if (nptPid > 0) {
+				if (packet->getPid() == nptPid) {
+					if (!packet->getStartIndicator()) {
+						cout << "NPT TS ERROR: PayloadUnitStartIndicator is zero." << endl;
+					}
+					if (packet->getAdaptationFieldControl() == 2) {
+						cout << "NPT TS ERROR: AdaptationFieldControl is 2." << endl;
+					}
+					char buf[184];
+					packet->getPayload(buf);
+					if (buf[0] != 0x3D) {
+						cout << "NPT TS ERROR: Invalid PointerField or tableId." << endl;
+					}
+				}
+			}
 		}
 
 		Thread::mutexLock(&stlMutex);

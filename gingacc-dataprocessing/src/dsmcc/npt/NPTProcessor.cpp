@@ -653,16 +653,62 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 			npt = (NPTReference*) desc;
 
 			if (nptPrinter) {
+				NPTReference* lastNpt = NULL;
 				cout << "FOUND NEW NPT REFERENCE DESCRIPTOR" << endl;
 				cout << "CONTENTID: " << (npt->getContentId() & 0xFF) << endl;
-				cout << "NPT REFERENCE: " << npt->getNptRef() << endl;
-				cout << "STC REFERENCE: " << npt->getStcRef() << endl;
+				cout << "NPT REFERENCE: " << npt->getNptRef() << " (" <<
+						Stc::baseToSecond(npt->getNptRef()) << "s)" << endl;
+				cout << "STC REFERENCE: " << npt->getStcRef() << " (" <<
+						Stc::baseToSecond(npt->getStcRef()) << "s)" << endl;
 				cout << "DISCONTINUITY INDICATOR: ";
 				cout << (npt->getPostDiscontinuityIndicator() & 0xFF) << endl;
-				cout << "NPT SCALE NUMERATOR: ";
-				cout << npt->getScaleNumerator() << endl;
-				cout << "NPT SCALE DENOMINATOR: ";
-				cout << npt->getScaleDenominator() << endl;
+				cout << "NPT SCALE: " << npt->getScaleNumerator() << "/" << npt->getScaleDenominator() << endl;
+
+				if (lastNptList.count(npt->getContentId())) {
+					lastNpt = lastNptList[npt->getContentId()];
+				} else {
+					lastNpt = NULL;
+				}
+				if (lastNpt) {
+					if ((npt->getScaleNumerator() > 0) && (lastNpt->getScaleNumerator() > 0)) {
+						if (lastNpt->getNptRef() >= npt->getNptRef()) {
+							cout << "Error in NPT references: ";
+							cout << "Current NPT value must be greater than last NPT." << endl;
+							cout << "Last NPT: " << Stc::baseToSecond(lastNpt->getNptRef()) << "s" << endl;
+							cout << "Curr NPT: " << Stc::baseToSecond(npt->getNptRef()) << "s" << endl;
+						}
+					} else if ((npt->getScaleNumerator() < 0) && (lastNpt->getScaleNumerator() < 0)) {
+						cout << "Error in NPT reference: ";
+						cout << "Current NPT value must be lower than last NPT." << endl;
+						cout << "Last NPT: " << Stc::baseToSecond(lastNpt->getNptRef()) << "s" << endl;
+						cout << "Curr NPT: " << Stc::baseToSecond(npt->getNptRef()) << "s" << endl;
+					}
+					if ((npt->getScaleNumerator() != 0) && (lastNpt->getScaleNumerator() != 0)) {
+						if (npt->getNptRef() == lastNpt->getNptRef()) {
+							cout << "Error in NPT references: ";
+							cout << "NPT values are not changing in time." << endl;
+						}
+					}
+					if (npt->getStcRef() < lastNpt->getStcRef()) {
+						cout << "Error in STC reference: ";
+						cout << "Current STC value must be greater than last STC." << endl;
+					}
+					delete lastNpt;
+					lastNpt = NULL;
+				}
+				if ((npt->getScaleNumerator() != 0) && (npt->getScaleDenominator() == 0)) {
+					cout << "Error in NPT scale: ";
+					cout << "Denominator value must be non-zero." << endl;
+				}
+				if ((npt->getScaleNumerator() == 0) && (npt->getScaleDenominator() == 0)) {
+					cout << "Warning on NPT scale: ";
+					cout << "Scale is not available." << endl;
+				}
+				newNpt = new NPTReference();
+				nptLen = npt->getStream(&stream);
+				newNpt->addData(stream, nptLen);
+				lastNptList[npt->getContentId()] = newNpt;
+				return 0;
 			}
 
 			//Search for existing time base
@@ -752,8 +798,8 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 
 			if (nptPrinter) {
 				cout << "FOUND NEW NPT ENDPOINT DESCRIPTOR" << endl;
-				cout << "START NPT: " << nptEP->getStartNPT() << endl;
-				cout << "STOP NPT: " << nptEP->getStopNPT() << endl;
+				cout << "START NPT: " << Stc::baseToSecond(nptEP->getStartNPT()) << "s" << endl;
+				cout << "STOP  NPT: " << Stc::baseToSecond(nptEP->getStopNPT()) << "s" << endl;
 			}
 
 			clk = getCurrentTimebase();

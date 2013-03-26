@@ -88,6 +88,16 @@ namespace si {
 		return false;
 	}
 
+	int Pat::getPidByStreamType(short streamType) {
+		map<unsigned int, Pmt*>::iterator i;
+
+		for (i = programs.begin(); i != programs.end(); ++i) {
+			return i->second->getPidByStreamType(streamType);
+		}
+
+		return -1;
+	}
+
 	unsigned int Pat::getNextPid() {
 		currentPid++;
 		while (hasPid(currentPid)) {

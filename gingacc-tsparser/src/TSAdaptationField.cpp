@@ -121,14 +121,12 @@ namespace tsparser {
 		int pos = 2;
 
 		adaptationFieldLength = adapFieldStream[0] & 0xFF;
-		if (adaptationFieldLength == 0 ||
-				adaptationFieldLength > MAX_ADAPTATION_FIELD_SIZE) {
-			//adaptationFieldLength = 0 is a valid scenario.
-			if (adaptationFieldLength > MAX_ADAPTATION_FIELD_SIZE) {
-				clog << "TSAdaptationField::process Warning! Invalid adaptation ";
-				clog << "field length: "  << (adaptationFieldLength & 0xFF);
-				clog << endl;
-			}
+		
+		if (adaptationFieldLength > MAX_ADAPTATION_FIELD_SIZE) {
+			//adaptationFieldLength == 0 is a valid value!
+			clog << "TSAdaptationField::process Warning! Invalid adaptation ";
+			clog << "field length: "  << (adaptationFieldLength & 0xFF);
+			clog << endl;
 			return;
 		}
 
