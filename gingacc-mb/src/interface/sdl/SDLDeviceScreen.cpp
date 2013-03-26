@@ -907,6 +907,17 @@ namespace mb {
 
 #if HAVE_COMPSUPPORT
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
+
+		if (provider == NULL) {
+			clog << "SDLDeviceScreen::createContinuousMediaProvider ";
+			clog << "Warning! Can't create a provider for '" << mrl << "' ";
+			clog << "using component '" << strSym << "'";
+			clog << endl;
+			unlockSDL();
+
+			return NULL;
+		}
+
 		provider->setLoadSymbol(strSym);
 #else
 		if (*hasVisual) {
