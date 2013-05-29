@@ -76,14 +76,15 @@ namespace carousel {
 			unsigned int idx;
 
 		public:
-			DownloadServerInitiate(DsmccMessageHeader* message);
+			DownloadServerInitiate();
 			virtual ~DownloadServerInitiate();
+
+			int processMessage(DsmccMessageHeader* message);
 
 			Ior* getServiceGatewayIor();
 
 		private:
-			void processMessage();
-			void processIor();
+			int processIor();
 	};
 }
 }

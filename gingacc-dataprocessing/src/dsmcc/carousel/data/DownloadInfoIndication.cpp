@@ -56,9 +56,29 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace carousel {
-	DownloadInfoIndication::DownloadInfoIndication(
-			DsmccMessageHeader* message) {
+	DownloadInfoIndication::DownloadInfoIndication() {
 
+	}
+
+	DownloadInfoIndication::~DownloadInfoIndication() {
+		map<unsigned int, Module*>::iterator i;
+
+		i = modules.begin();
+		while (i != modules.end()) {
+			delete i->second;
+
+			++i;
+		}
+		
+		if (header != NULL) {
+			delete header;
+			header = NULL;
+		}
+
+		modules.clear();
+	}
+
+	int DownloadInfoIndication::processMessage(DsmccMessageHeader* message) {
 		FILE* fd;
 		int rval;
 		unsigned int i, moduleId, moduleSize, moduleVersion, moduleInfoLength;
@@ -130,27 +150,12 @@ namespace carousel {
 		} else {
 			clog << "Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
+			return -1;
 		}
 
 		delete bytes;
-	}
 
-	DownloadInfoIndication::~DownloadInfoIndication() {
-		map<unsigned int, Module*>::iterator i;
-
-		i = modules.begin();
-		while (i != modules.end()) {
-			delete i->second;
-
-			++i;
-		}
-		
-		if (header != NULL) {
-			delete header;
-			header = NULL;
-		}
-
-		modules.clear();
+		return 0;
 	}
 
 	unsigned int DownloadInfoIndication::getDonwloadId() {

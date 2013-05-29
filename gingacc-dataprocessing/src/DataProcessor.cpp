@@ -493,20 +493,22 @@ namespace dataprocessing {
 					sectionName = section->getSectionName();
 
 					if (filterManager->processSection(section)) {
-						message = new DsmccMessageHeader(sectionName, pid);
-						if (processors.count(pid) == 0) {
-							processor = new MessageProcessor();
-							processors[pid] = processor;
+						message = new DsmccMessageHeader();
+						if (message->readMessageFromFile(sectionName, pid) == 0) {
+							if (processors.count(pid) == 0) {
+								processor = new MessageProcessor();
+								processors[pid] = processor;
 
-						} else {
-							processor = processors[pid];
-						}
+							} else {
+								processor = processors[pid];
+							}
 
-						sd = processor->pushMessage(message);
-						if (sd != NULL) {
-							sd->setObjectsListeners(&objectListeners);
-							sd->setServiceDomainListener(this);
-							processor->checkTasks();
+							sd = processor->pushMessage(message);
+							if (sd != NULL) {
+								sd->setObjectsListeners(&objectListeners);
+								sd->setServiceDomainListener(this);
+								processor->checkTasks();
+							}
 						}
 					}
 

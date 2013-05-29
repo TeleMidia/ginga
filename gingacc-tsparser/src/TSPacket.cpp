@@ -421,7 +421,7 @@ namespace tsparser {
 		memcpy(
 				(void*)(streamData),
 				(void*)(payload2),
-				payloadSize);
+				payloadSize2);
 	}
 
 	unsigned char TSPacket::getPayloadSize() {
@@ -468,6 +468,10 @@ namespace tsparser {
 
 	void TSPacket::setPacketCount(unsigned int count) {
 		packetCount = count;
+	}
+
+	unsigned int TSPacket::getPacketCount() {
+		return packetCount;
 	}
 
 	void TSPacket::print() {

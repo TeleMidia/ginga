@@ -56,12 +56,9 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace carousel {
-	DownloadServerInitiate::DownloadServerInitiate(DsmccMessageHeader* message) {
-		header = message;
+	DownloadServerInitiate::DownloadServerInitiate() {
 		srgIor = NULL;
 		data   = NULL;
-
-		processMessage();
 	}
 
 	DownloadServerInitiate::~DownloadServerInitiate() {
@@ -85,11 +82,12 @@ namespace carousel {
 		return this->srgIor;
 	}
 
-	void DownloadServerInitiate::processMessage() {
+	int DownloadServerInitiate::processMessage(DsmccMessageHeader* message) {
 		FILE* fd;
 		int rval;
 		unsigned int privateDataLength;
 
+		header = message;
 		// dsmccmessageheader = 12
 		idx = header->getAdaptationLength() + 12;
 
@@ -120,18 +118,22 @@ namespace carousel {
 				idx = idx + 2;
 			}
 
-			DownloadServerInitiate::processIor();
+			rval = DownloadServerInitiate::processIor();
 
 			fclose(fd);
 			remove(header->getFileName().c_str());
+			if (rval < 0) return rval;
 
 		} else {
 			clog << "Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
+			return -1;
 		}
+
+		return 0;
 	}
 
-	void DownloadServerInitiate::processIor() {
+	int DownloadServerInitiate::processIor() {
 		unsigned int len;
 		char* field;
 
@@ -156,6 +158,7 @@ namespace carousel {
 		if (len > 1) {
 			clog << "Warning: DSI::TaggedProfiles, never reach here!!! TP = ";
 			clog << len << endl;
+			return -1;
 		}
 
 		//get ior profile tag and check it
@@ -166,6 +169,7 @@ namespace carousel {
 		if (len != TAG_BIOP) {
 			clog << "Warning: DSI::TAG_BIOP, never reach here!!!";
 			clog << " TAG = " << len << endl;
+			return -2;
 
 		} else {
 			// BIOP Profile Body
@@ -186,6 +190,7 @@ namespace carousel {
 			if (len != 2) {
 				clog << "Warning: liteComponents, never reach here!!! LC = ";
 				clog << len << endl;
+				return -3;
 			}
 
 			idx++;
@@ -198,6 +203,7 @@ namespace carousel {
 			if (len != TAG_BIOP_OBJECT_LOCATION) {
 				clog << "Warning: TAG_ObjectLocation, never reach here!!!";
 				clog << " TAG = " << len << endl;
+				return -4;
 
 			} else {
 				idx = idx + 4;
@@ -224,6 +230,7 @@ namespace carousel {
 
 					clog << "DSI Warning: Object version, never reach here!!!";
 					clog << endl;
+					return -5;
 				}
 
 				idx = idx + 2;
@@ -239,6 +246,7 @@ namespace carousel {
 					clog << endl;
 
 					idx = idx + len;
+					return -6;
 
 				} else if (len > 0) {
 					if (len == 4) {
@@ -279,6 +287,7 @@ namespace carousel {
 
 		delete data;
 		data = NULL;
+		return 0;
 	}
 }
 }

@@ -268,9 +268,9 @@ namespace dataprocessing {
 		// All sections received.
 		if (secs->size() == (lsn + 1)) {
 			sectionFd = fopen(sectionName.c_str(),
-					 "a+b");
+					 "wb");
 
-			if (sectionFd < 0) {
+			if (sectionFd <= 0) {
 				clog << "FilterManager Warning! error open file ";
 				clog << sectionName;
 				clog << "." << endl;

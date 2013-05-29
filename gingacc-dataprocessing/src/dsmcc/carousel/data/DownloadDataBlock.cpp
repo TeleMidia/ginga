@@ -69,7 +69,7 @@ namespace carousel {
 		}
 	}
 
-	void DownloadDataBlock::processDataBlock(
+	int DownloadDataBlock::processDataBlock(
 			map<unsigned int, Module*>* ocModules) {
 
 		FILE* fd;
@@ -141,6 +141,7 @@ namespace carousel {
 						clog << "DownloadDataBlock::processDataBlock ";
 						clog << "DDB Warning! modId '" << moduleId << "' not";
 						clog << " found!" << endl;
+						return -1;
 					}
 
 				} else {
@@ -154,6 +155,8 @@ namespace carousel {
 							rval,
 							messageLength,
 							trval;*/
+					clog << "DownloadDataBlock::processDataBlock Warning!!" << endl;
+					return -2;
 				}
 
 				delete bytes;
@@ -162,11 +165,13 @@ namespace carousel {
 			} else {
 				clog << "Warning! Unknown DDB MessageId: ";
 				clog << hex << messageId << endl;
+				return -3;
 			}
 		}
 		fclose(fd);
 
 		remove(header->getFileName().c_str());
+		return 0;
 	}
 
 	unsigned int DownloadDataBlock::getModuleId() {

@@ -112,9 +112,13 @@ namespace carousel {
 		processor->setObjectsListeners(l);
 	}
 
-	void ServiceDomain::receiveDDB(DownloadDataBlock* ddb) {
-		ddb->processDataBlock(&info);
+	int ServiceDomain::receiveDDB(DownloadDataBlock* ddb) {
+		if (ddb->processDataBlock(&info) < 0) {
+			clog << "ServiceDomain::receiveDDB - error." << endl;
+			return -1;
+		}
 		clog << "ddb done!" << endl;
+		return 0;
 	}
 
 	Module* ServiceDomain::getModuleById(unsigned int id) {
@@ -167,7 +171,7 @@ namespace carousel {
 			if (i->second == module) {
 				info.erase(i);
 				if (remove(module->getModuleFileName().c_str()) == -1) {
-					cout << errno << endl;
+					clog << errno << endl;
 				}
 				Thread::mutexUnlock(&stlMutex);
 				return;
@@ -233,7 +237,13 @@ namespace carousel {
 					clog << "creating biop";
 					clog << endl;
 
-					biop = new Biop(module, processor);
+					try {
+						biop = new Biop(module, processor);
+					} catch (...) {
+						clog << "ServiceDomain::run - error: BIOP - SRG not processed." << endl;
+						return;
+					}
+
 					clog << "ServiceDomain::run BIOP processing SRG" << endl;
 
 					biop->processServiceGateway(
@@ -262,7 +272,13 @@ namespace carousel {
 					}
 
 					if (module->isConsolidated()) {
-						biop = new Biop(module, processor);
+						try {
+							biop = new Biop(module, processor);
+						} catch (...) {
+							clog << "ServiceDomain::run BIOP->process (init error)" << endl;
+							return;
+						}
+
 						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 

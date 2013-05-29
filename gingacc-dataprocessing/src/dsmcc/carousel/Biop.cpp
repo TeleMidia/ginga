@@ -57,31 +57,36 @@ namespace core {
 namespace dataprocessing {
 namespace carousel {
 	Biop::Biop(Module* module, ObjectProcessor* processor) {
-		this->module       = module;
+		Thread::mutexInit(&dataMutex, false);
+
 		currentSize        = 0;
 		isValidHdr         = false;
 		hasMoreBiopMessage = false;
 		objectKind         = "";
 		objectInfo         = "";
-		this->processor    = processor;
 		data               = NULL;
 
-		Thread::mutexInit(&dataMutex, true);
+		this->module    = module;
+		this->processor = processor;
 
 		if (fileExists(module->getModuleFileName())) {
 			moduleFd = fopen(module->getModuleFileName().c_str(), "r+b");
-			this->isValidHdr = processMessageHeader();
+			if (!moduleFd) {
+				clog << "Biop::init - Cannot open file: " << module->getModuleFileName().c_str() << endl;
+				throw 1;
+			}
 
 		} else {
-			abortProcess("Cannot open file " + module->getModuleFileName());
+			abortProcess("File not found: " + module->getModuleFileName());
+			throw 2;
 		}
 	}
 
 	Biop::~Biop() {
-		Thread::mutexLock(&dataMutex);
 
-		closeModule();
+		Thread::mutexLock(&dataMutex);
 		releaseData();
+		closeModule();
 		Thread::mutexUnlock(&dataMutex);
 		Thread::mutexDestroy(&dataMutex);
 	}
@@ -96,20 +101,16 @@ namespace carousel {
 	void Biop::createData(unsigned int dataSize) {
 		assert(dataSize > 0);
 
-		Thread::mutexLock(&dataMutex);
 		releaseData();
 		data = new char[dataSize];
 		memset(data, 0, dataSize);
-		Thread::mutexUnlock(&dataMutex);
 	}
 
 	void Biop::releaseData() {
-		Thread::mutexLock(&dataMutex);
 		if (data != NULL) {
 			delete data;
 			data = NULL;
 		}
-		Thread::mutexUnlock(&dataMutex);
 	}
 
 	string Biop::getStringFromData(unsigned int offset, unsigned int len) {
@@ -136,9 +137,10 @@ namespace carousel {
 
 	void Biop::abortProcess(string warningText) {
 		clog << "Warning! " << warningText.c_str() << endl;
-
+		Thread::mutexLock(&dataMutex);
 		closeModule();
 		releaseData();
+		Thread::mutexUnlock(&dataMutex);
 	}
 
 	bool Biop::processMessageHeader() {
@@ -178,7 +180,6 @@ namespace carousel {
 		// Check biop_version field
 		if ((data[i] & 0xFF) != 0x01 || (data[i + 1] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong biop_version");
-
 			return false;
 		}
 		i = i + 2;
@@ -186,7 +187,6 @@ namespace carousel {
 		// check byte_order field
 		if ((data[i] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong byte_order");
-
 			return false;
 		}
 		i++;
@@ -194,7 +194,6 @@ namespace carousel {
 		// check message_type field
 		if ((data[i] & 0xFF) != 0x00) {
 			abortProcess("Biop::processMessageHeader Wrong message_type");
-
 			return false;
 		}
 		i++;
@@ -222,14 +221,13 @@ namespace carousel {
 		return true;
 	}
 
-	void Biop::processMessageSubHeader() {
+	int Biop::processMessageSubHeader() {
 		int rval;
 		unsigned int len;
 
 		clog << "Biop::processMessageSubHeader" << endl;
 
 		createData(messageSize + 12);
-
 		rval = fread((void*)&(data[0]), 1, messageSize, moduleFd);
 
 		if ((unsigned int)rval != messageSize) {
@@ -237,7 +235,7 @@ namespace carousel {
 				    module->getModuleFileName() +
 				    ", rval = " + itos((int)rval));
 
-			return;
+			return -1;
 		}
 
 		clog << rval << " bytes read from ";
@@ -253,6 +251,7 @@ namespace carousel {
 			clog << "Warning! Size of objectKey > 4, never reaches here!";
 			clog << endl;
 			idx = idx + len;
+			return -2;
 
 		} else if (len > 0) {
 			if (len == 4) {
@@ -291,6 +290,7 @@ namespace carousel {
 		} else {
 			clog << "Warning! No kind. Should never reaches here!" << endl;
 			objectKind = "";
+			return -3;
 		}
 
 		// objectInfo
@@ -309,9 +309,10 @@ namespace carousel {
 
 		// skip last SubHeader field, named service_context
 		idx++;
+		return 0;
 	}
 
-	void Biop::skipObject() {
+	int Biop::skipObject() {
 		unsigned int len;
 
 		clog << "Biop::skipObject" << endl;
@@ -328,31 +329,46 @@ namespace carousel {
 		if (hasMoreBiopMessage) {
 			isValidHdr = processMessageHeader();
 			if (isValidHdr) {
-				processMessageSubHeader();
+				if (processMessageSubHeader() < 0) {
+					clog << "Biop::skipObject Warning! Invalid SubHeader" << endl;
+					return -1;
+				}
+
+			} else {
+				clog << "Biop::skipObject Warning! Invalid Header" << endl;
+				return -2;
 			}
 		}
+		return 0;
 	}
 
-	void Biop::processServiceGateway(unsigned int srgObjectKey) {
+	int Biop::processServiceGateway(unsigned int srgObjectKey) {
 		unsigned int i, len;
 		Binding* binding;
 		Object* carouselObject;
 
 		Thread::mutexLock(&dataMutex);
-
+		this->isValidHdr = processMessageHeader();
 		clog << "Biop::processServiceGateway" << endl;
-		if (!isValidHdr) {
-			clog << "BIOP process SRG Warning! Invalid HDR" << endl;
-			return;
+
+		if (isValidHdr) {
+			if (processMessageSubHeader() < 0) {
+				Thread::mutexUnlock(&dataMutex);
+				return -2;
+			}
 
 		} else {
-			processMessageSubHeader();
+			clog << "BIOP process SRG Warning! Invalid HDR" << endl;
+			Thread::mutexUnlock(&dataMutex);
+			return -1;
 		}
 
 		carouselObject = new Object();
 
 		while (objectKey != srgObjectKey) {
-			skipObject();
+			if (skipObject() < 0) {
+				clog << "error: object skipped." << endl;
+			}
 			clog << "currentObject key = " << objectKey << endl;
 		}
 
@@ -379,7 +395,9 @@ namespace carousel {
 
 		processor->pushObject(carouselObject);
 
+		rewind(moduleFd);
 		Thread::mutexUnlock(&dataMutex);
+		return 0;
 	}
 
 	Binding* Biop::processBinding() {
@@ -646,7 +664,6 @@ namespace carousel {
 
 		clog << "BIOP processFIL" << endl;
 
-		Thread::mutexLock(&dataMutex);
 		carouselObject = new Object();
 		carouselObject->setCarouselId(module->getCarouselId());
 		carouselObject->setModuleId(module->getId());
@@ -674,8 +691,6 @@ namespace carousel {
 
 		//skip file data
 		idx = idx + len;
-
-		Thread::mutexUnlock(&dataMutex);
 	}
 
 	void Biop::print() {
@@ -706,20 +721,25 @@ namespace carousel {
 		}
 	}
 
-	void Biop::process() {
-		bool processed;
-
-		Thread::mutexLock(&dataMutex);
+	int Biop::process() {
+		bool processed = false;
 
 		clog << "Biop::process" << endl;
-		processed = false;
-
 		do {
+			Thread::mutexLock(&dataMutex);
+			isValidHdr = processMessageHeader();
+
 			if (isValidHdr) {
 				clog << "Biop::process processing sub hdr" << endl;
-				processMessageSubHeader();
+				
+				if (processMessageSubHeader() < 0) {
+					return -1;
+				}
 				clog << "Biop::process processing obj" << endl;
 				processObject();
+
+			} else {
+				clog << "Biop::process Warning! Invalid Header" << endl;
 			}
 
 			if (hasMoreBiopMessage) {
@@ -729,18 +749,16 @@ namespace carousel {
 				clog << "processing another BIOP message from file ";
 				clog << module->getModuleFileName() << endl;
 
-				isValidHdr = processMessageHeader();
-
 			} else {
 				clog << "Biop::process processing done" << endl;
 				processed = true;
 			}
-
+			Thread::mutexUnlock(&dataMutex);
 		} while (!processed);
 
+		Thread::mutexLock(&dataMutex);
 		releaseData();
 		closeModule();
-
 		Thread::mutexUnlock(&dataMutex);
 	}
 }

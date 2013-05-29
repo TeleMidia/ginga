@@ -129,7 +129,12 @@ namespace carousel {
 
 		if (dsi == NULL) {
 			clog << "Message Processor dsi done!" << endl;
-			dsi = new DownloadServerInitiate(message);
+			dsi = new DownloadServerInitiate();
+			if (dsi->processMessage(message) < 0) {
+				delete dsi;
+				dsi = NULL;
+				return NULL;
+			}
 			if (dii != NULL && sd == NULL) {
 				clog << "Creating SD" << endl;
 				sd = new ServiceDomain(dsi, dii);
@@ -146,8 +151,12 @@ namespace carousel {
 			DsmccMessageHeader* message) {
 
 		if (dii == NULL) {
-			dii = new DownloadInfoIndication(message);
-
+			dii = new DownloadInfoIndication();
+			if (dii->processMessage(message) < 0) {
+				delete dii;
+				dii = NULL;
+				return NULL;
+			}
 			/*
 			 * TODO: start process all DII file?
 			 * or has every DII file less then 4066
@@ -176,7 +185,9 @@ namespace carousel {
 			while (!msgs.empty()) {
 				msg = *(msgs.begin());
 				ddb = new DownloadDataBlock(msg);
-				sd->receiveDDB(ddb);
+				if (sd->receiveDDB(ddb) < 0) {
+					clog << "MessageProcessor::processDDBMessages - error" << endl;
+				}
 				delete ddb;
 
 				msgs.erase(msgs.begin());

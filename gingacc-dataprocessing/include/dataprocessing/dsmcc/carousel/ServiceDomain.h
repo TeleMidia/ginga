@@ -102,7 +102,7 @@ namespace carousel {
 
 			void setServiceDomainListener(IServiceDomainListener* sdl);
 			void setObjectsListeners(set<IObjectListener*>* l);
-			void receiveDDB(DownloadDataBlock* ddb);
+			int receiveDDB(DownloadDataBlock* ddb);
 			Module* getModuleById(unsigned int id);
 
 			bool isMounted();

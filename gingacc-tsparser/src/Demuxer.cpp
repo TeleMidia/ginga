@@ -98,6 +98,8 @@ namespace tsparser {
 		nptPrinter	   = false;
 		nptPid		   = -1;
 
+		newPmt = NULL;
+
 		this->tuner->setTunerListener(this);
 	}
 
@@ -352,7 +354,7 @@ namespace tsparser {
 		short streamType;
 		vector<unsigned int>* pids;
 		vector<unsigned int>::iterator i;
-		Pmt* pmt, * newPmt;
+		Pmt* pmt;
 		char tsPacketPayload[184];
 
 		debugPacketCounter++;
@@ -424,38 +426,37 @@ namespace tsparser {
 			packet->getPayload(tsPacketPayload);
 			pmt = pmts[pid];
 			if (pmt->isConsolidated()) { /* If the PMT is OK, try update it */
-				newPmt = new Pmt(pid, pmt->getProgramNumber());
-				newPmt->addData(tsPacketPayload, 184);
-				if (newPmt->processSectionPayload()) { /* Process the new PMT */
-					newVer = newPmt->getVersionNumber();
-					currVer = pmt->getVersionNumber();
-					/* If the version is different update */
-					if (newVer != currVer) {
-						clog << "demuxer replace pmt id = '" << pid << "'";
-						clog << " newVer = '" << newVer;
-						clog << "' currVer = '" << currVer << "': ";
-						newPmt->print();
-						clog << endl;
-						pat->replacePmt(pid, newPmt);
-						pmts[pid] = newPmt;
-
-					} else { /* If the version is the same ignores */
-						delete newPmt;
-					}
-
-				} else {
-					//TODO: make possible to have pmt carried in two or more
-					// ts packets
-					/*clog << "Warning! Demuxer::demux - make possible to have "
-					      "PMT carried in two or more ts packets.\n");*/
-					delete newPmt;
+				if (!newPmt && packet->getStartIndicator()) {
+					newPmt = new Pmt(pid, pmt->getProgramNumber());
 				}
+				if (!newPmt) {
+					newPmt->addData(tsPacketPayload, 184);
+					if (newPmt->isConsolidated()) {
+						if (newPmt->processSectionPayload()) { /* Process the new PMT */
+							newVer = newPmt->getVersionNumber();
+							currVer = pmt->getVersionNumber();
+							/* If the version is different update */
+							if (newVer != currVer) {
+								clog << "demuxer replace pmt id = '" << pid << "'";
+								clog << " newVer = '" << newVer;
+								clog << "' currVer = '" << currVer << "': ";
+								newPmt->print();
+								clog << endl;
+								pat->replacePmt(pid, newPmt);
+								pmts[pid] = newPmt;
 
+							}
+						}
+						delete newPmt;
+						newPmt = NULL;
+					}
+				}
 			} else if (!pmt->hasProcessed()) { /* Tries to consolidate the PMT */
 				pmt->addData(tsPacketPayload, 184);
-				if (pmt->processSectionPayload()) {
-					pat->addPmt(pmt);
-
+				if (pmt->isConsolidated()) {
+					if (pmt->processSectionPayload()) {
+						pat->addPmt(pmt);
+					}
 				}
 			}
 

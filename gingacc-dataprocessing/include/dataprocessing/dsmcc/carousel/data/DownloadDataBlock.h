@@ -76,7 +76,7 @@ namespace carousel {
 			DownloadDataBlock(DsmccMessageHeader* message);
 			virtual ~DownloadDataBlock();
 
-			void processDataBlock(map<unsigned int, Module*>* mods);
+			int processDataBlock(map<unsigned int, Module*>* mods);
 			unsigned int getModuleId();
 			unsigned int getModuleVersion();
 			void print();

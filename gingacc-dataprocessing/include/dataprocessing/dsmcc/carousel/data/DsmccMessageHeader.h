@@ -115,7 +115,8 @@ namespace carousel {
 			unsigned int messageLength;
 
 		public:
-			DsmccMessageHeader(string fileName, unsigned int pid);
+			DsmccMessageHeader();
+			int readMessageFromFile(string fileName, unsigned int pid);
 			unsigned int getESId();
 			string getFileName();
 			unsigned int getDsmccType();
