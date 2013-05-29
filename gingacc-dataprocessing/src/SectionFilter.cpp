@@ -220,7 +220,7 @@ namespace dataprocessing {
 				/*clog << "SectionFilter::receiveTSPacket ";
 				clog << "Consolidates previous section.";
 				clog << endl;*/
-				verifyAndAddData(pack);
+				verifyAndAddData(pack, true);
 			}
 
 			// Create a new section.
@@ -260,7 +260,7 @@ namespace dataprocessing {
 
 				if (isValidCounter) {
 					/* The section is OK */
-					verifyAndAddData(pack);
+					verifyAndAddData(pack, false);
 
 				} else { // Discontinuity, ignore section.
 					clog << "SectionFilter::receiveTSPacket: ";
@@ -382,9 +382,10 @@ namespace dataprocessing {
 		}
 	}
 
-	void SectionFilter::verifyAndAddData(ITSPacket* pack) {
+	void SectionFilter::verifyAndAddData(ITSPacket* pack, bool lastPacket) {
 		char data[184];
 		SectionHandler* handler;
+		int payloadSize = pack->getPayloadSize();
 		/* Get the freespace in Section */
 		unsigned int freespace;
 
@@ -393,17 +394,32 @@ namespace dataprocessing {
 		assert(handler != NULL);
 		assert(handler->section != NULL);
 
+		if (lastPacket) {
+			if (pack->getPayloadSize2()) {
+				payloadSize = pack->getPayloadSize2();
+			}
+		}
+
 		freespace = handler->section->getSectionLength() + 3 -
 				handler->section->getCurrentSize();
 
 		/* If the freeSpace is bigger than payLoadSize then
 		* add just the payloadSize      */
-		if (freespace > pack->getPayloadSize()) {
-			freespace = pack->getPayloadSize();
+			
+		if (freespace > payloadSize) {
+			freespace = payloadSize;
 		}
 		memset(data, 0, sizeof(data));
 
-		pack->getPayload(data);
+		if (lastPacket) {
+			if (pack->getPayloadSize2()) {
+				pack->getPayload2(data);
+			} else {
+				pack->getPayload(data);
+			}
+		} else {
+			pack->getPayload(data);
+		}
 
 		assert(freespace > 0);
 		handler->section->addData(data, freespace);
@@ -414,8 +430,6 @@ namespace dataprocessing {
 	}
 
 	bool SectionFilter::verifyAndCreateSection(ITSPacket* pack) {
-		unsigned int offset;
-		unsigned int diff;
 		unsigned int payloadSize;
 		char data[ITSPacket::TS_PAYLOAD_SIZE];
 		char* buffer;
@@ -424,13 +438,9 @@ namespace dataprocessing {
 		handler = getSectionHandler(pack->getPid());
 		assert(handler != NULL);
 
-		offset      = pack->getPointerField();
 		payloadSize = pack->getPayloadSize();
 
-		/* What is the real payload */
-		diff = payloadSize - offset;
-
-		if (diff > ITSPacket::TS_PAYLOAD_SIZE) {
+		if (payloadSize > ITSPacket::TS_PAYLOAD_SIZE) {
 			clog << "SectionFilter::verifyAndCreateSection Warning! ";
 			clog << "invalid TS Packet" << endl;
 			pack->print();
@@ -440,7 +450,7 @@ namespace dataprocessing {
 
 		pack->getPayload(data);
 		/* The payload has only a part of the header */
-		if (diff < (ARRAY_SIZE(handler->sectionHeader) - handler->headerSize)) {
+		if (payloadSize < (ARRAY_SIZE(handler->sectionHeader) - handler->headerSize)) {
 			/*clog << "SectionFilter::verifyAndCreateSection ";
 			clog << "Creating Section header, currentSize is '";
 			clog << handler->headerSize << " and dataSize is '";
@@ -449,10 +459,10 @@ namespace dataprocessing {
 
 			memcpy(
 					(void*)&handler->sectionHeader[handler->headerSize],
-					(void*)&data[offset],
-					diff);
+					data,
+					payloadSize);
 
-			handler->headerSize            = handler->headerSize + diff;
+			handler->headerSize            = handler->headerSize + payloadSize;
 			handler->lastContinuityCounter = pack->getContinuityCounter();
 			return false;
 
@@ -464,7 +474,7 @@ namespace dataprocessing {
 			clog << " to data '" << diff << "'" << endl;*/
 
 			/* Creates the new data buffer */
-			buffer = new char[handler->headerSize + diff];
+			buffer = new char[handler->headerSize + payloadSize];
 
 			/* Copies the header to buffer */
 			memcpy(
@@ -474,8 +484,8 @@ namespace dataprocessing {
 			/* Copies the payload to buffer */
 			memcpy(
 					(void*)&buffer[handler->headerSize],
-					(void*)&data[offset],
-					diff);
+					data,
+					payloadSize);
 
 			/* Creates the new section */
 #if HAVE_COMPSUPPORT
@@ -484,7 +494,7 @@ namespace dataprocessing {
 
 #else
 			handler->section = new TransportSection(
-					buffer, diff + handler->headerSize);
+					buffer, payloadSize + handler->headerSize);
 #endif
 
 			delete buffer;
@@ -502,7 +512,7 @@ namespace dataprocessing {
 
 #else
 			handler->section = new TransportSection(
-					&data[offset], diff);
+					data, payloadSize);
 #endif
 
 		} else {

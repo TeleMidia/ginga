@@ -56,7 +56,11 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace carousel {
-	DsmccMessageHeader::DsmccMessageHeader(string fileName, unsigned int pid) {
+	DsmccMessageHeader::DsmccMessageHeader() {
+		
+	}
+
+	int DsmccMessageHeader::readMessageFromFile(string fileName, unsigned int pid) {
 		FILE* fd;
 		int rval;
 		char bytes[12];
@@ -94,8 +98,10 @@ namespace carousel {
 		} else {
 			clog << "Message header error: could not open file ";
 			clog << fileName.c_str() << endl;
+			return -1;
 		}
 		fclose(fd);
+		return 0;
 	}
 
 	unsigned int DsmccMessageHeader::getESId() {

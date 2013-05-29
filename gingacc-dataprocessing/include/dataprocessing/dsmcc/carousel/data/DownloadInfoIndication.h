@@ -81,8 +81,10 @@ namespace carousel {
 			DsmccMessageHeader* header;
 
 		public:
-			DownloadInfoIndication(DsmccMessageHeader* message);
+			DownloadInfoIndication();
 			virtual ~DownloadInfoIndication();
+
+			int processMessage(DsmccMessageHeader* message);
 
 			unsigned int getDonwloadId();
 			unsigned int getBlockSize();

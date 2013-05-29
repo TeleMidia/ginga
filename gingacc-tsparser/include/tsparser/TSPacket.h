@@ -186,6 +186,7 @@ namespace tsparser {
 		void setContinuityCounter(unsigned int counter);
 		void print();
 		void setPacketCount(unsigned int count);
+		unsigned int getPacketCount();
 	};
 }
 }

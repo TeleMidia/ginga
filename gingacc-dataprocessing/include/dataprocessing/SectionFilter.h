@@ -114,7 +114,7 @@ namespace dataprocessing {
 			void ignore(unsigned int pid);
 			SectionHandler* getSectionHandler(unsigned int pid);
 			void process(ITransportSection* section, unsigned int pid);
-			void verifyAndAddData(ITSPacket* pack);
+			void verifyAndAddData(ITSPacket* pack, bool lastPacket);
 			bool verifyAndCreateSection(ITSPacket* pack);
 			bool setSectionParameters(ITSPacket* pack);
 

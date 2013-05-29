@@ -120,11 +120,11 @@ namespace carousel {
 			void abortProcess(string warningText);
 			bool processServiceContext();
 			bool processMessageHeader();
-			void processMessageSubHeader();
-			void skipObject();
+			int processMessageSubHeader();
+			int skipObject();
 
 		public:
-			void processServiceGateway(unsigned int srgObjectKey);
+			int processServiceGateway(unsigned int srgObjectKey);
 
 		private:
 			Binding* processBinding();
@@ -140,7 +140,7 @@ namespace carousel {
 			void processObject();
 
 		public:
-			void process();
+			int process();
 	};
 }
 }

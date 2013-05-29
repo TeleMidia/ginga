@@ -72,7 +72,7 @@ namespace carousel {
 	}
 
 	void Module::openFile() {
-		moduleFd = fopen(getModuleFileName().c_str(), "a+b");
+		moduleFd = fopen(getModuleFileName().c_str(), "wb");
 	}
 
 	void Module::setCarouselId(unsigned int id) {

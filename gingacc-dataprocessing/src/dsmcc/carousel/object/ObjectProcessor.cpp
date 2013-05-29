@@ -191,9 +191,9 @@ namespace carousel {
 			    object->getKind() == "DSM::File") {
 
 			if (objectPaths.count(object->getObjectId()) == 0) {
-				/*clog << "ObjectProcessor::mountObject Warning! ";
+				clog << "ObjectProcessor::mountObject Warning! ";
 				clog << "cant find object id '" << object->getObjectId();
-				clog << "" << endl;*/
+				clog << "" << endl;
 				return false;
 
 			} else {

@@ -87,6 +87,7 @@ namespace tsparser {
 	class Demuxer : public IDemuxer {
 		private:
 			Pat* pat;
+			Pmt* newPmt;
 			map<unsigned int, Pmt*> pmts;
 			map<unsigned int, ITSFilter*> pidFilters;
 			map<short, ITSFilter*> stFilters;
