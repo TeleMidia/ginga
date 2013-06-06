@@ -60,7 +60,7 @@ namespace dataprocessing {
 namespace carousel {
 	ServiceDomain::ServiceDomain(
 		    DownloadServerInitiate* dsi,
-		    DownloadInfoIndication* dii) : Thread() {
+		    DownloadInfoIndication* dii, unsigned short pid) : Thread() {
 
 		Thread::mutexInit(&stlMutex, true);
 
@@ -73,14 +73,14 @@ namespace carousel {
 		hasServiceGateway       = false;
 		mountingServiceDomain   = true;
 
-		mountPoint              = "carousel/" +
+		mountPoint              = "carousel/" + itos(pid) + "." +
 				itos(carouselId) + SystemCompat::getIUriD();
 
 		remove(mountPoint.c_str());
 
 		SystemCompat::makeDir(mountPoint.c_str(), 0777);
 
-		processor = new ObjectProcessor();
+		processor = new ObjectProcessor(pid);
 		sdl       = NULL;
 
 		startThread();
@@ -299,7 +299,6 @@ namespace carousel {
 				SystemCompat::uSleep(1000);
 			}
 		}
-
 		mounted = true;
 		clog << "ServiceDomain::run ";
 		clog << "CAROUSEL " << carouselId << " MOUNTED!" << endl;

@@ -96,7 +96,8 @@ namespace carousel {
 
 		public:
 			ServiceDomain(
-					DownloadServerInitiate* dsi, DownloadInfoIndication* dii);
+					DownloadServerInitiate* dsi, DownloadInfoIndication* dii,
+					unsigned short pid);
 
 			virtual ~ServiceDomain();
 

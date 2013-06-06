@@ -173,6 +173,7 @@ namespace dataprocessing {
 		if (sdl != NULL) {
 			sdl->serviceDomainMounted(mountPoint, names, paths);
 		}
+
 	}
 
 	void DataProcessor::setDemuxer(IDemuxer* demux) {
@@ -395,15 +396,14 @@ namespace dataprocessing {
 
 		//AIT
 		} else if (tableId == AIT_TID) {
-			//clog << "DataProcessor::receiveSection AIT" << endl;
-
-			if (ait != NULL &&
-					ait->getSectionName() == section->getSectionName()) {
-
-				return;
-			}
+			clog << "DataProcessor::receiveSection AIT" << endl;
 
 			if (ait != NULL) {
+				if (ait->getSectionName() == section->getSectionName()) {
+					delete section;
+					section = NULL;
+					return;
+				}
 				delete ait;
 				ait = NULL;
 			}
@@ -421,7 +421,6 @@ namespace dataprocessing {
 			ait->process(section->getPayload(), section->getPayloadSize());
 
 			applicationInfoMounted(ait);
-
 		//SDT
 		} else if (tableId == SDT_TID) {
 			//clog << "DataProcessor::receiveSection SDT" << endl;
@@ -496,7 +495,7 @@ namespace dataprocessing {
 						message = new DsmccMessageHeader();
 						if (message->readMessageFromFile(sectionName, pid) == 0) {
 							if (processors.count(pid) == 0) {
-								processor = new MessageProcessor();
+								processor = new MessageProcessor(pid);
 								processors[pid] = processor;
 
 							} else {
