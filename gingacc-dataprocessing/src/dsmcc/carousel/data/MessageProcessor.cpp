@@ -63,11 +63,11 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace carousel {
-	MessageProcessor::MessageProcessor() {
+	MessageProcessor::MessageProcessor(unsigned short pid) {
 		sd = NULL;
 		dii = NULL;
 		dsi = NULL;
-
+		this->pid = pid;
 		Thread::mutexInit(&msgMutex, true);
 	}
 
@@ -137,7 +137,7 @@ namespace carousel {
 			}
 			if (dii != NULL && sd == NULL) {
 				clog << "Creating SD" << endl;
-				sd = new ServiceDomain(dsi, dii);
+				sd = new ServiceDomain(dsi, dii, pid);
 				return sd;
 			}
 
@@ -165,7 +165,7 @@ namespace carousel {
 			clog << "Message Processor dii done!" << endl;
 			if (dsi != NULL && sd == NULL) {
 				clog << "Creating SD" << endl;
-				sd = new ServiceDomain(dsi, dii);
+				sd = new ServiceDomain(dsi, dii, pid);
 
 				return sd;
 			}

@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #include "tuner/NetworkInterface.h"
 
 #include "tuner/providers/FileSystemProvider.h"
+#include "tuner/providers/MulticastProvider.h"
 
 //TODO: multicast and unicast provider using PracticalSocket instead of socket API
 //#include "tuner/providers/MulticastProvider.h"
@@ -146,7 +147,7 @@ namespace tuning {
 
 			} else if (protocol == "udp_multicast") {
 				//TODO: unicast provider using PracticalSocket instead of socket API
-				//provider = new MulticastProvider(ip, (int)util::stof(portNumber));
+				provider = new MulticastProvider(ip, (int)util::stof(portNumber));
 				return true;
 			}
 

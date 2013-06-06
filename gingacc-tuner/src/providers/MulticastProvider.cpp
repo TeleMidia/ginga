@@ -65,116 +65,21 @@ namespace tuning {
 	}
 
 	MulticastProvider::~MulticastProvider() {
-
+		if (udpSocket) delete udpSocket;
 	}
-
+	
 	int MulticastProvider::callServer() {
-		if (createSocket()) {
-			if (tryToBind()) {
-				if (setSocketOptions()) {
-					if (addToGroup()) {
-						return socketDescriptor;
-					}
-				}
-			}
+		try {
+			udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
+			return 1;
+		} catch (...) {
+			udpSocket = NULL;
+			return 0;
 		}
-		return -1;
 	}
 
-	bool MulticastProvider::createSocket() {
-		socketDescriptor = socket(AF_INET, SOCK_DGRAM, 0);
-		if (socketDescriptor < 0){
-			perror("MulticastProvider::createSocket");
-			return false;
-		}
-		return true;
-	}
-
-	bool MulticastProvider::tryToBind() {
-		int ret;
-
-		struct sockaddr_in stSourceAddr;
-
-		stSourceAddr.sin_family = AF_INET;
-		stSourceAddr.sin_port = htons(this->portNumber);
-		stSourceAddr.sin_addr.s_addr = INADDR_ANY;
-
-		/*
-		* Calling bind() is not required, but some implementations need it
-		* before you can reference any multicast socket options
-		*/
-		ret = bind(
-				socketDescriptor,
-				(struct sockaddr*)&stSourceAddr,
-				sizeof(struct sockaddr));
-
-		if (ret < 0) {
-			perror ("MulticastProvider::tryToBind bind");
-			return false;
-		}
-
-		if (setsockopt(
-				socketDescriptor,
-				IPPROTO_IP,
-				IP_MULTICAST_IF,
-				(char*)&stSourceAddr, sizeof(struct in_addr)) < 0) {
-
-			perror ("Multicast::tryToBind IP_MULTICAST_IF");
-	    }
-
-		return true;
-	}
-
-	bool MulticastProvider::setSocketOptions() {
-		int opt = 0;
-		int ret = setsockopt(
-				socketDescriptor,
-				IPPROTO_IP,
-				IP_MULTICAST_LOOP,
-				(char*)opt, sizeof(int));
-
-		if (ret < 0) {
-			perror("MulticastProvider::setSocketOptions loop");
-		}
-
-		opt = 15;
-		ret = setsockopt(
-				socketDescriptor,
-				IPPROTO_IP,
-				IP_MULTICAST_TTL,
-				(char*)opt, sizeof(int));
-
-		if (ret < 0) {
-			perror("MulticastProvider::setSocketOptions TTL");
-		}
-
-		return true;
-	}
-
-	bool MulticastProvider::addToGroup() {
-		int ret;
-		struct ip_mreq stIpMreq;
-
-		stIpMreq.imr_multiaddr.s_addr = inet_addr(addr.c_str());
-		stIpMreq.imr_interface.s_addr = INADDR_ANY;
-		ret = setsockopt(
-				socketDescriptor,
-				IPPROTO_IP,
-				IP_ADD_MEMBERSHIP,
-				(char*)&stIpMreq, sizeof(struct ip_mreq));
-
-		if (ret < 0) {
-			perror("MulticastProvider::addClientToGroup IP_ADD_MEMBERSHIP");
-			return false;
-		}
-
-		return true;
-	}
-
-	int MulticastProvider::receiveData(char* buff) {
-		return recvfrom(
-				socketDescriptor,
-				buff, BUFFSIZE, 0, (struct sockaddr*)NULL, (socklen_t*)NULL);
+	int MulticastProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
+		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
 	}
 }
 }

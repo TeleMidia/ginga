@@ -92,8 +92,10 @@ namespace carousel {
 
 			set<IObjectListener*> listeners;
 
+			unsigned short pid;
+
 		public:
-			ObjectProcessor();
+			ObjectProcessor(unsigned short pid);
 			virtual ~ObjectProcessor();
 
 			void setObjectsListeners(set<IObjectListener*>* l);

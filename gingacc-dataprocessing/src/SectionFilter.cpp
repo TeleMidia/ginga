@@ -190,7 +190,6 @@ namespace dataprocessing {
 		unsigned int packPID;
 		int last;
 		SectionHandler* handler;
-
 		packPID = pack->getPid();
 		handler = getSectionHandler(packPID);
 		if (handler == NULL) {
@@ -224,6 +223,7 @@ namespace dataprocessing {
 			}
 
 			// Create a new section.
+
 			if (!verifyAndCreateSection(pack)) {
 				/*clog << "SectionFilter::receiveTSPacket - Failed to create ";
 				clog << "Section, perhaps header is not complete yet!" << endl;

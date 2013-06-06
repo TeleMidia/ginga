@@ -54,19 +54,11 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <iostream>
 #include <fstream>
 using namespace std;
 
-#include "SocketProvider.h"
+#include "tuner/providers/SocketProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -81,14 +73,12 @@ namespace tuning {
 
 			int callServer();
 
+			UDPSocket *udpSocket;
+
 		private:
-			bool createSocket();
-			bool tryToBind();
-			bool setSocketOptions();
-			bool addToGroup();
 
 		public:
-			int receiveData(char* buff);
+			int receiveData(char* buff, int skipSize, unsigned char packetSize);
 	};
 }
 }

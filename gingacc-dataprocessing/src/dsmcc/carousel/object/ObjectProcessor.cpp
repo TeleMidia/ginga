@@ -56,8 +56,8 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 namespace carousel {
-	ObjectProcessor::ObjectProcessor() {
-
+	ObjectProcessor::ObjectProcessor(unsigned short pid) {
+		this->pid = pid;
 	}
 
 	ObjectProcessor::~ObjectProcessor() {
@@ -145,7 +145,7 @@ namespace carousel {
 				/*clog << "ObjectProcessor::mountObject srg adding objId '";
 				clog << objectId << "'" << endl;*/
 				objectNames[objectId] = (*i)->getId();
-				objectPaths[objectId] = "carousel/" +
+				objectPaths[objectId] = "carousel/" + itos(pid) + "." +
 					    itos(object->getCarouselId()) +
 					    SystemCompat::getIUriD();
 			}

@@ -79,9 +79,10 @@ namespace carousel {
 			DownloadInfoIndication* dii;
 			vector<DsmccMessageHeader*> msgs;
 			pthread_mutex_t msgMutex;
+			unsigned short pid;
 
 		public:
-			MessageProcessor();
+			MessageProcessor(unsigned short pid);
 			virtual ~MessageProcessor();
 
 			ServiceDomain* pushMessage(DsmccMessageHeader* hdr);
