@@ -230,15 +230,22 @@ namespace tsparser {
 	}
 
 	void TransportSection::setSectionName() {
+		sectionName = SystemCompat::getTemporaryDir() + "ginga" +
+					  SystemCompat::getIUriD();
 		if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID ||
 		 						(tableId >= 0x50 && tableId <= 0x5F )) {
 
-			sectionName = "epg/data/" + itos(pid) +
+			sectionName += "epg" + SystemCompat::getIUriD() +
+				"data" + SystemCompat::getIUriD() + itos(pid) +
 			    itos(tableId) + itos(idExtention) + itos(versionNumber);
 
 		} else {
-			sectionName = "carousel/modules/" + itos(pid) +
-			    itos(tableId) + itos(idExtention) + itos(versionNumber);
+			sectionName += "carousel" +
+						  SystemCompat::getIUriD() + "modules" +
+						  SystemCompat::getIUriD() +
+						  itos(pid) + itos(tableId) +
+						  itos(idExtention) +
+						  itos(versionNumber);
 		}
 	}
 

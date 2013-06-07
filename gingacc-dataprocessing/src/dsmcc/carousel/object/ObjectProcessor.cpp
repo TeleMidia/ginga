@@ -145,9 +145,11 @@ namespace carousel {
 				/*clog << "ObjectProcessor::mountObject srg adding objId '";
 				clog << objectId << "'" << endl;*/
 				objectNames[objectId] = (*i)->getId();
-				objectPaths[objectId] = "carousel/" + itos(pid) + "." +
-					    itos(object->getCarouselId()) +
-					    SystemCompat::getIUriD();
+				objectPaths[objectId] = SystemCompat::getTemporaryDir() + "ginga" +
+										SystemCompat::getIUriD() + "carousel" +
+										SystemCompat::getIUriD() + itos(pid) + "." +
+										itos(object->getCarouselId()) +
+										SystemCompat::getIUriD();
 			}
 
 			//clog << "ObjectProcessor::mountObject srg done" << endl;

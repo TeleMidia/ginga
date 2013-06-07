@@ -127,7 +127,10 @@ namespace carousel {
 	}
 
 	string Module::getModuleFileName() {
-		return ("carousel/modules/" +
+		return (SystemCompat::getTemporaryDir() +
+				"ginga" + SystemCompat::getIUriD() +
+				"carousel" + SystemCompat::getIUriD() +
+			    "modules" + SystemCompat::getIUriD() +
 				itos(pid) + itos(id) + itos(version) + ".mod");
 	}
 
