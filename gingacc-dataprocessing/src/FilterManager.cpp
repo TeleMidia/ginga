@@ -207,6 +207,7 @@ namespace dataprocessing {
 		ITransportSection* sec;
 		map<unsigned int, ITransportSection*>* secs;
 		unsigned int i;
+		string sectionDir;
 
 		if (section == NULL) {
 			clog << "FilterManager::processSection ";
@@ -223,14 +224,15 @@ namespace dataprocessing {
 		}
 
 		sectionName = section->getSectionName();
+		unsigned found = sectionName.find_last_of("/\\");
+		sectionDir = sectionName.substr(0,found);
 		len = sectionName.length();
 		if (sectionName == "") {
 			clog << "FilterManager::processSection ";
 			clog << "Warning! Empty section name" << endl;
 			return false;
 
-		} else if ((len < 8 || sectionName.substr(0,8) != "carousel") &&
-				(len < 3 || sectionName.substr(0,3) != "epg")) {
+		} else if (!isDirectory((char*)sectionDir.c_str())) {
 
 			clog << "FilterManager::processSection ";
 			clog << "Warning! Wrong section name: ";

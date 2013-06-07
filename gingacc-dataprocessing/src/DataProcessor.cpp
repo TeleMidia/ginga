@@ -81,13 +81,18 @@ namespace dataprocessing {
 		demux           = NULL;
 		ait             = NULL;
 		nptPrinter      = false;
+		string tempDir;
 
 		Thread::mutexInit(&mutex, true);
 
 		startThread();
 
-		SystemCompat::makeDir("carousel", 0777);
-		SystemCompat::makeDir("carousel/modules", 0777);
+		tempDir = SystemCompat::getTemporaryDir() + "ginga";
+		SystemCompat::makeDir(tempDir.c_str(), 0777);
+		tempDir += SystemCompat::getIUriD() + "carousel";
+		SystemCompat::makeDir(tempDir.c_str(), 0777);
+		tempDir += SystemCompat::getIUriD() + "modules";
+		SystemCompat::makeDir(tempDir.c_str(), 0777);
 
 		//TODO: remove all garbage from epg processor before start using it
 		//epgProcessor = EPGProcessor::getInstance();

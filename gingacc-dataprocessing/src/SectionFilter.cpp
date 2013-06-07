@@ -167,11 +167,14 @@ namespace dataprocessing {
 					    itos(section->getVersionNumber() - 1);
 
 			} else {
-				sectionName = "carousel/modules/" +
-						itos(section->getESId()) +
-					    itos(section->getTableId()) +
-					    itos(section->getExtensionId()) +
-					    itos(section->getVersionNumber() - 1);
+				sectionName = SystemCompat::getTemporaryDir() + "ginga" +
+							  SystemCompat::getIUriD() + "carousel" +
+							  SystemCompat::getIUriD() + "modules" +
+							  SystemCompat::getIUriD() +
+							  itos(section->getESId()) +
+							  itos(section->getTableId()) +
+							  itos(section->getExtensionId()) +
+							  itos(section->getVersionNumber() - 1);
 			}
 
 			if (checkProcessedSections(sectionName)) {
