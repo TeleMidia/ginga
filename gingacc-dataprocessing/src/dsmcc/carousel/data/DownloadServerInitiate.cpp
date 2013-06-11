@@ -125,7 +125,7 @@ namespace carousel {
 			if (rval < 0) return rval;
 
 		} else {
-			clog << "Message header error: could not open file ";
+			clog << "DownloadServerInitiate::DownloadServerInitiate - Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
 			return -1;
 		}
