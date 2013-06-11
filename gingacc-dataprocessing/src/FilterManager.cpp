@@ -241,6 +241,7 @@ namespace dataprocessing {
 		}
 
 		Thread::mutexLock(&filterMutex);
+		
 		if (sections.count(sectionName) == 0) {
 			clog << "FilterManager::processSection creating map for section '";
 			clog << sectionName << "'" << endl;

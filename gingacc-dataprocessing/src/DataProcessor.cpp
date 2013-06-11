@@ -513,6 +513,7 @@ namespace dataprocessing {
 								sd->setServiceDomainListener(this);
 								processor->checkTasks();
 							}
+
 						}
 					}
 

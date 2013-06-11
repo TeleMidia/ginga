@@ -218,7 +218,7 @@ namespace dataprocessing {
 		// Check if the TS has a beginning of a new section.
 		if (pack->getStartIndicator()) {
 			// Consolidates previous section.
-			if (handler->section != NULL) {
+			if (handler != NULL) {
 				/*clog << "SectionFilter::receiveTSPacket ";
 				clog << "Consolidates previous section.";
 				clog << endl;*/
@@ -395,7 +395,8 @@ namespace dataprocessing {
 		handler = getSectionHandler(pack->getPid());
 
 		assert(handler != NULL);
-		assert(handler->section != NULL);
+
+		if ((handler->section == NULL) && (handler->headerSize == 0)) return;
 
 		if (lastPacket) {
 			if (pack->getPayloadSize2()) {
@@ -403,15 +404,6 @@ namespace dataprocessing {
 			}
 		}
 
-		freespace = handler->section->getSectionLength() + 3 -
-				handler->section->getCurrentSize();
-
-		/* If the freeSpace is bigger than payLoadSize then
-		* add just the payloadSize      */
-			
-		if (freespace > payloadSize) {
-			freespace = payloadSize;
-		}
 		memset(data, 0, sizeof(data));
 
 		if (lastPacket) {
@@ -424,6 +416,36 @@ namespace dataprocessing {
 			pack->getPayload(data);
 		}
 
+		if (handler->section == NULL) {
+			int headerSizeLeft = 8 - handler->headerSize;
+			if ((headerSizeLeft > 0) || (headerSizeLeft <= 8)) {
+				memcpy(handler->sectionHeader + handler->headerSize, data, headerSizeLeft);
+				handler->headerSize += headerSizeLeft;
+				if (handler->headerSize == 8) {
+					handler->section = new TransportSection(
+					handler->sectionHeader, handler->headerSize);
+					handler->section->addData(data + headerSizeLeft, payloadSize - headerSizeLeft);
+					setSectionParameters(pack);
+					return;
+				} else {
+					handler->headerSize = 0;
+					return;
+				}
+			} else {
+				return;
+			}
+		}
+
+		freespace = handler->section->getSectionLength() + 3 -
+				handler->section->getCurrentSize();
+
+		/* If the freeSpace is bigger than payLoadSize then
+		* add just the payloadSize      */
+			
+		if (freespace > payloadSize) {
+			freespace = payloadSize;
+		}
+		
 		assert(freespace > 0);
 		handler->section->addData(data, freespace);
 

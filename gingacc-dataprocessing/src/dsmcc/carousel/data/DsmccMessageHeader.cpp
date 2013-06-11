@@ -96,7 +96,7 @@ namespace carousel {
 				clog << " readed." << endl;
 			}
 		} else {
-			clog << "Message header error: could not open file ";
+			clog << "DsmccMessageHeader::DsmccMessageHeader - Message header error: could not open file ";
 			clog << fileName.c_str() << endl;
 			return -1;
 		}

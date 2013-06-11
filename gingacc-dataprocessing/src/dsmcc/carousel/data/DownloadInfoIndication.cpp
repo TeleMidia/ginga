@@ -148,7 +148,7 @@ namespace carousel {
 			remove(header->getFileName().c_str());
 
 		} else {
-			clog << "Message header error: could not open file ";
+			clog << "DownloadInfoIndication::processMessage - Message header error: could not open file ";
 			clog << header->getFileName().c_str() << endl;
 			return -1;
 		}
