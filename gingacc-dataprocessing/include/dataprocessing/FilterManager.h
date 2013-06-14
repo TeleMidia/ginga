@@ -57,6 +57,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <string>
 #include <vector>
+#include <set>
 #include <iostream>
 using namespace std;
 
@@ -70,6 +71,7 @@ namespace dataprocessing {
 		private:
 			map<short, SectionFilter*> streamTypeFilters;
 			map<int, SectionFilter*> pidFilters;
+			set<string> processedSections;
 			map<string, map<unsigned int, ITransportSection*>*> sections;
 			bool reading;
 			pthread_mutex_t filterMutex;

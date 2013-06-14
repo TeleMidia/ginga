@@ -240,6 +240,10 @@ namespace dataprocessing {
 			return false;
 		}
 
+		if (processedSections.count(sectionName)) {
+			return false;
+		}
+
 		Thread::mutexLock(&filterMutex);
 		
 		if (sections.count(sectionName) == 0) {
@@ -326,6 +330,8 @@ namespace dataprocessing {
 		SectionFilter* sf;
 
 		Thread::mutexLock(&filterMutex);
+		processedSections.insert(sectionName);
+
 		i = streamTypeFilters.begin();
 		while (i != streamTypeFilters.end()) {
 			clog << "FilterManager::addProcessedSection '";
