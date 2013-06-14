@@ -130,6 +130,15 @@ namespace carousel {
 	unsigned int Object::getDataSize() {
 		return dataSize;
 	}
+
+	void Object::print() {
+		clog << "Object" << endl;
+		clog << "carouselId = " << carouselId << endl;
+		clog << "moduleId = " << moduleId << endl;
+		clog << "key = " << key << endl;
+		clog << "kind = " << kind << endl;
+		clog << "name = " << name << endl;
+	}
 }
 }
 }

@@ -120,7 +120,6 @@ namespace carousel {
 			clog << "ServiceDomain::receiveDDB - error." << endl;
 			return -1;
 		}
-		clog << "ddb done!" << endl;
 		return 0;
 	}
 
@@ -232,12 +231,9 @@ namespace carousel {
 						module = info[modId];
 					}
 
-					clog << "ServiceDomain::run waiting srg module" << endl;
 					while (!module->isConsolidated()) {
 						SystemCompat::uSleep(1000);
 					}
-					clog << "ServiceDomain::run srg module is consolidated, ";
-					clog << "creating biop";
 					clog << endl;
 
 					try {
@@ -247,15 +243,10 @@ namespace carousel {
 						return;
 					}
 
-					clog << "ServiceDomain::run BIOP processing SRG" << endl;
-
 					biop->processServiceGateway(
 							serviceGatewayIor->getObjectKey());
 
 					hasServiceGateway = true;
-					clog << "ServiceDomain::run SRG PROCESSED!" << endl;
-
-					clog << "ServiceDomain::run PROCESSING SRG MODULE" << endl;
 
 					biop->process();
 					delete biop;
@@ -265,7 +256,6 @@ namespace carousel {
 					Thread::mutexUnlock(&stlMutex);
 
 					j = 0;
-					clog << "ServiceDomain::run SRG MODULE PROCESSED!" << endl;
 
 				} else {
 					module = getModule(j);
@@ -282,13 +272,10 @@ namespace carousel {
 							return;
 						}
 
-						clog << "ServiceDomain::run BIOP->process" << endl;
 						biop->process();
 
 						eraseModule(module);
 
-						clog << "ServiceDomain::run BIOP->process DONE!";
-						clog << endl;
 						delete biop;
 						biop = NULL;
 
