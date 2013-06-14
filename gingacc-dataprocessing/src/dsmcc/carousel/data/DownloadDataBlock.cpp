@@ -93,7 +93,6 @@ namespace carousel {
 			trval = trval + rval;
 
 			if (rval == 0) {
-				clog << "DownloadDataBlock::processDataBlock eof" << endl;
 				break;
 			}
 
@@ -145,16 +144,6 @@ namespace carousel {
 					}
 
 				} else {
-					/*clog <<
-							"DownloadDataBlock::processDataBlock Warning! "
-							"Reading file (%s), with fd (%d), "
-							"the last call to read bytes (%d) is not equal "
-							"to messageLength (%d). Total bytes read (%d)! \n",
-							header->getFileName().c_str(),
-							fd,
-							rval,
-							messageLength,
-							trval;*/
 					clog << "DownloadDataBlock::processDataBlock Warning!!" << endl;
 					return -2;
 				}

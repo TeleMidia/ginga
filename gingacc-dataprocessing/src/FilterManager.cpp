@@ -334,8 +334,6 @@ namespace dataprocessing {
 
 		i = streamTypeFilters.begin();
 		while (i != streamTypeFilters.end()) {
-			clog << "FilterManager::addProcessedSection '";
-			clog << sectionName << "'" << endl;
 			sf = i->second;
 			sf->addProcessedSection(sectionName);
 			++i;
@@ -351,8 +349,6 @@ namespace dataprocessing {
 			sections.erase(sections.find(sectionName));
 		}
 		Thread::mutexUnlock(&filterMutex);
-		/*clog << "FilterManager::addProcessedSection '" << sectionName << "'";
-		clog << " done!" << endl;*/
 	}
 }
 }

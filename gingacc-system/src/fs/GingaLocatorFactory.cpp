@@ -283,9 +283,6 @@ namespace fs {
 			args = NULL;
 		}
 
-		clog << "GingaLocatorFactory::addClientLocation ";
-		clog << "clientUri '" << clientUri << "' ior '";
-		clog << newIor << "'" << endl;
 		(*iorClients)[newIor] = clientUri;
 		(*iorNames)[newIor] = name;
 		newLocatorConditionSatisfied();

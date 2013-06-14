@@ -91,7 +91,6 @@ namespace carousel {
 			object = i->second;
 
 			if (mountObject(object)) {
-				clog << "ObjectProcessor::pushObject call notifyLists" << endl;
 				notifyObjectListeners(object);
 
 				objects.erase(i);
@@ -131,8 +130,6 @@ namespace carousel {
 		char token[6];
 		unsigned int j, size;
 
-		/*clog << "ObjectProcessor::mountObject of kind '" << object->getKind();
-		clog << "'" << endl;*/
 		if (object->getKind() == "srg" ||
 			    object->getKind() == "DSM::ServiceGateway") {
 
@@ -142,8 +139,6 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				/*clog << "ObjectProcessor::mountObject srg adding objId '";
-				clog << objectId << "'" << endl;*/
 				objectNames[objectId] = (*i)->getId();
 				objectPaths[objectId] = SystemCompat::getTemporaryDir() + "ginga" +
 										SystemCompat::getIUriD() + "carousel" +
@@ -152,7 +147,6 @@ namespace carousel {
 										SystemCompat::getIUriD();
 			}
 
-			//clog << "ObjectProcessor::mountObject srg done" << endl;
 			return true;
 
 		} else if (object->getKind() == "dir" ||
@@ -169,8 +163,6 @@ namespace carousel {
 					    (objectNames.find(object->getObjectId()))->second +
 					    SystemCompat::getIUriD();
 
-				/*clog << "ObjectProcessor::mountObject create dir '" << path;
-				clog << endl;*/
 				SystemCompat::makeDir(path.c_str(), 0777);
 			}
 
@@ -180,13 +172,9 @@ namespace carousel {
 					    itos((*i)->getIor()->getModuleId()) +
 					    itos((*i)->getIor()->getObjectKey());
 
-				/*clog << "ObjectProcessor::mountObject dir adding objId '";
-				clog << objectId << "'" << endl;*/
-
 				objectNames[objectId] = (*i)->getId();
 				objectPaths[objectId] = path;
 			}
-			//clog << "ObjectProcessor::mountObject dir done" << endl;
 			return true;
 
 		} else if (object->getKind() == "fil" ||
@@ -207,7 +195,6 @@ namespace carousel {
 				if (fd > 0) {
 					//TODO: correct BUG in content provider
 					if (path.find(".ncl") != std::string::npos) {
-						clog << "ObjectProcessor::mount NCL FILE" << endl;
 						data = object->getData();
 						j = 0;
 						while (j < size) {
@@ -224,16 +211,12 @@ namespace carousel {
 					fwrite((void*)(object->getData()), 1, size, fd);
 					fclose(fd);
 
-					clog << "ObjectProcessor::mountObject create fil '";
-					clog << path << "'" << endl;
-
 				} else {
 					clog << "Warning! Cannot mount ";
 					clog << path.c_str() << endl;
 					return false;
 				}
 			}
-			//clog << "ObjectProcessor::mountObject fil done" << endl;
 			return true;
 		}
 
@@ -260,8 +243,6 @@ namespace carousel {
 
 		i = listeners.begin();
 		while (i != listeners.end()) {
-			clog << "ObjectProcessor::notifyListeners call objectmounted";
-			clog << " for '" << objectId << "'" << endl;
 			(*i)->objectMounted(objectId, clientUri, name);
 			++i;
 		}

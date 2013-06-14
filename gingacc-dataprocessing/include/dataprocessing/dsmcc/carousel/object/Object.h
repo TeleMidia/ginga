@@ -103,6 +103,7 @@ namespace carousel {
 			vector<Binding*>* getBindings();
 			char* getData();
 			unsigned int getDataSize();
+			void print();
 	};
 }
 }

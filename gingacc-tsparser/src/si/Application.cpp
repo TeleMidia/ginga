@@ -185,35 +185,30 @@ namespace si {
 					break;
 
 				case DT_APPLICATION_NAME:
-					clog <<" ApplicationNameDescriptor" << endl;
 					descriptor = new ApplicationNameDescriptor();
 					descriptor->process(data, pos);
 					descriptors.push_back(descriptor);
 					break;
 
 				case DT_TRANSPORT_PROTOCOL:
-					clog << " TransportProtocolDescriptor" << endl;
 					descriptor = new TransportProtocolDescriptor();
 					descriptor->process(data, pos);
 					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGAJ_APPLICATION_LOCATION:
-					clog << " GingaJApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
 					descriptors.push_back(descriptor);
 					break;
 
 				case DT_GINGANCL_APPLICATION_LOCATION:
-					clog << " GingaNCLApplicationLocationDesc" << endl;
 					descriptor = new ApplicationLocationDescriptor();
 					descriptor->process(data, pos);
 					descriptors.push_back(descriptor);
 					break;
 
 				case DT_PREFETCH:
-					clog <<" PrefetchDescriptor" << endl;
 					descriptor = new PrefetchDescriptor();
 					descriptor->process(data, pos);
 					descriptors.push_back(descriptor);

@@ -200,15 +200,10 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::createStreamTypeSectionFilter(short streamType) {
-		clog << "DataProcessor::createStreamTypeSectionFilter '";
-		clog << streamType << "'" << endl;
 		filterManager->createStreamTypeSectionFilter(streamType, demux, this);
 	}
 
 	void DataProcessor::createPidSectionFilter(int pid) {
-		clog << "DataProcessor::createPidSectionFilter '";
-		clog << pid << "'" << endl;
-
 		filterManager->createPidSectionFilter(pid, demux, this);
 	}
 
@@ -401,7 +396,6 @@ namespace dataprocessing {
 
 		//AIT
 		} else if (tableId == AIT_TID) {
-			clog << "DataProcessor::receiveSection AIT" << endl;
 
 			if (ait != NULL) {
 				if (ait->getSectionName() == section->getSectionName()) {
