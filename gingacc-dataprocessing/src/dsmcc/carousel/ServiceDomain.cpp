@@ -238,6 +238,7 @@ namespace carousel {
 
 					try {
 						biop = new Biop(module, processor);
+
 					} catch (...) {
 						clog << "ServiceDomain::run - error: BIOP - SRG not processed." << endl;
 						return;
@@ -252,10 +253,10 @@ namespace carousel {
 					delete biop;
 					biop = NULL;
 
-					eraseModule(module);
 					Thread::mutexUnlock(&stlMutex);
 
 					j = 0;
+					continue;
 
 				} else {
 					module = getModule(j);
