@@ -859,6 +859,7 @@ char NPTProcessor::getNextNptValue(
 	char ret = 0; //0 == schedNpt, 1 == listener
 	uint64_t stcValue;
 	Stc* cstc;
+	TimeControl* timeControl;
 
 	*sleepTime = 0.0;
 
@@ -887,12 +888,16 @@ char NPTProcessor::getNextNptValue(
 		if (i != timeListeners.end()) {
 			j = i->second->begin();
 			while (j != i->second->end()) {
-				if (!j->first->notified) {
-					r = j->first->time - value;
-					if (r < 0) r = 0.0;
+				timeControl = j->first;
+				if (!timeControl->notified) {
+					r = timeControl->time - value;
+					if (r < 0) {
+						r = 0.0;
+					}
+
 					if (r < remaining2) {
 						remaining2 = r;
-						*nextNptValue = j->first->time;
+						*nextNptValue = timeControl->time;
 					}
 				}
 				++j;
@@ -923,7 +928,8 @@ char NPTProcessor::getNextNptValue(
 
 			if (r < remaining3) {
 				remaining3 = r;
-				*nextNptValue = j->first->time;
+				//TODO: we need a bug fix here
+				//*nextNptValue = j->first->time;
 			}
 		}
 		++k;
