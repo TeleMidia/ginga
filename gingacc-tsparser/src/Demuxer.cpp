@@ -425,11 +425,11 @@ namespace tsparser {
 		} else if (pmts.count(pid) != 0) {
 			packet->getPayload(tsPacketPayload);
 			pmt = pmts[pid];
-			if (pmt->isConsolidated()) { /* If the PMT is OK, try update it */
-				if (!newPmt && packet->getStartIndicator()) {
+			if (pmt->isConsolidated()) { /* If the PMT is OK, try to update it */
+				if (newPmt == NULL && packet->getStartIndicator()) {
 					newPmt = new Pmt(pid, pmt->getProgramNumber());
 				}
-				if (!newPmt) {
+				if (newPmt != NULL) {
 					newPmt->addData(tsPacketPayload, 184);
 					if (newPmt->isConsolidated()) {
 						if (newPmt->processSectionPayload()) { /* Process the new PMT */
@@ -445,12 +445,17 @@ namespace tsparser {
 								pat->replacePmt(pid, newPmt);
 								pmts[pid] = newPmt;
 
+								newPmt = NULL;
 							}
 						}
-						delete newPmt;
-						newPmt = NULL;
+
+						if (newPmt != NULL) {
+							delete newPmt;
+							newPmt = NULL;
+						}
 					}
 				}
+
 			} else if (!pmt->hasProcessed()) { /* Tries to consolidate the PMT */
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->isConsolidated()) {
