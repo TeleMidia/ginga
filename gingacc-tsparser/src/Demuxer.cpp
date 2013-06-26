@@ -362,11 +362,7 @@ namespace tsparser {
 
 		pid = packet->getPid();
 
-		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
-
-			Thread::condSignal(&flagCondSignal);
-			isWaitingPI = false;
-		}
+		checkProgramInformation();
 
 		if (nptPrinter) {
 			if (nptPid == -1) {
@@ -393,14 +389,7 @@ namespace tsparser {
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
 			if (pat->isConsolidated()) {
-				/* Verifies if the PAT is OK */
-				if (!pat->hasUnprocessedPmt()) {
-					if (isWaitingPI) {
-						/* Free the mutex that is waiting for the PAT */
-						Thread::condSignal(&flagCondSignal);
-
-					}
-				}
+				checkProgramInformation();
 				//TODO: handle pat updates
 
 			/* PAT is not consolidated yet ! */
@@ -456,11 +445,13 @@ namespace tsparser {
 					}
 				}
 
-			} else if (!pmt->hasProcessed()) { /* Tries to consolidate the PMT */
+			} else if (!pmt->hasProcessed()) { /* Trying to consolidate the PMT */
 				pmt->addData(tsPacketPayload, 184);
 				if (pmt->isConsolidated()) {
 					if (pmt->processSectionPayload()) {
 						pat->addPmt(pmt);
+
+						checkProgramInformation();
 					}
 				}
 			}
@@ -723,9 +714,7 @@ namespace tsparser {
 						clog << "unsolved filters";
 						clog << endl;
 
-						if (isWaitingPI) {
-							Thread::condSignal(&flagCondSignal);
-						}
+						checkProgramInformation();
 
 						setupUnsolvedFilters();
 					}
@@ -973,12 +962,21 @@ namespace tsparser {
 		return 0;
 	}
 
+	void Demuxer::checkProgramInformation() {
+		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
+			Thread::condSignal(&flagCondSignal);
+			isWaitingPI = false;
+		}
+	}
+
 	bool Demuxer::waitProgramInformation() {
-		isWaitingPI = true;
-		Thread::mutexLock(&flagLockUntilSignal);
-		Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
-		isWaitingPI = false;
-		Thread::mutexUnlock(&flagLockUntilSignal);
+		if (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
+			isWaitingPI = true;
+			Thread::mutexLock(&flagLockUntilSignal);
+			Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
+			isWaitingPI = false;
+			Thread::mutexUnlock(&flagLockUntilSignal);
+		}
 		return true;
 	}
 

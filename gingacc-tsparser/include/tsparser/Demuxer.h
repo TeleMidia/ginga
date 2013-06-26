@@ -178,6 +178,11 @@ namespace tsparser {
 
 		public:
 			short getCaps();
+
+		private:
+			void checkProgramInformation();
+
+		public:
 			bool waitProgramInformation();
 			bool waitBuffers();
 	 };

@@ -732,8 +732,11 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 				unlockConditionSatisfied();
 				if (newNpt->getScaleNumerator()) {
 					clog << "NPTProcessor::decodeDescriptors - Scheduling ";
-					clog << "new timebase: Transition to ";
-					clog << (newNpt->getContentId() & 0xFF) << endl;
+					clog << "new timebase: Transition to '";
+					clog << (newNpt->getContentId() & 0xFF);
+					clog << "' (NPT STC_reference = '" << newNpt->getStcRef();
+					clog << "'; System STC = '";
+					clog << getSTCValue() << "')" << endl;
 
 				} else {
 					clog << "NPTProcessor::decodeDescriptors - Scheduling ";
