@@ -762,9 +762,24 @@ namespace tsparser {
 				clog << " vPid = '" << vPid << "'" << endl;
 
 				ni->createPesFilter(0x00, PFT_OTHER, true);
-				ni->createPesFilter(pPid, PFT_OTHER, true);
-				ni->createPesFilter(aPid, PFT_AUDIO, true);
-				ni->createPesFilter(vPid, PFT_VIDEO, true);
+
+				if (pPid > 0) {
+					ni->createPesFilter(pPid, PFT_OTHER, true);
+
+				} else {
+					clog << "Demuxer::addPesFilter Warning! ";
+					clog << "Invalid PMT pid" << endl;
+				}
+
+				//yes we can have a TS without main audio
+				if (aPid > 0) {
+					ni->createPesFilter(aPid, PFT_AUDIO, true);
+				}
+
+				//yes we can have a TS without main video
+				if (vPid > 0) {
+					ni->createPesFilter(vPid, PFT_VIDEO, true);
+				}
 
 				Thread::mutexLock(&stlMutex);
 				pesFilters[pat->getFirstProgramNumber()] = filter;
@@ -774,9 +789,22 @@ namespace tsparser {
 				Thread::mutexLock(&stlMutex);
 				if (pesFilters.find(0) == pesFilters.end()) {
 					filter->addPid(0x00);
-					filter->addPid(pPid);
-					filter->addPid(aPid);
-					filter->addPid(vPid);
+
+					if (pPid > 0) {
+						filter->addPid(pPid);
+
+					} else {
+						clog << "Demuxer::addPesFilter Warning! ";
+						clog << "Invalid PMT pid (2)" << endl;
+					}
+
+					if (aPid > 0) {
+						filter->addPid(aPid);
+					}
+
+					if (vPid > 0) {
+						filter->addPid(vPid);
+					}
 
 					clog << "Demuxer::addPesFilter created" << endl;
 					pesFilters[0] = filter;
