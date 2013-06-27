@@ -380,7 +380,9 @@ namespace compat {
 
 		checkValues();
 
-		if (dir.find("<") != std::string::npos) {
+		if (dir.find("<") != std::string::npos ||
+				checkUriPrefix(dir)) {
+
 			return dir;
 		}
 
@@ -442,6 +444,26 @@ namespace compat {
 		return false;
 	}
 
+	bool SystemCompat::checkUriPrefix(string uri) {
+		string::size_type len;
+
+		len = uri.length();
+		if ((len >= 10 && uri.substr(0,10) == "x-sbtvdts:")  ||
+				(len >= 9 && uri.substr(0,9) == "sbtvd-ts:") ||
+				(len >= 7 && uri.substr(0,7) == "http://")   ||
+				(len >= 6 && uri.substr(0,6) == "ftp://")    ||
+				(len >= 7 && uri.substr(0,7) == "file://")   ||
+				(len >= 6 && uri.substr(0,6) == "tcp://")    ||
+				(len >= 6 && uri.substr(0,6) == "udp://")    ||
+				(len >= 6 && uri.substr(0,6) == "rtp://")    ||
+				(len >= 7 && uri.substr(0,7) == "rtsp://")) {
+
+			return true;
+		}
+
+		return false;
+	}
+
 	bool SystemCompat::isAbsolutePath(string path) {
 		string::size_type i, len;
 
@@ -452,16 +474,7 @@ namespace compat {
 		}
 
 		len = path.length();
-		if ((len >= 10 && path.substr(0,10) == "x-sbtvdts:")  ||
-				(len >= 9 && path.substr(0,9) == "sbtvd-ts:") ||
-				(len >= 7 && path.substr(0,7) == "http://")   ||
-				(len >= 6 && path.substr(0,6) == "ftp://")    ||
-				(len >= 7 && path.substr(0,7) == "file://")   ||
-				(len >= 6 && path.substr(0,6) == "tcp://")    ||
-				(len >= 6 && path.substr(0,6) == "udp://")    ||
-				(len >= 6 && path.substr(0,6) == "rtp://")    ||
-				(len >= 7 && path.substr(0,7) == "rtsp://")) {
-
+		if (checkUriPrefix(path)) {
 			return true;
 		}
 

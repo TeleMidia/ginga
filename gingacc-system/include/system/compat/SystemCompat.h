@@ -194,6 +194,7 @@ namespace compat {
 			static string getGingaPrefix();
 			static string updatePath(string dir);
 			static bool isXmlStr(string location);
+			static bool checkUriPrefix(string uri);
 			static bool isAbsolutePath(string path);
 
 			static string getIUriD();

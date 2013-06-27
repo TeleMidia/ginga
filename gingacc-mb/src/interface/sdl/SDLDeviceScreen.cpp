@@ -1018,7 +1018,7 @@ namespace mb {
 	IImageProvider* SDLDeviceScreen::createImageProvider(const char* mrl) {
 		IImageProvider* provider = NULL;
 
-		lockSDL();
+		//lockSDL(); There is no SDL call inside SDLImageProvider constructor
 
 #if HAVE_COMPSUPPORT
 		provider = ((ImageProviderCreator*)(cm->getObject(
@@ -1027,7 +1027,7 @@ namespace mb {
 		provider = new SDLImageProvider(id, mrl);
 #endif
 
-		unlockSDL();
+		//unlockSDL();
 
 		Thread::mutexLock(&proMutex);
 		dmpPool.insert(provider);
@@ -1125,11 +1125,16 @@ namespace mb {
 		Uint32 subsystem_init = SDL_WasInit(0);
 
 		if (subsystem_init == 0) {
-			SDL_Init((Uint32)(
+			if (SDL_Init((Uint32)(
 					SDL_INIT_AUDIO |
 					SDL_INIT_VIDEO |
 					SDL_INIT_TIMER |
-					SDL_INIT_NOPARACHUTE));
+					SDL_INIT_NOPARACHUTE)) == 0) {
+
+				clog << "SDLDeviceScreen::checkSDLInit ";
+				clog << "Warning! " << SDL_GetError();
+				clog << endl;
+			}
 
 		} else {
 			if ((subsystem_init & SDL_INIT_AUDIO) == 0) {
@@ -1808,8 +1813,6 @@ namespace mb {
 		clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
 		clog << "'" << endl;
 
-		SDL_GetDisplayBounds(0, &rect);
-
 		if (s->mbSubSystem != "") {
 			numOfDrivers = SDL_GetNumVideoDrivers();
 			for (i = 0; i < numOfDrivers; i++) {
@@ -1820,6 +1823,20 @@ namespace mb {
 					break;
 				}
 			}
+
+		} else {
+			SDL_VideoInit(NULL);
+		}
+
+		if (SDL_GetDisplayBounds(0, &rect) != 0) {
+			rect.x = 0;
+			rect.y = 0;
+			rect.w = 0;
+			rect.h = 0;
+
+			clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
+			clog << "' Warning! Can't get display bounds. ";
+			clog << SDL_GetError() << endl;
 		}
 
 		if (s->uEmbedId != NULL) {
@@ -1850,16 +1867,24 @@ namespace mb {
 				s->hRes = 720;
 			}
 
-			if (s->wRes <= 0 || s->wRes > rect.w) {
+			if (rect.w > 0 && (s->wRes <= 0 || s->wRes > rect.w)) {
 				s->wRes = 0.9 * rect.w;
 			}
 
-			if (s->hRes <= 0 || s->hRes > rect.h) {
+			if (rect.h > 0 && (s->hRes <= 0 || s->hRes > rect.h)) {
 				s->hRes = 0.9 * rect.h;
 			}
 
-			x = (rect.w - s->wRes) / 2;
-			y = (rect.h - s->hRes) / 2;
+			x = 0;
+			y = 0;
+
+			if (rect.w > 0) {
+				x = (rect.w - s->wRes) / 2;
+			}
+
+			if (rect.h > 0) {
+				y = (rect.h - s->hRes) / 2;
+			}
 
 			if (s->fullScreen) {
 				s->screen = SDL_CreateWindow(
@@ -1872,6 +1897,12 @@ namespace mb {
 						title.c_str(),
 						x, y, s->wRes, s->hRes,
 						0);
+
+				if (s->screen == 0) {
+					clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
+					clog << "' Warning! Can't create Window. ";
+					clog << SDL_GetError() << endl;
+				}
 			}
 
 			s->sdlId = SDL_GetWindowID(s->screen);
