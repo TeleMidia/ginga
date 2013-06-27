@@ -422,11 +422,22 @@ namespace dataprocessing {
 				memcpy(handler->sectionHeader + handler->headerSize, data, headerSizeLeft);
 				handler->headerSize += headerSizeLeft;
 				if (handler->headerSize == 8) {
+
+#if HAVE_COMPSUPPORT
+					handler->section = ((TSSectionCreator*)(
+							cm->getObject("TransportSection")))(
+									handler->sectionHeader, 
+									handler->headerSize);
+
+#else
 					handler->section = new TransportSection(
-					handler->sectionHeader, handler->headerSize);
+							handler->sectionHeader, handler->headerSize);
+#endif
+
 					handler->section->addData(data + headerSizeLeft, payloadSize - headerSizeLeft);
 					setSectionParameters(pack);
 					return;
+
 				} else {
 					handler->headerSize = 0;
 					return;
