@@ -526,7 +526,7 @@ namespace dataprocessing {
 			/* Creates the new section */
 #if HAVE_COMPSUPPORT
 			handler->section = ((TSSectionCreator*)(cm->getObject(
-					"TransportSection")))(buffer, diff + handler->headerSize);
+					"TransportSection")))(buffer, payloadSize + handler->headerSize);
 
 #else
 			handler->section = new TransportSection(
@@ -544,7 +544,7 @@ namespace dataprocessing {
 
 #if HAVE_COMPSUPPORT
 			handler->section = ((TSSectionCreator*)(cm->getObject(
-					"TransportSection")))(&data[offset], diff);
+					"TransportSection")))(data, payloadSize);
 
 #else
 			handler->section = new TransportSection(
