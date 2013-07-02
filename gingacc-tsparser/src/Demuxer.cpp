@@ -745,7 +745,7 @@ namespace tsparser {
 
 	void Demuxer::addPesFilter(short type, ITSFilter* filter) {
 		INetworkInterface* ni;
-		int vPid, aPid, pPid;
+		int vPid, aPid, pPid, pcrPid;
 
 		ni = tuner->getCurrentInterface();
 		if (ni == NULL) {
@@ -756,12 +756,15 @@ namespace tsparser {
 			vPid = pat->getDefaultMainVideoPid();
 			aPid = pat->getDefaultMainAudioPid();
 			pPid = pat->getDefaultProgramPid();
+			pcrPid = pat->getPmtByProgramNumber(pat->getProgramNumberByPid(pPid))->getPCRPid();
 
 			if (ni->getCaps() & DPC_CAN_FILTERPID) {
 				clog << "Demuxer::addPesFilter aPid = '" << aPid << "'";
 				clog << " vPid = '" << vPid << "'" << endl;
 
 				ni->createPesFilter(0x00, PFT_OTHER, true);
+
+				if (pcrPid != vPid) ni->createPesFilter(pcrPid, PFT_OTHER, true);
 
 				if (pPid > 0) {
 					ni->createPesFilter(pPid, PFT_OTHER, true);
@@ -789,6 +792,8 @@ namespace tsparser {
 				Thread::mutexLock(&stlMutex);
 				if (pesFilters.find(0) == pesFilters.end()) {
 					filter->addPid(0x00);
+
+					if (pcrPid != vPid) filter->addPid(pcrPid);
 
 					if (pPid > 0) {
 						filter->addPid(pPid);
