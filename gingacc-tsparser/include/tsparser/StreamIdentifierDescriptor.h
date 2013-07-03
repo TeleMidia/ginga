@@ -69,6 +69,7 @@ namespace descriptors {
 			virtual ~StreamIdentifierDescriptor();
 			unsigned char getDescriptorTag();
 			unsigned int getDescriptorLength();
+			unsigned char getComponentTag();
 			void print();
 			size_t process(char* data, size_t pos);
 	};

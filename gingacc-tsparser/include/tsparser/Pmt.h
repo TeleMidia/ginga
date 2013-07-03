@@ -53,6 +53,9 @@ http://www.telemidia.puc-rio.br
 #include "TransportSection.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
+#include "StreamIdentifierDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -71,6 +74,7 @@ namespace si {
 		protected:
 			map<unsigned int, short> streams;
 			map<short, string> streamTypeNames;
+			map<unsigned short, unsigned char> componentTags; //<pid,ctag>
 
 			unsigned int pid;
 			unsigned int programNumber;
@@ -98,9 +102,12 @@ namespace si {
 			bool processSectionPayload();
 			bool hasProcessed();
 			map<unsigned int, short>* getStreamsInformation();
+			map<unsigned short, unsigned char>* getComponentTags();
 			unsigned int getPCRPid();
 			unsigned int getDefaultMainVideoPid();
 			unsigned int getDefaultMainAudioPid();
+			int getTaggedVideoPid(unsigned char idx);
+			int getTaggedAudioPid(unsigned char idx);
 			void print();
 	 };
 }

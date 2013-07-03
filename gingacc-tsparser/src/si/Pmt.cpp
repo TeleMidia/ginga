@@ -235,7 +235,9 @@ namespace si {
 		unsigned int i;
 		short streamType;
 		unsigned int elementaryPid;
-		unsigned int esInfoLength;
+		unsigned int esInfoLength, esInfoPos;
+		unsigned char descriptorTag, descriptorSize;
+		StreamIdentifierDescriptor* sid;
 
 		i = 4 + programInfoLength;//jumping descriptors
 		while (i < (sectionLength - 9)) {
@@ -249,8 +251,22 @@ namespace si {
 			i += 2;
 			esInfoLength = ((sectionPayload[i] & 0x0F) << 8) |
 			    (sectionPayload[i + 1] & 0xFF);
-
-			i = i + 2 + esInfoLength;
+			i += 2;
+			esInfoPos = 0;
+			while (esInfoPos < esInfoLength) {
+				descriptorTag = (sectionPayload[i] & 0xFF);
+				descriptorSize = (sectionPayload[i+1] & 0xFF) + 2;
+				switch (descriptorTag) {
+				case 0x52:
+					sid = new StreamIdentifierDescriptor();
+					sid->process(sectionPayload, i);
+					componentTags[elementaryPid] = sid->getComponentTag();
+					delete sid;
+					break;
+				}
+				esInfoPos += descriptorSize;
+				i += descriptorSize;
+			}
 		}
 
 		processed = true;
@@ -265,6 +281,10 @@ namespace si {
 
 	map<unsigned int, short>* Pmt::getStreamsInformation() {
 		return &streams;
+	}
+
+	map<unsigned short, unsigned char>* Pmt::getComponentTags() {
+		return &componentTags;
 	}
 
 	unsigned int Pmt::getPCRPid() {
@@ -315,14 +335,83 @@ namespace si {
 		return 0;
 	}
 
+	int Pmt::getTaggedVideoPid(unsigned char idx) {
+		short st;
+		map<unsigned short, unsigned char>::iterator itTag;
+		map<unsigned char, unsigned short>::iterator it;
+		map<unsigned char, unsigned short> videoTags;
+
+		itTag = componentTags.begin();
+		while (itTag != componentTags.end()) {
+			st = getStreamTypeValue(itTag->first);
+			if ((st == STREAM_TYPE_VIDEO_MPEG1) ||
+				(st == STREAM_TYPE_VIDEO_MPEG2) ||
+				(st == STREAM_TYPE_VIDEO_MPEG4) ||
+				(st == STREAM_TYPE_VIDEO_H264)) {
+
+				videoTags[itTag->second] = itTag->first;
+			}
+			++itTag;
+		}
+		if (idx < videoTags.size()) {
+			unsigned char cnt = 0;
+			it = videoTags.begin();
+			while (it != videoTags.end()) {
+				if (cnt == idx) return it->second;
+				cnt++;
+				++it;
+			}
+		}
+		return -1;
+	}
+
+	int Pmt::getTaggedAudioPid(unsigned char idx) {
+		short st;
+		map<unsigned short, unsigned char>::iterator itTag;
+		map<unsigned char, unsigned short>::iterator it;
+		map<unsigned char, unsigned short> audioTags;
+
+		itTag = componentTags.begin();
+		while (itTag != componentTags.end()) {
+			st = getStreamTypeValue(itTag->first);
+			if ((st == STREAM_TYPE_AUDIO_MPEG1) ||
+				(st == STREAM_TYPE_AUDIO_MPEG2) ||
+				(st == STREAM_TYPE_AUDIO_MPEG4) ||
+				(st == STREAM_TYPE_AUDIO_AAC) ||
+				(st == STREAM_TYPE_AUDIO_AC3) ||
+				(st == STREAM_TYPE_AUDIO_DTS)) {
+
+				audioTags[itTag->second] = itTag->first;
+			}
+			++itTag;
+		}
+		if (idx < audioTags.size()) {
+			unsigned char cnt = 0;
+			it = audioTags.begin();
+			while (it != audioTags.end()) {
+				if (cnt == idx) return it->second;
+				cnt++;
+				++it;
+			}
+		}
+		return -1;
+	}
+
 	void Pmt::print() {
+		map<unsigned short, unsigned char>::iterator it;
+
 		cout << "Pmt::print" << endl;
 		cout << "Program number = " << idExtention << endl;
 		cout << "streams:" << endl;
 		map<unsigned int, short>::iterator i;
 		for (i = streams.begin(); i != streams.end(); ++i) {
 			cout << "streamType '" << getStreamTypeName(i->second) << "' ";
-			cout << " has pid = '" << i->first << "'" << endl;
+			cout << " has pid = '" << i->first << "'";
+			it = componentTags.find(i->first);
+			if (it != componentTags.end()) {
+				cout << " with ctag = '" << (it->second & 0xFF) << "'";
+			}
+			cout << endl;
 		}
 	}
 }
