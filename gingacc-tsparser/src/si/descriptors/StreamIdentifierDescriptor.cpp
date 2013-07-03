@@ -57,7 +57,7 @@ namespace core {
 namespace tsparser {
 namespace si {
 namespace descriptors {
-//TODO: test this class
+
 	StreamIdentifierDescriptor::StreamIdentifierDescriptor() {
 		descriptorTag    = 0x52;
 		descriptorLength = 0;
@@ -77,8 +77,13 @@ namespace descriptors {
 		return descriptorLength;
 	}
 
+	unsigned char StreamIdentifierDescriptor::getComponentTag() {
+		return componentTag;
+	}
+
 	void StreamIdentifierDescriptor::print() {
-		clog << "StreamIdentifierDescriptor::print printing..." << endl;
+		clog << "StreamIdentifierDescriptor::print ctag = " <<
+			(componentTag & 0xFF) << endl;
 	}
 
 	size_t StreamIdentifierDescriptor::process(char* data, size_t pos) {

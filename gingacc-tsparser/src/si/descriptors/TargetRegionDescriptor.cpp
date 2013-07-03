@@ -77,7 +77,8 @@ namespace descriptors {
 	}
 
 	void TargetRegionDescriptor::print() {
-		clog << "StreamIdentifierDescriptor::print printing..." << endl;
+		clog << "TargetRegionDescriptor::print regionSpecType = " <<
+			(regionSpecType & 0xFF) << endl;
 	}
 
 	size_t TargetRegionDescriptor::process(char* data, size_t pos) {
