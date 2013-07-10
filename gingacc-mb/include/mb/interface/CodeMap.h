@@ -171,7 +171,6 @@ namespace mb {
 			static const int KEY_VOLUME_UP;
 
 			static const int KEY_ENTER;
-			static const int KEY_OK;
 
 			static const int KEY_RED;
 			static const int KEY_GREEN;

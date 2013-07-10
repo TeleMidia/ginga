@@ -210,7 +210,6 @@ namespace player {
 		fromGingaToBklm[CodeMap::KEY_ESCAPE]            = 27;
 		fromGingaToBklm[CodeMap::KEY_EXIT]              = 27;
 		fromGingaToBklm[CodeMap::KEY_ENTER]             = '\r';
-		fromGingaToBklm[CodeMap::KEY_OK]                = '\r';
 
 
 		fromGingaToBklm[CodeMap::KEY_GREATER_THAN_SIGN] = '>';

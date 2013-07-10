@@ -1337,7 +1337,7 @@ namespace mb {
 
 		clog << "SDLDeviceScreen::checkStdin calling cin" << endl;
 
-		while (cin >> strEvent) {
+		while (std::cin >> strEvent) {
 			intEvent = convertEventCodeStrToInt(strEvent);
 			if (intEvent >= 0) {
 				ie.type           = SDL_KEYDOWN;
@@ -2369,7 +2369,7 @@ namespace mb {
 		sdlStrToSdlCode["SDLK_VOLUMEDOWN"]        = SDLK_VOLUMEDOWN;
 		sdlStrToSdlCode["SDLK_VOLUMEUP"]          = SDLK_VOLUMEUP;
 
-		sdlStrToSdlCode["SDLK_RETURN"]            = SDLK_RETURN2;
+		sdlStrToSdlCode["SDLK_RETURN"]            = SDLK_RETURN;
 		sdlStrToSdlCode["SDLK_RETURN2"]           = SDLK_RETURN2;
 
 		sdlStrToSdlCode["SDLK_F17"]               = SDLK_F17;
@@ -2507,7 +2507,6 @@ namespace mb {
 		gingaToSDLCodeMap[CodeMap::KEY_VOLUME_UP]         = SDLK_VOLUMEUP;
 
 		gingaToSDLCodeMap[CodeMap::KEY_ENTER]             = SDLK_RETURN;
-		gingaToSDLCodeMap[CodeMap::KEY_OK]                = SDLK_RETURN2;
 
 		gingaToSDLCodeMap[CodeMap::KEY_RED]               = SDLK_F17;
 		gingaToSDLCodeMap[CodeMap::KEY_GREEN]             = SDLK_F18;
