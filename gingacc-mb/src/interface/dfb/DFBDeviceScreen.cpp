@@ -901,7 +901,6 @@ namespace mb {
 		gingaToDFBCodeMap[CodeMap::KEY_VOLUME_UP]         = DIKS_VOLUME_UP;
 
 		gingaToDFBCodeMap[CodeMap::KEY_ENTER]             = DIKS_ENTER;
-		gingaToDFBCodeMap[CodeMap::KEY_OK]                = DIKS_OK;
 
 		gingaToDFBCodeMap[CodeMap::KEY_RED]               = DIKS_RED;
 		gingaToDFBCodeMap[CodeMap::KEY_GREEN]             = DIKS_GREEN;

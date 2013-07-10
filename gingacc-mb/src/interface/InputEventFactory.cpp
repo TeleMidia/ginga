@@ -164,7 +164,7 @@ void XN_CALLBACK_TYPE pushDetector(
 		XnFloat fVelocity, XnFloat fAngle, void* ctx) {
 	
 	if (handsNumber == 1 && ctx != NULL) {
-		((IInputManager*)ctx)->postInputEvent(CodeMap::KEY_OK);
+		((IInputManager*)ctx)->postInputEvent(CodeMap::KEY_ENTER);
 	}
 }
 
