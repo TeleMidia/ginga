@@ -47,16 +47,25 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IDATAPROVIDER_H_
-#define IDATAPROVIDER_H_
+#ifndef BDAPROVIDER_H_
+#define BDAPROVIDER_H_
 
-#include <stdint.h>
+extern "C" {
+	#include <sys/types.h>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <stdint.h>
+}
 
-#include "IChannel.h"
-#include "IProviderListener.h"
-#include "frontends/IFrontendFilter.h"
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#define BUFFSIZE (204 * 200) + 1
+#include "IDataProvider.h"
+#include "BDAGraph.h"
+
+#include <string>
+#include <iostream>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -64,41 +73,33 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	//data provider capabilities
-	static const short DPC_CAN_FETCHDATA = 0x01;
-	static const short DPC_CAN_DEMUXBYHW = 0x02;
-	static const short DPC_CAN_FILTERPID = 0x04;
-	static const short DPC_CAN_FILTERTID = 0x08;
-	static const short DPC_CAN_DECODESTC = 0x10;
+	class BDAProvider : public IDataProvider {
+		protected:
+			BDAGraph *bda;
+			short capabilities;
+			ITProviderListener* listener;
+			long frequency;
 
-	// pes filter types
-	static const int PFT_DEFAULTTS = 0x01;
-	static const int PFT_PCR       = 0x02;
-	static const int PFT_VIDEO     = 0x03;
-	static const int PFT_AUDIO     = 0x04;
-	static const int PFT_OTHER     = 0x05;
-
-	class IDataProvider {
 		public:
-			virtual ~IDataProvider(){};
-			virtual short getCaps()=0;
-			virtual void setListener(ITProviderListener* listener)=0;
-			virtual void attachFilter(IFrontendFilter* filter)=0;
-			virtual void removeFilter(IFrontendFilter* filter)=0;
+			BDAProvider(long freq);
+			virtual ~BDAProvider();
 
-			virtual int receiveData(
-					char* buff, int skipSize, unsigned char packetSize)=0;
+			void setListener(ITProviderListener* listener);
+			void attachFilter(IFrontendFilter* filter){};
+			void removeFilter(IFrontendFilter* filter){};
 
-			virtual bool tune()=0;
-			virtual IChannel* getCurrentChannel()=0;
-			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
-			virtual bool changeChannel(int factor)=0;
-			virtual bool setChannel(string channelValue)=0;
-			virtual int createPesFilter(
-					int pid, int pesType, bool compositeFiler)=0;
+			short getCaps();
+			bool tune();
 
-			virtual string getPesFilterOutput()=0;
-			virtual void close()=0;
+			IChannel* getCurrentChannel();
+			bool getSTCValue(uint64_t* stc, int* valueType);
+			bool changeChannel(int factor);
+			bool setChannel(string channelValue);
+			int createPesFilter(int pid, int pesType, bool compositeFiler);
+			string getPesFilterOutput();
+			void close();
+			int receiveData(char* buff, int skipSize,
+							unsigned char packetSize);
 	};
 }
 }
@@ -107,4 +108,4 @@ namespace tuning {
 }
 }
 
-#endif /*IDATAPROVIDER_H_*/
+#endif /*BDAPROVIDER_H_*/
