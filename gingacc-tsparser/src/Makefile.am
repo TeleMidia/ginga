@@ -40,7 +40,8 @@ libgingacctsparser_la_SOURCES = \
                                 si/descriptors/DigitalCCDescriptor.cpp \
                                 si/descriptors/ContentAvailabilityDescriptor.cpp \
                                 si/descriptors/ServiceDescriptor.cpp \
-                                si/descriptors/LocalTimeOffsetDescriptor.cpp
+                                si/descriptors/LocalTimeOffsetDescriptor.cpp\
+                                si/descriptors/StreamIdentifierDescriptor.cpp
 
 libgingacctsparser_la_LIBADD = \
                                -ltelemidiautil \

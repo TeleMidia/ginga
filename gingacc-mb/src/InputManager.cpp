@@ -257,9 +257,7 @@ namespace mb {
 		map<IInputEventListener*, set<int>*>::iterator i;
 
 		if (!running) {
-			clog << "InputManager::addInputEventListener add listener ";
-			clog << "but I am not running. I will notify you though,";
-			clog << "as soon as you start me!" << endl;
+			eventBuffer = getEventBuffer();
 		}
 
 		if (notifying) {
@@ -429,13 +427,16 @@ namespace mb {
 
 		keyCode = inputEvent->getKeyCode(myScreen);
 
+		clog << "InputManger::dispatchEvent ";
 		if (keyCode == CodeMap::KEY_TAP) {
-			clog << "InputManger::dispatchEvent code '";
-			clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
-		}
+			clog << "TAP ";
 
-		clog << "InputManger::dispatchEvent code '";
-		clog << keyCode << "' screen id = '" << myScreen << "'" << endl;
+		} else {
+			clog << "keyCode = '" << keyCode << "' ";
+		}
+		clog << "on screen id = '";
+		clog << myScreen << "'";
+		clog << endl;
 
 		i = eventListeners.begin();
 		while (i != eventListeners.end() && running) {

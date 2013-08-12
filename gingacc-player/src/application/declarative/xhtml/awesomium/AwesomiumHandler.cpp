@@ -282,7 +282,6 @@ namespace player {
 		fromGingaToAwesomium[CodeMap::KEY_VOLUME_UP]         = KeyCodes::AK_VOLUME_UP;
 
 		fromGingaToAwesomium[CodeMap::KEY_ENTER]             = KeyCodes::AK_RETURN;
-		fromGingaToAwesomium[CodeMap::KEY_OK]                = KeyCodes::AK_RETURN;
 
 		fromGingaToAwesomium[CodeMap::KEY_RED]               = KeyCodes::AK_UNKNOWN;
 		fromGingaToAwesomium[CodeMap::KEY_GREEN]             = KeyCodes::AK_UNKNOWN;
