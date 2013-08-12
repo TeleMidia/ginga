@@ -164,7 +164,6 @@ namespace mb {
 	const int CodeMap::KEY_VOLUME_UP         = 95;
 
 	const int CodeMap::KEY_ENTER             = 96;
-	const int CodeMap::KEY_OK                = 97;
 
 	const int CodeMap::KEY_RED               = 98;
 	const int CodeMap::KEY_GREEN             = 99;
@@ -284,7 +283,6 @@ namespace mb {
 		keyMap["VOLUME_UP"]    = KEY_VOLUME_UP;
 
 		keyMap["ENTER"]        = KEY_ENTER;
-		keyMap["OK"]           = KEY_OK;
 		keyMap["TAP"]          = KEY_TAP;
 
 		keyMap["RED"]          = KEY_RED;
