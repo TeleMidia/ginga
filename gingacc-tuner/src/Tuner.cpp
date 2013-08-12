@@ -114,7 +114,6 @@ namespace tuning {
 
 	void Tuner::initializeInterface(string niSpec) {
 		size_t pos;
-
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 
 			if (niSpec.substr(0, 3) == "fs:") {
@@ -148,8 +147,13 @@ namespace tuning {
 
 				createInterface("ip", "udp_unicast", niSpec);
 
-			} else if (niSpec == "isdbt" || niSpec == "sbtvdt") {
-				createInterface("sbtvd", "terrestrial", niSpec);
+			} else if (niSpec.substr(0, 6) == "isdbt:") {
+				createInterface("sbtvd", "terrestrial",
+								niSpec.substr(6, niSpec.length() - 6));
+
+			} else if (niSpec.substr(0, 7) == "sbtvdt:") {
+				createInterface("sbtvd", "terrestrial",
+								niSpec.substr(7, niSpec.length() - 7));
 
 			} else {
 				clog << "Tuner::initializeInterface can't initialize '";

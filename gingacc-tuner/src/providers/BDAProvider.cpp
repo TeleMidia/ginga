@@ -47,16 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IDATAPROVIDER_H_
-#define IDATAPROVIDER_H_
-
-#include <stdint.h>
-
-#include "IChannel.h"
-#include "IProviderListener.h"
-#include "frontends/IFrontendFilter.h"
-
-#define BUFFSIZE (204 * 200) + 1
+#include "tuner/providers/BDAProvider.h"
+#include "tuner/providers/IProviderListener.h"
 
 namespace br {
 namespace pucrio {
@@ -64,47 +56,88 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	//data provider capabilities
-	static const short DPC_CAN_FETCHDATA = 0x01;
-	static const short DPC_CAN_DEMUXBYHW = 0x02;
-	static const short DPC_CAN_FILTERPID = 0x04;
-	static const short DPC_CAN_FILTERTID = 0x08;
-	static const short DPC_CAN_DECODESTC = 0x10;
+	BDAProvider::BDAProvider(long freq) {
+		this->capabilities   = DPC_CAN_FETCHDATA;
+		this->listener       = NULL;
+		bda = new BDAGraph(SystemCompat::getTemporaryDir() +
+							"ginga" + SystemCompat::getIUriD() +
+							"channels.txt");
+		frequency = freq;
+	}
 
-	// pes filter types
-	static const int PFT_DEFAULTTS = 0x01;
-	static const int PFT_PCR       = 0x02;
-	static const int PFT_VIDEO     = 0x03;
-	static const int PFT_AUDIO     = 0x04;
-	static const int PFT_OTHER     = 0x05;
+	BDAProvider::~BDAProvider() {
+		delete bda;
+	}
 
-	class IDataProvider {
-		public:
-			virtual ~IDataProvider(){};
-			virtual short getCaps()=0;
-			virtual void setListener(ITProviderListener* listener)=0;
-			virtual void attachFilter(IFrontendFilter* filter)=0;
-			virtual void removeFilter(IFrontendFilter* filter)=0;
+	void BDAProvider::setListener(ITProviderListener* listener) {
+		this->listener = listener;
+	}
 
-			virtual int receiveData(
-					char* buff, int skipSize, unsigned char packetSize)=0;
+	short BDAProvider::getCaps() {
+		return capabilities;
+	}
 
-			virtual bool tune()=0;
-			virtual IChannel* getCurrentChannel()=0;
-			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
-			virtual bool changeChannel(int factor)=0;
-			virtual bool setChannel(string channelValue)=0;
-			virtual int createPesFilter(
-					int pid, int pesType, bool compositeFiler)=0;
+	bool BDAProvider::tune() {
+		if (bda->execute(frequency) == 0) {
+			frequency = bda->getTunedFreq();
+			return true;
+		}
+		return false;
+	}
 
-			virtual string getPesFilterOutput()=0;
-			virtual void close()=0;
-	};
+	IChannel* BDAProvider::getCurrentChannel() {
+		return NULL;
+	}
+
+	bool BDAProvider::getSTCValue(uint64_t* stc, int* valueType) {
+		return false;
+	}
+
+	bool BDAProvider::changeChannel(int factor) {
+		return false;
+	}
+
+	bool BDAProvider::setChannel(string channelValue) {
+		long freq = stoi(channelValue);
+		if (bda->changeChannelTo(freq, false) == 0) {
+			frequency = freq;
+			return true;
+		}
+		frequency = -1;
+		return false;
+	}
+
+	int BDAProvider::createPesFilter(
+			int pid, int pesType, bool compositeFiler) {
+
+		return -1;
+	}
+
+	string BDAProvider::getPesFilterOutput() {
+		return "";
+	}
+
+	void BDAProvider::close() {
+
+	}
+
+	int BDAProvider::receiveData(char* buff,  int skipSize,
+									    unsigned char packetSize) {
+		Buffer* buf;
+		int bufSize;
+		if (bda->getBuffer(&buf)) {
+			memcpy(buff, buf->buffer, buf->len);
+			bufSize = buf->len;
+			delete (buf->buffer);
+			delete buf;
+			return bufSize;
+		}
+
+		return 0;
+	}
 }
 }
 }
 }
 }
 }
-
-#endif /*IDATAPROVIDER_H_*/

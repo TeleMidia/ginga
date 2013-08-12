@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "tuner/providers/FileSystemProvider.h"
 #include "tuner/providers/MulticastProvider.h"
+#include "tuner/providers/BDAProvider.h"
 
 //TODO: multicast and unicast provider using PracticalSocket instead of socket API
 //#include "tuner/providers/MulticastProvider.h"
@@ -154,7 +155,11 @@ namespace tuning {
 		} else if (name == "fs") {
 			provider = new FileSystemProvider(address);
 			return true;
-
+#if defined(_WIN32)
+		} else if (name == "sbtvd" && protocol == "terrestrial") {
+			provider = new BDAProvider((long)util::stof(address));
+			return true;
+#endif
 #if HAVE_FEV4L
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
 			provider = new ISDBTProvider("");
