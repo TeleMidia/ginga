@@ -47,23 +47,12 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef BDAPROVIDER_H_
-#define BDAPROVIDER_H_
-
-extern "C" {
-	#include <sys/types.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <stdint.h>
-}
-
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include "IDataProvider.h"
-#include "BDAGraph.h"
+#ifndef Channels_H_
+#define Channels_H_
 
 #include <string>
+#include <map>
+#include <fstream>
 #include <iostream>
 using namespace std;
 
@@ -73,37 +62,32 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class BDAProvider : public IDataProvider {
-		protected:
-			BDAGraph *bda;
-			short capabilities;
-			ITProviderListener* listener;
-			long frequency;
-			Channels channels;
+class Channels {
+	private:
+		map<long, string> *channelList;
+		map<long, unsigned char> *virtualChannelList;
+		long defaultFreq;
 
-		public:
-			BDAProvider(long freq);
-			virtual ~BDAProvider();
+	public:
+		Channels();
+		~Channels();
 
-			void setListener(ITProviderListener* listener);
-			void attachFilter(IFrontendFilter* filter){};
-			void removeFilter(IFrontendFilter* filter){};
-
-			short getCaps();
-			bool tune();
-
-			IChannel* getCurrentChannel();
-			bool getSTCValue(uint64_t* stc, int* valueType);
-			bool changeChannel(int factor);
-			bool setChannel(string channelValue);
-			int createPesFilter(int pid, int pesType, bool compositeFiler);
-			string getPesFilterOutput();
-			void close();
-			int receiveData(char* buff, int skipSize,
-							unsigned char packetSize);
-
-			Channels* getChannels();
-	};
+		void insertFreq(string name, long freq, unsigned char virtualChannel);
+		void removeFreq(long freq);
+		string getName(long freq);
+		long getFreqByName(string name);
+		unsigned char getVirtualChannel(long freq);
+		long getPreviousFreq(long currentFreq);
+		long getNextFreq(long currentFreq);
+		void cleanList();
+		int loadFromFile(string filename);
+		int saveToFile(string filename);
+		int getListSize();
+		void setDefaultFreq(long freq);
+		long getDefaultFreq();
+		map<long, string>* getChannelsListName();
+		map<long, unsigned char>* getVirtualChannelsList();
+};
 }
 }
 }
@@ -111,4 +95,4 @@ namespace tuning {
 }
 }
 
-#endif /*BDAPROVIDER_H_*/
+#endif /*Channels_H_*/

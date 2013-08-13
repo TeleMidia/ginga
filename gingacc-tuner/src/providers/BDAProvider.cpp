@@ -61,7 +61,7 @@ namespace tuning {
 		this->listener       = NULL;
 		bda = new BDAGraph(SystemCompat::getTemporaryDir() +
 							"ginga" + SystemCompat::getIUriD() +
-							"channels.txt");
+							"channels.txt", &channels);
 		frequency = freq;
 	}
 
@@ -94,12 +94,21 @@ namespace tuning {
 	}
 
 	bool BDAProvider::changeChannel(int factor) {
+		if (bda->changeChannelTo(factor, true) == 0) {
+			frequency = factor;
+			return true;
+		}
+		frequency = -1;
 		return false;
+	}
+
+	Channels* BDAProvider::getChannels() {
+		return &channels;
 	}
 
 	bool BDAProvider::setChannel(string channelValue) {
 		long freq = stoi(channelValue);
-		if (bda->changeChannelTo(freq, false) == 0) {
+		if (bda->changeChannelTo(freq, true) == 0) {
 			frequency = freq;
 			return true;
 		}

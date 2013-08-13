@@ -51,7 +51,13 @@ http://www.telemidia.puc-rio.br
 /*****************************************************************************
 * Constructor
 *****************************************************************************/
-BDAGraph::BDAGraph(string channelsFile) {
+namespace br {
+namespace pucrio {
+namespace telemidia {
+namespace ginga {
+namespace core {
+namespace tuning {
+BDAGraph::BDAGraph(string channelsFile, Channels *channelsList) {
     guid_network_type = GUID_NULL;
     l_tuner_used = -1;
     systems = 0;
@@ -63,6 +69,7 @@ BDAGraph::BDAGraph(string channelsFile) {
 	currentNetworkName.assign("Unknown");
 	currentVirtualChannel = 0;
 	this->channelsFile.assign(channelsFile);
+	this->channelsList = channelsList;
 	tunedFreq = -1;
 
     p_media_control = NULL;
@@ -531,7 +538,7 @@ HRESULT BDAGraph::changeChannelTo(long freq, bool setDefault) {
         return hr;
     }
 
-	if (setDefault) channelsList.setDefaultFreq(freq);
+	if (setDefault) channelsList->setDefaultFreq(freq);
 
 	if (np_tune_request) np_tune_request->Release();
 	if (np_dvb_tune_request) np_dvb_tune_request->Release();
@@ -1697,8 +1704,8 @@ void BDAGraph::readNetworkInfo(clock_t stopTime) {
 }
 
 HRESULT BDAGraph::tryToTune() {
-	channelsList.loadFromFile(channelsFile);
-	tunedFreq = channelsList.getDefaultFreq();
+	channelsList->loadFromFile(channelsFile);
+	tunedFreq = channelsList->getDefaultFreq();
 	if (tunedFreq > 0) {
 		changeChannelTo(tunedFreq);
 		Sleep(1500);
@@ -1708,13 +1715,13 @@ HRESULT BDAGraph::tryToTune() {
 		}
 	}
 	long freq = 0;
-	if (channelsList.getListSize()) {
+	if (channelsList->getListSize()) {
 		while (freq >= 0) {
-			freq = channelsList.getNextFreq(freq);
+			freq = channelsList->getNextFreq(freq);
 			changeChannelTo(freq, true);
 			Sleep(1500);
 			if (getSignalStrength()) {
-				channelsList.saveToFile(channelsFile);
+				channelsList->saveToFile(channelsFile);
 				break;
 			}
 		}
@@ -1733,7 +1740,7 @@ HRESULT BDAGraph::searchChannels() {
 	long st = 0;
 	bool setDefault = true;
 
-	channelsList.cleanList();
+	channelsList->cleanList();
 	cout << endl << "Searching channels..." << endl;
 	cout << "  0%";
 	while (1) {
@@ -1747,10 +1754,10 @@ HRESULT BDAGraph::searchChannels() {
 		}
 		if (freqBegin >= freqEnd) {
 			printf("\b\b\b\b");
-			if (channelsList.getListSize()) {
-				channelsList.saveToFile(channelsFile);
+			if (channelsList->getListSize()) {
+				channelsList->saveToFile(channelsFile);
 			} else {
-				channelsList.loadFromFile(channelsFile);
+				channelsList->loadFromFile(channelsFile);
 			}
 			break;
 		}
@@ -1765,10 +1772,10 @@ HRESULT BDAGraph::searchChannels() {
 			printf("\b\b\b\b");
 			cout << "Channel: " << (int)ch << ". Frequency: " << freqBegin << " Khz. "
 				<< "Virtual channel: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
-			channelsList.insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
+			channelsList->insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
 			if (setDefault) {
 				setDefault = false;
-				channelsList.setDefaultFreq(freqBegin);
+				channelsList->setDefaultFreq(freqBegin);
 			}
 			printf("%3.0f%%", (float(cProgress)/mProgress)*100);
 		}
@@ -1808,181 +1815,19 @@ HRESULT BDAGraph::execute(long freq) {
 		}
 	}
 	if (tunedFreq) {
-		cout << "Tuned in " << channelsList.getName(tunedFreq) << "." << endl;
+		cout << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
 	}
 	searching = false;
 	return hr;
-}
-
-map<long, string>* BDAGraph::getChannelsListName() {
-	return channelsList.getChannelsListName();
-}
-
-map<long, unsigned char>* BDAGraph::getVirtualChannelsList() {
-	return channelsList.getVirtualChannelsList();
 }
 
 long BDAGraph::getTunedFreq() {
 	return tunedFreq;
 }
 
-Channels::Channels() {
-	defaultFreq = -1;
-	channelList = new(map<long, string>);
-	virtualChannelList = new(map<long, unsigned char>);
 }
-
-Channels::~Channels() {
-	if (channelList) delete channelList;
-	if (virtualChannelList) delete virtualChannelList;
 }
-
-void Channels::insertFreq(string name, long freq, unsigned char virtualChannel) {
-	(*channelList)[freq] = name;
-	(*virtualChannelList)[freq] = virtualChannel;
 }
-
-void Channels::removeChannel(long freq) {
-	channelList->erase (freq);
-	virtualChannelList->erase (freq);
 }
-
-string Channels::getName(long freq) {
-	for (map<long,string>::iterator it=channelList->begin(); it!=channelList->end(); ++it)
-		if (it->first == freq) {
-			return it->second;
-		}
-	return "";
 }
-
-long Channels::getFreqByName(string name) {
-	for (map<long,string>::iterator it=channelList->begin(); it!=channelList->end(); ++it)
-		if (it->second.compare(name) == 0) {
-			return it->first;
-		}
-	return -1;
-}
-
-unsigned char Channels::getVirtualChannel(long freq) {
-	if (virtualChannelList->count(freq)) {
-		return (*virtualChannelList)[freq];
-	}
-	return 0;
-}
-
-long Channels::getPreviousFreq(long currentFreq) {
-	for (map<long,string>::reverse_iterator it=channelList->rbegin(); it!=channelList->rend(); ++it)
-		if (it->first < currentFreq) {
-			return it->first;
-		}
-	return -1;
-}
-
-long Channels::getNextFreq(long currentFreq) {
-	for (map<long,string>::iterator it=channelList->begin(); it!=channelList->end(); ++it)
-		if (it->first > currentFreq) {
-			return it->first;
-		}
-	return -1;
-}
-
-void Channels::cleanList() {
-	channelList->clear();
-	virtualChannelList->clear();
-}
-
-int Channels::getListSize() {
-	return channelList->size();
-}
-
-int Channels::loadFromFile(string filename) {
-	string line;
-	char error = 0;
-	ifstream myfile (filename);
-	if (myfile.is_open()) {
-		unsigned found;
-		long freq, vch, isDefault;
-		string name;
-		defaultFreq = -1;
-		while (myfile.good()) {
-			getline (myfile,line);
-			for (int i = 0; i < 3; i++) {
-				found=line.find(';');
-				if (found!=std::string::npos) {
-					string str = line.substr (0, found);
-					line = line.substr(found+1, 255);
-					switch (i) {
-					case 0:
-						isDefault = atol(str.c_str());
-						break;
-					case 1:
-						freq = atol(str.c_str());
-						break;
-					case 2:
-						vch = atol(str.c_str());
-						insertFreq(line, freq, (unsigned char)vch);
-						if (isDefault) defaultFreq = freq;
-						break;
-					}
-				} else {
-					error = 1;
-					break;
-				}
-			}
-			if (error) break;
-		}
-		myfile.close();
-		if (error) return -2;
-		return 0;
-	} else clog << "Channels::loadFromFile - Unable to open file"; 
-	return -1;
-}
-
-int Channels::saveToFile(string filename) {
-	map<long, string>::iterator it;
-	map<long, unsigned char>::iterator itv;
-	string value;
-	ofstream myfile (filename);
-	if (myfile.is_open()) {
-		it=channelList->begin();
-		itv=virtualChannelList->begin();
-		while ((it!=channelList->end()) && (itv!=virtualChannelList->end())) {
-			char buffer[7];
-			if (it->first == defaultFreq) {
-				myfile << "1;";
-			} else {
-				myfile << "0;";
-			}
-			_itoa_s(it->first,buffer,10);
-			value.assign(buffer);
-			myfile << buffer << ";";
-			_itoa_s(itv->second,buffer,10);
-			_itoa_s(itv->second,buffer,10);
-			myfile << buffer << ";" << it->second << endl;
-			++it;
-			++itv;
-		}
-		myfile.close();
-		return 0;
-	}
-	else clog << "Channels::saveToFile - Unable to open file";
-	return -1;
-}
-
-void Channels::setDefaultFreq(long freq) {
-	if (virtualChannelList->count(freq)) {
-		defaultFreq = freq;
-	}
-}
-
-long Channels::getDefaultFreq() {
-	return defaultFreq;
-}
-
-map<long, string>* Channels::getChannelsListName() {
-	return channelList;
-}
-
-map<long, unsigned char>* Channels::getVirtualChannelsList() {
-	return virtualChannelList;
 }

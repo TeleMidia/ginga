@@ -49,6 +49,8 @@ http://www.telemidia.puc-rio.br
 #ifndef BDAGRAPH_H_
 #define BDAGRAPH_H_
 
+#include "tuner/providers/Channels.h"
+
 #include "system/thread/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
 
@@ -189,43 +191,22 @@ enum {
 #define FREQ_HIGH 806143
 #define FREQ_BANDWIDTH 6
 
-class Channels {
-public:
-	Channels();
-	~Channels();
-
-	void insertFreq(string name, long freq, unsigned char virtualChannel);
-	void removeChannel(long freq);
-	string getName(long freq);
-	long getFreqByName(string name);
-	unsigned char getVirtualChannel(long freq);
-	long getPreviousFreq(long currentFreq);
-	long getNextFreq(long currentFreq);
-	void cleanList();
-	int loadFromFile(string filename);
-	int saveToFile(string filename);
-	int getListSize();
-	void setDefaultFreq(long freq);
-	long getDefaultFreq();
-	map<long, string>* getChannelsListName();
-	map<long, unsigned char>* getVirtualChannelsList();
-
-private:
-	map<long, string> *channelList;
-	map<long, unsigned char> *virtualChannelList;
-	long defaultFreq;
-};
-
 struct Buffer {
 	char* buffer;
 	int len;
 };
 
 /* The main class for building the filter graph */
+namespace br {
+namespace pucrio {
+namespace telemidia {
+namespace ginga {
+namespace core {
+namespace tuning {
 class BDAGraph : public ISampleGrabberCB {
 
 public:
-    BDAGraph(string channelsFile);
+    BDAGraph(string channelsFile, Channels *channelsList);
     virtual ~BDAGraph();
 
     /* */
@@ -234,8 +215,6 @@ public:
     long getSignalStrength();
 
 	HRESULT execute(long freq);
-	map<long, string>* getChannelsListName();
-	map<long, unsigned char>* getVirtualChannelsList();
 	HRESULT changeChannelTo(long freq, bool setDefault = false);
 	bool getBuffer(Buffer** buffer);
 	long getTunedFreq();
@@ -273,7 +252,7 @@ private:
 	string		  currentNetworkName;
 	unsigned char currentVirtualChannel;
 	clock_t		  rntStopTime;
-	Channels	  channelsList;
+	Channels	  *channelsList;
 	string		  channelsFile;
 	long		  tunedFreq;
 
@@ -309,5 +288,10 @@ private:
     HRESULT Register();
     void Deregister();
 };
-
+}
+}
+}
+}
+}
+}
 #endif /* BDAGRAPH_H_ */

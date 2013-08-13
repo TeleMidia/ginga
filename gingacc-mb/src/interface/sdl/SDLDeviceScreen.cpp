@@ -1310,8 +1310,8 @@ namespace mb {
 			if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
 					s->uEmbedId == NULL) || checkEventFocus(s))) {
 
-				clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
-				clog << endl;
+				//clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+				//clog << endl;
 				eventBuffer->feed(*event, capsOn, shiftOn);
 				return true;
 			}
@@ -1374,7 +1374,7 @@ namespace mb {
 		unlockSDL();
 
 		while (hasEvent) {
-			clog << "SDLDeviceScreen::checkEvents poll event" << endl;
+			//clog << "SDLDeviceScreen::checkEvents poll event" << endl;
 
 			if (event.type == SDL_KEYDOWN) {
 				clog << "SDLDeviceScreen::checkEvents poll event '";
