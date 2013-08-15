@@ -52,7 +52,9 @@ http://www.telemidia.puc-rio.br
 
 #include "tuner/providers/FileSystemProvider.h"
 #include "tuner/providers/MulticastProvider.h"
-#include "tuner/providers/BDAProvider.h"
+#if defined(_WIN32)
+	#include "tuner/providers/BDAProvider.h"
+#endif
 
 //TODO: multicast and unicast provider using PracticalSocket instead of socket API
 //#include "tuner/providers/MulticastProvider.h"
