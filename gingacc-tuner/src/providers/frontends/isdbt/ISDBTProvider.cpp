@@ -71,10 +71,10 @@ namespace tuning {
 		this->currentChannel = channels->end();
 		this->listener       = NULL;
 		this->capabilities   = (
-				DPC_CAN_FETCHDATA |
-				DPC_CAN_DEMUXBYHW |
+                                DPC_CAN_FETCHDATA);
+                                /*			| DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
-				DPC_CAN_FILTERTID);
+				DPC_CAN_FILTERTID);*/ // TODO: implement these capabilities...
 	}
 
 	ISDBTProvider::~ISDBTProvider() {
@@ -198,8 +198,11 @@ namespace tuning {
 		bool tuned = false;
 		IChannel* channel;
 
+		clog << "ISDBTProvider::tune enter" << endl;
+
 		if (frontend != NULL) {
-			return true;
+		    clog << "ISDBTProvider::tune returning TRUE early" << endl;
+		    return true;
 		}
 
 		if ((feDescriptor = open(
@@ -239,6 +242,7 @@ namespace tuning {
 			return tuned;
 
 		} else {
+                  
 			close();
 			return false;
 		}
@@ -330,12 +334,29 @@ namespace tuning {
 
 	int ISDBTProvider::receiveData(
 			char* buff, int skipSize, unsigned char packetSize) {
+          int read_size = 0;
+          int buff_size = packetSize * 100; // 100 TS packets
 
-		if (feDescriptor > 0) {
-			return read(feDescriptor, (void*)buff, packetSize);
-		}
+	  clog << "ISDBTProvider::receiveData enter " << endl;
+          
 
-		return 0;
+          if (frontend->dvrFd > 0) {
+	  try_again:
+		    read_size = read(frontend->dvrFd, (void*)buff, buff_size);
+
+                    if (read_size <= 0)
+		    {
+			struct pollfd fds[1];
+			fds[0].fd = frontend->dvrFd;
+			fds[0].events = POLLIN | POLLERR | POLLHUP;
+			poll(fds, 1, -1);
+			goto try_again;
+		    }
+		    
+		    return read_size;
+	  }
+
+	  return 0;
 	}
 }
 }
