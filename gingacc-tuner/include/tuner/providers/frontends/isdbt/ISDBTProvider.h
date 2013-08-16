@@ -53,6 +53,8 @@ http://www.telemidia.puc-rio.br
 extern "C" {
 	#include <sys/types.h>
 	#include <stdio.h>
+        #include <errno.h>
+        #include <poll.h>
 }
 
 #include "system/compat/SystemCompat.h"
