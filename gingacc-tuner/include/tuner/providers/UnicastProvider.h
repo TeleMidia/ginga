@@ -56,6 +56,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 extern "C" {
 	#include <sys/types.h>
 	#include <stdio.h>
+        #include <unistd.h>
 
 #ifndef WIN32
 	#include <sys/socket.h>
