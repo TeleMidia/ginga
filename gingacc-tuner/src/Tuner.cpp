@@ -155,6 +155,9 @@ namespace tuning {
 				createInterface("sbtvd", "terrestrial",
 								niSpec.substr(7, niSpec.length() - 7));
 
+			} else if (niSpec == "isdbt" || niSpec == "sbtvdt") {
+				createInterface("sbtvd", "terrestrial",  niSpec);
+
 			} else {
 				clog << "Tuner::initializeInterface can't initialize '";
 				clog << niSpec << "': unknown specification" << endl;
@@ -401,9 +404,9 @@ namespace tuning {
 		}
 
 		if (tuned && nInterface != NULL &&
-				!(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
+                                !(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
 
-			clog << "Tuner::run() call receive" << endl;
+                        clog << "Tuner::run() call receive" << endl;
 			receiveInterface(nInterface);
 		}
 
