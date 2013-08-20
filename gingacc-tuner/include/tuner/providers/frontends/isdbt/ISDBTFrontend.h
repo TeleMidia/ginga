@@ -95,12 +95,9 @@ namespace tuning {
 
 			static struct pollfd pollFds[ISDBTFrontend::IFE_MAX_FILTERS];
 
-#if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
-			struct frontend_parameters params;
-#else
 			struct dvb_frontend_parameters params;
-#endif
 			struct dvb_frontend_info info;
+
 			int feFd;
 			int dmFd;
 			fe_status_t feStatus;
@@ -114,6 +111,7 @@ namespace tuning {
 			static const string IFE_DVR_DEV_NAME;
 			static const string IFE_DEMUX_DEV_NAME;
 
+			int dvrFd;
 			ISDBTFrontend(int feFd);
 			virtual ~ISDBTFrontend();
 

@@ -52,7 +52,9 @@ http://www.telemidia.puc-rio.br
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <linux/dvb/dmx.h>
+#include <linux/dvb/version.h>
 #include <errno.h>
 
 #include "tuner/providers/frontends/isdbt/ISDBTFrontend.h"
@@ -80,14 +82,22 @@ namespace tuning {
 			new vector<ActionsToFilters*>);
 
 	ISDBTFrontend::ISDBTFrontend(int feFd) : Thread() {
+
+                int res;
 		clog << "ISDBTFrontend::ISDBTFrontend" << endl;
 
 		this->feFd = feFd;
+		this->dmFd = -1;
+                this->dvrFd = -1;
+
+		res = ioctl(feFd, FE_GET_INFO, &info);
+                if (res == -1)
+                  clog << "ISDBTFrontend::ISDBTFrontend error: " <<  strerror(errno) << endl;
+
+                dumpFrontendInfo();
 
 		initIsdbtParameters();
-		ioctl(feFd, FE_GET_INFO, &info);
-		dumpFrontendInfo();
-	}
+        }
 
 	ISDBTFrontend::~ISDBTFrontend() {
 
@@ -99,34 +109,26 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::initIsdbtParameters() {
-		clog << "ISDBTFrontend::initIsdbtParameters" << endl;
+	    
+		clog << "ISDBTFrontend::initIsdbtParameters: Enter" << endl;
 
-#if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
-		params.delivery_system                 = SYS_ISDBT;
-		params.inversion                       = INVERSION_AUTO;
-		params.u.isdbt.bandwidth_hz            = 6000000;
-		params.u.isdbt.guard_interval          = GUARD_INTERVAL_AUTO;
-		params.u.isdbt.transmission_mode       = TRANSMISSION_MODE_AUTO;
-		params.u.isdbt.isdbt_partial_reception = 0;
-		params.u.isdbt.isdbt_sb_mode           = 0;
-		params.u.isdbt.isdbt_sb_subchannel     = 0;
-		params.u.isdbt.isdbt_sb_segment_idx    = 0;
-		params.u.isdbt.isdbt_sb_segment_count  = 0;
-		params.u.isdbt.isdbt_layer_enabled     = 0x7;
-		params.u.isdbt.layer[0].segment_count  = 0;
-		params.u.isdbt.layer[0].modulation     = QAM_AUTO;
-		params.u.isdbt.layer[0].fec            = FEC_AUTO;
-		params.u.isdbt.layer[0].interleaving   = 0;
-		params.u.isdbt.layer[1].segment_count  = 0;
-		params.u.isdbt.layer[1].modulation     = QAM_AUTO;
-		params.u.isdbt.layer[1].fec            = FEC_AUTO;
-		params.u.isdbt.layer[1].interleaving   = 0;
-		params.u.isdbt.layer[2].segment_count  = 0;
-		params.u.isdbt.layer[2].modulation     = QAM_AUTO;
-		params.u.isdbt.layer[2].fec            = FEC_AUTO;
-		params.u.isdbt.layer[2].interleaving   = 0;
-#endif
-	}
+                memset( &params, 0, sizeof(dvb_frontend_parameters) );
+
+		// for debugging purposes...
+		// params.frequency = 533142000; // sbt,  521142000 - rede vida,  599142000 - band; 
+
+                params.inversion                    = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO : INVERSION_OFF;
+                //                params.inversion                    = INVERSION_AUTO;
+                params.u.ofdm.code_rate_HP          = FEC_AUTO;
+                params.u.ofdm.code_rate_LP          = FEC_AUTO;
+                params.u.ofdm.constellation         = QAM_AUTO;
+                params.u.ofdm.transmission_mode     = TRANSMISSION_MODE_AUTO;
+                params.u.ofdm.guard_interval        = GUARD_INTERVAL_AUTO;
+                params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
+                params.u.ofdm.bandwidth = BANDWIDTH_6_MHZ;                                                                                                                                  
+
+		// updateIsdbtFrontendParameters();
+        }
 
 	void ISDBTFrontend::dumpFrontendInfo() {
 		clog << "frontend_info:" << endl;
@@ -143,117 +145,84 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::updateIsdbtFrontendParameters() {
-		clog << "ISDBTFrontend::updateIsdbtFrontendParameters" << endl;
+		clog << "ISDBTFrontend::updateIsdbtFrontendParameters Enter" << endl;
+		
+		if (params.frequency == 0)
+		    return;
 
-#if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
+		clog << "ISDBTFrontend::updateIsdbtFrontendParameters: frequency: " << params.frequency <<  endl;
 
-		struct dtv_property* dtv_prop_arg;
-		struct dtv_properties dtv_prop;
-		int index_arg = 0;
-		int res;
+		if (ioctl( feFd, FE_SET_FRONTEND, &params ) == -1) {
+		    clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg FE_SET_FRONTEND" << endl;
+                }
 
-		dtv_prop_arg = (struct dtv_property*)(
-				malloc(27*sizeof(struct dtv_property)));
-
-		dtv_prop_arg[index_arg  ].cmd    = DTV_CLEAR;
-		dtv_prop_arg[index_arg++].u.data = 0;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_DELIVERY_SYSTEM;
-		dtv_prop_arg[index_arg++].u.data = SYS_ISDBT;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_FREQUENCY;
-		dtv_prop_arg[index_arg++].u.data = params.frequency;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_BANDWIDTH_HZ;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.bandwidth_hz;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_INVERSION;
-		dtv_prop_arg[index_arg++].u.data = params.inversion;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_GUARD_INTERVAL;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.guard_interval;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_TRANSMISSION_MODE;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.transmission_mode;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_PARTIAL_RECEPTION;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_partial_reception;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_SOUND_BROADCASTING;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_sb_mode;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_SB_SUBCHANNEL_ID;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_sb_subchannel;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_SB_SEGMENT_IDX;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_sb_segment_idx;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_SB_SEGMENT_COUNT;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_sb_segment_count;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERA_SEGMENT_COUNT;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[0].segment_count;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERA_MODULATION;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[0].modulation;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERA_FEC;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[0].fec;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERA_TIME_INTERLEAVING;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[0].interleaving;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERB_SEGMENT_COUNT;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[1].segment_count;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERB_MODULATION;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[1].modulation;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERB_FEC;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[1].fec;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERB_TIME_INTERLEAVING;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[1].interleaving;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERC_SEGMENT_COUNT;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[2].segment_count;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERC_MODULATION;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[2].modulation;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERC_FEC;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[2].fec;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYERC_TIME_INTERLEAVING;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.layer[2].interleaving;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_ISDBT_LAYER_ENABLED;
-		dtv_prop_arg[index_arg++].u.data = params.u.isdbt.isdbt_layer_enabled;
-		dtv_prop_arg[index_arg  ].cmd    = DTV_TUNE;
-		dtv_prop_arg[index_arg++].u.data = 0;
-
-		dtv_prop.num   = index_arg;
-		dtv_prop.props = &dtv_prop_arg[0];
-
-		res = ioctl(feFd, FE_SET_PROPERTY, &dtv_prop);
-		if (res == -1) {
-			clog << "setting properties failed" << endl;
+		if (dmFd == -1)
+		{
+		    dmFd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR);
+		    /* WARNING: For now we're just _not_ using the filter infrastructure of the linux kernel, so we just grab the "full" TS */
+		    if (dmFd < 0) {
+			
+			clog << "ISDBTFrontend::updateIsdbtFrontendParameters: " <<  IFE_DEMUX_DEV_NAME.c_str() << " could not be opened, bad things will happen!" << endl;
+		    }
+		
+		    struct dmx_pes_filter_params filter_dmx;
+		    filter_dmx.pid = 8192;
+		    filter_dmx.input = DMX_IN_FRONTEND;
+		    filter_dmx.output = DMX_OUT_TS_TAP;
+		    filter_dmx.pes_type = DMX_PES_OTHER;
+		    filter_dmx.flags = DMX_IMMEDIATE_START;
+		    
+		    if (ioctl(dmFd, DMX_SET_PES_FILTER, &filter_dmx)) {
+			clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg IFE_DEMUX_DEV_NAME" << endl;
+		    }
 		}
-		free(dtv_prop_arg);
-#endif
+                
+		if (dvrFd == -1)
+		{
+
+		    // opening DVR device (non-blocking mode), we read TS data in this fd
+		    dvrFd = open(IFE_DVR_DEV_NAME.c_str(), O_RDONLY | O_NONBLOCK);
+		    if (dvrFd < 0) {
+			clog << "ISDBTFrontend::updateIsdbtFrontendParameters: " <<  IFE_DVR_DEV_NAME.c_str() << " could not be opened, bad things will happen!" << endl;
+		    }
+		}
+
+
+
 	}
 
 	bool ISDBTFrontend::isTuned() {
+                int value, signal;
+
+                // why do we need this?
 		SystemCompat::uSleep(200000);
+
+                clog << "ISDBTFrontend::isTuned" << endl;
+
 		if (ioctl(feFd, FE_READ_STATUS, &feStatus) == -1) {
 			clog << "ISDBTFrontend::isTuned FE_READ_STATUS failed" << endl;
 			return false;
 		}
 
-		/* everything's working... */
-		if (feStatus & FE_HAS_LOCK) {
-			/* FEC is stable  */
-			if (feStatus & FE_HAS_VITERBI) {
-				/* found something above the noise level */
-				if (feStatus & FE_HAS_SIGNAL) {
-					/* found a carrier signal  */
-					if (!feStatus & FE_HAS_CARRIER) {
-						clog << "ISDBTFrontend::isTuned Warning! ";
-						clog << "can't find carrier."<< endl;
-					}
+                if (feStatus & FE_HAS_LOCK)
+                {
+                    if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) {                                                                                                                                                                                            
+                        clog << "ISDBTFrontend::isTuned FE_READ_SIGNAL_STRENGTH failed" << endl;
 
-					/* found sync bytes  */
-					if (feStatus & FE_HAS_SYNC) {
-						clog << "ISDBTFrontend::isTuned Warning! ";
-						clog << "can't find sync byte."<< endl;
-					}
-					return true;
-				}
-			}
-		}
-		return false;
+                    }
+                    else {
+                        signal = value * 100 / 65535;
+			clog << "ISDBTFrontend::isTuned: Signal locked, received power level is " << signal << "%" << endl;
+                    }
+                    return true;
+                }
+                return false;
 	}
 
 	bool ISDBTFrontend::getSTCValue(uint64_t* stc, int* valueType) {
 		struct dmx_stc* _stc;
 		int result, fd;
-
+                
 		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR, 644)) < 0) {
 			perror("ISDBTFrontend::getSTCValue FD");
 			return false;
@@ -281,13 +250,14 @@ namespace tuning {
 
 	bool ISDBTFrontend::changeFrequency(unsigned int frequency) {
 		int i;
-
-		clog << "ISDBTFrontend::changeFrequency" << endl;
+                
+		clog << "ISDBTFrontend::changeFrequency 4" << endl;
 
 		currentFreq      = frequency;
 		params.frequency = currentFreq;
 		updateIsdbtFrontendParameters();
 
+                // try 6 times..
 		for (i = 0; i < 6; i++) {
 			if (isTuned()) {
 				clog << "ISDBTFrontend::changeFrequency tuned at '";
@@ -316,7 +286,7 @@ namespace tuning {
 
 			if (currentFreq < 115000000) {
 				if (!infFm) {
-					clog << "Current Frequency at FM band" << endl;
+					clog << "Current Frequency at Low VHF band" << endl;
 					infFm = true;
 				}
 				continue;
@@ -360,6 +330,8 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::attachFilter(IFrontendFilter* filter) {
+                clog << "ISDBTFrontend::attachFilter not implemented! " << endl;
+#if 0
 		struct dmx_sct_filter_params f;
 		int fd, numOfFilters;
 		ActionsToFilters* action;
@@ -420,14 +392,19 @@ namespace tuning {
 		actsToRunningFilters->push_back(action);
 		unlock();
 
+
 		if (firstFilter) {
 			firstFilter = false;
 			startThread();
 		}
+#endif
+
 	}
 
 	int ISDBTFrontend::createPesFilter(
-			int pid, int pesType, bool compositeFiler) {
+	 		int pid, int pesType, bool compositeFiler) {
+                clog << "ISDBTFrontend::createPesFilter not implemented!" << endl;
+#if 0
 
 		int fd, res;
 		struct dmx_pes_filter_params f;
@@ -473,11 +450,14 @@ namespace tuning {
 			clog << "ISDBTFrontend::createPesFilter ";
 			clog << "ioctl DMX_SET_PES_FILTER failed" << endl;
 		}
-
 		return fd;
+#endif
+                return -1;
 	}
 
 	void ISDBTFrontend::removeFilter(IFrontendFilter* filter) {
+                clog << "ISDBTFrontend::removeFilter not implemented!" << endl;
+#if 0
 		ActionsToFilters* action;
 
 		clog << "ISDBTFrontend::removeFilter" << endl;
@@ -489,6 +469,7 @@ namespace tuning {
 		lock();
 		actsToRunningFilters->push_back(action);
 		unlock();
+#endif
 	}
 
 	void ISDBTFrontend::updatePool() {
@@ -511,9 +492,13 @@ namespace tuning {
 			i++;
 			++j;
 		}
+
+		clog << "ISDBTFrontend::updatePool: OUT ";
 	}
 
 	void ISDBTFrontend::readFilters() {
+                clog << "ISDBTFrontend::readFilters not implemented! ";
+#if 0
 		IFrontendFilter* filter;
 		int fd;
 		int i = 0, n, recv, fSize;
@@ -588,13 +573,16 @@ namespace tuning {
 			i++;
 			++j;
 		}
+#endif
 	}
 
 	void ISDBTFrontend::run() {
 		clog << "ISDBTFrontend::run" << endl;
+#if 0
 		do {
 			readFilters();
 		} while (true);
+#endif
 		clog << "ISDBTFrontend::run no filters running!" << endl;
 	}
 }
