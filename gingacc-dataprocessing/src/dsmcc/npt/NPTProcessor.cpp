@@ -184,16 +184,15 @@ void NPTProcessor::clearUnusedTimebase() {
 	TimeBaseClock* clk;
 	bool restart = true;
 
-	while (restart) {
-		restart = false;
-		i = timeBaseClock.begin();
-		while (i != timeBaseClock.end()) {
-			clk = i->second;
+	i = timeBaseClock.begin();
+	while (i != timeBaseClock.end()) {
+		clk = i->second;
+		if (clk) {
 			if ((clk->getEndpointAvailable()) &&
 					(clk->getStcBase() >= clk->getStopNpt())) {
 
 				notifyNaturalEndListeners(
-						clk->getContentId(), clk->getStopNpt());
+						clk->getContentId(), Stc::baseToSecond(clk->getStopNpt()));
 
 				clog << "NPTProcessor::clearUnusedTimebase - Deleted by ";
 				clog << "endpoint: CID = " << (clk->getContentId() & 0xFF);
@@ -201,13 +200,12 @@ void NPTProcessor::clearUnusedTimebase() {
 
 				delete i->second;
 				timeBaseClock.erase(i);
-				restart = true;
+				i = timeBaseClock.begin();
+				continue;
 			}
-			++i;
 		}
+		++i;
 	}
-
-	restart = true;
 
 	//TODO: Timebase should still be incremented after 1 second without no
 	//      NPT Reference updates?
@@ -218,13 +216,14 @@ void NPTProcessor::clearUnusedTimebase() {
 		if (itLife != timeBaseLife.end()) {
 			if (itLife->second->getStcBase() > 5400000) {// 1 minute
 				clk = getTimeBaseClock(itLife->first);
-				notifyNaturalEndListeners(
-						clk->getContentId(), clk->getBaseToSecond());
+				if (clk) {
+					notifyNaturalEndListeners(
+							clk->getContentId(), clk->getBaseToSecond());
 
-				clog << "NPTProcessor::clearUnusedTimebase - Deleted by ";
-				clog << "lifetime: CID = " << (clk->getContentId() & 0xFF);
-				clog << endl;
-
+					clog << "NPTProcessor::clearUnusedTimebase - Deleted by ";
+					clog << "lifetime: CID = " << (clk->getContentId() & 0xFF);
+					clog << endl;
+				}
 				delete itLife->second;
 				timeBaseLife.erase(itLife);
 				restart = true;
@@ -440,8 +439,10 @@ TimeBaseClock* NPTProcessor::getCurrentTimebase() {
 	i = timeBaseClock.begin();
 	while (i != timeBaseClock.end()) {
 		clk = i->second;
-		if (clk->getScaleNumerator()) {
-			return i->second;
+		if (clk) {
+			if (clk->getScaleNumerator()) {
+				return i->second;
+			}
 		}
 		++i;
 	}
@@ -587,6 +588,7 @@ double NPTProcessor::getCurrentTimeValue(unsigned char timeBaseId) {
 }
 
 void NPTProcessor::detectLoop() {
+	TimeBaseClock* clk;
 	map<unsigned char, Stc*>::iterator i;
 
 	if (getSTCValue()) {
@@ -598,10 +600,12 @@ void NPTProcessor::detectLoop() {
 				Thread::mutexLock(&lifeMutex);
 				i = timeBaseLife.begin();
 				while (i != timeBaseLife.end()) {
-					notifyNaturalEndListeners(
-							i->first,
-							getTimeBaseClock(i->first)->getBaseToSecond());
-
+					clk = getTimeBaseClock(i->first);
+					if (clk) {
+						notifyNaturalEndListeners(
+								i->first,
+								clk->getBaseToSecond());
+					}
 					++i;
 				}
 				Thread::mutexUnlock(&lifeMutex);
@@ -914,25 +918,27 @@ char NPTProcessor::getNextNptValue(
 	while (k != timeBaseLife.end()) {
 		cstc = k->second;
 		l = timeBaseClock.find(k->first);
-		value = 60.0 - cstc->getBaseToSecond();
-		if (value < 0) value = 0.0;
-		if (value < remaining3) {
-			remaining3 = value;
-		}
-		if (l->second->getScaleNumerator() &&
-				l->second->getEndpointAvailable()) {
-
-			r = Stc::baseToSecond(
-					l->second->getStopNpt()) - l->second->getBaseToSecond();
-
-			if (r < 0) {
-				r = 0.0;
+		if ((l != timeBaseClock.end()) && l->second) {
+			value = 60.0 - cstc->getBaseToSecond();
+			if (value < 0) value = 0.0;
+			if (value < remaining3) {
+				remaining3 = value;
 			}
+			if (l->second->getScaleNumerator() &&
+					l->second->getEndpointAvailable()) {
 
-			if (r < remaining3) {
-				remaining3 = r;
-				//TODO: we need a bug fix here
-				//*nextNptValue = j->first->time;
+				r = Stc::baseToSecond(
+						l->second->getStopNpt()) - l->second->getBaseToSecond();
+
+				if (r < 0) {
+					r = 0.0;
+				}
+
+				if (r < remaining3) {
+					remaining3 = r;
+					//TODO: we need a bug fix here
+					//*nextNptValue = j->first->time;
+				}
 			}
 		}
 		++k;

@@ -65,14 +65,14 @@ namespace time {
 
 			virtual void timeBaseNaturalEnd(
 					unsigned char contentId,
-					int64_t timeValue)=0;
+					double timeValue)=0;
 
 			virtual void updateTimeBaseId(
 					unsigned char oldContentId,
 					unsigned char newContentId)=0;
 
 			virtual void valueReached(
-					unsigned char timeBaseId, int64_t timeValue)=0;
+					unsigned char timeBaseId, double timeValue)=0;
 
 			virtual void loopDetected()=0;
 	};
