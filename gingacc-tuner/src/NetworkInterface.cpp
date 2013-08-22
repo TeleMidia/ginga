@@ -159,7 +159,11 @@ namespace tuning {
 			return true;
 #if defined(_WIN32)
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
-			provider = new BDAProvider((long)util::stof(address));
+			long freq;
+			if (!address.empty()) {
+				freq = (long)util::stof(address);
+			} else freq = -1;
+			provider = new BDAProvider(freq);
 			return true;
 #endif
 #if HAVE_FEV4L
