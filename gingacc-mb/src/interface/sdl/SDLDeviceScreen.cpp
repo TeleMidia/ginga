@@ -1369,9 +1369,9 @@ namespace mb {
 		bool capsOn  = false;
 		bool hasEvent;
 
-		lockSDL();
+//		lockSDL();
 		hasEvent = SDL_PollEvent(&event);
-		unlockSDL();
+//		unlockSDL();
 
 		while (hasEvent) {
 			//clog << "SDLDeviceScreen::checkEvents poll event" << endl;
@@ -1631,8 +1631,8 @@ namespace mb {
 		set<IWindow*>::iterator k;
 
 		Thread::mutexLock(&renMutex);
-		lockSDL();
 		if (s->renderer != NULL && !renderMap.empty()) {
+			lockSDL();
 			SDL_RenderClear(s->renderer);
 			unlockSDL();
 
@@ -1661,8 +1661,8 @@ namespace mb {
 
 			lockSDL();
 			SDL_RenderPresent(s->renderer);
+			unlockSDL();
 		}
-		unlockSDL();
 		Thread::mutexUnlock(&renMutex);
 	}
 
