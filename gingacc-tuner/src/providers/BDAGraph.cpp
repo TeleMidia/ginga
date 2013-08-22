@@ -1704,12 +1704,16 @@ void BDAGraph::readNetworkInfo(clock_t stopTime) {
 }
 
 HRESULT BDAGraph::tryToTune() {
+	searching = true;
 	channelsList->loadFromFile(channelsFile);
 	tunedFreq = channelsList->getDefaultFreq();
 	if (tunedFreq > 0) {
 		changeChannelTo(tunedFreq);
 		Sleep(1500);
-		if (getSignalStrength()) return S_OK;
+		if (getSignalStrength()) {
+			searching = false;
+			return S_OK;
+		}
 		else {
 			tunedFreq = -1;
 		}
@@ -1727,6 +1731,7 @@ HRESULT BDAGraph::tryToTune() {
 		}
 	} else freq = -1;
 	tunedFreq = freq;
+	searching = false;
 	if (freq == -1) return S_FALSE;
 	return S_OK;
 }
@@ -1740,6 +1745,7 @@ HRESULT BDAGraph::searchChannels() {
 	long st = 0;
 	bool setDefault = true;
 
+	searching = true;
 	channelsList->cleanList();
 	cout << endl << "Searching channels..." << endl;
 	cout << "  0%";
@@ -1780,6 +1786,11 @@ HRESULT BDAGraph::searchChannels() {
 			printf("%3.0f%%", (float(cProgress)/mProgress)*100);
 		}
 	}
+	searching = false;
+	cout << "Done!" << endl;
+	changeChannelTo(channelsList->getDefaultFreq());
+	tunedFreq = channelsList->getDefaultFreq();
+	clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
 	return S_OK;
 }
 
@@ -1795,30 +1806,19 @@ HRESULT BDAGraph::execute(long freq) {
 		changeChannelTo(freq);
 		Sleep(1500);
 		if (getSignalStrength())  {
-			cout << "Tuned at " << freq << " kHz." << endl;
+			clog << "Tuned at " << freq << " kHz." << endl;
+			tunedFreq = freq;
 			return S_OK;
 		} else {
 			tunedFreq = -1;
 			return S_FALSE;
 		}
 	}
-	searching = true;
-	if (tryToTune() == S_FALSE) {
-		hr = searchChannels();
-		if (FAILED(hr)) {
-			cout << "Channel search error." << endl;
-			Destroy();
-			return hr;
-		}
-		if (tryToTune() == S_FALSE) {
-			cout << "Unable to find any channel." << endl;
-		}
+	if ((freq == 0) && (tryToTune() == S_OK)) {
+		clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
+		return S_OK;
 	}
-	if (tunedFreq) {
-		cout << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
-	}
-	searching = false;
-	return hr;
+	return S_FALSE;
 }
 
 long BDAGraph::getTunedFreq() {
