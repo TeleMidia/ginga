@@ -120,6 +120,7 @@ namespace si {
 			unsigned int getDefaultProgramPid();
 			unsigned int getDefaultMainVideoPid();
 			unsigned int getDefaultMainAudioPid();
+			unsigned int getDefaultMainCarouselPid();
 
 			unsigned short createPatStreamByProgramPid(unsigned short pid, char** dataStream);
 

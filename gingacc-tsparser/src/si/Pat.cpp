@@ -471,6 +471,17 @@ namespace si {
 		return pmt->getDefaultMainAudioPid();
 	}
 
+	unsigned int Pat::getDefaultMainCarouselPid() {
+		Pmt* pmt;
+
+		if (programs.empty()) {
+			return 0;
+		}
+
+		pmt = programs.begin()->second;
+		return pmt->getDefaultMainCarouselPid();
+	}
+
 	unsigned short Pat::createPatStreamByProgramPid(unsigned short pid, char** dataStream) {
 		map<unsigned int, unsigned int>::iterator i;
 		int pos = 0;

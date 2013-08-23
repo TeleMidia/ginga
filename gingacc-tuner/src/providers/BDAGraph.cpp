@@ -1776,8 +1776,8 @@ HRESULT BDAGraph::searchChannels() {
 			readNetworkInfo(clock()+1500);
 			Sleep(1500);
 			printf("\b\b\b\b");
-			cout << "Channel: " << (int)ch << ". Frequency: " << freqBegin << " Khz. "
-				<< "Virtual channel: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
+			cout << "Channel: " << (int)ch << ". Freq: " << freqBegin << " Khz. "
+				<< "VC: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
 			channelsList->insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
 			if (setDefault) {
 				setDefault = false;
@@ -1787,10 +1787,13 @@ HRESULT BDAGraph::searchChannels() {
 		}
 	}
 	searching = false;
-	cout << "Done!" << endl;
-	changeChannelTo(channelsList->getDefaultFreq());
 	tunedFreq = channelsList->getDefaultFreq();
-	clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
+	channelsList->saveToFile(channelsFile);
+	cout << "Done!" << endl;
+	Destroy();
+	exit(0);
+	//changeChannelTo(channelsList->getDefaultFreq());
+	//clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
 	return S_OK;
 }
 
