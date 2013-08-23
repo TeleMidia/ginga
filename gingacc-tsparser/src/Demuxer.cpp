@@ -526,6 +526,17 @@ namespace tsparser {
 		return pat->getDefaultMainAudioPid();
 	}
 
+	int Demuxer::getDefaultMainCarouselPid() {
+			while (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
+			if (pat->isConsolidated()) {
+				pat->checkConsistency();
+			}
+			SystemCompat::uSleep(1000);
+		}
+
+		return pat->getDefaultMainCarouselPid();
+	}
+
 	void Demuxer::setDestination(short int streamType) {
 		clog << "Demuxer::setDestination '" << streamType << "'" << endl;
 		this->debugDest = streamType;

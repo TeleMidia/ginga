@@ -312,6 +312,20 @@ namespace si {
 		return 0;
 	}
 
+	unsigned int Pmt::getDefaultMainCarouselPid() {
+		map<unsigned int, short>::iterator i;
+
+		i = streams.begin();
+		while (i != streams.end()) {
+			if (i->second == STREAM_TYPE_DSMCC_TYPE_B) {
+				return i->first;
+			}
+			++i;
+		}
+
+		return 0;
+	}
+
 	unsigned int Pmt::getDefaultMainAudioPid() {
 		map<unsigned int, short>::iterator i;
 
