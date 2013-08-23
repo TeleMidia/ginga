@@ -70,6 +70,7 @@ BDAGraph::BDAGraph(string channelsFile, Channels *channelsList) {
 	currentVirtualChannel = 0;
 	this->channelsFile.assign(channelsFile);
 	this->channelsList = channelsList;
+	this->channelsList->loadFromFile(channelsFile);
 	tunedFreq = -1;
 
     p_media_control = NULL;
@@ -1705,7 +1706,6 @@ void BDAGraph::readNetworkInfo(clock_t stopTime) {
 
 HRESULT BDAGraph::tryToTune() {
 	searching = true;
-	channelsList->loadFromFile(channelsFile);
 	tunedFreq = channelsList->getDefaultFreq();
 	if (tunedFreq > 0) {
 		changeChannelTo(tunedFreq);
@@ -1808,6 +1808,8 @@ HRESULT BDAGraph::execute(long freq) {
 		if (getSignalStrength())  {
 			clog << "Tuned at " << freq << " kHz." << endl;
 			tunedFreq = freq;
+			channelsList->setDefaultFreq(tunedFreq);
+			channelsList->saveToFile(channelsFile);
 			return S_OK;
 		} else {
 			tunedFreq = -1;
