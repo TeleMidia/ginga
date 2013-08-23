@@ -154,15 +154,18 @@ namespace tuning {
 				return true;
 			}
 
-		} else if (name == "fs") {
+		} else if (name == "file") {
 			provider = new FileSystemProvider(address);
 			return true;
 #if defined(_WIN32)
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
 			long freq;
-			if (!address.empty()) {
-				freq = (long)util::stof(address);
-			} else freq = -1;
+			if (address == "scan") freq = -1;
+				else if (address == "current") freq = 0;
+					else {
+						freq = (long)util::stof(address);
+						if (freq < 1) return false;
+					}
 			provider = new BDAProvider(freq);
 			return true;
 #endif
