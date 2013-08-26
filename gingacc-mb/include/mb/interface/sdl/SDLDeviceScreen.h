@@ -66,6 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "SDL.h"
 
 #include <pthread.h>
+#include <time.h>
 
 #include <set>
 #include <map>

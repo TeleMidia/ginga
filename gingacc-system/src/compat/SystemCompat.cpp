@@ -775,6 +775,139 @@ namespace compat {
 		return rval;
 	}
 
+#if defined(_WIN32) && !defined(__MINGW32__)
+	LARGE_INTEGER win_getFILETIMEoffset() {
+		SYSTEMTIME s;
+		FILETIME f;
+		LARGE_INTEGER t;
+
+		s.wYear = 1970;
+		s.wMonth = 1;
+		s.wDay = 1;
+		s.wHour = 0;
+		s.wMinute = 0;
+		s.wSecond = 0;
+		s.wMilliseconds = 0;
+		SystemTimeToFileTime(&s, &f);
+		t.QuadPart = f.dwHighDateTime;
+		t.QuadPart <<= 32;
+		t.QuadPart |= f.dwLowDateTime;
+		return t;
+	}
+
+	int win_clock_gettime(int clockType, struct timespec* tv) {
+		unsigned __int64 t;
+		LARGE_INTEGER pf, pc;
+		union {
+			unsigned __int64 u64;
+			FILETIME ft;
+		} ct, et, kt, ut;
+
+		switch (clockType) {
+			case CLOCK_REALTIME:
+				GetSystemTimeAsFileTime(&ct.ft);
+				t = ct.u64 - DELTA_EPOCH_IN_100NS;
+				tv->tv_sec = t / POW10_7;
+				tv->tv_nsec = ((int) (t % POW10_7)) * 100;
+
+				return 0;
+
+			case CLOCK_MONOTONIC:
+				if (QueryPerformanceFrequency(&pf) == 0) {
+					return EINVAL;
+				}
+
+				if (QueryPerformanceCounter(&pc) == 0) {
+					return EINVAL;
+				}
+
+				tv->tv_sec = pc.QuadPart / pf.QuadPart;
+				tv->tv_nsec = (int) (((pc.QuadPart % pf.QuadPart) * POW10_9 + (pf.QuadPart >> 1)) / pf.QuadPart);
+				if (tv->tv_nsec >= POW10_9) {
+					tv->tv_sec ++;
+					tv->tv_nsec -= POW10_9;
+				}
+
+				return 0;
+
+			case CLOCK_PROCESS_CPUTIME_ID:
+				if (GetProcessTimes(GetCurrentProcess(), &ct.ft, &et.ft, &kt.ft, &ut.ft) == 0) {
+					return EINVAL;
+				}
+
+				t = kt.u64 + ut.u64;
+				tv->tv_sec = t / POW10_7;
+				tv->tv_nsec = ((int) (t % POW10_7)) * 100;
+
+				return 0;
+
+			case CLOCK_THREAD_CPUTIME_ID: 
+				if (GetThreadTimes(GetCurrentThread(), &ct.ft, &et.ft, &kt.ft, &ut.ft) == 0) {
+					return EINVAL;
+				}
+				t = kt.u64 + ut.u64;
+				tv->tv_sec = t / POW10_7;
+				tv->tv_nsec = ((int) (t % POW10_7)) * 100;
+
+				return 0;
+
+			default:
+				break;
+		}
+
+		return EINVAL;
+
+		/*LARGE_INTEGER t;
+		FILETIME f;
+		double microseconds;
+		static LARGE_INTEGER offset;
+		static double frequencyToMicroseconds;
+		static int initialized = 0;
+		static BOOL usePerformanceCounter = 0;
+
+		if (!initialized) {
+			LARGE_INTEGER performanceFrequency;
+			initialized = 1;
+			usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
+			if (usePerformanceCounter) {
+				QueryPerformanceCounter(&offset);
+				frequencyToMicroseconds = (double)performanceFrequency.QuadPart / 1000000.;
+
+			} else {
+				offset = win_getFILETIMEoffset();
+				frequencyToMicroseconds = 10.;
+			}
+		}
+		if (usePerformanceCounter) {
+			QueryPerformanceCounter(&t);
+
+		} else {
+			GetSystemTimeAsFileTime(&f);
+			t.QuadPart = f.dwHighDateTime;
+			t.QuadPart <<= 32;
+			t.QuadPart |= f.dwLowDateTime;
+		}
+
+		t.QuadPart  -= offset.QuadPart;
+		microseconds = (double)t.QuadPart / frequencyToMicroseconds;
+		t.QuadPart   = microseconds;
+		tv->tv_sec   = t.QuadPart / 1000;
+		tv->tv_nsec  = t.QuadPart % 1000;
+		return 0;*/
+	}
+#endif
+
+	int SystemCompat::clockGetTime(int clockType, struct timespec* tv) {
+		int res;
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+		res = win_clock_gettime(clockType, tv);
+#else
+		res = clock_gettime(clockType, tv);
+#endif
+		return res;
+	}
+
 	/* replacement of Unix rint() for Windows */
 	int SystemCompat::rint (double x) {
 #if defined(_WIN32) && !defined(__MINGW32__)

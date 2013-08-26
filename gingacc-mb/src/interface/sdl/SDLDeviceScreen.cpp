@@ -1425,13 +1425,21 @@ namespace mb {
 	void* SDLDeviceScreen::rendererT(void* ptr) {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDLDeviceScreen* s;
-		int elapsedTime, decRate;
-		double lastRender = 0;
-
 		checkSDLInit();
 
+		long render_delta_ns = 33000000; // 20ms render interval
+
+		int retcode;
+		int first_pass = 1;
+		struct timespec now;
+		struct timespec timeout;
+		pthread_mutex_t mutex;
+		pthread_cond_t cond;
+
+		Thread::mutexInit(&mutex, false);
+		Thread::condInit(&cond, NULL);
+
 		while (hasRenderer) {
-			elapsedTime = getCurrentTimeMillis();
 
 			if (!checkEvents()) {
 				return NULL;
@@ -1444,17 +1452,11 @@ namespace mb {
 
 				switch (i->second) {
 					case SPT_NONE:
-						decRate = refreshCMP(s);
 
-						if (lastRender == 0) {
-							refreshWin(s);
-							lastRender = getCurrentTimeMillis() * 1000;
-
-						} else if ((getCurrentTimeMillis() * 1000) -
-								lastRender > uSleepTime) {
-
-							lastRender = 0;
-						}
+						// WTF
+						// decRate = refreshCMP(s);
+						refreshCMP(s);
+						refreshWin(s);
 
 						if (s->mustGainFocus) {
 							if (!s->uEmbedFocused) {
@@ -1496,16 +1498,47 @@ namespace mb {
 				break;
 
 			} else {
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-				/*
-				 * TODO: we have to set windows to sleep less than 20ms
-				 *       (we're sleeping 2ms on linux)
-				 */
-				Sleep(0);
+				if (first_pass) {
+					SystemCompat::clockGetTime(CLOCK_MONOTONIC, &now);
+					timeout.tv_sec = now.tv_sec;
+					timeout.tv_nsec = now.tv_nsec;
+					first_pass = 0;
+				}
 
-#else
-				SystemCompat::uSleep(2000);
-#endif
+				// if (second_bump) 
+				if ((timeout.tv_nsec + render_delta_ns) >= 1000000000) {
+					timeout.tv_sec++;
+					timeout.tv_nsec = (timeout.tv_nsec + render_delta_ns) % 1000000000;
+
+				} else {
+					timeout.tv_nsec += render_delta_ns;
+				}
+
+				SystemCompat::clockGetTime(CLOCK_MONOTONIC, &now);
+				if ((timeout.tv_sec < now.tv_sec) || (
+						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_sec))) {
+
+					/*clog << "Not possible to keep up the bitrate, adjusting the timeout ..." << endl;
+
+					clog << "current time....: " << now.tv_sec << " " << now.tv_nsec <<  endl;
+					clog << "scheduled time..: " << timeout.tv_sec << " " << timeout.tv_nsec <<  endl;*/
+
+					timeout.tv_sec = now.tv_sec;
+					timeout.tv_nsec = now.tv_nsec;
+
+				} else {
+					//clog << "All good.." <<  endl;
+					pthread_mutex_lock(&mutex);
+					int retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
+					if (retcode == ETIMEDOUT) {
+						//clog << "All good" << endl;
+
+					} else {
+						//clog << "Strange stuff";
+					}
+
+					pthread_mutex_unlock(&mutex);
+				}
 			}
 		}
 
@@ -1632,7 +1665,7 @@ namespace mb {
 
 		Thread::mutexLock(&renMutex);
 		if (s->renderer != NULL && !renderMap.empty()) {
-			lockSDL();
+                        lockSDL();
 			SDL_RenderClear(s->renderer);
 			unlockSDL();
 
@@ -1661,7 +1694,7 @@ namespace mb {
 
 			lockSDL();
 			SDL_RenderPresent(s->renderer);
-			unlockSDL();
+                        unlockSDL();
 		}
 		Thread::mutexUnlock(&renMutex);
 	}

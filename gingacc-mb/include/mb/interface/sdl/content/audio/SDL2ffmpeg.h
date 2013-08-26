@@ -73,18 +73,6 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef INT64_C
-#define INT64_C(c) (c ## LL)
-#endif //INT64_C
-
-#ifndef UINT64_C
-#define UINT64_C(c) (c ## ULL)
-#endif //UINT64_C
-
-#ifndef __INT64_C
-#define __INT64_C int64_t
-#endif //__INT64_C
-
 #include "libavcodec/avfft.h"
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
