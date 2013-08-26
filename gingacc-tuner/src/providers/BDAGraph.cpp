@@ -1799,7 +1799,10 @@ HRESULT BDAGraph::searchChannels() {
 
 HRESULT BDAGraph::execute(long freq) {
 	HRESULT hr = SetDVBT(FREQ_LOW, FREQ_BANDWIDTH);
-	if (FAILED(hr)) return hr;
+	if (FAILED(hr)) {
+		if (freq == -1) exit(0);
+		return hr;
+	}
 	hr = SubmitTuneRequest();
 	if (FAILED(hr)) {
 		Destroy();
