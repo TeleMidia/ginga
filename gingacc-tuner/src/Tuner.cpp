@@ -116,11 +116,11 @@ namespace tuning {
 		size_t pos;
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 
-			if (niSpec.substr(0, 3) == "fs:") {
+			if (niSpec.substr(0, 5) == "file:") {
 				createInterface(
-						"fs",
+						"file",
 						"local",
-						niSpec.substr(3, niSpec.length() - 3));
+						niSpec.substr(5, niSpec.length() - 5));
 
 				return;
 

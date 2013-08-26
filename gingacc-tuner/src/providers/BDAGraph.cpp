@@ -70,6 +70,7 @@ BDAGraph::BDAGraph(string channelsFile, Channels *channelsList) {
 	currentVirtualChannel = 0;
 	this->channelsFile.assign(channelsFile);
 	this->channelsList = channelsList;
+	this->channelsList->loadFromFile(channelsFile);
 	tunedFreq = -1;
 
     p_media_control = NULL;
@@ -1705,7 +1706,6 @@ void BDAGraph::readNetworkInfo(clock_t stopTime) {
 
 HRESULT BDAGraph::tryToTune() {
 	searching = true;
-	channelsList->loadFromFile(channelsFile);
 	tunedFreq = channelsList->getDefaultFreq();
 	if (tunedFreq > 0) {
 		changeChannelTo(tunedFreq);
@@ -1776,8 +1776,8 @@ HRESULT BDAGraph::searchChannels() {
 			readNetworkInfo(clock()+1500);
 			Sleep(1500);
 			printf("\b\b\b\b");
-			cout << "Channel: " << (int)ch << ". Frequency: " << freqBegin << " Khz. "
-				<< "Virtual channel: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
+			cout << "Channel: " << (int)ch << ". Freq: " << freqBegin << " Khz. "
+				<< "VC: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
 			channelsList->insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
 			if (setDefault) {
 				setDefault = false;
@@ -1787,16 +1787,22 @@ HRESULT BDAGraph::searchChannels() {
 		}
 	}
 	searching = false;
-	cout << "Done!" << endl;
-	changeChannelTo(channelsList->getDefaultFreq());
 	tunedFreq = channelsList->getDefaultFreq();
-	clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
+	channelsList->saveToFile(channelsFile);
+	cout << "Done!" << endl;
+	Destroy();
+	exit(0);
+	//changeChannelTo(channelsList->getDefaultFreq());
+	//clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
 	return S_OK;
 }
 
 HRESULT BDAGraph::execute(long freq) {
 	HRESULT hr = SetDVBT(FREQ_LOW, FREQ_BANDWIDTH);
-	if (FAILED(hr)) return hr;
+	if (FAILED(hr)) {
+		if (freq == -1) exit(0);
+		return hr;
+	}
 	hr = SubmitTuneRequest();
 	if (FAILED(hr)) {
 		Destroy();
@@ -1808,6 +1814,8 @@ HRESULT BDAGraph::execute(long freq) {
 		if (getSignalStrength())  {
 			clog << "Tuned at " << freq << " kHz." << endl;
 			tunedFreq = freq;
+			channelsList->setDefaultFreq(tunedFreq);
+			channelsList->saveToFile(channelsFile);
 			return S_OK;
 		} else {
 			tunedFreq = -1;
