@@ -1665,7 +1665,7 @@ namespace mb {
 
 		Thread::mutexLock(&renMutex);
 		if (s->renderer != NULL && !renderMap.empty()) {
-                        lockSDL();
+			lockSDL();
 			SDL_RenderClear(s->renderer);
 			unlockSDL();
 
@@ -1694,7 +1694,7 @@ namespace mb {
 
 			lockSDL();
 			SDL_RenderPresent(s->renderer);
-                        unlockSDL();
+			unlockSDL();
 		}
 		Thread::mutexUnlock(&renMutex);
 	}
@@ -2908,13 +2908,19 @@ namespace mb {
 
 	    	/* window rendering */
 	    	if (hasTexture(texture)) {
-	    		void* pixels;
+	    		/*void* pixels;
 	    		int tpitch[3];
 	    		bool locked;
 
 	    		//trying to lock texture
 	    		locked = SDL_LockTexture(
-	    				texture, NULL, &pixels, &tpitch[0]) == 0;
+	    				texture, NULL, &pixels, &tpitch[0]) == 0;*/
+
+				/*
+				 * Warning: there is no need to lock the texture
+				 * lock the texture can imply some delay in 
+				 * the decoder procedure
+				 */
 
 				drawing = true;
 				if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
@@ -2923,9 +2929,9 @@ namespace mb {
 					clog << endl;
 				}
 
-				if (locked) {
+				/*if (locked) {
 					SDL_UnlockTexture(texture);
-				}
+				}*/
 	    	}
 
 	    	/* window border */
