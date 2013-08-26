@@ -145,6 +145,7 @@ namespace tsparser {
 			Pat* getPat();
 			int getDefaultMainVideoPid();
 			int getDefaultMainAudioPid();
+			int getDefaultMainCarouselPid();
 			void removeFilter(ITSFilter* tsFilter);
 			void addFilter(ITSFilter* tsFilter, int pid, int tid);
 			void addFilter(IFrontendFilter* filter);

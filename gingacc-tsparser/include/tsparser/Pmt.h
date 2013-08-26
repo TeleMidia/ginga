@@ -106,6 +106,7 @@ namespace si {
 			unsigned int getPCRPid();
 			unsigned int getDefaultMainVideoPid();
 			unsigned int getDefaultMainAudioPid();
+			unsigned int getDefaultMainCarouselPid();
 			int getTaggedVideoPid(unsigned char idx);
 			int getTaggedAudioPid(unsigned char idx);
 			void print();
