@@ -615,6 +615,9 @@ namespace player {
 			provider->playOver(surface, hasVisual);
 			checkVideoResizeEvent();
 			buffered = true;
+
+			//notifying GingaGUI
+			cout << "cmd::gingagui::0" << endl;
 			waitForUnlockCondition();
 
 		} else if (isRemote) {
