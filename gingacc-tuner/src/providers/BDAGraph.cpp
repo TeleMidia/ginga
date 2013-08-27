@@ -1739,7 +1739,7 @@ HRESULT BDAGraph::tryToTune() {
 HRESULT BDAGraph::searchChannels() {
 	long freqBegin = FREQ_LOW;
 	long freqEnd = FREQ_HIGH;
-	long cProgress = 0;
+	long cProgress = 0, vp = 0;
 	long mProgress = freqEnd - freqBegin;
 	float ch = 14.0;
 	long st = 0;
@@ -1747,8 +1747,8 @@ HRESULT BDAGraph::searchChannels() {
 
 	searching = true;
 	channelsList->cleanList();
-	cout << endl << "Searching channels..." << endl;
-	cout << "  0%";
+	clog << endl << "cmd::gingagui::Searching channels..." << endl;
+	clog << "cmd::gingagui::0%" << endl;
 	while (1) {
 		freqBegin += 3000;
 		cProgress += 3000;
@@ -1759,7 +1759,6 @@ HRESULT BDAGraph::searchChannels() {
 			freqBegin += 9000;
 		}
 		if (freqBegin >= freqEnd) {
-			printf("\b\b\b\b");
 			if (channelsList->getListSize()) {
 				channelsList->saveToFile(channelsFile);
 			} else {
@@ -1767,29 +1766,29 @@ HRESULT BDAGraph::searchChannels() {
 			}
 			break;
 		}
-		printf("\b\b\b\b");
-		printf("%3.0f%%", (float(cProgress)/mProgress)*100);
+		vp = (float(cProgress)/mProgress)*100;
+		clog << "cmd::gingagui::" << vp << "%" << endl;
 		changeChannelTo(freqBegin);
 		Sleep(1500);
 		st = getSignalStrength();
 		if (st > 0) {
 			readNetworkInfo(clock()+1500);
 			Sleep(1500);
-			printf("\b\b\b\b");
-			cout << "Channel: " << (int)ch << ". Freq: " << freqBegin << " Khz. "
+			clog << "cmd::gingagui::Channel: " << (int)ch << ". Freq: " << freqBegin << " Khz. "
 				<< "VC: "<< (currentVirtualChannel & 0xFF) << ". " << currentNetworkName << endl;
 			channelsList->insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
 			if (setDefault) {
 				setDefault = false;
 				channelsList->setDefaultFreq(freqBegin);
 			}
-			printf("%3.0f%%", (float(cProgress)/mProgress)*100);
+			vp = (float(cProgress)/mProgress)*100;
+			clog << "cmd::gingagui::" << vp << "%" << endl;
 		}
 	}
 	searching = false;
 	tunedFreq = channelsList->getDefaultFreq();
 	channelsList->saveToFile(channelsFile);
-	cout << "Done!" << endl;
+	clog << "cmd::gingagui::100%" << endl;
 	Destroy();
 	exit(0);
 	//changeChannelTo(channelsList->getDefaultFreq());
@@ -1812,18 +1811,21 @@ HRESULT BDAGraph::execute(long freq) {
 		changeChannelTo(freq);
 		Sleep(1500);
 		if (getSignalStrength())  {
-			clog << "Tuned at " << freq << " kHz." << endl;
+			clog << "cmd::gingagui::Tuned at " << freq << " kHz." << endl;
 			tunedFreq = freq;
 			channelsList->setDefaultFreq(tunedFreq);
 			channelsList->saveToFile(channelsFile);
 			return S_OK;
 		} else {
 			tunedFreq = -1;
+			Destroy();
+			clog << "cmd::gingagui::Unable to tune." << endl;
+			exit(0);
 			return S_FALSE;
 		}
 	}
 	if ((freq == 0) && (tryToTune() == S_OK)) {
-		clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
+		clog << "cmd::gingagui::Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
 		return S_OK;
 	}
 	return S_FALSE;
