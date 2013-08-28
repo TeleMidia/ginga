@@ -1732,7 +1732,12 @@ HRESULT BDAGraph::tryToTune() {
 	} else freq = -1;
 	tunedFreq = freq;
 	searching = false;
-	if (freq == -1) return S_FALSE;
+	if (freq == -1) {
+		Destroy();
+		clog << "cmd::gingagui::Unable to tune any channel." << endl;
+		exit(0);
+		return S_FALSE;
+	}
 	return S_OK;
 }
 
