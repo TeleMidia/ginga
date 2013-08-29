@@ -91,9 +91,17 @@ namespace tuning {
 	}
 
 	bool Tuner::userEventReceived(IInputEvent* ev) {
+		map<int, INetworkInterface*>::iterator i;
+
 		if (ev->getKeyCode(screenId) == CodeMap::KEY_QUIT) {
 			//CLOSE ALL TUNER INTERFACE/PROVIDER
-
+			lock();
+			i = interfaces.begin();
+			while (i != interfaces.end()) {
+				i->second->close();
+				++i;
+			}
+			unlock();
 		}
 
 		return true;
