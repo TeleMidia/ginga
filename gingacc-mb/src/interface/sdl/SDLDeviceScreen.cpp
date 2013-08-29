@@ -2294,7 +2294,7 @@ namespace mb {
 		}
 
 		//sdlStrToSdlCode
-		sdlStrToSdlCode["SDL_QUIT"]               = SDL_QUIT;
+		sdlStrToSdlCode["SDLK_QUIT"]               = SDL_QUIT;
 		sdlStrToSdlCode["SDLK_UNKNOWN"]           = SDLK_UNKNOWN;
 		sdlStrToSdlCode["SDLK_0"]                 = SDLK_0;
 		sdlStrToSdlCode["SDLK_1"]                 = SDLK_1;
