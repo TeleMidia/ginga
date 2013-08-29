@@ -1786,6 +1786,7 @@ HRESULT BDAGraph::searchChannels() {
 				setDefault = false;
 				channelsList->setDefaultFreq(freqBegin);
 			}
+			channelsList->saveToFile(channelsFile);
 			vp = (float(cProgress)/mProgress)*100;
 			clog << "cmd::gingagui::" << vp << "%" << endl;
 		}
