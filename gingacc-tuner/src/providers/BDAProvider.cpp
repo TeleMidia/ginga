@@ -131,7 +131,8 @@ namespace tuning {
 	}
 
 	void BDAProvider::close() {
-
+		delete bda;
+		bda = NULL;
 	}
 
 	int BDAProvider::receiveData(char* buff,  int skipSize,
