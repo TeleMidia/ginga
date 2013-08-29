@@ -55,13 +55,19 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	Tuner::Tuner(string network, string protocol, string address) : Thread() {
+	Tuner::Tuner(
+			GingaScreenID screenId,
+			string network,
+			string protocol,
+			string address) : Thread() {
+
 		receiving        = false;
 		currentInterface = -1;
 		firstTune        = true;
 		listener         = NULL;
 		skipSize         = 0;
 		packetSize       = 188;
+		this->screenId   = screenId;
 
 		interfaces.clear();
 
@@ -82,6 +88,15 @@ namespace tuning {
 
 		clearInterfaces();
 		clog << "Tuner::~Tuner all done" << endl;
+	}
+
+	bool Tuner::userEventReceived(IInputEvent* ev) {
+		if (ev->getKeyCode(screenId) == CodeMap::KEY_QUIT) {
+			//CLOSE ALL TUNER INTERFACE/PROVIDER
+
+		}
+
+		return true;
 	}
 
 	void Tuner::clearInterfaces() {
@@ -419,8 +434,8 @@ namespace tuning {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::tuning::ITuner* createTuner() {
-	return new ::br::pucrio::telemidia::ginga::core::tuning::Tuner();
+extern "C" ::br::pucrio::telemidia::ginga::core::tuning::ITuner* createTuner(GingaScreenID screenId) {
+	return new ::br::pucrio::telemidia::ginga::core::tuning::Tuner(screenId);
 }
 
 extern "C" void destroyTuner(

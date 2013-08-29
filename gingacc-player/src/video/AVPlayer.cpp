@@ -617,7 +617,7 @@ namespace player {
 			buffered = true;
 
 			//notifying GingaGUI
-			cout << "cmd::gingagui::0" << endl;
+			clog << "cmd::gingagui::0" << endl;
 			waitForUnlockCondition();
 
 		} else if (isRemote) {
