@@ -1804,12 +1804,15 @@ HRESULT BDAGraph::searchChannels() {
 HRESULT BDAGraph::execute(long freq) {
 	HRESULT hr = SetDVBT(FREQ_LOW, FREQ_BANDWIDTH);
 	if (FAILED(hr)) {
-		if (freq == -1) exit(0);
+		clog << "cmd::gingagui::Cannot connect to device." << endl;
+		exit(0);
 		return hr;
 	}
 	hr = SubmitTuneRequest();
 	if (FAILED(hr)) {
 		Destroy();
+		clog << "cmd::gingagui::Cannot submit tune request." << endl;
+		exit(0);
 		return hr;
 	}
 	if (freq > 0) {
