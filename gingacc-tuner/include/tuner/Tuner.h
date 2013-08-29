@@ -56,6 +56,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "mb/interface/IInputEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "mb/interface/CodeMap.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
 #include "ITuner.h"
 #include "providers/Channel.h"
 #include "NetworkInterface.h"
@@ -75,7 +81,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Tuner : public ITuner, public ITProviderListener, public Thread {
+	class Tuner : public ITuner, public IInputEventListener, public ITProviderListener, public Thread {
 		private:
 			bool receiving;
 			ITunerListener* listener;
@@ -84,20 +90,22 @@ namespace tuning {
 			bool firstTune;
 			int skipSize;
 			unsigned char packetSize;
+			GingaScreenID screenId;
 
 		public:
 			Tuner(
+					GingaScreenID screenId,
 					string network = "",
 					string protocol = "",
 					string address = "");
 
 			virtual ~Tuner();
 
+			bool userEventReceived(IInputEvent* ev);
+
 		private:
 			void clearInterfaces();
 			void receiveSignal(short signalCode);
-
-		private:
 			void initializeInterface(string niSpec);
 			void initializeInterfaces();
 			void createInterface(

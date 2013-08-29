@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef _ITUNER_H_
 #define _ITUNER_H_
 
+#include "mb/IMBDefs.h"
+
 #include "ITunerListener.h"
 #include "INetworkInterface.h"
 
@@ -83,7 +85,9 @@ namespace tuning {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tuning::ITuner* TunerCreator();
+typedef ::br::pucrio::telemidia::ginga::core::tuning::ITuner* TunerCreator(
+		GingaScreenID screenId);
+
 typedef void TunerDestroyer(
 		::br::pucrio::telemidia::ginga::core::tuning::ITuner*);
 
