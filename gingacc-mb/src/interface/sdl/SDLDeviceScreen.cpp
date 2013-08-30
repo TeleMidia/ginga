@@ -1437,9 +1437,11 @@ namespace mb {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDLDeviceScreen* s;
 		checkSDLInit();
-
-		long render_delta_ns = 33000000; // 20ms render interval
-
+		
+		/* TODO: make 'framerate' an user option */
+		// long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
+		long render_delta_ns = 16666666; // 16666666ns render interval (60fps) 
+		
 		int retcode;
 		int first_pass = 1;
 		struct timespec now;
@@ -1529,7 +1531,7 @@ namespace mb {
 				if ((timeout.tv_sec < now.tv_sec) || (
 						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_sec))) {
 
-					/*clog << "Not possible to keep up the bitrate, adjusting the timeout ..." << endl;
+					/*clog << "Not possible to keep up the frequency rate, adjusting the timeout ..." << endl;
 
 					clog << "current time....: " << now.tv_sec << " " << now.tv_nsec <<  endl;
 					clog << "scheduled time..: " << timeout.tv_sec << " " << timeout.tv_nsec <<  endl;*/
