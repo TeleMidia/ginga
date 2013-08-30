@@ -248,7 +248,7 @@ if test x$enable_components = xno; then
     -lgingaccsystem $(IC_LIBS) \
     -L${ginga_prefix}/lib/ginga/ -L/usr/local/lib \
     -L${ginga_prefix}/lib/ginga/mb/dec/  -L${ginga_prefix}/lib/ginga/mb \
-    -L/usr/local/lib/lua/5.1 -L/usr/local/lib/lua/5.1/socket'
+    -L{ginga_prefix}/lib/lua/5.1 -L{ginga_prefix}/lua/5.1/socket'
    COMPONENTS_INCS='-I${ginga_prefix}/include/ginga -I/usr/local/include/directfb/'
    AC_DEFINE(HAVE_COMPSUPPORT, 0, [Def to 0 if you don't have Component support.])
    AC_MSG_WARN([*** Component support will not be built.])

@@ -7,10 +7,9 @@ SUBDIRS =	include/dataprocessing \
 		include/dataprocessing/dsmcc/carousel/object \
 		include/dataprocessing/ncl \
 		include/dataprocessing/ncl/edit \
-    		src \
-    		src/ncl \
-    		src/ncl/edit \
-    		test
+		src \
+		src/ncl \
+		src/ncl/edit
 
 
 MAINTAINERCLEANFILES = 	aclocal.m4 \

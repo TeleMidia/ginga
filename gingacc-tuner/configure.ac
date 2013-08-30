@@ -143,7 +143,7 @@ if test x$enable_multiprocess = xno; then
    AC_MSG_WARN([*** Multiple process support will not be built.])
 
 else
-   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L${prefix}/lib/ginga/'
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lgingaccmb -lpthread -L${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi
@@ -154,8 +154,7 @@ AC_SUBST(MULTIPROCESS_LIBS)
 AC_CONFIG_FILES(Makefile
 	files/Makefile
 	src/Makefile
-	include/tuner/Makefile
-	test/Makefile)
+	include/tuner/Makefile)
 
 AC_OUTPUT
 
