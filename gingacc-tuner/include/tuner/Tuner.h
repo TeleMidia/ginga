@@ -90,6 +90,7 @@ namespace tuning {
 			bool firstTune;
 			int skipSize;
 			unsigned char packetSize;
+			string currentSpec;
 			GingaScreenID screenId;
 
 		public:

@@ -78,14 +78,17 @@ namespace tuning {
 	}
 
 	bool BDAProvider::tune() {
-		if (bda->execute(frequency) == 0) {
-			frequency = bda->getTunedFreq();
-			return true;
+		if (bda->initDevice()) {
+			if (frequency > 0 && bda->execute(frequency) == 0) {
+				frequency = bda->getTunedFreq();
+				return true;
+
+			} else if (frequency == -1 && bda->searchChannels() == 0) {
+				frequency = bda->getTunedFreq();
+				return true;
+			}
 		}
-		if ((frequency == -1) && (bda->searchChannels() == 0)) {
-			frequency = bda->getTunedFreq();
-			return true;
-		}
+
 		return false;
 	}
 

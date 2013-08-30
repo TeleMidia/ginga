@@ -214,6 +214,7 @@ public:
 	HRESULT searchChannels();
     long getSignalStrength();
 
+	bool initDevice();
 	HRESULT execute(long freq);
 	HRESULT changeChannelTo(long freq, bool setDefault = false);
 	bool getBuffer(Buffer** buffer);

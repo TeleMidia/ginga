@@ -455,7 +455,6 @@ namespace mb {
 					}
 
 				} else if (keyCode == CodeMap::KEY_QUIT) {
-					cout << "InputManger::dispatchEvent QUIT" << endl;
 					if (!lis->userEventReceived(inputEvent)) {
 						unlock();
 						notifying = false;
