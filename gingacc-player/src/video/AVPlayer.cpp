@@ -621,7 +621,7 @@ namespace player {
 			// cmd means a command to an embeddor process
 			// 0 means successful status message
 			// 
-			clog << "cmd::0::start::?mAV?" << endl;
+			cout << "cmd::0::start::?mAV?" << endl;
 			waitForUnlockCondition();
 
 		} else if (isRemote) {

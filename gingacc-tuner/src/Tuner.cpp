@@ -117,6 +117,7 @@ namespace tuning {
 		if (ev->getKeyCode(screenId) == CodeMap::KEY_QUIT) {
 			//CLOSE ALL TUNER INTERFACE/PROVIDER
 			lock();
+			notifyStatus(TS_TUNER_POWEROFF, NULL);
 			i = interfaces.begin();
 			while (i != interfaces.end()) {
 				i->second->close();

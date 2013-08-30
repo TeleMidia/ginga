@@ -1734,7 +1734,7 @@ HRESULT BDAGraph::tryToTune() {
 	searching = false;
 	if (freq == -1) {
 		Destroy();
-		clog << "cmd::1::tuner::Unable to tune any channel." << endl;
+		cout << "cmd::1::tuner::Unable to tune any channel." << endl;
 		return S_FALSE;
 	}
 	return S_OK;
@@ -1751,7 +1751,7 @@ HRESULT BDAGraph::searchChannels() {
 
 	searching = true;
 	channelsList->cleanList();
-	clog << "cmd::0::tunerscanprogress::0%" << endl;
+	cout << "cmd::0::tunerscanprogress::0%" << endl;
 	while (1) {
 		freqBegin += 3000;
 		cProgress += 3000;
@@ -1770,7 +1770,7 @@ HRESULT BDAGraph::searchChannels() {
 			break;
 		}
 		vp = (float(cProgress)/mProgress)*100;
-		clog << "cmd::0::tunerscanprogress::" << vp << "%" << endl;
+		cout << "cmd::0::tunerscanprogress::" << vp << "%" << endl;
 		changeChannelTo(freqBegin);
 
 		Sleep(1500);
@@ -1785,13 +1785,13 @@ HRESULT BDAGraph::searchChannels() {
 			}
 			channelsList->saveToFile(channelsFile);
 			vp = (float(cProgress)/mProgress)*100;
-			clog << "cmd::0::tunerscanprogress::" << vp << "%" << endl;
+			cout << "cmd::0::tunerscanprogress::" << vp << "%" << endl;
 		}
 	}
 	searching = false;
 	tunedFreq = channelsList->getDefaultFreq();
 	channelsList->saveToFile(channelsFile);
-	clog << "cmd::0::tunerscanprogress::100%" << endl;
+	cout << "cmd::0::tunerscanprogress::100%" << endl;
 	Destroy();
 	//changeChannelTo(channelsList->getDefaultFreq());
 	//clog << "Tuned in " << channelsList->getName(tunedFreq) << "." << endl;
@@ -1801,14 +1801,14 @@ HRESULT BDAGraph::searchChannels() {
 bool BDAGraph::initDevice() {
 	HRESULT hr = SetDVBT(FREQ_LOW, FREQ_BANDWIDTH);
 	if (FAILED(hr)) {
-		clog << "cmd::1::tuner::Cannot connect to device." << endl;
+		cout << "cmd::1::tuner::Can't find tuner device." << endl;
 		return false;
 	}
 
 	hr = SubmitTuneRequest();
 	if (FAILED(hr)) {
 		Destroy();
-		clog << "cmd::1::tuner::Cannot submit tune request." << endl;
+		cout << "cmd::1::tuner::Cannot submit tune request." << endl;
 		return false;
 	}
 
@@ -1827,7 +1827,7 @@ HRESULT BDAGraph::execute(long freq) {
 		} else {
 			tunedFreq = -1;
 			Destroy();
-			clog << "cmd::1::tuner::Unable to tune." << endl;
+			cout << "cmd::1::tuner::Unable to tune." << endl;
 			return S_FALSE;
 		}
 	}
