@@ -453,12 +453,15 @@ namespace tuning {
 		}
 
 		if (tuned && nInterface != NULL &&
-                                !(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
+				!(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
 
-                        clog << "Tuner::run() call receive" << endl;
+			clog << "Tuner::run() call receive" << endl;
 			receiveInterface(nInterface);
 		}
 
+		if (!tuned && listener != NULL) {
+			notifyStatus(TS_TUNER_POWEROFF, NULL);
+		}
 		clog << "Tuner::run done " << endl;
 	}
 }

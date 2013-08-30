@@ -1033,6 +1033,10 @@ namespace tsparser {
 			Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
 			isWaitingPI = false;
 			Thread::mutexUnlock(&flagLockUntilSignal);
+
+			if (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
+				return false;
+			}
 		}
 		return true;
 	}
