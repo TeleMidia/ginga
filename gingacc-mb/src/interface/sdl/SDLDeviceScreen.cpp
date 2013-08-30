@@ -1344,11 +1344,16 @@ namespace mb {
 		while (std::cin >> strEvent) {
 			intEvent = convertEventCodeStrToInt(strEvent);
 			if (intEvent >= 0) {
-				ie.type           = SDL_KEYDOWN;
-				ie.key.type       = SDL_KEYDOWN;
-				ie.key.state      = SDL_PRESSED;
-				ie.key.repeat     = 0;
-				ie.key.keysym.sym = intEvent;
+				if (strEvent != "SDLK_QUIT") {
+					ie.type           = SDL_KEYDOWN;
+					ie.key.type       = SDL_KEYDOWN;
+					ie.key.state      = SDL_PRESSED;
+					ie.key.repeat     = 0;
+					ie.key.keysym.sym = intEvent;
+
+				} else {
+					ie.type           = SDL_QUIT;
+				}
 
 				clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
 				clog << strEvent << "' (" << intEvent << ")" << endl;
@@ -2211,7 +2216,6 @@ namespace mb {
 
 		IInputEvent* ie = NULL;
 
-		lockSDL();
 		if (event != NULL) {
 			ie = new SDLInputEvent(*(SDL_Event*)event);
 		}
@@ -2219,8 +2223,6 @@ namespace mb {
 		if (symbol >= 0) {
 			ie = new SDLInputEvent(symbol);
 		}
-
-		unlockSDL();
 
 		return ie;
 	}
@@ -2307,7 +2309,7 @@ namespace mb {
 		}
 
 		//sdlStrToSdlCode
-		sdlStrToSdlCode["SDLK_QUIT"]              = SDLK_POWER;
+		sdlStrToSdlCode["SDLK_QUIT"]              = SDL_QUIT;
 		sdlStrToSdlCode["SDLK_UNKNOWN"]           = SDLK_UNKNOWN;
 		sdlStrToSdlCode["SDLK_0"]                 = SDLK_0;
 		sdlStrToSdlCode["SDLK_1"]                 = SDLK_1;
@@ -2429,7 +2431,7 @@ namespace mb {
 		sdlStrToSdlCode["SDLK_ESCAPE"]            = SDLK_ESCAPE;
 		sdlStrToSdlCode["SDLK_OUT"]               = SDLK_OUT;
 
-		//sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
+		sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
 		sdlStrToSdlCode["SDLK_F21"]               = SDLK_F21;
 		sdlStrToSdlCode["SDLK_STOP"]              = SDLK_STOP;
 		sdlStrToSdlCode["SDLK_EJECT"]             = SDLK_EJECT;
