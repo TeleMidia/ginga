@@ -49,12 +49,28 @@ http://www.telemidia.puc-rio.br
 
 #include "tuner/Tuner.h"
 
+#if HAVE_COMPSUPPORT
+#include "cm/IComponentManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#else
+#include "mb/LocalScreenManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
+#if HAVE_COMPSUPPORT
+	static IComponentManager* cm = IComponentManager::getCMInstance();
+	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+			cm->getObject("LocalScreenManager")))();
+#else
+	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
+#endif
+
 	Tuner::Tuner(
 			GingaScreenID screenId,
 			string network,
@@ -67,7 +83,10 @@ namespace tuning {
 		listener         = NULL;
 		skipSize         = 0;
 		packetSize       = 188;
+		currentSpec      = "";
 		this->screenId   = screenId;
+
+		dm->getInputManager(screenId)->addInputEventListener(this, NULL);
 
 		interfaces.clear();
 
@@ -84,6 +103,7 @@ namespace tuning {
 	Tuner::~Tuner() {
 		clog << "Tuner::~Tuner" << endl;
 
+		dm->getInputManager(screenId)->removeInputEventListener(this);
 		listener = NULL;
 
 		clearInterfaces();
@@ -93,6 +113,7 @@ namespace tuning {
 	bool Tuner::userEventReceived(IInputEvent* ev) {
 		map<int, INetworkInterface*>::iterator i;
 
+		clog << "Tuner::userEventReceived" << endl;
 		if (ev->getKeyCode(screenId) == CodeMap::KEY_QUIT) {
 			//CLOSE ALL TUNER INTERFACE/PROVIDER
 			lock();
@@ -288,18 +309,22 @@ namespace tuning {
 	}
 
 	void Tuner::setSpec(string niName, string ch) {
-		string niSpec;
 		clearInterfaces();
 
-		niSpec = niName + ":" + ch;
-		initializeInterface(niSpec);
+		currentSpec = niName + ":" + ch;
+		initializeInterface(currentSpec);
 
 		clog << "Tuner::setSpec NI = '" << niName << "'";
 		clog << ", channel = '" << ch << "' all done!" << endl;
 	}
 
 	void Tuner::tune() {
-		startThread();
+		if (currentSpec.find("scan") == std::string::npos) {
+			startThread();
+
+		} else {
+			run();
+		}
 	}
 
 	INetworkInterface* Tuner::getCurrentInterface() {

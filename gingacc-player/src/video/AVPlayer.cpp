@@ -617,7 +617,11 @@ namespace player {
 			buffered = true;
 
 			//notifying GingaGUI
-			clog << "cmd::gingagui::0" << endl;
+
+			// cmd means a command to an embeddor process
+			// 0 means successful status message
+			// 
+			clog << "cmd::0::start::?mAV?" << endl;
 			waitForUnlockCondition();
 
 		} else if (isRemote) {

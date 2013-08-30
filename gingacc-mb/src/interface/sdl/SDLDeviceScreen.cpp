@@ -235,6 +235,8 @@ namespace mb {
 		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator j;
 		map<float, set<IWindow*>*>::iterator k;
 
+		useStdin = false;
+
 		waitingCreator = false;
 		Thread::mutexDestroy(&condMutex);
 		Thread::condDestroy(&cond);
@@ -1303,6 +1305,8 @@ namespace mb {
 
 		SDLEventBuffer* eventBuffer = NULL;
 
+		clog << "SDLDeviceScreen::notifyEvent";
+		clog << endl;
 		checkWindowFocus(s, event);
 
     	if (s->im != NULL) {
@@ -1310,8 +1314,8 @@ namespace mb {
 			if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
 					s->uEmbedId == NULL) || checkEventFocus(s))) {
 
-				//clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
-				//clog << endl;
+				clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+				clog << endl;
 				eventBuffer->feed(*event, capsOn, shiftOn);
 				return true;
 			}
@@ -1346,13 +1350,19 @@ namespace mb {
 				ie.key.repeat     = 0;
 				ie.key.keysym.sym = intEvent;
 
-				lockSDL();
 				clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
 				clog << strEvent << "' (" << intEvent << ")" << endl;
+				//lockSDL();
 				SDL_PushEvent(&ie);
-				unlockSDL();
+				//unlockSDL();
+				clog << "SDLDeviceScreen::checkStdin event pushed" << endl;
 			}
 
+			if (strEvent == "SDLK_QUIT") {
+				clog << "SDLDeviceScreen::checkStdin QUIT";	
+				clog << endl;
+				break;
+			}
 			strEvent = "";
 		}
 
@@ -1374,7 +1384,8 @@ namespace mb {
 //		unlockSDL();
 
 		while (hasEvent) {
-			//clog << "SDLDeviceScreen::checkEvents poll event" << endl;
+			clog << "SDLDeviceScreen::checkEvents poll event";
+			clog << " type '" << event.type << "'" << endl;
 
 			if (event.type == SDL_KEYDOWN) {
 				clog << "SDLDeviceScreen::checkEvents poll event '";
@@ -1414,9 +1425,9 @@ namespace mb {
 			}
 			Thread::mutexUnlock(&scrMutex);
 
-			lockSDL();
+			//lockSDL();
 			hasEvent = SDL_PollEvent(&event);
-			unlockSDL();
+			//unlockSDL();
     	}
 
 		return true;
@@ -2294,7 +2305,7 @@ namespace mb {
 		}
 
 		//sdlStrToSdlCode
-		sdlStrToSdlCode["SDLK_QUIT"]               = SDL_QUIT;
+		sdlStrToSdlCode["SDLK_QUIT"]              = SDLK_POWER;
 		sdlStrToSdlCode["SDLK_UNKNOWN"]           = SDLK_UNKNOWN;
 		sdlStrToSdlCode["SDLK_0"]                 = SDLK_0;
 		sdlStrToSdlCode["SDLK_1"]                 = SDLK_1;
@@ -2361,8 +2372,8 @@ namespace mb {
 		sdlStrToSdlCode["SDLK_Y"]                 = SDLK_y + 5000;
 		sdlStrToSdlCode["SDLK_Z"]                 = SDLK_z + 5000;
 
-		sdlStrToSdlCode["SDLK_PAGEDOWN"]         = SDLK_PAGEDOWN;
-		sdlStrToSdlCode["SDLK_PAGEUP"]           = SDLK_PAGEUP;
+		sdlStrToSdlCode["SDLK_PAGEDOWN"]          = SDLK_PAGEDOWN;
+		sdlStrToSdlCode["SDLK_PAGEUP"]            = SDLK_PAGEUP;
 
 		sdlStrToSdlCode["SDLK_F1"]                = SDLK_F1;
 		sdlStrToSdlCode["SDLK_F2"]                = SDLK_F2;
@@ -2416,7 +2427,7 @@ namespace mb {
 		sdlStrToSdlCode["SDLK_ESCAPE"]            = SDLK_ESCAPE;
 		sdlStrToSdlCode["SDLK_OUT"]               = SDLK_OUT;
 
-		sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
+		//sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
 		sdlStrToSdlCode["SDLK_F21"]               = SDLK_F21;
 		sdlStrToSdlCode["SDLK_STOP"]              = SDLK_STOP;
 		sdlStrToSdlCode["SDLK_EJECT"]             = SDLK_EJECT;
