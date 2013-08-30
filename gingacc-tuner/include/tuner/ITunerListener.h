@@ -65,6 +65,7 @@ namespace tuning {
 	static const short TS_NEW_SERVICE_TUNED      = 0x04;
 	static const short TS_SWITCHING_INTERFACE    = 0x05;
 	static const short TS_NEW_INTERFACE_SELECTED = 0x06;
+	static const short TS_TUNER_POWEROFF         = 0x07;
 
 	class ITunerListener {
 		public:

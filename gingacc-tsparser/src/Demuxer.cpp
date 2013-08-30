@@ -945,6 +945,13 @@ namespace tsparser {
 
 			case TS_NEW_INTERFACE_SELECTED:
 				break;
+
+			case TS_TUNER_POWEROFF:
+				programInfoSatisfied();
+				break;
+
+			default:
+				break;
 		}
 	}
 
@@ -1007,7 +1014,13 @@ namespace tsparser {
 	}
 
 	void Demuxer::checkProgramInformation() {
-		if (pat->isConsolidated() && !pat->hasUnprocessedPmt() && isWaitingPI) {
+		if (pat->isConsolidated() && !pat->hasUnprocessedPmt()) {
+			programInfoSatisfied();
+		}
+	}
+
+	void Demuxer::programInfoSatisfied() {
+		if (isWaitingPI) {
 			Thread::condSignal(&flagCondSignal);
 			isWaitingPI = false;
 		}

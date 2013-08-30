@@ -182,6 +182,7 @@ namespace tsparser {
 
 		private:
 			void checkProgramInformation();
+			void programInfoSatisfied();
 
 		public:
 			bool waitProgramInformation();
