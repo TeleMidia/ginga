@@ -85,6 +85,16 @@ Please install Ginga CC System Thread Library.
 
 ]))
 
+####################
+# Ginga CC MB      #
+####################
+AC_HAVE_LIBRARY(gingaccmb, , AC_MSG_ERROR([
+
+Couldn't find Ginga CC Multimedia Backend library.
+Please install Ginga CC Multimedia Backend Library.
+
+]))
+
 ##################
 # Ginga CC Tuner #
 ##################
@@ -155,7 +165,7 @@ if test x$enable_multiprocess = xno; then
    AC_MSG_WARN([*** Multiple process support will not be built.])
 
 else
-   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lpthread -L${${prefix}/lib/ginga/'
+   MULTIPROCESS_LIBS='-lrt -lgingaccsystem -lgingaccmb -lpthread -L${${prefix}/lib/ginga/'
    AC_DEFINE(HAVE_MULTIPROCESS, 1, [Def to 1 if you have Multiple Process support.])
    AC_MSG_RESULT([*** Multiple Process support will be built.])
 fi
@@ -165,8 +175,7 @@ AC_SUBST(MULTIPROCESS_LIBS)
 
 AC_CONFIG_FILES(Makefile
 	include/tsparser/Makefile
-	src/Makefile
-	test/Makefile)
+	src/Makefile)
 
 AC_OUTPUT
 

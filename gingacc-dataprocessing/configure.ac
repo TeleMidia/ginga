@@ -144,8 +144,7 @@ AC_CONFIG_FILES(Makefile
     include/dataprocessing/Makefile
     src/ncl/Makefile
     src/ncl/edit/Makefile
-    src/Makefile
-    test/Makefile)
+    src/Makefile)
 
 AC_OUTPUT
 
