@@ -64,6 +64,17 @@ Please install TeleMidia Util.
 
 ]))
 
+##################
+# TeleMidia Util #
+##################
+AC_HAVE_LIBRARY(gingaccmb, , AC_MSG_ERROR([
+
+Couldn't find TeleMidia Util library.
+Please install TeleMidia Util.
+
+]))
+
+
 ################
 # Ginga System #
 ################
