@@ -987,7 +987,7 @@ namespace compat {
 					logOutput.close();
 				}
 
-				logOutput.open(logUri);
+				logOutput.open(logUri.c_str());
 				if (logOutput) {
 					clog.rdbuf(logOutput.rdbuf());
 				}
