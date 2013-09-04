@@ -173,8 +173,6 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeGingaPath() {
-		vector<string>* params;
-		vector<string>::iterator i;
 		string path, currentPath;
 		string gingaBinary = "ginga";
 
@@ -225,6 +223,9 @@ namespace compat {
 											   currentPath.find_last_of(iUriD)+1);
 		*/
 		
+		vector<string>* params;
+		vector<string>::iterator i;
+
 		params = split(path, pathD);
 		if (params != NULL) {
 			i = params->begin();
@@ -947,6 +948,57 @@ namespace compat {
 		_exit(status);
 	}
 
+#ifndef	__DARWIN_UNIX03
+	static std::ofstream logOutput;
+#endif
+
+	void SystemCompat::setLogTo(short logType) {
+#ifndef	__DARWIN_UNIX03
+		string logUri = "";
+
+		switch (logType) {
+			case LOG_NULL:
+				if (logOutput) {
+					logOutput.close();
+				}
+
+				logOutput.open("/dev/null");
+				if (logOutput) {
+					clog.rdbuf(logOutput.rdbuf());
+				}
+				break;
+
+			case LOG_STDO:
+				if (logOutput) {
+					logOutput.close();
+				}
+
+				logOutput.open("/dev/stdout");
+				if (logOutput) {
+					clog.rdbuf(logOutput.rdbuf());
+				}
+				break;
+
+			case LOG_FILE:
+				logUri = getTemporaryDir() + iUriD + "ginga";
+				makeDir(logUri.c_str(), 0755);
+				logUri = logUri + iUriD + "logFile.txt";
+				if (logOutput) {
+					logOutput.close();
+				}
+
+				logOutput.open(logUri);
+				if (logOutput) {
+					clog.rdbuf(logOutput.rdbuf());
+				}
+				break;
+
+			default:
+				break;
+		}
+#endif
+	}
+
 	string SystemCompat::checkPipeName(string pipeName) {
 		string newPipeName = pipeName;
 
@@ -992,7 +1044,7 @@ namespace compat {
 		}
 
 		// This call blocks until a client process connects to the pipe
-		bool result = ConnectNamedPipe(*pd, NULL);
+		BOOL result = ConnectNamedPipe(*pd, NULL);
 		if (!result) {
 			clog << "SystemCompat::createPipe Warning! Failed to make ";
 			clog << "connection on " << pipeName << endl;
@@ -1066,7 +1118,7 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		DWORD bRead = 0;
-		bool result = ReadFile(
+		BOOL result = ReadFile(
 				pd,
 				buffer,
 				buffSize,
@@ -1089,7 +1141,7 @@ namespace compat {
 #if defined(_WIN32) && !defined(__MINGW32__)
 		// This call blocks until a client process reads all the data
 		DWORD bWritten = 0;
-		bool result = WriteFile(
+		BOOL result = WriteFile(
 				pd,
 				data,
 				dataSize,

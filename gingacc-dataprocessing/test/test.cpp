@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
 	int buffSize = 188;
 	char buf[buffSize];
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();

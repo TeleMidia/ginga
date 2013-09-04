@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 	string remoteUri = "http://apps.club.ncl.org.br/78/main.ncl";
 
 	clog << "gingacc-ic main test: begin" << endl;
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 	SystemCompat::makeDir(localPath.c_str(), 0666);
 
 #if HAVE_COMPSUPPORT

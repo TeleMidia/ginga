@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
 	char* dfbArgv[5];
 	char* sdlArgv[5];
 
-	setLogToFile();
+	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();

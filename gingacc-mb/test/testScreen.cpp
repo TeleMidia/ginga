@@ -330,7 +330,7 @@ int main(int argc, char** argv) {
 	char* sdlArgv[5];
 	ILocalScreenManager* dm;
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 #if HAVE_COMPSUPPORT
 	IComponentManager* cm = IComponentManager::getCMInstance();

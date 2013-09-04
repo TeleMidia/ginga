@@ -717,6 +717,8 @@ namespace carousel {
 		releaseData();
 		closeModule();
 		Thread::mutexUnlock(&dataMutex);
+
+		return 1;
 	}
 }
 }
