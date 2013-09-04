@@ -194,7 +194,7 @@ int main(int argc, char** argv, char** envp) {
 	char* sdlArgv[5];
 	ILocalScreenManager* dm;
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 #if HAVE_COMPSUPPORT
 	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();

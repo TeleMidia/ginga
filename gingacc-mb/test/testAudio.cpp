@@ -128,7 +128,7 @@ int main(int argc, char** argv) {
 	ILocalScreenManager* dm;
 	int i;
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 	initTimeStamp();
 
 #if HAVE_COMPSUPPORT
@@ -144,10 +144,10 @@ int main(int argc, char** argv) {
 	for (i = 1; i < argc; i++) {
 		if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
 			if (strcmp(argv[i + 1], "stdout") == 0) {
-				setLogToStdoutDev();
+				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 
 			} else if (strcmp(argv[i + 1], "file") == 0) {
-				setLogToFile();
+				SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 			}
 
 		} else if ((strcmp(argv[i], "--debug") == 0)) {

@@ -302,6 +302,10 @@ namespace compat {
 
 			static void gingaProcessExit(short status);
 
+			static const short LOG_NULL = 0;
+			static const short LOG_STDO = 1;
+			static const short LOG_FILE = 2;
+			static void setLogTo(short logType);
 
 			/******************
 			 * Time functions *

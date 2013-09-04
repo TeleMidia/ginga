@@ -242,7 +242,7 @@ int main(int argc, char *argv[], char* envp[]) {
 	string rName, wName, objName;
 	PlayerSpawnedProcess* psp;
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 	objName = argv[0];
 	wName   = argv[1];

@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
-	setLogToNullDev();
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 	deviceClass = 0;
 	if (argc == 2) {
