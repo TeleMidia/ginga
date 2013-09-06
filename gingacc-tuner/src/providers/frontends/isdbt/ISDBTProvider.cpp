@@ -50,6 +50,7 @@ http://www.telemidia.puc-rio.br
 #include "config.h"
 
 #include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
+#include "tuner/providers/frontends/isdbt/RingBuffer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -72,14 +73,74 @@ namespace tuning {
 		this->listener       = NULL;
 		this->capabilities   = (
                                 DPC_CAN_FETCHDATA);
-                                /*			| DPC_CAN_DEMUXBYHW |
+                                /* | DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
-				DPC_CAN_FILTERTID);*/ // TODO: implement these capabilities...
-	}
+				DPC_CAN_FILTERTID); */ // TODO: implement these capabilities...
+
+                pthread_mutex_init(&output_mutex, NULL); 
+                pthread_cond_init(&output_cond, NULL); 
+                ring_buffer_create(&output_buffer, 28); 
+		keep_reading = 1;    
+                // start the thread which reads the data from the tuner
+                pthread_create(&output_thread_id, NULL, ISDBTProvider::output_thread, this);
+        }
 
 	ISDBTProvider::~ISDBTProvider() {
+	    	keep_reading = 0;    
 		close();
 	}
+
+
+        void *ISDBTProvider::output_thread(void *ptr) {
+            ISDBTProvider *obj = (ISDBTProvider *) ptr;
+
+	    void *addr;
+	    int bytes_read;
+	    char buffer[INPUT_BUFFER_SIZE];
+	    
+	    while (obj->keep_reading)
+	    {
+		if (obj->frontend == NULL || obj->frontend->dvrFd <= 0) 
+		{
+		    // wait until we get the dvr device opened
+		    usleep(100000);
+		    continue;
+		}
+
+		bytes_read = read(obj->frontend->dvrFd, buffer, INPUT_BUFFER_SIZE);
+		if (bytes_read <= 0)
+		{
+		    struct pollfd fds[1];
+		    fds[0].fd = obj->frontend->dvrFd;
+		    fds[0].events = POLLIN;
+		    poll(fds, 1, -1);
+		    continue;
+		}
+		
+	    try_again_write:
+		if (ring_buffer_count_free_bytes (&(obj->output_buffer)) >= bytes_read)
+		{ 
+		    pthread_mutex_lock(&(obj->output_mutex));
+		    addr = ring_buffer_write_address (&(obj->output_buffer));
+		    memcpy(addr, buffer, bytes_read);
+		    ring_buffer_write_advance(&(obj->output_buffer), bytes_read);
+		    pthread_cond_signal(&(obj->output_cond));
+		    pthread_mutex_unlock(&(obj->output_mutex));
+		}
+		else
+		{
+		    clog << "Input buffer full, nich gut... " << endl;
+		    pthread_mutex_lock(&(obj->output_mutex));
+		    pthread_cond_wait(&(obj->output_cond), &(obj->output_mutex));
+		    pthread_mutex_unlock(&(obj->output_mutex));
+		    goto try_again_write;
+		}
+	    }
+	    
+	    return NULL;
+	    
+        }
+      
 
 	void ISDBTProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
@@ -334,29 +395,31 @@ namespace tuning {
 
 	int ISDBTProvider::receiveData(
 			char* buff, int skipSize, unsigned char packetSize) {
-          int read_size = 0;
-          int buff_size = packetSize * 100; // 100 TS packets
+	    void *addr;
+	    int buff_size = packetSize * 150;
+	    
+	    
+	    //    clog << "ISDBTProvider::receiveData enter " << ring_buffer_count_bytes(&output_buffer) << endl;
+	    
+	    if (ring_buffer_count_bytes(&output_buffer) >= buff_size)
+	    {
+		pthread_mutex_lock(&output_mutex);
+		addr = ring_buffer_read_address(&output_buffer);
+		memcpy(buff, addr, buff_size);
+		ring_buffer_read_advance(&output_buffer, buff_size);
+		pthread_cond_signal(&output_cond);
+		pthread_mutex_unlock(&output_mutex);
+	    }
+	    else
+	    {
+		pthread_mutex_lock(&output_mutex);
+		pthread_cond_wait(&output_cond, &output_mutex);
+		pthread_mutex_unlock(&output_mutex);
+		return 0;
+	    }
 
-	  clog << "ISDBTProvider::receiveData enter " << endl;
-          
-
-          if (frontend->dvrFd > 0) {
-	  try_again:
-		    read_size = read(frontend->dvrFd, (void*)buff, buff_size);
-
-                    if (read_size <= 0)
-		    {
-			struct pollfd fds[1];
-			fds[0].fd = frontend->dvrFd;
-			fds[0].events = POLLIN | POLLERR | POLLHUP;
-			poll(fds, 1, -1);
-			goto try_again;
-		    }
-		    
-		    return read_size;
-	  }
-
-	  return 0;
+	    return buff_size;
+	    
 	}
 }
 }

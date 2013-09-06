@@ -50,6 +50,8 @@ http://www.telemidia.puc-rio.br
 #ifndef ISDBTPROVIDER_H_
 #define ISDBTPROVIDER_H_
 
+#define INPUT_BUFFER_SIZE 4096
+
 extern "C" {
 	#include <sys/types.h>
 	#include <stdio.h>
@@ -64,6 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "../../Channel.h"
 
 #include "ISDBTFrontend.h"
+#include "RingBuffer.h"
 
 #include <fstream>
 #include <string>
@@ -87,6 +90,13 @@ namespace tuning {
 			short capabilities;
 			ITProviderListener* listener;
 
+                        // thread and ring buffer variables...
+			int keep_reading;
+			pthread_t output_thread_id;
+			pthread_mutex_t output_mutex;
+			pthread_cond_t output_cond;
+			struct ring_buffer output_buffer; 
+			static void *output_thread(void *nothing);
 		public:
 			ISDBTProvider(string fileName);
 			virtual ~ISDBTProvider();

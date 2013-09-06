@@ -11,7 +11,7 @@ TUNERCPPS = providers/Channel.cpp \
 	NetworkInterface.cpp Tuner.cpp
 
 if V4LFRONTEND
-TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp providers/frontends/isdbt/ISDBTProvider.cpp
+TUNERCPPS += providers/frontends/isdbt/ISDBTFrontend.cpp providers/frontends/isdbt/ISDBTProvider.cpp providers/frontends/isdbt/RingBuffer.c
 endif
 
 libgingacctuner_la_SOURCES = $(TUNERCPPS)

@@ -1444,8 +1444,8 @@ namespace mb {
 		checkSDLInit();
 		
 		/* TODO: make 'framerate' an user option */
-		// long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
-		long render_delta_ns = 16666666; // 16666666ns render interval (60fps) 
+                long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
+		// long render_delta_ns = 16666666; // 16666666ns render interval (60fps) 
 		
 		int retcode;
 		int first_pass = 1;
@@ -1471,8 +1471,6 @@ namespace mb {
 				switch (i->second) {
 					case SPT_NONE:
 
-						// WTF
-						// decRate = refreshCMP(s);
 						refreshCMP(s);
 						refreshWin(s);
 
@@ -1516,8 +1514,9 @@ namespace mb {
 				break;
 
 			} else {
+#if 1
 				if (first_pass) {
-					SystemCompat::clockGetTime(CLOCK_MONOTONIC, &now);
+					SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
 					timeout.tv_sec = now.tv_sec;
 					timeout.tv_nsec = now.tv_nsec;
 					first_pass = 0;
@@ -1532,32 +1531,19 @@ namespace mb {
 					timeout.tv_nsec += render_delta_ns;
 				}
 
-				SystemCompat::clockGetTime(CLOCK_MONOTONIC, &now);
+				SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
 				if ((timeout.tv_sec < now.tv_sec) || (
-						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_sec))) {
-
-					/*clog << "Not possible to keep up the frequency rate, adjusting the timeout ..." << endl;
-
-					clog << "current time....: " << now.tv_sec << " " << now.tv_nsec <<  endl;
-					clog << "scheduled time..: " << timeout.tv_sec << " " << timeout.tv_nsec <<  endl;*/
-
-					timeout.tv_sec = now.tv_sec;
+						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_nsec))) {
+				        timeout.tv_sec = now.tv_sec;
 					timeout.tv_nsec = now.tv_nsec;
-
 				} else {
-					//clog << "All good.." <<  endl;
 					pthread_mutex_lock(&mutex);
 					int retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
-					if (retcode == ETIMEDOUT) {
-						//clog << "All good" << endl;
-
-					} else {
-						//clog << "Strange stuff";
-					}
-
 					pthread_mutex_unlock(&mutex);
 				}
+#endif
 			}
+
 		}
 
 		clog << "SDLDeviceScreen::rendererT ALL DONE" << endl;
