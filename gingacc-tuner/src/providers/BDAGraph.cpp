@@ -1778,6 +1778,7 @@ HRESULT BDAGraph::searchChannels() {
 		if (st > 0) {
 			readNetworkInfo(clock()+1500);
 			Sleep(1500);
+			cout << "cmd::0::channelfound::" << currentNetworkName << endl;
 			channelsList->insertFreq(currentNetworkName, freqBegin, currentVirtualChannel);
 			if (setDefault) {
 				setDefault = false;
