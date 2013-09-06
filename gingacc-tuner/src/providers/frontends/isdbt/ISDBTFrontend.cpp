@@ -96,6 +96,8 @@ namespace tuning {
 
                 dumpFrontendInfo();
 
+                
+
 		initIsdbtParameters();
         }
 
@@ -118,7 +120,6 @@ namespace tuning {
 		// params.frequency = 533142000; // sbt,  521142000 - rede vida,  599142000 - band; 
 
                 params.inversion                    = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO : INVERSION_OFF;
-                //                params.inversion                    = INVERSION_AUTO;
                 params.u.ofdm.code_rate_HP          = FEC_AUTO;
                 params.u.ofdm.code_rate_LP          = FEC_AUTO;
                 params.u.ofdm.constellation         = QAM_AUTO;
@@ -152,10 +153,15 @@ namespace tuning {
 
 		clog << "ISDBTFrontend::updateIsdbtFrontendParameters: frequency: " << params.frequency <<  endl;
 
-		if (ioctl( feFd, FE_SET_FRONTEND, &params ) == -1) {
-		    clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg FE_SET_FRONTEND" << endl;
+                if (params.frequency != 0)
+                {
+                
+		    if (ioctl( feFd, FE_SET_FRONTEND, &params ) == -1) 
+		    {
+                        clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg FE_SET_FRONTEND" << endl;
+                    }
                 }
-
+		
 		if (dmFd == -1)
 		{
 		    dmFd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR);
@@ -206,11 +212,12 @@ namespace tuning {
 
                 if (feStatus & FE_HAS_LOCK)
                 {
-                    if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) {                                                                                                                                                                                            
+                    if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) 
+		    {                        
                         clog << "ISDBTFrontend::isTuned FE_READ_SIGNAL_STRENGTH failed" << endl;
-
                     }
-                    else {
+                    else 
+		    {
                         signal = value * 100 / 65535;
 			clog << "ISDBTFrontend::isTuned: Signal locked, received power level is " << signal << "%" << endl;
                     }
@@ -331,145 +338,19 @@ namespace tuning {
 
 	void ISDBTFrontend::attachFilter(IFrontendFilter* filter) {
                 clog << "ISDBTFrontend::attachFilter not implemented! " << endl;
-#if 0
-		struct dmx_sct_filter_params f;
-		int fd, numOfFilters;
-		ActionsToFilters* action;
-
-		clog << "ISDBTFrontend::attachFilter pid = '";
-		clog << filter->getPid() << "' tid = '" << filter->getTid();
-		clog << "'" << endl;
-
-		numOfFilters = runningFilters->size();
-
-		if (numOfFilters == IFE_MAX_FILTERS) {
-			clog << "ISDBTFrontend::attachFilter reached max filters" << endl;
-			return;
-		}
-
-		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR | O_NONBLOCK, 0644))
-				< 0) {
-
-			clog << "ISDBTFrontend::attachFilter can't open '";
-			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
-			return;
-		}
-
-		filter->setDescriptor(fd);
-
-		memset(&f, 0, sizeof(f));
-
-		if (filter->getPid() > 0) {
-			f.pid = (uint16_t)filter->getPid();
-		}
-
-		if (filter->getTid() < 0x100 && filter->getTid() >= 0) {
-			f.filter.filter[0] = (uint8_t)filter->getTid();
-			f.filter.mask[0]   = 0xff;
-		}
-
-		if (filter->getTidExt() < 0x10000 && filter->getTidExt() > 0) {
-			f.filter.filter[1] = (uint8_t)((filter->getTidExt() >> 8) & 0xff);
-			f.filter.filter[2] = (uint8_t)(filter->getTidExt() & 0xff);
-			f.filter.mask[1] = 0xff;
-			f.filter.mask[2] = 0xff;
-		}
-
-		f.timeout = 0;
-		f.flags = DMX_IMMEDIATE_START | DMX_CHECK_CRC;
-
-		if (ioctl(fd, DMX_SET_FILTER, &f) == -1) {
-			clog << "ISDBTFrontend::attachFilter ";
-			clog << "ioctl DMX_SET_FILTER failed" << endl;
-			return;
-		}
-
-		action = new ActionsToFilters;
-		action->ff    = filter;
-		action->isAdd = true;
-
-		lock();
-		actsToRunningFilters->push_back(action);
-		unlock();
-
-
-		if (firstFilter) {
-			firstFilter = false;
-			startThread();
-		}
-#endif
 
 	}
 
 	int ISDBTFrontend::createPesFilter(
 	 		int pid, int pesType, bool compositeFiler) {
                 clog << "ISDBTFrontend::createPesFilter not implemented!" << endl;
-#if 0
 
-		int fd, res;
-		struct dmx_pes_filter_params f;
-		__u16 convPid;
-
-		convPid = pid;
-
-		clog << "ISDBTFrontend::createPesFilter pid '" << convPid << "'";
-		clog << " pesType '" << pesType << "'" << endl;
-		memset(&f, 0, sizeof(f));
-
-		fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR, 0644);
-		if (fd < 0) {
-			clog << "ISDBTFrontend::createPesFilter can't open '";
-			clog << IFE_DEMUX_DEV_NAME << "'" << endl;
-			return fd;
-		}
-
-		f.pid      = convPid;
-		f.input    = DMX_IN_FRONTEND;
-		f.output   = DMX_OUT_TS_TAP;
-
-		if (compositeFiler) {
-			f.pes_type = DMX_PES_OTHER;
-
-		} else if (pesType == PFT_AUDIO) {
-			f.pes_type = DMX_PES_AUDIO0;
-
-		} else if (pesType == PFT_VIDEO) {
-			f.pes_type = DMX_PES_VIDEO0;
-
-		} else if (pesType == PFT_PCR) {
-			f.pes_type = DMX_PES_PCR0;
-
-		} else {
-			f.pes_type = DMX_PES_OTHER;
-		}
-
-		f.flags = DMX_IMMEDIATE_START;
-
-		res = ioctl(fd, DMX_SET_PES_FILTER, &f);
-		if (res < 0) {
-			clog << "ISDBTFrontend::createPesFilter ";
-			clog << "ioctl DMX_SET_PES_FILTER failed" << endl;
-		}
-		return fd;
-#endif
                 return -1;
 	}
 
 	void ISDBTFrontend::removeFilter(IFrontendFilter* filter) {
                 clog << "ISDBTFrontend::removeFilter not implemented!" << endl;
-#if 0
-		ActionsToFilters* action;
 
-		clog << "ISDBTFrontend::removeFilter" << endl;
-
-		action = new ActionsToFilters;
-		action->ff    = filter;
-		action->isAdd = false;
-
-		lock();
-		actsToRunningFilters->push_back(action);
-		unlock();
-#endif
 	}
 
 	void ISDBTFrontend::updatePool() {
@@ -498,92 +379,10 @@ namespace tuning {
 
 	void ISDBTFrontend::readFilters() {
                 clog << "ISDBTFrontend::readFilters not implemented! ";
-#if 0
-		IFrontendFilter* filter;
-		int fd;
-		int i = 0, n, recv, fSize;
-		vector<IFrontendFilter*>::iterator j;
-		vector<ActionsToFilters*>::iterator k;
-		char buf[4096];
-		bool mustUpdate = false;
-
-		lock();
-		k = actsToRunningFilters->begin();
-		while (k != actsToRunningFilters->end()) {
-			mustUpdate = true;
-			if ((*k)->isAdd) {
-				runningFilters->push_back((*k)->ff);
-
-			} else {
-				j = runningFilters->begin();
-				while(j != runningFilters->end()) {
-					if (*j == (*k)->ff) {
-						runningFilters->erase(j);
-						break;
-					}
-					++j;
-				}
-			}
-			delete (*k);
-			++k;
-		}
-		actsToRunningFilters->clear();
-		unlock();
-
-		if (mustUpdate) {
-			updatePool();
-		}
-
-		fSize = runningFilters->size();
-
-		n = poll(pollFds, fSize, 1000);
-		if (n == -1) {
-			clog << "ISDBTFrontend::readFilters poll failed! ";
-			clog << endl;
-			return;
-
-		} else if (n == 0) {
-			/*clog << "ISDBTFrontend::readFilters poll timeout! ";
-			clog << endl;*/
-			return;
-		}
-
-		j = runningFilters->begin();
-		while(j != runningFilters->end()) {
-			filter = *j;
-			fd     = filter->getDescriptor();
-			if (pollFds[i].revents) {
-				if (pollFds[i].fd != fd) {
-					clog << "ISDBTFrontend::readFilters Warning Poolfd has ";
-					clog << "a different fd of the filter";
-					clog << endl;
-				}
-
-				if (((recv = read(fd, buf, sizeof(buf)) < 0)) &&
-						errno == EOVERFLOW) {
-
-					//avoid overflow
-					recv = read(fd, buf, sizeof(buf));
-				}
-
-				if (recv > 4) {
-					filter->receiveSection(buf, recv);
-				}
-			}
-			i++;
-			++j;
-		}
-#endif
 	}
 
 	void ISDBTFrontend::run() {
-		clog << "ISDBTFrontend::run" << endl;
-#if 0
-		do {
-			readFilters();
-		} while (true);
-#endif
-		clog << "ISDBTFrontend::run no filters running!" << endl;
+		clog << "ISDBTFrontend::run no filters running and not yet implemented!" << endl;
 	}
 }
 }
