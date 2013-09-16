@@ -651,6 +651,18 @@ namespace mb {
 		return uWin;
 	}
 
+#if defined(SDL_VIDEO_DRIVER_WINDOWS)
+	LRESULT CALLBACK MyWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+		switch(msg) {
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return 0;
+		}
+
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+	}
+#endif
+
 	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
 			GingaWindowID parent,
 			string spec,
@@ -692,7 +704,7 @@ namespace mb {
 
 		if (uWin == NULL) {
 			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
-			clog << "Can't create child window" << endl;
+			clog << "Can't create embed child window" << endl;
 			return NULL;
 		}
 
@@ -711,11 +723,76 @@ namespace mb {
 		XSync(xDisplay, 1);
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-		//TODO: Windows - create a child window from parent window id
+		TCHAR cName[MAX_PATH] = "Ginga";
+		HINSTANCE hInst = (HINSTANCE)GetWindowLong((HWND)parent, GWL_HINSTANCE);
+		WNDCLASS wndclass;
+
+		//GetClassName((HWND)parent, cName, _countof(cName));
+
+		wndclass.style         = CS_HREDRAW | CS_VREDRAW ;
+		wndclass.lpfnWndProc   = MyWndProc;
+		wndclass.cbClsExtra    = 0;
+		wndclass.cbWndExtra    = 0;
+		wndclass.hInstance     = hInst;
+		wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION) ;
+		wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW) ;
+		wndclass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1) ;
+		wndclass.lpszMenuName  = NULL ;
+		wndclass.lpszClassName = cName;
+
+		if (!RegisterClass (&wndclass)) {
+			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
+			clog << "Can't register class " << cName;
+			clog << endl;
+			return NULL;
+		}
+
+		clog << "SDLDeviceScreen::createUnderlyingSubWindow Creating ";
+		clog << "Embedded window within the following class: " << cName;
+		clog << endl;
+
+		// Create the main window. 
+		uWin = (GingaWindowID)CreateWindow(
+				cName,                      // name of window class
+				cName,                      // title-bar string
+				WS_VISIBLE|WS_CHILD,        // window style
+				x,
+				y,
+				w,
+				h,
+				(HWND) parent,         // owner window
+				(HMENU) NULL,          // use class menu
+				hInst, // handle to application instance
+				(LPVOID) NULL);        // no window-creation data
+
+		if (uWin != NULL) {
+			// Show the window and send a WM_PAINT message to the window 
+			// procedure. 
+			ShowWindow((HWND)uWin, 1); 
+			UpdateWindow((HWND)uWin); 
+			clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
+			clog << (void*)uWin << "'";
+			clog << endl;
+
+		} else {
+			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning!";
+			clog << " Can't create sub-window with the following data:";
+			clog << endl;
+			clog << "last error = " << GetLastError() << endl;
+			clog << "class name = " << cName << endl;
+			clog << "x = " << x << endl;
+			clog << "y = " << y << endl;
+			clog << "w = " << w << endl;
+			clog << "h = " << h << endl;
+			clog << "parentId = " << parent << endl;
+		}
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
 		//TODO: Cocoa - create a child window from parent window id
 #endif
+
+		wRes = w;
+		hRes = h;
 
 		return uWin;
 	}
@@ -1384,9 +1461,7 @@ namespace mb {
 		bool capsOn  = false;
 		bool hasEvent;
 
-//		lockSDL();
 		hasEvent = SDL_PollEvent(&event);
-//		unlockSDL();
 
 		while (hasEvent) {
 			clog << "SDLDeviceScreen::checkEvents poll event";
@@ -1430,9 +1505,7 @@ namespace mb {
 			}
 			Thread::mutexUnlock(&scrMutex);
 
-			//lockSDL();
 			hasEvent = SDL_PollEvent(&event);
-			//unlockSDL();
     	}
 
 		return true;
@@ -1444,9 +1517,9 @@ namespace mb {
 		checkSDLInit();
 		
 		/* TODO: make 'framerate' an user option */
-                long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
+		long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
 		// long render_delta_ns = 16666666; // 16666666ns render interval (60fps) 
-		
+
 		int retcode;
 		int first_pass = 1;
 		struct timespec now;
@@ -1881,7 +1954,6 @@ namespace mb {
 			if (s->screen != NULL) {
 				SDL_GetWindowSize(s->screen, &s->wRes, &s->hRes);
 				s->sdlId = SDL_GetWindowID(s->screen);
-
 				initEmbed(s, s->uEmbedId);
 			}
 
@@ -1899,9 +1971,13 @@ namespace mb {
 								(s->mbMode.length() -
 										(s->mbMode.find_first_of("x")) + 1)));
 
+			} else if (rect.w > 0 && rect.h > 0) {
+				s->wRes = rect.w;
+				s->hRes = rect.h;
+
 			} else {
-				s->wRes = 1280;
-				s->hRes = 720;
+				s->wRes = 1920;
+				s->hRes = 1080;
 			}
 
 			if (rect.w > 0 && (s->wRes <= 0 || s->wRes > rect.w)) {
