@@ -557,7 +557,7 @@ namespace mb {
 	}
 
 	void SDLSurface::scale(double x, double y) {
-		int width, height;
+		int width=0, height=0;
 
 		Thread::mutexLock(&sMutex);
 		if (sur == NULL) {

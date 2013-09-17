@@ -288,7 +288,7 @@ namespace tuning {
 
 		} while (receiving);
 
-		delete buff;
+		delete[] buff;
 
 		//close(debugStream);
 

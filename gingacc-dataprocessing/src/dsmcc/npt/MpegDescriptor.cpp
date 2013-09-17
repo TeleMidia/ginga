@@ -128,7 +128,7 @@ int MpegDescriptor::updateStream() {
 	unsigned int len;
 
 	if (stream != NULL) {
-		delete (stream);
+		delete[] (stream);
 	}
 	try {
 		len = calculateDescriptorSize();

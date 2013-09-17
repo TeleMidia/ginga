@@ -213,7 +213,7 @@ namespace tsparser {
 		}
 
 		running = false;
-		delete buff;
+		delete[] buff;
 	}
 }
 }
