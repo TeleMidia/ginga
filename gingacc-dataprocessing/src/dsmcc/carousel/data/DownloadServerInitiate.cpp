@@ -147,7 +147,7 @@ namespace carousel {
 		memcpy(field, (void*)&(data[idx]), len);
 		srgIor = new Ior();
 		srgIor->setTypeId((string)field);
-		delete field;
+		delete[] field;
 		idx = idx + len;
 
 		//check Number of TaggedProfiles

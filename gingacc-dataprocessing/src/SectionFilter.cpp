@@ -533,7 +533,7 @@ namespace dataprocessing {
 					buffer, payloadSize + handler->headerSize);
 #endif
 
-			delete buffer;
+			delete[] buffer;
 			buffer = NULL;
 
 		/* The Header is ready */

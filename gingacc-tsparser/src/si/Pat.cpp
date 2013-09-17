@@ -344,7 +344,7 @@ namespace si {
 			}
 		}
 
-		delete sectionPayload;
+		delete[] sectionPayload;
 		return true;
 	}
 

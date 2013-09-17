@@ -271,7 +271,7 @@ namespace si {
 
 		processed = true;
 
-		delete sectionPayload;
+		delete[] sectionPayload;
 		return processed;
 	}
 

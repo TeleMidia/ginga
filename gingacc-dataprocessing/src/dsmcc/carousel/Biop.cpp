@@ -122,7 +122,7 @@ namespace carousel {
 		memcpy(field, (void*)&(data[offset]), len);
 		strData = (string)field;
 
-		delete field;
+		delete[] field;
 
 		return strData;
 	}

@@ -161,7 +161,7 @@ namespace carousel {
 			}
 		}
 
-		if (isConsolidated()) {
+		if (isConsolidated() && moduleFd > 0) {
 			fclose(moduleFd);
 		}
 	}

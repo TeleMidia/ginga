@@ -153,7 +153,7 @@ namespace carousel {
 			return -1;
 		}
 
-		delete bytes;
+		delete[] bytes;
 
 		return 0;
 	}
