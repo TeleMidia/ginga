@@ -97,6 +97,8 @@ namespace mb {
 		framedrop                            = -1;
 		infinite_buffer                      = 0;
 		rdftspeed                            = 20;
+		vfilters                             = NULL;
+		afilters                             = NULL;
 		texture                              = NULL;
 		hasPic                               = false;
 		reof                                 = false;
@@ -121,6 +123,7 @@ namespace mb {
 		    av_register_all();
 		    avformat_network_init();
 		    avdevice_register_all();
+			avfilter_register_all();
 
 		    av_lockmgr_register(SDL2ffmpeg::lockmgr);
 		}
@@ -232,6 +235,9 @@ namespace mb {
 
 			stream_close();
 		}
+
+		//AVFILTER
+		av_freep(&vfilters);
 	}
 
 	void SDL2ffmpeg::close(bool quit) {
@@ -1153,15 +1159,12 @@ namespace mb {
 			rect.h = FFMAX(height, 1);
 
 			if (vp->src_frame && !abortRequest) {
-				uint8_t* pixels[AV_NUM_DATA_POINTERS];
-				int pitch[AV_NUM_DATA_POINTERS];
 		        Uint32 format;
 		        int textureAccess, w, h;
 		        bool locked = true;
+				AVPicture pict = { { 0 } };
 
-		        if (SDL_LockTexture(vp->tex, NULL, (void**)&pixels, &pitch[0])
-		        		!= 0) {
-
+		        if (SDL_LockTexture(vp->tex, NULL, (void**)&pict.data, &pict.linesize[0]) != 0) {
 					clog << "SDL2ffmpeg::video_image_display(" << vs->filename;
 					clog << ") Warning! ";
 					clog << "Can't lock texture: " << SDL_GetError() << endl;
@@ -1177,51 +1180,44 @@ namespace mb {
 
 		        SDL_QueryTexture(vp->tex, &format, &textureAccess, &w, &h);
 
-				if (vs->img_convert_ctx == NULL) {
-					if (w == 0 || h == 0) {
-						w = vp->width;
-						h = vp->height;
-					}
-
-					vs->img_convert_ctx = createContext(
-							vp->width,
-							vp->height,
-							vp->pix_fmt,
-							w,
-							h,
-							PIX_FMT_RGB24);
-				}
-
-				if (vs->img_convert_ctx == NULL) {
-					clog << "SDL2ffmpeg::video_image_display Warning! ";
-					clog << "Can't initialize the conversion context FROM";
-					clog << " w = '" << vp->width << "' ";
-					clog << " h = '" << vp->height << "' TO ";
-					clog << " w = '" << w << "' ";
-					clog << " h = '" << h << "' ";
-					clog << endl;
-					if (locked) {
-						SDL_UnlockTexture(vp->tex);
-					}
-					return;
-				}
-
 				if (!abortRequest) {
 					if (vp->tex &&
 							vp->src_frame->data &&
-							vp->src_frame->linesize > 0 &&
-							vp->height > 0 &&
-							vs->img_convert_ctx) {
+							vp->height > 0) {
+
+						//FIXME: use direct rendering
+						av_picture_copy(
+								&pict,
+								(AVPicture*)vp->src_frame,
+								(AVPixelFormat)vp->src_frame->format,
+								vp->width,
+								vp->height);
+
+						SwsContext* ctx = NULL;
+
+						/*
+						 * FIXME: we are using filters only to deinterlace video.
+						 *        we should use them to convert pixel formats as well.
+						 */
+						ctx = sws_getCachedContext(
+								ctx,
+								vp->width,
+								vp->height,
+								vp->pix_fmt,
+								w,
+								h,
+								PIX_FMT_RGB24,
+								SWS_BILINEAR,
+								0,
+								0,
+								0);
 
 						sws_scale(
-								vs->img_convert_ctx,
+								ctx,
 								(const uint8_t* const*)vp->src_frame->data,
 								vp->src_frame->linesize,
-								0, vp->height, pixels, pitch);
+								0, vp->height, pict.data, pict.linesize);
 					}
-
-					sws_freeContext(vs->img_convert_ctx);
-					vs->img_convert_ctx = NULL;
 				}
 
 				if (locked) {
@@ -1811,15 +1807,295 @@ display:
 		return 0;
 	}
 
+	// AVFILTER begin
+	int SDL2ffmpeg::configure_filtergraph(
+			AVFilterGraph *graph, 
+			const char *filtergraph, 
+			AVFilterContext *source_ctx, 
+			AVFilterContext *sink_ctx) {
+
+		int ret;
+		AVFilterInOut *outputs = NULL, *inputs = NULL;
+
+		if (filtergraph) {
+			outputs = avfilter_inout_alloc();
+			inputs  = avfilter_inout_alloc();
+			if (!outputs || !inputs) {
+				ret = AVERROR(ENOMEM);
+				goto fail;
+			}
+
+			outputs->name       = av_strdup("in");
+			outputs->filter_ctx = source_ctx;
+			outputs->pad_idx    = 0;
+			outputs->next       = NULL;
+
+			inputs->name        = av_strdup("out");
+			inputs->filter_ctx  = sink_ctx;
+			inputs->pad_idx     = 0;
+			inputs->next        = NULL;
+
+			if ((ret = avfilter_graph_parse_ptr(graph, filtergraph, &inputs, &outputs, NULL)) < 0) {
+				goto fail;
+			}
+		} else {
+			if ((ret = avfilter_link(source_ctx, 0, sink_ctx, 0)) < 0)
+			goto fail;
+		}
+
+		ret = avfilter_graph_config(graph, NULL);
+fail:
+		avfilter_inout_free(&outputs);
+		avfilter_inout_free(&inputs);
+		return ret;
+	}
+
+	int SDL2ffmpeg::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame) {
+		static const enum AVPixelFormat out_pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
+		char sws_flags_str[128];
+		char buffersrc_args[256];
+		int ret;
+		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_crop;
+		AVCodecContext *codec = vs->video_st->codec;
+		AVRational fr = av_guess_frame_rate(vs->ic, vs->video_st, NULL);
+
+		graph->scale_sws_opts = av_strdup(sws_flags_str);
+
+		snprintf(
+				buffersrc_args, 
+				sizeof(buffersrc_args),
+				"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+				frame->width, 
+				frame->height, 
+				frame->format,
+				vs->video_st->time_base.num, 
+				vs->video_st->time_base.den,
+				codec->sample_aspect_ratio.num, 
+				FFMAX(codec->sample_aspect_ratio.den, 1));
+
+		if (fr.num && fr.den) {
+			av_strlcatf(buffersrc_args, sizeof(buffersrc_args), ":frame_rate=%d/%d", fr.num, fr.den);
+		}
+
+		if ((ret = avfilter_graph_create_filter(
+				&filt_src, 
+				avfilter_get_by_name("buffer"), 
+				"sdl2ffmpeg", 
+				buffersrc_args, 
+				NULL, 
+				graph)) < 0) {
+
+			goto fail;
+		}
+
+		ret = avfilter_graph_create_filter(
+				&filt_out, 
+				avfilter_get_by_name("buffersink"),
+				"sdl2ffmpeg_buffersink",
+				NULL,
+				NULL,
+				graph);
+
+		if (ret < 0) {
+			goto fail;
+		}
+
+		if ((ret = av_opt_set_int_list(
+				filt_out, 
+				"pix_fmts", 
+				out_pix_fmts, 
+				AV_PIX_FMT_NONE,
+				AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+			goto fail;
+		}
+
+		/* SDL YUV code is not handling odd width/height for some driver
+		* combinations, therefore we crop the picture to an even width/height. */
+		if ((ret = avfilter_graph_create_filter(
+				&filt_crop, 
+				avfilter_get_by_name("crop"),
+				"sdl2ffmpeg_crop",
+				"floor(in_w/2)*2:floor(in_h/2)*2", 
+				NULL, 
+				graph)) < 0) {
+
+			goto fail;
+		}
+
+		if ((ret = avfilter_link(filt_crop, 0, filt_out, 0)) < 0) {
+			goto fail;
+		}
+
+		if ((ret = configure_filtergraph(graph, vfilters, filt_src, filt_crop)) < 0) {
+			goto fail;
+		}
+
+		vs->in_video_filter  = filt_src;
+		vs->out_video_filter = filt_out;
+fail:
+		return ret;
+	}
+
+	int SDL2ffmpeg::configure_audio_filters(const char *afilters, int force_output_format) {
+		static const enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE };
+		int sample_rates[2] = { 0, -1 };
+		int64_t channel_layouts[2] = { 0, -1 };
+		int channels[2] = { 0, -1 };
+		AVFilterContext *filt_asrc = NULL, *filt_asink = NULL;
+		char asrc_args[256];
+		int ret;
+
+		avfilter_graph_free(&vs->agraph);
+		if (!(vs->agraph = avfilter_graph_alloc())) {
+			return AVERROR(ENOMEM);
+		}
+
+		ret = snprintf(
+				asrc_args,
+				sizeof(asrc_args),
+				"sample_rate=%d:sample_fmt=%s:channels=%d:time_base=%d/%d",
+				vs->audio_filter_src.freq,
+				av_get_sample_fmt_name(vs->audio_filter_src.fmt),
+				vs->audio_filter_src.channels,
+				1, 
+				vs->audio_filter_src.freq);
+
+		if (vs->audio_filter_src.channel_layout) {
+			snprintf(
+					asrc_args + ret,
+					sizeof(asrc_args) - ret,
+					":channel_layout=0x%"PRIx64,
+					vs->audio_filter_src.channel_layout);
+		}
+
+		ret = avfilter_graph_create_filter(
+				&filt_asrc,
+				avfilter_get_by_name("abuffer"),
+				"sdl2ffmpeg_abuffer",
+				asrc_args, 
+				NULL, 
+				vs->agraph);
+
+		if (ret < 0) {
+			goto end;
+		}
+
+		ret = avfilter_graph_create_filter(
+				&filt_asink,
+				avfilter_get_by_name("abuffersink"),
+				"sdl2ffmpeg_abuffersink",
+				NULL, 
+				NULL, 
+				vs->agraph);
+
+		if (ret < 0) {
+			goto end;
+		}
+
+		if ((ret = av_opt_set_int_list(
+				filt_asink,
+				"sample_fmts",
+				sample_fmts,
+				AV_SAMPLE_FMT_NONE,
+				AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+			goto end;
+		}
+
+		if ((ret = av_opt_set_int(
+				filt_asink,
+				"all_channel_counts",
+				1, 
+				AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+			goto end;
+		}
+
+		if (force_output_format) {
+			channel_layouts[0] = vs->audio_tgt.channel_layout;
+			channels       [0] = vs->audio_tgt.channels;
+			sample_rates   [0] = vs->audio_tgt.freq;
+
+			if ((ret = av_opt_set_int(
+					filt_asink, 
+					"all_channel_counts", 
+					0, 
+					AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+				goto end;
+			}
+
+			if ((ret = av_opt_set_int_list(
+					filt_asink, 
+					"channel_layouts", 
+					channel_layouts,  
+					-1, 
+					AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+				goto end;
+			}
+
+			if ((ret = av_opt_set_int_list(
+					filt_asink, 
+					"channel_counts", 
+					channels,
+					-1, 
+					AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+				goto end;
+			}
+
+			if ((ret = av_opt_set_int_list(
+					filt_asink, 
+					"sample_rates",
+					sample_rates,
+					-1, 
+					AV_OPT_SEARCH_CHILDREN)) < 0) {
+
+				goto end;
+			}
+		}
+
+
+		if ((ret = configure_filtergraph(
+				vs->agraph, 
+				afilters, 
+				filt_asrc, 
+				filt_asink)) < 0) {
+
+			goto end;
+		}
+
+		vs->in_audio_filter  = filt_asrc;
+		vs->out_audio_filter = filt_asink;
+
+end:
+		if (ret < 0) {
+			avfilter_graph_free(&vs->agraph);
+		}
+		return ret;
+	}
+	// AVFILTER end
+
 	int SDL2ffmpeg::video_thread(void *arg) {
 		AVPacket pkt    = { 0 };
 		SDL2ffmpeg* dec = (SDL2ffmpeg*)arg;
 		VideoState* vs  = dec->vs;
-		AVFrame* frame  = avcodec_alloc_frame();
+		AVFrame* frame  = av_frame_alloc();
 		int64_t pts_int = AV_NOPTS_VALUE, pos = -1;
 
 		double pts;
 		int ret;
+
+		// AVFILTER begin
+		AVFilterGraph *graph = avfilter_graph_alloc();
+		AVFilterContext *filt_out = NULL, *filt_in = NULL;
+		int last_w = 0;
+		int last_h = 0;
+		enum AVPixelFormat last_format = (AVPixelFormat)-2;
+		int last_serial = -1;
+		// AVFILTER end
 
 		while (!dec->abortRequest) {
 			while (vs->paused && !vs->videoq.abort_request) {
@@ -1829,6 +2105,7 @@ display:
 			avcodec_get_frame_defaults(frame);
 			av_free_packet(&pkt);
 
+			av_init_packet(&pkt);
 			ret = dec->get_video_frame(frame, &pts_int, &pkt);
 			if (ret < 0) {
 				goto the_end;
@@ -1838,8 +2115,67 @@ display:
 				continue;
 			}
 
-			pts = pts_int * av_q2d(vs->video_st->time_base);
-			ret = dec->queue_picture(frame, pts, pkt.pos);
+			// AVFILTER begin
+			if (last_w != frame->width || 
+					last_h != frame->height ||
+					last_format != frame->format) {
+
+				avfilter_graph_free(&graph);
+				graph = avfilter_graph_alloc();
+				if ((ret = dec->configure_video_filters(graph, dec->vfilters, frame)) < 0) {
+					dec->abortRequest = true;
+					av_free_packet(&pkt);
+					goto the_end;
+				}
+
+				filt_in  = vs->in_video_filter;
+				filt_out = vs->out_video_filter;
+				last_w = frame->width;
+				last_h = frame->height;
+				last_format = (AVPixelFormat)frame->format;
+			}
+
+			ret = av_buffersrc_add_frame(filt_in, frame);
+			if (ret < 0) {
+				goto the_end;
+			}
+
+			av_frame_unref(frame);
+			avcodec_get_frame_defaults(frame);
+			av_free_packet(&pkt);
+
+			while (ret >= 0) {
+				vs->frame_last_returned_time = av_gettime() / 1000000.0;
+
+				ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
+				if (ret < 0) {
+					if (ret == AVERROR_EOF) {
+						dec->abortRequest = true;
+					}
+					ret = 0;
+					break;
+				}
+
+				vs->frame_last_filter_delay = av_gettime() / 1000000.0 - vs->frame_last_returned_time;
+				if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
+					vs->frame_last_filter_delay = 0;
+				}
+
+				/*pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(filt_out->inputs[0]->time_base);
+				ret = dec->queue_picture(
+						frame, 
+						pts, 
+						av_frame_get_pkt_pos(frame));*/
+
+				pts = pts_int * av_q2d(vs->video_st->time_base);
+				ret = dec->queue_picture(frame, pts, pkt.pos);
+
+				av_frame_unref(frame);
+			}
+			// AVFILTER end
+
+			//pts = pts_int * av_q2d(vs->video_st->time_base);
+			//ret = dec->queue_picture(frame, pts, pkt.pos);
 
 			if (ret < 0) {
 				goto the_end;
@@ -2616,10 +2952,11 @@ the_end:
 
 	/* open a given stream. Return 0 if OK */
 	int SDL2ffmpeg::stream_component_open(int stream_index) {
-		AVFormatContext *ic = vs->ic;
-		AVCodecContext *avctx;
-		AVCodec *codec;
-		AVDictionaryEntry *t = NULL;
+		AVFormatContext* ic = vs->ic;
+		AVCodecContext* avctx;
+		AVCodec* codec;
+		AVDictionaryEntry* t = NULL;
+		AVDictionary* opts;
 
 		if (stream_index < 0 || stream_index >= ic->nb_streams) {
 			clog << "SDL2ffmpeg::stream_component_open Warning! Invalid ";
@@ -2655,6 +2992,32 @@ the_end:
 
 		if (fast) {
 			avctx->flags2 |= CODEC_FLAG2_FAST;
+		}
+
+		if (codec->capabilities & CODEC_CAP_DR1) {
+			avctx->flags |= CODEC_FLAG_EMU_EDGE;
+		}
+
+		opts = filter_codec_opts(NULL, avctx->codec_id, ic, ic->streams[stream_index], codec);
+		if (!av_dict_get(opts, "threads", NULL, 0)) {
+			av_dict_set(&opts, "threads", "auto", 0);
+		}
+
+		if (avctx->lowres) {
+			av_dict_set(&opts, "lowres", av_asprintf("%d", avctx->lowres), AV_DICT_DONT_STRDUP_VAL);
+		}
+
+		if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			av_dict_set(&opts, "refcounted_frames", "1", 0);
+		}
+
+		if (avcodec_open2(avctx, codec, &opts) < 0) {
+			return -1;
+		}
+
+		if ((t = av_dict_get(opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
+			av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
+			return AVERROR_OPTION_NOT_FOUND;
 		}
 
 		if (!codec || avcodec_open2(avctx, codec, NULL) < 0) {
@@ -3162,6 +3525,67 @@ the_end:
 				return 0;
 		}
 		return 1;
+	}
+
+	AVDictionary* SDL2ffmpeg::filter_codec_opts(
+			AVDictionary *opts, 
+			enum AVCodecID codec_id,
+			AVFormatContext *s, 
+			AVStream *st, 
+			AVCodec *codec) {
+
+		AVDictionary* ret = NULL;
+		AVDictionaryEntry *t = NULL;
+
+		int flags = s->oformat ? AV_OPT_FLAG_ENCODING_PARAM : AV_OPT_FLAG_DECODING_PARAM;
+		char prefix = 0;
+		const AVClass* cc = avcodec_get_class();
+
+		if (!codec) {
+			codec = s->oformat ? avcodec_find_encoder(codec_id) : avcodec_find_decoder(codec_id);
+		}
+
+		if (!codec) {
+			return NULL;
+		}
+
+		switch (codec->type) {
+			case AVMEDIA_TYPE_VIDEO:
+				prefix  = 'v';
+				flags  |= AV_OPT_FLAG_VIDEO_PARAM;
+				break;
+
+			case AVMEDIA_TYPE_AUDIO:
+				prefix  = 'a';
+				flags  |= AV_OPT_FLAG_AUDIO_PARAM;
+				break;
+
+			case AVMEDIA_TYPE_SUBTITLE:
+				prefix  = 's';
+				flags  |= AV_OPT_FLAG_SUBTITLE_PARAM;
+				break;
+		}
+
+		while (t = av_dict_get(opts, "", t, AV_DICT_IGNORE_SUFFIX)) {
+			char *p = strchr(t->key, ':');
+
+			if (av_opt_find(&cc, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ) || 
+					(codec && codec->priv_class && av_opt_find(
+							&codec->priv_class, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ))) {
+
+				av_dict_set(&ret, t->key, t->value, 0);
+
+			} else if (t->key[0] == prefix && av_opt_find(
+					&cc, t->key + 1, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ))  {
+
+				av_dict_set(&ret, t->key + 1, t->value, 0);
+			}
+
+			if (p) {
+				*p = ':';
+			}
+		}
+		return ret;
 	}
 }
 }
