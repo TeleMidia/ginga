@@ -59,6 +59,15 @@ extern "C" {
 #include <assert.h>
 #include <stdio.h>
 #ifdef _WIN32
+
+#ifndef isnan
+#define isnan(x) ((x) != (x))
+#endif
+
+#ifndef snprintf
+#define snprintf sprintf_s
+#endif
+
 	#include <sys/timeb.h>
 	#include <sys/types.h>
 	#include <time.h>
@@ -140,6 +149,9 @@ using namespace std;
 #define __INT64_C int64_t
 #endif //__INT64_C
 
+#ifndef PRIx64
+#define PRIx64 "llx"
+#endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 

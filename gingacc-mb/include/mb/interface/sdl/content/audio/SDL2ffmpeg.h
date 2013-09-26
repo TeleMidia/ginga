@@ -73,18 +73,21 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#include "libavcodec/avfft.h"
-#include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
-
-#ifndef HAVE_LIBAVFORMAT_AVFORMAT_H
 #include "libavutil/time.h"
-#endif
-
-#include "libavutil/opt.h"
-#include "libswresample/swresample.h"
-#include "libswscale/swscale.h"
+#include "libavformat/avformat.h"
 #include "libavdevice/avdevice.h"
+#include "libswscale/swscale.h"
+#include "libavutil/opt.h"
+#include "libavcodec/avfft.h"
+#include "libswresample/swresample.h"
+
+// AVFILTER BEGIN
+# include "libavfilter/avcodec.h"
+# include "libavfilter/avfilter.h"
+# include "libavfilter/buffersink.h"
+# include "libavfilter/buffersrc.h"
+// AVFILTER end
 
 #include <inttypes.h>
 #include <limits.h>
@@ -202,12 +205,11 @@ namespace mb {
 		double pts;                //presentation time stamp for this picture
 		int64_t pos;               //byte position in file
 		int skip;
-		SDL_Texture* tex;
 		int width, height;         // source height & width
 		int allocated;
 		int reallocate;
 		enum PixelFormat pix_fmt;
-
+		SDL_Texture* tex;
 		AVFrame *src_frame;
 	} VideoPicture;
 
@@ -263,6 +265,7 @@ namespace mb {
 		AVPacket audio_pkt_temp;
 		AVPacket audio_pkt;
 		struct AudioParams audio_src;
+		struct AudioParams audio_filter_src; // AVFILTER
 		struct AudioParams audio_tgt;
 		struct SwrContext *swr_ctx;
 		double audio_current_pts;
@@ -323,6 +326,14 @@ namespace mb {
 		char filename[1024];
 		int step;
 
+		// AVFILTER begin
+		AVFilterContext *in_video_filter;   // the first filter in the video chain
+		AVFilterContext *out_video_filter;  // the last filter in the video chain
+		AVFilterContext *in_audio_filter;   // the first filter in the audio chain
+		AVFilterContext *out_audio_filter;  // the last filter in the audio chain
+		AVFilterGraph *agraph;              // audio filter graph
+		// AVFILTER end
+
 		int refresh;
 
 		SDL_Thread* subtitle_tid;
@@ -377,6 +388,9 @@ namespace mb {
 		int infinite_buffer;
 		int framedrop;
 		int rdftspeed;
+
+		char* vfilters;
+		char* afilters;
 
 		AVPacket flush_pkt;
 		VideoState* vs;
@@ -505,6 +519,23 @@ namespace mb {
 		int queue_picture(AVFrame *src_frame, double pts1, int64_t pos);
 		int get_video_frame(AVFrame *frame, int64_t *pts, AVPacket* pkt);
 
+		//AVFILTER begin
+		int configure_filtergraph(
+				AVFilterGraph* graph, 
+				const char* filtergraph,
+				AVFilterContext* source_ctx, 
+				AVFilterContext* sink_ctx);
+
+		int configure_video_filters(
+				AVFilterGraph* graph,
+				const char* vfilters,
+				AVFrame* frame);
+
+		int configure_audio_filters(
+				const char *afilters, 
+				int force_output_format);
+		//AVFILTER end
+
 		static int video_thread(void *arg);
 		static int subtitle_thread(void *arg);
 
@@ -534,6 +565,13 @@ namespace mb {
 		void step_to_next_frame();
 
 		static int lockmgr(void **mtx, enum AVLockOp op);
+
+		static AVDictionary* filter_codec_opts(
+				AVDictionary *opts,
+				enum AVCodecID codec_id,
+				AVFormatContext *s, 
+				AVStream *st, 
+				AVCodec *codec);
   };
 }
 }
