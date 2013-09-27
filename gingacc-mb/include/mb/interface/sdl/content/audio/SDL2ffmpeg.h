@@ -139,22 +139,34 @@ extern "C" {
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
 #endif
 
-/* no AV sync correction is done if below the AV sync threshold */
-#define AV_SYNC_THRESHOLD 0.01
+/* no AV sync correction is done if below the minimum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MIN 0.01
+/* AV sync correction is done if above the maximum AV sync threshold */
+#define AV_SYNC_THRESHOLD_MAX 0.1
+/* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
+#define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
 /* no AV correction is done if too big error */
 #define AV_NOSYNC_THRESHOLD 10.0
 
 /* maximum audio speed change to get correct sync */
 #define SAMPLE_CORRECTION_PERCENT_MAX 10
 
+/* external clock speed adjustment constants for realtime sources based on buffer fullness */
+#define EXTERNAL_CLOCK_SPEED_MIN  0.900
+#define EXTERNAL_CLOCK_SPEED_MAX  1.010
+#define EXTERNAL_CLOCK_SPEED_STEP 0.001
+
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
 #define AUDIO_DIFF_AVG_NB   20
 
-/* the size must be big enough to compensate the hardware audio buffer size */
-#define SAMPLE_ARRAY_SIZE (2*65536)
+/* polls for possible required screen refresh at least this often, should be less than 1/fps */
+#define REFRESH_RATE 0.01
 
-#define VIDEO_PICTURE_QUEUE_SIZE 2
-#define SUBPICTURE_QUEUE_SIZE 4
+/* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
+/* TODO: We assume that a decoded and resampled frame fits into this buffer */
+#define SAMPLE_ARRAY_SIZE (8 * 65536)
+
+#define VIDEO_PICTURE_QUEUE_SIZE 3
 
 #define ALPHA_BLEND(a, oldp, newp, s)\
 		((((oldp << s) * (255 - (a))) + (newp * (a))) / (255 << s))
@@ -181,6 +193,7 @@ extern "C" {
 
 #define BPP 1
 
+#include <cmath>
 #include <string>
 #include <iostream>
 #include <set>
@@ -192,49 +205,79 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+	typedef struct MyAVPacketList {
+		AVPacket pkt;
+		struct MyAVPacketList *next;
+		int serial;
+	} MyAVPacketList;
+
 	typedef struct PacketQueue {
-		AVPacketList *first_pkt, *last_pkt;
+		MyAVPacketList *first_pkt, *last_pkt;
 		int nb_packets;
 		int size;
 		int abort_request;
+		int serial;
 		SDL_mutex *mutex;
 		SDL_cond *cond;
 	} PacketQueue;
 
 	typedef struct VideoPicture {
-		double pts;                //presentation time stamp for this picture
+		double pts;                //presentation timestamp for this picture
 		int64_t pos;               //byte position in file
+		SDL_Texture* tex;
 		int skip;
 		int width, height;         // source height & width
 		int allocated;
 		int reallocate;
-		enum PixelFormat pix_fmt;
-		SDL_Texture* tex;
-		AVFrame *src_frame;
-	} VideoPicture;
+		int serial;
 
-	typedef struct SubPicture {
-		double pts; /* presentation time stamp for this picture */
-		AVSubtitle sub;
-	} SubPicture;
+		AVRational sar;
+
+		//tmcode
+		AVPixelFormat pix_fmt;
+		AVFrame* src_frame;
+	} VideoPicture;
 
 	typedef struct AudioParams {
 		int freq;
 		int channels;
-		int channel_layout;
+		int64_t channel_layout;
 		enum AVSampleFormat fmt;
 	} AudioParams;
 
+	typedef struct Clock {
+		double pts;           /* clock base */
+		double pts_drift;     /* clock base minus time at which we updated the clock */
+		double last_updated;
+		double speed;
+		int serial;           /* clock is based on a packet with this serial */
+		int paused;
+		int *queue_serial;    /* pointer to the current packet queue serial, used for obsolete clock detection */
+	} Clock;
+
 	typedef struct VideoState {
+		SDL_Thread *read_tid;
+		SDL_Thread *video_tid;
+		AVInputFormat *iformat;
+		int no_background;
+		int abort_request;
+		int force_refresh;
 		int paused;
 		int last_paused;
-		int que_attachments_req;
+		int queue_attachments_req;
 		int seek_req;
 		int seek_flags;
 		int64_t seek_pos;
 		int64_t seek_rel;
 		int read_pause_return;
 		AVFormatContext *ic;
+		int realtime;
+		int audio_finished;
+		int video_finished;
+
+		Clock audclk;
+		Clock vidclk;
+		Clock extclk;
 
 		int audio_stream;
 
@@ -243,6 +286,7 @@ namespace mb {
 		int64_t external_clock_time;
 
 		double audio_clock;
+		int audio_clock_serial;
 		double audio_diff_cum; /* used for AV difference average computation */
 		double audio_diff_avg_coef;
 		double audio_diff_threshold;
@@ -262,8 +306,11 @@ namespace mb {
 	    int audio_buf_index; /* in bytes */
 
 		int audio_write_buf_size;
+		int audio_buf_frames_pending;
 		AVPacket audio_pkt_temp;
 		AVPacket audio_pkt;
+		int audio_pkt_temp_serial;
+		int audio_last_serial;
 		struct AudioParams audio_src;
 		struct AudioParams audio_filter_src; // AVFILTER
 		struct AudioParams audio_tgt;
@@ -273,7 +320,7 @@ namespace mb {
 		int frame_drops_early;
 		int frame_drops_late;
 		AVFrame *frame;
-
+		int64_t audio_frame_next_pts;
 		int16_t sample_array[SAMPLE_ARRAY_SIZE];
 		int sample_array_index;
 		int last_i_start;
@@ -281,13 +328,7 @@ namespace mb {
 		int rdft_bits;
 		FFTSample *rdft_data;
 		int xpos;
-
-		int subtitle_stream;
-		int subtitle_stream_changed;
-		AVStream *subtitle_st;
-		PacketQueue subtitleq;
-		SubPicture subpq[SUBPICTURE_QUEUE_SIZE];
-		int subpq_size, subpq_rindex, subpq_windex;
+		double last_vis_time;
 
 		double frame_timer;
 		double frame_last_pts;
@@ -296,12 +337,14 @@ namespace mb {
 		double frame_last_returned_time;
 		double frame_last_filter_delay;
 		int64_t frame_last_dropped_pos;
-
+		int frame_last_dropped_serial;
 		//pts of last decoded frame / predicted pts of next decoded frame
 		double video_clock;
 		int video_stream;
 		AVStream *video_st;
 		PacketQueue videoq;
+		int64_t video_current_pos;      // current displayed file pos
+		double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 
 		/*
 		 * current displayed pts
@@ -314,9 +357,6 @@ namespace mb {
 		 * video_current_pts - used to have running video pts
 		 */
 		double video_current_pts_drift;
-
-		//current displayed file pos
-		int64_t video_current_pos;
 
 		VideoPicture pictq[VIDEO_PICTURE_QUEUE_SIZE];
 		int pictq_size, pictq_rindex, pictq_windex;
@@ -334,17 +374,13 @@ namespace mb {
 		AVFilterGraph *agraph;              // audio filter graph
 		// AVFILTER end
 
+		int last_video_stream, last_audio_stream, last_subtitle_stream;
 		int refresh;
 
-		SDL_Thread* subtitle_tid;
-	    SDL_Thread* read_tid;
-	    SDL_Thread* video_tid;
-
-	    SDL_mutex* subpq_mutex;
-	    SDL_cond* subpq_cond;
 	    SDL_mutex* pictq_mutex;
 	    SDL_cond* pictq_cond;
 
+		SDL_cond *continue_read_thread;
 	} VideoState;
 
   class SDL2ffmpeg {
@@ -379,20 +415,17 @@ namespace mb {
 		int fast;
 		int genpts;
 		int lowres;
-		int idct;
-		enum AVDiscard skip_frame;
-		enum AVDiscard skip_idct;
-		enum AVDiscard skip_loop_filter;
 		int error_concealment;
 		int decoder_reorder_pts;
-		int infinite_buffer;
 		int framedrop;
+		int infinite_buffer;
 		int rdftspeed;
 
 		char* vfilters;
 		char* afilters;
 
 		AVPacket flush_pkt;
+
 		VideoState* vs;
 
 		static bool init;
@@ -471,15 +504,16 @@ namespace mb {
 
 		static void clamp(short* buf, int len);
 
-		static struct SwsContext* createContext(
-				int inWidth,
-				int inHeight,
-				enum PixelFormat inFormat,
-				int outWidth,
-				int outHeight,
-				enum PixelFormat outFormat);
-
 	private:
+		static int cmp_audio_fmts(
+				enum AVSampleFormat fmt1, 
+				int64_t channel_count1,
+				enum AVSampleFormat fmt2, 
+				int64_t channel_count2);
+
+		static int64_t get_valid_channel_layout(
+				int64_t channel_layout, int channels);
+
 		int nts_packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		void packet_queue_init(PacketQueue *q);
@@ -487,13 +521,11 @@ namespace mb {
 		void packet_queue_destroy(PacketQueue *q);
 		void packet_queue_abort(PacketQueue *q);
 		void packet_queue_start(PacketQueue *q);
-		int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block);
+		int packet_queue_get(
+			PacketQueue *q, AVPacket *pkt, int block, int* serial);
 
-		void free_subpicture(SubPicture *sp);
 		void video_image_display();
 		void stream_close();
-
-	public:
 		void video_display();
 
 	private:
@@ -505,8 +537,12 @@ namespace mb {
 		double get_master_clock();
 
 	private:
+		void check_external_clock_speed();
+
 		void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
 		void stream_toggle_pause();
+		void toggle_pause();
+		void step_to_next_frame();
 		double compute_target_delay(double delay);
 		void pictq_next_picture();
 		void update_video_pts(double pts, int64_t pos);
@@ -516,8 +552,8 @@ namespace mb {
 		void alloc_picture();
 
 	private:
-		int queue_picture(AVFrame *src_frame, double pts1, int64_t pos);
-		int get_video_frame(AVFrame *frame, int64_t *pts, AVPacket* pkt);
+		int queue_picture(AVFrame *src_frame, double pts, int64_t pos, int serial);
+		int get_video_frame(AVFrame *frame, int64_t *pts, AVPacket* pkt, int* serial);
 
 		//AVFILTER begin
 		int configure_filtergraph(
@@ -537,7 +573,6 @@ namespace mb {
 		//AVFILTER end
 
 		static int video_thread(void *arg);
-		static int subtitle_thread(void *arg);
 
 		int synchronize_audio(int nb_samples);
 
@@ -556,13 +591,11 @@ namespace mb {
 		void stream_component_close(int stream_index);
 
 		static int decode_interrupt_cb(void *ctx);
-
+		static int is_realtime(AVFormatContext *s);
 		int read_init();
 		static int read_thread(void *arg);
 
 		void stream_cycle_channel(int codec_type);
-		void toggle_pause();
-		void step_to_next_frame();
 
 		static int lockmgr(void **mtx, enum AVLockOp op);
 
