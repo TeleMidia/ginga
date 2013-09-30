@@ -161,6 +161,9 @@ namespace dataprocessing {
 	void DataProcessor::applicationInfoMounted(IAIT* ait) {
 		if (sdl != NULL) {
 			sdl->applicationInfoMounted(ait);
+
+		} else {
+			delete ait;
 		}
 	}
 
@@ -403,8 +406,6 @@ namespace dataprocessing {
 					section = NULL;
 					return;
 				}
-				delete ait;
-				ait = NULL;
 			}
 
 #if HAVE_COMPSUPPORT

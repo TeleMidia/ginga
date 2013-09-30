@@ -119,6 +119,7 @@ namespace mb {
 
 			SDLDeviceScreen::lockSDL();
 			renderedSurface = IMG_Load(imgUri.c_str());
+			SDLDeviceScreen::unlockSDL();
 
 			if (renderedSurface != NULL) {
 				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
@@ -130,8 +131,6 @@ namespace mb {
 
 				surface->setSurfaceContent((void*)renderedSurface);
 			}
-
-			SDLDeviceScreen::unlockSDL();
 
 		} else {
 			clog << "SDLImageProvider::playOver Warning! NULL content";

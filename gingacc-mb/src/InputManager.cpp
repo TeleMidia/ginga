@@ -142,6 +142,7 @@ namespace mb {
 		bool runDone = false;
 		IInputEvent* ie;
 		int mbKeyCode;
+		bool wasRunning = running;
 
 		running = false;
 		if (eventBuffer != NULL) {
@@ -162,9 +163,11 @@ namespace mb {
 		ie = LocalScreenManager::getInstance()->createInputEvent(
 				myScreen, NULL, mbKeyCode);
 
-		running = true;
-		dispatchEvent(ie);
-		running = false;
+		if (wasRunning) {
+			running = true;
+			dispatchEvent(ie);
+			running = false;
+		}
 
 		delete ie;
 
@@ -444,14 +447,11 @@ namespace mb {
 			evs = i->second;
 			if (evs != NULL) {
 				if (evs->find(keyCode) != evs->end()) {
-
-					if (LocalScreenManager::hasIEListenerInstance(lis)) {
-						//return false means an event with changed keySymbol
-						if (!lis->userEventReceived(inputEvent)) {
-							unlock();
-							notifying = false;
-							return false;
-						}
+					//return false means an event with changed keySymbol
+					if (!lis->userEventReceived(inputEvent)) {
+						unlock();
+						notifying = false;
+						return false;
 					}
 
 				} else if (keyCode == CodeMap::KEY_QUIT) {

@@ -232,17 +232,22 @@ namespace player {
 
 	void BerkeliumHandler::setKeyHandler(bool handler) {
 		Thread::mutexLock(&sMutex);
-		if (im != NULL && isValid) {
+		if (isValid) {
 			if (handler) {
 				bWindow->focus();
 
-				im->addInputEventListener(this, NULL);
-				im->addMotionEventListener(this);
+				if (im != NULL) {
+					im->addInputEventListener(this, NULL);
+					im->addMotionEventListener(this);
+				}
 
 			} else {
 				bWindow->unfocus();
-				im->removeInputEventListener(this);
-				im->removeMotionEventListener(this);
+
+				if (im != NULL) {
+					im->removeInputEventListener(this);
+					im->removeMotionEventListener(this);
+				}
 			}
 		}
 		Thread::mutexUnlock(&sMutex);
