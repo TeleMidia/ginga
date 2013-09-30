@@ -184,8 +184,8 @@ namespace mb {
 	        	decoder->alloc_picture();
 	            break;
 		}*/
-
-		SDL2ffmpeg::video_refresh(decoder);
+		double rt;
+		SDL2ffmpeg::video_refresh(decoder, &rt);
 	}
 }
 }

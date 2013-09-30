@@ -204,9 +204,9 @@ namespace tsparser {
 
 		// Invalid size.
 		if (size > freespace) {
-			clog << "TransportSection::addData: size (";
+			/*clog << "TransportSection::addData: size (";
 			clog << size << ") is larger than the available space (";
-			clog << freespace << "), truncating..." << endl;
+			clog << freespace << "), truncating..." << endl;*/
 			size = freespace;
 		}
 
