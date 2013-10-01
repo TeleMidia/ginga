@@ -429,8 +429,6 @@ namespace mb {
 
 		IContinuousMediaProvider* cmp;
 
-		bool allocate;
-
 	public:
 		SDL2ffmpeg(IContinuousMediaProvider* cmp, const char *filename);
 		~SDL2ffmpeg();
