@@ -1246,8 +1246,8 @@ retry:
 				}
 
 				SDL_UnlockMutex(vs->pictq_mutex);
+				// nothing to do, no picture to display in the queue
 
-			// nothing to do, no picture to display in the queue
 			} else {
 				double last_duration, duration, delay;
 				/* dequeue the picture */
@@ -1259,8 +1259,9 @@ retry:
 					goto retry;
 				}
 
-				if (vs->paused)
+				if (vs->paused) {
 					goto display;
+				}
 
 				/* compute nominal last_duration */
 				last_duration = vp->pts - vs->frame_last_pts;
@@ -1271,8 +1272,10 @@ retry:
 					 */
 					vs->frame_last_duration = last_duration;
 				}
+
 				if (redisplay) {
 					delay = 0.0;
+
 				} else {
 					delay = dec->compute_target_delay(vs->frame_last_duration);
 				}
@@ -1848,7 +1851,6 @@ end:
 			avcodec_get_frame_defaults(frame);
 			av_free_packet(&pkt);
 
-			av_init_packet(&pkt);
 			ret = dec->get_video_frame(frame, &pkt, &serial);
 			if (ret < 0) {
 				goto the_end;
