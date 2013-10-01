@@ -99,7 +99,6 @@ namespace mb {
 		reof                                 = false;
 		hasSDLAudio                          = false;
 		abortRequest                         = false;
-		allocate                             = false;
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
@@ -911,8 +910,6 @@ namespace mb {
 								(const uint8_t* const*)vp->src_frame->data,
 								vp->src_frame->linesize,
 								0, vp->height, pict.data, pict.linesize);
-
-						av_frame_unref(vp->src_frame);
 					}
 				}
 
@@ -925,13 +922,14 @@ namespace mb {
 			} else {
 				clog << "SDL2ffmpeg::video_image_display aborting";
 				clog << endl;
-				return;
 			}
 
 		} else {
 			clog << "SDL2ffmpeg::video_image_display Can't display video ";
 			clog << "(NULL texture)" << endl;
 		}
+
+		av_frame_unref(vp->src_frame);
 	}
 
 	void SDL2ffmpeg::stream_close() {
@@ -1091,12 +1089,10 @@ namespace mb {
 		if (!vs->seek_req) {
 			vs->seek_pos = pos;
 			vs->seek_rel = rel;
+			vs->seek_flags &= ~AVSEEK_FLAG_BYTE;
 
 			if (seek_by_bytes) {
 				vs->seek_flags |= AVSEEK_FLAG_BYTE;
-
-			} else {
-				vs->seek_flags &= ~AVSEEK_FLAG_BYTE;
 			}
 
 			vs->seek_req = 1;
@@ -1154,8 +1150,6 @@ namespace mb {
 			}
 		}
 
-		av_dlog(NULL, "video: delay=%0.3f A-V=%f\n", delay, -diff);
-
 		return delay;
 	}
 
@@ -1205,10 +1199,6 @@ namespace mb {
 		VideoState* vs  = dec->vs;
 		VideoPicture *vp;
 		double time;
-
-		if (dec->allocate) {
-			dec->alloc_picture();
-		}
 
 		if (!vs->paused && 
 				dec->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && 
@@ -1348,7 +1338,6 @@ display:
 
 	    SDL_LockMutex(vs->pictq_mutex);
 	    vp->allocated = 1;
-	    allocate = false;
 	    SDL_CondSignal(vs->pictq_cond);
 	    SDL_UnlockMutex(vs->pictq_mutex);
 	}
@@ -1399,13 +1388,13 @@ display:
 			event.user.data2 = this->cmp;
 			SDL_PushEvent(&event);*/
 
-			allocate = true;
+			alloc_picture();
 
 	        /* wait until the picture is allocated */
-	        SDL_LockMutex(vs->pictq_mutex);
+			/*SDL_LockMutex(vs->pictq_mutex);
 	        while (!vp->allocated && !vs->videoq.abort_request) {
 	            SDL_CondWait(vs->pictq_cond, vs->pictq_mutex);
-	        }
+	        }*/
 
 	        /*
 	         * if the queue is aborted, we have to pop the pending ALLOC event
@@ -2289,6 +2278,13 @@ the_end:
 
 				currentLen = len;
 				offset = 0;
+				frame_size = av_samples_get_buffer_size(
+						NULL,
+						vs->audio_tgt.channels,
+						1,
+						vs->audio_tgt.fmt, 
+						1);
+
 				while (currentLen > 0) {
 					if (vs->audio_buf_index >= vs->audio_buf_size) {
 						audio_size = dec->audio_decode_frame();
