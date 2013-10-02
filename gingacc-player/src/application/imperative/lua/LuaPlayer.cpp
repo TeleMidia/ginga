@@ -105,7 +105,8 @@ LUAPLAYER_BEGIN_DECLS
 #  define __trace(format, ...)                                  \
      do {                                                       \
           char buf[1024];                                       \
-          fflush (NULL);                                        \
+          fflush (stdout);                                      \
+          fflush (stderr);                                      \
           snprintf (buf, sizeof (buf), format, ## __VA_ARGS__); \
           clog << buf << endl;                                  \
           clog.flush ();                                        \
