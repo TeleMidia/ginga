@@ -1403,7 +1403,8 @@ namespace mb {
 
 	void* SDLDeviceScreen::checkStdin(void* ptr) {
 		SDLDeviceScreen* s;
-		string strEvent;
+		string strCmd;
+		string cmdType;
 		int intEvent;
 
 		SDL_Event ie;
@@ -1418,34 +1419,56 @@ namespace mb {
 
 		clog << "SDLDeviceScreen::checkStdin calling cin" << endl;
 
-		while (std::cin >> strEvent) {
-			intEvent = convertEventCodeStrToInt(strEvent);
-			if (intEvent >= 0) {
-				if (strEvent != "SDLK_QUIT") {
-					ie.type           = SDL_KEYDOWN;
-					ie.key.type       = SDL_KEYDOWN;
-					ie.key.state      = SDL_PRESSED;
-					ie.key.repeat     = 0;
-					ie.key.keysym.sym = intEvent;
+		while (std::cin >> strCmd) {
+			cmdType = strCmd.substr(0, 4);
+			if (cmdType == "GIEK") {
+				intEvent = convertEventCodeStrToInt(strCmd);
+				if (intEvent >= 0) {
+					if (strCmd != "GIEK:QUIT") {
+						ie.type           = SDL_KEYDOWN;
+						ie.key.type       = SDL_KEYDOWN;
+						ie.key.state      = SDL_PRESSED;
+						ie.key.repeat     = 0;
+						ie.key.keysym.sym = intEvent;
 
-				} else {
-					ie.type           = SDL_QUIT;
+					} else {
+						ie.type           = SDL_QUIT;
+					}
+
+					clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
+					clog << strCmd << "' (" << intEvent << ")" << endl;
+					SDL_PushEvent(&ie);
+					clog << "SDLDeviceScreen::checkStdin event pushed" << endl;
 				}
 
-				clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
-				clog << strEvent << "' (" << intEvent << ")" << endl;
-				//lockSDL();
-				SDL_PushEvent(&ie);
-				//unlockSDL();
-				clog << "SDLDeviceScreen::checkStdin event pushed" << endl;
+				if (strCmd == "GIEK:QUIT") {
+					clog << "SDLDeviceScreen::checkStdin QUIT";	
+					clog << endl;
+					break;
+				}
+
+			} else if (cmdType == "GIEC") {
+				size_t token = strCmd.find_first_of(":");
+				string coords;
+
+				if (token != std::string::npos) {
+					coords = strCmd.substr(token + 1, strCmd.length() - token);
+					token = coords.find_first_of(",");
+					if (token != std::string::npos) {
+						int x = atoi(coords.substr(0, token).c_str());
+						int y = atoi(coords.substr(token + 1, coords.length() - token).c_str());
+						ie.type = SDL_MOUSEBUTTONUP;
+						ie.button.x = x;
+						ie.button.y = y;
+
+						clog << "SDLDeviceScreen::checkStdin pushing click on (";
+						clog << x << "," << y << ")" << endl;
+						SDL_PushEvent(&ie);
+					}
+				}
 			}
 
-			if (strEvent == "SDLK_QUIT") {
-				clog << "SDLDeviceScreen::checkStdin QUIT";	
-				clog << endl;
-				break;
-			}
-			strEvent = "";
+			strCmd = "";
 		}
 
 		clog << "SDLDeviceScreen::checkStdin all done" << endl;
@@ -2371,141 +2394,141 @@ namespace mb {
 		}
 
 		//sdlStrToSdlCode
-		sdlStrToSdlCode["SDLK_QUIT"]              = SDL_QUIT;
-		sdlStrToSdlCode["SDLK_UNKNOWN"]           = SDLK_UNKNOWN;
-		sdlStrToSdlCode["SDLK_0"]                 = SDLK_0;
-		sdlStrToSdlCode["SDLK_1"]                 = SDLK_1;
-		sdlStrToSdlCode["SDLK_2"]                 = SDLK_2;
-		sdlStrToSdlCode["SDLK_3"]                 = SDLK_3;
-		sdlStrToSdlCode["SDLK_4"]                 = SDLK_4;
-		sdlStrToSdlCode["SDLK_5"]                 = SDLK_5;
-		sdlStrToSdlCode["SDLK_6"]                 = SDLK_6;
-		sdlStrToSdlCode["SDLK_7"]                 = SDLK_7;
-		sdlStrToSdlCode["SDLK_8"]                 = SDLK_8;
-		sdlStrToSdlCode["SDLK_9"]                 = SDLK_9;
+		sdlStrToSdlCode["GIEK:QUIT"]              = SDL_QUIT;
+		sdlStrToSdlCode["GIEK:UNKNOWN"]           = SDLK_UNKNOWN;
+		sdlStrToSdlCode["GIEK:0"]                 = SDLK_0;
+		sdlStrToSdlCode["GIEK:1"]                 = SDLK_1;
+		sdlStrToSdlCode["GIEK:2"]                 = SDLK_2;
+		sdlStrToSdlCode["GIEK:3"]                 = SDLK_3;
+		sdlStrToSdlCode["GIEK:4"]                 = SDLK_4;
+		sdlStrToSdlCode["GIEK:5"]                 = SDLK_5;
+		sdlStrToSdlCode["GIEK:6"]                 = SDLK_6;
+		sdlStrToSdlCode["GIEK:7"]                 = SDLK_7;
+		sdlStrToSdlCode["GIEK:8"]                 = SDLK_8;
+		sdlStrToSdlCode["GIEK:9"]                 = SDLK_9;
 
-		sdlStrToSdlCode["SDLK_a"]                 = SDLK_a;
-		sdlStrToSdlCode["SDLK_b"]                 = SDLK_b;
-		sdlStrToSdlCode["SDLK_c"]                 = SDLK_c;
-		sdlStrToSdlCode["SDLK_d"]                 = SDLK_d;
-		sdlStrToSdlCode["SDLK_e"]                 = SDLK_e;
-		sdlStrToSdlCode["SDLK_f"]                 = SDLK_f;
-		sdlStrToSdlCode["SDLK_g"]                 = SDLK_g;
-		sdlStrToSdlCode["SDLK_h"]                 = SDLK_h;
-		sdlStrToSdlCode["SDLK_i"]                 = SDLK_i;
-		sdlStrToSdlCode["SDLK_j"]                 = SDLK_j;
-		sdlStrToSdlCode["SDLK_k"]                 = SDLK_k;
-		sdlStrToSdlCode["SDLK_l"]                 = SDLK_l;
-		sdlStrToSdlCode["SDLK_m"]                 = SDLK_m;
-		sdlStrToSdlCode["SDLK_n"]                 = SDLK_n;
-		sdlStrToSdlCode["SDLK_o"]                 = SDLK_o;
-		sdlStrToSdlCode["SDLK_p"]                 = SDLK_p;
-		sdlStrToSdlCode["SDLK_q"]                 = SDLK_q;
-		sdlStrToSdlCode["SDLK_r"]                 = SDLK_r;
-		sdlStrToSdlCode["SDLK_s"]                 = SDLK_s;
-		sdlStrToSdlCode["SDLK_t"]                 = SDLK_t;
-		sdlStrToSdlCode["SDLK_u"]                 = SDLK_u;
-		sdlStrToSdlCode["SDLK_v"]                 = SDLK_v;
-		sdlStrToSdlCode["SDLK_w"]                 = SDLK_w;
-		sdlStrToSdlCode["SDLK_x"]                 = SDLK_x;
-		sdlStrToSdlCode["SDLK_y"]                 = SDLK_y;
-		sdlStrToSdlCode["SDLK_z"]                 = SDLK_z;
+		sdlStrToSdlCode["GIEK:a"]                 = SDLK_a;
+		sdlStrToSdlCode["GIEK:b"]                 = SDLK_b;
+		sdlStrToSdlCode["GIEK:c"]                 = SDLK_c;
+		sdlStrToSdlCode["GIEK:d"]                 = SDLK_d;
+		sdlStrToSdlCode["GIEK:e"]                 = SDLK_e;
+		sdlStrToSdlCode["GIEK:f"]                 = SDLK_f;
+		sdlStrToSdlCode["GIEK:g"]                 = SDLK_g;
+		sdlStrToSdlCode["GIEK:h"]                 = SDLK_h;
+		sdlStrToSdlCode["GIEK:i"]                 = SDLK_i;
+		sdlStrToSdlCode["GIEK:j"]                 = SDLK_j;
+		sdlStrToSdlCode["GIEK:k"]                 = SDLK_k;
+		sdlStrToSdlCode["GIEK:l"]                 = SDLK_l;
+		sdlStrToSdlCode["GIEK:m"]                 = SDLK_m;
+		sdlStrToSdlCode["GIEK:n"]                 = SDLK_n;
+		sdlStrToSdlCode["GIEK:o"]                 = SDLK_o;
+		sdlStrToSdlCode["GIEK:p"]                 = SDLK_p;
+		sdlStrToSdlCode["GIEK:q"]                 = SDLK_q;
+		sdlStrToSdlCode["GIEK:r"]                 = SDLK_r;
+		sdlStrToSdlCode["GIEK:s"]                 = SDLK_s;
+		sdlStrToSdlCode["GIEK:t"]                 = SDLK_t;
+		sdlStrToSdlCode["GIEK:u"]                 = SDLK_u;
+		sdlStrToSdlCode["GIEK:v"]                 = SDLK_v;
+		sdlStrToSdlCode["GIEK:w"]                 = SDLK_w;
+		sdlStrToSdlCode["GIEK:x"]                 = SDLK_x;
+		sdlStrToSdlCode["GIEK:y"]                 = SDLK_y;
+		sdlStrToSdlCode["GIEK:z"]                 = SDLK_z;
 
-		sdlStrToSdlCode["SDLK_A"]                 = SDLK_a + 5000;
-		sdlStrToSdlCode["SDLK_B"]                 = SDLK_b + 5000;
-		sdlStrToSdlCode["SDLK_C"]                 = SDLK_c + 5000;
-		sdlStrToSdlCode["SDLK_D"]                 = SDLK_d + 5000;
-		sdlStrToSdlCode["SDLK_E"]                 = SDLK_e + 5000;
-		sdlStrToSdlCode["SDLK_F"]                 = SDLK_f + 5000;
-		sdlStrToSdlCode["SDLK_G"]                 = SDLK_g + 5000;
-		sdlStrToSdlCode["SDLK_H"]                 = SDLK_h + 5000;
-		sdlStrToSdlCode["SDLK_I"]                 = SDLK_i + 5000;
-		sdlStrToSdlCode["SDLK_J"]                 = SDLK_j + 5000;
-		sdlStrToSdlCode["SDLK_K"]                 = SDLK_k + 5000;
-		sdlStrToSdlCode["SDLK_L"]                 = SDLK_l + 5000;
-		sdlStrToSdlCode["SDLK_M"]                 = SDLK_m + 5000;
-		sdlStrToSdlCode["SDLK_N"]                 = SDLK_n + 5000;
-		sdlStrToSdlCode["SDLK_O"]                 = SDLK_o + 5000;
-		sdlStrToSdlCode["SDLK_P"]                 = SDLK_p + 5000;
-		sdlStrToSdlCode["SDLK_Q"]                 = SDLK_q + 5000;
-		sdlStrToSdlCode["SDLK_R"]                 = SDLK_r + 5000;
-		sdlStrToSdlCode["SDLK_S"]                 = SDLK_s + 5000;
-		sdlStrToSdlCode["SDLK_T"]                 = SDLK_t + 5000;
-		sdlStrToSdlCode["SDLK_U"]                 = SDLK_u + 5000;
-		sdlStrToSdlCode["SDLK_V"]                 = SDLK_v + 5000;
-		sdlStrToSdlCode["SDLK_W"]                 = SDLK_w + 5000;
-		sdlStrToSdlCode["SDLK_X"]                 = SDLK_x + 5000;
-		sdlStrToSdlCode["SDLK_Y"]                 = SDLK_y + 5000;
-		sdlStrToSdlCode["SDLK_Z"]                 = SDLK_z + 5000;
+		sdlStrToSdlCode["GIEK:A"]                 = SDLK_a + 5000;
+		sdlStrToSdlCode["GIEK:B"]                 = SDLK_b + 5000;
+		sdlStrToSdlCode["GIEK:C"]                 = SDLK_c + 5000;
+		sdlStrToSdlCode["GIEK:D"]                 = SDLK_d + 5000;
+		sdlStrToSdlCode["GIEK:E"]                 = SDLK_e + 5000;
+		sdlStrToSdlCode["GIEK:F"]                 = SDLK_f + 5000;
+		sdlStrToSdlCode["GIEK:G"]                 = SDLK_g + 5000;
+		sdlStrToSdlCode["GIEK:H"]                 = SDLK_h + 5000;
+		sdlStrToSdlCode["GIEK:I"]                 = SDLK_i + 5000;
+		sdlStrToSdlCode["GIEK:J"]                 = SDLK_j + 5000;
+		sdlStrToSdlCode["GIEK:K"]                 = SDLK_k + 5000;
+		sdlStrToSdlCode["GIEK:L"]                 = SDLK_l + 5000;
+		sdlStrToSdlCode["GIEK:M"]                 = SDLK_m + 5000;
+		sdlStrToSdlCode["GIEK:N"]                 = SDLK_n + 5000;
+		sdlStrToSdlCode["GIEK:O"]                 = SDLK_o + 5000;
+		sdlStrToSdlCode["GIEK:P"]                 = SDLK_p + 5000;
+		sdlStrToSdlCode["GIEK:Q"]                 = SDLK_q + 5000;
+		sdlStrToSdlCode["GIEK:R"]                 = SDLK_r + 5000;
+		sdlStrToSdlCode["GIEK:S"]                 = SDLK_s + 5000;
+		sdlStrToSdlCode["GIEK:T"]                 = SDLK_t + 5000;
+		sdlStrToSdlCode["GIEK:U"]                 = SDLK_u + 5000;
+		sdlStrToSdlCode["GIEK:V"]                 = SDLK_v + 5000;
+		sdlStrToSdlCode["GIEK:W"]                 = SDLK_w + 5000;
+		sdlStrToSdlCode["GIEK:X"]                 = SDLK_x + 5000;
+		sdlStrToSdlCode["GIEK:Y"]                 = SDLK_y + 5000;
+		sdlStrToSdlCode["GIEK:Z"]                 = SDLK_z + 5000;
 
-		sdlStrToSdlCode["SDLK_PAGEDOWN"]          = SDLK_PAGEDOWN;
-		sdlStrToSdlCode["SDLK_PAGEUP"]            = SDLK_PAGEUP;
+		sdlStrToSdlCode["GIEK:PAGEDOWN"]          = SDLK_PAGEDOWN;
+		sdlStrToSdlCode["GIEK:PAGEUP"]            = SDLK_PAGEUP;
 
-		sdlStrToSdlCode["SDLK_F1"]                = SDLK_F1;
-		sdlStrToSdlCode["SDLK_F2"]                = SDLK_F2;
-		sdlStrToSdlCode["SDLK_F3"]                = SDLK_F3;
-		sdlStrToSdlCode["SDLK_F4"]                = SDLK_F4;
-		sdlStrToSdlCode["SDLK_F5"]                = SDLK_F5;
-		sdlStrToSdlCode["SDLK_F6"]                = SDLK_F6;
-		sdlStrToSdlCode["SDLK_F7"]                = SDLK_F7;
-		sdlStrToSdlCode["SDLK_F8"]                = SDLK_F8;
-		sdlStrToSdlCode["SDLK_F9"]                = SDLK_F9;
-		sdlStrToSdlCode["SDLK_F10"]               = SDLK_F10;
-		sdlStrToSdlCode["SDLK_F11"]               = SDLK_F11;
-		sdlStrToSdlCode["SDLK_F12"]               = SDLK_F12;
+		sdlStrToSdlCode["GIEK:F1"]                = SDLK_F1;
+		sdlStrToSdlCode["GIEK:F2"]                = SDLK_F2;
+		sdlStrToSdlCode["GIEK:F3"]                = SDLK_F3;
+		sdlStrToSdlCode["GIEK:F4"]                = SDLK_F4;
+		sdlStrToSdlCode["GIEK:F5"]                = SDLK_F5;
+		sdlStrToSdlCode["GIEK:F6"]                = SDLK_F6;
+		sdlStrToSdlCode["GIEK:F7"]                = SDLK_F7;
+		sdlStrToSdlCode["GIEK:F8"]                = SDLK_F8;
+		sdlStrToSdlCode["GIEK:F9"]                = SDLK_F9;
+		sdlStrToSdlCode["GIEK:F10"]               = SDLK_F10;
+		sdlStrToSdlCode["GIEK:F11"]               = SDLK_F11;
+		sdlStrToSdlCode["GIEK:F12"]               = SDLK_F12;
 
-		sdlStrToSdlCode["SDLK_PLUS"]              = SDLK_PLUS;
-		sdlStrToSdlCode["SDLK_MINUS"]             = SDLK_MINUS;
+		sdlStrToSdlCode["GIEK:PLUS"]              = SDLK_PLUS;
+		sdlStrToSdlCode["GIEK:MINUS"]             = SDLK_MINUS;
 
-		sdlStrToSdlCode["SDLK_ASTERISK"]          = SDLK_ASTERISK;
-		sdlStrToSdlCode["SDLK_HASH"]              = SDLK_HASH;
+		sdlStrToSdlCode["GIEK:ASTERISK"]          = SDLK_ASTERISK;
+		sdlStrToSdlCode["GIEK:HASH"]              = SDLK_HASH;
 
-		sdlStrToSdlCode["SDLK_PERIOD"]            = SDLK_PERIOD;
+		sdlStrToSdlCode["GIEK:PERIOD"]            = SDLK_PERIOD;
 
-		sdlStrToSdlCode["SDLK_CAPSLOCK"]          = SDLK_CAPSLOCK;
-		sdlStrToSdlCode["SDLK_PRINTSCREEN"]       = SDLK_PRINTSCREEN;
-		sdlStrToSdlCode["SDLK_MENU"]              = SDLK_MENU;
-		sdlStrToSdlCode["SDLK_F14"]               = SDLK_F14;
-		sdlStrToSdlCode["SDLK_QUESTION"]          = SDLK_QUESTION;
+		sdlStrToSdlCode["GIEK:CAPSLOCK"]          = SDLK_CAPSLOCK;
+		sdlStrToSdlCode["GIEK:PRINTSCREEN"]       = SDLK_PRINTSCREEN;
+		sdlStrToSdlCode["GIEK:MENU"]              = SDLK_MENU;
+		sdlStrToSdlCode["GIEK:F14"]               = SDLK_F14;
+		sdlStrToSdlCode["GIEK:QUESTION"]          = SDLK_QUESTION;
 
-		sdlStrToSdlCode["SDLK_DOWN"]              = SDLK_DOWN;
-		sdlStrToSdlCode["SDLK_LEFT"]              = SDLK_LEFT;
-		sdlStrToSdlCode["SDLK_RIGHT"]             = SDLK_RIGHT;
-		sdlStrToSdlCode["SDLK_UP"]                = SDLK_UP;
+		sdlStrToSdlCode["GIEK:DOWN"]              = SDLK_DOWN;
+		sdlStrToSdlCode["GIEK:LEFT"]              = SDLK_LEFT;
+		sdlStrToSdlCode["GIEK:RIGHT"]             = SDLK_RIGHT;
+		sdlStrToSdlCode["GIEK:UP"]                = SDLK_UP;
 
-		sdlStrToSdlCode["SDLK_F15"]               = SDLK_F15;
-		sdlStrToSdlCode["SDLK_F16"]               = SDLK_F16;
+		sdlStrToSdlCode["GIEK:F15"]               = SDLK_F15;
+		sdlStrToSdlCode["GIEK:F16"]               = SDLK_F16;
 
-		sdlStrToSdlCode["SDLK_VOLUMEDOWN"]        = SDLK_VOLUMEDOWN;
-		sdlStrToSdlCode["SDLK_VOLUMEUP"]          = SDLK_VOLUMEUP;
+		sdlStrToSdlCode["GIEK:VOLUMEDOWN"]        = SDLK_VOLUMEDOWN;
+		sdlStrToSdlCode["GIEK:VOLUMEUP"]          = SDLK_VOLUMEUP;
 
-		sdlStrToSdlCode["SDLK_RETURN"]            = SDLK_RETURN;
-		sdlStrToSdlCode["SDLK_RETURN2"]           = SDLK_RETURN2;
+		sdlStrToSdlCode["GIEK:RETURN"]            = SDLK_RETURN;
+		sdlStrToSdlCode["GIEK:RETURN2"]           = SDLK_RETURN2;
 
-		sdlStrToSdlCode["SDLK_F17"]               = SDLK_F17;
-		sdlStrToSdlCode["SDLK_F18"]               = SDLK_F18;
-		sdlStrToSdlCode["SDLK_F19"]               = SDLK_F19;
-		sdlStrToSdlCode["SDLK_F20"]               = SDLK_F20;
+		sdlStrToSdlCode["GIEK:F17"]               = SDLK_F17;
+		sdlStrToSdlCode["GIEK:F18"]               = SDLK_F18;
+		sdlStrToSdlCode["GIEK:F19"]               = SDLK_F19;
+		sdlStrToSdlCode["GIEK:F20"]               = SDLK_F20;
 
-		sdlStrToSdlCode["SDLK_SPACE"]             = SDLK_SPACE;
-		sdlStrToSdlCode["SDLK_BACKSPACE"]         = SDLK_BACKSPACE;
-		sdlStrToSdlCode["SDLK_AC_BACK"]           = SDLK_AC_BACK;
-		sdlStrToSdlCode["SDLK_ESCAPE"]            = SDLK_ESCAPE;
-		sdlStrToSdlCode["SDLK_OUT"]               = SDLK_OUT;
+		sdlStrToSdlCode["GIEK:SPACE"]             = SDLK_SPACE;
+		sdlStrToSdlCode["GIEK:BACKSPACE"]         = SDLK_BACKSPACE;
+		sdlStrToSdlCode["GIEK:AC_BACK"]           = SDLK_AC_BACK;
+		sdlStrToSdlCode["GIEK:ESCAPE"]            = SDLK_ESCAPE;
+		sdlStrToSdlCode["GIEK:OUT"]               = SDLK_OUT;
 
-		sdlStrToSdlCode["SDLK_POWER"]             = SDLK_POWER;
-		sdlStrToSdlCode["SDLK_F21"]               = SDLK_F21;
-		sdlStrToSdlCode["SDLK_STOP"]              = SDLK_STOP;
-		sdlStrToSdlCode["SDLK_EJECT"]             = SDLK_EJECT;
-		sdlStrToSdlCode["SDLK_EXECUTE"]           = SDLK_EXECUTE;
-		sdlStrToSdlCode["SDLK_F22"]               = SDLK_F22;
-		sdlStrToSdlCode["SDLK_PAUSE"]             = SDLK_PAUSE;
+		sdlStrToSdlCode["GIEK:POWER"]             = SDLK_POWER;
+		sdlStrToSdlCode["GIEK:F21"]               = SDLK_F21;
+		sdlStrToSdlCode["GIEK:STOP"]              = SDLK_STOP;
+		sdlStrToSdlCode["GIEK:EJECT"]             = SDLK_EJECT;
+		sdlStrToSdlCode["GIEK:EXECUTE"]           = SDLK_EXECUTE;
+		sdlStrToSdlCode["GIEK:F22"]               = SDLK_F22;
+		sdlStrToSdlCode["GIEK:PAUSE"]             = SDLK_PAUSE;
 
-		sdlStrToSdlCode["SDLK_GREATER"]           = SDLK_GREATER;
-		sdlStrToSdlCode["SDLK_LESS"]              = SDLK_LESS;
+		sdlStrToSdlCode["GIEK:GREATER"]           = SDLK_GREATER;
+		sdlStrToSdlCode["GIEK:LESS"]              = SDLK_LESS;
 
-		sdlStrToSdlCode["SDLK_TAB"]               = SDLK_TAB;
-		sdlStrToSdlCode["SDLK_F23"]               = SDLK_F23;
+		sdlStrToSdlCode["GIEK:TAB"]               = SDLK_TAB;
+		sdlStrToSdlCode["GIEK:F23"]               = SDLK_F23;
 
 		//gingaToSDLCodeMap
 		gingaToSDLCodeMap[CodeMap::KEY_QUIT]              = SDL_QUIT;
