@@ -157,7 +157,9 @@ namespace carousel {
 				return -3;
 			}
 		}
-		fclose(fd);
+		if (fd != NULL) {
+			fclose(fd);
+		}
 
 		remove(header->getFileName().c_str());
 		return 0;
