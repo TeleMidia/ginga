@@ -178,7 +178,7 @@ namespace tsparser {
 			clog << "'" << endl;
 
 			running = false;
-			delete buff;
+			delete[] buff;
 			return;
 		}
 
@@ -195,7 +195,7 @@ namespace tsparser {
 				clog << " can't open '" << srcUri;
 				clog << "'" << endl;
 
-				delete buff;
+				delete[] buff;
 				return;
 			}
 
