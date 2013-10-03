@@ -2,7 +2,7 @@
 Este arquivo eh parte da implementacao do ambiente declarativo do middleware
 Ginga (Ginga-NCL).
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+Direitos Autorais Reservados (c) 1989-2013 PUC-Rio/Laboratorio TeleMidia
 
 Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
 os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
@@ -25,7 +25,7 @@ http://www.telemidia.puc-rio.br
 ******************************************************************************
 This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
 
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+Copyright: 1989-2013 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License version 2 as published by
@@ -64,19 +64,32 @@ namespace tuning {
 	const string ISDBTProvider::iniFileName(
 			SystemCompat::appendGingaFilesPrefix("tuner/isdbt.ini"));
 
-	ISDBTProvider::ISDBTProvider(string feName) {
+	ISDBTProvider::ISDBTProvider(long freq) {
 		this->frontend       = NULL;
-		this->fileName       = feName;
+		this->fileName       = "";
 		this->feDescriptor   = -1;
 		this->channels       = new vector<IChannel*>;
 		this->currentChannel = channels->end();
 		this->listener       = NULL;
+		this->initialFrequency = 0;
 		this->capabilities   = (
                                 DPC_CAN_FETCHDATA);
                                 /* | DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
 				DPC_CAN_FILTERTID); */ // TODO: implement these capabilities...
+                
+                // -1 means scan
+                if (freq == -1)
+		{
+		    scanChannels();
+		    return;
+		}
 
+		if (freq >= 0)
+		{
+		    this->initialFrequency = freq;
+		}
+		
                 pthread_mutex_init(&output_mutex, NULL); 
                 pthread_cond_init(&output_cond, NULL); 
                 ring_buffer_create(&output_buffer, 28); 
@@ -140,7 +153,6 @@ namespace tuning {
 	    return NULL;
 	    
         }
-      
 
 	void ISDBTProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
@@ -161,6 +173,141 @@ namespace tuning {
 			frontend->removeFilter(filter);
 		}
 	}
+
+
+        bool ISDBTProvider::scanChannels()
+	{
+	    struct dvb_frontend_parameters params;
+	    struct dvb_frontend_info info;
+	    fe_status_t feStatus;
+	    
+	    int feFd;
+	    int dmFd;
+	    int dvrFd;
+	
+	    clog << "ISDBTProvider::scanChannels init.";
+		
+	    memset( &params, 0, sizeof(dvb_frontend_parameters) );
+	    
+	    string file_name = SystemCompat::getTemporaryDir() + "ginga" + SystemCompat::getIUriD() + "channels.txt";
+
+	    FILE *fp = fopen(file_name.c_str(), "w");
+
+	    int channel_id = 0;
+	    int first_pass = 1;
+	    int progress = 0;
+
+	    // Let's assume just UHF channels for now
+	    for (int channel_counter = 14; channel_counter <= 69; channel_counter++)
+	    {
+		
+		clog << "Channel = " << channel_counter << " Frequency = " << (unsigned long long) tv_channels_list[channel_counter] << " " << endl;
+		
+		params.frequency                    = tv_channels_list[channel_counter];
+		params.inversion                    = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO : INVERSION_OFF;
+                params.u.ofdm.code_rate_HP          = FEC_AUTO;
+                params.u.ofdm.code_rate_LP          = FEC_AUTO;
+                params.u.ofdm.constellation         = QAM_AUTO;
+                params.u.ofdm.transmission_mode     = TRANSMISSION_MODE_AUTO;
+                params.u.ofdm.guard_interval        = GUARD_INTERVAL_AUTO;
+                params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
+                params.u.ofdm.bandwidth             = BANDWIDTH_6_MHZ;                                                                            
+		progress = (channel_counter - 14) * 100 / 55;
+		cout << "cmd::0::tunerscanprogress::" << progress << "%" << endl;
+
+		if ((feFd = open(ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) 
+		{
+		    clog << "ISDBTProvider::scanChannels failed opening FrontEnd DVB device." << endl;
+		    return false;
+		}
+		
+		if (ioctl(feFd, FE_SET_FRONTEND, &params) == -1) 
+		{
+		    clog << "ISDBTProvider:: ioctl error with arg FE_SET_FRONTEND" << endl;
+		}
+
+		if ((dmFd = open(ISDBTFrontend::IFE_DEMUX_DEV_NAME.c_str(), O_RDWR)) < 0)
+		{
+		    clog << "ISDBTProvider::scanChannels failed opening DeMux DVB device." << endl;
+		    return false;
+		}
+		
+		struct dmx_pes_filter_params filter_dmx;
+		filter_dmx.pid = 8192;
+		filter_dmx.input = DMX_IN_FRONTEND;
+		filter_dmx.output = DMX_OUT_TS_TAP;
+		filter_dmx.pes_type = DMX_PES_OTHER;
+		filter_dmx.flags = DMX_IMMEDIATE_START;
+		    
+		if (ioctl(dmFd, DMX_SET_PES_FILTER, &filter_dmx) == -1) 
+		{
+		    clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg IFE_DEMUX_DEV_NAME" << endl;
+		}
+                
+		// opening DVR device (non-blocking mode), we read TS data in this fd
+		if ((dvrFd = open(ISDBTFrontend::IFE_DVR_DEV_NAME.c_str(), O_RDONLY | O_NONBLOCK)) < 0)
+		{
+		    clog << "ISDBTProvider::scanChannels failed to open DVR DVB device. " << endl;
+		    return false;		    
+		}
+
+		int i, value, signal, has_signal_lock = 0;
+		clog << "ISDBTProvider::scanChannels Tuning" << endl;
+		
+		// retry 2 times...
+		for (i = 0; (i < 2) && (has_signal_lock == 0); i++)
+		{
+
+		    if (ioctl(feFd, FE_READ_STATUS, &feStatus) == -1) {
+			clog << "ISDBTProvider::scanChannels FE_READ_STATUS failed" << endl;
+			return false;
+		    }
+		    
+                    if (feStatus & FE_HAS_LOCK)
+		    {
+			if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) 
+			{                        
+			    clog << "ISDBTProvider::scanChannels FE_READ_SIGNAL_STRENGTH failed" << endl;
+			}
+			else 
+			{
+			    signal = value * 100 / 65535;
+			    cout << "ISDBTProvider::scanChannels Signal locked, received power level is " << signal << "%" << endl;
+			}
+			has_signal_lock = 1;
+		    }
+		    usleep(300000);
+		}
+
+		if (has_signal_lock)
+		{
+		    clog << "Channel " << channel_counter << " found." << endl;
+		    cout << "cmd::0::channelfound::" << "Phy_Channel_" << channel_counter << endl;
+		    if (first_pass)
+		    {
+			fprintf(fp, "1;%d;%d;Phy_Channel_%d\n", tv_channels_list[channel_counter] / 1000, channel_counter, channel_counter);
+			first_pass = 0;
+		    }
+		    else
+		    {
+			fprintf(fp, "0;%d;%d;Phy_Channel_%d\n", tv_channels_list[channel_counter] / 1000, channel_counter, channel_counter);
+		    }
+
+		}
+	
+		::close(dvrFd);
+		::close(dmFd);
+		::close(feFd);
+		
+	    }
+
+	    cout << "cmd::0::tunerscanprogress::100%" << endl;
+	    fclose(fp);
+	}
+	
+	    
+	    
+	
 
 	void ISDBTProvider::initializeChannels() {
 		ifstream fis;
@@ -275,40 +422,53 @@ namespace tuning {
 
 		frontend = new ISDBTFrontend(feDescriptor);
 		if (frontend->hasFrontend()) {
+		    if (initialFrequency)
+		    {
+			clog << "ISDBTProvider::tune frequency set " << initialFrequency << "Hz" << endl;
+			tuned = frontend->changeFrequency(initialFrequency * 1000);
+			if (!tuned) 
+			{
+			    clog << "ISDBTProvider::tune frequency set " << initialFrequency << "Hz failed!" << endl;
+			}    
+			
+		    }
+                    else
+		    {
 			initializeChannels();
 			if (channels->empty()) {
-				clog << "ISDBTProvider::tune no frequencies found";
-				clog << endl;
-				return false;
+			    clog << "ISDBTProvider::tune no frequencies found";
+			    clog << endl;
+			    return false;
 			}
 			currentChannel = channels->begin();
 			while (!tuned) {
-				channel = *currentChannel;
-				tuned = frontend->changeFrequency(channel->getFrequency());
-				if (!tuned) {
-					++currentChannel;
-					if (currentChannel == channels->end()) {
-						clog << "ISDBTProvider::tune all frequencies failed";
-						clog << endl;
-						break;
-					}
-
-				} else {
-					clog << "ISDBTProvider::tune tuned at '";
-					clog << channel->getFrequency() << "' - ";
-					clog << channel->getName() << endl;
+			    channel = *currentChannel;
+			    tuned = frontend->changeFrequency(channel->getFrequency());
+			    if (!tuned) {
+				++currentChannel;
+				if (currentChannel == channels->end()) {
+				    clog << "ISDBTProvider::tune all frequencies failed";
+				    clog << endl;
+				    break;
 				}
+				
+			    } else {
+				clog << "ISDBTProvider::tune tuned at '";
+				clog << channel->getFrequency() << "' - ";
+				clog << channel->getName() << endl;
+			    }
 			}
+		    }
 
-			return tuned;
-
+		    return tuned;
+		    
 		} else {
-                  
-			close();
-			return false;
+		    
+		    close();
+		    return false;
 		}
 	}
-
+	
 	IChannel* ISDBTProvider::getCurrentChannel() {
 		IChannel* channel = NULL;
 
