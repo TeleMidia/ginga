@@ -213,21 +213,24 @@ namespace tuning {
                 params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
                 params.u.ofdm.bandwidth             = BANDWIDTH_6_MHZ;                                                                            
 		progress = (channel_counter - 14) * 100 / 55;
-		cout << "cmd::0::tunerscanprogress::" << progress << "%" << endl;
+
 
 		if ((feFd = open(ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) 
 		{
+		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider::scanChannels failed opening FrontEnd DVB device." << endl;
 		    return false;
 		}
 		
 		if (ioctl(feFd, FE_SET_FRONTEND, &params) == -1) 
 		{
+		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider:: ioctl error with arg FE_SET_FRONTEND" << endl;
 		}
 
 		if ((dmFd = open(ISDBTFrontend::IFE_DEMUX_DEV_NAME.c_str(), O_RDWR)) < 0)
 		{
+		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider::scanChannels failed opening DeMux DVB device." << endl;
 		    return false;
 		}
@@ -247,6 +250,7 @@ namespace tuning {
 		// opening DVR device (non-blocking mode), we read TS data in this fd
 		if ((dvrFd = open(ISDBTFrontend::IFE_DVR_DEV_NAME.c_str(), O_RDONLY | O_NONBLOCK)) < 0)
 		{
+		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider::scanChannels failed to open DVR DVB device. " << endl;
 		    return false;		    
 		}
@@ -259,6 +263,7 @@ namespace tuning {
 		{
 
 		    if (ioctl(feFd, FE_READ_STATUS, &feStatus) == -1) {
+			cout << "cmd::1::tuner::Unable to tune." << endl;
 			clog << "ISDBTProvider::scanChannels FE_READ_STATUS failed" << endl;
 			return false;
 		    }
@@ -415,7 +420,7 @@ namespace tuning {
 
 		if ((feDescriptor = open(
 				ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) {
-
+		        cout << "cmd::1::tuner::Unable to tune." << endl;
 			clog << "ISDBTProvider::tune failed" << endl;
 			return false;
 		}
