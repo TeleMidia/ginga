@@ -204,12 +204,13 @@ namespace tuning {
 				createInterface("sbtvd", "terrestrial",  niSpec);
 
 			} else {
-				clog << "Tuner::initializeInterface can't initialize '";
+				clog << "Tuner::initializeInterface can't initialize";
 				clog << niSpec << "': unknown specification" << endl;
 			}
 
 		} else if (niSpec.substr(0, 1) != "#") {
-			clog << "Tuner::initializeInterface can't initialize '";
+
+			clog << "Tuner::initializeInterface can't initialize";
 			clog << niSpec << "': invalid specification" << endl;
 		}
 	}

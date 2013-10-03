@@ -171,8 +171,19 @@ namespace tuning {
 #endif
 #if HAVE_FEV4L
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
-			provider = new ISDBTProvider("");
-			return true;
+		    long freq;
+		    if (address == "current")
+			freq = 0;
+		    else if (address == "scan")
+			freq = -1;
+		    else 
+			freq = atol(address.c_str());
+		    
+		    if (freq > 0)
+			clog << "frequency set to " << freq << endl; 
+		    
+		    provider = new ISDBTProvider(freq);
+		    return true;
 #endif
 		}
 
