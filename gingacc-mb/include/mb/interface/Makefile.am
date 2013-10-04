@@ -5,6 +5,7 @@ localIncludedir = $(prefix)/include/ginga/mb/interface
 localInclude_HEADERS = \
                        CodeMap.h \
                        IDiscreteMediaProvider.h \
+                       ICmdEventListener.h \
                        IContinuousMediaProvider.h \
                        IMediaProvider.h \
                        IDataBuffer.h \

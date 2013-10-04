@@ -71,6 +71,7 @@ namespace mb {
 		notifying             = false;
 		notifyingApp          = false;
 		ief                   = new InputEventFactory();
+		cmdListener           = NULL;
 
 		Thread::mutexInit(&actInpMutex);
 		Thread::mutexInit(&actAppMutex);
@@ -567,6 +568,12 @@ namespace mb {
 		}
 	}
 
+	void InputManager::setCommandEventListener(
+			ICmdEventListener* listener) {
+
+		this->cmdListener = listener;
+	}
+
 	void InputManager::postInputEvent(IInputEvent* event) {
 		if (!running) {
 			delete event;
@@ -587,6 +594,12 @@ namespace mb {
 				myScreen, NULL, mbKeyCode);
 
 		postInputEvent(ie);
+	}
+
+	void InputManager::postCommand(string cmd, string args) {
+		if (cmdListener != NULL) {
+			cmdListener->cmdEventReceived(cmd, args);
+		}
 	}
 
 	void InputManager::setAxisValues(int x, int y, int z) {

@@ -294,6 +294,11 @@ typedef struct {
 					bool shiftOn);
 
 			static void* checkStdin(void* ptr);
+			static void processCmd(
+					SDLDeviceScreen* s,
+					string cmd, 
+					string type, 
+					string args);
 
 			static bool checkEvents();
 			static void* rendererT(void* ptr);

@@ -119,7 +119,7 @@ namespace si {
 		unsigned char value;
 
 		data = new char[payloadSize];
-		memcpy((void*)&data, payloadBytes, payloadSize);
+		memcpy((void*)&(data[0]), payloadBytes, payloadSize);
 
 		pos = 0;
 		commonDescriptorsLength = ((((data[pos] & 0x0F) << 8) & 0xFF00) |

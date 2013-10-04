@@ -47,15 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef IINPUTMANAGER_H_
-#define IINPUTMANAGER_H_
+#ifndef ICMDEVENTLISTENER_H_
+#define ICMDEVENTLISTENER_H_
 
-#include "interface/IEventBuffer.h"
-#include "interface/ICmdEventListener.h"
-#include "interface/IInputEventListener.h"
-#include "interface/IMotionEventListener.h"
-
-#include <set>
+#include <string>
 using namespace std;
 
 namespace br {
@@ -64,40 +59,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-  class IInputManager {
-	public:
-		virtual ~IInputManager(){};
-
-		virtual void release()=0;
-
-		virtual void addMotionEventListener(IMotionEventListener* listener)=0;
-		virtual void removeMotionEventListener(
-				IMotionEventListener* listener)=0;
-
-		virtual void addInputEventListener(
-				IInputEventListener* listener, set<int>* events)=0;
-
-		virtual void removeInputEventListener(IInputEventListener* listener)=0;
-
-		virtual void addApplicationInputEventListener(
-				IInputEventListener* listener)=0;
-
-		virtual void removeApplicationInputEventListener(
-				IInputEventListener* listener)=0;
-
-		virtual void setCommandEventListener(ICmdEventListener* listener)=0;
-
-		virtual void postInputEvent(IInputEvent* event)=0;
-		virtual void postInputEvent(int keyCode)=0;
-		virtual void postCommand(string cmd, string args)=0;
-
-		virtual void setAxisValues(int x, int y, int z)=0;
-		virtual void setAxisBoundaries(int x, int y, int z)=0;
-		virtual int getCurrentXAxisValue()=0;
-		virtual int getCurrentYAxisValue()=0;
-
-		virtual IEventBuffer* getEventBuffer()=0;
-  };
+	class ICmdEventListener {
+		public:
+			virtual ~ICmdEventListener(){};
+			virtual bool cmdEventReceived(string command, string args)=0;
+	};
 }
 }
 }
@@ -105,4 +71,4 @@ namespace mb {
 }
 }
 
-#endif /*IINPUTMANAGER_H_*/
+#endif /*IMOTIONEVENTLISTENER_H_*/
