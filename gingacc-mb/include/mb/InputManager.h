@@ -90,6 +90,9 @@ namespace mb {
 			vector<LockedAction*> actionsToAppListeners;
 
 			set<IMotionEventListener*> motionListeners;
+
+			ICmdEventListener* cmdListener;
+
 			pthread_mutex_t mlMutex;
 
 			bool running;
@@ -135,6 +138,8 @@ namespace mb {
 
 			void removeInputEventListener(IInputEventListener* listener);
 
+			void setCommandEventListener(ICmdEventListener* listener);
+
 		private:
 			void performInputLockedActions();
 			void performApplicationLockedActions();
@@ -148,6 +153,7 @@ namespace mb {
 
 			void postInputEvent(IInputEvent* event);
 			void postInputEvent(int keyCode);
+			void postCommand(string cmd, string args);
 
 			void setAxisValues(int x, int y, int z);
 			void setAxisBoundaries(int x, int y, int z);

@@ -213,6 +213,7 @@ namespace tuning {
                 params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
                 params.u.ofdm.bandwidth             = BANDWIDTH_6_MHZ;                                                                            
 		progress = (channel_counter - 14) * 100 / 55;
+		cout << "cmd::0::tunerscanprogress::" << progress << "%" << endl;
 
 
 		if ((feFd = open(ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) 

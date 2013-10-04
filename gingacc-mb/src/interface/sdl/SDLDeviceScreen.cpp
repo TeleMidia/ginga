@@ -1401,71 +1401,96 @@ namespace mb {
     	return false;
 	}
 
-	void* SDLDeviceScreen::checkStdin(void* ptr) {
-		SDLDeviceScreen* s;
-		string strCmd;
-		string cmdType;
+	void SDLDeviceScreen::processCmd(
+			SDLDeviceScreen* s,
+			string cmd, 
+			string type, 
+			string args) {
+
 		int intEvent;
-
 		SDL_Event ie;
+		size_t token;
 
-		Thread::mutexLock(&scrMutex);
-		s = (SDLDeviceScreen*)ptr;
 		assert(s->useStdin);
 		if (s->uEmbedId != NULL) {
 			ie.window.windowID = (Uint32)(unsigned long)s->uEmbedId;
 		}
-		Thread::mutexUnlock(&scrMutex);
+
+		if (type == "GIEK") {
+			intEvent = convertEventCodeStrToInt(cmd);
+			if (intEvent >= 0) {
+				if (cmd != "GIEK:QUIT") {
+					ie.type           = SDL_KEYDOWN;
+					ie.key.type       = SDL_KEYDOWN;
+					ie.key.state      = SDL_PRESSED;
+					ie.key.repeat     = 0;
+					ie.key.keysym.sym = intEvent;
+
+				} else {
+					ie.type           = SDL_QUIT;
+				}
+
+				SDL_PushEvent(&ie);
+			}
+
+		} else if (type == "GIEC") {
+			token = args.find_first_of(",");
+			if (token != std::string::npos) {
+				int x = atoi(args.substr(0, token).c_str());
+				int y = atoi(args.substr(token + 1, args.length() - (token + 1)).c_str());
+				ie.type = SDL_MOUSEBUTTONUP;
+				ie.button.x = x;
+				ie.button.y = y;
+
+				SDL_PushEvent(&ie);
+			}
+
+		} else if (type == "GCMD") {
+			string nCmd;
+			string nArgs;
+
+			token = args.find_first_of(",");
+			if (token != std::string::npos) {
+				nCmd  = args.substr(0, token);
+				nArgs = args.substr(token + 1, args.length() - (token + 1));
+
+			} else {
+				nCmd  = args;
+				nArgs = "";
+			}
+
+			if (s->im != NULL) {
+				s->im->postCommand(nCmd, nArgs);
+			}
+		}
+	}
+
+	void* SDLDeviceScreen::checkStdin(void* ptr) {
+		SDLDeviceScreen* s;
+		string strCmd;
+		string cmdType;
 
 		clog << "SDLDeviceScreen::checkStdin calling cin" << endl;
 
+		Thread::mutexLock(&scrMutex);
+		s = (SDLDeviceScreen*)ptr;
+		Thread::mutexUnlock(&scrMutex);
+
 		while (std::cin >> strCmd) {
-			cmdType = strCmd.substr(0, 4);
-			if (cmdType == "GIEK") {
-				intEvent = convertEventCodeStrToInt(strCmd);
-				if (intEvent >= 0) {
-					if (strCmd != "GIEK:QUIT") {
-						ie.type           = SDL_KEYDOWN;
-						ie.key.type       = SDL_KEYDOWN;
-						ie.key.state      = SDL_PRESSED;
-						ie.key.repeat     = 0;
-						ie.key.keysym.sym = intEvent;
+			size_t token;
+			token = strCmd.find_first_of(":");
+			if (token != std::string::npos && token < strCmd.length()) {
+				processCmd(
+						s,
+						strCmd, 
+						strCmd.substr(0, token), 
+						strCmd.substr(token + 1, strCmd.length() - (token + 1)));
+			}
 
-					} else {
-						ie.type           = SDL_QUIT;
-					}
-
-					clog << "SDLDeviceScreen::checkStdin pushing strEvent = '";
-					clog << strCmd << "' (" << intEvent << ")" << endl;
-					SDL_PushEvent(&ie);
-					clog << "SDLDeviceScreen::checkStdin event pushed" << endl;
-				}
-
-				if (strCmd == "GIEK:QUIT") {
-					clog << "SDLDeviceScreen::checkStdin QUIT";	
-					clog << endl;
-					break;
-				}
-
-			} else if (cmdType == "GIEC") {
-				size_t token = strCmd.find_first_of(":");
-				string coords;
-
-				if (token != std::string::npos) {
-					coords = strCmd.substr(token + 1, strCmd.length() - token);
-					token = coords.find_first_of(",");
-					if (token != std::string::npos) {
-						int x = atoi(coords.substr(0, token).c_str());
-						int y = atoi(coords.substr(token + 1, coords.length() - token).c_str());
-						ie.type = SDL_MOUSEBUTTONUP;
-						ie.button.x = x;
-						ie.button.y = y;
-
-						clog << "SDLDeviceScreen::checkStdin pushing click on (";
-						clog << x << "," << y << ")" << endl;
-						SDL_PushEvent(&ie);
-					}
-				}
+			if (strCmd == "GIEK:QUIT") {
+				clog << "SDLDeviceScreen::checkStdin QUIT";	
+				clog << endl;
+				break;
 			}
 
 			strCmd = "";
