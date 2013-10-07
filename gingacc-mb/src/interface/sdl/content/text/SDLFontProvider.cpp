@@ -237,7 +237,9 @@ namespace mb {
 
 		} else {
 			aux.assign(text, strlen(text));
-			aux = aux.substr(0, textLength);
+			if (aux.length() > textLength) {
+				aux = aux.substr(0, textLength);
+			}
 			getStringExtents(aux.c_str(), &w, &h);
 		}
 
