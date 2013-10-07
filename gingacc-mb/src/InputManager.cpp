@@ -222,6 +222,8 @@ namespace mb {
 	}
 
 	void InputManager::addMotionEventListener(IMotionEventListener* listener) {
+		assert(listener != NULL);
+
 		Thread::mutexLock(&mlMutex);
 		motionListeners.insert(listener);
 		Thread::mutexUnlock(&mlMutex);
@@ -231,6 +233,8 @@ namespace mb {
 			IMotionEventListener* listener) {
 
 		set<IMotionEventListener*>::iterator i;
+
+		assert(listener != NULL);
 
 		Thread::mutexLock(&mlMutex);
 		i = motionListeners.find(listener);
@@ -259,6 +263,8 @@ namespace mb {
 		LockedAction* action;
 		set<int>* iEvs;
 		map<IInputEventListener*, set<int>*>::iterator i;
+
+		assert(listener != NULL);
 
 		if (!running) {
 			eventBuffer = getEventBuffer();
@@ -295,6 +301,8 @@ namespace mb {
 
 		LockedAction* action;
 		map<IInputEventListener*, set<int>*>::iterator i;
+
+		assert(listener != NULL);
 
 		if (!running) {
 			return;
@@ -515,6 +523,8 @@ namespace mb {
 
 		LockedAction* action;
 
+		assert(listener != NULL);
+
 		if (!running) {
 			return;
 		}
@@ -542,6 +552,8 @@ namespace mb {
 
 		LockedAction* action;
 		set<IInputEventListener*>::iterator i;
+
+		assert(listener != NULL);
 
 		if (!running) {
 			return;
