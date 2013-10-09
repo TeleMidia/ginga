@@ -317,7 +317,7 @@ namespace compat {
 			static const short LOG_NULL = 0;
 			static const short LOG_STDO = 1;
 			static const short LOG_FILE = 2;
-			static void setLogTo(short logType);
+			static void setLogTo(short logType, string sufix="");
 
 			/******************
 			 * Time functions *
