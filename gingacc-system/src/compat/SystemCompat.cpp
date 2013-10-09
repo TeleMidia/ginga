@@ -952,7 +952,7 @@ namespace compat {
 	static std::ofstream logOutput;
 #endif
 
-	void SystemCompat::setLogTo(short logType) {
+	void SystemCompat::setLogTo(short logType, string sufix) {
 #ifndef	__DARWIN_UNIX03
 		string logUri = "";
 
@@ -982,7 +982,7 @@ namespace compat {
 			case LOG_FILE:
 				logUri = getTemporaryDir() + iUriD + "ginga";
 				makeDir(logUri.c_str(), 0755);
-				logUri = logUri + iUriD + "logFile.txt";
+				logUri = logUri + iUriD + "logFile" + sufix + ".txt";
 				if (logOutput) {
 					logOutput.close();
 				}
