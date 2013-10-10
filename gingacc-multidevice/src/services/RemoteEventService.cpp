@@ -83,23 +83,21 @@ namespace multidevice {
 #endif
 		clog << "RemoteEventService::new RemoteEventService()" << endl;
 
-		groups = new map<int,TcpSocketService*>;
-		Thread::mutexInit(&groupsMutex, NULL);
+		groups.clear();
+		Thread::mutexInit(&groupsMutex, false);
 	}
 
 	RemoteEventService::~RemoteEventService() {
-		map<int,TcpSocketService*>::iterator i;
+		map<int, TcpSocketService*>::iterator i;
 
 		Thread::mutexLock(&groupsMutex);
-		if (groups != NULL) {
-			i = groups->begin();
-			while (i != groups->end()) {
-				delete i->second;
-				++i;
-			}
-			delete groups;
-			groups = NULL;
+		i = groups.begin();
+		while (i != groups.end()) {
+			delete i->second;
+			++i;
 		}
+		groups.clear();
+
 		Thread::mutexUnlock(&groupsMutex);
 		Thread::mutexDestroy(&groupsMutex);
 	}
@@ -113,8 +111,8 @@ namespace multidevice {
 
 	void RemoteEventService::addDeviceClass(unsigned int id) {
 		Thread::mutexLock(&groupsMutex);
-		if (groups->count(id) == 0) {
-			(*groups)[id] = new TcpSocketService(
+		if (groups.count(id) == 0) {
+			groups[id] = new TcpSocketService(
 							RemoteEventService::DEFAULT_PORT,
 							this);
 		} else {
@@ -132,8 +130,8 @@ namespace multidevice {
 		TcpSocketService* tss;
 
 		Thread::mutexLock(&groupsMutex);
-		i = groups->find(device_class);
-		if (i == groups->end()) {
+		i = groups.find(device_class);
+		if (i == groups.end()) {
 			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
@@ -152,12 +150,12 @@ namespace multidevice {
 		TcpSocketService* tss;
 
 		Thread::mutexLock(&groupsMutex);
-		if (groups->count(device_class) == 0) {
+		if (groups.count(device_class) == 0) {
 			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
-		tss = (*groups)[device_class];
+		tss = groups[device_class];
 		tss->postTcpCommand((char*)"ADD", 0, name, body);
 		Thread::mutexUnlock(&groupsMutex);
 		//ADD without start will be used by prefetch mechanisms
@@ -171,12 +169,12 @@ namespace multidevice {
         string str_name = string(name);
 
 		Thread::mutexLock(&groupsMutex);
-		if (groups->count(device_class) == 0) {
+		if (groups.count(device_class) == 0) {
 			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
-		tss = (*groups)[device_class];
+		tss = groups[device_class];
 
 		clog << "RemoteEventService::startDocument " << name << endl; 
         
@@ -198,8 +196,6 @@ namespace multidevice {
 		//TODO: MANIFEST
 
 		string zipDumpStr = SystemCompat::getTemporaryDir() + "basetmp.zip";
-		char *zip_dump = (char*)zipDumpStr.c_str();
-
 		//char *zip_dump = (char*)"/tmp/basetmp.zip";
 
 		/* string dir_app = SystemCompat::getUserCurrentPath() +
@@ -209,30 +205,30 @@ namespace multidevice {
 				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
 
 
-		clog << "RemoteEventService::dir app="<<dir_app<<endl;
+		clog << "RemoteEventService::startDocument dir app="<<dir_app<<endl;
 		//clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
 
-		zip_directory(
-				zip_dump,
-				(char*)dir_app.c_str(),
-				SystemCompat::getIUriD());
+		zip_directory(zipDumpStr, dir_app, SystemCompat::getIUriD());
+		clog << "RemoteEventService::startDocument zip_directory all done!" << endl;
 
-		string zip_base64 = getBase64FromFile(zip_dump);
-
-		remove(zip_dump);
+		string zip_base64 = getBase64FromFile(zipDumpStr);
+		clog << "RemoteEventService::startDocument getBase64 all done!" << endl;
+		remove(zipDumpStr.c_str());
 		//TODO: prefetch. add w/o start
 
-		clog << "RemoteEventService::zipb64.len = ";
-		clog << strlen(zip_base64.c_str()) << endl;
+		if (zip_base64 != "") {
+			clog << "RemoteEventService::zipb64.len = ";
+			clog << zip_base64.length() << endl;
 
-//		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
-//		clog << "RemoteEventService:: ADD name="<<name<<endl;
+	//		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
+	//		clog << "RemoteEventService:: ADD name="<<name<<endl;
 
-//		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
-//
-		tss->postTcpCommand((char*)"START", 0,(char*) doc_rel_path.c_str(), (char*)zip_base64.c_str());
+	//		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
+	//
+			tss->postTcpCommand((char*)"START", 0,(char*) doc_rel_path.c_str(), (char*)zip_base64.c_str());
 		
-        clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
+			clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
+		}
 
 		Thread::mutexUnlock(&groupsMutex);
 	}
@@ -243,12 +239,12 @@ namespace multidevice {
 		TcpSocketService* tss;
 
 		Thread::mutexLock(&groupsMutex);
-		if (groups->count(device_class) == 0) {
+		if (groups.count(device_class) == 0) {
 			Thread::mutexUnlock(&groupsMutex);
 			return;
 		}
 
-		tss = (*groups)[device_class];
+		tss = groups[device_class];
 		clog << "RemoteEventService::stopDocument "<< name << endl;
 		tss->postTcpCommand((char*)"STOP", 0, name, (char*)"");
 		Thread::mutexUnlock(&groupsMutex);
