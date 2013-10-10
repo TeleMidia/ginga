@@ -1429,7 +1429,8 @@ namespace mb {
 				} else {
 					ie.type           = SDL_QUIT;
 				}
-
+				clog << "SDLDeviceScreen::processCmd pushing keyboard '";
+				clog << cmd << "'" << endl;
 				SDL_PushEvent(&ie);
 			}
 
@@ -1442,6 +1443,8 @@ namespace mb {
 				ie.button.x = x;
 				ie.button.y = y;
 
+				clog << "SDLDeviceScreen::processCmd pushing click '";
+				clog << cmd << "' on '" << args << "'" << endl;
 				SDL_PushEvent(&ie);
 			}
 

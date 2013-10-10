@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 #include <pthread.h>
 #include <map>
 #include <vector>
+#include <string>
 using namespace std;
 
 #include "util/functions.h"
@@ -78,7 +79,7 @@ namespace multidevice {
 		private:
 			static RemoteEventService* _instance;
 			pthread_mutex_t groupsMutex;
-			map<int,TcpSocketService*>* groups;
+			map<int,TcpSocketService*> groups;
 			static const int DEFAULT_PORT = 22222;
 			static IContextManager* contextManager;
 
