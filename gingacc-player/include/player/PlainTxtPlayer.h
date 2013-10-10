@@ -72,6 +72,7 @@ namespace player {
 		private:
 			void loadTxt();
 			void setContent(string content);
+			void setTextAlign(string align);
 
 		public:
 			bool play();
