@@ -169,23 +169,11 @@ namespace mb {
 	}
 
 	void SDLAudioProvider::refreshDR(void* data) {
-/*		SDL_Event* event = (SDL_Event*)data;
+		double rt;
 
-		switch (event->type) {
-			case FF_REFRESH_EVENT:
-				/*cout << "SDLAudioProvider::refreshDR call video refresh";
-				cout << endl;
-				SDL2ffmpeg::video_refresh(decoder);
-				break;
-
-	        case FF_ALLOC_EVENT:
-				/*cout << "SDLAudioProvider::refreshDR call alloc_picture";
-				cout << endl;
-	        	decoder->alloc_picture();
-	            break;
-		}*/
-
-		SDL2ffmpeg::video_refresh(decoder);
+		if (decoder != NULL) {
+			SDL2ffmpeg::video_refresh(decoder, &rt);
+		}
 	}
 }
 }

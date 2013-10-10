@@ -1768,13 +1768,11 @@ namespace mb {
 			cmp = (*i);
 			j = s->cmpPool.find(cmp);
 			if (j != s->cmpPool.end()) {
-				if (cmp->getHasVisual()) {
-					if (cmp->getProviderContent() == NULL) {
-						initCMP(s, cmp);
+				if (cmp->getProviderContent() == NULL) {
+					initCMP(s, cmp);
 
-					} else {
-						cmp->refreshDR(NULL);
-					}
+				} else {
+					cmp->refreshDR(NULL);
 				}
 			}
 			++i;
