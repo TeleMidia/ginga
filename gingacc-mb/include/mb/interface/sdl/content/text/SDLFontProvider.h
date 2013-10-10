@@ -130,7 +130,7 @@ namespace mb {
 			void playOver(
 					ISurface* surface,
 					const char* text,
-					int x=0, int y=0, short align=A_TOP_LEFT);
+					int x, int y, short align);
 
 		private:
 			void playOver(ISurface* surface);

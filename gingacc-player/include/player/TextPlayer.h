@@ -86,6 +86,7 @@ namespace player {
 			IColor* fontColor;
 			IColor* bgColor;
 			string fontUri;
+			short currentAlign;
 			IFontProvider* font;
 
 		public:
@@ -100,6 +101,7 @@ namespace player {
 					GingaScreenID screenId,
 					ISurface* s,
 					string text,
+					short textAlign,
 					string fontUri = "",
 					int fontSize = 12, IColor* fontColor = NULL);
 
@@ -117,8 +119,8 @@ namespace player {
 			void setColor(int red, int green, int blue, int alpha=255);
 			void setTabSize(int size);
 			int getTabSize();
-			void drawText(string text, short align=(0x00000004 | 0x00000000));
-			bool drawTextLn(string text, short align=(0x00000004 | 0x00000000));
+			void drawText(string text, short align);
+			bool drawTextLn(string text, short align);
 			void tab();
 			bool breakLine();
 			int getCurrentColumn();

@@ -59,10 +59,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	const short SDLFontProvider::A_LEFT          = 0;
-	const short SDLFontProvider::A_CENTER        = 1;
-	const short SDLFontProvider::A_RIGHT         = 2;
-
 	const short SDLFontProvider::A_TOP           = 3;
 	const short SDLFontProvider::A_TOP_CENTER    = 4;
 	const short SDLFontProvider::A_TOP_LEFT      = 5;
@@ -279,6 +275,7 @@ namespace mb {
 		SDL_Rect rect;
 		SDL_Surface* renderedSurface = NULL;
 		SDL_Surface* text;
+		int pW, pH;
 
 		Thread::mutexLock(&ntsMutex);
 		this->content = surface;
@@ -354,10 +351,10 @@ namespace mb {
 				renderedSurface = (SDL_Surface*)(parent->getContent());
 			}
 
+			pW = parent->getW();
+			pH = parent->getH();
 			if (renderedSurface == NULL) {
-				renderedSurface = SDLDeviceScreen::createUnderlyingSurface(
-						parent->getW(),
-						parent->getH());
+				renderedSurface = SDLDeviceScreen::createUnderlyingSurface(pW, pH);
 
 				if (SDL_SetColorKey(
 						renderedSurface,
@@ -374,11 +371,20 @@ namespace mb {
 				clog << "SDLFontProvider::playOver parent = '" << parent;
 				clog << "' bounds = '" << parent->getX() << ",";
 				clog << parent->getY() << ",";
-				clog << parent->getW() << ",";
-				clog << parent->getH() << "' text rectangle = '";
+				clog << pW << ",";
+				clog << pH << "' text rectangle = '";
 				clog << rect.x << ", " << rect.y << ", ";
 				clog << rect.w << ", " << rect.h << "'";
 				clog << endl;
+			}
+
+			if (rect.w < pW) {
+				if (align == IFontProvider::FP_TA_CENTER) {
+					rect.x = rect.x + (int)((pW - rect.w) / 2);
+
+				} else if (align == IFontProvider::FP_TA_RIGHT) {
+					rect.x = pW - rect.w;
+				}
 			}
 
 			SDLDeviceScreen::lockSDL();

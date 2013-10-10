@@ -63,6 +63,10 @@ namespace mb {
 		public:
 			static const short FP_AUTO_WORDWRAP = -10;
 
+			static const short FP_TA_LEFT   = 0x01;
+			static const short FP_TA_CENTER = 0x02;
+			static const short FP_TA_RIGHT  = 0x04;
+
 			virtual ~IFontProvider(){};
 
 			virtual string getLoadSymbol()=0;
@@ -78,7 +82,7 @@ namespace mb {
 			virtual void playOver(
 					ISurface* surface,
 					const char* text,
-					int x=0, int y=0, short align=0)=0;
+					int x, int y, short align)=0;
 	};
 }
 }

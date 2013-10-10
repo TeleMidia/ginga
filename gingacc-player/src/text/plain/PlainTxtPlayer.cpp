@@ -147,14 +147,14 @@ namespace player {
 
 				getline(fis, line);
 				if (line != "") {
-					if (!drawTextLn(line)) {
+					if (!drawTextLn(line, currentAlign)) {
 						break;
 					}
 				}
 			}
 
 		} else if (content != "") {
-			drawTextLn(content);
+			drawTextLn(content, currentAlign);
 		}
 
 		if (surface != NULL && surface->getParentWindow() != NULL) {
@@ -206,7 +206,7 @@ namespace player {
 		this->content = content;
 
 		if (content != "") {
-			drawTextLn(this->content);
+			drawTextLn(this->content, currentAlign);
 			mrl = "";
 		}
 
@@ -215,6 +215,18 @@ namespace player {
 		}
 
 		Thread::mutexUnlock(&mutex);
+	}
+
+	void PlainTxtPlayer::setTextAlign(string align) {
+		if (align == "left") {
+			currentAlign = IFontProvider::FP_TA_LEFT;
+
+		} else if (align == "right") {
+			currentAlign = IFontProvider::FP_TA_RIGHT;
+
+		} else if (align == "center") {
+			currentAlign = IFontProvider::FP_TA_CENTER;
+		}
 	}
 
 	void PlainTxtPlayer::setPropertyValue(string name, string value) {
@@ -251,6 +263,18 @@ namespace player {
 
 		} else if (name == "fontUri") {
 			setFont(value);
+
+		} else if (name == "textAlign") {
+			setTextAlign(value);
+
+		} else if (name == "fontStyle") {
+			string styleName = "text-align";
+			size_t pos = value.find(styleName);
+			string strAlign = "";
+			if (pos != std::string::npos) {
+				strAlign = value.substr(pos + styleName.length() + 1);
+				setTextAlign(strAlign);
+			}
 
 		} else if ((name == "x-bgColor" || name == "bgColor")) {
 			if (surface != NULL) {

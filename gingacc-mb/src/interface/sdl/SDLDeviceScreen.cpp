@@ -1757,6 +1757,7 @@ namespace mb {
 	int SDLDeviceScreen::refreshCMP(SDLDeviceScreen* s) {
 		set<IContinuousMediaProvider*>::iterator i;
 		set<IContinuousMediaProvider*>::iterator j;
+		IContinuousMediaProvider* cmp;
 
 		int size;
 
@@ -1764,14 +1765,15 @@ namespace mb {
 		size = cmpRenderList.size();
 		i = cmpRenderList.begin();
 		while (i != cmpRenderList.end()) {
-			j = s->cmpPool.find(*i);
+			cmp = (*i);
+			j = s->cmpPool.find(cmp);
 			if (j != s->cmpPool.end()) {
-				if ((*i)->getHasVisual()) {
-					if ((*i)->getProviderContent() == NULL) {
-						initCMP(s, (*i));
+				if (cmp->getHasVisual()) {
+					if (cmp->getProviderContent() == NULL) {
+						initCMP(s, cmp);
 
 					} else {
-						(*i)->refreshDR(NULL);
+						cmp->refreshDR(NULL);
 					}
 				}
 			}

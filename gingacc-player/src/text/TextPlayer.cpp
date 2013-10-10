@@ -96,6 +96,7 @@ namespace player {
 
 	void TextPlayer::initializePlayer(GingaScreenID screenId) {
 		this->fontHeight    = 0;
+		this->currentAlign  = IFontProvider::FP_TA_LEFT;
 		this->currentLine   = 0;
 		this->currentColumn = 0;
 		this->tabSize       = 0;
@@ -117,6 +118,7 @@ namespace player {
 			GingaScreenID screenId,
 			ISurface* s,
 			string text,
+			short textAlign,
 			string fontUri,
 			int fontSize, IColor* fontColor) {
 
@@ -143,7 +145,7 @@ namespace player {
 			width = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
 
-			font->playOver(s, text.c_str());
+			font->playOver(s, text.c_str(), 0, 0, textAlign);
 
 			dm->releaseFontProvider(screenId, font);
 			font = NULL;
@@ -456,13 +458,4 @@ namespace player {
 }
 }
 }
-}
-
-extern "C" int renderText(
-		GingaScreenID screenId,
-		::br::pucrio::telemidia::ginga::core::mb::ISurface* s,
-		string text, string fontUri, int fontSize, IColor* fontColor) {
-
-	return ::br::pucrio::telemidia::ginga::core::player::TextPlayer::write(
-			screenId, s, text, fontUri, fontSize, fontColor);
 }
