@@ -3037,12 +3037,12 @@ namespace mb {
 	    	/* window rendering */
 	    	if (hasTexture(texture)) {
 	    		/*void* pixels;
-	    		int tpitch[3];
-	    		bool locked;
+	    		int tpitch;
+	    		bool locked;*/
 
 	    		//trying to lock texture
-	    		locked = SDL_LockTexture(
-	    				texture, NULL, &pixels, &tpitch[0]) == 0;*/
+	    		/*locked = SDL_LockTexture(
+	    				texture, NULL, &pixels, &tpitch) == 0;*/
 
 				/*
 				 * Warning: there is no need to lock the texture
@@ -3141,7 +3141,7 @@ namespace mb {
 
 		texture = SDL_CreateTexture(
 				renderer,
-				SDL_PIXELFORMAT_RGB24,
+				GINGA_PIXEL_FMT,
 				SDL_TEXTUREACCESS_STREAMING,
 				w, h);
 
@@ -3203,14 +3203,17 @@ namespace mb {
 
 		SDL_Surface* newUSur = NULL;
 		Uint32 rmask, gmask, bmask, amask;
+		int bpp;
 
 		checkMutexInit();
 
 		lockSDL();
 
-		getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
+		SDL_PixelFormatEnumToMasks(
+				GINGA_PIXEL_FMT, &bpp, &rmask, &gmask, &bmask, &amask);
+
 		newUSur = SDL_CreateRGBSurface(
-				0, width, height, 24, rmask, gmask, bmask, amask);
+				0, width, height, bpp, rmask, gmask, bmask, amask);
 
 		unlockSDL();
 
@@ -3234,19 +3237,28 @@ namespace mb {
 		void* pixels;
 		int tpitch[3];
 		Uint32 rmask, gmask, bmask, amask, format;
-		int textureAccess, w, h;
+		int textureAccess, w, h, bpp;
 
 		lockSDL();
 
 		SDL_QueryTexture(texture, &format, &textureAccess, &w, &h);
 		if (textureAccess & SDL_TEXTUREACCESS_STREAMING) {
-			//trying to lock texture
-			SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]);
+			bool locked = true;
 
-			getRGBAMask(24, &rmask, &gmask, &bmask, &amask);
+			//trying to lock texture
+			if (SDL_LockTexture(texture, NULL, &pixels, &tpitch[0]) != 0) {
+				locked = false;
+			}
+
+            SDL_PixelFormatEnumToMasks(
+					GINGA_PIXEL_FMT, &bpp, &rmask, &gmask, &bmask, &amask);
 
 			uSur = SDL_CreateRGBSurfaceFrom(
-					pixels, w, h, 24, tpitch[0], rmask, gmask, bmask, amask);
+					pixels, w, h, bpp, tpitch[0], rmask, gmask, bmask, amask);
+
+			if (locked) {
+				SDL_UnlockTexture(texture);
+			}
 		}
 
 		unlockSDL();
@@ -3293,30 +3305,6 @@ namespace mb {
 
 		Thread::mutexUnlock(&surMutex);
 		unlockSDL();
-	}
-
-	void SDLDeviceScreen::getRGBAMask(
-			int depth,
-			Uint32* rmask,
-			Uint32* gmask,
-			Uint32* bmask,
-			Uint32* amask) {
-
-		switch (depth) {
-			case 32:
-				*rmask = 0x000000ff;
-				*gmask = 0x0000ff00;
-				*bmask = 0x00ff0000;
-				*amask = 0xff000000;
-				break;
-
-			case 24:
-				*rmask = 0x000000ff;
-				*gmask = 0x0000ff00;
-				*bmask = 0x00ff0000;
-				*amask = 0x00000000;
-				break;
-		}
 	}
 }
 }
