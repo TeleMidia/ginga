@@ -73,6 +73,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include <iostream>
 using namespace std;
 
+#ifndef GINGA_PIXEL_FMT
+#define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -405,14 +409,6 @@ typedef struct {
 
 		private:
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
-
-		public:
-			static void getRGBAMask(
-					int depth,
-					Uint32* rmask,
-					Uint32* gmask,
-					Uint32* bmask,
-					Uint32* amask);
 	};
 }
 }

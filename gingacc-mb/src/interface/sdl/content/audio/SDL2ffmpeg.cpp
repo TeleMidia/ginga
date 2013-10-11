@@ -848,7 +848,6 @@ namespace mb {
 		        int textureAccess, w, h;
 		        bool locked = true;
 				AVPicture pict = { { 0 } };
-				AVFrame* srcFrame = vp->src_frame;
 
 		        if (SDL_LockTexture(vp->tex, NULL, (void**)&pict.data, &pict.linesize[0]) != 0) {
 					clog << "SDL2ffmpeg::video_image_display(" << vs->filename;
@@ -871,26 +870,26 @@ namespace mb {
 							vp->src_frame->data &&
 							vp->height > 0) {
 
+						AVPixelFormat fmt = (AVPixelFormat)vp->src_frame->format;
+
+						if (fmt == PIX_FMT_NONE) {
+							fmt = PIX_FMT_YUV420P;
+						}
+
 						//FIXME: use direct rendering
 						/*av_picture_copy(
 								&pict,
 								(AVPicture*)vp->src_frame,
-								(AVPixelFormat)vp->src_frame->format,
+								(AVPixelFormat)fmt,
 								vp->width,
 								vp->height);*/
-
-						SwsContext* ctx = NULL;
 
 						/*
 						 * FIXME: we are using filters only to deinterlace video.
 						 *        we should use them to convert pixel formats as well.
 						 */
 
-						AVPixelFormat fmt = (AVPixelFormat)vp->src_frame->format;
-
-						if (fmt == AV_PIX_FMT_NONE) {
-							fmt = AV_PIX_FMT_YUV420P;
-						}
+						SwsContext* ctx = NULL;
 
 						ctx = sws_getCachedContext(
 								ctx,
