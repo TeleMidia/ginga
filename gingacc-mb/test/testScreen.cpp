@@ -182,22 +182,22 @@ void testScreen(
 	win2T->raiseToTop();
 
 	ttfSur->setColor(0xFF, 0xFF, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test White!", 10, 5);
+	ttf->playOver(ttfSur, "Test White!", 10, 5, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
+	ttf->playOver(ttfSur, "Test Yellow!", 10, 15, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Black!", 10, 25);
+	ttf->playOver(ttfSur, "Test Black!", 10, 25, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Green!", 10, 35);
+	ttf->playOver(ttfSur, "Test Green!", 10, 35, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
+	ttf->playOver(ttfSur, "Test Blue!", 10, 45, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Red!", 10, 55);
+	ttf->playOver(ttfSur, "Test Red!", 10, 55, IFontProvider::FP_TA_CENTER);
 
 	delete ttfSur;
 
@@ -222,19 +222,19 @@ void testScreen(
 	ttfSur->drawString(-1, 10, "Test White!");
 
 	ttfSur->setColor(0xFF, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Yellow!", 10, 15);
+	ttf->playOver(ttfSur, "Test Yellow!", 10, 15, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Black!", 10, 25);
+	ttf->playOver(ttfSur, "Test Black!", 10, 25, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0xFF, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Green!", 10, 35);
+	ttf->playOver(ttfSur, "Test Green!", 10, 35, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0x00, 0x00, 0xFF, 0xFF);
-	ttf->playOver(ttfSur, "Test Blue!", 10, 45);
+	ttf->playOver(ttfSur, "Test Blue!", 10, 45, IFontProvider::FP_TA_CENTER);
 
 	ttfSur->setColor(0xFF, 0x00, 0x00, 0xFF);
-	ttf->playOver(ttfSur, "Test Red!", 10, 55);
+	ttf->playOver(ttfSur, "Test Red!", 10, 55, IFontProvider::FP_TA_CENTER);
 
 	delete ttfSur;
 	ttfSur = NULL;
