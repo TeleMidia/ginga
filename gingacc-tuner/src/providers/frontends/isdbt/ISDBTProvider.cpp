@@ -73,7 +73,7 @@ namespace tuning {
 		this->listener       = NULL;
 		this->initialFrequency = 0;
 		this->capabilities   = (
-                                DPC_CAN_FETCHDATA);
+                                DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM);
                                 /* | DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
 				DPC_CAN_FILTERTID); */ // TODO: implement these capabilities...

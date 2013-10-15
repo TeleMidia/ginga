@@ -114,6 +114,9 @@ namespace thread {
 		static void condDestroy(pthread_cond_t* cond);
 		static void condWait(pthread_cond_t* cond, pthread_mutex_t* mutex);
 		static void condSignal(pthread_cond_t* cond);
+
+		/* Create functions */
+		static void startNewThread(void* (*funcion) (void*), void* ptr);
   };
 }
 }
