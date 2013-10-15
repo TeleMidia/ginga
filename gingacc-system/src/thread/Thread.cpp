@@ -246,6 +246,18 @@ namespace thread {
 		assert(cond != NULL);
 		assert(pthread_cond_signal(cond) == 0);
 	}
+
+	void Thread::startNewThread(void* (*foo) (void*), void* ptr) {
+		pthread_attr_t tattr;
+		pthread_t threadId_;
+
+		pthread_attr_init(&tattr);
+		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
+		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+
+		pthread_create(&threadId_, &tattr, foo, ptr);
+		pthread_detach(threadId_);
+	}
 }
 }
 }

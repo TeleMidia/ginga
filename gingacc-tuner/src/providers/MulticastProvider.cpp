@@ -61,7 +61,7 @@ namespace tuning {
 
 		this->addr         = groupAddr;
 		this->portNumber   = port;
-		this->capabilities = DPC_CAN_FETCHDATA;
+		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 	}
 
 	MulticastProvider::~MulticastProvider() {

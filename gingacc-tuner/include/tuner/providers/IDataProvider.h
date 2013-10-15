@@ -70,6 +70,7 @@ namespace tuning {
 	static const short DPC_CAN_FILTERPID = 0x04;
 	static const short DPC_CAN_FILTERTID = 0x08;
 	static const short DPC_CAN_DECODESTC = 0x10;
+	static const short DPC_CAN_CTLSTREAM = 0x20;
 
 	// pes filter types
 	static const int PFT_DEFAULTTS = 0x01;

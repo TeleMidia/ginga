@@ -57,7 +57,7 @@ namespace ginga {
 namespace core {
 namespace tuning {
 	BDAProvider::BDAProvider(long freq) {
-		this->capabilities   = DPC_CAN_FETCHDATA;
+		this->capabilities   = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 		this->listener       = NULL;
 		bda = new BDAGraph(SystemCompat::getTemporaryDir() +
 							"ginga" + SystemCompat::getIUriD() +
