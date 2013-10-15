@@ -97,6 +97,8 @@ namespace tsparser {
 		debugDest      = 0;
 		nptPrinter	   = false;
 		nptPid		   = -1;
+		enableDemuxer  = true;
+		outPipeCreated = false;
 
 		newPmt = NULL;
 
@@ -108,6 +110,15 @@ namespace tsparser {
 		clearMaps();
 
 		Thread::mutexDestroy(&stlMutex);
+	}
+
+	string Demuxer::disableDemuxer(string tsOutputUri) {
+		enableDemuxer = false;
+		outPipeUri    = SystemCompat::checkPipeName(tsOutputUri);
+
+		Thread::startNewThread(Demuxer::createNullDemuxer, this);
+
+		return outPipeUri;
 	}
 
 	bool Demuxer::hasStreamType(short streamType) {
@@ -492,6 +503,16 @@ namespace tsparser {
 		packet = NULL;
 	}
 
+	void* Demuxer::createNullDemuxer(void* ptr) {
+		Demuxer* d = (Demuxer*)ptr;
+
+		if (SystemCompat::createPipe(d->outPipeUri, &d->outPipeD)) {
+			d->outPipeCreated = true;
+		}
+
+		return NULL;
+	}
+
 	map<unsigned int, Pmt*>* Demuxer::getProgramsInfo() {
 		return pat->getProgramsInfo();
 	}
@@ -866,6 +887,16 @@ namespace tsparser {
 	void Demuxer::receiveData(char* buff, unsigned int size) {
 		TSPacket* packet;
 		unsigned int i = 0;
+
+		if (!enableDemuxer) {
+			if (outPipeCreated) {
+				int bytesWritten = SystemCompat::writePipe(
+						outPipeD, buff, size);
+
+				assert(bytesWritten == size);
+			}
+			return;
+		}
 
 		while (i < size) {
 			// Check TS packet boundaries.

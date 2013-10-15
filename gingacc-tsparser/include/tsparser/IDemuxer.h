@@ -109,6 +109,7 @@ namespace tsparser {
 	public:
 		virtual ~IDemuxer(){};
 
+		virtual string disableDemuxer(string tsOutputUri)=0;
 		virtual bool hasStreamType(short streamType)=0;
 		virtual void printPat()=0;
 		virtual void setNptPrinter(bool nptPrinter)=0;
