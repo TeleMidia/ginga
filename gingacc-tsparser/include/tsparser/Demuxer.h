@@ -114,6 +114,11 @@ namespace tsparser {
 			bool nptPrinter;
 			int nptPid;
 
+			bool enableDemuxer;
+			string outPipeUri;
+			PipeDescriptor outPipeD;
+			bool outPipeCreated;
+
 		public:
 			//defs
 			static const short NB_PID_MAX = 0x1FFF; //8191
@@ -123,6 +128,7 @@ namespace tsparser {
 			Demuxer(ITuner* tuner);
 			virtual ~Demuxer();
 
+			string disableDemuxer(string tsOutputUri);
 			bool hasStreamType(short streamType);
 			void printPat();
 			void setNptPrinter(bool nptPrinter);
@@ -138,6 +144,7 @@ namespace tsparser {
 			void setupUnsolvedFilters();
 			bool setupFilter(IFrontendFilter* filter);
 			void demux(ITSPacket* packet);
+			static void* createNullDemuxer(void* ptr);
 
 		public:
 			map<unsigned int, Pmt*>* getProgramsInfo();
