@@ -178,9 +178,14 @@ namespace multidevice {
 
 		clog << "RemoteEventService::startDocument " << name << endl; 
         
-        int pos_fname = str_name.find_last_of("/\\");
-
-        string doc_name = string(str_name.substr(pos_fname));
+        size_t pos_fname = str_name.find_last_of("/\\");
+		string doc_name;
+		
+		if (pos_fname != std::string::npos) {
+			doc_name = string(str_name.substr(pos_fname + 1));
+		} else {
+			doc_name = str_name;
+		}
         
         string str_path = string(str_name.substr(0,pos_fname));
 
@@ -188,7 +193,7 @@ namespace multidevice {
 
         string last_dir_name = string(str_path.substr(pos_fdir+1));
 
-        string doc_rel_path = last_dir_name + doc_name;
+        string doc_rel_path = doc_name;
 
         //clog << "RES::start " << doc_rel_path << endl;
         
