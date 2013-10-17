@@ -501,7 +501,6 @@ namespace dataprocessing {
 							} else {
 								processor = processors[pid];
 							}
-
 							sd = processor->pushMessage(message);
 							if (sd != NULL) {
 								sd->setObjectsListeners(&objectListeners);

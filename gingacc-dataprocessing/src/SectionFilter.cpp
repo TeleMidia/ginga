@@ -173,6 +173,7 @@ namespace dataprocessing {
 							  SystemCompat::getIUriD() +
 							  itos(section->getESId()) +
 							  itos(section->getTableId()) +
+							  itos(((TransportSection*)section)->getSection()[11]) + //part of messageId
 							  itos(section->getExtensionId()) +
 							  itos(section->getVersionNumber() - 1);
 			}
