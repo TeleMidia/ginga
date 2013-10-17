@@ -113,6 +113,10 @@ namespace tsparser {
 		return constructionFailed;
 	}
 
+	char* TransportSection::getSection() {
+		return section;
+	}
+
 	bool TransportSection::create(char *sectionBytes, unsigned int size){
 		// Verifies the size to protect the memcpy call
 		if (size > ARRAY_SIZE(section)) {
@@ -244,6 +248,7 @@ namespace tsparser {
 						  SystemCompat::getIUriD() + "modules" +
 						  SystemCompat::getIUriD() +
 						  itos(pid) + itos(tableId) +
+						  itos(section[11]) + //part of messageId
 						  itos(idExtention) +
 						  itos(versionNumber);
 		}
