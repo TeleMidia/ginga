@@ -1247,6 +1247,8 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::sdlQuit() {
+		SDL_PauseAudio(1);
+		SDL_CloseAudio();
 		SDL_Quit();
 		clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
 	}

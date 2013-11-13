@@ -173,46 +173,11 @@ namespace mb {
 		hasPic = false;
 
 		Thread::mutexLock(&aiMutex);
-
 		i = aInstances.find(this);
 		if (i != aInstances.end()) {
 			aInstances.erase(i);
 		}
-
-		if (aInstances.empty()) {
-			Thread::mutexUnlock(&aiMutex);
-
-			clog << endl;
-			clog << "SDL2ffmpeg::~SDL2ffmpeg calling SDL_PauseAudio(1)";
-			clog << endl << endl;
-
-			SDLDeviceScreen::lockSDL();
-			SDL_PauseAudio(1);
-
-			if (spec.size != 0) {
-				memset(&spec, 0, sizeof(spec));
-
-				SystemCompat::uSleep(10000);
-
-				/*
-				 * TODO: check why SDL_CloseAudio is causing SIGABRT for
-				 *       fc16 pulse audio (closing 2nd time).
-				 */
-				try {
-					SDL_CloseAudio();
-
-				} catch ( const std::exception& ex ) {
-					clog << "Caught exception: " << ex.what() << std::endl;
-
-				} catch ( ... ) {
-					clog << "unknown exception" << std::endl;
-				}
-			}
-			SDLDeviceScreen::unlockSDL();
-
-		} else {
-			Thread::mutexUnlock(&aiMutex);
-		}
+		Thread::mutexUnlock(&aiMutex);
 
 		release();
 
