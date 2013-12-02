@@ -1874,7 +1874,7 @@ end:
 						av_frame_get_pkt_pos(frame), 
 						serial);
 
-//				av_frame_unref(frame);
+				av_frame_unref(frame);
 			}
 			// AVFILTER end
 
