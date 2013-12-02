@@ -803,10 +803,7 @@ namespace mb {
 		return ret;
 	}
 
-	void SDL2ffmpeg::video_image_display() {
-		VideoPicture *vp;
-
-		vp = &vs->pictq[vs->pictq_rindex];
+	void SDL2ffmpeg::render_vp(VideoPicture* vp) {
 		if (vp->tex) {
 			if (vp->src_frame && !abortRequest) {
 		        Uint32 format;
@@ -815,11 +812,11 @@ namespace mb {
 				AVPicture pict = { { 0 } };
 
 		        if (SDL_LockTexture(vp->tex, NULL, (void**)&pict.data, &pict.linesize[0]) != 0) {
-					clog << "SDL2ffmpeg::video_image_display(" << vs->filename;
+					clog << "SDL2ffmpeg::render_vp(" << vs->filename;
 					clog << ") Warning! ";
 					clog << "Can't lock texture: " << SDL_GetError() << endl;
 					if (!SDLDeviceScreen::hasTexture(vp->tex)) {
-						clog << "SDL2ffmpeg::video_image_display(";
+						clog << "SDL2ffmpeg::render_vp(";
 						clog << vs->filename << ") Warning! ";
 						clog << "vp->tex(" << vp->tex << ") ";
 						clog << "is out of scope " << endl;
@@ -884,12 +881,12 @@ namespace mb {
 				hasPic = false;
 
 			} else {
-				clog << "SDL2ffmpeg::video_image_display aborting";
+				clog << "SDL2ffmpeg::render_vp aborting";
 				clog << endl;
 			}
 
 		} else {
-			clog << "SDL2ffmpeg::video_image_display Can't display video ";
+			clog << "SDL2ffmpeg::render_vp Can't display video ";
 			clog << "(NULL texture)" << endl;
 		}
 
@@ -924,13 +921,6 @@ namespace mb {
 		av_free(vs);
 
 		clog << "SDL2ffmpeg::stream_close all done" << endl;
-	}
-
-	/* display the current picture, if any */
-	void SDL2ffmpeg::video_display() {
-		if (vs->video_st) {
-			video_image_display();
-		}
 	}
 
 	double SDL2ffmpeg::get_clock(Clock* c) {
@@ -1279,9 +1269,6 @@ retry:
 				}
 
 display:
-				/* display picture */
-				dec->video_display();
-
 				dec->pictq_next_picture();
 
 				if (vs->step && !vs->paused) {
@@ -1392,6 +1379,8 @@ display:
 		/* if the frame is not skipped, then display it */
 		if (vp->tex) {
 			vp->src_frame = src_frame; //tm code
+			render_vp(vp);
+
 			vp->pts       = pts;
 			vp->pos       = pos;
 			vp->serial    = serial;
