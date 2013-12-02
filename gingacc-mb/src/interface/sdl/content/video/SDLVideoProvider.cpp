@@ -188,6 +188,9 @@ namespace mb {
 		if (!hasTex) {
 			while (win == NULL) {
 				SystemCompat::uSleep(10000);
+				if (decoder == NULL) {
+					return false;
+				}
 			}
 
 			((SDLWindow*)win)->setTexture(decoder->getTexture());

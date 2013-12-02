@@ -493,9 +493,9 @@ namespace mb {
 		int packet_queue_get(
 			PacketQueue *q, AVPacket *pkt, int block, int* serial);
 
-		void video_image_display();
+		void render_vp(VideoPicture* vp);
+
 		void stream_close();
-		void video_display();
 
 		double get_clock(Clock* c);
 		void set_clock_at(Clock* c, double pts, int serial, double time);
