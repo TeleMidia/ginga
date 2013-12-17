@@ -81,7 +81,7 @@ namespace time {
 			virtual bool addIdListener(ITimeBaseListener* ltn)=0;
 			virtual bool removeIdListener(ITimeBaseListener* ltn)=0;
 
-			virtual unsigned char getCurrentTimeBaseId()=0;
+			virtual unsigned char getOccurringTimeBaseId()=0;
 			virtual double getCurrentTimeValue(unsigned char timeBaseId)=0;
 	};
 }

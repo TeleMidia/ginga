@@ -63,6 +63,7 @@ NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 	this->isFirstStc     = true;
 	this->running        = true;
 	this->currentCid     = INVALID_CID;
+	occurringTimeBaseId  = INVALID_CID;
 	this->loopControlMax = false;
 	this->loopControlMin = false;
 	this->reScheduleIt   = false;
@@ -416,6 +417,10 @@ bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
 	return true;
 }
 
+unsigned char NPTProcessor::getOccurringTimeBaseId() {
+	return occurringTimeBaseId;
+}
+
 unsigned char NPTProcessor::getCurrentTimeBaseId() {
 	map<unsigned char, TimeBaseClock*>::iterator i;
 	TimeBaseClock* clk;
@@ -713,6 +718,10 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 				newNpt->addData(stream, nptLen);
 				lastNptList[npt->getContentId()] = newNpt;
 				return 0;
+			}
+
+			if ((npt->getScaleNumerator() != 0) && (npt->getScaleDenominator() != 0)) {
+				occurringTimeBaseId = npt->getContentId();
 			}
 
 			//Search for existing time base

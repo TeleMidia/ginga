@@ -336,6 +336,7 @@ namespace player {
 
 			} else {
 				currentPlayer->setPropertyValue(pName, pValue);
+				Player::setPropertyValue(pName, pValue);
 			}
 		}
 	}

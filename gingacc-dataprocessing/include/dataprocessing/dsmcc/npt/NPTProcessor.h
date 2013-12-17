@@ -101,6 +101,7 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		bool loopControlMin;
 		bool loopControlMax;
 		unsigned char currentCid;
+		unsigned char occurringTimeBaseId;
 
 		pthread_mutex_t loopMutex;
 		pthread_mutex_t schedMutex;
@@ -142,9 +143,10 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		bool addIdListener(ITimeBaseListener* ltn);
 		bool removeIdListener(ITimeBaseListener* ltn);
 
-		unsigned char getCurrentTimeBaseId();
+		unsigned char getOccurringTimeBaseId();
 
 	private:
+		unsigned char getCurrentTimeBaseId();
 		void notifyLoopToTimeListeners();
 		void notifyTimeListeners(unsigned char cid, double nptValue);
 		void notifyNaturalEndListeners(unsigned char cid, double nptValue);
