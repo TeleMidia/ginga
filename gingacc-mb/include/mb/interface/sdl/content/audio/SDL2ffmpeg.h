@@ -134,11 +134,6 @@ extern "C" {
    A/V sync as SDL does not have hardware buffer fullness info. */
 #define SDL_AUDIO_BUFFER_SIZE 1024
 
-//Define audio macro when using ffmpeg 2.0.x.
-#ifndef AVCODEC_MAX_AUDIO_FRAME_SIZE
-#define AVCODEC_MAX_AUDIO_FRAME_SIZE 192000
-#endif
-
 /* no AV sync correction is done if below the minimum AV sync threshold */
 #define AV_SYNC_THRESHOLD_MIN 0.01
 /* AV sync correction is done if above the maximum AV sync threshold */
@@ -223,6 +218,7 @@ namespace mb {
 
 	typedef struct VideoPicture {
 		double pts;                //presentation timestamp for this picture
+		double duration;           //estimated duration based on frame rate
 		int64_t pos;               //byte position in file
 		SDL_Texture* tex;
 		int width, height;         // source height & width
@@ -241,6 +237,8 @@ namespace mb {
 		int channels;
 		int64_t channel_layout;
 		enum AVSampleFormat fmt;
+		int frame_size;
+		int bytes_per_sec;
 	} AudioParams;
 
 	typedef struct Clock {
@@ -320,13 +318,8 @@ namespace mb {
 		double last_vis_time;
 
 		double frame_timer;
-		double frame_last_pts;
-		double frame_last_duration;
-		double frame_last_dropped_pts;
 		double frame_last_returned_time;
 		double frame_last_filter_delay;
-		int64_t frame_last_dropped_pos;
-		int frame_last_dropped_serial;
 		int video_stream;
 		AVStream *video_st;
 		PacketQueue videoq;
@@ -485,6 +478,7 @@ namespace mb {
 
 		int nts_packet_queue_put(PacketQueue *q, AVPacket *pkt);
 		int packet_queue_put(PacketQueue *q, AVPacket *pkt);
+		int packet_queue_put_nullpacket(PacketQueue *q, int stream_index);
 		void packet_queue_init(PacketQueue *q);
 		void packet_queue_flush(PacketQueue *q);
 		void packet_queue_destroy(PacketQueue *q);
@@ -516,6 +510,7 @@ namespace mb {
 		void toggle_pause();
 		void step_to_next_frame();
 		double compute_target_delay(double delay);
+		static double vp_duration(VideoState *vs, VideoPicture *vp, VideoPicture *nextvp);
 		void pictq_next_picture();
 		int pictq_prev_picture();
 		void update_video_pts(double pts, int64_t pos, int serial);
@@ -525,7 +520,13 @@ namespace mb {
 		void alloc_picture();
 
 	private:
-		int queue_picture(AVFrame *src_frame, double pts, int64_t pos, int serial);
+		int queue_picture(
+				AVFrame *src_frame, 
+				double pts, 
+				double duration, 
+				int64_t pos, 
+				int serial);
+
 		int get_video_frame(AVFrame *frame, AVPacket* pkt, int* serial);
 
 		//AVFILTER begin
