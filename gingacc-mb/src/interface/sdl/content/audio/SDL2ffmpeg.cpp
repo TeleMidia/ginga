@@ -132,7 +132,7 @@ namespace mb {
 			av_init_packet(&flush_pkt);
 		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
-		    if (read_init() >=0) {
+		    if (read_init() >= 0) {
 
 		    	SDLDeviceScreen::lockSDL();
 
@@ -151,7 +151,8 @@ namespace mb {
 				init_clock(&vs->audclk, &vs->audioq.serial);
 				init_clock(&vs->extclk, &vs->extclk.serial);
 				vs->audio_clock_serial = -1;
-				vs->audio_last_serial = -1;
+				vs->audio_last_serial  = -1;
+				vs->seek_pos           = 0;
 
 				vs->av_sync_type = av_sync_type;
 
@@ -474,27 +475,22 @@ namespace mb {
 	}
 
 	double SDL2ffmpeg::getPosition() {
-		double position = 0.0;
-		/*
-		clog << "SDL2ffmpeg::getPosition(" << vs->filename;
+		double position;
+
+		/*clog << "SDL2ffmpeg::getPosition(" << vs->filename;
 		clog << ") master_clock = '";
 		clog << get_master_clock() << "' (duration = '" << getDuration();
 		clog << "')" << endl;
 
 		clog << "SDL2ffmpeg::getPosition(" << vs->filename;
-		clog << ") current_pts = '";
-		clog << vs->video_current_pts << "' (duration = '" << getDuration();
-		clog << "')" << endl;
-		*/
-		if (vs->audio_stream >= 0 && vs->audio_st != NULL) {
-			position = vs->audclk.pts;
+		clog << ") external clock pts = '";
+		clog << vs->extclk.pts << "' (duration = '" << getDuration();
+		clog << "')" << endl;*/
 
-		} else if (vs->video_stream >= 0 && vs->video_st != NULL) {
-			position = vs->vidclk.pts;
-		}
+		position = get_master_clock();
 
 		if (position < 0.0 || isnan(position)) {
-			position = 0.0;
+			position = vs->seek_pos / 1000000;
 		}
 
 		return position;
