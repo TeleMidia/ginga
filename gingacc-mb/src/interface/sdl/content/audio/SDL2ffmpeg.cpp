@@ -1389,7 +1389,9 @@ display:
 		/* if the frame is not skipped, then display it */
 		if (vp->tex) {
 			vp->src_frame = src_frame; //tm code
+			SDLDeviceScreen::lockSDL();
 			render_vp(vp);
+			SDLDeviceScreen::unlockSDL();
 
 			vp->pts       = pts;
 			vp->duration  = duration;
