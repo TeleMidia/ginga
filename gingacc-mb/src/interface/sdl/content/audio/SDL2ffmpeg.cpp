@@ -2446,9 +2446,9 @@ the_end:
 		}
 
 		avctx->workaround_bugs = workaround_ffmpeg_bugs;
-		/*if (stream_lowres > av_codec_get_max_lowres(codec)) {
+		if (stream_lowres > av_codec_get_max_lowres(codec)) {
 			stream_lowres = av_codec_get_max_lowres(codec);
-		}*/
+		}
 
 		av_codec_set_lowres(avctx, stream_lowres);
 		avctx->error_concealment = error_concealment;
