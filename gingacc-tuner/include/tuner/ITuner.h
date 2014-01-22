@@ -67,6 +67,7 @@ namespace tuning {
 	class ITuner {
 		public:
 			virtual ~ITuner(){};
+			virtual void setLoopListener(ITunerListener* loopListener)=0;
 			virtual INetworkInterface* getCurrentInterface()=0;
 			virtual void channelUp()=0;
 			virtual void channelDown()=0;

@@ -81,7 +81,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-  class IDataProcessor : public IFilterListener {
+  class IDataProcessor : public IFilterListener, public ITunerListener {
 	public:
 		virtual ~IDataProcessor(){};
 
@@ -108,7 +108,10 @@ namespace dataprocessing {
 
 		virtual void removeObjectListener(IObjectListener* listener)=0;
 		virtual void receiveSection(ITransportSection* section)=0;
-		virtual void receiveData(char* data, int dataSize){};
+
+		virtual void receiveData(char* buff, unsigned int size){};
+		virtual void updateChannelStatus(
+					short newStatus, IChannel* channel)=0;
   };
 }
 }

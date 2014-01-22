@@ -65,7 +65,7 @@ namespace dataprocessing {
 	class IServiceDomainListener {
 		public:
 			virtual ~IServiceDomainListener(){};
-			virtual void applicationInfoMounted(IAIT* ait)=0;
+			virtual bool applicationInfoMounted(IAIT* ait)=0;
 
 			virtual void serviceDomainMounted(
 					string mountPoint,
