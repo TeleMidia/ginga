@@ -81,6 +81,7 @@ namespace tuning {
 		currentInterface = -1;
 		firstTune        = true;
 		listener         = NULL;
+		loopListener     = NULL;
 		skipSize         = 0;
 		packetSize       = 188;
 		currentSpec      = "";
@@ -104,10 +105,15 @@ namespace tuning {
 		clog << "Tuner::~Tuner" << endl;
 
 		dm->getInputManager(screenId)->removeInputEventListener(this);
-		listener = NULL;
+		listener     = NULL;
+		loopListener = NULL;
 
 		clearInterfaces();
 		clog << "Tuner::~Tuner all done" << endl;
+	}
+
+	void Tuner::setLoopListener(ITunerListener* loopListener) {
+		this->loopListener = loopListener;
 	}
 
 	bool Tuner::userEventReceived(IInputEvent* ev) {
@@ -149,7 +155,10 @@ namespace tuning {
 	void Tuner::receiveSignal(short signalCode) {
 		switch (signalCode) {
 			case PST_LOOP:
-				notifyStatus(TS_LOOP_DETECTED, NULL);
+				if (loopListener != NULL) {
+					loopListener->updateChannelStatus(
+							TS_LOOP_DETECTED, NULL);
+				}
 				break;
 
 			default:

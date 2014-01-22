@@ -119,11 +119,15 @@ namespace dataprocessing {
 
 		public:
 			DataProcessor();
+
+		private:
 			virtual ~DataProcessor();
 
+		public:
+			void deleteAIT();
 			void setNptPrinter(bool nptPrinter);
 
-			void applicationInfoMounted(IAIT* ait);
+			bool applicationInfoMounted(IAIT* ait);
 			void serviceDomainMounted(
 					string mountPoint,
 					map<string, string>* names,
@@ -155,6 +159,7 @@ namespace dataprocessing {
 
 		public:
 			void receiveSection(ITransportSection* section);
+			void updateChannelStatus(short newStatus, IChannel* channel);
 
 		private:
 			void run();

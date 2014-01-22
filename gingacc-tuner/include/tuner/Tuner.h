@@ -85,6 +85,7 @@ namespace tuning {
 		private:
 			bool receiving;
 			ITunerListener* listener;
+			ITunerListener* loopListener;
 			map<int, INetworkInterface*> interfaces;
 			int currentInterface;
 			bool firstTune;
@@ -102,6 +103,7 @@ namespace tuning {
 
 			virtual ~Tuner();
 
+			void setLoopListener(ITunerListener* loopListener);
 			bool userEventReceived(IInputEvent* ev);
 
 		private:

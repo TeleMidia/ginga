@@ -369,6 +369,11 @@ bool NPTProcessor::removeTimeListener(
 				if (j->second->empty()) {
 					delete j->second;
 					i->second->erase(j);
+					if (i->second->empty()) {
+						delete i->second;
+						timeListeners.erase(i);
+						break;
+					}
 					j = i->second->begin();
 				}
 			}

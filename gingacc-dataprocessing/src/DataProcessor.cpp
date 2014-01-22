@@ -132,10 +132,7 @@ namespace dataprocessing {
 
 		sections.clear();
 
-		if (ait != NULL) {
-			delete ait;
-			ait = NULL;
-		}
+		deleteAIT();
 
 		//TODO: remove all garbage from epg processor before start using it
 		/*if (epgProcessor != NULL) {
@@ -144,6 +141,13 @@ namespace dataprocessing {
 		}*/
 
 		Thread::mutexDestroy(&mutex);
+	}
+
+	void DataProcessor::deleteAIT() {
+		if (ait != NULL) {
+			delete ait;
+			ait = NULL;
+		}
 	}
 
 	void DataProcessor::setNptPrinter(bool nptPrinter) {
@@ -158,13 +162,15 @@ namespace dataprocessing {
 		}
 	}
 
-	void DataProcessor::applicationInfoMounted(IAIT* ait) {
+	bool DataProcessor::applicationInfoMounted(IAIT* ait) {
 		if (sdl != NULL) {
-			sdl->applicationInfoMounted(ait);
+			return sdl->applicationInfoMounted(ait);
 
 		} else {
-			delete ait;
+			deleteAIT();
 		}
+
+		return false;
 	}
 
 	void DataProcessor::serviceDomainMounted(
@@ -404,8 +410,11 @@ namespace dataprocessing {
 				if (ait->getSectionName() == section->getSectionName()) {
 					delete section;
 					section = NULL;
+
 					return;
 				}
+
+				delete ait;
 			}
 
 #if HAVE_COMPSUPPORT
@@ -458,6 +467,12 @@ namespace dataprocessing {
 			cout << "NPT PRINTER WARNING! FOUND '" << tableId << "TABLE ID! ";
 			cout << "EXPECTING SECTION WITH TABLE ID '";
 			cout << DDE_TID << "'! ";
+		}
+	}
+
+	void DataProcessor::updateChannelStatus(short newStatus, IChannel* channel) {
+		if (newStatus == TS_LOOP_DETECTED) {
+			deleteAIT();
 		}
 	}
 
