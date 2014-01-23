@@ -440,7 +440,7 @@ namespace tsparser {
 								clog << "demuxer replace pmt id = '" << pid << "'";
 								clog << " newVer = '" << newVer;
 								clog << "' currVer = '" << currVer << "': ";
-								newPmt->print();
+								//newPmt->print();
 								clog << endl;
 								pat->replacePmt(pid, newPmt);
 								pmts[pid] = newPmt;
