@@ -19,9 +19,17 @@
 
 #include "system/compat/PracticalSocket.h"
 
+
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
+
+	std::string itos(double i) {
+		ostringstream os;
+		os << i;
+		return os.str();
+	}
 
 #ifdef _MSC_VER
   #include <winsock2.h>         // For socket(), connect(), send(), and recv()
@@ -205,8 +213,10 @@ void CommunicatingSocket::connect(const string &foreignAddress,
   fillAddr(foreignAddress, foreignPort, destAddr);
 
   // Try to connect to the given port
-  if (::connect(sockDesc, (sockaddr *) &destAddr, sizeof(destAddr)) < 0) {
-    throw SocketException("Connect failed (connect())", true);
+  int aux = ::connect(sockDesc, (sockaddr *) &destAddr, sizeof(destAddr));
+  if (aux < 0) {
+	  clog << "====================> CommunicatingSocket::connect errno=" << strerror(errno) << endl;
+	  throw SocketException("Connect failed (connect())", true);
   }
 }
 
@@ -456,14 +466,28 @@ unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
 
     int nNumInterfaces = nBytesReturned / sizeof(INTERFACE_INFO);
 
-    for (int i = 0; i < nNumInterfaces; ++i) {
-        clog << endl;
+    sockaddr_in *pAddress;
+    pAddress = (sockaddr_in *) & (interfaceList[0].iiAddress);
+    if(nNumInterfaces == 1)
+    	return pAddress->sin_addr.S_un.S_addr;
 
+    for (int i = 0; i < nNumInterfaces; ++i) {
         sockaddr_in *pAddress;
         pAddress = (sockaddr_in *) & (interfaceList[i].iiAddress);
+        if (pAddress->sin_family == AF_INET && pAddress->sin_addr.S_un.S_addr != 16777343){
+        	return (unsigned int) pAddress->sin_addr.S_un.S_addr;
+        }
+
+        /*int aux = pAddress->sin_addr.S_un.S_addr;
+        std::string pAddress_str = itos(aux& 0xFF) + "." +
+        				itos((aux & 0xFF00) >> 8) + "." +
+        				itos((aux & 0xFF0000) >> 16) + "." +
+        				itos((aux & 0xFF000000) >> 24);
+    	clog << "==============> pAddress->sin_addr.S_un.S_addr="  << aux << "which means" << pAddress_str << endl;
+    	clog << endl;*/
         if (pAddress->sin_family == AF_INET) {
 
-			return (unsigned int) pAddress->sin_addr.S_un.S_addr;
+//			return (unsigned int) pAddress->sin_addr.S_un.S_addr;
 /*
 #else
 			return (unsigned int) pAddress->sin_addr.S_addr;
