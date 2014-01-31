@@ -102,7 +102,6 @@ namespace multidevice {
 		res = new RemoteEventService();
 		res->addDeviceClass(1);
 		res->addDeviceClass(2);
-
 	}
 
 	DeviceDomain::~DeviceDomain() {
@@ -266,11 +265,12 @@ namespace multidevice {
 		}
 	}
 
-	void DeviceDomain::setDeviceInfo(int width, int height) {
+	void DeviceDomain::setDeviceInfo(int width, int height,string base_device_ncl_path) {
 		this->deviceWidth  = width;
 		this->deviceHeight = height;
+		this->res->setBaseDeviceNCLPath(base_device_ncl_path);
 	}
-
+	
 	int DeviceDomain::getDeviceClass() {
 		return deviceClass;
 	}

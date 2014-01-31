@@ -333,8 +333,8 @@ namespace multidevice {
 				sourceIp, frameType, task, this->frameSize);
 	}
 
-	void BaseDeviceDomain::setDeviceInfo(int width, int height) {
-		DeviceDomain::setDeviceInfo(width, height);
+	void BaseDeviceDomain::setDeviceInfo(int width, int height, string base_device_ncl_path) {
+		DeviceDomain::setDeviceInfo(width, height,base_device_ncl_path);
 		connected = true;
 	}
 

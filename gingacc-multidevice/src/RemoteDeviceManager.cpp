@@ -116,10 +116,10 @@ namespace multidevice {
 	}
 
 	void RemoteDeviceManager::setDeviceInfo(
-			int deviceClass, int width, int height) {
+			int deviceClass, int width, int height, string base_device_ncl_path) {
 
 		if (domainService != NULL) {
-			domainService->setDeviceInfo(width, height);
+			domainService->setDeviceInfo(width, height, base_device_ncl_path);
 			if ((!running)&&(!released)) {
 				startThread();
 			}

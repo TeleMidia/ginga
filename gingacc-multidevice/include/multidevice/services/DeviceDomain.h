@@ -92,6 +92,7 @@ namespace multidevice {
 		bool newAnswerPosted;
 		bool enableMulticast;
 		int servicePort;
+		string base_device_ncl_path;
 
 	public:
 		DeviceDomain(bool useMulticast, int srvPort);
@@ -136,7 +137,7 @@ namespace multidevice {
 		virtual bool receiveEventTask(char* task)=0;
 
 	public:
-		virtual void setDeviceInfo(int width, int height);
+		virtual void setDeviceInfo(int width, int height,string base_device_ncl_path);
 		int getDeviceClass();
 
 	protected:

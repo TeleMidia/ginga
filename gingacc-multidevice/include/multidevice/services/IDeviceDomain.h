@@ -90,7 +90,7 @@ namespace multidevice {
 				char* payload,
 				int payloadSize)=0;
 
-		virtual void setDeviceInfo(int width, int height)=0;
+		virtual void setDeviceInfo(int width, int height, string base_device_ncl_path)=0;
 		virtual int getDeviceClass()=0;
 		virtual void checkDomainTasks()=0;
 		virtual void addDeviceListener(IRemoteDeviceListener* listener)=0;

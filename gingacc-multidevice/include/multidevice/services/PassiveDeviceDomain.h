@@ -79,7 +79,7 @@ namespace multidevice {
 		bool postMediaContentTask(int destDevClass, string url){return false;};
 		bool receiveMediaContentTask(char* task);
 		bool receiveEventTask(char* task){return false;};
-		void setDeviceInfo(int width, int height);
+		void setDeviceInfo(int width, int height, string base_device_ncl_path);
 		bool runControlTask();
 		bool runDataTask();
 		void checkDomainTasks();
