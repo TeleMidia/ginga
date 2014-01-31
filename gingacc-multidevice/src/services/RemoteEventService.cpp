@@ -86,6 +86,10 @@ namespace multidevice {
 		groups.clear();
 		Thread::mutexInit(&groupsMutex, false);
 	}
+	
+	void RemoteEventService::setBaseDeviceNCLPath(string base_device_ncl_path){
+		this->base_device_ncl_path = base_device_ncl_path;
+	}
 
 	RemoteEventService::~RemoteEventService() {
 		map<int, TcpSocketService*>::iterator i;
@@ -166,6 +170,7 @@ namespace multidevice {
 
 		TcpSocketService* tss;
 
+
         string str_name = string(name);
 
 		Thread::mutexLock(&groupsMutex);
@@ -206,7 +211,7 @@ namespace multidevice {
 		/* string dir_app = SystemCompat::getUserCurrentPath() +
 				SystemCompat::getPath(string(name));
 */
-		string dir_app = SystemCompat::getUserCurrentPath() +
+		string dir_app = SystemCompat::getPath(base_device_ncl_path) + SystemCompat::getIUriD() +
 				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
 
 

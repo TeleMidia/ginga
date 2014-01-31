@@ -82,6 +82,7 @@ namespace multidevice {
 			map<int,TcpSocketService*> groups;
 			static const int DEFAULT_PORT = 22222;
 			static IContextManager* contextManager;
+			string base_device_ncl_path;
 
 		public:
 			RemoteEventService();
@@ -90,6 +91,7 @@ namespace multidevice {
 			static RemoteEventService* getInstance();
 
 			void addDeviceClass(unsigned int id);
+			void setBaseDeviceNCLPath(string base_device_ncl_path);
 			void addDevice(
 					unsigned int device_class,
 					unsigned int device_id,

@@ -78,7 +78,7 @@ namespace multidevice {
 		static RemoteDeviceManager* getInstance();
 
 		void setDeviceDomain(IDeviceDomain* domain);
-		void setDeviceInfo(int deviceClass, int width, int height);
+		void setDeviceInfo(int deviceClass, int width, int height, string base_device_ncl_path);
 		int getDeviceClass();
 		void addListener(IRemoteDeviceListener* listener);
 		void removeListener(IRemoteDeviceListener* listener);

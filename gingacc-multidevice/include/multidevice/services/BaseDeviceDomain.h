@@ -113,7 +113,7 @@ typedef struct {
 		virtual bool receiveEventTask(char* task);
 
 	public:
-		virtual void setDeviceInfo(int width, int height);
+		virtual void setDeviceInfo( int width, int height, string base_device_ncl_path);
 
 	protected:
 		virtual bool runControlTask();

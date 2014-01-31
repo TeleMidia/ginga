@@ -154,8 +154,8 @@ namespace multidevice {
 				sourceIp, task, this->frameSize);
 	}
 
-	void PassiveDeviceDomain::setDeviceInfo(int width, int height) {
-		DeviceDomain::setDeviceInfo(width, height);
+	void PassiveDeviceDomain::setDeviceInfo(int width, int height, string base_device_ncl_path) {
+		DeviceDomain::setDeviceInfo(width, height, "");
 		connected = false;
 	}
 
