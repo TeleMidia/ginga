@@ -218,7 +218,7 @@ namespace multidevice {
 		clog << "RemoteEventService::startDocument dir app="<<dir_app<<endl;
 		//clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
 
-		zip_directory(zipDumpStr, dir_app, SystemCompat::getIUriD());
+		SystemCompat::zip_directory(zipDumpStr, dir_app, SystemCompat::getIUriD());
 		clog << "RemoteEventService::startDocument zip_directory all done!" << endl;
 
 		string zip_base64 = getBase64FromFile(zipDumpStr);

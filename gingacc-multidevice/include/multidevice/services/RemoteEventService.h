@@ -56,6 +56,8 @@ http://www.telemidia.puc-rio.br
 using namespace std;
 
 #include "util/functions.h"
+#include "util/Base64.h"
+
 using namespace ::br::pucrio::telemidia::util;
 
 #include "system/compat/SystemCompat.h"
