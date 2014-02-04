@@ -373,6 +373,10 @@ namespace compat {
 	}
 
 	string SystemCompat::updatePath(string dir) {
+		return updatePath(dir, iUriD);
+	}
+
+	string SystemCompat::updatePath(string dir, string separator) {
 		bool found = false;
 		string temp, newDir;
 		vector<string>* params;
@@ -407,10 +411,10 @@ namespace compat {
 						newDir = (*it); //Drive letter:
 
 					} else {
-						newDir = newDir + iUriD + (*it);
+						newDir = newDir + separator + (*it);
 					}
 #else
-					newDir = newDir + iUriD + (*it);
+					newDir = newDir + separator + (*it);
 #endif //WIN32
 
 				} else {
@@ -419,7 +423,7 @@ namespace compat {
 				}
 
 			} else if ((*it) != ".") {
-				newDir = newDir + iUriD + (*it);
+				newDir = newDir + separator + (*it);
 
 			}
 			++it;
