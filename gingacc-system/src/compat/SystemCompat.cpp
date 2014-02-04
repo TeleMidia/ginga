@@ -49,8 +49,6 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 
-#include "config.h"
-
 extern "C" float machInfo(const char *name);
 
 namespace br {
@@ -374,6 +372,308 @@ namespace compat {
 
 	string SystemCompat::updatePath(string dir) {
 		return updatePath(dir, iUriD);
+	}
+
+#if HAVE_ZIP
+	bool SystemCompat::getZipError(zip* file, string* strError) {
+		bool hasError = false;
+		int zipErr, sysErr;
+		char buff[2048];
+
+		zip_error_get(file, &zipErr, &sysErr);
+		if (zipErr != 0) {
+			zip_error_to_str(buff, 2048, zipErr, sysErr);
+			strError->assign(buff, strlen(buff));
+			hasError = true;
+		}
+
+		return hasError;
+	}
+
+	static void printZipError(string function, string strError) {
+		clog << function << " Warning! libzip error: '";
+		clog << strError << "'" << endl;
+	}
+#endif
+
+	int SystemCompat::zipwalker(void* zipfile, string initdir, string dirpath, string iUriD) {
+#if HAVE_ZIP
+		DIR           *d;
+		struct dirent *dir;
+		FILE *fp;
+		string relpath;
+		string fullpath;
+		struct zip* file;
+		int len_dirpath;
+		int len_initdir;
+		int ret = 0;
+
+		string strDirName;
+		string strError;
+		bool hasError;
+
+		d = opendir(initdir.c_str());
+		if (d == NULL) {
+			return -1;
+		}
+
+		file = (struct zip*)zipfile;
+		len_dirpath = dirpath.length();
+		len_initdir = initdir.length();
+
+		while ((dir = readdir(d))) {
+
+			if (strcmp(dir->d_name, ".") == 0 ||
+					strcmp(dir->d_name, "..") == 0) {
+
+				continue;
+			}
+
+			strDirName.assign(dir->d_name, strlen(dir->d_name));
+			fullpath = initdir + iUriD + strDirName;
+			if (fullpath.length() > len_dirpath) {
+				// Uses "/" as separator because is the default zip funcion separator.
+				relpath = updatePath(fullpath.substr(len_dirpath + 1), "/");
+			} else {
+				continue;
+			}
+
+			if (isDirectory(fullpath.c_str())) {
+				// \fixme We should not use that!
+				chdir(fullpath.c_str());
+
+				clog << "Directory ( " << relpath << " ) " << endl;
+				if (zip_dir_add(file, relpath.c_str(), ZIP_FL_ENC_GUESS) < 0) {
+					getZipError(file, &strError);
+					printZipError("zipwalker", strError);
+					ret = -1;
+					break;
+				}
+
+				if (zipwalker(file, fullpath, dirpath, iUriD) < 0) {
+					getZipError(file, &strError);
+					printZipError("zipwalker", strError);
+					ret = -1;
+					break;
+				}
+
+				// \fixme We should not use that!
+				clog << "Returning to dir '" << initdir << "'" << endl;
+				chdir(initdir.c_str());
+
+			} else {
+
+				clog << ":: full uri: " << fullpath << endl;
+				clog << ":: init dir: " << initdir << endl;
+				clog << ":: file name: " << string(dir->d_name) << endl;
+				clog << ":: relpath ( " << relpath << " ) " << endl;
+
+				fp = fopen(fullpath.c_str(), "rb");
+				if (fp == NULL) {
+					clog << ":: can't open "<< string(relpath) << endl;
+
+				} else {
+					struct zip_source *s;
+
+					s = zip_source_filep(file, fp, 0, -1);
+					if (s == NULL) {
+						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
+						ret = -1;
+						break;
+					}
+
+					if (zip_add(file, relpath.c_str(), s) == -1) {
+						zip_source_free(s);
+						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
+						ret = -1;
+						break;
+					}
+				}
+			}
+		}
+
+		clog << "zipwalker closing dir" << endl;
+		closedir(d);
+		clog << "zipwalker all done!" << endl;
+#endif
+		return ret;
+	}
+
+	int SystemCompat::zip_directory(
+			const string &zipfile_path,
+			const string &directory_path,
+			const string &iUriD) {
+
+#if HAVE_ZIP
+		struct zip* zipFile;
+		int error_open;
+		string dir_name;
+		string partial_path;
+		int pos;
+		string strError;
+		string functionStr;
+		size_t strPos;
+
+		clog << "functions::zip_directory " << endl;
+		clog << "zipfile_path = " << zipfile_path << endl;
+		clog << "directory_path = " << directory_path << endl;
+
+		error_open = 0;
+
+		if ((zipFile=zip_open(zipfile_path.c_str(), ZIP_CREATE, &error_open)) == NULL) {
+			getZipError(zipFile, &strError);
+			printZipError("zip_directory - zip_walker", strError);
+			return 1;
+		}
+
+		if (zipFile != NULL && error_open == 0) {
+			strPos = directory_path.find_last_of(iUriD);
+			if (strPos == std::string::npos) {
+				dir_name = directory_path;
+
+			} else {
+				dir_name = directory_path.substr(strPos + 1);
+			}
+
+			partial_path = directory_path;
+
+			// This make no sense. I am always adding an empty directory!
+			/* if (zip_dir_add(zipFile, dir_name.c_str(), ZIP_FL_ENC_GUESS) < 0) {
+				getZipError(zipFile, &strError);
+				printZipError("zip_directory - zip_dir_add ", strError);
+				zip_discard(zipFile);
+				return - 1;
+			} */
+
+			// \fixme This should not be recursive! So, there would not
+			// be a possibility of stack overflow.
+			if (zipwalker(zipFile, directory_path, partial_path, iUriD) < 0) {
+				getZipError(zipFile, &strError);
+				printZipError("zip_directory - zip_walker", strError);
+				zip_discard(zipFile);
+				return - 1;
+			}
+
+			/* if (getZipError(zipFile, &strError)) {
+				printZipError("zip_directory - can't close zip file: ", strError);
+				return -1;
+			} */
+
+			if (zip_close(zipFile) == -1) {
+				clog << "functions::zip_directory Warning! can't close zip archive '";
+				clog << zipfile_path << endl;
+				return -1;
+			}
+
+		} else {
+			clog << "functions::zip_directory Warning! Can't open '";
+			clog << zipfile_path << "': error code = " << error_open;
+			clog << endl;
+			return -1;
+		}
+
+#endif
+		clog << "functions::zip_directory all done" << endl;
+		return 0;
+	}
+
+
+	int SystemCompat::unzip_file(const char *zipname, const char *filedir) {
+#if HAVE_ZIP
+		struct zip *zipf;
+		struct zip_file *inf;
+		char cur_dir[2000];
+		char buf[1024];
+		int len = 0;
+		int k;
+		int errorp;
+		FILE *ofp;
+		int i;
+		const char *cur_file_name;
+		int name_len;
+
+		//open our zip file
+		zipf = zip_open(zipname, 0, &errorp);
+
+		//skado if doesnt exist
+		if (!zipf) {
+			return 0;
+		}
+
+		chdir(filedir);
+		//save our current dir so we can return to it
+		getcwd(cur_dir, 2000);
+
+		//printf (":: cur dir: %s\n",cur_dir); //cout
+
+		clog << ":: current dir: " << cur_dir << endl;
+
+		//change to the dir we want to extract to
+		chdir(filedir);
+
+		for(k = 0; (inf = zip_fopen_index(zipf, k, 0)); k++) {
+
+			cur_file_name = zip_get_name(zipf, k, 0);
+
+			if ((k == 0)&&(cur_file_name == NULL)) {
+				continue;
+			}
+
+			name_len = strlen(cur_file_name);
+
+			//open the file for writting
+			char *filename = (char*)malloc((name_len+3)*sizeof(char));
+			filename[0] = '.';
+			//filename[1] = '/';
+#ifdef WIN32
+			filename[1] = '\\';
+
+#else
+			filename[1] = '/';
+#endif
+			filename[2] = '\0';
+
+			strcat(filename, cur_file_name);
+			if (cur_file_name[name_len-1] == '/') {
+				//printf(":: creating dir: %s\n",filename);
+				clog << ":: creating dir: " << filename << endl;
+
+#ifdef WIN32
+				_mkdir(filename);
+#else
+				mkdir(filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
+
+			} else {
+				//printf(":: inflating %s",filename);//cout
+				clog << ":: inflating file " << filename << endl;
+
+				ofp = fopen(filename, "wb");
+				if (!ofp) {
+					continue;
+				}
+
+				while((len = zip_fread(inf,buf,1024))) {
+					fwrite(buf,sizeof(char),len,ofp);
+
+					/* for (i=0; i < len; i++) {
+						fprintf(ofp, "%c", buf[i]);
+					} */
+
+				}
+//				printf(" [done] \n");
+				//close the files
+				zip_fclose(inf);
+				fclose(ofp);
+			}
+			//printf(" [done]\n");//cout
+			clog << " [done]" << endl;
+			free(filename);
+		}
+		//go back to our original dir
+		chdir(cur_dir);
+#endif
+		return 1;
 	}
 
 	string SystemCompat::updatePath(string dir, string separator) {
