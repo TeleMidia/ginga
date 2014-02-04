@@ -238,8 +238,9 @@ namespace compat {
 			 * URIs *
 			 ********/
 			static string getGingaPrefix();
-			static string updatePath(string dir);
-			static bool isXmlStr(string location);
+            static string updatePath(string dir);
+            static string updatePath(string dir, string separator);
+            static bool isXmlStr(string location);
 			static bool checkUriPrefix(string uri);
 			static bool isAbsolutePath(string path);
 
