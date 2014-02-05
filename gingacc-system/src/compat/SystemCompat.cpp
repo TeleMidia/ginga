@@ -1463,6 +1463,41 @@ namespace compat {
 
 		return bytesWritten;
 	}
+
+	bool SystemCompat::initMemCheck() {
+		bool success = false;
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+#if ENABLE_MEM_LEAK_DETECTION
+		_CrtDumpMemoryLeaks();
+		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+#endif
+#endif
+		return success;
+	}
+
+	void SystemCompat::memCheckPoint() {
+#if defined(_WIN32) && !defined(__MINGW32__)
+#if ENABLE_MEM_LEAK_DETECTION
+		_CrtMemState s1;
+		_CrtMemCheckpoint(&s1);
+#endif
+#endif
+	}
+
+	bool SystemCompat::finishMemCheck() {
+		bool success = false;
+
+#if defined(_WIN32) && !defined(__MINGW32__)
+#if ENABLE_MEM_LEAK_DETECTION
+		_CrtMemState s1;
+		_CrtMemCheckpoint(&s1);
+		_CrtMemDumpStatistics( &s1 );
+		success = true;
+#endif
+#endif
+		return success;
+	}
 }
 }
 }
