@@ -63,7 +63,21 @@ extern "C" {
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+
 #ifdef _WIN32
+#if ENABLE_MEM_LEAK_DETECTION
+
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )      
+#define new DBG_NEW   
+#endif //DBG_NEW
+
+#ifndef _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif //_CRTDBG_MAP_ALLOC
+#endif //ENABLE_MEM_LEAK_DETECTION
 
 #ifndef isnan
 #define isnan(x) ((x) != (x))
@@ -344,14 +358,6 @@ namespace compat {
 			 ******************/
 			static string checkPipeName(string pipeName);
 
-			/******************
-			 * Zip Functions *
-			 ******************/
-			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
-			static int zipwalker(void* zipfile, string initdir, string dirpath, string iUriD);
-			static int unzip_file(const char *zipname, const char *filedir);
-			static bool getZipError(struct zip* file, string* strError);
-
 		private:
 			static void checkPipeDescriptor(PipeDescriptor pd);
 
@@ -361,6 +367,21 @@ namespace compat {
 			static void closePipe(PipeDescriptor pd);
 			static int readPipe(PipeDescriptor pd, char* buffer, int buffSize);
 			static int writePipe(PipeDescriptor pd, char* data, int dataSize);
+
+			/*****************
+			 * Zip Functions *
+			 *****************/
+			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
+			static int zipwalker(void* zipfile, string initdir, string dirpath, string iUriD);
+			static int unzip_file(const char *zipname, const char *filedir);
+			static bool getZipError(struct zip* file, string* strError);
+
+			/**********************
+			 * MemCheck Functions *
+			 **********************/
+			static bool initMemCheck();
+			static void memCheckPoint();
+			static bool finishMemCheck();
 	};
 }
 }

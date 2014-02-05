@@ -2901,7 +2901,7 @@ the_end:
 
 	void SDL2ffmpeg::stream_cycle_channel(int codec_type) {
 		AVFormatContext *ic = vs->ic;
-		int start_index, stream_index = 0;
+		int start_index = 0, stream_index = 0;
 		AVStream *st;
 		AVProgram *p = NULL;
 		int nb_streams = vs->ic->nb_streams;

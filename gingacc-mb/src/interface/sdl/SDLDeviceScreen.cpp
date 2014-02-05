@@ -1664,7 +1664,7 @@ namespace mb {
 					timeout.tv_nsec = now.tv_nsec;
 				} else {
 					pthread_mutex_lock(&mutex);
-					int retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
+					retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
 					pthread_mutex_unlock(&mutex);
 				}
 #endif
