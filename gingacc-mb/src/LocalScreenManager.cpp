@@ -108,18 +108,15 @@ namespace mb {
 	const short LocalScreenManager::GMBSST_COCOA = 5;
 
 	LocalScreenManager::LocalScreenManager() {
-		screens  = new map<GingaScreenID, IDeviceScreen*>;
 		Thread::mutexInit(&mapMutex);
 		Thread::mutexInit(&genMutex);
-
-		sysNames = new map<string, short>;
 		Thread::mutexInit(&sysMutex);
 
-		(*sysNames)["dflt" ] = GMBST_DFLT;
-		(*sysNames)["dfb"  ] = GMBST_DFB;
-		(*sysNames)["dx"   ] = GMBST_DX;
-		(*sysNames)["sdl"  ] = GMBST_SDL;
-		(*sysNames)["term" ] = GMBST_TERM;
+		sysNames["dflt" ] = GMBST_DFLT;
+		sysNames["dfb"  ] = GMBST_DFB;
+		sysNames["dx"   ] = GMBST_DX;
+		sysNames["sdl"  ] = GMBST_SDL;
+		sysNames["term" ] = GMBST_TERM;
 
 		sortSys.push_back(GMBST_DFB);
 		sortSys.push_back(GMBST_SDL);
@@ -137,16 +134,12 @@ namespace mb {
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 
 		lockScreenMap();
-		if (screens != NULL) {
-			i = screens->begin();
-			while (i != screens->end()) {
-				delete i->second;
-				++i;
-			}
-			screens->clear();
-			delete screens;
-			screens = NULL;
+		i = screens.begin();
+		while (i != screens.end()) {
+			delete i->second;
+			++i;
 		}
+		screens.clear();
 		unlockScreenMap();
 		Thread::mutexDestroy(&mapMutex);
 
@@ -156,11 +149,7 @@ namespace mb {
 
 
 		lockSysNames();
-		if (sysNames != NULL) {
-			sysNames->clear();
-			delete sysNames;
-			sysNames = NULL;
-		}
+		sysNames.clear();
 		unlockSysNames();
 		Thread::mutexDestroy(&sysMutex);
 	}
@@ -647,8 +636,8 @@ namespace mb {
 
 		lockSysNames();
 
-		i = sysNames->find(mbSystemName);
-		if (i != sysNames->end()) {
+		i = sysNames.find(mbSystemName);
+		if (i != sysNames.end()) {
 			*mbSystemType = i->second;
 			foundit = true;
 
@@ -1072,7 +1061,7 @@ namespace mb {
 
 		lockScreenMap();
 		if (screen != NULL) {
-			(*screens)[screenId] = screen;
+			screens[screenId] = screen;
 
 		} else {
 			clog << "LocalScreenManager::addScreen Warning! Trying to add ";
@@ -1085,7 +1074,7 @@ namespace mb {
 		short numOfScreens;
 
 		lockScreenMap();
-		numOfScreens = screens->size();
+		numOfScreens = screens.size();
 		unlockScreenMap();
 
 		return numOfScreens;
@@ -1098,8 +1087,8 @@ namespace mb {
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 
 		lockScreenMap();
-		i = screens->find(screenId);
-		if (i != screens->end()) {
+		i = screens.find(screenId);
+		if (i != screens.end()) {
 			hasScreen = true;
 			*screen   = i->second;
 		}
@@ -1113,9 +1102,9 @@ namespace mb {
 		map<GingaScreenID, IDeviceScreen*>::iterator i;
 
 		lockScreenMap();
-		i = screens->find(screenId);
-		if (i != screens->end()) {
-			screens->erase(i);
+		i = screens.find(screenId);
+		if (i != screens.end()) {
+			screens.erase(i);
 		}
 		unlockScreenMap();
 

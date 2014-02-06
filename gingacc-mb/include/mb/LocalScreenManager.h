@@ -90,7 +90,7 @@ namespace mb {
 			static const short GMBSST_COCOA; /* COCOA:              cocoa    */
 
 		private:
-			map<GingaScreenID, IDeviceScreen*>* screens;
+			map<GingaScreenID, IDeviceScreen*> screens;
 			pthread_mutex_t mapMutex;
 			pthread_mutex_t genMutex;
 
@@ -103,7 +103,7 @@ namespace mb {
 			static bool initMutex;
 
 			vector<short> sortSys;
-			map<string, short>* sysNames;
+			map<string, short> sysNames;
 			pthread_mutex_t sysMutex;
 
 			bool running;

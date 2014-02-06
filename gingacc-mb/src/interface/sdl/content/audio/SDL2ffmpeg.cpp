@@ -60,6 +60,9 @@ Many thanks to these guys and to the community that support them!
 #define AV_LOG_SKIP_REPEATED 1
 #endif
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {

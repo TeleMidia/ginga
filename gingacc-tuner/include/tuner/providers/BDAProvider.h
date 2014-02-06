@@ -50,15 +50,15 @@ http://www.telemidia.puc-rio.br
 #ifndef BDAPROVIDER_H_
 #define BDAPROVIDER_H_
 
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 extern "C" {
 	#include <sys/types.h>
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <stdint.h>
 }
-
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IDataProvider.h"
 #include "BDAGraph.h"
