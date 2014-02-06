@@ -51,6 +51,26 @@ http://www.telemidia.puc-rio.br
 #define SystemCompat_H_
 
 #include "config.h"
+
+#ifdef _WIN32
+
+#if ENABLE_MEM_LEAK_DETECTION
+#ifndef _CRTDBG_MAP_ALLOC
+#define _CRTDBG_MAP_ALLOC
+#endif //_CRTDBG_MAP_ALLOC
+
+#define _ATL_DISABLE_NOTHROW_NEW
+
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif //DBG_NEW
+
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif //ENABLE_MEM_LEAK_DETECTION
+#endif //_WIN32
+
 extern "C" {
 #include <dirent.h>
 #if HAVE_ZIP
@@ -65,20 +85,6 @@ extern "C" {
 #include <stdio.h>
 
 #ifdef _WIN32
-#if ENABLE_MEM_LEAK_DETECTION
-
-#ifndef DBG_NEW
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )      
-#define new DBG_NEW   
-#endif //DBG_NEW
-
-#ifndef _CRTDBG_MAP_ALLOC
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif //_CRTDBG_MAP_ALLOC
-#endif //ENABLE_MEM_LEAK_DETECTION
-
 #ifndef isnan
 #define isnan(x) ((x) != (x))
 #endif

@@ -71,9 +71,9 @@ namespace core {
 namespace contextmanager {
   class ContextManager : public IContextManager {
 	private:
-		map<int, IGingaUser*>* users;
-		map<int, map<string, string>*>* contexts;
-		set<IContextListener*>* ctxListeners;
+		map<int, IGingaUser*> users;
+		map<int, map<string, string>*> contexts;
+		set<IContextListener*> ctxListeners;
 		string usersUri, contextsUri;
 		int curUserId;
 		ISystemInfo* systemInfo;

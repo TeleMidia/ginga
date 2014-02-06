@@ -1469,7 +1469,6 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #if ENABLE_MEM_LEAK_DETECTION
-		_CrtDumpMemoryLeaks();
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 #endif
@@ -1490,9 +1489,7 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #if ENABLE_MEM_LEAK_DETECTION
-		_CrtMemState s1;
-		_CrtMemCheckpoint(&s1);
-		_CrtMemDumpStatistics( &s1 );
+		_CrtDumpMemoryLeaks();
 		success = true;
 #endif
 #endif

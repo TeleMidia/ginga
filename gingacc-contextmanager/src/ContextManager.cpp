@@ -77,11 +77,8 @@ namespace contextmanager {
 		contextsUri = SystemCompat::getGingaContextPrefix() +
 				SystemCompat::getIUriD() + "contexts.ini";
 
-		users        = new map<int, IGingaUser*>;
-		contexts     = new map<int, map<string, string>*>;
 		curUserId    = -1;
 		systemInfo   = new SystemInfo();
-		ctxListeners = new set<IContextListener*>;
 
 		initializeUsers();
 		initializeContexts();
@@ -96,15 +93,10 @@ namespace contextmanager {
 		set<IContextListener*>::iterator j;
 
 		Thread::mutexLock(&groupsMutex);
-		i = users->begin();
-		while (i != users->end()) {
+		i = users.begin();
+		while (i != users.end()) {
 			delete i->second;
 			++i;
-		}
-
-		if (ctxListeners != NULL) {
-			delete ctxListeners;
-			ctxListeners = NULL;
 		}
 		Thread::mutexUnlock(&groupsMutex);
 		Thread::mutexDestroy(&groupsMutex);
@@ -302,13 +294,13 @@ namespace contextmanager {
 		map<int, map<string, string>*>::iterator i;
 		map<string, string>* vars;
 
-		i = contexts->find(userId);
-		if (i != contexts->end()) {
+		i = contexts.find(userId);
+		if (i != contexts.end()) {
 			vars = i->second;
 
 		} else {
 			vars = new map<string, string>;
-			(*contexts)[userId] = vars;
+			contexts[userId] = vars;
 		}
 
 		(*vars)[varName] = varValue;
@@ -318,14 +310,14 @@ namespace contextmanager {
 		int id;
 
 		id = newUser->getUserId();
-		if (users->count(id) != 0) {
+		if (users.count(id) != 0) {
 			clog << "ContextManager::addUser Warning! ";
 			clog << "Trying to add the same user twice (id = '";
 			clog << id << "'" << endl;
 			return;
 		}
 
-		(*users)[id] = newUser;
+		users[id] = newUser;
 	}
 
 	void ContextManager::saveUsersAccounts() {
@@ -343,8 +335,8 @@ namespace contextmanager {
 		GingaUser::saveString(fd, itos(curUserId));
 		GingaUser::saveString(fd, "\n");
 
-		i = users->begin();
-		while (i != users->end()) {
+		i = users.begin();
+		while (i != users.end()) {
 			i->second->saveTo(fd);
 			GingaUser::saveString(fd, "\n");
 			++i;
@@ -368,8 +360,8 @@ namespace contextmanager {
 		GingaUser::saveString(fd, itos(curUserId));
 		GingaUser::saveString(fd, "\n");
 
-		i = contexts->begin();
-		while (i != contexts->end()) {
+		i = contexts.begin();
+		while (i != contexts.end()) {
 			saveProfile(fd, i->first, i->second);
 			++i;
 		}
@@ -397,7 +389,7 @@ namespace contextmanager {
 	}
 
 	void ContextManager::setCurrentUserId(int userId) {
-		if (users->count(userId) != 0) {
+		if (users.count(userId) != 0) {
 			curUserId = userId;
 		}
 	}
@@ -409,8 +401,8 @@ namespace contextmanager {
 	IGingaUser* ContextManager::getUser(int userId) {
 		map<int, IGingaUser*>::iterator i;
 
-		i = users->find(userId);
-		if (i != users->end()) {
+		i = users.find(userId);
+		if (i != users.end()) {
 			return i->second;
 		}
 
@@ -422,8 +414,8 @@ namespace contextmanager {
 	map<string, string>* ContextManager::getUserMap(int userId) {
 		map<int, map<string, string>*>::iterator i;
 
-		i = contexts->find(userId);
-		if (i != contexts->end()) {
+		i = contexts.find(userId);
+		if (i != contexts.end()) {
 			return i->second;
 		}
 
@@ -450,8 +442,8 @@ namespace contextmanager {
 		map<int, IGingaUser*>::iterator i;
 
 		names = new map<string, string>;
-		i = users->begin();
-		while (i != users->end()) {
+		i = users.begin();
+		while (i != users.end()) {
 			(*names)[i->second->getUserName()] = "";
 			++i;
 		}
@@ -472,8 +464,8 @@ namespace contextmanager {
 		map<int, IGingaUser*>::iterator i;
 
 		clog << "ContextManager::listUsersNicks '";
-		i = users->begin();
-		while (i != users->end()) {
+		i = users.begin();
+		while (i != users.end()) {
 			clog << i->second->getUserName() << "' ";
 			++i;
 		}
@@ -483,7 +475,7 @@ namespace contextmanager {
 	void ContextManager::addContextListener(IContextListener* listener) {
 		clog << "ContextManager::addContextListener" << endl;
 		Thread::mutexLock(&groupsMutex);
-		ctxListeners->insert(listener);
+		ctxListeners.insert(listener);
 		Thread::mutexUnlock(&groupsMutex);
 	}
 
@@ -492,9 +484,9 @@ namespace contextmanager {
 
 		clog << "ContextManager::removeContextListener" << endl;
 		Thread::mutexLock(&groupsMutex);
-		i = ctxListeners->find(listener);
-		if (i != ctxListeners->end()) {
-			ctxListeners->erase(i);
+		i = ctxListeners.find(listener);
+		if (i != ctxListeners.end()) {
+			ctxListeners.erase(i);
 		}
 		Thread::mutexUnlock(&groupsMutex);
 	}
@@ -506,8 +498,8 @@ namespace contextmanager {
 		clog << varValue << ") " << endl;
 
 		Thread::mutexLock(&groupsMutex);
-		i = ctxListeners->begin();
-		while (i != ctxListeners->end()) {
+		i = ctxListeners.begin();
+		while (i != ctxListeners.end()) {
 			(*i)->receiveGlobalAttribution(varName, varValue);
 			++i;
 		}
