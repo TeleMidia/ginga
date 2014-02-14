@@ -105,6 +105,13 @@ extern "C" {
 	#include <Ws2tcpip.h>
   #endif
 	#pragma comment(lib,"ws2_32.lib")
+
+	#ifdef BUILD_DLL
+		#define COMP_API __declspec(dllexport)
+	#else
+		#define COMP_API __declspec(dllimport)
+	#endif //BUILD_DLL
+
 #else // For Linux and Mac OS Snow Leopard (10.6)
   #if (defined __APPLE__ || defined HAVE_MACH_SL_H ) // For Mac OS Snow Leopard (10.6)
 	#include <mach/mach.h>
@@ -150,6 +157,7 @@ extern "C" {
 	#include <net/if.h>
   #endif
 
+	#define COMP_API
 #endif
 }
 

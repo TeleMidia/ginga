@@ -300,12 +300,13 @@ namespace compat {
 	void* SystemCompat::loadComponent(
 			string libName, void** llib, string symName) {
 
+		void* comp   = NULL;
 		void* comSym = NULL;
 
 		libName = appendLibExt(libName);
 
 #ifndef WIN32
-		void* comp = dlopen(libName.c_str(), RTLD_LAZY);
+		comp = dlopen(libName.c_str(), RTLD_LAZY);
 		if (comp == NULL) {
 			clog << "SystemCompat::loadComponent Warning: can't load ";
 			clog << "component '" << libName << "' => ";
@@ -330,7 +331,28 @@ namespace compat {
 
 		*llib = comp;
 		dlerror();
+
+#else
+		comp = LoadLibrary(libName.c_str());
+		if (comp == NULL) {
+			clog << "SystemCompat::loadComponent Warning: can't load ";
+			clog << "component '" << libName << "'" << endl;
+			return (NULL);
+		}
+
+		comSym = GetProcAddress((HINSTANCE)comp, symName.c_str());
+		if (comSym == NULL) {
+			clog << "SystemCompat::loadComponent warning: can't load symbol '";
+			clog << symName << "' from library '" << libName;
+			clog << "'" << endl;
+
+			FreeLibrary((HINSTANCE)comp);
+			*llib = NULL;
+
+			return (NULL);
+		}
 #endif //!WIN32
+
 		return comSym;
 	}
 
@@ -352,6 +374,9 @@ namespace compat {
 		}
 
 		dlerror();
+
+#else
+		released = (bool)FreeLibrary((HINSTANCE)component);
 #endif //!WIN32
 
 		return released;
