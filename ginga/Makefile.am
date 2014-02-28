@@ -18,6 +18,14 @@ AM_CPPFLAGS =\
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = -static -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS)
 
+if BUILD_COMPONENTS
+LDADD =\
+  $(top_builddir)/telemidia-util/libtelemidiautil.la\
+  $(top_builddir)/gingacc-system/libgingaccsystem.la\
+  $(top_builddir)/gingacc-cm/libgingacccm.la\
+  $(NULL)
+
+else
 LDADD =\
   $(top_builddir)/telemidia-util/libtelemidiautil.la\
   $(top_builddir)/gingacc-system/libgingaccsystem.la\
@@ -64,15 +72,6 @@ LDADD =\
   $(top_builddir)/gingalssm/libgingalssm.la\
   $(NULL)
 
-if BUILD_COMPONENTS
-LDADD +=\
-  $(top_builddir)/gingacc-cm/libgingacccm.la\
-  $(top_builddir)/gingacc-cm/libgingacccmcomponent.la\
-  $(top_builddir)/gingacc-cm/libgingacccmassembler.la\
-  $(top_builddir)/gingacc-cm/libgingacccmparser.la\
-  $(NULL)
-endif
-
 if BUILD_DATA_PROCESSING
 LDADD +=\
   $(top_builddir)/gingacc-tuner/libgingacctuner.la\
@@ -87,6 +86,7 @@ if BUILD_MULTIDEVICE
 LDADD +=\
   $(top_builddir)/gingacc-multidevice/libgingaccmd.la\
   $(NULL)
+endif
 endif
 
 bin_PROGRAMS = ginga
