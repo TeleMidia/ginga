@@ -46,6 +46,7 @@
 /config/ginga.ini
 /configure
 /ginga/ginga
+/gingacc-cm/files/componentDescription.xml
 /gingacc-cm/tests/test
 /gingacc-contextmanager/tests/test
 /gingacc-dataprocessing/tests/test

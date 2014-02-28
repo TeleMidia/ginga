@@ -62,6 +62,12 @@ parserinclude_HEADERS =\
 endif
 
 ############################## Configuration ###############################
+
+files/componentDescription.xml: files/componentDescription.xml.in
+	@$(SED) -e 's:@GINGA_LIBDIR@:$(gingalibdir):' $< >$@
+
+DISTCLEANFILES = files/componentDescription.xml
+
 gingacccmconfdir = $(gingaconfdir)
 gingacccmconf_DATA =\
   files/componentDescription.xml\
