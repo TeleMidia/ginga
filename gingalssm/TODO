@@ -1,0 +1,21 @@
+Ginga Logical Subsystems Manager TODO List
+--------------------------------------------------------------------------------
+
+This is the TODO list for Ginga NCL Reference Implementation. If you want to 
+work on any of this, please send us a mail to ask about it first.
+ 
+It's likely that work is already started and we can give you more details on
+the particular issue.
+--------------------------------------------------------------------------------
+
+
+EPG
+-------------
+ It is necessary to create a Ginga-CC user application for EPG presentation
+ management.
+
+Context management
+-----------
+ To implement a Ginga-CC user application (tool) to manage the user information
+ and context information. The Ginga Live CD already comprises a simple version
+ of such tool.

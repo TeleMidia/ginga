@@ -54,7 +54,9 @@ http://www.telemidia.puc-rio.br
 #include <string>
 
 #include <pthread.h>
+#if 0
 #include "nclua.h"
+#endif
 
 using namespace std;
 
@@ -77,7 +79,7 @@ class LuaPlayer : public Player, public IInputEventListener
 {
 private:
 
-     nclua_t *nc;                 // the NCLua state
+     void *nc;                 // the NCLua state
      bool hasExecuted;            // true if script was executed
      bool isKeyHandler;           // true if player has the focus
      string scope;                // the label of the active anchor

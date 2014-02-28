@@ -238,7 +238,7 @@ namespace player {
 
 		currentPid = pid;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		currentPlayer = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
 				myScreen, mrl.c_str(), &hasVisual);
 

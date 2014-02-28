@@ -52,12 +52,12 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
 
-#if HAVE_DATAPROC
+#if HAVE_DATA_PROCESSING
 #include "dataprocessing/EPGProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #endif
@@ -80,7 +80,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 }

@@ -1,0 +1,153 @@
+Ginga NCL ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2 or newer
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+type git log
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Offering an option to build the project with or without the component support.
+- Improved animation functionalities (robertogersontelemidia.puc-rio.br)
+- New architecture were defined in order to support embedded NCL objects
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+-------------
+ 02/03/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- Interfaces were defined to extern component load.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+-------------
+ 29/09/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+New functions:
+- First dynamic lib version of gingancl.
+
+--------------------------------------------------------------------------------
+Versao 0.9.28
+-------------
+ 08/08/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- NclEdit oferece suporte a eventos tranpostando string como conteudo XML.
+- Suporte a varias referencias implicitas em um mesmo conector
+- Suporte a atribuicao de valor nulo a uma propriedade
+
+Alteracoes:
+- Alteracoes realizadas para compatibilizar alteracoes do gingacc-io,
+  gingacc-tuner e gingacc-dataprocessing
+- Controle de capacidade e necessidade das Janelas em renderizarem com suporte
+  a canal alpha.
+- Listeners de FormatterEvent sao notificados de acordo com sua prioridade
+
+Bugs corrigidos:
+- Links nao oferece suporte a resolucao de algumas URLs. Correcao das URLs eh
+  realizada pelo adaptador antes de serem passadas ao links.
+- Tratamento de foco, na navegacao, concomitante aa troca da variavel
+  service.currentFocus estava com problema ao retornar para o estado original
+  do objeto.
+
+--------------------------------------------------------------------------------
+Versao 0.9.27
+-------------
+ 18/04/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Gerenciador de documentos faz uso do Ginga Locator para localizar documentos
+- Tecla backspace do teclado simula o mnemonico BACK (tecla back do controle
+  remoto)
+- Tecla ESC do teclado simula o mnemonico EXIT (tecla exit do controle
+  remoto)
+- currentKeyMaster adicionado
+- Desclaracao implicita de attributeassessment para got
+- Reuso: atributo instance substitui newInstance e trata os valores "instSame"
+  (instantlySame), "gradSame" (graduallySame) ou "new".
+- FormatterPlayerAdapter e PlayerAdapterManager permitem criacao de Noh tempo.
+- API nclEdit
+- Escalonador passa a controlar o tempo de atribuicao
+
+Alteracoes:
+- Transicao ABORTS_FROM_PAUSED eliminada
+- PlainTxt possui como default font white e bg black
+- Eliminado iterator nao utilizado em CompositeExecutionObject,
+  metodo getExecutionObject().
+- Otimizacao controle de zIndex com intersects.
+- NominalEventMonitor criado apenas para as midias que possuem ancoras (alem da
+  lambda).
+- FormatterRegion e ExecutionObject possuem inteligencia para
+  animation/transition
+- Adaptadores cadastram-se apenas nos eventos especificados no documento ncl
+- Regioes sao inseridas no dispositivo ordenadas conforme zIndex
+
+Bugs Corrigidos:
+- FocusManager entende back como saida e nao exit, conforme especificacao
+- DescriptorSwitch
+- repeat
+
+--------------------------------------------------------------------------------
+
+Versao 0.9.26
+-------------
+ 05/12/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Area funcional de animacao
+- PlayerAdapter possui inteligencia para eventos de entrada do objeto de
+  execucao
+- Objeto de execucao procedural segue as especificacoes ncl
+- Escalonador possui pre-busca de exibidores e eventos para procedurais
+--------------------------------------------------------------------------------
+
+Versao 0.9.25
+-------------
+ 31/08/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Alguns destrutores foram implementados
+- Focus Manager passa a gerenciar estado default da janela
+- Escalonador passa a solicitar o prepare de superficies para o gerenciador de
+  layout
+- Propriedade do settingnode currentFocus implementada, conforme especificacao
+
+Alteracoes na arquitetura:
+- "Pai" de todos os players (responsavel por controlar passagem de propriedades,
+  estado, etc) foi trocado de modulo, indo do gingancl para o gingaccplayer
+- Os adaptadores passam a ter a funcao de servir como uma interface entre os
+  exibidores e o nucleo do gingancl, conforme especificado no padrao brasileiro
+
+--------------------------------------------------------------------------------

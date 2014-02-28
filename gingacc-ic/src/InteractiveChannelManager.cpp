@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
@@ -64,7 +64,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "ic/ccrtpic/CCRTPInteractiveChannel.h"
 #endif //HAVE_CCRTP
 
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 
 namespace br {
 namespace pucrio {
@@ -73,7 +73,7 @@ namespace ginga {
 namespace core {
 namespace ic {
 	InteractiveChannelManager* InteractiveChannelManager::_instance = NULL;
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
@@ -96,7 +96,7 @@ namespace ic {
 		string symbol;
 		set<string>::iterator i;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		objects = cm->getObjectsFromInterface("IInteractiveChannel");
 		if (objects == NULL) {
 			clog << "InteractiveChannelManager::hasInteractiveChannel";
@@ -181,7 +181,7 @@ namespace ic {
 
 		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
 #if HAVE_CURL
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			ic = ((ICCreator*)(cm->getObject("CurlInteractiveChannel")))();
 #else
 			ic = new CurlInteractiveChannel();
@@ -190,7 +190,7 @@ namespace ic {
 
 		} else if (rUri.length() > 6 && rUri.substr(0, 6) == "rtp://") {
 #if HAVE_CCRTP
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			ic = ((ICCreator*)(cm->getObject("CCRTPInteractiveChannel")))();
 #else
 			ic = new CCRTPInteractiveChannel();

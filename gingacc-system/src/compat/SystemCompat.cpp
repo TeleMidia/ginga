@@ -102,7 +102,7 @@ namespace compat {
 
 		return;
 #else
-		string gingaini = gingaCurrentPath + "ginga.ini";
+		string gingaini = GINGA_INI_PATH;
 
 		fis.open(gingaini.c_str(), ifstream::in);
 
@@ -299,22 +299,24 @@ namespace compat {
 
 	void* SystemCompat::loadComponent(
 			string libName, void** llib, string symName) {
-
+#if HAVE_COMPONENTS
 		void* comp   = NULL;
 		void* comSym = NULL;
 
 		libName = appendLibExt(libName);
 
-#ifndef WIN32
+# ifndef WIN32
 		comp = dlopen(libName.c_str(), RTLD_LAZY);
 		if (comp == NULL) {
-			clog << "SystemCompat::loadComponent Warning: can't load ";
-			clog << "component '" << libName << "' => ";
-			clog << dlerror() << endl;
-			return (NULL);
+			std::string path = std::string (GINGA_LIBDIR) + "/" + libName;
+			comp = dlopen(path.c_str (), RTLD_LAZY);
+			if (comp == NULL) {
+				clog << "SystemCompat::loadComponent Warning: can't load ";
+				clog << "component '" << libName << "' => ";
+				clog << dlerror() << endl;
+				return (NULL);
+			}
 		}
-
-		dlerror();
 
 		comSym = dlsym(comp, symName.c_str());
 
@@ -332,7 +334,7 @@ namespace compat {
 		*llib = comp;
 		dlerror();
 
-#else
+# else
 		comp = LoadLibrary(libName.c_str());
 		if (comp == NULL) {
 			clog << "SystemCompat::loadComponent Warning: can't load ";
@@ -351,15 +353,18 @@ namespace compat {
 
 			return (NULL);
 		}
-#endif //!WIN32
+# endif //!WIN32
 
 		return comSym;
+#else // !HAVE_COMPONENTS
+		abort ();
+#endif
 	}
 
 	bool SystemCompat::releaseComponent(void* component) {
 		bool released = false;
-
-#ifndef WIN32
+#if HAVE_COMPONENTS
+# ifndef WIN32
 		int ret = dlclose(component);
 		const char* dlsym_error = dlerror();
 
@@ -375,11 +380,13 @@ namespace compat {
 
 		dlerror();
 
-#else
+# else
 		released = (bool)FreeLibrary((HINSTANCE)component);
-#endif //!WIN32
-
+# endif //!WIN32
 		return released;
+#else // !HAVE_COMPONENTS
+		abort ();
+#endif
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
@@ -432,7 +439,6 @@ namespace compat {
 		int len_dirpath;
 		int len_initdir;
 		int ret = 0;
-
 		string strDirName;
 		string strError;
 		bool hasError;
@@ -520,8 +526,10 @@ namespace compat {
 		clog << "zipwalker closing dir" << endl;
 		closedir(d);
 		clog << "zipwalker all done!" << endl;
-#endif
 		return ret;
+#else
+		return -1;
+#endif
 	}
 
 	int SystemCompat::zip_directory(
@@ -889,7 +897,7 @@ namespace compat {
 
 		checkValues();
 
-		absuri = updatePath(filesPref + relUrl);
+		absuri = updatePath(filesPref + iUriD + relUrl);
 		/*cout << "SystemCompat::appendGingaFilesPrefix to relUrl = '";
 		cout << relUrl << "' filesPref = '" << filesPref << "' ";
 		cout << " updated path = '" << absuri << "' ";
@@ -903,7 +911,7 @@ namespace compat {
 
 		checkValues();
 
-		absuri = updatePath(installPref + relUrl);
+		absuri = updatePath(installPref + iUriD + relUrl);
 		/*cout << "SystemCompat::appendGingaInstallPrefix to relUrl = '";
 		cout << relUrl << "' installPref = '" << installPref << "' ";
 		cout << " updated path = '" << absuri << "' ";

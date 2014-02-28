@@ -57,7 +57,7 @@ extern "C" {
 
 #include "config.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
@@ -74,7 +74,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "mb/interface/term/TermDeviceScreen.h"
 #endif //HAVE_TERM
 
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 
 namespace br {
 namespace pucrio {
@@ -82,7 +82,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
@@ -475,7 +475,7 @@ namespace mb {
 					argc++;
 				}
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 				screen = ((ScreenCreator*)(cm->getObject("SDLDeviceScreen")))(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 
@@ -484,11 +484,11 @@ namespace mb {
 				screen = new SDLDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_SDL
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 				break;
 
 			case GMBST_TERM:
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 				screen = ((ScreenCreator*)(cm->getObject("TermDeviceScreen")))(
 						0, NULL, screenId, embedWin, externalRenderer);
 
@@ -497,7 +497,7 @@ namespace mb {
 				screen = new TermDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_TERM
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 				break;
 
 			case GMBST_DFLT:
@@ -550,7 +550,7 @@ namespace mb {
 					argc++;
 				}
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 
@@ -559,7 +559,7 @@ namespace mb {
 				screen = new DFBDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_DIRECTFB
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 				break;
 		}
 
@@ -605,7 +605,7 @@ namespace mb {
 
 		*mbSystemType = GMBST_DFLT;
 
-#if !HAVE_COMPSUPPORT
+#if !HAVE_COMPONENTS
 		if (mbSystemName == "dfb") {
 #if HAVE_DIRECTFB
 			*mbSystemType = GMBST_DFB;
@@ -671,7 +671,7 @@ namespace mb {
 		bool hasSys = false;
 		string screenName = "";
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		switch (mbSysType) {
 			case GMBST_SDL:
 				screenName = "SDLDeviceScreen";

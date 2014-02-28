@@ -70,7 +70,7 @@ namespace player {
 		Thread::mutexInit(&referM, NULL);
 		Thread::mutexInit(&pnMutex, NULL);
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		if (dm == NULL) {
 			dm = ((LocalScreenManagerCreator*)(
 					cm->getObject("LocalScreenManager")))();

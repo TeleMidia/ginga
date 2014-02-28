@@ -1,33 +1,68 @@
-# not a GNU package. You can remove this line, if
-# have all needed files, that a GNU package needs
-AUTOMAKE_OPTIONS = foreign 1.4
-LIBS =
-SUBDIRS = 	include/cm include/cm/component include/cm/parser \
-		include/cm/assembler \
-		src \
-		src/component \
-		src/assembler \
-		src/parser \
-		files \
-		test
+include $(top_srcdir)/build-aux/Makefile.am.common
 
-MAINTAINERCLEANFILES = 	aclocal.m4 \
-			config.log \
-			config.guess \
-			config.h.in \
-			config.status \
-			config.sub \
-			configure \
-			depcomp \
-			install-sh \
-			libtool \
-			ltmain.sh \
-			Makefile.in \
-			missing \
-			mkinstalldirs \
-			autom4te.cache/* \
-			.deps/*
+################################ Libraries #################################
+AM_CPPFLAGS =\
+  $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(INCLUDE_GINGACC_CM)\
+  $(NULL)
 
-maintainer-clean-local:
-	rm -rf .deps
-	rm -rf autom4te.cache
+AM_CXXFLAGS =
+AM_LDFLAGS = $(LTLDFLAGS)
+
+gingacccmlib_LTLIBRARIES =\
+  libgingacccm.la\
+  libgingacccmassembler.la\
+  libgingacccmparser.la\
+  libgingacccmcomponent.la\
+  $(NULL)
+
+# gingacc-cm
+libgingacccm_la_SOURCES =\
+  src/ComponentManager.cpp\
+  $(NULL)
+
+# gingacc-cm-assembler
+libgingacccmassembler_la_SOURCES =\
+  src/assembler/ComponentDescription.cpp\
+  $(NULL)
+
+# gingacc-cm-component
+libgingacccmcomponent_la_SOURCES =\
+  src/component/Component.cpp\
+  $(NULL)
+
+# gingacc-cm-parser
+libgingacccmparser_la_CXXFLAGS = $(AM_CXXFLAGS) $(EXPAT_CFLAGS)
+libgingacccmparser_la_LDFLAGS = $(AM_LDFLAGS) $(EXPAT_LIBS)
+libgingacccmparser_la_SOURCES =\
+  src/parser/ComponentParser.cpp\
+  $(NULL)
+
+################################# Headers ##################################
+if INSTALL_HEADERS
+gingacccminclude_HEADERS =\
+  include/cm/IComponentManager.h\
+  $(NULL)
+
+assemblerincludedir = $(gingacccmincludedir)/assembler
+assemblerinclude_HEADERS =\
+  include/cm/assembler/IComponentDescription.h\
+  $(NULL)
+
+componentincludedir = $(gingacccmincludedir)/component
+componentinclude_HEADERS =\
+  include/cm/component/IComponent.h\
+  $(NULL)
+
+parserincludedir = $(gingacccmincludedir)/parser
+parserinclude_HEADERS =\
+  include/cm/parser/IComponentParser.h\
+  $(NULL)
+endif
+
+############################## Configuration ###############################
+gingacccmconfdir = $(gingaconfdir)
+gingacccmconf_DATA =\
+  files/componentDescription.xml\
+  $(NULL)

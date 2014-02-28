@@ -1,0 +1,4 @@
+system.internal.delimiter=@INTERNAL_DELIM@
+system.foreign.delimiter=@FOREIGN_DELIM@
+system.install.prefix=@INSTALL_PREFIX@
+system.files.prefix=@FILES_PREFIX@

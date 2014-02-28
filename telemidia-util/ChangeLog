@@ -1,0 +1,99 @@
+TeleMidia Util ChangeLog
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Version 0.11.2 or newer
+-------------
+ 24/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+type git log
+
+--------------------------------------------------------------------------------
+Version 0.11.1
+-------------
+ 09/12/2009
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Description:
+- New function for time stamp
+- getNextStepValue was improved (robertogerson@telemidia.puc-rio.br)
+
+--------------------------------------------------------------------------------
+Version 0.10.1
+--------------
+ 02/03/2009
+--------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+--------------
+
+Description:
+- Color now follows W3C RGB definitions.
+
+--------------------------------------------------------------------------------
+Version 0.10.0
+--------------
+ 29/09/2008
+--------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+--------------
+
+Alteracoes arquitetura:
+- Thread was refactored to gingacc-system
+
+--------------------------------------------------------------------------------
+Versao 0.9.28
+-------------
+ 08/08/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Funcao para correcao de URIs (substituicao de ".." etc)
+- Funcao para verificar se conteudo de uma string eh uma URI ou XML
+
+--------------------------------------------------------------------------------
+Versao 0.9.27
+-------------
+ 18/04/2008
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Funcao para calculo do proximo passo de uma animacao ou transicao
+
+--------------------------------------------------------------------------------
+Versao 0.9.26
+-------------
+ 05/12/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Inteligencia adicionada ao tratamento de de condicao na Thread
+- Funcoes para tratamento de strings em hexadecimal adicionadas em functions
+
+--------------------------------------------------------------------------------
+
+Versao 0.9.25
+-------------
+ 31/08/2007
+-------------
+Marcio Moreno (marcio@telemidia.puc-rio.br)
+-------------
+
+Novas funcionalidades:
+- Destrutor implementado
+
+
+Bugs corrigidos:
+- Vazamento de memoria da thread
+
+--------------------------------------------------------------------------------
