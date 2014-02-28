@@ -152,7 +152,7 @@ AM_CONDITIONAL([BUILD_TESTS], [test "$enable_tests" = yes])
 
 # Enable video4linux.
 _AC_ARG_ENABLE([video4linux], [build video4linux front-end support], [no])
-if test "$enable_video4linux"; then
+if test "$enable_video4linux" = yes; then
   AC_CHECK_HEADER([linux/dvb/frontend.h],
    [video4linux_ok=yes],
    [video4linux_ok=no])
