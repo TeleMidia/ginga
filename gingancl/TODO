@@ -1,0 +1,108 @@
+Ginga NCL TODO List
+--------------------------------------------------------------------------------
+
+This is the TODO list for Ginga NCL Reference Implementation. If you want to 
+work on any of this, please send us a mail to ask about it first.
+ 
+It's likely that work is already started and we can give you more details on
+the particular issue.
+--------------------------------------------------------------------------------
+
+
+Setting a value to the properties of a node
+------------
+ To implement the zIndex attribution, transparency (%) and properties with 
+ its initial value defined. To implement initial definitions for regions as
+ properties.
+
+Anchors
+----
+ Despite the fact that all the infrastructure that is necessary for the anchor
+ support is implemented, the presentation functionalities of the following types
+ of anchors are not implemented:
+ 1. coord
+ 2. text, position
+ 3. samples and frames
+ 4. time intervals, to implement support for the 
+ "Year":"Month":"Day":"Hours":"Minute" format
+  
+Interaction Channel
+------------
+ To implement the support for content streaming and the definition of a 
+ pre-search plan.
+ 
+Protocols and schemas
+--------------
+ To implement support of urls with RTP, RTPS and sbtvd-ts protocols (only 
+ sbtvd-ts://video is implemented)
+ 
+Transitions
+--------
+ Only fade is implemented.
+ The barWipe transition is implemented, though it is not according SMIL specs.
+
+
+Multidevice support
+--------------
+To implement the multi-device support according to UPnP definitions.
+
+
+Performance and memory leak tests
+----------------
+ Only system tests has been performed on Ginga-NCL. 
+ The unity and integration tests may be necessary, as well as using tools for
+ memory leak detection.
+
+
+
+XHTML Player
+---------
+ To implement the XHTML player according to the standard and to integrate the
+ new player with Ginga-NCL. 
+ 
+Reuse
+-----
+ To implement gradSame
+
+Descriptors
+----------
+ focusSrc and selSrc are only implemented for image medias.
+
+Navigation
+---------
+ Navigation borders between objects are not well functioning on XHTML and Lua 
+ players.
+
+Settings node
+--------
+ To implement the si variables feed.
+
+Reserved words
+-------------
+ To implement support of:
+
+      balanceLevel, trebleLevel, bassLevel, style, fontFamily, fontStyle, 
+      fontSize, fontVariant, fontWeight, reusePlayer, playerLife, fit, scroll 
+      and freeze.
+      
+Editing commands
+---------------
+ To implement support for the following startDocument parameters: offset, 
+ refDocumentId and refNodeId. Perform tests.
+ 
+ncl-mirror
+-------------
+ To implement support of ncl-mirror objects.
+ 
+UTC time node
+------------
+ To implement a TOT/TDT table decoder integrated with the time node, which 
+ also needs to be implemented.
+ 
+ Plane
+ ----
+ To implement image decoding on the background plane
+
+Metadata
+--------
+ To implement support for metadata definitions on the body element.

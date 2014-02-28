@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
@@ -91,7 +91,7 @@ namespace epg {
 	//set<string>* EPGProcessor::cdt = new set<string>;
 	//int EPGProcessor::files = 0;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
@@ -283,7 +283,7 @@ namespace epg {
 		pos += 3;
 		while (pos < payloadSize) {
 			//there's at least one serviceinfo
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			srvi = ((ServiceInfoCreator*)(cm->getObject("ServiceInfo")))();
 #else
 			srvi = new ServiceInfo();
@@ -465,7 +465,7 @@ namespace epg {
 */
 		pos++; //pos = 6;
 		while (pos < payloadSize) {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			ei = ((EICreator*)(cm->getObject("EventInfo")))();
 #else
 			ei = new EventInfo();
@@ -729,7 +729,7 @@ namespace epg {
 		data = new char[payloadSize];
 		memcpy((void*)&(data[0]), section->getPayload(), payloadSize);
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		tot = ((TOTCreator*)(cm->getObject("TOT")))();
 #else
 		tot = new TOT();

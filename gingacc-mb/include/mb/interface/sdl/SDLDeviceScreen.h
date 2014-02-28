@@ -55,7 +55,7 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
@@ -130,7 +130,7 @@ typedef struct {
 			unsigned long winIdRefCounter;
 			map<GingaWindowID, IWindow*> windowRefs;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			static IComponentManager* cm;
 #endif
 			set<IWindow*> windowPool;

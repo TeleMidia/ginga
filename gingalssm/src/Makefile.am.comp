@@ -1,0 +1,44 @@
+#Copied by autogen.sh/configure.ac according to SO and Ginga characteristics
+
+INCLUDES                = \
+                          -I$(prefix)/include/ginga/ \
+                          $(all_includes) \
+                          -I$(top_srcdir)/include
+
+LIBS                    =
+
+libdir                  = \
+                          $(prefix)/lib/ginga
+
+lib_LTLIBRARIES         = \
+                          libgingalssm.la
+
+libgingalssm_la_SOURCES = \
+                          PresentationEngineManager.cpp \
+                          CommonCoreManager.cpp \
+                          DataWrapperListener.cpp \
+                          StcWrapper.cpp
+
+libgingalssm_la_LIBADD  = \
+                          -ltelemidiautil \
+                          -lpthread \
+                          -lgingaccsystem \
+                          -lgingaccmb \
+                          -lncl30 \
+                          $(COMPONENTS_LIBS) \
+                          $(TUNER_LIBS) \
+                          $(TSPARSER_LIBS) \
+                          $(DATAPROCESSING_LIBS) \
+                          $(NCLET_LIBS) \
+                          -L/lib/ \
+                          -L/usr/lib/ \
+                          -L$(prefix)/lib/ \
+                          -L$(prefix)/lib/ginga \
+                          -L$(prefix)/lib/ginga/players
+
+libgingalssm_la_LDFLAGS = \
+                          -no-undefined \
+                          -version-info 13:1:8
+
+MAINTAINERCLEANFILES    = \
+                          Makefile.in

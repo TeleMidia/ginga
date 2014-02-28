@@ -49,7 +49,8 @@ http://www.telemidia.puc-rio.br
 
 #include "tuner/Tuner.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
+#include "mb/ILocalScreenManager.h"
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
@@ -63,7 +64,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();

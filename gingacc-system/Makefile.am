@@ -1,35 +1,67 @@
-AUTOMAKE_OPTIONS     = \
-                       foreign 1.4
+include $(top_srcdir)/build-aux/Makefile.am.common
 
-LIBS                 =
+############################## gingacc-system ##############################
+AM_CPPFLAGS =\
+  -DSTR_PREFIX='"$(prefix)"'\
+  -DGINGA_LIBDIR='"$(gingalibdir)"'\
+  -DGINGA_INI_PATH='"$(gingaconfdir)/config/ginga.ini"'\
+  $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(NULL)
 
-SUBDIRS              = \
-                       include/system/thread \
-                       include/system/compat \
-                       include/system/fs \
-                       include/system/time \
-                       include/system/process \
-                       src \
-                       test
+AM_CXXFLAGS = $(PTHREAD_CFLAGS)
+AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LIBS) $(DL_LIBS)
 
-MAINTAINERCLEANFILES = \
-                       aclocal.m4 \
-                       config.log \
-                       config.guess \
-                       config.h.in \
-                       config.status \
-                       config.sub \
-                       configure \
-                       depcomp \
-                       install-sh \
-                       libtool \
-                       ltmain.sh \
-                       Makefile.in \
-                       missing \
-                       mkinstalldirs \
-                       autom4te.cache/* \
-                       .deps/*
+gingaccsystemlib_LTLIBRARIES = libgingaccsystem.la
 
-maintainer-clean-local:
-	rm -rf .deps
-	rm -rf autom4te.cache
+libgingaccsystem_la_SOURCES =\
+  src/thread/Thread.cpp\
+  src/fs/GingaLocatorFactory.cpp\
+  src/compat/PracticalSocket.cpp\
+  src/compat/SystemCompat.cpp\
+  src/time/Stc.cpp\
+  $(NULL)
+
+if BUILD_MULTIPROCESS
+AM_LDFLAGS += $(RT_LIBS)
+libgingaccsystem_la_SOURCES +=\
+  src/process/Process.cpp\
+  src/process/SpawnedProcess.cpp\
+  $(NULL)
+endif
+
+################################# Headers ##################################
+if INSTALL_HEADERS
+compatincludedir = $(gingaccsystemincludedir)/compat
+compatinclude_HEADERS =\
+  include/system/compat/PracticalSocket.h\
+  include/system/compat/SystemCompat.h\
+  $(NULL)
+
+fsincludedir = $(gingaccsystemincludedir)/fs
+fsinclude_HEADERS =\
+  include/system/fs/IGingaLocatorFactory.h\
+  include/system/fs/GingaLocatorFactory.h\
+  $(NULL)
+
+if BUILD_MULTIPROCESS
+processincludedir = $(gingaccsystemincludedir)/process
+processinclude_HEADERS =\
+  include/system/process/IProcessListener.h\
+  include/system/process/Process.h\
+  include/system/process/SpawnedProcess.h\
+  $(NULL)
+endif
+
+threadincludedir = $(gingaccsystemincludedir)/thread
+threadinclude_HEADERS =\
+  include/system/thread/Thread.h\
+  $(NULL)
+
+timeincludedir = $(gingaccsystemincludedir)/time
+timeinclude_HEADERS =\
+  include/system/time/ITimeBaseListener.h\
+  include/system/time/ITimeBaseProvider.h\
+  include/system/time/Stc.h\
+  $(NULL)
+endif

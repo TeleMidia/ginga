@@ -1,43 +1,126 @@
-# not a GNU package. You can remove this line, if
-# have all needed files, that a GNU package needs
-AUTOMAKE_OPTIONS = foreign 1.4
-ACLOCAL_AMFLAGS= -Im4
+include $(top_srcdir)/build-aux/Makefile.am.common
 
-LIBS =
+################################ Libraries #################################
+AM_CPPFLAGS =\
+  $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(INCLUDE_GINGACC_CM)\
+  $(INCLUDE_GINGACC_IC)\
+  $(INCLUDE_GINGACC_MB)\
+  $(INCLUDE_GINGACC_PLAYER)\
+  $(NULL)
 
-SUBDIRS = 	files \
-			include/player \
-			src \
-			src/image \
-			src/application/declarative/smil \
-			src/application/declarative/xhtml/links \
-			src/application/declarative/xhtml/berkelium \
-			src/application/declarative/xhtml/awesomium \
-			src/application/imperative/lua \
-			src/text \
-			src/text/plain \
-			src/text/srt \
-			src/video \
-			src/tv \
-			src/widget \
-			tools \
-			test
+if BUILD_DATA_PROCESSING
+AM_CPPFLAGS +=\
+  $(INCLUDE_GINGACC_TUNER)\
+  $(INCLUDE_GINGACC_TSPARSER)\
+  $(INCLUDE_GINGACC_DATAPROCESSING)\
+  $(NULL)
+endif
 
-INCLUDES = -I$(prefix)/include/ -I$(prefix)/include/ginga/
+AM_CXXFLAGS = $(PTHREAD_CFLAGS)
+AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
 
-MAINTAINERCLEANFILES = 	aclocal.m4 \
-			config.log \
-			config.h.in \
-			config.h.in~ \
-			config.status \
-			configure \
-			Makefile.in \
-			m4/libtool.m4 \
-			m4/ltoptions.m4 \
-			m4/ltsugar.m4 \
-			m4/ltversion.m4 \
-			m4/lt~obsolete.m4
+gingaccplayerlib_LTLIBRARIES =\
+  libgingaccplayer.la\
+  libgingaccplaavp.la\
+  libgingaccplacha.la\
+  libgingaccplaimg.la\
+  libgingaccplalua.la\
+  libgingaccplapav.la\
+  libgingaccplaplt.la\
+  libgingaccplasrt.la\
+  libgingaccplatxt.la\
+  libgingaccplawdg.la\
+  $(NULL)
 
-maintainer-clean-local:
-	rm -rf build-aux
-	rm -rf autom4te.cache
+# gingacc-player
+libgingaccplayer_la_SOURCES = src/Player.cpp
+if BUILD_MULTIPROCESS
+libgingaccplayer_la_SOURCES += src/PlayerProcess.cpp
+endif
+
+# gingacc-pla-bkl
+if BUILD_BERKELIUM
+gingaccplayerlib_LTLIBRARIES += libgingaccplabkl.la
+libgingaccplabkl_la_CXXFLAGS = $(AM_CXXFLAGS) $(BERKELIUM_CFLAGS)
+libgingaccplabkl_la_LDFLAGS = $(AM_LDFLAGS) $(BERKELIUM_LIBS)
+libgingaccplabkl_la_SOURCES =\
+  src/application/declarative/xhtml/BerkeliumHandler.cpp\
+  src/application/declarative/xhtml/BerkeliumPlayer.cpp\
+  $(NULL)
+endif
+
+# gingacc-pla-lua
+libgingaccplalua_la_SOURCES =\
+  src/application/imperative/lua/LuaPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-img (Image)
+libgingaccplaimg_la_SOURCES =\
+  src/image/ImagePlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-txt (Text)
+libgingaccplatxt_la_SOURCES =\
+  src/text/TextPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-plt (Plain text)
+libgingaccplaplt_la_SOURCES =\
+  src/text/plain/PlainTxtPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-srt (SRT)
+libgingaccplasrt_la_SOURCES =\
+  src/text/srt/SrtPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-cha
+libgingaccplacha_la_SOURCES =\
+  src/tv/ChannelPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-pav (?)
+libgingaccplapav_la_SOURCES =\
+  src/tv/ProgramAV.cpp\
+  $(NULL)
+
+# gingacc-pla-avp (Audio and video)
+libgingaccplaavp_la_SOURCES =\
+  src/video/AVPlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-wdg (Widget)
+libgingaccplawdg_la_SOURCES =\
+  src/widget/ShowButton.cpp\
+  $(NULL)
+
+################################# Headers ##################################
+if INSTALL_HEADERS
+gingaccplayerinclude_HEADERS =\
+  include/player/IApplicationPlayer.h\
+  include/player/IPlayer.h\
+  include/player/Player.h\
+  include/player/INCLPlayer.h\
+  include/player/IPlayerListener.h\
+  include/player/IProgramAV.h\
+  include/player/IShowButton.h\
+  $(NULL)
+endif
+
+############################## Configuration ###############################
+gingaccplayerconfdir = $(gingaconfdir)
+
+buttondir = $(gingaccplayerconfdir)/img/button
+button_DATA =\
+  files/images/pauseButton.png\
+  files/images/playButton.png\
+  files/images/stopButton.png\
+  $(NULL)
+
+fontdir = $(gingaccplayerconfdir)/font
+font_DATA =\
+  files/fonts/decker.ttf\
+  files/fonts/vera.ttf\
+  $(NULL)

@@ -1,0 +1,423 @@
+AC_PREREQ([2.62])
+AC_INIT([ginga], [0.13.5], [bugs@telemidia.puc-rio.br])
+
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([build-aux])
+AC_CANONICAL_TARGET
+AC_CONFIG_SRCDIR([telemidia-util/src/functions.cpp])
+AC_CONFIG_HEADERS([config.h])
+
+m4_define([avcodec_required_version],       [55.39.101])
+m4_define([avdevice_required_version],      [55.5.100])
+m4_define([avformat_required_version],      [55.19.104])
+m4_define([avutil_required_version],        [52.48.101])
+m4_define([curl_required_version],          [7.18])
+m4_define([expat_required_version],         [2.1])
+m4_define([sdl2_image_require_version],     [2.0])
+m4_define([sdl2_required_version],          [2.0])
+m4_define([sdl2_ttf_require_version],       [2.0])
+m4_define([swresample_required_version],    [0.17.104])
+m4_define([swscale_required_version],       [2.5.101])
+m4_define([xercesc_required_version],       [2.7])
+
+AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
+AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
+AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
+AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
+AC_SUBST([CURL_REQUIRED_VERSION], curl_required_version)
+AC_SUBST([EXPAT_REQUIRED_VERSION], expat_required_version)
+AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION], sdl2_image_require_version)
+AC_SUBST([SDL2_REQUIRED_VERSION], sdl2_required_version)
+AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
+AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresample_required_version)
+AC_SUBST([SWSCALE_REQUIRED_VERSION], swscale_required_version)
+AC_SUBST([XERCESC_REQUIRED_VERSION], xercesc_required_version)
+
+AM_INIT_AUTOMAKE([-Wall 1.11 foreign gnu no-define subdir-objects])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
+AM_PROG_AR
+
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+LT_PREREQ([2.2])
+LT_INIT([disable-static win32-dll])
+
+# _AC_ARG_ENABLE(NAME, DESCRIPTION, DEFAULT)
+# ------------------------------------------
+# Check for argument --enable-NAME and sets $enable_NAME accordingly.
+m4_define([_AC_ARG_ENABLE],
+ [AC_ARG_ENABLE([$1],
+   [AS_HELP_STRING([--enable-$1],
+     [$2 [default=$3]])],
+   [AS_CASE([$enableval], [yes|no], [:],
+     [AC_MSG_ERROR([bad value '$enableval' for --enable-$1 option])])
+    enable_[]m4_translit($1,[-],[_])=$enableval],
+   [enable_[]m4_translit($1,[-],[_])=$3])])
+
+# _AC_DEFINE_DEPRECATED(NAME, VALUE)
+# ------------------------------
+# Define deprecated macro with name NAME and value VALUE.
+# Eventually, these should be removed from the code.
+m4_define([_AC_DEFINE_DEPRECATED],
+ [AC_DEFINE([$1], [$2], [Deprecated macro.])])
+
+# Enable components.
+_AC_ARG_ENABLE([components], [load shared libraries on demand], [no])
+if test "$enable_components" = yes; then
+  if test -z "$DL_LIBS"; then
+    dl_ok=no;
+    AC_CHECK_LIB([dl], [dlopen],
+     [AC_CHECK_LIB([dl], [dlsym],
+       [dl_ok=yes; DL_LIBS=-ldl])])
+
+    if test "$dl_ok" = no; then
+      AC_MSG_ERROR([
+*** Checks for COMPONENTS failed.
+*** Component support is optional; you can disable it by passing
+*** the option --disable-component to configure.])
+    fi
+  fi
+  AC_SUBST([DL_LIBS])
+  AC_DEFINE([HAVE_COMPONENTS], [1],
+   [Define to 1 if components are supported.])
+else
+  AC_DEFINE([HAVE_COMPONENTS], [0],
+   [Define to 1 if components are supported.])
+fi
+AM_CONDITIONAL([BUILD_COMPONENTS], [test "$enable_components" = yes])
+
+# Enable data-processing.
+_AC_ARG_ENABLE([data-processing], [build data-processing support], [no])
+if test "$enable_data_processing" = yes; then
+  AC_DEFINE([HAVE_DATA_PROCESSING], [1],
+   [Define to 1 if data-processing support is enabled.])
+  _AC_DEFINE_DEPRECATED([HAVE_TUNER], [1])
+  _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [1])
+  _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [1])
+else
+  AC_DEFINE([HAVE_DATA_PROCESSING], [0],
+   [Define to 1 if data-processing support is enabled.])
+  _AC_DEFINE_DEPRECATED([HAVE_TUNER], [0])
+  _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [0])
+  _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [0])
+fi
+AM_CONDITIONAL([BUILD_DATA_PROCESSING],
+ [test "$enable_data_processing" = yes])
+
+# Enable headers.
+_AC_ARG_ENABLE([headers], [install library headers], [no])
+AM_CONDITIONAL([INSTALL_HEADERS], [test "$enable_headers" = yes])
+
+# Enable multi-device.
+_AC_ARG_ENABLE([multidevice], [build multi-device support], [no])
+if test "$enable_multidevice" = yes; then
+  AC_CHECK_PROGS([CONVERT], [convert])
+  if test -z "$CONVERT"; then
+    AC_MSG_WARN([
+***
+*** Checks for CONVERT failed.
+*** ImageMagick's convert utility is required by Ginga-CC Multi-device.
+*** If convert is not installed, some applications may not work properly.
+***])
+  fi
+  AC_DEFINE([HAVE_MULTIDEVICE], [1],
+   [Define to 1 if multidevice support is enabled.])
+else
+  AC_DEFINE([HAVE_MULTIDEVICE], [0],
+   [Define to 1 if multidevice support is enabled.])
+fi
+AM_CONDITIONAL([BUILD_MULTIDEVICE], [test "$enable_multidevice" = yes])
+
+# Enable multi-process.
+_AC_ARG_ENABLE([multiprocess], [put players in separated processes], [no])
+if test "$enable_multiprocess" = yes; then
+  AC_HAVE_LIBRARY([rt], [rt_ok=yes], [rt_ok=no])
+  if test "$rt_ok" = yes; then
+    RT_LIBS='-lrt'
+  else
+    AC_MSG_ERROR([
+*** Checks for MULTIPROCESS failed.
+*** Multi-process support is optional; you can disable it by passing
+*** the option --disable-multiprocess to configure.])
+  fi
+  AC_SUBST([RT_LIBS])
+fi
+AM_CONDITIONAL([BUILD_MULTIPROCESS], [test "$enable_multiprocess" = yes])
+
+# Enable tests.
+_AC_ARG_ENABLE([tests], [build unit tests], [no])
+AM_CONDITIONAL([BUILD_TESTS], [test "$enable_tests" = yes])
+
+# Enable video4linux.
+_AC_ARG_ENABLE([video4linux], [build video4linux front-end support], [no])
+if test "$enable_video4linux"; then
+  AC_CHECK_HEADER([linux/dvb/frontend.h],
+   [video4linux_ok=yes],
+   [video4linux_ok=no])
+  if test "$video4linux_ok" = no; then
+    AC_MSG_ERROR([
+*** Checks for VIDEO4LINUX failed.
+*** Video4linux support is optional; you can disable it by passing
+*** the option --disable-video4linux to configure.])
+  fi
+fi
+AM_CONDITIONAL([BUILD_VIDEO4LINUX], [test "$enable_video4linux"=yes])
+
+# Check if we're on MS Windows.
+case "$target_os" in
+  *-*-mingw*)
+    os_win=yes
+    ;;
+  *)
+    os_win=no
+esac
+AM_CONDITIONAL([OS_WINDOWS], [test "$os_win" = yes])
+
+# Check for pthreads (required by most packages).
+AX_PTHREAD([],
+ [AC_MSG_ERROR([
+*** Checks for pthreads failed.])])
+
+# Check for Expat (required by Ginga-CC CM and Ginga-CC Data Processing).
+AX_LIB_EXPAT([expat_required_version])
+if test "$HAVE_EXPAT" = no; then
+  AC_MSG_ERROR([
+*** Expat XML Parser >= expat_required_version is required.])
+fi
+
+############################## TeleMidia Util ##############################
+
+# Check for libjpeg.
+AC_ARG_WITH([libjpeg],
+ [AC_HELP_STRING([--without-libjpeg],
+ [disable JPEG support])])
+
+if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
+  AC_CHECK_LIB([jpeg], [jpeg_destroy_decompress],
+   [jpeg_ok=yes],
+   [jpeg_ok=no; AC_MSG_WARN([*** JPEG library not found])])
+
+  if test "$jpeg_ok" = yes; then
+    AC_MSG_CHECKING([for jpeglib.h])
+    AC_TRY_CPP([[
+#include <stdio.h>
+#undef PACKAGE
+#undef VERSION
+#undef HAVE_STDLIB_H
+#include <jpeglib.h>
+   ]],
+   [jpeg_ok=yes],
+   [jpeg_ok=no])
+    AC_MSG_RESULT([$jpeg_ok])
+
+    if test "$jpeg_ok" = yes; then
+      JPEG_LIBS='-ljpeg'
+    else
+      AC_MSG_WARN([*** JPEG header file not found])
+    fi
+  fi
+
+  if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
+    AC_MSG_ERROR([
+*** Checks for LIBJPEG failed.
+*** Libjpeg is optional; you can disable it by passing
+*** the option --without-libjpeg to configure.])
+  fi
+fi
+AM_CONDITIONAL([WITH_JPEG], [test "$with_libjpeg" != no])
+AC_SUBST([JPEG_LIBS])
+
+############################# Ginga-CC System ##############################
+
+# Socket and sysinfo.
+AC_CHECK_HEADER([sys/socket.h])
+AC_CHECK_HEADER([net/if.h])
+AC_CHECK_HEADER([sys/sysinfo])
+
+# TODO: Check for libzip and define HAVE_ZIP (required by gingacc-multidevice).
+
+############################### Ginga-CC CM ################################
+# Nothing to do.
+
+############################### Ginga-CC UM ################################
+# Nothing do to (currently UM is stub).
+
+############################### Ginga-CC IC ################################
+
+# Check for Curl.
+AX_LIB_CURL([curl_required_version], [:],
+ [AC_MSG_ERROR([
+*** CURL >= curl_required_version is required.])])
+_AC_DEFINE_DEPRECATED([HAVE_CURL], [1])
+_AC_DEFINE_DEPRECATED([HAVE_IC], [1])
+
+############################### Ginga-CC MB ################################
+
+# Check for SDL2.
+PKG_CHECK_MODULES([SDL2],
+ [sdl2 >= sdl2_required_version], [],
+ [AC_MSG_ERROR([
+*** sdl2 >= sdl2_required_version is required.])])
+
+# Check for SDL2_image.
+PKG_CHECK_MODULES([SDL2IMAGE],
+ [SDL2_image >= sdl2_image_require_version], [],
+ [AC_MSG_ERROR([
+*** SDL2_image >= sdl2_image_required_version is required.])])
+
+# Check for SDL2_ttf.
+PKG_CHECK_MODULES([SDL2TTF],
+ [SDL2_ttf >= sdl2_ttf_require_version], [],
+ [AC_MSG_ERROR([
+*** SDL2_ttf >= sdl2_ttf_required_version is required.])])
+
+# Check for FFmpeg libs.
+PKG_CHECK_MODULES([FFMPEG],
+ [libavcodec >= avcodec_required_version
+  libavdevice >= avdevice_required_version
+  libavformat >= avformat_required_version
+  libavutil >= avutil_required_version
+  libswresample >= swresample_required_version
+  libswscale >= swscale_required_version], [],
+ [AC_MSG_ERROR([
+*** The following FFmpeg libraries are required:
+*** libavcodec >= avcodec_required_version
+*** libavdevice >= avdevice_required_version
+*** libavformat >= avformat_required_version
+*** libavutil >= avutil_required_version
+*** libswresample >= swresample_required_version
+*** libswscale >= swscale_required_version])])
+
+_AC_DEFINE_DEPRECATED([HAVE_SDL], [1])
+AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
+
+######################### Ginga-CC Context Manager #########################
+# Nothing to do.
+
+########################## Ginga-CC Multi-Device ###########################
+# Nothing to do.
+
+############################## Ginga-CC Tuner ##############################
+# Nothing to do.
+
+############################ Ginga-CC TS Parser ############################
+# Nothing to do.
+
+######################### Ginga-CC Data Processing #########################
+# Nothing to do.
+
+############################# Ginga-CC Player ##############################
+
+# Check for the Lua headers and library.
+AX_LUA_HEADERS
+AX_LUA_HEADERS_VERSION([502])
+AX_LUA_LIBS
+AC_SUBST([LUA_CFLAGS], [$LUA_INCLUDE])
+AC_SUBST([LUA_LIBS], [$LUA_LIB])
+
+# Check for Berkelium.
+berkelium_ok=no
+AC_HAVE_LIBRARY([berkelium],
+ [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
+   [berkelium_ok=yes])])
+if test "$berkelium_ok" = yes; then
+  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [1])
+  BERKELIUM_LIBS='-lberkelium'
+else
+  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [0])
+  AC_MSG_WARN([
+***
+*** Checks for BERKELIUM failed.
+*** Berkelium is required by Ginga-CC Player.
+*** If Berkelium is not installed, some applications may not work properly.
+***])
+fi
+AC_SUBST([BERKELIUM_LIBS])
+AM_CONDITIONAL([BUILD_BERKELIUM], [test "$berkelium_ok" = yes])
+
+################################# NCL 3.0 ##################################
+# Nothing to do.
+
+############################ NCL 3.0 Converter #############################
+
+# Check for xerces-c.
+AX_XERCESC
+AS_IF([test "$HAVE_LIBXERCES_C" = no],
+ [AC_MSG_ERROR([
+*** xerces-c >= xercesc_required_version is required.])])
+AC_SUBST([XERCESC_CFLAGS], [])
+AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
+
+################################ Ginga-NCL #################################
+# Nothing to do.
+
+################################ Ginga LLSM ################################
+# Nothing to do.
+
+################################## Ginga ###################################
+
+############################################################################
+
+# Ginga confdir, libdir, and includedir.
+AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
+AC_SUBST([gingalibdir], ['${libdir}'])
+AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
+
+# Per-package libdir and includedir.
+m4_define([_AC_SUBST_GINGAPKGDIR],
+ [AC_SUBST([$1][libdir], ['${gingalibdir}'])
+  AC_SUBST([$1][includedir], ['${gingaincludedir}'/][$2])])
+_AC_SUBST_GINGAPKGDIR([telemidiautil],         [util])
+_AC_SUBST_GINGAPKGDIR([gingaccsystem],         [system])
+_AC_SUBST_GINGAPKGDIR([gingacccm],             [cm])
+_AC_SUBST_GINGAPKGDIR([gingaccic],             [ic])
+_AC_SUBST_GINGAPKGDIR([gingaccmb],             [mb])
+_AC_SUBST_GINGAPKGDIR([gingacccontextmanager], [contextmanager])
+_AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
+_AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
+_AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
+_AC_SUBST_GINGAPKGDIR([gingaccdataprocessing], [dataprocessing])
+_AC_SUBST_GINGAPKGDIR([gingaccplayer],         [player])
+_AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
+_AC_SUBST_GINGAPKGDIR([ncl30converter],        [converter])
+_AC_SUBST_GINGAPKGDIR([gingancl],              [gingancl])
+_AC_SUBST_GINGAPKGDIR([gingalssm],             [gingalssm])
+
+AC_CONFIG_FILES([
+Makefile
+telemidia-util/Makefile
+gingacc-system/Makefile
+gingacc-cm/Makefile
+gingacc-ic/Makefile
+gingacc-mb/Makefile
+gingacc-contextmanager/Makefile
+gingacc-multidevice/Makefile
+gingacc-tuner/Makefile
+gingacc-tsparser/Makefile
+gingacc-dataprocessing/Makefile
+gingacc-player/Makefile
+ncl30/Makefile
+ncl30-converter/Makefile
+gingancl/Makefile
+gingalssm/Makefile
+ginga/Makefile
+])
+
+AC_CONFIG_FILES([
+telemidia-util/tests/Makefile
+gingacc-cm/tests/Makefile
+gingacc-ic/tests/Makefile
+gingacc-mb/tests/Makefile
+gingacc-contextmanager/tests/Makefile
+gingacc-multidevice/tests/Makefile
+gingacc-tuner/tests/Makefile
+gingacc-tsparser/tests/Makefile
+gingacc-dataprocessing/tests/Makefile
+gingacc-player/tests/Makefile
+gingancl/tests/Makefile
+gingalssm/tests/Makefile
+])
+
+AC_OUTPUT

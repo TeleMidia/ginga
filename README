@@ -1,6 +1,18 @@
-For now, GingaCC is just a repository for GingaCC-related subprojects
-(see the TODO file).
-So you must compile and install each subproject in a certain sequence,
-to satisfy the internal dependencies. See the README file in each subproject.
+Build dependencies
+==================
 
-In the future, many other subprojects may be included here.
+* LIBJPEG (optional)
+* CURL
+* LIBRT (required if --enable-multiprocess is given)
+* EXPAT (required if if --enable-components is given)
+* FFMPEG
+  + libavcodec
+  + libavdevice
+  + libavformat
+  + libavutil
+  + libswresample
+  + libswscale
+* SDL2
+* SDL2_image
+* SDL2_ttf
+* XERCES-C

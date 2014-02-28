@@ -1,26 +1,62 @@
-# not a GNU package. You can remove this line, if
-# have all needed files, that a GNU package needs
-AUTOMAKE_OPTIONS = foreign 1.4
-LIBS =
-SUBDIRS = files src include/tuner
+include $(top_srcdir)/build-aux/Makefile.am.common
 
-MAINTAINERCLEANFILES = 	aclocal.m4 \
-			config.log \
-			config.guess \
-			config.h.in \
-			config.status \
-			config.sub \
-			configure \
-			depcomp \
-			install-sh \
-			libtool \
-			ltmain.sh \
-			Makefile.in \
-			missing \
-			mkinstalldirs \
-			autom4te.cache/* \
-			.deps/*
+################################ Libraries #################################
+AM_CPPFLAGS =\
+  $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(INCLUDE_GINGACC_CM)\
+  $(INCLUDE_GINGACC_MB)\
+  $(INCLUDE_GINGACC_TUNER)\
+  $(NULL)
 
-maintainer-clean-local:
-	rm -rf .deps
-	rm -rf autom4te.cache
+AM_CXXFLAGS = $(PTHREAD_CFLAGS)
+AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
+
+gingacctunerlib_LTLIBRARIES = libgingacctuner.la
+
+libgingacctuner_la_SOURCES =\
+  src/providers/MulticastProvider.cpp\
+  src/providers/Channel.cpp\
+  src/providers/UnicastProvider.cpp\
+  src/providers/FileSystemProvider.cpp\
+  src/NetworkInterface.cpp\
+  src/Tuner.cpp\
+  $(NULL)
+
+if BUILD_VIDEO4LINUX
+libgingacctuner_la_SOURCES +=\
+  src/providers/frontends/isdbt/ISDBTFrontend.cpp\
+  src/providers/frontends/isdbt/ISDBTProvider.cpp\
+  src/providers/frontends/isdbt/RingBuffer.c\
+  $(NULL)
+endif
+
+################################# Headers ##################################
+if INSTALL_HEADERS
+gingacctunerinclude_HEADERS =\
+  include/tuner/ITuner.h\
+  include/tuner/ITunerListener.h\
+  include/tuner/INetworkInterface.h\
+  $(NULL)
+
+providersincludedir = $(gingacctunerincludedir)/providers
+providersinclude_HEADERS =\
+  include/tuner/providers/IDataProvider.h\
+  include/tuner/providers/IChannel.h\
+  include/tuner/providers/ISTCProvider.h\
+  include/tuner/providers/IProviderListener.h\
+  $(NULL)
+
+frontendsincludedir = $(providersincludedir)/frontends
+frontendsinclude_HEADERS =\
+  include/tuner/providers/frontends/IFrontendFilter.h\
+  $(NULL)
+endif
+
+############################## Configuration ###############################
+gingacctunerconfdir = $(gingaconfdir)/tuner
+gingacctunerconf_DATA =\
+  files/network/tuner.ini\
+  files/network/isdbt.ini\
+  files/img/tuning.png\
+  $(NULL)

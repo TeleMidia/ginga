@@ -1,0 +1,18 @@
+LTLDFLAGS = -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
+MAINTAINERCLEANFILES = Makefile.in
+
+INCLUDE_TELEMIDIA_UTIL = -I$(top_srcdir)/telemidia-util/include
+INCLUDE_GINGACC_SYSTEM = -I$(top_srcdir)/gingacc-system/include
+INCLUDE_GINGACC_CM = -I$(top_srcdir)/gingacc-cm/include
+INCLUDE_GINGACC_IC = -I$(top_srcdir)/gingacc-ic/include
+INCLUDE_GINGACC_MB = -I$(top_srcdir)/gingacc-mb/include
+INCLUDE_GINGACC_CONTEXTMANAGER = -I$(top_srcdir)/gingacc-contextmanager/include
+INCLUDE_GINGACC_MULTIDEVICE = -I$(top_srcdir)/gingacc-multidevice/include
+INCLUDE_GINGACC_TUNER = -I$(top_srcdir)/gingacc-tuner/include
+INCLUDE_GINGACC_TSPARSER = -I$(top_srcdir)/gingacc-tsparser/include
+INCLUDE_GINGACC_DATAPROCESSING = -I$(top_srcdir)/gingacc-dataprocessing/include
+INCLUDE_GINGACC_PLAYER = -I$(top_srcdir)/gingacc-player/include
+INCLUDE_NCL30 = -I$(top_srcdir)/ncl30/include
+INCLUDE_NCL30_CONVERTER = -I$(top_srcdir)/ncl30-converter/include
+INCLUDE_GINGA_NCL = -I$(top_srcdir)/gingancl/include
+INCLUDE_GINGA_LSSM = -I$(top_srcdir)/gingalssm/include

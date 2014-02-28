@@ -74,25 +74,7 @@ using namespace::br::pucrio::telemidia::util;
 
 #include "player/LuaPlayer.h"
 
-extern "C"
-{
-#include "Event.h"
-}
-
-int luaopen_canvas (lua_State *);
-int lua_createcanvas (lua_State *, ISurface *, int);
-
 LUAPLAYER_BEGIN_DECLS
-
-// Error logging.
-#define __errprint(format, ...)                         \
-     do {                                               \
-          fflush (stdout);                              \
-          fprintf (stderr, format"\n", ## __VA_ARGS__); \
-          fflush (stderr);                              \
-     } while (0)
-#define error(f, ...)   __errprint ("LuaPlayer ERROR: "f, ## __VA_ARGS__)
-#define warning(f, ...) __errprint ("LuaPlayer Warning: "f, ## __VA_ARGS__)
 
 // Execution trace.
 #ifdef LUAPLAYER_ENABLE_TRACE
@@ -156,6 +138,7 @@ pthread_t LuaPlayer::nc_update_tid;
 
 void *LuaPlayer::nc_update_thread (void *data)
 {
+#if 0
      while (true)
      {
           SystemCompat::uSleep ((NC_UPDATE_DELAY) * 1000);
@@ -207,7 +190,7 @@ void *LuaPlayer::nc_update_thread (void *data)
 
           MUTEX_UNLOCK (&nc_update_mutex);
      }
-
+#endif
      return NULL;
 }
 
@@ -287,6 +270,7 @@ void LuaPlayer::unlock (void)
 
 bool LuaPlayer::doPlay (void)
 {
+#if 0
      lua_State *L;
      ISurface *surface;
 
@@ -329,7 +313,7 @@ bool LuaPlayer::doPlay (void)
      }
 
      this->im->addApplicationInputEventListener (this);
-
+#endif
      return true;
 }
 
@@ -337,6 +321,7 @@ bool LuaPlayer::doPlay (void)
 
 void LuaPlayer::doStop (void)
 {
+#if 0
      lua_State *L;
 
      TRACE0 ();
@@ -355,6 +340,7 @@ void LuaPlayer::doStop (void)
      this->im->removeApplicationInputEventListener (this);
      this->forcedNaturalEnd = true;
      this->hasExecuted = true;
+#endif
 }
 
 
@@ -362,6 +348,7 @@ void LuaPlayer::doStop (void)
 
 LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 {
+#if 0
      TRACE ("id=%d, mrl='%s'", id, mrl.c_str ());
 
      // FIXME: This is *WRONG*: the chdir() call changes the working
@@ -385,10 +372,12 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
      this->hasExecuted = false;
      this->isKeyHandler = false;
      this->scope = "";
+#endif
 }
 
 LuaPlayer::~LuaPlayer (void)
 {
+#if 0
      this->lock ();
      LocalScreenManager::removeIEListenerInstance(this);
      TRACE0 ();
@@ -411,6 +400,7 @@ LuaPlayer::~LuaPlayer (void)
 
      this->unlock ();
      MUTEX_FINI (&this->mutex);
+#endif
 }
 
 
@@ -418,6 +408,7 @@ LuaPlayer::~LuaPlayer (void)
 
 void LuaPlayer::abort (void)
 {
+#if 0
      this->lock ();
      TRACE0 ();
 
@@ -426,10 +417,12 @@ void LuaPlayer::abort (void)
      this->stop ();
 
      this->unlock ();
+#endif
 }
 
 void LuaPlayer::pause (void)
 {
+#if 0
      this->lock ();
      TRACE0 ();
 
@@ -438,10 +431,12 @@ void LuaPlayer::pause (void)
      Player::pause ();
 
      this->unlock ();
+#endif
 }
 
 bool LuaPlayer::play (void)
 {
+#if 0
      bool status;
 
      this->lock ();
@@ -467,10 +462,12 @@ error:
      this->unlock ();
 
      return status;
+#endif
 }
 
 void LuaPlayer::resume (void)
 {
+#if 0
      this->lock ();
      TRACE0 ();
 
@@ -479,10 +476,12 @@ void LuaPlayer::resume (void)
      Player::resume ();
 
      this->unlock ();
+#endif
 }
 
 void LuaPlayer::stop (void)
 {
+#if 0
      this->lock ();
      TRACE0 ();
 
@@ -498,10 +497,12 @@ void LuaPlayer::stop (void)
      Player::stop ();
 
      this->unlock ();
+#endif
 }
 
 bool LuaPlayer::hasPresented (void)
 {
+#if 0
      bool hasExecuted;
 
      this->lock ();
@@ -512,20 +513,24 @@ bool LuaPlayer::hasPresented (void)
      this->unlock ();
 
      return hasExecuted;
+#endif
 }
 
 void LuaPlayer::setCurrentScope (string name)
 {
+#if 0
      this->lock ();
      TRACE ("name='%s'", name.c_str ());
 
      this->scope = name;
 
      this->unlock ();
+#endif
 }
 
 bool LuaPlayer::setKeyHandler (bool b)
 {
+#if 0
      this->lock ();
      TRACE ("b=%s", b ? "true" : "false");
 
@@ -533,10 +538,12 @@ bool LuaPlayer::setKeyHandler (bool b)
 
      this->unlock ();
      return b;
+#endif
 }
 
 void LuaPlayer::setPropertyValue (string name, string value)
 {
+#if 0
      this->lock ();
      TRACE ("name='%s', value='%s'", name.c_str (), value.c_str ());
 
@@ -559,6 +566,7 @@ void LuaPlayer::setPropertyValue (string name, string value)
      Player::setPropertyValue (name, value);
 
      this->unlock ();
+#endif
 }
 
 
@@ -566,6 +574,7 @@ void LuaPlayer::setPropertyValue (string name, string value)
 
 bool LuaPlayer::userEventReceived (IInputEvent *evt)
 {
+#if 0
      this->lock ();
      TRACE0 ();
 
@@ -589,6 +598,7 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 tail:
      this->unlock ();
      return true;
+#endif
 }
 
 
@@ -596,6 +606,7 @@ tail:
 
 GingaScreenID LuaPlayer::getScreenId (void)
 {
+#if 0
      GingaScreenID screen;
 
      this->lock ();
@@ -605,10 +616,12 @@ GingaScreenID LuaPlayer::getScreenId (void)
      this->unlock ();
 
      return screen;
+#endif
 }
 
 ILocalScreenManager *LuaPlayer::getScreenManager (void)
 {
+#if 0
      ILocalScreenManager *dm;
 
      this->lock ();
@@ -618,10 +631,12 @@ ILocalScreenManager *LuaPlayer::getScreenManager (void)
      this->unlock ();
 
      return dm;
+#endif
 }
 
 void LuaPlayer::refreshContent (void)
 {
+#if 0
      this->lock ();
 
      if (this->notifyContentUpdate)
@@ -631,6 +646,7 @@ void LuaPlayer::refreshContent (void)
      }
 
      this->unlock ();
+#endif
 }
 
 

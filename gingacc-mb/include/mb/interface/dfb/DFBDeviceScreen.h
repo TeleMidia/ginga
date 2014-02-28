@@ -52,7 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #endif
@@ -105,7 +105,7 @@ namespace mb {
 			unsigned int hRes;
 			unsigned int wRes;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			static IComponentManager* cm;
 #endif
 			set<IWindow*> windowPool;

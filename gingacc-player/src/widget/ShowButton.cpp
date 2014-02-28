@@ -57,7 +57,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 #else

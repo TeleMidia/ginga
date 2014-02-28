@@ -1,31 +1,47 @@
-# not a GNU package. You can remove this line, if
-# have all needed files, that a GNU package needs
-AUTOMAKE_OPTIONS = foreign 1.4
-LIBS =
-SUBDIRS = files \
-          include/contextmanager \
-          include/contextmanager/system \
-          include/contextmanager/user \
-          src/ \
-          test
+include $(top_srcdir)/build-aux/Makefile.am.common
 
-MAINTAINERCLEANFILES = 	aclocal.m4 \
-			config.log \
-			config.guess \
-			config.h.in \
-			config.status \
-			config.sub \
-			configure \
-			depcomp \
-			install-sh \
-			libtool \
-			ltmain.sh \
-			Makefile.in \
-			missing \
-			mkinstalldirs \
-			autom4te.cache/* \
-			.deps/*
+################################ Libraries #################################
+AM_CPPFLAGS =\
+  $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(INCLUDE_GINGACC_CM)\
+  $(INCLUDE_GINGACC_MB)\
+  $(INCLUDE_GINGACC_CONTEXTMANAGER)\
+  $(NULL)
 
-maintainer-clean-local:
-	rm -rf .deps
-	rm -rf autom4te.cache
+AM_CXXFLAGS = $(PTHREAD_CFLAGS)
+AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
+
+gingacccontextmanagerlib_LTLIBRARIES = libgingacccontextmanager.la
+
+libgingacccontextmanager_la_SOURCES =\
+  src/ContextManager.cpp\
+  src/user/GingaUser.cpp\
+  src/system/SystemInfo.cpp\
+  $(NULL)
+
+################################# Headers ##################################
+if INSTALL_HEADERS
+gingacccontextmanagerinclude_HEADERS =\
+  include/contextmanager/IContextManager.h\
+  include/contextmanager/IContextListener.h\
+  include/contextmanager/user/IGingaUser.h\
+  include/contextmanager/system/ISystemInfo.h\
+  $(NULL)
+
+systemincludedir = $(gingacccontextmanagerincludedir)/system
+systeminclude_HEADERS =\
+  include/contextmanager/system/ISystemInfo.h\
+  $(NULL)
+
+userincludedir = $(gingacccontextmanagerincludedir)/user
+userinclude_HEADERS =\
+  include/contextmanager/user/IGingaUser.h\
+  $(NULL)
+endif
+############################## Configuration ###############################
+gingacccontextmanagerconfdir = $(gingaconfdir)/contextmanager
+gingacccontextmanagerconf_DATA =\
+  files/users.ini\
+  files/contexts.ini\
+  $(NULL)

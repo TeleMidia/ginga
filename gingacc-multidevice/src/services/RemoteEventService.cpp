@@ -54,7 +54,7 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else
@@ -68,14 +68,14 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 	IContextManager* RemoteEventService::contextManager = NULL;
 	RemoteEventService* RemoteEventService::_instance = NULL;
 
 	RemoteEventService::RemoteEventService() {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		RemoteEventService::contextManager = ((ContextManagerCreator*)(cm->getObject(
 						"ContextManager")))();
 #else

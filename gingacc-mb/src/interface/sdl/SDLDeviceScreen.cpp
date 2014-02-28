@@ -67,14 +67,16 @@ extern "C" {
 #include <stdlib.h>
 }
 
-#if !HAVE_COMPSUPPORT
-#include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
-#include "mb/interface/sdl/content/image/SDLImageProvider.h"
-#include "mb/interface/sdl/content/text/SDLFontProvider.h"
-#include "mb/interface/sdl/content/video/SDLVideoProvider.h"
+#if HAVE_COMPONENTS
+# include "cm/IComponentManager.h"
+#else
+# include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
+# include "mb/interface/sdl/content/image/SDLImageProvider.h"
+# include "mb/interface/sdl/content/text/SDLFontProvider.h"
+# include "mb/interface/sdl/content/video/SDLVideoProvider.h"
 #endif
 
-#if defined(SDL_VIDEO_DRIVER_X11)
+#if defined (SDL_VIDEO_DRIVER_X11)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -86,7 +88,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	IComponentManager* SDLDeviceScreen::cm = IComponentManager::getCMInstance();
 #endif
 
@@ -984,7 +986,7 @@ namespace mb {
 			strSym = aSystem;
 		}
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
 
 		if (provider == NULL) {
@@ -1059,7 +1061,7 @@ namespace mb {
 
 		lockSDL();
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		provider = ((FontProviderCreator*)(cm->getObject("SDLFontProvider")))(
 				id, mrl, fontSize);
 
@@ -1099,7 +1101,7 @@ namespace mb {
 
 		//lockSDL(); There is no SDL call inside SDLImageProvider constructor
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 		provider = ((ImageProviderCreator*)(cm->getObject(
 				"SDLImageProvider")))(id, mrl);
 #else
@@ -1741,7 +1743,7 @@ namespace mb {
 					}
 				}
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 				if (strSym != "") {
 					cm->releaseComponentFromObject(strSym);
 				}

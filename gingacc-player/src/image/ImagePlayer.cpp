@@ -75,13 +75,13 @@ namespace player {
 #if HAVE_IC
 			IInteractiveChannelManager* icm;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			icm = ((ICMCreator*)(cm->getObject(
 					"InteractiveChannelManager")))();
 
 #else
 			icm = InteractiveChannelManager::getInstance();
-#endif //HAVE_COMPSUPPORT
+#endif //HAVE_COMPONENTS
 
 			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
 			newMrl = itos((long int)this);
@@ -127,7 +127,7 @@ namespace player {
 									SystemCompat::getFUriD()));
 				}
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 				glf = ((GingaLocatorFactoryCreator*)(cm->getObject(
 						"GingaLocatorFactory")))();
 #else

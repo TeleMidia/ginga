@@ -55,9 +55,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
+#include "tsparser/TransportSection.h"
 #else
 #include "tsparser/TransportSection.h"
 #endif
@@ -69,7 +70,7 @@ namespace ginga {
 namespace core {
 namespace dataprocessing {
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
@@ -298,7 +299,7 @@ namespace dataprocessing {
 
 		i = hFilteredSections.find(pid);
 		if (i == hFilteredSections.end()) {
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			filteredSection = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(buf, len);
 
@@ -424,7 +425,7 @@ namespace dataprocessing {
 				handler->headerSize += headerSizeLeft;
 				if (handler->headerSize == 8) {
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 					handler->section = ((TSSectionCreator*)(
 							cm->getObject("TransportSection")))(
 									handler->sectionHeader, 
@@ -525,7 +526,7 @@ namespace dataprocessing {
 					payloadSize);
 
 			/* Creates the new section */
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			handler->section = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(buffer, payloadSize + handler->headerSize);
 
@@ -543,7 +544,7 @@ namespace dataprocessing {
 			clog << " for PID = '" << pack->getPid() << "'";
 			clog << "Header is ready already!" << endl;*/
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 			handler->section = ((TSSectionCreator*)(cm->getObject(
 					"TransportSection")))(data, payloadSize);
 

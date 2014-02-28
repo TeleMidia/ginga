@@ -1,0 +1,3 @@
+On MS Windows, most packages depend on the following:
+* boost (http://www.boost.org/users/download/)
+* dlfcn (http://code.google.com/p/dlfcn-win32/)

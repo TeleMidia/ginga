@@ -62,7 +62,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_COMPSUPPORT
+#if HAVE_COMPONENTS
 #include "cm/IComponentManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #else

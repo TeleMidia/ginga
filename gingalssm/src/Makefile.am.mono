@@ -1,0 +1,490 @@
+#Copied by autogen.sh/configure.ac according to SO and Ginga characteristics
+
+INCLUDES                = \
+                          -I/opt/local/include/ \
+                          -I$(prefix)/include/ \
+                          -I${prefix}/include/SDL2/ \
+                          -I$(prefix)/include/directfb/ \
+                          -I$(prefix)/include/ginga/ \
+                          -I../../telemidia-util-cpp/include \
+                          -I../../gingacc-cpp/gingacc-system/include \
+                          -I../../gingacc-cpp/gingacc-mb/include \
+                          -I../../gingacc-cpp/gingacc-contextmanager/include \
+                          -I../../gingacc-cpp/gingacc-player/include \
+                          -I../../gingacc-cpp/gingacc-player/src/application/imperative/lua \
+                          -I../../ncl30-cpp/ncl30/include \
+                          -I../../ncl30-cpp/ncl30-converter/include \
+                          -I../../ncl30-cpp/ncl30-converter/include/converter/framework \
+                          -I../../gingancl-cpp/include \
+                          -I../../gingalssm-cpp/include \
+                          $(all_includes)
+
+LIBS                    =
+
+#############
+# INI FILES #
+#############
+
+#
+# GingaCC-CM
+############
+
+gcccmfildir             = \
+                          $(prefix)/etc/ginga/files
+
+gcccmfil_DATA           = \
+                          ../../gingacc-cpp/gingacc-cm/files/componentDescription.xml
+
+#
+# GingaCC-ContextM
+##################
+
+contextmanagerdir       = \
+                          $(prefix)/etc/ginga/files/contextmanager/
+
+contextmanager_DATA     = \
+                          ../../gingacc-cpp/gingacc-contextmanager/files/users.ini \
+                          ../../gingacc-cpp/gingacc-contextmanager/files/contexts.ini
+
+#
+# GingaCC-MB
+############
+
+gccmbfildir             = \
+                          $(prefix)/etc/ginga/files/mb/config/
+
+gccmbfil_DATA           = \
+                          ../../gingacc-cpp/gingacc-mb/files/config/input.cfg \
+                          ../../gingacc-cpp/gingacc-mb/files/config/_tracking.xml
+
+#
+# GingaCC-Player
+################
+
+buttondir               = \
+                          $(prefix)/etc/ginga/files/img/button/
+
+button_DATA             = \
+                          ../../gingacc-cpp/gingacc-player/files/images/pauseButton.png \
+                          ../../gingacc-cpp/gingacc-player/files/images/playButton.png \
+                          ../../gingacc-cpp/gingacc-player/files/images/stopButton.png
+
+fontdir                 = \
+                          $(prefix)/etc/ginga/files/font/
+
+font_DATA               = \
+                          ../../gingacc-cpp/gingacc-player/files/fonts/decker.ttf \
+                          ../../gingacc-cpp/gingacc-player/files/fonts/vera.ttf
+
+luadir                  = \
+                          $(prefix)/lib/lua/5.1/
+
+lua_DATA                = \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/tcp_event.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/oo.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/ui.lua
+
+luaguidir               = \
+                          $(prefix)/lib/lua/5.1/gui
+
+luagui_DATA             = \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/Anim.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/event.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/ImageDraw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/MUVAnim.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/TextDraw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/Draw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/gui.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/InputDraw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/RectDraw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/Timer.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/BoxDraw.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/BoxTimer.lua \
+                          ../../gingacc-cpp/gingacc-player/files/scripts/gui/TextInputDraw.lua
+
+#
+# Ginga-NCL
+###########
+
+miscdir                 = \
+                          $(prefix)/etc/ginga/files/cfg/formatter/
+
+misc_DATA               = \
+                          ../../gingancl-cpp/files/config/formatter/players/ctrldefs.ini \
+                          ../../gingancl-cpp/files/config/formatter/players/mimedefs.ini
+
+epgimgdir               = \
+                          $(prefix)/etc/ginga/files/img/epgfactory/
+
+epgimg_DATA             = \
+                          ../../gingancl-cpp/files/epgFactory/img/emissora.png \
+                          ../../gingancl-cpp/files/epgFactory/img/epg01.png \
+                          ../../gingancl-cpp/files/epgFactory/img/focus_05h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/focus_15h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/focus_1h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/focus_2h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/programacao_05h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/programacao_15h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/programacao_1h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/programacao_2h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/selecao_05h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/selecao_15h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/selecao_1h.png \
+                          ../../gingancl-cpp/files/epgFactory/img/selecao_2h.png
+
+epgsrcdir               = \
+                          $(prefix)/lib/ginga/epgfactory/src
+
+epgsrc_DATA             = \
+                          ../../gingancl-cpp/files/epgFactory/src/epg.ncl \
+                          ../../gingancl-cpp/files/epgFactory/src/epg.lua \
+                          ../../gingancl-cpp/files/epgFactory/src/epgTable.lua
+
+rollerdir               = \
+                          $(prefix)/etc/ginga/files/img/roller
+
+roller_DATA             = \
+                          ../../gingancl-cpp/files/img/b1.png \
+                          ../../gingancl-cpp/files/img/b2.png \
+                          ../../gingancl-cpp/files/img/b3.png \
+                          ../../gingancl-cpp/files/img/b4.png \
+                          ../../gingancl-cpp/files/img/b5.png \
+                          ../../gingancl-cpp/files/img/b6.png \
+                          ../../gingancl-cpp/files/img/b7.png \
+                          ../../gingancl-cpp/files/img/b8.png \
+                          ../../gingancl-cpp/files/img/loading.png
+
+mdimgdir                = \
+                          $(prefix)/etc/ginga/files/md/
+
+mdimg_DATA              = \
+                          ../../gingancl-cpp/files/img/active-device-reset.png \
+                          ../../gingancl-cpp/files/img/active-device.png
+
+###########
+# SOURCES #
+###########
+
+libdir                  = \
+                          $(prefix)/lib/ginga
+
+lib_LTLIBRARIES         = \
+                          libgingalssm.la
+
+#TeleMidia-Util
+tmutsrc                 = \
+                          ../../telemidia-util-cpp/src/functions.cpp \
+                          ../../telemidia-util-cpp/src/Color.cpp \
+                          ../../telemidia-util-cpp/src/Base64.cpp
+
+#Ginga-CC System
+gcsysrc                 = \
+                          ../../gingacc-cpp/gingacc-system/src/thread/Thread.cpp \
+                          ../../gingacc-cpp/gingacc-system/src/fs/GingaLocatorFactory.cpp \
+                          ../../gingacc-cpp/gingacc-system/src/compat/SystemCompat.cpp
+
+#Ginga-CC Multimedia Backend
+gcmbsrc                 = \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/CodeMap.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/InputEventFactory.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/Matrix.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/InputManager.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/LocalScreenManager.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/SDLDeviceScreen.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/input/SDLEventBuffer.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/input/SDLInputEvent.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/output/SDLSurface.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/output/SDLWindow.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/content/audio/SDLAudioProvider.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/content/audio/SDL2ffmpeg.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/content/image/SDLImageProvider.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/content/text/SDLFontProvider.cpp \
+                          ../../gingacc-cpp/gingacc-mb/src/interface/sdl/content/video/SDLVideoProvider.cpp
+
+gcmblib                 = \
+                          -lSDL2 \
+                          -lSDL2_image \
+                          -lSDL2_ttf \
+                          -lpthread \
+                          -lavcodec \
+                          -lavdevice \
+                          -lavformat \
+                          -lavutil \
+                          -lswresample \
+                          -lswscale
+
+#Ginga-CC Context Manager
+gccmsrc                 = \
+                          ../../gingacc-cpp/gingacc-contextmanager/src/ContextManager.cpp \
+                          ../../gingacc-cpp/gingacc-contextmanager/src/user/GingaUser.cpp \
+                          ../../gingacc-cpp/gingacc-contextmanager/src/system/SystemInfo.cpp
+
+#Ginga-CC Player
+gcplsrc                 = \
+                          ../../gingacc-cpp/gingacc-player/src/Player.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/application/imperative/lua/LuaCanvas.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/application/imperative/lua/LuaPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/image/ImagePlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/text/TextPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/text/srt/SrtPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/text/plain/PlainTxtPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/tv/ProgramAV.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/tv/ChannelPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/video/AVPlayer.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/widget/ShowButton.cpp
+
+gcpllib                 = \
+                          -llua \
+                          -lcore \
+                          -L/usr/local/lib/lua/5.1/ \
+                          -L/usr/local/lib/lua/5.1/socket/
+#                          -L$(prefix)/lib/lua/5.1 \
+                          -L$(prefix)/lib/lua/5.1/socket
+
+if AWESOMIUMLIB
+gcplsrc                += \
+                          ../../gingacc-cpp/gingacc-player/src/application/declarative/xhtml/awesomium/AwesomiumHandler.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/application/declarative/xhtml/awesomium/AwesomiumPlayer.cpp
+
+gcpllib                += \
+                          -lawesomium \
+                          -L${prefix}/lib/awesomium
+endif
+
+if BERKELIUMLIB
+gcplsrc                += \
+                          ../../gingacc-cpp/gingacc-player/src/application/declarative/xhtml/berkelium/BerkeliumHandler.cpp \
+                          ../../gingacc-cpp/gingacc-player/src/application/declarative/xhtml/berkelium/BerkeliumPlayer.cpp
+
+gcpllib                += \
+                          -llibberkelium \
+                          -L/usr/local/lib/ \
+                          -L/opt/local/lib/ \
+                          -L${prefix}/lib/
+endif
+
+#NCL30
+ncllsrc                 = \
+                          ../../ncl30-cpp/ncl30/src/util/Comparator.cpp \
+                          ../../ncl30-cpp/ncl30/src/transition/Transition.cpp \
+                          ../../ncl30-cpp/ncl30/src/transition/TransitionBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/transition/TransitionUtil.cpp \
+                          ../../ncl30-cpp/ncl30/src/time/flexibility/LinearTimeCostFunction.cpp \
+                          ../../ncl30-cpp/ncl30/src/time/flexibility/TemporalFlexibilityFunction.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/CompositeRule.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/DescriptorSwitch.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/Rule.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/RuleBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/SimpleRule.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/SwitchContent.cpp \
+                          ../../ncl30-cpp/ncl30/src/switches/SwitchNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/reuse/ReferredNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/reuse/ReferNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/navigation/FocusDecoration.cpp \
+                          ../../ncl30-cpp/ncl30/src/navigation/KeyNavigation.cpp \
+                          ../../ncl30-cpp/ncl30/src/metainformation/Meta.cpp \
+                          ../../ncl30-cpp/ncl30/src/metainformation/Metadata.cpp \
+                          ../../ncl30-cpp/ncl30/src/link/Bind.cpp \
+                          ../../ncl30-cpp/ncl30/src/link/CausalLink.cpp \
+                          ../../ncl30-cpp/ncl30/src/link/Link.cpp \
+                          ../../ncl30-cpp/ncl30/src/layout/LayoutRegion.cpp \
+                          ../../ncl30-cpp/ncl30/src/layout/DeviceLayout.cpp \
+                          ../../ncl30-cpp/ncl30/src/layout/RegionBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/Anchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/CircleSpatialAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/ContentAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/IntervalAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/LabeledAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/LambdaAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/Port.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/PropertyAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/RectangleSpatialAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/RelativeTimeIntervalAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/SampleIntervalAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/SwitchPort.cpp \
+                          ../../ncl30-cpp/ncl30/src/interfaces/TextAnchor.cpp \
+                          ../../ncl30-cpp/ncl30/src/descriptor/Descriptor.cpp \
+                          ../../ncl30-cpp/ncl30/src/descriptor/DescriptorBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/Action.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/AssessmentStatement.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/AttributeAssessment.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/CausalConnector.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/CompoundAction.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/CompoundCondition.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/CompoundStatement.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/Connector.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/ConnectorBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/EventTransitionAssessment.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/EventUtil.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/Role.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/SimpleAction.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/SimpleCondition.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/TriggerExpression.cpp \
+                          ../../ncl30-cpp/ncl30/src/connectors/ValueAssessment.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/AbsoluteReferenceContent.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/CompositeNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/Content.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/ContentNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/ContentTypeManager.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/ContextNode.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/Node.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/NodeEntity.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/PrivateBase.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/ReferenceContent.cpp \
+                          ../../ncl30-cpp/ncl30/src/components/RelativeReferenceContent.cpp \
+                          ../../ncl30-cpp/ncl30/src/animation/Animation.cpp \
+                          ../../ncl30-cpp/ncl30/src/Base.cpp \
+                          ../../ncl30-cpp/ncl30/src/Entity.cpp \
+                          ../../ncl30-cpp/ncl30/src/NclDocument.cpp \
+                          ../../ncl30-cpp/ncl30/src/Parameter.cpp
+
+#NCL30-Converter
+nclcsrc                 = \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclComponentsConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclConnectorsConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclDocumentConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclImportConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclInterfacesConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclLayoutConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclLinkingConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclMetainformationConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclPresentationControlConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclPresentationSpecConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclStructureConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/ncl/NclTransitionConverter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/DOMTreeErrorReporter.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/DocumentParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/XMLParsing.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclComponentsParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclConnectorsParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclDocumentParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclImportParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclInterfacesParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclLayoutParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclLinkingParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclMetainformationParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclPresentationControlParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclPresentationSpecificationParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclStructureParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/framework/ncl/NclTransitionParser.cpp \
+                          ../../ncl30-cpp/ncl30-converter/src/smil/SMILNCMDocumentConverter.cpp
+
+nclclib                 = \
+                          -lxerces-c \
+                          -lxerces-depdom \
+                          -L/usr/local/lib/ \
+                          -L/opt/local/lib/
+
+#Ginga-NCL
+gnclsrc                 = \
+                          ../../gingancl-cpp/src/FormatterMediator.cpp \
+                          ../../gingancl-cpp/src/FormatterScheduler.cpp \
+                          ../../gingancl-cpp/src/privatebase/PrivateBaseManager.cpp \
+                          ../../gingancl-cpp/src/privatebase/PrivateBaseContext.cpp \
+                          ../../gingancl-cpp/src/animation/AnimationController.cpp \
+                          ../../gingancl-cpp/src/adaptation/context/ContextBase.cpp \
+                          ../../gingancl-cpp/src/adaptation/context/PresentationContext.cpp \
+                          ../../gingancl-cpp/src/adaptation/context/RuleAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/application/imperative/lua/LuaPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/application/ApplicationPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/av/AVPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/av/ChannelPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/av/tv/ProgramAVPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/image/ImagePlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/text/PlainTxtPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/text/SubtitlePlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/FormatterPlayerAdapter.cpp \
+                          ../../gingancl-cpp/src/adapters/NominalEventMonitor.cpp \
+                          ../../gingancl-cpp/src/adapters/PlayerAdapterManager.cpp \
+                          ../../gingancl-cpp/src/emconverter/FormatterConverter.cpp \
+                          ../../gingancl-cpp/src/emconverter/FormatterLinkConverter.cpp \
+                          ../../gingancl-cpp/src/focus/FormatterFocusManager.cpp \
+                          ../../gingancl-cpp/src/model/time/CostFunctionDuration.cpp \
+                          ../../gingancl-cpp/src/model/time/DurationFactory.cpp \
+                          ../../gingancl-cpp/src/model/time/FlexibleTimeMeasurement.cpp \
+                          ../../gingancl-cpp/src/model/time/LinearCostFunctionDuration.cpp \
+                          ../../gingancl-cpp/src/model/time/TimeMeasurement.cpp \
+                          ../../gingancl-cpp/src/model/time/UnflexibleDuration.cpp \
+                          ../../gingancl-cpp/src/model/switches/ExecutionObjectSwitch.cpp \
+                          ../../gingancl-cpp/src/model/switches/SwitchEvent.cpp \
+                          ../../gingancl-cpp/src/model/presentation/focus/FocusSourceManager.cpp \
+                          ../../gingancl-cpp/src/model/presentation/CascadingDescriptor.cpp \
+                          ../../gingancl-cpp/src/model/presentation/FormatterDeviceRegion.cpp \
+                          ../../gingancl-cpp/src/model/presentation/FormatterLayout.cpp \
+                          ../../gingancl-cpp/src/model/presentation/FormatterRegion.cpp \
+                          ../../gingancl-cpp/src/model/link/FormatterCausalLink.cpp \
+                          ../../gingancl-cpp/src/model/link/FormatterLink.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkAction.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkAndCompoundTriggerCondition.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkAssessmentStatement.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkAssignmentAction.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkAttributeAssessment.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkCompoundAction.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkCompoundStatement.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkCompoundTriggerCondition.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkRepeatAction.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkSimpleAction.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkTransitionTriggerCondition.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkTriggerCondition.cpp \
+                          ../../gingancl-cpp/src/model/link/LinkValueAssessment.cpp \
+                          ../../gingancl-cpp/src/model/event/transition/BeginEventTransition.cpp \
+                          ../../gingancl-cpp/src/model/event/transition/EndEventTransition.cpp \
+                          ../../gingancl-cpp/src/model/event/transition/EventTransition.cpp \
+                          ../../gingancl-cpp/src/model/event/transition/EventTransitionManager.cpp \
+                          ../../gingancl-cpp/src/model/event/transition/TransitionDispatcher.cpp \
+                          ../../gingancl-cpp/src/model/event/AnchorEvent.cpp \
+                          ../../gingancl-cpp/src/model/event/AttributionEvent.cpp \
+                          ../../gingancl-cpp/src/model/event/FormatterEvent.cpp \
+                          ../../gingancl-cpp/src/model/event/PresentationEvent.cpp \
+                          ../../gingancl-cpp/src/model/event/SelectionEvent.cpp \
+                          ../../gingancl-cpp/src/model/components/CompositeExecutionObject.cpp \
+                          ../../gingancl-cpp/src/model/components/ExecutionObject.cpp \
+                          ../../gingancl-cpp/src/model/components/NodeNesting.cpp \
+                          ../../gingancl-cpp/src/model/components/ApplicationExecutionObject.cpp \
+                          ../../gingancl-cpp/src/multidevice/FormatterMultiDevice.cpp \
+                          ../../gingancl-cpp/src/multidevice/FormatterBaseDevice.cpp \
+                          ../../gingancl-cpp/src/prefetch/PrefetchManager.cpp
+
+if AWESOMIUMLIB
+gnclsrc                += \
+                          ../../gingancl-cpp/src/adapters/application/declarative/xhtml/awesomium/AwesomiumPlayerAdapter.cpp
+endif
+
+if BERKELIUMLIB
+gnclsrc                += \
+                          ../../gingancl-cpp/src/adapters/application/declarative/xhtml/berkelium/BerkeliumPlayerAdapter.cpp
+endif
+
+#Ginga Logical SubSystem Manager
+glsmsrc                 = \
+                          ../../gingalssm-cpp/src/PresentationEngineManager.cpp \
+                          ../../gingalssm-cpp/src/CommonCoreManager.cpp \
+                          ../../gingalssm-cpp/src/DataWrapperListener.cpp \
+                          ../../gingalssm-cpp/src/StcWrapper.cpp
+
+#Ginga
+libgingalssm_la_SOURCES = \
+                          $(tmutsrc) \
+                          $(gcsysrc) \
+                          $(gcmbsrc) \
+                          $(gccmsrc) \
+                          $(gcplsrc) \
+                          $(ncllsrc) \
+                          $(nclcsrc) \
+                          $(gnclsrc) \
+                          $(glsmsrc)
+
+libgingalssm_la_LIBADD  = \
+                          -lpthread \
+                          $(gcmblib) \
+                          $(gcpllib) \
+                          $(nclclib) \
+                          $(X11_LIBS)
+
+libgingalssm_la_LDFLAGS = \
+                          -no-undefined \
+                          -version-info 13:1:8
+
+MAINTAINERCLEANFILES    = \
+                          Makefile.in
