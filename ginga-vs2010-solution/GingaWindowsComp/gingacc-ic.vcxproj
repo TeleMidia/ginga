@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{41AD59AF-B011-44B3-8BE2-6C67DDCF740A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+	<OutDir>$(GINGACCIC_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(GINGACCIC_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GINGACCIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_WINDOWS;_USRDLL;GINGACCIC_EXPORTS;HAVE_COMPSUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGACCIC_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCCM_DIR)\include;$(TELEMIDIAUTIL_DIR)\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Components\$(Configuration);$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gingacc-system.lib;gingacc-cm.lib;telemidia-util-cpp.lib;libcurl.lib;pthreadVSE2.lib;dlfcn.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <!-- <ClCompile Include="$(GINGACCIC_DIR)\src\ccrtpic\CCRTPClient.cpp" /> -->
+    <!-- <ClCompile Include="$(GINGACCIC_DIR)\src\ccrtpic\CCRTPInteractiveChannel.cpp" /> -->
+    <ClCompile Include="$(GINGACCIC_DIR)\src\curlic\CurlInteractiveChannel.cpp" />
+    <ClCompile Include="$(GINGACCIC_DIR)\src\InteractiveChannelManager.cpp" />
+    <ClCompile Include="$(GINGACCIC_DIR)\test\test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- <ClInclude Include="$(GINGACCIC_DIR)\include\ic\ccrtpic\CCRTPClient.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCIC_DIR)\include\ic\ccrtpic\CCRTPInteractiveChannel.h" /> -->
+    <ClInclude Include="$(GINGACCIC_DIR)\include\ic\curlic\CurlInteractiveChannel.h" />
+    <ClInclude Include="$(GINGACCIC_DIR)\include\ic\IInteractiveChannel.h" />
+    <ClInclude Include="$(GINGACCIC_DIR)\include\ic\IInteractiveChannelListener.h" />
+    <ClInclude Include="$(GINGACCIC_DIR)\include\ic\IInteractiveChannelManager.h" />
+    <ClInclude Include="$(GINGACCIC_DIR)\include\ic\InteractiveChannelManager.h" />
+    <ClInclude Include="$(GINGACCIC_DIR)\include\GingaccICConf.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

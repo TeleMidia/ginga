@@ -1,0 +1,6 @@
+*.vcxproj.user
+*.suo
+*.sdf
+*Debug/*
+*/Debug/*
+*logFile.txt

@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A9549C57-FC30-4941-8DF9-7A412CE4710B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(GINGACCTUNER_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(GINGACCTUNER_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_WINDOWS;_USRDLL;GINGACCTUNER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_WINDOWS;_USRDLL;GINGACCTUNER_EXPORTS;HAVE_COMPSUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(TELEMIDIAUTIL_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCCM_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Components\$(Configuration);$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>strmiids.lib;dlfcn.lib;gingacc-system.lib;gingacc-mb.lib;gingacc-cm.lib;telemidia-util-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\NetworkInterface.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\BDAGraph.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\BDAProvider.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\Channel.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\Channels.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\FileSystemProvider.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\MulticastProvider.cpp" />
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\Tuner.cpp" />
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\dvbc\DVBCProvider.cpp" /> -->
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\isdbt\ISDBTFrontend.cpp" /> -->
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\isdbt\ISDBTProvider.cpp" /> -->
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\isdbt\RingBuffer.c" /> -->
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\UnicastProvider.cpp" /> -->
+    <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\test\test.cpp" /> -->
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\INetworkInterface.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\ITuner.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\ITunerListener.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\NetworkInterface.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\BDAGraph.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\BDAProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\Channel.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\Channels.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\FileSystemProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\IChannel.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\IDataProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\IProviderListener.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\ISTCProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\MulticastProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\SocketProvider.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\Tuner.h" />
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\GingaccTunerConf.h" />
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\frontend_parameter.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\IFrontendFilter.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\isdbt\ISDBTFrontend.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\isdbt\ISDBTProvider.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\isdbt\RingBuffer.h" /> -->
+    <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\UnicastProvider.h" /> -->
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

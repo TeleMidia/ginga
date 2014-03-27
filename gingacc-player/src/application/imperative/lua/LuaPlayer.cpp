@@ -463,6 +463,7 @@ error:
 
      return status;
 #endif
+	 return 0;
 }
 
 void LuaPlayer::resume (void)
@@ -514,6 +515,7 @@ bool LuaPlayer::hasPresented (void)
 
      return hasExecuted;
 #endif
+	 return 0;
 }
 
 void LuaPlayer::setCurrentScope (string name)
@@ -539,6 +541,7 @@ bool LuaPlayer::setKeyHandler (bool b)
      this->unlock ();
      return b;
 #endif
+	 return 0;
 }
 
 void LuaPlayer::setPropertyValue (string name, string value)
@@ -599,6 +602,7 @@ tail:
      this->unlock ();
      return true;
 #endif
+	 return 0;
 }
 
 
@@ -617,6 +621,7 @@ GingaScreenID LuaPlayer::getScreenId (void)
 
      return screen;
 #endif
+	 return 0;
 }
 
 ILocalScreenManager *LuaPlayer::getScreenManager (void)
@@ -632,6 +637,7 @@ ILocalScreenManager *LuaPlayer::getScreenManager (void)
 
      return dm;
 #endif
+	 return 0;
 }
 
 void LuaPlayer::refreshContent (void)

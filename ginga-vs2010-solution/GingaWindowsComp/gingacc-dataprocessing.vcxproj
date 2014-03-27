@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4B05BCB8-5295-4E18-8BA3-7FA068FC7706}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(GINGACCDATAPROCESSING_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(GINGACCDATAPROCESSING_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;_DEBUG;_WINDOWS;_USRDLL;GINGACCDATAPROCESSING_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;WIN32;NDEBUG;_WINDOWS;_USRDLL;GINGACCDATAPROCESSING_EXPORTS;HAVE_COMPSUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCMB_DIR)\include;$(TELEMIDIAUTIL_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCCM_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\expat_win32bin_2_0_1\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Components\$(Configuration);$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\expat_win32bin_2_0_1\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVSE2.lib;telemidia-util-cpp.lib;gingacc-system.lib;gingacc-cm.lib;;gingacc-tsparser.lib;gingacc-tuner.lib;libexpat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\DataProcessor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Binding.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Biop.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadDataBlock.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadInfoIndication.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadServerInitiate.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DsmccMessageHeader.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\MessageProcessor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\Module.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Ior.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\object\Object.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\object\ObjectProcessor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\ServiceDomain.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\Crc.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\DSMCCSectionPayload.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\MpegDescriptor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTEndpoint.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTProcessor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTReference.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\StreamMode.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\TimeBaseClock.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\StreamEvent.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\EPGProcessor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\FilterManager.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\ncl\edit\EventDescriptor.cpp" />
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\SectionFilter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\DataProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Binding.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Biop.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadDataBlock.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadInfoIndication.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadServerInitiate.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DsmccMessageHeader.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\MessageProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\Module.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Ior.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\IServiceDomainListener.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\IObjectListener.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\Object.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\ObjectProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\ServiceDomain.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\IStreamEvent.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\IStreamEventListener.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\Crc.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\DSMCCSectionPayload.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\MpegDescriptor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTEndpoint.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTReference.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\StreamMode.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\TimeBaseClock.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\StreamEvent.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\EPGProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\FilterManager.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IDataProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IEPGListener.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IEPGProcessor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\ncl\DataFile.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\ncl\edit\EventDescriptor.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\SectionFilter.h" />
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\GingaccDataProcessingConf.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

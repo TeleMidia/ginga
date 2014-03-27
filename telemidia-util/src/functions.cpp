@@ -50,7 +50,7 @@ http://www.telemidia.puc-rio.br
 #include <config.h>
 #include <dirent.h>
 
-#ifndef WIN32
+#ifndef _WIN32
 # define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
 # define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
 # define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
@@ -61,7 +61,7 @@ http://www.telemidia.puc-rio.br
 #  include <dirent.h>
    typedef struct dirent DIRENT;
 # endif
-#else  // WIN32
+#else  // _WIN32
 # define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
 # define IS_LINK(st_mode)	0
 # define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
@@ -71,7 +71,7 @@ http://www.telemidia.puc-rio.br
 
 #include "util/functions.h"
 
-#if WIN32
+#if _WIN32
 # include "atlimage.h"
 #else
 # if HAVE_JPEG
@@ -462,7 +462,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 			return false;
 		}
 
-#ifdef WIN32
+#ifdef _WIN32
 		if (upperCase(sval) == "NAN" || _isnan(value)) {
 #else
 		if (upperCase(sval) == "NAN" ) {
@@ -482,7 +482,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 			return false;
 		}
 
-#ifndef WIN32
+#ifndef _WIN32
 		if (upperCase(sval).find("INF") != std::string::npos) {
 #else
 		if (upperCase(sval).find("INF") != std::string::npos ||
@@ -700,7 +700,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 	}
 
 	bool ppmToJpeg(char *ppmfile, char *jpegfile, int quality) {
-#if WIN32
+#if _WIN32
 		CImage myImage;
 
 		myImage.Load(ppmfile);
@@ -773,7 +773,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		}
 
 	bool bmpToJpeg(char *bmpfile, char *jpegfile, int quality) {
-#if WIN32
+#if _WIN32
         //bmpFile points to a char array with the path to the BMP file
 		CImage myImage;
 
