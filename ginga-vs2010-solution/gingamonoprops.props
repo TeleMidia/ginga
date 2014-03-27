@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <GINGA_BASE_DIR>..\..\</GINGA_BASE_DIR>
+    <TELEMIDIAUTIL_DIR>$(GINGA_BASE_DIR)\telemidia-util</TELEMIDIAUTIL_DIR>
+    <CONTRIBLIB_DIR>$(GINGA_BASE_DIR)\contrib</CONTRIBLIB_DIR>
+    <NCL30_DIR>$(GINGA_BASE_DIR)\ncl30</NCL30_DIR>
+    <GINGACCSYSTEM_DIR>$(GINGA_BASE_DIR)\gingacc-system</GINGACCSYSTEM_DIR>
+	<GINGACCCM_DIR>$(GINGA_BASE_DIR)\gingacc-cm</GINGACCCM_DIR>
+    <GINGACCTSPARSER_DIR>$(GINGA_BASE_DIR)\gingacc-tsparser</GINGACCTSPARSER_DIR>
+    <GINGACCTUNER_DIR>$(GINGA_BASE_DIR)\gingacc-tuner</GINGACCTUNER_DIR>
+    <GINGACCDATAPROCESSING_DIR>$(GINGA_BASE_DIR)\gingacc-dataprocessing</GINGACCDATAPROCESSING_DIR>
+    <GINGACCCONTEXTMANAGER_DIR>$(GINGA_BASE_DIR)\gingacc-contextmanager</GINGACCCONTEXTMANAGER_DIR>
+    <GINGACCPLAYER_DIR>$(GINGA_BASE_DIR)\gingacc-player</GINGACCPLAYER_DIR>
+    <GINGACCMB_DIR>$(GINGA_BASE_DIR)\gingacc-mb</GINGACCMB_DIR>
+    <GINGACCMULTIDEVICE_DIR>$(GINGA_BASE_DIR)\gingacc-multidevice</GINGACCMULTIDEVICE_DIR>
+    <GINGACCIC_DIR>$(GINGA_BASE_DIR)\gingacc-ic</GINGACCIC_DIR>
+    <NCL30CONVERTER_DIR>$(GINGA_BASE_DIR)\ncl30-converter</NCL30CONVERTER_DIR>
+    <GINGANCL_DIR>$(GINGA_BASE_DIR)\gingancl</GINGANCL_DIR>
+    <GINGALSSM_DIR>$(GINGA_BASE_DIR)\gingalssm</GINGALSSM_DIR>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="GINGA_BASE_DIR">
+      <Value>$(GINGA_BASE_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="TELEMIDIAUTIL_DIR">
+      <Value>$(TELEMIDIAUTIL_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="CONTRIBLIB_DIR">
+      <Value>$(CONTRIBLIB_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="NCL30_DIR">
+      <Value>$(NCL30_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCSYSTEM_DIR">
+      <Value>$(GINGACCSYSTEM_DIR)</Value>
+    </BuildMacro>
+	<BuildMacro Include="GINGACCCM_DIR">
+      <Value>$(GINGACCCM_DIR)$(GINGACCCM_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCTSPARSER_DIR">
+      <Value>$(GINGACCTSPARSER_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCTUNER_DIR">
+      <Value>$(GINGACCTUNER_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCDATAPROCESSING_DIR">
+      <Value>$(GINGACCDATAPROCESSING_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCCONTEXTMANAGER_DIR">
+      <Value>$(GINGACCCONTEXTMANAGER_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCPLAYER_DIR">
+      <Value>$(GINGACCPLAYER_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCMULTIDEVICE_DIR">
+      <Value>$(GINGACCMULTIDEVICE_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGACCIC_DIR">
+      <Value>$(GINGACCIC_DIR)</Value>
+    </BuildMacro>
+	<BuildMacro Include="GINGACCMB_DIR">
+      <Value>$(GINGACCMB_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="NCL30CONVERTER_DIR">
+      <Value>$(NCL30CONVERTER_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGANCL_DIR">
+      <Value>$(GINGANCL_DIR)</Value>
+    </BuildMacro>
+    <BuildMacro Include="GINGALSSM_DIR">
+      <Value>$(GINGALSSM_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

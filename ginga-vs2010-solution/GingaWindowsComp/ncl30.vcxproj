@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{644AAA70-2762-4D65-B68C-FA11BCC80D54}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\gingamonoprops.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+	<OutDir>$(NCL30_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(NCL30_DIR)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;NCL30_EXPORTS;HAVE_COMPSUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(NCL30_DIR)\include;$(TELEMIDIAUTIL_DIR)\include\;$(CONTRIBLIB_DIR)\pthread\include;</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(SolutionDir)\Components\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>pthreadVSE2.lib;telemidia-util-cpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(NCL30_DIR)\src\animation\Animation.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\Base.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\AbsoluteReferenceContent.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\CompositeNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\Content.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\ContentNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\ContentTypeManager.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\ContextNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\Node.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\NodeEntity.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\PrivateBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\ReferenceContent.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\components\RelativeReferenceContent.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\Action.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\AssessmentStatement.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\AttributeAssessment.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\CausalConnector.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\CompoundAction.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\CompoundCondition.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\CompoundStatement.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\Connector.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\ConnectorBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\EventTransitionAssessment.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\EventUtil.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\Role.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\SimpleAction.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\SimpleCondition.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\TriggerExpression.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\connectors\ValueAssessment.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\descriptor\Descriptor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\descriptor\DescriptorBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\Entity.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\Anchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\CircleSpatialAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\ContentAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\IntervalAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\LabeledAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\LambdaAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\Port.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\PropertyAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\RectangleSpatialAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\RelativeTimeIntervalAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\SampleIntervalAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\SwitchPort.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\interfaces\TextAnchor.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\layout\DeviceLayout.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\layout\LayoutRegion.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\layout\RegionBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\link\Bind.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\link\CausalLink.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\link\Link.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\metainformation\Meta.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\metainformation\Metadata.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\navigation\FocusDecoration.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\navigation\KeyNavigation.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\NclDocument.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\Parameter.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\reuse\ReferNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\reuse\ReferredNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\CompositeRule.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\DescriptorSwitch.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\Rule.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\RuleBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\SimpleRule.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\SwitchContent.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\switches\SwitchNode.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\time\flexibility\LinearTimeCostFunction.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\time\flexibility\TemporalFlexibilityFunction.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\transition\Transition.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\transition\TransitionBase.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\transition\TransitionUtil.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\src\util\Comparator.cpp" />
+    <ClCompile Include="$(NCL30_DIR)\test\test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\animation\Animation.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\Base.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\AbsoluteReferenceContent.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\CompositeNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\Content.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\ContentNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\ContentTypeManager.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\ContextNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\IllegalNodeTypeException.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\Node.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\NodeEntity.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\PrivateBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\ReferenceContent.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\components\RelativeReferenceContent.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\Action.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\Assessment.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\AssessmentStatement.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\AttributeAssessment.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\CausalConnector.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\CompoundAction.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\CompoundCondition.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\CompoundStatement.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\ConditionExpression.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\Connector.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\ConnectorBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\EventTransitionAssessment.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\EventUtil.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\Role.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\SimpleAction.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\SimpleCondition.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\Statement.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\TriggerExpression.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\connectors\ValueAssessment.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\descriptor\Descriptor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\descriptor\DescriptorBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\descriptor\DescriptorUtil.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\descriptor\GenericDescriptor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\Entity.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\IllegalBaseTypeException.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\Anchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\CircleSpatialAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\ContentAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\InterfacePoint.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\IntervalAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\LabeledAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\LambdaAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\Port.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\PropertyAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\RectangleSpatialAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\RelativeTimeIntervalAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\SampleIntervalAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\SpatialAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\SwitchPort.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\interfaces\TextAnchor.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\IPrivateBaseContext.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\layout\DeviceLayout.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\layout\IDeviceLayout.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\layout\LayoutRegion.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\layout\RegionBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\link\Bind.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\link\CausalLink.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\link\Link.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\link\LinkComposition.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\metainformation\Meta.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\metainformation\Metadata.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\navigation\FocusDecoration.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\navigation\KeyNavigation.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\NclDocument.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\Parameter.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\reuse\ReferNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\reuse\ReferredNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\CompositeRule.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\DescriptorSwitch.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\Rule.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\RuleBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\SimpleRule.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\SwitchContent.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\switches\SwitchNode.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\time\flexibility\LinearTimeCostFunction.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\time\flexibility\TemporalFlexibilityFunction.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\transition\Transition.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\transition\TransitionBase.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\transition\TransitionUtil.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\ncl\util\Comparator.h" />
+    <ClInclude Include="$(NCL30_DIR)\include\Ncl30Conf.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

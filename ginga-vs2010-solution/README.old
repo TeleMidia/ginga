@@ -1,0 +1,180 @@
+This are old instructions are are here only for historic purposes.
+
+The necessary subprojects are almost the same of Ginga for Linux.
+ 
+The exceptions are:
+	* telemidia-dshow-cpp that is not necessary for Linux, but is
+		necessary for Windows.
+
+	* telemidia-links-cpp is not necessary for Windows, but is
+		necessary for Linux.
+
+MAIN REQUISITES
+============
+The main requirements to make a functional development enviroment for this 
+project are:
+	* Visual Studio C++ 2010 (Professional or Express Edition)
+		- Visual Studio Express: http://www.microsoft.com/express/Downloads
+
+	* DirectX SDK (>= 9.0)
+		- http://www.microsoft.com/downloads/en/details.aspx?displaylang=en&FamilyID=3021d52b-514e-41d3-ad02-438a3ba730ba 
+
+	* Codecs for DirectShow
+		- K-lite Codec Pack (recomended)
+
+
+
+GETTING SOURCE CODE
+============
+All Ginga source code is available at Software Publico Brasileiro 
+(http://www.softwarepublico.gov.br).
+
+You can get the most recent source code with these commands:
+
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/telemidia-util-cpp/trunk telemidia-util-cpp
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/gingacc-cpp/trunk gingacc-cpp
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/ginga-cpp/trunk ginga-cpp
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/gingalssm-cpp/trunk gingalssm-cpp
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/telemidia-dshow-cpp/trunk telemidia-dshow-cpp
+svn co --username YourEmail@Host.com http://svn.softwarepublico.gov.br/svn/ginga/ginga-vs2010-solution/trunk ginga-vs2010-solution
+
+
+
+HOW TO SETUP YOUR VISUAL STUDIO ENVIROMENT ?
+============
+
+* Directory Tree
+	The Visual Studio Solution available here considers that the above projects 
+	are located in a same directory. If you do not keep them in the same path, 
+	you have to do a lot of additional path configuration in Visual Studio 
+	Solution. These additional configurations are not discussed here, but 
+	mainly you have to change "Additional Include Directories" (AID) and 
+	"Additional Library Directories" (ALD) to your correct location.
+
+	For changing AID you should open GingaWindowsSolution.sln select each 
+	project and menu 
+		"Project->Properties->C/C++->Additional Include Directories"
+
+	For changing ALD you should select project and menu
+		"Project->Properties->Linker->Additional Library Directories"
+
+	Visual Studio Projects also consider that all include and library files 
+	are installed in the same directory. By default, the projects
+	configuration locate this directory under the same root as the other 
+	projects. But you can create this directory at any place of your 
+	machine. One more time, if you intent to put this directory in another 
+	place then you have to change AID and ALD.
+
+	After downloading the source code, and creating "contrib" directory in the 
+	same tree, you should have a directory structure like this:
+
+		GINGA_BASE_DIR/
+			contrib/
+			gingacc-cpp/
+			gingalssm-cpp/
+			gingancl-cpp/
+			ncl30-cpp/
+			telemidia-dshow-cpp/
+			telemidia-util-cpp/
+			ginga-vs2010-solution/
+
+* Populating "Contrib" directory
+	You must populate "contrib" directory with these dependencies:
+		-> boost (> 1.44.0) (compat)
+			http://www.boost.org/users/download
+
+		-> freeimage (> x.x) (eq libpng, libjpeg, ... )
+			http://freeimage.sourceforge.net/download.html
+
+		-> awesomium (> x.x)
+			http://www.khrona.com/products/awesomium/download
+
+		-> dlfcn > (compat)
+			http://code.google.com/p/dlfcn-win32
+
+		-> xerces (> 3.0.1)
+			http://xerces.apache.org/xerces-c/download.cgi
+
+		-> pthread (> x.x)
+			http://sourceware.org/pthreads-win32
+
+		-> libcurl (> 7.18.0)
+			http://curl.haxx.se/download.html
+
+		-> lua 5.1.4
+			http://code.google.com/p/luaforwindows
+
+	P.S. Be careful: the directory name of each depedency must be the same 
+	mapped in AID and ALD! If you want you can change AID and ALD instead
+	of renaming directory.
+
+
+* Configuring "contrib" directory location
+	As aforementioned, by default, "contrib" directory is located in 
+		$(GINGA_BASE_DIR)/contrib
+ 
+	If you want you can put this directory in another path. You need to configure 
+	Ginga VS Project, opening 
+		ginga-vs2010-solution/GingaWindowsMonolitic/gingamonoprops.props
+	with a text editor and replacing <CONTRIBLIB_DIR> content with the
+	apropriate path.
+
+	For example,
+		<CONTRIBLIB_DIR>
+			D:\workspace-cpp\gingarootdir\contrib
+		</CONTRIBLIB_DIR>
+
+* PATH enviroment variable
+	In order to run Ginga, Windows must be able to locate all dependencies 
+	(dlls files). There are many ways to do it. 
+
+	For example,
+		- You can copy all dll dependencies to the C:\Windows\System32 
+      			directory, which is already in PATH variable;
+
+		- You also can change PATH enviroment variable to be able to 
+		locate each necessary dll;
+
+		- ...
+
+	Here is just a suggestion:
+		- Create a "binaries" directory inside "contrib" and copy
+		  all dll dependecies to there. With this, you should add just 
+		  the fullpath of "contrib/binaries" to PATH enviroment 
+		  variable.
+
+
+
+COMPILING
+============
+If all configuration steps are right, your enviroment is done and you are able
+to open "ginga-vs2010-solution/GingaWindowsMonolitic.sln" with Visual 
+Studio C++ 2010.
+
+You should see two projects:
+ 	* GingaWindowsMonolitic
+	* GingaStandAlone
+
+Click right button in GingaWindowsMonolitic solution at "Solution Explorer 
+Window" and "build" to compile all Ginga files. If all your configurations and 
+dependencies are right the project will be compiled. Enjoy it!
+
+If any compilation problem occurs, FAQ Section can help you.
+
+P.S. When you call "build" command for GingaWindowsMonolitic project, this will
+copy some ginga settings files to %USERPROFILE%/ginga. Be sure that these files are
+at this location.
+
+
+
+
+TESTING
+============
+* TBD
+
+
+
+
+FAQ
+============
+* TBD

@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\DataProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Binding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Biop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadDataBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadInfoIndication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DownloadServerInitiate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\DsmccMessageHeader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\MessageProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\data\Module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\Ior.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\object\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\object\ObjectProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\carousel\ServiceDomain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\Crc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\DSMCCSectionPayload.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\MpegDescriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTEndpoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\NPTReference.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\StreamMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\npt\TimeBaseClock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\dsmcc\StreamEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\EPGProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\FilterManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\ncl\edit\EventDescriptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCDATAPROCESSING_DIR)\src\SectionFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\DataProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Binding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Biop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadDataBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadInfoIndication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DownloadServerInitiate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\DsmccMessageHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\MessageProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\data\Module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\Ior.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\IServiceDomainListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\IObjectListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\object\ObjectProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\carousel\ServiceDomain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\IStreamEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\IStreamEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\Crc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\DSMCCSectionPayload.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\MpegDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTEndpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\NPTReference.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\StreamMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\npt\TimeBaseClock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\dsmcc\StreamEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\EPGProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\FilterManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IDataProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IEPGListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\IEPGProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\ncl\DataFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\ncl\edit\EventDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCDATAPROCESSING_DIR)\include\dataprocessing\SectionFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gingacc-cpp\gingacc-dataprocessing\include\GingaccDataProcessingConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
