@@ -612,9 +612,6 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclTransitionConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\smil\SMILNCMDocumentConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\animation\Animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

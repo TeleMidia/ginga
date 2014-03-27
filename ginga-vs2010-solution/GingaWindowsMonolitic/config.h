@@ -11,13 +11,13 @@
 #define HAVE_CURL 1
 
 /* Define to 1 if data-processing support is enabled. */
-#define HAVE_DATA_PROCESSING 0
+#define HAVE_DATA_PROCESSING 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 //#define HAVE_DLFCN_H 1
 
 /* Deprecated macro. */
-#define HAVE_DSMCC 0
+#define HAVE_DSMCC 1
 
 /* Deprecated macro. */
 #define HAVE_IC 1
@@ -68,10 +68,10 @@
 //#define HAVE_SYS_TYPES_H 1
 
 /* Deprecated macro. */
-#define HAVE_TSPARSER 0
+#define HAVE_TSPARSER 1
 
 /* Deprecated macro. */
-#define HAVE_TUNER 0
+#define HAVE_TUNER 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
 //#define HAVE_UNISTD_H 1

@@ -1,9 +1,8 @@
 *.vcxproj.user
 *.suo
 *.sdf
-*Release/*
-*/Release/*
-*Debug/*
-*/Debug/*
-*logFile.txt
-*Ginga/*
+Release/*
+Debug/*
+Ginga/*
+GingaWindowsMonolitic/Release/*
+GingaWindowsMonolitic/Debug/*
