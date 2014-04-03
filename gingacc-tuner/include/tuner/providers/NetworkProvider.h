@@ -47,8 +47,8 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef UNICASTPROVIDER_H_
-#define UNICASTPROVIDER_H_
+#ifndef NETWORKPROVIDER_H_
+#define NETWORKPROVIDER_H_
 
 #include "system/compat/SystemCompat.h"
 #include "system/compat/PracticalSocket.h"
@@ -66,16 +66,17 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class UnicastProvider : public IDataProvider {
+	class NetworkProvider : public IDataProvider {
 		protected:
 			string addr;
+			string protocol;
 			int portNumber;
 			short capabilities;
 			UDPSocket *udpSocket;
 
 		public:
-			UnicastProvider(string sockAdd, int port);
-			~UnicastProvider();
+			NetworkProvider(string address, int port, string protocol);
+			~NetworkProvider();
 
 			virtual void setListener(ITProviderListener* listener){};
 			virtual void attachFilter(IFrontendFilter* filter){};
@@ -131,4 +132,4 @@ namespace tuning {
 }
 }
 
-#endif /*UNICASTPROVIDER_H_*/
+#endif /*NETWORKPROVIDER_H_*/

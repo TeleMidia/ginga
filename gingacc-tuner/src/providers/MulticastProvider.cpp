@@ -65,12 +65,16 @@ namespace tuning {
 	}
 
 	MulticastProvider::~MulticastProvider() {
-		if (udpSocket) delete udpSocket;
+		if (udpSocket) {
+			delete udpSocket;
+		}
 	}
 	
 	int MulticastProvider::callServer() {
 		try {
-			udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
+			udpSocket = new UDPSocket((unsigned short) portNumber);
+			udpSocket->joinGroup(addr);
+
 			return 1;
 		} catch (...) {
 			udpSocket = NULL;

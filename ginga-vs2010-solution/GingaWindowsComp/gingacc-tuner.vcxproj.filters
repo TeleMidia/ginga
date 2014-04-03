@@ -33,10 +33,10 @@
     <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\FileSystemProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\MulticastProvider.cpp">
+    <ClCompile Include="$(GINGACCTUNER_DIR)\src\Tuner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGACCTUNER_DIR)\src\Tuner.cpp">
+    <ClCompile Include="..\..\gingacc-tuner\src\providers\NetworkProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -80,16 +80,16 @@
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\ISTCProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\MulticastProvider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\SocketProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\Tuner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\gingacc-cpp\gingacc-tuner\include\GingaccTunerConf.h">
+    <ClInclude Include="$(GINGACCTUNER_DIR)\include\GingaccTunerConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gingacc-tuner\include\tuner\providers\NetworkProvider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

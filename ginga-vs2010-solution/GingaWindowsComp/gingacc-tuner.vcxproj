@@ -86,6 +86,7 @@
     <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\FileSystemProvider.cpp" />
     <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\MulticastProvider.cpp" />
     <ClCompile Include="$(GINGACCTUNER_DIR)\src\Tuner.cpp" />
+    <ClCompile Include="..\..\gingacc-tuner\src\providers\NetworkProvider.cpp" />
     <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\dvbc\DVBCProvider.cpp" /> -->
     <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\isdbt\ISDBTFrontend.cpp" /> -->
     <!-- <ClCompile Include="$(GINGACCTUNER_DIR)\src\providers\frontends\isdbt\ISDBTProvider.cpp" /> -->
@@ -111,6 +112,7 @@
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\SocketProvider.h" />
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\Tuner.h" />
     <ClInclude Include="$(GINGACCTUNER_DIR)\include\GingaccTunerConf.h" />
+    <ClInclude Include="..\..\gingacc-tuner\include\tuner\providers\NetworkProvider.h" />
     <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\frontend_parameter.h" /> -->
     <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\IFrontendFilter.h" /> -->
     <!-- <ClInclude Include="$(GINGACCTUNER_DIR)\include\tuner\providers\frontends\isdbt\ISDBTFrontend.h" /> -->

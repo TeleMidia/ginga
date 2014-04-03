@@ -169,6 +169,8 @@ namespace tuning {
 
 	void Tuner::initializeInterface(string niSpec) {
 		size_t pos;
+		int fo;
+
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 
 			if (niSpec.substr(0, 5) == "file:") {
@@ -190,15 +192,13 @@ namespace tuning {
 				}
 			}
 
-			if (niSpec.substr(0, 3) >= "224" &&
-					niSpec.substr(0, 3) <= "239") {
+			if (sscanf(niSpec.c_str(), "%d", &fo) == 0) return;
+
+			if (fo >= 224 && fo <= 239) {
 
 				createInterface("ip", "udp_multicast", niSpec);
 
-			} else if ((niSpec.substr(0, 3) >= "001" &&
-					niSpec.substr(0, 3) <= "223") ||
-					(niSpec.substr(0, 3) >= "240" &&
-							niSpec.substr(0, 3) <= "254")) {
+			} else if ((fo >= 001 && fo <= 223) || (fo >= 240 && fo <= 254)) {
 
 				createInterface("ip", "udp_unicast", niSpec);
 
