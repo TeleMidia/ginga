@@ -56,75 +56,31 @@ namespace ginga {
 namespace core {
 namespace tuning {
 	UnicastProvider::UnicastProvider(string sockAdd, int port) {
+		clog << "UDP UnicastProvider address '" << sockAdd << ":";
+		clog << port << "'" << endl;
+
 		this->addr         = sockAdd;
 		this->portNumber   = port;
-		this->capabilities = DPC_CAN_FETCHDATA;
+		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 	}
 
 	UnicastProvider::~UnicastProvider() {
-		::close(socketDescriptor);
+		if (udpSocket) delete udpSocket;
 	}
 
 	int UnicastProvider::callServer() {
-		// Create socket source
-		socketDescriptor = socket(AF_INET, SOCK_STREAM, 0);
+		try {
+			udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
 
-		clog << "connecting to " << this->addr;
-		clog << ":" << portNumber << endl;
-
-		if (socketDescriptor < 0) {
-			perror("UnicastProvider::callServer openSocket");
-			return socketDescriptor;
+			return 1;
+		} catch (...) {
+			udpSocket = NULL;
+			return 0;
 		}
-
-		// Connect socket
-		server.sin_family = AF_INET;
-		hp = gethostbyname(addr.c_str());
-		if (hp == NULL) {
-			herror("UnicastProvider::callServer first try:");
-			hp = gethostbyaddr(addr.c_str(), addr.length(), AF_INET);
-			if (hp == NULL) {
-				herror("UnicastProvider::callServer second try:");
-				return -1;
-			}
-		}
-
-		bcopy(hp->h_addr, &server.sin_addr, hp->h_length);
-		server.sin_port = htons(portNumber);
-
-		int count, conn;
-		count = 0;
-
-		while (portNumber+count < portNumber+16) {
-			conn = connect(
-					socketDescriptor, (sockaddr*)(&server), sizeof(server));
-
-			if (conn < 0) {
-				perror("UnicastProvider::callServer server not found");
-				count++;
-				server.sin_port = htons(portNumber+count);
-
-			} else {
-				clog << " connected to " << this->addr;
-				clog << " on port '" << portNumber+count << "'";
-				clog << "returning '" << socketDescriptor << "'" << endl;
-				return socketDescriptor;
-			}
-		}
-
-		return -1;
 	}
 
-	int UnicastProvider::receiveData(char* buff) {
-		int rval;
-		//char buf[BUFFSIZE];
-
-		rval = read(socketDescriptor, buff, BUFFSIZE);
-		if (rval <= 0) {
-			clog << "UnicastProvider::receiveData Warning! Received '";
-			clog << rval << "' while reading socket source." << endl;
-		}
-		return rval;
+	int UnicastProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
+		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
 	}
 }
 }

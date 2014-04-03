@@ -51,14 +51,10 @@ http://www.telemidia.puc-rio.br
 #include "tuner/NetworkInterface.h"
 
 #include "tuner/providers/FileSystemProvider.h"
-#include "tuner/providers/MulticastProvider.h"
+#include "tuner/providers/NetworkProvider.h"
 #if defined(_WIN32)
 	#include "tuner/providers/BDAProvider.h"
 #endif
-
-//TODO: multicast and unicast provider using PracticalSocket instead of socket API
-//#include "tuner/providers/MulticastProvider.h"
-//#include "tuner/providers/UnicastProvider.h"
 
 #if HAVE_FEV4L
 #include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
@@ -143,16 +139,8 @@ namespace tuning {
 			portNumber = address.substr(
 					address.find(":") + 1, address.length());
 
-			if (protocol == "udp_unicast") {
-				//TODO: multicast provider using PracticalSocket instead of socket API
-				//provider = new UnicastProvider(ip, (int)util::stof(portNumber));
-				return true;
-
-			} else if (protocol == "udp_multicast") {
-				//TODO: unicast provider using PracticalSocket instead of socket API
-				provider = new MulticastProvider(ip, (int)util::stof(portNumber));
-				return true;
-			}
+			provider = new NetworkProvider(ip, (int)util::stof(portNumber), protocol);
+			return true;
 
 		} else if (name == "file") {
 			provider = new FileSystemProvider(address);

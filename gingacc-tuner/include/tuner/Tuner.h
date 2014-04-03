@@ -71,6 +71,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <cstdio>
 #include <set>
 #include <map>
 using namespace std;

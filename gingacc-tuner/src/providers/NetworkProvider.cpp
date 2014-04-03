@@ -47,18 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef UNICASTPROVIDER_H_
-#define UNICASTPROVIDER_H_
-
-#include "system/compat/SystemCompat.h"
-#include "system/compat/PracticalSocket.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include <iostream>
-#include <fstream>
-using namespace std;
-
-#include "tuner/providers/IDataProvider.h"
+#include "tuner/providers/NetworkProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -66,69 +55,44 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class UnicastProvider : public IDataProvider {
-		protected:
-			string addr;
-			int portNumber;
-			short capabilities;
-			UDPSocket *udpSocket;
+	NetworkProvider::NetworkProvider(string address, int port, string protocol) {
+		clog << "UDP MulticastProvider address '" << address << ":";
+		clog << port << "'" << endl;
 
-		public:
-			UnicastProvider(string sockAdd, int port);
-			~UnicastProvider();
+		this->addr         = address;
+		this->portNumber   = port;
+		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
+		this->protocol	   = protocol;
+	}
 
-			virtual void setListener(ITProviderListener* listener){};
-			virtual void attachFilter(IFrontendFilter* filter){};
-			virtual void removeFilter(IFrontendFilter* filter){};
-
-			virtual short getCaps() {
-				return capabilities;
-			};
-
-			virtual bool tune() {
-				if (callServer() > 0) {
-					return true;
-				}
-
-				return false;
-			};
-
-			virtual IChannel* getCurrentChannel() {
-				return NULL;
+	NetworkProvider::~NetworkProvider() {
+		if (udpSocket) {
+			delete udpSocket;
+		}
+	}
+	
+	int NetworkProvider::callServer() {
+		try {
+			if (protocol == "udp_multicast") {
+				udpSocket = new UDPSocket((unsigned short) portNumber);
+				udpSocket->joinGroup(addr);
+			} else if (protocol == "udp_unicast") {
+				udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
 			}
 
-			virtual bool getSTCValue(uint64_t* stc, int* valueType) {
-				return false;
-			}
+			return 1;
+		} catch (...) {
+			udpSocket = NULL;
+			return 0;
+		}
+	}
 
-			virtual bool changeChannel(int factor) {
-				return false;
-			}
-
-			bool setChannel(string channelValue) {
-				return false;
-			}
-
-			virtual int createPesFilter(
-					int pid, int pesType, bool compositeFiler) {
-
-				return -1;
-			}
-
-			virtual string getPesFilterOutput() {
-				return "";
-			}
-
-			virtual void close() {};
-
-			virtual int callServer();
-			virtual int receiveData(char* buff, int skipSize, unsigned char packetSize);
-	};
+	int NetworkProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
+		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+	}
 }
 }
 }
 }
 }
 }
-
-#endif /*UNICASTPROVIDER_H_*/

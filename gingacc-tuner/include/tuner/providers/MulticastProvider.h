@@ -58,7 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <fstream>
 using namespace std;
 
-#include "tuner/providers/SocketProvider.h"
+#include "tuner/providers/IDataProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -66,19 +66,63 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class MulticastProvider : public SocketProvider {
+	class MulticastProvider : public IDataProvider {
+		protected:
+			string addr;
+			int portNumber;
+			short capabilities;
+			UDPSocket *udpSocket;
+
 		public:
 			MulticastProvider(string groupAddr, int port);
 			~MulticastProvider();
 
-			int callServer();
+			virtual void setListener(ITProviderListener* listener){};
+			virtual void attachFilter(IFrontendFilter* filter){};
+			virtual void removeFilter(IFrontendFilter* filter){};
 
-			UDPSocket *udpSocket;
+			virtual short getCaps() {
+				return capabilities;
+			};
 
-		private:
+			virtual bool tune() {
+				if (callServer() > 0) {
+					return true;
+				}
 
-		public:
-			int receiveData(char* buff, int skipSize, unsigned char packetSize);
+				return false;
+			};
+
+			virtual IChannel* getCurrentChannel() {
+				return NULL;
+			}
+
+			virtual bool getSTCValue(uint64_t* stc, int* valueType) {
+				return false;
+			}
+
+			virtual bool changeChannel(int factor) {
+				return false;
+			}
+
+			bool setChannel(string channelValue) {
+				return false;
+			}
+
+			virtual int createPesFilter(
+					int pid, int pesType, bool compositeFiler) {
+
+				return -1;
+			}
+
+			virtual string getPesFilterOutput() {
+				return "";
+			}
+
+			virtual void close() {};
+
+			virtual int callServer();
+			virtual int receiveData(char* buff, int skipSize, unsigned char packetSize);
 	};
 }
 }
