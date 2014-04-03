@@ -46,8 +46,8 @@ gingaccplayerlib_LTLIBRARIES += libgingaccplabkl.la
 libgingaccplabkl_la_CXXFLAGS = $(AM_CXXFLAGS) $(BERKELIUM_CFLAGS)
 libgingaccplabkl_la_LDFLAGS = $(AM_LDFLAGS) $(BERKELIUM_LIBS)
 libgingaccplabkl_la_SOURCES =\
-  src/application/declarative/xhtml/BerkeliumHandler.cpp\
-  src/application/declarative/xhtml/BerkeliumPlayer.cpp\
+  src/application/declarative/xhtml/berkelium/BerkeliumHandler.cpp\
+  src/application/declarative/xhtml/berkelium/BerkeliumPlayer.cpp\
   $(NULL)
 endif
 

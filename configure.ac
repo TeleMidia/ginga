@@ -11,6 +11,7 @@ m4_define([avcodec_required_version],       [55.39.101])
 m4_define([avdevice_required_version],      [55.5.100])
 m4_define([avformat_required_version],      [55.19.104])
 m4_define([avutil_required_version],        [52.48.101])
+m4_define([avfilter_required_version],      [3.90.100])
 m4_define([curl_required_version],          [7.18])
 m4_define([expat_required_version],         [2.1])
 m4_define([sdl2_image_require_version],     [2.0])
@@ -312,7 +313,7 @@ AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
 
 # Check for the Lua headers and library.
 AX_LUA_HEADERS
-AX_LUA_HEADERS_VERSION([502])
+AX_LUA_HEADERS_VERSION([501])
 AX_LUA_LIBS
 AC_SUBST([LUA_CFLAGS], [$LUA_INCLUDE])
 AC_SUBST([LUA_LIBS], [$LUA_LIB])
