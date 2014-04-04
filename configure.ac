@@ -280,6 +280,7 @@ PKG_CHECK_MODULES([FFMPEG],
   libavdevice >= avdevice_required_version
   libavformat >= avformat_required_version
   libavutil >= avutil_required_version
+  libavfilter >= avfilter_required_version
   libswresample >= swresample_required_version
   libswscale >= swscale_required_version], [],
  [AC_MSG_ERROR([
@@ -288,6 +289,7 @@ PKG_CHECK_MODULES([FFMPEG],
 *** libavdevice >= avdevice_required_version
 *** libavformat >= avformat_required_version
 *** libavutil >= avutil_required_version
+*** libavfilter >= avfilter_required_version
 *** libswresample >= swresample_required_version
 *** libswscale >= swscale_required_version])])
 
