@@ -87,6 +87,14 @@ LDADD +=\
   $(top_builddir)/gingacc-multidevice/libgingaccmd.la\
   $(NULL)
 endif
+
+if BUILD_BERKELIUM
+LDADD +=\
+  $(top_builddir)/gingancl/libginganclbklpadapter.la\
+  $(top_builddir)/gingacc-player/libgingaccplabkl.la\
+  $(NULL)
+endif
+
 endif
 
 bin_PROGRAMS = ginga

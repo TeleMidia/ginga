@@ -68,6 +68,9 @@ libginganclnclpadapter_la_SOURCES =\
 
 # ginga-ncl-bkl-p-adapter
 if BUILD_BERKELIUM
+libginganclbklpadapter_la_LDFLAGS =\
+  $(AM_LDFLAGS)\
+  $(BERKELIUM_LIBS)
 libginganclbklpadapter_la_SOURCES =\
   src/adapters/application/declarative/xhtml/berkelium/BerkeliumPlayerAdapter.cpp\
   $(NULL)

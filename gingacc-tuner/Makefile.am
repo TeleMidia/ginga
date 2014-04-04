@@ -19,6 +19,7 @@ libgingacctuner_la_SOURCES =\
   src/providers/Channel.cpp\
   src/providers/UnicastProvider.cpp\
   src/providers/FileSystemProvider.cpp\
+  src/providers/NetworkProvider.cpp\
   src/NetworkInterface.cpp\
   src/Tuner.cpp\
   $(NULL)
@@ -45,6 +46,7 @@ providersinclude_HEADERS =\
   include/tuner/providers/IChannel.h\
   include/tuner/providers/ISTCProvider.h\
   include/tuner/providers/IProviderListener.h\
+  include/tuner/providersNetworkProvider.h\
   $(NULL)
 
 frontendsincludedir = $(providersincludedir)/frontends

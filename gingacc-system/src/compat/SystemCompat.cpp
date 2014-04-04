@@ -306,10 +306,10 @@ namespace compat {
 		libName = appendLibExt(libName);
 
 # ifndef WIN32
-		comp = dlopen(libName.c_str(), RTLD_LAZY);
+		comp = dlopen(libName.c_str(), RTLD_NOW | RTLD_GLOBAL);
 		if (comp == NULL) {
 			std::string path = std::string (GINGA_LIBDIR) + "/" + libName;
-			comp = dlopen(path.c_str (), RTLD_LAZY);
+			comp = dlopen(path.c_str (), RTLD_NOW | RTLD_GLOBAL);
 			if (comp == NULL) {
 				clog << "SystemCompat::loadComponent Warning: can't load ";
 				clog << "component '" << libName << "' => ";
