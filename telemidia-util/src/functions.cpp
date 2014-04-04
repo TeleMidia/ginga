@@ -60,6 +60,8 @@ http://www.telemidia.puc-rio.br
 # else
 #  include <dirent.h>
    typedef struct dirent DIRENT;
+#  include <sys/time.h>
+#  include <sys/resource.h>
 # endif
 #else  // _WIN32
 # define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
@@ -495,7 +497,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		clog << "sval = " << sval << endl;*/
 		return false;
 	}
-/*
+
 	int timevalSubtract(
 			struct timeval *result, struct timeval *x, struct timeval *y) {
 
@@ -543,8 +545,8 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double) ((result.tv_sec * 1000) + (result.tv_usec / 1000));
 	}
-*/
 
+        /*
 	static double startTimeMills;
 	static bool firstCallTimeMills = true;
 
@@ -561,6 +563,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double)t.time*1000 + (double)t.millitm - startTimeMills;
 	}
+        */
 
 	//factor is not in use. It will be removed.
 	double getNextStepValue(
