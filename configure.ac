@@ -274,6 +274,11 @@ PKG_CHECK_MODULES([SDL2TTF],
  [AC_MSG_ERROR([
 *** SDL2_ttf >= sdl2_ttf_required_version is required.])])
 
+#Check for X11
+ PKG_CHECK_MODULES([X11], [x11], [],
+  [AC_MSG_ERROR([
+*** X11 is required.])])
+
 # Check for FFmpeg libs.
 PKG_CHECK_MODULES([FFMPEG],
  [libavcodec >= avcodec_required_version
