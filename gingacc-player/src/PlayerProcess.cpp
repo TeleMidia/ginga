@@ -102,7 +102,7 @@ namespace player {
 
 	void PlayerProcess::init(const char* objName) {
 		setProcessInfo(
-				"/usr/local/etc/ginga/tools/loaders/players",
+				"/usr/etc/ginga/tools/loaders/players",
 				objName);
 
 		run();
