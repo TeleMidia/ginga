@@ -498,6 +498,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		return false;
 	}
 
+#if 0
 	int timevalSubtract(
 			struct timeval *result, struct timeval *x, struct timeval *y) {
 
@@ -545,8 +546,8 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double) ((result.tv_sec * 1000) + (result.tv_usec / 1000));
 	}
+#endif
 
-        /*
 	static double startTimeMills;
 	static bool firstCallTimeMills = true;
 
@@ -563,7 +564,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double)t.time*1000 + (double)t.millitm - startTimeMills;
 	}
-        */
+
 
 	//factor is not in use. It will be removed.
 	double getNextStepValue(

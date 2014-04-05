@@ -61,8 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	const string ISDBTProvider::iniFileName(
-			SystemCompat::appendGingaFilesPrefix("tuner/isdbt.ini"));
+        const string ISDBTProvider::iniFileName(GINGA_ISDBT_PATH);
 
 	ISDBTProvider::ISDBTProvider(long freq) {
 		this->frontend       = NULL;
