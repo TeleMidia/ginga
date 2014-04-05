@@ -2,6 +2,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 ################################ Libraries #################################
 AM_CPPFLAGS =\
+  -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_CM)\

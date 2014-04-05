@@ -111,7 +111,7 @@ namespace compat {
 			clog << "Warning! Can't open input file: '" << gingaini;
 			clog << "' loading default configuration!" << endl;
 
-			gingaCurrentPath = gingaPrefix + iUriD + "sbin" + iUriD;
+			gingaCurrentPath = gingaPrefix + iUriD + "bin" + iUriD;
 			installPref      = gingaPrefix;
 			filesPref        = gingaPrefix + iUriD + "etc" +
 					 iUriD + "ginga" + iUriD + "files" + iUriD;
