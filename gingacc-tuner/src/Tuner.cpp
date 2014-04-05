@@ -230,11 +230,11 @@ namespace tuning {
 		string addr;
 
 		fis.open(
-				SystemCompat::appendGingaFilesPrefix("tuner/tuner.ini").c_str(),
+				GINGA_TUNER_PATH,
 				ifstream::in);
 
 		if (!fis.is_open()) {
-			clog << "can't open /usr/local/etc/ginga/files/tuner/tuner.ini";
+		        clog << "can't open " << GINGA_TUNER_PATH;
 			clog << endl;
 
 		} else {
