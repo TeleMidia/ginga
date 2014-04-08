@@ -346,7 +346,7 @@ namespace adapters {
 		float transpValue = -1;
 		float parentOpacity = -1;
 		bool isPercentual;
-		double explicitDur = - 1;
+		double explicitDur = -1;
 
 		string left = "", top = "", width = "", height = "";
 		string bottom = "", right = "";
