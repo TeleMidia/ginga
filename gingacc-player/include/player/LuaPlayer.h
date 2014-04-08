@@ -53,10 +53,8 @@ http://www.telemidia.puc-rio.br
 #include <list>
 #include <string>
 
+#include <ncluaw.h>
 #include <pthread.h>
-#if 0
-#include "nclua.h"
-#endif
 
 using namespace std;
 
@@ -79,28 +77,28 @@ class LuaPlayer : public Player, public IInputEventListener
 {
 private:
 
-     void *nc;                 // the NCLua state
-     bool hasExecuted;            // true if script was executed
-     bool isKeyHandler;           // true if player has the focus
-     string scope;                // the label of the active anchor
-     pthread_mutex_t mutex;       // sync access to player
+     ncluaw_t *nw;              // the NCLua state
+     bool hasExecuted;          // true if script was executed
+     bool isKeyHandler;         // true if player has the focus
+     string scope;              // the label of the active anchor
+     pthread_mutex_t mutex;     // sync access to player
      IInputManager *im;
 
      // Update thread.
-     static list <LuaPlayer *> *nc_update_list;
-     static pthread_mutex_t nc_update_mutex;
-     static pthread_t nc_update_tid;
-     static void *nc_update_thread (void *data);
-     static void nc_update_insert (LuaPlayer *player);
+     static list <LuaPlayer *> *nw_update_list;
+     static pthread_mutex_t nw_update_mutex;
+     static pthread_t nw_update_tid;
+     static void *nw_update_thread (void *data);
+     static void nw_update_insert (LuaPlayer *player);
 
 public:
-     static void nc_update_remove (LuaPlayer *player);
+     static void nw_update_remove (LuaPlayer *player);
 
 public:
      LuaPlayer (GingaScreenID screenId, string mrl);
      virtual ~LuaPlayer (void);
 
-     // TODO: Make it private.
+     // TODO: Make private.
      void lock (void);
      void unlock (void);
      bool doPlay  (void);

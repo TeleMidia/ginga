@@ -39,6 +39,7 @@
 !/build-aux/lib-link.m4
 !/build-aux/lib-prefix.m4
 /INSTALL
+/TAGS
 /aclocal.m4
 /config.h
 /config.h.in
