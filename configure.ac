@@ -7,19 +7,20 @@ AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR([telemidia-util/src/functions.cpp])
 AC_CONFIG_HEADERS([config.h])
 
-m4_define([avcodec_required_version],       [55.39.101])
-m4_define([avdevice_required_version],      [55.5.100])
-m4_define([avformat_required_version],      [55.19.104])
-m4_define([avutil_required_version],        [52.48.101])
-m4_define([avfilter_required_version],      [3.90.100])
-m4_define([curl_required_version],          [7.18])
-m4_define([expat_required_version],         [2.1])
-m4_define([sdl2_image_require_version],     [2.0])
-m4_define([sdl2_required_version],          [2.0])
-m4_define([sdl2_ttf_require_version],       [2.0])
-m4_define([swresample_required_version],    [0.17.104])
-m4_define([swscale_required_version],       [2.5.101])
-m4_define([xercesc_required_version],       [2.7])
+m4_define([avcodec_required_version],    [55.39.101])
+m4_define([avdevice_required_version],   [55.5.100])
+m4_define([avfilter_required_version],   [3.90.100])
+m4_define([avformat_required_version],   [55.19.104])
+m4_define([avutil_required_version],     [52.48.101])
+m4_define([curl_required_version],       [7.18])
+m4_define([expat_required_version],      [2.1])
+m4_define([nclua_required_version],      [1.0.0])
+m4_define([sdl2_image_require_version],  [2.0])
+m4_define([sdl2_required_version],       [2.0])
+m4_define([sdl2_ttf_require_version],    [2.0])
+m4_define([swresample_required_version], [0.17.104])
+m4_define([swscale_required_version],    [2.5.101])
+m4_define([xercesc_required_version],    [2.7])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
 AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
@@ -27,6 +28,7 @@ AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
 AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
 AC_SUBST([CURL_REQUIRED_VERSION], curl_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION], expat_required_version)
+AC_SUBST([NCLUA_REQUIRED_VERSION], nclua_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION], sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION], sdl2_required_version)
 AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
@@ -318,13 +320,6 @@ AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
 
 ############################# Ginga-CC Player ##############################
 
-# Check for the Lua headers and library.
-AX_LUA_HEADERS
-AX_LUA_HEADERS_VERSION([501])
-AX_LUA_LIBS
-AC_SUBST([LUA_CFLAGS], [$LUA_INCLUDE])
-AC_SUBST([LUA_LIBS], [$LUA_LIB])
-
 # Check for Berkelium.
 berkelium_ok=no
 AC_HAVE_LIBRARY([berkelium],
@@ -344,6 +339,12 @@ else
 fi
 AC_SUBST([BERKELIUM_LIBS])
 AM_CONDITIONAL([BUILD_BERKELIUM], [test "$berkelium_ok" = yes])
+
+# Check for NCLua.
+PKG_CHECK_MODULES([NCLUA],
+ [nclua >= nclua_required_version], [],
+ [AC_MSG_ERROR([
+*** nclua >= nclua_required_version is required.])])
 
 ################################# NCL 3.0 ##################################
 # Nothing to do.
@@ -429,3 +430,19 @@ gingalssm/tests/Makefile
 ])
 
 AC_OUTPUT
+AC_MSG_NOTICE([summary of main build options:
+
+  version:            ${VERSION}
+  host type:          ${host}
+  install prefix:     ${prefix}
+  compiler:           cc: ${CC} cflags: ${CFLAGS} cppflags: ${CPPFLAGS}
+  library types:      shared=${enable_shared}, static=${enable_static}
+
+  install headers:        ${enable_headers}
+  build components:       ${enable_components}
+  build data-processing:  ${enable_data_processing}
+  build multi-device:     ${enable_multidevice}
+  build multi-process:    ${enable_multiprocess}
+  build tests:            ${enable_tests}
+  build video4linux:      ${enable_video4linux}
+])
