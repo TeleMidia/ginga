@@ -241,9 +241,9 @@ void *LuaPlayer::nw_update_thread (void *data)
 
                wrapper = player->getSurface ();
                sfc = (SDL_Surface *) wrapper->getSurfaceContent ();
-               ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
-                             sfc->w, sfc->h, sfc->pitch);
-               assert (SDL_SaveBMP (sfc, "/home/gflima/tmp/dump.png") == 0);
+               // FIXME: sfc is NULL!
+               // ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
+               //               sfc->w, sfc->h, sfc->pitch);
                player->refreshContent ();
 
                while ((evt = ncluaw_receive (nw)) != NULL)

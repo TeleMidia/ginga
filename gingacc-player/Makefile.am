@@ -53,7 +53,7 @@ endif
 
 # gingacc-pla-lua
 libgingaccplalua_la_CXXFLAGS = $(AM_CXXFLAGS)\
- -DLUAPLAYER_ENABLE_TRACE=1 -Wall -Werror $(NCLUA_CFLAGS) $(SDL2_CFLAGS)
+ -DLUAPLAYER_ENABLE_TRACE=1 -Wall $(NCLUA_CFLAGS) $(SDL2_CFLAGS)
 libgingaccplalua_la_LDFLAGS = $(NCLUA_LIBS) $(SDL2_LIBS)
 libgingaccplalua_la_SOURCES =\
   src/application/imperative/lua/LuaPlayer.cpp\
