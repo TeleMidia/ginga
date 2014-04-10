@@ -1,3 +1,7 @@
+### windows build
+contrib/
+
+### 
 *.a
 *.bak
 *.core

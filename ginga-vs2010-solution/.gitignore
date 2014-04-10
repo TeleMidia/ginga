@@ -6,3 +6,8 @@ Debug/*
 Ginga/*
 GingaWindowsMonolitic/Release/*
 GingaWindowsMonolitic/Debug/*
+GingaWindowsMonolitic/Debug/*
+GingaWindowsComp/Release/*
+CompTests/Debug/*
+GingaWindowsComp/Debug/*
+GingaWindowsComp/Release/*
