@@ -521,6 +521,8 @@ namespace dataprocessing {
 								sd->setObjectsListeners(&objectListeners);
 								sd->setServiceDomainListener(this);
 								processor->checkTasks();
+								filterManager->setInfo(sd->getInfo());
+								filterManager->setBlockSize(sd->getBlockSize());
 							}
 
 						}

@@ -58,6 +58,7 @@ namespace dataprocessing {
 	FilterManager::FilterManager() {
 		this->reading = false;
 		Thread::mutexInit(&filterMutex, NULL);
+		info = NULL;
 	}
 
 	FilterManager::~FilterManager() {
@@ -208,6 +209,15 @@ namespace dataprocessing {
 		map<unsigned int, ITransportSection*>* secs;
 		unsigned int i;
 		string sectionDir;
+		map<unsigned int, Module*>::iterator it;
+		char* buffer;
+		unsigned int bufferSize;
+		Module* mod;
+
+		if ((section->getTableId() == 0x3C) && (!info)) {
+			delete section;
+			return false;
+		}
 
 		if (section == NULL) {
 			clog << "FilterManager::processSection ";
@@ -220,6 +230,7 @@ namespace dataprocessing {
 
 			clog << "FilterManager::processSection ";
 			clog << "Warning! Wrong payloadSize" << endl;
+			delete section;
 			return false;
 		}
 
@@ -230,6 +241,7 @@ namespace dataprocessing {
 		if (sectionName == "") {
 			clog << "FilterManager::processSection ";
 			clog << "Warning! Empty section name" << endl;
+			delete section;
 			return false;
 
 		} else if (!isDirectory((char*)sectionDir.c_str())) {
@@ -237,10 +249,12 @@ namespace dataprocessing {
 			clog << "FilterManager::processSection ";
 			clog << "Warning! Wrong section name: ";
 			clog << sectionName.c_str() << endl;
+			delete section;
 			return false;
 		}
 
 		if (processedSections.count(sectionName)) {
+			delete section;
 			return false;
 		}
 
@@ -257,20 +271,39 @@ namespace dataprocessing {
 		}
 		Thread::mutexUnlock(&filterMutex);
 
-		sn = section->getSectionNumber();
-		lsn = section->getLastSectionNumber();
-		if (secs->count(sn) != 0) {
-			clog << "FilterManager Warning! Adding section '";
-			clog << sectionName;
-			clog << "' in an existent ";
-			clog << "position = '" << sn << "'";
-			clog << endl;
-
-			return false;
-
+		if (section->getTableId() == 0x3C) {
+			bufferSize = section->getPayload(&buffer);
+			if (bufferSize && buffer[3] == 0x03) {
+				i = 16 + buffer[9];
+				sn = ((buffer[i] & 0xFF) << 8) | (buffer[i+1] & 0xFF); //blockNumber
+				if (info->count(section->getExtensionId())) {
+					mod = info->find(section->getExtensionId())->second;
+					lsn = mod->getSize() / blockSize;
+					if (mod->getSize() % blockSize) lsn++;
+					lsn--;
+				} else {
+					delete section;
+					return false;
+				}
+			} else {
+				sn = section->getSectionNumber();
+				lsn = section->getLastSectionNumber();
+			}
 		} else {
-			(*secs)[sn] = section;
+			sn = section->getSectionNumber();
+			lsn = section->getLastSectionNumber();
+			if (secs->count(sn) != 0) {
+				clog << "FilterManager Warning! Adding section '";
+				clog << sectionName;
+				clog << "' in an existent ";
+				clog << "position = '" << sn << "'";
+				clog << endl;
+				delete section;
+				return false;
+			}
 		}
+
+		(*secs)[sn] = section;
 
 		// All sections received.
 		if (secs->size() == (lsn + 1)) {
@@ -349,6 +382,14 @@ namespace dataprocessing {
 			sections.erase(sections.find(sectionName));
 		}
 		Thread::mutexUnlock(&filterMutex);
+	}
+
+	void FilterManager::setInfo(map<unsigned int, Module*>* info) {
+		this->info = info;
+	}
+
+	void FilterManager::setBlockSize(unsigned short size) {
+		blockSize = size;
 	}
 }
 }

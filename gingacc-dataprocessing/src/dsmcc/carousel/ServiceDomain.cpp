@@ -66,6 +66,7 @@ namespace carousel {
 
 		this->serviceGatewayIor = dsi->getServiceGatewayIor();
 		this->carouselId        = dii->getDonwloadId();
+		blockSize = dii->getBlockSize();
 
 		dii->getInfo(&this->info);
 
@@ -163,6 +164,10 @@ namespace carousel {
 		return module;
 	}
 
+	map<unsigned int, Module*>* ServiceDomain::getInfo() {
+		return &info;
+	}
+
 	void ServiceDomain::eraseModule(Module* module) {
 		map<unsigned int, Module*>::iterator i;
 
@@ -208,6 +213,10 @@ namespace carousel {
 		Thread::mutexUnlock(&stlMutex);
 
 		return false;
+	}
+
+	unsigned short ServiceDomain::getBlockSize() {
+		return blockSize;
 	}
 
 	void ServiceDomain::run() {

@@ -86,6 +86,7 @@ namespace carousel {
 
 			//mapping moduleId in module
 			map<unsigned int, Module*> info;
+			unsigned short blockSize;
 
 			ObjectProcessor* processor;
 			string mountPoint;
@@ -105,6 +106,8 @@ namespace carousel {
 			void setObjectsListeners(set<IObjectListener*>* l);
 			int receiveDDB(DownloadDataBlock* ddb);
 			Module* getModuleById(unsigned int id);
+			map<unsigned int, Module*>* getInfo();
+			unsigned short getBlockSize();
 
 			bool isMounted();
 

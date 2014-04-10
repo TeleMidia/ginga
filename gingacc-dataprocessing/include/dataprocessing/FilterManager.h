@@ -54,6 +54,8 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "SectionFilter.h"
+#include "dsmcc/carousel/data/Module.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include <string>
 #include <vector>
@@ -73,7 +75,9 @@ namespace dataprocessing {
 			map<int, SectionFilter*> pidFilters;
 			set<string> processedSections;
 			map<string, map<unsigned int, ITransportSection*>*> sections;
+			map<unsigned int, Module*>* info;
 			bool reading;
+			unsigned short blockSize;
 			pthread_mutex_t filterMutex;
 
 		public:
@@ -90,6 +94,8 @@ namespace dataprocessing {
 			void destroyFilter(IDemuxer* demux, ITSFilter* filter);
 			bool processSection(ITransportSection* section);
 			void addProcessedSection(string sectionName);
+			void setInfo(map<unsigned int, Module*>* info);
+			void setBlockSize(unsigned short size);
 	};
 }
 }

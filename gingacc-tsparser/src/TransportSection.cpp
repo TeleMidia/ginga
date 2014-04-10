@@ -304,6 +304,18 @@ namespace tsparser {
 		return (void*)(buffer);
 	}
 
+	unsigned int TransportSection::getPayload(char** buffer) {
+		unsigned int size = this->getPayloadSize();
+
+		if (sectionSyntaxIndicator == 0) {
+			*buffer = section + 3;
+		} else {
+			*buffer = section + 8;
+		}
+
+		return size;
+	}
+
 	unsigned int TransportSection::getCurrentSize() {
 		return currentSize;
 	}
