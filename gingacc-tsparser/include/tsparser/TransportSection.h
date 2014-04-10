@@ -136,6 +136,7 @@ namespace tsparser {
 			unsigned int getSectionNumber();
 			unsigned int getLastSectionNumber();
 			void* getPayload();
+			unsigned int getPayload(char** buffer);
 			unsigned int getPayloadSize();
 			bool isConsolidated();
 			bool isConstructionFailed();

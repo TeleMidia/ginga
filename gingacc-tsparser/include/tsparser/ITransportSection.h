@@ -76,6 +76,7 @@ namespace tsparser {
 			virtual unsigned int getSectionNumber()=0;
 			virtual unsigned int getLastSectionNumber()=0;
 			virtual void* getPayload()=0;
+			virtual unsigned int getPayload(char** buffer)=0;
 			virtual unsigned int getPayloadSize()=0;
 			virtual bool isConsolidated()=0;
 			virtual bool isConstructionFailed()=0;

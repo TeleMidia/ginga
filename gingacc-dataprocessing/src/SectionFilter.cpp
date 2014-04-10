@@ -463,6 +463,7 @@ namespace dataprocessing {
 		handler->section->addData(data, freespace);
 
 		if (handler->section->isConsolidated()) {
+			handler->section->setESId(pack->getPid());
 			process(handler->section, pack->getPid());
 		}
 	}
@@ -584,8 +585,6 @@ namespace dataprocessing {
 			return false;
 		}
 
-		handler->section->setESId(pack->getPid());
-
 		/*clog <<
 				"SectionFilter::setSectionParameters "
 				"Section %s created with secNUm=%d, lasSec=%d and secLen=%d\n",
@@ -595,6 +594,7 @@ namespace dataprocessing {
 				handler->section->getSectionLength();*/
 
 		if (handler->section->isConsolidated()) {
+			handler->section->setESId(pack->getPid());
 			process(handler->section, pack->getPid());
 
 		} else {
