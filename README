@@ -8,10 +8,12 @@ Build dependencies
 * FFMPEG
   + libavcodec
   + libavdevice
+  + libavfilter
   + libavformat
   + libavutil
   + libswresample
   + libswscale
+  + libpostproc
 * SDL2
 * SDL2_image
 * SDL2_ttf
