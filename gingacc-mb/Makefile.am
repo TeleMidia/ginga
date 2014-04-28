@@ -21,8 +21,8 @@ gingaccmblib_LTLIBRARIES =\
   $(NULL)
 
 # gingacc-mb
-libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS)
-libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS)
+libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
+libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmb_la_SOURCES =\
   src/InputManager.cpp\
@@ -80,10 +80,10 @@ libgingaccmbdecsdlf_la_SOURCES =\
 
 # gingacc-mb-dec-sdl-av (SDL Audio/Video)
 libgingaccmbdecsdlav_la_CXXFLAGS =\
-  $(AM_CXXFLAGS) $(SDL2_CFLAGS)
+  $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
 
 libgingaccmbdecsdlav_la_LDFLAGS =\
-  $(AM_LDFLAGS) $(SDL2_LIBS)
+  $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmbdecsdlav_la_SOURCES =\
   src/interface/sdl/content/video/SDLVideoProvider.cpp\
