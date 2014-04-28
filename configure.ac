@@ -15,6 +15,7 @@ m4_define([avutil_required_version],     [52.48.101])
 m4_define([curl_required_version],       [7.18])
 m4_define([expat_required_version],      [2.1])
 m4_define([nclua_required_version],      [1.0.0])
+m4_define([postproc_required_version],   [52.3.100])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
 m4_define([sdl2_ttf_require_version],    [2.0])
@@ -24,11 +25,13 @@ m4_define([xercesc_required_version],    [2.7])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
 AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
+AC_SUBST([AVFILTER_REQUIRED_VERSION], avfilter_required_version)
 AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
 AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
 AC_SUBST([CURL_REQUIRED_VERSION], curl_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION], expat_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION], nclua_required_version)
+AC_SUBST([POSTPROC_REQUIRED_VERSION], postproc_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION], sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION], sdl2_required_version)
 AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
@@ -288,6 +291,7 @@ PKG_CHECK_MODULES([FFMPEG],
   libavformat >= avformat_required_version
   libavutil >= avutil_required_version
   libavfilter >= avfilter_required_version
+  libpostproc >= postproc_required_version
   libswresample >= swresample_required_version
   libswscale >= swscale_required_version], [],
  [AC_MSG_ERROR([
@@ -297,6 +301,7 @@ PKG_CHECK_MODULES([FFMPEG],
 *** libavformat >= avformat_required_version
 *** libavutil >= avutil_required_version
 *** libavfilter >= avfilter_required_version
+*** libpostproc >= postproc_required_version
 *** libswresample >= swresample_required_version
 *** libswscale >= swscale_required_version])])
 
