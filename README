@@ -5,7 +5,7 @@ Build dependencies
 * CURL
 * LIBRT (required if --enable-multiprocess is given)
 * EXPAT (required if if --enable-components is given)
-* FFMPEG
+* FFMPEG (compiled with: --enable-shared --enable-static --build-suffix=ginga --disable-programs --enable-gpl --prefix=/usr --incdir=/usr/include/ffmpegginga)
   + libavcodec
   + libavdevice
   + libavfilter
