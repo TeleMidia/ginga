@@ -33,8 +33,8 @@ libgingaccmb_la_SOURCES =\
   $(NULL)
 
 # gingacc-mb-sdl (SDL)
-libgingaccmbsdl_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(X11_CFLAGS)
-libgingaccmbsdl_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(X11_LIBS)
+libgingaccmbsdl_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(X11_CFLAGS) $(FFMPEG_CFLAGS)
+libgingaccmbsdl_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(X11_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/SDLDeviceScreen.cpp\
