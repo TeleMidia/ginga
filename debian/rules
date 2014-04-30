@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+export LDFLAGS=-Wl,--no-as-needed
+export CPPFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
+export CFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-data-processing --enable-video4linux --disable-static --libdir=/usr/lib
+
+%:
+	dh $@
