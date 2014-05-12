@@ -1,0 +1,98 @@
+Index: ginga-0.13/configure.ac
+===================================================================
+--- ginga-0.13.orig/configure.ac	2014-04-29 17:39:16.735306875 -0300
++++ ginga-0.13/configure.ac	2014-04-29 17:48:18.851284202 -0300
+@@ -7,36 +7,36 @@
+ AC_CONFIG_SRCDIR([telemidia-util/src/functions.cpp])
+ AC_CONFIG_HEADERS([config.h])
+ 
+-m4_define([avcodec_required_version],    [55.39.101])
+-m4_define([avdevice_required_version],   [55.5.100])
+-m4_define([avfilter_required_version],   [3.90.100])
+-m4_define([avformat_required_version],   [55.19.104])
+-m4_define([avutil_required_version],     [52.48.101])
++m4_define([avcodecffmpeg_required_version],    [55.39.101])
++m4_define([avdeviceffmpeg_required_version],   [55.5.100])
++m4_define([avfilterffmpeg_required_version],   [3.90.100])
++m4_define([avformatffmpeg_required_version],   [55.19.104])
++m4_define([avutilffmpeg_required_version],     [52.48.101])
+ m4_define([curl_required_version],       [7.18])
+ m4_define([expat_required_version],      [2.1])
+ m4_define([nclua_required_version],      [1.0])
+-m4_define([postproc_required_version],   [52.3.100])
++m4_define([postprocffmpeg_required_version],   [52.3.100])
+ m4_define([sdl2_image_require_version],  [2.0])
+ m4_define([sdl2_required_version],       [2.0])
+ m4_define([sdl2_ttf_require_version],    [2.0])
+-m4_define([swresample_required_version], [0.17.104])
+-m4_define([swscale_required_version],    [2.5.101])
++m4_define([swresampleffmpeg_required_version], [0.17.104])
++m4_define([swscaleffmpeg_required_version],    [2.5.101])
+ m4_define([xercesc_required_version],    [2.7])
+ 
+-AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
+-AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
+-AC_SUBST([AVFILTER_REQUIRED_VERSION], avfilter_required_version)
+-AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
+-AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
++AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodecffmpeg_required_version)
++AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdeviceffmpeg_required_version)
++AC_SUBST([AVFILTER_REQUIRED_VERSION], avfilterffmpeg_required_version)
++AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformatffmpeg_required_version)
++AC_SUBST([AVUTIL_REQUIRED_VERSION], avutilffmpeg_required_version)
+ AC_SUBST([CURL_REQUIRED_VERSION], curl_required_version)
+ AC_SUBST([EXPAT_REQUIRED_VERSION], expat_required_version)
+ AC_SUBST([NCLUA_REQUIRED_VERSION], nclua_required_version)
+-AC_SUBST([POSTPROC_REQUIRED_VERSION], postproc_required_version)
++AC_SUBST([POSTPROC_REQUIRED_VERSION], postprocffmpeg_required_version)
+ AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION], sdl2_image_require_version)
+ AC_SUBST([SDL2_REQUIRED_VERSION], sdl2_required_version)
+ AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
+-AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresample_required_version)
+-AC_SUBST([SWSCALE_REQUIRED_VERSION], swscale_required_version)
++AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresampleffmpeg_required_version)
++AC_SUBST([SWSCALE_REQUIRED_VERSION], swscaleffmpeg_required_version)
+ AC_SUBST([XERCESC_REQUIRED_VERSION], xercesc_required_version)
+ 
+ AM_INIT_AUTOMAKE([-Wall 1.11 foreign gnu no-define subdir-objects])
+@@ -286,24 +286,24 @@
+ 
+ # Check for FFmpeg libs.
+ PKG_CHECK_MODULES([FFMPEG],
+- [libavcodec >= avcodec_required_version
+-  libavdevice >= avdevice_required_version
+-  libavformat >= avformat_required_version
+-  libavutil >= avutil_required_version
+-  libavfilter >= avfilter_required_version
+-  libpostproc >= postproc_required_version
+-  libswresample >= swresample_required_version
+-  libswscale >= swscale_required_version], [],
++ [libavcodecffmpeg >= avcodecffmpeg_required_version
++  libavdeviceffmpeg >= avdeviceffmpeg_required_version
++  libavformatffmpeg >= avformatffmpeg_required_version
++  libavutilffmpeg >= avutilffmpeg_required_version
++  libavfilterffmpeg >= avfilterffmpeg_required_version
++  libpostprocffmpeg >= postprocffmpeg_required_version
++  libswresampleffmpeg >= swresampleffmpeg_required_version
++  libswscaleffmpeg >= swscaleffmpeg_required_version], [],
+  [AC_MSG_ERROR([
+ *** The following FFmpeg libraries are required:
+-*** libavcodec >= avcodec_required_version
+-*** libavdevice >= avdevice_required_version
+-*** libavformat >= avformat_required_version
+-*** libavutil >= avutil_required_version
+-*** libavfilter >= avfilter_required_version
+-*** libpostproc >= postproc_required_version
+-*** libswresample >= swresample_required_version
+-*** libswscale >= swscale_required_version])])
++*** libavcodecffmpeg >= avcodecffmpeg_required_version
++*** libavdeviceffmpeg >= avdeviceffmpeg_required_version
++*** libavformatffmpeg >= avformatffmpeg_required_version
++*** libavutilffmpeg >= avutilffmpeg_required_version
++*** libavfilterffmpeg >= avfilterffmpeg_required_version
++*** libpostprocffmpeg >= postprocffmpeg_required_version
++*** libswresampleffmpeg >= swresampleffmpeg_required_version
++*** libswscaleffmpeg >= swscaleffmpeg_required_version])])
+ 
+ _AC_DEFINE_DEPRECATED([HAVE_SDL], [1])
+ AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
