@@ -1,6 +1,5 @@
 #!/usr/bin/make -f
 
-export PTHREAD_LIBS=-lpthread
 export LDFLAGS=-Wl,--no-as-needed
 export CPPFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
 export CFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
