@@ -241,9 +241,14 @@ void *LuaPlayer::nw_update_thread (void *data)
 
                wrapper = player->getSurface ();
                sfc = (SDL_Surface *) wrapper->getSurfaceContent ();
-               // FIXME: sfc is NULL!
-               // ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
-               //               sfc->w, sfc->h, sfc->pitch);
+
+               // FIXME: sfc can't be NULL!
+               if (sfc != NULL)
+                    ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
+                                  sfc->w, sfc->h, sfc->pitch);
+               else
+                    error ("sfc is NULL!");
+
                player->refreshContent ();
 
                while ((evt = ncluaw_receive (nw)) != NULL)
