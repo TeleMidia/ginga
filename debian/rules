@@ -1,11 +1,15 @@
 #!/usr/bin/make -f
 
-export LDFLAGS=-Wl,--no-as-needed
-export CPPFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
-export CFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/
+export LDFLAGS=-Wl,--no-as-needed -llua5.1
+export CPPFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/ -I/usr/include/lua5.1/
+export CFLAGS=-I/usr/include/mirclient -I/usr/include/mircommon/ -I/usr/include/lua5.1/
 
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-data-processing --enable-video4linux --libdir=/usr/lib
+
+override_dh_auto_install:
+	dh_auto_install
+	install -D $(CURDIR)/gingacc-player/files/scripts/tcp_event.lua $(CURDIR)/debian/ginga/usr/share/lua/5.1/tcp_event.lua
 
 %:
 	dh $@
