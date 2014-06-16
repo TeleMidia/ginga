@@ -15,6 +15,7 @@ LDADD =\
   $(top_builddir)/telemidia-util/libtelemidiautil.la\
   $(top_builddir)/gingacc-system/libgingaccsystem.la\
   $(top_builddir)/gingacc-contextmanager/libgingacccontextmanager.la\
+  $(top_builddir)/gingacc-mb/libgingaccmb.la\
   $(NULL)
 
 noinst_PROGRAMS = test
