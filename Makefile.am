@@ -60,9 +60,11 @@ SUBDIRS += gingacc-contextmanager/tests
 if BUILD_MULTIDEVICE
 SUBDIRS += gingacc-multidevice/tests
 endif
+if BUILD_DATA_PROCESSING
 SUBDIRS += gingacc-tuner/tests
 SUBDIRS += gingacc-tsparser/tests
 SUBDIRS += gingacc-dataprocessing/tests
+endif
 SUBDIRS += gingacc-player/tests
 SUBDIRS += gingancl/tests
 SUBDIRS += gingalssm/tests
