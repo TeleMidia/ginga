@@ -198,24 +198,6 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\RemoteEventService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaCanvas.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-event.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-luax.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-status.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\image\ImagePlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -334,9 +316,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\declarative\ncl\NCLPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\AVPlayerAdapter.cpp">
@@ -1059,9 +1038,6 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\FileSystemProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\MulticastProvider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\Tuner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -1069,6 +1045,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
