@@ -53,7 +53,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\lua-5.1.4\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\libzip\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX $(Config);GINGA_LIBDIR $(CONTRIB_LIB);GINGA_INI_PATH $(SolutionDir)\Ginga\files\ginga.ini;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -142,7 +142,7 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\lua-5.1.4\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;_MBCS;STR_PREFIX $(Config);GINGA_LIBDIR $(CONTRIB_LIB);GINGA_INI_PATH $(SolutionDir)\Ginga\files\ginga.ini;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;_MBCS;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -252,13 +252,7 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\RemoteEventService.cpp" />
     <!-- END MULTIDEVICE -->
     <!-- Lua Player -->
-    <!-- ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaEvent.cpp" / -->
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaCanvas.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-event.c" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-luax.c" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua-status.c" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\nclua.c" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp" />
+    <!-- <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp" /> -->
     <!-- End Lua Player -->
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\image\ImagePlayer.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\Player.cpp" />
@@ -271,16 +265,6 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\widget\ShowButton.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\declarative\xhtml\berkelium\BerkeliumHandler.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\declarative\xhtml\berkelium\BerkeliumPlayer.cpp" />
-    <!-- REMOVED DIRECTX ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\content\audio\dx\DXAudioProvider.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\content\image\dx\DXImageProvider.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\content\text\dx\DXFontProvider.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\content\video\dx\DXVideoProvider.cpp" />
-   <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\device\dx\DXDeviceScreen.cpp" />
-   <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\input\dx\DXEventBuffer.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\input\dx\DXInputEvent.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\output\dx\DX2DSurface.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\output\dx\DXSurface.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\output\dx\DXWindow.cpp" / -->
     <!-- ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\device\DeviceAudio.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\InputManager.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\io\interface\device\DeviceCommunication.cpp" />   
@@ -317,7 +301,7 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adaptation\context\RuleAdapter.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\ApplicationPlayerAdapter.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\declarative\ncl\NCLPlayerAdapter.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp" />
+    <!-- <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp" /> -->
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\AVPlayerAdapter.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\ChannelPlayerAdapter.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\tv\ProgramAVPlayerAdapter.cpp" />
@@ -484,11 +468,6 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\util\Comparator.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Color.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\functions.cpp" />
-    <!-- ClCompile Include="$(GINGA_BASE_DIR)\telemidia-dshow\src\AudioGraph.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-dshow\src\CMediaGraph.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-dshow\src\DShowGraph.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-dshow\src\VideoGraph.cpp" />
-    <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-dshow\src\VMRAllocPres.cpp" / -->
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\DocumentParser.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\DataProcessor.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\Binding.cpp" />
@@ -564,7 +543,7 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\Channel.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\Channels.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\FileSystemProvider.cpp" />
-	<ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\Tuner.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Base64.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp" />
