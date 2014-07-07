@@ -453,6 +453,22 @@ void LuaPlayer::doStop (void)
 
 LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 {
+#ifdef WIN32
+     static int putenv = 0;
+     if (!putenv)
+	 {
+		 char buf[512];
+		 const char *dir;
+
+		 dir = SystemCompat::getGingaBinPath().c_str ();
+		 _snprintf (buf, sizeof (buf), "%s\.lua;%s\?\init.lua;;", dir, dir);
+		 _putenv_s ("LUA_PATH", buf);
+
+		 _snprintf (buf, sizeof (buf), "%s\?.dll;;");
+		 _putenv_s ("LUA_CPATH", buf);
+		 putenv = 1;
+	 }
+#endif
      trace ("id=%d, mrl='%s'", id, mrl.c_str ());
 
      // FIXME: This is *WRONG*: the chdir() call changes the working
