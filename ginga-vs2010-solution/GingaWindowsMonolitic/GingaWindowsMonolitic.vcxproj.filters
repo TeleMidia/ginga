@@ -1050,6 +1050,12 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
