@@ -6,13 +6,24 @@ Ginga development on Windows.
 
 The necessary subprojects are almost the same of Ginga for Linux.
 
+  * ginga
+  * gingacc-cm
+  * gingacc-contextmanager
+  * gingacc-dataprocessing
+  * gingacc-ic
+  * gingacc-mb
+  * gingacc-multidevice
+  * gingacc-player
+  * gingacc-system
+  * gingacc-tsparser
+  * gingacc-tuner
+  * gingacc-um
+  * gingalssm
+  * gingancl
   * telemidia-util-cpp
   * ncl30-cpp
-  * gingacc-cpp
-  * gingancl-cpp
-  * gingalssm-cpp
-  * ginga-cpp
-
+  * ncl30-converter
+  
 Optionally, you can build a more friendly graphical user interface available in
 the subproject:
 
@@ -20,15 +31,22 @@ the subproject:
 
 MAIN REQUISITES
 ===============
-The main requirement is Visual Studio C++ 2010 (Professional or Express 
+The main requirement is Visual Studio C++ 2012 (Professional or Express 
 Edition). You can download it from:
 
   * Visual Studio Express: http://www.microsoft.com/express/Downloads
 
 In order to simplify the build process we already provide you with a package 
-containing all the necessary dependencies. You can download it from here:
+containing all the necessary dependencies. You can download by just executing
+the following bath script inside the contrib folder:
 
-  * TODO 
+  * fetch_deps.bat
+  
+This script will download a zip file containing the dependencies. You should extract
+the files to the folder contrib (the same folder where the script is). Note that
+some extractor programs create a subfolder with the same name of the zip file
+and then extract the content to this subfolder. The files extracted should be
+in the contrib folder and not in a subfolder.
 
 Of course, you can also download individually each one of the dependencies.
 If you prefer this last one, the main requirements to make a functional 
@@ -44,6 +62,13 @@ development enviroment for this project are:
   * msinttypes
   * xerces-c >= 3.0
   * zlib >= 1.2.3
+  * nclua
+
+There is also another batch script that copy the dlls to the correct
+folder in order to appropriate run the Ginga. The script is also 
+in contrib folder:
+
+   * cp_deps.bat 
 
 Only if you want to build gingagui-cpp you will also need Qt 4.8 built for 
 Visual Studio. You can download it from:
@@ -62,13 +87,8 @@ All Ginga source code is available at Software Publico Brasileiro
 
 You can get the most recent source code with these commands:
 
-  * git clone http://git.telemidia.puc-rio.br/telemidia-util-cpp.git
-  * git clone http://git.telemidia.puc-rio.br/ncl30-cpp.git
-  * git clone http://git.telemidia.puc-rio.br/gingacc-cpp.git
-  * git clone http://git.telemidia.puc-rio.br/gingancl-cpp.git
-  * git clone http://git.telemidia.puc-rio.br/gingalssm-cpp.git
-  * git clone http://git.telemidia.puc-rio.br/ginga-cpp.git
-
+  * git clone http://git.telemidia.puc-rio.br/ginga.git
+  
 And optionally:
 
   * git clone http://git.telemidia.puc-rio.br/gingagui-cpp.git
@@ -111,9 +131,10 @@ For changing ALD you should select project and menu
 Populating "Contrib" directory
 ------------------------------
 
-For simplicity, you can get "contrib" dir from this location:
+For simplicity, you can get "contrib" dir by just running the following
+script in contrib folder:
   
-  * TODO
+  * fetch_deps.bat
 
 Otherwise, you must populate "contrib" directory with these following 
 dependencies:
@@ -139,7 +160,7 @@ dependencies:
   -> lua 5.1.4
       http://code.google.com/p/luaforwindows
 
-Be careful!! The directory name of each depedency must be the same mapped in 
+Be careful!! The directory name of each dependency must be the same mapped in 
 AID and ALD! If you want you can change AID and ALD instead of renaming 
 directory.
 
@@ -175,9 +196,12 @@ For example,
   - You also can change PATH enviroment variable to be able to 
     locate each necessary dll;
 
-  - ...
+If you run the script bellow, all necessary dlls will be copied to a folder
+called "Ginga" inside the visual studio project folder.
 
-Here is a suggestion:
+   * cp_deps.bat
+
+Here is another suggestion:
   - Create a "binaries" directory inside "contrib" and copy all dll dependecies
     to there. With this, you should add just the fullpath of "contrib/binaries" 
     to PATH enviroment variable.
