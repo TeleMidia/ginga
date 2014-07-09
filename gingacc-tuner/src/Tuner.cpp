@@ -229,12 +229,14 @@ namespace tuning {
 		ifstream fis;
 		string addr;
 
+		string tunerpath = SystemCompat::getGingaBinPath() + "/" + GINGA_TUNER_PATH;
+
 		fis.open(
-				GINGA_TUNER_PATH,
+				tunerpath,
 				ifstream::in);
 
 		if (!fis.is_open()) {
-		        clog << "can't open " << GINGA_TUNER_PATH;
+		        clog << "can't open " << tunerpath;
 			clog << endl;
 
 		} else {
