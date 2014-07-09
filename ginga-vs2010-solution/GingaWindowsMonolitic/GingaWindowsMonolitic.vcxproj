@@ -52,14 +52,14 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\libzip\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+	  <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;pthreadVSE2.lib;xerces-c_3.lib;dlfcn.lib;FreeImage.lib;SDL2.lib;SDL2.lib;SDL2_image.lib;SDL2_ttf.lib;libcurl.lib;avutil.lib;avcodec.lib;avfilter.lib;avformat.lib;avdevice.lib;swscale.lib;swresample.lib;postproc.lib;berkelium.lib;zip.lib;strmiids.lib;quartz.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Winmm.lib;pthreadVSE2.lib;xerces-c_3.lib;dlfcn.lib;FreeImage.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libcurl.lib;avutil.lib;avcodec.lib;avfilter.lib;avformat.lib;avdevice.lib;swscale.lib;swresample.lib;postproc.lib;berkelium.lib;zip.lib;strmiids.lib;quartz.lib;nclua.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <CustomBuildStep>
@@ -102,11 +102,9 @@ if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
 if not exist "%GINGAFILESPATH%\img\button" ( mkdir "%GINGAFILESPATH%\img\button" )
 copy $(GINGACCPLAYER_DIR)\files\images\*.png %GINGAFILESPATH%\img\button
 
-if not exist "%GINGABINPATH%\lua" ( mkdir "%GINGABINPATH%\lua" )
-copy $(GINGACCPLAYER_DIR)\files\scripts\*.lua %GINGABINPATH%\lua
-
-if not exist "%GINGABINPATH%\lua\gui" ( mkdir "%GINGABINPATH%\lua\gui" )
-copy $(GINGACCPLAYER_DIR)\files\scripts\gui\*.lua %GINGABINPATH%\lua\gui
+if not exist "%GINGABINPATH%\nclua" ( mkdir "%GINGABINPATH%\nclua" )
+if not exist "%GINGABINPATH%\nclua\event" ( mkdir "%GINGABINPATH%\nclua\event" )
+copy $(CONTRIBLIB_DIR)\nclua\nclua\share\lua\5.2\nclua\event\*.lua %GINGABINPATH%\nclua\event
 
 :: GingaCC-tuner
 :: if not exist "%GINGAFILESPATH%\tuner" ( mkdir "%GINGAFILESPATH%\tuner" )
@@ -193,11 +191,9 @@ if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
 if not exist "%GINGAFILESPATH%\img\button" ( mkdir "%GINGAFILESPATH%\img\button" )
 copy $(GINGACCPLAYER_DIR)\files\images\*.png %GINGAFILESPATH%\img\button
 
-if not exist "%GINGABINPATH%\lua" ( mkdir "%GINGABINPATH%\lua" )
-copy $(GINGACCPLAYER_DIR)\files\scripts\*.lua %GINGABINPATH%\lua
-
-if not exist "%GINGABINPATH%\lua\gui" ( mkdir "%GINGABINPATH%\lua\gui" )
-copy $(GINGACCPLAYER_DIR)\files\scripts\gui\*.lua %GINGABINPATH%\lua\gui
+if not exist "%GINGABINPATH%\nclua" ( mkdir "%GINGABINPATH%\nclua" )
+if not exist "%GINGABINPATH%\nclua\event" ( mkdir "%GINGABINPATH%\nclua\event" )
+copy $(CONTRIBLIB_DIR)\nclua\nclua\share\lua\5.2\nclua\event\*.lua %GINGABINPATH%\nclua\event
 
 :: GingaCC-tuner
 :: if not exist "%GINGAFILESPATH%\tuner" ( mkdir "%GINGAFILESPATH%\tuner" )
