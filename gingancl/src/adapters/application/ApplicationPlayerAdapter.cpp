@@ -108,6 +108,36 @@ namespace application {
 		this->editingCommandListener = listener;
 	}
 
+	void ApplicationPlayerAdapter::checkPlayerSurface(ExecutionObject* obj) {
+		CascadingDescriptor* descriptor;
+		FormatterRegion* fRegion;
+		LayoutRegion* ncmRegion;
+		ISurface* wrapper;
+		int w, h;
+
+		if (player != NULL) {
+			wrapper = player->getSurface();
+			if (wrapper == NULL) {
+				descriptor = obj->getDescriptor();
+				if (descriptor != NULL) {
+					fRegion = descriptor->getFormatterRegion();
+					if (fRegion != NULL) {
+						ncmRegion = fRegion->getLayoutRegion();
+						if (ncmRegion != NULL) {
+							w = ncmRegion->getWidthInPixels();
+							h = ncmRegion->getHeightInPixels();
+							if (w > 0 && h > 0) {
+								wrapper = dm->createSurface(myScreen, w, h);
+								wrapper->setCaps(wrapper->getCap("ALPHACHANNEL"));
+								player->setSurface(wrapper);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	void ApplicationPlayerAdapter::createPlayer() {
 		clog << "ApplicationPlayerAdapter::createPlayer(" << this << ")";
 		clog << endl;
@@ -195,6 +225,7 @@ namespace application {
 
 			explicitDur = prepareProperties(object);
 			createPlayer();
+			checkPlayerSurface(object);
 
 		} else {
 			explicitDur = prepareProperties(object);

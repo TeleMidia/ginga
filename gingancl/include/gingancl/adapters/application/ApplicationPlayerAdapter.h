@@ -95,6 +95,7 @@ namespace application {
 			void setNclEditListener(IPlayerListener* listener);
 
 		protected:
+			void checkPlayerSurface(ExecutionObject* obj);
 			virtual void createPlayer();
 
 			virtual bool hasPrepared();
