@@ -52,7 +52,7 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-	  <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
@@ -63,75 +63,13 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <CustomBuildStep>
-      <Command>:: This script is part of ginga-vs2010-solution
-:: It will copy all necessary configuration file to the directory
-:: passed as parameter, e.g., where the ginga was built.
-
-set GINGABINPATH=$(SolutionDir)\$(Configuration)\
-set GINGAFILESPATH=%GINGABINPATH%files
-
-echo "%GINGAFILESPATH%"
-
-echo ::Copying ginga config files to %GINGABINPATH%
-
-if not exist "%GINGABINPATH%" ( mkdir "%GINGABINPATH%" )
-if not exist "%GINGAFILESPATH%" ( mkdir "%GINGAFILESPATH%" )
-if not exist "%GINGAFILESPATH%\cfg" ( mkdir "%GINGAFILESPATH%\cfg" )
-if not exist "%GINGAFILESPATH%\font" ( mkdir "%GINGAFILESPATH%\font" )
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\md" ( mkdir "%GINGAFILESPATH%\md" )
-
-:: GingaCC-CM
-copy $(GINGA_BASE_DIR)\gingacc-cm\files\*.xml %GINGAFILESPATH%\
-
-:: GingaCC-ContextManager
-if not exist "%GINGAFILESPATH%\contextmanager" ( mkdir "%GINGAFILESPATH%\contextmanager" )
-copy $(GINGACCCONTEXTMANAGER_DIR)\files\*.ini %GINGAFILESPATH%\contextmanager\
-copy $(GINGACCCONTEXTMANAGER_DIR)\files\*.txt %GINGAFILESPATH%\contextmanager\
-
-:: GingaCC-MB
-if not exist "%GINGAFILESPATH%\mb" ( mkdir "%GINGAFILESPATH%\mb" )
-if not exist "%GINGAFILESPATH%\mb\config" ( mkdir "%GINGAFILESPATH%\mb\config" )
-xcopy /Y $(GINGACCMB_DIR)\files\config %GINGAFILESPATH%\mb\config
-
-:: GingaCC-player
-if not exist "%GINGAFILESPATH%\font" ( mkdir "%GINGAFILESPATH%\font" )
-xcopy /Y $(GINGACCPLAYER_DIR)\files\fonts %GINGAFILESPATH%\font
-
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\img\button" ( mkdir "%GINGAFILESPATH%\img\button" )
-copy $(GINGACCPLAYER_DIR)\files\images\*.png %GINGAFILESPATH%\img\button
-
-if not exist "%GINGABINPATH%\nclua" ( mkdir "%GINGABINPATH%\nclua" )
-if not exist "%GINGABINPATH%\nclua\event" ( mkdir "%GINGABINPATH%\nclua\event" )
-copy $(CONTRIBLIB_DIR)\nclua\nclua\share\lua\5.2\nclua\event\*.lua %GINGABINPATH%\nclua\event
-
-:: GingaCC-tuner
-:: if not exist "%GINGAFILESPATH%\tuner" ( mkdir "%GINGAFILESPATH%\tuner" )
-:: copy $(GINGACCTUNER_DIR)\files\tuner\img\*.png %GINGAFILESPATH%\tuner
-:: copy $(GINGACCTUNER_DIR)\files\tuner\network\*.ini %GINGAFILESPATH%\tuner
-
-:: Ginga-NCL
-if not exist "%GINGAFILESPATH%\cfg" ( mkdir "%GINGAFILESPATH%\cfg" )
-if not exist "%GINGAFILESPATH%\cfg\formatter" ( mkdir "%GINGAFILESPATH%\cfg\formatter" )
-copy $(GINGANCL_DIR)\files\config\formatter\players\*.ini %GINGAFILESPATH%\cfg\formatter
-
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\img\epgFactory" ( mkdir "%GINGAFILESPATH%\img\epgfactory" )
-copy $(GINGANCL_DIR)\files\epgfactory\img\*.png %GINGAFILESPATH%\img\epgFactory
-
-if not exist "%GINGAFILESPATH%\img\roller" ( mkdir "%GINGAFILESPATH%\img\roller" )
-copy $(GINGANCL_DIR)\files\img\*.png %GINGAFILESPATH%\img\roller
-
-if not exist "%GINGAFILESPATH%\md" ( mkdir "%GINGAFILESPATH%\md" )
-copy $(GINGANCL_DIR)\files\img\active-device-reset.png %GINGAFILESPATH%\md
-copy $(GINGANCL_DIR)\files\img\active-device.png %GINGAFILESPATH%\md
-
-:: Ginga
-copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
-</Command>
+      <Command>
+      </Command>
       <Outputs>$(USERPROFILE)\ginga\input.cfg;%(Outputs)</Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>"$(ProjectDir)post_build.bat" "$(SolutionDir)$(Configuration)" "$(GINGA_BASE_DIR)" "$(GINGACCCONTEXTMANAGER_DIR)" "$(GINGACCMB_DIR)" "$(GINGACCPLAYER_DIR)" "$(CONTRIBLIB_DIR)" "$(GINGANCL_DIR)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -152,76 +90,13 @@ copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <CustomBuildStep>
-      <Command>:: This script is part of ginga-vs2010-solution
-:: It will copy all necessary configuration file to the directory
-:: passed as parameter, e.g., where the ginga was built.
-
-set GINGABINPATH=$(SolutionDir)\$(Configuration)\
-set GINGAFILESPATH=%GINGABINPATH%files
-
-echo "%GINGAFILESPATH%"
-
-echo ::Copying ginga config files to %GINGABINPATH%
-
-if not exist "%GINGABINPATH%" ( mkdir "%GINGABINPATH%" )
-if not exist "%GINGAFILESPATH%" ( mkdir "%GINGAFILESPATH%" )
-if not exist "%GINGAFILESPATH%\cfg" ( mkdir "%GINGAFILESPATH%\cfg" )
-if not exist "%GINGAFILESPATH%\font" ( mkdir "%GINGAFILESPATH%\font" )
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\md" ( mkdir "%GINGAFILESPATH%\md" )
-
-:: GingaCC-CM
-copy $(GINGA_BASE_DIR)\gingacc-cm\files\*.xml %GINGAFILESPATH%\
-
-:: GingaCC-ContextManager
-if not exist "%GINGAFILESPATH%\contextmanager" ( mkdir "%GINGAFILESPATH%\contextmanager" )
-copy $(GINGACCCONTEXTMANAGER_DIR)\files\*.ini %GINGAFILESPATH%\contextmanager\
-copy $(GINGACCCONTEXTMANAGER_DIR)\files\*.txt %GINGAFILESPATH%\contextmanager\
-
-:: GingaCC-MB
-if not exist "%GINGAFILESPATH%\mb" ( mkdir "%GINGAFILESPATH%\mb" )
-if not exist "%GINGAFILESPATH%\mb\config" ( mkdir "%GINGAFILESPATH%\mb\config" )
-xcopy /Y $(GINGACCMB_DIR)\files\config %GINGAFILESPATH%\mb\config
-
-:: GingaCC-player
-if not exist "%GINGAFILESPATH%\font" ( mkdir "%GINGAFILESPATH%\font" )
-xcopy /Y $(GINGACCPLAYER_DIR)\files\fonts %GINGAFILESPATH%\font
-
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\img\button" ( mkdir "%GINGAFILESPATH%\img\button" )
-copy $(GINGACCPLAYER_DIR)\files\images\*.png %GINGAFILESPATH%\img\button
-
-if not exist "%GINGABINPATH%\nclua" ( mkdir "%GINGABINPATH%\nclua" )
-if not exist "%GINGABINPATH%\nclua\event" ( mkdir "%GINGABINPATH%\nclua\event" )
-copy $(CONTRIBLIB_DIR)\nclua\nclua\share\lua\5.2\nclua\event\*.lua %GINGABINPATH%\nclua\event
-
-:: GingaCC-tuner
-:: if not exist "%GINGAFILESPATH%\tuner" ( mkdir "%GINGAFILESPATH%\tuner" )
-:: copy $(GINGACCTUNER_DIR)\files\tuner\img\*.png %GINGAFILESPATH%\tuner
-:: copy $(GINGACCTUNER_DIR)\files\tuner\network\*.ini %GINGAFILESPATH%\tuner
-
-:: Ginga-NCL
-if not exist "%GINGAFILESPATH%\cfg" ( mkdir "%GINGAFILESPATH%\cfg" )
-if not exist "%GINGAFILESPATH%\cfg\formatter" ( mkdir "%GINGAFILESPATH%\cfg\formatter" )
-copy $(GINGANCL_DIR)\files\config\formatter\players\*.ini %GINGAFILESPATH%\cfg\formatter
-
-if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
-if not exist "%GINGAFILESPATH%\img\epgFactory" ( mkdir "%GINGAFILESPATH%\img\epgfactory" )
-copy $(GINGANCL_DIR)\files\epgfactory\img\*.png %GINGAFILESPATH%\img\epgFactory
-
-if not exist "%GINGAFILESPATH%\img\roller" ( mkdir "%GINGAFILESPATH%\img\roller" )
-copy $(GINGANCL_DIR)\files\img\*.png %GINGAFILESPATH%\img\roller
-
-if not exist "%GINGAFILESPATH%\md" ( mkdir "%GINGAFILESPATH%\md" )
-copy $(GINGANCL_DIR)\files\img\active-device-reset.png %GINGAFILESPATH%\md
-copy $(GINGANCL_DIR)\files\img\active-device.png %GINGAFILESPATH%\md
-
-:: Ginga
-copy $(GINGA_BASE_DIR)\config\mimetypes.ini %GINGAFILESPATH%\mimetypes.ini
-copy $(GINGA_BASE_DIR)\config\ginga.win.ini %GINGAFILESPATH%\ginga.ini
-</Command>
+      <Command>
+      </Command>
       <Outputs>$(USERPROFILE)\ginga\input.cfg;%(Outputs)</Outputs>
     </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>"$(ProjectDir)post_build.bat" "$(SolutionDir)$(Configuration)" "$(GINGA_BASE_DIR)" "$(GINGACCCONTEXTMANAGER_DIR)" "$(GINGACCMB_DIR)" "$(GINGACCPLAYER_DIR)" "$(CONTRIBLIB_DIR)" "$(GINGANCL_DIR)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\ContextManager.cpp" />
