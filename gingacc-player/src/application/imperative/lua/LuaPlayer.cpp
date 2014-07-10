@@ -243,10 +243,12 @@ void *LuaPlayer::nw_update_thread (void *data)
                sfc = (SDL_Surface *) wrapper->getSurfaceContent ();
 
                // FIXME: sfc can't be NULL!
-               if (sfc != NULL)
-                    ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
+               if (sfc != NULL) {
+				   //ncluaw_debug_dump_surface(nw, "c:\\temp\\lua.png", NULL);
+				   //SDL_FillRect(sfc, NULL, 0xff0000);
+                   ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
                                   sfc->w, sfc->h, sfc->pitch);
-               else
+			   } else
                     error ("sfc is NULL!");
 
                player->refreshContent ();
@@ -485,8 +487,10 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 
      LocalScreenManager::addIEListenerInstance (this);
      this->im = dm->getInputManager (id);
-     this->surface = dm->createSurface (id);
-     this->surface->setCaps (this->surface->getCap ("ALPHACHANNEL"));
+
+	 // surface must be created by adapter
+     //this->surface = dm->createSurface (id);
+     //this->surface->setCaps (this->surface->getCap ("ALPHACHANNEL"));
 
      this->nw = NULL;           // created by start()
      MUTEX_INIT (&this->mutex);
