@@ -317,7 +317,7 @@ namespace adapters {
 		fisMime.open(mimeUri.c_str(), ifstream::in);
 
 		if (!fisMime.is_open()) {
-			clog << "PlayerAdapterManager: can't open '";
+			clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
 			clog << mimeUri << "'" << endl;
 			return;
 		}
@@ -325,31 +325,36 @@ namespace adapters {
 		mimeDefaultTable.clear();
 		while (fisMime.good()) {
 			fisMime >> line;
-			key = upperCase(line.substr(0, line.find_last_of("=")));
-			value = line.substr(
-					(line.find_first_of("=") + 1),
-					line.length() - (line.find_first_of("=") + 1));
+			if (line.substr(0, 1) != "#") {
+				key = upperCase(line.substr(0, line.find_last_of("=")));
+				value = line.substr(
+						(line.find_first_of("=") + 1),
+						line.length() - (line.find_first_of("=") + 1));
 
-			mimeDefaultTable[key] = value;
+				mimeDefaultTable[key] = value;
+			}
 		}
 
 		fisMime.close();
 
 		fisCtrl.open(ctrlUri.c_str());
 		if (!fisCtrl.is_open()) {
-			clog << "PlayerAdapterManager: can't open ctrldefs.ini" << endl;
+			clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
+			clog << fisCtrl << "'" << endl;
 			return;
 		}
 
 		playerTable.clear();
 		while (fisCtrl.good()) {
 			fisCtrl >> line;
-			key = line.substr(0, line.find_last_of("="));
-			value = line.substr(
-					(line.find_first_of("=") + 1),
-					line.length() - (line.find_first_of("=") + 1));
+			if (line.substr(0, 1) != "#") {
+				key = line.substr(0, line.find_last_of("="));
+				value = line.substr(
+						(line.find_first_of("=") + 1),
+						line.length() - (line.find_first_of("=") + 1));
 
-			playerTable[key] = value;
+				playerTable[key] = value;
+			}
 		}
 
 		fisCtrl.close();

@@ -457,15 +457,16 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
      static int putenv = 0;
      if (!putenv)
 	 {
-		 char buf[512];
-		 const char *dir;
+		 string env, dir;
 
-		 dir = SystemCompat::getGingaBinPath().c_str ();
-		 _snprintf (buf, sizeof (buf), "%s\.lua;%s\?\init.lua;;", dir, dir);
-		 _putenv_s ("LUA_PATH", buf);
+		 dir = SystemCompat::getGingaBinPath();
+		 env = dir + "\\.lua;" + dir + "\\?\\init.lua;;";
 
-		 _snprintf (buf, sizeof (buf), "%s\?.dll;;");
-		 _putenv_s ("LUA_CPATH", buf);
+		 _putenv_s ("LUA_PATH", env.c_str());
+
+		 env = dir + "\\?.dll;;";
+
+		 _putenv_s ("LUA_CPATH", env.c_str());
 		 putenv = 1;
 	 }
 #endif
