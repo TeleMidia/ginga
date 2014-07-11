@@ -82,17 +82,6 @@ LUAPLAYER_BEGIN_DECLS
 # define snprintf _snprintf
 #endif
 
-#if 0
-#define __clog(fmt, ...)                                        \
-     do {                                                       \
-          char buf[1024];                                       \
-          fflush (NULL);                                        \
-          snprintf (buf, sizeof (buf), fmt, ## __VA_ARGS__);    \
-          clog << buf << endl;                                  \
-          clog.flush ();                                        \
-     } while (0)
-#endif
-
 #define __clog(fmt, ...)                                        \
      do {                                                       \
           fflush (NULL);                                        \
@@ -227,6 +216,7 @@ void *LuaPlayer::nw_update_thread (void *data)
 
           for (i = lst.begin (); i != lst.end (); i++)
           {
+               IWindow* window;
                LuaPlayer *player;
                ISurface *wrapper;
                SDL_Surface *dest;
@@ -239,7 +229,6 @@ void *LuaPlayer::nw_update_thread (void *data)
 
                nw = player->nw;
                ncluaw_cycle (nw);
-               trace ("cycling %p", (void *) nw);
 
                wrapper = player->getSurface ();
                dest = (SDL_Surface *) wrapper->getSurfaceContent ();
@@ -250,6 +239,11 @@ void *LuaPlayer::nw_update_thread (void *data)
                                   sfc->w, sfc->h, sfc->pitch);
                assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
                SDL_FreeSurface (sfc);
+
+               // Refresh surface.
+               window = (IWindow*)(wrapper->getParentWindow ());
+               assert (window != NULL);
+               window->renderFrom (wrapper);
 
                while ((evt = ncluaw_receive (nw)) != NULL)
                {
@@ -486,10 +480,6 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
      LocalScreenManager::addIEListenerInstance (this);
      this->im = dm->getInputManager (id);
 
-	 // surface must be created by adapter
-     //this->surface = dm->createSurface (id);
-     //this->surface->setCaps (this->surface->getCap ("ALPHACHANNEL"));
-
      this->nw = NULL;           // created by start()
      MUTEX_INIT (&this->mutex);
      this->hasExecuted = false;
@@ -690,50 +680,6 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 tail:
      this->unlock ();
      return true;
-}
-
-#if 0
-
-// Extra public stuff (required by LuaCanvas).
-
-GingaScreenID LuaPlayer::getScreenId (void)
-{
-     GingaScreenID screen;
-
-     this->lock ();
-
-     screen = this->myScreen;
-
-     this->unlock ();
-
-     return screen;
-}
-
-ILocalScreenManager *LuaPlayer::getScreenManager (void)
-{
-     ILocalScreenManager *dm;
-
-     this->lock ();
-
-     dm = this->dm;
-
-     this->unlock ();
-
-     return dm;
-}
-#endif
-
-void LuaPlayer::refreshContent (void)
-{
-     this->lock ();
-
-     if (this->notifyContentUpdate)
-     {
-          notifyPlayerListeners
-               (PL_NOTIFY_UPDATECONTENT, "", TYPE_PASSIVEDEVICE, "");
-     }
-
-     this->unlock ();
 }
 
 

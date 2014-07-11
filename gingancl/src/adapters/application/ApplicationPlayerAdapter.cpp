@@ -128,7 +128,6 @@ namespace application {
 							h = ncmRegion->getHeightInPixels();
 							if (w > 0 && h > 0) {
 								wrapper = dm->createSurface(myScreen, w, h);
-								wrapper->setCaps(wrapper->getCap("ALPHACHANNEL"));
 								player->setSurface(wrapper);
 							}
 						}
