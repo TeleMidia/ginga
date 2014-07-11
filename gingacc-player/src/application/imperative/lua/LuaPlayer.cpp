@@ -108,7 +108,7 @@ LUAPLAYER_BEGIN_DECLS
 #ifdef LUAPLAYER_ENABLE_TRACE
 # define trace0() trace ("%s", "")
 # define trace(fmt, ...)                                        \
-     __clog ("%p %s:" fmt, this, __FUNCTION__, ## __VA_ARGS__)
+     __clog ("%s %s:" fmt, __FILE__, __FUNCTION__, ## __VA_ARGS__)
 #else
 # define trace0()               // nothing
 # define trace(fmt, ...)        // nothing
@@ -229,6 +229,7 @@ void *LuaPlayer::nw_update_thread (void *data)
           {
                LuaPlayer *player;
                ISurface *wrapper;
+               SDL_Surface *dest;
                SDL_Surface *sfc;
                ncluaw_t *nw;
                ncluaw_event_t *evt;
@@ -238,20 +239,17 @@ void *LuaPlayer::nw_update_thread (void *data)
 
                nw = player->nw;
                ncluaw_cycle (nw);
+               trace ("cycling %p", (void *) nw);
 
                wrapper = player->getSurface ();
-               sfc = (SDL_Surface *) wrapper->getSurfaceContent ();
-
-               // FIXME: sfc can't be NULL!
-               if (sfc != NULL) {
-				   //ncluaw_debug_dump_surface(nw, "c:\\temp\\lua.png", NULL);
-				   //SDL_FillRect(sfc, NULL, 0xff0000);
-                   ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
+               dest = (SDL_Surface *) wrapper->getSurfaceContent ();
+               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
+                                           0, 0, 0, 0);
+               assert (sfc != NULL);
+               ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
                                   sfc->w, sfc->h, sfc->pitch);
-			   } else
-                    error ("sfc is NULL!");
-
-               player->refreshContent ();
+               assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
+               SDL_FreeSurface (sfc);
 
                while ((evt = ncluaw_receive (nw)) != NULL)
                {
@@ -422,6 +420,7 @@ bool LuaPlayer::doPlay (void)
 
      // Create the NCLua state.
      this->nw = ncluaw_open (this->mrl.c_str (), w, h, &errmsg);
+
      if (this->nw == NULL)
      {
           error ("%s", errmsg);
@@ -431,7 +430,6 @@ bool LuaPlayer::doPlay (void)
           Player::abort ();
           return false;
      }
-
      this->im->addApplicationInputEventListener (this);
 
      return true;
@@ -457,20 +455,20 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 {
 #ifdef WIN32
      static int putenv = 0;
+
      if (!putenv)
-	 {
-		 string env, dir;
+     {
+          string env;
+          string dir;
 
-		 dir = SystemCompat::getGingaBinPath();
-		 env = dir + "\\.lua;" + dir + "\\?\\init.lua;;";
+          dir = SystemCompat::getGingaBinPath();
+          env = dir + "\\.lua;" + dir + "\\?\\init.lua;;";
+          _putenv_s ("LUA_PATH", env.c_str());
 
-		 _putenv_s ("LUA_PATH", env.c_str());
-
-		 env = dir + "\\?.dll;;";
-
-		 _putenv_s ("LUA_CPATH", env.c_str());
-		 putenv = 1;
-	 }
+          env = dir + "\\?.dll;;";
+          _putenv_s ("LUA_CPATH", env.c_str());
+          putenv = 1;
+     }
 #endif
      trace ("id=%d, mrl='%s'", id, mrl.c_str ());
 
