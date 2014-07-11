@@ -117,11 +117,6 @@ public:
 
      // Input event callback.
      bool userEventReceived (IInputEvent * evt);
-
-     // Required by LuaCanvas.cpp.
-     GingaScreenID getScreenId (void);
-     ILocalScreenManager *getScreenManager (void);
-     void refreshContent (void);
 };
 
 LUAPLAYER_END_DECLS
