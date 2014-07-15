@@ -232,7 +232,7 @@ namespace tuning {
 		string tunerpath = SystemCompat::getGingaBinPath() + "/" + GINGA_TUNER_PATH;
 
 		fis.open(
-				tunerpath,
+				tunerpath.c_str(),
 				ifstream::in);
 
 		if (!fis.is_open()) {
