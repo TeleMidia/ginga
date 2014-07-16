@@ -42,4 +42,4 @@ Build tutorial Ubuntu 14.04 build guide
   ./bootstrap
   ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" CPPFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/" CFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/"
   make -j4
-  sudo make install
+  sudo make -j4 install
