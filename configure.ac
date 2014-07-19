@@ -14,6 +14,7 @@ m4_define([avformat_required_version],   [55.19.104])
 m4_define([avutil_required_version],     [52.48.101])
 m4_define([curl_required_version],       [7.18])
 m4_define([expat_required_version],      [2.1])
+m4_define([libzip_required_version],     [0.11.2])
 m4_define([nclua_required_version],      [1.0])
 m4_define([postproc_required_version],   [52.3.100])
 m4_define([sdl2_image_require_version],  [2.0])
@@ -242,7 +243,13 @@ AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 AC_CHECK_HEADER([sys/sysinfo])
 
-# TODO: Check for libzip and define HAVE_ZIP (required by gingacc-multidevice).
+# Check for libzip if multi-device support is enabled.
+if test "$enable_multidevice" = yes; then
+  PKG_CHECK_MODULES([LIBZIP],
+    [libzip >= libzip_required_version], [],
+    [AC_MSG_ERROR([
+*** libzip >= libzip_required_version is required by --enable-multidevice])])
+fi
 
 ############################### Ginga-CC CM ################################
 # Nothing to do.
