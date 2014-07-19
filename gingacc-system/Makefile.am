@@ -22,6 +22,11 @@ libgingaccsystem_la_SOURCES =\
   src/time/Stc.cpp\
   $(NULL)
 
+if BUILD_MULTIDEVICE
+AM_CXXFLAGS += $(LIBZIP_CFLAGS)
+AM_LDFLAGS += $(LIBZIP_LIBS)
+endif
+
 if BUILD_MULTIPROCESS
 AM_LDFLAGS += $(RT_LIBS)
 libgingaccsystem_la_SOURCES +=\
