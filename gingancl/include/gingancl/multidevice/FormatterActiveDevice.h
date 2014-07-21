@@ -95,10 +95,10 @@ namespace multidevice {
 			//static const unsigned int COMMAND_SERVER_PORT = 22222;
 			static const unsigned int RCVBUFSIZE          = 100;
 
-			static const string IMG_DIR;
-			static const string IMG_DEV;
-			static const string IMG_RESET;
-			static string TMP_DIR;
+			string img_dir;
+			string img_dev;
+			string img_reset;
+			string tmp_dir;
 
 		private:
 			TCPSocket* tcpSocket;

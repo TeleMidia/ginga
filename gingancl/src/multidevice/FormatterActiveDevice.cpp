@@ -97,13 +97,6 @@ namespace ginga {
 namespace ncl {
 namespace multidevice {
 
-
-const string FormatterActiveDevice::IMG_DIR   = SystemCompat::appendGingaFilesPrefix("md") + SystemCompat::getIUriD();
-const string FormatterActiveDevice::IMG_DEV   = "active-device.png";
-const string FormatterActiveDevice::IMG_RESET = "active-device-reset.png";
-string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
-
-
 	FormatterActiveDevice::FormatterActiveDevice(
 			GingaScreenID screenId,
 			IDeviceLayout* deviceLayout,
@@ -115,14 +108,18 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 		this->deviceServicePort = srvPort;
 		asprintf(&portStr,"%d",srvPort);
 
-		FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir() +
+		tmp_dir   = SystemCompat::getTemporaryDir() +
 											string(portStr) +
 											SystemCompat::getIUriD();
-		SystemCompat::makeDir(TMP_DIR.c_str(),0755);
+		img_dir   = SystemCompat::appendGingaFilesPrefix("md");
+		img_dir.append(SystemCompat::getIUriD());
+		img_dev   = img_dir + "active-device.png";
+		img_reset = img_dir + "active-device-reset.png";
+		tmp_dir   = SystemCompat::getTemporaryDir();
+		SystemCompat::makeDir(tmp_dir.c_str(),0755);
 
 		clog << "FormatterActiveDevice::constructor" << endl;
 		set<int>* evs;
-		string imgDev = IMG_DIR + IMG_DEV;
 
 		contentsInfo = new map<string, string>;
 		deviceClass  = IDeviceDomain::CT_ACTIVE;
@@ -140,12 +137,12 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 		evs->insert(CodeMap::KEY_F10);
 		im->addInputEventListener(this, evs);
 
-		if (fileExists(imgDev)) {
+		if (fileExists(img_dev)) {
 			serialized = dm->createWindow(
 					myScreen, 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT, -1.0);
 
 			s = dm->createRenderedSurfaceFromImageFile(
-					myScreen, imgDev.c_str());
+					myScreen, img_dev.c_str());
 
 			serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
 			serialized->draw();
@@ -159,7 +156,7 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 
 		} else {
 			clog << "FormatterActiveDevice::constructor Warning! File not found: ";
-			clog << imgDev << endl;
+			clog << img_dev << endl;
 		}
 
 		if (rdm == NULL) {
@@ -538,14 +535,14 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 			string payload) {
 
 		bool handled   = false;
-		string appPath = TMP_DIR;
+		string appPath = tmp_dir;
 		int command_id = getCommandCode(&scommand);
 		string zip_dump;
 
 		clog << "FormatterActiveDevice::handleTCPCommand" << endl;
 		switch (command_id) {
 			case FormatterActiveDevice::ADD_DOCUMENT:{
-				zip_dump = TMP_DIR + "tmpzip.zip";
+				zip_dump = tmp_dir + "tmpzip.zip";
 
 				clog << "ADD node path = '" << spayload_desc << "'" << endl;
 
@@ -568,7 +565,7 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 				clog << spayload_desc << endl;
 
 				if (!payload.empty()) {
-					zip_dump = TMP_DIR + "tmpzip.zip";
+					zip_dump = tmp_dir + "tmpzip.zip";
 
 					clog << "ADD node path = '" << spayload_desc << "'" << endl;
                     clog << "PAYLOAD SIZE = " << strlen(payload.c_str()) << endl;
@@ -725,7 +722,7 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 		int recvMsgSize;
 		bool reading = true;
 		vector<string> tokens;
-		string imgDev = IMG_DIR + IMG_DEV;
+		string imgDev = img_dir + img_dev;
         //char pri[100];
 		char pri[FormatterActiveDevice::RCVBUFSIZE]; //first line; MAX command size
 		char *sec; //second line
@@ -791,7 +788,7 @@ string FormatterActiveDevice::TMP_DIR   = SystemCompat::getTemporaryDir();
 							myScreen, imgDev.c_str());
 				}
 
-				imgDev = IMG_DIR + IMG_RESET;
+				imgDev = img_dir + img_reset;
 				if (fileExists(imgDev)) {
 					serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
 					serialized->draw();
