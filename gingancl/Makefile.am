@@ -365,3 +365,23 @@ cfgformatter_DATA =\
   files/config/formatter/players/ctrldefs.ini\
   files/config/formatter/players/mimedefs.ini\
   $(NULL)
+
+imgsformaterdir = $(gingaconfdir)/img/roller/
+imgsformater_DATA =\
+	files/img/loading.png\
+  files/img/b1.png\
+	files/img/b2.png\
+	files/img/b3.png\
+	files/img/b4.png\
+	files/img/b6.png\
+	files/img/b5.png\
+	files/img/b7.png\
+	files/img/b8.png\
+	$(NULL)
+
+mdimgsformaterdir = $(gingaconfdir)/md/
+mdimgsformater_DATA =\
+  files/img/active-device-reset.png\
+  files/img/active-device.png\
+	$(NULL)
+
