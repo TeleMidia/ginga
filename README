@@ -33,9 +33,9 @@ Build tutorial Ubuntu 14.04 build guide
   sudo apt-get update
   sudo apt-get install -y berkelium ffmpegext  nclua
 
-* Apply Ubuntu patch to use Rafael Diniz's berkelium, ffmpegext and nclua packages
+* Apply Ubuntu patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
 
-  patch < debian/patches/configure.ac.diff
+  ./debian/patches/fix_configure_ac_ffmpeg.sh
 
 * Build ginga
 
