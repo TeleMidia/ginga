@@ -30,6 +30,7 @@ AC_SUBST([AVFILTER_REQUIRED_VERSION], avfilter_required_version)
 AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
 AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
 AC_SUBST([CURL_REQUIRED_VERSION], curl_required_version)
+AC_SUBST([LIBZIP_REQUIRED_VERSION], libzip_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION], expat_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION], nclua_required_version)
 AC_SUBST([POSTPROC_REQUIRED_VERSION], postproc_required_version)
@@ -243,14 +244,6 @@ AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 AC_CHECK_HEADER([sys/sysinfo])
 
-# Check for libzip if multi-device support is enabled.
-if test "$enable_multidevice" = yes; then
-  PKG_CHECK_MODULES([LIBZIP],
-    [libzip >= libzip_required_version], [],
-    [AC_MSG_ERROR([
-*** libzip >= libzip_required_version is required by --enable-multidevice])])
-fi
-
 ############################### Ginga-CC CM ################################
 # Nothing to do.
 
@@ -376,6 +369,16 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 
 ################################ Ginga LLSM ################################
 # Nothing to do.
+
+################################ Ginga MD ################################
+
+# Check for libzip if multi-device support is enabled.
+if test "$enable_multidevice" = yes; then
+  PKG_CHECK_MODULES([LIBZIP],
+    [libzip >= libzip_required_version], [],
+    [AC_MSG_ERROR([
+*** libzip >= libzip_required_version is required by --enable-multidevice])])
+fi
 
 ################################## Ginga ###################################
 
