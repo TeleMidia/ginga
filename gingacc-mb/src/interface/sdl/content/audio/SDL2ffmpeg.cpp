@@ -445,9 +445,13 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::getOriginalResolution(int* w, int* h) {
-		if (vs->video_st && vs->video_st->codec->width) {
+		if (vs->video_st) {
 			*w = vs->video_st->codec->width;
 			*h = vs->video_st->codec->height;
+			if (*w == 0 || *h == 0) {
+				*w = 1920;
+				*h = 1080;
+			}
 
 		} else {
 
