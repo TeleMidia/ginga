@@ -28,10 +28,10 @@ Build tutorial Ubuntu 14.04 build guide
 
 * Installing depencies
 
-  sudo apt-get install -y libcurl4-gnutls-dev libexpat1-dev libxerces-c28 libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
+  sudo apt-get install libcurl4-gnutls-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
   sudo echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/ubuntu amd64/ " >> /etc/apt/sources.list
   sudo apt-get update
-  sudo apt-get install -y berkelium ffmpegext  nclua
+  sudo apt-get install berkelium ffmpegext  nclua
 
 * Apply Ubuntu patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
 
