@@ -29,6 +29,7 @@ contrib/
 .libs
 .patch_number
 .project
+.cproject
 /build-aux/*
 !/build-aux/Makefile.am.common
 !/build-aux/ax_compare_version.m4
