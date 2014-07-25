@@ -334,6 +334,8 @@ namespace mb {
 		char filename[1024];
 		int step;
 
+		int scaleCounter;                   // telemidia debug
+
 		// AVFILTER begin
 		AVFilterContext *in_video_filter;   // the first filter in the video chain
 		AVFilterContext *out_video_filter;  // the last filter in the video chain

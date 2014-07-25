@@ -63,6 +63,8 @@ Many thanks to these guys and to the community that support them!
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
+#include "config.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -130,6 +132,7 @@ namespace mb {
 
 		vs = (VideoState*)av_mallocz(sizeof(VideoState));
 		if (vs) {
+			vs->scaleCounter = 0;
 			av_strlcpy(vs->filename, filename, sizeof(vs->filename));
 
 			av_init_packet(&flush_pkt);
@@ -195,6 +198,12 @@ namespace mb {
 		clog << "SDL2ffmpeg::release" << endl;
 
 		if (vs != NULL) {
+
+#if GINGA_DEBUG
+			clog << "SDL2ffmpeg::release scale counter ";
+			clog << vs->scaleCounter << endl;
+#endif
+
 			if (vs->ic) {
 				avformat_close_input(&vs->ic);
 				vs->ic = NULL; /* safety */
@@ -885,6 +894,11 @@ namespace mb {
 								(const uint8_t* const*)vp->src_frame->data,
 								vp->src_frame->linesize,
 								0, vp->height, pict.data, pict.linesize);
+
+#if GINGA_DEBUG
+						vs->scaleCounter++;
+#endif
+
 					}
 				}
 
@@ -1536,6 +1550,7 @@ fail:
 		AVCodecContext *codec = vs->video_st->codec;
 		AVRational fr = av_guess_frame_rate(vs->ic, vs->video_st, NULL);
 
+		memset(sws_flags_str, 0, sizeof(sws_flags_str));
 		graph->scale_sws_opts = av_strdup(sws_flags_str);
 
 		snprintf(
