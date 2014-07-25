@@ -85,6 +85,10 @@ libgingaccmbdecsdlav_la_CXXFLAGS =\
 libgingaccmbdecsdlav_la_LDFLAGS =\
   $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
+libgingaccmbdecsdlav_la_LIBADD =\
+  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlap.la\
+  $(NULL)
+
 libgingaccmbdecsdlav_la_SOURCES =\
   src/interface/sdl/content/video/SDLVideoProvider.cpp\
   $(NULL)
