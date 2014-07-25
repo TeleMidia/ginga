@@ -652,6 +652,9 @@ namespace player {
 
 			SystemCompat::uSleep(850000);
 			currentTime = getCurrentMediaTime();
+			if (currentTime > dur) {
+				currentTime = 0;
+			}
 			if (currentTime >= 0) {
 				while (dur > (currentTime + 0.1)) {
 					clog << "AVPlayer::run dur = '" << dur;
