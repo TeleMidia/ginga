@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
 	char* sdlArgv[5];
 	ILocalScreenManager* dm;
 
-	SystemCompat::setLogTo(SystemCompat::LOG_STDO);
+	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 
 #if HAVE_COMPONENTS
 	IComponentManager* cm = IComponentManager::getCMInstance();
@@ -254,10 +254,10 @@ int main(int argc, char** argv) {
 	}
 
 	if (printScreen) {
-		dm->blitScreen(screen1, "/root/printscreen1.bmp");
+		dm->blitScreen(screen1, "/tmp/printscreen1.bmp");
 
 		if (testAllScreens) {
-			dm->blitScreen(screen2, "/root/printscreen2.bmp");
+			dm->blitScreen(screen2, "/tmp/printscreen2.bmp");
 		}
 	}
 
