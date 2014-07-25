@@ -19,7 +19,11 @@ AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LIBS)
 
 gingancllib_LTLIBRARIES =\
+  libginganclmodel.la\
   libgingancladaptation.la\
+  libginganclemconverter.la\
+  libginganclmd.la\
+  libginganclprefetch.la\
   libgingancladapter.la\
   libginganclapppadapter.la\
   libginganclnclpadapter.la\
@@ -30,17 +34,66 @@ gingancllib_LTLIBRARIES =\
   libginganclimgpadapter.la\
   libginganclpltpadapter.la\
   libginganclsubpadapter.la\
-  libginganclemconverter.la\
-  libginganclfocus.la\
-  libginganclmodel.la\
-  libginganclmd.la\
-  libginganclprefetch.la\
   libgingancl.la\
   $(NULL)
 
 if BUILD_BERKELIUM
 gingancllib_LTLIBRARIES += libginganclbklpadapter.la
 endif
+
+# ginga-ncl-model
+if BUILD_DATA_PROCESSING
+AM_CPPFLAGS +=\
+  $(INCLUDE_GINGACC_TUNER)\
+  $(INCLUDE_GINGACC_TSPARSER)\
+  $(INCLUDE_GINGACC_DATAPROCESSING)\
+  $(NULL)
+endif
+
+libginganclmodel_la_SOURCES =\
+  src/model/components/ApplicationExecutionObject.cpp\
+  src/model/components/CompositeExecutionObject.cpp\
+  src/model/components/ExecutionObject.cpp\
+  src/model/components/NodeNesting.cpp\
+  src/model/event/AnchorEvent.cpp\
+  src/model/event/AttributionEvent.cpp\
+  src/model/event/FormatterEvent.cpp\
+  src/model/event/PresentationEvent.cpp\
+  src/model/event/SelectionEvent.cpp\
+  src/model/event/transition/BeginEventTransition.cpp\
+  src/model/event/transition/EndEventTransition.cpp\
+  src/model/event/transition/EventTransition.cpp\
+  src/model/event/transition/EventTransitionManager.cpp\
+  src/model/event/transition/TransitionDispatcher.cpp\
+  src/model/link/FormatterCausalLink.cpp\
+  src/model/link/FormatterLink.cpp\
+  src/model/link/LinkAction.cpp\
+  src/model/link/LinkAndCompoundTriggerCondition.cpp\
+  src/model/link/LinkAssessmentStatement.cpp\
+  src/model/link/LinkAssignmentAction.cpp\
+  src/model/link/LinkAttributeAssessment.cpp\
+  src/model/link/LinkCompoundAction.cpp\
+  src/model/link/LinkCompoundStatement.cpp\
+  src/model/link/LinkCompoundTriggerCondition.cpp\
+  src/model/link/LinkRepeatAction.cpp\
+  src/model/link/LinkSimpleAction.cpp\
+  src/model/link/LinkTransitionTriggerCondition.cpp\
+  src/model/link/LinkTriggerCondition.cpp\
+  src/model/link/LinkValueAssessment.cpp\
+  src/model/presentation/CascadingDescriptor.cpp\
+  src/model/presentation/FormatterDeviceRegion.cpp\
+  src/model/presentation/FormatterLayout.cpp\
+  src/model/presentation/FormatterRegion.cpp\
+  src/model/presentation/focus/FocusSourceManager.cpp\
+  src/model/switches/ExecutionObjectSwitch.cpp\
+  src/model/switches/SwitchEvent.cpp\
+  src/model/time/CostFunctionDuration.cpp\
+  src/model/time/DurationFactory.cpp\
+  src/model/time/FlexibleTimeMeasurement.cpp\
+  src/model/time/LinearCostFunctionDuration.cpp\
+  src/model/time/TimeMeasurement.cpp\
+  src/model/time/UnflexibleDuration.cpp\
+  $(NULL)
 
 # ginga-ncl-adaptation
 libgingancladaptation_la_SOURCES =\
@@ -49,7 +102,40 @@ libgingancladaptation_la_SOURCES =\
   src/adaptation/context/RuleAdapter.cpp\
   $(NULL)
 
+# ginga-ncl-em-converter
+libginganclemconverter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclmodel.la\
+  $(top_builddir)/gingancl/libgingancladaptation.la\
+  $(NULL)
+
+libginganclemconverter_la_SOURCES =\
+  src/emconverter/FormatterConverter.cpp\
+  src/emconverter/FormatterLinkConverter.cpp\
+  $(NULL)
+
+# ginga-ncl-md
+libginganclmd_la_SOURCES =\
+  src/multidevice/FormatterMultiDevice.cpp\
+  src/multidevice/FormatterBaseDevice.cpp\
+  $(NULL)
+
+if BUILD_MULTIDEVICE
+libginganclmd_la_SOURCES +=\
+  src/multidevice/FormatterPassiveDevice.cpp\
+  src/multidevice/FormatterActiveDevice.cpp\
+  $(NULL)
+endif
+
+# ginga-ncl-prefetch
+libginganclprefetch_la_SOURCES =\
+  src/prefetch/PrefetchManager.cpp\
+  $(NULL)
+
 # ginga-ncl-adapter
+libgingancladapter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclmodel.la\
+  $(NULL)
+
 libgingancladapter_la_SOURCES =\
   src/adapters/FormatterPlayerAdapter.cpp\
   src/adapters/NominalEventMonitor.cpp\
@@ -111,93 +197,19 @@ libginganclsubpadapter_la_SOURCES =\
   src/adapters/text/SubtitlePlayerAdapter.cpp\
   $(NULL)
 
-# ginga-ncl-em-converter
-libginganclemconverter_la_SOURCES =\
-  src/emconverter/FormatterConverter.cpp\
-  src/emconverter/FormatterLinkConverter.cpp\
-  $(NULL)
-
-# ginga-ncl-focus
-libginganclfocus_la_SOURCES =\
-  src/focus/FormatterFocusManager.cpp\
-  $(NULL)
-
-# ginga-ncl-model
-if BUILD_DATA_PROCESSING
-AM_CPPFLAGS +=\
-  $(INCLUDE_GINGACC_TUNER)\
-  $(INCLUDE_GINGACC_TSPARSER)\
-  $(INCLUDE_GINGACC_DATAPROCESSING)\
-  $(NULL)
-endif
-
-libginganclmodel_la_SOURCES =\
-  src/model/components/ApplicationExecutionObject.cpp\
-  src/model/components/CompositeExecutionObject.cpp\
-  src/model/components/ExecutionObject.cpp\
-  src/model/components/NodeNesting.cpp\
-  src/model/event/AnchorEvent.cpp\
-  src/model/event/AttributionEvent.cpp\
-  src/model/event/FormatterEvent.cpp\
-  src/model/event/PresentationEvent.cpp\
-  src/model/event/SelectionEvent.cpp\
-  src/model/event/transition/BeginEventTransition.cpp\
-  src/model/event/transition/EndEventTransition.cpp\
-  src/model/event/transition/EventTransition.cpp\
-  src/model/event/transition/EventTransitionManager.cpp\
-  src/model/event/transition/TransitionDispatcher.cpp\
-  src/model/link/FormatterCausalLink.cpp\
-  src/model/link/FormatterLink.cpp\
-  src/model/link/LinkAction.cpp\
-  src/model/link/LinkAndCompoundTriggerCondition.cpp\
-  src/model/link/LinkAssessmentStatement.cpp\
-  src/model/link/LinkAssignmentAction.cpp\
-  src/model/link/LinkAttributeAssessment.cpp\
-  src/model/link/LinkCompoundAction.cpp\
-  src/model/link/LinkCompoundStatement.cpp\
-  src/model/link/LinkCompoundTriggerCondition.cpp\
-  src/model/link/LinkRepeatAction.cpp\
-  src/model/link/LinkSimpleAction.cpp\
-  src/model/link/LinkTransitionTriggerCondition.cpp\
-  src/model/link/LinkTriggerCondition.cpp\
-  src/model/link/LinkValueAssessment.cpp\
-  src/model/presentation/CascadingDescriptor.cpp\
-  src/model/presentation/FormatterDeviceRegion.cpp\
-  src/model/presentation/FormatterLayout.cpp\
-  src/model/presentation/FormatterRegion.cpp\
-  src/model/presentation/focus/FocusSourceManager.cpp\
-  src/model/switches/ExecutionObjectSwitch.cpp\
-  src/model/switches/SwitchEvent.cpp\
-  src/model/time/CostFunctionDuration.cpp\
-  src/model/time/DurationFactory.cpp\
-  src/model/time/FlexibleTimeMeasurement.cpp\
-  src/model/time/LinearCostFunctionDuration.cpp\
-  src/model/time/TimeMeasurement.cpp\
-  src/model/time/UnflexibleDuration.cpp\
-  $(NULL)
-
-# ginga-ncl-md
-libginganclmd_la_SOURCES =\
-  src/multidevice/FormatterMultiDevice.cpp\
-  src/multidevice/FormatterBaseDevice.cpp\
-  $(NULL)
-
-if BUILD_MULTIDEVICE
-libginganclmd_la_SOURCES +=\
-  src/multidevice/FormatterPassiveDevice.cpp\
-  src/multidevice/FormatterActiveDevice.cpp\
-  $(NULL)
-endif
-
-# ginga-ncl-prefetch
-libginganclprefetch_la_SOURCES =\
-  src/prefetch/PrefetchManager.cpp\
-  $(NULL)
-
 # ginga-ncl
+libgingancl_la_LIBADD =\
+  $(top_builddir)/gingacc-player/libgingaccplayer.la\
+  $(top_builddir)/gingancl/libginganclmodel.la\
+  $(top_builddir)/gingancl/libginganclemconverter.la\
+  $(top_builddir)/gingancl/libginganclmd.la\
+  $(top_builddir)/gingancl/libgingancladapter.la\
+  $(NULL)
+
 libgingancl_la_SOURCES =\
   src/FormatterMediator.cpp\
   src/FormatterScheduler.cpp\
+  src/focus/FormatterFocusManager.cpp\
   src/privatebase/PrivateBaseManager.cpp\
   src/privatebase/PrivateBaseContext.cpp\
   src/animation/AnimationController.cpp\

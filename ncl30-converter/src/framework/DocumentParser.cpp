@@ -176,7 +176,11 @@ namespace framework {
 
 	void DocumentParser::initializeUserCurrentPath() {
 		char path[PATH_MAX] = "";
-		getcwd(path, PATH_MAX);
+		char* buf = getcwd(path, PATH_MAX);
+
+		if (buf == NULL) {
+			return;
+		}
 
 		userCurrentPath.assign(path, strlen(path));
 

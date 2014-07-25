@@ -28,6 +28,17 @@ AM_LDFLAGS = $(LT_LDLFAGS) $(PTHREAD_LIBS)
 
 gingalssmlib_LTLIBRARIES = libgingalssm.la
 
+if BUILD_DATA_PROCESSING
+libgingalssm_la_LIBADD =\
+  $(top_builddir)/gingacc-tuner/libgingacctuner.la\
+  $(top_builddir)/gingacc-tsparser/libgingacctsparser.la\
+  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocncledit.la\
+  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocessing.la\
+  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocncl.la\
+  $(top_builddir)/ncl30/libncl30.la\
+  $(NULL)
+endif
+
 libgingalssm_la_SOURCES =\
   src/PresentationEngineManager.cpp\
   src/CommonCoreManager.cpp\

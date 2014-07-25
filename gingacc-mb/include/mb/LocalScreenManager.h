@@ -173,7 +173,7 @@ namespace mb {
 			GingaWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
 
 		private:
-			void getMBSystemType(string mbSystemName, short* mbSystemType);
+			short getMBSystemType(string mbSystemName);
 
 			bool isAvailable(short mbSysType);
 			void lockSysNames();

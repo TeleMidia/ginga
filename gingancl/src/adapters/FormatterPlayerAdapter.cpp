@@ -180,8 +180,9 @@ namespace adapters {
 		if (player == NULL) {
 #if HAVE_COMPONENTS
 			playerCompName = "Player";
+			bool hasVisual = false;
 			player = ((PlayerCreator*)(cm->getObject("Player")))(
-					myScreen, NULL, false);
+					myScreen, NULL, &hasVisual);
 #else
 			player = new Player(myScreen, mrl);
 #endif

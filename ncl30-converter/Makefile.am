@@ -26,6 +26,10 @@ libncl30confraxml_la_SOURCES =\
   $(NULL)
 
 # con-fra-ncl
+libncl30confrancl_la_LIBADD =\
+  $(top_builddir)/ncl30-converter/libncl30confraxml.la\
+  $(NULL)
+
 libncl30confrancl_la_SOURCES =\
   src/framework/ncl/NclComponentsParser.cpp\
   src/framework/ncl/NclConnectorsParser.cpp\
@@ -42,6 +46,11 @@ libncl30confrancl_la_SOURCES =\
   $(NULL)
 
 # con-ncl-ncm
+libncl30connclncm_la_LIBADD =\
+  $(XERCESC_LIBS)\
+  $(top_builddir)/ncl30-converter/libncl30confrancl.la\
+  $(NULL)
+
 libncl30connclncm_la_SOURCES =\
   src/ncl/NclComponentsConverter.cpp\
   src/ncl/NclConnectorsConverter.cpp\
