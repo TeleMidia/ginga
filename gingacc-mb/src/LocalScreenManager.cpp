@@ -638,7 +638,11 @@ namespace mb {
 		}
 
 #if !HAVE_COMPONENTS
-		return;
+		if (mbSystemType == GMBST_DFLT) {
+			mbSystemType = GMBST_SDL;
+		}
+
+		return mbSystemType;
 #endif
 
 		lockSysNames();
