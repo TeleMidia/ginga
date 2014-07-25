@@ -59,7 +59,6 @@ LDADD =\
   $(top_builddir)/gingancl/libginganclpltpadapter.la\
   $(top_builddir)/gingancl/libginganclapppadapter.la\
   $(top_builddir)/gingancl/libginganclnclpadapter.la\
-  $(top_builddir)/gingancl/libginganclfocus.la\
   $(top_builddir)/gingancl/libginganclemconverter.la\
   $(top_builddir)/gingancl/libginganclpavpadapter.la\
   $(top_builddir)/gingancl/libginganclmodel.la\

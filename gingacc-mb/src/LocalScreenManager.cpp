@@ -122,7 +122,10 @@ namespace mb {
 		sortSys.push_back(GMBST_SDL);
 		sortSys.push_back(GMBST_TERM);
 
-		isWaiting = false;
+		waitingRefreshScreen = false;
+		running              = false;
+		isWaiting            = false;
+
 		Thread::condInit(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
 
@@ -419,7 +422,7 @@ namespace mb {
 		string mycmd     = "ginga";
 
 		screenId = getNumOfScreens();
-		getMBSystemType(vSystem, &sysType);
+		sysType = getMBSystemType(vSystem);
 
 		switch (sysType) {
 			case GMBST_SDL:
@@ -500,9 +503,7 @@ namespace mb {
 #endif //HAVE_COMPONENTS
 				break;
 
-			case GMBST_DFLT:
 			case GMBST_DFB:
-			default:
 				params = "";
 
 				if (vSubSystem != "") {
@@ -561,6 +562,12 @@ namespace mb {
 #endif //HAVE_DIRECTFB
 #endif //HAVE_COMPONENTS
 				break;
+
+			default:
+				clog << "LocalScreenManager::createScreen please reinstall";
+				clog << " ginga with a multimedia library (SDL or DFB)";
+				clog << endl;
+				break;
 		}
 
 		addScreen(screenId, screen);
@@ -596,63 +603,65 @@ namespace mb {
 		return uWin;
 	}
 
-	void LocalScreenManager::getMBSystemType(
-			string mbSystemName, short* mbSystemType) {
-
+	short LocalScreenManager::getMBSystemType(string mbSystemName) {
 		map<string, short>::iterator i;
 		vector<short>::iterator j;
-		bool foundit = false;
+		bool foundit = true;
+		short mbSystemType = GMBST_DFLT;
 
-		*mbSystemType = GMBST_DFLT;
-
-#if !HAVE_COMPONENTS
-		if (mbSystemName == "dfb") {
-#if HAVE_DIRECTFB
-			*mbSystemType = GMBST_DFB;
-#endif
-		} else if (mbSystemName == "sdl") {
+		if (mbSystemName == "sdl") {
 #if HAVE_SDL
-			*mbSystemType = GMBST_SDL;
+			mbSystemType = GMBST_SDL;
+#endif
+		} else if (mbSystemName == "dfb") {
+#if HAVE_DIRECTFB
+			mbSystemType = GMBST_DFB;
 #endif
 		} else if (mbSystemName == "term") {
 #if HAVE_TERM
-			*mbSystemType = GMBST_TERM;
+			mbSystemType = GMBST_TERM;
+#endif
+		} else if (mbSystemName != "") {
+			foundit = false;
+		}
+
+		if (mbSystemType == GMBST_DFLT) {
+#if HAVE_SDL
+			mbSystemType = GMBST_SDL;
+#elif HAVE_DIRECTFB
+			mbSystemType = GMBST_DFB;
+#elif HAVE_TERM
+			mbSystemType = GMBST_TERM;
+#else
+			foundit = false;
 #endif
 		}
 
-		if (*mbSystemType == GMBST_DFLT) {
-#if HAVE_TERM
-			*mbSystemType = GMBST_TERM;
-#endif
-#if HAVE_SDL
-			*mbSystemType = GMBST_SDL;
-#endif
-#if HAVE_DIRECTFB
-			*mbSystemType = GMBST_DFB;
-#endif
-		}
+#if !HAVE_COMPONENTS
 		return;
 #endif
 
 		lockSysNames();
 
-		i = sysNames.find(mbSystemName);
-		if (i != sysNames.end()) {
-			*mbSystemType = i->second;
-			foundit = true;
-
-		} else {
-			foundit = false;
+		if (!foundit) {
+			if (mbSystemName == "") {
+				string lName = "sdl";
+				i = sysNames.find(lName);
+				if (i != sysNames.end()) {
+					mbSystemType = i->second;
+					foundit = true;
+				}
+			}
 		}
 
-		if (!foundit || (foundit && !isAvailable(*mbSystemType))) {
+		if (!foundit || (foundit && !isAvailable(mbSystemType))) {
 			foundit = false;
 			j = sortSys.begin();
 			while (j != sortSys.end()) {
-				if (*j != *mbSystemType) {
+				if (*j != mbSystemType) {
 					if (isAvailable(*j)) {
 						foundit = true;
-						*mbSystemType = *j;
+						mbSystemType = *j;
 						break;
 					}
 				}
@@ -663,13 +672,20 @@ namespace mb {
 		unlockSysNames();
 
 		if (!foundit) {
-			*mbSystemType = -1;
+			clog << "LocalScreenManager::getMBSystemType Warning! ";
+			clog << "Can't find a multimedia backend library" << endl;
+			mbSystemType = -1;
 		}
+
+		return mbSystemType;
 	}
 
 	bool LocalScreenManager::isAvailable(short mbSysType) {
 		bool hasSys = false;
 		string screenName = "";
+
+		clog << "LocalScreenManager::isAvailable checking if '" << mbSysType;
+		clog << "' is available" << endl;
 
 #if HAVE_COMPONENTS
 		switch (mbSysType) {
