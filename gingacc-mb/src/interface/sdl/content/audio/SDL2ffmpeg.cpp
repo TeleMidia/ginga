@@ -1558,7 +1558,7 @@ fail:
 	}
 
 	int SDL2ffmpeg::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame) {
-		static const enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
+		static const enum AVPixelFormat pix_fmts[] = { PIX_FMT_YUV420P, PIX_FMT_NONE };
 		char sws_flags_str[128];
 		char buffersrc_args[256];
 		int ret;
@@ -1593,6 +1593,9 @@ fail:
 				NULL, 
 				graph)) < 0) {
 
+			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+			clog << "Can't create buffer filter.";
+			clog << endl;
 			return ret;
 		}
 
@@ -1605,6 +1608,9 @@ fail:
 				graph);
 
 		if (ret < 0) {
+			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+			clog << "Can't create buffersink filter.";
+			clog << endl;
 			return ret;
 		}
 
@@ -1618,6 +1624,37 @@ fail:
 			goto fail;
 		}*/
 
+		/* PIXEL FORMAT FILTER*/
+		/*AVFilter* pix_fmt = avfilter_get_by_name("format");
+		if (pix_fmt != NULL) {
+			if ((ret = avfilter_graph_create_filter(
+					&filt_fmt, 
+					pix_fmt,
+					"sdl2ffmpeg_format",
+					"pix_fmts=rgb24", 
+					NULL, 
+					graph)) < 0) {
+
+				return ret;
+			}
+
+			if ((ret = avfilter_link(filt_fmt, 0, filt_out, 0)) < 0) {
+				clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+				clog << "Can't link with format filter";
+				clog << endl;
+				return ret;
+			}
+
+			last_filter = filt_fmt;
+
+		} else {
+			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+			clog << "Can't convert video (pix_fmts filter not installed";
+			clog << endl;
+			last_filter = filt_out;
+		}*/
+
+		/* DEINTERLACE FILTER*/
 		AVFilter* yadif = avfilter_get_by_name("yadif");
 		if (yadif != NULL) {
 			if ((ret = avfilter_graph_create_filter(
@@ -1628,10 +1665,16 @@ fail:
 					NULL, 
 					graph)) < 0) {
 
+				clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+				clog << "Can't create yadif filter.";
+				clog << endl;
 				return ret;
 			}
 
 			if ((ret = avfilter_link(filt_deint, 0, filt_out, 0)) < 0) {
+				clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+				clog << "Can't link yadif filter.";
+				clog << endl;
 				return ret;
 			}
 
@@ -1687,6 +1730,9 @@ fail:
 		}
 
 		if ((ret = configure_filtergraph(graph, vfilters, filt_src, last_filter)) < 0) {
+			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+			clog << "Can't configure out filter.";
+			clog << endl;
 			return ret;
 		}
 
