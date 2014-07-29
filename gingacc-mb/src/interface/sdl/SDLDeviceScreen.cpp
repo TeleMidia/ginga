@@ -1386,8 +1386,8 @@ namespace mb {
 
 		SDLEventBuffer* eventBuffer = NULL;
 
-		clog << "SDLDeviceScreen::notifyEvent";
-		clog << endl;
+		/*clog << "SDLDeviceScreen::notifyEvent";
+		clog << endl;*/
 		checkWindowFocus(s, event);
 
     	if (s->im != NULL) {
@@ -1395,8 +1395,8 @@ namespace mb {
 			if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
 					s->uEmbedId == NULL) || checkEventFocus(s))) {
 
-				clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
-				clog << endl;
+				/*clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+				clog << endl;*/
 				eventBuffer->feed(*event, capsOn, shiftOn);
 				return true;
 			}

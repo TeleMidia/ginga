@@ -105,7 +105,6 @@ extern "C" {
 
 /* SDL2ffmpeg cplusplus compat end*/
 
-
 #include <SDL.h>
 #include <SDL_thread.h>
 
@@ -130,12 +129,13 @@ extern "C" {
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
 #define MIN_FRAMES 5
 
-/* SDL audio buffer size, in samples. Should be small to have precise
-   A/V sync as SDL does not have hardware buffer fullness info. */
-#define SDL_AUDIO_BUFFER_SIZE 1024
+/* Minimum SDL audio buffer size, in samples. */
+#define SDL_AUDIO_MIN_BUFFER_SIZE 512
+/* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
+#define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
 
 /* no AV sync correction is done if below the minimum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MIN 0.01
+#define AV_SYNC_THRESHOLD_MIN 0.04
 /* AV sync correction is done if above the maximum AV sync threshold */
 #define AV_SYNC_THRESHOLD_MAX 0.1
 /* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
@@ -288,7 +288,7 @@ namespace mb {
 		AVStream *audio_st;
 		PacketQueue audioq;
 		int audio_hw_buf_size;
-		uint8_t silence_buf[SDL_AUDIO_BUFFER_SIZE];
+		uint8_t silence_buf[SDL_AUDIO_MIN_BUFFER_SIZE];
 		uint8_t *audio_buf;
 		uint8_t *audio_buf1;
 		unsigned int audio_buf_size; /* in bytes */
@@ -326,7 +326,7 @@ namespace mb {
 		int64_t video_current_pos;      // current displayed file pos
 		double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
 		VideoPicture pictq[VIDEO_PICTURE_QUEUE_SIZE];
-		int pictq_size, pictq_rindex, pictq_windex;
+		int pictq_size, pictq_rindex, pictq_windex, pictq_rindex_shown;
 		SDL_mutex *pictq_mutex;
 		SDL_cond *pictq_cond;
 		SDL_Rect last_display_rect;
@@ -337,6 +337,7 @@ namespace mb {
 		int scaleCounter;                   // telemidia debug
 
 		// AVFILTER begin
+		int vfilter_idx;
 		AVFilterContext *in_video_filter;   // the first filter in the video chain
 		AVFilterContext *out_video_filter;  // the last filter in the video chain
 		AVFilterContext *in_audio_filter;   // the first filter in the audio chain
@@ -381,14 +382,18 @@ namespace mb {
 		int fast;
 		int genpts;
 		int lowres;
-		int error_concealment;
 		int decoder_reorder_pts;
 		int framedrop;
 		int infinite_buffer;
 		int rdftspeed;
 
-		char* vfilters;
+		/*CONFIG_AVFILTER*/
+		vector<char*> vfilters_list;
+		int nb_vfilters;
 		char* afilters;
+		/*CONFIG_AVFILTER*/
+
+		int autorotate;
 
 		AVPacket flush_pkt;
 
@@ -469,6 +474,11 @@ namespace mb {
 		static void clamp(short* buf, int len);
 
 	private:
+		int opt_add_vfilter(
+				void *optctx,
+				const char *opt,
+				const char *arg);
+
 		static int cmp_audio_fmts(
 				enum AVSampleFormat fmt1, 
 				int64_t channel_count1,
@@ -513,8 +523,9 @@ namespace mb {
 		void step_to_next_frame();
 		double compute_target_delay(double delay);
 		static double vp_duration(VideoState *vs, VideoPicture *vp, VideoPicture *nextvp);
-		void pictq_next_picture();
+		int pictq_nb_remaining();
 		int pictq_prev_picture();
+		void pictq_next_picture();
 		void update_video_pts(double pts, int64_t pos, int serial);
 
 	public:

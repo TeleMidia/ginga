@@ -92,13 +92,16 @@ namespace mb {
 		fast                                 = 0;
 		genpts                               = 0;
 		lowres                               = 0;
-		error_concealment                    = 3;
 		decoder_reorder_pts                  = -1;
 		framedrop                            = -1;
 		infinite_buffer                      = -1;
 		rdftspeed                            = 0.02;
-		vfilters                             = NULL;
+
+		vfilters_list.clear();
+		nb_vfilters                          = 0;
 		afilters                             = NULL;
+
+		autorotate                           = 1;
 		texture                              = NULL;
 		hasPic                               = false;
 		reof                                 = false;
@@ -213,7 +216,9 @@ namespace mb {
 		}
 
 		//AVFILTER
-		av_freep(&vfilters);
+		for (int i=0; i<vfilters_list.size(); i++) {
+			av_freep(vfilters_list[i]);
+		}
 	}
 
 	void SDL2ffmpeg::close(bool quit) {
@@ -632,6 +637,15 @@ namespace mb {
 		}
 	}
 
+	int SDL2ffmpeg::opt_add_vfilter(
+			void *optctx,
+			const char *opt,
+			const char *arg) {
+
+		vfilters_list.push_back((char*)arg);
+		return 0;
+	}
+
 	int SDL2ffmpeg::cmp_audio_fmts(
 			enum AVSampleFormat fmt1,
 			int64_t channel_count1,
@@ -959,7 +973,7 @@ namespace mb {
 		if (c->paused) {
 			return c->pts;
 		} else {
-			double time = av_gettime() / 1000000.0;
+			double time = av_gettime_relative() / 1000000.0;
 			return c->pts_drift + time - (time - c->last_updated) * (1.0 - c->speed);
 		}
 	}
@@ -972,7 +986,7 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::set_clock(Clock* c, double pts, int serial) {
-		double time = av_gettime() / 1000000.0;
+		double time = av_gettime_relative() / 1000000.0;
 		set_clock_at(c, pts, serial, time);
 	}
 
@@ -1085,7 +1099,7 @@ namespace mb {
 	/* pause or resume the video */
 	void SDL2ffmpeg::stream_toggle_pause() {
 		if (vs->paused) {
-			vs->frame_timer += av_gettime() / 1000000.0 + vs->vidclk.pts_drift - vs->vidclk.pts;
+			vs->frame_timer += av_gettime_relative() / 1000000.0 + vs->vidclk.pts_drift - vs->vidclk.pts;
 			if (vs->read_pause_return != AVERROR(ENOSYS)) {
 				vs->vidclk.paused = 0;
 			}
@@ -1152,7 +1166,25 @@ namespace mb {
 		}
 	}
 
+
+	/* return the number of undisplayed pictures in the queue */
+	int SDL2ffmpeg::pictq_nb_remaining() {
+		return vs->pictq_size - vs->pictq_rindex_shown;
+	}
+
+	/* jump back to the previous picture if available by resetting rindex_shown */
+	int SDL2ffmpeg::pictq_prev_picture() {
+		int ret = vs->pictq_rindex_shown;
+		vs->pictq_rindex_shown = 0;
+		return ret;
+	}
+
 	void SDL2ffmpeg::pictq_next_picture() {
+		if (!vs->pictq_rindex_shown) {
+			vs->pictq_rindex_shown = 1;
+			return;
+		}
+
 		/* update queue size and signal for next picture */
 		if (++vs->pictq_rindex == VIDEO_PICTURE_QUEUE_SIZE) {
 			vs->pictq_rindex = 0;
@@ -1162,26 +1194,6 @@ namespace mb {
 		vs->pictq_size--;
 		SDL_CondSignal(vs->pictq_cond);
 		SDL_UnlockMutex(vs->pictq_mutex);
-	}
-
-	int SDL2ffmpeg::pictq_prev_picture() {
-		VideoPicture *prevvp;
-		int ret = 0;
-		/* update queue size and signal for the previous picture */
-		prevvp = &vs->pictq[(vs->pictq_rindex + VIDEO_PICTURE_QUEUE_SIZE - 1) % VIDEO_PICTURE_QUEUE_SIZE];
-		if (prevvp->allocated && prevvp->serial == vs->videoq.serial) {
-			SDL_LockMutex(vs->pictq_mutex);
-			if (vs->pictq_size < VIDEO_PICTURE_QUEUE_SIZE) {
-				if (--vs->pictq_rindex == -1) {
-					vs->pictq_rindex = VIDEO_PICTURE_QUEUE_SIZE - 1;
-				}
-				vs->pictq_size++;
-				ret = 1;
-			}
-			SDL_CondSignal(vs->pictq_cond);
-			SDL_UnlockMutex(vs->pictq_mutex);
-		}
-		return ret;
 	}
 
 	void SDL2ffmpeg::update_video_pts(double pts, int64_t pos, int serial) {
@@ -1211,7 +1223,7 @@ namespace mb {
 		}
 
 		if (vs->video_st == NULL && vs->audio_st != NULL) {
-			time = av_gettime() / 1000000.0;
+			time = av_gettime_relative() / 1000000.0;
 			if (vs->force_refresh || vs->last_vis_time + dec->rdftspeed < time) {
 				vs->last_vis_time = time;
 			}
@@ -1225,7 +1237,7 @@ namespace mb {
 				redisplay = dec->pictq_prev_picture();
 			}
 retry:
-			if (vs->pictq_size == 0) {
+			if (dec->pictq_nb_remaining() == 0) {
 				// nothing to do, no picture to display in the queue
 
 			} else {
@@ -1233,8 +1245,8 @@ retry:
 				VideoPicture *vp, *lastvp;
 
 				/* dequeue the picture */
-				vp = &vs->pictq[vs->pictq_rindex];
-				lastvp = &vs->pictq[(vs->pictq_rindex + VIDEO_PICTURE_QUEUE_SIZE - 1) % VIDEO_PICTURE_QUEUE_SIZE];
+				lastvp = &vs->pictq[vs->pictq_rindex];
+				vp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown) % VIDEO_PICTURE_QUEUE_SIZE];
 
 				if (vp->serial != vs->videoq.serial) {
 					dec->pictq_next_picture();
@@ -1244,7 +1256,7 @@ retry:
 				}
 
 				if (lastvp->serial != vp->serial && !redisplay) {
-					vs->frame_timer = av_gettime() / 1000000.0;
+					vs->frame_timer = av_gettime_relative() / 1000000.0;
 				}
 
 				if (vs->paused) {
@@ -1261,7 +1273,7 @@ retry:
 					delay = dec->compute_target_delay(last_duration);
 				}
 
-				time= av_gettime()/1000000.0;
+				time = av_gettime_relative() / 1000000.0;
 				if (time < vs->frame_timer + delay && !redisplay) {
 					*remaining_time = FFMIN(
 							vs->frame_timer + delay - time,
@@ -1280,8 +1292,8 @@ retry:
 				}
 				SDL_UnlockMutex(vs->pictq_mutex);
 
-				if (vs->pictq_size > 1) {
-					VideoPicture *nextvp = &vs->pictq[(vs->pictq_rindex + 1) % VIDEO_PICTURE_QUEUE_SIZE];
+				if (dec->pictq_nb_remaining() > 1) {
+					VideoPicture *nextvp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown + 1) % VIDEO_PICTURE_QUEUE_SIZE];
 					duration = vp_duration(vs, vp, nextvp);
 					if (!vs->step &&
 							(redisplay || 
@@ -1338,8 +1350,7 @@ display:
 		/* wait until we have space to put a new picture */
 		SDL_LockMutex(vs->pictq_mutex);
 
-		/* keep the last already displayed picture in the queue */
-		while (vs->pictq_size >= VIDEO_PICTURE_QUEUE_SIZE - 1 &&
+		while (vs->pictq_size >= VIDEO_PICTURE_QUEUE_SIZE &&
 				!vs->videoq.abort_request) {
 
 			SDL_CondWait(vs->pictq_cond, vs->pictq_mutex);
@@ -1503,7 +1514,8 @@ display:
 			AVFilterContext *source_ctx, 
 			AVFilterContext *sink_ctx) {
 
-		int ret;
+		int ret, i;
+		int nb_filters = graph->nb_filters;
 		AVFilterInOut *outputs = NULL, *inputs = NULL;
 
 		if (filtergraph) {
@@ -1534,6 +1546,10 @@ display:
 			}
 		}
 
+		/* Reorder the filters to ensure that inputs of the custom filters are merged first */
+		for (i = 0; i < graph->nb_filters - nb_filters; i++)
+			FFSWAP(AVFilterContext*, graph->filters[i], graph->filters[i + nb_filters]);
+
 		ret = avfilter_graph_config(graph, NULL);
 fail:
 		avfilter_inout_free(&outputs);
@@ -1546,7 +1562,7 @@ fail:
 		char sws_flags_str[128];
 		char buffersrc_args[256];
 		int ret;
-		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_crop = NULL, *filt_deint = NULL;
+		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_crop = NULL, *filt_deint = NULL, *last_filter = NULL;
 		AVCodecContext *codec = vs->video_st->codec;
 		AVRational fr = av_guess_frame_rate(vs->ic, vs->video_st, NULL);
 
@@ -1602,35 +1618,75 @@ fail:
 			goto fail;
 		}*/
 
+		AVFilter* yadif = avfilter_get_by_name("yadif");
+		if (yadif != NULL) {
+			if ((ret = avfilter_graph_create_filter(
+					&filt_deint, 
+					yadif,
+					"sdl2ffmpeg_yadif",
+					"parity=-1:deint=1", 
+					NULL, 
+					graph)) < 0) {
+
+				goto fail;
+			}
+
+			if ((ret = avfilter_link(filt_deint, 0, filt_out, 0)) < 0) {
+				goto fail;
+			}
+
+			last_filter = filt_deint;
+
+		} else {
+			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
+			clog << "Can't deinterlace video (yadif filter not installed";
+			clog << endl;
+			last_filter = filt_out;
+		}
+
+/* Note: this macro adds a filter before the lastly added filter, so the
+ * processing order of the filters is in reverse */
+#define INSERT_FILT(name, arg) do {                                         \
+    AVFilterContext *filt_ctx;                                              \
+                                                                            \
+    ret = avfilter_graph_create_filter(&filt_ctx,                           \
+                                       avfilter_get_by_name(name),          \
+                                       "sdl2ffmpeg_" name, arg,             \
+                                       NULL, graph);                        \
+    if (ret < 0)                                                            \
+        goto fail;                                                          \
+                                                                            \
+    ret = avfilter_link(filt_ctx, 0, last_filter, 0);                       \
+    if (ret < 0)                                                            \
+        goto fail;                                                          \
+                                                                            \
+    last_filter = filt_ctx;                                                 \
+} while (0)
+/* MACRO ends */
+
 		/* SDL YUV code is not handling odd width/height for some driver
 		* combinations, therefore we crop the picture to an even width/height. */
-		/*if ((ret = avfilter_graph_create_filter(
-				&filt_crop, 
-				avfilter_get_by_name("crop"),
-				"sdl2ffmpeg_crop",
-				"floor(in_w/2)*2:floor(in_h/2)*2", 
-				NULL, 
-				graph)) < 0) {
+		INSERT_FILT("crop", "floor(in_w/2)*2:floor(in_h/2)*2");
 
-			goto fail;
-		}*/
-
-		if ((ret = avfilter_graph_create_filter(
-				&filt_deint, 
-				avfilter_get_by_name("yadif"),
-				"sdl2ffmpeg_yadif",
-				"parity=-1:deint=1", 
-				NULL, 
-				graph)) < 0) {
-
-			goto fail;
+		if (autorotate) {
+			AVDictionaryEntry *rotate_tag = av_dict_get(vs->video_st->metadata, "rotate", NULL, 0);
+			if (rotate_tag && *rotate_tag->value && strcmp(rotate_tag->value, "0")) {
+				if (!strcmp(rotate_tag->value, "90")) {
+					INSERT_FILT("transpose", "clock");
+				} else if (!strcmp(rotate_tag->value, "180")) {
+					INSERT_FILT("hflip", NULL);
+					INSERT_FILT("vflip", NULL);
+				} else if (!strcmp(rotate_tag->value, "270")) {
+					INSERT_FILT("transpose", "cclock");
+				} else {
+					char rotate_buf[64];
+					snprintf(rotate_buf, sizeof(rotate_buf), "%s*PI/180", rotate_tag->value);
+					INSERT_FILT("rotate", rotate_buf);
+				}
+			}
 		}
 
-		if ((ret = avfilter_link(filt_deint, 0, filt_out, 0)) < 0) {
-			goto fail;
-		}
-
-		if ((ret = configure_filtergraph(graph, vfilters, filt_src, filt_deint)) < 0) {
+		if ((ret = configure_filtergraph(graph, vfilters, filt_src, last_filter)) < 0) {
 			goto fail;
 		}
 
@@ -1813,6 +1869,7 @@ end:
 		int last_h = 0;
 		enum AVPixelFormat last_format = (AVPixelFormat)-2;
 		int last_serial = -1;
+		int last_vfilter_idx = 0;
 		// AVFILTER end
 
 		while (!dec->abortRequest) {
@@ -1832,14 +1889,21 @@ end:
 			}
 
 			// AVFILTER begin
+			char* vfilter = NULL;
+
+			if (dec->vfilters_list.size() > vs->vfilter_idx) {
+				vfilter = dec->vfilters_list[vs->vfilter_idx];
+			}
+
 			if (last_w != frame->width || 
 					last_h != frame->height ||
 					last_format != frame->format ||
-					last_serial != serial) {
+					last_serial != serial ||
+					last_vfilter_idx != vs->vfilter_idx) {
 
 				avfilter_graph_free(&graph);
 				graph = avfilter_graph_alloc();
-				if ((ret = dec->configure_video_filters(graph, dec->vfilters, frame)) < 0) {
+				if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
 					dec->abortRequest = true;
 					goto the_end;
 				}
@@ -1850,6 +1914,7 @@ end:
 				last_h = frame->height;
 				last_format = (AVPixelFormat)frame->format;
 				last_serial = serial;
+				last_vfilter_idx = vs->vfilter_idx;
 				frame_rate = filt_out->inputs[0]->frame_rate;
 			}
 
@@ -1859,7 +1924,7 @@ end:
 			}
 
 			while (ret >= 0) {
-				vs->frame_last_returned_time = av_gettime() / 1000000.0;
+				vs->frame_last_returned_time = av_gettime_relative() / 1000000.0;
 
 				ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
 				if (ret < 0) {
@@ -1870,7 +1935,7 @@ end:
 					break;
 				}
 
-				vs->frame_last_filter_delay = av_gettime() / 1000000.0 - vs->frame_last_returned_time;
+				vs->frame_last_filter_delay = av_gettime_relative() / 1000000.0 - vs->frame_last_returned_time;
 				if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
 					vs->frame_last_filter_delay = 0;
 				}
@@ -2235,7 +2300,7 @@ the_end:
 		int currentLen, offset;
 
 		Thread::mutexLock(&aiMutex);
-		audio_cb_time = av_gettime();
+		audio_cb_time = av_gettime_relative();
 
 		memset(stream, 0, len);
 
@@ -2347,7 +2412,7 @@ the_end:
 
 		wantedSpec.format   = AUDIO_S16SYS;
 		wantedSpec.silence  = 0;
-		wantedSpec.samples  = SDL_AUDIO_BUFFER_SIZE;
+		wantedSpec.samples  = SDL_AUDIO_MIN_BUFFER_SIZE;
 		wantedSpec.callback = sdl_audio_callback;
 		wantedSpec.userdata = NULL;
 		wantedSpec.freq     = 44100;
@@ -2475,7 +2540,6 @@ the_end:
 		}
 
 		av_codec_set_lowres(avctx, stream_lowres);
-		avctx->error_concealment = error_concealment;
 
 		if (stream_lowres || (codec->capabilities & CODEC_CAP_DR1)) {
 			avctx->flags |= CODEC_FLAG_EMU_EDGE;
@@ -2548,7 +2612,7 @@ the_end:
 				vs->audio_diff_avg_count = 0;
 				/* since we do not have a precise enough audio fifo fullness,
 				   we correct audio sync only if larger than this threshold */
-				vs->audio_diff_threshold = 2.0 * vs->audio_hw_buf_size / vs->audio_tgt.bytes_per_sec;
+				vs->audio_diff_threshold = (double)(vs->audio_hw_buf_size) / vs->audio_tgt.bytes_per_sec;
 
 				memset(&vs->audio_pkt, 0, sizeof(vs->audio_pkt));
 				memset(&vs->audio_pkt_temp, 0, sizeof(vs->audio_pkt_temp));
@@ -2688,6 +2752,8 @@ the_end:
 			vs->ic->flags |= AVFMT_FLAG_GENPTS;
 		}
 
+		av_format_inject_global_side_data(vs->ic);
+
 		clog << "SDL2ffmpeg::read_init context flags = '" << vs->ic->flags;
 		clog << "'" << endl;
 
@@ -2713,6 +2779,7 @@ the_end:
 		}
 
 		vs->max_frame_duration = (vs->ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+
 		vs->realtime = is_realtime(vs->ic);
 
 		for (i = 0; i < vs->ic->nb_streams; i++) {
