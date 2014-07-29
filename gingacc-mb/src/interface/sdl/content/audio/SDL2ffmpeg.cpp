@@ -1593,7 +1593,7 @@ fail:
 				NULL, 
 				graph)) < 0) {
 
-			goto fail;
+			return ret;
 		}
 
 		ret = avfilter_graph_create_filter(
@@ -1605,7 +1605,7 @@ fail:
 				graph);
 
 		if (ret < 0) {
-			goto fail;
+			return ret;
 		}
 
 		/*if ((ret = av_opt_set_int_list(
@@ -1628,11 +1628,11 @@ fail:
 					NULL, 
 					graph)) < 0) {
 
-				goto fail;
+				return ret;
 			}
 
 			if ((ret = avfilter_link(filt_deint, 0, filt_out, 0)) < 0) {
-				goto fail;
+				return ret;
 			}
 
 			last_filter = filt_deint;
@@ -1654,11 +1654,11 @@ fail:
                                        "sdl2ffmpeg_" name, arg,             \
                                        NULL, graph);                        \
     if (ret < 0)                                                            \
-        goto fail;                                                          \
+        return ret;                                                         \
                                                                             \
     ret = avfilter_link(filt_ctx, 0, last_filter, 0);                       \
     if (ret < 0)                                                            \
-        goto fail;                                                          \
+        return ret;                                                         \
                                                                             \
     last_filter = filt_ctx;                                                 \
 } while (0)
@@ -1687,12 +1687,12 @@ fail:
 		}
 
 		if ((ret = configure_filtergraph(graph, vfilters, filt_src, last_filter)) < 0) {
-			goto fail;
+			return ret;
 		}
 
 		vs->in_video_filter  = filt_src;
 		vs->out_video_filter = filt_out;
-fail:
+
 		return ret;
 	}
 
