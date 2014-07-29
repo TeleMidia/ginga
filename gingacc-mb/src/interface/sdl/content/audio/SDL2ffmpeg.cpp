@@ -875,6 +875,11 @@ namespace mb {
 							fmt = PIX_FMT_YUV420P;
 						}
 
+						if (format != GINGA_PIXEL_FMT) {
+							clog << "SDL2ffmpeg::render_vp Warning! SDL texture has ";
+							clog << "an invalid pixel format" << endl;
+						}
+
 						//FIXME: use direct rendering
 						/*av_picture_copy(
 								&pict,
@@ -903,12 +908,15 @@ namespace mb {
 								0,
 								0);
 
-						sws_scale(
+						int ret = sws_scale(
 								ctx,
 								(const uint8_t* const*)vp->src_frame->data,
 								vp->src_frame->linesize,
 								0, vp->height, pict.data, pict.linesize);
 
+						if (ret < 0) {
+							clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
+						}
 #if GINGA_DEBUG
 						vs->scaleCounter++;
 #endif
