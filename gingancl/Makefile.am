@@ -137,7 +137,7 @@ libgingancladapter_la_LIBADD =\
   $(NULL)
 
 libgingancladapter_la_SOURCES =\
-  src/adapters/mirro/MirrorPlayerAdapter.cpp\
+  src/adapters/mirror/MirrorPlayerAdapter.cpp\
   src/adapters/FormatterPlayerAdapter.cpp\
   src/adapters/NominalEventMonitor.cpp\
   src/adapters/PlayerAdapterManager.cpp\
