@@ -120,6 +120,10 @@ namespace mb {
 		    bool stretch;
 		    int caps;
 
+			set<IWindow*> mirrors;
+			bool imMirror;
+			IWindow* mirrorSrc;
+
 		    pthread_mutex_t mutex;    //external mutex
 		    pthread_mutex_t mutexC;   //childs mutex
 		    pthread_mutex_t texMutex; //texture mutex
@@ -155,6 +159,12 @@ namespace mb {
 			void releaseBorderColor();
 
 		public:
+			void addMirror(IWindow* window);
+			bool removeMirror(IWindow* window);
+			bool isMirror();
+			void setMirrorSrc(IWindow* mirrorSrc);
+			IWindow* getMirrorSrc();
+
 			void setBgColor(int r, int g, int b, int alpha);
 			IColor* getBgColor();
 			void setColorKey(int r, int g, int b);

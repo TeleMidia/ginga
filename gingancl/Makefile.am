@@ -137,6 +137,7 @@ libgingancladapter_la_LIBADD =\
   $(NULL)
 
 libgingancladapter_la_SOURCES =\
+  src/adapters/mirro/MirrorPlayerAdapter.cpp\
   src/adapters/FormatterPlayerAdapter.cpp\
   src/adapters/NominalEventMonitor.cpp\
   src/adapters/PlayerAdapterManager.cpp\
@@ -148,12 +149,20 @@ libginganclapppadapter_la_SOURCES =\
   $(NULL)
 
 # ginga-ncl-ncl-p-adapter
+libginganclnclpadapter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  $(NULL)
+
 libginganclnclpadapter_la_SOURCES =\
   src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
   $(NULL)
 
 # ginga-ncl-bkl-p-adapter
 if BUILD_BERKELIUM
+libginganclbklpadapter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  $(NULL)
+
 libginganclbklpadapter_la_LDFLAGS =\
   $(AM_LDFLAGS)\
   $(BERKELIUM_LIBS)
@@ -163,6 +172,10 @@ libginganclbklpadapter_la_SOURCES =\
 endif
 
 # ginga-ncl-lua-p-adapter
+libginganclluapadapter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  $(NULL)
+
 libginganclluapadapter_la_SOURCES =\
   src/adapters/application/imperative/lua/LuaPlayerAdapter.cpp\
   $(NULL)
