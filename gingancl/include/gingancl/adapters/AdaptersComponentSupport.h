@@ -77,6 +77,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
 #include "image/ImagePlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::image;
 
+#include "mirror/MirrorPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::mirror;
+
 #include "text/PlainTxtPlayerAdapter.h"
 #include "text/SubtitlePlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;

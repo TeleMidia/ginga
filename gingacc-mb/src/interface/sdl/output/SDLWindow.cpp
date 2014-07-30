@@ -101,6 +101,19 @@ namespace mb {
 		releaseWinColor();
 		releaseColorKey();
 
+		if (imMirror) {
+			mirrorSrc->removeMirror(this);
+			mirrorSrc = NULL;
+		}
+
+		set<IWindow*>::iterator j;
+		j = mirrors.begin();
+		while (j != mirrors.end()) {
+			(*j)->setMirrorSrc(NULL);
+			++j;
+		}
+		mirrors.clear();
+
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
 
@@ -161,6 +174,8 @@ namespace mb {
 		this->stretch           = true;
 		this->caps              = 0;
 		this->transparencyValue = 0x00;
+		this->imMirror          = false;
+		this->mirrorSrc         = NULL;
 
 		Thread::mutexInit(&mutex);
 		Thread::mutexInit(&mutexC);
@@ -207,6 +222,32 @@ namespace mb {
 			delete colorKey;
 			colorKey = NULL;
 		}
+	}
+
+	void SDLWindow::addMirror(IWindow* window) {
+		mirrors.insert(window);
+	}
+
+	bool SDLWindow::removeMirror(IWindow* window) {
+		set<IWindow*>::iterator i;
+		i = mirrors.find(window);
+		if (i != mirrors.end()) {
+			mirrors.erase(i);
+			return true;
+		}
+		return false;
+	}
+
+	bool SDLWindow::isMirror() {
+		return imMirror;
+	}
+
+	void SDLWindow::setMirrorSrc(IWindow* mirrorSrc) {
+		this->mirrorSrc = mirrorSrc;
+	}
+
+	IWindow* SDLWindow::getMirrorSrc() {
+		return mirrorSrc;
 	}
 
 	void SDLWindow::setBgColor(int r, int g, int b, int alpha) {

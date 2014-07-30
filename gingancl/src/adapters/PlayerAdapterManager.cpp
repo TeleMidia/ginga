@@ -392,6 +392,9 @@ namespace adapters {
 
 				if (url.length() > 9 && url.substr(0,9) == "sbtvd-ts:") {
 					playerClassName = "ProgramAVPlayerAdapter";
+
+				} else if (url.length() > 13 && url.substr(0,13) == "ncl-mirror://") {
+					playerClassName = "MirrorPlayerAdapter";
 				}
 			}
 		}
@@ -454,6 +457,9 @@ namespace adapters {
 
 		} else if (playerClassName == "ImagePlayerAdapter") {
 			player = new ImagePlayerAdapter(this);
+
+		} else if (playerClassName == "MirrorPlayerAdapter") {
+			player = new MirrorPlayerAdapter(this);
 
 		} else if (playerClassName == "AVPlayerAdapter") {
 			if ((*args)[1] == "true") {
