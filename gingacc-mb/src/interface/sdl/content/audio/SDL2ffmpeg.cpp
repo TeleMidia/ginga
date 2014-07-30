@@ -112,6 +112,7 @@ namespace mb {
 
 		scaleCounter                         = 0;
 		texAccessCount                       = 0;
+		enableFilter                         = 0;
 
 		setSoundLevel(1.0);
 
@@ -384,6 +385,10 @@ namespace mb {
 		SDLDeviceScreen::unlockSDL();
 
 		return true;
+	}
+
+	void SDL2ffmpeg::useFilter(bool enable) {
+		this->enableFilter = enable;
 	}
 
 	bool SDL2ffmpeg::hasVideoStream() {
@@ -885,13 +890,15 @@ namespace mb {
 						}
 
 						//FIXME: use direct rendering
-						/*av_picture_copy(
-								&pict,
-								(AVPicture*)vp->src_frame,
-								(AVPixelFormat)fmt,
-								vp->width,
-								vp->height);*/
-
+						/*
+						if (enableFilter) {
+							av_picture_copy(
+									&pict,
+									(AVPicture*)vp->src_frame,
+									(AVPixelFormat)fmt,
+									vp->width,
+									vp->height);
+						}*/
 						/*
 						 * FIXME: we are using filters only to deinterlace video.
 						 *        we should use them to convert pixel formats as well.
@@ -1948,67 +1955,76 @@ end:
 			}
 
 			// AVFILTER begin
-			char* vfilter = NULL;
+			if (dec->enableFilter) {
+				char* vfilter = NULL;
 
-			if (dec->vfilters_list.size() > vs->vfilter_idx) {
-				vfilter = dec->vfilters_list[vs->vfilter_idx];
-			}
+				if (dec->vfilters_list.size() > vs->vfilter_idx) {
+					vfilter = dec->vfilters_list[vs->vfilter_idx];
+				}
 
-			if (last_w != frame->width || 
-					last_h != frame->height ||
-					last_format != frame->format ||
-					last_serial != serial ||
-					last_vfilter_idx != vs->vfilter_idx) {
+				if (last_w != frame->width || 
+						last_h != frame->height ||
+						last_format != frame->format ||
+						last_serial != serial ||
+						last_vfilter_idx != vs->vfilter_idx) {
 
-				avfilter_graph_free(&graph);
-				graph = avfilter_graph_alloc();
-				if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
-					dec->abortRequest = true;
-					clog << "SDL2ffmpeg::video_thread error!";
-					clog << "can't configure video filters" << endl;
+					avfilter_graph_free(&graph);
+					graph = avfilter_graph_alloc();
+					if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
+						dec->abortRequest = true;
+						clog << "SDL2ffmpeg::video_thread error!";
+						clog << "can't configure video filters" << endl;
+						goto the_end;
+					}
+
+					filt_in  = vs->in_video_filter;
+					filt_out = vs->out_video_filter;
+					last_w = frame->width;
+					last_h = frame->height;
+					last_format = (AVPixelFormat)frame->format;
+					last_serial = serial;
+					last_vfilter_idx = vs->vfilter_idx;
+					frame_rate = filt_out->inputs[0]->frame_rate;
+				}
+
+				ret = av_buffersrc_add_frame(filt_in, frame);
+				if (ret < 0) {
 					goto the_end;
 				}
 
-				filt_in  = vs->in_video_filter;
-				filt_out = vs->out_video_filter;
-				last_w = frame->width;
-				last_h = frame->height;
-				last_format = (AVPixelFormat)frame->format;
-				last_serial = serial;
-				last_vfilter_idx = vs->vfilter_idx;
-				frame_rate = filt_out->inputs[0]->frame_rate;
-			}
+				while (ret >= 0) {
+					vs->frame_last_returned_time = av_gettime_relative() / 1000000.0;
 
-			ret = av_buffersrc_add_frame(filt_in, frame);
-			if (ret < 0) {
-				goto the_end;
-			}
-
-			while (ret >= 0) {
-				vs->frame_last_returned_time = av_gettime_relative() / 1000000.0;
-
-				ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
-				if (ret < 0) {
-					if (ret == AVERROR_EOF) {
-						vs->video_finished = serial;
+					ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
+					if (ret < 0) {
+						if (ret == AVERROR_EOF) {
+							vs->video_finished = serial;
+						}
+						ret = 0;
+						break;
 					}
-					ret = 0;
-					break;
-				}
 
-				vs->frame_last_filter_delay = av_gettime_relative() / 1000000.0 - vs->frame_last_returned_time;
-				if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
-					vs->frame_last_filter_delay = 0;
-				}
+					vs->frame_last_filter_delay = av_gettime_relative() / 1000000.0 - vs->frame_last_returned_time;
+					if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
+						vs->frame_last_filter_delay = 0;
+					}
 
-				tb = filt_out->inputs[0]->time_base;
+					tb = filt_out->inputs[0]->time_base;
+					AVRational fr = {frame_rate.den, frame_rate.num};
+					duration = (frame_rate.num && frame_rate.den ? av_q2d(fr) : 0);
+					pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+					ret = dec->queue_picture(frame, pts, duration, av_frame_get_pkt_pos(frame), serial);
+					av_frame_unref(frame);
+				}
+				// AVFILTER end
+
+			} else {
 				AVRational fr = {frame_rate.den, frame_rate.num};
 				duration = (frame_rate.num && frame_rate.den ? av_q2d(fr) : 0);
 				pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
 				ret = dec->queue_picture(frame, pts, duration, av_frame_get_pkt_pos(frame), serial);
 				av_frame_unref(frame);
 			}
-			// AVFILTER end
 
 			if (ret < 0) {
 				goto the_end;

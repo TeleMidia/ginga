@@ -83,10 +83,10 @@ extern "C" {
 #include "libswresample/swresample.h"
 
 // AVFILTER BEGIN
-# include "libavfilter/avcodec.h"
-# include "libavfilter/avfilter.h"
-# include "libavfilter/buffersink.h"
-# include "libavfilter/buffersrc.h"
+#include "libavfilter/avcodec.h"
+#include "libavfilter/avfilter.h"
+#include "libavfilter/buffersink.h"
+#include "libavfilter/buffersrc.h"
 // AVFILTER end
 
 #include <inttypes.h>
@@ -430,6 +430,7 @@ namespace mb {
 		int texAccessCount;
 		/* DEBUG end */
 
+		bool enableFilter;
 		IContinuousMediaProvider* cmp;
 
 	public:
@@ -446,6 +447,7 @@ namespace mb {
 		bool prepare();
 
 	public:
+		void useFilter(bool enable);
 		bool hasVideoStream();
 		void play();
 		void stop();
