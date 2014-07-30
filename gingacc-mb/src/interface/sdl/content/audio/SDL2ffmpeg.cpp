@@ -110,6 +110,9 @@ namespace mb {
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
+		scaleCounter                         = 0;
+		texAccessCount                       = 0;
+
 		setSoundLevel(1.0);
 
 		if (!init) {
@@ -135,7 +138,6 @@ namespace mb {
 
 		vs = (VideoState*)av_mallocz(sizeof(VideoState));
 		if (vs) {
-			vs->scaleCounter = 0;
 			av_strlcpy(vs->filename, filename, sizeof(vs->filename));
 
 			av_init_packet(&flush_pkt);
@@ -200,13 +202,14 @@ namespace mb {
 	void SDL2ffmpeg::release() {
 		clog << "SDL2ffmpeg::release" << endl;
 
-		if (vs != NULL) {
-
 #if GINGA_DEBUG
-			clog << "SDL2ffmpeg::release scale counter ";
-			clog << vs->scaleCounter << endl;
+		clog << "SDL2ffmpeg::release scale counter ";
+		clog << scaleCounter << endl;
+		clog << "SDL2ffmpeg::release texture access counter ";
+		clog << texAccessCount << endl;
 #endif
 
+		if (vs != NULL) {
 			if (vs->ic) {
 				avformat_close_input(&vs->ic);
 				vs->ic = NULL; /* safety */
@@ -534,6 +537,7 @@ namespace mb {
 	}
 
 	SDL_Texture* SDL2ffmpeg::getTexture() {
+		texAccessCount++;
 		return texture;
 	}
 
@@ -903,7 +907,7 @@ namespace mb {
 								w,
 								h,
 								PIX_FMT_RGB24,
-								SWS_BILINEAR,
+								SWS_FAST_BILINEAR,
 								0,
 								0,
 								0);
@@ -918,7 +922,7 @@ namespace mb {
 							clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
 						}
 #if GINGA_DEBUG
-						vs->scaleCounter++;
+						scaleCounter++;
 #endif
 
 					}
@@ -1576,7 +1580,7 @@ fail:
 		char sws_flags_str[128];
 		char buffersrc_args[256];
 		int ret;
-		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_deint = NULL, *last_filter = NULL;
+		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_deint = NULL, *last_filter = NULL;
 		AVCodecContext *codec = vs->video_st->codec;
 		AVRational fr = av_guess_frame_rate(vs->ic, vs->video_st, NULL);
 
@@ -1611,6 +1615,11 @@ fail:
 			clog << "Can't create buffer filter.";
 			clog << endl;
 			return ret;
+
+		} else {
+			clog << "SDL2ffmpeg::configure_video_filters Buffer filter: ";
+			clog << buffersrc_args;
+			clog << endl;
 		}
 
 		ret = avfilter_graph_create_filter(
@@ -1627,16 +1636,6 @@ fail:
 			clog << endl;
 			return ret;
 		}
-
-		/*if ((ret = av_opt_set_int_list(
-				filt_out, 
-				"pix_fmts", 
-				out_pix_fmts, 
-				AV_PIX_FMT_NONE,
-				AV_OPT_SEARCH_CHILDREN)) < 0) {
-
-			goto fail;
-		}*/
 
 		/* PIXEL FORMAT FILTER*/
 		/*AVFilter* pix_fmt = avfilter_get_by_name("format");
