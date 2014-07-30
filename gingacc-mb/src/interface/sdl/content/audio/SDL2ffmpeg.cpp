@@ -1531,6 +1531,8 @@ display:
 			inputs  = avfilter_inout_alloc();
 			if (!outputs || !inputs) {
 				ret = AVERROR(ENOMEM);
+				clog << "SDL2ffmpeg::configure_filtergraph error!";
+				clog << "Can't alloc avfilters" << endl;
 				goto fail;
 			}
 
@@ -1545,11 +1547,15 @@ display:
 			inputs->next        = NULL;
 
 			if ((ret = avfilter_graph_parse_ptr(graph, filtergraph, &inputs, &outputs, NULL)) < 0) {
+				clog << "SDL2ffmpeg::configure_filtergraph error!";
+				clog << "Can't parse avfilters" << endl;
 				goto fail;
 			}
 
 		} else {
 			if ((ret = avfilter_link(source_ctx, 0, sink_ctx, 0)) < 0) {
+				clog << "SDL2ffmpeg::configure_filtergraph error!";
+				clog << "Can't link avfilters" << endl;
 				goto fail;
 			}
 		}
@@ -1570,7 +1576,7 @@ fail:
 		char sws_flags_str[128];
 		char buffersrc_args[256];
 		int ret;
-		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_crop = NULL, *filt_deint = NULL, *last_filter = NULL;
+		AVFilterContext *filt_src = NULL, *filt_out = NULL, *filt_fmt = NULL, *filt_deint = NULL, *last_filter = NULL;
 		AVCodecContext *codec = vs->video_st->codec;
 		AVRational fr = av_guess_frame_rate(vs->ic, vs->video_st, NULL);
 
@@ -1959,6 +1965,8 @@ end:
 				graph = avfilter_graph_alloc();
 				if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
 					dec->abortRequest = true;
+					clog << "SDL2ffmpeg::video_thread error!";
+					clog << "can't configure video filters" << endl;
 					goto the_end;
 				}
 
