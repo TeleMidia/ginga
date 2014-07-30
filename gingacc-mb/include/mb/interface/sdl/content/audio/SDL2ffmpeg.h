@@ -334,8 +334,6 @@ namespace mb {
 		char filename[1024];
 		int step;
 
-		int scaleCounter;                   // telemidia debug
-
 		// AVFILTER begin
 		int vfilter_idx;
 		AVFilterContext *in_video_filter;   // the first filter in the video chain
@@ -426,6 +424,11 @@ namespace mb {
 
 		int64_t mono_cb_time;
 		int monoStep;
+
+		/* DEBUG begin */
+		int scaleCounter;
+		int texAccessCount;
+		/* DEBUG end */
 
 		IContinuousMediaProvider* cmp;
 
