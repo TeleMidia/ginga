@@ -59,7 +59,7 @@ namespace adapters {
 namespace mirror {
 	MirrorPlayerAdapter::MirrorPlayerAdapter(IPlayerAdapterManager* manager) :
 			FormatterPlayerAdapter(manager) {
-
+		
 	}
 
 	MirrorPlayerAdapter::~MirrorPlayerAdapter() {
@@ -67,16 +67,45 @@ namespace mirror {
 	}
 
 	void MirrorPlayerAdapter::createPlayer() {
+		FormatterRegion* fRegion;
+		CascadingDescriptor* descriptor;
+		LayoutRegion* ncmRegion = NULL;
+		ISurface* mirrorSur;
+
 		clog << "MirrorPlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
 		bool hasVisual = true;
+		string prefix = "ncl-mirror://";
+		FormatterPlayerAdapter* sourceAdapter = NULL;
+		ExecutionObject* execObjSrc;
+		size_t pos;
+
+		FormatterPlayerAdapter::createPlayer();
+
+		pos = mrl.find(prefix);
+		assert(pos != std::string::npos);
+		if (object != NULL && object->getMirrorSrc() != NULL && player != NULL) {
+			execObjSrc = object->getMirrorSrc();
+			sourceAdapter = ((PlayerAdapterManager*)manager)->getObjectPlayer(execObjSrc);
+			mirrorSrc = sourceAdapter->getPlayer();
+
+			descriptor = object->getDescriptor();
+			if (descriptor != NULL) {
+				fRegion = descriptor->getFormatterRegion();
+				if (fRegion != NULL) {
+					ncmRegion = fRegion->getLayoutRegion();
+					mirrorSur = dm->createSurface(
+							myScreen, 
+							ncmRegion->getWidthInPixels(), 
+							ncmRegion->getHeightInPixels());
+
+					player->setSurface(mirrorSur);
+				}
+			}
+		}
 
 		clog << "MirrorPlayerAdapter::createPlayer '";
 		clog << mrl << "' ALL DONE" << endl;
-
-		if (player != NULL) {
-			FormatterPlayerAdapter::createPlayer();
-		}
 	}
 }
 }

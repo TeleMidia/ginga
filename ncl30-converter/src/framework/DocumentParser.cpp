@@ -221,14 +221,15 @@ namespace framework {
 		string::size_type len;
 
 		len = uri.length();
-		if ((len >= 10 && uri.substr(0,10) == "x-sbtvdts:")  ||
-				(len >= 9 && uri.substr(0,9) == "sbtvd-ts:") ||
-				(len >= 7 && uri.substr(0,7) == "http://")   ||
-				(len >= 6 && uri.substr(0,6) == "ftp://")    ||
-				(len >= 7 && uri.substr(0,7) == "file://")   ||
-				(len >= 6 && uri.substr(0,6) == "tcp://")    ||
-				(len >= 6 && uri.substr(0,6) == "udp://")    ||
-				(len >= 6 && uri.substr(0,6) == "rtp://")    ||
+		if ((len >= 10 && uri.substr(0,10) == "x-sbtvdts:")        ||
+				(len >= 9 && uri.substr(0,9) == "sbtvd-ts:")       ||
+				(len >= 7 && uri.substr(0,7) == "http://")         ||
+				(len >= 6 && uri.substr(0,6) == "ftp://")          ||
+				(len >= 7 && uri.substr(0,7) == "file://")         ||
+				(len >= 6 && uri.substr(0,6) == "tcp://")          ||
+				(len >= 6 && uri.substr(0,6) == "udp://")          ||
+				(len >= 6 && uri.substr(0,6) == "rtp://")          ||
+				(len >= 13 && uri.substr(0,13) == "ncl-mirror://") ||
 				(len >= 7 && uri.substr(0,7) == "rtsp://")) {
 
 			return true;

@@ -485,7 +485,7 @@ namespace presentation {
 
 		formRegions->insert(region);
 		windowId = region->getOutputId();
-		if (windowId == NULL && renderedSurface != NULL) {
+		if (windowId == NULL) {
 			windowId = region->prepareOutputDisplay(
 					renderedSurface, convertedZIndex);
 		}

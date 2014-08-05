@@ -226,6 +226,7 @@ namespace components {
 		this->isLocked        = false;
 		this->isHandler       = false;
 		this->isHandling      = handling;
+		this->mirrorSrc       = NULL;
 
 		this->transMan        = new EventTransitionManager();
 
@@ -333,6 +334,14 @@ namespace components {
 
 	string ExecutionObject::getId() {
 		return id;
+	}
+
+	ExecutionObject* ExecutionObject::getMirrorSrc() {
+		return mirrorSrc;
+	}
+
+	void ExecutionObject::setMirrorSrc(ExecutionObject* mirrorSrc) {
+		this->mirrorSrc = mirrorSrc;
 	}
 
 	void* ExecutionObject::getParentObject() {

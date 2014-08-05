@@ -138,11 +138,20 @@ namespace player {
 			double scopeInitTime;
 			double scopeEndTime;
 			double outTransTime;
+			Player* mirrorSrc;
+			set<Player*> mirrors;
 
 		public:
 			Player(GingaScreenID screenId, string mrl);
 			virtual ~Player();
 
+			void setMirrorSrc(Player* mirrorSrc);
+
+		private:
+			void addMirror(Player* mirror);
+			bool removeMirror(Player* mirror);
+
+		public:
 			virtual void flip(){};
 			virtual void setMrl(string mrl, bool visible=true);
 			virtual void reset(){};
@@ -192,6 +201,11 @@ namespace player {
 					short type=TYPE_PRESENTATION,
 					double begin=-1, double end=-1, double outTransDur=-1);
 
+		private:
+			void mirrorIt(Player* mirrorSrc, Player* mirror);
+			void checkMirrors();
+
+		public:
 			virtual bool play();
 			virtual void stop();
 			virtual void abort();
