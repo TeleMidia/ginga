@@ -3,7 +3,7 @@
 @echo off
 
 set gingaVer=0.13.6
-set contribVer=1
+set contribVer=2
 set archive=contrib_v%gingaVer%.%contribVer%.zip
 
 set remoteHost=\\telemidiatc1
