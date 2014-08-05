@@ -71,13 +71,16 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace mirror {
-   class MirrorPlayerAdapter : public FormatterPlayerAdapter {
-	public:
-		MirrorPlayerAdapter(IPlayerAdapterManager* manager);
-		virtual ~MirrorPlayerAdapter();
+	class MirrorPlayerAdapter : public FormatterPlayerAdapter {
+		private:
+			string mirrorSrcId;
 
-	protected:
-		void createPlayer();
+		public:
+			MirrorPlayerAdapter(IPlayerAdapterManager* manager);
+			virtual ~MirrorPlayerAdapter();
+
+		protected:
+			void createPlayer();
    };
 }
 }

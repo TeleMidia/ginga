@@ -150,6 +150,10 @@ namespace mb {
 		clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
 		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
 			win = (SDLWindow*)parent;
+			if (hasTex) {
+				((SDLWindow*)win)->setTexture(tex);
+				decoder->play();
+			}
 
 		} else {
 			clog << "SDLVideoProvider::playOver parent(" << parent << ") ";
@@ -186,16 +190,17 @@ namespace mb {
 		assert(decoder != NULL);
 
 		if (!hasTex) {
-			while (win == NULL) {
-				SystemCompat::uSleep(10000);
-				if (decoder == NULL) {
-					return false;
-				}
+			if (decoder == NULL) {
+				return false;
 			}
 
-			((SDLWindow*)win)->setTexture(decoder->getTexture());
+			tex = decoder->getTexture();
+			if (win != NULL) {
+				((SDLWindow*)win)->setTexture(tex);
+				decoder->play();
+			}
 			hasTex = true;
-			decoder->play();
+			
 			return true;
 		}
 

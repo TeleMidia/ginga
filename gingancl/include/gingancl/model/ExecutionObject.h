@@ -160,6 +160,7 @@ namespace components {
 		int pauseCount;
 		FormatterEvent* mainEvent;
 		EventTransitionManager* transMan;
+		ExecutionObject* mirrorSrc;
 
 	private:
 		static set<ExecutionObject*> objects;
@@ -216,6 +217,10 @@ namespace components {
 		Node* getDataObject();
 		CascadingDescriptor* getDescriptor();
 		string getId();
+
+		ExecutionObject* getMirrorSrc();
+		void setMirrorSrc(ExecutionObject* mirrorSrc);
+
 		void* getParentObject(); //CompositeExecutionObject
 		void* getParentObject(Node* node); //CompositeExecutionObject
 		void addParentObject(void* parentObject, Node* parentNode);

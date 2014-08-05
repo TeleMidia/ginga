@@ -67,7 +67,6 @@ namespace mb {
 
 			virtual void addMirror(IWindow* window)=0;
 			virtual bool removeMirror(IWindow* window)=0;
-			virtual bool isMirror()=0;
 			virtual void setMirrorSrc(IWindow* mirrorSrc)=0;
 			virtual IWindow* getMirrorSrc()=0;
 
