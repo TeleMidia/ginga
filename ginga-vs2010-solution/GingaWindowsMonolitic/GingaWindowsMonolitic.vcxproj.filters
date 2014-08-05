@@ -1291,7 +1291,7 @@
       <Filter>Source Files\gingacc-dataprocessing\ncl\edit</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp">
-      <Filter>Source Files\ginga</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

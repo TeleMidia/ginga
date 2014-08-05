@@ -208,6 +208,7 @@ void *LuaPlayer::nw_update_thread (void *data)
           if (nw_update_list == NULL) // end of cycle process
           {
                MUTEX_UNLOCK (&nw_update_mutex);
+			   trace ("update thread done!");
                return NULL;
           }
 
@@ -668,13 +669,15 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 
      if (evt->isKeyType () && this->isKeyHandler)
      {
-          const char *key;
+		  string key;
           int press;
 
-          key = (CodeMap::getInstance ()->getValue
-                 (evt->getKeyCode (myScreen))).c_str ();
+		  key = (CodeMap::getInstance ()->getValue
+                 (evt->getKeyCode (myScreen)));
+
           press = evt->isPressedType ();
-          evt_key_send (this->nw, press ? "press" : "release", key);
+
+		  evt_key_send (this->nw, press ? "press" : "release", key.c_str());
      }
 
 tail:
