@@ -538,7 +538,7 @@
       <Filter>Source Files\gingancl\adapters\application</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\declarative\ncl\NCLPlayerAdapter.cpp">
-      <Filter>Source Files\gingancl\adapters\application\declarative</Filter>
+      <Filter>Source Files\gingancl\adapters\application\declarative\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\AVPlayerAdapter.cpp">
       <Filter>Source Files\gingancl\adapters\av</Filter>
