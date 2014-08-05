@@ -1162,7 +1162,9 @@ namespace mb {
 		checkMutexInit();
 
 		Thread::mutexLock(&proMutex);
-		cmpRenderList.insert(cmp);
+		if (cmp->getHasVisual()) {
+			cmpRenderList.insert(cmp);
+		}
 		Thread::mutexUnlock(&proMutex);
 	}
 
@@ -1789,6 +1791,7 @@ namespace mb {
 	void SDLDeviceScreen::refreshWin(SDLDeviceScreen* s) {
 		SDL_Texture* uTex;
 		SDLWindow* win;
+		SDLWindow* mirrorSrc;
 		bool ownTex = false;
 
 		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
@@ -1810,11 +1813,17 @@ namespace mb {
 						win = (SDLWindow*)(*k);
 
 						if (win->isVisible() && !win->isGhostWindow()) {
-							uTex = win->getTexture(s->renderer);
-							if (uTex != NULL) {
-								drawWindow(s->renderer, uTex, win);
+							mirrorSrc = (SDLWindow*)win->getMirrorSrc();
+							if (mirrorSrc != NULL) {
+								while (mirrorSrc->getMirrorSrc() != NULL) {
+									mirrorSrc = (SDLWindow*)mirrorSrc->getMirrorSrc();
+								}
+								uTex = mirrorSrc->getTexture(s->renderer);
+							} else {
+								uTex = win->getTexture(s->renderer);
 							}
 
+							drawWindow(s->renderer, uTex, win);
 							win->rendered();
 						}
 

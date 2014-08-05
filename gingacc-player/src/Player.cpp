@@ -98,9 +98,12 @@ namespace player {
 		this->scopeEndTime        = -1;
 		this->outTransTime        = -1;
 		this->notifyContentUpdate = false;
+		this->mirrorSrc           = NULL;
 	}
 
 	Player::~Player() {
+		set<Player*>::iterator i;
+
 		this->status = STOP;
 
 		Thread::mutexLock(&listM);
@@ -108,6 +111,17 @@ namespace player {
 
 		Thread::mutexLock(&lockedListM);
 		lockedListeners.clear();
+
+		if (mirrorSrc != NULL) {
+			mirrorSrc->removeMirror(this);
+		}
+
+		i = mirrors.begin();
+		while (i != mirrors.end()) {
+			(*i)->setMirrorSrc(NULL);
+			++i;
+		}
+		mirrors.clear();
 
 		if (dm->hasWindow(myScreen, outputWindow)) {
 			outputWindow->revertContent();
@@ -138,6 +152,26 @@ namespace player {
 		Thread::mutexDestroy(&listM);
 		Thread::mutexDestroy(&pnMutex);
    	}
+
+	void Player::setMirrorSrc(Player* mirrorSrc) {
+		this->mirrorSrc = mirrorSrc;
+	}
+
+	void Player::addMirror(Player* mirror) {
+		this->mirrors.insert(mirror);
+	}
+
+	bool Player::removeMirror(Player* mirror) {
+		set<Player*>::iterator i;
+
+		i = mirrors.find(mirror);
+		if (i != mirrors.end()) {
+			mirrors.erase(i);
+			return true;
+		}
+
+		return false;
+	}
 
 	void Player::setMrl(string mrl, bool visible) {
 		this->mrl     = mrl;
@@ -385,7 +419,40 @@ namespace player {
 		this->outTransTime  = outTransDur;
 	}
 
+	void Player::mirrorIt(Player* mirrorSrc, Player* mirror) {
+		ISurface* iSrcSur;
+		IWindow* iSrcWin;
+
+		ISurface* iSur;
+		IWindow* iWin;
+
+		if (mirrorSrc != NULL && mirror != NULL) {
+			iSrcSur = mirrorSrc->getSurface();
+			iSur = mirror->getSurface();
+			if (iSrcSur != NULL && iSur != NULL) {
+				iSrcWin = (IWindow*)iSrcSur->getParentWindow();
+				iWin = (IWindow*)iSur->getParentWindow();
+				if (iSrcWin != NULL && iWin != NULL) {
+					iWin->setMirrorSrc(iSrcWin);
+				}
+			}
+		}
+	}
+
+	void Player::checkMirrors() {
+		set<Player*>::iterator i;
+
+		mirrorIt(mirrorSrc, this);
+
+		i = mirrors.begin();
+		while (i != mirrors.end()) {
+			mirrorIt(this, (*i));
+			++i;
+		}
+	}
+
 	bool Player::play() {
+		checkMirrors();
 		this->forcedNaturalEnd = false;
 		this->status = PLAY;
 		if (scopeInitTime > 0) {
@@ -632,6 +699,10 @@ namespace player {
 
 		} else {
 			return false;
+		}
+#else
+		if (surface != NULL && surface->getParentWindow() == NULL) {
+			surface->setParentWindow(dm->getIWindowFromId(myScreen, windowId));
 		}
 #endif
 		return true;
