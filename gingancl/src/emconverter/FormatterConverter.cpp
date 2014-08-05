@@ -526,7 +526,46 @@ namespace emconverter {
 
 		addExecutionObject(executionObject, parentObject, depthLevel);
 
+		checkMirror(executionObject, depthLevel);
 		return executionObject;
+	}
+
+	void FormatterConverter::checkMirror(
+			ExecutionObject* object, int depthLevel) {
+
+		CompositeNode* parentNode;
+		Node* mirrorNode;
+		Node* dataObject = object->getDataObject();
+		NodeEntity* dataEntity = (NodeEntity*)(dataObject->getDataEntity());
+		Content* content = dataEntity->getContent();
+		string url, mirrorSrc;
+		ExecutionObject* mExecObj;
+		NodeNesting* mPerspective;
+
+		if (content != NULL) {
+			if (content->instanceOf("ReferenceContent")) {
+				url = ((ReferenceContent*)(content))->
+					    getCompleteReferenceUrl();
+
+				if (url.substr(0, 13) == "ncl-mirror://") {
+					mirrorSrc = url.substr(13, url.length() - 13);
+					parentNode = (CompositeNode*)dataObject->getParentComposition();
+					while (parentNode->getParentComposition() != NULL) {
+						parentNode = (CompositeNode*)parentNode->getParentComposition();
+					}
+
+					mirrorNode = parentNode->recursivelyGetNode(mirrorSrc);
+					if (mirrorNode != NULL) {
+						mPerspective = new NodeNesting(mirrorNode->getPerspective());
+						mExecObj = getExecutionObjectFromPerspective(
+								mPerspective, NULL, depthLevel);
+
+						delete mPerspective;
+						object->setMirrorSrc(mExecObj);
+					}
+				}
+			}
+		}
 	}
 
 	set<ExecutionObject*>* FormatterConverter::getSettingNodeObjects() {

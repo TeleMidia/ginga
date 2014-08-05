@@ -94,25 +94,26 @@ namespace mb {
 		curSur = NULL;
 
 		releaseWinISur();
+
+		set<IWindow*>::iterator j;
+		j = mirrors.begin();
+		while (j != mirrors.end()) {
+			(*j)->setMirrorSrc(NULL);
+			mirrors.erase(j);
+			j = mirrors.begin();
+		}
+		mirrors.clear();
+
+		if (mirrorSrc != NULL) {
+			mirrorSrc->removeMirror(this);
+			mirrorSrc = NULL;
+		}
 		unlockSurface();
 
 		releaseBGColor();
 		releaseBorderColor();
 		releaseWinColor();
 		releaseColorKey();
-
-		if (imMirror) {
-			mirrorSrc->removeMirror(this);
-			mirrorSrc = NULL;
-		}
-
-		set<IWindow*>::iterator j;
-		j = mirrors.begin();
-		while (j != mirrors.end()) {
-			(*j)->setMirrorSrc(NULL);
-			++j;
-		}
-		mirrors.clear();
 
 		// release window will delete texture
 		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
@@ -174,7 +175,6 @@ namespace mb {
 		this->stretch           = true;
 		this->caps              = 0;
 		this->transparencyValue = 0x00;
-		this->imMirror          = false;
 		this->mirrorSrc         = NULL;
 
 		Thread::mutexInit(&mutex);
@@ -225,25 +225,33 @@ namespace mb {
 	}
 
 	void SDLWindow::addMirror(IWindow* window) {
+		assert(window != this);
+		lockSurface();
 		mirrors.insert(window);
+		unlockSurface();
 	}
 
 	bool SDLWindow::removeMirror(IWindow* window) {
 		set<IWindow*>::iterator i;
+
+		lockSurface();
 		i = mirrors.find(window);
 		if (i != mirrors.end()) {
 			mirrors.erase(i);
+			unlockSurface();
 			return true;
 		}
+		unlockSurface();
 		return false;
 	}
 
-	bool SDLWindow::isMirror() {
-		return imMirror;
-	}
-
 	void SDLWindow::setMirrorSrc(IWindow* mirrorSrc) {
+		lockSurface();
 		this->mirrorSrc = mirrorSrc;
+		if (this->mirrorSrc != NULL) {
+			this->mirrorSrc->addMirror(this);
+		}
+		unlockSurface();
 	}
 
 	IWindow* SDLWindow::getMirrorSrc() {

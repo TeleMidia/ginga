@@ -74,6 +74,7 @@ namespace adapters {
 		this->manager        = manager;
 		this->object         = NULL;
 		this->player         = NULL;
+		this->mirrorSrc      = NULL;
 		this->anchorMonitor  = NULL;
 		this->mrl            = "";
 		this->playerCompName = "";
@@ -1223,6 +1224,9 @@ namespace adapters {
 				bool startSuccess = false;
 
 				if (player != NULL) {
+					if (mirrorSrc != NULL) {
+						((Player*)player)->setMirrorSrc((Player*)mirrorSrc);
+					}
 					startSuccess = player->play();
 				}
 

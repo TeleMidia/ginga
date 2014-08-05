@@ -116,6 +116,7 @@ namespace adapters {
 			set<string> typeSet;
 			ExecutionObject* object;
 			IPlayer* player;
+			IPlayer* mirrorSrc;
 			string playerCompName;
 			string mrl;
 			int objectDevice;

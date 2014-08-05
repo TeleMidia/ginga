@@ -186,6 +186,10 @@ namespace emconverter {
 			    GenericDescriptor* descriptor,
 			    int depthLevel) throw(ObjectCreationForbiddenException*);
 
+	private:
+		void checkMirror(ExecutionObject* object, int depthLevel);
+
+	public:
 		set<ExecutionObject*>* getSettingNodeObjects();
 
 	private:

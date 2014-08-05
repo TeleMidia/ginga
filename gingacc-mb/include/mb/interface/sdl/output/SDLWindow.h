@@ -121,7 +121,6 @@ namespace mb {
 		    int caps;
 
 			set<IWindow*> mirrors;
-			bool imMirror;
 			IWindow* mirrorSrc;
 
 		    pthread_mutex_t mutex;    //external mutex
@@ -161,7 +160,6 @@ namespace mb {
 		public:
 			void addMirror(IWindow* window);
 			bool removeMirror(IWindow* window);
-			bool isMirror();
 			void setMirrorSrc(IWindow* mirrorSrc);
 			IWindow* getMirrorSrc();
 

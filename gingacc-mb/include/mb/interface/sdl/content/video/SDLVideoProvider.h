@@ -70,6 +70,7 @@ namespace mb {
 			int hRes;
 
 			IWindow* win;
+			SDL_Texture* tex;
 
 			bool hasTex;
 
