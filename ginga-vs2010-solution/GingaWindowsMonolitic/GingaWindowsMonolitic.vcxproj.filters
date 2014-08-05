@@ -13,39 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\telemidia-util-cpp">
-      <UniqueIdentifier>{8564ae19-16f6-464a-943c-afb1cca0b505}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ncl30-cpp">
-      <UniqueIdentifier>{0b84ced3-1986-49f5-8f85-01707e0c9443}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ncl30-cpp\ncl30">
-      <UniqueIdentifier>{6de6dd66-c6f3-4744-94e2-4176444968c3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\ncl30-cpp\ncl30-converter">
-      <UniqueIdentifier>{690533f7-e4e9-4e19-b4fd-3e260c6eb246}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingancl-cpp">
-      <UniqueIdentifier>{cd3bf31e-50b9-45be-9b4b-d563f68c03e1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp">
-      <UniqueIdentifier>{5f592348-b832-4ddb-a4f7-e5fda8428ec8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-contextmanager">
-      <UniqueIdentifier>{0a90ce4e-a087-4e83-ac26-f1b69f41564d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-system">
-      <UniqueIdentifier>{f64282c6-bbb8-49d4-a5b8-02e4004a1323}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-ic">
-      <UniqueIdentifier>{e21a3779-ba2b-46cf-8fd3-f5c363b1a9d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-player">
-      <UniqueIdentifier>{9cfa7330-e049-4ba5-acfa-138547cd796c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingalssm-cpp">
-      <UniqueIdentifier>{6f49963e-1cc8-42c0-8c36-04595b413d9d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\gingacc-cpp">
       <UniqueIdentifier>{a87d8273-6e54-42bf-9e35-5e493e31a588}</UniqueIdentifier>
     </Filter>
@@ -76,988 +43,1255 @@
     <Filter Include="Header Files\gingacc-cpp\gingacc-system">
       <UniqueIdentifier>{11df264a-9954-4b9a-b109-3469d0411aa3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-mb">
-      <UniqueIdentifier>{1056b18c-2cd5-4be4-89f6-70590c6b59f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-mb\sdl">
-      <UniqueIdentifier>{d05101db-f5b2-4bb8-a95e-7337c8389b64}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-multidevice">
-      <UniqueIdentifier>{a6a108f3-ac16-4b9d-bf8b-2edf738eaf40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-tuner">
-      <UniqueIdentifier>{39365453-4ee2-49c0-a170-9290027a0da2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\gingacc-cpp\gingacc-mb">
       <UniqueIdentifier>{66ad57b5-175e-4f03-b69c-5caec5081f73}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\gingacc-cpp\gingacc-tuner">
       <UniqueIdentifier>{06f5968a-8c68-4d1a-8970-2fb730f57961}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-tuner\providers">
-      <UniqueIdentifier>{9aa4d81c-c74d-472b-948e-ef6ccee6a640}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-contextmanager">
+      <UniqueIdentifier>{8b524e1b-7125-487f-acd5-eed8788273f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-tsparser">
-      <UniqueIdentifier>{57e2dbca-7994-485a-82a1-0601c813ac45}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-contextmanager\system">
+      <UniqueIdentifier>{d4c70533-217c-4931-a091-7df5ffdc5347}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-tsparser\si">
-      <UniqueIdentifier>{c1966c13-0165-4cd4-980a-4a92a037c280}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-contextmanager\user">
+      <UniqueIdentifier>{377d1cea-8de5-4218-8131-b7630a349fab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-tsparser\si\descriptors">
-      <UniqueIdentifier>{e5bc23d7-f85d-49a9-bbaa-4c378cc90e1a}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing">
+      <UniqueIdentifier>{985f12c5-9c9e-4c7d-9070-738ea99634c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing">
-      <UniqueIdentifier>{20be08b1-38f8-4ca3-9d82-373388d6be86}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\dsmcc">
+      <UniqueIdentifier>{d1dad478-2a27-4627-b416-5e88ae76d8f6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\dsmcc">
-      <UniqueIdentifier>{30593cf8-9835-4707-849d-3d569db84e1f}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\dsmcc\carousel">
+      <UniqueIdentifier>{093caacd-2e77-43d2-8eb3-3fc399d8266c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\dsmcc\carousel">
-      <UniqueIdentifier>{ca773bb9-d851-40d0-ab44-5eaec7841028}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\dsmcc\npt">
+      <UniqueIdentifier>{acae1793-b3ec-4350-a44a-cd1fb0b50f01}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\dsmcc\carousel\data">
-      <UniqueIdentifier>{a7df2d86-7c01-476b-911e-1494b7504c2b}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\ncl">
+      <UniqueIdentifier>{ea256c5c-7a74-4720-9561-cec617ecf6b0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\dsmcc\carousel\object">
-      <UniqueIdentifier>{8c2198f3-52dd-4e4b-a9b7-3eb1cf8d59ad}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\dsmcc\carousel\data">
+      <UniqueIdentifier>{eae5549c-6fd8-4fe5-bc9d-b5480bdb5434}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\dsmcc\npt">
-      <UniqueIdentifier>{ca1ab81e-a917-4b7e-9c53-b64d0724b963}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-dataprocessing\dsmcc\carousel\object">
+      <UniqueIdentifier>{77625034-a45c-4592-9859-0fe1d3f24c65}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\ncl">
-      <UniqueIdentifier>{1992b32c-db8a-4e9d-a6d0-4ed739b69eb9}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-ic">
+      <UniqueIdentifier>{7ff92d01-545e-4411-82e2-96179208e249}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gingacc-cpp\gingacc-dataprocessing\ncl\edit">
-      <UniqueIdentifier>{accc9fb4-4635-4b91-9385-d8da2c6b4db5}</UniqueIdentifier>
+    <Filter Include="Source Files\gingacc-ic\curlic">
+      <UniqueIdentifier>{621a5f87-db24-4afb-b17a-d480c2624a78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb">
+      <UniqueIdentifier>{dd19061e-e355-4caa-98c6-74e713af6b01}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface">
+      <UniqueIdentifier>{cb6cc907-9dde-4606-8518-92cba2215e06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl">
+      <UniqueIdentifier>{65330dc1-f649-4474-a250-9f4ad7a6574e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\content">
+      <UniqueIdentifier>{93daeb30-b324-44d6-92f0-cd5593046c28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\content\audio">
+      <UniqueIdentifier>{b351c5c7-0895-4e16-87f0-a88bd1b1f586}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\content\image">
+      <UniqueIdentifier>{42dd5884-329d-4b9b-8025-477e575f7791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\content\text">
+      <UniqueIdentifier>{74a5bfcd-ea3e-4274-a7e1-a7f40089fc25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\content\video">
+      <UniqueIdentifier>{e589f56b-8ced-45ad-bfd5-07a96889ce3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\input">
+      <UniqueIdentifier>{4b47ba42-0415-4fb3-8131-304b634853aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-mb\interface\sdl\output">
+      <UniqueIdentifier>{7513eb59-9483-4595-a748-90f3e823b321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-multidevice">
+      <UniqueIdentifier>{229612b8-4ec2-403b-b048-f5bbb8b80f28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-multidevice\services">
+      <UniqueIdentifier>{90ab4adc-d349-4cdb-82c3-3acf6196fccf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-multidevice\services\device">
+      <UniqueIdentifier>{f5ed761a-72a9-418f-8a4d-c9ed73a891ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-multidevice\services\network">
+      <UniqueIdentifier>{1fe12e44-9229-4685-8a3b-fcc8d4966cd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player">
+      <UniqueIdentifier>{136658f3-dbef-489d-b9f2-ce9b635f0746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application">
+      <UniqueIdentifier>{e21084a8-2fc0-4710-8936-04e6eeb70bbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application\declarative">
+      <UniqueIdentifier>{3acd6177-d120-41e2-b5ba-92a46eb5dbb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application\declarative\xhtml">
+      <UniqueIdentifier>{67349c93-0e62-44e4-8c2c-0713c382c8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application\declarative\xhtml\berkelium">
+      <UniqueIdentifier>{243993aa-829f-483a-904b-4f7e9dd58b67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application\imperative">
+      <UniqueIdentifier>{cabcd4a1-9efe-47ed-96c3-8fb59ab572e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\application\imperative\lua">
+      <UniqueIdentifier>{6ddf8bc3-f4b3-4ef6-9956-9d46a13001b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\image">
+      <UniqueIdentifier>{3a1e9d3e-8c52-4a9b-b24e-c9d48ce36801}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\text">
+      <UniqueIdentifier>{428ebff2-5787-4638-9178-99f3941c0f78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\text\plain">
+      <UniqueIdentifier>{825506c6-aaed-434a-9d0e-26619728a2f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\text\srt">
+      <UniqueIdentifier>{24408d65-1c9c-448a-bfa4-7d577bed29c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\tv">
+      <UniqueIdentifier>{e8fb24f9-2808-4749-bb15-ed2a653373dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\video">
+      <UniqueIdentifier>{be1c58e4-8611-45f1-8653-53f026544eff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-player\widget">
+      <UniqueIdentifier>{a09b29e7-9817-44cb-9376-3df426678739}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system">
+      <UniqueIdentifier>{5dcd2371-9405-419b-bf7b-fb2a9a68230f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system\compat">
+      <UniqueIdentifier>{a4bac2d5-a96a-4e68-bbe6-7b0d3916f387}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system\fs">
+      <UniqueIdentifier>{11180245-cf63-4884-9deb-225a25d9afe7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system\process">
+      <UniqueIdentifier>{f9146267-8a66-4371-938a-cfc83c1cc13b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system\thread">
+      <UniqueIdentifier>{2b3ff291-f9f8-4e9e-8971-bab11f2c6b77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-system\time">
+      <UniqueIdentifier>{3bf2b7d9-574a-4f0f-b375-d9bb41a01f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-tsparser">
+      <UniqueIdentifier>{0e167db5-2925-4544-afd8-42a45eca45ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-tsparser\si">
+      <UniqueIdentifier>{bd82c0c9-7546-4f48-971b-573164203ca4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-tsparser\si\descriptors">
+      <UniqueIdentifier>{a45aa9a3-6ae4-46c1-98f4-1e63af7f2068}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-tuner">
+      <UniqueIdentifier>{e8ae36d3-0d94-4ca6-b351-1bf976bd9da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-tuner\providers">
+      <UniqueIdentifier>{1aed6374-e8bf-4aa2-8cf4-009c215d1628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingalssm">
+      <UniqueIdentifier>{3c0af542-2744-44f1-8067-a59c8a65c981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl">
+      <UniqueIdentifier>{0f7f8c6a-8aa6-4afd-9c7f-8d9f8ccad873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adaptation">
+      <UniqueIdentifier>{35e4c60a-0c91-487a-95d4-0108d556e188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adaptation\context">
+      <UniqueIdentifier>{5211ebb1-5c6d-43dc-be49-da487f6aa74f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters">
+      <UniqueIdentifier>{4c405c32-58ff-4349-bdfe-0346abb313c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application">
+      <UniqueIdentifier>{3e847d3b-e68d-428c-b4b0-aeed4e985733}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\declarative">
+      <UniqueIdentifier>{574b5a00-7059-4fbd-be14-5bb7684fa764}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\declarative\ncl">
+      <UniqueIdentifier>{71c32a44-dc9f-4f03-ae08-496374807933}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\declarative\xhtml">
+      <UniqueIdentifier>{5ad7f7b8-501f-4814-a1d8-cb75a3071bf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\declarative\xhtml\berkelium">
+      <UniqueIdentifier>{f634c4a6-4065-4631-8184-34af7fffe680}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\imperative">
+      <UniqueIdentifier>{fc3e0143-d2f2-4b71-b3cd-de0e02f82728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\application\imperative\lua">
+      <UniqueIdentifier>{857579fb-1c22-4bf4-97ee-07d6b14c048d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\av">
+      <UniqueIdentifier>{95879a4e-e632-478b-b7c1-52c9f036c10a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\av\tv">
+      <UniqueIdentifier>{320cc063-5494-442b-9a98-b52740fa5fbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\image">
+      <UniqueIdentifier>{c2507b33-b98d-4074-9fa9-600b234d4e03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\mirror">
+      <UniqueIdentifier>{f783239c-b9bc-4e03-ab6b-89ffb07b4130}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\adapters\text">
+      <UniqueIdentifier>{b755630e-055c-4a44-bbc5-e70582a69bf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\animation">
+      <UniqueIdentifier>{019ad237-82c3-4de0-a461-70c6fde440a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\emconverter">
+      <UniqueIdentifier>{5b1a6920-2e8c-4b5c-afc3-d3667bce7790}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\focus">
+      <UniqueIdentifier>{5cf8cc68-a105-4531-a85c-5637d7a995da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model">
+      <UniqueIdentifier>{82603d59-9494-4e4f-9e6b-c65832f13743}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\components">
+      <UniqueIdentifier>{6fe7958c-b676-4906-883d-250185d1bc8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\event">
+      <UniqueIdentifier>{2b717688-71d1-41cf-a9f2-871714ec00e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\event\transition">
+      <UniqueIdentifier>{89869204-b244-41f5-818e-d173f38ab0a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\link">
+      <UniqueIdentifier>{fe1260c0-f196-4f21-aa33-83e536b31af6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\presentation">
+      <UniqueIdentifier>{1d76f536-0b72-4bab-af14-621621abc2cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\presentation\focus">
+      <UniqueIdentifier>{40b915fd-aeca-46fa-84b6-cca113bbc55c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\switches">
+      <UniqueIdentifier>{5479c367-dda4-4a46-a6ab-021bab936022}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\model\time">
+      <UniqueIdentifier>{0c73fbf6-c881-4d8a-916f-4182f3e18c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\multidevice">
+      <UniqueIdentifier>{e8aebe6d-6c19-43dd-acfc-3d7488fbb330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\prefetch">
+      <UniqueIdentifier>{8a231125-c211-445d-b579-1faf7006a92c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingancl\privatebase">
+      <UniqueIdentifier>{9652f042-f69f-4caf-a383-356f3e117fa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30">
+      <UniqueIdentifier>{8f4577f4-e17e-4b12-873d-e181aaea672e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\animation">
+      <UniqueIdentifier>{cfe65c9a-69fd-4ff5-bf90-cff8ed0ba761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\components">
+      <UniqueIdentifier>{d09fbb1a-ab1e-4aff-8ffe-1719df8032fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\connectors">
+      <UniqueIdentifier>{84202c61-a9b4-42a7-95a5-be5847854a7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\descriptor">
+      <UniqueIdentifier>{d96f843c-2359-4218-b38b-76e51f820ee5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\interfaces">
+      <UniqueIdentifier>{d0a26303-d014-41ab-b04c-3df455ab3030}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\layout">
+      <UniqueIdentifier>{c2ceda4e-6c63-4cef-bb76-5d90af1dd925}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\link">
+      <UniqueIdentifier>{5586d14b-26d3-4511-b34a-fa22c5352e5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\metainformation">
+      <UniqueIdentifier>{8cafde4e-6c4d-45e2-9467-6fdd2646c738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\navigation">
+      <UniqueIdentifier>{a4b950f9-82b7-4aae-b35b-4dca73b5f113}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\reuse">
+      <UniqueIdentifier>{9bddf236-3055-4e0e-b70f-222493f69632}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\switches">
+      <UniqueIdentifier>{d9e5d0a4-e4fc-4d89-ad7d-33468cf34056}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\time">
+      <UniqueIdentifier>{e44e452e-ca62-4d68-a966-43342e277921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\time\flexibility">
+      <UniqueIdentifier>{87d374b7-a90b-4337-9a09-71eed47ae11e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\transition">
+      <UniqueIdentifier>{0352105d-bdb7-4662-bd7f-e925ce9cfd30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30\util">
+      <UniqueIdentifier>{77abfd56-639a-4060-a81f-ba8fcc740338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30-converter">
+      <UniqueIdentifier>{fb93b7d6-c085-4776-9925-3e4054c7d36e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30-converter\framework">
+      <UniqueIdentifier>{a133473c-bf40-4acd-be9f-f092019c64ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30-converter\framework\ncl">
+      <UniqueIdentifier>{6cc0fd1e-c55e-4fa9-b43b-c4f1377cd692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ncl30-converter\ncl">
+      <UniqueIdentifier>{d974498c-1726-426e-bb14-befb1ac3df11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\telemidia-util">
+      <UniqueIdentifier>{9340529a-3e9a-48f2-98eb-f64ac08e9dc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gingacc-dataprocessing\ncl\edit">
+      <UniqueIdentifier>{94e78038-6663-48bc-8698-3f97dad9a31f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="asprintf.c">
-      <Filter>Source Files\gingacc-cpp\gingacc-multidevice</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\ContextManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\system\SystemInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\user\GingaUser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-ic\src\curlic\CurlInteractiveChannel.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-ic\curlic</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-ic\src\InteractiveChannelManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-ic</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\RemoteDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\RemoteDeviceManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\ActiveDeviceDomain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\BaseDeviceDomain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\DeviceDomain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\device\ActiveDeviceService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\device</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\device\BaseDeviceService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\device</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\device\DeviceService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\device</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\device\PassiveDeviceService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\device</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\BroadcastSocketService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\MulticastSocketService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\NetworkUtil.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\TcpClientConnection.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\TcpSocketService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\PassiveDeviceDomain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\RemoteEventService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\image\ImagePlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\image</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\Player.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\text\plain\PlainTxtPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\text\plain</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\text\srt\SrtPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\text\srt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\text\TextPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\text</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\tv\ChannelPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\tv</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\tv\ProgramAV.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\tv</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\video\AVPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\video</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\widget\ShowButton.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\widget</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\declarative\xhtml\berkelium\BerkeliumHandler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\application\declarative\xhtml\berkelium</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\declarative\xhtml\berkelium\BerkeliumPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\application\declarative\xhtml\berkelium</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\thread\Thread.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-system\thread</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\fs\GingaLocatorFactory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-system\fs</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\compat\SystemCompat.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-system\compat</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\compat\PracticalSocket.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-system\compat</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\time\Stc.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-system\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\InputManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\LocalScreenManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\CodeMap.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\InputEventFactory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\Matrix.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\SDLDeviceScreen.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\output\SDLSurface.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\output</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\output\SDLWindow.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\output</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\input\SDLEventBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\input</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\input\SDLInputEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\input</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\audio\SDL2ffmpeg.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\content\audio</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\audio\SDLAudioProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\content\audio</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\image\SDLImageProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\content\image</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\text\SDLFontProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\content\text</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\video\SDLVideoProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-mb\interface\sdl\content\video</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\CommonCoreManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingalssm</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\DataWrapperListener.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingalssm</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\PresentationEngineManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingalssm</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\StcWrapper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingalssm</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adaptation\context\ContextBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adaptation\context</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adaptation\context\PresentationContext.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adaptation\context</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adaptation\context\RuleAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adaptation\context</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\ApplicationPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\application</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\declarative\ncl\NCLPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\application\declarative</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\AVPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\av</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\ChannelPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\av</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\av\tv\ProgramAVPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\av\tv</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\FormatterPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\image\ImagePlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\image</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\NominalEventMonitor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\PlayerAdapterManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\text\PlainTxtPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\text</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\text\SubtitlePlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\text</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\declarative\xhtml\berkelium\BerkeliumPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\adapters\application\declarative\xhtml\berkelium</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\animation\AnimationController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\animation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\emconverter\FormatterConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\emconverter</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\emconverter\FormatterLinkConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\emconverter</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\focus\FormatterFocusManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\focus</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\FormatterMediator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\FormatterScheduler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\components\ApplicationExecutionObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\components\CompositeExecutionObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\components\ExecutionObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\components\NodeNesting.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\AnchorEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\AttributionEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\FormatterEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\PresentationEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\SelectionEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\transition\BeginEventTransition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\transition\EndEventTransition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\transition\EventTransition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\transition\EventTransitionManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\event\transition\TransitionDispatcher.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\event\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\FormatterCausalLink.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\FormatterLink.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkAndCompoundTriggerCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkAssessmentStatement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkAssignmentAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkAttributeAssessment.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkCompoundAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkCompoundStatement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkCompoundTriggerCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkRepeatAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkSimpleAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkTransitionTriggerCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkTriggerCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\link\LinkValueAssessment.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\presentation\CascadingDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\presentation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\presentation\focus\FocusSourceManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\presentation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\presentation\FormatterDeviceRegion.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\presentation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\presentation\FormatterLayout.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\presentation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\presentation\FormatterRegion.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\presentation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\switches\ExecutionObjectSwitch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\switches\SwitchEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\CostFunctionDuration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\DurationFactory.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\FlexibleTimeMeasurement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\LinearCostFunctionDuration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\TimeMeasurement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\model\time\UnflexibleDuration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\model\time</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\multidevice\FormatterMultiDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\multidevice\FormatterBaseDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\multidevice\FormatterActiveDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\multidevice\FormatterPassiveDevice.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\multidevice</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\prefetch\PrefetchManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\prefetch</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\privatebase\PrivateBaseContext.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\privatebase</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\privatebase\PrivateBaseManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingancl\privatebase</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\DOMTreeErrorReporter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclComponentsParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclConnectorsParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclDocumentParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclImportParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclInterfacesParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclLayoutParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclLinkingParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclMetainformationParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclPresentationControlParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclPresentationSpecificationParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclStructureParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\ncl\NclTransitionParser.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\XMLParsing.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclComponentsConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclConnectorsConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclDocumentConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclImportConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclInterfacesConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclLayoutConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclLinkingConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclMetainformationConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclPresentationControlConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclPresentationSpecConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclStructureConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\ncl\NclTransitionConverter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\ncl</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\animation\Animation.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\animation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\Base.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\AbsoluteReferenceContent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\CompositeNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\Content.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\ContentNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\ContentTypeManager.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\ContextNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\Node.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\NodeEntity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\PrivateBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\ReferenceContent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\components\RelativeReferenceContent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\components</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\Action.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\AssessmentStatement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\AttributeAssessment.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\CausalConnector.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\CompoundAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\CompoundCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\CompoundStatement.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\Connector.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\ConnectorBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\EventTransitionAssessment.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\EventUtil.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\Role.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\SimpleAction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\SimpleCondition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\TriggerExpression.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\connectors\ValueAssessment.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\connectors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\descriptor\Descriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\descriptor</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\descriptor\DescriptorBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\descriptor</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\Entity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\Anchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\CircleSpatialAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\ContentAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\IntervalAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\LabeledAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\LambdaAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\Port.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\PropertyAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\RectangleSpatialAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\RelativeTimeIntervalAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\SampleIntervalAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\SwitchPort.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\interfaces\TextAnchor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\layout\DeviceLayout.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\layout</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\layout\LayoutRegion.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\layout</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\layout\RegionBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\layout</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\link\Bind.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\link\CausalLink.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\link\Link.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\link</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\metainformation\Meta.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\metainformation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\metainformation\Metadata.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\metainformation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\navigation\FocusDecoration.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\navigation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\navigation\KeyNavigation.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\navigation</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\NclDocument.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\Parameter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\reuse\ReferNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\reuse</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\reuse\ReferredNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\reuse</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\CompositeRule.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\DescriptorSwitch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\Rule.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\RuleBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\SimpleRule.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\SwitchContent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\switches\SwitchNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\switches</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\time\flexibility\LinearTimeCostFunction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\time\flexibility</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\time\flexibility\TemporalFlexibilityFunction.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\time\flexibility</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\transition\Transition.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\transition\TransitionBase.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\transition\TransitionUtil.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\transition</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30\src\util\Comparator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30\util</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Color.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\telemidia-util</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\functions.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\telemidia-util</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\ncl30-converter\src\framework\DocumentParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\DataProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ncl30-converter\framework</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\Binding.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\Biop.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\DownloadDataBlock.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\DownloadInfoIndication.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\DownloadServerInitiate.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\DsmccMessageHeader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\MessageProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\data\Module.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\data</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\Ior.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\object\Object.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\object</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\object\ObjectProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel\object</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\carousel\ServiceDomain.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\carousel</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\Crc.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\DSMCCSectionPayload.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\MpegDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\NPTEndpoint.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\NPTProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\NPTReference.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\StreamMode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\npt\TimeBaseClock.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\StreamEvent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc\npt</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\EPGProcessor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\FilterManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\ncl\edit\EventDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\SectionFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-dataprocessing</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-multidevice\src\services\network\BroadcastDualSocketService.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-multidevice\services\network</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\Demuxer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\FrontendFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\PesFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\PipeFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\PSIFilter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\AIT.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\Application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ApplicationDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ApplicationLocationDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ApplicationNameDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\AudioComponentDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ComponentDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ComponentGroupDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ContentAvailabilityDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ContentDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\DataContentDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\DigitalCCDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\EventGroupDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ExtendedEventDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\HiperlinkDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\LDTLinkageDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\LocalTimeOffsetDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\LogoTransmissionDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\MosaicDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ParentalRatingDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\PartialReceptionDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\PrefetchDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\SeriesDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ServiceDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\ShortEventDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\StreamIdentifierDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\TargetRegionDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\descriptors\TransportProtocolDescriptor.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si\descriptors</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\EventInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\Pat.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\Pmt.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\ServiceInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\si\TOT.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser\si</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\TransportSection.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\TSAdaptationField.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tsparser\src\TSPacket.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tsparser</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\NetworkInterface.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\BDAGraph.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\BDAProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\Channel.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\Channels.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\FileSystemProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\Tuner.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Base64.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\telemidia-util</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
     </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
+      <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp">
+      <Filter>Source Files\gingancl\adapters\mirror</Filter>
+    </ClCompile>
+    <ClCompile Include="asprintf.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\ContextManager.cpp">
+      <Filter>Source Files\gingacc-contextmanager</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\system\SystemInfo.cpp">
+      <Filter>Source Files\gingacc-contextmanager\system</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-contextmanager\src\user\GingaUser.cpp">
+      <Filter>Source Files\gingacc-contextmanager\user</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\DataProcessor.cpp">
+      <Filter>Source Files\gingacc-dataprocessing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\dsmcc\StreamEvent.cpp">
+      <Filter>Source Files\gingacc-dataprocessing\dsmcc</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-dataprocessing\src\ncl\edit\EventDescriptor.cpp">
+      <Filter>Source Files\gingacc-dataprocessing\ncl\edit</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp">
+      <Filter>Source Files\ginga</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
