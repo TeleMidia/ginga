@@ -199,6 +199,7 @@ namespace ncl {
 
 		static void release();
 
+		void setMirrorSrc(IPlayer* mirrorSrc);
 		void printGingaWindows();
 		set<string>* createPortIdList();
 		short getMappedInterfaceType(string portId);

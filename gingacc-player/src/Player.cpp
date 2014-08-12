@@ -102,7 +102,7 @@ namespace player {
 	}
 
 	Player::~Player() {
-		set<Player*>::iterator i;
+		set<IPlayer*>::iterator i;
 
 		this->status = STOP;
 
@@ -113,7 +113,7 @@ namespace player {
 		lockedListeners.clear();
 
 		if (mirrorSrc != NULL) {
-			mirrorSrc->removeMirror(this);
+			((Player*)mirrorSrc)->removeMirror(this);
 		}
 
 		i = mirrors.begin();
@@ -153,16 +153,16 @@ namespace player {
 		Thread::mutexDestroy(&pnMutex);
    	}
 
-	void Player::setMirrorSrc(Player* mirrorSrc) {
+	void Player::setMirrorSrc(IPlayer* mirrorSrc) {
 		this->mirrorSrc = mirrorSrc;
 	}
 
-	void Player::addMirror(Player* mirror) {
+	void Player::addMirror(IPlayer* mirror) {
 		this->mirrors.insert(mirror);
 	}
 
-	bool Player::removeMirror(Player* mirror) {
-		set<Player*>::iterator i;
+	bool Player::removeMirror(IPlayer* mirror) {
+		set<IPlayer*>::iterator i;
 
 		i = mirrors.find(mirror);
 		if (i != mirrors.end()) {
@@ -440,13 +440,13 @@ namespace player {
 	}
 
 	void Player::checkMirrors() {
-		set<Player*>::iterator i;
+		set<IPlayer*>::iterator i;
 
-		mirrorIt(mirrorSrc, this);
+		mirrorIt((Player*)mirrorSrc, this);
 
 		i = mirrors.begin();
 		while (i != mirrors.end()) {
-			mirrorIt(this, (*i));
+			mirrorIt(this, (Player*)(*i));
 			++i;
 		}
 	}

@@ -92,6 +92,7 @@ namespace player {
 
 			virtual ~INCLPlayer(){};
 
+			virtual void setMirrorSrc(IPlayer* mirrorSrc)=0;
 			virtual void printGingaWindows()=0;
 			virtual set<string>* createPortIdList()=0;
 			virtual short getMappedInterfaceType(string portId)=0;
