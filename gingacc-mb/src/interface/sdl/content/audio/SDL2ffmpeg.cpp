@@ -112,7 +112,7 @@ namespace mb {
 
 		scaleCounter                         = 0;
 		texAccessCount                       = 0;
-		enableFilter                         = true;
+		enableFilter                         = false;
 
 		setSoundLevel(1.0);
 
@@ -2630,26 +2630,28 @@ the_end:
 			avctx->flags |= CODEC_FLAG_EMU_EDGE;
 		}
 
-		opts = filter_codec_opts(NULL, avctx->codec_id, ic, ic->streams[stream_index], codec);
-		if (!av_dict_get(opts, "threads", NULL, 0)) {
-			av_dict_set(&opts, "threads", "auto", 0);
-		}
+		if (enableFilter) {
+			opts = filter_codec_opts(NULL, avctx->codec_id, ic, ic->streams[stream_index], codec);
+			if (!av_dict_get(opts, "threads", NULL, 0)) {
+				av_dict_set(&opts, "threads", "auto", 0);
+			}
 
-		if (stream_lowres) {
-			av_dict_set(&opts, "lowres", av_asprintf("%d", stream_lowres), AV_DICT_DONT_STRDUP_VAL);
-		}
+			if (stream_lowres) {
+				av_dict_set(&opts, "lowres", av_asprintf("%d", stream_lowres), AV_DICT_DONT_STRDUP_VAL);
+			}
 
-		if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
-			av_dict_set(&opts, "refcounted_frames", "1", 0);
-		}
+			if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+				av_dict_set(&opts, "refcounted_frames", "1", 0);
+			}
 
-		if (avcodec_open2(avctx, codec, &opts) < 0) {
-			return -1;
-		}
+			if (avcodec_open2(avctx, codec, &opts) < 0) {
+				return -1;
+			}
 
-		if ((t = av_dict_get(opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
-			av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
-			return AVERROR_OPTION_NOT_FOUND;
+			if ((t = av_dict_get(opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
+				av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
+				return AVERROR_OPTION_NOT_FOUND;
+			}
 		}
 
 		if (!codec || avcodec_open2(avctx, codec, NULL) < 0) {
