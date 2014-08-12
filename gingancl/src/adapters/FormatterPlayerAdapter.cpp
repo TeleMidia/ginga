@@ -1225,7 +1225,7 @@ namespace adapters {
 
 				if (player != NULL) {
 					if (mirrorSrc != NULL) {
-						((Player*)player)->setMirrorSrc((Player*)mirrorSrc);
+						player->setMirrorSrc(mirrorSrc);
 					}
 					startSuccess = player->play();
 				}
