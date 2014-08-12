@@ -313,7 +313,7 @@ namespace ncl {
 				    	    ((FormatterConverter*)compiler)->getDepthLevel());
 
 			if (timeBaseObject != NULL) {
-				timeBasePlayer = playerManager->getObjectPlayer(timeBaseObject);
+				timeBasePlayer = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(timeBaseObject);
 				if (timeBasePlayer != NULL) {
 					objectPlayer->setTimeBasePlayer(timeBasePlayer);
 				}
@@ -484,7 +484,7 @@ namespace ncl {
 			clog << "FormatterScheduler::runAction ";
 			clog << "acquiring player for '" << executionObject->getId();
 			clog << "' ";
-			player = playerManager->getObjectPlayer(executionObject);
+			player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(executionObject);
 			if (player == NULL) {
 				clog << "Player = NULL for ";
 				clog << executionObject->getId() << endl;
@@ -716,7 +716,7 @@ namespace ncl {
 				anim = NULL;
 			}
 
-			player = playerManager->getObjectPlayer(executionObject);
+			player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(executionObject);
 			actionType = action->getType();
 
 			switch (actionType) {
@@ -1093,7 +1093,7 @@ namespace ncl {
 							runAction(childEvent, NULL, action);
 
 						} else { //force attribution
-							pAdapter = playerManager->getObjectPlayer(
+							pAdapter = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(
 									childObject);
 
 							if (pAdapter != NULL) {
@@ -1835,7 +1835,7 @@ namespace ncl {
 					//TODO: if (isDocumentRunning(event)) {
 					object = (ExecutionObject*)(event->getExecutionObject());
 
-					player = playerManager->getObjectPlayer(object);
+					player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 					if (player != NULL) {
 						((FormatterMultiDevice*)multiDevPres)->showObject(
 								object);
@@ -1871,7 +1871,7 @@ namespace ncl {
 							((FormatterMultiDevice*)multiDevPres)->hideObject(
 									object);
 
-							player = playerManager->getObjectPlayer(object);
+							player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 							if (player != NULL && player->getPlayer() != NULL) {
 								player->flip();
 
@@ -1911,7 +1911,7 @@ namespace ncl {
 						((FormatterMultiDevice*)multiDevPres)->hideObject(
 								object);
 
-						player = playerManager->getObjectPlayer(object);
+						player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 						if (player != NULL && player->getPlayer() != NULL &&
 								player->getObjectDevice() == 0) {
 

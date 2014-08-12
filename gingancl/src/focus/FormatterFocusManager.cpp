@@ -421,7 +421,7 @@ namespace focus {
 
 			recoveryDefaultState(selectedObject);
 
-			player = playerManager->getObjectPlayer(selectedObject);
+			player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 			exitSelection(player);
 		}
 	}
@@ -548,7 +548,7 @@ namespace focus {
 		//selecting new object
 		selectedObject = nextObject;
 		selectedObject->setHandler(true);
-		player = playerManager->getObjectPlayer(selectedObject);
+		player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 
 		enterSelection(player);
 		nextObject->selectionEvent(
@@ -704,7 +704,7 @@ namespace focus {
 			return;
 		}
 
-		player = playerManager->getObjectPlayer(object);
+		player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 		if (player != NULL) {
 			fRegion = object->getDescriptor()->getFormatterRegion();
 			fRegion->setFocus(false);
@@ -826,7 +826,7 @@ namespace focus {
 
 					selectedObject = object;
 					selectedObject->setHandler(true);
-					player = playerManager->getObjectPlayer(selectedObject);
+					player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 					enterSelection(player);
 				}
 			}
@@ -858,7 +858,7 @@ namespace focus {
 					fr->getFocusState() == FormatterRegion::SELECTED &&
 					selectedObject == object) {
 
-				player = playerManager->getObjectPlayer(selectedObject);
+				player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 				exitSelection(player);
 				//region->setSelection(false);
 				//recoveryDefaultState(selectedObject);
@@ -908,7 +908,7 @@ namespace focus {
 
 		selectedObject = currentObject;
 		selectedObject->setHandler(true);
-		player = playerManager->getObjectPlayer(selectedObject);
+		player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 
 		changeSettingState("service.currentKeyMaster", "start");
 		isHandling = enterSelection(player);
@@ -976,7 +976,7 @@ namespace focus {
 		}
 
 		if (selectedObject != NULL) {
-			player = playerManager->getObjectPlayer(selectedObject);
+			player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(selectedObject);
 			changeSettingState("service.currentKeyMaster", "start");
 			exitSelection(player);
 			changeSettingState("service.currentKeyMaster", "stop");

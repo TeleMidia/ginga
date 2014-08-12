@@ -526,12 +526,11 @@ namespace adapters {
 		return (FormatterPlayerAdapter*)player;
 	}
 
-	FormatterPlayerAdapter* PlayerAdapterManager::getObjectPlayer(
-		    ExecutionObject* execObj) {
-
+	void* PlayerAdapterManager::getObjectPlayer(void* eObj) {
 		map<string, IPlayerAdapter*>::iterator i;
 		FormatterPlayerAdapter* player;
 		string objId;
+		ExecutionObject* execObj = (ExecutionObject*)eObj;
 
 		Thread::mutexLock(&mutexPlayer);
 		objId = execObj->getId();

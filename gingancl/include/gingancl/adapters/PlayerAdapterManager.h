@@ -130,7 +130,7 @@ namespace adapters {
 		FormatterPlayerAdapter* initializePlayer(ExecutionObject* object);
 
 	public:
-		FormatterPlayerAdapter* getObjectPlayer(ExecutionObject* execObj);
+		void* getObjectPlayer(void* execObj);
 
 	private:
 		string getMimeTypeFromSchema(string url);

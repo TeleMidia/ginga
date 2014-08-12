@@ -71,6 +71,7 @@ namespace adapters {
 		//virtual void setStandByState(bool standBy)=0;
 		virtual NclPlayerData* getNclPlayerData()=0;
 		virtual ITimeBaseProvider* getTimeBaseProvider()=0;
+		virtual void* getObjectPlayer(void* execObj)=0;
 		virtual bool removePlayer(void* object)=0;
   };
 }

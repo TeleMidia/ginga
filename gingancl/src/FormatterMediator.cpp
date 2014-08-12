@@ -2785,7 +2785,7 @@ namespace ncl {
 						if (event != NULL && event->getCurrentState() ==
 								EventUtil::ST_OCCURRING) {
 
-							player = playerManager->getObjectPlayer(object);
+							player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 							if (player != NULL) {
 								player->checkAnchorMonitor();
 							}

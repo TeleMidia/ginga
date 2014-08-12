@@ -112,7 +112,7 @@ namespace mb {
 
 		scaleCounter                         = 0;
 		texAccessCount                       = 0;
-		enableFilter                         = false;
+		enableFilter                         = true;
 
 		setSoundLevel(1.0);
 
