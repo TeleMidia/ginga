@@ -86,7 +86,7 @@ namespace mirror {
 		assert(pos != std::string::npos);
 		if (object != NULL && object->getMirrorSrc() != NULL && player != NULL) {
 			execObjSrc = object->getMirrorSrc();
-			sourceAdapter = ((PlayerAdapterManager*)manager)->getObjectPlayer(execObjSrc);
+			sourceAdapter = (FormatterPlayerAdapter*)manager->getObjectPlayer(execObjSrc);
 			mirrorSrc = sourceAdapter->getPlayer();
 
 			descriptor = object->getDescriptor();
