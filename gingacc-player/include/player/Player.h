@@ -138,18 +138,18 @@ namespace player {
 			double scopeInitTime;
 			double scopeEndTime;
 			double outTransTime;
-			Player* mirrorSrc;
-			set<Player*> mirrors;
+			IPlayer* mirrorSrc;
+			set<IPlayer*> mirrors;
 
 		public:
 			Player(GingaScreenID screenId, string mrl);
 			virtual ~Player();
 
-			void setMirrorSrc(Player* mirrorSrc);
+			void setMirrorSrc(IPlayer* mirrorSrc);
 
 		private:
-			void addMirror(Player* mirror);
-			bool removeMirror(Player* mirror);
+			void addMirror(IPlayer* mirror);
+			bool removeMirror(IPlayer* mirror);
 
 		public:
 			virtual void flip(){};

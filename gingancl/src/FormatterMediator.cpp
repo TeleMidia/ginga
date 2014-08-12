@@ -454,6 +454,10 @@ namespace ncl {
 		clog << "FormatterMediator::~FormatterMediator all done" << endl;
 	}
 
+	void FormatterMediator::setMirrorSrc(IPlayer* mirrorSrc) {
+		Player::setMirrorSrc(mirrorSrc);
+	}
+
 	void FormatterMediator::printGingaWindows() {
 		if (multiDevice != NULL) {
 			multiDevice->printGingaWindows();

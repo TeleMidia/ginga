@@ -88,6 +88,8 @@ namespace player {
 
 			virtual ~IPlayer(){};
 
+			virtual void setMirrorSrc(IPlayer* mirrorSrc)=0;
+
 			virtual void flip()=0;
 			virtual ISurface* getSurface()=0;
 			virtual void setSurface(ISurface* sfc)=0;
