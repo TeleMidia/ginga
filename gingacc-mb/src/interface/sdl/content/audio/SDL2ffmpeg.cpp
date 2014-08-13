@@ -60,9 +60,6 @@ Many thanks to these guys and to the community that support them!
 #define AV_LOG_SKIP_REPEATED 1
 #endif
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
 #include "config.h"
 
 namespace br {
@@ -220,8 +217,10 @@ namespace mb {
 		}
 
 		//AVFILTER
-		for (int i=0; i<vfilters_list.size(); i++) {
-			av_freep(vfilters_list[i]);
+		if (enableFilter) {
+			for (int i=0; i<vfilters_list.size(); i++) {
+				av_freep(vfilters_list[i]);
+			}
 		}
 	}
 
