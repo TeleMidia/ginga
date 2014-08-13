@@ -93,20 +93,6 @@ namespace av {
 #endif
 		}
 
-		if (object != NULL) {
-			descriptor = object->getDescriptor();
-			if (descriptor != NULL) {
-				soundLevel = descriptor->getParameterValue("soundLevel");
-				if (soundLevel == "") {
-					soundLevel = "1.0";
-				}
-
-				if (player != NULL) {
-					player->setPropertyValue("soundLevel", soundLevel);
-				}
-			}
-		}
-
 		FormatterPlayerAdapter::createPlayer();
 
 		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'";
