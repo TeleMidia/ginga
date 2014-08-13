@@ -1664,8 +1664,10 @@ namespace mb {
 				SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
 				if ((timeout.tv_sec < now.tv_sec) || (
 						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_nsec))) {
-				        timeout.tv_sec = now.tv_sec;
+
+					timeout.tv_sec = now.tv_sec;
 					timeout.tv_nsec = now.tv_nsec;
+
 				} else {
 					pthread_mutex_lock(&mutex);
 					retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
@@ -1673,7 +1675,6 @@ namespace mb {
 				}
 #endif
 			}
-
 		}
 
 		clog << "SDLDeviceScreen::rendererT ALL DONE" << endl;

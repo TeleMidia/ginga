@@ -842,6 +842,25 @@ namespace adapters {
 		return explicitDur;
 	}
 
+	void FormatterPlayerAdapter::updatePlayerProperties(ExecutionObject* obj) {
+		CascadingDescriptor* descriptor;
+		string value;
+
+		if (object != NULL) {
+			descriptor = object->getDescriptor();
+			if (descriptor != NULL) {
+				value = descriptor->getParameterValue("soundLevel");
+				if (value == "") {
+					value = "1.0";
+				}
+
+				if (player != NULL) {
+					player->setPropertyValue("soundLevel", value);
+				}
+			}
+		}
+	}
+
 	bool FormatterPlayerAdapter::prepare(
 			ExecutionObject* object, FormatterEvent* event) {
 
@@ -943,6 +962,7 @@ namespace adapters {
 		}
 
 		createPlayer();
+		updatePlayerProperties(object);
 		if (event->getCurrentState() == EventUtil::ST_SLEEPING) {
 			object->prepare((PresentationEvent*)event, 0);
 			prepare();
@@ -1442,7 +1462,6 @@ namespace adapters {
 		    AttributionEvent* event, string value) {
 
 		string propName;
-		string strValue;
 
 		if (player == NULL || object == NULL) {
 			clog << "FormatterPlayerAdapter::setPropertyValue Warning!";
@@ -1458,6 +1477,10 @@ namespace adapters {
 
 	  		return false;
 	  	}
+
+		if (isPercentualValue(value)) {
+			value = itos(getPercentualValue(value) / 100);
+		}
 
 		propName = (event->getAnchor())->getPropertyName();
 		if (propName == "visible") {

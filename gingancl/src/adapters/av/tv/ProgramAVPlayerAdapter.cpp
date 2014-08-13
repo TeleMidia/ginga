@@ -112,15 +112,6 @@ namespace tv {
 		player = ProgramAV::getInstance(myScreen);
 #endif
 
-		descriptor = object->getDescriptor();
-		if (descriptor != NULL) {
-			soundLevel = descriptor->getParameterValue("soundLevel");
-			if (soundLevel == "") {
-				soundLevel = "1.0";
-			}
-			player->setPropertyValue("soundLevel", soundLevel);
-		}
-
 		FormatterPlayerAdapter::createPlayer();
 		updateAVBounds();
 	}

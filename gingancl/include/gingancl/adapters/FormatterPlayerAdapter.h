@@ -147,6 +147,7 @@ namespace adapters {
 
 		protected:
 			double prepareProperties(ExecutionObject* obj);
+			void updatePlayerProperties(ExecutionObject* obj);
 
 		public:
 			virtual bool prepare(
