@@ -541,7 +541,9 @@ namespace mb {
 	}
 
 	SDL_Texture* SDL2ffmpeg::getTexture() {
+#if GINGA_DEBUG
 		texAccessCount++;
+#endif
 		return texture;
 	}
 
