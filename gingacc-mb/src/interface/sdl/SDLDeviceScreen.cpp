@@ -3157,6 +3157,9 @@ namespace mb {
 			SDL_Renderer* renderer, int w, int h) {
 
 		SDL_Texture* texture;
+		int qW, qH;
+		Uint32 format;
+		int access;
 
 		lockSDL();
 
@@ -3166,16 +3169,17 @@ namespace mb {
 				SDL_TEXTUREACCESS_STREAMING,
 				w, h);
 
-		if (texture != NULL) {
-			uTexPool.insert(texture);
+		assert(texture != NULL);
 
-			/* allowing alpha */
-			SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+		/* allowing alpha */
+		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-		} else {
-			clog << "SDLDeviceScreen::createTexture SDL error: '";
-			clog << SDL_GetError() << "'" << endl;
-		}
+		SDL_QueryTexture(texture, &format, &access, &qW, &qH);
+
+		assert(format == GINGA_PIXEL_FMT);
+		assert(access == SDL_TEXTUREACCESS_STREAMING);
+		uTexPool.insert(texture);
+
 	    unlockSDL();
 
 	    return texture;
