@@ -2086,24 +2086,25 @@ namespace mb {
 			s->sdlId = SDL_GetWindowID(s->screen);
 		}
 
-		if (s->screen != NULL) {
+		assert(s->screen != NULL);
+		s->renderer = SDL_CreateRenderer(
+				s->screen, -1, SDL_RENDERER_ACCELERATED);
+
+		if (s->renderer != NULL) {
+			clog << "SDLDeviceScreen::initScreen renderer ";
+			clog << "accelerated by hardware was created";
+			clog << endl;
+
+		} else {
+			clog << "SDLDeviceScreen::initScreen software renderer ";
+			clog << "was created";
+			clog << endl;
+
 			s->renderer = SDL_CreateRenderer(
-					s->screen, -1, SDL_RENDERER_ACCELERATED);
-
-			if (s->renderer != NULL) {
-				clog << "SDLDeviceScreen::initScreen renderer ";
-				clog << "accelerated by hardware was created";
-				clog << endl;
-
-			} else {
-				clog << "SDLDeviceScreen::initScreen software renderer ";
-				clog << "was created";
-				clog << endl;
-
-				s->renderer = SDL_CreateRenderer(
-						s->screen, -1, SDL_RENDERER_SOFTWARE);
-			}
+					s->screen, -1, SDL_RENDERER_SOFTWARE);
 		}
+
+		assert(SDL_GetRendererInfo(s->renderer, &s->info) == 0);
 
 		initCodeMaps();
 		s->im = new InputManager(s->id);
@@ -2242,6 +2243,12 @@ namespace mb {
 
 		/*clog << "SDLDeviceScreen::initCMP creating texture with w = '";
 		clog << w << "' and h = '" << h << "'" << endl;*/
+
+		if (w > s->info.max_texture_width)
+			w = s->info.max_texture_width;
+
+		if (h > s->info.max_texture_height)
+			h = s->info.max_texture_height;
 
 		texture = createTexture(s->renderer, w, h);
 		cmp->setProviderContent((void*)texture);
