@@ -84,7 +84,7 @@ namespace mb {
 			virtual void feedBuffers(){};
 			void* getProviderContent();
 			virtual void setProviderContent(void* content){};
-			virtual bool checkVideoResizeEvent(ISurface* frame){return false;};
+			virtual bool checkVideoResizeEvent(GingaSurfaceID frame){return false;};
 			double getTotalMediaTime();
 			virtual int64_t getVPts();
 			double getMediaTime();
@@ -92,10 +92,10 @@ namespace mb {
 
 		public:
 			void playOver(
-					ISurface* surface,
+					GingaSurfaceID surface,
 					bool hasVisual=true, IProviderListener* listener=NULL);
 
-			void resume(ISurface* surface, bool hasVisual=false);
+			void resume(GingaSurfaceID surface, bool hasVisual=false);
 			void pause();
 			void stop();
 			void setSoundLevel(float level);

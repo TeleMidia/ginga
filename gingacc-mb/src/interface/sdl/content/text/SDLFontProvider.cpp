@@ -249,7 +249,7 @@ namespace mb {
 	}
 
 	void SDLFontProvider::playOver(
-			ISurface* surface, const char* text, int x, int y, short align) {
+			GingaSurfaceID surface, const char* text, int x, int y, short align) {
 
 		Thread::mutexLock(&ntsMutex);
 
@@ -267,7 +267,7 @@ namespace mb {
 		Thread::mutexUnlock(&ntsMutex);
 	}
 
-	void SDLFontProvider::playOver(ISurface* surface) {
+	void SDLFontProvider::playOver(GingaSurfaceID surface) {
 		SDLWindow* parent;
 		IColor* fontColor = NULL;
 
@@ -278,7 +278,8 @@ namespace mb {
 		int pW, pH;
 
 		Thread::mutexLock(&ntsMutex);
-		this->content = surface;
+		this->content = LocalScreenManager::getInstance()->
+				getISurfaceFromId(surface);
 		if (plainText == "") {
 			clog << "SDLFontProvider::playOver Warning! Empty text.";
 			clog << endl;
@@ -296,7 +297,8 @@ namespace mb {
 			}
 		}
 
-		if (LocalScreenManager::getInstance()->hasSurface(myScreen, content)) {
+		if (LocalScreenManager::getInstance()->
+				hasSurface(myScreen, content->getId())) {
 			parent = (SDLWindow*)(content->getParentWindow());
 
 			if (parent == NULL) {

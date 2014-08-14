@@ -93,9 +93,9 @@ namespace presentation {
 		LayoutRegion* ncmRegion;
 		LayoutRegion* originalRegion;
 		bool externHandler;
-		IWindow* outputDisplay;
+		GingaWindowID outputDisplay;
 
-		ISurface* renderedSurface;
+		GingaSurfaceID renderedSurface;
 
 		bool imVisible;
 
@@ -200,14 +200,14 @@ namespace presentation {
 			    int height,
 			    int prefWidth,
 			    int prefHeight,
-			    ISurface* component);
+			    GingaSurfaceID component);
 
 		void sliceComponent(
 			    int width,
 			    int height,
 			    int prefWidth,
 			    int prefHeight,
-			    ISurface* component);
+			    GingaSurfaceID component);
 
 		void updateCurrentComponentSize();
 
@@ -223,7 +223,7 @@ namespace presentation {
 		LayoutRegion* getOriginalRegion();
 
 		GingaWindowID prepareOutputDisplay(
-				ISurface* renderedSurface, float cvtIndex);
+				GingaSurfaceID renderedSurface, float cvtIndex);
 
 		void showContent();
 		void hideContent();

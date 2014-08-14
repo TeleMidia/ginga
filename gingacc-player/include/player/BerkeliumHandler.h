@@ -92,7 +92,7 @@ namespace player {
 		ILocalScreenManager* dm;
 		GingaScreenID myScreen;
 		IInputManager* im;
-		ISurface* surface;
+		GingaSurfaceID surface;
 		int xOffset, yOffset;
 		int x, y;
 		int w, h;
@@ -128,7 +128,7 @@ namespace player {
 		void setBounds(int x, int y, int w, int h);
 		void setUrl(string url);
 		string getUrl();
-		ISurface* getSurface();
+		GingaSurfaceID getSurface();
 
 		void updateEvents();
 
@@ -155,7 +155,7 @@ namespace player {
 				bool ignore_partial,
 				unsigned char* scroll_buffer);
 
-		ISurface* createRenderedSurface(string fileName);
+		GingaSurfaceID createRenderedSurface(string fileName);
 
 		string createFile(
 				const unsigned char *sourceBuffer,

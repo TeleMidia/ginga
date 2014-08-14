@@ -94,7 +94,7 @@ namespace mb {
 			void getVideoSurfaceDescription(void* dsc);
 
 		public:
-			bool checkVideoResizeEvent(ISurface* frame);
+			bool checkVideoResizeEvent(GingaSurfaceID frame);
 
 			void getOriginalResolution(int* width, int* height);
 			double getTotalMediaTime();
@@ -103,10 +103,10 @@ namespace mb {
 			void setMediaTime(double pos);
 
 			void playOver(
-					ISurface* surface,
+					GingaSurfaceID surface,
 					bool hasVisual=true, IProviderListener* listener=NULL);
 
-			void resume(ISurface* surface, bool hasVisual=true);
+			void resume(GingaSurfaceID surface, bool hasVisual=true);
 			void pause();
 			void stop();
 			void setSoundLevel(float level);

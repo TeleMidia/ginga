@@ -475,7 +475,7 @@ namespace mb {
 
 			Thread::mutexLock(&pMutex);
 			if (createPendingSurface()) {
-				iFont->playOver(this, txt, x, y, 0);
+				iFont->playOver(this->getId(), txt, x, y, 0);
 			}
 			Thread::mutexUnlock(&pMutex);
 		}
@@ -775,6 +775,16 @@ namespace mb {
 		/*if (sur != NULL) {
 			sur->SetMatrix(sur, (const int*)matrix);
 		}*/
+	}
+
+	GingaSurfaceID SDLSurface::getId()
+	{
+		return myId;
+	}
+
+	void SDLSurface::setId(const GingaSurfaceID &surId)
+	{
+		myId = surId;
 	}
 }
 }

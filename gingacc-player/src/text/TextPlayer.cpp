@@ -84,7 +84,7 @@ namespace player {
 		}
 
 		if (surface != NULL && dm->hasSurface(myScreen, surface)) {
-			delete surface;
+			dm->deleteSurface(surface);
 			surface = NULL;
 		}
 
@@ -109,8 +109,8 @@ namespace player {
 
 		this->surface = dm->createSurface(myScreen);
 		if (this->surface != NULL) {
-			this->surface->setCaps(
-					this->surface->getCap("ALPHACHANNEL"));
+			int cap = dm->getSurfaceCap(surface, "ALPHACHANNEL");
+			dm->setSurfaceCaps (surface, cap);
 		}
 	}
 
@@ -145,7 +145,7 @@ namespace player {
 			width = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
 
-			font->playOver(s, text.c_str(), 0, 0, textAlign);
+			font->playOver(s->getId(), text.c_str(), 0, 0, textAlign);
 
 			dm->releaseFontProvider(screenId, font);
 			font = NULL;
@@ -202,7 +202,7 @@ namespace player {
 
    		bgColor = new Color(red, green, blue, alpha);
 		if (this->surface != NULL) {
-			surface->setBgColor(red, green, blue, alpha);
+			dm->setSurfaceBgColor(surface, red, green, blue, alpha);
 		}
 	}
 
@@ -244,21 +244,21 @@ namespace player {
 			return;
 
 		} else {
-			surface->setSurfaceFont(font);
+			dm->setSurfaceFont(surface, font);
 		}
 
 		if (fontColor == NULL) {
 			fontColor = new Color("black");
 		}
 
-		surface->setColor(
-				fontColor->getR(),
-				fontColor->getG(),
-				fontColor->getB(),
-				fontColor->getAlpha());
+		dm->setSurfaceBgColor(surface,
+		                      fontColor->getR(),
+		                      fontColor->getG(),
+		                      fontColor->getB(),
+		                      fontColor->getAlpha());
 
 		if (font != NULL && surface != NULL) {
-			surface->getSize(&surWidth, &surHeight);
+			dm->getSurfaceSize(surface, &surWidth, &surHeight);
 			textWidth = font->getStringWidth(
 					text.c_str(), strlen((const char*)(text.c_str())));
 
@@ -423,7 +423,7 @@ namespace player {
 			setFont(SystemCompat::appendGingaFilesPrefix("font/decker.ttf"));
 		}
 
-		surface->getSize(&w, &h);
+		dm->getSurfaceSize(surface, &w, &h);
 		if ((currentLine + fontHeight) > h) {
 			clog << "TextPlayer::breakLine() Exceeding surface bounds";
 			clog << " currentLine = '" << currentLine << "'";

@@ -119,8 +119,8 @@ namespace player {
 			virtual void notifyPlayerListeners(
 					short code, string paremeter, short type, string value)=0;
 
-			virtual void setSurface(ISurface* surface)=0;
-			virtual ISurface* getSurface()=0;
+			virtual void setSurface(GingaSurfaceID surface)=0;
+			virtual GingaSurfaceID getSurface()=0;
 			virtual int64_t getVPts(){return 0;};
 			virtual double getMediaTime()=0;
 			virtual double getTotalMediaTime()=0;

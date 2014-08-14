@@ -86,7 +86,7 @@ namespace player {
 		void setSurfacesParent(void* parent);
 
 	protected:
-		ISurface* getSurface();
+		GingaSurfaceID getSurface();
 
 	public:
 		bool play();

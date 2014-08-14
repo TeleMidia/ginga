@@ -69,7 +69,7 @@ namespace lssm {
   class CommonCoreManager : public ICommonCoreManager {
 	private:
 		void* tuner;
-		void* tuningWindow;
+		GingaWindowID tuningWindow;
 		void* demuxer;
 		void* dataProcessor;
 		void* nptProvider;

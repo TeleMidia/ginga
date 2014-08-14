@@ -114,7 +114,7 @@ namespace presentation {
 		ExecutionObject* getObject(int x, int y);
 		GingaWindowID prepareFormatterRegion(
 				ExecutionObject* object,
-				ISurface* renderedSurface,
+				GingaSurfaceID renderedSurface,
 				string plan);
 
 		float refreshZIndex(
@@ -122,7 +122,7 @@ namespace presentation {
 				string layoutRegionId,
 				int zIndex,
 				string plan,
-				ISurface* renderedSurface);
+				GingaSurfaceID renderedSurface);
 
 	private:
 		void sortRegion(string regionId, float cvtIndex, string plan);
@@ -135,7 +135,7 @@ namespace presentation {
 	private:
 		GingaWindowID addRegionOnMaps(
 				ExecutionObject* object, FormatterRegion* region,
-				ISurface* renderedSurface,
+				GingaSurfaceID renderedSurface,
 				string layoutRegionId, int zIndex, string plan,
 				float* cvtZIndex);
 

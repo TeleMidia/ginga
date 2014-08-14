@@ -103,6 +103,9 @@ namespace mb {
 			virtual void getSize(int* width, int* height)=0;
 			virtual string getDumpFileUri()=0;
 			virtual void setMatrix(void* matrix)=0;
+
+			virtual GingaSurfaceID getId () = 0;
+			virtual void setId (const GingaSurfaceID &surId) = 0;
 	};
 }
 }

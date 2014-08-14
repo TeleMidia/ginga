@@ -286,7 +286,7 @@ namespace presentation {
 
 	GingaWindowID FormatterLayout::prepareFormatterRegion(
 			ExecutionObject* object,
-			ISurface* renderedSurface,
+			GingaSurfaceID renderedSurface,
 			string plan) {
 
 		CascadingDescriptor* descriptor;
@@ -368,7 +368,7 @@ namespace presentation {
 			string layoutRegionId,
 			int zIndex,
 			string plan,
-			ISurface* renderedSurface) {
+			GingaSurfaceID renderedSurface) {
 
 		ExecutionObject* object;
 		float cvtZIndex;
@@ -465,7 +465,7 @@ namespace presentation {
 
 	GingaWindowID FormatterLayout::addRegionOnMaps(
 			ExecutionObject* object, FormatterRegion* region,
-			ISurface* renderedSurface,
+			GingaSurfaceID renderedSurface,
 			string layoutRegionId, int zIndex, string plan, float* cvtZIndex) {
 
 		float convertedZIndex;

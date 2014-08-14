@@ -58,4 +58,8 @@ typedef void* GingaWindowID;
 typedef short GingaScreenID;
 #endif //GingaScreenID
 
+#ifndef GingaSurfaceID
+typedef unsigned int GingaSurfaceID;
+#endif //GingaSurfaceID
+
 #endif /*IMBDefs_H_*/

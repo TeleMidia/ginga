@@ -110,7 +110,7 @@ namespace player {
 			BerkeliumPlayer(GingaScreenID myScreen, string mrl);
 			virtual ~BerkeliumPlayer();
 
-			ISurface* getSurface();
+			GingaSurfaceID getSurface();
 			void setNotifyContentUpdate(bool notify);
 
 			bool play();

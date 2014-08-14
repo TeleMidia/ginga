@@ -138,9 +138,9 @@ namespace multidevice {
 			vector<string>* activeUris;
 			string activeBaseUri;
 			FormatterLayout* mainLayout;
-			IWindow* serialized;
-			IWindow* printScreen;
-			IWindow* bitMapScreen;
+			GingaWindowID serialized;
+			GingaWindowID printScreen;
+			GingaWindowID bitMapScreen;
 			int xOffset;
 			int yOffset;
 			int defaultWidth;
@@ -178,7 +178,7 @@ namespace multidevice {
 			void* getMainLayout();
 			void* getFormatterLayout(int devClass);
 			string getScreenShot();
-			string serializeScreen(int devClass, IWindow* mapWindow);
+			string serializeScreen(int devClass, GingaWindowID mapWindow);
 
 		protected:
 			virtual void postMediaContent(int destDevClass);
@@ -188,7 +188,7 @@ namespace multidevice {
 					CascadingDescriptor* descriptor, ExecutionObject* object);
 
 			GingaWindowID prepareFormatterRegion(
-					ExecutionObject* object, ISurface* renderedSurface);
+					ExecutionObject* object, GingaSurfaceID renderedSurface);
 
 			void showObject(ExecutionObject* executionObject);
 			void hideObject(ExecutionObject* executionObject);
@@ -215,7 +215,7 @@ namespace multidevice {
 				return false;
 			};
 
-			void renderFromUri(IWindow* win, string uri);
+			void renderFromUri(GingaWindowID win, string uri);
 			void tapObject(int devClass, int x, int y);
 
 			virtual bool receiveRemoteContent(

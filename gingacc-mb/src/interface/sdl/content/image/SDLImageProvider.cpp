@@ -99,7 +99,7 @@ namespace mb {
 		//Thread::mutexUnlock(&pMutex);
 	}
 
-	void SDLImageProvider::playOver(ISurface* surface) {
+	void SDLImageProvider::playOver(GingaSurfaceID surface) {
 		SDL_Surface* renderedSurface;
 		SDLWindow* parent;
 
@@ -123,13 +123,16 @@ namespace mb {
 
 			if (renderedSurface != NULL) {
 				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
+				GingaWindowID parentId = LocalScreenManager::getInstance()->
+						getSurfaceParentWindow(surface);
+				parent = (SDLWindow*)LocalScreenManager::getInstance()->
+						getIWindowFromId(myScreen, parentId);
 
-				parent = (SDLWindow*)(surface->getParentWindow());
 				if (parent != NULL) {
 					parent->setRenderedSurface(renderedSurface);
 				}
-
-				surface->setSurfaceContent((void*)renderedSurface);
+				LocalScreenManager::getInstance()->setSurfaceContent(
+						surface, (void*)renderedSurface);
 			}
 
 		} else {

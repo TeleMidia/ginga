@@ -135,7 +135,7 @@ namespace player {
 			bool mainAV;
 			bool isRemote;
 			bool hasData;
-			IWindow* win;
+			GingaWindowID win;
 
 		public:
 			AVPlayer(GingaScreenID screenId, string mrl, bool hasVisual);
@@ -152,7 +152,7 @@ namespace player {
 
 			virtual ~AVPlayer();
 
-			ISurface* getSurface();
+			GingaSurfaceID getSurface();
 
 		private:
 			void createProvider();
@@ -172,7 +172,7 @@ namespace player {
 
 		private:
 			void setSoundLevel(float level);
-			ISurface* createFrame();
+			GingaSurfaceID createFrame();
 
 		public:
 			void getOriginalResolution(int* width, int* height);

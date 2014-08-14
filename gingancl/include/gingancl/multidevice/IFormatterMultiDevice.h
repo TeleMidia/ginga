@@ -91,7 +91,7 @@ namespace multidevice {
 			virtual void* getMainLayout()=0;
 			virtual void* getFormatterLayout(int devClass)=0;
 			virtual string getScreenShot()=0;
-			virtual string serializeScreen(int devClass, IWindow* mapWindow)=0;
+			virtual string serializeScreen(int devClass, GingaWindowID mapWindow)=0;
 
 		protected:
 			virtual bool newDeviceConnected(int newDevClass, int w, int h)=0;
