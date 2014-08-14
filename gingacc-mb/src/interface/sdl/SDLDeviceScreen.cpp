@@ -472,16 +472,12 @@ namespace mb {
 		map<GingaWindowID, IWindow*>::iterator i;
 		IWindow* iWin = NULL;
 
-		lockSDL();
-
 		Thread::mutexLock(&winMutex);
 		i = windowRefs.find(winId);
 		if (i != windowRefs.end()) {
 			iWin = i->second;
 		}
 		Thread::mutexUnlock(&winMutex);
-
-		unlockSDL();
 
 		return iWin;
 	}
