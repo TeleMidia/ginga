@@ -932,7 +932,6 @@ namespace mb {
 #if GINGA_DEBUG
 						scaleCounter++;
 #endif
-
 					}
 				}
 
