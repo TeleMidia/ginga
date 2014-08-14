@@ -430,6 +430,11 @@ namespace player {
 
 		//TODO: animation, set volume, brightness, ...
 		if (name == "soundLevel") {
+
+			if (isPercentualValue(value)) {
+				value = itos(getPercentualValue(value) / 100);
+			}
+
 			if (value != "") {
 				fValue = util::stof(value);
 			}

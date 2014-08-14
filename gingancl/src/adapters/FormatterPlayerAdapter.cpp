@@ -1172,8 +1172,6 @@ namespace adapters {
 	void FormatterPlayerAdapter::printAction(
 			string action, ExecutionObject* object) {
 
-		short transition;
-		double specTime, delay;
 		FormatterEvent* event;
 
 		if (object->instanceOf("ApplicationExecutionObject")) {
@@ -1477,10 +1475,6 @@ namespace adapters {
 
 	  		return false;
 	  	}
-
-		if (isPercentualValue(value)) {
-			value = itos(getPercentualValue(value) / 100);
-		}
 
 		propName = (event->getAnchor())->getPropertyName();
 		if (propName == "visible") {
