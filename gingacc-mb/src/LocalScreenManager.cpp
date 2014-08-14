@@ -872,15 +872,15 @@ namespace mb {
 		ISurface* surface = NULL;
 		GingaSurfaceID surId = 0;
 
-		Thread::mutexLock (&surMapMutex);
 		if (getScreen(screenId, &screen)) {
 			surId = surIdRefCounter++;
 			surface = screen->createSurface();
 			surface->setId(surId);
 
+			Thread::mutexLock (&surMapMutex);
 			surMap [surId] = surface;
+			Thread::mutexUnlock (&surMapMutex);
 		}
-		Thread::mutexUnlock (&surMapMutex);
 
 		return surId;
 	}
@@ -1464,7 +1464,6 @@ void LocalScreenManager::clearWindowContent (
 	 if (surface)
 	 {
 			Thread::mutexLock (&surMapMutex);
-
 			surMap.erase(surId);
 			delete surface;
 
