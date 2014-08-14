@@ -138,21 +138,21 @@ namespace player {
 	void ChannelPlayer::setSurfacesParent(void* parent) {
 		map<string, IPlayer*>::iterator players;
 		IPlayer* avPlayer;
-		ISurface* s = NULL;
+		GingaSurfaceID s = NULL;
 
 		players = objectMap->begin();
 		while (players != objectMap->end()) {
 			avPlayer = players->second;
 			s = ((Player*)avPlayer)->getSurface();
-			if (s != NULL && s->getParentWindow() != parent) {
-				s->setParentWindow(parent);
+			if (s != NULL && dm->getSurfaceParentWindow(s) != parent) {
+				dm->setSurfaceParentWindow(myScreen, s, parent);
 			}
 			++players;
 		}
 		hasParent = true;
 	}
 
-	ISurface* ChannelPlayer::getSurface() {
+	GingaSurfaceID ChannelPlayer::getSurface() {
 		if (selectedPlayer != NULL) {
 			return ((Player*)selectedPlayer)->getSurface();
 		}
@@ -160,12 +160,13 @@ namespace player {
 	}
 
 	bool ChannelPlayer::play() {
-		ISurface* s;
+		GingaSurfaceID s;
 
 		if (selectedPlayer != NULL) {
 			s = ((Player*)selectedPlayer)->getSurface();
-			if (!hasParent && s != NULL && s->getParentWindow() != NULL) {
-				setSurfacesParent(s->getParentWindow());
+			if (!hasParent && s != NULL && dm->getSurfaceParentWindow(s) != NULL) {
+				GingaWindowID parentWindow = dm->getSurfaceParentWindow(s);
+				setSurfacesParent(parentWindow);
 				selectedPlayer->play();
 
 			} else if (!hasVisual) {

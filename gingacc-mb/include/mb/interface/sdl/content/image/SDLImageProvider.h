@@ -82,7 +82,7 @@ namespace mb {
 
 			string getLoadSymbol() {return "SDLImageProvider";};
 
-			void playOver(ISurface* surface);
+			void playOver(GingaSurfaceID surface);
 
 			bool releaseAll();
 	};

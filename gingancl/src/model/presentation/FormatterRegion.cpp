@@ -304,7 +304,8 @@ namespace presentation {
 				clog << "original zIndex = '" << zIndex << "'";
 				clog << "converted zIndex = '" << cvtZIndex << "'";
 				clog << endl;
-				outputDisplay->setZ(cvtZIndex);
+				dm->setWindowZ (((FormatterLayout*)layoutManager)->getScreenID(),
+				                outputDisplay, cvtZIndex);
 			}
 
 			toFront();
@@ -561,15 +562,15 @@ namespace presentation {
 	}
 
 	GingaWindowID FormatterRegion::getOutputId() {
-		GingaWindowID outputId = NULL;
+//		GingaWindowID outputId = NULL;
 
-		lock();
-		if (outputDisplay != NULL) {
-			outputId = outputDisplay->getId();
-		}
-		unlock();
+//		lock();
+//		if (outputDisplay != NULL) {
+//			outputId = outputDisplay->getId();
+//		}
+//		unlock();
 
-		return outputId;
+		return outputDisplay;
 	}
 
 	void FormatterRegion::meetComponent(
@@ -577,7 +578,7 @@ namespace presentation {
 		    int height,
 		    int prefWidth,
 		    int prefHeight,
-		    ISurface* component) {
+		    GingaSurfaceID component) {
 
 		int finalH, finalW;
 
@@ -601,7 +602,7 @@ namespace presentation {
 		    int height,
 		    int prefWidth,
 		    int prefHeight,
-		    ISurface* component) {
+		    GingaSurfaceID component) {
 
 		int finalH, finalW;
 
@@ -750,7 +751,8 @@ namespace presentation {
 
 		lock();
 		if (outputDisplay != NULL) {
-			outputDisplay->setBounds(left, top, width, height);
+			dm->setWindowBounds (((FormatterLayout*)layoutManager)->getScreenID(),
+			                     outputDisplay, left, top, width, height);
 		}
 		unlock();
 	}
@@ -772,12 +774,14 @@ namespace presentation {
 	}
 
 	GingaWindowID FormatterRegion::prepareOutputDisplay(
-			ISurface* renderedSurface, float cvtIndex) {
+			GingaSurfaceID renderedSurface, float cvtIndex) {
 
 		GingaWindowID windowId = NULL;
 
 		//clog << "FormatterRegion::prepareOutputDisplay" << endl;
 		lock();
+		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+
 		if (outputDisplay == NULL) {
 			string title;
 			int left   = 0;
@@ -817,17 +821,15 @@ namespace presentation {
 			this->renderedSurface = renderedSurface;
 
 			if (renderedSurface != NULL &&
-					renderedSurface->hasExternalHandler()) {
+					dm->hasSurfaceExternalHandler(renderedSurface)) {
 
 				externHandler = true;
-				outputDisplay = (IWindow*)(renderedSurface->getParentWindow());
+				outputDisplay = dm->getSurfaceParentWindow(renderedSurface);;
 			}
 
 			if (!externHandler) {
 				outputDisplay = dm->createWindow(
-						((FormatterLayout*)layoutManager)->getScreenID(),
-						left, top, width, height,
-						cvtIndex);
+						screenId, left, top, width, height, cvtIndex);
 			}
 
 			clog << "FormatterRegion::prepareOutputDisplay '" << outputDisplay;
@@ -847,7 +849,7 @@ namespace presentation {
 				clog << "b = '" << bgColor->getB() << "' ";
 				clog << endl;
 
-				outputDisplay->setBgColor(
+				dm->setWindowBgColor (screenId, outputDisplay,
 					    bgColor->getR(),
 					    bgColor->getG(),
 					    bgColor->getB(),
@@ -856,28 +858,31 @@ namespace presentation {
 			unlockFocusInfo();
 
 			if (!externHandler) {
-				outputDisplay->setCurrentTransparency(
-						(int)(transparency * 255));
+				dm->setWindowCurrentTransparency (screenId, outputDisplay,
+				                                  (int)(transparency * 255));
 			}
 
+			int caps = dm->getWindowCap (screenId, outputDisplay, "ALPHACHANNEL");
 			if (!externHandler && renderedSurface != NULL &&
-					(outputDisplay->getCap("ALPHACHANNEL") &
-							renderedSurface->getCaps())) {
+					(caps & dm->getSurfaceCaps(renderedSurface))) {
 
-				outputDisplay->addCaps(
-						outputDisplay->getCap("ALPHACHANNEL"));
+				dm->addWindowCaps (screenId, outputDisplay,
+				                   caps);
 			}
 
 			if (chromaKey != NULL) {
-				outputDisplay->setCaps(outputDisplay->getCap("NOSTRUCTURE"));
-				outputDisplay->draw();
-				outputDisplay->setColorKey(
-					    chromaKey->getR(),
-					    chromaKey->getG(),
-					    chromaKey->getB());
+				caps = dm->getWindowCap (screenId, outputDisplay, "NOSTRUCTURE");
+
+				dm->setWindowCaps (screenId, outputDisplay, caps);
+				dm->drawWindow (screenId, outputDisplay);
+
+				dm->setWindowColorKey (screenId, outputDisplay,
+															chromaKey->getR(),
+															chromaKey->getG(),
+															chromaKey->getB());
 
 			} else if (!externHandler) {
-				outputDisplay->draw();
+				dm->drawWindow (screenId, outputDisplay);
 			}
 
 			if (scroll != Descriptor::SCROLL_NONE) {
@@ -934,16 +939,16 @@ namespace presentation {
 
 #if !HAVE_MULTIPROCESS
 		if (renderedSurface != NULL && !externHandler) {
-			if (renderedSurface->setParentWindow((void*)outputDisplay)) {
-				outputDisplay->renderFrom(renderedSurface);
+			if ( dm->setSurfaceParentWindow(
+					screenId, renderedSurface,outputDisplay)) {
+				dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
 			}
 		}
 #endif
 
-		windowId = outputDisplay->getId();
 		unlock();
 
-		return windowId;
+		return outputDisplay;
 	}
 
 	void FormatterRegion::showContent() {
@@ -1107,6 +1112,8 @@ namespace presentation {
 			return;
 		}
 
+		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+
 		if (outputDisplay != NULL) {
 			if (!visible) {
 				clog << "FormatterRegion::setRegionVisibility (" << this;
@@ -1114,7 +1121,7 @@ namespace presentation {
 				clog << outputDisplay;
 				clog << "' HIDE" << endl;
 
-				outputDisplay->hide();
+				dm->hideWindow (screenId, outputDisplay);
 
 			} else {
 				clog << "FormatterRegion::setRegionVisibility (" << this;
@@ -1122,7 +1129,7 @@ namespace presentation {
 				clog << outputDisplay;
 				clog << "' SHOW" << endl;
 
-				outputDisplay->show();
+				dm->showWindow (screenId, outputDisplay);
 			}
 		}
 		imVisible = visible;
@@ -1131,8 +1138,9 @@ namespace presentation {
 
 	void FormatterRegion::disposeOutputDisplay() {
 		if (outputDisplay != NULL) {
+			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 			if (!externHandler) {
-				delete outputDisplay;
+				dm->disposeWindow (screenId, outputDisplay);
 			}
 			outputDisplay = NULL;
 		}
@@ -1143,8 +1151,9 @@ namespace presentation {
 
 	void FormatterRegion::toFront() {
 		lock();
+		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 		if (outputDisplay != NULL && !externHandler) {
-			outputDisplay->raiseToTop();
+			dm->raiseWindowToTop (screenId, outputDisplay);
 			unlock();
 			if (ncmRegion != NULL) {
 				bringChildrenToFront(ncmRegion);
@@ -1309,7 +1318,8 @@ namespace presentation {
 	void FormatterRegion::setGhostRegion(bool ghost) {
 		lock();
 		if (outputDisplay != NULL && !externHandler) {
-			outputDisplay->setGhostWindow(ghost);
+			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+			dm->setGhostWindow (screenId, outputDisplay, ghost);
 		}
 		unlock();
 	}
@@ -1324,8 +1334,9 @@ namespace presentation {
 
 	bool FormatterRegion::setSelection(bool selOn) {
 		GingaScreenID screenId;
-		ISurface* selSurface;
+		GingaSurfaceID selSurface;
 
+		screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 		if (selOn && focusState == FormatterRegion::SELECTED) {
 			return false;
 		}
@@ -1333,8 +1344,6 @@ namespace presentation {
 		if (selOn) {
 			focusState = FormatterRegion::SELECTED;
 			if (selComponentSrc != "") {
-				screenId = ((FormatterLayout*)layoutManager)->getScreenID();
-
 				lock();
 
 				selSurface = FocusSourceManager::getFocusSourceComponent(
@@ -1342,10 +1351,10 @@ namespace presentation {
 
 				if (selSurface != NULL) {
 					if (outputDisplay != NULL && !externHandler) {
-						outputDisplay->renderFrom(selSurface);
+						dm->renderWindowFrom (screenId, outputDisplay, selSurface);
 					}
 
-					delete selSurface;
+					dm->deleteSurface(selSurface);
 				}
 				unlock();
 			}
@@ -1354,16 +1363,16 @@ namespace presentation {
 			if (outputDisplay != NULL && !externHandler) {
 				lockFocusInfo();
 				if (selComponentSrc == "") {
-					outputDisplay->validate();
+					dm->validateWindow (screenId, outputDisplay);
 				}
 
 				if (selBorderColor != NULL) {
-					outputDisplay->setBorder(
-							selBorderColor->getR(),
-							selBorderColor->getG(),
-							selBorderColor->getB(),
-							selBorderColor->getAlpha(),
-							selBorderWidth);
+					dm->setWindowBorder(screenId, outputDisplay,
+															selBorderColor->getR(),
+															selBorderColor->getG(),
+															selBorderColor->getB(),
+															selBorderColor->getAlpha(),
+															selBorderWidth);
 				}
 
 				unlockFocusInfo();
@@ -1379,7 +1388,7 @@ namespace presentation {
 
 	void FormatterRegion::setFocus(bool focusOn) {
 		GingaScreenID screenId;
-		ISurface* focusSurface;
+		GingaSurfaceID focusSurface;
 
 		if (focusOn) {
 			focusState = FormatterRegion::FOCUSED;
@@ -1418,10 +1427,9 @@ namespace presentation {
 
 				if (focusSurface != NULL) {
 					if (outputDisplay != NULL && !externHandler) {
-						outputDisplay->renderFrom(focusSurface);
+						dm->renderWindowFrom (screenId, outputDisplay, focusSurface);
 					}
-
-					delete focusSurface;
+					dm->deleteSurface(focusSurface);
 				}
 				unlock();
 			}
@@ -1430,16 +1438,16 @@ namespace presentation {
 			if (outputDisplay != NULL && !externHandler) {
 				lockFocusInfo();
 				if (focusComponentSrc == "") {
-					outputDisplay->validate();
+					dm->validateWindow (screenId, outputDisplay);
 				}
 
 				if (focusBorderColor != NULL) {
-					outputDisplay->setBorder(
-							focusBorderColor->getR(),
-							focusBorderColor->getG(),
-							focusBorderColor->getB(),
-							focusBorderColor->getAlpha(),
-							focusBorderWidth);
+					dm->setWindowBorder (screenId, outputDisplay,
+															focusBorderColor->getR(),
+															focusBorderColor->getG(),
+															focusBorderColor->getB(),
+															focusBorderColor->getAlpha(),
+															focusBorderWidth);
 				}
 
 				unlockFocusInfo();
@@ -1456,12 +1464,14 @@ namespace presentation {
 
 		lock();
 		if (outputDisplay != NULL && !externHandler) {
-			outputDisplay->setBorder(-1, -1, -1, -1, 0);
+			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+
+			dm->setWindowBorder (screenId, outputDisplay, -1, -1, -1, -1, 0);
 			if (renderedSurface != NULL) {
-				renderedSurface->setParentWindow(outputDisplay);
-				outputDisplay->renderFrom(renderedSurface);
+				dm->setSurfaceParentWindow(screenId, renderedSurface, outputDisplay);
+				dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
 			}
-			outputDisplay->validate();
+			dm->validateWindow (screenId, outputDisplay);
 		}
 		unlock();
 
@@ -1530,10 +1540,11 @@ namespace presentation {
 			return;
 		}
 
-		x      = outputDisplay->getX();
-		y      = outputDisplay->getY();
-		width  = outputDisplay->getW();
-		height = outputDisplay->getH();
+		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+		x      = dm->getWindowX (screenId, outputDisplay);
+		y      = dm->getWindowY (screenId, outputDisplay);
+		width  = dm->getWindowW (screenId, outputDisplay);
+		height = dm->getWindowH (screenId, outputDisplay);
 		unlock();
 
 		transitionDur     = transition->getDur();
@@ -1542,7 +1553,7 @@ namespace presentation {
 		startProgress     = transition->getStartProgress();
 		endProgress       = transition->getEndProgress();
 
-		transparencyValue = outputDisplay->getTransparencyValue();
+		transparencyValue = dm->getWindowTransparencyValue(screenId, outputDisplay);
 
 		//outputDisplay->setStretch(false);
 		initTime = getCurrentTimeMillis();
@@ -1553,8 +1564,9 @@ namespace presentation {
 			if (isShowEffect) {
 				lock();
 				if (outputDisplay != NULL) {
-					outputDisplay->setCurrentTransparency(transparencyValue);
-					outputDisplay->resize(1, height);
+					dm->setWindowCurrentTransparency (
+							screenId, outputDisplay, transparencyValue);
+					dm->resizeWindow (screenId, outputDisplay, 1, height);
 				}
 				unlock();
 
@@ -1585,13 +1597,12 @@ namespace presentation {
 								x + (width - i) >= 0 &&
 								i > 0 &&
 								height > 0) {
-
-							outputDisplay->setBounds(
-									x + (width - i), y, i, height);
+							dm->setWindowBounds (screenId, outputDisplay,
+																	x + (width - i), y, i, height);
 						}
 
 					} else if (i > 0 && height > 0) {
-						outputDisplay->resize(i, height);
+						dm->resizeWindow (screenId, outputDisplay, i, height);
 					}
 
 				} else {
@@ -1607,7 +1618,7 @@ namespace presentation {
 
 				lock();
 				if (outputDisplay != NULL) {
-					outputDisplay->validate();
+					dm->validateWindow (screenId, outputDisplay);
 				}
 				unlock();
 
@@ -1626,7 +1637,7 @@ namespace presentation {
 							clog << endl;
 
 						} else {
-							outputDisplay->setBounds(x, y, width, height);
+							dm->setWindowBounds(screenId, outputDisplay, x, y, width, height);
 						}
 
 						unlock();
@@ -1651,9 +1662,10 @@ namespace presentation {
 			if (isShowEffect) {
 				lock();
 				if (outputDisplay != NULL) {
-					outputDisplay->setCurrentTransparency(transparencyValue);
+					dm->setWindowCurrentTransparency (
+							screenId, outputDisplay, transparencyValue);
 					if (width > 0) {
-						outputDisplay->resize(width, 1);
+						dm->resizeWindow (screenId, outputDisplay, width, 1);
 					}
 				}
 				unlock();
@@ -1685,13 +1697,12 @@ namespace presentation {
 								y + (height - i) >= 0 &&
 								width > 0 &&
 								i > 0) {
-
-							outputDisplay->setBounds(
-									x, y + (height - i), width, i);
+							dm->setWindowBounds (screenId, outputDisplay,
+							                     x, y + (height - i), width, i);
 						}
 
 					} else if (width > 0 && i > 0) {
-						outputDisplay->resize(width, i);
+						dm->resizeWindow (screenId, outputDisplay, width, i);
 					}
 
 				} else {
@@ -1707,7 +1718,7 @@ namespace presentation {
 
 				lock();
 				if (outputDisplay != NULL) {
-					outputDisplay->validate();
+					dm->validateWindow (screenId, outputDisplay);
 				}
 				unlock();
 
@@ -1726,7 +1737,8 @@ namespace presentation {
 							clog << endl;
 
 						} else {
-							outputDisplay->setBounds(x, y, width, height);
+							dm->setWindowBounds (screenId, outputDisplay,
+							                     x, y, width, height);
 						}
 
 						//outputDisplay->setStretch(true);
@@ -1748,8 +1760,8 @@ namespace presentation {
 		} else {
 			if (outputDisplay != NULL) {
 				//outputDisplay->setStretch(true);
-				outputDisplay->setBounds(x, y, width, height);
-				outputDisplay->validate();
+				dm->setWindowBounds (screenId, outputDisplay, x, y, width, height);
+				dm->validateWindow (screenId, outputDisplay);
 			}
 		}
 		unlock();
@@ -1775,6 +1787,7 @@ namespace presentation {
 		double time, initTime, initValue, endValue, startProgress, endProgress;
 		int opacityValue;
 		double transitionDur;
+		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 
 		lock();
 		if (outputDisplay == NULL || externHandler) {
@@ -1788,7 +1801,8 @@ namespace presentation {
 			return;
 		}
 
-		opacityValue = (255 - outputDisplay->getTransparencyValue());
+		opacityValue = (255 -
+				dm->getWindowTransparencyValue (screenId, outputDisplay));
 		unlock();
 
 		transitionDur = transition->getDur();
@@ -1815,7 +1829,7 @@ namespace presentation {
 
 			lock();
 			if (outputDisplay != NULL) {
-				outputDisplay->setCurrentTransparency(255 - i);
+				dm->setWindowCurrentTransparency (screenId, outputDisplay, 255 - i);
 
 			} else {
 				unlock();
@@ -1925,8 +1939,9 @@ namespace presentation {
 		clog << transparency << endl;*/
 
 		if (outputDisplay != NULL && !externHandler) {
-			outputDisplay->setCurrentTransparency(
-					(int)(this->transparency * 255));
+			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
+			dm->setWindowCurrentTransparency (screenId, outputDisplay,
+			                                 (int)(this->transparency * 255));
 		}
 
 		unlock();

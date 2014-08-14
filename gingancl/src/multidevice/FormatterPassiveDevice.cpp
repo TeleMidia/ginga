@@ -66,8 +66,9 @@ namespace multidevice {
 		serialized = dm->createWindow(
 				myScreen, x, y, defaultWidth, defaultHeight, -1.0);
 
-		serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
-		serialized->draw();
+		int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+		dm->setWindowCaps (myScreen, serialized, cap);
+		dm->drawWindow (myScreen, serialized);
 
 		if (rdm == NULL) {
 #if HAVE_COMPONENTS

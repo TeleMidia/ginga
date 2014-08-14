@@ -128,12 +128,12 @@ namespace mb {
 			int getStringWidth(const char* text, int textLength=0);
 			int getHeight();
 			void playOver(
-					ISurface* surface,
+					GingaSurfaceID surface,
 					const char* text,
 					int x, int y, short align);
 
 		private:
-			void playOver(ISurface* surface);
+			void playOver(GingaSurfaceID surface);
 	};
 }
 }

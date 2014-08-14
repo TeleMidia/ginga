@@ -1145,7 +1145,7 @@ namespace mb {
 			provider = createImageProvider(mrl);
 			if (provider != NULL) {
 				iSur = createSurfaceFrom(NULL);
-				provider->playOver(iSur);
+				provider->playOver(iSur->getId());
 
 				releaseImageProvider(provider);
 			}

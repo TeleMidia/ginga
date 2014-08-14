@@ -89,7 +89,7 @@ namespace player {
 			virtual void setPropertyValue(string name, string value);
 
 		private:
-			ISurface* prepareSurface(IImageProvider* provider, string mrl);
+			GingaSurfaceID prepareSurface(IImageProvider* provider, string mrl);
 	};
 }
 }

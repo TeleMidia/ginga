@@ -129,8 +129,9 @@ namespace multidevice {
 		printScreen = dm->createWindow(
 				myScreen, 0, 0, defaultWidth, defaultHeight, -1.0);
 
-		printScreen->setCaps(printScreen->getCap("ALPHACHANNEL"));
-		printScreen->draw();
+		int caps = dm->getWindowCap (myScreen, printScreen, "ALPHACHANNEL");
+		dm->setWindowCaps (myScreen, printScreen, caps);
+		dm->drawWindow (myScreen, printScreen);
 
 		Thread::mutexInit(&mutex, false);
 		Thread::mutexInit(&lMutex, false);
@@ -194,15 +195,15 @@ namespace multidevice {
 		cout << "' layouts" << endl;
 
 		cout << "Serialized window Id = '";
-		cout << (unsigned long)serialized->getId();
+		cout << (unsigned long)serialized;
 		cout << "'" << endl;
 
-		serialized->getDumpFileUri(quality, dumpW, dumpH);
+		dm->getWindowDumpFileUri(myScreen, serialized, quality, dumpW, dumpH);
 
 		cout << "BitMapScreen window Id = '";
 		if (bitMapScreen != NULL) {
-			cout << (unsigned long)bitMapScreen->getId() << "'";
-			bitMapScreen->getDumpFileUri(quality, dumpW, dumpH);
+			cout << (unsigned long)bitMapScreen << "'";
+			dm->getWindowDumpFileUri(myScreen, bitMapScreen, quality, dumpW, dumpH);
 
 		} else {
 			cout << "NULL'";
@@ -308,7 +309,7 @@ namespace multidevice {
 	}
 
 	string FormatterMultiDevice::serializeScreen(
-			int devClass, IWindow* mapWindow) {
+			int devClass, GingaWindowID mapWindow) {
 
 		string fileUri = "";
 		FormatterLayout* formatterLayout;
@@ -321,10 +322,10 @@ namespace multidevice {
 		i = layoutManager.find(devClass);
 		if (i != layoutManager.end()) {
 			formatterLayout = i->second;
-			mapWindow->clearContent();
+			dm->clearWindowContent(myScreen, mapWindow);
 			formatterLayout->getSortedIds(&sortedIds);
 			if (!sortedIds.empty()) {
-				if (!dm->mergeIds(myScreen, mapWindow->getId(), &sortedIds)) {
+				if (!dm->mergeIds(myScreen, mapWindow, &sortedIds)) {
 					return "";
 				}
 
@@ -334,7 +335,8 @@ namespace multidevice {
 					dumpH   = 320 / 1.8;
 				}
 			}
-			fileUri = mapWindow->getDumpFileUri(quality, dumpW, dumpH);
+			fileUri = dm->getWindowDumpFileUri (myScreen, mapWindow,
+			                                    quality, dumpW, dumpH);
 
 			clog << "FormatterMultiDevice::serializeScreen fileURI = '";
 			clog << fileUri << "' sortedIds size = '" << sortedIds.size();
@@ -346,7 +348,7 @@ namespace multidevice {
 
 	void FormatterMultiDevice::postMediaContent(int destDevClass) {
 		string fileUri;
-		IWindow* bmpScr = NULL;
+		GingaWindowID bmpScr = NULL;
 		vector<GingaWindowID> wins;
 
 		/*clog << "FormatterMultiDevice::postMediaContent to class '";
@@ -370,18 +372,18 @@ namespace multidevice {
 				clog << "FormatterMultiDevice::postMediaContent(";
 				clog << this << ")";
 				clog << " serialized window id = '";
-				clog << (unsigned long)serialized->getId();
+				clog << (unsigned long)serialized;
 
 #endif //HAVE_MULTIDEVICE
 
 				if (bmpScr != NULL) {
-					wins.push_back(serialized->getId());
-					dm->mergeIds(myScreen, bmpScr->getId(), &wins);
+					wins.push_back(serialized);
+					dm->mergeIds(myScreen, bmpScr, &wins);
 
-					bmpScr->show();
+					dm->showWindow (myScreen, bmpScr);
 
 					clog << "' bmpScr = '";
-					clog << (unsigned long)bmpScr->getId();
+					clog << (unsigned long)bmpScr;
 
 					/*bmpScr->clearContent();
 					bmpScr->stretchBlit(serialized);
@@ -453,7 +455,7 @@ namespace multidevice {
 	}
 
 	GingaWindowID FormatterMultiDevice::prepareFormatterRegion(
-			ExecutionObject* executionObject, ISurface* renderedSurface) {
+			ExecutionObject* executionObject, GingaSurfaceID renderedSurface) {
 
 		FormatterLayout* layout;
 		CascadingDescriptor* descriptor;
@@ -536,8 +538,9 @@ namespace multidevice {
 				clog << "' zIndex = '" << bitMapRegion->getZIndexValue();
 				clog << endl << endl;
 
-				bitMapScreen->setCaps(bitMapScreen->getCap("ALPHACHANNEL"));
-				bitMapScreen->draw();
+				int caps = dm->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
+				dm->setWindowCaps (myScreen, bitMapScreen, caps);
+				dm->drawWindow (myScreen, bitMapScreen);
 			}
 		}
 
@@ -736,8 +739,8 @@ namespace multidevice {
 		}
 	}
 
-	void FormatterMultiDevice::renderFromUri(IWindow* win, string uri) {
-		ISurface* s;
+	void FormatterMultiDevice::renderFromUri(GingaWindowID win, string uri) {
+		GingaSurfaceID s;
 		IPlayer* img;
 		bool hasVisual = true;
 
@@ -748,16 +751,16 @@ namespace multidevice {
 		img = new ImagePlayer(myScreen, uri.c_str());
 #endif
 
-		img->setOutWindow(win->getId());
+		img->setOutWindow(win);
 
-		win->setColorKey(0, 0, 0);
-		win->clearContent();
+		dm->setWindowColorKey (myScreen, win, 0, 0, 0);
+		dm->clearWindowContent (myScreen, win);
 
 		s = img->getSurface();
-		win->renderFrom(s);
+		dm->renderWindowFrom (myScreen, win, s);
 
-		win->show();
-		win->validate();
+		dm->showWindow (myScreen, win);
+		dm->validateWindow (myScreen, win);
 
 		delete img;
 	}

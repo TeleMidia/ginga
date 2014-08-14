@@ -83,12 +83,12 @@ namespace focus {
 	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
 #endif
 
-	ISurface* FocusSourceManager::getFocusSourceComponent(
+	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
 			GingaScreenID screenId, string src) {
 
 		string::size_type index;
 		string extension;
-		ISurface* s;
+		GingaSurfaceID s;
 
 		if (src != "") {
 			index = src.find_last_of('.');

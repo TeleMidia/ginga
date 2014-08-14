@@ -67,7 +67,7 @@ namespace presentation {
 namespace focus {
   class FocusSourceManager {
 	public:
-		static ISurface* getFocusSourceComponent(
+		static GingaSurfaceID getFocusSourceComponent(
 				GingaScreenID screenId, string src);
   };
 }

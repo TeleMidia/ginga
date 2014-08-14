@@ -233,7 +233,7 @@ namespace lssm {
 	void CommonCoreManager::showTunningWindow(
 			GingaScreenID screenId, int x, int y, int w, int h) {
 
-		ISurface* s     = NULL;
+		GingaSurfaceID s     = NULL;
 		string tunerImg = "";
 
 		tunerImg = SystemCompat::appendGingaFilesPrefix("tuner/tuning.png");
@@ -244,15 +244,15 @@ namespace lssm {
 			s = dm->createRenderedSurfaceFromImageFile(
 					screenId, tunerImg.c_str());
 
-			((IWindow*)tuningWindow)->setCaps(
-					(int)((IWindow*)tuningWindow)->getCap("ALPHACHANNEL"));
+			int cap = dm->getWindowCap(myScreen, tuningWindow, "ALPHACHANNEL");
+			dm->setWindowCaps(myScreen, tuningWindow, cap);
 
-			((IWindow*)tuningWindow)->draw();
-			((IWindow*)tuningWindow)->show();
-			((IWindow*)tuningWindow)->renderFrom(s);
-			((IWindow*)tuningWindow)->lowerToBottom();
+			dm->drawWindow(myScreen, tuningWindow);
+			dm->showWindow(myScreen, tuningWindow);
+			dm->renderWindowFrom(myScreen, tuningWindow, s);
+			dm->lowerWindowToBottom(myScreen, tuningWindow);
 
-			delete s;
+			dm->deleteSurface(s);
 			s = NULL;
 		}
 	}

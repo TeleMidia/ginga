@@ -88,7 +88,7 @@ namespace player {
 
 			GingaScreenID myScreen;
 			short previousStatus;
-			IWindow* win;
+			GingaWindowID win;
 			bool running;
 
 		public:

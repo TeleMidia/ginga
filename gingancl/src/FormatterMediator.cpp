@@ -2924,29 +2924,29 @@ namespace ncl {
 		Player::notifyPlayerListeners(code, paremeter, type, value);
 	}
 
-	void FormatterMediator::setSurface(ISurface* surface) {
+	void FormatterMediator::setSurface(GingaSurfaceID surface) {
 		Player::setSurface(surface);
 	}
 
-	ISurface* FormatterMediator::getSurface() {
-		ISurface* s = NULL;
+	GingaSurfaceID FormatterMediator::getSurface() {
+		GingaSurfaceID s = NULL;
 
 		s = Player::getSurface();
-		s->clearContent();
-		s->flip();
+		dm->clearSurfaceContent(s);
+		dm->flipSurface(s);
 
 		return s;
 	}
 
 	void FormatterMediator::flip() {
-		IWindow* w = NULL;
+		GingaWindowID w = NULL;
 
 		if (data->devClass == 0) {
 			if (surface != NULL && dm->hasSurface(myScreen, surface)) {
-				w = (IWindow*)(surface->getParentWindow());
+				w = dm->getSurfaceParentWindow(surface);
 				if (w != NULL) {
-					w->clearContent();
-					w->validate();
+					dm->clearWindowContent(myScreen, w);
+					dm->validateWindow(myScreen, w);
 				}
 			}
 

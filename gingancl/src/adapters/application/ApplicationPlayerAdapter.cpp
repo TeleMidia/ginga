@@ -112,7 +112,7 @@ namespace application {
 		CascadingDescriptor* descriptor;
 		FormatterRegion* fRegion;
 		LayoutRegion* ncmRegion;
-		ISurface* wrapper;
+		GingaSurfaceID wrapper;
 		int w, h;
 
 		if (player != NULL) {

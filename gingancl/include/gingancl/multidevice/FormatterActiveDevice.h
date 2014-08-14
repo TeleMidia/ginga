@@ -104,7 +104,7 @@ namespace multidevice {
 			TCPSocket* tcpSocket;
 			int deviceServicePort;
 
-			ISurface* s;
+			GingaSurfaceID s;
 
 			map<string, string>* contentsInfo;
 			map<string, string> initVars;

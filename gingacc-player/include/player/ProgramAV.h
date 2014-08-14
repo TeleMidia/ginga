@@ -80,7 +80,7 @@ namespace player {
 			static ProgramAV* getInstance(GingaScreenID screenId);
 			void release();
 			int64_t getVPts();
-			ISurface* getSurface();
+			GingaSurfaceID getSurface();
 
 		private:
 			void addPidName(string name, int pid);

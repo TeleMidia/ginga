@@ -91,8 +91,12 @@ namespace mb {
 
 		private:
 			map<GingaScreenID, IDeviceScreen*> screens;
+
 			pthread_mutex_t mapMutex;
 			pthread_mutex_t genMutex;
+
+			map<GingaSurfaceID, ISurface*> surMap;
+			pthread_mutex_t surMapMutex;
 
 			static set<IInputEventListener*> iListeners;
 			static pthread_mutex_t ilMutex;
@@ -179,7 +183,11 @@ namespace mb {
 			void lockSysNames();
 			void unlockSysNames();
 
+			GingaSurfaceID surIdRefCounter;
+
 		public:
+			ISurface* getISurfaceFromId(const GingaSurfaceID &surfaceId);
+
 			IWindow* getIWindowFromId(
 					GingaScreenID screenId, GingaWindowID winId);
 
@@ -194,7 +202,7 @@ namespace mb {
 
 
 			/* Interfacing output */
-			IWindow* createWindow(
+			GingaWindowID createWindow(
 					GingaScreenID screenId,
 					int x, int y,
 					int w, int h,
@@ -206,22 +214,25 @@ namespace mb {
 					int w, int h,
 					float z);
 
-			IWindow* createWindowFrom(
+			GingaWindowID createWindowFrom(
 					GingaScreenID screenId, GingaWindowID underlyingWindow);
 
-			bool hasWindow(GingaScreenID screenId, IWindow* window);
+			bool hasWindow(GingaScreenID screenId, GingaWindowID window);
 			void releaseWindow(GingaScreenID screenId, IWindow* window);
 
-			ISurface* createSurface(GingaScreenID screenId);
+			GingaSurfaceID createSurface(GingaScreenID screenId);
 
-			ISurface* createSurface(GingaScreenID screenId, int w, int h);
+			GingaSurfaceID createSurface(GingaScreenID screenId, int w, int h);
 
-			ISurface* createSurfaceFrom(
+			GingaSurfaceID createSurfaceFrom(
 					GingaScreenID screenId, void* underlyingSurface);
 
-			bool hasSurface(GingaScreenID screenId, ISurface* surface);
+			bool hasSurface(
+					const GingaScreenID &screenId, const GingaSurfaceID &surId);
 			bool releaseSurface(GingaScreenID screenId, ISurface* surface);
 
+			void lowerWindowToBottom (
+					const GingaScreenID &screenId, const GingaWindowID &winId);
 
 			/* Interfacing content */
 			IContinuousMediaProvider* createContinuousMediaProvider(
@@ -248,7 +259,7 @@ namespace mb {
 			void releaseImageProvider(
 					GingaScreenID screenId, IImageProvider* provider);
 
-			ISurface* createRenderedSurfaceFromImageFile(
+			GingaSurfaceID createRenderedSurfaceFromImageFile(
 					GingaScreenID screenId, const char* mrl);
 
 
@@ -263,6 +274,125 @@ namespace mb {
 
 			int fromMBToGinga(GingaScreenID screenId, int keyCode);
 			int fromGingaToMB(GingaScreenID screenId, int keyCode);
+
+			/* Methods created to isolate gingacc-mb */
+			void addWindowCaps (const GingaScreenID &screenId,
+			                    const GingaWindowID &winId, int caps);
+			void setWindowCaps (const GingaScreenID &screenId,
+			                    const GingaWindowID &winId, int caps);
+			int getWindowCap (const GingaScreenID &screenId,
+			                  const GingaWindowID &winId, const string &capName);
+
+			void drawWindow (const GingaScreenID &screenId,
+			                 const GingaWindowID &winId);
+			void setWindowBounds (
+					const GingaScreenID &screenId, const GingaWindowID &winId, int x,
+					int y, int w, int h);
+			void showWindow (const GingaScreenID &screenId,
+			                 const GingaWindowID &winId);
+			void hideWindow (const GingaScreenID &screenId,
+			                 const GingaWindowID &winId);
+			void raiseWindowToTop (const GingaScreenID &screenId,
+			                       const GingaWindowID &winId);
+			void renderWindowFrom (
+					const GingaScreenID &screenId, const GingaWindowID &winId,
+					const GingaSurfaceID &surId);
+
+			void setWindowBgColor (
+					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
+					int g, int b, int alpha);
+
+			void setWindowBorder (
+					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
+					int g, int b, int alpha, int width);
+
+			void setWindowCurrentTransparency (
+					const GingaScreenID &screenId, const GingaWindowID &winId,
+					int transparency);
+			void setWindowColorKey (
+					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
+					int g, int b);
+
+			void setWindowZ (const GingaScreenID &screenId,
+			                 const GingaWindowID &winId, float z);
+
+			void disposeWindow (const GingaScreenID &screenId,
+			                    const GingaWindowID &winId);
+
+			void setGhostWindow(const GingaScreenID &screenId,
+			                    const GingaWindowID &winId, bool ghost);
+
+			void validateWindow (const GingaScreenID &screenId,
+			                     const GingaWindowID &winId);
+
+			int getWindowX (const GingaScreenID &screenId,
+			                const GingaWindowID &winId);
+			int getWindowY (const GingaScreenID &screenId,
+			                const GingaWindowID &winId);
+			int getWindowW (const GingaScreenID &screenId,
+			                const GingaWindowID &winId);
+			int getWindowH (const GingaScreenID &screenId,
+			                const GingaWindowID &winId);
+			float getWindowZ (const GingaScreenID &screenId,
+			                  const GingaWindowID &winId);
+
+			int getWindowTransparencyValue(const GingaScreenID &screenId,
+			                               const GingaWindowID &winId);
+
+			void resizeWindow(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int width,
+					int height);
+
+			string getWindowDumpFileUri (
+					const GingaScreenID &screenId, const GingaWindowID &winId,
+					int quality, int dumpW, int dumpH);
+
+			void clearWindowContent (const GingaScreenID &screenId,
+			                         const GingaWindowID &winId);
+
+			void setWindowMirrorSrc (
+					const GingaScreenID &screenId, const GingaWindowID &winId,
+					const GingaWindowID &mirrorSrc);
+
+			void* getSurfaceContent(const GingaSurfaceID &surId);
+
+			GingaWindowID getSurfaceParentWindow(const GingaSurfaceID& surId);
+
+			void deleteSurface (const GingaSurfaceID &surId);
+
+			bool setSurfaceParentWindow (
+					const GingaScreenID &screenId,  const GingaSurfaceID &surId,
+					const GingaWindowID &winId);
+
+			void clearSurfaceContent (const GingaSurfaceID &surId);
+
+			void getSurfaceSize(const GingaSurfaceID &surId, int* width, int* height);
+
+			void addSurfaceCaps(const GingaSurfaceID &surId, const int caps);
+			void setSurfaceCaps (const GingaSurfaceID &surId, const int caps);
+			int getSurfaceCap(const GingaSurfaceID &surId, const string &cap);
+			int getSurfaceCaps(const GingaSurfaceID &surId);
+
+			void setSurfaceBgColor(
+					const GingaSurfaceID &surId, int r, int g, int b, int alpha);
+
+			void setSurfaceFont(const GingaSurfaceID &surId, void* font);
+
+			void setColor(const GingaSurfaceID &surId, int r, int g, int b,int alpha);
+
+			void setExternalHandler(const GingaSurfaceID &surId, bool extHandler);
+
+			void blitSurface (
+					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=NULL,
+					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
+
+			void flipSurface (const GingaSurfaceID &surId);
+
+			void setSurfaceContent(const GingaSurfaceID &surId, void* surface);
+
+			IColor* getSurfaceColor(const GingaSurfaceID &surId);
+
+			bool hasSurfaceExternalHandler(const GingaSurfaceID &surId);
 
 			/* and finally some private stuff */
 		private:

@@ -71,7 +71,7 @@ namespace player {
 			 * the surface could never be a child of window
 			 * (it gets the widget surface)
 			 */
-			surface->setParentWindow(NULL);
+			dm->setSurfaceParentWindow(myScreen, surface, NULL);
 		}
 		Thread::mutexUnlock(&mutex);
 		Thread::mutexDestroy(&mutex);
@@ -122,18 +122,19 @@ namespace player {
 			fontColor = new Color(255, 255, 255, 255);
 		}
 
-		if (surface != NULL && surface->getParentWindow() != NULL) {
+		if (surface != NULL && dm->getSurfaceParentWindow(surface) != NULL) {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
-				surface->clearContent();
-				((IWindow*)(surface->getParentWindow()))->setBgColor(
-						bgColor->getR(),
-						bgColor->getG(),
-						bgColor->getB(),
-						bgColor->getAlpha());
+				dm->clearSurfaceContent(surface);
+				dm->setWindowBgColor(myScreen, dm->getSurfaceParentWindow(surface),
+														bgColor->getR(),
+														bgColor->getG(),
+														bgColor->getB(),
+														bgColor->getAlpha());
 
 			} else {
-				((IWindow*)(surface->getParentWindow()))->clearContent();
+				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
+				dm->clearWindowContent(myScreen, parentWindow);
 			}
 		}
 
@@ -141,7 +142,7 @@ namespace player {
 		this->currentColumn = 0;
 
 		if (mrl != "" && content == "") {
-			surface->getSize(&surfaceW, &surfaceH);
+			dm->getSurfaceSize(surface, &surfaceW, &surfaceH);
 			while (!fis.eof() && fis.good() &&
 					(currentLine + fontHeight) < surfaceH) {
 
@@ -157,8 +158,9 @@ namespace player {
 			drawTextLn(content, currentAlign);
 		}
 
-		if (surface != NULL && surface->getParentWindow() != NULL) {
-			((IWindow*)(surface->getParentWindow()))->validate();
+		if (surface != NULL && dm->getSurfaceParentWindow (surface) != NULL) {
+			GingaWindowID parentWin = dm->getSurfaceParentWindow(surface);
+			dm->validateWindow(myScreen, parentWin);
 		}
 
 		fis.close();
@@ -184,20 +186,21 @@ namespace player {
 	void PlainTxtPlayer::setContent(string content) {
 		Thread::mutexLock(&mutex);
 
-		if (surface != NULL && surface->getParentWindow() != NULL) {
+		GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
+		if (surface != NULL &&  parentWindow != NULL) {
 //			surface->clearSurface();
 
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
-				surface->clearContent();
-				((IWindow*)(surface->getParentWindow()))->setBgColor(
-						bgColor->getR(),
-						bgColor->getG(),
-						bgColor->getB(),
-						bgColor->getAlpha());
+				dm->clearSurfaceContent(surface);
+				dm->setWindowBgColor (myScreen, parentWindow,
+															bgColor->getR(),
+															bgColor->getG(),
+															bgColor->getB(),
+															bgColor->getAlpha());
 
 			} else {
-				((IWindow*)(surface->getParentWindow()))->clearContent();
+				dm->clearWindowContent(myScreen, parentWindow);
 			}
 		}
 
@@ -210,8 +213,8 @@ namespace player {
 			mrl = "";
 		}
 
-		if (surface != NULL && surface->getParentWindow() != NULL) {
-			((IWindow*)(surface->getParentWindow()))->validate();
+		if (surface != NULL && parentWindow != NULL) {
+			dm->validateWindow(myScreen, parentWindow);
 		}
 
 		Thread::mutexUnlock(&mutex);
@@ -245,7 +248,7 @@ namespace player {
 			return;
 		}
 
-		if (surface == NULL || surface->getSurfaceContent() == NULL) {
+		if (surface == NULL || dm->getSurfaceContent (surface) == NULL) {
 			refresh = false;
 		}
 
@@ -290,14 +293,15 @@ namespace player {
 					bgColor = new Color(value);
 				}
 
-				if (surface->getParentWindow() != NULL) {
+				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
+				if (parentWindow != NULL) {
 					//this->surface->setCaps(0);
-					surface->clearContent();
-					((IWindow*)(surface->getParentWindow()))->setBgColor(
-							bgColor->getR(),
-							bgColor->getG(),
-							bgColor->getB(),
-							bgColor->getAlpha());
+					dm->clearSurfaceContent(surface);
+					dm->setWindowBgColor(myScreen, parentWindow,
+															bgColor->getR(),
+															bgColor->getG(),
+															bgColor->getB(),
+															bgColor->getAlpha());
 				}
 			}
 
@@ -315,14 +319,15 @@ namespace player {
 							(int)util::stof((*params)[1]),
 							(int)util::stof((*params)[2]));
 
-					if (surface->getParentWindow() != NULL) {
+					GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
+					if (parentWindow != NULL) {
 						//this->surface->setCaps(0);
-						surface->clearContent();
-						((IWindow*)(surface->getParentWindow()))->setBgColor(
-								bgColor->getR(),
-								bgColor->getG(),
-								bgColor->getB(),
-								bgColor->getAlpha());
+						dm->clearSurfaceContent(surface);
+						dm->setWindowBgColor(myScreen, parentWindow,
+																bgColor->getR(),
+																bgColor->getG(),
+																bgColor->getB(),
+																bgColor->getAlpha());
 					}
 				}
 

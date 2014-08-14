@@ -119,13 +119,13 @@ namespace player {
 		return 0;
 	}
 
-	ISurface* ProgramAV::getSurface() {
-		ISurface* pSur = NULL;
+	GingaSurfaceID ProgramAV::getSurface() {
+		GingaSurfaceID pSur = NULL;
 
 		if (currentPlayer != NULL) {
 			pSur = currentPlayer->getSurface();
 			if (pSur != NULL) {
-				pSur->setExternalHandler(true);
+				dm->setExternalHandler(pSur, true);
 			}
 		}
 

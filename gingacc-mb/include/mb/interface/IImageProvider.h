@@ -66,7 +66,7 @@ namespace mb {
 			virtual ~IImageProvider(){};
 
 			virtual string getLoadSymbol()=0;
-			virtual void playOver(ISurface* surface)=0;
+			virtual void playOver(GingaSurfaceID surface)=0;
 			virtual bool releaseAll()=0;
 	};
 }

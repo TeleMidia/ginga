@@ -111,7 +111,7 @@ namespace mb {
 
 	}
 
-	bool SDLVideoProvider::checkVideoResizeEvent(ISurface* frame) {
+	bool SDLVideoProvider::checkVideoResizeEvent(GingaSurfaceID frame) {
 		return false;
 	}
 
@@ -140,16 +140,21 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::playOver(
-			ISurface* surface, bool hasVisual, IProviderListener* listener) {
+			GingaSurfaceID surface, bool hasVisual, IProviderListener* listener) {
 
+		GingaWindowID parentId;
 		IWindow* parent;
 
 		SDLDeviceScreen::addCMPToRendererList(this);
-		parent = (IWindow*)(surface->getParentWindow());
+		parentId = LocalScreenManager::getInstance()->
+				getSurfaceParentWindow(surface);
+		parent = (IWindow*)(LocalScreenManager::getInstance()->
+				getIWindowFromId(myScreen, parentId));
 
 		clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parent)) {
-			win = (SDLWindow*)parent;
+		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parentId)) {
+			win = (SDLWindow*)LocalScreenManager::getInstance()->
+					getIWindowFromId(myScreen, parentId);
 			if (hasTex) {
 				((SDLWindow*)win)->setTexture(tex);
 				decoder->play();
@@ -161,7 +166,7 @@ namespace mb {
 		}
 	}
 
-	void SDLVideoProvider::resume(ISurface* surface, bool hasVisual) {
+	void SDLVideoProvider::resume(GingaSurfaceID surface, bool hasVisual) {
 		SDLAudioProvider::resume(surface, hasVisual);
 	}
 

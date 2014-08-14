@@ -130,7 +130,7 @@ namespace player {
 		}
 
 		if (dm->hasSurface(myScreen, surface)) {
-			delete surface;
+			dm->deleteSurface(surface);
 			surface = NULL;
 		}
 
@@ -364,15 +364,15 @@ namespace player {
 		}
 	}
 
-	void Player::setSurface(ISurface* surface) {
+	void Player::setSurface(GingaSurfaceID surface) {
 		if (this->surface != NULL) {
-			delete this->surface;
+			dm->deleteSurface(surface);
 			this->surface = NULL;
 		}
 		this->surface = surface;
 	}
 
-	ISurface* Player::getSurface() {
+	GingaSurfaceID Player::getSurface() {
 		return surface;
 	}
 
@@ -420,20 +420,20 @@ namespace player {
 	}
 
 	void Player::mirrorIt(Player* mirrorSrc, Player* mirror) {
-		ISurface* iSrcSur;
-		IWindow* iSrcWin;
+		GingaSurfaceID iSrcSur;
+		GingaWindowID iSrcWin;
 
-		ISurface* iSur;
-		IWindow* iWin;
+		GingaSurfaceID iSur;
+		GingaWindowID iWin;
 
 		if (mirrorSrc != NULL && mirror != NULL) {
 			iSrcSur = mirrorSrc->getSurface();
 			iSur = mirror->getSurface();
 			if (iSrcSur != NULL && iSur != NULL) {
-				iSrcWin = (IWindow*)iSrcSur->getParentWindow();
-				iWin = (IWindow*)iSur->getParentWindow();
+				iSrcWin = dm->getSurfaceParentWindow(iSrcSur);
+				iWin =  dm->getSurfaceParentWindow(iSur);
 				if (iSrcWin != NULL && iWin != NULL) {
-					iWin->setMirrorSrc(iSrcWin);
+					dm->setWindowMirrorSrc(myScreen, iWin, iSrcWin);
 				}
 			}
 		}
@@ -701,8 +701,8 @@ namespace player {
 			return false;
 		}
 #else
-		if (surface != NULL && surface->getParentWindow() == NULL) {
-			surface->setParentWindow(dm->getIWindowFromId(myScreen, windowId));
+		if (surface != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
+			dm->setSurfaceParentWindow(myScreen, surface, windowId);
 		}
 #endif
 		return true;

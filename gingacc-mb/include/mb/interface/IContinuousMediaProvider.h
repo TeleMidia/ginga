@@ -76,16 +76,16 @@ namespace mb {
 			virtual string getLoadSymbol()=0;
 			virtual void setAVPid(int aPid, int vPid)=0;
 			virtual void feedBuffers()=0;
-			virtual bool checkVideoResizeEvent(ISurface* frame)=0;
+			virtual bool checkVideoResizeEvent(GingaSurfaceID frame)=0;
 			virtual double getTotalMediaTime()=0;
 			virtual int64_t getVPts()=0;
 			virtual double getMediaTime()=0;
 			virtual void setMediaTime(double pos)=0;
 			virtual void playOver(
-					ISurface* surface,
+					GingaSurfaceID surface,
 					bool hasVisual=true, IProviderListener* listener=NULL)=0;
 
-			virtual void resume(ISurface* surface, bool hasVisual)=0;
+			virtual void resume(GingaSurfaceID surface, bool hasVisual)=0;
 			virtual void pause()=0;
 			virtual void stop()=0;
 			virtual void setSoundLevel(float level)=0;

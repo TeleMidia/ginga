@@ -174,8 +174,7 @@ namespace player {
 	}
 
 	bool ImagePlayer::play() {
-		if (provider == NULL ||
-				surface == NULL || surface->getSurfaceContent() == NULL) {
+		if (provider == NULL || dm->getSurfaceContent(surface) == NULL) {
 
 			return false;
 		}
@@ -195,22 +194,22 @@ namespace player {
 	void ImagePlayer::setPropertyValue(string name, string value) {
 		//TODO: set brightness, rotate...
 		//refresh changes
-		IWindow* win;
+		GingaWindowID win;
 
 		if (surface != NULL) {
-			win = (IWindow*)(surface->getParentWindow());
+			win = dm->getSurfaceParentWindow(surface);
 			if (win != NULL) {
-				win->renderFrom(surface);
+				dm->renderWindowFrom(myScreen, win, surface);
 			}
 		}
 
 		Player::setPropertyValue(name, value);
 	}
 
-	ISurface* ImagePlayer::prepareSurface(
+	GingaSurfaceID ImagePlayer::prepareSurface(
 			IImageProvider* provider, string mrl) {
 
-		ISurface* renderedSurface = NULL;
+		GingaSurfaceID renderedSurface = NULL;
 
 		renderedSurface = dm->createSurfaceFrom(myScreen, NULL);
 		provider->playOver(renderedSurface);
@@ -221,7 +220,7 @@ namespace player {
 }
 }
 }
-}
+} 
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*

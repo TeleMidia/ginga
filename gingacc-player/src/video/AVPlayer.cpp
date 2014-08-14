@@ -129,11 +129,12 @@ namespace player {
 
 		Thread::mutexLock(&tMutex);
 		if (surface != NULL && mainAV) {
-			surface->setParentWindow(NULL);
+			dm->setSurfaceParentWindow(myScreen, surface, NULL);
 		}
 
 		if (mainAV) {
 			if (win != NULL) {
+				dm->disposeWindow (myScreen, win);
 				delete win;
 				win = NULL;
 			}
@@ -151,7 +152,7 @@ namespace player {
 		Thread::mutexDestroy(&tMutex);
 	}
 
-	ISurface* AVPlayer::getSurface() {
+	GingaSurfaceID AVPlayer::getSurface() {
 		if (provider == NULL) {
 			createProvider();
 			if (provider == NULL) {
@@ -224,7 +225,7 @@ namespace player {
 		//unlock();
 	}
 
-	ISurface* AVPlayer::createFrame() {
+	GingaSurfaceID AVPlayer::createFrame() {
 		//clog << "AVPlayer::createFrame()" << endl;
 
 		Thread::mutexLock(&tMutex);
@@ -232,14 +233,15 @@ namespace player {
 			clog << "AVPlayer::createFrame Warning! surface != NULL";
 			clog << endl;
 			if (mainAV) {
-				surface->setParentWindow(NULL);
+				dm->setSurfaceParentWindow(myScreen, surface, NULL);
 			}
-			delete surface;
+			dm->deleteSurface(surface);
 		}
 
 		surface = dm->createSurface(myScreen);
 		if (win != NULL && mainAV) {
-			surface->setParentWindow(win);
+			dm->setSurfaceParentWindow(myScreen, surface,
+			                           dm->getIWindowFromId(myScreen,win));
 		}
 
 		Thread::mutexUnlock(&tMutex);
@@ -445,10 +447,10 @@ namespace player {
 							util::stof((*vals)[3]),
 							1.0);
 
-					win->setCaps(win->getCap("NOSTRUCTURE") |
-							win->getCap("DOUBLEBUFFER"));
-
-					win->draw();
+					int caps = dm->getWindowCap (myScreen, win, "NOSTRUCTURE") |
+										dm->getWindowCap (myScreen, win, "DOUBLEBUFFER");
+					dm->setWindowCaps (myScreen, win, caps);
+					dm->drawWindow (myScreen, win);
 				}
 
 				delete vals;
@@ -460,19 +462,19 @@ namespace player {
 			} else if (name == "bounds" && win != NULL) {
 				vals = split(value, ",");
 				if (vals->size() == 4) {
-					win->setBounds(
-							util::stof((*vals)[0]),
-							util::stof((*vals)[1]),
-							util::stof((*vals)[2]),
-							util::stof((*vals)[3]));
+					dm->setWindowBounds (myScreen, win,
+															util::stof((*vals)[0]),
+															util::stof((*vals)[1]),
+															util::stof((*vals)[2]),
+															util::stof((*vals)[3]));
 				}
 				delete vals;
 
 			} else if (name == "show" && win != NULL) {
-				win->show();
+				dm->showWindow(myScreen, win);
 
 			} else if (name == "hide" && win != NULL) {
-				win->hide();
+				dm->hideWindow(myScreen, win);
 			}
 		}
 
@@ -608,8 +610,8 @@ namespace player {
 
 			this->surface = createFrame();
 
-			if (this->win != NULL && surface->getParentWindow() == NULL) {
-				this->surface->setParentWindow((void*)win);
+			if (this->win != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
+				dm->setSurfaceParentWindow(myScreen, surface, win);
 			}
 
 			provider->playOver(surface, hasVisual);

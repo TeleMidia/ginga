@@ -93,7 +93,7 @@ namespace mb {
 			SDL_Texture* texture;
 			SDL_Surface* curSur;
 
-			ISurface* winISur;
+			GingaSurfaceID winISur;
 
 			bool textureUpdate;
 			bool textureOwner;

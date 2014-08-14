@@ -88,8 +88,9 @@ namespace multidevice {
 
 		im->addInputEventListener(this, evs);
 
-		serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
-		serialized->draw();
+		int caps = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+		dm->setWindowCaps (myScreen, serialized, caps);
+		dm->drawWindow (myScreen, serialized);
 
 #if HAVE_MULTIDEVICE
 		//if ((deviceClass == IDeviceDomain::CT_BASE)&&(rdm==NULL)) {

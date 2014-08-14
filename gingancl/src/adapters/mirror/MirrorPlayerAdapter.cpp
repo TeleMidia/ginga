@@ -70,7 +70,7 @@ namespace mirror {
 		FormatterRegion* fRegion;
 		CascadingDescriptor* descriptor;
 		LayoutRegion* ncmRegion = NULL;
-		ISurface* mirrorSur;
+		GingaSurfaceID mirrorSur;
 
 		clog << "MirrorPlayerAdapter::createPlayer '" << mrl << "'" << endl;
 

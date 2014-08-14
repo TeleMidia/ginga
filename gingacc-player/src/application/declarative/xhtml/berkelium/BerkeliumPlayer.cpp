@@ -252,7 +252,7 @@ namespace player {
 		clog << "BerkeliumPlayer::~BerkeliumPlayer all done" << endl;
 	}
 
-	ISurface* BerkeliumPlayer::getSurface() {
+	GingaSurfaceID BerkeliumPlayer::getSurface() {
 		clog << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;
 
 		if (bInfo != NULL) {

@@ -96,9 +96,9 @@ namespace player {
 		string parameter;
 		short type;
 		string value;
+
 		set<IPlayerListener*>* clone;
 	} PendingNotification;
-
 	class Player : public IPlayer {
 		private:
 			pthread_mutex_t listM;
@@ -123,7 +123,7 @@ namespace player {
 
 			string mrl;
 			static ILocalScreenManager* dm;
-			ISurface* surface;
+			GingaSurfaceID surface;
 			IWindow* outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;
 			set<IPlayer*> referredPlayers;
@@ -178,8 +178,8 @@ namespace player {
 					short code, string parameter, short type, string value);
 
 		public:
-			virtual void setSurface(ISurface* surface);
-			virtual ISurface* getSurface();
+			virtual void setSurface(GingaSurfaceID surface);
+			virtual GingaSurfaceID getSurface();
 
 			virtual void setMediaTime(double newTime);
 			virtual int64_t getVPts() {

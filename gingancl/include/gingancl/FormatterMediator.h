@@ -383,8 +383,8 @@ namespace ncl {
 		void notifyPlayerListeners(
 				short code, string paremeter, short type, string value);
 
-		void setSurface(ISurface* surface);
-		ISurface* getSurface();
+		void setSurface(GingaSurfaceID surface);
+		GingaSurfaceID getSurface();
 		void flip();
 		double getMediaTime();
 		double getTotalMediaTime();

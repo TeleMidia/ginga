@@ -77,7 +77,7 @@ namespace ncl {
 		CascadingDescriptor* descriptor = NULL;
 		string value;
 		bool isPercent;
-		ISurface* s;
+		GingaSurfaceID s;
 		NclPlayerData* childData, *playerData;
 		PropertyAnchor* property;
 
@@ -164,7 +164,8 @@ namespace ncl {
 #endif
 
 			s = dm->createSurface(myScreen);
-			s->setCaps(s->getCap("ALPHACHANNEL"));
+			int cap = dm->getSurfaceCap(s, "ALPHACHANNEL");
+			dm->setSurfaceCaps(s, cap);
 
 			((INCLPlayer*)player)->setSurface(s);
 			if (((INCLPlayer*)player)->setCurrentDocument(mrl) == NULL) {

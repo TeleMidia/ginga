@@ -94,8 +94,9 @@ namespace player {
 		if (dm != NULL) {
 			win = dm->createWindow(myScreen, x, y, w, h, 4.0);
 		}
-		win->setCaps(win->getCap("ALPHACHANNEL"));
-		win->draw();
+		int caps = dm->getWindowCap (myScreen, win, "ALPHACHANNEL");
+		dm->setWindowCaps (myScreen, win, caps);
+		dm->drawWindow (myScreen, win);
 	}
 
 	void ShowButton::stop() {
@@ -129,7 +130,7 @@ namespace player {
 	void ShowButton::release() {
 		lock();
 		if (win != NULL) {
-			win->hide();
+			dm->hideWindow (myScreen, win);
 			delete win;
 			win = NULL;
 		}
@@ -137,7 +138,7 @@ namespace player {
 	}
 
 	void ShowButton::render(string mrl) {
-		ISurface* surface;
+		GingaSurfaceID surface;
 
 		surface = dm->createRenderedSurfaceFromImageFile(myScreen, mrl.c_str());
 
@@ -146,11 +147,11 @@ namespace player {
 			initializeWindow();
 		}
 
-		if (surface->setParentWindow((void*)win)) {
-			win->renderFrom(surface);
+		if ( dm->setSurfaceParentWindow(myScreen, surface, win)) {
+			dm->renderWindowFrom(myScreen, win, surface);
 		}
-		win->show();
-		win->raiseToTop();
+		dm->showWindow (myScreen, win);
+		dm->raiseWindowToTop (myScreen, win);
 		unlock();
 	}
 

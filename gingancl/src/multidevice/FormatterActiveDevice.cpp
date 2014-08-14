@@ -144,14 +144,15 @@ namespace multidevice {
 			s = dm->createRenderedSurfaceFromImageFile(
 					myScreen, img_dev.c_str());
 
-			serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
-			serialized->draw();
+			int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+			dm->setWindowCaps (myScreen, serialized, cap);
+			dm->drawWindow(myScreen, serialized);
 
-			serialized->show();
- 			serialized->renderFrom(s);
- 			serialized->lowerToBottom();
+			dm->showWindow (myScreen, serialized);
+			dm->renderWindowFrom (myScreen, serialized, s);
+			dm->lowerWindowToBottom (myScreen, serialized);
 
- 			delete s;
+			dm->deleteSurface(s);
 			s = NULL;
 
 		} else {
@@ -203,7 +204,7 @@ namespace multidevice {
 
 				//handleTCPClient(servSock.accept());
 				if (serialized) {
-					serialized->hide();
+					dm->hideWindow(myScreen, serialized);
 				}
 				handleTCPClient(tcpSocket);
 			}
@@ -790,14 +791,15 @@ namespace multidevice {
 
 				imgDev = img_dir + img_reset;
 				if (fileExists(imgDev)) {
-					serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
-					serialized->draw();
+					int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+					dm->setWindowCaps (myScreen, serialized, cap);
+					dm->drawWindow (myScreen, serialized);
 
-					serialized->show();
-					serialized->renderFrom(s);
-					serialized->lowerToBottom();
+					dm->showWindow (myScreen, serialized);
+					dm->renderWindowFrom (myScreen, serialized, s);
+					dm->lowerWindowToBottom (myScreen, serialized);
 
-					delete s;
+					dm->deleteSurface(s);
 					s = NULL;
 				}
 				break;

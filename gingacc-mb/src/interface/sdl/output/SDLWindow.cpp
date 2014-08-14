@@ -191,7 +191,7 @@ namespace mb {
 
 	void SDLWindow::releaseWinISur() {
 		if (winISur != NULL) {
-			delete winISur;
+			LocalScreenManager::getInstance()->deleteSurface(winISur);
 			winISur = NULL;
 		}
 	}
@@ -502,8 +502,9 @@ namespace mb {
 
 	void SDLWindow::unprotectedValidate() {
 		if (winISur != NULL) {
-			winISur->flip();
-			curSur = (SDL_Surface*)(winISur->getSurfaceContent());
+			LocalScreenManager::getInstance()->flipSurface(winISur);
+			curSur = (SDL_Surface*)
+					(LocalScreenManager::getInstance()->getSurfaceContent(winISur));
 			textureUpdate = true;
 
 		} else if (childSurface != NULL) {
@@ -518,7 +519,7 @@ namespace mb {
 		lockChilds();
 		if (childSurface != NULL &&
 				LocalScreenManager::getInstance()->hasSurface(
-						myScreen, childSurface)) {
+						myScreen, childSurface->getId())) {
 
 			dd = ((SDLSurface*)childSurface)->createDrawDataList();
 		}
@@ -634,7 +635,7 @@ namespace mb {
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
-			if (surface == winISur || surface == childSurface) {
+			if (surface->getId() == winISur || surface == childSurface) {
 				itIs = true;
 			}
 		}
@@ -644,22 +645,23 @@ namespace mb {
 
 	void SDLWindow::renderImgFile(string serializedImageUrl) {
 		IImageProvider* img;
-		ISurface* s;
+		GingaSurfaceID surId;
 
 		img = LocalScreenManager::getInstance()->createImageProvider(
 				myScreen, serializedImageUrl.c_str());
 
-		s = LocalScreenManager::getInstance()->createSurface(myScreen);
-		img->playOver(s);
+		surId = LocalScreenManager::getInstance()->createSurface(myScreen);
+		img->playOver(surId);
 
 		lockSurface();
-		curSur = (SDL_Surface*)(s->getSurfaceContent());
+		curSur = (SDL_Surface*)LocalScreenManager::getInstance()->
+				getSurfaceContent(surId);
 		unlockSurface();
 
 		textureUpdate = true;
 
 		LocalScreenManager::getInstance()->releaseImageProvider(myScreen, img);
-		delete s;
+		LocalScreenManager::getInstance()->deleteSurface(surId);
 	}
 
 	void SDLWindow::renderFrom(ISurface* surface) {
@@ -681,10 +683,12 @@ namespace mb {
 			winISur = LocalScreenManager::getInstance()->createSurface(
 					myScreen, contentSurface->w, contentSurface->h);
 
-			winISur->blit(0, 0, surface);
-			winISur->flip();
+			LocalScreenManager::getInstance()->blitSurface(winISur, 0, 0,
+			                                               surface->getId());
+			LocalScreenManager::getInstance()->flipSurface(winISur);
 
-			curSur = (SDL_Surface*)winISur->getSurfaceContent();
+			curSur = (SDL_Surface*)
+					LocalScreenManager::getInstance()->getSurfaceContent(winISur);
 			textureUpdate = true;
 
 		} else {
