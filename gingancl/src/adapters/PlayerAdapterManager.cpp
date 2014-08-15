@@ -681,6 +681,11 @@ namespace adapters {
 		IPlayerAdapter* player;
 		string playerClassName = "";
 
+#if HAVE_COMPONENTS
+		set<string> releaseCmps;
+		set<string>::iterator k;
+#endif
+
 		Thread::mutexLock(&mutexPlayer);
 		i = deletePlayers.begin();
 		while (i != deletePlayers.end()) {
@@ -709,12 +714,19 @@ namespace adapters {
 			delete player;
 
 #if HAVE_COMPONENTS
-			if (trim(playerClassName) != "") {
-				cm->releaseComponentFromObject(playerClassName);
-			}
+			assert(trim(playerClassName) != "");
+			releaseCmps.insert(playerClassName);
 #endif
 			++i;
 		}
+
+#if HAVE_COMPONENTS
+		k = releaseCmps.begin();
+		while (k != releaseCmps.end()) {
+			cm->releaseComponentFromObject(*k);
+			++k;
+		}
+#endif
 	}
 
 	void PlayerAdapterManager::run() {

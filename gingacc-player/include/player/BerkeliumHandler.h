@@ -155,8 +155,6 @@ namespace player {
 				bool ignore_partial,
 				unsigned char* scroll_buffer);
 
-		ISurface* createRenderedSurface(string fileName);
-
 		string createFile(
 				const unsigned char *sourceBuffer,
 				int width, int height);
