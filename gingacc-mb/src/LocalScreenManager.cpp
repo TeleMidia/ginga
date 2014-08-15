@@ -892,17 +892,17 @@ namespace mb {
 		ISurface* surface = NULL;
 		GingaSurfaceID surId = 0;
 
-		Thread::mutexLock(&surMapMutex);
+
 
 		if (getScreen(screenId, &screen)) {
 			surId = surIdRefCounter++;
 			surface = screen->createSurface(w, h);
 			surface->setId(surId);
 
+			Thread::mutexLock(&surMapMutex);
 			surMap [surId] = surface;
+			Thread::mutexUnlock(&surMapMutex);
 		}
-
-		Thread::mutexUnlock(&surMapMutex);
 
 		return surId;
 	}
@@ -914,17 +914,15 @@ namespace mb {
 		ISurface* surface = NULL;
 		GingaSurfaceID surId = 0;
 
-		Thread::mutexLock(&surMapMutex);
-
 		if (getScreen(screenId, &screen)) {
 			surId = surIdRefCounter++;
 			surface = screen->createSurfaceFrom(underlyingSurface);
 			surface->setId(surId);
 
+			Thread::mutexLock(&surMapMutex);
 			surMap [surId] = surface;
+			Thread::mutexUnlock(&surMapMutex);
 		}
-
-		Thread::mutexUnlock(&surMapMutex);
 
 		return surId;
 	}

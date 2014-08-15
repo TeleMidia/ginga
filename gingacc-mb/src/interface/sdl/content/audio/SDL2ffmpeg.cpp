@@ -1266,6 +1266,7 @@ retry:
 				/* dequeue the picture */
 				lastvp = &vs->pictq[vs->pictq_rindex];
 				vp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown) % VIDEO_PICTURE_QUEUE_SIZE];
+				dec->render_vp(vp);
 
 				if (vp->serial != vs->videoq.serial) {
 					dec->pictq_next_picture();
@@ -1440,10 +1441,6 @@ display:
 		/* if the frame is not skipped, then display it */
 		if (vp->tex) {
 			vp->src_frame = src_frame; //tm code
-			SDLDeviceScreen::lockSDL();
-			render_vp(vp);
-			SDLDeviceScreen::unlockSDL();
-
 			vp->pts       = pts;
 			vp->duration  = duration;
 			vp->pos       = pos;
