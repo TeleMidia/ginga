@@ -508,7 +508,7 @@ namespace player {
 			strFile = createFile(
 					bitmap_in, dest_texture_width, dest_texture_height);
 
-			s = createRenderedSurface(strFile);
+			s = dm->createRenderedSurfaceFromImageFile(myScreen, strFile.c_str());
 			remove(strFile.c_str());
 
 			surface->blit(0, 0, s);
@@ -584,16 +584,14 @@ namespace player {
 			strFile = createFile(
 				(const unsigned char*) tmp_buffer, wid, hig);
 
-			s = createRenderedSurface(strFile);
+			s = dm->createRenderedSurfaceFromImageFile(myScreen, strFile.c_str());
 			remove(strFile.c_str());
 
 			delete [] tmp_buffer;
 			left =  copy_rects[i].left();
 			top = copy_rects[i].top();
 
-			surface->blit(
-					copy_rects[i].left(), copy_rects[i].top(),
-					s, 0, 0, wid, hig);
+			surface->blit(left, top, s, 0, 0, wid, hig);
 
 			if (surface->getParentWindow() != NULL) {
 				((IWindow*)(surface->getParentWindow()))->validate();
@@ -604,19 +602,6 @@ namespace player {
 
 		Thread::mutexUnlock(&sMutex);
 		return true;
-	}
-
-	ISurface* BerkeliumHandler::createRenderedSurface(string fileName) {
-		ISurface* s;
-		IImageProvider* img;
-
-		img = dm->createImageProvider(myScreen, fileName.c_str());
-		s   = dm->createSurface(myScreen);
-
-		img->playOver(s);
-		dm->releaseImageProvider(myScreen, img);
-
-		return s;
 	}
 
 	string BerkeliumHandler::createFile(
