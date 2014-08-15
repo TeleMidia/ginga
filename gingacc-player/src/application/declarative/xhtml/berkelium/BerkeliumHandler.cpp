@@ -220,6 +220,8 @@ namespace player {
 	}
 
 	void BerkeliumHandler::stop() {
+		setKeyHandler(false);
+
 		if (isValid) {
 			Thread::mutexLock(&sMutex);
 			bWindow->mouseMoved(-1, -1);
@@ -487,6 +489,7 @@ namespace player {
 			unsigned char* scroll_buffer) {
 
 		string strFile;
+		IWindow* sWin;
 		ISurface* s;
 		const int kBytesPerPixel = 4;
 
@@ -512,9 +515,9 @@ namespace player {
 			remove(strFile.c_str());
 
 			surface->blit(0, 0, s);
-
-			if (surface->getParentWindow() != NULL) {
-				((IWindow*)(surface->getParentWindow()))->validate();
+			sWin = (IWindow*)surface->getParentWindow();
+			if (sWin != NULL) {
+				sWin->validate();
 			}
 
 			ignore_partial = false;
@@ -558,8 +561,9 @@ namespace player {
 					surface->blit(0, 0, surface, left, top, wid, hig);
 				}
 
-				if (surface->getParentWindow() != NULL) {
-					((IWindow*)(surface->getParentWindow()))->validate();
+				sWin = (IWindow*)surface->getParentWindow();
+				if (sWin != NULL) {
+					sWin->validate();
 				}
 			}
 		}
@@ -592,9 +596,9 @@ namespace player {
 			top = copy_rects[i].top();
 
 			surface->blit(left, top, s, 0, 0, wid, hig);
-
-			if (surface->getParentWindow() != NULL) {
-				((IWindow*)(surface->getParentWindow()))->validate();
+			sWin = (IWindow*)surface->getParentWindow();
+			if (sWin != NULL) {
+				sWin->validate();
 			}
 
 			delete s;

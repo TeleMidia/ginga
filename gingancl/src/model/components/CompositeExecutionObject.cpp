@@ -735,8 +735,10 @@ namespace components {
 				clog << "paused events)";
 				clog << endl;
 
-				wholeContent->stop();
-				unsetParentsAsListeners();
+				if (FormatterEvent::hasInstance(wholeContent, false)) {
+					wholeContent->stop();
+					unsetParentsAsListeners();
+				}
 			}
 		}
 		running = false;
