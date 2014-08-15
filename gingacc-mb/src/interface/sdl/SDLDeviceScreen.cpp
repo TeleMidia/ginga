@@ -1251,8 +1251,11 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::sdlQuit() {
-		SDL_PauseAudio(1);
-		SDL_CloseAudio();
+		if (SDL_GetAudioStatus() != SDL_AUDIO_STOPPED) {
+			SDL_PauseAudio(1);
+			SDL_CloseAudio();
+			SDL_AudioQuit();
+		}
 		SDL_Quit();
 		clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
 	}
