@@ -2080,19 +2080,9 @@ namespace mb {
 		}
 
 		assert(s->screen != NULL);
-		SDL_RendererInfo info;
-		string dName;
 
 		s->renderer = SDL_CreateRenderer(
 				s->screen, -1, SDL_RENDERER_ACCELERATED);
-
-		SDL_GetRendererInfo(s->renderer, &info);
-		dName.assign(info.name, strlen(info.name));
-		if (dName.find("opengl") != std::string::npos) {
-			SDL_DestroyRenderer(s->renderer);
-			s->renderer = SDL_CreateRenderer(
-					s->screen, -1, SDL_RENDERER_SOFTWARE);
-		}
 
 		initCodeMaps();
 		s->im = new InputManager(s->id);
