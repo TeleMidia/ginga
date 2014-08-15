@@ -299,7 +299,13 @@ namespace player {
 	}
 
 	bool BerkeliumPlayer::play() {
+		IWindow* iWin;
+
 		berkeliumFactory.createBrowser(bInfo);
+		iWin = (IWindow*)surface->getParentWindow();
+		if (iWin != NULL) {
+			iWin->renderFrom(surface);
+		}
 		return Player::play();
 	}
 
