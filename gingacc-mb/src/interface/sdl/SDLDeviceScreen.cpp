@@ -2060,47 +2060,35 @@ namespace mb {
 				y = (rect.h - s->hRes) / 2;
 			}
 
+			Uint32 winFlags;
+
 			if (s->fullScreen) {
-				s->screen = SDL_CreateWindow(
-						title.c_str(),
-						x, y, s->wRes, s->hRes,
-						SDL_WINDOW_FULLSCREEN);
+				winFlags = (Uint32)(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN);
 
 			} else {
-				s->screen = SDL_CreateWindow(
-						title.c_str(),
-						x, y, s->wRes, s->hRes,
-						0);
-
-				if (s->screen == 0) {
-					clog << "SDLDeviceScreen::initScreen '" << s->getScreenName();
-					clog << "' Warning! Can't create Window. ";
-					clog << SDL_GetError() << endl;
-				}
+				winFlags = (Uint32)(SDL_WINDOW_SHOWN);
 			}
+
+			s->screen = SDL_CreateWindow(
+					title.c_str(), x, y, s->wRes, s->hRes, winFlags);
 
 			s->sdlId = SDL_GetWindowID(s->screen);
 		}
 
 		assert(s->screen != NULL);
+		SDL_RendererInfo info;
+		string dName;
+
 		s->renderer = SDL_CreateRenderer(
 				s->screen, -1, SDL_RENDERER_ACCELERATED);
 
-		if (s->renderer != NULL) {
-			clog << "SDLDeviceScreen::initScreen renderer ";
-			clog << "accelerated by hardware was created";
-			clog << endl;
-
-		} else {
-			clog << "SDLDeviceScreen::initScreen software renderer ";
-			clog << "was created";
-			clog << endl;
-
+		SDL_GetRendererInfo(s->renderer, &info);
+		dName.assign(info.name, strlen(info.name));
+		if (dName.find("opengl") != std::string::npos) {
+			SDL_DestroyRenderer(s->renderer);
 			s->renderer = SDL_CreateRenderer(
 					s->screen, -1, SDL_RENDERER_SOFTWARE);
 		}
-
-		assert(SDL_GetRendererInfo(s->renderer, &s->info) == 0);
 
 		initCodeMaps();
 		s->im = new InputManager(s->id);
@@ -2239,12 +2227,6 @@ namespace mb {
 
 		/*clog << "SDLDeviceScreen::initCMP creating texture with w = '";
 		clog << w << "' and h = '" << h << "'" << endl;*/
-
-		if (w > s->info.max_texture_width)
-			w = s->info.max_texture_width;
-
-		if (h > s->info.max_texture_height)
-			h = s->info.max_texture_height;
 
 		texture = createTexture(s->renderer, w, h);
 		cmp->setProviderContent((void*)texture);
