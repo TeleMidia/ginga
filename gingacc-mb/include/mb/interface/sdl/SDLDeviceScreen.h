@@ -156,7 +156,6 @@ typedef struct {
 			SDL_Window* screen;
 			Uint32 sdlId;
 			SDL_Renderer* renderer;
-			SDL_RendererInfo info;
 
 			static bool hasERC; //external renderer controller
 
