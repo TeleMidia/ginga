@@ -2084,6 +2084,7 @@ namespace mb {
 
 		SDL_GetRendererInfo(s->renderer, &info);
 		dName.assign(info.name, strlen(info.name));
+
 		if (dName.find("opengl") != std::string::npos) {
 			SDL_DestroyRenderer(s->renderer);
 			s->renderer = SDL_CreateRenderer(
