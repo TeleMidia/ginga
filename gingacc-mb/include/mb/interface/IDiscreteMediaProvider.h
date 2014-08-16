@@ -65,7 +65,7 @@ namespace mb {
 
 			virtual string getLoadSymbol()=0;
 
-			virtual void playOver(GingaSurfaceID surface)=0;
+			virtual void playOver(GingaSurfaceID surface) = 0;
 	};
 }
 }

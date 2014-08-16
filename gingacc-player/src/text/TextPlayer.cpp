@@ -78,7 +78,9 @@ namespace player {
 
    		/* release window and surface first; then, release font */
 		if (outputWindow != NULL && dm->hasWindow(myScreen, outputWindow)) {
-			outputWindow->revertContent();
+			dm->revertWindowContent(myScreen, outputWindow);
+			dm->deleteWindow(myScreen, outputWindow);
+
 			delete outputWindow;
 			outputWindow = NULL;
 		}
@@ -116,7 +118,7 @@ namespace player {
 
 	int TextPlayer::write(
 			GingaScreenID screenId,
-			ISurface* s,
+			GingaSurfaceID s,
 			string text,
 			short textAlign,
 			string fontUri,
@@ -126,7 +128,7 @@ namespace player {
 			return 0;
 		}
 
-		IFontProvider* font = NULL;
+		GingaProviderID font = NULL;
 		int width = 0;
 
 		font = dm->createFontProvider(screenId, fontUri.c_str(), fontSize);
@@ -136,16 +138,16 @@ namespace player {
 		}
 
 		if (font != NULL) {
-			s->setColor(
-					fontColor->getR(),
-					fontColor->getG(),
-					fontColor->getB(),
-					fontColor->getAlpha());
+			dm->setSurfaceColor(s,
+													fontColor->getR(),
+													fontColor->getG(),
+													fontColor->getB(),
+													fontColor->getAlpha());
 
-			width = font->getStringWidth(
-					text.c_str(), strlen((const char*)(text.c_str())));
+			width = dm->getProviderStringWidth(font, text.c_str(),
+			                                   strlen((const char*)(text.c_str())));
 
-			font->playOver(s->getId(), text.c_str(), 0, 0, textAlign);
+			dm->playProviderOver(font, s, text.c_str(), 0, 0, textAlign);
 
 			dm->releaseFontProvider(screenId, font);
 			font = NULL;
@@ -177,7 +179,7 @@ namespace player {
 			return false;
 		}
 
-		fontHeight = font->getHeight();
+		dm->getProviderHeight(font);
 		return true;
 	}
 
@@ -259,8 +261,8 @@ namespace player {
 
 		if (font != NULL && surface != NULL) {
 			dm->getSurfaceSize(surface, &surWidth, &surHeight);
-			textWidth = font->getStringWidth(
-					text.c_str(), strlen((const char*)(text.c_str())));
+			textWidth = dm->getProviderStringWidth(
+					font, text.c_str(), strlen((const char*)(text.c_str())));
 
 			if (textWidth > surWidth) {
 				space = false;
@@ -284,7 +286,7 @@ namespace player {
 
 				text = text.substr(0, splitPos);
 
-				textWidth = font->getStringWidth(text.c_str());
+				textWidth = dm->getProviderStringWidth(font, text.c_str());
 
 				while (textWidth > surWidth) {
 					if (space) {
@@ -308,16 +310,15 @@ namespace player {
 					}
 
 					oldTextWidth = textWidth;
-					textWidth = font->getStringWidth(text.c_str());
+					textWidth = dm->getProviderStringWidth(font, text.c_str());
 
 					if (oldTextWidth == textWidth) {
 						break;
 					}
 				}
 
-				font->playOver(
-						surface, text.c_str(),
-						currentColumn, currentLine, align);
+				dm->playProviderOver(font, surface, text.c_str(), currentColumn,
+				                     currentLine, align);
 
 				/*if (align == A_TOP_CENTER) {
 					DFBCHECK(surface->getSurface()->DrawString(
@@ -358,9 +359,8 @@ namespace player {
 				drawText(splited, align);
 
 			} else {
-				font->playOver(
-						surface, text.c_str(),
-						currentColumn, currentLine, align);
+				dm->playProviderOver(font, surface, text.c_str(), currentColumn,
+				                     currentLine, align);
 /*
 				if (align == A_TOP_CENTER) {
 

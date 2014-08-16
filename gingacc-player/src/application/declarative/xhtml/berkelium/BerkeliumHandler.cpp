@@ -609,12 +609,12 @@ namespace player {
 
 	GingaSurfaceID BerkeliumHandler::createRenderedSurface(string fileName) {
 		GingaSurfaceID s;
-		IImageProvider* img;
+		GingaProviderID img;
 
 		img = dm->createImageProvider(myScreen, fileName.c_str());
 		s   = dm->createSurface(myScreen);
 
-		img->playOver(s);
+		dm->playProviderOver(img, s);
 		dm->releaseImageProvider(myScreen, img);
 
 		return s;

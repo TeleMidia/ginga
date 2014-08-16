@@ -124,7 +124,7 @@ namespace player {
 			string mrl;
 			static ILocalScreenManager* dm;
 			GingaSurfaceID surface;
-			IWindow* outputWindow;
+			GingaWindowID outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;
 			set<IPlayer*> referredPlayers;
 			IPlayer* timeBasePlayer;

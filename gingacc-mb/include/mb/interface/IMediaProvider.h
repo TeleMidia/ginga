@@ -61,8 +61,21 @@ namespace core {
 namespace mb {
 	class IMediaProvider {
 		public:
+			enum IMediaProviderType {
+						AudioProvider, VideoProvider, FontProvider, ImageProvider};
+
 			virtual ~IMediaProvider(){};
 			virtual string getLoadSymbol()=0;
+
+			IMediaProviderType getType () const { return type; }
+
+			GingaProviderID getId () const { return id; }
+			void setId (const GingaProviderID& id) {this->id = id; }
+
+
+		protected:
+			GingaProviderID id;
+			IMediaProviderType type;
 	};
 }
 }

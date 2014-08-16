@@ -259,9 +259,11 @@ namespace lssm {
 
 	void CommonCoreManager::releaseTunningWindow() {
 		if (tuningWindow != NULL) {
-			((IWindow*)tuningWindow)->clearContent();
-			((IWindow*)tuningWindow)->hide();
-			delete ((IWindow*)tuningWindow);
+			dm->clearWindowContent(myScreen, tuningWindow);
+			dm->hideWindow(myScreen, tuningWindow);
+
+			dm->deleteWindow(myScreen, tuningWindow);
+			delete tuningWindow;
 			tuningWindow = NULL;
 		}
 	}

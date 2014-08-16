@@ -134,7 +134,7 @@ namespace mb {
 					GingaScreenID screenId, GingaWindowID window)=0;
 
 			virtual void releaseWindow(
-					GingaScreenID screenId, IWindow* window)=0;
+					GingaScreenID screenId, IWindow* window) = 0;
 
 			virtual GingaSurfaceID createSurface(GingaScreenID screenId)=0;
 
@@ -150,10 +150,9 @@ namespace mb {
 			virtual bool releaseSurface(
 					GingaScreenID screenId, ISurface* sur)=0;
 
-
 			/* Interfacing content */
 
-			virtual IContinuousMediaProvider* createContinuousMediaProvider(
+			virtual GingaProviderID createContinuousMediaProvider(
 					GingaScreenID screenId,
 					const char* mrl,
 					bool* hasVisual,
@@ -161,21 +160,21 @@ namespace mb {
 
 			virtual void releaseContinuousMediaProvider(
 					GingaScreenID screenId,
-					IContinuousMediaProvider* provider)=0;
+					GingaProviderID provider)=0;
 
-			virtual IFontProvider* createFontProvider(
+			virtual GingaProviderID createFontProvider(
 					GingaScreenID screenId,
 					const char* mrl,
 					int fontSize)=0;
 
 			virtual void releaseFontProvider(
-					GingaScreenID screenId, IFontProvider* provider)=0;
+					GingaScreenID screenId, GingaProviderID provider)=0;
 
-			virtual IImageProvider* createImageProvider(
+			virtual GingaProviderID createImageProvider(
 					GingaScreenID screenId, const char* mrl)=0;
 
 			virtual void releaseImageProvider(
-					GingaScreenID screenId, IImageProvider* provider)=0;
+					GingaScreenID screenId, GingaProviderID provider)=0;
 
 			virtual GingaSurfaceID createRenderedSurfaceFromImageFile(
 					GingaScreenID screenId, const char* mrl)=0;
@@ -195,6 +194,7 @@ namespace mb {
 			virtual int fromGingaToMB(GingaScreenID screenId, int keyCode)=0;
 
 			/* Methods created to isolate gingacc-mb */
+			//Windows
 			virtual void addWindowCaps (
 					const GingaScreenID &screenId, const GingaWindowID &winId,
 					int caps) = 0;
@@ -241,6 +241,14 @@ namespace mb {
 					const GingaScreenID &screenId, const GingaWindowID &winId,
 					int r, int g, int b) = 0;
 
+			virtual void setWindowX(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int x) = 0;
+			virtual void setWindowY(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int y) = 0;
+			virtual void setWindowW(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int w) = 0;
+			virtual void setWindowH(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int h) = 0;
 			virtual void setWindowZ (
 					const GingaScreenID &screenId, const GingaWindowID &winId,
 					float z) = 0;
@@ -287,6 +295,18 @@ namespace mb {
 					const GingaScreenID &screenId, const GingaWindowID &winId,
 					const GingaWindowID &mirrorSrc) = 0;
 
+			virtual void revertWindowContent(
+					const GingaScreenID &screenId, const GingaWindowID &winId) = 0;
+
+			virtual void deleteWindow(
+					const GingaScreenID &screenId, const GingaWindowID &winId) = 0;
+
+			virtual void moveWindowTo(
+					const GingaScreenID &screenId, const GingaWindowID &winId,
+					int x, int y) = 0;
+
+
+			//Surfaces
 			virtual void* getSurfaceContent(const GingaSurfaceID& surId) = 0;
 
 			virtual GingaWindowID getSurfaceParentWindow(
@@ -315,7 +335,7 @@ namespace mb {
 			                               int r, int g, int b, int alpha) = 0;
 
 			virtual void setSurfaceFont(const GingaSurfaceID &surId,
-			                            void* font) = 0;
+			                            GingaSurfaceID font) = 0;
 
 			virtual void setColor(const GingaSurfaceID &surId, int r, int g, int b,
 			                      int alpha) = 0;;
@@ -336,6 +356,58 @@ namespace mb {
 
 			virtual bool hasSurfaceExternalHandler(const GingaSurfaceID &surId) = 0;
 
+			virtual void setSurfaceColor(
+					const GingaSurfaceID &surId, int r, int g, int b, int alpha) = 0;
+
+
+			//Providers
+			virtual void setProviderSoundLevel (
+					const GingaProviderID &provId, float level) = 0;
+
+			virtual void getProviderOriginalResolution(
+					const GingaProviderID &provId, int* width, int* height) = 0;
+
+			virtual double getProviderTotalMediaTime(
+					const GingaProviderID &provId) = 0;
+
+			virtual int64_t getProviderVPts(const GingaProviderID &provId) = 0;
+
+			virtual void setProviderMediaTime(
+					const GingaProviderID &provId, double pos) = 0;
+
+			virtual double getProviderMediaTime(const GingaProviderID &provId) = 0;
+
+			virtual void pauseProvider (const GingaProviderID &provId) = 0;
+
+			virtual void stopProvider (const GingaProviderID &provId) = 0;
+
+			virtual void resumeProvider (
+					const GingaProviderID &provId, GingaSurfaceID surface,
+					bool hasVisual) = 0;
+
+			virtual void setProviderAVPid(
+					const GingaProviderID &provId, int aPid, int vPid) = 0;
+
+			virtual void feedProviderBuffers(const GingaProviderID &provId) = 0;
+
+			virtual bool checkProviderVideoResizeEvent(
+					const GingaProviderID &provId, const GingaSurfaceID &frame) = 0;
+
+			virtual int getProviderStringWidth(
+					const GingaProviderID &provId, const char* text, int textLength=0)=0;
+
+			virtual void playProviderOver(
+					const GingaProviderID &provId, const GingaSurfaceID &surface) = 0;
+
+			virtual void playProviderOver(
+								const GingaProviderID &provId, GingaSurfaceID surface,
+								bool hasVisual, IProviderListener* listener=NULL) = 0;
+
+			virtual void playProviderOver(
+					const GingaProviderID &provId, const GingaSurfaceID &surface,
+					const char* text, int x, int y, short align) = 0;
+
+			virtual int getProviderHeight(const GingaProviderID &provId) = 0;
 	};
 }
 }

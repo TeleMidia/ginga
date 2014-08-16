@@ -61,7 +61,9 @@ namespace core {
 namespace mb {
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
-
+		
+		type = VideoProvider;
+				 
 		myScreen = screenId;
 		win      = NULL;
 		hasTex   = false;

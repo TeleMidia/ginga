@@ -226,8 +226,12 @@ namespace mb {
 	}
 
 	void SDLSurface::releaseFont() {
-		LocalScreenManager::getInstance()->releaseFontProvider(myScreen, iFont);
-		iFont = NULL;
+		if (iFont != NULL)
+		{
+			LocalScreenManager::getInstance()->releaseFontProvider(myScreen,
+		                                                       iFont->getId());
+			iFont = NULL;
+		}
 	}
 
 	void SDLSurface::releaseDrawData() {

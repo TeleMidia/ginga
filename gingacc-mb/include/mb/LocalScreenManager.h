@@ -98,6 +98,9 @@ namespace mb {
 			map<GingaSurfaceID, ISurface*> surMap;
 			pthread_mutex_t surMapMutex;
 
+			map<GingaProviderID, IMediaProvider*> provMap;
+			pthread_mutex_t provMapMutex;
+
 			static set<IInputEventListener*> iListeners;
 			static pthread_mutex_t ilMutex;
 
@@ -184,8 +187,10 @@ namespace mb {
 			void unlockSysNames();
 
 			GingaSurfaceID surIdRefCounter;
+			GingaSurfaceID provIdRefCounter;
 
 		public:
+			IMediaProvider* getIMediaProviderFromId (const GingaProviderID& provId);
 			ISurface* getISurfaceFromId(const GingaSurfaceID &surfaceId);
 
 			IWindow* getIWindowFromId(
@@ -218,6 +223,7 @@ namespace mb {
 					GingaScreenID screenId, GingaWindowID underlyingWindow);
 
 			bool hasWindow(GingaScreenID screenId, GingaWindowID window);
+
 			void releaseWindow(GingaScreenID screenId, IWindow* window);
 
 			GingaSurfaceID createSurface(GingaScreenID screenId);
@@ -235,7 +241,7 @@ namespace mb {
 					const GingaScreenID &screenId, const GingaWindowID &winId);
 
 			/* Interfacing content */
-			IContinuousMediaProvider* createContinuousMediaProvider(
+			GingaProviderID createContinuousMediaProvider(
 					GingaScreenID screenId,
 					const char* mrl,
 					bool* hasVisual,
@@ -243,21 +249,21 @@ namespace mb {
 
 			void releaseContinuousMediaProvider(
 					GingaScreenID screenId,
-					IContinuousMediaProvider* provider);
+					GingaProviderID provider);
 
-			IFontProvider* createFontProvider(
+			GingaProviderID createFontProvider(
 					GingaScreenID screenId,
 					const char* mrl,
 					int fontSize);
 
 			void releaseFontProvider(
-					GingaScreenID screenId, IFontProvider* provider);
+					GingaScreenID screenId, GingaProviderID provider);
 
-			IImageProvider* createImageProvider(
+			GingaProviderID createImageProvider(
 					GingaScreenID screenId, const char* mrl);
 
 			void releaseImageProvider(
-					GingaScreenID screenId, IImageProvider* provider);
+					GingaScreenID screenId, GingaProviderID provider);
 
 			GingaSurfaceID createRenderedSurfaceFromImageFile(
 					GingaScreenID screenId, const char* mrl);
@@ -276,6 +282,7 @@ namespace mb {
 			int fromGingaToMB(GingaScreenID screenId, int keyCode);
 
 			/* Methods created to isolate gingacc-mb */
+			//windows
 			void addWindowCaps (const GingaScreenID &screenId,
 			                    const GingaWindowID &winId, int caps);
 			void setWindowCaps (const GingaScreenID &screenId,
@@ -313,8 +320,20 @@ namespace mb {
 					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
 					int g, int b);
 
-			void setWindowZ (const GingaScreenID &screenId,
-			                 const GingaWindowID &winId, float z);
+			void setWindowX(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int x);
+
+			void setWindowY(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int y);
+
+			void setWindowW(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int w);
+
+			void setWindowH(
+					const GingaScreenID &screenId, const GingaWindowID &winId, int h);
+
+			void setWindowZ(
+					const GingaScreenID &screenId, const GingaWindowID &winId, float z);
 
 			void disposeWindow (const GingaScreenID &screenId,
 			                    const GingaWindowID &winId);
@@ -350,10 +369,21 @@ namespace mb {
 			void clearWindowContent (const GingaScreenID &screenId,
 			                         const GingaWindowID &winId);
 
+			void revertWindowContent(
+								const GingaScreenID &screenId, const GingaWindowID &winId);
+
+			void deleteWindow(
+								const GingaScreenID &screenId, const GingaWindowID &winId);
+
+			void moveWindowTo(
+								const GingaScreenID &screenId, const GingaWindowID &winId,
+								int x, int y);
+
 			void setWindowMirrorSrc (
 					const GingaScreenID &screenId, const GingaWindowID &winId,
 					const GingaWindowID &mirrorSrc);
 
+			//surfaces
 			void* getSurfaceContent(const GingaSurfaceID &surId);
 
 			GingaWindowID getSurfaceParentWindow(const GingaSurfaceID& surId);
@@ -376,7 +406,7 @@ namespace mb {
 			void setSurfaceBgColor(
 					const GingaSurfaceID &surId, int r, int g, int b, int alpha);
 
-			void setSurfaceFont(const GingaSurfaceID &surId, void* font);
+			void setSurfaceFont(const GingaSurfaceID &surId, GingaSurfaceID font);
 
 			void setColor(const GingaSurfaceID &surId, int r, int g, int b,int alpha);
 
@@ -393,6 +423,54 @@ namespace mb {
 			IColor* getSurfaceColor(const GingaSurfaceID &surId);
 
 			bool hasSurfaceExternalHandler(const GingaSurfaceID &surId);
+
+			void setSurfaceColor(
+								const GingaSurfaceID &surId, int r, int g, int b, int alpha);
+
+			//providers
+			void setProviderSoundLevel (
+								const GingaProviderID &provId, float level);
+
+			void getProviderOriginalResolution(
+								const GingaProviderID &provId, int* width, int* height);
+
+			double getProviderTotalMediaTime(const GingaProviderID &provId);
+
+			int64_t getProviderVPts(const GingaProviderID &provId);
+
+			void setProviderMediaTime( const GingaProviderID &provId, double pos);
+
+			double getProviderMediaTime(const GingaProviderID &provId);
+
+			void pauseProvider (const GingaProviderID &provId);
+
+			void stopProvider (const GingaProviderID &provId);
+
+			void resumeProvider (
+					const GingaProviderID &provId, GingaSurfaceID surface,bool hasVisual);
+
+			void setProviderAVPid(const GingaProviderID &provId, int aPid, int vPid);
+
+			void feedProviderBuffers(const GingaProviderID &provId);
+
+			bool checkProviderVideoResizeEvent(
+								const GingaProviderID &provId, const GingaSurfaceID &frame);
+
+			int getProviderStringWidth(
+					const GingaProviderID &provId, const char* text, int textLength=0);
+
+			void playProviderOver(
+					const GingaProviderID &provId, const GingaSurfaceID &surface);
+
+			void playProviderOver(
+					const GingaProviderID &provId, const GingaSurfaceID &surface,
+					const char* text, int x, int y, short align);
+
+			void playProviderOver(
+								const GingaProviderID &provId, GingaSurfaceID surface,
+								bool hasVisual, IProviderListener* listener=NULL);
+
+			int getProviderHeight(const GingaProviderID &provId);
 
 			/* and finally some private stuff */
 		private:

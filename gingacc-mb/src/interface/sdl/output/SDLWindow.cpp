@@ -645,10 +645,17 @@ namespace mb {
 
 	void SDLWindow::renderImgFile(string serializedImageUrl) {
 		IImageProvider* img;
+		GingaProviderID providerId;
 		GingaSurfaceID surId;
 
-		img = LocalScreenManager::getInstance()->createImageProvider(
+		providerId = LocalScreenManager::getInstance()->createImageProvider(
 				myScreen, serializedImageUrl.c_str());
+
+		IMediaProvider *mediaProvider =
+				LocalScreenManager::getInstance()->getIMediaProviderFromId(providerId);
+		if (mediaProvider &&
+				mediaProvider->getType() == IMediaProvider::ImageProvider)
+			img = (IImageProvider*) mediaProvider;
 
 		surId = LocalScreenManager::getInstance()->createSurface(myScreen);
 		img->playOver(surId);
@@ -660,7 +667,8 @@ namespace mb {
 
 		textureUpdate = true;
 
-		LocalScreenManager::getInstance()->releaseImageProvider(myScreen, img);
+		LocalScreenManager::getInstance()->releaseImageProvider(myScreen,
+		                                                        img->getId());
 		LocalScreenManager::getInstance()->deleteSurface(surId);
 	}
 
