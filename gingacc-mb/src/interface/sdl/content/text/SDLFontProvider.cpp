@@ -78,7 +78,9 @@ namespace mb {
 	short SDLFontProvider::fontRefs   = 0;
 
 	SDLFontProvider::SDLFontProvider(
-			GingaScreenID screenId, const char* fontUri, int heightInPixel) {
+			GingaScreenID screenId, const char* fontUri, int heightInPixel){
+
+		type = FontProvider;
 
 		if (!initNTSMutex) {
 			initNTSMutex = true;

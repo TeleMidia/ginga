@@ -63,7 +63,9 @@ namespace ginga {
 namespace core {
 namespace mb {
 	SDLAudioProvider::SDLAudioProvider(
-			GingaScreenID screenId, const char* mrl) {
+			GingaScreenID screenId, const char* mrl){
+
+		type = AudioProvider;
 
 		myScreen   = screenId;
 		this->mrl  = "";

@@ -87,7 +87,7 @@ namespace player {
 			IColor* bgColor;
 			string fontUri;
 			short currentAlign;
-			IFontProvider* font;
+			GingaProviderID font;
 
 		public:
 			TextPlayer(GingaScreenID screenId);
@@ -99,7 +99,7 @@ namespace player {
 		public:
 			static int write(
 					GingaScreenID screenId,
-					ISurface* s,
+					GingaSurfaceID s,
 					string text,
 					short textAlign,
 					string fontUri = "",

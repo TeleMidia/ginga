@@ -179,7 +179,7 @@ namespace multidevice {
 
 	void FormatterMultiDevice::printGingaWindows() {
 		string fileUri = "";
-		IWindow* iWin;
+		GingaWindowID iWin;
 		FormatterLayout* formatterLayout;
 
 		vector<GingaWindowID> sortedIds;
@@ -227,10 +227,10 @@ namespace multidevice {
 				cout << "has the following : ";
 				j = sortedIds.begin();
 				while (j != sortedIds.end()) {
-					iWin = dm->getIWindowFromId(myScreen, (*j));
+					iWin = (*j);
 
 					if (iWin != NULL) {
-						iWin->getDumpFileUri(quality, dumpW, dumpH);
+						dm->getWindowDumpFileUri(myScreen, iWin, quality, dumpW, dumpH);
 					}
 
 					cout << "'" << (unsigned long)(*j) << "' ";

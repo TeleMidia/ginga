@@ -187,7 +187,7 @@ namespace player {
 		clog << "AVPlayer::createProvider '" << mrl << "' all done" << endl;
 	}
 
-	void* AVPlayer::createProviderT(void* ptr) {
+	GingaProviderID AVPlayer::createProviderT(void* ptr) {
 		AVPlayer* p = (AVPlayer*)ptr;
 
 		p->createProvider();
@@ -220,7 +220,7 @@ namespace player {
 		//lock()();
 		this->soundLevel = level;
 		if (provider != NULL) {
-			provider->setSoundLevel(soundLevel);
+			dm->setProviderSoundLevel(provider, soundLevel);
 		}
 		//unlock();
 	}
@@ -251,13 +251,13 @@ namespace player {
 
 	void AVPlayer::getOriginalResolution(int* width, int* height) {
 		if (provider != NULL) {
-			provider->getOriginalResolution(height, width);
+			dm->getProviderOriginalResolution(provider, height, width);
 		}
 	}
 
 	double AVPlayer::getTotalMediaTime() {
 		if (provider != NULL) {
-			return provider->getTotalMediaTime();
+			return dm->getProviderTotalMediaTime(provider);
 		}
 
 		this->wakeUp();
@@ -269,16 +269,18 @@ namespace player {
 			return 0;
 		}
 
-		return provider->getVPts();
+		return dm->getProviderVPts(provider);
 	}
 
 	void AVPlayer::timeShift(string direction) {
 		if (provider != NULL) {
 			if (direction == "forward") {
-				provider->setMediaTime(provider->getMediaTime() + 10);
+				dm->setProviderMediaTime(provider,
+				                         dm->getProviderMediaTime(provider) + 10);
 
 			} else if (direction == "backward") {
-				provider->setMediaTime(provider->getMediaTime() - 10);
+				dm->setProviderMediaTime(provider,
+				                         dm->getProviderMediaTime(provider) - 10);
 			}
 		}
 	}
@@ -292,7 +294,7 @@ namespace player {
 			return -1;
 		}
 
-		return provider->getMediaTime();
+		return dm->getProviderMediaTime(provider);
 	}
 
 	double AVPlayer::getMediaTime() {
@@ -303,13 +305,13 @@ namespace player {
 		if (status == PLAY) {
 			status = PAUSE;
 			this->wakeUp();
-			provider->setMediaTime(pos);
+			dm->setProviderMediaTime(provider, pos);
 			status = PLAY;
 			running = true;
 			Thread::startThread();
 
 		} else if (provider != NULL) {
-			provider->setMediaTime(pos);
+			dm->setProviderMediaTime(provider, pos);
 		}
 	}
 
@@ -357,7 +359,7 @@ namespace player {
 
 		Player::play();
 		clog << "AVPlayer::play() calling provider play over" << endl;
-		provider->playOver(surface, hasVisual, this);
+		dm->playProviderOver(provider, surface, hasVisual, this);
 
 		if (!running) {
 			running = true;
@@ -376,9 +378,9 @@ namespace player {
 		}
 
 		if (outputWindow != NULL) {
-			outputWindow->validate();
+			dm->validateWindow(myScreen, outputWindow);
 		}
-		provider->pause();
+		dm->pauseProvider(provider);
 		this->wakeUp();
 		/*if (hasVisual) {
 			Window::dynamicRenderCallBack((void*)(this->surface));
@@ -402,7 +404,7 @@ namespace player {
 		}
 
 		if (previousStatus != STOP) {
-			provider->stop();
+			dm->stopProvider(provider);
 			this->wakeUp();
 		}
 
@@ -413,7 +415,7 @@ namespace player {
 		setSoundLevel(soundLevel);
 
 		Player::play();
-		provider->resume(surface, hasVisual);
+		dm->resumeProvider(provider, surface, hasVisual);
 
 		if (!running) {
 			running = true;
@@ -544,7 +546,7 @@ namespace player {
 		while (!buffered) {
 			SystemCompat::uSleep(150000);
 		}
-		provider->setAVPid(aPid, vPid);
+		dm->setProviderAVPid(provider, aPid, vPid);
 	}
 
 	void AVPlayer::setAlphaBlend(int x, int y, int w, int h) {
@@ -563,14 +565,14 @@ namespace player {
 		bool hasEvent = false;
 
 		if (mainAV) {
-			provider->feedBuffers();
+			dm->feedProviderBuffers(provider);
 		} else {
 			SystemCompat::uSleep(150000);
 		}
-		hasEvent = provider->checkVideoResizeEvent(surface);
+		hasEvent = dm->checkProviderVideoResizeEvent(provider, surface);
 		setSoundLevel(this->soundLevel);
 		if (hasEvent) {
-			provider->playOver(surface, hasVisual);
+			dm->playProviderOver(provider, surface, hasVisual);
 		}
 
 		return hasEvent;
@@ -618,8 +620,7 @@ namespace player {
 			if (this->win != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
 				dm->setSurfaceParentWindow(myScreen, surface, win);
 			}
-
-			provider->playOver(surface, hasVisual);
+			dm->playProviderOver(provider, surface, hasVisual);
 			checkVideoResizeEvent();
 			buffered = true;
 
@@ -750,7 +751,7 @@ namespace player {
 			running = false;
 
 			if (provider != NULL) {
-				provider->stop();
+				dm->stopProvider(provider);
 			}
 
 			clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;

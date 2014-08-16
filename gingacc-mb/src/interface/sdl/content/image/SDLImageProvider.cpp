@@ -70,6 +70,8 @@ namespace mb {
 	SDLImageProvider::SDLImageProvider(
 			GingaScreenID screenId, const char* mrl) {
 
+		type = ImageProvider;
+
 		if (!mutexInit) {
 			mutexInit = true;
 			Thread::mutexInit(&pMutex, true);

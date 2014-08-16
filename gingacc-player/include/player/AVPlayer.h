@@ -130,7 +130,7 @@ namespace player {
 
 		private:
 			string pSym;
-			IContinuousMediaProvider* provider;
+			GingaProviderID provider;
 			bool hasResized;
 			bool mainAV;
 			bool isRemote;
@@ -156,7 +156,7 @@ namespace player {
 
 		private:
 			void createProvider();
-			static void* createProviderT(void* ptr);
+			static GingaProviderID createProviderT(void* ptr);
 
 		public:
 			void finished();

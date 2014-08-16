@@ -124,7 +124,8 @@ namespace player {
 		mirrors.clear();
 
 		if (dm->hasWindow(myScreen, outputWindow)) {
-			outputWindow->revertContent();
+			dm->revertWindowContent(myScreen, outputWindow);
+			dm->deleteWindow(myScreen, outputWindow);
 			delete outputWindow;
 			outputWindow = NULL;
 		}
@@ -502,44 +503,45 @@ namespace player {
 			if (name == "bounds") {
 				params = split(value, ",");
 				if (params->size() == 4) {
-					outputWindow->setBounds(
-							util::stof((*params)[0]),
-							util::stof((*params)[1]),
-							util::stof((*params)[2]),
-							util::stof((*params)[3]));
+					dm->setWindowBounds(myScreen, outputWindow,
+															util::stof((*params)[0]),
+															util::stof((*params)[1]),
+															util::stof((*params)[2]),
+															util::stof((*params)[3]));
 				}
 				delete params;
 
 			} else if (name == "location") {
 				params = split(value, ",");
 				if (params->size() == 2) {
-					outputWindow->moveTo(
-							util::stof((*params)[0]), util::stof((*params)[1]));
+					dm->moveWindowTo(myScreen, outputWindow,
+					                 util::stof((*params)[0]), util::stof((*params)[1]));
 				}
 				delete params;
 
 			} else if (name == "size") {
 				params = split(value, ",");
 				if (params->size() == 2) {
-					outputWindow->resize(
-							util::stof((*params)[0]), util::stof((*params)[1]));
+					dm->resizeWindow(myScreen, outputWindow,
+					                 util::stof((*params)[0]), util::stof((*params)[1]));
 				}
 				delete params;
 
 			} else if (name == "left") {
-				outputWindow->setX(util::stof(value));
+				dm->setWindowX(myScreen, outputWindow, util::stof(value));
 
 			} else if (name == "top") {
-				outputWindow->setY(util::stof(value));
+				dm->setWindowY(myScreen, outputWindow, util::stof(value));
 
 			} else if (name == "width") {
-				outputWindow->setW(util::stof(value));
+				dm->setWindowW (myScreen, outputWindow, util::stof(value));
 
 			} else if (name == "height") {
-				outputWindow->setH(util::stof(value));
+				dm->setWindowH (myScreen, outputWindow, util::stof(value));
 
 			} else if (name == "transparency") {
-				outputWindow->setCurrentTransparency(util::stof(value));
+				dm->setWindowCurrentTransparency(myScreen, outputWindow,
+				                                 util::stof(value));
 			}
 		}
 		properties[name] = value;

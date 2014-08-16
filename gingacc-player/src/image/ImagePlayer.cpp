@@ -179,7 +179,7 @@ namespace player {
 			return false;
 		}
 
-		provider->playOver(surface);
+		dm->playProviderOver(provider, surface);
 		return Player::play();
 	}
 
@@ -207,12 +207,12 @@ namespace player {
 	}
 
 	GingaSurfaceID ImagePlayer::prepareSurface(
-			IImageProvider* provider, string mrl) {
+			GingaProviderID provider, string mrl) {
 
 		GingaSurfaceID renderedSurface = NULL;
 
 		renderedSurface = dm->createSurfaceFrom(myScreen, NULL);
-		provider->playOver(renderedSurface);
+		dm->playProviderOver(provider, renderedSurface);
 
 		return renderedSurface;
 	}

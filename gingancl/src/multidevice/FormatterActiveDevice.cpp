@@ -339,7 +339,7 @@ namespace multidevice {
 			string contentUri) {
 
 		map<string, string>::iterator i;
-		ISurface* s;
+		GingaSurfaceID s;
 
 		clog << "FormatterActiveDevice::receiveRemoteContent from class '";
 		clog << remoteDevClass << "' and contentUri '" << contentUri << "'";

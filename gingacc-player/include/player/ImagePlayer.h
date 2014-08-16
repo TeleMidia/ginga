@@ -77,7 +77,7 @@ namespace core {
 namespace player {
 	class ImagePlayer : public Player {
 		private:
-			IImageProvider* provider;
+			GingaProviderID provider;
 
 		public:
 			ImagePlayer(GingaScreenID screenId, string mrl);
@@ -89,7 +89,7 @@ namespace player {
 			virtual void setPropertyValue(string name, string value);
 
 		private:
-			GingaSurfaceID prepareSurface(IImageProvider* provider, string mrl);
+			GingaSurfaceID prepareSurface(GingaProviderID provider, string mrl);
 	};
 }
 }
