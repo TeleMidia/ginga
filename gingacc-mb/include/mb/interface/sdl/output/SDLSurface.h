@@ -69,6 +69,7 @@ namespace core {
 namespace mb {
 	class SDLSurface : public ISurface {
 		private:
+		  static GingaSurfaceID refIdCounter;
 			GingaSurfaceID myId;
 			GingaScreenID myScreen;
 			SDL_Surface* sur;
@@ -95,7 +96,7 @@ namespace mb {
 
 			virtual ~SDLSurface();
 
-			GingaSurfaceID getId ();
+			GingaSurfaceID getId () const;
 			void setId (const GingaSurfaceID &surId);
 
 		private:
@@ -111,7 +112,7 @@ namespace mb {
 			void releaseFont();
 			void releaseDrawData();
 
-			void initialize(GingaScreenID screenId);
+			void initialize(const GingaScreenID &screenId, const GingaSurfaceID &id);
 
 		public:
 			void takeOwnership();

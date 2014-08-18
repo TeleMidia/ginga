@@ -307,6 +307,8 @@ namespace mb {
 
 
 			//Surfaces
+			virtual void registerSurface (ISurface*) = 0;
+
 			virtual void* getSurfaceContent(const GingaSurfaceID& surId) = 0;
 
 			virtual GingaWindowID getSurfaceParentWindow(

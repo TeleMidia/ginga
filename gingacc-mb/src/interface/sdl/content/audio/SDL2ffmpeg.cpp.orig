@@ -851,6 +851,88 @@ namespace mb {
 	}
 
 	void SDL2ffmpeg::render_vp(VideoPicture* vp) {
+<<<<<<< HEAD
+		if (vp->src_frame)
+		{
+			if (vp->tex) {
+				if (vp->src_frame && !abortRequest) {
+							Uint32 format;
+							int textureAccess, w, h;
+							bool locked = true;
+					AVPicture pict = { { 0 } };
+
+							if (SDL_LockTexture(vp->tex, NULL, (void**)&pict.data, &pict.linesize[0]) != 0) {
+						clog << "SDL2ffmpeg::render_vp(" << vs->filename;
+						clog << ") Warning! ";
+						clog << "Can't lock texture: " << SDL_GetError() << endl;
+						if (!SDLDeviceScreen::hasTexture(vp->tex)) {
+							clog << "SDL2ffmpeg::render_vp(";
+							clog << vs->filename << ") Warning! ";
+							clog << "vp->tex(" << vp->tex << ") ";
+							clog << "is out of scope " << endl;
+							return;
+						}
+						locked = false;
+							}
+
+							SDL_QueryTexture(vp->tex, &format, &textureAccess, &w, &h);
+
+					if (!abortRequest) {
+						if (vp->tex &&
+								vp->src_frame->data &&
+								vp->height > 0) {
+
+							AVPixelFormat fmt = (AVPixelFormat)vp->src_frame->format;
+
+							if (fmt == PIX_FMT_NONE) {
+								fmt = PIX_FMT_YUV420P;
+							}
+
+							if (format != GINGA_PIXEL_FMT) {
+								clog << "SDL2ffmpeg::render_vp Warning! SDL texture has ";
+								clog << "an invalid pixel format" << endl;
+							}
+
+							//FIXME: use direct rendering
+							/*
+							if (enableFilter) {
+								av_picture_copy(
+										&pict,
+										(AVPicture*)vp->src_frame,
+										(AVPixelFormat)fmt,
+										vp->width,
+										vp->height);
+							}*/
+							/*
+							 * FIXME: we are using filters only to deinterlace video.
+							 *        we should use them to convert pixel formats as well.
+							 */
+
+							SwsContext* ctx = NULL;
+
+							ctx = sws_getCachedContext(
+									ctx,
+									vp->width,
+									vp->height,
+									(AVPixelFormat)fmt,
+									w,
+									h,
+									PIX_FMT_RGB24,
+									SWS_FAST_BILINEAR,
+									0,
+									0,
+									0);
+
+							int ret = sws_scale(
+									ctx,
+									(const uint8_t* const*)vp->src_frame->data,
+									vp->src_frame->linesize,
+									0, vp->height, pict.data, pict.linesize);
+
+							if (ret < 0) {
+								clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
+							}
+=======
 		assert(vp->src_frame != NULL);
 
 		if (vp->tex) {
@@ -930,9 +1012,32 @@ namespace mb {
 					if (ret < 0) {
 						clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
 					}
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 #if GINGA_DEBUG
 					scaleCounter++;
 #endif
+<<<<<<< HEAD
+						}
+					}
+
+					if (locked) {
+						SDL_UnlockTexture(vp->tex);
+					}
+
+					hasPic = false;
+
+				} else {
+					clog << "SDL2ffmpeg::render_vp aborting";
+					clog << endl;
+				}
+
+			} else {
+				clog << "SDL2ffmpeg::render_vp Can't display video ";
+				clog << "(NULL texture)" << endl;
+			}
+			av_frame_unref(vp->src_frame);
+		}
+=======
 				}
 			}
 
@@ -950,6 +1055,7 @@ namespace mb {
 		//TODO: find a better way to check if video_thread already did this frame unref
 		if (vp->src_frame->width > 0)
 			av_frame_unref(vp->src_frame);
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 	}
 
 	void SDL2ffmpeg::stream_close() {

@@ -47,71 +47,84 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef ISURFACE_H_
-#define ISURFACE_H_
+#include "config.h"
 
-#include "mb/IMBDefs.h"
-
-#include "util/IColor.h"
+#include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
-	class ISurface {
-		public:
-			virtual ~ISurface(){};
+#include "system/compat/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-			virtual void setExternalHandler(bool extHandler)=0;
-			virtual bool hasExternalHandler()=0;
-			virtual void addCaps(int caps)=0;
-			virtual void setCaps(int caps)=0;
-			virtual int getCap(string cap)=0;
-			virtual int getCaps()=0;
-			virtual bool setParentWindow(void* parentWindow)=0;
-			virtual void* getParentWindow()=0;
-			virtual void* getSurfaceContent()=0;
-			virtual void setSurfaceContent(void* surface)=0;
-			virtual void clearContent()=0;
-			virtual void clearSurface()=0;
-			virtual void drawLine(int x1, int y1, int x2, int y2)=0;
-			virtual void drawRectangle(int x, int y, int w, int h)=0;
-			virtual void fillRectangle(int x, int y, int w, int h)=0;
-			virtual void drawString(int x, int y, const char* txt)=0;
-			virtual void setBorderColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBorderColor()=0;
-			virtual void setBgColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBgColor()=0;
-			virtual void setColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getColor()=0;
-			virtual void setChromaColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getChromaColor()=0;
-			virtual void setSurfaceFont(void* font)=0;
-			virtual void flip()=0;
-			virtual void scale(double x, double y)=0;
-			virtual void blit(
-					int x,
-					int y,
-					ISurface* src=NULL,
-					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1)=0;
+#include "mb/LocalScreenManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-			virtual void getStringExtents(const char* text, int* w, int* h)=0;
-			virtual void setClip(int x, int y, int w, int h)=0;
-			virtual void getSize(int* width, int* height)=0;
-			virtual string getDumpFileUri()=0;
-			virtual void setMatrix(void* matrix)=0;
+#include "player/BerkeliumPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-			virtual GingaSurfaceID getId () const = 0;
-			//virtual void setId (const GingaSurfaceID &surId) = 0;
-	};
-}
-}
-}
-}
-}
+#include "player/PlayersComponentSupport.h"
+
+extern "C" {
+#include <stdio.h>
 }
 
-#endif /*SURFACE_H_*/
+void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
+	IWindow* w;
+	bool notFalse = true;
+	ISurface* s;
+	IPlayer* html;
+
+	w = dm->createWindow(screen, 10, 10, 380, 280, 3.3);
+
+	w->setCaps(w->getCap("ALPHACHANNEL"));
+	w->draw();
+	w->show();
+	w->raiseToTop();
+
+	html = new BerkeliumPlayer(screen, "http://www.google.com");
+	html->setPropertyValue("bounds", "0, 0, 380, 280");
+	html->setOutWindow(w->getId());
+	s = html->getSurface();
+
+	html->play();
+	if (s != NULL && s->setParentWindow((void*)w)) {
+		w->renderFrom(s);
+	}
+}
+
+bool running = false;
+
+int main(int argc, char** argv, char** envp) {
+	GingaScreenID screen1;
+	int fakeArgc = 5;
+	char* sdlArgv[5];
+	ILocalScreenManager* dm;
+
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
+
+	dm = LocalScreenManager::getInstance();
+
+	sdlArgv[0] = (char*)"testScreen";
+	sdlArgv[1] = (char*)"--vsystem";
+	sdlArgv[2] = (char*)"sdl";
+	sdlArgv[3] = (char*)"--vmode";
+	sdlArgv[4] = (char*)"400x300";
+	screen1 = dm->createScreen(fakeArgc, sdlArgv);
+
+	testPlayer(dm, screen1);
+
+	cout << "gingacc-player test has shown HTML page. ";
+	cout << "press enter to exit";
+	cout << endl;
+	getchar();
+
+	dm->clearWidgetPools(screen1);
+	dm->releaseScreen(screen1);
+	dm->releaseMB(screen1);
+
+	delete dm;
+
+	cout << "Player test done. press enter to continue" << endl;
+	getchar();
+
+	return 0;
+}

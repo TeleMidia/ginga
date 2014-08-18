@@ -489,8 +489,12 @@ namespace player {
 			unsigned char* scroll_buffer) {
 
 		string strFile;
-		GingaWindowID sWin;
+<<<<<<< HEAD
 		GingaSurfaceID s;
+=======
+		IWindow* sWin;
+		ISurface* s;
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 		const int kBytesPerPixel = 4;
 
 		// If we've reloaded the page and need a full update, ignore updates
@@ -514,10 +518,18 @@ namespace player {
 			s = dm->createRenderedSurfaceFromImageFile(myScreen, strFile.c_str());
 			remove(strFile.c_str());
 
+<<<<<<< HEAD
 			dm->blitSurface(surface, 0, 0, s);
-			sWin = dm->getSurfaceParentWindow(surface);
+
+			GingaWindowID parentWindow = dm->getSurfaceParentWindow (surface);
+			if ( parentWindow != NULL) {
+				dm->validateWindow(myScreen, parentWindow);
+=======
+			surface->blit(0, 0, s);
+			sWin = (IWindow*)surface->getParentWindow();
 			if (sWin != NULL) {
-				dm->validateWindow(myScreen, sWin);
+				sWin->validate();
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 			}
 
 			ignore_partial = false;
@@ -527,6 +539,8 @@ namespace player {
 			Thread::mutexUnlock(&sMutex);
 			return true;
 		}
+
+		GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
 
 		// Now, we first handle scrolling. We need to do this first since it
 		// requires shifting existing data, some of which will be overwritten by
@@ -553,17 +567,20 @@ namespace player {
 
 				if (dx > 0) {
 					dm->blitSurface(surface, dx, 0, surface, 0, 0, wid, hig);
-
 				} else if(dy > 0) {
 					dm->blitSurface(surface, 0, dy, surface, 0, 0, wid, hig);
-
 				} else {
 					dm->blitSurface(surface, 0, 0, surface, left, top, wid, hig);
 				}
 
-				sWin = dm->getSurfaceParentWindow(surface);
+<<<<<<< HEAD
+				if (parentWindow != NULL) {
+					dm->validateWindow(myScreen, parentWindow);
+=======
+				sWin = (IWindow*)surface->getParentWindow();
 				if (sWin != NULL) {
-					dm->validateWindow(myScreen, sWin);
+					sWin->validate();
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 				}
 			}
 		}
@@ -595,10 +612,19 @@ namespace player {
 			left =  copy_rects[i].left();
 			top = copy_rects[i].top();
 
-			dm->blitSurface(surface, left, top, s, 0, 0, wid, hig);
-			sWin = dm->getSurfaceParentWindow(surface);
+<<<<<<< HEAD
+			dm->blitSurface(surface,
+			                copy_rects[i].left(), copy_rects[i].top(),
+			                s, 0, 0, wid, hig);
+
+			if (parentWindow != NULL) {
+				dm->validateWindow(myScreen, parentWindow);
+=======
+			surface->blit(left, top, s, 0, 0, wid, hig);
+			sWin = (IWindow*)surface->getParentWindow();
 			if (sWin != NULL) {
-				dm->validateWindow(myScreen, sWin);
+				sWin->validate();
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 			}
 
 			dm->deleteSurface(s);
@@ -608,6 +634,22 @@ namespace player {
 		return true;
 	}
 
+<<<<<<< HEAD
+	GingaSurfaceID BerkeliumHandler::createRenderedSurface(string fileName) {
+		GingaSurfaceID s;
+		GingaProviderID img;
+
+		img = dm->createImageProvider(myScreen, fileName.c_str());
+		s   = dm->createSurface(myScreen);
+
+		dm->playProviderOver(img, s);
+		dm->releaseImageProvider(myScreen, img);
+
+		return s;
+	}
+
+=======
+>>>>>>> 1f7ed1b895a01ba899e6e305599ad36c820697fd
 	string BerkeliumHandler::createFile(
 			const unsigned char *sourceBuffer,
 			int width, int height) {
