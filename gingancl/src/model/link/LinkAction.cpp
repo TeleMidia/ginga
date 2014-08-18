@@ -57,7 +57,7 @@ namespace ncl {
 namespace model {
 namespace link {
 	LinkAction::LinkAction() : Thread() {
-		initLinkAction(0);
+		initLinkAction(0.0);
 	}
 
 	LinkAction::LinkAction(double delay) : Thread() {

@@ -107,10 +107,6 @@ namespace mb {
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
-		scaleCounter                         = 0;
-		texAccessCount                       = 0;
-		enableFilter                         = true;
-
 		setSoundLevel(1.0);
 
 		if (!init) {
@@ -175,12 +171,15 @@ namespace mb {
 	}
 
 	SDL2ffmpeg::~SDL2ffmpeg() {
+		int sdlReturn;
 		set<SDL2ffmpeg*>::iterator i;
 
 		clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
 
 		abortRequest = true;
-		hasPic = false;
+		hasPic       = false;
+
+		SDL_WaitThread(vs->read_tid, NULL);
 
 		Thread::mutexLock(&aiMutex);
 		i = aInstances.find(this);
@@ -200,31 +199,18 @@ namespace mb {
 	void SDL2ffmpeg::release() {
 		clog << "SDL2ffmpeg::release" << endl;
 
-#if GINGA_DEBUG
-		clog << "SDL2ffmpeg::release scale counter ";
-		clog << scaleCounter << endl;
-		clog << "SDL2ffmpeg::release texture access counter ";
-		clog << texAccessCount << endl;
-#endif
-
 		if (vs != NULL) {
-			if (vs->ic) {
-				avformat_close_input(&vs->ic);
-				vs->ic = NULL; /* safety */
-			}
-
+			close();
 			stream_close();
 		}
 
 		//AVFILTER
-		if (enableFilter) {
-			for (int i=0; i<vfilters_list.size(); i++) {
-				av_freep(vfilters_list[i]);
-			}
+		for (int i=0; i<vfilters_list.size(); i++) {
+			av_freep(vfilters_list[i]);
 		}
 	}
 
-	void SDL2ffmpeg::close(bool quit) {
+	void SDL2ffmpeg::close() {
 		/* close each stream */
 		if (vs->audio_stream >= 0) {
 			stream_component_close(vs->audio_stream);
@@ -234,6 +220,11 @@ namespace mb {
 		if (vs->video_stream >= 0) {
 			stream_component_close(vs->video_stream);
 			vs->video_stream = -1;
+		}
+
+		if (vs->ic) {
+			avformat_close_input(&vs->ic);
+			vs->ic = NULL; /* safety */
 		}
 	}
 
@@ -331,6 +322,7 @@ namespace mb {
 			clog << vs->video_st->time_base.den << "'" << endl;
 
 			SDLDeviceScreen::lockSDL();
+
 			vs->video_tid = SDL_CreateThread(
 					SDL2ffmpeg::video_thread, "video_thread", this);
 
@@ -384,10 +376,6 @@ namespace mb {
 		SDLDeviceScreen::unlockSDL();
 
 		return true;
-	}
-
-	void SDL2ffmpeg::useFilter(bool enable) {
-		this->enableFilter = enable;
 	}
 
 	bool SDL2ffmpeg::hasVideoStream() {
@@ -541,9 +529,6 @@ namespace mb {
 	}
 
 	SDL_Texture* SDL2ffmpeg::getTexture() {
-#if GINGA_DEBUG
-		texAccessCount++;
-#endif
 		return texture;
 	}
 
@@ -893,18 +878,17 @@ namespace mb {
 
 					//FIXME: use direct rendering
 					/*
-					if (enableFilter) {
-						av_picture_copy(
-								&pict,
-								(AVPicture*)vp->src_frame,
-								(AVPixelFormat)fmt,
-								vp->width,
-								vp->height);
-					}*/
+					av_picture_copy(
+							&pict,
+							(AVPicture*)vp->src_frame,
+							(AVPixelFormat)fmt,
+							vp->width,
+							vp->height);
+					}
 					/*
-						* FIXME: we are using filters only to deinterlace video.
-						*        we should use them to convert pixel formats as well.
-						*/
+					 * FIXME: we are using filters only to deinterlace video.
+					 *        we should use them to convert pixel formats as well.
+					 */
 
 					SwsContext* ctx = NULL;
 
@@ -930,9 +914,6 @@ namespace mb {
 					if (ret < 0) {
 						clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
 					}
-#if GINGA_DEBUG
-					scaleCounter++;
-#endif
 				}
 			}
 
@@ -957,8 +938,6 @@ namespace mb {
 		int i;
 
 		/* XXX: use a special url_shutdown call to abort parse cleanly */
-		abortRequest = 1;
-		SDL_WaitThread(vs->read_tid, NULL);
 
 	    packet_queue_destroy(&vs->videoq);
 	    packet_queue_destroy(&vs->audioq);
@@ -1263,7 +1242,9 @@ retry:
 
 				/* dequeue the picture */
 				lastvp = &vs->pictq[vs->pictq_rindex];
+				SDLDeviceScreen::lockSDL();
 				dec->render_vp(lastvp);
+				SDLDeviceScreen::unlockSDL();
 				vp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown) % VIDEO_PICTURE_QUEUE_SIZE];
 
 				if (vp->serial != vs->videoq.serial) {
@@ -1950,76 +1931,68 @@ end:
 			}
 
 			// AVFILTER begin
-			if (dec->enableFilter) {
-				char* vfilter = NULL;
+			char* vfilter = NULL;
 
-				if (dec->vfilters_list.size() > vs->vfilter_idx) {
-					vfilter = dec->vfilters_list[vs->vfilter_idx];
-				}
+			if (dec->vfilters_list.size() > vs->vfilter_idx) {
+				vfilter = dec->vfilters_list[vs->vfilter_idx];
+			}
 
-				if (last_w != frame->width || 
-						last_h != frame->height ||
-						last_format != frame->format ||
-						last_serial != serial ||
-						last_vfilter_idx != vs->vfilter_idx) {
+			if (last_w != frame->width || 
+					last_h != frame->height ||
+					last_format != frame->format ||
+					last_serial != serial ||
+					last_vfilter_idx != vs->vfilter_idx) {
 
-					avfilter_graph_free(&graph);
-					graph = avfilter_graph_alloc();
-					if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
-						dec->abortRequest = true;
-						clog << "SDL2ffmpeg::video_thread error!";
-						clog << "can't configure video filters" << endl;
-						goto the_end;
-					}
-
-					filt_in  = vs->in_video_filter;
-					filt_out = vs->out_video_filter;
-					last_w = frame->width;
-					last_h = frame->height;
-					last_format = (AVPixelFormat)frame->format;
-					last_serial = serial;
-					last_vfilter_idx = vs->vfilter_idx;
-					frame_rate = filt_out->inputs[0]->frame_rate;
-				}
-
-				ret = av_buffersrc_add_frame(filt_in, frame);
-				if (ret < 0) {
+				avfilter_graph_free(&graph);
+				graph = avfilter_graph_alloc();
+				if ((ret = dec->configure_video_filters(graph, vfilter, frame)) < 0) {
+					dec->abortRequest = true;
+					clog << "SDL2ffmpeg::video_thread error!";
+					clog << "can't configure video filters" << endl;
 					goto the_end;
 				}
 
-				while (ret >= 0) {
-					vs->frame_last_returned_time = av_gettime_relative() / 1000000.0;
-
-					ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
-					if (ret < 0) {
-						if (ret == AVERROR_EOF) {
-							vs->video_finished = serial;
-						}
-						ret = 0;
-						break;
-					}
-
-					vs->frame_last_filter_delay = av_gettime_relative() / 1000000.0 - vs->frame_last_returned_time;
-					if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
-						vs->frame_last_filter_delay = 0;
-					}
-
-					tb = filt_out->inputs[0]->time_base;
-					AVRational fr = {frame_rate.den, frame_rate.num};
-					duration = (frame_rate.num && frame_rate.den ? av_q2d(fr) : 0);
-					pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
-					ret = dec->queue_picture(frame, pts, duration, av_frame_get_pkt_pos(frame), serial);
-					av_frame_unref(frame);
-				}
-				// AVFILTER end
-
-			} else {
-				AVRational fr = {frame_rate.den, frame_rate.num};
-				duration = (frame_rate.num && frame_rate.den ? av_q2d(fr) : 0);
-				pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
-				ret = dec->queue_picture(frame, pts, duration, av_frame_get_pkt_pos(frame), serial);
-				av_frame_unref(frame);
+				filt_in  = vs->in_video_filter;
+				filt_out = vs->out_video_filter;
+				last_w = frame->width;
+				last_h = frame->height;
+				last_format = (AVPixelFormat)frame->format;
+				last_serial = serial;
+				last_vfilter_idx = vs->vfilter_idx;
+				frame_rate = filt_out->inputs[0]->frame_rate;
 			}
+
+			ret = av_buffersrc_add_frame(filt_in, frame);
+			if (ret < 0) {
+				goto the_end;
+			}
+
+			while (ret >= 0) {
+				vs->frame_last_returned_time = av_gettime_relative() / 1000000.0;
+
+				ret = av_buffersink_get_frame_flags(filt_out, frame, 0);
+				if (ret < 0) {
+					if (ret == AVERROR_EOF) {
+						vs->video_finished = serial;
+					}
+					ret = 0;
+					break;
+				}
+
+				vs->frame_last_filter_delay = av_gettime_relative() / 1000000.0 - vs->frame_last_returned_time;
+				if (fabs(vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0) {
+					vs->frame_last_filter_delay = 0;
+				}
+
+				tb = filt_out->inputs[0]->time_base;
+			}
+			// AVFILTER end
+
+			AVRational fr = {frame_rate.den, frame_rate.num};
+			duration = (frame_rate.num && frame_rate.den ? av_q2d(fr) : 0);
+			pts = (frame->pts == AV_NOPTS_VALUE) ? NAN : frame->pts * av_q2d(tb);
+			ret = dec->queue_picture(frame, pts, duration, av_frame_get_pkt_pos(frame), serial);
+			av_frame_unref(frame);
 
 			if (ret < 0) {
 				goto the_end;
@@ -2625,28 +2598,26 @@ the_end:
 			avctx->flags |= CODEC_FLAG_EMU_EDGE;
 		}
 
-		if (enableFilter) {
-			opts = filter_codec_opts(NULL, avctx->codec_id, ic, ic->streams[stream_index], codec);
-			if (!av_dict_get(opts, "threads", NULL, 0)) {
-				av_dict_set(&opts, "threads", "auto", 0);
-			}
+		opts = filter_codec_opts(NULL, avctx->codec_id, ic, ic->streams[stream_index], codec);
+		if (!av_dict_get(opts, "threads", NULL, 0)) {
+			av_dict_set(&opts, "threads", "auto", 0);
+		}
 
-			if (stream_lowres) {
-				av_dict_set(&opts, "lowres", av_asprintf("%d", stream_lowres), AV_DICT_DONT_STRDUP_VAL);
-			}
+		if (stream_lowres) {
+			av_dict_set(&opts, "lowres", av_asprintf("%d", stream_lowres), AV_DICT_DONT_STRDUP_VAL);
+		}
 
-			if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
-				av_dict_set(&opts, "refcounted_frames", "1", 0);
-			}
+		if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
+			av_dict_set(&opts, "refcounted_frames", "1", 0);
+		}
 
-			if (avcodec_open2(avctx, codec, &opts) < 0) {
-				return -1;
-			}
+		if (avcodec_open2(avctx, codec, &opts) < 0) {
+			return -1;
+		}
 
-			if ((t = av_dict_get(opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
-				av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
-				return AVERROR_OPTION_NOT_FOUND;
-			}
+		if ((t = av_dict_get(opts, "", NULL, AV_DICT_IGNORE_SUFFIX))) {
+			av_log(NULL, AV_LOG_ERROR, "Option %s not found.\n", t->key);
+			return AVERROR_OPTION_NOT_FOUND;
 		}
 
 		if (!codec || avcodec_open2(avctx, codec, NULL) < 0) {
@@ -2818,7 +2789,7 @@ the_end:
 			clog << vs->filename << "': '";
 			clog << ffmpegErr(err) << "'" << endl;
 
-			close(true);
+			close();
 			return -1;
 		}
 
@@ -2837,7 +2808,7 @@ the_end:
 			clog << "for '" << vs->filename << "': '";
 			clog << ffmpegErr(err) << "'" << endl;
 
-			close(true);
+			close();
 			return -1;
 		}
 
@@ -2883,7 +2854,7 @@ the_end:
 			clog << vs->filename << "'";
 			clog << endl;
 
-			dec->close(true);
+			dec->close();
 			return -1;
 		}
 
