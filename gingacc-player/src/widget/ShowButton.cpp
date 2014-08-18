@@ -131,7 +131,7 @@ namespace player {
 		lock();
 		if (win != NULL) {
 			dm->hideWindow (myScreen, win);
-			delete win;
+			dm->deleteWindow(myScreen, win);
 			win = NULL;
 		}
 		unlock();
