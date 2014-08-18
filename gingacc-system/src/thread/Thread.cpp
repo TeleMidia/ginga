@@ -161,10 +161,14 @@ namespace thread {
 		return (res == ETIMEDOUT);
 	}
 
-	void Thread::wakeUp() {
+	bool Thread::wakeUp() {
+		bool wasSleeping = false;
 		while (isThreadSleeping) {
 			Thread::condSignal(&threadFlagConditionVariable);
+			wasSleeping = true;
 		}
+
+		return wasSleeping;
 	}
 
 	void Thread::lock() {

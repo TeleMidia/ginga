@@ -95,7 +95,7 @@ namespace thread {
 		virtual void startThread();
 		bool sleep(long int seconds);
 		bool mSleep(long int milliseconds);
-		void wakeUp();
+		bool wakeUp();
 		void lock();
 		void unlock();
 		void waitForUnlockCondition();
