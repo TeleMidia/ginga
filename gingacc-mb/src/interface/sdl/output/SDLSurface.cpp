@@ -61,12 +61,14 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
+	GingaSurfaceID SDLSurface::refIdCounter = 1;
+
 	SDLSurface::SDLSurface(GingaScreenID screenId) {
-		initialize(screenId);
+		initialize(screenId, refIdCounter++);
 	}
 
 	SDLSurface::SDLSurface(GingaScreenID screenId, void* underlyingSurface) {
-		initialize(screenId);
+		initialize(screenId, refIdCounter++);
 
 		this->sur = (SDL_Surface*)underlyingSurface;
 	}
@@ -249,7 +251,8 @@ namespace mb {
 		Thread::mutexUnlock(&ddMutex);
 	}
 
-	void SDLSurface::initialize(GingaScreenID screenId) {
+	void SDLSurface::initialize(const GingaScreenID &screenId,
+	                            const GingaSurfaceID &id) {
 		this->myScreen      = screenId;
 		this->sur           = NULL;
 		this->iFont         = NULL;
@@ -262,6 +265,7 @@ namespace mb {
 		this->hasExtHandler = false;
 		this->isDeleting    = false;
 		this->pending       = NULL;
+		this->myId					= id;
 
 		this->drawData.clear();
 
@@ -781,7 +785,7 @@ namespace mb {
 		}*/
 	}
 
-	GingaSurfaceID SDLSurface::getId()
+	GingaSurfaceID SDLSurface::getId() const
 	{
 		return myId;
 	}

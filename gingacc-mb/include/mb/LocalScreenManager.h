@@ -186,7 +186,7 @@ namespace mb {
 			void lockSysNames();
 			void unlockSysNames();
 
-			GingaSurfaceID surIdRefCounter;
+			//GingaSurfaceID surIdRefCounter;
 			GingaSurfaceID provIdRefCounter;
 
 		public:
@@ -225,6 +225,8 @@ namespace mb {
 			bool hasWindow(GingaScreenID screenId, GingaWindowID window);
 
 			void releaseWindow(GingaScreenID screenId, IWindow* window);
+
+			void registerSurface (ISurface*);
 
 			GingaSurfaceID createSurface(GingaScreenID screenId);
 
