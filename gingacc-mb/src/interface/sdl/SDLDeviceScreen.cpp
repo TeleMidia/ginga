@@ -3212,6 +3212,7 @@ namespace mb {
 		newUSur = SDL_CreateRGBSurface(
 				0, width, height, bpp, rmask, gmask, bmask, amask);
 
+		SDL_SetColorKey(newUSur, 1, *((Uint8*)newUSur->pixels));
 		unlockSDL();
 
 		Thread::mutexLock(&surMutex);

@@ -717,10 +717,9 @@ namespace components {
 	}
 
 	void CompositeExecutionObject::checkLinkConditions() {
-		if (running) {
-			wakeUp();
+		if (!running || (running && !Thread::wakeUp())) {
+			Thread::startThread();
 		}
-		Thread::startThread();
 	}
 
 	void CompositeExecutionObject::run() {
