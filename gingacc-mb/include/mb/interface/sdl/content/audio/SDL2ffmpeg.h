@@ -425,12 +425,6 @@ namespace mb {
 		int64_t mono_cb_time;
 		int monoStep;
 
-		/* DEBUG begin */
-		int scaleCounter;
-		int texAccessCount;
-		/* DEBUG end */
-
-		bool enableFilter;
 		IContinuousMediaProvider* cmp;
 
 	public:
@@ -439,7 +433,7 @@ namespace mb {
 
 	private:
 		void release();
-		void close(bool quit);
+		void close();
 
 		string ffmpegErr(int err);
 
@@ -447,7 +441,6 @@ namespace mb {
 		bool prepare();
 
 	public:
-		void useFilter(bool enable);
 		bool hasVideoStream();
 		void play();
 		void stop();

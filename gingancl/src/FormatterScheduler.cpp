@@ -335,6 +335,7 @@ namespace ncl {
 		FormatterEvent* cndEvent;
 		FormatterEvent* event;
 		double delay;
+		Node* node;
 		Bind* bind;
 		string role;
 		string nodeId;
@@ -342,8 +343,13 @@ namespace ncl {
 
 		event  = linkAction->getEvent();
 		object = (ExecutionObject*)event->getExecutionObject();
-		action = action + "::" + object->getDataObject()->getId();
+		node   = object->getDataObject();
 
+		if (node->instanceOf("CompositeNode")) {
+			return;
+		}
+
+		action = action + "::" + node->getId();
 		if (condition != NULL &&
 				condition->instanceOf("LinkTransitionTriggerCondition")) {
 
