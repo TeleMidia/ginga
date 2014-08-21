@@ -47,67 +47,33 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "ncl/interfaces/IntervalAnchor.h"
+#include "gingancl/adapters/time/TimePlayerAdapter.h"
+#include "gingancl/adapters/AdaptersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
+namespace ginga {
 namespace ncl {
-namespace interfaces {
-	//if the representation changes, update isObjectDuration method
-	const double IntervalAnchor::OBJECT_DURATION = infinity();
-
-	IntervalAnchor::IntervalAnchor(string id, double begin, double end)
-		    : ContentAnchor(id) {
-
-		typeSet.insert("IntervalAnchor");
-		this->begin = 0;
-		setEnd(end);
-		setBegin(begin);
+namespace adapters {
+namespace time {
+	TimePlayerAdapter::TimePlayerAdapter(IPlayerAdapterManager* manager) :
+			FormatterPlayerAdapter(manager) {
+		
 	}
 
-	double IntervalAnchor::getBegin() {
-		return begin;
+	TimePlayerAdapter::~TimePlayerAdapter() {
+		player = NULL;
 	}
 
-	double IntervalAnchor::getEnd() {
-		return end;
+	void TimePlayerAdapter::createPlayer() {
+
+
+		clog << "TimePlayerAdapter::createPlayer '";
+		clog << mrl << "' ALL DONE" << endl;
 	}
-
-	void IntervalAnchor::setBegin(double b) {
-		bool isBDur = isObjectDuration(b);
-		bool isEDur = isObjectDuration(end);
-
-		if (b < 0 && !isBDur) {
-			begin = 0;
-
-		} else if ((!isBDur && !isEDur && b > end) ||
-				(isBDur && !isEDur)) {
-
-			begin = end;
-
-		} else {
-			begin = b;
-		}
-	}
-
-	void IntervalAnchor::setEnd(double e) {
-		bool isEDur = isObjectDuration(e);
-
-		if (e < 0 && !isEDur) {
-			end = IntervalAnchor::OBJECT_DURATION;
-
-		} else if ((!isEDur && !isObjectDuration(begin) && e < begin)) {
-			end = begin;
-
-		} else {
-			end = e;
-		}
-	}
-
-	bool IntervalAnchor::isObjectDuration(double value) {
-		return isInfinity(value);
-	}
+}
+}
 }
 }
 }
