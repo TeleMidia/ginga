@@ -462,7 +462,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 	bool isInfinity(double value) {
 #ifndef _WIN32
-		if (isinf(x)) {
+		if (isinf(value)) {
 #else
 		if (!_finite(value)) {
 #endif
