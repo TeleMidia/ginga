@@ -363,8 +363,8 @@ namespace tsparser {
 	void Demuxer::demux(ITSPacket* packet) {
 		unsigned int pid, newVer, currVer;
 		short streamType;
-		set<unsigned int>* pids;
-		set<unsigned int>::iterator i;
+		set<UnpPmtTime*>* pids;
+		set<UnpPmtTime*>::iterator i;
 		Pmt* pmt;
 		char tsPacketPayload[184];
 
@@ -414,8 +414,8 @@ namespace tsparser {
 					pids = pat->getUnprocessedPmtPids();
 					i = pids->begin();
 					while (i != pids->end()) { /* Create each PMT */
-						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						pmts[*i] = pmt;
+						pmt = new Pmt((*i)->pid, pat->getProgramNumberByPid((*i)->pid));
+						pmts[(*i)->pid] = pmt;
 						++i;
 					}
 				}
@@ -457,12 +457,14 @@ namespace tsparser {
 				}
 
 			} else if (!pmt->hasProcessed()) { /* Trying to consolidate the PMT */
-				pmt->addData(tsPacketPayload, 184);
-				if (pmt->isConsolidated()) {
-					if (pmt->processSectionPayload()) {
-						pat->addPmt(pmt);
+				if (!((pmt->getCurrentSize() == 0) && !packet->getStartIndicator())) {
+					pmt->addData(tsPacketPayload, packet->getPayloadSize());
+					if (pmt->isConsolidated()) {
+						if (pmt->processSectionPayload()) {
+							pat->addPmt(pmt);
 
-						checkProgramInformation();
+							checkProgramInformation();
+						}
 					}
 				}
 			}
@@ -670,8 +672,8 @@ namespace tsparser {
 			char* section, int secLen, IFrontendFilter* f) {
 
 		unsigned int pid, newVer, currVer;
-		set<unsigned int>* pids;
-		set<unsigned int>::iterator i;
+		set<UnpPmtTime*>* pids;
+		set<UnpPmtTime*>::iterator i;
 		Pmt* pmt, * newPmt;
 		INetworkInterface* ni;
 
@@ -688,8 +690,8 @@ namespace tsparser {
 					pids = pat->getUnprocessedPmtPids();
 					i = pids->begin();
 					while (i != pids->end()) {
-						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						pmts[*i] = pmt;
+						pmt = new Pmt((*i)->pid, pat->getProgramNumberByPid((*i)->pid));
+						pmts[(*i)->pid] = pmt;
 						++i;
 					}
 					//clog << "Demuxer::receiveSection PAT mounted" << endl;
