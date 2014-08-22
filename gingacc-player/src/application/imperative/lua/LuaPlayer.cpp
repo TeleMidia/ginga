@@ -111,8 +111,8 @@ LUAPLAYER_BEGIN_DECLS
 #else
 # define trace0()         // nothing
 # define trace(fmt, ...)  // nothing
-# define ptrace0()
-# define trace(fmt, ...)
+# define ptrace0()        // nothing
+# define ptrace(fmt, ...) // nothing
 #endif
 
 
