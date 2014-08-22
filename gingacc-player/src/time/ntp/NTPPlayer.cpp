@@ -241,7 +241,7 @@ void NTPPlayer::printCurrentDateTime() {
 	unsigned short ms;
 	a = getTime(&ms);
 	valueStruct = localtime(&a);
-	strftime(buff, 20, "%Y-%m-%d %H:%M:%S", valueStruct);
+	strftime(buff, 20, "%Y:%m:%d:%H:%M:%S", valueStruct);
 	printf("%s.%03d (diff: %.3f)\n", buff, ms, diff);
 }
 
