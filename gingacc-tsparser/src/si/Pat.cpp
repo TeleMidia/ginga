@@ -187,16 +187,13 @@ namespace si {
 			return;
 		}
 
-		vector<unsigned int>::iterator i;
-		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
-			if (*i == program->getPid()) {
-				unprocessedPmts.erase(i);
-				break;
-			}
+		set<unsigned int>::iterator i;
+		i = unprocessedPmts.find(program->getPid());
+		if (i != unprocessedPmts.end()) {
+			unprocessedPmts.erase(i);
 		}
 
 		if (programs.count(program->getPid())) {
-
 			clog << "Pat::addPmt Warning! Trying to override an existent";
 			clog << " program. Pid = '" << program->getPid() << "'";
 			clog << endl;
@@ -262,13 +259,10 @@ namespace si {
 			return true;
 		}
 
-		vector<unsigned int>::iterator it;
-		for (it = unprocessedPmts.begin();
-			    it != unprocessedPmts.end(); ++it) {
-
-			if (*it == pid) {
-				return true;
-			}
+		set<unsigned int>::iterator it;
+		it = unprocessedPmts.find(pid);
+		if (it != unprocessedPmts.end()) {
+			return true;
 		}
 
 		map<unsigned int, Pmt*>::iterator i;
@@ -339,7 +333,7 @@ namespace si {
 					}
 
 					pat[pid] = programNumber;
-					unprocessedPmts.push_back(pid);
+					unprocessedPmts.insert(pid);
 				}
 			}
 		}
@@ -412,7 +406,7 @@ namespace si {
 		return true;
 	}
 
-	vector<unsigned int>* Pat::getUnprocessedPmtPids() {
+	set<unsigned int>* Pat::getUnprocessedPmtPids() {
 		return &unprocessedPmts;
 	}
 
