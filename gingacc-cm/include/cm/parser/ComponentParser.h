@@ -104,8 +104,8 @@ namespace cm {
 			IComponent* getComponent(string name);
 
 		public:
-			map<string, IComponent*>* getComponents();
-			map<string, IComponent*>* getSymbols();
+			map<string, IComponent*>* copyComponents();
+			map<string, IComponent*>* copySymbols();
 			map<string, set<string>*>* getParentObjects();
 			map<string, set<string>*>* getUnsolvedDependencies();
 			void solveDependencies();
