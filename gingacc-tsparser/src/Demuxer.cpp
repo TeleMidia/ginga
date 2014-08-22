@@ -363,8 +363,8 @@ namespace tsparser {
 	void Demuxer::demux(ITSPacket* packet) {
 		unsigned int pid, newVer, currVer;
 		short streamType;
-		vector<unsigned int>* pids;
-		vector<unsigned int>::iterator i;
+		set<unsigned int>* pids;
+		set<unsigned int>::iterator i;
 		Pmt* pmt;
 		char tsPacketPayload[184];
 
@@ -670,8 +670,8 @@ namespace tsparser {
 			char* section, int secLen, IFrontendFilter* f) {
 
 		unsigned int pid, newVer, currVer;
-		vector<unsigned int>* pids;
-		vector<unsigned int>::iterator i;
+		set<unsigned int>* pids;
+		set<unsigned int>::iterator i;
 		Pmt* pmt, * newPmt;
 		INetworkInterface* ni;
 
