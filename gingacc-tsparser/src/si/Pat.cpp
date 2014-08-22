@@ -70,9 +70,14 @@ namespace si {
 	}
 
 	Pat::~Pat() {
+		set<UnpPmtTime*>::iterator i;
+
 		if (stream != NULL) {
 			delete (stream);
 			stream = NULL;
+		}
+		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
+			delete (*i);
 		}
 	}
 
@@ -187,10 +192,12 @@ namespace si {
 			return;
 		}
 
-		set<unsigned int>::iterator i;
-		i = unprocessedPmts.find(program->getPid());
-		if (i != unprocessedPmts.end()) {
-			unprocessedPmts.erase(i);
+		set<UnpPmtTime*>::iterator i;
+		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
+			if ((*i)->pid == program->getPid()) {
+				unprocessedPmts.erase(i);
+				break;
+			}
 		}
 
 		if (programs.count(program->getPid())) {
@@ -259,10 +266,11 @@ namespace si {
 			return true;
 		}
 
-		set<unsigned int>::iterator it;
-		it = unprocessedPmts.find(pid);
-		if (it != unprocessedPmts.end()) {
-			return true;
+		set<UnpPmtTime*>::iterator it;
+		for (it = unprocessedPmts.begin(); it != unprocessedPmts.end(); ++it) {
+			if ((*it)->pid == pid) {
+				return true;
+			}
 		}
 
 		map<unsigned int, Pmt*>::iterator i;
@@ -333,7 +341,11 @@ namespace si {
 					}
 
 					pat[pid] = programNumber;
-					unprocessedPmts.insert(pid);
+
+					UnpPmtTime* upt = new UnpPmtTime();
+					upt->pid = pid;
+					upt->time = getCurrentTimeMillis();
+					unprocessedPmts.insert(upt);
 				}
 			}
 		}
@@ -400,13 +412,25 @@ namespace si {
 	}
 
 	bool Pat::hasUnprocessedPmt() {
+		set<UnpPmtTime*>::iterator i;
+		i = unprocessedPmts.begin();
+		while (i != unprocessedPmts.end()) {
+			if (((getCurrentTimeMillis() - (*i)->time) >= 10000.0)
+					&& programs.size()) {
+				cout << "PMT PID = " << (*i)->pid << " has been expired." << endl;
+				unprocessedPmts.erase(i);
+				i = unprocessedPmts.begin();
+				continue;
+			}
+			++i;
+		}
 		if (unprocessedPmts.empty()) {
 			return false;
 		}
 		return true;
 	}
 
-	set<unsigned int>* Pat::getUnprocessedPmtPids() {
+	set<UnpPmtTime*>* Pat::getUnprocessedPmtPids() {
 		return &unprocessedPmts;
 	}
 
