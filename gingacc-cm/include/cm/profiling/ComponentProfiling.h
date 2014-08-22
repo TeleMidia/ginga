@@ -47,22 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
+#ifndef _ComponentProfiling_H_
+#define _ComponentProfiling_H_
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
-#include "IComponentManager.h"
-#include "component/IComponent.h"
-
-#include <pthread.h>
-
-#include <map>
-using namespace std;
+#include "cm/IComponentManager.h"
+#include "cm/profiling/IComponentProfiling.h"
 
 namespace br {
 namespace pucrio {
@@ -70,42 +59,27 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace cm {
-	class ComponentManager : public IComponentManager {
+	class ComponentProfiling : public IComponentProfiling {
 		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
-
-			bool canUnload;
-
+			IComponentManager* cm;
+			map<string, IComponent*>* compDesc;
+			string auxFile;
 			string processName;
 
-			pthread_mutex_t mapMutex;
-
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
-
 		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
+			ComponentProfiling(string processName);
+			~ComponentProfiling();
+			void process();
+			void updateDescription();
 
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
-
+		/*
+		 * TODO: we have to find a better way to do this.
+		 *       using system calls for now.
+		 */
 		private:
-			bool releaseComponent(void* component);
-
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
-
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
+			bool getFootprint(int* cpu, int* mem);
+			string getPIdFromPName(string name);
+			string getValue(string command);
 	};
 }
 }
@@ -114,4 +88,4 @@ namespace cm {
 }
 }
 
-#endif //_ComponentManager_H_
+#endif //_ComponentProfiling_H_
