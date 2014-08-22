@@ -80,7 +80,7 @@ namespace si {
 			// if i->first == 0 i->second = networkPid
 			map<unsigned int, unsigned int> pat;
 
-			vector<unsigned int> unprocessedPmts;
+			set<unsigned int> unprocessedPmts;
 
 			//PMT Pid TO PMT
 			map<unsigned int, Pmt*> programs;
@@ -114,7 +114,7 @@ namespace si {
 
 			bool processSectionPayload();
 			bool hasUnprocessedPmt();
-			vector<unsigned int>* getUnprocessedPmtPids();
+			set<unsigned int>* getUnprocessedPmtPids();
 			map<unsigned int, Pmt*>* getProgramsInfo();
 			void checkConsistency();
 			unsigned int getDefaultProgramPid();
