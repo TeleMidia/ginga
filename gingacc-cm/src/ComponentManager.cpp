@@ -62,6 +62,7 @@ namespace cm {
 		this->parentObjects        = NULL;
 		this->unsolvedDependencies = NULL;
 		this->canUnload            = true;
+		this->processName          = "";
 
 		Thread::mutexInit(&mapMutex, NULL);
 	}
@@ -250,8 +251,8 @@ namespace cm {
 
 		cp->parse(compUri);
 
-		this->components           = cp->getComponents();
-		this->symbols              = cp->getSymbols();
+		this->components           = cp->copyComponents();
+		this->symbols              = cp->copySymbols();
 		this->parentObjects        = cp->getParentObjects();
 		this->unsolvedDependencies = cp->getUnsolvedDependencies();
 
@@ -259,7 +260,7 @@ namespace cm {
 		releaseComponent(component);
 	}
 
-	map<string, IComponent*>* ComponentManager::getComponentDescription() {
+	map<string, IComponent*>* ComponentManager::copyComponentDescription() {
 		map<string, IComponent*>* compdesc;
 
 		Thread::mutexLock(&mapMutex);
@@ -305,6 +306,10 @@ namespace cm {
 
 		Thread::mutexUnlock(&mapMutex);
 		return false;
+	}
+
+	void ComponentManager::setProcessName(string processName) {
+		this->processName = processName;
 	}
 }
 }
