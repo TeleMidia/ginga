@@ -78,6 +78,7 @@ namespace player {
 			timeb utcTime;
 			timeb currentTime;
 			double diff;
+			char text[20];
 
 			void diffNtpLocal();
 
@@ -87,7 +88,8 @@ namespace player {
 
 			bool updateTime();
 			time_t getTime(unsigned short* milliseconds = NULL);
-			void printCurrentDateTime();
+			string getTimeString();
+			double elapsedTime(string& oldNclTime);
 
 			static double diffTime(timeb a, timeb b);
 			static timeb* tm2timeb(struct tm* time, unsigned short milliseconds);

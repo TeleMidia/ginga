@@ -76,7 +76,9 @@ int main(int argc, char *argv[]) {
 
 	ntpPlayer = new NTPPlayer(screen, "200.160.7.186");
 	if (ntpPlayer->updateTime()) {
-		ntpPlayer->printCurrentDateTime();
+		string nclTime = "2014:08:22:21:30:00.000";
+		cout << ntpPlayer->getTimeString() << endl;
+		cout << ntpPlayer->elapsedTime(nclTime) << endl;
 		cout << "Process done." << endl;
 
 	} else {
