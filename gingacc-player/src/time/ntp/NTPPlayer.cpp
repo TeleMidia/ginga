@@ -234,15 +234,39 @@ short NTPPlayer::localTimezone() {
 	return (0 - mktime(&when));
 }
 
-void NTPPlayer::printCurrentDateTime() {
+string NTPPlayer::getTimeString() {
 	struct tm* valueStruct;
-	char buff[25];
 	time_t a;
 	unsigned short ms;
 	a = getTime(&ms);
 	valueStruct = localtime(&a);
-	strftime(buff, 20, "%Y:%m:%d:%H:%M:%S", valueStruct);
-	printf("%s.%03d (diff: %.3f)\n", buff, ms, diff);
+	strftime(text, 20, "%Y:%m:%d:%H:%M:%S", valueStruct);
+	sprintf(text, "%s.%03d", text, ms);
+	string result(text);
+	return result;
+}
+
+double NTPPlayer::elapsedTime(string& oldNclTime) {
+	int dd, mo, yy, hh, mm, ss, ms, r;
+	struct tm when = {0};
+	timeb tb, otb;
+
+	if (sscanf(oldNclTime.c_str(), "%d:%d:%d:%d:%d:%d.%d",
+			&yy, &mo, &dd, &hh, &mm, &ss, &ms) != 7) {
+		return -1.0;
+	}
+
+	when.tm_mday = dd;
+	when.tm_mon = mo - 1;
+	when.tm_year = yy - 1900;
+	when.tm_hour = hh;
+	when.tm_min = mm;
+	when.tm_sec = ss;
+
+	otb.time = mktime(&when);
+	otb.millitm = ms;
+	ftime(&tb);
+	return NTPPlayer::diffTime(tb, otb);
 }
 
 }
