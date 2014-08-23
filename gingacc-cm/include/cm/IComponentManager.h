@@ -80,8 +80,9 @@ namespace cm {
 			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;
 			virtual bool releaseComponentFromObject(string objName)=0;
 			virtual void refreshComponentDescription()=0;
-			virtual map<string, IComponent*>* getComponentDescription()=0;
+			virtual map<string, IComponent*>* copyComponentDescription()=0;
 			virtual bool isAvailable(string objName)=0;
+			virtual void setProcessName(string processName)=0;
 
 		private:
 			virtual bool releaseComponent(void* component)=0;
