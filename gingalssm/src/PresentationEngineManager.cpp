@@ -182,7 +182,6 @@ namespace lssm {
 		this->hasInteractivity     = true;
 		this->closed               = false;
 		this->hasTMPNotification   = false;
-		this->disableAV            = false;
 		this->isEmbedded           = true;
 		this->currentPrivateBaseId = -1;
 		this->timeBaseProvider     = NULL;
@@ -274,10 +273,6 @@ namespace lssm {
 		}
 
 		return miType;
-	}
-
-	void PresentationEngineManager::disableMainAV(bool disableAV) {
-		this->disableAV = disableAV;
 	}
 
 	void PresentationEngineManager::autoMountOC(bool autoMountIt) {
@@ -1287,10 +1282,8 @@ namespace lssm {
 			clog << "PresentationEngineManager::readCommand checking tuner ...";
 			clog << endl;
 
-			if (!disableAV) {
-				while (!hasTMPNotification) {
-					SystemCompat::uSleep(1000000);
-				}
+			while (!hasTMPNotification) {
+				SystemCompat::uSleep(1000000);
 			}
 
 			clog << "PresentationEngineManager::readCommand tuner OK";

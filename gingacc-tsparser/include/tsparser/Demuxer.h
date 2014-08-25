@@ -91,9 +91,6 @@ namespace tsparser {
 			map<unsigned int, Pmt*> pmts;
 			map<unsigned int, ITSFilter*> pidFilters;
 			map<short, ITSFilter*> stFilters;
-			map<unsigned int, ITSFilter*> pesFilters;
-			IFrontendFilter* audioFilter;
-			IFrontendFilter* videoFilter;
 			set<IFrontendFilter*> feFilters;
 			set<IFrontendFilter*> feFiltersToSetup;
 			static vector<Pat*> pats;
@@ -114,10 +111,11 @@ namespace tsparser {
 			bool nptPrinter;
 			int nptPid;
 
-			bool enableDemuxer;
 			string outPipeUri;
 			PipeDescriptor outPipeD;
 			bool outPipeCreated;
+
+			vector<Buffer*> demuxMe;
 
 		public:
 			//defs
@@ -128,7 +126,7 @@ namespace tsparser {
 			Demuxer(ITuner* tuner);
 			virtual ~Demuxer();
 
-			string disableDemuxer(string tsOutputUri);
+			string createTSUri(string tsOutputUri);
 			bool hasStreamType(short streamType);
 			void printPat();
 			void setNptPrinter(bool nptPrinter);
@@ -169,11 +167,16 @@ namespace tsparser {
 			void addPidFilter(unsigned int pid, ITSFilter* filter);
 			void addSectionFilter(unsigned int tid, ITSFilter* filter);
 			void addStreamTypeFilter(short streamType, ITSFilter* filter);
-			void addPesFilter(short type, ITSFilter* filter);
-			void addVideoFilter(unsigned int pid, ITSFilter* f);
 
 		private:
-			void receiveData(char* buff, unsigned int size);
+			void receiveData(char* buff, unsigned int size, bool mustDelBuff);
+
+		public:
+			void processDemuxData();
+
+		private:
+			void processDemuxData(char* buff, unsigned int size);
+
 			void updateChannelStatus(short newStatus, IChannel* channel);
 
 		public:

@@ -58,6 +58,12 @@ http://www.telemidia.puc-rio.br
 #include <string>
 using namespace std;
 
+typedef struct {
+	char* buff;
+	unsigned int size;
+	bool mustDelBuff;
+} Buffer;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {

@@ -71,6 +71,18 @@ namespace tuning {
 		}
 	}
 	
+	bool NetworkProvider::isPushService() {
+		bool isPush = false;
+
+		if (protocol.find("multicast") != std::string::npos ||
+				protocol.find("broadcast") != std::string::npos) {
+
+			isPush = true;
+		}
+
+		return isPush;
+	}
+
 	int NetworkProvider::callServer() {
 		try {
 			if (protocol == "udp_multicast") {

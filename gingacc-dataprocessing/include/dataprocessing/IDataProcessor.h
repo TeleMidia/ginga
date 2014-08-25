@@ -109,7 +109,7 @@ namespace dataprocessing {
 		virtual void removeObjectListener(IObjectListener* listener)=0;
 		virtual void receiveSection(ITransportSection* section)=0;
 
-		virtual void receiveData(char* buff, unsigned int size){};
+		virtual void receiveData(char* buff, unsigned int size, bool mustDelBuff){};
 		virtual void updateChannelStatus(
 					short newStatus, IChannel* channel)=0;
   };

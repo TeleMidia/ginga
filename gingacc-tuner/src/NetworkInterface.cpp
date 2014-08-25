@@ -81,6 +81,15 @@ namespace tuning {
 		close();
 	}
 
+	bool NetworkInterface::isPush() {
+		bool isPush = false;
+		if (provider != NULL) {
+			isPush = provider->isPushService();
+		}
+
+		return isPush;
+	}
+
 	short NetworkInterface::getCaps() {
 		if (provider != NULL) {
 			return provider->getCaps();
@@ -245,13 +254,14 @@ namespace tuning {
 		return provider->getCurrentChannel();
 	}
 
-	int NetworkInterface::receiveData(char* buff, int skipSize,
-							unsigned char packetSize) {
-		if (provider != NULL) {
-			return provider->receiveData(buff, skipSize, packetSize);
-		}
+	char* NetworkInterface::receiveData(int* len) {
+		return provider->receiveData(len);
+	}
 
-		return -1;
+	int NetworkInterface::receiveData(
+			char* buff, int skipSize, unsigned char packetSize) {
+
+		return provider->receiveData(buff, skipSize, packetSize);
 	}
 
 	void NetworkInterface::close() {

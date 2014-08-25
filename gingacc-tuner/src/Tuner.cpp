@@ -277,31 +277,45 @@ namespace tuning {
 
 	void Tuner::receiveInterface(INetworkInterface* nInterface) {
 		int rval;
+		bool isPush;
 		char* buff;
 
 		/*int debugStream = fopen(
 				"debugStream.ts", "w+b");*/
 
-		buff = new char[BUFFSIZE];
 		receiving = true;
+		isPush    = nInterface->isPush();
 
-		do {
-			rval = nInterface->receiveData(buff, skipSize, packetSize);
-			skipSize = 0;
-			if (rval > 0) {
-				/*if (debugStream > 0) {
-					write(debugStream, buff, rval);
-				}*/
+		if (isPush) {
+			do {
+				buff = nInterface->receiveData(&rval);
+				if (rval > 0) {
+					notifyData(buff, (unsigned int)rval, true);
+				}
 
-				notifyData(buff, (unsigned int)rval);
+			} while (receiving);
 
-			} else if (rval < 0) {
-				//cerr << "Tuner::receive minus rval" << endl;
-			}
+		} else {
+			buff = new char[BUFFSIZE];
 
-		} while (receiving);
+			do {
+				rval = nInterface->receiveData(buff, skipSize, packetSize);
+				skipSize = 0;
+				if (rval > 0) {
+					/*if (debugStream > 0) {
+						write(debugStream, buff, rval);
+					}*/
 
-		delete[] buff;
+					notifyData(buff, (unsigned int)rval, false);
+
+				} else if (rval < 0) {
+					//cerr << "Tuner::receive minus rval" << endl;
+				}
+
+			} while (receiving);
+
+			delete[] buff;
+		}
 
 		//close(debugStream);
 
@@ -405,9 +419,9 @@ namespace tuning {
 		packetSize = size;
 	}
 
-	void Tuner::notifyData(char* buff, unsigned int val) {
+	void Tuner::notifyData(char* buff, unsigned int val, bool mustDelBuff) {
 		if (listener != NULL) {
-			listener->receiveData(buff, val);
+			listener->receiveData(buff, val, mustDelBuff);
 		}
 	}
 
