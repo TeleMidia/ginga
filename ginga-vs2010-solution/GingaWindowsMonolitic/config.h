@@ -16,6 +16,8 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 //#define HAVE_DLFCN_H 1
 
+#define HAVE_ZIP 1
+
 /* Deprecated macro. */
 #define HAVE_DSMCC 1
 
