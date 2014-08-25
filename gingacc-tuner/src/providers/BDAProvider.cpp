@@ -69,6 +69,10 @@ namespace tuning {
 		delete bda;
 	}
 
+	bool BDAProvider::isPushService() {
+		return true;
+	}
+
 	void BDAProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}
@@ -138,7 +142,22 @@ namespace tuning {
 		bda = NULL;
 	}
 
-	int BDAProvider::receiveData(char* buff,  int skipSize,
+	char* BDAProvider::receiveData(int* len) {
+		Buffer* buf;
+		char* buffer;
+
+		if (bda->getBuffer(&buf)) {
+			*len = buf->len;
+			buffer = buf->buffer;
+
+			delete buf;
+			return buffer;
+		}
+
+		return 0;
+	}
+
+	/*int BDAProvider::receiveData(char* buff,  int skipSize,
 									    unsigned char packetSize) {
 		Buffer* buf;
 		int bufSize;
@@ -151,7 +170,7 @@ namespace tuning {
 		}
 
 		return 0;
-	}
+	}*/
 }
 }
 }

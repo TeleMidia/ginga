@@ -67,6 +67,10 @@ namespace tuning {
 
 	}
 
+	bool FileSystemProvider::isPushService() {
+		return false;
+	}
+
 	void FileSystemProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}

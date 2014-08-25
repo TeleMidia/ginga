@@ -82,10 +82,13 @@ namespace tuning {
 	class IDataProvider {
 		public:
 			virtual ~IDataProvider(){};
+			virtual bool isPushService()=0;
 			virtual short getCaps()=0;
 			virtual void setListener(ITProviderListener* listener)=0;
 			virtual void attachFilter(IFrontendFilter* filter)=0;
 			virtual void removeFilter(IFrontendFilter* filter)=0;
+
+			virtual char* receiveData(int* len)=0;
 
 			virtual int receiveData(
 					char* buff, int skipSize, unsigned char packetSize)=0;

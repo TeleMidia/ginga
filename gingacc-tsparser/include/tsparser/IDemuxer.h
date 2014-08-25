@@ -109,7 +109,7 @@ namespace tsparser {
 	public:
 		virtual ~IDemuxer(){};
 
-		virtual string disableDemuxer(string tsOutputUri)=0;
+		virtual string createTSUri(string tsOutputUri)=0;
 		virtual bool hasStreamType(short streamType)=0;
 		virtual void printPat()=0;
 		virtual void setNptPrinter(bool nptPrinter)=0;
@@ -164,13 +164,13 @@ namespace tsparser {
 		virtual void addPidFilter(unsigned int pid, ITSFilter* filter)=0;
 		virtual void addSectionFilter(unsigned int tid, ITSFilter* filter)=0;
 		virtual void addStreamTypeFilter(short streamType, ITSFilter* filter)=0;
-		virtual void addPesFilter(short type, ITSFilter* filter)=0;
 
 		virtual int getDefaultMainVideoPid()=0;
 		virtual int getDefaultMainAudioPid()=0;
 		virtual int getDefaultMainCarouselPid()=0;
 
-		virtual void receiveData(char* buff, unsigned int size)=0;
+		virtual void receiveData(char* buff, unsigned int size, bool mustDelBuff)=0;
+		virtual void processDemuxData()=0;
 		virtual void updateChannelStatus(short newStatus, IChannel* channel)=0;
 
 		virtual short getCaps()=0;

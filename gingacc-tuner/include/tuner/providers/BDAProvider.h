@@ -85,6 +85,7 @@ namespace tuning {
 			BDAProvider(long freq);
 			virtual ~BDAProvider();
 
+			bool isPushService();
 			void setListener(ITProviderListener* listener);
 			void attachFilter(IFrontendFilter* filter){};
 			void removeFilter(IFrontendFilter* filter){};
@@ -99,8 +100,13 @@ namespace tuning {
 			int createPesFilter(int pid, int pesType, bool compositeFiler);
 			string getPesFilterOutput();
 			void close();
-			int receiveData(char* buff, int skipSize,
-							unsigned char packetSize);
+
+			char* receiveData(int* len);
+
+			int receiveData(
+					char* buff, 
+					int skipSize, 
+					unsigned char packetSize) {return 0;};
 
 			Channels* getChannels();
 	};

@@ -123,7 +123,6 @@ namespace lssm {
 		bool isEmbedded;
 		bool standAloneApp;
 		bool isLocalNcl;
-		bool disableAV;
 		void* dsmccListener;
 		void* tuner;
 		bool closed;
@@ -164,7 +163,6 @@ namespace lssm {
 		set<string>* createPortIdList(string nclFile);
 		short getMappedInterfaceType(string nclFile, string portId);
 
-		void disableMainAV(bool disableAV);
 		void autoMountOC(bool autoMountIt);
 		void setCurrentPrivateBaseId(unsigned int baseId);
 		void setTimeBaseProvider(ITimeBaseProvider* tmp);

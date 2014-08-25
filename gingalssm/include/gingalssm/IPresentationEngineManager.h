@@ -77,7 +77,6 @@ namespace lssm {
 		virtual set<string>* createPortIdList(string nclFile)=0;
 		virtual short getMappedInterfaceType(string nclFile, string portId)=0;
 
-		virtual void disableMainAV(bool disableAV)=0;
 		virtual void autoMountOC(bool autoMountIt)=0;
 		virtual void setCurrentPrivateBaseId(unsigned int baseId)=0;
 		virtual void setBackgroundImage(string uri)=0;

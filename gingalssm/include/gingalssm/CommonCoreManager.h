@@ -76,22 +76,18 @@ namespace lssm {
 		void* ccUser;
 		double ocDelay;
 		bool hasOCSupport;
-		bool disableAV;
 		bool nptPrinter;
-		bool disableDemuxer;
 		GingaScreenID myScreen;
 		IPresentationEngineManager* pem;
 
 	public:
 		CommonCoreManager(
 				IPresentationEngineManager* pem,
-				GingaScreenID screenId,
-				bool disableDemuxer);
+				GingaScreenID screenId);
 
 		~CommonCoreManager();
 
 		void enableNPTPrinter(bool enableNPTPrinter);
-		void disableMainAV(bool disableAV);
 		void setOCDelay(double ocDelay);
 		void setInteractivityInfo(bool hasOCSupport);
 		void removeOCFilterAfterMount(bool removeIt);
@@ -102,8 +98,6 @@ namespace lssm {
 				GingaScreenID screenId, int x, int y, int w, int h);
 
 		void releaseTunningWindow();
-
-		bool checkProgramInfo();
 
 		IPlayer* createMainAVPlayer(
 				string dstUri,
