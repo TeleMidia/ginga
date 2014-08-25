@@ -738,28 +738,21 @@ namespace multidevice {
 
 	void FormatterMultiDevice::renderFromUri(IWindow* win, string uri) {
 		ISurface* s;
-		IPlayer* img;
-		bool hasVisual = true;
+		/*clog << "FormatterMultiDevice::renderFromUri window coords: ";
+		clog <<  win->getX() << ",";
+		clog <<  win->getY() << ",";
+		clog <<  win->getW() << ",";
+		clog <<  win->getH() << ",";
+		clog <<  win->getZ() << "."<< endl;*/
 
-#if HAVE_COMPONENTS
-		img = ((PlayerCreator*)(cm->getObject(
-				"ImagePlayer")))(myScreen, uri.c_str(), &hasVisual);
-#else
-		img = new ImagePlayer(myScreen, uri.c_str());
-#endif
-
-		img->setOutWindow(win->getId());
+		s = dm->createRenderedSurfaceFromImageFile(myScreen, uri.c_str());
 
 		win->setColorKey(0, 0, 0);
 		win->clearContent();
-
-		s = img->getSurface();
 		win->renderFrom(s);
-
 		win->show();
 		win->validate();
-
-		delete img;
+		delete s;
 	}
 
 	void FormatterMultiDevice::tapObject(int devClass, int x, int y) {
