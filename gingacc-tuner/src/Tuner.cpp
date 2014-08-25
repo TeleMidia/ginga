@@ -169,7 +169,7 @@ namespace tuning {
 
 	void Tuner::initializeInterface(string niSpec) {
 		size_t pos;
-		int fo;
+		int fo = 0;
 
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 
@@ -192,7 +192,7 @@ namespace tuning {
 				}
 			}
 
-			if (sscanf(niSpec.c_str(), "%d", &fo) == 0) return;
+			sscanf(niSpec.c_str(), "%d", &fo);
 
 			if (fo >= 224 && fo <= 239) {
 

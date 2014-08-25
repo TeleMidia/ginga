@@ -65,7 +65,7 @@ int main() {
 
 	clog << "MAIN cm instance ok" << endl;
 
-	comps = cm->getComponentDescription();
+	comps = cm->copyComponentDescription();
 	as = ((ComponentDescriptionCreator*)(
 			cm->getObject("ComponentDescription")))(comps);
 
