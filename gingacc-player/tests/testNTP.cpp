@@ -47,71 +47,59 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
+#include "player/NTPPlayer.h"
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
-#include "IComponentManager.h"
-#include "component/IComponent.h"
-
-#include <pthread.h>
-
-#include <map>
+#include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace cm {
-	class ComponentManager : public IComponentManager {
-		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
+#if !HAVE_COMPONENTS
+#include "mb/LocalScreenManager.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+#endif
 
-			bool canUnload;
+int main(int argc, char *argv[]) {
+	NTPPlayer* ntpPlayer;
 
-			string processName;
+	GingaScreenID screen;
+	ILocalScreenManager* dm;
 
-			pthread_mutex_t mapMutex;
+	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
+#if HAVE_COMPONENTS
+	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
 
-		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
+#else
+	dm = LocalScreenManager::getInstance();
+#endif
 
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
+	screen = dm->createScreen(argc, argv);
 
-		private:
-			bool releaseComponent(void* component);
+	ntpPlayer = new NTPPlayer(screen, "200.160.7.186");
+	if (ntpPlayer->updateTime()) {
+		string nclTime = "2014:08:22:21:30:00.000";
+		cout << ntpPlayer->getTimeString() << endl;
+		cout << ntpPlayer->elapsedTime(nclTime) << endl;
+		cout << "Process done." << endl;
 
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
+	} else {
+		cout << "An error occurred during the process!" << endl;
+	}
 
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
-	};
+	delete ntpPlayer;
+
+	cout << "gingacc-player test has shown ImagePlayers. ";
+	cout << "press enter to automatic release";
+	cout << endl;
+	getchar();
+
+	dm->clearWidgetPools(screen);
+	dm->releaseScreen(screen);
+	dm->releaseMB(screen);
+
+	delete dm;
+
+	cout << "Player test done. press enter to continue" << endl;
+	getchar();
+
+	return 0;
 }
-}
-}
-}
-}
-}
-
-#endif //_ComponentManager_H_

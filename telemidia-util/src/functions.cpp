@@ -51,25 +51,28 @@ http://www.telemidia.puc-rio.br
 #include <dirent.h>
 
 #ifndef _WIN32
-# define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
-# define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
-# define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
-# ifdef __APPLE__
-#  include <sys/dir.h>
-   typedef struct direct DIRENT;
-# else
-#  include <dirent.h>
-   typedef struct dirent DIRENT;
-#  include <sys/time.h>
-#  include <sys/resource.h>
-# endif
+ #define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
+ #define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
+ #define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
+ #ifdef __APPLE__
+  #include <sys/dir.h>
+    typedef struct direct DIRENT;
+ #else
+  #include <dirent.h>
+    typedef struct dirent DIRENT;
+  #include <sys/time.h>
+  #include <sys/resource.h>
+ #endif
 #else  // _WIN32
-# define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
-# define IS_LINK(st_mode)	0
-# define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
-# define lstat stat
-# include <windows.h>
+#define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
+#define IS_LINK(st_mode)	0
+#define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
+#define lstat stat
+#include <windows.h>
+#include <float.h>
 #endif
+
+#include <math.h>
 
 #include "util/functions.h"
 
@@ -436,59 +439,32 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 	}
 
 	static numeric_limits<double> double_info;
-	static double notANumber     = double_info.quiet_NaN();
-	static double doubleInfinity = double_info.infinity();
 
 	double NaN() {
-#ifndef _WIN32
-		return notANumber;
-#else
 		return double_info.quiet_NaN();
-#endif
 	}
 
 	double infinity() {
-#ifndef _WIN32
-		return doubleInfinity;
-#else
 		return double_info.infinity();
-#endif
 	}
 
 	bool isNaN(double value) {
-		string sval;
-		sval = itos(value);
-		/*clog << "functions::isNaN val = '" << value << "' ";
-		clog << "sval = '" << sval << "'";*/
-		if (isNumeric((void*)(sval.c_str()))) {
-			return false;
-		}
-
 #ifdef _WIN32
-		if (upperCase(sval) == "NAN" || _isnan(value)) {
+		if (_isnan(value)) {
 #else
-		if (upperCase(sval) == "NAN" ) {
+		if (isnan(value)) {
 #endif
 			return true;
 		}
 
-		/*clog << "isNaN Warning! Value = '" << value << "', ";
-		clog << "sval = " << sval << endl;*/
 		return false;
 	}
 
 	bool isInfinity(double value) {
-		string sval;
-		sval = itos(value);
-		if (isNumeric((void*)(sval.c_str()))) {
-			return false;
-		}
-
 #ifndef _WIN32
-		if (upperCase(sval).find("INF") != std::string::npos) {
+		if (isinf(value)) {
 #else
-		if (upperCase(sval).find("INF") != std::string::npos ||
-				!_finite(value)) {
+		if (!_finite(value)) {
 #endif
 			return true;
 		}
@@ -497,56 +473,6 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		clog << "sval = " << sval << endl;*/
 		return false;
 	}
-
-#if 0
-	int timevalSubtract(
-			struct timeval *result, struct timeval *x, struct timeval *y) {
-
-		int nsec;
-
-		if (x->tv_usec < y->tv_usec) {
-			nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-			y->tv_usec -= 1000000 * nsec;
-			y->tv_sec  += nsec;
-		}
-
-		if (x->tv_usec - y->tv_usec > 1000000) {
-			nsec = (x->tv_usec - y->tv_usec) / 1000000;
-			y->tv_usec += 1000000 * nsec;
-			y->tv_sec  -= nsec;
-		}
-
-		result->tv_sec  = x->tv_sec - y->tv_sec;
-		result->tv_usec = x->tv_usec - y->tv_usec;
-
-		return x->tv_sec < y->tv_sec;
-	}
-
-	static struct timeval startTimeMills;
-	static bool firstCallTimeMills = true;
-
-	double getCurrentTimeMillis() {
-		struct timeval result;
-		struct rusage usage;
-
-		if (getrusage(RUSAGE_SELF, &usage) != 0) {
-			clog << "getCurrentTimeMillis Warning!";
-			clog << " getrusage error" << endl;
-			return -1;
-		}
-
-		if (firstCallTimeMills) {
-			firstCallTimeMills     = false;
-			startTimeMills.tv_sec  = usage.ru_utime.tv_sec;
-			startTimeMills.tv_usec = usage.ru_utime.tv_usec;
-			return 1;
-		}
-
-		timevalSubtract(&result, &(usage.ru_utime), &startTimeMills);
-
-		return (double) ((result.tv_sec * 1000) + (result.tv_usec / 1000));
-	}
-#endif
 
 	static double startTimeMills;
 	static bool firstCallTimeMills = true;
@@ -564,7 +490,6 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double)t.time*1000 + (double)t.millitm - startTimeMills;
 	}
-
 
 	//factor is not in use. It will be removed.
 	double getNextStepValue(

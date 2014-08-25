@@ -75,13 +75,14 @@ namespace interfaces {
 	}
 
 	void IntervalAnchor::setBegin(double b) {
-		if (b < 0 && !isObjectDuration(b)) {
+		bool isBDur = isObjectDuration(b);
+		bool isEDur = isObjectDuration(end);
+
+		if (b < 0 && !isBDur) {
 			begin = 0;
 
-		} else if ((!isObjectDuration(b) &&
-				!isObjectDuration(end) && b > end) ||
-				(isObjectDuration(b) &&
-				!isObjectDuration(end))) {
+		} else if ((!isBDur && !isEDur && b > end) ||
+				(isBDur && !isEDur)) {
 
 			begin = end;
 
@@ -91,12 +92,12 @@ namespace interfaces {
 	}
 
 	void IntervalAnchor::setEnd(double e) {
-		if (e < 0 && !isObjectDuration(e)) {
+		bool isEDur = isObjectDuration(e);
+
+		if (e < 0 && !isEDur) {
 			end = IntervalAnchor::OBJECT_DURATION;
 
-		} else if ((!isObjectDuration(e) &&
-				!isObjectDuration(begin) && e < begin)) {
-
+		} else if ((!isEDur && !isObjectDuration(begin) && e < begin)) {
 			end = begin;
 
 		} else {

@@ -47,71 +47,49 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
+#ifndef UDPCLIENT_H_
+#define UDPCLIENT_H_
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+#include <iostream>
+#include <cstdio>
 
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+#if defined _WIN32 || defined __CYGWIN__
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+#else
+  #include <sys/socket.h>
+  #include <netinet/in.h>
+  #include <sys/ioctl.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>
+  #include <net/if.h>
+  #include <netdb.h>
+#endif
 
-#include "IComponentManager.h"
-#include "component/IComponent.h"
-
-#include <pthread.h>
-
-#include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace cm {
-	class ComponentManager : public IComponentManager {
-		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
+class UDPClient {
 
-			bool canUnload;
+protected:
 
-			string processName;
+#if defined _WIN32 || defined __CYGWIN__
+	SOCKET sd;
+#else
+	int sd;
+#endif
+	struct sockaddr_in myaddr, remaddr;
 
-			pthread_mutex_t mapMutex;
+public:
+	UDPClient();
+	~UDPClient();
 
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
+	bool connectSocket(string host, int port);
+	int send(char* buff, unsigned int size);
+	int receive(char** buff);
+	void closeSocket();
+	int dataAvailable(int timeout);
 
-		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
+};
 
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
 
-		private:
-			bool releaseComponent(void* component);
-
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
-
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
-	};
-}
-}
-}
-}
-}
-}
-
-#endif //_ComponentManager_H_
+#endif /* UDPCLIENT_H_ */

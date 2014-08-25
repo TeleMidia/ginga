@@ -58,6 +58,11 @@ http://www.telemidia.puc-rio.br
 #include <iostream>
 using namespace std;
 
+struct UnpPmtTime {
+		unsigned int pid;
+		double time;
+};
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -80,7 +85,7 @@ namespace si {
 			// if i->first == 0 i->second = networkPid
 			map<unsigned int, unsigned int> pat;
 
-			vector<unsigned int> unprocessedPmts;
+			set<UnpPmtTime*> unprocessedPmts;
 
 			//PMT Pid TO PMT
 			map<unsigned int, Pmt*> programs;
@@ -114,7 +119,7 @@ namespace si {
 
 			bool processSectionPayload();
 			bool hasUnprocessedPmt();
-			vector<unsigned int>* getUnprocessedPmtPids();
+			set<UnpPmtTime*>* getUnprocessedPmtPids();
 			map<unsigned int, Pmt*>* getProgramsInfo();
 			void checkConsistency();
 			unsigned int getDefaultProgramPid();

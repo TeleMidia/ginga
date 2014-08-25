@@ -47,22 +47,10 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
+#include "cm/profiling/ComponentProfiling.h"
 
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
-#include "IComponentManager.h"
-#include "component/IComponent.h"
-
-#include <pthread.h>
-
-#include <map>
-using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -70,43 +58,88 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace cm {
-	class ComponentManager : public IComponentManager {
-		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
+	ComponentProfiling::ComponentProfiling(string processName) {
+		this->cm          = IComponentManager::getCMInstance();
+		this->compDesc    = cm->copyComponentDescription();
+		this->auxFile     = SystemCompat::getTemporaryDir() + "/_compProf.txt";
+		this->processName = processName;
+	}
 
-			bool canUnload;
+	ComponentProfiling::~ComponentProfiling() {
+		delete compDesc;
 
-			string processName;
+#ifndef _WIN32
+		string strCmd = "rm -f " + auxFile;
+		::system(strCmd.c_str());
+#endif //!_WIN32
+	}
 
-			pthread_mutex_t mapMutex;
+	void ComponentProfiling::process() {
+		map<string, IComponent*>::iterator i;
 
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
+		i = compDesc->begin();
+		while (i != compDesc->end()) {
 
-		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
+			++i;
+		}
+	}
 
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
+	void ComponentProfiling::updateDescription() {
 
-		private:
-			bool releaseComponent(void* component);
+	}
 
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
+	bool ComponentProfiling::getFootprint(int* cpu, int* mem) {
+		bool gotIt = false;
+		string value, pidNum, strCmd;
 
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
-	};
+#ifndef _WIN32
+		//process pid
+		pidNum = getPIdFromPName(processName);
+
+		//cpu from process pid
+		strCmd = "ps -p " + pidNum + " -o pcpu > " + auxFile;
+		value  = getValue(strCmd);
+		*cpu   = stof(value);
+
+		//mem from process pid
+		strCmd = "cat /proc/" + pidNum + "/status | grep VmLib > " + auxFile;
+		value  = getValue(strCmd);
+		*mem   = stof(value);
+
+#endif //!_WIN32
+
+		return gotIt;
+	}
+
+	string ComponentProfiling::getPIdFromPName(string name) {
+
+		string pidNum = "";
+		string strCmd;
+
+#ifndef _WIN32
+
+		strCmd = "pgrep " + name + " > "  + auxFile;
+		pidNum = getValue(strCmd);
+
+#endif //!_WIN32
+
+		return pidNum;
+	}
+
+	string ComponentProfiling::getValue(string command) {
+		ifstream pidFile;
+		string value = "";
+
+		::system(command.c_str());
+		pidFile.open(auxFile.c_str(), ifstream::in);
+		if (pidFile.is_open()) {
+			if (pidFile.good()) {
+				pidFile >> value;
+			}
+		}
+
+		return value;
+	}
 }
 }
 }
@@ -114,4 +147,15 @@ namespace cm {
 }
 }
 
-#endif //_ComponentManager_H_
+extern "C" ::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling*
+		createComponentProfiling(string processName) {
+
+	return new ::br::pucrio::telemidia::ginga::core::cm::ComponentProfiling(
+			processName);
+}
+
+extern "C" void destroyComponentProfiling(
+		::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling* cp) {
+
+	delete cp;
+}

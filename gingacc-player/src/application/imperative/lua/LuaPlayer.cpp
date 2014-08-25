@@ -88,19 +88,31 @@ LUAPLAYER_BEGIN_DECLS
           fprintf (stderr, "NCLUA " fmt "\n", ## __VA_ARGS__);  \
      } while (0)
 
-#define error(fmt, ...)                                         \
-     __clog ("%s ERROR: " fmt, __FILE__, ## __VA_ARGS__)
+#define error(fmt, ...)\
+     __clog ("ERROR: " fmt, ## __VA_ARGS__)
 
-#define warning(fmt, ...)                                       \
-     __clog ("%s Warning: " fmt, __FILE__, ## __VA_ARGS__)
+#define perror(fmt, ...)\
+     __clog ("%p ERROR: " fmt, (void *) this, ## __VA_ARGS__)
+
+#define warn(fmt, ...)\
+     __clog ("Warning: " fmt, ## __VA_ARGS__)
+
+#define pwarn(fmt, ...)\
+     __clog ("%p Warning: " fmt, (void *) this, ## __VA_ARGS__)
 
 #ifdef LUAPLAYER_ENABLE_TRACE
-# define trace0() trace ("%s", "")
-# define trace(fmt, ...)                                        \
-     __clog ("%s %s:" fmt, __FILE__, __FUNCTION__, ## __VA_ARGS__)
+# define trace0()   trace ("%s", "")
+# define trace(fmt, ...)\
+     __clog ("%s: " fmt, __FUNCTION__, ## __VA_ARGS__)
+
+# define ptrace0()  ptrace ("%s", "")
+# define ptrace(fmt, ...)\
+     __clog ("%p %s: " fmt, (void *) this, __FUNCTION__, __VA_ARGS__)
 #else
-# define trace0()               // nothing
-# define trace(fmt, ...)        // nothing
+# define trace0()         // nothing
+# define trace(fmt, ...)  // nothing
+# define ptrace0()        // nothing
+# define ptrace(fmt, ...) // nothing
 #endif
 
 
@@ -199,6 +211,7 @@ pthread_t LuaPlayer::nw_update_tid;
 
 void *LuaPlayer::nw_update_thread (void *data)
 {
+     trace ("starting update thread");
      while (true)
      {
           SystemCompat::uSleep ((NW_UPDATE_DELAY) * 1000);
@@ -208,7 +221,7 @@ void *LuaPlayer::nw_update_thread (void *data)
           if (nw_update_list == NULL) // end of cycle process
           {
                MUTEX_UNLOCK (&nw_update_mutex);
-			   trace ("update thread done!");
+               trace ("exiting update thread");
                return NULL;
           }
 
@@ -371,10 +384,8 @@ void LuaPlayer::nw_update_remove (LuaPlayer *player)
      {
           delete nw_update_list;
           nw_update_list = NULL; // signal end of cycle process
-
           MUTEX_UNLOCK (&nw_update_mutex);
           assert (pthread_join (nw_update_tid, NULL) == 0);
-
           MUTEX_FINI (&nw_update_mutex);
      }
      else
@@ -408,8 +419,6 @@ bool LuaPlayer::doPlay (void)
      int w, h;
      char *errmsg = NULL;
 
-     trace0 ();
-
      assert (this->nw == NULL);
      (this->getSurface ())->getSize (&w, &h);
 
@@ -418,7 +427,7 @@ bool LuaPlayer::doPlay (void)
 
      if (this->nw == NULL)
      {
-          error ("%s", errmsg);
+          perror ("%s", errmsg);
           free (errmsg);
           this->doStop ();
           this->notifyPlayerListeners (Player::PL_NOTIFY_ABORT, "");
@@ -434,9 +443,10 @@ bool LuaPlayer::doPlay (void)
 
 void LuaPlayer::doStop (void)
 {
-     trace0 ();
-     assert (this->nw != NULL);
-     ncluaw_close (this->nw);
+     if (this->nw != NULL)
+     {
+          ncluaw_close (this->nw);
+     }
      this->nw = NULL;
      this->im->removeApplicationInputEventListener (this);
      this->forcedNaturalEnd = true;
@@ -465,7 +475,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
           putenv = 1;
      }
 #endif
-     trace ("id=%d, mrl='%s'", id, mrl.c_str ());
+     ptrace ("mrl='%s'", mrl.c_str ());
 
      // FIXME: This is *WRONG*: the chdir() call changes the working
      // directory of the whole process.
@@ -475,7 +485,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
      {
           char buf[1024];
           SystemCompat::strError (errno, buf, sizeof (buf));
-          warning ("%s: %s", buf, cwd.c_str ());
+          pwarn ("%s: %s", buf, cwd.c_str ());
      }
 
      LocalScreenManager::addIEListenerInstance (this);
@@ -491,9 +501,9 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 LuaPlayer::~LuaPlayer (void)
 {
      this->lock ();
-     trace0 ();
+     ptrace0 ();
 
-     LocalScreenManager::removeIEListenerInstance(this);
+     LocalScreenManager::removeIEListenerInstance (this);
 
      if (nw_update_list != NULL && nw_update_list->empty ())
      {
@@ -506,10 +516,7 @@ LuaPlayer::~LuaPlayer (void)
           LuaPlayer::nw_update_remove (this);
      }
 
-     if (this->nw != NULL)
-     {
-          this->doStop ();
-     }
+     this->doStop ();
 
      this->unlock ();
      MUTEX_FINI (&this->mutex);
@@ -521,7 +528,7 @@ LuaPlayer::~LuaPlayer (void)
 void LuaPlayer::abort (void)
 {
      this->lock ();
-     trace0 ();
+     ptrace ("scope='%s'", this->scope.c_str ());
 
      evt_ncl_send_presentation (this->nw, "abort", this->scope.c_str ());
      this->stop ();
@@ -532,7 +539,7 @@ void LuaPlayer::abort (void)
 void LuaPlayer::pause (void)
 {
      this->lock ();
-     trace0 ();
+     ptrace ("scope='%s'", this->scope.c_str ());
 
      evt_ncl_send_presentation (this->nw, "pause", this->scope.c_str ());
      Player::pause ();
@@ -545,7 +552,7 @@ bool LuaPlayer::play (void)
      bool status;
 
      this->lock ();
-     trace0 ();
+     ptrace ("scope='%s'", this->scope.c_str ());
 
      status = true;
      if (this->nw == NULL)
@@ -570,7 +577,7 @@ error:
 void LuaPlayer::resume (void)
 {
      this->lock ();
-     trace0 ();
+     ptrace ("scope='%s'", this->scope.c_str ());
 
      evt_ncl_send_presentation (this->nw, "resume", this->scope.c_str ());
      Player::resume ();
@@ -581,7 +588,7 @@ void LuaPlayer::resume (void)
 void LuaPlayer::stop (void)
 {
      this->lock ();
-     trace0 ();
+     ptrace ("scope='%s'", this->scope.c_str ());
 
      if (this->nw != NULL)
      {
@@ -601,10 +608,7 @@ bool LuaPlayer::hasPresented (void)
      bool hasExecuted;
 
      this->lock ();
-     trace0 ();
-
      hasExecuted = this->hasExecuted;
-
      this->unlock ();
 
      return hasExecuted;
@@ -613,17 +617,14 @@ bool LuaPlayer::hasPresented (void)
 void LuaPlayer::setCurrentScope (string name)
 {
      this->lock ();
-     trace ("name='%s'", name.c_str ());
-
      this->scope = name;
-
      this->unlock ();
 }
 
 bool LuaPlayer::setKeyHandler (bool b)
 {
      this->lock ();
-     trace ("b=%s", b ? "true" : "false");
+     ptrace ("isKeyHandler=%s", b ? "true" : "false");
 
      this->isKeyHandler = b;
 
@@ -634,7 +635,7 @@ bool LuaPlayer::setKeyHandler (bool b)
 void LuaPlayer::setPropertyValue (string name, string value)
 {
      this->lock ();
-     trace ("name='%s', value='%s'", name.c_str (), value.c_str ());
+     ptrace ("name='%s', value='%s'", name.c_str (), value.c_str ());
 
      // FIXME: Before calling play(), FormatterPlayerAdapter calls
      // setPropertyValue() to initialize the object's properties.  We
@@ -660,7 +661,6 @@ void LuaPlayer::setPropertyValue (string name, string value)
 bool LuaPlayer::userEventReceived (IInputEvent *evt)
 {
      this->lock ();
-     trace0 ();
 
      if (this->nw == NULL)
      {
@@ -669,15 +669,16 @@ bool LuaPlayer::userEventReceived (IInputEvent *evt)
 
      if (evt->isKeyType () && this->isKeyHandler)
      {
-		  string key;
+          string key;
           int press;
 
-		  key = (CodeMap::getInstance ()->getValue
+          key = (CodeMap::getInstance ()->getValue
                  (evt->getKeyCode (myScreen)));
-
           press = evt->isPressedType ();
+          ptrace ("key='%s', type='%s'", key.c_str (),
+                  press ? "press" : "release");
 
-		  evt_key_send (this->nw, press ? "press" : "release", key.c_str());
+          evt_key_send (this->nw, press ? "press" : "release", key.c_str());
      }
 
 tail:

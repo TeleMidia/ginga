@@ -428,18 +428,18 @@ namespace cm {
 		return NULL;
 	}
 
-	map<string, IComponent*>* ComponentParser::getSymbols() {
-		map<string, IComponent*>* symbs;
-
-		symbs = new map<string, IComponent*>(*symbols);
-		return symbs;
-	}
-
-	map<string, IComponent*>* ComponentParser::getComponents() {
+	map<string, IComponent*>* ComponentParser::copyComponents() {
 		map<string, IComponent*>* comps;
 
 		comps = new map<string, IComponent*>(*components);
 		return comps;
+	}
+
+	map<string, IComponent*>* ComponentParser::copySymbols() {
+		map<string, IComponent*>* symbs;
+
+		symbs = new map<string, IComponent*>(*symbols);
+		return symbs;
 	}
 
 	map<string, set<string>*>* ComponentParser::getParentObjects() {

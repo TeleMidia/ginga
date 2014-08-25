@@ -47,71 +47,35 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
-
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
-
-#include "IComponentManager.h"
-#include "component/IComponent.h"
-
-#include <pthread.h>
-
-#include <map>
-using namespace std;
+#include "gingancl/adapters/time/TimePlayerAdapter.h"
+#include "gingancl/adapters/AdaptersComponentSupport.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace core {
-namespace cm {
-	class ComponentManager : public IComponentManager {
-		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
+namespace ncl {
+namespace adapters {
+namespace time {
+	TimePlayerAdapter::TimePlayerAdapter(IPlayerAdapterManager* manager) :
+			FormatterPlayerAdapter(manager) {
+		
+	}
 
-			bool canUnload;
+	TimePlayerAdapter::~TimePlayerAdapter() {
+		player = NULL;
+	}
 
-			string processName;
+	void TimePlayerAdapter::createPlayer() {
 
-			pthread_mutex_t mapMutex;
 
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
-
-		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
-
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
-
-		private:
-			bool releaseComponent(void* component);
-
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
-
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
-	};
+		clog << "TimePlayerAdapter::createPlayer '";
+		clog << mrl << "' ALL DONE" << endl;
+	}
 }
 }
 }
 }
 }
 }
-
-#endif //_ComponentManager_H_
+}

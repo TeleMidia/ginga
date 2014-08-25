@@ -47,66 +47,42 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentManager_H_
-#define _ComponentManager_H_
+#ifndef TIMEPLAYERADAPTER_H_
+#define TIMEPLAYERADAPTER_H_
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+#include "../FormatterPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "system/thread/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+#include "../../model/ExecutionObject.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "IComponentManager.h"
-#include "component/IComponent.h"
+#include "../../model/FormatterEvent.h"
+#include "../../model/PresentationEvent.h"
+#include "../../model/SelectionEvent.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include <pthread.h>
-
-#include <map>
+#include <string>
 using namespace std;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace core {
-namespace cm {
-	class ComponentManager : public IComponentManager {
+namespace ncl {
+namespace adapters {
+namespace time {
+	class TimePlayerAdapter : public FormatterPlayerAdapter {
 		private:
-			map<string, IComponent*>* components;
-			map<string, IComponent*>* symbols;
-			map<string, set<string>*>* parentObjects;
-			map<string, set<string>*>* unsolvedDependencies;
-
-			bool canUnload;
-
-			string processName;
-
-			pthread_mutex_t mapMutex;
-
-			static ComponentManager* _instance;
-			ComponentManager();
-			virtual ~ComponentManager();
+			string TimeSrcId;
 
 		public:
-			void setUnloadComponents(bool allowUnload);
-			void release();
-			static ComponentManager* getInstance();
+			TimePlayerAdapter(IPlayerAdapterManager* manager);
+			virtual ~TimePlayerAdapter();
 
-			void* getObject(string objectName);
-			set<string>* getObjectsFromInterface(string interfaceName);
-			map<string, set<string>*>* getUnsolvedDependencies();
-			bool releaseComponentFromObject(string objName);
-
-		private:
-			bool releaseComponent(void* component);
-
-		public:
-			void refreshComponentDescription();
-			map<string, IComponent*>* copyComponentDescription();
-
-			bool isAvailable(string objName);
-			void setProcessName(string processName);
-	};
+		protected:
+			void createPlayer();
+   };
+}
 }
 }
 }
@@ -114,4 +90,4 @@ namespace cm {
 }
 }
 
-#endif //_ComponentManager_H_
+#endif /*TIMEPLAYERADAPTER_H_*/
