@@ -48,7 +48,9 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "system/compat/SystemCompat.h"
-
+#if HAVE_ZIP
+	#include <zip.h>
+#endif
 extern "C" float machInfo(const char *name);
 
 namespace br {
@@ -58,6 +60,130 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace compat {
+
+
+#if HAVE_ZIP
+	bool getZipError(zip* file, string* strError) {
+		bool hasError = false;
+		int zipErr, sysErr;
+		char buff[2048];
+
+		zip_error_get(file, &zipErr, &sysErr);
+		if (zipErr != 0) {
+			zip_error_to_str(buff, 2048, zipErr, sysErr);
+			strError->assign(buff, strlen(buff));
+			hasError = true;
+		}
+
+		return hasError;
+	}
+
+	static void printZipError(string function, string strError) {
+		clog << function << " Warning! libzip error: '";
+		clog << strError << "'" << endl;
+	}
+
+	int zipwalker(void* zipfile, string initdir, string dirpath, string iUriD) {
+		DIR           *d;
+		struct dirent *dir;
+		FILE *fp;
+		string relpath;
+		string fullpath;
+		struct zip* file;
+		int len_dirpath;
+		int len_initdir;
+		int ret = 0;
+		string strDirName;
+		string strError;
+		bool hasError;
+
+		d = opendir(initdir.c_str());
+		if (d == NULL) {
+			return -1;
+		}
+
+		file = (struct zip*)zipfile;
+		len_dirpath = dirpath.length();
+		len_initdir = initdir.length();
+
+		while ((dir = readdir(d))) {
+
+			if (strcmp(dir->d_name, ".") == 0 ||
+					strcmp(dir->d_name, "..") == 0) {
+
+				continue;
+			}
+
+			strDirName.assign(dir->d_name, strlen(dir->d_name));
+			fullpath = initdir + iUriD + strDirName;
+			if (fullpath.length() > len_dirpath) {
+				// Uses "/" as separator because is the default zip funcion separator.
+				relpath = SystemCompat::updatePath(fullpath.substr(len_dirpath + 1), "/");
+			} else {
+				continue;
+			}
+
+			if (isDirectory(fullpath.c_str())) {
+				// \fixme We should not use that!
+				chdir(fullpath.c_str());
+
+				clog << "Directory ( " << relpath << " ) " << endl;
+				if (zip_dir_add(file, relpath.c_str(), ZIP_FL_ENC_GUESS) < 0) {
+					getZipError(file, &strError);
+					printZipError("zipwalker", strError);
+					ret = -1;
+					break;
+				}
+
+				if (zipwalker(file, fullpath, dirpath, iUriD) < 0) {
+					getZipError(file, &strError);
+					printZipError("zipwalker", strError);
+					ret = -1;
+					break;
+				}
+
+				// \fixme We should not use that!
+				clog << "Returning to dir '" << initdir << "'" << endl;
+				chdir(initdir.c_str());
+
+			} else {
+
+				clog << ":: full uri: " << fullpath << endl;
+				clog << ":: init dir: " << initdir << endl;
+				clog << ":: file name: " << string(dir->d_name) << endl;
+				clog << ":: relpath ( " << relpath << " ) " << endl;
+
+				fp = fopen(fullpath.c_str(), "rb");
+				if (fp == NULL) {
+					clog << ":: can't open "<< string(relpath) << endl;
+
+				} else {
+					struct zip_source *s;
+
+					s = zip_source_filep(file, fp, 0, -1);
+					if (s == NULL) {
+						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
+						ret = -1;
+						break;
+					}
+
+					if (zip_add(file, relpath.c_str(), s) == -1) {
+						zip_source_free(s);
+						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
+						ret = -1;
+						break;
+					}
+				}
+			}
+		}
+
+		clog << "zipwalker closing dir" << endl;
+		closedir(d);
+		clog << "zipwalker all done!" << endl;
+		return ret;
+	}
+#endif
+
 	string SystemCompat::filesPref        = "";
 	string SystemCompat::ctxFilesPref     = "";
 	string SystemCompat::installPref      = "";
@@ -404,132 +530,6 @@ namespace compat {
 
 	string SystemCompat::updatePath(string dir) {
 		return updatePath(dir, iUriD);
-	}
-
-#if HAVE_ZIP
-	bool SystemCompat::getZipError(zip* file, string* strError) {
-		bool hasError = false;
-		int zipErr, sysErr;
-		char buff[2048];
-
-		zip_error_get(file, &zipErr, &sysErr);
-		if (zipErr != 0) {
-			zip_error_to_str(buff, 2048, zipErr, sysErr);
-			strError->assign(buff, strlen(buff));
-			hasError = true;
-		}
-
-		return hasError;
-	}
-
-	static void printZipError(string function, string strError) {
-		clog << function << " Warning! libzip error: '";
-		clog << strError << "'" << endl;
-	}
-#endif
-
-	int SystemCompat::zipwalker(void* zipfile, string initdir, string dirpath, string iUriD) {
-#if HAVE_ZIP
-		DIR           *d;
-		struct dirent *dir;
-		FILE *fp;
-		string relpath;
-		string fullpath;
-		struct zip* file;
-		int len_dirpath;
-		int len_initdir;
-		int ret = 0;
-		string strDirName;
-		string strError;
-		bool hasError;
-
-		d = opendir(initdir.c_str());
-		if (d == NULL) {
-			return -1;
-		}
-
-		file = (struct zip*)zipfile;
-		len_dirpath = dirpath.length();
-		len_initdir = initdir.length();
-
-		while ((dir = readdir(d))) {
-
-			if (strcmp(dir->d_name, ".") == 0 ||
-					strcmp(dir->d_name, "..") == 0) {
-
-				continue;
-			}
-
-			strDirName.assign(dir->d_name, strlen(dir->d_name));
-			fullpath = initdir + iUriD + strDirName;
-			if (fullpath.length() > len_dirpath) {
-				// Uses "/" as separator because is the default zip funcion separator.
-				relpath = updatePath(fullpath.substr(len_dirpath + 1), "/");
-			} else {
-				continue;
-			}
-
-			if (isDirectory(fullpath.c_str())) {
-				// \fixme We should not use that!
-				chdir(fullpath.c_str());
-
-				clog << "Directory ( " << relpath << " ) " << endl;
-				if (zip_dir_add(file, relpath.c_str(), ZIP_FL_ENC_GUESS) < 0) {
-					getZipError(file, &strError);
-					printZipError("zipwalker", strError);
-					ret = -1;
-					break;
-				}
-
-				if (zipwalker(file, fullpath, dirpath, iUriD) < 0) {
-					getZipError(file, &strError);
-					printZipError("zipwalker", strError);
-					ret = -1;
-					break;
-				}
-
-				// \fixme We should not use that!
-				clog << "Returning to dir '" << initdir << "'" << endl;
-				chdir(initdir.c_str());
-
-			} else {
-
-				clog << ":: full uri: " << fullpath << endl;
-				clog << ":: init dir: " << initdir << endl;
-				clog << ":: file name: " << string(dir->d_name) << endl;
-				clog << ":: relpath ( " << relpath << " ) " << endl;
-
-				fp = fopen(fullpath.c_str(), "rb");
-				if (fp == NULL) {
-					clog << ":: can't open "<< string(relpath) << endl;
-
-				} else {
-					struct zip_source *s;
-
-					s = zip_source_filep(file, fp, 0, -1);
-					if (s == NULL) {
-						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
-						ret = -1;
-						break;
-					}
-
-					if (zip_add(file, relpath.c_str(), s) == -1) {
-						zip_source_free(s);
-						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
-						ret = -1;
-						break;
-					}
-				}
-			}
-		}
-
-		clog << "zipwalker closing dir" << endl;
-		closedir(d);
-		clog << "zipwalker all done!" << endl;
-		return ret;
-#else
-		return -1;
-#endif
 	}
 
 	int SystemCompat::zip_directory(

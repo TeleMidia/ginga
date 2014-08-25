@@ -375,7 +375,7 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 # Check for libzip if multi-device support is enabled.
 if test "$enable_multidevice" = yes; then
   PKG_CHECK_MODULES([LIBZIP],
-    [libzip >= libzip_required_version], [],
+    [libzip >= libzip_required_version], AC_DEFINE_DEPRECATED([HAVE_ZIP], [1]),
     [AC_MSG_ERROR([
 *** libzip >= libzip_required_version is required by --enable-multidevice])])
 fi
