@@ -818,7 +818,7 @@ namespace mb {
 			sUWin = (GingaWindowID)info.info.win.window;
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
-			//TODO: Cocoa input event configuration
+			sUWin = (GingaWindowID)info.info.cocoa.window;
 #endif
 		}
 
