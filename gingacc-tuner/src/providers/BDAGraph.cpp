@@ -551,12 +551,12 @@ HRESULT BDAGraph::changeChannelTo(long freq, bool setDefault) {
 
 bool BDAGraph::getBuffer(Buffer** buffer) {
 	Thread::mutexLock(&bufferMutex);
-	if (!bufferList.size()) {
+	if (bufferList.empty()) {
 		Thread::mutexUnlock(&bufferMutex);
 		return false;
 	}
-	*buffer = bufferList[0];
-	bufferList.erase(bufferList.begin());
+	*buffer = *bufferList.begin();
+	bufferList.pop_front();
 	Thread::mutexUnlock(&bufferMutex);
 	return true;
 }

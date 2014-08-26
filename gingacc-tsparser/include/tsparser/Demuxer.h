@@ -74,6 +74,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include <map>
 #include <vector>
+#include <list>
 #include <set>
 #include <string>
 using namespace std;
@@ -115,7 +116,7 @@ namespace tsparser {
 			PipeDescriptor outPipeD;
 			bool outPipeCreated;
 
-			vector<Buffer*> demuxMe;
+			list<Buffer*> demuxMe;
 
 		public:
 			//defs
