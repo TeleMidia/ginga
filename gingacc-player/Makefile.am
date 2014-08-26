@@ -31,6 +31,7 @@ gingaccplayerlib_LTLIBRARIES =\
   libgingaccplaplt.la\
   libgingaccplasrt.la\
   libgingaccplatxt.la\
+  libgingaccplatim.la\
   libgingaccplawdg.la\
   $(NULL)
 
@@ -62,6 +63,13 @@ libgingaccplalua_la_SOURCES =\
 # gingacc-pla-img (Image)
 libgingaccplaimg_la_SOURCES =\
   src/image/ImagePlayer.cpp\
+  $(NULL)
+
+# gingacc-pla-tim (Time - Network Time Protocol)
+libgingaccplatim_la_SOURCES =\
+  src/time/ntp/NTPDatagram.cpp\
+  src/time/ntp/NTPPlayer.cpp\
+  src/time/ntp/UDPClient.cpp\
   $(NULL)
 
 # gingacc-pla-txt (Text)

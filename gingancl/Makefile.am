@@ -34,6 +34,8 @@ gingancllib_LTLIBRARIES =\
   libginganclimgpadapter.la\
   libginganclpltpadapter.la\
   libginganclsubpadapter.la\
+  libginganclmirpadapter.la\
+  libgingancltimpadapter.la\
   libgingancl.la\
   $(NULL)
 
@@ -157,6 +159,15 @@ libginganclnclpadapter_la_SOURCES =\
   src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
   $(NULL)
 
+# ginga-ncl-ncl-p-adapter
+libginganclnclpadapter_la_LIBADD =\
+  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  $(NULL)
+
+libginganclnclpadapter_la_SOURCES =\
+  src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
+  $(NULL)
+
 # ginga-ncl-bkl-p-adapter
 if BUILD_BERKELIUM
 libginganclbklpadapter_la_LIBADD =\
@@ -183,6 +194,22 @@ libginganclluapadapter_la_SOURCES =\
 # ginga-ncl-av-p-adapter
 libginganclaavpadapter_la_SOURCES =\
   src/adapters/av/AVPlayerAdapter.cpp\
+  $(NULL)
+
+# ginga-ncl-mir-p-adapter
+libginganclmirpadapter_la_LIBADD =\
+  $(NULL)
+
+libginganclmirpadapter_la_SOURCES =\
+  src/adapters/mirror/MirrorPlayerAdapter.cpp\
+  $(NULL)
+
+# ginga-ncl-tim-p-adapter
+libgingancltimpadapter_la_LIBADD =\
+  $(NULL)
+
+libgingancltimpadapter_la_SOURCES =\
+  src/adapters/time/TimePlayerAdapter.cpp\
   $(NULL)
 
 # ginga-ncl-pav-p-adapter
@@ -284,6 +311,16 @@ adaptersavincludedir = $(adaptersincludedir)/av
 adaptersavinclude_HEADERS =\
   include/gingancl/adapters/av/AVPlayerAdapter.h\
   include/gingancl/adapters/av/ChannelPlayerAdapter.h\
+  $(NULL)
+
+adaptersmirincludedir = $(adaptersincludedir)/mirror
+adaptersmirinclude_HEADERS =\
+  include/gingancl/adapters/mirror/MirrorPlayerAdapter.h\
+  $(NULL)
+
+adapterstimincludedir = $(adaptersincludedir)/time
+adapterstiminclude_HEADERS =\
+  include/gingancl/adapters/time/TimePlayerAdapter.h\
   $(NULL)
 
 adatpersavtvincludedir = $(adaptersavincludedir)/tv

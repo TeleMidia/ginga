@@ -1272,9 +1272,6 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
       <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
-      <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp">
       <Filter>Source Files\gingancl\adapters\mirror</Filter>
     </ClCompile>
@@ -1313,6 +1310,9 @@
     </ClCompile>
     <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPPlayer.cpp">
       <Filter>Source Files\gingacc-player\time\ntp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
+      <Filter>Source Files\gingancl\adapters\application\imperative\lua</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

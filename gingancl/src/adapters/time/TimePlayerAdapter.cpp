@@ -67,7 +67,15 @@ namespace time {
 	}
 
 	void TimePlayerAdapter::createPlayer() {
+#if HAVE_COMPONENTS
+		playerCompName = "NTPPlayer";
+		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
+				myScreen, mrl.c_str());
+#else
+		player = new NTPPlayer(myScreen, mrl.c_str());
+#endif
 
+		FormatterPlayerAdapter::createPlayer();
 
 		clog << "TimePlayerAdapter::createPlayer '";
 		clog << mrl << "' ALL DONE" << endl;
@@ -78,4 +86,16 @@ namespace time {
 }
 }
 }
+}
+
+extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
+		createTimAdapter(IPlayerAdapterManager* manager, void* param) {
+
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::time::TimePlayerAdapter(manager);
+}
+
+extern "C" void destroyTimAdapter(
+		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
+
+	delete player;
 }

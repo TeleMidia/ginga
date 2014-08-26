@@ -66,6 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "player/ImagePlayer.h"
 #include "player/PlainTxtPlayer.h"
 #include "player/SrtPlayer.h"
+#include "player/NTPPlayer.h"
 
 #include "av/AVPlayerAdapter.h"
 #include "av/ChannelPlayerAdapter.h"
@@ -86,6 +87,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
 
 #include "application/imperative/lua/LuaPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua;
+
+#include "time/TimePlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
 #if HAVE_BERKELIUM
 #include "player/BerkeliumPlayer.h"
