@@ -48,6 +48,8 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "player/UDPClient.h"
+#include <unistd.h>
+#include <string.h>
 
 UDPClient::UDPClient() {
 	sd = 0;
