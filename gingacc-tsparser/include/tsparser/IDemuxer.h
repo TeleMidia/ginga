@@ -174,9 +174,6 @@ namespace tsparser {
 		virtual void updateChannelStatus(short newStatus, IChannel* channel)=0;
 
 		virtual short getCaps()=0;
-
-		virtual bool waitProgramInformation()=0;
-		virtual bool waitBuffers()=0;
 	 };
 }
 }
