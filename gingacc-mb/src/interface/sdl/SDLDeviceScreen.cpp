@@ -123,7 +123,7 @@ namespace mb {
 
 	SDLDeviceScreen::SDLDeviceScreen(
 			int argc, char** args,
-			GingaScreenID myId, GingaWindowID embedId,
+			GingaScreenID myId, UnderlyingWindowID embedId,
 			bool externalRenderer) {
 
 		string parentCoords = "";
@@ -633,11 +633,11 @@ namespace mb {
 		return iWin;
 	}
 
-	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
+	UnderlyingWindowID SDLDeviceScreen::createUnderlyingSubWindow(
 			int x, int y, int w, int h, float z) {
 
-		GingaWindowID uWin   = NULL;
-		GingaWindowID parent = NULL;
+		UnderlyingWindowID uWin   = NULL;
+		UnderlyingWindowID parent = NULL;
 
 		lockSDL();
 		parent = getScreenUnderlyingWindow();
@@ -665,12 +665,12 @@ namespace mb {
 	}
 #endif
 
-	GingaWindowID SDLDeviceScreen::createUnderlyingSubWindow(
-			GingaWindowID parent,
+	UnderlyingWindowID SDLDeviceScreen::createUnderlyingSubWindow(
+			UnderlyingWindowID parent,
 			string spec,
 			int x, int y, int w, int h, float z) {
 
-		GingaWindowID uWin = NULL;
+		UnderlyingWindowID uWin = NULL;
 
 #if defined(SDL_VIDEO_DRIVER_X11)
 		Display* xDisplay;
@@ -754,7 +754,7 @@ namespace mb {
 		clog << endl;
 
 		// Create the main window. 
-		uWin = (GingaWindowID)CreateWindow(
+		uWin = (UnderlyingWindowID)CreateWindow(
 				cName,                      // name of window class
 				cName,                      // title-bar string
 				WS_VISIBLE|WS_CHILD,        // window style
@@ -799,8 +799,8 @@ namespace mb {
 		return uWin;
 	}
 
-	GingaWindowID SDLDeviceScreen::getScreenUnderlyingWindow() {
-		GingaWindowID sUWin = NULL;
+	UnderlyingWindowID SDLDeviceScreen::getScreenUnderlyingWindow() {
+		UnderlyingWindowID sUWin = NULL;
 		SDL_SysWMinfo info;
 
 		lockSDL();
@@ -812,35 +812,19 @@ namespace mb {
 			SDL_GetWindowWMInfo(screen, &info);
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-			sUWin = (GingaWindowID)info.info.x11.window;
+			sUWin = (UnderlyingWindowID)info.info.x11.window;
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-			sUWin = (GingaWindowID)info.info.win.window;
+			sUWin = (UnderlyingWindowID)info.info.win.window;
 
 #elif defined(SDL_VIDEO_DRIVER_COCOA)
-			sUWin = (GingaWindowID)info.info.cocoa.window;
+			sUWin = (UnderlyingWindowID)info.info.cocoa.window;
 #endif
 		}
 
 		unlockSDL();
 
 		return sUWin;
-	}
-
-	IWindow* SDLDeviceScreen::createWindowFrom(GingaWindowID underlyingWindow) {
-		IWindow* iWin = NULL;
-
-		Thread::mutexLock(&winMutex);
-
-		if (underlyingWindow != NULL) {
-			iWin = new SDLWindow(underlyingWindow, NULL, id, 0, 0, 0, 0, 0);
-			windowPool.insert(iWin);
-			renderMapInsertWindow(id, iWin, 2.0);
-		}
-
-		Thread::mutexUnlock(&winMutex);
-
-		return iWin;
 	}
 
 	bool SDLDeviceScreen::hasWindow(IWindow* win) {
@@ -1844,7 +1828,7 @@ namespace mb {
 		Thread::mutexUnlock(&renMutex);
 	}
 
-	void SDLDeviceScreen::initEmbed(SDLDeviceScreen* s, GingaWindowID uWin) {
+	void SDLDeviceScreen::initEmbed(SDLDeviceScreen* s, UnderlyingWindowID uWin) {
 		SDL_SysWMinfo info;
 
 		lockSDL();
@@ -1905,7 +1889,7 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::forceInputFocus(
-			SDLDeviceScreen* s, GingaWindowID uWin) {
+			SDLDeviceScreen* s, UnderlyingWindowID uWin) {
 
 		lockSDL();
 
@@ -3317,7 +3301,7 @@ namespace mb {
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		createSDLScreen(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID embedId,
+				GingaScreenID myId, UnderlyingWindowID embedId,
 				bool externalRenderer) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::mb::

@@ -141,13 +141,6 @@ namespace mb {
 
 		this->windowId = windowID;
 
-		if (parentWindowID != NULL) {
-			this->parentId = parentWindowID;
-
-		} else {
-			this->parentId = 0;
-		}
-
 		this->texture           = NULL;
 		this->winISur           = NULL;
 		this->curSur            = NULL;

@@ -106,7 +106,6 @@ namespace mb {
 
 			GingaScreenID myScreen;
 			GingaWindowID windowId;
-			GingaWindowID parentId;
 
 			SDL_Rect rect;
 

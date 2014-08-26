@@ -525,7 +525,7 @@ namespace player {
 
 	bool AVPlayer::setOutWindow(GingaWindowID windowId) {
 		if (mainAV && win == NULL) {
-			win = dm->createWindowFrom(myScreen, windowId);
+			win = dm->getIWindowFromId(myScreen, windowId);
 
 			if (!running) {
 				Thread::startThread();

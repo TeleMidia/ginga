@@ -127,7 +127,7 @@ typedef struct {
 			int hRes;
 			int wRes;
 
-			unsigned long winIdRefCounter;
+			GingaWindowID winIdRefCounter;
 			map<GingaWindowID, IWindow*> windowRefs;
 
 #if HAVE_COMPONENTS
@@ -139,8 +139,8 @@ typedef struct {
 			set<IDiscreteMediaProvider*> dmpPool;
 
 			GingaScreenID id;
-			GingaWindowID uParentId;
-			GingaWindowID uEmbedId;
+			UnderlyingWindowID uParentId;
+			UnderlyingWindowID uEmbedId;
 			bool uEmbedFocused;
 			bool mustGainFocus;
 
@@ -182,7 +182,7 @@ typedef struct {
 		public:
 			SDLDeviceScreen(
 					int numArgs, char** args,
-					GingaScreenID myId, GingaWindowID embedId,
+					GingaScreenID myId, UnderlyingWindowID embedId,
 					bool externalRenderer);
 
 			virtual ~SDLDeviceScreen();
@@ -236,19 +236,18 @@ typedef struct {
 
 			IWindow* createWindow(int x, int y, int w, int h, float z);
 
-			GingaWindowID createUnderlyingSubWindow(
+			UnderlyingWindowID createUnderlyingSubWindow(
 					int x, int y, int w, int h, float z);
 
 		private:
-			GingaWindowID createUnderlyingSubWindow(
-					GingaWindowID parent,
+			UnderlyingWindowID createUnderlyingSubWindow(
+					UnderlyingWindowID parent,
 					string spec,
 					int x, int y, int w, int h, float z);
 
 		public:
-			GingaWindowID getScreenUnderlyingWindow();
+			UnderlyingWindowID getScreenUnderlyingWindow();
 
-			IWindow* createWindowFrom(GingaWindowID underlyingWindow);
 			bool hasWindow(IWindow* win);
 			void releaseWindow(IWindow* win);
 
@@ -311,9 +310,9 @@ typedef struct {
 			static int refreshCMP(SDLDeviceScreen* screen);
 			static void refreshWin(SDLDeviceScreen* screen);
 
-			static void initEmbed(SDLDeviceScreen* s, GingaWindowID uWin);
+			static void initEmbed(SDLDeviceScreen* s, UnderlyingWindowID uWin);
 			static void forceInputFocus(
-					SDLDeviceScreen* screen, GingaWindowID uWin);
+					SDLDeviceScreen* screen, UnderlyingWindowID uWin);
 
 			static void initScreen(SDLDeviceScreen* screen);
 			static void clearScreen(SDLDeviceScreen* screen);
