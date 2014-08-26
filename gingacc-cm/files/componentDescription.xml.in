@@ -288,6 +288,14 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-player" name="libgingaccplatim" version="0.13.5" type="dynamic">
+    <dependency componentName="libtelemidiautil" version="0.13.5"/>
+    <dependency componentName="libgingaccplayer" version="0.13.5"/>
+    <symbol object="TimePlayer" creator="createTimePlayer" destroyer="destroyTimePlayer" interface="IPlayer"/>
+    <location type="local" uri="@GINGA_LIBDIR@"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
   <component package="gingacc-player" name="libgingaccplalua" version="0.13.5" type="dynamic">
     <dependency componentName="liblua" version="5.1.0"/>
     <dependency componentName="libtelemidiautil" version="0.13.5"/>
@@ -427,6 +435,24 @@
     <dependency componentName="libginganclmodel" version="0.13.5"/>
     <dependency componentName="libgingancladapter" version="0.13.5"/>
     <symbol object="ProgramAVPlayerAdapter" creator="createPAVAdapter" destroyer="destroyPAVAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="@GINGA_LIBDIR@"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libginganclmirpadapter" version="0.13.5" type="dynamic">
+    <dependency componentName="libncl30" version="0.13.5"/>
+    <dependency componentName="libginganclmodel" version="0.13.5"/>
+    <dependency componentName="libgingancladapter" version="0.13.5"/>
+    <symbol object="MirrorPlayerAdapter" creator="createMirAdapter" destroyer="destroyMirAdapter" interface="IPlayerAdapter"/>
+    <location type="local" uri="@GINGA_LIBDIR@"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
+  <component package="gingancl" name="libgingancltimpadapter" version="0.13.5" type="dynamic">
+    <dependency componentName="libncl30" version="0.13.5"/>
+    <dependency componentName="libginganclmodel" version="0.13.5"/>
+    <dependency componentName="libgingancladapter" version="0.13.5"/>
+    <symbol object="TimePlayerAdapter" creator="createTimAdapter" destroyer="destroyTimAdapter" interface="IPlayerAdapter"/>
     <location type="local" uri="@GINGA_LIBDIR@"/>
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>

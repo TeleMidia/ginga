@@ -114,3 +114,15 @@ namespace mirror {
 }
 }
 }
+
+extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
+		createMirAdapter(IPlayerAdapterManager* manager, void* param) {
+
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::mirror::MirrorPlayerAdapter(manager);
+}
+
+extern "C" void destroyMirAdapter(
+		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
+
+	delete player;
+}

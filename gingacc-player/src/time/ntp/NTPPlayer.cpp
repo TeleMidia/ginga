@@ -275,3 +275,16 @@ double NTPPlayer::elapsedTime(string& oldNclTime) {
 }
 }
 }
+
+extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
+		createTimePlayer(GingaScreenID screenId, const char* mrl) {
+
+	return new ::br::pucrio::telemidia::ginga::core::player::NTPPlayer(
+			screenId, mrl);
+}
+
+extern "C" void destroyTimePlayer(
+		::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
+
+	delete p;
+}

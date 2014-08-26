@@ -234,6 +234,9 @@ namespace adapters {
 
 			if (((ContentNode*)dataObject)->isSettingNode()) {
 				return "SETTING_NODE";
+
+			} else if (((ContentNode*)dataObject)->isSettingNode()) {
+				return "TimePlayerAdapter";
 			}
 		}
 
@@ -483,6 +486,9 @@ namespace adapters {
 
 		} else if (playerClassName == "ProgramAVPlayerAdapter") {
 			player = ProgramAVPlayerAdapter::getInstance(this);
+
+		} else if (playerClassName == "TimePlayerAdapter") {
+			player = new TimePlayerAdapter(this);
 
 		} else if (playerClassName != "SETTING_NODE") {
 			clog << "PlayerAdapterManager::initializePlayer is creating a ";

@@ -61,9 +61,14 @@ namespace components {
 		typeSet.insert("DocumentNode");
 
 		this->type        = "";
+
 		// must set to false before a new isSettingNode call
 		isSettingNodeType = false;
 		isSettingNodeType = isSettingNode();
+
+		// must set to false before a new isTimeNode call
+		isTimeNodeType = false;
+		isTimeNodeType = isTimeNode();
 	}
 
 	ContentNode::ContentNode(string uid, Content* someContent, string type)
@@ -94,6 +99,29 @@ namespace components {
 		upNodeType = upperCase(nodeType);
 		if (upNodeType == "APPLICATION/X-GINGA-SETTINGS" ||
 				upNodeType == "APPLICATION/X-NCL-SETTINGS") {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ContentNode::isTimeNode() {
+		string upNodeType;
+		string nodeType = getNodeType();
+
+		if (isTimeNodeType) {
+			return true;
+		}
+
+		if (nodeType == "") {
+			return false;
+		}
+
+		//W3C (and RFC2045) type value isn't sensitive
+		upNodeType = upperCase(nodeType);
+		if (upNodeType == "APPLICATION/X-GINGA-TIME" ||
+				upNodeType == "APPLICATION/X-NCL-TIME") {
 
 			return true;
 		}
