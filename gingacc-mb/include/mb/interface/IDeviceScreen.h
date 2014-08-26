@@ -86,7 +86,7 @@ namespace mb {
 			virtual void clearWidgetPools()=0;
 
 			virtual string getScreenName()=0;
-			virtual GingaWindowID getScreenUnderlyingWindow()=0;
+			virtual UnderlyingWindowID getScreenUnderlyingWindow()=0;
 
 			virtual void setBackgroundImage(string uri)=0;
 
@@ -113,10 +113,9 @@ namespace mb {
 			virtual IWindow* createWindow(
 					int x, int y, int w, int h, float z)=0;
 
-			virtual GingaWindowID createUnderlyingSubWindow(
+			virtual UnderlyingWindowID createUnderlyingSubWindow(
 					int x, int y, int w, int h, float z)=0;
 
-			virtual IWindow* createWindowFrom(GingaWindowID underlyingWindow)=0;
 			virtual bool hasWindow(IWindow* win)=0;
 			virtual void releaseWindow(IWindow* win)=0;
 
@@ -174,7 +173,7 @@ namespace mb {
 typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 		ScreenCreator(
 				int numArgs, char** args,
-				GingaScreenID myId, GingaWindowID embedId,
+				GingaScreenID myId, UnderlyingWindowID embedId,
 				bool externalRenderer);
 
 typedef void ScreenDestroyer(

@@ -170,7 +170,7 @@ namespace mb {
 
 		public:
 			string getScreenName(GingaScreenID screenId);
-			GingaWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
+			UnderlyingWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
 
 		private:
 			short getMBSystemType(string mbSystemName);
@@ -200,14 +200,11 @@ namespace mb {
 					int w, int h,
 					float z);
 
-			GingaWindowID createUnderlyingSubWindow(
+			UnderlyingWindowID createUnderlyingSubWindow(
 					GingaScreenID screenId,
 					int x, int y,
 					int w, int h,
 					float z);
-
-			IWindow* createWindowFrom(
-					GingaScreenID screenId, GingaWindowID underlyingWindow);
 
 			bool hasWindow(GingaScreenID screenId, IWindow* window);
 			void releaseWindow(GingaScreenID screenId, IWindow* window);
