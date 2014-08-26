@@ -79,8 +79,7 @@ namespace lssm {
 
 typedef ::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager* CCMCreator(
 		::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager* pem,
-		 GingaScreenID screenId,
-		 bool disableDemuxer);
+		 GingaScreenID screenId);
 
 typedef void CCMDestroyer(
 		::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager*);

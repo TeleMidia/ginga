@@ -826,7 +826,7 @@ namespace ncl {
 
 		double time         = getCurrentTimeMillis();
 		int actionType      = action->getType();
-		GingaWindowID winId = NULL;
+		GingaWindowID winId = 0;
 
 		clog << "FormatterScheduler::";
 		clog << "runActionOverApplicationObject ACTION = '";
