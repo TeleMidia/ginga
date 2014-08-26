@@ -458,7 +458,7 @@ namespace multidevice {
 		FormatterLayout* layout;
 		CascadingDescriptor* descriptor;
 		string regionId, plan = "";
-		GingaWindowID windowId = NULL;
+		GingaWindowID windowId = 0;
 
 		map<int, FormatterLayout*>::iterator i;
 		LayoutRegion* bitMapRegion;

@@ -100,8 +100,8 @@ namespace tsparser {
 
 			short debugDest;
 			unsigned int debugPacketCounter;
-			bool isWaitingPI;
 
+			bool isWaiting;
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
 
@@ -191,12 +191,8 @@ namespace tsparser {
 			short getCaps();
 
 		private:
-			void checkProgramInformation();
-			void programInfoSatisfied();
-
-		public:
-			bool waitProgramInformation();
-			bool waitBuffers();
+			void dataArrived();
+			bool waitData();
 	 };
 }
 }
