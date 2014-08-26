@@ -685,13 +685,13 @@ namespace mb {
 		}
 
 		if (parent == NULL) {
-			parent = (GingaWindowID)XDefaultRootWindow(xDisplay);
+			parent = (UnderlyingWindowID)XDefaultRootWindow(xDisplay);
 		}
 
 		xScreen    = DefaultScreen(xDisplay);
 		blackColor = BlackPixel(xDisplay, xScreen);
 
-		uWin       = (GingaWindowID)XCreateSimpleWindow(
+		uWin       = (UnderlyingWindowID)XCreateSimpleWindow(
 				xDisplay,               /* display */
 				(Window)parent,         /* parent */
 				x,                      /* x */
