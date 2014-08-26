@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "tuner/ITuner.h"
 #include "tuner/providers/NetworkProvider.h"
 
 namespace br {
@@ -99,7 +100,7 @@ namespace tuning {
 		}
 	}
 
-	int NetworkProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
+	int NetworkProvider::receiveData(char* buff) {
 		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
 	}
 }

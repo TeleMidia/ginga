@@ -367,12 +367,12 @@ namespace lssm {
 					STREAM_TYPE_DSMCC_TYPE_D); //DSM-CC descriptors
 
 			if (hasOCSupport) {
-				if (ocDelay == 0) {
+				/*if (ocDelay == 0) {
 					cpid = ((IDemuxer*)demuxer)->getDefaultMainCarouselPid();
 					if (cpid != 0) {
 						((IDataProcessor*)dataProcessor)->createPidSectionFilter(cpid);
 					}
-				}
+				}*/
 
 				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_C);

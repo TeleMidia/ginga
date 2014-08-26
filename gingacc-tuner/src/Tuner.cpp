@@ -83,8 +83,6 @@ namespace tuning {
 		firstTune        = true;
 		listener         = NULL;
 		loopListener     = NULL;
-		skipSize         = 0;
-		packetSize       = 188;
 		currentSpec      = "";
 		this->screenId   = screenId;
 
@@ -289,7 +287,7 @@ namespace tuning {
 		if (isPush) {
 			do {
 				buff = nInterface->receiveData(&rval);
-				if (rval > 0) {
+				if (rval > 0 && buff != NULL) {
 					notifyData(buff, (unsigned int)rval, true);
 				}
 
@@ -299,8 +297,7 @@ namespace tuning {
 			buff = new char[BUFFSIZE];
 
 			do {
-				rval = nInterface->receiveData(buff, skipSize, packetSize);
-				skipSize = 0;
+				rval = nInterface->receiveData(buff);
 				if (rval > 0) {
 					/*if (debugStream > 0) {
 						write(debugStream, buff, rval);
@@ -409,14 +406,6 @@ namespace tuning {
 
 	void Tuner::setTunerListener(ITunerListener* listener) {
 		this->listener = listener;
-	}
-
-	void Tuner::setSkipSize(int size) {
-		skipSize = size;
-	}
-
-	void Tuner::setPacketSize(unsigned char size) {
-		packetSize = size;
 	}
 
 	void Tuner::notifyData(char* buff, unsigned int val, bool mustDelBuff) {

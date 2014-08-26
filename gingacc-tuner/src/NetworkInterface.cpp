@@ -258,10 +258,8 @@ namespace tuning {
 		return provider->receiveData(len);
 	}
 
-	int NetworkInterface::receiveData(
-			char* buff, int skipSize, unsigned char packetSize) {
-
-		return provider->receiveData(buff, skipSize, packetSize);
+	int NetworkInterface::receiveData(char* buff) {
+		return provider->receiveData(buff);
 	}
 
 	void NetworkInterface::close() {

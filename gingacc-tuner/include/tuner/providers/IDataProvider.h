@@ -56,8 +56,6 @@ http://www.telemidia.puc-rio.br
 #include "IProviderListener.h"
 #include "frontends/IFrontendFilter.h"
 
-#define BUFFSIZE (204 * 200) + 1
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -89,9 +87,7 @@ namespace tuning {
 			virtual void removeFilter(IFrontendFilter* filter)=0;
 
 			virtual char* receiveData(int* len)=0;
-
-			virtual int receiveData(
-					char* buff, int skipSize, unsigned char packetSize)=0;
+			virtual int receiveData(char* buff)=0;
 
 			virtual bool tune()=0;
 			virtual IChannel* getCurrentChannel()=0;

@@ -779,14 +779,14 @@ namespace tsparser {
 					tuner->setPacketSize(packetSize);
 				}
 
-			}*/ else {
-				/*clog << "Demuxer::receiveData breaking when i = '";
-				clog << i << "' and size = '" << size << "'" << endl;*/
+			} else {
+				clog << "Demuxer::receiveData breaking when i = '";
+				clog << i << "' and size = '" << size << "'" << endl;
 				tuner->setSkipSize(
 						(packetSize-((size-i-1)%packetSize))%packetSize);
 
 				break;
-			}
+			}*/
 		}
 	}
 
