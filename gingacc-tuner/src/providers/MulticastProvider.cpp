@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "tuner/providers/MulticastProvider.h"
+#include "tuner/ITuner.h"
 
 namespace br {
 namespace pucrio {
