@@ -52,6 +52,10 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/IMBDefs.h"
 
+#ifndef BUFFSIZE
+#define BUFFSIZE 9588
+#endif //BUFFSIZE
+
 #include "ITunerListener.h"
 #include "INetworkInterface.h"
 
@@ -82,8 +86,6 @@ namespace tuning {
 			virtual void tune()=0;
 			virtual void setTunerListener(ITunerListener* listener)=0;
 			virtual bool hasSignal()=0;
-			virtual void setSkipSize(int size)=0;
-			virtual void setPacketSize(unsigned char size)=0;
 	};
 }
 }

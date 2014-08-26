@@ -100,11 +100,7 @@ namespace tuning {
 			void close();
 
 			char* receiveData(int* len) {return NULL;};
-
-			int receiveData(
-					char* buff, 
-					int skipSize,
-					unsigned char packetSize);
+			int receiveData(char* buff);
 	};
 }
 }

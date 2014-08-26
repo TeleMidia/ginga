@@ -106,11 +106,7 @@ namespace tuning {
 			string getPesFilterOutput();
 
 			char* receiveData(int* len);
-
-			int receiveData(
-				char* buff, 
-				int skipSize,
-				unsigned char packetSize);
+			int receiveData(char* buff);
 
 			void close();
 	};

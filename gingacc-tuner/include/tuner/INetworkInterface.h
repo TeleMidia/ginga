@@ -88,11 +88,7 @@ namespace tuning {
 			virtual string getPesFilterOutput()=0;
 
 			virtual char* receiveData(int* len)=0;
-
-			virtual int receiveData(
-					char* buff, 
-					int skipSize,
-					unsigned char packetSize)=0;
+			virtual int receiveData(char* buff)=0;
 
 			virtual void close()=0;
 	};
