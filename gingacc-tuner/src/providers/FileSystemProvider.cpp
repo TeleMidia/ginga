@@ -122,7 +122,7 @@ namespace tuning {
 
 	int FileSystemProvider::receiveData(char* buff,  int skipSize,
 									    unsigned char packetSize) {
-		int bufSize = (packetSize * 100) + 1;
+		int bufSize = (packetSize * 100);
 		if (fileDescriptor > 0) {
 			if (skipSize) fseek(fileDescriptor, skipSize, SEEK_CUR);
 			int rval = fread((void*)buff, 1, bufSize, fileDescriptor);
@@ -134,8 +134,6 @@ namespace tuning {
 					listener->receiveSignal(PST_LOOP);
 				}
 
-			} else {
-				fseek(fileDescriptor, -1, SEEK_CUR);
 			}
 			return rval;
 		}
