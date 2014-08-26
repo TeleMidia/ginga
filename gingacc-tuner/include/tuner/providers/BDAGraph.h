@@ -84,7 +84,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::thread;
 #include <comutil.h>
 
 #include <map>
-#include <vector>
+#include <list>
 #include <fstream>
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ public:
 
 private:
 	bool searching;
-	vector<Buffer*> bufferList;
+	list<Buffer*> bufferList;
 	pthread_mutex_t bufferMutex;
 
     /* ISampleGrabberCB methods */

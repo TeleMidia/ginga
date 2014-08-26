@@ -729,8 +729,8 @@ namespace tsparser {
 				waitData();
 
 			} else {
-				b = demuxMe[0];
-				demuxMe.erase(demuxMe.begin());
+				b = *demuxMe.begin();
+				demuxMe.pop_front();
 				Thread::mutexUnlock(&stlMutex);
 				processDemuxData(b->buff, b->size);
 				if (b->mustDelBuff) {
