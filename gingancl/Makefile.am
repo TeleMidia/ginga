@@ -159,15 +159,6 @@ libginganclnclpadapter_la_SOURCES =\
   src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
   $(NULL)
 
-# ginga-ncl-ncl-p-adapter
-libginganclnclpadapter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclapppadapter.la\
-  $(NULL)
-
-libginganclnclpadapter_la_SOURCES =\
-  src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
-  $(NULL)
-
 # ginga-ncl-bkl-p-adapter
 if BUILD_BERKELIUM
 libginganclbklpadapter_la_LIBADD =\
