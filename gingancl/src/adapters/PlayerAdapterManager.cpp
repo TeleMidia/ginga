@@ -235,7 +235,7 @@ namespace adapters {
 			if (((ContentNode*)dataObject)->isSettingNode()) {
 				return "SETTING_NODE";
 
-			} else if (((ContentNode*)dataObject)->isSettingNode()) {
+			} else if (((ContentNode*)dataObject)->isTimeNode()) {
 				return "TimePlayerAdapter";
 			}
 		}

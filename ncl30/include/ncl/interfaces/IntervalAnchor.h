@@ -61,11 +61,16 @@ namespace interfaces {
 		protected:
 			double begin;
 			double end;
+			string strBegin;
+			string strEnd;
 
 		public:
 			static const double OBJECT_DURATION;
 
 			IntervalAnchor(string id, double begin, double end);
+			void setStrValues(string begin, string end);
+			string getStrBegin();
+			string getStrEnd();
 			double getBegin();
 			double getEnd();
 			void setBegin(double b);
