@@ -57,10 +57,20 @@ namespace components {
 	ContentNode::ContentNode(string uid, Content* someContent)
 		    : NodeEntity(uid, someContent) {
 
+		initialize("");
+	}
+
+	ContentNode::ContentNode(string uid, Content* someContent, string type)
+		    : NodeEntity(uid, someContent) {
+
+		initialize(type);
+	}
+
+	void ContentNode::initialize(string type) {
 		typeSet.insert("ContentNode");
 		typeSet.insert("DocumentNode");
 
-		this->type        = "";
+		this->type = type;
 
 		// must set to false before a new isSettingNode call
 		isSettingNodeType = false;
@@ -69,18 +79,6 @@ namespace components {
 		// must set to false before a new isTimeNode call
 		isTimeNodeType = false;
 		isTimeNodeType = isTimeNode();
-	}
-
-	ContentNode::ContentNode(string uid, Content* someContent, string type)
-		    : NodeEntity(uid, someContent) {
-
-		typeSet.insert("ContentNode");
-		typeSet.insert("DocumentNode");
-
-		this->type        = type;
-		// must set to false before a new isSettingNode call
-		isSettingNodeType = false;
-		isSettingNodeType = isSettingNode();
 	}
 
 	bool ContentNode::isSettingNode() {

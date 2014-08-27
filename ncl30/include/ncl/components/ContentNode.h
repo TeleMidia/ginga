@@ -71,8 +71,13 @@ namespace components {
 	public:
 		ContentNode(string uid, Content* someContent);
 		ContentNode(string uid, Content* content, string type);
+
 		virtual ~ContentNode(){};
 
+	private:
+		void initialize(string type);
+
+	public:
 		bool isSettingNode();
 		bool isTimeNode();
 		string getTypeValue();
