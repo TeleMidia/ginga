@@ -158,6 +158,16 @@ AM_CONDITIONAL([BUILD_MULTIPROCESS], [test "$enable_multiprocess" = yes])
 _AC_ARG_ENABLE([tests], [build unit tests], [no])
 AM_CONDITIONAL([BUILD_TESTS], [test "$enable_tests" = yes])
 
+# Enable NCLua trace.
+_AC_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])
+if test "$enable_nclua_trace" = yes; then
+  AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [1],
+    [Define to 1 to trace NCLua calls.])
+else
+  AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [0],
+    [Define to 1 to trace NCLua calls.])
+fi
+
 # Enable video4linux.
 _AC_ARG_ENABLE([video4linux], [build video4linux front-end support], [no])
 if test "$enable_video4linux" = yes; then
@@ -370,7 +380,7 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 ################################ Ginga LLSM ################################
 # Nothing to do.
 
-################################ Ginga MD ################################
+################################  Ginga MD #################################
 
 # Check for libzip if multi-device support is enabled.
 if test "$enable_multidevice" = yes; then
@@ -453,11 +463,13 @@ AC_MSG_NOTICE([summary of main build options:
   compiler:           cc: ${CC} cflags: ${CFLAGS} cppflags: ${CPPFLAGS}
   library types:      shared=${enable_shared}, static=${enable_static}
 
-  install headers:        ${enable_headers}
   build components:       ${enable_components}
   build data-processing:  ${enable_data_processing}
   build multi-device:     ${enable_multidevice}
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build video4linux:      ${enable_video4linux}
+
+  install headers:        ${enable_headers}
+  trace nclua calls:      ${enable_nclua_trace}
 ])
