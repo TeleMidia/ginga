@@ -66,6 +66,19 @@ namespace interfaces {
 		setBegin(begin);
 	}
 
+	void IntervalAnchor::setStrValues(string begin, string end) {
+		this->strBegin = begin;
+		this->strEnd   = end;
+	}
+
+	string IntervalAnchor::getStrBegin() {
+		return this->strBegin;
+	}
+
+	string IntervalAnchor::getStrEnd() {
+		return this->strEnd;
+	}
+
 	double IntervalAnchor::getBegin() {
 		return begin;
 	}
