@@ -143,6 +143,9 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 				secs = 3600 * util::stof((*params)[0]) + 60 * util::stof((*params)[1]) +
 						util::stof((*params)[2]);
 				break;
+
+			default:
+				secs = infinity();
 		}
 
 		delete params;
