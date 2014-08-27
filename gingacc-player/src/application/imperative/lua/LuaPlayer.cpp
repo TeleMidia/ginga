@@ -230,11 +230,8 @@ void *LuaPlayer::nw_update_thread (void *data)
 
           for (i = lst.begin (); i != lst.end (); i++)
           {
-               IWindow* window;
                LuaPlayer *player;
                ISurface *wrapper;
-               SDL_Surface *dest;
-               SDL_Surface *sfc;
                ncluaw_t *nw;
                ncluaw_event_t *evt;
 
@@ -245,19 +242,26 @@ void *LuaPlayer::nw_update_thread (void *data)
                ncluaw_cycle (nw);
 
                wrapper = player->getSurface ();
-               dest = (SDL_Surface *) wrapper->getSurfaceContent ();
-               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
-                                           0, 0, 0, 0);
-               assert (sfc != NULL);
-               ncluaw_paint (nw, (unsigned char *) sfc->pixels, "RGB24",
-                                  sfc->w, sfc->h, sfc->pitch);
-               assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
-               SDL_FreeSurface (sfc);
+               if (wrapper != NULL)
+               {
+                    SDL_Surface *dest;
+                    SDL_Surface *sfc;
+                    IWindow* window;
 
-               // Refresh surface.
-               window = (IWindow*)(wrapper->getParentWindow ());
-               assert (window != NULL);
-               window->renderFrom (wrapper);
+                    dest = (SDL_Surface *) wrapper->getSurfaceContent ();
+                    sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
+                                                0, 0, 0, 0);
+                    assert (sfc != NULL);
+                    ncluaw_paint (nw, (unsigned char *) sfc->pixels,
+                                  "RGB24", sfc->w, sfc->h, sfc->pitch);
+                    assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
+                    SDL_FreeSurface (sfc);
+
+                    // Refresh surface.
+                    window = (IWindow*)(wrapper->getParentWindow ());
+                    assert (window != NULL);
+                    window->renderFrom (wrapper);
+               }
 
                while ((evt = ncluaw_receive (nw)) != NULL)
                {
@@ -416,11 +420,18 @@ void LuaPlayer::unlock (void)
 
 bool LuaPlayer::doPlay (void)
 {
-     int w, h;
+     ISurface *sfc;
      char *errmsg = NULL;
+     int w = 0;
+     int h = 0;
 
      assert (this->nw == NULL);
-     (this->getSurface ())->getSize (&w, &h);
+
+     sfc = this->getSurface ();
+     if (sfc != NULL)
+     {
+          sfc->getSize (&w, &h);
+     }
 
      // Create the NCLua state.
      this->nw = ncluaw_open (this->mrl.c_str (), w, h, &errmsg);
