@@ -53,6 +53,7 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/output/SDLWindow.h"
 #include "mb/interface/sdl/output/SDLSurface.h"
 #include "mb/interface/sdl/SDLDeviceScreen.h"
+#include "mb/interface/sdl/content/SDLConvert.h"
 
 extern "C" {
 #include <stdlib.h>
@@ -729,20 +730,16 @@ namespace mb {
 
 	string SDLWindow::getDumpFileUri(int quality, int dumpW, int dumpH) {
 		string uri;
-		string uriJpeg;
 		SDL_Surface* dumpUSur;
 		bool freeSurface = false;
 
 		lockSurface();
 		if (curSur != NULL) {
 			dumpUSur = curSur;
-
 		} else if (texture != NULL) {
 			dumpUSur = SDLDeviceScreen::createUnderlyingSurfaceFromTexture(
 					texture);
-
 			freeSurface = true;
-
 		} else {
 			unlockSurface();
 			clog << "SDLWindow::getDumpFileUri window '";
@@ -753,28 +750,14 @@ namespace mb {
 
 		SDLDeviceScreen::lockSDL();
 		uri = SystemCompat::getTemporaryDir() +
-				"dump_" + itos((unsigned long)windowId) + ".bmp";
-
-		remove((char*)(uri.c_str()));
-		remove((char*)((uri + ".jpg").c_str()));
-
-		SDL_SaveBMP(dumpUSur, uri.c_str());
-
-		uriJpeg = uri + ".jpg";
-
-		if (fileExists(uri)) {
-			if (bmpToJpeg(
-					(char*)uri.c_str(), (char*)uriJpeg.c_str(), quality)) {
-
-				uri = uriJpeg;
-			}
-		}
-
-		if (freeSurface) {
+				"dump_" + itos((unsigned long)windowId) + ".jpg";
+		int ret = SDLConvert::convertSurfaceToJPEG(uri.c_str(), dumpUSur,quality);
+		if (ret == -1)
+			uri ="";
+		if (freeSurface)
 			SDLDeviceScreen::createReleaseContainer(dumpUSur, NULL, NULL);
-		}
-
 		SDLDeviceScreen::unlockSDL();
+
 		unlockSurface();
 		return uri;
 	}
