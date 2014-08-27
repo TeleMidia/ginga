@@ -206,46 +206,7 @@ if test "$HAVE_EXPAT" = no; then
 fi
 
 ############################## TeleMidia Util ##############################
-
-# Check for libjpeg.
-AC_ARG_WITH([libjpeg],
- [AC_HELP_STRING([--without-libjpeg],
- [disable JPEG support])])
-
-if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
-  AC_CHECK_LIB([jpeg], [jpeg_destroy_decompress],
-   [jpeg_ok=yes],
-   [jpeg_ok=no; AC_MSG_WARN([*** JPEG library not found])])
-
-  if test "$jpeg_ok" = yes; then
-    AC_MSG_CHECKING([for jpeglib.h])
-    AC_TRY_CPP([[
-#include <stdio.h>
-#undef PACKAGE
-#undef VERSION
-#undef HAVE_STDLIB_H
-#include <jpeglib.h>
-   ]],
-   [jpeg_ok=yes],
-   [jpeg_ok=no])
-    AC_MSG_RESULT([$jpeg_ok])
-
-    if test "$jpeg_ok" = yes; then
-      JPEG_LIBS='-ljpeg'
-    else
-      AC_MSG_WARN([*** JPEG header file not found])
-    fi
-  fi
-
-  if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
-    AC_MSG_ERROR([
-*** Checks for LIBJPEG failed.
-*** Libjpeg is optional; you can disable it by passing
-*** the option --without-libjpeg to configure.])
-  fi
-fi
-AM_CONDITIONAL([WITH_JPEG], [test "$with_libjpeg" != no])
-AC_SUBST([JPEG_LIBS])
+# Nothing to do.
 
 ############################# Ginga-CC System ##############################
 
@@ -253,6 +214,14 @@ AC_SUBST([JPEG_LIBS])
 AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 AC_CHECK_HEADER([sys/sysinfo])
+
+# Check for libzip if multi-device support is enabled.
+if test "$enable_multidevice" = yes; then
+  PKG_CHECK_MODULES([LIBZIP],
+    [libzip >= libzip_required_version], _AC_DEFINE_DEPRECATED([HAVE_ZIP], [1]),
+    [AC_MSG_ERROR([
+*** libzip >= libzip_required_version is required by --enable-multidevice])])
+fi
 
 ############################### Ginga-CC CM ################################
 # Nothing to do.
@@ -316,6 +285,42 @@ PKG_CHECK_MODULES([FFMPEG],
 *** libswscale >= swscale_required_version])])
 
 _AC_DEFINE_DEPRECATED([HAVE_SDL], [1])
+
+# Check for libjpeg.
+if test "$enable_multidevice" = yes; then
+  AC_CHECK_LIB([jpeg], [jpeg_destroy_decompress],
+   [jpeg_ok=yes],
+   [jpeg_ok=no; AC_MSG_WARN([*** JPEG library not found])])
+
+  if test "$jpeg_ok" = yes; then
+    AC_MSG_CHECKING([for jpeglib.h])
+    AC_TRY_CPP([[
+#include <stdio.h>
+#undef PACKAGE
+#undef VERSION
+#undef HAVE_STDLIB_H
+#include <jpeglib.h>
+   ]],
+   [jpeg_ok=yes],
+   [jpeg_ok=no])
+    AC_MSG_RESULT([$jpeg_ok])
+
+    if test "$jpeg_ok" = yes; then
+      JPEG_LIBS='-ljpeg'
+      _AC_DEFINE_DEPRECATED([HAVE_JPEG], [1])
+    else
+      AC_MSG_WARN([*** JPEG header file not found])
+    fi
+  fi
+
+  if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
+    AC_MSG_ERROR([
+*** Checks for LIBJPEG failed.
+*** Libjpeg is required by --enable-multidevice.])
+  fi
+fi
+AC_SUBST([JPEG_LIBS])
+
 AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
 
 ######################### Ginga-CC Context Manager #########################
@@ -380,17 +385,8 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 ################################ Ginga LLSM ################################
 # Nothing to do.
 
-################################  Ginga MD #################################
-
-# Check for libzip if multi-device support is enabled.
-if test "$enable_multidevice" = yes; then
-  PKG_CHECK_MODULES([LIBZIP],
-    [libzip >= libzip_required_version], _AC_DEFINE_DEPRECATED([HAVE_ZIP], [1]),
-    [AC_MSG_ERROR([
-*** libzip >= libzip_required_version is required by --enable-multidevice])])
-fi
-
 ################################## Ginga ###################################
+# Nothing to do.
 
 ############################################################################
 

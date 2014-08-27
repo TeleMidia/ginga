@@ -419,6 +419,7 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Base64.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp" />
+    <ClCompile Include="..\..\gingacc-mb\src\interface\sdl\content\SDLConvert.cpp" />
     <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPPlayer.cpp" />
     <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPDatagram.cpp" />
     <ClCompile Include="..\..\gingacc-player\src\time\ntp\UDPClient.cpp" />
