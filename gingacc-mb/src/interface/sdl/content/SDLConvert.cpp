@@ -255,11 +255,16 @@ namespace mb {
 	int SDLConvert::convertSurfaceToJPEG(const char *filename, SDL_Surface *surf,
 			int quality) {
 	#if _WIN32
-		string bmpfile = string(filename).append(".bmp");
-		SDL_SaveBMP(surf, bmpfile.c_str());
+
+		char *bmpfile;
+		bmpfile = new char[strlen(filename) + 5];
+		strcpy(bmpfile, filename);
+		strcat(bmpfile, ".bmp");
+		SDL_SaveBMP(surf, bmpfile);
 		CImage myImage;
-		myImage.Load(bmpfile.c_str());
+		myImage.Load(bmpfile);
 		myImage.Save(filename);
+		delete bmpfile;
 		return 0;
 	#elif HAVE_JPEG
 		SDL_RWops *out;
