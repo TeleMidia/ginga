@@ -1,3 +1,7 @@
-On MS Windows, most packages depend on the following:
-* boost (http://www.boost.org/users/download/)
-* dlfcn (http://code.google.com/p/dlfcn-win32/)
+Build on MS Windows:
+* For build with autotools using mingw(www.mingw.org/):
+  Read README.linux.
+
+* For build with Visual Studio(www.visualstudio.com/):
+  Read ginga-vs-solution/README.
+
