@@ -722,7 +722,6 @@ namespace multidevice {
 		int recvMsgSize;
 		bool reading = true;
 		vector<string> tokens;
-		string imgDev = img_dir + img_dev;
         //char pri[100];
 		char pri[FormatterActiveDevice::RCVBUFSIZE]; //first line; MAX command size
 		char *sec; //second line
@@ -783,13 +782,12 @@ namespace multidevice {
 				serialized = dm->createWindow(
 						myScreen, 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT, -1.0);
 
-				if (fileExists(imgDev)) {
+				if (fileExists(img_reset)) {
 					s = dm->createRenderedSurfaceFromImageFile(
-							myScreen, imgDev.c_str());
+							myScreen, img_reset.c_str());
 				}
 
-				imgDev = img_dir + img_reset;
-				if (fileExists(imgDev)) {
+				if (fileExists(img_reset)) {
 					serialized->setCaps(serialized->getCap("ALPHACHANNEL"));
 					serialized->draw();
 
