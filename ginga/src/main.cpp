@@ -157,13 +157,12 @@ void printHelp() {
 	cout << "    --enable-nptprinter       Ginga becomes nothing, but an NPT ";
 	cout << "printer (debug purpose only)";
 	cout << endl;
-	cout << "    --set-tuner [ni:channel]  Force an interface and a channel to be tuned.";
-	cout << endl;
-	cout << "                                 --set-tuner file:/tmp/test.ts";
-	cout << "                                 --set-tuner sbtvdt:635143";
-	cout << "                                 --set-tuner ip:224.0.0.1:1234";
+	cout << "    --set-tuner [ni:channel]  Force an interface and a channel to be tuned."<< endl;
+	cout << "                              For instance:" << endl;
+	cout << "                                 --set-tuner file:/tmp/test.ts"<< endl;
+	cout << "                                 --set-tuner sbtvdt:635143"<< endl;
+	cout << "                                 --set-tuner ip:224.0.0.1:1234"<< endl;
 	cout << "                                             (...)" << endl;
-	cout << endl;
 	cout << "    --disable-unload          Disable unload components. Useful ";
 	cout << "for debug. " << endl;
 	cout << "    --vsystem <vsystem>       Specifies the video backend to use.";
