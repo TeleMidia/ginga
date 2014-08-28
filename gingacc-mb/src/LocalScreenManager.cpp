@@ -129,8 +129,8 @@ namespace mb {
 		Thread::condInit(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
 
-		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
-		clog << "all done" << endl;
+//		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
+//		clog << "all done" << endl;
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
