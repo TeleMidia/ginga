@@ -381,7 +381,7 @@ namespace multidevice {
 		vector<struct frame*>::iterator i;
 		bool sent = false;
 		struct frame* f = NULL;
-	    clog << "=========== checkOutputBuffer ==========="<<endl;
+	  //clog << "=========== checkOutputBuffer ==========="<<endl;
 		pthread_mutex_lock(&mutexBuffer);
 		i = outputBuffer->begin();
 		if (i != outputBuffer->end()) {
@@ -421,7 +421,7 @@ namespace multidevice {
 
 	    res = udpSocket->select_t(0,0);
 
-	    clog << "=========== checkInputBuffer ==========="<<endl;
+	  //clog << "=========== checkInputBuffer ============"<<endl;
 		switch (res) {
 			case -1:
 				clog << "BroadcastSocketService::checkInputBuffer ERROR res=-1"<<endl;
