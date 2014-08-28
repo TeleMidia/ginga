@@ -97,11 +97,19 @@ libginganclmodel_la_SOURCES =\
   src/model/time/UnflexibleDuration.cpp\
   $(NULL)
 
+libginganclmodel_la_LIBADD =\
+  $(top_builddir)/ncl30/libncl30.la\
+  $(NULL)
+
 # ginga-ncl-adaptation
 libgingancladaptation_la_SOURCES =\
   src/adaptation/context/ContextBase.cpp\
   src/adaptation/context/PresentationContext.cpp\
   src/adaptation/context/RuleAdapter.cpp\
+  $(NULL)
+
+libgingancladaptation_la_LIBADD =\
+  $(top_builddir)/ncl30/libncl30.la\
   $(NULL)
 
 # ginga-ncl-em-converter
@@ -128,6 +136,11 @@ libginganclmd_la_SOURCES +=\
   $(NULL)
 endif
 
+libginganclmd_la_LIBADD =\
+  $(top_builddir)/gingancl/libgingancladaptation.la\
+  $(top_builddir)/gingancl/libginganclmodel.la\
+  $(NULL)
+
 # ginga-ncl-prefetch
 libginganclprefetch_la_SOURCES =\
   src/prefetch/PrefetchManager.cpp\
@@ -147,7 +160,7 @@ libgingancladapter_la_SOURCES =\
 
 # ginga-ncl-app-adapter
 libginganclapppadapter_la_SOURCES =\
-  src/adapters/application/ApplicationPlayerAdapter.cpp
+  src/adapters/application/ApplicationPlayerAdapter.cpp\
   $(NULL)
 
 # ginga-ncl-ncl-p-adapter
@@ -422,7 +435,7 @@ cfgformatter_DATA =\
 imgsformaterdir = $(gingaconfdir)/img/roller/
 imgsformater_DATA =\
 	files/img/loading.png\
-  files/img/b1.png\
+	files/img/b1.png\
 	files/img/b2.png\
 	files/img/b3.png\
 	files/img/b4.png\
