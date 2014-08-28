@@ -4,6 +4,8 @@ Build dependencies
 * Optional dependencies
   * LIBRT (required if --enable-multiprocess is given)
   * EXPAT (required if --enable-components is given)
+  * LIBJPEG (required if --enable-multidevice is given)
+  * LIBZIP (required if --enable-multidevice is given)
 
 * Required dependencies
   * XERCES-C
@@ -23,8 +25,8 @@ Build dependencies
   * NCLUA
   * Berkelium
 
-Build tutorial Ubuntu 14.04 build guide
-========================
+Build tutorial for Ubuntu 14.04
+===============================
 
 * Installing depencies
 
@@ -43,3 +45,9 @@ Build tutorial Ubuntu 14.04 build guide
   ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" CPPFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/" CFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/"
   make -j4
   sudo make -j4 install
+
+Import to eclipse CDT
+=====================
+One way to code in ginga source is using Eclipse CDT(www.eclipse.org/cdt) doing:
+import -> C/C++ -> "Existing Code as Makefile Project" -> chose "GNU Autotools toolchain" -> finish.
+

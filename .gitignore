@@ -1,6 +1,11 @@
 ### windows build
 contrib/
 
+### CDT project files
+.project
+.cproject
+.autotools
+
 ### 
 *.a
 *.bak
@@ -28,8 +33,6 @@ contrib/
 .dirstamp
 .libs
 .patch_number
-.project
-.cproject
 /build-aux/*
 !/build-aux/Makefile.am.common
 !/build-aux/ax_compare_version.m4
