@@ -51,6 +51,7 @@ http://www.telemidia.puc-rio.br
 #define SDLDEVICECONVERT_H_
 
 #include "SDL.h"
+#include <cstring>
 
 namespace br {
 namespace pucrio {
