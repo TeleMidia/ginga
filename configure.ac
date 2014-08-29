@@ -100,13 +100,13 @@ AM_CONDITIONAL([BUILD_COMPONENTS], [test "$enable_components" = yes])
 _AC_ARG_ENABLE([data-processing], [build data-processing support], [no])
 if test "$enable_data_processing" = yes; then
   AC_DEFINE([HAVE_DATA_PROCESSING], [1],
-   [Define to 1 if data-processing support is enabled.])
+   [Define to 1 if data-processing is enabled.])
   _AC_DEFINE_DEPRECATED([HAVE_TUNER], [1])
   _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [1])
   _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [1])
 else
   AC_DEFINE([HAVE_DATA_PROCESSING], [0],
-   [Define to 1 if data-processing support is enabled.])
+   [Define to 1 if data-processing is enabled.])
   _AC_DEFINE_DEPRECATED([HAVE_TUNER], [0])
   _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [0])
   _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [0])
@@ -131,10 +131,10 @@ if test "$enable_multidevice" = yes; then
 ***])
   fi
   AC_DEFINE([HAVE_MULTIDEVICE], [1],
-   [Define to 1 if multidevice support is enabled.])
+   [Define to 1 if multidevice is enabled.])
 else
   AC_DEFINE([HAVE_MULTIDEVICE], [0],
-   [Define to 1 if multidevice support is enabled.])
+   [Define to 1 if multidevice is enabled.])
 fi
 AM_CONDITIONAL([BUILD_MULTIDEVICE], [test "$enable_multidevice" = yes])
 
@@ -216,11 +216,19 @@ AC_CHECK_HEADER([net/if.h])
 AC_CHECK_HEADER([sys/sysinfo])
 
 # Check for libzip if multi-device support is enabled.
-if test "$enable_multidevice" = yes; then
-  PKG_CHECK_MODULES([LIBZIP],
-    [libzip >= libzip_required_version], _AC_DEFINE_DEPRECATED([HAVE_ZIP], [1]),
-    [AC_MSG_ERROR([
-*** libzip >= libzip_required_version is required by --enable-multidevice])])
+PKG_CHECK_MODULES([LIBZIP],
+  [libzip >= libzip_required_version],
+  [have_libzip=yes],
+  [have_libzip=no])
+
+if test "$have_libzip" = yes; then
+  AC_DEFINE([HAVE_ZIP], [1], [Define to 1 if libzip is present.])
+else
+  AC_DEFINE([HAVE_ZIP], [0], [Define to 1 if libzip is present.])
+  if test "$enable_multidevice" = yes; then
+    AC_MSG_ERROR([
+*** libzip >= libzip_required_version is required by --enable-multidevice.])
+  fi
 fi
 
 ############################### Ginga-CC CM ################################
@@ -235,7 +243,8 @@ fi
 AX_LIB_CURL([curl_required_version], [:],
  [AC_MSG_ERROR([
 *** CURL >= curl_required_version is required.])])
-_AC_DEFINE_DEPRECATED([HAVE_CURL], [1])
+
+# FIXME: This should be removed since it is always defined.
 _AC_DEFINE_DEPRECATED([HAVE_IC], [1])
 
 ############################### Ginga-CC MB ################################
@@ -245,6 +254,7 @@ PKG_CHECK_MODULES([SDL2],
  [sdl2 >= sdl2_required_version], [],
  [AC_MSG_ERROR([
 *** sdl2 >= sdl2_required_version is required.])])
+AC_DEFINE([HAVE_SDL], [1], [Define to 1 if SDL2 is present.])
 
 # Check for SDL2_image.
 PKG_CHECK_MODULES([SDL2IMAGE],
@@ -258,9 +268,9 @@ PKG_CHECK_MODULES([SDL2TTF],
  [AC_MSG_ERROR([
 *** SDL2_ttf >= sdl2_ttf_required_version is required.])])
 
-#Check for X11
- PKG_CHECK_MODULES([X11], [x11], [],
-  [AC_MSG_ERROR([
+# Check for X11.
+PKG_CHECK_MODULES([X11], [x11], [],
+ [AC_MSG_ERROR([
 *** X11 is required.])])
 
 # Check for FFmpeg libs.
@@ -283,8 +293,6 @@ PKG_CHECK_MODULES([FFMPEG],
 *** libpostproc >= postproc_required_version
 *** libswresample >= swresample_required_version
 *** libswscale >= swscale_required_version])])
-
-_AC_DEFINE_DEPRECATED([HAVE_SDL], [1])
 
 # Check for libjpeg.
 if test "$enable_multidevice" = yes; then
@@ -315,13 +323,10 @@ if test "$enable_multidevice" = yes; then
 
   if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
     AC_MSG_ERROR([
-*** Checks for LIBJPEG failed.
-*** Libjpeg is required by --enable-multidevice.])
+*** libjpeg is required by --enable-multidevice.])
   fi
 fi
 AC_SUBST([JPEG_LIBS])
-
-AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
 
 ######################### Ginga-CC Context Manager #########################
 # Nothing to do.
@@ -346,10 +351,12 @@ AC_HAVE_LIBRARY([berkelium],
  [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
    [berkelium_ok=yes])])
 if test "$berkelium_ok" = yes; then
-  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [1])
+  AC_DEFINE([HAVE_BERKELIUM], [1],
+    [Define to 1 if berkelium is present.])
   BERKELIUM_LIBS='-lberkelium'
 else
-  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [0])
+  AC_DEFINE([HAVE_BERKELIUM], [0],
+    [Define to 1 if berkelium is present.])
   AC_MSG_WARN([
 ***
 *** Checks for BERKELIUM failed.
@@ -389,6 +396,9 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 # Nothing to do.
 
 ############################################################################
+
+# Ginga version.
+AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
 # Ginga confdir, libdir, and includedir.
 AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
