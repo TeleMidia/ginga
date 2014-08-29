@@ -49,7 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "system/compat/SystemCompat.h"
 #if HAVE_ZIP
-	#include <zip.h>
+# include <zip.h>
 #endif
 extern "C" float machInfo(const char *name);
 
