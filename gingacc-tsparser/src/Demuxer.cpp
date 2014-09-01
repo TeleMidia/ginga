@@ -702,7 +702,7 @@ namespace tsparser {
 		clog << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
 	}
 
-	void Demuxer::receiveData(char* buff, unsigned int size, bool mustDelBuff) {
+	void Demuxer::receiveData(char* buff, unsigned int size) {
 		Buffer* demuxBuff = new Buffer;
 
 		if (outPipeCreated) {
@@ -711,7 +711,6 @@ namespace tsparser {
 
 		demuxBuff->buff        = buff;
 		demuxBuff->size        = size;
-		demuxBuff->mustDelBuff = mustDelBuff;
 
 		Thread::mutexLock(&stlMutex);
 		demuxMe.push_back(demuxBuff);
@@ -733,9 +732,7 @@ namespace tsparser {
 				demuxMe.pop_front();
 				Thread::mutexUnlock(&stlMutex);
 				processDemuxData(b->buff, b->size);
-				if (b->mustDelBuff) {
-					delete[] b->buff;
-				}
+				delete[] b->buff;
 				delete b;
 			}
 		}

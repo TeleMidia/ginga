@@ -64,24 +64,13 @@ namespace tuning {
 		this->portNumber   = port;
 		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 		this->protocol	   = protocol;
+		this->udpSocket    = NULL;
 	}
 
 	NetworkProvider::~NetworkProvider() {
 		if (udpSocket) {
 			delete udpSocket;
 		}
-	}
-	
-	bool NetworkProvider::isPushService() {
-		bool isPush = false;
-
-		if (protocol.find("multicast") != std::string::npos ||
-				protocol.find("broadcast") != std::string::npos) {
-
-			isPush = true;
-		}
-
-		return isPush;
 	}
 
 	int NetworkProvider::callServer() {
@@ -100,8 +89,12 @@ namespace tuning {
 		}
 	}
 
-	int NetworkProvider::receiveData(char* buff) {
-		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+	char* NetworkProvider::receiveData(int* len) {
+		char* buff = new char[BUFFSIZE];
+		*len = udpSocket->recvFrom(
+				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+
+		return buff;
 	}
 }
 }

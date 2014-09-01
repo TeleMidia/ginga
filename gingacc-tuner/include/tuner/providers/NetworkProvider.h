@@ -78,7 +78,6 @@ namespace tuning {
 			NetworkProvider(string address, int port, string protocol);
 			~NetworkProvider();
 
-			bool isPushService();
 			virtual void setListener(ITProviderListener* listener){};
 			virtual void attachFilter(IFrontendFilter* filter){};
 			virtual void removeFilter(IFrontendFilter* filter){};
@@ -125,8 +124,7 @@ namespace tuning {
 
 			virtual int callServer();
 
-			char* receiveData(int* len) {return NULL;};
-			virtual int receiveData(char* buff);
+			virtual char* receiveData(int* len);
 	};
 }
 }

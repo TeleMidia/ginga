@@ -70,7 +70,7 @@ namespace tuning {
 	class ITunerListener {
 		public:
 			virtual ~ITunerListener(){};
-			virtual void receiveData(char* buff, unsigned int size, bool mustDelBuff)=0;
+			virtual void receiveData(char* buff, unsigned int size)=0;
 			virtual void updateChannelStatus(
 					short newStatus, IChannel* channel)=0;
 	};

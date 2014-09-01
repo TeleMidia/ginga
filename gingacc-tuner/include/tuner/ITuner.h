@@ -65,7 +65,6 @@ using namespace std;
 typedef struct {
 	char* buff;
 	unsigned int size;
-	bool mustDelBuff;
 } Buffer;
 
 namespace br {

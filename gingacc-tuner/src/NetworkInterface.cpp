@@ -81,15 +81,6 @@ namespace tuning {
 		close();
 	}
 
-	bool NetworkInterface::isPush() {
-		bool isPush = false;
-		if (provider != NULL) {
-			isPush = provider->isPushService();
-		}
-
-		return isPush;
-	}
-
 	short NetworkInterface::getCaps() {
 		if (provider != NULL) {
 			return provider->getCaps();
@@ -250,10 +241,6 @@ namespace tuning {
 
 	char* NetworkInterface::receiveData(int* len) {
 		return provider->receiveData(len);
-	}
-
-	int NetworkInterface::receiveData(char* buff) {
-		return provider->receiveData(buff);
 	}
 
 	void NetworkInterface::close() {

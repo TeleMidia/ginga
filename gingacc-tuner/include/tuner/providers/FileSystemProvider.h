@@ -83,7 +83,6 @@ namespace tuning {
 			FileSystemProvider(string fileName);
 			virtual ~FileSystemProvider();
 
-			bool isPushService();
 			void setListener(ITProviderListener* listener);
 			void attachFilter(IFrontendFilter* filter){};
 			void removeFilter(IFrontendFilter* filter){};
@@ -99,8 +98,7 @@ namespace tuning {
 			string getPesFilterOutput();
 			void close();
 
-			char* receiveData(int* len) {return NULL;};
-			int receiveData(char* buff);
+			char* receiveData(int* len);
 	};
 }
 }

@@ -558,12 +558,10 @@ namespace tuning {
 		}
 	}
 
-	int ISDBTProvider::receiveData(
-			char* buff, int skipSize, unsigned char packetSize) {
+	char* ISDBTProvider::receiveData(int* len) {
 	    void *addr;
-	    int buff_size = packetSize * 150;
-	    
-	    
+	    int buff_size = BUFFSIZE;
+
 	    //    clog << "ISDBTProvider::receiveData enter " << ring_buffer_count_bytes(&output_buffer) << endl;
 	    
 	    if (ring_buffer_count_bytes(&output_buffer) >= buff_size)

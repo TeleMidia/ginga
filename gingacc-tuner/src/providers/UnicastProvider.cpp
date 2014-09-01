@@ -80,8 +80,12 @@ namespace tuning {
 		}
 	}
 
-	int UnicastProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
-		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+	char* UnicastProvider::receiveData(int* len) {
+		char* buff = new char[BUFFSIZE];
+		*len = udpSocket->recvFrom(
+				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+
+		return buff;
 	}
 }
 }
