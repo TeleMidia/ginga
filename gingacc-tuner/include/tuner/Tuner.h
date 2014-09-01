@@ -129,7 +129,7 @@ namespace tuning {
 			void setTunerListener(ITunerListener* listener);
 
 		private:
-			void notifyData(char* buff, unsigned int val, bool mustDelBuff);
+			void notifyData(char* buff, unsigned int val);
 			void notifyStatus(short newStatus, IChannel* channel);
 			virtual void run();
 	};

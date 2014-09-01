@@ -115,7 +115,7 @@ namespace tuning {
 			};
 
 			virtual int callServer()=0;
-			virtual int receiveData(char* buff, int skipSize, unsigned char packetSize)=0;
+			virtual char* receiveData(int* len)=0;
 	};
 }
 }

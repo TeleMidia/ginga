@@ -80,7 +80,6 @@ namespace tuning {
 
 			virtual ~NetworkInterface();
 
-			bool isPush();
 			short getCaps();
 			int getId();
 			string getName();
@@ -106,7 +105,6 @@ namespace tuning {
 			string getPesFilterOutput();
 
 			char* receiveData(int* len);
-			int receiveData(char* buff);
 
 			void close();
 	};

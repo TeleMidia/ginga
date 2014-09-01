@@ -170,7 +170,7 @@ namespace tsparser {
 			void addStreamTypeFilter(short streamType, ITSFilter* filter);
 
 		private:
-			void receiveData(char* buff, unsigned int size, bool mustDelBuff);
+			void receiveData(char* buff, unsigned int size);
 
 		public:
 			void processDemuxData();

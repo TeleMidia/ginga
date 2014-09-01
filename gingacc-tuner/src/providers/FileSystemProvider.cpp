@@ -68,10 +68,6 @@ namespace tuning {
 
 	}
 
-	bool FileSystemProvider::isPushService() {
-		return false;
-	}
-
 	void FileSystemProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}
@@ -121,10 +117,14 @@ namespace tuning {
 		fclose(fileDescriptor);
 	}
 
-	int FileSystemProvider::receiveData(char* buff) {
+	char* FileSystemProvider::receiveData(int* len) {
+		char* buff = NULL;
+		*len = 0;
+
 		if (fileDescriptor > 0) {
-			int rval = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
-			if (rval < BUFFSIZE) {
+			buff = new char[BUFFSIZE];
+			*len = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
+			if (*len < BUFFSIZE) {
 				clog << "FileSystemProvider::receiveData" << endl;
 				clog << "File is over, set file to begin again!" << endl;
 				fseek(fileDescriptor, 0L, SEEK_SET);
@@ -132,10 +132,9 @@ namespace tuning {
 					listener->receiveSignal(PST_LOOP);
 				}
 			}
-			return rval;
 		}
 
-		return 0;
+		return buff;
 	}
 }
 }

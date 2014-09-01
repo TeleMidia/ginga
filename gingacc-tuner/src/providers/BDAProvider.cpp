@@ -69,10 +69,6 @@ namespace tuning {
 		delete bda;
 	}
 
-	bool BDAProvider::isPushService() {
-		return true;
-	}
-
 	void BDAProvider::setListener(ITProviderListener* listener) {
 		this->listener = listener;
 	}

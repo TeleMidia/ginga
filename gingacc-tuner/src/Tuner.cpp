@@ -275,44 +275,20 @@ namespace tuning {
 
 	void Tuner::receiveInterface(INetworkInterface* nInterface) {
 		int rval;
-		bool isPush;
 		char* buff;
 
 		/*int debugStream = fopen(
 				"debugStream.ts", "w+b");*/
 
 		receiving = true;
-		isPush    = nInterface->isPush();
 
-		if (isPush) {
-			do {
-				buff = nInterface->receiveData(&rval);
-				if (rval > 0 && buff != NULL) {
-					notifyData(buff, (unsigned int)rval, true);
-				}
+		do {
+			buff = nInterface->receiveData(&rval);
+			if (rval > 0 && buff != NULL) {
+				notifyData(buff, (unsigned int)rval);
+			}
 
-			} while (receiving);
-
-		} else {
-			buff = new char[BUFFSIZE];
-
-			do {
-				rval = nInterface->receiveData(buff);
-				if (rval > 0) {
-					/*if (debugStream > 0) {
-						write(debugStream, buff, rval);
-					}*/
-
-					notifyData(buff, (unsigned int)rval, false);
-
-				} else if (rval < 0) {
-					//cerr << "Tuner::receive minus rval" << endl;
-				}
-
-			} while (receiving);
-
-			delete[] buff;
-		}
+		} while (receiving);
 
 		//close(debugStream);
 
@@ -408,9 +384,12 @@ namespace tuning {
 		this->listener = listener;
 	}
 
-	void Tuner::notifyData(char* buff, unsigned int val, bool mustDelBuff) {
+	void Tuner::notifyData(char* buff, unsigned int val) {
 		if (listener != NULL) {
-			listener->receiveData(buff, val, mustDelBuff);
+			listener->receiveData(buff, val);
+
+		} else {
+			delete[] buff;
 		}
 	}
 
