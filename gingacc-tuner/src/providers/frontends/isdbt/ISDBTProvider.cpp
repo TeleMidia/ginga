@@ -49,6 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
+#include "tuner/ITuner.h"
 #include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
 #include "tuner/providers/frontends/isdbt/RingBuffer.h"
 
