@@ -561,29 +561,27 @@ namespace tuning {
 
 	char* ISDBTProvider::receiveData(int* len) {
 	    void *addr;
-	    int buff_size = BUFFSIZE;
+	    char* buff = new char[BUFFSIZE];
 
 	    //    clog << "ISDBTProvider::receiveData enter " << ring_buffer_count_bytes(&output_buffer) << endl;
-	    
-	    if (ring_buffer_count_bytes(&output_buffer) >= buff_size)
-	    {
-		pthread_mutex_lock(&output_mutex);
-		addr = ring_buffer_read_address(&output_buffer);
-		memcpy(buff, addr, buff_size);
-		ring_buffer_read_advance(&output_buffer, buff_size);
-		pthread_cond_signal(&output_cond);
-		pthread_mutex_unlock(&output_mutex);
-	    }
-	    else
-	    {
-		pthread_mutex_lock(&output_mutex);
-		pthread_cond_wait(&output_cond, &output_mutex);
-		pthread_mutex_unlock(&output_mutex);
-		return 0;
+
+	    if (ring_buffer_count_bytes(&output_buffer) >= BUFFSIZE) {
+			pthread_mutex_lock(&output_mutex);
+			addr = ring_buffer_read_address(&output_buffer);
+			memcpy(buff, addr, BUFFSIZE);
+			*len = BUFFSIZE;
+			ring_buffer_read_advance(&output_buffer, BUFFSIZE);
+			pthread_cond_signal(&output_cond);
+			pthread_mutex_unlock(&output_mutex);
+
+		} else {
+			pthread_mutex_lock(&output_mutex);
+			pthread_cond_wait(&output_cond, &output_mutex);
+			pthread_mutex_unlock(&output_mutex);
+			*len = 0;
 	    }
 
-	    return buff_size;
-	    
+	    return buff;
 	}
 }
 }
