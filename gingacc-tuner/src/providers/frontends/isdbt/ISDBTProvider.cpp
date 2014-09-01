@@ -561,13 +561,15 @@ namespace tuning {
 
 	char* ISDBTProvider::receiveData(int* len) {
 	    void *addr;
-	    char* buff = new char[BUFFSIZE];
+	    char* buff = NULL;
 
 	    //    clog << "ISDBTProvider::receiveData enter " << ring_buffer_count_bytes(&output_buffer) << endl;
 
 	    if (ring_buffer_count_bytes(&output_buffer) >= BUFFSIZE) {
 			pthread_mutex_lock(&output_mutex);
 			addr = ring_buffer_read_address(&output_buffer);
+
+			buff = new char[BUFFSIZE];
 			memcpy(buff, addr, BUFFSIZE);
 			*len = BUFFSIZE;
 			ring_buffer_read_advance(&output_buffer, BUFFSIZE);
