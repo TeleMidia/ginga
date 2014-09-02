@@ -761,7 +761,7 @@ namespace tsparser {
 				}
 				i = i + packetSize;
 
-			} /*else if (i + packetSize < size) {
+			} else if (i + packetSize < size) {
 
 				int diff = i;
 				i++;
@@ -769,21 +769,19 @@ namespace tsparser {
 				diff = i - diff;
 				if (diff > 188) {
 					packetSize = 204;
-					tuner->setPacketSize(packetSize);
 				}
 				else {
 					packetSize = 188;
-					tuner->setPacketSize(packetSize);
 				}
 
 			} else {
 				clog << "Demuxer::receiveData breaking when i = '";
 				clog << i << "' and size = '" << size << "'" << endl;
-				tuner->setSkipSize(
-						(packetSize-((size-i-1)%packetSize))%packetSize);
+				//tuner->setSkipSize(
+					//	(packetSize-((size-i-1)%packetSize))%packetSize);
 
 				break;
-			}*/
+			}
 		}
 	}
 

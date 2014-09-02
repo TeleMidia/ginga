@@ -375,6 +375,9 @@ namespace lssm {
 				}*/
 
 				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+						STREAM_TYPE_DSMCC_TYPE_B);
+
+				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_C);
 
 				//AIT

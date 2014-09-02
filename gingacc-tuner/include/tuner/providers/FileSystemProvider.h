@@ -79,6 +79,10 @@ namespace tuning {
 			short capabilities;
 			ITProviderListener* listener;
 
+			bool checkPossiblePacket(char *buff, const int &pos);
+			int nextPacket(char *buff);
+			int synchBuffer(char *buff, int diff);
+
 		public:
 			FileSystemProvider(string fileName);
 			virtual ~FileSystemProvider();
