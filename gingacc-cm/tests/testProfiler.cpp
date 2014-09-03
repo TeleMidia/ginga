@@ -47,36 +47,31 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _IComponentProfiling_H_
-#define _IComponentProfiling_H_
+#include "cm/IComponentManager.h"
+#include "cm/profiler/IComponentProfiler.h"
+#include "cm/assembler/IComponentDescription.h"
+#include "cm/parser/IComponentParser.h"
+#include "cm/component/IComponent.h"
+using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
-#include <string>
-using namespace std;
+#include <sys/stat.h>
+#include <sys/types.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace cm {
-	class IComponentProfiling {
-		public:
-			virtual ~IComponentProfiling(){};
+int main() {
+	clog << "MAIN instancing CM" << endl;
+	IComponentManager* cm  = IComponentManager::getCMInstance();
+	IComponentProfiler* cp = ((ComponentProfilerCreator*)(
+			IComponentProfiler*)cm->getObject("ComponentProfiler"))("testProfiler");
 
-			virtual void process()=0;
-			virtual void updateDescription()=0;
-	};
-}
-}
-}
-}
-}
-}
+	cout << "testProfiler CM(" << cm << ") and CP(" << cp << ")";
+	cout << endl;
 
-typedef ::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling*
-		ComponentProfilingCreator(string processName);
+	getchar();
+	cp->process();
+	delete cp;
+	cm->releaseComponentFromObject("ComponentProfiler");
 
-typedef void ComponentProfilingDestroyer(
-		::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling* cp);
-
-#endif //_IComponentProfiling_H_
+	cout << "testProfiler All done! Press enter to exit" << endl;
+	getchar();
+	return 0;
+}

@@ -15,7 +15,7 @@ gingacccmlib_LTLIBRARIES =\
   libgingacccmassembler.la\
   libgingacccmparser.la\
   libgingacccmcomponent.la\
-  libgingacccmprofiling.la\
+  libgingacccmprofiler.la\
   $(NULL)
 
 # gingacc-cm
@@ -41,8 +41,8 @@ libgingacccmparser_la_SOURCES =\
   $(NULL)
 
 # gingacc-cm-proof
-libgingacccmprofiling_la_SOURCES =\
-  src/profiling/ComponentProfiling.cpp\
+libgingacccmprofiler_la_SOURCES =\
+  src/profiler/ComponentProfiler.cpp\
   $(NULL)
 
 ################################# Headers ##################################
@@ -66,9 +66,9 @@ parserinclude_HEADERS =\
   include/cm/parser/IComponentParser.h\
   $(NULL)
 
-profilingincludedir = $(gingacccmincludedir)/profiling
-profilinginclude_HEADERS =\
-  include/cm/profiling/IComponentProfiling.h\
+profilerincludedir = $(gingacccmincludedir)/profiler
+profilerinclude_HEADERS =\
+  include/cm/profiler/IComponentProfiler.h\
   $(NULL)
 endif
 
