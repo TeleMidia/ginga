@@ -13,6 +13,12 @@
     <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
   </component>
 
+  <component package="gingacc-cm" name="libgingacccmprofiler" version="0.13.5" type="dynamic">
+    <symbol object="ComponentProfiler" creator="createComponentProfiler" destroyer="destroyComponentProfiler" interface="IComponentProfiler"/>
+    <location type="local" uri="@GINGA_LIBDIR@"/>
+    <repository uri="http://www.gingancl.org.br/releases/referenceimp/"/>
+  </component>
+
   <component package="gingacc-cm" name="libgingacccmcomponent" version="0.13.5" type="dynamic">
     <symbol object="Component" creator="createComponent" destroyer="destroyComponent" interface="IComponent"/>
     <location type="local" uri="@GINGA_LIBDIR@"/>

@@ -47,11 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef _ComponentProfiling_H_
-#define _ComponentProfiling_H_
+#ifndef _ComponentProfiler_H_
+#define _ComponentProfiler_H_
 
 #include "cm/IComponentManager.h"
-#include "cm/profiling/IComponentProfiling.h"
+#include "cm/profiler/IComponentProfiler.h"
 
 namespace br {
 namespace pucrio {
@@ -59,7 +59,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace cm {
-	class ComponentProfiling : public IComponentProfiling {
+	class ComponentProfiler : public IComponentProfiler {
 		private:
 			IComponentManager* cm;
 			map<string, IComponent*>* compDesc;
@@ -67,8 +67,8 @@ namespace cm {
 			string processName;
 
 		public:
-			ComponentProfiling(string processName);
-			~ComponentProfiling();
+			ComponentProfiler(string processName);
+			~ComponentProfiler();
 			void process();
 			void updateDescription();
 
@@ -88,4 +88,4 @@ namespace cm {
 }
 }
 
-#endif //_ComponentProfiling_H_
+#endif //_ComponentProfiler_H_

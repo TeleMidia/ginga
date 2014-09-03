@@ -47,10 +47,11 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "cm/profiling/ComponentProfiling.h"
+#ifndef _IComponentProfiler_H_
+#define _IComponentProfiler_H_
 
-#include "system/compat/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -58,88 +59,13 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace cm {
-	ComponentProfiling::ComponentProfiling(string processName) {
-		this->cm          = IComponentManager::getCMInstance();
-		this->compDesc    = cm->copyComponentDescription();
-		this->auxFile     = SystemCompat::getTemporaryDir() + "/_compProf.txt";
-		this->processName = processName;
-	}
+	class IComponentProfiler {
+		public:
+			virtual ~IComponentProfiler(){};
 
-	ComponentProfiling::~ComponentProfiling() {
-		delete compDesc;
-
-#ifndef _WIN32
-		string strCmd = "rm -f " + auxFile;
-		::system(strCmd.c_str());
-#endif //!_WIN32
-	}
-
-	void ComponentProfiling::process() {
-		map<string, IComponent*>::iterator i;
-
-		i = compDesc->begin();
-		while (i != compDesc->end()) {
-
-			++i;
-		}
-	}
-
-	void ComponentProfiling::updateDescription() {
-
-	}
-
-	bool ComponentProfiling::getFootprint(int* cpu, int* mem) {
-		bool gotIt = false;
-		string value, pidNum, strCmd;
-
-#ifndef _WIN32
-		//process pid
-		pidNum = getPIdFromPName(processName);
-
-		//cpu from process pid
-		strCmd = "ps -p " + pidNum + " -o pcpu > " + auxFile;
-		value  = getValue(strCmd);
-		*cpu   = stof(value);
-
-		//mem from process pid
-		strCmd = "cat /proc/" + pidNum + "/status | grep VmLib > " + auxFile;
-		value  = getValue(strCmd);
-		*mem   = stof(value);
-
-#endif //!_WIN32
-
-		return gotIt;
-	}
-
-	string ComponentProfiling::getPIdFromPName(string name) {
-
-		string pidNum = "";
-		string strCmd;
-
-#ifndef _WIN32
-
-		strCmd = "pgrep " + name + " > "  + auxFile;
-		pidNum = getValue(strCmd);
-
-#endif //!_WIN32
-
-		return pidNum;
-	}
-
-	string ComponentProfiling::getValue(string command) {
-		ifstream pidFile;
-		string value = "";
-
-		::system(command.c_str());
-		pidFile.open(auxFile.c_str(), ifstream::in);
-		if (pidFile.is_open()) {
-			if (pidFile.good()) {
-				pidFile >> value;
-			}
-		}
-
-		return value;
-	}
+			virtual void process()=0;
+			virtual void updateDescription()=0;
+	};
 }
 }
 }
@@ -147,15 +73,10 @@ namespace cm {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling*
-		createComponentProfiling(string processName) {
+typedef ::br::pucrio::telemidia::ginga::core::cm::IComponentProfiler*
+		ComponentProfilerCreator(string processName);
 
-	return new ::br::pucrio::telemidia::ginga::core::cm::ComponentProfiling(
-			processName);
-}
+typedef void ComponentProfilerDestroyer(
+		::br::pucrio::telemidia::ginga::core::cm::IComponentProfiler* cp);
 
-extern "C" void destroyComponentProfiling(
-		::br::pucrio::telemidia::ginga::core::cm::IComponentProfiling* cp) {
-
-	delete cp;
-}
+#endif //_IComponentProfiler_H_
