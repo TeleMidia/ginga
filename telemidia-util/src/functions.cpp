@@ -51,35 +51,30 @@ http://www.telemidia.puc-rio.br
 #include <dirent.h>
 
 #ifndef _WIN32
-# define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
-# define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
-# define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
-# ifdef __APPLE__
-#  include <sys/dir.h>
-   typedef struct direct DIRENT;
-# else
-#  include <dirent.h>
-   typedef struct dirent DIRENT;
-#  include <sys/time.h>
-#  include <sys/resource.h>
-# endif
+ #define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
+ #define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
+ #define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
+ #ifdef __APPLE__
+  #include <sys/dir.h>
+    typedef struct direct DIRENT;
+ #else
+  #include <dirent.h>
+    typedef struct dirent DIRENT;
+  #include <sys/time.h>
+  #include <sys/resource.h>
+ #endif
 #else  // _WIN32
-# define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
-# define IS_LINK(st_mode)	0
-# define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
-# define lstat stat
-# include <windows.h>
+#define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
+#define IS_LINK(st_mode)	0
+#define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
+#define lstat stat
+#include <windows.h>
+#include <float.h>
 #endif
+
+#include <math.h>
 
 #include "util/functions.h"
-
-#if _WIN32
-# include "atlimage.h"
-#else
-# if HAVE_JPEG
-#  include "jpeglib.h"
-# endif
-#endif
 
 TELEMIDIA_UTIL_BEGIN_DECLS
 
@@ -140,6 +135,9 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 				secs = 3600 * util::stof((*params)[0]) + 60 * util::stof((*params)[1]) +
 						util::stof((*params)[2]);
 				break;
+
+			default:
+				secs = infinity();
 		}
 
 		delete params;
@@ -436,59 +434,32 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 	}
 
 	static numeric_limits<double> double_info;
-	static double notANumber     = double_info.quiet_NaN();
-	static double doubleInfinity = double_info.infinity();
 
 	double NaN() {
-#ifndef _WIN32
-		return notANumber;
-#else
 		return double_info.quiet_NaN();
-#endif
 	}
 
 	double infinity() {
-#ifndef _WIN32
-		return doubleInfinity;
-#else
 		return double_info.infinity();
-#endif
 	}
 
 	bool isNaN(double value) {
-		string sval;
-		sval = itos(value);
-		/*clog << "functions::isNaN val = '" << value << "' ";
-		clog << "sval = '" << sval << "'";*/
-		if (isNumeric((void*)(sval.c_str()))) {
-			return false;
-		}
-
 #ifdef _WIN32
-		if (upperCase(sval) == "NAN" || _isnan(value)) {
+		if (_isnan(value)) {
 #else
-		if (upperCase(sval) == "NAN" ) {
+		if (isnan(value)) {
 #endif
 			return true;
 		}
 
-		/*clog << "isNaN Warning! Value = '" << value << "', ";
-		clog << "sval = " << sval << endl;*/
 		return false;
 	}
 
 	bool isInfinity(double value) {
-		string sval;
-		sval = itos(value);
-		if (isNumeric((void*)(sval.c_str()))) {
-			return false;
-		}
-
 #ifndef _WIN32
-		if (upperCase(sval).find("INF") != std::string::npos) {
+		if (isinf(value)) {
 #else
-		if (upperCase(sval).find("INF") != std::string::npos ||
-				!_finite(value)) {
+		if (!_finite(value)) {
 #endif
 			return true;
 		}
@@ -497,56 +468,6 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		clog << "sval = " << sval << endl;*/
 		return false;
 	}
-
-#if 0
-	int timevalSubtract(
-			struct timeval *result, struct timeval *x, struct timeval *y) {
-
-		int nsec;
-
-		if (x->tv_usec < y->tv_usec) {
-			nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-			y->tv_usec -= 1000000 * nsec;
-			y->tv_sec  += nsec;
-		}
-
-		if (x->tv_usec - y->tv_usec > 1000000) {
-			nsec = (x->tv_usec - y->tv_usec) / 1000000;
-			y->tv_usec += 1000000 * nsec;
-			y->tv_sec  -= nsec;
-		}
-
-		result->tv_sec  = x->tv_sec - y->tv_sec;
-		result->tv_usec = x->tv_usec - y->tv_usec;
-
-		return x->tv_sec < y->tv_sec;
-	}
-
-	static struct timeval startTimeMills;
-	static bool firstCallTimeMills = true;
-
-	double getCurrentTimeMillis() {
-		struct timeval result;
-		struct rusage usage;
-
-		if (getrusage(RUSAGE_SELF, &usage) != 0) {
-			clog << "getCurrentTimeMillis Warning!";
-			clog << " getrusage error" << endl;
-			return -1;
-		}
-
-		if (firstCallTimeMills) {
-			firstCallTimeMills     = false;
-			startTimeMills.tv_sec  = usage.ru_utime.tv_sec;
-			startTimeMills.tv_usec = usage.ru_utime.tv_usec;
-			return 1;
-		}
-
-		timevalSubtract(&result, &(usage.ru_utime), &startTimeMills);
-
-		return (double) ((result.tv_sec * 1000) + (result.tv_usec / 1000));
-	}
-#endif
 
 	static double startTimeMills;
 	static bool firstCallTimeMills = true;
@@ -564,7 +485,6 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return (double)t.time*1000 + (double)t.millitm - startTimeMills;
 	}
-
 
 	//factor is not in use. It will be removed.
 	double getNextStepValue(
@@ -596,261 +516,6 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		return nextStepValue;
 	}
-
-	bool readPPMFile(char *fn, int &X, int &Y, unsigned char* &result){
-		int i,j,tmpint;
-
-		FILE *in_file = fopen(fn,"r");
-
-
-		if(in_file == NULL) {
-			clog << "readPPMFile: Can't open input file: " << string(fn) << endl;
-			return false;
-		}
-
-		fscanf(in_file,"P%d\n", &tmpint);
-
-		/* check for file header (ASCII F6 ) */
-		if(tmpint != 6) {
-			clog << "readPPMFile: Input file is not binary ppm. "<<endl;
-			fclose(in_file);
-			return false;
-		}
-
-		/* ignoring PPM comments */
-		char ch;
-		fscanf(in_file, "%c", &ch);
-		while(ch == '#'){
-			while(ch != '\n')
-				fscanf(in_file,"%c", &ch);
-			fscanf(in_file, "%c", &ch);
-		}
-
-		/* reading image size */
-		fseek (in_file, -1, 1);
-		fscanf(in_file,"%d %d\n%d\n", &X, &Y, &tmpint);
-
-		if(tmpint != 255) clog << "readPPMFile: Warning: maxvalue is not 255 in ppm file"<<endl;
-
-		/* memory allocation for PPM RGB pixel data */
-
-		result = (unsigned char *) malloc(3*X*Y*sizeof(unsigned char));
-
-		if(result == NULL){
-			clog << "readPPMFile: Can't allocate memory buffer for PPM image "<<endl;
-			fclose(in_file);
-			return false;
-		} /*else {
-			printf("Reading image %s of size %dx%d\n",fn,X,Y);
-		}*/
-
-		/* read pixel data from file */
-		if (fread(result, 3*X,Y,in_file) != Y) {
-			clog << "readPPMFile: error reading ppm file"<<endl;
-			fclose(in_file);
-			return false;
-		}
-
-		fclose(in_file);
-
-		return true;
-
-}
-
-	bool readBMPFile(char *fn, int &X, int &Y, unsigned char* &result) {
-		FILE* f = fopen(fn, "rb");
-
-		unsigned char* temp;
-
-		if(f == NULL) {
-			clog << "readBMPFile: Can't open input file: " << string(fn) << endl;
-			return false;
-		}
-
-		unsigned char info[54];
-
-		fread(info, sizeof(unsigned char), 54, f); // read the 54-byte header
-
-		X = *(int*)&info[18];
-		Y = *(int*)&info[22];
-
-		int size = 3 * X * Y;
-
-		//result = (unsigned char *) malloc(size*sizeof(unsigned char));
-		temp = (unsigned char *) malloc(size*sizeof(unsigned char));
-
-		//unsigned char* data = new unsigned char[size]; // allocate 3 bytes per pixel
-
-		fread(temp, sizeof(unsigned char), size, f); // read the rest of the data at once
-
-		fclose(f);
-
-        int i = 0;
-/*
-		for(i = 0; i < size; i += 3)
-		{
-			unsigned char tmp = temp[i];
-			temp[i] = temp[i+2];
-			temp[i+2] = tmp;
-		}
-*/
-		result = (unsigned char *) malloc(size*sizeof(unsigned char));
-
-        int j = 0;
-        for (i = size-1; i >= 0; i--) {
-   			result[j++] = temp [i];
-		}
-		return true;
-	}
-
-	bool ppmToJpeg(char *ppmfile, char *jpegfile, int quality) {
-#if _WIN32
-		CImage myImage;
-
-		myImage.Load(ppmfile);
-		myImage.Save(jpegfile);
-
-		return true;
-#else
-#if HAVE_JPEG
-		struct jpeg_compress_struct cinfo;
-		unsigned char *raw_image = NULL;
-		int _w;
-		int _h;
-		struct jpeg_error_mgr jerr;
-
-		/* this is a pointer to one row of image data */
-		JSAMPROW row_pointer[1];
-
-		if (!readPPMFile(ppmfile,_w,_h,raw_image)) {
-			clog << "ppmToJPEG: error reading PPM File" << string(ppmfile) << endl;
-			return false;
-		}
-
-		FILE *outfile = fopen( jpegfile, "wb" );
-
-		if ( !outfile ) {
-			clog << "Error opening output jpeg file " << string(jpegfile) << endl;
-			//printf("Error opening output jpeg file %s\n!", filename );
-			fclose(outfile);
-			return false;
-		}
-
-		jpeg_create_compress(&cinfo);
-		jpeg_stdio_dest(&cinfo, outfile);
-
-		/* Setting the parameters of the output file here */
-		cinfo.image_width = _w;
-		cinfo.image_height = _h;
-		cinfo.input_components = 3; //bytes per pixel
-		cinfo.in_color_space = JCS_RGB;
-		/* default compression parameters, we shouldn't be worried about these */
-
-		cinfo.err = jpeg_std_error(&jerr);
-//		jpeg_set_defaults(&cinfo);
-
-		jpeg_set_defaults( &cinfo );
-		cinfo.num_components = 3;
-		//cinfo.data_precision = 4;
-		cinfo.dct_method = JDCT_FLOAT;
-
-		jpeg_set_quality(&cinfo, quality, TRUE);
-
-		jpeg_start_compress( &cinfo, TRUE );
-
-		while( cinfo.next_scanline < cinfo.image_height ) {
-			row_pointer[0] = &raw_image[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
-			jpeg_write_scanlines( &cinfo, row_pointer, 1 );
-		}
-
-		jpeg_finish_compress( &cinfo );
-		jpeg_destroy_compress( &cinfo );
-		fclose( outfile );
-
-		//free(row_pointer[0]);
-		//free(raw_image);
-
-		return true;
-#endif
-#endif
-		return false;
-		}
-
-	bool bmpToJpeg(char *bmpfile, char *jpegfile, int quality) {
-#if _WIN32
-        //bmpFile points to a char array with the path to the BMP file
-		CImage myImage;
-
-		myImage.Load(bmpfile);
-		myImage.Save(jpegfile);
-
-		return true;
-#else
-#if HAVE_JPEG
-        //bmpFile points to the array of bytes from the BMP file
-		struct jpeg_compress_struct cinfo;
-		unsigned char *raw_image = NULL;
-		int _w;
-		int _h;
-		struct jpeg_error_mgr jerr;
-
-		/* this is a pointer to one row of image data */
-		JSAMPROW row_pointer[1];
-
-		if (!readBMPFile(bmpfile,_w,_h,raw_image)) {
-			clog << "ppmToJPEG: error reading BMP File" << string(bmpfile) << endl;
-			return false;
-		}
-
-		FILE *outfile = fopen( jpegfile, "wb" );
-
-		if ( !outfile ) {
-			clog << "Error opening output jpeg file " << string(jpegfile) << endl;
-			//printf("Error opening output jpeg file %s\n!", filename );
-			fclose(outfile);
-			return false;
-		}
-
-		jpeg_create_compress(&cinfo);
-		jpeg_stdio_dest(&cinfo, outfile);
-
-		/* Setting the parameters of the output file here */
-		cinfo.image_width = _w;
-		cinfo.image_height = _h;
-		cinfo.input_components = 3; //bytes per pixel
-		cinfo.in_color_space = JCS_RGB;
-		/* default compression parameters, we shouldn't be worried about these */
-
-		cinfo.err = jpeg_std_error(&jerr);
-//		jpeg_set_defaults(&cinfo);
-
-		jpeg_set_defaults( &cinfo );
-		cinfo.num_components = 3;
-		//cinfo.data_precision = 4;
-		cinfo.dct_method = JDCT_FLOAT;
-
-		jpeg_set_quality(&cinfo, quality, TRUE);
-
-		jpeg_start_compress( &cinfo, TRUE );
-
-		while( cinfo.next_scanline < cinfo.image_height ) {
-			row_pointer[0] = &raw_image[ cinfo.next_scanline * cinfo.image_width * cinfo.input_components];
-			jpeg_write_scanlines( &cinfo, row_pointer, 1 );
-		}
-
-		jpeg_finish_compress( &cinfo );
-		jpeg_destroy_compress( &cinfo );
-		fclose( outfile );
-
-		//free(row_pointer[0]);
-		//free(raw_image);
-
-		return true;
-#endif
-#endif
-		return false;
-	}
-
 
 	// Replaces ALL occurences in <str> of the string <find_what> with the
 	// string <replace_with>

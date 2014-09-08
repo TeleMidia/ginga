@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "tuner/ITuner.h"
 #include "tuner/providers/FileSystemProvider.h"
 #include "tuner/providers/IProviderListener.h"
 
@@ -116,27 +117,62 @@ namespace tuning {
 		fclose(fileDescriptor);
 	}
 
-	int FileSystemProvider::receiveData(char* buff,  int skipSize,
-									    unsigned char packetSize) {
-		int bufSize = (packetSize * 100) + 1;
+	bool FileSystemProvider::checkPossiblePacket(char *buff, const int &pos) {
+		if ((buff[pos] == 0x47 &&
+				(buff[pos+188] == 0x47 || buff[pos+204] == 0x47))) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	int FileSystemProvider::nextPacket(char *buff) {
+		if (!(checkPossiblePacket(buff, 0))) {
+			for (int i = 1; i < BUFFSIZE - 204; i++) {
+				if (checkPossiblePacket(buff, i)) {
+					return i;
+				}
+			}
+		}
+		return 0;
+	}
+
+	int FileSystemProvider::synchBuffer(char *buff, int diff) {
+		memcpy(buff, buff + diff, BUFFSIZE - diff);
+		return BUFFSIZE - diff;
+	}
+
+	char* FileSystemProvider::receiveData(int* len) {
+		bool loop = false;
+		int diff, pos;
+		char* buff = NULL;
+		*len = 0;
+
 		if (fileDescriptor > 0) {
-			if (skipSize) fseek(fileDescriptor, skipSize, SEEK_CUR);
-			int rval = fread((void*)buff, 1, bufSize, fileDescriptor);
-			if (rval < bufSize) {
+			buff = new char[BUFFSIZE];
+			*len = fread((void*)buff, 1, BUFFSIZE, fileDescriptor);
+			if (*len < BUFFSIZE) loop = true;
+
+			if (!loop) {
+				diff = nextPacket(buff);
+				if (diff > 0) {
+					pos = synchBuffer(buff, diff);
+					int r = fread(buff + pos, 1, diff, fileDescriptor);
+					if (r < diff) loop = true;
+				}
+			}
+
+			if (loop) {
 				clog << "FileSystemProvider::receiveData" << endl;
 				clog << "File is over, set file to begin again!" << endl;
 				fseek(fileDescriptor, 0L, SEEK_SET);
 				if (listener != NULL) {
 					listener->receiveSignal(PST_LOOP);
 				}
-
-			} else {
-				fseek(fileDescriptor, -1, SEEK_CUR);
 			}
-			return rval;
 		}
 
-		return 0;
+		return buff;
 	}
 }
 }

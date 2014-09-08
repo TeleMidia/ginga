@@ -126,7 +126,6 @@ namespace player {
 		if (dm->hasWindow(myScreen, outputWindow)) {
 			dm->revertWindowContent(myScreen, outputWindow);
 			dm->deleteWindow(myScreen, outputWindow);
-			delete outputWindow;
 			outputWindow = NULL;
 		}
 

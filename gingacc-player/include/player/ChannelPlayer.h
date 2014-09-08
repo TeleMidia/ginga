@@ -83,7 +83,7 @@ namespace player {
 		double getMediaTime();
 
 	private:
-		void setSurfacesParent(void* parent);
+		void setSurfacesParent(GingaWindowID parent);
 
 	protected:
 		GingaSurfaceID getSurface();

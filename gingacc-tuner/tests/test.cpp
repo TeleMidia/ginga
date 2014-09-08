@@ -73,6 +73,8 @@ class TestTunerListener : public ITunerListener {
 			if (fd != NULL) {
 				fwrite(buff, 1, size, fd);
 			}
+
+			delete[] buff;
 		}
 
 		void updateChannelStatus(short newStatus, IChannel* channel) {

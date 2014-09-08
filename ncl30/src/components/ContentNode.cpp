@@ -57,25 +57,28 @@ namespace components {
 	ContentNode::ContentNode(string uid, Content* someContent)
 		    : NodeEntity(uid, someContent) {
 
-		typeSet.insert("ContentNode");
-		typeSet.insert("DocumentNode");
-
-		this->type        = "";
-		// must set to false before a new isSettingNode call
-		isSettingNodeType = false;
-		isSettingNodeType = isSettingNode();
+		initialize("");
 	}
 
 	ContentNode::ContentNode(string uid, Content* someContent, string type)
 		    : NodeEntity(uid, someContent) {
 
+		initialize(type);
+	}
+
+	void ContentNode::initialize(string type) {
 		typeSet.insert("ContentNode");
 		typeSet.insert("DocumentNode");
 
-		this->type        = type;
+		this->type = type;
+
 		// must set to false before a new isSettingNode call
 		isSettingNodeType = false;
 		isSettingNodeType = isSettingNode();
+
+		// must set to false before a new isTimeNode call
+		isTimeNodeType = false;
+		isTimeNodeType = isTimeNode();
 	}
 
 	bool ContentNode::isSettingNode() {
@@ -94,6 +97,29 @@ namespace components {
 		upNodeType = upperCase(nodeType);
 		if (upNodeType == "APPLICATION/X-GINGA-SETTINGS" ||
 				upNodeType == "APPLICATION/X-NCL-SETTINGS") {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ContentNode::isTimeNode() {
+		string upNodeType;
+		string nodeType = getNodeType();
+
+		if (isTimeNodeType) {
+			return true;
+		}
+
+		if (nodeType == "") {
+			return false;
+		}
+
+		//W3C (and RFC2045) type value isn't sensitive
+		upNodeType = upperCase(nodeType);
+		if (upNodeType == "APPLICATION/X-GINGA-TIME" ||
+				upNodeType == "APPLICATION/X-NCL-TIME") {
 
 			return true;
 		}

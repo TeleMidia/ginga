@@ -80,8 +80,6 @@ namespace tsparser {
 		initMaps();
 
 		this->tuner = tuner;
-		audioFilter = NULL;
-		videoFilter = NULL;
 
 		knownSectionPids.insert(PAT_PID);
 		knownSectionPids.insert(CAT_PID);
@@ -91,13 +89,11 @@ namespace tsparser {
 		knownSectionPids.insert(EIT_PID);
 		knownSectionPids.insert(CDT_PID);
 
-		isWaitingPI    = false;
 		debugPacketCounter = 0;
-
 		debugDest      = 0;
 		nptPrinter	   = false;
 		nptPid		   = -1;
-		enableDemuxer  = true;
+		isWaiting      = false;
 		outPipeCreated = false;
 
 		newPmt = NULL;
@@ -106,16 +102,16 @@ namespace tsparser {
 	}
 
 	Demuxer::~Demuxer() {
+		outPipeUri = "";
+		dataArrived();
 		clearPSI();
 		clearMaps();
 
 		Thread::mutexDestroy(&stlMutex);
 	}
 
-	string Demuxer::disableDemuxer(string tsOutputUri) {
-		enableDemuxer = false;
-		outPipeUri    = SystemCompat::checkPipeName(tsOutputUri);
-
+	string Demuxer::createTSUri(string tsOutputUri) {
+		outPipeUri = SystemCompat::checkPipeName(tsOutputUri);
 		Thread::startNewThread(Demuxer::createNullDemuxer, this);
 
 		return outPipeUri;
@@ -175,7 +171,6 @@ namespace tsparser {
 
 		this->pidFilters.clear();
 		this->stFilters.clear();
-		this->pesFilters.clear();
 		this->feFilters.clear();
 		this->feFiltersToSetup.clear();
 		this->pmts.clear();
@@ -204,14 +199,6 @@ namespace tsparser {
 		}
 
 		pidFilters.clear();
-
-		i = pesFilters.begin();
-		while (i != pesFilters.end()) {
-			delete i->second;
-			++i;
-		}
-
-		pesFilters.clear();
 
 		k = feFilters.begin();
 		while (k != feFilters.end()) {
@@ -249,9 +236,7 @@ namespace tsparser {
 
 	void Demuxer::setupUnsolvedFilters() {
 		set<IFrontendFilter*>::iterator i;
-		INetworkInterface* ni;
 		IFrontendFilter* filter;
-		int aPid, vPid;
 
 		Thread::mutexLock(&stlMutex);
 		i = feFiltersToSetup.begin();
@@ -267,38 +252,6 @@ namespace tsparser {
 			}
 		}
 		Thread::mutexUnlock(&stlMutex);
-
-		if (audioFilter != NULL && videoFilter != NULL) {
-			aPid = pat->getDefaultMainAudioPid();
-			vPid = pat->getDefaultMainVideoPid();
-
-			if (aPid != 0 && vPid != 0) {
-				clog << "Demuxer::setupUnsolvedFilters aPid = '";
-				clog << aPid << "' vPid = '" << vPid;
-				clog << "'" << endl;
-
-				ni = tuner->getCurrentInterface();
-				if (ni != NULL) {
-					audioFilter->setPid(aPid);
-					videoFilter->setPid(vPid);
-
-					ni->attachFilter(audioFilter);
-					ni->attachFilter(videoFilter);
-
-					Thread::mutexLock(&stlMutex);
-					feFilters.insert(audioFilter);
-					feFilters.insert(videoFilter);
-					Thread::mutexUnlock(&stlMutex);
-
-					audioFilter = NULL;
-					videoFilter = NULL;
-				}
-
-			} else {
-				clog << "Demuxer::setupUnsolvedFilters can't solve A/V PIDs";
-				clog << endl;
-			}
-		}
 	}
 
 	bool Demuxer::setupFilter(IFrontendFilter* filter) {
@@ -363,8 +316,8 @@ namespace tsparser {
 	void Demuxer::demux(ITSPacket* packet) {
 		unsigned int pid, newVer, currVer;
 		short streamType;
-		vector<unsigned int>* pids;
-		vector<unsigned int>::iterator i;
+		set<UnpPmtTime*>* pids;
+		set<UnpPmtTime*>::iterator i;
 		Pmt* pmt;
 		char tsPacketPayload[184];
 
@@ -372,8 +325,6 @@ namespace tsparser {
 		packet->setPacketCount(debugPacketCounter);
 
 		pid = packet->getPid();
-
-		checkProgramInformation();
 
 		if (nptPrinter) {
 			if (nptPid == -1) {
@@ -399,13 +350,8 @@ namespace tsparser {
 		Thread::mutexLock(&stlMutex);
 		/* Verifies if the PID is for a PAT */
 		if (pid == 0x00) {
-			if (pat->isConsolidated()) {
-				checkProgramInformation();
-				//TODO: handle pat updates
-
-			/* PAT is not consolidated yet ! */
-			} else if (packet->getAdaptationFieldControl() == 1 ||
-					    packet->getAdaptationFieldControl() == 3) {
+			if (!pat->isConsolidated() && (packet->getAdaptationFieldControl() == 1 ||
+					packet->getAdaptationFieldControl() == 3)) {
 
 				packet->getPayload(tsPacketPayload);
 				pat->addData(tsPacketPayload, 184); /* Mount PAT HEADER */
@@ -414,8 +360,8 @@ namespace tsparser {
 					pids = pat->getUnprocessedPmtPids();
 					i = pids->begin();
 					while (i != pids->end()) { /* Create each PMT */
-						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						pmts[*i] = pmt;
+						pmt = new Pmt((*i)->pid, pat->getProgramNumberByPid((*i)->pid));
+						pmts[(*i)->pid] = pmt;
 						++i;
 					}
 				}
@@ -457,12 +403,12 @@ namespace tsparser {
 				}
 
 			} else if (!pmt->hasProcessed()) { /* Trying to consolidate the PMT */
-				pmt->addData(tsPacketPayload, 184);
-				if (pmt->isConsolidated()) {
-					if (pmt->processSectionPayload()) {
-						pat->addPmt(pmt);
-
-						checkProgramInformation();
+				if (!((pmt->getCurrentSize() == 0) && !packet->getStartIndicator())) {
+					pmt->addData(tsPacketPayload, packet->getPayloadSize());
+					if (pmt->isConsolidated()) {
+						if (pmt->processSectionPayload()) {
+							pat->addPmt(pmt);
+						}
 					}
 				}
 			}
@@ -480,23 +426,6 @@ namespace tsparser {
 			}
 		}
 
-		if (pesFilters.count(0) != 0) {
-			if (pid == 0) {
-				char *patStream;
-				unsigned short slen;
-				slen = pat->createPatStreamByProgramPid(
-						pat->getDefaultProgramPid(), &patStream);
-
-				TSPacket* patPacket = new TSPacket(true, patStream, slen);
-				patPacket->setPid(0);
-				pesFilters[0]->receiveTSPacket(patPacket);
-
-				delete patPacket;
-
-			} else {
-				pesFilters[0]->receiveTSPacket(packet);
-			}
-		}
 		Thread::mutexUnlock(&stlMutex);
 
 		delete packet;
@@ -548,7 +477,7 @@ namespace tsparser {
 	}
 
 	int Demuxer::getDefaultMainCarouselPid() {
-			while (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
+		while (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
@@ -670,8 +599,8 @@ namespace tsparser {
 			char* section, int secLen, IFrontendFilter* f) {
 
 		unsigned int pid, newVer, currVer;
-		vector<unsigned int>* pids;
-		vector<unsigned int>::iterator i;
+		set<UnpPmtTime*>* pids;
+		set<UnpPmtTime*>::iterator i;
 		Pmt* pmt, * newPmt;
 		INetworkInterface* ni;
 
@@ -688,8 +617,8 @@ namespace tsparser {
 					pids = pat->getUnprocessedPmtPids();
 					i = pids->begin();
 					while (i != pids->end()) {
-						pmt = new Pmt(*i, pat->getProgramNumberByPid(*i));
-						pmts[*i] = pmt;
+						pmt = new Pmt((*i)->pid, pat->getProgramNumberByPid((*i)->pid));
+						pmts[(*i)->pid] = pmt;
 						++i;
 					}
 					//clog << "Demuxer::receiveSection PAT mounted" << endl;
@@ -746,8 +675,6 @@ namespace tsparser {
 						clog << "unsolved filters";
 						clog << endl;
 
-						checkProgramInformation();
-
 						setupUnsolvedFilters();
 					}
 				}
@@ -775,128 +702,45 @@ namespace tsparser {
 		clog << "Demuxer::addStreamTypeFilter '" << streamType << "'" << endl;
 	}
 
-	void Demuxer::addPesFilter(short type, ITSFilter* filter) {
-		INetworkInterface* ni;
-		int vPid, aPid, pPid, pcrPid;
+	void Demuxer::receiveData(char* buff, unsigned int size) {
+		Buffer* demuxBuff = new Buffer;
 
-		ni = tuner->getCurrentInterface();
-		if (ni == NULL) {
-			return;
+		if (outPipeCreated) {
+			SystemCompat::writePipe(outPipeD, buff, size);
 		}
 
-		if (type == PFT_DEFAULTTS) {
-			vPid = pat->getDefaultMainVideoPid();
-			aPid = pat->getDefaultMainAudioPid();
-			pPid = pat->getDefaultProgramPid();
-			pcrPid = pat->getPmtByProgramNumber(pat->getProgramNumberByPid(pPid))->getPCRPid();
-
-			if (ni->getCaps() & DPC_CAN_FILTERPID) {
-				clog << "Demuxer::addPesFilter aPid = '" << aPid << "'";
-				clog << " vPid = '" << vPid << "'" << endl;
-
-				ni->createPesFilter(0x00, PFT_OTHER, true);
-
-				if (pcrPid != vPid) ni->createPesFilter(pcrPid, PFT_OTHER, true);
-
-				if (pPid > 0) {
-					ni->createPesFilter(pPid, PFT_OTHER, true);
-
-				} else {
-					clog << "Demuxer::addPesFilter Warning! ";
-					clog << "Invalid PMT pid" << endl;
-				}
-
-				//yes we can have a TS without main audio
-				if (aPid > 0) {
-					ni->createPesFilter(aPid, PFT_AUDIO, true);
-				}
-
-				//yes we can have a TS without main video
-				if (vPid > 0) {
-					ni->createPesFilter(vPid, PFT_VIDEO, true);
-				}
-
-				Thread::mutexLock(&stlMutex);
-				pesFilters[pat->getFirstProgramNumber()] = filter;
-				Thread::mutexUnlock(&stlMutex);
-
-			} else {
-				Thread::mutexLock(&stlMutex);
-				if (pesFilters.find(0) == pesFilters.end()) {
-					filter->addPid(0x00);
-
-					if (pcrPid != vPid) filter->addPid(pcrPid);
-
-					if (pPid > 0) {
-						filter->addPid(pPid);
-
-					} else {
-						clog << "Demuxer::addPesFilter Warning! ";
-						clog << "Invalid PMT pid (2)" << endl;
-					}
-
-					if (aPid > 0) {
-						filter->addPid(aPid);
-					}
-
-					if (vPid > 0) {
-						filter->addPid(vPid);
-					}
-
-					clog << "Demuxer::addPesFilter created" << endl;
-					pesFilters[0] = filter;
-
-				} else {
-					delete filter;
-				}
-				Thread::mutexUnlock(&stlMutex);
-			}
-
-		} else if (type == PFT_PCR) {
-
-
-		} else if (type == PFT_VIDEO) {
-			addVideoFilter(0, filter);
-		}
-	}
-
-	void Demuxer::addVideoFilter(unsigned int pid, ITSFilter* f) {
-		IFrontendFilter* ff;
-		unsigned int convPid = pid;
-		INetworkInterface* ni;
-
-		ni = tuner->getCurrentInterface();
-		if (ni == NULL) {
-			return;
-		}
-
-		if (pid == 0) {
-			convPid = pat->getDefaultMainVideoPid();
-		}
-
-		ff = new PesFilter(f);
-		ff->setPid(convPid);
-
-		ni->attachFilter(ff);
+		demuxBuff->buff        = buff;
+		demuxBuff->size        = size;
 
 		Thread::mutexLock(&stlMutex);
-		feFilters.insert(ff);
+		demuxMe.push_back(demuxBuff);
 		Thread::mutexUnlock(&stlMutex);
+		dataArrived();
 	}
 
-	void Demuxer::receiveData(char* buff, unsigned int size) {
-		TSPacket* packet;
-		unsigned int i = 0;
+	void Demuxer::processDemuxData() {
+		Buffer* b;
 
-		if (!enableDemuxer) {
-			if (outPipeCreated) {
-				int bytesWritten = SystemCompat::writePipe(
-						outPipeD, buff, size);
+		while (outPipeUri != "") {
+			Thread::mutexLock(&stlMutex);
+			if (demuxMe.empty()) {
+				Thread::mutexUnlock(&stlMutex);
+				waitData();
 
-				assert(bytesWritten == size);
+			} else {
+				b = *demuxMe.begin();
+				demuxMe.pop_front();
+				Thread::mutexUnlock(&stlMutex);
+				processDemuxData(b->buff, b->size);
+				delete[] b->buff;
+				delete b;
 			}
-			return;
 		}
+	}
+
+	void Demuxer::processDemuxData(char* buff, unsigned int size) {
+		unsigned int i = 0;
+		TSPacket* packet;
 
 		while (i < size) {
 			// Check TS packet boundaries.
@@ -918,29 +762,23 @@ namespace tsparser {
 				i = i + packetSize;
 
 			} else if (i + packetSize < size) {
-				/*clog << "Demuxer::receiveData hunting when i = '";
-				clog << i << "' and size = '" << size << "'";
-				clog << " current byte value = '" << (buff[i] & 0xFF);
-				clog << "' next sync = '" << (buff[i + 188] & 0xFF);
-				clog << "'" << endl;*/
+
 				int diff = i;
 				i++;
 				i = i + hunt(buff + i, size - i);
 				diff = i - diff;
 				if (diff > 188) {
 					packetSize = 204;
-					tuner->setPacketSize(packetSize);
 				}
 				else {
 					packetSize = 188;
-					tuner->setPacketSize(packetSize);
 				}
 
 			} else {
-				/*clog << "Demuxer::receiveData breaking when i = '";
-				clog << i << "' and size = '" << size << "'" << endl;*/
-				tuner->setSkipSize(
-						(packetSize-((size-i-1)%packetSize))%packetSize);
+				clog << "Demuxer::receiveData breaking when i = '";
+				clog << i << "' and size = '" << size << "'" << endl;
+				//tuner->setSkipSize(
+					//	(packetSize-((size-i-1)%packetSize))%packetSize);
 
 				break;
 			}
@@ -978,7 +816,6 @@ namespace tsparser {
 				break;
 
 			case TS_TUNER_POWEROFF:
-				programInfoSatisfied();
 				break;
 
 			default:
@@ -1044,36 +881,20 @@ namespace tsparser {
 		return 0;
 	}
 
-	void Demuxer::checkProgramInformation() {
-		if (pat->isConsolidated() && !pat->hasUnprocessedPmt()) {
-			programInfoSatisfied();
-		}
-	}
-
-	void Demuxer::programInfoSatisfied() {
-		if (isWaitingPI) {
+	void Demuxer::dataArrived() {
+		if (isWaiting) {
 			Thread::condSignal(&flagCondSignal);
-			isWaitingPI = false;
+			isWaiting = false;
 		}
 	}
 
-	bool Demuxer::waitProgramInformation() {
-		if (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
-			isWaitingPI = true;
-			Thread::mutexLock(&flagLockUntilSignal);
-			Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
-			isWaitingPI = false;
-			Thread::mutexUnlock(&flagLockUntilSignal);
+	bool Demuxer::waitData() {
+		isWaiting = true;
+		Thread::mutexLock(&flagLockUntilSignal);
+		Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
+		isWaiting = false;
+		Thread::mutexUnlock(&flagLockUntilSignal);
 
-			if (!pat->isConsolidated() || pat->hasUnprocessedPmt()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	bool Demuxer::waitBuffers() {
-		SystemCompat::uSleep(3000000);
 		return true;
 	}
 }

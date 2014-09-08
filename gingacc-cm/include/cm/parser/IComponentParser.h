@@ -67,8 +67,8 @@ namespace cm {
 		public:
 			virtual ~IComponentParser(){};
 			virtual void parse(string xmlDocument)=0;
-			virtual map<string, IComponent*>* getComponents()=0;
-			virtual map<string, IComponent*>* getSymbols()=0;
+			virtual map<string, IComponent*>* copyComponents()=0;
+			virtual map<string, IComponent*>* copySymbols()=0;
 			virtual map<string, set<string>*>* getParentObjects()=0;
 			virtual void solveDependencies()=0;
 			virtual map<string, set<string>*>* getUnsolvedDependencies()=0;

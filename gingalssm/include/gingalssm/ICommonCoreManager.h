@@ -64,7 +64,6 @@ namespace lssm {
 	public:
 		virtual ~ICommonCoreManager(){};
 		virtual void enableNPTPrinter(bool enableNPTPrinter)=0;
-		virtual void disableMainAV(bool disableAV)=0;
 		virtual void setOCDelay(double ocDelay)=0;
 		virtual void setInteractivityInfo(bool hasOCSupport)=0;
 		virtual void removeOCFilterAfterMount(bool removeIt)=0;
@@ -80,8 +79,7 @@ namespace lssm {
 
 typedef ::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager* CCMCreator(
 		::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager* pem,
-		 GingaScreenID screenId,
-		 bool disableDemuxer);
+		 GingaScreenID screenId);
 
 typedef void CCMDestroyer(
 		::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager*);

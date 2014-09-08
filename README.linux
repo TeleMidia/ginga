@@ -1,0 +1,53 @@
+Build dependencies
+==================
+
+* Optional dependencies
+  * LIBRT   (required if --enable-multiprocess is given)
+  * EXPAT   (required if --enable-components is given)
+  * LIBJPEG (required if --enable-multidevice is given)
+  * LIBZIP  (required if --enable-multidevice is given)
+
+* Required dependencies
+  * XERCES-C
+  * CURL
+  * SDL2
+  * SDL2_image
+  * SDL2_ttf
+  * FFMPEG (disabled SDL by patch, and compiled with: --prefix=/usr --incdir=/usr/include/ffmpeg --enable-static --enable-shared --enable-gpl --enable-postproc --disable-programs --enable-pic --disable-outdev=sdl --build-suffix=ffmpeg)
+    + libavcodec
+    + libavdevice
+    + libavfilter
+    + libavformat
+    + libavutil
+    + libswresample
+    + libswscale
+    + libpostproc
+  * NCLUA
+  * Berkelium
+
+Build tutorial for Ubuntu 14.04
+===============================
+
+* Installing depencies
+
+  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-gnutls-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
+  sudo echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/ubuntu amd64/ " >> /etc/apt/sources.list
+  sudo apt-get update
+  sudo apt-get install berkelium ffmpegext  nclua
+
+* Apply Ubuntu patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
+
+  ./debian/scripts/fix_configure_ac_ffmpeg.sh
+
+* Build ginga
+
+  ./bootstrap
+  ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" CPPFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/" CFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/"
+  make -j4
+  sudo make -j4 install
+
+Import to eclipse CDT
+=====================
+One way to code in ginga source is using Eclipse CDT(www.eclipse.org/cdt) doing:
+import -> C/C++ -> "Existing Code as Makefile Project" -> chose "GNU Autotools toolchain" -> finish.
+

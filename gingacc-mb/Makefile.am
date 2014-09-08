@@ -9,7 +9,7 @@ AM_CPPFLAGS =\
   $(NULL)
 
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
+AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS) $(JPEG_LIBS)
 
 gingaccmblib_LTLIBRARIES =\
   libgingaccmb.la\
@@ -42,6 +42,7 @@ libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/input/SDLInputEvent.cpp\
   src/interface/sdl/output/SDLSurface.cpp\
   src/interface/sdl/output/SDLWindow.cpp\
+  src/interface/sdl/content/SDLConvert.cpp\
   $(NULL)
 
 # gingacc-mb-dec-sdl-ap (SDL Audio)
@@ -64,7 +65,7 @@ libgingaccmbdecsdlimg_la_LDFLAGS =\
   $(AM_LDFLAGS) $(SDL2_LIBS) $(SDL2IMAGE_LIBS)
 
 libgingaccmbdecsdlimg_la_SOURCES =\
-  src/interface/sdl/content/image/SDLImageProvider.cpp
+  src/interface/sdl/content/image/SDLImageProvider.cpp\
   $(NULL)
 
 # gingacc-mb-dec-sdl-f (SDL Text)

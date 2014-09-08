@@ -135,7 +135,7 @@ namespace player {
 		return selectedPlayer->getMediaTime();
 	}
 
-	void ChannelPlayer::setSurfacesParent(void* parent) {
+	void ChannelPlayer::setSurfacesParent(GingaWindowID parent) {
 		map<string, IPlayer*>::iterator players;
 		IPlayer* avPlayer;
 		GingaSurfaceID s = NULL;

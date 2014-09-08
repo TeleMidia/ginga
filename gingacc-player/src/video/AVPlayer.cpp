@@ -135,7 +135,6 @@ namespace player {
 		if (mainAV) {
 			if (win != NULL) {
 				dm->disposeWindow (myScreen, win);
-				delete win;
 				win = NULL;
 			}
 		}
@@ -240,8 +239,7 @@ namespace player {
 
 		surface = dm->createSurface(myScreen);
 		if (win != NULL && mainAV) {
-			dm->setSurfaceParentWindow(myScreen, surface,
-			                           dm->getIWindowFromId(myScreen,win));
+			dm->setSurfaceParentWindow(myScreen, surface, win);
 		}
 
 		Thread::mutexUnlock(&tMutex);
@@ -529,7 +527,7 @@ namespace player {
 
 	bool AVPlayer::setOutWindow(GingaWindowID windowId) {
 		if (mainAV && win == NULL) {
-			win = dm->createWindowFrom(myScreen, windowId);
+			win = windowId;
 
 			if (!running) {
 				Thread::startThread();

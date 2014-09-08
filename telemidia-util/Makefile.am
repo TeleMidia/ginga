@@ -5,10 +5,6 @@ AM_CPPFLAGS = $(INCLUDE_TELEMIDIA_UTIL)
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LIBS)
 
-if WITH_JPEG
-AM_LDFLAGS += $(JPEG_LIBS)
-endif
-
 telemidiautillib_LTLIBRARIES = libtelemidiautil.la
 
 libtelemidiautil_la_SOURCES =\

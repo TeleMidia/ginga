@@ -321,6 +321,11 @@ namespace ncl {
 					firstSyntax, lastSyntax);
 
 		}
+
+		if (anchor != NULL) {
+			anchor->setStrValues(begin, end);
+		}
+
 		return anchor;
 	}
 

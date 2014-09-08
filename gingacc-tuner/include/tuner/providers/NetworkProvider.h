@@ -123,7 +123,8 @@ namespace tuning {
 			virtual void close() {};
 
 			virtual int callServer();
-			virtual int receiveData(char* buff, int skipSize, unsigned char packetSize);
+
+			virtual char* receiveData(int* len);
 	};
 }
 }

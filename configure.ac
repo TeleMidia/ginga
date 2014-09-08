@@ -100,13 +100,13 @@ AM_CONDITIONAL([BUILD_COMPONENTS], [test "$enable_components" = yes])
 _AC_ARG_ENABLE([data-processing], [build data-processing support], [no])
 if test "$enable_data_processing" = yes; then
   AC_DEFINE([HAVE_DATA_PROCESSING], [1],
-   [Define to 1 if data-processing support is enabled.])
+   [Define to 1 if data-processing is enabled.])
   _AC_DEFINE_DEPRECATED([HAVE_TUNER], [1])
   _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [1])
   _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [1])
 else
   AC_DEFINE([HAVE_DATA_PROCESSING], [0],
-   [Define to 1 if data-processing support is enabled.])
+   [Define to 1 if data-processing is enabled.])
   _AC_DEFINE_DEPRECATED([HAVE_TUNER], [0])
   _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [0])
   _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [0])
@@ -131,10 +131,10 @@ if test "$enable_multidevice" = yes; then
 ***])
   fi
   AC_DEFINE([HAVE_MULTIDEVICE], [1],
-   [Define to 1 if multidevice support is enabled.])
+   [Define to 1 if multidevice is enabled.])
 else
   AC_DEFINE([HAVE_MULTIDEVICE], [0],
-   [Define to 1 if multidevice support is enabled.])
+   [Define to 1 if multidevice is enabled.])
 fi
 AM_CONDITIONAL([BUILD_MULTIDEVICE], [test "$enable_multidevice" = yes])
 
@@ -157,6 +157,16 @@ AM_CONDITIONAL([BUILD_MULTIPROCESS], [test "$enable_multiprocess" = yes])
 # Enable tests.
 _AC_ARG_ENABLE([tests], [build unit tests], [no])
 AM_CONDITIONAL([BUILD_TESTS], [test "$enable_tests" = yes])
+
+# Enable NCLua trace.
+_AC_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])
+if test "$enable_nclua_trace" = yes; then
+  AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [1],
+    [Define to 1 to trace NCLua calls.])
+else
+  AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [0],
+    [Define to 1 to trace NCLua calls.])
+fi
 
 # Enable video4linux.
 _AC_ARG_ENABLE([video4linux], [build video4linux front-end support], [no])
@@ -196,46 +206,7 @@ if test "$HAVE_EXPAT" = no; then
 fi
 
 ############################## TeleMidia Util ##############################
-
-# Check for libjpeg.
-AC_ARG_WITH([libjpeg],
- [AC_HELP_STRING([--without-libjpeg],
- [disable JPEG support])])
-
-if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
-  AC_CHECK_LIB([jpeg], [jpeg_destroy_decompress],
-   [jpeg_ok=yes],
-   [jpeg_ok=no; AC_MSG_WARN([*** JPEG library not found])])
-
-  if test "$jpeg_ok" = yes; then
-    AC_MSG_CHECKING([for jpeglib.h])
-    AC_TRY_CPP([[
-#include <stdio.h>
-#undef PACKAGE
-#undef VERSION
-#undef HAVE_STDLIB_H
-#include <jpeglib.h>
-   ]],
-   [jpeg_ok=yes],
-   [jpeg_ok=no])
-    AC_MSG_RESULT([$jpeg_ok])
-
-    if test "$jpeg_ok" = yes; then
-      JPEG_LIBS='-ljpeg'
-    else
-      AC_MSG_WARN([*** JPEG header file not found])
-    fi
-  fi
-
-  if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
-    AC_MSG_ERROR([
-*** Checks for LIBJPEG failed.
-*** Libjpeg is optional; you can disable it by passing
-*** the option --without-libjpeg to configure.])
-  fi
-fi
-AM_CONDITIONAL([WITH_JPEG], [test "$with_libjpeg" != no])
-AC_SUBST([JPEG_LIBS])
+# Nothing to do.
 
 ############################# Ginga-CC System ##############################
 
@@ -243,6 +214,22 @@ AC_SUBST([JPEG_LIBS])
 AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 AC_CHECK_HEADER([sys/sysinfo])
+
+# Check for libzip if multi-device support is enabled.
+PKG_CHECK_MODULES([LIBZIP],
+  [libzip >= libzip_required_version],
+  [have_libzip=yes],
+  [have_libzip=no])
+
+if test "$have_libzip" = yes; then
+  AC_DEFINE([HAVE_ZIP], [1], [Define to 1 if libzip is present.])
+else
+  AC_DEFINE([HAVE_ZIP], [0], [Define to 1 if libzip is present.])
+  if test "$enable_multidevice" = yes; then
+    AC_MSG_ERROR([
+*** libzip >= libzip_required_version is required by --enable-multidevice.])
+  fi
+fi
 
 ############################### Ginga-CC CM ################################
 # Nothing to do.
@@ -256,7 +243,8 @@ AC_CHECK_HEADER([sys/sysinfo])
 AX_LIB_CURL([curl_required_version], [:],
  [AC_MSG_ERROR([
 *** CURL >= curl_required_version is required.])])
-_AC_DEFINE_DEPRECATED([HAVE_CURL], [1])
+
+# FIXME: This should be removed since it is always defined.
 _AC_DEFINE_DEPRECATED([HAVE_IC], [1])
 
 ############################### Ginga-CC MB ################################
@@ -266,6 +254,7 @@ PKG_CHECK_MODULES([SDL2],
  [sdl2 >= sdl2_required_version], [],
  [AC_MSG_ERROR([
 *** sdl2 >= sdl2_required_version is required.])])
+AC_DEFINE([HAVE_SDL], [1], [Define to 1 if SDL2 is present.])
 
 # Check for SDL2_image.
 PKG_CHECK_MODULES([SDL2IMAGE],
@@ -279,9 +268,9 @@ PKG_CHECK_MODULES([SDL2TTF],
  [AC_MSG_ERROR([
 *** SDL2_ttf >= sdl2_ttf_required_version is required.])])
 
-#Check for X11
- PKG_CHECK_MODULES([X11], [x11], [],
-  [AC_MSG_ERROR([
+# Check for X11.
+PKG_CHECK_MODULES([X11], [x11], [],
+ [AC_MSG_ERROR([
 *** X11 is required.])])
 
 # Check for FFmpeg libs.
@@ -305,8 +294,39 @@ PKG_CHECK_MODULES([FFMPEG],
 *** libswresample >= swresample_required_version
 *** libswscale >= swscale_required_version])])
 
-_AC_DEFINE_DEPRECATED([HAVE_SDL], [1])
-AC_DEFINE_UNQUOTED([VERSION], "$PACKAGE_VERSION", [Ginga-CC version])
+# Check for libjpeg.
+if test "$enable_multidevice" = yes; then
+  AC_CHECK_LIB([jpeg], [jpeg_destroy_decompress],
+   [jpeg_ok=yes],
+   [jpeg_ok=no; AC_MSG_WARN([*** JPEG library not found])])
+
+  if test "$jpeg_ok" = yes; then
+    AC_MSG_CHECKING([for jpeglib.h])
+    AC_TRY_CPP([[
+#include <stdio.h>
+#undef PACKAGE
+#undef VERSION
+#undef HAVE_STDLIB_H
+#include <jpeglib.h>
+   ]],
+   [jpeg_ok=yes],
+   [jpeg_ok=no])
+    AC_MSG_RESULT([$jpeg_ok])
+
+    if test "$jpeg_ok" = yes; then
+      JPEG_LIBS='-ljpeg'
+      _AC_DEFINE_DEPRECATED([HAVE_JPEG], [1])
+    else
+      AC_MSG_WARN([*** JPEG header file not found])
+    fi
+  fi
+
+  if test "$with_libjpeg" != no && test -z "$JPEG_LIBS"; then
+    AC_MSG_ERROR([
+*** libjpeg is required by --enable-multidevice.])
+  fi
+fi
+AC_SUBST([JPEG_LIBS])
 
 ######################### Ginga-CC Context Manager #########################
 # Nothing to do.
@@ -331,10 +351,12 @@ AC_HAVE_LIBRARY([berkelium],
  [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
    [berkelium_ok=yes])])
 if test "$berkelium_ok" = yes; then
-  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [1])
+  AC_DEFINE([HAVE_BERKELIUM], [1],
+    [Define to 1 if berkelium is present.])
   BERKELIUM_LIBS='-lberkelium'
 else
-  _AC_DEFINE_DEPRECATED([HAVE_BERKELIUM], [0])
+  AC_DEFINE([HAVE_BERKELIUM], [0],
+    [Define to 1 if berkelium is present.])
   AC_MSG_WARN([
 ***
 *** Checks for BERKELIUM failed.
@@ -370,19 +392,13 @@ AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
 ################################ Ginga LLSM ################################
 # Nothing to do.
 
-################################ Ginga MD ################################
-
-# Check for libzip if multi-device support is enabled.
-if test "$enable_multidevice" = yes; then
-  PKG_CHECK_MODULES([LIBZIP],
-    [libzip >= libzip_required_version], [],
-    [AC_MSG_ERROR([
-*** libzip >= libzip_required_version is required by --enable-multidevice])])
-fi
-
 ################################## Ginga ###################################
+# Nothing to do.
 
 ############################################################################
+
+# Ginga version.
+AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
 # Ginga confdir, libdir, and includedir.
 AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
@@ -453,11 +469,13 @@ AC_MSG_NOTICE([summary of main build options:
   compiler:           cc: ${CC} cflags: ${CFLAGS} cppflags: ${CPPFLAGS}
   library types:      shared=${enable_shared}, static=${enable_static}
 
-  install headers:        ${enable_headers}
   build components:       ${enable_components}
   build data-processing:  ${enable_data_processing}
   build multi-device:     ${enable_multidevice}
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build video4linux:      ${enable_video4linux}
+
+  install headers:        ${enable_headers}
+  trace nclua calls:      ${enable_nclua_trace}
 ])

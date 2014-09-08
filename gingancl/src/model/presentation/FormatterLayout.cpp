@@ -254,7 +254,7 @@ namespace presentation {
 
 		set<FormatterRegion*>* formRegions = NULL;
 		FormatterRegion* formatterRegion;
-		GingaWindowID outputId = NULL;
+		GingaWindowID outputId;
 
 		lock();
 		k = sortedRegions.begin();
@@ -266,7 +266,7 @@ namespace presentation {
 				while (j != formRegions->end()) {
 					formatterRegion = (*j);
 					outputId = formatterRegion->getOutputId();
-					if (outputId != NULL) {
+					if (outputId != 0) {
 						sortedIds->push_back(outputId);
 						l = objectMap.find(formatterRegion);
 						if (l != objectMap.end()) {
@@ -300,7 +300,7 @@ namespace presentation {
 
 		int devClass, zIndex;
 		float cvtZIndex;
-		GingaWindowID windowId = NULL;
+		GingaWindowID windowId = 0;
 
 		if (object == NULL || object->getDescriptor() == NULL ||
 			    object->getDescriptor()->getFormatterRegion() == NULL) {
@@ -485,7 +485,7 @@ namespace presentation {
 
 		formRegions->insert(region);
 		windowId = region->getOutputId();
-		if (windowId == NULL) {
+		if (windowId == 0) {
 			windowId = region->prepareOutputDisplay(
 					renderedSurface, convertedZIndex);
 		}

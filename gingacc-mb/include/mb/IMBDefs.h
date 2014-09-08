@@ -50,8 +50,12 @@ http://www.telemidia.puc-rio.br
 #ifndef IMBDefs_H_
 #define IMBDefs_H_
 
+#ifndef UnderlyingWindowID
+typedef void* UnderlyingWindowID;
+#endif //UnderlyingWindowID
+
 #ifndef GingaWindowID
-typedef void* GingaWindowID;
+typedef unsigned long GingaWindowID;
 #endif //GingaWindowID
 
 #ifndef GingaScreenID

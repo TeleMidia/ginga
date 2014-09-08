@@ -95,7 +95,7 @@ namespace mb {
 			virtual GingaScreenID createScreen(int numArgs, char** args)=0;
 			virtual string getScreenName(GingaScreenID screenId)=0;
 
-			virtual GingaWindowID getScreenUnderlyingWindow(
+			virtual UnderlyingWindowID getScreenUnderlyingWindow(
 					GingaScreenID screenId)=0;
 
 			virtual IWindow* getIWindowFromId(
@@ -121,14 +121,11 @@ namespace mb {
 					int w, int h,
 					float z)=0;
 
-			virtual GingaWindowID createUnderlyingSubWindow(
+			virtual UnderlyingWindowID createUnderlyingSubWindow(
 					GingaScreenID screenId,
 					int x, int y,
 					int w, int h,
 					float z)=0;
-
-			virtual GingaWindowID createWindowFrom(
-					GingaScreenID screenId, GingaWindowID underlyingWindow)=0;
 
 			virtual bool hasWindow(
 					GingaScreenID screenId, GingaWindowID window)=0;
