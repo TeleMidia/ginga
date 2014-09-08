@@ -1110,6 +1110,7 @@ namespace adapters {
 	void FormatterPlayerAdapter::checkAnchorMonitor() {
 		ITimeBaseProvider* timeBaseProvider = NULL;
 		EventTransition* nextTransition;
+		NodeEntity* dataObject;
 
 		if (anchorMonitor != NULL) {
 			anchorMonitor->stopMonitor();
@@ -1154,6 +1155,13 @@ namespace adapters {
 			}
 
 			anchorMonitor->setTimeBaseProvider(timeBaseProvider);
+		}
+
+		dataObject = (NodeEntity*)(object->getDataObject()->getDataEntity());
+		if (dataObject->instanceOf("ContentNode")) {
+			if (((ContentNode*)dataObject)->isTimeNode() && anchorMonitor == NULL) {
+				anchorMonitor = new NominalEventMonitor(object, this);
+			}
 		}
 
 		if (im == NULL) { //player was recovered from manager gc

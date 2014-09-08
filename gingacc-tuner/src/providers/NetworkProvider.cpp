@@ -47,6 +47,7 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
+#include "tuner/ITuner.h"
 #include "tuner/providers/NetworkProvider.h"
 
 namespace br {
@@ -63,6 +64,7 @@ namespace tuning {
 		this->portNumber   = port;
 		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 		this->protocol	   = protocol;
+		this->udpSocket    = NULL;
 	}
 
 	NetworkProvider::~NetworkProvider() {
@@ -70,7 +72,7 @@ namespace tuning {
 			delete udpSocket;
 		}
 	}
-	
+
 	int NetworkProvider::callServer() {
 		try {
 			if (protocol == "udp_multicast") {
@@ -87,8 +89,12 @@ namespace tuning {
 		}
 	}
 
-	int NetworkProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
-		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+	char* NetworkProvider::receiveData(int* len) {
+		char* buff = new char[BUFFSIZE];
+		*len = udpSocket->recvFrom(
+				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+
+		return buff;
 	}
 }
 }

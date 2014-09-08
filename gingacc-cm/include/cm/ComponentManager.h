@@ -79,6 +79,8 @@ namespace cm {
 
 			bool canUnload;
 
+			string processName;
+
 			pthread_mutex_t mapMutex;
 
 			static ComponentManager* _instance;
@@ -100,9 +102,10 @@ namespace cm {
 
 		public:
 			void refreshComponentDescription();
-			map<string, IComponent*>* getComponentDescription();
+			map<string, IComponent*>* copyComponentDescription();
 
 			bool isAvailable(string objName);
+			void setProcessName(string processName);
 	};
 }
 }

@@ -70,9 +70,14 @@ namespace si {
 	}
 
 	Pat::~Pat() {
+		set<UnpPmtTime*>::iterator i;
+
 		if (stream != NULL) {
 			delete (stream);
 			stream = NULL;
+		}
+		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
+			delete (*i);
 		}
 	}
 
@@ -187,16 +192,15 @@ namespace si {
 			return;
 		}
 
-		vector<unsigned int>::iterator i;
+		set<UnpPmtTime*>::iterator i;
 		for (i = unprocessedPmts.begin(); i != unprocessedPmts.end(); ++i) {
-			if (*i == program->getPid()) {
+			if ((*i)->pid == program->getPid()) {
 				unprocessedPmts.erase(i);
 				break;
 			}
 		}
 
 		if (programs.count(program->getPid())) {
-
 			clog << "Pat::addPmt Warning! Trying to override an existent";
 			clog << " program. Pid = '" << program->getPid() << "'";
 			clog << endl;
@@ -262,11 +266,9 @@ namespace si {
 			return true;
 		}
 
-		vector<unsigned int>::iterator it;
-		for (it = unprocessedPmts.begin();
-			    it != unprocessedPmts.end(); ++it) {
-
-			if (*it == pid) {
+		set<UnpPmtTime*>::iterator it;
+		for (it = unprocessedPmts.begin(); it != unprocessedPmts.end(); ++it) {
+			if ((*it)->pid == pid) {
 				return true;
 			}
 		}
@@ -339,7 +341,11 @@ namespace si {
 					}
 
 					pat[pid] = programNumber;
-					unprocessedPmts.push_back(pid);
+
+					UnpPmtTime* upt = new UnpPmtTime();
+					upt->pid = pid;
+					upt->time = getCurrentTimeMillis();
+					unprocessedPmts.insert(upt);
 				}
 			}
 		}
@@ -406,13 +412,25 @@ namespace si {
 	}
 
 	bool Pat::hasUnprocessedPmt() {
+		set<UnpPmtTime*>::iterator i;
+		i = unprocessedPmts.begin();
+		while (i != unprocessedPmts.end()) {
+			if (((getCurrentTimeMillis() - (*i)->time) >= 10000.0)
+					&& programs.size()) {
+				cout << "PMT PID = " << (*i)->pid << " has been expired." << endl;
+				unprocessedPmts.erase(i);
+				i = unprocessedPmts.begin();
+				continue;
+			}
+			++i;
+		}
 		if (unprocessedPmts.empty()) {
 			return false;
 		}
 		return true;
 	}
 
-	vector<unsigned int>* Pat::getUnprocessedPmtPids() {
+	set<UnpPmtTime*>* Pat::getUnprocessedPmtPids() {
 		return &unprocessedPmts;
 	}
 

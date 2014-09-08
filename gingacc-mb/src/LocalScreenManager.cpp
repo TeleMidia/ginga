@@ -134,8 +134,8 @@ namespace mb {
 		Thread::condInit(&wsSignal, NULL);
 		Thread::mutexInit(&wsMutex);
 
-		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
-		clog << "all done" << endl;
+//		clog << "LocalScreenManager::LocalScreenManager(" << this << ") ";
+//		clog << "all done" << endl;
 	}
 
 	LocalScreenManager::~LocalScreenManager() {
@@ -437,9 +437,9 @@ namespace mb {
 			bool externalRenderer,
 			bool useStdin) {
 
-		IDeviceScreen* screen  = NULL;
-		GingaWindowID embedWin = NULL;
-		int argc               = 0;
+		IDeviceScreen* screen       = NULL;
+		UnderlyingWindowID embedWin = NULL;
+		int argc                    = 0;
 
 		short sysType;
 		GingaScreenID screenId;
@@ -618,11 +618,11 @@ namespace mb {
 		return screenName;
 	}
 
-	GingaWindowID LocalScreenManager::getScreenUnderlyingWindow(
+	UnderlyingWindowID LocalScreenManager::getScreenUnderlyingWindow(
 			GingaScreenID screenId) {
 
 		IDeviceScreen* screen;
-		GingaWindowID uWin = NULL;
+		UnderlyingWindowID uWin = NULL;
 
 		if (getScreen(screenId, &screen)) {
 			uWin = screen->getScreenUnderlyingWindow();
@@ -825,11 +825,11 @@ namespace mb {
 		return window->getId();
 	}
 
-	GingaWindowID LocalScreenManager::createUnderlyingSubWindow(
+	UnderlyingWindowID LocalScreenManager::createUnderlyingSubWindow(
 			GingaScreenID screenId, int x, int y, int w, int h, float z) {
 
 		IDeviceScreen* screen;
-		GingaWindowID window = NULL;
+		UnderlyingWindowID window = NULL;
 
 		if (getScreen(screenId, &screen)) {
 			window = screen->createUnderlyingSubWindow(x, y, w, h, z);
@@ -840,19 +840,6 @@ namespace mb {
 		}
 
 		return window;
-	}
-
-	GingaWindowID LocalScreenManager::createWindowFrom(
-			GingaScreenID screenId, GingaWindowID underlyingWindow) {
-
-		IDeviceScreen* screen;
-		IWindow* window = NULL;
-
-		if (getScreen(screenId, &screen)) {
-			window = screen->createWindowFrom(underlyingWindow);
-		}
-
-		return window->getId();
 	}
 
 	bool LocalScreenManager::hasWindow(

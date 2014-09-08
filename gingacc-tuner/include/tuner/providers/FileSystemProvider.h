@@ -79,6 +79,10 @@ namespace tuning {
 			short capabilities;
 			ITProviderListener* listener;
 
+			bool checkPossiblePacket(char *buff, const int &pos);
+			int nextPacket(char *buff);
+			int synchBuffer(char *buff, int diff);
+
 		public:
 			FileSystemProvider(string fileName);
 			virtual ~FileSystemProvider();
@@ -97,8 +101,8 @@ namespace tuning {
 			int createPesFilter(int pid, int pesType, bool compositeFiler);
 			string getPesFilterOutput();
 			void close();
-			int receiveData(char* buff, int skipSize,
-							unsigned char packetSize);
+
+			char* receiveData(int* len);
 	};
 }
 }

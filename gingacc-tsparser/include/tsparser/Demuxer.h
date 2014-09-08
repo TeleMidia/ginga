@@ -74,6 +74,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include <map>
 #include <vector>
+#include <list>
 #include <set>
 #include <string>
 using namespace std;
@@ -91,9 +92,6 @@ namespace tsparser {
 			map<unsigned int, Pmt*> pmts;
 			map<unsigned int, ITSFilter*> pidFilters;
 			map<short, ITSFilter*> stFilters;
-			map<unsigned int, ITSFilter*> pesFilters;
-			IFrontendFilter* audioFilter;
-			IFrontendFilter* videoFilter;
 			set<IFrontendFilter*> feFilters;
 			set<IFrontendFilter*> feFiltersToSetup;
 			static vector<Pat*> pats;
@@ -103,8 +101,8 @@ namespace tsparser {
 
 			short debugDest;
 			unsigned int debugPacketCounter;
-			bool isWaitingPI;
 
+			bool isWaiting;
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
 
@@ -114,10 +112,11 @@ namespace tsparser {
 			bool nptPrinter;
 			int nptPid;
 
-			bool enableDemuxer;
 			string outPipeUri;
 			PipeDescriptor outPipeD;
 			bool outPipeCreated;
+
+			list<Buffer*> demuxMe;
 
 		public:
 			//defs
@@ -128,7 +127,7 @@ namespace tsparser {
 			Demuxer(ITuner* tuner);
 			virtual ~Demuxer();
 
-			string disableDemuxer(string tsOutputUri);
+			string createTSUri(string tsOutputUri);
 			bool hasStreamType(short streamType);
 			void printPat();
 			void setNptPrinter(bool nptPrinter);
@@ -169,11 +168,16 @@ namespace tsparser {
 			void addPidFilter(unsigned int pid, ITSFilter* filter);
 			void addSectionFilter(unsigned int tid, ITSFilter* filter);
 			void addStreamTypeFilter(short streamType, ITSFilter* filter);
-			void addPesFilter(short type, ITSFilter* filter);
-			void addVideoFilter(unsigned int pid, ITSFilter* f);
 
 		private:
 			void receiveData(char* buff, unsigned int size);
+
+		public:
+			void processDemuxData();
+
+		private:
+			void processDemuxData(char* buff, unsigned int size);
+
 			void updateChannelStatus(short newStatus, IChannel* channel);
 
 		public:
@@ -188,12 +192,8 @@ namespace tsparser {
 			short getCaps();
 
 		private:
-			void checkProgramInformation();
-			void programInfoSatisfied();
-
-		public:
-			bool waitProgramInformation();
-			bool waitBuffers();
+			void dataArrived();
+			bool waitData();
 	 };
 }
 }

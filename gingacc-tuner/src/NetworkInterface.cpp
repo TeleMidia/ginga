@@ -145,34 +145,28 @@ namespace tuning {
 		} else if (name == "file") {
 			provider = new FileSystemProvider(address);
 			return true;
-#if defined(_WIN32)
+
 		} else if (name == "sbtvd" && protocol == "terrestrial") {
 			long freq;
-			if (address == "scan") freq = -1;
-				else if (address == "current") freq = 0;
-					else {
-						freq = (long)util::stof(address);
-						if (freq < 1) return false;
-					}
+
+			if (address == "scan") {
+				freq = -1;
+
+			} else if (address == "current") {
+				freq = 0;
+
+			} else {
+				freq = (long)util::stof(address);
+				if (freq < 1) 
+					return false;
+			}
+#if _WIN32
 			provider = new BDAProvider(freq);
+#elif HAVE_FEV4L
+			provider = new ISDBTProvider(freq);
+#endif
+
 			return true;
-#endif
-#if HAVE_FEV4L
-		} else if (name == "sbtvd" && protocol == "terrestrial") {
-		    long freq;
-		    if (address == "current")
-			freq = 0;
-		    else if (address == "scan")
-			freq = -1;
-		    else 
-			freq = atol(address.c_str());
-		    
-		    if (freq > 0)
-			clog << "frequency set to " << freq << endl; 
-		    
-		    provider = new ISDBTProvider(freq);
-		    return true;
-#endif
 		}
 
 		return false;
@@ -245,13 +239,8 @@ namespace tuning {
 		return provider->getCurrentChannel();
 	}
 
-	int NetworkInterface::receiveData(char* buff, int skipSize,
-							unsigned char packetSize) {
-		if (provider != NULL) {
-			return provider->receiveData(buff, skipSize, packetSize);
-		}
-
-		return -1;
+	char* NetworkInterface::receiveData(int* len) {
+		return provider->receiveData(len);
 	}
 
 	void NetworkInterface::close() {

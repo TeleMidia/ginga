@@ -73,9 +73,6 @@ http://www.telemidia.puc-rio.br
 
 extern "C" {
 #include <dirent.h>
-#if HAVE_ZIP
-	#include <zip.h>
-#endif
 // For Linux, Mac OS Snow Leopard (10.6) and Win32
 #include <dlfcn.h>
 #include <errno.h>
@@ -386,9 +383,7 @@ namespace compat {
 			 * Zip Functions *
 			 *****************/
 			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
-			static int zipwalker(void* zipfile, string initdir, string dirpath, string iUriD);
 			static int unzip_file(const char *zipname, const char *filedir);
-			static bool getZipError(struct zip* file, string* strError);
 
 			/**********************
 			 * MemCheck Functions *

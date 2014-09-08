@@ -48,6 +48,7 @@ http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
 #include "tuner/providers/MulticastProvider.h"
+#include "tuner/ITuner.h"
 
 namespace br {
 namespace pucrio {
@@ -82,8 +83,12 @@ namespace tuning {
 		}
 	}
 
-	int MulticastProvider::receiveData(char* buff, int skipSize, unsigned char packetSize) {
-		return udpSocket->recvFrom(buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+	char* MulticastProvider::receiveData(int* len) {
+		char* buff = new char[BUFFSIZE];
+		*len = udpSocket->recvFrom(
+				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+
+		return buff;
 	}
 }
 }

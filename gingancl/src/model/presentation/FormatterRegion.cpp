@@ -563,7 +563,6 @@ namespace presentation {
 
 	GingaWindowID FormatterRegion::getOutputId() {
 //		GingaWindowID outputId = NULL;
-
 //		lock();
 //		if (outputDisplay != NULL) {
 //			outputId = outputDisplay->getId();
@@ -776,7 +775,7 @@ namespace presentation {
 	GingaWindowID FormatterRegion::prepareOutputDisplay(
 			GingaSurfaceID renderedSurface, float cvtIndex) {
 
-		GingaWindowID windowId = NULL;
+		GingaWindowID windowId = 0;
 
 		//clog << "FormatterRegion::prepareOutputDisplay" << endl;
 		lock();

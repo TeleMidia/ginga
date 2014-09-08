@@ -460,7 +460,7 @@ namespace multidevice {
 		FormatterLayout* layout;
 		CascadingDescriptor* descriptor;
 		string regionId, plan = "";
-		GingaWindowID windowId = NULL;
+		GingaWindowID windowId = 0;
 
 		map<int, FormatterLayout*>::iterator i;
 		LayoutRegion* bitMapRegion;
@@ -740,7 +740,7 @@ namespace multidevice {
 	}
 
 	void FormatterMultiDevice::renderFromUri(GingaWindowID win, string uri) {
-		GingaSurfaceID s;
+/*		GingaSurfaceID s;
 		IPlayer* img;
 		bool hasVisual = true;
 
@@ -762,7 +762,33 @@ namespace multidevice {
 		dm->showWindow (myScreen, win);
 		dm->validateWindow (myScreen, win);
 
+
+		win->setColorKey(0, 0, 0);
+		win->clearContent();
+		win->renderFrom(s);
+		win->show();
+		win->validate();
+
 		delete img;
+		*/
+
+		GingaSurfaceID s;
+		/*clog << "FormatterMultiDevice::renderFromUri window coords: ";
+		clog <<  win->getX() << ",";
+		clog <<  win->getY() << ",";
+		clog <<  win->getW() << ",";
+		clog <<  win->getH() << ",";
+		clog <<  win->getZ() << "."<< endl;*/
+
+		s = dm->createRenderedSurfaceFromImageFile(myScreen, uri.c_str());
+
+		dm->setWindowColorKey (myScreen, win, 0, 0, 0);
+		dm->clearWindowContent (myScreen, win);
+		dm->renderWindowFrom(myScreen, win, s);
+		dm->showWindow (myScreen, win);
+		dm->validateWindow (myScreen, win);
+		
+		dm->deleteSurface(s);
 	}
 
 	void FormatterMultiDevice::tapObject(int devClass, int x, int y) {

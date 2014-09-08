@@ -121,8 +121,7 @@ namespace lssm {
 
 	CommonCoreManager::CommonCoreManager(
 			IPresentationEngineManager* pem,
-			GingaScreenID screenId,
-			bool disableDemuxer) {
+			GingaScreenID screenId) {
 
 		tuningWindow  = NULL;
 		tuner         = NULL;
@@ -133,7 +132,6 @@ namespace lssm {
 		ocDelay       = 0;
 		hasOCSupport  = true;
 		this->pem     = pem;
-		disableAV     = false;
 		nptPrinter    = false;
 		myScreen      = screenId;
 
@@ -154,35 +152,31 @@ namespace lssm {
 		demuxer = new Demuxer((ITuner*)tuner);
 #endif
 
-		this->disableDemuxer = disableDemuxer;
-
-		if (!disableDemuxer) {
-			clog << "CommonCoreManager::CommonCoreManager ";
-			clog << "creating data processor" << endl;
+		clog << "CommonCoreManager::CommonCoreManager ";
+		clog << "creating data processor" << endl;
 
 #if HAVE_COMPONENTS
-			dataProcessor = ((dpCreator*)(cm->getObject("DataProcessor")))();
+		dataProcessor = ((dpCreator*)(cm->getObject("DataProcessor")))();
 #else
-			dataProcessor = new DataProcessor();
+		dataProcessor = new DataProcessor();
 #endif
 
-			ccUser = pem->getDsmccListener();
+		ccUser = pem->getDsmccListener();
 
-			// Add PEM as a listener of SEs and OCs
-			((IDataProcessor*)dataProcessor)->addSEListener(
-					"gingaEditingCommands", (IStreamEventListener*)(
-							(DataWrapperListener*)ccUser));
+		// Add PEM as a listener of SEs and OCs
+		((IDataProcessor*)dataProcessor)->addSEListener(
+				"gingaEditingCommands", (IStreamEventListener*)(
+						(DataWrapperListener*)ccUser));
 
-			((IDataProcessor*)dataProcessor)->addObjectListener(
-					(IObjectListener*)((DataWrapperListener*)ccUser));
+		((IDataProcessor*)dataProcessor)->addObjectListener(
+				(IObjectListener*)((DataWrapperListener*)ccUser));
 
-			((IDataProcessor*)dataProcessor)->setServiceDomainListener(
-					(IServiceDomainListener*)((DataWrapperListener*)ccUser));
+		((IDataProcessor*)dataProcessor)->setServiceDomainListener(
+				(IServiceDomainListener*)((DataWrapperListener*)ccUser));
 
-			((IDataProcessor*)dataProcessor)->setDemuxer((IDemuxer*)demuxer);
+		((IDataProcessor*)dataProcessor)->setDemuxer((IDemuxer*)demuxer);
 
-			((ITuner*)tuner)->setLoopListener((IDataProcessor*)dataProcessor);
-		}
+		((ITuner*)tuner)->setLoopListener((IDataProcessor*)dataProcessor);
 
 #endif //HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
 	}
@@ -194,10 +188,6 @@ namespace lssm {
 
 	void CommonCoreManager::enableNPTPrinter(bool enableNPTPrinter) {
 		nptPrinter = enableNPTPrinter;
-	}
-
-	void CommonCoreManager::disableMainAV(bool disableAV) {
-		this->disableAV = disableAV;
 	}
 
 	void CommonCoreManager::setOCDelay(double ocDelay) {
@@ -263,27 +253,8 @@ namespace lssm {
 			dm->hideWindow(myScreen, tuningWindow);
 
 			dm->deleteWindow(myScreen, tuningWindow);
-			delete tuningWindow;
 			tuningWindow = NULL;
 		}
-	}
-
-	bool CommonCoreManager::checkProgramInfo() {
-#if HAVE_TUNER && HAVE_TSPARSER
-		tune();
-
-		clog << "lssm-ccm::cpi waiting program information" << endl;
-		if (((IDemuxer*)demuxer)->waitProgramInformation()) {
-			clog << "lssm-ccm::cpi setting private base id as '";
-			clog << ((IDemuxer*)demuxer)->getTSId() << "'" << endl;
-			pem->setCurrentPrivateBaseId(((IDemuxer*)demuxer)->getTSId());
-			return true;
-
-		} else {
-			return false;
-		}
-#endif
-		return false;
 	}
 
 	IPlayer* CommonCoreManager::createMainAVPlayer(
@@ -340,50 +311,14 @@ namespace lssm {
 		data = pem->createNclPlayerData();
 
 		showTunningWindow(data->screenId, data->x, data->y, data->w, data->h);
+		tune();
+		dstUri = ((IDemuxer*)demuxer)->createTSUri(dstUri);
 
-		if (!disableAV) {
-			if (!disableDemuxer) {
-#if HAVE_COMPONENTS
-				mavFilter = ((filterCreator*)(cm->getObject("PipeFilter")))(0);
-
-#else
-				mavFilter = new PipeFilter(0);
-#endif
-
-				if (checkProgramInfo()) {
-					dstUri = mavFilter->setDestinationUri(dstUri);
-
-					// Create Main AV
-					ipav = createMainAVPlayer(
-							dstUri,
-							data->screenId,
-							data->x, data->y, data->w, data->h);
-
-					((IDemuxer*)demuxer)->addPesFilter(PFT_DEFAULTTS, mavFilter);
-
-				} else {
-					releaseTunningWindow();
-					return;
-				}
-
-			} else {
-				tune();
-
-				dstUri = ((IDemuxer*)demuxer)->disableDemuxer(dstUri);
-
-				// Create Main AV
-				ipav = createMainAVPlayer(
-						dstUri,
-						data->screenId,
-						data->x, data->y, data->w, data->h);
-			}
-
-		} else {
-			if (!checkProgramInfo()) {
-				releaseTunningWindow();
-				return;
-			}
-		}
+		// Create Main AV
+		ipav = createMainAVPlayer(
+				dstUri,
+				data->screenId,
+				data->x, data->y, data->w, data->h);
 
 		if (ocDelay > 0 && hasOCSupport && dataProcessor != NULL) {
 			cpid = ((IDemuxer*)demuxer)->getDefaultMainCarouselPid();
@@ -396,13 +331,13 @@ namespace lssm {
 		delete data;
 		clog << "lssm-ccm::sp create av ok" << endl;
 
-		if (dataProcessor != NULL && !disableDemuxer) {
+		if (dataProcessor != NULL) {
 			ni = ((ITuner*)tuner)->getCurrentInterface();
 			if (ni != NULL && (ni->getCaps() & DPC_CAN_DECODESTC)) {
 				clog << "lssm-ccm::sp using stc hardware!" << endl;
 				((IDataProcessor*)dataProcessor)->setSTCProvider(ni);
 
-			} else if (!disableAV || nptPrinter) {
+			} else if (nptPrinter) {
 				clog << "lssm-ccm::sp using stc wrapper!" << endl;
 				sw = new StcWrapper(ipav);
 				((IDataProcessor*)dataProcessor)->setSTCProvider(sw);
@@ -433,12 +368,15 @@ namespace lssm {
 					STREAM_TYPE_DSMCC_TYPE_D); //DSM-CC descriptors
 
 			if (hasOCSupport) {
-				if (ocDelay == 0) {
+				/*if (ocDelay == 0) {
 					cpid = ((IDemuxer*)demuxer)->getDefaultMainCarouselPid();
 					if (cpid != 0) {
 						((IDataProcessor*)dataProcessor)->createPidSectionFilter(cpid);
 					}
-				}
+				}*/
+
+				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+						STREAM_TYPE_DSMCC_TYPE_B);
 
 				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_C);
@@ -457,8 +395,7 @@ namespace lssm {
 
 		releaseTunningWindow();
 
-		clog << "lssm ccm::sp cond_wait" << endl;
-		pem->waitUnlockCondition();
+		((IDemuxer*)demuxer)->processDemuxData();
 
 		clog << "lssm ccm::sp all done!" << endl;
 #endif //TUNER...
@@ -471,11 +408,10 @@ namespace lssm {
 
 extern "C" ::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager* createCCM(
 		::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager* pem,
-		 GingaScreenID screenId,
-		 bool disableDemuxer) {
+		 GingaScreenID screenId) {
 
 	return new ::br::pucrio::telemidia::ginga::lssm::CommonCoreManager(
-			pem, screenId, disableDemuxer);
+			pem, screenId);
 }
 
 extern "C" void destroyCCM(

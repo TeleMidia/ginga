@@ -133,7 +133,7 @@ namespace multidevice {
 		}
 
 		if (dm->hasWindow(myScreen, serialized)) {
-			delete serialized;
+			dm->deleteWindow(myScreen, serialized);
 			serialized = NULL;
 		}
 

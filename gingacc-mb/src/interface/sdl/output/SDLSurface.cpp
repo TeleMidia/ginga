@@ -93,7 +93,7 @@ namespace mb {
 
 		if (parent != NULL &&
 				LocalScreenManager::getInstance()->hasWindow(
-						myScreen, parent)) {
+								myScreen, parent->getId())) {
 
 			if (parent->getContent() == sur) {
 				((SDLWindow*)parent)->setRenderedSurface(NULL);
@@ -603,7 +603,7 @@ namespace mb {
 
 		if (parent != NULL &&
 				LocalScreenManager::getInstance()->hasWindow(
-						myScreen, parent)) {
+						myScreen, parent->getId())) {
 
 			w = parent->getW();
 			h = parent->getH();

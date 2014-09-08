@@ -81,7 +81,6 @@ namespace player {
 			dm->revertWindowContent(myScreen, outputWindow);
 			dm->deleteWindow(myScreen, outputWindow);
 
-			delete outputWindow;
 			outputWindow = NULL;
 		}
 

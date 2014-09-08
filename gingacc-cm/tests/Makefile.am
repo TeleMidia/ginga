@@ -14,5 +14,10 @@ LDADD =\
   $(top_builddir)/gingacc-system/libgingaccsystem.la\
   $(NULL)
 
-noinst_PROGRAMS = test
+noinst_PROGRAMS =\
+  test\
+  testProfiler\
+  $(NULL)
+
 test_SOURCES = test.cpp
+testProfiler_SOURCES = testProfiler.cpp

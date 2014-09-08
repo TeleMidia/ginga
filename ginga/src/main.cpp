@@ -157,13 +157,12 @@ void printHelp() {
 	cout << "    --enable-nptprinter       Ginga becomes nothing, but an NPT ";
 	cout << "printer (debug purpose only)";
 	cout << endl;
-	cout << "    --set-tuner [ni:channel]  Force an interface and a channel to be tuned.";
-	cout << endl;
-	cout << "                                 --set-tuner file:/tmp/test.ts";
-	cout << "                                 --set-tuner sbtvdt:635143";
-	cout << "                                 --set-tuner ip:224.0.0.1:1234";
+	cout << "    --set-tuner [ni:channel]  Force an interface and a channel to be tuned."<< endl;
+	cout << "                              For instance:" << endl;
+	cout << "                                 --set-tuner file:/tmp/test.ts"<< endl;
+	cout << "                                 --set-tuner sbtvdt:635143"<< endl;
+	cout << "                                 --set-tuner ip:224.0.0.1:1234"<< endl;
 	cout << "                                             (...)" << endl;
-	cout << endl;
 	cout << "    --disable-unload          Disable unload components. Useful ";
 	cout << "for debug. " << endl;
 	cout << "    --vsystem <vsystem>       Specifies the video backend to use.";
@@ -265,7 +264,6 @@ int main(int argc, char *argv[]) {
 	bool autoMount      = false;
 	bool hasInteract    = true;
 	bool hasOCSupport   = true;
-	bool disableAV      = false;
 	bool disableUC      = false;
 	bool exitOnEnd      = false;
 	bool disableFKeys   = false;
@@ -273,7 +271,6 @@ int main(int argc, char *argv[]) {
 	bool debugWindow    = false;
 	bool nptPrinter     = false;
 	short logDest       = SystemCompat::LOG_NULL;
-	bool disableDemuxer = false;
 
 	SystemCompat::initMemCheck();
 	SystemCompat::initializeSigpipeHandler();
@@ -418,12 +415,8 @@ int main(int argc, char *argv[]) {
 		} else if (strcmp(argv[i], "--disable-oc") == 0) {
 			hasOCSupport = false;
 
-		} else if (strcmp(argv[i], "--disable-mainav") == 0) {
-			disableAV = true;
-
 		} else if (strcmp(argv[i], "--enable-nptprinter") == 0) {
 			nptPrinter   = true;
-			disableAV    = true;
 			hasOCSupport = false;
 			hasInteract  = false;
 
@@ -441,9 +434,6 @@ int main(int argc, char *argv[]) {
 
 		} else if (strcmp(argv[i], "--enable-debug-window") == 0) {
 			debugWindow = true;
-
-		} else if (strcmp(argv[i], "--disable-demuxer") == 0) {
-			disableDemuxer = true;
 		}
 	}
 
@@ -584,18 +574,16 @@ int main(int argc, char *argv[]) {
 		if (nclFile == "") {
 			pem->setIsLocalNcl(false, NULL);
 			pem->autoMountOC(autoMount);
-			pem->disableMainAV(disableAV);
 
 #if HAVE_COMPONENTS
 			ccm = ((CCMCreator*)(cm->getObject("CommonCoreManager")))(
-					pem, screenId, disableDemuxer);
+					pem, screenId);
 
 #else
-			ccm = new CommonCoreManager(pem, screenId, disableDemuxer);
+			ccm = new CommonCoreManager(pem, screenId);
 #endif
 
 			ccm->enableNPTPrinter(nptPrinter);
-			ccm->disableMainAV(disableAV);
 			ccm->setInteractivityInfo(hasOCSupport);
 			ccm->removeOCFilterAfterMount(removeOCFilter);
 			ccm->setOCDelay(ocDelay);

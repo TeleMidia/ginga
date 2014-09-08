@@ -83,8 +83,6 @@ namespace tuning {
 		firstTune        = true;
 		listener         = NULL;
 		loopListener     = NULL;
-		skipSize         = 0;
-		packetSize       = 188;
 		currentSpec      = "";
 		this->screenId   = screenId;
 
@@ -169,7 +167,7 @@ namespace tuning {
 
 	void Tuner::initializeInterface(string niSpec) {
 		size_t pos;
-		int fo;
+		int fo = 0;
 
 		if (niSpec.length() > 3 && niSpec.substr(0, 1) != "#") {
 
@@ -192,7 +190,7 @@ namespace tuning {
 				}
 			}
 
-			if (sscanf(niSpec.c_str(), "%d", &fo) == 0) return;
+			sscanf(niSpec.c_str(), "%d", &fo);
 
 			if (fo >= 224 && fo <= 239) {
 
@@ -282,26 +280,15 @@ namespace tuning {
 		/*int debugStream = fopen(
 				"debugStream.ts", "w+b");*/
 
-		buff = new char[BUFFSIZE];
 		receiving = true;
 
 		do {
-			rval = nInterface->receiveData(buff, skipSize, packetSize);
-			skipSize = 0;
-			if (rval > 0) {
-				/*if (debugStream > 0) {
-					write(debugStream, buff, rval);
-				}*/
-
+			buff = nInterface->receiveData(&rval);
+			if (rval > 0 && buff != NULL) {
 				notifyData(buff, (unsigned int)rval);
-
-			} else if (rval < 0) {
-				//cerr << "Tuner::receive minus rval" << endl;
 			}
 
 		} while (receiving);
-
-		delete[] buff;
 
 		//close(debugStream);
 
@@ -397,17 +384,12 @@ namespace tuning {
 		this->listener = listener;
 	}
 
-	void Tuner::setSkipSize(int size) {
-		skipSize = size;
-	}
-
-	void Tuner::setPacketSize(unsigned char size) {
-		packetSize = size;
-	}
-
 	void Tuner::notifyData(char* buff, unsigned int val) {
 		if (listener != NULL) {
 			listener->receiveData(buff, val);
+
+		} else {
+			delete[] buff;
 		}
 	}
 

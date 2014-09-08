@@ -427,11 +427,9 @@ namespace ncl {
 		string attName;
 		string attValue;
 		double time;
-		GingaWindowID winId;
+		GingaWindowID winId = 0;
 
-		time  = getCurrentTimeMillis();
-		winId = NULL;
-
+		time            = getCurrentTimeMillis();
 		executionObject = (ExecutionObject*)(event->getExecutionObject());
 
 		if (isDocumentRunning(event) && !executionObject->isCompiled()) {
@@ -826,7 +824,7 @@ namespace ncl {
 
 		double time         = getCurrentTimeMillis();
 		int actionType      = action->getType();
-		GingaWindowID winId = NULL;
+		GingaWindowID winId = 0;
 
 		clog << "FormatterScheduler::";
 		clog << "runActionOverApplicationObject ACTION = '";
