@@ -89,7 +89,7 @@ namespace mb {
 			static const short GMBSST_SDL;   /* SDL:                sdl      */
 			static const short GMBSST_COCOA; /* COCOA:              cocoa    */
 
-		private:
+		protected:
 			map<GingaScreenID, IDeviceScreen*> screens;
 
 			pthread_mutex_t mapMutex;
@@ -164,7 +164,7 @@ namespace mb {
 
 			GingaScreenID createScreen(int argc, char** args);
 
-		private:
+		protected:
 			GingaScreenID createScreen(
 					string vSystem,
 					string vSubSystem,
@@ -179,14 +179,13 @@ namespace mb {
 			string getScreenName(GingaScreenID screenId);
 			UnderlyingWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
 
-		private:
+		protected:
 			short getMBSystemType(string mbSystemName);
 
 			bool isAvailable(short mbSysType);
 			void lockSysNames();
 			void unlockSysNames();
 
-			//GingaSurfaceID surIdRefCounter;
 			GingaSurfaceID provIdRefCounter;
 
 		public:
@@ -471,8 +470,8 @@ namespace mb {
 
 			int getProviderHeight(const GingaProviderID &provId);
 
-			/* and finally some private stuff */
-		private:
+			/* and finally some protected stuff */
+		protected:
 			void addScreen(
 					GingaScreenID screenId, IDeviceScreen* screen);
 

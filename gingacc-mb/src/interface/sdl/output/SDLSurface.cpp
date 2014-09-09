@@ -265,7 +265,7 @@ namespace mb {
 		this->hasExtHandler = false;
 		this->isDeleting    = false;
 		this->pending       = NULL;
-		this->myId					= id;
+		this->myId			= id;
 
 		this->drawData.clear();
 

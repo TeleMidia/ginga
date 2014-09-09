@@ -145,6 +145,7 @@ namespace player {
 			Player(GingaScreenID screenId, string mrl);
 			virtual ~Player();
 
+			inline GingaScreenID getScreenID () const { return myScreen; }
 			void setMirrorSrc(IPlayer* mirrorSrc);
 
 		private:
