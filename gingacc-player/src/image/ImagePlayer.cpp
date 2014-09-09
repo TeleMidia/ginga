@@ -174,7 +174,7 @@ namespace player {
 	}
 
 	bool ImagePlayer::play() {
-		if (provider == NULL || dm->getSurfaceContent(surface) == NULL) {
+		if (provider == NULL) {
 
 			return false;
 		}

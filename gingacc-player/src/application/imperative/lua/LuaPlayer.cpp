@@ -231,7 +231,7 @@ void *LuaPlayer::nw_update_thread (void *data)
           for (i = lst.begin (); i != lst.end (); i++)
           {
                LuaPlayer *player;
-               ISurface *wrapper;
+               GingaSurfaceID wrapper;
                ncluaw_t *nw;
                ncluaw_event_t *evt;
 
@@ -246,9 +246,10 @@ void *LuaPlayer::nw_update_thread (void *data)
                {
                     SDL_Surface *dest;
                     SDL_Surface *sfc;
-                    IWindow* window;
+					GingaWindowID window;
 
-                    dest = (SDL_Surface *) wrapper->getSurfaceContent ();
+					dest = (SDL_Surface *) dm->getSurfaceContent(wrapper);
+
                     sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
                                                 0, 0, 0, 0);
                     assert (sfc != NULL);
@@ -258,9 +259,9 @@ void *LuaPlayer::nw_update_thread (void *data)
                     SDL_FreeSurface (sfc);
 
                     // Refresh surface.
-                    window = (IWindow*)(wrapper->getParentWindow ());
+					window = dm->getSurfaceParentWindow(wrapper);
                     assert (window != NULL);
-                    window->renderFrom (wrapper);
+					dm->renderWindowFrom(player->getScreenID(), window, wrapper);
                }
 
                while ((evt = ncluaw_receive (nw)) != NULL)
@@ -420,7 +421,7 @@ void LuaPlayer::unlock (void)
 
 bool LuaPlayer::doPlay (void)
 {
-     ISurface *sfc;
+     GingaSurfaceID sfc;
      char *errmsg = NULL;
      int w = 0;
      int h = 0;
@@ -430,7 +431,7 @@ bool LuaPlayer::doPlay (void)
      sfc = this->getSurface ();
      if (sfc != NULL)
      {
-          sfc->getSize (&w, &h);
+		 dm->getSurfaceSize(sfc, &w, &h);
      }
 
      // Create the NCLua state.

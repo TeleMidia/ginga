@@ -471,8 +471,8 @@ namespace adapters {
 				player = new AVPlayerAdapter(this, false);
 			}
 
-//		} else if (playerClassName == "LuaPlayerAdapter") {
-//			player = new LuaPlayerAdapter(this);
+		} else if (playerClassName == "LuaPlayerAdapter") {
+			player = new LuaPlayerAdapter(this);
 
 		} else if (playerClassName == "NCLPlayerAdapter") {
 			player = new NCLPlayerAdapter(this);

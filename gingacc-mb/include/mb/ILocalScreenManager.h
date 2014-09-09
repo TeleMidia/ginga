@@ -306,6 +306,7 @@ namespace mb {
 			//Surfaces
 			virtual void registerSurface (ISurface*) = 0;
 
+			//FIXME: Players should not use this method to completely isolate gingacc-mb.
 			virtual void* getSurfaceContent(const GingaSurfaceID& surId) = 0;
 
 			virtual GingaWindowID getSurfaceParentWindow(

@@ -83,3 +83,4 @@ autom4te.cache
 libtool
 gingacc-system.pc
 vgcore.*
+/Debug/

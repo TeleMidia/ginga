@@ -76,6 +76,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 #endif //HAVE_COMPONENTS
 
+#ifdef ENABLE_EXTERNAL_MB
+#include "mb/DistributedScreenManager.h"
+#endif
+
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -128,7 +133,6 @@ namespace mb {
 		running              = false;
 		isWaiting            = false;
 
-//		surIdRefCounter			 = 1;
 		provIdRefCounter		 = 1;
 
 		Thread::condInit(&wsSignal, NULL);
@@ -307,7 +311,11 @@ namespace mb {
 
 	LocalScreenManager* LocalScreenManager::getInstance() {
 		if (LocalScreenManager::_instance == NULL) {
+#ifdef ENABLE_EXTERNAL_MB
+			LocalScreenManager::_instance = new DistributedScreenManager();
+#else
 			LocalScreenManager::_instance = new LocalScreenManager();
+#endif
 		}
 		return LocalScreenManager::_instance;
 	}
@@ -883,10 +891,8 @@ namespace mb {
 		GingaSurfaceID surId = 0;
 
 		if (getScreen(screenId, &screen)) {
-//			surId = surIdRefCounter++;
 			surface = screen->createSurface();
 			surId = surface->getId();
-			//surface->setId(surId);
 
 			Thread::mutexLock (&surMapMutex);
 			surMap [surId] = surface;
@@ -904,11 +910,9 @@ namespace mb {
 		GingaSurfaceID surId = 0;
 
 		if (getScreen(screenId, &screen)) {
-//			surId = surIdRefCounter++;
 			surface = screen->createSurface(w, h);
 			surId = surface->getId();
-			//surface->setId(surId);
-
+			
 			Thread::mutexLock(&surMapMutex);
 			surMap [surId] = surface;
 			Thread::mutexUnlock(&surMapMutex);
@@ -925,10 +929,8 @@ namespace mb {
 		GingaSurfaceID surId = 0;
 
 		if (getScreen(screenId, &screen)) {
-//			surId = surIdRefCounter++;
 			surface = screen->createSurfaceFrom(underlyingSurface);
 			surId = surface->getId();
-			//surface->setId(surId);
 
 			Thread::mutexLock(&surMapMutex);
 			surMap [surId] = surface;
@@ -1098,10 +1100,8 @@ namespace mb {
 		GingaSurfaceID surId = 0;
 
 		if (getScreen(screenId, &screen)) {
-//			surId = surIdRefCounter++;
 			uSur = screen->createRenderedSurfaceFromImageFile(mrl);
 			surId = uSur->getId();
-			//uSur->setId(surId);
 			
 			Thread::mutexLock(&surMapMutex);
 			surMap [surId] = uSur;

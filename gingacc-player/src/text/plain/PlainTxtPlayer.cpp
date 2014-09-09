@@ -248,7 +248,7 @@ namespace player {
 			return;
 		}
 
-		if (surface == NULL || dm->getSurfaceContent (surface) == NULL) {
+		if (surface == NULL) {
 			refresh = false;
 		}
 
