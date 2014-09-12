@@ -222,26 +222,40 @@ namespace animation {
 
 	bool AnimationController::loadInitValues() {
 		double propValue;
+		CascadingDescriptor* descriptor = NULL;
 		unsigned int i;
 		string value = "";
 
 		this->initValues.clear();
+		if (isExecutionObjectProperty(this->propName)) {
+			descriptor = this->execObj->getDescriptor();
 
-		for (i = 0; i < this->propertySingleNames.size(); i++) {
-			value = player->getPropertyValue(this->propertySingleNames[i]);
+			if (descriptor == NULL ||
+					descriptor->getFormatterRegion() == NULL) {
 
-			if (value == "") {
-				value = execObj->getPropertyValue(this->propertySingleNames[i]);
+				clog << "AnimationController::loadTargetValues : load target";
+				clog << " could not be performed. Descriptor or ";
+				clog << "formatterRegion is NULL." << endl;
+
+				return false;
 			}
-			propValue = util::stof(value);
 
-			clog << "AnimationController::loadInitValues (execObj): ";
-			clog << propertySingleNames[i] << " value = '";
-			clog << propValue << "'" << endl;
+			this->targetRegion = descriptor->getFormatterRegion()->getLayoutRegion();;
+			for (i = 0; i < this->propertySingleNames.size(); i++) {
+				value = player->getPropertyValue(this->propertySingleNames[i]);
 
-			this->initValues.push_back(propValue);
+				if (value == "") {
+					value = execObj->getPropertyValue(this->propertySingleNames[i]);
+				}
+				propValue = util::stof(value);
+
+				clog << "AnimationController::loadInitValues (execObj): ";
+				clog << propertySingleNames[i] << " value = '";
+				clog << propValue << "'" << endl;
+
+				this->initValues.push_back(getSinglePropertyTarget(i));
+			}
 		}
-
 		return true;
 	}
 
