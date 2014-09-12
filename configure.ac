@@ -221,12 +221,11 @@ PKG_CHECK_MODULES([LIBZIP],
   [have_libzip=yes],
   [have_libzip=no])
 
-if test "$have_libzip" = yes; then
-  AC_DEFINE([HAVE_ZIP], [1], [Define to 1 if libzip is present.])
-else
-  AC_DEFINE([HAVE_ZIP], [0], [Define to 1 if libzip is present.])
-  if test "$enable_multidevice" = yes; then
-    AC_MSG_ERROR([
+if test "$enable_multidevice" = yes; then
+  if test "$have_libzip" = yes; then
+    AC_DEFINE([HAVE_ZIP], [1], [Define to 1 if libzip is present.])
+  else
+      AC_MSG_ERROR([
 *** libzip >= libzip_required_version is required by --enable-multidevice.])
   fi
 fi
