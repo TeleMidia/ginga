@@ -103,7 +103,8 @@ int main(int argc, char** argv, char** envp) {
 #if HAVE_COMPONENTS
 		void* component = cm->getObject("LinksPlayerAdapter");
 		if (component != NULL) {
-			player = ((AdapterCreator*)component)(NULL, (void*)(mrl.c_str()));
+			player = ((CICreator*)compObject)();
+			player->initializeAdapter(NULL, (void*)(mrl.c_str()));
 
 			s = player->getPlayer()->getSurface();
 			if (s == NULL) {

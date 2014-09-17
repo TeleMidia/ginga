@@ -41,6 +41,11 @@ if BUILD_MULTIPROCESS
 libgingaccplayer_la_SOURCES += src/PlayerProcess.cpp
 endif
 
+# gingacc-pla-avp (Audio and video)
+libgingaccplaavp_la_SOURCES =\
+  src/video/AVPlayer.cpp\
+  $(NULL)
+
 # gingacc-pla-bkl
 if BUILD_BERKELIUM
 gingaccplayerlib_LTLIBRARIES += libgingaccplabkl.la
@@ -88,18 +93,21 @@ libgingaccplasrt_la_SOURCES =\
   $(NULL)
 
 # gingacc-pla-cha
+libgingaccplacha_la_LIBADD =\
+  $(top_builddir)/gingacc-player/libgingaccplaavp.la\
+  $(NULL)
+
 libgingaccplacha_la_SOURCES =\
   src/tv/ChannelPlayer.cpp\
   $(NULL)
 
 # gingacc-pla-pav (?)
-libgingaccplapav_la_SOURCES =\
-  src/tv/ProgramAV.cpp\
+libgingaccplapav_la_LIBADD =\
+  $(top_builddir)/gingacc-player/libgingaccplaavp.la\
   $(NULL)
 
-# gingacc-pla-avp (Audio and video)
-libgingaccplaavp_la_SOURCES =\
-  src/video/AVPlayer.cpp\
+libgingaccplapav_la_SOURCES =\
+  src/tv/ProgramAV.cpp\
   $(NULL)
 
 # gingacc-pla-wdg (Widget)

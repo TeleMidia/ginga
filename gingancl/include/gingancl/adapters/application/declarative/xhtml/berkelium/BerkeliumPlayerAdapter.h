@@ -76,7 +76,7 @@ namespace application {
 namespace xhtml {
 	class BerkeliumPlayerAdapter : public FormatterPlayerAdapter {
 		public:
-			BerkeliumPlayerAdapter(IPlayerAdapterManager* manager);
+			BerkeliumPlayerAdapter();
 			virtual ~BerkeliumPlayerAdapter(){};
 
 		protected:

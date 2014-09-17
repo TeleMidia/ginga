@@ -47,37 +47,34 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#ifndef LUAPLAYERADAPTER_H_
-#define LUAPLAYERADAPTER_H_
+#ifndef _IComponentInstance_H_
+#define _IComponentInstance_H_
 
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
-
-#include "../../ApplicationPlayerAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+#include <string>
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace lua {
-  class LuaPlayerAdapter : public ApplicationPlayerAdapter {
-	public:
-		LuaPlayerAdapter();
-		virtual ~LuaPlayerAdapter(){};
+namespace core {
+namespace system {
+	class IComponentInstance {
+		protected:
+			static const unsigned short SC_BESTCASE  = 0;
+			static const unsigned short SC_AVGCASE   = 1;
+			static const unsigned short SC_WORSTCASE = 2;
 
-	protected:
-		void createPlayer();
+		public:
+			virtual ~IComponentInstance(){};
 
-	public:
-		bool setAndLockCurrentEvent(FormatterEvent* event);
-		void unlockCurrentEvent(FormatterEvent* event);
-  };
-}
-}
+			/* each interface can use its own initilization method */
+			/* these are for profilers and testers implementation  */
+			virtual void initializeInstance(std::string& data, short scenario)=0;
+			virtual void testInstance(std::string& data, short scenario)=0;
+	};
+
+typedef IComponentInstance* CICreator();
+
 }
 }
 }
@@ -85,4 +82,4 @@ namespace lua {
 }
 }
 
-#endif /* LUAPLAYERADAPTER_H_ */
+#endif //_IComponentInstance_H_

@@ -54,6 +54,9 @@ http://www.telemidia.puc-rio.br
 #include "ncl/IPrivateBaseContext.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
+#include "system/IComponentInstance.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system;
+
 #include <string>
 using namespace std;
 
@@ -64,6 +67,15 @@ namespace converter {
   class IDocumentConverter {
 	public:
 		virtual ~IDocumentConverter(){};
+
+		virtual void setConverterInfo(
+				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout)=0;
+
+	private:
+		virtual void initializeInstance(std::string& data, short scenario)=0;
+		virtual void testInstance(std::string& data, short scenario)=0;
+
+	public:
 		virtual string getAttribute(void* element, string attribute)=0;
 		virtual void* getObject(string tableName, string key)=0;
 		virtual void* parse(string uri, string iUriD, string fUriD)=0;
@@ -74,12 +86,5 @@ namespace converter {
 }
 }
 }
-
-typedef ::br::pucrio::telemidia::converter::IDocumentConverter*
-		ConverterCreator(
-				IPrivateBaseContext* baseContext, IDeviceLayout* deviceLayout);
-
-typedef void ConverterDestroyer(
-		::br::pucrio::telemidia::converter::IDocumentConverter* deadInterface);
 
 #endif //IDocumentConverter_H

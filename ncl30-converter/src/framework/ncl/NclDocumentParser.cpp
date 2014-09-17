@@ -55,10 +55,8 @@ namespace telemidia {
 namespace converter {
 namespace framework {
 namespace ncl {
-	NclDocumentParser::NclDocumentParser(IDeviceLayout* deviceLayout) :
-			DocumentParser() {
-
-		this->deviceLayout                    = deviceLayout;
+	NclDocumentParser::NclDocumentParser() : DocumentParser() {
+		this->deviceLayout                    = NULL;
 		this->presentationSpecificationParser = NULL;
 		this->structureParser                 = NULL;
 		this->componentsParser                = NULL;
@@ -68,10 +66,16 @@ namespace ncl {
 		this->layoutParser                    = NULL;
 		this->presentationControlParser       = NULL;
 		this->importParser                    = NULL;
+		this->metainformationParser           = NULL;
+		this->transitionParser                = NULL;
 	}
 
 	NclDocumentParser::~NclDocumentParser() {
 
+	}
+
+	void NclDocumentParser::setDeviceLayout(IDeviceLayout* deviceLayout) {
+		this->deviceLayout = deviceLayout;
 	}
 
 	void NclDocumentParser::setDependencies() {

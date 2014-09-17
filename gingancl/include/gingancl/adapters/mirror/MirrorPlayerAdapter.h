@@ -76,7 +76,7 @@ namespace mirror {
 			string mirrorSrcId;
 
 		public:
-			MirrorPlayerAdapter(IPlayerAdapterManager* manager);
+			MirrorPlayerAdapter();
 			virtual ~MirrorPlayerAdapter();
 
 		protected:

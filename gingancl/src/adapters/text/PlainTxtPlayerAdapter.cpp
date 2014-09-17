@@ -58,8 +58,7 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace text {
-	PlainTxtPlayerAdapter::PlainTxtPlayerAdapter(
-			IPlayerAdapterManager* manager) : FormatterPlayerAdapter(manager) {
+	PlainTxtPlayerAdapter::PlainTxtPlayerAdapter() : FormatterPlayerAdapter() {
 
 	}
 
@@ -131,15 +130,6 @@ namespace text {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createPlTAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::
-			PlainTxtPlayerAdapter(manager);
-}
-
-extern "C" void destroyPlTAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createPlTAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::PlainTxtPlayerAdapter();
 }

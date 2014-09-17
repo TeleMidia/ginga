@@ -155,12 +155,13 @@ namespace ncl {
 		}
 
 #if HAVE_COMPONENTS
-		compiler = ((ConverterCreator*)(cm->getObject(
-				"NclDocumentConverter")))(this, deviceLayout);
+		compiler = (IDocumentConverter*)((CICreator*)(
+				cm->getObject("NclDocumentConverter")))();
 #else
-		compiler = new NclDocumentConverter(this, deviceLayout);
+		compiler = new NclDocumentConverter();
 #endif
 
+		compiler->setConverterInfo(this, deviceLayout);
 		compiler->parse(
 				docUrl,
 				SystemCompat::getIUriD(),
@@ -554,12 +555,13 @@ namespace ncl {
 		deviceLayout = layouts[document];
 
 #if HAVE_COMPONENTS
-		compiler = ((ConverterCreator*)(cm->getObject(
-				"NclDocumentConverter")))(this, deviceLayout);
-
+		compiler = (IDocumentConverter*)((CICreator*)(
+				cm->getObject("NclDocumentConverter")))();
 #else
-		compiler = new NclDocumentConverter(this, deviceLayout);
+		compiler = new NclDocumentConverter();
 #endif
+
+		compiler->setConverterInfo(this, deviceLayout);
 
 		clog << "PrivateBaseContext::compileEntity entityURL = '" << entityUrl;
 		clog << "'" << endl;
@@ -1158,11 +1160,12 @@ namespace ncl {
 		deviceLayout = layouts[document];
 
 #if HAVE_COMPONENTS
-		compiler = ((ConverterCreator*)(cm->getObject(
-				"NclDocumentConverter")))(this, deviceLayout);
+		compiler = (IDocumentConverter*)((CICreator*)(
+				cm->getObject("NclDocumentConverter")))();
 #else
-		compiler = new NclDocumentConverter(this, deviceLayout);
+		compiler = new NclDocumentConverter();
 #endif
+		compiler->setConverterInfo(this, deviceLayout);
 
 		location = compiler->getAttribute(importElement, "documentURI");
 		if (location != "") {
@@ -1326,11 +1329,13 @@ namespace ncl {
 		deviceLayout = layouts[document];
 
 #if HAVE_COMPONENTS
-		compiler = ((ConverterCreator*)(cm->getObject(
-				"NclDocumentConverter")))(this, deviceLayout);
+		compiler = (IDocumentConverter*)((CICreator*)(
+				cm->getObject("NclDocumentConverter")))();
 #else
-		compiler = new NclDocumentConverter(this, deviceLayout);
+		compiler = new NclDocumentConverter();
 #endif
+
+		compiler->setConverterInfo(this, deviceLayout);
 
 		location = compiler->getAttribute(importElement, "documentURI");
 		if (location != "") {

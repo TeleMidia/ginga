@@ -85,7 +85,7 @@ namespace av {
 			bool hasVisual;
 
 		public:
-			ChannelPlayerAdapter(IPlayerAdapterManager* manager, bool visual);
+			ChannelPlayerAdapter();
 			virtual ~ChannelPlayerAdapter(){};
 
 		protected:

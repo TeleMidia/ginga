@@ -66,12 +66,11 @@ namespace adapters {
 	ILocalScreenManager* FormatterPlayerAdapter::dm = NULL;
 	double FormatterPlayerAdapter::eventTS = 0;
 
-	FormatterPlayerAdapter::FormatterPlayerAdapter(
-			IPlayerAdapterManager* manager) {
+	FormatterPlayerAdapter::FormatterPlayerAdapter() {
 
 		typeSet.insert("FormatterPlayerAdapter");
 
-		this->manager        = manager;
+		this->manager        = NULL;
 		this->object         = NULL;
 		this->player         = NULL;
 		this->mirrorSrc      = NULL;
@@ -79,19 +78,10 @@ namespace adapters {
 		this->mrl            = "";
 		this->playerCompName = "";
 		this->objectDevice   = -1;
-		this->myScreen       = manager->getNclPlayerData()->screenId;
+		this->myScreen       = 0;
 		this->outTransDur    = 0;
 		this->outTransTime   = -1.0;
-
-		if (dm == NULL) {
-			dm = LocalScreenManager::getInstance();
-		}
-
-		LocalScreenManager::addIEListenerInstance(this);
-
-		im = dm->getInputManager(myScreen);
-
-		isLocked = false;
+		this->isLocked       = false;
 		Thread::mutexInit(&objectMutex, NULL);
 	}
 
@@ -138,6 +128,28 @@ namespace adapters {
 		unlockObject();
 
 		Thread::mutexDestroy(&objectMutex);
+	}
+
+	void FormatterPlayerAdapter::setAdapterManager(
+			IPlayerAdapterManager* manager) {
+
+		this->manager  = manager;
+		this->myScreen = manager->getNclPlayerData()->screenId;
+		if (dm == NULL) {
+			dm = LocalScreenManager::getInstance();
+		}
+
+		LocalScreenManager::addIEListenerInstance(this);
+
+		im = dm->getInputManager(myScreen);
+	}
+
+	void FormatterPlayerAdapter::initializeInstance(std::string& data, short scenario) {
+
+	}
+
+	void FormatterPlayerAdapter::testInstance(std::string& data, short scenario)  {
+
 	}
 
 	bool FormatterPlayerAdapter::instanceOf(string s) {

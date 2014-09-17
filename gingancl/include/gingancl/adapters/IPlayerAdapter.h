@@ -56,6 +56,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "player/IPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
+#include "system/IComponentInstance.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system;
+
 #include "IPlayerAdapterManager.h"
 
 namespace br {
@@ -64,10 +67,17 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-	class IPlayerAdapter {
+	class IPlayerAdapter : public IComponentInstance {
 		public:
 			virtual ~IPlayerAdapter(){};
 
+			virtual void setAdapterManager(IPlayerAdapterManager* manager)=0;
+
+		private:
+			virtual void initializeInstance(std::string& data, short scenario)=0;
+			virtual void testInstance(std::string& data, short scenario)=0;
+
+		public:
 			virtual bool instanceOf(string s)=0;
 
 		protected:
@@ -90,14 +100,5 @@ namespace adapters {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
-
-typedef ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-         AdapterCreator(IPlayerAdapterManager* manager, void* param);
-
-typedef void AdapterDestroyer(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		deadInterface);
 
 #endif /*IPlayerAdapter_H_*/

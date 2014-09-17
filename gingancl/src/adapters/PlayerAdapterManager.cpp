@@ -413,7 +413,8 @@ namespace adapters {
 		if (playerClassName == "") {
 			clog << "PlayerAdapterManager::initializePlayer creating ";
 			clog << "LOCAL TIME player" << endl;
-			player = new FormatterPlayerAdapter(this);
+			player = new FormatterPlayerAdapter();
+			player->setAdapterManager(this);
 			objectPlayers[objId] = player;
 			return (FormatterPlayerAdapter*)player;
 		}
@@ -433,69 +434,67 @@ namespace adapters {
 		compObject = cm->getObject(playerClassName);
 
 		if (compObject != NULL) {
-			player = ((AdapterCreator*)compObject)(
-					this, (void*)(((*args)[1]).c_str()));
+			player = (IPlayerAdapter*)((CICreator*)compObject)();
+			player->setAdapterManager(this);
 		}
+
+		if (player == NULL) {
+			delete args;
+			return NULL;
+		}
+
 #else
 		if (playerClassName == "SubtitlePlayerAdapter") {
-			player = new SubtitlePlayerAdapter(this);
+			player = new SubtitlePlayerAdapter();
 
 		} else if (playerClassName == "PlainTxtPlayerAdapter") {
-			player = new PlainTxtPlayerAdapter(this);
+			player = new PlainTxtPlayerAdapter();
 
 		} else if (playerClassName == "AwesomiumPlayerAdapter") {
 #if HAVE_AWESOMIUM
-			player = new AwesomiumPlayerAdapter(this);
+			player = new AwesomiumPlayerAdapter();
 #endif //HAVE_AWESOMIUM
 
 		} else if (playerClassName == "BerkeliumPlayerAdapter") {
 #if HAVE_BERKELIUM
-			player = new BerkeliumPlayerAdapter(this);
+			player = new BerkeliumPlayerAdapter();
 #endif //HAVE_BERKELIUM
 
 		} else if (playerClassName == "LinksPlayerAdapter") {
 #if HAVE_LINKS
-			player = new LinksPlayerAdapter(this);
+			player = new LinksPlayerAdapter();
 #endif //HAVE_LINKS
 
 		} else if (playerClassName == "ImagePlayerAdapter") {
-			player = new ImagePlayerAdapter(this);
+			player = new ImagePlayerAdapter();
 
 		} else if (playerClassName == "MirrorPlayerAdapter") {
-			player = new MirrorPlayerAdapter(this);
+			player = new MirrorPlayerAdapter();
 
 		} else if (playerClassName == "AVPlayerAdapter") {
-			if ((*args)[1] == "true") {
-				player = new AVPlayerAdapter(this, true);
-			} else {
-				player = new AVPlayerAdapter(this, false);
-			}
+			player = new AVPlayerAdapter();
 
 		} else if (playerClassName == "LuaPlayerAdapter") {
-			player = new LuaPlayerAdapter(this);
+			player = new LuaPlayerAdapter();
 
 		} else if (playerClassName == "NCLPlayerAdapter") {
-			player = new NCLPlayerAdapter(this);
+			player = new NCLPlayerAdapter();
 
 		} else if (playerClassName == "ChannelPlayerAdapter") {
-			if ((*args)[1] == "true") {
-				player = new ChannelPlayerAdapter(this, true);
-			} else {
-				player = new ChannelPlayerAdapter(this, false);
-			}
+			player = new ChannelPlayerAdapter();
 
 		} else if (playerClassName == "ProgramAVPlayerAdapter") {
-			player = ProgramAVPlayerAdapter::getInstance(this);
+			player = ProgramAVPlayerAdapter::getInstance();
 
 		} else if (playerClassName == "TimePlayerAdapter") {
-			player = new TimePlayerAdapter(this);
+			player = new TimePlayerAdapter();
 
 		} else if (playerClassName != "SETTING_NODE") {
 			clog << "PlayerAdapterManager::initializePlayer is creating a ";
 			clog << "new time player for '" << objId << "'";
 			clog << " playerClassName is '" << playerClassName;
 			clog << "'" << endl;
-			player = new FormatterPlayerAdapter(this);
+			player = new FormatterPlayerAdapter();
 
 		} else {
 			clog << "PlayerAdapterManager::initializePlayer is returning a ";
@@ -503,12 +502,9 @@ namespace adapters {
 			delete args;
 			return NULL;
 		}
-#endif
 
-		if (player == NULL) {
-			delete args;
-			return NULL;
-		}
+		player->setAdapterManager(this);
+#endif
 
 		param = (*args)[1];
 		if (param == "epg") {

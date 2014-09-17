@@ -82,7 +82,7 @@ namespace adapters {
 namespace text {
 	class SubtitlePlayerAdapter : public FormatterPlayerAdapter {
 		public:
-			SubtitlePlayerAdapter(IPlayerAdapterManager* manager);
+			SubtitlePlayerAdapter();
 
 			virtual ~SubtitlePlayerAdapter(){};
 

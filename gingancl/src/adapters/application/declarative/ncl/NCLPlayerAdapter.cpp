@@ -65,9 +65,7 @@ namespace ncl {
 namespace adapters {
 namespace application {
 namespace ncl {
-	NCLPlayerAdapter::NCLPlayerAdapter(IPlayerAdapterManager* manager) :
-			ApplicationPlayerAdapter(manager)  {
-
+	NCLPlayerAdapter::NCLPlayerAdapter() : ApplicationPlayerAdapter()  {
 		typeSet.insert("NCLPlayerAdapter");
 	}
 
@@ -265,12 +263,6 @@ namespace ncl {
 
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-extern "C" IPlayerAdapter* createNCLAdapter(
-		IPlayerAdapterManager* manager, void* param) {
-
-	return new application::ncl::NCLPlayerAdapter(manager);
-}
-
-extern "C" void destroyNCLAdapter(IPlayerAdapter* player) {
-	delete player;
+extern "C" IPlayerAdapter* createNCLAdapter() {
+	return new application::ncl::NCLPlayerAdapter();
 }

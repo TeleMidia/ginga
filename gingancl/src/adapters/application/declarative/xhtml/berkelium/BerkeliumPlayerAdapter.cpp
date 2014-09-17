@@ -59,8 +59,8 @@ namespace ncl {
 namespace adapters {
 namespace application {
 namespace xhtml {
-	BerkeliumPlayerAdapter::BerkeliumPlayerAdapter(
-			IPlayerAdapterManager* manager) : FormatterPlayerAdapter(manager) {
+	BerkeliumPlayerAdapter::BerkeliumPlayerAdapter() :
+			FormatterPlayerAdapter() {
 
 	}
 
@@ -188,14 +188,8 @@ namespace xhtml {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createBklAdapter(IPlayerAdapterManager* manager, void* param) {
+		createBklAdapter() {
 
 	return new ::br::pucrio::telemidia::ginga::ncl::adapters::
-			application::xhtml::BerkeliumPlayerAdapter(manager);
-}
-
-extern "C" void destroyBklAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+			application::xhtml::BerkeliumPlayerAdapter();
 }

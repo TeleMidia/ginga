@@ -58,8 +58,15 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace image {
-	ImagePlayerAdapter::ImagePlayerAdapter(IPlayerAdapterManager* manager) :
-		FormatterPlayerAdapter(manager) {
+	ImagePlayerAdapter::ImagePlayerAdapter() : FormatterPlayerAdapter() {
+
+	}
+
+	void ImagePlayerAdapter::initializeInstance(std::string& data, short scenario) {
+
+	}
+
+	void ImagePlayerAdapter::testInstance(std::string& data, short scenario) {
 
 	}
 
@@ -96,15 +103,6 @@ namespace image {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createImgAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::image::
-			ImagePlayerAdapter(manager);
-}
-
-extern "C" void destroyImgAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createImgAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::image::ImagePlayerAdapter();
 }
