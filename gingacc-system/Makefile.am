@@ -37,6 +37,11 @@ endif
 
 ################################# Headers ##################################
 if INSTALL_HEADERS
+systemincludedir = $(gingaccsystemincludedir)
+systeminclude_HEADERS =\
+  include/system/IComponentInstance.h\
+  $(NULL)
+
 compatincludedir = $(gingaccsystemincludedir)/compat
 compatinclude_HEADERS =\
   include/system/compat/PracticalSocket.h\

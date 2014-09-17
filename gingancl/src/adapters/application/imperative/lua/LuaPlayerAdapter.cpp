@@ -59,8 +59,7 @@ namespace ncl {
 namespace adapters {
 namespace application {
 namespace lua {
-	LuaPlayerAdapter::LuaPlayerAdapter(IPlayerAdapterManager* manager) :
-		ApplicationPlayerAdapter(manager)  {
+	LuaPlayerAdapter::LuaPlayerAdapter() : ApplicationPlayerAdapter()  {
 
 	}
 
@@ -164,14 +163,6 @@ namespace lua {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createLuaAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua::LuaPlayerAdapter(manager);
-}
-
-extern "C" void destroyLuaAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createLuaAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua::LuaPlayerAdapter();
 }

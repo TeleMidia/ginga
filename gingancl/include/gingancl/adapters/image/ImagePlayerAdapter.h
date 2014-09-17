@@ -71,13 +71,17 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace image {
-   class ImagePlayerAdapter : public FormatterPlayerAdapter {
-	public:
-		ImagePlayerAdapter(IPlayerAdapterManager* manager);
-		virtual ~ImagePlayerAdapter(){};
+	class ImagePlayerAdapter : public FormatterPlayerAdapter {
+		public:
+			ImagePlayerAdapter();
+			virtual ~ImagePlayerAdapter(){};
 
-	protected:
-		void createPlayer();
+		private:
+			void initializeInstance(std::string& data, short scenario);
+			void testInstance(std::string& data, short scenario);
+
+		protected:
+			void createPlayer();
    };
 }
 }

@@ -57,8 +57,7 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace mirror {
-	MirrorPlayerAdapter::MirrorPlayerAdapter(IPlayerAdapterManager* manager) :
-			FormatterPlayerAdapter(manager) {
+	MirrorPlayerAdapter::MirrorPlayerAdapter() : FormatterPlayerAdapter() {
 		
 	}
 
@@ -115,14 +114,6 @@ namespace mirror {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createMirAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::mirror::MirrorPlayerAdapter(manager);
-}
-
-extern "C" void destroyMirAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createMirAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::mirror::MirrorPlayerAdapter();
 }

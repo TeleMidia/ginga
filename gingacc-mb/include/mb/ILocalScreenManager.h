@@ -344,7 +344,7 @@ namespace mb {
 					const GingaSurfaceID &surId, bool extHandler) = 0;
 
 			virtual void blitSurface (
-					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=NULL,
+					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=0,
 					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1) = 0;
 
 			virtual void flipSurface (const GingaSurfaceID &surId) = 0;

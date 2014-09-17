@@ -97,8 +97,10 @@ namespace ncl {
 		IDeviceLayout* deviceLayout;
 
 	public:
-		NclDocumentParser(IDeviceLayout* deviceLayout);
+		NclDocumentParser();
 		virtual ~NclDocumentParser();
+
+		void setDeviceLayout(IDeviceLayout* deviceLayout);
 
 	protected:
 		void setDependencies();

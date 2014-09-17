@@ -3,6 +3,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 ################################ Libraries #################################
 AM_CPPFLAGS =\
   $(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_NCL30_CONVERTER)\
   $(NULL)

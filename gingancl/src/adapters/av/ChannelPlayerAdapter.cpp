@@ -58,13 +58,10 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace av {
-  	ChannelPlayerAdapter::ChannelPlayerAdapter(
-  			IPlayerAdapterManager* manager, bool visual) :
-  				FormatterPlayerAdapter(manager) {
-
+  	ChannelPlayerAdapter::ChannelPlayerAdapter() : FormatterPlayerAdapter() {
 		//clog << "ChannelPlayerAdapter::ChannelPlayerAdapter" << endl;
 	    typeSet.insert("ChannelPlayerAdapter");
-	    hasVisual = visual;
+	    hasVisual = true;
 	}
 
 	void ChannelPlayerAdapter::createPlayer() {
@@ -230,19 +227,6 @@ namespace av {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createChaAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	bool hasVisual = false;
-	if (strcmp("true", (char*)param) == 0) {
-		hasVisual = true;
-	}
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::av::
-			ChannelPlayerAdapter(manager, hasVisual);
-}
-
-extern "C" void destroyChaAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createChaAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::av::ChannelPlayerAdapter();
 }

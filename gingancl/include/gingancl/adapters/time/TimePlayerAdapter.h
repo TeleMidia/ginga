@@ -76,7 +76,7 @@ namespace time {
 			string TimeSrcId;
 
 		public:
-			TimePlayerAdapter(IPlayerAdapterManager* manager);
+			TimePlayerAdapter();
 			virtual ~TimePlayerAdapter();
 
 		protected:

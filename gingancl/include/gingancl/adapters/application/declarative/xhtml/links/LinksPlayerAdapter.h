@@ -79,7 +79,7 @@ namespace application {
 namespace xhtml {
 	class LinksPlayerAdapter : public FormatterPlayerAdapter {
 		public:
-			LinksPlayerAdapter(IPlayerAdapterManager* manager);
+			LinksPlayerAdapter();
 			virtual ~LinksPlayerAdapter();
 
 		protected:

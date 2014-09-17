@@ -56,8 +56,8 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace application {
-	ApplicationPlayerAdapter::ApplicationPlayerAdapter(
-			IPlayerAdapterManager* manager) : FormatterPlayerAdapter(manager) {
+	ApplicationPlayerAdapter::ApplicationPlayerAdapter() :
+			FormatterPlayerAdapter() {
 
 		typeSet.insert("ApplicationPlayerAdapter");
 		Thread::mutexInit(&eventMutex, NULL);

@@ -89,7 +89,7 @@ namespace application {
 			FormatterEvent* currentEvent;
 
 		public:
-			ApplicationPlayerAdapter(IPlayerAdapterManager* manager);
+			ApplicationPlayerAdapter();
 			virtual ~ApplicationPlayerAdapter();
 
 			void setNclEditListener(IPlayerListener* listener);

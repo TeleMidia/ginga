@@ -85,13 +85,12 @@ namespace tv {
 			string lastValue;
 
 		protected:
-			ProgramAVPlayerAdapter(IPlayerAdapterManager* manager);
+			ProgramAVPlayerAdapter();
 			virtual ~ProgramAVPlayerAdapter(){};
 			static ProgramAVPlayerAdapter* _instance;
 
 		public:
-			static ProgramAVPlayerAdapter* getInstance(
-					IPlayerAdapterManager* manager);
+			static ProgramAVPlayerAdapter* getInstance();
 
 			virtual bool hasPrepared();
 			virtual bool start();

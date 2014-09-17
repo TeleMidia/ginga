@@ -57,8 +57,7 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace time {
-	TimePlayerAdapter::TimePlayerAdapter(IPlayerAdapterManager* manager) :
-			FormatterPlayerAdapter(manager) {
+	TimePlayerAdapter::TimePlayerAdapter() : FormatterPlayerAdapter() {
 		
 	}
 
@@ -89,14 +88,6 @@ namespace time {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createTimAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::time::TimePlayerAdapter(manager);
-}
-
-extern "C" void destroyTimAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createTimAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::time::TimePlayerAdapter();
 }

@@ -68,7 +68,7 @@ namespace adapters {
 namespace text {
    class PlainTxtPlayerAdapter : public FormatterPlayerAdapter {
 	public:
-		PlainTxtPlayerAdapter(IPlayerAdapterManager* manager);
+		PlainTxtPlayerAdapter();
 		virtual ~PlainTxtPlayerAdapter(){};
 
 	protected:

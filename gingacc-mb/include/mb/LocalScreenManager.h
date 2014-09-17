@@ -411,7 +411,7 @@ namespace mb {
 			void setExternalHandler(const GingaSurfaceID &surId, bool extHandler);
 
 			void blitSurface (
-					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=NULL,
+					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=0,
 					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
 
 			void flipSurface (const GingaSurfaceID &surId);

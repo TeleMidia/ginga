@@ -59,24 +59,16 @@ namespace ncl {
 namespace adapters {
 namespace av {
 namespace tv {
-	ProgramAVPlayerAdapter::ProgramAVPlayerAdapter(
-			IPlayerAdapterManager* manager) : FormatterPlayerAdapter(manager) {
-
+	ProgramAVPlayerAdapter::ProgramAVPlayerAdapter() : FormatterPlayerAdapter() {
 		typeSet.insert("ProgramAVPlayerAdapter");
 		lastValue = "";
 	}
 
 	ProgramAVPlayerAdapter* ProgramAVPlayerAdapter::_instance = 0;
 
-	ProgramAVPlayerAdapter* ProgramAVPlayerAdapter::getInstance(
-			IPlayerAdapterManager* manager) {
-
+	ProgramAVPlayerAdapter* ProgramAVPlayerAdapter::getInstance() {
 		if (ProgramAVPlayerAdapter::_instance == NULL) {
-			ProgramAVPlayerAdapter::_instance = new ProgramAVPlayerAdapter(
-					manager);
-
-		} else {
-			ProgramAVPlayerAdapter::_instance->manager = manager;
+			ProgramAVPlayerAdapter::_instance = new ProgramAVPlayerAdapter();
 		}
 
 		return ProgramAVPlayerAdapter::_instance;
@@ -189,15 +181,7 @@ namespace tv {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createPAVAdapter(IPlayerAdapterManager* manager, void* param) {
-
+extern "C" IPlayerAdapter* createPAVAdapter() {
 	return ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv::
-			ProgramAVPlayerAdapter::getInstance(manager);
-}
-
-extern "C" void destroyPAVAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+			ProgramAVPlayerAdapter::getInstance();
 }

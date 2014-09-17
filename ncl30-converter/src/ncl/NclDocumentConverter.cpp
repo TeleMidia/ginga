@@ -65,17 +65,11 @@ namespace pucrio {
 namespace telemidia {
 namespace converter {
 namespace ncl {
-	NclDocumentConverter::NclDocumentConverter(
-			IPrivateBaseContext* baseContext, IDeviceLayout* deviceLayout) :
-				NclDocumentParser(deviceLayout) {
-
-		this->privateBaseContext = baseContext;
+	NclDocumentConverter::NclDocumentConverter() : NclDocumentParser() {
+		this->parentObject       = NULL;
+		this->privateBaseContext = NULL;
 		this->ownManager         = false;
 		this->parseEntityVar     = false;
-
-		setDocumentPath(getUserCurrentPath() + getIUriD());
-		initialize();
-		setDependencies();
 	}
 
 	NclDocumentConverter::~NclDocumentConverter() {
@@ -133,6 +127,26 @@ namespace ncl {
 			delete metainformationParser;
 			metainformationParser = NULL;
 		}
+	}
+
+	void NclDocumentConverter::setConverterInfo(
+			IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout) {
+
+		setDeviceLayout(deviceLayout);
+		this->privateBaseContext = pbc;
+
+		setDocumentPath(getUserCurrentPath() + getIUriD());
+		initialize();
+		setDependencies();
+	}
+
+	void NclDocumentConverter::initializeInstance(
+			std::string& data, short scenario) {
+
+	}
+
+	void NclDocumentConverter::testInstance(std::string& data, short scenario) {
+
 	}
 
 	void NclDocumentConverter::initialize() {
@@ -366,15 +380,7 @@ namespace ncl {
 }
 
 extern "C" ::br::pucrio::telemidia::converter::IDocumentConverter*
-		createNclDocumentConverter(
-				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout) {
+		createNclDocumentConverter() {
 
-	return new ::br::pucrio::telemidia::converter::ncl::NclDocumentConverter(
-			pbc, deviceLayout);
-}
-
-extern "C" void destroyNclDocumentConverter(
-		::br::pucrio::telemidia::converter::IDocumentConverter* doc) {
-
-	delete doc;
+	return new ::br::pucrio::telemidia::converter::ncl::NclDocumentConverter();
 }

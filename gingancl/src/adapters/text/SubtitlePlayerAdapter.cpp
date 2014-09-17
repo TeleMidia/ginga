@@ -58,10 +58,7 @@ namespace ginga {
 namespace ncl {
 namespace adapters {
 namespace text {
-	SubtitlePlayerAdapter::SubtitlePlayerAdapter(
-			IPlayerAdapterManager* manager) :
-				FormatterPlayerAdapter(manager) {
-
+	SubtitlePlayerAdapter::SubtitlePlayerAdapter() : FormatterPlayerAdapter() {
 		typeSet.insert("SubtitlePlayerAdapter");
 	}
 
@@ -129,15 +126,6 @@ namespace text {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createSubAdapter(IPlayerAdapterManager* manager, void* param) {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::
-			SubtitlePlayerAdapter(manager);
-}
-
-extern "C" void destroySubAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
+extern "C" IPlayerAdapter* createSubAdapter() {
+	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::SubtitlePlayerAdapter();
 }

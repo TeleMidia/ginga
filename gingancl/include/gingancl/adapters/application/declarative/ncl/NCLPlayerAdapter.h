@@ -63,7 +63,7 @@ namespace application {
 namespace ncl {
   class NCLPlayerAdapter : public ApplicationPlayerAdapter {
 	public:
-		NCLPlayerAdapter(IPlayerAdapterManager* manager);
+		NCLPlayerAdapter();
 		virtual ~NCLPlayerAdapter(){};
 
 	protected:

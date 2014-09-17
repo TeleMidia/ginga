@@ -88,10 +88,15 @@ namespace ncl {
 		void* parentObject;
 
 	public:
-		NclDocumentConverter(
-				IPrivateBaseContext* baseContext, IDeviceLayout* deviceLayout);
-
+		NclDocumentConverter();
 		virtual ~NclDocumentConverter();
+
+		void setConverterInfo(
+				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout);
+
+	private:
+		virtual void initializeInstance(std::string& data, short scenario);
+		virtual void testInstance(std::string& data, short scenario);
 
 	protected:
 		void checkManager();
