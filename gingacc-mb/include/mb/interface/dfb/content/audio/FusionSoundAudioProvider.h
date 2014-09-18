@@ -107,9 +107,9 @@ namespace mb {
 			void setMediaTime(double pos);
 			void playOver(
 					ISurface* surface,
-					bool hasVisual=true, IProviderListener* listener=NULL);
+					IProviderListener* listener=NULL);
 
-			void resume(ISurface* surface, bool hasVisual=false);
+			void resume(ISurface* surface);
 			void pause();
 			void stop();
 			void setSoundLevel(float level);

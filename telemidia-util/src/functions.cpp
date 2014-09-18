@@ -273,7 +273,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 
 		if (lastPos != string::npos) {
 			curPos = str.find_first_of(delimiter, lastPos);
-			while (string::npos != curPos || string::npos != lastPos) {
+			while (string::npos != curPos) {
 				splited->push_back(str.substr(lastPos, curPos - lastPos));
 				lastPos = str.find_first_not_of(delimiter, curPos);
 				if (lastPos == string::npos) {

@@ -732,6 +732,10 @@ namespace compat {
 			dir.replace(pos, 1, iUriD);
 		}
 
+		if (dir.find("..") == std::string::npos) {
+			return dir;
+		}
+
 		params = split(dir, iUriD);
 		newDir = "";
 		it = params->begin();

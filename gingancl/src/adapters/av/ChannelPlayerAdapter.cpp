@@ -61,7 +61,6 @@ namespace av {
   	ChannelPlayerAdapter::ChannelPlayerAdapter() : FormatterPlayerAdapter() {
 		//clog << "ChannelPlayerAdapter::ChannelPlayerAdapter" << endl;
 	    typeSet.insert("ChannelPlayerAdapter");
-	    hasVisual = true;
 	}
 
 	void ChannelPlayerAdapter::createPlayer() {
@@ -100,13 +99,10 @@ namespace av {
 						childPlayer = ((PlayerCreator*)(
 								cm->getObject(playerCompName)))(
 										myScreen,
-										mrlPlayer.c_str(),
-										&hasVisual);
+										mrlPlayer.c_str());
 #else
 						childPlayer = new AVPlayer(
-								myScreen, mrlPlayer.c_str(), hasVisual);
-
-						hasVisual = ((AVPlayer*)childPlayer)->getHasVisual();
+								myScreen, mrlPlayer.c_str());
 #endif
 
 						if (childPlayer != NULL) {
@@ -132,15 +128,15 @@ namespace av {
 #if HAVE_MULTIPROCESS
 		playerCompName = "PlayerProcess";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "ChannelPlayer", &hasVisual);
+				myScreen, "ChannelPlayer");
 
-		player->setMrl(mrl, hasVisual);
+		player->setMrl(mrl);
 
 #elif HAVE_COMPONENTS
 		player = ((PlayerCreator*)(cm->getObject("ChannelPlayer")))(
-				myScreen, (char*)"", &hasVisual);
+				myScreen, (char*)"");
 #else
-		player = new ChannelPlayer(myScreen, &hasVisual);
+		player = new ChannelPlayer(myScreen);
 #endif
 
 		if (player != NULL) {
@@ -214,10 +210,6 @@ namespace av {
 		} else {
 			return FormatterPlayerAdapter::setPropertyValue(event, value);
 		}
-	}
-
-	bool ChannelPlayerAdapter::getHasVisual() {
-		return hasVisual;
 	}
 }
 }

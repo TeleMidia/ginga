@@ -58,12 +58,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ChannelPlayer::ChannelPlayer(
-			GingaScreenID screenId, bool hasVisual) : Player(screenId, "") {
-
+	ChannelPlayer::ChannelPlayer(GingaScreenID screenId) : Player(screenId, "") {
 		this->objectMap = NULL;
 		this->selectedPlayer = NULL;
-		this->hasVisual = hasVisual;
 		this->hasParent = false;
 	}
 
@@ -167,11 +164,8 @@ namespace player {
 			if (!hasParent && s != NULL && dm->getSurfaceParentWindow(s) != NULL) {
 				GingaWindowID parentWindow = dm->getSurfaceParentWindow(s);
 				setSurfacesParent(parentWindow);
-				selectedPlayer->play();
-
-			} else if (!hasVisual) {
-				selectedPlayer->play();
-			}
+			} 
+			selectedPlayer->play();
 		}
 
 		return Player::play();
@@ -236,10 +230,10 @@ namespace player {
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		createChannelPlayer(
-				GingaScreenID screenId, const char* mrl, bool hasVisual) {
+				GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::player::ChannelPlayer(
-			screenId, hasVisual));
+			screenId));
 }
 
 extern "C" void destroyChannelPlayer(::br::pucrio::telemidia::ginga::core::

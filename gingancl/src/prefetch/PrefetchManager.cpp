@@ -96,7 +96,7 @@ namespace prefetch {
 		kbytes              = 0;
 		filesDown           = 0;
 		filesSched          = 0;
-		prefetchRoot        = SystemCompat::getGingaBinPath() +
+		prefetchRoot        = SystemCompat::getTemporaryDir() +
 				iurid + "tmp" + iurid + "prefetch";
 
 		createDirectory(prefetchRoot);

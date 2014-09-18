@@ -445,7 +445,7 @@ namespace player {
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		createBerkeliumPlayer(
-				GingaScreenID screenId, const char* mrl, bool hasVisual) {
+				GingaScreenID screenId, const char* mrl) {
 
 	return new ::br::pucrio::telemidia::ginga::core::player::BerkeliumPlayer(
 			screenId, (string)mrl);

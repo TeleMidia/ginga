@@ -716,14 +716,8 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer* createPlayer(
-		GingaScreenID screenId, const char* mrl, bool hasVisual) {
+		GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::player::Player(
 			screenId, ""));
-}
-
-extern "C" void destroyPlayer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* player) {
-
-	delete player;
 }

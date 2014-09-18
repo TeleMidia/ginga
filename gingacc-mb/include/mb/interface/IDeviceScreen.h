@@ -130,7 +130,7 @@ namespace mb {
 			/* interfacing content */
 
 			virtual IContinuousMediaProvider* createContinuousMediaProvider(
-					const char* mrl, bool* hasVisual, bool isRemote)=0;
+					const char* mrl, bool isRemote)=0;
 
 			virtual void releaseContinuousMediaProvider(
 					IContinuousMediaProvider* provider)=0;

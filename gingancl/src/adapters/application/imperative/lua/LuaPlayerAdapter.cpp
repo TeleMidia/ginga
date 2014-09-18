@@ -64,20 +64,18 @@ namespace lua {
 	}
 
 	void LuaPlayerAdapter::createPlayer() {
-		bool hasVisual = true;
-
 		if (fileExists(mrl)) {
 #if HAVE_MULTIPROCESS
 			playerCompName = "PlayerProcess";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "LuaPlayer", &hasVisual);
+					myScreen, "LuaPlayer");
 
 			player->setMrl(mrl.c_str(), true);
 
 #elif HAVE_COMPONENTS
 			playerCompName = "LuaPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str(), &hasVisual);
+					myScreen, mrl.c_str());
 #else
 			player = new LuaPlayer(myScreen, mrl.c_str());
 #endif

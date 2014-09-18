@@ -550,7 +550,7 @@ namespace player {
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
 		createSrtPlayer(
-				GingaScreenID screenId, const char* mrl, bool hasVisual) {
+				GingaScreenID screenId, const char* mrl) {
 
 	return (new ::br::pucrio::telemidia::ginga::core::player::
 			SrtPlayer(screenId, (string)mrl));

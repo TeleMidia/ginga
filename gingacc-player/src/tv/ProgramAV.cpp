@@ -219,7 +219,6 @@ namespace player {
 	void ProgramAV::createPlayer(string mrl) {
 		string name;
 		int pid;
-		bool hasVisual = true;
 
 		name = getNameFromMrl(mrl);
 		if (isNumeric((void*)(name.c_str()))) {
@@ -240,11 +239,10 @@ namespace player {
 
 #if HAVE_COMPONENTS
 		currentPlayer = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-				myScreen, mrl.c_str(), &hasVisual);
+				myScreen, mrl.c_str());
 
 #else
-		currentPlayer = new AVPlayer(myScreen, mrl.c_str(), hasVisual);
-		hasVisual = ((AVPlayer*)currentPlayer)->getHasVisual();
+		currentPlayer = new AVPlayer(myScreen, mrl.c_str());
 #endif
 
 		if (fullScreenBounds != "") {

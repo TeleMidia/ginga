@@ -81,9 +81,6 @@ namespace ncl {
 namespace adapters {
 namespace av {
   	class ChannelPlayerAdapter : public FormatterPlayerAdapter {
-		private:
-			bool hasVisual;
-
 		public:
 			ChannelPlayerAdapter();
 			virtual ~ChannelPlayerAdapter(){};
@@ -91,9 +88,6 @@ namespace av {
 		protected:
 			void createPlayer();
 			bool setPropertyValue(AttributionEvent* event, string value);
-
-		public:
-			bool getHasVisual();
 	};
 }
 }

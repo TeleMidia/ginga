@@ -128,7 +128,7 @@ namespace mb {
 	}
 
 	void SDLAudioProvider::playOver(
-			GingaSurfaceID surface, bool hasVisual, IProviderListener* listener) {
+			GingaSurfaceID surface, IProviderListener* listener) {
 
 		clog << "SDLAudioProvider::playOver" << endl;
 		SDLDeviceScreen::addCMPToRendererList(this);
@@ -143,7 +143,7 @@ namespace mb {
 		}
 	}
 
-	void SDLAudioProvider::resume(GingaSurfaceID surface, bool hasVisual) {
+	void SDLAudioProvider::resume(GingaSurfaceID surface) {
 		if (decoder != NULL) {
 			decoder->resume();
 		}

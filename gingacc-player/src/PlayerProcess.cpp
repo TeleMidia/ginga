@@ -437,7 +437,7 @@ namespace player {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-createPlayerProcess(const char* objectName, bool hasVisual) {
+createPlayerProcess(const char* objectName) {
 	return new ::br::pucrio::telemidia::ginga::core::player::PlayerProcess(
 			objectName);
 }

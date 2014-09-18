@@ -125,7 +125,6 @@ namespace player {
 		protected:
 			bool running;
 			bool buffered;
-			bool hasVisual;
 			float soundLevel;
 
 		private:
@@ -138,7 +137,7 @@ namespace player {
 			GingaWindowID win;
 
 		public:
-			AVPlayer(GingaScreenID screenId, string mrl, bool hasVisual);
+			AVPlayer(GingaScreenID screenId, string mrl);
 
 #ifdef STx7100
 		private:
@@ -168,7 +167,6 @@ namespace player {
 		public:
 			static void initializeAudio(int numArgs, char* args[]);
 			static void releaseAudio();
-			bool getHasVisual();
 
 		private:
 			void setSoundLevel(float level);

@@ -70,10 +70,9 @@ namespace player {
   		map<string, IPlayer*>* objectMap;
 		IPlayer* selectedPlayer;
 		bool hasParent;
-		bool hasVisual;
 
 	public:
-		ChannelPlayer(GingaScreenID screenId, bool hasVisual);
+		ChannelPlayer(GingaScreenID screenId);
 		virtual ~ChannelPlayer();
 		IPlayer* getSelectedPlayer();
 		void setPlayerMap(map<string, IPlayer*>* objs);

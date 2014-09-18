@@ -104,9 +104,9 @@ namespace mb {
 
 			void playOver(
 					GingaSurfaceID surface,
-					bool hasVisual=true, IProviderListener* listener=NULL);
+					IProviderListener* listener=NULL);
 
-			void resume(GingaSurfaceID surface, bool hasVisual=true);
+			void resume(GingaSurfaceID surface);
 			void pause();
 			void stop();
 			void setSoundLevel(float level);
