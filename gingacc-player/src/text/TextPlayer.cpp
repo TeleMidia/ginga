@@ -263,7 +263,7 @@ namespace player {
 			textWidth = dm->getProviderStringWidth(
 					font, text.c_str(), strlen((const char*)(text.c_str())));
 
-			if (textWidth > surWidth) {
+			if (textWidth > surWidth && text.length() > 1) {
 				space = false;
 
 				widthAverage = (int)(textWidth / text.length());
