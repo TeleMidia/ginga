@@ -235,7 +235,7 @@ namespace player {
 		int oldTextWidth;
 		string splited;
 
-		uri = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
+		uri = SystemCompat::appendGingaFilesPrefix("font" + SystemCompat::getIUriD() + "vera.ttf");
 		if (font == NULL && fileExists(uri)) {
 			setFont(uri);
 		}

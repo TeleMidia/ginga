@@ -242,7 +242,6 @@ namespace mb {
 			GingaProviderID createContinuousMediaProvider(
 					GingaScreenID screenId,
 					const char* mrl,
-					bool* hasVisual,
 					bool isRemote);
 
 			void releaseContinuousMediaProvider(
@@ -445,7 +444,7 @@ namespace mb {
 			void stopProvider (const GingaProviderID &provId);
 
 			void resumeProvider (
-					const GingaProviderID &provId, GingaSurfaceID surface,bool hasVisual);
+					const GingaProviderID &provId, GingaSurfaceID surface);
 
 			void setProviderAVPid(const GingaProviderID &provId, int aPid, int vPid);
 
@@ -466,7 +465,7 @@ namespace mb {
 
 			void playProviderOver(
 								const GingaProviderID &provId, GingaSurfaceID surface,
-								bool hasVisual, IProviderListener* listener=NULL);
+								IProviderListener* listener=NULL);
 
 			int getProviderHeight(const GingaProviderID &provId);
 

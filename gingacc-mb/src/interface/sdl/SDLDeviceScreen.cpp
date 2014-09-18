@@ -952,19 +952,13 @@ namespace mb {
 
 	/* interfacing content */
 	IContinuousMediaProvider* SDLDeviceScreen::createContinuousMediaProvider(
-			const char* mrl, bool* hasVisual, bool isRemote) {
+			const char* mrl, bool isRemote) {
 
 		IContinuousMediaProvider* provider;
 		string strSym;
-		bool providerHasVisual;
 
 		lockSDL();
-		if (*hasVisual) {
-			strSym = "SDLVideoProvider";
-
-		} else {
-			strSym = aSystem;
-		}
+		strSym = "SDLVideoProvider";
 
 #if HAVE_COMPONENTS
 		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
@@ -981,29 +975,8 @@ namespace mb {
 
 		provider->setLoadSymbol(strSym);
 #else
-		if (*hasVisual) {
-			provider = new SDLVideoProvider(id, mrl);
-
-		} else {
-			provider = new SDLAudioProvider(id, mrl);
-		}
+		provider = new SDLVideoProvider(id, mrl);
 #endif
-
-		providerHasVisual = provider->getHasVisual();
-		if (*hasVisual != providerHasVisual) {
-			clog << "SDLDeviceScreen::createContinuousMediaProvider ";
-			clog << "mime has visual = '" << *hasVisual << "' and ";
-			clog << "content has visual = '" << providerHasVisual << "'! ";
-			clog << "Trying to recreate provider with new data";
-			clog << endl;
-
-			*hasVisual = providerHasVisual;
-			delete provider;
-
-			unlockSDL();
-			return createContinuousMediaProvider(mrl, hasVisual, isRemote);
-		}
-
 		unlockSDL();
 
 		Thread::mutexLock(&proMutex);

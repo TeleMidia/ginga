@@ -73,7 +73,6 @@ namespace mirror {
 
 		clog << "MirrorPlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
-		bool hasVisual = true;
 		string prefix = "ncl-mirror://";
 		FormatterPlayerAdapter* sourceAdapter = NULL;
 		ExecutionObject* execObjSrc;

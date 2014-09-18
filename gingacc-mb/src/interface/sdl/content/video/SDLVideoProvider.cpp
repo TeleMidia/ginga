@@ -142,14 +142,19 @@ namespace mb {
 	}
 
 	void SDLVideoProvider::playOver(
-			GingaSurfaceID surface, bool hasVisual, IProviderListener* listener) {
+			GingaSurfaceID surface, IProviderListener* listener) {
 
 		GingaWindowID parentId;
 		IWindow* parent;
 
 		SDLDeviceScreen::addCMPToRendererList(this);
-		parentId = LocalScreenManager::getInstance()->
-				getSurfaceParentWindow(surface);
+		parentId = LocalScreenManager::getInstance()->getSurfaceParentWindow(surface);
+
+		if (parentId == 0) {
+			SDLAudioProvider::playOver(surface, listener);
+			return;
+		}
+
 		parent = (IWindow*)(LocalScreenManager::getInstance()->
 				getIWindowFromId(myScreen, parentId));
 
@@ -168,8 +173,8 @@ namespace mb {
 		}
 	}
 
-	void SDLVideoProvider::resume(GingaSurfaceID surface, bool hasVisual) {
-		SDLAudioProvider::resume(surface, hasVisual);
+	void SDLVideoProvider::resume(GingaSurfaceID surface) {
+		SDLAudioProvider::resume(surface);
 	}
 
 	void SDLVideoProvider::pause() {

@@ -976,7 +976,6 @@ namespace mb {
 	GingaProviderID LocalScreenManager::createContinuousMediaProvider(
 			GingaScreenID screenId,
 			const char* mrl,
-			bool* hasVisual,
 			bool isRemote) {
 
 		IDeviceScreen* screen;
@@ -984,7 +983,7 @@ namespace mb {
 
 		if (getScreen(screenId, &screen)) {
 			provider = screen->createContinuousMediaProvider(
-					mrl, hasVisual, isRemote);
+					mrl, isRemote);
 
 			provider->setId(provIdRefCounter++);
 
@@ -1902,9 +1901,10 @@ void LocalScreenManager::moveWindowTo(
  }
 
  void LocalScreenManager::playProviderOver(
-		 const GingaProviderID &provId, GingaSurfaceID surface, bool hasVisual,
-		 IProviderListener* listener)
- {
+		 const GingaProviderID &provId, 
+		 GingaSurfaceID surface,
+		 IProviderListener* listener) {
+
 	 IContinuousMediaProvider *provider = NULL;
 	 IMediaProvider *iProvider = getIMediaProviderFromId(provId);
 
@@ -1913,7 +1913,7 @@ void LocalScreenManager::moveWindowTo(
 			  iProvider->getType() == IMediaProvider::VideoProvider))
 	 {
 		 provider = (IContinuousMediaProvider*) iProvider;
-		 provider->playOver(surface, hasVisual, listener);
+		 provider->playOver(surface, listener);
 	 }
  }
 
@@ -1961,8 +1961,9 @@ void LocalScreenManager::moveWindowTo(
  }
 
  void LocalScreenManager::resumeProvider (
-			const GingaProviderID &provId, GingaSurfaceID surface, bool hasVisual)
- {
+			const GingaProviderID &provId, 
+			GingaSurfaceID surface) {
+
 	 IContinuousMediaProvider *provider = NULL;
 	 IMediaProvider *iProvider = getIMediaProviderFromId(provId);
 
@@ -1971,7 +1972,7 @@ void LocalScreenManager::moveWindowTo(
 			  iProvider->getType() == IMediaProvider::VideoProvider))
 	 {
 		 provider = (IContinuousMediaProvider*) iProvider;
-		 provider->resume(surface, hasVisual);
+		 provider->resume(surface);
 	 }
  }
 

@@ -83,9 +83,9 @@ namespace mb {
 			virtual void setMediaTime(double pos)=0;
 			virtual void playOver(
 					GingaSurfaceID surface,
-					bool hasVisual=true, IProviderListener* listener=NULL)=0;
+					IProviderListener* listener=NULL)=0;
 
-			virtual void resume(GingaSurfaceID surface, bool hasVisual)=0;
+			virtual void resume(GingaSurfaceID surface)=0;
 			virtual void pause()=0;
 			virtual void stop()=0;
 			virtual void setSoundLevel(float level)=0;

@@ -109,8 +109,6 @@ namespace xhtml {
 	}
 
 	void BerkeliumPlayerAdapter::createPlayer() {
-		bool hasVisual = true;
-
 		if (mrl != "") {
 
 			if (mrl.substr(0, 1) == SystemCompat::getIUriD()) {
@@ -120,14 +118,14 @@ namespace xhtml {
 #if HAVE_MULTIPROCESS
 			playerCompName = "PlayerProcess";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "BerkeliumPlayer", &hasVisual);
+					myScreen, "BerkeliumPlayer");
 
 			player->setMrl(mrl, true);
 
 #elif HAVE_COMPONENTS
 			playerCompName = "BerkeliumPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str(), &hasVisual);
+					myScreen, mrl.c_str());
 #else
 			player = new BerkeliumPlayer(myScreen, mrl.c_str());
 #endif

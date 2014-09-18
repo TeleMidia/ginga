@@ -65,19 +65,18 @@ namespace text {
 	void SubtitlePlayerAdapter::createPlayer() {
 		string paramValue;
 		CascadingDescriptor* descriptor;
-		bool hasVisual = true;
 
 #if HAVE_MULTIPROCESS
 		playerCompName = "PlayerProcess";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "SrtPlayer", &hasVisual);
+				myScreen, "SrtPlayer");
 
 		player->setMrl(mrl, true);
 
 #elif HAVE_COMPONENTS
 		playerCompName = "SrtPlayer";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, mrl.c_str(), &hasVisual);
+				myScreen, mrl.c_str());
 #else
 		player = new SrtPlayer(myScreen, mrl.c_str());
 #endif

@@ -170,9 +170,9 @@ namespace mb {
 		public:
 			void playOver(
 					ISurface* surface,
-					bool hasVisual=true, IProviderListener* listener=NULL);
+					IProviderListener* listener=NULL);
 
-			void resume(ISurface* surface, bool hasVisual=true);
+			void resume(ISurface* surface);
 			void pause();
 			void stop();
 			void setSoundLevel(float level);

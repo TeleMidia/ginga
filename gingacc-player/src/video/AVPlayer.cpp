@@ -61,7 +61,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	AVPlayer::AVPlayer(GingaScreenID screenId, string mrl, bool hasVisual) :
+	AVPlayer::AVPlayer(GingaScreenID screenId, string mrl) :
 			Thread(), Player(screenId, mrl) {
 
 		string::size_type pos;
@@ -73,7 +73,6 @@ namespace player {
 
 		this->status      = STOP;
 		this->running     = false;
-		this->hasVisual   = hasVisual;
 		this->soundLevel  = 1.0;
 		this->win         = NULL;
 		this->pSym        = "";
@@ -164,8 +163,7 @@ namespace player {
 
 	void AVPlayer::createProvider(void) {
 		Thread::mutexLock(&pMutex);
-		clog << "AVPlayer::createProvider '" << mrl << "' has visual = '";
-		clog << hasVisual << "'" << endl;
+		clog << "AVPlayer::createProvider '" << mrl << "'" << endl;
 
 		if (mrl.substr(0, 7) == "rtsp://" ||
 				mrl.substr(0, 6) == "rtp://" ||
@@ -177,7 +175,7 @@ namespace player {
 
 		if (provider == NULL && (fileExists(mrl) || isRemote)) {
 			provider = dm->createContinuousMediaProvider(
-					myScreen, mrl.c_str(), &hasVisual, isRemote);
+					myScreen, mrl.c_str(), isRemote);
 
 			surface = createFrame();
 		}
@@ -208,10 +206,6 @@ namespace player {
 
 	void AVPlayer::releaseAudio() {
 
-	}
-
-	bool AVPlayer::getHasVisual() {
-		return this->hasVisual;
 	}
 
 	void AVPlayer::setSoundLevel(float level) {
@@ -357,7 +351,7 @@ namespace player {
 
 		Player::play();
 		clog << "AVPlayer::play() calling provider play over" << endl;
-		dm->playProviderOver(provider, surface, hasVisual, this);
+		dm->playProviderOver(provider, surface, this);
 
 		if (!running) {
 			running = true;
@@ -380,9 +374,6 @@ namespace player {
 		}
 		dm->pauseProvider(provider);
 		this->wakeUp();
-		/*if (hasVisual) {
-			Window::dynamicRenderCallBack((void*)(this->surface));
-		}*/
 
 		clog << "AVPlayer::pause("<< mrl << ") all done!" << endl;
 	}
@@ -413,7 +404,7 @@ namespace player {
 		setSoundLevel(soundLevel);
 
 		Player::play();
-		dm->resumeProvider(provider, surface, hasVisual);
+		dm->resumeProvider(provider, surface);
 
 		if (!running) {
 			running = true;
@@ -570,7 +561,7 @@ namespace player {
 		hasEvent = dm->checkProviderVideoResizeEvent(provider, surface);
 		setSoundLevel(this->soundLevel);
 		if (hasEvent) {
-			dm->playProviderOver(provider, surface, hasVisual);
+			dm->playProviderOver(provider, surface, this);
 		}
 
 		return hasEvent;
@@ -609,16 +600,15 @@ namespace player {
 		if (mainAV) {
 			running = true;
 
-			hasVisual = true;
 			this->provider = dm->createContinuousMediaProvider(
-					myScreen, mrl.c_str(), &hasVisual, true);
+					myScreen, mrl.c_str(), true);
 
 			this->surface = createFrame();
 
 			if (this->win != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
 				dm->setSurfaceParentWindow(myScreen, surface, win);
 			}
-			dm->playProviderOver(provider, surface, hasVisual);
+			dm->playProviderOver(provider, surface);
 			checkVideoResizeEvent();
 			buffered = true;
 
@@ -777,7 +767,7 @@ static pthread_mutex_t avpm;
 static bool avpmInit = false;
 
 extern "C" IPlayer* createAVPlayer(
-		GingaScreenID screenId, const char* mrl, bool* hasVisual) {
+		GingaScreenID screenId, const char* mrl) {
 
 	AVPlayer* player;
 	if (!avpmInit) {
@@ -786,8 +776,7 @@ extern "C" IPlayer* createAVPlayer(
 	}
 
 	Thread::mutexLock(&avpm);
-	player = new AVPlayer(screenId, mrl, *hasVisual);
-	*hasVisual = player->getHasVisual();
+	player = new AVPlayer(screenId, mrl);
 	Thread::mutexUnlock(&avpm);
 
 	return player;

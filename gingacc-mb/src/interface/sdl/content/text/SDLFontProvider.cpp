@@ -253,13 +253,22 @@ namespace mb {
 	void SDLFontProvider::playOver(
 			GingaSurfaceID surface, const char* text, int x, int y, short align) {
 
+		size_t textLength;
 		Thread::mutexLock(&ntsMutex);
 
 		if (font == NULL) {
 			initializeFont();
 		}
 
-		plainText.assign(text, strlen(text));
+		textLength = strlen(text);
+		if (textLength <= 0) {
+			Thread::mutexUnlock(&ntsMutex);
+			return;
+		}
+
+		plainText.assign(text, textLength);
+		assert(plainText != "");
+
 		coordX      = x;
 		coordY      = y;
 		this->align = align;
@@ -282,12 +291,6 @@ namespace mb {
 		Thread::mutexLock(&ntsMutex);
 		this->content = LocalScreenManager::getInstance()->
 				getISurfaceFromId(surface);
-		if (plainText == "") {
-			clog << "SDLFontProvider::playOver Warning! Empty text.";
-			clog << endl;
-			Thread::mutexUnlock(&ntsMutex);
-			return;
-		}
 
 		if (font == NULL) {
 			if (!createFont()) {

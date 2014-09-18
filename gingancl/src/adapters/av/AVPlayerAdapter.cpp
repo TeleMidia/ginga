@@ -61,7 +61,6 @@ namespace ncl {
 namespace adapters {
 namespace av {
 	AVPlayerAdapter::AVPlayerAdapter() : FormatterPlayerAdapter() {
-		this->hasVisual = true;
 		typeSet.insert("AVPlayerAdapter");
 	}
 
@@ -69,31 +68,28 @@ namespace av {
 		CascadingDescriptor* descriptor;
 		string soundLevel;
 
-		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'";
-		clog << " trying has visual = '" << hasVisual << "'" << endl;
+		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
 
 		if (mrl != "") {
 #if HAVE_MULTIPROCESS
 			playerCompName = "PlayerProcess";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "AVPlayer", &hasVisual);
+					myScreen, "AVPlayer");
 
-			player->setMrl(mrl, hasVisual);
+			player->setMrl(mrl);
 
 #elif HAVE_COMPONENTS
 			playerCompName = "AVPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str(), &hasVisual);
+					myScreen, mrl.c_str());
 #else
-			player = new AVPlayer(myScreen, mrl.c_str(), hasVisual);
-			hasVisual = ((AVPlayer*)player)->getHasVisual();
+			player = new AVPlayer(myScreen, mrl.c_str());
 #endif
 		}
 
 		FormatterPlayerAdapter::createPlayer();
 
-		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'";
-		clog << " has visual = '" << hasVisual << "' all done" << endl;
+		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
 	}
 
 	bool AVPlayerAdapter::setPropertyValue(
@@ -141,10 +137,6 @@ namespace av {
 		}
 #endif /*GEODE*/
 #endif /*STx7100*/
-	}
-
-	bool AVPlayerAdapter::getHasVisual() {
-		return this->hasVisual;
 	}
 }
 }

@@ -65,20 +65,19 @@ namespace text {
 	void PlainTxtPlayerAdapter::createPlayer() {
 		string paramValue;
 		CascadingDescriptor* descriptor;
-		bool hasVisual = true;
 
 		if (fileExists(mrl)) {
 #if HAVE_MULTIPROCESS
 			playerCompName = "PlayerProcess";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "PlainTxtPlayer", &hasVisual);
+					myScreen, "PlainTxtPlayer");
 
 			player->setMrl(mrl, true);
 
 #elif HAVE_COMPONENTS
 			playerCompName = "PlainTxtPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str(), &hasVisual);
+					myScreen, mrl.c_str());
 #else
 			player = new PlainTxtPlayer(myScreen, mrl.c_str());
 #endif
