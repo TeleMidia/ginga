@@ -69,8 +69,8 @@ namespace ginga {
 namespace core {
 namespace mb {
 
-#if !defined(_WIN32) && defined(HAVE_JPEG)
-	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#if !defined(_WIN32) && (HAVE_JPEG == 1)
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	// 24 bit RGB masks on big-endian
 	#define RMASK24 0xFF0000
 	#define GMASK24 0x00FF00
@@ -89,7 +89,7 @@ namespace mb {
 	#define GSHIFT24 16
 	#define BSHIFT24 8
 	#define ASHIFT24 0
-	#else
+#else
 	// 24 bit RGB masks on little-endian
 	#define RMASK24 0x0000FF
 	#define GMASK24 0x00FF00
@@ -108,7 +108,7 @@ namespace mb {
 	#define GSHIFT32 8
 	#define BSHIFT32 16
 	#define ASHIFT32 24
-	#endif
+#endif
 
 	#define OUTPUT_BUFFER_SIZE 4096
 	typedef struct {
@@ -254,8 +254,7 @@ namespace mb {
 
 	int SDLConvert::convertSurfaceToJPEG(const char *filename, SDL_Surface *surf,
 			int quality) {
-	#if _WIN32
-
+#if _WIN32
 		char *bmpfile;
 		bmpfile = new char[strlen(filename) + 5];
 		strcpy(bmpfile, filename);
@@ -266,7 +265,7 @@ namespace mb {
 		myImage.Save(filename);
 		delete bmpfile;
 		return 0;
-	#elif HAVE_JPEG
+#elif HAVE_JPEG
 		SDL_RWops *out;
 		if (!(out = SDL_RWFromFile(filename, "wb"))) {
 			return (-1);
@@ -274,7 +273,7 @@ namespace mb {
 		int result = IMG_SaveJPG_RW(out, surf, quality);
 		SDL_RWclose(out);
 		return result;
-	#endif
+#endif
 		return -1;
 	}
 }
