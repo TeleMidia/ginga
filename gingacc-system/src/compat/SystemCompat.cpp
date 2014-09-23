@@ -227,6 +227,13 @@ namespace compat {
 		fUriD = "/";
 
 		return;
+#elif defined(__ANDROID__)
+			filesPref = "/sdcard/ginga4android/";
+			installPref = "/sdcard/ginga4android/";
+			pathD = ";";
+			iUriD = "/";
+			fUriD = "\\";
+			return;
 #else
 		string gingaini = GINGA_INI_PATH;
 
@@ -1280,6 +1287,8 @@ namespace compat {
 			return gingaCurrentPath + "Temp\\";
 		}
 		return lpTempPathBuffer;
+#elif defined(__ANDROID__)
+		return "/sdcard/ginga4android/";
 #else
 		return "/tmp/";
 #endif
