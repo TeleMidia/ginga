@@ -640,7 +640,7 @@ namespace compat {
 			return 0;
 		}
 
-		chdir(filedir);
+//		chdir(filedir);
 		//save our current dir so we can return to it
 		getcwd(cur_dir, 2000);
 
@@ -650,6 +650,7 @@ namespace compat {
 
 		//change to the dir we want to extract to
 		chdir(filedir);
+		clog << ":: extract to dir: " << filedir << endl;
 
 		for(k = 0; (inf = zip_fopen_index(zipf, k, 0)); k++) {
 
@@ -678,11 +679,7 @@ namespace compat {
 				//printf(":: creating dir: %s\n",filename);
 				clog << ":: creating dir: " << filename << endl;
 
-#ifdef WIN32
-				_mkdir(filename);
-#else
-				mkdir(filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-#endif
+				SystemCompat::makeDir(filename, 0755);
 
 			} else {
 				//printf(":: inflating %s",filename);//cout

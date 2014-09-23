@@ -536,7 +536,10 @@ namespace multidevice {
 			string payload) {
 
 		bool handled   = false;
-		string appPath = tmp_dir;
+
+		string appPath = tmp_dir+spayload_desc;
+		appPath = appPath.substr(0, appPath.rfind(".")) + SystemCompat::getIUriD();
+
 		int command_id = getCommandCode(&scommand);
 		string zip_dump;
 
@@ -562,13 +565,14 @@ namespace multidevice {
 			break;
 
 			case FormatterActiveDevice::START_DOCUMENT: {
-				clog << "FormatterActiveDevice::START:";
-				clog << spayload_desc << endl;
+				clog << "FormatterActiveDevice::START:" << spayload_desc << endl;
 
 				if (!payload.empty()) {
+					if(!isDirectory(appPath.c_str()))
+					     SystemCompat::makeDir(appPath.c_str(), 0755);
 					zip_dump = tmp_dir + "tmpzip.zip";
 
-					clog << "ADD node path = '" << spayload_desc << "'" << endl;
+					clog << "ADD node path = '" << appPath << spayload_desc << "'" << endl;
                     clog << "PAYLOAD SIZE = " << strlen(payload.c_str()) << endl;
 
 					writeFileFromBase64(payload, (char*)zip_dump.c_str());
@@ -576,9 +580,8 @@ namespace multidevice {
 					//remove((char*)zip_dump.c_str());
 				}
 
-				string full_path = string("");
-				full_path.append(appPath);
-				full_path.append(spayload_desc);
+				string full_path = appPath+spayload_desc;
+
 				if (currentDocUri.compare(full_path) != 0) {
 					if (openDocument(full_path)) {
 
@@ -786,7 +789,7 @@ namespace multidevice {
 				if (fileExists(img_reset)) {
 					s = dm->createRenderedSurfaceFromImageFile(
 							myScreen, img_reset.c_str());
-				
+
 					int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
 					dm->setWindowCaps (myScreen, serialized, cap);
 					dm->drawWindow (myScreen, serialized);
@@ -849,7 +852,7 @@ namespace multidevice {
 
                 clog << "FormatterActiveDevice::Payload size=";
 				clog << payload_size << endl;
-                
+
 				//check all sizes
 				//There is another line for the payload
 				if (payload_size > 0) {
