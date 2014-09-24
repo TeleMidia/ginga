@@ -73,17 +73,18 @@ extern "C" {
 using namespace std;
 
 /***********************************************************
- * Testing image provider.                                 *
- * You can set an image input using --src /x/y.png         *
+ * Testing text provider.                                  *
+ * You can set a font using --src /x/y.ttf                 *
+ * You can also set the changing the value of strText var  *
  * In order to set the screen size, enter the following as *
- * parameter: ./simpleTestImage --vmode 800x600 --src ...  *
+ * parameter: ./simpleTestText --vmode 800x600 --src ...   *
  * To exit, read instructions in your terminal             *
  ***********************************************************/
 
 int main(int argc, char** argv) {
 	GingaScreenID screen;
 	ILocalScreenManager* dm;
-	string imageUri = "";
+	string fontUri = "";
 
 	//SETTING LOG INFO TO A FILE
 	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
@@ -111,27 +112,23 @@ int main(int argc, char** argv) {
 			}
 
 		} else if ((strcmp(argv[i], "--src") == 0) && ((i + 1) < argc)) {
-			imageUri.assign(argv[i + 1]);
+			fontUri.assign(argv[i + 1]);
 		}
-	}
-
-	if (imageUri == "") {
-		cout << "Please specify the image URI with --src parameter" << endl;
-		exit(0);
 	}
 
 	/* CREATING MAIN SCREEN ACCORDING TO MAIN PARAMETERS */
 	screen = dm->createScreen(argc, argv);
 	cout << "gingacc-mb test has created screen '" << screen;
-	cout << "'. creating image provider for '" << imageUri << "'";
+	cout << "'. creating text provider using '" << fontUri << "'";
 	cout << endl;
 
-	/***** IMAGE *****/
+	/***** TEXT *****/
 	GingaWindowID win;
 	GingaSurfaceID s;
-	GingaProviderID img = NULL;
+	GingaProviderID txt = NULL;
 	int x, y, w, h, z;
 	bool notFalse = true;
+	string strText = "TEST";
 
 	x = 25;
 	y = 25;
@@ -148,7 +145,7 @@ int main(int argc, char** argv) {
 	dm->drawWindow(screen, win);
 
 	s   = dm->createSurface(screen);
-	img = dm->createImageProvider(screen, imageUri.c_str());
+	txt = dm->createFontProvider(screen, fontUri.c_str(), 12);
 
 	dm->setSurfaceParentWindow(screen, s, win);
 	dm->setWindowBgColor(screen, win, 255, 0, 0, 0);
@@ -156,21 +153,21 @@ int main(int argc, char** argv) {
 	dm->raiseWindowToTop(screen, win);
 	dm->validateWindow(screen, win);
 
-	cout << "gingacc-mb test image for screen '" << screen << "' has '";
-	cout << dm->getProviderMediaTime(img) << "' as its total media time." << endl;
+	cout << "gingacc-mb test text for screen '" << screen << "' has '";
+	cout << dm->getProviderMediaTime(txt) << "' as its total media time." << endl;
 
-	dm->setProviderSoundLevel(img, 0.1);
-	dm->playProviderOver(img, s);
+	dm->setSurfaceColor(s, 0, 0, 0, 0);
+	dm->playProviderOver(txt, s, strText.c_str(), 20, 20, 0);
 
-	cout << "gingacc-mb image is playing. if you see a red square, we have ";
-	cout << "a problem with image rendering. ";
+	cout << "gingacc-mb text is playing. if you see only a red square, we ";
+	cout << "have a problem with text rendering. ";
 	cout << " check if at least the audio is ok.";
 	cout << "press enter to stop and release";
 	cout << endl;
 	getchar();
 
-	if (img != 0) {
-		dm->stopProvider(img);
+	if (txt != 0) {
+		dm->stopProvider(txt);
 	}
 
 	dm->clearWidgetPools(screen);

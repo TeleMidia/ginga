@@ -102,6 +102,16 @@ public:
 	}
 };
 
+/***********************************************************
+ * Testing input events.                                   *
+ * You can see which event was created when you hit a key  *
+ * You must set your focus on the blank screen and see the *
+ * output in your terminal                                 *
+ * In order to set the screen size, enter the following as *
+ * parameter: ./simpleTestInput --vmode 800x600            *
+ * To exit, hit enter in your terminal                     *
+ ***********************************************************/
+
 int main(int argc, char** argv) {
 	GingaScreenID screen;
 	IInputManager* im;
@@ -125,7 +135,7 @@ int main(int argc, char** argv) {
 	screen = dm->createScreen(argc, argv);
 	im     = dm->getInputManager(screen);
 	l      = new TestInputEventListener(screen);
-	im->addInputEventListener(l, NULL);
+	im->addInputEventListener(l, NULL); //NULL == I want to receive all events
 
 	cout << "gingacc-mb testing input events. ";
 	cout << "press enter to automatic release";

@@ -74,6 +74,14 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
+/***********************************************************
+ * Testing video provider.                                 *
+ * You can set a video input using --src /x/y.mpg          *
+ * In order to set the screen size, enter the following as *
+ * parameter: ./simpleTestVideo --vmode 800x600 --src ...  *
+ * To exit, read instructions in your terminal             *
+ ***********************************************************/
+
 int main(int argc, char** argv) {
 	GingaScreenID screen;
 	ILocalScreenManager* dm;
@@ -117,13 +125,13 @@ int main(int argc, char** argv) {
 	/* CREATING MAIN SCREEN ACCORDING TO MAIN PARAMETERS */
 	screen = dm->createScreen(argc, argv);
 	cout << "gingacc-mb test has created screen '" << screen;
-	cout << "'. creating video provider";
+	cout << "'. creating video provider for '" << videoUri << "'";
 	cout << endl;
 
 	/***** VIDEO *****/
-	IContinuousMediaProvider* vid = NULL;
-	IWindow* win;
-	ISurface* s;
+	GingaWindowID win;
+	GingaSurfaceID s;
+	GingaProviderID vid = NULL;
 	int x, y, w, h, z;
 	bool notFalse = true;
 
@@ -134,31 +142,30 @@ int main(int argc, char** argv) {
 	z = 1;
 
 	win = dm->createWindow(screen, x, y, w, h, z);
-	if (win == NULL) {
+	if (win == 0) {
 		cout << "gingacc-mb test can't create window. exiting program...";
 		cout << endl;
 		exit(1);
 	}
-	win->draw();
+	dm->drawWindow(screen, win);
 
 	s   = dm->createSurface(screen);
 	vid = dm->createContinuousMediaProvider(
 			screen,
 			videoUri.c_str(),
-			&notFalse,
 			false);
 
-	s->setParentWindow(win);
-	win->setBgColor(255, 0, 0, 0);
-	win->show();
-	win->raiseToTop();
-	win->validate();
+	dm->setSurfaceParentWindow(screen, s, win);
+	dm->setWindowBgColor(screen, win, 255, 0, 0, 0);
+	dm->showWindow(screen, win);
+	dm->raiseWindowToTop(screen, win);
+	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb test video for screen '" << screen << "' has '";
-	cout << vid->getTotalMediaTime() << "' as its total media time." << endl;
+	cout << dm->getProviderMediaTime(vid) << "' as its total media time." << endl;
 
-	vid->setSoundLevel(0.1);
-	vid->playOver(s, true, NULL);
+	dm->setProviderSoundLevel(vid, 0.1);
+	dm->playProviderOver(vid, s);
 
 	cout << "gingacc-mb video is playing. if you see a red square, we have ";
 	cout << "a problem with video rendering. ";
@@ -167,8 +174,8 @@ int main(int argc, char** argv) {
 	cout << endl;
 	getchar();
 
-	if (vid != NULL) {
-		vid->stop();
+	if (vid != 0) {
+		dm->stopProvider(vid);
 	}
 
 	dm->clearWidgetPools(screen);

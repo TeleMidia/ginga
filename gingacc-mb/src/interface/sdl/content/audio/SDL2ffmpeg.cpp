@@ -962,6 +962,8 @@ namespace mb {
 	}
 
 	double SDL2ffmpeg::get_clock(Clock* c) {
+		assert(c->queue_serial != NULL);
+
 		if (*c->queue_serial != c->serial) {
 			return NAN;
 		}
