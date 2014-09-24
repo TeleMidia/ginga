@@ -22,7 +22,9 @@ LDADD =\
   $(NULL)
 
 noinst_PROGRAMS =\
+  simpleTestImage\
   simpleTestInput\
+  simpleTestText\
   simpleTestVideo\
   testAudio\
   testFont\
@@ -32,7 +34,9 @@ noinst_PROGRAMS =\
   testVideo\
   $(NULL)
 
+simpleTestImage_SOURCES = simpleTestImage.cpp
 simpleTestInput_SOURCES = simpleTestInput.cpp
+simpleTestText_SOURCES = simpleTestText.cpp
 simpleTestVideo_SOURCES = simpleTestVideo.cpp
 testAudio_SOURCES = testAudio.cpp
 testFont_SOURCES = testFont.cpp

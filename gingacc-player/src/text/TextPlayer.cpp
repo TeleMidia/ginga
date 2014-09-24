@@ -252,7 +252,7 @@ namespace player {
 			fontColor = new Color("black");
 		}
 
-		dm->setSurfaceBgColor(surface,
+		dm->setSurfaceColor(surface,
 		                      fontColor->getR(),
 		                      fontColor->getG(),
 		                      fontColor->getB(),
