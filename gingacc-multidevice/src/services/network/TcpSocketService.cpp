@@ -119,28 +119,28 @@ void TcpSocketService::addConnection(unsigned int deviceId,
 		clog << "TcpSocketService::warning - connection already registered";
 		clog << endl;
 
-		if (!isLocalConnection) {
-			//TODO: maintain index when connection is created again for the same device
-			//TODO: defining a getIndex method for the TCPClientConn class
-			//configurable: stick (based on address+port), slot (like videogames)
-			//and continuous (index in not regained, keeps increasing)
-
-			connection_counter++;
-			clog << "TcpSocketService::warning - not a local connection,";
-			clog << " removing and adding it again (";
-			clog << deviceId << ")" << endl;
-
-			this->removeConnection(deviceId);
-			tcpcc = new TCPClientConnection(
-							deviceId,
-							connection_counter,
-							addr,
-							portStr,
-							(IRemoteDeviceListener*) res);
-
-			(*connections)[deviceId] = tcpcc;
-			tcpcc->startThread();
-		}
+//		if (!isLocalConnection) {
+//			//TODO: maintain index when connection is created again for the same device
+//			//TODO: defining a getIndex method for the TCPClientConn class
+//			//configurable: stick (based on address+port), slot (like videogames)
+//			//and continuous (index in not regained, keeps increasing)
+//
+//			connection_counter++;
+//			clog << "TcpSocketService::warning - not a local connection,";
+//			clog << " removing and adding it again (";
+//			clog << deviceId << ")" << endl;
+//
+//			this->removeConnection(deviceId);
+//			tcpcc = new TCPClientConnection(
+//							deviceId,
+//							connection_counter,
+//							addr,
+//							portStr,
+//							(IRemoteDeviceListener*) res);
+//
+//			(*connections)[deviceId] = tcpcc;
+//			tcpcc->startThread();
+//		}
 		//newDevId = (--connections->end())->first + 1;
 		//(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
 	}

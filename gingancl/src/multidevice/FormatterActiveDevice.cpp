@@ -103,21 +103,13 @@ namespace multidevice {
 			int x, int y, int w, int h, bool useMulticast, int srvPort) : FormatterMultiDevice(
 					screenId, deviceLayout, x, y, w, h, useMulticast, srvPort) {
 
-		char* portStr;
-
 		this->deviceServicePort = srvPort;
-		asprintf(&portStr,"%d",srvPort);
 
-		tmp_dir   = SystemCompat::getTemporaryDir() +
-											string(portStr) +
-											SystemCompat::getIUriD();
+
 		img_dir   = SystemCompat::appendGingaFilesPrefix("md");
 		img_dir.append(SystemCompat::getIUriD());
 		img_dev   = img_dir + "active-device.png";
 		img_reset = img_dir + "active-device-reset.png";
-		tmp_dir   = SystemCompat::getTemporaryDir();
-		SystemCompat::makeDir(tmp_dir.c_str(),0755);
-
 		clog << "FormatterActiveDevice::constructor" << endl;
 		set<int>* evs;
 
@@ -160,14 +152,32 @@ namespace multidevice {
 			clog << img_dev << endl;
 		}
 
+		TCPServerSocket * servSock;
+		bool tryServerSocket=true;
+		deviceServicePort = 4444;
+		while(tryServerSocket){
+			try{
+				clog << "FormatterActiveDevice:: trying use port " << deviceServicePort << "..." << endl;
+						servSock = new TCPServerSocket(deviceServicePort);
+				tryServerSocket=false;
+			} catch (SocketException &e) {
+				deviceServicePort++;
+				clog << "FormatterActiveDevice::deviceServicePort"<< deviceServicePort<< "already in use. Exception error: " << e.what() << endl;
+			}
+		}
+		char* srvPortStr;
+		asprintf(&srvPortStr,"%d",deviceServicePort);
+		tmp_dir   = SystemCompat::getTemporaryDir() + srvPortStr + SystemCompat::getIUriD();
+		SystemCompat::makeDir(tmp_dir.c_str(),0755);
+
 		if (rdm == NULL) {
 #if HAVE_COMPONENTS
 			rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-					"RemoteDeviceManager")))(deviceClass, useMulticast, srvPort);
+					"RemoteDeviceManager")))(deviceClass, useMulticast, deviceServicePort);
 #else
 			rdm = RemoteDeviceManager::getInstance();
 			((RemoteDeviceManager*)rdm)->setDeviceDomain(
-					new ActiveDeviceDomain(useMulticast, srvPort));
+					new ActiveDeviceDomain(useMulticast, deviceServicePort));
 
 #endif
 		}
@@ -188,16 +198,13 @@ namespace multidevice {
 		);
 
 		listening = true;
-
 		try {
 			//TCPServerSocket servSock(FormatterActiveDevice::COMMAND_SERVER_PORT);
-			TCPServerSocket servSock(deviceServicePort);
-
 			while (listening) {
 				clog << "FormatterActiveDevice::FormatterActiveDevice ";
-				clog << "waiting servSock.accept() on port " << deviceServicePort << endl;
+				clog << "waiting servSock.accept() on port " << srvPortStr << endl;
 
-				tcpSocket = servSock.accept();
+				tcpSocket = servSock->accept();
 
 				clog << "FormatterActiveDevice::FormatterActiveDevice ";
 				clog << "servSock accepted" << endl;
@@ -208,7 +215,7 @@ namespace multidevice {
 				}
 				handleTCPClient(tcpSocket);
 			}
-			servSock.cleanUp();
+			servSock->cleanUp();
 
 		} catch (SocketException &e) {
 			cerr << e.what() << endl;

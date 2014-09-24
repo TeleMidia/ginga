@@ -679,7 +679,11 @@ namespace compat {
 				//printf(":: creating dir: %s\n",filename);
 				clog << ":: creating dir: " << filename << endl;
 
-				SystemCompat::makeDir(filename, 0755);
+#ifdef WIN32
+				_mkdir(filename);
+#else
+				mkdir(filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+#endif
 
 			} else {
 				//printf(":: inflating %s",filename);//cout
