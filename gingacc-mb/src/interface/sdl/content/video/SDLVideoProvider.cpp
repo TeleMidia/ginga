@@ -141,8 +141,7 @@ namespace mb {
 		SDLAudioProvider::setMediaTime(pos);
 	}
 
-	void SDLVideoProvider::playOver(
-			GingaSurfaceID surface, IProviderListener* listener) {
+	void SDLVideoProvider::playOver(GingaSurfaceID surface) {
 
 		GingaWindowID parentId;
 		IWindow* parent;
@@ -151,7 +150,7 @@ namespace mb {
 		parentId = LocalScreenManager::getInstance()->getSurfaceParentWindow(surface);
 
 		if (parentId == 0) {
-			SDLAudioProvider::playOver(surface, listener);
+			SDLAudioProvider::playOver(surface);
 			return;
 		}
 

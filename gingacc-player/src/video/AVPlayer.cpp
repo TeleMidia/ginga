@@ -351,7 +351,7 @@ namespace player {
 
 		Player::play();
 		clog << "AVPlayer::play() calling provider play over" << endl;
-		dm->playProviderOver(provider, surface, this);
+		dm->playProviderOver(provider, surface);
 
 		if (!running) {
 			running = true;
@@ -561,7 +561,7 @@ namespace player {
 		hasEvent = dm->checkProviderVideoResizeEvent(provider, surface);
 		setSoundLevel(this->soundLevel);
 		if (hasEvent) {
-			dm->playProviderOver(provider, surface, this);
+			dm->playProviderOver(provider, surface);
 		}
 
 		return hasEvent;

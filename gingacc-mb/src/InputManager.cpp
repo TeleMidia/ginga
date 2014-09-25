@@ -673,83 +673,7 @@ namespace mb {
 
 			inputEvent = eventBuffer->getNextEvent();
 			while (inputEvent != NULL) {
-				if (inputEvent->isMotionType()) {
-					mouseX = currentXAxis;
-					mouseY = currentYAxis;
-
-					inputEvent->getAxisValue(
-							&currentXAxis, &currentYAxis, &currentZAxis);
-
-					if (currentXAxis == 0) {
-						currentXAxis = mouseX;
-
-					} else if (currentXAxis > maxX && maxX != 0) {
-						currentXAxis = maxX;
-					}
-
-					if (currentYAxis == 0) {
-						currentYAxis = mouseY;
-
-					} else if (currentYAxis > maxY && maxY != 0) {
-						currentYAxis = maxY;
-					}
-
-					delete inputEvent;
-					if (eventBuffer != NULL) {
-						inputEvent = eventBuffer->getNextEvent();
-					}
-
-					notifyMotionListeners(
-							currentXAxis, currentYAxis, currentZAxis);
-
-					continue;
-				}
-
-				if (!inputEvent->isApplicationType() &&
-						inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
-
-					delete inputEvent;
-					inputEvent = eventBuffer->getNextEvent();
-					continue;
-				}
-
-				if (inputEvent->isButtonPressType()) {
-					inputEvent->setAxisValue(currentXAxis, currentYAxis, 0);
-
-					inputEvent->getAxisValue(
-							&currentXAxis,
-							&currentYAxis,
-							&currentZAxis);
-
-					dispatchEvent(inputEvent);
-					delete inputEvent;
-					inputEvent = eventBuffer->getNextEvent();
-					continue;
-				}
-
-				if (inputEvent->isPressedType() && ((getCurrentTimeMillis() -
-						timeStamp) >= declarativeIntervalTime)) {
-
-					lastCode  = inputEvent->getKeyCode(myScreen);
-					timeStamp = getCurrentTimeMillis();
-
-					clog << "InputManager::run event code = '";
-					clog << lastCode << "'" << endl;
-
-					if (!dispatchEvent(inputEvent)) {
-						delete inputEvent;
-						inputEvent = eventBuffer->getNextEvent();
-						continue;
-					}
-				}
-
-				if (inputEvent->isKeyType() ||
-						inputEvent->isApplicationType()) {
-
-					clog << "InputManager::run key or application" << endl;
-
-					dispatchApplicationEvent(inputEvent);
-				}
+				handleInputEvent(inputEvent, pLastCode, lastCode, pTimeStamp, timeStamp, mouseX, mouseY);
 
 				delete inputEvent;
 				inputEvent = eventBuffer->getNextEvent();
@@ -768,6 +692,82 @@ namespace mb {
 		maxY         = 0;
 
 		clog << "InputManager::run all done" << endl;
+	}
+
+	void InputManager::handleInputEvent(
+		IInputEvent *inputEvent, int& pLastCode, int& lastCode, 
+		double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY)
+	{
+		if (inputEvent->isMotionType()) {
+			mouseX = currentXAxis;
+			mouseY = currentYAxis;
+
+			inputEvent->getAxisValue(
+					&currentXAxis, &currentYAxis, &currentZAxis);
+
+			if (currentXAxis == 0) {
+				currentXAxis = mouseX;
+
+			} else if (currentXAxis > maxX && maxX != 0) {
+				currentXAxis = maxX;
+			}
+
+			if (currentYAxis == 0) {
+				currentYAxis = mouseY;
+
+			} else if (currentYAxis > maxY && maxY != 0) {
+				currentYAxis = maxY;
+			}
+
+			if (eventBuffer != NULL) {
+				inputEvent = eventBuffer->getNextEvent();
+			}
+
+			notifyMotionListeners(
+					currentXAxis, currentYAxis, currentZAxis);
+
+			return;
+		}
+
+		if (!inputEvent->isApplicationType() &&
+				inputEvent->getKeyCode(myScreen) == CodeMap::KEY_NULL) {
+
+			return;
+		}
+
+		if (inputEvent->isButtonPressType()) {
+			inputEvent->setAxisValue(currentXAxis, currentYAxis, 0);
+
+			inputEvent->getAxisValue(
+					&currentXAxis,
+					&currentYAxis,
+					&currentZAxis);
+
+			dispatchEvent(inputEvent);
+			return;
+		}
+
+		if (inputEvent->isPressedType() && ((getCurrentTimeMillis() -
+				timeStamp) >= declarativeIntervalTime)) {
+
+			lastCode  = inputEvent->getKeyCode(myScreen);
+			timeStamp = getCurrentTimeMillis();
+
+			clog << "InputManager::run event code = '";
+			clog << lastCode << "'" << endl;
+
+			if (!dispatchEvent(inputEvent)) {
+				return;
+			}
+		}
+
+		if (inputEvent->isKeyType() ||
+				inputEvent->isApplicationType()) {
+
+			clog << "InputManager::run key or application" << endl;
+
+			dispatchApplicationEvent(inputEvent);
+		}
 	}
 }
 }
