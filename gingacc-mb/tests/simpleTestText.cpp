@@ -151,17 +151,16 @@ int main(int argc, char** argv) {
 	dm->setWindowBgColor(screen, win, 255, 0, 0, 0);
 	dm->showWindow(screen, win);
 	dm->raiseWindowToTop(screen, win);
-	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb test text for screen '" << screen << "' has '";
 	cout << dm->getProviderMediaTime(txt) << "' as its total media time." << endl;
 
 	dm->setSurfaceColor(s, 0, 0, 0, 0);
 	dm->playProviderOver(txt, s, strText.c_str(), 20, 20, 0);
+	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb text is playing. if you see only a red square, we ";
-	cout << "have a problem with text rendering. ";
-	cout << " check if at least the audio is ok.";
+	cout << "have a problem with text rendering.";
 	cout << "press enter to stop and release";
 	cout << endl;
 	getchar();

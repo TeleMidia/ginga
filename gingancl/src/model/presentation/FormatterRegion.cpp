@@ -283,6 +283,10 @@ namespace presentation {
 		}
 	}
 
+	void FormatterRegion::setRenderedSurface(GingaSurfaceID iSur) {
+		this->renderedSurface = iSur;
+	}
+	
 	void FormatterRegion::setZIndex(int zIndex) {
 		string layoutId;
 		float cvtZIndex;

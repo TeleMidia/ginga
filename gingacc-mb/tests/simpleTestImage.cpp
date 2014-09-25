@@ -154,17 +154,16 @@ int main(int argc, char** argv) {
 	dm->setWindowBgColor(screen, win, 255, 0, 0, 0);
 	dm->showWindow(screen, win);
 	dm->raiseWindowToTop(screen, win);
-	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb test image for screen '" << screen << "' has '";
 	cout << dm->getProviderMediaTime(img) << "' as its total media time." << endl;
 
 	dm->setProviderSoundLevel(img, 0.1);
 	dm->playProviderOver(img, s);
+	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb image is playing. if you see a red square, we have ";
-	cout << "a problem with image rendering. ";
-	cout << " check if at least the audio is ok.";
+	cout << "a problem with image rendering.";
 	cout << "press enter to stop and release";
 	cout << endl;
 	getchar();

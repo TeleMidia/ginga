@@ -144,6 +144,8 @@ namespace presentation {
 		void initializeNCMRegion();
 
 	public:
+		void setRenderedSurface(GingaSurfaceID iSur);
+
 		void setZIndex(int zIndex);
 		int getZIndex();
 
