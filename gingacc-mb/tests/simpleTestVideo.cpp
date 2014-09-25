@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb test video for screen '" << screen << "' has '";
-	cout << dm->getProviderMediaTime(vid) << "' as its total media time." << endl;
+	cout << dm->getProviderTotalMediaTime(vid) << "' as its total media time." << endl;
 
 	dm->setProviderSoundLevel(vid, 0.1);
 	dm->playProviderOver(vid, s);
