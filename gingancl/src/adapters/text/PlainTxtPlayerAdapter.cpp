@@ -99,10 +99,9 @@ namespace text {
 			player->setPropertyValue("fontSize", paramValue);
 
 			paramValue = trim(descriptor->getParameterValue("x-rgbBgColor"));
-			if (paramValue == "") {
-				paramValue = "0,0,0,255";
+			if (paramValue != "") {
+				player->setPropertyValue("x-rgbBgColor", paramValue);
 			}
-			player->setPropertyValue("x-rgbBgColor", paramValue);
 
 			paramValue = trim(descriptor->getParameterValue("fontColor"));
 			if (paramValue == "") {
