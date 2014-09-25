@@ -66,6 +66,7 @@ namespace mb {
 
 			virtual ~IMediaProvider(){};
 			virtual string getLoadSymbol()=0;
+			virtual void playOver(GingaSurfaceID surface) = 0;
 
 			IMediaProviderType getType () const { return type; }
 

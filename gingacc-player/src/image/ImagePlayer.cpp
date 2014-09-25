@@ -211,7 +211,7 @@ namespace player {
 
 		GingaSurfaceID renderedSurface = NULL;
 
-		renderedSurface = dm->createSurfaceFrom(myScreen, NULL);
+		renderedSurface = dm->createSurfaceFrom(myScreen, 0);
 		dm->playProviderOver(provider, renderedSurface);
 
 		return renderedSurface;

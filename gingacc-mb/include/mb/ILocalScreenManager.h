@@ -139,7 +139,7 @@ namespace mb {
 					GingaScreenID screenId, int w, int h)=0;
 
 			virtual GingaSurfaceID createSurfaceFrom(
-					GingaScreenID screenId, void* underlyingSurface)=0;
+					GingaScreenID screenId, GingaSurfaceID underlyingSurface)=0;
 
 			virtual bool hasSurface(
 					const GingaScreenID &screenId, const GingaSurfaceID &surId)=0;
@@ -396,10 +396,6 @@ namespace mb {
 
 			virtual void playProviderOver(
 					const GingaProviderID &provId, const GingaSurfaceID &surface) = 0;
-
-			virtual void playProviderOver(
-								const GingaProviderID &provId, GingaSurfaceID surface,
-								IProviderListener* listener) = 0;
 
 			virtual void playProviderOver(
 					const GingaProviderID &provId, const GingaSurfaceID &surface,

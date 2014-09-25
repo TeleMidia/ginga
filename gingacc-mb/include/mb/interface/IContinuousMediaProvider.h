@@ -81,10 +81,7 @@ namespace mb {
 			virtual int64_t getVPts()=0;
 			virtual double getMediaTime()=0;
 			virtual void setMediaTime(double pos)=0;
-			virtual void playOver(
-					GingaSurfaceID surface,
-					IProviderListener* listener=NULL)=0;
-
+			virtual void playOver(GingaSurfaceID surface)=0;
 			virtual void resume(GingaSurfaceID surface)=0;
 			virtual void pause()=0;
 			virtual void stop()=0;

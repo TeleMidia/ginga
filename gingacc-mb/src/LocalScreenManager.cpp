@@ -922,14 +922,14 @@ namespace mb {
 	}
 
 	GingaSurfaceID LocalScreenManager::createSurfaceFrom(
-			GingaScreenID screenId, void* underlyingSurface) {
+			GingaScreenID screenId, GingaSurfaceID underlyingSurface) {
 
 		IDeviceScreen* screen;
 		ISurface* surface = NULL;
 		GingaSurfaceID surId = 0;
 
 		if (getScreen(screenId, &screen)) {
-			surface = screen->createSurfaceFrom(underlyingSurface);
+			surface = screen->createSurfaceFrom((void*)getISurfaceFromId(underlyingSurface));
 			surId = surface->getId();
 
 			Thread::mutexLock(&surMapMutex);
@@ -1900,23 +1900,6 @@ void LocalScreenManager::moveWindowTo(
 	 return totalTime;
  }
 
- void LocalScreenManager::playProviderOver(
-		 const GingaProviderID &provId, 
-		 GingaSurfaceID surface,
-		 IProviderListener* listener) {
-
-	 IContinuousMediaProvider *provider = NULL;
-	 IMediaProvider *iProvider = getIMediaProviderFromId(provId);
-
-	 if (iProvider != NULL &&
-			 (iProvider->getType() == IMediaProvider::AudioProvider ||
-			  iProvider->getType() == IMediaProvider::VideoProvider))
-	 {
-		 provider = (IContinuousMediaProvider*) iProvider;
-		 provider->playOver(surface, listener);
-	 }
- }
-
  void LocalScreenManager::pauseProvider (const GingaProviderID &provId)
  {
 	 IContinuousMediaProvider *provider = NULL;
@@ -2027,15 +2010,11 @@ void LocalScreenManager::moveWindowTo(
  void LocalScreenManager::playProviderOver(
 		 const GingaProviderID &provId, const GingaSurfaceID &surface)
  {
-	 IDiscreteMediaProvider* provider = NULL;
 	 IMediaProvider* iProvider = getIMediaProviderFromId(provId);
 
-	 if (iProvider != NULL &&
-			 (iProvider->getType() == IMediaProvider::FontProvider ||
-			  iProvider->getType() == IMediaProvider::ImageProvider))
+	 if (iProvider != NULL)
 	 {
-		 provider = (IDiscreteMediaProvider*) iProvider;
-		 provider->playOver(surface);
+		 iProvider->playOver(surface);
 	 }
  }
 

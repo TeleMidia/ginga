@@ -127,8 +127,7 @@ namespace mb {
 		}
 	}
 
-	void SDLAudioProvider::playOver(
-			GingaSurfaceID surface, IProviderListener* listener) {
+	void SDLAudioProvider::playOver(GingaSurfaceID surface) {
 
 		clog << "SDLAudioProvider::playOver" << endl;
 		SDLDeviceScreen::addCMPToRendererList(this);

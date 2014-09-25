@@ -229,7 +229,7 @@ namespace mb {
 			GingaSurfaceID createSurface(GingaScreenID screenId, int w, int h);
 
 			GingaSurfaceID createSurfaceFrom(
-					GingaScreenID screenId, void* underlyingSurface);
+					GingaScreenID screenId, GingaSurfaceID underlyingSurface);
 
 			bool hasSurface(
 					const GingaScreenID &screenId, const GingaSurfaceID &surId);
@@ -267,6 +267,7 @@ namespace mb {
 
 
 			/* interfacing input */
+		public:
 			IInputManager* getInputManager(GingaScreenID screenId);
 			IEventBuffer* createEventBuffer(GingaScreenID screenId);
 			IInputEvent* createInputEvent(
@@ -462,10 +463,6 @@ namespace mb {
 			void playProviderOver(
 					const GingaProviderID &provId, const GingaSurfaceID &surface,
 					const char* text, int x, int y, short align);
-
-			void playProviderOver(
-								const GingaProviderID &provId, GingaSurfaceID surface,
-								IProviderListener* listener=NULL);
 
 			int getProviderHeight(const GingaProviderID &provId);
 

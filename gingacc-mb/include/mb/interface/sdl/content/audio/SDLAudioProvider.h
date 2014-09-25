@@ -91,10 +91,7 @@ namespace mb {
 			void setMediaTime(double pos);
 
 		public:
-			void playOver(
-					GingaSurfaceID surface,
-					IProviderListener* listener=NULL);
-
+			void playOver(GingaSurfaceID surface);
 			void resume(GingaSurfaceID surface);
 			void pause();
 			void stop();

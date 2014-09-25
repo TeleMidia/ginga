@@ -373,6 +373,9 @@
     <Filter Include="Source Files\gingacc-player\time\ntp">
       <UniqueIdentifier>{3172e119-d7cb-4383-9655-a2c0d359afd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gingacc-mb\remote">
+      <UniqueIdentifier>{1cf2d864-bfaa-421e-b933-65b9494c711a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-ic\src\curlic\CurlInteractiveChannel.cpp">
@@ -1269,9 +1272,6 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-tuner\src\providers\NetworkProvider.cpp">
       <Filter>Source Files\gingacc-tuner\providers</Filter>
     </ClCompile>
-    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
-      <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp">
       <Filter>Source Files\gingancl\adapters\mirror</Filter>
     </ClCompile>
@@ -1299,20 +1299,35 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gingancl\src\adapters\time\TimePlayerAdapter.cpp">
-      <Filter>Source Files\gingancl\adapters\time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPDatagram.cpp">
-      <Filter>Source Files\gingacc-player\time\ntp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\UDPClient.cpp">
-      <Filter>Source Files\gingacc-player\time\ntp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPPlayer.cpp">
-      <Filter>Source Files\gingacc-player\time\ntp</Filter>
-    </ClCompile>
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\application\imperative\lua\LuaPlayerAdapter.cpp">
       <Filter>Source Files\gingancl\adapters\application\imperative\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedScreenManager.cpp">
+      <Filter>Source Files\gingacc-mb</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\remote\StubClient.cpp">
+      <Filter>Source Files\gingacc-mb\remote</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\application\imperative\lua\LuaPlayer.cpp">
+      <Filter>Source Files\gingacc-player\application\imperative\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\SDLConvert.cpp">
+      <Filter>Source Files\gingacc-mb\interface\sdl\content</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\NTPDatagram.cpp">
+      <Filter>Source Files\gingacc-player\time\ntp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\NTPPlayer.cpp">
+      <Filter>Source Files\gingacc-player\time\ntp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\UDPClient.cpp">
+      <Filter>Source Files\gingacc-player\time\ntp</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\time\TimePlayerAdapter.cpp">
+      <Filter>Source Files\gingancl\adapters\time</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedInputManagerListener.cpp">
+      <Filter>Source Files\gingacc-mb</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1347,6 +1362,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(GINGA_BASE_DIR)\telemidia-util\include\util\Observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedScreenManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\remote\StubClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\remote\MessagesHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedInputManagerMB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedInputManagerListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

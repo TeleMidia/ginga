@@ -83,7 +83,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 	class InputManager : public IInputManager, public Thread {
-		private:
+		protected:
 			map<IInputEventListener*, set<int>*> eventListeners;
 			vector<LockedAction*> actionsToInpListeners;
 			set<IInputEventListener*> applicationListeners;
@@ -120,7 +120,7 @@ namespace mb {
 			InputManager(GingaScreenID screenId);
 			virtual ~InputManager();
 
-		private:
+		protected:
 			void initializeInputIntervalTime();
 
 			void release();
@@ -129,22 +129,23 @@ namespace mb {
 			void addMotionEventListener(IMotionEventListener* listener);
 			void removeMotionEventListener(IMotionEventListener* listener);
 
-		private:
-			void notifyMotionListeners(int x, int y, int z);
+		protected:
+			virtual void notifyMotionListeners(int x, int y, int z);
 
-		public:
+		protected:
 			void addInputEventListener(
 					IInputEventListener* listener, set<int>* events=NULL);
 
 			void removeInputEventListener(IInputEventListener* listener);
 
+		public:
 			void setCommandEventListener(ICmdEventListener* listener);
 
-		private:
+		protected:
 			void performInputLockedActions();
 			void performApplicationLockedActions();
-			bool dispatchEvent(IInputEvent* keyEvent);
-			bool dispatchApplicationEvent(IInputEvent* keyEvent);
+			virtual bool dispatchEvent(IInputEvent* keyEvent);
+			virtual bool dispatchApplicationEvent(IInputEvent* keyEvent);
 
 		public:
 			void addApplicationInputEventListener(IInputEventListener* listener);
@@ -162,8 +163,11 @@ namespace mb {
 
 			IEventBuffer* getEventBuffer();
 
-		private:
-			void run();
+		protected:
+			virtual void run();
+			void handleInputEvent (
+				IInputEvent *inputEvent, int& pLastCode, int& lastCode, 
+				double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY);
 	};
 }
 }

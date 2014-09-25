@@ -82,6 +82,12 @@ extern "C" {
 #include <X11/Xatom.h>
 #endif
 
+#if defined ENABLE_MB_PROCESS
+#include "mb/DistributedInputManagerMB.h"
+#elif defined ENABLE_EXTERNAL_MB
+#include "mb/DistributedInputManagerListener.h"
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -2042,7 +2048,12 @@ namespace mb {
 				s->screen, -1, SDL_RENDERER_ACCELERATED);
 
 		initCodeMaps();
-		s->im = new InputManager(s->id);
+		s->im = 
+#if defined ENABLE_MB_PROCESS
+			new DistributedInputManagerMB(s->id);
+#else
+			new InputManager(s->id);
+#endif
 		s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
 
 		unlockSDL();

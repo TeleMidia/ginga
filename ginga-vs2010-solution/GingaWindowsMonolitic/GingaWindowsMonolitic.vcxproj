@@ -52,13 +52,14 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";LUAPLAYER_ENABLE_TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include;$(CONTRIBLIB_DIR)\boost\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;_MBCS;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;D3D_DEBUG_INFO;DIRECTINPUT_VERSION=0x0800;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);ENABLE_EXTERNAL_MB_;GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";LUAPLAYER_ENABLE_TRACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib</AdditionalLibraryDirectories>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib;$(CONTRIBLIB_DIR)\boost\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Winmm.lib;pthreadVSE2.lib;xerces-c_3.lib;dlfcn.lib;FreeImage.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libcurl.lib;avutil.lib;avcodec.lib;avfilter.lib;avformat.lib;avdevice.lib;swscale.lib;swresample.lib;postproc.lib;berkelium.lib;zip.lib;strmiids.lib;quartz.lib;nclua.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -77,15 +78,16 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;_MBCS;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(GINGA_BASE_DIR);$(TELEMIDIAUTIL_DIR)\include;$(NCL30_DIR)\include;$(NCL30CONVERTER_DIR)\include;$(GINGACCSYSTEM_DIR)\include;$(GINGACCMB_DIR)\include;$(GINGACCIC_DIR)\include;$(GINGACCPLAYER_DIR)\include;$(GINGACCPLAYER_DIR)\src\application\imperative\lua;$(GINGACCMULTIDEVICE_DIR)\include;$(GINGACCCONTEXTMANAGER_DIR)\include;$(GINGACCDATAPROCESSING_DIR)\include;$(GINGACCTUNER_DIR)\include;$(GINGACCTSPARSER_DIR)\include;$(GINGANCL_DIR)\include;$(GINGALSSM_DIR)\include;$(CONTRIBLIB_DIR)\pthread\include;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\include;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\include;$(CONTRIBLIB_DIR)\libcurl\include;$(CONTRIBLIB_DIR)\ffmpeg\include;$(CONTRIBLIB_DIR)\msinttypes;$(CONTRIBLIB_DIR)\sdl2.0\include;$(CONTRIBLIB_DIR)\dirent\include;$(CONTRIBLIB_DIR)\berkelium-win32\include;$(CONTRIBLIB_DIR)\libzip\include;$(CONTRIBLIB_DIR)\nclua\nclua\include;$(CONTRIBLIB_DIR)\boost\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;BOOST_MEM_FN_ENABLE_STDCALL;_MBCS;BOOST_DATE_TIME_NO_LIB;BOOST_REGEX_NO_LIB;STR_PREFIX="$(SolutionDir)Ginga";GINGA_LIBDIR=$(CONTRIB_LIB);GINGA_INI_PATH=$(SolutionDir)\Ginga\files\ginga.ini;GINGA_TUNER_PATH="files/tuner/tuner.ini";ENABLE_EXTERNAL_MB_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib</AdditionalLibraryDirectories>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib;$(CONTRIBLIB_DIR)\boost\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Winmm.lib;pthreadVSE2.lib;xerces-c_3.lib;dlfcn.lib;FreeImage.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libcurl.lib;avutil.lib;avcodec.lib;avfilter.lib;avformat.lib;avdevice.lib;swscale.lib;swresample.lib;postproc.lib;berkelium.lib;zip.lib;strmiids.lib;quartz.lib;nclua.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
@@ -150,6 +152,9 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\time\Stc.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\InputManager.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\LocalScreenManager.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedScreenManager.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedInputManagerListener.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\remote\StubClient.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\CodeMap.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\InputEventFactory.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\Matrix.cpp" />
@@ -163,6 +168,7 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\image\SDLImageProvider.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\text\SDLFontProvider.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\video\SDLVideoProvider.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\interface\sdl\content\SDLConvert.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\CommonCoreManager.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\DataWrapperListener.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingalssm\src\PresentationEngineManager.cpp" />
@@ -419,11 +425,10 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\telemidia-util\src\Base64.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\ginga\src\main.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\mirror\MirrorPlayerAdapter.cpp" />
-    <ClCompile Include="..\..\gingacc-mb\src\interface\sdl\content\SDLConvert.cpp" />
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPPlayer.cpp" />
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\NTPDatagram.cpp" />
-    <ClCompile Include="..\..\gingacc-player\src\time\ntp\UDPClient.cpp" />
-    <ClCompile Include="..\..\gingancl\src\adapters\time\TimePlayerAdapter.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\NTPPlayer.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\NTPDatagram.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-player\src\time\ntp\UDPClient.cpp" />
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingancl\src\adapters\time\TimePlayerAdapter.cpp" />
     <ClCompile Include="asprintf.c" />
   </ItemGroup>
   <ItemGroup>
@@ -438,6 +443,11 @@
     <ClInclude Include="$(GINGA_BASE_DIR)\telemidia-util\include\util\Observer.h" />
     <ClInclude Include="asprintf.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedScreenManager.h" />
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedInputManagerMB.h" />
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\DistributedInputManagerListener.h" />
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\remote\StubClient.h" />
+    <ClInclude Include="$(GINGA_BASE_DIR)\gingacc-mb\include\mb\remote\MessagesHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="WINDOWS_NOTES.txt" />

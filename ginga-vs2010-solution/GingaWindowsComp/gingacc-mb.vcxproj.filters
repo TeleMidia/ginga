@@ -60,6 +60,45 @@
     <ClCompile Include="$(GINGACCMB_DIR)\src\LocalScreenManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(TELEMIDIAUTIL_DIR)\src\Base64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(TELEMIDIAUTIL_DIR)\src\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(TELEMIDIAUTIL_DIR)\src\functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCSYSTEM_DIR)\src\compat\PracticalSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCSYSTEM_DIR)\src\compat\SystemCompat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCSYSTEM_DIR)\src\fs\GingaLocatorFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCSYSTEM_DIR)\src\thread\Thread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCSYSTEM_DIR)\src\time\Stc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCMB_DIR)\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GINGACCMB_DIR)\src\remote\StubServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gingacc-mb\src\remote\RequestManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gingacc-mb\src\interface\sdl\content\SDLConvert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gingacc-mb\src\DistributedInputManagerMB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(GINGACCMB_DIR)\include\mb\IInputManager.h">
@@ -162,6 +201,63 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(GINGACCMB_DIR)\include\GingaccMBConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\Base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\IColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\Observable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\util\Observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(TELEMIDIAUTIL_DIR)\include\TelemidiaUtilConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\system\compat\PracticalSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\system\compat\SystemCompat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\system\fs\GingaLocatorFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\system\thread\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\system\time\Stc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCMB_DIR)\include\mb\DSMDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCSYSTEM_DIR)\include\GingaccSystemConf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(GINGACCMB_DIR)\include\mb\remote\StubServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gingacc-mb\include\mb\remote\RequestManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gingacc-mb\include\mb\remote\MessageHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gingacc-mb\include\mb\DistributedInputManagerMB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
