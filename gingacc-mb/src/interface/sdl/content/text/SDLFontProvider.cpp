@@ -304,6 +304,7 @@ namespace mb {
 
 		if (LocalScreenManager::getInstance()->
 				hasSurface(myScreen, content->getId())) {
+
 			parent = (SDLWindow*)(content->getParentWindow());
 
 			if (parent == NULL) {
@@ -363,6 +364,12 @@ namespace mb {
 			if (renderedSurface == NULL) {
 				renderedSurface = SDLDeviceScreen::createUnderlyingSurface(pW, pH);
 
+/*
+	*******************************************
+	Code removed due to new default behavior of 
+	SDLDeviceScreen::createUnderlyingSurface
+	*******************************************
+
 				if (SDL_SetColorKey(
 						renderedSurface,
 						1,
@@ -371,7 +378,7 @@ namespace mb {
 					clog << "SDLFontProvider::playOver SDL error: '";
 					clog << SDL_GetError() << "'" << endl;
 				}
-
+*/
 				content->setSurfaceContent((void*)renderedSurface);
 				parent->setRenderedSurface(renderedSurface);
 

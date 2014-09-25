@@ -707,6 +707,7 @@ namespace focus {
 		player = (FormatterPlayerAdapter*)playerManager->getObjectPlayer(object);
 		if (player != NULL) {
 			fRegion = object->getDescriptor()->getFormatterRegion();
+			fRegion->setRenderedSurface(player->getPlayer()->getSurface());
 			fRegion->setFocus(false);
 			wId = fRegion->getOutputId();
 			player->setOutputWindow(wId);
