@@ -72,14 +72,14 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
-/***********************************************************
- * Testing text provider.                                  *
- * You can set a font using --src /x/y.ttf                 *
- * You can also set the changing the value of strText var  *
- * In order to set the screen size, enter the following as *
- * parameter: ./simpleTestText --vmode 800x600 --src ...   *
- * To exit, read instructions in your terminal             *
- ***********************************************************/
+/****************************************************************
+ * Testing text provider.                                       *
+ * You must set a font using --src /x/y.ttf (use absolute path) *
+ * You can set the changing the value of strText var            *
+ * In order to set the screen size, enter the following as      *
+ * parameter: ./simpleTestText --vmode 800x600 --src ...        *
+ * To exit, read instructions in your terminal                  *
+ ****************************************************************/
 
 int main(int argc, char** argv) {
 	GingaScreenID screen;
@@ -125,10 +125,10 @@ int main(int argc, char** argv) {
 	/***** TEXT *****/
 	GingaWindowID win;
 	GingaSurfaceID s;
-	GingaProviderID txt = NULL;
+	GingaProviderID font = NULL;
 	int x, y, w, h, z;
 	bool notFalse = true;
-	string strText = "TEST";
+	string strText;
 
 	x = 25;
 	y = 25;
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 	dm->drawWindow(screen, win);
 
 	s   = dm->createSurface(screen);
-	txt = dm->createFontProvider(screen, fontUri.c_str(), 12);
+	font = dm->createFontProvider(screen, fontUri.c_str(), 12);
 
 	dm->setSurfaceParentWindow(screen, s, win);
 	dm->setWindowBgColor(screen, win, 255, 0, 0, 0);
@@ -153,10 +153,18 @@ int main(int argc, char** argv) {
 	dm->raiseWindowToTop(screen, win);
 
 	cout << "gingacc-mb test text for screen '" << screen << "' has '";
-	cout << dm->getProviderMediaTime(txt) << "' as its total media time." << endl;
+	cout << dm->getProviderMediaTime(font) << "' as its total media time." << endl;
 
+	//drawing BLACK
+	strText = "BLACK";
 	dm->setSurfaceColor(s, 0, 0, 0, 0);
-	dm->playProviderOver(txt, s, strText.c_str(), 20, 20, 0);
+	dm->playProviderOver(font, s, strText.c_str(), 20, 20, 0);
+
+	//drawing WHITE
+	strText = "WHITE";
+	dm->setSurfaceColor(s, 255, 255, 255, 0);
+	dm->playProviderOver(font, s, strText.c_str(), 20, 50, 0);
+
 	dm->validateWindow(screen, win);
 
 	cout << "gingacc-mb text is playing. if you see only a red square, we ";
@@ -165,9 +173,8 @@ int main(int argc, char** argv) {
 	cout << endl;
 	getchar();
 
-	if (txt != 0) {
-		dm->stopProvider(txt);
-	}
+	dm->releaseFontProvider(screen, font);
+	font = NULL;
 
 	dm->clearWidgetPools(screen);
 	dm->releaseScreen(screen);
