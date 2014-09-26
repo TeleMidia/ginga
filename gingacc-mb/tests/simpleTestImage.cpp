@@ -168,10 +168,7 @@ int main(int argc, char** argv) {
 	cout << endl;
 	getchar();
 
-	if (img != 0) {
-		dm->stopProvider(img);
-	}
-
+	dm->releaseImageProvider(screen, img);
 	dm->clearWidgetPools(screen);
 	dm->releaseScreen(screen);
 	dm->releaseMB(screen);

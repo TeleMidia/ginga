@@ -286,12 +286,7 @@ namespace player {
 					bgColor = NULL;
 				}
 
-				if (value == "black") {
-					bgColor = new Color(0x10, 0x10, 0x10, 0xFF);
-
-				} else {
-					bgColor = new Color(value);
-				}
+				bgColor = new Color(value);
 
 				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
 				if (parentWindow != NULL) {

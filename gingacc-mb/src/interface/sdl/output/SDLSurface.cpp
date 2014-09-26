@@ -545,6 +545,11 @@ namespace mb {
 	void SDLSurface::setColor(int r, int g, int b, int alpha) {
 		releaseSurfaceColor();
 
+		if (r < 10 && g < 10 && b < 10) {
+			r = 10;
+			g = 10;
+			b = 10;
+		}
 		this->surfaceColor = new Color(r, g, b, alpha);
 	}
 
