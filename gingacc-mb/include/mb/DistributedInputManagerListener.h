@@ -19,6 +19,15 @@ public:
 	DistributedInputManagerListener (
 		const GingaScreenID &screenId, const std::string& address, int port);
 
+	~DistributedInputManagerListener () { }
+
+public:
+	void addInputEventListener(
+						IInputEventListener* listener, set<int>* events=NULL)
+	{
+		InputManager::addInputEventListener(listener, events);
+	}
+
 protected:
 	void run ();
 
@@ -32,30 +41,6 @@ public:
 	RemoteInputEvent (map <string, string>& args)
 	{
 		this->_args = args;
-		
-		/*for (size_t i = 0; i < args.size(); i++)
-		{
-			pair <string, string> entry = args.at(i);
-			if (entry.first == "keyCode")
-				_keyCode = atoi (entry.second.c_str());
-			else if (entry.first == "type")
-				_type = atoi (entry.second.c_str());
-			else if (entry.first == "isButtonPress")
-				_isButtonPressType = (bool) atoi (entry.second.c_str());
-			else if (entry.first == "isMotion")
-				_isMotionType = (bool) atoi (entry.second.c_str());
-			else if (entry.first == "isPressed")
-				_isPressedType = (bool) atoi (entry.second.c_str());
-			else if (entry.first == "isKey")
-				_isKeyType = (bool) atoi (entry.second.c_str());
-			else if (entry.first == "isApplication")
-				_isApplicationType = (bool) atoi (entry.second.c_str());
-
-			args.push_back (make_pair("axisX", pt.get<std::string> ("axisX")));
-			args.push_back (make_pair("axisY", pt.get<std::string> ("axisY")));
-			args.push_back (make_pair("axisZ", pt.get<std::string> ("axisZ")));
-		}
-		*/
 	}
 
 	~RemoteInputEvent () {};
@@ -91,7 +76,7 @@ public:
 
 	void setAxisValue(int x, int y, int z) 
 	{ 
-		_args["axisX"] = to_string(x); 
+		_args["axisX"] = std::to_string (x);
 		_args["axisY"] = to_string(y); 
 		_args["axisZ"] = to_string(z); 
 	}

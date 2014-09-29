@@ -1,6 +1,5 @@
 
 
-#include <SDL.h>
 #include "mb/LocalScreenManager.h"
 #include "mb/DSMDefs.h"
 

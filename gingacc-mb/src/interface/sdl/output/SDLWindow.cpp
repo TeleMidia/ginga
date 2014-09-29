@@ -143,7 +143,7 @@ namespace mb {
 		this->windowId = windowID;
 
 		this->texture           = NULL;
-		this->winISur           = NULL;
+		this->winISur           = 0;
 		this->curSur            = NULL;
 
 		this->textureUpdate     = false;
@@ -184,9 +184,9 @@ namespace mb {
 	}
 
 	void SDLWindow::releaseWinISur() {
-		if (winISur != NULL) {
+		if (winISur != 0) {
 			LocalScreenManager::getInstance()->deleteSurface(winISur);
-			winISur = NULL;
+			winISur = 0;
 		}
 	}
 
@@ -495,7 +495,7 @@ namespace mb {
 	}
 
 	void SDLWindow::unprotectedValidate() {
-		if (winISur != NULL) {
+		if (winISur != 0) {
 			LocalScreenManager::getInstance()->flipSurface(winISur);
 			curSur = (SDL_Surface*)
 					(LocalScreenManager::getInstance()->getSurfaceContent(winISur));

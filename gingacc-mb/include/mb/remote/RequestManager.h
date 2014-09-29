@@ -96,12 +96,10 @@ public:
 		 { return ""; }
 
 	std::string blitScreen_screenId_string (
-		const MethodRequested&, const std::vector <std::string>&)
-		 { return ""; }
+		const MethodRequested&, const std::vector <std::string>&);
 	
 	std::string refreshScreen (
-		const MethodRequested&, const std::vector <std::string>&)
-		 { return ""; }
+		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string createWindow_screenID_4int_float (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -215,8 +213,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string setWindowBgColor (
-		const MethodRequested&, const std::vector <std::string>&)
-		 { return ""; }
+		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string setWindowBorder (
 		const MethodRequested&, const std::vector <std::string>&);
