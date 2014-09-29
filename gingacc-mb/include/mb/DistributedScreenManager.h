@@ -11,7 +11,7 @@
 #include <stdarg.h>
 #include <vector>
 
-#include "mb/localscreenmanager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/remote/StubClient.h"
 
 #include "mb/DSMDefs.h"
@@ -119,7 +119,6 @@ public:
 	GingaProviderID createContinuousMediaProvider(
 			GingaScreenID screenId,
 			const char* mrl,
-			bool* hasVisual,
 			bool isRemote);
 
 	void releaseContinuousMediaProvider(
@@ -288,7 +287,7 @@ public:
 	void setExternalHandler(const GingaSurfaceID &surId, bool extHandler);
 
 	void blitSurface (
-			const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=NULL,
+			const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=0,
 			int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
 
 	void flipSurface (const GingaSurfaceID &surId);
@@ -342,8 +341,7 @@ public:
 			const char* text, int x, int y, short align);
 
 	void playProviderOver(
-						const GingaProviderID &provId, GingaSurfaceID surface,
-						bool hasVisual);
+						const GingaProviderID &provId, GingaSurfaceID surface);
 
 	int getProviderHeight(const GingaProviderID &provId);
 

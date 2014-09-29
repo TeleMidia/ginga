@@ -126,8 +126,8 @@ RequestManager::RequestManager()
 
 }
 
-std::string RequestManager::processRequest (std::string& request) 
-{	
+std::string RequestManager::processRequest (std::string& request)
+{
 	_screenManager = LocalScreenManager::getInstance();
 
 	std::vector <std::string> args;
@@ -142,7 +142,7 @@ std::string RequestManager::processRequest (std::string& request)
 		}
 
 		if (code >=0 && code < MethodRequested::LENGHT)
-			response = (this->*_ptMethods[code])(code, args);			
+			response = (this->*_ptMethods[code])(code, args);
 		else
 			response = MessageHandler::createResponseMessage(ResponseCode::METHOD_NOT_FOUND);
 	}
@@ -155,37 +155,40 @@ std::string RequestManager::processRequest (std::string& request)
 std::string RequestManager::createScreen(
 	const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createScreen || args.size () == 0)	
+	if (code != MethodRequested::t_createScreen || args.size () == 0)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	int argc = atoi(args[0].c_str());
-	char **createScreenArgs;
-	createScreenArgs = (char **) malloc (args.size() - 1 * sizeof(char *));
+	char *createScreenArgs [args.size()];
+	//createScreenArgs = (char **) malloc (args.size() - 1 * sizeof(char *));
 	for (int i = 1; i < args.size (); i++)
 	{
-		createScreenArgs[i - 1] = (char *) malloc ((args[i].length() + 1) * sizeof (char));
-		createScreenArgs[i - 1] = (char *) args[i].c_str();
+		char* arg = const_cast <char*> (args[i].c_str());
+		//createScreenArgs[i - 1] = (char *) malloc ((args[i].length() + 1) * sizeof (char));
+
+		//std::cout << "teste" << std::endl;
+		createScreenArgs[i - 1] = arg;
 	}
-	
+
 	GingaScreenID screenId = _screenManager->createScreen (argc, createScreenArgs);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(screenId));
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
-	
+
 }
 
 std::string RequestManager::getDeviceWidth(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getDeviceWidth || args.size () < 1)	
+	if (code != MethodRequested::t_getDeviceWidth || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
-	
+
 	int width = _screenManager->getDeviceWidth(screenId);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(width));
 
@@ -195,13 +198,13 @@ std::string RequestManager::getDeviceWidth(
 std::string RequestManager::getDeviceHeight(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getDeviceHeight || args.size () > 1)	
+	if (code != MethodRequested::t_getDeviceHeight || args.size () > 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
-	
+
 	int height = _screenManager->getDeviceHeight(screenId);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(height));
 
@@ -211,13 +214,13 @@ std::string RequestManager::getDeviceHeight(
 std::string RequestManager::getInputManager (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getInputManager || args.size () < 1)	
+	if (code != MethodRequested::t_getInputManager || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
-	
+
 	_screenManager->getInputManager(screenId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
@@ -225,13 +228,13 @@ std::string RequestManager::getInputManager (
 std::string RequestManager::createEventBuffer (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createEventBuffer || args.size () < 1)	
+	if (code != MethodRequested::t_createEventBuffer || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
-	
+
 	_screenManager->createEventBuffer(screenId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
@@ -239,7 +242,7 @@ std::string RequestManager::createEventBuffer (
 std::string RequestManager::createWindow_screenID_4int_float (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createWindow_screenID_4int_float || args.size () < 6)	
+	if (code != MethodRequested::t_createWindow_screenID_4int_float || args.size () < 6)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
@@ -248,261 +251,259 @@ std::string RequestManager::createWindow_screenID_4int_float (
 	int w = atoi (args[3].c_str());
 	int h = atoi (args[4].c_str());
 	float z = atof (args[5].c_str());
-	
+
 	GingaWindowID winId = _screenManager->createWindow(screenId, x, y, w, h, z);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(winId));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::getWindowCap (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowCap || args.size () < 3)	
+	if (code != MethodRequested::t_getWindowCap || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
-	string capName = args[2];	
-	
+	string capName = args[2];
+
 	int cap = _screenManager->getWindowCap(screenId, winId, capName);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(cap));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::setWindowCaps (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setWindowCaps || args.size () < 3)	
+	if (code != MethodRequested::t_setWindowCaps || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
-	int caps = atoi (args[2].c_str());	
-	
+	int caps = atoi (args[2].c_str());
+
 	_screenManager->setWindowCaps(screenId, winId, caps);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::addWindowCaps (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_addWindowCaps || args.size () < 3)	
+	if (code != MethodRequested::t_addWindowCaps || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
-	int caps = atoi (args[2].c_str());	
-	
+	int caps = atoi (args[2].c_str());
+
 	_screenManager->addWindowCaps(screenId, winId, caps);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::drawWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_drawWindow || args.size () < 2)	
+	if (code != MethodRequested::t_drawWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
-	
+
 	_screenManager->drawWindow(screenId, winId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::setWindowCurrentTransparency (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setWindowCurrentTransparency || args.size () < 3)	
+	if (code != MethodRequested::t_setWindowCurrentTransparency || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
 	int transparency = atoi (args[2].c_str());
-	
+
 	_screenManager->setWindowCurrentTransparency(screenId, winId, transparency);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::setWindowZ (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setWindowZ || args.size () < 3)	
+	if (code != MethodRequested::t_setWindowZ || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
 	float z = atof (args[2].c_str());
-	
+
 	_screenManager->setWindowZ(screenId, winId, z);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 std::string RequestManager::raiseWindowToTop (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_raiseWindowToTop || args.size () < 2)	
+	if (code != MethodRequested::t_raiseWindowToTop || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi (args[1].c_str());
-	
+
 	_screenManager->raiseWindowToTop(screenId, winId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::createSurface_screenId (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createSurface_screenId || args.size () < 1)	
+	if (code != MethodRequested::t_createSurface_screenId || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
-	
+
 	GingaSurfaceID surfaceId = _screenManager->createSurface(screenId);
 
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(surfaceId));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::createContinuousMediaProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createContinuousMediaProvider|| args.size () < 4)	
+	if (code != MethodRequested::t_createContinuousMediaProvider || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	const char* mrl = args[1].c_str();
-	bool hasVisual = (bool) atoi (args[2].c_str());
-	int isRemote = atoi (args[3].c_str());
+	bool isRemote = (bool) atoi (args[2].c_str());
 
-	GingaProviderID providerId = 
-		_screenManager->createContinuousMediaProvider(screenId, mrl, &hasVisual, isRemote);
+	GingaProviderID providerId =
+		_screenManager->createContinuousMediaProvider(screenId, mrl, isRemote);
 
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(providerId));
-	respArgs.push_back(to_string(hasVisual));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::releaseContinuousMediaProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_releaseContinuousMediaProvider || args.size () < 2)	
+	if (code != MethodRequested::t_releaseContinuousMediaProvider || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaProviderID providerId = (GingaProviderID) atoi(args[1].c_str());
 
 	_screenManager->releaseContinuousMediaProvider(screenId, providerId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::createFontProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createFontProvider || args.size () < 3)	
+	if (code != MethodRequested::t_createFontProvider || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	const char* mrl = args[1].c_str();
 	int fontSize = atoi (args[2].c_str());
 
-	GingaProviderID providerId = 
+	GingaProviderID providerId =
 		_screenManager->createFontProvider(screenId, mrl, fontSize);
 
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(providerId));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::releaseFontProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_releaseFontProvider || args.size () < 2)	
+	if (code != MethodRequested::t_releaseFontProvider || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaProviderID providerId = (GingaProviderID) atoi(args[1].c_str());
-	
+
 	_screenManager->releaseFontProvider(screenId, providerId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::createImageProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createImageProvider || args.size () < 2)	
+	if (code != MethodRequested::t_createImageProvider || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	const char* mrl = args[1].c_str();
-	
-	GingaProviderID providerId = 
+
+	GingaProviderID providerId =
 		_screenManager->createImageProvider (screenId, mrl);
 
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(providerId));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::releaseImageProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_releaseImageProvider || args.size () < 2)	
+	if (code != MethodRequested::t_releaseImageProvider || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaProviderID providerId = (GingaProviderID) atoi(args[1].c_str());
-	
+
 	_screenManager->releaseImageProvider(screenId, providerId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::getProviderTotalMediaTime (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getProviderTotalMediaTime || args.size () < 1)	
+	if (code != MethodRequested::t_getProviderTotalMediaTime || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
-	
+
 	double totalTime =  _screenManager->getProviderTotalMediaTime(providerId);
 
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(totalTime));
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::setProviderSoundLevel (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setProviderSoundLevel || args.size () < 2)	
+	if (code != MethodRequested::t_setProviderSoundLevel || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
 	float level = atof (args[1].c_str());
-	
+
 	_screenManager->setProviderSoundLevel(providerId, level);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -511,13 +512,13 @@ std::string RequestManager::setProviderSoundLevel (
 std::string RequestManager::getSurfaceParentWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getSurfaceParentWindow || args.size () < 1)	
+	if (code != MethodRequested::t_getSurfaceParentWindow || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[0].c_str());
-	
+
 	GingaWindowID winId = _screenManager->getSurfaceParentWindow(surfaceId);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(winId));
 
@@ -527,15 +528,15 @@ std::string RequestManager::getSurfaceParentWindow (
 std::string RequestManager::setSurfaceParentWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setSurfaceParentWindow || args.size () < 3)	
+	if (code != MethodRequested::t_setSurfaceParentWindow || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
 	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi(args[2].c_str());
-	
+
 	bool result = _screenManager->setSurfaceParentWindow(screenId, surfaceId, winId);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(result));
 
@@ -545,13 +546,13 @@ std::string RequestManager::setSurfaceParentWindow (
 std::string RequestManager::showWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_showWindow || args.size () < 2)	
+	if (code != MethodRequested::t_showWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi(args[1].c_str());
-	
-	_screenManager->showWindow(screenId, winId);	
+
+	_screenManager->showWindow(screenId, winId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
@@ -559,13 +560,13 @@ std::string RequestManager::showWindow (
 std::string RequestManager::hideWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_hideWindow || args.size () < 2)	
+	if (code != MethodRequested::t_hideWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 	GingaWindowID winId = (GingaWindowID) atoi(args[1].c_str());
-	
-	_screenManager->hideWindow(screenId, winId);	
+
+	_screenManager->hideWindow(screenId, winId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
@@ -573,11 +574,11 @@ std::string RequestManager::hideWindow (
 std::string RequestManager::getProviderMediaTime (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getProviderMediaTime || args.size () < 1)	
+	if (code != MethodRequested::t_getProviderMediaTime || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+
 	double mediaTime = _screenManager->getProviderMediaTime(providerId);
 
 	std::vector<std::string> respArgs;
@@ -589,14 +590,14 @@ std::string RequestManager::getProviderMediaTime (
 std::string RequestManager::playProviderOver_provId_surId_bool (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_playProviderOver_provId_surId_bool || args.size () < 3)	
+	if (code != MethodRequested::t_playProviderOver_provId_surId_bool || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());	
-	int hasVisual = atoi(args[2].c_str());	
-	
-	_screenManager->playProviderOver(providerId, surfaceId, hasVisual);
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());
+	int hasVisual = atoi(args[2].c_str());
+
+	_screenManager->playProviderOver(providerId, surfaceId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
@@ -604,11 +605,11 @@ std::string RequestManager::playProviderOver_provId_surId_bool (
 std::string RequestManager::setBackgroundImage(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setBackgroundImage || args.size () < 2)	
+	if (code != MethodRequested::t_setBackgroundImage || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	std::string uri = args[1];	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	std::string uri = args[1];
 
 	_screenManager->setBackgroundImage(screenId, uri);
 
@@ -618,13 +619,13 @@ std::string RequestManager::setBackgroundImage(
 std::string RequestManager::getScreenName(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getScreenName || args.size () < 1)	
+	if (code != MethodRequested::t_getScreenName || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
 
 	std::string screenName = _screenManager->getScreenName(screenId);
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(screenName);
 
@@ -634,14 +635,14 @@ std::string RequestManager::getScreenName(
 std::string RequestManager::createRenderedSurfaceFromImageFile (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createRenderedSurfaceFromImageFile || args.size () < 2)	
+	if (code != MethodRequested::t_createRenderedSurfaceFromImageFile || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	std::string mrl = args[1];	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	std::string mrl = args[1];
 
 	GingaSurfaceID surfaceId = _screenManager->createRenderedSurfaceFromImageFile(screenId, mrl.c_str());
-	
+
 	std::vector<std::string> respArgs;
 	respArgs.push_back(to_string(surfaceId));
 
@@ -651,11 +652,11 @@ std::string RequestManager::createRenderedSurfaceFromImageFile (
 std::string RequestManager::setWindowBounds (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setWindowBounds || args.size () < 6)	
+	if (code != MethodRequested::t_setWindowBounds || args.size () < 6)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID winId = (GingaWindowID) atoi(args[1].c_str());	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID winId = (GingaWindowID) atoi(args[1].c_str());
 	int x = atoi (args[2].c_str());
 	int y = atoi (args[3].c_str());
 	int w = atoi (args[4].c_str());
@@ -669,12 +670,12 @@ std::string RequestManager::setWindowBounds (
 std::string RequestManager::createSurfaceFrom (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_createSurfaceFrom || args.size () < 2)	
+	if (code != MethodRequested::t_createSurfaceFrom || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaSurfaceID underlyingSuface = (GingaSurfaceID) atoi(args[1].c_str());	
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaSurfaceID underlyingSuface = (GingaSurfaceID) atoi(args[1].c_str());
+
 	GingaSurfaceID surfaceId = _screenManager->createSurfaceFrom(screenId, underlyingSuface);
 
 	std::vector<std::string> respArgs;
@@ -686,12 +687,12 @@ std::string RequestManager::createSurfaceFrom (
 std::string RequestManager::playProviderOver_provId_surId (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_playProviderOver_provId_surId || args.size () < 2)	
+	if (code != MethodRequested::t_playProviderOver_provId_surId || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());	
-	
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());
+
 	_screenManager->playProviderOver(providerId, surfaceId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -700,12 +701,12 @@ std::string RequestManager::playProviderOver_provId_surId (
 std::string RequestManager::validateWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_validateWindow || args.size () < 2)	
+	if (code != MethodRequested::t_validateWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());	
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	_screenManager->validateWindow(screenId, windowId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -713,16 +714,16 @@ std::string RequestManager::validateWindow (
 std::string RequestManager::setWindowBorder (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_setWindowBorder || args.size () < 7)	
+	if (code != MethodRequested::t_setWindowBorder || args.size () < 7)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());	
-	int r = atoi(args[2].c_str());	
-	int g = atoi(args[3].c_str());	
-	int b = atoi(args[4].c_str());	
-	int alpha = atoi(args[5].c_str());	
-	int width = atoi(args[6].c_str());	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+	int r = atoi(args[2].c_str());
+	int g = atoi(args[3].c_str());
+	int b = atoi(args[4].c_str());
+	int alpha = atoi(args[5].c_str());
+	int width = atoi(args[6].c_str());
 
 	_screenManager->setWindowBorder(screenId, windowId, r, g, b, alpha, width);
 
@@ -732,11 +733,11 @@ std::string RequestManager::setWindowBorder (
 std::string RequestManager::getWindowTransparencyValue (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowTransparencyValue || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowTransparencyValue || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	int value = _screenManager->getWindowTransparencyValue(screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -747,11 +748,11 @@ std::string RequestManager::getWindowTransparencyValue (
 std::string RequestManager::getWindowX (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowX || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowX || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	int value = _screenManager->getWindowX (screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -763,11 +764,11 @@ std::string RequestManager::getWindowX (
 std::string RequestManager::getWindowY (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowY || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowY || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	int value = _screenManager->getWindowY (screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -779,11 +780,11 @@ std::string RequestManager::getWindowY (
 std::string RequestManager::getWindowW (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowW || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowW || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	int value = _screenManager->getWindowW (screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -795,11 +796,11 @@ std::string RequestManager::getWindowW (
 std::string RequestManager::getWindowH (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowH || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowH || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	int value = _screenManager->getWindowH (screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -811,11 +812,11 @@ std::string RequestManager::getWindowH (
 std::string RequestManager::getWindowZ (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getWindowZ || args.size () < 2)	
+	if (code != MethodRequested::t_getWindowZ || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
 
 	float value = _screenManager->getWindowZ (screenId, windowId);
 	std::vector<std::string> respArgs;
@@ -827,14 +828,14 @@ std::string RequestManager::getWindowZ (
 std::string RequestManager::resizeWindow (
 	const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_resizeWindow || args.size () < 4)	
+	if (code != MethodRequested::t_resizeWindow || args.size () < 4)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	int width = atoi(args[2].c_str());		
-	int height = atoi(args[3].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+	int width = atoi(args[2].c_str());
+	int height = atoi(args[3].c_str());
+
 	_screenManager->resizeWindow(screenId, windowId, width, height);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -843,12 +844,12 @@ std::string RequestManager::resizeWindow (
 std::string RequestManager::disposeWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_disposeWindow || args.size () < 2)	
+	if (code != MethodRequested::t_disposeWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	_screenManager->disposeWindow(screenId, windowId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -857,11 +858,11 @@ std::string RequestManager::disposeWindow (
 std::string RequestManager::stopProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_stopProvider || args.size () < 1)	
+	if (code != MethodRequested::t_stopProvider || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+
 	_screenManager->stopProvider(providerId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -870,11 +871,11 @@ std::string RequestManager::stopProvider (
 std::string RequestManager::pauseProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_pauseProvider || args.size () < 1)	
+	if (code != MethodRequested::t_pauseProvider || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+
 	_screenManager->pauseProvider(providerId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -883,14 +884,14 @@ std::string RequestManager::pauseProvider (
 std::string RequestManager::resumeProvider (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_resumeProvider || args.size () < 3)	
+	if (code != MethodRequested::t_resumeProvider || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());	
-	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());	
-	int hasVisual = atoi(args[2].c_str());	
-	
-	_screenManager->resumeProvider(providerId, surfaceId, hasVisual);
+	GingaProviderID providerId = (GingaProviderID) atoi(args[0].c_str());
+	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());
+	int hasVisual = atoi(args[2].c_str());
+
+	_screenManager->resumeProvider(providerId, surfaceId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
@@ -898,12 +899,12 @@ std::string RequestManager::resumeProvider (
 std::string RequestManager::hasWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_hasWindow || args.size () < 2)	
+	if (code != MethodRequested::t_hasWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	bool hasWin = _screenManager->hasWindow(screenId, windowId);
 	std::vector<std::string> respArgs;
 
@@ -915,12 +916,12 @@ std::string RequestManager::hasWindow (
 std::string RequestManager::hasSurface (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_hasSurface || args.size () < 2)	
+	if (code != MethodRequested::t_hasSurface || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaSurfaceID surfaceId = (GingaSurfaceID) atoi(args[1].c_str());
+
 	bool hasSur = _screenManager->hasSurface(screenId, surfaceId);
 	std::vector<std::string> respArgs;
 
@@ -932,12 +933,12 @@ std::string RequestManager::hasSurface (
 std::string RequestManager::lowerWindowToBottom (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_lowerWindowToBottom || args.size () < 2)	
+	if (code != MethodRequested::t_lowerWindowToBottom || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());	
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	_screenManager->lowerWindowToBottom(screenId, windowId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -946,11 +947,11 @@ std::string RequestManager::lowerWindowToBottom (
 std::string RequestManager::deleteSurface (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_deleteSurface || args.size () < 1)	
+	if (code != MethodRequested::t_deleteSurface || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaSurfaceID surfaceId = (GingaWindowID) atoi(args[0].c_str());		
-	
+	GingaSurfaceID surfaceId = (GingaWindowID) atoi(args[0].c_str());
+
 	_screenManager->deleteSurface(surfaceId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -959,13 +960,13 @@ std::string RequestManager::deleteSurface (
 std::string RequestManager::renderWindowFrom (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_renderWindowFrom || args.size () < 3)	
+	if (code != MethodRequested::t_renderWindowFrom || args.size () < 3)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	GingaSurfaceID surfaceId = (GingaWindowID) atoi(args[2].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+	GingaSurfaceID surfaceId = (GingaWindowID) atoi(args[2].c_str());
+
 	_screenManager->renderWindowFrom(screenId, windowId, surfaceId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -974,12 +975,12 @@ std::string RequestManager::renderWindowFrom (
 std::string RequestManager::deleteWindow (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_deleteWindow || args.size () < 2)	
+	if (code != MethodRequested::t_deleteWindow || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());			
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	_screenManager->deleteWindow(screenId, windowId);
 
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
@@ -988,12 +989,12 @@ std::string RequestManager::deleteWindow (
 std::string RequestManager::fromGingaToMB (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_fromGingaToMB || args.size () < 2)	
+	if (code != MethodRequested::t_fromGingaToMB || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	int keyCode =  atoi(args[1].c_str());			
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	int keyCode =  atoi(args[1].c_str());
+
 	int value = _screenManager->fromGingaToMB(screenId, keyCode);
 	std::vector <std::string> respArgs;
 	respArgs.push_back(to_string(value));
@@ -1004,13 +1005,13 @@ std::string RequestManager::fromGingaToMB (
 std::string RequestManager::releaseScreen (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_releaseScreen || args.size () < 1)	
+	if (code != MethodRequested::t_releaseScreen || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+
 	_screenManager->releaseScreen(screenId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
@@ -1023,57 +1024,102 @@ std::string RequestManager::getGfxRoot(
 std::string RequestManager::releaseMB(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_releaseMB || args.size () < 1)	
+	if (code != MethodRequested::t_releaseMB || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+
 	_screenManager->releaseMB(screenId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::clearWidgetPools(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_clearWidgetPools || args.size () < 1)	
+	if (code != MethodRequested::t_clearWidgetPools || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+
 	_screenManager->clearWidgetPools(screenId);
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }
 
 std::string RequestManager::getScreenUnderlyingWindow(
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_getScreenUnderlyingWindow || args.size () < 1)	
+	if (code != MethodRequested::t_getScreenUnderlyingWindow || args.size () < 1)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+
 	UnderlyingWindowID id = _screenManager->getScreenUnderlyingWindow(screenId);
 	std::stringstream ss;
 	ss << id;
-	
+
 	std::vector <std::string> respArgs;
 	respArgs.push_back(ss.str());
-	
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS, respArgs);
 }
 
 std::string RequestManager::clearWindowContent (
 		const MethodRequested& code, const std::vector <std::string>& args)
 {
-	if (code != MethodRequested::t_clearWindowContent || args.size () < 2)	
+	if (code != MethodRequested::t_clearWindowContent || args.size () < 2)
 		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
 
-	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());		
-	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());		
-	
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID windowId = (GingaWindowID) atoi(args[1].c_str());
+
 	_screenManager->clearWindowContent(screenId, windowId);
-	
+
+	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
+}
+
+std::string RequestManager::setWindowBgColor (
+		const MethodRequested& code, const std::vector <std::string>& args)
+{
+	if (code != MethodRequested::t_setWindowBgColor || args.size () < 6)
+		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
+
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	GingaWindowID winId = (GingaWindowID) atoi(args[1].c_str());
+	int r = (GingaWindowID) atoi(args[2].c_str());
+	int g = (GingaWindowID) atoi(args[3].c_str());
+	int b = (GingaWindowID) atoi(args[4].c_str());
+	int alpha = (GingaWindowID) atoi(args[5].c_str());
+
+	_screenManager->setWindowBgColor(screenId, winId, r, g, b, alpha);
+
+	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
+}
+
+std::string RequestManager::blitScreen_screenId_string (
+		const MethodRequested& code, const std::vector <std::string>& args)
+{
+	if (code != MethodRequested::t_blitScreen_screenId_string || args.size () < 2)
+		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
+
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+	string fileUri = args[1].c_str();
+
+	_screenManager->blitScreen(screenId, fileUri);
+
+	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
+}
+
+std::string RequestManager::refreshScreen (
+		const MethodRequested& code, const std::vector <std::string>& args)
+{
+	if (code != MethodRequested::t_refreshScreen || args.size () < 1)
+		return MessageHandler::createResponseMessage(ResponseCode::INTERNAL_ERROR);
+
+	GingaScreenID screenId = (GingaScreenID) atoi(args[0].c_str());
+
+	_screenManager->refreshScreen(screenId);
+
 	return MessageHandler::createResponseMessage (ResponseCode::SUCCESS);
 }

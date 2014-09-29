@@ -25,7 +25,7 @@ DistributedScreenManager::~DistributedScreenManager()
 	Thread::mutexUnlock(_stubMutex);
 	Thread::mutexDestroy(_stubMutex);
 
-	LocalScreenManager::~LocalScreenManager ();
+	this->~ILocalScreenManager();
 }
 
 string DistributedScreenManager::sendMessage (const string& message)
@@ -220,7 +220,7 @@ UnderlyingWindowID DistributedScreenManager::getScreenUnderlyingWindow(GingaScre
 {
 	ResponseCode code;
 	vector <string> args;
-	UnderlyingWindowID underlyingWindowId = "";
+	UnderlyingWindowID underlyingWindowId = 0;
 	args.push_back(to_string(screenId));
 
 	string request = MessageHandler::createRequestMessage(MethodRequested::t_getScreenUnderlyingWindow, args);
@@ -323,7 +323,7 @@ GingaWindowID DistributedScreenManager::createWindow(
 {
 	ResponseCode code;
 	vector <string> args;
-	GingaWindowID winId = NULL;
+	GingaWindowID winId = 0;
 
 	args.push_back(to_string(screenId));
 	args.push_back(to_string(x));
@@ -513,14 +513,13 @@ void DistributedScreenManager::lowerWindowToBottom (
 
 	/* Interfacing content */
 GingaProviderID DistributedScreenManager::createContinuousMediaProvider(
-			GingaScreenID screenId, const char* mrl, bool* hasVisual, bool isRemote)
+			GingaScreenID screenId, const char* mrl, bool isRemote)
 {
 	ResponseCode code;
 	GingaSurfaceID surfaceId = -1;
 	vector <string> args;
 	args.push_back(to_string(screenId));
 	args.push_back(mrl);
-	args.push_back(to_string(*hasVisual));
 	args.push_back(to_string(isRemote));
 	
 	string request = MessageHandler::createRequestMessage(
@@ -532,7 +531,6 @@ GingaProviderID DistributedScreenManager::createContinuousMediaProvider(
 	if (MessageHandler::extractResponseMessage(response, code, args))
 	{
 		surfaceId = atoi (args.at(0).c_str());
-		*hasVisual = atoi (args.at(1).c_str());
 	}
 
 	return surfaceId;
@@ -654,8 +652,10 @@ IInputManager* DistributedScreenManager::getInputManager(GingaScreenID screenId)
 
 	sendMessage (request);
 
-	if (_im == nullptr)
+	if (_im == NULL)
+	{
 		_im = new DistributedInputManagerListener(screenId, "127.0.0.1", 123457);
+	}
 
 	return _im;
 }
@@ -1865,20 +1865,6 @@ void DistributedScreenManager::playProviderOver(
 	sendMessage (request);
 }
 
-void DistributedScreenManager::playProviderOver(
-	const GingaProviderID &provId, GingaSurfaceID surface,
-	bool hasVisual)
-{
-	vector <string> args;
-	args.push_back(to_string(provId));
-	args.push_back(to_string(surface));
-	args.push_back(to_string(hasVisual));
-	
-	string request = MessageHandler::createRequestMessage(
-		MethodRequested::t_playProviderOver_provId_surId_bool, args);
-
-	sendMessage (request);
-}
 
 int DistributedScreenManager::getProviderHeight(const GingaProviderID &provId)
 {

@@ -505,7 +505,7 @@ namespace mb {
 
 		position = get_master_clock();
 
-		if (position < 0.0 || isnan(position)) {
+		if (position < 0.0 || std::isnan(position)) {
 			position = vs->seek_pos / 1000000;
 		}
 
@@ -1004,8 +1004,8 @@ namespace mb {
 		double clock = get_clock(c);
 		double slave_clock = get_clock(slave);
 
-		if (!isnan(slave_clock) && 
-				(isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD)) {
+		if (!std::isnan(slave_clock) &&
+				(std::isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD)) {
 
 			set_clock(c, slave_clock, slave->serial);
 		}
@@ -1133,7 +1133,7 @@ namespace mb {
 	           delay to compute the threshold. I still don't know
 	           if it is the best guess */
 			sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
-			if (!isnan(diff) && fabs(diff) < vs->max_frame_duration) {
+			if (!std::isnan(diff) && fabs(diff) < vs->max_frame_duration) {
 				if (diff <= -sync_threshold) {
 					delay = FFMAX(0, delay + diff);
 				} else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD) {
@@ -1152,7 +1152,7 @@ namespace mb {
 
 		if (vp->serial == nextvp->serial) {
 			duration = nextvp->pts - vp->pts;
-			if (isnan(duration) || duration <= 0 || duration > vs->max_frame_duration) {
+			if (std::isnan(duration) || duration <= 0 || duration > vs->max_frame_duration) {
 				return vp->duration;
 
 			} else {
@@ -1288,7 +1288,7 @@ retry:
 				}
 
 				SDL_LockMutex(vs->pictq_mutex);
-				if (!redisplay && !isnan(vp->pts)) {
+				if (!redisplay && !std::isnan(vp->pts)) {
 					dec->update_video_pts(vp->pts, vp->pos, vp->serial);
 				}
 				SDL_UnlockMutex(vs->pictq_mutex);
@@ -1486,7 +1486,7 @@ display:
 			if (framedrop > 0 || (framedrop && get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) {
 				if (frame->pts != AV_NOPTS_VALUE) {
 					double diff = dpts - get_master_clock();
-					if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
+					if (!std::isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 							diff - vs->frame_last_filter_delay < 0 &&
 							*serial == vs->vidclk.serial &&
 							vs->videoq.nb_packets) {
@@ -2023,7 +2023,7 @@ the_end:
 
 			diff = get_clock(&vs->audclk) - get_master_clock();
 
-			if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
+			if (!std::isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD) {
 				vs->audio_diff_cum = diff +
 						vs->audio_diff_avg_coef * vs->audio_diff_cum;
 
@@ -2405,7 +2405,7 @@ the_end:
 
 				vs->audio_write_buf_size = vs->audio_buf_size - vs->audio_buf_index;
 				/* Let's assume the audio driver that is used by SDL has two periods. */
-				if (!isnan(vs->audio_clock)) {
+				if (!std::isnan(vs->audio_clock)) {
 					dec->set_clock_at(&vs->audclk, vs->audio_clock - (double)(2 * vs->audio_hw_buf_size + vs->audio_write_buf_size) / vs->audio_tgt.bytes_per_sec, vs->audio_clock_serial, audio_cb_time / 1000000.0);
 					dec->sync_clock_to_slave(&vs->extclk, &vs->audclk);
 				}

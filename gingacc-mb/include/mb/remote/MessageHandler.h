@@ -36,7 +36,21 @@ public:
 	}
 
 	static std::string createResponseMessage (
-		const ResponseCode& code, std::vector<std::string>& args = std::vector<std::string>())
+			const ResponseCode& code)
+		{
+			ptree pt;
+
+			pt.put ("Response.code", code);
+			pt.put ("Response.argc", 0);
+
+			std::stringstream ss;
+			write_json(ss, pt);
+
+			return ss.str();
+		}
+
+	static std::string createResponseMessage (
+		const ResponseCode& code, std::vector<std::string>& args)
 	{
 		ptree pt;
 

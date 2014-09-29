@@ -116,7 +116,7 @@ namespace mb {
 			}
 		}
 
-		if (surface != NULL && LocalScreenManager::getInstance()->hasSurface(
+		if (surface != 0 && LocalScreenManager::getInstance()->hasSurface(
 				myScreen, surface)) {
 
 			SDLDeviceScreen::lockSDL();

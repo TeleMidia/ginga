@@ -76,6 +76,8 @@ void StubServer::removeRequestHandler ()
 
 void StubServer::session(socket_ptr socket)
 {
+  std::cout << "Client accepted!" << std::endl;
+
   try
   {
     while (true)
@@ -96,7 +98,8 @@ void StubServer::session(socket_ptr socket)
 
 		if (_requestHandler != NULL)
 		{
-			std::string response = _requestHandler->processRequest(std::string(data).substr(0, length));
+			std::string str = std::string(data).substr(0, length);
+			std::string response = _requestHandler->processRequest(str);
 			boost::system::error_code code;
 
 			size_t len = boost::asio::write(*socket, boost::asio::buffer(response),
@@ -117,7 +120,8 @@ int StubServer::waitIncoming ()
 	if (initConnection())
 	{
 		//std::vector <tcp::socket*> sockets;
-
+    tcp::endpoint endpoint = _serverSocket->local_endpoint ();
+    std::cout << "Listing on " << endpoint.address () << ":" << endpoint.port () << std::endl;
 		while (true) 
 		{
 			socket_ptr socket (new tcp::socket (*_io_service));

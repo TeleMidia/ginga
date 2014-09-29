@@ -2,6 +2,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 ################################ Libraries #################################
 AM_CPPFLAGS =\
+	-std=c++11 \
   $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_CM)\
@@ -25,16 +26,20 @@ libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
 libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmb_la_SOURCES =\
+	src/DistributedInputManagerListener.cpp\
   src/InputManager.cpp\
   src/LocalScreenManager.cpp\
+  src/remote/StubClient.cpp \
+  src/DistributedScreenManager.cpp\
   src/interface/CodeMap.cpp\
   src/interface/InputEventFactory.cpp\
   src/interface/Matrix.cpp\
   $(NULL)
 
+
 # gingacc-mb-sdl (SDL)
 libgingaccmbsdl_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(X11_CFLAGS) $(FFMPEG_CFLAGS)
-libgingaccmbsdl_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(X11_LIBS) $(FFMPEG_LIBS)
+libgingaccmbsdl_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(X11_LIBS) $(FFMPEG_LIBS) 
 
 libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/SDLDeviceScreen.cpp\
@@ -44,7 +49,7 @@ libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/output/SDLWindow.cpp\
   src/interface/sdl/content/SDLConvert.cpp\
   $(NULL)
-
+  
 # gingacc-mb-dec-sdl-ap (SDL Audio)
 libgingaccmbdecsdlap_la_CXXFLAGS =\
   $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
@@ -129,3 +134,49 @@ gingaccmbconfdir = $(gingaconfdir)/mb/config
 gingaccmbconf_DATA =\
   files/config/input.cfg\
   $(NULL)
+  
+  
+ ############################## Ginga-mb PROGRAMS ###############################
+bin_PROGRAMS = gingacc_mb
+gingacc_mb_SOURCES =\
+   src/DistributedInputManagerListener.cpp\
+   src/DistributedScreenManager.cpp\
+   src/LocalScreenManager.cpp\
+   src/remote/RequestManager.cpp\
+   src/remote/StubClient.cpp \
+   src/remote/StubServer.cpp\
+   src/DistributedInputManagerMB.cpp\
+   src/InputManager.cpp\
+   src/main.cpp\
+   $(NULL)
+   
+gingacc_mb_CPPFLAGS =\
+  -std=c++11 \
+  -I/usr/local/include/SDL2\
+  -I/usr/include/boost\
+	$(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_GINGACC_SYSTEM)\
+  $(INCLUDE_GINGACC_CM)\
+  $(INCLUDE_GINGACC_MB)\
+  $(INCLUDE_GINGACC_CONTEXTMANAGER)\
+  $(INCLUDE_GINGACC_MULTIDEVICE)\
+  $(INCLUDE_GINGACC_PLAYER)\
+  $(INCLUDE_NCL30)\
+  $(INCLUDE_GINGA_NCL)\
+  $(INCLUDE_GINGA_LSSM)\
+  $(NULL)
+  
+gingacc_mb_LDADD = \
+	-lboost_system\
+  $(top_builddir)/gingacc-system/libgingaccsystem.la\
+  $(top_builddir)/gingacc-contextmanager/libgingacccontextmanager.la\
+  $(top_builddir)/gingacc-ic/libgingaccic.la\
+  $(top_builddir)/gingacc-ic/libgingacciccurlic.la\
+  $(top_builddir)/gingacc-mb/libgingaccmb.la\
+  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlap.la\
+  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlav.la\
+  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlf.la\
+  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlimg.la\
+  $(top_builddir)/gingacc-mb/libgingaccmbsdl.la\
+  $(top_builddir)/telemidia-util/libtelemidiautil.la\
+  $(NULL)	

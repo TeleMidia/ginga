@@ -118,7 +118,7 @@ namespace mb {
 
 		public:
 			InputManager(GingaScreenID screenId);
-			virtual ~InputManager();
+			~InputManager();
 
 		protected:
 			void initializeInputIntervalTime();
@@ -132,7 +132,7 @@ namespace mb {
 		protected:
 			virtual void notifyMotionListeners(int x, int y, int z);
 
-		protected:
+		public:
 			void addInputEventListener(
 					IInputEventListener* listener, set<int>* events=NULL);
 
