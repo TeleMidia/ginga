@@ -115,7 +115,6 @@ libgingancladaptation_la_LIBADD =\
 # ginga-ncl-em-converter
 libginganclemconverter_la_LIBADD =\
   $(top_builddir)/gingancl/libginganclmodel.la\
-  $(top_builddir)/gingancl/libgingancladaptation.la\
   $(NULL)
 
 libginganclemconverter_la_SOURCES =\
@@ -165,7 +164,6 @@ libginganclapppadapter_la_SOURCES =\
 
 # ginga-ncl-ncl-p-adapter
 libginganclnclpadapter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclapppadapter.la\
   $(NULL)
 
 libginganclnclpadapter_la_SOURCES =\
@@ -247,7 +245,6 @@ libgingancl_la_LIBADD =\
   $(top_builddir)/gingancl/libginganclmodel.la\
   $(top_builddir)/gingancl/libginganclemconverter.la\
   $(top_builddir)/gingancl/libginganclmd.la\
-  $(top_builddir)/gingancl/libgingancladapter.la\
   $(NULL)
 
 libgingancl_la_SOURCES =\
