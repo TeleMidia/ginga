@@ -980,6 +980,7 @@ namespace mb {
 
 		IDeviceScreen* screen;
 		IContinuousMediaProvider* provider = NULL;
+		GingaProviderID providerId = 0;
 
 		if (getScreen(screenId, &screen)) {
 			provider = screen->createContinuousMediaProvider(
@@ -990,9 +991,11 @@ namespace mb {
 			Thread::mutexLock(&provMapMutex);
 			provMap [provider->getId()] = provider;
 			Thread::mutexUnlock(&provMapMutex);
+
+			providerId = provider->getId();
 		}
 
-		return provider->getId();
+		return providerId;
 	}
 
 	void LocalScreenManager::releaseContinuousMediaProvider(
@@ -1002,11 +1005,14 @@ namespace mb {
 		IContinuousMediaProvider* provider = NULL;
 		IMediaProvider* iProvider = getIMediaProviderFromId(providerId);
 
-		if (iProvider->getType() == IMediaProvider::VideoProvider ||
-				iProvider->getType() == IMediaProvider::AudioProvider)
-			provider = (IContinuousMediaProvider*) iProvider;
+		assert(iProvider != NULL);
+		assert(
+				iProvider->getType() == IMediaProvider::VideoProvider ||
+				iProvider->getType() == IMediaProvider::AudioProvider);
 
-		if (provider != NULL && getScreen(screenId, &screen)) {
+		provider = (IContinuousMediaProvider*) iProvider;
+
+		if (getScreen(screenId, &screen)) {
 			Thread::mutexLock(&provMapMutex);
 			provMap.erase(providerId);
 			Thread::mutexUnlock(&provMapMutex);
@@ -1020,6 +1026,7 @@ namespace mb {
 
 		IDeviceScreen* screen;
 		IFontProvider* provider = NULL;
+		GingaProviderID providerId = 0;
 
 		if (getScreen(screenId, &screen)) {
 			provider = screen->createFontProvider(mrl, fontSize);
@@ -1029,9 +1036,11 @@ namespace mb {
 			Thread::mutexLock(&provMapMutex);
 			provMap [provider->getId()] = provider;
 			Thread::mutexUnlock(&provMapMutex);
+
+			providerId = provider->getId();
 		}
 
-		return provider->getId();
+		return providerId;
 	}
 
 	void LocalScreenManager::releaseFontProvider(
@@ -1041,9 +1050,10 @@ namespace mb {
 		IFontProvider* provider = NULL;
 		IMediaProvider* iProvider = getIMediaProviderFromId(providerId);
 
-		if (iProvider->getType() == IMediaProvider::FontProvider)
-			provider = (IFontProvider*) iProvider;
+		assert(iProvider != NULL);
+		assert(iProvider->getType() == IMediaProvider::FontProvider);
 
+		provider = (IFontProvider*) iProvider;
 		if (provider != NULL && getScreen(screenId, &screen)) {
 			Thread::mutexLock(&provMapMutex);
 			provMap.erase (providerId);
@@ -1058,6 +1068,7 @@ namespace mb {
 
 		IDeviceScreen* screen;
 		IImageProvider* provider = NULL;
+		GingaProviderID providerId = 0;
 
 		if (getScreen(screenId, &screen)) {
 			provider = screen->createImageProvider(mrl);
@@ -1067,9 +1078,11 @@ namespace mb {
 			Thread::mutexLock(&provMapMutex);
 			provMap [provider->getId()] = provider;
 			Thread::mutexUnlock(&provMapMutex);
+
+			providerId = provider->getId();
 		}
 
-		return provider->getId();
+		return providerId;
 	}
 
 	void LocalScreenManager::releaseImageProvider(
@@ -1079,10 +1092,11 @@ namespace mb {
 		IImageProvider* provider = NULL;
 		IMediaProvider* iProvider = getIMediaProviderFromId(providerId);
 
-		if (iProvider->getType() == IMediaProvider::ImageProvider)
-			provider = (IImageProvider*) provider;
+		assert(iProvider != NULL);
+		assert(iProvider->getType() == IMediaProvider::ImageProvider);
 
-		if (provider != NULL && getScreen(screenId, &screen)) {
+		provider = (IImageProvider*) provider;
+		if (getScreen(screenId, &screen)) {
 			Thread::mutexLock(&provMapMutex);
 			provMap.erase(providerId);
 			Thread::mutexUnlock(&provMapMutex);
