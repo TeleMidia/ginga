@@ -81,17 +81,17 @@ namespace player {
 			dm->revertWindowContent(myScreen, outputWindow);
 			dm->deleteWindow(myScreen, outputWindow);
 
-			outputWindow = NULL;
+			outputWindow = 0;
 		}
 
 		if (surface != NULL && dm->hasSurface(myScreen, surface)) {
 			dm->deleteSurface(surface);
-			surface = NULL;
+			surface = 0;
 		}
 
-   		if (font != NULL) {
+   		if (font != 0) {
    			dm->releaseFontProvider(myScreen, font);
-   			font = NULL;
+   			font = 0;
    		}
    	}
 
@@ -101,7 +101,7 @@ namespace player {
 		this->currentLine   = 0;
 		this->currentColumn = 0;
 		this->tabSize       = 0;
-		this->font          = NULL;
+		this->font          = 0;
 		this->bgColor       = NULL;
 		this->fontColor     = NULL;
 		this->fontSize      = 12;
@@ -127,7 +127,7 @@ namespace player {
 			return 0;
 		}
 
-		GingaProviderID font = NULL;
+		GingaProviderID font = 0;
 		int width = 0;
 
 		font = dm->createFontProvider(screenId, fontUri.c_str(), fontSize);
@@ -136,7 +136,7 @@ namespace player {
 			fontColor = new Color("black");
 		}
 
-		if (font != NULL) {
+		if (font != 0) {
 			dm->setSurfaceColor(s,
 													fontColor->getR(),
 													fontColor->getG(),
@@ -149,7 +149,7 @@ namespace player {
 			dm->playProviderOver(font, s, text.c_str(), 0, 0, textAlign);
 
 			dm->releaseFontProvider(screenId, font);
-			font = NULL;
+			font = 0;
 		}
 
 		delete fontColor;
@@ -166,13 +166,13 @@ namespace player {
 		}
 
 		this->fontUri = someUri;
-		if (font != NULL) {
+		if (font != 0) {
 			dm->releaseFontProvider(myScreen, font);
-			font = NULL;
+			font = 0;
 		}
 
 		font = dm->createFontProvider(myScreen, someUri.c_str(), fontSize);
-		if (font == NULL) {
+		if (font == 0) {
 			clog << "TextPlayer::setFont Warning! Can't create Font '";
 			clog << someUri << "': '" << font << "'" << endl;
 			return false;
@@ -243,9 +243,6 @@ namespace player {
 		if (font == NULL) {
 			clog << "TextPlayer::drawText Warning! can't set font" << endl;
 			return;
-
-		} else {
-			dm->setSurfaceFont(surface, font);
 		}
 
 		if (fontColor == NULL) {
@@ -258,7 +255,7 @@ namespace player {
 		                      fontColor->getB(),
 		                      fontColor->getAlpha());
 
-		if (font != NULL && surface != NULL) {
+		if (font != 0 && surface != NULL) {
 			dm->getSurfaceSize(surface, &surWidth, &surHeight);
 			textWidth = dm->getProviderStringWidth(
 					font, text.c_str(), strlen((const char*)(text.c_str())));
@@ -418,7 +415,7 @@ namespace player {
 
 	bool TextPlayer::breakLine() {
 		int w, h;
-		if (font == NULL) {
+		if (font == 0) {
 			setFont(SystemCompat::appendGingaFilesPrefix("font/decker.ttf"));
 		}
 
