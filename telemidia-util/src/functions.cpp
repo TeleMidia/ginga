@@ -280,6 +280,9 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 					break;
 				}
 				curPos = str.find_first_of(delimiter, lastPos);
+				if (curPos == string::npos) {
+					splited->push_back(str.substr(lastPos, str.length() - lastPos));
+				}
 			}
 		}
 		return splited;
