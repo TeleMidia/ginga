@@ -178,7 +178,7 @@ namespace player {
 			return false;
 		}
 
-		dm->getProviderHeight(font);
+		fontHeight = dm->getProviderHeight(font);
 		return true;
 	}
 
