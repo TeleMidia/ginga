@@ -26,16 +26,23 @@ libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
 libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmb_la_SOURCES =\
-	src/DistributedInputManagerListener.cpp\
-  src/InputManager.cpp\
-  src/LocalScreenManager.cpp\
-  src/remote/StubClient.cpp \
-  src/DistributedScreenManager.cpp\
+  src/ScreenManagerFactory.cpp\
   src/interface/CodeMap.cpp\
   src/interface/InputEventFactory.cpp\
   src/interface/Matrix.cpp\
-  $(NULL)
+  src/InputManager.cpp\
+  src/LocalScreenManager.cpp\
+	src/DistributedInputManagerMB.cpp
+    
+if BUILD_REMOTE_MB
+libgingaccmb_la_SOURCES +=\
+	src/DistributedInputManagerListener.cpp\
+	src/remote/StubClient.cpp\
+	src/DistributedScreenManager.cpp
+endif
 
+libgingaccmb_la_SOURCES +=\
+	$(NULL)	
 
 # gingacc-mb-sdl (SDL)
 libgingaccmbsdl_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(X11_CFLAGS) $(FFMPEG_CFLAGS)
@@ -104,6 +111,7 @@ if INSTALL_HEADERS
 gingaccmbinclude_HEADERS =\
   include/mb/IInputManager.h\
   include/mb/ILocalScreenManager.h\
+  include/mb/ScreenManagerFactory.h\
   include/mb/IMBDefs.h\
   include/mb/LocalScreenManager.h\
   $(NULL)
@@ -136,17 +144,12 @@ gingaccmbconf_DATA =\
   $(NULL)
   
   
- ############################## Ginga-mb PROGRAMS ###############################
+############################## Ginga-mb PROGRAMS ###########################
+if BUILD_REMOTE_MB
 bin_PROGRAMS = gingacc_mb
 gingacc_mb_SOURCES =\
-   src/DistributedInputManagerListener.cpp\
-   src/DistributedScreenManager.cpp\
-   src/LocalScreenManager.cpp\
    src/remote/RequestManager.cpp\
-   src/remote/StubClient.cpp \
    src/remote/StubServer.cpp\
-   src/DistributedInputManagerMB.cpp\
-   src/InputManager.cpp\
    src/main.cpp\
    $(NULL)
    
@@ -169,9 +172,6 @@ gingacc_mb_CPPFLAGS =\
 gingacc_mb_LDADD = \
 	-lboost_system\
   $(top_builddir)/gingacc-system/libgingaccsystem.la\
-  $(top_builddir)/gingacc-contextmanager/libgingacccontextmanager.la\
-  $(top_builddir)/gingacc-ic/libgingaccic.la\
-  $(top_builddir)/gingacc-ic/libgingacciccurlic.la\
   $(top_builddir)/gingacc-mb/libgingaccmb.la\
   $(top_builddir)/gingacc-mb/libgingaccmbdecsdlap.la\
   $(top_builddir)/gingacc-mb/libgingaccmbdecsdlav.la\
@@ -180,3 +180,4 @@ gingacc_mb_LDADD = \
   $(top_builddir)/gingacc-mb/libgingaccmbsdl.la\
   $(top_builddir)/telemidia-util/libtelemidiautil.la\
   $(NULL)	
+endif

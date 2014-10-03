@@ -16,7 +16,7 @@ AM_CPPFLAGS =\
   $(NULL)
 
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LIBS)
+AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LIBS) -lboost_system
 
 if BUILD_COMPONENTS
 LDADD =\
