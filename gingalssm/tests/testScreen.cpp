@@ -119,7 +119,7 @@ int main(int argc, char** argv, char** envp) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	int i;
 	bool testAllScreens = false;

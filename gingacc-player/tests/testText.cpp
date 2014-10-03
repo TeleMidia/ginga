@@ -68,7 +68,7 @@ extern "C" {
 }
 
 typedef struct {
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	GingaScreenID screen;
 	set<IWindow*>* windows;
 } TestContainer;
@@ -97,7 +97,7 @@ IPlayer* txt2;
 IPlayer* txt3;
 
 void* testPlayer(void* ptr) {
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	GingaScreenID screen;
 	set<IWindow*>* windows;
 
@@ -291,7 +291,7 @@ int main(int argc, char** argv, char** envp) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	//SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 

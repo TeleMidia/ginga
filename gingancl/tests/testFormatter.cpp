@@ -72,7 +72,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::xhtm
 
 int main(int argc, char** argv, char** envp) {
 	FormatterMediator* formatter;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	NclPlayerData* data = new NclPlayerData;
 	IPlayerAdapter* player;
 	IWindow* w;
@@ -84,7 +84,7 @@ int main(int argc, char** argv, char** envp) {
 	dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 #else
-	dm = LocalScreenManager::getInstance();
+	dm = ScreenManagerFactory::getInstance();
 #endif
 
 	screenId = dm->createScreen(0, NULL);

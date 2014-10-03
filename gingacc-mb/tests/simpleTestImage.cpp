@@ -82,7 +82,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 	GingaScreenID screen;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	string imageUri = "";
 
 	//SETTING LOG INFO TO A FILE
@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 
 	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
 #else
-	dm = LocalScreenManager::getInstance();
+	dm = ScreenManagerFactory::getInstance();
 #endif
 
 	cout << "gingacc-mb test has created the screen manager. ";

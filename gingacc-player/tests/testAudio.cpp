@@ -87,7 +87,7 @@ IPlayer* aud2;
 IPlayer* aud3;
 IPlayer* aud4;
 
-void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
+void testPlayer(IScreenManager* dm, GingaScreenID screen) {
 	IWindow* w;
 	IWindow* ww;
 	IWindow* www;
@@ -165,7 +165,7 @@ void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
 
 int main(int argc, char** argv, char** envp) {
 	GingaScreenID screen1;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 

@@ -253,7 +253,7 @@ void printHelp() {
 	exit(0);
 }
 
-ILocalScreenManager* dm = NULL;
+IScreenManager* dm = NULL;
 bool running = true;
 
 void* callMain(void* ptr) {

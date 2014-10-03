@@ -115,7 +115,7 @@ public:
 int main(int argc, char** argv) {
 	GingaScreenID screen;
 	IInputManager* im;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	TestInputEventListener* l;
 	int fakeArgc = 5;
 	char* sdlArgv[5];
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 			cm->getObject("LocalScreenManager")))();
 
 #else
-	dm = LocalScreenManager::getInstance();
+	dm = ScreenManagerFactory::getInstance();
 #endif
 
 	screen = dm->createScreen(argc, argv);

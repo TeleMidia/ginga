@@ -68,7 +68,7 @@ extern "C" {
 }
 
 void testAwesomium(
-		ILocalScreenManager* dm,
+		IScreenManager* dm,
 		GingaScreenID screen,
 		set<IWindow*>* windows,
 		bool testStop) {
@@ -192,7 +192,7 @@ int main(int argc, char** argv, char** envp) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 

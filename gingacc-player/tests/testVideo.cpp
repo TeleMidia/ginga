@@ -125,7 +125,7 @@ class TestPlayerListener : public IPlayerListener {
 };
 
 void testPlayer(
-		ILocalScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
+		IScreenManager* dm, GingaScreenID screen, set<IWindow*>* windows) {
 
 	IWindow* w1;
 	IWindow* w2;
@@ -259,7 +259,7 @@ int main(int argc, char** argv, char** envp) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 

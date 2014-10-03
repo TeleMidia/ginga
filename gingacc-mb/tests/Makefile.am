@@ -11,6 +11,7 @@ AM_CXXFLAGS =
 AM_LDFLAGS = -static
 
 LDADD =\
+	-lboost_system\
   $(top_builddir)/telemidia-util/libtelemidiautil.la\
   $(top_builddir)/gingacc-system/libgingaccsystem.la\
   $(top_builddir)/gingacc-mb/libgingaccmb.la\
@@ -26,21 +27,9 @@ noinst_PROGRAMS =\
   simpleTestInput\
   simpleTestText\
   simpleTestVideo\
-  testAudio\
-  testFont\
-  testInput\
-  testScreen\
-  testSingleVideo\
-  testVideo\
   $(NULL)
 
 simpleTestImage_SOURCES = simpleTestImage.cpp
 simpleTestInput_SOURCES = simpleTestInput.cpp
 simpleTestText_SOURCES = simpleTestText.cpp
 simpleTestVideo_SOURCES = simpleTestVideo.cpp
-testAudio_SOURCES = testAudio.cpp
-testFont_SOURCES = testFont.cpp
-testInput_SOURCES = testInput.cpp
-testScreen_SOURCES = testScreen.cpp
-testSingleVideo_SOURCES = testSingleVideo.cpp
-testVideo_SOURCES = testVideo.cpp

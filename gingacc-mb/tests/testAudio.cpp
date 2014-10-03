@@ -91,7 +91,7 @@ string updateFileUri(string file) {
 	return file;
 }
 
-void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
+void testScreen(IScreenManager* dm, GingaScreenID screen) {
 	IContinuousMediaProvider* aud1;
 	IContinuousMediaProvider* aud2;
 	IContinuousMediaProvider* aud3;
@@ -125,7 +125,7 @@ void testScreen(ILocalScreenManager* dm, GingaScreenID screen) {
 
 int main(int argc, char** argv) {
 	GingaScreenID screen1;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	int i;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_STDO);

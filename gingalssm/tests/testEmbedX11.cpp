@@ -349,7 +349,7 @@ int main(int argc, char** argv, char** envp) {
 	IComponentManager* cm = IComponentManager::getCMInstance();
 	cm->setUnloadComponents(!disableUC);
 
-	ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+	IScreenManager* dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 
 	char* fakeArgv1[5];

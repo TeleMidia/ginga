@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	NTPPlayer* ntpPlayer;
 
 	GingaScreenID screen;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
 
 #else
-	dm = LocalScreenManager::getInstance();
+	dm = ScreenManagerFactory::getInstance();
 #endif
 
 	screen = dm->createScreen(argc, argv);

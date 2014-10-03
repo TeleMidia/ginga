@@ -67,7 +67,7 @@ extern "C" {
 #include <stdio.h>
 }
 
-void testPlayer(ILocalScreenManager* dm, GingaScreenID screen) {
+void testPlayer(IScreenManager* dm, GingaScreenID screen) {
 	IWindow* w;
 	bool notFalse = true;
 	ISurface* s;
@@ -97,11 +97,11 @@ int main(int argc, char** argv, char** envp) {
 	GingaScreenID screen1;
 	int fakeArgc = 5;
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-	dm = LocalScreenManager::getInstance();
+	dm = ScreenManagerFactory::getInstance();
 
 	sdlArgv[0] = (char*)"testScreen";
 	sdlArgv[1] = (char*)"--vsystem";
