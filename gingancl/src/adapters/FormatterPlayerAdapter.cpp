@@ -63,7 +63,7 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-	ILocalScreenManager* FormatterPlayerAdapter::dm = NULL;
+	IScreenManager* FormatterPlayerAdapter::dm = NULL;
 	double FormatterPlayerAdapter::eventTS = 0;
 
 	FormatterPlayerAdapter::FormatterPlayerAdapter() {
@@ -136,7 +136,7 @@ namespace adapters {
 		this->manager  = manager;
 		this->myScreen = manager->getNclPlayerData()->screenId;
 		if (dm == NULL) {
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 		}
 
 		LocalScreenManager::addIEListenerInstance(this);

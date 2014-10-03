@@ -107,7 +107,7 @@ namespace adapters {
 			public IInputEventListener {
 
 		protected:
-			static ILocalScreenManager* dm;
+			static IScreenManager* dm;
 			static double eventTS;
 			IInputManager* im;
 

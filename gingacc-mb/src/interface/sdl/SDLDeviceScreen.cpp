@@ -82,10 +82,8 @@ extern "C" {
 #include <X11/Xatom.h>
 #endif
 
-#if defined ENABLE_MB_PROCESS
+#if HAVE_REMOTE_MB
 #include "mb/DistributedInputManagerMB.h"
-#elif defined ENABLE_EXTERNAL_MB
-#include "mb/DistributedInputManagerListener.h"
 #endif
 
 namespace br {
@@ -1104,7 +1102,7 @@ namespace mb {
 			provider = createImageProvider(mrl);
 			if (provider != NULL) {
 				iSur = createSurfaceFrom(NULL);
-				LocalScreenManager::getInstance()->registerSurface (iSur);
+				ScreenManagerFactory::getInstance()->registerSurface (iSur);
 				provider->playOver(iSur->getId());
 
 				releaseImageProvider(provider);
@@ -1195,17 +1193,19 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::notifyQuit() {
-		map<SDLDeviceScreen*, short>::iterator i;
-		SDLDeviceScreen* s;
+    map<SDLDeviceScreen*, short>::iterator i;
+    SDLDeviceScreen* s;
 
-		Thread::mutexLock(&scrMutex);
-		i = sdlScreens.begin();
-		while (i != sdlScreens.end()) {
-			s = i->first;
-			s->im->postInputEvent(CodeMap::KEY_QUIT);
-			++i;
-		}
-		Thread::mutexUnlock(&scrMutex);
+    Thread::mutexLock(&scrMutex);
+
+    i = sdlScreens.begin();
+    while (i != sdlScreens.end()) {
+      s = i->first;
+      if (s->im != NULL)
+        s->im->postInputEvent(CodeMap::KEY_QUIT);
+      ++i;
+    }
+    Thread::mutexUnlock(&scrMutex);
 
 		clog << "SDLDeviceScreen::notifyQuit all done!" << endl;
 	}
@@ -1270,8 +1270,8 @@ namespace mb {
 
 						if (s->im != NULL) {
 							s->im->setAxisBoundaries(
-									s->wRes, s->hRes, 0);
-						}
+                  s->wRes, s->hRes, 0);
+            }
 
 						break;
 
@@ -1356,14 +1356,14 @@ namespace mb {
 		checkWindowFocus(s, event);
 
     	if (s->im != NULL) {
-			eventBuffer = (SDLEventBuffer*)(s->im->getEventBuffer());
-			if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
-					s->uEmbedId == NULL) || checkEventFocus(s))) {
+        eventBuffer = (SDLEventBuffer*)(s->im->getEventBuffer());
+        if (((SDLEventBuffer::checkEvent(s->sdlId, *event) &&
+                s->uEmbedId == NULL) || checkEventFocus(s))) {
 
-				/*clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
-				clog << endl;*/
-				eventBuffer->feed(*event, capsOn, shiftOn);
-				return true;
+          /*clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+            clog << endl;*/
+          eventBuffer->feed(*event, capsOn, shiftOn);
+          return true;
 			}
 		}
 
@@ -2048,13 +2048,18 @@ namespace mb {
 				s->screen, -1, SDL_RENDERER_ACCELERATED);
 
 		initCodeMaps();
-		s->im = 
-#if defined ENABLE_MB_PROCESS
-			new DistributedInputManagerMB(s->id);
+
+#if HAVE_REMOTE_MB
+    if (ScreenManagerFactory::getInstance()->isLocal () == true)
+      s->im = new DistributedInputManagerMB (s->id);
+    else
+      s->im = new InputManager (s->id);
 #else
-			new InputManager(s->id);
+      s->im = new InputManager (s->id);
 #endif
-		s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
+
+    if (s->im != NULL)
+      s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
 
 		unlockSDL();
 

@@ -128,7 +128,7 @@ RequestManager::RequestManager()
 
 std::string RequestManager::processRequest (std::string& request)
 {
-	_screenManager = LocalScreenManager::getInstance();
+   _screenManager = ScreenManagerFactory::getInstance(true);
 
 	std::vector <std::string> args;
 	MethodRequested code;

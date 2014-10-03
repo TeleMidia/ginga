@@ -78,7 +78,7 @@ namespace mb {
 		Thread::mutexLock(&sMutex);
 		Thread::mutexLock(&pMutex);
 
-		if (!LocalScreenManager::getInstance()->releaseSurface(
+		if (!ScreenManagerFactory::getInstance()->releaseSurface(
 				myScreen, this)) {
 
 			clog << "SDLSurface::~SDLSurface Warning! Can't find ISur" << endl;
@@ -92,7 +92,7 @@ namespace mb {
 		releaseFont();
 
 		if (parent != NULL &&
-				LocalScreenManager::getInstance()->hasWindow(
+				ScreenManagerFactory::getInstance()->hasWindow(
 								myScreen, parent->getId())) {
 
 			if (parent->getContent() == sur) {
@@ -230,7 +230,7 @@ namespace mb {
 	void SDLSurface::releaseFont() {
 		if (iFont != NULL)
 		{
-			LocalScreenManager::getInstance()->releaseFontProvider(myScreen,
+			ScreenManagerFactory::getInstance()->releaseFontProvider(myScreen,
 		                                                       iFont->getId());
 			iFont = NULL;
 		}
@@ -607,7 +607,7 @@ namespace mb {
 		int h;
 
 		if (parent != NULL &&
-				LocalScreenManager::getInstance()->hasWindow(
+				ScreenManagerFactory::getInstance()->hasWindow(
 						myScreen, parent->getId())) {
 
 			w = parent->getW();

@@ -71,7 +71,7 @@ namespace player {
 		LocalScreenManager::addIEListenerInstance(this);
 		LocalScreenManager::addMEListenerInstance(this);
 
-		dm = LocalScreenManager::getInstance();
+		dm = ScreenManagerFactory::getInstance();
 		im = dm->getInputManager(myScreen);
 
 		this->myScreen = myScreen;

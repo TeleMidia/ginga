@@ -71,7 +71,7 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace multidevice {
-	ILocalScreenManager* FormatterMultiDevice::dm   = NULL;
+	IScreenManager* FormatterMultiDevice::dm   = NULL;
 #if HAVE_MULTIDEVICE
 	IRemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
 #else
@@ -106,7 +106,7 @@ namespace multidevice {
 					cm->getObject("LocalScreenManager")))();
 
 #else
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 #endif
 		}
 

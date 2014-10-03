@@ -109,7 +109,7 @@ namespace lssm {
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
 
-	ILocalScreenManager* PresentationEngineManager::dm = NULL;
+	IScreenManager* PresentationEngineManager::dm = NULL;
 	bool PresentationEngineManager::autoProcess        = false;
 
 	PresentationEngineManager::PresentationEngineManager(
@@ -127,7 +127,7 @@ namespace lssm {
 			dm = ((LocalScreenManagerCreator*)(
 					cm->getObject("LocalScreenManager")))();
 #else
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 #endif
 		}
 

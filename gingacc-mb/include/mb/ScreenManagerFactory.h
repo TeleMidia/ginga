@@ -47,75 +47,33 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "gingancl/model/FocusSourceManager.h"
+#ifndef ScreenManagerFactory_H_
+#define ScreenManagerFactory_H_
 
-#include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
-
-#include "mb/ILocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
-
-#include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
-namespace focus {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
+namespace core {
+namespace mb {
 
-	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
-			GingaScreenID screenId, string src) {
+class ScreenManagerFactory {
+public:
+	static IScreenManager* getInstance(bool forceLocal = false);
 
-		string::size_type index;
-		string extension;
-		GingaSurfaceID s;
+	static void releaseInstance ();
 
-		if (src != "") {
-			index = src.find_last_of('.');
-			if (index != std::string::npos) {
-				index++;
-				extension = src.substr(index, src.length() - index);
+private:
+	static IScreenManager* _instance;
+};
+}
+}
+}
+}
+}
+}
 
-				if (extension == "png" ||
-					    extension == "gif" ||
-					    extension == "jpg" ||
-					    extension == "jpeg" ||
-					    extension == "bmp") {
-
-					s = dm->createRenderedSurfaceFromImageFile(
-							screenId, src.c_str());
-
-					return s;
-				}
-			}
-		}
-		return NULL;
-	}
-}
-}
-}
-}
-}
-}
-}
-}
+#endif /* ScreenManagerFactory_H_ */

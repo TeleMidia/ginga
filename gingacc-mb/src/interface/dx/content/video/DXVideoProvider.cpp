@@ -65,7 +65,7 @@ namespace mb {
 		clog << "DXVideoProvider::DXVideoProvider(" << mrl << ")" << endl;
 		pD3ddev = NULL;
 
-		pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		pD3ddev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 
 		m_pVideo.reset(new VideoGraph(mrl, pD3ddev));
 		
@@ -99,7 +99,7 @@ namespace mb {
 			surProp.height = desc.Height;
 		}
 
-		DX2DSurface* sur = (DX2DSurface*)LocalScreenManager::getInstance()->createSurface(&surProp);
+		DX2DSurface* sur = (DX2DSurface*)ScreenManagerFactory::getInstance()->createSurface(&surProp);
 		sur->replaceTex(videoTex);
 
 		return new DXSurface(sur);

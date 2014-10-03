@@ -271,7 +271,7 @@ namespace mb {
 
 		Sleep(1000);
 		memset(&dPresentParam, 0, sizeof(D3DPRESENT_PARAMETERS));
-		pD3dDev = (LPDIRECT3DDEVICE9)(LocalScreenManager::getInstance())->getGfxRoot(0);
+		pD3dDev = (LPDIRECT3DDEVICE9)(ScreenManagerFactory::getInstance())->getGfxRoot(0);
 
 		if(pD3dDev){
 			pD3dDev->GetSwapChain(0, &pSwapChain); // Default SwapChain
@@ -284,8 +284,8 @@ namespace mb {
 			clog << "DXEventBuffer: error - pD3dDev is NULL" << endl;
 		}
 
-		m_scrWidth	= (LocalScreenManager::getInstance())->getDeviceWidth();	
-		m_scrHeight = (LocalScreenManager::getInstance())->getDeviceHeight(); 
+		m_scrWidth	= (ScreenManagerFactory::getInstance())->getDeviceWidth();	
+		m_scrHeight = (ScreenManagerFactory::getInstance())->getDeviceHeight(); 
 		m_hwndC		= dPresentParam.hDeviceWindow;
  		hInstance	= (HINSTANCE)GetModuleHandle(NULL);
 

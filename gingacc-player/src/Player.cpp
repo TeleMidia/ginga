@@ -62,7 +62,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	ILocalScreenManager* Player::dm = NULL;
+	IScreenManager* Player::dm = NULL;
 
 	Player::Player(GingaScreenID screenId, string mrl) {
 		Thread::mutexInit(&listM, NULL);
@@ -77,7 +77,7 @@ namespace player {
 		}
 #else
 		if (dm == NULL) {
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 		}
 #endif
 

@@ -147,19 +147,19 @@ namespace mb {
 		IWindow* parent;
 
 		SDLDeviceScreen::addCMPToRendererList(this);
-		parentId = LocalScreenManager::getInstance()->getSurfaceParentWindow(surface);
+		parentId = ScreenManagerFactory::getInstance()->getSurfaceParentWindow(surface);
 
 		if (parentId == 0) {
 			SDLAudioProvider::playOver(surface);
 			return;
 		}
 
-		parent = (IWindow*)(LocalScreenManager::getInstance()->
+		parent = (IWindow*)(ScreenManagerFactory::getInstance()->
 				getIWindowFromId(myScreen, parentId));
 
 		clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-		if (LocalScreenManager::getInstance()->hasWindow(myScreen, parentId)) {
-			win = (SDLWindow*)LocalScreenManager::getInstance()->
+		if (ScreenManagerFactory::getInstance()->hasWindow(myScreen, parentId)) {
+			win = (SDLWindow*)ScreenManagerFactory::getInstance()->
 					getIWindowFromId(myScreen, parentId);
 			if (hasTex) {
 				((SDLWindow*)win)->setTexture(tex);

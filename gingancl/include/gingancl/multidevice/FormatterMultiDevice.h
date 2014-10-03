@@ -123,7 +123,7 @@ namespace multidevice {
 			public IInputEventListener {
 #endif //HAVE_MULTIDEVICE
 		protected:
-			static ILocalScreenManager* dm;
+			static IScreenManager* dm;
 			IInputManager* im;
 			pthread_mutex_t mutex;
 

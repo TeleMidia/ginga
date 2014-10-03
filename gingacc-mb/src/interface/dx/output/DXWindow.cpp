@@ -122,12 +122,12 @@ namespace mb {
 		unlockChilds();
 
 		if (winSur != NULL) {
-			LocalScreenManager::getInstance()->releaseSurface(winSur);
+			ScreenManagerFactory::getInstance()->releaseSurface(winSur);
 			winSur = NULL;
 		}
 
 		if (win != NULL) {
-			LocalScreenManager::getInstance()->releaseWindow(win);
+			ScreenManagerFactory::getInstance()->releaseWindow(win);
 			win = NULL;
 		}
 		unlock();
@@ -170,7 +170,7 @@ namespace mb {
 		if (win != NULL) {
 			clog << "DXWindow::draw Warning! Requesting redraw" << endl;
 		} else {
-			win = (DX2DSurface *)(LocalScreenManager::getInstance()->createWindow(&winProp));
+			win = (DX2DSurface *)(ScreenManagerFactory::getInstance()->createWindow(&winProp));
 			if (win != NULL) {
 				this->winSur = this->win;
 			}

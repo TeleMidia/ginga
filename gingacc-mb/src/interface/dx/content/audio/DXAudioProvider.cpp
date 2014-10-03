@@ -65,7 +65,7 @@ namespace mb {
 		JCriticalSection crit;
 		clog << "DXAudioProvider::DXAudioProvider(" << mrl << ")" << endl;
 		
-		IDirect3DDevice9* pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		IDirect3DDevice9* pD3ddev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 		
 		m_pAudio = new AudioGraph(mrl, pD3ddev);
 		
@@ -74,7 +74,7 @@ namespace mb {
 		}
 		//pD3ddev = NULL;
 
-		//pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		//pD3ddev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 		//vmr = new eVMR3(pD3ddev, false, 10, 10, 0.1);
 	
 		//if(vmr->RenderVideo( LPSTR(mrl)))
@@ -113,7 +113,7 @@ namespace mb {
 			surProp.height = 1;
 		}
 
-		DX2DSurface* sur = (DX2DSurface*)LocalScreenManager::getInstance()->createSurface(&surProp);
+		DX2DSurface* sur = (DX2DSurface*)ScreenManagerFactory::getInstance()->createSurface(&surProp);
 		sur->setTexture(tex);
 
 		return new DXSurface(sur);

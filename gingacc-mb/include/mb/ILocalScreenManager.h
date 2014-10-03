@@ -73,9 +73,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class ILocalScreenManager {
+	class IScreenManager {
 		public:
-			virtual ~ILocalScreenManager(){};
+			virtual ~IScreenManager(){};
 
 			virtual void releaseHandler()=0;
 
@@ -111,6 +111,8 @@ namespace mb {
 
 			virtual void blitScreen(GingaScreenID screenId, string fileUri)=0;
 			virtual void refreshScreen(GingaScreenID screenId)=0;
+
+      virtual bool isLocal () = 0;
 
 
 			/* Interfacing output */
@@ -148,6 +150,9 @@ namespace mb {
 					GingaScreenID screenId, ISurface* sur)=0;
 
 			/* Interfacing content */
+			virtual IMediaProvider* getIMediaProviderFromId (
+					const GingaProviderID& provId) = 0;
+			virtual ISurface* getISurfaceFromId(const GingaSurfaceID &surfaceId) = 0;
 
 			virtual GingaProviderID createContinuousMediaProvider(
 					GingaScreenID screenId,
@@ -410,11 +415,11 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::ILocalScreenManager*
+typedef ::br::pucrio::telemidia::ginga::core::mb::IScreenManager*
 		LocalScreenManagerCreator();
 
 typedef void LocalScreenManagerDestroyer(
 		::br::pucrio::telemidia::ginga::core::mb::
-				ILocalScreenManager* dm);
+				IScreenManager* dm);
 
 #endif /*ILocalScreenManager_H_*/

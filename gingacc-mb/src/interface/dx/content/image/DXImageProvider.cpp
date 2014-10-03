@@ -91,7 +91,7 @@ namespace mb {
 
 		mrl = string(pmrl);
 		pD3ddev = NULL;
-		pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		pD3ddev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 		
 		if(pD3ddev == NULL)
 			clog << "DXImageProvider - No Direct3D device found" << endl;
@@ -186,7 +186,7 @@ namespace mb {
 		surProp.y = 0;
 		surProp.z = 1.0;
 
-		destination = (DX2DSurface*)(LocalScreenManager::getInstance()->createSurface(&surProp));
+		destination = (DX2DSurface*)(ScreenManagerFactory::getInstance()->createSurface(&surProp));
 		renderedSurface = new DXSurface(destination);
 
 		if(destination != NULL && renderedSurface != NULL){

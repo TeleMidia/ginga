@@ -438,7 +438,7 @@ private:
 	std::string (RequestManager::*_ptMethods[MethodRequested::LENGHT]) (const MethodRequested&, 
 		const std::vector<std::string>& args) ;
 
-	LocalScreenManager* _screenManager;
+	IScreenManager* _screenManager;
 };
 
 #endif //REQUESTMANAGER_H
