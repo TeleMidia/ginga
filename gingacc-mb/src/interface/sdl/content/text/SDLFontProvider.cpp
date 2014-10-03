@@ -289,7 +289,7 @@ namespace mb {
 		int pW, pH;
 
 		Thread::mutexLock(&ntsMutex);
-		this->content = LocalScreenManager::getInstance()->
+		this->content = ScreenManagerFactory::getInstance()->
 				getISurfaceFromId(surface);
 
 		if (font == NULL) {
@@ -302,7 +302,7 @@ namespace mb {
 			}
 		}
 
-		if (LocalScreenManager::getInstance()->
+		if (ScreenManagerFactory::getInstance()->
 				hasSurface(myScreen, content->getId())) {
 
 			parent = (SDLWindow*)(content->getParentWindow());

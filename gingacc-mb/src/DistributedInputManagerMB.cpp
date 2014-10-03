@@ -63,7 +63,7 @@ bool DistributedInputManagerMB::dispatchEvent(IInputEvent* inputEvent)
 
 	vector <pair <string, string> >args;
 	args.push_back (make_pair("keyCode", to_string(inputEvent->getKeyCode(myScreen))));
-	args.push_back (make_pair("type",  to_string(LocalScreenManager::getInstance()->fromMBToGinga(myScreen, inputEvent->getType()))) );
+	args.push_back (make_pair("type",  to_string(ScreenManagerFactory::getInstance()->fromMBToGinga(myScreen, inputEvent->getType()))) );
 	args.push_back (make_pair("isButtonPress", to_string(inputEvent->isButtonPressType())));
 	args.push_back (make_pair("isMotion", to_string(inputEvent->isMotionType())));
 	args.push_back (make_pair("isPressed", to_string(inputEvent->isPressedType())));
@@ -107,7 +107,6 @@ void DistributedInputManagerMB::notifyMotionListeners (int x, int y, int z)
 
 DistributedInputManagerMB::~DistributedInputManagerMB()
 {
-	InputManager::~InputManager();
 }
 
 

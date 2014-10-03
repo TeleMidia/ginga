@@ -52,6 +52,7 @@ http://www.telemidia.puc-rio.br
 
 #include "interface/IDeviceScreen.h"
 #include "ILocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 #include "IInputManager.h"
 
 #include <pthread.h>
@@ -70,7 +71,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class LocalScreenManager : public ILocalScreenManager {
+	class LocalScreenManager : public IScreenManager {
 		public:
 			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
 										     /* System Description  String   */
@@ -88,6 +89,8 @@ namespace mb {
 			static const short GMBSST_HWND;  /* MS-W Window Handle: hwnd     */
 			static const short GMBSST_SDL;   /* SDL:                sdl      */
 			static const short GMBSST_COCOA; /* COCOA:              cocoa    */
+
+			LocalScreenManager();
 
 		protected:
 			map<GingaScreenID, IDeviceScreen*> screens;
@@ -120,9 +123,6 @@ namespace mb {
 			pthread_mutex_t wsMutex;
 			GingaScreenID waitingRefreshScreen;
 
-			static LocalScreenManager* _instance;
-
-			LocalScreenManager();
 			virtual ~LocalScreenManager();
 
 			static void checkInitMutex();
@@ -149,8 +149,6 @@ namespace mb {
 					IMotionEventListener* listener, bool removeInstance=false);
 
 			void setBackgroundImage(GingaScreenID screenId, string uri);
-
-			static LocalScreenManager* getInstance();
 
 			int getDeviceWidth(GingaScreenID screenId);
 
@@ -187,6 +185,8 @@ namespace mb {
 			void unlockSysNames();
 
 			GingaSurfaceID provIdRefCounter;
+
+      virtual bool isLocal () { return true; }
 
 		public:
 			IMediaProvider* getIMediaProviderFromId (const GingaProviderID& provId);

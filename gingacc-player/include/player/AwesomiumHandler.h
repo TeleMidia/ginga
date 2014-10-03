@@ -135,7 +135,7 @@ namespace player {
 			static bool initialized;
 			static awe_webview* webView;
 
-			static ILocalScreenManager* dm;
+			static IScreenManager* dm;
 
 			static void initCodeMap();
 

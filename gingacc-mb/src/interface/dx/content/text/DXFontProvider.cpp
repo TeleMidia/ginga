@@ -98,7 +98,7 @@ namespace mb {
 		clog << "DXFontProvider::DXFontProvider" << endl;
 		pD3ddev = NULL;
 		fontTex = NULL;
-		pD3ddev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		pD3ddev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 		// Get Font uri ?
 		// Create Font
 		DXCHECK(D3DXCreateFont( pD3ddev, heightInPixel + 8, 10, 10, 1, FW_DONTCARE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &font ), "", "");
@@ -205,7 +205,7 @@ namespace mb {
 		D3DSURFACE_DESC		destSurDesc ;
 		int					gSurWidth, gSurHeight;
 
-		gfxDev = (IDirect3DDevice9 *)(LocalScreenManager::getInstance()->getGfxRoot());
+		gfxDev = (IDirect3DDevice9 *)(ScreenManagerFactory::getInstance()->getGfxRoot());
 		givenSurface = (IDirect3DSurface9*)(((ISurface*)surface)->getContent());
 
 		DXCHECK(givenSurface->GetDesc(&destSurDesc), "DXFontProvider::playOver()", "Can�t Get Descriptor");

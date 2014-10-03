@@ -189,8 +189,6 @@ namespace mb {
 		Thread::mutexDestroy(&sysMutex);
 	}
 
-	LocalScreenManager* LocalScreenManager::_instance = NULL;
-
 	void LocalScreenManager::checkInitMutex() {
 		if (!initMutex) {
 			initMutex = true;
@@ -204,10 +202,7 @@ namespace mb {
 	}
 
 	void LocalScreenManager::releaseHandler() {
-		if (_instance != NULL) {
-			delete _instance;
-			_instance = NULL;
-		}
+		ScreenManagerFactory::releaseInstance();
 	}
 
 	void LocalScreenManager::addIEListenerInstance(
@@ -307,17 +302,6 @@ namespace mb {
 		if (getScreen(screenId, &screen)) {
 			screen->setBackgroundImage(uri);
 		}
-	}
-
-	LocalScreenManager* LocalScreenManager::getInstance() {
-		if (LocalScreenManager::_instance == NULL) {
-#ifdef ENABLE_EXTERNAL_MB
-			LocalScreenManager::_instance = new DistributedScreenManager();
-#else
-			LocalScreenManager::_instance = new LocalScreenManager();
-#endif
-		}
-		return LocalScreenManager::_instance;
 	}
 
 	int LocalScreenManager::getDeviceWidth(GingaScreenID screenId) {
@@ -2159,16 +2143,16 @@ void LocalScreenManager::moveWindowTo(
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		ILocalScreenManager* createLocalScreenManager() {
+		IScreenManager* createLocalScreenManager() {
 
-	::br::pucrio::telemidia::ginga::core::mb::ILocalScreenManager* ldm = (
-			::br::pucrio::telemidia::ginga::core::mb::LocalScreenManager::getInstance());
+	::br::pucrio::telemidia::ginga::core::mb::IScreenManager* ldm = (
+			::br::pucrio::telemidia::ginga::core::mb::ScreenManagerFactory::getInstance());
 
 	return ldm;
 }
 
 extern "C" void destroyLocalScreenManager(
-		::br::pucrio::telemidia::ginga::core::mb::ILocalScreenManager* dm) {
+		::br::pucrio::telemidia::ginga::core::mb::IScreenManager* dm) {
 
-	dm->releaseHandler();
+	::br::pucrio::telemidia::ginga::core::mb::ScreenManagerFactory::releaseInstance();
 }

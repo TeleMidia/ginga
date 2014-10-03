@@ -89,7 +89,7 @@ namespace player {
 	private:
 		static map<int, int> fromGingaToBklm;
 		std::string mURL;
-		ILocalScreenManager* dm;
+		IScreenManager* dm;
 		GingaScreenID myScreen;
 		IInputManager* im;
 		GingaSurfaceID surface;

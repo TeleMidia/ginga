@@ -117,7 +117,7 @@ namespace mb {
 		releaseColorKey();
 
 		// release window will delete texture
-		LocalScreenManager::getInstance()->releaseWindow(myScreen, this);
+		ScreenManagerFactory::getInstance()->releaseWindow(myScreen, this);
 
 		Thread::mutexDestroy(&mutexC);
 
@@ -185,7 +185,7 @@ namespace mb {
 
 	void SDLWindow::releaseWinISur() {
 		if (winISur != 0) {
-			LocalScreenManager::getInstance()->deleteSurface(winISur);
+			ScreenManagerFactory::getInstance()->deleteSurface(winISur);
 			winISur = 0;
 		}
 	}
@@ -496,9 +496,9 @@ namespace mb {
 
 	void SDLWindow::unprotectedValidate() {
 		if (winISur != 0) {
-			LocalScreenManager::getInstance()->flipSurface(winISur);
+			ScreenManagerFactory::getInstance()->flipSurface(winISur);
 			curSur = (SDL_Surface*)
-					(LocalScreenManager::getInstance()->getSurfaceContent(winISur));
+					(ScreenManagerFactory::getInstance()->getSurfaceContent(winISur));
 			textureUpdate = true;
 
 		} else if (childSurface != NULL) {
@@ -512,7 +512,7 @@ namespace mb {
 
 		lockChilds();
 		if (childSurface != NULL &&
-				LocalScreenManager::getInstance()->hasSurface(
+				ScreenManagerFactory::getInstance()->hasSurface(
 						myScreen, childSurface->getId())) {
 
 			dd = ((SDLSurface*)childSurface)->createDrawDataList();
@@ -642,28 +642,28 @@ namespace mb {
 		GingaProviderID providerId;
 		GingaSurfaceID surId;
 
-		providerId = LocalScreenManager::getInstance()->createImageProvider(
+		providerId = ScreenManagerFactory::getInstance()->createImageProvider(
 				myScreen, serializedImageUrl.c_str());
 
 		IMediaProvider *mediaProvider =
-				LocalScreenManager::getInstance()->getIMediaProviderFromId(providerId);
+				ScreenManagerFactory::getInstance()->getIMediaProviderFromId(providerId);
 		if (mediaProvider &&
 				mediaProvider->getType() == IMediaProvider::ImageProvider)
 			img = (IImageProvider*) mediaProvider;
 
-		surId = LocalScreenManager::getInstance()->createSurface(myScreen);
+		surId = ScreenManagerFactory::getInstance()->createSurface(myScreen);
 		img->playOver(surId);
 
 		lockSurface();
-		curSur = (SDL_Surface*)LocalScreenManager::getInstance()->
+		curSur = (SDL_Surface*)ScreenManagerFactory::getInstance()->
 				getSurfaceContent(surId);
 		unlockSurface();
 
 		textureUpdate = true;
 
-		LocalScreenManager::getInstance()->releaseImageProvider(myScreen,
+		ScreenManagerFactory::getInstance()->releaseImageProvider(myScreen,
 		                                                        img->getId());
-		LocalScreenManager::getInstance()->deleteSurface(surId);
+		ScreenManagerFactory::getInstance()->deleteSurface(surId);
 	}
 
 	void SDLWindow::renderFrom(ISurface* surface) {
@@ -682,15 +682,15 @@ namespace mb {
 		lockSurface();
 		if (!isMine(surface)) {
 			releaseWinISur();
-			winISur = LocalScreenManager::getInstance()->createSurface(
+			winISur = ScreenManagerFactory::getInstance()->createSurface(
 					myScreen, contentSurface->w, contentSurface->h);
 
-			LocalScreenManager::getInstance()->blitSurface(winISur, 0, 0,
+			ScreenManagerFactory::getInstance()->blitSurface(winISur, 0, 0,
 			                                               surface->getId());
-			LocalScreenManager::getInstance()->flipSurface(winISur);
+			ScreenManagerFactory::getInstance()->flipSurface(winISur);
 
 			curSur = (SDL_Surface*)
-					LocalScreenManager::getInstance()->getSurfaceContent(winISur);
+					ScreenManagerFactory::getInstance()->getSurfaceContent(winISur);
 			textureUpdate = true;
 
 		} else {

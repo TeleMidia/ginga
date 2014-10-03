@@ -239,7 +239,7 @@ string updateFileUri(string file) {
 int main(int argc, char *argv[]) {
 	ICommonCoreManager* ccm = NULL;
 	IPresentationEngineManager* pem = NULL;
-	ILocalScreenManager* dm = NULL;
+	IScreenManager* dm = NULL;
 #if HAVE_MULTIDEVICE
 	IFormatterMultiDevice* fmd = NULL;
 #endif
@@ -483,7 +483,7 @@ int main(int argc, char *argv[]) {
 	dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 #else
-	dm  = LocalScreenManager::getInstance();
+	dm  = ScreenManagerFactory::getInstance();
 #endif
 
 	screenId = dm->createScreen(argc, argv);

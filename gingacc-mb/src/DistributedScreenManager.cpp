@@ -24,8 +24,6 @@ DistributedScreenManager::~DistributedScreenManager()
 {
 	Thread::mutexUnlock(_stubMutex);
 	Thread::mutexDestroy(_stubMutex);
-
-	this->~ILocalScreenManager();
 }
 
 string DistributedScreenManager::sendMessage (const string& message)

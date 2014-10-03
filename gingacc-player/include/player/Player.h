@@ -122,7 +122,7 @@ namespace player {
 			static const short STOP = 3;
 
 			string mrl;
-			static ILocalScreenManager* dm;
+			static IScreenManager* dm;
 			GingaSurfaceID surface;
 			GingaWindowID outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;

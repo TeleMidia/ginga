@@ -77,7 +77,7 @@ namespace contextmanager {
 #if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
 #endif
-	static ILocalScreenManager* dm = NULL;
+	static IScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
 		initializeClockSpeed();
@@ -88,7 +88,7 @@ namespace contextmanager {
 			dm = ((LocalScreenManagerCreator*)(
 					cm->getObject("LocalScreenManager")))();
 #else
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 #endif
 		}
 	}

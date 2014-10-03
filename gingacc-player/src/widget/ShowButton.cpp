@@ -58,10 +58,10 @@ namespace ginga {
 namespace core {
 namespace player {
 #if HAVE_COMPONENTS
-	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 #else
-	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
+	static IScreenManager* dm = ScreenManagerFactory::getInstance();
 #endif
 
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {

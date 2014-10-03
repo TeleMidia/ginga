@@ -77,10 +77,10 @@ namespace model {
 namespace presentation {
 #if HAVE_COMPONENTS
 	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
+	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
 			cm->getObject("LocalScreenManager")))();
 #else
-	static ILocalScreenManager* dm = LocalScreenManager::getInstance();
+	static IScreenManager* dm = ScreenManagerFactory::getInstance();
 #endif
 	FormatterRegion::FormatterRegion(
 		    string objectId, void* descriptor, void* layoutManager) {

@@ -112,7 +112,7 @@ namespace mb {
 	void SDLInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
 		int sdlCode;
 
-		sdlCode = LocalScreenManager::getInstance()->fromGingaToMB(
+		sdlCode = ScreenManagerFactory::getInstance()->fromGingaToMB(
 				screenId, keyCode);
 
 		if (event.type == SDL_USEREVENT) {
@@ -148,14 +148,14 @@ namespace mb {
 			return CodeMap::KEY_NULL;;
 		}
 
-		gingaValue = LocalScreenManager::getInstance()->fromMBToGinga(
+		gingaValue = ScreenManagerFactory::getInstance()->fromMBToGinga(
 				screenId, sdlValue);
 
 		if (gingaValue >= CodeMap::KEY_SMALL_A &&
 				gingaValue <= CodeMap::KEY_SMALL_Z &&
 				((capsOn && !shiftOn) || (!capsOn && shiftOn))) {
 
-			gingaValue = LocalScreenManager::getInstance()->fromMBToGinga(
+			gingaValue = ScreenManagerFactory::getInstance()->fromMBToGinga(
 					screenId, sdlValue + 5000);
 		}
 

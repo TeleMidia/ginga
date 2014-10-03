@@ -148,7 +148,7 @@ namespace ncl {
 				}
 			}
 
-			ILocalScreenManager* dm;
+			IScreenManager* dm;
 
 #if HAVE_COMPONENTS
 			dm = ((LocalScreenManagerCreator*)(
@@ -157,7 +157,7 @@ namespace ncl {
 			player = ((NCLPlayerCreator*)(cm->getObject(playerCompName)))(
 					childData);
 #else
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 			player = (INCLPlayer*)(new FormatterMediator(childData));
 #endif
 

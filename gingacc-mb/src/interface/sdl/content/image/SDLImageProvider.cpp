@@ -116,7 +116,7 @@ namespace mb {
 			}
 		}
 
-		if (surface != 0 && LocalScreenManager::getInstance()->hasSurface(
+		if (surface != 0 && ScreenManagerFactory::getInstance()->hasSurface(
 				myScreen, surface)) {
 
 			SDLDeviceScreen::lockSDL();
@@ -125,15 +125,15 @@ namespace mb {
 
 			if (renderedSurface != NULL) {
 				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
-				GingaWindowID parentId = LocalScreenManager::getInstance()->
+				GingaWindowID parentId = ScreenManagerFactory::getInstance()->
 						getSurfaceParentWindow(surface);
-				parent = (SDLWindow*)LocalScreenManager::getInstance()->
+				parent = (SDLWindow*)ScreenManagerFactory::getInstance()->
 						getIWindowFromId(myScreen, parentId);
 
 				if (parent != NULL) {
 					parent->setRenderedSurface(renderedSurface);
 				}
-				LocalScreenManager::getInstance()->setSurfaceContent(
+				ScreenManagerFactory::getInstance()->setSurfaceContent(
 						surface, (void*)renderedSurface);
 			}
 

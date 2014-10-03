@@ -110,7 +110,7 @@ namespace mb {
 		surProp.height = h;
 
 		this->caps = 0;
-		this->sur = (DX2DSurface*)(LocalScreenManager::getInstance()->createSurface(&surProp));
+		this->sur = (DX2DSurface*)(ScreenManagerFactory::getInstance()->createSurface(&surProp));
 
 		this->parent = NULL;
 		this->chromaColor = NULL;
@@ -125,7 +125,7 @@ namespace mb {
 
 		if (sur != NULL) {
 			if (parent != NULL) {
-				LocalScreenManager::getInstance()->releaseSurface(sur);
+				ScreenManagerFactory::getInstance()->releaseSurface(sur);
 				sur = NULL;
 			}
 		}
@@ -159,7 +159,7 @@ namespace mb {
 	void DXSurface::setContent(void* surface) {
 		clog << "DXSurface::setContent(void* surface)" << endl;
 		if (this->sur != NULL && surface != NULL) {
-			LocalScreenManager::getInstance()->releaseSurface(sur);
+			ScreenManagerFactory::getInstance()->releaseSurface(sur);
 			sur = NULL;
 		}
 		this->sur = (DX2DSurface*)surface;
@@ -240,7 +240,7 @@ namespace mb {
 	void DXSurface::fillRectangle(int x, int y, int w, int h) {
 		clog << "DXSurface::fillRectangle(int x, int y, int w, int h)" << endl;
 //		LPDIRECT3DSURFACE9 pSur;
-//		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((LocalScreenManager::getInstance())->getGfxRoot());
+//		LPDIRECT3DDEVICE9 pDev = (LPDIRECT3DDEVICE9)((ScreenManagerFactory::getInstance())->getGfxRoot());
 
 		
 		(this->sur)->fill(x, y, w, h);

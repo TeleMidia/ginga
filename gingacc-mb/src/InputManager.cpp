@@ -49,6 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 #include "mb/interface/CodeMap.h"
 
 #include "config.h"
@@ -158,10 +159,10 @@ namespace mb {
 			runDone = (maxX == 0 && maxY == 0);
 		}
 
-		mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
+		mbKeyCode = ScreenManagerFactory::getInstance()->fromGingaToMB(
 				myScreen, CodeMap::KEY_QUIT);
 
-		ie = LocalScreenManager::getInstance()->createInputEvent(
+		ie = ScreenManagerFactory::getInstance()->createInputEvent(
 				myScreen, NULL, mbKeyCode);
 
 		if (wasRunning) {
@@ -599,10 +600,10 @@ namespace mb {
 		IInputEvent* ie;
 		int mbKeyCode;
 
-		mbKeyCode = LocalScreenManager::getInstance()->fromGingaToMB(
+		mbKeyCode = ScreenManagerFactory::getInstance()->fromGingaToMB(
 				myScreen, keyCode);
 
-		ie = LocalScreenManager::getInstance()->createInputEvent(
+		ie = ScreenManagerFactory::getInstance()->createInputEvent(
 				myScreen, NULL, mbKeyCode);
 
 		postInputEvent(ie);
@@ -635,7 +636,7 @@ namespace mb {
 
 	IEventBuffer* InputManager::getEventBuffer() {
 		if (eventBuffer == NULL) {
-			eventBuffer = LocalScreenManager::getInstance()->
+			eventBuffer = ScreenManagerFactory::getInstance()->
 					createEventBuffer(myScreen);
 
 			if (!running) {

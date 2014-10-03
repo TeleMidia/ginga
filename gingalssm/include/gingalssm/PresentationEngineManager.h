@@ -138,7 +138,7 @@ namespace lssm {
 		int currentPrivateBaseId;
 		static bool autoProcess;
 		vector<string> commands;
-		static ILocalScreenManager* dm;
+		static IScreenManager* dm;
 		IInputManager* im;
 		IShowButton* sb;
 		bool debugWindow;
