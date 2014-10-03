@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 	GingaScreenID screen1, screen2;
 	IInputManager* im1;
 	IInputManager* im2;
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 	TestInputEventListener* l1;
 	TestInputEventListener* l2;
 

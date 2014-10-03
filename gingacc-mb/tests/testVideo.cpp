@@ -82,7 +82,7 @@ IContinuousMediaProvider* vid5 = NULL;
 bool singleVideo = false;
 
 void testVideo(
-		ILocalScreenManager* dm,
+		IScreenManager* dm,
 		GingaScreenID screen,
 		set<IWindow*>* windows) {
 
@@ -320,7 +320,7 @@ int main(int argc, char** argv) {
 	int fakeArgc = 5;
 	char* dfbArgv[5];
 	char* sdlArgv[5];
-	ILocalScreenManager* dm;
+	IScreenManager* dm;
 
 	SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 
