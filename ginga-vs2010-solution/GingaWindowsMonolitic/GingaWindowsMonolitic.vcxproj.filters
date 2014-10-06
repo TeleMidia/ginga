@@ -1329,6 +1329,9 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedInputManagerListener.cpp">
       <Filter>Source Files\gingacc-mb</Filter>
     </ClCompile>
+    <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\ScreenManagerFactory.cpp">
+      <Filter>Source Files\gingacc-mb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">

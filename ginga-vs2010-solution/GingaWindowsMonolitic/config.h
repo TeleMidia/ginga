@@ -100,6 +100,9 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.13.5"
 
+/* Define to 1 if you have a remote mb */
+#define HAVE_REMOTE_MB 0
+
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
 /* #undef PTHREAD_CREATE_JOINABLE */

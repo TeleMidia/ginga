@@ -152,6 +152,7 @@
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-system\src\time\Stc.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\InputManager.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\LocalScreenManager.cpp" />
+	<ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\ScreenManagerFactory.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedScreenManager.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\DistributedInputManagerListener.cpp" />
     <ClCompile Include="$(GINGA_BASE_DIR)\gingacc-mb\src\remote\StubClient.cpp" />
