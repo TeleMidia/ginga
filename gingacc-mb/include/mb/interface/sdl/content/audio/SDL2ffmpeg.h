@@ -95,6 +95,12 @@ extern "C" {
 #include <pthread.h>
 }
 
+#ifdef _MSC_VER
+#define isnan(x) _isnan(x)
+#define isinf(x) (!_finite(x))
+#define fpu_error(x) (isinf(x) || isnan(x))
+#endif
+
 #ifndef INT64_MIN
 #define INT64_MIN		(-__INT64_C(9223372036854775807)-1)
 #endif //INT64_MIN
