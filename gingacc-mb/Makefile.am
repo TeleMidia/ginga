@@ -31,14 +31,17 @@ libgingaccmb_la_SOURCES =\
   src/interface/InputEventFactory.cpp\
   src/interface/Matrix.cpp\
   src/InputManager.cpp\
-  src/LocalScreenManager.cpp\
-	src/DistributedInputManagerMB.cpp
+  src/LocalScreenManager.cpp
     
 if BUILD_REMOTE_MB
 libgingaccmb_la_SOURCES +=\
+	src/DistributedInputManagerMB.cpp\
 	src/DistributedInputManagerListener.cpp\
 	src/remote/StubClient.cpp\
 	src/DistributedScreenManager.cpp
+
+
+libgingaccmb_la_LDFLAGS += -lboost_system
 endif
 
 libgingaccmb_la_SOURCES +=\

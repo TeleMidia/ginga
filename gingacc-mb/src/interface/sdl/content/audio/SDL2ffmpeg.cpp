@@ -64,6 +64,14 @@ Many thanks to these guys and to the community that support them!
 
 using namespace std;
 
+#ifdef _MSC_VER
+#define isnan(x) _isnan(x)
+#else
+#define isnan(x) std::isnan(x)
+#endif
+
+
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
