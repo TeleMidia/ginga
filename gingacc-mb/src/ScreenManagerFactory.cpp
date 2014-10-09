@@ -48,7 +48,9 @@
  *******************************************************************************/
 
 #include "mb/ScreenManagerFactory.h"
+#if HAVE_REMOTE_MB
 #include "mb/DistributedScreenManager.h"
+#endif
 
 using namespace br::pucrio::telemidia::ginga::core::mb;
 
