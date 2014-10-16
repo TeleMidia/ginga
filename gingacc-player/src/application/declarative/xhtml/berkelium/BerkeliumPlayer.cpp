@@ -303,7 +303,7 @@ namespace player {
 
 		berkeliumFactory.createBrowser(bInfo);
 		iWin = dm->getSurfaceParentWindow(surface);
-		if (iWin != NULL) {
+		if (iWin != 0) {
 			dm->renderWindowFrom(myScreen, iWin, surface);
 		}
 		return Player::play();

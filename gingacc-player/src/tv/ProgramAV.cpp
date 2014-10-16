@@ -120,11 +120,11 @@ namespace player {
 	}
 
 	GingaSurfaceID ProgramAV::getSurface() {
-		GingaSurfaceID pSur = NULL;
+		GingaSurfaceID pSur = 0;
 
 		if (currentPlayer != NULL) {
 			pSur = currentPlayer->getSurface();
-			if (pSur != NULL) {
+			if (pSur != 0) {
 				dm->setExternalHandler(pSur, true);
 			}
 		}

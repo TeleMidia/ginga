@@ -242,26 +242,26 @@ void *LuaPlayer::nw_update_thread (void *data)
                ncluaw_cycle (nw);
 
                wrapper = player->getSurface ();
-               if (wrapper != NULL)
+               if (wrapper != 0)
                {
-                    SDL_Surface *dest;
-                    SDL_Surface *sfc;
-					GingaWindowID window;
+                 SDL_Surface *dest;
+                 SDL_Surface *sfc;
+                 GingaWindowID window;
 
-					dest = (SDL_Surface *) dm->getSurfaceContent(wrapper);
+                 dest = (SDL_Surface *) dm->getSurfaceContent(wrapper);
 
-                    sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
-                                                0, 0, 0, 0);
-                    assert (sfc != NULL);
-                    ncluaw_paint (nw, (unsigned char *) sfc->pixels,
-                                  "RGB24", sfc->w, sfc->h, sfc->pitch);
-                    assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
-                    SDL_FreeSurface (sfc);
+                 sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32,
+                     0, 0, 0, 0);
+                 assert (sfc != NULL);
+                 ncluaw_paint (nw, (unsigned char *) sfc->pixels,
+                     "RGB24", sfc->w, sfc->h, sfc->pitch);
+                 assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
+                 SDL_FreeSurface (sfc);
 
-                    // Refresh surface.
-					window = dm->getSurfaceParentWindow(wrapper);
-                    assert (window != NULL);
-					dm->renderWindowFrom(player->getScreenID(), window, wrapper);
+                 // Refresh surface.
+                 window = dm->getSurfaceParentWindow(wrapper);
+                 assert (window != 0);
+                 dm->renderWindowFrom(player->getScreenID(), window, wrapper);
                }
 
                while ((evt = ncluaw_receive (nw)) != NULL)
@@ -429,7 +429,7 @@ bool LuaPlayer::doPlay (void)
      assert (this->nw == NULL);
 
      sfc = this->getSurface ();
-     if (sfc != NULL)
+     if (sfc != 0)
      {
 		 dm->getSurfaceSize(sfc, &w, &h);
      }

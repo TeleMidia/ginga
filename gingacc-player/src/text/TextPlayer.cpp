@@ -77,14 +77,14 @@ namespace player {
    		}
 
    		/* release window and surface first; then, release font */
-		if (outputWindow != NULL && dm->hasWindow(myScreen, outputWindow)) {
+		if (outputWindow != 0 && dm->hasWindow(myScreen, outputWindow)) {
 			dm->revertWindowContent(myScreen, outputWindow);
 			dm->deleteWindow(myScreen, outputWindow);
 
 			outputWindow = 0;
 		}
 
-		if (surface != NULL && dm->hasSurface(myScreen, surface)) {
+		if (surface != 0 && dm->hasSurface(myScreen, surface)) {
 			dm->deleteSurface(surface);
 			surface = 0;
 		}
@@ -109,7 +109,7 @@ namespace player {
 				"font/vera.ttf");
 
 		this->surface = dm->createSurface(myScreen);
-		if (this->surface != NULL) {
+		if (this->surface != 0) {
 			int cap = dm->getSurfaceCap(surface, "ALPHACHANNEL");
 			dm->setSurfaceCaps (surface, cap);
 		}
@@ -123,7 +123,7 @@ namespace player {
 			string fontUri,
 			int fontSize, IColor* fontColor) {
 
-		if (fontSize < 1 || s == NULL || text == "") {
+		if (fontSize < 1 || s == 0 || text == "") {
 			return 0;
 		}
 
@@ -202,7 +202,7 @@ namespace player {
    		}
 
    		bgColor = new Color(red, green, blue, alpha);
-		if (this->surface != NULL) {
+		if (this->surface != 0) {
 			dm->setSurfaceBgColor(surface, red, green, blue, alpha);
 		}
 	}
@@ -236,11 +236,11 @@ namespace player {
 		string splited;
 
 		uri = SystemCompat::appendGingaFilesPrefix("font" + SystemCompat::getIUriD() + "vera.ttf");
-		if (font == NULL && fileExists(uri)) {
+		if (font == 0 && fileExists(uri)) {
 			setFont(uri);
 		}
 
-		if (font == NULL) {
+		if (font == 0) {
 			clog << "TextPlayer::drawText Warning! can't set font" << endl;
 			return;
 		}
@@ -255,7 +255,7 @@ namespace player {
 		                      fontColor->getB(),
 		                      fontColor->getAlpha());
 
-		if (font != 0 && surface != NULL) {
+		if (font != 0 && surface != 0) {
 			dm->getSurfaceSize(surface, &surWidth, &surHeight);
 			textWidth = dm->getProviderStringWidth(
 					font, text.c_str(), strlen((const char*)(text.c_str())));

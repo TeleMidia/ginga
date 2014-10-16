@@ -516,7 +516,7 @@ namespace player {
 
 			dm->blitSurface(surface, 0, 0, s);
 			sWin = dm->getSurfaceParentWindow(surface);
-			if (sWin != NULL) {
+			if (sWin != 0) {
 				dm->validateWindow(myScreen, sWin);
 			}
 
@@ -562,7 +562,7 @@ namespace player {
 				}
 
 				sWin = dm->getSurfaceParentWindow(surface);
-				if (sWin != NULL) {
+				if (sWin != 0) {
 					dm->validateWindow(myScreen, sWin);
 				}
 			}
@@ -597,7 +597,7 @@ namespace player {
 
 			dm->blitSurface(surface, left, top, s, 0, 0, wid, hig);
 			sWin = dm->getSurfaceParentWindow(surface);
-			if (sWin != NULL) {
+			if (sWin != 0) {
 				dm->validateWindow(myScreen, sWin);
 			}
 

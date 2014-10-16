@@ -134,7 +134,7 @@ namespace multidevice {
 
 		if (dm->hasWindow(myScreen, serialized)) {
 			dm->deleteWindow(myScreen, serialized);
-			serialized = NULL;
+			serialized = 0;
 		}
 
 		if (mainLayout != NULL) {

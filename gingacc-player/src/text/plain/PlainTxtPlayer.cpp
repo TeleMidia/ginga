@@ -71,7 +71,7 @@ namespace player {
 			 * the surface could never be a child of window
 			 * (it gets the widget surface)
 			 */
-			dm->setSurfaceParentWindow(myScreen, surface, NULL);
+			dm->setSurfaceParentWindow(myScreen, surface, 0);
 		}
 		Thread::mutexUnlock(&mutex);
 		Thread::mutexDestroy(&mutex);
@@ -122,7 +122,7 @@ namespace player {
 			fontColor = new Color(255, 255, 255, 255);
 		}
 
-		if (surface != NULL && dm->getSurfaceParentWindow(surface) != NULL) {
+		if (surface != 0 && dm->getSurfaceParentWindow(surface) != 0) {
 			if (bgColor != NULL) {
 				//this->surface->setCaps(0);
 				dm->clearSurfaceContent(surface);
@@ -158,7 +158,7 @@ namespace player {
 			drawTextLn(content, currentAlign);
 		}
 
-		if (surface != NULL && dm->getSurfaceParentWindow (surface) != NULL) {
+		if (surface != 0 && dm->getSurfaceParentWindow (surface) != 0) {
 			GingaWindowID parentWin = dm->getSurfaceParentWindow(surface);
 			dm->validateWindow(myScreen, parentWin);
 		}
@@ -168,7 +168,7 @@ namespace player {
 	}
 
 	bool PlainTxtPlayer::play() {
-		if (surface != NULL) {
+		if (surface != 0) {
 			clog << "PlainTxtPlayer::play ok" << endl;
 			loadTxt();
 			return Player::play();
@@ -187,7 +187,7 @@ namespace player {
 		Thread::mutexLock(&mutex);
 
 		GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-		if (surface != NULL &&  parentWindow != NULL) {
+		if (surface != 0 &&  parentWindow != 0) {
 //			surface->clearSurface();
 
 			if (bgColor != NULL) {
@@ -213,7 +213,7 @@ namespace player {
 			mrl = "";
 		}
 
-		if (surface != NULL && parentWindow != NULL) {
+		if (surface != 0 && parentWindow != 0) {
 			dm->validateWindow(myScreen, parentWindow);
 		}
 
@@ -248,7 +248,7 @@ namespace player {
 			return;
 		}
 
-		if (surface == NULL) {
+		if (surface == 0) {
 			refresh = false;
 		}
 
@@ -280,7 +280,7 @@ namespace player {
 			}
 
 		} else if ((name == "x-bgColor" || name == "bgColor")) {
-			if (surface != NULL) {
+			if (surface != 0) {
 				if (bgColor != NULL) {
 					delete bgColor;
 					bgColor = NULL;
@@ -289,7 +289,7 @@ namespace player {
 				bgColor = new Color(value);
 
 				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-				if (parentWindow != NULL) {
+				if (parentWindow != 0) {
 					//this->surface->setCaps(0);
 					dm->clearSurfaceContent(surface);
 					dm->setWindowBgColor(myScreen, parentWindow,
@@ -303,7 +303,7 @@ namespace player {
 		} else if (name == "x-rgbBgColor" || name == "rgbBgColor") {
 			params = split(value, ",");
 			if (params->size() == 3) {
-				if (surface != NULL) {
+				if (surface != 0) {
 					if (bgColor != NULL) {
 						delete bgColor;
 						bgColor = NULL;
@@ -315,7 +315,7 @@ namespace player {
 							(int)util::stof((*params)[2]));
 
 					GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-					if (parentWindow != NULL) {
+					if (parentWindow != 0) {
 						//this->surface->setCaps(0);
 						dm->clearSurfaceContent(surface);
 						dm->setWindowBgColor(myScreen, parentWindow,

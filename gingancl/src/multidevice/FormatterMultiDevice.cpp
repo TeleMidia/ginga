@@ -92,8 +92,8 @@ namespace multidevice {
 		this->deviceLayout     = deviceLayout;
 		this->activeBaseUri    = "";
 		this->activeUris       = NULL;
-		this->bitMapScreen     = NULL;
-		this->serialized       = NULL;
+		this->bitMapScreen     = 0;
+		this->serialized       = 0;
 		this->presContext      = NULL;
 		this->focusManager     = NULL;
 		this->parent           = NULL;
@@ -201,7 +201,7 @@ namespace multidevice {
 		dm->getWindowDumpFileUri(myScreen, serialized, quality, dumpW, dumpH);
 
 		cout << "BitMapScreen window Id = '";
-		if (bitMapScreen != NULL) {
+		if (bitMapScreen != 0) {
 			cout << (unsigned long)bitMapScreen << "'";
 			dm->getWindowDumpFileUri(myScreen, bitMapScreen, quality, dumpW, dumpH);
 
@@ -229,7 +229,7 @@ namespace multidevice {
 				while (j != sortedIds.end()) {
 					iWin = (*j);
 
-					if (iWin != NULL) {
+					if (iWin != 0) {
 						dm->getWindowDumpFileUri(myScreen, iWin, quality, dumpW, dumpH);
 					}
 
@@ -348,7 +348,7 @@ namespace multidevice {
 
 	void FormatterMultiDevice::postMediaContent(int destDevClass) {
 		string fileUri;
-		GingaWindowID bmpScr = NULL;
+		GingaWindowID bmpScr = 0;
 		vector<GingaWindowID> wins;
 
 		/*clog << "FormatterMultiDevice::postMediaContent to class '";
@@ -376,7 +376,7 @@ namespace multidevice {
 
 #endif //HAVE_MULTIDEVICE
 
-				if (bmpScr != NULL) {
+				if (bmpScr != 0) {
 					wins.push_back(serialized);
 					dm->mergeIds(myScreen, bmpScr, &wins);
 
@@ -477,7 +477,7 @@ namespace multidevice {
 				windowId = layout->prepareFormatterRegion(
 						executionObject, renderedSurface, plan);
 
-				if (bitMapScreen != NULL) {
+				if (bitMapScreen != 0) {
 					/*clog << endl;
 					clog << "FormatterMultiDevice::prepareFormatterRegion ";
 					clog << "bitMapScreen != NULL" << endl;*/

@@ -109,7 +109,7 @@ namespace focus {
 				}
 			}
 		}
-		return NULL;
+		return 0;
 	}
 }
 }

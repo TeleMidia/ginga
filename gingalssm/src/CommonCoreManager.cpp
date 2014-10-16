@@ -123,7 +123,7 @@ namespace lssm {
 			IPresentationEngineManager* pem,
 			GingaScreenID screenId) {
 
-		tuningWindow  = NULL;
+		tuningWindow  = 0;
 		tuner         = NULL;
 		demuxer       = NULL;
 		dataProcessor = NULL;
@@ -223,7 +223,7 @@ namespace lssm {
 	void CommonCoreManager::showTunningWindow(
 			GingaScreenID screenId, int x, int y, int w, int h) {
 
-		GingaSurfaceID s     = NULL;
+		GingaSurfaceID s     = 0;
 		string tunerImg = "";
 
 		tunerImg = SystemCompat::appendGingaFilesPrefix("tuner/tuning.png");
@@ -243,17 +243,17 @@ namespace lssm {
 			dm->lowerWindowToBottom(myScreen, tuningWindow);
 
 			dm->deleteSurface(s);
-			s = NULL;
+			s = 0;
 		}
 	}
 
 	void CommonCoreManager::releaseTunningWindow() {
-		if (tuningWindow != NULL) {
+		if (tuningWindow != 0) {
 			dm->clearWindowContent(myScreen, tuningWindow);
 			dm->hideWindow(myScreen, tuningWindow);
 
 			dm->deleteWindow(myScreen, tuningWindow);
-			tuningWindow = NULL;
+			tuningWindow = 0;
 		}
 	}
 
