@@ -117,7 +117,7 @@ namespace application {
 
 		if (player != NULL) {
 			wrapper = player->getSurface();
-			if (wrapper == NULL) {
+			if (wrapper == 0) {
 				descriptor = obj->getDescriptor();
 				if (descriptor != NULL) {
 					fRegion = descriptor->getFormatterRegion();

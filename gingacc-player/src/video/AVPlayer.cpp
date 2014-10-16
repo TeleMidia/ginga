@@ -66,7 +66,7 @@ namespace player {
 
 		string::size_type pos;
 
-		this->provider    = NULL;
+		this->provider    = 0;
 		this->mainAV      = false;
 		this->buffered    = false;
 		this->isRemote    = false;
@@ -74,7 +74,7 @@ namespace player {
 		this->status      = STOP;
 		this->running     = false;
 		this->soundLevel  = 1.0;
-		this->win         = NULL;
+		this->win         = 0;
 		this->pSym        = "";
 
 		Thread::mutexInit(&pMutex, true);
@@ -127,19 +127,19 @@ namespace player {
 		}
 
 		Thread::mutexLock(&tMutex);
-		if (surface != NULL && mainAV) {
-			dm->setSurfaceParentWindow(myScreen, surface, NULL);
+		if (surface != 0 && mainAV) {
+			dm->setSurfaceParentWindow(myScreen, surface, 0);
 		}
 
 		if (mainAV) {
-			if (win != NULL) {
+			if (win != 0) {
 				dm->disposeWindow (myScreen, win);
-				win = NULL;
+				win = 0;
 			}
 		}
 
 		Thread::mutexLock(&pMutex);
-		if (this->provider != NULL) {
+		if (this->provider != 0) {
 			release();
 		}
 
@@ -151,9 +151,9 @@ namespace player {
 	}
 
 	GingaSurfaceID AVPlayer::getSurface() {
-		if (provider == NULL) {
+		if (provider == 0) {
 			createProvider();
-			if (provider == NULL) {
+			if (provider == 0) {
 				clog << "AVPlayer::getSurface() can't create provider" << endl;
 			}
 		}
@@ -173,7 +173,7 @@ namespace player {
 			isRemote = true;
 		}
 
-		if (provider == NULL && (fileExists(mrl) || isRemote)) {
+		if (provider == 0 && (fileExists(mrl) || isRemote)) {
 			provider = dm->createContinuousMediaProvider(
 					myScreen, mrl.c_str(), isRemote);
 
@@ -212,7 +212,7 @@ namespace player {
 		//clog << "AVPlayer::setSoundLevel()" << endl;
 		//lock()();
 		this->soundLevel = level;
-		if (provider != NULL) {
+		if (provider != 0) {
 			dm->setProviderSoundLevel(provider, soundLevel);
 		}
 		//unlock();
@@ -222,17 +222,17 @@ namespace player {
 		//clog << "AVPlayer::createFrame()" << endl;
 
 		Thread::mutexLock(&tMutex);
-		if (surface != NULL) {
+		if (surface != 0) {
 			clog << "AVPlayer::createFrame Warning! surface != NULL";
 			clog << endl;
 			if (mainAV) {
-				dm->setSurfaceParentWindow(myScreen, surface, NULL);
+				dm->setSurfaceParentWindow(myScreen, surface, 0);
 			}
 			dm->deleteSurface(surface);
 		}
 
 		surface = dm->createSurface(myScreen);
-		if (win != NULL && mainAV) {
+		if (win != 0 && mainAV) {
 			dm->setSurfaceParentWindow(myScreen, surface, win);
 		}
 
@@ -242,13 +242,13 @@ namespace player {
 	}
 
 	void AVPlayer::getOriginalResolution(int* width, int* height) {
-		if (provider != NULL) {
+		if (provider != 0) {
 			dm->getProviderOriginalResolution(provider, height, width);
 		}
 	}
 
 	double AVPlayer::getTotalMediaTime() {
-		if (provider != NULL) {
+		if (provider != 0) {
 			return dm->getProviderTotalMediaTime(provider);
 		}
 
@@ -257,7 +257,7 @@ namespace player {
 	}
 
 	int64_t AVPlayer::getVPts() {
-		if (provider == NULL) {
+		if (provider == 0) {
 			return 0;
 		}
 
@@ -265,7 +265,7 @@ namespace player {
 	}
 
 	void AVPlayer::timeShift(string direction) {
-		if (provider != NULL) {
+		if (provider != 0) {
 			if (direction == "forward") {
 				dm->setProviderMediaTime(provider,
 				                         dm->getProviderMediaTime(provider) + 10);
@@ -278,7 +278,7 @@ namespace player {
 	}
 
 	double AVPlayer::getCurrentMediaTime() {
-		if (provider == NULL) {
+		if (provider == 0) {
 			clog << "AVPlayer::getCurrentMediaTime returning -1";
 			clog << " cause provider is NULL";
 			clog << endl;
@@ -302,7 +302,7 @@ namespace player {
 			running = true;
 			Thread::startThread();
 
-		} else if (provider != NULL) {
+		} else if (provider != 0) {
 			dm->setProviderMediaTime(provider, pos);
 		}
 	}
@@ -343,7 +343,7 @@ namespace player {
 	}
 
 	bool AVPlayer::play() {
-		if (provider == NULL) {
+		if (provider == 0) {
 			clog << "AVPlayer::play() can't play, provider is NULL" << endl;
 			this->wakeUp();
 			return false;
@@ -364,12 +364,12 @@ namespace player {
 
 	void AVPlayer::pause() {
 		status = PAUSE;
-		if (provider == NULL) {
+		if (provider == 0) {
 			this->wakeUp();
 			return;
 		}
 
-		if (outputWindow != NULL) {
+		if (outputWindow != 0) {
 			dm->validateWindow(myScreen, outputWindow);
 		}
 		dm->pauseProvider(provider);
@@ -387,7 +387,7 @@ namespace player {
 			icListener->releaseIC();
 		}
 #endif
-		if (provider == NULL) {
+		if (provider == 0) {
 			this->wakeUp();
 			return;
 		}
@@ -455,7 +455,7 @@ namespace player {
 					Thread::startThread();
 				}
 
-			} else if (name == "bounds" && win != NULL) {
+			} else if (name == "bounds" && win != 0) {
 				vals = split(value, ",");
 				if (vals->size() == 4) {
 					dm->setWindowBounds (myScreen, win,
@@ -466,10 +466,10 @@ namespace player {
 				}
 				delete vals;
 
-			} else if (name == "show" && win != NULL) {
+			} else if (name == "show" && win != 0) {
 				dm->showWindow(myScreen, win);
 
-			} else if (name == "hide" && win != NULL) {
+			} else if (name == "hide" && win != 0) {
 				dm->hideWindow(myScreen, win);
 			}
 		}
@@ -483,7 +483,7 @@ namespace player {
 
 	void AVPlayer::release() {
 		dm->releaseContinuousMediaProvider(myScreen, provider);
-		provider = NULL;
+		provider = 0;
 
 #if HAVE_ICRTP & !HAVE_XINEPROVIDER
 		if (icListener != NULL) {
@@ -502,7 +502,7 @@ namespace player {
 	}
 
 	bool AVPlayer::isPlaying() {
-		if (provider == NULL) {
+		if (provider == 0) {
 			return false;
 		}
 
@@ -517,7 +517,7 @@ namespace player {
 	}
 
 	bool AVPlayer::setOutWindow(GingaWindowID windowId) {
-		if (mainAV && win == NULL) {
+		if (mainAV && win == 0) {
 			win = windowId;
 
 			if (!running) {
@@ -605,7 +605,7 @@ namespace player {
 
 			this->surface = createFrame();
 
-			if (this->win != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
+			if (this->win != 0 && dm->getSurfaceParentWindow(surface) == 0) {
 				dm->setSurfaceParentWindow(myScreen, surface, win);
 			}
 			dm->playProviderOver(provider, surface);
@@ -738,7 +738,7 @@ namespace player {
 			status  = STOP;
 			running = false;
 
-			if (provider != NULL) {
+			if (provider != 0) {
 				dm->stopProvider(provider);
 			}
 

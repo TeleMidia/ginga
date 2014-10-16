@@ -348,7 +348,7 @@ namespace player {
 			return true;
 		}
 		lock();
-		if (surface != NULL) {
+		if (surface != 0) {
 			dm->clearSurfaceContent(surface);
 		}
 		unlock();
@@ -359,15 +359,15 @@ namespace player {
 		clog << "SrtPlayer::run" << endl;
 		running = true;
 		lock();
-		GingaWindowID parent = NULL;
-		if (surface != NULL) {
+		GingaWindowID parent = 0;
+		if (surface != 0) {
 			parent = dm->getSurfaceParentWindow(surface);
 		} else {
 			clog << "SrtPlayer::run warning! surface == NULL" << endl;
 		}
 		unlock();
 
-		if (player != NULL && parent != NULL) {
+		if (player != NULL && parent != 0) {
 			float mediaTime, hide, show;
 			int sleepTime;
 			map<float, float>* events;
@@ -454,9 +454,9 @@ namespace player {
 				}
 
 				lock();
-				if (surface != NULL) {
+				if (surface != 0) {
 					parent =  dm->getSurfaceParentWindow(surface);
-					if (parent != NULL && isPlayingSrt()) {
+					if (parent != 0 && isPlayingSrt()) {
 						if (controlParentVisibility) {
 							clog << "SrtPlayer::run show";
 							clog << "LINE: '" << line.c_str() << "'" << endl;
@@ -494,10 +494,10 @@ namespace player {
 				}
 
 				lock();
-				if (surface != NULL) {
+				if (surface != 0) {
 					dm->clearSurfaceContent(surface);
 					parent = dm->getSurfaceParentWindow (surface);
-					if (parent != NULL && controlParentVisibility) {
+					if (parent != 0 && controlParentVisibility) {
 						dm->hideWindow(myScreen, parent);
 					}
 				}

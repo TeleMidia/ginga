@@ -91,8 +91,8 @@ namespace presentation {
 
 		initializeNCMRegion();
 
-		this->outputDisplay      = NULL;
-		this->renderedSurface    = NULL;
+		this->outputDisplay      = 0;
+		this->renderedSurface    = 0;
 		this->imVisible          = false;
 		this->externHandler      = false;
 		this->focusState         = FormatterRegion::UNSELECTED;
@@ -303,7 +303,7 @@ namespace presentation {
 			cvtZIndex = ((FormatterLayout*)layoutManager)->refreshZIndex(
 					this, layoutId, zIndex, plan, renderedSurface);
 
-			if (outputDisplay != NULL) {
+			if (outputDisplay != 0) {
 				clog << "FormatterRegion::setZIndex(" << layoutId <<"): ";
 				clog << "original zIndex = '" << zIndex << "'";
 				clog << "converted zIndex = '" << cvtZIndex << "'";
@@ -753,7 +753,7 @@ namespace presentation {
 			height = 1;
 
 		lock();
-		if (outputDisplay != NULL) {
+		if (outputDisplay != 0) {
 			dm->setWindowBounds (((FormatterLayout*)layoutManager)->getScreenID(),
 			                     outputDisplay, left, top, width, height);
 		}
@@ -785,7 +785,7 @@ namespace presentation {
 		lock();
 		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 
-		if (outputDisplay == NULL) {
+		if (outputDisplay == 0) {
 			string title;
 			int left   = 0;
 			int top    = 0;
@@ -823,7 +823,7 @@ namespace presentation {
 
 			this->renderedSurface = renderedSurface;
 
-			if (renderedSurface != NULL &&
+			if (renderedSurface != 0 &&
 					dm->hasSurfaceExternalHandler(renderedSurface)) {
 
 				externHandler = true;
@@ -866,7 +866,7 @@ namespace presentation {
 			}
 
 			int caps = dm->getWindowCap (screenId, outputDisplay, "ALPHACHANNEL");
-			if (!externHandler && renderedSurface != NULL &&
+			if (!externHandler && renderedSurface != 0 &&
 					(caps & dm->getSurfaceCaps(renderedSurface))) {
 
 				dm->addWindowCaps (screenId, outputDisplay,
@@ -941,7 +941,7 @@ namespace presentation {
 		}
 
 #if !HAVE_MULTIPROCESS
-		if (renderedSurface != NULL && !externHandler) {
+		if (renderedSurface != 0 && !externHandler) {
 			if ( dm->setSurfaceParentWindow(
 					screenId, renderedSurface,outputDisplay)) {
 				dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
@@ -1117,7 +1117,7 @@ namespace presentation {
 
 		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 
-		if (outputDisplay != NULL) {
+		if (outputDisplay != 0) {
 			if (!visible) {
 				clog << "FormatterRegion::setRegionVisibility (" << this;
 				clog << ") object '" << objectId << "' display '";
@@ -1140,22 +1140,22 @@ namespace presentation {
 	}
 
 	void FormatterRegion::disposeOutputDisplay() {
-		if (outputDisplay != NULL) {
+		if (outputDisplay != 0) {
 			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 			if (!externHandler) {
 				dm->disposeWindow (screenId, outputDisplay);
 			}
-			outputDisplay = NULL;
+			outputDisplay = 0;
 		}
 
 		//rendered surface is deleted by player
-		renderedSurface = NULL;
+		renderedSurface = 0;
 	}
 
 	void FormatterRegion::toFront() {
 		lock();
 		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
-		if (outputDisplay != NULL && !externHandler) {
+		if (outputDisplay != 0 && !externHandler) {
 			dm->raiseWindowToTop (screenId, outputDisplay);
 			unlock();
 			if (ncmRegion != NULL) {
@@ -1320,7 +1320,7 @@ namespace presentation {
 
 	void FormatterRegion::setGhostRegion(bool ghost) {
 		lock();
-		if (outputDisplay != NULL && !externHandler) {
+		if (outputDisplay != 0 && !externHandler) {
 			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 			dm->setGhostWindow (screenId, outputDisplay, ghost);
 		}
@@ -1352,8 +1352,8 @@ namespace presentation {
 				selSurface = FocusSourceManager::getFocusSourceComponent(
 						screenId, selComponentSrc);
 
-				if (selSurface != NULL) {
-					if (outputDisplay != NULL && !externHandler) {
+				if (selSurface != 0) {
+					if (outputDisplay != 0 && !externHandler) {
 						dm->renderWindowFrom (screenId, outputDisplay, selSurface);
 					}
 
@@ -1363,7 +1363,7 @@ namespace presentation {
 			}
 
 			lock();
-			if (outputDisplay != NULL && !externHandler) {
+			if (outputDisplay != 0 && !externHandler) {
 				lockFocusInfo();
 				if (selComponentSrc == "") {
 					dm->validateWindow (screenId, outputDisplay);
@@ -1428,8 +1428,8 @@ namespace presentation {
 				focusSurface = FocusSourceManager::getFocusSourceComponent(
 					    screenId, focusComponentSrc);
 
-				if (focusSurface != NULL) {
-					if (outputDisplay != NULL && !externHandler) {
+				if (focusSurface != 0) {
+					if (outputDisplay != 0 && !externHandler) {
 						dm->renderWindowFrom (screenId, outputDisplay, focusSurface);
 					}
 					dm->deleteSurface(focusSurface);
@@ -1438,7 +1438,7 @@ namespace presentation {
 			}
 
 			lock();
-			if (outputDisplay != NULL && !externHandler) {
+			if (outputDisplay != 0 && !externHandler) {
 				lockFocusInfo();
 				if (focusComponentSrc == "") {
 					dm->validateWindow (screenId, outputDisplay);
@@ -1466,11 +1466,11 @@ namespace presentation {
 		focusState = FormatterRegion::UNSELECTED;
 
 		lock();
-		if (outputDisplay != NULL && !externHandler) {
+		if (outputDisplay != 0 && !externHandler) {
 			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 
 			dm->setWindowBorder (screenId, outputDisplay, -1, -1, -1, -1, 0);
-			if (renderedSurface != NULL) {
+			if (renderedSurface != 0) {
 				dm->setSurfaceParentWindow(screenId, renderedSurface, outputDisplay);
 				dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
 			}
@@ -1532,7 +1532,7 @@ namespace presentation {
 		short transitionDir;
 
 		lock();
-		if (outputDisplay == NULL || externHandler) {
+		if (outputDisplay == 0 || externHandler) {
 			clog << "FormatterRegion::barWipe(" << this << ")";
 			clog << "Warning! return cause ";
 			clog << "abortIn = '" << abortTransitionIn << "' and ";
@@ -1566,7 +1566,7 @@ namespace presentation {
 		if (transitionSubType == Transition::SUBTYPE_BARWIPE_LEFTTORIGHT) {
 			if (isShowEffect) {
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					dm->setWindowCurrentTransparency (
 							screenId, outputDisplay, transparencyValue);
 					dm->resizeWindow (screenId, outputDisplay, 1, height);
@@ -1590,7 +1590,7 @@ namespace presentation {
 				}
 
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					if (transitionDir == Transition::DIRECTION_REVERSE) {
 						/*clog << "outDisplay =" << outputDisplay << " x=" << x;
 						clog << " w=" << width << " y=" << y << " h=" << height;
@@ -1620,7 +1620,7 @@ namespace presentation {
 						endValue, factor, time, initTime, transitionDur, 0);
 
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					dm->validateWindow (screenId, outputDisplay);
 				}
 				unlock();
@@ -1629,7 +1629,7 @@ namespace presentation {
 						(abortTransitionOut && !isShowEffect)) {
 
 					lock();
-					if (outputDisplay != NULL) {
+					if (outputDisplay != 0) {
 						if (x < 0 || y < 0 || width <= 0 || height <= 0) {
 							clog << "FormatterRegion::barWipe Warning! ";
 							clog << "invalid dimensions: ";
@@ -1664,7 +1664,7 @@ namespace presentation {
 
 			if (isShowEffect) {
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					dm->setWindowCurrentTransparency (
 							screenId, outputDisplay, transparencyValue);
 					if (width > 0) {
@@ -1694,7 +1694,7 @@ namespace presentation {
 				}
 
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					if (transitionDir == Transition::DIRECTION_REVERSE) {
 						if (x >= 0 &&
 								y + (height - i) >= 0 &&
@@ -1720,7 +1720,7 @@ namespace presentation {
 						factor, time, initTime, transitionDur, 0);
 
 				lock();
-				if (outputDisplay != NULL) {
+				if (outputDisplay != 0) {
 					dm->validateWindow (screenId, outputDisplay);
 				}
 				unlock();
@@ -1729,7 +1729,7 @@ namespace presentation {
 						(abortTransitionOut && !isShowEffect)) {
 
 					lock();
-					if (outputDisplay != NULL) {
+					if (outputDisplay != 0) {
 						if (x < 0 || y < 0 || width <= 0 || height <= 0) {
 							clog << "FormatterRegion::barWipe Warning! ";
 							clog << "invalid dimensions: ";
@@ -1761,7 +1761,7 @@ namespace presentation {
 			disposeOutputDisplay();
 
 		} else {
-			if (outputDisplay != NULL) {
+			if (outputDisplay != 0) {
 				//outputDisplay->setStretch(true);
 				dm->setWindowBounds (screenId, outputDisplay, x, y, width, height);
 				dm->validateWindow (screenId, outputDisplay);
@@ -1793,7 +1793,7 @@ namespace presentation {
 		GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 
 		lock();
-		if (outputDisplay == NULL || externHandler) {
+		if (outputDisplay == 0 || externHandler) {
 			clog << "FormatterRegion::fade(" << this << ")";
 			clog << "Warning! return cause ";
 			clog << "abortIn = '" << abortTransitionIn << "' and ";
@@ -1831,7 +1831,7 @@ namespace presentation {
 			}
 
 			lock();
-			if (outputDisplay != NULL) {
+			if (outputDisplay != 0) {
 				dm->setWindowCurrentTransparency (screenId, outputDisplay, 255 - i);
 
 			} else {
@@ -1941,7 +1941,7 @@ namespace presentation {
 		/*clog << "FormatterRegion::setTransparency : calling with value ";
 		clog << transparency << endl;*/
 
-		if (outputDisplay != NULL && !externHandler) {
+		if (outputDisplay != 0 && !externHandler) {
 			GingaScreenID screenId = ((FormatterLayout*)layoutManager)->getScreenID();
 			dm->setWindowCurrentTransparency (screenId, outputDisplay,
 			                                 (int)(this->transparency * 255));

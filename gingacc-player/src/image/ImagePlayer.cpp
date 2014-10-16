@@ -147,14 +147,14 @@ namespace player {
 								myScreen, newMrl.c_str());
 
 					} else {
-						provider = NULL;
+						provider = 0;
 						clog << "ImagePlayer::ImagePlayer Warning! File ";
 						clog << " Not Found: '" << newMrl.c_str();
 						clog << "'" << endl;
 					}
 
 				} else {
-					provider = NULL;
+					provider = 0;
 					clog << "ImagePlayer::ImagePlayer Warning! ";
 					clog << "GLF Component NOT";
 					clog << " Found!" << endl;
@@ -162,19 +162,19 @@ namespace player {
 			}
 		}
 
-		if (provider != NULL) {
+		if (provider != 0) {
 			surface = prepareSurface(provider, mrl);
 		}
 	}
 
 	ImagePlayer::~ImagePlayer() {
-		if (provider != NULL) {
+		if (provider != 0) {
 			dm->releaseImageProvider(myScreen, provider);
 		}
 	}
 
 	bool ImagePlayer::play() {
-		if (provider == NULL) {
+		if (provider == 0) {
 
 			return false;
 		}
@@ -196,9 +196,9 @@ namespace player {
 		//refresh changes
 		GingaWindowID win;
 
-		if (surface != NULL) {
+		if (surface != 0) {
 			win = dm->getSurfaceParentWindow(surface);
-			if (win != NULL) {
+			if (win != 0) {
 				dm->renderWindowFrom(myScreen, win, surface);
 			}
 		}
@@ -209,7 +209,7 @@ namespace player {
 	GingaSurfaceID ImagePlayer::prepareSurface(
 			GingaProviderID provider, string mrl) {
 
-		GingaSurfaceID renderedSurface = NULL;
+		GingaSurfaceID renderedSurface = 0;
 
 		renderedSurface = dm->createSurfaceFrom(myScreen, 0);
 		dm->playProviderOver(provider, renderedSurface);

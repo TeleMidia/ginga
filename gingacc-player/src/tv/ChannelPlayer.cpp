@@ -135,13 +135,13 @@ namespace player {
 	void ChannelPlayer::setSurfacesParent(GingaWindowID parent) {
 		map<string, IPlayer*>::iterator players;
 		IPlayer* avPlayer;
-		GingaSurfaceID s = NULL;
+		GingaSurfaceID s = 0;
 
 		players = objectMap->begin();
 		while (players != objectMap->end()) {
 			avPlayer = players->second;
 			s = ((Player*)avPlayer)->getSurface();
-			if (s != NULL && dm->getSurfaceParentWindow(s) != parent) {
+			if (s != 0 && dm->getSurfaceParentWindow(s) != parent) {
 				dm->setSurfaceParentWindow(myScreen, s, parent);
 			}
 			++players;
@@ -153,7 +153,7 @@ namespace player {
 		if (selectedPlayer != NULL) {
 			return ((Player*)selectedPlayer)->getSurface();
 		}
-		return NULL;
+		return 0;
 	}
 
 	bool ChannelPlayer::play() {
@@ -161,7 +161,7 @@ namespace player {
 
 		if (selectedPlayer != NULL) {
 			s = ((Player*)selectedPlayer)->getSurface();
-			if (!hasParent && s != NULL && dm->getSurfaceParentWindow(s) != NULL) {
+			if (!hasParent && s != 0 && dm->getSurfaceParentWindow(s) != 0) {
 				GingaWindowID parentWindow = dm->getSurfaceParentWindow(s);
 				setSurfacesParent(parentWindow);
 			} 

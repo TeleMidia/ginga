@@ -618,7 +618,7 @@ namespace mb {
 
 		iWin = new SDLWindow(
 				(GingaWindowID)winIdRefCounter,
-				NULL,
+				0,
 				id,
 				x, y, w, h, z);
 

@@ -83,8 +83,8 @@ namespace player {
 
 		this->myScreen            = screenId;
 		this->mrl                 = mrl;
-		this->outputWindow        = NULL;
-		this->surface             = NULL;
+		this->outputWindow        = 0;
+		this->surface             = 0;
 
 		this->notifying           = false;
 		this->presented           = false;
@@ -126,12 +126,12 @@ namespace player {
 		if (dm->hasWindow(myScreen, outputWindow)) {
 			dm->revertWindowContent(myScreen, outputWindow);
 			dm->deleteWindow(myScreen, outputWindow);
-			outputWindow = NULL;
+			outputWindow = 0;
 		}
 
 		if (dm->hasSurface(myScreen, surface)) {
 			dm->deleteSurface(surface);
-			surface = NULL;
+			surface = 0;
 		}
 
 		Thread::mutexLock(&referM);
@@ -365,9 +365,9 @@ namespace player {
 	}
 
 	void Player::setSurface(GingaSurfaceID surface) {
-		if (this->surface != NULL) {
+		if (this->surface != 0) {
 			dm->deleteSurface(surface);
-			this->surface = NULL;
+			this->surface = 0;
 		}
 		this->surface = surface;
 	}
@@ -429,10 +429,10 @@ namespace player {
 		if (mirrorSrc != NULL && mirror != NULL) {
 			iSrcSur = mirrorSrc->getSurface();
 			iSur = mirror->getSurface();
-			if (iSrcSur != NULL && iSur != NULL) {
+			if (iSrcSur != 0 && iSur != 0) {
 				iSrcWin = dm->getSurfaceParentWindow(iSrcSur);
 				iWin =  dm->getSurfaceParentWindow(iSur);
-				if (iSrcWin != NULL && iWin != NULL) {
+				if (iSrcWin != 0 && iWin != 0) {
 					dm->setWindowMirrorSrc(myScreen, iWin, iSrcWin);
 				}
 			}
@@ -498,7 +498,7 @@ namespace player {
 	void Player::setPropertyValue(string name, string value) {
 		vector<string>* params = NULL;
 
-		if (outputWindow != NULL) {
+		if (outputWindow != 0) {
 			if (name == "bounds") {
 				params = split(value, ",");
 				if (params->size() == 4) {
@@ -702,7 +702,7 @@ namespace player {
 			return false;
 		}
 #else
-		if (surface != NULL && dm->getSurfaceParentWindow(surface) == NULL) {
+		if (surface != 0 && dm->getSurfaceParentWindow(surface) == 0) {
 			dm->setSurfaceParentWindow(myScreen, surface, windowId);
 		}
 #endif

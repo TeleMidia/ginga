@@ -68,7 +68,7 @@ namespace player {
 		myScreen       = screenId;
 		status         = NONE;
 		previousStatus = NONE;
-		win            = NULL;
+		win            = 0;
 		running        = false;
 	}
 
@@ -129,10 +129,10 @@ namespace player {
 
 	void ShowButton::release() {
 		lock();
-		if (win != NULL) {
+		if (win != 0) {
 			dm->hideWindow (myScreen, win);
 			dm->deleteWindow(myScreen, win);
-			win = NULL;
+			win = 0;
 		}
 		unlock();
 	}
@@ -143,7 +143,7 @@ namespace player {
 		surface = dm->createRenderedSurfaceFromImageFile(myScreen, mrl.c_str());
 
 		lock();
-		if (win == NULL) {
+		if (win == 0) {
 			initializeWindow();
 		}
 

@@ -2929,7 +2929,7 @@ namespace ncl {
 	}
 
 	GingaSurfaceID FormatterMediator::getSurface() {
-		GingaSurfaceID s = NULL;
+		GingaSurfaceID s = 0;
 
 		s = Player::getSurface();
 		dm->clearSurfaceContent(s);
@@ -2939,12 +2939,12 @@ namespace ncl {
 	}
 
 	void FormatterMediator::flip() {
-		GingaWindowID w = NULL;
+		GingaWindowID w = 0;
 
 		if (data->devClass == 0) {
-			if (surface != NULL && dm->hasSurface(myScreen, surface)) {
+			if (surface != 0 && dm->hasSurface(myScreen, surface)) {
 				w = dm->getSurfaceParentWindow(surface);
-				if (w != NULL) {
+				if (w != 0) {
 					dm->clearWindowContent(myScreen, w);
 					dm->validateWindow(myScreen, w);
 				}
