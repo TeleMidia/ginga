@@ -465,13 +465,6 @@ namespace mb {
 		bool getAudioSpec(
 				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
 
-		static char* interleave(uint8_t* src, int srcLen, double ratio);
-
-		static char* createCVT(
-				uint8_t* src, int srcLen, double ratio, int sampleSize);
-
-		static void clamp(short* buf, int len);
-
 	private:
 		int opt_add_vfilter(
 				void *optctx,
