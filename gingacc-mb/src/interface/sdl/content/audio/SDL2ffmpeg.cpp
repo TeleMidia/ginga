@@ -240,12 +240,12 @@ namespace mb {
 
 	string SDL2ffmpeg::ffmpegErr(int err) {
 		string strErr = "";
-		char* errmsg = (char*)malloc(250);
+		char* errmsg = new char[250];
 		av_strerror(err, errmsg, 250);
 
 		strErr.assign(errmsg);
 
-		free(errmsg);
+		delete[] errmsg;
 
 		return strErr;
 	}
@@ -595,51 +595,6 @@ namespace mb {
 		}
 
 		return audioSpec;
-	}
-
-	char* SDL2ffmpeg::interleave(uint8_t* src, int srcLen, double ratio) {
-		int i, j;
-		int cvtRatio = ratio + 1;
-		char* cvtbuf = (char*)malloc(cvtRatio * srcLen);
-
-		for (i = 0; i < srcLen; ++i) {
-			for (j = 0; j < cvtRatio; ++j) {
-				memcpy(cvtbuf + (i * cvtRatio) + j, src + i, 1);
-			}
-		}
-
-		return cvtbuf;
-	}
-
-	char* SDL2ffmpeg::createCVT(
-			uint8_t* src, int srcLen, double ratio, int sampleSize) {
-
-		char* cvtbuf = (char*)malloc((ratio + 1) * srcLen);
-		int loop = ratio + 1;
-		int i;
-
-		for (i = 0; i < loop; i++) {
-			memcpy(cvtbuf + (srcLen * i), src, srcLen);
-		}
-
-		return cvtbuf;
-	}
-
-	void SDL2ffmpeg::clamp(short* buf, int len) {
-		int i;
-		long value;
-
-		for (i = 0; i < len; i++) {
-			value = (long)buf[i];
-			if (value > 0x7fff) {
-				value = 0x7fff;
-
-			} else if (value < -0x7fff) {
-				value = -0x7fff;
-			}
-
-			buf[i] = (short)value;
-		}
 	}
 
 	int SDL2ffmpeg::opt_add_vfilter(

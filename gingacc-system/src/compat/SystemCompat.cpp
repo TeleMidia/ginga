@@ -1517,7 +1517,7 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #if ENABLE_MEM_LEAK_DETECTION
-		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_CRT_DF );
 #endif
 #endif
 		return success;
