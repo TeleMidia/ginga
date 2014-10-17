@@ -891,8 +891,9 @@ namespace mb {
 		}
 
 		//TODO: find a better way to check if video_thread already did this frame unref
-		if (vp->src_frame->width > 0)
+		if (vp->src_frame->width > 0) {
 			av_frame_unref(vp->src_frame);
+		}
 	}
 
 	void SDL2ffmpeg::stream_close() {
@@ -1206,9 +1207,13 @@ retry:
 
 				/* dequeue the picture */
 				lastvp = &vs->pictq[vs->pictq_rindex];
-				SDLDeviceScreen::lockSDL();
-				dec->render_vp(lastvp);
-				SDLDeviceScreen::unlockSDL();
+				if (lastvp->src_frame) {
+					SDLDeviceScreen::lockSDL();
+					dec->render_vp(lastvp);
+					lastvp->src_frame = NULL;
+					SDLDeviceScreen::unlockSDL();
+				}
+
 				vp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown) % VIDEO_PICTURE_QUEUE_SIZE];
 
 				if (vp->serial != vs->videoq.serial) {
