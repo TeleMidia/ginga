@@ -47,10 +47,6 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "util/Color.h"
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
-
 #include "config.h"
 
 #include "system/compat/SystemCompat.h"
@@ -59,7 +55,13 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "mb/interface/sdl/content/audio/SDL2ffmpeg.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "SDL.h"
+extern "C" {
+	#include "SDL.h"
+}
+
+#ifdef main
+#undef main
+#endif
 
 #include <string>
 #include <iostream>
@@ -78,7 +80,7 @@ int main(int argc, char** argv) {
 				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 
 			} else if (strcmp(argv[i + 1], "file") == 0) {
-				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
+				SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 			}
 
 		} else if ((strcmp(argv[i], "--src") == 0) && ((i + 1) < argc)) {
@@ -114,7 +116,12 @@ int main(int argc, char** argv) {
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
 	/* SDL2ffmpeg stuffs */
+	double rt;
 	SDL2ffmpeg decoder(videoUri.c_str());
+	decoder.setTexture(texture);
+
+	SystemCompat::initMemCheck();
+	decoder.play();
 
 	while (1) {
 		SDL_Event e;
@@ -124,10 +131,14 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		SDL2ffmpeg::video_refresh(&decoder, &rt);
+
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
 	}
+
+	SystemCompat::finishMemCheck();
 
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
