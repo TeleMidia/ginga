@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to 1 if you want to check leaks. */
-#define ENABLE_MEM_LEAK_DETECTION 1
+#define ENABLE_MEM_LEAK_DETECTION 0
 
 /* Deprecated macro. */
 #define HAVE_BERKELIUM 1
