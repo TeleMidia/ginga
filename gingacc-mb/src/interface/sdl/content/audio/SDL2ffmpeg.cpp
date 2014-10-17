@@ -85,10 +85,7 @@ namespace mb {
 	bool SDL2ffmpeg::init = false;
 	pthread_mutex_t SDL2ffmpeg::aiMutex;
 
-	SDL2ffmpeg::SDL2ffmpeg(
-			IContinuousMediaProvider* cmp, const char *filename) {
-
-		this->cmp                            = cmp;
+	SDL2ffmpeg::SDL2ffmpeg(const char *filename) {
 		wanted_stream[AVMEDIA_TYPE_AUDIO]    = -1;
 		wanted_stream[AVMEDIA_TYPE_VIDEO]    = -1;
 		seek_by_bytes                        = -1;
@@ -1343,15 +1340,6 @@ display:
 			vp->reallocate = 0;
 			vp->width = src_frame->width;
 			vp->height = src_frame->height;
-
-			/*
-			 * the allocation must be done in the main thread to avoid
-			 * locking problems
-			 *
-			event.type = FF_ALLOC_EVENT;
-			event.user.data1 = this;
-			event.user.data2 = this->cmp;
-			SDL_PushEvent(&event);*/
 
 			alloc_picture();
 

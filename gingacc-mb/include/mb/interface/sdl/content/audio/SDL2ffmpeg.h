@@ -426,10 +426,8 @@ namespace mb {
 		int64_t mono_cb_time;
 		int monoStep;
 
-		IContinuousMediaProvider* cmp;
-
 	public:
-		SDL2ffmpeg(IContinuousMediaProvider* cmp, const char *filename);
+		SDL2ffmpeg(const char *filename);
 		~SDL2ffmpeg();
 
 	private:
