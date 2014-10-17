@@ -69,7 +69,7 @@ namespace mb {
 
 		myScreen   = screenId;
 		this->mrl  = "";
-		decoder    = new SDL2ffmpeg(this, mrl);
+		decoder    = new SDL2ffmpeg(mrl);
 
 		this->mrl.assign(mrl);
 	}
