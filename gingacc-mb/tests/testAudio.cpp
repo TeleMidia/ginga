@@ -146,8 +146,8 @@ int main(int argc, char** argv) {
 			if (strcmp(argv[i + 1], "stdout") == 0) {
 				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 
-			} else {
-				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
+			} else if (strcmp(argv[i + 1], "file") == 0) {
+				SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 			}
 
 		} else if ((strcmp(argv[i], "--debug") == 0)) {

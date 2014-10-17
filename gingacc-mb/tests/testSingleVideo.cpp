@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
 				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 
 			} else if (strcmp(argv[i + 1], "file") == 0) {
-				SystemCompat::setLogTo(SystemCompat::LOG_STDO);
+				SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 			}
 
 		} else if ((strcmp(argv[i], "--all") == 0)) {
