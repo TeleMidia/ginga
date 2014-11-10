@@ -92,7 +92,7 @@
 #define PACKAGE_NAME "ginga"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "ginga 0.13.5"
+#define PACKAGE_STRING "ginga 0.13.6"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "ginga"
@@ -101,7 +101,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.13.5"
+#define PACKAGE_VERSION "0.13.6"
 
 /* Define to 1 if you have a remote mb */
 #define HAVE_REMOTE_MB 0
@@ -114,4 +114,4 @@
 //#define STDC_HEADERS 1
 
 /* Ginga-CC version */
-#define VERSION "0.13.5"
+#define VERSION "0.13.6"

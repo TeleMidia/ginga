@@ -342,7 +342,7 @@ namespace prefetch {
 					remoteUri);
 
 			ic->setSourceTarget(localUri);
-			ic->reserveUrl(remoteUri, this, "GingaNCL/0.13.5");
+			ic->reserveUrl(remoteUri, this, "GingaNCL/0.13.6");
 			ic->performUrl();
 
 			icm->releaseInteractiveChannel(ic);
