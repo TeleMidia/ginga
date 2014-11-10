@@ -543,95 +543,70 @@ namespace multidevice {
 			string payload) {
 
 		bool handled   = false;
+    clog << "FormatterActiveDevice::handleTCPCommand scommand=" << scommand << endl;
+    clog << "FormatterActiveDevice::handleTCPCommand spayload_desc='" << spayload_desc << endl;
 
-		string appPath = tmp_dir+spayload_desc;
-		appPath = appPath.substr(0, appPath.rfind(".")) + SystemCompat::getIUriD();
+    string appName = spayload_desc.substr(0, spayload_desc.rfind(".")) + SystemCompat::getIUriD();
+    string appPath = tmp_dir+appName;
+    clog << "FormatterActiveDevice::handleTCPCommand appName=" << appName << endl;;
+    clog << "FormatterActiveDevice::handleTCPCommand appPath=" << appPath << endl;
+    string zip_dump = tmp_dir + "tmpzip.zip";
+    clog << "FormatterActiveDevice::handleTCPCommand zip_dump=" << zip_dump <<  endl;
 
 		int command_id = getCommandCode(&scommand);
-		string zip_dump;
-
-		clog << "FormatterActiveDevice::handleTCPCommand" << endl;
 		switch (command_id) {
 			case FormatterActiveDevice::ADD_DOCUMENT:{
-				zip_dump = tmp_dir + "tmpzip.zip";
-
-				clog << "ADD node path = '" << spayload_desc << "'" << endl;
-
-				writeFileFromBase64(payload, (char*)zip_dump.c_str());
-				SystemCompat::unzip_file((char*)zip_dump.c_str(), (char*)appPath.c_str());
-
-				remove((char*)zip_dump.c_str());
-				handled = true;
+			    clog << "FormatterActiveDevice::ADD_DOCUMENT" << endl;
+          SystemCompat::makeDir(appPath.c_str(), 0755);
+          writeFileFromBase64(payload, (char*)zip_dump.c_str());
+          SystemCompat::unzip_file((char*)zip_dump.c_str(),(char*)appPath.c_str());
+          remove((char*)zip_dump.c_str());
+          clog << "FormatterActiveDevice:: unzip app=" <<  spayload_desc
+              << " with payload size=" << strlen(payload.c_str())
+              << "in dir=" << appPath << endl;
+          handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::REMOVE_DOCUMENT: {
 				clog << "FormatterActiveDevice::REMOVE DOCUMENT" << endl;
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::START_DOCUMENT: {
-				clog << "FormatterActiveDevice::START:" << spayload_desc << endl;
-
+			  clog << "FormatterActiveDevice::START:" << spayload_desc << endl;
 				if (!payload.empty()) {
-					if(!isDirectory(appPath.c_str()))
-					     SystemCompat::makeDir(appPath.c_str(), 0755);
-					zip_dump = tmp_dir + "tmpzip.zip";
-
-					clog << "ADD node path = '" << appPath << spayload_desc << "'" << endl;
-                    clog << "PAYLOAD SIZE = " << strlen(payload.c_str()) << endl;
-
+ 		     SystemCompat::makeDir(appPath.c_str(), 0755);
 					writeFileFromBase64(payload, (char*)zip_dump.c_str());
 					SystemCompat::unzip_file((char*)zip_dump.c_str(),(char*)appPath.c_str());
-					//remove((char*)zip_dump.c_str());
+					remove((char*)zip_dump.c_str());
+					clog << "FormatterActiveDevice:: unzip app=" <<  spayload_desc
+              << " with payload size=" << strlen(payload.c_str())
+              << "in dir=" << appPath << endl;
 				}
-
 				string full_path = appPath+spayload_desc;
+        if (openDocument(full_path)) {
 
-				if (currentDocUri.compare(full_path) != 0) {
-					if (openDocument(full_path)) {
+          clog << "FormatterActiveDevice::START_DOCUMENT play " << full_path << endl;
+          formatter->setKeyHandler(true);
+          formatter->play();
 
-						clog << "FormatterActiveDevice::START_DOCUMENT play '";
-						clog << full_path << "'";
-
-						clog << endl;
-						formatter->setKeyHandler(true);
-						formatter->play();
-
-						//TODO: improve vars initialization
-						//using formatter->setPropertyValue(pname,pvalue);
-						//would do Player (gingacc-player) properties[name] = value
-
-						map<string,string>::iterator it;
-
-						for ( it=initVars.begin() ; it != initVars.end(); it++ ) {
-
-							string pname = (string)(*it).first;
-							string pvalue = (string)(*it).second;
-
-							//formatter->setPropertyValue(pname,pvalue);
-
-							((FormatterMediator *)formatter)->getPresentationContext()->
-									setPropertyValue(pname,pvalue);
-
-						    //clog << (*it).first << " => " << (*it).second << endl;
-						}
-
-					}
-					else {
-						clog << "FormatterActiveDevice::START_DOCUMENT: " << full_path;
-						clog << " open failure!"<<endl;
-					}
-				}
-				else {
-					//TODO: handle start with different doc
-				}
-
+          //using formatter->setPropertyValue(pname,pvalue);
+          //would do Player (gingacc-player) properties[name] = value
+          map<string,string>::iterator it;
+          for ( it=initVars.begin() ; it != initVars.end(); it++ ) {
+            string pname = (string)(*it).first;
+            string pvalue = (string)(*it).second;
+            ((FormatterMediator *)formatter)->getPresentationContext()->
+                setPropertyValue(pname,pvalue);
+          }
+        }
+        else {
+          clog << "FormatterActiveDevice::START_DOCUMENT: " << full_path;
+          clog << " open failure!"<<endl;
+        }
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::STOP_DOCUMENT: {
 				clog << "FormatterActiveDevice::STOP DOCUMENT" << endl;
 				string full_path = string("");
@@ -641,15 +616,12 @@ namespace multidevice {
 					if (formatter != NULL) {
 						formatter->stop();
 					}
-
 					currentDocUri = "";
-					//TODO: handle start with different doc
 				}
 
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::PAUSE_DOCUMENT: {
 				clog << "FormatterActiveDevice::PAUSE DOCUMENT" << endl;
 
@@ -665,7 +637,6 @@ namespace multidevice {
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::RESUME_DOCUMENT: {
 				clog << "FormatterActiveDevice::RESUME DOCUMENT" << endl;
 				//spayload_desc = appPath + spayload_desc;
@@ -681,7 +652,6 @@ namespace multidevice {
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::SET_VAR: {
 				string pname, pvalue;
 				size_t pos;
@@ -703,18 +673,15 @@ namespace multidevice {
 				handled = true;
 			}
 			break;
-
 			case FormatterActiveDevice::SELECTION: {
 				clog << "FormatterActiveDevice::SELECTION" << endl;
 				//TODO: handle selection
 				handled = true;
 			}
 			break;
-
 			default:
 				break;
 		}
-
 		return handled;
 	}
 
