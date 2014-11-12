@@ -552,12 +552,15 @@ namespace player {
 				hig = scrolled_rect.height();
 
 				if (dx > 0) {
+		      dm->clearSurfaceContent(surface);
 					dm->blitSurface(surface, dx, 0, surface, 0, 0, wid, hig);
 
 				} else if(dy > 0) {
+		      dm->clearSurfaceContent(surface);
 					dm->blitSurface(surface, 0, dy, surface, 0, 0, wid, hig);
 
 				} else {
+		      dm->clearSurfaceContent(surface);
 					dm->blitSurface(surface, 0, 0, surface, left, top, wid, hig);
 				}
 
