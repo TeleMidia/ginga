@@ -1505,6 +1505,8 @@ namespace compat {
 			clog << GetLastError() << "' pd = " << pd << endl;
 		}
 		bytesWritten = (int)bWritten;
+
+		assert(bytesWritten == dataSize);
 #else
 		bytesWritten = write(pd, (void*)data, dataSize);
 #endif

@@ -891,7 +891,7 @@ namespace mb {
 		}
 
 		//TODO: find a better way to check if video_thread already did this frame unref
-		if (vp->src_frame->width > 0) {
+		if (vp->src_frame) {
 			av_frame_unref(vp->src_frame);
 		}
 	}
