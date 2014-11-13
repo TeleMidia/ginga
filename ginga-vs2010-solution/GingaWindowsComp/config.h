@@ -5,7 +5,7 @@
 #define WIN32 1
 #endif
 
-#define VERSION "0.13.5"
+#define VERSION "0.13.6"
 
 #define STR_PREFIX "/usr/local"
 
