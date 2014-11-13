@@ -1,5 +1,5 @@
 AC_PREREQ([2.62])
-AC_INIT([ginga], [0.13.5], [bugs@telemidia.puc-rio.br])
+AC_INIT([ginga], [0.13.6], [bugs@telemidia.puc-rio.br])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
