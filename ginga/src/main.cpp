@@ -576,13 +576,12 @@ int main(int argc, char *argv[]) {
 			pem->autoMountOC(autoMount);
 
 #if HAVE_COMPONENTS
-			ccm = ((CCMCreator*)(cm->getObject("CommonCoreManager")))(
-					pem, screenId);
+			ccm = ((CICreator*)(cm->getObject("CommonCoreManager")))();
 
 #else
-			ccm = new CommonCoreManager(pem, screenId);
+			ccm = new CommonCoreManager();
 #endif
-
+			ccm->addPEM(pem, screenId);
 			ccm->enableNPTPrinter(nptPrinter);
 			ccm->setInteractivityInfo(hasOCSupport);
 			ccm->removeOCFilterAfterMount(removeOCFilter);

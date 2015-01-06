@@ -119,10 +119,7 @@ namespace lssm {
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
 #endif
 
-	CommonCoreManager::CommonCoreManager(
-			IPresentationEngineManager* pem,
-			GingaScreenID screenId) {
-
+	CommonCoreManager::CommonCoreManager() {
 		tuningWindow  = 0;
 		tuner         = NULL;
 		demuxer       = NULL;
@@ -131,9 +128,21 @@ namespace lssm {
 		nptProvider   = NULL;
 		ocDelay       = 0;
 		hasOCSupport  = true;
-		this->pem     = pem;
+		pem           = NULL;
 		nptPrinter    = false;
-		myScreen      = screenId;
+		myScreen      = 0;
+	}
+
+	CommonCoreManager::~CommonCoreManager() {
+		//TODO: release attributes
+		clog << "CommonCoreManager::~CommonCoreManager all done" << endl;
+	}
+
+	void CommonCoreManager::addPEM(
+			IPresentationEngineManager* pem, GingaScreenID screenId) {
+
+		this->myScreen = screenId;
+		this->pem = pem;
 
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
 #if HAVE_COMPONENTS
@@ -181,9 +190,12 @@ namespace lssm {
 #endif //HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
 	}
 
-	CommonCoreManager::~CommonCoreManager() {
-		//TODO: release attributes
-		clog << "CommonCoreManager::~CommonCoreManager all done" << endl;
+	void CommonCoreManager::initializeInstance(std::string& data, short scenario) {
+
+	}
+
+	void CommonCoreManager::testInstance(std::string& data, short scenario) {
+
 	}
 
 	void CommonCoreManager::enableNPTPrinter(bool enableNPTPrinter) {
@@ -404,18 +416,4 @@ namespace lssm {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager* createCCM(
-		::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager* pem,
-		 GingaScreenID screenId) {
-
-	return new ::br::pucrio::telemidia::ginga::lssm::CommonCoreManager(
-			pem, screenId);
-}
-
-extern "C" void destroyCCM(
-		::br::pucrio::telemidia::ginga::lssm::ICommonCoreManager* ccm) {
-
-	delete ccm;
 }

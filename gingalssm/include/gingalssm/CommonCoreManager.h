@@ -81,11 +81,14 @@ namespace lssm {
 		IPresentationEngineManager* pem;
 
 	public:
-		CommonCoreManager(
-				IPresentationEngineManager* pem,
-				GingaScreenID screenId);
-
+		CommonCoreManager();
 		~CommonCoreManager();
+
+		void addPEM(
+				IPresentationEngineManager* pem, GingaScreenID screenId);
+
+		void initializeInstance(std::string& data, short scenario);
+		void testInstance(std::string& data, short scenario);
 
 		void enableNPTPrinter(bool enableNPTPrinter);
 		void setOCDelay(double ocDelay);
