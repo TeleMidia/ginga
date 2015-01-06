@@ -64,7 +64,7 @@ namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace converter {
-  class IDocumentConverter {
+  class IDocumentConverter : public IComponentInstance {
 	public:
 		virtual ~IDocumentConverter(){};
 

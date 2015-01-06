@@ -1360,6 +1360,14 @@ namespace compat {
 		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
 			newPipeName = "\\\\.\\pipe\\" + pipeName;
 		}
+#else
+		string tempDir = SystemCompat::getTemporaryDir();
+
+		if (pipeName.length() < tempDir || 
+				pipeName.substr(0, tempDir.length()) != tempDir) {
+
+			newPipeName = tempDir + pipeName;
+		}
 #endif
 
 		return newPipeName;
@@ -1405,7 +1413,7 @@ namespace compat {
 			return false;
 		}
 #else
-		mkfifo(pipeName.c_str(), S_IFIFO);
+		assert(mkfifo(pipeName.c_str(), 0666) != -1);
 
 		*pd = open(pipeName.c_str(), O_WRONLY);
 		if (*pd == -1) {
