@@ -1363,7 +1363,7 @@ namespace compat {
 #else
 		string tempDir = SystemCompat::getTemporaryDir();
 
-		if (pipeName.length() < tempDir || 
+		if (pipeName.length() < tempDir.length() || 
 				pipeName.substr(0, tempDir.length()) != tempDir) {
 
 			newPipeName = tempDir + pipeName;
@@ -1413,7 +1413,7 @@ namespace compat {
 			return false;
 		}
 #else
-		assert(mkfifo(pipeName.c_str(), 0666) != -1);
+		mkfifo(pipeName.c_str(), 0666);
 
 		*pd = open(pipeName.c_str(), O_WRONLY);
 		if (*pd == -1) {
