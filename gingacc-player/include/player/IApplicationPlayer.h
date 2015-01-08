@@ -60,7 +60,7 @@ namespace ginga {
 namespace core {
 namespace player {
 	//debug purpose
-	static const string EC_DBG_START_PRESENTATION        = "0xFF";
+	static const string EC_DBG_START_PRESENTATION        = "0x255";
 
 	//nclEdit base
 	static const string EC_OPEN_BASE                     = "0x00";
