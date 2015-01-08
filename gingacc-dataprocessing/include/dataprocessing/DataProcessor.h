@@ -88,7 +88,6 @@ using namespace std;
 struct notifyData {
 	IStreamEventListener* listener;
 	IStreamEvent* se;
-	pthread_mutex_t* mutex;
 };
 
 namespace br {
@@ -108,7 +107,6 @@ namespace dataprocessing {
 			set<IObjectListener*> objectListeners;
 			IServiceDomainListener* sdl;
 			set<unsigned int> processedIds;
-			pthread_mutex_t mutex;
 			NPTProcessor* nptProcessor;
 			vector<ITransportSection*> sections;
 			IDemuxer* demux;

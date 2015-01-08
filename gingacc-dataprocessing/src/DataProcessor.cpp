@@ -83,8 +83,6 @@ namespace dataprocessing {
 		nptPrinter      = false;
 		string tempDir;
 
-		Thread::mutexInit(&mutex, true);
-
 		startThread();
 
 		tempDir = SystemCompat::getTemporaryDir() + "ginga";
@@ -139,8 +137,6 @@ namespace dataprocessing {
 			epgProcessor->release();
 			epgProcessor = NULL;
 		}*/
-
-		Thread::mutexDestroy(&mutex);
 	}
 
 	void DataProcessor::deleteAIT() {
@@ -282,17 +278,13 @@ namespace dataprocessing {
 		struct notifyData* data;
 		IStreamEventListener* listener;
 		IStreamEvent* se;
-		pthread_mutex_t* mtx;
 
 		data = (struct notifyData*)ptr;
 		se = data->se;
 		listener = data->listener;
-		mtx = data->mutex;
 
 		delete data;
 		data = NULL;
-
-		Thread::mutexUnlock(mtx);
 
 		listener->receiveStreamEvent(se);
 		return NULL;
@@ -312,12 +304,9 @@ namespace dataprocessing {
 			listeners = eventListeners[eventName];
 			j = listeners->begin();
 			while (j != listeners->end()) {
-				//(*j)->receiveStreamEvent(se);
-				Thread::mutexLock(&mutex);
 				data = new struct notifyData;
 				data->listener = *j;
 				data->se = se;
-				data->mutex = &mutex;
 
 				pthread_create(
 						&notifyThreadId_,
