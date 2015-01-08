@@ -59,6 +59,9 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
+	//debug purpose
+	static const string EC_DBG_START_PRESENTATION        = "0xFF";
+
 	//nclEdit base
 	static const string EC_OPEN_BASE                     = "0x00";
 	static const string EC_ACTIVATE_BASE                 = "0x01";
