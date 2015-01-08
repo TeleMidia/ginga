@@ -100,7 +100,7 @@ LUAPLAYER_BEGIN_DECLS
 #define pwarn(fmt, ...)\
      __clog ("%p Warning: " fmt, (void *) this, ## __VA_ARGS__)
 
-#ifdef LUAPLAYER_ENABLE_TRACE
+#if LUAPLAYER_ENABLE_TRACE
 # define trace0()   trace ("%s", "")
 # define trace(fmt, ...)\
      __clog ("%s: " fmt, __FUNCTION__, ## __VA_ARGS__)
