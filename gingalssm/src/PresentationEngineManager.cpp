@@ -435,6 +435,9 @@ namespace lssm {
 				}
 			}
 
+		} else if (commandTag == EC_DBG_START_PRESENTATION) {
+			startPresentation(commandPayload, "");
+
 		} else {
 			//clog << "PresentationEngineManager::editingCommand not to base";
 			//clog << endl;
