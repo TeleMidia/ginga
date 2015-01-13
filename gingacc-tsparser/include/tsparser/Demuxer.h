@@ -190,6 +190,7 @@ namespace tsparser {
 
 		public:
 			short getCaps();
+			bool isReady();
 
 		private:
 			void dataArrived();

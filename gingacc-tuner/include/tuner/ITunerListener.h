@@ -73,6 +73,7 @@ namespace tuning {
 			virtual void receiveData(char* buff, unsigned int size)=0;
 			virtual void updateChannelStatus(
 					short newStatus, IChannel* channel)=0;
+			virtual bool isReady()=0;
 	};
 }
 }

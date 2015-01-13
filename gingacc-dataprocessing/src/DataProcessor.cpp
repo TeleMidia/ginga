@@ -465,6 +465,10 @@ namespace dataprocessing {
 		}
 	}
 
+	bool DataProcessor::isReady() {
+		return true;
+	}
+
 	void DataProcessor::run() {
 		int pid;
 		ITransportSection* section;

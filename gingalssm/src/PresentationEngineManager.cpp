@@ -347,7 +347,6 @@ namespace lssm {
 #endif
 
 #if HAVE_DSMCC
-
 		args   = split(commandPayload, ",");
 		i      = args->begin();
 		baseId = EventDescriptor::extractMarks(*i);

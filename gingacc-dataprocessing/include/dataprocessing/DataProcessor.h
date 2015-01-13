@@ -158,6 +158,7 @@ namespace dataprocessing {
 		public:
 			void receiveSection(ITransportSection* section);
 			void updateChannelStatus(short newStatus, IChannel* channel);
+			bool isReady();
 
 		private:
 			void run();
