@@ -131,6 +131,7 @@ namespace tuning {
 		private:
 			void notifyData(char* buff, unsigned int val);
 			void notifyStatus(short newStatus, IChannel* channel);
+			void waitForListeners();
 			virtual void run();
 	};
 }
