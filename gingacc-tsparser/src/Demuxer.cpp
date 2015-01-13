@@ -881,6 +881,10 @@ namespace tsparser {
 		return 0;
 	}
 
+	bool Demuxer::isReady() {
+		return outPipeCreated;
+	}
+
 	void Demuxer::dataArrived() {
 		if (isWaiting) {
 			Thread::condSignal(&flagCondSignal);
