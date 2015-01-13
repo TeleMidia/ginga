@@ -13,7 +13,7 @@ Build dependencies
   * SDL2
   * SDL2_image
   * SDL2_ttf
-  * FFMPEG (disabled SDL by patch, and compiled with: --prefix=/usr --incdir=/usr/include/ffmpeg --enable-static --enable-shared --enable-gpl --enable-postproc --disable-programs --enable-pic --disable-outdev=sdl --build-suffix=ffmpeg)
+  * FFMPEG (compiled with: --prefix=/usr --incdir=/usr/include/ffmpeg --enable-static --enable-shared --enable-gpl --enable-postproc --disable-programs --disable-sdl --enable-pic --build-suffix=ffmpeg)
     + libavcodec
     + libavdevice
     + libavfilter
@@ -25,26 +25,27 @@ Build dependencies
   * NCLUA
   * Berkelium
 
-Build tutorial for Ubuntu 14.04
-===============================
+Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies from 3rd party repository
+==========================================================================================================
 
 * Installing depencies
 
-  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-gnutls-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
-  sudo echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/ubuntu amd64/ " >> /etc/apt/sources.list
+  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
+  sudo echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/debian amd64/ " >> /etc/apt/sources.list
   sudo apt-get update
-  sudo apt-get install berkelium ffmpegext  nclua
+  sudo apt-get install berkelium ffmpegext nclua
 
 * Apply Ubuntu patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
 
   ./debian/scripts/fix_configure_ac_ffmpeg.sh
 
-* Build ginga
+* Build ginga (don't build with -j > 1 as there is a bug in the multi-job build).
 
   ./bootstrap
-  ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" CPPFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/" CFLAGS="-I/usr/include/mirclient -I/usr/include/mircommon/"
-  make -j4
-  sudo make -j4 install
+  ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" 
+  make
+  sudo make install
+
 
 Import to eclipse CDT
 =====================
