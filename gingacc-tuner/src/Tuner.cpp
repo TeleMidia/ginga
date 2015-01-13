@@ -399,6 +399,11 @@ namespace tuning {
 		}
 	}
 
+	void Tuner::waitForListeners() {
+		while (listener == NULL)
+			SystemCompat::uSleep(10000);
+	}
+
 	void Tuner::run() {
 		INetworkInterface* nInterface = NULL, *curInt = NULL;
 		map<int, INetworkInterface*>::iterator i;
@@ -451,6 +456,8 @@ namespace tuning {
 				!(nInterface->getCaps() & DPC_CAN_DEMUXBYHW)) {
 
 			clog << "Tuner::run() call receive" << endl;
+
+			waitForListeners();
 			receiveInterface(nInterface);
 		}
 
