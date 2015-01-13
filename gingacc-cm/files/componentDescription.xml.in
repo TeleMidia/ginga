@@ -334,7 +334,7 @@
   </component>
 
   <component package="gingacc-player" name="libgingaccplabkl" version="0.13.5" type="dynamic">
-    <dependency componentName="liblibberkelium" version="8.0.552.237"/>
+    <dependency componentName="libberkelium" version="8.0.552.237"/>
     <dependency componentName="libtelemidiautil" version="0.13.5"/>
     <dependency componentName="libgingaccplayer" version="0.13.5"/>
     <symbol object="BerkeliumPlayer" creator="createBerkeliumPlayer" destroyer="destroyBerkeliumPlayer" interface="IPlayer"/>

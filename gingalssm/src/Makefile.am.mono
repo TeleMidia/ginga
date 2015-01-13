@@ -257,7 +257,7 @@ gcplsrc                += \
                           ../../gingacc-cpp/gingacc-player/src/application/declarative/xhtml/berkelium/BerkeliumPlayer.cpp
 
 gcpllib                += \
-                          -llibberkelium \
+                          -lberkelium \
                           -L/usr/local/lib/ \
                           -L/opt/local/lib/ \
                           -L${prefix}/lib/
