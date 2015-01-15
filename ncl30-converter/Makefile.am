@@ -28,7 +28,7 @@ libncl30confraxml_la_SOURCES =\
 
 # con-fra-ncl
 libncl30confrancl_la_LIBADD =\
-  $(top_builddir)/ncl30-converter/libncl30confraxml.la\
+  libncl30confraxml.la\
   $(NULL)
 
 libncl30confrancl_la_SOURCES =\
@@ -49,7 +49,7 @@ libncl30confrancl_la_SOURCES =\
 # con-ncl-ncm
 libncl30connclncm_la_LIBADD =\
   $(XERCESC_LIBS)\
-  $(top_builddir)/ncl30-converter/libncl30confrancl.la\
+  libncl30confrancl.la\
   $(NULL)
 
 libncl30connclncm_la_SOURCES =\

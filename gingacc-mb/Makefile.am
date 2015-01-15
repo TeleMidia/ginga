@@ -32,7 +32,7 @@ libgingaccmb_la_SOURCES =\
   src/interface/Matrix.cpp\
   src/InputManager.cpp\
   src/LocalScreenManager.cpp
-    
+
 if BUILD_REMOTE_MB
 libgingaccmb_la_SOURCES +=\
 	src/DistributedInputManagerMB.cpp\
@@ -59,7 +59,7 @@ libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/output/SDLWindow.cpp\
   src/interface/sdl/content/SDLConvert.cpp\
   $(NULL)
-  
+
 # gingacc-mb-dec-sdl-ap (SDL Audio)
 libgingaccmbdecsdlap_la_CXXFLAGS =\
   $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
@@ -102,7 +102,7 @@ libgingaccmbdecsdlav_la_LDFLAGS =\
   $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
 libgingaccmbdecsdlav_la_LIBADD =\
-  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlap.la\
+  libgingaccmbdecsdlap.la\
   $(NULL)
 
 libgingaccmbdecsdlav_la_SOURCES =\
@@ -145,8 +145,7 @@ gingaccmbconfdir = $(gingaconfdir)/mb/config
 gingaccmbconf_DATA =\
   files/config/input.cfg\
   $(NULL)
-  
-  
+
 ############################## Ginga-mb PROGRAMS ###########################
 if BUILD_REMOTE_MB
 bin_PROGRAMS = gingacc_mb
@@ -155,12 +154,10 @@ gingacc_mb_SOURCES =\
    src/remote/StubServer.cpp\
    src/main.cpp\
    $(NULL)
-   
+
 gingacc_mb_CPPFLAGS =\
   -std=c++11 \
-  -I/usr/local/include/SDL2\
-  -I/usr/include/boost\
-	$(INCLUDE_TELEMIDIA_UTIL)\
+  $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_CM)\
   $(INCLUDE_GINGACC_MB)\
@@ -171,16 +168,15 @@ gingacc_mb_CPPFLAGS =\
   $(INCLUDE_GINGA_NCL)\
   $(INCLUDE_GINGA_LSSM)\
   $(NULL)
-  
+
 gingacc_mb_LDADD = \
-	-lboost_system\
-  $(top_builddir)/gingacc-system/libgingaccsystem.la\
-  $(top_builddir)/gingacc-mb/libgingaccmb.la\
-  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlap.la\
-  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlav.la\
-  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlf.la\
-  $(top_builddir)/gingacc-mb/libgingaccmbdecsdlimg.la\
-  $(top_builddir)/gingacc-mb/libgingaccmbsdl.la\
-  $(top_builddir)/telemidia-util/libtelemidiautil.la\
+  ../gingacc-system/libgingaccsystem.la\
+  ../gingacc-mb/libgingaccmb.la\
+  ../gingacc-mb/libgingaccmbdecsdlap.la\
+  ../gingacc-mb/libgingaccmbdecsdlav.la\
+  ../gingacc-mb/libgingaccmbdecsdlf.la\
+  ../gingacc-mb/libgingaccmbdecsdlimg.la\
+  ../gingacc-mb/libgingaccmbsdl.la\
+  ../telemidia-util/libtelemidiautil.la\
   $(NULL)	
 endif
