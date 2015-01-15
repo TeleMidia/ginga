@@ -98,7 +98,7 @@ libginganclmodel_la_SOURCES =\
   $(NULL)
 
 libginganclmodel_la_LIBADD =\
-  $(top_builddir)/ncl30/libncl30.la\
+  ../ncl30/libncl30.la\
   $(NULL)
 
 # ginga-ncl-adaptation
@@ -109,12 +109,12 @@ libgingancladaptation_la_SOURCES =\
   $(NULL)
 
 libgingancladaptation_la_LIBADD =\
-  $(top_builddir)/ncl30/libncl30.la\
+  ../ncl30/libncl30.la\
   $(NULL)
 
 # ginga-ncl-em-converter
 libginganclemconverter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclmodel.la\
+  libginganclmodel.la\
   $(NULL)
 
 libginganclemconverter_la_SOURCES =\
@@ -136,8 +136,8 @@ libginganclmd_la_SOURCES +=\
 endif
 
 libginganclmd_la_LIBADD =\
-  $(top_builddir)/gingancl/libgingancladaptation.la\
-  $(top_builddir)/gingancl/libginganclmodel.la\
+  libgingancladaptation.la\
+  libginganclmodel.la\
   $(NULL)
 
 # ginga-ncl-prefetch
@@ -147,7 +147,7 @@ libginganclprefetch_la_SOURCES =\
 
 # ginga-ncl-adapter
 libgingancladapter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclmodel.la\
+  libginganclmodel.la\
   $(NULL)
 
 libgingancladapter_la_SOURCES =\
@@ -173,7 +173,7 @@ libginganclnclpadapter_la_SOURCES =\
 # ginga-ncl-bkl-p-adapter
 if BUILD_BERKELIUM
 libginganclbklpadapter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  libginganclapppadapter.la\
   $(NULL)
 
 libginganclbklpadapter_la_LDFLAGS =\
@@ -186,7 +186,7 @@ endif
 
 # ginga-ncl-lua-p-adapter
 libginganclluapadapter_la_LIBADD =\
-  $(top_builddir)/gingancl/libginganclapppadapter.la\
+  libginganclapppadapter.la\
   $(NULL)
 
 libginganclluapadapter_la_SOURCES =\
@@ -241,10 +241,10 @@ libginganclsubpadapter_la_SOURCES =\
 
 # ginga-ncl
 libgingancl_la_LIBADD =\
-  $(top_builddir)/gingacc-player/libgingaccplayer.la\
-  $(top_builddir)/gingancl/libginganclmodel.la\
-  $(top_builddir)/gingancl/libginganclemconverter.la\
-  $(top_builddir)/gingancl/libginganclmd.la\
+  ../gingacc-player/libgingaccplayer.la\
+  libginganclmodel.la\
+  libginganclemconverter.la\
+  libginganclmd.la\
   $(NULL)
 
 libgingancl_la_SOURCES =\
