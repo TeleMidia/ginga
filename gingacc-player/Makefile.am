@@ -94,7 +94,7 @@ libgingaccplasrt_la_SOURCES =\
 
 # gingacc-pla-cha
 libgingaccplacha_la_LIBADD =\
-  $(top_builddir)/gingacc-player/libgingaccplaavp.la\
+  libgingaccplaavp.la\
   $(NULL)
 
 libgingaccplacha_la_SOURCES =\
@@ -103,7 +103,7 @@ libgingaccplacha_la_SOURCES =\
 
 # gingacc-pla-pav (?)
 libgingaccplapav_la_LIBADD =\
-  $(top_builddir)/gingacc-player/libgingaccplaavp.la\
+  libgingaccplaavp.la\
   $(NULL)
 
 libgingaccplapav_la_SOURCES =\

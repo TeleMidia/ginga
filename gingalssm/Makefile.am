@@ -30,12 +30,12 @@ gingalssmlib_LTLIBRARIES = libgingalssm.la
 
 if BUILD_DATA_PROCESSING
 libgingalssm_la_LIBADD =\
-  $(top_builddir)/gingacc-tuner/libgingacctuner.la\
-  $(top_builddir)/gingacc-tsparser/libgingacctsparser.la\
-  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocncledit.la\
-  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocessing.la\
-  $(top_builddir)/gingacc-dataprocessing/libgingaccdataprocncl.la\
-  $(top_builddir)/ncl30/libncl30.la\
+  ../gingacc-tuner/libgingacctuner.la\
+  ../gingacc-tsparser/libgingacctsparser.la\
+  ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
+  ../gingacc-dataprocessing/libgingaccdataprocessing.la\
+  ../gingacc-dataprocessing/libgingaccdataprocncl.la\
+  ../ncl30/libncl30.la\
   $(NULL)
 endif
 
