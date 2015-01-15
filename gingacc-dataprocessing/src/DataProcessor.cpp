@@ -344,7 +344,12 @@ namespace dataprocessing {
 
 			if ((payload[0] & 0xFF) == IMpegDescriptor::STR_EVENT_TAG ||
 					(payload[0] & 0xFF) == 0x1a) {
-
+				static char lastSeVer = -1;
+				if (lastSeVer == section->getVersionNumber()) {
+					delete section;
+					return;
+				}
+				lastSeVer = section->getVersionNumber();
 				se = new StreamEvent(
 						section->getPayload(), section->getPayloadSize());
 

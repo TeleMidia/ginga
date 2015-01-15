@@ -1484,8 +1484,8 @@ namespace mb {
 		hasEvent = SDL_PollEvent(&event);
 
 		while (hasEvent) {
-			clog << "SDLDeviceScreen::checkEvents poll event";
-			clog << " type '" << event.type << "'" << endl;
+			//clog << "SDLDeviceScreen::checkEvents poll event";
+			//clog << " type '" << event.type << "'" << endl;
 
 			if (event.type == SDL_KEYDOWN) {
 				clog << "SDLDeviceScreen::checkEvents poll event '";
