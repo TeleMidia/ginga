@@ -35,15 +35,15 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
   sudo apt-get update
   sudo apt-get install berkelium ffmpegext nclua
 
-* Apply Ubuntu patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
+* Apply patch to use Rafael Diniz's ffmpeg insted of Ubuntu libav.
 
   ./debian/scripts/fix_configure_ac_ffmpeg.sh
 
-* Build ginga (don't build with -j > 1 as there is a bug in the multi-job build).
+* Build ginga.
 
   ./bootstrap
   ./configure --enable-data-processing --enable-linuxdvb --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed" 
-  make
+  make -j4
   sudo make install
 
 
