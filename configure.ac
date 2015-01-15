@@ -168,20 +168,22 @@ else
     [Define to 1 to trace NCLua calls.])
 fi
 
-# Enable video4linux.
-_AC_ARG_ENABLE([video4linux], [build video4linux front-end support], [no])
-if test "$enable_video4linux" = yes; then
+# Enable linux dvb support.
+_AC_ARG_ENABLE([linuxdvb], [build linuxdvb support], [no])
+if test "$enable_linuxdvb" = yes; then
   AC_CHECK_HEADER([linux/dvb/frontend.h],
-   [video4linux_ok=yes],
-   [video4linux_ok=no])
-  if test "$video4linux_ok" = no; then
+   [linuxdvb_ok=yes],
+   [linuxdvb_ok=no])
+  if test "$linuxdvb_ok" = yes; then
+    AC_DEFINE([HAVE_LINUXDVB], [1], [Define to 1 if LinuxDVB is present.])
+  else
     AC_MSG_ERROR([
-*** Checks for VIDEO4LINUX failed.
-*** Video4linux support is optional; you can disable it by passing
-*** the option --disable-video4linux to configure.])
+*** Checks for LinuxDVB failed.
+*** LinuxDVB support is optional; you can disable it by passing
+*** the option --disable-linuxdvb to configure.])
   fi
 fi
-AM_CONDITIONAL([BUILD_VIDEO4LINUX], [test "$enable_video4linux"=yes])
+AM_CONDITIONAL([BUILD_LINUXDVB], [test "$enable_linuxdvb"=yes])
 
 # Check if we're on MS Windows.
 case "$target_os" in
@@ -484,7 +486,7 @@ AC_MSG_NOTICE([summary of main build options:
   build multi-device:     ${enable_multidevice}
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
-  build video4linux:      ${enable_video4linux}
+  build linuxdvb:         ${enable_linuxdvb}
   build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}
