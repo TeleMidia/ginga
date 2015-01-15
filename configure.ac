@@ -482,7 +482,7 @@ AC_MSG_NOTICE([summary of main build options:
   library types:      shared=${enable_shared}, static=${enable_static}
 
   build components:       ${enable_components}
-  build data-processing:  ${enable_dataprocessing}
+  build data-processing:  ${enable_data_processing}
   build multi-device:     ${enable_multidevice}
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
