@@ -26,7 +26,7 @@ libgingacctuner_la_SOURCES =\
   src/Tuner.cpp\
   $(NULL)
 
-if BUILD_VIDEO4LINUX
+if BUILD_LINUXDVB
 libgingacctuner_la_SOURCES +=\
   src/providers/frontends/isdbt/ISDBTFrontend.cpp\
   src/providers/frontends/isdbt/ISDBTProvider.cpp\

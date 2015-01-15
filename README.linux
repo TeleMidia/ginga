@@ -42,7 +42,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
 * Build ginga (don't build with -j > 1 as there is a bug in the multi-job build).
 
   ./bootstrap
-  ./configure --enable-data-processing --enable-video4linux --libdir=/usr/lib --prefix=/usr/ LDFLAGS="-Wl,--no-as-needed" 
+  ./configure --enable-data-processing --enable-linuxdvb --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed" 
   make
   sudo make install
 

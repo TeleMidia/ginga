@@ -56,7 +56,7 @@ http://www.telemidia.puc-rio.br
 	#include "tuner/providers/BDAProvider.h"
 #endif
 
-#if HAVE_FEV4L
+#if HAVE_LINUXDVB
 #include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
 #endif
 
@@ -162,7 +162,7 @@ namespace tuning {
 			}
 #if _WIN32
 			provider = new BDAProvider(freq);
-#elif HAVE_FEV4L
+#elif HAVE_LINUXDVB
 			provider = new ISDBTProvider(freq);
 #endif
 
