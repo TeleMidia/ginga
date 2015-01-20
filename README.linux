@@ -1,3 +1,6 @@
+Ginga reference implementation by PUC-Rio/Laboratorio TeleMidia
+===============================================================
+
 Build dependencies
 ==================
 
@@ -25,8 +28,8 @@ Build dependencies
   * NCLUA
   * Berkelium
 
-Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies from 3rd party repository
-==========================================================================================================
+Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies from Telemidia's repository
+============================================================================================================
 
 * Installing depencies
 
@@ -35,7 +38,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
   sudo apt-get update
   sudo apt-get install berkelium ffmpegext nclua
 
-* Apply patch to use Rafael Diniz's ffmpeg insted of Debian/Ubuntu libav.
+* Apply patch to use Telemidia's ffmpeg instead Debian/Ubuntu's libav.
 
   ./debian/scripts/fix_configure_ac_ffmpeg.sh
 
