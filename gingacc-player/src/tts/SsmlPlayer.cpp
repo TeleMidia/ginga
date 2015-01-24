@@ -61,13 +61,11 @@ http://www.telemidia.puc-rio.br
 #define MAX_READ 100000
 
 bool isRunning;
-bool terminated;
+bool terminateSpeak;
 
 // Callback method which delivers the synthetized audio samples and the events.
 static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
-    if (isRunning == false)
-        return 1;
     
     return 0;
 }
@@ -82,17 +80,10 @@ namespace player {
 
     SsmlPlayer::SsmlPlayer(GingaScreenID screenId, string mrl) :
         Thread(), Player(screenId, mrl) {
-        
-        Thread::mutexInit(&mutex, NULL);
-        
+
     }
 
     SsmlPlayer::~SsmlPlayer() {
-
-        Thread::mutexLock(&mutex);
-        Thread::mutexUnlock(&mutex);
-        Thread::mutexDestroy(&mutex);
-
 
     }
 
@@ -141,21 +132,22 @@ namespace player {
         
         ifstream fis;
 
-        Thread::mutexLock(&mutex);
-
-        isRunning = true;
-        
         fis.open((this->mrl).c_str(), ifstream::in);
 
         if (!fis.is_open() && (mrl != "" || content == "")) {
             clog << "SsmlPlayer::loadFile Warning! can't open input ";
             clog << "file: '" << this->mrl << "'" << endl;
-            Thread::mutexUnlock(&mutex);
             return;
         }
-        
+
+        if (isRunning == true) {
+            terminateSpeak = true;
+            while (isRunning == true)
+                sleep (1);
+        }
         
         sampleRate = espeak_Initialize(outType, MAX_READ, NULL, 0);
+        isRunning = true;
 
         errType = espeak_SetVoiceByProperties(&voiceType);
         
@@ -164,9 +156,9 @@ namespace player {
         string line;
         do {
 
-            if (!isRunning)
+            if (terminateSpeak == true)
                 break;
-
+            
             getline (fis, line);
             errType = espeak_Synth(line.c_str(),
                      line.length(),
@@ -179,19 +171,18 @@ namespace player {
 
 
         } while (!fis.eof());
-        
+
         fis.close();
         
         espeak_Synchronize();
         espeak_Terminate();
 
+        if (terminateSpeak == false)
+            notifyPlayerListeners(PL_NOTIFY_STOP, "");
         
-        isRunning = false;
-        terminated = true;
-        
-        Thread::mutexUnlock(&mutex);
-
-        notifyPlayerListeners(PL_NOTIFY_STOP, "");
+        terminateSpeak = false;
+        isRunning = false; 
+       
 
     }
 
@@ -208,20 +199,6 @@ namespace player {
     void SsmlPlayer::stop() {
         clog << "SsmlPlayer::stop ok" << endl;
 
-        if (isRunning)
-            isRunning = false;
-
-    again:
-        Thread::mutexLock(&mutex);
-        if (terminated == false){
-            Thread::mutexUnlock(&mutex);
-            sleep(1);
-            goto again;
-        }
-        Thread::mutexUnlock(&mutex);
-        
-        notifyPlayerListeners(PL_NOTIFY_STOP, "");
-        
         Player::stop();
     }
 
@@ -232,16 +209,12 @@ namespace player {
 
 
     void SsmlPlayer::setPropertyValue(string name, string value) {
-        Thread::mutexLock(&mutex);
-        
         Player::setPropertyValue(name, value);
-        Thread::mutexUnlock(&mutex);
         
     }
 
     void SsmlPlayer::run() {
         clog << "SsmlPlayer::run thread created!" << endl;
-        terminated = false;
         loadSsml();
         
     }

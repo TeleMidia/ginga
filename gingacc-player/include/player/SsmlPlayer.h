@@ -80,7 +80,6 @@ namespace player {
 	    public Thread,
 	    public Player {
 		private:
-			pthread_mutex_t mutex;
 			string content;
 
 		public:
