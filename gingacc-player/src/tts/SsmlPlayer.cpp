@@ -53,16 +53,22 @@ http://www.telemidia.puc-rio.br
 
 #include "player/PlayersComponentSupport.h"
 
+// TODO: Develop a ginga common audio system and integrate this player in it.
 // The eSpeak header
 #include <espeak/speak_lib.h>
 
 // size of the max read by the voice syntetizer
 #define MAX_READ 100000
 
+bool isRunning;
+bool terminated;
+
 // Callback method which delivers the synthetized audio samples and the events.
 static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
-
+    if (isRunning == false)
+        return 1;
+    
     return 0;
 }
 
@@ -78,7 +84,7 @@ namespace player {
         Thread(), Player(screenId, mrl) {
         
         Thread::mutexInit(&mutex, NULL);
-
+        
     }
 
     SsmlPlayer::~SsmlPlayer() {
@@ -137,6 +143,8 @@ namespace player {
 
         Thread::mutexLock(&mutex);
 
+        isRunning = true;
+        
         fis.open((this->mrl).c_str(), ifstream::in);
 
         if (!fis.is_open() && (mrl != "" || content == "")) {
@@ -155,8 +163,12 @@ namespace player {
 
         string line;
         do {
-        getline (fis, line);
-        errType = espeak_Synth(line.c_str(),
+
+            if (!isRunning)
+                break;
+
+            getline (fis, line);
+            errType = espeak_Synth(line.c_str(),
                      line.length(),
                      0,
                      pType,
@@ -165,6 +177,7 @@ namespace player {
                      NULL,
                      NULL);
 
+
         } while (!fis.eof());
         
         fis.close();
@@ -172,9 +185,13 @@ namespace player {
         espeak_Synchronize();
         espeak_Terminate();
 
-        notifyPlayerListeners(PL_NOTIFY_STOP, "");
+        
+        isRunning = false;
+        terminated = true;
         
         Thread::mutexUnlock(&mutex);
+
+        notifyPlayerListeners(PL_NOTIFY_STOP, "");
 
     }
 
@@ -190,6 +207,21 @@ namespace player {
 
     void SsmlPlayer::stop() {
         clog << "SsmlPlayer::stop ok" << endl;
+
+        if (isRunning)
+            isRunning = false;
+
+    again:
+        Thread::mutexLock(&mutex);
+        if (terminated == false){
+            Thread::mutexUnlock(&mutex);
+            sleep(1);
+            goto again;
+        }
+        Thread::mutexUnlock(&mutex);
+        
+        notifyPlayerListeners(PL_NOTIFY_STOP, "");
+        
         Player::stop();
     }
 
@@ -209,6 +241,7 @@ namespace player {
 
     void SsmlPlayer::run() {
         clog << "SsmlPlayer::run thread created!" << endl;
+        terminated = false;
         loadSsml();
         
     }
