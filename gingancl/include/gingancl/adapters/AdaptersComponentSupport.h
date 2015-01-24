@@ -98,6 +98,13 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
 #endif
 
+#if HAVE_SSML
+#include "player/SsmlPlayer.h"
+
+#include "tts/SsmlPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;
+#endif
+
 #if HAVE_AWESOMIUM
 #include "player/AwesomiumPlayer.h"
 

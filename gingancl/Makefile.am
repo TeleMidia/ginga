@@ -43,6 +43,10 @@ if BUILD_BERKELIUM
 gingancllib_LTLIBRARIES += libginganclbklpadapter.la
 endif
 
+if BUILD_SSML
+gingancllib_LTLIBRARIES += libginganclssmlpadapter.la
+endif
+
 # ginga-ncl-model
 if BUILD_DATA_PROCESSING
 AM_CPPFLAGS +=\
@@ -239,6 +243,13 @@ libginganclsubpadapter_la_SOURCES =\
   src/adapters/text/SubtitlePlayerAdapter.cpp\
   $(NULL)
 
+# ginga-ncl-ssml-p-adapter
+if BUILD_SSML
+libginganclssmlpadapter_la_SOURCES =\
+  src/adapters/tts/SsmlPlayerAdapter.cpp\
+  $(NULL)
+endif
+
 # ginga-ncl
 libgingancl_la_LIBADD =\
   ../gingacc-player/libgingaccplayer.la\
@@ -339,6 +350,13 @@ adapterstextinclude_HEADERS =\
   include/gingancl/adpaters/text/PlainTxtPlayerAdapter.h\
   include/gingancl/adpaters/text/SubtitlePlayerAdapter.h\
   $(NULL)
+
+if BUILD_SSML
+adaptersttsincludedir = $(adaptersincludedir)/tts
+adaptersttsinclude_HEADERS =\
+  include/gingancl/adapters/tts/SsmlPlayerAdapter.h\
+  $(NULL)
+endif
 
 emconverterincludedir = $(ginganclincludedir)/emconverter
 emconverterinclude_HEADERS =\

@@ -450,22 +450,33 @@ namespace adapters {
 		} else if (playerClassName == "PlainTxtPlayerAdapter") {
 			player = new PlainTxtPlayerAdapter();
 
-		} else if (playerClassName == "AwesomiumPlayerAdapter") {
+		}
+#if HAVE_SSML
+                else if (playerClassName == "SsmlPlayerAdapter") {
+			player = new SsmlPlayerAdapter();
+
+		}
+#endif //HAVE_SSML
+                
 #if HAVE_AWESOMIUM
+                else if (playerClassName == "AwesomiumPlayerAdapter") {
 			player = new AwesomiumPlayerAdapter();
+
+		}
 #endif //HAVE_AWESOMIUM
 
-		} else if (playerClassName == "BerkeliumPlayerAdapter") {
-#if HAVE_BERKELIUM
+#if HAVE_BERKELIUM                
+                else if (playerClassName == "BerkeliumPlayerAdapter") {
 			player = new BerkeliumPlayerAdapter();
+		}
 #endif //HAVE_BERKELIUM
 
-		} else if (playerClassName == "LinksPlayerAdapter") {
 #if HAVE_LINKS
+                else if (playerClassName == "LinksPlayerAdapter") {
 			player = new LinksPlayerAdapter();
+		}
 #endif //HAVE_LINKS
-
-		} else if (playerClassName == "ImagePlayerAdapter") {
+                else if (playerClassName == "ImagePlayerAdapter") {
 			player = new ImagePlayerAdapter();
 
 		} else if (playerClassName == "MirrorPlayerAdapter") {
