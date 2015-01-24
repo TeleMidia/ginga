@@ -98,5 +98,12 @@ endif
 
 endif
 
+if BUILD_SSML
+LDADD +=\
+  ../gingancl/libginganclssmlpadapter.la\
+  ../gingacc-player/libgingaccplassml.la\
+  $(NULL)
+endif
+
 bin_PROGRAMS = ginga
 ginga_SOURCES = src/main.cpp

@@ -57,6 +57,16 @@ libgingaccplabkl_la_SOURCES =\
   $(NULL)
 endif
 
+# gingacc-pla-ssml
+if BUILD_SSML
+gingaccplayerlib_LTLIBRARIES += libgingaccplassml.la
+libgingaccplassml_la_CXXFLAGS = $(AM_CXXFLAGS) $(SSML_CFLAGS)
+libgingaccplassml_la_LDFLAGS = $(AM_LDFLAGS) $(SSML_LIBS)
+libgingaccplassml_la_SOURCES =\
+  src/tts/SsmlPlayer.cpp\
+  $(NULL)
+endif
+
 # gingacc-pla-lua
 libgingaccplalua_la_CXXFLAGS = $(AM_CXXFLAGS) -Wall\
   $(NCLUA_CFLAGS) $(SDL2_CFLAGS)

@@ -33,7 +33,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
 
 * Installing depencies
 
-  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick
+  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick libespeak-dev espeak-data
   sudo echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/debian amd64/ " >> /etc/apt/sources.list
   sudo apt-get update
   sudo apt-get install berkelium ffmpegext nclua
@@ -45,7 +45,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
 * Build ginga.
 
   ./bootstrap
-  ./configure --enable-data-processing --enable-linuxdvb --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed" 
+  ./configure --enable-data-processing --enable-linuxdvb --enable-espeak --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed" 
   make -j4
   sudo make install
 

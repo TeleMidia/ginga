@@ -379,6 +379,31 @@ fi
 AC_SUBST([BERKELIUM_LIBS])
 AM_CONDITIONAL([BUILD_BERKELIUM], [test "$berkelium_ok" = yes])
 
+# Check for espeak.
+espeak_ok=no
+_AC_ARG_ENABLE([espeak], [build with espeak SSML support], [no])      
+if test "$enable_espeak" = yes; then
+  AC_HAVE_LIBRARY([espeak],
+   [AC_CHECK_HEADER([espeak/speak_lib.h],
+     [espeak_ok=yes])])
+  if test "$espeak_ok" = yes; then
+    AC_DEFINE([HAVE_SSML], [1],
+      [Define to 1 if espeak is present.])
+    SSML_LIBS='-lespeak'
+  else
+    AC_DEFINE([HAVE_SSML], [0],
+      [Define to 1 if espeak is present.])
+    AC_MSG_WARN([
+  ***
+  *** Checks for eSpeak failed.
+  *** eSpeak is required by Ginga-CC Player.
+  *** If eSpeak is not installed, some applications may not work properly.
+  ***])
+  fi
+  AC_SUBST([SSML_LIBS])
+fi
+AM_CONDITIONAL([BUILD_SSML], [test "$enable_espeak" = yes])
+
 # Check for NCLua.
 PKG_CHECK_MODULES([NCLUA],
  [nclua >= nclua_required_version], [],
@@ -487,6 +512,7 @@ AC_MSG_NOTICE([summary of main build options:
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
+  build espeak:           ${enable_espeak}
   build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}
