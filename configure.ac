@@ -478,7 +478,7 @@ AC_MSG_NOTICE([summary of main build options:
   version:            ${VERSION}
   host type:          ${host}
   install prefix:     ${prefix}
-  compiler:           cc: ${CC} cflags: ${CFLAGS} cppflags: ${CPPFLAGS}
+  compiler:           CC: \"${CC}\"  CFLAGS: \"${CFLAGS}\"  CPPFLAGS: \"${CPPFLAGS}\"  LDFLAGS: \"${LDFLAGS}\"
   library types:      shared=${enable_shared}, static=${enable_static}
 
   build components:       ${enable_components}
