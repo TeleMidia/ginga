@@ -298,6 +298,20 @@ namespace player {
 		return NULL;
 	}
 
+	string ProgramAV::getPropertyValue(string name) {
+		string value = "";
+
+		if (currentPlayer != NULL) {
+			value = currentPlayer->getPropertyValue(name);
+		}
+
+		if (value == "") {
+			value = Player::getPropertyValue(name);
+		}
+
+		return value;
+	}
+
 	void ProgramAV::setPropertyValue(string pName, string pValue) {
 		clog << "ProgramAV::setPropertyValue '" << pName << "' = '";
 		clog << pValue << "'" << endl;

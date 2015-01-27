@@ -84,7 +84,10 @@ namespace tv {
 	
 	bool ProgramAVPlayerAdapter::stop() {
 		player->setPropertyValue("bounds", "");     // full screen
-		player->setPropertyValue("soundLevel", ""); // full sound
+
+		//TODO: create a map to handle each default value (before AIT app start cmd)
+		player->setPropertyValue("soundLevel", "1.0"); // full sound
+
 		return FormatterPlayerAdapter::stop();
 	}
 

@@ -458,7 +458,8 @@ namespace mb {
 
 		bool hasPicture();
 
-        void setSoundLevel(float level);
+        float getSoundLevel();
+		void setSoundLevel(float level);
 
 		bool getAudioSpec(
 				SDL_AudioSpec* spec, int sample_rate, uint8_t channels);
