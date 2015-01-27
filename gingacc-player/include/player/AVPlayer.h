@@ -196,6 +196,7 @@ namespace player {
 			void stop();
 			void resume();
 
+			virtual string getPropertyValue(string name);
 			virtual void setPropertyValue(string name, string value);
 
 			void addListener(IPlayerListener* listener);

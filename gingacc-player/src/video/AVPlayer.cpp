@@ -412,6 +412,14 @@ namespace player {
 		}
 	}
 
+	string AVPlayer::getPropertyValue(string name) {
+		if (name == "soundLevel") {
+			return itos(dm->getProviderSoundLevel(provider));
+		}
+
+		return Player::getPropertyValue(name);
+	}
+
 	void AVPlayer::setPropertyValue(string name, string value) {
 		float fValue = 1.0;
 		vector<string>* vals;

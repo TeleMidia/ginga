@@ -543,8 +543,12 @@ namespace mb {
 		return hasPic;
 	}
 
+	float SDL2ffmpeg::getSoundLevel() {
+		return soundLevel / SDL_MIX_MAXVOLUME;
+	}
+
 	void SDL2ffmpeg::setSoundLevel(float level) {
-		if (level >= 1.0) {
+		if (level >= 1.0 || level < 0.0) {
 			soundLevel = SDL_MIX_MAXVOLUME;
 
 		} else if (level >= 0.0) {

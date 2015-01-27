@@ -374,6 +374,8 @@ namespace mb {
 			virtual double getProviderTotalMediaTime(
 					const GingaProviderID &provId) = 0;
 
+			virtual double getProviderSoundLevel(const GingaProviderID &provId) = 0;
+
 			virtual int64_t getProviderVPts(const GingaProviderID &provId) = 0;
 
 			virtual void setProviderMediaTime(

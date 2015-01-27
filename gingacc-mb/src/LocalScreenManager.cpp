@@ -1854,6 +1854,25 @@ void LocalScreenManager::moveWindowTo(
 	 return totalTime;
  }
 
+ 
+ double LocalScreenManager::getProviderSoundLevel(
+		 const GingaProviderID &provId)
+ {
+	 double soundLevel = 0.0;
+	 IContinuousMediaProvider *provider = NULL;
+	 IMediaProvider *iProvider = getIMediaProviderFromId(provId);
+
+	 if (iProvider != NULL &&
+			 (iProvider->getType() == IMediaProvider::AudioProvider ||
+			  iProvider->getType() == IMediaProvider::VideoProvider))
+	 {
+		 provider   = (IContinuousMediaProvider*) iProvider;
+		 soundLevel = provider->getSoundLevel();
+	 }
+
+	 return soundLevel;
+ }
+
  int64_t LocalScreenManager::getProviderVPts(const GingaProviderID &provId)
  {
 	 int64_t vpts = 0.0;

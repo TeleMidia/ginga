@@ -161,6 +161,16 @@ namespace mb {
 		}
 	}
 
+	float SDLAudioProvider::getSoundLevel() {
+		float soundLevel = 0.0;
+
+		if (decoder != NULL) {
+			soundLevel = decoder->getSoundLevel();
+		}
+
+		return soundLevel;
+	}
+
 	bool SDLAudioProvider::releaseAll() {
 		return false;
 	}

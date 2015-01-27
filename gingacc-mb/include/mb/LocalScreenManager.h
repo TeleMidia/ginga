@@ -434,6 +434,8 @@ namespace mb {
 
 			double getProviderTotalMediaTime(const GingaProviderID &provId);
 
+			double getProviderSoundLevel(const GingaProviderID &provId);
+
 			int64_t getProviderVPts(const GingaProviderID &provId);
 
 			void setProviderMediaTime( const GingaProviderID &provId, double pos);

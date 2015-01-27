@@ -86,6 +86,7 @@ namespace mb {
 			virtual void setProviderContent(void* content){};
 			virtual bool checkVideoResizeEvent(GingaSurfaceID frame){return false;};
 			double getTotalMediaTime();
+			float getSoundLevel();
 			virtual int64_t getVPts();
 			double getMediaTime();
 			void setMediaTime(double pos);
