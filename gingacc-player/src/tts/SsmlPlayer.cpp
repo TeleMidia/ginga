@@ -66,7 +66,9 @@ bool terminateSpeak;
 // Callback method which delivers the synthetized audio samples and the events.
 static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 {
-    
+    if (terminateSpeak == true)
+        return 1;
+
     return 0;
 }
 
@@ -168,7 +170,6 @@ namespace player {
                      espeakSSML,
                      NULL,
                      NULL);
-
 
         } while (!fis.eof());
 
