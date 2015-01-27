@@ -93,7 +93,6 @@ namespace tsparser {
 		debugDest      = 0;
 		nptPrinter	   = false;
 		nptPid		   = -1;
-		isWaiting      = false;
 		outPipeCreated = false;
 
 		newPmt = NULL;
@@ -886,17 +885,12 @@ namespace tsparser {
 	}
 
 	void Demuxer::dataArrived() {
-		if (isWaiting) {
-			Thread::condSignal(&flagCondSignal);
-			isWaiting = false;
-		}
+		Thread::condSignal(&flagCondSignal);
 	}
 
 	bool Demuxer::waitData() {
-		isWaiting = true;
 		Thread::mutexLock(&flagLockUntilSignal);
 		Thread::condWait(&flagCondSignal, &flagLockUntilSignal);
-		isWaiting = false;
 		Thread::mutexUnlock(&flagLockUntilSignal);
 
 		return true;

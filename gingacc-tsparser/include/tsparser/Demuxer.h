@@ -102,7 +102,6 @@ namespace tsparser {
 			short debugDest;
 			unsigned int debugPacketCounter;
 
-			bool isWaiting;
 			pthread_mutex_t flagLockUntilSignal;
 			pthread_cond_t flagCondSignal;
 

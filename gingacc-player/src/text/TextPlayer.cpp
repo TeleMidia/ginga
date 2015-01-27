@@ -233,8 +233,9 @@ namespace player {
 		unsigned int widthAverage;
 		bool space;
 		int oldTextWidth;
-		string splited;
+		string aux, splited;
 
+		aux = text;
 		uri = SystemCompat::appendGingaFilesPrefix("font" + SystemCompat::getIUriD() + "vera.ttf");
 		if (font == 0 && fileExists(uri)) {
 			setFont(uri);
@@ -258,142 +259,74 @@ namespace player {
 		if (font != 0 && surface != 0) {
 			dm->getSurfaceSize(surface, &surWidth, &surHeight);
 			textWidth = dm->getProviderStringWidth(
-					font, text.c_str(), strlen((const char*)(text.c_str())));
+					font, aux.c_str(), strlen((const char*)(aux.c_str())));
 
-			if (textWidth > surWidth && text.length() > 1) {
+			if (textWidth > surWidth && aux.length() > 1) {
 				space = false;
 
-				widthAverage = (int)(textWidth / text.length());
+				widthAverage = (int)(textWidth / aux.length());
 				maxToDraw = (int)(((surWidth) / widthAverage) * 0.85);
 
-				len = text.length();
-				splited = text.substr(0, maxToDraw);
+				len      = aux.length();
+				splited  = aux.substr(0, maxToDraw);
 				splitPos = splited.find_last_of(" ");
 
 				if (splitPos == std::string::npos) {
 					splitPos = maxToDraw;
-					splited = text.substr(splitPos, len - splitPos);
+					splited = aux.substr(splitPos, len - splitPos);
 
 				} else {
 					splitPos++;
-					splited = text.substr(splitPos, len - splitPos);
+					splited = aux.substr(splitPos, len - splitPos);
 					space = true;
 				}
 
-				text = text.substr(0, splitPos);
+				aux = aux.substr(0, splitPos);
 
-				textWidth = dm->getProviderStringWidth(font, text.c_str());
+				textWidth = dm->getProviderStringWidth(font, aux.c_str());
 
 				while (textWidth > surWidth) {
 					if (space) {
 						splited = " " + splited;
 					}
 
-					len = text.length();
-					splitPos = text.find_last_of(" ");
+					len      = aux.length();
+					splitPos = aux.find_last_of(" ");
+
 					if (splitPos == std::string::npos) {
-						splited = text[len] + splited;
-						text = text.substr(0, len - 1);
-						space = false;
+						splited = aux[len] + splited;
+						aux     = aux.substr(0, len - 1);
+						space   = false;
 
 					} else {
 						splitPos++;
-						splited = text.substr(
+						splited = aux.substr(
 								splitPos, len - splitPos) + splited;
 
-						text = text.substr(0, splitPos);
+						aux   = aux.substr(0, splitPos);
 						space = true;
 					}
 
 					oldTextWidth = textWidth;
-					textWidth = dm->getProviderStringWidth(font, text.c_str());
+					textWidth = dm->getProviderStringWidth(font, aux.c_str());
 
 					if (oldTextWidth == textWidth) {
 						break;
 					}
 				}
 
-				dm->playProviderOver(font, surface, text.c_str(), currentColumn,
-				                     currentLine, align);
-
-				/*if (align == A_TOP_CENTER) {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    currentLine, (DFBSurfaceTextFlags)(align)));
-
-				} else if (align == A_CENTER) {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    (int)((surHeight + currentLine) / 2),
-					    (DFBSurfaceTextFlags)(align)));
-
-				} else if (align == A_BOTTOM_CENTER) {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    (int)((surHeight - currentLine) / 2),
-					    (DFBSurfaceTextFlags)(align)));
-
-				} else {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    currentColumn,
-					    currentLine, (DFBSurfaceTextFlags)(align)));
-				}*/
+				dm->playProviderOver(
+						font, surface, aux.c_str(), currentColumn, currentLine, align);
 
 				breakLine();
-				drawText(splited, align);
+				if (splited != text) {
+					drawText(splited, align);
+				}
 
 			} else {
-				dm->playProviderOver(font, surface, text.c_str(), currentColumn,
-				                     currentLine, align);
-/*
-				if (align == A_TOP_CENTER) {
+				dm->playProviderOver(
+						font, surface, aux.c_str(), currentColumn, currentLine, align);
 
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    currentLine, (DFBSurfaceTextFlags)(align)));
-
-				} else if (align == A_CENTER) {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    (int)((surHeight + currentLine) / 2),
-					    (DFBSurfaceTextFlags)(align)));
-
-				} else if (align == A_BOTTOM_CENTER) {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    (int)(surWidth / 2),
-					    (int)((surHeight - currentLine) / 2),
-					    (DFBSurfaceTextFlags)(align)));
-
-				} else {
-					DFBCHECK(surface->getSurface()->DrawString(
-					    surface->getSurface(),
-					    text.c_str(),
-					    -1,
-					    currentColumn,
-					    currentLine, (DFBSurfaceTextFlags)(align)));
-				}
-*/
 				currentColumn += textWidth;
 			}
 
