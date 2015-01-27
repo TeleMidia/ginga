@@ -740,15 +740,16 @@ namespace mb {
 	void SDLSurface::getSize(int* w, int* h) {
 		Thread::mutexLock(&sMutex);
 		if (sur != NULL) {
-			*w = sur->w;
+      *w = sur->w;
 			*h = sur->h;
 
 		} else if (parent != NULL) {
-			*w = parent->getW();
+      *w = parent->getW();
 			*h = parent->getH();
 
 		} else {
-			clog << "SDLSurface::getSize Warning! NULL underlying surface and";
+      *w = *h = 0;
+      clog << "SDLSurface::getSize Warning! NULL underlying surface and";
 			clog << " parent";
 			clog << endl;
 		}

@@ -1620,7 +1620,12 @@ void LocalScreenManager::moveWindowTo(
 	 ISurface *surface = NULL;
 	 surface = getISurfaceFromId (surId);
 	 if (surface != NULL)
-		 surface->getSize(width, height);
+     surface->getSize(width, height);
+   else
+   {
+      *width = 0;
+      *height = 0;
+   }
  }
 
  void LocalScreenManager::addSurfaceCaps(const GingaSurfaceID &surId,
