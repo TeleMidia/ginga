@@ -114,6 +114,8 @@ namespace mb {
 		monoStep                             = 0;
 		status                               = ST_STOPPED;
 
+		ctx                                  = NULL;
+
 		setSoundLevel(1.0);
 
 		if (!init) {
@@ -856,8 +858,6 @@ namespace mb {
 					 *        we should use them to convert pixel formats as well.
 					 */
 
-					SwsContext* ctx = NULL;
-
 					ctx = sws_getCachedContext(
 							ctx,
 							vp->width,
@@ -916,6 +916,8 @@ namespace mb {
 				vp->tex = NULL;
 			}
 		}
+
+		sws_freeContext(ctx);
 
 		SDLDeviceScreen::lockSDL();
 		SDL_DestroyMutex(vs->pictq_mutex);

@@ -416,6 +416,7 @@ namespace mb {
 		SDL_AudioCVT acvt;
 		float soundLevel;
 		SDL_Texture* texture;
+		SwsContext* ctx;
 
 		bool hasSDLAudio;
 		bool reof;
