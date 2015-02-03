@@ -12,7 +12,7 @@
 
 
 !define BASEDIR "..\Ginga"
-!define VERSION "0.13.5"
+!define VERSION "0.13.6"
 
 Name "Ginga ${VERSION}"
 Caption "Ginga Installer"
