@@ -435,7 +435,7 @@ namespace mb {
 
 		short sysType;
 		GingaScreenID screenId;
-		char* mbArgs[4];
+		char* mbArgs[64];
 
 		string params    = "";
 		string paramsSfx = "";
