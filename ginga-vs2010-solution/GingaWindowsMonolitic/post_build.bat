@@ -26,6 +26,10 @@ if not exist "%GINGAFILESPATH%\font" ( mkdir "%GINGAFILESPATH%\font" )
 if not exist "%GINGAFILESPATH%\img" ( mkdir "%GINGAFILESPATH%\img" )
 if not exist "%GINGAFILESPATH%\md" ( mkdir "%GINGAFILESPATH%\md" )
 
+:: GingaCC-tuner
+%CP_COMMAND% %GINGA_BASE_DIR%gingacc-tuner\files\img\tuning.png %GINGAFILESPATH%\tuner\
+%CP_COMMAND% %GINGA_BASE_DIR%gingacc-tuner\files\network\tuner.ini %GINGAFILESPATH%\tuner\
+
 :: GingaCC-CM
 %CP_COMMAND% %GINGA_BASE_DIR%gingacc-cm\files\*.xml %GINGAFILESPATH%\
 
