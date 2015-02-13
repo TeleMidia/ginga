@@ -225,7 +225,7 @@ void printVersion() {
 	cout << "This is ginga (open source version):  a free " << endl;
 	cout << " support for iTV middleware named Ginga." << endl;
 	cout << "Ginga binary v" << VERSION << endl;
-	cout << "(c) 2002-2013 The TeleMidia PUC-Rio Team." << endl << endl;
+	cout << "(c) 2002-2015 The TeleMidia PUC-Rio Team." << endl << endl;
 }
 
 string updateFileUri(string file) {
@@ -367,10 +367,10 @@ int main(int argc, char *argv[]) {
 
 				devClass = 2;
 			}
-		
+
 		} else if (strcmp(argv[i], "--disable-multicast") == 0) {
 			useMulticast = false;
-				
+
 		} else if (strcmp(argv[i], "--device-srv-port") == 0) {
 			if (isNumeric(argv[i+1])&&((i + 1) < argc)) {
 				deviceSrvPort = util::stof(argv[i+1]);
