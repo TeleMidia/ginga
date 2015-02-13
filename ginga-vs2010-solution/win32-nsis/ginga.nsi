@@ -123,7 +123,7 @@ Section "-Ginga Settings" ; No components page, name is not important
   ; Put file there
   File ${BASEDIR}\files\contextmanager\*
 
-  WriteUninstaller "Uninstall.exe"
+  WriteUninstaller "Uninstall Ginga.exe"
 
   ; Associate .ncl files with Ginga-GUI
 
@@ -133,7 +133,7 @@ SectionEnd ; end the section
 Section "Start Menu Shortcuts"
   SectionIn 1
   CreateDirectory "$SMPROGRAMS\TeleMidia\Ginga"
-  CreateShortCut "$SMPROGRAMS\TeleMidia\Ginga\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\TeleMidia\Ginga\Uninstall Ginga.lnk" "$INSTDIR\Uninstall Ginga.exe" "" "$INSTDIR\Uninstall Ginga.exe" 0
   ;CreateShortCut "$SMPROGRAMS\TeleMidia\Ginga\ginga.lnk" "$INSTDIR\ginga.exe" "" "$INSTDIR\ginga.exe" 0
   CreateShortCut "$SMPROGRAMS\TeleMidia\Ginga\Ginga.lnk" "$INSTDIR\gingagui.exe" "" "$INSTDIR\gingagui.exe" 0
   ;CreateShortCut "$SMPROGRAMS\TeleMidia\Ginga\ (MakeNSISW).lnk" "$INSTDIR\ginga.nsi" "" "$INSTDIR\ginga.nsi" 0
@@ -144,7 +144,10 @@ SectionEnd
 UninstallText "This will uninstall Ginga. Hit next to continue"
 Section "Uninstall"
   Delete "$INSTDIR\*"
-  RMDir "$INSTDIR"
+  RMDir /r /REBOOTOK "$INSTDIR\imageformats"
+  RMDir /r /REBOOTOK "$INSTDIR\locales"
+  RMDir /r /REBOOTOK "$INSTDIR\nclua"
+  ;RMDir "$INSTDIR"
 
   ;Shortcuts
   Delete "$SMPROGRAMS\TeleMidia\Ginga\*"
