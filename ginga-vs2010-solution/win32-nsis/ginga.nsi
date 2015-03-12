@@ -110,9 +110,11 @@ Section "Ginga (Command Line Binary + GUI)" ; No components page, name is not im
   ; Put file there
   File /r ${BASEDIR}\*
 
-  WriteUninstaller "Uninstall.exe"
-
+  ; Associate .ncl files with Ginga-GUI
   ${registerExtension} $INSTDIR\gingagui.exe ".ncl" "Nested Context Language document"
+
+  ; delete old gingagui.ini
+  Delete $APPDATA\telemidia\gingagui.ini
 SectionEnd ; end the section
 
 Section "-Ginga Settings" ; No components page, name is not important
@@ -124,9 +126,6 @@ Section "-Ginga Settings" ; No components page, name is not important
   File ${BASEDIR}\files\contextmanager\*
 
   WriteUninstaller "Uninstall Ginga.exe"
-
-  ; Associate .ncl files with Ginga-GUI
-
 SectionEnd ; end the section
 
 ; Optional section (can be disabled by the user)
@@ -147,7 +146,7 @@ Section "Uninstall"
   RMDir /r /REBOOTOK "$INSTDIR\imageformats"
   RMDir /r /REBOOTOK "$INSTDIR\locales"
   RMDir /r /REBOOTOK "$INSTDIR\nclua"
-  ;RMDir "$INSTDIR"
+  RMDir /r /REBOOTOK $APPDATA\telemidia
 
   ;Shortcuts
   Delete "$SMPROGRAMS\TeleMidia\Ginga\*"
