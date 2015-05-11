@@ -75,13 +75,23 @@ libgingaccmbdecsdlap_la_SOURCES =\
 # gingacc-mb-dec-sdl-img (SDL Image)
 libgingaccmbdecsdlimg_la_CXXFLAGS =\
   $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(SDL2IMAGE_CFLAGS)
+if BUILD_SVG
+libgingaccmbdecsdlimg_la_CXXFLAGS += $(LIBRSVG_CFLAGS)
+endif
 
 libgingaccmbdecsdlimg_la_LDFLAGS =\
   $(AM_LDFLAGS) $(SDL2_LIBS) $(SDL2IMAGE_LIBS)
+if BUILD_SVG
+libgingaccmbdecsdlimg_la_LDFLAGS += $(LIBRSVG_LIBS)
+endif
 
 libgingaccmbdecsdlimg_la_SOURCES =\
   src/interface/sdl/content/image/SDLImageProvider.cpp\
   $(NULL)
+
+if BUILD_SVG
+libgingaccmbdecsdlimg_la_SOURCES += src/interface/sdl/content/image/SDLSvgDecoder.cpp
+endif
 
 # gingacc-mb-dec-sdl-f (SDL Text)
 libgingaccmbdecsdlf_la_CXXFLAGS =\

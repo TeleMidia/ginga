@@ -100,7 +100,10 @@ namespace focus {
 					    extension == "gif" ||
 					    extension == "jpg" ||
 					    extension == "jpeg" ||
-					    extension == "bmp") {
+					    extension == "bmp" ||
+                                            extension == "bpg" ||
+                                            extension == "svg" ||
+                                            extension == "svgz") {
 
 					s = dm->createRenderedSurfaceFromImageFile(
 							screenId, src.c_str());

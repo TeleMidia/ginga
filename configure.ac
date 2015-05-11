@@ -23,6 +23,7 @@ m4_define([sdl2_ttf_require_version],    [2.0])
 m4_define([swresample_required_version], [0.17.104])
 m4_define([swscale_required_version],    [2.5.101])
 m4_define([xercesc_required_version],    [2.7])
+m4_define([librsvg_required_version],      [2.40.0])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
 AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
@@ -40,6 +41,7 @@ AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
 AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresample_required_version)
 AC_SUBST([SWSCALE_REQUIRED_VERSION], swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION], xercesc_required_version)
+AC_SUBST([LIBRSVG_REQUIRED_VERSION], librsvg_required_version)
 
 AM_INIT_AUTOMAKE([-Wall 1.11 foreign gnu no-define subdir-objects])
 AM_MAINTAINER_MODE([enable])
@@ -392,7 +394,7 @@ if test "$enable_espeak" = yes; then
     SSML_LIBS='-lespeak'
   else
     AC_DEFINE([HAVE_SSML], [0],
-      [Define to 1 if espeak is present.])
+      [Define to 0 if espeak is not present.])
     AC_MSG_WARN([
   ***
   *** Checks for eSpeak failed.
@@ -403,6 +405,25 @@ if test "$enable_espeak" = yes; then
   AC_SUBST([SSML_LIBS])
 fi
 AM_CONDITIONAL([BUILD_SSML], [test "$enable_espeak" = yes])
+
+# Check for LibRsvg for SVG
+librsvg_ok=no
+_AC_ARG_ENABLE([librsvg], [build with LibRsvg SVG support], [no])
+if test "$enable_librsvg" = yes; then
+  PKG_CHECK_MODULES([LIBRSVG],
+   [librsvg-2.0 >= librsvg_required_version], [librsvg_ok=yes],
+    [AC_MSG_ERROR([
+*** librsvg >= librsvg_required_version is required.])])
+
+  if test "$librsvg_ok" = yes; then
+    AC_DEFINE([HAVE_LIBRSVG], [1],
+      [Define to 1 if librsvg is present.])
+  else
+    AC_DEFINE([HAVE_LIBRSVG], [0],
+      [Define to 0 if librsvg is not present.])
+  fi
+fi
+AM_CONDITIONAL([BUILD_SVG], [test "$enable_librsvg" = yes])
 
 # Check for NCLua.
 PKG_CHECK_MODULES([NCLUA],
@@ -513,6 +534,7 @@ AC_MSG_NOTICE([summary of main build options:
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
   build espeak:           ${enable_espeak}
+  build librsvg:          ${enable_librsvg}
   build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}
