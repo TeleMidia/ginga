@@ -78,19 +78,27 @@ libgingaccmbdecsdlimg_la_CXXFLAGS =\
 if BUILD_SVG
 libgingaccmbdecsdlimg_la_CXXFLAGS += $(LIBRSVG_CFLAGS)
 endif
+if BUILD_LIBBPG
+libgingaccmbdecsdlimg_la_CXXFLAGS += $(LIBBPG_CFLAGS)
+endif
 
 libgingaccmbdecsdlimg_la_LDFLAGS =\
   $(AM_LDFLAGS) $(SDL2_LIBS) $(SDL2IMAGE_LIBS)
 if BUILD_SVG
 libgingaccmbdecsdlimg_la_LDFLAGS += $(LIBRSVG_LIBS)
 endif
+if BUILD_LIBBPG
+libgingaccmbdecsdlimg_la_LDFLAGS += $(LIBBPG_LIBS)
+endif
 
 libgingaccmbdecsdlimg_la_SOURCES =\
   src/interface/sdl/content/image/SDLImageProvider.cpp\
   $(NULL)
-
 if BUILD_SVG
 libgingaccmbdecsdlimg_la_SOURCES += src/interface/sdl/content/image/SDLSvgDecoder.cpp
+endif
+if BUILD_LIBBPG
+libgingaccmbdecsdlimg_la_SOURCES += src/interface/sdl/content/image/SDLBpgDecoder.cpp
 endif
 
 # gingacc-mb-dec-sdl-f (SDL Text)

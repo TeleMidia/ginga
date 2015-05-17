@@ -23,7 +23,8 @@ m4_define([sdl2_ttf_require_version],    [2.0])
 m4_define([swresample_required_version], [0.17.104])
 m4_define([swscale_required_version],    [2.5.101])
 m4_define([xercesc_required_version],    [2.7])
-m4_define([librsvg_required_version],      [2.40.0])
+m4_define([librsvg_required_version],    [2.40.0])
+m4_define([libbpg_required_version],     [0.9.5])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
 AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
@@ -42,6 +43,7 @@ AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresample_required_version)
 AC_SUBST([SWSCALE_REQUIRED_VERSION], swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION], xercesc_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION], librsvg_required_version)
+AC_SUBST([LIBBPG_REQUIRED_VERSION], libbpg_required_version)
 
 AM_INIT_AUTOMAKE([-Wall 1.11 foreign gnu no-define subdir-objects])
 AM_MAINTAINER_MODE([enable])
@@ -425,6 +427,25 @@ if test "$enable_librsvg" = yes; then
 fi
 AM_CONDITIONAL([BUILD_SVG], [test "$enable_librsvg" = yes])
 
+# Check for libbpg for BPG support
+libbpg_ok=no
+_AC_ARG_ENABLE([libbpg], [build with libbpg BPG support (Experimental)], [no])
+if test "$enable_libbpg" = yes; then
+  PKG_CHECK_MODULES([LIBBPG],
+   [libbpg >= libbpg_required_version], [libbpg_ok=yes],
+    [AC_MSG_ERROR([
+*** libbpg >= libbpg_required_version is required.])])
+
+  if test "$libbpg_ok" = yes; then
+    AC_DEFINE([HAVE_LIBBPG], [1],
+      [Define to 1 if libbpg is present.])
+  else
+    AC_DEFINE([HAVE_LIBBPG], [0],
+      [Define to 0 if libbpg is not present.])
+  fi
+fi
+AM_CONDITIONAL([BUILD_LIBBPG], [test "$enable_libbpg" = yes])
+
 # Check for NCLua.
 PKG_CHECK_MODULES([NCLUA],
  [nclua >= nclua_required_version], [],
@@ -535,6 +556,7 @@ AC_MSG_NOTICE([summary of main build options:
   build linuxdvb:         ${enable_linuxdvb}
   build espeak:           ${enable_espeak}
   build librsvg:          ${enable_librsvg}
+  build libbpg:           ${enable_libbpg}
   build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}
