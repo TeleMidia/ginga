@@ -59,6 +59,10 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/content/image/SDLSvgDecoder.h"
 #endif
 
+#if HAVE_LIBBPG
+#include "mb/interface/sdl/content/image/SDLBpgDecoder.h"
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -135,11 +139,15 @@ namespace mb {
                         renderedSurface = svgdec->decode(w, h);
 			SDLDeviceScreen::unlockSDL();
                         delete svgdec;
-                    }
-                    else if ( imgUri.substr(imgUri.find_last_of(".") + 1) == "bpg")
+                    } else
+#endif
+#if HAVE_LIBBPG
+                    if ( imgUri.substr(imgUri.find_last_of(".") + 1) == "bpg")
                     {
-                        // if (file == BPG)
-                        //   renderedSurface = SDLBpgDecoderLoad(imgUri.c_str()); else...
+                        SDLBpgDecoder *bpgdec = new SDLBpgDecoder(imgUri);
+                        SDLDeviceScreen::lockSDL();
+                        renderedSurface = bpgdec->decode();
+			SDLDeviceScreen::unlockSDL();
                     } else
 #endif
                     {
