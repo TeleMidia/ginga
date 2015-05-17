@@ -99,13 +99,21 @@ namespace mb {
 
         rsvg_handle_render_cairo (h, cairoState);
 
+        // Use the following line for debug purposes
 //        cairo_surface_write_to_png (cairoSurface, "/tmp/out.png");
 
         // Match ARGB32 format masks
-        Uint32 amask = 0xff000000;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        Uint32 rmask = 0x0000ff00;
+        Uint32 gmask = 0x00ff0000;
+        Uint32 bmask = 0xff000000;
+        Uint32 amask = 0x000000ff;
+#else
         Uint32 rmask = 0x00ff0000;
         Uint32 gmask = 0x0000ff00;
         Uint32 bmask = 0x000000ff;
+        Uint32 amask = 0xff000000;
+#endif
 
         SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom ( (void *) image, x, y, 32, stride, rmask, gmask, bmask, amask);
 
