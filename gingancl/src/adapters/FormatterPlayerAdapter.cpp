@@ -992,6 +992,10 @@ namespace adapters {
 			return;
 		}
 
+                if (player == NULL) {
+                        return;
+                }
+
 		descriptor = object->getDescriptor();
 		if (descriptor != NULL) {
 			region = descriptor->getRegion();
