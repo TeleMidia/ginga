@@ -429,7 +429,7 @@ AM_CONDITIONAL([BUILD_SVG], [test "$enable_librsvg" = yes])
 
 # Check for libbpg for BPG support
 libbpg_ok=no
-_AC_ARG_ENABLE([libbpg], [build with libbpg BPG support (Experimental)], [no])
+_AC_ARG_ENABLE([libbpg], [build with libbpg BPG support], [no])
 if test "$enable_libbpg" = yes; then
   PKG_CHECK_MODULES([LIBBPG],
    [libbpg >= libbpg_required_version], [libbpg_ok=yes],
