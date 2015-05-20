@@ -85,19 +85,26 @@ namespace mb {
         h = rsvg_handle_new_from_file(filePath.c_str(), &e);
 
         rsvg_handle_get_dimensions (h, &dim);
-        int x = dim.width;
-        int y = dim.height;
+
+        // precisamos ver o quanto vamos escalar... Usando 1920x1080 como pior caso...
+        // Ver: http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
+        double scale = (dim.width > dim.height)? (double) 1920 / dim.width : (double) 1080 / dim.height;
+
+        int x = floor(dim.width * scale) + 1;
+        int y = floor(dim.height * scale) + 1;
         int stride = x * 4; // ARGB
 
         /* Cairo Initiation */
         uint8_t *image = (uint8_t *) malloc (stride * y); // ARGB uses 4 bytes / pixel
 
         // here the correct would be...
-        // cairoSurface = cairo_image_surface_create_for_data (image, CAIRO_FORMAT_ARGB32, width, height, width * 4);
         cairoSurface = cairo_image_surface_create_for_data (image, CAIRO_FORMAT_ARGB32, x, y, stride);
         cairoState = cairo_create (cairoSurface);
 
+        cairo_scale(cairoState, scale, scale);
+
         rsvg_handle_render_cairo (h, cairoState);
+
 
         // Use the following line for debug purposes
 //        cairo_surface_write_to_png (cairoSurface, "/tmp/out.png");
