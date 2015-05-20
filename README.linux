@@ -9,6 +9,8 @@ Build dependencies
   * EXPAT   (required if --enable-components is given)
   * LIBJPEG (required if --enable-multidevice is given)
   * LIBZIP  (required if --enable-multidevice is given)
+  * LIBBPG  (required if --enable-libbpg is given) | Use this version: https://github.com/rafael2k/libbpg
+  * LIBRSVG (required if --enable-librsvg is given)
 
 * Required dependencies
   * XERCES-C
