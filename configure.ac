@@ -554,6 +554,7 @@ AC_MSG_NOTICE([summary of main build options:
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
+  build berkelium         ${berkelium_ok}
   build espeak:           ${enable_espeak}
   build librsvg:          ${enable_librsvg}
   build libbpg:           ${enable_libbpg}

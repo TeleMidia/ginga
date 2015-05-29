@@ -51,9 +51,31 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
   make -j4
   sudo make install
 
+Known build errors
+=====================
+
+* Ubuntu 14.04
+  This ubuntu version not has support to libzip2. The libzip2 is required by gingacc-multidevice. Do the following commands to correct.
+  * (i386)
+    http://launchpadlibrarian.net/155948292/libzip2_0.10.1-1.2_i386.deb &&\
+    sudo dpkg -i libzip2_0.10.1-1.2_i386.deb
+  * (amd64)
+    http://launchpadlibrarian.net/155948137/libzip2_0.10.1-1.2_amd64.deb &&\
+    sudo dpkg -i libzip2_0.10.1-1.2_amd64.deb
+
+* Ubuntu 15.04
+  This ubuntu version not has support to libcrypt11. The libgcrypt11 is required by berkelium. Do the following commands to correct.
+  * (i386)
+    wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_i386.deb &&\
+    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_i386.deb 
+  * (amd64)
+    wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb &&\
+    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb 
 
 Import to eclipse CDT
 =====================
 One way to code in ginga source is using Eclipse CDT(www.eclipse.org/cdt) doing:
 import -> C/C++ -> "Existing Code as Makefile Project" -> chose "GNU Autotools toolchain" -> finish.
+
+
 
