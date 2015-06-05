@@ -103,7 +103,8 @@ namespace focus {
 					    extension == "bmp" ||
                                             extension == "bpg" ||
                                             extension == "svg" ||
-                                            extension == "svgz") {
+                                            extension == "svgz" ||
+                                            extension == "webp" ) {
 
 					s = dm->createRenderedSurfaceFromImageFile(
 							screenId, src.c_str());
