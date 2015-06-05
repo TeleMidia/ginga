@@ -72,22 +72,23 @@ namespace ginga {
 namespace core {
 namespace player {
 
-	ILocalScreenManager* AwesomiumHandler::dm = NULL;
+
+        IScreenManager* AwesomiumHandler::dm = NULL;
 	AwesomiumHDR AwesomiumHandler::s_id       = 0;
 
 	/* static since we have to respect browser isolation */
 	bool AwesomiumHandler::initialized        = false;
-	awe_webview* AwesomiumHandler::webView    = NULL;
+	WebView* AwesomiumHandler::webView    = NULL;
 
 	map<int, int> AwesomiumHandler::fromGingaToAwesomium;
 	map<AwesomiumHDR, AwesomiumInfo*> AwesomiumHandler::s_infos;
 	map<AwesomiumHDR, IInputManager*> AwesomiumHandler::s_ims;
 	pthread_mutex_t AwesomiumHandler::s_lMutex;
 
-	AwesomiumInfo::AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id) {
+        AwesomiumInfo::AwesomiumInfo(GingaScreenID screenId, AwesomiumHDR id) {
 		LocalScreenManager::addIEListenerInstance(this);
 		LocalScreenManager::addMEListenerInstance(this);
-		this->myScreen  = screenId;
+                this->myScreen  = screenId;
 		this->id        = id;
 		this->mURL      = "";
 		this->surface   = NULL;
@@ -351,7 +352,7 @@ namespace player {
 		return hasInfo;
 	}
 
-	AwesomiumHDR AwesomiumHandler::createAwesomium(GingaScreenID screenId) {
+    AwesomiumHDR AwesomiumHandler::createAwesomium(GingaScreenID screenId) {
 		AwesomiumInfo* aInfo;
 		IInputManager* im;
 
@@ -363,7 +364,7 @@ namespace player {
 				cm->getObject("LocalScreenManager")))();
 
 #else
-			dm = LocalScreenManager::getInstance();
+			dm = ScreenManagerFactory::getInstance();
 #endif
 		}
 
@@ -419,17 +420,18 @@ namespace player {
 		}
 	}
 
-	void AwesomiumHandler::onDOMReady(awe_webview* caller) {
+	void AwesomiumHandler::onDOMReady(WebView* caller) {
 		clog << "AwesomiumHandler::onDOMReady" << endl;
 	}
 
 	void AwesomiumHandler::loadUrl(AwesomiumHDR id, string url) {
 		AwesomiumInfo* aInfo;
 
-		awe_string* awe_custom_css;
-		awe_string* awe_base;
-		awe_string* awe_file;
-
+		WebString awe_custom_css;
+		WebString* awe_base;
+		WebString* awe_file;
+                WebCore* web_core;
+                
 		string str_custom_css;
 
 		Thread::mutexLock(&s_lMutex);
@@ -452,9 +454,13 @@ namespace player {
 				str_custom_css = str_custom_css +
 						"body { font-size: 12px !important; }";
 
-				awe_custom_css = awe_string_create_from_utf8(
-						str_custom_css.c_str(), str_custom_css.length());
+                                web_core = WebCore::Initialize(WebConfig());
+                                
+				awe_custom_css = WebString::CreateFromUTF8(
+                                    str_custom_css.c_str(), str_custom_css.length());
 
+
+#if 0
 				awe_webcore_initialize(
 						true,               //enable_plugins
 						true,               //enable_javascript
@@ -479,24 +485,20 @@ namespace player {
 						false,              //disable_same_origin_policy
 						false,              //disable_win_message_pump
 						awe_custom_css);
-
-				awe_string_destroy(awe_custom_css);
+#endif
+				awe_custom_css.Clear();
 			}
 
 			if (webView == NULL) {
 				if (aInfo->w <= 0 || aInfo->h <= 0) {
-					if (aInfo->surface->getParentWindow() != NULL) {
-						aInfo->x = ((IWindow*)(
-								aInfo->surface->getParentWindow()))->getX();
+					if (aInfo != 0) {
+                                                aInfo->x = x; // ((IWindow*)(aInfo->surface->getParentWindow()))->getX();
 
-						aInfo->y = ((IWindow*)(
-								aInfo->surface->getParentWindow()))->getY();
+						aInfo->y = y; // ((IWindow*)(aInfo->surface->getParentWindow()))->getY();
 
-						aInfo->w = ((IWindow*)(
-								aInfo->surface->getParentWindow()))->getW();
+						aInfo->w = w; // ((IWindow*)(aInfo->surface->getParentWindow()))->getW();
 
-						aInfo->h = ((IWindow*)(
-								aInfo->surface->getParentWindow()))->getH();
+						aInfo->h = h; // ((IWindow*)(aInfo->surface->getParentWindow()))->getH();
 
 						clog << "Window coords: '";
 						clog << aInfo->x << ", ";

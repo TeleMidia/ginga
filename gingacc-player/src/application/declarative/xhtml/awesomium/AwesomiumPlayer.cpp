@@ -91,11 +91,14 @@ namespace player {
 		AwesomiumHandler::destroyAwesomium(awesome);
 	}
 
-	ISurface* AwesomiumPlayer::getSurface() {
+    	GingaSurfaceID AwesomiumPlayer::getSurface() {
 		clog << "AwesomiumPlayer::getSurface '" << mrl << "'" << endl;
 
-		surface = AwesomiumHandler::getSurface(awesome);
-		return (Player::getSurface());
+                if (aInfo != NULL) {
+                    surface = aInfo->getSurface();
+		}
+
+		return Player::getSurface();
 	}
 
 	void AwesomiumPlayer::setNotifyContentUpdate(bool notify) {
