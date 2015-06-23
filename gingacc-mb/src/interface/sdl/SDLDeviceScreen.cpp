@@ -1756,7 +1756,7 @@ namespace mb {
 
 	void SDLDeviceScreen::refreshWin(SDLDeviceScreen* s) {
 		SDL_Texture* uTex;
-		SDLWindow* win;
+		SDLWindow* dstWin;
 		SDLWindow* mirrorSrc;
 		bool ownTex = false;
 
@@ -1776,21 +1776,21 @@ namespace mb {
 				while (j != i->second->end()) {
 					k = j->second->begin();
 					while (k != j->second->end()) {
-						win = (SDLWindow*)(*k);
+						dstWin = (SDLWindow*)(*k);
 
-						if (win->isVisible() && !win->isGhostWindow()) {
-							mirrorSrc = (SDLWindow*)win->getMirrorSrc();
+						if (dstWin->isVisible() && !dstWin->isGhostWindow()) {
+							mirrorSrc = (SDLWindow*)dstWin->getMirrorSrc();
 							if (mirrorSrc != NULL) {
 								while (mirrorSrc->getMirrorSrc() != NULL) {
 									mirrorSrc = (SDLWindow*)mirrorSrc->getMirrorSrc();
 								}
 								uTex = mirrorSrc->getTexture(s->renderer);
 							} else {
-								uTex = win->getTexture(s->renderer);
+								uTex = dstWin->getTexture(s->renderer);
 							}
 
-							drawWindow(s->renderer, uTex, win);
-							win->rendered();
+							drawSDLWindow(s->renderer, uTex, dstWin);
+							dstWin->rendered();
 						}
 
 						++k;
@@ -2046,8 +2046,33 @@ namespace mb {
 
 		assert(s->screen != NULL);
 
+		SDL_RendererInfo info;
+		int d = SDL_GetNumRenderDrivers();
+		for (int i=0; i<d; i++) {
+			SDL_GetRenderDriverInfo(i, &info);
+			clog << "SDLDeviceScreen::initScreen renderer driver: (" << i << ") = '" << info.name << "'";
+			clog << endl;
+		}
+
 		s->renderer = SDL_CreateRenderer(
 				s->screen, -1, SDL_RENDERER_ACCELERATED);
+
+		if (s->renderer == NULL) {
+			clog << "SDLDeviceScreen::initScreen Warning! Can't create accelerated renderer";
+			clog << endl;
+
+			s->renderer = SDL_CreateRenderer(
+					s->screen, -1, SDL_RENDERER_TARGETTEXTURE);
+
+			if (s->renderer == NULL) {
+				clog << "SDLDeviceScreen::initScreen Warning! Can't create target renderer";
+				clog << endl;
+				s->renderer = SDL_CreateRenderer(
+						s->screen, -1, SDL_RENDERER_SOFTWARE);
+			}
+		}
+
+		assert (s->renderer != NULL);
 
 		initCodeMaps();
 
@@ -2841,12 +2866,12 @@ namespace mb {
 		return window;
 	}
 
-	bool SDLDeviceScreen::drawWindow(
+	bool SDLDeviceScreen::drawSDLWindow(
 			SDL_Renderer* renderer,
-			SDL_Texture* texture,
-			IWindow* iWin) {
+			SDL_Texture* srcTxtr,
+			IWindow* dstWin) {
 
-		SDL_Rect rect;
+		SDL_Rect dstRect;
 		IColor* bgColor;
 		Uint8 rr, rg, rb, ra;
 		int i, r, g, b, a, bw;
@@ -2861,22 +2886,22 @@ namespace mb {
 
 		lockSDL();
 
-	    if (iWin != NULL) {
+	    if (dstWin != NULL) {
 	    	/* getting renderer previous state */
 	    	SDL_GetRenderDrawColor(renderer, &rr, &rg, &rb, &ra);
 
-	    	rect.x = iWin->getX();
-	    	rect.y = iWin->getY();
-	    	rect.w = iWin->getW();
-	    	rect.h = iWin->getH();
+	    	dstRect.x = dstWin->getX();
+	    	dstRect.y = dstWin->getY();
+	    	dstRect.w = dstWin->getW();
+	    	dstRect.h = dstWin->getH();
 
-	    	alpha = iWin->getTransparencyValue();
-	    	if (texture != NULL) {
-	    		SDL_SetTextureAlphaMod(texture, 255 - alpha);
+	    	alpha = dstWin->getTransparencyValue();
+	    	if (srcTxtr != NULL) {
+	    		SDL_SetTextureAlphaMod(srcTxtr, 255 - alpha);
 	    	}
 
 	    	/* setting window background */
-	    	bgColor = iWin->getBgColor();
+	    	bgColor = dstWin->getBgColor();
 	    	if (bgColor != NULL) {
 	    		drawing = true;
 	    		if (alpha == 0) {
@@ -2894,7 +2919,7 @@ namespace mb {
 	    				bgColor->getB(),
 	    				255 - alpha);
 
-	    		if (SDL_RenderFillRect(renderer, &rect) < 0) {
+	    		if (SDL_RenderFillRect(renderer, &dstRect) < 0) {
 	    	        clog << "SDLDeviceScreen::drawWindow ";
 	    	        clog << "Warning! Can't use render to fill rect ";
 	    	        clog << SDL_GetError();
@@ -2903,7 +2928,7 @@ namespace mb {
 	    	}
 
 	    	/* geometric figures (lua only) */
-	    	drawData = ((SDLWindow*)iWin)->createDrawDataList();
+	    	drawData = ((SDLWindow*)dstWin)->createDrawDataList();
 	    	if (drawData != NULL) {
 	    		drawing = true;
 	    		it = drawData->begin();
@@ -2914,12 +2939,12 @@ namespace mb {
 
 	    			switch (dd->dataType) {
 						case SDLWindow::DDT_LINE:
-							if ((dd->coord1 < rect.x) ||
-									(dd->coord2 < rect.y) ||
-									(dd->coord1 > rect.w) ||
-									(dd->coord2 > rect.h) ||
-									(dd->coord3 > rect.w) ||
-									(dd->coord4 > rect.h)) {
+							if ((dd->coord1 < dstRect.x) ||
+									(dd->coord2 < dstRect.y) ||
+									(dd->coord1 > dstRect.w) ||
+									(dd->coord2 > dstRect.h) ||
+									(dd->coord3 > dstRect.w) ||
+									(dd->coord4 > dstRect.h)) {
 
 								clog << "SDLDeviceScreen::drawWindow Warning!";
 								clog << " Invalid line coords: " << endl;
@@ -2929,20 +2954,20 @@ namespace mb {
 								clog << dd->coord4 << "'";
 								clog << endl;
 								clog << "Window rect coords: " << endl;
-								clog << rect.x << ", ";
-								clog << rect.y << ", ";
-								clog << rect.w << ", ";
-								clog << rect.h << "'";
+								clog << dstRect.x << ", ";
+								clog << dstRect.y << ", ";
+								clog << dstRect.w << ", ";
+								clog << dstRect.h << "'";
 								clog << endl;
 								break;
 							}
 
 							if (SDL_RenderDrawLine(
 									renderer,
-									dd->coord1 + rect.x,
-									dd->coord2 + rect.y,
-									dd->coord3 + rect.x,
-									dd->coord4 + rect.y) < 0) {
+									dd->coord1 + dstRect.x,
+									dd->coord2 + dstRect.y,
+									dd->coord3 + dstRect.x,
+									dd->coord4 + dstRect.y) < 0) {
 
 				    	        clog << "SDLDeviceScreen::drawWindow ";
 				    	        clog << "Warning! Can't draw line ";
@@ -2953,15 +2978,15 @@ namespace mb {
 							break;
 
 						case SDLWindow::DDT_RECT:
-							dr.x = dd->coord1 + rect.x;
-							dr.y = dd->coord2 + rect.y;
+							dr.x = dd->coord1 + dstRect.x;
+							dr.y = dd->coord2 + dstRect.y;
 							dr.w = dd->coord3;
 							dr.h = dd->coord4;
 
-							if ((dr.x > + rect.x + rect.w) ||
-									(dr.y >  + rect.y + rect.h) ||
-									(dd->coord1 + dr.w > rect.w) ||
-									(dd->coord2 + dr.h > rect.h)) {
+							if ((dr.x > + dstRect.x + dstRect.w) ||
+									(dr.y >  + dstRect.y + dstRect.h) ||
+									(dd->coord1 + dr.w > dstRect.w) ||
+									(dd->coord2 + dr.h > dstRect.h)) {
 
 								clog << "SDLDeviceScreen::drawWindow Warning!";
 								clog << " Invalid rect coords: " << endl;
@@ -2971,10 +2996,10 @@ namespace mb {
 								clog << dr.h << "'";
 								clog << endl;
 								clog << "Window rect coords: " << endl;
-								clog << rect.x << ", ";
-								clog << rect.y << ", ";
-								clog << rect.w << ", ";
-								clog << rect.h << "'";
+								clog << dstRect.x << ", ";
+								clog << dstRect.y << ", ";
+								clog << dstRect.w << ", ";
+								clog << dstRect.h << "'";
 								clog << endl;
 								break;
 							}
@@ -3003,7 +3028,7 @@ namespace mb {
 	    	}
 
 	    	/* window rendering */
-	    	if (hasTexture(texture)) {
+	    	if (hasTexture(srcTxtr)) {
 	    		/*void* pixels;
 	    		int tpitch;
 	    		bool locked;*/
@@ -3019,7 +3044,7 @@ namespace mb {
 				 */
 
 				drawing = true;
-				if (SDL_RenderCopy(renderer, texture, NULL, &rect) < 0) {
+				if (SDL_RenderCopy(renderer, srcTxtr, NULL, &dstRect) < 0) {
 					clog << "SDLDeviceScreen::drawWindow Warning! ";
 					clog << "can't perform render copy " << SDL_GetError();
 					clog << endl;
@@ -3031,18 +3056,18 @@ namespace mb {
 	    	}
 
 	    	/* window border */
-	    	iWin->getBorder(&r, &g, &b, &a, &bw);
+	    	dstWin->getBorder(&r, &g, &b, &a, &bw);
 	    	if (bw != 0) {
 	    		SDL_SetRenderDrawColor(renderer, r, g, b, a);
 
 				i = 0;
 				while (i != bw) {
-					rect.x = iWin->getX() - i;
-					rect.y = iWin->getY() - i;
-					rect.w = iWin->getW() + 2*i;
-					rect.h = iWin->getH() + 2*i;
+					dstRect.x = dstWin->getX() - i;
+					dstRect.y = dstWin->getY() - i;
+					dstRect.w = dstWin->getW() + 2*i;
+					dstRect.h = dstWin->getH() + 2*i;
 
-					if (SDL_RenderDrawRect(renderer, &rect) < 0) {
+					if (SDL_RenderDrawRect(renderer, &dstRect) < 0) {
 						clog << "SDLDeviceScreen::drawWindow SDL error: '";
 						clog << SDL_GetError() << "'" << endl;
 					}
@@ -3104,9 +3129,6 @@ namespace mb {
 			SDL_Renderer* renderer, int w, int h) {
 
 		SDL_Texture* texture;
-		int qW, qH;
-		Uint32 format;
-		int access;
 
 		lockSDL();
 
@@ -3116,15 +3138,12 @@ namespace mb {
 				SDL_TEXTUREACCESS_STREAMING,
 				w, h);
 
+		//w > maxW || h > maxH || format is not supported
 		assert(texture != NULL);
 
 		/* allowing alpha */
 		SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-		SDL_QueryTexture(texture, &format, &access, &qW, &qH);
-
-		assert(format == GINGA_PIXEL_FMT);
-		assert(access == SDL_TEXTUREACCESS_STREAMING);
 		uTexPool.insert(texture);
 
 	    unlockSDL();

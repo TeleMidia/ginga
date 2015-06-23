@@ -1430,7 +1430,7 @@ namespace emconverter {
 
 		ExecutionObject* selectedObject;
 		ExecutionObject* endPointObject;
-		Node* selectedNode;
+		Node* selectedNode, *mappedNode;
 		NodeEntity* selectedNodeEntity;
 		vector<FormatterEvent*>* events;
 		vector<FormatterEvent*>::iterator i;
@@ -1477,7 +1477,9 @@ namespace emconverter {
 						j = mappings->begin();
 						while (j != mappings->end()) {
 							mapping = (*j);
-							if (mapping->getNode() == selectedNode) {
+							if (mapping->getNode() == selectedNode ||
+									mapping->getNode()->getDataEntity() == selectedNode->getDataEntity()) {
+
 								nodePerspective = switchObject->
 									    getNodePerspective();
 
