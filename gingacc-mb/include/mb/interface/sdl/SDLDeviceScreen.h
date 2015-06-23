@@ -374,7 +374,7 @@ typedef struct {
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
 
 		private:
-			static bool drawWindow(
+			static bool drawSDLWindow(
 					SDL_Renderer* renderer,
 					SDL_Texture* texture,
 					IWindow* iWin);
