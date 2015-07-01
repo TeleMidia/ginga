@@ -1062,7 +1062,7 @@ namespace components {
 	bool ExecutionObject::start() {
 		ContentAnchor* contentAnchor;
 
-		//clog << "ExecutionObject::start(" << id << ")" << endl;
+		clog << "ExecutionObject::start(" << id << ")" << endl;
 		if (mainEvent == NULL && wholeContent == NULL) {
 			return false;
 		}
@@ -1070,7 +1070,7 @@ namespace components {
 		if (mainEvent != NULL &&
 				mainEvent->getCurrentState() != EventUtil::ST_SLEEPING) {
 
-			return false;
+			return true;
 		}
 
 		if (mainEvent == NULL) {
