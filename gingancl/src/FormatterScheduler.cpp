@@ -574,16 +574,15 @@ namespace ncl {
 						clog << executionObject->getId() << "'";
 						clog << endl;
 
-						// checking if player failed to start
-						if (event->getCurrentState() == EventUtil::ST_SLEEPING) {
-							event->removeEventListener(this);
-							Thread::mutexLock(&lMutex);
-							it = listening.find(event);
-							if (it != listening.end()) {
-								listening.erase(it);
-							}
-							Thread::mutexUnlock(&lMutex);
+						assert(event->getCurrentState() == EventUtil::ST_SLEEPING);
+
+						event->removeEventListener(this);
+						Thread::mutexLock(&lMutex);
+						it = listening.find(event);
+						if (it != listening.end()) {
+							listening.erase(it);
 						}
+						Thread::mutexUnlock(&lMutex);
 
 					} else {
 						time = getCurrentTimeMillis() - time;
@@ -593,6 +592,7 @@ namespace ncl {
 						clog << endl;*/
 
 						printAction("start", condition, action);
+
 					}
 					break;
 
