@@ -112,6 +112,7 @@ namespace lssm {
 		void autoMountOC(bool autoMountIt);
 
 	private:
+		bool startApp(const string &appName);
 		bool processAIT();
 
 	public:

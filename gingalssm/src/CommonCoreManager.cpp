@@ -332,14 +332,6 @@ namespace lssm {
 				data->screenId,
 				data->x, data->y, data->w, data->h);
 
-		if (ocDelay > 0 && hasOCSupport && dataProcessor != NULL) {
-			cpid = ((IDemuxer*)demuxer)->getDefaultMainCarouselPid();
-			if (cpid != 0) {
-				((IDataProcessor*)dataProcessor)->createPidSectionFilter(cpid);
-			}
-			SystemCompat::uSleep((int)(ocDelay * 1000));
-		}
-
 		delete data;
 		clog << "lssm-ccm::sp create av ok" << endl;
 
@@ -349,7 +341,7 @@ namespace lssm {
 				clog << "lssm-ccm::sp using stc hardware!" << endl;
 				((IDataProcessor*)dataProcessor)->setSTCProvider(ni);
 
-			} else if (nptPrinter) {
+			} else {
 				clog << "lssm-ccm::sp using stc wrapper!" << endl;
 				sw = new StcWrapper(ipav);
 				((IDataProcessor*)dataProcessor)->setSTCProvider(sw);
@@ -380,13 +372,6 @@ namespace lssm {
 					STREAM_TYPE_DSMCC_TYPE_D); //DSM-CC descriptors
 
 			if (hasOCSupport) {
-				/*if (ocDelay == 0) {
-					cpid = ((IDemuxer*)demuxer)->getDefaultMainCarouselPid();
-					if (cpid != 0) {
-						((IDataProcessor*)dataProcessor)->createPidSectionFilter(cpid);
-					}
-				}*/
-
 				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_B);
 
