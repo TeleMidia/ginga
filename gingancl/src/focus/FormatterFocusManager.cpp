@@ -163,6 +163,8 @@ namespace focus {
 		clog << "parentCurrentFocus is '" << parentManager;
 		clog << "'" << endl;*/
 
+		unregister();
+
 		LocalScreenManager::removeIEListenerInstance(this);
 		LocalScreenManager::removeMEListenerInstance(this);
 

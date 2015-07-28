@@ -118,6 +118,9 @@ namespace player {
 	private:
 		void initInputMap();
 
+		void registerIE();
+		void unregisterIE();
+
 	public:
 		void stop();
 		void setKeyHandler(bool handler);

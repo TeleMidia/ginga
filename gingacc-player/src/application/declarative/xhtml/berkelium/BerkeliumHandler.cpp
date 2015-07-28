@@ -219,7 +219,22 @@ namespace player {
 		fromGingaToBklm[CodeMap::KEY_TAP]               = '\n';
 	}
 
+	void BerkeliumHandler::registerIE() {
+		if (im != NULL) {
+			im->addInputEventListener(this, NULL);
+			im->addMotionEventListener(this);
+		}
+	}
+
+	void BerkeliumHandler::unregisterIE() {
+		if (im != NULL) {
+			im->removeInputEventListener(this);
+			im->removeMotionEventListener(this);
+		}
+	}
+
 	void BerkeliumHandler::stop() {
+		unregisterIE();
 		setKeyHandler(false);
 
 		if (isValid) {
@@ -237,19 +252,11 @@ namespace player {
 		if (isValid) {
 			if (handler) {
 				bWindow->focus();
-
-				if (im != NULL) {
-					im->addInputEventListener(this, NULL);
-					im->addMotionEventListener(this);
-				}
+				registerIE();
 
 			} else {
 				bWindow->unfocus();
-
-				if (im != NULL) {
-					im->removeInputEventListener(this);
-					im->removeMotionEventListener(this);
-				}
+				unregisterIE();
 			}
 		}
 		Thread::mutexUnlock(&sMutex);

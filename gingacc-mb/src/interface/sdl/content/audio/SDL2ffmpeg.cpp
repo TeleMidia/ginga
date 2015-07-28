@@ -147,14 +147,9 @@ namespace mb {
 		    flush_pkt.data = (uint8_t*)(intptr_t)"FLUSH";
 
 		    if (read_init() >= 0) {
-
-		    	SDLDeviceScreen::lockSDL();
-
 				/* start video display */
 				vs->pictq_mutex = SDL_CreateMutex();
 				vs->pictq_cond  = SDL_CreateCond();
-
-				SDLDeviceScreen::unlockSDL();
 
 				packet_queue_init(&vs->videoq);
 				packet_queue_init(&vs->audioq);

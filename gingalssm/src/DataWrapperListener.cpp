@@ -89,11 +89,37 @@ namespace lssm {
 		this->autoMount = autoMountIt;
 	}
 
+	bool DataWrapperListener::startApp(const string &appName) {
+		map<string, string>::iterator j;
+		string appUri;
+
+		j = ncls.find(appName);
+
+		//TODO: we should be able to avoid names conflict (two or more OC)
+		if (j != ncls.end()) {
+			appUri = j->second;
+
+			assert (fileExists(appUri));
+
+			clog << "DataWrapperListener::startApp '";
+			clog << appUri << "'" << endl;
+			docToStart = appUri;
+			Thread::startThread();
+			return true;
+
+		} else {
+			clog << "DataWrapperListener::processAIT '";
+			clog << appName << "' still not available." << endl;
+		}
+
+		return false;
+	}
+
 	bool DataWrapperListener::processAIT() {
 		vector<IApplication*>* apps;
 		vector<IApplication*>::iterator i;
-		map<string, string>::iterator j;
 		string nclName, baseDir;
+		bool foundApp = false;
 
 		if (ait != NULL) {
 			apps = ait->copyApplications();
@@ -106,37 +132,74 @@ namespace lssm {
 
 					clog << "DataWrapperListener::processAIT checking '";
 					clog << nclName << "'" << endl;
-					if ((*i)->getControlCode() == IApplication::CC_AUTOSTART) {
-						j = ncls.find(nclName);
-
-						//TODO: we should be able to avoid names conflict (two or more OC)
-						if (j != ncls.end()) {
-							delete apps;
-
-							nclName = j->second;
-
-							if (fileExists(nclName)) {
-								clog << "DataWrapperListener::processAIT starting '";
-								clog << nclName << "'" << endl;
-								docToStart = nclName;
-								Thread::startThread();
-
-							} else {
-								clog << "DataWrapperListener::processAIT can't start '";
-								clog << nclName << "'" << endl;
-							}
-
-							return true;
-
-						} else {
+					unsigned char controlCode = (*i)->getControlCode();
+					switch (controlCode) {
+						case IApplication::CC_AUTOSTART:
 							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' still not available." << endl;
-						}
+							clog << nclName << "' AUTOSTART." << endl;
 
-					} else {
-						clog << "DataWrapperListener::processAIT control code is '";
-						clog << (*i)->getControlCode() << "'" << endl;
+							foundApp = startApp(nclName);
+							break;
+
+						case IApplication::CC_PRESENT:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' PRESENT." << endl;
+
+							//TODO: do not start. it should just notify AppCatUI
+							foundApp = startApp(nclName);
+							break;
+
+						case IApplication::CC_DESTROY:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' DESTROY." << endl;
+							break;
+
+						case IApplication::CC_KILL:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' KILL." << endl;
+							break;
+
+						case IApplication::CC_PREFETCH:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' PREFETCH." << endl;
+							break;
+
+						case IApplication::CC_REMOTE:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' REMOTE." << endl;
+							break;
+
+						case IApplication::CC_UNBOUND:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' UNBOUND." << endl;
+							break;
+
+						case IApplication::CC_STORE:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' STORE." << endl;
+							break;
+
+						case IApplication::CC_STORED_AUTOSTART:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' STORED_AUTOSTART." << endl;
+							break;
+
+						case IApplication::CC_STORED_PRESENT:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' STORED_PRESENT." << endl;
+							break;
+
+						case IApplication::CC_STORED_REMOVE:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' STORED_REMOVE." << endl;
+							break;
+
+						default:
+							clog << "DataWrapperListener::processAIT '";
+							clog << nclName << "' unknown control code." << endl;
+							break;
 					}
+
 					++i;
 				}
 			}
@@ -144,7 +207,7 @@ namespace lssm {
 			delete apps;
 		}
 
-		return false;
+		return foundApp;
 	}
 
 	bool DataWrapperListener::applicationInfoMounted(IAIT* ait) {
