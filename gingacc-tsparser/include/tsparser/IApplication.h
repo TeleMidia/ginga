@@ -98,6 +98,8 @@ namespace si {
 			virtual string getInitialClass()=0;
 			virtual unsigned short getControlCode()=0;
 			virtual unsigned short getLength()=0;
+			virtual unsigned short getProfile(int profileNumber=0)=0;
+			virtual unsigned short getTransportProtocolId()=0;
 			virtual size_t process(char* data, size_t pos)=0;
 		};
 

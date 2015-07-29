@@ -90,16 +90,16 @@ namespace lssm {
 	}
 
 	bool DataWrapperListener::startApp(const string &appName) {
-		map<string, string>::iterator j;
+		map<string, string>::iterator i;
 		string appUri;
 
-		j = ncls.find(appName);
+		i = ncls.find(appName);
 
 		//TODO: we should be able to avoid names conflict (two or more OC)
-		if (j != ncls.end()) {
-			appUri = j->second;
+		if (i != ncls.end()) {
+			appUri = i->second;
 
-			assert (fileExists(appUri));
+			assert(fileExists(appUri));
 
 			clog << "DataWrapperListener::startApp '";
 			clog << appUri << "'" << endl;
@@ -115,97 +115,113 @@ namespace lssm {
 		return false;
 	}
 
+	bool DataWrapperListener::appIsPresent(const string &appName) {
+		map<string, string>::iterator i;
+		string appUri;
+
+		i = ncls.find(appName);
+
+		//TODO: we should be able to avoid names conflict (two or more OC)
+		if (i != ncls.end()) {
+			appUri = i->second;
+
+			assert(fileExists(appUri));
+
+			clog << "DataWrapperListener::appIsPresent '";
+			clog << appUri << "'" << endl;
+			present.insert(appUri);
+			return true;
+
+		} else {
+			clog << "DataWrapperListener::processAIT '";
+			clog << appName << "' still not available." << endl;
+		}
+
+		return false;
+	}
+
 	bool DataWrapperListener::processAIT() {
 		vector<IApplication*>* apps;
 		vector<IApplication*>::iterator i;
+		IApplication* app;
 		string nclName, baseDir;
 		bool foundApp = false;
 
-		if (ait != NULL) {
-			apps = ait->copyApplications();
-			clog << "DataWrapperListener::processAIT with '";
-			clog << apps->size() << "' application(s)" << endl;
-			if (!apps->empty()) {
-				i = apps->begin();
-				while (i != apps->end()) {
-					nclName = (*i)->getInitialClass();
+		assert(ait != NULL);
 
-					clog << "DataWrapperListener::processAIT checking '";
-					clog << nclName << "'" << endl;
-					unsigned char controlCode = (*i)->getControlCode();
-					switch (controlCode) {
-						case IApplication::CC_AUTOSTART:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' AUTOSTART." << endl;
+		present.clear();
 
-							foundApp = startApp(nclName);
-							break;
+		apps = ait->copyApplications();
+		i = apps->begin();
+		while (i != apps->end()) {
+			app = (*i);
 
-						case IApplication::CC_PRESENT:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' PRESENT." << endl;
+			nclName = app->getInitialClass();
 
-							//TODO: do not start. it should just notify AppCatUI
-							foundApp = startApp(nclName);
-							break;
+			clog << endl << "DataWrapperListener::processAIT " << endl;
+			clog << "Application '" << nclName << "'" << endl;
+			clog << "Target profle: 0x" << hex << app->getProfile() << endl;
+			clog << "Transport protocol: 0x" << hex << app->getTransportProtocolId() << endl;
 
-						case IApplication::CC_DESTROY:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' DESTROY." << endl;
-							break;
+			unsigned char controlCode = (*i)->getControlCode();
+			switch (controlCode) {
+				case IApplication::CC_AUTOSTART:
+					clog << nclName << " AUTOSTART." << endl;
 
-						case IApplication::CC_KILL:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' KILL." << endl;
-							break;
+					foundApp |= startApp(nclName);
+					break;
 
-						case IApplication::CC_PREFETCH:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' PREFETCH." << endl;
-							break;
+				case IApplication::CC_PRESENT:
+					clog << nclName << " PRESENT." << endl;
 
-						case IApplication::CC_REMOTE:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' REMOTE." << endl;
-							break;
+					//TODO: do not start. it should just notify AppCatUI
+					foundApp |= appIsPresent(nclName);
+					break;
 
-						case IApplication::CC_UNBOUND:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' UNBOUND." << endl;
-							break;
+				case IApplication::CC_DESTROY:
+					clog << nclName << " DESTROY." << endl;
+					break;
 
-						case IApplication::CC_STORE:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' STORE." << endl;
-							break;
+				case IApplication::CC_KILL:
+					clog << nclName << " KILL." << endl;
+					break;
 
-						case IApplication::CC_STORED_AUTOSTART:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' STORED_AUTOSTART." << endl;
-							break;
+				case IApplication::CC_PREFETCH:
+					clog << nclName << " PREFETCH." << endl;
+					break;
 
-						case IApplication::CC_STORED_PRESENT:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' STORED_PRESENT." << endl;
-							break;
+				case IApplication::CC_REMOTE:
+					clog << nclName << " REMOTE." << endl;
+					break;
 
-						case IApplication::CC_STORED_REMOVE:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' STORED_REMOVE." << endl;
-							break;
+				case IApplication::CC_UNBOUND:
+					clog << nclName << " UNBOUND." << endl;
+					break;
 
-						default:
-							clog << "DataWrapperListener::processAIT '";
-							clog << nclName << "' unknown control code." << endl;
-							break;
-					}
+				case IApplication::CC_STORE:
+					clog << nclName << " STORE." << endl;
+					break;
 
-					++i;
-				}
+				case IApplication::CC_STORED_AUTOSTART:
+					clog << nclName << " STORED_AUTOSTART." << endl;
+					break;
+
+				case IApplication::CC_STORED_PRESENT:
+					clog << nclName << " STORED_PRESENT." << endl;
+					break;
+
+				case IApplication::CC_STORED_REMOVE:
+					clog << nclName << " STORED_REMOVE." << endl;
+					break;
+
+				default:
+					clog << nclName << " unknown control code." << endl;
+					break;
 			}
 
-			delete apps;
+			++i;
 		}
+		delete apps;
 
 		return foundApp;
 	}

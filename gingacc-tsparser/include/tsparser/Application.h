@@ -98,9 +98,10 @@ namespace si {
 			string getInitialClass();
 			unsigned short getControlCode();
 			unsigned short getLength();
+			unsigned short getProfile(int profileNumber=0);
+			unsigned short getTransportProtocolId();
 			size_t process(char* data, size_t pos);
 		};
-
 }
 }
 }
