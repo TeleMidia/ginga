@@ -102,6 +102,7 @@ namespace lssm {
 		string documentUri;
 		bool autoMount;
 		map<string, string> ncls;
+		set<string> present;
 		string docToStart;
 
 		IAIT* ait;
@@ -113,6 +114,7 @@ namespace lssm {
 
 	private:
 		bool startApp(const string &appName);
+		bool appIsPresent(const string &appName);
 		bool processAIT();
 
 	public:

@@ -121,7 +121,6 @@ namespace si {
 
 		return pos;
 	}
-
 }
 }
 }
