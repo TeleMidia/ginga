@@ -96,6 +96,7 @@ namespace si {
 
 			virtual string getBaseDirectory()=0;
 			virtual string getInitialClass()=0;
+			virtual string getId()=0;
 			virtual unsigned short getControlCode()=0;
 			virtual unsigned short getLength()=0;
 			virtual unsigned short getProfile(int profileNumber=0)=0;

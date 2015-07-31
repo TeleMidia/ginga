@@ -89,7 +89,7 @@ namespace lssm {
 		this->autoMount = autoMountIt;
 	}
 
-	bool DataWrapperListener::startApp(const string &appName) {
+	bool DataWrapperListener::startApp(const string &appName, IApplication* app) {
 		map<string, string>::iterator i;
 		string appUri;
 
@@ -115,7 +115,7 @@ namespace lssm {
 		return false;
 	}
 
-	bool DataWrapperListener::appIsPresent(const string &appName) {
+	bool DataWrapperListener::appIsPresent(const string &appName, IApplication* app) {
 		map<string, string>::iterator i;
 		string appUri;
 
@@ -130,6 +130,14 @@ namespace lssm {
 			clog << "DataWrapperListener::appIsPresent '";
 			clog << appUri << "'" << endl;
 			present.insert(appUri);
+
+			//cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${URI}::${PROFILE}::${TRANSPORT_ID}
+			cout << "cmd::0::ait::";
+			cout << app->getId() << "::";
+			cout << "0x" << hex << app->getControlCode() << "::";
+			cout << appUri << "::";
+			cout << "0x" << hex << app->getProfile() << "::";
+			cout << "0x" << hex << app->getTransportProtocolId() << endl;
 			return true;
 
 		} else {
@@ -149,6 +157,7 @@ namespace lssm {
 
 		assert(ait != NULL);
 
+		cout << "cmd::0::ait::clear" << endl;
 		present.clear();
 
 		apps = ait->copyApplications();
@@ -168,14 +177,14 @@ namespace lssm {
 				case IApplication::CC_AUTOSTART:
 					clog << nclName << " AUTOSTART." << endl;
 
-					foundApp |= startApp(nclName);
+					foundApp |= startApp(nclName, app);
 					break;
 
 				case IApplication::CC_PRESENT:
 					clog << nclName << " PRESENT." << endl;
 
 					//TODO: do not start. it should just notify AppCatUI
-					foundApp |= appIsPresent(nclName);
+					foundApp |= appIsPresent(nclName, app);
 					break;
 
 				case IApplication::CC_DESTROY:

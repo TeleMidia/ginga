@@ -113,8 +113,8 @@ namespace lssm {
 		void autoMountOC(bool autoMountIt);
 
 	private:
-		bool startApp(const string &appName);
-		bool appIsPresent(const string &appName);
+		bool startApp(const string &appName, IApplication* app);
+		bool appIsPresent(const string &appName, IApplication* app);
 		bool processAIT();
 
 	public:

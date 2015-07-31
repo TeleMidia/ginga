@@ -130,6 +130,10 @@ namespace si {
 		return "";
 	}
 
+	string Application::getId() {
+		return itos(applicationId.applicationId);
+	}
+
 	unsigned short Application::getControlCode() {
 		return applicationControlCode;
 	}
