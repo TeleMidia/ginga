@@ -96,6 +96,7 @@ namespace si {
 
 			string getBaseDirectory();
 			string getInitialClass();
+			string getId();
 			unsigned short getControlCode();
 			unsigned short getLength();
 			unsigned short getProfile(int profileNumber=0);

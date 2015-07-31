@@ -1609,7 +1609,6 @@ namespace mb {
 				break;
 
 			} else {
-#if 1
 				if (first_pass) {
 					SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
 					timeout.tv_sec = now.tv_sec;
@@ -1638,7 +1637,6 @@ namespace mb {
 					retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
 					pthread_mutex_unlock(&mutex);
 				}
-#endif
 			}
 		}
 
