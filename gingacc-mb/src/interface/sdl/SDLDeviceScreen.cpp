@@ -1420,20 +1420,19 @@ namespace mb {
 			}
 
 		} else if (type == "GCMD") {
-			string nCmd;
-			string nArgs;
+			string nCmd  = args;
+			string nArgs = "";
 
 			token = args.find_first_of(",");
 			if (token != std::string::npos) {
 				nCmd  = args.substr(0, token);
 				nArgs = args.substr(token + 1, args.length() - (token + 1));
-
-			} else {
-				nCmd  = args;
-				nArgs = "";
 			}
 
 			if (s->im != NULL) {
+				clog << "SDLDeviceScreen::processCmd calling postCommand" << endl;
+				clog << "nCmd: " << nCmd << endl;
+				clog << "nArgs: " << nArgs << endl;
 				s->im->postCommand(nCmd, nArgs);
 			}
 		}
@@ -1450,8 +1449,10 @@ namespace mb {
 		s = (SDLDeviceScreen*)ptr;
 		Thread::mutexUnlock(&scrMutex);
 
-		while (std::cin >> strCmd) {
+		while (true) {
 			size_t token;
+
+			std::getline(std::cin, strCmd);
 			token = strCmd.find_first_of(":");
 			if (token != std::string::npos && token < strCmd.length()) {
 				processCmd(

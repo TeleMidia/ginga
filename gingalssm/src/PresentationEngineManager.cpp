@@ -1135,6 +1135,9 @@ namespace lssm {
 		string nCmd;
 		string nArgs;
 
+		clog << "PresentationEngineManager::cmdEventReceived" << endl;
+		clog << "Command: " << command << endl;
+		clog << "Parameters: " << args << endl;
 		token = args.find_first_of(",");
 		if (token == std::string::npos) {
 			nCmd  = args;
