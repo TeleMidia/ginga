@@ -81,11 +81,9 @@ namespace text {
 #else
 			player = new PlainTxtPlayer(myScreen, mrl.c_str());
 #endif
+		} else {
+			return;
 		}
-                else
-                {
-                    return;
-                }
 
 		player->setPropertyValue("x-setFile", mrl);
 		descriptor = object->getDescriptor();

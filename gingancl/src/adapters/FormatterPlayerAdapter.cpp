@@ -1228,61 +1228,62 @@ namespace adapters {
 		string paramValue;
 		FormatterEvent* objEv;
 
+		assert(object != NULL);
+
+		if (!object->isSleeping()) {
+			clog << "FormatterPlayerAdapter::start(" << object->getId();
+			clog << ") is occurring or paused" << endl;
+			return false;
+		}
+
+		/*clog << "FormatterPlayerAdapter::start(" << object->getId();
+		clog << ")" << endl;*/
+		descriptor = object->getDescriptor();
+		if (descriptor != NULL) {
+			paramValue = descriptor->getParameterValue("visible");
+			if (paramValue == "false") {
+				setVisible(false);
+
+			} else if (paramValue == "true") {
+				setVisible(true);
+			}
+
+			ncmRegion = descriptor->getRegion();
+			if (ncmRegion != NULL && ncmRegion->getDeviceClass() == 2) {
+				objEv = object->getMainEvent();
+				if (objEv != NULL) {
+					clog << "FormatterPlayerAdapter::start(";
+					clog << object->getId();
+					clog << ") ACTIVE CLASS" << endl;
+					objEv->start();
+				}
+				return true;
+			}
+		}
+
 		if (object != NULL) {
+			bool startSuccess = false;
 
-			if (!object->isSleeping()) {
-				clog << "FormatterPlayerAdapter::start(" << object->getId();
-				clog << ") is occurring or paused" << endl;
-				return false;
+			if (player != NULL) {
+				if (mirrorSrc != NULL) {
+					player->setMirrorSrc(mirrorSrc);
+				}
+				startSuccess = player->play();
 			}
 
-			/*clog << "FormatterPlayerAdapter::start(" << object->getId();
-			clog << ")" << endl;*/
-			descriptor = object->getDescriptor();
-			if (descriptor != NULL) {
-				paramValue = descriptor->getParameterValue("visible");
-				if (paramValue == "false") {
-					setVisible(false);
-
-				} else if (paramValue == "true") {
-					setVisible(true);
-				}
-
-				ncmRegion = descriptor->getRegion();
-				if (ncmRegion != NULL && ncmRegion->getDeviceClass() == 2) {
-					objEv = object->getMainEvent();
-					if (objEv != NULL) {
-						clog << "FormatterPlayerAdapter::start(";
-						clog << object->getId();
-						clog << ") ACTIVE CLASS" << endl;
-						objEv->start();
-					}
-					return true;
-				}
-			}
-
-			if (object != NULL) {
-				bool startSuccess = false;
-
-				if (player != NULL) {
-					if (mirrorSrc != NULL) {
-						player->setMirrorSrc(mirrorSrc);
-					}
-					startSuccess = player->play();
-				}
-
-				if (startSuccess) {
-					if (!object->start() && player != NULL) {
+			if (startSuccess) {
+				if (!object->start()) {
+					if (player != NULL) {
 						player->stop();
-						startSuccess = false;
-
-					} else {
-						checkAnchorMonitor();
 					}
-				}
+					startSuccess = false;
 
-				return startSuccess;
+				} else {
+					checkAnchorMonitor();
+				}
 			}
+
+			return startSuccess;
 		}
 		return false;
 	}

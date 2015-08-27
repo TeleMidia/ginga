@@ -574,15 +574,15 @@ namespace ncl {
 						clog << executionObject->getId() << "'";
 						clog << endl;
 
-						assert(event->getCurrentState() == EventUtil::ST_SLEEPING);
-
-						event->removeEventListener(this);
-						Thread::mutexLock(&lMutex);
-						it = listening.find(event);
-						if (it != listening.end()) {
-							listening.erase(it);
+						if (event->getCurrentState() == EventUtil::ST_SLEEPING) {
+							event->removeEventListener(this);
+							Thread::mutexLock(&lMutex);
+							it = listening.find(event);
+							if (it != listening.end()) {
+								listening.erase(it);
+							}
+							Thread::mutexUnlock(&lMutex);
 						}
-						Thread::mutexUnlock(&lMutex);
 
 					} else {
 						time = getCurrentTimeMillis() - time;
