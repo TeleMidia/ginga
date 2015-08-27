@@ -2016,7 +2016,7 @@ void LocalScreenManager::moveWindowTo(
  int LocalScreenManager::getProviderStringWidth(
 			const GingaProviderID &provId, const char* text, int textLength)
  {
-	 int width = false;
+	 int width = 0;
 	 IFontProvider *provider = NULL;
 	 IMediaProvider *iProvider = getIMediaProviderFromId(provId);
 

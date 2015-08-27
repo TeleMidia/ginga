@@ -89,6 +89,18 @@ namespace lssm {
 		this->autoMount = autoMountIt;
 	}
 
+	void DataWrapperListener::writeAITCommand(const string &appName, const string &appUri, IApplication* app) {
+		//cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${$BASE_URI}::{$INITIAL_ENTITY}::${URI}::${PROFILE}::${TRANSPORT_ID}
+		cout << "cmd::0::ait::";
+		cout << app->getId() << "::";
+		cout << "0x" << hex << app->getControlCode() << "::";
+		cout << app->getBaseDirectory() << "::";
+		cout << app->getInitialClass() << "::";
+		cout << appUri << "::";
+		cout << "0x" << hex << app->getProfile() << "::";
+		cout << "0x" << hex << app->getTransportProtocolId() << endl;
+	}
+
 	bool DataWrapperListener::startApp(const string &appName, IApplication* app) {
 		map<string, string>::iterator i;
 		string appUri;
@@ -130,14 +142,7 @@ namespace lssm {
 			clog << "DataWrapperListener::appIsPresent '";
 			clog << appUri << "'" << endl;
 			present.insert(appUri);
-
-			//cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${URI}::${PROFILE}::${TRANSPORT_ID}
-			cout << "cmd::0::ait::";
-			cout << app->getId() << "::";
-			cout << "0x" << hex << app->getControlCode() << "::";
-			cout << appUri << "::";
-			cout << "0x" << hex << app->getProfile() << "::";
-			cout << "0x" << hex << app->getTransportProtocolId() << endl;
+			writeAITCommand(appName, appUri, app);
 			return true;
 
 		} else {
@@ -189,38 +194,47 @@ namespace lssm {
 
 				case IApplication::CC_DESTROY:
 					clog << nclName << " DESTROY." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_KILL:
 					clog << nclName << " KILL." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_PREFETCH:
 					clog << nclName << " PREFETCH." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_REMOTE:
 					clog << nclName << " REMOTE." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_UNBOUND:
 					clog << nclName << " UNBOUND." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_STORE:
 					clog << nclName << " STORE." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_STORED_AUTOSTART:
 					clog << nclName << " STORED_AUTOSTART." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_STORED_PRESENT:
 					clog << nclName << " STORED_PRESENT." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				case IApplication::CC_STORED_REMOVE:
 					clog << nclName << " STORED_REMOVE." << endl;
+					writeAITCommand(nclName, "", app);
 					break;
 
 				default:
@@ -275,14 +289,14 @@ namespace lssm {
 
 		eventType = event->getEventName();
 		eventData.assign(event->getData(), event->getDescriptorLength());
-/*
+
 		clog << "DsmccWrapper::receiveStreamEvent ";
 		clog << "eventId = '" << (eventData[0] & 0xFF) << (eventData[1] & 0xFF);
 		clog << "' commandTag = '" << (eventData[11] & 0xFF);
 		clog << "' eventType = '" << eventType;
 		clog << "' and payload = '" << eventData;
 		clog << "'" << endl;
-*/
+
 		if (eventType == "gingaEditingCommands") {
 			if (pem != NULL) {
 				pem->editingCommand(eventData);
@@ -356,4 +370,5 @@ namespace lssm {
 }
 }
 }
+
 #endif //HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
