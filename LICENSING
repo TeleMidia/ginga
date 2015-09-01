@@ -55,7 +55,7 @@ para que tipos diferentes de usuarios possam melhor se enquadrar.
 
 A primeira licenca chamamos de licenca livre e garante que o codigo publicado
 neste Portal e suas novas funcionalidades a partir daqui desenvolvidas
-permanecerao livres, repassando todo conhecimento gerado à Comunidade Ginga,
+permanecerao livres, repassando todo conhecimento gerado Ã  Comunidade Ginga,
 indefinidamente. A licenca livre adotada e a GPLv2.
 
 A segunda licenca chamamos de licenca comercial ou proprietaria, que prove
@@ -109,7 +109,7 @@ empresa o licenciamento nao-GPL de novas funcionalidades, este deve ser
 negociado diretamente com os autores correspondentes.
 
 A resolucao de um  bug em codigo original Ginga e tambem regido pela GPLv2, sera
-publicada neste Portal, porem sua propriedade e atribuida à PUC-Rio, como autor
+publicada neste Portal, porem sua propriedade e atribuida Ã  PUC-Rio, como autor
 original.
 
 --------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ softwares Ginga, nem obriga a PUC-Rio a oferecer suporte sobre esse codigo.
 
 7. Quem nao pode aderir ao licenciamento livre do Ginga?
 
-R: Nao podem aderir à licenca livre os desenvolvedores que:
+R: Nao podem aderir Ã  licenca livre os desenvolvedores que:
 
     * Nao podem ou nao pretendem compartilhar seu codigo para a Comunidade
       Ginga;
@@ -161,7 +161,7 @@ comercial.
 8. Quais sao os termos da licenca comercial?
 
 R: O software licenciado comercialmente nao se refere ao codigo disponibilizado
-neste Portal, mas apenas àquele de propriedade da PUC-Rio, como destacado na
+neste Portal, mas apenas Ã quele de propriedade da PUC-Rio, como destacado na
 pergunta 4.
 
 A licenca comercial concede ao desenvolvedor o uso irrestrito do codigo sob seu
