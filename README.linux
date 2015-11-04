@@ -36,7 +36,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
 * Installing depencies
 
   sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick libespeak-dev espeak-data
-  sudo sh -c 'echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/debian amd64/ " >> /etc/apt/sources.list'
+  sudo sh -c 'echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/debian amd64/ " >> /etc/apt/sources.list.d/ginga.list'
   sudo apt-get update
   sudo apt-get install berkelium ffmpegext nclua
 
@@ -47,7 +47,7 @@ Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies
 * Build ginga.
 
   ./bootstrap
-  ./configure --enable-data-processing --enable-linuxdvb --enable-espeak --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed" 
+  ./configure --enable-data-processing --enable-linuxdvb --enable-espeak --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed"
   make -j4
   sudo make install
 
@@ -67,15 +67,12 @@ Known build errors
   This ubuntu version not has support to libcrypt11. The libgcrypt11 is required by berkelium. Do the following commands to correct.
   * (i386)
     wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_i386.deb &&\
-    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_i386.deb 
+    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_i386.deb
   * (amd64)
     wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb &&\
-    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb 
+    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb
 
 Import to eclipse CDT
 =====================
 One way to code in ginga source is using Eclipse CDT(www.eclipse.org/cdt) doing:
 import -> C/C++ -> "Existing Code as Makefile Project" -> chose "GNU Autotools toolchain" -> finish.
-
-
-
