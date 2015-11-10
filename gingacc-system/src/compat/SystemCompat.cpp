@@ -1253,6 +1253,14 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		res = win_clock_gettime(clockType, tv);
+#elif (__MACH__ || HAVE_MACH_SL_H)
+    		clock_serv_t cclock;
+    		mach_timespec_t mts;
+    		host_get_clock_service(mach_host_self(), clockType, &cclock);
+    		clock_get_time(cclock, &mts);
+    		mach_port_deallocate(mach_task_self(), cclock);
+    		tv->tv_sec = mts.tv_sec;
+    		tv->tv_nsec = mts.tv_nsec;
 #else
 		res = clock_gettime(clockType, tv);
 #endif
