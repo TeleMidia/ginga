@@ -62,7 +62,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "player/ProgramAV.h"
 #include "player/ChannelPlayer.h"
 #include "player/AVPlayer.h"
+#ifndef __ANDROID__
 #include "player/LuaPlayer.h"
+#endif
 #include "player/ImagePlayer.h"
 #include "player/PlainTxtPlayer.h"
 #include "player/SrtPlayer.h"
@@ -85,8 +87,10 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::mirror;
 #include "text/SubtitlePlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
 
+#ifndef __ANDROID__
 #include "application/imperative/lua/LuaPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua;
+#endif
 
 #include "time/TimePlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;

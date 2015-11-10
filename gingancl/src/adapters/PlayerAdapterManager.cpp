@@ -485,9 +485,10 @@ namespace adapters {
 		} else if (playerClassName == "AVPlayerAdapter") {
 			player = new AVPlayerAdapter();
 
+#ifndef __ANDROID__
 		} else if (playerClassName == "LuaPlayerAdapter") {
 			player = new LuaPlayerAdapter();
-
+#endif
 		} else if (playerClassName == "NCLPlayerAdapter") {
 			player = new NCLPlayerAdapter();
 

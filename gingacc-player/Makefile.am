@@ -57,6 +57,17 @@ libgingaccplabkl_la_SOURCES =\
   $(NULL)
 endif
 
+# gingacc-pla-awe
+if BUILD_AWESOMIUM
+gingaccplayerlib_LTLIBRARIES += libgingaccplaawe.la
+libgingaccplaawe_la_CXXFLAGS = $(AM_CXXFLAGS) $(AWESOMIUM_CFLAGS)
+libgingaccplaawe_la_LDFLAGS = $(AM_LDFLAGS) $(AWESOMIUM_LIBS)
+libgingaccplaawe_la_SOURCES =\
+  src/application/declarative/xhtml/awesomium/AwesomiumHandler.cpp\
+  src/application/declarative/xhtml/awesomium/AwesomiumPlayer.cpp\
+  $(NULL)
+endif
+
 # gingacc-pla-ssml
 if BUILD_SSML
 gingaccplayerlib_LTLIBRARIES += libgingaccplassml.la

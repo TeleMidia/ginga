@@ -23,6 +23,8 @@ m4_define([sdl2_ttf_require_version],    [2.0])
 m4_define([swresample_required_version], [0.17.104])
 m4_define([swscale_required_version],    [2.5.101])
 m4_define([xercesc_required_version],    [2.7])
+m4_define([librsvg_required_version],    [2.40.0])
+m4_define([libbpg_required_version],     [0.9.5])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
 AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
@@ -40,6 +42,8 @@ AC_SUBST([SDL2_TTF_REQUIRED_VERSION], sdl2_ttf_required_version)
 AC_SUBST([SWRESAMPLE_REQUIRED_VERSION], swresample_required_version)
 AC_SUBST([SWSCALE_REQUIRED_VERSION], swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION], xercesc_required_version)
+AC_SUBST([LIBRSVG_REQUIRED_VERSION], librsvg_required_version)
+AC_SUBST([LIBBPG_REQUIRED_VERSION], libbpg_required_version)
 
 AM_INIT_AUTOMAKE([-Wall 1.11 foreign gnu no-define subdir-objects])
 AM_MAINTAINER_MODE([enable])
@@ -359,29 +363,54 @@ AC_SUBST([JPEG_LIBS])
 
 # Check for Berkelium.
 berkelium_ok=no
-AC_HAVE_LIBRARY([berkelium],
- [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
-   [berkelium_ok=yes])])
-if test "$berkelium_ok" = yes; then
-  AC_DEFINE([HAVE_BERKELIUM], [1],
-    [Define to 1 if berkelium is present.])
-  BERKELIUM_LIBS='-lberkelium'
-else
-  AC_DEFINE([HAVE_BERKELIUM], [0],
-    [Define to 1 if berkelium is present.])
-  AC_MSG_WARN([
-***
-*** Checks for BERKELIUM failed.
-*** Berkelium is required by Ginga-CC Player.
-*** If Berkelium is not installed, some applications may not work properly.
-***])
+_AC_ARG_ENABLE([berkelium], [build with Berkelium XHTML support], [yes])
+if test "$enable_berkelium" = yes; then
+  AC_HAVE_LIBRARY([berkelium],
+   [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
+     [berkelium_ok=yes])])
+  if test "$berkelium_ok" = yes; then
+    AC_DEFINE([HAVE_BERKELIUM], [1],
+      [Define to 1 if berkelium is present.])
+    BERKELIUM_LIBS='-lberkelium'
+  else
+    AC_DEFINE([HAVE_BERKELIUM], [0],
+      [Define to 0 if berkelium is not present.])
+    AC_MSG_WARN([
+  ***
+  *** Checks for BERKELIUM failed.
+  *** Berkelium is required by Ginga-CC Player.
+  *** If Berkelium is not installed, some applications may not work properly.
+  ***])
+  fi
+  AC_SUBST([BERKELIUM_LIBS])
 fi
-AC_SUBST([BERKELIUM_LIBS])
 AM_CONDITIONAL([BUILD_BERKELIUM], [test "$berkelium_ok" = yes])
+
+# Check for Awesomium.
+awesomium_ok=no
+_AC_ARG_ENABLE([awesomium], [build with Awesomium XHTML support], [no])
+if test "$enable_awesomium" = yes; then
+  AC_CHECK_HEADER([Awesomium/WebView.h],
+     [awesomium_ok=yes])
+  if test "$awesomium_ok" = yes; then
+    AC_DEFINE([HAVE_AWESOMIUM], [1],
+      [Define to 1 if awesomium is present.])
+    AWESOMIUM_LIBS='-lawesomium-1-7'
+  else
+    AC_DEFINE([HAVE_AWESOMIUM], [0],
+      [Define to 0 if awesomium is not present.])
+    AC_MSG_WARN([
+  ***
+  *** Checks for AWESOMIUM failed.
+  ***])
+  fi
+  AC_SUBST([AWESOMIUM_LIBS])
+fi
+AM_CONDITIONAL([BUILD_AWESOMIUM], [test "$awesomium_ok" = yes])
 
 # Check for espeak.
 espeak_ok=no
-_AC_ARG_ENABLE([espeak], [build with espeak SSML support], [no])      
+_AC_ARG_ENABLE([espeak], [build with espeak SSML support], [no])
 if test "$enable_espeak" = yes; then
   AC_HAVE_LIBRARY([espeak],
    [AC_CHECK_HEADER([espeak/speak_lib.h],
@@ -392,7 +421,7 @@ if test "$enable_espeak" = yes; then
     SSML_LIBS='-lespeak'
   else
     AC_DEFINE([HAVE_SSML], [0],
-      [Define to 1 if espeak is present.])
+      [Define to 0 if espeak is not present.])
     AC_MSG_WARN([
   ***
   *** Checks for eSpeak failed.
@@ -403,6 +432,44 @@ if test "$enable_espeak" = yes; then
   AC_SUBST([SSML_LIBS])
 fi
 AM_CONDITIONAL([BUILD_SSML], [test "$enable_espeak" = yes])
+
+# Check for LibRsvg for SVG
+librsvg_ok=no
+_AC_ARG_ENABLE([librsvg], [build with LibRsvg SVG support], [no])
+if test "$enable_librsvg" = yes; then
+  PKG_CHECK_MODULES([LIBRSVG],
+   [librsvg-2.0 >= librsvg_required_version], [librsvg_ok=yes],
+    [AC_MSG_ERROR([
+*** librsvg >= librsvg_required_version is required.])])
+
+  if test "$librsvg_ok" = yes; then
+    AC_DEFINE([HAVE_LIBRSVG], [1],
+      [Define to 1 if librsvg is present.])
+  else
+    AC_DEFINE([HAVE_LIBRSVG], [0],
+      [Define to 0 if librsvg is not present.])
+  fi
+fi
+AM_CONDITIONAL([BUILD_SVG], [test "$enable_librsvg" = yes])
+
+# Check for libbpg for BPG support
+libbpg_ok=no
+_AC_ARG_ENABLE([libbpg], [build with libbpg BPG support], [no])
+if test "$enable_libbpg" = yes; then
+  PKG_CHECK_MODULES([LIBBPG],
+   [libbpg >= libbpg_required_version], [libbpg_ok=yes],
+    [AC_MSG_ERROR([
+*** libbpg >= libbpg_required_version is required.])])
+
+  if test "$libbpg_ok" = yes; then
+    AC_DEFINE([HAVE_LIBBPG], [1],
+      [Define to 1 if libbpg is present.])
+  else
+    AC_DEFINE([HAVE_LIBBPG], [0],
+      [Define to 0 if libbpg is not present.])
+  fi
+fi
+AM_CONDITIONAL([BUILD_LIBBPG], [test "$enable_libbpg" = yes])
 
 # Check for NCLua.
 PKG_CHECK_MODULES([NCLUA],
@@ -512,7 +579,11 @@ AC_MSG_NOTICE([summary of main build options:
   build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
+  build berkelium:        ${berkelium_ok}
+  build awesomium:        ${awesomium_ok}
   build espeak:           ${enable_espeak}
+  build librsvg:          ${enable_librsvg}
+  build libbpg:           ${enable_libbpg}
   build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}

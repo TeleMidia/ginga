@@ -86,7 +86,6 @@ namespace si {
 		ApplicationLocationDescriptor* location;
 		unsigned char descTag;
 
-
 		Thread::mutexLock(&stlMutex);
 		i = descriptors.begin();
 		while (i != descriptors.end()) {
@@ -98,7 +97,8 @@ namespace si {
 
 				Thread::mutexUnlock(&stlMutex);
 				return location->getBaseDirectory();
-			}
+			} 
+
 			++i;
 		}
 
@@ -130,12 +130,64 @@ namespace si {
 		return "";
 	}
 
+	string Application::getId() {
+		return itos(applicationId.applicationId);
+	}
+
 	unsigned short Application::getControlCode() {
 		return applicationControlCode;
 	}
 
 	unsigned short Application::getLength() {
 		return applicationLength;
+	}
+
+	unsigned short Application::getProfile(int profileNumber) {
+		vector<IMpegDescriptor*>::iterator i;
+		ApplicationDescriptor* app;
+		vector<struct Profile*>* profs;
+		unsigned char descTag;
+
+		Thread::mutexLock(&stlMutex);
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
+			descTag = (*i)->getDescriptorTag();
+			if (descTag == DT_APPLICATION) {
+				app = (ApplicationDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
+
+				profs = app->getProfiles();
+				return profs->at(profileNumber)->applicationProfile;
+			}
+			++i;
+		}
+
+		Thread::mutexUnlock(&stlMutex);
+		return 0;
+	}
+
+	unsigned short Application::getTransportProtocolId() {
+		vector<IMpegDescriptor*>::iterator i;
+		TransportProtocolDescriptor* tpd;
+		vector<struct Profile*>* profs;
+		unsigned char descTag;
+
+		Thread::mutexLock(&stlMutex);
+		i = descriptors.begin();
+		while (i != descriptors.end()) {
+			descTag = (*i)->getDescriptorTag();
+			if (descTag == DT_TRANSPORT_PROTOCOL) {
+				tpd = (TransportProtocolDescriptor*)(*i);
+
+				Thread::mutexUnlock(&stlMutex);
+				return tpd->getProtocolId();
+			}
+			++i;
+		}
+
+		Thread::mutexUnlock(&stlMutex);
+		return 0;
 	}
 
 	size_t Application::process(char *data, size_t pos) {

@@ -55,6 +55,14 @@ http://www.telemidia.puc-rio.br
 #include "mb/interface/sdl/SDLDeviceScreen.h"
 #include "mb/LocalScreenManager.h"
 
+#if HAVE_LIBRSVG
+#include "mb/interface/sdl/content/image/SDLSvgDecoder.h"
+#endif
+
+#if HAVE_LIBBPG
+#include "mb/interface/sdl/content/image/SDLBpgDecoder.h"
+#endif
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -119,9 +127,34 @@ namespace mb {
 		if (surface != 0 && ScreenManagerFactory::getInstance()->hasSurface(
 				myScreen, surface)) {
 
-			SDLDeviceScreen::lockSDL();
+#if HAVE_LIBRSVG
+                    if( imgUri.substr(imgUri.find_last_of(".") + 1) == "svg" ||
+                        imgUri.substr(imgUri.find_last_of(".") + 1) == "svgz")
+                    {
+                        int w = 0, h = 0;
+                        // We need the region dimensions for SVG. How to do it?
+
+                        SDLSvgDecoder *svgdec = new SDLSvgDecoder(imgUri);
+                        SDLDeviceScreen::lockSDL();
+                        renderedSurface = svgdec->decode(w, h);
+			SDLDeviceScreen::unlockSDL();
+                        delete svgdec;
+                    } else
+#endif
+#if HAVE_LIBBPG
+                    if ( imgUri.substr(imgUri.find_last_of(".") + 1) == "bpg")
+                    {
+                        SDLBpgDecoder *bpgdec = new SDLBpgDecoder(imgUri);
+                        SDLDeviceScreen::lockSDL();
+                        renderedSurface = bpgdec->decode();
+			SDLDeviceScreen::unlockSDL();
+                    } else
+#endif
+                    {
+                        SDLDeviceScreen::lockSDL();
 			renderedSurface = IMG_Load(imgUri.c_str());
 			SDLDeviceScreen::unlockSDL();
+                    }
 
 			if (renderedSurface != NULL) {
 				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
@@ -135,7 +168,8 @@ namespace mb {
 				}
 				ScreenManagerFactory::getInstance()->setSurfaceContent(
 						surface, (void*)renderedSurface);
-			}
+
+                        }
 
 		} else {
 			clog << "SDLImageProvider::playOver Warning! NULL content";

@@ -105,5 +105,9 @@ LDADD +=\
   $(NULL)
 endif
 
+if BUILD_LIBBPG
+AM_LDFLAGS += $(LIBBPG_LIBS)
+endif
+
 bin_PROGRAMS = ginga
 ginga_SOURCES = src/main.cpp

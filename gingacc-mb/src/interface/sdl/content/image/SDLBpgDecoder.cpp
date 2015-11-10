@@ -25,7 +25,7 @@ http://www.telemidia.puc-rio.br
 ******************************************************************************
 This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
 
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+Copyright: 1989-2015 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License version 2 as published by
@@ -47,84 +47,99 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "tsparser/TransportProtocolDescriptor.h"
-#include <string.h>
+#include <stdint.h>
+
+#include "mb/interface/sdl/content/image/SDLBpgDecoder.h"
+#include "config.h"
+
+extern "C"{
+#include <libbpg.h>
+}
+
+
+using namespace std;
+
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace tsparser {
-namespace si {
-	TransportProtocolDescriptor::TransportProtocolDescriptor() {
-		protocolId = 0;
-		transportProtocolLabel = 0;
-		selectorByte = NULL;
-		selectorByteLength = 0;
-		descriptorLength = 0;
-		descriptorTag = 0x02;
-	}
+namespace mb {
+    
+    SDLBpgDecoder::SDLBpgDecoder(string filename) {
 
-	TransportProtocolDescriptor::~TransportProtocolDescriptor() {
-		if (selectorByte != NULL) {
-			delete selectorByte;
-		}
-	}
+        filePath.assign(filename);
+        
+    }
 
-	unsigned int TransportProtocolDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
+    SDLBpgDecoder::~SDLBpgDecoder() {
 
-	unsigned char TransportProtocolDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+    }
 
-	unsigned int TransportProtocolDescriptor::getSelectorByteLength() {
-		return selectorByteLength;
-	}
+    SDL_Surface *SDLBpgDecoder::decode() {
+        BPGDecoderContext *s;
+        BPGImageInfo bi_s, *bi = &bi_s;
+        uint8_t *buf;
+        int len, y;
+        SDL_Surface *img;
+        uint32_t rmask, gmask, bmask, amask;
+        int i;
 
-	char* TransportProtocolDescriptor::getSelectorByte() {
-		return selectorByte;
-	}
+        FILE *f = fopen(filePath.c_str(), "r");
+        fseek(f, 0, SEEK_END);
+        len = ftell(f);
+        fseek(f, 0, SEEK_SET);
+        if (len < 0)
+            return NULL;
+        buf = (uint8_t *) malloc(len);
+        if (!buf)
+            return NULL;
+        if (fread(buf, 1, len, f) != len)
+            return NULL;
 
-	unsigned char TransportProtocolDescriptor::getTransportProtocolLabel() {
-		return transportProtocolLabel;
-	}
+        fclose(f);
+    
+        s = bpg_decoder_open();
+        if (bpg_decoder_decode(s, buf, len) < 0) 
+            return NULL;
+        
+        bpg_decoder_get_info(s, bi);
+        
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        rmask = 0xff000000;
+        gmask = 0x00ff0000;
+        bmask = 0x0000ff00;
+        amask = 0x000000ff;
+#else
+        rmask = 0x000000ff;
+        gmask = 0x0000ff00;
+        bmask = 0x00ff0000;
+        amask = 0xff000000;
+#endif
+        
+        if (bpg_decoder_start(s, BPG_OUTPUT_FORMAT_RGBA32) < 0)
+            return NULL;
+        
 
-	unsigned short TransportProtocolDescriptor::getProtocolId() {
-		return protocolId;
-	}
-
-	void TransportProtocolDescriptor::print() {
-		clog << "TransportProtocolDescriptor::print" << endl;
-	}
-
-
-	size_t TransportProtocolDescriptor::process(char* data, size_t pos) {
-		descriptorLength = data[pos+1];
-		pos += 2;
-
-		protocolId = ((((data[pos] & 0xFF ) << 8) & 0xFF00) |
-				(data[pos+1] & 0xFF));
-		pos += 2;
-
-		transportProtocolLabel =  data[pos];
-		//pos ++;
-
-		selectorByteLength = descriptorLength - 3;
-		selectorByte = new char[selectorByteLength];
-
-		memcpy(selectorByte, data+pos+1, selectorByteLength);
-
-		pos += selectorByteLength;
-
-		return pos;
-	}
+        img = SDL_CreateRGBSurface(0, bi->width, bi->height, 32,
+                                   rmask, gmask, bmask, amask);
+        if (!img) 
+            return NULL;
+        
+        SDL_LockSurface(img);
+        for(y = 0; y < bi->height; y++) {
+            bpg_decoder_get_line(s, (uint8_t *)img->pixels + y * img->pitch);
+        }
+        SDL_UnlockSurface(img);
+        
+        bpg_decoder_close(s);
+        return img;
+    }
 }
 }
 }
 }
 }
 }
-}
+

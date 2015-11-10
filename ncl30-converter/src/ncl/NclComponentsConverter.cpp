@@ -428,7 +428,6 @@ namespace ncl {
 			}
 
 			node = new ReferNode(id);
-			((ReferNode*)node)->setReferredEntity(referNode);
 			if (parentElement->hasAttribute(XMLString::transcode(
 				    "instance"))) {
 
@@ -437,6 +436,7 @@ namespace ncl {
 
 				((ReferNode*)node)->setInstanceType(attValue);
 			}
+			((ReferNode*)node)->setReferredEntity(referNode);
 
 			return node;
 		}

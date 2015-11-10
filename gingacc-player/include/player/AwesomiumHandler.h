@@ -70,11 +70,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <iostream>
 using namespace std;
 
-extern "C" {
-#include <Awesomium/awesomium_capi.h>
-}
-
-#include <Awesomium/KeyboardCodes.h>
+#include <Awesomium/WebCore.h>
+#include <Awesomium/WebKeyboardCodes.h>
+#include <Awesomium/WebView.h>
+#include <Awesomium/WebString.h>
+#include <Awesomium/BitmapSurface.h>
+#include <Awesomium/STLHelpers.h>
 using namespace Awesomium;
 
 namespace br {
@@ -98,7 +99,7 @@ namespace player {
 			GingaScreenID myScreen;
 			AwesomiumHDR id;
 			string mURL;
-			ISurface* surface;
+			GingaSurfaceID surface;
 			int mouseX, mouseY;
 			int x, y;
 			int w, h;
@@ -133,7 +134,7 @@ namespace player {
 
 			/* static since we have to respect browser isolation */
 			static bool initialized;
-			static awe_webview* webView;
+			static WebView* webView;
 
 			static IScreenManager* dm;
 
@@ -149,7 +150,7 @@ namespace player {
 					IInputManager** im,
 					bool removeInfo=false);
 
-			static void onDOMReady(awe_webview* caller);
+			static void onDOMReady(WebView* caller);
 
 		public:
 			static AwesomiumHDR createAwesomium(GingaScreenID screenId);
