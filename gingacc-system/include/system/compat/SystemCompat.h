@@ -81,6 +81,13 @@ extern "C" {
 #include <assert.h>
 #include <stdio.h>
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#include <mach/clock_types.h>
+#define CLOCK_REALTIME SYSTEM_CLOCK
+#endif
+
 #ifdef _WIN32
 #ifndef isnan
 #define isnan(x) ((x) != (x))
