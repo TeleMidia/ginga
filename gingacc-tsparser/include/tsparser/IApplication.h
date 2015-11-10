@@ -87,13 +87,20 @@ namespace si {
 			static const unsigned char CC_PREFETCH                      = 0x05;
 			static const unsigned char CC_REMOTE                        = 0x06;
 			static const unsigned char CC_UNBOUND                       = 0x07;
+			static const unsigned char CC_STORE                         = 0x08;
+			static const unsigned char CC_STORED_AUTOSTART              = 0x09;
+			static const unsigned char CC_STORED_PRESENT                = 0x0A;
+			static const unsigned char CC_STORED_REMOVE                 = 0x0B;
 
 			virtual ~IApplication(){};
 
 			virtual string getBaseDirectory()=0;
 			virtual string getInitialClass()=0;
+			virtual string getId()=0;
 			virtual unsigned short getControlCode()=0;
 			virtual unsigned short getLength()=0;
+			virtual unsigned short getProfile(int profileNumber=0)=0;
+			virtual unsigned short getTransportProtocolId()=0;
 			virtual size_t process(char* data, size_t pos)=0;
 		};
 

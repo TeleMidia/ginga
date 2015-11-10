@@ -2,7 +2,7 @@
 Este arquivo eh parte da implementacao do ambiente declarativo do middleware
 Ginga (Ginga-NCL).
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+Direitos Autorais Reservados (c) 1989-2015 PUC-Rio/Laboratorio TeleMidia
 
 Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
 os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
@@ -25,7 +25,7 @@ http://www.telemidia.puc-rio.br
 ******************************************************************************
 This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
 
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
+Copyright: 1989-2015 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License version 2 as published by
@@ -47,84 +47,44 @@ http://www.ginga.org.br
 http://www.telemidia.puc-rio.br
 *******************************************************************************/
 
-#include "tsparser/TransportProtocolDescriptor.h"
-#include <string.h>
+#ifndef SDLBPGDECODER_H
+#define SDLBPGDECODER_H
+
+//#include "system/compat/SystemCompat.h"
+//using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
+//#include "system/thread/Thread.h"
+//using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+#include "mb/interface/sdl/content/image/SDLImageProvider.h"
+#include "mb/interface/sdl/output/SDLWindow.h"
+#include "mb/interface/sdl/output/SDLSurface.h"
+#include "mb/interface/sdl/SDLDeviceScreen.h"
+#include "mb/LocalScreenManager.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace tsparser {
-namespace si {
-	TransportProtocolDescriptor::TransportProtocolDescriptor() {
-		protocolId = 0;
-		transportProtocolLabel = 0;
-		selectorByte = NULL;
-		selectorByteLength = 0;
-		descriptorLength = 0;
-		descriptorTag = 0x02;
-	}
+namespace mb {
 
-	TransportProtocolDescriptor::~TransportProtocolDescriptor() {
-		if (selectorByte != NULL) {
-			delete selectorByte;
-		}
-	}
+      class SDLBpgDecoder {
+	public:
+	        string filePath;
+		SDLBpgDecoder(string filename);
+		~SDLBpgDecoder();
+		SDL_Surface *decode();
+	private:
 
-	unsigned int TransportProtocolDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
-
-	unsigned char TransportProtocolDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
-
-	unsigned int TransportProtocolDescriptor::getSelectorByteLength() {
-		return selectorByteLength;
-	}
-
-	char* TransportProtocolDescriptor::getSelectorByte() {
-		return selectorByte;
-	}
-
-	unsigned char TransportProtocolDescriptor::getTransportProtocolLabel() {
-		return transportProtocolLabel;
-	}
-
-	unsigned short TransportProtocolDescriptor::getProtocolId() {
-		return protocolId;
-	}
-
-	void TransportProtocolDescriptor::print() {
-		clog << "TransportProtocolDescriptor::print" << endl;
-	}
-
-
-	size_t TransportProtocolDescriptor::process(char* data, size_t pos) {
-		descriptorLength = data[pos+1];
-		pos += 2;
-
-		protocolId = ((((data[pos] & 0xFF ) << 8) & 0xFF00) |
-				(data[pos+1] & 0xFF));
-		pos += 2;
-
-		transportProtocolLabel =  data[pos];
-		//pos ++;
-
-		selectorByteLength = descriptorLength - 3;
-		selectorByte = new char[selectorByteLength];
-
-		memcpy(selectorByte, data+pos+1, selectorByteLength);
-
-		pos += selectorByteLength;
-
-		return pos;
-	}
+      };
+    
 }
 }
 }
 }
 }
 }
-}
+
+
+#endif /* SDLBPGDECODER_H */

@@ -140,12 +140,6 @@ namespace switches {
 		}
 
 		if (ruleList != NULL) {
-			j = ruleList->begin();
-			while (j != ruleList->end()) {
-				delete *j;
-				++j;
-			}
-
 			delete ruleList;
 			ruleList = NULL;
 		}

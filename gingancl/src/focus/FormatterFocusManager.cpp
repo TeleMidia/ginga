@@ -157,12 +157,6 @@ namespace focus {
 	}
 
 	FormatterFocusManager::~FormatterFocusManager() {
-		/*clog << "FormatterFocusManager::~FormatterFocusManager(";
-		clog << this << ")";
-		clog << "currentFocus is '" << currentFocus << "' and ";
-		clog << "parentCurrentFocus is '" << parentManager;
-		clog << "'" << endl;*/
-
 		LocalScreenManager::removeIEListenerInstance(this);
 		LocalScreenManager::removeMEListenerInstance(this);
 

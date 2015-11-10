@@ -59,7 +59,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\bin;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib;$(CONTRIBLIB_DIR)\boost\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CONTRIBLIB_DIR)\pthread\lib;$(CONTRIBLIB_DIR)\xerces-c-3.0.1-x86-windows-vc-9.0\lib;$(CONTRIBLIB_DIR)\FreeImage\Dist;$(CONTRIBLIB_DIR)\nclua\nclua\lib;$(CONTRIBLIB_DIR)\dlfcn-win32-static-r11\lib\x86;$(CONTRIBLIB_DIR)\libcurl\lib;$(CONTRIBLIB_DIR)\sdl2.0;$(CONTRIBLIB_DIR)\ffmpeg;$(CONTRIBLIB_DIR)\berkelium-win32\lib;$(CONTRIBLIB_DIR)\libzip\lib;$(CONTRIBLIB_DIR)\boost\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>Winmm.lib;pthreadVSE2.lib;xerces-c_3.lib;dlfcn.lib;FreeImage.lib;SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;libcurl.lib;avutil.lib;avcodec.lib;avfilter.lib;avformat.lib;avdevice.lib;swscale.lib;swresample.lib;postproc.lib;berkelium.lib;zip.lib;strmiids.lib;quartz.lib;nclua.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>

@@ -574,7 +574,6 @@ namespace ncl {
 						clog << executionObject->getId() << "'";
 						clog << endl;
 
-						// checking if player failed to start
 						if (event->getCurrentState() == EventUtil::ST_SLEEPING) {
 							event->removeEventListener(this);
 							Thread::mutexLock(&lMutex);
@@ -593,6 +592,7 @@ namespace ncl {
 						clog << endl;*/
 
 						printAction("start", condition, action);
+
 					}
 					break;
 

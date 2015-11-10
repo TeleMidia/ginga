@@ -394,6 +394,12 @@ namespace emconverter {
 							referNode)) {
 
 						addSameInstance(executionObject, referNode);
+
+					} else {
+						clog << "FormatterConverter::addExecutionObject Can't ";
+						clog << "find '" << referNode->getId() << "' inside '";
+						clog << headNode->getId() << "' ";
+						clog << endl;
 					}
 					++i;
 				}
@@ -1430,7 +1436,7 @@ namespace emconverter {
 
 		ExecutionObject* selectedObject;
 		ExecutionObject* endPointObject;
-		Node* selectedNode;
+		Node* selectedNode, *mappedNode;
 		NodeEntity* selectedNodeEntity;
 		vector<FormatterEvent*>* events;
 		vector<FormatterEvent*>::iterator i;
@@ -1472,12 +1478,14 @@ namespace emconverter {
 
 				} else {
 					switchPort = (SwitchPort*)interfacePoint;
-					mappings = ((SwitchPort*)switchPort)->getPorts();
+					mappings = switchPort->getPorts();
 					if (mappings != NULL && !mappings->empty()) {
 						j = mappings->begin();
 						while (j != mappings->end()) {
 							mapping = (*j);
-							if (mapping->getNode() == selectedNode) {
+							if (mapping->getNode() == selectedNode ||
+									mapping->getNode()->getDataEntity() == selectedNode->getDataEntity()) {
+
 								nodePerspective = switchObject->
 									    getNodePerspective();
 
@@ -1492,14 +1500,12 @@ namespace emconverter {
 									if (endPointObject != NULL) {
 										mappedEvent = getEvent(
 											    endPointObject,
-											    mapping->
-											    	    getEndInterfacePoint(),
+											    mapping->getEndInterfacePoint(),
 											    switchEvent->getEventType(),
 											    switchEvent->getKey());
 									}
 
-								} catch (ObjectCreationForbiddenException*
-									    exc) {
+								} catch (ObjectCreationForbiddenException* exc) {
 
 									clog << "FormatterConverter::";
 									clog << "resolveSwitchEvents exception ";
@@ -1791,14 +1797,40 @@ namespace emconverter {
 
 		ExecutionObject* executionObject;
 		FormatterEvent* event;
+		vector<FormatterEvent*>* evs;
+		vector<FormatterEvent*>::iterator i;
+		FormatterEvent* ev;
+		ExecutionObject* obj;
 
 		event = (FormatterEvent*)someEvent;
 		executionObject = (ExecutionObject*)(event->getExecutionObject());
 
-		/*clog << "FormatterConverter::eventStateChanged EO = '";
-		clog << executionObject->getId() << "'" << endl;*/
-
 		if (executionObject->instanceOf("ExecutionObjectSwitch")) {
+			if (transition == EventUtil::TR_STARTS) {
+				evs = ((ExecutionObjectSwitch*)executionObject)->getEvents();
+
+				i = evs->begin();
+				while (i != evs->end()) {
+					if ((*i)->instanceOf("SwitchEvent")) {
+						ev  = ((SwitchEvent*)(*i))->getMappedEvent();
+						if (ev == NULL) {
+							// there is only one way to start a switch with
+							// NULL mapped event: a instSame refernode inside 
+							// it was started
+							processExecutionObjectSwitch((ExecutionObjectSwitch*)executionObject);
+							ev  = ((SwitchEvent*)(*i))->getMappedEvent();
+							if (ev != NULL) {
+								//now we know the event is mapped, we can start the switchport
+								(*i)->start();
+							}
+						}
+					}
+					++i;
+				}
+
+				delete evs;
+			}
+
 			if (transition == EventUtil::TR_STOPS ||
 				    transition == EventUtil::TR_ABORTS) {
 
