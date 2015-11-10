@@ -84,3 +84,4 @@ libtool
 gingacc-system.pc
 vgcore.*
 /Debug/
+*.DS_Store
