@@ -1,78 +1,62 @@
-Ginga reference implementation by PUC-Rio/Laboratorio TeleMidia
-===============================================================
+# Build Ginga in Linux
 
-Build dependencies
-==================
+### Build dependencies
 
-* Optional dependencies
-  * LIBRT   (required if --enable-multiprocess is given)
-  * EXPAT   (required if --enable-components is given)
-  * LIBJPEG (required if --enable-multidevice is given)
-  * LIBZIP  (required if --enable-multidevice is given)
-  * LIBBPG  (required if --enable-libbpg is given) | Use this version: https://github.com/rafael2k/libbpg
-  * LIBRSVG (required if --enable-librsvg is given)
+* Optional dependencies  
+    * LIBRT   (required if --enable-multiprocess is given)  
+    * EXPAT   (required if --enable-components is given)  
+    * LIBJPEG (required if --enable-multidevice is given)  
+    * LIBZIP  (required if --enable-multidevice is given)  
+    * LIBRSVG (required if --enable-librsvg is given)
+    * LIBBPG  (required if --enable-libbpg is given) | Use this version: https://github.com/rafael2k/libbpg
 
 * Required dependencies
-  * XERCES-C
-  * CURL
-  * SDL2
-  * SDL2_image
-  * SDL2_ttf
-  * FFMPEG (compiled with: --prefix=/usr --incdir=/usr/include/ffmpeg --enable-static --enable-shared --enable-gpl --enable-postproc --disable-programs --disable-sdl --enable-pic --build-suffix=ffmpeg)
-    + libavcodec
-    + libavdevice
-    + libavfilter
-    + libavformat
-    + libavutil
-    + libswresample
-    + libswscale
-    + libpostproc
+    * XERCES-C
+    * CURL
+    * SDL2
+    * SDL2_image
+    * SDL2_ttf
+    * FFMPEG (compiled with: --prefix=/usr --incdir=/usr/include/ffmpeg --enable-static --enable-shared --enable-gpl --enable-postproc \
+              --disable-programs --disable-sdl --enable-pic --build-suffix=ffmpeg)
+        + libavcodec
+        + libavdevice
+        + libavfilter
+        + libavformat
+        + libavutil
+        + libswresample
+        + libswscale
+        + libpostproc
   * NCLUA
   * Berkelium
 
-Build example for Debian (and Debian-like as Ubuntu and Mint) using dependencies from Telemidia's repository
-============================================================================================================
+### A building exampple in a Debian or Debian-like (e.g Ubuntu, Mint) using dependencies from Telemidia's repository
 
 * Installing depencies
 
-  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-dev libzip-dev imagemagick libespeak-dev espeak-data
+  sudo apt-get install build-essential libjpeg-dev autoconf automake libtool libcurl4-openssl-dev libexpat1-dev libxerces-c-dev libsdl2-ttf-dev \
+    libsdl2-image-dev libsdl2-dev libzip-dev imagemagick libespeak-dev espeak-data librsvg2-dev libavcodec-dev  libavdevice-dev libavformat-dev \
+    libavutil-dev libavfilter-dev libpostproc-dev libswresample-dev libswscale-dev
   sudo sh -c 'echo "deb http://www.telemidia.puc-rio.br/~rafaeldiniz/ginga4linux/debian amd64/ " >> /etc/apt/sources.list.d/ginga.list'
   sudo apt-get update
-  sudo apt-get install berkelium ffmpegext nclua
+  sudo apt-get install berkelium nclua
 
-* Apply patch to use Telemidia's ffmpeg instead Debian/Ubuntu's libav.
-
-  ./debian/scripts/fix_configure_ac_ffmpeg.sh
-
-* Build ginga.
+* Build ginga, only for support play NCL aplications.
 
   ./bootstrap
-  ./configure --enable-data-processing --enable-linuxdvb --enable-espeak --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed"
+  ./configure --enable-data-processing --enable-multidevice --enable-espeak --enable-librsvg --prefix=/usr --libdir=/usr/lib LDFLAGS="-Wl,--no-as-needed"
   make -j4
   sudo make install
 
-Known build errors
-=====================
+### Known build errors
 
-* Ubuntu 14.04
-  This ubuntu version not has support to libzip2. The libzip2 is required by gingacc-multidevice. Do the following commands to correct.
-  * (i386)
-    http://launchpadlibrarian.net/155948292/libzip2_0.10.1-1.2_i386.deb &&\
-    sudo dpkg -i libzip2_0.10.1-1.2_i386.deb
-  * (amd64)
-    http://launchpadlibrarian.net/155948137/libzip2_0.10.1-1.2_amd64.deb &&\
-    sudo dpkg -i libzip2_0.10.1-1.2_amd64.deb
+* The berkelium package from Telemidia's repository is only for amd64.
 
-* Ubuntu 15.04
-  This ubuntu version not has support to libcrypt11. The libgcrypt11 is required by berkelium. Do the following commands to correct.
-  * (i386)
-    wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_i386.deb &&\
-    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_i386.deb
-  * (amd64)
-    wget https://launchpad.net/ubuntu/+archive/primary/+files/libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb &&\
-    sudo dpkg -i libgcrypt11_1.5.3-2ubuntu4.2_amd64.deb
+* libzip2 in Ubuntu 14.04 and 15.10
+    These ubuntu versions not support libzip2(required by gingacc-multidevice). Install libzip2 from launchpad repository as follow:
+    * wget http://launchpadlibrarian.net/201329489/libzip2_0.11.2-1.2_amd64.deb
+    * sudo dpkg -i libzip2_0.10.1-1.2_amd64.deb
 
-Import to eclipse CDT
-=====================
-One way to code in ginga source is using Eclipse CDT(www.eclipse.org/cdt) doing:
-import -> C/C++ -> "Existing Code as Makefile Project" -> chose "GNU Autotools toolchain" -> finish.
+* FFmpeg in Ubuntu 14.04, 14.10 and 15.04
+    These ubuntu versions not support ffmpeg libraries. Install ffmpegext from Telemidia's repository and apply the patch as follow
+    * sudo apt-get install ffmpegext 
+    * ./debian/scripts/fix_configure_ac_ffmpeg.sh
