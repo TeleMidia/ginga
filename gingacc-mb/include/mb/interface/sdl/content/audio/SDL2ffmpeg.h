@@ -76,7 +76,6 @@ extern "C" {
 #include "libavutil/avstring.h"
 #include "libavutil/time.h"
 #include "libavformat/avformat.h"
-#include "libavdevice/avdevice.h"
 #include "libswscale/swscale.h"
 #include "libavutil/opt.h"
 #include "libavcodec/avfft.h"

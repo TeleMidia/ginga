@@ -8,7 +8,6 @@ AC_CONFIG_SRCDIR([telemidia-util/src/functions.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 m4_define([avcodec_required_version],    [55.39.101])
-m4_define([avdevice_required_version],   [55.5.100])
 m4_define([avfilter_required_version],   [3.90.100])
 m4_define([avformat_required_version],   [55.19.104])
 m4_define([avutil_required_version],     [52.48.101])
@@ -27,7 +26,6 @@ m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libbpg_required_version],     [0.9.5])
 
 AC_SUBST([AVCODEC_REQUIRED_VERSION], avcodec_required_version)
-AC_SUBST([AVDEVICE_REQUIRED_VERSION], avdevice_required_version)
 AC_SUBST([AVFILTER_REQUIRED_VERSION], avfilter_required_version)
 AC_SUBST([AVFORMAT_REQUIRED_VERSION], avformat_required_version)
 AC_SUBST([AVUTIL_REQUIRED_VERSION], avutil_required_version)
@@ -292,7 +290,6 @@ PKG_CHECK_MODULES([X11], [x11], [],
 # Check for FFmpeg libs.
 PKG_CHECK_MODULES([FFMPEG],
  [libavcodec >= avcodec_required_version
-  libavdevice >= avdevice_required_version
   libavformat >= avformat_required_version
   libavutil >= avutil_required_version
   libavfilter >= avfilter_required_version
@@ -302,7 +299,6 @@ PKG_CHECK_MODULES([FFMPEG],
  [AC_MSG_ERROR([
 *** The following FFmpeg libraries are required:
 *** libavcodec >= avcodec_required_version
-*** libavdevice >= avdevice_required_version
 *** libavformat >= avformat_required_version
 *** libavutil >= avutil_required_version
 *** libavfilter >= avfilter_required_version
