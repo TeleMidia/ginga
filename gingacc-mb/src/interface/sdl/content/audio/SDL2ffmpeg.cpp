@@ -130,8 +130,8 @@ namespace mb {
 			avcodec_register_all();
 		    av_register_all();
 		    avformat_network_init();
-		    avdevice_register_all();
-			avfilter_register_all();
+		    //avdevice_register_all();
+		    avfilter_register_all();
 
 		    av_lockmgr_register(SDL2ffmpeg::lockmgr);
 		}
