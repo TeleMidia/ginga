@@ -2,11 +2,11 @@
 
 ### Build dependencies
 
-* Optional dependencies  
-    * LIBRT   (required if --enable-multiprocess is given)  
-    * EXPAT   (required if --enable-components is given)  
-    * LIBJPEG (required if --enable-multidevice is given)  
-    * LIBZIP  (required if --enable-multidevice is given)  
+* Optional dependencies
+    * LIBRT   (required if --enable-multiprocess is given)
+    * EXPAT   (required if --enable-components is given)
+    * LIBJPEG (required if --enable-multidevice is given)
+    * LIBZIP  (required if --enable-multidevice is given)
     * LIBRSVG (required if --enable-librsvg is given)
     * LIBBPG  (required if --enable-libbpg is given) | Use this version: https://github.com/rafael2k/libbpg
 
@@ -51,12 +51,12 @@
 
 * The berkelium package from Telemidia's repository is only for amd64.
 
-* libzip2 in Ubuntu 14.04 and 15.10
+* libzip2 in Ubuntu 14.04, 14.10, 15.04, 15.10 and 16.04
     These ubuntu versions not support libzip2(required by gingacc-multidevice). Install libzip2 from launchpad repository as follow:
     * wget http://launchpadlibrarian.net/201329489/libzip2_0.11.2-1.2_amd64.deb
-    * sudo dpkg -i libzip2_0.10.1-1.2_amd64.deb
+    * sudo dpkg -i libzip2_0.11.2-1.2_amd64.deb
 
 * FFmpeg in Ubuntu 14.04, 14.10 and 15.04
     These ubuntu versions not support ffmpeg libraries. Install ffmpegext from Telemidia's repository and apply the patch as follow
-    * sudo apt-get install ffmpegext 
+    * sudo apt-get install ffmpegext
     * ./debian/scripts/fix_configure_ac_ffmpeg.sh
