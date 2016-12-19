@@ -29,24 +29,12 @@ else
 LDADD =\
   ../gingacc-contextmanager/libgingacccontextmanager.la\
   ../gingacc-ic/libgingaccic.la\
-  ../gingacc-ic/libgingacciccurlic.la\
   ../gingacc-mb/libgingaccmb.la\
   ../gingacc-mb/libgingaccmbdecsdlap.la\
   ../gingacc-mb/libgingaccmbdecsdlav.la\
   ../gingacc-mb/libgingaccmbdecsdlf.la\
   ../gingacc-mb/libgingaccmbdecsdlimg.la\
   ../gingacc-mb/libgingaccmbsdl.la\
-  ../gingacc-player/libgingaccplaavp.la\
-  ../gingacc-player/libgingaccplacha.la\
-  ../gingacc-player/libgingaccplaimg.la\
-  ../gingacc-player/libgingaccplalua.la\
-  ../gingacc-player/libgingaccplapav.la\
-  ../gingacc-player/libgingaccplaplt.la\
-  ../gingacc-player/libgingaccplasrt.la\
-  ../gingacc-player/libgingaccplatim.la\
-  ../gingacc-player/libgingaccplatxt.la\
-  ../gingacc-player/libgingaccplawdg.la\
-  ../gingacc-player/libgingaccplayer.la\
   ../gingacc-system/libgingaccsystem.la\
   ../gingalssm/libgingalssm.la\
   ../gingancl/libgingancl.la\
@@ -60,6 +48,7 @@ LDADD =\
   ../gingancl/libginganclluapadapter.la\
   ../gingancl/libginganclmd.la\
   ../gingancl/libginganclmodel.la\
+  ../gingacc-player/libgingaccplayer.la\
   ../gingancl/libginganclnclpadapter.la\
   ../gingancl/libginganclpavpadapter.la\
   ../gingancl/libginganclpltpadapter.la\
@@ -92,7 +81,6 @@ endif
 if BUILD_BERKELIUM
 LDADD +=\
   ../gingancl/libginganclbklpadapter.la\
-  ../gingacc-player/libgingaccplabkl.la\
   $(NULL)
 endif
 

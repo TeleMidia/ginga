@@ -13,25 +13,9 @@ AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS) $(CURL_LIBS)
 
 gingacciclib_LTLIBRARIES =\
   libgingaccic.la\
-  libgingacciccurlic.la\
   $(NULL)
 
-# gingacc-ic
 libgingaccic_la_SOURCES =\
   src/InteractiveChannelManager.cpp\
-  $(NULL)
-
-# gingacc-ic-curlic
-libgingacciccurlic_la_SOURCES =\
   src/curlic/CurlInteractiveChannel.cpp\
   $(NULL)
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingaccicinclude_HEADERS =\
-  include/ic/IInteractiveChannel.h\
-  include/ic/IInteractiveChannelListener.h\
-  include/ic/IInteractiveChannelManager.h\
-  include/ic/InteractiveChannelManager.h\
-  $(NULL)
-endif
