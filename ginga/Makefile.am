@@ -32,24 +32,8 @@ LDADD =\
   ../gingacc-mb/libgingaccmb.la\
   ../gingacc-system/libgingaccsystem.la\
   ../gingalssm/libgingalssm.la\
-  ../gingancl/libgingancl.la\
-  ../gingancl/libginganclaavpadapter.la\
-  ../gingancl/libgingancladaptation.la\
-  ../gingancl/libgingancladapter.la\
-  ../gingancl/libginganclapppadapter.la\
-  ../gingancl/libginganclchapadapter.la\
-  ../gingancl/libginganclemconverter.la\
-  ../gingancl/libginganclimgpadapter.la\
-  ../gingancl/libginganclluapadapter.la\
-  ../gingancl/libginganclmd.la\
   ../gingancl/libginganclmodel.la\
   ../gingacc-player/libgingaccplayer.la\
-  ../gingancl/libginganclnclpadapter.la\
-  ../gingancl/libginganclpavpadapter.la\
-  ../gingancl/libginganclpltpadapter.la\
-  ../gingancl/libginganclprefetch.la\
-  ../gingancl/libginganclsubpadapter.la\
-  ../gingancl/libgingancltimpadapter.la\
   ../ncl30-converter/libncl30confrancl.la\
   ../ncl30/libncl30.la\
   ../telemidia-util/libtelemidiautil.la\
