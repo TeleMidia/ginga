@@ -14,16 +14,11 @@ AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS) $(JPEG_LIBS)
 
 gingaccmblib_LTLIBRARIES =\
   libgingaccmb.la\
-  libgingaccmbsdl.la\
-  libgingaccmbdecsdlap.la\
-  libgingaccmbdecsdlimg.la\
-  libgingaccmbdecsdlf.la\
-  libgingaccmbdecsdlav.la\
   $(NULL)
 
 # gingacc-mb
-libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
-libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
+libgingaccmb_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS) $(X11_CFLAGS) $(SDL2IMAGE_CFLAGS) $(SDL2TTF_CFLAGS)
+libgingaccmb_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS) $(SDL2IMAGE_LIBS) $(SDL2TTF_LIBS)
 
 libgingaccmb_la_SOURCES =\
   src/ScreenManagerFactory.cpp\
@@ -47,11 +42,7 @@ endif
 libgingaccmb_la_SOURCES +=\
 	$(NULL)	
 
-# gingacc-mb-sdl (SDL)
-libgingaccmbsdl_la_CXXFLAGS = $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(X11_CFLAGS) $(FFMPEG_CFLAGS)
-libgingaccmbsdl_la_LDFLAGS = $(AM_LDFLAGS) $(SDL2_LIBS) $(X11_LIBS) $(FFMPEG_LIBS) 
-
-libgingaccmbsdl_la_SOURCES =\
+libgingaccmb_la_SOURCES +=\
   src/interface/sdl/SDLDeviceScreen.cpp\
   src/interface/sdl/input/SDLEventBuffer.cpp\
   src/interface/sdl/input/SDLInputEvent.cpp\
@@ -60,103 +51,44 @@ libgingaccmbsdl_la_SOURCES =\
   src/interface/sdl/content/SDLConvert.cpp\
   $(NULL)
 
-# gingacc-mb-dec-sdl-ap (SDL Audio)
-libgingaccmbdecsdlap_la_CXXFLAGS =\
-  $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
-
-libgingaccmbdecsdlap_la_LDFLAGS =\
-  $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
-
-libgingaccmbdecsdlap_la_SOURCES =\
+libgingaccmb_la_SOURCES +=\
   src/interface/sdl/content/audio/SDLAudioProvider.cpp\
   src/interface/sdl/content/audio/SDL2ffmpeg.cpp\
   $(NULL)
 
-# gingacc-mb-dec-sdl-img (SDL Image)
-libgingaccmbdecsdlimg_la_CXXFLAGS =\
-  $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(SDL2IMAGE_CFLAGS)
 if BUILD_SVG
-libgingaccmbdecsdlimg_la_CXXFLAGS += $(LIBRSVG_CFLAGS)
-endif
-if BUILD_LIBBPG
-libgingaccmbdecsdlimg_la_CXXFLAGS += $(LIBBPG_CFLAGS)
+libgingaccmb_la_CXXFLAGS += $(LIBRSVG_CFLAGS)
 endif
 
-libgingaccmbdecsdlimg_la_LDFLAGS =\
-  $(AM_LDFLAGS) $(SDL2_LIBS) $(SDL2IMAGE_LIBS)
-if BUILD_SVG
-libgingaccmbdecsdlimg_la_LDFLAGS += $(LIBRSVG_LIBS)
-endif
 if BUILD_LIBBPG
-libgingaccmbdecsdlimg_la_LDFLAGS += $(LIBBPG_LIBS)
+libgingaccmb_la_CXXFLAGS += $(LIBBPG_CFLAGS)
 endif
 
-libgingaccmbdecsdlimg_la_SOURCES =\
+if BUILD_SVG
+libgingaccmb_la_LDFLAGS += $(LIBRSVG_LIBS)
+endif
+if BUILD_LIBBPG
+libgingaccmb_la_LDFLAGS += $(LIBBPG_LIBS)
+endif
+
+libgingaccmb_la_SOURCES +=\
   src/interface/sdl/content/image/SDLImageProvider.cpp\
   $(NULL)
 if BUILD_SVG
-libgingaccmbdecsdlimg_la_SOURCES += src/interface/sdl/content/image/SDLSvgDecoder.cpp
+libgingaccmb_la_SOURCES += src/interface/sdl/content/image/SDLSvgDecoder.cpp
 endif
+
 if BUILD_LIBBPG
-libgingaccmbdecsdlimg_la_SOURCES += src/interface/sdl/content/image/SDLBpgDecoder.cpp
+libgingaccmb_la_SOURCES += src/interface/sdl/content/image/SDLBpgDecoder.cpp
 endif
 
-# gingacc-mb-dec-sdl-f (SDL Text)
-libgingaccmbdecsdlf_la_CXXFLAGS =\
-  $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(SDL2TTF_CFLAGS)
-
-libgingaccmbdecsdlf_la_LDFLAGS =\
-  $(AM_LDFLAGS) $(SDL2_LIBS) $(SDL2TTF_LIBS)
-
-libgingaccmbdecsdlf_la_SOURCES =\
+libgingaccmb_la_SOURCES +=\
   src/interface/sdl/content/text/SDLFontProvider.cpp\
   $(NULL)
 
-# gingacc-mb-dec-sdl-av (SDL Audio/Video)
-libgingaccmbdecsdlav_la_CXXFLAGS =\
-  $(AM_CXXFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
-
-libgingaccmbdecsdlav_la_LDFLAGS =\
-  $(AM_LDFLAGS) $(SDL2_LIBS) $(FFMPEG_LIBS)
-
-libgingaccmbdecsdlav_la_LIBADD =\
-  libgingaccmbdecsdlap.la\
-  $(NULL)
-
-libgingaccmbdecsdlav_la_SOURCES =\
+libgingaccmb_la_SOURCES +=\
   src/interface/sdl/content/video/SDLVideoProvider.cpp\
   $(NULL)
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingaccmbinclude_HEADERS =\
-  include/mb/IInputManager.h\
-  include/mb/ILocalScreenManager.h\
-  include/mb/ScreenManagerFactory.h\
-  include/mb/IMBDefs.h\
-  include/mb/LocalScreenManager.h\
-  $(NULL)
-
-interfaceincludedir = $(gingaccmbincludedir)/interface
-interfaceinclude_HEADERS =\
-  include/mb/interface/CodeMap.h\
-  include/mb/interface/ICmdEventListener.h\
-  include/mb/interface/IContinuousMediaProvider.h\
-  include/mb/interface/IDataBuffer.h\
-  include/mb/interface/IDeviceScreen.h\
-  include/mb/interface/IDiscreteMediaProvider.h\
-  include/mb/interface/IEventBuffer.h\
-  include/mb/interface/IFontProvider.h\
-  include/mb/interface/IImageProvider.h\
-  include/mb/interface/IInputEvent.h\
-  include/mb/interface/IInputEventListener.h\
-  include/mb/interface/IMediaProvider.h\
-  include/mb/interface/IMotionEventListener.h\
-  include/mb/interface/IProviderListener.h\
-  include/mb/interface/ISurface.h\
-  include/mb/interface/IWindow.h\
-  $(NULL)
-endif
 
 ############################## Configuration ###############################
 gingaccmbconfdir = $(gingaconfdir)/mb/config
@@ -190,11 +122,6 @@ gingacc_mb_CPPFLAGS =\
 gingacc_mb_LDADD = \
   ../gingacc-system/libgingaccsystem.la\
   ../gingacc-mb/libgingaccmb.la\
-  ../gingacc-mb/libgingaccmbdecsdlap.la\
-  ../gingacc-mb/libgingaccmbdecsdlav.la\
-  ../gingacc-mb/libgingaccmbdecsdlf.la\
-  ../gingacc-mb/libgingaccmbdecsdlimg.la\
-  ../gingacc-mb/libgingaccmbsdl.la\
   ../telemidia-util/libtelemidiautil.la\
   $(NULL)	
 endif

@@ -30,11 +30,6 @@ LDADD =\
   ../gingacc-contextmanager/libgingacccontextmanager.la\
   ../gingacc-ic/libgingaccic.la\
   ../gingacc-mb/libgingaccmb.la\
-  ../gingacc-mb/libgingaccmbdecsdlap.la\
-  ../gingacc-mb/libgingaccmbdecsdlav.la\
-  ../gingacc-mb/libgingaccmbdecsdlf.la\
-  ../gingacc-mb/libgingaccmbdecsdlimg.la\
-  ../gingacc-mb/libgingaccmbsdl.la\
   ../gingacc-system/libgingaccsystem.la\
   ../gingalssm/libgingalssm.la\
   ../gingancl/libgingancl.la\
@@ -56,8 +51,6 @@ LDADD =\
   ../gingancl/libginganclsubpadapter.la\
   ../gingancl/libgingancltimpadapter.la\
   ../ncl30-converter/libncl30confrancl.la\
-  ../ncl30-converter/libncl30confraxml.la\
-  ../ncl30-converter/libncl30connclncm.la\
   ../ncl30/libncl30.la\
   ../telemidia-util/libtelemidiautil.la\
   $(NULL)
