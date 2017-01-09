@@ -45,11 +45,3 @@ libgingalssm_la_SOURCES =\
   src/DataWrapperListener.cpp\
   src/StcWrapper.cpp\
   $(NULL)
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingalssminclude_HEADERS =\
-  include/gingalssm/IPresentationEngineManager.h\
-  include/gingalssm/ICommonCoreManager.h\
-  $(NULL)
-endif

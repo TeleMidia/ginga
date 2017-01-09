@@ -45,33 +45,6 @@ libgingacccmprofiler_la_SOURCES =\
   src/profiler/ComponentProfiler.cpp\
   $(NULL)
 
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingacccminclude_HEADERS =\
-  include/cm/IComponentManager.h\
-  $(NULL)
-
-assemblerincludedir = $(gingacccmincludedir)/assembler
-assemblerinclude_HEADERS =\
-  include/cm/assembler/IComponentDescription.h\
-  $(NULL)
-
-componentincludedir = $(gingacccmincludedir)/component
-componentinclude_HEADERS =\
-  include/cm/component/IComponent.h\
-  $(NULL)
-
-parserincludedir = $(gingacccmincludedir)/parser
-parserinclude_HEADERS =\
-  include/cm/parser/IComponentParser.h\
-  $(NULL)
-
-profilerincludedir = $(gingacccmincludedir)/profiler
-profilerinclude_HEADERS =\
-  include/cm/profiler/IComponentProfiler.h\
-  $(NULL)
-endif
-
 ############################## Configuration ###############################
 
 files/componentDescription.xml: files/componentDescription.xml.in

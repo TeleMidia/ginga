@@ -34,29 +34,6 @@ libgingacctuner_la_SOURCES +=\
   $(NULL)
 endif
 
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingacctunerinclude_HEADERS =\
-  include/tuner/ITuner.h\
-  include/tuner/ITunerListener.h\
-  include/tuner/INetworkInterface.h\
-  $(NULL)
-
-providersincludedir = $(gingacctunerincludedir)/providers
-providersinclude_HEADERS =\
-  include/tuner/providers/IDataProvider.h\
-  include/tuner/providers/IChannel.h\
-  include/tuner/providers/ISTCProvider.h\
-  include/tuner/providers/IProviderListener.h\
-  include/tuner/providersNetworkProvider.h\
-  $(NULL)
-
-frontendsincludedir = $(providersincludedir)/frontends
-frontendsinclude_HEADERS =\
-  include/tuner/providers/frontends/IFrontendFilter.h\
-  $(NULL)
-endif
-
 ############################## Configuration ###############################
 gingacctunerconfdir = $(gingaconfdir)/tuner
 gingacctunerconf_DATA =\

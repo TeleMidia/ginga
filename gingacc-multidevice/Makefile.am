@@ -34,25 +34,3 @@ libgingaccmd_la_SOURCES =\
   src/services/network/TcpSocketService.cpp\
   src/services/network/TcpClientConnection.cpp\
   $(NULL)
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingaccmultideviceinclude_HEADERS =\
-  include/multidevice/IRemoteDeviceManager.h\
-  include/multidevice/IRemoteDeviceListener.h\
-  include/multidevice/IRemoteDevice.h\
-  $(NULL)
-
-servicesincludedir = $(gingaccmultideviceincludedir)/services
-servicesinclude_HEADERS =\
-  include/multidevice/services/IDeviceDomain.h\
-  include/multidevice/services/RemoteEventService.h\
-  $(NULL)
-
-networkincludedir = $(servicesincludedir)/network
-networkinclude_HEADERS =\
-  include/multidevice/services/network/ISocketService.h\
-  include/multidevice/services/network/TcpClientConnection.h\
-  include/multidevice/services/network/TcpSocketService.h\
-  $(NULL)
-endif

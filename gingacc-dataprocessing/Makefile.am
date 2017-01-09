@@ -61,36 +61,3 @@ libgingaccdataprocncl_la_SOURCES =\
 
 # gingacc-data-proc-ncl-edit
 libgingaccdataprocncledit_la_SOURCES = src/ncl/edit/EventDescriptor.cpp
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingaccdataprocessinginclude_HEADERS =\
-  include/dataprocessing/IDataProcessor.h\
-  include/dataprocessing/IEPGListener.h\
-  include/dataprocessing/IEPGProcessor.h\
-  $(NULL)
-
-dsmccincludedir = $(gingaccdataprocessingincludedir)/dsmcc
-dsmccinclude_HEADERS =\
-  include/dataprocessing/dsmcc/IStreamEvent.h\
-  include/dataprocessing/dsmcc/IStreamEventListener.h\
-  $(NULL)
-
-objectincludedir = $(dsmccincludedir)/carousel/object
-objectinclude_HEADERS =\
-  include/dataprocessing/dsmcc/carousel/object/IObjectListener.h\
-  $(NULL)
-
-nclincludedir = $(gingaccdataprocessingincludedir)/ncl
-nclinclude_HEADERS =\
-  include/dataprocessing/ncl/IDataFile.h\
-  include/dataprocessing/ncl/IMetadata.h\
-  include/dataprocessing/ncl/INCLStructure.h\
-  include/dataprocessing/ncl/INCLSectionProcessor.h\
-  $(NULL)
-
-editincludedir = $(nclincludedir)/edit
-editinclude_HEADERS =\
-  include/dataprocessing/ncl/edit/EventDescriptor.h\
-  $(NULL)
-endif

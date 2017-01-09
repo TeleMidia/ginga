@@ -12,15 +12,3 @@ libtelemidiautil_la_SOURCES =\
   src/Color.cpp\
   src/functions.cpp\
   $(NULL)
-
-################################# Headers ##################################
-if INSTALL_HEADERS
-telemidiautilinclude_HEADERS =\
-  include/util/Base64.h\
-  include/util/Color.h\
-  include/util/IColor.h\
-  include/util/Observable.h\
-  include/util/Observer.h\
-  include/util/functions.h\
-  $(NULL)
-endif
