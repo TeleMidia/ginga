@@ -54,7 +54,7 @@ EOF
   $old="\Q$old\E";
 
   $new=<<'EOF'
-/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (C) 1989-2017 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
