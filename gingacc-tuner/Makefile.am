@@ -1,6 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-################################ Libraries #################################
 AM_CPPFLAGS =\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   -DGINGA_TUNER_PATH='"$(gingaconfdir)/tuner/tuner.ini"'\
@@ -31,11 +30,3 @@ libgingacctuner_la_SOURCES +=\
   src/providers/frontends/isdbt/RingBuffer.c\
   $(NULL)
 endif
-
-############################## Configuration ###############################
-gingacctunerconfdir = $(gingaconfdir)/tuner
-gingacctunerconf_DATA =\
-  files/network/tuner.ini\
-  files/network/isdbt.ini\
-  files/img/tuning.png\
-  $(NULL)

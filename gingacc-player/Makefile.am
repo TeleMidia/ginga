@@ -1,6 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-################################ Libraries #################################
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MB)\
@@ -78,21 +77,4 @@ libgingaccplayer_la_SOURCES +=\
 
 libgingaccplayer_la_SOURCES +=\
   src/widget/ShowButton.cpp\
-  $(NULL)
-
-
-############################## Configuration ###############################
-gingaccplayerconfdir = $(gingaconfdir)
-
-buttondir = $(gingaccplayerconfdir)/img/button
-button_DATA =\
-  files/images/pauseButton.png\
-  files/images/playButton.png\
-  files/images/stopButton.png\
-  $(NULL)
-
-fontdir = $(gingaccplayerconfdir)/font
-font_DATA =\
-  files/fonts/decker.ttf\
-  files/fonts/vera.ttf\
   $(NULL)
