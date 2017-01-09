@@ -59,12 +59,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "tsparser/AIT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "tuner/Tuner.h"
-#endif
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -83,13 +78,7 @@ int main(int argc, char** argv, char** envp) {
 	pipeName = "dtv_channel.ts";
 	fileName = "/tmp/TSPARSERTEST.ts";
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	tuner = ((TunerCreator*)(cm->getObject("Tuner")))(0);
-#else
 	tuner = new Tuner(0);
-#endif
-
 	demuxer = new Demuxer(tuner);
 
 	((ITuner*)tuner)->tune();

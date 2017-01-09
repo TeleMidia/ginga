@@ -100,12 +100,7 @@ namespace tv {
 		CascadingDescriptor* descriptor;
 		string soundLevel;
 
-#if HAVE_COMPONENTS
-		playerCompName = "ProgramAV";
-		player = ((ProgramHandlerCreator*)(cm->getObject(playerCompName)))(myScreen);
-#else
 		player = ProgramAV::getInstance(myScreen);
-#endif
 
 		FormatterPlayerAdapter::createPlayer();
 		updateAVBounds();

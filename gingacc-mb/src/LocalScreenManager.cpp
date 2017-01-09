@@ -57,11 +57,6 @@ extern "C" {
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
-
 #if HAVE_DIRECTFB
 #include "mb/interface/dfb/DFBDeviceScreen.h"
 #endif //HAVE_DIRECTFB
@@ -74,8 +69,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "mb/interface/term/TermDeviceScreen.h"
 #endif //HAVE_TERM
 
-#endif //HAVE_COMPONENTS
-
 #ifdef ENABLE_EXTERNAL_MB
 #include "mb/DistributedScreenManager.h"
 #endif
@@ -87,9 +80,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 
 	set<IInputEventListener*> LocalScreenManager::iListeners;
 	pthread_mutex_t LocalScreenManager::ilMutex;
@@ -498,29 +488,17 @@ namespace mb {
 					argc++;
 				}
 
-#if HAVE_COMPONENTS
-				screen = ((ScreenCreator*)(cm->getObject("SDLDeviceScreen")))(
-						argc, mbArgs, screenId, embedWin, externalRenderer);
-
-#else
 #if HAVE_SDL
 				screen = new SDLDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_SDL
-#endif //HAVE_COMPONENTS
 				break;
 
 			case GMBST_TERM:
-#if HAVE_COMPONENTS
-				screen = ((ScreenCreator*)(cm->getObject("TermDeviceScreen")))(
-						0, NULL, screenId, embedWin, externalRenderer);
-
-#else
 #if HAVE_TERM
 				screen = new TermDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_TERM
-#endif //HAVE_COMPONENTS
 				break;
 
 			case GMBST_DFB:
@@ -571,16 +549,10 @@ namespace mb {
 					argc++;
 				}
 
-#if HAVE_COMPONENTS
-				screen = ((ScreenCreator*)(cm->getObject("DFBDeviceScreen")))(
-						argc, mbArgs, screenId, embedWin, externalRenderer);
-
-#else
 #if HAVE_DIRECTFB
 				screen = new DFBDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
 #endif //HAVE_DIRECTFB
-#endif //HAVE_COMPONENTS
 				break;
 
 			default:
@@ -657,13 +629,11 @@ namespace mb {
 #endif
 		}
 
-#if !HAVE_COMPONENTS
 		if (mbSystemType == GMBST_DFLT) {
 			mbSystemType = GMBST_SDL;
 		}
 
 		return mbSystemType;
-#endif
 
 		lockSysNames();
 
@@ -710,26 +680,6 @@ namespace mb {
 
 		clog << "LocalScreenManager::isAvailable checking if '" << mbSysType;
 		clog << "' is available" << endl;
-
-#if HAVE_COMPONENTS
-		switch (mbSysType) {
-			case GMBST_SDL:
-				screenName = "SDLDeviceScreen";
-				break;
-
-			case GMBST_TERM:
-				screenName = "TermDeviceScreen";
-				break;
-
-			case GMBST_DFB:
-				screenName = "DFBDeviceScreen";
-				break;
-		}
-
-		if (screenName != "") {
-			hasSys = cm->isAvailable(screenName);
-		}
-#endif
 
 		return hasSys;
 	}

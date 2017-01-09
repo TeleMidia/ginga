@@ -49,15 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "tuner/Tuner.h"
 #include "tsparser/Demuxer.h"
 #include "tsparser/PipeFilter.h"
 #include "dataprocessing/DataProcessor.h"
-#endif
 
 #include "system/time/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
@@ -107,20 +102,9 @@ int main(int argc, char** argv) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
-#if HAVE_COMPONENTS
-	tuner         = ((TunerCreator*)(cm->getObject("Tuner")))(0);
-	demuxer       = ((demCreator*)(cm->getObject("Demuxer")))((ITuner*)tuner);
-	dataProcessor = ((dpCreator*)(cm->getObject("DataProcessor")))();
-
-#else
 	tuner         = new Tuner(0);
 	demuxer       = new Demuxer(tuner);
 	dataProcessor = new DataProcessor();
-#endif
 
 	nptProcessor  = new NPTProcessor(NULL);
 	dsmccSection  = new DSMCCSectionPayload(NULL, 0);

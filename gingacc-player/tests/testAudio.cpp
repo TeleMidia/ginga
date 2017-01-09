@@ -116,20 +116,6 @@ void testPlayer(IScreenManager* dm, GingaScreenID screen) {
 	wwww->draw();
 	wwww->show();
 
-#if HAVE_COMPONENTS
-	aud1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "rock.mp3", false);
-
-	aud2 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "techno.mp3", false);
-
-	aud3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "cartoon.mp3", false);
-
-	aud4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "choro.mp3", false);
-#endif
-
 	aud1->setOutWindow(w->getId());
 	s = aud1->getSurface();
 	if (s != NULL && s->setParentWindow((void*)w)) {
@@ -170,14 +156,9 @@ int main(int argc, char** argv, char** envp) {
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	cout << "gingacc-player test works only with enabled component support.";
 	cout << endl;
 	exit(0);
-#endif
 
 	int i;
 	bool testAllScreens = false;

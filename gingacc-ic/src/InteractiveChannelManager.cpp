@@ -52,10 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #if HAVE_CURL
 #include "ic/curlic/CurlInteractiveChannel.h"
 #endif //HAVE_CURL
@@ -64,8 +60,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "ic/ccrtpic/CCRTPInteractiveChannel.h"
 #endif //HAVE_CCRTP
 
-#endif //HAVE_COMPONENTS
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -73,10 +67,6 @@ namespace ginga {
 namespace core {
 namespace ic {
 	InteractiveChannelManager* InteractiveChannelManager::_instance = NULL;
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	InteractiveChannelManager::InteractiveChannelManager() {
 		ics     = new set<IInteractiveChannel*>;
 		urisIcs = new map<string, IInteractiveChannel*>;
@@ -96,31 +86,6 @@ namespace ic {
 		string symbol;
 		set<string>::iterator i;
 
-#if HAVE_COMPONENTS
-		objects = cm->getObjectsFromInterface("IInteractiveChannel");
-		if (objects == NULL) {
-			clog << "InteractiveChannelManager::hasInteractiveChannel";
-			clog << " objects = NULL => return false" << endl;
-			return false;
-		}
-
-		i = objects->begin();
-		while (i != objects->end()) {
-			clog << "Get symbol! " << objects->size() << endl;
-			symbol = *i;
-			clog << "Trying to create '" << symbol << "'" << endl;
-			ic = ((ICCreator*)(cm->getObject(symbol)))();
-			if (ic != NULL) {
-				if (ic->hasConnection()) {
-					delete ic;
-					return true;
-				}
-
-				delete ic;
-			}
-			++i;
-		}
-#else
 #if HAVE_CURL
 		ic = new CurlInteractiveChannel();
 		if (ic->hasConnection()) {
@@ -128,7 +93,6 @@ namespace ic {
 			return true;
 		}
 		delete ic;
-#endif
 #endif
 		clog << "InteractiveChannelManager::hasInteractiveChannel";
 		clog << " return false" << endl;
@@ -181,20 +145,12 @@ namespace ic {
 
 		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
 #if HAVE_CURL
-#if HAVE_COMPONENTS
-			ic = ((ICCreator*)(cm->getObject("CurlInteractiveChannel")))();
-#else
 			ic = new CurlInteractiveChannel();
-#endif
 #endif
 
 		} else if (rUri.length() > 6 && rUri.substr(0, 6) == "rtp://") {
 #if HAVE_CCRTP
-#if HAVE_COMPONENTS
-			ic = ((ICCreator*)(cm->getObject("CCRTPInteractiveChannel")))();
-#else
 			ic = new CCRTPInteractiveChannel();
-#endif
 #endif
 		}
 

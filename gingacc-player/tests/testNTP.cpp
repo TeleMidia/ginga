@@ -52,10 +52,8 @@ http://www.telemidia.puc-rio.br
 #include <iostream>
 using namespace std;
 
-#if !HAVE_COMPONENTS
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-#endif
 
 int main(int argc, char *argv[]) {
 	NTPPlayer* ntpPlayer;
@@ -65,12 +63,7 @@ int main(int argc, char *argv[]) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	dm = ScreenManagerFactory::getInstance();
-#endif
 
 	screen = dm->createScreen(argc, argv);
 

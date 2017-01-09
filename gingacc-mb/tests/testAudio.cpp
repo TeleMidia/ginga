@@ -56,11 +56,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 #include "mb/LocalScreenManager.h"
 #include "mb/interface/IContinuousMediaProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -131,15 +126,9 @@ int main(int argc, char** argv) {
 	SystemCompat::setLogTo(SystemCompat::LOG_STDO);
 	initTimeStamp();
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-#else
 	cout << "gingacc-mb test works only with enabled component support";
 	cout << endl;
 	exit(0);
-#endif
 
 	for (i = 1; i < argc; i++) {
 		if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {

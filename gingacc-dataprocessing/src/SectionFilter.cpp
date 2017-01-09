@@ -55,13 +55,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "tsparser/TransportSection.h"
-#else
-#include "tsparser/TransportSection.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -69,10 +63,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 
 	SectionFilter::SectionFilter() {
 		this->listener = NULL;
@@ -299,13 +289,7 @@ namespace dataprocessing {
 
 		i = hFilteredSections.find(pid);
 		if (i == hFilteredSections.end()) {
-#if HAVE_COMPONENTS
-			filteredSection = ((TSSectionCreator*)(cm->getObject(
-					"TransportSection")))(buf, len);
-
-#else
 			filteredSection = new TransportSection(buf, len);
-#endif
 			filteredSection->setESId(pid);
 			hFilteredSections[pid] = filteredSection;
 			i = hFilteredSections.find(pid);
@@ -425,16 +409,8 @@ namespace dataprocessing {
 				handler->headerSize += headerSizeLeft;
 				if (handler->headerSize == 8) {
 
-#if HAVE_COMPONENTS
-					handler->section = ((TSSectionCreator*)(
-							cm->getObject("TransportSection")))(
-									handler->sectionHeader, 
-									handler->headerSize);
-
-#else
 					handler->section = new TransportSection(
 							handler->sectionHeader, handler->headerSize);
-#endif
 
 					handler->section->addData(data + headerSizeLeft, payloadSize - headerSizeLeft);
 					setSectionParameters(pack);
@@ -527,14 +503,8 @@ namespace dataprocessing {
 					payloadSize);
 
 			/* Creates the new section */
-#if HAVE_COMPONENTS
-			handler->section = ((TSSectionCreator*)(cm->getObject(
-					"TransportSection")))(buffer, payloadSize + handler->headerSize);
-
-#else
 			handler->section = new TransportSection(
 					buffer, payloadSize + handler->headerSize);
-#endif
 
 			delete[] buffer;
 			buffer = NULL;
@@ -545,14 +515,8 @@ namespace dataprocessing {
 			clog << " for PID = '" << pack->getPid() << "'";
 			clog << "Header is ready already!" << endl;*/
 
-#if HAVE_COMPONENTS
-			handler->section = ((TSSectionCreator*)(cm->getObject(
-					"TransportSection")))(data, payloadSize);
-
-#else
 			handler->section = new TransportSection(
 					data, payloadSize);
-#endif
 
 		} else {
 			/*clog << "SectionFilter::verifyAndCreateSection ";

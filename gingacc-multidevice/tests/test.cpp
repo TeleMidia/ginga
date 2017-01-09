@@ -52,12 +52,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "multidevice/RemoteDeviceManager.h"
-#endif
 
 #include "multidevice/IRemoteDeviceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
@@ -65,9 +60,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 int main(int argc, char *argv[]) {
 	int deviceClass;
 	IRemoteDeviceManager* rdm;
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
@@ -76,12 +68,7 @@ int main(int argc, char *argv[]) {
 		deviceClass = (int)stof((string)argv[1]);
 	}
 
-#if HAVE_COMPONENTS
-	rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-			"RemoteDeviceManager")))(deviceClass, false, 22222);
-#else
 	rdm = RemoteDeviceManager::getInstance();
-#endif
 
 	clog << "gingacc-multidevice test with class '" << deviceClass;
 	clog << "'" << endl;

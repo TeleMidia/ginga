@@ -64,11 +64,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "gingalssm/IPresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 bool verbose = false;
 
 
@@ -339,42 +334,9 @@ int main(int argc, char** argv, char** envp) {
     xScreen     = DefaultScreen(xDisplay);
     rootWindow  = RootWindow(xDisplay, xScreen);
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	cm->setUnloadComponents(!disableUC);
-
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-	char* fakeArgv1[5];
-
-	parentXId   = createXWindow(
-			xDisplay, xScreen, rootWindow, 0, 0, 600, 600);
-
-	gingaChild1 = createXWindow(
-			xDisplay, xScreen, parentXId, 0, 0, 300, 300);
-
-	strChild1 = ultostr((unsigned long)gingaChild1);
-
-	fakeArgv1[0] = (char*)"testScreen";
-	fakeArgv1[1] = (char*)"--vsystem";
-	fakeArgv1[2] = (char*)"sdl";
-	fakeArgv1[3] = (char*)"--embed";
-	fakeArgv1[4] = (char*)strChild1.c_str();
-	fakeArgv1[5] = (char*)"--external-renderer";
-
-	screen1 = dm->createScreen(6, fakeArgv1);
-
-	width   = dm->getDeviceWidth(screen1);
-	height  = dm->getDeviceHeight(screen1);
-
-	pem1    = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-			devClass, 0, 0, 0, 0, enableGfx, false, screen1);
-
-#else
 	cout << "ginga-lssm test works only when component manager support is ";
 	cout << "enabled" << endl;
 	exit(0);
-#endif
 
 	nclFile1 = updateFileUri(nclFile1);
 
@@ -404,10 +366,6 @@ int main(int argc, char** argv, char** envp) {
 	delete pem1;
 
 	delete dm;
-
-#if HAVE_COMPONENTS
-	delete cm;
-#endif
 
 	delete embedding;
 

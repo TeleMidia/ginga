@@ -18,14 +18,6 @@ AM_CPPFLAGS =\
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LIBS)
 
-if BUILD_COMPONENTS
-LDADD =\
-  ../telemidia-util/libtelemidiautil.la\
-  ../gingacc-system/libgingaccsystem.la\
-  ../gingacc-cm/libgingacccm.la\
-  $(NULL)
-
-else
 LDADD =\
   ../gingacc-contextmanager/libgingacccontextmanager.la\
   ../gingacc-ic/libgingaccic.la\
@@ -59,8 +51,6 @@ if BUILD_BERKELIUM
 LDADD +=\
   ../gingancl/libginganclbklpadapter.la\
   $(NULL)
-endif
-
 endif
 
 if BUILD_SSML

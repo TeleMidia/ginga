@@ -172,22 +172,6 @@ void testPlayer(
 	windows->insert(w3);
 	windows->insert(w4);
 
-#if HAVE_COMPONENTS
-	m1 = updateFileUri("corrego1.mp4");
-	vid1 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m1.c_str(), &notFalse);
-
-	m2 = updateFileUri("corrego1.mp4");
-	vid2 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m2.c_str(), &notFalse);
-
-	m3 = updateFileUri("corrego1.mp4");
-	vid3 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, m3.c_str(), &notFalse);
-
-	vid4 = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-			screen, "/root/workspaces/NCL/Garrincha/media/animGar.mp4", &notFalse);
-#endif
 
 	vid1->addListener(l1);
 	vid1->setOutWindow(w1->getId());
@@ -263,14 +247,9 @@ int main(int argc, char** argv, char** envp) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	cout << "gingacc-player test works only with enabled component support.";
 	cout << endl;
 	exit(0);
-#endif
 
 	int i;
 	bool testAllScreens = false;

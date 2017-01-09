@@ -115,13 +115,7 @@ namespace xhtml {
 				mrl = SystemCompat::updatePath(mrl);
 			}
 
-#if HAVE_COMPONENTS
-			playerCompName = "BerkeliumPlayer";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str());
-#else
 			player = new BerkeliumPlayer(myScreen, mrl.c_str());
-#endif
 
 			updateProperties();
 		}

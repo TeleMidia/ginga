@@ -67,14 +67,10 @@ extern "C" {
 #include <stdlib.h>
 }
 
-#if HAVE_COMPONENTS
-# include "cm/IComponentManager.h"
-#else
-# include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
-# include "mb/interface/sdl/content/image/SDLImageProvider.h"
-# include "mb/interface/sdl/content/text/SDLFontProvider.h"
-# include "mb/interface/sdl/content/video/SDLVideoProvider.h"
-#endif
+#include "mb/interface/sdl/content/audio/SDLAudioProvider.h"
+#include "mb/interface/sdl/content/image/SDLImageProvider.h"
+#include "mb/interface/sdl/content/text/SDLFontProvider.h"
+#include "mb/interface/sdl/content/video/SDLVideoProvider.h"
 
 #if defined (SDL_VIDEO_DRIVER_X11)
 #include <X11/Xlib.h>
@@ -92,10 +88,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-#if HAVE_COMPONENTS
-	IComponentManager* SDLDeviceScreen::cm = IComponentManager::getCMInstance();
-#endif
-
 	map<SDLDeviceScreen*, short> SDLDeviceScreen::sdlScreens;
 	bool SDLDeviceScreen::hasRenderer = false;
 	bool SDLDeviceScreen::hasERC      = false;
@@ -965,24 +957,7 @@ namespace mb {
 
 		lockSDL();
 		strSym = "SDLVideoProvider";
-
-#if HAVE_COMPONENTS
-		provider = ((CMPCreator*)(cm->getObject(strSym)))(id, mrl);
-
-		if (provider == NULL) {
-			clog << "SDLDeviceScreen::createContinuousMediaProvider ";
-			clog << "Warning! Can't create a provider for '" << mrl << "' ";
-			clog << "using component '" << strSym << "'";
-			clog << endl;
-			unlockSDL();
-
-			return NULL;
-		}
-
-		provider->setLoadSymbol(strSym);
-#else
 		provider = new SDLVideoProvider(id, mrl);
-#endif
 		unlockSDL();
 
 		Thread::mutexLock(&proMutex);
@@ -1019,15 +994,7 @@ namespace mb {
 		IFontProvider* provider = NULL;
 
 		lockSDL();
-
-#if HAVE_COMPONENTS
-		provider = ((FontProviderCreator*)(cm->getObject("SDLFontProvider")))(
-				id, mrl, fontSize);
-
-#else
 		provider = new SDLFontProvider(id, mrl, fontSize);
-#endif
-
 		unlockSDL();
 
 		Thread::mutexLock(&proMutex);
@@ -1060,12 +1027,7 @@ namespace mb {
 
 		//lockSDL(); There is no SDL call inside SDLImageProvider constructor
 
-#if HAVE_COMPONENTS
-		provider = ((ImageProviderCreator*)(cm->getObject(
-				"SDLImageProvider")))(id, mrl);
-#else
 		provider = new SDLImageProvider(id, mrl);
-#endif
 
 		//unlockSDL();
 
@@ -1709,12 +1671,6 @@ namespace mb {
 						delete dmp;
 					}
 				}
-
-#if HAVE_COMPONENTS
-				if (strSym != "") {
-					cm->releaseComponentFromObject(strSym);
-				}
-#endif
 			}
 
 			Thread::mutexLock(&recMutex);

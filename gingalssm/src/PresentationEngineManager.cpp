@@ -54,10 +54,6 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #endif
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "player/ProgramAV.h"
 
 #include "system/fs/GingaLocatorFactory.h"
@@ -66,7 +62,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "player/ShowButton.h"
-#endif
 
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputManager.h"
@@ -105,10 +100,6 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	IScreenManager* PresentationEngineManager::dm = NULL;
 	bool PresentationEngineManager::autoProcess        = false;
 
@@ -123,12 +114,7 @@ namespace lssm {
 			GingaScreenID screenId) : Thread () {
 
 		if (dm == NULL) {
-#if HAVE_COMPONENTS
-			dm = ((LocalScreenManagerCreator*)(
-					cm->getObject("LocalScreenManager")))();
-#else
 			dm = ScreenManagerFactory::getInstance();
-#endif
 		}
 
 		LocalScreenManager::addIEListenerInstance(this);
@@ -186,17 +172,8 @@ namespace lssm {
 		this->currentPrivateBaseId = -1;
 		this->timeBaseProvider     = NULL;
 		this->im                   = dm->getInputManager(myScreen);
-
-#if HAVE_COMPONENTS
-		this->sb = ((WidgetCreator*)(cm->getObject("ShowButton")))(myScreen);
-
-		privateBaseManager = ((PrivateBaseManagerCreator*)(cm->getObject(
-				"PrivateBaseManager")))();
-
-#else
 		privateBaseManager = new PrivateBaseManager();
 		this->sb           = new ShowButton(myScreen);
-#endif
 
 		ContentTypeManager::getInstance()->setMimeFile(
 				SystemCompat::appendGingaFilesPrefix("mimetypes.ini")
@@ -338,13 +315,7 @@ namespace lssm {
 		INCLPlayer* docPlayer     = NULL;
 		string baseId, docId;
 		string docIor, docUri, arg, uri, ior, uName;
-
-#if HAVE_COMPONENTS
-		glf = ((GingaLocatorFactoryCreator*)(cm->getObject(
-				"GingaLocatorFactory")))();
-#else
 		glf = GingaLocatorFactory::getInstance();
-#endif
 
 #if HAVE_DSMCC
 		args   = split(commandPayload, ",");
@@ -592,13 +563,7 @@ namespace lssm {
 			data->playerId           = fname;
 			data->privateBaseManager = privateBaseManager;
             data->enableMulticast    = enableMulticast;
-
-#if HAVE_COMPONENTS
-			formatter = ((NCLPlayerCreator*)(cm->getObject("Formatter")))(data);
-
-#else
 			formatter = new FormatterMediator(data);
-#endif
 			(NclDocument*)(formatter->setCurrentDocument(fname));
 
 			if (formatters.empty() && !isEmbedded) {

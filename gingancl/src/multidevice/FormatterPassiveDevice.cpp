@@ -71,14 +71,9 @@ namespace multidevice {
 		dm->drawWindow (myScreen, serialized);
 
 		if (rdm == NULL) {
-#if HAVE_COMPONENTS
-			rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-					"RemoteDeviceManager")))(deviceClass, useMulticast, srvPort);
-#else
 			rdm = RemoteDeviceManager::getInstance();
 			((RemoteDeviceManager*)rdm)->setDeviceDomain(
 					new PassiveDeviceDomain(useMulticast, srvPort));
-#endif
 		}
 
 		rdm->setDeviceInfo(deviceClass, w, h, "");

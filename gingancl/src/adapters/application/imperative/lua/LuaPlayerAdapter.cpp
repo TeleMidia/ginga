@@ -65,13 +65,7 @@ namespace lua {
 
 	void LuaPlayerAdapter::createPlayer() {
 		if (fileExists(mrl)) {
-#if HAVE_COMPONENTS
-			playerCompName = "LuaPlayer";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str());
-#else
 			player = new LuaPlayer(myScreen, mrl.c_str());
-#endif
 
 		} else {
 			player = NULL;

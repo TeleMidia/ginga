@@ -69,16 +69,10 @@ namespace tts {
 
 		string paramValue;
 		CascadingDescriptor* descriptor;
-                
+
 		bool hasVisual = false;
-                
-#if HAVE_COMPONENTS
-		playerCompName = "SsmlPlayer";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, mrl.c_str(), &hasVisual);
-#else
+
 		player = new SsmlPlayer(myScreen, mrl.c_str());
-#endif
 
                 clog << "SsmlPlayerAdapter::createPlayer '";
 		clog << mrl << "' ALL DONE" << endl;

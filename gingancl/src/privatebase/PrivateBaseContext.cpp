@@ -51,13 +51,8 @@ http://www.telemidia.puc-rio.br
 using namespace ::br::pucrio::telemidia::converter;
 
 #include "config.h"
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "converter/ncl/NclDocumentConverter.h"
 using namespace ::br::pucrio::telemidia::converter::ncl;
-#endif
 
 #include "gingancl/privatebase/PrivateBaseContext.h"
 
@@ -69,10 +64,6 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace ncl {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	PrivateBaseContext::PrivateBaseContext() {
 		this->privateBase = NULL;
 	}
@@ -154,12 +145,7 @@ namespace ncl {
 			docUrl = SystemCompat::getUserCurrentPath() + location;
 		}
 
-#if HAVE_COMPONENTS
-		compiler = (IDocumentConverter*)((CICreator*)(
-				cm->getObject("NclDocumentConverter")))();
-#else
 		compiler = new NclDocumentConverter();
-#endif
 
 		compiler->setConverterInfo(this, deviceLayout);
 		compiler->parse(
@@ -234,11 +220,6 @@ namespace ncl {
 				clog << "Can't compile document '" << docUrl << "'";
 				clog << endl;
 			}
-
-#if HAVE_COMPONENTS
-			printTimeStamp();
-			cm->releaseComponentFromObject("NclDocumentConverter");
-#endif
 
 			if (newDocument != NULL) {
 				clog << "PrivateBaseContext::addDocument ";
@@ -554,13 +535,7 @@ namespace ncl {
 
 		deviceLayout = layouts[document];
 
-#if HAVE_COMPONENTS
-		compiler = (IDocumentConverter*)((CICreator*)(
-				cm->getObject("NclDocumentConverter")))();
-#else
 		compiler = new NclDocumentConverter();
-#endif
-
 		compiler->setConverterInfo(this, deviceLayout);
 
 		clog << "PrivateBaseContext::compileEntity entityURL = '" << entityUrl;
@@ -569,11 +544,6 @@ namespace ncl {
 		entity = compiler->parseEntity(entityUrl, document, parentObject);
 
 		delete compiler;
-
-#if HAVE_COMPONENTS
-		printTimeStamp();
-		cm->releaseComponentFromObject("NclDocumentConverter");
-#endif
 
 		return entity;
 	}
@@ -1159,12 +1129,7 @@ namespace ncl {
 
 		deviceLayout = layouts[document];
 
-#if HAVE_COMPONENTS
-		compiler = (IDocumentConverter*)((CICreator*)(
-				cm->getObject("NclDocumentConverter")))();
-#else
 		compiler = new NclDocumentConverter();
-#endif
 		compiler->setConverterInfo(this, deviceLayout);
 
 		location = compiler->getAttribute(importElement, "documentURI");
@@ -1199,12 +1164,6 @@ namespace ncl {
 		}
 
 		delete compiler;
-
-#if HAVE_COMPONENTS
-		printTimeStamp();
-		cm->releaseComponentFromObject("NclDocumentConverter");
-#endif
-
 		return base;
 	}
 
@@ -1328,13 +1287,7 @@ namespace ncl {
 
 		deviceLayout = layouts[document];
 
-#if HAVE_COMPONENTS
-		compiler = (IDocumentConverter*)((CICreator*)(
-				cm->getObject("NclDocumentConverter")))();
-#else
 		compiler = new NclDocumentConverter();
-#endif
-
 		compiler->setConverterInfo(this, deviceLayout);
 
 		location = compiler->getAttribute(importElement, "documentURI");
@@ -1349,11 +1302,6 @@ namespace ncl {
 		}
 
 		delete compiler;
-
-#if HAVE_COMPONENTS
-		cm->releaseComponentFromObject("NclDocumentConverter");
-#endif
-
 		return importedDocument;
 	}
 

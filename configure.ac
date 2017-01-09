@@ -72,31 +72,6 @@ m4_define([_AC_ARG_ENABLE],
 m4_define([_AC_DEFINE_DEPRECATED],
  [AC_DEFINE([$1], [$2], [Deprecated macro.])])
 
-# Enable components.
-_AC_ARG_ENABLE([components], [load shared libraries on demand], [no])
-if test "$enable_components" = yes; then
-  if test -z "$DL_LIBS"; then
-    dl_ok=no;
-    AC_CHECK_LIB([dl], [dlopen],
-     [AC_CHECK_LIB([dl], [dlsym],
-       [dl_ok=yes; DL_LIBS=-ldl])])
-
-    if test "$dl_ok" = no; then
-      AC_MSG_ERROR([
-*** Checks for COMPONENTS failed.
-*** Component support is optional; you can disable it by passing
-*** the option --disable-component to configure.])
-    fi
-  fi
-  AC_SUBST([DL_LIBS])
-  AC_DEFINE([HAVE_COMPONENTS], [1],
-   [Define to 1 if components are supported.])
-else
-  AC_DEFINE([HAVE_COMPONENTS], [0],
-   [Define to 1 if components are supported.])
-fi
-AM_CONDITIONAL([BUILD_COMPONENTS], [test "$enable_components" = yes])
-
 # Enable data-processing.
 _AC_ARG_ENABLE([data-processing], [build data-processing support], [no])
 if test "$enable_data_processing" = yes; then
@@ -210,12 +185,6 @@ if test "$enable_multidevice" = yes; then
   fi
 fi
 
-############################### Ginga-CC CM ################################
-# Nothing to do.
-
-############################### Ginga-CC UM ################################
-# Nothing do to (currently UM is stub).
-
 ############################### Ginga-CC IC ################################
 
 # Check for Curl.
@@ -302,21 +271,6 @@ if test "$enable_multidevice" = yes; then
   fi
 fi
 AC_SUBST([JPEG_LIBS])
-
-######################### Ginga-CC Context Manager #########################
-# Nothing to do.
-
-########################## Ginga-CC Multi-Device ###########################
-# Nothing to do.
-
-############################## Ginga-CC Tuner ##############################
-# Nothing to do.
-
-############################ Ginga-CC TS Parser ############################
-# Nothing to do.
-
-######################### Ginga-CC Data Processing #########################
-# Nothing to do.
 
 ############################# Ginga-CC Player ##############################
 
@@ -492,7 +446,6 @@ AC_CONFIG_FILES([
 Makefile
 telemidia-util/Makefile
 gingacc-system/Makefile
-gingacc-cm/Makefile
 gingacc-ic/Makefile
 gingacc-mb/Makefile
 gingacc-contextmanager/Makefile
@@ -510,7 +463,6 @@ ginga/Makefile
 
 AC_CONFIG_FILES([
 telemidia-util/tests/Makefile
-gingacc-cm/tests/Makefile
 gingacc-ic/tests/Makefile
 gingacc-mb/tests/Makefile
 gingacc-contextmanager/tests/Makefile
@@ -532,7 +484,6 @@ AC_MSG_NOTICE([summary of main build options:
   compiler:           CC: \"${CC}\"  CFLAGS: \"${CFLAGS}\"  CPPFLAGS: \"${CPPFLAGS}\"  LDFLAGS: \"${LDFLAGS}\"
   library types:      shared=${enable_shared}, static=${enable_static}
 
-  build components:       ${enable_components}
   build data-processing:  ${enable_data_processing}
   build multi-device:     ${enable_multidevice}
   build tests:            ${enable_tests}

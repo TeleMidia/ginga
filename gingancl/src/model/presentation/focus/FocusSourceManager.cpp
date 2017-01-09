@@ -51,12 +51,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
 
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -75,13 +70,7 @@ namespace ncl {
 namespace model {
 namespace presentation {
 namespace focus {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
 
 	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
 			GingaScreenID screenId, string src) {

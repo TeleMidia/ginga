@@ -101,13 +101,7 @@ namespace multidevice {
 		this->enableMulticast  = useMulticast;
 
 		if (dm == NULL) {
-#if HAVE_COMPONENTS
-			dm = ((LocalScreenManagerCreator*)(
-					cm->getObject("LocalScreenManager")))();
-
-#else
 			dm = ScreenManagerFactory::getInstance();
-#endif
 		}
 
 		LocalScreenManager::addIEListenerInstance(this);
@@ -740,54 +734,13 @@ namespace multidevice {
 	}
 
 	void FormatterMultiDevice::renderFromUri(GingaWindowID win, string uri) {
-/*		GingaSurfaceID s;
-		IPlayer* img;
-		bool hasVisual = true;
-
-#if HAVE_COMPONENTS
-		img = ((PlayerCreator*)(cm->getObject(
-				"ImagePlayer")))(myScreen, uri.c_str(), &hasVisual);
-#else
-		img = new ImagePlayer(myScreen, uri.c_str());
-#endif
-
-		img->setOutWindow(win);
-
-		dm->setWindowColorKey (myScreen, win, 0, 0, 0);
-		dm->clearWindowContent (myScreen, win);
-
-		s = img->getSurface();
-		dm->renderWindowFrom (myScreen, win, s);
-
-		dm->showWindow (myScreen, win);
-		dm->validateWindow (myScreen, win);
-
-
-		win->setColorKey(0, 0, 0);
-		win->clearContent();
-		win->renderFrom(s);
-		win->show();
-		win->validate();
-
-		delete img;
-		*/
-
 		GingaSurfaceID s;
-		/*clog << "FormatterMultiDevice::renderFromUri window coords: ";
-		clog <<  win->getX() << ",";
-		clog <<  win->getY() << ",";
-		clog <<  win->getW() << ",";
-		clog <<  win->getH() << ",";
-		clog <<  win->getZ() << "."<< endl;*/
-
 		s = dm->createRenderedSurfaceFromImageFile(myScreen, uri.c_str());
-
 		dm->setWindowColorKey (myScreen, win, 0, 0, 0);
 		dm->clearWindowContent (myScreen, win);
 		dm->renderWindowFrom(myScreen, win, s);
 		dm->showWindow (myScreen, win);
 		dm->validateWindow (myScreen, win);
-		
 		dm->deleteSurface(s);
 	}
 

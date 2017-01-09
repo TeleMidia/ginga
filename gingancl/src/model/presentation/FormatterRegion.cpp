@@ -61,12 +61,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -75,13 +70,7 @@ namespace ginga {
 namespace ncl {
 namespace model {
 namespace presentation {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
 	FormatterRegion::FormatterRegion(
 		    string objectId, void* descriptor, void* layoutManager) {
 

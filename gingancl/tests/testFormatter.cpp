@@ -55,13 +55,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::image;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
-
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -79,14 +73,7 @@ int main(int argc, char** argv, char** envp) {
 	ISurface* s;
 	GingaScreenID screenId;
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	dm = ScreenManagerFactory::getInstance();
-#endif
-
 	screenId = dm->createScreen(0, NULL);
 
 	if (argc > 1 && strcmp(argv[1], "links") == 0) {
@@ -99,23 +86,6 @@ int main(int argc, char** argv, char** envp) {
 		w->show();
 
 		string mrl = "www.google.com";
-
-#if HAVE_COMPONENTS
-		void* component = cm->getObject("LinksPlayerAdapter");
-		if (component != NULL) {
-			player = ((CICreator*)compObject)();
-			player->initializeAdapter(NULL, (void*)(mrl.c_str()));
-
-			s = player->getPlayer()->getSurface();
-			if (s == NULL) {
-				clog << "gingacc-player test Warning! surface is NULL" << endl;
-
-			} else {
-				s->setParentWindow(w);
-			}
-		}
-#endif
-
 #endif
 
 	} else {

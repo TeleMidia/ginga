@@ -64,11 +64,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "gingalssm/IPresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 bool verbose = false;
 
 
@@ -345,79 +340,9 @@ int main(int argc, char** argv, char** envp) {
     xScreen     = DefaultScreen(xDisplay);
     rootWindow  = RootWindow(xDisplay, xScreen);
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	cm->setUnloadComponents(!disableUC);
-
-	IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-
-	char* fakeArgv1[5];
-	char* fakeArgv2[5];
-
-	if (nclFile2 == "") {
-		parentXId   = createXWindow(
-				xDisplay, xScreen, rootWindow, 0, 0, 600, 600);
-
-		gingaChild1 = createXWindow(
-				xDisplay, xScreen, parentXId, 0, 0, 300, 300);
-
-		strChild1 = ultostr((unsigned long)gingaChild1);
-
-		fakeArgv1[0] = (char*)"testScreen";
-		fakeArgv1[1] = (char*)"--vsystem";
-		fakeArgv1[2] = (char*)"sdl";
-		fakeArgv1[3] = (char*)"--embed";
-		fakeArgv1[4] = (char*)strChild1.c_str();
-
-		screen1 = dm->createScreen(5, fakeArgv1);
-
-		width   = dm->getDeviceWidth(screen1);
-		height  = dm->getDeviceHeight(screen1);
-
-		pem1    = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass, 0, 0, 0, 0, enableGfx, false, screen1);
-
-	} else {
-	    parentXId   = createXWindow(
-	    		xDisplay, xScreen, rootWindow, 0, 0, 600, 600);
-
-	    gingaChild1 = createXWindow(
-	    		xDisplay, xScreen, parentXId, 0, 0, 300, 300);
-
-	    gingaChild2 = createXWindow(
-	    		xDisplay, xScreen, parentXId, 300, 300, 300, 300);
-
-	    strChild1 = ultostr((unsigned long)gingaChild1);
-	    strChild2 = ultostr((unsigned long)gingaChild2);
-
-		fakeArgv1[0] = (char*)"testScreen";
-		fakeArgv1[1] = (char*)"--vsystem";
-		fakeArgv1[2] = (char*)"sdl";
-		fakeArgv1[3] = (char*)"--embed";
-		fakeArgv1[4] = (char*)strChild1.c_str();
-
-		fakeArgv2[0] = (char*)"testScreen";
-		fakeArgv2[1] = (char*)"--vsystem";
-		fakeArgv2[2] = (char*)"sdl";
-		fakeArgv2[3] = (char*)"--embed";
-		fakeArgv2[4] = (char*)strChild2.c_str();
-
-		screen1 = dm->createScreen(5, fakeArgv1);
-		screen2 = dm->createScreen(5, fakeArgv2);
-
-		pem1   = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass, 0, 0, 0, 0, enableGfx, false, screen1);
-
-		pem2   = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass, 0, 0, 0, 0, enableGfx, false, screen2);
-	}
-
-#else
 	cout << "ginga-lssm test works only when component manager support is ";
 	cout << "enabled" << endl;
 	exit(0);
-#endif
 
 	nclFile1 = updateFileUri(nclFile1);
 	if (nclFile2 != "") {

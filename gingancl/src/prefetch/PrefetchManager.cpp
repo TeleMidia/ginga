@@ -51,14 +51,9 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #if HAVE_IC
 #include "ic/InteractiveChannelManager.h"
 #endif //HAVE_IC
-#endif
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -72,20 +67,12 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace prefetch {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	PrefetchManager::PrefetchManager() {
 		string iurid = SystemCompat::getIUriD();
 		icm          = NULL;
 
 #if HAVE_IC
-#if HAVE_COMPONENTS
-		icm = ((ICMCreator*)(cm->getObject("InteractiveChannelManager")))();
-#else
 		icm = InteractiveChannelManager::getInstance();
-#endif //HAVE_COMPONENTS
 #endif //HAVE_IC
 
 		scheduledRemoteUris = NULL;

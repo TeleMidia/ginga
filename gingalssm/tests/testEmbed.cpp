@@ -64,11 +64,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "gingalssm/IPresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 bool verbose = false;
 
 string updateFileUri(string file) {
@@ -296,49 +291,9 @@ int main(int argc, char** argv, char** envp) {
 		interfaceId2 = "doc2p2";
 	}
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	cm->setUnloadComponents(!disableUC);
-
-	ILocalScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-
-	screen = dm->createScreen(argc, argv);
-
-	width  = dm->getDeviceWidth(screen);
-	height = dm->getDeviceHeight(screen);
-
-	if (nclFile2 == "") {
-		pem1   = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass, xOffset, yOffset, width, height, enableGfx, false, screen);
-
-	} else {
-		pem1   = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass,
-				xOffset,
-				yOffset,
-				width / 2,
-				height / 2,
-				enableGfx,
-                false,
-				screen);
-
-		pem2   = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass,
-				width / 2,
-				height / 2,
-				width / 2,
-				height / 2,
-				enableGfx,
-                false,
-				screen);
-	}
-
-#else
 	cout << "ginga-lssm test works only when component manager support is ";
 	cout << "enabled" << endl;
 	exit(0);
-#endif
 
 	nclFile1 = updateFileUri(nclFile1);
 	if (nclFile2 != "") {
@@ -486,10 +441,6 @@ int main(int argc, char** argv, char** envp) {
 		delete pem2;
 	}
 
-#if HAVE_COMPONENTS
-	delete dm;
-	delete cm;
-#endif
 	delete embedding;
 
 	cout << "ginga-lssm test all done!" << endl;

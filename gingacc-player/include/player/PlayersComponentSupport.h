@@ -52,11 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
-
 #if HAVE_DATA_PROCESSING
 #include "dataprocessing/EPGProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
@@ -72,17 +67,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#endif
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 }
 }
 }

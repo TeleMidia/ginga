@@ -66,13 +66,7 @@ namespace time {
 	}
 
 	void TimePlayerAdapter::createPlayer() {
-#if HAVE_COMPONENTS
-		playerCompName = "NTPPlayer";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, mrl.c_str());
-#else
 		player = new NTPPlayer(myScreen, mrl.c_str());
-#endif
 
 		FormatterPlayerAdapter::createPlayer();
 

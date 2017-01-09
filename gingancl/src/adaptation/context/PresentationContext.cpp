@@ -51,13 +51,8 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "contextmanager/ContextManager.h"
 #include "contextmanager/system/SystemInfo.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -66,10 +61,6 @@ namespace ginga {
 namespace ncl {
 namespace adaptation {
 namespace context {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	IContextManager* PresentationContext::contextManager = NULL;
 
 	PresentationContext::PresentationContext(GingaScreenID screenId) {
@@ -78,12 +69,7 @@ namespace context {
 		myScreen = screenId;
 
 		if (contextManager == NULL) {
-#if HAVE_COMPONENTS
-			contextManager = ((ContextManagerCreator*)(cm->getObject(
-					"ContextManager")))();
-#else
 			PresentationContext::contextManager = ContextManager::getInstance();
-#endif
 		}
 
 		contextManager->addContextListener(this);

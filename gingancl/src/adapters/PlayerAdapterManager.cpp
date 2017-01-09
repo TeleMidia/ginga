@@ -274,24 +274,7 @@ namespace adapters {
 						pToolName = toolName;
 					}
 
-#if HAVE_COMPONENTS
-					pos = pToolName.find_first_of(",");
-					if (pos != std::string::npos) {
-						symName = pToolName.substr(0, pos);
-
-					} else {
-						symName = pToolName;
-					}
-
-					if (cm->isAvailable(symName)) {
-						clog << "PlayerAdapterManager::getPlayerClass '";
-						clog << symName << "' is available!";
-						clog << endl;
-						toolName = "";
-					}
-#else
 					break;
-#endif
 				}
 				return pToolName;
 			}
@@ -430,20 +413,6 @@ namespace adapters {
 
 		playerClassName = (*args)[0];
 
-#if HAVE_COMPONENTS
-		compObject = cm->getObject(playerClassName);
-
-		if (compObject != NULL) {
-			player = (IPlayerAdapter*)((CICreator*)compObject)();
-			player->setAdapterManager(this);
-		}
-
-		if (player == NULL) {
-			delete args;
-			return NULL;
-		}
-
-#else
 		if (playerClassName == "SubtitlePlayerAdapter") {
 			player = new SubtitlePlayerAdapter();
 
@@ -457,7 +426,7 @@ namespace adapters {
 
 		}
 #endif //HAVE_SSML
-                
+
 #if HAVE_AWESOMIUM
                 else if (playerClassName == "AwesomiumPlayerAdapter") {
 			player = new AwesomiumPlayerAdapter();
@@ -485,10 +454,8 @@ namespace adapters {
 		} else if (playerClassName == "AVPlayerAdapter") {
 			player = new AVPlayerAdapter();
 
-#ifndef __ANDROID__
 		} else if (playerClassName == "LuaPlayerAdapter") {
 			player = new LuaPlayerAdapter();
-#endif
 		} else if (playerClassName == "NCLPlayerAdapter") {
 			player = new NCLPlayerAdapter();
 
@@ -516,7 +483,6 @@ namespace adapters {
 		}
 
 		player->setAdapterManager(this);
-#endif
 
 		param = (*args)[1];
 		if (param == "epg") {
@@ -695,11 +661,6 @@ namespace adapters {
 		IPlayerAdapter* player;
 		string playerClassName = "";
 
-#if HAVE_COMPONENTS
-		set<string> releaseCmps;
-		set<string>::iterator k;
-#endif
-
 		Thread::mutexLock(&mutexPlayer);
 		i = deletePlayers.begin();
 		while (i != deletePlayers.end()) {
@@ -727,20 +688,8 @@ namespace adapters {
 
 			delete player;
 
-#if HAVE_COMPONENTS
-			assert(trim(playerClassName) != "");
-			releaseCmps.insert(playerClassName);
-#endif
 			++i;
 		}
-
-#if HAVE_COMPONENTS
-		k = releaseCmps.begin();
-		while (k != releaseCmps.end()) {
-			cm->releaseComponentFromObject(*k);
-			++k;
-		}
-#endif
 	}
 
 	void PlayerAdapterManager::run() {
