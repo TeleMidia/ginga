@@ -43,10 +43,10 @@ public:
 
 	std::string hasMEListener(
 		const MethodRequested&, const std::vector <std::string>&)
-		 { return ""; } 
+		 { return ""; }
 
 	std::string setBackgroundImage(
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string getDeviceWidth(
 		const MethodRequested&, const std::vector <std::string>&);
@@ -58,7 +58,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string releaseScreen(
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string releaseMB(
 		const MethodRequested&, const std::vector <std::string>&);
@@ -67,7 +67,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string createScreen(
-		const MethodRequested&, const std::vector <std::string>&); 
+		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string getScreenName(
 		const MethodRequested&, const std::vector <std::string>&);	
@@ -113,7 +113,7 @@ public:
 		 { return ""; }
 
 	std::string hasWindow (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string releaseWindow (
 		const MethodRequested&, const std::vector <std::string>&)
@@ -134,7 +134,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string hasSurface (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 	
 	std::string releaseSurface (
 		const MethodRequested&, const std::vector <std::string>&)
@@ -144,7 +144,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 	
 	std::string createContinuousMediaProvider (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string releaseContinuousMediaProvider (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -162,7 +162,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string createRenderedSurfaceFromImageFile (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 	
 	std::string getInputManager (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -186,7 +186,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string addWindowCaps (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string setWindowCaps (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -198,7 +198,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 	
 	std::string setWindowBounds (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 	
 	std::string showWindow (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -219,7 +219,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string setWindowCurrentTransparency (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string setWindowColorKey (
 		const MethodRequested&, const std::vector <std::string>&)
@@ -261,13 +261,13 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string getWindowW (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string getWindowH (
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string getWindowZ (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string getWindowTransparencyValue (
 		const MethodRequested&, const std::vector <std::string>&);
@@ -308,7 +308,7 @@ public:
 		const MethodRequested&, const std::vector <std::string>&);
 
 	std::string setSurfaceParentWindow (
-		const MethodRequested&, const std::vector <std::string>&);		 
+		const MethodRequested&, const std::vector <std::string>&);		
 
 	std::string clearSurfaceContent (
 		const MethodRequested&, const std::vector <std::string>&)
@@ -435,7 +435,7 @@ public:
 		 { return ""; }
 
 private:
-	std::string (RequestManager::*_ptMethods[MethodRequested::LENGHT]) (const MethodRequested&, 
+	std::string (RequestManager::*_ptMethods[MethodRequested::LENGHT]) (const MethodRequested&,
 		const std::vector<std::string>& args) ;
 
 	IScreenManager* _screenManager;

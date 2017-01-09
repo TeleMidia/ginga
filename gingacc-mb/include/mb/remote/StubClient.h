@@ -18,7 +18,7 @@ public:
 	std::string readMessage ();
 
 private:
-	static StubClient* _instance; 
+	static StubClient* _instance;
 	std::string _address;
 	int _port;
 

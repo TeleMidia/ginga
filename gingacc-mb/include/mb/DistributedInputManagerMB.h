@@ -36,7 +36,7 @@ class InputManagerServer : public Thread
 public:
 	InputManagerServer (const std::string &address, const int port);
 
-	std::vector <socket_ptr> getClientSockets () const 
+	std::vector <socket_ptr> getClientSockets () const
 	{ return _clientSockets; }
 
 protected:

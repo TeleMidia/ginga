@@ -1,54 +1,19 @@
-/******************************************************************************
-Este arquivo eh parte da implementacao do ambiente declarativo do middleware
-Ginga (Ginga-NCL).
+/* Copyright (C) 1989-2017 PUC-Rio/Laboratorio TeleMidia
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+This file is part of Ginga (Ginga-NCL).
 
-Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
-os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
-Software Foundation.
+Ginga is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
 
-Este programa eh distribuido na expectativa de que seja util, porem, SEM
-NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
-ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
-GNU versao 2 para mais detalhes.
+Ginga is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
 
-Voce deve ter recebido uma copia da Licenca Publica Geral do GNU versao 2 junto
-com este programa; se nao, escreva para a Free Software Foundation, Inc., no
-endereco 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
-
-Para maiores informacoes:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-******************************************************************************
-This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
-
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License version 2 as published by
-the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License version 2 for more
-details.
-
-You should have received a copy of the GNU General Public License version 2
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-
-For further information contact:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-*******************************************************************************
-The contents of file were based on the Cairo Graphics Library, originally
-developed by University of Southern California.
-*******************************************************************************/
+You should have received a copy of the GNU General Public License
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 extern "C" {
 	#include <sys/types.h>
@@ -160,15 +125,15 @@ namespace mb {
 		multiply(matrix, &tmp, matrix);
 	}
 
-	void Matrix::setMatrix(const matrix_t* cairo, ISurface* primary) {
+	void Matrix::setMatrix(const matrix_t* mx, ISurface* primary) {
 		s32 matrix[9];
 
-		matrix[0] = (s32)(cairo->xx * 0x10000);
-		matrix[1] = (s32)(cairo->xy * 0x10000);
-		matrix[2] = (s32)(cairo->x0 * 0x10000);
-		matrix[3] = (s32)(cairo->yx * 0x10000);
-		matrix[4] = (s32)(cairo->yy * 0x10000);
-		matrix[5] = (s32)(cairo->y0 * 0x10000);
+		matrix[0] = (s32)(mx->xx * 0x10000);
+		matrix[1] = (s32)(mx->xy * 0x10000);
+		matrix[2] = (s32)(mx->x0 * 0x10000);
+		matrix[3] = (s32)(mx->yx * 0x10000);
+		matrix[4] = (s32)(mx->yy * 0x10000);
+		matrix[5] = (s32)(mx->y0 * 0x10000);
 		matrix[6] = 0x00000;
 		matrix[7] = 0x00000;
 		matrix[8] = 0x10000;
