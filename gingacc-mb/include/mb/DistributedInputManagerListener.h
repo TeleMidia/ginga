@@ -47,51 +47,51 @@ public:
 
 	void clearContent() {};
 
-	void setKeyCode(GingaScreenID scrId, const int keyCode) 
-	{ _args["keyCode"] = keyCode; } 
+	void setKeyCode(GingaScreenID scrId, const int keyCode)
+	{ _args["keyCode"] = keyCode; }
 
-	virtual const int getKeyCode(GingaScreenID) 
+	virtual const int getKeyCode(GingaScreenID)
 	{ return atoi (_args["keyCode"].c_str()); }
 
-	unsigned int getType() 
+	unsigned int getType()
 	{ return atoi (_args["type"].c_str()); }
 
-	void* getApplicationData() 
+	void* getApplicationData()
 	{ return NULL;}
 
-	bool isButtonPressType() 
+	bool isButtonPressType()
 	{ return (bool) atoi (_args["isButtonPress"].c_str()); }
 
-	bool isMotionType() 
+	bool isMotionType()
 	{ return (bool) atoi (_args["_isMotion"].c_str());}
 
-	bool isPressedType() 
+	bool isPressedType()
 	{ return (bool) atoi (_args["isPressed"].c_str());}
 
-	bool isKeyType() 
+	bool isKeyType()
 	{ return (bool) atoi (_args["isKey"].c_str());}
 
-	bool isApplicationType() 
+	bool isApplicationType()
 	{ return (bool) atoi (_args["isApplication"].c_str());}
 
-	void setAxisValue(int x, int y, int z) 
-	{ 
+	void setAxisValue(int x, int y, int z)
+	{
 		_args["axisX"] = std::to_string (x);
-		_args["axisY"] = to_string(y); 
-		_args["axisZ"] = to_string(z); 
+		_args["axisY"] = to_string(y);
+		_args["axisZ"] = to_string(z);
 	}
-	void getAxisValue(int* x, int* y, int* z) 
+	void getAxisValue(int* x, int* y, int* z)
 	{
 		if (x != NULL)
-			*x = atoi(_args["axisX"].c_str()); 
+			*x = atoi(_args["axisX"].c_str());
 
 		if (y != NULL)
-		*y = atoi(_args["axisY"].c_str()); 
+		*y = atoi(_args["axisY"].c_str());
 
 		if (z != NULL)
-			*z = atoi(_args["axisZ"].c_str()); 
+			*z = atoi(_args["axisZ"].c_str());
 	}
-	void* getContent() 
+	void* getContent()
 	{ return NULL; }
 
 private:

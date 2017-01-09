@@ -1,51 +1,19 @@
-/******************************************************************************
-Este arquivo eh parte da implementacao do ambiente declarativo do middleware
-Ginga (Ginga-NCL).
+/* Copyright (C) 1989-2017 PUC-Rio/Laboratorio TeleMidia
 
-Direitos Autorais Reservados (c) 1989-2007 PUC-Rio/Laboratorio TeleMidia
+This file is part of Ginga (Ginga-NCL).
 
-Este programa eh software livre; voce pode redistribui-lo e/ou modificah-lo sob
-os termos da Licenca Publica Geral GNU versao 2 conforme publicada pela Free
-Software Foundation.
+Ginga is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
 
-Este programa eh distribuido na expectativa de que seja util, porem, SEM
-NENHUMA GARANTIA; nem mesmo a garantia implicita de COMERCIABILIDADE OU
-ADEQUACAO A UMA FINALIDADE ESPECIFICA. Consulte a Licenca Publica Geral do
-GNU versao 2 para mais detalhes.
+Ginga is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
 
-Voce deve ter recebido uma copia da Licenca Publica Geral do GNU versao 2 junto
-com este programa; se nao, escreva para a Free Software Foundation, Inc., no
-endereco 59 Temple Street, Suite 330, Boston, MA 02111-1307 USA.
-
-Para maiores informacoes:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-******************************************************************************
-This file is part of the declarative environment of middleware Ginga (Ginga-NCL)
-
-Copyright: 1989-2007 PUC-RIO/LABORATORIO TELEMIDIA, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License version 2 as published by
-the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License version 2 for more
-details.
-
-You should have received a copy of the GNU General Public License version 2
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-
-For further information contact:
-ncl @ telemidia.puc-rio.br
-http://www.ncl.org.br
-http://www.ginga.org.br
-http://www.telemidia.puc-rio.br
-*******************************************************************************/
+You should have received a copy of the GNU General Public License
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #ifndef ISDBTPROVIDER_H_
 #define ISDBTPROVIDER_H_
@@ -65,8 +33,8 @@ extern "C" {
 
 
 // Latin America channel assignments for ISDB-T International
-                 static uint64_t tv_channels_list[] =  
-			    { 
+                 static uint64_t tv_channels_list[] = 
+			    {
 				/* 0 */ 0, /* index placeholders... */
 				/* 1 */ 0, // never used for broadcasting
 				/* 2 */ 0, // what to do?
@@ -105,7 +73,7 @@ extern "C" {
 				/* 35 */ 599142000,
 				/* 36 */ 605142000,
 				/* 37 */ 611142000, // radio astronomy reserved (we are in rx mode anyway, so no harm here...
-				/* 38 */ 617142000, 
+				/* 38 */ 617142000,
 				/* 39 */ 623142000,
 				/* 40 */ 629142000,
 				/* 41 */ 635142000,
@@ -125,7 +93,7 @@ extern "C" {
 				/* 55 */ 719142000,
 				/* 56 */ 725142000,
 				/* 57 */ 731142000,
-				/* 58 */ 737142000, 
+				/* 58 */ 737142000,
 				/* 59 */ 743142000,
 				/* 60 */ 749142000,
 				/* 61 */ 755142000,
@@ -180,7 +148,7 @@ namespace tuning {
 			pthread_t output_thread_id;
 			pthread_mutex_t output_mutex;
 			pthread_cond_t output_cond;
-			struct ring_buffer output_buffer; 
+			struct ring_buffer output_buffer;
 			static void *output_thread(void *nothing);
 		public:
 			ISDBTProvider(long freq);

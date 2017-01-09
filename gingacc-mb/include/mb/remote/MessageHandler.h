@@ -25,7 +25,7 @@ public:
 		pt.put ("Method.code", type);
 		pt.put ("Method.argc", args.size());
 
-		for(size_t i = 0; i < args.size(); i++) 
+		for(size_t i = 0; i < args.size(); i++)
 		{
 			pt.put ("Method.arg" + std::to_string(i), args.at(i));
 		}
@@ -57,7 +57,7 @@ public:
 		pt.put ("Response.code", code);
 		pt.put ("Response.argc", args.size());
 
-		for(size_t i = 0; i < args.size(); i++) 
+		for(size_t i = 0; i < args.size(); i++)
 		{
 			pt.put ("Response.arg" + std::to_string(i), args.at(i));
 		}
@@ -134,7 +134,7 @@ public:
 	}
 
 	static std::string createEventMessage (
-		const EventType& type, 
+		const EventType& type,
 		const std::vector< std::pair<std::string,std::string> >& args)
 	{
 		ptree pt;
@@ -142,7 +142,7 @@ public:
 		pt.put ("Event.type", type);
 		pt.put ("Event.argc", args.size());
 
-		for(size_t i = 0; i < args.size(); i++) 
+		for(size_t i = 0; i < args.size(); i++)
 		{
 			pt.put (args.at(i).first, args.at(i).second);
 		}
@@ -153,7 +153,7 @@ public:
 	}
 
 	static bool extractEventMessage (
-		const std::string message, 
+		const std::string message,
 		std::map <std::string, std::string> &args)
 	{
 		boost::property_tree::ptree pt;
