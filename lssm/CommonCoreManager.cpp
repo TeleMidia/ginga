@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "gingalssm/CommonCoreManager.h"
+#include "lssm/CommonCoreManager.h"
 #include "config.h"
 
 #if HAVE_DSMCC
@@ -59,7 +59,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include "gingalssm/DataWrapperListener.h"
 #endif
 
-#include "gingalssm/StcWrapper.h"
+#include "lssm/StcWrapper.h"
 
 #include <sys/types.h>
 #include <stdio.h>

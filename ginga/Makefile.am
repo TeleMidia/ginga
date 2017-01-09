@@ -10,7 +10,6 @@ AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_PLAYER)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_GINGA_NCL)\
-  $(INCLUDE_GINGA_LSSM)\
   $(NULL)
 
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
@@ -21,7 +20,7 @@ LDADD =\
   ../ic/libgingaccic.la\
   ../gingacc-mb/libgingaccmb.la\
   ../gingacc-system/libgingaccsystem.la\
-  ../gingalssm/libgingalssm.la\
+  ../lssm/libgingalssm.la\
   ../gingancl/libginganclmodel.la\
   ../gingacc-player/libgingaccplayer.la\
   ../ncl30-converter/libncl30confrancl.la\

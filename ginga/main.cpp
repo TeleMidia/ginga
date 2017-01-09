@@ -29,8 +29,8 @@ using namespace ::br::pucrio::telemidia;
 # include "gingancl/multidevice/FormatterPassiveDevice.h"
 # include "gingancl/multidevice/FormatterActiveDevice.h"
 #endif //HAVE_MULTIDEVICE
-#include "gingalssm/CommonCoreManager.h"
-#include "gingalssm/PresentationEngineManager.h"
+#include "lssm/CommonCoreManager.h"
+#include "lssm/PresentationEngineManager.h"
 
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -49,8 +49,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #endif
 
-#include "gingalssm/ICommonCoreManager.h"
-#include "gingalssm/IPresentationEngineManager.h"
+#include "lssm/ICommonCoreManager.h"
+#include "lssm/IPresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
 #include <string>

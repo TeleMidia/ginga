@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "gingalssm/StcWrapper.h"
+#include "lssm/StcWrapper.h"
 
 namespace br {
 namespace pucrio {

@@ -60,7 +60,7 @@ contrib/
 /config.h
 /config.h.in
 /config.status
-/config/ginga.ini
+/data/ini/ginga.ini
 /configure
 /ginga/ginga
 /gingacc-cm/files/componentDescription.xml
