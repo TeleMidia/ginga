@@ -299,28 +299,6 @@ if test "$enable_berkelium" = yes; then
 fi
 AM_CONDITIONAL([BUILD_BERKELIUM], [test "$berkelium_ok" = yes])
 
-# Check for Awesomium.
-awesomium_ok=no
-_AC_ARG_ENABLE([awesomium], [build with Awesomium XHTML support], [no])
-if test "$enable_awesomium" = yes; then
-  AC_CHECK_HEADER([Awesomium/WebView.h],
-     [awesomium_ok=yes])
-  if test "$awesomium_ok" = yes; then
-    AC_DEFINE([HAVE_AWESOMIUM], [1],
-      [Define to 1 if awesomium is present.])
-    AWESOMIUM_LIBS='-lawesomium-1-7'
-  else
-    AC_DEFINE([HAVE_AWESOMIUM], [0],
-      [Define to 0 if awesomium is not present.])
-    AC_MSG_WARN([
-  ***
-  *** Checks for AWESOMIUM failed.
-  ***])
-  fi
-  AC_SUBST([AWESOMIUM_LIBS])
-fi
-AM_CONDITIONAL([BUILD_AWESOMIUM], [test "$awesomium_ok" = yes])
-
 # Check for espeak.
 espeak_ok=no
 _AC_ARG_ENABLE([espeak], [build with espeak SSML support], [no])
@@ -489,7 +467,6 @@ AC_MSG_NOTICE([summary of main build options:
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
   build berkelium:        ${berkelium_ok}
-  build awesomium:        ${awesomium_ok}
   build espeak:           ${enable_espeak}
   build librsvg:          ${enable_librsvg}
   build libbpg:           ${enable_libbpg}
