@@ -48,9 +48,6 @@
  *******************************************************************************/
 
 #include "mb/ScreenManagerFactory.h"
-#if HAVE_REMOTE_MB
-#include "mb/DistributedScreenManager.h"
-#endif
 
 using namespace br::pucrio::telemidia::ginga::core::mb;
 
@@ -60,16 +57,7 @@ IScreenManager* ScreenManagerFactory::getInstance(bool forceLocal)
 {
 	if (ScreenManagerFactory::_instance == NULL)
 	{
-		if (forceLocal == true)
-			ScreenManagerFactory::_instance = new LocalScreenManager();
-		else
-		{
-#if HAVE_REMOTE_MB
-			ScreenManagerFactory::_instance = new DistributedScreenManager();
-#else
-			ScreenManagerFactory::_instance = new LocalScreenManager();
-#endif
-		}
+		ScreenManagerFactory::_instance = new LocalScreenManager();
 	}
 	return ScreenManagerFactory::_instance;
 }

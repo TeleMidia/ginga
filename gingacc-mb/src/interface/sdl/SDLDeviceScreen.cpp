@@ -2075,14 +2075,7 @@ namespace mb {
 
 		initCodeMaps();
 
-#if HAVE_REMOTE_MB
-    if (ScreenManagerFactory::getInstance()->isLocal () == true)
-      s->im = new DistributedInputManagerMB (s->id);
-    else
       s->im = new InputManager (s->id);
-#else
-      s->im = new InputManager (s->id);
-#endif
 
     if (s->im != NULL)
       s->im->setAxisBoundaries(s->wRes, s->hRes, 0);
