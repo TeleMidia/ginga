@@ -535,7 +535,6 @@ AC_MSG_NOTICE([summary of main build options:
   build components:       ${enable_components}
   build data-processing:  ${enable_data_processing}
   build multi-device:     ${enable_multidevice}
-  build multi-process:    ${enable_multiprocess}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}
   build berkelium:        ${berkelium_ok}
@@ -543,7 +542,6 @@ AC_MSG_NOTICE([summary of main build options:
   build espeak:           ${enable_espeak}
   build librsvg:          ${enable_librsvg}
   build libbpg:           ${enable_libbpg}
-  build remote-mb:        ${enable_remote_mb}
 
   install headers:        ${enable_headers}
   trace nclua calls:      ${enable_nclua_trace}
