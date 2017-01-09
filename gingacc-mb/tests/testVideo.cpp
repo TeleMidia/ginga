@@ -444,35 +444,6 @@ int main(int argc, char** argv) {
 	cout << "press enter to exit";
 	cout << endl;
 
-	/*if (argc == 3) {
-		if (strcmp(argv[1], "xine") == 0) {
-			cout << "gingacc-mb test will test xine video provider" << endl;
-#if HAVE_XINEPROVIDER
-			xineProvider = new XineVideoProvider(argv[2]);
-			s->setParent(w);
-			xineProvider->playOver(s, true);
-			xineProvider->feedBuffers();
-			xineProvider->checkVideoResizeEvent(s);
-			xineProvider->setSoundLevel(100);
-			xineProvider->playOver(s, true);
-			win->show();
-#endif
-		} else if (strcmp(argv[1], "ffmpeg") == 0) {
-			cout << "gingacc-mb test will test ffmpeg video provider" << endl;
-#if HAVE_FFMPEGPROVIDER
-			ffmpegProvider = new FFmpegVideoProvider(argv[2]);
-			s->setParent(w);
-			win->show();
-			ffmpegProvider->feedBuffers();
-			ffmpegProvider->checkVideoResizeEvent(s);
-			ffmpegProvider->setSoundLevel(100);
-			ffmpegProvider->playOver(s, true);
-#endif
-		}
-	}*/
-
-	//TODO: tests
-
 	getchar();
 	return 0;
 }

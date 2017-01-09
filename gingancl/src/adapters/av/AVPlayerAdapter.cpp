@@ -86,44 +86,6 @@ namespace av {
 		return FormatterPlayerAdapter::setPropertyValue(
 				event, value);
 
-#ifdef STx7100
-#ifdef GEODE
-		if (value == "") {
-	  		return;
-	  	}
-		string propName;
-		AVPlayer* vp;
-		CascadingDescriptor* descriptor;
-		FormatterRegion* region;
-		LayoutRegion* ncmRegion;
-
-		propName = event->getAnchor()->getPropertyName();
-		propName = event->getAnchor()->getPropertyName();
-				if (propName == "size" || propName == "location" ||
-					propName == "bounds" ||
-					propName == "top" || propName == "left" ||
-					propName == "bottom" || propName == "right" ||
-					propName == "width" || propName == "height") {
-
-			if (playerObj->instanceOf("AVPlayerObject")) {
-				descriptor = object->getDescriptor();
-				region = descriptor->getFormatterRegion();
-				ncmRegion = region->getLayoutRegion();
-
-				vp = ((AVPlayerObject*)playerObj)->getPlayer();
-				vp->setVoutWindow(ncmRegion->getAbsoluteLeft(),
-					ncmRegion->getAbsoluteTop(),
-					ncmRegion->getWidthInPixels(),
-					ncmRegion->getHeightInPixels());
-
-				vp->setAlphaBlend(ncmRegion->getAbsoluteLeft(),
-					ncmRegion->getAbsoluteTop(),
-					ncmRegion->getWidthInPixels(),
-					ncmRegion->getHeightInPixels());
-			}
-		}
-#endif /*GEODE*/
-#endif /*STx7100*/
 	}
 }
 }

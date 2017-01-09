@@ -56,10 +56,6 @@ http://www.telemidia.puc-rio.br
 #include "ic/curlic/CurlInteractiveChannel.h"
 #endif //HAVE_CURL
 
-#if HAVE_CCRTP
-#include "ic/ccrtpic/CCRTPInteractiveChannel.h"
-#endif //HAVE_CCRTP
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -146,11 +142,6 @@ namespace ic {
 		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
 #if HAVE_CURL
 			ic = new CurlInteractiveChannel();
-#endif
-
-		} else if (rUri.length() > 6 && rUri.substr(0, 6) == "rtp://") {
-#if HAVE_CCRTP
-			ic = new CCRTPInteractiveChannel();
 #endif
 		}
 

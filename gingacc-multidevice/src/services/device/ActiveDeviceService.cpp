@@ -100,37 +100,6 @@ namespace multidevice {
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
 
-#ifdef	__DARWIN_UNIX03
-					i = listeners->begin();
-					while (i != listeners->end()) {
-						(*i)->receiveRemoteContent(
-								remoteDevClass, stream, streamSize);
-						++i;
-					}
-					return true;
-
-#else
-
-/*			if (nsp != NULL) {
-				nsp->process(stream, streamSize);
-				nsp->mount();
-
-				if (nsp != NULL && nsp->isConsolidated()) {
-					Thread::mutexLock(&lMutex);
-					i = listeners->begin();
-					while (i != listeners->end()) {
-						(*i)->receiveRemoteContentInfo(
-								nsp->getMetadata()->getName(), nsp->getRootUri());
-
-						(*i)->receiveRemoteContent(
-								remoteDevClass, nsp->getRootUri());
-						++i;
-					}
-					Thread::mutexUnlock(&lMutex);
-				}
-				return true;
-			}*/
-#endif
 		}
 
 		clog << "ActiveDeviceService::receiveMediaContent Warning! ";

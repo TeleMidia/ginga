@@ -74,13 +74,6 @@ typedef int socklen_t;
 #include "system/compat/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-    #include <ifaddrs.h>
-    #define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
-  #endif
-#endif
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -88,17 +81,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-	static int sd = -1;
-	static struct sockaddr_in domain_addr;
-	static int                domain_addr_len;
-	static struct sockaddr_in broadcast_addr;
-	static socklen_t          broadcast_addr_len;
-  #endif
-#else
 	static UDPSocket* udpSocket;
-#endif
 
 	BroadcastSocketService::BroadcastSocketService() {
 		interfaceIP  = 0;
@@ -109,10 +92,6 @@ namespace multidevice {
 		pthread_mutex_init(&mutexBuffer, NULL);
 
 		if (buildDomainAddress()) {
-#ifdef __DARWIN_UNIX03
-			interfaceIP = discoverBroadcastAddress();
-#else
-
 			try {
 				broadcastIPAddr = udpSocket->getBroadcastAddress();
 				interfaceIP = udpSocket->getLocalIPAddress();
@@ -125,7 +104,6 @@ namespace multidevice {
 				clog << e.what() << endl;
 				clog << " BroadcastSocketService::getBroadcastAddress() error! " << endl;
 			}
-#endif
 		}
 		else {
 			try {
@@ -147,13 +125,6 @@ namespace multidevice {
 	}
 
 	BroadcastSocketService::~BroadcastSocketService() {
-#if __APPLE__
-  #ifdef __DARWIN_UNIX03
-		if (sd > 0) {
-			close(sd);
-		}
-  #endif
-#else
 		if (udpSocket != NULL) {
 			udpSocket->disconnect();
 			//udpSocket->cleanUp();
@@ -164,12 +135,10 @@ namespace multidevice {
 			delete outputBuffer;
 			outputBuffer = NULL;
 		}
-#endif
 		Thread::mutexDestroy(&mutexBuffer);
 	}
 
 	bool BroadcastSocketService::buildDomainAddress() {
-#ifndef __DARWIN_UNIX03
 		try {
 			udpSocket = new UDPSocket();
 			udpSocket->setReuseAddr(true);
@@ -182,129 +151,11 @@ namespace multidevice {
 			clog << "BroadcastSocketService::buildClientAddress Warning!" << endl;
 			return false;
 		}
-#elif __APPLE__
-  #ifdef __DARWIN_UNIX03
-		int ret;
-		int trueVar = 1;
-
-		sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-		if (sd == -1) {
-			clog << "BroadcastSocketService::buildClientAddress Warning!";
-			clog << " can't create socket (sd == -1)" << endl;
-			return false;
-		}
-		setsockopt(sd, SOL_SOCKET, SO_BSDCOMPAT, &trueVar, sizeof(trueVar));
-		domain_addr.sin_family       = AF_INET;
-		domain_addr.sin_port         = htons(port);
-		domain_addr.sin_addr.s_addr  = INADDR_ANY;
-		domain_addr_len              = sizeof(domain_addr);
-		ret = bind(sd, (struct sockaddr *)&domain_addr, domain_addr_len);
-
-		if (ret == -1) {
-			clog << "BroadcastSocketService::buildClientAddress Warning!";
-			clog << " can't bind socket (ret == -1)" << endl;
-			return false;
-		}
-  #endif
-#endif
 		return true;
 
 	}
 
 	unsigned int BroadcastSocketService::discoverBroadcastAddress() {
-//kept for compatibility with the iOS passive device client
-//TODO: organize/clean ios defines
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-
-		struct ifconf interfaces;
-		struct ifreq* netInterface;
-		struct sockaddr_in* myAddr;
-		int numOfInterfaces, result, i;
-		string interfaceName;
-		bool validInterface;
-		char buffer[1024000];
-
-		interfaces.ifc_len = sizeof(buffer);
-		interfaces.ifc_buf = buffer;
-		result = ioctl(sd, SIOCGIFCONF, (char *) &interfaces);
-		netInterface = interfaces.ifc_req;
-		numOfInterfaces = interfaces.ifc_len/sizeof(struct ifreq);
-
-		struct ifaddrs *ifaddr, *ifa;
-		int family, s;
-		char host[NI_MAXHOST];
-
-		if (getifaddrs(&ifaddr) == -1) {
-			perror("getifaddrs");
-			SystemCompat::gingaProcessExit(EXIT_FAILURE);
-		}
-
-		/* Walk through linked list, maintaining head pointer so we
-		can free list later */
-
-		for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-			family = ifa->ifa_addr->sa_family;
-
-			/* Display interface name and family (including symbolic
-			form of the latter for the common families) */
-
-			printf("%s  address family: %d%s\n",
-			ifa->ifa_name, family,
-			(family == AF_INET) ?   " (AF_INET)" :
-			(family == AF_INET6) ?  " (AF_INET6)" : "");
-
-			/* For an AF_INET* interface address, display the address */
-			validInterface = (strcmp("en0", ifa->ifa_name) == 0);
-			if (validInterface && (family == AF_INET || family == AF_INET6)) {
-				s = getnameinfo(ifa->ifa_addr,
-				(family == AF_INET) ? sizeof(struct sockaddr_in) :
-				sizeof(struct sockaddr_in6),
-				host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST);
-
-				if (s != 0) {
-					clog << "BroadcastSocketService::discoverBroadcastAddress";
-					clog << " getnameinfo() failed: " << gai_strerror(s);
-					clog << endl;
-					return 0;
-				}
-
-				broadcast_addr.sin_family = AF_INET;
-				broadcast_addr.sin_port = htons(port);
-				broadcast_addr_len      = sizeof(broadcast_addr);
-				broadcast_addr.sin_addr.s_addr = inet_addr(inet_ntoa(
-						((struct sockaddr_in *)ifa->ifa_broadaddr)->sin_addr));
-
-				/*clog << "Broadcast addr = ";
-				clog << inet_ntoa(
-						((struct sockaddr_in *)ifa->ifa_broadaddr)->sin_addr);
-
-				clog << endl;*/
-
-				memset(
-						broadcast_addr.sin_zero,
-						'\0',
-						sizeof(broadcast_addr.sin_zero));
-
-				if (result >= 0) {
-					clog << "BroadcastSocketService::";
-					clog << "discoverBroadcastAddress interfaceName: '";
-					clog << ifa->ifa_name;
-
-					inet_aton(
-							host,
-							&(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr));
-
-					freeifaddrs(ifaddr);
-					return (unsigned int)(((struct sockaddr_in *)
-							ifa->ifa_addr)->sin_addr.s_addr);
-				}
-			}
-		}
-
-		freeifaddrs(ifaddr);
-  #endif
-#endif
 		clog << "BroadcastSocketService::discoverBroadcastAddress Warning!";
 		clog << " can't discover broadcast address" << endl;
 		return 0;
@@ -343,7 +194,6 @@ namespace multidevice {
 		//clog << " taskSize = " << taskSize << endl; //<< "' and headerSize = '";
 		//clog << headerSize << "'" << endl;
 
-#ifndef __DARWIN_UNIX03
 		try {
 			for (i = 0; i < NUM_OF_COPIES; i++) {
 				udpSocket->sendTo(data,taskSize,broadcastIPAddr,port);
@@ -354,25 +204,6 @@ namespace multidevice {
 			clog << "BroadcastSocketService::sendData Error!!";
 			return false;
 		}
-#elif __APPLE__
-  #ifdef __DARWIN_UNIX03
-		for (i = 0; i < NUM_OF_COPIES; i++) {
-			result = sendto(
-					sd,
-					data,
-					taskSize,
-					0,
-					(struct sockaddr*)&broadcast_addr,
-					broadcast_addr_len);
-
-			if (result == -1) {
-				perror("BroadcastSocketService::taskRequest sendto");
-				return false;
-			}
-
-		}
-  #endif
-#endif
 	return true;
 
 	}
@@ -405,7 +236,6 @@ namespace multidevice {
 	}
 
 	bool BroadcastSocketService::checkInputBuffer(char* data, int* size) {
-#ifndef __DARWIN_UNIX03
 		int res = 0;
 		int recvFrom = 0;
 		int sz = 0;
@@ -491,80 +321,6 @@ namespace multidevice {
 				memset(recvString, 0, MAX_FRAME_SIZE);
 				return false;
 		}
-#elif __APPLE__
-  #ifdef __DARWIN_UNIX03
-		int nfds, res, recvFrom;
-		fd_set fdset;
-		struct timeval tv_timeout;
-
-		FD_ZERO(&fdset);
-		FD_SET(sd, &fdset);
-		nfds               = sd + 1;
-		tv_timeout.tv_sec  = 0;
-		tv_timeout.tv_usec = 0;
-
-		res = select(nfds, &fdset, NULL, NULL, &tv_timeout);
-
-		switch (res) {
-			case -1:
-				clog << "BroadcastSocketService::checkInputBuffer ";
-				clog << "Warning! select ERRNO = " << errno << endl;
-				memset(data, 0, MAX_FRAME_SIZE);
-				return false;
-
-			case 1:
-				clog << "BroadcastSocketService::checkInputBuffer ";
-				clog << "receiving data ..." << endl;
-
-				memset(data, 0, MAX_FRAME_SIZE);
-				//result = recv(sd, headerStream, headerSize, 0);
-				*size = recvfrom(
-						sd,
-						data,
-						MAX_FRAME_SIZE,
-						MSG_DONTWAIT,
-						(struct sockaddr*)&broadcast_addr,
-						&broadcast_addr_len);
-
-				if (*size == -1) {
-					if (errno != EAGAIN) {
-						clog << "BroadcastSocketService::checkInputBuffer ";
-						herror("check domain error: ");
-						clog << "Warning! receive data ERRNO = " << errno;
-						clog << endl;
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-
-					} else {
-						memset(data, 0, MAX_FRAME_SIZE);
-						return false;
-					}
-				}
-
-				if (*size <= HEADER_SIZE) {
-					clog << "BroadcastSocketService::checkInputBuffer ";
-					clog << "Warning! Received invalid frame: ";
-					clog << "bytes received = '" << *size << "' ";
-					clog << "HEADER_SIZE = '" << HEADER_SIZE << "' ";
-					clog << endl;
-
-					memset(data, 0, MAX_FRAME_SIZE);
-					return false;
-				}
-
-				recvFrom = getUIntFromStream(data + 1);
-				if (!isValidRecvFrame(recvFrom, data)) {
-					memset(data, 0, MAX_FRAME_SIZE);
-					return false;
-				}
-				break;
-
-			default:
-				memset(data, 0, MAX_FRAME_SIZE);
-				return false;
-		}
-  #endif
-#endif
 		return true;
 	}
 }

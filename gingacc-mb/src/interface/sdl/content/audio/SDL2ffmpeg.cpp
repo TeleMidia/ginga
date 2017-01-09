@@ -1739,11 +1739,7 @@ fail:
 			snprintf(
 					asrc_args + ret,
 					sizeof(asrc_args) - ret,
-#ifdef __MACH__
-					":channel_layout=0x%PRIx64",
-#else
 					":channel_layout=0x%"PRIx64,
-#endif
 
 					vs->audio_filter_src.channel_layout);
 		}

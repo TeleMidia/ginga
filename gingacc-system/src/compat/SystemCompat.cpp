@@ -227,13 +227,6 @@ namespace compat {
 		fUriD = "/";
 
 		return;
-#elif defined(__ANDROID__)
-			filesPref = "/sdcard/ginga4android/";
-			installPref = "/sdcard/ginga4android/";
-			pathD = ";";
-			iUriD = "/";
-			fUriD = "\\";
-			return;
 #else
 		string gingaini = GINGA_INI_PATH;
 
@@ -346,14 +339,6 @@ namespace compat {
 						   currentPath.find_last_of(iUriD)+1);
 
 #else
-		// This commented solution should be the correct way to find the executable name on Unix
-		/* char buf[256];
-		readlink("/proc/self/exe", buf, sizeof(buf));
-		currentPath = buf;
-		gingaCurrentPath = gingaCurrentPath = currentPath.substr( 0,
-											   currentPath.find_last_of(iUriD)+1);
-		*/
-		
 		vector<string>* params;
 		vector<string>::iterator i;
 
@@ -409,13 +394,6 @@ namespace compat {
 	string SystemCompat::appendLibExt(string libName) {
 		string newLibName = libName;
 
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-		if (libName.find(".dylib") == std::string::npos) {
-			newLibName = libName + ".dylib";
-		}
-  #endif //__DARWIN_UNIX03
-#else //!__APPLE__
 #ifdef WIN32
 		if (libName.find(".dll") == std::string::npos) {
 			newLibName = libName + ".dll";
@@ -425,7 +403,6 @@ namespace compat {
 			newLibName = libName + ".so";
 		}
 #endif //WIN32
-#endif//__APPLE__
 
 		return newLibName;
 	}
@@ -851,26 +828,20 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeSigpipeHandler() {
-#ifndef WIN32 // Linux and Mac OS Snow Leopard (10.6)
+#ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);
-#endif // Linux and Mac OS Snow Leopard (10.6) 
+#endif
 	}
 
 	string SystemCompat::getOperatingSystem() {
 
 		string _ops;
 
-#ifdef __APPLE__
-  #ifdef __DARWIN_UNIX03
-		_ops = "Mach";
-  #endif //__DARWIN_UNIX03
-#else //!__APPLE__
 #ifdef WIN32
 		_ops = "Windows";
 #else //!WIN32
 		_ops = "Linux";
 #endif //WIN32
-#endif //__APPLE__
 
 		return _ops;
 	}
@@ -904,16 +875,6 @@ namespace compat {
 				}
 			}
 		}
-#elif (__MACH__ || HAVE_MACH_SL_H)
-		/**
-		 * Date: 18.01.2013
-		 * Author: Ricardo Rios
-		 * E-mail: rrios@telemidia.puc-rio.br
-		 **/
-		float cpuFreq = machInfo("hw.cpufrequency");
-		if (cpuFreq > 0.0) {
-			clockSpeed = cpuFreq;
-		}
 #endif
 		return clockSpeed;
 	}
@@ -930,17 +891,6 @@ namespace compat {
 		struct sysinfo info;
 		sysinfo(&info);
 		memSize = info.totalram;
-#elif (__MACH__ || HAVE_MACH_SL_H) // Mac Snow Leopard (10.6)
-		/**
-                  * Date: 18.01.2013
-                  * Author: Ricardo Rios
-                  * E-mail: rrios@telemidia.puc-rio.br
-                  **/
-		float machMemSize = machInfo("hw.memsize");
-
-		if (machMemSize > 0.0) {
-			memSize = machMemSize;
-		}
 #endif
 
 		return (memSize);
@@ -1170,14 +1120,6 @@ namespace compat {
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 		res = win_clock_gettime(clockType, tv);
-#elif (__MACH__ || HAVE_MACH_SL_H)
-    		clock_serv_t cclock;
-    		mach_timespec_t mts;
-    		host_get_clock_service(mach_host_self(), clockType, &cclock);
-    		clock_get_time(cclock, &mts);
-    		mach_port_deallocate(mach_task_self(), cclock);
-    		tv->tv_sec = mts.tv_sec;
-    		tv->tv_nsec = mts.tv_nsec;
 #else
 		res = clock_gettime(clockType, tv);
 #endif
@@ -1213,8 +1155,6 @@ namespace compat {
 			return gingaCurrentPath + "Temp\\";
 		}
 		return lpTempPathBuffer;
-#elif defined(__ANDROID__)
-		return "/sdcard/ginga4android/";
 #else
 		return "/tmp/";
 #endif
@@ -1225,12 +1165,9 @@ namespace compat {
 		_exit(status);
 	}
 
-#ifndef	__DARWIN_UNIX03
 	static std::ofstream logOutput;
-#endif
 
 	void SystemCompat::setLogTo(short logType, string sufix) {
-#ifndef	__DARWIN_UNIX03
 		string logUri = "";
 
 		switch (logType) {
@@ -1273,7 +1210,6 @@ namespace compat {
 			default:
 				break;
 		}
-#endif
 	}
 
 	string SystemCompat::checkPipeName(string pipeName) {
@@ -1449,33 +1385,14 @@ namespace compat {
 
 	bool SystemCompat::initMemCheck() {
 		bool success = false;
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-#if ENABLE_MEM_LEAK_DETECTION
-		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_CRT_DF );
-#endif
-#endif
 		return success;
 	}
 
 	void SystemCompat::memCheckPoint() {
-#if defined(_WIN32) && !defined(__MINGW32__)
-#if ENABLE_MEM_LEAK_DETECTION
-		_CrtMemState s1;
-		_CrtMemCheckpoint(&s1);
-#endif
-#endif
 	}
 
 	bool SystemCompat::finishMemCheck() {
 		bool success = false;
-
-#if defined(_WIN32) && !defined(__MINGW32__)
-#if ENABLE_MEM_LEAK_DETECTION
-		_CrtDumpMemoryLeaks();
-		success = true;
-#endif
-#endif
 		return success;
 	}
 }
@@ -1485,22 +1402,3 @@ namespace compat {
 }
 }
 }
-
-#if (__MACH__ || HAVE_MACH_SL_H)
-
-extern "C" float machInfo(const char *name) {
-	// If the CPU frequency can not be obtained, returns 0.0 (zero) for unknown.
-	float var = 0.0;
-	uint64_t uVar;
-	size_t len = sizeof(uint64_t);
-
-	if ( sysctlbyname(name, &uVar, &len, NULL, 0) )
-	{
-		perror("sysctl");
-	} else {
-		var = (float) (uVar / 1000000) ;
-	}
-
-	return (var);
-}
-#endif

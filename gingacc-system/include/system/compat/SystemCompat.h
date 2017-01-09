@@ -52,41 +52,14 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#ifdef _WIN32
-
-#if ENABLE_MEM_LEAK_DETECTION
-#ifndef _CRTDBG_MAP_ALLOC
-#define _CRTDBG_MAP_ALLOC
-#endif //_CRTDBG_MAP_ALLOC
-
-#define _ATL_DISABLE_NOTHROW_NEW
-
-#ifndef DBG_NEW
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#define new DBG_NEW
-#endif //DBG_NEW
-
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif //ENABLE_MEM_LEAK_DETECTION
-#endif //_WIN32
-
 extern "C" {
 #include <dirent.h>
-// For Linux, Mac OS Snow Leopard (10.6) and Win32
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
-
-#ifdef __MACH__
-#include <mach/clock.h>
-#include <mach/mach.h>
-#include <mach/clock_types.h>
-#define CLOCK_REALTIME SYSTEM_CLOCK
-#endif
 
 #ifdef _WIN32
 #ifndef isnan
@@ -116,15 +89,8 @@ extern "C" {
 		#define COMP_API __declspec(dllimport)
 	#endif //BUILD_DLL
 
-#else // For Linux and Mac OS Snow Leopard (10.6)
-  #if (defined __APPLE__ || defined HAVE_MACH_SL_H ) // For Mac OS Snow Leopard (10.6)
-	#include <mach/mach.h>
-	#include <mach/mach_host.h>
-	#include <mach/mach_types.h>
-	#include <mach/vm_statistics.h>
-	#include <sys/sysctl.h>
-	#include <sys/types.h>
-  #elif (HAVE_SYS_SYSINFO_H) // For Linux only
+#else
+  #if HAVE_SYS_SYSINFO_H
 	#include <sys/sysinfo.h>
   #endif
 

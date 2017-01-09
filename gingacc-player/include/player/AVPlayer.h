@@ -76,10 +76,6 @@ extern "C" {
 #endif
 #endif
 
-#ifdef GEODE
-#include "GeodeVideo4Linux.h"
-#endif
-
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
@@ -208,10 +204,7 @@ namespace player {
 
 			void setAVPid(int aPid, int vPid);
 
-			//geode:
 			bool setOutWindow(GingaWindowID windowId);
-			void setAlphaBlend(int x, int y, int w, int h);
-			void checkResize();
 
 		private:
 			bool checkVideoResizeEvent();

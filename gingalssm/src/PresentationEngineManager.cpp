@@ -837,7 +837,6 @@ namespace lssm {
 		return aborted;
 	}
 
-	//#if HAVE_GINGAJ
 	void PresentationEngineManager::openNclDocument(
 			string docUri, int x, int y, int w, int h) {
 
@@ -846,7 +845,6 @@ namespace lssm {
 		clog << w << "', h = '" << h << "'" << endl;
 	}
 
-	//#if HAVE_DSMCC
 	void* PresentationEngineManager::getDsmccListener() {
 		return this->dsmccListener;
 	}

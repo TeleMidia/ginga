@@ -208,10 +208,8 @@ namespace lssm {
 		bool abortPresentation(string nclFile);
 
 	private:
-		//#if HAVE_GINGAJ
 		void openNclDocument(string docUri, int x, int y, int w, int h);
 
-		//#if HAVE_DSMCC
 		void* getDsmccListener();
 		void pausePressed();
 

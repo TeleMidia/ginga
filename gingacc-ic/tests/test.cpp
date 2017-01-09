@@ -51,9 +51,6 @@ http://www.telemidia.puc-rio.br
 
 #include "ic/InteractiveChannelManager.h"
 #include "ic/curlic/CurlInteractiveChannel.h"
-#if HAVE_CCRTP
-#include "ic/ccrtpic/CCRTPInteractiveChannel.h"
-#endif
 
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
@@ -72,47 +69,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include <iostream>
 using namespace std;
 
-#if HAVE_CCRTP
-class ICListener : public IInteractiveChannelListener {
-	private:
-		FILE* fd;
-
-	public:
-		ICListener() {
-			fd = fopen("recv.ts", "w+b");
-		}
-
-		~ICListener() {
-			if (fd > 0) {
-				fclose(fd);
-			}
-		}
-
-		void receiveCode(long respCode) {
-			clog << "ICListener received code '" << respCode << "'" << endl;
-		}
-
-		void receiveDataStream(char* buffer, int size) {
-			if (fd != NULL && size > 0) {
-				fwrite(buffer, 1, size, fd);
-			}
-		}
-
-		void receiveDataPipe(FILE* fd, int size) {
-			clog << "ICListener received write '" << size << "'" << endl;
-		}
-
-		void downloadCompleted(const char* localUri) {
-			clog << "ICListener download completed '" << localUri << "'";
-			clog << endl;
-		}
-};
-#endif
-
 int main(int argc, char** argv) {
-#if HAVE_CCRTP
-	ICListener* listener;
-#endif
 	IInteractiveChannel* ic;
 	IInteractiveChannelManager* icm;
 
@@ -126,10 +83,6 @@ int main(int argc, char** argv) {
 	SystemCompat::makeDir(localPath.c_str(), 0666);
 
 	icm = InteractiveChannelManager::getInstance();
-
-#if HAVE_CCRTP
-	listener = new ICListener();
-#endif
 
 	if (argc == 3 && strcmp(argv[1], "--curl") == 0) {
 		if (strcmp(argv[2], "fd") == 0) {
@@ -153,22 +106,6 @@ int main(int argc, char** argv) {
 		}
 
 	} else if (argc == 3 && strcmp(argv[1], "--ccrtp") == 0) {
-#if HAVE_CCRTP
-		ic = new CCRTPInteractiveChannel();
-
-		char* buffer = NULL;
-
-		remoteUri.assign(argv[2], strlen(argv[2]));
-		buffer = new char[10240];
-		if (ic != NULL && ic->hasConnection()) {
-			ic->setTarget(buffer);
-			ic->reserveUrl(remoteUri, listener);
-			ic->performUrl();
-		}
-
-		delete ic;
-		delete buffer;
-#endif
 	}
 
 #if HAVE_CCRTP
