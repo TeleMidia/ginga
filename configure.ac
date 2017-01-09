@@ -410,21 +410,22 @@ _AC_SUBST_GINGAPKGDIR([gingalssm],             [gingalssm])
 
 AC_CONFIG_FILES([
 Makefile
-util/Makefile
-gingacc-system/Makefile
-ic/Makefile
-gingacc-mb/Makefile
-gingacc-contextmanager/Makefile
-gingacc-multidevice/Makefile
-gingacc-tuner/Makefile
-gingacc-tsparser/Makefile
-gingacc-dataprocessing/Makefile
-gingacc-player/Makefile
-ncl30/Makefile
-ncl30-converter/Makefile
-gingancl/Makefile
-gingalssm/Makefile
+data/Makefile
 ginga/Makefile
+gingacc-contextmanager/Makefile
+gingacc-dataprocessing/Makefile
+gingacc-mb/Makefile
+gingacc-multidevice/Makefile
+gingacc-player/Makefile
+gingacc-system/Makefile
+gingacc-tsparser/Makefile
+gingacc-tuner/Makefile
+gingalssm/Makefile
+gingancl/Makefile
+ic/Makefile
+ncl30-converter/Makefile
+ncl30/Makefile
+util/Makefile
 ])
 
 AC_CONFIG_FILES([

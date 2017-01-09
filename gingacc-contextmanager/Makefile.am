@@ -1,6 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-################################ Libraries #################################
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MB)\
@@ -16,11 +15,4 @@ libgingacccontextmanager_la_SOURCES =\
   src/ContextManager.cpp\
   src/user/GingaUser.cpp\
   src/system/SystemInfo.cpp\
-  $(NULL)
-
-############################## Configuration ###############################
-gingacccontextmanagerconfdir = $(gingaconfdir)/contextmanager
-gingacccontextmanagerconf_DATA =\
-  files/users.ini\
-  files/contexts.ini\
   $(NULL)

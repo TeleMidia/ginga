@@ -76,9 +76,3 @@ libgingaccmb_la_SOURCES +=\
 libgingaccmb_la_SOURCES +=\
   src/interface/sdl/content/video/SDLVideoProvider.cpp\
   $(NULL)
-
-############################## Configuration ###############################
-gingaccmbconfdir = $(gingaconfdir)/mb/config
-gingaccmbconf_DATA =\
-  files/config/input.cfg\
-  $(NULL)
