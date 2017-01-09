@@ -22,7 +22,7 @@ extern "C" {
 #include <assert.h>
 }
 
-#include "contextmanager/IContextListener.h"
+#include "ctxmgmt/IContextListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #include "model/ExecutionObject.h"

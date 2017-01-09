@@ -15,12 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "contextmanager/user/GingaUser.h"
+#include "config.h"
+#include <stdio.h>
 
+#include "GingaUser.h"
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
-
-#include <stdio.h>
 
 namespace br {
 namespace pucrio {

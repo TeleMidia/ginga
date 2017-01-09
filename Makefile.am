@@ -9,7 +9,7 @@ SUBDIRS+= util
 SUBDIRS+= gingacc-system
 SUBDIRS+= ic
 SUBDIRS+= gingacc-mb
-SUBDIRS+= gingacc-contextmanager
+SUBDIRS+= ctxmgmt
 if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice
 endif
@@ -28,7 +28,6 @@ SUBDIRS+= ginga
 
 if BUILD_TESTS
 SUBDIRS+= gingacc-mb/tests
-SUBDIRS+= gingacc-contextmanager/tests
 if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice/tests
 endif

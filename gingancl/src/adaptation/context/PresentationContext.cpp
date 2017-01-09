@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "contextmanager/ContextManager.h"
-#include "contextmanager/system/SystemInfo.h"
+#include "ctxmgmt/ContextManager.h"
+#include "ctxmgmt/SystemInfo.h"
 
 namespace br {
 namespace pucrio {

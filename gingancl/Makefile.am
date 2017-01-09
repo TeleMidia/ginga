@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MB)\
-  $(INCLUDE_GINGACC_CONTEXTMANAGER)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_GINGACC_PLAYER)\
   $(INCLUDE_NCL30)\
@@ -81,7 +80,8 @@ libginganclmodel_la_SOURCES =\
   $(NULL)
 
 libginganclmodel_la_LIBADD =\
-  ../ic/libgingaccic.la\
+  ../ctxmgmt/ctxmgmt.la\
+  ../ic/ic.la\
   ../ncl30/libncl30.la\
   $(NULL)
 

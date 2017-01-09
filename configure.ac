@@ -395,7 +395,6 @@ m4_define([_AC_SUBST_GINGAPKGDIR],
 _AC_SUBST_GINGAPKGDIR([gingaccsystem],         [system])
 _AC_SUBST_GINGAPKGDIR([gingacccm],             [cm])
 _AC_SUBST_GINGAPKGDIR([gingaccmb],             [mb])
-_AC_SUBST_GINGAPKGDIR([gingacccontextmanager], [contextmanager])
 _AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
 _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
 _AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
@@ -409,7 +408,7 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 ginga/Makefile
-gingacc-contextmanager/Makefile
+ctxmgmt/Makefile
 gingacc-dataprocessing/Makefile
 gingacc-mb/Makefile
 gingacc-multidevice/Makefile
@@ -427,7 +426,6 @@ util/Makefile
 
 AC_CONFIG_FILES([
 gingacc-mb/tests/Makefile
-gingacc-contextmanager/tests/Makefile
 gingacc-multidevice/tests/Makefile
 gingacc-tuner/tests/Makefile
 gingacc-tsparser/tests/Makefile
