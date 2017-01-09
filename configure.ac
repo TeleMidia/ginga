@@ -188,20 +188,6 @@ if test "$HAVE_EXPAT" = no; then
 *** Expat XML Parser >= expat_required_version is required.])
 fi
 
-# Enable remote mb
-_AC_ARG_ENABLE([remote-mb], [enable remote backend communication support], [no])
-AM_CONDITIONAL([BUILD_REMOTE_MB], [test "$enable_remote_mb" = yes])
-if test "$enable_remote_mb" = yes; then
-  AC_DEFINE([HAVE_REMOTE_MB], [1],
-   [Define to 1 if remote-mb is enabled.])
-else
-  AC_DEFINE([HAVE_REMOTE_MB], [0],
-   [Define to 1 if remote-mb is enabled.])
-fi
-
-############################## TeleMidia Util ##############################
-# Nothing to do.
-
 ############################# Ginga-CC System ##############################
 
 # Socket and sysinfo.

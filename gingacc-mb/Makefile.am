@@ -28,19 +28,8 @@ libgingaccmb_la_SOURCES =\
   src/InputManager.cpp\
   src/LocalScreenManager.cpp
 
-if BUILD_REMOTE_MB
 libgingaccmb_la_SOURCES +=\
-	src/DistributedInputManagerMB.cpp\
-	src/DistributedInputManagerListener.cpp\
-	src/remote/StubClient.cpp\
-	src/DistributedScreenManager.cpp
-
-
-libgingaccmb_la_LDFLAGS += -lboost_system
-endif
-
-libgingaccmb_la_SOURCES +=\
-	$(NULL)	
+  $(NULL)
 
 libgingaccmb_la_SOURCES +=\
   src/interface/sdl/SDLDeviceScreen.cpp\
@@ -95,33 +84,3 @@ gingaccmbconfdir = $(gingaconfdir)/mb/config
 gingaccmbconf_DATA =\
   files/config/input.cfg\
   $(NULL)
-
-############################## Ginga-mb PROGRAMS ###########################
-if BUILD_REMOTE_MB
-bin_PROGRAMS = gingacc_mb
-gingacc_mb_SOURCES =\
-   src/remote/RequestManager.cpp\
-   src/remote/StubServer.cpp\
-   src/main.cpp\
-   $(NULL)
-
-gingacc_mb_CPPFLAGS =\
-  -std=c++11 \
-  $(INCLUDE_TELEMIDIA_UTIL)\
-  $(INCLUDE_GINGACC_SYSTEM)\
-  $(INCLUDE_GINGACC_CM)\
-  $(INCLUDE_GINGACC_MB)\
-  $(INCLUDE_GINGACC_CONTEXTMANAGER)\
-  $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(INCLUDE_GINGACC_PLAYER)\
-  $(INCLUDE_NCL30)\
-  $(INCLUDE_GINGA_NCL)\
-  $(INCLUDE_GINGA_LSSM)\
-  $(NULL)
-
-gingacc_mb_LDADD = \
-  ../gingacc-system/libgingaccsystem.la\
-  ../gingacc-mb/libgingaccmb.la\
-  ../telemidia-util/libtelemidiautil.la\
-  $(NULL)	
-endif
