@@ -26,7 +26,7 @@ gingaconf_DATA =\
   $(NULL)
 
 SUBDIRS  =
-SUBDIRS += telemidia-util
+SUBDIRS += util
 SUBDIRS += gingacc-system
 SUBDIRS += gingacc-ic
 SUBDIRS += gingacc-mb
@@ -47,7 +47,6 @@ SUBDIRS += gingalssm
 SUBDIRS += ginga
 
 if BUILD_TESTS
-SUBDIRS += telemidia-util/tests
 SUBDIRS += gingacc-ic/tests
 SUBDIRS += gingacc-mb/tests
 SUBDIRS += gingacc-contextmanager/tests

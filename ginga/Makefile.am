@@ -28,7 +28,7 @@ LDADD =\
   ../gingacc-player/libgingaccplayer.la\
   ../ncl30-converter/libncl30confrancl.la\
   ../ncl30/libncl30.la\
-  ../telemidia-util/libtelemidiautil.la\
+  ../util/libtelemidiautil.la\
   $(NULL)
 
 if BUILD_DATA_PROCESSING
