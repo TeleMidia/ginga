@@ -65,4 +65,4 @@ AM_LDFLAGS += $(LIBBPG_LIBS)
 endif
 
 bin_PROGRAMS = ginga
-ginga_SOURCES = src/main.cpp
+ginga_SOURCES = main.cpp
