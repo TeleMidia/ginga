@@ -20,25 +20,6 @@ libgingacccontextmanager_la_SOURCES =\
   src/system/SystemInfo.cpp\
   $(NULL)
 
-################################# Headers ##################################
-if INSTALL_HEADERS
-gingacccontextmanagerinclude_HEADERS =\
-  include/contextmanager/IContextManager.h\
-  include/contextmanager/IContextListener.h\
-  include/contextmanager/user/IGingaUser.h\
-  include/contextmanager/system/ISystemInfo.h\
-  $(NULL)
-
-systemincludedir = $(gingacccontextmanagerincludedir)/system
-systeminclude_HEADERS =\
-  include/contextmanager/system/ISystemInfo.h\
-  $(NULL)
-
-userincludedir = $(gingacccontextmanagerincludedir)/user
-userinclude_HEADERS =\
-  include/contextmanager/user/IGingaUser.h\
-  $(NULL)
-endif
 ############################## Configuration ###############################
 gingacccontextmanagerconfdir = $(gingaconfdir)/contextmanager
 gingacccontextmanagerconf_DATA =\

@@ -115,10 +115,6 @@ fi
 AM_CONDITIONAL([BUILD_DATA_PROCESSING],
  [test "$enable_data_processing" = yes])
 
-# Enable headers.
-_AC_ARG_ENABLE([headers], [install library headers], [no])
-AM_CONDITIONAL([INSTALL_HEADERS], [test "$enable_headers" = yes])
-
 # Enable multi-device.
 _AC_ARG_ENABLE([multidevice], [build multi-device support], [no])
 if test "$enable_multidevice" = yes; then
