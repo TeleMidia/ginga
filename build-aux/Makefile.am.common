@@ -1,9 +1,8 @@
-LTLDFLAGS = -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
-MAINTAINERCLEANFILES = Makefile.in
+LTSTATIC= -static -avoid-version
+LTLDFLAGS= -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
+MAINTAINERCLEANFILES= Makefile.in
 
-INCLUDE_TELEMIDIA_UTIL =
 INCLUDE_GINGACC_SYSTEM = -I$(top_srcdir)/gingacc-system/include
-INCLUDE_GINGACC_IC =
 INCLUDE_GINGACC_MB = -I$(top_srcdir)/gingacc-mb/include
 INCLUDE_GINGACC_CONTEXTMANAGER = -I$(top_srcdir)/gingacc-contextmanager/include
 INCLUDE_GINGACC_MULTIDEVICE = -I$(top_srcdir)/gingacc-multidevice/include
