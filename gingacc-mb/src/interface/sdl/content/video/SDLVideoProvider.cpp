@@ -63,7 +63,7 @@ namespace mb {
 			: SDLAudioProvider(screenId, mrl) {
 		
 		type = VideoProvider;
-				 
+				
 		myScreen = screenId;
 		win      = NULL;
 		hasTex   = false;

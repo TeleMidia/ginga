@@ -93,8 +93,8 @@ namespace mirror {
 				if (fRegion != NULL) {
 					ncmRegion = fRegion->getLayoutRegion();
 					mirrorSur = dm->createSurface(
-							myScreen, 
-							ncmRegion->getWidthInPixels(), 
+							myScreen,
+							ncmRegion->getWidthInPixels(),
 							ncmRegion->getHeightInPixels());
 
 					player->setSurface(mirrorSur);

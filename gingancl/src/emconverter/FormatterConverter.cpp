@@ -992,7 +992,7 @@ namespace emconverter {
 						ncmDesc = createDummyDescriptor(node);
 						((NodeEntity*)node)->setDescriptor(ncmDesc);
 
-					} else if (node->instanceOf("ReferNode") && 
+					} else if (node->instanceOf("ReferNode") &&
 							((ReferNode*)node)->getInstanceType() == "new") {
 
 						if (((ReferNode*)node)->getInstanceDescriptor() == NULL) {
@@ -1019,7 +1019,7 @@ namespace emconverter {
 			}
 		}
 
-		if (node->instanceOf("ReferNode") && 
+		if (node->instanceOf("ReferNode") &&
 				((ReferNode*)node)->getInstanceType() == "new" &&
 				((ReferNode*)node)->getInstanceDescriptor() == NULL) {
 
@@ -1042,7 +1042,7 @@ namespace emconverter {
 		if (node->instanceOf("ContentNode")) {
 			cascadingDescriptor = createDummyCascadingDescriptor(node);
 
-		} else if (node->instanceOf("ReferNode") && 
+		} else if (node->instanceOf("ReferNode") &&
 					((ReferNode*)node)->getInstanceType() == "new") {
 
 			nodeEntity = (NodeEntity*)node->getDataEntity();
@@ -1097,7 +1097,7 @@ namespace emconverter {
 		int size;
 
 		anchorNode = nodePerspective->getAnchorNode();
-		if (anchorNode->instanceOf("ReferNode") && 
+		if (anchorNode->instanceOf("ReferNode") &&
 				((ReferNode*)anchorNode)->getInstanceType() == "new") {
 
 			node = anchorNode;
@@ -1815,7 +1815,7 @@ namespace emconverter {
 						ev  = ((SwitchEvent*)(*i))->getMappedEvent();
 						if (ev == NULL) {
 							// there is only one way to start a switch with
-							// NULL mapped event: a instSame refernode inside 
+							// NULL mapped event: a instSame refernode inside
 							// it was started
 							processExecutionObjectSwitch((ExecutionObjectSwitch*)executionObject);
 							ev  = ((SwitchEvent*)(*i))->getMappedEvent();

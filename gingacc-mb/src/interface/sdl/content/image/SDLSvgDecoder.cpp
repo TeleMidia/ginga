@@ -63,11 +63,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-    
+   
     SDLSvgDecoder::SDLSvgDecoder(string filename) {
 
         filePath.assign(filename);
-        
+       
     }
 
     SDLSvgDecoder::~SDLSvgDecoder() {

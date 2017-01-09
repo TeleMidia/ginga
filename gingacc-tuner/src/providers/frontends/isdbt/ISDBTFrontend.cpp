@@ -96,7 +96,7 @@ namespace tuning {
 
                 dumpFrontendInfo();
 
-                
+               
 
 		initIsdbtParameters();
         }
@@ -111,13 +111,13 @@ namespace tuning {
 	}
 
 	void ISDBTFrontend::initIsdbtParameters() {
-	    
+	   
 		clog << "ISDBTFrontend::initIsdbtParameters: Enter" << endl;
 
                 memset( &params, 0, sizeof(dvb_frontend_parameters) );
 
 		// for debugging purposes...
-		// params.frequency = 533142000; // sbt,  521142000 - rede vida,  599142000 - band; 
+		// params.frequency = 533142000; // sbt,  521142000 - rede vida,  599142000 - band;
 
                 params.inversion                    = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO : INVERSION_OFF;
                 params.u.ofdm.code_rate_HP          = FEC_AUTO;
@@ -126,7 +126,7 @@ namespace tuning {
                 params.u.ofdm.transmission_mode     = TRANSMISSION_MODE_AUTO;
                 params.u.ofdm.guard_interval        = GUARD_INTERVAL_AUTO;
                 params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
-                params.u.ofdm.bandwidth = BANDWIDTH_6_MHZ;                                                                                                                                  
+                params.u.ofdm.bandwidth = BANDWIDTH_6_MHZ;                                                                                                                                 
 
 		// updateIsdbtFrontendParameters();
         }
@@ -155,8 +155,8 @@ namespace tuning {
 
                 if (params.frequency != 0)
                 {
-                
-		    if (ioctl( feFd, FE_SET_FRONTEND, &params ) == -1) 
+               
+		    if (ioctl( feFd, FE_SET_FRONTEND, &params ) == -1)
 		    {
                         clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg FE_SET_FRONTEND" << endl;
                     }
@@ -177,12 +177,12 @@ namespace tuning {
 		    filter_dmx.output = DMX_OUT_TS_TAP;
 		    filter_dmx.pes_type = DMX_PES_OTHER;
 		    filter_dmx.flags = DMX_IMMEDIATE_START;
-		    
+		   
 		    if (ioctl(dmFd, DMX_SET_PES_FILTER, &filter_dmx)) {
 			clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg IFE_DEMUX_DEV_NAME" << endl;
 		    }
 		}
-                
+               
 		if (dvrFd == -1)
 		{
 
@@ -212,11 +212,11 @@ namespace tuning {
 
                 if (feStatus & FE_HAS_LOCK)
                 {
-                    if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) 
-		    {                        
+                    if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1)
+		    {                       
                         clog << "ISDBTFrontend::isTuned FE_READ_SIGNAL_STRENGTH failed" << endl;
                     }
-                    else 
+                    else
 		    {
                         signal = value * 100 / 65535;
 			clog << "ISDBTFrontend::isTuned: Signal locked, received power level is " << signal << "%" << endl;
@@ -229,7 +229,7 @@ namespace tuning {
 	bool ISDBTFrontend::getSTCValue(uint64_t* stc, int* valueType) {
 		struct dmx_stc* _stc;
 		int result, fd;
-                
+               
 		if ((fd = open(IFE_DEMUX_DEV_NAME.c_str(), O_RDWR, 644)) < 0) {
 			perror("ISDBTFrontend::getSTCValue FD");
 			return false;
@@ -257,7 +257,7 @@ namespace tuning {
 
 	bool ISDBTFrontend::changeFrequency(unsigned int frequency) {
 		int i;
-                
+               
 		clog << "ISDBTFrontend::changeFrequency 4" << endl;
 
 		currentFreq      = frequency;

@@ -1381,7 +1381,7 @@ namespace ncl {
 		documentEvent = documentEvents[documentId];
 
 		FormatterPlayerAdapter::printAction(
-				"stopApp", 
+				"stopApp",
 				(ExecutionObject*)documentEvent->getExecutionObject());
 
 		scheduler->stopDocument(documentEvent);

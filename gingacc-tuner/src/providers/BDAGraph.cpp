@@ -203,7 +203,7 @@ HRESULT BDAGraph::SetDVBT(long l_frequency, long l_bandwidth) {
 * to the Network Type requested.
 *
 * Logic: if tuner is set up and is the right network type, use it.
-* Otherwise, poll the tuner for the right tuning space. 
+* Otherwise, poll the tuner for the right tuning space.
 *
 * Then set up a tune request and try to validate it. Finally, put
 * tune request and tuning space to tuner
@@ -1227,7 +1227,7 @@ HRESULT BDAGraph::Connect( IBaseFilter* p_upstream, IBaseFilter* p_downstream ) 
             p_pin_upstream_enum(NULL), p_pin_downstream_enum(NULL),
             p_pin_temp(NULL),
             psz_upstream(NULL),
-            psz_downstream(NULL) 
+            psz_downstream(NULL)
             { };
         ~localComPtr() {
             if (p_pin_temp)

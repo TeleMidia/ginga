@@ -97,7 +97,7 @@ namespace si {
 
 				Thread::mutexUnlock(&stlMutex);
 				return location->getBaseDirectory();
-			} 
+			}
 
 			++i;
 		}

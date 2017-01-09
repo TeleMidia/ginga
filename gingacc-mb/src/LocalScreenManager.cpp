@@ -1717,7 +1717,7 @@ void LocalScreenManager::moveWindowTo(
 	 return totalTime;
  }
 
- 
+
  double LocalScreenManager::getProviderSoundLevel(
 		 const GingaProviderID &provId)
  {
@@ -1767,7 +1767,7 @@ void LocalScreenManager::moveWindowTo(
 		 provider->setMediaTime(pos);
 	 }
  }
- 
+
  double LocalScreenManager::getProviderMediaTime(const GingaProviderID &provId)
  {
 	 double totalTime = 0.0;
@@ -1829,7 +1829,7 @@ void LocalScreenManager::moveWindowTo(
  }
 
  void LocalScreenManager::resumeProvider (
-			const GingaProviderID &provId, 
+			const GingaProviderID &provId,
 			GingaSurfaceID surface) {
 
 	 IContinuousMediaProvider *provider = NULL;

@@ -325,8 +325,8 @@ namespace ncl {
 	}
 
 	void FormatterScheduler::printAction(
-			string action, 
-			LinkCondition* condition, 
+			string action,
+			LinkCondition* condition,
 			LinkSimpleAction* linkAction) {
 
 		
@@ -389,7 +389,7 @@ namespace ncl {
 		pthread_mutex_lock(&mutexActions);
 		assert(someAction != NULL);
 		runAction(
-				(LinkCondition*)condition, 
+				(LinkCondition*)condition,
 				(LinkSimpleAction*)someAction);
 
 		pthread_mutex_unlock(&mutexActions);
@@ -414,8 +414,8 @@ namespace ncl {
 	}
 
 	void FormatterScheduler::runAction(
-			FormatterEvent* event, 
-			LinkCondition* condition, 
+			FormatterEvent* event,
+			LinkCondition* condition,
 			LinkSimpleAction* action) {
 
 		ExecutionObject* executionObject;

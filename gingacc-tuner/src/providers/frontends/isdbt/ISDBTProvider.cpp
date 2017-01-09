@@ -77,7 +77,7 @@ namespace tuning {
                                 /* | DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
 				DPC_CAN_FILTERTID); */ // TODO: implement these capabilities...
-                
+               
                 // -1 means scan
                 if (freq == -1)
 		{
@@ -90,16 +90,16 @@ namespace tuning {
 		    this->initialFrequency = freq;
 		}
 		
-                pthread_mutex_init(&output_mutex, NULL); 
-                pthread_cond_init(&output_cond, NULL); 
-                ring_buffer_create(&output_buffer, 28); 
-		keep_reading = 1;    
+                pthread_mutex_init(&output_mutex, NULL);
+                pthread_cond_init(&output_cond, NULL);
+                ring_buffer_create(&output_buffer, 28);
+		keep_reading = 1;   
                 // start the thread which reads the data from the tuner
                 pthread_create(&output_thread_id, NULL, ISDBTProvider::output_thread, this);
         }
 
 	ISDBTProvider::~ISDBTProvider() {
-	    	keep_reading = 0;    
+	    	keep_reading = 0;   
 		close();
 	}
 
@@ -110,10 +110,10 @@ namespace tuning {
 	    void *addr;
 	    int bytes_read;
 	    char buffer[INPUT_BUFFER_SIZE];
-	    
+	   
 	    while (obj->keep_reading)
 	    {
-		if (obj->frontend == NULL || obj->frontend->dvrFd <= 0) 
+		if (obj->frontend == NULL || obj->frontend->dvrFd <= 0)
 		{
 		    // wait until we get the dvr device opened
 		    usleep(100000);
@@ -132,7 +132,7 @@ namespace tuning {
 		
 	    try_again_write:
 		if (ring_buffer_count_free_bytes (&(obj->output_buffer)) >= bytes_read)
-		{ 
+		{
 		    pthread_mutex_lock(&(obj->output_mutex));
 		    addr = ring_buffer_write_address (&(obj->output_buffer));
 		    memcpy(addr, buffer, bytes_read);
@@ -149,9 +149,9 @@ namespace tuning {
 		    goto try_again_write;
 		}
 	    }
-	    
+	   
 	    return NULL;
-	    
+	   
         }
 
 	void ISDBTProvider::setListener(ITProviderListener* listener) {
@@ -180,7 +180,7 @@ namespace tuning {
 	    struct dvb_frontend_parameters params;
 	    struct dvb_frontend_info info;
 	    fe_status_t feStatus;
-	    
+	   
 	    int feFd;
 	    int dmFd;
 	    int dvrFd;
@@ -188,7 +188,7 @@ namespace tuning {
 	    clog << "ISDBTProvider::scanChannels init.";
 		
 	    memset( &params, 0, sizeof(dvb_frontend_parameters) );
-	    
+	   
 	    string file_name = SystemCompat::getTemporaryDir() + "ginga" + SystemCompat::getIUriD() + "channels.txt";
 
 	    FILE *fp = fopen(file_name.c_str(), "w");
@@ -211,19 +211,19 @@ namespace tuning {
                 params.u.ofdm.transmission_mode     = TRANSMISSION_MODE_AUTO;
                 params.u.ofdm.guard_interval        = GUARD_INTERVAL_AUTO;
                 params.u.ofdm.hierarchy_information = HIERARCHY_NONE;
-                params.u.ofdm.bandwidth             = BANDWIDTH_6_MHZ;                                                                            
+                params.u.ofdm.bandwidth             = BANDWIDTH_6_MHZ;                                                                           
 		progress = (channel_counter - 14) * 100 / 55;
 		cout << "cmd::0::tunerscanprogress::" << progress << "%" << endl;
 
 
-		if ((feFd = open(ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0) 
+		if ((feFd = open(ISDBTFrontend::IFE_FE_DEV_NAME.c_str(), O_RDWR)) < 0)
 		{
 		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider::scanChannels failed opening FrontEnd DVB device." << endl;
 		    return false;
 		}
 		
-		if (ioctl(feFd, FE_SET_FRONTEND, &params) == -1) 
+		if (ioctl(feFd, FE_SET_FRONTEND, &params) == -1)
 		{
 		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider:: ioctl error with arg FE_SET_FRONTEND" << endl;
@@ -242,18 +242,18 @@ namespace tuning {
 		filter_dmx.output = DMX_OUT_TS_TAP;
 		filter_dmx.pes_type = DMX_PES_OTHER;
 		filter_dmx.flags = DMX_IMMEDIATE_START;
-		    
-		if (ioctl(dmFd, DMX_SET_PES_FILTER, &filter_dmx) == -1) 
+		   
+		if (ioctl(dmFd, DMX_SET_PES_FILTER, &filter_dmx) == -1)
 		{
 		    clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error with arg IFE_DEMUX_DEV_NAME" << endl;
 		}
-                
+               
 		// opening DVR device (non-blocking mode), we read TS data in this fd
 		if ((dvrFd = open(ISDBTFrontend::IFE_DVR_DEV_NAME.c_str(), O_RDONLY | O_NONBLOCK)) < 0)
 		{
 		    cout << "cmd::1::tuner::Unable to tune." << endl;
 		    clog << "ISDBTProvider::scanChannels failed to open DVR DVB device. " << endl;
-		    return false;		    
+		    return false;		   
 		}
 
 		int i, value, signal, has_signal_lock = 0;
@@ -268,14 +268,14 @@ namespace tuning {
 			clog << "ISDBTProvider::scanChannels FE_READ_STATUS failed" << endl;
 			return false;
 		    }
-		    
+		   
                     if (feStatus & FE_HAS_LOCK)
 		    {
-			if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1) 
-			{                        
+			if (ioctl(feFd, FE_READ_SIGNAL_STRENGTH, &value) == -1)
+			{                       
 			    clog << "ISDBTProvider::scanChannels FE_READ_SIGNAL_STRENGTH failed" << endl;
 			}
-			else 
+			else
 			{
 			    signal = value * 100 / 65535;
 			    cout << "ISDBTProvider::scanChannels Signal locked, received power level is " << signal << "%" << endl;
@@ -311,8 +311,8 @@ namespace tuning {
 	    fclose(fp);
 	}
 	
-	    
-	    
+	   
+	   
 	
 
 	void ISDBTProvider::initializeChannels() {
@@ -432,10 +432,10 @@ namespace tuning {
 		    {
 			clog << "ISDBTProvider::tune frequency set " << initialFrequency << "Hz" << endl;
 			tuned = frontend->changeFrequency(initialFrequency * 1000);
-			if (!tuned) 
+			if (!tuned)
 			{
 			    clog << "ISDBTProvider::tune frequency set " << initialFrequency << "Hz failed!" << endl;
-			}    
+			}   
 			
 		    }
                     else
@@ -467,9 +467,9 @@ namespace tuning {
 		    }
 
 		    return tuned;
-		    
+		   
 		} else {
-		    
+		   
 		    close();
 		    return false;
 		}

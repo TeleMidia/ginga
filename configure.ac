@@ -156,7 +156,7 @@ AX_PTHREAD([],
  [AC_MSG_ERROR([
 *** Checks for pthreads failed.])])
 
-# Check for Expat (required by Ginga-CC CM and Ginga-CC Data Processing).
+# Check for Expat (required Ginga-CC Data Processing).
 AX_LIB_EXPAT([expat_required_version])
 if test "$HAVE_EXPAT" = no; then
   AC_MSG_ERROR([
@@ -368,9 +368,6 @@ PKG_CHECK_MODULES([NCLUA],
  [AC_MSG_ERROR([
 *** nclua >= nclua_required_version is required.])])
 
-################################# NCL 3.0 ##################################
-# Nothing to do.
-
 ############################ NCL 3.0 Converter #############################
 
 # Check for xerces-c.
@@ -380,15 +377,6 @@ AS_IF([test "$HAVE_LIBXERCES_C" = no],
 *** xerces-c >= xercesc_required_version is required.])])
 AC_SUBST([XERCESC_CFLAGS], [])
 AC_SUBST([XERCESC_LIBS], [$LIBXERCES_C])
-
-################################ Ginga-NCL #################################
-# Nothing to do.
-
-################################ Ginga LLSM ################################
-# Nothing to do.
-
-################################## Ginga ###################################
-# Nothing to do.
 
 ############################################################################
 

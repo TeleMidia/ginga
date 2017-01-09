@@ -1059,7 +1059,7 @@ namespace compat {
 
 				return 0;
 
-			case CLOCK_THREAD_CPUTIME_ID: 
+			case CLOCK_THREAD_CPUTIME_ID:
 				if (GetThreadTimes(GetCurrentThread(), &ct.ft, &et.ft, &kt.ft, &ut.ft) == 0) {
 					return EINVAL;
 				}
@@ -1149,7 +1149,7 @@ namespace compat {
 		//TODO: Use the WIN32 API to return the temporary directory
 		TCHAR lpTempPathBuffer[MAX_PATH];
 		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
-					   lpTempPathBuffer); // buffer for path 
+					   lpTempPathBuffer); // buffer for path
 		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
 		{
 			return gingaCurrentPath + "Temp\\";
@@ -1224,7 +1224,7 @@ namespace compat {
 #else
 		string tempDir = SystemCompat::getTemporaryDir();
 
-		if (pipeName.length() < tempDir.length() || 
+		if (pipeName.length() < tempDir.length() ||
 				pipeName.substr(0, tempDir.length()) != tempDir) {
 
 			newPipeName = tempDir + pipeName;

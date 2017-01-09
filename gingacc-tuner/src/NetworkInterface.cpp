@@ -157,7 +157,7 @@ namespace tuning {
 
 			} else {
 				freq = (long)util::stof(address);
-				if (freq < 1) 
+				if (freq < 1)
 					return false;
 			}
 #if _WIN32
