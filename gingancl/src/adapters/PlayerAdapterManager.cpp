@@ -342,8 +342,8 @@ namespace adapters {
 
 		fisCtrl.open(ctrlUri.c_str());
 		if (!fisCtrl.is_open()) {
-			clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
-			clog << fisCtrl << "'" << endl;
+			// clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
+			// clog << fisCtrl << "'" << endl;
 			return;
 		}
 
