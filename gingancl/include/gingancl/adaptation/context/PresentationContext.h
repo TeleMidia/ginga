@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "contextmanager/IContextManager.h"
-#include "contextmanager/system/ISystemInfo.h"
+#include "ctxmgmt/IContextManager.h"
+#include "ctxmgmt/ISystemInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #include "config.h"

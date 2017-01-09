@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _IContextManager_H_
 #define _IContextManager_H_
 
-#include "system/ISystemInfo.h"
-#include "user/IGingaUser.h"
+#include "ISystemInfo.h"
+#include "IGingaUser.h"
 
 #include "IContextListener.h"
 

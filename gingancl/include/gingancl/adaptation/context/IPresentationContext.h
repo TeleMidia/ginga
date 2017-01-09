@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _IPRESENTATIONCONTEXT_H_
 #define _IPRESENTATIONCONTEXT_H_
 
-#include "contextmanager/IContextListener.h"
+#include "ctxmgmt/IContextListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #if HAVE_MULTIDEVICE
