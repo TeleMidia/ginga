@@ -59,11 +59,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::image;
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_LINKS
-#include "gingancl/adapters/application/declarative/xhtml/links/LinksPlayerAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
-#endif
-
 int main(int argc, char** argv, char** envp) {
 	FormatterMediator* formatter;
 	IScreenManager* dm;
@@ -77,17 +72,6 @@ int main(int argc, char** argv, char** envp) {
 	screenId = dm->createScreen(0, NULL);
 
 	if (argc > 1 && strcmp(argv[1], "links") == 0) {
-#if HAVE_LINKS
-
-		w = dm->createWindow(screenId, 120, 120, 400, 400, 0.0);
-
-		w->setCaps(w->getCap("ALPHACHANNEL"));
-		w->draw();
-		w->show();
-
-		string mrl = "www.google.com";
-#endif
-
 	} else {
 		clog << "Test::main() initializing formatter" << endl;
 		data->screenId          = screenId;

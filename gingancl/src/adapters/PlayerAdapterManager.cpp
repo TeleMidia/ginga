@@ -427,24 +427,12 @@ namespace adapters {
 		}
 #endif //HAVE_SSML
 
-#if HAVE_AWESOMIUM
-                else if (playerClassName == "AwesomiumPlayerAdapter") {
-			player = new AwesomiumPlayerAdapter();
-
-		}
-#endif //HAVE_AWESOMIUM
-
 #if HAVE_BERKELIUM                
                 else if (playerClassName == "BerkeliumPlayerAdapter") {
 			player = new BerkeliumPlayerAdapter();
 		}
 #endif //HAVE_BERKELIUM
 
-#if HAVE_LINKS
-                else if (playerClassName == "LinksPlayerAdapter") {
-			player = new LinksPlayerAdapter();
-		}
-#endif //HAVE_LINKS
                 else if (playerClassName == "ImagePlayerAdapter") {
 			player = new ImagePlayerAdapter();
 

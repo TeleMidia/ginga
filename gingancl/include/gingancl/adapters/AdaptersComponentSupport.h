@@ -105,20 +105,6 @@ using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;
 #endif
 
-#if HAVE_AWESOMIUM
-#include "player/AwesomiumPlayer.h"
-
-#include "application/declarative/xhtml/awesomium/AwesomiumPlayerAdapter.h"
-using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
-#endif
-
-#if HAVE_LINKS
-#include "player/LinksPlayer.h"
-
-#include "application/declarative/xhtml/links/LinksPlayerAdapter.h"
-using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
-#endif
-
 #include "application/declarative/ncl/NCLPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::ncl;
 
