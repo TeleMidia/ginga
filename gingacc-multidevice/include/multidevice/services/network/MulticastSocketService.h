@@ -64,11 +64,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef __DARWIN_UNIX03
-#include <ifaddrs.h>
-#define inaddrr(x) (*(struct in_addr *) myAddr->x[sizeof sa.sin_port])
-#endif
-
 #include <pthread.h>
 #include <vector>
 #include <string>

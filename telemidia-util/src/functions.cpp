@@ -54,15 +54,10 @@ http://www.telemidia.puc-rio.br
  #define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
  #define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
  #define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
- #ifdef __APPLE__
-  #include <sys/dir.h>
-    typedef struct direct DIRENT;
- #else
   #include <dirent.h>
     typedef struct dirent DIRENT;
   #include <sys/time.h>
   #include <sys/resource.h>
- #endif
 #else  // _WIN32
 #define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
 #define IS_LINK(st_mode)	0

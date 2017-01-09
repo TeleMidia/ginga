@@ -80,10 +80,6 @@ namespace player {
 		Thread::mutexInit(&pMutex, true);
 		Thread::mutexInit(&tMutex, true);
 
-#if HAVE_ICRTP & !HAVE_XINEPROVIDER
-		this->icListener  = NULL;
-#endif
-
 		if (mrl.length() > 11 && mrl.substr(0, 11) == "sbtvd-ts://") {
 			this->mainAV = true;
 			pos = mrl.find("#");
@@ -96,19 +92,6 @@ namespace player {
 			clog << "AVPlayer::AVPlayer MAINAV CREATED MRL = '";
 			clog << this->mrl << "'" << endl;
 
-#if HAVE_ICRTP & !HAVE_XINEPROVIDER
-		} else if (mrl.length() > 6 && mrl.substr(0, 6) == "rtp://") {
-			clog << "AVPlayer::AVPlayer creating RTP IC " << endl;
-
-			icListener = new RTPListener(mrl);
-			this->mrl  = icListener->getUrl();
-
-			Thread::startThread();
-
-			pthread_t _tId;
-			pthread_create(&_tId, NULL, createProviderT, this);
-			pthread_detach(_tId);
-#endif
 		} else {
 			createProvider();
 			this->scopeEndTime = getTotalMediaTime();
@@ -382,11 +365,6 @@ namespace player {
 		short previousStatus = status;
 
 		Player::stop();
-#if HAVE_ICRTP & !HAVE_XINEPROVIDER
-		if (icListener != NULL) {
-			icListener->releaseIC();
-		}
-#endif
 		if (provider == 0) {
 			this->wakeUp();
 			return;
@@ -493,12 +471,6 @@ namespace player {
 		dm->releaseContinuousMediaProvider(myScreen, provider);
 		provider = 0;
 
-#if HAVE_ICRTP & !HAVE_XINEPROVIDER
-		if (icListener != NULL) {
-			delete icListener;
-			icListener = NULL;
-		}
-#endif
 	}
 
 	void AVPlayer::setMrl(const char* mrl) {
@@ -546,14 +518,6 @@ namespace player {
 		dm->setProviderAVPid(provider, aPid, vPid);
 	}
 
-	void AVPlayer::setAlphaBlend(int x, int y, int w, int h) {
-		// only for geode
-	}
-
-	void AVPlayer::checkResize() {
-		// only for geode
-	}
-
 	bool AVPlayer::isRunning() {
 		return running;
 	}
@@ -585,25 +549,6 @@ namespace player {
 		clog << "AVPlayer::run" << endl;
 
 		Thread::mutexLock(&tMutex);
-
-#if HAVE_ICRTP & !HAVE_XINEPROVIDER
-		if (icListener != NULL) {
-			running = true;
-
-			Thread::mutexUnlock(&tMutex);
-
-			clog << "AVPlayer::run call performIC" << endl;
-			icListener->performIC();
-			clog << "AVPlayer::run call performIC done" << endl;
-			if (status != STOP && status != PAUSE) {
-				status  = STOP;
-				running = false;
-				notifyPlayerListeners(PL_NOTIFY_STOP, "");
-			}
-
-			return;
-		}
-#endif
 
 		if (mainAV) {
 			running = true;

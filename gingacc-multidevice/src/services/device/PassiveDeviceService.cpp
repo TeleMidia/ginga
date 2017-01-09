@@ -108,16 +108,6 @@ namespace multidevice {
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
 
-			#ifdef	__DARWIN_UNIX03
-					i = listeners->begin();
-					while (i != listeners->end()) {
-						(*i)->receiveRemoteContent(
-								remoteDevClass, stream, streamSize);
-						++i;
-					}
-					return true;
-
-			#else
 				uri = SystemCompat::getTemporaryDir()+"render.jpg";
 				remove((char*)(uri.c_str()));
 				fd = fopen(uri.c_str(), "w+b");
@@ -148,8 +138,6 @@ namespace multidevice {
 					clog << " can't create file '" << uri << "'";
 					clog << endl;
 				}
-
-			#endif
 
 		} else {
 			clog << "PassiveDeviceService::receiveMediaContent Warning! ";
