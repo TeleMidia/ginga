@@ -28,7 +28,7 @@ gingaconf_DATA =\
 SUBDIRS  =
 SUBDIRS += util
 SUBDIRS += gingacc-system
-SUBDIRS += gingacc-ic
+SUBDIRS += ic
 SUBDIRS += gingacc-mb
 SUBDIRS += gingacc-contextmanager
 if BUILD_MULTIDEVICE
@@ -47,7 +47,6 @@ SUBDIRS += gingalssm
 SUBDIRS += ginga
 
 if BUILD_TESTS
-SUBDIRS += gingacc-ic/tests
 SUBDIRS += gingacc-mb/tests
 SUBDIRS += gingacc-contextmanager/tests
 if BUILD_MULTIDEVICE

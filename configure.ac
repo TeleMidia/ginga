@@ -412,7 +412,7 @@ AC_CONFIG_FILES([
 Makefile
 util/Makefile
 gingacc-system/Makefile
-gingacc-ic/Makefile
+ic/Makefile
 gingacc-mb/Makefile
 gingacc-contextmanager/Makefile
 gingacc-multidevice/Makefile
@@ -428,7 +428,6 @@ ginga/Makefile
 ])
 
 AC_CONFIG_FILES([
-gingacc-ic/tests/Makefile
 gingacc-mb/tests/Makefile
 gingacc-contextmanager/tests/Makefile
 gingacc-multidevice/tests/Makefile

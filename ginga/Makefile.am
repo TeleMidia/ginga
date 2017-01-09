@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 ################################## Ginga ###################################
 
 AM_CPPFLAGS =\
-  $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_CM)\
   $(INCLUDE_GINGACC_MB)\
@@ -20,7 +19,7 @@ AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LI
 
 LDADD =\
   ../gingacc-contextmanager/libgingacccontextmanager.la\
-  ../gingacc-ic/libgingaccic.la\
+  ../ic/libgingaccic.la\
   ../gingacc-mb/libgingaccmb.la\
   ../gingacc-system/libgingaccsystem.la\
   ../gingalssm/libgingalssm.la\
