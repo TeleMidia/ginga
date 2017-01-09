@@ -1,7 +1,7 @@
 LTLDFLAGS = -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
 MAINTAINERCLEANFILES = Makefile.in
 
-INCLUDE_TELEMIDIA_UTIL = -I$(top_srcdir)/telemidia-util/include
+INCLUDE_TELEMIDIA_UTIL = -I$(top_srcdir)/util
 INCLUDE_GINGACC_SYSTEM = -I$(top_srcdir)/gingacc-system/include
 INCLUDE_GINGACC_CM = -I$(top_srcdir)/gingacc-cm/include
 INCLUDE_GINGACC_IC = -I$(top_srcdir)/gingacc-ic/include

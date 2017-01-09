@@ -4,7 +4,7 @@ AC_INIT([ginga], [0.13.6], [bugs@telemidia.puc-rio.br])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
 AC_CANONICAL_TARGET
-AC_CONFIG_SRCDIR([telemidia-util/src/functions.cpp])
+AC_CONFIG_SRCDIR([util/functions.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 m4_define([avcodec_required_version],    [55.39.101])
@@ -410,7 +410,7 @@ _AC_SUBST_GINGAPKGDIR([gingalssm],             [gingalssm])
 
 AC_CONFIG_FILES([
 Makefile
-telemidia-util/Makefile
+util/Makefile
 gingacc-system/Makefile
 gingacc-ic/Makefile
 gingacc-mb/Makefile
@@ -428,7 +428,6 @@ ginga/Makefile
 ])
 
 AC_CONFIG_FILES([
-telemidia-util/tests/Makefile
 gingacc-ic/tests/Makefile
 gingacc-mb/tests/Makefile
 gingacc-contextmanager/tests/Makefile

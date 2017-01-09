@@ -8,7 +8,7 @@ AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LIBS)
 telemidiautillib_LTLIBRARIES = libtelemidiautil.la
 
 libtelemidiautil_la_SOURCES =\
-  src/Base64.cpp\
-  src/Color.cpp\
-  src/functions.cpp\
+  Base64.cpp\
+  Color.cpp\
+  functions.cpp\
   $(NULL)
