@@ -3,9 +3,7 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 ################################ Libraries #################################
 AM_CPPFLAGS =\
 	-std=c++11 \
-  $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
-  $(INCLUDE_GINGACC_CM)\
   $(INCLUDE_GINGACC_MB)\
   $(NULL)
 

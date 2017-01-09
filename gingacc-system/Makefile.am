@@ -5,7 +5,6 @@ AM_CPPFLAGS =\
   -DSTR_PREFIX='"$(prefix)"'\
   -DGINGA_LIBDIR='"$(gingalibdir)"'\
   -DGINGA_INI_PATH='"$(gingaconfdir)/ginga.ini"'\
-  $(INCLUDE_TELEMIDIA_UTIL)\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(NULL)
 

@@ -1,17 +1,11 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(INCLUDE_GINGACC_SYSTEM)
-  $(NULL)
+AM_CPPFLAGS= $(INCLUDE_GINGACC_SYSTEM)
+AM_CXXFLAGS= $(CURL_CFLAGS)
+AM_LDFLAGS= $(LTSTATIC) $(CURL_LIBS)
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS) $(CURL_CFLAGS)
-AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS) $(CURL_LIBS)
-
-gingacciclib_LTLIBRARIES =\
-  libgingaccic.la\
-  $(NULL)
-
-libgingaccic_la_SOURCES =\
+gingacciclib_LTLIBRARIES= libgingaccic.la
+libgingaccic_la_SOURCES=\
   InteractiveChannelManager.cpp\
   CurlInteractiveChannel.cpp\
   $(NULL)

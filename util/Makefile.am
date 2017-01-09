@@ -1,11 +1,9 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(PTHREAD_LIBS)
+AM_LDFLAGS= $(LTSTATIC)
 
-telemidiautillib_LTLIBRARIES = libtelemidiautil.la
-
-libtelemidiautil_la_SOURCES =\
+noinst_LTLIBRARIES= libtelemidiautil.la
+libtelemidiautil_la_SOURCES=\
   Base64.cpp\
   Color.cpp\
   functions.cpp\
