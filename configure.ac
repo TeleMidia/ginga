@@ -392,10 +392,8 @@ AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 m4_define([_AC_SUBST_GINGAPKGDIR],
  [AC_SUBST([$1][libdir], ['${gingalibdir}'])
   AC_SUBST([$1][includedir], ['${gingaincludedir}'/][$2])])
-_AC_SUBST_GINGAPKGDIR([telemidiautil],         [util])
 _AC_SUBST_GINGAPKGDIR([gingaccsystem],         [system])
 _AC_SUBST_GINGAPKGDIR([gingacccm],             [cm])
-_AC_SUBST_GINGAPKGDIR([gingaccic],             [ic])
 _AC_SUBST_GINGAPKGDIR([gingaccmb],             [mb])
 _AC_SUBST_GINGAPKGDIR([gingacccontextmanager], [contextmanager])
 _AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
@@ -406,7 +404,6 @@ _AC_SUBST_GINGAPKGDIR([gingaccplayer],         [player])
 _AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
 _AC_SUBST_GINGAPKGDIR([ncl30converter],        [converter])
 _AC_SUBST_GINGAPKGDIR([gingancl],              [gingancl])
-_AC_SUBST_GINGAPKGDIR([gingalssm],             [gingalssm])
 
 AC_CONFIG_FILES([
 Makefile
@@ -420,7 +417,7 @@ gingacc-player/Makefile
 gingacc-system/Makefile
 gingacc-tsparser/Makefile
 gingacc-tuner/Makefile
-gingalssm/Makefile
+lssm/Makefile
 gingancl/Makefile
 ic/Makefile
 ncl30-converter/Makefile
@@ -437,7 +434,6 @@ gingacc-tsparser/tests/Makefile
 gingacc-dataprocessing/tests/Makefile
 gingacc-player/tests/Makefile
 gingancl/tests/Makefile
-gingalssm/tests/Makefile
 ])
 
 AC_OUTPUT

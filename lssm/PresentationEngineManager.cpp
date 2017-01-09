@@ -50,7 +50,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "system/fs/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
-#include "gingalssm/PresentationEngineManager.h"
+#include "lssm/PresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
 struct inputEventNotification {

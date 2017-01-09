@@ -22,7 +22,7 @@ SUBDIRS+= gingacc-player
 SUBDIRS+= ncl30
 SUBDIRS+= ncl30-converter
 SUBDIRS+= gingancl
-SUBDIRS+= gingalssm
+SUBDIRS+= lssm
 SUBDIRS+= ginga
 
 
@@ -39,7 +39,6 @@ SUBDIRS+= gingacc-dataprocessing/tests
 endif
 SUBDIRS+= gingacc-player/tests
 SUBDIRS+= gingancl/tests
-SUBDIRS+= gingalssm/tests
 endif
 
 MAINTAINERCLEANFILES+=\
