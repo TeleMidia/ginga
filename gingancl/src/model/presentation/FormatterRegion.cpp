@@ -940,14 +940,12 @@ namespace presentation {
 			clog << "window != NULL" << endl;
 		}
 
-#if !HAVE_MULTIPROCESS
 		if (renderedSurface != 0 && !externHandler) {
 			if ( dm->setSurfaceParentWindow(
 					screenId, renderedSurface,outputDisplay)) {
 				dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
 			}
 		}
-#endif
 
 		unlock();
 

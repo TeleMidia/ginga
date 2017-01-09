@@ -72,14 +72,7 @@ namespace tts {
                 
 		bool hasVisual = false;
                 
-#if HAVE_MULTIPROCESS
-		playerCompName = "PlayerProcess";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "SsmlPlayer", &hasVisual);
-
-		player->setMrl(mrl, true);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 		playerCompName = "SsmlPlayer";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 				myScreen, mrl.c_str(), &hasVisual);

@@ -73,14 +73,7 @@ namespace image {
 	void ImagePlayerAdapter::createPlayer() {
 		clog << "ImagePlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
-#if HAVE_MULTIPROCESS
-		playerCompName = "PlayerProcess";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "ImagePlayer");
-
-		player->setMrl(mrl, true);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 		playerCompName = "ImagePlayer";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 				myScreen, mrl.c_str());

@@ -26,11 +26,3 @@ if BUILD_MULTIDEVICE
 AM_CXXFLAGS += $(LIBZIP_CFLAGS)
 AM_LDFLAGS += $(LIBZIP_LIBS)
 endif
-
-if BUILD_MULTIPROCESS
-AM_LDFLAGS += $(RT_LIBS)
-libgingaccsystem_la_SOURCES +=\
-  src/process/Process.cpp\
-  src/process/SpawnedProcess.cpp\
-  $(NULL)
-endif

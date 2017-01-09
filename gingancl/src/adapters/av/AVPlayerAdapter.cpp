@@ -71,14 +71,7 @@ namespace av {
 		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
 
 		if (mrl != "") {
-#if HAVE_MULTIPROCESS
-			playerCompName = "PlayerProcess";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "AVPlayer");
-
-			player->setMrl(mrl);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 			playerCompName = "AVPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 					myScreen, mrl.c_str());

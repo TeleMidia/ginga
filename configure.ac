@@ -135,22 +135,6 @@ else
 fi
 AM_CONDITIONAL([BUILD_MULTIDEVICE], [test "$enable_multidevice" = yes])
 
-# Enable multi-process.
-_AC_ARG_ENABLE([multiprocess], [put players in separated processes], [no])
-if test "$enable_multiprocess" = yes; then
-  AC_HAVE_LIBRARY([rt], [rt_ok=yes], [rt_ok=no])
-  if test "$rt_ok" = yes; then
-    RT_LIBS='-lrt'
-  else
-    AC_MSG_ERROR([
-*** Checks for MULTIPROCESS failed.
-*** Multi-process support is optional; you can disable it by passing
-*** the option --disable-multiprocess to configure.])
-  fi
-  AC_SUBST([RT_LIBS])
-fi
-AM_CONDITIONAL([BUILD_MULTIPROCESS], [test "$enable_multiprocess" = yes])
-
 # Enable tests.
 _AC_ARG_ENABLE([tests], [build unit tests], [no])
 AM_CONDITIONAL([BUILD_TESTS], [test "$enable_tests" = yes])

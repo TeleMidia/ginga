@@ -125,14 +125,7 @@ namespace av {
 			objects = NULL;
 		}
 
-#if HAVE_MULTIPROCESS
-		playerCompName = "PlayerProcess";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "ChannelPlayer");
-
-		player->setMrl(mrl);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 		player = ((PlayerCreator*)(cm->getObject("ChannelPlayer")))(
 				myScreen, (char*)"");
 #else
