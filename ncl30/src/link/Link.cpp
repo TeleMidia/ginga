@@ -462,12 +462,12 @@ namespace link {
 					if (entityDesc == descriptor) {
 						return true;
 
-					} else if (descriptor != NULL && 
+					} else if (descriptor != NULL &&
 							descriptor->getId().find("dummy") != std::string::npos) {
 
 						return true;
 
-					} else if (entityDesc != NULL && 
+					} else if (entityDesc != NULL &&
 							entityDesc->getId().find("dummy") != std::string::npos) {
 
 						return true;

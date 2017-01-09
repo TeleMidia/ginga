@@ -99,7 +99,7 @@ namespace multidevice {
 			if (!active_dev)
 				((RemoteDeviceManager*)rdm)->setDeviceDomain(
 						new BaseDeviceDomain(useMulticast, srvPort));
-			else 
+			else
 				((RemoteDeviceManager*)rdm)->setDeviceDomain(
 						new ActiveDeviceDomain(useMulticast, srvPort));
 		}

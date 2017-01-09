@@ -168,8 +168,8 @@ namespace multidevice {
 
 		tss = groups[device_class];
 
-		clog << "RemoteEventService::startDocument " << name << endl; 
-        
+		clog << "RemoteEventService::startDocument " << name << endl;
+       
         size_t pos_fname = str_name.find_last_of("/\\");
 		string doc_name;
 		
@@ -178,7 +178,7 @@ namespace multidevice {
 		} else {
 			doc_name = str_name;
 		}
-        
+       
         string str_path = string(str_name.substr(0,pos_fname));
 
         int pos_fdir = str_path.find_last_of("/\\");
@@ -188,7 +188,7 @@ namespace multidevice {
         string doc_rel_path = doc_name;
 
         //clog << "RES::start " << doc_rel_path << endl;
-        
+       
 		//TODO: start individual media objects
 		//TODO: MANIFEST
 

@@ -5,7 +5,7 @@
 
 using namespace br::pucrio::telemidia::ginga::core::mb;
 
-DistributedInputManagerListener::DistributedInputManagerListener 
+DistributedInputManagerListener::DistributedInputManagerListener
 	(const GingaScreenID &screenId, const std::string &address, int port) : InputManager(screenId)
 {
 	_stubClient = new StubClient(address, port);
@@ -30,7 +30,7 @@ void DistributedInputManagerListener::run()
 	}
 #endif
 
-	while (running && _stubClient != NULL) 
+	while (running && _stubClient != NULL)
 	{
 		std::string inputMessage = _stubClient->readMessage();
 		std::cout << inputMessage << std::endl;
@@ -48,7 +48,7 @@ void DistributedInputManagerListener::run()
 
 		delete inputEvent;
 		
-		if (running && _stubClient == NULL) 
+		if (running && _stubClient == NULL)
 		{
 			clog << "DistributedInputManagerListener::run Warning! Can't receive events: ";
 			clog << "event buffer is NULL" << endl;

@@ -163,7 +163,7 @@ int Channels::loadFromFile(string filename) {
 		myfile.close();
 		if (error) return -2;
 		return 0;
-	} else clog << "Channels::loadFromFile - Unable to open file"; 
+	} else clog << "Channels::loadFromFile - Unable to open file";
 	return -1;
 }
 

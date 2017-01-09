@@ -32,7 +32,7 @@ bool DistributedInputManagerMB::dispatchEvent(IInputEvent* inputEvent)
 
 	performInputLockedActions();
 
-	if (inputEvent == NULL || !running) 
+	if (inputEvent == NULL || !running)
 	{
 		unlock();
 		notifying = false;
@@ -82,7 +82,7 @@ bool DistributedInputManagerMB::dispatchEvent(IInputEvent* inputEvent)
 	for (size_t i = 0; i < listeners.size(); i++)
 	{
 		socket_ptr socket = listeners.at (i);		
-		try 
+		try
 		{
 			size_t len = boost::asio::write(*socket, boost::asio::buffer(eventMessage),
 				boost::asio::transfer_all(), code);
@@ -118,7 +118,7 @@ InputManagerServer::InputManagerServer(const std::string &address, const int por
 	_io_service = new boost::asio::io_service();
 	try
 	{
-		_serverSocket = new tcp::acceptor (*_io_service, 
+		_serverSocket = new tcp::acceptor (*_io_service,
 			tcp::endpoint(boost::asio::ip::address::from_string(_address), _port));
 
 		Thread::startThread();
@@ -132,7 +132,7 @@ InputManagerServer::InputManagerServer(const std::string &address, const int por
 
 void InputManagerServer::run ()
 {
-	while (true) 
+	while (true)
 	{
 		socket_ptr socket (new tcp::socket (*_io_service));
 		_serverSocket->accept(*socket); // Accept incoming connection

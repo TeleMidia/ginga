@@ -366,7 +366,7 @@ namespace mb {
 
 /*
 	*******************************************
-	Code removed due to new default behavior of 
+	Code removed due to new default behavior of
 	SDLDeviceScreen::createUnderlyingSurface
 	*******************************************
 

@@ -569,7 +569,7 @@ namespace player {
 
 			// cmd means a command to an embeddor process
 			// 0 means successful status message
-			// 
+			//
 			cout << "cmd::0::tuned::?mAV?" << endl;
 			waitForUnlockCondition();
 

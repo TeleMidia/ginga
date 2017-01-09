@@ -747,7 +747,7 @@ namespace mb {
 		clog << "Embedded window within the following class: " << cName;
 		clog << endl;
 
-		// Create the main window. 
+		// Create the main window.
 		uWin = (UnderlyingWindowID)CreateWindow(
 				cName,                      // name of window class
 				cName,                      // title-bar string
@@ -762,10 +762,10 @@ namespace mb {
 				(LPVOID) NULL);        // no window-creation data
 
 		if (uWin != NULL) {
-			// Show the window and send a WM_PAINT message to the window 
-			// procedure. 
-			ShowWindow((HWND)uWin, 1); 
-			UpdateWindow((HWND)uWin); 
+			// Show the window and send a WM_PAINT message to the window
+			// procedure.
+			ShowWindow((HWND)uWin, 1);
+			UpdateWindow((HWND)uWin);
 			clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
 			clog << (void*)uWin << "'";
 			clog << endl;
@@ -1336,8 +1336,8 @@ namespace mb {
 
 	void SDLDeviceScreen::processCmd(
 			SDLDeviceScreen* s,
-			string cmd, 
-			string type, 
+			string cmd,
+			string type,
 			string args) {
 
 		int intEvent;
@@ -1419,8 +1419,8 @@ namespace mb {
 			if (token != std::string::npos && token < strCmd.length()) {
 				processCmd(
 						s,
-						strCmd, 
-						strCmd.substr(0, token), 
+						strCmd,
+						strCmd.substr(0, token),
 						strCmd.substr(token + 1, strCmd.length() - (token + 1)));
 			}
 
@@ -1502,8 +1502,8 @@ namespace mb {
 		checkSDLInit();
 		
 		/* TODO: make 'framerate' an user option */
-		long render_delta_ns = 33333333; // 33000000ns render interval (30fps) 
-		// long render_delta_ns = 16666666; // 16666666ns render interval (60fps) 
+		long render_delta_ns = 33333333; // 33000000ns render interval (30fps)
+		// long render_delta_ns = 16666666; // 16666666ns render interval (60fps)
 
 		int retcode;
 		int first_pass = 1;
@@ -1579,7 +1579,7 @@ namespace mb {
 					first_pass = 0;
 				}
 
-				// if (second_bump) 
+				// if (second_bump)
 				if ((timeout.tv_nsec + render_delta_ns) >= 1000000000) {
 					timeout.tv_sec++;
 					timeout.tv_nsec = (timeout.tv_nsec + render_delta_ns) % 1000000000;
@@ -2987,7 +2987,7 @@ namespace mb {
 
 				/*
 				 * Warning: there is no need to lock the texture
-				 * lock the texture can imply some delay in 
+				 * lock the texture can imply some delay in
 				 * the decoder procedure
 				 */
 

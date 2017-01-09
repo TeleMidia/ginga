@@ -607,7 +607,7 @@ namespace mb {
 	int SDL2ffmpeg::cmp_audio_fmts(
 			enum AVSampleFormat fmt1,
 			int64_t channel_count1,
-			enum AVSampleFormat fmt2, 
+			enum AVSampleFormat fmt2,
 			int64_t channel_count2) {
 
 		/* If channel count == 1, planar and non-planar formats are the same */
@@ -1023,20 +1023,20 @@ namespace mb {
 				vs->audio_stream >= 0 && vs->audioq.nb_packets <= MIN_FRAMES / 2) {
 
 			set_clock_speed(
-					&vs->extclk, 
+					&vs->extclk,
 					FFMAX(EXTERNAL_CLOCK_SPEED_MIN, vs->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
 
 		} else if ((vs->video_stream < 0 || vs->videoq.nb_packets > MIN_FRAMES * 2) &&
 				(vs->audio_stream < 0 || vs->audioq.nb_packets > MIN_FRAMES * 2)) {
 
 			set_clock_speed(
-					&vs->extclk, 
+					&vs->extclk,
 					FFMIN(EXTERNAL_CLOCK_SPEED_MAX, vs->extclk.speed + EXTERNAL_CLOCK_SPEED_STEP));
 		} else {
 			double speed = vs->extclk.speed;
 			if (speed != 1.0) {
 				set_clock_speed(
-						&vs->extclk, 
+						&vs->extclk,
 						speed + EXTERNAL_CLOCK_SPEED_STEP * (1.0 - speed) / fabs(1.0 - speed));
 			}
 		}
@@ -1177,8 +1177,8 @@ namespace mb {
 			return;
 		}
 
-		if (!vs->paused && 
-				dec->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK && 
+		if (!vs->paused &&
+				dec->get_master_sync_type() == AV_SYNC_EXTERNAL_CLOCK &&
 				vs->realtime) {
 
 			dec->check_external_clock_speed();
@@ -1265,9 +1265,9 @@ retry:
 					VideoPicture *nextvp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown + 1) % VIDEO_PICTURE_QUEUE_SIZE];
 					duration = vp_duration(vs, vp, nextvp);
 					if (!vs->step &&
-							(redisplay || 
+							(redisplay ||
 							dec->framedrop > 0 ||
-							(dec->framedrop && dec->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) && 
+							(dec->framedrop && dec->get_master_sync_type() != AV_SYNC_VIDEO_MASTER)) &&
 							time > vs->frame_timer + duration) {
 
 						if (!redisplay) {
@@ -1465,9 +1465,9 @@ display:
 
 	// AVFILTER begin
 	int SDL2ffmpeg::configure_filtergraph(
-			AVFilterGraph *graph, 
-			const char *filtergraph, 
-			AVFilterContext *source_ctx, 
+			AVFilterGraph *graph,
+			const char *filtergraph,
+			AVFilterContext *source_ctx,
 			AVFilterContext *sink_ctx) {
 
 		int ret, i;
@@ -1532,15 +1532,15 @@ fail:
 		graph->scale_sws_opts = av_strdup(sws_flags_str);
 
 		snprintf(
-				buffersrc_args, 
+				buffersrc_args,
 				sizeof(buffersrc_args),
 				"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
-				frame->width, 
-				frame->height, 
+				frame->width,
+				frame->height,
 				frame->format,
-				vs->video_st->time_base.num, 
+				vs->video_st->time_base.num,
 				vs->video_st->time_base.den,
-				codec->sample_aspect_ratio.num, 
+				codec->sample_aspect_ratio.num,
 				FFMAX(codec->sample_aspect_ratio.den, 1));
 
 		if (fr.num && fr.den) {
@@ -1548,11 +1548,11 @@ fail:
 		}
 
 		if ((ret = avfilter_graph_create_filter(
-				&filt_src, 
-				avfilter_get_by_name("buffer"), 
-				"sdl2ffmpeg", 
-				buffersrc_args, 
-				NULL, 
+				&filt_src,
+				avfilter_get_by_name("buffer"),
+				"sdl2ffmpeg",
+				buffersrc_args,
+				NULL,
 				graph)) < 0) {
 
 			clog << "SDL2ffmpeg::configure_video_filters Warning! ";
@@ -1567,7 +1567,7 @@ fail:
 		}
 
 		ret = avfilter_graph_create_filter(
-				&filt_out, 
+				&filt_out,
 				avfilter_get_by_name("buffersink"),
 				"sdl2ffmpeg_buffersink",
 				NULL,
@@ -1585,11 +1585,11 @@ fail:
 		/*AVFilter* pix_fmt = avfilter_get_by_name("format");
 		if (pix_fmt != NULL) {
 			if ((ret = avfilter_graph_create_filter(
-					&filt_fmt, 
+					&filt_fmt,
 					pix_fmt,
 					"sdl2ffmpeg_format",
-					"pix_fmts=rgb24", 
-					NULL, 
+					"pix_fmts=rgb24",
+					NULL,
 					graph)) < 0) {
 
 				return ret;
@@ -1615,11 +1615,11 @@ fail:
 		AVFilter* yadif = avfilter_get_by_name("yadif");
 		if (yadif != NULL) {
 			if ((ret = avfilter_graph_create_filter(
-					&filt_deint, 
+					&filt_deint,
 					yadif,
 					"sdl2ffmpeg_yadif",
-					"parity=-1:deint=1", 
-					NULL, 
+					"parity=-1:deint=1",
+					NULL,
 					graph)) < 0) {
 
 				clog << "SDL2ffmpeg::configure_video_filters Warning! ";
@@ -1732,7 +1732,7 @@ fail:
 				vs->audio_filter_src.freq,
 				av_get_sample_fmt_name(vs->audio_filter_src.fmt),
 				vs->audio_filter_src.channels,
-				1, 
+				1,
 				vs->audio_filter_src.freq);
 
 		if (vs->audio_filter_src.channel_layout) {
@@ -1748,8 +1748,8 @@ fail:
 				&filt_asrc,
 				avfilter_get_by_name("abuffer"),
 				"sdl2ffmpeg_abuffer",
-				asrc_args, 
-				NULL, 
+				asrc_args,
+				NULL,
 				vs->agraph);
 
 		if (ret < 0) {
@@ -1760,8 +1760,8 @@ fail:
 				&filt_asink,
 				avfilter_get_by_name("abuffersink"),
 				"sdl2ffmpeg_abuffersink",
-				NULL, 
-				NULL, 
+				NULL,
+				NULL,
 				vs->agraph);
 
 		if (ret < 0) {
@@ -1781,7 +1781,7 @@ fail:
 		if ((ret = av_opt_set_int(
 				filt_asink,
 				"all_channel_counts",
-				1, 
+				1,
 				AV_OPT_SEARCH_CHILDREN)) < 0) {
 
 			goto end;
@@ -1793,39 +1793,39 @@ fail:
 			sample_rates   [0] = vs->audio_tgt.freq;
 
 			if ((ret = av_opt_set_int(
-					filt_asink, 
-					"all_channel_counts", 
-					0, 
+					filt_asink,
+					"all_channel_counts",
+					0,
 					AV_OPT_SEARCH_CHILDREN)) < 0) {
 
 				goto end;
 			}
 
 			if ((ret = av_opt_set_int_list(
-					filt_asink, 
-					"channel_layouts", 
-					channel_layouts,  
-					-1, 
+					filt_asink,
+					"channel_layouts",
+					channel_layouts, 
+					-1,
 					AV_OPT_SEARCH_CHILDREN)) < 0) {
 
 				goto end;
 			}
 
 			if ((ret = av_opt_set_int_list(
-					filt_asink, 
-					"channel_counts", 
+					filt_asink,
+					"channel_counts",
 					channels,
-					-1, 
+					-1,
 					AV_OPT_SEARCH_CHILDREN)) < 0) {
 
 				goto end;
 			}
 
 			if ((ret = av_opt_set_int_list(
-					filt_asink, 
+					filt_asink,
 					"sample_rates",
 					sample_rates,
-					-1, 
+					-1,
 					AV_OPT_SEARCH_CHILDREN)) < 0) {
 
 				goto end;
@@ -1834,9 +1834,9 @@ fail:
 
 
 		if ((ret = configure_filtergraph(
-				vs->agraph, 
-				afilters, 
-				filt_asrc, 
+				vs->agraph,
+				afilters,
+				filt_asrc,
 				filt_asink)) < 0) {
 
 			goto end;
@@ -1899,7 +1899,7 @@ end:
 				vfilter = dec->vfilters_list[vs->vfilter_idx];
 			}
 
-			if (last_w != frame->width || 
+			if (last_w != frame->width ||
 					last_h != frame->height ||
 					last_format != frame->format ||
 					last_serial != serial ||
@@ -2107,13 +2107,13 @@ the_end:
 					}
 
 					dec_channel_layout = get_valid_channel_layout(
-							vs->frame->channel_layout, 
+							vs->frame->channel_layout,
 							av_frame_get_channels(vs->frame));
 
 					reconfigure = cmp_audio_fmts(
-							vs->audio_filter_src.fmt, 
+							vs->audio_filter_src.fmt,
 							vs->audio_filter_src.channels,
-							(AVSampleFormat)vs->frame->format, 
+							(AVSampleFormat)vs->frame->format,
 							av_frame_get_channels(vs->frame))    ||
 							vs->audio_filter_src.channel_layout != dec_channel_layout ||
 							vs->audio_filter_src.freq           != vs->frame->sample_rate ||
@@ -2154,13 +2154,13 @@ the_end:
 				tb = vs->out_audio_filter->inputs[0]->time_base;
 
 				data_size = av_samples_get_buffer_size(
-						NULL, 
+						NULL,
 						av_frame_get_channels(vs->frame),
 						vs->frame->nb_samples,
-						(AVSampleFormat)vs->frame->format, 
+						(AVSampleFormat)vs->frame->format,
 						1);
 
-				dec_channel_layout = (vs->frame->channel_layout && 
+				dec_channel_layout = (vs->frame->channel_layout &&
 						av_frame_get_channels(vs->frame) == av_get_channel_layout_nb_channels(vs->frame->channel_layout)) ?
 						vs->frame->channel_layout : av_get_default_channel_layout(av_frame_get_channels(vs->frame));
 
@@ -2174,13 +2174,13 @@ the_end:
 					swr_free(&vs->swr_ctx);
 					vs->swr_ctx = swr_alloc_set_opts(
 							NULL,
-							vs->audio_tgt.channel_layout, 
-							vs->audio_tgt.fmt, 
+							vs->audio_tgt.channel_layout,
+							vs->audio_tgt.fmt,
 							vs->audio_tgt.freq,
 							dec_channel_layout,
-							(AVSampleFormat)vs->frame->format, 
-							vs->frame->sample_rate, 
-							0, 
+							(AVSampleFormat)vs->frame->format,
+							vs->frame->sample_rate,
+							0,
 							NULL);
 
 					if (!vs->swr_ctx || swr_init(vs->swr_ctx) < 0) {
@@ -2210,7 +2210,7 @@ the_end:
 
 					if (wanted_nb_samples != vs->frame->nb_samples) {
 						if (swr_set_compensation(
-								vs->swr_ctx, 
+								vs->swr_ctx,
 								(wanted_nb_samples - vs->frame->nb_samples) * vs->audio_tgt.freq / vs->frame->sample_rate,
 								wanted_nb_samples * vs->audio_tgt.freq / vs->frame->sample_rate) < 0) {
 
@@ -2720,8 +2720,8 @@ the_end:
 	}
 
 	int SDL2ffmpeg::is_realtime(AVFormatContext *s) {
-		if (!strcmp(s->iformat->name, "rtp") || 
-				!strcmp(s->iformat->name, "rtsp") || 
+		if (!strcmp(s->iformat->name, "rtp") ||
+				!strcmp(s->iformat->name, "rtsp") ||
 				!strcmp(s->iformat->name, "sdp")) {
 
 			return 1;
@@ -2915,7 +2915,7 @@ the_end:
 						vs->audioq.abort_request) &&
 						(vs->videoq.nb_packets > MIN_FRAMES ||
 								vs->video_stream < 0 ||
-								vs->videoq.abort_request || 
+								vs->videoq.abort_request ||
 								(vs->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC))))) {
 
 				/* wait 10 ms */
@@ -3092,10 +3092,10 @@ the_end:
 	}
 
 	AVDictionary* SDL2ffmpeg::filter_codec_opts(
-			AVDictionary *opts, 
+			AVDictionary *opts,
 			enum AVCodecID codec_id,
-			AVFormatContext *s, 
-			AVStream *st, 
+			AVFormatContext *s,
+			AVStream *st,
 			AVCodec *codec) {
 
 		AVDictionary* ret = NULL;
@@ -3128,7 +3128,7 @@ the_end:
 		while (t = av_dict_get(opts, "", t, AV_DICT_IGNORE_SUFFIX)) {
 			char *p = strchr(t->key, ':');
 
-			if (av_opt_find(&cc, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ) || 
+			if (av_opt_find(&cc, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ) ||
 					(codec && codec->priv_class && av_opt_find(
 							&codec->priv_class, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ))) {
 

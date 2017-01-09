@@ -164,7 +164,7 @@ namespace player {
 			if (!hasParent && s != 0 && dm->getSurfaceParentWindow(s) != 0) {
 				GingaWindowID parentWindow = dm->getSurfaceParentWindow(s);
 				setSurfacesParent(parentWindow);
-			} 
+			}
 			selectedPlayer->play();
 		}
 

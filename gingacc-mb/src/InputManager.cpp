@@ -696,7 +696,7 @@ namespace mb {
 	}
 
 	void InputManager::handleInputEvent(
-		IInputEvent *inputEvent, int& pLastCode, int& lastCode, 
+		IInputEvent *inputEvent, int& pLastCode, int& lastCode,
 		double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY)
 	{
 		if (inputEvent->isMotionType()) {

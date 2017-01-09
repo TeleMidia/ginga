@@ -27,7 +27,7 @@ bool StubClient::connect ()
 		_socket = new tcp::socket (*_ioService);
 
 	tcp::endpoint endpoint (boost::asio::ip::address::from_string(_address), _port);
-	try 
+	try
 	{
 		_socket->connect(endpoint);	
 	}
@@ -49,7 +49,7 @@ std::string StubClient::readMessage ()
 		if (!succeeded)
 			return "";
 	}
-	try 
+	try
 	{
 		boost::system::error_code code;
 
@@ -79,7 +79,7 @@ std::string StubClient::sendRequest (const std::string& request)
 		if (!succeeded)
 			return "";
 	}
-	try 
+	try
 	{
 		boost::system::error_code code;
 

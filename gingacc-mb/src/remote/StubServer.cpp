@@ -31,9 +31,9 @@ bool StubServer::initConnection ()
 		free (_serverSocket);
 		_serverSocket = NULL;
 	}
-	try 
+	try
 	{
-		_serverSocket = new tcp::acceptor (*_io_service, 
+		_serverSocket = new tcp::acceptor (*_io_service,
 			tcp::endpoint(boost::asio::ip::address::from_string(_address), _port));
 	}
 	catch (std::exception& e)
@@ -122,7 +122,7 @@ int StubServer::waitIncoming ()
 		//std::vector <tcp::socket*> sockets;
     tcp::endpoint endpoint = _serverSocket->local_endpoint ();
     std::cout << "Listing on " << endpoint.address () << ":" << endpoint.port () << std::endl;
-		while (true) 
+		while (true)
 		{
 			socket_ptr socket (new tcp::socket (*_io_service));
 			_serverSocket->accept(*socket); // Accept incoming connection.

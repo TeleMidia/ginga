@@ -208,7 +208,7 @@ namespace player {
 }
 }
 }
-} 
+}
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*

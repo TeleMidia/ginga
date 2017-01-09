@@ -536,7 +536,7 @@ namespace presentation {
 		object     = (ExecutionObject*)executionObject;
 		dataObject = (NodeEntity*)(object->getDataObject());
 		if (dataObject != NULL && (dataObject->instanceOf("ContentNode") ||
-			(dataObject->instanceOf("ReferNode") && 
+			(dataObject->instanceOf("ReferNode") &&
 					((ReferNode*)dataObject)->getInstanceType() == "new"))) {
 
 			anchors = ((ContentNode*)dataObject)->getAnchors();

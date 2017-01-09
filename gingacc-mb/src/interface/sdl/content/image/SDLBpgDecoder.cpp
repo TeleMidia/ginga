@@ -66,11 +66,11 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-    
+   
     SDLBpgDecoder::SDLBpgDecoder(string filename) {
 
         filePath.assign(filename);
-        
+       
     }
 
     SDLBpgDecoder::~SDLBpgDecoder() {
@@ -99,13 +99,13 @@ namespace mb {
             return NULL;
 
         fclose(f);
-    
+   
         s = bpg_decoder_open();
-        if (bpg_decoder_decode(s, buf, len) < 0) 
+        if (bpg_decoder_decode(s, buf, len) < 0)
             return NULL;
-        
+       
         bpg_decoder_get_info(s, bi);
-        
+       
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
         rmask = 0xff000000;
         gmask = 0x00ff0000;
@@ -117,22 +117,22 @@ namespace mb {
         bmask = 0x00ff0000;
         amask = 0xff000000;
 #endif
-        
+       
         if (bpg_decoder_start(s, BPG_OUTPUT_FORMAT_RGBA32) < 0)
             return NULL;
-        
+       
 
         img = SDL_CreateRGBSurface(0, bi->width, bi->height, 32,
                                    rmask, gmask, bmask, amask);
-        if (!img) 
+        if (!img)
             return NULL;
-        
+       
         SDL_LockSurface(img);
         for(y = 0; y < bi->height; y++) {
             bpg_decoder_get_line(s, (uint8_t *)img->pixels + y * img->pitch);
         }
         SDL_UnlockSurface(img);
-        
+       
         bpg_decoder_close(s);
         return img;
     }

@@ -413,7 +413,7 @@ namespace mb {
 	void SDLSurface::drawLine(int x1, int y1, int x2, int y2) {
 		clog << "SDLSurface::drawLine '";
 		clog << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "'";
-		clog << endl; 
+		clog << endl;
 
 		pushDrawData(x1, y1, x2, y2, SDLWindow::DDT_LINE);
 	}

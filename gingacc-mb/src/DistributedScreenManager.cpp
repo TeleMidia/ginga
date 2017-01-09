@@ -20,7 +20,7 @@ DistributedScreenManager::DistributedScreenManager() : LocalScreenManager ()
 	Thread::mutexInit(_stubMutex);
 }
 
-DistributedScreenManager::~DistributedScreenManager() 
+DistributedScreenManager::~DistributedScreenManager()
 {
 	Thread::mutexUnlock(_stubMutex);
 	Thread::mutexDestroy(_stubMutex);
@@ -180,7 +180,7 @@ GingaScreenID DistributedScreenManager::createScreen(int argc, char** args)
 		arguments.push_back(std::string (args[i]));
 	}
 
-	std::string request = 
+	std::string request =
 		MessageHandler::createRequestMessage (MethodRequested::t_createScreen, arguments);
 
 	string response = sendMessage(request);
@@ -799,7 +799,7 @@ void DistributedScreenManager::drawWindow (
 }
 
 void DistributedScreenManager::setWindowBounds (
-	const GingaScreenID &screenId, const GingaWindowID &winId, int x, 
+	const GingaScreenID &screenId, const GingaWindowID &winId, int x,
 	int y, int w, int h)
 {
 	vector <string> args;
@@ -1268,7 +1268,7 @@ void DistributedScreenManager::resizeWindow(
 }
 
 string DistributedScreenManager::getWindowDumpFileUri (
-	const GingaScreenID &screenId, const GingaWindowID &winId, 
+	const GingaScreenID &screenId, const GingaWindowID &winId,
 	int quality, int dumpW, int dumpH)
 {
 	vector <string> args;

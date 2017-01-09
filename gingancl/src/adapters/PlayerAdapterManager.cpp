@@ -427,7 +427,7 @@ namespace adapters {
 		}
 #endif //HAVE_SSML
 
-#if HAVE_BERKELIUM                
+#if HAVE_BERKELIUM               
                 else if (playerClassName == "BerkeliumPlayerAdapter") {
 			player = new BerkeliumPlayerAdapter();
 		}
