@@ -57,22 +57,9 @@ extern "C" {
 
 #include "config.h"
 
-#if HAVE_DIRECTFB
-#include "mb/interface/dfb/DFBDeviceScreen.h"
-#endif //HAVE_DIRECTFB
-
 #if HAVE_SDL
 #include "mb/interface/sdl/SDLDeviceScreen.h"
 #endif //HAVE_SDL
-
-#if HAVE_TERM
-#include "mb/interface/term/TermDeviceScreen.h"
-#endif //HAVE_TERM
-
-#ifdef ENABLE_EXTERNAL_MB
-#include "mb/DistributedScreenManager.h"
-#endif
-
 
 namespace br {
 namespace pucrio {
@@ -494,67 +481,6 @@ namespace mb {
 #endif //HAVE_SDL
 				break;
 
-			case GMBST_TERM:
-#if HAVE_TERM
-				screen = new TermDeviceScreen(
-						argc, mbArgs, screenId, embedWin, externalRenderer);
-#endif //HAVE_TERM
-				break;
-
-			case GMBST_DFB:
-				params = "";
-
-				if (vSubSystem != "") {
-					params = "--dfb:system=" + vSubSystem;
-				}
-
-				if (vMode != "") {
-					if (params == "") {
-						params = "--dfb:mode=" + vMode;
-
-					} else {
-						params = params + ",mode=" + vMode;
-					}
-				}
-
-				if (vEmbed != "") {
-					if (params == "") {
-						params = "--dfb:x11-root-window=" + vEmbed;
-
-					} else {
-						params = params + ",x11-root-window=" + vEmbed;
-					}
-				}
-
-				paramsSfx = "no-sighandler,force-windowed,quiet,no-banner,";
-				paramsSfx = paramsSfx + "no-debug,fatal-level=NONE";
-
-				if (params == "") {
-					params = "--dfb:" + paramsSfx;
-
-				} else {
-					params = params + "," + paramsSfx;
-				}
-
-				mbArgs[argc] = (char*)mycmd.c_str();
-				argc++;
-				mbArgs[argc] = (char*)params.c_str();
-				argc++;
-
-				if (aSystem != "") {
-					mbArgs[argc] = (char*)"audio";
-					argc++;
-
-					mbArgs[argc] = (char*)aSystem.c_str();
-					argc++;
-				}
-
-#if HAVE_DIRECTFB
-				screen = new DFBDeviceScreen(
-						argc, mbArgs, screenId, embedWin, externalRenderer);
-#endif //HAVE_DIRECTFB
-				break;
-
 			default:
 				clog << "LocalScreenManager::createScreen please reinstall";
 				clog << " ginga with a multimedia library (SDL or DFB)";
@@ -605,14 +531,6 @@ namespace mb {
 #if HAVE_SDL
 			mbSystemType = GMBST_SDL;
 #endif
-		} else if (mbSystemName == "dfb") {
-#if HAVE_DIRECTFB
-			mbSystemType = GMBST_DFB;
-#endif
-		} else if (mbSystemName == "term") {
-#if HAVE_TERM
-			mbSystemType = GMBST_TERM;
-#endif
 		} else if (mbSystemName != "") {
 			foundit = false;
 		}
@@ -620,11 +538,6 @@ namespace mb {
 		if (mbSystemType == GMBST_DFLT) {
 #if HAVE_SDL
 			mbSystemType = GMBST_SDL;
-#elif HAVE_DIRECTFB
-			mbSystemType = GMBST_DFB;
-#elif HAVE_TERM
-			mbSystemType = GMBST_TERM;
-#else
 			foundit = false;
 #endif
 		}
