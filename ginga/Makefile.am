@@ -1,7 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-################################## Ginga ###################################
-
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MB)\
@@ -17,15 +15,15 @@ AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LI
 
 LDADD =\
   ../gingacc-contextmanager/libgingacccontextmanager.la\
-  ../ic/libgingaccic.la\
+  ../ic/ic.la\
   ../gingacc-mb/libgingaccmb.la\
   ../gingacc-system/libgingaccsystem.la\
-  ../lssm/libgingalssm.la\
+  ../lssm/lssm.la\
   ../gingancl/libginganclmodel.la\
   ../gingacc-player/libgingaccplayer.la\
   ../ncl30-converter/libncl30confrancl.la\
   ../ncl30/libncl30.la\
-  ../util/libtelemidiautil.la\
+  ../util/util.la\
   $(NULL)
 
 if BUILD_DATA_PROCESSING

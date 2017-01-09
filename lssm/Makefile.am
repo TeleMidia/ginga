@@ -11,9 +11,8 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_LDFLAGS= $(LTSTATIC)
-
-noinst_LTLIBRARIES= libgingalssm.la
-libgingalssm_la_SOURCES=\
+noinst_LTLIBRARIES= lssm.la
+lssm_la_SOURCES=\
   PresentationEngineManager.cpp\
   CommonCoreManager.cpp\
   DataWrapperListener.cpp\
@@ -21,7 +20,7 @@ libgingalssm_la_SOURCES=\
   $(NULL)
 
 if BUILD_DATA_PROCESSING
-libgingalssm_la_LIBADD=\
+lssm_la_LIBADD=\
   ../gingacc-tuner/libgingacctuner.la\
   ../gingacc-tsparser/libgingacctsparser.la\
   ../gingacc-dataprocessing/libgingaccdataprocncledit.la\

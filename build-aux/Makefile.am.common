@@ -1,4 +1,4 @@
-LTSTATIC= -static -avoid-version
+LTSTATIC= -static -module -avoid-version
 LTLDFLAGS= -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
 MAINTAINERCLEANFILES= Makefile.in
 
