@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CurlInteractiveChannel_H_
 #define _CurlInteractiveChannel_H_
 
-#include "../IInteractiveChannel.h"
+#include "ic/IInteractiveChannel.h"
 
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
