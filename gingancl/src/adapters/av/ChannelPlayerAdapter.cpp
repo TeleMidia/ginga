@@ -94,16 +94,8 @@ namespace av {
 						mrlPlayer = ((ReferenceContent*)content)->
 							    getCompleteReferenceUrl();
 
-#if HAVE_COMPONENTS
-						playerCompName = "AVPlayer";
-						childPlayer = ((PlayerCreator*)(
-								cm->getObject(playerCompName)))(
-										myScreen,
-										mrlPlayer.c_str());
-#else
 						childPlayer = new AVPlayer(
 								myScreen, mrlPlayer.c_str());
-#endif
 
 						if (childPlayer != NULL) {
 							(*objectMap)[childObj->
@@ -125,12 +117,7 @@ namespace av {
 			objects = NULL;
 		}
 
-#if HAVE_COMPONENTS
-		player = ((PlayerCreator*)(cm->getObject("ChannelPlayer")))(
-				myScreen, (char*)"");
-#else
 		player = new ChannelPlayer(myScreen);
-#endif
 
 		if (player != NULL) {
 			player->setPlayerMap(objectMap);

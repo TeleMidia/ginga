@@ -53,13 +53,8 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-#endif
 
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
@@ -122,15 +117,7 @@ int main(int argc, char** argv) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-
-	dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-
-#else
 	dm = ScreenManagerFactory::getInstance();
-#endif
 
 	screen = dm->createScreen(argc, argv);
 	im     = dm->getInputManager(screen);

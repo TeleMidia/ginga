@@ -53,10 +53,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "ncl/layout/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"
 #if HAVE_MULTIDEVICE
@@ -70,7 +66,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#endif
 
 #include "ncl/layout/IDeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
@@ -244,9 +239,6 @@ int main(int argc, char *argv[]) {
 	IFormatterMultiDevice* fmd = NULL;
 #endif
 	GingaScreenID screenId;
-#if HAVE_COMPONENTS
-	IComponentManager* cm;
-#endif
 
 	string nclFile      = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
 	string interfaceId  = "";
@@ -456,12 +448,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	initTimeStamp();
-
-#if HAVE_COMPONENTS
-	cm = IComponentManager::getCMInstance();
-	cm->setUnloadComponents(!disableUC);
-#endif
-
 	if (nclFile != "") {
 		nclFile = SystemCompat::updatePath(updateFileUri(nclFile));
 
@@ -479,12 +465,7 @@ int main(int argc, char *argv[]) {
 	clog << "NCLFILE = '" << nclFile.c_str() << "'";
 	clog << endl;
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	dm  = ScreenManagerFactory::getInstance();
-#endif
 
 	screenId = dm->createScreen(argc, argv);
 	if (screenId < 0) {
@@ -495,16 +476,9 @@ int main(int argc, char *argv[]) {
 
 	if (devClass == 1) {
 
-#if HAVE_COMPONENTS && HAVE_MULTIDEVICE
-		fmd = ((FormatterMultiDeviceCreator*)(cm->getObject(
-				"FormatterMultiDevice")))(
-				screenId, NULL, devClass, nclFile, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
-#else
-
 #if HAVE_MULTIDEVICE
 		fmd = new FormatterPassiveDevice(
 				screenId, NULL, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
-#endif
 #endif
 #if HAVE_MULTIDEVICE
 		if (bgUri != "") {
@@ -514,14 +488,8 @@ int main(int argc, char *argv[]) {
 #endif
 
 	} else if (devClass == 2) {
-#if HAVE_COMPONENTS && HAVE_MULTIDEVICE
-		fmd = ((FormatterMultiDeviceCreator*)(cm->getObject(
-				"FormatterMultiDevice")))(
-                                                          screenId, NULL, devClass, nclFile, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
-#else
 #if HAVE_MULTIDEVICE
 		fmd = new FormatterActiveDevice(screenId, NULL, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
-#endif
 #endif
 
 #if HAVE_MULTIDEVICE
@@ -538,13 +506,8 @@ int main(int argc, char *argv[]) {
 			enableGfx = false;
 		}
 
-#if HAVE_COMPONENTS
-		pem = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-				devClass, xOffset, yOffset, w, h, enableGfx, useMulticast, screenId);
-#else
 		pem = new PresentationEngineManager(
 				devClass, xOffset, yOffset, w, h, enableGfx, useMulticast, screenId);
-#endif
 
 		if (pem == NULL) {
 			clog << "ginga main() Warning! Can't create Presentation Engine";
@@ -575,12 +538,7 @@ int main(int argc, char *argv[]) {
 			pem->setIsLocalNcl(false, NULL);
 			pem->autoMountOC(autoMount);
 
-#if HAVE_COMPONENTS
-			ccm = ((CICreator*)(cm->getObject("CommonCoreManager")))();
-
-#else
 			ccm = new CommonCoreManager();
-#endif
 			ccm->addPEM(pem, screenId);
 			ccm->enableNPTPrinter(nptPrinter);
 			ccm->setInteractivityInfo(hasOCSupport);
@@ -617,11 +575,6 @@ int main(int argc, char *argv[]) {
 			delete ccm;
 			clog << "ginga main() calling delete ccm all done" << endl;
 		}
-
-#if HAVE_COMPONENTS
-		printTimeStamp();
-		cm->releaseComponentFromObject("PresentationEngineManager");
-#endif
 	}
 
 	clog << "Ginga v" << VERSION << " all done!" << endl;

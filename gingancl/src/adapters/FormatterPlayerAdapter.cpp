@@ -116,15 +116,6 @@ namespace adapters {
 			player = NULL;
 		}
 
-#if HAVE_COMPONENTS
-		if (playerCompName != "" && playerCompName != "ProgramAV") {
-			clog << "FormatterPlayerAdapter::~FormatterPlayerAdapter ";
-			clog << "release player component '" << playerCompName << "'";
-			clog << endl;
-			cm->releaseComponentFromObject(playerCompName);
-		}
-#endif
-
 		unlockObject();
 
 		Thread::mutexDestroy(&objectMutex);
@@ -191,13 +182,7 @@ namespace adapters {
 		PropertyAnchor* property;
 
 		if (player == NULL) {
-#if HAVE_COMPONENTS
-			playerCompName = "Player";
-			player = ((PlayerCreator*)(cm->getObject("Player")))(
-					myScreen, NULL);
-#else
 			player = new Player(myScreen, mrl);
-#endif
 		}
 
 		player->addListener(this);

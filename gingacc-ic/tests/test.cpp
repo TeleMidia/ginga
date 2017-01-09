@@ -49,15 +49,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "ic/InteractiveChannelManager.h"
 #include "ic/curlic/CurlInteractiveChannel.h"
 #if HAVE_CCRTP
 #include "ic/ccrtpic/CCRTPInteractiveChannel.h"
-#endif
 #endif
 
 #include "system/compat/SystemCompat.h"
@@ -119,9 +114,6 @@ int main(int argc, char** argv) {
 	ICListener* listener;
 #endif
 	IInteractiveChannel* ic;
-#if HAVE_COMPONENTS
-	IComponentManager* cm;
-#endif
 	IInteractiveChannelManager* icm;
 
 	FILE* fd;
@@ -133,13 +125,7 @@ int main(int argc, char** argv) {
 	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 	SystemCompat::makeDir(localPath.c_str(), 0666);
 
-#if HAVE_COMPONENTS
-	cm = IComponentManager::getCMInstance();
-	icm = ((ICMCreator*)(cm->getObject("InteractiveChannelManager")))();
-
-#else
 	icm = InteractiveChannelManager::getInstance();
-#endif
 
 #if HAVE_CCRTP
 	listener = new ICListener();
@@ -152,11 +138,7 @@ int main(int argc, char** argv) {
 
 		if (icm != NULL) {
 #if HAVE_CURL
-#if HAVE_COMPONENTS
-			ic = ((ICCreator*)(cm->getObject("CurlInteractiveChannel")))();
-#else
 			ic = new CurlInteractiveChannel();
-#endif
 			if (ic != NULL && ic->hasConnection()) {
 				if (fd > 0) {
 					ic->setTarget(fd);
@@ -172,11 +154,7 @@ int main(int argc, char** argv) {
 
 	} else if (argc == 3 && strcmp(argv[1], "--ccrtp") == 0) {
 #if HAVE_CCRTP
-#if HAVE_COMPONENTS
-		ic = ((ICCreator*)(cm->getObject("CCRTPInteractiveChannel")))();
-#else
 		ic = new CCRTPInteractiveChannel();
-#endif
 
 		char* buffer = NULL;
 

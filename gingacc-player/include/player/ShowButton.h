@@ -62,12 +62,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/interface/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
 
 #include "IShowButton.h"
 #include "ImagePlayer.h"

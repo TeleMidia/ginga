@@ -150,16 +150,8 @@ namespace ncl {
 
 			IScreenManager* dm;
 
-#if HAVE_COMPONENTS
-			dm = ((LocalScreenManagerCreator*)(
-					cm->getObject("LocalScreenManager")))();
-
-			player = ((NCLPlayerCreator*)(cm->getObject(playerCompName)))(
-					childData);
-#else
 			dm = ScreenManagerFactory::getInstance();
 			player = (INCLPlayer*)(new FormatterMediator(childData));
-#endif
 
 			s = dm->createSurface(myScreen);
 			int cap = dm->getSurfaceCap(s, "ALPHACHANNEL");

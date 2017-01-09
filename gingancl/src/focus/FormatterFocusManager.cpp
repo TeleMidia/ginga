@@ -51,13 +51,8 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-#endif
 
 #include "multidevice/services/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
@@ -82,13 +77,7 @@ namespace focus {
 	set<FormatterFocusManager*> FormatterFocusManager::instances;
 	pthread_mutex_t FormatterFocusManager::iMutex;
 
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
 
 	FormatterFocusManager::FormatterFocusManager(
 		    PlayerAdapterManager* playerManager,

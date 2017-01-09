@@ -57,13 +57,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-#if HAVE_COMPONENTS
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
-
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
 		myScreen       = screenId;
 		status         = NONE;

@@ -52,11 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 #include "mb/interface/IDeviceScreen.h"
 
 #ifdef __cplusplus
@@ -105,9 +100,6 @@ namespace mb {
 			unsigned int hRes;
 			unsigned int wRes;
 
-#if HAVE_COMPONENTS
-			static IComponentManager* cm;
-#endif
 			set<IWindow*> windowPool;
 			vector<IWindow*> windowRenderList;
 			set<ISurface*> surfacePool;

@@ -236,14 +236,7 @@ namespace player {
 		}
 
 		currentPid = pid;
-
-#if HAVE_COMPONENTS
-		currentPlayer = ((PlayerCreator*)(cm->getObject("AVPlayer")))(
-				myScreen, mrl.c_str());
-
-#else
 		currentPlayer = new AVPlayer(myScreen, mrl.c_str());
-#endif
 
 		if (fullScreenBounds != "") {
 			playerBounds[pid] = fullScreenBounds;

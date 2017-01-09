@@ -65,14 +65,7 @@ namespace text {
 	void SubtitlePlayerAdapter::createPlayer() {
 		string paramValue;
 		CascadingDescriptor* descriptor;
-
-#if HAVE_COMPONENTS
-		playerCompName = "SrtPlayer";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, mrl.c_str());
-#else
 		player = new SrtPlayer(myScreen, mrl.c_str());
-#endif
 
 		descriptor = object->getDescriptor();
 		if (descriptor != NULL) {

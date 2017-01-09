@@ -51,19 +51,10 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-
 #include "system/fs/GingaLocatorFactory.h"
-
 #include "gingancl/prefetch/PrefetchManager.h"
-
 #include "gingancl/multidevice/FormatterBaseDevice.h"
-
-#endif //HAVE_COMPONENTS
 
 #include "gingancl/adaptation/context/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
@@ -78,11 +69,6 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace ncl {
-
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	IPrefetchManager* FormatterMediator::pm = NULL;
 
 	EntryEventListener::EntryEventListener(Player* player, string interfaceId) {
@@ -257,12 +243,7 @@ namespace ncl {
 		this->currentDocument = NULL;
 
 		if (pm == NULL) {
-#if HAVE_COMPONENTS
-			pm = ((PrefetchManagerCreator*)(
-					cm->getObject("PrefetchManager")))();
-#else
 			pm = PrefetchManager::getInstance();
-#endif
 		}
 
 		deviceLayout = new DeviceLayout(deviceName);
@@ -271,21 +252,6 @@ namespace ncl {
 
 		presContext = new PresentationContext(data->screenId);
 
-#if HAVE_COMPONENTS
-		multiDevice = ((FormatterMultiDeviceCreator*)(cm->getObject(
-				"FormatterMultiDevice")))(
-						data->screenId,
-						deviceLayout,
-						0,
-						data->playerId,
-						data->x,
-						data->y,
-						data->w,
-						data->h,
-						data->enableMulticast, 22222);
-		//TODO: improve instantiation
-
-#else
 		multiDevice = new FormatterBaseDevice(
 				data->screenId,
 				deviceLayout,
@@ -294,7 +260,6 @@ namespace ncl {
 				data->y,
 				data->w,
 				data->h, data->enableMulticast, 22222);
-#endif
 
 		multiDevice->setPresentationContex(presContext);
 
@@ -1503,12 +1468,7 @@ namespace ncl {
 		string arg, uri, ior, docUri, docIor, uName, docId;
 		IGingaLocatorFactory* glf = NULL;
 
-#if HAVE_COMPONENTS
-		glf = ((GingaLocatorFactoryCreator*)(cm->getObject(
-				"GingaLocatorFactory")))();
-#else
 		glf = GingaLocatorFactory::getInstance();
-#endif
 
 		args = split(privateDataPayload, ",", "'");
 		i = args->begin();

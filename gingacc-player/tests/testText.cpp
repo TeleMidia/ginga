@@ -140,17 +140,6 @@ void* testPlayer(void* ptr) {
 	windows->insert(ww);
 	windows->insert(www);
 
-#if HAVE_COMPONENTS
-	txt1 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", &notFalse);
-
-	txt2 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", &notFalse);
-
-	txt3 = ((PlayerCreator*)(cm->getObject("PlainTxtPlayer")))(
-			screen, "file.txt", &notFalse);
-#endif
-
 	txt1->setOutWindow(w->getId());
 	s = txt1->getSurface();
 	if (s != NULL) {
@@ -295,14 +284,9 @@ int main(int argc, char** argv, char** envp) {
 
 	//SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	cout << "gingacc-player test works only with enabled component support.";
 	cout << endl;
 	exit(0);
-#endif
 
 	running = true;
 

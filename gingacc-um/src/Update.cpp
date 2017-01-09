@@ -54,12 +54,7 @@ http://www.telemidia.puc-rio.br
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "ic/InteractiveChannelManager.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -67,9 +62,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace um {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 	Update::Update(IComponent* component) {
 		this->listeners = NULL;
 		this->component = component;
@@ -112,12 +104,7 @@ namespace um {
 		string remoteFileName, localFileName;
 		FILE* fd;
 
-#if HAVE_COMPONENTS
-		icm = ((ICMCreator*)(cm->getObject(
-				"InteractiveChannelManager")))();
-#else
 		icm = InteractiveChannelManager::getInstance();
-#endif
 
 		remoteFileName = component->getRepository(0) + component->getName();
 		localFileName = location + component->getName();

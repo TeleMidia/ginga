@@ -64,11 +64,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "gingalssm/IPresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 bool verbose = false;
 
 //GTK
@@ -390,71 +385,9 @@ int main(int argc, char** argv, char** envp) {
     xScreen   = DefaultScreen(xDisplay);
     parentXId = GDK_DRAWABLE_XID(gdkWindow);
 
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	cm->setUnloadComponents(!disableUC);
-
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-	char* fakeArgv1[5];
-	char* fakeArgv2[5];
-
-	/********
-	 * NCL1 *
-	 ********/
-	/*
-	 * Preparing parent data:
-	 *     <display>,<parentId>,<childX>,<childY>,<childW>,<childH>
-	 */
-	strParent = "";
-
-	strParent.assign(XDisplayName((char*)xDisplay));
-
-	strParent    = strParent +
-			"," + ultostr((unsigned long)parentXId) + ",0,0,320,480";
-
-	fakeArgv1[0] = (char*)"testEmbedGtk";
-	fakeArgv1[1] = (char*)"--vsystem";
-	fakeArgv1[2] = (char*)"sdl";
-	fakeArgv1[3] = (char*)"--parent";
-	fakeArgv1[4] = (char*)strParent.c_str();
-	fakeArgv1[5] = (char*)"--external-renderer";
-
-	screen1 = dm->createScreen(6, fakeArgv1);
-
-	pem1    = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-			devClass, 0, 0, 0, 0, enableGfx, false, screen1);
-
-	/********
-	 * NCL2 *
-	 ********/
-	/*
-	 * Preparing parent data:
-	 *     <display>,<parentId>,<childX>,<childY>,<childW>,<childH>
-	 */
-	strParent2 = "";
-
-	strParent2.assign(XDisplayName((char*)xDisplay));
-
-	strParent2   = strParent2 + "," + ultostr(parentXId) + ",320,0,320,480";
-
-	fakeArgv2[0] = (char*)"testEmbedGtk";
-	fakeArgv2[1] = (char*)"--vsystem";
-	fakeArgv2[2] = (char*)"sdl";
-	fakeArgv2[3] = (char*)"--parent";
-	fakeArgv2[4] = (char*)strParent2.c_str();
-	fakeArgv2[5] = (char*)"--external-renderer";
-
-	screen2 = dm->createScreen(6, fakeArgv2);
-
-	pem2    = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-			devClass, 0, 0, 0, 0, enableGfx, false, screen2);
-
-#else
 	cout << "ginga-lssm test works only when component manager support is ";
 	cout << "enabled" << endl;
 	exit(0);
-#endif
 
 	nclFile1 = updateFileUri(nclFile1);
 	nclFile2 = updateFileUri(nclFile2);
@@ -477,10 +410,6 @@ int main(int argc, char** argv, char** envp) {
 	delete pem1;
 
 	delete dm;
-
-#if HAVE_COMPONENTS
-	delete cm;
-#endif
 
 	delete embedding;
 

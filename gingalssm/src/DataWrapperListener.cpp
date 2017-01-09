@@ -51,13 +51,8 @@ http://www.telemidia.puc-rio.br
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
 #include "gingalssm/DataWrapperListener.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "system/fs/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
-#endif
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -67,9 +62,6 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 	DataWrapperListener::DataWrapperListener(
 			IPresentationEngineManager* pem) {
 
@@ -262,12 +254,7 @@ namespace lssm {
 
 		IGingaLocatorFactory* glf = NULL;
 
-#if HAVE_COMPONENTS
-		glf = ((GingaLocatorFactoryCreator*)(cm->getObject(
-				"GingaLocatorFactory")))();
-#else
 		glf = GingaLocatorFactory::getInstance();
-#endif
 
 		clog << "DataWrapperListener::objectMounted ior '" << ior;
 		clog << "', uri '" << clientUri << "' and name '" << name;

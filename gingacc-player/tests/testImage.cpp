@@ -105,17 +105,6 @@ void testPlayer(
 	windows->insert(ww);
 	windows->insert(www);
 
-#if HAVE_COMPONENTS
-	img1 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", &notFalse);
-
-	img2 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", &notFalse);
-
-	img3 = ((PlayerCreator*)(cm->getObject("ImagePlayer")))(
-			screen, "1.png", &notFalse);
-#endif
-
 	img1->setOutWindow(w->getId());
 	s = img1->getSurface();
 	if (s != NULL && s->setParentWindow((void*)w)) {
@@ -176,14 +165,9 @@ int main(int argc, char** argv, char** envp) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	cout << "gingacc-player test works only with enabled component support.";
 	cout << endl;
 	exit(0);
-#endif
 
 	int i;
 	bool testAllScreens = false;

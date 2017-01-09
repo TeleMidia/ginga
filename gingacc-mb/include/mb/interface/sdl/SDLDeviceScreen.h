@@ -55,11 +55,6 @@ http://www.telemidia.puc-rio.br
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 #include "mb/interface/IDiscreteMediaProvider.h"
 #include "mb/interface/IDeviceScreen.h"
 
@@ -129,10 +124,6 @@ typedef struct {
 
 			GingaWindowID winIdRefCounter;
 			map<GingaWindowID, IWindow*> windowRefs;
-
-#if HAVE_COMPONENTS
-			static IComponentManager* cm;
-#endif
 			set<IWindow*> windowPool;
 			set<ISurface*> surfacePool;
 			set<IContinuousMediaProvider*> cmpPool;

@@ -49,16 +49,10 @@ http://www.telemidia.puc-rio.br
 #include "gingancl/multidevice/FormatterActiveDevice.h"
 #include "gingancl/multidevice/FMDComponentSupport.h"
 
-
-#if HAVE_COMPONENTS
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/interface/CodeMap.h"
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-#endif
 
 //TODO: fix formatter instantiation
 #include "gingancl/FormatterMediator.h"
@@ -171,27 +165,14 @@ namespace multidevice {
 		SystemCompat::makeDir(tmp_dir.c_str(),0755);
 
 		if (rdm == NULL) {
-#if HAVE_COMPONENTS
-			rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-					"RemoteDeviceManager")))(deviceClass, useMulticast, deviceServicePort);
-#else
 			rdm = RemoteDeviceManager::getInstance();
 			((RemoteDeviceManager*)rdm)->setDeviceDomain(
 					new ActiveDeviceDomain(useMulticast, deviceServicePort));
-
-#endif
 		}
 
 		rdm->setDeviceInfo(deviceClass, w, h, "");
 		rdm->addListener(this);
-
-#if HAVE_COMPONENTS
-		privateBaseManager = ((PrivateBaseManagerCreator*)(cm->getObject(
-				"PrivateBaseManager")))();
-
-#else
 		privateBaseManager = new PrivateBaseManager();
-#endif
 
 		ContentTypeManager::getInstance()->setMimeFile(
 				SystemCompat::appendGingaFilesPrefix("mimetypes.ini")
@@ -355,42 +336,6 @@ namespace multidevice {
 		i = contentsInfo->find(contentUri);
 		if (contentUri.find(".ncl") != std::string::npos &&
 				i != contentsInfo->end()) {
-/*
-			NclPlayerData* data = new NclPlayerData;
-			data->screenId      = myScreen;
-			data->baseId        = i->second;
-			data->playerId      = i->second;
-			data->devClass      = deviceClass;
-			data->x             = xOffset;
-			data->y             = yOffset;
-			data->w             = defaultWidth;
-			data->h             = defaultHeight;
-			data->enableGfx     = false;
-			data->parentDocId   = "";
-			data->nodeId        = "";
-			data->docId         = "";
-			data->focusManager  = NULL;
-			data->editListener  = NULL;
-*/
-//			player = new FormatterMediator(NULL);
-/*
-#if HAVE_COMPONENTS
-				player = ((PlayerCreator*)(cm->getObject("Player")))(
-						myScreen, contentUri.c_str(), false);
-#else
-				player = new Player(myScreen, contentUri);
-#endif
-
-			player->addListener(this);
-
-
-			//s = dm->createSurface(myScreen);
-
-			//player->setSurface(s);
-			//player->setCurrentDocument(contentUri);
-			//player->setParentLayout(mainLayout);
-*/
-			//TODO: use FormatterMediator (as in PresentationEngineManager)
 			return true;
 		}
 
@@ -484,16 +429,8 @@ namespace multidevice {
 		data->baseId             = 1;
 		data->playerId           = "active-device";
 		data->privateBaseManager = privateBaseManager;
-		//TODO: component manager to instantiate formatter (as in PresentationEngineManager)
 
-#if HAVE_COMPONENTS
-			fmt = ((NCLPlayerCreator*)(cm->getObject("Formatter")))(data);
-
-#else
-			fmt = new FormatterMediator(data);
-#endif
-		//fmt = new FormatterMediator(data);
-		//(NclDocument*)(formatter->setCurrentDocument(fname));
+		fmt = new FormatterMediator(data);
 
 		fmt->addListener(this);
 

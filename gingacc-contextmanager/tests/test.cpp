@@ -49,12 +49,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "contextmanager/ContextManager.h"
-#endif
 
 #include "contextmanager/IContextManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
@@ -63,13 +58,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 using namespace std;
 
 int main() {
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-	IContextManager* contextManager = ((ContextManagerCreator*)(cm->getObject(
-			"ContextManager")))();
-#else
 	IContextManager* contextManager = ContextManager::getInstance();
-#endif
 
 	clog << "gingacc-contextmanager main test: begin" << endl;
 	if (contextManager != NULL) {

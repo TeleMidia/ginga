@@ -67,11 +67,7 @@ namespace player {
 		}
 
 		if (this->url != "") {
-#if HAVE_COMPONENTS
-			icm = ((ICMCreator*)(cm->getObject("InteractiveChannelManager")))();
-#else
 			icm = InteractiveChannelManager::getInstance();
-#endif
 
 			ic = icm->createInteractiveChannel(url);
 			if (ic != NULL) {

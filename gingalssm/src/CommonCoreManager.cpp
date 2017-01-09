@@ -50,10 +50,6 @@ http://www.telemidia.puc-rio.br
 #include "gingalssm/CommonCoreManager.h"
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #if HAVE_DSMCC
 #include "tuner/Tuner.h"
 #include "tsparser/Demuxer.h"
@@ -63,7 +59,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::cm;
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 #include "player/ProgramAV.h"
-#endif
 
 #if HAVE_TUNER
 #include "tuner/ITuner.h"
@@ -111,13 +106,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-	static IScreenManager* dm = ((LocalScreenManagerCreator*)(
-			cm->getObject("LocalScreenManager")))();
-#else
 	static IScreenManager* dm = ScreenManagerFactory::getInstance();
-#endif
 
 	CommonCoreManager::CommonCoreManager() {
 		tuningWindow  = 0;
@@ -145,30 +134,18 @@ namespace lssm {
 		this->pem = pem;
 
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
-#if HAVE_COMPONENTS
-		tuner = ((TunerCreator*)(cm->getObject("Tuner")))(myScreen);
-#else
 		tuner = new Tuner(myScreen);
-#endif
 
 		pem->setIsLocalNcl(false, tuner);
 
 		clog << "CommonCoreManager::CommonCoreManager ";
 		clog << "creating demuxer" << endl;
-#if HAVE_COMPONENTS
-		demuxer = ((demCreator*)(cm->getObject("Demuxer")))((ITuner*)tuner);
-#else
 		demuxer = new Demuxer((ITuner*)tuner);
-#endif
 
 		clog << "CommonCoreManager::CommonCoreManager ";
 		clog << "creating data processor" << endl;
 
-#if HAVE_COMPONENTS
-		dataProcessor = ((dpCreator*)(cm->getObject("DataProcessor")))();
-#else
 		dataProcessor = new DataProcessor();
-#endif
 
 		ccUser = pem->getDsmccListener();
 
@@ -276,13 +253,7 @@ namespace lssm {
 
 		clog << "lssm-ccm::cmavp creating player" << endl;
 
-#if HAVE_COMPONENTS
-		ipav = ((ProgramHandlerCreator*)(cm->getObject("ProgramAV")))(
-				screenId);
-
-#else
 		ipav = ProgramAV::getInstance(screenId);
-#endif
 
 		//vPid = ((IDemuxer*)demuxer)->getDefaultMainVideoPid();
 		//aPid = ((IDemuxer*)demuxer)->getDefaultMainAudioPid();

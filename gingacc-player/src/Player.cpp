@@ -70,16 +70,9 @@ namespace player {
 		Thread::mutexInit(&referM, NULL);
 		Thread::mutexInit(&pnMutex, NULL);
 
-#if HAVE_COMPONENTS
-		if (dm == NULL) {
-			dm = ((LocalScreenManagerCreator*)(
-					cm->getObject("LocalScreenManager")))();
-		}
-#else
 		if (dm == NULL) {
 			dm = ScreenManagerFactory::getInstance();
 		}
-#endif
 
 		this->myScreen            = screenId;
 		this->mrl                 = mrl;

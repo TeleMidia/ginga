@@ -52,10 +52,6 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/IInputManager.h"
 #include "mb/LocalScreenManager.h"
 
@@ -130,7 +126,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::ncl;
 
 #include "gingancl/FormatterMediator.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
-#endif
 
 namespace br {
 namespace pucrio {
@@ -138,9 +133,6 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 }
 }
 }

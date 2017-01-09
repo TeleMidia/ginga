@@ -432,94 +432,11 @@ namespace compat {
 
 	void* SystemCompat::loadComponent(
 			string libName, void** llib, string symName) {
-#if HAVE_COMPONENTS
-		void* comp   = NULL;
-		void* comSym = NULL;
-
-		libName = appendLibExt(libName);
-
-# ifndef WIN32
-		comp = dlopen(libName.c_str(), RTLD_NOW | RTLD_GLOBAL);
-		if (comp == NULL) {
-			std::string path = std::string (GINGA_LIBDIR) + "/" + libName;
-			comp = dlopen(path.c_str (), RTLD_NOW | RTLD_GLOBAL);
-			if (comp == NULL) {
-				clog << "SystemCompat::loadComponent Warning: can't load ";
-				clog << "component '" << libName << "' => ";
-				clog << dlerror() << endl;
-				return (NULL);
-			}
-		}
-
-		comSym = dlsym(comp, symName.c_str());
-
-		const char* dlsym_error = dlerror();
-		if (dlsym_error != NULL) {
-			clog << "SystemCompat::loadComponent warning: can't load symbol '";
-			clog << symName << "' from library '" << libName;
-			clog << "' => " << dlsym_error << endl;
-			dlclose(comp);
-			*llib = NULL;
-
-			return (NULL);
-		}
-
-		*llib = comp;
-		dlerror();
-
-# else
-		comp = LoadLibrary(libName.c_str());
-		if (comp == NULL) {
-			clog << "SystemCompat::loadComponent Warning: can't load ";
-			clog << "component '" << libName << "'" << endl;
-			return (NULL);
-		}
-
-		comSym = GetProcAddress((HINSTANCE)comp, symName.c_str());
-		if (comSym == NULL) {
-			clog << "SystemCompat::loadComponent warning: can't load symbol '";
-			clog << symName << "' from library '" << libName;
-			clog << "'" << endl;
-
-			FreeLibrary((HINSTANCE)comp);
-			*llib = NULL;
-
-			return (NULL);
-		}
-# endif //!WIN32
-
-		return comSym;
-#else // !HAVE_COMPONENTS
 		abort ();
-#endif
 	}
 
 	bool SystemCompat::releaseComponent(void* component) {
-		bool released = false;
-#if HAVE_COMPONENTS
-# ifndef WIN32
-		int ret = dlclose(component);
-		const char* dlsym_error = dlerror();
-
-		if (dlsym_error != NULL) {
-			clog << "SystemCompat::releaseComponent Warning! Can't";
-			clog << " release => " << dlsym_error << endl;
-
-			released = false;
-
-		} else {
-			released = true;
-		}
-
-		dlerror();
-
-# else
-		released = (bool)FreeLibrary((HINSTANCE)component);
-# endif //!WIN32
-		return released;
-#else // !HAVE_COMPONENTS
 		abort ();
-#endif
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {

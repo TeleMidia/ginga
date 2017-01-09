@@ -95,10 +95,6 @@ namespace multidevice {
 #if HAVE_MULTIDEVICE
 		//if ((deviceClass == IDeviceDomain::CT_BASE)&&(rdm==NULL)) {
 		if (rdm == NULL) {
-#if HAVE_COMPONENTS
-			rdm = ((IRemoteDeviceManagerCreator*)(cm->getObject(
-					"RemoteDeviceManager")))(deviceClass, useMulticast, srvPort);
-#else //!HAVE_COMPONENTS
 			rdm = RemoteDeviceManager::getInstance();
 			if (!active_dev)
 				((RemoteDeviceManager*)rdm)->setDeviceDomain(
@@ -106,7 +102,6 @@ namespace multidevice {
 			else 
 				((RemoteDeviceManager*)rdm)->setDeviceDomain(
 						new ActiveDeviceDomain(useMulticast, srvPort));
-#endif //HAVE_COMPONENTS
 		}
 
 		rdm->setDeviceInfo(deviceClass, w, h, playerId);

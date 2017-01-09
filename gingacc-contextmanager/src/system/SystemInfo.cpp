@@ -51,12 +51,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "mb/LocalScreenManager.h"
-#endif
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -74,9 +69,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
 	static IScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
@@ -84,12 +76,7 @@ namespace contextmanager {
 		sysTable = NULL;
 
 		if (dm == NULL) {
-#if HAVE_COMPONENTS
-			dm = ((LocalScreenManagerCreator*)(
-					cm->getObject("LocalScreenManager")))();
-#else
 			dm = ScreenManagerFactory::getInstance();
-#endif
 		}
 	}
 

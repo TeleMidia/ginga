@@ -67,13 +67,7 @@ namespace text {
 		CascadingDescriptor* descriptor;
 
 		if (fileExists(mrl)) {
-#if HAVE_COMPONENTS
-			playerCompName = "PlainTxtPlayer";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str());
-#else
 			player = new PlainTxtPlayer(myScreen, mrl.c_str());
-#endif
 		} else {
 			return;
 		}

@@ -61,15 +61,6 @@ using namespace ::br::pucrio::telemidia::ginga::lssm;
 #include "system/compat/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 extern "C" {
 #include <pthread.h>
 }
@@ -91,18 +82,6 @@ void* testLSSM(void* ptr) {
 	int height     = 300;
 
 	tc = (ThreadContainer*)ptr;
-
-#if HAVE_COMPONENTS
-	pem = ((PEMCreator*)(cm->getObject("PresentationEngineManager")))(
-			devClass,
-			xOffset,
-			yOffset,
-			width,
-			height,
-			tc->enableGfx,
-            false,
-			tc->screen);
-#endif
 
 	pem->openNclFile(tc->nclFile);
 	pem->startPresentation(tc->nclFile, "");
@@ -150,15 +129,9 @@ int main(int argc, char** argv, char** envp) {
 		nclFile = "/root/ncl/VivaMaisPratos/main.ncl";
 	}
 
-#if HAVE_COMPONENTS
-	cm->setUnloadComponents(!disableUC);
-
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-#else
 	cout << "ginga-lssm test works only when component manager support is ";
 	cout << "enabled" << endl;
 	exit(0);
-#endif
 
 	if (testAllScreens) {
 		pthread_t tid1, tid2;
@@ -224,10 +197,6 @@ int main(int argc, char** argv, char** envp) {
 	}
 
 	delete dm;
-
-#if HAVE_COMPONENTS
-	delete cm;
-#endif
 
 	cout << "ginga-lssm test all done!" << endl;
 	cout << "Please, press enter to exit!" << endl;

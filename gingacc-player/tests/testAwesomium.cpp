@@ -104,24 +104,6 @@ void testAwesomium(
 	windows->insert(w);
 	windows->insert(ww);
 
-#if HAVE_COMPONENTS
-	void* sym;
-
-	sym  = cm->getObject("AwesomiumPlayer");
-	if (sym == NULL) {
-		cout << "testAwesomium Error! Can't load AwesomiumPlayer.";
-		if (cm->isAvailable("AwesomiumPlayer")) {
-			cout << " (availability was checked)";
-		}
-		cout << endl;
-		return;
-	}
-
-	awe1 = ((PlayerCreator*)(sym))(screen, mrl.c_str(), true);
-
-	awe2 = ((PlayerCreator*)(cm->getObject("AwesomiumPlayer")))(
-			screen, "www.telemidia.puc-rio.br", true);
-#endif
 
 	awe1->setOutWindow(w->getId());
 	s = awe1->getSurface();
@@ -196,14 +178,9 @@ int main(int argc, char** argv, char** envp) {
 
 	SystemCompat::setLogTo(SystemCompat::LOG_NULL);
 
-#if HAVE_COMPONENTS
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-
-#else
 	cout << "gingacc-player test works only with enabled component support.";
 	cout << endl;
 	exit(0);
-#endif
 
 	int i;
 	bool testAllScreens = false;

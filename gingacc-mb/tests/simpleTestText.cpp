@@ -53,11 +53,6 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#endif
-
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -90,13 +85,7 @@ int main(int argc, char** argv) {
 	SystemCompat::setLogTo(SystemCompat::LOG_FILE);
 
 /* GETTING DEVICE SCREEN */
-#if HAVE_COMPONENTS
-	IComponentManager* cm = IComponentManager::getCMInstance();
-
-	dm = ((LocalScreenManagerCreator*)(cm->getObject("LocalScreenManager")))();
-#else
 	dm = ScreenManagerFactory::getInstance();
-#endif
 
 	cout << "gingacc-mb test has created the screen manager. ";
 	cout << endl;

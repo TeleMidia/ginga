@@ -71,13 +71,7 @@ namespace av {
 		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
 
 		if (mrl != "") {
-#if HAVE_COMPONENTS
-			playerCompName = "AVPlayer";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, mrl.c_str());
-#else
 			player = new AVPlayer(myScreen, mrl.c_str());
-#endif
 		}
 
 		FormatterPlayerAdapter::createPlayer();

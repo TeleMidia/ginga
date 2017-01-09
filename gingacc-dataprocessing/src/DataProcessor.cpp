@@ -55,12 +55,7 @@ http://www.telemidia.puc-rio.br
 
 #include "config.h"
 
-#if HAVE_COMPONENTS
-#include "cm/IComponentManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::cm;
-#else
 #include "tsparser/AIT.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -68,11 +63,6 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-
-#if HAVE_COMPONENTS
-	static IComponentManager* cm = IComponentManager::getCMInstance();
-#endif
-
 	DataProcessor::DataProcessor() : Thread() {
 		filterManager   = new FilterManager();
 		nptProcessor    = NULL;
@@ -411,11 +401,7 @@ namespace dataprocessing {
 				delete ait;
 			}
 
-#if HAVE_COMPONENTS
-			ait = ((AITCreator*)(cm->getObject("AIT")))();
-#else
 			ait = new AIT();
-#endif
 
 			ait->setSectionName(section->getSectionName());
 			ait->setApplicationType(section->getExtensionId());
