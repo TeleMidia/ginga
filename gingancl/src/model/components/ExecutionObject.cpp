@@ -1406,9 +1406,7 @@ namespace components {
 			//set the values
 			ncmRegion->validateTarget();
 
-#if !HAVE_MULTIPROCESS
 			region->updateRegionBounds();
-#endif
 			unlock();
 			delete params;
 			params = NULL;

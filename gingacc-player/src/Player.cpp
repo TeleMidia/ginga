@@ -678,34 +678,9 @@ namespace player {
 	}
 
 	bool Player::setOutWindow(GingaWindowID windowId) {
-#if HAVE_MULTIPROCESS
-		ISurface* renderedSurface;
-
-		if (windowId < 0 && outputWindow != NULL) {
-			outputWindow->revertContent();
-
-		} else if (outputWindow == NULL) {
-			dm->createWindowFrom(myScreen, windowId);
-		}
-
-		if (outputWindow == NULL || outputWindow->getId() != windowId) {
-			return false;
-		}
-
-		renderedSurface = getSurface();
-		if (renderedSurface != NULL) {
-			if (renderedSurface->setParent((void*)outputWindow)) {
-				outputWindow->renderFrom(renderedSurface);
-			}
-
-		} else {
-			return false;
-		}
-#else
 		if (surface != 0 && dm->getSurfaceParentWindow(surface) == 0) {
 			dm->setSurfaceParentWindow(myScreen, surface, windowId);
 		}
-#endif
 		return true;
 	}
 }

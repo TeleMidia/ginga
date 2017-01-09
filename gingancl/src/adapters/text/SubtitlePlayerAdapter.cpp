@@ -66,14 +66,7 @@ namespace text {
 		string paramValue;
 		CascadingDescriptor* descriptor;
 
-#if HAVE_MULTIPROCESS
-		playerCompName = "PlayerProcess";
-		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-				myScreen, "SrtPlayer");
-
-		player->setMrl(mrl, true);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 		playerCompName = "SrtPlayer";
 		player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 				myScreen, mrl.c_str());

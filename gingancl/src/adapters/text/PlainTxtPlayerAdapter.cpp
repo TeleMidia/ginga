@@ -67,14 +67,7 @@ namespace text {
 		CascadingDescriptor* descriptor;
 
 		if (fileExists(mrl)) {
-#if HAVE_MULTIPROCESS
-			playerCompName = "PlayerProcess";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "PlainTxtPlayer");
-
-			player->setMrl(mrl, true);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 			playerCompName = "PlainTxtPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 					myScreen, mrl.c_str());

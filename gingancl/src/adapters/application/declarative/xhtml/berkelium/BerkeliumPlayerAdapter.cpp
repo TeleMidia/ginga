@@ -115,14 +115,7 @@ namespace xhtml {
 				mrl = SystemCompat::updatePath(mrl);
 			}
 
-#if HAVE_MULTIPROCESS
-			playerCompName = "PlayerProcess";
-			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
-					myScreen, "BerkeliumPlayer");
-
-			player->setMrl(mrl, true);
-
-#elif HAVE_COMPONENTS
+#if HAVE_COMPONENTS
 			playerCompName = "BerkeliumPlayer";
 			player = ((PlayerCreator*)(cm->getObject(playerCompName)))(
 					myScreen, mrl.c_str());
