@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "ncl/animation/Animation.h"
 using namespace ::br::pucrio::telemidia::ncl::animation;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "../adapters/FormatterPlayerAdapter.h"

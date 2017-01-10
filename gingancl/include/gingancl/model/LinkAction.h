@@ -24,10 +24,10 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "LinkActionProgressionListener.h"
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 extern "C" {

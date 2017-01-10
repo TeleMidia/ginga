@@ -20,10 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ic/IInteractiveChannel.h"
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "curl/curl.h"

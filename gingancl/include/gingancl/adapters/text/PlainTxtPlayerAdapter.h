@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "../FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <string>

@@ -5,7 +5,6 @@ ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 SUBDIRS=
 SUBDIRS+= data
 SUBDIRS+= util
-SUBDIRS+= gingacc-system
 SUBDIRS+= ic
 SUBDIRS+= mb
 SUBDIRS+= ctxmgmt
@@ -22,6 +21,7 @@ SUBDIRS+= ncl30
 SUBDIRS+= ncl30-converter
 SUBDIRS+= gingancl
 SUBDIRS+= lssm
+SUBDIRS+= system
 SUBDIRS+= ginga
 
 

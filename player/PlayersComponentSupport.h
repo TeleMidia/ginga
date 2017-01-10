@@ -29,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #include "ic/InteractiveChannelManager.h"
 #endif
 
-#include "system/fs/GingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "mb/LocalScreenManager.h"

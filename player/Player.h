@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "system/fs/IGingaLocatorFactory.h"
+#include "system/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/IInputManager.h"

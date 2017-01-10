@@ -1,7 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS =\
-  $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_GINGA_NCL)\
@@ -10,11 +9,11 @@ AM_CPPFLAGS =\
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LIBS)
 
-LDADD =\
+LDADD=\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
   ../mb/mb.la\
-  ../gingacc-system/libgingaccsystem.la\
+  ../system/system.la\
   ../lssm/lssm.la\
   ../gingancl/libginganclmodel.la\
   ../player/player.la\
@@ -34,13 +33,13 @@ LDADD +=\
 endif
 
 if BUILD_MULTIDEVICE
-LDADD +=\
+LDADD+=\
   ../gingacc-multidevice/libgingaccmd.la\
   $(NULL)
 endif
 
 if BUILD_BERKELIUM
-LDADD +=\
+LDADD+=\
   ../gingancl/libginganclbklpadapter.la\
   $(NULL)
 endif

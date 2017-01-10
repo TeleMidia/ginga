@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SRTPLAYER_H_
 #define SRTPLAYER_H_
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "TextPlayer.h"

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKTRIGGERCONDITION_H_
 #define _LINKTRIGGERCONDITION_H_
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "LinkTriggerListener.h"

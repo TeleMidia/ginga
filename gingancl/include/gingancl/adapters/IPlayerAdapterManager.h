@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _IPLAYERADAPTERMANAGER_H_
 #define _IPLAYERADAPTERMANAGER_H_
 
-#include "system/time/ITimeBaseProvider.h"
+#include "system/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/INCLPlayer.h"

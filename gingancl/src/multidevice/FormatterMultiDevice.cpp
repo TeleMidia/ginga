@@ -21,14 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if HAVE_MULTIDEVICE
 #include "gingancl/multidevice/FormatterPassiveDevice.h"
 #include "gingancl/multidevice/FormatterActiveDevice.h"
-#endif //HAVE_MULTIDEVICE
+#endif
 #include "gingancl/multidevice/FMDComponentSupport.h"
 
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputManager.h"
 #include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
 
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
