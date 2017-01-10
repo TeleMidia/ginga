@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(INCLUDE_GINGACC_PLAYER)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_GINGA_NCL)\
   $(NULL)
@@ -18,7 +17,7 @@ LDADD =\
   ../gingacc-system/libgingaccsystem.la\
   ../lssm/lssm.la\
   ../gingancl/libginganclmodel.la\
-  ../gingacc-player/libgingaccplayer.la\
+  ../player/player.la\
   ../ncl30-converter/libncl30confrancl.la\
   ../ncl30/libncl30.la\
   ../util/util.la\

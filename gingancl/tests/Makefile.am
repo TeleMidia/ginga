@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(INCLUDE_GINGACC_PLAYER)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_GINGA_NCL)\
   $(NULL)
@@ -31,16 +30,6 @@ LDADD =\
   $(top_builddir)/gingancl/libginganclpltpadapter.la\
   $(top_builddir)/gingancl/libginganclprefetch.la\
   $(top_builddir)/gingancl/libginganclsubpadapter.la\
-  $(top_builddir)/gingacc-player/libgingaccplaavp.la\
-  $(top_builddir)/gingacc-player/libgingaccplacha.la\
-  $(top_builddir)/gingacc-player/libgingaccplaimg.la\
-  $(top_builddir)/gingacc-player/libgingaccplalua.la\
-  $(top_builddir)/gingacc-player/libgingaccplapav.la\
-  $(top_builddir)/gingacc-player/libgingaccplaplt.la\
-  $(top_builddir)/gingacc-player/libgingaccplasrt.la\
-  $(top_builddir)/gingacc-player/libgingaccplatxt.la\
-  $(top_builddir)/gingacc-player/libgingaccplawdg.la\
-  $(top_builddir)/gingacc-player/libgingaccplayer.la\
   $(NULL)
 
 if BUILD_MULTIDEVICE
