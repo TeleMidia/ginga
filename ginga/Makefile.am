@@ -17,7 +17,7 @@ LDADD=\
   ../lssm/lssm.la\
   ../gingancl/libginganclmodel.la\
   ../player/player.la\
-  ../ncl30-converter/libncl30confrancl.la\
+  ../nclconv/nclconv.la\
   ../ncl30/libncl30.la\
   ../util/util.la\
   $(NULL)

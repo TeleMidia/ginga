@@ -15,11 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "converter/IDocumentConverter.h"
+#include "nclconv/IDocumentConverter.h"
 using namespace ::br::pucrio::telemidia::converter;
 
 #include "config.h"
-#include "converter/ncl/NclDocumentConverter.h"
+#include "nclconv/NclDocumentConverter.h"
 using namespace ::br::pucrio::telemidia::converter::ncl;
 
 #include "gingancl/privatebase/PrivateBaseContext.h"
