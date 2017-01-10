@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IFORMATTERFOCUSMANAGER_H_
 #define IFORMATTERFOCUSMANAGER_H_
 
-#include "mb/interface/IMotionEventListener.h"
+#include "mb/IMotionEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <string>

@@ -2,13 +2,12 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 
-
 SUBDIRS=
 SUBDIRS+= data
 SUBDIRS+= util
 SUBDIRS+= gingacc-system
 SUBDIRS+= ic
-SUBDIRS+= gingacc-mb
+SUBDIRS+= mb
 SUBDIRS+= ctxmgmt
 if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice
@@ -27,7 +26,7 @@ SUBDIRS+= ginga
 
 
 if BUILD_TESTS
-SUBDIRS+= gingacc-mb/tests
+SUBDIRS+= mb/tests
 if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice/tests
 endif

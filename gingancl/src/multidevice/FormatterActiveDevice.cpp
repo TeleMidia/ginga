@@ -14,10 +14,13 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
+#include "config.h"
+
 #include "gingancl/multidevice/FormatterActiveDevice.h"
 #include "gingancl/multidevice/FMDComponentSupport.h"
 
-#include "mb/interface/CodeMap.h"
+#include "mb/CodeMap.h"
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;

@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IMAGEPLAYER_H_
 #define IMAGEPLAYER_H_
 
-#include "mb/interface/IImageProvider.h"
-#include "mb/interface/IWindow.h"
+#include "mb/IImageProvider.h"
+#include "mb/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/fs/IGingaLocatorFactory.h"

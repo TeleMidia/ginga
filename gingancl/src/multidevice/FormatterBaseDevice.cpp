@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "gingancl/multidevice/FormatterBaseDevice.h"
 #include "gingancl/multidevice/FMDComponentSupport.h"
 
-#include "mb/interface/CodeMap.h"
+#include "mb/CodeMap.h"
 
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;

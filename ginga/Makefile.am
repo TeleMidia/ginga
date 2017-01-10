@@ -2,7 +2,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_SYSTEM)\
-  $(INCLUDE_GINGACC_MB)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_GINGACC_PLAYER)\
   $(INCLUDE_NCL30)\
@@ -15,7 +14,7 @@ AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LI
 LDADD =\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
-  ../gingacc-mb/libgingaccmb.la\
+  ../mb/mb.la\
   ../gingacc-system/libgingaccsystem.la\
   ../lssm/lssm.la\
   ../gingancl/libginganclmodel.la\

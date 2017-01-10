@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/IMBDefs.h"
 #include "mb/IInputManager.h"
-#include "mb/interface/IInputEventListener.h"
-#include "mb/interface/CodeMap.h"
+#include "mb/IInputEventListener.h"
+#include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "../model/CascadingDescriptor.h"

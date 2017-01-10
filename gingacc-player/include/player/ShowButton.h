@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IWindow.h"
+#include "mb/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "mb/LocalScreenManager.h"

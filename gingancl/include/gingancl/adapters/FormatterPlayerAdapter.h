@@ -25,8 +25,8 @@ using namespace ::br::pucrio::telemidia::util;
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "mb/LocalScreenManager.h"
-#include "mb/interface/IInputEventListener.h"
-#include "mb/interface/ISurface.h"
+#include "mb/IInputEventListener.h"
+#include "mb/ISurface.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IPlayer.h"

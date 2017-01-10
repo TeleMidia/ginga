@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CHANNELPLAYER_H_
 #define CHANNELPLAYER_H_
 
-#include "mb/interface/IWindow.h"
+#include "mb/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"

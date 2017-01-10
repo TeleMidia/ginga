@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/thread/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "mb/interface/CodeMap.h"
+#include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IPlayer.h"

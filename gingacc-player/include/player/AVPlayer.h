@@ -51,9 +51,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #undef IPROVIDERLISTENER
 #endif
 
-#include "mb/interface/IContinuousMediaProvider.h"
-#include "mb/interface/IWindow.h"
-#include "mb/interface/IProviderListener.h"
+#include "mb/IContinuousMediaProvider.h"
+#include "mb/IWindow.h"
+#include "mb/IProviderListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"

@@ -48,7 +48,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #endif
 
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IWindow.h"
+#include "mb/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IPlayer.h"

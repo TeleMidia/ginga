@@ -35,7 +35,7 @@ using namespace ::br::pucrio::telemidia::ncl::transition;
 
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IWindow.h"
+#include "mb/IWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "FocusSourceManager.h"

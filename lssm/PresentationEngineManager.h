@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IInputEventListener.h"
+#include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IShowButton.h"

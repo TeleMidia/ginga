@@ -3,7 +3,6 @@ LTLDFLAGS= -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
 MAINTAINERCLEANFILES= Makefile.in
 
 INCLUDE_GINGACC_SYSTEM = -I$(top_srcdir)/gingacc-system/include
-INCLUDE_GINGACC_MB = -I$(top_srcdir)/gingacc-mb/include
 INCLUDE_GINGACC_MULTIDEVICE = -I$(top_srcdir)/gingacc-multidevice/include
 INCLUDE_GINGACC_TUNER = -I$(top_srcdir)/gingacc-tuner/include
 INCLUDE_GINGACC_TSPARSER = -I$(top_srcdir)/gingacc-tsparser/include
