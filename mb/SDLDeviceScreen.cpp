@@ -40,14 +40,10 @@ extern "C" {
 #include "SDLFontProvider.h"
 #include "SDLVideoProvider.h"
 
-#if defined (SDL_VIDEO_DRIVER_X11)
+#ifdef SDL_VIDEO_DRIVER_X11
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#endif
-
-#if HAVE_REMOTE_MB
-#include "DistributedInputManagerMB.h"
 #endif
 
 namespace br {

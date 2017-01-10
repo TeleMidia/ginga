@@ -17,7 +17,7 @@ SUBDIRS+= gingacc-tuner
 SUBDIRS+= gingacc-tsparser
 SUBDIRS+= gingacc-dataprocessing
 endif
-SUBDIRS+= gingacc-player
+SUBDIRS+= player
 SUBDIRS+= ncl30
 SUBDIRS+= ncl30-converter
 SUBDIRS+= gingancl
@@ -35,7 +35,7 @@ SUBDIRS+= gingacc-tuner/tests
 SUBDIRS+= gingacc-tsparser/tests
 SUBDIRS+= gingacc-dataprocessing/tests
 endif
-SUBDIRS+= gingacc-player/tests
+SUBDIRS+= player/tests
 SUBDIRS+= gingancl/tests
 endif
 

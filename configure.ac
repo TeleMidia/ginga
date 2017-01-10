@@ -398,7 +398,6 @@ _AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
 _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
 _AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
 _AC_SUBST_GINGAPKGDIR([gingaccdataprocessing], [dataprocessing])
-_AC_SUBST_GINGAPKGDIR([gingaccplayer],         [player])
 _AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
 _AC_SUBST_GINGAPKGDIR([ncl30converter],        [converter])
 _AC_SUBST_GINGAPKGDIR([gingancl],              [gingancl])
@@ -411,7 +410,7 @@ ctxmgmt/Makefile
 gingacc-dataprocessing/Makefile
 mb/Makefile
 gingacc-multidevice/Makefile
-gingacc-player/Makefile
+player/Makefile
 gingacc-system/Makefile
 gingacc-tsparser/Makefile
 gingacc-tuner/Makefile
@@ -429,7 +428,7 @@ gingacc-multidevice/tests/Makefile
 gingacc-tuner/tests/Makefile
 gingacc-tsparser/tests/Makefile
 gingacc-dataprocessing/tests/Makefile
-gingacc-player/tests/Makefile
+player/tests/Makefile
 gingancl/tests/Makefile
 ])
 
