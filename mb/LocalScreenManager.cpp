@@ -15,6 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "config.h"
+
 #include "CodeMap.h"
 #include "LocalScreenManager.h"
 #include "InputManager.h"
@@ -23,11 +25,7 @@ extern "C" {
 #include "string.h"
 }
 
-#include "config.h"
-
-#if HAVE_SDL
 #include "SDLDeviceScreen.h"
-#endif
 
 namespace br {
 namespace pucrio {
@@ -442,11 +440,8 @@ namespace mb {
 					mbArgs[argc] = (char*)"poll-stdin";
 					argc++;
 				}
-
-#if HAVE_SDL
 				screen = new SDLDeviceScreen(
 						argc, mbArgs, screenId, embedWin, externalRenderer);
-#endif //HAVE_SDL
 				break;
 
 			default:
@@ -496,18 +491,14 @@ namespace mb {
 		short mbSystemType = GMBST_DFLT;
 
 		if (mbSystemName == "sdl") {
-#if HAVE_SDL
 			mbSystemType = GMBST_SDL;
-#endif
 		} else if (mbSystemName != "") {
 			foundit = false;
 		}
 
 		if (mbSystemType == GMBST_DFLT) {
-#if HAVE_SDL
 			mbSystemType = GMBST_SDL;
 			foundit = false;
-#endif
 		}
 
 		if (mbSystemType == GMBST_DFLT) {

@@ -37,7 +37,7 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "ncl/interfaces/InterfacePoint.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ncl/switches/Rule.h"

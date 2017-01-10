@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <pthread.h>
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
 
 #include <string>

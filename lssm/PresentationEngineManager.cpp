@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "player/ProgramAV.h"
 
-#include "system/fs/GingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 
 #include "gingancl/FormatterMediator.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
@@ -47,7 +47,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/fs/IGingaLocatorFactory.h"
+#include "system/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "lssm/PresentationEngineManager.h"

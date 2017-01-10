@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define STC_H_
 
 #define SYSTEM_CLOCK_FREQUENCY 27000000
-#define	SYSTEM_CLOCK_FREQUENCY_90 90000
+#define SYSTEM_CLOCK_FREQUENCY_90 90000
 
-#include "system/compat/SystemCompat.h"
+#include "SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdint.h>

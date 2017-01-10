@@ -392,7 +392,6 @@ AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 m4_define([_AC_SUBST_GINGAPKGDIR],
  [AC_SUBST([$1][libdir], ['${gingalibdir}'])
   AC_SUBST([$1][includedir], ['${gingaincludedir}'/][$2])])
-_AC_SUBST_GINGAPKGDIR([gingaccsystem],         [system])
 _AC_SUBST_GINGAPKGDIR([gingacccm],             [cm])
 _AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
 _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
@@ -411,7 +410,7 @@ gingacc-dataprocessing/Makefile
 mb/Makefile
 gingacc-multidevice/Makefile
 player/Makefile
-gingacc-system/Makefile
+system/Makefile
 gingacc-tsparser/Makefile
 gingacc-tuner/Makefile
 lssm/Makefile

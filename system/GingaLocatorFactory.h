@@ -21,10 +21,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "system/compat/SystemCompat.h"
+#include "SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
+#include "Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "IGingaLocatorFactory.h"

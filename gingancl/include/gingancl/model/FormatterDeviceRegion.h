@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include "ncl/layout/LayoutRegion.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include <pthread.h>

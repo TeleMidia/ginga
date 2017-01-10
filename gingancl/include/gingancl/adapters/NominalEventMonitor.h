@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NOMINALEVENTMONITOR_H_
 #define NOMINALEVENTMONITOR_H_
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/time/ITimeBaseListener.h"
-#include "system/time/ITimeBaseProvider.h"
+#include "system/ITimeBaseListener.h"
+#include "system/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/IPlayer.h"

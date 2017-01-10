@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "system/compat/SystemCompat.h"
+#include "SystemCompat.h"
 #if HAVE_ZIP
 # include <zip.h>
 #endif

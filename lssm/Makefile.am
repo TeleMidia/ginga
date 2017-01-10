@@ -1,7 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS=\
-  $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_NCL30)\
   $(INCLUDE_GINGA_NCL)\
@@ -16,6 +15,7 @@ lssm_la_SOURCES=\
   StcWrapper.cpp\
   $(NULL)
 
+lssm_la_LIBADD= ../system/system.la
 if BUILD_DATA_PROCESSING
 lssm_la_LIBADD=\
   ../gingacc-tuner/libgingacctuner.la\

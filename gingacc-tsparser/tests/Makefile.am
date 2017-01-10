@@ -1,7 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS =\
-  $(INCLUDE_GINGACC_SYSTEM)\
   $(INCLUDE_GINGACC_TUNER)\
   $(INCLUDE_GINGACC_TSPARSER)\
   $(NULL)

@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/Color.h"
 
-#include "player/PlainTxtPlayer.h"
+#include "PlainTxtPlayer.h"
 
 namespace br {
 namespace pucrio {

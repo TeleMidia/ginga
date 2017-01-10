@@ -33,7 +33,7 @@ using namespace std;
 #include "mb/IInputManager.h"
 using namespace::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace::br::pucrio::telemidia::ginga::core::system::compat;
 
 #define LUAPLAYER_BEGIN_DECLS NAMESPACE_GINGA_CORE_PLAYER_BEGIN

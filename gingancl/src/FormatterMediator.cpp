@@ -15,19 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "gingancl/FormatterMediator.h"
-
 #include "config.h"
 
+#include "gingancl/FormatterMediator.h"
+
 #include "mb/LocalScreenManager.h"
-#include "system/fs/GingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 #include "gingancl/prefetch/PrefetchManager.h"
 #include "gingancl/multidevice/FormatterBaseDevice.h"
 
 #include "gingancl/adaptation/context/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
-#include "system/fs/IGingaLocatorFactory.h"
+#include "system/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "multidevice/services/IDeviceDomain.h"
