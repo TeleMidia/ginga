@@ -18,12 +18,11 @@ SUBDIRS+= gingacc-dataprocessing
 endif
 SUBDIRS+= player
 SUBDIRS+= ncl30
-SUBDIRS+= ncl30-converter
+SUBDIRS+= nclconv
 SUBDIRS+= gingancl
 SUBDIRS+= lssm
 SUBDIRS+= system
 SUBDIRS+= ginga
-
 
 if BUILD_TESTS
 SUBDIRS+= mb/tests

@@ -8,5 +8,4 @@ INCLUDE_GINGACC_TSPARSER = -I$(top_srcdir)/gingacc-tsparser/include
 INCLUDE_GINGACC_DATAPROCESSING = -I$(top_srcdir)/gingacc-dataprocessing/include
 INCLUDE_GINGACC_PLAYER = -I$(top_srcdir)/gingacc-player/include
 INCLUDE_NCL30 = -I$(top_srcdir)/ncl30/include
-INCLUDE_NCL30_CONVERTER = -I$(top_srcdir)/ncl30-converter/include
 INCLUDE_GINGA_NCL = -I$(top_srcdir)/gingancl/include

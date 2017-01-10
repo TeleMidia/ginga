@@ -398,7 +398,6 @@ _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
 _AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
 _AC_SUBST_GINGAPKGDIR([gingaccdataprocessing], [dataprocessing])
 _AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
-_AC_SUBST_GINGAPKGDIR([ncl30converter],        [converter])
 _AC_SUBST_GINGAPKGDIR([gingancl],              [gingancl])
 
 AC_CONFIG_FILES([
@@ -416,7 +415,7 @@ gingacc-tuner/Makefile
 lssm/Makefile
 gingancl/Makefile
 ic/Makefile
-ncl30-converter/Makefile
+nclconv/Makefile
 ncl30/Makefile
 util/Makefile
 ])

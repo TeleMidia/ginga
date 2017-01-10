@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_NCL30)\
-  $(INCLUDE_NCL30_CONVERTER)\
   $(INCLUDE_GINGA_NCL)\
   $(NULL)
 
