@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IInputEventListener.h"
+#include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_MULTIDEVICE

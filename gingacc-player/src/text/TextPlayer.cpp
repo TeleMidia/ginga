@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/Color.h"
-#include "mb/interface/IFontProvider.h"
-#include "mb/interface/ISurface.h"
+#include "mb/IFontProvider.h"
+#include "mb/ISurface.h"
 
 #include "player/TextPlayer.h"
 

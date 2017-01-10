@@ -29,8 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
-#include "mb/interface/IInputEventListener.h"
-#include "mb/interface/CodeMap.h"
+#include "mb/IInputEventListener.h"
+#include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "IPlayer.h"

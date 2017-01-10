@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stdint.h>
 
-#include "mb/interface/IWindow.h"
-#include "mb/interface/ISurface.h"
-#include "mb/interface/IImageProvider.h"
+#include "mb/IWindow.h"
+#include "mb/ISurface.h"
+#include "mb/IImageProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "IPlayerListener.h"

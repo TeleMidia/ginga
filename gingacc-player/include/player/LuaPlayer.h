@@ -28,8 +28,8 @@ using namespace std;
 
 #include "Player.h"
 #include "util/functions.h"
-#include "mb/interface/IWindow.h"
-#include "mb/interface/IFontProvider.h"
+#include "mb/IWindow.h"
+#include "mb/IFontProvider.h"
 #include "mb/IInputManager.h"
 using namespace::br::pucrio::telemidia::ginga::core::mb;
 

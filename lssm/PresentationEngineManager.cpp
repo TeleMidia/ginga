@@ -42,7 +42,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #include "gingalssm/DataWrapperListener.h"
 #endif
 
-#include "mb/interface/CodeMap.h"
+#include "mb/CodeMap.h"
 #include "mb/IInputManager.h"
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;

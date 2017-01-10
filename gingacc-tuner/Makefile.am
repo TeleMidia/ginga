@@ -4,7 +4,6 @@ AM_CPPFLAGS =\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   -DGINGA_TUNER_PATH='"$(gingaconfdir)/tuner/tuner.ini"'\
   $(INCLUDE_GINGACC_SYSTEM)\
-  $(INCLUDE_GINGACC_MB)\
   $(INCLUDE_GINGACC_TUNER)\
   $(NULL)
 
