@@ -25,7 +25,6 @@ AM_LDFLAGS=\
 noinst_LTLIBRARIES= mb.la
 mb_la_SOURCES=\
   CodeMap.cpp\
-  InputEventFactory.cpp\
   InputManager.cpp\
   LocalScreenManager.cpp\
   Matrix.cpp\

@@ -27,8 +27,6 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "InputEventFactory.h"
-
 #include "IMBDefs.h"
 #include "IInputManager.h"
 
@@ -70,7 +68,6 @@ namespace mb {
 			double lastEventTime;
 			double imperativeIntervalTime;
 			double declarativeIntervalTime;
-			InputEventFactory* ief;
 			GingaScreenID myScreen;
 
 			int currentXAxis;
