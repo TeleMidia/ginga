@@ -7,7 +7,6 @@ noinst_LTLIBRARIES= gingancl.la
 
 if BUILD_DATA_PROCESSING
 AM_CPPFLAGS+=\
-  $(INCLUDE_GINGACC_TSPARSER)\
   $(INCLUDE_GINGACC_DATAPROCESSING)\
   $(NULL)
 endif
@@ -17,7 +16,7 @@ gingancl_la_LIBADD=\
   ../ic/ic.la\
   ../ncl/ncl.la\
   ../system/system.la\
-  ../gingacc-tsparser/tsparser.la\
+  ../tsparser/tsparser.la\
   ../tuner/tuner.la\
   ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
   ../gingacc-dataprocessing/libgingaccdataprocessing.la\
