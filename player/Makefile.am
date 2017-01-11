@@ -1,14 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(NULL)
-
-if BUILD_DATA_PROCESSING
-AM_CPPFLAGS+=\
-  $(INCLUDE_GINGACC_DATAPROCESSING)\
-  $(NULL)
-endif
-
 AM_CXXFLAGS= $(NCLUA_CFLAGS) $(SDL2_CFLAGS)
 AM_LDFLAGS= $(LTSTATIC) $(NCLUA_LIBS) $(SDL2_LIBS)
 noinst_LTLIBRARIES= player.la

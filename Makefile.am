@@ -14,7 +14,7 @@ endif
 if BUILD_DATA_PROCESSING
 SUBDIRS+= tuner
 SUBDIRS+= tsparser
-SUBDIRS+= gingacc-dataprocessing
+SUBDIRS+= dataprocessing
 endif
 SUBDIRS+= player
 SUBDIRS+= ncl
@@ -28,9 +28,6 @@ if BUILD_TESTS
 SUBDIRS+= mb/tests
 if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice/tests
-endif
-if BUILD_DATA_PROCESSING
-SUBDIRS+= gingacc-dataprocessing/tests
 endif
 SUBDIRS+= player/tests
 endif

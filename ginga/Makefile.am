@@ -24,9 +24,7 @@ if BUILD_DATA_PROCESSING
 LDADD+=\
   ../tuner/tuner.la\
   ../tsparser/tsparser.la\
-  ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
-  ../gingacc-dataprocessing/libgingaccdataprocessing.la\
-  ../gingacc-dataprocessing/libgingaccdataprocncl.la\
+  ../dataprocessing/dataprocessing.la\
   $(NULL)
 endif
 

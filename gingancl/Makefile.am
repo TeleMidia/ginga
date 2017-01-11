@@ -5,12 +5,6 @@ AM_CXXFLAGS=
 AM_LDFLAGS= $(LTSTATIC)
 noinst_LTLIBRARIES= gingancl.la
 
-if BUILD_DATA_PROCESSING
-AM_CPPFLAGS+=\
-  $(INCLUDE_GINGACC_DATAPROCESSING)\
-  $(NULL)
-endif
-
 gingancl_la_LIBADD=\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
@@ -18,9 +12,7 @@ gingancl_la_LIBADD=\
   ../system/system.la\
   ../tsparser/tsparser.la\
   ../tuner/tuner.la\
-  ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
-  ../gingacc-dataprocessing/libgingaccdataprocessing.la\
-  ../gingacc-dataprocessing/libgingaccdataprocncl.la\
+  ../dataprocessing/dataprocessing.la\
   $(NULL)
 
 gingancl_la_SOURCES=\
