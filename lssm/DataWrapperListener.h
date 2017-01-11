@@ -45,8 +45,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 #include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
-#include "dataprocessing/dsmcc/carousel/IServiceDomainListener.h"
-#include "dataprocessing/dsmcc/carousel/object/IObjectListener.h"
+#include "dataprocessing/dsmcc/IServiceDomainListener.h"
+#include "dataprocessing/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IPresentationEngineManager.h"

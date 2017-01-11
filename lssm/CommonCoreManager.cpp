@@ -43,7 +43,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "dataprocessing/IDataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "dataprocessing/dsmcc/carousel/object/IObjectListener.h"
+#include "dataprocessing/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #endif
 

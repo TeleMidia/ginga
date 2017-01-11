@@ -36,7 +36,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_DSMCC && HAVE_TSPARSER && HAVE_TUNER
-#include "dataprocessing/ncl/edit/EventDescriptor.h"
+#include "dataprocessing/ncl/EventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
 #include "lssm/DataWrapperListener.h"
