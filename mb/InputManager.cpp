@@ -39,26 +39,16 @@ namespace mb {
 		running               = false;
 		notifying             = false;
 		notifyingApp          = false;
-		ief                   = new InputEventFactory();
 		cmdListener           = NULL;
-
 		Thread::mutexInit(&actInpMutex);
 		Thread::mutexInit(&actAppMutex);
-
 		Thread::mutexInit(&appMutex);
-
 		Thread::mutexInit(&mlMutex);
-
 		initializeInputIntervalTime();
 	}
 
 	InputManager::~InputManager() {
 		release();
-
-		if (ief != NULL) {
-			delete ief;
-			ief = NULL;
-		}
 	}
 
 	void InputManager::initializeInputIntervalTime() {
@@ -627,12 +617,6 @@ namespace mb {
 		int mouseX, mouseY;
 
 		clog << "InputManager::run main loop" << endl;
-
-#if HAVE_KINECTSUPPORT
-		if (running) {
-			ief->createFactory(InputEventFactory::FT_KINECT, this);
-		}
-#endif
 
 		while (running && eventBuffer != NULL) {
 			eventBuffer->waitEvent();
