@@ -42,7 +42,7 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 #include "ncl/NclDocument.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-#include "gingancl/privatebase/IPrivateBaseManager.h"
+#include "gingancl/IPrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "IPresentationEngineManager.h"

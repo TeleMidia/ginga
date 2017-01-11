@@ -398,7 +398,6 @@ _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
 _AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
 _AC_SUBST_GINGAPKGDIR([gingaccdataprocessing], [dataprocessing])
 _AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
-_AC_SUBST_GINGAPKGDIR([gingancl],              [gingancl])
 
 AC_CONFIG_FILES([
 Makefile
@@ -427,7 +426,6 @@ gingacc-tuner/tests/Makefile
 gingacc-tsparser/tests/Makefile
 gingacc-dataprocessing/tests/Makefile
 player/tests/Makefile
-gingancl/tests/Makefile
 ])
 
 AC_OUTPUT

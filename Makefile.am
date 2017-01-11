@@ -35,7 +35,6 @@ SUBDIRS+= gingacc-tsparser/tests
 SUBDIRS+= gingacc-dataprocessing/tests
 endif
 SUBDIRS+= player/tests
-SUBDIRS+= gingancl/tests
 endif
 
 MAINTAINERCLEANFILES+=\
