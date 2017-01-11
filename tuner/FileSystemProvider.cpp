@@ -15,9 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "tuner/ITuner.h"
-#include "tuner/providers/FileSystemProvider.h"
-#include "tuner/providers/IProviderListener.h"
+#include "ITuner.h"
+#include "FileSystemProvider.h"
+#include "IProviderListener.h"
 
 namespace br {
 namespace pucrio {

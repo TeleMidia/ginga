@@ -15,14 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IDATAPROVIDER_H_
-#define IDATAPROVIDER_H_
+#ifndef INETWORKINTERFACE_H_
+#define INETWORKINTERFACE_H_
 
-#include <stdint.h>
-
+#include "IFrontendFilter.h"
+#include "IDataProvider.h"
+#include "ISTCProvider.h"
 #include "IChannel.h"
-#include "IProviderListener.h"
-#include "frontends/IFrontendFilter.h"
+
+#include <string>
+using namespace std;
 
 namespace br {
 namespace pucrio {
@@ -30,40 +32,30 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	//data provider capabilities
-	static const short DPC_CAN_FETCHDATA = 0x01;
-	static const short DPC_CAN_DEMUXBYHW = 0x02;
-	static const short DPC_CAN_FILTERPID = 0x04;
-	static const short DPC_CAN_FILTERTID = 0x08;
-	static const short DPC_CAN_DECODESTC = 0x10;
-	static const short DPC_CAN_CTLSTREAM = 0x20;
-
-	// pes filter types
-	static const int PFT_DEFAULTTS = 0x01;
-	static const int PFT_PCR       = 0x02;
-	static const int PFT_VIDEO     = 0x03;
-	static const int PFT_AUDIO     = 0x04;
-	static const int PFT_OTHER     = 0x05;
-
-	class IDataProvider {
+	class INetworkInterface : public ISTCProvider {
 		public:
-			virtual ~IDataProvider(){};
+			virtual ~INetworkInterface(){};
 			virtual short getCaps()=0;
-			virtual void setListener(ITProviderListener* listener)=0;
+			virtual int getId()=0;
+			virtual string getName()=0;
+			virtual string getProtocol()=0;
+			virtual string getAddress()=0;
 			virtual void attachFilter(IFrontendFilter* filter)=0;
 			virtual void removeFilter(IFrontendFilter* filter)=0;
-
-			virtual char* receiveData(int* len)=0;
-
-			virtual bool tune()=0;
-			virtual IChannel* getCurrentChannel()=0;
-			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
+			virtual void setDataProvider(IDataProvider* provider)=0;
+			virtual bool hasSignal()=0;
+			virtual IDataProvider* tune()=0;
 			virtual bool changeChannel(int factor)=0;
 			virtual bool setChannel(string channelValue)=0;
+			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
+			virtual IChannel* getCurrentChannel()=0;
 			virtual int createPesFilter(
 					int pid, int pesType, bool compositeFiler)=0;
 
 			virtual string getPesFilterOutput()=0;
+
+			virtual char* receiveData(int* len)=0;
+
 			virtual void close()=0;
 	};
 }
@@ -73,4 +65,4 @@ namespace tuning {
 }
 }
 
-#endif /*IDATAPROVIDER_H_*/
+#endif /*NETWORKINTERFACE_H_*/

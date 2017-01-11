@@ -25,10 +25,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <linux/dvb/version.h>
 #include <errno.h>
 
-#include "tuner/providers/frontends/isdbt/ISDBTFrontend.h"
-#include "tuner/providers/IDataProvider.h"
-#include "tuner/providers/ISTCProvider.h"
-#include "tuner/providers/Channel.h"
+#include "ISDBTFrontend.h"
+#include "IDataProvider.h"
+#include "ISTCProvider.h"
+#include "Channel.h"
 
 namespace br {
 namespace pucrio {

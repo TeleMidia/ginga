@@ -21,8 +21,8 @@ LDADD=\
   $(NULL)
 
 if BUILD_DATA_PROCESSING
-LDADD +=\
-  ../gingacc-tuner/tuner.la\
+LDADD+=\
+  ../tuner/tuner.la\
   ../gingacc-tsparser/tsparser.la\
   ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
   ../gingacc-dataprocessing/libgingaccdataprocessing.la\

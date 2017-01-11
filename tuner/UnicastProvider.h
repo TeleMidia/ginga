@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NETWORKPROVIDER_H_
-#define NETWORKPROVIDER_H_
+#ifndef UNICASTPROVIDER_H_
+#define UNICASTPROVIDER_H_
 
 #include "system/SystemCompat.h"
 #include "system/PracticalSocket.h"
@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <fstream>
 using namespace std;
 
-#include "tuner/providers/IDataProvider.h"
+#include "IDataProvider.h"
 
 namespace br {
 namespace pucrio {
@@ -34,17 +34,16 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class NetworkProvider : public IDataProvider {
+	class UnicastProvider : public IDataProvider {
 		protected:
 			string addr;
-			string protocol;
 			int portNumber;
 			short capabilities;
 			UDPSocket *udpSocket;
 
 		public:
-			NetworkProvider(string address, int port, string protocol);
-			~NetworkProvider();
+			UnicastProvider(string sockAdd, int port);
+			~UnicastProvider();
 
 			virtual void setListener(ITProviderListener* listener){};
 			virtual void attachFilter(IFrontendFilter* filter){};
@@ -91,7 +90,6 @@ namespace tuning {
 			virtual void close() {};
 
 			virtual int callServer();
-
 			virtual char* receiveData(int* len);
 	};
 }
@@ -101,4 +99,4 @@ namespace tuning {
 }
 }
 
-#endif /*NETWORKPROVIDER_H_*/
+#endif /*UNICASTPROVIDER_H_*/

@@ -32,10 +32,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "../frontend_parameter.h"
+#include "frontend_parameter.h"
 
-#include "../IFrontendFilter.h"
-#include "../../IChannel.h"
+#include "IFrontendFilter.h"
+#include "IChannel.h"
 
 #include <map>
 #include <vector>
