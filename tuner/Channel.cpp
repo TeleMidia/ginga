@@ -15,51 +15,60 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PSIFilter_H_
-#define PSIFilter_H_
-
-#include "tuner/IFrontendFilter.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
-
-#include "IDemuxer.h"
+#include "Channel.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace tsparser {
-	class PSIFilter : public IFrontendFilter {
-		private:
-			int pid;
-			int tid;
-			int tidExt;
-			int feDescriptor;
-			IDemuxer* demuxer;
+namespace tuning {
+	Channel::Channel() {
+		id            = 0;
+		name          = "";
+		frequency     = 0;
+		isFullSegment = false;
+	}
 
-		public:
-			PSIFilter(IDemuxer* filter);
-			virtual ~PSIFilter();
+	Channel::~Channel() {
 
-			void setPid(int pid);
-			int getPid();
+	}
 
-			void setTid(int tid);
-			int getTid();
+	short Channel::getId() {
+		return id;
+	}
 
-			void setTidExt(int tidExt);
-			int getTidExt();
+	void Channel::setId(short id) {
+		this->id = id;
+	}
 
-			void setDescriptor(int feDescripor);
-			int getDescriptor();
-			void receivePes(char* pes, int pesLen);
-			void receiveSection(char* section, int secLen);
-	};
+	string Channel::getName() {
+		return name;
+	}
+
+	void Channel::setName(string name) {
+		this->name = name;
+	}
+
+	unsigned int Channel::getFrequency() {
+		return frequency;
+	}
+
+	void Channel::setFrequency(unsigned int freq) {
+		clog << "Channel::setFrequency '" << freq << "'" << endl;
+		frequency = freq;
+	}
+
+	bool Channel::isFullSeg() {
+		return isFullSegment;
+	}
+
+	void Channel::setSegment(bool isFullSeg) {
+		isFullSegment = isFullSeg;
+	}
 }
 }
 }
 }
 }
 }
-
-#endif /*PSIFilter_H_*/

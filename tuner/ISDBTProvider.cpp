@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "tuner/ITuner.h"
-#include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
-#include "tuner/providers/frontends/isdbt/RingBuffer.h"
+#include "ITuner.h"
+#include "ISDBTProvider.h"
+#include "RingBuffer.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

@@ -113,8 +113,8 @@ extern "C" {
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "../../IDataProvider.h"
-#include "../../Channel.h"
+#include "IDataProvider.h"
+#include "Channel.h"
 
 #include "ISDBTFrontend.h"
 #include "RingBuffer.h"

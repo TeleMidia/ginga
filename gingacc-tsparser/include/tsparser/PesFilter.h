@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PesFilter_H_
 #define PesFilter_H_
 
-#include "tuner/providers/frontends/IFrontendFilter.h"
+#include "tuner/IFrontendFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "IDemuxer.h"

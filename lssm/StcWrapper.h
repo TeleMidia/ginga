@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
-#include "tuner/providers/ISTCProvider.h"
+#include "tuner/ISTCProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "player/IPlayer.h"

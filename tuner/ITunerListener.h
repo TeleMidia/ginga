@@ -15,7 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "tuner/providers/Channel.h"
+#ifndef ITUNERLISTENER_H_
+#define ITUNERLISTENER_H_
+
+#include "IChannel.h"
 
 namespace br {
 namespace pucrio {
@@ -23,52 +26,28 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	Channel::Channel() {
-		id            = 0;
-		name          = "";
-		frequency     = 0;
-		isFullSegment = false;
-	}
+	//tuner status
+	static const short TS_LOOP_DETECTED          = 0x01;
+	static const short TS_SWITCHING_CHANNEL      = 0x02;
+	static const short TS_NEW_CHANNEL_TUNED      = 0x03;
+	static const short TS_NEW_SERVICE_TUNED      = 0x04;
+	static const short TS_SWITCHING_INTERFACE    = 0x05;
+	static const short TS_NEW_INTERFACE_SELECTED = 0x06;
+	static const short TS_TUNER_POWEROFF         = 0x07;
 
-	Channel::~Channel() {
-
-	}
-
-	short Channel::getId() {
-		return id;
-	}
-
-	void Channel::setId(short id) {
-		this->id = id;
-	}
-
-	string Channel::getName() {
-		return name;
-	}
-
-	void Channel::setName(string name) {
-		this->name = name;
-	}
-
-	unsigned int Channel::getFrequency() {
-		return frequency;
-	}
-
-	void Channel::setFrequency(unsigned int freq) {
-		clog << "Channel::setFrequency '" << freq << "'" << endl;
-		frequency = freq;
-	}
-
-	bool Channel::isFullSeg() {
-		return isFullSegment;
-	}
-
-	void Channel::setSegment(bool isFullSeg) {
-		isFullSegment = isFullSeg;
-	}
+	class ITunerListener {
+		public:
+			virtual ~ITunerListener(){};
+			virtual void receiveData(char* buff, unsigned int size)=0;
+			virtual void updateChannelStatus(
+					short newStatus, IChannel* channel)=0;
+			virtual bool isReady()=0;
+	};
 }
 }
 }
 }
 }
 }
+
+#endif /*ITUNERLISTENER_H_*/

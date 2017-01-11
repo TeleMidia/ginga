@@ -16,16 +16,16 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "tuner/NetworkInterface.h"
+#include "NetworkInterface.h"
 
-#include "tuner/providers/FileSystemProvider.h"
-#include "tuner/providers/NetworkProvider.h"
-#if defined(_WIN32)
-	#include "tuner/providers/BDAProvider.h"
+#include "FileSystemProvider.h"
+#include "NetworkProvider.h"
+#ifdef _WIN32
+# include "BDAProvider.h"
 #endif
 
 #if HAVE_LINUXDVB
-#include "tuner/providers/frontends/isdbt/ISDBTProvider.h"
+#include "ISDBTProvider.h"
 #endif
 
 namespace br {

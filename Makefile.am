@@ -12,7 +12,7 @@ if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice
 endif
 if BUILD_DATA_PROCESSING
-SUBDIRS+= gingacc-tuner
+SUBDIRS+= tuner
 SUBDIRS+= gingacc-tsparser
 SUBDIRS+= gingacc-dataprocessing
 endif
@@ -30,7 +30,6 @@ if BUILD_MULTIDEVICE
 SUBDIRS+= gingacc-multidevice/tests
 endif
 if BUILD_DATA_PROCESSING
-SUBDIRS+= gingacc-tuner/tests
 SUBDIRS+= gingacc-tsparser/tests
 SUBDIRS+= gingacc-dataprocessing/tests
 endif

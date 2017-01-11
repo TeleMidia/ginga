@@ -31,10 +31,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ITuner.h"
-#include "providers/Channel.h"
+#include "Channel.h"
 #include "NetworkInterface.h"
 #include "ITunerListener.h"
-#include "providers/IProviderListener.h"
+#include "IProviderListener.h"
 
 #include <fstream>
 #include <string>

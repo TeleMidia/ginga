@@ -1,12 +1,11 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS =\
-  $(INCLUDE_GINGACC_TUNER)\
   $(INCLUDE_GINGACC_TSPARSER)\
   $(NULL)
 
 AM_CXXFLAGS=
-AM_LDFLAGS= $(LTSTATIC) $(PTHREAD_LDFLAGS)
+AM_LDFLAGS= $(LTSTATIC)
 
 noinst_LTLIBRARIES = tsparser.la
 

@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "tuner/providers/UnicastProvider.h"
+#include "tuner/MulticastProvider.h"
 #include "tuner/ITuner.h"
 
 namespace br {
@@ -24,22 +24,25 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	UnicastProvider::UnicastProvider(string sockAdd, int port) {
-		clog << "UDP UnicastProvider address '" << sockAdd << ":";
+	MulticastProvider::MulticastProvider(string groupAddr, int port) {
+		clog << "UDP MulticastProvider address '" << groupAddr << ":";
 		clog << port << "'" << endl;
 
-		this->addr         = sockAdd;
+		this->addr         = groupAddr;
 		this->portNumber   = port;
 		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
 	}
 
-	UnicastProvider::~UnicastProvider() {
-		if (udpSocket) delete udpSocket;
+	MulticastProvider::~MulticastProvider() {
+		if (udpSocket) {
+			delete udpSocket;
+		}
 	}
-
-	int UnicastProvider::callServer() {
+	
+	int MulticastProvider::callServer() {
 		try {
-			udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
+			udpSocket = new UDPSocket((unsigned short) portNumber);
+			udpSocket->joinGroup(addr);
 
 			return 1;
 		} catch (...) {
@@ -48,7 +51,7 @@ namespace tuning {
 		}
 	}
 
-	char* UnicastProvider::receiveData(int* len) {
+	char* MulticastProvider::receiveData(int* len) {
 		char* buff = new char[BUFFSIZE];
 		*len = udpSocket->recvFrom(
 				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
