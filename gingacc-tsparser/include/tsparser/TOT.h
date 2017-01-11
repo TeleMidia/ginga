@@ -24,7 +24,7 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include "LocalTimeOffsetDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ITOT.h"

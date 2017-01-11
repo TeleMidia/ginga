@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TIMEBASECLOCK_H_
 #define TIMEBASECLOCK_H_
 
-#include "system/time/Stc.h"
+#include "system/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 namespace br {

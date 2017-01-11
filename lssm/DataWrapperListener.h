@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DataWrapperListener_H_
 #define DataWrapperListener_H_
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/fs/IGingaLocatorFactory.h"
+#include "system/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "player/INCLPlayer.h"
@@ -42,7 +42,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 #include "dataprocessing/dsmcc/IStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "system/time/ITimeBaseProvider.h"
+#include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
 #include "dataprocessing/dsmcc/carousel/IServiceDomainListener.h"

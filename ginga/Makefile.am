@@ -22,8 +22,8 @@ LDADD=\
 
 if BUILD_DATA_PROCESSING
 LDADD +=\
-  ../gingacc-tuner/libgingacctuner.la\
-  ../gingacc-tsparser/libgingacctsparser.la\
+  ../gingacc-tuner/tuner.la\
+  ../gingacc-tsparser/tsparser.la\
   ../gingacc-dataprocessing/libgingaccdataprocncledit.la\
   ../gingacc-dataprocessing/libgingaccdataprocessing.la\
   ../gingacc-dataprocessing/libgingaccdataprocncl.la\

@@ -56,7 +56,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
-#include "gingalssm/DataWrapperListener.h"
+#include "lssm/DataWrapperListener.h"
 #endif
 
 #include "lssm/StcWrapper.h"

@@ -39,7 +39,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "dataprocessing/ncl/edit/EventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
-#include "gingalssm/DataWrapperListener.h"
+#include "lssm/DataWrapperListener.h"
 #endif
 
 #include "mb/CodeMap.h"

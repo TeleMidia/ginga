@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ISDBTFRONTEND_H_
 #define ISDBTFRONTEND_H_
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <sys/types.h>
@@ -29,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <error.h>
 #include <stdint.h>
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "../frontend_parameter.h"

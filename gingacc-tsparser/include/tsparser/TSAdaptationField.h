@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MAX_ADAPTATION_FIELD_SIZE 183
 #define MAX_PRIVATE_DATA_SIZE 255
 
-#include "system/time/Stc.h"
+#include "system/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include <iostream>
