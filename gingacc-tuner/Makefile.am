@@ -6,12 +6,11 @@ AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_TUNER)\
   $(NULL)
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
+AM_CXXFLAGS =
+AM_LDFLAGS = $(LTSTATIC)
 
-gingacctunerlib_LTLIBRARIES = libgingacctuner.la
-
-libgingacctuner_la_SOURCES =\
+noinst_LTLIBRARIES = tuner.la
+tuner_la_SOURCES =\
   src/providers/MulticastProvider.cpp\
   src/providers/Channel.cpp\
   src/providers/UnicastProvider.cpp\
@@ -22,7 +21,7 @@ libgingacctuner_la_SOURCES =\
   $(NULL)
 
 if BUILD_LINUXDVB
-libgingacctuner_la_SOURCES +=\
+tuner_la_SOURCES +=\
   src/providers/frontends/isdbt/ISDBTFrontend.cpp\
   src/providers/frontends/isdbt/ISDBTProvider.cpp\
   src/providers/frontends/isdbt/RingBuffer.c\

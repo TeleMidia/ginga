@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
-#include "gingalssm/DataWrapperListener.h"
+#include "lssm/DataWrapperListener.h"
 
-#include "system/fs/GingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "util/functions.h"

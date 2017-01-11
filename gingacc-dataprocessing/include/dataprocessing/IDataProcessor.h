@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IDATAPROCESSOR_H_
 #define IDATAPROCESSOR_H_
 
-#include "system/time/ITimeBaseProvider.h"
+#include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
 #include "tuner/providers/ISTCProvider.h"

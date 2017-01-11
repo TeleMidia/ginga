@@ -27,7 +27,7 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 

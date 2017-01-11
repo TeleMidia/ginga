@@ -18,16 +18,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef __TUNER_H__
 #define __TUNER_H__
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "mb/interface/IInputEventListener.h"
+#include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/interface/CodeMap.h"
+#include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "ITuner.h"

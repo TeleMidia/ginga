@@ -29,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IApplication.h"
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include <vector>

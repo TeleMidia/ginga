@@ -324,11 +324,11 @@ namespace tuning {
 
 								if (!skipLine) {
 									channel = new Channel();
-									channel->setId((short)(stof(id)));
+									channel->setId((short)(util::stof(id)));
 									channel->setName(name);
 
 									channel->setFrequency(
-											(unsigned int)(stof(freq)));
+											(unsigned int)(util::stof(freq)));
 
 									if (seg == "FULLSEG") {
 										channel->setSegment(true);
@@ -498,7 +498,7 @@ namespace tuning {
 	}
 
 	bool ISDBTProvider::setChannel(string channelValue) {
-		return frontend->changeFrequency(stof(channelValue));
+		return frontend->changeFrequency(util::stof(channelValue));
 	}
 
 	int ISDBTProvider::createPesFilter(

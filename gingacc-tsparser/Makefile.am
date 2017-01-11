@@ -5,12 +5,12 @@ AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_TSPARSER)\
   $(NULL)
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LDFLAGS)
+AM_CXXFLAGS=
+AM_LDFLAGS= $(LTSTATIC) $(PTHREAD_LDFLAGS)
 
-gingacctsparserlib_LTLIBRARIES = libgingacctsparser.la
+noinst_LTLIBRARIES = tsparser.la
 
-libgingacctsparser_la_SOURCES =\
+tsparser_la_SOURCES =\
   src/Demuxer.cpp\
   src/FrontendFilter.cpp\
   src/PipeFilter.cpp\

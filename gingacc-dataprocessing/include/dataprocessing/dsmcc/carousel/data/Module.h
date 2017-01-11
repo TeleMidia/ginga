@@ -24,7 +24,7 @@ extern "C" {
 	#include <stdio.h>
 }
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
