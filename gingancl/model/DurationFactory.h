@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _DURATIONFACTORY_H_
 #define _DURATIONFACTORY_H_
 
-#include "ncl/time/flexibility/LinearTimeCostFunction.h"
-#include "ncl/time/flexibility/TemporalFlexibilityFunction.h"
+#include "ncl/time/LinearTimeCostFunction.h"
+#include "ncl/time/TemporalFlexibilityFunction.h"
 using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "UnflexibleDuration.h"

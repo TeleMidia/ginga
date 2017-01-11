@@ -22,8 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
+#if HAVE_MULTIDEVICE
 #include "multidevice/services/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+#endif
 
 #include "FormatterConverter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;

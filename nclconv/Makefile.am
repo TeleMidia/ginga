@@ -1,9 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(INCLUDE_NCL30)\
-  $(NULL)
-
 AM_CXXFLAGS= $(XERCESC_CFLAGS)
 AM_LDFLAGS= $(LTSTATIC) $(XERCESC_LIBS)
 noinst_LTLIBRARIES=  nclconv.la

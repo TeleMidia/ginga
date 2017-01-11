@@ -2,7 +2,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(INCLUDE_NCL30)\
   $(NULL)
 
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
@@ -17,7 +16,7 @@ LDADD=\
   ../gingancl/gingancl.la\
   ../player/player.la\
   ../nclconv/nclconv.la\
-  ../ncl30/libncl30.la\
+  ../ncl/ncl.la\
   ../util/util.la\
   $(NULL)
 

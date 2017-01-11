@@ -17,7 +17,7 @@ SUBDIRS+= gingacc-tsparser
 SUBDIRS+= gingacc-dataprocessing
 endif
 SUBDIRS+= player
-SUBDIRS+= ncl30
+SUBDIRS+= ncl
 SUBDIRS+= nclconv
 SUBDIRS+= gingancl
 SUBDIRS+= lssm

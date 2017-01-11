@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <set>
 using namespace std;
 
-#include "../../Entity.h"
+#include "../Entity.h"
 using namespace br::pucrio::telemidia::ncl;
 
 namespace br {

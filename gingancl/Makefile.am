@@ -1,10 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(INCLUDE_NCL30)\
-  $(NULL)
-
 AM_CXXFLAGS=
 AM_LDFLAGS= $(LTSTATIC)
 noinst_LTLIBRARIES= gingancl.la
@@ -12,7 +7,7 @@ noinst_LTLIBRARIES= gingancl.la
 gingancl_la_LIBADD=\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
-  ../ncl30/libncl30.la\
+  ../ncl/ncl.la\
   ../system/system.la\
   $(NULL)
 
