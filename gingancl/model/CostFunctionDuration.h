@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _COSTFUNCTIONDURATION_H_
 #define _COSTFUNCTIONDURATION_H_
 
-#include "ncl/time/flexibility/TemporalFlexibilityFunction.h"
+#include "ncl/time/TemporalFlexibilityFunction.h"
 using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "FlexibleTimeMeasurement.h"

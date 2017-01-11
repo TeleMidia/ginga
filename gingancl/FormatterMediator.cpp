@@ -30,7 +30,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "system/IGingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
+#if HAVE_MULTIDEVICE
 #include "multidevice/services/IDeviceDomain.h"
+#endif
 
 namespace br {
 namespace pucrio {

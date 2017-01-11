@@ -392,12 +392,10 @@ AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 m4_define([_AC_SUBST_GINGAPKGDIR],
  [AC_SUBST([$1][libdir], ['${gingalibdir}'])
   AC_SUBST([$1][includedir], ['${gingaincludedir}'/][$2])])
-_AC_SUBST_GINGAPKGDIR([gingacccm],             [cm])
 _AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
 _AC_SUBST_GINGAPKGDIR([gingacctuner],          [tuner])
 _AC_SUBST_GINGAPKGDIR([gingacctsparser],       [tsparser])
 _AC_SUBST_GINGAPKGDIR([gingaccdataprocessing], [dataprocessing])
-_AC_SUBST_GINGAPKGDIR([ncl30],                 [ncl30])
 
 AC_CONFIG_FILES([
 Makefile
@@ -415,7 +413,7 @@ lssm/Makefile
 gingancl/Makefile
 ic/Makefile
 nclconv/Makefile
-ncl30/Makefile
+ncl/Makefile
 util/Makefile
 ])
 

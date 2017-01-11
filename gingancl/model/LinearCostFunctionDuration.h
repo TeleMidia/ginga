@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINEARCOSTFUNCTIONDURATION_H_
 #define _LINEARCOSTFUNCTIONDURATION_H_
 
-#include "ncl/time/flexibility/LinearTimeCostFunction.h"
+#include "ncl/time/LinearTimeCostFunction.h"
 using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "TimeMeasurement.h"
