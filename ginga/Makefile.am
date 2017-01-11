@@ -3,7 +3,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 AM_CPPFLAGS =\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_NCL30)\
-  $(INCLUDE_GINGA_NCL)\
   $(NULL)
 
 AM_CXXFLAGS = $(PTHREAD_CFLAGS)
@@ -15,7 +14,7 @@ LDADD=\
   ../mb/mb.la\
   ../system/system.la\
   ../lssm/lssm.la\
-  ../gingancl/libginganclmodel.la\
+  ../gingancl/gingancl.la\
   ../player/player.la\
   ../nclconv/nclconv.la\
   ../ncl30/libncl30.la\
@@ -36,23 +35,6 @@ if BUILD_MULTIDEVICE
 LDADD+=\
   ../gingacc-multidevice/libgingaccmd.la\
   $(NULL)
-endif
-
-if BUILD_BERKELIUM
-LDADD+=\
-  ../gingancl/libginganclbklpadapter.la\
-  $(NULL)
-endif
-
-if BUILD_SSML
-LDADD +=\
-  ../gingancl/libginganclssmlpadapter.la\
-  ../gingacc-player/libgingaccplassml.la\
-  $(NULL)
-endif
-
-if BUILD_LIBBPG
-AM_LDFLAGS += $(LIBBPG_LIBS)
 endif
 
 bin_PROGRAMS = ginga

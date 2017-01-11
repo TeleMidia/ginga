@@ -1,187 +1,107 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS =\
+AM_CPPFLAGS=\
   $(INCLUDE_GINGACC_MULTIDEVICE)\
   $(INCLUDE_NCL30)\
-  $(INCLUDE_GINGA_NCL)\
   $(NULL)
 
-AM_CXXFLAGS = $(PTHREAD_CFLAGS)
-AM_LDFLAGS = $(LTLDFLAGS) $(PTHREAD_LIBS)
+AM_CXXFLAGS=
+AM_LDFLAGS= $(LTSTATIC)
+noinst_LTLIBRARIES= gingancl.la
 
-gingancllib_LTLIBRARIES =\
-  libginganclmodel.la\
-  $(NULL)
-
-if BUILD_BERKELIUM
-gingancllib_LTLIBRARIES += libginganclbklpadapter.la
-endif
-
-if BUILD_SSML
-gingancllib_LTLIBRARIES += libginganclssmlpadapter.la
-endif
-
-# ginga-ncl-model
-if BUILD_DATA_PROCESSING
-AM_CPPFLAGS +=\
-  $(INCLUDE_GINGACC_TUNER)\
-  $(INCLUDE_GINGACC_TSPARSER)\
-  $(INCLUDE_GINGACC_DATAPROCESSING)\
-  $(NULL)
-endif
-
-libginganclmodel_la_SOURCES =\
-  src/model/components/ApplicationExecutionObject.cpp\
-  src/model/components/CompositeExecutionObject.cpp\
-  src/model/components/ExecutionObject.cpp\
-  src/model/components/NodeNesting.cpp\
-  src/model/event/AnchorEvent.cpp\
-  src/model/event/AttributionEvent.cpp\
-  src/model/event/FormatterEvent.cpp\
-  src/model/event/PresentationEvent.cpp\
-  src/model/event/SelectionEvent.cpp\
-  src/model/event/transition/BeginEventTransition.cpp\
-  src/model/event/transition/EndEventTransition.cpp\
-  src/model/event/transition/EventTransition.cpp\
-  src/model/event/transition/EventTransitionManager.cpp\
-  src/model/event/transition/TransitionDispatcher.cpp\
-  src/model/link/FormatterCausalLink.cpp\
-  src/model/link/FormatterLink.cpp\
-  src/model/link/LinkAction.cpp\
-  src/model/link/LinkAndCompoundTriggerCondition.cpp\
-  src/model/link/LinkAssessmentStatement.cpp\
-  src/model/link/LinkAssignmentAction.cpp\
-  src/model/link/LinkAttributeAssessment.cpp\
-  src/model/link/LinkCompoundAction.cpp\
-  src/model/link/LinkCompoundStatement.cpp\
-  src/model/link/LinkCompoundTriggerCondition.cpp\
-  src/model/link/LinkRepeatAction.cpp\
-  src/model/link/LinkSimpleAction.cpp\
-  src/model/link/LinkTransitionTriggerCondition.cpp\
-  src/model/link/LinkTriggerCondition.cpp\
-  src/model/link/LinkValueAssessment.cpp\
-  src/model/presentation/CascadingDescriptor.cpp\
-  src/model/presentation/FormatterDeviceRegion.cpp\
-  src/model/presentation/FormatterLayout.cpp\
-  src/model/presentation/FormatterRegion.cpp\
-  src/model/presentation/focus/FocusSourceManager.cpp\
-  src/model/switches/ExecutionObjectSwitch.cpp\
-  src/model/switches/SwitchEvent.cpp\
-  src/model/time/CostFunctionDuration.cpp\
-  src/model/time/DurationFactory.cpp\
-  src/model/time/FlexibleTimeMeasurement.cpp\
-  src/model/time/LinearCostFunctionDuration.cpp\
-  src/model/time/TimeMeasurement.cpp\
-  src/model/time/UnflexibleDuration.cpp\
-  $(NULL)
-
-libginganclmodel_la_LIBADD =\
+gingancl_la_LIBADD=\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
   ../ncl30/libncl30.la\
+  ../system/system.la\
   $(NULL)
 
-libginganclmodel_la_SOURCES +=\
-  src/adaptation/context/ContextBase.cpp\
-  src/adaptation/context/PresentationContext.cpp\
-  src/adaptation/context/RuleAdapter.cpp\
+gingancl_la_SOURCES=\
+  AnimationController.cpp\
+  FormatterBaseDevice.cpp\
+  FormatterConverter.cpp\
+  FormatterFocusManager.cpp\
+  FormatterLinkConverter.cpp\
+  FormatterMediator.cpp\
+  FormatterMultiDevice.cpp\
+  FormatterScheduler.cpp\
+  PrefetchManager.cpp\
+  PrivateBaseContext.cpp\
+  PrivateBaseManager.cpp\
+  adaptation/ContextBase.cpp\
+  adaptation/PresentationContext.cpp\
+  adaptation/RuleAdapter.cpp\
+  adapters/AVPlayerAdapter.cpp\
+  adapters/ApplicationPlayerAdapter.cpp\
+  adapters/ChannelPlayerAdapter.cpp\
+  adapters/FormatterPlayerAdapter.cpp\
+  adapters/ImagePlayerAdapter.cpp\
+  adapters/LuaPlayerAdapter.cpp\
+  adapters/MirrorPlayerAdapter.cpp\
+  adapters/NCLPlayerAdapter.cpp\
+  adapters/NominalEventMonitor.cpp\
+  adapters/PlainTxtPlayerAdapter.cpp\
+  adapters/PlayerAdapterManager.cpp\
+  adapters/ProgramAVPlayerAdapter.cpp\
+  adapters/SubtitlePlayerAdapter.cpp\
+  adapters/TimePlayerAdapter.cpp\
+  model/AnchorEvent.cpp\
+  model/ApplicationExecutionObject.cpp\
+  model/AttributionEvent.cpp\
+  model/BeginEventTransition.cpp\
+  model/CascadingDescriptor.cpp\
+  model/CompositeExecutionObject.cpp\
+  model/CostFunctionDuration.cpp\
+  model/DurationFactory.cpp\
+  model/EndEventTransition.cpp\
+  model/EventTransition.cpp\
+  model/EventTransitionManager.cpp\
+  model/ExecutionObject.cpp\
+  model/ExecutionObjectSwitch.cpp\
+  model/FlexibleTimeMeasurement.cpp\
+  model/FocusSourceManager.cpp\
+  model/FormatterCausalLink.cpp\
+  model/FormatterDeviceRegion.cpp\
+  model/FormatterEvent.cpp\
+  model/FormatterLayout.cpp\
+  model/FormatterLink.cpp\
+  model/FormatterRegion.cpp\
+  model/LinearCostFunctionDuration.cpp\
+  model/LinkAction.cpp\
+  model/LinkAndCompoundTriggerCondition.cpp\
+  model/LinkAssessmentStatement.cpp\
+  model/LinkAssignmentAction.cpp\
+  model/LinkAttributeAssessment.cpp\
+  model/LinkCompoundAction.cpp\
+  model/LinkCompoundStatement.cpp\
+  model/LinkCompoundTriggerCondition.cpp\
+  model/LinkRepeatAction.cpp\
+  model/LinkSimpleAction.cpp\
+  model/LinkTransitionTriggerCondition.cpp\
+  model/LinkTriggerCondition.cpp\
+  model/LinkValueAssessment.cpp\
+  model/NodeNesting.cpp\
+  model/PresentationEvent.cpp\
+  model/SelectionEvent.cpp\
+  model/SwitchEvent.cpp\
+  model/TimeMeasurement.cpp\
+  model/TransitionDispatcher.cpp\
+  model/UnflexibleDuration.cpp\
   $(NULL)
 
-libginganclmodel_la_SOURCES +=\
-  src/emconverter/FormatterConverter.cpp\
-  src/emconverter/FormatterLinkConverter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/multidevice/FormatterMultiDevice.cpp\
-  src/multidevice/FormatterBaseDevice.cpp\
-  $(NULL)
+if BUILD_BERKELIUM
+AM_CXXFLAGS+= $(BERKELIUM_CFLAGS)
+AM_LDFLAGS+= $(BERKELIUM_LIBS)
+gingancl_la_SOURCES+= adapters/BerkeliumPlayerAdapter.cpp
+endif
 
 if BUILD_MULTIDEVICE
-libginganclmodel_la_SOURCES +=\
-  src/multidevice/FormatterPassiveDevice.cpp\
-  src/multidevice/FormatterActiveDevice.cpp\
+gingancl_la_SOURCES+=\
+  FormatterPassiveDevice.cpp\
+  FormatterActiveDevice.cpp\
   $(NULL)
 endif
 
-libginganclmodel_la_SOURCES +=\
-  src/prefetch/PrefetchManager.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/mirror/MirrorPlayerAdapter.cpp\
-  src/adapters/FormatterPlayerAdapter.cpp\
-  src/adapters/NominalEventMonitor.cpp\
-  src/adapters/PlayerAdapterManager.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/application/ApplicationPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/application/declarative/ncl/NCLPlayerAdapter.cpp\
-  $(NULL)
-
-# ginga-ncl-bkl-p-adapter
-if BUILD_BERKELIUM
-libginganclbklpadapter_la_LDFLAGS =\
-  $(AM_LDFLAGS)\
-  $(BERKELIUM_LIBS)
-libginganclbklpadapter_la_SOURCES =\
-  src/adapters/application/declarative/xhtml/berkelium/BerkeliumPlayerAdapter.cpp\
-  $(NULL)
-endif
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/application/imperative/lua/LuaPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/av/AVPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/time/TimePlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/av/tv/ProgramAVPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/av/ChannelPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/image/ImagePlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/text/PlainTxtPlayerAdapter.cpp\
-  $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/adapters/text/SubtitlePlayerAdapter.cpp\
-  $(NULL)
-
-# ginga-ncl-ssml-p-adapter
 if BUILD_SSML
-libginganclssmlpadapter_la_SOURCES =\
-  src/adapters/tts/SsmlPlayerAdapter.cpp\
-  $(NULL)
+gingancl_la_SOURCES+= adapters/SsmlPlayerAdapter.cpp
 endif
-
-# ginga-ncl
-# libginganclmodel_la_LIBADD +=\
-#   ../gingacc-player/player.la\
-#   $(NULL)
-
-libginganclmodel_la_SOURCES +=\
-  src/FormatterMediator.cpp\
-  src/FormatterScheduler.cpp\
-  src/focus/FormatterFocusManager.cpp\
-  src/privatebase/PrivateBaseManager.cpp\
-  src/privatebase/PrivateBaseContext.cpp\
-  src/animation/AnimationController.cpp\
-  $(NULL)
