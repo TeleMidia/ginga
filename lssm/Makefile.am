@@ -2,7 +2,6 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 if BUILD_DATA_PROCESSING
 AM_CPPFLAGS=\
-  $(INCLUDE_GINGACC_TSPARSER)\
   $(INCLUDE_GINGACC_DATAPROCESSING)\
   $(NULL)
 endif
