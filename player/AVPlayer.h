@@ -33,17 +33,6 @@ extern "C" {
 }
 #endif
 
-#ifdef STx7100
-#ifdef __cplusplus
-extern "C" {
-#endif
-	#include "audio_hal.h"
-	#include "video_hal.h"
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
@@ -58,10 +47,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
 #include "PlayersComponentSupport.h"
-
-#if HAVE_ICRTP
-#include "RTPListener.h"
-#endif
 
 #include <vector>
 #include <iostream>
@@ -82,10 +67,6 @@ namespace player {
 			pthread_mutex_t pMutex; //provider mutex
 			pthread_mutex_t tMutex; //AV player thread mutex
 
-#if HAVE_ICRTP
-			RTPListener* icListener;
-#endif
-
 		protected:
 			bool running;
 			bool buffered;
@@ -102,19 +83,7 @@ namespace player {
 
 		public:
 			AVPlayer(GingaScreenID screenId, string mrl);
-
-#ifdef STx7100
-		private:
-			video_t *video;
-			audio_t *audio;
-
-		public:
-			AVPlayer(GingaScreenID screenId, video_t *video);
-			AVPlayer(GingaScreenID screenId, audio_t *audio);
-#endif
-
 			virtual ~AVPlayer();
-
 			GingaSurfaceID getSurface();
 
 		private:
