@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_MULTIDEVICE
-#include "multidevice/services/IDeviceDomain.h"
+#include "multidevice/IDeviceDomain.h"
 #include "multidevice/IRemoteDeviceManager.h"
 #include "multidevice/IRemoteDeviceListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;

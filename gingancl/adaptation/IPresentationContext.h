@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #if HAVE_MULTIDEVICE
-#include "multidevice/services/IDeviceDomain.h"
+#include "multidevice/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #endif
 

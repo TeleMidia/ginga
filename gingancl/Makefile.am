@@ -1,10 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS= $(INCLUDE_GINGACC_MULTIDEVICE)
-AM_CXXFLAGS=
-AM_LDFLAGS= $(LTSTATIC)
-noinst_LTLIBRARIES= gingancl.la
-
 gingancl_la_LIBADD=\
   ../ctxmgmt/ctxmgmt.la\
   ../ic/ic.la\
@@ -15,6 +10,9 @@ gingancl_la_LIBADD=\
   ../dataprocessing/dataprocessing.la\
   $(NULL)
 
+AM_CXXFLAGS=
+AM_LDFLAGS= $(LTSTATIC)
+noinst_LTLIBRARIES= gingancl.la
 gingancl_la_SOURCES=\
   AnimationController.cpp\
   FormatterBaseDevice.cpp\

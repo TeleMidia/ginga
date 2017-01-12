@@ -15,31 +15,42 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FMDCOMPONENTSUPPORT_H_
-#define FMDCOMPONENTSUPPORT_H_
+#ifndef _BaseDeviceService_H_
+#define _BaseDeviceService_H_
 
-#include "config.h"
+#include "IRemoteDevice.h"
+#include "IRemoteDeviceListener.h"
+#include "DeviceDomain.h"
+#include "DeviceService.h"
 
-#include "mb/IInputManager.h"
-#include "mb/LocalScreenManager.h"
-
-#if HAVE_MULTIDEVICE
-# include "multidevice/RemoteDeviceManager.h"
-# include "multidevice/ActiveDeviceDomain.h"
-# include "multidevice/PassiveDeviceDomain.h"
-# include "multidevice/BaseDeviceDomain.h"
-#endif
-#include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
-
-#include "player/ImagePlayer.h"
+#include <map>
+using namespace std;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace ncl {
+namespace core {
 namespace multidevice {
+  class BaseDeviceService : public DeviceService {
+	public:
+		BaseDeviceService();
+		virtual ~BaseDeviceService();
+
+		virtual void newDeviceConnected(unsigned int devAddr);
+		virtual void connectedToBaseDevice(unsigned int domainAddr){};
+
+		virtual bool receiveEvent(
+				unsigned int devAddr,
+				int eventType,
+				char* stream,
+				int streamSize);
+
+		virtual bool receiveMediaContent(
+				unsigned int devAddr,
+				char* stream,
+				int streamSize){return false;};
+  };
 }
 }
 }
@@ -47,4 +58,4 @@ namespace multidevice {
 }
 }
 
-#endif /* FMDCOMPONENTSUPPORT_H_ */
+#endif /*_BaseDeviceService_H_*/
