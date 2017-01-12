@@ -30,9 +30,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 #include "config.h"
 
 #if HAVE_MULTIDEVICE
-#include "multidevice/services/IDeviceDomain.h"
+# include "multidevice/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
-#endif //HAVE_MULTIDEVICE
+#endif
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

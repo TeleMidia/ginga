@@ -31,7 +31,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #if HAVE_MULTIDEVICE
-#include "multidevice/services/IDeviceDomain.h"
+# include "multidevice/IDeviceDomain.h"
 #endif
 
 namespace br {

@@ -1,5 +1,2 @@
 LTSTATIC= -static -module -avoid-version
-LTLDFLAGS= -avoid-version -no-undefined -export-dynamic -rpath $(gingalibdir)
 MAINTAINERCLEANFILES= Makefile.in
-
-INCLUDE_GINGACC_MULTIDEVICE = -I$(top_srcdir)/gingacc-multidevice/include

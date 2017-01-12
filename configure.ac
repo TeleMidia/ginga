@@ -388,12 +388,6 @@ AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
 AC_SUBST([gingalibdir], ['${libdir}'])
 AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 
-# Per-package libdir and includedir.
-m4_define([_AC_SUBST_GINGAPKGDIR],
- [AC_SUBST([$1][libdir], ['${gingalibdir}'])
-  AC_SUBST([$1][includedir], ['${gingaincludedir}'/][$2])])
-_AC_SUBST_GINGAPKGDIR([gingaccmultidevice],    [multidevice])
-
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
@@ -401,7 +395,7 @@ ginga/Makefile
 ctxmgmt/Makefile
 dataprocessing/Makefile
 mb/Makefile
-gingacc-multidevice/Makefile
+multidevice/Makefile
 player/Makefile
 system/Makefile
 tsparser/Makefile
@@ -416,7 +410,6 @@ util/Makefile
 
 AC_CONFIG_FILES([
 mb/tests/Makefile
-gingacc-multidevice/tests/Makefile
 player/tests/Makefile
 ])
 

@@ -9,7 +9,7 @@ SUBDIRS+= ic
 SUBDIRS+= mb
 SUBDIRS+= ctxmgmt
 if BUILD_MULTIDEVICE
-SUBDIRS+= gingacc-multidevice
+SUBDIRS+= multidevice
 endif
 if BUILD_DATA_PROCESSING
 SUBDIRS+= tuner
@@ -26,9 +26,6 @@ SUBDIRS+= ginga
 
 if BUILD_TESTS
 SUBDIRS+= mb/tests
-if BUILD_MULTIDEVICE
-SUBDIRS+= gingacc-multidevice/tests
-endif
 SUBDIRS+= player/tests
 endif
 

@@ -1,10 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS =\
-  $(INCLUDE_GINGACC_MULTIDEVICE)\
-  $(NULL)
-
-AM_CXXFLAGS = $(PTHREAD_CFLAGS)
 AM_LDFLAGS = -R $(gingalibdir) -rpath $(gingalibdir) $(PTHREAD_LIBS) $(FFMPEG_LIBS)
 
 LDADD=\
@@ -29,9 +24,7 @@ LDADD+=\
 endif
 
 if BUILD_MULTIDEVICE
-LDADD+=\
-  ../gingacc-multidevice/libgingaccmd.la\
-  $(NULL)
+LDADD+= ../multidevice/multidevice.la
 endif
 
 bin_PROGRAMS = ginga

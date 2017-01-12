@@ -15,31 +15,42 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FMDCOMPONENTSUPPORT_H_
-#define FMDCOMPONENTSUPPORT_H_
+#ifndef TCPSOCKETSERVICE_H_
+#define TCPSOCKETSERVICE_H_
 
-#include "config.h"
+#include <map>
+#include <string.h>
+using namespace std;
 
-#include "mb/IInputManager.h"
-#include "mb/LocalScreenManager.h"
-
-#if HAVE_MULTIDEVICE
-# include "multidevice/RemoteDeviceManager.h"
-# include "multidevice/ActiveDeviceDomain.h"
-# include "multidevice/PassiveDeviceDomain.h"
-# include "multidevice/BaseDeviceDomain.h"
-#endif
-#include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
-
-#include "player/ImagePlayer.h"
+#include "IRemoteDeviceListener.h"
+#include "TcpClientConnection.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
-namespace ncl {
+namespace core {
 namespace multidevice {
+	class TcpSocketService {
+		private:
+			map<unsigned int, TCPClientConnection*>* connections;
+			unsigned int port;
+			int connection_counter;
+			pthread_mutex_t connMutex;
+			IRemoteDeviceListener* res;
+
+		public:
+			TcpSocketService(unsigned int p, IRemoteDeviceListener* r);
+			virtual ~TcpSocketService();
+			void addConnection(unsigned int deviceId, char* addr, int srvPort, bool isLocalConnection);
+			void removeConnection(unsigned int deviceId);
+			void postTcpCommand(
+					char* command,
+					int npt,
+					char* payloadDesc,
+					char* payload);
+	};
+
 }
 }
 }
@@ -47,4 +58,4 @@ namespace multidevice {
 }
 }
 
-#endif /* FMDCOMPONENTSUPPORT_H_ */
+#endif /* TCPSOCKETSERVICE_H_ */
