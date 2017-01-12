@@ -62,7 +62,7 @@ contrib/
 /config.status
 /data/ini/ginga.ini
 /configure
-/ginga/ginga
+/src/ginga
 /gingacc-cm/files/componentDescription.xml
 /gingacc-cm/tests/test
 /gingacc-contextmanager/tests/test
