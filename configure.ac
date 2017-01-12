@@ -386,21 +386,7 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 src/Makefile
-dataprocessing/Makefile
-mb/Makefile
-multidevice/Makefile
-player/Makefile
-system/Makefile
-tsparser/Makefile
-tuner/Makefile
-lssm/Makefile
-gingancl/Makefile
-nclconv/Makefile
-])
-
-AC_CONFIG_FILES([
-mb/tests/Makefile
-player/tests/Makefile
+tests/Makefile
 ])
 
 AC_OUTPUT
