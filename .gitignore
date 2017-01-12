@@ -57,8 +57,8 @@ contrib/
 /INSTALL
 /TAGS
 /aclocal.m4
-/config.h
-/config.h.in
+/src/config.h
+/src/config.h.in
 /config.status
 /data/ini/ginga.ini
 /configure
@@ -83,7 +83,7 @@ contrib/
 /gingalssm/tests/testEmbed
 /gingalssm/tests/testScreen
 /gingancl/tests/testFormatter
-/stamp-h1
+/src/stamp-h1
 /telemidia-util/tests/test
 Makefile
 Makefile.in

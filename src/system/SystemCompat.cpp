@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SystemCompat.h"
-#if HAVE_ZIP
+#if HAVE_MULTIDEVICE
 # include <zip.h>
 #endif
 extern "C" float machInfo(const char *name);
@@ -29,8 +29,7 @@ namespace core {
 namespace system {
 namespace compat {
 
-
-#if HAVE_ZIP
+#if HAVE_MULTIDEVICE
 	bool getZipError(zip* file, string* strError) {
 		bool hasError = false;
 		int zipErr, sysErr;
@@ -406,7 +405,7 @@ namespace compat {
 			const string &directory_path,
 			const string &iUriD) {
 
-#if HAVE_ZIP
+#if HAVE_MULTIDEVICE
 		struct zip* zipFile;
 		int error_open;
 		string dir_name;
@@ -481,7 +480,7 @@ namespace compat {
 
 
 	int SystemCompat::unzip_file(const char *zipname, const char *filedir) {
-#if HAVE_ZIP
+#if HAVE_MULTIDEVICE
 		struct zip *zipf;
 		struct zip_file *inf;
 		char cur_dir[2000];

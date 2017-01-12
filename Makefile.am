@@ -1,11 +1,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
-
 SUBDIRS= data src
-if BUILD_TESTS
-SUBDIRS+= tests
-endif
 
 MAINTAINERCLEANFILES+=\
   INSTALL\
@@ -24,7 +20,5 @@ MAINTAINERCLEANFILES+=\
   build-aux/ltversion.m4\
   build-aux/lt~obsolete.m4\
   build-aux/missing\
-  config.h.in\
-  config.h.in~\
   configure\
   $(NULL)

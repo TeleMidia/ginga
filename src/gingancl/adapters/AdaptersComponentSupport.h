@@ -60,7 +60,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
 #endif
 
-#if HAVE_SSML
+#if HAVE_ESPEAK
 #include "player/SsmlPlayer.h"
 #include "SsmlPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;
