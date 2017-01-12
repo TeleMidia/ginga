@@ -4,7 +4,6 @@ ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 
 SUBDIRS=
 SUBDIRS+= data
-SUBDIRS+= util
 SUBDIRS+= ic
 SUBDIRS+= mb
 SUBDIRS+= ctxmgmt

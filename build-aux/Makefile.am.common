@@ -1,2 +1,3 @@
 LTSTATIC= -static -module -avoid-version
+AM_CPPFLAGS= -I$(top_srcdir)/src/
 MAINTAINERCLEANFILES= Makefile.in

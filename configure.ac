@@ -4,7 +4,7 @@ AC_INIT([ginga], [0.13.6], [bugs@telemidia.puc-rio.br])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
 AC_CANONICAL_TARGET
-AC_CONFIG_SRCDIR([util/functions.cpp])
+AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([config.h])
 
 m4_define([avcodec_required_version],    [55.39.101])
@@ -399,7 +399,6 @@ gingancl/Makefile
 ic/Makefile
 nclconv/Makefile
 ncl/Makefile
-util/Makefile
 ])
 
 AC_CONFIG_FILES([

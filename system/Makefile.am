@@ -1,6 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
+AM_CPPFLAGS+=\
   -DSTR_PREFIX='"$(prefix)"'\
   -DGINGA_LIBDIR='"$(gingalibdir)"'\
   -DGINGA_INI_PATH='"$(gingaconfdir)/ginga.ini"'\
