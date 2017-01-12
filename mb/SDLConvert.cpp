@@ -19,16 +19,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 
 #if _WIN32
-#include "atlimage.h"
+# include "atlimage.h"
 #elif HAVE_JPEG
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <setjmp.h>
-	#include <jpeglib.h>
-	#include <jerror.h>
-	#include <SDL2/SDL_bits.h>
-	#include <iostream>
-	using namespace std;
+# include <stdlib.h>
+# include <stdio.h>
+# include <setjmp.h>
+# include <jpeglib.h>
+# include <jerror.h>
+# include <SDL2/SDL_bits.h>
+# include <iostream>
+using namespace std;
 #endif
 
 namespace br {
@@ -147,10 +147,13 @@ namespace mb {
 	}
 
 	SDL_Surface *make_usable_format(SDL_Surface *surf) {
-		SDL_PixelFormat pf_temp = { SDL_PIXELFORMAT_RGB332, NULL, 24, 3, 0, 0, 0, 8,
-		RSHIFT24, GSHIFT24, BSHIFT24, 0,
-		RMASK24, GMASK24, BMASK24, 0, 0, 255 };
-		SDL_Surface *rgb_surf = SDL_ConvertSurface(surf, &pf_temp, SDL_SWSURFACE);
+		// SDL_PixelFormat pf_temp = { SDL_PIXELFORMAT_RGB332, NULL, 24, 3, 0, 0, 0, 8,
+		// RSHIFT24, GSHIFT24, BSHIFT24, 0,
+		// RMASK24, GMASK24, BMASK24, 0, 0, 255 };
+
+                SDL_PixelFormat *pf = SDL_AllocFormat (SDL_PIXELFORMAT_RGB332);
+		SDL_Surface *rgb_surf = SDL_ConvertSurface(surf, pf, SDL_SWSURFACE);
+                SDL_FreeFormat (pf);
 
 		return rgb_surf;
 	}

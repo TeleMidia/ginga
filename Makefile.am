@@ -19,9 +19,9 @@ endif
 SUBDIRS+= player
 SUBDIRS+= ncl
 SUBDIRS+= nclconv
+SUBDIRS+= system
 SUBDIRS+= gingancl
 SUBDIRS+= lssm
-SUBDIRS+= system
 SUBDIRS+= ginga
 
 if BUILD_TESTS

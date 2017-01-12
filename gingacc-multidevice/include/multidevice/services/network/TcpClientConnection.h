@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TCPCLIENTCONNECTION_H_
 #define TCPCLIENTCONNECTION_H_
 
-#include "system/compat/SystemCompat.h"
-#include "system/compat/PracticalSocket.h"
+#include "system/SystemCompat.h"
+#include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <iostream>
@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string.h>
 using namespace std;
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "../../IRemoteDeviceListener.h"

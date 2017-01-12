@@ -24,11 +24,11 @@ using namespace ::br::pucrio::telemidia;
 #include "ncl/layout/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"
 #if HAVE_MULTIDEVICE
-# include "gingancl/multidevice/FormatterMultiDevice.h"
+# include "gingancl/FormatterMultiDevice.h"
 # include "multidevice/services/DeviceDomain.h"
-# include "gingancl/multidevice/FormatterPassiveDevice.h"
-# include "gingancl/multidevice/FormatterActiveDevice.h"
-#endif //HAVE_MULTIDEVICE
+# include "gingancl/FormatterPassiveDevice.h"
+# include "gingancl/FormatterActiveDevice.h"
+#endif
 #include "lssm/CommonCoreManager.h"
 #include "lssm/PresentationEngineManager.h"
 
@@ -42,10 +42,9 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_MULTIDEVICE
-#include "multidevice/services/IDeviceDomain.h"
+# include "multidevice/services/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
-
-#include "gingancl/multidevice/IFormatterMultiDevice.h"
+# include "gingancl/IFormatterMultiDevice.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #endif
 

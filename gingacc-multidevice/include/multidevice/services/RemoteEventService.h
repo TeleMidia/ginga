@@ -28,10 +28,10 @@ using namespace std;
 
 using namespace ::br::pucrio::telemidia::util;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "contextmanager/IContextManager.h"
+#include "ctxmgmt/IContextManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #ifndef REMOTEEVENTSERVICE_H_
