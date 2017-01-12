@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <fstream>
 using namespace std;
 
-#include "tuner/IDataProvider.h"
+#include "isdbt-tuner/IDataProvider.h"
 
 namespace br {
 namespace pucrio {

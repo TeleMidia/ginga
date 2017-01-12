@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BDAGRAPH_H_
 #define BDAGRAPH_H_
 
-#include "tuner/providers/Channels.h"
+#include "isdbt-tuner/providers/Channels.h"
 
 #include "system/thread/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;

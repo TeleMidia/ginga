@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 
 #if HAVE_ISDBT
-#include "tuner/ITuner.h"
+#include "isdbt-tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #endif
 

@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
-#include "tuner/ISTCProvider.h"
+#include "isdbt-tuner/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "DSMCCSectionPayload.h"
