@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "tsparser/TransportSection.h"
+#include "isdbt-tsparser/TransportSection.h"
 
 namespace br {
 namespace pucrio {

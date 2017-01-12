@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DataProcessor.h"
 #include "dsmcc/StreamEvent.h"
 #include "dsmcc/DSMCCSectionPayload.h"
-#include "tsparser/AIT.h"
+#include "isdbt-tsparser/AIT.h"
 
 namespace br {
 namespace pucrio {

@@ -24,8 +24,8 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 #include "isdbt-tuner/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
-#include "tsparser/IDemuxer.h"
-#include "tsparser/IFilterListener.h"
+#include "isdbt-tsparser/IDemuxer.h"
+#include "isdbt-tsparser/IFilterListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "dsmcc/IStreamEventListener.h"

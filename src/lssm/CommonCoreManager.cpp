@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if HAVE_ISDBT
 #include "isdbt-tuner/Tuner.h"
-#include "tsparser/Demuxer.h"
-#include "tsparser/PipeFilter.h"
+#include "isdbt-tsparser/Demuxer.h"
+#include "isdbt-tsparser/PipeFilter.h"
 #include "isdbt-dataproc/DataProcessor.h"
 #endif
 #include "player/ImagePlayer.h"
@@ -32,8 +32,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
-#include "tsparser/IDemuxer.h"
-#include "tsparser/ITSFilter.h"
+#include "isdbt-tsparser/IDemuxer.h"
+#include "isdbt-tsparser/ITSFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "isdbt-dataproc/IDataProcessor.h"

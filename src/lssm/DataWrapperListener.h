@@ -33,10 +33,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include "isdbt-tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
-#include "tsparser/IEventInfo.h"
+#include "isdbt-tsparser/IEventInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "tsparser/IShortEventDescriptor.h"
+#include "isdbt-tsparser/IShortEventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "isdbt-dataproc/dsmcc/IStreamEventListener.h"

@@ -22,22 +22,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "tsparser/ServiceInfo.h"
-#include "tsparser/EventInfo.h"
-#include "tsparser/TOT.h"
-#include "tsparser/ShortEventDescriptor.h"
-#include "tsparser/LogoTransmissionDescriptor.h"
+#include "isdbt-tsparser/ServiceInfo.h"
+#include "isdbt-tsparser/EventInfo.h"
+#include "isdbt-tsparser/TOT.h"
+#include "isdbt-tsparser/ShortEventDescriptor.h"
+#include "isdbt-tsparser/LogoTransmissionDescriptor.h"
 
-#include "tsparser/IServiceInfo.h"
-#include "tsparser/IEventInfo.h"
+#include "isdbt-tsparser/IServiceInfo.h"
+#include "isdbt-tsparser/IEventInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#include "tsparser/IMpegDescriptor.h"
+#include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "tsparser/IShortEventDescriptor.h"
-#include "tsparser/IExtendedEventDescriptor.h"
-#include "tsparser/IServiceDescriptor.h"
+#include "isdbt-tsparser/IShortEventDescriptor.h"
+#include "isdbt-tsparser/IExtendedEventDescriptor.h"
+#include "isdbt-tsparser/IServiceDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "isdbt-dataproc/IEPGListener.h"
