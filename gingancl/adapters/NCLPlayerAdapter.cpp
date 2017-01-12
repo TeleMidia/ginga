@@ -220,9 +220,3 @@ namespace ncl {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
-
-extern "C" IPlayerAdapter* createNCLAdapter() {
-	return new application::ncl::NCLPlayerAdapter();
-}

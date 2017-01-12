@@ -3350,13 +3350,3 @@ namespace ncl {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::ncl;
-
-extern "C" INCLPlayer* createNCLPlayer(NclPlayerData* data) {
-	return (new FormatterMediator(data));
-}
-
-extern "C" void destroyNCLPlayer(INCLPlayer* p) {
-	delete p;
-}

@@ -48,7 +48,3 @@ namespace time {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createTimAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::time::TimePlayerAdapter();
-}

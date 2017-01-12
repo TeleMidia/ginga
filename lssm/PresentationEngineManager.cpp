@@ -1587,19 +1587,3 @@ namespace lssm {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::lssm;
-extern "C" IPresentationEngineManager* createPEM(
-		int devClass,
-		int xOffset, int yOffset, int w, int h,
-		bool enableGfx,
-        bool useMulticast,
-		GingaScreenID screenId) {
-
-	return new PresentationEngineManager(
-			devClass, xOffset, yOffset, w, h, enableGfx, useMulticast, screenId);
-}
-
-extern "C" void destroyPEM(IPresentationEngineManager* pem) {
-	delete pem;
-}

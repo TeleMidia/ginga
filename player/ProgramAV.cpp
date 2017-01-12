@@ -319,14 +319,3 @@ namespace player {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-extern "C" IPlayer* createProgramAV(GingaScreenID screenId) {
-	return (IPlayer*)(Player*)ProgramAV::getInstance(screenId);
-}
-
-extern "C" void destroyProgramAV(IPlayer* pav) {
-	//TODO: static release method
-	delete pav;
-}
