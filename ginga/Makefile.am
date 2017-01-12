@@ -15,7 +15,7 @@ LDADD=\
   ../util/util.la\
   $(NULL)
 
-if BUILD_DATA_PROCESSING
+if BUILD_ISDBT
 LDADD+=\
   ../tuner/tuner.la\
   ../tsparser/tsparser.la\

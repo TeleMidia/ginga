@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#if HAVE_ISDBT
 #include "tuner/ISTCProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
@@ -36,7 +36,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#if HAVE_ISDBT
   class StcWrapper : public ISTCProvider {
 	private:
 		IPlayer* realStcProvider;
