@@ -15,15 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "lssm/CommonCoreManager.h"
 #include "config.h"
+#include "lssm/CommonCoreManager.h"
 
 #if HAVE_ISDBT
-#include "isdbt-tuner/Tuner.h"
-#include "isdbt-tsparser/Demuxer.h"
-#include "isdbt-tsparser/PipeFilter.h"
-#include "isdbt-dataproc/DataProcessor.h"
+# include "isdbt-tuner/Tuner.h"
+# include "isdbt-tsparser/Demuxer.h"
+# include "isdbt-tsparser/PipeFilter.h"
+# include "isdbt-dataproc/DataProcessor.h"
 #endif
+
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 #include "player/ProgramAV.h"

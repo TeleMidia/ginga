@@ -16,15 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-
 #include "SDLDeviceScreen.h"
-
 #include "SDLWindow.h"
 #include "SDLSurface.h"
-
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
-
 #include "ILocalScreenManager.h"
 #include "InputManager.h"
 

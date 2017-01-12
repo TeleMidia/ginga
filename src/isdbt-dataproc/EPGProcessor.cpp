@@ -15,9 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "isdbt-dataproc/EPGProcessor.h"
-
 #include "config.h"
+
+#include "isdbt-dataproc/EPGProcessor.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;

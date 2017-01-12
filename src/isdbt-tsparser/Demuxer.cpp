@@ -15,13 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "config.h"
+
 #include "isdbt-tsparser/Demuxer.h"
 
 #include "isdbt-tsparser/PipeFilter.h"
 #include "isdbt-tsparser/PSIFilter.h"
 #include "isdbt-tsparser/PesFilter.h"
-
-#include "config.h"
 
 namespace br {
 namespace pucrio {
