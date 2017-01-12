@@ -62,6 +62,18 @@ AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
 AC_SUBST([gingalibdir], ['${libdir}'])
 AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 
+# _AC_ARG_ENABLE(NAME, DESCRIPTION, DEFAULT)
+# ------------------------------------------
+# Check for argument --enable-NAME and sets $enable_NAME accordingly.
+m4_define([_AC_ARG_ENABLE],
+ [AC_ARG_ENABLE([$1],
+   [AS_HELP_STRING([--enable-$1],
+     [$2 [default=$3]])],
+   [AS_CASE([$enableval], [yes|no], [:],
+     [AC_MSG_ERROR([bad value '$enableval' for --enable-$1 option])])
+    enable_[]m4_translit($1,[-],[_])=$enableval],
+   [enable_[]m4_translit($1,[-],[_])=$3])])
+
 # _AC_ARG_WITH(NAME, DESCRIPTION, [DEFAULT=check])
 # -----------------------------------------------
 # Adds option --with-[NAME], with description DESCRIPTION and default
@@ -76,25 +88,6 @@ AC_ARG_WITH(AS_TR_SH([$1]),
  [AS_CASE([$]AS_TR_SH([with_$1]), [yes|no|check], [:],
    [AC_MSG_ERROR([bad value '][$]AS_TR_SH([with_$1])[' for --with-$1 option])])],
  [AS_TR_SH([with_$1])=check])])
-
-# _AC_ARG_ENABLE(NAME, DESCRIPTION, DEFAULT)
-# ------------------------------------------
-# Check for argument --enable-NAME and sets $enable_NAME accordingly.
-m4_define([_AC_ARG_ENABLE],
- [AC_ARG_ENABLE([$1],
-   [AS_HELP_STRING([--enable-$1],
-     [$2 [default=$3]])],
-   [AS_CASE([$enableval], [yes|no], [:],
-     [AC_MSG_ERROR([bad value '$enableval' for --enable-$1 option])])
-    enable_[]m4_translit($1,[-],[_])=$enableval],
-   [enable_[]m4_translit($1,[-],[_])=$3])])
-
-# _AC_DEFINE_DEPRECATED(NAME, VALUE)
-# ------------------------------
-# Define deprecated macro with name NAME and value VALUE.
-# Eventually, these should be removed from the code.
-m4_define([_AC_DEFINE_DEPRECATED],
- [AC_DEFINE([$1], [$2], [Deprecated macro.])])
 
 # Check if we're on MS Windows.
 case "$target_os" in
