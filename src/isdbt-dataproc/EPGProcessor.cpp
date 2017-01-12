@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "dataprocessing/EPGProcessor.h"
+#include "isdbt-dataproc/EPGProcessor.h"
 
 #include "config.h"
 
@@ -40,7 +40,7 @@ using namespace::br::pucrio::telemidia::ginga::core::tsparser;
 #include "tsparser/IServiceDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
-#include "dataprocessing/IEPGListener.h"
+#include "isdbt-dataproc/IEPGListener.h"
 #include <iostream>
 using namespace std;
 

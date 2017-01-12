@@ -39,14 +39,14 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "tsparser/IShortEventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
-#include "dataprocessing/dsmcc/IStreamEventListener.h"
+#include "isdbt-dataproc/dsmcc/IStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
 #include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
-#include "dataprocessing/dsmcc/IServiceDomainListener.h"
-#include "dataprocessing/dsmcc/IObjectListener.h"
+#include "isdbt-dataproc/dsmcc/IServiceDomainListener.h"
+#include "isdbt-dataproc/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IPresentationEngineManager.h"

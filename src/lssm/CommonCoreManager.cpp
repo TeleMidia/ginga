@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "tuner/Tuner.h"
 #include "tsparser/Demuxer.h"
 #include "tsparser/PipeFilter.h"
-#include "dataprocessing/DataProcessor.h"
+#include "isdbt-dataproc/DataProcessor.h"
 #endif
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
@@ -36,10 +36,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #include "tsparser/ITSFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "dataprocessing/IDataProcessor.h"
+#include "isdbt-dataproc/IDataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "dataprocessing/dsmcc/IObjectListener.h"
+#include "isdbt-dataproc/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "lssm/DataWrapperListener.h"
