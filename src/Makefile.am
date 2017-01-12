@@ -259,11 +259,12 @@ src+= player/BerkeliumHandler.cpp
 src+= player/BerkeliumPlayer.cpp
 endif # BUILD_BERKELIUM
 
-if BUILD_LIBBPG
-AM_CXXFLAGS+= $(LIBBPG_CFLAGS)
-AM_LDFLAGS+= $(LIBBPG_LIBS)
-src+= SDLBpgDecoder.cpp
-endif # BUILD_LIBBPG
+if BUILD_ESPEAK
+AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
+AM_LDFLAGS+= $(ESPEAK_LIBS)
+src+= gingancl/adapters/SsmlPlayerAdapter.cpp
+src+= player/SsmlPlayer.cpp
+endif # BUILD_ESPEAK
 
 if BUILD_ISDBT
 AM_CPPFLAGS+=\
@@ -350,6 +351,12 @@ src+= tuner/RingBuffer.c
 endif # BUILD_LINUXDVB
 endif # BUILD_ISDBT
 
+if BUILD_LIBBPG
+AM_CXXFLAGS+= $(LIBBPG_CFLAGS)
+AM_LDFLAGS+= $(LIBBPG_LIBS)
+src+= SDLBpgDecoder.cpp
+endif # BUILD_LIBBPG
+
 if BUILD_MULTIDEVICE
 AM_CXXFLAGS+= $(LIBZIP_CFLAGS)
 AM_LDFLAGS+= $(LIBZIP_LIBS)
@@ -374,14 +381,7 @@ src+= multidevice/TcpClientConnection.cpp
 src+= multidevice/TcpSocketService.cpp
 endif # BUILD_MULTIDEVICE
 
-if BUILD_SSML
-AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
-AM_LDFLAGS+= $(ESPEAK_LIBS)
-src+= gingancl/adapters/SsmlPlayerAdapter.cpp
-src+= player/SsmlPlayer.cpp
-endif # BUILD_SSML
-
-if BUILD_SVG
+if BUILD_LIBRSVG
 AM_CXXFLAGS+= $(LIBRSVG_CFLAGS)
 AM_LDFLAGS+= $(LIBRSVG_LIBS)
 src+= SDLSvgDecoder.cpp

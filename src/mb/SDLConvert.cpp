@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if _WIN32
 # include "atlimage.h"
-#elif HAVE_JPEG
+#elif HAVE_MULTIDEVICE
 # include <stdlib.h>
 # include <stdio.h>
 # include <setjmp.h>
@@ -38,7 +38,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 
-#if !defined(_WIN32) && (HAVE_JPEG == 1)
+#if !defined(_WIN32) && (HAVE_MULTIDEVICE == 1)
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	// 24 bit RGB masks on big-endian
 	#define RMASK24 0xFF0000
@@ -237,7 +237,7 @@ namespace mb {
 		myImage.Save(filename);
 		delete bmpfile;
 		return 0;
-#elif HAVE_JPEG
+#elif HAVE_MULTIDEVICE
 		SDL_RWops *out;
 		if (!(out = SDL_RWFromFile(filename, "wb"))) {
 			return (-1);

@@ -15,14 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "config.h"
 #include "ic/InteractiveChannelManager.h"
 #include "ic/IInteractiveChannel.h"
-
-#include "config.h"
-
-#if HAVE_CURL
-#include "ic/curlic/CurlInteractiveChannel.h"
-#endif //HAVE_CURL
+#include "ic/CurlInteractiveChannel.h"
 
 namespace br {
 namespace pucrio {
@@ -49,15 +45,12 @@ namespace ic {
 		set<string>* objects;
 		string symbol;
 		set<string>::iterator i;
-
-#if HAVE_CURL
 		ic = new CurlInteractiveChannel();
 		if (ic->hasConnection()) {
 			delete ic;
 			return true;
 		}
 		delete ic;
-#endif
 		clog << "InteractiveChannelManager::hasInteractiveChannel";
 		clog << " return false" << endl;
 		return false;
@@ -108,9 +101,7 @@ namespace ic {
 		IInteractiveChannel* ic = NULL;
 
 		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
-#if HAVE_CURL
 			ic = new CurlInteractiveChannel();
-#endif
 		}
 
 		if (ic != NULL) {

@@ -387,7 +387,7 @@ namespace adapters {
 			player = new PlainTxtPlayerAdapter();
 
 		}
-#if HAVE_SSML
+#if HAVE_ESPEAK
                 else if (playerClassName == "SsmlPlayerAdapter") {
 			player = new SsmlPlayerAdapter();
 		}
