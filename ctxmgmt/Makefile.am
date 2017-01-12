@@ -1,8 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(NULL)
-
 AM_LDFLAGS= $(LTSTATIC)
 noinst_LTLIBRARIES= ctxmgmt.la
 ctxmgmt_la_SOURCES=\

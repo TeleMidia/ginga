@@ -12,7 +12,6 @@ LDADD=\
   ../player/player.la\
   ../nclconv/nclconv.la\
   ../ncl/ncl.la\
-  ../util/util.la\
   $(NULL)
 
 if BUILD_ISDBT
@@ -28,4 +27,9 @@ LDADD+= ../multidevice/multidevice.la
 endif
 
 bin_PROGRAMS = ginga
-ginga_SOURCES = main.cpp
+ginga_SOURCES= $(sources)
+sources=
+sources+= main.cpp
+sources+= util/Base64.cpp
+sources+= util/Color.cpp
+sources+= util/functions.cpp
