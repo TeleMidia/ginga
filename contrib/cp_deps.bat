@@ -5,7 +5,7 @@
 pushd..
 set baseDir=%cd%\
 popd
-set vsProjectDirName=ginga-vs2010-solution
+set vsProjectDirName=vs2010
 set cpCommand=xcopy /Y /Q
 
 set contribDir=%~dp0
