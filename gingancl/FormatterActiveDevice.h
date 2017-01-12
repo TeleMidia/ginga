@@ -27,8 +27,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "system/compat/SystemCompat.h"
-#include "system/compat/PracticalSocket.h"
+#include "system/SystemCompat.h"
+#include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IPrivateBaseManager.h"
@@ -50,7 +50,6 @@ namespace ncl {
 namespace multidevice {
 	class FormatterActiveDevice : public FormatterMultiDevice {
 		public:
-			//TODO: here?
 			static const unsigned int ADD_DOCUMENT        = 10081;
 			static const unsigned int REMOVE_DOCUMENT     = 10082;
 			static const unsigned int START_DOCUMENT      = 10083;
@@ -59,8 +58,6 @@ namespace multidevice {
 			static const unsigned int RESUME_DOCUMENT     = 10086;
 			static const unsigned int SET_VAR             = 10087;
 			static const unsigned int SELECTION           = 10088;
-
-			//static const unsigned int COMMAND_SERVER_PORT = 22222;
 			static const unsigned int RCVBUFSIZE          = 100;
 
 			string img_dir;

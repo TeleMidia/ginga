@@ -25,12 +25,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-//TODO: fix formatter instantiation
 #include "gingancl/FormatterMediator.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 
-#include "system/thread/Thread.h"
+#include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "ncl/layout/DeviceLayout.h"

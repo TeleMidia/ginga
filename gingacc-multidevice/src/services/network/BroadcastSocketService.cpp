@@ -38,8 +38,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 typedef int socklen_t;
 #endif
 
-#include "system/compat/SystemCompat.h"
-#include "system/compat/PracticalSocket.h"
+#include "system/SystemCompat.h"
+#include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 namespace br {

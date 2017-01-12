@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 #if HAVE_MULTIDEVICE
 #include "multidevice/services/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
-#endif //HAVE_MULTIDEVICE
+#endif
 
 #include <set>
 #include <string>

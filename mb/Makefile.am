@@ -1,8 +1,5 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
-  $(NULL)
-
 AM_CXXFLAGS=\
   $(FFMPEG_CFLAGS)\
   $(JPEG_CFLAGS)\
