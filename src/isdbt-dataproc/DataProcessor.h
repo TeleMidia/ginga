@@ -24,10 +24,10 @@ extern "C" {
 	#include <stdio.h>
 }
 
-#include "tsparser/IMpegDescriptor.h"
+#include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "tsparser/IAIT.h"
+#include "isdbt-tsparser/IAIT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include "dsmcc/ServiceDomain.h"

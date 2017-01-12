@@ -15,30 +15,26 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IServiceDomainListener_H_
-#define IServiceDomainListener_H_
+#ifndef ISERVICEDESCRIPTOR_H_
+#define ISERVICEDESCRIPTOR_H_
 
-#include "isdbt-tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
-
-#include <map>
-using namespace std;
+#include "isdbt-tsparser/IMpegDescriptor.h"
+using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
-namespace dataprocessing {
-	class IServiceDomainListener {
+namespace tsparser {
+namespace si {
+namespace descriptors {
+	class IServiceDescriptor : public IMpegDescriptor{
 		public:
-			virtual ~IServiceDomainListener(){};
-			virtual bool applicationInfoMounted(IAIT* ait)=0;
+			~IServiceDescriptor(){};
+			virtual string getServiceProviderNameChar()=0;
+			virtual string getServiceNameChar()=0;
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
 	};
 }
 }
@@ -46,5 +42,8 @@ namespace dataprocessing {
 }
 }
 }
+}
+}
 
-#endif /*ISTREAMEVENTLISTENER_H_*/
+
+#endif /* ISERVICEDESCRIPTOR_H_ */

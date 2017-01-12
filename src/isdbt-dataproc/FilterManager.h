@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FILTERMANAGER_H_
 #define FILTERMANAGER_H_
 
-#include "tsparser/ITransportSection.h"
+#include "isdbt-tsparser/ITransportSection.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "SectionFilter.h"

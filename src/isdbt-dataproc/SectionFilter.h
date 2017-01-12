@@ -30,10 +30,10 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "tsparser/IDemuxer.h"
-#include "tsparser/ITSPacket.h"
-#include "tsparser/ITransportSection.h"
-#include "tsparser/IFilterListener.h"
+#include "isdbt-tsparser/IDemuxer.h"
+#include "isdbt-tsparser/ITSPacket.h"
+#include "isdbt-tsparser/ITransportSection.h"
+#include "isdbt-tsparser/IFilterListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <string>

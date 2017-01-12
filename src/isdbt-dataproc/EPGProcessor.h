@@ -31,9 +31,9 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "tsparser/IServiceInfo.h"
-#include "tsparser/IEventInfo.h"
-#include "tsparser/ITOT.h"
+#include "isdbt-tsparser/IServiceInfo.h"
+#include "isdbt-tsparser/IEventInfo.h"
+#include "isdbt-tsparser/ITOT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 #include "IDataProcessor.h"
