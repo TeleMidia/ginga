@@ -25,10 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#if HAVE_IC
 #include "ic/IInteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
-#endif
 
 #include <sys/stat.h>
 #include <map>
@@ -39,23 +37,15 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace prefetch {
-#if HAVE_IC
 	class PrefetchManager : public IPrefetchManager,
 			public IInteractiveChannelListener {
-#else
-	class PrefetchManager : public IPrefetchManager {
-#endif
 
 		private:
 			map<string, string>* localToRemoteUris;
 			map<string, string>* urisToLocalRoots;
 			set<string>* scheduledRemoteUris;
 			set<string>* scheduledLocalUris;
-#if HAVE_IC
 			IInteractiveChannelManager* icm;
-#else
-			void* icm;
-#endif
 			string prefetchRoot;
 			bool synch;
 

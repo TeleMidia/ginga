@@ -19,9 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "PrefetchManager.h"
 
-#if HAVE_IC
 #include "ic/InteractiveChannelManager.h"
-#endif //HAVE_IC
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -37,12 +35,7 @@ namespace ncl {
 namespace prefetch {
 	PrefetchManager::PrefetchManager() {
 		string iurid = SystemCompat::getIUriD();
-		icm          = NULL;
-
-#if HAVE_IC
 		icm = InteractiveChannelManager::getInstance();
-#endif //HAVE_IC
-
 		scheduledRemoteUris = NULL;
 		scheduledLocalUris  = NULL;
 		localToRemoteUris   = new map<string, string>;
@@ -124,9 +117,7 @@ namespace prefetch {
 		}
 
 		if (icm != NULL) {
-#if HAVE_IC
 			icm->clearInteractiveChannelManager();
-#endif //HAVE_IC
 		}
 	}
 
@@ -257,12 +248,9 @@ namespace prefetch {
 	}
 
 	bool PrefetchManager::hasIChannel() {
-#if HAVE_IC
-		if (icm != NULL) {
-			return icm->hasInteractiveChannel();
-		}
-#endif
-		return false;
+		if (icm != NULL)
+                  return false;
+                return icm->hasInteractiveChannel();
 	}
 
 	bool PrefetchManager::hasRemoteLocation(string docUri) {
@@ -292,7 +280,6 @@ namespace prefetch {
 
 	void PrefetchManager::getContent(string remoteUri, string localUri) {
 		if (icm != NULL) {
-#if HAVE_IC
 			IInteractiveChannel* ic = icm->createInteractiveChannel(
 					remoteUri);
 
@@ -301,7 +288,6 @@ namespace prefetch {
 			ic->performUrl();
 
 			icm->releaseInteractiveChannel(ic);
-#endif
 		}
 	}
 

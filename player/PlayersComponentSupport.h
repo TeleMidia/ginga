@@ -25,9 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #endif
 
-#if HAVE_IC
 #include "ic/InteractiveChannelManager.h"
-#endif
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
