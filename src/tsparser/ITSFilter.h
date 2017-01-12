@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITSFILTER_H_
 #define ITSFILTER_H_
 
-#include "tuner/IFrontendFilter.h"
+#include "isdbt-tuner/IFrontendFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "ITSPacket.h"

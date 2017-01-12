@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 
 #if HAVE_ISDBT
-#include "tuner/Tuner.h"
+#include "isdbt-tuner/Tuner.h"
 #include "tsparser/Demuxer.h"
 #include "tsparser/PipeFilter.h"
 #include "isdbt-dataproc/DataProcessor.h"
@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/ProgramAV.h"
 
 #if HAVE_ISDBT
-#include "tuner/ITuner.h"
+#include "isdbt-tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "tsparser/IDemuxer.h"

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PSIFilter_H_
 #define PSIFilter_H_
 
-#include "tuner/IFrontendFilter.h"
+#include "isdbt-tuner/IFrontendFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "IDemuxer.h"

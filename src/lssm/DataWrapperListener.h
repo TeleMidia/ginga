@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "tuner/ITuner.h"
+#include "isdbt-tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "tsparser/IEventInfo.h"

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/ITimeBaseProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::system::time;
 
-#include "tuner/ISTCProvider.h"
+#include "isdbt-tuner/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;
 
 #include "tsparser/IDemuxer.h"

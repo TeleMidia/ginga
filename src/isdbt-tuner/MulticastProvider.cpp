@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "tuner/MulticastProvider.h"
-#include "tuner/ITuner.h"
+#include "isdbt-tuner/MulticastProvider.h"
+#include "isdbt-tuner/ITuner.h"
 
 namespace br {
 namespace pucrio {

@@ -337,17 +337,17 @@ src+= tsparser/TSAdaptationField.cpp
 src+= tsparser/TSPacket.cpp
 src+= tsparser/TransportProtocolDescriptor.cpp
 src+= tsparser/TransportSection.cpp
-src+= tuner/Channel.cpp
-src+= tuner/FileSystemProvider.cpp
-src+= tuner/MulticastProvider.cpp
-src+= tuner/NetworkInterface.cpp
-src+= tuner/NetworkProvider.cpp
-src+= tuner/Tuner.cpp
-src+= tuner/UnicastProvider.cpp
+src+= isdbt-tuner/Channel.cpp
+src+= isdbt-tuner/FileSystemProvider.cpp
+src+= isdbt-tuner/MulticastProvider.cpp
+src+= isdbt-tuner/NetworkInterface.cpp
+src+= isdbt-tuner/NetworkProvider.cpp
+src+= isdbt-tuner/Tuner.cpp
+src+= isdbt-tuner/UnicastProvider.cpp
 if BUILD_LINUXDVB
-src+= tuner/ISDBTFrontend.cpp
-src+= tuner/ISDBTProvider.cpp
-src+= tuner/RingBuffer.c
+src+= isdbt-tuner/ISDBTFrontend.cpp
+src+= isdbt-tuner/ISDBTProvider.cpp
+src+= isdbt-tuner/RingBuffer.c
 endif # BUILD_LINUXDVB
 endif # BUILD_ISDBT
 
