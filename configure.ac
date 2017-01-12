@@ -385,7 +385,7 @@ AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
-ginga/Makefile
+src/Makefile
 ctxmgmt/Makefile
 dataprocessing/Makefile
 mb/Makefile
@@ -425,6 +425,5 @@ AC_MSG_NOTICE([summary of main build options:
   build librsvg:          ${enable_librsvg}
   build libbpg:           ${enable_libbpg}
 
-  install headers:        ${enable_headers}
   trace nclua calls:      ${enable_nclua_trace}
 ])

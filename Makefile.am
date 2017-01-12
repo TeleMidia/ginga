@@ -22,7 +22,7 @@ SUBDIRS+= nclconv
 SUBDIRS+= system
 SUBDIRS+= gingancl
 SUBDIRS+= lssm
-SUBDIRS+= ginga
+SUBDIRS+= src
 
 if BUILD_TESTS
 SUBDIRS+= mb/tests
