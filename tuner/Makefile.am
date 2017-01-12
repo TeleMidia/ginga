@@ -1,6 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-AM_CPPFLAGS=\
+AM_CPPFLAGS+=\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   -DGINGA_TUNER_PATH='"$(gingaconfdir)/tuner/tuner.ini"'\
   $(NULL)

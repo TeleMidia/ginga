@@ -4,9 +4,7 @@ ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 
 SUBDIRS=
 SUBDIRS+= data
-SUBDIRS+= ic
 SUBDIRS+= mb
-SUBDIRS+= ctxmgmt
 if BUILD_MULTIDEVICE
 SUBDIRS+= multidevice
 endif
@@ -16,7 +14,6 @@ SUBDIRS+= tsparser
 SUBDIRS+= dataprocessing
 endif
 SUBDIRS+= player
-SUBDIRS+= ncl
 SUBDIRS+= nclconv
 SUBDIRS+= system
 SUBDIRS+= gingancl

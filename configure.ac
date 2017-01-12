@@ -386,7 +386,6 @@ AC_CONFIG_FILES([
 Makefile
 data/Makefile
 src/Makefile
-ctxmgmt/Makefile
 dataprocessing/Makefile
 mb/Makefile
 multidevice/Makefile
@@ -396,9 +395,7 @@ tsparser/Makefile
 tuner/Makefile
 lssm/Makefile
 gingancl/Makefile
-ic/Makefile
 nclconv/Makefile
-ncl/Makefile
 ])
 
 AC_CONFIG_FILES([
@@ -415,7 +412,7 @@ AC_MSG_NOTICE([summary of main build options:
   compiler:           CC: \"${CC}\"  CFLAGS: \"${CFLAGS}\"  CPPFLAGS: \"${CPPFLAGS}\"  LDFLAGS: \"${LDFLAGS}\"
   library types:      shared=${enable_shared}, static=${enable_static}
 
-  build data-processing:  ${enable_isdbt}
+  build isdbt:  ${enable_isdbt}
   build multi-device:     ${enable_multidevice}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}

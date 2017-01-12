@@ -1,9 +1,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 gingancl_la_LIBADD=\
-  ../ctxmgmt/ctxmgmt.la\
-  ../ic/ic.la\
-  ../ncl/ncl.la\
   ../system/system.la\
   ../tsparser/tsparser.la\
   ../tuner/tuner.la\
