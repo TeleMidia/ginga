@@ -2,27 +2,9 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 
-SUBDIRS=
-SUBDIRS+= data
-SUBDIRS+= mb
-if BUILD_MULTIDEVICE
-SUBDIRS+= multidevice
-endif
-if BUILD_ISDBT
-SUBDIRS+= tuner
-SUBDIRS+= tsparser
-SUBDIRS+= dataprocessing
-endif
-SUBDIRS+= player
-SUBDIRS+= nclconv
-SUBDIRS+= system
-SUBDIRS+= gingancl
-SUBDIRS+= lssm
-SUBDIRS+= src
-
+SUBDIRS= data src
 if BUILD_TESTS
-SUBDIRS+= mb/tests
-SUBDIRS+= player/tests
+SUBDIRS+= tests
 endif
 
 MAINTAINERCLEANFILES+=\
