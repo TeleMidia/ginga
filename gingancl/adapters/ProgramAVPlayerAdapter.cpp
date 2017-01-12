@@ -146,8 +146,3 @@ namespace tv {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createPAVAdapter() {
-	return ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv::
-			ProgramAVPlayerAdapter::getInstance();
-}

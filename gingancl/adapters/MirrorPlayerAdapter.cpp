@@ -80,7 +80,3 @@ namespace mirror {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createMirAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::mirror::MirrorPlayerAdapter();
-}

@@ -681,30 +681,3 @@ namespace player {
 }
 }
 }
-
-using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-static pthread_mutex_t avpm;
-static bool avpmInit = false;
-
-extern "C" IPlayer* createAVPlayer(
-		GingaScreenID screenId, const char* mrl) {
-
-	AVPlayer* player;
-	if (!avpmInit) {
-		avpmInit = true;
-		Thread::mutexInit(&avpm, NULL);
-	}
-
-	Thread::mutexLock(&avpm);
-	player = new AVPlayer(screenId, mrl);
-	Thread::mutexUnlock(&avpm);
-
-	return player;
-}
-
-extern "C" void destroyAVPlayer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
-
-	delete p;
-}

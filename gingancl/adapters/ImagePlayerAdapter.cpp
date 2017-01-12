@@ -55,7 +55,3 @@ namespace image {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createImgAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::image::ImagePlayerAdapter();
-}

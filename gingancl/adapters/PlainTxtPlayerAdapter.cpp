@@ -84,7 +84,3 @@ namespace text {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createPlTAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::PlainTxtPlayerAdapter();
-}

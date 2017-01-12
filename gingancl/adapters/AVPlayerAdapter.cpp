@@ -62,7 +62,3 @@ namespace av {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createAaVAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::av::AVPlayerAdapter();
-}

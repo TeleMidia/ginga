@@ -430,13 +430,3 @@ namespace tuning {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tuning::ITuner* createTuner(GingaScreenID screenId) {
-	return new ::br::pucrio::telemidia::ginga::core::tuning::Tuner(screenId);
-}
-
-extern "C" void destroyTuner(
-		::br::pucrio::telemidia::ginga::core::tuning::ITuner* t) {
-
-	delete t;
-}

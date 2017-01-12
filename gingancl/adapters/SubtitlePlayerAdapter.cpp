@@ -78,7 +78,3 @@ namespace text {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createSubAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::text::SubtitlePlayerAdapter();
-}

@@ -115,7 +115,3 @@ namespace lua {
 }
 }
 }
-
-extern "C" IPlayerAdapter* createLuaAdapter() {
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua::LuaPlayerAdapter();
-}

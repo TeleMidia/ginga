@@ -187,29 +187,3 @@ namespace multidevice {
 }
 }
 }
-
-extern "C" IRemoteDeviceManager* createRemoteDeviceManager(int devClass, bool useMulticast, int srvPort) {
-	IDeviceDomain* domain = NULL;
-
-	RemoteDeviceManager* rdm = RemoteDeviceManager::getInstance();
-
-	if (devClass == IDeviceDomain::CT_BASE) {
-		domain = new BaseDeviceDomain(useMulticast, srvPort);
-
-	} else if (devClass == IDeviceDomain::CT_PASSIVE) {
-		domain = new PassiveDeviceDomain(useMulticast, srvPort);
-
-	} else if (devClass == IDeviceDomain::CT_ACTIVE) {
-		domain = new ActiveDeviceDomain(useMulticast, srvPort);
-	}
-
-	rdm->setDeviceDomain(domain);
-	return rdm;
-}
-
-extern "C" void destroyRemoteDeviceManager(
-		::br::pucrio::telemidia::ginga::core::multidevice::
-				IRemoteDeviceManager* rdm) {
-
-	rdm->release();
-}
