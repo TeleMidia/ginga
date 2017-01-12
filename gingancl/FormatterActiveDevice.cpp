@@ -109,7 +109,7 @@ namespace multidevice {
 			dm->lowerWindowToBottom (myScreen, serialized);
 
 			dm->deleteSurface(s);
-			s = NULL;
+			s = 0;
 
 		} else {
 			clog << "FormatterActiveDevice::constructor Warning! File not found: ";
@@ -680,7 +680,7 @@ namespace multidevice {
 					dm->lowerWindowToBottom (myScreen, serialized);
 
 					dm->deleteSurface(s);
-					s = NULL;
+					s = 0;
 				}
 				break;
 			}
