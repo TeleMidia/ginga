@@ -15,18 +15,15 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include <stdint.h>
-
-#include "SDLBpgDecoder.h"
 #include "config.h"
+#include "SDLBpgDecoder.h"
 
 extern "C"{
+#include <stdint.h>
 #include <libbpg.h>
 }
 
-
 using namespace std;
-
 
 namespace br {
 namespace pucrio {

@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "SDLConvert.h"
 #include "config.h"
+#include "SDLConvert.h"
 
 #if _WIN32
 # include "atlimage.h"

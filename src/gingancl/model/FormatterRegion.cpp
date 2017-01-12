@@ -15,6 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "config.h"
+
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -26,8 +28,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-#include "config.h"
 
 #include "mb/LocalScreenManager.h"
 

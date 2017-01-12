@@ -15,13 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#include "config.h"
 #include "isdbt-dataproc/SectionFilter.h"
 
 #ifndef abs
-#define abs(a) ((a) < 0 ? (-a) : (a))
+# define abs(a) ((a) < 0 ? (-a) : (a))
 #endif
-
-#include "config.h"
 
 #include "isdbt-tsparser/TransportSection.h"
 

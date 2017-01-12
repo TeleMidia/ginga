@@ -15,15 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* Part of this file was extracted from the SDL_ffmpeg library and ffplay.  */
+/* Extracted from the SDL_ffmpeg library and ffplay.  */
 
+#include "config.h"
 #include "SDL2ffmpeg.h"
 
 #ifndef AV_LOG_SKIP_REPEATED
 #define AV_LOG_SKIP_REPEATED 1
 #endif
-
-#include "config.h"
 
 using namespace std;
 
