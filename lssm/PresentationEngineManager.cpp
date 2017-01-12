@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#if HAVE_TUNER
+#if HAVE_ISDBT
 #include "tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #endif
@@ -35,7 +35,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "mb/IInputManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_DSMCC && HAVE_TSPARSER && HAVE_TUNER
+#if HAVE_ISDBT
 #include "dataprocessing/ncl/EventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
@@ -57,7 +57,7 @@ struct inputEventNotification {
 	PresentationEngineManager* p;
 	int code;
 	string parameter;
-#if HAVE_TUNER
+#if HAVE_ISDBT
 	ITuner* tuner;
 #endif
 	vector<string>* cmds;
@@ -285,7 +285,7 @@ namespace lssm {
 		string docIor, docUri, arg, uri, ior, uName;
 		glf = GingaLocatorFactory::getInstance();
 
-#if HAVE_DSMCC
+#if HAVE_ISDBT
 		args   = split(commandPayload, ",");
 		i      = args->begin();
 		baseId = EventDescriptor::extractMarks(*i);
@@ -395,7 +395,7 @@ namespace lssm {
 			}
 		}
 
-#endif //HAVE_DSMCC
+#endif //HAVE_ISDBT
 
 		return false;
 	}
@@ -404,7 +404,7 @@ namespace lssm {
 		string commandTag     = "";
 		string commandPayload = "";
 
-#if HAVE_DSMCC
+#if HAVE_ISDBT
 		commandTag     = EventDescriptor::getCommandTag(editingCmd);
 		commandPayload = EventDescriptor::getPrivateDataPayload(editingCmd);
 #endif
@@ -467,7 +467,7 @@ namespace lssm {
 		keys->insert(CodeMap::KEY_F12);
 		keys->insert(CodeMap::KEY_PAUSE);
 
-#if HAVE_TUNER
+#if HAVE_ISDBT
 		this->tuner = NULL;
 		keys->insert(CodeMap::KEY_PAGE_UP);
 		keys->insert(CodeMap::KEY_PAGE_DOWN);
@@ -503,7 +503,7 @@ namespace lssm {
 
 	void PresentationEngineManager::setIsLocalNcl(bool isLocal, void* tuner) {
 		if (this->tuner != NULL && this->tuner != tuner) {
-#if HAVE_TUNER
+#if HAVE_ISDBT
 			delete (ITuner*)(this->tuner);
 #endif
 		}
@@ -1159,7 +1159,7 @@ namespace lssm {
 			p->sb->pause();
 			p->pausePressed();
 
-#if HAVE_TUNER
+#if HAVE_ISDBT
 		} else if (code == CodeMap::KEY_CHANNEL_UP ||
 				code == CodeMap::KEY_PAGE_UP) {
 
@@ -1214,7 +1214,7 @@ namespace lssm {
 
 			cmdParams = cmdParams.substr(0, cmdParams.find_last_of(")"));
 
-#if HAVE_TUNER
+#if HAVE_ISDBT
 			clog << "PresentationEngineManager::readCommand checking tuner ...";
 			clog << endl;
 

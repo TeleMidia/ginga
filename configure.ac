@@ -73,22 +73,16 @@ m4_define([_AC_DEFINE_DEPRECATED],
  [AC_DEFINE([$1], [$2], [Deprecated macro.])])
 
 # Enable data-processing.
-_AC_ARG_ENABLE([data-processing], [build data-processing support], [no])
-if test "$enable_data_processing" = yes; then
-  AC_DEFINE([HAVE_DATA_PROCESSING], [1],
-   [Define to 1 if data-processing is enabled.])
-  _AC_DEFINE_DEPRECATED([HAVE_TUNER], [1])
-  _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [1])
-  _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [1])
+_AC_ARG_ENABLE([isdbt], [build isdbt support], [no])
+if test "$enable_isdbt" = yes; then
+  AC_DEFINE([HAVE_ISDBT], [1],
+   [Define to 1 if isdbt support is enabled.])
 else
-  AC_DEFINE([HAVE_DATA_PROCESSING], [0],
-   [Define to 1 if data-processing is enabled.])
-  _AC_DEFINE_DEPRECATED([HAVE_TUNER], [0])
-  _AC_DEFINE_DEPRECATED([HAVE_TSPARSER], [0])
-  _AC_DEFINE_DEPRECATED([HAVE_DSMCC], [0])
+  AC_DEFINE([HAVE_ISDBT], [0],
+   [Define to 1 if isdbt support is enabled.])
 fi
-AM_CONDITIONAL([BUILD_DATA_PROCESSING],
- [test "$enable_data_processing" = yes])
+AM_CONDITIONAL([BUILD_ISDBT],
+ [test "$enable_isdbt" = yes])
 
 # Enable multi-device.
 _AC_ARG_ENABLE([multidevice], [build multi-device support], [no])
@@ -422,7 +416,7 @@ AC_MSG_NOTICE([summary of main build options:
   compiler:           CC: \"${CC}\"  CFLAGS: \"${CFLAGS}\"  CPPFLAGS: \"${CPPFLAGS}\"  LDFLAGS: \"${LDFLAGS}\"
   library types:      shared=${enable_shared}, static=${enable_static}
 
-  build data-processing:  ${enable_data_processing}
+  build data-processing:  ${enable_isdbt}
   build multi-device:     ${enable_multidevice}
   build tests:            ${enable_tests}
   build linuxdvb:         ${enable_linuxdvb}

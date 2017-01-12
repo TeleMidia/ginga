@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "lssm/CommonCoreManager.h"
 #include "config.h"
 
-#if HAVE_DSMCC
+#if HAVE_ISDBT
 #include "tuner/Tuner.h"
 #include "tsparser/Demuxer.h"
 #include "tsparser/PipeFilter.h"
@@ -28,24 +28,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/AVPlayer.h"
 #include "player/ProgramAV.h"
 
-#if HAVE_TUNER
+#if HAVE_ISDBT
 #include "tuner/ITuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
-#endif
 
-#if HAVE_TSPARSER
 #include "tsparser/IDemuxer.h"
 #include "tsparser/ITSFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
-#endif
 
-#if HAVE_DSMCC
 #include "dataprocessing/IDataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
 #include "dataprocessing/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
-#endif
+
+#include "lssm/DataWrapperListener.h"
+#endif // HAVE_ISDBT
 
 #include "mb/ILocalScreenManager.h"
 #include "mb/IWindow.h"
@@ -54,10 +52,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "player/IPlayer.h"
 #include "player/IProgramAV.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
-#include "lssm/DataWrapperListener.h"
-#endif
 
 #include "lssm/StcWrapper.h"
 
@@ -101,7 +95,7 @@ namespace lssm {
 		this->myScreen = screenId;
 		this->pem = pem;
 
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#if HAVE_ISDBT
 		tuner = new Tuner(myScreen);
 
 		pem->setIsLocalNcl(false, tuner);
@@ -132,7 +126,7 @@ namespace lssm {
 
 		((ITuner*)tuner)->setLoopListener((IDataProcessor*)dataProcessor);
 
-#endif //HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#endif // HAVE_ISDBT
 	}
 
 	void CommonCoreManager::initializeInstance(std::string& data, short scenario) {
@@ -156,7 +150,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::removeOCFilterAfterMount(bool removeIt) {
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#if HAVE_ISDBT
 		if (dataProcessor != NULL) {
 			((IDataProcessor*)dataProcessor)->removeOCFilterAfterMount(removeIt);
 		}
@@ -164,7 +158,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::setTunerSpec(string tunerSpec) {
-#if HAVE_TUNER
+#if HAVE_ISDBT
 		string ni, ch;
 		size_t pos;
 
@@ -240,7 +234,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::tune() {
-#if HAVE_TUNER
+#if HAVE_ISDBT
 		clog << "lssm-ccm::cpi tunning..." << endl;
 		((ITuner*)tuner)->tune();
 #endif
@@ -250,7 +244,7 @@ namespace lssm {
 		//int aPid = -1, vPid = -1;
 		int cpid;
 
-#if HAVE_TUNER && HAVE_TSPARSER && HAVE_DSMCC
+#if HAVE_ISDBT
 
 		ITSFilter* mavFilter  = NULL;
 		IPlayer* ipav         = NULL;

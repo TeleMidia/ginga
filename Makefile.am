@@ -11,7 +11,7 @@ SUBDIRS+= ctxmgmt
 if BUILD_MULTIDEVICE
 SUBDIRS+= multidevice
 endif
-if BUILD_DATA_PROCESSING
+if BUILD_ISDBT
 SUBDIRS+= tuner
 SUBDIRS+= tsparser
 SUBDIRS+= dataprocessing
