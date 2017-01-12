@@ -36,7 +36,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_ISDBT
-#include "dataprocessing/ncl/EventDescriptor.h"
+#include "isdbt-dataproc/ncl/EventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
 #include "lssm/DataWrapperListener.h"
