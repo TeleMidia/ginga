@@ -23,6 +23,9 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "player/PlayersComponentSupport.h"
 
+#include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
+
 #include <iostream>
 
 namespace br {
@@ -31,7 +34,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	IScreenManager* Player::dm = NULL;
+	LocalScreenManager* Player::dm = NULL;
 
 	Player::Player(GingaScreenID screenId, string mrl) {
 		Thread::mutexInit(&listM, NULL);

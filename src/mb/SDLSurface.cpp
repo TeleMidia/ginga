@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include <stdlib.h>
 #include "SDLSurface.h"
-#include "Matrix.h"
 #include "SDLWindow.h"
 #include "SDLDeviceScreen.h"
 #include "IFontProvider.h"
 #include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 
 namespace br {
 namespace pucrio {
@@ -30,44 +30,43 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	GingaSurfaceID SDLSurface::refIdCounter = 1;
 
-	SDLSurface::SDLSurface(GingaScreenID screenId) {
-		initialize(screenId, refIdCounter++);
-	}
+  GingaSurfaceID SDLSurface::refIdCounter = 1;
 
-	SDLSurface::SDLSurface(GingaScreenID screenId, void* underlyingSurface) {
-		initialize(screenId, refIdCounter++);
+  SDLSurface::SDLSurface (GingaScreenID screenId)
+  {
+    initialize (screenId, refIdCounter++);
+  }
 
-		this->sur = (SDL_Surface*)underlyingSurface;
-	}
+  SDLSurface::SDLSurface(GingaScreenID screenId, void* underlyingSurface)
+  {
+    initialize(screenId, refIdCounter++);
+    this->sur = (SDL_Surface*) underlyingSurface;
+  }
 
-	SDLSurface::~SDLSurface() {
-		isDeleting = true;
-		Thread::mutexLock(&sMutex);
-		Thread::mutexLock(&pMutex);
+  SDLSurface::~SDLSurface()
+  {
+    isDeleting = true;
+    Thread::mutexLock(&sMutex);
+    Thread::mutexLock(&pMutex);
 
-		if (!ScreenManagerFactory::getInstance()->releaseSurface(
-				myScreen, this)) {
+    SDLWindow *w = (SDLWindow *) parent;
+    ScreenManagerFactory::getInstance()->releaseSurface (myScreen, this);
 
-			clog << "SDLSurface::~SDLSurface Warning! Can't find ISur" << endl;
-		}
+    releaseChromaColor ();
+    releaseBorderColor ();
+    releaseBgColor ();
+    releaseSurfaceColor ();
+    releaseFont ();
 
-		releaseChromaColor();
-		releaseBorderColor();
-		releaseBgColor();
-		releaseSurfaceColor();
+    if (w != NULL &&
+        ScreenManagerFactory::getInstance()->hasWindow(
+                                                       myScreen, w->getId())) {
 
-		releaseFont();
-
-		if (parent != NULL &&
-				ScreenManagerFactory::getInstance()->hasWindow(
-								myScreen, parent->getId())) {
-
-			if (parent->getContent() == sur) {
-				((SDLWindow*)parent)->setRenderedSurface(NULL);
-			}
-		}
+      if (w->getContent() == sur) {
+        w->setRenderedSurface(NULL);
+      }
+    }
 
 		if (sur != NULL) {
 			SDLDeviceScreen::createReleaseContainer(sur, NULL, NULL);
@@ -114,9 +113,10 @@ namespace mb {
 
 	void SDLSurface::checkPendingSurface() {
 		Thread::mutexLock(&pMutex);
+                SDLWindow *w = (SDLWindow *) parent;
 		if (pending != NULL) {
-			if (parent != NULL && parent->getContent() == sur) {
-				((SDLWindow*)parent)->setRenderedSurface(pending);
+			if (parent != NULL && w->getContent() == sur) {
+				w->setRenderedSurface(pending);
 			}
 
 			Thread::mutexLock(&sMutex);
@@ -281,13 +281,14 @@ namespace mb {
 
 	void SDLSurface::setSurfaceContent(void* surface) {
 		Thread::mutexLock(&sMutex);
+                SDLWindow *w = (SDLWindow *) parent;
 		if (sur != NULL && surface == sur) {
 			Thread::mutexUnlock(&sMutex);
 			return;
 		}
 
 		if (parent != NULL) {
-			if (parent->getContent() == sur && sur != NULL) {
+			if (w->getContent() == sur && sur != NULL) {
 				((SDLWindow*)parent)->setRenderedSurface((SDL_Surface*)surface);
 			}
 		}
@@ -301,21 +302,23 @@ namespace mb {
 
 	bool SDLSurface::setParentWindow(void* parentWindow) {
 		Thread::mutexLock(&sMutex);
-		if (parent != NULL) {
-			parent->setChildSurface(NULL);
+                SDLWindow *w = (SDLWindow*) parent;
+		if (w != NULL) {
+			w->setChildSurface(NULL);
 		}
 
-		this->parent = (IWindow*)parentWindow;
+		this->parent = parentWindow;
+                w = (SDLWindow *) this->parent;
 
 		if (parent != NULL) {
 			if (chromaColor != NULL) {
-				parent->setColorKey(
+				w->setColorKey(
 						chromaColor->getR(),
 						chromaColor->getG(),
 						chromaColor->getB());
 			}
 
-			parent->setChildSurface(this);
+			w->setChildSurface(this);
 		}
 
 		Thread::mutexUnlock(&sMutex);
@@ -460,6 +463,7 @@ namespace mb {
 
 	void SDLSurface::setChromaColor(int r, int g, int b, int alpha) {
 		releaseChromaColor();
+                SDLWindow *w = (SDLWindow *) parent;
 
 		this->chromaColor = new Color(r, g, b, alpha);
 
@@ -480,7 +484,7 @@ namespace mb {
 		}
 
 		if (parent != NULL) {
-			parent->setColorKey(r, g, b);
+			w->setColorKey(r, g, b);
 		}
 
 		Thread::mutexUnlock(&sMutex);
@@ -550,59 +554,53 @@ namespace mb {
 			return;
 		}
 
-		/*Scale the matrix*/
-		matrix_t matrix;
-		Matrix::initTranslate(&matrix, width/2, height/2);				
-		Matrix::scale(&matrix, x, y);
-
-		Matrix::setMatrix(&matrix, this);
-
 		Thread::mutexUnlock(&sMutex);
 	}
 
 	void SDLSurface::initContentSurface() {
-		if (sur == NULL && parent != NULL) {
-			sur = (SDL_Surface*)(parent->getContent());
-			if (sur == NULL) {
-				sur = createSurface();
-				((SDLWindow*)parent)->setRenderedSurface(sur);
-			}
-		}
+          if (sur == NULL || parent == NULL)
+            return;
+          SDLWindow *w = (SDLWindow *) parent;
+          sur = (SDL_Surface*)(w->getContent());
+          if (sur == NULL)
+            return;
+          sur = createSurface ();
+          w->setRenderedSurface(sur);
 	}
 
 	SDL_Surface* SDLSurface::createSurface() {
-		SDL_Surface* sdlSurface = NULL;
-		int w;
-		int h;
+          SDLWindow *win = (SDLWindow *) parent;
+          SDL_Surface* sdlSurface = NULL;
+          int w, h;
 
-		if (parent != NULL &&
-				ScreenManagerFactory::getInstance()->hasWindow(
-						myScreen, parent->getId())) {
+          if (win == NULL)
+            return NULL;
 
-			w = parent->getW();
-			h = parent->getH();
+          if (ScreenManagerFactory::getInstance ()
+              ->hasWindow(myScreen, win->getId ())) {
+            w = win->getW();
+            h = win->getH();
+          }
+          else if (sur != NULL) {
+            w = sur->w;
+            h = sur->h;
+          }
+          else {
+            return NULL;
+          }
 
-		} else if (sur != NULL) {
-			w = sur->w;
-			h = sur->h;
+          sdlSurface = SDLDeviceScreen::createUnderlyingSurface (w, h);
+          if (sdlSurface == NULL)
+            return NULL;
 
-		} else {
-			return NULL;
-		}
+          if (bgColor == NULL && caps != 0)
+            SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels));
 
-		sdlSurface = SDLDeviceScreen::createUnderlyingSurface(w, h);
-		if (sdlSurface != NULL && bgColor == NULL && caps != 0) {
-			if (SDL_SetColorKey(sdlSurface, 1, *((Uint8*)sdlSurface->pixels)) < 0) {
-				clog << "SDLSurface::createSurface SDL error: '";
-				clog << SDL_GetError() << "'" << endl;
-			}
-		}
-
-		return sdlSurface;
+          return sdlSurface;
 	}
 
 	void SDLSurface::blit(
-			int x, int y, ISurface* src,
+			int x, int y, SDLSurface* src,
 			int srcX, int srcY, int srcW, int srcH) {
 
 		SDL_Rect srcRect;
@@ -665,7 +663,7 @@ namespace mb {
 		} else {
 			clog << "SDLSurface::blit(" << this << ") Warning! ";
 			clog << "Can't blit: ";
-			clog << "underlying surface is NULL. Destination ISurface ";
+			clog << "underlying surface is NULL. Destination SDLSurface ";
 			clog << "address would be '" << src << "'" << endl;
 		}
 
@@ -713,8 +711,8 @@ namespace mb {
 			*h = sur->h;
 
 		} else if (parent != NULL) {
-      *w = parent->getW();
-			*h = parent->getH();
+      *w = ((SDLWindow *) parent)->getW();
+			*h = ((SDLWindow *) parent)->getH();
 
 		} else {
       *w = *h = 0;
@@ -752,12 +750,6 @@ namespace mb {
 		}
 		Thread::mutexUnlock(&sMutex);
 		return uri;
-	}
-
-	void SDLSurface::setMatrix(void* matrix) {
-		/*if (sur != NULL) {
-			sur->SetMatrix(sur, (const int*)matrix);
-		}*/
 	}
 
 	GingaSurfaceID SDLSurface::getId() const

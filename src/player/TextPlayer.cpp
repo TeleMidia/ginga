@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "util/Color.h"
 #include "mb/IFontProvider.h"
-#include "mb/ISurface.h"
+#include "mb/SDLSurface.h"
 
 #include "player/TextPlayer.h"
 

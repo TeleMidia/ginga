@@ -18,10 +18,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LocalScreenManager_H_
 #define LocalScreenManager_H_
 
-#include "IDeviceScreen.h"
-#include "ILocalScreenManager.h"
-#include "ScreenManagerFactory.h"
-#include "IInputManager.h"
+#include "SDLDeviceScreen.h"
+#include "InputManager.h"
+
+#include "IMBDefs.h"
+
+#include "SDLWindow.h"
+#include "SDLSurface.h"
+
+#include "IContinuousMediaProvider.h"
+#include "IFontProvider.h"
+#include "IImageProvider.h"
+
+#include "InputManager.h"
+#include "SDLInputEvent.h"
+#include "SDLEventBuffer.h"
+
+#include <vector>
+#include <string>
+using namespace std;
 
 #include <pthread.h>
 
@@ -39,7 +54,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class LocalScreenManager : public IScreenManager {
+	class LocalScreenManager {
 		public:
 			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
 										     /* System Description  String   */
@@ -61,12 +76,12 @@ namespace mb {
 			LocalScreenManager();
 
 		protected:
-			map<GingaScreenID, IDeviceScreen*> screens;
+			map<GingaScreenID, SDLDeviceScreen*> screens;
 
 			pthread_mutex_t mapMutex;
 			pthread_mutex_t genMutex;
 
-			map<GingaSurfaceID, ISurface*> surMap;
+			map<GingaSurfaceID, SDLSurface*> surMap;
 			pthread_mutex_t surMapMutex;
 
 			map<GingaProviderID, IMediaProvider*> provMap;
@@ -91,11 +106,12 @@ namespace mb {
 			pthread_mutex_t wsMutex;
 			GingaScreenID waitingRefreshScreen;
 
-			virtual ~LocalScreenManager();
-
 			static void checkInitMutex();
 
 		public:
+			virtual ~LocalScreenManager();
+
+
 			void releaseHandler();
 
 			static void addIEListenerInstance(
@@ -158,9 +174,9 @@ namespace mb {
 
 		public:
 			IMediaProvider* getIMediaProviderFromId (const GingaProviderID& provId);
-			ISurface* getISurfaceFromId(const GingaSurfaceID &surfaceId);
+			SDLSurface* getISurfaceFromId(const GingaSurfaceID &surfaceId);
 
-			IWindow* getIWindowFromId(
+			SDLWindow* getIWindowFromId(
 					GingaScreenID screenId, GingaWindowID winId);
 
 			bool mergeIds(
@@ -168,7 +184,7 @@ namespace mb {
 					GingaWindowID destId,
 					vector<GingaWindowID>* srcIds);
 
-			void blitScreen(GingaScreenID screenId, ISurface* destination);
+			void blitScreen(GingaScreenID screenId, SDLSurface* destination);
 			void blitScreen(GingaScreenID screenId, string fileUri);
 			void refreshScreen(GingaScreenID screenId);
 
@@ -188,9 +204,9 @@ namespace mb {
 
 			bool hasWindow(GingaScreenID screenId, GingaWindowID window);
 
-			void releaseWindow(GingaScreenID screenId, IWindow* window);
+			void releaseWindow(GingaScreenID screenId, SDLWindow* window);
 
-			void registerSurface (ISurface*);
+			void registerSurface (SDLSurface*);
 
 			GingaSurfaceID createSurface(GingaScreenID screenId);
 
@@ -201,7 +217,7 @@ namespace mb {
 
 			bool hasSurface(
 					const GingaScreenID &screenId, const GingaSurfaceID &surId);
-			bool releaseSurface(GingaScreenID screenId, ISurface* surface);
+			bool releaseSurface(GingaScreenID screenId, SDLSurface* surface);
 
 			void lowerWindowToBottom (
 					const GingaScreenID &screenId, const GingaWindowID &winId);
@@ -236,12 +252,12 @@ namespace mb {
 
 			/* interfacing input */
 		public:
-			IInputManager* getInputManager(GingaScreenID screenId);
-			IEventBuffer* createEventBuffer(GingaScreenID screenId);
-			IInputEvent* createInputEvent(
+			InputManager* getInputManager(GingaScreenID screenId);
+			SDLEventBuffer* createEventBuffer(GingaScreenID screenId);
+			SDLInputEvent* createInputEvent(
 					GingaScreenID screenId, void* event, const int symbol);
 
-			IInputEvent* createApplicationEvent(
+			SDLInputEvent* createApplicationEvent(
 					GingaScreenID screenId, int type, void* data);
 
 			int fromMBToGinga(GingaScreenID screenId, int keyCode);
@@ -439,12 +455,12 @@ namespace mb {
 			/* and finally some protected stuff */
 		protected:
 			void addScreen(
-					GingaScreenID screenId, IDeviceScreen* screen);
+					GingaScreenID screenId, SDLDeviceScreen* screen);
 
 			short getNumOfScreens();
 
 			bool getScreen(
-					GingaScreenID screenId, IDeviceScreen** screen);
+					GingaScreenID screenId, SDLDeviceScreen** screen);
 
 			bool removeScreen(GingaScreenID screenId);
 

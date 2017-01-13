@@ -56,7 +56,7 @@ namespace multidevice {
 				return false;
 			};
 
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 	};
 }
 }

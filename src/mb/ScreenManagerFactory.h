@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ScreenManagerFactory_H_
 #define ScreenManagerFactory_H_
 
-
 #include "LocalScreenManager.h"
 
 namespace br {
@@ -30,12 +29,11 @@ namespace mb {
 
 class ScreenManagerFactory {
 public:
-	static IScreenManager* getInstance(bool forceLocal = false);
+	static LocalScreenManager* getInstance(bool forceLocal = false);
 
 	static void releaseInstance ();
 
-private:
-	static IScreenManager* _instance;
+	static LocalScreenManager* _instance;
 };
 }
 }

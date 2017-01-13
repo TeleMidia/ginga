@@ -117,7 +117,6 @@ src+= lssm/StcWrapper.cpp
 src+= mb/CodeMap.cpp
 src+= mb/InputManager.cpp
 src+= mb/LocalScreenManager.cpp
-src+= mb/Matrix.cpp
 src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLAudioProvider.cpp
 src+= mb/SDLConvert.cpp

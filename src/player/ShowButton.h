@@ -26,11 +26,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "mb/ILocalScreenManager.h"
-#include "mb/IWindow.h"
+#include "mb/SDLWindow.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/LocalScreenManager.h"
 
 #include "IShowButton.h"
 #include "ImagePlayer.h"

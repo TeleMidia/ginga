@@ -22,9 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <pthread.h>
 
-#include "IWindow.h"
-#include "SDLWindow.h"
 #include "IFontProvider.h"
+
+#include "IMBDefs.h"
+
+#include "util/Color.h"
+using namespace ::br::pucrio::telemidia::util;
 
 #include <vector>
 using namespace std;
@@ -35,111 +38,123 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLSurface : public ISurface {
-		private:
-		  static GingaSurfaceID refIdCounter;
-			GingaSurfaceID myId;
-			GingaScreenID myScreen;
-			SDL_Surface* sur;
-			SDL_Surface* pending;
-			IWindow* parent;
-			bool hasExtHandler;
-			Color* chromaColor;
-			Color* borderColor;
-			Color* bgColor;
-			Color* surfaceColor;
-			IFontProvider* iFont;
-			int caps;
-			bool isDeleting;
 
-			vector<DrawData*> drawData;
-			pthread_mutex_t ddMutex;
+  typedef struct DrawData {
+    int coord1;
+    int coord2;
+    int coord3;
+    int coord4;
+    short dataType;
+    int r;
+    int g;
+    int b;
+    int a;
+  } DrawData;
 
-			pthread_mutex_t sMutex;
-			pthread_mutex_t pMutex;
+  class SDLSurface {
+  private:
+    static GingaSurfaceID refIdCounter;
+    GingaSurfaceID myId;
+    GingaScreenID myScreen;
+    SDL_Surface* sur;
+    SDL_Surface* pending;
+    void* parent;
+    bool hasExtHandler;
+    Color* chromaColor;
+    Color* borderColor;
+    Color* bgColor;
+    Color* surfaceColor;
+    IFontProvider* iFont;
+    int caps;
+    bool isDeleting;
 
-		public:
-			SDLSurface(GingaScreenID screenId);
-			SDLSurface(GingaScreenID screenId, void* underlyingSurface);
+    vector<DrawData*> drawData;
+    pthread_mutex_t ddMutex;
 
-			virtual ~SDLSurface();
+    pthread_mutex_t sMutex;
+    pthread_mutex_t pMutex;
 
-			GingaSurfaceID getId () const;
-			void setId (const GingaSurfaceID &surId);
+  public:
+    SDLSurface(GingaScreenID screenId);
+    SDLSurface(GingaScreenID screenId, void* underlyingSurface);
 
-		private:
-			void releasePendingSurface();
-			bool createPendingSurface();
-			void checkPendingSurface();
-			void fill();
-			void releaseChromaColor();
-			void releaseBgColor();
-			void releaseBorderColor();
-			void releaseSurfaceColor();
+    virtual ~SDLSurface();
 
-			void releaseFont();
-			void releaseDrawData();
+    GingaSurfaceID getId () const;
+    void setId (const GingaSurfaceID &surId);
 
-			void initialize(const GingaScreenID &screenId, const GingaSurfaceID &id);
+  private:
+    void releasePendingSurface();
+    bool createPendingSurface();
+    void checkPendingSurface();
+    void fill();
+    void releaseChromaColor();
+    void releaseBgColor();
+    void releaseBorderColor();
+    void releaseSurfaceColor();
 
-		public:
-			void takeOwnership();
+    void releaseFont();
+    void releaseDrawData();
 
-			SDL_Surface* getPendingSurface();
+    void initialize(const GingaScreenID &screenId, const GingaSurfaceID &id);
 
-			void setExternalHandler(bool extHandler);
-			bool hasExternalHandler();
+  public:
+    void takeOwnership();
 
-			void addCaps(int caps);
-			void setCaps(int caps);
-			int getCap(string cap);
-			int getCaps();
-			bool setParentWindow(void* parentWindow); //IWindow
-			void* getParentWindow();                  //IWindow
-			void* getSurfaceContent();
-			void setSurfaceContent(void* surface);
-			void clearContent();
-			void clearSurface();
+    SDL_Surface* getPendingSurface();
 
-			vector<DrawData*>* createDrawDataList();
+    void setExternalHandler(bool extHandler);
+    bool hasExternalHandler();
 
-		private:
-			void pushDrawData(int c1, int c2, int c3, int c4, short type);
+    void addCaps(int caps);
+    void setCaps(int caps);
+    int getCap(string cap);
+    int getCaps();
+    bool setParentWindow(void* parentWindow);
+    void* getParentWindow();
+    void* getSurfaceContent();
+    void setSurfaceContent(void* surface);
+    void clearContent();
+    void clearSurface();
 
-		public:
-			void drawLine(int x1, int y1, int x2, int y2);
-			void drawRectangle(int x, int y, int w, int h);
-			void fillRectangle(int x, int y, int w, int h);
-			void drawString(int x, int y, const char* txt);
-			void setChromaColor(int r, int g, int b, int alpha);
-			Color* getChromaColor();
-			void setBorderColor(int r, int g, int b, int alpha);
-			Color* getBorderColor();
-			void setBgColor(int r, int g, int b, int alpha);
-			Color* getBgColor();
-			void setColor(int r, int g, int b, int alpha);
-			Color* getColor();
-			void setSurfaceFont(void* font);
-			void getStringExtents(const char* text, int* w, int* h);
-			void flip();
-			void scale(double x, double y);
+    vector<DrawData*>* createDrawDataList();
 
-		private:
-			void initContentSurface();
-			SDL_Surface* createSurface();
+  private:
+    void pushDrawData(int c1, int c2, int c3, int c4, short type);
 
-		public:
-			void blit(
-					int x,
-					int y,
-					ISurface* src=NULL,
-					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
+  public:
+    void drawLine(int x1, int y1, int x2, int y2);
+    void drawRectangle(int x, int y, int w, int h);
+    void fillRectangle(int x, int y, int w, int h);
+    void drawString(int x, int y, const char* txt);
+    void setChromaColor(int r, int g, int b, int alpha);
+    Color* getChromaColor();
+    void setBorderColor(int r, int g, int b, int alpha);
+    Color* getBorderColor();
+    void setBgColor(int r, int g, int b, int alpha);
+    Color* getBgColor();
+    void setColor(int r, int g, int b, int alpha);
+    Color* getColor();
+    void setSurfaceFont(void* font);
+    void getStringExtents(const char* text, int* w, int* h);
+    void flip();
+    void scale(double x, double y);
 
-			void setClip(int x, int y, int w, int h);
-			void getSize(int* width, int* height);
-			string getDumpFileUri();
-			void setMatrix(void* matrix);
-	};
+  private:
+    void initContentSurface();
+    SDL_Surface* createSurface();
+
+  public:
+    void blit(
+              int x,
+              int y,
+              SDLSurface* src=NULL,
+              int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
+
+    void setClip(int x, int y, int w, int h);
+    void getSize(int* width, int* height);
+    string getDumpFileUri();
+  };
 }
 }
 }

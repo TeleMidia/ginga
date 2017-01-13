@@ -71,7 +71,7 @@ namespace tuning {
 			virtual ~Tuner();
 
 			void setLoopListener(ITunerListener* loopListener);
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 
 		private:
 			void clearInterfaces();

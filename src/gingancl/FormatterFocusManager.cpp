@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterFocusManager.h"
 
+#include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -46,7 +47,7 @@ namespace focus {
 	set<FormatterFocusManager*> FormatterFocusManager::instances;
 	pthread_mutex_t FormatterFocusManager::iMutex;
 
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	FormatterFocusManager::FormatterFocusManager(
 		    PlayerAdapterManager* playerManager,
@@ -1093,7 +1094,7 @@ namespace focus {
 		multiDevice->updatePassiveDevices();
 	}
 
-	bool FormatterFocusManager::userEventReceived(IInputEvent* userEvent) {
+	bool FormatterFocusManager::userEventReceived(SDLInputEvent* userEvent) {
 		ExecutionObject* currentObject;
 		CascadingDescriptor* currentDescriptor;
 		FormatterRegion* fr;

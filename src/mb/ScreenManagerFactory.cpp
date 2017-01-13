@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 using namespace br::pucrio::telemidia::ginga::core::mb;
 
-IScreenManager* ScreenManagerFactory::_instance = NULL;
+LocalScreenManager* ScreenManagerFactory::_instance = NULL;
 
-IScreenManager* ScreenManagerFactory::getInstance(bool forceLocal)
+LocalScreenManager* ScreenManagerFactory::getInstance(bool forceLocal)
 {
 	if (ScreenManagerFactory::_instance == NULL)
 	{
@@ -38,4 +38,3 @@ void ScreenManagerFactory::releaseInstance() {
 	}
 
 }
-

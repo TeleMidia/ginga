@@ -27,7 +27,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	Tuner::Tuner(
 			GingaScreenID screenId,
@@ -72,7 +72,7 @@ namespace tuning {
 		this->loopListener = loopListener;
 	}
 
-	bool Tuner::userEventReceived(IInputEvent* ev) {
+	bool Tuner::userEventReceived(SDLInputEvent* ev) {
 		map<int, INetworkInterface*>::iterator i;
 
 		clog << "Tuner::userEventReceived" << endl;

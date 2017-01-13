@@ -18,6 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "SystemInfo.h"
 #include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -35,7 +36,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-	static IScreenManager* dm = NULL;
+	static LocalScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
 		initializeClockSpeed();

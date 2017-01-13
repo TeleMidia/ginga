@@ -2914,7 +2914,7 @@ namespace ncl {
 
 	bool FormatterMediator::play() {
 		bool documentStarted;
-		//IWindow* window;
+		//SDLWindow* window;
 
 		if (currentDocument != NULL) {
 			Player::play();
@@ -2926,7 +2926,7 @@ namespace ncl {
 				clog << " surface = '" << surface;
 				clog << "'";
 				if (surface != NULL) {
-					window = (IWindow*)(surface->getParentWindow());
+					window = (SDLWindow*)(surface->getParentWindow());
 
 					clog << " parent window = '";
 					clog << window << "'";
@@ -2945,7 +2945,7 @@ namespace ncl {
 				clog << " surface = '" << surface;
 				clog << "'";
 				if (surface != NULL) {
-					window = (IWindow*)(surface->getParentWindow());
+					window = (SDLWindow*)(surface->getParentWindow());
 
 					clog << " parent window = '";
 					clog << window << "'";

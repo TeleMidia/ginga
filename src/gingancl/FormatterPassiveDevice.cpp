@@ -77,7 +77,7 @@ namespace multidevice {
 		return true;
 	}
 
-	bool FormatterPassiveDevice::userEventReceived(IInputEvent* ev) {
+	bool FormatterPassiveDevice::userEventReceived(SDLInputEvent* ev) {
 		string mnemonicCode;
 		int currentX;
 		int currentY;

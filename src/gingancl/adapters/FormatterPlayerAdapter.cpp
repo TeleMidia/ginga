@@ -26,13 +26,16 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "AdaptersComponentSupport.h"
 
+#include "mb/ScreenManagerFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-	IScreenManager* FormatterPlayerAdapter::dm = NULL;
+	LocalScreenManager* FormatterPlayerAdapter::dm = NULL;
 	double FormatterPlayerAdapter::eventTS = 0;
 
 	FormatterPlayerAdapter::FormatterPlayerAdapter() {
@@ -1662,7 +1665,7 @@ namespace adapters {
 		}
 	}
 
-	bool FormatterPlayerAdapter::userEventReceived(IInputEvent* ev) {
+	bool FormatterPlayerAdapter::userEventReceived(SDLInputEvent* ev) {
 		int keyCode;
 
 		keyCode = ev->getKeyCode(myScreen);

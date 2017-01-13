@@ -336,7 +336,7 @@ namespace player {
 		Thread::mutexUnlock(&sMutex);
 	}
 
-	bool BerkeliumHandler::userEventReceived(IInputEvent* userEvent) {
+	bool BerkeliumHandler::userEventReceived(SDLInputEvent* userEvent) {
 		map<int, int>::iterator i;
 
 		clog << "BerkeliumHandler::userEventReceived " << endl;

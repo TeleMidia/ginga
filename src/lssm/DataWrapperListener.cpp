@@ -31,7 +31,7 @@ namespace telemidia {
 namespace ginga {
 namespace lssm {
 	DataWrapperListener::DataWrapperListener(
-			IPresentationEngineManager* pem) {
+			PresentationEngineManager* pem) {
 
 		this->ait         = NULL;
 		this->pem         = pem;

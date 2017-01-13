@@ -123,7 +123,7 @@ namespace multidevice {
 				remoteDevClass, eventType, eventContent);
 	}
 
-	bool FormatterBaseDevice::userEventReceived(IInputEvent* ev) {
+	bool FormatterBaseDevice::userEventReceived(SDLInputEvent* ev) {
 		string mnemonicCode;
 		int currentX;
 		int currentY;

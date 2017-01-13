@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -91,8 +91,8 @@ namespace multidevice {
 			public IInputEventListener {
 #endif //HAVE_MULTIDEVICE
 		protected:
-			static IScreenManager* dm;
-			IInputManager* im;
+			static LocalScreenManager* dm;
+			InputManager* im;
 			pthread_mutex_t mutex;
 
 #if HAVE_MULTIDEVICE
@@ -201,7 +201,7 @@ namespace multidevice {
 			void updateStatus(
 					short code, string parameter, short type, string value);
 
-			virtual bool userEventReceived(IInputEvent* ev)=0;
+			virtual bool userEventReceived(SDLInputEvent* ev)=0;
 	};
 }
 }

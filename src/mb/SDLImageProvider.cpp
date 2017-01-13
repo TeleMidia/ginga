@@ -22,7 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 #include "SDLDeviceScreen.h"
+
 #include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 
 #if HAVE_LIBRSVG
 #include "SDLSvgDecoder.h"

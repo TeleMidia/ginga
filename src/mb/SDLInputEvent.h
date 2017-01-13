@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDL.h"
 
-#include "IInputEvent.h"
+#include "IMBDefs.h"
 #include "CodeMap.h"
 
 namespace br {
@@ -29,7 +29,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLInputEvent : public IInputEvent {
+	class SDLInputEvent {
 		public:
 			static const string ET_WAKEUP;
 			static const string ET_INPUTEVENT;

@@ -41,7 +41,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #endif
 
 #include "mb/IContinuousMediaProvider.h"
-#include "mb/IWindow.h"
+#include "mb/SDLWindow.h"
 #include "mb/IProviderListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 

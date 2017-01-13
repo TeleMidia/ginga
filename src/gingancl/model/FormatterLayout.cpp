@@ -168,7 +168,7 @@ namespace presentation {
 		return object;
 	}
 
-	/*bool FormatterLayout::getScreenShot(IWindow* region) {
+	/*bool FormatterLayout::getScreenShot(SDLWindow* region) {
 		map<string, set<FormatterRegion*>*>::iterator i;
 		set<FormatterRegion*>::iterator j;
 		vector<string>::iterator k;
@@ -177,7 +177,7 @@ namespace presentation {
 
 		set<FormatterRegion*>* formRegions = NULL;
 		FormatterRegion* formatterRegion;
-		IWindow* formWindow = NULL;
+		SDLWindow* formWindow = NULL;
 
 		lock();
 		k = sortedRegions.begin();

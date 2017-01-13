@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IFontProvider.h"
-#include "ISurface.h"
+#include "SDLSurface.h"
 
 #include <pthread.h>
 
@@ -47,7 +47,7 @@ namespace mb {
 			string fontUri;
 			int height;
 			TTF_Font* font;
-			ISurface* content;
+			SDLSurface* content;
 			string plainText;
 			int coordX;
 			int coordY;

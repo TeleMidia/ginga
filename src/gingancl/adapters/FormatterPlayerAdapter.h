@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
-#include "mb/ISurface.h"
+#include "mb/SDLSurface.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IPlayer.h"
@@ -74,9 +74,9 @@ namespace adapters {
 			public IInputEventListener {
 
 		protected:
-			static IScreenManager* dm;
+			static LocalScreenManager* dm;
 			static double eventTS;
-			IInputManager* im;
+			InputManager* im;
 
 			IPlayerAdapterManager* manager;
 			NominalEventMonitor* anchorMonitor;
@@ -176,7 +176,7 @@ namespace adapters {
 					short type=10,
 					string value="");
 
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 
 		private:
 			void setVisible(bool visible);

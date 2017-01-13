@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ICONTINUOUSMEDIAPROVIDER_H_
 #define ICONTINUOUSMEDIAPROVIDER_H_
 
-#include "ISurface.h"
+#include "SDLSurface.h"
 
 #include "IProviderListener.h"
 #include "IMediaProvider.h"

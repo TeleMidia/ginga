@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLInputEvent.h"
 #include "CodeMap.h"
 #include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 
 namespace br {
 namespace pucrio {

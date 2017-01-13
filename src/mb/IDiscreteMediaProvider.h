@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IDiscreteMediaProvider_H_
 #define IDiscreteMediaProvider_H_
 
-#include "ISurface.h"
 #include "IMediaProvider.h"
 
 namespace br {

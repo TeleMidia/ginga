@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IMAGEPLAYER_H_
 
 #include "mb/IImageProvider.h"
-#include "mb/IWindow.h"
+#include "mb/SDLWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/IGingaLocatorFactory.h"

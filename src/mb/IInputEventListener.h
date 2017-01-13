@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IINPUTEVENTLISTENER_H_
 #define IINPUTEVENTLISTENER_H_
 
-#include "IInputEvent.h"
+#include "SDLInputEvent.h"
 
 namespace br {
 namespace pucrio {
@@ -29,7 +29,7 @@ namespace mb {
 	class IInputEventListener {
 		public:
 			virtual ~IInputEventListener(){};
-			virtual bool userEventReceived(IInputEvent* ev)=0;
+			virtual bool userEventReceived(SDLInputEvent* ev)=0;
 	};
 }
 }

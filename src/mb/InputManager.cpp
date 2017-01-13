@@ -99,7 +99,7 @@ namespace mb {
 	void InputManager::release() {
 		map<IInputEventListener*, set<int>*>::iterator i;
 		bool runDone = false;
-		IInputEvent* ie;
+		SDLInputEvent* ie;
 		int mbKeyCode;
 		bool wasRunning = running;
 
@@ -368,7 +368,7 @@ namespace mb {
 		Thread::mutexUnlock(&actAppMutex);
 	}
 
-	bool InputManager::dispatchEvent(IInputEvent* inputEvent) {
+	bool InputManager::dispatchEvent(SDLInputEvent* inputEvent) {
 		map<IInputEventListener*, set<int>*>::iterator i;
 
 		IInputEventListener* lis;
@@ -441,7 +441,7 @@ namespace mb {
 		return true;
 	}
 
-	bool InputManager::dispatchApplicationEvent(IInputEvent* inputEvent) {
+	bool InputManager::dispatchApplicationEvent(SDLInputEvent* inputEvent) {
 		set<IInputEventListener*>::iterator i;
 		vector<LockedAction*>::iterator j;
 
@@ -544,7 +544,7 @@ namespace mb {
 		this->cmdListener = listener;
 	}
 
-	void InputManager::postInputEvent(IInputEvent* event) {
+	void InputManager::postInputEvent(SDLInputEvent* event) {
 		if (!running) {
 			delete event;
 			return;
@@ -554,7 +554,7 @@ namespace mb {
 	}
 
 	void InputManager::postInputEvent(int keyCode) {
-		IInputEvent* ie;
+		SDLInputEvent* ie;
 		int mbKeyCode;
 
 		mbKeyCode = ScreenManagerFactory::getInstance()->fromGingaToMB(
@@ -591,7 +591,7 @@ namespace mb {
 		return currentYAxis;
 	}
 
-	IEventBuffer* InputManager::getEventBuffer() {
+	SDLEventBuffer* InputManager::getEventBuffer() {
 		if (eventBuffer == NULL) {
 			eventBuffer = ScreenManagerFactory::getInstance()->
 					createEventBuffer(myScreen);
@@ -606,7 +606,7 @@ namespace mb {
 	}
 
 	void InputManager::run() {
-		IInputEvent* inputEvent;
+		SDLInputEvent* inputEvent;
 
 		int pLastCode     = -1;
 		int lastCode      = -1;
@@ -647,7 +647,7 @@ namespace mb {
 	}
 
 	void InputManager::handleInputEvent(
-		IInputEvent *inputEvent, int& pLastCode, int& lastCode,
+		SDLInputEvent *inputEvent, int& pLastCode, int& lastCode,
 		double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY)
 	{
 		if (inputEvent->isMotionType()) {
