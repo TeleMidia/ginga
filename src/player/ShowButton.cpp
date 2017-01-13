@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/ShowButton.h"
 
 #include "player/PlayersComponentSupport.h"
+#include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 
 namespace br {
 namespace pucrio {
@@ -26,7 +28,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
 		myScreen       = screenId;
 		status         = NONE;

@@ -59,7 +59,7 @@ namespace multidevice {
 			};
 
 			bool receiveRemoteContent(int remoteDevClass, string contentUri);
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 	};
 }
 }

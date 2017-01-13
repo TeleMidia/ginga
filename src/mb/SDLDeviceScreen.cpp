@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
-#include "ILocalScreenManager.h"
+#include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 #include "InputManager.h"
 
 extern "C" {
@@ -60,7 +61,7 @@ namespace mb {
 	set<SDL_Texture*> SDLDeviceScreen::uTexPool;
 	set<SDL_Surface*> SDLDeviceScreen::uSurPool;
 	vector<ReleaseContainer*> SDLDeviceScreen::releaseList;
-	map<GingaScreenID, map<float, set<IWindow*>*>*> SDLDeviceScreen::renderMap;
+	map<GingaScreenID, map<float, set<SDLWindow*>*>*> SDLDeviceScreen::renderMap;
 	set<IContinuousMediaProvider*> SDLDeviceScreen::cmpRenderList;
 
 	const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
@@ -192,8 +193,8 @@ namespace mb {
 
 	SDLDeviceScreen::~SDLDeviceScreen() {
 		map<SDLDeviceScreen*, short>::iterator i;
-		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator j;
-		map<float, set<IWindow*>*>::iterator k;
+		map<GingaScreenID, map<float, set<SDLWindow*>*>*>::iterator j;
+		map<float, set<SDLWindow*>*>::iterator k;
 
 		useStdin = false;
 
@@ -269,7 +270,7 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::updateRenderMap(
-			GingaScreenID screenId, IWindow* window,
+			GingaScreenID screenId, SDLWindow* window,
 			float oldZIndex, float newZIndex) {
 
 		checkMutexInit();
@@ -426,9 +427,9 @@ namespace mb {
 
 	}
 
-	IWindow* SDLDeviceScreen::getIWindowFromId(GingaWindowID winId) {
-		map<GingaWindowID, IWindow*>::iterator i;
-		IWindow* iWin = NULL;
+	SDLWindow* SDLDeviceScreen::getIWindowFromId(GingaWindowID winId) {
+		map<GingaWindowID, SDLWindow*>::iterator i;
+		SDLWindow* iWin = NULL;
 
 		Thread::mutexLock(&winMutex);
 		i = windowRefs.find(winId);
@@ -443,7 +444,7 @@ namespace mb {
 	bool SDLDeviceScreen::mergeIds(
 			GingaWindowID destId, vector<GingaWindowID>* srcIds) {
 
-		map<GingaWindowID, IWindow*>::iterator i;
+		map<GingaWindowID, SDLWindow*>::iterator i;
 		vector<GingaWindowID>::iterator j;
 		SDLWindow* destWin;
 		SDL_Surface* destSur;
@@ -498,7 +499,7 @@ namespace mb {
 		return merged;
 	}
 
-	void SDLDeviceScreen::blitScreen(ISurface* destination) {
+	void SDLDeviceScreen::blitScreen(SDLSurface* destination) {
 		SDL_Surface* dest;
 
 		lockSDL();
@@ -528,9 +529,9 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::blitScreen(SDL_Surface* dest) {
-		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
-		map<float, set<IWindow*>*>::iterator j;
-		set<IWindow*>::iterator k;
+		map<GingaScreenID, map<float, set<SDLWindow*>*>*>::iterator i;
+		map<float, set<SDLWindow*>*>::iterator j;
+		set<SDLWindow*>::iterator k;
 
 		Thread::mutexLock(&renMutex);
 		i = renderMap.find(id);
@@ -563,10 +564,10 @@ namespace mb {
 
 	/* interfacing output */
 
-	IWindow* SDLDeviceScreen::createWindow(
+	SDLWindow* SDLDeviceScreen::createWindow(
 			int x, int y, int w, int h, float z) {
 
-		IWindow* iWin;
+		SDLWindow* iWin;
 
 		Thread::mutexLock(&winMutex);
 
@@ -781,8 +782,8 @@ namespace mb {
 		return sUWin;
 	}
 
-	bool SDLDeviceScreen::hasWindow(IWindow* win) {
-		set<IWindow*>::iterator i;
+	bool SDLDeviceScreen::hasWindow(SDLWindow* win) {
+		set<SDLWindow*>::iterator i;
 		bool hasWin = false;
 
 		Thread::mutexLock(&winMutex);
@@ -797,9 +798,9 @@ namespace mb {
 		return hasWin;
 	}
 
-	void SDLDeviceScreen::releaseWindow(IWindow* win) {
-		set<IWindow*>::iterator i;
-		map<GingaWindowID, IWindow*>::iterator j;
+	void SDLDeviceScreen::releaseWindow(SDLWindow* win) {
+		set<SDLWindow*>::iterator i;
+		map<GingaWindowID, SDLWindow*>::iterator j;
 		SDLWindow* iWin;
 		SDL_Texture* uTex = NULL;
 		bool uTexOwn;
@@ -835,12 +836,12 @@ namespace mb {
 		}
 	}
 
-	ISurface* SDLDeviceScreen::createSurface() {
+	SDLSurface* SDLDeviceScreen::createSurface() {
 		return createSurfaceFrom(NULL);
 	}
 
-	ISurface* SDLDeviceScreen::createSurface(int w, int h) {
-		ISurface* iSur    = NULL;
+	SDLSurface* SDLDeviceScreen::createSurface(int w, int h) {
+		SDLSurface* iSur    = NULL;
 		SDL_Surface* uSur = NULL;
 
 		lockSDL();
@@ -858,8 +859,8 @@ namespace mb {
 		return iSur;
 	}
 
-	ISurface* SDLDeviceScreen::createSurfaceFrom(void* uSur) {
-		ISurface* iSur = NULL;
+	SDLSurface* SDLDeviceScreen::createSurfaceFrom(void* uSur) {
+		SDLSurface* iSur = NULL;
 
 		lockSDL();
 		if (uSur != NULL) {
@@ -877,8 +878,8 @@ namespace mb {
 		return iSur;
 	}
 
-	bool SDLDeviceScreen::hasSurface(ISurface* s) {
-		set<ISurface*>::iterator i;
+	bool SDLDeviceScreen::hasSurface(SDLSurface* s) {
+		set<SDLSurface*>::iterator i;
 		bool hasSur = false;
 
 		Thread::mutexLock(&surMutex);
@@ -891,8 +892,8 @@ namespace mb {
 		return hasSur;
 	}
 
-	bool SDLDeviceScreen::releaseSurface(ISurface* s) {
-		set<ISurface*>::iterator i;
+	bool SDLDeviceScreen::releaseSurface(SDLSurface* s) {
+		set<SDLSurface*>::iterator i;
 		SDL_Surface* uSur = NULL;
 		bool released = false;
 
@@ -1016,10 +1017,10 @@ namespace mb {
 		}
 	}
 
-	ISurface* SDLDeviceScreen::createRenderedSurfaceFromImageFile(
+	SDLSurface* SDLDeviceScreen::createRenderedSurfaceFromImageFile(
 			const char* mrl) {
 
-		ISurface* iSur           = NULL;
+		SDLSurface* iSur           = NULL;
 		IImageProvider* provider = NULL;
 
 		if (fileExists(mrl)) {
@@ -1675,9 +1676,9 @@ namespace mb {
 		SDLWindow* mirrorSrc;
 		bool ownTex = false;
 
-		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
-		map<float, set<IWindow*>*>::iterator j;
-		set<IWindow*>::iterator k;
+		map<GingaScreenID, map<float, set<SDLWindow*>*>*>::iterator i;
+		map<float, set<SDLWindow*>*>::iterator j;
+		set<SDLWindow*>::iterator k;
 
 		Thread::mutexLock(&renMutex);
 		if (s->renderer != NULL && !renderMap.empty()) {
@@ -2004,13 +2005,13 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::clearScreen(SDLDeviceScreen* s) {
-		IWindow* iWin;
-		ISurface* iSur;
+		SDLWindow* iWin;
+		SDLSurface* iSur;
 		IContinuousMediaProvider* iCmp;
 		IDiscreteMediaProvider* iDmp;
 
-		set<IWindow*>::iterator i;
-		set<ISurface*>::iterator j;
+		set<SDLWindow*>::iterator i;
+		set<SDLSurface*>::iterator j;
 		set<IContinuousMediaProvider*>::iterator k;
 		set<IDiscreteMediaProvider*>::iterator l;
 
@@ -2134,7 +2135,7 @@ namespace mb {
 		cmp->setProviderContent((void*)texture);
 	}
 
-	bool SDLDeviceScreen::blitFromWindow(IWindow* iWin, SDL_Surface* dest) {
+	bool SDLDeviceScreen::blitFromWindow(SDLWindow* iWin, SDL_Surface* dest) {
 		SDL_Surface* tmpSur;
 		SDL_Texture* tmpTex;
 		SDL_Rect rect;
@@ -2210,7 +2211,7 @@ namespace mb {
 
 	/* interfacing input */
 
-	IInputManager* SDLDeviceScreen::getInputManager() {
+	InputManager* SDLDeviceScreen::getInputManager() {
 		/*
 		 * im == NULL is an initial state. So pthread_cond_t
 		 * is not necessary here.
@@ -2221,14 +2222,14 @@ namespace mb {
 		return im;
 	}
 
-	IEventBuffer* SDLDeviceScreen::createEventBuffer() {
+	SDLEventBuffer* SDLDeviceScreen::createEventBuffer() {
 		return new SDLEventBuffer(id);
 	}
 
-	IInputEvent* SDLDeviceScreen::createInputEvent(
+	SDLInputEvent* SDLDeviceScreen::createInputEvent(
 			void* event, const int symbol) {
 
-		IInputEvent* ie = NULL;
+		SDLInputEvent* ie = NULL;
 
 		if (event != NULL) {
 			ie = new SDLInputEvent(*(SDL_Event*)event);
@@ -2241,7 +2242,7 @@ namespace mb {
 		return ie;
 	}
 
-	IInputEvent* SDLDeviceScreen::createApplicationEvent(int type, void* data) {
+	SDLInputEvent* SDLDeviceScreen::createApplicationEvent(int type, void* data) {
 		return new SDLInputEvent(type, data);
 	}
 
@@ -2623,13 +2624,13 @@ namespace mb {
 
 	/* output */
 	void SDLDeviceScreen::renderMapInsertWindow(
-			GingaScreenID screenId, IWindow* iWin, float z) {
+			GingaScreenID screenId, SDLWindow* iWin, float z) {
 
-		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
-		map<float, set<IWindow*>*>::iterator j;
+		map<GingaScreenID, map<float, set<SDLWindow*>*>*>::iterator i;
+		map<float, set<SDLWindow*>*>::iterator j;
 
-		map<float, set<IWindow*>*>* sortedMap;
-		set<IWindow*>* windows;
+		map<float, set<SDLWindow*>*>* sortedMap;
+		set<SDLWindow*>* windows;
 
 		checkMutexInit();
 
@@ -2639,7 +2640,7 @@ namespace mb {
 			sortedMap = i->second;
 
 		} else {
-			sortedMap = new map<float, set<IWindow*>*>;
+			sortedMap = new map<float, set<SDLWindow*>*>;
 			renderMap[screenId] = sortedMap;
 		}
 
@@ -2647,7 +2648,7 @@ namespace mb {
 		if (j != sortedMap->end()) {
 			windows = j->second;
 		} else {
-			windows = new set<IWindow*>;
+			windows = new set<SDLWindow*>;
 			(*sortedMap)[z] = windows;
 		}
 
@@ -2656,14 +2657,14 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::renderMapRemoveWindow(
-			GingaScreenID screenId, IWindow* iWin, float z) {
+			GingaScreenID screenId, SDLWindow* iWin, float z) {
 
-		map<GingaScreenID, map<float, set<IWindow*>*>*>::iterator i;
-		map<float, set<IWindow*>*>::iterator j;
-		set<IWindow*>::iterator k;
+		map<GingaScreenID, map<float, set<SDLWindow*>*>*>::iterator i;
+		map<float, set<SDLWindow*>*>::iterator j;
+		set<SDLWindow*>::iterator k;
 
-		map<float, set<IWindow*>*>* sortedMap;
-		set<IWindow*>* windows;
+		map<float, set<SDLWindow*>*>* sortedMap;
+		set<SDLWindow*>* windows;
 
 		checkMutexInit();
 
@@ -2688,10 +2689,10 @@ namespace mb {
 	}
 
 	/*void SDLDeviceScreen::updateWindowState(
-			GingaScreenID screenId, IWindow* win, short state) {
+			GingaScreenID screenId, SDLWindow* win, short state) {
 
-		map<GingaScreenID, vector<IWindow*>*>::iterator i;
-		vector<IWindow*>* wins;
+		map<GingaScreenID, vector<SDLWindow*>*>::iterator i;
+		vector<SDLWindow*>* wins;
 
 		Thread::mutexLock(&wrMutex);
 		i = windowRenderMap.find(screenId);
@@ -2700,7 +2701,7 @@ namespace mb {
 			updateWindowList(wins, win, state);
 
 		} else {
-			wins = new vector<IWindow*>;
+			wins = new vector<SDLWindow*>;
 			wins->push_back(win);
 			windowRenderMap[screenId] = wins;
 		}
@@ -2710,7 +2711,7 @@ namespace mb {
 	}
 
 	void SDLDeviceScreen::updateWindowList(
-			vector<IWindow*>* windows, IWindow* win, short state) {
+			vector<SDLWindow*>* windows, SDLWindow* win, short state) {
 
 		switch (state) {
 			case SUW_SHOW:
@@ -2737,9 +2738,9 @@ namespace mb {
 	}*/
 
 	void SDLDeviceScreen::removeFromWindowList(
-			vector<IWindow*>* windows, IWindow* win) {
+			vector<SDLWindow*>* windows, SDLWindow* win) {
 
-		vector<IWindow*>::iterator i;
+		vector<SDLWindow*>::iterator i;
 
 		i = windows->begin();
 		while (i != windows->end()) {
@@ -2777,7 +2778,7 @@ namespace mb {
 	bool SDLDeviceScreen::drawSDLWindow(
 			SDL_Renderer* renderer,
 			SDL_Texture* srcTxtr,
-			IWindow* dstWin) {
+			SDLWindow* dstWin) {
 
 		SDL_Rect dstRect;
 		Color* bgColor;
@@ -3213,7 +3214,7 @@ namespace mb {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
+extern "C" ::br::pucrio::telemidia::ginga::core::mb::SDLDeviceScreen*
 		createSDLScreen(
 				int numArgs, char** args,
 				GingaScreenID myId, UnderlyingWindowID embedId,
@@ -3224,7 +3225,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
 }
 
 extern "C" void destroySDLScreen(
-		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds) {
+		::br::pucrio::telemidia::ginga::core::mb::SDLDeviceScreen* ds) {
 
 	delete ds;
 }

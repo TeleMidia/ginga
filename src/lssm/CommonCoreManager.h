@@ -18,6 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _COMMONCOREMANAGER_H_
 #define _COMMONCOREMANAGER_H_
 
+#include "PresentationEngineManager.h"
+
+#include "system/IComponentInstance.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system;
+
+#include <string>
+using namespace std;
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
@@ -26,15 +34,14 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "mb/IMBDefs.h"
 
-#include "IPresentationEngineManager.h"
-#include "ICommonCoreManager.h"
+#include "CommonCoreManager.h"
 
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-  class CommonCoreManager : public ICommonCoreManager {
+  class CommonCoreManager {
 	private:
 		void* tuner;
 		GingaWindowID tuningWindow;
@@ -46,14 +53,14 @@ namespace lssm {
 		bool hasOCSupport;
 		bool nptPrinter;
 		GingaScreenID myScreen;
-		IPresentationEngineManager* pem;
+		PresentationEngineManager* pem;
 
 	public:
 		CommonCoreManager();
 		~CommonCoreManager();
 
 		void addPEM(
-				IPresentationEngineManager* pem, GingaScreenID screenId);
+				PresentationEngineManager* pem, GingaScreenID screenId);
 
 		void initializeInstance(std::string& data, short scenario);
 		void testInstance(std::string& data, short scenario);

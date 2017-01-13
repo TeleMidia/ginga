@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 
 #include "mb/IMBDefs.h"
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -70,7 +70,7 @@ namespace focus {
 			public IInputEventListener {
 
 		private:
-			IInputManager* im;
+			InputManager* im;
 
 			GingaScreenID myScreen;
 			IPresentationContext* presContext;
@@ -165,7 +165,7 @@ namespace focus {
 			void changeSettingState(string name, string act);
 
 		public:
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 			bool motionEventReceived(int x, int y, int z);
 	};
 }

@@ -27,8 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "mb/IInputManager.h"
-#include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
@@ -90,7 +90,7 @@ namespace player {
 			static const short STOP = 3;
 
 			string mrl;
-			static IScreenManager* dm;
+			static LocalScreenManager* dm;
 			GingaSurfaceID surface;
 			GingaWindowID outputWindow;
 			double initTime, elapsedTime, elapsedPause, pauseTime;

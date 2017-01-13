@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BerkeliumHandler_h_
 #define BerkeliumHandler_h_
 
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 #include "mb/interface/CodeMap.h"
-#include "mb/interface/IWindow.h"
+#include "mb/interface/SDLWindow.h"
 #include "mb/interface/IInputEventListener.h"
 
-#include "mb/ILocalScreenManager.h"
-#include "mb/interface/IWindow.h"
+#include "mb/LocalScreenManager.h"
+#include "mb/interface/SDLWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/thread/Thread.h"
@@ -57,9 +57,9 @@ namespace player {
 	private:
 		static map<int, int> fromGingaToBklm;
 		std::string mURL;
-		IScreenManager* dm;
+		LocalScreenManager* dm;
 		GingaScreenID myScreen;
-		IInputManager* im;
+		InputManager* im;
 		GingaSurfaceID surface;
 		int xOffset, yOffset;
 		int x, y;
@@ -103,7 +103,7 @@ namespace player {
 
 		void updateEvents();
 
-		bool userEventReceived(IInputEvent* ev);
+		bool userEventReceived(SDLInputEvent* ev);
 		bool motionEventReceived(int x, int y, int z);
 
 		virtual void onAddressBarChanged(Window *win, URLString newURL);

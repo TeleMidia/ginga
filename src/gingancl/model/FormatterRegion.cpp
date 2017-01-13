@@ -25,10 +25,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "FormatterRegion.h"
 #include "FormatterLayout.h"
 
-#include "mb/ILocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
 #include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 namespace br {
 namespace pucrio {
@@ -37,7 +36,7 @@ namespace ginga {
 namespace ncl {
 namespace model {
 namespace presentation {
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 	FormatterRegion::FormatterRegion(
 		    string objectId, void* descriptor, void* layoutManager) {
 

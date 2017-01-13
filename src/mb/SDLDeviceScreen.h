@@ -20,11 +20,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
+#include "IMBDefs.h"
+
+#include "InputManager.h"
+#include "SDLEventBuffer.h"
+#include "SDLInputEvent.h"
+#include "IContinuousMediaProvider.h"
+#include "IFontProvider.h"
+#include "IImageProvider.h"
+
+#include "SDLWindow.h"
+#include "SDLSurface.h"
+
+#include <vector>
+#include <string>
+using namespace std;
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
 #include "IDiscreteMediaProvider.h"
-#include "IDeviceScreen.h"
 
 #include "SDL.h"
 
@@ -53,7 +68,7 @@ typedef struct {
 	SDL_Texture* uTex;
 } ReleaseContainer;
 
-	class SDLDeviceScreen : public IDeviceScreen {
+	class SDLDeviceScreen {
 		public:
 			static const unsigned int DSA_UNKNOWN;
 			static const unsigned int DSA_4x3;
@@ -91,9 +106,9 @@ typedef struct {
 			int wRes;
 
 			GingaWindowID winIdRefCounter;
-			map<GingaWindowID, IWindow*> windowRefs;
-			set<IWindow*> windowPool;
-			set<ISurface*> surfacePool;
+			map<GingaWindowID, SDLWindow*> windowRefs;
+			set<SDLWindow*> windowPool;
+			set<SDLSurface*> surfacePool;
 			set<IContinuousMediaProvider*> cmpPool;
 			set<IDiscreteMediaProvider*> dmpPool;
 
@@ -103,14 +118,14 @@ typedef struct {
 			bool uEmbedFocused;
 			bool mustGainFocus;
 
-			IInputManager* im;
+			InputManager* im;
 			bool useStdin;
 
 			bool waitingCreator;
 			pthread_mutex_t condMutex;
 			pthread_cond_t cond;
 
-			IWindow* backgroundLayer;
+			SDLWindow* backgroundLayer;
 			bool fullScreen;
 			SDL_Window* screen;
 			Uint32 sdlId;
@@ -125,7 +140,7 @@ typedef struct {
 			static set<SDL_Surface*> uSurPool;
 			static set<SDL_Texture*> uTexPool;
 			static vector<ReleaseContainer*> releaseList;
-			static map<GingaScreenID, map<float, set<IWindow*>*>*> renderMap;
+			static map<GingaScreenID, map<float, set<SDLWindow*>*>*> renderMap;
 			static set<IContinuousMediaProvider*> cmpRenderList;
 
 			static pthread_mutex_t sdlMutex; //mutex for SDL structures
@@ -154,7 +169,7 @@ typedef struct {
 			static void unlockSDL();
 
 			static void updateRenderMap(
-					GingaScreenID screenId, IWindow* window,
+					GingaScreenID screenId, SDLWindow* window,
 					float oldZIndex, float newZIndex);
 
 			void releaseScreen();
@@ -178,9 +193,9 @@ typedef struct {
 
 			void setColorKey(int r, int g, int b);
 
-			IWindow* getIWindowFromId(GingaWindowID winId);
+			SDLWindow* getIWindowFromId(GingaWindowID winId);
 			bool mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
-			void blitScreen(ISurface* destination);
+			void blitScreen(SDLSurface* destination);
 			void blitScreen(string fileUri);
 
 		private:
@@ -193,7 +208,7 @@ typedef struct {
 
 			/* interfacing output */
 
-			IWindow* createWindow(int x, int y, int w, int h, float z);
+			SDLWindow* createWindow(int x, int y, int w, int h, float z);
 
 			UnderlyingWindowID createUnderlyingSubWindow(
 					int x, int y, int w, int h, float z);
@@ -207,14 +222,14 @@ typedef struct {
 		public:
 			UnderlyingWindowID getScreenUnderlyingWindow();
 
-			bool hasWindow(IWindow* win);
-			void releaseWindow(IWindow* win);
+			bool hasWindow(SDLWindow* win);
+			void releaseWindow(SDLWindow* win);
 
-			ISurface* createSurface();
-			ISurface* createSurface(int w, int h);
-			ISurface* createSurfaceFrom(void* underlyingSurface);
-			bool hasSurface(ISurface* sur);
-			bool releaseSurface(ISurface* sur);
+			SDLSurface* createSurface();
+			SDLSurface* createSurface(int w, int h);
+			SDLSurface* createSurfaceFrom(void* underlyingSurface);
+			bool hasSurface(SDLSurface* sur);
+			bool releaseSurface(SDLSurface* sur);
 
 
 			/* interfacing content */
@@ -233,7 +248,7 @@ typedef struct {
 			IImageProvider* createImageProvider(const char* mrl);
 			void releaseImageProvider(IImageProvider* provider);
 
-			ISurface* createRenderedSurfaceFromImageFile(const char* mrl);
+			SDLSurface* createRenderedSurfaceFromImageFile(const char* mrl);
 
 			static void addCMPToRendererList(IContinuousMediaProvider* cmp);
 			static void removeCMPToRendererList(IContinuousMediaProvider* cmp);
@@ -282,18 +297,18 @@ typedef struct {
 			static void initCMP(
 					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
 
-			static bool blitFromWindow(IWindow* iWin, SDL_Surface* dest);
+			static bool blitFromWindow(SDLWindow* iWin, SDL_Surface* dest);
 
 		public:
 
 			/* interfacing input */
 
-			IInputManager* getInputManager();
+			InputManager* getInputManager();
 
-			IEventBuffer* createEventBuffer();
+			SDLEventBuffer* createEventBuffer();
 
-			IInputEvent* createInputEvent(void* event, const int symbol);
-			IInputEvent* createApplicationEvent(int type, void* data);
+			SDLInputEvent* createInputEvent(void* event, const int symbol);
+			SDLInputEvent* createApplicationEvent(int type, void* data);
 
 			int fromMBToGinga(int keyCode);
 			int fromGingaToMB(int keyCode);
@@ -314,20 +329,20 @@ typedef struct {
 		public:
 			/* output */
 			static void renderMapInsertWindow(
-					GingaScreenID screenId, IWindow* iWin, float z);
+					GingaScreenID screenId, SDLWindow* iWin, float z);
 
 			static void renderMapRemoveWindow(
-					GingaScreenID screenId, IWindow* iWin, float z);
+					GingaScreenID screenId, SDLWindow* iWin, float z);
 
 //			static void updateWindowState(
-//					GingaScreenID screenId, IWindow* win, short status);
+//					GingaScreenID screenId, SDLWindow* win, short status);
 
 		private:
 //			static void updateWindowList(
-//					vector<IWindow*>* windows, IWindow* win, short status);
+//					vector<SDLWindow*>* windows, SDLWindow* win, short status);
 
 			static void removeFromWindowList(
-					vector<IWindow*>* windows, IWindow* win);
+					vector<SDLWindow*>* windows, SDLWindow* win);
 
 		public:
 			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
@@ -336,13 +351,13 @@ typedef struct {
 			static bool drawSDLWindow(
 					SDL_Renderer* renderer,
 					SDL_Texture* texture,
-					IWindow* iWin);
+					SDLWindow* iWin);
 
 			static void insertWindowFromRenderList(
-					IWindow* win, vector<IWindow*>* windows);
+					SDLWindow* win, vector<SDLWindow*>* windows);
 
 			static void removeWindowFromRenderList(
-					IWindow* win, vector<IWindow*>* windows);
+					SDLWindow* win, vector<SDLWindow*>* windows);
 
 		public:
 			/* CAUTION: call this method only from main SDL thread */

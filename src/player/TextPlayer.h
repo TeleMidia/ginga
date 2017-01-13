@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TEXTPLAYER_H_
 #define TEXTPLAYER_H_
 
-#include "mb/IWindow.h"
+#include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"

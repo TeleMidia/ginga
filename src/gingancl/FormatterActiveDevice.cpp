@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FMDComponentSupport.h"
 
 #include "mb/CodeMap.h"
-#include "mb/IInputManager.h"
-#include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "gingancl/FormatterMediator.h"
@@ -318,7 +318,7 @@ namespace multidevice {
 		return true;
 	}
 
-	bool FormatterActiveDevice::userEventReceived(IInputEvent* ev) {
+	bool FormatterActiveDevice::userEventReceived(SDLInputEvent* ev) {
 		string mnemonicCode;
 		int currentX;
 		int currentY;

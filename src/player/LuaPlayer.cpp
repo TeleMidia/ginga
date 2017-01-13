@@ -34,7 +34,7 @@ extern "C"
 }
 
 #include "player/PlayersComponentSupport.h"
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 #include "util/functions.h"
 using namespace::br::pucrio::telemidia::util;
@@ -639,7 +639,7 @@ void LuaPlayer::setPropertyValue (string name, string value)
 
 // Inherited from IInputEventListener.
 
-bool LuaPlayer::userEventReceived (IInputEvent *evt)
+bool LuaPlayer::userEventReceived (SDLInputEvent *evt)
 {
      this->lock ();
 

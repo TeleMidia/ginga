@@ -25,8 +25,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #endif
 #include "FMDComponentSupport.h"
 
+#include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 #include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -39,7 +40,7 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace multidevice {
-	IScreenManager* FormatterMultiDevice::dm   = NULL;
+	LocalScreenManager* FormatterMultiDevice::dm   = NULL;
 #if HAVE_MULTIDEVICE
 	IRemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
 #else

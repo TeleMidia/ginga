@@ -109,7 +109,7 @@ namespace multidevice {
 
 			bool receiveRemoteContent(int remoteDevClass, string contentUri);
 			bool receiveRemoteContentInfo(string contentId, string contentUri);
-			bool userEventReceived(IInputEvent* ev);
+			bool userEventReceived(SDLInputEvent* ev);
 
 			bool openDocument(string contentUri);
 			INCLPlayer* createNCLPlayer();

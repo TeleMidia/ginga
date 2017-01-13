@@ -19,8 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FocusSourceManager.h"
 
 #include "mb/LocalScreenManager.h"
-
-#include "mb/ILocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"
@@ -37,7 +36,7 @@ namespace ncl {
 namespace model {
 namespace presentation {
 namespace focus {
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
 			GingaScreenID screenId, string src) {

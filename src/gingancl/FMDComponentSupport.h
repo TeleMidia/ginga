@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 
 #if HAVE_MULTIDEVICE

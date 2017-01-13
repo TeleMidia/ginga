@@ -115,7 +115,7 @@ namespace mb {
 		feed(event, capsOn, shiftOn);
 	}
 
-	void SDLEventBuffer::postInputEvent(IInputEvent* event) {
+	void SDLEventBuffer::postInputEvent(SDLInputEvent* event) {
 		SDL_Event ev;
 
 		if (event != NULL && event->getContent() != NULL) {
@@ -164,7 +164,7 @@ namespace mb {
 		Thread::mutexUnlock(&ebMutex);
 	}
 
-	IInputEvent* SDLEventBuffer::getNextEvent() {
+	SDLInputEvent* SDLEventBuffer::getNextEvent() {
 		SDL_Event sdlEvent;
 		SDLInputEvent* gingaEvent = NULL;
 		vector<SDL_Event>::iterator i;

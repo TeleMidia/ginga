@@ -46,8 +46,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #include "lssm/DataWrapperListener.h"
 #endif // HAVE_ISDBT
 
-#include "mb/ILocalScreenManager.h"
-#include "mb/IWindow.h"
+#include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
+#include "mb/SDLWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/IPlayer.h"
@@ -69,7 +70,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-	static IScreenManager* dm = ScreenManagerFactory::getInstance();
+	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	CommonCoreManager::CommonCoreManager() {
 		tuningWindow  = 0;
@@ -91,7 +92,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::addPEM(
-			IPresentationEngineManager* pem, GingaScreenID screenId) {
+			PresentationEngineManager* pem, GingaScreenID screenId) {
 
 		this->myScreen = screenId;
 		this->pem = pem;

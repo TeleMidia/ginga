@@ -31,7 +31,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "player/ShowButton.h"
 
 #include "mb/LocalScreenManager.h"
-#include "mb/IInputManager.h"
+#include "mb/ScreenManagerFactory.h"
+#include "mb/InputManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_ISDBT
@@ -42,8 +43,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #endif
 
 #include "mb/CodeMap.h"
-#include "mb/IInputManager.h"
-#include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/IGingaLocatorFactory.h"
@@ -67,7 +68,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-	IScreenManager* PresentationEngineManager::dm = NULL;
+	LocalScreenManager* PresentationEngineManager::dm = NULL;
 	bool PresentationEngineManager::autoProcess        = false;
 
 	PresentationEngineManager::PresentationEngineManager(
@@ -427,7 +428,7 @@ namespace lssm {
 		if (im != NULL) {
 			im->removeInputEventListener(this);
 			im->setCommandEventListener(NULL);
-			im->release();
+			delete im;
 			im = NULL;
 		}
 
@@ -1028,7 +1029,7 @@ namespace lssm {
 		}
 	}
 
-	bool PresentationEngineManager::userEventReceived(IInputEvent* ev) {
+	bool PresentationEngineManager::userEventReceived(SDLInputEvent* ev) {
 		struct inputEventNotification* evR;
 		int keyCode;
 

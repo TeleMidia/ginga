@@ -24,6 +24,7 @@ using namespace ::br::pucrio::telemidia;
 
 #include "ncl/layout/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 #if HAVE_MULTIDEVICE
 # include "gingancl/FormatterMultiDevice.h"
 # include "multidevice/DeviceDomain.h"
@@ -39,7 +40,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "ncl/layout/IDeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #if HAVE_MULTIDEVICE
@@ -49,8 +50,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #endif
 
-#include "lssm/ICommonCoreManager.h"
-#include "lssm/IPresentationEngineManager.h"
+#include "lssm/CommonCoreManager.h"
+#include "lssm/PresentationEngineManager.h"
 using namespace ::br::pucrio::telemidia::ginga::lssm;
 
 #include <string>
@@ -200,9 +201,9 @@ string updateFileUri(string file) {
 }
 
 int main(int argc, char *argv[]) {
-	ICommonCoreManager* ccm = NULL;
-	IPresentationEngineManager* pem = NULL;
-	IScreenManager* dm = NULL;
+	CommonCoreManager* ccm = NULL;
+	PresentationEngineManager* pem = NULL;
+	LocalScreenManager* dm = NULL;
 #if HAVE_MULTIDEVICE
 	IFormatterMultiDevice* fmd = NULL;
 #endif

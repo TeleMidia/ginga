@@ -28,7 +28,15 @@ using namespace ::br::pucrio::telemidia::util;
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IMBDefs.h"
-#include "IInputManager.h"
+
+#include "SDLEventBuffer.h"
+#include "SDLInputEvent.h"
+#include "ICmdEventListener.h"
+#include "IInputEventListener.h"
+#include "IMotionEventListener.h"
+
+#include <set>
+using namespace std;
 
 #include <iostream>
 #include <vector>
@@ -48,7 +56,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class InputManager : public IInputManager, public Thread {
+	class InputManager : public Thread {
 		protected:
 			map<IInputEventListener*, set<int>*> eventListeners;
 			vector<LockedAction*> actionsToInpListeners;
@@ -64,7 +72,7 @@ namespace mb {
 			bool running;
 			bool notifying;
 			bool notifyingApp;
-			IEventBuffer* eventBuffer;
+			SDLEventBuffer* eventBuffer;
 			double lastEventTime;
 			double imperativeIntervalTime;
 			double declarativeIntervalTime;
@@ -109,15 +117,15 @@ namespace mb {
 		protected:
 			void performInputLockedActions();
 			void performApplicationLockedActions();
-			virtual bool dispatchEvent(IInputEvent* keyEvent);
-			virtual bool dispatchApplicationEvent(IInputEvent* keyEvent);
+			virtual bool dispatchEvent(SDLInputEvent* keyEvent);
+			virtual bool dispatchApplicationEvent(SDLInputEvent* keyEvent);
 
 		public:
 			void addApplicationInputEventListener(IInputEventListener* listener);
 			void removeApplicationInputEventListener(
 					IInputEventListener* listener);
 
-			void postInputEvent(IInputEvent* event);
+			void postInputEvent(SDLInputEvent* event);
 			void postInputEvent(int keyCode);
 			void postCommand(string cmd, string args);
 
@@ -126,12 +134,12 @@ namespace mb {
 			int getCurrentXAxisValue();
 			int getCurrentYAxisValue();
 
-			IEventBuffer* getEventBuffer();
+			SDLEventBuffer* getEventBuffer();
 
 		protected:
 			virtual void run();
 			void handleInputEvent (
-				IInputEvent *inputEvent, int& pLastCode, int& lastCode,
+				SDLInputEvent *inputEvent, int& pLastCode, int& lastCode,
 				double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY);
 	};
 }

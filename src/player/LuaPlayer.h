@@ -28,9 +28,9 @@ using namespace std;
 
 #include "Player.h"
 #include "util/functions.h"
-#include "mb/IWindow.h"
+#include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
-#include "mb/IInputManager.h"
+#include "mb/InputManager.h"
 using namespace::br::pucrio::telemidia::ginga::core::mb;
 
 #include "system/SystemCompat.h"
@@ -50,7 +50,7 @@ private:
      bool isKeyHandler;         // true if player has the focus
      string scope;              // the label of the active anchor
      pthread_mutex_t mutex;     // sync access to player
-     IInputManager *im;
+     InputManager *im;
 
      // Update thread.
      static list <LuaPlayer *> *nw_update_list;
@@ -84,7 +84,7 @@ public:
      virtual void setPropertyValue (string name, string value);
 
      // Input event callback.
-     bool userEventReceived (IInputEvent * evt);
+     bool userEventReceived (SDLInputEvent * evt);
 };
 
 LUAPLAYER_END_DECLS

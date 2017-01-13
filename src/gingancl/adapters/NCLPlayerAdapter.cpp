@@ -23,7 +23,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "AdaptersComponentSupport.h"
 
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
+#include "mb/ScreenManagerFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 namespace br {
@@ -117,7 +118,7 @@ namespace ncl {
 				}
 			}
 
-			IScreenManager* dm;
+			LocalScreenManager* dm;
 
 			dm = ScreenManagerFactory::getInstance();
 			player = (INCLPlayer*)(new FormatterMediator(childData));

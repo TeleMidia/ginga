@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLEVENTBUFFER_H_
 #define SDLEVENTBUFFER_H_
 
-#include "IEventBuffer.h"
-#include "LocalScreenManager.h"
+#include "IMBDefs.h"
+#include "SDLInputEvent.h"
 
 #include "SDL.h"
 
@@ -32,7 +32,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace mb {
-	class SDLEventBuffer : public IEventBuffer {
+	class SDLEventBuffer {
 		private:
 			GingaScreenID myScreen;
 			pthread_mutex_t ebMutex;
@@ -52,9 +52,9 @@ namespace mb {
 			void feed(SDL_Event event, bool capsOn, bool shiftOn);
 
 			void wakeUp();
-			void postInputEvent(IInputEvent* event);
+			void postInputEvent(SDLInputEvent* event);
 			void waitEvent();
-			IInputEvent* getNextEvent();
+			SDLInputEvent* getNextEvent();
 			void* getContent();
 
 		private:

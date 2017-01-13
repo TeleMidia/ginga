@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "../../../../FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "mb/ILocalScreenManager.h"
+#include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include <string>

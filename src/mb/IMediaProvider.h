@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
+#include "IMBDefs.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {

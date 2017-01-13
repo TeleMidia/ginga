@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 #include "SDLDeviceScreen.h"
 #include "SDLFontProvider.h"
 #include "SDLWindow.h"

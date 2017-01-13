@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 
 #include "LocalScreenManager.h"
+#include "ScreenManagerFactory.h"
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 #include "SDLDeviceScreen.h"
@@ -50,7 +51,7 @@ namespace mb {
 	}
 
 	SDLWindow::~SDLWindow() {
-		vector<ISurface*>::iterator i;
+		vector<SDLSurface*>::iterator i;
 
 		lock();
 		lockChilds();
@@ -65,7 +66,7 @@ namespace mb {
 
 		releaseWinISur();
 
-		set<IWindow*>::iterator j;
+		set<SDLWindow*>::iterator j;
 		j = mirrors.begin();
 		while (j != mirrors.end()) {
 			(*j)->setMirrorSrc(NULL);
@@ -187,15 +188,15 @@ namespace mb {
 		}
 	}
 
-	void SDLWindow::addMirror(IWindow* window) {
+	void SDLWindow::addMirror(SDLWindow* window) {
 		assert(window != this);
 		lockSurface();
 		mirrors.insert(window);
 		unlockSurface();
 	}
 
-	bool SDLWindow::removeMirror(IWindow* window) {
-		set<IWindow*>::iterator i;
+	bool SDLWindow::removeMirror(SDLWindow* window) {
+		set<SDLWindow*>::iterator i;
 
 		lockSurface();
 		i = mirrors.find(window);
@@ -208,7 +209,7 @@ namespace mb {
 		return false;
 	}
 
-	void SDLWindow::setMirrorSrc(IWindow* mirrorSrc) {
+	void SDLWindow::setMirrorSrc(SDLWindow* mirrorSrc) {
 		lockSurface();
 		this->mirrorSrc = mirrorSrc;
 		if (this->mirrorSrc != NULL) {
@@ -217,7 +218,7 @@ namespace mb {
 		unlockSurface();
 	}
 
-	IWindow* SDLWindow::getMirrorSrc() {
+	SDLWindow* SDLWindow::getMirrorSrc() {
 		return mirrorSrc;
 	}
 
@@ -304,7 +305,7 @@ namespace mb {
 		unlockSurface();
 	}
 
-	void SDLWindow::setChildSurface(ISurface* iSur) {
+	void SDLWindow::setChildSurface(SDLSurface* iSur) {
 		lockSurface();
 		releaseWinISur();
 		this->childSurface = iSur;
@@ -594,7 +595,7 @@ namespace mb {
 		return itIs;
 	}
 
-	bool SDLWindow::isMine(ISurface* surface) {
+	bool SDLWindow::isMine(SDLSurface* surface) {
 		bool itIs = false;
 
 		if (surface != NULL && surface->getSurfaceContent() != NULL) {
@@ -635,7 +636,7 @@ namespace mb {
 		ScreenManagerFactory::getInstance()->deleteSurface(surId);
 	}
 
-	void SDLWindow::renderFrom(ISurface* surface) {
+	void SDLWindow::renderFrom(SDLSurface* surface) {
 		SDL_Surface* contentSurface;
 
 		Thread::mutexLock(&rMutex);
@@ -671,7 +672,7 @@ namespace mb {
 		Thread::mutexUnlock(&rMutex);
 	}
 
-	void SDLWindow::blit(IWindow* src) {
+	void SDLWindow::blit(SDLWindow* src) {
 		/*SDL_Window* srcWin;
 		SDL_Surface* srcSur;
 
@@ -690,7 +691,7 @@ namespace mb {
 		}*/
 	}
 
-	void SDLWindow::stretchBlit(IWindow* src) {
+	void SDLWindow::stretchBlit(SDLWindow* src) {
 		//SDLRectangle rect, *r = NULL;
 		//SDL_Window* srcWin;
 		//SDL_Surface* srcSur;

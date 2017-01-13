@@ -18,14 +18,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PRESENTATIONENGINEMANAGER_H_
 #define PRESENTATIONENGINEMANAGER_H_
 
+#include "mb/IMBDefs.h"
+
+#include "system/ITimeBaseProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+
+#include "player/INCLPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
+#include <set>
+#include <string>
+using namespace std;
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "mb/IInputManager.h"
-#include "mb/ILocalScreenManager.h"
+#include "mb/InputManager.h"
+#include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
@@ -45,7 +57,7 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include "gingancl/IPrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
-#include "IPresentationEngineManager.h"
+#include "PresentationEngineManager.h"
 
 #include <pthread.h>
 #include <iostream>
@@ -61,7 +73,6 @@ namespace telemidia {
 namespace ginga {
 namespace lssm {
   class PresentationEngineManager :
-					public IPresentationEngineManager,
 		  			public IPlayerListener,
 					public IInputEventListener,
 					public ICmdEventListener,
@@ -106,8 +117,8 @@ namespace lssm {
 		int currentPrivateBaseId;
 		static bool autoProcess;
 		vector<string> commands;
-		static IScreenManager* dm;
-		IInputManager* im;
+		static LocalScreenManager* dm;
+		InputManager* im;
 		IShowButton* sb;
 		bool debugWindow;
 
@@ -194,7 +205,7 @@ namespace lssm {
 		void updateStatus(
 				short code, string parameter, short type, string value);
 
-		bool userEventReceived(IInputEvent* ev);
+		bool userEventReceived(SDLInputEvent* ev);
 		bool cmdEventReceived(string command, string args);
 
 		static void* eventReceived(void* ptr);

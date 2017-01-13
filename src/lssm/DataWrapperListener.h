@@ -49,7 +49,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 #include "isdbt-dataproc/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
-#include "IPresentationEngineManager.h"
+#include "PresentationEngineManager.h"
 
 #include <string>
 using namespace std;
@@ -66,7 +66,7 @@ namespace lssm {
 				public Thread {
 
 	private:
-		IPresentationEngineManager* pem;
+		PresentationEngineManager* pem;
 		string documentUri;
 		bool autoMount;
 		map<string, string> ncls;
@@ -76,7 +76,7 @@ namespace lssm {
 		IAIT* ait;
 
 	public:
-		DataWrapperListener(IPresentationEngineManager* pem);
+		DataWrapperListener(PresentationEngineManager* pem);
 		virtual ~DataWrapperListener();
 		void autoMountOC(bool autoMountIt);
 
