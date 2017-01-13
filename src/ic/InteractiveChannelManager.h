@@ -18,10 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _InteractiveChannelManager_H_
 #define _InteractiveChannelManager_H_
 
-#include "IInteractiveChannelManager.h"
+#include "IInteractiveChannel.h"
 
 #include <pthread.h>
 
+#include <set>
+#include <string>
 #include <map>
 #include <iostream>
 using namespace std;
@@ -32,7 +34,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace ic {
-  class InteractiveChannelManager : public IInteractiveChannelManager {
+  class InteractiveChannelManager {
 	private:
 		set<IInteractiveChannel*>* ics;
 		map<string, IInteractiveChannel*>* urisIcs;
