@@ -61,10 +61,4 @@ namespace tuning {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tuning::ITuner* TunerCreator(
-		GingaScreenID screenId);
-
-typedef void TunerDestroyer(
-		::br::pucrio::telemidia::ginga::core::tuning::ITuner*);
-
 #endif //_ITUNER_H_

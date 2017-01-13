@@ -44,10 +44,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IImageProvider*
-		ImageProviderCreator(GingaScreenID screenId, const char* mrl);
-
-typedef void ImageProviderDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IImageProvider* ip);
-
 #endif /*IIMAGEPROVIDER_H_*/

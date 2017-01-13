@@ -146,10 +146,4 @@ namespace player {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::player::INCLPlayer*
-	NCLPlayerCreator(NclPlayerData* data);
-
-typedef void NCLPlayerDescroyer(
-		::br::pucrio::telemidia::ginga::core::player::INCLPlayer* p);
-
 #endif //_INCLPlayer_H_

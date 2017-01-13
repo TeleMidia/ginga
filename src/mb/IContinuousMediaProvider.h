@@ -68,10 +68,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
-		CMPCreator(GingaScreenID screenId, const char* mrl);
-
-typedef void CMPDestroyer(::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* cmp);
-
 #endif /*ICONTINUOUSMEDIAPROVIDER_H_*/

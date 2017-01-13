@@ -44,10 +44,4 @@ namespace player {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		ProgramHandlerCreator(GingaScreenID screenId);
-
-typedef void ProgramHandlerDestroyer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* ipav);
-
 #endif /*IPROGRAMAV_H_*/

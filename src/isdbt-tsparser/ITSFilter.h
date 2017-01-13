@@ -55,10 +55,4 @@ namespace tsparser {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::ITSFilter*
-		filterCreator(int pid);
-
-typedef void filterDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::ITSFilter*);
-
 #endif /*ITSFILTER_H_*/

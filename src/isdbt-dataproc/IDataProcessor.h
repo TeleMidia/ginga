@@ -89,10 +89,4 @@ namespace dataprocessing {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::dataprocessing::IDataProcessor*
-		dpCreator();
-
-typedef void dpDestroyer(
-		::br::pucrio::telemidia::ginga::core::dataprocessing::IDataProcessor*);
-
 #endif /*IDataProcessor_H_*/

@@ -52,6 +52,4 @@ namespace si {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::IAIT* AITCreator();
-
 #endif /* IAIT_H_ */

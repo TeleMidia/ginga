@@ -49,11 +49,4 @@ namespace fs {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::system::fs::IGingaLocatorFactory*
-		GingaLocatorFactoryCreator();
-
-typedef void GingaLocatorFactoryDestroyer(
-		::br::pucrio::telemidia::ginga::core::system::fs::
-				IGingaLocatorFactory* glf);
-
 #endif /*IGINGALOCATORFACTORY_H_*/

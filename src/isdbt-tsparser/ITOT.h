@@ -52,9 +52,4 @@ namespace si {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::ITOT* TOTCreator();
-
-typedef void TOTDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::ITOT* tot);
-
 #endif /* ITOT_H_ */

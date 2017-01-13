@@ -51,10 +51,4 @@ namespace prefetch {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::ncl::prefetch::IPrefetchManager*
-         PrefetchManagerCreator();
-
-typedef void PrefetchManagerDestroyer(
-		::br::pucrio::telemidia::ginga::ncl::prefetch::IPrefetchManager* pm);
-
 #endif /*IPrefetchManager_H_*/

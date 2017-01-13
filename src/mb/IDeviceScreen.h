@@ -139,13 +139,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen*
-		ScreenCreator(
-				int numArgs, char** args,
-				GingaScreenID myId, UnderlyingWindowID embedId,
-				bool externalRenderer);
-
-typedef void ScreenDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IDeviceScreen* ds);
-
 #endif /*IDEVICESCREEN_H_*/

@@ -96,20 +96,4 @@ namespace multidevice {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::ncl::multidevice::
-		IFormatterMultiDevice* FormatterMultiDeviceCreator(
-				GingaScreenID screenId,
-				IDeviceLayout* deviceLayout,
-				int devClass,
-				string playerId,
-				int x,
-				int y,
-				int w,
-				int h,
-				bool deviceSearch, int srvPort);
-
-typedef void FormatterMultiDeviceDescroyer(
-		::br::pucrio::telemidia::ginga::ncl::multidevice::
-				IFormatterMultiDevice* fmd);
-
 #endif /* _IFormatterMultiDevice_H_ */

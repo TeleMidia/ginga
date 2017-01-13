@@ -61,10 +61,4 @@ namespace si {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::IServiceInfo*
-		ServiceInfoCreator();
-
-typedef void ServiceInfoDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::IServiceInfo* si);
-
 #endif /*ISERVICEINFO_H_*/

@@ -49,10 +49,4 @@ namespace tuning {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tuning::IFrontendFilter*
-		feFilterCreator(int id);
-
-typedef void feFilterDestroyer(
-		::br::pucrio::telemidia::ginga::core::tuning::IFrontendFilter*);
-
 #endif /*IFrontendFilter_H_*/
