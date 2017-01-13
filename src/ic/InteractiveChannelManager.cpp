@@ -172,17 +172,3 @@ namespace ic {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannelManager*
-		createICM() {
-
-	return ::br::pucrio::telemidia::ginga::core::ic::
-			InteractiveChannelManager::getInstance();
-}
-
-extern "C" void destroyICM(
-		::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannelManager*
-				icm) {
-
-	delete icm;
-}

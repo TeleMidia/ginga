@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "player/PlayersComponentSupport.h"
 
-#include "ic/IInteractiveChannelManager.h"
+#include "ic/InteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
 namespace br {
@@ -39,7 +39,7 @@ namespace player {
 		if (mrl.substr(0, 7) == "http://" ||
 				mrl.substr(0, 8) == "https://") {
 
-			IInteractiveChannelManager* icm;
+			InteractiveChannelManager* icm;
 
 			icm = InteractiveChannelManager::getInstance();
 			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);

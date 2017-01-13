@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "ic/IInteractiveChannelManager.h"
+#include "ic/InteractiveChannelManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::ic;
 
 #include <sys/stat.h>
@@ -45,7 +45,7 @@ namespace prefetch {
 			map<string, string>* urisToLocalRoots;
 			set<string>* scheduledRemoteUris;
 			set<string>* scheduledLocalUris;
-			IInteractiveChannelManager* icm;
+			InteractiveChannelManager* icm;
 			string prefetchRoot;
 			bool synch;
 
