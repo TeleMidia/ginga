@@ -67,10 +67,10 @@ namespace mb {
 			bool textureOwner;
 
 			int borderWidth;
-			IColor* bgColor;
-			IColor* borderColor;
-			IColor* winColor;
-			IColor* colorKey;
+			Color* bgColor;
+			Color* borderColor;
+			Color* winColor;
+			Color* colorKey;
 
 			GingaScreenID myScreen;
 			GingaWindowID windowId;
@@ -131,11 +131,11 @@ namespace mb {
 			IWindow* getMirrorSrc();
 
 			void setBgColor(int r, int g, int b, int alpha);
-			IColor* getBgColor();
+			Color* getBgColor();
 			void setColorKey(int r, int g, int b);
-			IColor* getColorKey();
+			Color* getColorKey();
 			void setWindowColor(int r, int g, int b, int alpha);
-			IColor* getWindowColor();
+			Color* getWindowColor();
 			void setBorder(int r, int g, int b, int alpha=255, int bWidth=0);
 			void getBorder(int* r, int* g, int* b, int* alpha, int* bWidth);
 

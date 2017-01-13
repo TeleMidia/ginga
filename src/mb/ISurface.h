@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMBDefs.h"
 
-#include "util/IColor.h"
+#include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
 
 namespace br {
@@ -50,13 +50,13 @@ namespace mb {
 			virtual void fillRectangle(int x, int y, int w, int h)=0;
 			virtual void drawString(int x, int y, const char* txt)=0;
 			virtual void setBorderColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBorderColor()=0;
+			virtual Color* getBorderColor()=0;
 			virtual void setBgColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBgColor()=0;
+			virtual Color* getBgColor()=0;
 			virtual void setColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getColor()=0;
+			virtual Color* getColor()=0;
 			virtual void setChromaColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getChromaColor()=0;
+			virtual Color* getChromaColor()=0;
 			virtual void setSurfaceFont(void* font)=0;
 			virtual void flip()=0;
 			virtual void scale(double x, double y)=0;

@@ -231,7 +231,7 @@ namespace mb {
 		bgColor = new Color(r, g, b, alpha);
 	}
 
-	IColor* SDLWindow::getBgColor() {
+	Color* SDLWindow::getBgColor() {
 		return bgColor;
 	}
 
@@ -245,7 +245,7 @@ namespace mb {
 		colorKey = new Color(r, g, b);
 	}
 
-	IColor* SDLWindow::getColorKey() {
+	Color* SDLWindow::getColorKey() {
 		return colorKey;
 	}
 
@@ -259,7 +259,7 @@ namespace mb {
 		winColor = new Color(r, g, b, alpha);
 	}
 
-	IColor* SDLWindow::getWindowColor() {
+	Color* SDLWindow::getWindowColor() {
 		return winColor;
 	}
 

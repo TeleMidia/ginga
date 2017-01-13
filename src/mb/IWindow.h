@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IWINDOW_H_
 #define IWINDOW_H_
 
-#include "util/IColor.h"
+#include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
 
 #include "ISurface.h"
@@ -39,11 +39,11 @@ namespace mb {
 			virtual IWindow* getMirrorSrc()=0;
 
 			virtual void setBgColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getBgColor()=0;
+			virtual Color* getBgColor()=0;
 			virtual void setColorKey(int r, int g, int b)=0;
-			virtual IColor* getColorKey()=0;
+			virtual Color* getColorKey()=0;
 			virtual void setWindowColor(int r, int g, int b, int alpha)=0;
-			virtual IColor* getWindowColor()=0;
+			virtual Color* getWindowColor()=0;
 			virtual void setBorder(
 					int r, int g, int b, int alpha=255, int bWidth=0)=0;
 

@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
-#include "util/functions.h"
-#include "IColor.h"
+#include "functions.h"
 
 #include <string>
 #include <iostream>
@@ -27,7 +26,7 @@ using namespace std;
 
 TELEMIDIA_UTIL_BEGIN_DECLS
 
-class Color : public IColor {
+class Color {
 	private:
 		int r, g, b, alpha;
 

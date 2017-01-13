@@ -249,7 +249,7 @@ namespace mb {
 
 	void SDLFontProvider::playOver(GingaSurfaceID surface) {
 		SDLWindow* parent;
-		IColor* fontColor = NULL;
+		Color* fontColor = NULL;
 
 		SDL_Color sdlColor;
 		SDL_Rect rect;
