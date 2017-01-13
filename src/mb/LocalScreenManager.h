@@ -386,7 +386,7 @@ namespace mb {
 
 			void setSurfaceContent(const GingaSurfaceID &surId, void* surface);
 
-			IColor* getSurfaceColor(const GingaSurfaceID &surId);
+			Color* getSurfaceColor(const GingaSurfaceID &surId);
 
 			bool hasSurfaceExternalHandler(const GingaSurfaceID &surId);
 

@@ -51,8 +51,8 @@ namespace player {
 			int currentColumn;
 			int tabSize;
 			int fontSize;
-			IColor* fontColor;
-			IColor* bgColor;
+			Color* fontColor;
+			Color* bgColor;
 			string fontUri;
 			short currentAlign;
 			GingaProviderID font;
@@ -71,7 +71,7 @@ namespace player {
 					string text,
 					short textAlign,
 					string fontUri = "",
-					int fontSize = 12, IColor* fontColor = NULL);
+					int fontSize = 12, Color* fontColor = NULL);
 
 			virtual bool play(){return Player::play();};
 			virtual void stop(){Player::stop();};

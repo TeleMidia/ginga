@@ -324,7 +324,7 @@ namespace mb {
 			virtual void setSurfaceContent(
 					const GingaSurfaceID &surId, void* surface) = 0;
 
-			virtual IColor* getSurfaceColor(const GingaSurfaceID &surId) = 0;
+			virtual Color* getSurfaceColor(const GingaSurfaceID &surId) = 0;
 
 			virtual bool hasSurfaceExternalHandler(const GingaSurfaceID &surId) = 0;
 

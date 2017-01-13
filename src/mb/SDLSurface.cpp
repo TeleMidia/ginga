@@ -486,7 +486,7 @@ namespace mb {
 		Thread::mutexUnlock(&sMutex);
 	}
 
-	IColor* SDLSurface::getChromaColor() {
+	Color* SDLSurface::getChromaColor() {
 		return this->chromaColor;
 	}
 
@@ -496,7 +496,7 @@ namespace mb {
 		this->borderColor = new Color(r, g, b, alpha);
 	}
 
-	IColor* SDLSurface::getBorderColor() {
+	Color* SDLSurface::getBorderColor() {
 		return borderColor;
 	}
 
@@ -507,7 +507,7 @@ namespace mb {
 		fill();
 	}
 
-	IColor* SDLSurface::getBgColor() {
+	Color* SDLSurface::getBgColor() {
 		return bgColor;
 	}
 
@@ -522,7 +522,7 @@ namespace mb {
 		this->surfaceColor = new Color(r, g, b, alpha);
 	}
 
-	IColor* SDLSurface::getColor() {
+	Color* SDLSurface::getColor() {
 		return surfaceColor;
 	}
 

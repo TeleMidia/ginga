@@ -90,7 +90,7 @@ namespace player {
 			string text,
 			short textAlign,
 			string fontUri,
-			int fontSize, IColor* fontColor) {
+			int fontSize, Color* fontColor) {
 
 		if (fontSize < 1 || s == 0 || text == "") {
 			return 0;

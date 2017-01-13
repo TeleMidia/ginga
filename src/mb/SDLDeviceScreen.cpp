@@ -2780,7 +2780,7 @@ namespace mb {
 			IWindow* dstWin) {
 
 		SDL_Rect dstRect;
-		IColor* bgColor;
+		Color* bgColor;
 		Uint8 rr, rg, rb, ra;
 		int i, r, g, b, a, bw;
 		int alpha = 0;

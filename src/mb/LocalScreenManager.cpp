@@ -1577,10 +1577,10 @@ void LocalScreenManager::moveWindowTo(
 		 sur->setSurfaceContent(surface);
  }
 
- IColor* LocalScreenManager::getSurfaceColor(const GingaSurfaceID &surId)
+ Color* LocalScreenManager::getSurfaceColor(const GingaSurfaceID &surId)
  {
 	 ISurface* surface = NULL;
-	 IColor* color = NULL;
+	 Color* color = NULL;
 
 	 surface = getISurfaceFromId (surId);
 	 if (surface != NULL)
