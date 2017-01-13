@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-
 #include "isdbt-tsparser/Demuxer.h"
 
 #include "isdbt-tsparser/PipeFilter.h"

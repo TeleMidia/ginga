@@ -25,7 +25,8 @@
 
 */
 
-#include "util/Base64.h"
+#include "config.h"
+#include "Base64.h"
 
 namespace br {
 namespace pucrio {
