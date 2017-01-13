@@ -36,7 +36,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-	IContextManager* ContextManager::_instance = NULL;
+	ContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
 		usersUri = SystemCompat::getGingaContextPrefix() +
@@ -57,7 +57,7 @@ namespace contextmanager {
 	}
 
 	ContextManager::~ContextManager() {
-		map<int, IGingaUser*>::iterator i;
+		map<int, GingaUser*>::iterator i;
 		set<IContextListener*>::iterator j;
 
 		Thread::mutexLock(&groupsMutex);
@@ -70,7 +70,7 @@ namespace contextmanager {
 		Thread::mutexDestroy(&groupsMutex);
 	}
 
-	IContextManager* ContextManager::getInstance() {
+	ContextManager* ContextManager::getInstance() {
 		if (_instance == NULL) {
 			_instance = new ContextManager();
 		}
@@ -79,7 +79,7 @@ namespace contextmanager {
 	}
 
 	void ContextManager::initializeUsers() {
-		IGingaUser* newUser;
+		GingaUser* newUser;
 		ifstream fis;
 		string line = "", name = "", location = "", passwd = "";
 		int id = -1, age = -1;
@@ -274,7 +274,7 @@ namespace contextmanager {
 		(*vars)[varName] = varValue;
 	}
 
-	void ContextManager::addUser(IGingaUser* newUser) {
+	void ContextManager::addUser(GingaUser* newUser) {
 		int id;
 
 		id = newUser->getUserId();
@@ -290,7 +290,7 @@ namespace contextmanager {
 
 	void ContextManager::saveUsersAccounts() {
 		FILE* fd;
-		map<int, IGingaUser*>::iterator i;
+		map<int, GingaUser*>::iterator i;
 
 		remove(usersUri.c_str());
 		fd = fopen(usersUri.c_str(), "w+b");
@@ -366,8 +366,8 @@ namespace contextmanager {
 		return curUserId;
 	}
 
-	IGingaUser* ContextManager::getUser(int userId) {
-		map<int, IGingaUser*>::iterator i;
+	GingaUser* ContextManager::getUser(int userId) {
+		map<int, GingaUser*>::iterator i;
 
 		i = users.find(userId);
 		if (i != users.end()) {
@@ -407,7 +407,7 @@ namespace contextmanager {
 
 	map<string, string>* ContextManager::getUsersNames() {
 		map<string, string>* names;
-		map<int, IGingaUser*>::iterator i;
+		map<int, GingaUser*>::iterator i;
 
 		names = new map<string, string>;
 		i = users.begin();
@@ -424,12 +424,12 @@ namespace contextmanager {
 		return names;
 	}
 
-	ISystemInfo* ContextManager::getSystemInfo() {
+	SystemInfo* ContextManager::getSystemInfo() {
 		return systemInfo;
 	}
 
 	void ContextManager::listUsersNicks() {
-		map<int, IGingaUser*>::iterator i;
+		map<int, GingaUser*>::iterator i;
 
 		clog << "ContextManager::listUsersNicks '";
 		i = users.begin();
@@ -481,14 +481,14 @@ namespace contextmanager {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::contextmanager::
-		IContextManager* createContextManager() {
+		ContextManager* createContextManager() {
 
 	return ::br::pucrio::telemidia::ginga::core::contextmanager::
 			ContextManager::getInstance();
 }
 
 extern "C" void destroyContextManager(
-		::br::pucrio::telemidia::ginga::core::contextmanager::IContextManager*
+		::br::pucrio::telemidia::ginga::core::contextmanager::ContextManager*
 		cm) {
 
 	delete cm;

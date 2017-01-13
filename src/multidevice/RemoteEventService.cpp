@@ -30,7 +30,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 
-	IContextManager* RemoteEventService::contextManager = NULL;
+	ContextManager* RemoteEventService::contextManager = NULL;
 	RemoteEventService* RemoteEventService::_instance = NULL;
 
 	RemoteEventService::RemoteEventService() {

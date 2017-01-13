@@ -31,7 +31,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "ctxmgmt/IContextManager.h"
+#include "ctxmgmt/ContextManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #ifndef REMOTEEVENTSERVICE_H_
@@ -51,7 +51,7 @@ namespace multidevice {
 			pthread_mutex_t groupsMutex;
 			map<int,TcpSocketService*> groups;
 			static const int DEFAULT_PORT = 22222;
-			static IContextManager* contextManager;
+			static ContextManager* contextManager;
 			string base_device_ncl_path;
 
 		public:
