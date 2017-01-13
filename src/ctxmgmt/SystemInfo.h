@@ -18,10 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SystemInfo_H_
 #define _SystemInfo_H_
 
+#include "mb/IMBDefs.h"
+
+#include <map>
+#include <string>
+using namespace std;
+
 #include "mb/ILocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
-
-#include "ISystemInfo.h"
 
 namespace br {
 namespace pucrio {
@@ -29,7 +33,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-	class SystemInfo : public ISystemInfo {
+	class SystemInfo {
 		private:
 			float clockSpeed;
 			map<string, string>* sysTable;

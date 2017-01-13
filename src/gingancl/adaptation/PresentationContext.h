@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "ctxmgmt/IContextManager.h"
-#include "ctxmgmt/ISystemInfo.h"
+#include "ctxmgmt/ContextManager.h"
+#include "ctxmgmt/SystemInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #include "config.h"
@@ -62,7 +62,7 @@ namespace context {
 		private:
 			GingaScreenID myScreen;
 			map<string, string> contextTable;
-			static IContextManager* contextManager;
+			static ContextManager* contextManager;
 			IContextListener* globalVarListener;
 			pthread_mutex_t attrMutex;
 

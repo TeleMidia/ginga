@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _GingaUser_H_
 #define _GingaUser_H_
 
-#include "IGingaUser.h"
-
 #include <string>
 using namespace std;
 
@@ -29,7 +27,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-  class GingaUser : public IGingaUser {
+  class GingaUser {
 	private:
 		int userId;
 		string userName;

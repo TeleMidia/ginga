@@ -27,7 +27,7 @@ namespace ginga {
 namespace ncl {
 namespace adaptation {
 namespace context {
-	IContextManager* PresentationContext::contextManager = NULL;
+	ContextManager* PresentationContext::contextManager = NULL;
 
 	PresentationContext::PresentationContext(GingaScreenID screenId) {
 		createObserversVector();
@@ -193,7 +193,7 @@ namespace context {
 	}
 
 	void PresentationContext::initializeUserInfo(int currentUserId) {
-		IGingaUser* user;
+		GingaUser* user;
 
 		user = PresentationContext::contextManager->getUser(currentUserId);
 		if (user != NULL) {
@@ -204,7 +204,7 @@ namespace context {
 	}
 
 	void PresentationContext::initializeSystemValues() {
-		ISystemInfo* si;
+		SystemInfo* si;
 		int w, h;
 
 		//clog << "PresentationContext::initializeSystemValues " << endl;

@@ -18,7 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ContextManager_H_
 #define _ContextManager_H_
 
-#include "IContextManager.h"
+#include "SystemInfo.h"
+#include "GingaUser.h"
+
+#include <map>
+using namespace std;
 
 #include "IContextListener.h"
 
@@ -37,22 +41,22 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace contextmanager {
-  class ContextManager : public IContextManager {
+  class ContextManager {
 	private:
-		map<int, IGingaUser*> users;
+		map<int, GingaUser*> users;
 		map<int, map<string, string>*> contexts;
 		set<IContextListener*> ctxListeners;
 		string usersUri, contextsUri;
 		int curUserId;
-		ISystemInfo* systemInfo;
-		static IContextManager* _instance;
+		SystemInfo* systemInfo;
+		static ContextManager* _instance;
 		ContextManager();
 
 		pthread_mutex_t groupsMutex;
 
 	public:
 		~ContextManager();
-		static IContextManager* getInstance();
+		static ContextManager* getInstance();
 
 	private:
 		void initializeUsers();
@@ -60,7 +64,7 @@ namespace contextmanager {
 
 	public:
 		void addContextVar(int userId, string varName, string varValue);
-		void addUser(IGingaUser* newUser);
+		void addUser(GingaUser* newUser);
 		void saveUsersAccounts();
 		void saveUsersProfiles();
 		void addContextListener(IContextListener* listener);
@@ -73,7 +77,7 @@ namespace contextmanager {
 	public:
 		void setCurrentUserId(int userId);
 		int getCurrentUserId();
-		IGingaUser* getUser(int userId);
+		GingaUser* getUser(int userId);
 
 	private:
 		map<string,string>* getUserMap(int userId);
@@ -81,7 +85,7 @@ namespace contextmanager {
 	public:
 		map<string,string>* getUserProfile(int userId);
 		map<string, string>* getUsersNames();
-		ISystemInfo* getSystemInfo();
+		SystemInfo* getSystemInfo();
 
 	private:
 		void listUsersNicks();
