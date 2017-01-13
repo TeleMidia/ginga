@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-/*
- * $Id: DOMTreeErrorReporter.cpp,v 1.2 2008/10/01 20:54:36 marcio Exp $
- */
-
-// ---------------------------------------------------------------------------
-//  Includes
-// ---------------------------------------------------------------------------
+#include "config.h"
 #include <xercesc/sax/SAXParseException.hpp>
 #include "DOMTreeErrorReporter.h"
 #include <iostream>
