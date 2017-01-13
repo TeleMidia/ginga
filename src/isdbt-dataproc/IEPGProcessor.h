@@ -55,12 +55,4 @@ namespace epg {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::IEPGProcessor*
-		epgpCreator();
-
-typedef void epgpDestroyer(
-		::br::pucrio::telemidia::ginga::core::dataprocessing::epg::IEPGProcessor* epgProcessor);
-
-
-
 #endif /* IEPGPROCESSOR_H_ */

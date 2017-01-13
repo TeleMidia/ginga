@@ -88,10 +88,4 @@ namespace si {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::IEventInfo*
-		EICreator();
-
-typedef void EIDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::IEventInfo* ei);
-
 #endif /*IEVENTINFO_H_*/

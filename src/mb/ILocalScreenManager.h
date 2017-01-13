@@ -385,11 +385,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IScreenManager*
-		LocalScreenManagerCreator();
-
-typedef void LocalScreenManagerDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::
-				IScreenManager* dm);
-
 #endif /*ILocalScreenManager_H_*/

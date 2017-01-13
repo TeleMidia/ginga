@@ -152,10 +152,4 @@ namespace tsparser {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::IDemuxer* demCreator(
-		ITuner* tuner);
-
-typedef void demDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::IDemuxer* demuxer);
-
 #endif /*IDEMUXER_H_*/

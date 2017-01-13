@@ -59,13 +59,4 @@ namespace mb {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
-		FontProviderCreator(
-				GingaScreenID screenId,
-				const char* fontUri,
-				int heightInPixel);
-
-typedef void FontProviderDestroyer(
-		::br::pucrio::telemidia::ginga::core::mb::IFontProvider* fp);
-
 #endif /*IFONTPROVIDER_H_*/

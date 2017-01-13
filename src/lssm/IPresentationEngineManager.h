@@ -87,15 +87,4 @@ namespace lssm {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager*
-		PEMCreator(
-				int devClass,
-				int xOffset, int yOffset, int w, int h,
-				bool disableGfx,
-                bool useMulticast,
-				GingaScreenID screenId);
-
-typedef void PEMDestroyer(
-		::br::pucrio::telemidia::ginga::lssm::IPresentationEngineManager* pem);
-
 #endif /*_IPRESENTATIONENGINEMANAGER_H_*/

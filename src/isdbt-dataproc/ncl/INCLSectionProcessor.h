@@ -60,7 +60,4 @@ namespace ncl {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::
-		INCLSectionProcessor* NCLSectionProcessorCreator();
-
 #endif //_INCLSectionProcessor_H_

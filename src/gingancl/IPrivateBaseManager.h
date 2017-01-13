@@ -39,7 +39,4 @@ namespace ncl {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::ncl::IPrivateBaseManager*
-		PrivateBaseManagerCreator();
-
 #endif /*IPrivateBaseManager_H_*/

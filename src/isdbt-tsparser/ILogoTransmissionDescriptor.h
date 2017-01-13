@@ -59,11 +59,4 @@ namespace descriptors {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		ILogoTransmissionDescriptor* LTDCreator();
-
-typedef void LTDDestroyer(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors::
-		ILogoTransmissionDescriptor* ltd);
-
 #endif /*ILOGOTRANSMISSIONDESCRIPTOR_H_*/

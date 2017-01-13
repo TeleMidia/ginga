@@ -56,10 +56,4 @@ namespace ic {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannel*
-		ICCreator();
-
-typedef void ICDestroyer(
-		::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannel* ic);
-
 #endif /*_IInteractiveChannel_H_*/

@@ -41,8 +41,6 @@ namespace system {
 			virtual void testInstance(std::string& data, short scenario)=0;
 	};
 
-typedef IComponentInstance* CICreator();
-
 }
 }
 }

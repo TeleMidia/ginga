@@ -57,7 +57,4 @@ namespace tsparser {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::tsparser::ITransportSection*
-		TSSectionCreator(char* sectionBytes, unsigned int size);
-
 #endif /*ITRANSPORTSECTION_H_*/

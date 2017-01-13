@@ -45,11 +45,4 @@ namespace player {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::player::IShowButton*
-         WidgetCreator(GingaScreenID screenId);
-
-typedef void WidgetDestroyer(
-		::br::pucrio::telemidia::ginga::core::player::IShowButton*
-		deadInterface);
-
 #endif /*IShowButton_H_*/

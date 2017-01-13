@@ -125,10 +125,4 @@ namespace player {
 }
 }
 
-typedef ::br::pucrio::telemidia::ginga::core::player::IPlayer* PlayerCreator(
-		GingaScreenID screenId, const char* mrl);
-
-typedef void PlayerDestroyer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* player);
-
 #endif /*IPLAYER_H_*/
