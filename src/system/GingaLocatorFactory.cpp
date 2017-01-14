@@ -281,7 +281,7 @@ namespace fs {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::system::fs::
-		IGingaLocatorFactory* createGingaLocatorFactory() {
+		GingaLocatorFactory* createGingaLocatorFactory() {
 
 	return (::br::pucrio::telemidia::ginga::core::system::fs::
 			GingaLocatorFactory::getInstance());
@@ -289,7 +289,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::system::fs::
 
 extern "C" void destroyGingaLocatorFactory(
 		::br::pucrio::telemidia::ginga::core::system::fs::
-				IGingaLocatorFactory* glf) {
+				GingaLocatorFactory* glf) {
 
 	glf->release();
 }

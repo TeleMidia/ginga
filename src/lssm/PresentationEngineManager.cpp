@@ -47,7 +47,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/IGingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "lssm/PresentationEngineManager.h"
@@ -278,7 +278,7 @@ namespace lssm {
 
 		vector<string>* args;
 		vector<string>::iterator i;
-		IGingaLocatorFactory* glf = NULL;
+		GingaLocatorFactory* glf = NULL;
 		//NclDocument* document     = NULL;
 		INCLPlayer* docPlayer     = NULL;
 		string baseId, docId;

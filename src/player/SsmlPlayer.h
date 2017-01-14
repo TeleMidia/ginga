@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/interface/SDLWindow.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "system/fs/IGingaLocatorFactory.h"
+#include "system/fs/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "util/Color.h"

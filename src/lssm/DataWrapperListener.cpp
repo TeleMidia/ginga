@@ -220,7 +220,7 @@ namespace lssm {
 	void DataWrapperListener::objectMounted(
 			string ior, string clientUri, string name) {
 
-		IGingaLocatorFactory* glf = NULL;
+		GingaLocatorFactory* glf = NULL;
 
 		glf = GingaLocatorFactory::getInstance();
 

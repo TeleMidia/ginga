@@ -27,8 +27,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "IGingaLocatorFactory.h"
-
 #include <pthread.h>
 
 #include <map>
@@ -43,7 +41,7 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace fs {
-	class GingaLocatorFactory : public IGingaLocatorFactory {
+	class GingaLocatorFactory {
 		private:
 			static GingaLocatorFactory* _instance;
 			map<string, string>* iorClients;

@@ -32,7 +32,7 @@ namespace player {
 	ImagePlayer::ImagePlayer(GingaScreenID screenId, string mrl) :
 			Player(screenId, mrl) {
 
-		IGingaLocatorFactory* glf = NULL;
+		GingaLocatorFactory* glf = NULL;
 		string path, name, clientPath, newMrl;
 		bool resolved = false;
 
