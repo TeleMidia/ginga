@@ -654,9 +654,3 @@ namespace ncl {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::ncl::IPrivateBaseManager*
-		createPrivateBaseManager() {
-
-	return (new ::br::pucrio::telemidia::ginga::ncl::PrivateBaseManager());
-}

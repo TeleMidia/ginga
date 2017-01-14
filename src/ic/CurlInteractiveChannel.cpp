@@ -277,16 +277,3 @@ namespace ic {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannel*
-		createCurlIC() {
-
-	return new ::br::pucrio::telemidia::ginga::core::ic::
-			CurlInteractiveChannel();
-}
-
-extern "C" void destroyCurlIC(
-		::br::pucrio::telemidia::ginga::core::ic::IInteractiveChannel* ic) {
-
-	delete ic;
-}

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _DeviceDomain_H_
 
 #include "BroadcastSocketService.h"
-#include "IDeviceDomain.h"
+#include "IRemoteDeviceListener.h"
 #include "IDeviceService.h"
 #include "ISocketService.h"
 #include "MulticastSocketService.h"
@@ -32,7 +32,22 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class DeviceDomain : public IDeviceDomain {
+  class DeviceDomain {
+	public:
+		//CT: class types
+		static const int CT_BASE              = 0;
+		static const int CT_PASSIVE           = 1;
+		static const int CT_ACTIVE            = 2;
+
+		//FT: frame types
+		static const int FT_CONNECTIONREQUEST = 0;
+		static const int FT_ANSWERTOREQUEST   = 1;
+		static const int FT_KEEPALIVE         = 2;
+		static const int FT_MEDIACONTENT      = 3;
+		static const int FT_SELECTIONEVENT    = 4;
+		static const int FT_ATTRIBUTIONEVENT  = 5;
+		static const int FT_PRESENTATIONEVENT = 6;
+
 	protected:
 		static char headerStream[HEADER_SIZE];
 		static char* mdFrame;

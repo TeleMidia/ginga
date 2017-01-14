@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "ic/InteractiveChannelManager.h"
-#include "ic/IInteractiveChannel.h"
 #include "ic/CurlInteractiveChannel.h"
 
 namespace br {
@@ -28,8 +27,8 @@ namespace core {
 namespace ic {
 	InteractiveChannelManager* InteractiveChannelManager::_instance = NULL;
 	InteractiveChannelManager::InteractiveChannelManager() {
-		ics     = new set<IInteractiveChannel*>;
-		urisIcs = new map<string, IInteractiveChannel*>;
+		ics     = new set<CurlInteractiveChannel*>;
+		urisIcs = new map<string, CurlInteractiveChannel*>;
 	}
 
 	InteractiveChannelManager::~InteractiveChannelManager() {
@@ -41,7 +40,7 @@ namespace ic {
 	}
 
 	bool InteractiveChannelManager::hasInteractiveChannel() {
-		IInteractiveChannel* ic;
+		CurlInteractiveChannel* ic;
 		set<string>* objects;
 		string symbol;
 		set<string>::iterator i;
@@ -63,7 +62,7 @@ namespace ic {
 		return _instance;
 	}
 
-	set<IInteractiveChannel*>*
+	set<CurlInteractiveChannel*>*
 	InteractiveChannelManager::getInteractiveChannels() {
 		return ics;
 	}
@@ -73,10 +72,10 @@ namespace ic {
 	}
 
 	void InteractiveChannelManager::releaseInteractiveChannel(
-			IInteractiveChannel* ic) {
+			CurlInteractiveChannel* ic) {
 
-		set<IInteractiveChannel*>::iterator i;
-		map<string, IInteractiveChannel*>::iterator j;
+		set<CurlInteractiveChannel*>::iterator i;
+		map<string, CurlInteractiveChannel*>::iterator j;
 
 		i = ics->find(ic);
 		if (ics->end() != i) {
@@ -95,10 +94,10 @@ namespace ic {
 		}
 	}
 
-	IInteractiveChannel* InteractiveChannelManager::createInteractiveChannel(
+	CurlInteractiveChannel* InteractiveChannelManager::createInteractiveChannel(
 			string rUri) {
 
-		IInteractiveChannel* ic = NULL;
+		CurlInteractiveChannel* ic = NULL;
 
 		if (rUri.length() > 7 && rUri.substr(0, 7) == "http://") {
 			ic = new CurlInteractiveChannel();
@@ -112,7 +111,7 @@ namespace ic {
 		return ic;
 	}
 
-	IInteractiveChannel* InteractiveChannelManager::getInteractiveChannel(
+	CurlInteractiveChannel* InteractiveChannelManager::getInteractiveChannel(
 			string remoteUri) {
 
 		if (urisIcs->count(remoteUri) != 0) {
@@ -123,7 +122,7 @@ namespace ic {
 	}
 
 	void InteractiveChannelManager::releaseInteractiveChannels() {
-		set<IInteractiveChannel*>::iterator i;
+		set<CurlInteractiveChannel*>::iterator i;
 		urisIcs->clear();
 		i = ics->begin();
 		while (i != ics->end()) {
@@ -149,8 +148,8 @@ namespace ic {
 
 	void* InteractiveChannelManager::asyncPerform(void* thiz) {
 		InteractiveChannelManager* icm;
-		set<IInteractiveChannel*>* icSet;
-		set<IInteractiveChannel*>::iterator i;
+		set<CurlInteractiveChannel*>* icSet;
+		set<CurlInteractiveChannel*>::iterator i;
 
 		icm   = (InteractiveChannelManager*)thiz;
 		icSet = icm->getInteractiveChannels();

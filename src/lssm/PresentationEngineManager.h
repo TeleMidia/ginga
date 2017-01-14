@@ -54,7 +54,7 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 #include "ncl/NclDocument.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-#include "gingancl/IPrivateBaseManager.h"
+#include "gingancl/PrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "PresentationEngineManager.h"
@@ -94,7 +94,7 @@ namespace lssm {
 		bool enableGfx;
 
 		GingaScreenID myScreen;
-		IPrivateBaseManager* privateBaseManager;
+		PrivateBaseManager* privateBaseManager;
 		map<string, INCLPlayer*> formatters;
 		set<INCLPlayer*> formattersToRelease;
 		bool paused;

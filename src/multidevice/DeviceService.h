@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::util;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "RemoteDevice.h"
-#include "IDeviceService.h"
+#include "IRemoteDeviceListener.h"
 
 #include <set>
 #include <map>
@@ -39,7 +39,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class DeviceService : public IDeviceService {
+  class DeviceService {
 	protected:
 		set<IRemoteDeviceListener*>* listeners;
 		map<unsigned int, IRemoteDevice*>* devices;

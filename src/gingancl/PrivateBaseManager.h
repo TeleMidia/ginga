@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "IPrivateBaseManager.h"
 #include "PrivateBaseContext.h"
 
 namespace br {
@@ -29,7 +28,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace ncl {
-  class PrivateBaseManager : public IPrivateBaseManager {
+  class PrivateBaseManager {
 	private:
 		map<string, PrivateBaseContext*> privateBases;
 		pthread_mutex_t mutexTable;

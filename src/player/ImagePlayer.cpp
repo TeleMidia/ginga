@@ -42,7 +42,7 @@ namespace player {
 			InteractiveChannelManager* icm;
 
 			icm = InteractiveChannelManager::getInstance();
-			IInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
+			CurlInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
 			newMrl = itos((long int)this);
 			ic->setSourceTarget(newMrl);
 			ic->reserveUrl(mrl, NULL, "GingaNCL/0.13.6");

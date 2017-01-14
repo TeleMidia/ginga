@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "IPrefetchManager.h"
-
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
@@ -37,8 +35,7 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace prefetch {
-	class PrefetchManager : public IPrefetchManager,
-			public IInteractiveChannelListener {
+	class PrefetchManager : public IInteractiveChannelListener {
 
 		private:
 			map<string, string>* localToRemoteUris;
@@ -55,10 +52,10 @@ namespace prefetch {
 
 			PrefetchManager();
 			~PrefetchManager();
-			static IPrefetchManager* _instance;
+			static PrefetchManager* _instance;
 
 		public:
-			static IPrefetchManager* getInstance();
+			static PrefetchManager* getInstance();
 
 		private:
 			void createDirectory(string newDir);

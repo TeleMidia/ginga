@@ -38,7 +38,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace ncl {
-	IPrefetchManager* FormatterMediator::pm = NULL;
+	PrefetchManager* FormatterMediator::pm = NULL;
 
 	EntryEventListener::EntryEventListener(Player* player, string interfaceId) {
 		this->player  = player;
@@ -401,7 +401,6 @@ namespace ncl {
 	void FormatterMediator::release() {
 		if (pm != NULL) {
 			pm->release();
-			delete pm;
 			pm = NULL;
 		}
 	}
