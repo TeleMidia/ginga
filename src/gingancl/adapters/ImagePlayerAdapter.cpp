@@ -31,14 +31,6 @@ namespace image {
 
 	}
 
-	void ImagePlayerAdapter::initializeInstance(std::string& data, short scenario) {
-
-	}
-
-	void ImagePlayerAdapter::testInstance(std::string& data, short scenario) {
-
-	}
-
 	void ImagePlayerAdapter::createPlayer() {
 		clog << "ImagePlayerAdapter::createPlayer '" << mrl << "'" << endl;
 

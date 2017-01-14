@@ -101,11 +101,6 @@ namespace adapters {
 
 			virtual void setAdapterManager(IPlayerAdapterManager* manager);
 
-		private:
-			virtual void initializeInstance(std::string& data, short scenario);
-			virtual void testInstance(std::string& data, short scenario);
-
-		public:
 			bool instanceOf(string s);
 			virtual void setNclEditListener(IPlayerListener* listener){};
 			void setOutputWindow(GingaWindowID windowId);

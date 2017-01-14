@@ -131,14 +131,6 @@ namespace lssm {
 #endif // HAVE_ISDBT
 	}
 
-	void CommonCoreManager::initializeInstance(std::string& data, short scenario) {
-
-	}
-
-	void CommonCoreManager::testInstance(std::string& data, short scenario) {
-
-	}
-
 	void CommonCoreManager::enableNPTPrinter(bool enableNPTPrinter) {
 		nptPrinter = enableNPTPrinter;
 	}

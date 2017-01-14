@@ -61,11 +61,6 @@ namespace ncl {
 
 		void setConverterInfo(
 				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout);
-
-	private:
-		virtual void initializeInstance(std::string& data, short scenario);
-		virtual void testInstance(std::string& data, short scenario);
-
 	protected:
 		void checkManager();
 		virtual void initialize();
