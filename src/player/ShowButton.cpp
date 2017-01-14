@@ -175,7 +175,7 @@ namespace player {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IShowButton*
+extern "C" ::br::pucrio::telemidia::ginga::core::player::ShowButton*
 		createShowButton(GingaScreenID screenId) {
 
 	br::pucrio::telemidia::ginga::core::player::ShowButton* sb;
@@ -185,7 +185,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::player::IShowButton*
 }
 
 extern "C" void destroyShowButton(
-		::br::pucrio::telemidia::ginga::core::player::IShowButton* sb) {
+		::br::pucrio::telemidia::ginga::core::player::ShowButton* sb) {
 
 	delete sb;
 }

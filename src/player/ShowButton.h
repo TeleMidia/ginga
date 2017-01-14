@@ -30,8 +30,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-
-#include "IShowButton.h"
+#include "mb/IMBDefs.h"
+#include <string>
 #include "ImagePlayer.h"
 
 namespace br {
@@ -40,7 +40,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace player {
-	class ShowButton : public IShowButton, public Thread {
+  class ShowButton : public Thread {
 		private:
 			short status;
 			static const short NONE = 0;
