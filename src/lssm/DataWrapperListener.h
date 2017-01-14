@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/IGingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "player/INCLPlayer.h"

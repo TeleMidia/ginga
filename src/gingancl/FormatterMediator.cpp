@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "adaptation/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
-#include "system/IGingaLocatorFactory.h"
+#include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #if HAVE_MULTIDEVICE
@@ -1435,7 +1435,7 @@ namespace ncl {
 		vector<string>* args;
 		vector<string>::iterator i;
 		string arg, uri, ior, docUri, docIor, uName, docId;
-		IGingaLocatorFactory* glf = NULL;
+		GingaLocatorFactory* glf = NULL;
 
 		glf = GingaLocatorFactory::getInstance();
 
