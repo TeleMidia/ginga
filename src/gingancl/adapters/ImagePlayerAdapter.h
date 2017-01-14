@@ -44,10 +44,6 @@ namespace image {
 			ImagePlayerAdapter();
 			virtual ~ImagePlayerAdapter(){};
 
-		private:
-			void initializeInstance(std::string& data, short scenario);
-			void testInstance(std::string& data, short scenario);
-
 		protected:
 			void createPlayer();
    };

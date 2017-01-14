@@ -109,15 +109,6 @@ namespace ncl {
 		setDependencies();
 	}
 
-	void NclDocumentConverter::initializeInstance(
-			std::string& data, short scenario) {
-
-	}
-
-	void NclDocumentConverter::testInstance(std::string& data, short scenario) {
-
-	}
-
 	void NclDocumentConverter::initialize() {
 		presentationSpecificationParser = new
 			    NclPresentationSpecConverter(this, deviceLayout);

@@ -107,14 +107,6 @@ namespace adapters {
 		im = dm->getInputManager(myScreen);
 	}
 
-	void FormatterPlayerAdapter::initializeInstance(std::string& data, short scenario) {
-
-	}
-
-	void FormatterPlayerAdapter::testInstance(std::string& data, short scenario)  {
-
-	}
-
 	bool FormatterPlayerAdapter::instanceOf(string s) {
 		if (!typeSet.empty()) {
 			return (typeSet.find(s) != typeSet.end());

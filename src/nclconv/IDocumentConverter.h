@@ -22,9 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/IPrivateBaseContext.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-#include "system/IComponentInstance.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
-
 #include <string>
 using namespace std;
 
@@ -32,18 +29,12 @@ namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace converter {
-  class IDocumentConverter : public IComponentInstance {
+  class IDocumentConverter {
 	public:
 		virtual ~IDocumentConverter(){};
 
 		virtual void setConverterInfo(
 				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout)=0;
-
-	private:
-		virtual void initializeInstance(std::string& data, short scenario)=0;
-		virtual void testInstance(std::string& data, short scenario)=0;
-
-	public:
 		virtual string getAttribute(void* element, string attribute)=0;
 		virtual void* getObject(string tableName, string key)=0;
 		virtual void* parse(string uri, string iUriD, string fUriD)=0;

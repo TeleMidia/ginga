@@ -24,7 +24,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "player/IPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "system/IComponentInstance.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
 #include "IPlayerAdapterManager.h"
@@ -35,15 +34,11 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-	class IPlayerAdapter : public IComponentInstance {
+	class IPlayerAdapter {
 		public:
 			virtual ~IPlayerAdapter(){};
 
 			virtual void setAdapterManager(IPlayerAdapterManager* manager)=0;
-
-		private:
-			virtual void initializeInstance(std::string& data, short scenario)=0;
-			virtual void testInstance(std::string& data, short scenario)=0;
 
 		public:
 			virtual bool instanceOf(string s)=0;

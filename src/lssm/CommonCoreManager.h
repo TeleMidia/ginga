@@ -20,9 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "PresentationEngineManager.h"
 
-#include "system/IComponentInstance.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system;
-
 #include <string>
 using namespace std;
 
@@ -61,9 +58,6 @@ namespace lssm {
 
 		void addPEM(
 				PresentationEngineManager* pem, GingaScreenID screenId);
-
-		void initializeInstance(std::string& data, short scenario);
-		void testInstance(std::string& data, short scenario);
 
 		void enableNPTPrinter(bool enableNPTPrinter);
 		void setOCDelay(double ocDelay);
