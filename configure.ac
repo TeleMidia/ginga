@@ -376,7 +376,6 @@ AC_MSG_NOTICE([summary of main build options:
   with isdbt:         ${with_isdbt}
   with linuxdvb:      ${with_linuxdvb}
   with multidevice:   ${with_multidevice}
-  with tests:         ${enable_tests}
 
   trace nclua calls:  ${enable_nclua_trace}
 ])
