@@ -41,7 +41,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "player/IShowButton.h"
+#include "player/ShowButton.h"
 #include "player/IProgramAV.h"
 #include "player/IPlayerListener.h"
 #include "player/IApplicationPlayer.h"
@@ -119,7 +119,7 @@ namespace lssm {
 		vector<string> commands;
 		static LocalScreenManager* dm;
 		InputManager* im;
-		IShowButton* sb;
+		ShowButton* sb;
 		bool debugWindow;
 
 	public:
