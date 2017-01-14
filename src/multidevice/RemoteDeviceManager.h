@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "IRemoteDeviceManager.h"
+#include "IRemoteDeviceListener.h"
 #include "BaseDeviceDomain.h"
 
 namespace br {
@@ -30,7 +30,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class RemoteDeviceManager : public IRemoteDeviceManager, public Thread {
+  class RemoteDeviceManager : public Thread {
 	private:
 		bool connecting;
 		bool running;

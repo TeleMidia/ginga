@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CurlInteractiveChannel_H_
 #define _CurlInteractiveChannel_H_
 
-#include "ic/IInteractiveChannel.h"
+#include "IInteractiveChannelListener.h"
 
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
@@ -38,7 +38,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace ic {
-  class CurlInteractiveChannel : public IInteractiveChannel {
+  class CurlInteractiveChannel {
 	private:
 		FILE* fd;
 		char* buffer;

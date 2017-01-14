@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _InteractiveChannelManager_H_
 #define _InteractiveChannelManager_H_
 
-#include "IInteractiveChannel.h"
+#include "CurlInteractiveChannel.h"
 
 #include <pthread.h>
 
@@ -36,8 +36,8 @@ namespace core {
 namespace ic {
   class InteractiveChannelManager {
 	private:
-		set<IInteractiveChannel*>* ics;
-		map<string, IInteractiveChannel*>* urisIcs;
+		set<CurlInteractiveChannel*>* ics;
+		map<string, CurlInteractiveChannel*>* urisIcs;
 		static InteractiveChannelManager* _instance;
 		InteractiveChannelManager();
 
@@ -47,12 +47,12 @@ namespace ic {
 		static InteractiveChannelManager* getInstance();
 
 	private:
-		set<IInteractiveChannel*>* getInteractiveChannels();
+		set<CurlInteractiveChannel*>* getInteractiveChannels();
 
 	public:
-		IInteractiveChannel* createInteractiveChannel(string remoteUri);
-		void releaseInteractiveChannel(IInteractiveChannel* ic);
-		IInteractiveChannel* getInteractiveChannel(string remoteUri);
+		CurlInteractiveChannel* createInteractiveChannel(string remoteUri);
+		void releaseInteractiveChannel(CurlInteractiveChannel* ic);
+		CurlInteractiveChannel* getInteractiveChannel(string remoteUri);
 		void clearInteractiveChannelManager();
 
 	private:

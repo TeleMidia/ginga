@@ -97,7 +97,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "FormatterConverter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;
 
-#include "IPrefetchManager.h"
+#include "PrefetchManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::prefetch;
 
 #include "FormatterScheduler.h"
@@ -143,7 +143,7 @@ namespace ncl {
 		NclDocument* currentDocument;
 
 		PrivateBaseManager* privateBaseManager;
-		static IPrefetchManager* pm;
+		static PrefetchManager* pm;
 		map<string, FormatterEvent*> documentEvents;
 		map<string, vector<FormatterEvent*>*> documentEntryEvents;
 		map<Port*, FormatterEvent*> portsToEntryEvents;

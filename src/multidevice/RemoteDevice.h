@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _RemoteDevice_H_
 #define _RemoteDevice_H_
 
-#include "IRemoteDevice.h"
-
 namespace br {
 namespace pucrio {
 namespace telemidia {

@@ -61,9 +61,9 @@ namespace prefetch {
 		}
 	}
 
-	IPrefetchManager* PrefetchManager::_instance = NULL;
+	PrefetchManager* PrefetchManager::_instance = NULL;
 
-	IPrefetchManager* PrefetchManager::getInstance() {
+	PrefetchManager* PrefetchManager::getInstance() {
 		if (_instance == NULL) {
 			return new PrefetchManager();
 		}
@@ -279,7 +279,7 @@ namespace prefetch {
 
 	void PrefetchManager::getContent(string remoteUri, string localUri) {
 		if (icm != NULL) {
-			IInteractiveChannel* ic = icm->createInteractiveChannel(
+			CurlInteractiveChannel* ic = icm->createInteractiveChannel(
 					remoteUri);
 
 			ic->setSourceTarget(localUri);
@@ -382,17 +382,4 @@ namespace prefetch {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::ncl::prefetch::IPrefetchManager*
-         createPrefetchManager() {
-
-	return (::br::pucrio::telemidia::ginga::ncl::prefetch::
-			PrefetchManager::getInstance());
-}
-
-extern "C" void destroyPrefetchManager(
-		::br::pucrio::telemidia::ginga::ncl::prefetch::IPrefetchManager* pm) {
-
-	pm->release();
 }
