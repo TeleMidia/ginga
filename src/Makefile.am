@@ -15,7 +15,6 @@ AM_CXXFLAGS=\
  $(SDL2IMAGE_CFLAGS)\
  $(SDL2TTF_CFLAGS)\
  $(SDL2_CFLAGS)\
- $(X11_CFLAGS)\
  $(XERCESC_CFLAGS)\
  $(NULL)
 
@@ -28,7 +27,6 @@ AM_LDFLAGS= -R $(gingalibdir) -rpath $(gingalibdir)\
  $(SDL2IMAGE_LIBS)\
  $(SDL2TTF_LIBS)\
  $(SDL2_LIBS)\
- $(X11_LIBS)\
  $(XERCESC_LIBS)\
  $(NULL)
 
@@ -250,22 +248,22 @@ src+= util/Base64.cpp
 src+= util/Color.cpp
 src+= util/functions.cpp
 
-if BUILD_BERKELIUM
+if WITH_BERKELIUM
 AM_CXXFLAGS+= $(BERKELIUM_CFLAGS)
 AM_LDFLAGS+= $(BERKELIUM_LIBS)
 src+= gingancl/adapters/BerkeliumPlayerAdapter.cpp
 src+= player/BerkeliumHandler.cpp
 src+= player/BerkeliumPlayer.cpp
-endif # BUILD_BERKELIUM
+endif # WITH_BERKELIUM
 
-if BUILD_ESPEAK
+if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
 AM_LDFLAGS+= $(ESPEAK_LIBS)
 src+= gingancl/adapters/SsmlPlayerAdapter.cpp
 src+= player/SsmlPlayer.cpp
-endif # BUILD_ESPEAK
+endif # WITH_ESPEAK
 
-if BUILD_ISDBT
+if WITH_ISDBT
 AM_CPPFLAGS+=\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   -DGINGA_TUNER_PATH='"$(gingaconfdir)/tuner/tuner.ini"'\
@@ -343,20 +341,20 @@ src+= isdbt-tuner/NetworkInterface.cpp
 src+= isdbt-tuner/NetworkProvider.cpp
 src+= isdbt-tuner/Tuner.cpp
 src+= isdbt-tuner/UnicastProvider.cpp
-if BUILD_LINUXDVB
+if WITH_LINUXDVB
 src+= isdbt-tuner/ISDBTFrontend.cpp
 src+= isdbt-tuner/ISDBTProvider.cpp
 src+= isdbt-tuner/RingBuffer.c
-endif # BUILD_LINUXDVB
-endif # BUILD_ISDBT
+endif # WITH_LINUXDVB
+endif # WITH_ISDBT
 
-if BUILD_LIBBPG
+if WITH_LIBBPG
 AM_CXXFLAGS+= $(LIBBPG_CFLAGS)
 AM_LDFLAGS+= $(LIBBPG_LIBS)
 src+= SDLBpgDecoder.cpp
-endif # BUILD_LIBBPG
+endif # WITH_LIBBPG
 
-if BUILD_MULTIDEVICE
+if WITH_MULTIDEVICE
 AM_CXXFLAGS+= $(LIBZIP_CFLAGS)
 AM_LDFLAGS+= $(LIBZIP_LIBS)
 src+= gingancl/FormatterActiveDevice.cpp
@@ -378,10 +376,10 @@ src+= multidevice/RemoteDeviceManager.cpp
 src+= multidevice/RemoteEventService.cpp
 src+= multidevice/TcpClientConnection.cpp
 src+= multidevice/TcpSocketService.cpp
-endif # BUILD_MULTIDEVICE
+endif # WITH_MULTIDEVICE
 
-if BUILD_LIBRSVG
+if WITH_LIBRSVG
 AM_CXXFLAGS+= $(LIBRSVG_CFLAGS)
 AM_LDFLAGS+= $(LIBRSVG_LIBS)
 src+= SDLSvgDecoder.cpp
-endif # BUILD_SVG
+endif # WITH_LIBRSVG
