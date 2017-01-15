@@ -54,8 +54,7 @@ namespace contextmanager {
 	void SystemInfo::initializeClockSpeed() {
 		ifstream fis;
 		string line = "";
-
-		clockSpeed = SystemCompat::getClockSpeed();
+		clockSpeed = 0;
 	}
 
 	string SystemInfo::getValue(string attribute) {
@@ -157,7 +156,7 @@ namespace contextmanager {
 	}
 
 	float SystemInfo::getMemorySize() {
-		return SystemCompat::getMemorySize();
+		return 0;
 	}
 
 	string SystemInfo::getOperatingSystem() {

@@ -99,10 +99,9 @@ case "$target_os" in
 esac
 AM_CONDITIONAL([OS_WINDOWS], [test "$os_win" = yes])
 
-# Socket and sysinfo.
+# Sockets.
 AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
-AC_CHECK_HEADER([sys/sysinfo])
 
 
 # Check for Curl.
