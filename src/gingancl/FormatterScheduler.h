@@ -48,7 +48,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "adaptation/RuleAdapter.h"
-#include "adaptation/IPresentationContext.h"
+#include "adaptation/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "adapters/ApplicationPlayerAdapter.h"
@@ -81,7 +81,7 @@ using namespace ::br::pucrio::telemidia::ncl::reuse;
 #include "FormatterFocusManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::focus;
 
-#include "IFormatterMultiDevice.h"
+#include "FormatterMultiDevice.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 
 #include "IFormatterSchedulerListener.h"
@@ -103,15 +103,14 @@ namespace ginga {
 namespace ncl {
 	class FormatterScheduler :
 			public ILinkActionListener,
-			public IFormatterScheduler,
 			public IEventListener,
 			public IContextListener {
 
 		private:
 			RuleAdapter* ruleAdapter;
 			PlayerAdapterManager* playerManager;
-			IPresentationContext* presContext;
-			IFormatterMultiDevice* multiDevPres;
+			PresentationContext* presContext;
+			FormatterMultiDevice* multiDevPres;
 			FormatterFocusManager* focusManager;
 
 			void* compiler; //FormatterConverter*
@@ -133,7 +132,7 @@ namespace ncl {
 			FormatterScheduler(
 				    PlayerAdapterManager* playerManager,
 				    RuleAdapter* ruleAdapter,
-				    IFormatterMultiDevice* multiDevice,
+				    FormatterMultiDevice* multiDevice,
 				    void* compiler); //FormatterConverter
 
 			virtual ~FormatterScheduler();
@@ -142,7 +141,6 @@ namespace ncl {
 			void removeAction(void* action);
 
 			bool setKeyHandler(bool isHandler);
-			//void setStandByState(bool standBy);
 			FormatterFocusManager* getFocusManager();
 			void* getFormatterLayout(void* descriptor, void* object);
 

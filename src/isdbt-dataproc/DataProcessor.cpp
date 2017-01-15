@@ -231,7 +231,7 @@ namespace dataprocessing {
 	void* DataProcessor::notifySEListener(void* ptr) {
 		struct notifyData* data;
 		IStreamEventListener* listener;
-		IStreamEvent* se;
+		StreamEvent* se;
 
 		data = (struct notifyData*)ptr;
 		se = data->se;
@@ -244,7 +244,7 @@ namespace dataprocessing {
 		return NULL;
 	}
 
-	void DataProcessor::notifySEListeners(IStreamEvent* se) {
+	void DataProcessor::notifySEListeners(StreamEvent* se) {
 		map<string, set<IStreamEventListener*>*>::iterator i;
 		set<IStreamEventListener*>* listeners;
 		set<IStreamEventListener*>::iterator j;
@@ -274,7 +274,7 @@ namespace dataprocessing {
 	}
 
 	void DataProcessor::receiveSection(ITransportSection* section) {
-		IStreamEvent* se;
+		StreamEvent* se;
 		string sectionName;
 		set<unsigned int>::iterator i;
 		char* payload;
@@ -414,7 +414,7 @@ namespace dataprocessing {
 		}
 	}
 
-	void DataProcessor::updateChannelStatus(short newStatus, IChannel* channel) {
+	void DataProcessor::updateChannelStatus(short newStatus, Channel* channel) {
 		if (newStatus == TS_LOOP_DETECTED) {
 			deleteAIT();
 		}
@@ -497,7 +497,7 @@ namespace dataprocessing {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::IDataProcessor*
+extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::DataProcessor*
 		createDP() {
 
 	return (new ::br::pucrio::telemidia::ginga::core::dataprocessing::
@@ -505,7 +505,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::IDataProcessor*
 }
 
 extern "C" void destroyDP(::br::pucrio::telemidia::ginga::core::
-		dataprocessing::IDataProcessor* dp) {
+		dataprocessing::DataProcessor* dp) {
 
 	delete dp;
 }

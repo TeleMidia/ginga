@@ -41,7 +41,31 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 
 #include "FilterManager.h"
-#include "IDataProcessor.h"
+#include "system/ITimeBaseProvider.h"
+using namespace br::pucrio::telemidia::ginga::core::system::time;
+
+#include "isdbt-tuner/ISTCProvider.h"
+using namespace br::pucrio::telemidia::ginga::core::tuning;
+
+#include "isdbt-tsparser/IDemuxer.h"
+#include "isdbt-tsparser/IFilterListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
+#include "dsmcc/IStreamEventListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
+
+#include "dsmcc/IObjectListener.h"
+#include "dsmcc/IServiceDomainListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+
+#include "IEPGListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+
+#include <map>
+#include <set>
+#include <string>
+using namespace std;
+
 #include "dsmcc/IStreamEventListener.h"
 
 #include "dsmcc/NPTProcessor.h"
@@ -55,7 +79,7 @@ using namespace std;
 
 struct notifyData {
 	IStreamEventListener* listener;
-	IStreamEvent* se;
+	StreamEvent* se;
 };
 
 namespace br {
@@ -64,7 +88,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-	class DataProcessor : public IDataProcessor,
+	class DataProcessor : public IFilterListener, public ITunerListener,
 				public IServiceDomainListener, public Thread {
 
 		private:
@@ -119,13 +143,13 @@ namespace dataprocessing {
 			void removeObjectListener(IObjectListener* listener);
 
 		private:
-			void notifySEListeners(IStreamEvent* se);
+			void notifySEListeners(StreamEvent* se);
 			static void* notifySEListener(void* data);
 			void notifyEitListeners(set<IEventInfo*>* events);
 
 		public:
 			void receiveSection(ITransportSection* section);
-			void updateChannelStatus(short newStatus, IChannel* channel);
+			void updateChannelStatus(short newStatus, Channel* channel);
 			bool isReady();
 
 		private:

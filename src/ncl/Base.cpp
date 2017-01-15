@@ -85,9 +85,7 @@ namespace ncl {
 		return hasBase;
 	}
 
-	bool Base::addBase(Base* base, string alias, string location)
-		     throw(IllegalBaseTypeException*) {
-
+	bool Base::addBase(Base* base, string alias, string location) {
 		if (base == NULL || location == "") {
 			return false;
 		}

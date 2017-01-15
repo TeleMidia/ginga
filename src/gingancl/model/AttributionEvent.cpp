@@ -36,7 +36,7 @@ namespace event {
 			string id,
 			void* executionObject,
 	        PropertyAnchor* anchor,
-	        IPresentationContext* presContext) :
+	        PresentationContext* presContext) :
 					FormatterEvent(id, executionObject) {
 
 		Entity* entity;

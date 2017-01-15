@@ -33,10 +33,6 @@ namespace adapters {
   class IPlayerAdapterManager {
 	public:
 		virtual ~IPlayerAdapterManager(){};
-
-		//TODO: create entire interface
-
-		//virtual void setStandByState(bool standBy)=0;
 		virtual NclPlayerData* getNclPlayerData()=0;
 		virtual ITimeBaseProvider* getTimeBaseProvider()=0;
 		virtual void* getObjectPlayer(void* execObj)=0;

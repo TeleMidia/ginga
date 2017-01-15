@@ -61,7 +61,7 @@ namespace tuning {
 				return false;
 			};
 
-			virtual IChannel* getCurrentChannel() {
+			virtual Channel* getCurrentChannel() {
 				return NULL;
 			}
 

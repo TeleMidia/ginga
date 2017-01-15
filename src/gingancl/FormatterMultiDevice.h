@@ -67,7 +67,15 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "adaptation/ContextBase.h"
 
-#include "IFormatterMultiDevice.h"
+#include "ncl/layout/IDeviceLayout.h"
+using namespace ::br::pucrio::telemidia::ncl::layout;
+
+#include "player/IPlayer.h"
+#include "player/IPlayerListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
+#include "adaptation/PresentationContext.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include <pthread.h>
 
@@ -82,12 +90,13 @@ namespace ncl {
 namespace multidevice {
 #if HAVE_MULTIDEVICE
 	class FormatterMultiDevice :
-			public IFormatterMultiDevice,
+			public IPlayerListener,
+			public FormatterMultiDevice,
 			public IInputEventListener,
 			public IRemoteDeviceListener {
 #else //!HAVE_MULTIDEVICE
 	class FormatterMultiDevice :
-			public IFormatterMultiDevice,
+			public IPlayerListener,
 			public IInputEventListener {
 #endif //HAVE_MULTIDEVICE
 		protected:
@@ -116,8 +125,8 @@ namespace multidevice {
 			int deviceClass;
 			bool hasRemoteDevices;
 			bool enableMulticast;
-			IPresentationContext* presContext;
-			IFormatterFocusManager* focusManager;
+			PresentationContext* presContext;
+			void* focusManager;
 			FormatterMultiDevice* parent;
 			GingaScreenID myScreen;
 
@@ -139,9 +148,9 @@ namespace multidevice {
 			void printGingaWindows();
 			void listenPlayer(IPlayer* player);
 			void stopListenPlayer(IPlayer* player);
-			void setParent(IFormatterMultiDevice* parent);
-			void setPresentationContex(IPresentationContext* presContext);
-			void setFocusManager(IFormatterFocusManager* focusManager);
+			void setParent(FormatterMultiDevice* parent);
+			void setPresentationContex(PresentationContext* presContext);
+			void setFocusManager(void* focusManager);
 			void setBackgroundImage(string uri);
 			void* getMainLayout();
 			void* getFormatterLayout(int devClass);

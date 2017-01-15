@@ -1120,13 +1120,8 @@ namespace ncl {
 				}
 
 				if (base != NULL) {
-					try {
-						alias = compiler->getAttribute(importElement, "alias");
-						parentBase->addBase(base, alias, location);
-
-					} catch (IllegalBaseTypeException* exc) {
-						//do nothing
-					}
+                                  alias = compiler->getAttribute(importElement, "alias");
+                                  parentBase->addBase(base, alias, location);
 				}
 			}
 		}
@@ -1351,13 +1346,7 @@ namespace ncl {
 			return NULL;
 		}
 
-		try {
-			contextNode->addNode(node);
-
-		} catch (IllegalNodeTypeException* e) {
-			return NULL;
-		}
-
+                contextNode->addNode(node);
 		return node;
 	}
 

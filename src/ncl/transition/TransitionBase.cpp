@@ -60,16 +60,9 @@ namespace transition {
 		return true;
 	}
 
-	bool TransitionBase::addBase(Base* base, string alias, string location)
-		    throw(IllegalBaseTypeException*) {
-
+	bool TransitionBase::addBase(Base* base, string alias, string location){
 		if (base->instanceOf("TransitionBase")) {
 			return Base::addBase(base, alias, location);
-
-		} else {
-			clog << "TransitionBase::addBase throw IllegalBaseTypeException";
-			clog << endl;
-			throw (new IllegalBaseTypeException());
 		}
 	}
 

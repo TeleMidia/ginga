@@ -65,7 +65,7 @@ namespace tsparser {
 			static vector<Pat*> pats;
 			static unsigned int sectionPid; //debug only
 			static set<unsigned int> knownSectionPids;
-			ITuner* tuner;
+			Tuner* tuner;
 
 			short debugDest;
 			unsigned int debugPacketCounter;
@@ -91,7 +91,7 @@ namespace tsparser {
 			static const short ERR_CONDITION_SATISFIED = 5;
 
 		public:
-			Demuxer(ITuner* tuner);
+			Demuxer(Tuner* tuner);
 			virtual ~Demuxer();
 
 			string createTSUri(string tsOutputUri);
@@ -125,8 +125,8 @@ namespace tsparser {
 
 		private:
 			void attachFilter(IFrontendFilter* filter);
-			void createPatFilter(INetworkInterface* ni);
-			void createPmtFilter(INetworkInterface* ni);
+			void createPatFilter(NetworkInterface* ni);
+			void createPmtFilter(NetworkInterface* ni);
 
 		public:
 			void receiveSection(
@@ -145,7 +145,7 @@ namespace tsparser {
 		private:
 			void processDemuxData(char* buff, unsigned int size);
 
-			void updateChannelStatus(short newStatus, IChannel* channel);
+			void updateChannelStatus(short newStatus, Channel* channel);
 
 		public:
 			static void addPat(Pat* pat);

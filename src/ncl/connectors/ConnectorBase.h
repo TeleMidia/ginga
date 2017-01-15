@@ -44,7 +44,7 @@ namespace connectors {
 			bool addBase(
 				    Base* base,
 				    string alias,
-				    string location) throw(IllegalBaseTypeException*);
+				    string location);
 
 			void clear();
 			bool containsConnector(string connectorId);

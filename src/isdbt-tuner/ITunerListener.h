@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITUNERLISTENER_H_
 #define ITUNERLISTENER_H_
 
-#include "IChannel.h"
+#include "Channel.h"
 
 namespace br {
 namespace pucrio {
@@ -40,7 +40,7 @@ namespace tuning {
 			virtual ~ITunerListener(){};
 			virtual void receiveData(char* buff, unsigned int size)=0;
 			virtual void updateChannelStatus(
-					short newStatus, IChannel* channel)=0;
+					short newStatus, Channel* channel)=0;
 			virtual bool isReady()=0;
 	};
 }

@@ -232,18 +232,18 @@ namespace multidevice {
 		Thread::mutexUnlock(&lMutex);
 	}
 
-	void FormatterMultiDevice::setParent(IFormatterMultiDevice* parent) {
+	void FormatterMultiDevice::setParent(FormatterMultiDevice* parent) {
 		this->parent = (FormatterMultiDevice*)parent;
 	}
 
 	void FormatterMultiDevice::setPresentationContex(
-			IPresentationContext* presContext) {
+			PresentationContext* presContext) {
 
 		this->presContext = presContext;
 	}
 
 	void FormatterMultiDevice::setFocusManager(
-			IFormatterFocusManager* focusManager) {
+			void* focusManager) {
 
 		this->focusManager = focusManager;
 	}
@@ -724,11 +724,7 @@ namespace multidevice {
 			if (focusManager != NULL && object != NULL) {
 				clog << "FormatterMultiDevice::tapObject '";
 				clog << object->getId() << "'" << endl;
-
-				focusManager->tapObject((void*)object);
-
-//				object->selectionEvent(CodeMap::KEY_NULL, 0);
-
+				((FormatterFocusManager *)focusManager)->tapObject((void*)object);
 			} else {
 				clog << "FormatterMultiDevice::tapObject can't ";
 				clog << "find object at '" << x << "' and '";
@@ -877,7 +873,7 @@ namespace multidevice {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::ncl::multidevice::
-		IFormatterMultiDevice* createFormatterMultiDevice(
+		FormatterMultiDevice* createFormatterMultiDevice(
 				GingaScreenID screenId,
 				IDeviceLayout* deviceLayout,
 				int devClass,
@@ -910,7 +906,7 @@ extern "C" ::br::pucrio::telemidia::ginga::ncl::multidevice::
 
 extern "C" void destroyFormatterMultiDevice(
 		::br::pucrio::telemidia::ginga::ncl::multidevice::
-				IFormatterMultiDevice* fmd) {
+				FormatterMultiDevice* fmd) {
 
 	delete fmd;
 }

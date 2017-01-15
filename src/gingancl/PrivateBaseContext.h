@@ -58,7 +58,6 @@ using namespace ::br::pucrio::telemidia::ncl::transition;
 #include "ncl/Base.h"
 #include "ncl/NclDocument.h"
 #include "ncl/IPrivateBaseContext.h"
-#include "ncl/IllegalBaseTypeException.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
 #include <map>

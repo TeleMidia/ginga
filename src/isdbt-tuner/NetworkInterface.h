@@ -21,7 +21,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace br::pucrio::telemidia::util;
 
-#include "INetworkInterface.h"
+#include "IFrontendFilter.h"
+#include "IDataProvider.h"
+#include "ISTCProvider.h"
+#include "Channel.h"
 
 #include <string>
 using namespace std;
@@ -32,7 +35,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class NetworkInterface : public INetworkInterface {
+	class NetworkInterface : public ISTCProvider {
 		private:
 			int id;    //NetworkInterface number
 			string name;  //eth, isdb-t, dvb-c, ...
@@ -68,7 +71,7 @@ namespace tuning {
 			bool changeChannel(int factor);
 			bool setChannel(string channelValue);
 			bool getSTCValue(uint64_t* stc, int* valueType);
-			IChannel* getCurrentChannel();
+			Channel* getCurrentChannel();
 			int createPesFilter(int pid, int pesType, bool compositeFiler);
 			string getPesFilterOutput();
 

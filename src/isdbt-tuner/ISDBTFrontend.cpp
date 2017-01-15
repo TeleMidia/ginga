@@ -245,10 +245,10 @@ namespace tuning {
 		return false;
 	}
 
-	void ISDBTFrontend::scanFrequencies(vector<IChannel*>* channels) {
+	void ISDBTFrontend::scanFrequencies(vector<Channel*>* channels) {
 		int i;
 		bool infFm = false, infVhf = false, infUhf = false;
-		IChannel* channel;
+		Channel* channel;
 
 		clog << "ISDBTFrontend::scanFrequencies searching channels" << endl;
 

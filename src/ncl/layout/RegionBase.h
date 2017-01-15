@@ -53,7 +53,7 @@ namespace layout {
 			virtual bool addBase(
 				    Base* base,
 				    string alias,
-				    string location) throw(IllegalBaseTypeException*);
+				    string location);
 
 		private:
 			LayoutRegion* getRegionLocally(string regionId);

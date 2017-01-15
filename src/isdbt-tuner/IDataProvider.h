@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stdint.h>
 
-#include "IChannel.h"
+#include "Channel.h"
 #include "IProviderListener.h"
 #include "IFrontendFilter.h"
 
@@ -56,7 +56,7 @@ namespace tuning {
 			virtual char* receiveData(int* len)=0;
 
 			virtual bool tune()=0;
-			virtual IChannel* getCurrentChannel()=0;
+			virtual Channel* getCurrentChannel()=0;
 			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
 			virtual bool changeChannel(int factor)=0;
 			virtual bool setChannel(string channelValue)=0;

@@ -35,7 +35,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "frontend_parameter.h"
 
 #include "IFrontendFilter.h"
-#include "IChannel.h"
+#include "Channel.h"
 
 #include <map>
 #include <vector>
@@ -94,7 +94,7 @@ namespace tuning {
 		public:
 			bool getSTCValue(uint64_t* stc, int* valueType);
 			bool changeFrequency(unsigned int frequency);
-			void scanFrequencies(vector<IChannel*>* channels);
+			void scanFrequencies(vector<Channel*>* channels);
 
 			void attachFilter(IFrontendFilter* filter);
 			int createPesFilter(int pid, int pesType, bool compositeFiler);

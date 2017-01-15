@@ -30,7 +30,24 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "mb/CodeMap.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "ITuner.h"
+#include "Tuner.h"
+#include "mb/IMBDefs.h"
+
+#ifndef BUFFSIZE
+#define BUFFSIZE 9588
+#endif //BUFFSIZE
+
+#include "ITunerListener.h"
+#include "NetworkInterface.h"
+
+#include <string>
+using namespace std;
+
+typedef struct {
+	char* buff;
+	unsigned int size;
+} Buffer;
+
 #include "Channel.h"
 #include "NetworkInterface.h"
 #include "ITunerListener.h"
@@ -50,12 +67,12 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Tuner : public ITuner, public IInputEventListener, public ITProviderListener, public Thread {
+	class Tuner : public IInputEventListener, public ITProviderListener, public Thread {
 		private:
 			bool receiving;
 			ITunerListener* listener;
 			ITunerListener* loopListener;
-			map<int, INetworkInterface*> interfaces;
+			map<int, NetworkInterface*> interfaces;
 			int currentInterface;
 			bool firstTune;
 			string currentSpec;
@@ -81,13 +98,13 @@ namespace tuning {
 			void createInterface(
 					string network, string protocol, string address);
 
-			bool listenInterface(INetworkInterface* nInterface);
-			void receiveInterface(INetworkInterface* nInterface);
+			bool listenInterface(NetworkInterface* nInterface);
+			void receiveInterface(NetworkInterface* nInterface);
 
 		public:
 			void setSpec(string ni, string ch);
 			void tune();
-			INetworkInterface* getCurrentInterface();
+			NetworkInterface* getCurrentInterface();
 			void channelUp();
 			void channelDown();
 			void changeChannel(int factor);
@@ -98,7 +115,7 @@ namespace tuning {
 
 		private:
 			void notifyData(char* buff, unsigned int val);
-			void notifyStatus(short newStatus, IChannel* channel);
+			void notifyStatus(short newStatus, Channel* channel);
 			void waitForListeners();
 			virtual void run();
 	};

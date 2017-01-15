@@ -57,9 +57,7 @@ namespace switches {
 		return true;
 	}
 
-	bool RuleBase::addBase(Base* base, string alias, string location)
-		     throw(IllegalBaseTypeException*) {
-
+	bool RuleBase::addBase(Base* base, string alias, string location){
 		if (base->instanceOf("RuleBase")) {
 			return Base::addBase(base, alias, location);
 		}

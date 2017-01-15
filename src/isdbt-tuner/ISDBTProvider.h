@@ -138,8 +138,8 @@ namespace tuning {
 			int initialFrequency;
 			static const string iniFileName;
 			ISDBTFrontend* frontend;
-			vector<IChannel*>* channels;
-			vector<IChannel*>::iterator currentChannel;
+			vector<Channel*>* channels;
+			vector<Channel*>::iterator currentChannel;
 			short capabilities;
 			ITProviderListener* listener;
 
@@ -165,7 +165,7 @@ namespace tuning {
 
 		public:
 			bool tune();
-			IChannel* getCurrentChannel();
+			Channel* getCurrentChannel();
 			bool getSTCValue(uint64_t* stc, int* valueType);
 			bool changeChannel(int factor);
 			bool setChannel(string channelValue);

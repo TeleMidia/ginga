@@ -238,7 +238,7 @@ namespace lssm {
 		}
 	}
 
-	void DataWrapperListener::receiveStreamEvent(IStreamEvent* event) {
+	void DataWrapperListener::receiveStreamEvent(StreamEvent* event) {
 		string eventType;
 		string eventData;
 

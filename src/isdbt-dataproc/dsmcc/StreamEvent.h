@@ -25,15 +25,13 @@ using namespace std;
 #include <stdint.h>
 #include <string.h>
 
-#include "IStreamEvent.h"
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace core {
 namespace dataprocessing {
-	class StreamEvent : public IStreamEvent {
+	class StreamEvent {
 		private:
 			unsigned int descriptorTag;
 			unsigned int descriptorLength;

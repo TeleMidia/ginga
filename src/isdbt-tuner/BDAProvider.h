@@ -60,7 +60,7 @@ namespace tuning {
 			short getCaps();
 			bool tune();
 
-			IChannel* getCurrentChannel();
+			Channel* getCurrentChannel();
 			bool getSTCValue(uint64_t* stc, int* valueType);
 			bool changeChannel(int factor);
 			bool setChannel(string channelValue);

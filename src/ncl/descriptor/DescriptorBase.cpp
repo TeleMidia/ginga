@@ -56,9 +56,7 @@ namespace descriptor {
 		return true;
 	}
 
-	bool DescriptorBase::addBase(Base* base, string alias, string location)
-		     throw(IllegalBaseTypeException*) {
-
+	bool DescriptorBase::addBase(Base* base, string alias, string location){
 		if (base->instanceOf("DescriptorBase")) {
 			return Base::addBase(base, alias, location);
 		}
