@@ -146,7 +146,7 @@ namespace mb {
 			clog << "SDL2_ffmpeg instead." << endl;
 		}
 		aSystem = "SDLAudioProvider";
-#ifdef _WIN32
+#ifdef _MSC_VER
         putenv("SDL_AUDIODRIVER=DirectSound");
 #endif
 		if (mbSubSystem == "dfb") {

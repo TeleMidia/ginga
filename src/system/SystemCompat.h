@@ -29,7 +29,7 @@ extern "C" {
 #include <assert.h>
 #include <stdio.h>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #ifndef isnan
 #define isnan(x) ((x) != (x))
 #endif
@@ -124,7 +124,7 @@ using namespace std;
 #define PRIx64 "llx"
 #endif
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_MSC_VER) && !defined(__MINGW32__)
 
 /* clock_gettime() deps begin */
 static const int CLOCK_REALTIME           = 0;

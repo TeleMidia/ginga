@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FileSystemProvider.h"
 #include "NetworkProvider.h"
-#ifdef _WIN32
+#ifdef _MSC_VER
 # include "BDAProvider.h"
 #endif
 
@@ -128,7 +128,7 @@ namespace tuning {
 				if (freq < 1)
 					return false;
 			}
-#if _WIN32
+#if _MSC_VER
 			provider = new BDAProvider(freq);
 #elif WITH_LINUXDVB
 			provider = new ISDBTProvider(freq);

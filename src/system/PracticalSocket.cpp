@@ -53,7 +53,7 @@
 
 using namespace std;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 static bool initialized = false;
 #endif
 
@@ -102,7 +102,7 @@ static void fillAddr(const string &address, unsigned short port,
 // Socket Code
 
 Socket::Socket(int type, int protocol) throw(SocketException) {
-  #ifdef _WIN32
+  #ifdef _MSC_VER
     if (!initialized) {
       WORD wVersionRequested;
       WSADATA wsaData;
@@ -126,7 +126,7 @@ Socket::Socket(int sockDesc) {
 }
 
 Socket::~Socket() {
-  #ifdef _WIN32
+  #ifdef _MSC_VER
     ::closesocket(sockDesc);
   #else
     ::close(sockDesc);
@@ -179,7 +179,7 @@ void Socket::setLocalAddressAndPort(const string &localAddress,
 }
 
 void Socket::cleanUp() throw(SocketException) {
-  #ifdef _WIN32
+  #ifdef _MSC_VER
     if (WSACleanup() != 0) {
       throw SocketException("WSACleanup() failed");
     }
@@ -340,7 +340,7 @@ void UDPSocket::disconnect() throw(SocketException) {
 
   // Try to disconnect
   if (::connect(sockDesc, (sockaddr *) &nullAddr, sizeof(nullAddr)) < 0) {
-   #ifdef _WIN32
+   #ifdef _MSC_VER
     if (errno != WSAEAFNOSUPPORT) {
    #else
     if (errno != EAFNOSUPPORT) {
@@ -368,7 +368,7 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
   sockaddr_in clntAddr;
   socklen_t addrLen = sizeof(clntAddr);
   int rtn;
-#ifdef _WIN32
+#ifdef _MSC_VER
   if ((rtn = recvfrom(sockDesc, (raw_type *) buffer, bufferLen, 0,
                       (sockaddr *) &clntAddr, (socklen_t *) &addrLen)) < 0) {
     throw SocketException("Receive failed (recvfrom())", true);
@@ -387,7 +387,7 @@ int UDPSocket::recvFrom(void *buffer, int bufferLen, string &sourceAddress,
 }
 
 string UDPSocket::getBroadcastAddress() throw(SocketException) {
-#ifdef _WIN32
+#ifdef _MSC_VER
     INTERFACE_INFO interfaceList[20];
     unsigned long nBytesReturned;
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
@@ -455,7 +455,7 @@ string UDPSocket::getBroadcastAddress() throw(SocketException) {
 }
 
 unsigned int UDPSocket::getLocalIPAddress() throw(SocketException) {
-#ifdef _WIN32
+#ifdef _MSC_VER
     INTERFACE_INFO interfaceList[20];
     unsigned long nBytesReturned;
     if (WSAIoctl(sockDesc, SIO_GET_INTERFACE_LIST, 0, 0, &interfaceList,
@@ -612,7 +612,7 @@ int UDPSocket::select_t(int sec, int usec) {
 }
 
 void UDPSocket::setNonBlocking(bool nonblock) {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	u_long iMode=nonblock?1:0;
 	ioctlsocket(sockDesc,FIONBIO,&iMode);
 	this->BLOCKING_MODE = (nonblock?1:0);

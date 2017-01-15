@@ -766,7 +766,7 @@ namespace multidevice {
 					sec[diff] = '\0'; //part of the payload (second line)
 
 					++sec;
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 //TODO: fix this
 					++sec;
 #endif

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "SDLConvert.h"
 
-#if _WIN32
+#if _MSC_VER
 # include "atlimage.h"
 #elif WITH_MULTIDEVICE
 # include <stdlib.h>
@@ -38,7 +38,7 @@ namespace ginga {
 namespace core {
 namespace mb {
 
-#if !defined(_WIN32) && (WITH_MULTIDEVICE == 1)
+#if !defined(_MSC_VER) && (WITH_MULTIDEVICE == 1)
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	// 24 bit RGB masks on big-endian
 	#define RMASK24 0xFF0000
@@ -226,7 +226,7 @@ namespace mb {
 
 	int SDLConvert::convertSurfaceToJPEG(const char *filename, SDL_Surface *surf,
 			int quality) {
-#if _WIN32
+#if _MSC_VER
 		char *bmpfile;
 		bmpfile = new char[strlen(filename) + 5];
 		strcpy(bmpfile, filename);

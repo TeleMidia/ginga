@@ -438,7 +438,7 @@ void LuaPlayer::doStop (void)
 
 LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 {
-#ifdef WIN32
+#ifdef _MSC_VER
      static int putenv = 0;
 
      if (!putenv)
