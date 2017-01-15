@@ -16,10 +16,15 @@ LT_INIT([win32-dll])
 dnl Ginga version.
 AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
-dnl Ginga confdir, libdir, and includedir.
-AC_SUBST([gingaconfdir], ['${sysconfdir}'/ginga/files])
-AC_SUBST([gingalibdir], ['${libdir}'])
-AC_SUBST([gingaincludedir], ['${includedir}'/ginga])
+dnl Data directories.
+AC_SUBST([buttondir], ['${pkgdatadir}'/img/button])
+AC_SUBST([contextmanagerdir], ['${pkgdatadir}'/contextmanager])
+AC_SUBST([fontdir], ['${pkgdatadir}'/font])
+AC_SUBST([formatterdir], ['${pkgdatadir}'/cfg/fromatter])
+AC_SUBST([formatterimgdir], ['${pkgdatadir}'/img/roller])
+AC_SUBST([formattermddir], ['${pkgdatadir}'/md])
+AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
+AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
 
 dnl Required dependencies version.
 m4_define([avcodec_required_version],    [55.39.101])

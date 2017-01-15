@@ -68,14 +68,10 @@ namespace multidevice {
 
 		this->deviceServicePort = srvPort;
 
+		img_dev   = string (GINGA_MB_DATADIR) + "active-device.png";
+		img_reset = string (GINGA_MB_DATADIR) + "active-device-reset.png";
 
-		img_dir   = SystemCompat::appendGingaFilesPrefix("md");
-		img_dir.append(SystemCompat::getIUriD());
-		img_dev   = img_dir + "active-device.png";
-		img_reset = img_dir + "active-device-reset.png";
-		clog << "FormatterActiveDevice::constructor" << endl;
 		set<int>* evs;
-
 		contentsInfo = new map<string, string>;
 		deviceClass  = DeviceDomain::CT_ACTIVE;
 		formatter    = NULL;
@@ -143,9 +139,7 @@ namespace multidevice {
 		rdm->addListener(this);
 		privateBaseManager = new PrivateBaseManager();
 
-		ContentTypeManager::getInstance()->setMimeFile(
-				SystemCompat::appendGingaFilesPrefix("mimetypes.ini")
-		);
+		ContentTypeManager::getInstance()->setMimeFile(string (GINGA_DATADIR) + "mimetypes.ini");
 
 		listening = true;
 		try {
@@ -741,11 +735,6 @@ namespace multidevice {
 					int diff = recvMsgSize - (pri_len);
 					++sec;
                     ++sec;
-/*
-#if defined(_WIN32) && !defined(__MINGW32__)
-					++sec;
-#endif
-*/
 					//TODO: fix the lines above (\n removal) with portable solution
 
 					sec[diff] = '\0'; //part of the payload (second line)
@@ -777,7 +766,7 @@ namespace multidevice {
 					sec[diff] = '\0'; //part of the payload (second line)
 
 					++sec;
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 //TODO: fix this
 					++sec;
 #endif

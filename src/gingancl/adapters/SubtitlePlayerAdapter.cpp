@@ -39,7 +39,7 @@ namespace text {
 		if (descriptor != NULL) {
 			paramValue = descriptor->getParameterValue("x-setFontUri");
 			if (paramValue == "") {
-				paramValue = SystemCompat::appendGingaFilesPrefix("font/decker.ttf");
+				paramValue = string (GINGA_FONT_DATADIR) + "decker.ttf";
 			}
 			player->setPropertyValue("x-setFontUri", paramValue);
 

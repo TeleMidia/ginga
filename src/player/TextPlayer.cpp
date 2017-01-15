@@ -72,9 +72,7 @@ namespace player {
 		this->bgColor       = NULL;
 		this->fontColor     = NULL;
 		this->fontSize      = 12;
-		this->fontUri       = SystemCompat::appendGingaFilesPrefix(
-				"font/vera.ttf");
-
+		this->fontUri       = string (GINGA_FONT_DATADIR) + "vera.ttf";
 		this->surface = dm->createSurface(myScreen);
 		if (this->surface != 0) {
 			int cap = dm->getSurfaceCap(surface, "ALPHACHANNEL");
@@ -203,7 +201,7 @@ namespace player {
 		string aux, splited;
 
 		aux = text;
-		uri = SystemCompat::appendGingaFilesPrefix("font" + SystemCompat::getIUriD() + "vera.ttf");
+		uri = string (GINGA_FONT_DATADIR) + "vera.ttf";
 		if (font == 0 && fileExists(uri)) {
 			setFont(uri);
 		}
@@ -316,7 +314,7 @@ namespace player {
 	bool TextPlayer::breakLine() {
 		int w, h;
 		if (font == 0) {
-			setFont(SystemCompat::appendGingaFilesPrefix("font/decker.ttf"));
+			setFont(string (GINGA_FONT_DATADIR) + "decker.ttf");
 		}
 
 		dm->getSurfaceSize(surface, &w, &h);

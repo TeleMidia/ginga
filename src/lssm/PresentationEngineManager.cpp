@@ -143,10 +143,7 @@ namespace lssm {
 		privateBaseManager = new PrivateBaseManager();
 		this->sb           = new ShowButton(myScreen);
 
-		ContentTypeManager::getInstance()->setMimeFile(
-				SystemCompat::appendGingaFilesPrefix("mimetypes.ini")
-			);
-
+		ContentTypeManager::getInstance()->setMimeFile(string (GINGA_DATADIR) + "mimetypes.ini");
 		im->setCommandEventListener(this);
 	}
 

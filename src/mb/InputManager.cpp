@@ -57,7 +57,7 @@ namespace mb {
 		imperativeIntervalTime  = 0;
 		declarativeIntervalTime = 0;
 
-		strVar = SystemCompat::appendGingaFilesPrefix("mb/config/input.cfg");
+		strVar = string (GINGA_MB_DATADIR) + "input.cfg";
 
 		fis.open(strVar.c_str(), ifstream::in);
 		if (!fis.is_open()) {

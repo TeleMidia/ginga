@@ -39,12 +39,8 @@ namespace contextmanager {
 	ContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
-		usersUri = SystemCompat::getGingaContextPrefix() +
-				SystemCompat::getIUriD() + "users.ini";
-
-		contextsUri = SystemCompat::getGingaContextPrefix() +
-				SystemCompat::getIUriD() + "contexts.ini";
-
+		usersUri = string (GINGA_CONTEXTMANAGER_DATADIR) + "users.ini";
+                contextsUri = string (GINGA_CONTEXTMANAGER_DATADIR) + "contexts.ini";
 		curUserId    = -1;
 		systemInfo   = new SystemInfo();
 

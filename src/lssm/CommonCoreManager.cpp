@@ -168,10 +168,10 @@ namespace lssm {
 	void CommonCoreManager::showTunningWindow(
 			GingaScreenID screenId, int x, int y, int w, int h) {
 
-		GingaSurfaceID s     = 0;
+		GingaSurfaceID s = 0;
 		string tunerImg = "";
 
-		tunerImg = SystemCompat::appendGingaFilesPrefix("tuner/tuning.png");
+		tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
 		if (fileExists(tunerImg)) {
 			tuningWindow = dm->createWindow(
 					screenId, x, y, w, h, -10.0);
