@@ -190,15 +190,3 @@ namespace tsparser {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::ITSFilter*
-		createPipeFilter(int pid) {
-
-	return new ::br::pucrio::telemidia::ginga::core::tsparser::PipeFilter(pid);
-}
-
-extern "C" void destroyPipeFilter(
-		::br::pucrio::telemidia::ginga::core::tsparser::ITSFilter* f) {
-
-	delete f;
-}

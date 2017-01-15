@@ -61,7 +61,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "EndEventTransition.h"
 #include "EventTransition.h"
 #include "EventTransitionManager.h"
-#include "TransitionDispatcher.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::transition;
 
 #include "CascadingDescriptor.h"

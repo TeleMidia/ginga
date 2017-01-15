@@ -183,17 +183,3 @@ namespace si {
 }
 }
 }
-
-
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::si::
-		ITOT* createTOT() {
-
-	return new ::br::pucrio::telemidia::ginga::core::tsparser::si::TOT();
-}
-
-extern "C" void destroyTOT(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::ITOT* tot) {
-
-	delete tot;
-}

@@ -140,10 +140,3 @@ namespace xhtml {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createBklAdapter() {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::
-			application::xhtml::BerkeliumPlayerAdapter();
-}

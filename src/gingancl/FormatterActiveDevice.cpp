@@ -35,7 +35,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
 extern "C" {
-	#include <stdlib.h>
+#include <stdlib.h>
 }
 
 #ifdef _MSC_VER

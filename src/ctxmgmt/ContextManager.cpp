@@ -475,17 +475,3 @@ namespace contextmanager {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::contextmanager::
-		ContextManager* createContextManager() {
-
-	return ::br::pucrio::telemidia::ginga::core::contextmanager::
-			ContextManager::getInstance();
-}
-
-extern "C" void destroyContextManager(
-		::br::pucrio::telemidia::ginga::core::contextmanager::ContextManager*
-		cm) {
-
-	delete cm;
-}

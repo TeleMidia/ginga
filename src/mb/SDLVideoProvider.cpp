@@ -193,17 +193,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IContinuousMediaProvider*
-		createSDLVideoProvider(GingaScreenID screenId, const char* mrl) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::SDLVideoProvider(
-			screenId, mrl));
-}
-
-extern "C" void destroySDLVideoProvider(
-		::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* cmp) {
-
-	delete cmp;
-}

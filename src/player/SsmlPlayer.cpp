@@ -67,7 +67,7 @@ namespace player {
 
         if (mrl.length() > 5) {
             string fileType;
-	
+
             this->mrl = mrl;
             fileType = this->mrl.substr(this->mrl.length() - 5, 5);
             if (fileType != ".ssml") {
@@ -98,7 +98,7 @@ namespace player {
         voiceType.gender = 0;
         voiceType.age = 0;
         voiceType.variant = 0;
-       
+
         ifstream fis;
 
         fis.open((this->mrl).c_str(), ifstream::in);
@@ -114,12 +114,12 @@ namespace player {
             while (isRunning == true)
                 sleep (1);
         }
-       
+
         sampleRate = espeak_Initialize(outType, MAX_READ, NULL, 0);
         isRunning = true;
 
         errType = espeak_SetVoiceByProperties(&voiceType);
-       
+
         espeak_SetSynthCallback(SynthCallback);
 
         string line;
@@ -127,7 +127,7 @@ namespace player {
 
             if (terminateSpeak == true)
                 break;
-           
+
             getline (fis, line);
             errType = espeak_Synth(line.c_str(),
                      line.length(),
@@ -141,16 +141,16 @@ namespace player {
         } while (!fis.eof());
 
         fis.close();
-       
+
         espeak_Synchronize();
         espeak_Terminate();
 
         if (terminateSpeak == false)
             notifyPlayerListeners(PL_NOTIFY_STOP, "");
-       
+
         terminateSpeak = false;
         isRunning = false;
-      
+
 
     }
 
@@ -178,33 +178,19 @@ namespace player {
 
     void SsmlPlayer::setPropertyValue(string name, string value) {
         Player::setPropertyValue(name, value);
-       
+
     }
 
     void SsmlPlayer::run() {
         clog << "SsmlPlayer::run thread created!" << endl;
         loadSsml();
-       
+
     }
 
-   
-}
-}
-}
-}
-}
-}
 
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-createSsmlPlayer(
-    GingaScreenID screenId, const char* mrl, bool hasVisual) {
-   
-    return (new ::br::pucrio::telemidia::ginga::core::player::
-            SsmlPlayer(screenId, (string)mrl));
 }
-
-extern "C" void destroySsmlPlayer(
-    ::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
-   
-    delete p;
+}
+}
+}
+}
 }

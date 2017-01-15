@@ -279,17 +279,3 @@ namespace fs {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::system::fs::
-		GingaLocatorFactory* createGingaLocatorFactory() {
-
-	return (::br::pucrio::telemidia::ginga::core::system::fs::
-			GingaLocatorFactory::getInstance());
-}
-
-extern "C" void destroyGingaLocatorFactory(
-		::br::pucrio::telemidia::ginga::core::system::fs::
-				GingaLocatorFactory* glf) {
-
-	glf->release();
-}

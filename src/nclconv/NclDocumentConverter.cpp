@@ -257,17 +257,14 @@ namespace ncl {
 					    parseDescriptorBase(rootElement, parentObject);
 
 			} else if (elementName == "importBase") {
-				// return the root element
 				return getImportParser()->parseImportBase(
 					    rootElement, parentObject);
 
 			} else if (elementName == "importedDocumentBase") {
-				// return the root element
 				return getImportParser()->parseImportedDocumentBase(
 					    rootElement, parentObject);
 
 			} else if (elementName == "importNCL") {
-				// return the root element
 				return getImportParser()->parseImportNCL(
 					    rootElement, parentObject);
 
@@ -322,25 +319,8 @@ namespace ncl {
 		return NULL;
 	}
 
-/*
-	void *NclDocumentConverter::parseRootElement(DOMElement *rootElement){
-		if ( XMLString::compareIString( rootElement->getTagName(),
-			    XMLString::transcode("ncl") ) == 0) {
-
-			return getStructureParser()->parseNcl(rootElement, NULL);
-		}
-
-		clog << "Wrong Document" << endl;
-		return NULL;
-	}*/
 }
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::converter::IDocumentConverter*
-		createNclDocumentConverter() {
-
-	return new ::br::pucrio::telemidia::converter::ncl::NclDocumentConverter();
 }

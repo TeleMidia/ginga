@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "InputManager.h"
 
 extern "C" {
-#include "string.h"
+#include <string.h>
 }
 
 #include "SDLDeviceScreen.h"
@@ -1986,19 +1986,4 @@ void LocalScreenManager::moveWindowTo(
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		LocalScreenManager* createLocalScreenManager() {
-
-	::br::pucrio::telemidia::ginga::core::mb::LocalScreenManager* ldm = (
-			::br::pucrio::telemidia::ginga::core::mb::ScreenManagerFactory::getInstance());
-
-	return ldm;
-}
-
-extern "C" void destroyLocalScreenManager(
-		::br::pucrio::telemidia::ginga::core::mb::LocalScreenManager* dm) {
-
-	::br::pucrio::telemidia::ginga::core::mb::ScreenManagerFactory::releaseInstance();
 }
