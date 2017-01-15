@@ -1,9 +1,15 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS=\
-  -DSTR_PREFIX='"$(prefix)"'\
-  -DGINGA_LIBDIR='"$(gingalibdir)"'\
-  -DGINGA_INI_PATH='"$(gingaconfdir)/ginga.ini"'\
+  -DGINGA_DATADIR='"$(pkgdatadir)/"'\
+  -DGINGA_BUTTON_DATADIR='"$(buttondir)/"'\
+  -DGINGA_CONTEXTMANAGER_DATADIR='"$(contextmanagerdir)/"'\
+  -DGINGA_FONT_DATADIR='"$(fontdir)"'\
+  -DGINGA_FORMATTER_DATADIR='"$(formatterdir)/"'\
+  -DGINGA_FORMATTERIMG_DATADIR='"$(formatterimgdir)/"'\
+  -DGINGA_FORMATTERMD_DATADIR='"$(formattermddir)/"'\
+  -DGINGA_MB_DATADIR='"$(mbdir)/"'\
+  -DGINGA_TUNER_DATADIR='"$(tunerdir)/"'\
   $(NULL)
 
 AM_CXXFLAGS=\
@@ -18,7 +24,7 @@ AM_CXXFLAGS=\
  $(XERCESC_CFLAGS)\
  $(NULL)
 
-AM_LDFLAGS= -R $(gingalibdir) -rpath $(gingalibdir)\
+AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
  $(CURL_LIBS)\
  $(FFMPEG_LIBS)\
  $(JPEG_LIBS)\

@@ -119,72 +119,43 @@ namespace player {
 		unlock();
 	}
 
-	void ShowButton::run() {
-		//lock();
-		running = true;
+  void ShowButton::run ()
+  {
+    running = true;
+    if (isDeleting)
+      goto done;
 
-		if (!isDeleting) {
-			switch (status) {
-				case PAUSE:
-					clog << "ShowButton::run PAUSE" << endl;
-					render(SystemCompat::appendGingaFilesPrefix(
-							"img/button/pauseButton.png"));
+    switch (status)
+      {
+      case PAUSE:
+        render (string (GINGA_BUTTON_DATADIR) + "pauseButton.png");
+        break;
+      case STOP:
+        if (previousStatus == PAUSE) {
+          release ();
+        }
+        render (string (GINGA_BUTTON_DATADIR) + "stopButton.png");
+        SystemCompat::uSleep(1000000);
+        release ();
+        break;
+      case PLAY:
+        if (previousStatus == PAUSE) {
+          release ();
+        }
+        render (string (GINGA_BUTTON_DATADIR) + "playButton.png");
+        SystemCompat::uSleep(1000000);
+        release();
+        break;
+      default:
+        break;
+      }
+  done:
+    running = false;
+  }
 
-					break;
-
-				case STOP:
-					clog << "ShowButton::run STOP" << endl;
-					if (previousStatus == PAUSE) {
-						release();
-					}
-
-					render(SystemCompat::appendGingaFilesPrefix(
-							"img/button/stopButton.png"));
-
-					SystemCompat::uSleep(1000000);
-					release();
-					break;
-
-				case PLAY:
-					clog << "ShowButton::run PLAY" << endl;
-					if (previousStatus == PAUSE) {
-						release();
-					}
-
-					render(SystemCompat::appendGingaFilesPrefix(
-							"img/button/playButton.png"));
-
-					SystemCompat::uSleep(1000000);
-					release();
-					break;
-
-				default:
-					clog << "ShowButton::run DEFAULT" << endl;
-					break;
-			}
-		}
-
-		running = false;
-		//unlock();
-	}
 }
 }
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::ShowButton*
-		createShowButton(GingaScreenID screenId) {
-
-	br::pucrio::telemidia::ginga::core::player::ShowButton* sb;
-	sb = new br::pucrio::telemidia::ginga::core::player::ShowButton(screenId);
-
-	return sb;
-}
-
-extern "C" void destroyShowButton(
-		::br::pucrio::telemidia::ginga::core::player::ShowButton* sb) {
-
-	delete sb;
 }

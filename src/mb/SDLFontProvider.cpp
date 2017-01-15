@@ -61,7 +61,7 @@ namespace mb {
 
 		this->fontInit  = false;
 		this->fontUri   = "";
-		this->dfltFont  = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
+		this->dfltFont  = string (GINGA_FONT_DATADIR) + "vera.ttf";
 		this->myScreen  = screenId;
 		this->height    = heightInPixel;
 		this->font      = NULL;

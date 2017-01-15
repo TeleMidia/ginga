@@ -358,8 +358,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 				return true;
 			}
 
-//TODO: This must be moved to SystemCompat?
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 			if (_access(fileName.c_str(), 0) == 0) {
 				return true;
 			}

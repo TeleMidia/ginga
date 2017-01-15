@@ -175,18 +175,14 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeGingaPrefix() {
-		SystemCompat::gingaPrefix = STR_PREFIX;
-
-		if (gingaPrefix == "NONE") {
-			gingaPrefix =  iUriD + "usr" + iUriD + "local" + iUriD;
-		}
+		SystemCompat::gingaPrefix = "";
 	}
 
 	void SystemCompat::initializeGingaConfigFile() {
 		ifstream fis;
 		string line, key, partial, value;
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		filesPref = gingaCurrentPath + "files\\";
 		installPref = gingaCurrentPath;
 
@@ -196,7 +192,7 @@ namespace compat {
 
 		return;
 #else
-		string gingaini = GINGA_INI_PATH;
+		string gingaini = "";
 
 		fis.open(gingaini.c_str(), ifstream::in);
 
@@ -291,7 +287,7 @@ namespace compat {
 			fUriD = "\\";
 		}
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		// Get the current executable path
 		HMODULE hModule = GetModuleHandleW(NULL);
 		WCHAR wexepath[300];
@@ -820,7 +816,7 @@ namespace compat {
 #endif
 
 	int SystemCompat::gettimeofday(struct timeval *tv, struct timezone *tz) {
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		FILETIME ft;
 		unsigned __int64 tmpres = 0;
 		static int tzflag;
@@ -854,7 +850,7 @@ namespace compat {
 	int SystemCompat::getUserClock(struct timeval* usrClk) {
 		int rval = 0;
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		double temp;
 
 		temp            = clock() / CLOCKS_PER_SEC;
@@ -875,7 +871,7 @@ namespace compat {
 		return rval;
 	}
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 	LARGE_INTEGER win_getFILETIMEoffset() {
 		SYSTEMTIME s;
 		FILETIME f;
@@ -1000,7 +996,7 @@ namespace compat {
 	int SystemCompat::clockGetTime(int clockType, struct timespec* tv) {
 		int res;
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		res = win_clock_gettime(clockType, tv);
 #else
 		res = clock_gettime(clockType, tv);
@@ -1010,7 +1006,7 @@ namespace compat {
 
 	/* replacement of Unix rint() for Windows */
 	int SystemCompat::rint (double x) {
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		char *buf;
 		int i,dec,sig;
 
@@ -1027,7 +1023,7 @@ namespace compat {
 	}
 
 	string SystemCompat::getTemporaryDir() {
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		//TODO: Use the WIN32 API to return the temporary directory
 		TCHAR lpTempPathBuffer[MAX_PATH];
 		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
@@ -1095,7 +1091,7 @@ namespace compat {
 
 		assert(pipeName != "");
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
 			newPipeName = "\\\\.\\pipe\\" + pipeName;
 		}
@@ -1113,7 +1109,7 @@ namespace compat {
 	}
 
 	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		assert(pd > 0);
 #else
 		assert(pd >= 0);
@@ -1123,7 +1119,7 @@ namespace compat {
 	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
 		pipeName = checkPipeName(pipeName);
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		*pd = CreateNamedPipe(
 				pipeName.c_str(),
 				PIPE_ACCESS_OUTBOUND, // 1-way pipe
@@ -1168,7 +1164,7 @@ namespace compat {
 	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
 		pipeName = checkPipeName(pipeName);
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		*pd = CreateFile(
 				pipeName.c_str(),
 				GENERIC_READ,
@@ -1200,7 +1196,7 @@ namespace compat {
 	void SystemCompat::closePipe(PipeDescriptor pd) {
 		checkPipeDescriptor(pd);
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		CloseHandle(pd);
 #else
 		close(pd);
@@ -1215,7 +1211,7 @@ namespace compat {
 
 		checkPipeDescriptor(pd);
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		DWORD bRead = 0;
 		BOOL result = ReadFile(
 				pd,
@@ -1237,7 +1233,7 @@ namespace compat {
 
 		assert(pd > 0);
 
-#if defined(_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32)
 		// This call blocks until a client process reads all the data
 		DWORD bWritten = 0;
 		BOOL result = WriteFile(

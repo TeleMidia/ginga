@@ -90,9 +90,6 @@ void printHelp() {
   cout << " /dev/null" << endl;
   cout << "                                              (default mode).";
   cout << endl;
-  cout << "    --context-dir <value>     Defines a new base directory to ";
-  cout << " ginga files use it carefully.";
-  cout << endl;
   cout << "    --x-offset <value>        Offset of left Ginga display coord.";
   cout << endl;
   cout << "    --y-offset <value>        Offset of top Ginga display coord.";
@@ -202,7 +199,6 @@ int main(int argc, char *argv[]) {
   string nclFile      = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
   string interfaceId  = "";
 
-  string contextDir   = "";
   int i, devClass     = 0;
   int xOffset         = 0, yOffset = 0, w = 0, h = 0, maxTransp = 0;
   double delayTime    = 0;
@@ -241,9 +237,6 @@ int main(int argc, char *argv[]) {
       nclFile.assign(argv[i+1], strlen(argv[i+1]));
       clog << "argv = '" << argv[i+1] << "' nclFile = '";
       clog << nclFile << "'" << endl;
-
-    } else if ((strcmp(argv[i], "--context-dir") == 0) && ((i + 1) < argc)) {
-      contextDir.assign(argv[i+1], strlen(argv[i+1]));
 
     } else if ((strcmp(argv[i], "--enable-log") == 0) && ((i + 1) < argc)) {
       if (strcmp(argv[i+1], "file") == 0) {
@@ -395,10 +388,6 @@ int main(int argc, char *argv[]) {
 
   } else if (devClass == 2) {
     SystemCompat::setLogTo(logDest, "_active");
-  }
-
-  if (contextDir != "") {
-    SystemCompat::setGingaContextPrefix(contextDir);
   }
 
   if (delayTime > 0) {

@@ -297,8 +297,8 @@ namespace adapters {
 		string mimeUri;
 		string ctrlUri;
 
-		mimeUri = SystemCompat::appendGingaFilesPrefix("cfg/formatter/mimedefs.ini");
-		ctrlUri = SystemCompat::appendGingaFilesPrefix("cfg/formatter/ctrldefs.ini");
+		mimeUri = string (GINGA_FORMATTER_DATADIR) + "mimedefs.ini";
+		ctrlUri = string (GINGA_FORMATTER_DATADIR) + "ctrldefs.ini";
 
 		fisMime.open(mimeUri.c_str(), ifstream::in);
 

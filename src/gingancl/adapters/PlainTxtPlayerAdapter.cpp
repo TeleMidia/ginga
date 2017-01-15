@@ -45,7 +45,7 @@ namespace text {
 		if (descriptor != NULL) {
 			paramValue = trim(descriptor->getParameterValue("fontUri"));
 			if (paramValue == "") {
-				paramValue = SystemCompat::appendGingaFilesPrefix("font/vera.ttf");
+				paramValue = string (GINGA_FONT_DATADIR) + "vera.ttf";
 			}
 			player->setPropertyValue("fontUri", paramValue);
 
