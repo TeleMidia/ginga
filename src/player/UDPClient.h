@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 #include <cstdio>
 
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _MSC_VER || defined __CYGWIN__
   #include <winsock2.h>
   #include <ws2tcpip.h>
 #else
@@ -40,7 +40,7 @@ class UDPClient {
 
 protected:
 
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _MSC_VER || defined __CYGWIN__
 	SOCKET sd;
 #else
 	int sd;

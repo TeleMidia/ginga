@@ -1,8 +1,8 @@
 #ifndef _GINGA_CONFIG_H_
 #define _GINGA_CONFIG_H_
 
-#ifndef WIN32
-#define WIN32 1
+#ifndef _MSC_VER
+#define _MSC_VER 1
 #endif
 
 #define VERSION "0.13.6"

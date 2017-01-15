@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <config.h>
 #include <dirent.h>
 
-#ifndef _WIN32
+#ifndef _MSC_VER
  #define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
  #define IS_LINK(st_mode)	(((st_mode) & S_IFMT) == S_IFLNK)
  #define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
@@ -27,7 +27,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
     typedef struct dirent DIRENT;
   #include <sys/time.h>
   #include <sys/resource.h>
-#else  // _WIN32
+#else  // _MSC_VER
 #define IS_DIRECTORY(st_mode)	(((st_mode) & S_IFMT) == S_IFDIR)
 #define IS_LINK(st_mode)	0
 #define IS_REGULAR(st_mode)	(((st_mode) & S_IFMT) == S_IFREG)
@@ -358,7 +358,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 				return true;
 			}
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 			if (_access(fileName.c_str(), 0) == 0) {
 				return true;
 			}
@@ -410,7 +410,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 	}
 
 	bool isNaN(double value) {
-#ifdef _WIN32
+#ifdef _MSC_VER
 		if (_isnan(value)) {
 #else
 		if (isnan(value)) {
@@ -422,7 +422,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 	}
 
 	bool isInfinity(double value) {
-#ifndef _WIN32
+#ifndef _MSC_VER
 		if (isinf(value)) {
 #else
 		if (!_finite(value)) {

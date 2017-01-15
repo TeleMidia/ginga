@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <ctime>
 #include <cmath>
 
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _MSC_VER || defined __CYGWIN__
   #include <winsock2.h>
 #else
   #include <netinet/in.h>

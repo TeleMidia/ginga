@@ -182,7 +182,7 @@ namespace compat {
 		ifstream fis;
 		string line, key, partial, value;
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		filesPref = gingaCurrentPath + "files\\";
 		installPref = gingaCurrentPath;
 
@@ -264,7 +264,7 @@ namespace compat {
 		string path, currentPath;
 		string gingaBinary = "ginga";
 
-#ifndef WIN32
+#ifndef _MSC_VER
 		pathD            = ";";
 		iUriD            = "/";
 		fUriD            = "\\";
@@ -287,7 +287,7 @@ namespace compat {
 			fUriD = "\\";
 		}
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		// Get the current executable path
 		HMODULE hModule = GetModuleHandleW(NULL);
 		WCHAR wexepath[300];
@@ -331,7 +331,7 @@ namespace compat {
 			}
 			delete params;
 		}
-#endif //WIN32
+#endif //_MSC_VER
 	}
 
 	void SystemCompat::initializeUserCurrentPath() {
@@ -348,12 +348,12 @@ namespace compat {
 	}
 
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
-#ifndef WIN32
+#ifndef _MSC_VER
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
 		clog << "SystemCompat::sigpipeHandler ";
 		clog << "throw: " << strsignal(x) << endl;
 		throw strsignal(x);  //throw the exception
-#endif //!WIN32
+#endif //!_MSC_VER
 	}
 
 	string SystemCompat::getGingaPrefix() {
@@ -491,7 +491,7 @@ namespace compat {
 			char *filename = (char*)malloc((name_len+3)*sizeof(char));
 			filename[0] = '.';
 			//filename[1] = '/';
-#ifdef WIN32
+#ifdef _MSC_VER
 			filename[1] = '\\';
 
 #else
@@ -504,7 +504,7 @@ namespace compat {
 				//printf(":: creating dir: %s\n",filename);
 				clog << ":: creating dir: " << filename << endl;
 
-#ifdef WIN32
+#ifdef _MSC_VER
 				_mkdir(filename);
 #else
 				mkdir(filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -576,7 +576,7 @@ namespace compat {
 			if ((it + 1) != params->end()) {
 				temp = *(it + 1);
 				if (temp != ".." || found) {
-#ifdef WIN32
+#ifdef _MSC_VER
 					if (newDir == "") {
 						newDir = (*it); //Drive letter:
 
@@ -585,7 +585,7 @@ namespace compat {
 					}
 #else
 					newDir = newDir + separator + (*it);
-#endif //WIN32
+#endif //_MSC_VER
 
 				} else {
 					++it;
@@ -699,7 +699,7 @@ namespace compat {
 		string _str;
 		_str = relPath;
 
-#ifdef WIN32
+#ifdef _MSC_VER
 		_str.replace( relPath.begin(), relPath.end(), '/', '\\');
 #endif
 		return _str;
@@ -759,14 +759,14 @@ namespace compat {
 	}
 
 	void SystemCompat::initializeSigpipeHandler() {
-#ifndef WIN32
+#ifndef _MSC_VER
 		signal(SIGPIPE, sigpipeHandler);
 #endif
 	}
 
 	string SystemCompat::getOperatingSystem() {
 		string _ops;
-#ifdef WIN32
+#ifdef _MSC_VER
 		_ops = "Windows";
 #else
 		_ops = "Linux";
@@ -776,7 +776,7 @@ namespace compat {
 
      void SystemCompat::strError (int err, char *buf, size_t size) {
 		int saved_errno = errno;
-#ifdef WIN32
+#ifdef _MSC_VER
 		strerror_s (buf, size, err);
 #else
 		strerror_r (err, buf, size);
@@ -786,7 +786,7 @@ namespace compat {
 
 
 	int SystemCompat::changeDir (const char *path) {
-#ifdef WIN32
+#ifdef _MSC_VER
 			return _chdir (path);
 #else
 			return chdir (path);
@@ -794,7 +794,7 @@ namespace compat {
 	}
 
 	void SystemCompat::makeDir(const char* dirName, unsigned int mode) {
-#ifdef WIN32
+#ifdef _MSC_VER
 			_mkdir(dirName);
 #else
 			mkdir(dirName, mode);
@@ -802,21 +802,21 @@ namespace compat {
 	}
 
 	void SystemCompat::uSleep(unsigned int microseconds) {
-#ifndef WIN32
+#ifndef _MSC_VER
 		::usleep(microseconds);
 #else
 		Sleep(microseconds/1000);
 #endif
 	}
 
-#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
+#if defined(_MSC_VER)
  #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
 #else
  #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
 #endif
 
 	int SystemCompat::gettimeofday(struct timeval *tv, struct timezone *tz) {
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		FILETIME ft;
 		unsigned __int64 tmpres = 0;
 		static int tzflag;
@@ -850,7 +850,7 @@ namespace compat {
 	int SystemCompat::getUserClock(struct timeval* usrClk) {
 		int rval = 0;
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		double temp;
 
 		temp            = clock() / CLOCKS_PER_SEC;
@@ -871,7 +871,7 @@ namespace compat {
 		return rval;
 	}
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 	LARGE_INTEGER win_getFILETIMEoffset() {
 		SYSTEMTIME s;
 		FILETIME f;
@@ -996,7 +996,7 @@ namespace compat {
 	int SystemCompat::clockGetTime(int clockType, struct timespec* tv) {
 		int res;
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		res = win_clock_gettime(clockType, tv);
 #else
 		res = clock_gettime(clockType, tv);
@@ -1006,7 +1006,7 @@ namespace compat {
 
 	/* replacement of Unix rint() for Windows */
 	int SystemCompat::rint (double x) {
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		char *buf;
 		int i,dec,sig;
 
@@ -1023,8 +1023,8 @@ namespace compat {
 	}
 
 	string SystemCompat::getTemporaryDir() {
-#if defined(_WIN32)
-		//TODO: Use the WIN32 API to return the temporary directory
+#if defined(_MSC_VER)
+		//TODO: Use the _MSC_VER API to return the temporary directory
 		TCHAR lpTempPathBuffer[MAX_PATH];
 		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
 					   lpTempPathBuffer); // buffer for path
@@ -1091,7 +1091,7 @@ namespace compat {
 
 		assert(pipeName != "");
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
 			newPipeName = "\\\\.\\pipe\\" + pipeName;
 		}
@@ -1109,7 +1109,7 @@ namespace compat {
 	}
 
 	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		assert(pd > 0);
 #else
 		assert(pd >= 0);
@@ -1119,7 +1119,7 @@ namespace compat {
 	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
 		pipeName = checkPipeName(pipeName);
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		*pd = CreateNamedPipe(
 				pipeName.c_str(),
 				PIPE_ACCESS_OUTBOUND, // 1-way pipe
@@ -1164,7 +1164,7 @@ namespace compat {
 	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
 		pipeName = checkPipeName(pipeName);
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		*pd = CreateFile(
 				pipeName.c_str(),
 				GENERIC_READ,
@@ -1196,7 +1196,7 @@ namespace compat {
 	void SystemCompat::closePipe(PipeDescriptor pd) {
 		checkPipeDescriptor(pd);
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		CloseHandle(pd);
 #else
 		close(pd);
@@ -1211,7 +1211,7 @@ namespace compat {
 
 		checkPipeDescriptor(pd);
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		DWORD bRead = 0;
 		BOOL result = ReadFile(
 				pd,
@@ -1233,7 +1233,7 @@ namespace compat {
 
 		assert(pd > 0);
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 		// This call blocks until a client process reads all the data
 		DWORD bWritten = 0;
 		BOOL result = WriteFile(

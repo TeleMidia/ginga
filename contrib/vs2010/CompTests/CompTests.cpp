@@ -32,7 +32,7 @@ int main() {
 		cout << "upperCase: " << (test = upperCase (test)) << endl;
 		cout << "upperCase: " << (test = lowerCase (test)) << endl;
 
-#ifndef WIN32
+#ifndef _MSC_VER
 		::usleep(1000000);
 #else
 		Sleep(1000);

@@ -31,14 +31,14 @@ extern "C" {
 	#include <ctype.h>
 	#include <sys/stat.h>
 	#include <sys/types.h>
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define _WINSOCKAPI_    // stops windows.h including winsock.h
 	#include <windows.h>
 	#include <io.h>
 	#include <time.h>
 	#include <direct.h>
 #endif
-#ifndef _WIN32
+#ifndef _MSC_VER
 	#include <sys/param.h>
 	#include <unistd.h>
 	#include <sys/time.h>

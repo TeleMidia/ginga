@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#ifndef _WIN32
+#ifndef _MSC_VER
 #include <sys/ioctl.h>
 #endif
 

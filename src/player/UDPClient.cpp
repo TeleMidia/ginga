@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "player/UDPClient.h"
 
-#ifndef _WIN32
+#ifndef _MSC_VER
 #include <unistd.h>
-#endif //_WIN32
+#endif //_MSC_VER
 
 #include <string.h>
 
@@ -33,7 +33,7 @@ UDPClient::~UDPClient() {
 }
 
 bool UDPClient::connectSocket(string host, int port) {
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _MSC_VER || defined __CYGWIN__
 	WORD L_Ver;
 	WSADATA wsaData;
 
@@ -92,7 +92,7 @@ int UDPClient::receive(char** buff) {
 
 void UDPClient::closeSocket() {
 	if (sd > 0) {
-#if defined _WIN32 || defined __CYGWIN__
+#if defined _MSC_VER || defined __CYGWIN__
 		closesocket(sd);
 #else
 		close(sd);
