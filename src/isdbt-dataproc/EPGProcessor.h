@@ -36,8 +36,6 @@ using namespace ::br::pucrio::telemidia::util;
 #include "isdbt-tsparser/ITOT.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#include "DataProcessor.h"
-
 #include "isdbt-tsparser/ITransportSection.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
@@ -76,7 +74,7 @@ namespace epg {
 			set<IEPGListener*>* epgListeners;
 			set<IEPGListener*>* serviceListeners;
 			set<IEPGListener*>* timeListeners;
-			DataProcessor* dataProcessor;
+			void* dataProcessor;
 
 		private:
 			virtual ~EPGProcessor();
@@ -84,7 +82,7 @@ namespace epg {
 		public:
 			static EPGProcessor* getInstance();
 			void release();
-			void setDataProcessor(DataProcessor* dataProcessor);
+			void setDataProcessor(void* dataProcessor);
 			void decodeSdt(string fileName);
 			void decodeSdtSection(ITransportSection* section);
 			set<IEventInfo*>* decodeEit(string fileName);

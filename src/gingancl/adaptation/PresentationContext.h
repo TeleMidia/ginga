@@ -29,8 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 #include "config.h"
 
-#if HAVE_MULTIDEVICE
-# include "multidevice/IDeviceDomain.h"
+#if WITH_MULTIDEVICE
+# include "multidevice/DeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #endif
 
@@ -42,8 +42,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "ctxmgmt/IContextListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
-#if HAVE_MULTIDEVICE
-#include "multidevice/IDeviceDomain.h"
+#if WITH_MULTIDEVICE
+#include "multidevice/DeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #endif
 
@@ -75,11 +75,11 @@ namespace context {
 			IContextListener* globalVarListener;
 			pthread_mutex_t attrMutex;
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 			IRemoteDeviceListener* devListener;
 #else
 			void* devListener;
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 
 		public:
 			PresentationContext(GingaScreenID screenId);
@@ -101,9 +101,9 @@ namespace context {
 			void setGlobalVarListener(IContextListener* listener);
 			void receiveGlobalAttribution(string propertyName, string value);
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 			void setRemoteDeviceListener(IRemoteDeviceListener* rdl);
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 	};
 }
 }

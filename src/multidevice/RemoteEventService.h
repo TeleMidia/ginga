@@ -15,6 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+#ifndef REMOTEEVENTSERVICE_H_
+#define REMOTEEVENTSERVICE_H_
+
 #include "TcpSocketService.h"
 
 #include <pthread.h>
@@ -33,9 +36,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ctxmgmt/ContextManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
-
-#ifndef REMOTEEVENTSERVICE_H_
-#define REMOTEEVENTSERVICE_H_
 
 using namespace std;
 

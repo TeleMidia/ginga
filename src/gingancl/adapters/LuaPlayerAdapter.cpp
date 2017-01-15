@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "LuaPlayerAdapter.h"
-#include "AdaptersComponentSupport.h"
+#include "player/LuaPlayer.h"
 
 namespace br {
 namespace pucrio {

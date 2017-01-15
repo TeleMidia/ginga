@@ -28,7 +28,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	DeviceService::DeviceService() {
-		devices      = new map<unsigned int, IRemoteDevice*>;
+		devices      = new map<unsigned int, RemoteDevice*>;
 		listeners    = new set<IRemoteDeviceListener*>;
 
 		Thread::mutexInit(&lMutex, NULL);
@@ -54,9 +54,9 @@ namespace multidevice {
 		Thread::mutexDestroy(&lMutex);
 	}
 
-	IRemoteDevice* DeviceService::getDevice(unsigned int devAddr) {
-		map<unsigned int, IRemoteDevice*>::iterator i;
-		IRemoteDevice* remoteDev;
+	RemoteDevice* DeviceService::getDevice(unsigned int devAddr) {
+		map<unsigned int, RemoteDevice*>::iterator i;
+		RemoteDevice* remoteDev;
 
 		Thread::mutexLock(&dMutex);
 		i = devices->find(devAddr);
@@ -94,7 +94,7 @@ namespace multidevice {
 			int height) {
 
 		int w, h;
-		IRemoteDevice* device = getDevice(deviceAddress);
+		RemoteDevice* device = getDevice(deviceAddress);
 
 		if (device == NULL) {
 			clog << "DeviceService::addDevice() new RemoteDevice() " << endl;

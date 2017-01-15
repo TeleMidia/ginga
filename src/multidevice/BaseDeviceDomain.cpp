@@ -184,8 +184,8 @@ namespace multidevice {
 		StreamData* streamData;
 		vector<StreamData*>::iterator i;
 
-		if (devClass != IDeviceDomain::CT_BASE &&
-				devClass != IDeviceDomain::CT_ACTIVE) {
+		if (devClass != DeviceDomain::CT_BASE &&
+				devClass != DeviceDomain::CT_ACTIVE) {
 
 			return;
 		}
@@ -253,7 +253,7 @@ namespace multidevice {
 					return false;
 				}
 
-				if (destDevClass == IDeviceDomain::CT_PASSIVE) {
+				if (destDevClass == DeviceDomain::CT_PASSIVE) {
 					//prepare frame
 					task = mountFrame(
 							myIP, destDevClass, FT_MEDIACONTENT, fileSize);
@@ -507,7 +507,7 @@ namespace multidevice {
 							lastMediaContentTask.size);
 
 					taskRequest(
-							IDeviceDomain::CT_PASSIVE,
+							DeviceDomain::CT_PASSIVE,
 							data,
 							lastMediaContentTask.size);
 

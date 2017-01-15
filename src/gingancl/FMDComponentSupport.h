@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 # include "multidevice/RemoteDeviceManager.h"
 # include "multidevice/ActiveDeviceDomain.h"
 # include "multidevice/PassiveDeviceDomain.h"

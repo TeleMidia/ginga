@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "NetworkUtil.h"
-#include "IDeviceDomain.h"
+#include "DeviceDomain.h"
 
 #include <map>
 using namespace std;
@@ -99,7 +99,7 @@ namespace multidevice {
 	}
 
 	bool isControlFrame(int frameType) {
-		if (frameType < IDeviceDomain::FT_MEDIACONTENT) {
+		if (frameType < DeviceDomain::FT_MEDIACONTENT) {
 			return true;
 		}
 

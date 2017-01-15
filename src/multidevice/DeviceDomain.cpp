@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "BaseDeviceDomain.h"
 #include "ActiveDeviceService.h"
 #include "PassiveDeviceService.h"
+#include "RemoteEventService.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -68,9 +69,10 @@ namespace multidevice {
 		 *       accomplish the addition of the device classes based on
 		 *       a configuration file
 		 */
-		res = new RemoteEventService();
-		res->addDeviceClass(1);
-		res->addDeviceClass(2);
+		RemoteEventService *nres = new RemoteEventService();
+		nres->addDeviceClass(1);
+		nres->addDeviceClass(2);
+                res=nres;
 	}
 
 	DeviceDomain::~DeviceDomain() {
@@ -176,7 +178,7 @@ namespace multidevice {
 			clog << "DeviceDomain::addDevice adding new device - class 2...";
 			clog << endl;
 
-			res->addDevice(
+			((RemoteEventService*)res)->addDevice(
 					reqDeviceClass,
 					(sourceIp+srvPort),
 					(char*)getStrIP(sourceIp).c_str(), srvPort, (sourceIp==myIP));
@@ -203,27 +205,27 @@ namespace multidevice {
 		int taskSize;
 
 		//prepare frame
-		if (destDevClass == IDeviceDomain::CT_ACTIVE) {
-			if (frameType == IDeviceDomain::FT_PRESENTATIONEVENT) {
+		if (destDevClass == DeviceDomain::CT_ACTIVE) {
+			if (frameType == DeviceDomain::FT_PRESENTATIONEVENT) {
 				if (strstr(payload,"start::") != NULL) {
 					_doc.assign(payload + 7, payloadSize - 7);
 					clog << "DeviceDomain::postEventTask calling ";
 					clog << "startDocument with doc = '";
 					clog << _doc << "'" << endl;
-					res->startDocument(2, (char*)(_doc.c_str()));
+					((RemoteEventService*)res)->startDocument(2, (char*)(_doc.c_str()));
 
 				} else if (strstr(payload,"stop::") != NULL) {
 					clog << "DeviceDomain::postEventTask calling ";
 					clog << "stopDocument" << endl;
 
 					_doc.assign(payload + 6, payloadSize - 6);
-					res->stopDocument(2, (char*)(_doc.c_str()));
+					((RemoteEventService*)res)->stopDocument(2, (char*)(_doc.c_str()));
 				}
 			}
 
 		} else {
-			if (frameType == IDeviceDomain::FT_SELECTIONEVENT) {
-				clog << "DeviceDomain frameType == IDeviceDomain::FT_SELECTIONEVENT"<<endl;
+			if (frameType == DeviceDomain::FT_SELECTIONEVENT) {
+				clog << "DeviceDomain frameType == DeviceDomain::FT_SELECTIONEVENT"<<endl;
 			}
 			task = mountFrame(myIP, destDevClass, frameType, payloadSize);
 
@@ -237,7 +239,7 @@ namespace multidevice {
 	void DeviceDomain::setDeviceInfo(int width, int height,string base_device_ncl_path) {
 		this->deviceWidth  = width;
 		this->deviceHeight = height;
-		this->res->setBaseDeviceNCLPath(base_device_ncl_path);
+		((RemoteEventService*)this->res)->setBaseDeviceNCLPath(base_device_ncl_path);
 	}
 	
 	int DeviceDomain::getDeviceClass() {

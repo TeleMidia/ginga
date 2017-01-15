@@ -35,7 +35,7 @@ namespace multidevice {
 		bool connecting;
 		bool running;
 		bool released;
-		IDeviceDomain* domainService;
+		DeviceDomain* domainService;
 		static RemoteDeviceManager* _instance;
 
 		RemoteDeviceManager();
@@ -45,7 +45,7 @@ namespace multidevice {
 		void release();
 		static RemoteDeviceManager* getInstance();
 
-		void setDeviceDomain(IDeviceDomain* domain);
+		void setDeviceDomain(DeviceDomain* domain);
 		void setDeviceInfo(int deviceClass, int width, int height, string base_device_ncl_path);
 		int getDeviceClass();
 		void addListener(IRemoteDeviceListener* listener);

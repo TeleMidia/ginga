@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "ApplicationPlayerAdapter.h"
+#include "PlayerAdapterManager.h"
 
 namespace br {
 namespace pucrio {
@@ -560,7 +561,7 @@ namespace application {
 			}
 
 			if (object != NULL) {
-				manager->removePlayer(object);
+				((PlayerAdapterManager*)manager)->removePlayer(object);
 				object->unprepare();
 			}
 
@@ -583,7 +584,7 @@ namespace application {
 
 			if (object != NULL) {
 				object->unprepare();
-				manager->removePlayer(object);
+				((PlayerAdapterManager*)manager)->removePlayer(object);
 			}
 
 			preparedEvents.clear();
@@ -725,7 +726,8 @@ namespace application {
 				if (editingCommandListener != NULL) {
 					string cTag, bId, dId;
 					string::size_type pos;
-					NclPlayerData* pData = manager->getNclPlayerData();
+					NclPlayerData* pData =
+                                          ((PlayerAdapterManager*)manager)->getNclPlayerData();
 
 					pos   = param.find_first_of(",");
 					cTag  = param.substr(0, pos);

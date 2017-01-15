@@ -247,7 +247,7 @@ namespace multidevice {
 						int eventType,
 						string eventContent) {
 
-		if (eventType == IDeviceDomain::FT_ATTRIBUTIONEVENT) {
+		if (eventType == 5) {
 			//clog << "RemoteEventService::receiveRemoteEvent ATTR";
 			//clog << eventContent << endl;
 

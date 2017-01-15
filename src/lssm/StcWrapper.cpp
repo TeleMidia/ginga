@@ -26,7 +26,7 @@ namespace pucrio {
 namespace telemidia {
 namespace ginga {
 namespace lssm {
-#if HAVE_ISDBT
+#if WITH_ISDBT
 	StcWrapper::StcWrapper(IPlayer* realStcProvider) {
 		this->realStcProvider = realStcProvider;
 	}

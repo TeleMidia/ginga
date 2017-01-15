@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "AVPlayerAdapter.h"
-#include "AdaptersComponentSupport.h"
+#include "player/AVPlayer.h"
 
 #include <string.h>
 

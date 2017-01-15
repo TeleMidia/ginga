@@ -54,7 +54,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "IPlayerAdapterManager.h"
 #include "IPlayerAdapter.h"
 #include "NominalEventMonitor.h"
 
@@ -78,7 +77,7 @@ namespace adapters {
 			static double eventTS;
 			InputManager* im;
 
-			IPlayerAdapterManager* manager;
+			void* manager;
 			NominalEventMonitor* anchorMonitor;
 			set<string> typeSet;
 			ExecutionObject* object;
@@ -99,7 +98,7 @@ namespace adapters {
 			FormatterPlayerAdapter();
 			virtual ~FormatterPlayerAdapter();
 
-			virtual void setAdapterManager(IPlayerAdapterManager* manager);
+			virtual void setAdapterManager(void* manager);
 
 			bool instanceOf(string s);
 			virtual void setNclEditListener(IPlayerListener* listener){};

@@ -43,6 +43,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 #include <iostream>
 using namespace std;
 
+#include "DataProcessor.h"
+
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -121,7 +123,7 @@ namespace epg {
 		}
 	}
 
-	void EPGProcessor::setDataProcessor(DataProcessor* dataProcessor) {
+	void EPGProcessor::setDataProcessor(void* dataProcessor) {
 		this->dataProcessor = dataProcessor;
 	}
 
@@ -153,9 +155,10 @@ namespace epg {
 
 			if (epgListeners->empty()) {
 				if (dataProcessor != NULL) {
-					dataProcessor->createPidSectionFilter(SDT_PID); //SDT
-					dataProcessor->createPidSectionFilter(EIT_PID); //EIT
-					dataProcessor->createPidSectionFilter(CDT_PID); //CDT
+					DataProcessor *dp = (DataProcessor *)dataProcessor;
+					dp->createPidSectionFilter(SDT_PID); //SDT
+					dp->createPidSectionFilter(EIT_PID); //EIT
+					dp->createPidSectionFilter(CDT_PID); //CDT
 				}
 			}
 
@@ -786,17 +789,4 @@ namespace epg {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::EPGProcessor*
-		createEPGP() {
-
-	return (::br::pucrio::telemidia::ginga::core::dataprocessing::epg::
-			EPGProcessor::getInstance());
-}
-
-extern "C" void destroyEPGP(::br::pucrio::telemidia::ginga::core::
-		dataprocessing::epg::EPGProcessor* epgp) {
-
-	delete epgp;
 }

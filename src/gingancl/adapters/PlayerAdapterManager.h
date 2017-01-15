@@ -35,8 +35,14 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "gingancl/model/ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "IPlayerAdapterManager.h"
+#include "system/ITimeBaseProvider.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+
+#include "player/INCLPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
 #include "FormatterPlayerAdapter.h"
+#include "IPlayerAdapter.h"
 
 #include <iostream>
 #include <fstream>
@@ -52,7 +58,7 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace adapters {
-  class PlayerAdapterManager : public Thread, public IPlayerAdapterManager {
+  class PlayerAdapterManager : public Thread {
 	private:
 		map<string, IPlayerAdapter*> objectPlayers;
 		map<string, IPlayerAdapter*> deletePlayers;

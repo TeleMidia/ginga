@@ -26,11 +26,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LocalScreenManager.h"
 #include "ScreenManagerFactory.h"
 
-#if HAVE_LIBRSVG
+#if WITH_LIBRSVG
 #include "SDLSvgDecoder.h"
 #endif
 
-#if HAVE_LIBBPG
+#if WITH_LIBBPG
 #include "SDLBpgDecoder.h"
 #endif
 
@@ -98,7 +98,7 @@ namespace mb {
 		if (surface != 0 && ScreenManagerFactory::getInstance()->hasSurface(
 				myScreen, surface)) {
 
-#if HAVE_LIBRSVG
+#if WITH_LIBRSVG
                     if( imgUri.substr(imgUri.find_last_of(".") + 1) == "svg" ||
                         imgUri.substr(imgUri.find_last_of(".") + 1) == "svgz")
                     {
@@ -112,7 +112,7 @@ namespace mb {
                         delete svgdec;
                     } else
 #endif
-#if HAVE_LIBBPG
+#if WITH_LIBBPG
                     if ( imgUri.substr(imgUri.find_last_of(".") + 1) == "bpg")
                     {
                         SDLBpgDecoder *bpgdec = new SDLBpgDecoder(imgUri);

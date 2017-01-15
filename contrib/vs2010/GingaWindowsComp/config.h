@@ -13,7 +13,7 @@
 
 #define HAVE_CURL 1
 
-#define HAVE_BERKELIUM 1
+#define WITH_BERKELIUM 1
 
 #define HAVE_JPEG 0
 

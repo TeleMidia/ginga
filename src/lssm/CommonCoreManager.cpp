@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "lssm/CommonCoreManager.h"
 
-#if HAVE_ISDBT
+#if WITH_ISDBT
 # include "isdbt-tuner/Tuner.h"
 # include "isdbt-tsparser/Demuxer.h"
 # include "isdbt-tsparser/PipeFilter.h"
@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/AVPlayer.h"
 #include "player/ProgramAV.h"
 
-#if HAVE_ISDBT
+#if WITH_ISDBT
 #include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
@@ -44,7 +44,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "lssm/DataWrapperListener.h"
-#endif // HAVE_ISDBT
+#endif // WITH_ISDBT
 
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
@@ -97,7 +97,7 @@ namespace lssm {
 		this->myScreen = screenId;
 		this->pem = pem;
 
-#if HAVE_ISDBT
+#if WITH_ISDBT
 		tuner = new Tuner(myScreen);
 
 		pem->setIsLocalNcl(false, tuner);
@@ -128,7 +128,7 @@ namespace lssm {
 
 		((Tuner*)tuner)->setLoopListener((DataProcessor*)dataProcessor);
 
-#endif // HAVE_ISDBT
+#endif // WITH_ISDBT
 	}
 
 	void CommonCoreManager::enableNPTPrinter(bool enableNPTPrinter) {
@@ -144,7 +144,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::removeOCFilterAfterMount(bool removeIt) {
-#if HAVE_ISDBT
+#if WITH_ISDBT
 		if (dataProcessor != NULL) {
 			((DataProcessor*)dataProcessor)->removeOCFilterAfterMount(removeIt);
 		}
@@ -152,7 +152,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::setTunerSpec(string tunerSpec) {
-#if HAVE_ISDBT
+#if WITH_ISDBT
 		string ni, ch;
 		size_t pos;
 
@@ -228,7 +228,7 @@ namespace lssm {
 	}
 
 	void CommonCoreManager::tune() {
-#if HAVE_ISDBT
+#if WITH_ISDBT
 		clog << "lssm-ccm::cpi tunning..." << endl;
 		((Tuner*)tuner)->tune();
 #endif
@@ -238,7 +238,7 @@ namespace lssm {
 		//int aPid = -1, vPid = -1;
 		int cpid;
 
-#if HAVE_ISDBT
+#if WITH_ISDBT
 
 		ITSFilter* mavFilter  = NULL;
 		IPlayer* ipav         = NULL;

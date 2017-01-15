@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _BaseDeviceService_H_
 #define _BaseDeviceService_H_
 
-#include "IRemoteDevice.h"
+#include "RemoteDevice.h"
 #include "IRemoteDeviceListener.h"
 #include "DeviceDomain.h"
 #include "DeviceService.h"

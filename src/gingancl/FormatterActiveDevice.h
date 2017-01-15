@@ -31,7 +31,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "IPrivateBaseManager.h"
+#include "PrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include <stdio.h>
@@ -75,7 +75,7 @@ namespace multidevice {
 			map<string, string> initVars;
 
 			string currentDocUri;
-			IPrivateBaseManager* privateBaseManager;
+			PrivateBaseManager* privateBaseManager;
 			INCLPlayer* formatter;
 
 			bool listening;

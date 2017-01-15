@@ -31,7 +31,7 @@ namespace multidevice {
 			int x, int y, int w, int h, bool useMulticast, int srvPort) : FormatterMultiDevice(
 					screenId, deviceLayout, x, y, w, h, useMulticast, srvPort) {
 
-		deviceClass = IDeviceDomain::CT_PASSIVE;
+		deviceClass = DeviceDomain::CT_PASSIVE;
 		serialized = dm->createWindow(
 				myScreen, x, y, defaultWidth, defaultHeight, -1.0);
 
@@ -113,8 +113,8 @@ namespace multidevice {
 		clog << mnemonicCode << "'" << endl;
 
 		rdm->postEvent(
-				IDeviceDomain::CT_BASE,
-				IDeviceDomain::FT_SELECTIONEVENT,
+				DeviceDomain::CT_BASE,
+				DeviceDomain::FT_SELECTIONEVENT,
 				(char*)(mnemonicCode.c_str()),
 				(int)(mnemonicCode.length()));
 

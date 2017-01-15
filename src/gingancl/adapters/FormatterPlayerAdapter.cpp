@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "FormatterPlayerAdapter.h"
+#include "PlayerAdapterManager.h"
 
 #include "ApplicationPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
@@ -24,10 +25,10 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
 #include "gingancl/model/LinkTransitionTriggerCondition.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
-#include "AdaptersComponentSupport.h"
-
 #include "mb/ScreenManagerFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "player/Player.h"
 
 namespace br {
 namespace pucrio {
@@ -94,10 +95,10 @@ namespace adapters {
 	}
 
 	void FormatterPlayerAdapter::setAdapterManager(
-			IPlayerAdapterManager* manager) {
+			void* manager) {
 
 		this->manager  = manager;
-		this->myScreen = manager->getNclPlayerData()->screenId;
+		this->myScreen = ((PlayerAdapterManager*)manager)->getNclPlayerData()->screenId;
 		if (dm == NULL) {
 			dm = ScreenManagerFactory::getInstance();
 		}
@@ -411,7 +412,7 @@ namespace adapters {
 						}
 
 						parentOpacity = (1 -
-								manager->getNclPlayerData()->transparency);
+								((PlayerAdapterManager*)manager)->getNclPlayerData()->transparency);
 
 						transpValue = (1 - (parentOpacity -
 								(parentOpacity * transpValue)));
@@ -602,7 +603,7 @@ namespace adapters {
 							}
 
 							parentOpacity = (1 -
-									manager->getNclPlayerData()->transparency);
+									((PlayerAdapterManager*)manager)->getNclPlayerData()->transparency);
 
 							transpValue = (1 - (parentOpacity -
 									(parentOpacity * transpValue)));
@@ -792,7 +793,7 @@ namespace adapters {
 		if (transpValue == -1 &&
 				descriptor->getParameterValue("transparency") == "") {
 
-			transpValue = manager->getNclPlayerData()->transparency;
+			transpValue = ((PlayerAdapterManager*)manager)->getNclPlayerData()->transparency;
 
 			if (fRegion != NULL) {
 				fRegion->setTransparency(transpValue);
@@ -1111,7 +1112,7 @@ namespace adapters {
 			clog << endl;
 		}
 
-		timeBaseProvider = manager->getTimeBaseProvider();
+		timeBaseProvider = ((PlayerAdapterManager*)manager)->getTimeBaseProvider();
 
 		if (object->hasSampleEvents() && timeBaseProvider != NULL) {
 			if (anchorMonitor == NULL) {
@@ -1417,7 +1418,7 @@ namespace adapters {
 			return stop();
 		}
 
-		manager->removePlayer(object);
+		((PlayerAdapterManager*)manager)->removePlayer(object);
 
 		if (ExecutionObject::hasInstance(object, false)) {
 			object->unprepare();
@@ -1485,7 +1486,7 @@ namespace adapters {
 					}
 
 					parentOpacity = (1 -
-							manager->getNclPlayerData()->transparency);
+							((PlayerAdapterManager*)manager)->getNclPlayerData()->transparency);
 
 					transpValue = (1 - (parentOpacity -
 							(parentOpacity * transpValue)));

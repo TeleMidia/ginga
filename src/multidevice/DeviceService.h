@@ -42,7 +42,7 @@ namespace multidevice {
   class DeviceService {
 	protected:
 		set<IRemoteDeviceListener*>* listeners;
-		map<unsigned int, IRemoteDevice*>* devices;
+		map<unsigned int, RemoteDevice*>* devices;
 		int serviceClass;
 		pthread_mutex_t lMutex;
 		pthread_mutex_t dMutex;
@@ -52,7 +52,7 @@ namespace multidevice {
 		virtual ~DeviceService();
 
 	protected:
-		IRemoteDevice* getDevice(unsigned int devAddr);
+		RemoteDevice* getDevice(unsigned int devAddr);
 
 	public:
 		void addListener(IRemoteDeviceListener* listener);
