@@ -46,7 +46,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
-#include "PlayersComponentSupport.h"
 
 #include <vector>
 #include <iostream>

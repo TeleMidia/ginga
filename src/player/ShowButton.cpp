@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "player/ShowButton.h"
 
-#include "player/PlayersComponentSupport.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 

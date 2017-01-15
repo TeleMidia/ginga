@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "player/TextPlayer.h"
 
-#include "player/PlayersComponentSupport.h"
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
