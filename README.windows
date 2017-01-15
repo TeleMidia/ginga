@@ -1,6 +1,0 @@
-# Build Ginga in Windows
-
-* For build with autotools using mingw(www.mingw.org/), see README.linux.
-
-* For build with Visual Studio(www.visualstudio.com/), see ginga-vs2010-solution/README.
-
