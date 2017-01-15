@@ -284,8 +284,6 @@ namespace compat {
 			static void uSleep(unsigned int microseconds);
 			static string getTemporaryDir();
 
-			static void gingaProcessExit(short status);
-
 			static const short LOG_NULL = 0;
 			static const short LOG_STDO = 1;
 			static const short LOG_FILE = 2;
@@ -325,13 +323,6 @@ namespace compat {
 			 *****************/
 			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
 			static int unzip_file(const char *zipname, const char *filedir);
-
-			/**********************
-			 * MemCheck Functions *
-			 **********************/
-			static bool initMemCheck();
-			static void memCheckPoint();
-			static bool finishMemCheck();
 	};
 }
 }
