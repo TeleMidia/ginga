@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "SDLBpgDecoder.h"
 
-extern "C"{
+extern "C" {
 #include <stdint.h>
 #include <libbpg.h>
 }

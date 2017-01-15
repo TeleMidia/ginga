@@ -168,9 +168,3 @@ namespace si {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::si::
-		IAIT* createAIT() {
-
-	return new ::br::pucrio::telemidia::ginga::core::tsparser::si::AIT();
-}

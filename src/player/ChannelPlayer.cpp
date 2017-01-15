@@ -196,18 +196,3 @@ namespace player {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createChannelPlayer(
-				GingaScreenID screenId, const char* mrl) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::player::ChannelPlayer(
-			screenId));
-}
-
-extern "C" void destroyChannelPlayer(::br::pucrio::telemidia::ginga::core::
-		player::IPlayer* p) {
-
-	//TODO: static release method
-	delete p;
-}

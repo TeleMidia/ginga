@@ -161,18 +161,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* createSDLAudioProvider(
-				GingaScreenID screenId, const char* mrl) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLAudioProvider(screenId, mrl));
-}
-
-extern "C" void destroySDLAudioProvider(
-		::br::pucrio::telemidia::ginga::core::mb::
-		IContinuousMediaProvider* cmp) {
-
-	delete cmp;
-}

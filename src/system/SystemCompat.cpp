@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if WITH_MULTIDEVICE
 # include <zip.h>
 #endif
-extern "C" float machInfo(const char *name);
 
 namespace br {
 namespace pucrio {

@@ -639,15 +639,3 @@ namespace si {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::si::IEventInfo*
-		createEventInfo() {
-
-	return new ::br::pucrio::telemidia::ginga::core::tsparser::si::EventInfo();
-}
-
-extern "C" void destroyEventInfo(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::IEventInfo* ei) {
-
-	delete ei;
-}

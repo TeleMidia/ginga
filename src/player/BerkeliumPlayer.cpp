@@ -411,17 +411,3 @@ namespace player {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createBerkeliumPlayer(
-				GingaScreenID screenId, const char* mrl) {
-
-	return new ::br::pucrio::telemidia::ginga::core::player::BerkeliumPlayer(
-			screenId, (string)mrl);
-}
-
-extern "C" void destroyBerkeliumPlayer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
-
-	delete p;
-}

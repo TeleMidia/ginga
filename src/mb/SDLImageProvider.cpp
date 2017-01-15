@@ -159,16 +159,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IImageProvider*
-		createSDLImageProvider(GingaScreenID screenId, const char* mrl) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLImageProvider(screenId, mrl));
-}
-
-extern "C" void destroySDLImageProvider(
-		::br::pucrio::telemidia::ginga::core::mb::IImageProvider* ip) {
-
-	delete ip;
-}

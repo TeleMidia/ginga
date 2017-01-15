@@ -400,19 +400,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::IFontProvider*
-		createSDLFontProvider(
-				GingaScreenID screenId,
-				const char* fontUri,
-				int heightInPixel) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLFontProvider(screenId, fontUri, heightInPixel));
-}
-
-extern "C" void destroySDLFontProvider(
-		::br::pucrio::telemidia::ginga::core::mb::IFontProvider* fp) {
-
-	delete fp;
-}

@@ -55,16 +55,3 @@ namespace tts {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter*
-		createSsmlAdapter() {
-
-	return new ::br::pucrio::telemidia::ginga::ncl::adapters::tts::
-                SsmlPlayerAdapter();
-}
-
-extern "C" void destroySsmlAdapter(
-		::br::pucrio::telemidia::ginga::ncl::adapters::IPlayerAdapter* player) {
-
-	delete player;
-}

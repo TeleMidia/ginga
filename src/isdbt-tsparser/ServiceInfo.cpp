@@ -197,16 +197,3 @@ namespace si {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::si::IServiceInfo*
-		createServiceInfo() {
-
-	return (new
-			::br::pucrio::telemidia::ginga::core::tsparser::si::ServiceInfo());
-}
-
-extern "C" void destroyServiceInfo(
-		::br::pucrio::telemidia::ginga::core::tsparser::si::IServiceInfo* si) {
-
-	delete si;
-}

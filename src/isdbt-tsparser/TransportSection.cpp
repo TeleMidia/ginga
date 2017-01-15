@@ -364,16 +364,3 @@ namespace tsparser {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::ITransportSection*
-		createTSSection(char* sectionBytes, unsigned int size) {
-
-	if (sectionBytes == NULL) {
-		return new ::br::pucrio::telemidia::ginga::core::tsparser::
-			TransportSection();
-
-	} else {
-		return new ::br::pucrio::telemidia::ginga::core::tsparser::
-			TransportSection(sectionBytes, size);
-	}
-}

@@ -173,16 +173,3 @@ namespace player {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createImagePlayer(GingaScreenID screenId, const char* mrl) {
-
-	return new ::br::pucrio::telemidia::ginga::core::player::ImagePlayer(
-			screenId, mrl);
-}
-
-extern "C" void destroyImagePlayer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
-
-	delete p;
-}

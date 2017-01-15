@@ -868,16 +868,3 @@ namespace tsparser {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::IDemuxer*
-		createDemuxer(Tuner* tuner) {
-
-	return new ::br::pucrio::telemidia::ginga::core::tsparser::Demuxer(
-			tuner);
-}
-
-extern "C" void destroyDemuxer(
-		::br::pucrio::telemidia::ginga::core::tsparser::IDemuxer* dem) {
-
-	delete dem;
-}

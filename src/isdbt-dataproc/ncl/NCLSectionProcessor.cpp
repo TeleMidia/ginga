@@ -305,10 +305,3 @@ namespace ncl {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::
-		INCLSectionProcessor* createNCLSectionProcessor() {
-
-	return (new ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::
-			NCLSectionProcessor());
-}

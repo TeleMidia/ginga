@@ -354,17 +354,3 @@ namespace player {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::player::IPlayer*
-		createPlainTextPlayer(
-				GingaScreenID screenId, const char* mrl) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::player::
-			PlainTxtPlayer(screenId, (string)mrl));
-}
-
-extern "C" void destroyPlainTextPlayer(
-		::br::pucrio::telemidia::ginga::core::player::IPlayer* p) {
-
-	delete p;
-}

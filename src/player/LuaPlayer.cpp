@@ -27,7 +27,6 @@ extern "C"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <SDL.h>
 #include <ncluaw.h>
 #include <pthread.h>
@@ -665,25 +664,6 @@ tail:
      this->unlock ();
      return true;
 }
-
-
-// Component manager interface.
-
-extern "C"
-{
-
-IPlayer *createLuaPlayer (GingaScreenID id, const char *mrl, bool b)
-{
-     (void) b;
-     return new LuaPlayer (id, string (mrl));
-}
-
-void destroyLuaPlayer (IPlayer *player)
-{
-     delete player;
-}
-
-} // extern "C"
 
 LUAPLAYER_END_DECLS
 

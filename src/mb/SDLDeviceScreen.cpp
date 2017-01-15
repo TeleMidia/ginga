@@ -3185,19 +3185,3 @@ namespace mb {
 }
 }
 }
-
-extern "C" ::br::pucrio::telemidia::ginga::core::mb::SDLDeviceScreen*
-		createSDLScreen(
-				int numArgs, char** args,
-				GingaScreenID myId, UnderlyingWindowID embedId,
-				bool externalRenderer) {
-
-	return (new ::br::pucrio::telemidia::ginga::core::mb::
-			SDLDeviceScreen(numArgs, args, myId, embedId, externalRenderer));
-}
-
-extern "C" void destroySDLScreen(
-		::br::pucrio::telemidia::ginga::core::mb::SDLDeviceScreen* ds) {
-
-	delete ds;
-}
