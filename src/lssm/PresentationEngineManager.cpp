@@ -164,7 +164,7 @@ namespace lssm {
 		clog << "PresentationEngineManager::~PresentationEngineManager";
 		clog << " releasing screen '" << myScreen << "'" << endl;
 
-		dm->releaseScreen(myScreen);
+		//dm->releaseScreen(myScreen);
 
 		lock();
 		while (!formattersToRelease.empty()) {
@@ -856,11 +856,11 @@ namespace lssm {
 				}
 			}
 		}
-		
+
 		if (autoProcess) {
 			pthread_t autoCmdId_;
 			struct inputEventNotification* ev;
-			
+
 			ev       = new struct inputEventNotification;
 			ev->p    = this;
 			ev->cmds = new vector<string>(commands);
@@ -890,7 +890,7 @@ namespace lssm {
 
 		while (!cmds->empty()) {
 			cmd = *(cmds->begin());
-			
+
 			clog << "PresentationEngineManager::processAutoCmd ";
 			clog << "RUNNING CURRENT COMMAND '" << cmd;
 			clog << "'" << endl;
@@ -901,7 +901,7 @@ namespace lssm {
 			}
 			cmds->erase(cmds->begin());
 		}
-		
+
 		delete cmds;
 		clog << "PresentationEngineManager::processAutoCmd ";
 		clog << "ALL DONE" << endl;
@@ -972,7 +972,7 @@ namespace lssm {
 		if (checked) {
 			if (exitOnEnd) {
 				clog << "PresentationEngineManager::checkStatus: exit" << endl;
-				SystemCompat::gingaProcessExit(0);
+				exit (0);
 			}
 
 			clog << "PresentationEngineManager::checkStatus: closing" << endl;
@@ -1119,7 +1119,7 @@ namespace lssm {
 			p->sb->stop();
 			p->setIsLocalNcl(true, NULL);
 			p->stopAllPresentations();
-			SystemCompat::gingaProcessExit(0);
+			exit (0);
 
 		} else if (parameter != "" && code == IPlayer::PL_NOTIFY_STOP) {
 			clog << "PresentationEngineManager::eventReceived: NOTIFY_STOP";
@@ -1158,18 +1158,6 @@ namespace lssm {
 
 			p->sb->pause();
 			p->pausePressed();
-
-#if HAVE_ISDBT
-		} else if (code == CodeMap::KEY_CHANNEL_UP ||
-				code == CodeMap::KEY_PAGE_UP) {
-
-			//t->channelUp();
-
-		} else if (code == CodeMap::KEY_CHANNEL_DOWN ||
-				code == CodeMap::KEY_PAGE_DOWN) {
-
-			//t->channelDown();
-#endif
 
 		} else if (code == CodeMap::KEY_PLUS_SIGN && cmds != NULL) {
 			if (!cmds->empty() && !autoProcess) {
@@ -1265,213 +1253,6 @@ namespace lssm {
 			}
 		}
 	}
-
-/*
-	void PresentationEngineManager::addRegion(string location) {
-		if (location != "" && formatter != NULL) {
-			//TODO choose the parent region
-			formatter->addRegion(currentDocument->getId(), NULL, location);
-		}
-	}
-
-	void PresentationEngineManager::removeRegion(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeRegion(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addRegionBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addRegionBase(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeRegionBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeRegionBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addRule(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addRule(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeRule(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeRule(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addRuleBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addRuleBase(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeRuleBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeRuleBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addConnector(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addConnector(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeConnector(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeConnector(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addConnectorBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addConnectorBase(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeConnectorBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeConnectorBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addTransition(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addTransition(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeTransition(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeTransition(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addTransitionBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addTransitionBase(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeTransitionBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeTransitionBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addDescriptor(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addDescriptor(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeDescriptor(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeDescriptor(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addDescriptorBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addDescriptorBase(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeDescriptorBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeDescriptorBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addImportBase(string id, string location) {
-		if (location != "" && id != "" && formatter != NULL) {
-			formatter->addImportBase(currentDocument->getId(), id, location);
-		}
-	}
-
-	void PresentationEngineManager::removeImportBase(
-		    string id, string location) {
-
-		if (id != "" && location != "" && formatter != NULL) {
-			formatter->removeImportBase(currentDocument->getId(), id, location);
-		}
-	}
-
-	void PresentationEngineManager::addImportedDocumentBase(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addImportedDocumentBase(
-				    currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeImportedDocumentBase(string id) {
-		if (id != "" && formatter != NULL) {
-			formatter->removeImportedDocumentBase(currentDocument->getId(), id);
-		}
-	}
-
-	void PresentationEngineManager::addImportNCL(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->addImportNCL(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::removeImportNCL(string location) {
-		if (location != "" && formatter != NULL) {
-			formatter->removeImportNCL(currentDocument->getId(), location);
-		}
-	}
-
-	void PresentationEngineManager::addNode(string id, string location) {
-		if (location != "" && id != "" && formatter != NULL) {
-			formatter->addNode(currentDocument->getId(), id, location);
-		}
-	}
-
-	void PresentationEngineManager::removeNode(
-		    string compositionId, string nodeId) {
-
-		if (compositionId != "" && nodeId != "" && formatter != NULL) {
-    		formatter->removeNode(
-    			    currentDocument->getId(), compositionId, nodeId);
-  		}
-  	}
-
-	void PresentationEngineManager::addInterface(string id, string location) {
-		if (location != "" && id != "" && formatter != NULL) {
-			formatter->addInterface(currentDocument->getId(), id, location);
-		}
-	}
-
-	void PresentationEngineManager::removeInterface(
-		    string nodeId, string interfaceId) {
-
-		if (nodeId != "" && interfaceId != "" && formatter != NULL) {
-			formatter->removeInterface(
-				    currentDocument->getId(), nodeId, interfaceId);
-		}
-	}
-
-	void PresentationEngineManager::addLink(string id, string location) {
-		if (location != "" && id != "" && formatter != NULL) {
-			formatter->addLink(currentDocument->getId(), id, location);
-		}
-	}
-
-	void PresentationEngineManager::removeLink(
-		    string compositionId, string linkId) {
-
-		if (compositionId != "" && linkId != "" && formatter != NULL) {
-			formatter->removeLink(
-				    currentDocument->getId(), compositionId, linkId);
-		}
-	}
-*/
 
 	bool PresentationEngineManager::getNclPlayer(
 			string docLocation, INCLPlayer** nclPlayer) {

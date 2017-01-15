@@ -1129,10 +1129,6 @@ namespace compat {
 	
 	}
 
-	void SystemCompat::gingaProcessExit(short status) {
-		_exit(status);
-	}
-
 	static std::ofstream logOutput;
 
 	void SystemCompat::setLogTo(short logType, string sufix) {
@@ -1351,18 +1347,6 @@ namespace compat {
 		return bytesWritten;
 	}
 
-	bool SystemCompat::initMemCheck() {
-		bool success = false;
-		return success;
-	}
-
-	void SystemCompat::memCheckPoint() {
-	}
-
-	bool SystemCompat::finishMemCheck() {
-		bool success = false;
-		return success;
-	}
 }
 }
 }
