@@ -49,15 +49,9 @@ formattermd_DATA=\
   $(NULL)
 
 # ini
-if OS_WINDOWS
-INTERNAL_DELIM= "\\\\"
-FOREIGN_DELIM= "/"
-INSTALL_PREFIX= "$(bindir)"
-else
 INTERNAL_DELIM= "/"
 FOREIGN_DELIM= "\\\\"
 INSTALL_PREFIX= "$(gingaconfdir)"
-endif
 FILES_PREFIX= "$(gingaconfdir)"
 
 DISTCLEANFILES= ini/ginga.ini
