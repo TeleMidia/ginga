@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TRANSITIONBASE_H_
 
 #include "../Base.h"
-#include "../IllegalBaseTypeException.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
 #include <vector>
@@ -41,9 +40,7 @@ namespace transition {
 			TransitionBase(string id);
 			virtual ~TransitionBase();
 			bool addTransition(Transition* transition);
-			bool addBase(Base* base, string alias, string location)
-				    throw(IllegalBaseTypeException*);
-
+			bool addBase(Base* base, string alias, string location);
 			void clear();
 
 		private:

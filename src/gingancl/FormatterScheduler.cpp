@@ -36,7 +36,7 @@ namespace ncl {
 	FormatterScheduler::FormatterScheduler(
 		    PlayerAdapterManager* playerManager,
 		    RuleAdapter* ruleAdapter,
-		    IFormatterMultiDevice* multiDevice,
+		    FormatterMultiDevice* multiDevice,
 		    void* compiler) {
 
 		this->playerManager = playerManager;
@@ -150,34 +150,12 @@ namespace ncl {
 		return focusManager->setKeyHandler(isHandler);
 	}
 
-	/*void FormatterScheduler::setStandByState(bool standBy) {
-		focusManager->setStandByState(standBy);
-	}*/
-
 	bool FormatterScheduler::isDocumentRunning(FormatterEvent* event) {
 		ExecutionObject* executionObject;
 		CompositeExecutionObject* parentObject;
 		FormatterEvent* documentEvent;
 
-		/*NodeEntity* dataObject;
-		NodeNesting* referPerspective;
-		set<ReferNode*>* sameInstances = NULL;
-		set<ReferNode*>::iterator i;*/
-
 		executionObject = (ExecutionObject*)(event->getExecutionObject());
-		/*dataObject = (NodeEntity*)(executionObject->getDataObject());
-
-		if (dataObject != NULL && dataObject->instanceOf("NodeEntity")) {
-			sameInstances = dataObject->getSameInstances();
-			if (sameInstances != NULL && !sameInstances->empty()) {
-				i = sameInstances->begin();
-				while (i != sameInstances->end()) {
-					referPerspective = new NodeNesting((*i)->getPerspective());
-					++i;
-				}
-			}
-		}*/
-
 		parentObject = (CompositeExecutionObject*)(executionObject->
 			    getParentObject());
 

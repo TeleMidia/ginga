@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #if HAVE_ISDBT
-#include "isdbt-tuner/ITuner.h"
+#include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #endif
 
@@ -58,7 +58,7 @@ struct inputEventNotification {
 	int code;
 	string parameter;
 #if HAVE_ISDBT
-	ITuner* tuner;
+	Tuner* tuner;
 #endif
 	vector<string>* cmds;
 };
@@ -504,7 +504,7 @@ namespace lssm {
 	void PresentationEngineManager::setIsLocalNcl(bool isLocal, void* tuner) {
 		if (this->tuner != NULL && this->tuner != tuner) {
 #if HAVE_ISDBT
-			delete (ITuner*)(this->tuner);
+			delete (Tuner*)(this->tuner);
 #endif
 		}
 
@@ -1041,7 +1041,7 @@ namespace lssm {
 		evR->parameter = "";
 		evR->code      = keyCode;
 #ifdef DSMCCWRAPPERLISTENER_H_
-		evR->tuner     = (ITuner*)this->tuner;
+		evR->tuner     = (Tuner*)this->tuner;
 #endif
 		if (!commands.empty()) {
 			evR->cmds = new vector<string>(commands);
@@ -1107,7 +1107,7 @@ namespace lssm {
 		clog << code << "'" << endl;
 
 #ifdef DSMCCWRAPPERLISTENER_H_
-		ITuner* t;
+		Tuner* t;
 		t = ev->tuner;
 #endif
 

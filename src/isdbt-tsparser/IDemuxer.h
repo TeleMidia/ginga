@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IDEMUXER_H_
 #define IDEMUXER_H_
 
-#include "isdbt-tuner/ITuner.h"
+#include "isdbt-tuner/Tuner.h"
 #include "isdbt-tuner/IFrontendFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
@@ -139,7 +139,7 @@ namespace tsparser {
 
 		virtual void receiveData(char* buff, unsigned int size)=0;
 		virtual void processDemuxData()=0;
-		virtual void updateChannelStatus(short newStatus, IChannel* channel)=0;
+		virtual void updateChannelStatus(short newStatus, Channel* channel)=0;
 
 		virtual short getCaps()=0;
 

@@ -154,7 +154,7 @@ namespace ncl {
 		ITimeBaseProvider* timeBaseProvider;
 		vector<string> compileErrors;
 		IDeviceLayout* deviceLayout;
-		IFormatterMultiDevice* multiDevice;
+		FormatterMultiDevice* multiDevice;
 		PresentationContext* presContext;
 		bool isEmbedded;
 		bool enablePrefetch;
@@ -176,7 +176,6 @@ namespace ncl {
 		void reset(){};
 		void rebase(){};
 		void printData(NclPlayerData* data);
-		//void setStandByState(bool standBy);
 		void setTimeBaseProvider(ITimeBaseProvider* timeBaseProvider);
 
 		void setBackgroundImage(string uri);
@@ -231,7 +230,7 @@ namespace ncl {
 		bool stopDocument(string documentId);
 		bool pauseDocument(string documentId);
 		bool resumeDocument(string documentId);
-		void presentationCompleted(IFormatterEvent* documentEvent);
+		void presentationCompleted(FormatterEvent* documentEvent);
 
 	public:
 		bool nclEdit(string nclEditApi);
@@ -401,8 +400,7 @@ namespace ncl {
 		string getActiveUris(vector<string>* uris);
 		string getDepUris(vector<string>* uris, int targetDev=0);
 
-		/* */
-		IPresentationContext* getPresentationContext();
+		PresentationContext* getPresentationContext();
 
 	private:
 		string getDepUrisFromNodes(

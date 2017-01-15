@@ -26,7 +26,6 @@ using namespace ::br::pucrio::telemidia::ncl::descriptor;
 using namespace ::br::pucrio::telemidia::ncl::link;
 
 #include "NodeEntity.h"
-#include "IllegalNodeTypeException.h"
 #include "CompositeNode.h"
 
 #include <map>
@@ -55,8 +54,7 @@ namespace components {
 			};
 
 			bool addLink(Link* link);
-			bool addNode(Node* node)
-				    throw(IllegalNodeTypeException*);
+			bool addNode(Node* node);
 
 			void clearLinks();
 			bool containsLink(Link* link);

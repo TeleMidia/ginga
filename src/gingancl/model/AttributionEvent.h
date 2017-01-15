@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/interfaces/PropertyAnchor.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;
 
-#include "gingancl/adaptation/IPresentationContext.h"
+#include "gingancl/adaptation/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "FormatterEvent.h"
@@ -46,14 +46,14 @@ namespace event {
 			PropertyAnchor* anchor;
 			IAttributeValueMaintainer* valueMaintainer;
 			map<string, FormatterEvent*> assessments;
-			IPresentationContext* presContext;
+			PresentationContext* presContext;
 
 		public:
 			AttributionEvent(
 				    string id,
 				    void* executionObject,
 				    PropertyAnchor* anchor,
-				    IPresentationContext* presContext);
+				    PresentationContext* presContext);
 
 			virtual ~AttributionEvent();
 			PropertyAnchor* getAnchor();

@@ -49,9 +49,7 @@ namespace connectors {
 		return true;
 	}
 
-	bool ConnectorBase::addBase(Base* base, string alias, string location)
-		     throw(IllegalBaseTypeException*) {
-
+	bool ConnectorBase::addBase(Base* base, string alias, string location){
 		if (Base::hasInstance(base, false) &&
 				base->instanceOf("ConnectorBase")) {
 

@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/connectors/EventUtil.h"
 using namespace ::br::pucrio::telemidia::ncl::connectors;
 
-#include "IFormatterEvent.h"
+#include "IEventListener.h"
 
 #include <string>
 #include <iostream>
@@ -37,7 +37,7 @@ namespace ginga {
 namespace ncl {
 namespace model {
 namespace event {
-  class FormatterEvent : public IFormatterEvent {
+  class FormatterEvent {
 	private:
 		static const short ST_ABORTED = 50;
 

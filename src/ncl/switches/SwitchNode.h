@@ -24,7 +24,6 @@ using namespace ::br::pucrio::telemidia::util;
 #include "../components/ContextNode.h"
 #include "../components/CompositeNode.h"
 #include "../components/NodeEntity.h"
-#include "../components/IllegalNodeTypeException.h"
 using namespace ::br::pucrio::telemidia::ncl::components;
 
 #include "../interfaces/Port.h"

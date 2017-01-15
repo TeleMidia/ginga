@@ -86,7 +86,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "adapters/PlayerAdapterManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "IFormatterScheduler.h"
+#include "FormatterScheduler.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "ObjectCreationForbiddenException.h"
@@ -111,7 +111,7 @@ namespace emconverter {
 		set<FormatterEvent*> listening;
 		set<ExecutionObject*> settingObjects;
 		void* linkCompiler; //FormatterLinkConverter*
-		IFormatterScheduler* scheduler;
+		FormatterScheduler* scheduler;
 		ILinkActionListener* actionListener;
 		RuleAdapter* ruleAdapter;
 		pthread_mutex_t objectsMutex;
@@ -127,7 +127,7 @@ namespace emconverter {
 		void setHandlingStatus(bool hanling);
 		ExecutionObject* getObjectFromNodeId(string id);
 
-		void setScheduler(IFormatterScheduler* scheduler);
+		void setScheduler(void* scheduler);
 		void setLinkActionListener(ILinkActionListener* actionListener);
 
 		void setDepthLevel(int level);

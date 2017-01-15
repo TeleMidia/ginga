@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ITuner.h"
+#include "Tuner.h"
 #include "ISDBTProvider.h"
 #include "RingBuffer.h"
 
@@ -35,7 +35,7 @@ namespace tuning {
 		this->frontend       = NULL;
 		this->fileName       = "";
 		this->feDescriptor   = -1;
-		this->channels       = new vector<IChannel*>;
+		this->channels       = new vector<Channel*>;
 		this->currentChannel = channels->end();
 		this->listener       = NULL;
 		this->initialFrequency = 0;
@@ -286,7 +286,7 @@ namespace tuning {
 		ifstream fis;
 		string token, id, name, freq, seg;
 		bool skipLine = false;
-		IChannel* channel;
+		Channel* channel;
 
 		channels->clear();
 
@@ -377,7 +377,7 @@ namespace tuning {
 
 	bool ISDBTProvider::tune() {
 		bool tuned = false;
-		IChannel* channel;
+		Channel* channel;
 
 		clog << "ISDBTProvider::tune enter" << endl;
 
@@ -442,8 +442,8 @@ namespace tuning {
 		}
 	}
 	
-	IChannel* ISDBTProvider::getCurrentChannel() {
-		IChannel* channel = NULL;
+	Channel* ISDBTProvider::getCurrentChannel() {
+		Channel* channel = NULL;
 
 		if (currentChannel != channels->end()) {
 			channel = *currentChannel;
@@ -462,7 +462,7 @@ namespace tuning {
 
 	bool ISDBTProvider::changeChannel(int factor) {
 		int freq = 0;
-		IChannel* channel;
+		Channel* channel;
 
 		if (channels->empty() || frontend == NULL) {
 			clog << "ISDBTProvider::changeChannel return false: ";

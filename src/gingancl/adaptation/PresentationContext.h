@@ -38,7 +38,17 @@ using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "ContextBase.h"
-#include "IPresentationContext.h"
+
+#include "ctxmgmt/IContextListener.h"
+using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
+
+#if HAVE_MULTIDEVICE
+#include "multidevice/IDeviceDomain.h"
+using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+#endif
+
+#include <set>
+#include <string>
 
 #include "math.h"
 
@@ -56,8 +66,7 @@ namespace ginga {
 namespace ncl {
 namespace adaptation {
 namespace context {
-	class PresentationContext : public IPresentationContext,
-				public Observable, public IContextListener {
+	class PresentationContext : public Observable, public IContextListener {
 
 		private:
 			GingaScreenID myScreen;

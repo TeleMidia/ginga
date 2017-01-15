@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BASE_H_
 #define BASE_H_
 
-#include "IllegalBaseTypeException.h"
-
 #include <pthread.h>
 #include <vector>
 #include <map>
@@ -54,7 +52,7 @@ namespace ncl {
 			virtual bool addBase(
 				    Base* base,
 				    string alias,
-				    string location) throw(IllegalBaseTypeException*);
+				    string location);
 
 			virtual void clear();
 			Base* getBase(string baseId);

@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "UnicastProvider.h"
-#include "ITuner.h"
+#include "Tuner.h"
 
 namespace br {
 namespace pucrio {

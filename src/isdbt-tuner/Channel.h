@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef Channel_H_
 #define Channel_H_
 
-#include "IChannel.h"
-
 #include <iostream>
 using namespace std;
 
@@ -29,7 +27,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace tuning {
-	class Channel : public IChannel {
+	class Channel {
 		private:
 			short id;
 			string name;

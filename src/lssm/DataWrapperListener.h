@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-#include "isdbt-tuner/ITuner.h"
+#include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "isdbt-tsparser/IEventInfo.h"
@@ -89,7 +89,7 @@ namespace lssm {
 	public:
 		bool applicationInfoMounted(IAIT* ait);
 		void objectMounted(string ior, string clientUri, string name);
-		void receiveStreamEvent(IStreamEvent* event);
+		void receiveStreamEvent(StreamEvent* event);
 		
 	private:
 		void addNCLInfo(string name, string path);

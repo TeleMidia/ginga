@@ -168,8 +168,8 @@ namespace emconverter {
 		return NULL;
 	}
 
-	void FormatterConverter::setScheduler(IFormatterScheduler* scheduler) {
-		this->scheduler = scheduler;
+	void FormatterConverter::setScheduler(void* scheduler) {
+		this->scheduler = (FormatterScheduler *) scheduler;
 	}
 
 	void FormatterConverter::setLinkActionListener(

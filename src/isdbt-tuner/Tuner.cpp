@@ -73,7 +73,7 @@ namespace tuning {
 	}
 
 	bool Tuner::userEventReceived(SDLInputEvent* ev) {
-		map<int, INetworkInterface*>::iterator i;
+		map<int, NetworkInterface*>::iterator i;
 
 		clog << "Tuner::userEventReceived" << endl;
 		if (ev->getKeyCode(screenId) == CodeMap::KEY_QUIT) {
@@ -92,8 +92,8 @@ namespace tuning {
 	}
 
 	void Tuner::clearInterfaces() {
-		map<int, INetworkInterface*>::iterator i;
-		INetworkInterface* ni;
+		map<int, NetworkInterface*>::iterator i;
+		NetworkInterface* ni;
 
 		lock();
 		i = interfaces.begin();
@@ -209,7 +209,7 @@ namespace tuning {
 			string network, string protocol, string address) {
 
 		currentInterface++;
-		INetworkInterface* newInterface = new NetworkInterface(
+		NetworkInterface* newInterface = new NetworkInterface(
 				currentInterface, network, protocol, address);
 
 		lock();
@@ -217,7 +217,7 @@ namespace tuning {
 		unlock();
 	}
 
-	bool Tuner::listenInterface(INetworkInterface* nInterface) {
+	bool Tuner::listenInterface(NetworkInterface* nInterface) {
 		IDataProvider* provider;
 		bool tuned = false;
 
@@ -230,7 +230,7 @@ namespace tuning {
 		return tuned;
 	}
 
-	void Tuner::receiveInterface(INetworkInterface* nInterface) {
+	void Tuner::receiveInterface(NetworkInterface* nInterface) {
 		int rval;
 		char* buff;
 
@@ -255,8 +255,8 @@ namespace tuning {
 	}
 
 	bool Tuner::hasSignal() {
-		map<int, INetworkInterface*>::iterator i;
-		INetworkInterface* ni;
+		map<int, NetworkInterface*>::iterator i;
+		NetworkInterface* ni;
 
 		ni = getCurrentInterface();
 		if (ni != NULL) {
@@ -285,9 +285,9 @@ namespace tuning {
 		}
 	}
 
-	INetworkInterface* Tuner::getCurrentInterface() {
-		map<int, INetworkInterface*>::iterator i;
-		INetworkInterface* ni;
+	NetworkInterface* Tuner::getCurrentInterface() {
+		map<int, NetworkInterface*>::iterator i;
+		NetworkInterface* ni;
 
 		lock();
 		i = interfaces.find(currentInterface);
@@ -310,8 +310,8 @@ namespace tuning {
 	}
 
 	void Tuner::changeChannel(int factor) {
-		INetworkInterface* nInterface;
-		IChannel* channel;
+		NetworkInterface* nInterface;
+		Channel* channel;
 
 		if (receiving) {
 			receiving = false;
@@ -350,7 +350,7 @@ namespace tuning {
 		}
 	}
 
-	void Tuner::notifyStatus(short newStatus, IChannel* channel) {
+	void Tuner::notifyStatus(short newStatus, Channel* channel) {
 		if (listener != NULL) {
 			listener->updateChannelStatus(newStatus, channel);
 		}
@@ -364,11 +364,11 @@ namespace tuning {
 	}
 
 	void Tuner::run() {
-		INetworkInterface* nInterface = NULL, *curInt = NULL;
-		map<int, INetworkInterface*>::iterator i;
+		NetworkInterface* nInterface = NULL, *curInt = NULL;
+		map<int, NetworkInterface*>::iterator i;
 		bool tuned = false;
 		int intIx = -1;
-		IChannel* channel;
+		Channel* channel;
 
 		clog << "Tuner::run tuning... " << endl;
 

@@ -203,7 +203,7 @@ namespace tuning {
 		return provider->getPesFilterOutput();
 	}
 
-	IChannel* NetworkInterface::getCurrentChannel() {
+	Channel* NetworkInterface::getCurrentChannel() {
 		return provider->getCurrentChannel();
 	}
 

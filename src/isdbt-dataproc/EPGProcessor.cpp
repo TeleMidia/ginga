@@ -121,7 +121,7 @@ namespace epg {
 		}
 	}
 
-	void EPGProcessor::setDataProcessor(IDataProcessor* dataProcessor) {
+	void EPGProcessor::setDataProcessor(DataProcessor* dataProcessor) {
 		this->dataProcessor = dataProcessor;
 	}
 
@@ -788,7 +788,7 @@ namespace epg {
 }
 }
 
-extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::IEPGProcessor*
+extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::EPGProcessor*
 		createEPGP() {
 
 	return (::br::pucrio::telemidia::ginga::core::dataprocessing::epg::
@@ -796,7 +796,7 @@ extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::epg::IEPGProces
 }
 
 extern "C" void destroyEPGP(::br::pucrio::telemidia::ginga::core::
-		dataprocessing::epg::IEPGProcessor* epgp) {
+		dataprocessing::epg::EPGProcessor* epgp) {
 
 	delete epgp;
 }

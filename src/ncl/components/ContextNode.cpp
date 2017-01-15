@@ -69,9 +69,8 @@ namespace components {
 		return true;
 	}
 
-	bool ContextNode::addNode(Node* node) throw(IllegalNodeTypeException*) {
+	bool ContextNode::addNode(Node* node) {
 		if (!node->instanceOf("DocumentNode")) {
-			throw(new IllegalNodeTypeException());
 			return false;
 		}
 

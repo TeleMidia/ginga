@@ -30,14 +30,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/ProgramAV.h"
 
 #if HAVE_ISDBT
-#include "isdbt-tuner/ITuner.h"
+#include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/ITSFilter.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include "isdbt-dataproc/IDataProcessor.h"
+#include "isdbt-dataproc/DataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
 #include "isdbt-dataproc/dsmcc/IObjectListener.h"
@@ -104,7 +104,7 @@ namespace lssm {
 
 		clog << "CommonCoreManager::CommonCoreManager ";
 		clog << "creating demuxer" << endl;
-		demuxer = new Demuxer((ITuner*)tuner);
+		demuxer = new Demuxer((Tuner*)tuner);
 
 		clog << "CommonCoreManager::CommonCoreManager ";
 		clog << "creating data processor" << endl;
@@ -114,19 +114,19 @@ namespace lssm {
 		ccUser = pem->getDsmccListener();
 
 		// Add PEM as a listener of SEs and OCs
-		((IDataProcessor*)dataProcessor)->addSEListener(
+		((DataProcessor*)dataProcessor)->addSEListener(
 				"gingaEditingCommands", (IStreamEventListener*)(
 						(DataWrapperListener*)ccUser));
 
-		((IDataProcessor*)dataProcessor)->addObjectListener(
+		((DataProcessor*)dataProcessor)->addObjectListener(
 				(IObjectListener*)((DataWrapperListener*)ccUser));
 
-		((IDataProcessor*)dataProcessor)->setServiceDomainListener(
+		((DataProcessor*)dataProcessor)->setServiceDomainListener(
 				(IServiceDomainListener*)((DataWrapperListener*)ccUser));
 
-		((IDataProcessor*)dataProcessor)->setDemuxer((IDemuxer*)demuxer);
+		((DataProcessor*)dataProcessor)->setDemuxer((IDemuxer*)demuxer);
 
-		((ITuner*)tuner)->setLoopListener((IDataProcessor*)dataProcessor);
+		((Tuner*)tuner)->setLoopListener((DataProcessor*)dataProcessor);
 
 #endif // HAVE_ISDBT
 	}
@@ -146,7 +146,7 @@ namespace lssm {
 	void CommonCoreManager::removeOCFilterAfterMount(bool removeIt) {
 #if HAVE_ISDBT
 		if (dataProcessor != NULL) {
-			((IDataProcessor*)dataProcessor)->removeOCFilterAfterMount(removeIt);
+			((DataProcessor*)dataProcessor)->removeOCFilterAfterMount(removeIt);
 		}
 #endif
 	}
@@ -160,7 +160,7 @@ namespace lssm {
 		if (pos != std::string::npos) {
 			ni = tunerSpec.substr(0, pos);
 			ch = tunerSpec.substr(pos + 1, tunerSpec.length() - pos + 1);
-			((ITuner*)tuner)->setSpec(ni, ch);
+			((Tuner*)tuner)->setSpec(ni, ch);
 		}
 #endif
 	}
@@ -230,7 +230,7 @@ namespace lssm {
 	void CommonCoreManager::tune() {
 #if HAVE_ISDBT
 		clog << "lssm-ccm::cpi tunning..." << endl;
-		((ITuner*)tuner)->tune();
+		((Tuner*)tuner)->tune();
 #endif
 	}
 
@@ -244,7 +244,7 @@ namespace lssm {
 		IPlayer* ipav         = NULL;
 		NclPlayerData* data   = NULL;
 		StcWrapper* sw        = NULL;
-		INetworkInterface* ni = NULL;
+		NetworkInterface* ni = NULL;
 		string dstUri         = "dtv_channel.ts";
 
 		data = pem->createNclPlayerData();
@@ -263,18 +263,18 @@ namespace lssm {
 		clog << "lssm-ccm::sp create av ok" << endl;
 
 		if (dataProcessor != NULL) {
-			ni = ((ITuner*)tuner)->getCurrentInterface();
+			ni = ((Tuner*)tuner)->getCurrentInterface();
 			if (ni != NULL && (ni->getCaps() & DPC_CAN_DECODESTC)) {
 				clog << "lssm-ccm::sp using stc hardware!" << endl;
-				((IDataProcessor*)dataProcessor)->setSTCProvider(ni);
+				((DataProcessor*)dataProcessor)->setSTCProvider(ni);
 
 			} else {
 				clog << "lssm-ccm::sp using stc wrapper!" << endl;
 				sw = new StcWrapper(ipav);
-				((IDataProcessor*)dataProcessor)->setSTCProvider(sw);
+				((DataProcessor*)dataProcessor)->setSTCProvider(sw);
 			}
 
-			nptProvider = ((IDataProcessor*)dataProcessor)->getNPTProvider();
+			nptProvider = ((DataProcessor*)dataProcessor)->getNPTProvider();
 			if (nptProvider != NULL) {
 				pem->setTimeBaseProvider((ITimeBaseProvider*)nptProvider);
 
@@ -282,7 +282,7 @@ namespace lssm {
 				clog << "lssm-ccm::sp warning! can't use npt provider" << endl;
 			}
 
-			((IDataProcessor*)dataProcessor)->setNptPrinter(nptPrinter);
+			((DataProcessor*)dataProcessor)->setNptPrinter(nptPrinter);
 			if (nptPrinter) {
 				if (((IDemuxer*)demuxer)->hasStreamType(STREAM_TYPE_DSMCC_TYPE_C)) {
 					((IDemuxer*)demuxer)->setNptPrinter(nptPrinter);
@@ -295,24 +295,24 @@ namespace lssm {
 				((IDemuxer*)demuxer)->printPat();
 			}
 
-			((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+			((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 					STREAM_TYPE_DSMCC_TYPE_D); //DSM-CC descriptors
 
 			if (hasOCSupport) {
-				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_B);
 
-				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_C);
 
 				//AIT
-				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_PRIVATE_SECTION);
 
 				clog << "lssm ccm::sp OC support enabled" << endl;
 
 			} else if (nptPrinter) {
-				((IDataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
+				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
 						STREAM_TYPE_DSMCC_TYPE_C);
 			}
 		}

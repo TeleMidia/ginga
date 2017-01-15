@@ -51,8 +51,8 @@ namespace focus {
 
 	FormatterFocusManager::FormatterFocusManager(
 		    PlayerAdapterManager* playerManager,
-		    IPresentationContext* presContext,
-		    IFormatterMultiDevice* multiDevice,
+		    PresentationContext* presContext,
+		    FormatterMultiDevice* multiDevice,
 		    ILinkActionListener* settingActions,
 		    void* converter) {
 
@@ -263,25 +263,6 @@ namespace focus {
 
 		return isHandler;
 	}
-
-	/*void FormatterFocusManager::setStandByState(bool standBy) {
-		if (!isHandler) {
-			return;
-		}
-
-		if (standBy) {
-			if (parentManager != NULL) {
-				parentManager->unregister();
-			}
-			unregister();
-
-		} else {
-			if (parentManager != NULL) {
-				parentManager->registerBackKeys();
-			}
-			registerNavigationKeys();
-		}
-	}*/
 
 	void FormatterFocusManager::setHandlingObjects(bool isHandling) {
 		((FormatterConverter*)converter)->setHandlingStatus(isHandling);

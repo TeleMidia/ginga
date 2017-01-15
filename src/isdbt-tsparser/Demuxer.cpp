@@ -34,7 +34,7 @@ namespace tsparser {
 
 	set<unsigned int> Demuxer::knownSectionPids;
 
-	Demuxer::Demuxer(ITuner* tuner) {
+	Demuxer::Demuxer(Tuner* tuner) {
 		Thread::condInit(&flagCondSignal, NULL);
 		Thread::mutexInit(&flagLockUntilSignal, false);
 
@@ -193,7 +193,7 @@ namespace tsparser {
 	}
 
 	void Demuxer::removeFilter(IFrontendFilter* filter) {
-		INetworkInterface* ni = tuner->getCurrentInterface();
+		NetworkInterface* ni = tuner->getCurrentInterface();
 
 		if (ni != NULL && (ni->getCaps() & DPC_CAN_FILTERPID)) {
 			ni->removeFilter(filter);
@@ -514,7 +514,7 @@ namespace tsparser {
 	}
 
 	void Demuxer::attachFilter(IFrontendFilter* filter) {
-		INetworkInterface* ni;
+		NetworkInterface* ni;
 
 		ni = tuner->getCurrentInterface();
 		if (ni != NULL) {
@@ -522,7 +522,7 @@ namespace tsparser {
 		}
 	}
 
-	void Demuxer::createPatFilter(INetworkInterface* ni) {
+	void Demuxer::createPatFilter(NetworkInterface* ni) {
 		IFrontendFilter* ff;
 
 		ff = new PSIFilter(this);
@@ -536,7 +536,7 @@ namespace tsparser {
 		Thread::mutexUnlock(&stlMutex);
 	}
 
-	void Demuxer::createPmtFilter(INetworkInterface* ni) {
+	void Demuxer::createPmtFilter(NetworkInterface* ni) {
 		IFrontendFilter* ff;
 		map<unsigned int, Pmt*>::iterator i;
 
@@ -568,7 +568,7 @@ namespace tsparser {
 		set<UnpPmtTime*>* pids;
 		set<UnpPmtTime*>::iterator i;
 		Pmt* pmt, * newPmt;
-		INetworkInterface* ni;
+		NetworkInterface* ni;
 
 		Thread::mutexLock(&stlMutex);
 		pid = f->getPid();
@@ -751,8 +751,8 @@ namespace tsparser {
 		}
 	}
 
-	void Demuxer::updateChannelStatus(short newStatus, IChannel* channel) {
-		INetworkInterface* ni;
+	void Demuxer::updateChannelStatus(short newStatus, Channel* channel) {
+		NetworkInterface* ni;
 
 		switch (newStatus) {
 			case TS_LOOP_DETECTED:
@@ -834,7 +834,7 @@ namespace tsparser {
 	}
 
 	short Demuxer::getCaps() {
-		INetworkInterface* ni;
+		NetworkInterface* ni;
 
 		ni = tuner->getCurrentInterface();
 		if (ni != NULL) {
@@ -870,7 +870,7 @@ namespace tsparser {
 }
 
 extern "C" ::br::pucrio::telemidia::ginga::core::tsparser::IDemuxer*
-		createDemuxer(ITuner* tuner) {
+		createDemuxer(Tuner* tuner) {
 
 	return new ::br::pucrio::telemidia::ginga::core::tsparser::Demuxer(
 			tuner);

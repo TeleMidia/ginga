@@ -507,22 +507,6 @@ namespace adapters {
 		return mime;
 	}
 
-	/*void PlayerAdapterManager::setStandByState(bool standBy) {
-		map<string, IPlayerAdapter*>::iterator i;
-		FormatterPlayerAdapter* player;
-
-		Thread::mutexLock(&mutexPlayer);
-		i = objectPlayers.begin();
-		while (i != objectPlayers.end()) {
-			player = (FormatterPlayerAdapter*)(i->second);
-			if (player->getPlayer() != NULL) {
-				player->getPlayer()->setStandByState(standBy);
-			}
-			++i;
-		}
-		Thread::mutexUnlock(&mutexPlayer);
-	}*/
-
 	bool PlayerAdapterManager::isEmbeddedApp(NodeEntity* dataObject) {
 		string mediaType = "";
 		string url = "";

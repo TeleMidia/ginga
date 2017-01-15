@@ -45,7 +45,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #if HAVE_MULTIDEVICE
 # include "multidevice/IDeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
-# include "gingancl/IFormatterMultiDevice.h"
+# include "gingancl/FormatterMultiDevice.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #endif
 
@@ -195,7 +195,7 @@ int main(int argc, char *argv[]) {
   PresentationEngineManager* pem = NULL;
   LocalScreenManager* dm = NULL;
 #if HAVE_MULTIDEVICE
-  IFormatterMultiDevice* fmd = NULL;
+  FormatterMultiDevice* fmd = NULL;
 #endif
   GingaScreenID screenId;
 

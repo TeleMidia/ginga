@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ISTREAMEVENTLISTENER_H_
 #define ISTREAMEVENTLISTENER_H_
 
-#include "IStreamEvent.h"
+#include "StreamEvent.h"
 
 namespace br {
 namespace pucrio {
@@ -29,7 +29,7 @@ namespace dataprocessing {
 	class IStreamEventListener {
 		public:
 			virtual ~IStreamEventListener(){};
-			virtual void receiveStreamEvent(IStreamEvent* event)=0;
+			virtual void receiveStreamEvent(StreamEvent* event)=0;
 	};
 }
 }

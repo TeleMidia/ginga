@@ -266,7 +266,7 @@ namespace ncl {
 
 		privateBaseManager->createPrivateBase(data->baseId);
 		playerManager->setNclEditListener((IPlayerListener*)data->editListener);
-		((IFormatterFocusManager*)(data->focusManager))->setMotionBoundaries(
+		((FormatterFocusManager*)(data->focusManager))->setMotionBoundaries(
 				data->x, data->y, data->w, data->h);
 
 		enablePrefetch = false;
@@ -472,19 +472,6 @@ namespace ncl {
 		clog << " docId: " << data->docId;
 		clog << endl;
 	}
-
-	/*void FormatterMediator::setStandByState(bool standBy) {
-		setVisible(!standBy);
-		if (standBy) {
-			pause();
-
-		} else {
-			resume();
-		}
-
-		scheduler->setStandByState(standBy);
-		playerManager->setStandByState(standBy);
-	}*/
 
 	void FormatterMediator::setTimeBaseProvider(
 			ITimeBaseProvider* timeBaseProvider) {
@@ -1397,7 +1384,7 @@ namespace ncl {
 	}
 
 	void FormatterMediator::presentationCompleted(
-			IFormatterEvent* documentEvent) {
+			FormatterEvent* documentEvent) {
 
 		string documentId;
 		map<string, FormatterEvent*>::iterator i;
@@ -3340,7 +3327,7 @@ namespace ncl {
 		playerManager->timeShift(direction);
 	}
 
-	IPresentationContext* FormatterMediator::getPresentationContext() {
+	PresentationContext* FormatterMediator::getPresentationContext() {
 		return presContext;
 	}
 }

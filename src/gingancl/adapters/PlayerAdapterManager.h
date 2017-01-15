@@ -104,7 +104,6 @@ namespace adapters {
 		string getMimeTypeFromSchema(string url);
 
 	public:
-		//void setStandByState(bool standBy);
 		static bool isEmbeddedApp(NodeEntity* dataObject);
 
 	private:

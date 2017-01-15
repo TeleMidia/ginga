@@ -108,9 +108,7 @@ namespace layout {
 		}
 	}
 
-	bool RegionBase::addBase(Base* base, string alias, string location)
-		     throw(IllegalBaseTypeException*) {
-
+	bool RegionBase::addBase(Base* base, string alias, string location) {
 		if (base->instanceOf("RegionBase")) {
 			return Base::addBase(base, alias, location);
 		}

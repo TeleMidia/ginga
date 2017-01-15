@@ -68,7 +68,6 @@ namespace player {
 			virtual void setMrl(string mrl, bool visible=true)=0;
 			virtual void reset()=0;
 			virtual void rebase()=0;
-			//virtual void setStandByState(bool standBy)=0;
 			virtual void setTimeBaseProvider(
 					ITimeBaseProvider* timeBaseProvider)=0;
 

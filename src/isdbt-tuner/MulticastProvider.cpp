@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "isdbt-tuner/MulticastProvider.h"
-#include "isdbt-tuner/ITuner.h"
+#include "isdbt-tuner/Tuner.h"
 
 namespace br {
 namespace pucrio {
