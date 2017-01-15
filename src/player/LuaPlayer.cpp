@@ -33,7 +33,6 @@ extern "C"
 #include <pthread.h>
 }
 
-#include "player/PlayersComponentSupport.h"
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 #include "util/functions.h"

@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "player/PlayersComponentSupport.h"
-
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 

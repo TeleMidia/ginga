@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "player/SsmlPlayer.h"
 
-#include "player/PlayersComponentSupport.h"
-
 // TODO: Develop a ginga common audio system and integrate this player in it.
 // The eSpeak header
 #include <espeak/speak_lib.h>
