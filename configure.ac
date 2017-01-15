@@ -77,7 +77,7 @@ dnl Required dependencies.
 AU_CHECK_PKG([CURL],
  [libcurl >= curl_required_version])
 
-AU_CHECK_PKG([FFMEG],
+AU_CHECK_PKG([FFMPEG],
  [libavcodec >= avcodec_required_version
   libavformat >= avformat_required_version
   libavutil >= avutil_required_version
@@ -131,11 +131,11 @@ AS_IF([test "$with_$1" != no],
     [_AU_ERROR_REQ([--with-$1 requires $4])])])])
 AS_IF([test "$with_optional_$1" = yes],
  [with_$1_result=yes
-  AC_DEFINE([HAVE_$3], [1],
-   [Define to 1 if you have ]$4[.])],
+  AC_DEFINE([WITH_$3], [1], [Define to 1 if you have ]$4[.])],
  [AS_IF([test "$with_$1" = check],
   [with_$1_result='no	(requires: $4)'],
-  [with_$1_result='no'])])
+  [with_$1_result='no'])
+  AC_DEFINE([WITH_$3], [0], [Define to 1 if you have ]$4[.])])
 AM_CONDITIONAL([WITH_$3],
  [test "$with_optional_$1" = yes])])
 
@@ -149,7 +149,8 @@ _MY_CHECK_OPTIONAL([espeak], [build with Espeak ssml support],
  [ESPEAK], [libespeak],
  [AC_HAVE_LIBRARY([espeak],
   [AC_CHECK_HEADER([espeak/speak_lib.h],
-   [with_optional_espeak=yes])])])
+   [with_optional_espeak=yes; ESPEAK_LIBS=-lespeak])])])
+AC_SUBST([ESPEAK_LIBS])
 
 _MY_CHECK_OPTIONAL([linuxdvb], [build linuxdvb support],
  [LINUXDVB], [linux dvb],

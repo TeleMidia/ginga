@@ -17,8 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "PlainTxtPlayerAdapter.h"
-
-#include "AdaptersComponentSupport.h"
+#include "player/PlainTxtPlayer.h"
 
 namespace br {
 namespace pucrio {

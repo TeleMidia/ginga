@@ -41,7 +41,7 @@ namespace multidevice {
 		string layoutName = deviceLayout->getLayoutName();
 
 		bool active_dev = (layoutName.compare("systemScreen(2)")==0);
-		deviceClass = IDeviceDomain::CT_BASE;
+		deviceClass = DeviceDomain::CT_BASE;
 		deviceLayout->addDevice(
 				"systemScreen(1)", 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT);
 
@@ -61,8 +61,8 @@ namespace multidevice {
 		dm->setWindowCaps (myScreen, serialized, caps);
 		dm->drawWindow (myScreen, serialized);
 
-#if HAVE_MULTIDEVICE
-		//if ((deviceClass == IDeviceDomain::CT_BASE)&&(rdm==NULL)) {
+#if WITH_MULTIDEVICE
+		//if ((deviceClass == DeviceDomain::CT_BASE)&&(rdm==NULL)) {
 		if (rdm == NULL) {
 			rdm = RemoteDeviceManager::getInstance();
 			if (!active_dev)
@@ -75,7 +75,7 @@ namespace multidevice {
 
 		rdm->setDeviceInfo(deviceClass, w, h, playerId);
 		rdm->addListener(this);
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 
 		mainLayout = new FormatterLayout(myScreen, x, y, w, h);
 
@@ -91,9 +91,9 @@ namespace multidevice {
 		}
 
 		if (rdm != NULL) {
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 			rdm->removeListener(this);
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 		}
 
 		if (dm->hasWindow(myScreen, serialized)) {

@@ -136,8 +136,7 @@ namespace multidevice {
 
 				if ((strcmp(evtType,"ATTR")) == 0) {
 					if (resrv != NULL) {
-					resrv->receiveRemoteEvent(
-							2,IDeviceDomain::FT_ATTRIBUTIONEVENT,buf);
+					resrv->receiveRemoteEvent(2,5,buf);
 					}
 				}
 			}//end if strcmp(msgtype)

@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia;
 #include "ncl/layout/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 # include "gingancl/FormatterMultiDevice.h"
 # include "multidevice/DeviceDomain.h"
 # include "gingancl/FormatterPassiveDevice.h"
@@ -42,8 +42,8 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_MULTIDEVICE
-# include "multidevice/IDeviceDomain.h"
+#if WITH_MULTIDEVICE
+# include "multidevice/DeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 # include "gingancl/FormatterMultiDevice.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
   CommonCoreManager* ccm = NULL;
   PresentationEngineManager* pem = NULL;
   LocalScreenManager* dm = NULL;
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
   FormatterMultiDevice* fmd = NULL;
 #endif
   GingaScreenID screenId;
@@ -434,11 +434,11 @@ int main(int argc, char *argv[]) {
 
   if (devClass == 1) {
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
     fmd = new FormatterPassiveDevice(
                                      screenId, NULL, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
 #endif
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
     if (bgUri != "") {
       fmd->setBackgroundImage(bgUri);
     }
@@ -446,11 +446,11 @@ int main(int argc, char *argv[]) {
 #endif
 
   } else if (devClass == 2) {
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
     fmd = new FormatterActiveDevice(screenId, NULL, xOffset, yOffset, w, h, useMulticast, deviceSrvPort);
 #endif
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
     if (bgUri != "") {
       fmd->setBackgroundImage(bgUri);
     }

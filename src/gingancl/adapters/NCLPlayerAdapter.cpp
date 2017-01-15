@@ -21,11 +21,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "NCLPlayerAdapter.h"
 
-#include "AdaptersComponentSupport.h"
-
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
+
+#include "gingancl/FormatterMediator.h"
 
 namespace br {
 namespace pucrio {
@@ -58,7 +58,7 @@ namespace ncl {
 		player = NULL;
 		if (fileExists(mrl)) {
 			playerCompName                = "Formatter";
-			playerData                    = manager->getNclPlayerData();
+			playerData                    = ((PlayerAdapterManager*)manager)->getNclPlayerData();
 
 			childData                     = new NclPlayerData;
 			childData->screenId           = myScreen;

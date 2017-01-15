@@ -31,7 +31,6 @@ using namespace std;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "IRemoteDeviceListener.h"
-#include "IDeviceDomain.h"
 
 namespace br {
 namespace pucrio {

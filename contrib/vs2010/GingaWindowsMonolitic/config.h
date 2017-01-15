@@ -5,7 +5,7 @@
 #define ENABLE_MEM_LEAK_DETECTION 0
 
 /* Deprecated macro. */
-#define HAVE_BERKELIUM 1
+#define WITH_BERKELIUM 1
 
 /* Define to 1 if components are supported. */
 #define HAVE_COMPONENTS 0
@@ -43,7 +43,7 @@
 //#define HAVE_MEMORY_H 1
 
 /* Define to 1 if multidevice support is enabled. */
-#define HAVE_MULTIDEVICE 1
+#define WITH_MULTIDEVICE 1
 
 /* Define if you have POSIX threads libraries and header files. */
 #define HAVE_PTHREAD 1

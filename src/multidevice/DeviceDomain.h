@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "BroadcastSocketService.h"
 #include "IRemoteDeviceListener.h"
-#include "IDeviceService.h"
+#include "DeviceService.h"
 #include "ISocketService.h"
 #include "MulticastSocketService.h"
 #include "NetworkUtil.h"
@@ -55,9 +55,9 @@ namespace multidevice {
 		static unsigned int myIP;
 		static bool taskIndicationFlag;
 
-		IDeviceService* deviceService;
+		DeviceService* deviceService;
 		ISocketService* broadcastService;
-		RemoteEventService* res;
+		void* res;
 
 		unsigned int sourceIp;
 		int bytesRecv;

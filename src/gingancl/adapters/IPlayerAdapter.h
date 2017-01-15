@@ -26,8 +26,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
-#include "IPlayerAdapterManager.h"
-
 namespace br {
 namespace pucrio {
 namespace telemidia {
@@ -38,7 +36,7 @@ namespace adapters {
 		public:
 			virtual ~IPlayerAdapter(){};
 
-			virtual void setAdapterManager(IPlayerAdapterManager* manager)=0;
+			virtual void setAdapterManager(void* manager)=0;
 
 		public:
 			virtual bool instanceOf(string s)=0;

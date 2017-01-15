@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMultiDevice.h"
 #include "FormatterBaseDevice.h"
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 #include "FormatterPassiveDevice.h"
 #include "FormatterActiveDevice.h"
 #endif
@@ -41,8 +41,8 @@ namespace ginga {
 namespace ncl {
 namespace multidevice {
 	LocalScreenManager* FormatterMultiDevice::dm   = NULL;
-#if HAVE_MULTIDEVICE
-	IRemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
+#if WITH_MULTIDEVICE
+	RemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
 #else
 	void* FormatterMultiDevice::rdm = NULL;
 #endif
@@ -319,7 +319,7 @@ namespace multidevice {
 		clog << endl;*/
 
 		Thread::mutexLock(&mutex);
-		if (destDevClass == IDeviceDomain::CT_PASSIVE) {
+		if (destDevClass == DeviceDomain::CT_PASSIVE) {
 			if (parent != NULL) {
 				bmpScr = parent->bitMapScreen;
 
@@ -329,7 +329,7 @@ namespace multidevice {
 
 			fileUri = serializeScreen(destDevClass, serialized);
 			if (fileUri != "" && fileExists(fileUri)) {
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 				rdm->postMediaContent(destDevClass, fileUri);
 
 				clog << "FormatterMultiDevice::postMediaContent(";
@@ -337,7 +337,7 @@ namespace multidevice {
 				clog << " serialized window id = '";
 				clog << (unsigned long)serialized;
 
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 
 				if (bmpScr != 0) {
 					wins.push_back(serialized);
@@ -359,7 +359,7 @@ namespace multidevice {
 				clog << "'" << endl;
 			}
 
-		} else if (destDevClass == IDeviceDomain::CT_ACTIVE) {
+		} else if (destDevClass == DeviceDomain::CT_ACTIVE) {
 			if (!activeUris->empty()) {
 
 			}
@@ -398,7 +398,7 @@ namespace multidevice {
 		i = layoutManager.find(devClass);
 
 		if (i == layoutManager.end()) {
-			if (devClass == IDeviceDomain::CT_PASSIVE) {
+			if (devClass == DeviceDomain::CT_PASSIVE) {
 				layout = new FormatterLayout(
 						myScreen, 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT);
 
@@ -538,7 +538,7 @@ namespace multidevice {
 				clog << devClass << "'" << endl;
 
 				fRegion = descriptor->getFormatterRegion();
-				if (devClass != IDeviceDomain::CT_BASE) {
+				if (devClass != DeviceDomain::CT_BASE) {
 					clog << "FormatterMultiDevice::showObject as base" << endl;
 
 					if (fRegion != NULL) {
@@ -546,15 +546,15 @@ namespace multidevice {
 					}
 				}
 
-				if (devClass != IDeviceDomain::CT_ACTIVE) {
+				if (devClass != DeviceDomain::CT_ACTIVE) {
 					layout->showObject(executionObject);
 				}
 
 				if (hasRemoteDevices) {
-					if (devClass == IDeviceDomain::CT_PASSIVE) {
+					if (devClass == DeviceDomain::CT_PASSIVE) {
 						postMediaContent(devClass);
 
-					} else if (devClass == IDeviceDomain::CT_ACTIVE) {
+					} else if (devClass == DeviceDomain::CT_ACTIVE) {
 						//clog << "activeBaseUri: "<<activeBaseUri<<endl;
 						//clog << "activeUris: "<<activeUris<<endl;
 
@@ -600,9 +600,9 @@ namespace multidevice {
 							clog << "executionObject.RP = '";
 							clog << tempRelPath << "'" << endl;
 						}
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 						rdm->postEvent(devClass,
-								IDeviceDomain::FT_PRESENTATIONEVENT,
+								DeviceDomain::FT_PRESENTATIONEVENT,
 								(char*)("start::" + tempRelPath).c_str(),
 								("start::" + tempRelPath).size());
 
@@ -618,10 +618,10 @@ namespace multidevice {
 						fileUri = "start::" + executionObject->getId();*
 						rdm->postEvent(
 								devClass,
-								IDeviceDomain::FT_PRESENTATIONEVENT,
+								DeviceDomain::FT_PRESENTATIONEVENT,
 								(char*)(fileUri.c_str()),
 								fileUri.length());*/
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 					}
 				}
 			}
@@ -644,7 +644,7 @@ namespace multidevice {
 			layout = getFormatterLayout(descriptor, executionObject);
 			if (region != NULL && layout != NULL) {
 				devClass = region->getDeviceClass();
-				if (devClass != IDeviceDomain::CT_ACTIVE) {
+				if (devClass != DeviceDomain::CT_ACTIVE) {
 					/*clog << "FormatterMultiDevice::hideObject '";
 					clog << executionObject->getId() << "' class '";
 					clog << devClass << "'" << endl;*/
@@ -653,10 +653,10 @@ namespace multidevice {
 				}
 
 				if (hasRemoteDevices) {
-					if (devClass == IDeviceDomain::CT_PASSIVE) {
+					if (devClass == DeviceDomain::CT_PASSIVE) {
 						postMediaContent(devClass);
 
-					} else if (devClass == IDeviceDomain::CT_ACTIVE) {
+					} else if (devClass == DeviceDomain::CT_ACTIVE) {
 						Content* content;
 						string relativePath = "";
 						string url;
@@ -689,13 +689,13 @@ namespace multidevice {
 						/*clog << "FormatterMultiDevice::hideObject";
 						clog << " POSTING STOP EVENT";
 						clog << endl;*/
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 						rdm->postEvent(
 								devClass,
-								IDeviceDomain::FT_PRESENTATIONEVENT,
+								DeviceDomain::FT_PRESENTATIONEVENT,
 								(char*)("stop::" + relativePath).c_str(),
 								("stop::" + relativePath).size());
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 					}
 				}
 			}
@@ -766,9 +766,9 @@ namespace multidevice {
 			isNewClass = true;
 		}
 
-		if (newDevClass == IDeviceDomain::CT_ACTIVE) {
+		if (newDevClass == DeviceDomain::CT_ACTIVE) {
 			clog << "FormatterMulDevice::newDeviceConnected class = ";
-			clog << IDeviceDomain::CT_ACTIVE << endl;
+			clog << DeviceDomain::CT_ACTIVE << endl;
 
 			/*streams = nsp->createNCLSections(
 					"0x01.0x01",
@@ -798,8 +798,8 @@ namespace multidevice {
 		clog << remoteDevClass << "', eventType '" << eventType << "', ";
 		clog << "eventContent = '" << eventContent << "'" << endl;*/
 
-		if (remoteDevClass == IDeviceDomain::CT_PASSIVE &&
-				eventType == IDeviceDomain::FT_SELECTIONEVENT) {
+		if (remoteDevClass == DeviceDomain::CT_PASSIVE &&
+				eventType == DeviceDomain::FT_SELECTIONEVENT) {
 
 			if (eventContent.find(",") != std::string::npos) {
 				params = split(eventContent, ",");
@@ -813,7 +813,7 @@ namespace multidevice {
 							strY    = (*params)[2];
 
 							tapObject(
-									IDeviceDomain::CT_PASSIVE,
+									DeviceDomain::CT_PASSIVE,
 									(int)util::stof(strX),
 									(int)util::stof(strY));
 
@@ -848,7 +848,7 @@ namespace multidevice {
 	}
 
 	void FormatterMultiDevice::updatePassiveDevices() {
-		postMediaContent(IDeviceDomain::CT_PASSIVE);
+		postMediaContent(DeviceDomain::CT_PASSIVE);
 	}
 
 	void FormatterMultiDevice::updateStatus(
@@ -886,19 +886,19 @@ extern "C" ::br::pucrio::telemidia::ginga::ncl::multidevice::
 
     clog << "FormatterMultiDevice::createFormatter useMulticast = "<<(useMulticast?"TRUE":"FALSE")<<endl;
 
-	if (devClass == IDeviceDomain::CT_BASE) {
+	if (devClass == DeviceDomain::CT_BASE) {
 		return (new ::br::pucrio::telemidia::ginga::ncl::multidevice::
 				FormatterBaseDevice(screenId, deviceLayout, playerId, x, y, w, h, useMulticast, srvPort));
 
-#if HAVE_MULTIDEVICE
-	} else if (devClass == IDeviceDomain::CT_PASSIVE) {
+#if WITH_MULTIDEVICE
+	} else if (devClass == DeviceDomain::CT_PASSIVE) {
 		return (new ::br::pucrio::telemidia::ginga::ncl::multidevice::
 				FormatterPassiveDevice(screenId, deviceLayout, x, y, w, h, useMulticast, srvPort));
 
-	} else if (devClass == IDeviceDomain::CT_ACTIVE) {
+	} else if (devClass == DeviceDomain::CT_ACTIVE) {
 		return (new ::br::pucrio::telemidia::ginga::ncl::multidevice::
 				FormatterActiveDevice(screenId, deviceLayout, x, y, w, h, useMulticast, srvPort));
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 	}
 
 	return NULL;

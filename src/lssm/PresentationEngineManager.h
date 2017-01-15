@@ -189,10 +189,10 @@ namespace lssm {
 	private:
 		void openNclDocument(string docUri, int x, int y, int w, int h);
 
-		void* getDsmccListener();
 		void pausePressed();
 
 	public:
+	void* getDsmccListener();
 		void setCmdFile(string cmdFile);
 		static void* processAutoCmd(void* ptr);
 		void waitUnlockCondition();

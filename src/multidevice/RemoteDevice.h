@@ -24,7 +24,7 @@ namespace telemidia {
 namespace ginga {
 namespace core {
 namespace multidevice {
-  class RemoteDevice : public IRemoteDevice {
+  class RemoteDevice {
 	private:
 		unsigned int address;
 		int deviceClass;

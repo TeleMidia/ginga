@@ -85,14 +85,14 @@ namespace context {
 		}
 
 		if (devListener != NULL) {
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 			//clog << "PresentationContext::set(devListener != NULL)" << endl;
 			int myDevClass = -1;
 			string evPayload = property + " = " + value;
 			devListener->receiveRemoteEvent(myDevClass,
-					IDeviceDomain::FT_ATTRIBUTIONEVENT,
+					DeviceDomain::FT_ATTRIBUTIONEVENT,
 					evPayload);
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 		}
 
 	}
@@ -276,7 +276,7 @@ namespace context {
 		}
 	}
 
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 	void PresentationContext::setRemoteDeviceListener(IRemoteDeviceListener* rdl) {
 		devListener = rdl;
 	}

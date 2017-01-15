@@ -435,7 +435,6 @@ namespace dataprocessing {
 
 		running = true;
 		while (running) {
-			//clog << "DataProcessor::run checking tasks" << endl;
 			lock();
 			if (sections.empty()) {
 				unlock();
@@ -495,17 +494,4 @@ namespace dataprocessing {
 }
 }
 }
-}
-
-extern "C" ::br::pucrio::telemidia::ginga::core::dataprocessing::DataProcessor*
-		createDP() {
-
-	return (new ::br::pucrio::telemidia::ginga::core::dataprocessing::
-			DataProcessor());
-}
-
-extern "C" void destroyDP(::br::pucrio::telemidia::ginga::core::
-		dataprocessing::DataProcessor* dp) {
-
-	delete dp;
 }

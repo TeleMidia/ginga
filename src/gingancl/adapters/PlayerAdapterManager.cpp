@@ -17,7 +17,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "PlayerAdapterManager.h"
-#include "AdaptersComponentSupport.h"
+
+#include "SubtitlePlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
+
+#include "PlainTxtPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
+
+#include "SsmlPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;
+
+#include "ImagePlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::image;
+
+#include "MirrorPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::mirror;
+
+#include "AVPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
+
+#include "LuaPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua;
+
+#include "NCLPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::ncl;
+
+#include "ChannelPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
+
+#include "ProgramAVPlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
+
+#include "TimePlayerAdapter.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
 namespace br {
 namespace pucrio {
@@ -388,12 +420,12 @@ namespace adapters {
 			player = new PlainTxtPlayerAdapter();
 
 		}
-#if HAVE_ESPEAK
+#if WITH_ESPEAK
                 else if (playerClassName == "SsmlPlayerAdapter") {
 			player = new SsmlPlayerAdapter();
 		}
 #endif
-#if HAVE_BERKELIUM
+#if WITH_BERKELIUM
                 else if (playerClassName == "BerkeliumPlayerAdapter") {
 			player = new BerkeliumPlayerAdapter();
 		}

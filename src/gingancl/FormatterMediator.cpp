@@ -29,8 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
-#if HAVE_MULTIDEVICE
-# include "multidevice/IDeviceDomain.h"
+#if WITH_MULTIDEVICE
+# include "multidevice/DeviceDomain.h"
 #endif
 
 namespace br {

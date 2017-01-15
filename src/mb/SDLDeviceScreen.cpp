@@ -38,9 +38,9 @@ extern "C" {
 #include "SDLVideoProvider.h"
 
 #ifdef SDL_VIDEO_DRIVER_X11
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
+# include <X11/Xlib.h>
+# include <X11/Xutil.h>
+# include <X11/Xatom.h>
 #endif
 
 namespace br {
@@ -628,56 +628,56 @@ namespace mb {
 		UnderlyingWindowID uWin = NULL;
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-		Display* xDisplay;
-		int xScreen;
-		int blackColor;
+// 		Display* xDisplay;
+// 		int xScreen;
+// 		int blackColor;
 
-		if (spec == "") {
-			xDisplay = XOpenDisplay(getenv("DISPLAY"));
+// 		if (spec == "") {
+// 			xDisplay = XOpenDisplay(getenv("DISPLAY"));
 
-		} else {
-			xDisplay = XOpenDisplay(spec.c_str());
-		}
+// 		} else {
+// 			xDisplay = XOpenDisplay(spec.c_str());
+// 		}
 
-		if (parent == NULL) {
-			parent = (UnderlyingWindowID)XDefaultRootWindow(xDisplay);
-		}
+// 		if (parent == NULL) {
+// 			parent = (UnderlyingWindowID)XDefaultRootWindow(xDisplay);
+// 		}
 
-		xScreen    = DefaultScreen(xDisplay);
-		blackColor = BlackPixel(xDisplay, xScreen);
+// 		xScreen    = DefaultScreen(xDisplay);
+// 		blackColor = BlackPixel(xDisplay, xScreen);
 
-		uWin       = (UnderlyingWindowID)XCreateSimpleWindow(
-				xDisplay,               /* display */
-				(Window)parent,         /* parent */
-				x,                      /* x */
-				y,                      /* y */
-				w,                      /* w */
-				h,                      /* h */
-				0,                      /* border_width */
-				blackColor,             /* border_color */
-				blackColor);            /* background_color */
+// 		uWin       = (UnderlyingWindowID)XCreateSimpleWindow(
+// 				xDisplay,               /* display */
+// 				(Window)parent,         /* parent */
+// 				x,                      /* x */
+// 				y,                      /* y */
+// 				w,                      /* w */
+// 				h,                      /* h */
+// 				0,                      /* border_width */
+// 				blackColor,             /* border_color */
+// 				blackColor);            /* background_color */
 
-		XSync(xDisplay, 0);
+// 		XSync(xDisplay, 0);
 
-		if (uWin == NULL) {
-			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
-			clog << "Can't create embed child window" << endl;
-			return NULL;
-		}
+// 		if (uWin == NULL) {
+// 			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
+// 			clog << "Can't create embed child window" << endl;
+// 			return NULL;
+// 		}
 
-		XMapWindow(xDisplay, (Window)uWin);
-		XClearWindow(xDisplay, (Window)uWin);
-		XFlush(xDisplay);
+// 		XMapWindow(xDisplay, (Window)uWin);
+// 		XClearWindow(xDisplay, (Window)uWin);
+// 		XFlush(xDisplay);
 
-		if (!hasRenderer) {
-			XInitThreads();
-		}
+// 		if (!hasRenderer) {
+// 			XInitThreads();
+// 		}
 
-		clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
-		clog << (void*)uWin << "'";
-		clog << endl;
+// 		clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
+// 		clog << (void*)uWin << "'";
+// 		clog << endl;
 
-		XSync(xDisplay, 1);
+// 		XSync(xDisplay, 1);
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 		TCHAR cName[MAX_PATH] = "Ginga";
@@ -743,9 +743,6 @@ namespace mb {
 			clog << "h = " << h << endl;
 			clog << "parentId = " << parent << endl;
 		}
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-		//TODO: Cocoa - create a child window from parent window id
 #endif
 
 		wRes = w;
@@ -767,13 +764,10 @@ namespace mb {
 			SDL_GetWindowWMInfo(screen, &info);
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-			sUWin = (UnderlyingWindowID)info.info.x11.window;
+			// sUWin = (UnderlyingWindowID)info.info.x11.window;
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 			sUWin = (UnderlyingWindowID)info.info.win.window;
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-			sUWin = (UnderlyingWindowID)info.info.cocoa.window;
 #endif
 		}
 
@@ -1730,53 +1724,50 @@ namespace mb {
 		SDL_GetWindowWMInfo(s->screen, &info);
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-		XSetWindowAttributes attributes;
+		// XSetWindowAttributes attributes;
 
-		if (info.info.x11.display == NULL) {
-			info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
-		}
+		// if (info.info.x11.display == NULL) {
+		// 	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
+		// }
 
-		if (info.info.x11.display != NULL) {
-			attributes.event_mask = (
-					FocusChangeMask       |
-					EnterWindowMask       |
-					LeaveWindowMask       |
-					ExposureMask          |
-					ButtonPressMask       |
-					ButtonReleaseMask     |
-					PointerMotionMask     |
-					KeyPressMask          |
-					KeyReleaseMask        |
-					PropertyChangeMask    |
-					StructureNotifyMask   |
-					KeymapStateMask);
+		// if (info.info.x11.display != NULL) {
+		// 	attributes.event_mask = (
+		// 			FocusChangeMask       |
+		// 			EnterWindowMask       |
+		// 			LeaveWindowMask       |
+		// 			ExposureMask          |
+		// 			ButtonPressMask       |
+		// 			ButtonReleaseMask     |
+		// 			PointerMotionMask     |
+		// 			KeyPressMask          |
+		// 			KeyReleaseMask        |
+		// 			PropertyChangeMask    |
+		// 			StructureNotifyMask   |
+		// 			KeymapStateMask);
 
-			attributes.override_redirect = False;
+		// 	attributes.override_redirect = False;
 
-			XChangeWindowAttributes(
-					info.info.x11.display,
-					(Window)uWin,
-					(CWEventMask | CWOverrideRedirect),
-					&attributes);
+		// 	XChangeWindowAttributes(
+		// 			info.info.x11.display,
+		// 			(Window)uWin,
+		// 			(CWEventMask | CWOverrideRedirect),
+		// 			&attributes);
 
-			XFlush(info.info.x11.display);
+		// 	XFlush(info.info.x11.display);
 
-			XSync(info.info.x11.display, 1);
+		// 	XSync(info.info.x11.display, 1);
 
-			clog << "SDLDeviceScreen::initEmbed set attributes for '";
-			clog << uWin << "'" << endl;
+		// 	clog << "SDLDeviceScreen::initEmbed set attributes for '";
+		// 	clog << uWin << "'" << endl;
 
-		} else {
-			clog << "SDLDeviceScreen::initEmbed Warning! ";
-			clog << "Can't set input event mask for embedded ";
-			clog << "window '" << uWin << "'" << endl;
-		}
+		// } else {
+		// 	clog << "SDLDeviceScreen::initEmbed Warning! ";
+		// 	clog << "Can't set input event mask for embedded ";
+		// 	clog << "window '" << uWin << "'" << endl;
+		// }
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 		//TODO: Windows input event configuration
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-		//TODO: Cocoa input event configuration
 #endif
 
 		unlockSDL();
@@ -1788,72 +1779,53 @@ namespace mb {
 		lockSDL();
 
 #if defined(SDL_VIDEO_DRIVER_X11)
-		Window focusedWindow;
-		int revert;
-		SDL_SysWMinfo info;
+		// Window focusedWindow;
+		// int revert;
+		// SDL_SysWMinfo info;
 
-		SDL_VERSION(&info.version);
-		SDL_GetWindowWMInfo(s->screen, &info);
+		// SDL_VERSION(&info.version);
+		// SDL_GetWindowWMInfo(s->screen, &info);
 
-		if (info.info.x11.display == NULL) {
-			info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
-		}
+		// if (info.info.x11.display == NULL) {
+		// 	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
+		// }
 
-		if (info.info.x11.display != NULL) {
-			XGetInputFocus(
-					info.info.x11.display,
-					&focusedWindow,
-					&revert);
+		// if (info.info.x11.display != NULL) {
+		// 	XGetInputFocus(
+		// 			info.info.x11.display,
+		// 			&focusedWindow,
+		// 			&revert);
 
-			if (focusedWindow != (Window)uWin) {
-				XSetInputFocus(
-						info.info.x11.display,
-						(Window)uWin,
-						RevertToParent,
-						CurrentTime);
+		// 	if (focusedWindow != (Window)uWin) {
+		// 		XSetInputFocus(
+		// 				info.info.x11.display,
+		// 				(Window)uWin,
+		// 				RevertToParent,
+		// 				CurrentTime);
 
-			    /*XSelectInput(
-						info.info.x11.display,
-						(Window)s->uEmbedId,
-						FocusChangeMask       |
-						EnterWindowMask       |
-						LeaveWindowMask       |
-						ExposureMask          |
-						ButtonPressMask       |
-						ButtonReleaseMask     |
-						PointerMotionMask     |
-						KeyPressMask          |
-						KeyReleaseMask        |
-						PropertyChangeMask    |
-						StructureNotifyMask   |
-						KeymapStateMask);*/
+		// 		XCirculateSubwindowsUp(
+		// 				info.info.x11.display,
+		// 				(Window)uWin);
 
-				XCirculateSubwindowsUp(
-						info.info.x11.display,
-						(Window)uWin);
+		// 		XFlush(info.info.x11.display);
 
-				XFlush(info.info.x11.display);
+		// 		XSync(info.info.x11.display, 1);
 
-				XSync(info.info.x11.display, 1);
+		// 		clog << "SDLDeviceScreen::forceInputFocus set input for '";
+		// 		clog << uWin << "'" << endl;
+		// 	}
 
-				clog << "SDLDeviceScreen::forceInputFocus set input for '";
-				clog << uWin << "'" << endl;
-			}
-
-		} else {
-			clog << "SDLDeviceScreen::forceInputFocus Warning! ";
-			clog << "Can't set input event mask for embedded ";
-			clog << "window '" << uWin << "'" << endl;
-		}
+		// } else {
+		// 	clog << "SDLDeviceScreen::forceInputFocus Warning! ";
+		// 	clog << "Can't set input event mask for embedded ";
+		// 	clog << "window '" << uWin << "'" << endl;
+		// }
 
 #elif defined(SDL_VIDEO_DRIVER_WINDOWS)
 		SetFocus((HWND)uWin);
 		clog << "SDLDeviceScreen::forceInputFocus(";
 		clog << (unsigned long)uWin << ") DONE";
 		clog << endl;
-
-#elif defined(SDL_VIDEO_DRIVER_COCOA)
-		//TODO: Cocoa input event configuration
 #endif
 
 		unlockSDL();

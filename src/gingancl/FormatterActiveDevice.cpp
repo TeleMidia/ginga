@@ -77,7 +77,7 @@ namespace multidevice {
 		set<int>* evs;
 
 		contentsInfo = new map<string, string>;
-		deviceClass  = IDeviceDomain::CT_ACTIVE;
+		deviceClass  = DeviceDomain::CT_ACTIVE;
 		formatter    = NULL;
 
 		defaultWidth  = dm->getDeviceWidth(myScreen);
@@ -188,7 +188,7 @@ namespace multidevice {
 			privateBaseManager = NULL;
 		}
 		if (rdm != NULL) {
-			delete rdm;
+			rdm->release ();
 			rdm = NULL;
 		}
 
@@ -246,7 +246,7 @@ namespace multidevice {
 			string eventContent) {
 
 		vector<string>* args;
-		if (eventType == IDeviceDomain::FT_ATTRIBUTIONEVENT) {
+		if (eventType == DeviceDomain::FT_ATTRIBUTIONEVENT) {
 			if (remoteDevClass == -1) {
 
 				//Only sends to parent device vars within the "parent." namespace
@@ -265,8 +265,8 @@ namespace multidevice {
 			}
 		}
 
-		if (remoteDevClass == IDeviceDomain::CT_BASE) {
-			if (eventType == IDeviceDomain::FT_PRESENTATIONEVENT) {
+		if (remoteDevClass == DeviceDomain::CT_BASE) {
+			if (eventType == DeviceDomain::FT_PRESENTATIONEVENT) {
 				if (eventContent.find("::") != std::string::npos) {
 					args = split(eventContent, "::");
 					if (args->size() == 2) {

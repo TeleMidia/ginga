@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "BaseDeviceService.h"
-#include "IDeviceDomain.h"
+#include "DeviceDomain.h"
 
 namespace br {
 namespace pucrio {
@@ -26,7 +26,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	BaseDeviceService::BaseDeviceService() : DeviceService() {
-		serviceClass = IDeviceDomain::CT_BASE;
+		serviceClass = DeviceDomain::CT_BASE;
 	}
 
 	BaseDeviceService::~BaseDeviceService() {
@@ -34,7 +34,7 @@ namespace multidevice {
 	}
 
 	void BaseDeviceService::newDeviceConnected(unsigned int devAddr) {
-		IRemoteDevice* dev;
+		RemoteDevice* dev;
 		int newDevClass, w, h;
 		set<IRemoteDeviceListener*>::iterator i;
 
@@ -60,7 +60,7 @@ namespace multidevice {
 			int streamSize) {
 
 		string strStream = "";
-		IRemoteDevice* dev;
+		RemoteDevice* dev;
 		int devClass;
 		set<IRemoteDeviceListener*>::iterator it;
 		bool hasLists;

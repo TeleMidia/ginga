@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DATAPROCESSOR_H_
 
 extern "C" {
-	#include <sys/stat.h>
 	#include <stdio.h>
 	#include <stdio.h>
 }
@@ -71,7 +70,6 @@ using namespace std;
 #include "dsmcc/NPTProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
-#include <sys/stat.h>
 #include <map>
 #include <set>
 #include <string>
@@ -148,6 +146,7 @@ namespace dataprocessing {
 			void notifyEitListeners(set<IEventInfo*>* events);
 
 		public:
+			void receiveData(char* buff, unsigned int size){};
 			void receiveSection(ITransportSection* section);
 			void updateChannelStatus(short newStatus, Channel* channel);
 			bool isReady();

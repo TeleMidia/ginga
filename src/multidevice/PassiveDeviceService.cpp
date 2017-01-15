@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "PassiveDeviceService.h"
-#include "IDeviceDomain.h"
+#include "DeviceDomain.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	PassiveDeviceService::PassiveDeviceService() : DeviceService() {
-		serviceClass = IDeviceDomain::CT_PASSIVE;
+		serviceClass = DeviceDomain::CT_PASSIVE;
 	}
 
 	PassiveDeviceService::~PassiveDeviceService() {
@@ -43,7 +43,7 @@ namespace multidevice {
 	void PassiveDeviceService::connectedToBaseDevice(unsigned int domainAddr) {
 		set<IRemoteDeviceListener*>::iterator i;
 
-		addDevice(domainAddr, IDeviceDomain::CT_BASE, 0, 0);
+		addDevice(domainAddr, DeviceDomain::CT_BASE, 0, 0);
 
 		Thread::mutexLock(&lMutex);
 		i = listeners->begin();
@@ -62,7 +62,7 @@ namespace multidevice {
 
 		int remoteDevClass, bytesWrite;
 		FILE* fd;
-		IRemoteDevice* dev;
+		RemoteDevice* dev;
 		string uri;
 		set<IRemoteDeviceListener*>::iterator i;
 		bool hasLists;

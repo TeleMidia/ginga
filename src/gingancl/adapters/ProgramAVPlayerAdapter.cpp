@@ -17,8 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "ProgramAVPlayerAdapter.h"
-
-#include "AdaptersComponentSupport.h"
+#include "player/ProgramAV.h"
 
 namespace br {
 namespace pucrio {

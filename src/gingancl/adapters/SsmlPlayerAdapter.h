@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SSMLPLAYERADAPTER_H_
 #define SSMLPLAYERADAPTER_H_
 
-#include "../FormatterPlayerAdapter.h"
+#include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "system/compat/SystemCompat.h"
+#include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <string>

@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#if HAVE_ISDBT
-# include "dataprocessing/EPGProcessor.h"
+#if WITH_ISDBT
+# include "isdbt-dataproc/EPGProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 #endif
 

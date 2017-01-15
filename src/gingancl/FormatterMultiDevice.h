@@ -24,13 +24,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/IInputEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_MULTIDEVICE
-#include "multidevice/IDeviceDomain.h"
-#include "multidevice/IRemoteDeviceManager.h"
+#if WITH_MULTIDEVICE
+#include "multidevice/DeviceDomain.h"
+#include "multidevice/RemoteDeviceManager.h"
 #include "multidevice/IRemoteDeviceListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #else
-class IDeviceDomain {
+class DeviceDomain {
 	public:
 		//CT: class types
 		static const int CT_BASE              = 0;
@@ -46,7 +46,7 @@ class IDeviceDomain {
 		static const int FT_ATTRIBUTIONEVENT  = 5;
 		static const int FT_PRESENTATIONEVENT = 6;
 };
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 
 #include "ncl/layout/LayoutRegion.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
@@ -88,27 +88,26 @@ namespace telemidia {
 namespace ginga {
 namespace ncl {
 namespace multidevice {
-#if HAVE_MULTIDEVICE
+#if WITH_MULTIDEVICE
 	class FormatterMultiDevice :
 			public IPlayerListener,
-			public FormatterMultiDevice,
 			public IInputEventListener,
 			public IRemoteDeviceListener {
-#else //!HAVE_MULTIDEVICE
+#else //!WITH_MULTIDEVICE
 	class FormatterMultiDevice :
 			public IPlayerListener,
 			public IInputEventListener {
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 		protected:
 			static LocalScreenManager* dm;
 			InputManager* im;
 			pthread_mutex_t mutex;
 
-#if HAVE_MULTIDEVICE
-			static IRemoteDeviceManager* rdm;
+#if WITH_MULTIDEVICE
+			static RemoteDeviceManager* rdm;
 #else
 			static void* rdm;
-#endif //HAVE_MULTIDEVICE
+#endif //WITH_MULTIDEVICE
 
 			IDeviceLayout* deviceLayout;
 			map<int, FormatterLayout*> layoutManager;

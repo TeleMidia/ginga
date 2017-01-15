@@ -268,8 +268,8 @@ AM_CPPFLAGS+=\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
   -DGINGA_TUNER_PATH='"$(gingaconfdir)/tuner/tuner.ini"'\
   $(NULL)
-AM_CXXFLAGS+= $(EXPAT_CFLAGS)
-AM_LDFLAGS+= $(EXPAT_LIBS)
+AM_CXXFLAGS+= $(ISDBT_CFLAGS)
+AM_LDFLAGS+= $(ISDBT_LIBS)
 src+= isdbt-dataproc/DataProcessor.cpp
 src+= isdbt-dataproc/EPGProcessor.cpp
 src+= isdbt-dataproc/FilterManager.cpp
@@ -355,8 +355,8 @@ src+= SDLBpgDecoder.cpp
 endif # WITH_LIBBPG
 
 if WITH_MULTIDEVICE
-AM_CXXFLAGS+= $(LIBZIP_CFLAGS)
-AM_LDFLAGS+= $(LIBZIP_LIBS)
+AM_CXXFLAGS+= $(MULTIDEVICE_CFLAGS)
+AM_LDFLAGS+= $(MULTIDEVICE_LIBS)
 src+= gingancl/FormatterActiveDevice.cpp
 src+= gingancl/FormatterPassiveDevice.cpp
 src+= multidevice/ActiveDeviceDomain.cpp
@@ -381,5 +381,5 @@ endif # WITH_MULTIDEVICE
 if WITH_LIBRSVG
 AM_CXXFLAGS+= $(LIBRSVG_CFLAGS)
 AM_LDFLAGS+= $(LIBRSVG_LIBS)
-src+= SDLSvgDecoder.cpp
+src+= mb/SDLSvgDecoder.cpp
 endif # WITH_LIBRSVG

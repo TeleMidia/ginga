@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "MirrorPlayerAdapter.h"
-#include "AdaptersComponentSupport.h"
+#include "PlayerAdapterManager.h"
 
 namespace br {
 namespace pucrio {
@@ -53,7 +53,7 @@ namespace mirror {
 		assert(pos != std::string::npos);
 		if (object != NULL && object->getMirrorSrc() != NULL && player != NULL) {
 			execObjSrc = object->getMirrorSrc();
-			sourceAdapter = (FormatterPlayerAdapter*)manager->getObjectPlayer(execObjSrc);
+			sourceAdapter = (FormatterPlayerAdapter*)((PlayerAdapterManager*)manager)->getObjectPlayer(execObjSrc);
 			mirrorSrc = sourceAdapter->getPlayer();
 
 			descriptor = object->getDescriptor();

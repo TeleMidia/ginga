@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "ActiveDeviceService.h"
-#include "IDeviceDomain.h"
+#include "DeviceDomain.h"
 
 namespace br {
 namespace pucrio {
@@ -26,7 +26,7 @@ namespace ginga {
 namespace core {
 namespace multidevice {
 	ActiveDeviceService::ActiveDeviceService() : BaseDeviceService() {
-		serviceClass = IDeviceDomain::CT_ACTIVE;
+		serviceClass = DeviceDomain::CT_ACTIVE;
 	}
 
 	ActiveDeviceService::~ActiveDeviceService() {
@@ -36,7 +36,7 @@ namespace multidevice {
 	void ActiveDeviceService::connectedToBaseDevice(unsigned int domainAddr) {
 		set<IRemoteDeviceListener*>::iterator i;
 
-		addDevice(domainAddr, IDeviceDomain::CT_BASE, 0, 0);
+		addDevice(domainAddr, DeviceDomain::CT_BASE, 0, 0);
 
 		Thread::mutexLock(&lMutex);
 		i = listeners->begin();
@@ -53,7 +53,7 @@ namespace multidevice {
 			int streamSize) {
 
 		int remoteDevClass;
-		IRemoteDevice* dev;
+		RemoteDevice* dev;
 		string uri;
 		set<IRemoteDeviceListener*>::iterator i;
 		//INCLSectionProcessor* nsp = NULL;

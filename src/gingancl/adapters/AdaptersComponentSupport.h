@@ -54,13 +54,13 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
 #include "TimePlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
-#if HAVE_BERKELIUM
+#if WITH_BERKELIUM
 #include "player/BerkeliumPlayer.h"
 #include "application/declarative/xhtml/berkelium/BerkeliumPlayerAdapter.h"
 using namespace br::pucrio::telemidia::ginga::ncl::adapters::application::xhtml;
 #endif
 
-#if HAVE_ESPEAK
+#if WITH_ESPEAK
 #include "player/SsmlPlayer.h"
 #include "SsmlPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;

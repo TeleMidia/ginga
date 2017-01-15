@@ -79,7 +79,7 @@ namespace multidevice {
 		return _instance;
 	}
 
-	void RemoteDeviceManager::setDeviceDomain(IDeviceDomain* domain) {
+	void RemoteDeviceManager::setDeviceDomain(DeviceDomain* domain) {
 		domainService = domain;
 	}
 

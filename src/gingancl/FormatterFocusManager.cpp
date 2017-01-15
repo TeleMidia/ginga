@@ -22,8 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#if HAVE_MULTIDEVICE
-# include "multidevice/IDeviceDomain.h"
+#if WITH_MULTIDEVICE
+# include "multidevice/DeviceDomain.h"
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #endif
 

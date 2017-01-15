@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#if HAVE_ISDBT
+#if WITH_ISDBT
 #include "lssm/DataWrapperListener.h"
 
 #include "system/GingaLocatorFactory.h"
@@ -326,4 +326,4 @@ namespace lssm {
 }
 }
 
-#endif // HAVE_ISDBT
+#endif // WITH_ISDBT

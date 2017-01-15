@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "BDAProvider.h"
 #endif
 
-#if HAVE_LINUXDVB
+#if WITH_LINUXDVB
 #include "ISDBTProvider.h"
 #endif
 
@@ -130,7 +130,7 @@ namespace tuning {
 			}
 #if _WIN32
 			provider = new BDAProvider(freq);
-#elif HAVE_LINUXDVB
+#elif WITH_LINUXDVB
 			provider = new ISDBTProvider(freq);
 #endif
 
