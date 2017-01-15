@@ -351,39 +351,6 @@ namespace compat {
 		}
 	}
 
-	void* SystemCompat::getComponentManagerInstance() {
-		return cmInstance;
-	}
-
-	void SystemCompat::setComponentManagerInstance(void* cmInstance) {
-		SystemCompat::cmInstance = cmInstance;
-	}
-
-	string SystemCompat::appendLibExt(string libName) {
-		string newLibName = libName;
-
-#ifdef WIN32
-		if (libName.find(".dll") == std::string::npos) {
-			newLibName = libName + ".dll";
-		}
-#else //!WIN32
-		if (libName.find(".so") == std::string::npos) {
-			newLibName = libName + ".so";
-		}
-#endif //WIN32
-
-		return newLibName;
-	}
-
-	void* SystemCompat::loadComponent(
-			string libName, void** llib, string symName) {
-		abort ();
-	}
-
-	bool SystemCompat::releaseComponent(void* component) {
-		abort ();
-	}
-
 	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
 #ifndef WIN32
 		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
@@ -802,66 +769,13 @@ namespace compat {
 	}
 
 	string SystemCompat::getOperatingSystem() {
-
 		string _ops;
-
 #ifdef WIN32
 		_ops = "Windows";
-#else //!WIN32
+#else
 		_ops = "Linux";
-#endif //WIN32
-
+#endif
 		return _ops;
-	}
-
-	float SystemCompat::getClockSpeed() {
-		float clockSpeed = 1000.0;
-
-#ifdef HAVE_SYS_SYSINFO_H
-		ifstream fis;
-		string line = "";
-
-		fis.open("/proc/cpuinfo", ifstream::in);
-
-		if (!fis.is_open()) {
-			clog << "SystemInfo::initializeClockSpeed Warning: can't open ";
-			clog << "file '/proc/cpuinfo'" << endl;
-			return clockSpeed;
-		}
-
-		while (fis.good()) {
-			fis >> line;
-			if (line == "cpu") {
-				fis >> line;
-				if (line == "MHz") {
-					fis >> line;
-					if (line == ":") {
-						fis >> line;
-						clockSpeed = util::stof(line);
-						break;
-					}
-				}
-			}
-		}
-#endif
-		return clockSpeed;
-	}
-
-	float SystemCompat::getMemorySize() {
-
-		float memSize = 0.0;
-
-#ifdef WIN32
-	MEMORYSTATUS ms;
-	GlobalMemoryStatus(&ms);
-	memSize = (float)ms.dwAvailPhys;
-#elif HAVE_SYS_SYSINFO_H
-		struct sysinfo info;
-		sysinfo(&info);
-		memSize = info.totalram;
-#endif
-
-		return (memSize);
 	}
 
      void SystemCompat::strError (int err, char *buf, size_t size) {

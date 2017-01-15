@@ -247,33 +247,15 @@ namespace compat {
 			 */
 			static string appendGingaInstallPrefix(string relUrl);
 
-
-			/******************************
-			 * Handling Dynamic libraries *
-			 ******************************/
-			static void* getComponentManagerInstance();
-			static void setComponentManagerInstance(void* cmInstance);
-
-			static string appendLibExt(string libName);
-
-			static void* loadComponent(
-					string libName, void** llib, string symName);
-
-			static bool releaseComponent(void* component);
-
 			/****************
 			 * SIG Handlers *
 			 ****************/
 			static void initializeSigpipeHandler();
 
-
 			/*****************
 			 * Embedded Info *
 			 *****************/
 			static string getOperatingSystem();
-			static float getClockSpeed();
-			static float getMemorySize();
-
 
 			/**********************
 			 * Specific Functions *
@@ -296,12 +278,10 @@ namespace compat {
 			static int getUserClock(struct timeval* usrClk);
 			static int clockGetTime(int clockType, struct timespec* tv);
 
-
 			/******************
 			 * Math functions *
 			 ******************/
 			static int rint (double x);
-
 
 			/******************
 			 * Pipe Functions *
