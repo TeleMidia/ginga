@@ -1455,11 +1455,6 @@ namespace mb {
 		map<SDLDeviceScreen*, short>::iterator i;
 		SDLDeviceScreen* s;
 		checkSDLInit();
-		
-		/* TODO: make 'framerate' an user option */
-		long render_delta_ns = 33333333; // 33000000ns render interval (30fps)
-		// long render_delta_ns = 16666666; // 16666666ns render interval (60fps)
-
 		int retcode;
 		int first_pass = 1;
 		struct timespec now;
@@ -1522,39 +1517,8 @@ namespace mb {
 				}
 			}
 			Thread::mutexUnlock(&scrMutex);
-
 			if (hasERC) {
 				break;
-
-			} else {
-				if (first_pass) {
-					SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
-					timeout.tv_sec = now.tv_sec;
-					timeout.tv_nsec = now.tv_nsec;
-					first_pass = 0;
-				}
-
-				// if (second_bump)
-				if ((timeout.tv_nsec + render_delta_ns) >= 1000000000) {
-					timeout.tv_sec++;
-					timeout.tv_nsec = (timeout.tv_nsec + render_delta_ns) % 1000000000;
-
-				} else {
-					timeout.tv_nsec += render_delta_ns;
-				}
-
-				SystemCompat::clockGetTime(CLOCK_REALTIME, &now);
-				if ((timeout.tv_sec < now.tv_sec) || (
-						(timeout.tv_sec == now.tv_sec) && (timeout.tv_nsec < now.tv_nsec))) {
-
-					timeout.tv_sec = now.tv_sec;
-					timeout.tv_nsec = now.tv_nsec;
-
-				} else {
-					pthread_mutex_lock(&mutex);
-					retcode = pthread_cond_timedwait(&cond, &mutex, &timeout);
-					pthread_mutex_unlock(&mutex);
-				}
 			}
 		}
 
