@@ -37,6 +37,7 @@ extern "C" {
 #include <string.h>
 
 #include "libavutil/avstring.h"
+#include "libavutil/pixfmt.h"
 #include "libavutil/time.h"
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
@@ -45,7 +46,7 @@ extern "C" {
 #include "libswresample/swresample.h"
 
 // AVFILTER BEGIN
-#include "libavfilter/avcodec.h"
+#include "libavcodec/avcodec.h"
 #include "libavfilter/avfilter.h"
 #include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
