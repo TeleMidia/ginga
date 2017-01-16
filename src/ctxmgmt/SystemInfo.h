@@ -63,7 +63,6 @@ namespace contextmanager {
 			string getAudioType();
 			float getCPUClock();
 			float getMemorySize();
-			string getOperatingSystem();
 			string getJavaConfiguration();
 			string getJavaProfile();
 			string getLuaVersion();

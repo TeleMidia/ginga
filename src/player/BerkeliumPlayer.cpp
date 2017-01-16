@@ -214,7 +214,7 @@ namespace player {
 
 		if (!berkeliumFactory.hasRunningBrowser()) {
 			while (!mainLoopDone) {
-				SystemCompat::uSleep(30000);
+				g_usleep(30000);
 			}
 		}
 
@@ -367,7 +367,7 @@ namespace player {
 				int waitFactory = 0;
 				while (waitFactory < 1000000) {
 					Berkelium::update();
-					SystemCompat::uSleep(30000);
+					g_usleep(30000);
 					waitFactory = waitFactory + 30000;
 				}
 			}
@@ -383,7 +383,7 @@ namespace player {
 					}
 				}*/
 
-				SystemCompat::uSleep(30000);
+				g_usleep(30000);
 
 			} else {
 				clog << "BerkeliumPlayer::mainLoop stopping factory!" << endl;

@@ -346,15 +346,6 @@ namespace compat {
 		}
 	}
 
-	void SystemCompat::sigpipeHandler(int x) throw(const char*) {
-#ifndef _MSC_VER
-		signal(SIGPIPE, sigpipeHandler);  //reset the signal handler
-		clog << "SystemCompat::sigpipeHandler ";
-		clog << "throw: " << strsignal(x) << endl;
-		throw strsignal(x);  //throw the exception
-#endif //!_MSC_VER
-	}
-
 	string SystemCompat::getGingaPrefix() {
 		return SystemCompat::gingaPrefix;
 	}
@@ -757,54 +748,11 @@ namespace compat {
 		return absuri;
 	}
 
-	void SystemCompat::initializeSigpipeHandler() {
-#ifndef _MSC_VER
-		signal(SIGPIPE, sigpipeHandler);
-#endif
-	}
-
-	string SystemCompat::getOperatingSystem() {
-		string _ops;
-#ifdef _MSC_VER
-		_ops = "Windows";
-#else
-		_ops = "Linux";
-#endif
-		return _ops;
-	}
-
-     void SystemCompat::strError (int err, char *buf, size_t size) {
-		int saved_errno = errno;
-#ifdef _MSC_VER
-		strerror_s (buf, size, err);
-#else
-		strerror_r (err, buf, size);
-#endif
-		errno = saved_errno;
-	}
-
-
-	int SystemCompat::changeDir (const char *path) {
-#ifdef _MSC_VER
-			return _chdir (path);
-#else
-			return chdir (path);
-#endif
-	}
-
 	void SystemCompat::makeDir(const char* dirName, unsigned int mode) {
 #ifdef _MSC_VER
 			_mkdir(dirName);
 #else
 			mkdir(dirName, mode);
-#endif
-	}
-
-	void SystemCompat::uSleep(unsigned int microseconds) {
-#ifndef _MSC_VER
-		::usleep(microseconds);
-#else
-		Sleep(microseconds/1000);
 #endif
 	}
 
@@ -969,24 +917,6 @@ namespace compat {
 		res = clock_gettime(clockType, tv);
 #endif
 		return res;
-	}
-
-	/* replacement of Unix rint() for Windows */
-	int SystemCompat::rint (double x) {
-#if defined(_MSC_VER)
-		char *buf;
-		int i,dec,sig;
-
-		buf = _fcvt(x, 0, &dec, &sig);
-		i = atoi(buf);
-		if(sig == 1) {
-			i = i * -1;
-		}
-
-		return(i);
-#else
-		return ::rint(x);
-#endif
 	}
 
 	string SystemCompat::getTemporaryDir() {

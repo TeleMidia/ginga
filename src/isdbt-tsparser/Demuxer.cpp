@@ -425,7 +425,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			SystemCompat::uSleep(1000);
+			g_usleep(1000);
 		}
 
 		return pat->getDefaultMainVideoPid();
@@ -436,7 +436,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			SystemCompat::uSleep(1000);
+			g_usleep(1000);
 		}
 
 		return pat->getDefaultMainAudioPid();
@@ -447,7 +447,7 @@ namespace tsparser {
 			if (pat->isConsolidated()) {
 				pat->checkConsistency();
 			}
-			SystemCompat::uSleep(1000);
+			g_usleep(1000);
 		}
 
 		return pat->getDefaultMainCarouselPid();

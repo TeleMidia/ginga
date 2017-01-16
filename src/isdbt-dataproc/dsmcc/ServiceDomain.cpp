@@ -210,7 +210,7 @@ namespace carousel {
 					}
 
 					while (!module->isConsolidated()) {
-						SystemCompat::uSleep(1000);
+						g_usleep(1000);
 					}
 					clog << endl;
 
@@ -259,13 +259,13 @@ namespace carousel {
 						biop = NULL;
 
 					} else {
-						SystemCompat::uSleep(1000);
+						g_usleep(1000);
 						j++;
 					}
 				}
 
 			} else {
-				SystemCompat::uSleep(1000);
+				g_usleep(1000);
 			}
 		}
 		mounted = true;

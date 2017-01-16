@@ -40,7 +40,7 @@ namespace player {
 		isDeleting = true;
 
 		while (running) {
-			SystemCompat::uSleep(50000);
+			g_usleep(50000);
 		}
 	}
 
@@ -135,7 +135,7 @@ namespace player {
           release ();
         }
         render (string (GINGA_BUTTON_DATADIR) + "stopButton.png");
-        SystemCompat::uSleep(1000000);
+        g_usleep(1000000);
         release ();
         break;
       case PLAY:
@@ -143,7 +143,7 @@ namespace player {
           release ();
         }
         render (string (GINGA_BUTTON_DATADIR) + "playButton.png");
-        SystemCompat::uSleep(1000000);
+        g_usleep(1000000);
         release();
         break;
       default:

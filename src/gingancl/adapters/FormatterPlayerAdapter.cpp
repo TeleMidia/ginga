@@ -284,7 +284,7 @@ namespace adapters {
 
 	bool FormatterPlayerAdapter::setKeyHandler(bool isHandler) {
 		if (player == NULL) {
-			SystemCompat::uSleep(100000);
+			g_usleep(100000);
 		}
 
 		if (player == NULL) {

@@ -223,7 +223,7 @@ namespace mb {
 		releaseScreen();
 
 		while (this->renderer != NULL) {
-			SystemCompat::uSleep(10000);
+			g_usleep (10000);
 		}
 
 		Thread::mutexLock(&scrMutex);
@@ -293,7 +293,7 @@ namespace mb {
 		numSDL = sdlScreens.size();
 
 		while (numSDL > 1) {
-			SystemCompat::uSleep(100000);
+			g_usleep(100000);
 			errCount++;
 
 			numSDL = sdlScreens.size();
@@ -369,7 +369,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (wRes <= 0) {
-			SystemCompat::uSleep(uSleepTime);
+			g_usleep(uSleepTime);
 		}
 
 		clog << "SDLDeviceScreen::getWidthResolution returns '";
@@ -399,7 +399,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (hRes <= 0) {
-			SystemCompat::uSleep(uSleepTime);
+			g_usleep(uSleepTime);
 		}
 
 		clog << "SDLDeviceScreen::getHeightResolution returns '";
@@ -2189,7 +2189,7 @@ namespace mb {
 		 * is not necessary here.
 		 */
 		while (im == NULL) {
-			SystemCompat::uSleep(1000000 / SDS_FPS);
+			g_usleep(1000000 / SDS_FPS);
 		}
 		return im;
 	}

@@ -202,8 +202,6 @@ namespace compat {
 			static void initializeUserCurrentPath();
 			static void initializeGingaConfigFile();
 
-			static void sigpipeHandler(int x) throw(const char*);
-
 		public:
 			/********
 			 * URIs *
@@ -247,23 +245,10 @@ namespace compat {
 			 */
 			static string appendGingaInstallPrefix(string relUrl);
 
-			/****************
-			 * SIG Handlers *
-			 ****************/
-			static void initializeSigpipeHandler();
-
-			/*****************
-			 * Embedded Info *
-			 *****************/
-			static string getOperatingSystem();
-
 			/**********************
 			 * Specific Functions *
 			 **********************/
-			static void strError (int err, char *buf, size_t size);
-			static int changeDir (const char *path);
 			static void makeDir(const char* dirName, unsigned int mode);
-			static void uSleep(unsigned int microseconds);
 			static string getTemporaryDir();
 
 			static const short LOG_NULL = 0;
@@ -276,11 +261,6 @@ namespace compat {
 			 ******************/
 			static int getUserClock(struct timeval* usrClk);
 			static int clockGetTime(int clockType, struct timespec* tv);
-
-			/******************
-			 * Math functions *
-			 ******************/
-			static int rint (double x);
 
 			/******************
 			 * Pipe Functions *

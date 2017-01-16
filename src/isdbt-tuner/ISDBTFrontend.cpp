@@ -168,7 +168,7 @@ namespace tuning {
                 int value, signal;
 
                 // why do we need this?
-		SystemCompat::uSleep(200000);
+		g_usleep(200000);
 
                 clog << "ISDBTFrontend::isTuned" << endl;
 

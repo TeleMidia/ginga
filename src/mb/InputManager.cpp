@@ -109,7 +109,7 @@ namespace mb {
 		}
 
 		while (!runDone) {
-			SystemCompat::uSleep(10000);
+			g_usleep(10000);
 			runDone = (maxX == 0 && maxY == 0);
 		}
 
