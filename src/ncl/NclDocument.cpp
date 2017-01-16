@@ -245,7 +245,7 @@ namespace ncl {
 	string NclDocument::getDocumentAlias(NclDocument* document) {
 		map<string, NclDocument*>::iterator i;
 
-		for (i != documentAliases.begin(); i != documentAliases.end(); ++i) {
+		for (i = documentAliases.begin(); i != documentAliases.end(); ++i) {
 			if (i->second == document) {
 				return i->first;
 			}
@@ -261,7 +261,7 @@ namespace ncl {
 	string NclDocument::getDocumentLocation(NclDocument* document) {
 		map<string, NclDocument*>::iterator i;
 
-		for (i != documentLocations.begin(); i != documentLocations.end(); ++i) {
+		for (i = documentLocations.begin(); i != documentLocations.end(); ++i) {
 			if (i->second == document) {
 				return i->first;
 			}

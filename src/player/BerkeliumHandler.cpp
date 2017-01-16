@@ -63,7 +63,7 @@ namespace player {
 		scroll_buffer      = new unsigned char[w*(h+1)*4];
 		needs_full_refresh = false;
 
-		Thread::mutexInit(&sMutex, NULL);
+		Thread::mutexInit(&sMutex, false);
 	}
 
 	BerkeliumHandler::~BerkeliumHandler() {

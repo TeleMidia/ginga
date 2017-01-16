@@ -44,11 +44,11 @@ namespace event {
 
 		if (!init) {
 			init = true;
-			Thread::mutexInit(&iMutex, NULL);
+			Thread::mutexInit(&iMutex, false);
 		}
 
 		typeSet.insert("FormatterEvent");
-		Thread::mutexInit(&mutex, NULL);
+		Thread::mutexInit(&mutex, false);
 
 		addInstance(this);
 	}

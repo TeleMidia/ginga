@@ -34,7 +34,7 @@ namespace fs {
 
 		isWaiting = false;
 		Thread::condInit(&flagCondSignal, NULL);
-		Thread::mutexInit(&flagMutexSignal, NULL);
+		Thread::mutexInit(&flagMutexSignal, false);
 	}
 
 	GingaLocatorFactory::~GingaLocatorFactory() {

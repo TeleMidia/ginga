@@ -85,7 +85,7 @@ namespace components {
 
 		currentEvent = NULL;
 
-		Thread::mutexInit(&eventsMutex, NULL);
+		Thread::mutexInit(&eventsMutex, false);
 	}
 
 	bool ApplicationExecutionObject::isSleeping() {

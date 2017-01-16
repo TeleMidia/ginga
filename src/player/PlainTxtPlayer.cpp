@@ -29,7 +29,7 @@ namespace player {
 	PlainTxtPlayer::PlainTxtPlayer(GingaScreenID screenId, string mrl) :
 			TextPlayer(screenId) {
 
-		Thread::mutexInit(&mutex, NULL);
+		Thread::mutexInit(&mutex, false);
 		content = "";
 	}
 

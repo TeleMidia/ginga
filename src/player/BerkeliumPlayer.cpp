@@ -33,7 +33,7 @@ namespace player {
 	bool BerkeliumPlayer::mainLoopDone = false;
 
 	BBrowserFactory::BBrowserFactory() {
-		Thread::mutexInit(&smutex, NULL);
+		Thread::mutexInit(&smutex, false);
 	}
 
 	BBrowserFactory::~BBrowserFactory() {

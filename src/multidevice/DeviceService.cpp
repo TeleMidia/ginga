@@ -31,8 +31,8 @@ namespace multidevice {
 		devices      = new map<unsigned int, RemoteDevice*>;
 		listeners    = new set<IRemoteDeviceListener*>;
 
-		Thread::mutexInit(&lMutex, NULL);
-		Thread::mutexInit(&dMutex, NULL);
+		Thread::mutexInit(&lMutex, false);
+		Thread::mutexInit(&dMutex, false);
 		serviceClass = -1;
 	}
 

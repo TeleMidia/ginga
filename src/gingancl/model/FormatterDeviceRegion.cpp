@@ -31,7 +31,7 @@ namespace presentation {
 		this->id = id;
 		sortedRegions  = new vector<LayoutRegion*>;
 
-		Thread::mutexInit(&rMutex, NULL);
+		Thread::mutexInit(&rMutex, false);
 		typeSet.insert("FormatterDeviceRegion");
 	}
 

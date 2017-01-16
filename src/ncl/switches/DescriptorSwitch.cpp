@@ -117,7 +117,7 @@ namespace switches {
 	bool DescriptorSwitch::addDescriptor(
 		    unsigned int index, GenericDescriptor* descriptor, Rule* rule) {
 
-		if (index < 0 || index > descriptorList->size() ||
+		if (index > descriptorList->size() ||
 			    getDescriptor(descriptor->getId()) != NULL ) {
 
 			return false;

@@ -46,7 +46,7 @@ namespace context {
 		globalVarListener = NULL;
 		devListener = NULL;
 
-		Thread::mutexInit(&attrMutex, NULL);
+		Thread::mutexInit(&attrMutex, false);
 	}
 
 	PresentationContext::~PresentationContext() {

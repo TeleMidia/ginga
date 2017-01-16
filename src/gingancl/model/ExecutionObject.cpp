@@ -172,7 +172,7 @@ namespace components {
 
 		if (!initMutex) {
 			initMutex = true;
-			Thread::mutexInit(&ExecutionObject::_objMutex, NULL);
+			Thread::mutexInit(&ExecutionObject::_objMutex, false);
 		}
 
 		addInstance(this);
@@ -197,9 +197,9 @@ namespace components {
 
 		this->transMan        = new EventTransitionManager();
 
-		Thread::mutexInit(&mutex, NULL);
-		Thread::mutexInit(&mutexEvent, NULL);
-		Thread::mutexInit(&mutexParentTable, NULL);
+		Thread::mutexInit(&mutex, false);
+		Thread::mutexInit(&mutexEvent, false);
+		Thread::mutexInit(&mutexParentTable, false);
 	}
 
 	void ExecutionObject::destroyEvents() {

@@ -35,10 +35,10 @@ namespace player {
 	LocalScreenManager* Player::dm = NULL;
 
 	Player::Player(GingaScreenID screenId, string mrl) {
-		Thread::mutexInit(&listM, NULL);
-		Thread::mutexInit(&lockedListM, NULL);
-		Thread::mutexInit(&referM, NULL);
-		Thread::mutexInit(&pnMutex, NULL);
+		Thread::mutexInit(&listM, false);
+		Thread::mutexInit(&lockedListM, false);
+		Thread::mutexInit(&referM, false);
+		Thread::mutexInit(&pnMutex, false);
 
 		if (dm == NULL) {
 			dm = ScreenManagerFactory::getInstance();
