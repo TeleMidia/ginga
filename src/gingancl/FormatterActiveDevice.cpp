@@ -34,17 +34,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
-extern "C" {
-#include <stdlib.h>
-}
-
-#ifdef _MSC_VER
-extern "C" {
-#include "asprintf.h"
-}
-#endif
-
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -124,8 +113,7 @@ namespace multidevice {
 				clog << "FormatterActiveDevice::deviceServicePort"<< deviceServicePort<< "already in use. Exception error: " << e.what() << endl;
 			}
 		}
-		char* srvPortStr;
-		asprintf(&srvPortStr,"%d",deviceServicePort);
+		char* srvPortStr = g_strdup_printf ("%d", deviceServicePort);
 		tmp_dir   = string (g_get_tmp_dir ()) + "/" + srvPortStr + SystemCompat::getIUriD();
 		g_mkdir (tmp_dir.c_str(),0755);
 

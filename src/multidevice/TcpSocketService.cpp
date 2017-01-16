@@ -19,12 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifdef _MSC_VER
-extern "C" {
-# include "asprintf.h"
-}
-#endif
-
 #include <pthread.h>
 #include <stdio.h>
 
@@ -65,7 +59,7 @@ void TcpSocketService::addConnection(unsigned int deviceId,
 	TCPClientConnection* tcpcc;
 	//unsigned int newDevId;
 
-	asprintf(&portStr,"%d",srvPort);
+	portStr = g_strdup_printf ("%d", srvPort);
 
 	Thread::mutexLock(&connMutex);
 	if (connections != NULL && connections->count(deviceId) == 0) {
@@ -135,19 +129,7 @@ void TcpSocketService::postTcpCommand(
 
 	map<unsigned int, TCPClientConnection*>::iterator i;
 	char* com;
-/*
-	asprintf(
-			&com,
-			"%d %s %s %d\n%s\n",
-			npt,
-			command,
-			payloadDesc,
-			(int)strlen(payload),
-			payload);
-*/
-	asprintf(
-				&com,
-				"%d %s %s %d\n",
+        com = g_strdup_printf ("%d %s %s %d\n",
 				npt,
 				command,
 				payloadDesc,
