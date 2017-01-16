@@ -66,7 +66,7 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		n = i;
 		i--;
 
-		while (i >= 0 && j < 32) {
+		while (j < 32) {
 			dst[j] = digits[i];
 			i--;
 			j++;
@@ -435,21 +435,16 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		return false;
 	}
 
-	static double startTimeMills;
-	static bool firstCallTimeMills = true;
-
 	double getCurrentTimeMillis() {
-		struct timeb t;
+          static bool first_call = true;
+          static gint64 t0;
 
-		ftime(&t);
-
-		if(firstCallTimeMills) {
-			firstCallTimeMills = false;
-			startTimeMills = (double)t.time*1000 + (double)t.millitm - 1;
-			return 1;
-		}
-
-		return (double)t.time*1000 + (double)t.millitm - startTimeMills;
+          if (first_call)
+            {
+              first_call = false;
+              t0 = g_get_monotonic_time () * 1000;
+            }
+          return (g_get_monotonic_time () * 1000) - t0;
 	}
 
 	//factor is not in use. It will be removed.

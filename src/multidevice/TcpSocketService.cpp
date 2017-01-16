@@ -38,7 +38,7 @@ TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
 	connection_counter = 0;
 
 	connections = new map<unsigned int, TCPClientConnection*>;
-	Thread::mutexInit(&connMutex, NULL);
+	Thread::mutexInit(&connMutex, false);
 }
 
 TcpSocketService::~TcpSocketService() {

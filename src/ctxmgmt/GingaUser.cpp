@@ -67,7 +67,7 @@ namespace contextmanager {
 
 	bool GingaUser::setPassword(string oldPasswd, string newPasswd) {
 		if (oldPasswd == userPasswd) {
-			userPasswd == newPasswd;
+			userPasswd = newPasswd;
 			return true;
 		}
 		return false;

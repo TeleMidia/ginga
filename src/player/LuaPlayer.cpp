@@ -458,7 +458,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
 
      string cwd = SystemCompat::getPath (mrl);
      if (g_chdir (cwd.c_str ()) < 0)
-          g_warning (g_strerror (errno));
+          g_warning ("%s", g_strerror (errno));
 
      LocalScreenManager::addIEListenerInstance (this);
      this->im = dm->getInputManager (id);

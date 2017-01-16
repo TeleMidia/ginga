@@ -261,7 +261,7 @@ namespace switches {
 	bool SwitchNode::removeNode(unsigned int index) {
 		Node *node;
 
-		if (index < 0 || index >= CompositeNode::nodes.size()) {
+		if (index >= CompositeNode::nodes.size()) {
 			return false;
 		}
 

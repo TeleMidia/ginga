@@ -30,8 +30,8 @@ namespace application {
 			FormatterPlayerAdapter() {
 
 		typeSet.insert("ApplicationPlayerAdapter");
-		Thread::mutexInit(&eventMutex, NULL);
-		Thread::mutexInit(&eventsMutex, NULL);
+		Thread::mutexInit(&eventMutex, false);
+		Thread::mutexInit(&eventsMutex, false);
 
 		currentEvent           = NULL;
 		editingCommandListener = NULL;

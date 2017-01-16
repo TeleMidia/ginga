@@ -43,9 +43,6 @@ extern "C" {
 	#include <unistd.h>
 	#include <sys/time.h>
 #endif
-	#include <errno.h>
-	#include <sys/timeb.h>
-	#include <pthread.h>
 }
 #include <math.h>
 #include <string.h>

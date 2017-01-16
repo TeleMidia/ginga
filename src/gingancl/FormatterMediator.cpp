@@ -45,7 +45,7 @@ namespace ncl {
 		hasStartPoint = interfaceId != "";
 		eventsRunning = 0;
 
-		Thread::mutexInit(&evMutex, NULL);
+		Thread::mutexInit(&evMutex, false);
 	}
 
 	EntryEventListener::~EntryEventListener() {

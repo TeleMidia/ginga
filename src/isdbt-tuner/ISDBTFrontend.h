@@ -26,7 +26,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <stdio.h>
-#include <error.h>
 #include <stdint.h>
 
 #include "system/Thread.h"

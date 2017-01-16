@@ -34,7 +34,7 @@ namespace multidevice {
 
 		interfaceIP = 0;
 
-		Thread::mutexInit(&mutexBuffer, NULL);
+		Thread::mutexInit(&mutexBuffer, false);
 		createMulticastGroup();
 	}
 

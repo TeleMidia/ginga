@@ -64,6 +64,7 @@ namespace transition {
 		if (base->instanceOf("TransitionBase")) {
 			return Base::addBase(base, alias, location);
 		}
+		return false;
 	}
 
 	void TransitionBase::clear() {

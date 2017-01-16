@@ -48,7 +48,7 @@ namespace ic {
 
 		if (!mutexInit) {
 			mutexInit = true;
-			Thread::mutexInit(&mutex, NULL);
+			Thread::mutexInit(&mutex, false);
 		}
 	}
 

@@ -157,7 +157,7 @@ namespace focus {
 	void FormatterFocusManager::checkInit() {
 		if (!init) {
 			init = true;
-			Thread::mutexInit(&iMutex, NULL);
+			Thread::mutexInit(&iMutex, false);
 		}
 	}
 

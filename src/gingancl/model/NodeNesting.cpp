@@ -59,7 +59,7 @@ namespace components {
 		this->nodes = new vector<Node*>;
 		id = "";
 		typeSet.insert(type);
-		Thread::mutexInit(&mutexNodes, NULL);
+		Thread::mutexInit(&mutexNodes, false);
 	}
 
 	bool NodeNesting::instanceOf(string s) {

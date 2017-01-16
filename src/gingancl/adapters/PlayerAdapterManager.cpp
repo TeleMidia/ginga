@@ -48,8 +48,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
 #include "ProgramAVPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
 
-#include "TimePlayerAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
+// #include "TimePlayerAdapter.h"
+// using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
 namespace br {
 namespace pucrio {
@@ -64,7 +64,7 @@ namespace adapters {
 		epgFactoryAdapter      = NULL;
 		timeBaseProvider       = NULL;
 
-		Thread::mutexInit(&mutexPlayer, NULL);
+		Thread::mutexInit(&mutexPlayer, false);
 
 		readConfigFiles();
 
@@ -233,10 +233,11 @@ namespace adapters {
 
 			if (((ContentNode*)dataObject)->isSettingNode()) {
 				return "SETTING_NODE";
+                        }
 
-			} else if (((ContentNode*)dataObject)->isTimeNode()) {
-				return "TimePlayerAdapter";
-			}
+			// } else if (((ContentNode*)dataObject)->isTimeNode()) {
+			// 	return "TimePlayerAdapter";
+			// }
 		}
 
 		if (toolName == "") {
@@ -449,8 +450,8 @@ namespace adapters {
 		} else if (playerClassName == "ProgramAVPlayerAdapter") {
 			player = ProgramAVPlayerAdapter::getInstance();
 
-		} else if (playerClassName == "TimePlayerAdapter") {
-			player = new TimePlayerAdapter();
+		// } else if (playerClassName == "TimePlayerAdapter") {
+		// 	player = new TimePlayerAdapter();
 
 		} else if (playerClassName != "SETTING_NODE") {
 			clog << "PlayerAdapterManager::initializePlayer is creating a ";

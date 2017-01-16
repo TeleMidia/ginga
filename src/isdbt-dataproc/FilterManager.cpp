@@ -26,7 +26,7 @@ namespace core {
 namespace dataprocessing {
 	FilterManager::FilterManager() {
 		this->reading = false;
-		Thread::mutexInit(&filterMutex, NULL);
+		Thread::mutexInit(&filterMutex, false);
 		info = NULL;
 	}
 

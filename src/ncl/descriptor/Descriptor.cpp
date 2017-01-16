@@ -166,7 +166,7 @@ namespace descriptor {
 	bool Descriptor::addInputTransition(Transition* transition, int somePos) {
 		unsigned int pos;
 		pos = (unsigned int)somePos;
-		if (pos < 0 || pos > inputTransitions.size() || transition == NULL) {
+		if (pos > inputTransitions.size() || transition == NULL) {
 			return false;
 		}
 
@@ -205,7 +205,7 @@ namespace descriptor {
 	bool Descriptor::addOutputTransition(Transition* transition, int somePos) {
 		unsigned int pos;
 		pos = (unsigned int)somePos;
-		if (pos < 0 || pos > outputTransitions.size() || transition == NULL) {
+		if (pos > outputTransitions.size() || transition == NULL) {
 			return false;
 		}
 

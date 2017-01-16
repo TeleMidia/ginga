@@ -529,8 +529,7 @@ namespace lssm {
 			data->privateBaseManager = privateBaseManager;
             data->enableMulticast    = enableMulticast;
 			formatter = new FormatterMediator(data);
-			(NclDocument*)(formatter->setCurrentDocument(fname));
-
+			formatter->setCurrentDocument(fname);
 			if (formatters.empty() && !isEmbedded) {
 				registerKeys();
 			}

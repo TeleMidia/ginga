@@ -32,7 +32,7 @@ namespace presentation {
 		deviceRegion  = NULL;
 
 		typeSet.insert("FormatterLayout");
-		Thread::mutexInit(&mutex, NULL);
+		Thread::mutexInit(&mutex, false);
 		createDeviceRegion(x, y, w, h);
 	}
 

@@ -49,7 +49,7 @@ namespace link {
 		satisfiedCondition = NULL;
 		this->delay = delay;
 		progressionListeners = new vector<LinkActionProgressionListener*>;
-		Thread::mutexInit(&plMutex, NULL);
+		Thread::mutexInit(&plMutex, false);
 		typeSet.insert("LinkAction");
 	}
 

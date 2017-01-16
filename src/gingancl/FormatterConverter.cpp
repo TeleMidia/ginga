@@ -36,8 +36,8 @@ namespace emconverter {
 		this->depthLevel     = 1; //Formatter::DEEPEST_LEVEL;
 		this->handling       = false;
 
-		Thread::mutexInit(&objectsMutex, NULL);
-		Thread::mutexInit(&lMutex, NULL);
+		Thread::mutexInit(&objectsMutex, false);
+		Thread::mutexInit(&lMutex, false);
 	}
 
 	FormatterConverter::~FormatterConverter() {

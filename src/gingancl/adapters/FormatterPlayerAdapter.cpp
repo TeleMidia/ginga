@@ -55,7 +55,7 @@ namespace adapters {
 		this->outTransDur    = 0;
 		this->outTransTime   = -1.0;
 		this->isLocked       = false;
-		Thread::mutexInit(&objectMutex, NULL);
+		Thread::mutexInit(&objectMutex, false);
 	}
 
 	FormatterPlayerAdapter::~FormatterPlayerAdapter() {

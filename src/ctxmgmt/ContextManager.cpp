@@ -49,7 +49,7 @@ namespace contextmanager {
 
 		systemInfo->setSystemTable(getUserProfile(getCurrentUserId()));
 
-		Thread::mutexInit(&groupsMutex, NULL);
+		Thread::mutexInit(&groupsMutex, false);
 	}
 
 	ContextManager::~ContextManager() {
