@@ -51,12 +51,6 @@ extern "C" {
   #endif
 	#pragma comment(lib,"ws2_32.lib")
 
-	#ifdef BUILD_DLL
-		#define COMP_API __declspec(dllexport)
-	#else
-		#define COMP_API __declspec(dllimport)
-	#endif //BUILD_DLL
-
 #else
   #if HAVE_SYS_SYSINFO_H
 	#include <sys/sysinfo.h>
@@ -94,8 +88,6 @@ extern "C" {
   #ifdef HAVE_IF_H
 	#include <net/if.h>
   #endif
-
-	#define COMP_API
 #endif
 }
 
@@ -125,26 +117,6 @@ using namespace std;
 #endif
 
 #if defined(_MSC_VER) && !defined(__MINGW32__)
-
-/* clock_gettime() deps begin */
-static const int CLOCK_REALTIME           = 0;
-static const int CLOCK_MONOTONIC          = 1;
-static const int CLOCK_PROCESS_CPUTIME_ID = 2;
-static const int CLOCK_THREAD_CPUTIME_ID  = 3;
-
-#define DELTA_EPOCH_IN_SEC      INT64_C(11644473600)
-#define DELTA_EPOCH_IN_USEC     INT64_C(11644473600000000)
-#define DELTA_EPOCH_IN_100NS    INT64_C(116444736000000000)
-#define DELTA_EPOCH_IN_NS       INT64_C(11644473600000000000)
-
-#define POW10_2     INT64_C(100)
-#define POW10_3     INT64_C(1000)
-#define POW10_4     INT64_C(10000)
-#define POW10_6     INT64_C(1000000)
-#define POW10_7     INT64_C(10000000)
-#define POW10_9     INT64_C(1000000000)
-/* clock_gettime() deps end */
-
 struct timezone
 {
  int  tz_minuteswest; /* minutes W of Greenwich */
@@ -257,7 +229,6 @@ namespace compat {
 			 * Time functions *
 			 ******************/
 			static int getUserClock(struct timeval* usrClk);
-			static int clockGetTime(int clockType, struct timespec* tv);
 
 			/******************
 			 * Pipe Functions *
