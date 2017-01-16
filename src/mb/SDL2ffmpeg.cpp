@@ -61,7 +61,7 @@ namespace mb {
 		decoder_reorder_pts                  = -1;
 		framedrop                            = -1;
 		infinite_buffer                      = -1;
-		rdftspeed                            = 0.02;
+		rdftspeed                            = 0;
 
 		vfilters_list.clear();
 		nb_vfilters                          = 0;
@@ -792,8 +792,8 @@ namespace mb {
 
 					AVPixelFormat fmt = (AVPixelFormat)vp->src_frame->format;
 
-					if (fmt == PIX_FMT_NONE) {
-						fmt = PIX_FMT_YUV420P;
+					if (fmt == AV_PIX_FMT_NONE) {
+						fmt = AV_PIX_FMT_YUV420P;
 					}
 
 					if (format != GINGA_PIXEL_FMT) {
@@ -801,19 +801,6 @@ namespace mb {
 						clog << "an invalid pixel format" << endl;
 					}
 
-					//FIXME: use direct rendering
-					/*
-					av_picture_copy(
-							&pict,
-							(AVPicture*)vp->src_frame,
-							(AVPixelFormat)fmt,
-							vp->width,
-							vp->height);
-					}
-					/*
-					 * FIXME: we are using filters only to deinterlace video.
-					 *        we should use them to convert pixel formats as well.
-					 */
 
 					ctx = sws_getCachedContext(
 							ctx,
@@ -822,7 +809,7 @@ namespace mb {
 							(AVPixelFormat)fmt,
 							w,
 							h,
-							PIX_FMT_RGB24,
+							AV_PIX_FMT_RGB24,
 							SWS_FAST_BILINEAR,
 							0,
 							0,
@@ -1482,7 +1469,7 @@ fail:
 	}
 
 	int SDL2ffmpeg::configure_video_filters(AVFilterGraph *graph, const char *vfilters, AVFrame *frame) {
-		static const enum AVPixelFormat pix_fmts[] = { PIX_FMT_YUV420P, PIX_FMT_NONE };
+		static const enum AVPixelFormat pix_fmts[] = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
 		char sws_flags_str[128];
 		char buffersrc_args[256];
 		int ret;
