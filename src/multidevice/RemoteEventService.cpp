@@ -154,17 +154,8 @@ namespace multidevice {
 
         string doc_rel_path = doc_name;
 
-        //clog << "RES::start " << doc_rel_path << endl;
-       
-		//TODO: start individual media objects
-		//TODO: MANIFEST
+		string zipDumpStr = string (g_get_tmp_dir ()) + "/basetmp.zip";
 
-		string zipDumpStr = SystemCompat::getTemporaryDir() + "basetmp.zip";
-		//char *zip_dump = (char*)"/tmp/basetmp.zip";
-
-		/* string dir_app = SystemCompat::getUserCurrentPath() +
-				SystemCompat::getPath(string(name));
-*/
 		string dir_app = SystemCompat::getPath(base_device_ncl_path) + SystemCompat::getIUriD() +
 				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
 

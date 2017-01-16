@@ -156,7 +156,7 @@ namespace tuning {
 		
 	    memset( &params, 0, sizeof(dvb_frontend_parameters) );
 	   
-	    string file_name = SystemCompat::getTemporaryDir() + "ginga" + SystemCompat::getIUriD() + "channels.txt";
+	    string file_name = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD() + "channels.txt";
 
 	    FILE *fp = fopen(file_name.c_str(), "w");
 

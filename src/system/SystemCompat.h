@@ -248,9 +248,6 @@ namespace compat {
 			/**********************
 			 * Specific Functions *
 			 **********************/
-			static void makeDir(const char* dirName, unsigned int mode);
-			static string getTemporaryDir();
-
 			static const short LOG_NULL = 0;
 			static const short LOG_STDO = 1;
 			static const short LOG_FILE = 2;

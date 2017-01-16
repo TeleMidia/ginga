@@ -125,7 +125,7 @@ namespace dataprocessing {
 					    itos(section->getVersionNumber() - 1);
 
 			} else {
-				sectionName = SystemCompat::getTemporaryDir() + "ginga" +
+				sectionName = string (g_get_tmp_dir ()) + "/ginga" +
 							  SystemCompat::getIUriD() + "carousel" +
 							  SystemCompat::getIUriD() + "modules" +
 							  SystemCompat::getIUriD() +

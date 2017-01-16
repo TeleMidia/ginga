@@ -43,15 +43,14 @@ namespace carousel {
 		hasServiceGateway       = false;
 		mountingServiceDomain   = true;
 
-		mountPoint = SystemCompat::getTemporaryDir() +
-					 "ginga" + SystemCompat::getIUriD() +
+		mountPoint = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD() +
 					 "carousel" + SystemCompat::getIUriD() +
 					 itos(pid) + "." + itos(carouselId) +
 					 SystemCompat::getIUriD();
 
 		remove(mountPoint.c_str());
 
-		SystemCompat::makeDir(mountPoint.c_str(), 0777);
+		g_mkdir (mountPoint.c_str(), 0777);
 
 		processor = new ObjectProcessor(pid);
 		sdl       = NULL;

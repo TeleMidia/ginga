@@ -38,17 +38,12 @@ namespace dataprocessing {
 		string tempDir;
 
 		startThread();
-
-		tempDir = SystemCompat::getTemporaryDir() + "ginga";
-		SystemCompat::makeDir(tempDir.c_str(), 0777);
+		tempDir = string (g_get_tmp_dir ()) + "/ginga";
+		g_mkdir (tempDir.c_str(), 0777);
 		tempDir += SystemCompat::getIUriD() + "carousel";
-		SystemCompat::makeDir(tempDir.c_str(), 0777);
+		g_mkdir (tempDir.c_str(), 0777);
 		tempDir += SystemCompat::getIUriD() + "modules";
-		SystemCompat::makeDir(tempDir.c_str(), 0777);
-
-		//TODO: remove all garbage from epg processor before start using it
-		//epgProcessor = EPGProcessor::getInstance();
-		//epgProcessor->setDataProcessor(this);
+		g_mkdir (tempDir.c_str(), 0777);
 	}
 
 	DataProcessor::~DataProcessor() {

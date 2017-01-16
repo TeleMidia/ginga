@@ -99,7 +99,7 @@ namespace ncl {
 		i = dirs->begin();
 		while (i != dirs->end()) {
 			dir = dir + SystemCompat::getIUriD() + *i;
-			SystemCompat::makeDir(dir.c_str(), 0777);
+			g_mkdir (dir.c_str(), 0777);
 			//clog << "PrefetchManager::createDirectory '";
 			//clog << dir << "'" << endl;
 			++i;

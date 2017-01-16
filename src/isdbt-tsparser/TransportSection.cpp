@@ -203,7 +203,7 @@ namespace tsparser {
 	}
 
 	void TransportSection::setSectionName() {
-		sectionName = SystemCompat::getTemporaryDir() + "ginga" +
+		sectionName = string (g_get_tmp_dir ()) + "/ginga" +
 					  SystemCompat::getIUriD();
 		if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID ||
 		 						(tableId >= 0x50 && tableId <= 0x5F )) {
