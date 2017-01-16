@@ -1,1 +1,0 @@
-extern int asprintf(char **str, const char *fmt, ...);

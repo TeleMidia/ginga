@@ -17,11 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "TcpClientConnection.h"
-#ifdef _MSC_VER
-extern "C" {
-#include "asprintf.h"
-}
-#endif
 
 namespace br {
 namespace pucrio {
@@ -46,8 +41,7 @@ namespace multidevice {
 			////
 			//TODO: improve (create setIndex e getIndex methods) so index does not change
 
-			char* set_index;
-			asprintf(&set_index,"%d %s %s=%d\n",0,"SET","child.index",orderId);
+			char* set_index = g_strdup_printf ("%d %s %s=%d\n",0,"SET","child.index",orderId);
 			this->post(set_index);
 			////
 			running = true;
@@ -74,9 +68,8 @@ namespace multidevice {
 		if (tcpSocket == NULL) {
 			return false;
 		}
-		asprintf(&com, "%d", counter);
+		com= g_strdup_printf ("%d", counter);
 		string s_com = string(com) + " " + string(str);
-
 		counter++;
 
 		try {

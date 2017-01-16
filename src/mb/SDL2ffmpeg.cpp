@@ -2528,7 +2528,8 @@ the_end:
 		}
 
 		if (stream_lowres) {
-			av_dict_set(&opts, "lowres", av_asprintf("%d", stream_lowres), AV_DICT_DONT_STRDUP_VAL);
+			char *s = g_strdup_printf ("%d", stream_lowres);
+			av_dict_set(&opts, "lowres", s, AV_DICT_DONT_STRDUP_VAL);
 		}
 
 		if (avctx->codec_type == AVMEDIA_TYPE_VIDEO || avctx->codec_type == AVMEDIA_TYPE_AUDIO) {
