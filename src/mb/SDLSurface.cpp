@@ -734,18 +734,9 @@ namespace mb {
 			uri = "";
 
 		} else {
-			/*
-			uri = SystemCompat::getTemporaryDir() + "dump_0000";
-			remove((char*)((uri + ".ppm").c_str()));
-			remove((char*)((uri + ".pgm").c_str()));
-			sur->Dump(sur, SystemCompat::getTemporaryDir().c_str(), "dump");
-			*/
-			uri = SystemCompat::getTemporaryDir() + "dump_0000.bmp";
+			uri = string (g_get_tmp_dir ()) + "/" + "dump_0000.bmp";
 
 			remove((char*)(uri.c_str()));
-
-			//winSur->Dump(winSur, SystemCompat::getTemporaryDir().c_str(), "dump");
-
 			SDL_SaveBMP(sur,uri.c_str());
 		}
 		Thread::mutexUnlock(&sMutex);

@@ -731,7 +731,7 @@ namespace mb {
 		}
 
 		SDLDeviceScreen::lockSDL();
-		uri = SystemCompat::getTemporaryDir() +
+		uri = string (g_get_tmp_dir ()) + "/" +
 				"dump_" + itos((unsigned long)windowId) + ".jpg";
 		int ret = SDLConvert::convertSurfaceToJPEG(uri.c_str(), dumpUSur,quality);
 		if (ret == -1)

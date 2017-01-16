@@ -126,8 +126,8 @@ namespace multidevice {
 		}
 		char* srvPortStr;
 		asprintf(&srvPortStr,"%d",deviceServicePort);
-		tmp_dir   = SystemCompat::getTemporaryDir() + srvPortStr + SystemCompat::getIUriD();
-		SystemCompat::makeDir(tmp_dir.c_str(),0755);
+		tmp_dir   = string (g_get_tmp_dir ()) + "/" + srvPortStr + SystemCompat::getIUriD();
+		g_mkdir (tmp_dir.c_str(),0755);
 
 		if (rdm == NULL) {
 			rdm = RemoteDeviceManager::getInstance();
@@ -457,7 +457,7 @@ namespace multidevice {
 		switch (command_id) {
 			case FormatterActiveDevice::ADD_DOCUMENT:{
 			    clog << "FormatterActiveDevice::ADD_DOCUMENT" << endl;
-          SystemCompat::makeDir(appPath.c_str(), 0755);
+          g_mkdir (appPath.c_str(), 0755);
           writeFileFromBase64(payload, (char*)zip_dump.c_str());
           SystemCompat::unzip_file((char*)zip_dump.c_str(),(char*)appPath.c_str());
           remove((char*)zip_dump.c_str());
@@ -475,7 +475,7 @@ namespace multidevice {
 			case FormatterActiveDevice::START_DOCUMENT: {
 			  clog << "FormatterActiveDevice::START:" << spayload_desc << endl;
 				if (!payload.empty()) {
- 		     SystemCompat::makeDir(appPath.c_str(), 0755);
+ 		     g_mkdir (appPath.c_str(), 0755);
 					writeFileFromBase64(payload, (char*)zip_dump.c_str());
 					SystemCompat::unzip_file((char*)zip_dump.c_str(),(char*)appPath.c_str());
 					remove((char*)zip_dump.c_str());

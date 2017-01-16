@@ -736,24 +736,9 @@ namespace compat {
 
 	string SystemCompat::appendGingaInstallPrefix(string relUrl) {
 		string absuri;
-
 		checkValues();
-
 		absuri = updatePath(installPref + iUriD + relUrl);
-		/*cout << "SystemCompat::appendGingaInstallPrefix to relUrl = '";
-		cout << relUrl << "' installPref = '" << installPref << "' ";
-		cout << " updated path = '" << absuri << "' ";
-		cout << endl;*/
-
 		return absuri;
-	}
-
-	void SystemCompat::makeDir(const char* dirName, unsigned int mode) {
-#ifdef _MSC_VER
-			_mkdir(dirName);
-#else
-			mkdir(dirName, mode);
-#endif
 	}
 
 #if defined(_MSC_VER)
@@ -868,43 +853,6 @@ namespace compat {
 
 		return EINVAL;
 
-		/*LARGE_INTEGER t;
-		FILETIME f;
-		double microseconds;
-		static LARGE_INTEGER offset;
-		static double frequencyToMicroseconds;
-		static int initialized = 0;
-		static BOOL usePerformanceCounter = 0;
-
-		if (!initialized) {
-			LARGE_INTEGER performanceFrequency;
-			initialized = 1;
-			usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
-			if (usePerformanceCounter) {
-				QueryPerformanceCounter(&offset);
-				frequencyToMicroseconds = (double)performanceFrequency.QuadPart / 1000000.;
-
-			} else {
-				offset = win_getFILETIMEoffset();
-				frequencyToMicroseconds = 10.;
-			}
-		}
-		if (usePerformanceCounter) {
-			QueryPerformanceCounter(&t);
-
-		} else {
-			GetSystemTimeAsFileTime(&f);
-			t.QuadPart = f.dwHighDateTime;
-			t.QuadPart <<= 32;
-			t.QuadPart |= f.dwLowDateTime;
-		}
-
-		t.QuadPart  -= offset.QuadPart;
-		microseconds = (double)t.QuadPart / frequencyToMicroseconds;
-		t.QuadPart   = microseconds;
-		tv->tv_sec   = t.QuadPart / 1000;
-		tv->tv_nsec  = t.QuadPart % 1000;
-		return 0;*/
 	}
 #endif
 
@@ -917,23 +865,6 @@ namespace compat {
 		res = clock_gettime(clockType, tv);
 #endif
 		return res;
-	}
-
-	string SystemCompat::getTemporaryDir() {
-#if defined(_MSC_VER)
-		//TODO: Use the _MSC_VER API to return the temporary directory
-		TCHAR lpTempPathBuffer[MAX_PATH];
-		int dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
-					   lpTempPathBuffer); // buffer for path
-		if (dwRetVal > MAX_PATH || (dwRetVal == 0))
-		{
-			return gingaCurrentPath + "Temp\\";
-		}
-		return lpTempPathBuffer;
-#else
-		return "/tmp/";
-#endif
-	
 	}
 
 	static std::ofstream logOutput;
@@ -965,8 +896,8 @@ namespace compat {
 				break;
 
 			case LOG_FILE:
-				logUri = getTemporaryDir() + iUriD + "ginga";
-				makeDir(logUri.c_str(), 0755);
+				logUri = string (g_get_tmp_dir ()) + "/" + iUriD + "ginga";
+				g_mkdir(logUri.c_str(), 0755);
 				logUri = logUri + iUriD + "logFile" + sufix + ".txt";
 				if (logOutput) {
 					logOutput.close();
@@ -993,7 +924,7 @@ namespace compat {
 			newPipeName = "\\\\.\\pipe\\" + pipeName;
 		}
 #else
-		string tempDir = SystemCompat::getTemporaryDir();
+		string tempDir = string (g_get_tmp_dir ()) + "/";
 
 		if (pipeName.length() < tempDir.length() ||
 				pipeName.substr(0, tempDir.length()) != tempDir) {

@@ -593,7 +593,7 @@ namespace player {
 		FILE *outfile;
 		{
 			std::ostringstream os;
-			os << SystemCompat::getTemporaryDir() + "bh_r_" << time(NULL) << "_" << (callCount++) << ".ppm";
+			os << string (g_get_tmp_dir ()) + "/bh_r_" << time(NULL) << "_" << (callCount++) << ".ppm";
 			str = os.str();
 			outfile = fopen(str.c_str(), "wb");
 		}

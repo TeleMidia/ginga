@@ -43,7 +43,7 @@ namespace prefetch {
 		kbytes              = 0;
 		filesDown           = 0;
 		filesSched          = 0;
-		prefetchRoot        = SystemCompat::getTemporaryDir() +
+		prefetchRoot        = string (g_get_tmp_dir ()) + "/" +
 				iurid + "tmp" + iurid + "prefetch";
 
 		createDirectory(prefetchRoot);
@@ -84,7 +84,7 @@ namespace prefetch {
 		i = dirs->begin();
 		while (i != dirs->end()) {
 			dir = dir + SystemCompat::getIUriD() + *i;
-			SystemCompat::makeDir(dir.c_str(), 0755);
+			g_mkdir (dir.c_str(), 0755);
 			//clog << "PrefetchManager::createDirectory '";
 			//clog << dir << "'" << endl;
 			++i;

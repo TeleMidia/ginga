@@ -77,7 +77,7 @@ namespace multidevice {
 		if (dev != NULL && hasLists) {
 			remoteDevClass = dev->getDeviceClass();
 
-				uri = SystemCompat::getTemporaryDir()+"render.jpg";
+				uri = string (g_get_tmp_dir ()) + "/render.jpg";
 				remove((char*)(uri.c_str()));
 				fd = fopen(uri.c_str(), "w+b");
 

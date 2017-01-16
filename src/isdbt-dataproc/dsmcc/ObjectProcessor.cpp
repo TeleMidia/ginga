@@ -109,7 +109,7 @@ namespace carousel {
 					    itos((*i)->getIor()->getObjectKey());
 
 				objectNames[objectId] = (*i)->getId();
-				objectPaths[objectId] = SystemCompat::getTemporaryDir() + "ginga" +
+				objectPaths[objectId] = string (g_get_tmp_dir ()) + "/ginga" +
 										SystemCompat::getIUriD() + "carousel" +
 										SystemCompat::getIUriD() + itos(pid) + "." +
 										itos(object->getCarouselId()) +
@@ -132,7 +132,7 @@ namespace carousel {
 					    (objectNames.find(object->getObjectId()))->second +
 					    SystemCompat::getIUriD();
 
-				SystemCompat::makeDir(path.c_str(), 0777);
+				g_mkdir (path.c_str(), 0777);
 			}
 
 			bindings = object->getBindings();
