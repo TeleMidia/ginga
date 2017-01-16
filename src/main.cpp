@@ -219,8 +219,6 @@ int main(int argc, char *argv[]) {
   bool nptPrinter     = false;
   short logDest       = SystemCompat::LOG_NULL;
 
-  SystemCompat::initializeSigpipeHandler();
-
   for (i = 1; i < argc; i++) {
 
     if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0)) {
@@ -391,7 +389,7 @@ int main(int argc, char *argv[]) {
   }
 
   if (delayTime > 0) {
-    SystemCompat::uSleep(delayTime);
+    g_usleep(delayTime);
   }
 
   initTimeStamp();
@@ -431,7 +429,7 @@ int main(int argc, char *argv[]) {
     if (bgUri != "") {
       fmd->setBackgroundImage(bgUri);
     }
-    while(true) SystemCompat::uSleep(1000000); //getchar();
+    while(true) g_usleep(1000000); //getchar();
 #endif
 
   } else if (devClass == 2) {
@@ -526,7 +524,7 @@ int main(int argc, char *argv[]) {
 
   clog << "Ginga v" << VERSION << " all done!" << endl;
   cout << "Ginga v" << VERSION << " all done!" << endl;
-  SystemCompat::uSleep(500000);
+  g_usleep(500000);
 
   return 0;
 }

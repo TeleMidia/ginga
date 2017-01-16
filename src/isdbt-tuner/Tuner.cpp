@@ -359,9 +359,9 @@ namespace tuning {
 
 	void Tuner::waitForListeners() {
 		while (listener == NULL)
-			SystemCompat::uSleep(10000);
+			g_usleep(10000);
 		while (!listener->isReady())
-			SystemCompat::uSleep(10000);
+			g_usleep(10000);
 	}
 
 	void Tuner::run() {

@@ -166,7 +166,7 @@ namespace lssm {
 		lock();
 		while (!formattersToRelease.empty()) {
 			unlock();
-			SystemCompat::uSleep(1000);
+			g_usleep(1000);
 			lock();
 		}
 		unlock();
@@ -960,7 +960,7 @@ namespace lssm {
 				sb->stop();
 			}
 
-			SystemCompat::uSleep(50000);
+			g_usleep(50000);
 
 			checked = true;
 		}
@@ -974,7 +974,7 @@ namespace lssm {
 
 			clog << "PresentationEngineManager::checkStatus: closing" << endl;
 			close();
-			SystemCompat::uSleep(600000);
+			g_usleep(600000);
 			unlockConditionSatisfied();
 
 		} else {
@@ -1122,7 +1122,7 @@ namespace lssm {
 			clog << "PresentationEngineManager::eventReceived: NOTIFY_STOP";
 			clog << endl;
 
-			SystemCompat::uSleep(100000);
+			g_usleep(100000);
 			p->presentationCompleted(parameter);
 
 		} else if (!p->disableFKeys &&
@@ -1133,13 +1133,13 @@ namespace lssm {
 			clog << endl;
 
 			p->sb->stop();
-			SystemCompat::uSleep(500000);
+			g_usleep(500000);
 			printTimeStamp();
 
 			p->setIsLocalNcl(true, NULL);
 			p->stopAllPresentations();
 			p->close();
-			SystemCompat::uSleep(500000);
+			g_usleep(500000);
 			p->unlockConditionSatisfied();
 
 		} else if (code == CodeMap::KEY_PRINTSCREEN ||
@@ -1204,7 +1204,7 @@ namespace lssm {
 			clog << endl;
 
 			while (!hasTMPNotification) {
-				SystemCompat::uSleep(1000000);
+				g_usleep(1000000);
 			}
 
 			clog << "PresentationEngineManager::readCommand tuner OK";

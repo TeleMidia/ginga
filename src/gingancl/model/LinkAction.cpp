@@ -80,7 +80,7 @@ namespace link {
 	void LinkAction::run() {
 		if (hasDelay()) {
 			clog << "LinkAction::run uSleeping '" << delay*1000 << "'" << endl;
-			SystemCompat::uSleep((long)(delay*1000));
+			g_usleep((long)(delay*1000));
 		}
 	}
 

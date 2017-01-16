@@ -159,10 +159,6 @@ namespace contextmanager {
 		return 0;
 	}
 
-	string SystemInfo::getOperatingSystem() {
-		return SystemCompat::getOperatingSystem();
-	}
-
 	string SystemInfo::getJavaConfiguration() {
 		string value = getValue("system.javaConfiguration");
 		if (value == "") {

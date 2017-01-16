@@ -172,7 +172,7 @@ namespace link {
 
 	void LinkTriggerCondition::run() {
 		if (delay > 0) {
-			SystemCompat::uSleep((long)(delay * 1000));
+			g_usleep((long)(delay * 1000));
 		}
 		notifyConditionObservers(LinkTriggerListener::CONDITION_SATISFIED);
 	}

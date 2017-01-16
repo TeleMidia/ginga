@@ -223,7 +223,7 @@ namespace context {
 		contextTable[SYSTEM_AUDIO_TYPE]          = si->getAudioType();
 		contextTable[SYSTEM_CPU]                 = itos(si->getCPUClock());
 		contextTable[SYSTEM_MEMORY]              = itos(si->getMemorySize());
-		contextTable[SYSTEM_OPERATING_SYSTEM]    = si->getOperatingSystem();
+		contextTable[SYSTEM_OPERATING_SYSTEM]    = "";
 
 		contextTable[SYSTEM_DEVNUMBER + "(0)"] = "0";
 		contextTable[SYSTEM_DEVNUMBER + "(1)"] = "0";

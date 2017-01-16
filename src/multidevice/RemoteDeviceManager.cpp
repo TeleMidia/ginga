@@ -175,8 +175,8 @@ namespace multidevice {
 					domainService->postConnectionRequestTask();
 				}
 			}*/
-			//SystemCompat::uSleep(25000);
-			SystemCompat::uSleep(80000);
+			//g_usleep(25000);
+			g_usleep(80000);
 		}
 		unlock();
 

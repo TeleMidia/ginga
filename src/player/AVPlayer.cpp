@@ -468,7 +468,7 @@ namespace player {
 
 	void AVPlayer::setAVPid(int aPid, int vPid) {
 		while (!buffered) {
-			SystemCompat::uSleep(150000);
+			g_usleep(150000);
 		}
 		dm->setProviderAVPid(provider, aPid, vPid);
 	}
@@ -483,7 +483,7 @@ namespace player {
 		if (mainAV) {
 			dm->feedProviderBuffers(provider);
 		} else {
-			SystemCompat::uSleep(150000);
+			g_usleep(150000);
 		}
 		hasEvent = dm->checkProviderVideoResizeEvent(provider, surface);
 		setSoundLevel(this->soundLevel);
@@ -554,7 +554,7 @@ namespace player {
 				return;
 			}
 
-			SystemCompat::uSleep(850000);
+			g_usleep(850000);
 			currentTime = getCurrentMediaTime();
 			if (currentTime > dur) {
 				currentTime = 0;

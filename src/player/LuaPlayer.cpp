@@ -64,9 +64,6 @@ LUAPLAYER_BEGIN_DECLS
 #define warn(fmt, ...)\
      __clog ("Warning: " fmt, ## __VA_ARGS__)
 
-#define pwarn(fmt, ...)\
-     __clog ("%p Warning: " fmt, (void *) this, ## __VA_ARGS__)
-
 #if LUAPLAYER_ENABLE_TRACE
 # define trace0()   trace ("%s", "")
 # define trace(fmt, ...)\
@@ -181,7 +178,7 @@ void *LuaPlayer::nw_update_thread (void *data)
      trace ("starting update thread");
      while (true)
      {
-          SystemCompat::uSleep ((NW_UPDATE_DELAY) * 1000);
+          g_usleep ((NW_UPDATE_DELAY) * 1000);
 
           MUTEX_LOCK (&nw_update_mutex);
 
@@ -460,12 +457,8 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
      // directory of the whole process.
 
      string cwd = SystemCompat::getPath (mrl);
-     if (SystemCompat::changeDir (cwd.c_str ()) < 0)
-     {
-          char buf[1024];
-          SystemCompat::strError (errno, buf, sizeof (buf));
-          pwarn ("%s: %s", buf, cwd.c_str ());
-     }
+     if (g_chdir (cwd.c_str ()) < 0)
+          g_warning (g_strerror (errno));
 
      LocalScreenManager::addIEListenerInstance (this);
      this->im = dm->getInputManager (id);

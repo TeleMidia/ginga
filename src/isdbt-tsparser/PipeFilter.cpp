@@ -97,7 +97,7 @@ namespace tsparser {
 			}
 
 			while (!dstPipeCreated) {
-				SystemCompat::uSleep(10000);
+				g_usleep(10000);
 			}
 		}
 

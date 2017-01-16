@@ -364,7 +364,7 @@ namespace player {
 
 	bool Player::setKeyHandler(bool isHandler) {
 		if (isHandler) {
-			SystemCompat::uSleep(200000);
+			g_usleep(200000);
 		}
 		return false;
 	}
@@ -608,7 +608,7 @@ namespace player {
 						(p->scopeInitTime + (p->getMediaTime() / 1000)));
 			}
 
-			SystemCompat::uSleep(expectedSleepTime * 1000000);
+			g_usleep(expectedSleepTime * 1000000);
 
 			if (p->outTransTime > 0.0) {
 				p->notifyPlayerListeners(PL_NOTIFY_OUTTRANS);
@@ -617,7 +617,7 @@ namespace player {
 						p->scopeEndTime -
 						(p->scopeInitTime + (p->getMediaTime() / 1000)));
 
-				SystemCompat::uSleep(expectedSleepTime * 1000000);
+				g_usleep(expectedSleepTime * 1000000);
 			}
 		}
 
