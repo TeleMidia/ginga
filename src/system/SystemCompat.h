@@ -274,7 +274,6 @@ namespace compat {
 			/******************
 			 * Time functions *
 			 ******************/
-			static int gettimeofday(struct timeval *tv, struct timezone *tz);
 			static int getUserClock(struct timeval* usrClk);
 			static int clockGetTime(int clockType, struct timespec* tv);
 

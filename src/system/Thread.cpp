@@ -25,212 +25,184 @@ namespace ginga {
 namespace core {
 namespace system {
 namespace thread {
-	Thread::Thread() {
-		isDeleting = false;
 
-		Thread::mutexInit(&threadMutex);
+  Thread::Thread ()
+  {
+    isDeleting = false;
 
-		isThreadSleeping = false;
-		Thread::mutexInit(&threadFlagMutex);
-		Thread::mutexInit(&threadFlagMutexLockUntilSignal);
-		Thread::mutexInit(&threadIdMutex);
+    Thread::mutexInit (&threadMutex);
 
-		isWaiting = false;
-		Thread::condInit(&threadFlagConditionVariable, NULL);
-		Thread::condInit(&threadFlagCVLockUntilSignal, NULL);
+    isThreadSleeping = false;
+    Thread::mutexInit (&threadFlagMutex);
+    Thread::mutexInit (&threadFlagMutexLockUntilSignal);
+    Thread::mutexInit (&threadIdMutex);
 
-		pthread_attr_init(&tattr);
-		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
-		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
-	}
+    isWaiting = false;
+    Thread::condInit (&threadFlagCVLockUntilSignal, NULL);
 
-	Thread::~Thread() {
-		isDeleting = true;
+    pthread_attr_init (&tattr);
+    pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
+  }
 
-		wakeUp();
-		Thread::condSignal(&threadFlagConditionVariable);
-		Thread::condDestroy(&threadFlagConditionVariable);
+  Thread::~Thread ()
+  {
+    isDeleting = true;
 
-		unlockConditionSatisfied();
-		Thread::condSignal(&threadFlagCVLockUntilSignal);
-		Thread::condDestroy(&threadFlagCVLockUntilSignal);
+    unlockConditionSatisfied ();
+    Thread::condSignal (&threadFlagCVLockUntilSignal);
+    Thread::condDestroy (&threadFlagCVLockUntilSignal);
 
-		Thread::mutexLock(&threadMutex);
-		Thread::mutexUnlock(&threadMutex);
-		Thread::mutexDestroy(&threadMutex);
+    Thread::mutexLock (&threadMutex);
+    Thread::mutexUnlock (&threadMutex);
+    Thread::mutexDestroy (&threadMutex);
 
-		Thread::mutexLock(&threadFlagMutex);
-		Thread::mutexUnlock(&threadFlagMutex);
-		Thread::mutexDestroy(&threadFlagMutex);
+    Thread::mutexLock (&threadFlagMutex);
+    Thread::mutexUnlock (&threadFlagMutex);
+    Thread::mutexDestroy (&threadFlagMutex);
 
-		Thread::mutexLock(&threadFlagMutexLockUntilSignal);
-		Thread::mutexUnlock(&threadFlagMutexLockUntilSignal);
-		Thread::mutexDestroy(&threadFlagMutexLockUntilSignal);
+    Thread::mutexLock (&threadFlagMutexLockUntilSignal);
+    Thread::mutexUnlock (&threadFlagMutexLockUntilSignal);
+    Thread::mutexDestroy (&threadFlagMutexLockUntilSignal);
 
-		Thread::mutexLock(&threadIdMutex);
-		Thread::mutexUnlock(&threadIdMutex);
-		Thread::mutexDestroy(&threadIdMutex);
+    Thread::mutexLock (&threadIdMutex);
+    Thread::mutexUnlock (&threadIdMutex);
+    Thread::mutexDestroy (&threadIdMutex);
 
-		pthread_attr_destroy(&tattr);
-	}
+    pthread_attr_destroy (&tattr);
+  }
 
-	void* Thread::function(void* ptr) {
-		if (ptr == NULL || static_cast<Thread*>(ptr)->isDeleting) {
-			return NULL;
-		}
+  void *Thread::function (void *ptr)
+  {
+    if (ptr == NULL || static_cast<Thread*>(ptr)->isDeleting)
+      return NULL;
 
-		static_cast<Thread*>(ptr)->run();
-		pthread_exit(ptr);
-		return NULL;
-	}
+    static_cast<Thread*>(ptr)->run ();
+    pthread_exit (ptr);
+    return NULL;
+  }
 
-	void Thread::startThread() {
-		if (!isDeleting) {
-			Thread::mutexLock(&threadIdMutex);
-			pthread_create(&threadId_, &tattr, Thread::function, this);
-			pthread_detach(threadId_);
-			Thread::mutexUnlock(&threadIdMutex);
-		}
-	}
+  void Thread::startThread ()
+  {
+    if (isDeleting)
+      return;
 
-	bool Thread::sleep(long int seconds) {
-		return this->mSleep(seconds * 1000);
-	}
+    Thread::mutexLock (&threadIdMutex);
+    pthread_create (&threadId_, &tattr, Thread::function, this);
+    pthread_detach (threadId_);
+    Thread::mutexUnlock (&threadIdMutex);
+  }
 
-	bool Thread::mSleep(long int milliseconds) {
-		int res;
-		struct timeval time;
-		struct timespec timeOut;
+  bool Thread::sleep (long int s)
+  {
+    g_usleep (s * 1000000);
+    return true;
+  }
 
-		SystemCompat::gettimeofday(&time, NULL);
+  bool Thread::mSleep (long int ms)
+  {
+    g_usleep (ms * 1000);
+    return true;
+  }
 
-		timeOut.tv_sec = time.tv_sec + (long int)(milliseconds / 1000);
-		long int micro;
-		micro = ((milliseconds%1000) * 1000) + time.tv_usec;
-		if (micro > 1000000) {
-			timeOut.tv_sec++;
-			micro -= 1000000;
-		}
+  bool Thread::wakeUp ()
+  {
+    return true;
+  }
 
-		timeOut.tv_nsec = micro * 1000;
+  void Thread::lock ()
+  {
+    Thread::mutexLock (&threadMutex);
+  }
 
-		//clog << "teste = '" << teste <<  "'" << endl;
-		/*timeOut.tv_nsec = (time.tv_usec * 1000) +
-			    (long int)(milliseconds % 1000);*/
+  void Thread::unlock ()
+  {
+    Thread::mutexUnlock (&threadMutex);
+  }
 
-		Thread::mutexLock(&threadFlagMutex);
-		isThreadSleeping = true;
-		res = pthread_cond_timedwait(
-			    &threadFlagConditionVariable,
-			    &threadFlagMutex,
-			    (const struct timespec*)(&timeOut));
+  void Thread::waitForUnlockCondition ()
+  {
+    isWaiting = true;
+    Thread::mutexLock (&threadFlagMutexLockUntilSignal);
+    Thread::condWait (&threadFlagCVLockUntilSignal, &threadFlagMutexLockUntilSignal);
+    isWaiting = false;
+    Thread::mutexUnlock (&threadFlagMutexLockUntilSignal);
+  }
 
-		isThreadSleeping = false;
-		Thread::mutexUnlock(&threadFlagMutex);
-		return (res == ETIMEDOUT);
-	}
+  bool Thread::unlockConditionSatisfied ()
+  {
+    if (isWaiting)
+      {
+        Thread::condSignal (&threadFlagCVLockUntilSignal);
+        return true;
+      }
+    return false;
+  }
 
-	bool Thread::wakeUp() {
-		bool wasSleeping = false;
-		while (isThreadSleeping) {
-			Thread::condSignal(&threadFlagConditionVariable);
-			wasSleeping = true;
-		}
+  void Thread::mutexInit (pthread_mutex_t* mutex, bool recursive)
+  {
+    pthread_mutexattr_t attr;
+    if (recursive)
+      {
+        g_assert (pthread_mutexattr_init (&attr) == 0);
+        g_assert (pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE) == 0);
+        g_assert (pthread_mutex_init (mutex, &attr) == 0);
+        g_assert (pthread_mutexattr_destroy (&attr) == 0);
+      }
+    else
+      {
+        g_assert (pthread_mutex_init (mutex, NULL) == 0);
+      }
+  }
 
-		return wasSleeping;
-	}
+  void Thread::mutexDestroy (pthread_mutex_t* mutex) {
+    assert (mutex != NULL);
+    assert (pthread_mutex_destroy (mutex) == 0);
+  }
 
-	void Thread::lock() {
-		Thread::mutexLock(&threadMutex);
-	}
+  void Thread::mutexLock (pthread_mutex_t* mutex)
+  {
+    g_assert (pthread_mutex_lock (mutex) == 0);
+  }
 
-	void Thread::unlock() {
-		Thread::mutexUnlock(&threadMutex);
-	}
+  void Thread::mutexUnlock (pthread_mutex_t* mutex)
+  {
+    g_assert (pthread_mutex_unlock (mutex) == 0);
+  }
 
-	void Thread::waitForUnlockCondition() {
-		isWaiting = true;
-		Thread::mutexLock(&threadFlagMutexLockUntilSignal);
-		Thread::condWait(
-			    &threadFlagCVLockUntilSignal, &threadFlagMutexLockUntilSignal);
+  void Thread::condInit (pthread_cond_t *cond, const pthread_condattr_t *attr)
+  {
+    g_assert (pthread_cond_init (cond, NULL) == 0);
+  }
 
-		isWaiting = false;
-		Thread::mutexUnlock(&threadFlagMutexLockUntilSignal);
-	}
+  void Thread::condDestroy (pthread_cond_t* cond)
+  {
+    g_assert (pthread_cond_destroy (cond) == 0);
+  }
 
-	bool Thread::unlockConditionSatisfied() {
-		if (isWaiting) {
-			Thread::condSignal(&threadFlagCVLockUntilSignal);
-			return true;
-		}
-		return false;
-	}
+  void Thread::condWait (pthread_cond_t *cond, pthread_mutex_t *mutex)
+  {
+    g_assert (pthread_cond_wait (cond, mutex) == 0);
+  }
 
-	void Thread::mutexInit(pthread_mutex_t* mutex, bool recursive) {
-        pthread_mutexattr_t attr;
+  void Thread::condSignal (pthread_cond_t* cond)
+  {
+    g_assert (pthread_cond_signal (cond) == 0);
+  }
 
-        if (recursive) {
-        	assert(pthread_mutexattr_init(&attr) == 0);
-        	assert(pthread_mutexattr_settype(
-        			&attr, PTHREAD_MUTEX_RECURSIVE) == 0);
+  void Thread::startNewThread (void *(*foo) (void*), void *ptr)
+  {
+    pthread_attr_t tattr;
+    pthread_t threadId_;
 
-            assert(pthread_mutex_init(mutex, &attr) == 0);
-            assert(pthread_mutexattr_destroy (&attr) == 0);
+    pthread_attr_init (&tattr);
+    pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
+    pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
 
-        } else {
-            assert(pthread_mutex_init(mutex, NULL) == 0);
-        }
-	}
+    pthread_create (&threadId_, &tattr, foo, ptr);
+    pthread_detach (threadId_);
+  }
 
-	void Thread::mutexDestroy(pthread_mutex_t* mutex) {
-		assert(mutex != NULL);
-		assert(pthread_mutex_destroy(mutex) == 0);
-	}
-
-	void Thread::mutexLock(pthread_mutex_t* mutex) {
-		assert(mutex != NULL);
-		assert(pthread_mutex_lock(mutex) == 0);
-	}
-
-	void Thread::mutexUnlock(pthread_mutex_t* mutex) {
-		assert(mutex != NULL);
-		assert(pthread_mutex_unlock(mutex) == 0);
-	}
-
-	void Thread::condInit(
-			pthread_cond_t* cond, const pthread_condattr_t * attr) {
-
-		assert(cond != NULL);
-		assert(pthread_cond_init(cond, NULL) == 0);
-	}
-
-	void Thread::condDestroy(pthread_cond_t* cond) {
-		assert(cond != NULL);
-		assert(pthread_cond_destroy(cond) == 0);
-	}
-
-	void Thread::condWait(pthread_cond_t* cond, pthread_mutex_t* mutex) {
-		assert(cond != NULL);
-		assert(mutex != NULL);
-		assert(pthread_cond_wait(cond, mutex) == 0);
-	}
-
-	void Thread::condSignal(pthread_cond_t* cond) {
-		assert(cond != NULL);
-		assert(pthread_cond_signal(cond) == 0);
-	}
-
-	void Thread::startNewThread(void* (*foo) (void*), void* ptr) {
-		pthread_attr_t tattr;
-		pthread_t threadId_;
-
-		pthread_attr_init(&tattr);
-		pthread_attr_setdetachstate(&tattr,PTHREAD_CREATE_DETACHED);
-		pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
-
-		pthread_create(&threadId_, &tattr, foo, ptr);
-		pthread_detach(threadId_);
-	}
 }
 }
 }
