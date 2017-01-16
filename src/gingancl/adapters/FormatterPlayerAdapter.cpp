@@ -1704,11 +1704,7 @@ namespace adapters {
 		if (player == NULL) {
 			return;
 		}
-
 		player->timeShift(direction);
-		if (anchorMonitor != NULL) {
-			anchorMonitor->wakeUp();
-		}
 	}
 
 	bool FormatterPlayerAdapter::lockObject() {

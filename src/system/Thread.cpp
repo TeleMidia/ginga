@@ -105,11 +105,6 @@ namespace thread {
     return true;
   }
 
-  bool Thread::wakeUp ()
-  {
-    return true;
-  }
-
   void Thread::lock ()
   {
     Thread::mutexLock (&threadMutex);

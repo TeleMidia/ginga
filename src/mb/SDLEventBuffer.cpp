@@ -104,17 +104,6 @@ namespace mb {
 		Thread::mutexUnlock(&ebMutex);
 	}
 
-	void SDLEventBuffer::wakeUp() {
-		SDL_Event event;
-
-		event.type       = SDL_USEREVENT;
-		event.user.code  = SDLK_APPLICATION;
-		event.user.data1 = (void*)(SDLInputEvent::ET_WAKEUP.c_str());
-		event.user.data2 = NULL;
-
-		feed(event, capsOn, shiftOn);
-	}
-
 	void SDLEventBuffer::postInputEvent(SDLInputEvent* event) {
 		SDL_Event ev;
 

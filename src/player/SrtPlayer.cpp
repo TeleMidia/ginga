@@ -252,7 +252,6 @@ namespace player {
 		clog << "SrtPlayer::stop()" << endl;
 		Player::stop();
 		isPlaying = false;
-		wakeUp();
 	}
 
 	void SrtPlayer::pause() {

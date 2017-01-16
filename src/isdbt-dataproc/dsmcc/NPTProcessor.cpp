@@ -260,7 +260,6 @@ bool NPTProcessor::removeLoopListener(unsigned char cid, ITimeBaseListener* ltn)
 	Thread::mutexUnlock(&loopMutex);
 
 	unlockConditionSatisfied();
-	wakeUp();
 
 	return true;
 }
@@ -314,7 +313,6 @@ bool NPTProcessor::addTimeListener(
 	unlock();
 
 	unlockConditionSatisfied();
-	wakeUp();
 	return added;
 }
 
@@ -349,7 +347,6 @@ bool NPTProcessor::removeTimeListener(
 			++j;
 		}
 		unlockConditionSatisfied();
-		wakeUp();
 		unlock();
 		return true;
 	}
@@ -367,7 +364,6 @@ bool NPTProcessor::addIdListener(ITimeBaseListener* ltn) {
 	cidListeners.insert((ITimeBaseProvider*)ltn);
 
 	unlockConditionSatisfied();
-	wakeUp();
 
 	clog << "NPTProcessor::addIdListener" << endl;
 	return added;
@@ -386,7 +382,6 @@ bool NPTProcessor::removeIdListener(ITimeBaseListener* ltn) {
 	cidListeners.erase(i);
 
 	unlockConditionSatisfied();
-	wakeUp();
 
 	return true;
 }
@@ -715,7 +710,6 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 				scheduledNpts[npt->getContentId()] = newNpt;
 				Thread::mutexUnlock(&schedMutex);
 
-				wakeUp();
 				unlockConditionSatisfied();
 				if (newNpt->getScaleNumerator()) {
 					clog << "NPTProcessor::decodeDescriptors - Scheduling ";
@@ -754,7 +748,6 @@ int NPTProcessor::decodeDescriptors(vector<MpegDescriptor*>* list) {
 					Thread::mutexUnlock(&schedMutex);
 
 					unlockConditionSatisfied();
-					wakeUp();
 					if (npt->getScaleNumerator()) {
 						clog << "NPTProcessor::decodeDescriptors - ";
 						clog << "Scheduling existent timebase: ";
