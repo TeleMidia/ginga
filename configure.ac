@@ -194,7 +194,7 @@ AC_MSG_NOTICE([summary of main build options:
   version:            ${VERSION}
   host type:          ${host}
   install prefix:     ${prefix}
-  compiler:           ${CC}
+  compiler:           ${CXX}
   cppflags:           ${CPPFLAGS}
   cxxflags:           ${CXXFLAGS}
   ldflags:            ${LDFLAGS}
