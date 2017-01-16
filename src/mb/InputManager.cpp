@@ -104,11 +104,8 @@ namespace mb {
 		bool wasRunning = running;
 
 		running = false;
-		if (eventBuffer != NULL) {
-			eventBuffer->wakeUp();
-
-		} else {
-			return;
+		if (eventBuffer == NULL) {
+                  return;
 		}
 
 		while (!runDone) {

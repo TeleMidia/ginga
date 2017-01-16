@@ -76,7 +76,6 @@ namespace adapters {
 		isDeleting = true;
 		running    = false;
 		unlockConditionSatisfied();
-		wakeUp();
 
 		clear();
 		clearDeletePlayers();

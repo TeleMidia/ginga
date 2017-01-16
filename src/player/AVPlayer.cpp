@@ -74,10 +74,6 @@ namespace player {
 
 		unlockConditionSatisfied();
 
-		if (running) {
-			wakeUp();
-		}
-
 		Thread::mutexLock(&tMutex);
 		if (surface != 0 && mainAV) {
 			dm->setSurfaceParentWindow(myScreen, surface, 0);
@@ -203,8 +199,6 @@ namespace player {
 		if (provider != 0) {
 			return dm->getProviderTotalMediaTime(provider);
 		}
-
-		this->wakeUp();
 		return 0;
 	}
 
@@ -234,7 +228,6 @@ namespace player {
 			clog << "AVPlayer::getCurrentMediaTime returning -1";
 			clog << " cause provider is NULL";
 			clog << endl;
-			this->wakeUp();
 			return -1;
 		}
 
@@ -248,7 +241,6 @@ namespace player {
 	void AVPlayer::setMediaTime(double pos) {
 		if (status == PLAY) {
 			status = PAUSE;
-			this->wakeUp();
 			dm->setProviderMediaTime(provider, pos);
 			status = PLAY;
 			running = true;
@@ -262,7 +254,6 @@ namespace player {
 	void AVPlayer::setStopTime(double pos) {
 		if (status == PLAY) {
 			status = PAUSE;
-			this->wakeUp();
 			scopeEndTime = pos;
 			status = PLAY;
 			running = true;
@@ -297,7 +288,6 @@ namespace player {
 	bool AVPlayer::play() {
 		if (provider == 0) {
 			clog << "AVPlayer::play() can't play, provider is NULL" << endl;
-			this->wakeUp();
 			return false;
 		}
 
@@ -317,7 +307,6 @@ namespace player {
 	void AVPlayer::pause() {
 		status = PAUSE;
 		if (provider == 0) {
-			this->wakeUp();
 			return;
 		}
 
@@ -325,7 +314,6 @@ namespace player {
 			dm->validateWindow(myScreen, outputWindow);
 		}
 		dm->pauseProvider(provider);
-		this->wakeUp();
 
 		clog << "AVPlayer::pause("<< mrl << ") all done!" << endl;
 	}
@@ -335,13 +323,11 @@ namespace player {
 
 		Player::stop();
 		if (provider == 0) {
-			this->wakeUp();
 			return;
 		}
 
 		if (previousStatus != STOP) {
 			dm->stopProvider(provider);
-			this->wakeUp();
 		}
 
 		clog << "AVPlayer::stop("<< mrl << ") all done!" << endl;

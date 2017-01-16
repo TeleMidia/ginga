@@ -47,7 +47,6 @@ namespace adapters {
 		running	   = false;
 		stopped	   = true;
 
-		wakeUp();
 		unlockConditionSatisfied();
 
 		unregisterFromTimeBase();
@@ -246,7 +245,6 @@ namespace adapters {
 		clog << "NominalEventMonitor::pauseMonitor" << endl;
 
 		if (!isInfinity(expectedSleepTime)) {
-			wakeUp();
 			paused = true;
 		}
 	}
@@ -271,7 +269,6 @@ namespace adapters {
 				unlockConditionSatisfied();
 
 			} else {
-				wakeUp();
 			}
 		}
 	}
