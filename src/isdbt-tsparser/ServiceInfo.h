@@ -42,7 +42,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			unsigned short descriptorsLoopLength;
 			vector<IMpegDescriptor*>* descriptors;
 		public:
-			static const unsigned char LOGO_TRANMISSION = 0XCF;
+			static const unsigned char LOGO_TRANSMISSION = 0xCF;
 			static const unsigned char SERVICE = 0x48;
 
 		public:

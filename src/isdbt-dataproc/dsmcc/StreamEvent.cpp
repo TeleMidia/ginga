@@ -31,7 +31,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		this->eventId = ((data[2] & 0xFF) << 8) | (data[3] & 0xFF);
 
 		//4,5,6,7* reserved
-		this->timeReference = ((data[7] & 0x01) << 32) |
+		this->timeReference = (((uint64_t)(data[7] & 0x01)) << 32) |
 				((data[8] & 0xFF) << 24) | ((data[9] & 0xFF) << 16) |
 				((data[10] & 0xFF) << 8) | (data[11] & 0xFF);
 	}

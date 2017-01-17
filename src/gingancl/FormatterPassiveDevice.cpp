@@ -17,7 +17,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "FormatterPassiveDevice.h"
-#include "FMDComponentSupport.h"
+
+#include "multidevice/ActiveDeviceDomain.h"
+#include "multidevice/PassiveDeviceDomain.h"
+#include "multidevice/BaseDeviceDomain.h"
+#include "gingancl/FormatterMediator.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl;
+
+#include "gingancl/FormatterMediator.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 

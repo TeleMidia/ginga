@@ -158,8 +158,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			value = data[pos+1] + 2;
 			remainingBytesDescriptor -= value;
 
-			switch (data[pos]) {
-				case LOGO_TRANMISSION:
+			switch ((unsigned char)data[pos]) {
+				case LOGO_TRANSMISSION:
 					descriptor = new LogoTransmissionDescriptor();
 					localpos = descriptor->process(data, pos);
 					pos += value;

@@ -16,7 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
+
 #include "FormatterBaseDevice.h"
+
+#include "multidevice/ActiveDeviceDomain.h"
+#include "multidevice/PassiveDeviceDomain.h"
+#include "multidevice/BaseDeviceDomain.h"
+#include "gingancl/FormatterMediator.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "mb/CodeMap.h"
 

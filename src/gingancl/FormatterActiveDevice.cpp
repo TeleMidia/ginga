@@ -17,7 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "FormatterActiveDevice.h"
-#include "FMDComponentSupport.h"
+
+#include "multidevice/ActiveDeviceDomain.h"
+#include "multidevice/PassiveDeviceDomain.h"
+#include "multidevice/BaseDeviceDomain.h"
+#include "gingancl/FormatterMediator.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
@@ -27,20 +32,11 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "gingancl/FormatterMediator.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
-
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
-
-#include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <ostream>
-#include <algorithm>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
