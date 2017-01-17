@@ -30,13 +30,13 @@
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+GINGA_UTIL_BEGIN
 
 string base64_encode(unsigned char const* , unsigned int len);
 string base64_decode(std::string const& s);
 string getBase64FromFile(string file_path);
 int writeFileFromBase64(string payload, char * file_path);
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END
 
 #endif /* BASE64_H_ */

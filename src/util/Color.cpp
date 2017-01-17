@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 #include "util/functions.h"
 
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+GINGA_UTIL_BEGIN
 
   	const string Color::swhite = "#FFFFFF";
 	const string Color::syellow = "#FFFF00";
@@ -51,9 +51,9 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 		}
 
 		if (color.substr(0,1)=="#" && color.length() > 6) {
-			r = (int)(util::stof(color.substr(1, 2)));
-			g = (int)(util::stof(color.substr(3, 2)));
-			b = (int)(util::stof(color.substr(5, 2)));
+			r = (int)(::ginga::util::stof(color.substr(1, 2)));
+			g = (int)(::ginga::util::stof(color.substr(3, 2)));
+			b = (int)(::ginga::util::stof(color.substr(5, 2)));
 			return;
 		}
 
@@ -133,9 +133,9 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 		if (color.substr(0,1) == "#" && color.length() > 6) {
 			int red, green, blue;
 
-			red   = (int)(util::stof(color.substr(1, 2)));
-			green = (int)(util::stof(color.substr(3, 2)));
-			blue  = (int)(util::stof(color.substr(5, 2)));
+			red   = (int)(::ginga::util::stof(color.substr(1, 2)));
+			green = (int)(::ginga::util::stof(color.substr(3, 2)));
+			blue  = (int)(::ginga::util::stof(color.substr(5, 2)));
 
 			return 256*256*red + 256*green + blue;
 		}
@@ -265,4 +265,4 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 				b & 0x000000FF;
 	}
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END

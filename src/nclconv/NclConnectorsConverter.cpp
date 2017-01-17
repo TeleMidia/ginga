@@ -226,7 +226,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 			} else {
 				double delayValue;
-				delayValue = util::stof(
+				delayValue = ::ginga::util::stof(
 						attValue.substr(0, (attValue.length() - 1))) * 1000;
 
 				conditionExpression->setDelay(itos(delayValue));
@@ -266,7 +266,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				conditionExpression->setDelay( attValue );
 
 			} else {
-				double delayValue = util::stof(attValue.substr(
+				double delayValue = ::ginga::util::stof(attValue.substr(
 					    0, (attValue.length() - 1))) * 1000;
 
 				conditionExpression->setDelay( itos(delayValue) );
@@ -448,18 +448,18 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 				} else {
 					if (durVal.find("s") != std::string::npos) {
-						animation->setDuration(itos(util::stof(durVal.substr(
+						animation->setDuration(itos(::ginga::util::stof(durVal.substr(
 								0, durVal.length() - 1))));
 					} else {
-						animation->setDuration(itos(util::stof(durVal)));
+						animation->setDuration(itos(::ginga::util::stof(durVal)));
 					}
 				}
 
 				if (byVal.find("s") != std::string::npos) {
-					animation->setBy(itos(util::stof(byVal.substr(
+					animation->setBy(itos(::ginga::util::stof(byVal.substr(
 							0, byVal.length() - 1))));
 				} else {
-					animation->setBy(itos(util::stof(byVal)));
+					animation->setBy(itos(::ginga::util::stof(byVal)));
 				}
 			}
 
@@ -489,7 +489,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				actionExpression->setDelay(attValue);
 
 			} else {
-				actionExpression->setDelay(itos(util::stof(
+				actionExpression->setDelay(itos(::ginga::util::stof(
 					    attValue.substr(0, attValue.length() - 1)) * 1000));
 			}
 		}
@@ -504,7 +504,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				actionExpression->setDelay(attValue);
 
 			} else {
-				actionExpression->setDelay(itos(util::stof(attValue.substr(
+				actionExpression->setDelay(itos(::ginga::util::stof(attValue.substr(
 					    0, attValue.length() - 1)) * 1000));
 			}
 		}
@@ -561,7 +561,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				actionExpression->setDelay(attValue);
 
 			} else {
-				actionExpression->setDelay(itos(util::stof(attValue.substr(
+				actionExpression->setDelay(itos(::ginga::util::stof(attValue.substr(
 					    0, attValue.length() - 1)) * 1000));
 			}
 		}

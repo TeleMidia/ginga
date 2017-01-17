@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/SrtPlayer.h"
 
 #include "util/Color.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
@@ -167,13 +167,13 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 		float hours, minutes, seconds, milliseconds;
 
-		hours = util::stof(time.substr(0, time.find_first_of(":")));
+		hours = ::ginga::util::stof(time.substr(0, time.find_first_of(":")));
 		time = time.substr(time.find_first_of(":") + 1, time.length());
-		minutes = util::stof(time.substr(0, time.find_first_of(":")));
+		minutes = ::ginga::util::stof(time.substr(0, time.find_first_of(":")));
 		time = time.substr(time.find_first_of(":") + 1, time.length());
-		seconds = util::stof(time.substr(0, time.find_first_of(",")));
+		seconds = ::ginga::util::stof(time.substr(0, time.find_first_of(",")));
 		time = time.substr(time.find_first_of(",") + 1, time.length());
-		milliseconds = util::stof(time);
+		milliseconds = ::ginga::util::stof(time);
 
 		return (float)(
 			    (hours * 3600) +
@@ -271,7 +271,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		    setFont(value);
 
 		} else if (name == "x-setFontSize") {
-		    setFontSize((int)util::stof(value));
+		    setFontSize((int)::ginga::util::stof(value));
 
 		} else if (name == "x-controlVisibility") {
 			if (value == "true") {

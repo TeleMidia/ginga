@@ -15,13 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _OBSERVER_H_
-#define _OBSERVER_H_
+#ifndef OBSERVER_H
+#define OBSERVER_H
 
-class Observer {
-	public:
-		virtual ~Observer(){};
-		virtual void update(void* observable, void* object)=0;
+#include "ginga.h"
+
+GINGA_UTIL_BEGIN
+
+class Observer
+{
+public:
+  virtual ~Observer(){};
+  virtual void update (void *observable, void *object)=0;
 };
 
-#endif //_OBSERVER_H_
+GINGA_UTIL_END
+
+#endif /* OBSERVER_H */

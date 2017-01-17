@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PassiveDeviceService.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;

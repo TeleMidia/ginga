@@ -1418,7 +1418,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 				DEFAULT_FOCUS_BORDER_TRANSPARENCY);
 
 		if (value != "") {
-			alfa = util::stof(value);
+			alfa = ::ginga::util::stof(value);
 
 		} else {
 			alfa = 1;
@@ -1433,7 +1433,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
 		value = presContext->getPropertyValue(DEFAULT_FOCUS_BORDER_WIDTH);
 		if (value != "") {
-			focusManager->setDefaultFocusBorderWidth((int)util::stof(value));
+			focusManager->setDefaultFocusBorderWidth((int)::ginga::util::stof(value));
 		}
 
 		value = presContext->getPropertyValue(DEFAULT_SEL_BORDER_COLOR);

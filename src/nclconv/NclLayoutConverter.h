@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NclLayoutConverter_H
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "ncl/layout/LayoutRegion.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;

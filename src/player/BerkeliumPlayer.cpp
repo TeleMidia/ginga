@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/PlayersComponentSupport.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
@@ -299,10 +299,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				return;
 			}
 
-			x = (int)util::stof((*params)[0]);
-			y = (int)util::stof((*params)[1]);
-			w = (int)util::stof((*params)[2]);
-			h = (int)util::stof((*params)[3]);
+			x = (int)::ginga::util::stof((*params)[0]);
+			y = (int)::ginga::util::stof((*params)[1]);
+			w = (int)::ginga::util::stof((*params)[2]);
+			h = (int)::ginga::util::stof((*params)[3]);
 
 			delete params;
 
@@ -320,8 +320,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				return;
 			}
 
-			w = (int)util::stof((*params)[2]);
-			h = (int)util::stof((*params)[3]);
+			w = (int)::ginga::util::stof((*params)[2]);
+			h = (int)::ginga::util::stof((*params)[3]);
 
 			delete params;
 

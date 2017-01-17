@@ -28,9 +28,7 @@
 #include "config.h"
 #include "Base64.h"
 
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
-
-
+GINGA_UTIL_BEGIN
 
 	static const std::string base64_chars =
 				 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -209,4 +207,4 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 	  return ret;
 	}
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END

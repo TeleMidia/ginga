@@ -43,7 +43,7 @@ using namespace br::pucrio::telemidia::ginga::core::system::time;
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 GINGA_LSSM_BEGIN
 

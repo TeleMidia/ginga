@@ -23,7 +23,7 @@ using namespace ::br::pucrio::telemidia::ncl;
 
 #include "util/functions.h"
 #include "util/Color.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <pthread.h>
 //#include <limits>

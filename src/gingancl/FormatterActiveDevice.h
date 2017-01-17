@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 #include "util/Base64.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;

@@ -43,7 +43,7 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 using namespace ::br::pucrio::telemidia::ncl::util;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "ncl/NclDocument.h"
 using namespace ::br::pucrio::telemidia::ncl;

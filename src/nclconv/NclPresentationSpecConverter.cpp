@@ -198,7 +198,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			string durStr = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("explicitDur")));
 
-			descriptor->setExplicitDuration(util::strUTCToSec(durStr) * 1000);
+			descriptor->setExplicitDuration(::ginga::util::strUTCToSec(durStr) * 1000);
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("freeze"))) {
@@ -281,7 +281,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			    XMLString::transcode("focusBorderWidth"))) {
 
 			int w;
-			w = (int)util::stof(XMLString::transcode(
+			w = (int)::ginga::util::stof(XMLString::transcode(
 				    parentElement->getAttribute(XMLString::transcode(
 				    	    "focusBorderWidth"))));
 
@@ -292,7 +292,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			    "focusBorderTransparency"))) {
 
 			double alpha;
-			alpha = (double)util::stof(XMLString::transcode(
+			alpha = (double)::ginga::util::stof(XMLString::transcode(
 				    parentElement->getAttribute(XMLString::transcode(
 				    	    "focusBorderTransparency"))));
 

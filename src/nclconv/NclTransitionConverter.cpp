@@ -91,7 +91,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("dur")));
 
-			dur = util::stof(attValue.substr(0, attValue.length() - 1));
+			dur = ::ginga::util::stof(attValue.substr(0, attValue.length() - 1));
 			transition->setDur(dur * 1000);
 		}
 
@@ -101,14 +101,14 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("startProgress")));
 
-			transition->setStartProgress(util::stof(attValue));
+			transition->setStartProgress(::ginga::util::stof(attValue));
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("endProgress"))) {
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("endProgress")));
 
-			transition->setEndProgress(util::stof(attValue));
+			transition->setEndProgress(::ginga::util::stof(attValue));
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("direction"))) {
@@ -132,21 +132,21 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("horzRepeat")));
 
-			transition->setHorzRepeat((int)util::stof(attValue));
+			transition->setHorzRepeat((int)::ginga::util::stof(attValue));
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("vertRepeat"))) {
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("vertRepeat")));
 
-			transition->setVertRepeat((int)util::stof(attValue));
+			transition->setVertRepeat((int)::ginga::util::stof(attValue));
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("borderWidth"))) {
 			attValue = XMLString::transcode(parentElement->
 				    getAttribute(XMLString::transcode("borderWidth")));
 
-			transition->setBorderWidth((int)util::stof(attValue));
+			transition->setBorderWidth((int)::ginga::util::stof(attValue));
 		}
 
 		if (parentElement->hasAttribute(XMLString::transcode("borderColor"))) {

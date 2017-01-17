@@ -84,11 +84,11 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 
 	bool TransportSection::create(char *sectionBytes, unsigned int size){
 		// Verifies the size to protect the memcpy call
-		if (size > ARRAY_SIZE(section)) {
+		if (size > G_N_ELEMENTS(section)) {
 			clog << "TransportSection::create Warning! ";
 			clog << "Invalid section size " << size << " ";
 			clog << "truncating..." << endl;
-			size = ARRAY_SIZE(section);
+			size = G_N_ELEMENTS(section);
 		}
 
 		memcpy((void*)&(section[0]), (void*)&(sectionBytes[0]), size);

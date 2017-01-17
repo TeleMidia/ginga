@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/AVPlayer.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -364,7 +364,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			}
 
 			if (value != "") {
-				fValue = util::stof(value);
+				fValue = ::ginga::util::stof(value);
 			}
 			setSoundLevel(fValue);
 
@@ -374,10 +374,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				if (vals->size() == 4) {
 					win = dm->createWindow(
 							myScreen,
-							util::stof((*vals)[0]),
-							util::stof((*vals)[1]),
-							util::stof((*vals)[2]),
-							util::stof((*vals)[3]),
+							::ginga::util::stof((*vals)[0]),
+							::ginga::util::stof((*vals)[1]),
+							::ginga::util::stof((*vals)[2]),
+							::ginga::util::stof((*vals)[3]),
 							1.0);
 
 					int caps = dm->getWindowCap (myScreen, win, "NOSTRUCTURE") |
@@ -396,10 +396,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				vals = split(value, ",");
 				if (vals->size() == 4) {
 					dm->setWindowBounds (myScreen, win,
-															util::stof((*vals)[0]),
-															util::stof((*vals)[1]),
-															util::stof((*vals)[2]),
-															util::stof((*vals)[3]));
+															::ginga::util::stof((*vals)[0]),
+															::ginga::util::stof((*vals)[1]),
+															::ginga::util::stof((*vals)[2]),
+															::ginga::util::stof((*vals)[3]));
 				}
 				delete vals;
 

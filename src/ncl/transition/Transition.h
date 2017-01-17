@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TRANSITION_H_
 
 #include "util/Color.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;

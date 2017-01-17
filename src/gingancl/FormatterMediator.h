@@ -63,7 +63,7 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 using namespace ::br::pucrio::telemidia::ncl::reuse;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "ncl/Base.h"
 #include "ncl/NclDocument.h"

@@ -69,7 +69,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 				if (strVar == "=" && fis.good()) {
 					fis >> strVar;
 					if (strVar != "") {
-						imperativeIntervalTime = util::stof(strVar);
+						imperativeIntervalTime = ::ginga::util::stof(strVar);
 					}
 				}
 
@@ -80,7 +80,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 				if (strVar == "=" && fis.good()) {
 					fis >> strVar;
 					if (strVar != "") {
-						declarativeIntervalTime = util::stof(strVar);
+						declarativeIntervalTime = ::ginga::util::stof(strVar);
 					}
 				}
 			}

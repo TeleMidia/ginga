@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
@@ -462,10 +462,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				params = split(value, ",");
 				if (params->size() == 4) {
 					dm->setWindowBounds(myScreen, outputWindow,
-															util::stof((*params)[0]),
-															util::stof((*params)[1]),
-															util::stof((*params)[2]),
-															util::stof((*params)[3]));
+															::ginga::util::stof((*params)[0]),
+															::ginga::util::stof((*params)[1]),
+															::ginga::util::stof((*params)[2]),
+															::ginga::util::stof((*params)[3]));
 				}
 				delete params;
 
@@ -473,7 +473,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				params = split(value, ",");
 				if (params->size() == 2) {
 					dm->moveWindowTo(myScreen, outputWindow,
-					                 util::stof((*params)[0]), util::stof((*params)[1]));
+					                 ::ginga::util::stof((*params)[0]), ::ginga::util::stof((*params)[1]));
 				}
 				delete params;
 
@@ -481,25 +481,25 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				params = split(value, ",");
 				if (params->size() == 2) {
 					dm->resizeWindow(myScreen, outputWindow,
-					                 util::stof((*params)[0]), util::stof((*params)[1]));
+					                 ::ginga::util::stof((*params)[0]), ::ginga::util::stof((*params)[1]));
 				}
 				delete params;
 
 			} else if (name == "left") {
-				dm->setWindowX(myScreen, outputWindow, util::stof(value));
+				dm->setWindowX(myScreen, outputWindow, ::ginga::util::stof(value));
 
 			} else if (name == "top") {
-				dm->setWindowY(myScreen, outputWindow, util::stof(value));
+				dm->setWindowY(myScreen, outputWindow, ::ginga::util::stof(value));
 
 			} else if (name == "width") {
-				dm->setWindowW (myScreen, outputWindow, util::stof(value));
+				dm->setWindowW (myScreen, outputWindow, ::ginga::util::stof(value));
 
 			} else if (name == "height") {
-				dm->setWindowH (myScreen, outputWindow, util::stof(value));
+				dm->setWindowH (myScreen, outputWindow, ::ginga::util::stof(value));
 
 			} else if (name == "transparency") {
 				dm->setWindowCurrentTransparency(myScreen, outputWindow,
-				                                 util::stof(value));
+				                                 ::ginga::util::stof(value));
 			}
 		}
 		properties[name] = value;

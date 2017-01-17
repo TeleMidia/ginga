@@ -653,11 +653,11 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 							repeat = 0;
 
 						} else {
-							repeat = (long)util::stof(param->getValue());
+							repeat = (long)::ginga::util::stof(param->getValue());
 						}
 
 					} else {
-						repeat = (long)util::stof(paramValue);
+						repeat = (long)::ginga::util::stof(paramValue);
 					}
 
 					((LinkRepeatAction*)action)->setRepetitions(repeat);
@@ -973,7 +973,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 				if (param == "") {
 					return 0.0;
 				} else {
-					return util::stof(param) * 1000;
+					return ::ginga::util::stof(param) * 1000;
 				}
 
 			} catch (exception* exc) {
@@ -1052,7 +1052,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 				delete param;
 
 			} else {
-				delay = (double)(util::stof(delayObject));
+				delay = (double)(::ginga::util::stof(delayObject));
 			}
 		}
 

@@ -326,7 +326,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 			property = obj->getNCMProperty("explicitDur");
 			if (property != NULL) {
 				value = property->getPropertyValue();
-				explicitDur = util::strUTCToSec(value) * 1000;
+				explicitDur = ::ginga::util::strUTCToSec(value) * 1000;
 			}
 
 			return explicitDur;
@@ -349,7 +349,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 				if (value != "") {
 					if (name == "explicitDur") {
-						explicitDur = util::strUTCToSec(value) * 1000;
+						explicitDur = ::ginga::util::strUTCToSec(value) * 1000;
 
 					} else if (name == "left") {
 						left = value;
@@ -370,7 +370,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 						right = value;
 
 					} else if (name == "zIndex") {
-						region->setZIndex(util::stof(value));
+						region->setZIndex(::ginga::util::stof(value));
 
 					} else if (name == "bounds") {
 						params = split(trim(value), ",");
@@ -402,7 +402,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 					} else if (name == "transparency") {
 						value = cvtPercentual(value, &isPercentual);
-						transpValue = util::stof(value);
+						transpValue = ::ginga::util::stof(value);
 						if (isPercentual) {
 							transpValue = transpValue / 100;
 						}
@@ -434,18 +434,18 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 								params = split(trim(value), ",");
 								if (params->size() == 3) {
 									bg = new Color(
-											util::stof((*params)[0]),
-											util::stof((*params)[1]),
-											util::stof((*params)[2]));
+											::ginga::util::stof((*params)[0]),
+											::ginga::util::stof((*params)[1]),
+											::ginga::util::stof((*params)[2]));
 
 									fRegion->setBackgroundColor(bg);
 
 								} else if (params->size() == 4) {
 									bg = new Color(
-											util::stof((*params)[0]),
-											util::stof((*params)[1]),
-											util::stof((*params)[2]),
-											util::stof((*params)[3]));
+											::ginga::util::stof((*params)[0]),
+											::ginga::util::stof((*params)[1]),
+											::ginga::util::stof((*params)[2]),
+											::ginga::util::stof((*params)[3]));
 
 									fRegion->setBackgroundColor(bg);
 								}
@@ -468,7 +468,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 					} else if (name == "focusBorderWidth") {
 						if (fRegion != NULL) {
-							fRegion->setFocusBorderWidth(util::stof(value));
+							fRegion->setFocusBorderWidth(::ginga::util::stof(value));
 						}
 
 					} else if (name == "focusComponentSrc") {
@@ -486,7 +486,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 					} else if (name == "selBorderWidth") {
 						if (fRegion != NULL) {
-							fRegion->setSelBorderWidth(util::stof(value));
+							fRegion->setSelBorderWidth(::ginga::util::stof(value));
 						}
 
 					} else if (name == "selComponentSrc") {
@@ -540,7 +540,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 					if (value != "") {
 						if (name == "explicitDur") {
-							explicitDur = util::strUTCToSec(value) * 1000;
+							explicitDur = ::ginga::util::strUTCToSec(value) * 1000;
 
 						} else if (name == "left") {
 							left = value;
@@ -561,7 +561,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 							right = value;
 
 						} else if (name == "zIndex") {
-							region->setZIndex(util::stof(value));
+							region->setZIndex(::ginga::util::stof(value));
 
 						} else if (name == "bounds") {
 							params = split(trim(value), ",");
@@ -593,7 +593,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 						} else if (name == "transparency") {
 							value = cvtPercentual(value, &isPercentual);
-							transpValue = util::stof(value);
+							transpValue = ::ginga::util::stof(value);
 							if (isPercentual) {
 								transpValue = transpValue / 100;
 							}
@@ -625,18 +625,18 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 									params = split(trim(value), ",");
 									if (params->size() == 3) {
 										bg = new Color(
-												util::stof((*params)[0]),
-												util::stof((*params)[1]),
-												util::stof((*params)[2]));
+												::ginga::util::stof((*params)[0]),
+												::ginga::util::stof((*params)[1]),
+												::ginga::util::stof((*params)[2]));
 
 										fRegion->setBackgroundColor(bg);
 
 									} else if (params->size() == 4) {
 										bg = new Color(
-												util::stof((*params)[0]),
-												util::stof((*params)[1]),
-												util::stof((*params)[2]),
-												util::stof((*params)[3]));
+												::ginga::util::stof((*params)[0]),
+												::ginga::util::stof((*params)[1]),
+												::ginga::util::stof((*params)[2]),
+												::ginga::util::stof((*params)[3]));
 
 										fRegion->setBackgroundColor(bg);
 									}
@@ -659,7 +659,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 						} else if (name == "focusBorderWidth") {
 							if (fRegion != NULL) {
-								fRegion->setFocusBorderWidth(util::stof(value));
+								fRegion->setFocusBorderWidth(::ginga::util::stof(value));
 							}
 
 						} else if (name == "focusComponentSrc") {
@@ -677,7 +677,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 						} else if (name == "selBorderWidth") {
 							if (fRegion != NULL) {
-								fRegion->setSelBorderWidth(util::stof(value));
+								fRegion->setSelBorderWidth(::ginga::util::stof(value));
 							}
 
 						} else if (name == "selComponentSrc") {
@@ -746,32 +746,32 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 		if (left != "") {
 			value = cvtPercentual(left, &isPercentual);
-			region->setLeft(util::stof(value), isPercentual);
+			region->setLeft(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (top != "") {
 			value = cvtPercentual(top, &isPercentual);
-			region->setTop(util::stof(value), isPercentual);
+			region->setTop(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (width != "") {
 			value = cvtPercentual(width, &isPercentual);
-			region->setWidth(util::stof(value), isPercentual);
+			region->setWidth(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (height != "") {
 			value = cvtPercentual(height, &isPercentual);
-			region->setHeight(util::stof(value), isPercentual);
+			region->setHeight(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (bottom != "") {
 			value = cvtPercentual(bottom, &isPercentual);
-			region->setBottom(util::stof(value), isPercentual);
+			region->setBottom(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (right != "") {
 			value = cvtPercentual(right, &isPercentual);
-			region->setRight(util::stof(value), isPercentual);
+			region->setRight(::ginga::util::stof(value), isPercentual);
 		}
 
 		if (plan == "" && mrl.find("sbtvd-ts://") != std::string::npos) {
@@ -1476,7 +1476,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 					CascadingDescriptor* descriptor;
 
 					value = cvtPercentual(value, &isPercentual);
-					transpValue = util::stof(value);
+					transpValue = ::ginga::util::stof(value);
 					if (isPercentual) {
 						transpValue = transpValue / 100;
 					}

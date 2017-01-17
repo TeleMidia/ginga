@@ -35,7 +35,7 @@ extern "C"
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 #include "util/functions.h"
-using namespace::br::pucrio::telemidia::util;
+using namespace::ginga::util;
 
 #include "player/LuaPlayer.h"
 

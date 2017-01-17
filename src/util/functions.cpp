@@ -16,8 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include <config.h>
+#include "functions.h"
+
+extern "C" {
+#include <ctype.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <dirent.h>
+}
 
 #ifndef _MSC_VER
  #define IS_DIRECTORY(st_mode)  (((st_mode) & S_IFMT) == S_IFDIR)
@@ -36,11 +42,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <float.h>
 #endif
 
-#include <math.h>
-
-#include "util/functions.h"
-
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+GINGA_UTIL_BEGIN
 
 	string userCurrentPath;
 	static double timeStamp;
@@ -88,16 +90,16 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 					utcValue = utcValue.substr(0, utcValue.length() - 1);
 				}
 
-				secs = util::stof(utcValue);
+				secs = ::ginga::util::stof(utcValue);
 				break;
 
 			case 2:
-				secs = 60 * util::stof((*params)[0]) + util::stof((*params)[1]);
+				secs = 60 * ::ginga::util::stof((*params)[0]) + ::ginga::util::stof((*params)[1]);
 				break;
 
 			case 3:
-				secs = 3600 * util::stof((*params)[0]) + 60 * util::stof((*params)[1]) +
-						util::stof((*params)[2]);
+				secs = 3600 * ::ginga::util::stof((*params)[0]) + 60 * ::ginga::util::stof((*params)[1]) +
+						::ginga::util::stof((*params)[2]);
 				break;
 
 			default:
@@ -211,7 +213,7 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 
 	float itof(int i) {
 		string s = itos(i);
-		return util::stof(s);
+		return ::ginga::util::stof(s);
 	}
 
 	string getUserCurrentPath() {
@@ -319,7 +321,7 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 		//retirar o caracter percentual da string
 		actualValue = value.substr(0, (value.length() - 1));
 		//converter para float
-		floatValue = util::stof(actualValue);
+		floatValue = ::ginga::util::stof(actualValue);
 
 		//se menor que zero, retornar zero
 		if (floatValue < 0)
@@ -490,4 +492,4 @@ BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END

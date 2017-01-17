@@ -37,7 +37,7 @@ using namespace std;
 
 #include "util/functions.h"
 #include "util/Color.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE

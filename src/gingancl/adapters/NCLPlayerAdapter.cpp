@@ -100,7 +100,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
 					float parentOpacity = (1 - playerData->transparency);
 
 					value = cvtPercentual(value, &isPercent);
-					transpValue = util::stof(value);
+					transpValue = ::ginga::util::stof(value);
 					if (isPercent) {
 						transpValue = transpValue / 100;
 					}

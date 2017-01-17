@@ -1252,7 +1252,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 		lock(); //lock the object
 
 		if (propName == "zIndex") {
-			region->setZIndex((int)util::stof(value));
+			region->setZIndex((int)::ginga::util::stof(value));
 			unlock();
 			return true;
 		}
@@ -1316,7 +1316,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetLeft(getPercentualValue(left), true);
 
 				} else {
-					ncmRegion->setTargetLeft((double)util::stof(left), false);
+					ncmRegion->setTargetLeft((double)::ginga::util::stof(left), false);
 				}
 			}
 
@@ -1325,7 +1325,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetTop(getPercentualValue(top), true);
 
 				} else {
-					ncmRegion->setTargetTop((double)util::stof(top), false);
+					ncmRegion->setTargetTop((double)::ginga::util::stof(top), false);
 				}
 			}
 
@@ -1334,7 +1334,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetWidth(getPercentualValue(width), true);
 
 				} else {
-					ncmRegion->setTargetWidth((double)util::stof(width), false);
+					ncmRegion->setTargetWidth((double)::ginga::util::stof(width), false);
 				}
 			}
 
@@ -1343,7 +1343,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetHeight(getPercentualValue(height), true);
 
 				} else {
-					ncmRegion->setTargetHeight((double)util::stof(height), false);
+					ncmRegion->setTargetHeight((double)::ginga::util::stof(height), false);
 				}
 			}
 
@@ -1352,7 +1352,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetBottom(getPercentualValue(bottom), true);
 
 				} else {
-					ncmRegion->setTargetBottom((double)util::stof(bottom), false);
+					ncmRegion->setTargetBottom((double)::ginga::util::stof(bottom), false);
 				}
 			}
 
@@ -1361,7 +1361,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 					ncmRegion->setTargetRight(getPercentualValue(right), true);
 
 				} else {
-					ncmRegion->setTargetRight((double)util::stof(right), false);
+					ncmRegion->setTargetRight((double)::ginga::util::stof(right), false);
 				}
 			}
 

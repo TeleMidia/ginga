@@ -20,48 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include <fstream>
-#include <string>
-#include <vector>
-#include <set>
-#include <iostream>
-#include <sstream>
-#include <limits>
-using namespace std;
-
-extern "C" {
-	#include <ctype.h>
-	#include <sys/stat.h>
-	#include <sys/types.h>
-#ifdef _MSC_VER
-#define _WINSOCKAPI_    // stops windows.h including winsock.h
-	#include <windows.h>
-	#include <io.h>
-	#include <time.h>
-	#include <direct.h>
-#endif
-#ifndef _MSC_VER
-	#include <sys/param.h>
-	#include <unistd.h>
-	#include <sys/time.h>
-#endif
-}
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
-
 #ifndef PATH_MAX
 # define PATH_MAX 512
 #endif
 
-#ifndef ARRAY_SIZE
-# define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
-#endif
-
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+GINGA_UTIL_BEGIN
 
 string ultostr(unsigned long int value);
 double strUTCToSec(string utcValue);
@@ -102,6 +65,6 @@ bool bmpToJpeg(char *bmpfile, char *jpegfile, int quality);
 
 void str_replace_all(string &str, const string &find_what, const string &replace_with);
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END
 
-#endif //_FUNCTIONS_H_
+#endif /* FUNCTIONS_H */
