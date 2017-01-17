@@ -36,11 +36,8 @@ using namespace ::br::pucrio::telemidia::ncl::descriptor;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class NodeEntity : public Node {
 		protected:
 			GenericDescriptor* descriptor;
@@ -69,10 +66,6 @@ namespace components {
 			bool addSameInstance(ReferNode* node);
 			void removeSameInstance(ReferNode* node);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_NODEENTITY_H_

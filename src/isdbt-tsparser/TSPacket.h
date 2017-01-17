@@ -27,12 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class TSPacket : public ITSPacket {
 	protected:
 		//
@@ -156,11 +152,6 @@ namespace tsparser {
 		void setPacketCount(unsigned int count);
 		unsigned int getPacketCount();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*TSPACKET_*/

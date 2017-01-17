@@ -15,68 +15,28 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPARATOR_H_
-#define _COMPARATOR_H_
+#ifndef COMPARATOR_H
+#define COMPARATOR_H
 
-#include <iostream>
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace util {
-	class Comparator {
-	  public:
-		/**
-		 * Constant that represents an equality.
-		 */
-		static const short CMP_EQ = 0;
+BR_PUCRIO_TELEMIDIA_NCL_UTIL_BEGIN
 
-		/**
-		 * Constant that represents a disequality.
-		 */	
-		static const short CMP_NE = 1;
+class Comparator
+{
+public:
+  static const short CMP_EQ = 0;
+  static const short CMP_NE = 1;
+  static const short CMP_LT = 2;
+  static const short CMP_LTE = 3;
+  static const short CMP_GT = 4;
+  static const short CMP_GTE = 5;
+  static bool evaluate(string first, string second, short comparator);
+  static bool evaluate(float first, float second, short comparator);
+  static string toString(short comparator);
+  static short fromString(string comp);
+};
 
-		/**
-		 * Constant that represents something is smaller than other thing.
-		 */	
-		static const short CMP_LT = 2;
+BR_PUCRIO_TELEMIDIA_NCL_UTIL_END
 
-		/**
-		 * Constant that represents something is smaller (or equal)
-		 * than other thing.
-		 */		
-		static const short CMP_LTE = 3;
-
-		/**
-		 * Constant that represents something is bigger than other thing.
-		 */			
-		static const short CMP_GT = 4;
-
-		/**
-		 * Constant that represents something is bigger (or equal)
-		 * than other thing.
-		 */			
-		static const short CMP_GTE = 5;
-
-		static bool evaluate(string first, string second, short comparator);
-		static bool evaluate(float first, float second, short comparator);
-
-		/**
-		 * This method returns a string representing one comparator.
-		 * 
-		 * @param comparator the comparator to be transformed in string.
-		 * @return a string representing one comparator.
-		 */	
-		static string toString(short comparator);
-		static short fromString(string comp);
-	};
-}
-}
-}
-}
-}
-
-#endif //_COMPARATOR_H_
+#endif /* COMPARATOR_H */

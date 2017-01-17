@@ -28,14 +28,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include "player/IPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
-namespace focus {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
+
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
@@ -70,11 +64,5 @@ namespace focus {
 		}
 		return 0;
 	}
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_END

@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	DeviceService::DeviceService() {
 		devices      = new map<unsigned int, RemoteDevice*>;
 		listeners    = new set<IRemoteDeviceListener*>;
@@ -127,9 +123,5 @@ namespace multidevice {
 
 		return hasDev;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

@@ -12,14 +12,8 @@
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 #include <string.h>
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class HiperlinkDescriptor : public IMpegDescriptor{
 		protected:
 			unsigned char hyperLinkageType;
@@ -36,13 +30,6 @@ namespace descriptors {
 			size_t process(char* data, size_t pos);
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* HIPERLINKDESCRIPTOR_H_ */

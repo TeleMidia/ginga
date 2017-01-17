@@ -15,46 +15,38 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ITRANSPORTSECTION_H_
-#define ITRANSPORTSECTION_H_
+#ifndef I_TRANSPORTSECTION_H
+#define I_TRANSPORTSECTION_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-	class ITransportSection {
-		public:
-			virtual ~ITransportSection(){};
-			virtual void setESId(unsigned int id)=0;
-			virtual unsigned int getESId()=0;
-			virtual void addData(char* bytes, unsigned int size)=0;
-			virtual string getSectionName()=0;
-			virtual unsigned int getTableId()=0;
-			virtual bool getSectionSyntaxIndicator()=0;
-			virtual unsigned int getSectionLength()=0;
-			virtual unsigned int getCurrentSize()=0;
-			virtual unsigned int getExtensionId()=0;
-			virtual unsigned int getVersionNumber()=0;
-			virtual bool getCurrentNextIndicator()=0;
-			virtual unsigned int getSectionNumber()=0;
-			virtual unsigned int getLastSectionNumber()=0;
-			virtual void* getPayload()=0;
-			virtual unsigned int getPayload(char** buffer)=0;
-			virtual unsigned int getPayloadSize()=0;
-			virtual bool isConsolidated()=0;
-			virtual bool isConstructionFailed()=0;
-			virtual void print()=0;
-	};
-}
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 
-#endif /*ITRANSPORTSECTION_H_*/
+class ITransportSection
+{
+public:
+  virtual ~ITransportSection(){};
+  virtual void setESId(unsigned int id)=0;
+  virtual unsigned int getESId()=0;
+  virtual void addData(char* bytes, unsigned int size)=0;
+  virtual string getSectionName()=0;
+  virtual unsigned int getTableId()=0;
+  virtual bool getSectionSyntaxIndicator()=0;
+  virtual unsigned int getSectionLength()=0;
+  virtual unsigned int getCurrentSize()=0;
+  virtual unsigned int getExtensionId()=0;
+  virtual unsigned int getVersionNumber()=0;
+  virtual bool getCurrentNextIndicator()=0;
+  virtual unsigned int getSectionNumber()=0;
+  virtual unsigned int getLastSectionNumber()=0;
+  virtual void* getPayload()=0;
+  virtual unsigned int getPayload(char** buffer)=0;
+  virtual unsigned int getPayloadSize()=0;
+  virtual bool isConsolidated()=0;
+  virtual bool isConstructionFailed()=0;
+  virtual void print()=0;
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+
+#endif /*I_TRANSPORT_SECTION_H_*/

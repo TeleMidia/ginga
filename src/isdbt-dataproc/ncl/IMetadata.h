@@ -26,13 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 
 typedef struct {
 	char* stream;
@@ -43,7 +38,7 @@ typedef struct {
 		public:
 			virtual ~IMetadata(){};
 
-			int getType(){return ST_METADA;};
+			int getType(){return ST_METADATA;};
 			int getId(){return 0;};
 
 			virtual string getRootUri()=0;
@@ -64,12 +59,6 @@ typedef struct {
 
 			virtual vector<StreamData*>* createNCLSections()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
 #endif //_IMetadata_H_

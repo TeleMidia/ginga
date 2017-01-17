@@ -27,13 +27,8 @@ using namespace std;
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkCondition {
 		protected:
 			set<string>typeSet;
@@ -55,12 +50,6 @@ namespace link {
 			};
 			virtual vector<FormatterEvent*>* getEvents()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCONDITION_H_

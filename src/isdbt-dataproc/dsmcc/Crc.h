@@ -24,14 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <stdio.h>
 #include <string.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 
 class Crc32 {
 	private:
@@ -47,13 +41,6 @@ class Crc32 {
 
 };
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
 #endif

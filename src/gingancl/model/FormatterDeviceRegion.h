@@ -35,13 +35,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
   class FormatterDeviceRegion : public LayoutRegion {
 	private:
 		string id;
@@ -125,12 +120,6 @@ namespace presentation {
 		Entity *getDataEntity();
 		int compareTo(void *arg0);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
 #endif /*FORMATTERDEVICEREGION_H_*/

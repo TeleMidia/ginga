@@ -21,23 +21,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
   class IContextListener {
 	public:
 		virtual ~IContextListener(){};
 		virtual void receiveGlobalAttribution(
 				string propertyName, string value)=0;
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
 #endif /*_IContextListener_H_*/

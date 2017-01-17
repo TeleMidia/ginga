@@ -28,13 +28,8 @@ typedef struct {
 	bool isParsing;
 } MetadataAndParser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	IMetadata* NCLMetadataParser::parse(string xmlDocument) {
 		FILE* fd;
 		int bytes = 1;
@@ -230,10 +225,5 @@ namespace ncl {
 			((MetadataAndParser*)data)->isParsing = false;
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END

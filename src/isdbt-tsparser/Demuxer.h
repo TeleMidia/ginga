@@ -47,12 +47,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class Demuxer : public IDemuxer {
 		private:
 			Pat* pat;
@@ -163,11 +159,6 @@ namespace tsparser {
 			void dataArrived();
 			bool waitData();
 	 };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*DEMUXER_H_*/

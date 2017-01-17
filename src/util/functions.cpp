@@ -40,7 +40,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 
-TELEMIDIA_UTIL_BEGIN_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 
 	string userCurrentPath;
 	static double timeStamp;
@@ -490,4 +490,4 @@ TELEMIDIA_UTIL_BEGIN_DECLS
 		}
 	}
 
-TELEMIDIA_UTIL_END_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_END

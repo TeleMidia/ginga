@@ -24,14 +24,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include "ApplicationPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace lua {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
+
   class LuaPlayerAdapter : public ApplicationPlayerAdapter {
 	public:
 		LuaPlayerAdapter();
@@ -44,13 +38,6 @@ namespace lua {
 		bool setAndLockCurrentEvent(FormatterEvent* event);
 		void unlockCurrentEvent(FormatterEvent* event);
   };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END
 #endif /* LUAPLAYERADAPTER_H_ */

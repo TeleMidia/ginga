@@ -37,12 +37,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class ImagePlayer : public Player {
 		private:
 			GingaProviderID provider;
@@ -59,11 +55,6 @@ namespace player {
 		private:
 			GingaSurfaceID prepareSurface(GingaProviderID provider, string mrl);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*IMAGEPLAYER_H_*/

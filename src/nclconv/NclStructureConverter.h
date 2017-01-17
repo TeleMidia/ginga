@@ -53,11 +53,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclStructureConverter : public NclStructureParser {
 	public:
 		NclStructureConverter(DocumentParser *documentParser);
@@ -104,10 +101,6 @@ namespace ncl {
 		void addMetaToHead(void* parentObject, void* childObject);
 		void addMetadataToHead(void* parentObject, void* childObject);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif //NCLNCMSTRUCTURECOMPILER_H

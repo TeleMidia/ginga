@@ -32,12 +32,8 @@ typedef Uint32 SDL_WindowID;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
   class SDLWindow {
   public:
     static const short DDT_LINE = 0;
@@ -207,11 +203,6 @@ namespace mb {
     void lockSurface();
     void unlockSurface();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLWINDOW_H_*/

@@ -29,12 +29,8 @@ extern "C" {
 #include <stdlib.h>
 }
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	SDLWindow::SDLWindow(
 			GingaWindowID windowID,
 			GingaWindowID parentWindowID,
@@ -791,9 +787,5 @@ namespace mb {
 	void SDLWindow::unlockSurface() {
 		Thread::mutexUnlock(&surMutex);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

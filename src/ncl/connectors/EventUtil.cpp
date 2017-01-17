@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/EventUtil.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	short EventUtil::getTypeCode(string typeName) {
 		if (typeName == "presentation") {
 			return EventUtil::EVT_PRESENTATION;
@@ -164,8 +161,5 @@ namespace connectors {
 				return "nodeProperty";
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

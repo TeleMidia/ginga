@@ -26,12 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class SDLEventBuffer {
 		private:
 			GingaScreenID myScreen;
@@ -61,11 +57,6 @@ namespace mb {
 			void waitForEvent();
 			bool eventArrived();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLINPUTEVENTBUFFER_H_*/

@@ -24,12 +24,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <sys/types.h>
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	AVPlayer::AVPlayer(GingaScreenID screenId, string mrl) :
 			Thread(), Player(screenId, mrl) {
 
@@ -662,9 +658,5 @@ namespace player {
 
 		clog << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

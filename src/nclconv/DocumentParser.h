@@ -15,81 +15,65 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DocumentParser_H
-#define DocumentParser_H
+#ifndef DOCUMENT_PARSER_H
+#define DOCUMENT_PARSER_H
 
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
-using namespace std;
-
-#include <xercesc/dom/DOM.hpp>
-XERCES_CPP_NAMESPACE_USE
-
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
-
+#include "namespaces.h"
 #include "XMLParsing.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-  class DocumentParser {
-	protected:
-		string documentPath;
-		string userCurrentPath;
-		string documentUri;
-		string iUriD;
-		string fUriD;
-		DOMDocument *documentTree;
-		map<string, void*>* genericTable;
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
 
-	public:
-		DocumentParser();
-		virtual ~DocumentParser();
+class DocumentParser
+{
+protected:
+  string documentPath;
+  string userCurrentPath;
+  string documentUri;
+  string iUriD;
+  string fUriD;
+  DOMDocument *documentTree;
+  map<string, void*>* genericTable;
 
-	protected:
-		virtual void initialize()=0;
+public:
+  DocumentParser();
+  virtual ~DocumentParser();
 
-	public:
-		void* parse(string uri, string iUriD, string fUriD);
-		void* parse(DOMElement* rootElement, string uri);
+protected:
+  virtual void initialize()=0;
 
-	protected:
-		virtual void setDependencies();
-		virtual void* parseRootElement(DOMElement *rootElement)=0;
+public:
+  void* parse(string uri, string iUriD, string fUriD);
+  void* parse(DOMElement* rootElement, string uri);
 
-	private:
-		void initializeUserCurrentPath();
-		string absoluteFile(string basePath, string filename);
-		string getPath(string filename);
+protected:
+  virtual void setDependencies();
+  virtual void* parseRootElement(DOMElement *rootElement)=0;
 
-	public:
-		string getIUriD();
-		string getFUriD();
-		string getUserCurrentPath();
-		bool checkUriPrefix(string uri);
-		bool isAbsolutePath(string path);
-		bool isXmlStr(string location);
+private:
+  void initializeUserCurrentPath();
+  string absoluteFile(string basePath, string filename);
+  string getPath(string filename);
 
-		string getAbsolutePath(string path);
-		string getDocumentUri();
-		string getDocumentPath();
-		void setDocumentPath(string path);
-		DOMDocument *getDocumentTree();
-		void addObject(string tableName, string key, void* value);
-		void* getObject(string tableName, string key);
-		void removeObject(string tableName, string key);
-		void addObjectGrouped(string tableName, string key, void* value);
-		bool importDocument(DocumentParser* parser, string docLocation);
-  };
-}
-}
-}
-}
-}
+public:
+  string getIUriD();
+  string getFUriD();
+  string getUserCurrentPath();
+  bool checkUriPrefix(string uri);
+  bool isAbsolutePath(string path);
+  bool isXmlStr(string location);
 
-#endif //DocumentParser_H
+  string getAbsolutePath(string path);
+  string getDocumentUri();
+  string getDocumentPath();
+  void setDocumentPath(string path);
+  DOMDocument *getDocumentTree();
+  void addObject(string tableName, string key, void* value);
+  void* getObject(string tableName, string key);
+  void removeObject(string tableName, string key);
+  void addObjectGrouped(string tableName, string key, void* value);
+  bool importDocument(DocumentParser* parser, string docLocation);
+};
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END
+
+#endif /* DOCUMENT_PARSER_H */

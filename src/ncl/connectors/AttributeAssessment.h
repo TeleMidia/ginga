@@ -29,11 +29,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class AttributeAssessment : public Assessment, public Role {
 		private:
 			short attributeType;
@@ -56,10 +53,6 @@ namespace connectors {
 				return Assessment::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif /*ATTRIBUTEASSESSMENT_H_*/

@@ -17,16 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "PresentationEvent.h"
+#include "ncl/interfaces/IntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
   	//if the representation changes, update isUndefinedInstant method
-	const double PresentationEvent::UNDEFINED_INSTANT= NaN();
+	const double PresentationEvent::UNDEFINED_INSTANT= std::numeric_limits<double>::quiet_NaN();
 
 	PresentationEvent::PresentationEvent(
 		    string id,
@@ -85,7 +81,7 @@ namespace event {
 	void PresentationEvent::setEnd(double e) {
 		bool isObjDur = IntervalAnchor::isObjectDuration(e);
 
-		if (!isObjDur && isNaN(begin)) {
+		if (!isObjDur && isnan(begin)) {
 			begin = 0;
 		}
 
@@ -126,12 +122,7 @@ namespace event {
 	}
 
 	bool PresentationEvent::isUndefinedInstant(double value) {
-		return isNaN(value);
+		return isnan(value);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

@@ -23,12 +23,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "IDemuxer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class PSIFilter : public IFrontendFilter {
 		private:
 			int pid;
@@ -55,11 +51,6 @@ namespace tsparser {
 			void receivePes(char* pes, int pesLen);
 			void receiveSection(char* section, int secLen);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*PSIFilter_H_*/

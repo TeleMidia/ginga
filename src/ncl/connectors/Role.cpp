@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/Role.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	Role::Role() {
 		this->minCon = 1;
 		this->maxCon = 1;
@@ -63,8 +60,5 @@ namespace connectors {
 	void Role::setMaxCon(int maxCon) {
 		this->maxCon = maxCon;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

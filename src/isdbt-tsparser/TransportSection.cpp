@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IDemuxer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 
 	static bool initTab = false;
 	static unsigned int crcTab[256] = {};
@@ -358,9 +354,5 @@ namespace tsparser {
 		}
 		clog << endl << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

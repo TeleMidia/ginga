@@ -65,11 +65,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
 	CommonCoreManager::CommonCoreManager() {
@@ -324,8 +321,5 @@ namespace lssm {
 		clog << "lssm ccm::sp all done!" << endl;
 #endif //TUNER...
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END

@@ -18,16 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/Anchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	Anchor::Anchor(string id) : InterfacePoint(id) {
 		typeSet.insert("Anchor");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

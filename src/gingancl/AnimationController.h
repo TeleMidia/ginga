@@ -34,12 +34,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "model/ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace animation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
+
 	class AnimationController : public Thread {
 		private:
 			PlayerAdapterManager* pManager;
@@ -148,11 +144,6 @@ namespace animation {
 			bool isExecutionObjectProperty(string name);
 
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_END
 #endif // _ANIMATIONCONTROLLER_H_

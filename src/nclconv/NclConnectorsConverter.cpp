@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnectorsConverter.h"
 #include "NclDocumentConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclConnectorsConverter::NclConnectorsConverter(
 		    DocumentParser* documentParser) : NclConnectorsParser(
 		    	    documentParser) {
@@ -739,8 +736,5 @@ namespace ncl {
 		// TODO Auto-generated method stub
 		return NULL;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

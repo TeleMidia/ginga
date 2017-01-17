@@ -18,23 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPROVIDERLISTENER_H_
 #define IPROVIDERLISTENER_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class IProviderListener {
 		public:
 			virtual ~IProviderListener(){};
 			virtual void finished()=0;
 			virtual double getEndTime()=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*IPROVIDERLISTENER_H_*/

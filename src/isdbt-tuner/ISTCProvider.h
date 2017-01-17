@@ -15,30 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ISTCProvider_H_
-#define ISTCProvider_H_
+#ifndef ISTC_PROVIDER_H
+#define ISTC_PROVIDER_H
 
-#include <stdint.h>
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
-	static const int ST_90KHz = 0x01;
-	static const int ST_27MHz = 0x02;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
-	class ISTCProvider {
-		public:
-			virtual ~ISTCProvider(){};
-			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
-	};
-}
-}
-}
-}
-}
-}
+static const int ST_90KHz = 0x01;
+static const int ST_27MHz = 0x02;
 
-#endif /*ISTCProvider_H_*/
+class ISTCProvider
+{
+public:
+  virtual ~ISTCProvider(){};
+  virtual bool getSTCValue(guint64 *stc, int *valueType)=0;
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+
+#endif /* ISTC_PROVIDER_H */

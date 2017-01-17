@@ -28,13 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+
 	class Stc {
 		protected:
 			uint64_t stc;
@@ -69,12 +64,6 @@ namespace time {
 			uint64_t getStcExt();
 			double getBaseToSecond();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
 #endif /* STC_H_ */

@@ -15,53 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef APPLICATIONLOCATIONDESCRIPTOR_H_
-#define APPLICATIONLOCATIONDESCRIPTOR_H_
+#ifndef APPLICATION_LOCATION_DESCRIPTOR_H
+#define APPLICATION_LOCATION_DESCRIPTOR_H
+
+#include "namespaces.h"
 
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <string.h>
-#include <string>
-#include <iostream>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-	class ApplicationLocationDescriptor : public IMpegDescriptor{
-		private:
-			unsigned char baseDirectoryLength;
-			char* baseDirectoryByte;
-			unsigned char classPathExtensionLength;
-			char* classPathExtensionByte;
-			unsigned char initialClassLentgh;
-			char* initialClassByte;
+class ApplicationLocationDescriptor : public IMpegDescriptor
+{
+private:
+  unsigned char baseDirectoryLength;
+  char* baseDirectoryByte;
+  unsigned char classPathExtensionLength;
+  char* classPathExtensionByte;
+  unsigned char initialClassLentgh;
+  char* initialClassByte;
 
-		public:
-			ApplicationLocationDescriptor();
-			virtual ~ApplicationLocationDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			size_t process(char* data, size_t pos);
-			void print();
-			unsigned int getBaseDirectoryLength();
-			string getBaseDirectory();
-			unsigned int getClassPathExtensionLength();
-			string getClassPathExtension();
-			unsigned int getInitialClassLength();
-			string getInitialClass();
-		};
-}
-}
-}
-}
-}
-}
-}
+public:
+  ApplicationLocationDescriptor();
+  virtual ~ApplicationLocationDescriptor();
+  unsigned char getDescriptorTag();
+  unsigned int getDescriptorLength();
+  size_t process(char* data, size_t pos);
+  void print();
+  unsigned int getBaseDirectoryLength();
+  string getBaseDirectory();
+  unsigned int getClassPathExtensionLength();
+  string getClassPathExtension();
+  unsigned int getInitialClassLength();
+  string getInitialClass();
+};
 
-#endif /* APPLICATIONLOCATIONDESCRIPTOR_H_ */
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+
+#endif /* APPLICATION_LOCATION_DESCRIPTOR_H */

@@ -36,12 +36,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "gingancl/FormatterScheduler.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace focus {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_BEGIN
+
 
 	bool FormatterFocusManager::init = false;
 	set<FormatterFocusManager*> FormatterFocusManager::instances;
@@ -1243,9 +1239,5 @@ namespace focus {
 
 		return true;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_END

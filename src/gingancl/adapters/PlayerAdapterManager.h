@@ -52,12 +52,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
   class PlayerAdapterManager : public Thread {
 	private:
 		map<string, IPlayerAdapter*> objectPlayers;
@@ -122,11 +118,6 @@ namespace adapters {
 		void clearDeletePlayers();
 		void run();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif //_PLAYERADAPTERMANAGER_H_

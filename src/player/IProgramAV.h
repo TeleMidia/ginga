@@ -22,12 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class IProgramAV {
 		public:
 			virtual ~IProgramAV(){};
@@ -37,11 +33,6 @@ namespace player {
 			virtual void setPlayer(int pid, IPlayer*)=0;
 			virtual void setPropertyValue(string pName, string pValue)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*IPROGRAMAV_H_*/

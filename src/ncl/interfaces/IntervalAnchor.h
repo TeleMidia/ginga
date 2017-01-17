@@ -20,11 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ContentAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class IntervalAnchor : public ContentAnchor {
 		protected:
 			double begin;
@@ -45,10 +42,6 @@ namespace interfaces {
 			void setEnd(double e);
 			static bool isObjectDuration(double value);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //_INTERVALANCHOR_H_

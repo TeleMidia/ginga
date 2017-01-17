@@ -47,13 +47,8 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace epg {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_BEGIN
+
 	class EPGProcessor {
 		private:
 			set<string>* processedSections;
@@ -108,12 +103,6 @@ namespace epg {
 			void printFieldMap(map<string, struct SIField>* fieldMap);
 
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_END
 #endif /*EPGPROCESSOR_H_*/

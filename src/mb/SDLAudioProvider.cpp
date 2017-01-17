@@ -25,12 +25,8 @@ extern "C" {
 #include <string.h>
 }
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	SDLAudioProvider::SDLAudioProvider(
 			GingaScreenID screenId, const char* mrl){
 
@@ -155,9 +151,5 @@ namespace mb {
 			SDL2ffmpeg::video_refresh(decoder, &rt);
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

@@ -26,12 +26,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 using namespace ::br::pucrio::telemidia::ginga::core::system;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
 	class IPlayerAdapter {
 		public:
 			virtual ~IPlayerAdapter(){};
@@ -55,11 +51,6 @@ namespace adapters {
 			virtual string getPropertyValue(string name)=0;
 
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif /*IPlayerAdapter_H_*/

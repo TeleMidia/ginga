@@ -27,12 +27,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class BBrowserFactory {
 		private:
 			bool running;
@@ -93,11 +89,6 @@ namespace player {
 		private:
 			static void* mainLoop(void* ptr);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*BerkeliumPlayer_h_*/

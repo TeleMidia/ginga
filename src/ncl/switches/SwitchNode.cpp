@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/switches/SwitchNode.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	SwitchNode::SwitchNode(string id) : CompositeNode(id) {
 		content     = new SwitchContent();
 		defaultNode = NULL;
@@ -299,8 +296,5 @@ namespace switches {
 	void SwitchNode::setDefaultNode(Node* node) {
 		defaultNode = node;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END

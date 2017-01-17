@@ -20,13 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IDataFile.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	class DataFile : public IDataFile {
 		private:
 			int structureId;
@@ -49,12 +44,6 @@ namespace ncl {
 			void setSize(double size);
 			double getSize();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
 #endif //_DataFile_H_

@@ -60,11 +60,8 @@ using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclPresentationControlConverter : public NclPresentationControlParser {
 	// tabelas com componentes e regras de cada switch
 	// para reusar logica
@@ -139,10 +136,6 @@ namespace ncl {
 	private:
 		short convertComparator(string comparator);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif

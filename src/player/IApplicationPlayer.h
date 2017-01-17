@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	//debug purpose
 	static const string EC_DBG_START_PRESENTATION        = "0x255";
 
@@ -98,11 +94,6 @@ namespace player {
 	static const string EC_REMOVE_LINK                   = "0x2C";
 
 	static const string EC_SET_PROPERTY_VALUE            = "0x2D";
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*IAPPLICATIONPLAYER_H_*/

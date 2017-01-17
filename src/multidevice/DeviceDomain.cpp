@@ -33,12 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	char DeviceDomain::headerStream[HEADER_SIZE];
 	char* DeviceDomain::mdFrame           = new char[MAX_FRAME_SIZE];
 	unsigned int DeviceDomain::myIP       = 0;
@@ -304,9 +300,5 @@ namespace multidevice {
 			deviceService->removeListener(listener);
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

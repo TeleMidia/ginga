@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationControlParser.h"
 #include "NclComponentsParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
 	NclPresentationControlParser::NclPresentationControlParser(
 		    DocumentParser *documentParser) : ModuleParser(documentParser) {
 
@@ -403,9 +399,5 @@ namespace ncl {
 
 		this->importParser = importParser;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END

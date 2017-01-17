@@ -18,16 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/switches/SwitchContent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	SwitchContent::SwitchContent():Content("application/x-nodeswitch", -1) {
 		typeSet.insert("SwitchContent");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END

@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/Action.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	Action::Action()  {
 		delay = "0";
 		typeSet.insert("Action");
@@ -40,8 +37,5 @@ namespace connectors {
 	void Action::setDelay(string dur) {
 		delay = dur;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

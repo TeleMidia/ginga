@@ -15,42 +15,34 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef Channel_H_
-#define Channel_H_
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
-#include <iostream>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
-	class Channel {
-		private:
-			short id;
-			string name;
-			unsigned int frequency;
-			bool isFullSegment;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
-		public:
-			Channel();
-			~Channel();
-			short getId();
-			void setId(short id);
-			string getName();
-			void setName(string name);
-			unsigned int getFrequency();
-			void setFrequency(unsigned int freq);
-			bool isFullSeg();
-			void setSegment(bool isFullSeg);
-	};
-}
-}
-}
-}
-}
-}
+class Channel
+{
+private:
+  short id;
+  string name;
+  unsigned int frequency;
+  bool isFullSegment;
 
-#endif /*Channel_H_*/
+public:
+  Channel();
+  ~Channel();
+  short getId();
+  void setId(short id);
+  string getName();
+  void setName(string name);
+  unsigned int getFrequency();
+  void setFrequency(unsigned int freq);
+  bool isFullSeg();
+  void setSegment(bool isFullSeg);
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+
+#endif /* CHANNEL_H */

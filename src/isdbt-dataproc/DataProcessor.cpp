@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "dsmcc/DSMCCSectionPayload.h"
 #include "isdbt-tsparser/AIT.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	DataProcessor::DataProcessor() : Thread() {
 		filterManager   = new FilterManager();
 		nptProcessor    = NULL;
@@ -484,9 +480,5 @@ namespace dataprocessing {
 
 		clog << "DataProcessor::run all done!" << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END

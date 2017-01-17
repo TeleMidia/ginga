@@ -27,13 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class DownloadDataBlock {
 		private:
 			unsigned int moduleId;
@@ -49,12 +44,6 @@ namespace carousel {
 			unsigned int getModuleVersion();
 			void print();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*DOWNLOADDATABLOCK_H_*/

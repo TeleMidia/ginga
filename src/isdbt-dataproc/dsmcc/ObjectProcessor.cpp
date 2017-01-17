@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ObjectProcessor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	ObjectProcessor::ObjectProcessor(unsigned short pid) {
 		this->pid = pid;
 	}
@@ -216,10 +211,5 @@ namespace carousel {
 			++i;
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END

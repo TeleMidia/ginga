@@ -15,50 +15,43 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FOCUSDECORATION_H_
-#define FOCUSDECORATION_H_
+#ifndef FOCUS_DECORATION_H
+#define FOCUS_DECORATION_H
+
+#include "namespaces.h"
 
 #include "util/Color.h"
-#include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace navigation {
-  class FocusDecoration {
-  	private:
-  		Color* focusBorderColor;
-  		double focusBorderTransparency;
-  		string focusSrc;
-  		int focusBorderWidth;
-  		Color* selBorderColor;
-  		string focusSelSrc;
+class FocusDecoration
+{
+private:
+  Color* focusBorderColor;
+  double focusBorderTransparency;
+  string focusSrc;
+  int focusBorderWidth;
+  Color* selBorderColor;
+  string focusSelSrc;
 
-	public:
-		FocusDecoration();
-		virtual ~FocusDecoration();
-		Color* getFocusBorderColor();
-		double getFocusBorderTransparency();
-		string getFocusSelSrc();
-		string getFocusSrc();
-		int getFocusBorderWidth();
-		Color* getSelBorderColor();
-		void setFocusBorderColor(Color* color);
-		void setFocusBorderTransparency(double alpha);
-		void setFocusBorderWidth(int width);
-		void setFocusSelSrc(string src);
-		void setFocusSrc(string src);
-		void setSelBorderColor(Color* color);
-  };
-}
-}
-}
-}
-}
+public:
+  FocusDecoration();
+  virtual ~FocusDecoration();
+  Color* getFocusBorderColor();
+  double getFocusBorderTransparency();
+  string getFocusSelSrc();
+  string getFocusSrc();
+  int getFocusBorderWidth();
+  Color* getSelBorderColor();
+  void setFocusBorderColor(Color* color);
+  void setFocusBorderTransparency(double alpha);
+  void setFocusBorderWidth(int width);
+  void setFocusSelSrc(string src);
+  void setFocusSrc(string src);
+  void setSelBorderColor(Color* color);
+};
 
-#endif /*FOCUSDECORATION_H_*/
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_END
+
+#endif /* FOCUS_DECORATION_H */

@@ -23,12 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMBDefs.h"
 #include "CodeMap.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class SDLInputEvent {
 		public:
 			static const string ET_WAKEUP;
@@ -69,11 +65,6 @@ namespace mb {
 			void getAxisValue(int* x, int* y, int* z);
 			void* getContent();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLINPUTEVENT_H_*/

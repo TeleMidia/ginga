@@ -29,12 +29,8 @@ using namespace std;
 
 using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	RemoteDeviceManager* RemoteDeviceManager::_instance = NULL;
 
 	RemoteDeviceManager::RemoteDeviceManager() : Thread() {
@@ -182,9 +178,5 @@ namespace multidevice {
 
 		clog << "RemoteDeviceManager::run All done!" << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

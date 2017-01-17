@@ -24,13 +24,8 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	class TransportProtocolDescriptor : public IMpegDescriptor {
 		private:
 			unsigned short protocolId;
@@ -51,12 +46,6 @@ namespace si {
 			char* getSelectorByte();
 	};
 
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* TRANSPORTPROTOCOLDESCRIPTOR_H_ */

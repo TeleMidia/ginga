@@ -27,12 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
    class ChannelPlayer : public Player, public IPlayerListener {
   	protected:
   		map<string, IPlayer*>* objectMap;
@@ -71,11 +67,6 @@ namespace player {
 
 		virtual void timeShift(string direction){};
    };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*CHANNELPLAYER_H_*/

@@ -158,12 +158,8 @@ extern "C" {
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	typedef struct MyAVPacketList {
 		AVPacket pkt;
 		struct MyAVPacketList *next;
@@ -546,11 +542,6 @@ namespace mb {
 				AVStream *st,
 				AVCodec *codec);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /* SDL2FFMPEG_H */

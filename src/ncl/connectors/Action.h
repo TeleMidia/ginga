@@ -25,11 +25,8 @@ using namespace std;
 
 #include "Role.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class Action {
 		protected:
 			set<string> typeSet;
@@ -48,10 +45,6 @@ namespace connectors {
 				return typeSet.count(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_ACTION_H_

@@ -24,11 +24,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
 	class Transition : public Entity {
 		public:
 			static const int TYPE_BARWIPE = 0;
@@ -101,10 +98,6 @@ namespace transition {
 			void setType(int type);
 			void setVertRepeat(int num);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END
 #endif /*TRANSITION_H_*/

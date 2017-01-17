@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/SampleIntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	SampleIntervalAnchor::SampleIntervalAnchor(
 			string id,
 			double begin,
@@ -46,8 +43,5 @@ namespace interfaces {
 		*firstSyntax = this->firstSyntax;
 		*lastSyntax = this->lastSyntax;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

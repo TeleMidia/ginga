@@ -28,14 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
     class LogoTransmissionDescriptor : public IMpegDescriptor {
 		protected:
 			unsigned char logoType;
@@ -63,13 +57,6 @@ namespace descriptors {
 			void print();
 			size_t process (char* data, size_t pos);
     };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /*LOGOTRANSMISSIONDESCRIPTOR_H_*/

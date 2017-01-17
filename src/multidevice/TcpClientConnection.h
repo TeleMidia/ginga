@@ -32,12 +32,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "IRemoteDeviceListener.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	class TCPClientConnection : public Thread  {
 		private:
 			TCPSocket* tcpSocket;
@@ -63,11 +59,6 @@ namespace multidevice {
 			bool post(char* str);
 			void release();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /* TCPCLIENTCONNECTION_H_ */

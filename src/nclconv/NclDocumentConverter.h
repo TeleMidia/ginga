@@ -40,11 +40,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclDocumentConverter : public IDocumentConverter,
 		  public NclDocumentParser {
 
@@ -84,10 +81,6 @@ namespace ncl {
 			return DocumentParser::parse(uri, iUriD, fUriD);
 		}
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif

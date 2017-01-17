@@ -41,14 +41,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+
   class EventTransitionManager {
 	private:
 		map<short int, int> currentTransitionIndex;
@@ -94,13 +88,6 @@ namespace transition {
 		set<double>* getTransitionsValues(short int transType);
 		EventTransition* getNextTransition(FormatterEvent* mainEvent);
   };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
 #endif /*EventTransitionManager_H_*/

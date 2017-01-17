@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adaptation {
-namespace context {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+
 	const string SYSTEM_LANGUAGE("system.language");
 	const string SYSTEM_CAPTION("system.caption");
 	const string SYSTEM_SUBTITLE("system.subtitle");
@@ -64,12 +59,6 @@ namespace context {
 
 	const string DEFAULT_FOCUS_BORDER_TRANSPARENCY(
 			"default.focusBorderTransparency");
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
 #endif //_CONTEXTBASE_H_

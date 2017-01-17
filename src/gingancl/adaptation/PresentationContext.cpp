@@ -20,13 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ctxmgmt/ContextManager.h"
 #include "ctxmgmt/SystemInfo.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adaptation {
-namespace context {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+
 	ContextManager* PresentationContext::contextManager = NULL;
 
 	PresentationContext::PresentationContext(GingaScreenID screenId) {
@@ -281,10 +276,5 @@ namespace context {
 		devListener = rdl;
 	}
 #endif
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END

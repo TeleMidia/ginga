@@ -15,41 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ASSESSMENT_H_
-#define _ASSESSMENT_H_
+#ifndef ASSESSMENT_H
+#define ASSESSMENT_H
 
-#include <string>
-#include <set>
-#include <iostream>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
-	class Assessment {
-		protected:
-			set<string> typeSet;
-			
-		public:
-			Assessment(){
-				typeSet.insert("Assessment");
-			};
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
 
-			virtual ~Assessment() {
-				typeSet.clear();
-			};
+class Assessment
+{
+protected:
+  set<string> typeSet;
 
-			virtual string toString(){return "";};
-			virtual bool instanceOf(string type) {
-				return typeSet.count(type);
-			}
-	};
-}
-}
-}
-}
-}
+public:
+  Assessment()
+  {
+    typeSet.insert("Assessment");
+  };
 
-#endif //_ASSESSMENT_H_
+  virtual ~Assessment()
+  {
+    typeSet.clear();
+  };
+
+  virtual string toString(){ return ""; };
+  virtual bool instanceOf(string type)
+  {
+    return typeSet.count (type);
+  }
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
+
+#endif /* ASSESSMENT_H */

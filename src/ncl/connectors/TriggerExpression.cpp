@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/TriggerExpression.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	TriggerExpression::TriggerExpression() : ConditionExpression() {
 		delay = "0";
 		typeSet.insert("TriggerExpression");
@@ -35,8 +32,5 @@ namespace connectors {
 	void TriggerExpression::setDelay(string delay) {
 		this->delay = delay;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

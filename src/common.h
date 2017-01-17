@@ -30,15 +30,33 @@ GINGA_BEGIN_DECLS
 
 #include <assert.h>
 #include <errno.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <pthread.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <ncluaw.h>
+#include <SDL.h>
 
 #define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 
 GINGA_END_DECLS
+
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <list>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+using namespace std;
+
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+XERCES_CPP_NAMESPACE_USE
 
 #endif /* COMMON_H */

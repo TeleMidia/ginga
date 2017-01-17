@@ -18,14 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NPTProcessor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 NPTProcessor::NPTProcessor(ISTCProvider* stcProvider) : Thread() {
 
 	this->stcProvider    = stcProvider;
@@ -1077,11 +1071,5 @@ void NPTProcessor::run() {
 	}
 }
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END

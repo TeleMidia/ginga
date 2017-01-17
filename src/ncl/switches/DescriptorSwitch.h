@@ -35,11 +35,8 @@ extern "C" {
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class DescriptorSwitch : public GenericDescriptor {
 		private:
 			vector<GenericDescriptor*>* descriptorList;
@@ -89,10 +86,6 @@ namespace switches {
 			void selectDefault();
 			GenericDescriptor* getSelectedDescriptor();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_DESCRIPTORSWITCH_H_

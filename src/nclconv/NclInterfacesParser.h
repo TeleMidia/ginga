@@ -29,12 +29,8 @@ XERCES_CPP_NAMESPACE_USE
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
   class NclInterfacesParser : public ModuleParser {
 	public:
 		NclInterfacesParser(DocumentParser *documentParser);
@@ -62,11 +58,6 @@ namespace ncl {
 		void *parseProperty(DOMElement *parentElement, void *objGrandParent);
 		void *parsePort(DOMElement *parentElement, void *objGrandParent);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLINTERFACESPARSER_H_*/

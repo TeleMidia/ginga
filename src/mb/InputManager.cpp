@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ScreenManagerFactory.h"
 #include "CodeMap.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	InputManager::InputManager(GingaScreenID screenId) : Thread() {
 		currentXAxis          = 0;
 		currentYAxis          = 0;
@@ -718,9 +714,5 @@ namespace mb {
 			dispatchApplicationEvent(inputEvent);
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

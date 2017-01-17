@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITPROVIDERLISTENER_H_
 #define ITPROVIDERLISTENER_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 
 	static const short PST_LOOP = 0x01;
 
@@ -32,11 +28,6 @@ namespace tuning {
 			virtual ~ITProviderListener(){};
 			virtual void receiveSignal(short signalCode)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*ITPROVIDERLISTENER_H_*/

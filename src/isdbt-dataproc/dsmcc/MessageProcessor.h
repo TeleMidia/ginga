@@ -33,13 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class MessageProcessor {
 		private:
 			ServiceDomain* sd;
@@ -64,12 +59,6 @@ namespace carousel {
 			ServiceDomain* getServiceDomain();
 			void checkTasks();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*MESSAGEPROCESSOR_H_*/

@@ -39,12 +39,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
 
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	class RemoteEventService : public IRemoteDeviceListener {
 		private:
 			static RemoteEventService* _instance;
@@ -93,11 +89,6 @@ namespace multidevice {
 					string eventContent);
 
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /* REMOTEEVENTSERVICE_H_ */

@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/animation/Animation.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace animation {
+BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_BEGIN
+
 	Animation::Animation() {
 		this->duration = "";
 		this->by = "";
@@ -43,8 +40,5 @@ namespace animation {
 	string Animation::getBy() {
 		return by;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_END

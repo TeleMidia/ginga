@@ -26,12 +26,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <sys/stat.h>
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace prefetch {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
+
 	PrefetchManager::PrefetchManager() {
 		string iurid = SystemCompat::getIUriD();
 		icm = InteractiveChannelManager::getInstance();
@@ -377,9 +373,5 @@ namespace prefetch {
 			receiveDataPipe(NULL, 1); //refresh last file downloaded
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END

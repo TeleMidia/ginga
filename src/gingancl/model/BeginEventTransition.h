@@ -24,14 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "EndEventTransition.h"
 #include "EventTransition.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+
   class BeginEventTransition : public EventTransition {
 	private:
 		EndEventTransition* endTransition;
@@ -42,13 +36,6 @@ namespace transition {
 		EndEventTransition* getEndTransition();
 		void setEndTransition(EndEventTransition* entry);
   };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
 #endif /*BEGINEVENTTRANSITION_H_*/

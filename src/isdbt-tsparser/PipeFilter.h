@@ -35,12 +35,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class PipeFilter : public ITSFilter, Thread {
 		private:
 			unsigned int pid;
@@ -75,11 +71,6 @@ namespace tsparser {
 		private:
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*PIPEFILTER_H_*/

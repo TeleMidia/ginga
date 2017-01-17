@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DocumentParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
+
 	DocumentParser::DocumentParser() {
 		genericTable = new map<string, void*>;
 		//initialize();
@@ -144,15 +141,7 @@ namespace framework {
 	}
 
 	void DocumentParser::initializeUserCurrentPath() {
-		char path[PATH_MAX] = "";
-		char* buf = getcwd(path, PATH_MAX);
-
-		if (buf == NULL) {
-			return;
-		}
-
-		userCurrentPath.assign(path, strlen(path));
-
+		userCurrentPath.assign(g_get_current_dir ());
 		if (userCurrentPath.find_last_of(iUriD) !=
 				userCurrentPath.length() - 1) {
 
@@ -415,8 +404,5 @@ namespace framework {
 
 		return true;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END

@@ -24,14 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
     class ILogoTransmissionDescriptor : public IMpegDescriptor {
 		public:
 			virtual ~ILogoTransmissionDescriptor(){};
@@ -50,13 +44,6 @@ namespace descriptors {
 			virtual unsigned char getNameLength()=0;
 			virtual unsigned char getDescriptorTag()=0;
     };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /*ILOGOTRANSMISSIONDESCRIPTOR_H_*/

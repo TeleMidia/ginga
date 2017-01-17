@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/TSPacket.h"
 #include "isdbt-tsparser/Demuxer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	TSPacket::TSPacket(char* packetData) {
 		isSectionType      = false;
 		tsaf               = NULL;
@@ -497,9 +493,5 @@ namespace tsparser {
 
 		clog << endl << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

@@ -26,13 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
     class IEventInfo {
 		public:
 			//obrigatory descriptors tag:
@@ -80,12 +75,6 @@ namespace si {
 			virtual void print()=0;
 
     };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /*IEVENTINFO_H_*/

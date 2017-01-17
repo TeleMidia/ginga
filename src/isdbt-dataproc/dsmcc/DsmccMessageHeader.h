@@ -15,91 +15,73 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DSMCCMESSAGEHEADER_H_
-#define DSMCCMESSAGEHEADER_H_
+#ifndef DSMCC_MESSAGE_HEADER_H
+#define DSMCC_MESSAGE_HEADER_H
 
-extern "C" {
-	#include <sys/stat.h>
-	#include <stdio.h>
-	#include <stdio.h>
-	#include <string.h>
-}
+#include "namespaces.h"
 
-#include <iostream>
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
-	class DsmccMessageHeader {
-		private:
-			//origin es is
-			unsigned int pid;
-			string fileName;
+class DsmccMessageHeader
+{
+private:
+  //origin es is
+  unsigned int pid;
+  string fileName;
 
-			//
-			// ISO/IEC 13818-6 DSM-CC MESSAGE HEADER
-			//
+  //
+  // ISO/IEC 13818-6 DSM-CC MESSAGE HEADER
+  //
 
-			// Must be 0x11 for DSMCC message. (1 byte)
-			unsigned int protocolDiscriminator;
+  // Must be 0x11 for DSMCC message. (1 byte)
+  unsigned int protocolDiscriminator;
 
-			// Defines message type. (1 byte)
-			//   0x01    Configuration message
-			//   0x02    Session message
-			//   0x03    Download message
-			//   0x04    Channel change
-			//   0x05    Passthru message
-			unsigned int dsmccType;
+  // Defines message type. (1 byte)
+  //   0x01    Configuration message
+  //   0x02    Session message
+  //   0x03    Download message
+  //   0x04    Channel change
+  //   0x05    Passthru message
+  unsigned int dsmccType;
 
-			// Indicates the message type depending on
-			// DSMCC type. (2 bytes)
-			//   0x1001    Dowload info request
-			//   0x1002    Download info response or DII
-			//   0x1003    Download data block (actual data)
-			//   0x1004    Download data request
-			//   0x1005    Download cancel
-			//   0x1006    Download server initiate (DSI)
-			unsigned int messageId;
+  // Indicates the message type depending on
+  // DSMCC type. (2 bytes)
+  //   0x1001    Dowload info request
+  //   0x1002    Download info response or DII
+  //   0x1003    Download data block (actual data)
+  //   0x1004    Download data request
+  //   0x1005    Download cancel
+  //   0x1006    Download server initiate (DSI)
+  unsigned int messageId;
 
-			// Used for session integrity and
-			// error. (4 bytes)
-			unsigned int transactionId;
+  // Used for session integrity and
+  // error. (4 bytes)
+  unsigned int transactionId;
 
-			// RESERVED BYTE, must be 0xFF.
+  // RESERVED BYTE, must be 0xFF.
 
-			// Indicates the lenght in bytes of the
-			// adaptation header. (1 byte)
-			unsigned int adaptationLength;
+  // Indicates the lenght in bytes of the
+  // adaptation header. (1 byte)
+  unsigned int adaptationLength;
 
-			// The total lenght in bytes of this message
-			// following this field.  This lenght includes
-			// any adaptation headers. (2 bytes)
-			unsigned int messageLength;
+  // The total lenght in bytes of this message
+  // following this field.  This lenght includes
+  // any adaptation headers. (2 bytes)
+  unsigned int messageLength;
 
-		public:
-			DsmccMessageHeader();
-			int readMessageFromFile(string fileName, unsigned int pid);
-			unsigned int getESId();
-			string getFileName();
-			unsigned int getDsmccType();
-			unsigned int getMessageId();
-			unsigned int getTrasnsactionId();
-			unsigned int getAdaptationLength();
-			unsigned int getMessageLength();
-			void print();
-	};
-}
-}
-}
-}
-}
-}
-}
+public:
+  DsmccMessageHeader();
+  int readMessageFromFile(string fileName, unsigned int pid);
+  unsigned int getESId();
+  string getFileName();
+  unsigned int getDsmccType();
+  unsigned int getMessageId();
+  unsigned int getTrasnsactionId();
+  unsigned int getAdaptationLength();
+  unsigned int getMessageLength();
+  void print();
+};
 
-#endif /*DSMCCMESSAGEHEADER_H_*/
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+
+#endif /* DSMCC_MESSAGE_HEADER_H */

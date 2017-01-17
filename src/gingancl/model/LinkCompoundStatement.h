@@ -29,13 +29,8 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkCompoundStatement : public LinkStatement {
 		protected:
 			vector<LinkStatement*>* statements;
@@ -58,12 +53,6 @@ namespace link {
 			virtual vector<FormatterEvent*>* getEvents();
 			virtual bool evaluate();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCOMPOUNDSTATEMENT_H_

@@ -43,11 +43,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclLayoutConverter : public NclLayoutParser {
 	private:
 		IDeviceLayout* deviceLayout;
@@ -67,10 +64,6 @@ namespace ncl {
 		int getPixelValue(string value);
 		bool isPercentualValue(string value);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif

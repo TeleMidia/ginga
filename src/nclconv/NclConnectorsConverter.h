@@ -15,8 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NclConnectorsConverter_H
-#define NclConnectorsConverter_H
+#ifndef NCL_CONNECTORS_CONVERTER_H
+#define NCL_CONNECTORS_CONVERTER_H
+
+#include "namespaces.h"
 
 #include "ncl/Parameter.h"
 using namespace ::br::pucrio::telemidia::ncl;
@@ -52,134 +54,77 @@ using namespace ::br::pucrio::telemidia::converter::framework;
 #include "NclConnectorsParser.h"
 using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 
-#include <map>
-#include <vector>
-using namespace std;
-
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
-  class NclConnectorsConverter : public NclConnectorsParser {
-	private:
-		Connector *connector;
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
-	public:
-		NclConnectorsConverter(DocumentParser *documentParser);
-		void addCausalConnectorToConnectorBase(
-			    void *parentObject, void *childObject);
+class NclConnectorsConverter : public NclConnectorsParser
+{
+private:
+  Connector *connector;
 
-		void addConnectorParamToCausalConnector(
-			    void *parentObject, void *childObject);
+public:
+  NclConnectorsConverter(DocumentParser *documentParser);
+  void addCausalConnectorToConnectorBase(void *parent, void *child);
+  void addConnectorParamToCausalConnector(void *parent, void *child);
+  void addImportBaseToConnectorBase(void *parent, void *child);
+  void *createCausalConnector(DOMElement *parentElement,
+                              void *objGrandParent);
+  void *createConnectorBase(DOMElement *parentElement,
+                            void *objGrandParent);
+  void *createConnectorParam(DOMElement *parentElement,
+                             void *objGrandParent);
 
-		void addImportBaseToConnectorBase(
-			    void *parentObject, void *childObject);
+private:
+  void compileRoleInformation(Role *role, DOMElement *parentElement);
 
-		void *createCausalConnector(
-			    DOMElement *parentElement, void *objGrandParent);
+public:
+  void *createSimpleCondition(DOMElement *parentElement,
+                              void *objGrandParent);
+  void *createCompoundCondition(DOMElement *parentElement,
+                                void *objGrandParent);
+  void *createAttributeAssessment(DOMElement *parentElement,
+                                  void *objGrandParent);
+  void *createValueAssessment(DOMElement *parentElement,
+                              void *objGrandParent);
+  void *createAssessmentStatement(DOMElement *parentElement,
+                                  void *objGrandParent);
+  void *createCompoundStatement(DOMElement *parentElement,
+                                void *objGrandParent);
+  void *createSimpleAction(DOMElement *parentElement, void *objGrandParent);
+  void *createCompoundAction(DOMElement *parentElement,
+                             void *objGrandParent);
 
-		void *createConnectorBase(
-			    DOMElement *parentElement, void *objGrandParent);
+private:
+  Parameter *getParameter(string paramName);
+  short convertActionType(string actionType);
 
-		void *createConnectorParam(
-			    DOMElement *parentElement, void *objGrandParent);
+public:
+  static short convertEventState(string eventState);
+  void addSimpleConditionToCompoundCondition(void *parent,void *child);
+  void addCompoundConditionToCompoundCondition(void *parent,void *child);
+  void addAssessmentStatementToCompoundCondition(void *parent,void *child);
+  void addCompoundStatementToCompoundCondition(void *parent,void *child);
+  void addAttributeAssessmentToAssessmentStatement(void *parent,
+                                                   void *child);
+  void addValueAssessmentToAssessmentStatement(void *parent, void *child);
+  void addAssessmentStatementToCompoundStatement(void *parent, void *child);
+  void addCompoundStatementToCompoundStatement(void *parent, void *child);
+  void addSimpleActionToCompoundAction(void *parent, void *child);
+  void addCompoundActionToCompoundAction(void *parent, void *child);
+  void addSimpleConditionToCausalConnector(void *parent, void *child);
+  void addCompoundConditionToCausalConnector(void *parent, void *child);
+  void addSimpleActionToCausalConnector(void *parent, void *child);
+  void addCompoundActionToCausalConnector(void *parent, void *child);
+  void addAssessmentStatementToConstraintConnector(void *parent,
+                                                   void *child);
+  void addCompoundStatementToConstraintConnector(void *parent, void *child);
+  void addConstraintConnectorToConnectorBase(void *parent, void *child);
+  void *createConstraintConnector(DOMElement *parentElement,
+                                  void *objGrandParent);
+};
 
-	private:
-		void compileRoleInformation(Role *role, DOMElement *parentElement);
-
-	public:
-		void *createSimpleCondition(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createCompoundCondition(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createAttributeAssessment(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createValueAssessment(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createAssessmentStatement(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createCompoundStatement(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createSimpleAction(
-			    DOMElement *parentElement, void *objGrandParent);
-
-		void *createCompoundAction(
-			    DOMElement *parentElement, void *objGrandParent);
-
-	private:
-		Parameter *getParameter(string paramName);
-		short convertActionType(string actionType);
-
-	public:
-		static short convertEventState(string eventState);
-		void addSimpleConditionToCompoundCondition(
-			    void *parentObject, void *childObject);
-
-		void addCompoundConditionToCompoundCondition(
-			    void *parentObject, void *childObject);
-
-		void addAssessmentStatementToCompoundCondition(
-			    void *parentObject, void *childObject);
-
-		void addCompoundStatementToCompoundCondition(
-			    void *parentObject, void *childObject);
-
-		void addAttributeAssessmentToAssessmentStatement(
-			    void *parentObject, void *childObject);
-
-		void addValueAssessmentToAssessmentStatement(
-			    void *parentObject, void *childObject);
-
-		void addAssessmentStatementToCompoundStatement(
-			    void *parentObject, void *childObject);
-
-		void addCompoundStatementToCompoundStatement(
-			    void *parentObject, void *childObject);
-
-		void addSimpleActionToCompoundAction(
-			    void *parentObject, void *childObject);
-
-		void addCompoundActionToCompoundAction(
-			    void *parentObject, void *childObject);
-
-		void addSimpleConditionToCausalConnector(
-			    void *parentObject, void *childObject);
-
-		void addCompoundConditionToCausalConnector(
-			    void *parentObject, void *childObject);
-
-		void addSimpleActionToCausalConnector(
-			    void *parentObject, void *childObject);
-
-		void addCompoundActionToCausalConnector(
-			    void *parentObject, void *childObject);
-
-		void addAssessmentStatementToConstraintConnector(
-			    void *parentObject, void *childObject);
-
-		void addCompoundStatementToConstraintConnector(
-			    void *parentObject, void *childObject);
-
-		void addConstraintConnectorToConnectorBase(
-			    void *parentObject, void *childObject);
-
-		void *createConstraintConnector(
-			    DOMElement *parentElement, void *objGrandParent);
-  };
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 
 #endif

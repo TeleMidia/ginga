@@ -18,18 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/components/AbsoluteReferenceContent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	AbsoluteReferenceContent::AbsoluteReferenceContent(string ref) :
 		    ReferenceContent(ref) {
 
 		typeSet.insert("AbsoluteReferenceContent");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END

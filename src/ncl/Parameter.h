@@ -15,37 +15,32 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _PARAMETER_H_
-#define _PARAMETER_H_
+#ifndef PARAMETER_H
+#define PARAMETER_H
 
-#include <string>
-#include <set>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-	class Parameter {
-		public:
-			Parameter(string n, string v);
-			virtual ~Parameter() {};
-			bool instanceOf(string s);
-			string getName();
-			string getValue();
-			void setName(string n);
-			void setValue(string v);
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 
-		protected:
-			string name;
-			set<string> typeSet; //informacoes de tipo
+class Parameter
+{
+public:
+  Parameter(string n, string v);
+  virtual ~Parameter() {};
+  bool instanceOf(string s);
+  string getName();
+  string getValue();
+  void setName(string n);
+  void setValue(string v);
 
-		private:
-			string value;
-	};
-}
-}
-}
-}
+protected:
+  string name;
+  set<string> typeSet;
 
-#endif /*PARAMETER_H_*/
+private:
+  string value;
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_END
+
+#endif /* PARAMETER_H */

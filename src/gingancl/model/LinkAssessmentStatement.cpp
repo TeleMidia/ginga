@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "LinkAssessmentStatement.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	LinkAssessmentStatement::LinkAssessmentStatement(
 		    short comparator,
 		    LinkAttributeAssessment* mainAssessment,
@@ -106,10 +101,5 @@ namespace link {
 			    otherAssessment->getValue(),
 			    comparator);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

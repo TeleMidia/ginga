@@ -31,12 +31,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	static const unsigned int BROADCAST_PORT = 41000;
 	static const string PASSIVE_MCAST_ADDR      = "239.10.10.3";
 	//static const string SECO_WRITE_MCAST_ADDR   = "239.10.10.4";
@@ -65,11 +61,6 @@ namespace multidevice {
 			int destDevClass,
 			int mountFrameType,
 			unsigned int payloadSize);
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_NetworkUtil_H_*/

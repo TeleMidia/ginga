@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclMetainformationConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclMetainformationConverter::NclMetainformationConverter(
 		    DocumentParser *documentParser) : NclMetainformationParser(
 		    	   documentParser) {
@@ -64,8 +61,5 @@ namespace ncl {
 		metadata = new Metadata();
 		return (void*)metadata;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

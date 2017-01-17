@@ -24,12 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LocalScreenManager.h"
 #include "ScreenManagerFactory.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
   GingaSurfaceID SDLSurface::refIdCounter = 1;
 
@@ -752,9 +748,5 @@ namespace mb {
 	{
 		myId = surId;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

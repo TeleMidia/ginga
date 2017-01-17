@@ -30,13 +30,8 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
   class FormatterEvent {
 	private:
 		static const short ST_ABORTED = 50;
@@ -113,12 +108,6 @@ namespace event {
 		long getOccurrences();
 		static string getStateName(short state);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_FORMATTEREVENT_H_

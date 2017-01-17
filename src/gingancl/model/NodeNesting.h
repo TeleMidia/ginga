@@ -30,13 +30,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
   class NodeNesting {
 	private:
 		string id;
@@ -70,12 +65,6 @@ namespace components {
 		NodeNesting* copy();
 		string toString();
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif /*NODENESTING_H_*/

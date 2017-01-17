@@ -15,36 +15,24 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FOCUSSOURCEMANAGER_H_
-#define FOCUSSOURCEMANAGER_H_
+#ifndef FOCUS_SOURCE_MANAGER_H
+#define FOCUS_SOURCE_MANAGER_H
+
+#include "namespaces.h"
 
 #include "mb/IMBDefs.h"
 #include "mb/SDLSurface.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
-namespace focus {
-  class FocusSourceManager {
-	public:
-		static GingaSurfaceID getFocusSourceComponent(
-				GingaScreenID screenId, string src);
-  };
-}
-}
-}
-}
-}
-}
-}
-}
+class FocusSourceManager
+{
+public:
+  static GingaSurfaceID getFocusSourceComponent
+  (GingaScreenID screenId, string src);
+};
 
-#endif /*FOCUSSOURCEMANAGER_H_*/
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_END
+
+#endif /* FOCUS_SOURCE_MANAGER_H */

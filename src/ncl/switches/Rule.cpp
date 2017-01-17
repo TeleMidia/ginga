@@ -18,16 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/switches/Rule.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	Rule::Rule(string someId) : Entity(someId) {
 		typeSet.insert("Rule");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END

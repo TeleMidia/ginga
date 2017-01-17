@@ -22,13 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompositeExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
 
 	set<FormatterEvent*> FormatterEvent::instances;
 	bool FormatterEvent::init = false;
@@ -478,10 +473,5 @@ namespace event {
 				return "";
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

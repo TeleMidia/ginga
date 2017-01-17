@@ -28,12 +28,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace ic {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+
   class InteractiveChannelManager {
 	private:
 		set<CurlInteractiveChannel*>* ics;
@@ -64,11 +60,6 @@ namespace ic {
 	private:
 		static void* asyncPerform(void* thiz);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
 #endif /*_InteractiveChannelManager_H_*/

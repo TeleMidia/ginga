@@ -21,14 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ApplicationPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
+
   class NCLPlayerAdapter : public ApplicationPlayerAdapter {
 	public:
 		NCLPlayerAdapter();
@@ -42,13 +36,6 @@ namespace ncl {
 		void unlockCurrentEvent(FormatterEvent* event);
 		void flip();
   };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END
 #endif /* NCLPLAYERADAPTER_H_ */

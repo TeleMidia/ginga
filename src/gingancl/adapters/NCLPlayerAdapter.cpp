@@ -27,14 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "gingancl/FormatterMediator.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
+
 	NCLPlayerAdapter::NCLPlayerAdapter() : ApplicationPlayerAdapter()  {
 		typeSet.insert("NCLPlayerAdapter");
 	}
@@ -214,11 +208,5 @@ namespace ncl {
 			player->flip();
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END

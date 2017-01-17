@@ -50,12 +50,8 @@ typedef struct lockedLitenerAction {
 	set<int>* events;
 } LockedAction;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class InputManager : public Thread {
 		protected:
 			map<IInputEventListener*, set<int>*> eventListeners;
@@ -142,11 +138,6 @@ namespace mb {
 				SDLInputEvent *inputEvent, int& pLastCode, int& lastCode,
 				double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*INPUTMANAGER_H_*/

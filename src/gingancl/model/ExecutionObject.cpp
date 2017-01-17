@@ -23,13 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SwitchEvent.h"
 using namespace br::pucrio::telemidia::ginga::ncl::model::switches;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
 	bool ExecutionObject::initMutex = false;
 	set<ExecutionObject*> ExecutionObject::objects;
 	pthread_mutex_t ExecutionObject::_objMutex;
@@ -1711,10 +1706,5 @@ namespace components {
 	void ExecutionObject::unlockParentTable() {
 		Thread::mutexUnlock(&mutexParentTable);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END

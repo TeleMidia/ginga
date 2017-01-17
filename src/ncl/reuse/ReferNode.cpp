@@ -21,11 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/components/NodeEntity.h"
 using namespace ::br::pucrio::telemidia::ncl::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace reuse {
+BR_PUCRIO_TELEMIDIA_NCL_REUSE_BEGIN
+
 	ReferNode::ReferNode(string id) : Node(id) {
 		typeSet.insert("ReferNode");
 		typeSet.insert("DocumentNode");
@@ -115,8 +112,5 @@ namespace reuse {
 	Entity* ReferNode::getDataEntity() {
 		return referredNode;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_REUSE_END

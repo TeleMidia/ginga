@@ -96,11 +96,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::animation;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	class FormatterScheduler :
 			public ILinkActionListener,
 			public IEventListener,
@@ -228,10 +225,6 @@ namespace ncl {
 			void removeSchedulerListener(IFormatterSchedulerListener* listener);
 			void receiveGlobalAttribution(string propertyName, string value);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif //_FORMATTERSCHEDULER_H_

@@ -28,11 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "ncl/connectors/EventUtil.h"
 using namespace ::br::pucrio::telemidia::ncl::connectors;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	FormatterScheduler::FormatterScheduler(
 		    PlayerAdapterManager* playerManager,
 		    RuleAdapter* ruleAdapter,
@@ -1969,8 +1966,5 @@ namespace ncl {
 
 		delete names;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END

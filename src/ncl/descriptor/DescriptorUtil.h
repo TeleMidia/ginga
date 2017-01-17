@@ -26,11 +26,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
   class DescriptorUtil {
 	public:
 		static short getFitCode(string fitName) {
@@ -119,10 +116,6 @@ namespace descriptor {
 			}
 		}
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END
 #endif /*DESCRIPTORUTIL_H_*/

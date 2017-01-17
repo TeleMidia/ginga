@@ -21,20 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "../components/Content.h"
 using namespace ::br::pucrio::telemidia::ncl::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class SwitchContent : public Content {
 		public:
 			SwitchContent();
 			virtual ~SwitchContent(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_SWITCHCONTENT_H_

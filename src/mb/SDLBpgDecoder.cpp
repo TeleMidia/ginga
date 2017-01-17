@@ -25,12 +25,8 @@ extern "C" {
 
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
    
     SDLBpgDecoder::SDLBpgDecoder(string filename) {
 
@@ -101,10 +97,5 @@ namespace mb {
         bpg_decoder_close(s);
         return img;
     }
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

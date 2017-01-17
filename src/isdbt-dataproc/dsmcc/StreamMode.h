@@ -22,14 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 
 class StreamMode : public MpegDescriptor {
 	private:
@@ -51,13 +45,6 @@ class StreamMode : public MpegDescriptor {
 
 };
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
 #endif /* STREAMMODE_H_ */

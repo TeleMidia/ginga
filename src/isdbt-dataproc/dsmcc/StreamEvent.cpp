@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-dataproc/dsmcc/StreamEvent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	StreamEvent::StreamEvent(
 			void* descriptorData, unsigned int descriptorSize) {
 
@@ -84,9 +80,5 @@ namespace dataprocessing {
 		clog << "eventName: " << eventName << endl;
 		clog << "privateData: " << (string)(char*)getEventData() << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END

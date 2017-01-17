@@ -33,11 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "CommonCoreManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
   class CommonCoreManager {
 	private:
 		void* tuner;
@@ -80,10 +77,6 @@ namespace lssm {
 		void tune();
 		void startPresentation();
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
 #endif /*_COMMONCOREMANAGER_H_*/

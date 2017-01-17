@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "multidevice/RemoteDevice.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	RemoteDevice::RemoteDevice(unsigned int address, int deviceClass) {
 		this->address = address;
 		this->deviceClass = deviceClass;
@@ -52,9 +48,5 @@ namespace multidevice {
 		*width = this->width;
 		*height = this->height;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

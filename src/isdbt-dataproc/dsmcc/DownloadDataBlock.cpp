@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DownloadDataBlock.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	DownloadDataBlock::DownloadDataBlock(DsmccMessageHeader* message) {
 		header        = message;
 		moduleId      = 0;
@@ -147,10 +142,5 @@ namespace carousel {
 		clog << "datablock moduleId " << moduleId << endl;
 		clog << "datablock moduleVersion " << moduleVersion << endl;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END

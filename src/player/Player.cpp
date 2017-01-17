@@ -26,12 +26,8 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include <iostream>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	LocalScreenManager* Player::dm = NULL;
 
 	Player::Player(GingaScreenID screenId, string mrl) {
@@ -646,9 +642,5 @@ namespace player {
 		}
 		return true;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

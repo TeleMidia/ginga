@@ -29,11 +29,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclTransitionConverter.h"
 #include "NclMetainformationConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclDocumentConverter::NclDocumentConverter() : NclDocumentParser() {
 		this->parentObject       = NULL;
 		this->privateBaseContext = NULL;
@@ -319,8 +316,5 @@ namespace ncl {
 		return NULL;
 	}
 
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

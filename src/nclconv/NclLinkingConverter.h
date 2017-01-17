@@ -56,11 +56,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclLinkingConverter : public NclLinkingParser {
 	private:
 		Connector *connector;
@@ -82,10 +79,6 @@ namespace ncl {
 	private:
 		string getId(DOMElement *element);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif //NclLinkingConverter_H

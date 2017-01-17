@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompositeExecutionObject.h"
 #include "ExecutionObject.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
   class ApplicationExecutionObject : public ExecutionObject {
     private:
     	map<string, FormatterEvent*> preparedEvents;
@@ -83,12 +78,6 @@ namespace components {
 		void lockEvents();
 		void unlockEvents();
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_APPLICATIONEXECUTIONOBJECT_H_

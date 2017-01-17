@@ -20,13 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	ServiceDomain::ServiceDomain(
 		    DownloadServerInitiate* dsi,
 		    DownloadInfoIndication* dii, unsigned short pid) : Thread() {
@@ -277,10 +272,5 @@ namespace carousel {
 					processor->getSDPaths());
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END

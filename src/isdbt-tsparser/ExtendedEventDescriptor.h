@@ -36,14 +36,8 @@ struct Item {
 };
 */
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 
 	class ExtendedEventDescriptor : public IExtendedEventDescriptor  {
 		protected:
@@ -73,13 +67,6 @@ namespace descriptors {
 			size_t process(char* data, size_t pos);
 
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /*EXTENDEDEVENTDESCRIPTOR_H_*/

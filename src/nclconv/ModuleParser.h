@@ -20,11 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DocumentParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
+
 	class ModuleParser {
 		protected:
 			DocumentParser *documentParser;
@@ -43,10 +40,6 @@ namespace framework {
 				return documentParser;
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END
 #endif

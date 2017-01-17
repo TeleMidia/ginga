@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tuner/MulticastProvider.h"
 #include "isdbt-tuner/Tuner.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	MulticastProvider::MulticastProvider(string groupAddr, int port) {
 		clog << "UDP MulticastProvider address '" << groupAddr << ":";
 		clog << port << "'" << endl;
@@ -59,9 +55,5 @@ namespace tuning {
 
 		return buff;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

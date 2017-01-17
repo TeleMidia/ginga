@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/TransportProtocolDescriptor.h"
 #include <string.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	TransportProtocolDescriptor::TransportProtocolDescriptor() {
 		protocolId = 0;
 		transportProtocolLabel = 0;
@@ -90,10 +85,5 @@ namespace si {
 
 		return pos;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END

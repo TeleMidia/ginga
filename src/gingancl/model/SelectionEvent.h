@@ -32,13 +32,8 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
   class SelectionEvent : public AnchorEvent {
 	private:
 		int selectionCode;
@@ -50,12 +45,6 @@ namespace event {
 		int getSelectionCode();
 		void setSelectionCode(string codeStr);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_SELECTIONEVENT_H_

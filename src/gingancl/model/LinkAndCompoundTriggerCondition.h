@@ -26,13 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkAndCompoundTriggerCondition :
 		    public LinkCompoundTriggerCondition {
 
@@ -47,12 +42,6 @@ namespace link {
 			void conditionSatisfied(void* condition); //LinkTriggerCondition
 			vector<FormatterEvent*>* getEvents();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKANDCOMPOUNDTRIGGERCONDITION_H_*/

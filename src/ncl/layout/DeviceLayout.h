@@ -23,11 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	class DeviceProperty : public IDeviceProperty {
 		private:
 			int left;
@@ -102,10 +99,6 @@ namespace layout {
 			void addDevice(string name, int x, int y, int width, int height);
 			IDeviceProperty* getDeviceProperty(string name);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END
 #endif /*DEVICELAYOUT_H_*/

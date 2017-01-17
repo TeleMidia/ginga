@@ -47,12 +47,8 @@ typedef struct lockedFiltersAction {
 	bool isAdd;
 } ActionsToFilters;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	class ISDBTFrontend : public Thread {
 		private:
 			static const int IFE_FORCED_MIN_FREQ  = 450143000;
@@ -105,11 +101,6 @@ namespace tuning {
 
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*ISDBTFRONTEND_H_*/

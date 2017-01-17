@@ -26,13 +26,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
 	int CascadingDescriptor::dummyCount = 0;
 
 	CascadingDescriptor::CascadingDescriptor(
@@ -675,10 +670,5 @@ namespace presentation {
 	vector<Transition*>* CascadingDescriptor::getOutputTransitions() {
 		return this->outputTransitions;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END

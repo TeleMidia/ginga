@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "LinkAndCompoundTriggerCondition.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	LinkAndCompoundTriggerCondition::LinkAndCompoundTriggerCondition() :
 		    LinkCompoundTriggerCondition() {
 
@@ -138,10 +133,5 @@ namespace link {
 
 		return events;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

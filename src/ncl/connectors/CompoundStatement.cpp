@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/CompoundStatement.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	CompoundStatement::CompoundStatement() : Statement() {
 		statements = new vector<Statement*>;
 		myOperator = OP_OR;
@@ -136,8 +133,5 @@ namespace connectors {
 		}
 		return roles;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

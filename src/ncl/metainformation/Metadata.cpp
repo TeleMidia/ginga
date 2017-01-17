@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/metainformation/Metadata.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace metainformation {
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_BEGIN
+
 	void* Metadata::getRDFTree() {
 		// TODO Auto-generated method stub
 		return NULL;
@@ -32,8 +29,5 @@ namespace metainformation {
 		// TODO Auto-generated method stub
 
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_END

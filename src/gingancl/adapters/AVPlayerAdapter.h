@@ -37,13 +37,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace av {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
+
   class AVPlayerAdapter : public FormatterPlayerAdapter {
 	public:
 		AVPlayerAdapter();
@@ -55,12 +50,6 @@ namespace av {
 		bool setPropertyValue(
 			    AttributionEvent* event, string value);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END
 #endif /*AVPLAYERADAPTER_H_*/

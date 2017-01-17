@@ -21,11 +21,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 
 #include "ncl/interfaces/RectangleSpatialAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	RectangleSpatialAnchor::RectangleSpatialAnchor(
 		    string id, long left, long top, long width, long height)
 				    : SpatialAnchor(id) {
@@ -61,8 +58,5 @@ namespace interfaces {
 		this->width = width;
 		this->height = height;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

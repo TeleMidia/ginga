@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclPresentationControlConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclPresentationControlConverter::NclPresentationControlConverter(
 		    DocumentParser *documentParser) : NclPresentationControlParser(
 		    	    documentParser) {
@@ -623,8 +620,5 @@ namespace ncl {
 
 		return -1;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

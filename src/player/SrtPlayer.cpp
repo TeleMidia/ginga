@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	SrtPlayer::SrtPlayer(GingaScreenID screenId, string mrl) :
 			TextPlayer(screenId), Thread() {
 
@@ -509,9 +505,5 @@ namespace player {
 		running = false;
 		this->unlockConditionSatisfied();
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

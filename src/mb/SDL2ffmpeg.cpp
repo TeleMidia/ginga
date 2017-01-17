@@ -34,12 +34,8 @@ using namespace std;
 
 
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 	SDL_AudioSpec SDL2ffmpeg::spec;
 	short SDL2ffmpeg::refCount = 0;
@@ -3096,9 +3092,5 @@ the_end:
 		}
 		return ret;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

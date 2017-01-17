@@ -22,12 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
 	GingaUser::GingaUser(int userId, string userName, string passwd) {
 		this->userId       = userId;
 		this->userName     = userName;
@@ -119,9 +115,5 @@ namespace contextmanager {
 		fwrite(bytesToSave.c_str(), 1, bytesToSave.length(), fd);
 		fwrite(" ", 1, 1, fd);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END

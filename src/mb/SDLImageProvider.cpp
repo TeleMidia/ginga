@@ -34,12 +34,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLBpgDecoder.h"
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 	bool SDLImageProvider::mutexInit   = false;
 	bool SDLImageProvider::initialized = false;
@@ -153,9 +149,5 @@ namespace mb {
 	bool SDLImageProvider::releaseAll() {
 		return false;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

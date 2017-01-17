@@ -24,11 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class ReferenceContent : public Content {
 		protected:
 			string reference;
@@ -42,10 +39,6 @@ namespace components {
 			void setReference(string ref);
 			string getType();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_REFERENCECONTENT_H_

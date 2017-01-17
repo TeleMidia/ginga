@@ -15,41 +15,30 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ITimeBaseListener_H_
-#define ITimeBaseListener_H_
+#ifndef I_TIME_BASE_LISTENER_H
+#define I_TIME_BASE_LISTENER_H
 
-#include <stdint.h>
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace time {
-	class ITimeBaseListener {
-		public:
-			virtual ~ITimeBaseListener(){};
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
 
-			virtual void timeBaseNaturalEnd(
-					unsigned char contentId,
-					double timeValue)=0;
+class ITimeBaseListener
+{
+public:
+  virtual ~ITimeBaseListener(){};
 
-			virtual void updateTimeBaseId(
-					unsigned char oldContentId,
-					unsigned char newContentId)=0;
+  virtual void timeBaseNaturalEnd(unsigned char contentId,
+                                  double timeValue)=0;
 
-			virtual void valueReached(
-					unsigned char timeBaseId, double timeValue)=0;
+  virtual void updateTimeBaseId(unsigned char oldContentId,
+                                unsigned char newContentId)=0;
 
-			virtual void loopDetected()=0;
-	};
-}
-}
-}
-}
-}
-}
-}
+  virtual void valueReached(unsigned char timeBaseId,
+                            double timeValue)=0;
 
-#endif /*ITimeBaseListener_H_*/
+  virtual void loopDetected()=0;
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
+
+#endif /* I_TIME_BASE_LISTENER_H */

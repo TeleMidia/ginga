@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-dataproc/ncl/DataFile.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	DataFile::DataFile(int id) {
 		this->structureId  = id;
 		this->componentTag = "";
@@ -63,10 +58,5 @@ namespace ncl {
 	double DataFile::getSize() {
 		return this->size;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END

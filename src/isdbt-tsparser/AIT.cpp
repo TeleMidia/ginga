@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/AIT.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	AIT::AIT() {
 		secName                 = "";
 		applicationType         = 0;
@@ -161,10 +156,5 @@ namespace si {
 
 		delete[] data;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END

@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SsmlPlayerAdapter.h"
 #include "player/SsmlPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace tts {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
+
 	SsmlPlayerAdapter::SsmlPlayerAdapter() :
 				FormatterPlayerAdapter() {
 
@@ -48,10 +43,5 @@ namespace tts {
 
 		FormatterPlayerAdapter::createPlayer();
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END

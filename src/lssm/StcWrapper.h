@@ -31,11 +31,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
 #if WITH_ISDBT
   class StcWrapper : public ISTCProvider {
 	private:
@@ -47,10 +44,6 @@ namespace lssm {
 		bool getSTCValue(uint64_t* stc, int* valueType);
   };
 #endif
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
 #endif /*StcWrapper_H_*/

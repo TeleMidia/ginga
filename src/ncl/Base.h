@@ -15,61 +15,45 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef BASE_H_
-#define BASE_H_
+#ifndef BASE_H
+#define BASE_H
 
-#include <pthread.h>
-#include <vector>
-#include <map>
-#include <string>
-#include <set>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-	class Base {
-		private:
-			static set<Base*> baseInstances;
-			static pthread_mutex_t biMutex;
-			static bool initMutex;
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 
-		protected:
-			string id;
-			vector<Base*> baseSet;
-			map<string, Base*> baseAliases;
-			map<string, Base*> baseLocations;
+class Base
+{
+private:
+  static set<Base*> baseInstances;
+  static pthread_mutex_t biMutex;
+  static bool initMutex;
 
-			set<string> typeSet; //informacoes de tipo
+protected:
+  string id;
+  vector<Base*> baseSet;
+  map<string, Base*> baseAliases;
+  map<string, Base*> baseLocations;
+  set<string> typeSet;
 
-		public:
-			Base(string id);
-			virtual ~Base();
+public:
+  Base(string id);
+  virtual ~Base();
+  static bool hasInstance(Base* base, bool eraseFromList);
+  virtual bool addBase(Base* base, string alias, string location);
+  virtual void clear();
+  Base* getBase(string baseId);
+  string getBaseAlias(Base* base);
+  string getBaseLocation(Base* base);
+  vector<Base*>* getBases();
+  bool removeBase(Base* base);
+  void setBaseAlias(Base* base, string alias);
+  void setBaseLocation(Base* base, string location);
+  string getId();
+  void setId(string id);
+  bool instanceOf(string s);
+};
 
-			static bool hasInstance(Base* base, bool eraseFromList);
+BR_PUCRIO_TELEMIDIA_NCL_END
 
-			virtual bool addBase(
-				    Base* base,
-				    string alias,
-				    string location);
-
-			virtual void clear();
-			Base* getBase(string baseId);
-			string getBaseAlias(Base* base);
-			string getBaseLocation(Base* base);
-			vector<Base*>* getBases();
-			bool removeBase(Base* base);
-			void setBaseAlias(Base* base, string alias);
-			void setBaseLocation(Base* base, string location);
-			string getId();
-			void setId(string id);
-
-			bool instanceOf(string s);
-	};
-}
-}
-}
-}
-
-#endif /*BASE_H_*/
+#endif /* BASE_H */

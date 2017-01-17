@@ -27,11 +27,8 @@ using namespace ::br::pucrio::telemidia::converter::ncl;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	PrivateBaseContext::PrivateBaseContext() {
 		this->privateBase = NULL;
 	}
@@ -1452,8 +1449,5 @@ namespace ncl {
 	PrivateBase* PrivateBaseContext::getPrivateBase() {
 		return privateBase;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END

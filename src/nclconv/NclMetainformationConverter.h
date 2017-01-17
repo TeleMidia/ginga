@@ -35,11 +35,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
    class NclMetainformationConverter : public NclMetainformationParser {
   	public:
 		NclMetainformationConverter(DocumentParser* documentParser);
@@ -49,10 +46,6 @@ namespace ncl {
 		void* createMetadata(
 			    DOMElement *parentElement, void *objGrandParent);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif //NclMetainformationConverter_H

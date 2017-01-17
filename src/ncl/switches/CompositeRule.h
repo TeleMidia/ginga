@@ -24,11 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class CompositeRule : public Rule {
 		private:
 			vector<Rule*>* rules;
@@ -52,10 +49,6 @@ namespace switches {
 			string toString();
 			void setOperator(short op);
 	};		
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_COMPOSITERULE_H_

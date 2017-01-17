@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "SwitchEvent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+
 	SwitchEvent::SwitchEvent(
 		    string id,
 		    void* executionObjectSwitch,
@@ -83,10 +78,5 @@ namespace switches {
 	short SwitchEvent::getPriorityType() {
 		return IEventListener::PT_LINK;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END

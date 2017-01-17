@@ -40,14 +40,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace av {
-namespace tv {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
+
 	class ProgramAVPlayerAdapter : public FormatterPlayerAdapter {
 		private:
 			string lastValue;
@@ -72,13 +66,6 @@ namespace tv {
 		private:
 			void updateAVBounds();
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_END
 #endif /*PROGRAMAVPLAYERADAPTER_H_*/

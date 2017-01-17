@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/SimpleAction.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	SimpleAction::SimpleAction(string role) :
 		    Action(), Role() {
 
@@ -120,8 +117,5 @@ namespace connectors {
 	void SimpleAction::setAnimation(Animation* animation) {
 		this->animation = animation;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

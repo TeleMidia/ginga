@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterPassiveDevice.h"
 #include "FMDComponentSupport.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+
 	FormatterPassiveDevice::FormatterPassiveDevice(
 			GingaScreenID screenId,
 			IDeviceLayout* deviceLayout,
@@ -120,9 +116,5 @@ namespace multidevice {
 
 		return false;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

@@ -24,12 +24,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace ic {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+
 	bool CurlInteractiveChannel::mutexInit = false;
 	pthread_mutex_t CurlInteractiveChannel::mutex;
 	CURL* CurlInteractiveChannel::curl = NULL;
@@ -271,9 +267,5 @@ namespace ic {
 	IInteractiveChannelListener* CurlInteractiveChannel::getListener() {
 		return listener;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END

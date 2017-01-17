@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/components/ContentNode.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	ContentNode::ContentNode(string uid, Content* someContent)
 		    : NodeEntity(uid, someContent) {
 
@@ -119,8 +119,5 @@ namespace components {
 		isSettingNodeType = false;
 		isSettingNodeType = isSettingNode();
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END

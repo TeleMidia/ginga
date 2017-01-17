@@ -33,11 +33,8 @@ using namespace ::br::pucrio::telemidia::ncl::link;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class ContextNode : public CompositeNode, public LinkComposition {
 		protected:
 			map<string, GenericDescriptor*> descriptorCollection;
@@ -68,10 +65,6 @@ namespace components {
 				    string nodeId,
 				    GenericDescriptor* descriptor);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_CONTEXTNODE_H_

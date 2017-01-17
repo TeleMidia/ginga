@@ -32,12 +32,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <stdio.h>
 #include <string.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace ic {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+
   class CurlInteractiveChannel {
 	private:
 		FILE* fd;
@@ -79,11 +75,6 @@ namespace ic {
 		FILE* getLocalFileDescriptor();
 		IInteractiveChannelListener* getListener();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
 #endif /*CurlInteractiveChannel*/

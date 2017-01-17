@@ -80,12 +80,8 @@ struct notifyData {
 	StreamEvent* se;
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	class DataProcessor : public IFilterListener, public ITunerListener,
 				public IServiceDomainListener, public Thread {
 
@@ -154,11 +150,6 @@ namespace dataprocessing {
 		private:
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 #endif /*DataProcessor_H_*/

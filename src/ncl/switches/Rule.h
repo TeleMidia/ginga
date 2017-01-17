@@ -21,20 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class Rule : public Entity {
 		public:
 			Rule(string id);
 			virtual ~Rule(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_RULE_H_

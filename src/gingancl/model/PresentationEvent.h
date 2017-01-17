@@ -15,67 +15,44 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _PRESENTATIONEVENT_H_
-#define _PRESENTATIONEVENT_H_
+#ifndef PRESENTATION_EVENT_H
+#define PRESENTATION_EVENT_H
 
 #include "ncl/interfaces/ContentAnchor.h"
-#include "ncl/interfaces/IntervalAnchor.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;
-
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
 
 #include "AnchorEvent.h"
 
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
-  class PresentationEvent : public AnchorEvent {
-	public:
-		static const double UNDEFINED_INSTANT;
+class PresentationEvent : public AnchorEvent
+{
+public:
+  static const double UNDEFINED_INSTANT;
 
-	private:
-		double begin;
-		double end;
-		double duration;
-		long numPresentations;
-		double repetitionInterval;
+private:
+  double begin;
+  double end;
+  double duration;
+  long numPresentations;
+  double repetitionInterval;
 
-	public:
-		PresentationEvent(
-			    string id,
-			    void* executionObject,
-			    ContentAnchor* anchor);
+public:
+  PresentationEvent(string id,void* executionObject,ContentAnchor* anchor);
+  virtual ~PresentationEvent();
+  bool stop();
+  double getDuration();
+  double getRepetitionInterval();
+  long getRepetitions();
+  void setDuration(double dur);
+  void setEnd(double e);
+  void setRepetitionSettings(long repetitions, double repetitionInterval);
+  double getBegin();
+  double getEnd();
+  void incrementOccurrences();
+  static bool isUndefinedInstant(double value);
+};
 
-		virtual ~PresentationEvent();
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 
-		bool stop();
-		double getDuration();
-		double getRepetitionInterval();
-		long getRepetitions();
-		void setDuration(double dur);
-		void setEnd(double e);
-		void setRepetitionSettings(
-			    long repetitions, double repetitionInterval);
-
-		double getBegin();
-		double getEnd();
-		void incrementOccurrences();
-		static bool isUndefinedInstant(double value);
-  };
-}
-}
-}
-}
-}
-}
-}
-
-#endif //_PRESENTATIONEVENT_H_
+#endif /* PRESENTATION_EVENT_H */

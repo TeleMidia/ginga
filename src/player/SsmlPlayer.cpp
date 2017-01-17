@@ -40,12 +40,8 @@ static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 }
 
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 
     SsmlPlayer::SsmlPlayer(GingaScreenID screenId, string mrl) :
         Thread(), Player(screenId, mrl) {
@@ -188,9 +184,5 @@ namespace player {
     }
 
 
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

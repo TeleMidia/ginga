@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclImportConverter.h"
 
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
     NclImportConverter::NclImportConverter(
     	    DocumentParser *documentParser) : NclImportParser(
     	    	    documentParser) {
@@ -72,8 +69,5 @@ namespace ncl {
 
 		return parentElement;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

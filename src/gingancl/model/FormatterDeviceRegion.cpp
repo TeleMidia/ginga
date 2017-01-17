@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterDeviceRegion.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
 	FormatterDeviceRegion::FormatterDeviceRegion(
 		    string id) : LayoutRegion(id) {
 
@@ -509,10 +504,5 @@ namespace presentation {
 	int FormatterDeviceRegion::compareTo(void *arg0) {
 		return 0;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END

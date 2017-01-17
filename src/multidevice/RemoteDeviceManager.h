@@ -24,12 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "IRemoteDeviceListener.h"
 #include "BaseDeviceDomain.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class RemoteDeviceManager : public Thread {
 	private:
 		bool connecting;
@@ -56,11 +52,6 @@ namespace multidevice {
 	private:
 		void run();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_RemoteDeviceManager_H_*/

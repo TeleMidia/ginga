@@ -24,12 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IProviderListener.h"
 #include "IFrontendFilter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	//data provider capabilities
 	static const short DPC_CAN_FETCHDATA = 0x01;
 	static const short DPC_CAN_DEMUXBYHW = 0x02;
@@ -66,11 +62,6 @@ namespace tuning {
 			virtual string getPesFilterOutput()=0;
 			virtual void close()=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*IDATAPROVIDER_H_*/

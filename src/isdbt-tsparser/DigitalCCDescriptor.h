@@ -21,14 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 
 struct Component{
 	unsigned char componentTag;
@@ -60,13 +54,6 @@ struct Component{
 
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* DIGITALCCDESCRIPTOR_H_ */

@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "TcpClientConnection.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	const static int MAX_MSG_SIZE = 1024;
 
 	TCPClientConnection::TCPClientConnection(
@@ -143,9 +139,5 @@ namespace multidevice {
 		running = false;
 	}
 
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

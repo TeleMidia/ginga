@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclStructureParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
 	NclStructureParser::NclStructureParser(
 		    DocumentParser *documentParser) :
 		    	    ModuleParser(documentParser) {
@@ -432,9 +428,5 @@ namespace ncl {
 
 		this->metainformationParser = metainformationParser;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END

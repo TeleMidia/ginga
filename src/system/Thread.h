@@ -23,13 +23,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <pthread.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace thread {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_BEGIN
+
 
   class Thread {
   protected:
@@ -85,12 +80,6 @@ namespace thread {
     static void startNewThread(void* (*funcion) (void*), void* ptr);
 
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_END
 #endif //__THREAD_H__

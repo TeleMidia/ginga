@@ -27,11 +27,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class Port : public InterfacePoint {
 		protected:
 			Node* node;
@@ -50,10 +47,6 @@ namespace interfaces {
 			void setInterfacePoint(InterfacePoint* someInterfacePoint);
 			void setNode(Node* someNode);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //_PORT_H_

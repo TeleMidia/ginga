@@ -28,12 +28,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ISDBTProvider.h"
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	NetworkInterface::NetworkInterface(
 			int id, string name, string protocol, string addr) {
 
@@ -218,9 +214,5 @@ namespace tuning {
 			provider = NULL;
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

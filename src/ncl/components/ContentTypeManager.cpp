@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/components/ContentTypeManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	ContentTypeManager *ContentTypeManager::_instance = NULL;
 	string ContentTypeManager::absUrl                 = "";
 
@@ -83,8 +83,5 @@ namespace components {
 
 		return mType;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END

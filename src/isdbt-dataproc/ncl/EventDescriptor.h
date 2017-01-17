@@ -22,13 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	class EventDescriptor {
 		public:
 			static string getEventId(string event);
@@ -41,12 +36,6 @@ namespace ncl {
 
 			static string extractMarks(string eventParam);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
 #endif //_EventDescriptor_H_

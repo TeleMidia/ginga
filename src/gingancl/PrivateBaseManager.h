@@ -23,11 +23,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "PrivateBaseContext.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
   class PrivateBaseManager {
 	private:
 		map<string, PrivateBaseContext*> privateBases;
@@ -229,10 +226,6 @@ namespace ncl {
 		void lockTable();
 		void unlockTable();
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif /*PrivateBaseManager_H_*/

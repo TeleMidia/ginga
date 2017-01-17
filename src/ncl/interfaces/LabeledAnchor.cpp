@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/LabeledAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	LabeledAnchor::LabeledAnchor(string id, string label) : Anchor(id) {
 		this->label = label;
 		typeSet.insert("LabeledAnchor");
@@ -35,8 +32,5 @@ namespace interfaces {
 	void LabeledAnchor::setLabel(string label) {
 		this->label = label;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

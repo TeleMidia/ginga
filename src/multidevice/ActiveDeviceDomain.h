@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DeviceDomain.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class ActiveDeviceDomain : public DeviceDomain {
 	public:
 		ActiveDeviceDomain(bool useMulticast, int srvPort);
@@ -66,11 +62,6 @@ namespace multidevice {
 
 		void checkDomainTasks();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_ActiveDeviceDomain_H_*/

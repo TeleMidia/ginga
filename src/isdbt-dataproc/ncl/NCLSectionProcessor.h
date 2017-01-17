@@ -28,13 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	class NCLSectionProcessor : public INCLSectionProcessor {
 		private:
 			IMetadata* metadata;
@@ -71,12 +66,6 @@ namespace ncl {
 					vector<string>* files,
 					map<int, string>* eventMap);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
 #endif //_NCLSectionProcessor_H_

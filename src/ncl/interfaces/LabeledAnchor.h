@@ -26,11 +26,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 
 #include "Anchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class LabeledAnchor : public Anchor {
 		private:
 			string label;
@@ -40,10 +37,6 @@ namespace interfaces {
 			string getLabel();
 			void setLabel(string label);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //LABELED_ANCHOR_H_

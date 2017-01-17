@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMBDefs.h"
 #include "IDiscreteMediaProvider.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class IFontProvider : public IDiscreteMediaProvider {
 		public:
 			static const short FP_AUTO_WORDWRAP = -10;
@@ -52,11 +48,6 @@ namespace mb {
 					const char* text,
 					int x, int y, short align)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*IFONTPROVIDER_H_*/

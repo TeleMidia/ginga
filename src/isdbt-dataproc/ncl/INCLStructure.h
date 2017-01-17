@@ -15,35 +15,24 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _INCLStructure_H_
-#define _INCLStructure_H_
+#ifndef I_NCL_STRUCTURE_H_
+#define I_NCL_STRUCTURE_H_
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
-	class INCLStructure {
-		public:
-			static const int ST_METADA   = 0x01;
-			static const int ST_DATAFILE = 0x02;
-			static const int ST_EVENTMAP = 0x03;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 
-			virtual ~INCLStructure(){};
-			virtual int getType()=0;
-			virtual int getId()=0;
-	};
-}
-}
-}
-}
-}
-}
-}
+class INCLStructure
+{
+public:
+  static const int ST_METADATA = 0x01;
+  static const int ST_DATAFILE = 0x02;
+  static const int ST_EVENTMAP = 0x03;
+  virtual ~INCLStructure(){};
+  virtual int getType()=0;
+  virtual int getId()=0;
+};
 
-#endif //_INCLStructure_H_
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+
+#endif /* I_NCL_STRUCTURE_H_ */

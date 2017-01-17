@@ -15,73 +15,45 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef MPEGDESCRIPTOR_H_
-#define MPEGDESCRIPTOR_H_
+#ifndef MPEG_DESCRIPTOR_H
+#define MPEG_DESCRIPTOR_H
 
-#include <string.h>
-#include <iostream>
-#include <vector>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
 
-class MpegDescriptor {
-	public:
-		static const unsigned short MAX_DESCRIPTOR_SIZE = 257;
+class MpegDescriptor
+{
+public:
+  static const unsigned short MAX_DESCRIPTOR_SIZE = 257;
 
-	private:
+protected:
+  unsigned char descriptorTag;
+  unsigned char descriptorLength;
+  char* stream;
+  unsigned short currentSize;
+  virtual int process();
+  virtual int updateStream();
+  virtual unsigned int calculateDescriptorSize();
 
-	protected:
-		unsigned char descriptorTag;
-		unsigned char descriptorLength;
-		char* stream;
-
-		unsigned short currentSize;
-
-		virtual int process();
-		virtual int updateStream();
-
-		virtual unsigned int calculateDescriptorSize();
-
-	public:
-		MpegDescriptor();
-		MpegDescriptor(unsigned char tag);
-		virtual ~MpegDescriptor();
-
-		char addData(char* data, unsigned short length);
-		unsigned char isConsolidated();
-
-		unsigned char getDescriptorTag();
-		unsigned char getDescriptorLength();
-
-		int getStreamSize();
-		int getStream(char** dataStream);
-
-		void setDescriptorTag(unsigned char tag);
-
-		static MpegDescriptor* getDescriptor(
-				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
-
-		static vector<MpegDescriptor*>* getDescriptors(
-				vector<MpegDescriptor*>* descriptors, unsigned char Tag);
-
-		static int getDescriptorsLength(vector<MpegDescriptor*>* descriptors);
+public:
+  MpegDescriptor();
+  MpegDescriptor(unsigned char tag);
+  virtual ~MpegDescriptor();
+  char addData(char* data, unsigned short length);
+  unsigned char isConsolidated();
+  unsigned char getDescriptorTag();
+  unsigned char getDescriptorLength();
+  int getStreamSize();
+  int getStream(char** dataStream);
+  void setDescriptorTag(unsigned char tag);
+  static MpegDescriptor* getDescriptor(vector<MpegDescriptor*>* descriptors,
+                                       unsigned char Tag);
+  static vector<MpegDescriptor*>* getDescriptors
+  (vector<MpegDescriptor*>* descriptors, unsigned char Tag);
+  static int getDescriptorsLength(vector<MpegDescriptor*>* descriptors);
 };
 
-}
-}
-}
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
 
-#endif /*MPEGDESCRIPTOR_H_*/
+#endif /* MPEG_DESCRIPTOR_H */

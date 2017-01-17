@@ -28,11 +28,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include "../interfaces/PropertyAnchor.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class Node : public Entity {
 		private:
 			void* parentNode;
@@ -67,10 +64,6 @@ namespace components {
 			virtual bool removeAnchor(int index);
 			virtual bool removeAnchor(Anchor *anchor);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif /*NODE_H_*/

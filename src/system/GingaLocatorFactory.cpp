@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "GingaLocatorFactory.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace fs {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
+
 	GingaLocatorFactory* GingaLocatorFactory::_instance = 0;
 
 	GingaLocatorFactory::GingaLocatorFactory() {
@@ -272,10 +267,5 @@ namespace fs {
 		}
 		return false;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_END

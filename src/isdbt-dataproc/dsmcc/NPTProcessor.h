@@ -42,14 +42,8 @@ using namespace br::pucrio::telemidia::ginga::core::tuning;
 #include <cmath>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 
 class NPTProcessor : public Thread, public ITimeBaseProvider {
 	
@@ -135,13 +129,6 @@ class NPTProcessor : public Thread, public ITimeBaseProvider {
 		void run();
 };
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
 #endif /* NPTPROCESSOR_H_ */

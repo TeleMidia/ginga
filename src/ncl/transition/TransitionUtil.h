@@ -26,11 +26,8 @@ using namespace std;
 
 #include "Transition.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
 	class TransitionUtil {
 		public:
 			static int getTypeCode(string type);
@@ -41,10 +38,6 @@ namespace transition {
 			static string getDirectionName(short direction);
 			static int getDefaultSubtype(int type);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END
 #endif /*TRANSITIONUTIL_H_*/

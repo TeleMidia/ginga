@@ -24,12 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 class Channels {
 	private:
 		map<long, string> *channelList;
@@ -56,11 +52,6 @@ class Channels {
 		map<long, string>* getChannelsListName();
 		map<long, unsigned char>* getVirtualChannelsList();
 };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*Channels_H_*/

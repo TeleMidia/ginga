@@ -33,11 +33,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	class LayoutRegion : public Entity {
 		protected:
 			string title;
@@ -172,10 +169,6 @@ namespace layout {
 			void lock();
 			void unlock();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END
 #endif //_LAYOUTREGION_H_

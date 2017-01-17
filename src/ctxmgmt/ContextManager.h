@@ -35,12 +35,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
   class ContextManager {
 	private:
 		map<int, GingaUser*> users;
@@ -90,11 +86,6 @@ namespace contextmanager {
 	private:
 		void listUsersNicks();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
 #endif /*_ContextManager_H_*/

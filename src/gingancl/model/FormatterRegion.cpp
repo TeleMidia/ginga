@@ -29,13 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "mb/ScreenManagerFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 	FormatterRegion::FormatterRegion(
 		    string objectId, void* descriptor, void* layoutManager) {
@@ -1986,10 +1981,5 @@ namespace presentation {
 			scroll = value;
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END

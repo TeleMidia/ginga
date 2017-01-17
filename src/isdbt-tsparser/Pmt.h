@@ -31,13 +31,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	class Pmt : public TransportSection {
 		protected:
 			map<unsigned int, short> streams;
@@ -79,12 +74,6 @@ namespace si {
 			int getTaggedAudioPid(unsigned char idx);
 			void print();
 	 };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /*PMT_H_*/

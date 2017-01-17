@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/components/NodeEntity.h"
 #include "ncl/components/CompositeNode.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	NodeEntity::NodeEntity(string uid, Content* someContent) : Node(uid) {
 		descriptor = NULL;
 		anchorList.push_back(new LambdaAnchor(uid));
@@ -176,8 +173,5 @@ namespace components {
 			instSameInstances.erase(i);
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END

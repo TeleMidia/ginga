@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "TimePlayerAdapter.h"
 #include "AdaptersComponentSupport.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
+
 	TimePlayerAdapter::TimePlayerAdapter() : FormatterPlayerAdapter() {
 		
 	}
@@ -42,10 +37,5 @@ namespace time {
 		clog << "TimePlayerAdapter::createPlayer '";
 		clog << mrl << "' ALL DONE" << endl;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_END

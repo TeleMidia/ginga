@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKTRIGGERLISTENER_H_
 #define _LINKTRIGGERLISTENER_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkTriggerListener {
 		public:
 			static const short CONDITION_SATISFIED = 0;
@@ -35,12 +30,6 @@ namespace link {
 			virtual void evaluationStarted()=0;
 			virtual void evaluationEnded()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKTRIGGERLISTENER_H_

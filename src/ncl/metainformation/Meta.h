@@ -15,33 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef META_H_
-#define META_H_
+#ifndef META_H
+#define META_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace metainformation {
-	class Meta {
-		private:
-			string name;
-			void* content;
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_BEGIN
 
-		public:
-			Meta(string name, void* content);
-			void* getContent();
-			string getName();
-			void setContent(void* content);
-			void setName(string name);
-	};
-}
-}
-}
-}
-}
+class Meta
+{
+private:
+  string name;
+  void* content;
 
-#endif /*META_H_*/
+public:
+  Meta(string name, void* content);
+  void* getContent();
+  string getName();
+  void setContent(void* content);
+  void setName(string name);
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_END
+
+#endif /* META_H */

@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <string.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace av {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
+
 	AVPlayerAdapter::AVPlayerAdapter() : FormatterPlayerAdapter() {
 		typeSet.insert("AVPlayerAdapter");
 	}
@@ -55,10 +50,5 @@ namespace av {
 				event, value);
 
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END

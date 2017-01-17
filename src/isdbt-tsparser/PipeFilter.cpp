@@ -25,12 +25,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include <signal.h>
 #include <string.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	PipeFilter::PipeFilter(unsigned int pid) : Thread() {
 		this->pid             = pid;
 		this->dataReceived    = false;
@@ -184,9 +180,5 @@ namespace tsparser {
 		running = false;
 		delete[] buff;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

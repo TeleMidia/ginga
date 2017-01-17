@@ -39,11 +39,8 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class SwitchNode : public CompositeNode {
 		private:
 			Node* defaultNode;
@@ -100,10 +97,6 @@ namespace switches {
 			bool removeRule(Rule* rule);
 			void setDefaultNode(Node* node);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_SWITCHNODE_H_

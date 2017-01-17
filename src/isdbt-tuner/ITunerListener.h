@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Channel.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	//tuner status
 	static const short TS_LOOP_DETECTED          = 0x01;
 	static const short TS_SWITCHING_CHANNEL      = 0x02;
@@ -43,11 +39,6 @@ namespace tuning {
 					short newStatus, Channel* channel)=0;
 			virtual bool isReady()=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*ITUNERLISTENER_H_*/

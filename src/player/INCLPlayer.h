@@ -48,12 +48,8 @@ typedef struct {
 	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* editListener;
 } NclPlayerData;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class INCLPlayer : public IPlayer {
 		public:
 			static const int DEEPEST_LEVEL = -1;
@@ -138,11 +134,6 @@ namespace player {
 
 			virtual void timeShift(string direction)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif //_INCLPlayer_H_

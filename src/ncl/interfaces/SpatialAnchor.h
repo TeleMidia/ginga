@@ -20,21 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ContentAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class SpatialAnchor : public ContentAnchor {
 		public:
 			SpatialAnchor(string id) : ContentAnchor(id) {
 				typeSet.insert("SpatialAnchor");
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif /*SPATIALANCHOR_H_*/

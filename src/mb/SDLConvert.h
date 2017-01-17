@@ -15,27 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDLDEVICECONVERT_H_
-#define SDLDEVICECONVERT_H_
+#ifndef SDL_CONVERT_H
+#define SDL_CONVERT_H
 
-#include "SDL.h"
-#include <cstring>
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 
-	class SDLConvert {
-		public:
-			static int convertSurfaceToJPEG(const char *dest_filename, SDL_Surface *surf, int quality);
-	};
-}
-}
-}
-}
-}
-}
-#endif /*SDLDEVICESCREEN_H_*/
+class SDLConvert
+{
+public:
+  static int convertSurfaceToJPEG(const char *dest_filename,
+                                  SDL_Surface *surf,
+                                  int quality);
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+
+#endif /* SDL_CONVERT_H */

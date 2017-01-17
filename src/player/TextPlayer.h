@@ -38,12 +38,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class TextPlayer : public Player {
 		protected:
 			int fontHeight;
@@ -96,11 +92,6 @@ namespace player {
 
 			virtual void setPropertyValue(string name, string value);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*TEXTPLAYER_H_*/

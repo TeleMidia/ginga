@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <exception>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace emconverter {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+
   class ObjectCreationForbiddenException : public exception {
 	virtual const char* what() const throw() {
 		string exceptionDescription;
@@ -34,11 +30,6 @@ namespace emconverter {
 		return exceptionDescription.c_str();
 	}
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*OBJECTCREATIONFORBIDDENEXCEPTION_H_*/

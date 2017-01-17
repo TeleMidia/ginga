@@ -27,12 +27,8 @@ using namespace std;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
 	class SystemInfo {
 		private:
 			float clockSpeed;
@@ -67,11 +63,6 @@ namespace contextmanager {
 			string getJavaProfile();
 			string getLuaVersion();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
 #endif /*_SystemInfo_H_*/

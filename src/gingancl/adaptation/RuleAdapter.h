@@ -54,13 +54,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adaptation {
-namespace context {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+
 	class RuleAdapter : public Observer {
 		private:
 			PresentationContext* presContext;
@@ -99,12 +94,6 @@ namespace context {
 		public:
 			virtual void update(void* arg0, void* arg1);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
 #endif //_RULEADAPTER_H_

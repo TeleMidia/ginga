@@ -21,14 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class IServiceDescriptor : public IMpegDescriptor{
 		public:
 			~IServiceDescriptor(){};
@@ -36,14 +30,6 @@ namespace descriptors {
 			virtual string getServiceNameChar()=0;
 
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
-
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* ISERVICEDESCRIPTOR_H_ */

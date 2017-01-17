@@ -18,18 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/LambdaAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	LambdaAnchor::LambdaAnchor(string id) : RelativeTimeIntervalAnchor(
 		    id, 0, IntervalAnchor::OBJECT_DURATION) {
 
 		typeSet.insert("LambdaAnchor");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

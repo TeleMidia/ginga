@@ -28,11 +28,8 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class PrivateBase : public CompositeNode {
 		public:
 			PrivateBase(string uid);
@@ -42,10 +39,6 @@ namespace components {
 			bool removeAllNodeOccurrences(string nodeUID);
 			bool removeAllNodeOccurrences(Node* node);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_PRIVATEBASE_H_

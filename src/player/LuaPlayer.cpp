@@ -39,7 +39,7 @@ using namespace::br::pucrio::telemidia::util;
 
 #include "player/LuaPlayer.h"
 
-LUAPLAYER_BEGIN_DECLS
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 #define ASSERT_NOT_REACHED (assert (!"reached"), ::abort ())
 #define nelementsof(x)   (sizeof (x) / sizeof (x[0]))
@@ -658,7 +658,7 @@ tail:
      return true;
 }
 
-LUAPLAYER_END_DECLS
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 
 // Local variables:
 // mode: c++

@@ -19,11 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 #include "util/functions.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace util {
-
+BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 
   	const string Color::swhite = "#FFFFFF";
 	const string Color::syellow = "#FFFF00";
@@ -268,7 +264,5 @@ namespace util {
 				(g << 8) & 0x0000FF00 +
 				b & 0x000000FF;
 	}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_UTIL_END

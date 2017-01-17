@@ -20,13 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ITimeBaseListener.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+
 	class ITimeBaseProvider {
 		public:
 			virtual ~ITimeBaseProvider(){};
@@ -56,12 +51,6 @@ namespace time {
 			virtual unsigned char getOccurringTimeBaseId()=0;
 			virtual double getCurrentTimeValue(unsigned char timeBaseId)=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
 #endif /*ITimeBaseProvider_H_*/

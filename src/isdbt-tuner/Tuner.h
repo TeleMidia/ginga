@@ -61,12 +61,8 @@ typedef struct {
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	class Tuner : public IInputEventListener, public ITProviderListener, public Thread {
 		private:
 			bool receiving;
@@ -119,11 +115,6 @@ namespace tuning {
 			void waitForListeners();
 			virtual void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif //__TUNER_H__

@@ -18,16 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LUAPLAYER_H
 #define LUAPLAYER_H
 
-#include <list>
-#include <string>
-
-#include <ncluaw.h>
-#include <pthread.h>
-
-using namespace std;
-
 #include "Player.h"
-#include "util/functions.h"
 #include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
 #include "mb/InputManager.h"
@@ -36,10 +27,7 @@ using namespace::br::pucrio::telemidia::ginga::core::mb;
 #include "system/SystemCompat.h"
 using namespace::br::pucrio::telemidia::ginga::core::system::compat;
 
-#define LUAPLAYER_BEGIN_DECLS NAMESPACE_GINGA_CORE_PLAYER_BEGIN
-#define LUAPLAYER_END_DECLS   NAMESPACE_GINGA_CORE_PLAYER_END
-
-LUAPLAYER_BEGIN_DECLS
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 class LuaPlayer : public Player, public IInputEventListener
 {
@@ -87,7 +75,7 @@ public:
      bool userEventReceived (SDLInputEvent * evt);
 };
 
-LUAPLAYER_END_DECLS
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 
 #endif // LUAPLAYER_H
 

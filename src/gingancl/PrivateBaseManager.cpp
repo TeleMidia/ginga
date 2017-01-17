@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "PrivateBaseManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	PrivateBaseManager::PrivateBaseManager() {
 		Thread::mutexInit(&mutexTable, false);
 	}
@@ -649,8 +646,5 @@ namespace ncl {
 	void PrivateBaseManager::unlockTable() {
 		Thread::mutexUnlock(&mutexTable);
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END

@@ -40,13 +40,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class ObjectProcessor {
 		private:
 			//mapping object location to known name
@@ -76,12 +71,6 @@ namespace carousel {
 			bool mountObject(Object* object);
 			void notifyObjectListeners(Object* obj);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*OBJECTPROCESSOR_H_*/

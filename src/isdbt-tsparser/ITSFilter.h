@@ -26,12 +26,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class ITSFilter {
 		public:
 			virtual ~ITSFilter(){};
@@ -48,11 +44,6 @@ namespace tsparser {
 			virtual string setDestinationUri(string dstUri)=0;
 			virtual void setSourceUri(string srcUri, bool isPipe)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*ITSFILTER_H_*/

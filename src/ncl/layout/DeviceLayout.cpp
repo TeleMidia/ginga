@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/layout/DeviceLayout.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	DeviceLayout::DeviceLayout(string layoutName) {
 		devices          = new map<string, IDeviceProperty*>;
 		this->layoutName = layoutName;
@@ -70,8 +67,5 @@ namespace layout {
 			return NULL;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END

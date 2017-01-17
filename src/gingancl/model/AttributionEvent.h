@@ -31,13 +31,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
 	class AttributionEvent : public FormatterEvent {
 		private:
 			bool settingNode;
@@ -66,12 +61,6 @@ namespace event {
 
 			FormatterEvent* getImplicitRefAssessmentEvent(string roleId);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_ATTRIBUTEEVENT_H_

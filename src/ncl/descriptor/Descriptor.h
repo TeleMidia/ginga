@@ -42,11 +42,8 @@ using namespace ::br::pucrio::telemidia::ncl::transition;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
 	class Descriptor : public GenericDescriptor {
 		public:
 			static const short FIT_FILL = 0;
@@ -105,10 +102,6 @@ namespace descriptor {
 			void removeOutputTransition(Transition* transition);
 			void removeAllOutputTransitions();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END
 #endif //_DESCRIPTOR_H_

@@ -59,13 +59,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adaptation {
-namespace context {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+
 	class PresentationContext : public Observable, public IContextListener {
 
 		private:
@@ -105,12 +100,6 @@ namespace context {
 			void setRemoteDeviceListener(IRemoteDeviceListener* rdl);
 #endif //WITH_MULTIDEVICE
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
 #endif //_PRESENTATIONCONTEXT_H_

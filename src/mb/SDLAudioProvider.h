@@ -25,12 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class SDLAudioProvider : public IContinuousMediaProvider {
 		protected:
 			GingaScreenID myScreen;
@@ -70,11 +66,6 @@ namespace mb {
 
 			virtual void refreshDR(void* data);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLAUDIOPROVIDER_H_*/

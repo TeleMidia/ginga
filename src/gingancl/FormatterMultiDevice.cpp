@@ -23,7 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterPassiveDevice.h"
 #include "FormatterActiveDevice.h"
 #endif
-#include "FMDComponentSupport.h"
+
+#include "FormatterMediator.h"
+using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
@@ -34,12 +36,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+
 	LocalScreenManager* FormatterMultiDevice::dm   = NULL;
 #if WITH_MULTIDEVICE
 	RemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
@@ -865,9 +863,5 @@ namespace multidevice {
 				break;
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

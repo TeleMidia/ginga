@@ -21,11 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class InterfacePoint : public Entity {
 		public:
 			InterfacePoint(string someId) : Entity(someId) {
@@ -33,10 +30,6 @@ namespace interfaces {
 			};
 			virtual ~InterfacePoint(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //_INTERFACEPOINT_H_

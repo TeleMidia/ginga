@@ -33,12 +33,8 @@ using namespace std;
 #include "NclInterfacesParser.h"
 #include "NclImportParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
   class NclPresentationControlParser : public ModuleParser {
 	private:
 		NclPresentationSpecificationParser *presentationSpecificationParser;
@@ -148,11 +144,6 @@ namespace ncl {
 		NclImportParser *getImportParser();
 		void setImportParser(NclImportParser *importParser);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLPRESENTATIONCONTROLPARSER_H_*/

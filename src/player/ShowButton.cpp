@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
 		myScreen       = screenId;
@@ -153,9 +149,5 @@ namespace player {
     running = false;
   }
 
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

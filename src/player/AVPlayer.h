@@ -51,12 +51,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class AVPlayer :
 			public Thread,
 			public Player,
@@ -146,11 +142,6 @@ namespace player {
 			bool checkVideoResizeEvent();
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*AVPLAYER_H_*/

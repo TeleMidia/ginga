@@ -15,47 +15,40 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CONTENTNODE_H_
-#define _CONTENTNODE_H_
+#ifndef CONTENT_NODE_H
+#define CONTENT_NODE_H
+
+#include "namespaces.h"
 
 #include "NodeEntity.h"
 #include "Content.h"
 using namespace ::br::pucrio::telemidia::ncl::components;
 
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
-  class ContentNode : public NodeEntity {
-	private:
-		string type;
-		bool isSettingNodeType;
-		bool isTimeNodeType;
+class ContentNode : public NodeEntity
+{
+private:
+  string type;
+  bool isSettingNodeType;
+  bool isTimeNodeType;
 
-	public:
-		ContentNode(string uid, Content* someContent);
-		ContentNode(string uid, Content* content, string type);
+public:
+  ContentNode(string uid, Content* someContent);
+  ContentNode(string uid, Content* content, string type);
+  virtual ~ContentNode(){};
 
-		virtual ~ContentNode(){};
+private:
+  void initialize(string type);
 
-	private:
-		void initialize(string type);
+public:
+  bool isSettingNode();
+  bool isTimeNode();
+  string getTypeValue();
+  string getNodeType();
+  void setNodeType(string type);
+};
 
-	public:
-		bool isSettingNode();
-		bool isTimeNode();
-		string getTypeValue();
-		string getNodeType();
-		void setNodeType(string type);
-  };
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 
-#endif //_CONTENTNODE_H_
+#endif /* CONTENT_NODE_H */

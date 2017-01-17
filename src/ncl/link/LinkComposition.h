@@ -23,11 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	class LinkComposition {
 		public:
 			virtual ~LinkComposition(){};
@@ -39,10 +36,6 @@ namespace link {
 			virtual int getNumLinks()=0;
 			virtual bool removeLink(Link* link)=0;
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END
 #endif //_LINKCOMPOSITION_H_

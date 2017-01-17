@@ -42,11 +42,8 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	class LinkComposition;
 	class Link : public Entity {
 		protected:
@@ -93,10 +90,6 @@ namespace link {
 			bool containsNode(Node *node, GenericDescriptor *descriptor,
 				    vector<Bind*> *binds);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END
 #endif //_LINK_H_

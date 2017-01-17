@@ -18,53 +18,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef STREAMEVENT_H_
 #define STREAMEVENT_H_
 
-#include <string>
-#include <iostream>
-using namespace std;
+#include "namespaces.h"
 
-#include <stdint.h>
-#include <string.h>
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-	class StreamEvent {
-		private:
-			unsigned int descriptorTag;
-			unsigned int descriptorLength;
-			unsigned int eventId;
-			uint64_t timeReference;
-			void* privateData;
+class StreamEvent
+{
+private:
+  unsigned int descriptorTag;
+  unsigned int descriptorLength;
+  unsigned int eventId;
+  uint64_t timeReference;
+  void* privateData;
+  string eventName;
+  char data[262];               // 7 header bytes + 255 data field bytes
 
-			string eventName;
+public:
+  StreamEvent(void* descriptorData, unsigned int descriptorSize);
+  virtual ~StreamEvent();
+  unsigned int getDescriptorTag();
+  unsigned int getDescriptorLength();
+  unsigned int getId();
+  long double getTimeReference();
+  char* getData();
+  void* getEventData();
+  void setEventName(string eventName);
+  string getEventName();
+  void print();
+};
 
-			//7 header bytes + 255 data field bytes
-			char data[262];
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 
-		public:
-			StreamEvent(void* descriptorData, unsigned int descriptorSize);
-			virtual ~StreamEvent();
-
-			unsigned int getDescriptorTag();
-			unsigned int getDescriptorLength();
-			unsigned int getId();
-			long double getTimeReference();
-			char* getData();
-			void* getEventData();
-
-			void setEventName(string eventName);
-			string getEventName();
-
-			void print();
-	};
-}
-}
-}
-}
-}
-}
-
-#endif /*STREAMEVENT_H_*/
+#endif /* STREAM_EVENT_H */

@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LinkSimpleAction.h"
 #include "LinkAssignmentAction.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	LinkSimpleAction::LinkSimpleAction(
 			FormatterEvent* event, short type) : LinkAction() {
 
@@ -134,10 +129,5 @@ namespace link {
 		}
 	}
 
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

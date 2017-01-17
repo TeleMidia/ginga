@@ -19,14 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LuaPlayerAdapter.h"
 #include "player/LuaPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace lua {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
+
 	LuaPlayerAdapter::LuaPlayerAdapter() : ApplicationPlayerAdapter()  {
 
 	}
@@ -107,11 +101,5 @@ namespace lua {
 		}
 		unlockEvent();
 	}
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END

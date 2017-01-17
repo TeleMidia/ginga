@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CompositeExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	FormatterCausalLink::FormatterCausalLink(
 		    LinkTriggerCondition* condition,
 		    LinkAction* action,
@@ -132,10 +127,5 @@ namespace link {
 		((CompositeExecutionObject*)parentObject)->
 			    linkEvaluationFinished(this, start);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

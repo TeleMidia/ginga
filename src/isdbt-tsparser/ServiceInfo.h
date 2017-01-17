@@ -30,13 +30,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
     class ServiceInfo : public IServiceInfo {
 		protected:
 			unsigned short serviceId;
@@ -67,12 +62,6 @@ namespace si {
 			size_t process (char* data, size_t pos);
 
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /*SERVICEINFO_H_*/

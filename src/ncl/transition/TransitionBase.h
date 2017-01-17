@@ -27,11 +27,8 @@ using namespace std;
 
 #include "Transition.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
    	class TransitionBase : public Base {
 		private:
 			vector<Transition*>* transitionSet;
@@ -51,10 +48,6 @@ namespace transition {
 			vector<Transition*>* getTransitions();
 			bool removeTransition(Transition* transition);
    	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END
 #endif /*TRANSITIONBASE_H_*/

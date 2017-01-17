@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/TextAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	TextAnchor::TextAnchor(string id, string t, long p) : Anchor(id) {
 		position = p;
 		text = t;
@@ -44,8 +41,5 @@ namespace interfaces {
 	void TextAnchor::setText(string t) {
 		text = t;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

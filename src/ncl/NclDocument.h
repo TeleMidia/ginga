@@ -58,10 +58,8 @@ using namespace ::br::pucrio::telemidia::ncl::metainformation;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+
   class NclDocument {
 	private:
 		ContextNode* body;
@@ -141,9 +139,6 @@ namespace ncl {
 		void removeAllMetainformation();
 		void removeAllMetadata();
   };
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_END
 #endif /*NCLDOCUMENT_H_*/

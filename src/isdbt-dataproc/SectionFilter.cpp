@@ -24,12 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "isdbt-tsparser/TransportSection.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 
 	SectionFilter::SectionFilter() {
 		this->listener = NULL;
@@ -536,9 +532,5 @@ namespace dataprocessing {
 		//memset(handler->sectionHeader, 0, ARRAY_SIZE(handler->sectionHeader));
 		return true;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END

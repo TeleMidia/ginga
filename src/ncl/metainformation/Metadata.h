@@ -15,25 +15,20 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef METADATA_H_
-#define METADATA_H_
+#ifndef METADATA_H
+#define METADATA_H
 
-#include <cstdlib>
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace metainformation {
-	class Metadata {
-		public:
-			void* getRDFTree();
-			void setRDFTree(void* tree);
-	};
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_BEGIN
 
-#endif /*METADATA_H_*/
+class Metadata
+{
+public:
+  void* getRDFTree();
+  void setRDFTree(void* tree);
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_END
+
+#endif /* METADATA_H */

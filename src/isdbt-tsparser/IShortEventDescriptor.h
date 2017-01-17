@@ -20,14 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class IShortEventDescriptor : public IMpegDescriptor{
 		public:
 			virtual ~IShortEventDescriptor(){};
@@ -36,14 +30,6 @@ namespace descriptors {
 			virtual string getTextChar()=0;
 
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
-
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* ISHORTEVENTDESCRIPTOR_H_ */

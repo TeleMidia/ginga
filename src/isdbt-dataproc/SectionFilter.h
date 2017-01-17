@@ -42,12 +42,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	struct SectionHandler {
 		// Last section's packet continuityCounter.
 		int lastContinuityCounter;
@@ -97,11 +93,6 @@ namespace dataprocessing {
 			void receiveSection(char* buf, int len, IFrontendFilter* filter);
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 #endif /*SECTIONFILTER_H_*/

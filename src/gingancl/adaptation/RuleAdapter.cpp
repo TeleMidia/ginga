@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "RuleAdapter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adaptation {
-namespace context {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+
 	RuleAdapter::RuleAdapter(PresentationContext* presContext) {
 		this->presContext = presContext;
 		this->presContext->addObserver(this);
@@ -516,10 +511,5 @@ if (object != NULL) {
 			}
 		}
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END

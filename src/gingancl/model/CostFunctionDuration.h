@@ -26,13 +26,8 @@ using namespace br::pucrio::telemidia::ncl::time::flexibility;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
+
 	class CostFunctionDuration : public FlexibleTimeMeasurement {
 		protected:
 			TemporalFlexibilityFunction* costFunction;
@@ -57,12 +52,6 @@ namespace time {
 		public:
 			virtual double getCostValue(double value);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_END
 #endif //_COSTFUNCTIONDURATION_H_

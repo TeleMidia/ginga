@@ -23,12 +23,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ctxmgmt/ContextManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 
 	ContextManager* RemoteEventService::contextManager = NULL;
 	RemoteEventService* RemoteEventService::_instance = NULL;
@@ -254,9 +250,5 @@ namespace multidevice {
 	}
 
 
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

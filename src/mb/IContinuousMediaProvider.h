@@ -30,12 +30,8 @@ extern "C" {
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class IContinuousMediaProvider : public IMediaProvider {
 		public:
 			virtual ~IContinuousMediaProvider(){};
@@ -61,11 +57,6 @@ namespace mb {
 			virtual bool releaseAll()=0;
 			virtual void refreshDR(void* data)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*ICONTINUOUSMEDIAPROVIDER_H_*/

@@ -20,10 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 namespace br {
 namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	MulticastSocketService::MulticastSocketService(
 			char* groupAddr,
 			unsigned int portNumber) {
@@ -289,7 +287,5 @@ namespace multidevice {
 	}
 }
 }
-}
-}
-}
-}
+
+TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

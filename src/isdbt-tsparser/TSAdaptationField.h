@@ -28,12 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 #include <string.h>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class TSAdaptationField {
 		private:
 			char adapFieldStream[MAX_ADAPTATION_FIELD_SIZE];
@@ -135,11 +131,6 @@ namespace tsparser {
 
 			int getStream(char stream[MAX_ADAPTATION_FIELD_SIZE]);
 	 };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /* TSADAPTATIONFIELD_H_ */

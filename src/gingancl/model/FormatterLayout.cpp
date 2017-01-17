@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterLayout.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
 	FormatterLayout::FormatterLayout(
 			GingaScreenID screenId, int x, int y, int w, int h) {
 
@@ -573,10 +568,5 @@ namespace presentation {
 	void FormatterLayout::unlock() {
 		Thread::mutexUnlock(&mutex);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
