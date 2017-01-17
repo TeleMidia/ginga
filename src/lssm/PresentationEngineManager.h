@@ -18,17 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PRESENTATIONENGINEMANAGER_H_
 #define PRESENTATIONENGINEMANAGER_H_
 
-#include "mb/IMBDefs.h"
-
 #include "system/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-#include <set>
-#include <string>
-using namespace std;
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
@@ -58,14 +52,6 @@ using namespace ::br::pucrio::telemidia::ncl;
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "PresentationEngineManager.h"
-
-#include <pthread.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 

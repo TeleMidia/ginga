@@ -27,8 +27,6 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "IMBDefs.h"
-
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
 #include "ICmdEventListener.h"

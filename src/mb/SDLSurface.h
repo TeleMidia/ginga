@@ -18,19 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLSURFACE_H_
 #define SDLSURFACE_H_
 
-#include "SDL.h"
-
-#include <pthread.h>
-
 #include "IFontProvider.h"
-
-#include "IMBDefs.h"
 
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;
-
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 

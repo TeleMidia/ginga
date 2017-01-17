@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-#include "IMBDefs.h"
-
 #include "InputManager.h"
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"

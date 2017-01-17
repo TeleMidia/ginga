@@ -29,8 +29,6 @@ using namespace ::br::pucrio::telemidia::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "mb/IMBDefs.h"
-
 #include "CommonCoreManager.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN

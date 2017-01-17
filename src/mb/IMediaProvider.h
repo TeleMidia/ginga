@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define I_MEDIA_PROVIDER_H
 
 #include "ginga.h"
-#include "IMBDefs.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 

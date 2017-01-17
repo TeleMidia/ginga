@@ -18,20 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AVPLAYER_H_
 #define AVPLAYER_H_
 
-#include "mb/IMBDefs.h"
-
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-	#include <pthread.h>
-	#include <string.h>
-	#include <stdio.h>
-#ifdef __cplusplus
-}
-#endif
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -46,10 +34,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Player.h"
-
-#include <vector>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
