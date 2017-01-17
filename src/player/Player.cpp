@@ -26,7 +26,7 @@ using namespace ::ginga::util;
 
 #include <iostream>
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	LocalScreenManager* Player::dm = NULL;
 
@@ -643,4 +643,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		return true;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

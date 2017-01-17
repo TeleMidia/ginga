@@ -48,10 +48,10 @@ using namespace ::ginga::mb;
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	typedef struct LockedPlayerLitenerAction {
-		::br::pucrio::telemidia::ginga::core::player::IPlayerListener* l;
+		::ginga::player::IPlayerListener* l;
 		bool isAdd;
 	} LockedPlayerListener;
 
@@ -216,8 +216,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			virtual void timeShift(string direction){};
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+GINGA_PLAYER_END
+using namespace ::ginga::player;
 
 struct notify {
 	IPlayerListener* listener;

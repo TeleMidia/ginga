@@ -39,7 +39,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "FormatterPlayerAdapter.h"
 #include "IPlayerAdapter.h"

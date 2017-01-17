@@ -35,7 +35,7 @@ using namespace ::ginga::mb;
 
 #include "Player.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class AVPlayer :
 			public Thread,
@@ -127,5 +127,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*AVPLAYER_H_*/

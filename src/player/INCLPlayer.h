@@ -41,10 +41,10 @@ typedef struct {
 	void* focusManager;
 	void* privateBaseManager;
     bool enableMulticast;
-	::br::pucrio::telemidia::ginga::core::player::IPlayerListener* editListener;
+	::ginga::player::IPlayerListener* editListener;
 } NclPlayerData;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class INCLPlayer : public IPlayer {
 		public:
@@ -131,5 +131,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			virtual void timeShift(string direction)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif //_INCLPlayer_H_

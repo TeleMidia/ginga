@@ -117,6 +117,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_LSSM_END      NS_END2
 #define GINGA_MB_BEGIN      NS_BEGIN2 (ginga, mb)
 #define GINGA_MB_END        NS_END2
+#define GINGA_PLAYER_BEGIN  NS_BEGIN2 (ginga, player)
+#define GINGA_PLAYER_END    NS_END2
 #define GINGA_UTIL_BEGIN    NS_BEGIN2 (ginga, util)
 #define GINGA_UTIL_END      NS_END2
 
@@ -185,12 +187,6 @@ typedef unsigned int GingaProviderID;
   NS_BEGIN6 (br, pucrio, telemidia, ginga, core, multidevice)
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END\
-  NS_END6
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN\
-  NS_BEGIN6 (br, pucrio, telemidia, ginga, core, player)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END\
   NS_END6
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN\

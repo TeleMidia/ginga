@@ -33,7 +33,7 @@ using namespace std;
 #define NTP_PORT_NUM 123
 #define NTP_CLIENT 3
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class NTPPlayer : public Player {
 		private:
@@ -62,5 +62,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			static void addTime(timeb* a, double seconds);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /* NTPPLAYER_H_ */

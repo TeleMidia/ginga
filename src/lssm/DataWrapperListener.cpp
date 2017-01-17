@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;

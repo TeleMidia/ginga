@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "player/IPlayerListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
 

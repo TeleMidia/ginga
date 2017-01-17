@@ -29,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 using namespace ::br::pucrio::telemidia::ncl::connectors;
 
 #include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

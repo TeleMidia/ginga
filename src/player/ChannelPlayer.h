@@ -27,7 +27,7 @@ using namespace ::ginga::mb;
 #include <vector>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
    class ChannelPlayer : public Player, public IPlayerListener {
   	protected:
@@ -68,5 +68,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		virtual void timeShift(string direction){};
    };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*CHANNELPLAYER_H_*/

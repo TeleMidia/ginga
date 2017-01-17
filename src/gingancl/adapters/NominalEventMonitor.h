@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "ncl/interfaces/ContentAnchor.h"
 #include "ncl/interfaces/LambdaAnchor.h"

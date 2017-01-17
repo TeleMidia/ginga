@@ -26,7 +26,7 @@ using namespace ::ginga::mb;
 using namespace ::ginga::util;
 
 #include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
 

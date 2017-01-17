@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "player/NTPPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 
 NTPPlayer::NTPPlayer(GingaScreenID screenId, string mrl) : Player(screenId, mrl) {
@@ -235,4 +235,4 @@ double NTPPlayer::elapsedTime(string& oldNclTime) {
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

@@ -32,7 +32,7 @@ using namespace ::ginga::mb;
 
 #include "ImagePlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
   class ShowButton : public Thread {
 		private:
@@ -62,5 +62,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*ShowButton_H_*/

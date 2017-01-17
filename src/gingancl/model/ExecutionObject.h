@@ -28,7 +28,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "ncl/animation/Animation.h"
 using namespace ::br::pucrio::telemidia::ncl::animation;
