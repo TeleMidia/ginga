@@ -15,91 +15,66 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DataWrapperListener_H_
-#define DataWrapperListener_H_
+#ifndef DATA_WRAPPER_LISTENER_H
+#define DATA_WRAPPER_LISTENER_H
 
-#include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+#include "ginga.h"
+#include "PresentationEngineManager.h"
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
-
-#include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-#include "isdbt-tuner/Tuner.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
-
-#include "isdbt-tsparser/IEventInfo.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
-
-#include "isdbt-tsparser/IShortEventDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
-
 #include "isdbt-dataproc/dsmcc/IStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
-
-#include "system/ITimeBaseProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::system::time;
 
 #include "isdbt-dataproc/dsmcc/IServiceDomainListener.h"
 #include "isdbt-dataproc/dsmcc/IObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
-#include "PresentationEngineManager.h"
+GINGA_LSSM_BEGIN
 
-#include <string>
-using namespace std;
+class DataWrapperListener : public IStreamEventListener,
+                            public IObjectListener,
+                            public IServiceDomainListener,
+                            public Thread
+{
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+private:
+  PresentationEngineManager* pem;
+  string documentUri;
+  bool autoMount;
+  map<string, string> ncls;
+  set<string> present;
+  string docToStart;
+  IAIT* ait;
 
-  class DataWrapperListener :
-				public IStreamEventListener,
-				public IObjectListener,
-				public IServiceDomainListener,
-				public Thread {
+public:
+  DataWrapperListener(PresentationEngineManager* pem);
+  virtual ~DataWrapperListener();
+  void autoMountOC(bool autoMountIt);
 
-	private:
-		PresentationEngineManager* pem;
-		string documentUri;
-		bool autoMount;
-		map<string, string> ncls;
-		set<string> present;
-		string docToStart;
+private:
+  static void writeAITCommand(const string &appName,
+                              const string &appUri, IApplication* app);
+  bool startApp(const string &appName, IApplication* app);
+  bool appIsPresent(const string &appName, IApplication* app);
+  bool processAIT();
 
-		IAIT* ait;
+public:
+  bool applicationInfoMounted(IAIT* ait);
+  void objectMounted(string ior, string clientUri, string name);
+  void receiveStreamEvent(StreamEvent* event);
 
-	public:
-		DataWrapperListener(PresentationEngineManager* pem);
-		virtual ~DataWrapperListener();
-		void autoMountOC(bool autoMountIt);
+private:
+  void addNCLInfo(string name, string path);
 
-	private:
-		static void writeAITCommand(const string &appName, const string &appUri, IApplication* app);
-		bool startApp(const string &appName, IApplication* app);
-		bool appIsPresent(const string &appName, IApplication* app);
-		bool processAIT();
+public:
+  void serviceDomainMounted (string mountPoint, map<string, string>* names,
+                             map<string, string>* paths);
+private:
+  void run();
+};
 
-	public:
-		bool applicationInfoMounted(IAIT* ait);
-		void objectMounted(string ior, string clientUri, string name);
-		void receiveStreamEvent(StreamEvent* event);
-		
-	private:
-		void addNCLInfo(string name, string path);
+GINGA_LSSM_END
 
-	public:
-		void serviceDomainMounted(
-				string mountPoint,
-				map<string, string>* names,
-				map<string, string>* paths);
-
-	private:
-		void run();
-  };
-
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
-#endif /*DataWrapperListener_H_*/
+#endif /* DATA_WRAPPER_LISTENER_H */

@@ -541,7 +541,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			value = ((data[pos+1] & 0xFF) + 2);
 			remainingBytesDescriptor -= value;
 
-			switch (data[pos]) {//pos = descriptorTag
+			switch ((unsigned char) data[pos]) {//pos = descriptorTag
 				case DT_SHORT_EVENT:
 					descriptor = new ShortEventDescriptor();
 					localpos = descriptor->process(data, pos);

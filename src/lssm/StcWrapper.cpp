@@ -16,34 +16,33 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
+#include "StcWrapper.h"
+
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include "lssm/StcWrapper.h"
+GINGA_LSSM_BEGIN
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+StcWrapper::StcWrapper(IPlayer* realStcProvider)
+{
+  this->realStcProvider = realStcProvider;
+}
 
-#if WITH_ISDBT
-	StcWrapper::StcWrapper(IPlayer* realStcProvider) {
-		this->realStcProvider = realStcProvider;
-	}
+StcWrapper::~StcWrapper()
+{
+  this->realStcProvider = NULL;
+}
 
-	StcWrapper::~StcWrapper() {
-		this->realStcProvider = NULL;
-	}
+bool StcWrapper::getSTCValue(uint64_t* stc, int* valueType)
+{
+  if (realStcProvider == NULL)
+    {
+      *stc = 0;
+      return false;
+    }
+  *stc = realStcProvider->getVPts();
+  *valueType = ST_90KHz;
+  return true;
+}
 
-	bool StcWrapper::getSTCValue(uint64_t* stc, int* valueType) {
-		if (realStcProvider == NULL) {
-			*stc = 0;
-			return false;
-		}
-
-		*stc       = realStcProvider->getVPts();
-		*valueType = ST_90KHz;
-
-		return true;
-	}
-
-#endif
-
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
+GINGA_LSSM_END

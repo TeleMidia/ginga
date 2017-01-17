@@ -15,35 +15,30 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef StcWrapper_H_
-#define StcWrapper_H_
+#ifndef STC_WRAPPER_H
+#define STC_WRAPPER_H
 
-#include "config.h"
+#include "ginga.h"
 
-#if WITH_ISDBT
 #include "isdbt-tuner/ISTCProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "player/IPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
-#endif
 
-#include <string>
-using namespace std;
+GINGA_LSSM_BEGIN
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+class StcWrapper : public ISTCProvider
+{
+private:
+  IPlayer *realStcProvider;
 
-#if WITH_ISDBT
-  class StcWrapper : public ISTCProvider {
-	private:
-		IPlayer* realStcProvider;
+public:
+  StcWrapper (IPlayer *realStcProvider);
+  virtual ~StcWrapper ();
+  bool getSTCValue (uint64_t *stc, int *valueType);
+};
 
-	public:
-		StcWrapper(IPlayer* realStcProvider);
-		virtual ~StcWrapper();
-		bool getSTCValue(uint64_t* stc, int* valueType);
-  };
-#endif
+GINGA_LSSM_END
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
-#endif /*StcWrapper_H_*/
+#endif /* STC_WRAPPER_H */
