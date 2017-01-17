@@ -43,12 +43,12 @@ using namespace std;
 using namespace std;
 
 typedef struct lockedLitenerAction {
-	::br::pucrio::telemidia::ginga::core::mb::IInputEventListener* l;
+	::ginga::mb::IInputEventListener* l;
 	bool isAdd;
 	set<int>* events;
 } LockedAction;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class InputManager : public Thread {
 		protected:
@@ -137,5 +137,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 				double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*INPUTMANAGER_H_*/

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 class IMediaProvider
 {
@@ -45,6 +45,6 @@ protected:
   IMediaProviderType type;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 
 #endif /* I_MEDIA_PROVIDER_H */

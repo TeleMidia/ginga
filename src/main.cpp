@@ -34,13 +34,13 @@ using namespace ::br::pucrio::telemidia;
 #include "lssm/CommonCoreManager.h"
 #include "lssm/PresentationEngineManager.h"
 
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "ncl/layout/IDeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;
 
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
 # include "multidevice/DeviceDomain.h"

@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LocalScreenManager.h"
 #include "ScreenManagerFactory.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
   GingaSurfaceID SDLSurface::refIdCounter = 1;
@@ -749,4 +749,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		myId = surId;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

@@ -53,7 +53,7 @@ using namespace std;
 #define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 typedef struct {
@@ -378,5 +378,5 @@ typedef struct {
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*SDLDEVICESCREEN_H_*/

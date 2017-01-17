@@ -34,7 +34,7 @@ using namespace std;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 	SDL_AudioSpec SDL2ffmpeg::spec;
@@ -3093,4 +3093,4 @@ the_end:
 		return ret;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

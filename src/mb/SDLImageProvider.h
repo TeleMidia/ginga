@@ -27,7 +27,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <set>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class SDLImageProvider : public IImageProvider {
 		private:
@@ -51,5 +51,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			bool releaseAll();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*SDLIMAGEPROVIDER_H_*/

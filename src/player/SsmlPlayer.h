@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/IImageProvider.h"
 #include "mb/SDLWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;

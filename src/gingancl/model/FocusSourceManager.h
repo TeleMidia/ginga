@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "mb/SDLSurface.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
 

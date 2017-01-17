@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "player/ShowButton.h"
 #include "player/IPlayerListener.h"

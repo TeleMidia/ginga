@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class ICmdEventListener {
 		public:
@@ -29,5 +29,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			virtual bool cmdEventReceived(string command, string args)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*IMOTIONEVENTLISTENER_H_*/

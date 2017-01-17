@@ -32,7 +32,7 @@ typedef Uint32 SDL_WindowID;
 #include <vector>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
   class SDLWindow {
   public:
@@ -204,5 +204,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
     void unlockSurface();
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*SDLWINDOW_H_*/

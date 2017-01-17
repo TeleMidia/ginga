@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "LocalScreenManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 class ScreenManagerFactory {
@@ -32,5 +32,5 @@ public:
 	static LocalScreenManager* _instance;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /* ScreenManagerFactory_H_ */

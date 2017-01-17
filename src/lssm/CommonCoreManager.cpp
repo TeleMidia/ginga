@@ -55,7 +55,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 #include "mb/SDLWindow.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
 #include "player/IProgramAV.h"

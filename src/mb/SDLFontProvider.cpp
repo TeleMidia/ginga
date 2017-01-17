@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	const short SDLFontProvider::A_TOP           = 3;
 	const short SDLFontProvider::A_TOP_CENTER    = 4;
@@ -391,4 +391,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		Thread::mutexUnlock(&ntsMutex);
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

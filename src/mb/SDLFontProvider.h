@@ -34,7 +34,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <map>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class SDLFontProvider : public IFontProvider {
 		private:
@@ -100,5 +100,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			void playOver(GingaSurfaceID surface);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*SDLFONTPROVIDER_H_*/

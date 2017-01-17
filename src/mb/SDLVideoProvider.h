@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SDLVIDEOPROVIDER_H_
 
 #include "IContinuousMediaProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "SDLAudioProvider.h"
 
 #include <set>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class SDLVideoProvider : public SDLAudioProvider {
 		private:
@@ -80,5 +80,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			bool textureCreated();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*SDLVIDEOPROVIDER_H_*/

@@ -45,7 +45,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 #include "mb/InputManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #if WITH_ISDBT
 #include "isdbt-dataproc/ncl/EventDescriptor.h"
@@ -60,7 +60,7 @@ using namespace ::ginga::util;
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;

@@ -34,7 +34,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLBpgDecoder.h"
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 	bool SDLImageProvider::mutexInit   = false;
@@ -150,4 +150,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		return false;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

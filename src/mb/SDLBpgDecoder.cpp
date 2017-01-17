@@ -25,7 +25,7 @@ extern "C" {
 
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
    
     SDLBpgDecoder::SDLBpgDecoder(string filename) {
@@ -98,4 +98,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
         return img;
     }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

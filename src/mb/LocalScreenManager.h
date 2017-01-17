@@ -35,7 +35,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class LocalScreenManager {
 		public:
@@ -454,5 +454,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			void unlock();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*LocalScreenManager_H_*/

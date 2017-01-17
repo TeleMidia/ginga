@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IMOTIONEVENTLISTENER_H_
 #define IMOTIONEVENTLISTENER_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class IMotionEventListener {
 		public:
@@ -26,5 +26,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			virtual bool motionEventReceived(int x, int y, int z)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*IMOTIONEVENTLISTENER_H_*/

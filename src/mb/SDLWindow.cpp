@@ -29,7 +29,7 @@ extern "C" {
 #include <stdlib.h>
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	SDLWindow::SDLWindow(
 			GingaWindowID windowID,
@@ -788,4 +788,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		Thread::mutexUnlock(&surMutex);
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

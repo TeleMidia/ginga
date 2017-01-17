@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
 # include "multidevice/DeviceDomain.h"

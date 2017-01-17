@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	SDLVideoProvider::SDLVideoProvider(GingaScreenID screenId, const char* mrl)
 			: SDLAudioProvider(screenId, mrl) {
@@ -184,4 +184,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		return false;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

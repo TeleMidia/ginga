@@ -27,7 +27,7 @@ extern "C" {
 
 #include "SDLDeviceScreen.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 	set<IInputEventListener*> LocalScreenManager::iListeners;
@@ -1978,4 +1978,4 @@ void LocalScreenManager::moveWindowTo(
 		Thread::mutexUnlock(&genMutex);
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

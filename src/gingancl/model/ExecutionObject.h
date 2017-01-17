@@ -25,7 +25,7 @@ using namespace ::ginga::util;
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;

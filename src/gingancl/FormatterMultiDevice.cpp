@@ -31,7 +31,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "mb/LocalScreenManager.h"
 #include "mb/InputManager.h"
 #include "mb/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "ncl/layout/DeviceLayout.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;

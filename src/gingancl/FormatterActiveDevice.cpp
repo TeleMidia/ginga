@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "gingancl/FormatterMediator.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;

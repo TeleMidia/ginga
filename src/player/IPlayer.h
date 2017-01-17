@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/SDLWindow.h"
 #include "mb/SDLSurface.h"
 #include "mb/IImageProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "IPlayerListener.h"
 
