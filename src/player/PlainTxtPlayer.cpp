@@ -227,7 +227,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 		} else if (name == "fontSize" && isNumeric((void*)(value.c_str()))) {
 
-			setFontSize((int)(util::stof(value)));
+			setFontSize((int)(::ginga::util::stof(value)));
 
 		} else if (name == "fontUri") {
 			setFont(value);
@@ -275,9 +275,9 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 					}
 
 					bgColor = new Color(
-							(int)util::stof((*params)[0]),
-							(int)util::stof((*params)[1]),
-							(int)util::stof((*params)[2]));
+							(int)::ginga::util::stof((*params)[0]),
+							(int)::ginga::util::stof((*params)[1]),
+							(int)::ginga::util::stof((*params)[2]));
 
 					GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
 					if (parentWindow != 0) {
@@ -307,9 +307,9 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				}
 
 				fontColor = new Color(
-						(int)util::stof((*params)[0]),
-						(int)util::stof((*params)[1]),
-						(int)util::stof((*params)[2]));
+						(int)::ginga::util::stof((*params)[0]),
+						(int)::ginga::util::stof((*params)[1]),
+						(int)::ginga::util::stof((*params)[2]));
 
 			} else {
 				refresh = false;

@@ -15,63 +15,70 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _OBSERVABLE_H_
-#define _OBSERVABLE_H_
+#ifndef OBSERVABLE_H
+#define OBSERVABLE_H
 
+#include "ginga.h"
 #include "Observer.h"
 
-#include <pthread.h>
-#include <set>
-using namespace std;
+GINGA_UTIL_BEGIN
 
-class Observable {
-	private:
-		set<Observer*> observers;
-		pthread_mutex_t vM;
+class Observable
+{
+private:
+  set<Observer*> observers;
+  pthread_mutex_t vM;
 
-	public:
-		virtual ~Observable() {
-			pthread_mutex_lock(&vM);
-			observers.clear();
-			pthread_mutex_unlock(&vM);
-			pthread_mutex_destroy(&vM);
-		};
+public:
+  virtual ~Observable()
+  {
+    pthread_mutex_lock(&vM);
+    observers.clear();
+    pthread_mutex_unlock(&vM);
+    pthread_mutex_destroy(&vM);
+  };
 
-	protected:
-		void createObserversVector() {
-			pthread_mutex_init(&vM, NULL);
-			observers.clear();
-		};
+protected:
+  void createObserversVector()
+  {
+    pthread_mutex_init(&vM, NULL);
+    observers.clear();
+  };
 
-	public:
-		void addObserver(Observer* object) {
-			pthread_mutex_lock(&vM);
-			observers.insert(object);
-			pthread_mutex_unlock(&vM);
-		};
+public:
+  void addObserver(Observer* object)
+  {
+    pthread_mutex_lock(&vM);
+    observers.insert(object);
+    pthread_mutex_unlock(&vM);
+  };
 
-		void removeObserver(Observer* object) {
-			set<Observer*>::iterator i;
+  void removeObserver(Observer* object)
+  {
+    set<Observer*>::iterator i;
 
-			pthread_mutex_lock(&vM);
-			i = observers.find(object);
-			if (i != observers.end()) {
-				observers.erase(i);
-			}
-			pthread_mutex_unlock(&vM);
-		};
+    pthread_mutex_lock(&vM);
+    i = observers.find(object);
+    if (i != observers.end()) {
+      observers.erase(i);
+    }
+    pthread_mutex_unlock(&vM);
+  };
 
-		virtual void notifyObservers(void* object) {
-			set<Observer*>::iterator i;
+  virtual void notifyObservers(void* object)
+  {
+    set<Observer*>::iterator i;
 
-			pthread_mutex_lock(&vM);
-			i = observers.begin();
-			while (i != observers.end()) {
-				(*i)->update(this, object);
-				++i;
-			}
-			pthread_mutex_unlock(&vM);
-		};
+    pthread_mutex_lock(&vM);
+    i = observers.begin();
+    while (i != observers.end()) {
+      (*i)->update(this, object);
+      ++i;
+    }
+    pthread_mutex_unlock(&vM);
+  };
 };
 
-#endif //_OBSERVABLE_H_
+GINGA_UTIL_END
+
+#endif /* OBSERVABLE_H */

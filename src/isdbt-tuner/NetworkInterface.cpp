@@ -103,7 +103,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			portNumber = address.substr(
 					address.find(":") + 1, address.length());
 
-			provider = new NetworkProvider(ip, (int)util::stof(portNumber), protocol);
+			provider = new NetworkProvider(ip, (int)::ginga::util::stof(portNumber), protocol);
 			return true;
 
 		} else if (name == "file") {
@@ -120,7 +120,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 				freq = 0;
 
 			} else {
-				freq = (long)util::stof(address);
+				freq = (long)::ginga::util::stof(address);
 				if (freq < 1)
 					return false;
 			}

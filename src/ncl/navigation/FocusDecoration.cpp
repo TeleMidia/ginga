@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/navigation/FocusDecoration.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN
 

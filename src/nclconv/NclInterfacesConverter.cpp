@@ -203,7 +203,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				begin = XMLString::transcode(areaElement->getAttribute(
 					    XMLString::transcode("begin")));
 
-				begVal = util::strUTCToSec(begin) * 1000;
+				begVal = ::ginga::util::strUTCToSec(begin) * 1000;
 
 			} else {
 				begVal = 0;
@@ -213,7 +213,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 				end = XMLString::transcode(areaElement->getAttribute(
 					    XMLString::transcode("end")));
 
-				endVal = util::strUTCToSec(end) * 1000;
+				endVal = ::ginga::util::strUTCToSec(end) * 1000;
 
 			} else {
 				endVal = IntervalAnchor::OBJECT_DURATION;
@@ -244,17 +244,17 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 				if (begin.find("s") != std::string::npos) {
 					firstSyntax = ContentAnchor::CAT_SAMPLES;
-					begVal = util::stof(begin.substr(0, begin.length() - 1));
+					begVal = ::ginga::util::stof(begin.substr(0, begin.length() - 1));
 
 				} else if (begin.find("f") != std::string::npos) {
 					firstSyntax = ContentAnchor::CAT_FRAMES;
-					begVal = util::stof(begin.substr(0, begin.length() - 1));
+					begVal = ::ginga::util::stof(begin.substr(0, begin.length() - 1));
 
 				} else if (begin.find("npt") != std::string::npos ||
 						begin.find("NPT") != std::string::npos) {
 
 					firstSyntax = ContentAnchor::CAT_NPT;
-					begVal = util::stof(begin.substr(0, begin.length() - 3));
+					begVal = ::ginga::util::stof(begin.substr(0, begin.length() - 3));
 				}
 			}
 
@@ -264,17 +264,17 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 				if (end.find("s") != std::string::npos) {
 					lastSyntax = ContentAnchor::CAT_SAMPLES;
-					endVal = util::stof(end.substr(0, end.length() - 1));
+					endVal = ::ginga::util::stof(end.substr(0, end.length() - 1));
 
 				} else if (end.find("f") != std::string::npos) {
 					lastSyntax = ContentAnchor::CAT_FRAMES;
-					endVal = util::stof(end.substr(0, end.length() - 1));
+					endVal = ::ginga::util::stof(end.substr(0, end.length() - 1));
 
 				} else if (end.find("npt") != std::string::npos ||
 						end.find("NPT") != std::string::npos) {
 
 					lastSyntax = ContentAnchor::CAT_NPT;
-					endVal = util::stof(end.substr(0, end.length() - 3));
+					endVal = ::ginga::util::stof(end.substr(0, end.length() - 3));
 				}
 			}
 

@@ -321,7 +321,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		memset(
 				handler->sectionHeader,
 				0,
-				ARRAY_SIZE(handler->sectionHeader));
+				G_N_ELEMENTS(handler->sectionHeader));
 	}
 
 	// Ignore SECTION.
@@ -428,7 +428,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 
 		pack->getPayload(data);
 		/* The payload has only a part of the header */
-		if (payloadSize < (ARRAY_SIZE(handler->sectionHeader) - handler->headerSize)) {
+		if (payloadSize < (G_N_ELEMENTS(handler->sectionHeader) - handler->headerSize)) {
 			/*clog << "SectionFilter::verifyAndCreateSection ";
 			clog << "Creating Section header, currentSize is '";
 			clog << handler->headerSize << " and dataSize is '";
@@ -528,8 +528,6 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			handler->lastContinuityCounter = pack->getContinuityCounter();
 		}
 
-		//handler->headerSize = 0;
-		//memset(handler->sectionHeader, 0, ARRAY_SIZE(handler->sectionHeader));
 		return true;
 	}
 

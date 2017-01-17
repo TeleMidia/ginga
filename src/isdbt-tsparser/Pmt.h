@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <map>
 #include <string>

@@ -83,7 +83,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_BEGIN
 			defaultFocusBorderWidth = -3;
 
 		} else {
-			defaultFocusBorderWidth = util::stof(strValue);
+			defaultFocusBorderWidth = ::ginga::util::stof(strValue);
 		}
 
 		strValue = presContext->getPropertyValue(DEFAULT_SEL_BORDER_COLOR);

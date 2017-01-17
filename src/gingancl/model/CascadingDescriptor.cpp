@@ -370,36 +370,36 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 		if (name == "left") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setLeft(util::stof(value), isPercentual);
+			region->setLeft(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "top") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setTop(util::stof(value), isPercentual);
+			region->setTop(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "width") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setWidth(util::stof(value), isPercentual);
+			region->setWidth(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "height") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setHeight(util::stof(value), isPercentual);
+			region->setHeight(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "bottom") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setBottom(util::stof(value), isPercentual);
+			region->setBottom(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "right") {
 			createDummyRegion(formatterLayout);
 			value = cvtPercentual(value, &isPercentual);
-			region->setRight(util::stof(value), isPercentual);
+			region->setRight(::ginga::util::stof(value), isPercentual);
 
 		} else if (name == "zIndex") {
 			createDummyRegion(formatterLayout);
-			region->setZIndex(util::stof(value));
+			region->setZIndex(::ginga::util::stof(value));
 
 		} else if (name == "bounds") {
 			createDummyRegion(formatterLayout);
@@ -410,25 +410,25 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 							(*params)[0], &isPercentual);
 
 					region->setLeft(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 
 					value = cvtPercentual(
 							(*params)[1], &isPercentual);
 
 					region->setTop(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 
 					value = cvtPercentual(
 							(*params)[2], &isPercentual);
 
 					region->setWidth(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 
 					value = cvtPercentual(
 							(*params)[3], &isPercentual);
 
 					region->setHeight(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 				}
 			}
 			delete params;
@@ -442,13 +442,13 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 							(*params)[0], &isPercentual);
 
 					region->setLeft(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 
 					value = cvtPercentual(
 							(*params)[1], &isPercentual);
 
 					region->setTop(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 				}
 			}
 			delete params;
@@ -462,13 +462,13 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 							(*params)[0], &isPercentual);
 
 					region->setWidth(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 
 					value = cvtPercentual(
 							(*params)[1], &isPercentual);
 
 					region->setHeight(
-							util::stof(value), isPercentual);
+							::ginga::util::stof(value), isPercentual);
 				}
 			}
 			delete params;
@@ -603,7 +603,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 		if (pos != std::string::npos && pos == paramValue.length() - 1) {
 			paramValue = paramValue.substr(0, paramValue.length() - 1);
 			if (isNumeric((void*)(paramValue.c_str()))) {
-				value = util::stof(paramValue) / 100;
+				value = ::ginga::util::stof(paramValue) / 100;
 				paramValue = itos(value);
 			}
 		}

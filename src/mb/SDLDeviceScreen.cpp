@@ -333,10 +333,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		if (params->size() == 6) {
 			spec       = (*params)[0];
 			uParentId  = (void*)strtoul((*params)[1].c_str(), NULL, 10);
-			uEmbedX    = util::stof((*params)[2]);
-			uEmbedY    = util::stof((*params)[3]);
-			uEmbedW    = util::stof((*params)[4]);
-			uEmbedH    = util::stof((*params)[5]);
+			uEmbedX    = ::ginga::util::stof((*params)[2]);
+			uEmbedY    = ::ginga::util::stof((*params)[3]);
+			uEmbedW    = ::ginga::util::stof((*params)[4]);
+			uEmbedH    = ::ginga::util::stof((*params)[5]);
 			uEmbedId   = createUnderlyingSubWindow(
 					uParentId, spec, uEmbedX, uEmbedY, uEmbedW, uEmbedH, 1.0);
 		}
@@ -1840,10 +1840,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			title = "Ginga v" + title;
 
 			if (s->mbMode != "" && s->mbMode.find("x") != std::string::npos) {
-				s->wRes = (int)util::stof(
+				s->wRes = (int)::ginga::util::stof(
 						s->mbMode.substr(0, s->mbMode.find_first_of("x")));
 
-				s->hRes = (int)util::stof(
+				s->hRes = (int)::ginga::util::stof(
 						s->mbMode.substr(
 								s->mbMode.find_first_of("x") + 1,
 								(s->mbMode.length() -

@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
 #include "util/Color.h"
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;

@@ -92,7 +92,7 @@ extern "C" {
 }
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <iostream>
 #include <string>

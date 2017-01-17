@@ -45,7 +45,7 @@ using namespace ::br::pucrio::telemidia::converter::framework;
 using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <string>
 using namespace std;

@@ -89,7 +89,7 @@ GINGA_CTXMGMT_BEGIN
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					curUserId = util::stof(line);
+					curUserId = ::ginga::util::stof(line);
 				} else {
 					invalidUser = true;
 					clog << "ContextManager::initializeUsers ";
@@ -105,7 +105,7 @@ GINGA_CTXMGMT_BEGIN
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					id = (int)util::stof(line);
+					id = (int)::ginga::util::stof(line);
 					if (id >= 0) {
 						fis >> line;
 						name = line;
@@ -114,7 +114,7 @@ GINGA_CTXMGMT_BEGIN
 							passwd = line;
 							if (passwd != "") {
 								fis >> line;
-								age = (int)util::stof(line);
+								age = (int)::ginga::util::stof(line);
 								if (age >= 0) {
 									fis >> line;
 									location = line;
@@ -210,7 +210,7 @@ GINGA_CTXMGMT_BEGIN
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					curUserId = util::stof(line);
+					curUserId = ::ginga::util::stof(line);
 				}
 			}
 
@@ -221,7 +221,7 @@ GINGA_CTXMGMT_BEGIN
 				fis >> line;
 				if (line == "=") {
 					fis >> line;
-					id = (int)util::stof(line);
+					id = (int)::ginga::util::stof(line);
 					if (id >= 0) {
 						while (fis.good()) {
 							fis >> line;

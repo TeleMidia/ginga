@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+GINGA_UTIL_BEGIN
 
 class Color
 {
@@ -91,6 +91,6 @@ public:
   uint32_t getARGB();
 };
 
-BR_PUCRIO_TELEMIDIA_UTIL_END
+GINGA_UTIL_END
 
 #endif /* COLOR_H */

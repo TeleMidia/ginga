@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "RingBuffer.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
@@ -319,11 +319,11 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
 								if (!skipLine) {
 									channel = new Channel();
-									channel->setId((short)(util::stof(id)));
+									channel->setId((short)(::ginga::util::stof(id)));
 									channel->setName(name);
 
 									channel->setFrequency(
-											(unsigned int)(util::stof(freq)));
+											(unsigned int)(::ginga::util::stof(freq)));
 
 									if (seg == "FULLSEG") {
 										channel->setSegment(true);
@@ -493,7 +493,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 	}
 
 	bool ISDBTProvider::setChannel(string channelValue) {
-		return frontend->changeFrequency(util::stof(channelValue));
+		return frontend->changeFrequency(::ginga::util::stof(channelValue));
 	}
 
 	int ISDBTProvider::createPesFilter(

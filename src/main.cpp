@@ -252,25 +252,25 @@ int main(int argc, char *argv[]) {
     } else if ((strcmp(argv[i], "--x-offset") == 0) && ((i + 1) < argc)) {
       if (isNumeric(argv[i+1])) {
         param = argv[i+1];
-        xOffset = util::stof(param);
+        xOffset = ::ginga::util::stof(param);
       }
 
     } else if ((strcmp(argv[i], "--y-offset") == 0) && ((i + 1) < argc)) {
       if (isNumeric(argv[i+1])) {
         param = argv[i+1];
-        yOffset = util::stof(param);
+        yOffset = ::ginga::util::stof(param);
       }
 
     } else if ((strcmp(argv[i], "--set-width") == 0) && ((i + 1) < argc)) {
       if (isNumeric(argv[i+1])) {
         param = argv[i+1];
-        w = util::stof(param);
+        w = ::ginga::util::stof(param);
       }
 
     } else if ((strcmp(argv[i], "--set-height") == 0) && ((i + 1) < argc)) {
       if (isNumeric(argv[i+1])) {
         param = argv[i+1];
-        h = util::stof(param);
+        h = ::ginga::util::stof(param);
       }
 
     } else if ((strcmp(argv[i], "--set-max-transp") == 0) &&
@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
 
       if (isNumeric(argv[i+1])) {
         param = argv[i+1];
-        maxTransp = util::stof(param);
+        maxTransp = ::ginga::util::stof(param);
       }
 
     } else if ((strcmp(argv[i], "--set-bg-image") == 0) &&
@@ -314,7 +314,7 @@ int main(int argc, char *argv[]) {
 
     } else if (strcmp(argv[i], "--device-srv-port") == 0) {
       if (isNumeric(argv[i+1])&&((i + 1) < argc)) {
-        deviceSrvPort = util::stof(argv[i+1]);
+        deviceSrvPort = ::ginga::util::stof(argv[i+1]);
       }
 
     } else if (((strcmp(argv[i], "-i") == 0) ||
@@ -323,7 +323,7 @@ int main(int argc, char *argv[]) {
 
       if (isNumeric(argv[i+1])) {
         param     = argv[i+1];
-        delayTime = util::stof(param);
+        delayTime = ::ginga::util::stof(param);
       }
 
     } else if (strcmp(argv[i], "--insert-oc-delay") == 0 &&
@@ -331,7 +331,7 @@ int main(int argc, char *argv[]) {
 
       if (isNumeric(argv[i+1])) {
         param   = argv[i+1];
-        ocDelay = util::stof(param);
+        ocDelay = ::ginga::util::stof(param);
       }
 
     } else if (strcmp(argv[i], "--enable-automount") == 0) {

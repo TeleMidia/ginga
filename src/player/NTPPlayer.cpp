@@ -30,7 +30,7 @@ NTPPlayer::NTPPlayer(GingaScreenID screenId, string mrl) : Player(screenId, mrl)
 
 	} else {
 		this->host = mrl.substr(0, pos);
-		this->port = util::stof(mrl.substr(pos + 1, mrl.length() - (pos + 1)));
+		this->port = ::ginga::util::stof(mrl.substr(pos + 1, mrl.length() - (pos + 1)));
 	}
 }
 

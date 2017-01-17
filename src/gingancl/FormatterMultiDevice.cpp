@@ -812,8 +812,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
 							tapObject(
 									DeviceDomain::CT_PASSIVE,
-									(int)util::stof(strX),
-									(int)util::stof(strY));
+									(int)::ginga::util::stof(strX),
+									(int)::ginga::util::stof(strY));
 
 						} else if (eventCode != CodeMap::KEY_NULL) {
 							im->postInputEvent(eventCode);

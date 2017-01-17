@@ -100,7 +100,7 @@ string SystemInfo::getSubtitleLanguage ()
 float SystemInfo::getReturnBitRate ()
 {
   string value = getValue ("system.returnBitRate");
-  return (value != "") ? util::stof (value) : 0.;
+  return (value != "") ? ::ginga::util::stof (value) : 0.;
 }
 
 void SystemInfo::getScreenSize (GingaScreenID screenId,

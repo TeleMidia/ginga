@@ -36,8 +36,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 		this->params          = split(trim(value), ",");
 		this->propName        = (event->getAnchor())->getPropertyName();
 
-		this->duration        = util::stof(anim->getDuration());
-		this->stepSize 	      = (int)util::stof(anim->getBy());
+		this->duration        = ::ginga::util::stof(anim->getDuration());
+		this->stepSize 	      = (int)::ginga::util::stof(anim->getBy());
 
 		this->targetRegion    = NULL;
 
@@ -212,7 +212,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 				if (value == "") {
 					value = execObj->getPropertyValue(this->propertySingleNames[i]);
 				}
-				propValue = util::stof(value);
+				propValue = ::ginga::util::stof(value);
 
 				clog << "AnimationController::loadInitValues (execObj): ";
 				clog << propertySingleNames[i] << " value = '";
@@ -412,27 +412,27 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 			} else {
 				if (param == "left") {
 					targetRegion->setTargetLeft(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 
 				} else if (param == "top") {
 					targetRegion->setTargetTop(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 
 				} else if (param == "width") {
 					targetRegion->setTargetWidth(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 
 				} else if (param == "height") {
 					targetRegion->setTargetHeight(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 
 				} else if (param == "bottom") {
 					targetRegion->setTargetBottom(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 
 				} else if (param == "right") {
 					targetRegion->setTargetRight(
-							(double)(util::stof(value)), false);
+							(double)(::ginga::util::stof(value)), false);
 				}
 			}
 		}
@@ -463,7 +463,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 			target = targetRegion->getBottomInPixels();
 
 		} else {
-			target = (double)(util::stof(strTargetValues[i]));
+			target = (double)(::ginga::util::stof(strTargetValues[i]));
 		}
 
 		return target;

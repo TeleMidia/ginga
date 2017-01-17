@@ -105,7 +105,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
 			return;
 		}
 
-		newValue = itos(util::stof(oldValue) + 1);
+		newValue = itos(::ginga::util::stof(oldValue) + 1);
 		if ((newValue != "") && (newValue != oldValue)) {
 			contextTable[propertyName] = newValue;
 			notifyObservers(&propertyName);
@@ -125,7 +125,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
 			return;
 		}
 
-		newValue = itos(util::stof(oldValue) - 1);
+		newValue = itos(::ginga::util::stof(oldValue) - 1);
 		if ((newValue != "") && (newValue != oldValue)) {
 			contextTable[propertyName] = newValue;
 			notifyObservers(&propertyName);

@@ -87,8 +87,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 		    string assessmentValue) {
 
 		if (offset != "" && isNumeric((void*)(assessmentValue.c_str()))) {
-			return itos(util::stof(
-				    assessmentValue) + util::stof(offset));
+			return itos(::ginga::util::stof(
+				    assessmentValue) + ::ginga::util::stof(offset));
 		}
 
 		return assessmentValue;

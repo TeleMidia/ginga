@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define LUAPLAYERADAPTER_H_
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "ApplicationPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;

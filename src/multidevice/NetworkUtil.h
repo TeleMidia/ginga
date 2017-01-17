@@ -25,7 +25,7 @@ struct frame {
 };
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include <string>
 #include <iostream>

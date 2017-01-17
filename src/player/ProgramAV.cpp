@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/AVPlayer.h"
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
@@ -118,7 +118,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		vals = split(pValue, ",");
 		if (vals->size() == 3) {
 			name = getNameFromMrl((*vals)[0]);
-			setAVPid(name, util::stof((*vals)[1]), util::stof((*vals)[2]));
+			setAVPid(name, ::ginga::util::stof((*vals)[1]), ::ginga::util::stof((*vals)[2]));
 		}
 
 		delete vals;
@@ -184,7 +184,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 		name = getNameFromMrl(mrl);
 		if (isNumeric((void*)(name.c_str()))) {
-			pid = util::stof(name);
+			pid = ::ginga::util::stof(name);
 
 		} else {
 			pid = getPidByName(name);
@@ -233,7 +233,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 		name = getNameFromMrl(mrl);
 		if (isNumeric((void*)(name.c_str()))) {
-			pid = util::stof(name);
+			pid = ::ginga::util::stof(name);
 
 		} else {
 			pid = getPidByName(name);
@@ -272,7 +272,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		clog << pValue << "'" << endl;
 
 		if (pName.substr(0, 11) == "sbtvd-ts://") {
-			addPidName(getNameFromMrl(pName), util::stof(pValue));
+			addPidName(getNameFromMrl(pName), ::ginga::util::stof(pValue));
 
 		} else if (pName == "createPlayer") {
 			createPlayer(pValue);

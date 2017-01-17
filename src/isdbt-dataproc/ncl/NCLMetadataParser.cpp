@@ -145,7 +145,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 				name = attrs[i + 1];
 
 			} else if (strcmp(attrs[i], "size") == 0) {
-				size = util::stof((string)attrs[i + 1]);
+				size = ::ginga::util::stof((string)attrs[i + 1]);
 			}
 		}
 
@@ -195,10 +195,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 
 		for (int i = 0; i < 8; i = i + 2) {
 			if (strcmp(attrs[i], "structureId") == 0) {
-				structureId = util::stof((string)attrs[i + 1]);
+				structureId = ::ginga::util::stof((string)attrs[i + 1]);
 
 			} else if (strcmp(attrs[i], "size") == 0) {
-				size = util::stof((string)attrs[i + 1]);
+				size = ::ginga::util::stof((string)attrs[i + 1]);
 
 			} else if (strcmp(attrs[i], "component_tag") == 0) {
 				componentTag = attrs[i + 1];

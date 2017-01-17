@@ -1375,7 +1375,7 @@ BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
 		//retirar o caracter percentual da string
 		actualValue = value.substr(0, value.length() - 1);
 		//converter para float
-		floatValue = util::stof( actualValue );
+		floatValue = ::ginga::util::stof( actualValue );
 
 		//se menor que zero, retornar zero
 		if (floatValue < 0)

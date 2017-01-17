@@ -55,6 +55,7 @@ GINGA_END_DECLS
 #include <list>
 #include <map>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 using namespace std;
@@ -114,6 +115,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_IC_END        NS_END2
 #define GINGA_LSSM_BEGIN    NS_BEGIN2 (ginga, lssm)
 #define GINGA_LSSM_END      NS_END2
+#define GINGA_UTIL_BEGIN    NS_BEGIN2 (ginga, util)
+#define GINGA_UTIL_END      NS_END2
 
 
 #define BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN\
@@ -487,11 +490,5 @@ typedef unsigned int GingaProviderID;
 
 #define BR_PUCRIO_TELEMIDIA_NCL_UTIL_END\
   NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_UTIL_BEGIN\
-  NS_BEGIN4 (br, pucrio, telemidia, util)
-
-#define BR_PUCRIO_TELEMIDIA_UTIL_END\
-  NS_END4
 
 #endif /* GINGA_H */

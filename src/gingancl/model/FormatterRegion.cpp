@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "util/Color.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "CascadingDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
@@ -80,7 +80,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 		value = ((CascadingDescriptor*)descriptor)->getParameterValue(
 			    "background");
 
-		if (util::trim(value) != "") {
+		if (::ginga::util::trim(value) != "") {
 			if (value.find(",") == std::string::npos) {
 				this->setBackgroundColor(value);
 
@@ -91,18 +91,18 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 				params = split(trim(value), ",");
 				if (params->size() == 3) {
 					bg = new Color(
-							util::stof((*params)[0]),
-							util::stof((*params)[1]),
-							util::stof((*params)[2]));
+							::ginga::util::stof((*params)[0]),
+							::ginga::util::stof((*params)[1]),
+							::ginga::util::stof((*params)[2]));
 
 					setBackgroundColor(bg);
 
 				} else if (params->size() == 4) {
 					bg = new Color(
-							util::stof((*params)[0]),
-							util::stof((*params)[1]),
-							util::stof((*params)[2]),
-							util::stof((*params)[3]));
+							::ginga::util::stof((*params)[0]),
+							::ginga::util::stof((*params)[1]),
+							::ginga::util::stof((*params)[2]),
+							::ginga::util::stof((*params)[3]));
 
 					setBackgroundColor(bg);
 				}
@@ -1864,7 +1864,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 		if (strTrans == "") {
 			trans = 0.0;
 		} else {
-			trans = util::stof(strTrans);
+			trans = ::ginga::util::stof(strTrans);
 		}
 
 		setTransparency(trans);
@@ -1900,7 +1900,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 
 	void FormatterRegion::setBackgroundColor(string color) {
 		Color* bg = NULL;
-		string trimColor = util::trim(color);
+		string trimColor = ::ginga::util::trim(color);
 
 		if (trimColor != "" && trimColor != "transparent") {
 			bg = new Color(color, (int)(transparency * 255));
@@ -1938,9 +1938,9 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 			params = split(value, ",");
 			if (params->size() == 3) {
 				this->chromaKey = new Color(
-						(int)util::stof((*params)[0]),
-						(int)util::stof((*params)[1]),
-						(int)util::stof((*params)[2]));
+						(int)::ginga::util::stof((*params)[0]),
+						(int)::ginga::util::stof((*params)[1]),
+						(int)::ginga::util::stof((*params)[2]));
 			}
 			delete params;
 		}

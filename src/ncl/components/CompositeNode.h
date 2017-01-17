@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _COMPOSITENODE_H_
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "../interfaces/InterfacePoint.h"
 #include "../interfaces/Port.h"

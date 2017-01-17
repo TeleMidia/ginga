@@ -55,7 +55,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #endif
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
@@ -1225,7 +1225,7 @@ struct inputEventNotification
 				editingCmd = (*params)[0];
 
 			} else if (params->size() == 2) {
-				delay = br::pucrio::telemidia::util::stof(((*params)[0]));
+				delay = ::ginga::util::stof(((*params)[0]));
 				if (delay > 0) {
 					Thread::mSleep(delay);
 				}

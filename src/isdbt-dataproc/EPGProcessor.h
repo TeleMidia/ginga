@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::ginga::util;
 
 #include "isdbt-tsparser/IServiceInfo.h"
 #include "isdbt-tsparser/IEventInfo.h"
