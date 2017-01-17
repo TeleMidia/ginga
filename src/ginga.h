@@ -37,6 +37,7 @@ GINGA_BEGIN_DECLS
 
 // External C libraries.
 #include <pthread.h>
+#include <curl/curl.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <ncluaw.h>
@@ -109,6 +110,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_END           NS_END
 #define GINGA_CTXMGMT_BEGIN NS_BEGIN2 (ginga, ctxmgmt)
 #define GINGA_CTXMGMT_END   NS_END2
+#define GINGA_IC_BEGIN      NS_BEGIN2 (ginga, ic)
+#define GINGA_IC_END        NS_END2
 
 
 #define BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN\

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/ImagePlayer.h"
 
 #include "ic/InteractiveChannelManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::ic;
+using namespace ::ginga::ic;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+GINGA_IC_BEGIN
 
 class IInteractiveChannelListener
 {
@@ -32,6 +32,6 @@ public:
   virtual void downloadCompleted(const char* localUri)=0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
+GINGA_IC_END
 
 #endif /* I_INTERACTIVE_CHANNEL_LISTENER_H */

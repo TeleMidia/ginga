@@ -15,51 +15,46 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _InteractiveChannelManager_H_
-#define _InteractiveChannelManager_H_
+#ifndef INTERACTIVE_CHANNEL_MANAGER_H
+#define INTERACTIVE_CHANNEL_MANAGER_H
 
+#include "ginga.h"
 #include "CurlInteractiveChannel.h"
 
-#include <pthread.h>
+GINGA_IC_BEGIN
 
-#include <set>
-#include <string>
-#include <map>
-#include <iostream>
-using namespace std;
+class InteractiveChannelManager
+{
+private:
+  set<CurlInteractiveChannel*>* ics;
+  map<string, CurlInteractiveChannel*>* urisIcs;
+  static InteractiveChannelManager* _instance;
+  InteractiveChannelManager();
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+public:
+  ~InteractiveChannelManager();
+  bool hasInteractiveChannel();
+  static InteractiveChannelManager* getInstance();
 
-  class InteractiveChannelManager {
-	private:
-		set<CurlInteractiveChannel*>* ics;
-		map<string, CurlInteractiveChannel*>* urisIcs;
-		static InteractiveChannelManager* _instance;
-		InteractiveChannelManager();
+private:
+  set<CurlInteractiveChannel*>* getInteractiveChannels();
 
-	public:
-		~InteractiveChannelManager();
-		bool hasInteractiveChannel();
-		static InteractiveChannelManager* getInstance();
+public:
+  CurlInteractiveChannel* createInteractiveChannel(string remoteUri);
+  void releaseInteractiveChannel(CurlInteractiveChannel* ic);
+  CurlInteractiveChannel* getInteractiveChannel(string remoteUri);
+  void clearInteractiveChannelManager();
 
-	private:
-		set<CurlInteractiveChannel*>* getInteractiveChannels();
+private:
+  void releaseInteractiveChannels();
 
-	public:
-		CurlInteractiveChannel* createInteractiveChannel(string remoteUri);
-		void releaseInteractiveChannel(CurlInteractiveChannel* ic);
-		CurlInteractiveChannel* getInteractiveChannel(string remoteUri);
-		void clearInteractiveChannelManager();
+public:
+  void performPendingUrls();
 
-	private:
-		void releaseInteractiveChannels();
+private:
+  static void* asyncPerform(void* thiz);
+};
 
-	public:
-		void performPendingUrls();
+GINGA_IC_END
 
-	private:
-		static void* asyncPerform(void* thiz);
-  };
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
-#endif /*_InteractiveChannelManager_H_*/
+#endif /* INTERACTIVE_CHANNEL_MANAGER_H */

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ic/InteractiveChannelManager.h"
 #include "ic/CurlInteractiveChannel.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+GINGA_IC_BEGIN
 
 	InteractiveChannelManager* InteractiveChannelManager::_instance = NULL;
 	InteractiveChannelManager::InteractiveChannelManager() {
@@ -162,4 +162,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
 		return NULL;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
+GINGA_IC_END
