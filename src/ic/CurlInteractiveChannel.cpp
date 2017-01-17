@@ -16,15 +16,19 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ic/CurlInteractiveChannel.h"
+#include "CurlInteractiveChannel.h"
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-#include <iostream>
-using namespace std;
+#include "system/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+#include "system/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
+
+GINGA_IC_BEGIN
 
 	bool CurlInteractiveChannel::mutexInit = false;
 	pthread_mutex_t CurlInteractiveChannel::mutex;
@@ -268,4 +272,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
 		return listener;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
+GINGA_IC_END

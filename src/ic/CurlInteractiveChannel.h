@@ -15,66 +15,54 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CurlInteractiveChannel_H_
-#define _CurlInteractiveChannel_H_
+#ifndef CURL_INTERACTIVE_CHANNEL_H
+#define CURL_INTERACTIVE_CHANNEL_H
 
+#include "ginga.h"
 #include "IInteractiveChannelListener.h"
 
-#include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+GINGA_IC_BEGIN
 
-#include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+class CurlInteractiveChannel
+{
+private:
+  FILE* fd;
+  char* buffer;
+  short type;
+  float rate;
+  string localUri;
+  string defaultServer;
+  string uri;
+  string userAgent;
+  static CURL* curl;
+  static pthread_mutex_t mutex;
+  static bool mutexInit;
+  IInteractiveChannelListener* listener;
 
-#include "curl/curl.h"
+public:
+  CurlInteractiveChannel();
+  ~CurlInteractiveChannel();
+  bool hasConnection();
+  void setSourceTarget(string url);
+  void setTarget(FILE* fd);
+  void setTarget(char* buffer);
+  short getType();
+  float getRate();
+  void setListener(IInteractiveChannelListener* listener);
+  bool reserveUrl(string uri, IInteractiveChannelListener* listener=NULL,
+                  string userAgent="");
 
-#include <sys/stat.h>
-#include <stdio.h>
-#include <string.h>
+  bool performUrl();
+  bool releaseUrl();
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+private:
+  static size_t writeCallBack(void* ptr, size_t size,
+                              size_t nmemb, void* stream);
+  bool positiveResponse(long* respCode);
+  FILE* getLocalFileDescriptor();
+  IInteractiveChannelListener* getListener();
+};
 
-  class CurlInteractiveChannel {
-	private:
-		FILE* fd;
-		char* buffer;
-		short type;
-		float rate;
-		string localUri;
-		string defaultServer;
-		string uri;
-		string userAgent;
-		static CURL* curl;
-		static pthread_mutex_t mutex;
-		static bool mutexInit;
-		IInteractiveChannelListener* listener;
+GINGA_IC_END
 
-	public:
-		CurlInteractiveChannel();
-		~CurlInteractiveChannel();
-		bool hasConnection();
-		void setSourceTarget(string url);
-		void setTarget(FILE* fd);
-		void setTarget(char* buffer);
-		short getType();
-		float getRate();
-		void setListener(IInteractiveChannelListener* listener);
-		bool reserveUrl(
-				string uri,
-				IInteractiveChannelListener* listener=NULL,
-				string userAgent="");
-
-		bool performUrl();
-		bool releaseUrl();
-
-	private:
-		static size_t writeCallBack(
-				void* ptr, size_t size, size_t nmemb, void* stream);
-
-		bool positiveResponse(long* respCode);
-		FILE* getLocalFileDescriptor();
-		IInteractiveChannelListener* getListener();
-  };
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END
-#endif /*CurlInteractiveChannel*/
+#endif /* CURL_INTERACTIVE_CHANNEL_H */
