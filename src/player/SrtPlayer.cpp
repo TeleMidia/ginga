@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 using namespace ::ginga::util;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	SrtPlayer::SrtPlayer(GingaScreenID screenId, string mrl) :
 			TextPlayer(screenId), Thread() {
@@ -506,4 +506,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		this->unlockConditionSatisfied();
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

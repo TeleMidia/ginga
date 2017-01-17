@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	//debug purpose
 	static const string EC_DBG_START_PRESENTATION        = "0x255";
@@ -95,5 +95,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 	static const string EC_SET_PROPERTY_VALUE            = "0x2D";
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*IAPPLICATIONPLAYER_H_*/

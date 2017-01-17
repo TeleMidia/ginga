@@ -27,7 +27,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "system/SystemCompat.h"
 #include "system/PracticalSocket.h"

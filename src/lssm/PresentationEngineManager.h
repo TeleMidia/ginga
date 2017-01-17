@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -34,7 +34,7 @@ using namespace ::ginga::mb;
 
 #include "player/ShowButton.h"
 #include "player/IPlayerListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "gingancl/PrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;

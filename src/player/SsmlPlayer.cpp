@@ -40,7 +40,7 @@ static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 
     SsmlPlayer::SsmlPlayer(GingaScreenID screenId, string mrl) :
@@ -185,4 +185,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

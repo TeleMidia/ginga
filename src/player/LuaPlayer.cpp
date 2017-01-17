@@ -39,7 +39,7 @@ using namespace::ginga::util;
 
 #include "player/LuaPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 #define ASSERT_NOT_REACHED (assert (!"reached"), ::abort ())
 #define nelementsof(x)   (sizeof (x) / sizeof (x[0]))
@@ -658,7 +658,7 @@ tail:
      return true;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 
 // Local variables:
 // mode: c++

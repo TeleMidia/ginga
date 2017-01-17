@@ -38,7 +38,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace std;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class SsmlPlayer :
 	    public Thread,
@@ -65,5 +65,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*SSMLPLAYER_H_*/

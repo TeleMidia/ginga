@@ -38,7 +38,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class TextPlayer : public Player {
 		protected:
@@ -93,5 +93,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			virtual void setPropertyValue(string name, string value);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*TEXTPLAYER_H_*/

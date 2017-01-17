@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "player/INCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "NCLPlayerAdapter.h"
 

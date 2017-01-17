@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "player/TextPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	TextPlayer::TextPlayer(GingaScreenID screenId) : Player(screenId, "") {
    		initializePlayer(screenId);
@@ -344,4 +344,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		Player::setPropertyValue(name, value);
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

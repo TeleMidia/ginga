@@ -73,7 +73,7 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 
 #include "player/IPlayer.h"
 #include "player/IPlayerListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "adaptation/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;

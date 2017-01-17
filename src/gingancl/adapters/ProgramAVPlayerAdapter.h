@@ -32,7 +32,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 using namespace ::br::pucrio::telemidia::ncl::components;
 
 #include "player/IProgramAV.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;

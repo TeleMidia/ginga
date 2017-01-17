@@ -22,7 +22,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "TextPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class SrtPlayer : public TextPlayer, public Thread {
 		protected:
@@ -63,5 +63,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*SRTPLAYER_H_*/

@@ -59,7 +59,7 @@ using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
 #include "player/IProgramAV.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "lssm/StcWrapper.h"
 

@@ -43,7 +43,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 using namespace Berkelium;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
   class BerkeliumHandler :
 	  public WindowDelegate,
@@ -176,5 +176,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 				const Rect &scrollRect);
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*BerkeliumHandler_h_*/

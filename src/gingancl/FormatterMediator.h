@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/INCLPlayer.h"
 #include "player/IApplicationPlayer.h"
 #include "player/Player.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "ncl/components/ContextNode.h"
 #include "ncl/components/CompositeNode.h"

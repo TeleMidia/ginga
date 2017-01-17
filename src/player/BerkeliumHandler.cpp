@@ -22,7 +22,7 @@ using namespace ::ginga::mb;
 #include "player/BerkeliumHandler.h"
 #include "player/PlayersComponentSupport.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 
 	map<int, int> BerkeliumHandler::fromGingaToBklm;
@@ -712,4 +712,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

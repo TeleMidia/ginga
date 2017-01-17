@@ -27,7 +27,7 @@ using namespace ::ginga::mb;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 class LuaPlayer : public Player, public IInputEventListener
 {
@@ -75,7 +75,7 @@ public:
      bool userEventReceived (SDLInputEvent * evt);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 
 #endif // LUAPLAYER_H
 

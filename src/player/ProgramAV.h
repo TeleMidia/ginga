@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <map>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	class ProgramAV : public Player {
 		private:
@@ -63,5 +63,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 			void setPropertyValue(string pName, string pValue);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
 #endif /*PROGRAMAV_H_*/

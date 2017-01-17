@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::player;
+using namespace ::ginga::player;
 
 #include "ncl/components/Content.h"
 #include "ncl/components/ContentNode.h"

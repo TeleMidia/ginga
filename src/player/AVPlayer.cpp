@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 #include <sys/types.h>
 #include <stdio.h>
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	AVPlayer::AVPlayer(GingaScreenID screenId, string mrl) :
 			Thread(), Player(screenId, mrl) {
@@ -659,4 +659,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 		clog << "AVPlayer::run(" << mrl << ") ALL DONE" << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END

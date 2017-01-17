@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+GINGA_PLAYER_BEGIN
 
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
@@ -150,4 +150,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
   }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
+GINGA_PLAYER_END
