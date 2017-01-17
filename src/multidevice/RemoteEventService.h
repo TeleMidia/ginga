@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "TcpSocketService.h"
 #include "ctxmgmt/ContextManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
+using namespace ::ginga::ctxmgmt;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 

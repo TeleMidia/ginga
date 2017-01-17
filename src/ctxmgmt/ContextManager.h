@@ -15,77 +15,68 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ContextManager_H_
-#define _ContextManager_H_
+#ifndef CONTEXT_MANAGER_H
+#define CONTEXT_MANAGER_H
 
-#include "SystemInfo.h"
+#include "ginga.h"
+
 #include "GingaUser.h"
-
-#include <map>
-using namespace std;
-
 #include "IContextListener.h"
+#include "SystemInfo.h"
 
-#include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+GINGA_CTXMGMT_BEGIN
 
-#include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+class ContextManager
+{
+private:
+  map<int, GingaUser*> users;
+  map<int, map<string, string>*> contexts;
+  set<IContextListener*> ctxListeners;
+  string usersUri, contextsUri;
+  int curUserId;
+  SystemInfo* systemInfo;
+  static ContextManager* _instance;
+  ContextManager();
 
-#include <set>
-using namespace std;
+  pthread_mutex_t groupsMutex;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+public:
+  ~ContextManager();
+  static ContextManager* getInstance();
 
-  class ContextManager {
-	private:
-		map<int, GingaUser*> users;
-		map<int, map<string, string>*> contexts;
-		set<IContextListener*> ctxListeners;
-		string usersUri, contextsUri;
-		int curUserId;
-		SystemInfo* systemInfo;
-		static ContextManager* _instance;
-		ContextManager();
+private:
+  void initializeUsers();
+  void initializeContexts();
 
-		pthread_mutex_t groupsMutex;
+public:
+  void addContextVar(int userId, string varName, string varValue);
+  void addUser(GingaUser* newUser);
+  void saveUsersAccounts();
+  void saveUsersProfiles();
+  void addContextListener(IContextListener* listener);
+  void removeContextListener(IContextListener* listener);
+  void setGlobalVar(string varName, string varValue);
 
-	public:
-		~ContextManager();
-		static ContextManager* getInstance();
+private:
+  void saveProfile(FILE* fd, int userId, map<string, string>* profile);
 
-	private:
-		void initializeUsers();
-		void initializeContexts();
+public:
+  void setCurrentUserId(int userId);
+  int getCurrentUserId();
+  GingaUser* getUser(int userId);
 
-	public:
-		void addContextVar(int userId, string varName, string varValue);
-		void addUser(GingaUser* newUser);
-		void saveUsersAccounts();
-		void saveUsersProfiles();
-		void addContextListener(IContextListener* listener);
-		void removeContextListener(IContextListener* listener);
-		void setGlobalVar(string varName, string varValue);
+private:
+  map<string,string>* getUserMap(int userId);
 
-	private:
-		void saveProfile(FILE* fd, int userId, map<string, string>* profile);
+public:
+  map<string,string>* getUserProfile(int userId);
+  map<string, string>* getUsersNames();
+  SystemInfo* getSystemInfo();
 
-	public:
-		void setCurrentUserId(int userId);
-		int getCurrentUserId();
-		GingaUser* getUser(int userId);
+private:
+  void listUsersNicks();
+};
 
-	private:
-		map<string,string>* getUserMap(int userId);
+GINGA_CTXMGMT_END
 
-	public:
-		map<string,string>* getUserProfile(int userId);
-		map<string, string>* getUsersNames();
-		SystemInfo* getSystemInfo();
-
-	private:
-		void listUsersNicks();
-  };
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
-#endif /*_ContextManager_H_*/
+#endif /* CONTEXT_MANAGER_H */

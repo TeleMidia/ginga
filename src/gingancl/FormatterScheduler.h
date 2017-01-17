@@ -23,7 +23,7 @@ extern "C" {
 }
 
 #include "ctxmgmt/IContextListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
+using namespace ::ginga::ctxmgmt;
 
 #include "model/ExecutionObject.h"
 #include "model/NodeNesting.h"

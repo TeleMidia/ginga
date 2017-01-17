@@ -15,54 +15,44 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SystemInfo_H_
-#define _SystemInfo_H_
+#ifndef SYSTEM_INFO_H
+#define SYSTEM_INFO_H
 
-#include "mb/IMBDefs.h"
+#include "ginga.h"
 
-#include <map>
-#include <string>
-using namespace std;
+GINGA_CTXMGMT_BEGIN
 
-#include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+class SystemInfo {
+private:
+  float clockSpeed;
+  map<string, string>* sysTable;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+public:
+  SystemInfo();
+  ~SystemInfo();
 
-	class SystemInfo {
-		private:
-			float clockSpeed;
-			map<string, string>* sysTable;
+private:
+  void initializeClockSpeed();
+  string getValue(string attribute);
+  void printSysTable();
 
-		public:
-			SystemInfo();
-			~SystemInfo();
+public:
+  void setSystemTable(map<string, string>* sysTable);
+  string getSystemLanguage();
+  string getCaptionLanguage();
+  string getSubtitleLanguage();
+  float getReturnBitRate();
+  void getScreenSize(GingaScreenID screenId, int* width, int* height);
+  void getScreenGraphicSize(GingaScreenID screenId, int* width,
+                            int* height);
+  string getAudioType();
+  float getCPUClock();
+  float getMemorySize();
+  string getJavaConfiguration();
+  string getJavaProfile();
+  string getLuaVersion();
+};
 
-		private:
-			void initializeClockSpeed();
-			string getValue(string attribute);
-			void printSysTable();
+GINGA_CTXMGMT_END
 
-		public:
-			void setSystemTable(map<string, string>* sysTable);
-			string getSystemLanguage();
-			string getCaptionLanguage();
-			string getSubtitleLanguage();
-			float getReturnBitRate();
-
-			void getScreenSize(
-					GingaScreenID screenId, int* width, int* height);
-
-			void getScreenGraphicSize(
-					GingaScreenID screenId, int* width, int* height);
-
-			string getAudioType();
-			float getCPUClock();
-			float getMemorySize();
-			string getJavaConfiguration();
-			string getJavaProfile();
-			string getLuaVersion();
-	};
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
-#endif /*_SystemInfo_H_*/
+#endif /* SYSTEM_INFO_H */

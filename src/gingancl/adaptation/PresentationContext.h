@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "ctxmgmt/ContextManager.h"
 #include "ctxmgmt/SystemInfo.h"
-using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
+using namespace ::ginga::ctxmgmt;
 
 #include "config.h"
 
@@ -40,7 +40,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "ContextBase.h"
 
 #include "ctxmgmt/IContextListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::contextmanager;
+using namespace ::ginga::ctxmgmt;
 
 #if WITH_MULTIDEVICE
 #include "multidevice/DeviceDomain.h"
