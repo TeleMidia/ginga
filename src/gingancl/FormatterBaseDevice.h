@@ -15,45 +15,39 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FormatterBaseDevice_H_
-#define _FormatterBaseDevice_H_
+#ifndef FORMATTER_BASE_DEVICE_H
+#define FORMATTER_BASE_DEVICE_H
 
+#include "namespaces.h"
 #include "FormatterMultiDevice.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
-	class FormatterBaseDevice : public FormatterMultiDevice {
-		public:
-			FormatterBaseDevice(
-					GingaScreenID screenId,
-					IDeviceLayout* deviceLayout,
-					string playerId,
-					int x, int y, int w, int h, bool useMulticast, int srvPort);
+class FormatterBaseDevice : public FormatterMultiDevice
+{
+public:
+  FormatterBaseDevice(GingaScreenID screenId, IDeviceLayout* deviceLayout,
+                      string playerId, int x, int y, int w, int h,
+                      bool useMulticast, int srvPort);
+  virtual ~FormatterBaseDevice();
 
-			virtual ~FormatterBaseDevice();
-
-		protected:
-			bool newDeviceConnected(int newDevClass, int w, int h);
-			void connectedToBaseDevice(unsigned int domainAddr){};
-
-			bool receiveRemoteEvent(
-					int remoteDevClass,
-					int eventType,
-					string eventContent);
-
-			bool receiveRemoteContent(
-					int remoteDevClass,
-					char *stream, int streamSize) {
-
-				return false;
-			};
-
-			bool receiveRemoteContent(int remoteDevClass, string contentUri) {
-				return false;
-			};
-
-			bool userEventReceived(SDLInputEvent* ev);
-	};
+protected:
+  bool newDeviceConnected(int newDevClass, int w, int h);
+  void connectedToBaseDevice(unsigned int domainAddr){};
+  bool receiveRemoteEvent(int remoteDevClass,int eventType,
+                          string eventContent);
+  bool receiveRemoteContent(int remoteDevClass, char *stream,
+                            int streamSize)
+  {
+    return false;
+  };
+  bool receiveRemoteContent(int remoteDevClass, string contentUri)
+  {
+    return false;
+  };
+  bool userEventReceived(SDLInputEvent* ev);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
-#endif /* _FormatterBaseDevice_H_ */
+
+#endif /* FORMATTER_BASE_DEVICE_H */

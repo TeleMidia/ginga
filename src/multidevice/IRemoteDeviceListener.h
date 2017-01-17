@@ -15,35 +15,28 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _IRemoteDeviceListener_H_
-#define _IRemoteDeviceListener_H_
+#ifndef I_REMOTE_DEVICE_LISTENER_H
+#define I_REMOTE_DEVICE_LISTENER_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 
-  class IRemoteDeviceListener {
-	public:
-		virtual ~IRemoteDeviceListener(){};
-		virtual bool newDeviceConnected(int newDevClass, int w, int h)=0;
-		virtual void connectedToBaseDevice(unsigned int domainAddr)=0;
-		virtual bool receiveRemoteEvent(
-				int remoteDevClass,
-				int eventType,
-				string eventContent)=0;
-
-		virtual bool receiveRemoteContent(
-				int remoteDevClass,
-				string contentUri)=0;
-
-		virtual bool receiveRemoteContent(
-				int remoteDevClass,
-				char *stream, int streamSize)=0;
-
-		virtual bool receiveRemoteContentInfo(
-				string contentId, string contentUri)=0;
-  };
+class IRemoteDeviceListener
+{
+public:
+  virtual ~IRemoteDeviceListener(){};
+  virtual bool newDeviceConnected(int newDevClass, int w, int h)=0;
+  virtual void connectedToBaseDevice(unsigned int domainAddr)=0;
+  virtual bool receiveRemoteEvent(int remoteDevClass,int eventType,
+                                  string eventContent)=0;
+  virtual bool receiveRemoteContent(int remoteDevClass,string contentUri)=0;
+  virtual bool receiveRemoteContent(int remoteDevClass,char *stream,
+                                    int streamSize)=0;
+  virtual bool receiveRemoteContentInfo(string contentId,
+                                        string contentUri)=0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
-#endif /*_IRemoteDeviceListener_H_*/
+
+#endif /* I_REMOTE_DEVICE_LISTENER_H */

@@ -47,6 +47,7 @@ GINGA_END_DECLS
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <list>
 #include <map>
 #include <set>

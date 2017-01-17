@@ -15,26 +15,30 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _RemoteDevice_H_
-#define _RemoteDevice_H_
+#ifndef REMOTE_DEVICE_H
+#define REMOTE_DEVICE_H
+
+#include "namespaces.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 
-  class RemoteDevice {
-	private:
-		unsigned int address;
-		int deviceClass;
-		int width;
-		int height;
+class RemoteDevice
+{
+private:
+  unsigned int address;
+  int deviceClass;
+  int width;
+  int height;
 
-	public:
-		RemoteDevice(unsigned int address, int deviceClass);
-		~RemoteDevice();
-		unsigned int getDeviceAddress();
-		int getDeviceClass();
-		void setDeviceResolution(int width, int height);
-		void getDeviceResolution(int* width, int* height);
-  };
+public:
+  RemoteDevice(unsigned int address, int deviceClass);
+  ~RemoteDevice();
+  unsigned int getDeviceAddress();
+  int getDeviceClass();
+  void setDeviceResolution(int width, int height);
+  void getDeviceResolution(int* width, int* height);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
-#endif /*_RemoteDevice_H_*/
+
+#endif /* REMOTE_DEVICE_H */
