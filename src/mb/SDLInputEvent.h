@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLINPUTEVENT_H_
 #define SDLINPUTEVENT_H_
 
-#include "SDL.h"
-
-#include "IMBDefs.h"
 #include "CodeMap.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN

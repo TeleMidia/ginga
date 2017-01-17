@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLDeviceScreen.h"
 #include "InputManager.h"
 
-#include "IMBDefs.h"
-
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
@@ -34,19 +32,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLInputEvent.h"
 #include "SDLEventBuffer.h"
 
-#include <vector>
-#include <string>
-using namespace std;
-
-#include <pthread.h>
-
 #include "system/Thread.h"
 using namespace br::pucrio::telemidia::ginga::core::system::thread;
-
-#include <string>
-#include <iostream>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 

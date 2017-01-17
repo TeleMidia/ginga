@@ -23,7 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 #include "util/Color.h"
 
-#include "mb/IMBDefs.h"
 #include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"

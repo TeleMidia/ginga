@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
-#include "mb/IMBDefs.h"
-
 #include "IPlayer.h"
 #include "IPlayerListener.h"
-
-#include <vector>
 
 typedef struct {
 	string baseId;

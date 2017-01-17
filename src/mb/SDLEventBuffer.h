@@ -15,48 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDLEVENTBUFFER_H_
-#define SDLEVENTBUFFER_H_
+#ifndef SDL_EVENT_BUFFER_H
+#define SDL_EVENT_BUFFER_H
 
-#include "IMBDefs.h"
+#include "ginga.h"
 #include "SDLInputEvent.h"
-
-#include "SDL.h"
-
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 
-	class SDLEventBuffer {
-		private:
-			GingaScreenID myScreen;
-			pthread_mutex_t ebMutex;
-			vector<SDL_Event> eventBuffer;
-			bool capsOn;
-			bool shiftOn;
+class SDLEventBuffer
+{
+private:
+  GingaScreenID myScreen;
+  pthread_mutex_t ebMutex;
+  vector<SDL_Event> eventBuffer;
+  bool capsOn;
+  bool shiftOn;
+  bool isWaiting;
+  pthread_cond_t cond;
+  pthread_mutex_t condMutex;
 
-			bool isWaiting;
-			pthread_cond_t cond;
-			pthread_mutex_t condMutex;
+public:
+  SDLEventBuffer(GingaScreenID screen);
+  virtual ~SDLEventBuffer();
+  static bool checkEvent(Uint32 winId, SDL_Event event);
+  void feed(SDL_Event event, bool capsOn, bool shiftOn);
+  void postInputEvent(SDLInputEvent* event);
+  void waitEvent();
+  SDLInputEvent* getNextEvent();
+  void* getContent();
 
-		public:
-			SDLEventBuffer(GingaScreenID screen);
-			virtual ~SDLEventBuffer();
-
-			static bool checkEvent(Uint32 winId, SDL_Event event);
-			void feed(SDL_Event event, bool capsOn, bool shiftOn);
-
-			void wakeUp();
-			void postInputEvent(SDLInputEvent* event);
-			void waitEvent();
-			SDLInputEvent* getNextEvent();
-			void* getContent();
-
-		private:
-			void waitForEvent();
-			bool eventArrived();
-	};
+private:
+  void waitForEvent();
+  bool eventArrived();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
-#endif /*SDLINPUTEVENTBUFFER_H_*/
+
+#endif /* SDL_EVENT_BUFFER_H */

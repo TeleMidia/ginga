@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "mb/IMBDefs.h"
 #include "mb/SDLSurface.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 

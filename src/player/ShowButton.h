@@ -30,8 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/LocalScreenManager.h"
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
-#include "mb/IMBDefs.h"
-#include <string>
 #include "ImagePlayer.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN

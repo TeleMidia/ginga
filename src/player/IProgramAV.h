@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPROGRAMAV_H_
 #define IPROGRAMAV_H_
 
-#include "mb/IMBDefs.h"
-
 #include "IPlayer.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN

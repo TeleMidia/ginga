@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IFONTPROVIDER_H_
 #define IFONTPROVIDER_H_
 
-#include "IMBDefs.h"
 #include "IDiscreteMediaProvider.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN

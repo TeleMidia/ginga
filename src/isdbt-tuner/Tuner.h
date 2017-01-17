@@ -31,35 +31,24 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "Tuner.h"
-#include "mb/IMBDefs.h"
 
 #ifndef BUFFSIZE
-#define BUFFSIZE 9588
-#endif //BUFFSIZE
+# define BUFFSIZE 9588
+#endif
 
 #include "ITunerListener.h"
 #include "NetworkInterface.h"
 
-#include <string>
-using namespace std;
-
-typedef struct {
-	char* buff;
-	unsigned int size;
+typedef struct
+{
+  char* buff;
+  unsigned int size;
 } Buffer;
 
 #include "Channel.h"
 #include "NetworkInterface.h"
 #include "ITunerListener.h"
 #include "IProviderListener.h"
-
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <cstdio>
-#include <set>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
