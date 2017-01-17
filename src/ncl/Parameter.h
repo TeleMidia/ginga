@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 

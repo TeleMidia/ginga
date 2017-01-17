@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef I_DEVICE_LAYOUT_H
 #define I_DEVICE_LAYOUT_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
 

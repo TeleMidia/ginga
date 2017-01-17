@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SystemCompat_H_
 #define SystemCompat_H_
 
-#include "namespaces.h"
+#include "ginga.h"
 
 extern "C" {
 #include <dirent.h>

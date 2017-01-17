@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DEVICE_DOMAIN_H
 #define DEVICE_DOMAIN_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "IRemoteDeviceListener.h"
 #include "DeviceService.h"

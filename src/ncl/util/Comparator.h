@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_NCL_UTIL_BEGIN
 

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCL_CONNECTORS_CONVERTER_H
 #define NCL_CONNECTORS_CONVERTER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "ncl/Parameter.h"
 using namespace ::br::pucrio::telemidia::ncl;

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef I_TIME_BASE_LISTENER_H
 #define I_TIME_BASE_LISTENER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
 

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FOCUS_SOURCE_MANAGER_H
 #define FOCUS_SOURCE_MANAGER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "mb/IMBDefs.h"
 #include "mb/SDLSurface.h"

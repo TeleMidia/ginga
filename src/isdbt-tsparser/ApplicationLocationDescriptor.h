@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef APPLICATION_LOCATION_DESCRIPTOR_H
 #define APPLICATION_LOCATION_DESCRIPTOR_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef REMOTE_EVENT_SERVICE_H
 #define REMOTE_EVENT_SERVICE_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "TcpSocketService.h"
 #include "ctxmgmt/ContextManager.h"

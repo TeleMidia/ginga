@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 

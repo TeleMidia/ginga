@@ -15,11 +15,56 @@
    You should have received a copy of the GNU General Public License
    along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NAMESPACES_H
-#define NAMESPACES_H
+#ifndef GINGA_H
+#define GINGA_H
 
-#include "common.h"
+#ifdef  __cplusplus
+# define GINGA_BEGIN_DECLS extern "C" { /* } */
+# define GINGA_END_DECLS           /* { */ }
+#else
+# define GINGA_BEGIN_DECLS
+# define GINGA_END_DECLS
+#endif
 
+GINGA_BEGIN_DECLS
+
+// C library.
+#include <assert.h>
+#include <errno.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+// External C libraries.
+#include <pthread.h>
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <ncluaw.h>
+#include <SDL.h>
+
+#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
+
+GINGA_END_DECLS
+
+// C++ library.
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <limits>
+#include <list>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+using namespace std;
+
+// External C++ libraries.
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+XERCES_CPP_NAMESPACE_USE
+
+// Namespaces.
 #define NS_BEGIN(t)\
   namespace t {
 
@@ -449,4 +494,4 @@
 #define BR_PUCRIO_TELEMIDIA_UTIL_END\
   NS_END4
 
-#endif /* NAMESPACES_H */
+#endif /* GINGA_H */

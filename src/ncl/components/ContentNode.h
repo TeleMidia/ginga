@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CONTENT_NODE_H
 #define CONTENT_NODE_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "NodeEntity.h"
 #include "Content.h"

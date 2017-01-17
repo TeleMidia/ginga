@@ -8,9 +8,9 @@ AC_INIT([Ginga],
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux])
 AC_USE_SYSTEM_EXTENSIONS
-AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_SRCDIR([src/ginga.h])
 AC_CONFIG_HEADERS([src/config.h])
-AH_BOTTOM([#include "common.h"])
+AH_BOTTOM([#include "ginga.h"])
 
 AM_INIT_AUTOMAKE([1.14 -Wall -Werror gnu subdir-objects])
 AM_SILENT_RULES([yes])

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef I_INTERACTIVE_CHANNEL_LISTENER_H
 #define I_INTERACTIVE_CHANNEL_LISTENER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
 

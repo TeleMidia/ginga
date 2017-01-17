@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_BASE_DEVICE_H
 #define FORMATTER_BASE_DEVICE_H
 
-#include "namespaces.h"
+#include "ginga.h"
 #include "FormatterMultiDevice.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
