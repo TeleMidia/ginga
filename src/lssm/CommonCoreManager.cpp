@@ -25,6 +25,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "isdbt-dataproc/DataProcessor.h"
 #endif
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+#include "system/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
 #include "player/ImagePlayer.h"
 #include "player/AVPlayer.h"
 #include "player/ProgramAV.h"
@@ -65,7 +71,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 #include <iostream>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+GINGA_LSSM_BEGIN
 
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
@@ -231,95 +237,97 @@ BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 #endif
 	}
 
-	void CommonCoreManager::startPresentation() {
-		//int aPid = -1, vPid = -1;
-		int cpid;
+void CommonCoreManager::startPresentation() {
 
-#if WITH_ISDBT
+#if !defined WITH_ISDBT || WITH_ISDBT == 0
+  return;
+#endif
 
-		ITSFilter* mavFilter  = NULL;
-		IPlayer* ipav         = NULL;
-		NclPlayerData* data   = NULL;
-		StcWrapper* sw        = NULL;
-		NetworkInterface* ni = NULL;
-		string dstUri         = "dtv_channel.ts";
+  int cpid;
 
-		data = pem->createNclPlayerData();
+  ITSFilter* mavFilter  = NULL;
+  IPlayer* ipav         = NULL;
+  NclPlayerData* data   = NULL;
+  StcWrapper* sw        = NULL;
+  NetworkInterface* ni = NULL;
+  string dstUri         = "dtv_channel.ts";
 
-		showTunningWindow(data->screenId, data->x, data->y, data->w, data->h);
-		tune();
-		dstUri = ((IDemuxer*)demuxer)->createTSUri(dstUri);
+  data = pem->createNclPlayerData();
 
-		// Create Main AV
-		ipav = createMainAVPlayer(
-				dstUri,
-				data->screenId,
-				data->x, data->y, data->w, data->h);
+  showTunningWindow(data->screenId, data->x, data->y, data->w, data->h);
+  tune();
+  dstUri = ((IDemuxer*)demuxer)->createTSUri(dstUri);
 
-		delete data;
-		clog << "lssm-ccm::sp create av ok" << endl;
+  // Create Main AV
+  ipav = createMainAVPlayer(
+                            dstUri,
+                            data->screenId,
+                            data->x, data->y, data->w, data->h);
 
-		if (dataProcessor != NULL) {
-			ni = ((Tuner*)tuner)->getCurrentInterface();
-			if (ni != NULL && (ni->getCaps() & DPC_CAN_DECODESTC)) {
-				clog << "lssm-ccm::sp using stc hardware!" << endl;
-				((DataProcessor*)dataProcessor)->setSTCProvider(ni);
+  delete data;
+  clog << "lssm-ccm::sp create av ok" << endl;
 
-			} else {
-				clog << "lssm-ccm::sp using stc wrapper!" << endl;
-				sw = new StcWrapper(ipav);
-				((DataProcessor*)dataProcessor)->setSTCProvider(sw);
-			}
+  if (dataProcessor != NULL) {
+    ni = ((Tuner*)tuner)->getCurrentInterface();
+    if (ni != NULL && (ni->getCaps() & DPC_CAN_DECODESTC)) {
+      clog << "lssm-ccm::sp using stc hardware!" << endl;
+      ((DataProcessor*)dataProcessor)->setSTCProvider(ni);
 
-			nptProvider = ((DataProcessor*)dataProcessor)->getNPTProvider();
-			if (nptProvider != NULL) {
-				pem->setTimeBaseProvider((ITimeBaseProvider*)nptProvider);
+    } else {
+      clog << "lssm-ccm::sp using stc wrapper!" << endl;
+      sw = new StcWrapper(ipav);
+      ((DataProcessor*)dataProcessor)->setSTCProvider(sw);
+    }
 
-			} else {
-				clog << "lssm-ccm::sp warning! can't use npt provider" << endl;
-			}
+    nptProvider = ((DataProcessor*)dataProcessor)->getNPTProvider();
+    if (nptProvider != NULL) {
+      pem->setTimeBaseProvider((ITimeBaseProvider*)nptProvider);
 
-			((DataProcessor*)dataProcessor)->setNptPrinter(nptPrinter);
-			if (nptPrinter) {
-				if (((IDemuxer*)demuxer)->hasStreamType(STREAM_TYPE_DSMCC_TYPE_C)) {
-					((IDemuxer*)demuxer)->setNptPrinter(nptPrinter);
-					cout << "TS HAS AN NPT STREAM" << endl;
+    } else {
+      clog << "lssm-ccm::sp warning! can't use npt provider" << endl;
+    }
 
-				} else {
-					cout << "NPTPRINTER WARNING!" << endl;
-					cout << "TS DOESNT HAVE A STREAM WITH NPT STREAM TYPE" << endl;
-				}
-				((IDemuxer*)demuxer)->printPat();
-			}
+    ((DataProcessor*)dataProcessor)->setNptPrinter(nptPrinter);
+    if (nptPrinter) {
+      if (((IDemuxer*)demuxer)->hasStreamType(STREAM_TYPE_DSMCC_TYPE_C)) {
+        ((IDemuxer*)demuxer)->setNptPrinter(nptPrinter);
+        cout << "TS HAS AN NPT STREAM" << endl;
 
-			((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
-					STREAM_TYPE_DSMCC_TYPE_D); //DSM-CC descriptors
+      } else {
+        cout << "NPTPRINTER WARNING!" << endl;
+        cout << "TS DOESNT HAVE A STREAM WITH NPT STREAM TYPE" << endl;
+      }
+      ((IDemuxer*)demuxer)->printPat();
+    }
 
-			if (hasOCSupport) {
-				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
-						STREAM_TYPE_DSMCC_TYPE_B);
+    //DSM-CC descriptors
+    ((DataProcessor*)dataProcessor)
+      ->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_D);
 
-				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
-						STREAM_TYPE_DSMCC_TYPE_C);
+    if (hasOCSupport) {
+      ((DataProcessor*)dataProcessor)
+        ->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_B);
 
-				//AIT
-				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
-						STREAM_TYPE_PRIVATE_SECTION);
+      ((DataProcessor*)dataProcessor)
+        ->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_C);
 
-				clog << "lssm ccm::sp OC support enabled" << endl;
+      //AIT
+      ((DataProcessor*)dataProcessor)
+        ->createStreamTypeSectionFilter(STREAM_TYPE_PRIVATE_SECTION);
 
-			} else if (nptPrinter) {
-				((DataProcessor*)dataProcessor)->createStreamTypeSectionFilter(
-						STREAM_TYPE_DSMCC_TYPE_C);
-			}
-		}
+      clog << "lssm ccm::sp OC support enabled" << endl;
 
-		releaseTunningWindow();
+    } else if (nptPrinter) {
+      ((DataProcessor*)dataProcessor)
+        ->createStreamTypeSectionFilter(STREAM_TYPE_DSMCC_TYPE_C);
+    }
+  }
 
-		((IDemuxer*)demuxer)->processDemuxData();
+  releaseTunningWindow();
 
-		clog << "lssm ccm::sp all done!" << endl;
-#endif //TUNER...
-	}
+  ((IDemuxer*)demuxer)->processDemuxData();
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
+  clog << "lssm ccm::sp all done!" << endl;
+}
+
+GINGA_LSSM_END

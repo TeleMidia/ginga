@@ -51,7 +51,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 
 #include "lssm/CommonCoreManager.h"
 #include "lssm/PresentationEngineManager.h"
-using namespace ::br::pucrio::telemidia::ginga::lssm;
+using namespace ::ginga::lssm;
 
 #include <string>
 #include <iostream>

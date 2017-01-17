@@ -16,12 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
+#include "PresentationEngineManager.h"
+
 #if WITH_ISDBT
 #include "isdbt-tuner/Tuner.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #endif
 
 #include "player/ProgramAV.h"
+
+#include "player/IProgramAV.h"
+#include "player/IApplicationPlayer.h"
+
+#include "ncl/layout/LayoutRegion.h"
+using namespace ::br::pucrio::telemidia::ncl::layout;
+
+#include "ncl/components/ContentTypeManager.h"
+#include "ncl/NclDocument.h"
+using namespace ::br::pucrio::telemidia::ncl;
 
 #include "system/GingaLocatorFactory.h"
 
@@ -42,6 +54,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 #include "lssm/DataWrapperListener.h"
 #endif
 
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"
@@ -50,20 +65,18 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 
-#include "lssm/PresentationEngineManager.h"
-using namespace ::br::pucrio::telemidia::ginga::lssm;
+GINGA_LSSM_BEGIN
 
-struct inputEventNotification {
-	PresentationEngineManager* p;
-	int code;
-	string parameter;
+struct inputEventNotification
+{
+  PresentationEngineManager* p;
+  int code;
+  string parameter;
 #if WITH_ISDBT
-	Tuner* tuner;
+  Tuner* tuner;
 #endif
-	vector<string>* cmds;
+  vector<string>* cmds;
 };
-
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 
 	LocalScreenManager* PresentationEngineManager::dm = NULL;
 	bool PresentationEngineManager::autoProcess        = false;
@@ -1212,7 +1225,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 				editingCmd = (*params)[0];
 
 			} else if (params->size() == 2) {
-				delay = util::stof((*params)[0]);
+				delay = br::pucrio::telemidia::util::stof(((*params)[0]));
 				if (delay > 0) {
 					Thread::mSleep(delay);
 				}
@@ -1357,4 +1370,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 		clog << "PresentationEngineManager::run all done" << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
+GINGA_LSSM_END

@@ -16,8 +16,28 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#if WITH_ISDBT
-#include "lssm/DataWrapperListener.h"
+#include "DataWrapperListener.h"
+
+#include "system/SystemCompat.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+
+#include "system/GingaLocatorFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+
+#include "player/INCLPlayer.h"
+using namespace ::br::pucrio::telemidia::ginga::core::player;
+
+#include "isdbt-tuner/Tuner.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+
+#include "isdbt-tsparser/IEventInfo.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+
+#include "isdbt-tsparser/IShortEventDescriptor.h"
+using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+
+#include "system/ITimeBaseProvider.h"
+using namespace br::pucrio::telemidia::ginga::core::system::time;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
@@ -25,7 +45,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+GINGA_LSSM_BEGIN
 
 	DataWrapperListener::DataWrapperListener(
 			PresentationEngineManager* pem) {
@@ -318,5 +338,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
 		pem->startPresentation(docToStart, "");
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
-#endif // WITH_ISDBT
+GINGA_LSSM_END

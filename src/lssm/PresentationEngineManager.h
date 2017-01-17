@@ -15,17 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PRESENTATIONENGINEMANAGER_H_
-#define PRESENTATIONENGINEMANAGER_H_
+#ifndef PRESENTATION_ENGINE_MANAGER_H
+#define PRESENTATION_ENGINE_MANAGER_H
 
 #include "system/ITimeBaseProvider.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
 #include "player/INCLPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -36,170 +33,135 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/ShowButton.h"
-#include "player/IProgramAV.h"
 #include "player/IPlayerListener.h"
-#include "player/IApplicationPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
-
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
-
-#include "ncl/components/ContentTypeManager.h"
-#include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
 
 #include "gingancl/PrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
-#include "PresentationEngineManager.h"
+GINGA_LSSM_BEGIN
 
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+class PresentationEngineManager :  public IPlayerListener,
+                                   public IInputEventListener,
+                                   public ICmdEventListener,
+                                   public Thread
+{
+private:
+  static const short UC_BACKGROUND  = 0;
+  static const short UC_PRINTSCREEN = 1;
+  static const short UC_STOP        = 2;
+  static const short UC_PAUSE       = 3;
+  static const short UC_RESUME      = 4;
+  static const short UC_SHIFT       = 5;
+  int devClass;
+  int x;
+  int y;
+  int w;
+  int h;
+  bool enableGfx;
+  GingaScreenID myScreen;
+  PrivateBaseManager* privateBaseManager;
+  map<string, INCLPlayer*> formatters;
+  set<INCLPlayer*> formattersToRelease;
+  bool paused;
+  string iconPath;
+  bool isEmbedded;
+  bool standAloneApp;
+  bool isLocalNcl;
+  void* dsmccListener;
+  void* tuner;
+  bool closed;
+  bool hasTMPNotification;
+  bool hasInteractivity;
+  bool enableMulticast;
+  bool exitOnEnd;
+  bool disableFKeys;
+  ITimeBaseProvider* timeBaseProvider;
+  int currentPrivateBaseId;
+  static bool autoProcess;
+  vector<string> commands;
+  static LocalScreenManager* dm;
+  InputManager* im;
+  ShowButton* sb;
+  bool debugWindow;
 
-  class PresentationEngineManager :
-		  			public IPlayerListener,
-					public IInputEventListener,
-					public ICmdEventListener,
-					Thread {
+public:
+  PresentationEngineManager(int devClass, int xOffset, int yOffset,
+                            int width, int height, bool disableGfx,
+                            bool useMulticast, GingaScreenID screenId);
+  virtual ~PresentationEngineManager();
+  void setDebugWindow(bool debugWindow);
+  void setExitOnEnd(bool exitOnEnd);
+  void setDisableFKeys(bool disableFKeys);
+  set<string>* createPortIdList(string nclFile);
+  short getMappedInterfaceType(string nclFile, string portId);
+  void autoMountOC(bool autoMountIt);
+  void setCurrentPrivateBaseId(unsigned int baseId);
+  void setTimeBaseProvider(ITimeBaseProvider* tmp);
 
-	private:
-		static const short UC_BACKGROUND  = 0;
-		static const short UC_PRINTSCREEN = 1;
-		static const short UC_STOP        = 2;
-		static const short UC_PAUSE       = 3;
-		static const short UC_RESUME      = 4;
-		static const short UC_SHIFT       = 5;
+private:
+  void printGingaWindows();
+  bool nclEdit(string nclEditApi);
+  bool editingCommand(string commandTag, string commandPayload);
 
-		int devClass;
-		int x;
-		int y;
-		int w;
-		int h;
-		bool enableGfx;
+public:
+  bool editingCommand(string editingCmd);
+  void setBackgroundImage(string uri);
 
-		GingaScreenID myScreen;
-		PrivateBaseManager* privateBaseManager;
-		map<string, INCLPlayer*> formatters;
-		set<INCLPlayer*> formattersToRelease;
-		bool paused;
-		string iconPath;
-		bool isEmbedded;
-		bool standAloneApp;
-		bool isLocalNcl;
-		void* dsmccListener;
-		void* tuner;
-		bool closed;
-		bool hasTMPNotification;
-		bool hasInteractivity;
+private:
+  void close();
+  void registerKeys();
+  void setTimeBaseInfo(INCLPlayer* nclPlayer);
 
-        bool enableMulticast;
+public:
+  void getScreenShot();
+  bool getIsLocalNcl();
+  void setEmbedApp(bool isEmbedded);
+  void setIsLocalNcl(bool isLocal, void* tuner=NULL);
+  void setInteractivityInfo(bool hasInt);
 
-		bool exitOnEnd;
-		bool disableFKeys;
+private:
+  INCLPlayer* createNclPlayer(string baseId, string fname);
 
-		ITimeBaseProvider* timeBaseProvider;
-		int currentPrivateBaseId;
-		static bool autoProcess;
-		vector<string> commands;
-		static LocalScreenManager* dm;
-		InputManager* im;
-		ShowButton* sb;
-		bool debugWindow;
+public:
+  NclPlayerData* createNclPlayerData();
+  void addPlayerListener(string nclFile, IPlayerListener* listener);
+  void removePlayerListener(string nclFile, IPlayerListener* listener);
+  bool openNclFile(string nclFile);
+  bool startPresentation(string nclFile, string interfId);
+  bool pausePresentation(string nclFile);
+  bool resumePresentation(string nclFile);
+  bool stopPresentation(string nclFile);
+  bool setPropertyValue(string nclFile, string interfaceId, string value);
+  string getPropertyValue(string nclFile, string interfaceId);
+  bool stopAllPresentations();
+  bool abortPresentation(string nclFile);
 
-	public:
-		PresentationEngineManager(
-				int devClass,
-				int xOffset,
-				int yOffset,
-				int width,
-				int height,
-				bool disableGfx,
-                bool useMulticast,
-				GingaScreenID screenId);
+private:
+  void openNclDocument(string docUri, int x, int y, int w, int h);
+  void pausePressed();
 
-		virtual ~PresentationEngineManager();
+public:
+  void* getDsmccListener();
+  void setCmdFile(string cmdFile);
+  static void* processAutoCmd(void* ptr);
+  void waitUnlockCondition();
 
-		void setDebugWindow(bool debugWindow);
-		void setExitOnEnd(bool exitOnEnd);
-		void setDisableFKeys(bool disableFKeys);
+private:
+  void presentationCompleted(string formatterId);
+  void releaseFormatter(string formatterId);
+  bool checkStatus();
+  void updateStatus(short code, string parameter, short type, string value);
+  bool userEventReceived(SDLInputEvent* ev);
+  bool cmdEventReceived(string command, string args);
+  static void* eventReceived(void* ptr);
+  void readCommand(string command);
+  bool getNclPlayer(string docLocation, INCLPlayer** player);
+  bool getNclPlayer(string baseId, string docId, INCLPlayer** p);
+  void updateFormatters(short command, string parameter="");
+  void run();
+};
 
-		set<string>* createPortIdList(string nclFile);
-		short getMappedInterfaceType(string nclFile, string portId);
+GINGA_LSSM_END
 
-		void autoMountOC(bool autoMountIt);
-		void setCurrentPrivateBaseId(unsigned int baseId);
-		void setTimeBaseProvider(ITimeBaseProvider* tmp);
-
-	private:
-		void printGingaWindows();
-		bool nclEdit(string nclEditApi);
-		bool editingCommand(string commandTag, string commandPayload);
-
-	public:
-		bool editingCommand(string editingCmd);
-		void setBackgroundImage(string uri);
-
-	private:
-		void close();
-		void registerKeys();
-		void setTimeBaseInfo(INCLPlayer* nclPlayer);
-
-	public:
-		void getScreenShot();
-		bool getIsLocalNcl();
-		void setEmbedApp(bool isEmbedded);
-		void setIsLocalNcl(bool isLocal, void* tuner=NULL);
-		void setInteractivityInfo(bool hasInt);
-
-	private:
-		INCLPlayer* createNclPlayer(string baseId, string fname);
-
-	public:
-		NclPlayerData* createNclPlayerData();
-
-		void addPlayerListener(string nclFile, IPlayerListener* listener);
-		void removePlayerListener(string nclFile, IPlayerListener* listener);
-
-		bool openNclFile(string nclFile);
-		bool startPresentation(string nclFile, string interfId);
-		bool pausePresentation(string nclFile);
-		bool resumePresentation(string nclFile);
-		bool stopPresentation(string nclFile);
-		bool setPropertyValue(string nclFile, string interfaceId, string value);
-		string getPropertyValue(string nclFile, string interfaceId);
-		bool stopAllPresentations();
-		bool abortPresentation(string nclFile);
-
-	private:
-		void openNclDocument(string docUri, int x, int y, int w, int h);
-
-		void pausePressed();
-
-	public:
-	void* getDsmccListener();
-		void setCmdFile(string cmdFile);
-		static void* processAutoCmd(void* ptr);
-		void waitUnlockCondition();
-
-	private:
-		void presentationCompleted(string formatterId);
-		void releaseFormatter(string formatterId);
-		bool checkStatus();
-
-		void updateStatus(
-				short code, string parameter, short type, string value);
-
-		bool userEventReceived(SDLInputEvent* ev);
-		bool cmdEventReceived(string command, string args);
-
-		static void* eventReceived(void* ptr);
-		void readCommand(string command);
-
-		bool getNclPlayer(string docLocation, INCLPlayer** player);
-		bool getNclPlayer(string baseId, string docId, INCLPlayer** p);
-
-		void updateFormatters(short command, string parameter="");
-		void run();
-  };
-
-BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
-#endif /*PRESENTATIONENGINEMANAGER_H_*/
+#endif /* PRESENTATION_ENGINE_MANAGER_H */
