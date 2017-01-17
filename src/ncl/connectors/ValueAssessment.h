@@ -23,11 +23,8 @@ using namespace std;
 
 #include "Assessment.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class ValueAssessment : public Assessment {
 		private:
 			string value;
@@ -40,10 +37,6 @@ namespace connectors {
 				return Assessment::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif /*VALUEASSESSMENT_H_*/

@@ -18,10 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/NclDocument.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+
 	NclDocument::NclDocument(string id, string docLocation) {
 		this->id            = id;
 
@@ -595,7 +593,5 @@ namespace ncl {
 	void NclDocument::removeAllMetadata() {
 		metadataList.clear();
 	}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_END

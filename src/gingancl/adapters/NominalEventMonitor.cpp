@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/interfaces/SampleIntervalAnchor.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
 	const double NominalEventMonitor::DEFAULT_SLEEP_TIME = 5000;
 	const double NominalEventMonitor::DEFAULT_ERROR = 50.0;
 
@@ -379,9 +375,5 @@ namespace adapters {
 		}
 		unlock();
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END

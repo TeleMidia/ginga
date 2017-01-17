@@ -54,11 +54,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
   class DataWrapperListener :
 				public IStreamEventListener,
 				public IObjectListener,
@@ -103,10 +100,6 @@ namespace lssm {
 	private:
 		void run();
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
 #endif /*DataWrapperListener_H_*/

@@ -42,12 +42,8 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 #include <algorithm>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+
 
 	FormatterActiveDevice::FormatterActiveDevice(
 			GingaScreenID screenId,
@@ -796,9 +792,5 @@ namespace multidevice {
 		}//while
 		delete sock;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

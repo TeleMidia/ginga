@@ -28,10 +28,8 @@
 #include "config.h"
 #include "Base64.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace util {
+BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
+
 
 
 	static const std::string base64_chars =
@@ -210,7 +208,5 @@ namespace util {
 
 	  return ret;
 	}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_UTIL_END

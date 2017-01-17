@@ -18,13 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccMessageHeader.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+extern "C" {
+#include <sys/stat.h>
+}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	DsmccMessageHeader::DsmccMessageHeader() {
 		
 	}
@@ -110,10 +109,5 @@ namespace carousel {
 		clog << "adaptationLength = " << adaptationLength << endl;
 		clog << "messageLength = " << messageLength << endl;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END

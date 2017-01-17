@@ -25,14 +25,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+
   class EventTransition {
 	protected:
 		set<string> typeSet;
@@ -56,13 +50,6 @@ namespace transition {
 		double getTime();
 		bool instanceOf(string s);
   };
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
 #endif /*EVENTTRANSITION_H_*/

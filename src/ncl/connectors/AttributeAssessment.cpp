@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/AttributeAssessment.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	AttributeAssessment::AttributeAssessment(string role) :
 		    Assessment(), Role() {
 
@@ -71,8 +68,5 @@ namespace connectors {
 	string AttributeAssessment::toString() {
 		return itos(attributeType);
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

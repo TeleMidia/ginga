@@ -22,14 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class AudioComponentDescriptor : public IMpegDescriptor {
 		protected:
 			unsigned char streamContent;
@@ -67,12 +61,6 @@ namespace descriptors {
 			size_t process (char* data, size_t pos);
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* AUDIOCOMPONENTDESCRIPTOR_H_ */

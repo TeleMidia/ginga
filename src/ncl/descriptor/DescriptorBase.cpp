@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/descriptor/DescriptorBase.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
 	DescriptorBase::DescriptorBase(string id) : Base(id) {
 		descriptorSet = new vector<GenericDescriptor*>;
 		typeSet.insert("DescriptorBase");
@@ -120,8 +117,5 @@ namespace descriptor {
 		}
 		return false;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END

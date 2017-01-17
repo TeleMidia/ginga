@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ic/InteractiveChannelManager.h"
 #include "ic/CurlInteractiveChannel.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace ic {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_BEGIN
+
 	InteractiveChannelManager* InteractiveChannelManager::_instance = NULL;
 	InteractiveChannelManager::InteractiveChannelManager() {
 		ics     = new set<CurlInteractiveChannel*>;
@@ -165,9 +161,5 @@ namespace ic {
 
 		return NULL;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_IC_END

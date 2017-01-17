@@ -28,13 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+
 	class SwitchEvent : public FormatterEvent, public IEventListener {
 		private:
 			InterfacePoint* interfacePoint;
@@ -61,12 +56,6 @@ namespace switches {
 
 			short getPriorityType();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
 #endif //_SWITCHEVENT_H_

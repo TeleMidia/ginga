@@ -28,13 +28,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class Object {
 		protected:
 			unsigned int carouselId;
@@ -73,12 +68,6 @@ namespace carousel {
 			unsigned int getDataSize();
 			void print();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*OBJECT_H_*/

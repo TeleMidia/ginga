@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/transition/Transition.h"
 #include "ncl/transition/TransitionUtil.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
 	Transition::Transition(string id, int type) : Entity(id) {
 		setType(type);
 
@@ -208,8 +205,5 @@ namespace transition {
 			this->vertRepeat = num;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END

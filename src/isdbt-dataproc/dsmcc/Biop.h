@@ -38,13 +38,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class Biop {
 		private:
 			//Biop Attributes
@@ -110,12 +105,6 @@ namespace carousel {
 		public:
 			int process();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*BIOP_H_*/

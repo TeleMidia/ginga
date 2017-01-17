@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DeviceService.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class PassiveDeviceService : public DeviceService {
 	private:
 	public:
@@ -46,11 +42,6 @@ namespace multidevice {
 				char* stream,
 				int streamSize);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_PassiveDeviceService_H_*/

@@ -21,14 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 
 class TimeBaseClock : public Stc {
 
@@ -65,13 +59,6 @@ class TimeBaseClock : public Stc {
 		void setEndpointAvailable(bool epa);
 };
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
 #endif /* TIMEBASECLOCK_H_ */

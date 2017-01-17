@@ -63,11 +63,8 @@ struct inputEventNotification {
 	vector<string>* cmds;
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
 	LocalScreenManager* PresentationEngineManager::dm = NULL;
 	bool PresentationEngineManager::autoProcess        = false;
 
@@ -1359,8 +1356,5 @@ namespace lssm {
 		unlock();
 		clog << "PresentationEngineManager::run all done" << endl;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END

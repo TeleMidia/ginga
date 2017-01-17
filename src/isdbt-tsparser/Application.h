@@ -36,13 +36,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 
 	typedef struct {
 		unsigned int organizationId;
@@ -71,11 +66,6 @@ namespace si {
 			unsigned short getTransportProtocolId();
 			size_t process(char* data, size_t pos);
 		};
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* APPLICATION_H_ */

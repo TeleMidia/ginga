@@ -24,14 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 
 	typedef struct{
 		char countryCode[3];
@@ -45,12 +39,6 @@ namespace descriptors {
 
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* IPARENTALRATINGDESCRIPTOR_H_ */

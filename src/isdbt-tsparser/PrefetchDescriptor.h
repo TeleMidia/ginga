@@ -26,13 +26,8 @@ using namespace std;
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 
 	struct Prefetch {
 		unsigned char lambelLength;
@@ -55,11 +50,6 @@ namespace si {
 			void print();
 	};
 
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* PREFETCHDESCRIPTOR_H_ */

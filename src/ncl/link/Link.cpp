@@ -21,11 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/components/ContextNode.h"
 using namespace ::br::pucrio::telemidia::ncl::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	Link::Link(string id, Connector* connector) : Entity(id) {
 		roleBinds = new map<string, vector<Bind*>*>;
 		binds = new vector<Bind*>;
@@ -447,8 +444,5 @@ namespace link {
 		}
 		return false;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END

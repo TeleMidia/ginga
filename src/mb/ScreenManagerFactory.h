@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "LocalScreenManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 class ScreenManagerFactory {
 public:
@@ -35,11 +31,6 @@ public:
 
 	static LocalScreenManager* _instance;
 };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /* ScreenManagerFactory_H_ */

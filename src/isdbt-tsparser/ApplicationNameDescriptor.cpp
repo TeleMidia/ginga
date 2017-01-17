@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/ApplicationNameDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	ApplicationNameDescriptor::ApplicationNameDescriptor() {
 		descriptorLength = 0;
 		descriptorTag    = 0x01;
@@ -86,10 +81,5 @@ namespace si {
 
 		return pos;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END

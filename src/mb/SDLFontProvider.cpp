@@ -23,12 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	const short SDLFontProvider::A_TOP           = 3;
 	const short SDLFontProvider::A_TOP_CENTER    = 4;
 	const short SDLFontProvider::A_TOP_LEFT      = 5;
@@ -394,9 +390,5 @@ namespace mb {
 
 		Thread::mutexUnlock(&ntsMutex);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

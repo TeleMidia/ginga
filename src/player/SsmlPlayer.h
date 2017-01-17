@@ -38,12 +38,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 using namespace std;
 
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class SsmlPlayer :
 	    public Thread,
 	    public Player {
@@ -68,11 +64,6 @@ namespace player {
 			virtual void setPropertyValue(string name, string value);
 
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*SSMLPLAYER_H_*/

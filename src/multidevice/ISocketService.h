@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NetworkUtil.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class ISocketService {
 	public:
 		virtual ~ISocketService(){};
@@ -35,11 +31,6 @@ namespace multidevice {
 		virtual bool checkOutputBuffer()=0;
 		virtual bool checkInputBuffer(char* data, int* size)=0;
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_ISocketService_H_*/

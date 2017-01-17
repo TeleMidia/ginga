@@ -33,11 +33,8 @@ using namespace ::br::pucrio::telemidia::ncl::animation;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class SimpleAction : public Action, public Role {
 		private:
 			short actionType;
@@ -77,10 +74,6 @@ namespace connectors {
 				return Action::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_SIMPLEACTION_H_

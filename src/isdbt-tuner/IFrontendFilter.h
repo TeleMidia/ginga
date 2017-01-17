@@ -15,38 +15,29 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IFrontendFilter_H_
-#define IFrontendFilter_H_
+#ifndef I_FRONTEND_FILTER_H
+#define I_FRONTEND_FILTER_H
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
-	class IFrontendFilter {
-		public:
-			virtual ~IFrontendFilter(){};
+#include "namespaces.h"
 
-			virtual void setPid(int pid)=0;
-			virtual int getPid()=0;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 
-			virtual void setTid(int tid)=0;
-			virtual int getTid()=0;
+class IFrontendFilter
+{
+public:
+  virtual ~IFrontendFilter(){};
+  virtual void setPid(int pid)=0;
+  virtual int getPid()=0;
+  virtual void setTid(int tid)=0;
+  virtual int getTid()=0;
+  virtual void setTidExt(int tidExt)=0;
+  virtual int getTidExt()=0;
+  virtual void setDescriptor(int feDescripor)=0;
+  virtual int getDescriptor()=0;
+  virtual void receivePes(char* pes, int pesLen)=0;
+  virtual void receiveSection(char* section, int secLen)=0;
+};
 
-			virtual void setTidExt(int tidExt)=0;
-			virtual int getTidExt()=0;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 
-			virtual void setDescriptor(int feDescripor)=0;
-			virtual int getDescriptor()=0;
-			virtual void receivePes(char* pes, int pesLen)=0;
-			virtual void receiveSection(char* section, int secLen)=0;
-	};
-}
-}
-}
-}
-}
-}
-
-#endif /*IFrontendFilter_H_*/
+#endif /* I_FRONTEND_FILTER_H */

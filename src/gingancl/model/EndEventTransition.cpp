@@ -19,14 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "EndEventTransition.h"
 #include "BeginEventTransition.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+
 	EndEventTransition::EndEventTransition(
 		    double time,
 		    PresentationEvent* event,
@@ -44,11 +38,5 @@ namespace transition {
 	void* EndEventTransition::getBeginTransition() {
 		return beginTransition;
 	}
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END

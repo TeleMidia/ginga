@@ -27,13 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace tts {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
+
    class SsmlPlayerAdapter : public FormatterPlayerAdapter {
 	public:
 		SsmlPlayerAdapter();
@@ -42,12 +37,6 @@ namespace tts {
 	protected:
 		void createPlayer();
    };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END
 #endif /*SSMLPLAYERADAPTER_H_*/

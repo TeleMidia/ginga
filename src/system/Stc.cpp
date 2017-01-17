@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Stc.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+
 	Stc::Stc() {
 		reference        = 0;
 		stc              = 0;
@@ -145,10 +140,5 @@ namespace time {
 	double Stc::getBaseToSecond() {
 		return baseToSecond(getStcBase());
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END

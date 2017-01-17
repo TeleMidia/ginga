@@ -28,12 +28,8 @@ using namespace std;
 
 #include "IDataProvider.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	class NetworkProvider : public IDataProvider {
 		protected:
 			string addr;
@@ -94,11 +90,6 @@ namespace tuning {
 
 			virtual char* receiveData(int* len);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*NETWORKPROVIDER_H_*/

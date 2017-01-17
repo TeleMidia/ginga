@@ -30,11 +30,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace reuse {
+BR_PUCRIO_TELEMIDIA_NCL_REUSE_BEGIN
+
 	class ReferNode : public Node {
 		private:
 			string instanceType;
@@ -55,10 +52,6 @@ namespace reuse {
 			void setReferredEntity(Entity* entity);
 			Entity* getDataEntity();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_REUSE_END
 #endif /*REFERNODE_H_*/

@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
 	class IEventListener {
 		public:
 			//PRIORITY TYPE FOR NOTIFICATIONS
@@ -41,12 +36,6 @@ namespace event {
 
 			virtual short getPriorityType()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_IEVENTLISTENER_H_

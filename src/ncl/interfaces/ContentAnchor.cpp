@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/ContentAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	const short ContentAnchor::CAT_NONE    = 0x00;
 	const short ContentAnchor::CAT_ALL     = 0x01;
 	const short ContentAnchor::CAT_TIME    = 0x02;
@@ -33,8 +30,5 @@ namespace interfaces {
 	ContentAnchor::ContentAnchor(string id) : Anchor(id) {
 		typeSet.insert("ContentAnchor");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

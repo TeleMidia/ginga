@@ -18,10 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Base.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+
 	set<Base*> Base::baseInstances;
 	pthread_mutex_t Base::biMutex;
 	bool Base::initMutex = false;
@@ -210,7 +208,5 @@ namespace ncl {
 			return false;
 		}
 	}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_END

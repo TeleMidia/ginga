@@ -29,12 +29,8 @@ XERCES_CPP_NAMESPACE_USE
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
   class NclLinkingParser : public ModuleParser {
 	public:
 		NclLinkingParser(DocumentParser *documentParser);
@@ -62,11 +58,6 @@ namespace ncl {
 
 		virtual void addBindToLink(void *parentObject, void *childObject)=0;
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLLINKINGPARSER_H_*/

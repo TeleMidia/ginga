@@ -30,13 +30,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <iostream>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	NCLSectionProcessor::NCLSectionProcessor() {
 		dataToProcess = NULL;
 		metadata      = NULL;
@@ -160,7 +155,7 @@ namespace ncl {
 		int structType = (((unsigned char)stream[0]) & 0xFF);
 
 		switch (structType) {
-			case INCLStructure::ST_METADA:
+			case INCLStructure::ST_METADATA:
 				clearMetadata();
 				metadata = NCLMetadataParser::parse(stream + 2, streamSize - 2);
 				break;
@@ -298,10 +293,5 @@ namespace ncl {
 		//TODO: map-event stream
 		return streams;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END

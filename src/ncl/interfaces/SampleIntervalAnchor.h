@@ -20,11 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class SampleIntervalAnchor : public IntervalAnchor {
 		private:
 			short firstSyntax;
@@ -35,10 +32,6 @@ namespace interfaces {
 			void setValueSyntax(short firstSyntax, short lastSyntax);
 			void getValueSyntax(short* firstSyntax, short* lastSyntax);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif /*SAMPLEINTERVALANCHOR_H_*/

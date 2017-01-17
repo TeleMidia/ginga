@@ -25,11 +25,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
 	class GenericDescriptor : public Entity {
 		public:
 			GenericDescriptor(string someId) : Entity(someId) {
@@ -37,10 +34,6 @@ namespace descriptor {
 			};
 			virtual ~GenericDescriptor(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END
 #endif //_GENERICDESCRIPTOR_H_

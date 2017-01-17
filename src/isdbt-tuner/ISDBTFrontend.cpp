@@ -29,12 +29,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ISTCProvider.h"
 #include "Channel.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 
 	const string ISDBTFrontend::IFE_FE_DEV_NAME("/dev/dvb/adapter0/frontend0");
 	const string ISDBTFrontend::IFE_DVR_DEV_NAME("/dev/dvb/adapter0/dvr0");
@@ -351,9 +347,5 @@ namespace tuning {
 	void ISDBTFrontend::run() {
 		clog << "ISDBTFrontend::run no filters running and not yet implemented!" << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

@@ -97,12 +97,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace emconverter {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+
   class FormatterConverter : public IEventListener {
 	private:
 		int depthLevel;
@@ -254,11 +250,6 @@ namespace emconverter {
 		short getPriorityType();
 		void reset();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*FORMATTERCONVERTER_H_*/

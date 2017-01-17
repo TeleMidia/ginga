@@ -29,12 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::ic;
 #include <sys/stat.h>
 #include <map>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace prefetch {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
+
 	class PrefetchManager : public IInteractiveChannelListener {
 
 		private:
@@ -87,11 +83,6 @@ namespace prefetch {
 			void getScheduledContent(string clientUri);
 			void getScheduledContents();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END
 #endif /*PrefetchManager_H_*/

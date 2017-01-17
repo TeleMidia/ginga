@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "AnchorEvent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
 	AnchorEvent::AnchorEvent(
 			    string id,
 			    void* executionObject,
@@ -42,10 +37,5 @@ namespace event {
 	ContentAnchor* AnchorEvent::getAnchor() {
 		return anchor;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

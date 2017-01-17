@@ -26,13 +26,8 @@ using namespace std;
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 
 	struct AppName {
 		char languageCode[3];
@@ -52,12 +47,6 @@ namespace si {
 			size_t process(char* data, size_t pos);
 			void print();
 		};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* APPLICATIONNAMEDESCRIPTOR_H_ */

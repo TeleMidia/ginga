@@ -29,11 +29,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class Connector : public Entity {
 		private:
 			map<string, Parameter*>* parameters;
@@ -49,10 +46,6 @@ namespace connectors {
 			Parameter* getParameter(string name);
 			bool removeParameter(string name);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_CONNECTOR_H_

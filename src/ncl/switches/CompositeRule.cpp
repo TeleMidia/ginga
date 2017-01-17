@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/switches/CompositeRule.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	CompositeRule::CompositeRule(string id, short someOperator) : Rule(id) {
 		rules = new vector<Rule*>;
 		setOperator(someOperator);
@@ -129,8 +126,5 @@ namespace switches {
 				break;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END

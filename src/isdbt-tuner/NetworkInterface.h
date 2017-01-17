@@ -29,12 +29,8 @@ using namespace br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	class NetworkInterface : public ISTCProvider {
 		private:
 			int id;    //NetworkInterface number
@@ -79,11 +75,6 @@ namespace tuning {
 
 			void close();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*NETWORKINTERFACE_H_*/

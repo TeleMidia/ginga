@@ -15,39 +15,31 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _CONTENT_H_
-#define _CONTENT_H_
+#ifndef CONTENT_H
+#define CONTENT_H
 
-#include <string>
-#include <iostream>
-#include <set>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
-	class Content {
-		protected:
-			string type; // tipo do conteudo (recomendavel uso do MIME)
-			long size;   // tamanho do conteudo (recomendavel em octetos)
-			set<string> typeSet;
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
 
-		public:
-			Content(string someType, long someSize);
-			Content();
-			virtual ~Content();
-			bool instanceOf(string s);
-			virtual long getSize(void);
-			virtual string getType(void);
-			virtual void setSize(long someSize);
-			virtual void setType(string someType);
-	};
-}
-}
-}
-}
-}
+class Content
+{
+protected:
+  string type;
+  long size;
+  set<string> typeSet;
 
-#endif //_CONTENT_H_
+public:
+  Content(string someType, long someSize);
+  Content();
+  virtual ~Content();
+  bool instanceOf(string s);
+  virtual long getSize(void);
+  virtual string getType(void);
+  virtual void setSize(long someSize);
+  virtual void setType(string someType);
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
+
+#endif /* CONTENT_H */

@@ -24,10 +24,8 @@ using namespace ::br::pucrio::telemidia::ncl::layout;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+
   class IPrivateBaseContext {
 	public:
 		virtual ~IPrivateBaseContext(){};
@@ -35,9 +33,6 @@ namespace ncl {
 		virtual void* addVisibleDocument(
 				string location, IDeviceLayout* deviceLayout)=0;
   };
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_END
 #endif /*IPrivateBaseContext_H_*/

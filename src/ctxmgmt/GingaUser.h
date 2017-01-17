@@ -15,52 +15,44 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _GingaUser_H_
-#define _GingaUser_H_
+#ifndef GINGA_USER_H
+#define GINGA_USER_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
-  class GingaUser {
-	private:
-		int userId;
-		string userName;
-		string userPasswd;
-		int userAge;
-		string userLocation;
-		char userGenre;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
 
-	public:
-		GingaUser(int userId, string userName, string passwd);
-		~GingaUser();
+class GingaUser
+{
+private:
+  int userId;
+  string userName;
+  string userPasswd;
+  int userAge;
+  string userLocation;
+  char userGenre;
 
-		int getUserId();
-		string getUserName();
-		int getUserAge();
-		string getUserLocation();
-		char getUserGenre();
-		bool isValidPassword(string passwd);
+public:
+  GingaUser(int userId, string userName, string passwd);
+  ~GingaUser();
 
-		bool setPassword(string oldPasswd, string newPasswd);
-		void setUserName(string passwd, string userName);
-		void setUserAge(string passwd, int userAge);
-		void setUserLocation(string passwd, string userLocation);
-		void setUserGenre(string passwd, char userGenre);
+  int getUserId();
+  string getUserName();
+  int getUserAge();
+  string getUserLocation();
+  char getUserGenre();
+  bool isValidPassword(string passwd);
 
-		void saveTo(FILE* fd);
-		static void saveString(FILE* fd, string bytesToSave);
-  };
-}
-}
-}
-}
-}
-}
+  bool setPassword(string oldPasswd, string newPasswd);
+  void setUserName(string passwd, string userName);
+  void setUserAge(string passwd, int userAge);
+  void setUserLocation(string passwd, string userLocation);
+  void setUserGenre(string passwd, char userGenre);
 
-#endif /*_GingaUser_H_*/
+  void saveTo(FILE* fd);
+  static void saveString(FILE* fd, string bytesToSave);
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
+
+#endif /* GINGA_USER_H*/

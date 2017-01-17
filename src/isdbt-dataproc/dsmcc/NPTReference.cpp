@@ -18,14 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NPTReference.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 NPTReference::NPTReference() : MpegDescriptor(0x01) {
 	postDiscontinuityIndicator = 0;
 	contentId = 0;
@@ -166,11 +160,5 @@ void NPTReference::setScaleDenominator(unsigned short denominator) {
 	scaleDenominator = denominator;
 }
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END

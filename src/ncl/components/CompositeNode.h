@@ -32,11 +32,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class CompositeNode : public NodeEntity {
 		protected:
 			vector<Node*> nodes;
@@ -93,10 +90,6 @@ namespace components {
 			virtual bool setNodeDescriptor(
 				    string nodeId, GenericDescriptor *descriptor);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_COMPOSITENODE_H_

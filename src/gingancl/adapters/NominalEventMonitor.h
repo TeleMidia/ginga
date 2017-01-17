@@ -47,12 +47,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
    class NominalEventMonitor : public Thread, public ITimeBaseListener {
 	private:
 		double sleepTime;
@@ -100,11 +96,6 @@ namespace adapters {
 
 		virtual void run();
    };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif /*NOMINALEVENTMONITOR_H_*/

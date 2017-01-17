@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/IntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	//if the representation changes, update isObjectDuration method
 	const double IntervalAnchor::OBJECT_DURATION = infinity();
 
@@ -90,8 +90,5 @@ namespace interfaces {
 	bool IntervalAnchor::isObjectDuration(double value) {
 		return isInfinity(value);
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

@@ -32,13 +32,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace time {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
+
 	class TimePlayerAdapter : public FormatterPlayerAdapter {
 		private:
 			string TimeSrcId;
@@ -50,12 +45,6 @@ namespace time {
 		protected:
 			void createPlayer();
    };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_END
 #endif /*TIMEPLAYERADAPTER_H_*/

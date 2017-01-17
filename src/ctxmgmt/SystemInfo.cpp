@@ -30,12 +30,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
 	static LocalScreenManager* dm = NULL;
 
 	SystemInfo::SystemInfo() {
@@ -180,9 +176,5 @@ namespace contextmanager {
 	string SystemInfo::getLuaVersion() {
 		return (string)("5.1");
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END

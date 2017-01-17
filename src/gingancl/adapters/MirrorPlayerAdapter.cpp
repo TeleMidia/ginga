@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "MirrorPlayerAdapter.h"
 #include "PlayerAdapterManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace mirror {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_BEGIN
+
 	MirrorPlayerAdapter::MirrorPlayerAdapter() : FormatterPlayerAdapter() {
 		
 	}
@@ -74,10 +69,5 @@ namespace mirror {
 		clog << "MirrorPlayerAdapter::createPlayer '";
 		clog << mrl << "' ALL DONE" << endl;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_END

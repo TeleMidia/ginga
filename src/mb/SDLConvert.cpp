@@ -31,12 +31,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace std;
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 #if !defined(_MSC_VER) && (WITH_MULTIDEVICE == 1)
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -248,9 +244,5 @@ namespace mb {
 #endif
 		return -1;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

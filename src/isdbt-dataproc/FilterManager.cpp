@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-dataproc/FilterManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	FilterManager::FilterManager() {
 		this->reading = false;
 		Thread::mutexInit(&filterMutex, false);
@@ -360,9 +356,5 @@ namespace dataprocessing {
 	void FilterManager::setBlockSize(unsigned short size) {
 		blockSize = size;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END

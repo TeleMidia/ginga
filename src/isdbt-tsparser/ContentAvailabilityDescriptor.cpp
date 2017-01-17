@@ -18,14 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/ContentAvailabilityDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	ContentAvailabilityDescriptor::ContentAvailabilityDescriptor() {
 		descriptorTag        = 0xDE;
 		descriptorLength     = 0;
@@ -69,11 +63,5 @@ namespace descriptors {
 		pos += descriptorLength - 2; //jumping reserved future use
 		return pos;
 	}
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END

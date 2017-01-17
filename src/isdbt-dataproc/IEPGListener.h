@@ -63,13 +63,8 @@ struct SIField {
 	map<string, struct SIField> table;
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace epg {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_BEGIN
+
 	class IEPGListener {
 
 		public:
@@ -85,12 +80,6 @@ namespace epg {
 
 			virtual void addAsSIListener(unsigned char type)=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_END
 #endif /*IEPGLISTENER_H_*/

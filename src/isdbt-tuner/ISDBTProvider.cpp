@@ -23,12 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
         const string ISDBTProvider::iniFileName(GINGA_ISDBT_PATH);
 
 	ISDBTProvider::ISDBTProvider(long freq) {
@@ -552,9 +548,5 @@ namespace tuning {
 
 	    return buff;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

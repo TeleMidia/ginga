@@ -48,12 +48,8 @@ using namespace br::pucrio::telemidia::ginga::core::system::thread;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class LocalScreenManager {
 		public:
 			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
@@ -470,11 +466,6 @@ namespace mb {
 			void lock();
 			void unlock();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*LocalScreenManager_H_*/

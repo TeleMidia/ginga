@@ -21,11 +21,8 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "lssm/StcWrapper.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
 #if WITH_ISDBT
 	StcWrapper::StcWrapper(IPlayer* realStcProvider) {
 		this->realStcProvider = realStcProvider;
@@ -48,8 +45,5 @@ namespace lssm {
 	}
 
 #endif
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END

@@ -28,11 +28,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class SwitchPort : public Port {
 		private:
 			vector<Port*>* portList;
@@ -47,10 +44,6 @@ namespace interfaces {
 			Node* getEndNode();
 			InterfacePoint* getEndInterfacePoint();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //_SWITCHPORT_H_

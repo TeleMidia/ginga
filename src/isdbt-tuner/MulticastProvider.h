@@ -28,12 +28,8 @@ using namespace std;
 
 #include "isdbt-tuner/IDataProvider.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	class MulticastProvider : public IDataProvider {
 		protected:
 			string addr;
@@ -92,11 +88,6 @@ namespace tuning {
 			virtual int callServer();
 			virtual char* receiveData(int* len);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*MULTICASTPROVIDER_H_*/

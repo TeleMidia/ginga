@@ -30,12 +30,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <fstream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace contextmanager {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+
 	ContextManager* ContextManager::_instance = NULL;
 
 	ContextManager::ContextManager() {
@@ -469,9 +465,5 @@ namespace contextmanager {
 		}
 		Thread::mutexUnlock(&groupsMutex);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END

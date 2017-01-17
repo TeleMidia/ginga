@@ -15,43 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IDEVICELAYOUT_H_
-#define IDEVICELAYOUT_H_
+#ifndef I_DEVICE_LAYOUT_H
+#define I_DEVICE_LAYOUT_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
-	class IDeviceProperty {
-		public:
-			virtual ~IDeviceProperty(){};
-			virtual void setDeviceLeft(int left)=0;
-			virtual int getDeviceLeft()=0;
-			virtual void setDeviceTop(int top)=0;
-			virtual int getDeviceTop()=0;
-			virtual void setDeviceWidth(int width)=0;
-			virtual int getDeviceWidth()=0;
-			virtual void setDeviceHeight(int height)=0;
-			virtual int getDeviceHeight()=0;
-	};
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
 
-	class IDeviceLayout {
-		public:
-			virtual ~IDeviceLayout(){};
-			virtual string getLayoutName()=0;
-			virtual void addDevice(
-					string name, int x, int y, int width, int height)=0;
+class IDeviceProperty
+{
+public:
+  virtual ~IDeviceProperty(){};
+  virtual void setDeviceLeft(int left)=0;
+  virtual int getDeviceLeft()=0;
+  virtual void setDeviceTop(int top)=0;
+  virtual int getDeviceTop()=0;
+  virtual void setDeviceWidth(int width)=0;
+  virtual int getDeviceWidth()=0;
+  virtual void setDeviceHeight(int height)=0;
+  virtual int getDeviceHeight()=0;
+};
 
-			virtual IDeviceProperty* getDeviceProperty(string name)=0;
-	};
-}
-}
-}
-}
-}
+class IDeviceLayout {
+public:
+  virtual ~IDeviceLayout(){};
+  virtual string getLayoutName()=0;
+  virtual void addDevice(string name, int x, int y,
+                         int width, int height)=0;
+  virtual IDeviceProperty* getDeviceProperty(string name)=0;
+};
 
-#endif /*IDEVICELAYOUT_H_*/
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END
+
+#endif /* I_DEVICE_LAYOUT_H */

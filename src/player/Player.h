@@ -48,12 +48,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	typedef struct LockedPlayerLitenerAction {
 		::br::pucrio::telemidia::ginga::core::player::IPlayerListener* l;
 		bool isAdd;
@@ -219,13 +215,8 @@ namespace player {
 
 			virtual void timeShift(string direction){};
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 struct notify {

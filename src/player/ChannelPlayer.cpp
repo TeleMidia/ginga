@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	ChannelPlayer::ChannelPlayer(GingaScreenID screenId) : Player(screenId, "") {
 		this->objectMap = NULL;
 		this->selectedPlayer = NULL;
@@ -190,9 +186,5 @@ namespace player {
 
 		Player::setPropertyValue(name, value);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

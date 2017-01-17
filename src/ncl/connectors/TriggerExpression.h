@@ -23,11 +23,8 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "ConditionExpression.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class TriggerExpression : public ConditionExpression {
 		private:
 			string delay;
@@ -41,10 +38,6 @@ namespace connectors {
 				return ConditionExpression::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //TRIGGEREXPRESSION_H_

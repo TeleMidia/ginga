@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class IRemoteDeviceListener {
 	public:
 		virtual ~IRemoteDeviceListener(){};
@@ -48,11 +44,6 @@ namespace multidevice {
 		virtual bool receiveRemoteContentInfo(
 				string contentId, string contentUri)=0;
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_IRemoteDeviceListener_H_*/

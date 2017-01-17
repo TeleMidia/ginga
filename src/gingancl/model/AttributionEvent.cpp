@@ -25,13 +25,8 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 #include "ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
 	AttributionEvent::AttributionEvent(
 			string id,
 			void* executionObject,
@@ -146,10 +141,5 @@ namespace event {
 
 		return assessments[roleId];
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

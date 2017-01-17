@@ -25,11 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class CompoundAction : public Action {
 		public:
 			static const short OP_PAR = 0;
@@ -58,10 +55,6 @@ namespace connectors {
 				return Action::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_COMPOUNDACTION_H_

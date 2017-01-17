@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Tuner.h"
 #include "NetworkProvider.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	NetworkProvider::NetworkProvider(string address, int port, string protocol) {
 		clog << "UDP MulticastProvider address '" << address << ":";
 		clog << port << "'" << endl;
@@ -65,9 +61,5 @@ namespace tuning {
 
 		return buff;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLayoutConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclLayoutConverter::NclLayoutConverter(
 		     DocumentParser *documentParser, IDeviceLayout* deviceLayout) :
 		    	 NclLayoutParser(documentParser) {
@@ -299,8 +296,5 @@ namespace ncl {
 		else
 			return false;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

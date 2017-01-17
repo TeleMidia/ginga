@@ -15,8 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FUNCTIONS_H_
-#define _FUNCTIONS_H_
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
+#include "namespaces.h"
 
 #include <fstream>
 #include <string>
@@ -59,55 +61,7 @@ extern "C" {
 # define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
 #endif
 
-// Macros for namespace declaration.
-
-#define NAMESPACE_BEGIN(t) \
-  namespace t {
-
-#define NAMESPACE_BEGIN2(t1, t2) \
-  NAMESPACE_BEGIN (t1) NAMESPACE_BEGIN (t2)
-
-#define NAMESPACE_BEGIN3(t1, t2, t3) \
-  NAMESPACE_BEGIN2 (t1, t2) NAMESPACE_BEGIN (t3)
-
-#define NAMESPACE_BEGIN4(t1, t2, t3, t4) \
-  NAMESPACE_BEGIN3 (t1, t2, t3) NAMESPACE_BEGIN(t4)
-
-#define NAMESPACE_BEGIN5(t1, t2, t3, t4, t5) \
-  NAMESPACE_BEGIN4 (t1, t2, t3, t4) NAMESPACE_BEGIN (t5)
-
-#define NAMESPACE_END  }
-#define NAMESPACE_END2 }}
-#define NAMESPACE_END3 }}}
-#define NAMESPACE_END4 }}}}
-#define NAMESPACE_END5 }}}}}
-
-#define NAMESPACE_TELEMIDIA_BEGIN \
-  NAMESPACE_BEGIN3 (br, pucrio, telemidia)
-#define NAMESPACE_TELEMIDIA_END \
-  NAMESPACE_END3
-
-#define NAMESPACE_GINGA_BEGIN \
-  NAMESPACE_TELEMIDIA_BEGIN NAMESPACE_BEGIN (ginga)
-#define NAMESPACE_GINGA_END \
-  NAMESPACE_TELEMIDIA_END NAMESPACE_END
-
-#define NAMESPACE_GINGA_CORE_BEGIN \
-  NAMESPACE_GINGA_BEGIN NAMESPACE_BEGIN (core)
-#define NAMESPACE_GINGA_CORE_END \
-  NAMESPACE_GINGA_END NAMESPACE_END
-
-#define NAMESPACE_GINGA_CORE_PLAYER_BEGIN \
-  NAMESPACE_GINGA_CORE_BEGIN NAMESPACE_BEGIN (player)
-#define NAMESPACE_GINGA_CORE_PLAYER_END \
-  NAMESPACE_GINGA_CORE_END NAMESPACE_END
-
-#define TELEMIDIA_UTIL_BEGIN_DECLS \
-  NAMESPACE_TELEMIDIA_BEGIN NAMESPACE_BEGIN (util)
-#define TELEMIDIA_UTIL_END_DECLS \
-  NAMESPACE_TELEMIDIA_END NAMESPACE_END
-
-TELEMIDIA_UTIL_BEGIN_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 
 string ultostr(unsigned long int value);
 double strUTCToSec(string utcValue);
@@ -148,6 +102,6 @@ bool bmpToJpeg(char *bmpfile, char *jpegfile, int quality);
 
 void str_replace_all(string &str, const string &find_what, const string &replace_with);
 
-TELEMIDIA_UTIL_END_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_END
 
 #endif //_FUNCTIONS_H_

@@ -43,12 +43,8 @@ extern "C" {
 # include <X11/Xatom.h>
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	map<SDLDeviceScreen*, short> SDLDeviceScreen::sdlScreens;
 	bool SDLDeviceScreen::hasRenderer = false;
 	bool SDLDeviceScreen::hasERC      = false;
@@ -3143,9 +3139,5 @@ namespace mb {
 		Thread::mutexUnlock(&surMutex);
 		unlockSDL();
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

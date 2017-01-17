@@ -42,11 +42,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclTransitionConverter : public NclTransitionParser {
   	public:
 		NclTransitionConverter(DocumentParser *documentParser);
@@ -62,10 +59,6 @@ namespace ncl {
 		void addImportBaseToTransitionBase(
 			    void* parentObject, void* childObject);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif // NclTransitionConverter_H

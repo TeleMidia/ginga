@@ -34,12 +34,8 @@ static char receivedControlFrameId = -2;
 static char sendingDataFrameId      = -1;
 static char receivedDataFrameId    = -2;*/
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	bool isValidRecvFrame(int recvFrom, int myIP, char* frame) {
 		//ATS: if the recvFrom = myIP the frame is sent along, in order to be validated based on its destClass
 		map<int, char>::iterator i;
@@ -190,9 +186,5 @@ namespace multidevice {
 
 		return frame;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

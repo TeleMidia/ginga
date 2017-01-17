@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/connectors/ValueAssessment.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	ValueAssessment::ValueAssessment(string value) : Assessment() {
 		this->value = value;
 		typeSet.insert("ValueAssessment");
@@ -35,8 +32,5 @@ namespace connectors {
 	void ValueAssessment::setValue(string newValue) {
 		value = newValue;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END

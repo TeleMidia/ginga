@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "player/NTPPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 
 NTPPlayer::NTPPlayer(GingaScreenID screenId, string mrl) : Player(screenId, mrl) {
 	size_t pos = mrl.find_first_of(":");
@@ -238,9 +234,5 @@ double NTPPlayer::elapsedTime(string& oldNclTime) {
 	return NTPPlayer::diffTime(tb, otb);
 }
 
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

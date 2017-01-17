@@ -45,13 +45,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation::focus;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace presentation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+
   class FormatterRegion {
 	private:
 		void* layoutManager; //FormatterLayout
@@ -253,14 +248,8 @@ namespace presentation {
 		void lockFocusInfo();
 		void unlockFocusInfo();
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
 typedef struct {
 	::br::pucrio::telemidia::ginga::ncl::model::presentation::FormatterRegion* fr;
 	Transition* t;

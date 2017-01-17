@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/interfaces/RelativeTimeIntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor(
 		    string id,
 		    double begin,
@@ -30,8 +27,5 @@ namespace interfaces {
 
 		typeSet.insert("RelativeTimeIntervalAnchor");
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

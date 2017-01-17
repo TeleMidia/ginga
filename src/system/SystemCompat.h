@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SystemCompat_H_
 #define SystemCompat_H_
 
-#include "config.h"
+#include "namespaces.h"
 
 extern "C" {
 #include <dirent.h>
@@ -81,7 +81,7 @@ extern "C" {
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <net/if.h>
-  #ifdef HAVE_SYS_SOCKET_H                                                                                                                                                                                                                                    
+  #ifdef HAVE_SYS_SOCKET_H
 	#include <sys/socket.h>
   #endif
 
@@ -147,13 +147,8 @@ typedef int PipeDescriptor;
 #define R_OK 4
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace compat {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+
 	class SystemCompat {
 		private:
 			static string filesPref;
@@ -251,12 +246,6 @@ namespace compat {
 			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
 			static int unzip_file(const char *zipname, const char *filedir);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END
 #endif /*SystemCompat_H_*/

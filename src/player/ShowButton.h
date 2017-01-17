@@ -34,12 +34,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <string>
 #include "ImagePlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
   class ShowButton : public Thread {
 		private:
 			short status;
@@ -67,11 +63,6 @@ namespace player {
 			void render(string mrl);
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*ShowButton_H_*/

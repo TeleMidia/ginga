@@ -25,11 +25,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
 	DataWrapperListener::DataWrapperListener(
 			PresentationEngineManager* pem) {
 
@@ -320,10 +317,6 @@ namespace lssm {
 		clog << "for '" << docToStart << "'" << endl;
 		pem->startPresentation(docToStart, "");
 	}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
 #endif // WITH_ISDBT

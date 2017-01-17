@@ -18,10 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Entity.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 
 	set<Entity*> Entity::instances;
 	pthread_mutex_t Entity::iMutex;
@@ -153,7 +150,5 @@ namespace ncl {
 	Entity *Entity::getDataEntity() {
 		return this;
 	}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_END

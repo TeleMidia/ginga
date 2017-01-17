@@ -37,11 +37,8 @@ using namespace ::br::pucrio::telemidia::ncl::connectors;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	class CausalLink : public Link {
 		public:
 			CausalLink(string uid, Connector *connector);
@@ -52,10 +49,6 @@ namespace link {
 			vector<Bind*> *getActionBinds();
 			vector<Bind*> *getConditionBinds();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END
 #endif //_CAUSALLINK_H_

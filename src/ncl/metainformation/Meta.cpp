@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/metainformation/Meta.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace metainformation {
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_BEGIN
+
 	Meta::Meta(string name, void* content) {
 		this->name = name;
 		this->content = content;
@@ -43,8 +40,5 @@ namespace metainformation {
 	void Meta::setName(string name) {
 		this->name = name;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_END

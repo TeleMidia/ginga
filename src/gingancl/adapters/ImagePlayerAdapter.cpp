@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ImagePlayerAdapter.h"
 #include "player/ImagePlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace image {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_BEGIN
+
 	ImagePlayerAdapter::ImagePlayerAdapter() : FormatterPlayerAdapter() {
 
 	}
@@ -40,10 +35,5 @@ namespace image {
 
 		FormatterPlayerAdapter::createPlayer();
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_END

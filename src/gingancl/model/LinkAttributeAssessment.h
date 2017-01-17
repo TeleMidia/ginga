@@ -32,13 +32,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkAttributeAssessment : public LinkAssessment {
 		private:
 			FormatterEvent *event;
@@ -61,12 +56,6 @@ namespace link {
 		private:
 			string getAssessmentWithOffset(string assessmentValue);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKATTRIBUTEASSESSMENT_H_*/

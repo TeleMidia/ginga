@@ -15,54 +15,42 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ENTITY_H_
-#define _ENTITY_H_
+#ifndef ENTITY_H
+#define ENTITY_H
 
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+#include "namespaces.h"
 
-extern "C" {
-#include "pthread.h"
-}
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 
-#include <string>
-#include <set>
-using namespace std;
+class Entity
+{
+protected:
+  set<string> typeSet; //type information
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-	class Entity {
-		protected:
-			set<string> typeSet; //type information
+private:
+  static set<Entity*> instances;
+  static pthread_mutex_t iMutex;
+  static bool initMutex;
 
-		private:
-			static set<Entity*> instances;
-			static pthread_mutex_t iMutex;
-			static bool initMutex;
+  string id; // id=comparable unique entity Id
 
-			string id; // id=comparable unique entity Id
+public:
+  Entity(string someId);
+  virtual ~Entity();
 
-		public:
-			Entity(string someId);
-			virtual ~Entity();
+  static bool hasInstance(Entity* instance, bool eraseFromList);
+  void printHierarchy();
+  bool instanceOf(string s);
+  int compareTo(Entity* otherEntity);
+  string getId();
+  int hashCode();
 
-			static bool hasInstance(Entity* instance, bool eraseFromList);
-			void printHierarchy();
-			bool instanceOf(string s);
-			int compareTo(Entity* otherEntity);
-			string getId();
-			int hashCode();
+  virtual void setId(string someId);
 
-			virtual void setId(string someId);
+  virtual string toString();
+  virtual Entity *getDataEntity();
+};
 
-			virtual string toString();
-			virtual Entity *getDataEntity();
-	};
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_NCL_END
 
-#endif //_ENTITY_H_
+#endif /* ENTITY_H */

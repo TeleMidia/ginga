@@ -18,14 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "TimeBaseClock.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace dsmcc {
-namespace npt {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+
 TimeBaseClock::TimeBaseClock() : Stc() {
 	numerator   = 1;
 	denominator = 1;
@@ -111,11 +105,5 @@ void TimeBaseClock::refreshStcSample() {
 	stc       = (uint64_t) doubleStc;
 }
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END

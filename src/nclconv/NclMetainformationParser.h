@@ -29,12 +29,8 @@ XERCES_CPP_NAMESPACE_USE
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
 	class NclMetainformationParser : public ModuleParser {
 		public:
 			NclMetainformationParser(DocumentParser *documentParser);
@@ -49,11 +45,6 @@ namespace ncl {
 			virtual void* createMetadata(
 				    DOMElement *parentElement, void *objGrandParent)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif //NCLMETAINFORMATIONPARSER_H_

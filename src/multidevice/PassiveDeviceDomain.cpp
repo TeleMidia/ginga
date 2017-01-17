@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PassiveDeviceDomain.h"
 #include "PassiveDeviceService.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	PassiveDeviceDomain::PassiveDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		deviceClass      = CT_PASSIVE;
 		deviceService    = new PassiveDeviceService();
@@ -271,9 +267,5 @@ namespace multidevice {
 
 		passiveSocket->checkOutputBuffer();
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

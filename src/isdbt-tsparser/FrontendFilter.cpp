@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/FrontendFilter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	FrontendFilter::FrontendFilter(ITSFilter* f) {
 		pid          = -1;
 		tid          = -1;
@@ -83,9 +79,5 @@ namespace tsparser {
 	ITSFilter* FrontendFilter::getTSFilter() {
 		return filter;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

@@ -31,12 +31,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	class FilterManager {
 		private:
 			map<short, SectionFilter*> streamTypeFilters;
@@ -65,11 +61,6 @@ namespace dataprocessing {
 			void setInfo(map<unsigned int, Module*>* info);
 			void setBlockSize(unsigned short size);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 #endif /*FILTERMANAGER_H_*/

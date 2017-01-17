@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/interfaces/Port.h"
 #include "ncl/interfaces/SwitchPort.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	Port::Port(
 			string id,
 			Node* someNode,
@@ -95,8 +92,5 @@ namespace interfaces {
 	void Port::setNode(Node* someNode) {
 		node = someNode;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END

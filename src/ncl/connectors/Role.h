@@ -15,51 +15,42 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ROLE_H_
-#define ROLE_H_
+#ifndef ROLE_H
+#define ROLE_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
-	class Role {
-		protected:
-			string label;
-			short eventType;
-			int maxCon, minCon;
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
 
-		public:
-			Role();
-			virtual ~Role();
+class Role
+{
+protected:
+  string label;
+  short eventType;
+  int maxCon, minCon;
 
-			static const int UNBOUNDED = 2^30;
+public:
+  Role();
+  virtual ~Role();
 
-			virtual short getEventType();
-			virtual string getLabel();
-			virtual void setEventType(short type);
-			virtual void setLabel(string id);
-			
-			virtual int getMinCon();
-			virtual int getMaxCon();
-			
-			virtual void setMinCon(int minCon);
-			virtual void setMaxCon(int maxCon);
-			virtual bool instanceOf(string type) {
-				if (type == "Role") {
-					return true;
-				}
+  static const int UNBOUNDED = 2^30;
 
-				return false;
-			};
-	};
-}
-}
-}
-}
-}
+  virtual short getEventType();
+  virtual string getLabel();
+  virtual void setEventType(short type);
+  virtual void setLabel(string id);
 
-#endif /*ROLE_H_*/
+  virtual int getMinCon();
+  virtual int getMaxCon();
+
+  virtual void setMinCon(int minCon);
+  virtual void setMaxCon(int maxCon);
+  virtual bool instanceOf(string type)
+  {
+    return type == "Role";
+  };
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
+
+#endif /* ROLE_H*/

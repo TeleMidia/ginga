@@ -33,12 +33,8 @@ struct Content {
 	unsigned char userNibble2;
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 namespace si{
 namespace descriptors{
 	class ContentDescriptor : public IMpegDescriptor {
@@ -64,10 +60,6 @@ namespace descriptors{
 
 }
 }
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /* CONTENTDESCRIPTOR_H_ */

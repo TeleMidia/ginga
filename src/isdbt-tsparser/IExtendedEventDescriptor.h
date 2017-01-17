@@ -30,14 +30,8 @@ struct Item {
 	unsigned char itemLength;
 	char* itemChar;
 };
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class IExtendedEventDescriptor : public IMpegDescriptor {
 		public:
 			~IExtendedEventDescriptor(){};
@@ -49,15 +43,6 @@ namespace descriptors {
 			virtual string getItemChar(struct Item* item)=0;
 
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
-
-
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* IEXTENDEDEVENTDESCRIPTOR_H_ */

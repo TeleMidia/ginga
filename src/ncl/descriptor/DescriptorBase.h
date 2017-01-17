@@ -27,11 +27,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
 	class DescriptorBase : public Base {
 		private:
 			vector<GenericDescriptor*>* descriptorSet;
@@ -56,10 +53,6 @@ namespace descriptor {
 			vector<GenericDescriptor*>* getDescriptors();
 			bool removeDescriptor(GenericDescriptor* descriptor);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END
 #endif /*DESCRIPTORBASE_H_*/

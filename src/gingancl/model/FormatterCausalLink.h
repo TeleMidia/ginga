@@ -34,13 +34,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
   class FormatterCausalLink : public FormatterLink,
 	    public LinkTriggerListener,
 	    public LinkActionProgressionListener {
@@ -66,12 +61,6 @@ namespace link {
 		void evaluationEnded();
 		void actionProcessed(bool start);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_FORMATTERCAUSALLINK_H_

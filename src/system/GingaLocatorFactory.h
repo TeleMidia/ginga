@@ -34,13 +34,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace fs {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
+
 	class GingaLocatorFactory {
 		private:
 			static GingaLocatorFactory* _instance;
@@ -65,12 +60,6 @@ namespace fs {
 			void waitNewLocatorCondition();
 			bool newLocatorConditionSatisfied();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_END
 #endif /*GINGALOCATORFACTORY_H_*/

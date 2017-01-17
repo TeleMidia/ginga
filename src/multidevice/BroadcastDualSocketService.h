@@ -37,12 +37,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class BroadcastDualSocketService : public ISocketService {
 	private:
 
@@ -84,11 +80,6 @@ namespace multidevice {
 		bool checkOutputBuffer();
 		bool checkInputBuffer(char* data, int* size);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_BroadcastDualSocketService_H_*/

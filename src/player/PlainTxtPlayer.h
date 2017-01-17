@@ -19,12 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "TextPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class PlainTxtPlayer : public TextPlayer {
 		private:
 			pthread_mutex_t mutex;
@@ -47,11 +43,6 @@ namespace player {
 			void stop();
 			virtual void setPropertyValue(string name, string value);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*TXTPLAINPLAYER_H_*/

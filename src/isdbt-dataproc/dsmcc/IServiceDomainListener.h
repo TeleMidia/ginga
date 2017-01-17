@@ -24,12 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	class IServiceDomainListener {
 		public:
 			virtual ~IServiceDomainListener(){};
@@ -40,11 +36,6 @@ namespace dataprocessing {
 					map<string, string>* names,
 					map<string, string>* paths)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 #endif /*ISTREAMEVENTLISTENER_H_*/

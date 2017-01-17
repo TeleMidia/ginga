@@ -27,13 +27,8 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	class IAIT {
 		public:
 			virtual ~IAIT(){};
@@ -44,12 +39,6 @@ namespace si {
 			virtual vector<IMpegDescriptor*>* copyDescriptors()=0;
 			virtual vector<IApplication*>* copyApplications()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* IAIT_H_ */

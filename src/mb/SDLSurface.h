@@ -32,12 +32,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
   typedef struct DrawData {
     int coord1;
@@ -155,11 +151,6 @@ namespace mb {
     void getSize(int* width, int* height);
     string getDumpFileUri();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLSURFACE_H_*/

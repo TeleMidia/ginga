@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclInterfacesConverter.h"
 #include "NclDocumentConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclInterfacesConverter::NclInterfacesConverter(
 		    DocumentParser *documentParser) :
 		    	    NclInterfacesParser(documentParser) {
@@ -488,8 +485,5 @@ namespace ncl {
 
 		((SwitchPort*) parentObject)->addPort((Port*) childObject);
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

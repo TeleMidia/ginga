@@ -43,12 +43,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 using namespace Berkelium;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
   class BerkeliumHandler :
 	  public WindowDelegate,
 	  public IInputEventListener,
@@ -179,11 +175,6 @@ namespace player {
 				int dy,
 				const Rect &scrollRect);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*BerkeliumHandler_h_*/

@@ -67,11 +67,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace lssm {
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_BEGIN
+
   class PresentationEngineManager :
 		  			public IPlayerListener,
 					public IInputEventListener,
@@ -217,10 +214,6 @@ namespace lssm {
 		void updateFormatters(short command, string parameter="");
 		void run();
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_LSSM_END
 #endif /*PRESENTATIONENGINEMANAGER_H_*/

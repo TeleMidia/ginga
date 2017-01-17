@@ -15,8 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTERFOCUSMANAGER_H_
-#define FORMATTERFOCUSMANAGER_H_
+#ifndef FORMATTER_FOCUS_MANAGER_H
+#define FORMATTER_FOCUS_MANAGER_H
+
+#include "namespaces.h"
 
 #include "util/functions.h"
 #include "util/Color.h"
@@ -53,127 +55,109 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 
 #include "mb/IMotionEventListener.h"
 
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace focus {
+class FormatterFocusManager : public IMotionEventListener,
+                              public IInputEventListener
+{
 
-  class FormatterFocusManager :
-    public IMotionEventListener,
-    public IInputEventListener {
+private:
+  InputManager* im;
 
-  private:
-    InputManager* im;
+  GingaScreenID myScreen;
+  PresentationContext* presContext;
+  map<string, set<ExecutionObject*>*>* focusTable;
+  bool isHandler;
+  string currentFocus;
+  string objectToSelect;
+  ExecutionObject* selectedObject;
 
-    GingaScreenID myScreen;
-    PresentationContext* presContext;
-    map<string, set<ExecutionObject*>*>* focusTable;
-    bool isHandler;
-    string currentFocus;
-    string objectToSelect;
-    ExecutionObject* selectedObject;
+  Color* defaultFocusBorderColor;
+  int defaultFocusBorderWidth;
+  Color* defaultSelBorderColor;
+  PlayerAdapterManager* playerManager;
+  FormatterFocusManager* parentManager;
+  FormatterMultiDevice* multiDevice;
+  ILinkActionListener* settingActions;
 
-    Color* defaultFocusBorderColor;
-    int defaultFocusBorderWidth;
-    Color* defaultSelBorderColor;
-    PlayerAdapterManager* playerManager;
-    FormatterFocusManager* parentManager;
-    FormatterMultiDevice* multiDevice;
-    ILinkActionListener* settingActions;
+  int xOffset;
+  int yOffset;
+  int width;
+  int height;
 
-    int xOffset;
-    int yOffset;
-    int width;
-    int height;
+  double focusHandlerTS;
 
-    double focusHandlerTS;
+  void* converter;
+  pthread_mutex_t mutexFocus;
+  pthread_mutex_t mutexTable;
 
-    void* converter;
-    pthread_mutex_t mutexFocus;
-    pthread_mutex_t mutexTable;
+  static bool init;
+  static set<FormatterFocusManager*> instances;
+  static pthread_mutex_t iMutex;
 
-    static bool init;
-    static set<FormatterFocusManager*> instances;
-    static pthread_mutex_t iMutex;
+public:
+  FormatterFocusManager(PlayerAdapterManager* playerManager,
+                        PresentationContext* presContext,
+                        FormatterMultiDevice* multiDevice,
+                        ILinkActionListener* settingActions,
+                        void* converter);
 
-  public:
-    FormatterFocusManager(
-                          PlayerAdapterManager* playerManager,
-                          PresentationContext* presContext,
-                          FormatterMultiDevice* multiDevice,
-                          ILinkActionListener* settingActions,
-                          void* converter);
+  virtual ~FormatterFocusManager();
 
-    virtual ~FormatterFocusManager();
+private:
+  static void checkInit();
+  static bool hasInstance(FormatterFocusManager* instance, bool remove);
 
-  private:
-    static void checkInit();
-    static bool hasInstance(
-                            FormatterFocusManager* instance, bool remove);
+public:
+  void setParent(FormatterFocusManager* parent);
+  bool isKeyHandler();
+  bool setKeyHandler(bool isHandler);
 
-  public:
-    void setParent(FormatterFocusManager* parent);
-    bool isKeyHandler();
-    bool setKeyHandler(bool isHandler);
+private:
+  void setHandlingObjects(bool isHandling);
+  void resetKeyMaster();
 
-  private:
-    void setHandlingObjects(bool isHandling);
-    void resetKeyMaster();
+public:
+  void tapObject(void* executionObject);
+  void setKeyMaster(string mediaId);
+  void setFocus(string focusIndex);
 
-  public:
-    void tapObject(void* executionObject);
-    void setKeyMaster(string mediaId);
-    void setFocus(string focusIndex);
+private:
+  void setFocus(CascadingDescriptor* descriptor);
+  void recoveryDefaultState(ExecutionObject* object);
 
-  private:
-    void setFocus(CascadingDescriptor* descriptor);
-    void recoveryDefaultState(ExecutionObject* object);
+public:
+  void showObject(ExecutionObject* object);
+  void hideObject(ExecutionObject* object);
 
-  public:
-    void showObject(ExecutionObject* object);
-    void hideObject(ExecutionObject* object);
+private:
+  ExecutionObject* getObjectFromFocusIndex(string focusIndex);
+  void insertObject(ExecutionObject* object, string focusIndex);
+  void removeObject(ExecutionObject* object, string focusIndex);
 
-  private:
-    ExecutionObject* getObjectFromFocusIndex(string focusIndex);
-    void insertObject(ExecutionObject* object, string focusIndex);
-    void removeObject(ExecutionObject* object, string focusIndex);
+  bool keyCodeOk(ExecutionObject* currentObject);
+  bool keyCodeBack();
+  bool enterSelection(FormatterPlayerAdapter* player);
+  void exitSelection(FormatterPlayerAdapter* player);
+  void registerNavigationKeys();
+  void registerBackKeys();
+  void unregister();
 
-    bool keyCodeOk(ExecutionObject* currentObject);
-    bool keyCodeBack();
-    bool enterSelection(FormatterPlayerAdapter* player);
-    void exitSelection(FormatterPlayerAdapter* player);
-    void registerNavigationKeys();
-    void registerBackKeys();
-    void unregister();
+public:
+  void setDefaultFocusBorderColor(Color* color);
+  void setDefaultFocusBorderWidth(int width);
+  void setDefaultSelBorderColor(Color* color);
 
-  public:
-    void setDefaultFocusBorderColor(Color* color);
-    void setDefaultFocusBorderWidth(int width);
-    void setDefaultSelBorderColor(Color* color);
+  void setMotionBoundaries(int x, int y, int w, int h);
 
-    void setMotionBoundaries(int x, int y, int w, int h);
+private:
+  void changeSettingState(string name, string act);
 
-  private:
-    void changeSettingState(string name, string act);
+public:
+  bool userEventReceived(SDLInputEvent* ev);
+  bool motionEventReceived(int x, int y, int z);
+};
 
-  public:
-    bool userEventReceived(SDLInputEvent* ev);
-    bool motionEventReceived(int x, int y, int z);
-  };
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_END
 
-}
-}
-}
-}
-}
-}
-
-#endif /*FORMATTERFOCUSMANAGER_H_*/
+#endif /* FORMATTER_FOCUS_MANAGER_H */

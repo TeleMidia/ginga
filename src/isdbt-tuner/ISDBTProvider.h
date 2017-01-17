@@ -124,12 +124,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 
 	class ISDBTProvider : public IDataProvider {
 		protected:
@@ -177,11 +173,6 @@ namespace tuning {
 
 			
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
 #endif /*FILESYSTEMPROVIDER_H_*/

@@ -17,20 +17,12 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PRACTICALSOCKET_INCLUDED__
-#define __PRACTICALSOCKET_INCLUDED__
+#ifndef PRACTICAL_SOCKET_H
+#define PRACTICAL_SOCKET_H
 
-#include <string>            // For string
-#include <exception>         // For exception class
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace compat {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
 
 /**
  *   Signals a problem with the execution of a socket call.
@@ -385,12 +377,6 @@ private:
   int BLOCKING_MODE;
 };
 
-}
-}
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END
 
-#endif
+#endif /* PRACTICAL_SOCKET_H */

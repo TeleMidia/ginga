@@ -34,12 +34,8 @@ using namespace std;
 #include "NclInterfacesParser.h"
 #include "NclPresentationControlParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
   class NclComponentsParser : public ModuleParser {
 	//Ref Classes
 	private:
@@ -93,11 +89,6 @@ namespace ncl {
 		void setPresentationControlParser(
 			    NclPresentationControlParser *presentationControlParser);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLCOMPONENTSPARSER_H_*/

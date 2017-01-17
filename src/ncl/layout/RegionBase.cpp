@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/layout/RegionBase.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	RegionBase::RegionBase(string id, IDeviceLayout* deviceLayout) : Base(id) {
 		this->deviceLayout      = deviceLayout;
 		this->device            = "";
@@ -230,8 +227,5 @@ namespace layout {
 		regions.clear();
 		Base::clear();
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END

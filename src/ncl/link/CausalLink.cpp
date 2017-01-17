@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/link/CausalLink.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	CausalLink::CausalLink(string uid, Connector* connector) :
 		     Link(uid, connector) {
 
@@ -95,8 +92,5 @@ namespace link {
 
 		return conditionsVector;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END

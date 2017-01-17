@@ -42,12 +42,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include <errno.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+
 	class FormatterActiveDevice : public FormatterMultiDevice {
 		public:
 			static const unsigned int ADD_DOCUMENT        = 10081;
@@ -124,11 +120,6 @@ namespace multidevice {
 					string spayload_desc,
 					string payload);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
 #endif /* _FormatterActiveDevice_H_ */

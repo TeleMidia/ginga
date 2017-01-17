@@ -37,13 +37,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+
   class ExecutionObjectSwitch : public CompositeExecutionObject {
 	protected:
 		ExecutionObject* selectedObject;
@@ -60,12 +55,6 @@ namespace switches {
 		void select(ExecutionObject* executionObject);
 		bool addEvent(FormatterEvent* event);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
 #endif //_EXECUTIONOBJECTSWITCH_H_

@@ -81,13 +81,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
   class ExecutionObject {
 	protected:
 		string id;
@@ -265,12 +260,6 @@ namespace components {
 		void lockParentTable();
 		void unlockParentTable();
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_EXECUTIONOBJECT_H_

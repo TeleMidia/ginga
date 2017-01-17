@@ -27,13 +27,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "player/IPlayerListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::player;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
+
 
 	typedef struct {
 		short code;
@@ -123,12 +118,6 @@ namespace application {
 		public:
 			virtual void flip(){};
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_END
 #endif //_ApplicationPlayerAdapter_H_

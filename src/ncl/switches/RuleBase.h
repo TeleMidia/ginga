@@ -27,11 +27,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class RuleBase : public Base {
 		private:
 			vector<Rule*>* ruleSet;
@@ -56,10 +53,6 @@ namespace switches {
 			vector<Rule*>* getRules();
 			bool removeRule(Rule* rule);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif /*RULEBASE_H_*/

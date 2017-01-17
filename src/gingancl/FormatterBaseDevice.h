@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterMultiDevice.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+
 	class FormatterBaseDevice : public FormatterMultiDevice {
 		public:
 			FormatterBaseDevice(
@@ -58,11 +54,6 @@ namespace multidevice {
 
 			bool userEventReceived(SDLInputEvent* ev);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
 #endif /* _FormatterBaseDevice_H_ */

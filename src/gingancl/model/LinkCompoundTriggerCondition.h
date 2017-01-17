@@ -29,13 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkCompoundTriggerCondition :
 			public LinkTriggerCondition,
 			public LinkTriggerListener {
@@ -53,12 +48,6 @@ namespace link {
 			void evaluationStarted();
 			void evaluationEnded();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCOMPOUNDTRIGGERCONDITION_H_

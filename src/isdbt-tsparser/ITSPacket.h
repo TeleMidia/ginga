@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITSPACKET_
 #define ITSPACKET_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class ITSPacket {
 	public:
 		static const unsigned char TS_PACKET_SIZE = 188;
@@ -46,11 +42,6 @@ namespace tsparser {
 		virtual void setPacketCount(unsigned int count)=0;
 		virtual unsigned int getPacketCount()=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*TSPACKET_*/

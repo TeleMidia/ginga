@@ -42,11 +42,8 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
     class Bind {
 		private:
 			Node* node;
@@ -84,10 +81,6 @@ namespace link {
 			vector<Node*>* getNodeNesting();
 			InterfacePoint* getEndPointInterface();
     };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END
 #endif //_BIND_H_

@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/transition/TransitionBase.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
    	TransitionBase::TransitionBase(string id) : Base(id) {
 		transitionSet = new vector<Transition*>;
 	}
@@ -130,8 +127,5 @@ namespace transition {
 
 		return false;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END

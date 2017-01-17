@@ -25,14 +25,8 @@ using namespace std;
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 	class ComponentDescriptor : public IMpegDescriptor {
 		protected:
 			unsigned char streamContent;
@@ -52,12 +46,6 @@ namespace descriptors {
 
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* COMPONENTDESCRIPTOR_H_ */

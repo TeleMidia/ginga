@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "CodeMap.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	const int CodeMap::KEY_QUIT              = -1;
 	const int CodeMap::KEY_NULL              = 1;
 	const int CodeMap::KEY_0                 = 2;
@@ -307,9 +303,5 @@ namespace mb {
 	map<string, int>* CodeMap::cloneKeyMap() {
 		return new map<string, int>(keyMap);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

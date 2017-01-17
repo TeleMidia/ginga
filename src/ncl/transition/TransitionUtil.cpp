@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/transition/TransitionUtil.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace transition {
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN
+
    	int TransitionUtil::getTypeCode(string type) {
 		if (type == "barWipe") {
 			return Transition::TYPE_BARWIPE;
@@ -303,8 +300,5 @@ namespace transition {
 				return Transition::SUBTYPE_FADE_CROSSFADE;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END

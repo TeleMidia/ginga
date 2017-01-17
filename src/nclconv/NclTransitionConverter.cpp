@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclTransitionConverter.h"
 #include "NclDocumentConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclTransitionConverter::NclTransitionConverter(
 		    DocumentParser *documentParser) : NclTransitionParser(
 		    	   documentParser) {
@@ -198,8 +195,5 @@ namespace ncl {
 			clog << "Warning! exception '" << exc->what() << "'" << endl;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

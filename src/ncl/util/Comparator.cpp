@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/util/Comparator.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace util {
+BR_PUCRIO_TELEMIDIA_NCL_UTIL_BEGIN
+
 	bool Comparator::evaluate(
 		    string first,
 		    string second,
@@ -187,8 +184,5 @@ namespace util {
 	  		return Comparator::CMP_EQ;
 	  	}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_UTIL_END

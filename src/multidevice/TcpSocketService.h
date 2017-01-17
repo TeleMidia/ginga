@@ -25,12 +25,8 @@ using namespace std;
 #include "IRemoteDeviceListener.h"
 #include "TcpClientConnection.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	class TcpSocketService {
 		private:
 			map<unsigned int, TCPClientConnection*>* connections;
@@ -51,11 +47,6 @@ namespace multidevice {
 					char* payload);
 	};
 
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /* TCPSOCKETSERVICE_H_ */

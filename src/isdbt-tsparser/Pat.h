@@ -31,13 +31,8 @@ struct UnpPmtTime {
 		double time;
 };
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	class Pat : public TransportSection {
 		private:
 			static int defaultProgramNumber;
@@ -99,12 +94,6 @@ namespace si {
 
 			void print();
 	 };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /*PAT_H_*/

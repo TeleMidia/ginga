@@ -109,11 +109,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::prefetch;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
   class EntryEventListener : public IEventListener {
 	private:
 		Player* player;
@@ -414,10 +411,6 @@ namespace ncl {
 	public:
 		void timeShift(string direction);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif //_FormatterMediator_H_

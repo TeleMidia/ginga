@@ -28,12 +28,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 	BaseDeviceDomain::BaseDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		timerCount    = 0;
 
@@ -516,9 +512,5 @@ namespace multidevice {
 			}
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

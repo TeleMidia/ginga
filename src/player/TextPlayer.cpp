@@ -22,12 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "player/TextPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	TextPlayer::TextPlayer(GingaScreenID screenId) : Player(screenId, "") {
    		initializePlayer(screenId);
    	}
@@ -347,9 +343,5 @@ namespace player {
 		//TODO: set font url, font size, font color, ...
 		Player::setPropertyValue(name, value);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

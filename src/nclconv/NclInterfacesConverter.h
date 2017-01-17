@@ -53,11 +53,8 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
   class NclInterfacesConverter : public NclInterfacesParser {
 	public:
 		NclInterfacesConverter(DocumentParser *documentParser);
@@ -74,10 +71,6 @@ namespace ncl {
 		void *createSwitchPort(DOMElement *parentElement, void *objGrandParent);
 		void addMappingToSwitchPort(void *parentObject, void *childObject);
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
 #endif

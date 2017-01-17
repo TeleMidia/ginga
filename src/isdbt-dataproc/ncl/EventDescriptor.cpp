@@ -21,13 +21,8 @@ using namespace ::br::pucrio::telemidia::util;
 
 #include "EventDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	string EventDescriptor::getEventId(string event) {
 		return event.substr(0, 2);
 	}
@@ -102,10 +97,5 @@ namespace ncl {
 
 		return noMarks;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END

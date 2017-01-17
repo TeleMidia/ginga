@@ -41,13 +41,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace text {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
+
 	class SubtitlePlayerAdapter : public FormatterPlayerAdapter {
 		public:
 			SubtitlePlayerAdapter();
@@ -57,12 +52,6 @@ namespace text {
 		protected:
 			void createPlayer();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END
 #endif /*SUBTITLEPLAYERADAPTER_H_*/

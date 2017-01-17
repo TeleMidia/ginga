@@ -28,11 +28,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <sstream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	class SimpleRule : public Rule {
 		private:
 			string attribute;
@@ -52,10 +49,6 @@ namespace switches {
 			string toString();
 			void setAttribute(string someAttribute);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END
 #endif //_SIMPLERULE_H_

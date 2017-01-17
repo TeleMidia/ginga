@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "BroadcastDualSocketService.h"
 
 namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 BroadcastDualSocketService::BroadcastDualSocketService(
 		unsigned int readPort, unsigned int writePort) {
 
@@ -235,8 +232,5 @@ BroadcastDualSocketService::~BroadcastDualSocketService() {
 		return true;
 	}
 }
-}
-}
-}
-}
-}
+
+PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

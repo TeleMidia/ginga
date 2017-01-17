@@ -24,20 +24,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {		
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+		
 	class LambdaAnchor : public RelativeTimeIntervalAnchor {
 		public:
 			LambdaAnchor(string id);
 			virtual ~LambdaAnchor(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //_LAMBDAANCHOR_H_

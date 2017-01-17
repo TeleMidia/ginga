@@ -21,13 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include <zip.h>
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace compat {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+
 
 #if WITH_MULTIDEVICE
 	bool getZipError(zip* file, string* strError) {
@@ -983,10 +978,5 @@ namespace compat {
 		return bytesWritten;
 	}
 
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END

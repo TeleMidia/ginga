@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/navigation/FocusDecoration.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace navigation {
+#include "util/functions.h"
+using namespace ::br::pucrio::telemidia::util;
+
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN
+
 	FocusDecoration::FocusDecoration() {
 		focusBorderTransparency = NaN();
 		focusSrc                = "";
@@ -99,8 +99,5 @@ namespace navigation {
 	void FocusDecoration::setSelBorderColor(Color* color) {
 		selBorderColor = color;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_END

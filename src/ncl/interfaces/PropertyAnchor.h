@@ -26,11 +26,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class PropertyAnchor : public Anchor {
 		private:
 			string value;
@@ -46,10 +43,6 @@ namespace interfaces {
 
 			PropertyAnchor* clone();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif //PROPERTYANCHOR_H_

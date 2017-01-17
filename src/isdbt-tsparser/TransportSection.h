@@ -31,12 +31,8 @@ using namespace ::br::pucrio::telemidia::util;
 #endif
 
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	class TransportSection : public ITransportSection {
 		private:
 			// Original TS packet id.
@@ -112,11 +108,6 @@ namespace tsparser {
 			static unsigned int crc32(char *data, unsigned int len);
 			void print();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*TRANSPORTSECTION_H_*/

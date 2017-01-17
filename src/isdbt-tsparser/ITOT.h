@@ -27,13 +27,8 @@ using namespace std;
 
 #include <time.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 	class ITOT {
 		public:
 			static const unsigned char DT_LOCAL_TIME_OFFSET = 0x58;
@@ -44,12 +39,6 @@ namespace si {
 			virtual void print()=0;
 			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* ITOT_H_ */

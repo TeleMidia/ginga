@@ -26,13 +26,8 @@ extern "C" {
 #include "Ior.h"
 #include "DsmccMessageHeader.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace carousel {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+
 	class DownloadServerInitiate {
 		private:
 			DsmccMessageHeader* header;
@@ -54,12 +49,6 @@ namespace carousel {
 		private:
 			int processIor();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
 #endif /*DOWNLOADSERVERINITIATE_H_*/

@@ -30,11 +30,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class AssessmentStatement : public Statement {
 		private:
 			short comparator;
@@ -54,10 +51,6 @@ namespace connectors {
 
 			string toString();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_ASSESSMENTSTATEMENT_H_

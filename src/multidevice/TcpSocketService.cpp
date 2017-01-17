@@ -25,11 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "TcpSocketService.h"
 
 namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
 
 TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
 	res = r;
@@ -151,8 +148,5 @@ void TcpSocketService::postTcpCommand(
 }
 
 }
-}
-}
-}
-}
-}
+
+PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END

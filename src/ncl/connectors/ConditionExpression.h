@@ -25,11 +25,8 @@ using namespace std;
 
 #include "Role.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class ConditionExpression {
 		protected:
 			set<string> typeSet;
@@ -49,10 +46,6 @@ namespace connectors {
 
 			virtual string toString(){return "";};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_CONDITIONEXPRESSION_H_

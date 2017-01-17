@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKLISTENER_H_
 #define _LINKLISTENER_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkListener {
 		public:
 			virtual ~LinkListener(){};
@@ -32,12 +27,6 @@ namespace link {
 			virtual void linkEvaluationFinished(
 				    FormatterCausalLink* link, bool start)=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKLISTENER_H_

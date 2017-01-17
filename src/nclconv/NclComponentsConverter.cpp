@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclComponentsConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+
 	NclComponentsConverter::NclComponentsConverter(
 		    DocumentParser *documentParser) :
 		    	    NclComponentsParser(documentParser) {
@@ -480,8 +477,5 @@ namespace ncl {
 		//retornar no' de midia
 		return node;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END

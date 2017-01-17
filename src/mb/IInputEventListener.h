@@ -20,22 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDLInputEvent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class IInputEventListener {
 		public:
 			virtual ~IInputEventListener(){};
 			virtual bool userEventReceived(SDLInputEvent* ev)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*IINPUTEVENTLISTENER_H_*/

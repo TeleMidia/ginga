@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/descriptor/Descriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace descriptor {
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN
+
 	Descriptor::Descriptor(string id) :
 			    GenericDescriptor(id) {
 
@@ -236,8 +233,5 @@ namespace descriptor {
 	void Descriptor::removeAllOutputTransitions() {
 		outputTransitions.clear();
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END

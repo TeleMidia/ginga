@@ -27,12 +27,8 @@ using namespace ::br::pucrio::telemidia::converter::framework;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
    class NclConnectorsParser : public ModuleParser {
 	//Ref Classes
 	private:
@@ -161,11 +157,6 @@ namespace ncl {
 		NclImportParser *getImportParser();
 		void setImportParser(NclImportParser *importParser);
    };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLCONNECTORSPARSER_H_*/

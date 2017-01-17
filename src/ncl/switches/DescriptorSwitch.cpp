@@ -21,11 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace switches {
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN
+
 	bool DescriptorSwitch::initMutex = false;
 	set<DescriptorSwitch*> DescriptorSwitch::objects;
 	pthread_mutex_t DescriptorSwitch::_objMutex;
@@ -310,8 +307,5 @@ namespace switches {
 	GenericDescriptor* DescriptorSwitch::getSelectedDescriptor() {
 		return selectedDescriptor;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END

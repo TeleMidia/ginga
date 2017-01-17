@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "AnimationController.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace animation {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
+
 	AnimationController::AnimationController(
 			ExecutionObject* execObj,
 			PlayerAdapterManager* pManager,
@@ -472,9 +468,5 @@ namespace animation {
 
 		return target;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_END

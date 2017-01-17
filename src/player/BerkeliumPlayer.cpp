@@ -23,12 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia::util;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	BBrowserFactory BerkeliumPlayer::berkeliumFactory;
 	bool BerkeliumPlayer::mainLoopDone = false;
 
@@ -405,9 +401,5 @@ namespace player {
 		mainLoopDone = true;
 		return NULL;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

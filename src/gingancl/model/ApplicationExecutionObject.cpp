@@ -18,13 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ApplicationExecutionObject.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
 	ApplicationExecutionObject::ApplicationExecutionObject(
 			string id,
 			Node* node,
@@ -645,10 +640,5 @@ namespace components {
 	void ApplicationExecutionObject::unlockEvents() {
 		Thread::mutexUnlock(&eventsMutex);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END

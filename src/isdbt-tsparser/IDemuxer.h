@@ -24,12 +24,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "ITSFilter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	// specific packet ids
 	static const short PAT_PID  = 0x0000;
 	static const short CAT_PID  = 0x0001;
@@ -145,11 +141,6 @@ namespace tsparser {
 
 		virtual bool isReady()=0;
 	 };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
 #endif /*IDEMUXER_H_*/

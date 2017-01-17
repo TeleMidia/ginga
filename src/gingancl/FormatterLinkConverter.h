@@ -83,12 +83,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include <vector>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace emconverter {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+
   class FormatterLinkConverter {
 	private:
 		FormatterConverter* compiler;
@@ -186,11 +182,6 @@ namespace emconverter {
 		string getBindKey(Link* ncmLink, Bind* ncmBind);
 		double compileDelay(Link* ncmLink, string delayObject, Bind* bind);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*FORMATTERLINKCONVERTER_H_*/

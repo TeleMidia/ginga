@@ -25,22 +25,18 @@
 
 */
 
-#ifndef BASE64_H_
-#define BASE64_H_
+#ifndef BASE64_H
+#define BASE64_H
 
-#include "util/functions.h"
+#include "namespaces.h"
 
-#include <string>
-#include <iostream>
-using namespace std;
-
-TELEMIDIA_UTIL_BEGIN_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_BEGIN
 
 string base64_encode(unsigned char const* , unsigned int len);
 string base64_decode(std::string const& s);
 string getBase64FromFile(string file_path);
 int writeFileFromBase64(string payload, char * file_path);
 
-TELEMIDIA_UTIL_END_DECLS
+BR_PUCRIO_TELEMIDIA_UTIL_END
 
 #endif /* BASE64_H_ */

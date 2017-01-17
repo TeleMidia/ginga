@@ -20,12 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FileSystemProvider.h"
 #include "IProviderListener.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tuning {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+
 	FileSystemProvider::FileSystemProvider(string fileName) {
 		this->fileName       = fileName;
 		this->fileDescriptor = NULL;
@@ -143,9 +139,5 @@ namespace tuning {
 
 		return buff;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END

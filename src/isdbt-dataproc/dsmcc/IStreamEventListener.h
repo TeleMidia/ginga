@@ -20,22 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "StreamEvent.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+
 	class IStreamEventListener {
 		public:
 			virtual ~IStreamEventListener(){};
 			virtual void receiveStreamEvent(StreamEvent* event)=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
 #endif /*ISTREAMEVENTLISTENER_H_*/

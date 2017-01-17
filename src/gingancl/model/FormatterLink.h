@@ -26,13 +26,8 @@ using namespace ::br::pucrio::telemidia::ncl::link;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
   class FormatterLink {
 	protected:
 		Link* ncmLink;
@@ -48,12 +43,6 @@ namespace link {
 		Link* getNcmLink();
 		bool instanceOf(string s);
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_FORMATTERLINK_H_

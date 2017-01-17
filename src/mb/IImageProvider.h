@@ -23,12 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class IImageProvider : public IDiscreteMediaProvider {
 		public:
 			virtual ~IImageProvider(){};
@@ -37,11 +33,6 @@ namespace mb {
 			virtual void playOver(GingaSurfaceID surface)=0;
 			virtual bool releaseAll()=0;
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*IIMAGEPROVIDER_H_*/

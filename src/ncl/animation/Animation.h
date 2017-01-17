@@ -15,36 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ANIMATION_H_
-#define ANIMATION_H_
+#ifndef ANIMATION_H
+#define ANIMATION_H
 
-#include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+#include "namespaces.h"
 
-#include <string>
-using namespace std;
+BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_BEGIN
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace animation {
-	class Animation {
-		private:
-			string duration;
-			string by;
+class Animation
+{
+private:
+  string duration;
+  string by;
 
-		public:
-			Animation();
-			void setDuration(string dur);
-			string getDuration();
-			void setBy(string by);
-			string getBy();
-	};
-}
-}
-}
-}
-}
+public:
+  Animation();
+  void setDuration(string dur);
+  string getDuration();
+  void setBy(string by);
+  string getBy();
+};
 
-#endif /*ANIMATION_H_*/
+BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_END
+
+#endif /* ANIMATION_H */

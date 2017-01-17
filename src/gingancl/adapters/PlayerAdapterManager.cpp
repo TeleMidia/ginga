@@ -51,12 +51,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
 // #include "TimePlayerAdapter.h"
 // using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
 	PlayerAdapterManager::PlayerAdapterManager(NclPlayerData* data) : Thread() {
 		nclPlayerData = data;
 
@@ -689,9 +685,5 @@ namespace adapters {
 
 		clog << "PlayerAdapterManager::run all done" << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END

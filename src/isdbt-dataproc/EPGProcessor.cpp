@@ -45,13 +45,8 @@ using namespace std;
 
 #include "DataProcessor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace epg {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_BEGIN
+
 	EPGProcessor::EPGProcessor() {
 		files              = 0;
 		cdt                = new set<string>;
@@ -783,10 +778,5 @@ namespace epg {
 		fclose(png);
 		return 0;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_END

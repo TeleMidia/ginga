@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SubtitlePlayerAdapter.h"
 #include "player/SrtPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace text {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
+
 	SubtitlePlayerAdapter::SubtitlePlayerAdapter() : FormatterPlayerAdapter() {
 		typeSet.insert("SubtitlePlayerAdapter");
 	}
@@ -71,10 +66,5 @@ namespace text {
 		player->setPropertyValue("loadFile", mrl);
 		FormatterPlayerAdapter::createPlayer();
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END

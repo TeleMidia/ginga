@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/DataContentDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 namespace si{
 namespace descriptors{
 	DataContentDescriptor::DataContentDescriptor() {
@@ -62,10 +58,6 @@ namespace descriptors{
 	}
 	string DataContentDescriptor::getLanguageCode() {
 		string str;
-
-		if (languageCode == NULL){
-			return "";
-		}
 		str.append(languageCode, 3);
 		return str;
 	}
@@ -145,9 +137,5 @@ namespace descriptors{
 	}
 }
 }
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

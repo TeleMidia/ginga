@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/link/Bind.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace link {
+BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN
+
 	Bind::Bind(Node* node, InterfacePoint* interfPt,
 		    GenericDescriptor* desc, Role* role) {
 
@@ -196,8 +193,5 @@ namespace link {
 			return interfacePoint;
 		}
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LINK_END

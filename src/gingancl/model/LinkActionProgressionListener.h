@@ -18,24 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKACTIONPROGRESSIONLISTENER_H_
 #define _LINKACTIONPROGRESSIONLISTENER_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkActionProgressionListener {
 		public:
 			virtual ~LinkActionProgressionListener(){};
 			virtual void actionProcessed(bool start)=0;
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKACTIONPROGRESSIONLISTENER_H_

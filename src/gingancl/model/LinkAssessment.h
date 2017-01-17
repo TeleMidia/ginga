@@ -15,39 +15,30 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LINKASSESSMENT_H_
-#define LINKASSESSMENT_H_
+#ifndef LINK_ASSESSMENT_H
+#define LINK_ASSESSMENT_H
 
-#include <string>
-#include <set>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
-	class LinkAssessment {
-		protected:
-			set<string> typeSet;
-		public:
-			LinkAssessment() {
-				typeSet.insert("LinkAssessment");
-			}
-			virtual ~LinkAssessment() {}
-			virtual string getValue()=0;
-			bool instanceOf(string type) {
-				return typeSet.count(type);
-			}
-	};
-}
-}
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-#endif /*LINKASSESSMENT_H_*/
+class LinkAssessment
+{
+protected:
+  set<string> typeSet;
+public:
+  LinkAssessment()
+  {
+    typeSet.insert("LinkAssessment");
+  }
+  virtual ~LinkAssessment() {}
+  virtual string getValue()=0;
+  bool instanceOf(string type)
+  {
+    return typeSet.count(type);
+  }
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+
+#endif /* LINK_ASSESSMENT_H */

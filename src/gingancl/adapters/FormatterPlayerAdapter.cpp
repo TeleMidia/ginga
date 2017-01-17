@@ -30,12 +30,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "player/Player.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+
 	LocalScreenManager* FormatterPlayerAdapter::dm = NULL;
 	double FormatterPlayerAdapter::eventTS = 0;
 
@@ -1724,9 +1720,5 @@ namespace adapters {
 		isLocked = false;
 		return true;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END

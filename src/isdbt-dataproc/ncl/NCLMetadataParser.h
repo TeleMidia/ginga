@@ -29,13 +29,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	class NCLMetadataParser {
 		public:
 			static IMetadata* parse(string xmlDocument);
@@ -56,12 +51,6 @@ namespace ncl {
 
 			static void stopElementHandler(void* data, const XML_Char* element);
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
 #endif //_NCLMetadataParser_H_

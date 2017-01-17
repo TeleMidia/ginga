@@ -22,12 +22,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include "player/BerkeliumHandler.h"
 #include "player/PlayersComponentSupport.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 
 	map<int, int> BerkeliumHandler::fromGingaToBklm;
 	int BerkeliumHandler::callCount  = 0;
@@ -715,9 +711,5 @@ namespace player {
 
 		clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END

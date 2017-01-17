@@ -15,44 +15,37 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMediaProvider_H_
-#define IMediaProvider_H_
+#ifndef I_MEDIA_PROVIDER_H
+#define I_MEDIA_PROVIDER_H
 
-#include <string>
-using namespace std;
-
+#include "namespaces.h"
 #include "IMBDefs.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
-	class IMediaProvider {
-		public:
-			enum IMediaProviderType {
-						AudioProvider, VideoProvider, FontProvider, ImageProvider};
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 
-			virtual ~IMediaProvider(){};
-			virtual string getLoadSymbol()=0;
-			virtual void playOver(GingaSurfaceID surface) = 0;
+class IMediaProvider
+{
+public:
+  enum IMediaProviderType
+    {
+      AudioProvider,
+      FontProvider,
+      ImageProvider,
+      VideoProvider,
+    };
 
-			IMediaProviderType getType () const { return type; }
+  virtual ~IMediaProvider(){};
+  virtual string getLoadSymbol()=0;
+  virtual void playOver(GingaSurfaceID surface) = 0;
+  IMediaProviderType getType () const { return type; }
+  GingaProviderID getId () const { return id; }
+  void setId (const GingaProviderID& id) {this->id = id; }
 
-			GingaProviderID getId () const { return id; }
-			void setId (const GingaProviderID& id) {this->id = id; }
+protected:
+  GingaProviderID id;
+  IMediaProviderType type;
+};
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 
-		protected:
-			GingaProviderID id;
-			IMediaProviderType type;
-	};
-}
-}
-}
-}
-}
-}
-
-#endif /* IMediaProvider_H_ */
+#endif /* I_MEDIA_PROVIDER_H */

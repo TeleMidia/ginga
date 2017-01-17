@@ -15,41 +15,33 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMPEGDESCRIPTOR_H_
-#define IMPEGDESCRIPTOR_H_
+#ifndef I_MPEG_DESCRIPTOR_H
+#define I_MPEG_DESCRIPTOR_H
 
-#include <iostream>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-	class IMpegDescriptor {
-		protected:
-			unsigned char descriptorTag;
-			unsigned char descriptorLength;
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 
-		public:
-			static const int NPT_REFERENCE_TAG = 0x01;
-			static const int NPT_ENDPOINT_TAG  = 0x02;
-			static const int STR_MODE_TAG      = 0x03;
-			static const int STR_EVENT_TAG     = 0x04;
+class IMpegDescriptor
+{
+protected:
+  unsigned char descriptorTag;
+  unsigned char descriptorLength;
 
-			virtual ~IMpegDescriptor(){};
-			virtual unsigned char getDescriptorTag()=0;
-			virtual unsigned int getDescriptorLength()=0;
-			virtual size_t process (char* data, size_t pos)=0;
-			virtual void print()=0;
+public:
+  static const int NPT_REFERENCE_TAG = 0x01;
+  static const int NPT_ENDPOINT_TAG = 0x02;
+  static const int STR_MODE_TAG = 0x03;
+  static const int STR_EVENT_TAG = 0x04;
 
-	};
-}
-}
-}
-}
-}
-}
+  virtual ~IMpegDescriptor(){};
+  virtual unsigned char getDescriptorTag()=0;
+  virtual unsigned int getDescriptorLength()=0;
+  virtual size_t process (char* data, size_t pos)=0;
+  virtual void print()=0;
 
-#endif /*IMPEGDESCRIPTOR_H_*/
+};
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+
+#endif /* I_MPEG_DESCRIPTOR_H_*/

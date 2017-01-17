@@ -33,12 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class DeviceService {
 	protected:
 		set<IRemoteDeviceListener*>* listeners;
@@ -80,11 +76,6 @@ namespace multidevice {
 				char* stream,
 				int streamSize)=0;
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_BaseDeviceService_H_*/

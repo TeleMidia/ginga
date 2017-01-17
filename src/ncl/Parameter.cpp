@@ -18,10 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Parameter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+
 	Parameter::Parameter(string n, string v) {
 		name = n;
 		value = v;
@@ -47,7 +45,5 @@ namespace ncl {
 	void Parameter::setValue(string v) {
 		value = v;
 	}
-}	
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_END

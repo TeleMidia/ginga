@@ -18,14 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/LogoTransmissionDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 //TODO: test this class - no use of this descriptor on TS files.
 	LogoTransmissionDescriptor::LogoTransmissionDescriptor() {
 		descriptorTag    = 0xCF;
@@ -149,12 +143,5 @@ namespace descriptors {
 		}
 		return pos;
 	}
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END

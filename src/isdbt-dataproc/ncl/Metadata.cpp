@@ -25,13 +25,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <sys/stat.h>
 #include <stdio.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace dataprocessing {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+
 	Metadata::Metadata(string name) {
 		this->name           = name;
 		this->targetTotalLen = 0;
@@ -189,7 +184,7 @@ namespace ncl {
 		closeMetadataFile();
 
 		fileSize = getFileSize(mdUri);
-		streamData = createStreamData(0, ST_METADA, mdUri, fileSize);
+		streamData = createStreamData(0, ST_METADATA, mdUri, fileSize);
 		streams->insert(streams->begin(), streamData);
 
 		return streams;
@@ -320,10 +315,5 @@ namespace ncl {
 
 		return bytes;
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END

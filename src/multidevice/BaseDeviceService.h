@@ -26,12 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <map>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class BaseDeviceService : public DeviceService {
 	public:
 		BaseDeviceService();
@@ -51,11 +47,6 @@ namespace multidevice {
 				char* stream,
 				int streamSize){return false;};
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_BaseDeviceService_H_*/

@@ -27,11 +27,8 @@ using namespace std;
 #include "LayoutRegion.h"
 #include "DeviceLayout.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	class RegionBase : public Base {
 		private:
 			string device;
@@ -69,10 +66,6 @@ namespace layout {
 			int getDeviceClass();
 			void clear();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END
 #endif /*REGIONBASE_H_*/

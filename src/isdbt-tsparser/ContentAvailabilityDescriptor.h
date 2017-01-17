@@ -20,14 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 
 	class ContentAvailabilityDescriptor : public IMpegDescriptor{
 		protected:
@@ -44,13 +38,6 @@ namespace descriptors {
 			size_t process (char* data, size_t pos);
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* CONTENTAVAILABILITYDESCRIPTOR_H_ */

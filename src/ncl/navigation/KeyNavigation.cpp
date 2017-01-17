@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/navigation/KeyNavigation.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace navigation {
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN
+
 	KeyNavigation::KeyNavigation() {
 		focusIndex = "";
 		moveUp = "";
@@ -70,8 +67,5 @@ namespace navigation {
 	void KeyNavigation::setMoveLeft(string index) {
 		moveLeft = index;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_END

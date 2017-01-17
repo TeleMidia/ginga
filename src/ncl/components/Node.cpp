@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/components/Node.h"
 #include "ncl/components/CompositeNode.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	Node::Node(string id) : Entity(id) {
 		typeSet.insert("Node");
 		parentNode = NULL;
@@ -231,8 +228,5 @@ namespace components {
 	bool Node::removeAnchor(Anchor *anchor) {
 		return removeAnchor(indexOfAnchor(anchor));
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END

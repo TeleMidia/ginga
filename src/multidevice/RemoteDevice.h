@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _RemoteDevice_H_
 #define _RemoteDevice_H_
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class RemoteDevice {
 	private:
 		unsigned int address;
@@ -39,11 +35,6 @@ namespace multidevice {
 		void setDeviceResolution(int width, int height);
 		void getDeviceResolution(int* width, int* height);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_RemoteDevice_H_*/

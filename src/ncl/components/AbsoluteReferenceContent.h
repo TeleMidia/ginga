@@ -23,20 +23,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace components {
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN
+
 	class AbsoluteReferenceContent : public ReferenceContent {
 		public:
 			AbsoluteReferenceContent(string ref);
 			virtual ~AbsoluteReferenceContent(){};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END
 #endif //_ABSOLUTEREFERENCECONTENT_H_

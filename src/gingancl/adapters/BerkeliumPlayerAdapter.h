@@ -34,14 +34,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
-namespace xhtml {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
+
 	class BerkeliumPlayerAdapter : public FormatterPlayerAdapter {
 		public:
 			BerkeliumPlayerAdapter();
@@ -56,13 +50,6 @@ namespace xhtml {
 			bool setPropertyValue(
 				    AttributionEvent* event, string value);
 	};
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_END
 #endif /*BerkeliumPlayerAdapter_H_*/

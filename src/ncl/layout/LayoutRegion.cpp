@@ -18,11 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/layout/LayoutRegion.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace layout {
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN
+
 	LayoutRegion::LayoutRegion(string id) : Entity(id) {
 		title = "";
 		outputMapRegionId = "";
@@ -1419,8 +1416,5 @@ namespace layout {
 	void LayoutRegion::unlock() {
 		pthread_mutex_unlock(&mutex);
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END

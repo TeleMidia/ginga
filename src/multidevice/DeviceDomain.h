@@ -26,12 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NetworkUtil.h"
 #include "RemoteEventService.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class DeviceDomain {
 	public:
 		//CT: class types
@@ -132,11 +128,6 @@ namespace multidevice {
 		virtual void addDeviceListener(IRemoteDeviceListener* listener);
 		virtual void removeDeviceListener(IRemoteDeviceListener* listener);
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_IDeviceDomain_H_*/

@@ -39,13 +39,8 @@ using namespace std;
 #include <string.h>
 #include <time.h>
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+
 
 	class TOT : public ITOT {
 		protected:
@@ -68,12 +63,6 @@ namespace si {
 			int convertBCDtoDecimal(int bcd);
 
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
 #endif /* TOT_H_ */

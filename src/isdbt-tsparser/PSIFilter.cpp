@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/PSIFilter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+
 	PSIFilter::PSIFilter(IDemuxer* dm) {
 		pid          = -1;
 		tid          = -1;
@@ -75,9 +71,5 @@ namespace tsparser {
 	void PSIFilter::receiveSection(char* section, int secLen) {
 		demuxer->receiveSection(section, secLen, this);
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END

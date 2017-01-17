@@ -26,12 +26,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::mb;
 #include <set>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 	class SDLVideoProvider : public SDLAudioProvider {
 		private:
 			int wRes;
@@ -83,11 +79,6 @@ namespace mb {
 		private:
 			bool textureCreated();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLVIDEOPROVIDER_H_*/

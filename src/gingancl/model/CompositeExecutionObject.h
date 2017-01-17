@@ -51,13 +51,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace components {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+
 	class CompositeExecutionObject :
 			public ExecutionObject, public LinkListener, public IEventListener,
 			public Thread {
@@ -143,12 +138,6 @@ namespace components {
 			void lockSTL();
 			void unlockSTL();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_COMPOSITEEXECUTIONOBJECT_H_

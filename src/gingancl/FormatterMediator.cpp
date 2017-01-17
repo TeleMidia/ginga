@@ -33,11 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
 # include "multidevice/DeviceDomain.h"
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	PrefetchManager* FormatterMediator::pm = NULL;
 
 	EntryEventListener::EntryEventListener(Player* player, string interfaceId) {
@@ -3330,8 +3327,5 @@ namespace ncl {
 	PresentationContext* FormatterMediator::getPresentationContext() {
 		return presContext;
 	}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END

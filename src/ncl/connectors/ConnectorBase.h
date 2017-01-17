@@ -27,11 +27,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class ConnectorBase : public Base {
 		private:
 			set<Connector*> connectorSet;
@@ -58,10 +55,6 @@ namespace connectors {
 			bool removeConnector(string connectorId);
 			bool removeConnector(Connector* connector);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif /*CONNECTORBASE_H_*/

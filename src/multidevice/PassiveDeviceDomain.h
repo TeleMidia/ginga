@@ -22,12 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "MulticastSocketService.h"
 #include "BroadcastDualSocketService.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace multidevice {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+
   class PassiveDeviceDomain : public DeviceDomain {
 	private:
 		ISocketService* passiveSocket;
@@ -52,11 +48,6 @@ namespace multidevice {
 		bool runDataTask();
 		void checkDomainTasks();
   };
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
 #endif /*_PassiveDeviceDomain_H_*/

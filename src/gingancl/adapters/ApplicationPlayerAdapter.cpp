@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ApplicationPlayerAdapter.h"
 #include "PlayerAdapterManager.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace adapters {
-namespace application {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
+
 	ApplicationPlayerAdapter::ApplicationPlayerAdapter() :
 			FormatterPlayerAdapter() {
 
@@ -1105,10 +1100,5 @@ namespace application {
 	void ApplicationPlayerAdapter::unlockPreparedEvents() {
 		Thread::mutexUnlock(&eventsMutex);
 	}
-}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_END

@@ -21,12 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LocalScreenManager.h"
 #include "ScreenManagerFactory.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 	const string SDLInputEvent::ET_WAKEUP     = "GINGA_WAKEUP";
 	const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
@@ -274,9 +270,5 @@ namespace mb {
 				break;
 		}
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END

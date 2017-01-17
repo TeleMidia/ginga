@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterLinkConverter.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace emconverter {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+
 	FormatterLinkConverter::FormatterLinkConverter(
 		    FormatterConverter* compiler) {
 
@@ -1062,9 +1058,5 @@ namespace emconverter {
 
 		return delay;
 	}
-}
-}
-}
-}
-}
-}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END

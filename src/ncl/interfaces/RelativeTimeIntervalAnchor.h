@@ -20,19 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IntervalAnchor.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace interfaces {
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN
+
 	class RelativeTimeIntervalAnchor : public IntervalAnchor {
 		public:
 			RelativeTimeIntervalAnchor(string id, double begin, double end);
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END
 #endif /*RELATIVETIMEINTERVALANCHOR_H_*/

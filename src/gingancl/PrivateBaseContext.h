@@ -71,11 +71,8 @@ typedef struct {
 	NclDocument* embeddedDocument;
 } EmbeddedNclData;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
   class PrivateBaseContext : public IPrivateBaseContext {
 	private:
 		map<string, NclDocument*> baseDocuments;
@@ -207,10 +204,6 @@ namespace ncl {
 		Link* addLink(string documentId, string compositeId, string xmlLink);
 		PrivateBase* getPrivateBase();
   };
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif /*PrivateBaseContext_H_*/

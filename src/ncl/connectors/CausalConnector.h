@@ -34,11 +34,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class CausalConnector : public Connector {
 		private:
 			ConditionExpression* conditionExpression;
@@ -71,10 +68,6 @@ namespace connectors {
 		public:
 			vector<Role*>* getRoles();
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_CAUSALCONNECTOR_H_

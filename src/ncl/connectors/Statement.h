@@ -22,11 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class Statement : public ConditionExpression {
 		public:
 			Statement() : ConditionExpression() {
@@ -45,10 +42,6 @@ namespace connectors {
 				return ConditionExpression::instanceOf(type);
 			};
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_STATEMENT_H_

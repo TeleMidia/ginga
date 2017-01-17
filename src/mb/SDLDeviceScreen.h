@@ -55,12 +55,8 @@ using namespace std;
 #define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24
 #endif
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace mb {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+
 
 typedef struct {
 	IMediaProvider* iDec;
@@ -383,11 +379,6 @@ typedef struct {
 		private:
 			static void releaseUnderlyingSurface(SDL_Surface* uSur);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
 #endif /*SDLDEVICESCREEN_H_*/

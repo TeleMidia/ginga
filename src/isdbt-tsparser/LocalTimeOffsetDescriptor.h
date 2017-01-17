@@ -25,14 +25,8 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace tsparser {
-namespace si {
-namespace descriptors {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+
 
 	class LocalTimeOffsetDescriptor : public IMpegDescriptor {
 		protected:
@@ -58,13 +52,6 @@ namespace descriptors {
 
 	};
 
-}
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
 #endif /* LOCALTIMEOFFSETDESCRIPTOR_H_ */

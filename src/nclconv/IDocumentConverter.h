@@ -25,10 +25,8 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
+BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN
+
   class IDocumentConverter {
 	public:
 		virtual ~IDocumentConverter(){};
@@ -41,9 +39,6 @@ namespace converter {
 		virtual void* parseEntity(
 				string entityLocation, NclDocument* document, void* parent)=0;
   };
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_END
 #endif //IDocumentConverter_H

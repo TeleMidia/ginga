@@ -29,11 +29,8 @@ using namespace ::br::pucrio::telemidia::util;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace connectors {
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN
+
 	class CompoundStatement : public Statement {
 		public:
 			static const short OP_AND = 0;
@@ -64,10 +61,6 @@ namespace connectors {
 				return Statement::instanceOf(type);
 			}
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END
 #endif //_COMPOUNDSTATEMENT_H_

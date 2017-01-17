@@ -26,13 +26,8 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 #include <string>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace event {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+
   class AnchorEvent : public FormatterEvent {
 	protected:
 		ContentAnchor* anchor;
@@ -49,12 +44,6 @@ namespace event {
 		virtual bool start() {return FormatterEvent::start();};
 		virtual bool stop() {return FormatterEvent::stop();};
   };
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_ANCHOREVENT_H_

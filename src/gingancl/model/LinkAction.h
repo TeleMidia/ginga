@@ -40,13 +40,8 @@ extern "C" {
 #include <iostream>
 using namespace std;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkAction : public Thread {
 		protected:
 			set<string> typeSet;
@@ -90,12 +85,6 @@ namespace link {
 		private:
 			bool tryLock();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKACTION_H_

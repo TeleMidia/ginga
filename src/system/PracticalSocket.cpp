@@ -59,13 +59,8 @@ static bool initialized = false;
 
 // SocketException Code
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace system {
-namespace compat {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+
 
 SocketException::SocketException(const string &message, bool inclSysMsg)
   throw() : userMessage(message) {
@@ -622,11 +617,4 @@ void UDPSocket::setNonBlocking(bool nonblock) {
 
 }
 
-
-}
-}
-}
-}
-}
-}
-}
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END

@@ -33,12 +33,8 @@ using namespace std;
 #define NTP_PORT_NUM 123
 #define NTP_CLIENT 3
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class NTPPlayer : public Player {
 		private:
 			string host;
@@ -65,11 +61,6 @@ namespace player {
 			static short localTimezone();
 			static void addTime(timeb* a, double seconds);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /* NTPPLAYER_H_ */

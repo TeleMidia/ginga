@@ -40,12 +40,8 @@ using namespace std;
 #include "NclImportParser.h"
 #include "NclMetainformationParser.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace converter {
-namespace framework {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+
   class NclStructureParser : public ModuleParser {
 	protected:
 		NclTransitionParser* transitionParser;
@@ -164,11 +160,6 @@ namespace ncl {
 		void setMetainformationParser(
 			    NclMetainformationParser* metainformationParser);
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
 #endif /*NCLSTRUCTUREPARSER_H_*/

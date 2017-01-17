@@ -21,21 +21,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "model/FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+
 	class IFormatterSchedulerListener {
 		public:
 			virtual ~IFormatterSchedulerListener(){};
 			virtual void presentationCompleted(
 				    FormatterEvent* documentEvent)=0;
 	};
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif /*IFORMATTERSCHEDULERLISTENER_H_*/

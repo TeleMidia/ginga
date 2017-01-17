@@ -22,12 +22,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "TextPlayer.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace core {
-namespace player {
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
+
 	class SrtPlayer : public TextPlayer, public Thread {
 		protected:
 			map<float, float>* textEvents;
@@ -66,11 +62,6 @@ namespace player {
 		protected:
 			void run();
 	};
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_END
 #endif /*SRTPLAYER_H_*/

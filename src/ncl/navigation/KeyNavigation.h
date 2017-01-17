@@ -15,42 +15,36 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef KEYNAVIGATION_H_
-#define KEYNAVIGATION_H_
+#ifndef KEY_NAVIGATION_H
+#define KEY_NAVIGATION_H
 
-#include <string>
-using namespace std;
+#include "namespaces.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ncl {
-namespace navigation {
-  class KeyNavigation {
-	private:
-		string focusIndex;
-		string moveUp;
-		string moveDown;
-		string moveLeft;
-		string moveRight;
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN
 
-	public:
-		KeyNavigation();
-		string getFocusIndex();
-		void setFocusIndex(string index);
-		string getMoveUp();
-		void setMoveUp(string index);
-		string getMoveDown();
-		void setMoveDown(string index);
-		string getMoveRight();
-		void setMoveRight(string index);
-		string getMoveLeft();
-		void setMoveLeft(string index);
-	};
-}
-}
-}
-}
-}
+class KeyNavigation
+{
+private:
+  string focusIndex;
+  string moveUp;
+  string moveDown;
+  string moveLeft;
+  string moveRight;
 
-#endif /*KEYNAVIGATION_H_*/
+public:
+  KeyNavigation();
+  string getFocusIndex();
+  void setFocusIndex(string index);
+  string getMoveUp();
+  void setMoveUp(string index);
+  string getMoveDown();
+  void setMoveDown(string index);
+  string getMoveRight();
+  void setMoveRight(string index);
+  string getMoveLeft();
+  void setMoveLeft(string index);
+};
+
+BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_END
+
+#endif /* KEY_NAVIGATION_H */

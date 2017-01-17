@@ -32,13 +32,8 @@ using namespace ::br::pucrio::telemidia::ncl::util;
 #include "LinkAssessment.h"
 #include "LinkAttributeAssessment.h"
 
-namespace br {
-namespace pucrio {
-namespace telemidia {
-namespace ginga {
-namespace ncl {
-namespace model {
-namespace link {
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+
 	class LinkAssessmentStatement : public LinkStatement {
 		protected:
 			short comparator;
@@ -62,12 +57,6 @@ namespace link {
 			void setOtherAssessment(LinkAssessment* assessment);
 			virtual bool evaluate();
 	};
-}
-}
-}
-}
-}
-}
-}
 
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKASSESSMENTSTATEMENT_H_
