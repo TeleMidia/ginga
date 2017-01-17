@@ -20,7 +20,7 @@
 #ifndef PRACTICAL_SOCKET_H
 #define PRACTICAL_SOCKET_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
 

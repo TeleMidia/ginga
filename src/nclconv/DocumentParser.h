@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DOCUMENT_PARSER_H
 #define DOCUMENT_PARSER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 #include "XMLParsing.h"
 
 BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN

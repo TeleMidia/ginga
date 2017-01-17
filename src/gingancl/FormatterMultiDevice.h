@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_MULTI_DEVICE_H
 #define FORMATTER_MULTI_DEVICE_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"

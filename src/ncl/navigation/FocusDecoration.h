@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FOCUS_DECORATION_H
 #define FOCUS_DECORATION_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "util/Color.h"
 using namespace ::br::pucrio::telemidia::util;

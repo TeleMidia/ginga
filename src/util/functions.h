@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include <fstream>
 #include <string>

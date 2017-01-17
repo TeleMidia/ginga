@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_FOCUS_MANAGER_H
 #define FORMATTER_FOCUS_MANAGER_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "util/functions.h"
 #include "util/Color.h"

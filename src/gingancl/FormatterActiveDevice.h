@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_ACTIVE_DEVICE_H
 #define FORMATTER_ACTIVE_DEVICE_H
 
-#include "namespaces.h"
+#include "ginga.h"
 
 #include "FormatterMultiDevice.h"
 
