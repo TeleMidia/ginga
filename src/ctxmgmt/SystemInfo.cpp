@@ -17,164 +17,138 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "SystemInfo.h"
+
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
+using namespace ::br::pucrio::telemidia::ginga::core::mb;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::br::pucrio::telemidia;
 
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <fstream>
-#include <iostream>
-using namespace std;
+GINGA_CTXMGMT_BEGIN
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+SystemInfo::SystemInfo()
+{
+  initializeClockSpeed();
+  sysTable = NULL;
+}
 
-	static LocalScreenManager* dm = NULL;
+SystemInfo::~SystemInfo()
+{
+}
 
-	SystemInfo::SystemInfo() {
-		initializeClockSpeed();
-		sysTable = NULL;
+void SystemInfo::initializeClockSpeed()
+{
+  string line = "";
+  clockSpeed = 0;
+}
 
-		if (dm == NULL) {
-			dm = ScreenManagerFactory::getInstance();
-		}
-	}
+string SystemInfo::getValue (string attribute)
+{
+  map<string, string>::iterator i;
 
-	SystemInfo::~SystemInfo() {
+  if (sysTable == NULL)
+    goto fail;
 
-	}
+  i = sysTable->find(attribute);
+  if (i != sysTable->end())
+    return i->second;
 
-	void SystemInfo::initializeClockSpeed() {
-		ifstream fis;
-		string line = "";
-		clockSpeed = 0;
-	}
+ fail:
+  return "";
+}
 
-	string SystemInfo::getValue(string attribute) {
-		map<string, string>::iterator i;
+void SystemInfo::printSysTable()
+{
+  map<string, string>::iterator i;
+  clog << "SystemInfo::printSysTable " << endl;
+  i = sysTable->begin();
+  while (i != sysTable->end())
+    {
+      clog << "'" << i->first << "' = '" << i->second << "'" << endl;
+      ++i;
+    }
+}
 
-		if (sysTable != NULL) {
-			i = sysTable->find(attribute);
-			if (i != sysTable->end()) {
-				return i->second;
-			}
-		}
+void SystemInfo::setSystemTable (map<string, string> *sysTable)
+{
+  if (this->sysTable != NULL)
+    delete this->sysTable;
+  this->sysTable = sysTable;
+}
 
-		return "";
-	}
+string SystemInfo::getSystemLanguage ()
+{
+  string value = getValue ("system.language");
+  return (value != "") ? value : "por";
+}
 
-	void SystemInfo::printSysTable() {
-		map<string, string>::iterator i;
+string SystemInfo::getCaptionLanguage () {
+  string value = getValue ("system.caption");
+  return (value != "") ? value : "por";
+}
 
-		clog << "SystemInfo::printSysTable " << endl;
-		i = sysTable->begin();
-		while (i != sysTable->end()) {
-			clog << "'" << i->first << "' = '" << i->second << "'" << endl;
-			++i;
-		}
-	}
+string SystemInfo::getSubtitleLanguage ()
+{
+  string value = getValue ("system.subtitle");
+  return (value != "") ? value : "por";
+}
 
-	void SystemInfo::setSystemTable(map<string, string>* sysTable) {
-		if (this->sysTable != NULL) {
-			delete this->sysTable;
-		}
+float SystemInfo::getReturnBitRate ()
+{
+  string value = getValue ("system.returnBitRate");
+  return (value != "") ? util::stof (value) : 0.;
+}
 
-		this->sysTable = sysTable;
-		//printSysTable();
-	}
+void SystemInfo::getScreenSize (GingaScreenID screenId,
+                                int *width, int *height)
+{
+  LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+  *width = dm->getDeviceWidth (screenId);
+  *height = dm->getDeviceHeight (screenId);
+}
 
-	string SystemInfo::getSystemLanguage() {
-		string value = getValue("system.language");
-		if (value == "") {
-			clog << "SystemInfo::getSystemLanguage can't find '";
-			clog << "system.language, return por" << endl;
-			return "por";
-		}
+void SystemInfo::getScreenGraphicSize (GingaScreenID screenId,
+                                       int *width, int *height)
+{
+  LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+  *width = dm->getDeviceWidth (screenId);
+  *height = dm->getDeviceHeight (screenId);
+}
 
-		return value;
-	}
+string SystemInfo::getAudioType ()
+{
+  string value = getValue ("system.audioType");
+  return (value != "") ? value : "stereo";
+}
 
-	string SystemInfo::getCaptionLanguage() {
-		string value = getValue("system.caption");
-		if (value == "") {
-			return "por";
-		}
+float SystemInfo::getCPUClock ()
+{
+  return clockSpeed;
+}
 
-		return value;
-	}
+float SystemInfo::getMemorySize ()
+{
+  return 0;
+}
 
-	string SystemInfo::getSubtitleLanguage() {
-		string value = getValue("system.subtitle");
-		if (value == "") {
-			return "por";
-		}
+string SystemInfo::getJavaConfiguration ()
+{
+  string value = getValue ("system.javaConfiguration");
+  return (value != "") ? value : "0";
+}
 
-		return value;
-	}
+string SystemInfo::getJavaProfile () {
+  string value = getValue ("system.javaProfile");
+  return (value != "") ? value : "0";
+}
 
-	float SystemInfo::getReturnBitRate() {
-		string value = getValue("system.returnBitRate");
-		if (value == "") {
-			return 0;
-		}
+string SystemInfo::getLuaVersion ()
+{
+  return string ("5.1");
+}
 
-		return util::stof(value);
-	}
-
-	void SystemInfo::getScreenSize(
-			GingaScreenID screenId, int* width, int* height) {
-
-		*width = dm->getDeviceWidth(screenId);
-		*height = dm->getDeviceHeight(screenId);
-	}
-
-	void SystemInfo::getScreenGraphicSize(
-			GingaScreenID screenId, int* width, int* height) {
-
-		*width = dm->getDeviceWidth(screenId);
-		*height = dm->getDeviceHeight(screenId);
-	}
-
-	string SystemInfo::getAudioType() {
-		string value = getValue("system.audioType");
-		if (value == "") {
-			return "stereo";
-		}
-
-		return value;
-	}
-
-	float SystemInfo::getCPUClock() {
-		return clockSpeed;
-	}
-
-	float SystemInfo::getMemorySize() {
-		return 0;
-	}
-
-	string SystemInfo::getJavaConfiguration() {
-		string value = getValue("system.javaConfiguration");
-		if (value == "") {
-			return "0";
-		}
-
-		return value;
-	}
-
-	string SystemInfo::getJavaProfile() {
-		string value = getValue("system.javaProfile");
-		if (value == "") {
-			return "0";
-		}
-
-		return value;
-	}
-
-	string SystemInfo::getLuaVersion() {
-		return (string)("5.1");
-	}
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
+GINGA_CTXMGMT_END

@@ -64,6 +64,13 @@ using namespace std;
 #include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_USE
 
+// Typedefs.
+typedef void *UnderlyingWindowID;
+typedef unsigned long GingaWindowID;
+typedef short GingaScreenID;
+typedef unsigned int GingaSurfaceID;
+typedef unsigned int GingaProviderID;
+
 // Namespaces.
 #define NS_BEGIN(t)\
   namespace t {
@@ -98,6 +105,12 @@ XERCES_CPP_NAMESPACE_USE
 #define NS_END7 }}}}}}}
 #define NS_END8 }}}}}}}}
 
+#define GINGA_BEGIN         NS_BEGIN (ginga)
+#define GINGA_END           NS_END
+#define GINGA_CTXMGMT_BEGIN NS_BEGIN2 (ginga, ctxmgmt)
+#define GINGA_CTXMGMT_END   NS_END2
+
+
 #define BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN\
   NS_BEGIN4 (br, pucrio, telemidia, converter)
 

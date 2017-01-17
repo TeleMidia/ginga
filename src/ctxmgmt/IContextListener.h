@@ -15,20 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _IContextListener_H_
-#define _IContextListener_H_
+#ifndef I_CONTEXT_LISTENER_H
+#define I_CONTEXT_LISTENER_H
 
-#include <string>
-using namespace std;
+#include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+GINGA_CTXMGMT_BEGIN
 
-  class IContextListener {
-	public:
-		virtual ~IContextListener(){};
-		virtual void receiveGlobalAttribution(
-				string propertyName, string value)=0;
-  };
+class IContextListener
+{
+public:
+  virtual ~IContextListener(){};
+  virtual void receiveGlobalAttribution(string propertyName,
+                                        string value)=0;
+};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
-#endif /*_IContextListener_H_*/
+GINGA_CTXMGMT_END
+
+#endif /* I_CONTEXT_LISTENER_H */

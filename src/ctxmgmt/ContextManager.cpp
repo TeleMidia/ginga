@@ -17,20 +17,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "ContextManager.h"
+
 #include "GingaUser.h"
 #include "SystemInfo.h"
 
+#include "system/Thread.h"
+using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia::util;
+using namespace ::br::pucrio::telemidia;
 
-#include <sys/types.h>
-#include <stdio.h>
-
-#include <iostream>
-#include <fstream>
-using namespace std;
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
+GINGA_CTXMGMT_BEGIN
 
 	ContextManager* ContextManager::_instance = NULL;
 
@@ -466,4 +463,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_BEGIN
 		Thread::mutexUnlock(&groupsMutex);
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_CONTEXTMANAGER_END
+GINGA_CTXMGMT_END
