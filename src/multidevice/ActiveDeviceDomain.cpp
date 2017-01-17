@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ActiveDeviceService.h"
 #include "MulticastSocketService.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	ActiveDeviceDomain::ActiveDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
 		clog << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
@@ -178,4 +178,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		DeviceDomain::checkDomainTasks();
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

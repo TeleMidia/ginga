@@ -42,7 +42,7 @@ typedef int socklen_t;
 #include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 
 	static UDPSocket* udpSocket;
@@ -288,4 +288,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		return true;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <iostream>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	PassiveDeviceService::PassiveDeviceService() : DeviceService() {
 		serviceClass = DeviceDomain::CT_PASSIVE;
@@ -112,4 +112,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		return false;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

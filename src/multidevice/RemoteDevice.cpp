@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "multidevice/RemoteDevice.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	RemoteDevice::RemoteDevice(unsigned int address, int deviceClass) {
 		this->address = address;
@@ -49,4 +49,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		*height = this->height;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

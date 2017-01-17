@@ -27,9 +27,9 @@ using namespace ::ginga::util;
 #include <iostream>
 using namespace std;
 
-using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+using namespace ::ginga::multidevice;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	RemoteDeviceManager* RemoteDeviceManager::_instance = NULL;
 
@@ -179,4 +179,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		clog << "RemoteDeviceManager::run All done!" << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

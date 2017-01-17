@@ -32,7 +32,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "IRemoteDeviceListener.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	class TCPClientConnection : public Thread  {
 		private:
@@ -60,5 +60,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 			void release();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /* TCPCLIENTCONNECTION_H_ */

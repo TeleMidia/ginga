@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "BroadcastDualSocketService.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 BroadcastDualSocketService::BroadcastDualSocketService
 (unsigned int readPort, unsigned int writePort) {
@@ -231,4 +231,4 @@ bool BroadcastDualSocketService::checkInputBuffer(char* data, int* size) {
   return true;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

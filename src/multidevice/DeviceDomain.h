@@ -27,7 +27,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NetworkUtil.h"
 #include "RemoteEventService.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 class DeviceDomain
 {
@@ -125,6 +125,6 @@ public:
   virtual void removeDeviceListener(IRemoteDeviceListener* listener);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 
 #endif /* DEVICE_DOMAIN_H */

@@ -33,7 +33,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <map>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
   class DeviceService {
 	protected:
@@ -77,5 +77,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 				int streamSize)=0;
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /*_BaseDeviceService_H_*/

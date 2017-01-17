@@ -33,7 +33,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include <stdio.h>
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	char DeviceDomain::headerStream[HEADER_SIZE];
 	char* DeviceDomain::mdFrame           = new char[MAX_FRAME_SIZE];
@@ -301,4 +301,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

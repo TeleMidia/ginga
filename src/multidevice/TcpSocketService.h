@@ -25,7 +25,7 @@ using namespace std;
 #include "IRemoteDeviceListener.h"
 #include "TcpClientConnection.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	class TcpSocketService {
 		private:
@@ -48,5 +48,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 	};
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /* TCPSOCKETSERVICE_H_ */

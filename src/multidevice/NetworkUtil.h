@@ -31,7 +31,7 @@ using namespace ::ginga::util;
 #include <iostream>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	static const unsigned int BROADCAST_PORT = 41000;
 	static const string PASSIVE_MCAST_ADDR      = "239.10.10.3";
@@ -62,5 +62,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 			int mountFrameType,
 			unsigned int payloadSize);
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /*_NetworkUtil_H_*/

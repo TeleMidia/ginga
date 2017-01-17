@@ -34,7 +34,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 
 typedef struct {
@@ -85,5 +85,5 @@ typedef struct {
 		virtual void checkDomainTasks();
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /*_BaseDeviceDomain_H_*/
