@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia;

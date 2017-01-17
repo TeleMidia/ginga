@@ -28,7 +28,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "mb/SDLWindow.h"
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "ImagePlayer.h"
 

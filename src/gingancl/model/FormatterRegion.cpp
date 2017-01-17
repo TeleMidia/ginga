@@ -27,7 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 

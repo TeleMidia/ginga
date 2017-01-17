@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _SELECTIONEVENT_H_
 
 #include "mb/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "ncl/interfaces/ContentAnchor.h"
 using namespace ::br::pucrio::telemidia::ncl::interfaces;

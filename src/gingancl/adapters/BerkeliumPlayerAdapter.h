@@ -28,7 +28,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "mb/LocalScreenManager.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include <string>
 #include <iostream>

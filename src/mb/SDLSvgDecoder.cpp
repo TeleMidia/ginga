@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
    
     SDLSvgDecoder::SDLSvgDecoder(string filename) {
@@ -94,4 +94,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

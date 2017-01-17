@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "model/CascadingDescriptor.h"
 #include "model/ExecutionObject.h"

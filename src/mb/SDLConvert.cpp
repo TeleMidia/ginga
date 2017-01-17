@@ -31,7 +31,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace std;
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 
 #if !defined(_MSC_VER) && (WITH_MULTIDEVICE == 1)
@@ -245,4 +245,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		return -1;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END

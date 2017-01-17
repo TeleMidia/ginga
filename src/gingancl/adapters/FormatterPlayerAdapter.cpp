@@ -26,7 +26,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "mb/ScreenManagerFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "player/Player.h"
 

@@ -158,7 +158,7 @@ extern "C" {
 #include <set>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	typedef struct MyAVPacketList {
 		AVPacket pkt;
@@ -543,5 +543,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 				AVCodec *codec);
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /* SDL2FFMPEG_H */

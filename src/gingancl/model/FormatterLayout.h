@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTERLAYOUT_H_
 
 #include "mb/SDLSurface.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "ncl/layout/LayoutRegion.h"
 using namespace ::br::pucrio::telemidia::ncl::layout;

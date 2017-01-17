@@ -23,7 +23,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::player;
 
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "gingancl/FormatterMediator.h"
 

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ScreenManagerFactory.h"
 
-using namespace br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 LocalScreenManager* ScreenManagerFactory::_instance = NULL;
 

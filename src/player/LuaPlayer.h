@@ -22,10 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
 #include "mb/InputManager.h"
-using namespace::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "system/SystemCompat.h"
-using namespace::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_PLAYER_BEGIN
 

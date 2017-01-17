@@ -31,7 +31,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "mb/LocalScreenManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"
-using namespace ::br::pucrio::telemidia::ginga::core::mb;
+using namespace ::ginga::mb;
 
 #include "IPlayer.h"
 

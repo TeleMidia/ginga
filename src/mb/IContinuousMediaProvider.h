@@ -30,7 +30,7 @@ extern "C" {
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	class IContinuousMediaProvider : public IMediaProvider {
 		public:
@@ -58,5 +58,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 			virtual void refreshDR(void* data)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
 #endif /*ICONTINUOUSMEDIAPROVIDER_H_*/

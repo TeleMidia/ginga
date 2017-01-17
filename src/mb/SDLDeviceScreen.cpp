@@ -43,7 +43,7 @@ extern "C" {
 # include <X11/Xatom.h>
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
+GINGA_MB_BEGIN
 
 	map<SDLDeviceScreen*, short> SDLDeviceScreen::sdlScreens;
 	bool SDLDeviceScreen::hasRenderer = false;
@@ -3140,4 +3140,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_BEGIN
 		unlockSDL();
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MB_END
+GINGA_MB_END
