@@ -34,7 +34,7 @@ static char receivedControlFrameId = -2;
 static char sendingDataFrameId      = -1;
 static char receivedDataFrameId    = -2;*/
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 	bool isValidRecvFrame(int recvFrom, int myIP, char* frame) {
 		//ATS: if the recvFrom = myIP the frame is sent along, in order to be validated based on its destClass
@@ -187,4 +187,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		return frame;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

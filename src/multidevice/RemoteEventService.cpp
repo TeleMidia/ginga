@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ctxmgmt/ContextManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 
 	ContextManager* RemoteEventService::contextManager = NULL;
@@ -253,4 +253,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

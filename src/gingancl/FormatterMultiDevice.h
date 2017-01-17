@@ -28,7 +28,7 @@ using namespace ::ginga::mb;
 #include "multidevice/DeviceDomain.h"
 #include "multidevice/RemoteDeviceManager.h"
 #include "multidevice/IRemoteDeviceListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+using namespace ::ginga::multidevice;
 #else
 class DeviceDomain
 {

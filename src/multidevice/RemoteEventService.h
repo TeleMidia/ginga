@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ctxmgmt/ContextManager.h"
 using namespace ::ginga::ctxmgmt;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 class RemoteEventService : public IRemoteDeviceListener
 {
@@ -57,6 +57,6 @@ public:
                           string eventContent);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 
 #endif /* REMOTE_EVENT_SERVICE_H */

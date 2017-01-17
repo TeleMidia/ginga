@@ -24,7 +24,7 @@ using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
 # include "multidevice/DeviceDomain.h"
-using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+using namespace ::ginga::multidevice;
 #endif
 
 #include "FormatterConverter.h"

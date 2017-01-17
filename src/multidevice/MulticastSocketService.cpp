@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "MulticastSocketService.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
 MulticastSocketService::MulticastSocketService(
                                                char* groupAddr,
@@ -265,4 +265,4 @@ bool MulticastSocketService::checkInputBuffer(char* data, int* size) {
   return true;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END

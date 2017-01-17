@@ -31,7 +31,7 @@ using namespace ::ginga::ctxmgmt;
 
 #if WITH_MULTIDEVICE
 # include "multidevice/DeviceDomain.h"
-using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+using namespace ::ginga::multidevice;
 #endif
 
 #include "system/Thread.h"
@@ -44,7 +44,7 @@ using namespace ::ginga::ctxmgmt;
 
 #if WITH_MULTIDEVICE
 #include "multidevice/DeviceDomain.h"
-using namespace ::br::pucrio::telemidia::ginga::core::multidevice;
+using namespace ::ginga::multidevice;
 #endif
 
 #include <set>

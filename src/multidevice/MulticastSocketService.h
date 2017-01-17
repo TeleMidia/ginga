@@ -37,7 +37,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
+GINGA_MULTIDEVICE_BEGIN
 
   class MulticastSocketService : public ISocketService {
 	private:
@@ -82,5 +82,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_BEGIN
 		bool checkInputBuffer(char* data, int* size);
   };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_MULTIDEVICE_END
+GINGA_MULTIDEVICE_END
 #endif /*_MulticastSocketService_H_*/
