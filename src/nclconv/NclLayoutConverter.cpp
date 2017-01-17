@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLayoutConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclLayoutConverter::NclLayoutConverter(
 		     DocumentParser *documentParser, IDeviceLayout* deviceLayout) :
@@ -297,4 +297,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			return false;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

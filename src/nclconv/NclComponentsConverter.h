@@ -54,10 +54,10 @@ using namespace std;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclComponentsParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "NclPresentationSpecConverter.h"
 #include "NclLinkingConverter.h"
@@ -67,7 +67,7 @@ using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclComponentsConverter : public NclComponentsParser {
 	/*tabela com a lista dos elementos q devem ser compilados ao fim do
@@ -110,5 +110,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		void *createMedia(DOMElement *parentElement, void *objGrandParent);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif //NclComponentsConverter

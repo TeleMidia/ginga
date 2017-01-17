@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclStructureParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclStructureParser::NclStructureParser(
 		    DocumentParser *documentParser) :
@@ -429,4 +429,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
 		this->metainformationParser = metainformationParser;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
+GINGA_NCLCONV_END

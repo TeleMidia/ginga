@@ -17,10 +17,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "nclconv/IDocumentConverter.h"
-using namespace ::br::pucrio::telemidia::converter;
+using namespace ::ginga::nclconv;
 
 #include "nclconv/NclDocumentConverter.h"
-using namespace ::br::pucrio::telemidia::converter::ncl;
+using namespace ::ginga::nclconv;
 
 #include "PrivateBaseContext.h"
 

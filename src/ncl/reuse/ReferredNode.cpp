@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/reuse/ReferredNode.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	ReferredNode::ReferredNode(string id, void* element) : Entity(id) {
 		referElement = element;
@@ -29,4 +29,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_BEGIN
 		return referElement;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_END
+GINGA_NCLCONV_END

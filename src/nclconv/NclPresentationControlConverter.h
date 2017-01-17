@@ -49,10 +49,10 @@ using namespace std;
 
 #include "ModuleParser.h"
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclPresentationControlParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "NclPresentationSpecConverter.h"
 #include "NclComponentsConverter.h"
@@ -60,7 +60,7 @@ using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclPresentationControlConverter : public NclPresentationControlParser {
 	// tabelas com componentes e regras de cada switch
@@ -137,5 +137,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		short convertComparator(string comparator);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif

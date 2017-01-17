@@ -119,42 +119,14 @@ typedef unsigned int GingaProviderID;
 #define GINGA_MB_END            NS_END2
 #define GINGA_MULTIDEVICE_BEGIN NS_BEGIN2 (ginga, multidevice)
 #define GINGA_MULTIDEVICE_END   NS_END2
+#define GINGA_NCLCONV_BEGIN     NS_BEGIN2 (ginga, nclconv)
+#define GINGA_NCLCONV_END       NS_END2
 #define GINGA_PLAYER_BEGIN      NS_BEGIN2 (ginga, player)
 #define GINGA_PLAYER_END        NS_END2
 #define GINGA_UTIL_BEGIN        NS_BEGIN2 (ginga, util)
 #define GINGA_UTIL_END          NS_END2
 
 
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN\
-  NS_BEGIN4 (br, pucrio, telemidia, converter)
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_END\
-  NS_END4
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, converter, framework)
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN\
-  NS_BEGIN6 (br, pucrio, telemidia, converter, framework, ncl)
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END\
-  NS_END6
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, converter, ncl)
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_BEGIN\
-  NS_BEGIN6 (br, pucrio, telemidia, converter, ncl, reuse)
-
-#define BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_END\
-  NS_END6
-
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN\
   NS_BEGIN6 (br, pucrio, telemidia, ginga, core, dataprocessing)
 

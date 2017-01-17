@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclDocumentParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclDocumentParser::NclDocumentParser() : DocumentParser() {
 		this->deviceLayout                    = NULL;
@@ -204,4 +204,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
+GINGA_NCLCONV_END

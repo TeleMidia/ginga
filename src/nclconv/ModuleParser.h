@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DocumentParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	class ModuleParser {
 		protected:
@@ -41,5 +41,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
 			}
 	};
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END
+GINGA_NCLCONV_END
 #endif

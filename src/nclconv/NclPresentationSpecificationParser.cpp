@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationSpecificationParser.h"
 #include "NclPresentationControlParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclPresentationSpecificationParser::NclPresentationSpecificationParser(
 		    DocumentParser *documentParser) : ModuleParser(documentParser) {
@@ -168,4 +168,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
 		this->presentationControlParser = presentationControlParser;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
+GINGA_NCLCONV_END

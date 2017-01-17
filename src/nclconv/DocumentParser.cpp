@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DocumentParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	DocumentParser::DocumentParser() {
 		genericTable = new map<string, void*>;
@@ -405,4 +405,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
 		return true;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END
+GINGA_NCLCONV_END

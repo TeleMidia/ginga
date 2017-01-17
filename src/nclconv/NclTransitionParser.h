@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ModuleParser.h"
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
@@ -31,7 +31,7 @@ using namespace std;
 
 #include "NclImportParser.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	class NclTransitionParser : public ModuleParser {
 		private:
@@ -63,5 +63,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
 			void setImportParser(NclImportParser *importParser);
 	};
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
+GINGA_NCLCONV_END
 #endif //NCLTRANSITIONPARSER_H_

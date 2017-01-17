@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclComponentsConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclComponentsConverter::NclComponentsConverter(
 		    DocumentParser *documentParser) :
@@ -208,7 +208,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 					referNode = (ContextNode*)(document->getNode(attValue));
 					if (referNode == NULL) {
-						referNode = (Entity*)(new reuse::ReferredNode(
+						referNode = (Entity*)(new ReferredNode(
 								attValue, (void*)parentElement));
 					}
 				}
@@ -381,7 +381,7 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 					referNode = (ContentNode*)document->getNode(attValue);
 					if (referNode == NULL) {
-						referNode = new reuse::ReferredNode(
+						referNode = new ReferredNode(
 								attValue, (void*)parentElement);
 					}
 				}
@@ -478,4 +478,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		return node;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
