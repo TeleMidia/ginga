@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclInterfacesConverter.h"
 #include "NclDocumentConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclInterfacesConverter::NclInterfacesConverter(
 		    DocumentParser *documentParser) :
@@ -486,4 +486,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		((SwitchPort*) parentObject)->addPort((Port*) childObject);
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

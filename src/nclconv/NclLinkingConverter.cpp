@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkingConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclLinkingConverter::NclLinkingConverter(
 		    DocumentParser *documentParser,
@@ -296,4 +296,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

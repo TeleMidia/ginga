@@ -27,10 +27,10 @@ using namespace ::br::pucrio::telemidia::ncl;
 using namespace ::br::pucrio::telemidia::ncl::transition;
 
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclTransitionParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include <map>
 using namespace std;
@@ -42,7 +42,7 @@ using namespace ::ginga::util;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclTransitionConverter : public NclTransitionParser {
   	public:
@@ -60,5 +60,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			    void* parentObject, void* childObject);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif // NclTransitionConverter_H

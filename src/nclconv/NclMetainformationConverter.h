@@ -23,10 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ncl::metainformation;
 
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclMetainformationParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include <map>
 #include <string>
@@ -35,7 +35,7 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
    class NclMetainformationConverter : public NclMetainformationParser {
   	public:
@@ -47,5 +47,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			    DOMElement *parentElement, void *objGrandParent);
 	};
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif //NclMetainformationConverter_H

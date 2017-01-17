@@ -34,10 +34,10 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclStructureParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include <string>
 using namespace std;
@@ -53,7 +53,7 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclStructureConverter : public NclStructureParser {
 	public:
@@ -102,5 +102,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		void addMetadataToHead(void* parentObject, void* childObject);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif //NCLNCMSTRUCTURECOMPILER_H

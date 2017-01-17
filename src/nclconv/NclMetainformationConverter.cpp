@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclMetainformationConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclMetainformationConverter::NclMetainformationConverter(
 		    DocumentParser *documentParser) : NclMetainformationParser(
@@ -62,4 +62,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		return (void*)metadata;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "XMLParsing.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_BEGIN
+GINGA_NCLCONV_BEGIN
 
 class DocumentParser
 {
@@ -74,6 +74,6 @@ public:
   bool importDocument(DocumentParser* parser, string docLocation);
 };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_END
+GINGA_NCLCONV_END
 
 #endif /* DOCUMENT_PARSER_H */

@@ -23,10 +23,10 @@ using namespace ::br::pucrio::telemidia::ncl::components;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclDocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "ncl/NclDocument.h"
 #include "ncl/IPrivateBaseContext.h"
@@ -40,7 +40,7 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclDocumentConverter : public IDocumentConverter,
 		  public NclDocumentParser {
@@ -82,5 +82,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		}
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif

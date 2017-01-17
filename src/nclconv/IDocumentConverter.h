@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ncl;
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class IDocumentConverter {
 	public:
@@ -40,5 +40,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_BEGIN
 				string entityLocation, NclDocument* document, void* parent)=0;
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_END
+GINGA_NCLCONV_END
 #endif //IDocumentConverter_H

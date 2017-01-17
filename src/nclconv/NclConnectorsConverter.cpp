@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclConnectorsConverter.h"
 #include "NclDocumentConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclConnectorsConverter::NclConnectorsConverter(
 		    DocumentParser* documentParser) : NclConnectorsParser(
@@ -737,4 +737,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		return NULL;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

@@ -39,10 +39,10 @@ using namespace ::br::pucrio::telemidia::ncl::interfaces;
 using namespace ::br::pucrio::telemidia::ncl::components;
 
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclInterfacesParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
@@ -53,7 +53,7 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclInterfacesConverter : public NclInterfacesParser {
 	public:
@@ -72,5 +72,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		void addMappingToSwitchPort(void *parentObject, void *childObject);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif

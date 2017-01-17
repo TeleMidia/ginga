@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "../Entity.h"
 using namespace ::br::pucrio::telemidia::ncl;
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class ReferredNode : public Entity {
 	private:
@@ -32,5 +32,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_BEGIN
 		void* getReferElement();
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_REUSE_END
+GINGA_NCLCONV_END
 #endif /*REFERREDNODE_H_*/

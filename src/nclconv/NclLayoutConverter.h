@@ -29,10 +29,10 @@ using namespace ::br::pucrio::telemidia::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclLayoutParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "NclImportConverter.h"
 
@@ -43,7 +43,7 @@ using namespace std;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclLayoutConverter : public NclLayoutParser {
 	private:
@@ -65,5 +65,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		bool isPercentualValue(string value);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif

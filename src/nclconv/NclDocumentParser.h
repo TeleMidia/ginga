@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLDOCUMENTPARSER_H_
 
 #include "DocumentParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclConnectorsParser.h"
 #include "NclImportParser.h"
@@ -43,7 +43,7 @@ XERCES_CPP_NAMESPACE_USE
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
    class NclDocumentParser : public DocumentParser {
 	protected:
@@ -106,5 +106,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_BEGIN
 		virtual void initialize()=0;
    };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_FRAMEWORK_NCL_END
+GINGA_NCLCONV_END
 #endif /*NCLDOCUMENTPARSER_H_*/

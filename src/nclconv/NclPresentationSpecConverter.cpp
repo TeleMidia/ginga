@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
 	NclPresentationSpecConverter::NclPresentationSpecConverter(
 		    DocumentParser *documentParser, IDeviceLayout* deviceLayout) :
@@ -379,4 +379,4 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 		return descriptor;
 	}
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END

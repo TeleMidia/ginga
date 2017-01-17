@@ -53,10 +53,10 @@ using namespace ::br::pucrio::telemidia::ncl::transition;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework;
+using namespace ::ginga::nclconv;
 
 #include "NclPresentationSpecificationParser.h"
-using namespace ::br::pucrio::telemidia::converter::framework::ncl;
+using namespace ::ginga::nclconv;
 
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
@@ -64,7 +64,7 @@ using namespace ::br::pucrio::telemidia::converter::framework::ncl;
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
+GINGA_NCLCONV_BEGIN
 
   class NclPresentationSpecConverter
 		: public NclPresentationSpecificationParser {
@@ -101,5 +101,5 @@ BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_BEGIN
 			    DOMElement *parentElement, void *objGrandParent);
   };
 
-BR_PUCRIO_TELEMIDIA_CONVERTER_NCL_END
+GINGA_NCLCONV_END
 #endif //NclPresentationSpecConverter_H
