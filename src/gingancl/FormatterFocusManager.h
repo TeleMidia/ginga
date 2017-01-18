@@ -42,7 +42,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "model/FormatterRegion.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include "adaptation/PresentationContext.h"
+#include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "adapters/FormatterPlayerAdapter.h"

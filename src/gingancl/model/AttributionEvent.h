@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/adaptation/PresentationContext.h"
+#include "gingancl/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "FormatterEvent.h"

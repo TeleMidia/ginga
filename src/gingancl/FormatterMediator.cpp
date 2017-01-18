@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PrefetchManager.h"
 #include "FormatterBaseDevice.h"
 
-#include "adaptation/PresentationContext.h"
+#include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "system/GingaLocatorFactory.h"

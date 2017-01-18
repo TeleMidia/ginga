@@ -80,7 +80,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "model/NodeNesting.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "adaptation/RuleAdapter.h"
+#include "RuleAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "adapters/PlayerAdapterManager.h"

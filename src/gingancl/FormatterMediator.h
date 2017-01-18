@@ -90,7 +90,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "model/LinkAssignmentAction.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
-#include "adaptation/RuleAdapter.h"
+#include "RuleAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "ObjectCreationForbiddenException.h"
