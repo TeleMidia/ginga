@@ -24,7 +24,8 @@ using namespace ::ginga::tsparser;
 /*
  * A Lua Node can register himself to handle EPG events (class='si',
  * type='epg').
- * Doing this, his associated Lua Player becames an IEPGListener. The standard
+ * Doing this, his associated Lua Player becames an IEPGListener. The
+ * standard
  * defines 3 main types that a Lua Node can request EPG events.
  *
  * 1) stage='current', fields={field_1, field_2,...field_j}
@@ -48,7 +49,8 @@ struct Request
 
   string startTime;
   string endTime;
-  /* only if stage==schedule, requesting events with startTime and endTime in
+  /* only if stage==schedule, requesting events with startTime and endTime
+  * in
   * the range specified by this startTime and this endTime*/
 
   vector<string> fields;

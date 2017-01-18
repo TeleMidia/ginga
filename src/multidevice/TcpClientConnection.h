@@ -46,8 +46,9 @@ private:
   unsigned int orderId;
 
 public:
-  TCPClientConnection (unsigned int devid, unsigned int index, char *hostname,
-                       char *port_str, IRemoteDeviceListener *srv);
+  TCPClientConnection (unsigned int devid, unsigned int index,
+                       char *hostname, char *port_str,
+                       IRemoteDeviceListener *srv);
   virtual ~TCPClientConnection ();
   bool post (char *str);
   void release ();

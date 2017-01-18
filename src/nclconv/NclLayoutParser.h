@@ -37,10 +37,12 @@ private:
 public:
   NclLayoutParser (DocumentParser *documentParser);
   void *parseRegion (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createRegion (DOMElement *parentElement, void *objGrandParent)
+  virtual void *createRegion (DOMElement *parentElement,
+                              void *objGrandParent)
       = 0;
 
-  virtual void addRegionToRegion (void *parentObject, void *childObject) = 0;
+  virtual void addRegionToRegion (void *parentObject, void *childObject)
+      = 0;
   void *parseRegionBase (DOMElement *parentElement, void *objGrandParent);
   virtual void *createRegionBase (DOMElement *parentElement,
                                   void *objGrandParent)

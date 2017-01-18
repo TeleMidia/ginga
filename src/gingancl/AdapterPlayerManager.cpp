@@ -107,7 +107,8 @@ AdapterPlayerManager::getNclPlayerData ()
 }
 
 void
-AdapterPlayerManager::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
+AdapterPlayerManager::setTimeBaseProvider (
+    ITimeBaseProvider *timeBaseProvider)
 {
 
   this->timeBaseProvider = timeBaseProvider;
@@ -226,8 +227,8 @@ AdapterPlayerManager::initializePlayer (ExecutionObject *object)
   g_assert_nonnull (entity);
   g_assert (entity->instanceOf ("ContentNode"));
 
-  if (((ContentNode *) entity)->isSettingNode ())
-    return NULL;                // nothing to do
+  if (((ContentNode *)entity)->isSettingNode ())
+    return NULL; // nothing to do
 
   content = entity->getContent ();
   g_assert (content != NULL);
@@ -259,7 +260,7 @@ AdapterPlayerManager::initializePlayer (ExecutionObject *object)
         }
     }
 
-  buf = ((ContentNode *) entity)->getNodeType ();
+  buf = ((ContentNode *)entity)->getNodeType ();
   mime = buf.c_str ();
   g_assert_nonnull (mime);
 
@@ -305,8 +306,8 @@ AdapterPlayerManager::initializePlayer (ExecutionObject *object)
     }
   else
     {
-      g_warning ("unknown mime \"%s\", skipping object id=%s",
-                 mime, id.c_str ());
+      g_warning ("unknown mime \"%s\", skipping object id=%s", mime,
+                 id.c_str ());
       return NULL;
     }
 
@@ -315,10 +316,10 @@ done:
   objectPlayers[id] = adapter;
   playerNames[adapter] = classname;
 
-  g_debug ("%s allocated for object id=%s) ",
-           classname.c_str (), id.c_str ());
+  g_debug ("%s allocated for object id=%s) ", classname.c_str (),
+           id.c_str ());
 
-  return (AdapterFormatterPlayer *) adapter;
+  return (AdapterFormatterPlayer *)adapter;
 }
 
 void *
@@ -427,8 +428,9 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
               if (pos != std::string::npos)
                 {
                   pos++;
-                  mediaType = ContentTypeManager::getInstance ()->getMimeType (
-                      url.substr (pos, url.length () - pos));
+                  mediaType
+                      = ContentTypeManager::getInstance ()->getMimeType (
+                          url.substr (pos, url.length () - pos));
 
                   return isEmbeddedAppMediaType (mediaType);
                 }

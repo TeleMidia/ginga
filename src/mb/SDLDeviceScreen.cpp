@@ -382,8 +382,8 @@ SDLDeviceScreen::setEmbedFromParent (string parentCoords)
       uEmbedY = ::ginga::util::stof ((*params)[3]);
       uEmbedW = ::ginga::util::stof ((*params)[4]);
       uEmbedH = ::ginga::util::stof ((*params)[5]);
-      uEmbedId = createUnderlyingSubWindow (uParentId, spec, uEmbedX, uEmbedY,
-                                            uEmbedW, uEmbedH, 1.0);
+      uEmbedId = createUnderlyingSubWindow (uParentId, spec, uEmbedX,
+                                            uEmbedY, uEmbedW, uEmbedH, 1.0);
     }
 
   delete params;
@@ -502,7 +502,8 @@ SDLDeviceScreen::getIWindowFromId (GingaWindowID winId)
 }
 
 bool
-SDLDeviceScreen::mergeIds (GingaWindowID destId, vector<GingaWindowID> *srcIds)
+SDLDeviceScreen::mergeIds (GingaWindowID destId,
+                           vector<GingaWindowID> *srcIds)
 {
 
   map<GingaWindowID, SDLWindow *>::iterator i;
@@ -654,7 +655,8 @@ SDLDeviceScreen::createWindow (int x, int y, int w, int h, float z)
 
   Thread::mutexLock (&winMutex);
 
-  iWin = new SDLWindow ((GingaWindowID)winIdRefCounter, 0, id, x, y, w, h, z);
+  iWin = new SDLWindow ((GingaWindowID)winIdRefCounter, 0, id, x, y, w, h,
+                        z);
 
   windowRefs[(GingaWindowID)winIdRefCounter] = iWin;
 
@@ -707,8 +709,8 @@ MyWndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 UnderlyingWindowID
 SDLDeviceScreen::createUnderlyingSubWindow (UnderlyingWindowID parent,
-                                            string spec, int x, int y, int w,
-                                            int h, float z)
+                                            string spec, int x, int y,
+                                            int w, int h, float z)
 {
 
   UnderlyingWindowID uWin = NULL;
@@ -742,12 +744,14 @@ SDLDeviceScreen::createUnderlyingSubWindow (UnderlyingWindowID parent,
 // 				h,                      /* h */
 // 				0,                      /* border_width */
 // 				blackColor,             /* border_color */
-// 				blackColor);            /* background_color */
+// 				blackColor);            /* background_color
+// */
 
 // 		XSync(xDisplay, 0);
 
 // 		if (uWin == NULL) {
-// 			clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning!
+// 			clog << "SDLDeviceScreen::createUnderlyingSubWindow
+// Warning!
 // ";
 // 			clog << "Can't create embed child window" << endl;
 // 			return NULL;
@@ -815,7 +819,8 @@ SDLDeviceScreen::createUnderlyingSubWindow (UnderlyingWindowID parent,
       // procedure.
       ShowWindow ((HWND)uWin, 1);
       UpdateWindow ((HWND)uWin);
-      clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created '";
+      clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created "
+              "'";
       clog << (void *)uWin << "'";
       clog << endl;
     }
@@ -1020,7 +1025,8 @@ SDLDeviceScreen::releaseSurface (SDLSurface *s)
 
 /* interfacing content */
 IContinuousMediaProvider *
-SDLDeviceScreen::createContinuousMediaProvider (const char *mrl, bool isRemote)
+SDLDeviceScreen::createContinuousMediaProvider (const char *mrl,
+                                                bool isRemote)
 {
 
   IContinuousMediaProvider *provider;
@@ -1201,7 +1207,8 @@ SDLDeviceScreen::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 }
 
 void
-SDLDeviceScreen::createReleaseContainer (SDL_Surface *uSur, SDL_Texture *uTex,
+SDLDeviceScreen::createReleaseContainer (SDL_Surface *uSur,
+                                         SDL_Texture *uTex,
                                          IMediaProvider *iDec)
 {
 
@@ -1228,8 +1235,8 @@ SDLDeviceScreen::checkSDLInit ()
 
   if (subsystem_init == 0)
     {
-      if (SDL_Init ((Uint32) (SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_TIMER
-                              | SDL_INIT_NOPARACHUTE))
+      if (SDL_Init ((Uint32) (SDL_INIT_AUDIO | SDL_INIT_VIDEO
+                              | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE))
           != 0)
         {
 
@@ -1297,7 +1304,8 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
 
   if (s->uEmbedId != NULL)
     {
-      if (event->type == SDL_WINDOWEVENT && event->window.windowID == s->sdlId)
+      if (event->type == SDL_WINDOWEVENT
+          && event->window.windowID == s->sdlId)
         {
 
           switch (event->window.event)
@@ -1489,8 +1497,9 @@ SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
       if (token != std::string::npos)
         {
           int x = atoi (args.substr (0, token).c_str ());
-          int y = atoi (
-              args.substr (token + 1, args.length () - (token + 1)).c_str ());
+          int y
+              = atoi (args.substr (token + 1, args.length () - (token + 1))
+                          .c_str ());
           ie.type = SDL_MOUSEBUTTONUP;
           ie.button.x = x;
           ie.button.y = y;
@@ -1958,7 +1967,8 @@ SDLDeviceScreen::initEmbed (SDLDeviceScreen *s, UnderlyingWindowID uWin)
 }
 
 void
-SDLDeviceScreen::forceInputFocus (SDLDeviceScreen *s, UnderlyingWindowID uWin)
+SDLDeviceScreen::forceInputFocus (SDLDeviceScreen *s,
+                                  UnderlyingWindowID uWin)
 {
 
   lockSDL ();
@@ -2140,16 +2150,18 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
   for (int i = 0; i < d; i++)
     {
       SDL_GetRenderDriverInfo (i, &info);
-      clog << "SDLDeviceScreen::initScreen renderer driver: (" << i << ") = '"
-           << info.name << "'";
+      clog << "SDLDeviceScreen::initScreen renderer driver: (" << i
+           << ") = '" << info.name << "'";
       clog << endl;
     }
 
-  s->renderer = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_ACCELERATED);
+  s->renderer
+      = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_ACCELERATED);
 
   if (s->renderer == NULL)
     {
-      clog << "SDLDeviceScreen::initScreen Warning! Can't create accelerated "
+      clog << "SDLDeviceScreen::initScreen Warning! Can't create "
+              "accelerated "
               "renderer";
       clog << endl;
 
@@ -2158,8 +2170,9 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
 
       if (s->renderer == NULL)
         {
-          clog << "SDLDeviceScreen::initScreen Warning! Can't create target "
-                  "renderer";
+          clog
+              << "SDLDeviceScreen::initScreen Warning! Can't create target "
+                 "renderer";
           clog << endl;
           s->renderer
               = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_SOFTWARE);
@@ -3040,8 +3053,8 @@ SDLDeviceScreen::getUnderlyingWindow (GingaWindowID winId)
 }
 
 bool
-SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *srcTxtr,
-                                SDLWindow *dstWin)
+SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
+                                SDL_Texture *srcTxtr, SDLWindow *dstWin)
 {
 
   SDL_Rect dstRect;
@@ -3089,8 +3102,9 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *srcTxtr,
           g = bgColor->getG ();
           b = bgColor->getB ();
 
-          SDL_SetRenderDrawColor (renderer, bgColor->getR (), bgColor->getG (),
-                                  bgColor->getB (), 255 - alpha);
+          SDL_SetRenderDrawColor (renderer, bgColor->getR (),
+                                  bgColor->getG (), bgColor->getB (),
+                                  255 - alpha);
 
           if (SDL_RenderFillRect (renderer, &dstRect) < 0)
             {
@@ -3116,8 +3130,10 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *srcTxtr,
                 {
                 case SDLWindow::DDT_LINE:
                   if ((dd->coord1 < dstRect.x) || (dd->coord2 < dstRect.y)
-                      || (dd->coord1 > dstRect.w) || (dd->coord2 > dstRect.h)
-                      || (dd->coord3 > dstRect.w) || (dd->coord4 > dstRect.h))
+                      || (dd->coord1 > dstRect.w)
+                      || (dd->coord2 > dstRect.h)
+                      || (dd->coord3 > dstRect.w)
+                      || (dd->coord4 > dstRect.h))
                     {
 
                       clog << "SDLDeviceScreen::drawWindow Warning!";
@@ -3403,8 +3419,8 @@ SDLDeviceScreen::createUnderlyingSurface (int width, int height)
   SDL_PixelFormatEnumToMasks (GINGA_PIXEL_FMT, &bpp, &rmask, &gmask, &bmask,
                               &amask);
 
-  newUSur = SDL_CreateRGBSurface (0, width, height, bpp, rmask, gmask, bmask,
-                                  amask);
+  newUSur = SDL_CreateRGBSurface (0, width, height, bpp, rmask, gmask,
+                                  bmask, amask);
 
   SDL_SetColorKey (newUSur, 1, *((Uint8 *)newUSur->pixels));
   unlockSDL ();

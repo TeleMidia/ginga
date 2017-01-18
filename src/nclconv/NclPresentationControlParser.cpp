@@ -68,7 +68,8 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importBase")
               == 0)
             {
 
@@ -80,7 +81,8 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                   addImportBaseToRuleBase (parentObject, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (), "rule")
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "rule")
                    == 0)
             {
 
@@ -153,8 +155,9 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
               == 0)
             {
 
-              elementObject = ((NclComponentsParser *)getComponentsParser ())
-                                  ->parseMedia (element, parentObject);
+              elementObject
+                  = ((NclComponentsParser *)getComponentsParser ())
+                        ->parseMedia (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -166,8 +169,9 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = ((NclComponentsParser *)getComponentsParser ())
-                                  ->parseContext (element, parentObject);
+              elementObject
+                  = ((NclComponentsParser *)getComponentsParser ())
+                        ->parseContext (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -195,11 +199,13 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "bindRule")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "bindRule")
               == 0)
             {
 
-              elementObject = parseBindRule ((DOMElement *)node, parentObject);
+              elementObject
+                  = parseBindRule ((DOMElement *)node, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -211,8 +217,8 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject
-                  = parseDefaultComponent ((DOMElement *)node, parentObject);
+              elementObject = parseDefaultComponent ((DOMElement *)node,
+                                                     parentObject);
 
               if (elementObject != NULL)
                 {
@@ -264,8 +270,8 @@ NclPresentationControlParser::posCompileSwitch (DOMElement *parentElement,
 }
 
 void *
-NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement,
-                                                     void *objGrandParent)
+NclPresentationControlParser::parseDefaultComponent (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   clog << "parseDefaultComponent" << endl;
@@ -313,7 +319,8 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "rule") == 0)
+          if (XMLString::compareIString (elementTagName.c_str (), "rule")
+              == 0)
             {
 
               elementObject = parseRule (element, parentObject);
@@ -341,8 +348,8 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
 }
 
 void *
-NclPresentationControlParser::parseDescriptorSwitch (DOMElement *parentElement,
-                                                     void *objGrandParent)
+NclPresentationControlParser::parseDescriptorSwitch (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   clog << "parseDescriptorSwitch" << endl;
@@ -390,15 +397,18 @@ NclPresentationControlParser::parseDescriptorSwitch (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "bindRule")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "bindRule")
               == 0)
             {
 
-              elementObject = parseBindRule ((DOMElement *)node, parentObject);
+              elementObject
+                  = parseBindRule ((DOMElement *)node, parentObject);
 
               if (elementObject != NULL)
                 {
-                  addBindRuleToDescriptorSwitch (parentObject, elementObject);
+                  addBindRuleToDescriptorSwitch (parentObject,
+                                                 elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -406,8 +416,8 @@ NclPresentationControlParser::parseDescriptorSwitch (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject
-                  = parseDefaultDescriptor ((DOMElement *)node, parentObject);
+              elementObject = parseDefaultDescriptor ((DOMElement *)node,
+                                                      parentObject);
 
               if (elementObject != NULL)
                 {
@@ -470,7 +480,8 @@ NclPresentationControlParser::getImportParser ()
 }
 
 void
-NclPresentationControlParser::setImportParser (NclImportParser *importParser)
+NclPresentationControlParser::setImportParser (
+    NclImportParser *importParser)
 {
 
   this->importParser = importParser;

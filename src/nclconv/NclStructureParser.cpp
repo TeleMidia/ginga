@@ -26,7 +26,8 @@ NclStructureParser::NclStructureParser (DocumentParser *documentParser)
 }
 
 void *
-NclStructureParser::parseBody (DOMElement *parentElement, void *objGrandParent)
+NclStructureParser::parseBody (DOMElement *parentElement,
+                               void *objGrandParent)
 {
 
   void *parentObject;
@@ -57,8 +58,8 @@ NclStructureParser::parseBody (DOMElement *parentElement, void *objGrandParent)
               == 0)
             {
 
-              elementObject
-                  = getComponentsParser ()->parseMedia (element, parentObject);
+              elementObject = getComponentsParser ()->parseMedia (
+                  element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -126,7 +127,8 @@ NclStructureParser::posCompileBody (DOMElement *parentElement,
 }
 
 void *
-NclStructureParser::parseHead (DOMElement *parentElement, void *objGrandParent)
+NclStructureParser::parseHead (DOMElement *parentElement,
+                               void *objGrandParent)
 {
 
   void *parentObject = NULL;
@@ -254,8 +256,9 @@ NclStructureParser::parseHead (DOMElement *parentElement, void *objGrandParent)
     {
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("connectorBase"))
+          && XMLString::compareIString (
+                 ((DOMElement *)node)->getTagName (),
+                 XMLString::transcode ("connectorBase"))
                  == 0)
         {
 
@@ -314,7 +317,8 @@ NclStructureParser::parseHead (DOMElement *parentElement, void *objGrandParent)
 }
 
 void *
-NclStructureParser::parseNcl (DOMElement *parentElement, void *objGrandParent)
+NclStructureParser::parseNcl (DOMElement *parentElement,
+                              void *objGrandParent)
 {
 
   void *parentObject = NULL;
@@ -380,7 +384,8 @@ NclStructureParser::getTransitionParser ()
 }
 
 void
-NclStructureParser::setTransitionParser (NclTransitionParser *transitionParser)
+NclStructureParser::setTransitionParser (
+    NclTransitionParser *transitionParser)
 {
 
   this->transitionParser = transitionParser;
@@ -408,7 +413,8 @@ NclStructureParser::getComponentsParser ()
 }
 
 void
-NclStructureParser::setComponentsParser (NclComponentsParser *componentsParser)
+NclStructureParser::setComponentsParser (
+    NclComponentsParser *componentsParser)
 {
 
   this->componentsParser = componentsParser;
@@ -454,7 +460,8 @@ NclStructureParser::getInterfacesParser ()
 }
 
 void
-NclStructureParser::setInterfacesParser (NclInterfacesParser *interfacesParser)
+NclStructureParser::setInterfacesParser (
+    NclInterfacesParser *interfacesParser)
 {
 
   this->interfacesParser = interfacesParser;
@@ -482,7 +489,8 @@ NclStructureParser::getConnectorsParser ()
 }
 
 void
-NclStructureParser::setConnectorsParser (NclConnectorsParser *connectorsParser)
+NclStructureParser::setConnectorsParser (
+    NclConnectorsParser *connectorsParser)
 {
 
   this->connectorsParser = connectorsParser;

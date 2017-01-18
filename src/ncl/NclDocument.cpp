@@ -73,7 +73,8 @@ NclDocument::getDocumentLocation ()
 }
 
 bool
-NclDocument::addDocument (NclDocument *document, string alias, string location)
+NclDocument::addDocument (NclDocument *document, string alias,
+                          string location)
 {
 
   assert (document != NULL);

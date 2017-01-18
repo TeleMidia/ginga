@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclTransitionConverter::NclTransitionConverter (DocumentParser *documentParser)
+NclTransitionConverter::NclTransitionConverter (
+    DocumentParser *documentParser)
     : NclTransitionParser (documentParser)
 {
 }
@@ -31,7 +32,8 @@ NclTransitionConverter::addTransitionToTransitionBase (void *parentObject,
                                                        void *childObject)
 {
 
-  ((TransitionBase *)parentObject)->addTransition ((Transition *)childObject);
+  ((TransitionBase *)parentObject)
+      ->addTransition ((Transition *)childObject);
 }
 
 void *
@@ -102,7 +104,8 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("dur")));
 
-      dur = ::ginga::util::stof (attValue.substr (0, attValue.length () - 1));
+      dur = ::ginga::util::stof (
+          attValue.substr (0, attValue.length () - 1));
       transition->setDur (dur * 1000);
     }
 
@@ -117,8 +120,8 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("endProgress")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("endProgress")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("endProgress")));
 
       transition->setEndProgress (::ginga::util::stof (attValue));
     }
@@ -137,40 +140,40 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("fadeColor")))
     {
-      color = new Color (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("fadeColor"))));
+      color = new Color (XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("fadeColor"))));
 
       transition->setFadeColor (color);
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("horzRepeat")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("horzRepeat")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("horzRepeat")));
 
       transition->setHorzRepeat ((int)::ginga::util::stof (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("vertRepeat")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("vertRepeat")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("vertRepeat")));
 
       transition->setVertRepeat ((int)::ginga::util::stof (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("borderWidth")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("borderWidth")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("borderWidth")));
 
       transition->setBorderWidth ((int)::ginga::util::stof (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("borderColor")))
     {
-      color = new Color (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("borderColor"))));
+      color = new Color (XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("borderColor"))));
 
       transition->setBorderColor (color);
     }

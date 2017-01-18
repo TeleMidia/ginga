@@ -125,8 +125,8 @@ public:
 protected:
   virtual void run ();
   void handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
-                         int &lastCode, double &pTimeStamp, double &timeStamp,
-                         int &mouseX, int &mouseY);
+                         int &lastCode, double &pTimeStamp,
+                         double &timeStamp, int &mouseX, int &mouseY);
 };
 
 GINGA_MB_END

@@ -149,12 +149,14 @@ SrtPlayer::loadSrt ()
 
           key = trim (line.substr (0, line.find ("-->")));
 
-          value = trim (line.substr ((line.find ("-->") + 3), line.length ()));
+          value = trim (
+              line.substr ((line.find ("-->") + 3), line.length ()));
 
           //				clog << "key = '" << key << "'" <<
-          //endl;
-          //				clog << "value = '" << value << "'" <<
-          //endl;
+          // endl;
+          //				clog << "value = '" << value << "'"
+          //<<
+          // endl;
 
           (*textEvents)[strTimeToFloat (key)] = strTimeToFloat (value);
 
@@ -176,8 +178,9 @@ SrtPlayer::loadSrt ()
                 }
             }
 
-          //				clog << " text = '" << text << "'" <<
-          //endl;
+          //				clog << " text = '" << text << "'"
+          //<<
+          // endl;
           textLines->push_back (text);
           i++;
         }
@@ -471,10 +474,12 @@ SrtPlayer::run ()
 
           mediaTime = (float)(player->getMediaTime ());
           sleepTime = (int)(((show - mediaTime) * 1000000) - 70000);
-          //				clog << "show = '" << show << "' mediaTime = '" <<
-          //mediaTime;
-          //				clog << "' sleepTime = '" << sleepTime << "'" <<
-          //endl;
+          //				clog << "show = '" << show << "' mediaTime = '"
+          //<<
+          // mediaTime;
+          //				clog << "' sleepTime = '" << sleepTime << "'"
+          //<<
+          // endl;
           if (sleepTime > 0)
             {
               Thread::mSleep (sleepTime / 1000);

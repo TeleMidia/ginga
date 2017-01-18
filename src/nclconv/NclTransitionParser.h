@@ -37,7 +37,8 @@ private:
 public:
   NclTransitionParser (DocumentParser *documentParser);
 
-  void *parseTransitionBase (DOMElement *parentElement, void *objGrandParent);
+  void *parseTransitionBase (DOMElement *parentElement,
+                             void *objGrandParent);
 
   virtual void *createTransitionBase (DOMElement *parentElement,
                                       void *objGrandParent)

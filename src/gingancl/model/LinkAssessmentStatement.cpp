@@ -53,7 +53,8 @@ LinkAssessmentStatement::getEvents ()
   vector<FormatterEvent *> *events;
 
   events = new vector<FormatterEvent *>;
-  events->push_back (((LinkAttributeAssessment *)mainAssessment)->getEvent ());
+  events->push_back (
+      ((LinkAttributeAssessment *)mainAssessment)->getEvent ());
 
   if (otherAssessment->instanceOf ("LinkAttributeAssessment"))
     {

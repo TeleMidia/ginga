@@ -166,7 +166,8 @@ EventInfo::setStartTime (char *date)
       // startTime = 0;
       return;
     }
-  mjd = (((startTimeEncoded[0] << 8) & 0xFF00) | (startTimeEncoded[1] & 0xFF));
+  mjd = (((startTimeEncoded[0] << 8) & 0xFF00)
+         | (startTimeEncoded[1] & 0xFF));
 
   startTime = convertMJDtoUTC (mjd);
 
@@ -211,7 +212,8 @@ unsigned int
 EventInfo::getDurationSecs ()
 {
   unsigned int secs = 0;
-  secs = (((duration.tm_hour * 60) + duration.tm_min) * 60) + duration.tm_sec;
+  secs = (((duration.tm_hour * 60) + duration.tm_min) * 60)
+         + duration.tm_sec;
 
   return secs;
 }
@@ -236,7 +238,8 @@ EventInfo::getDurationSecsStr ()
   stringstream str;
   unsigned int secs = 0;
 
-  secs = (((duration.tm_hour * 60) + duration.tm_min) * 60) + duration.tm_sec;
+  secs = (((duration.tm_hour * 60) + duration.tm_min) * 60)
+         + duration.tm_sec;
 
   str << secs;
   return str.str ();
@@ -290,7 +293,8 @@ EventInfo::setDuration (char *dur)
 
 /*
  * Method calcEndTime calculates the end time of an event through start time
- * and duration values, updating correctly minute, hour, day, month and year.
+ * and duration values, updating correctly minute, hour, day, month and
+ * year.
  * minute: 0 - 59, hour: 0 - 23, day: 1 - 31 (restricted to the month),
  * month: 0 - 11 (attention! january = 0, december = 11), year:1900 - ...
  * (values stored are year - 100, ie, for 1900, the stored value is 100).

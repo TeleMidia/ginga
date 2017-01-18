@@ -43,8 +43,8 @@ bool SDLFontProvider::initNTSMutex = false;
 bool SDLFontProvider::initialized = false;
 short SDLFontProvider::fontRefs = 0;
 
-SDLFontProvider::SDLFontProvider (GingaScreenID screenId, const char *fontUri,
-                                  int heightInPixel)
+SDLFontProvider::SDLFontProvider (GingaScreenID screenId,
+                                  const char *fontUri, int heightInPixel)
 {
 
   type = FontProvider;
@@ -376,7 +376,8 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
       pH = parent->getH ();
       if (renderedSurface == NULL)
         {
-          renderedSurface = SDLDeviceScreen::createUnderlyingSurface (pW, pH);
+          renderedSurface
+              = SDLDeviceScreen::createUnderlyingSurface (pW, pH);
 
           /*
                   *******************************************
@@ -392,7 +393,8 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
 
                                                   clog <<
              "SDLFontProvider::playOver SDL error: '";
-                                                  clog << SDL_GetError() << "'"
+                                                  clog << SDL_GetError() <<
+             "'"
              << endl;
                                           }
           */

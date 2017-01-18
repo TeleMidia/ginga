@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclComponentsConverter::NclComponentsConverter (DocumentParser *documentParser)
+NclComponentsConverter::NclComponentsConverter (
+    DocumentParser *documentParser)
     : NclComponentsParser (documentParser)
 {
 }
@@ -185,7 +186,8 @@ NclComponentsConverter::addAnchorToMedia (ContentNode *contentNode,
 }
 
 void
-NclComponentsConverter::addAreaToMedia (void *parentObject, void *childObject)
+NclComponentsConverter::addAreaToMedia (void *parentObject,
+                                        void *childObject)
 {
 
   addAnchorToMedia ((ContentNode *)parentObject, (Anchor *)childObject);
@@ -236,9 +238,9 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
 
       try
         {
-          referNode
-              = (ContextNode *)((NclDocumentConverter *)getDocumentParser ())
-                    ->getNode (attValue);
+          referNode = (ContextNode *)((NclDocumentConverter *)
+                                          getDocumentParser ())
+                          ->getNode (attValue);
 
           if (referNode == NULL)
             {
@@ -276,11 +278,11 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("descriptor")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("descriptor")));
 
-      document = (NclDocument *)(getDocumentParser ()->getObject ("return",
-                                                                  "document"));
+      document = (NclDocument *)(getDocumentParser ()->getObject (
+          "return", "document"));
 
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
@@ -331,10 +333,11 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
 
               if (parentObject != NULL)
                 {
-                  elementObject = ((ContextNode *)parentObject)
-                                      ->getNode (XMLString::transcode (
-                                          element->getAttribute (
-                                              XMLString::transcode ("id"))));
+                  elementObject
+                      = ((ContextNode *)parentObject)
+                            ->getNode (XMLString::transcode (
+                                element->getAttribute (
+                                    XMLString::transcode ("id"))));
 
                   /*
                    * This is an old version to get nested contexts.
@@ -394,7 +397,8 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
         }
     }
 
-  return NclComponentsParser::posCompileContext (parentElement, parentObject);
+  return NclComponentsParser::posCompileContext (parentElement,
+                                                 parentObject);
 }
 
 void *
@@ -433,9 +437,9 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
 
       try
         {
-          referNode
-              = (ContentNode *)((NclDocumentConverter *)getDocumentParser ())
-                    ->getNode (attValue);
+          referNode = (ContentNode *)((NclDocumentConverter *)
+                                          getDocumentParser ())
+                          ->getNode (attValue);
 
           if (referNode == NULL)
             {
@@ -463,8 +467,8 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
       if (parentElement->hasAttribute (XMLString::transcode ("instance")))
         {
 
-          attValue = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("instance")));
+          attValue = XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("instance")));
 
           ((ReferNode *)node)->setInstanceType (attValue);
         }
@@ -525,11 +529,11 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("descriptor")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("descriptor")));
 
-      document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                                 "document");
+      document = (NclDocument *)getDocumentParser ()->getObject (
+          "return", "document");
 
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)

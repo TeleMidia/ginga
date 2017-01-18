@@ -32,8 +32,10 @@ main ()
           string test = "tEsT";
 
           while (true) {
-                  cout << "upperCase: " << (test = upperCase (test)) << endl;
-                  cout << "upperCase: " << (test = lowerCase (test)) << endl;
+                  cout << "upperCase: " << (test = upperCase (test)) <<
+  endl;
+                  cout << "upperCase: " << (test = lowerCase (test)) <<
+  endl;
 
   #ifndef _MSC_VER
                   ::usleep(1000000);

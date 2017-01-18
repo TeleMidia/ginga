@@ -60,27 +60,33 @@ public:
   virtual void addPropertyToBody (void *parentObject, void *childObject);
   virtual void addContextToBody (void *parentObject, void *childObject);
   virtual void addSwitchToBody (void *parentObject, void *childObject);
-  virtual void addDescriptorBaseToHead (void *parentObject, void *childObject);
+  virtual void addDescriptorBaseToHead (void *parentObject,
+                                        void *childObject);
 
   virtual void addHeadToNcl (void *parentObject, void *childObject);
   virtual void addRegionBaseToHead (void *parentObject, void *childObject);
 
-  virtual void addTransitionBaseToHead (void *parentObject, void *childObject);
+  virtual void addTransitionBaseToHead (void *parentObject,
+                                        void *childObject);
 
   virtual void addLinkToBody (void *parentObject, void *childObject);
   virtual void addMediaToBody (void *parentObject, void *childObject);
   virtual void addRuleBaseToHead (void *parentObject, void *childObject);
-  virtual void addConnectorBaseToHead (void *parentObject, void *childObject);
+  virtual void addConnectorBaseToHead (void *parentObject,
+                                       void *childObject);
 
-  virtual void *createBody (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createBody (DOMElement *parentElement,
+                            void *objGrandParent);
 
 private:
   void solveNodeReferences (CompositeNode *composition);
 
 public:
-  virtual void *posCompileBody (DOMElement *parentElement, void *parentObject);
+  virtual void *posCompileBody (DOMElement *parentElement,
+                                void *parentObject);
 
-  virtual void *createHead (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createHead (DOMElement *parentElement,
+                            void *objGrandParent);
 
   virtual void *createNcl (DOMElement *parentElement, void *objGrandParent);
 

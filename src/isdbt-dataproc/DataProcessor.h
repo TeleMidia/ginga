@@ -113,7 +113,8 @@ public:
   void createStreamTypeSectionFilter (short streamType);
   void createPidSectionFilter (int pid);
 
-  void addSEListener (string eventType, IDsmccStreamEventListener *listener);
+  void addSEListener (string eventType,
+                      IDsmccStreamEventListener *listener);
 
   void removeSEListener (string eventType,
                          IDsmccStreamEventListener *listener);

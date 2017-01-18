@@ -50,8 +50,8 @@ StreamIdentifierDescriptor::getComponentTag ()
 void
 StreamIdentifierDescriptor::print ()
 {
-  clog << "StreamIdentifierDescriptor::print ctag = " << (componentTag & 0xFF)
-       << endl;
+  clog << "StreamIdentifierDescriptor::print ctag = "
+       << (componentTag & 0xFF) << endl;
 }
 
 size_t

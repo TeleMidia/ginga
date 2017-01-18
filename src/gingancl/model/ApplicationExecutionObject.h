@@ -39,7 +39,8 @@ public:
                               ILinkActionListener *seListener);
 
   ApplicationExecutionObject (string id, Node *node,
-                              CascadingDescriptor *descriptor, bool handling,
+                              CascadingDescriptor *descriptor,
+                              bool handling,
                               ILinkActionListener *seListener);
 
   virtual ~ApplicationExecutionObject ();

@@ -54,7 +54,8 @@ public:
 
   bool addDescriptor (GenericDescriptor *descriptor, Rule *rule);
   bool containsRule (Rule *rule);
-  void exchangeDescriptorsAndRules (unsigned int index1, unsigned int index2);
+  void exchangeDescriptorsAndRules (unsigned int index1,
+                                    unsigned int index2);
 
   int indexOfRule (Rule *rule);
   GenericDescriptor *getDefaultDescriptor ();

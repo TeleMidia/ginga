@@ -168,7 +168,8 @@ bool
 DescriptorSwitch::containsRule (Rule *rule)
 {
   vector<Rule *>::iterator iterRule;
-  for (iterRule = ruleList->begin (); iterRule != ruleList->end (); ++iterRule)
+  for (iterRule = ruleList->begin (); iterRule != ruleList->end ();
+       ++iterRule)
     {
 
       if ((*iterRule)->getId () == rule->getId ())
@@ -184,7 +185,8 @@ DescriptorSwitch::exchangeDescriptorsAndRules (unsigned int index1,
                                                unsigned int index2)
 {
 
-  if (index1 >= descriptorList->size () || index2 >= descriptorList->size ())
+  if (index1 >= descriptorList->size ()
+      || index2 >= descriptorList->size ())
     {
       return;
     }

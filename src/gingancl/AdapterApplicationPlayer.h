@@ -37,7 +37,8 @@ typedef struct
   string value;
 } ApplicationStatus;
 
-class AdapterApplicationPlayer : public AdapterFormatterPlayer, public Thread
+class AdapterApplicationPlayer : public AdapterFormatterPlayer,
+                                 public Thread
 {
 
 private:

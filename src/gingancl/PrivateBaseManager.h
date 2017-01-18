@@ -60,8 +60,9 @@ public:
   NclDocument *removeEmbeddedDocument (string baseId, string parentDocId,
                                        string nodeId);
 
-  LayoutRegion *addRegion (string id, string documentId, string regionBaseId,
-                           string regionId, string xmlRegion);
+  LayoutRegion *addRegion (string id, string documentId,
+                           string regionBaseId, string regionId,
+                           string xmlRegion);
 
   LayoutRegion *removeRegion (string id, string documentId,
                               string regionBaseId, string regionId);
@@ -78,7 +79,8 @@ public:
 
   RuleBase *addRuleBase (string id, string documentId, string xmlRuleBase);
 
-  RuleBase *removeRuleBase (string id, string documentId, string ruleBaseId);
+  RuleBase *removeRuleBase (string id, string documentId,
+                            string ruleBaseId);
 
   Transition *addTransition (string id, string documentId,
                              string xmlTransition);
@@ -92,7 +94,8 @@ public:
   TransitionBase *removeTransitionBase (string id, string documentId,
                                         string transitionBaseId);
 
-  Connector *addConnector (string id, string documentId, string xmlConnector);
+  Connector *addConnector (string id, string documentId,
+                           string xmlConnector);
 
   Connector *removeConnector (string id, string documentId,
                               string connectorId);

@@ -72,7 +72,8 @@ NclLayoutConverter::addImportBaseToRegionBase (void *parentObject,
 }
 
 void
-NclLayoutConverter::addRegionToRegion (void *parentObject, void *childObject)
+NclLayoutConverter::addRegionToRegion (void *parentObject,
+                                       void *childObject)
 {
 
   ((LayoutRegion *)parentObject)->addRegion ((LayoutRegion *)childObject);
@@ -95,10 +96,11 @@ NclLayoutConverter::createRegionBase (DOMElement *parentElement,
   RegionBase *layout;
   string mapId = "";
 
-  layout = new RegionBase (XMLString::transcode (parentElement->getAttribute (
-                               XMLString::transcode ("id"))),
+  layout
+      = new RegionBase (XMLString::transcode (parentElement->getAttribute (
+                            XMLString::transcode ("id"))),
 
-                           deviceLayout);
+                        deviceLayout);
 
   // device attribute
   if (parentElement->hasAttribute (XMLString::transcode ("device")))
@@ -106,8 +108,8 @@ NclLayoutConverter::createRegionBase (DOMElement *parentElement,
       // region for output bit map attribute
       if (parentElement->hasAttribute (XMLString::transcode ("region")))
         {
-          mapId = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("region")));
+          mapId = XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("region")));
         }
 
       layout->setDevice (XMLString::transcode (parentElement->getAttribute (

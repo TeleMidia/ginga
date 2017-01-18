@@ -45,7 +45,8 @@ public:
                                                void *childObject)
       = 0;
 
-  void *parseDescriptorBase (DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorBase (DOMElement *parentElement,
+                             void *objGrandParent);
 
   virtual void *createDescriptorBase (DOMElement *parentElement,
                                       void *objGrandParent)
@@ -63,13 +64,15 @@ public:
                                               void *childObject)
       = 0;
 
-  void *parseDescriptorBind (DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorBind (DOMElement *parentElement,
+                             void *objGrandParent);
 
   virtual void *createDescriptorBind (DOMElement *parentElement,
                                       void *objGrandParent)
       = 0;
 
-  void *parseDescriptorParam (DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorParam (DOMElement *parentElement,
+                              void *objGrandParent);
 
   virtual void *createDescriptorParam (DOMElement *parentElement,
                                        void *objGrandParent)

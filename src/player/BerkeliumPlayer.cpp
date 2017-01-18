@@ -277,7 +277,8 @@ BerkeliumPlayer::setOutWindow (GingaWindowID windowId)
   Player::setOutWindow (windowId);
   /*
                   if (hasBrowser && outputWindow != NULL) {
-                          clog << "BerkeliumPlayer::setOutWindow '" << mrl <<
+                          clog << "BerkeliumPlayer::setOutWindow '" << mrl
+     <<
      "' call ";
                           clog << "browserSetFlipWindow" << endl;
                           browserSetFlipWindow(mBrowser,

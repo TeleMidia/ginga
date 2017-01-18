@@ -275,7 +275,8 @@ CompositeNode::recursivelyContainsNode (Node *node)
         }
       else if (childNode->instanceOf ("ReferNode"))
         {
-          childNode = (Node *)(((ReferNode *)childNode)->getReferredEntity ());
+          childNode
+              = (Node *)(((ReferNode *)childNode)->getReferredEntity ());
 
           if (childNode == node)
             {
@@ -365,7 +366,8 @@ CompositeNode::getNodeDescriptor (Node *node)
 }
 
 bool
-CompositeNode::setNodeDescriptor (string nodeId, GenericDescriptor *descriptor)
+CompositeNode::setNodeDescriptor (string nodeId,
+                                  GenericDescriptor *descriptor)
 {
 
   // do nothing

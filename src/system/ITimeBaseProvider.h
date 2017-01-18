@@ -33,10 +33,12 @@ public:
                                 ITimeBaseListener *ltn)
       = 0;
 
-  virtual bool removeLoopListener (unsigned char cid, ITimeBaseListener *ltn)
+  virtual bool removeLoopListener (unsigned char cid,
+                                   ITimeBaseListener *ltn)
       = 0;
 
-  virtual bool addTimeListener (unsigned char timeBaseId, double timeBaseValue,
+  virtual bool addTimeListener (unsigned char timeBaseId,
+                                double timeBaseValue,
                                 ITimeBaseListener *ltn)
       = 0;
 

@@ -71,7 +71,8 @@ DataWrapperListener::autoMountOC (bool autoMountIt)
 
 void
 DataWrapperListener::writeAITCommand (const string &appName,
-                                      const string &appUri, IApplication *app)
+                                      const string &appUri,
+                                      IApplication *app)
 {
   // cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${$BASE_URI}::{$INITIAL_ENTITY}::${URI}::${PROFILE}::${TRANSPORT_ID}
   cout << "cmd::0::ait::";
@@ -169,8 +170,8 @@ DataWrapperListener::processAIT ()
       clog << endl << "DataWrapperListener::processAIT " << endl;
       clog << "Application '" << nclName << "'" << endl;
       clog << "Target profle: 0x" << hex << app->getProfile () << endl;
-      clog << "Transport protocol: 0x" << hex << app->getTransportProtocolId ()
-           << endl;
+      clog << "Transport protocol: 0x" << hex
+           << app->getTransportProtocolId () << endl;
 
       unsigned char controlCode = (*i)->getControlCode ();
       switch (controlCode)
@@ -257,7 +258,8 @@ DataWrapperListener::applicationInfoMounted (IAIT *ait)
 }
 
 void
-DataWrapperListener::objectMounted (string ior, string clientUri, string name)
+DataWrapperListener::objectMounted (string ior, string clientUri,
+                                    string name)
 {
 
   GingaLocatorFactory *glf = NULL;

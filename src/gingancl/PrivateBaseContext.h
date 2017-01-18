@@ -86,7 +86,8 @@ public:
   void createPrivateBase (string id);
 
 private:
-  NclDocument *compileDocument (string location, DeviceLayout *deviceLayout);
+  NclDocument *compileDocument (string location,
+                                DeviceLayout *deviceLayout);
 
 public:
   NclDocument *addDocument (string location, DeviceLayout *deviceLayout);
@@ -145,14 +146,17 @@ public:
 
   Connector *addConnector (string documentId, string xmlConnector);
   Connector *removeConnector (string documentId, string connectorId);
-  ConnectorBase *addConnectorBase (string documentId, string xmlConnectorBase);
+  ConnectorBase *addConnectorBase (string documentId,
+                                   string xmlConnectorBase);
 
   ConnectorBase *removeConnectorBase (string documentId,
                                       string connectorBaseId);
 
-  GenericDescriptor *addDescriptor (string documentId, string xmlDescriptor);
+  GenericDescriptor *addDescriptor (string documentId,
+                                    string xmlDescriptor);
 
-  GenericDescriptor *removeDescriptor (string documentId, string descriptorId);
+  GenericDescriptor *removeDescriptor (string documentId,
+                                       string descriptorId);
 
   DescriptorBase *addDescriptorBase (string documentId,
                                      string xmlDescriptorBase);

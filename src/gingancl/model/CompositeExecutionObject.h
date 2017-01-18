@@ -101,7 +101,8 @@ public:
   void setAllLinksAsUncompiled (bool isRecursive);
   void setParentsAsListeners ();
   void unsetParentsAsListeners ();
-  void eventStateChanged (void *event, short transition, short previousState);
+  void eventStateChanged (void *event, short transition,
+                          short previousState);
 
   short getPriorityType ();
 

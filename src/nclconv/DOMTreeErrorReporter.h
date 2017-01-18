@@ -63,7 +63,8 @@ DOMTreeErrorReporter::getSawErrors () const
 }
 
 // ---------------------------------------------------------------------------
-//  This is a simple class that lets us do easy (though not terribly efficient)
+//  This is a simple class that lets us do easy (though not terribly
+//  efficient)
 //  trancoding of XMLCh data to local code page for display.
 // ---------------------------------------------------------------------------
 class StrX
@@ -100,7 +101,7 @@ private:
 };
 
 inline XERCES_STD_QUALIFIER ostream &
-operator<<(XERCES_STD_QUALIFIER ostream &target, const StrX &toDump)
+operator<< (XERCES_STD_QUALIFIER ostream &target, const StrX &toDump)
 {
   target << toDump.localForm ();
   return target;

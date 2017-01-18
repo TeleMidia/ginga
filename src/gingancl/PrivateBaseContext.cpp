@@ -150,7 +150,8 @@ PrivateBaseContext::compileDocument (string location,
 }
 
 NclDocument *
-PrivateBaseContext::addDocument (string location, DeviceLayout *deviceLayout)
+PrivateBaseContext::addDocument (string location,
+                                 DeviceLayout *deviceLayout)
 {
 
   NclDocument *newDocument;
@@ -222,7 +223,8 @@ PrivateBaseContext::addDocument (string location, DeviceLayout *deviceLayout)
 
 NclDocument *
 PrivateBaseContext::embedDocument (string docId, string nodeId,
-                                   string location, DeviceLayout *deviceLayout)
+                                   string location,
+                                   DeviceLayout *deviceLayout)
 {
 
   map<string, EmbeddedNclData *>::iterator i;
@@ -517,7 +519,8 @@ PrivateBaseContext::removeDocument (string id)
 }
 
 NclDocument *
-PrivateBaseContext::removeEmbeddedDocument (string parentDocId, string nodeId)
+PrivateBaseContext::removeEmbeddedDocument (string parentDocId,
+                                            string nodeId)
 {
 
   map<string, EmbeddedNclData *>::iterator i;
@@ -722,7 +725,8 @@ PrivateBaseContext::addRegionBase (string documentId, string xmlRegionBase)
 }
 
 RegionBase *
-PrivateBaseContext::removeRegionBase (string documentId, string regionBaseId)
+PrivateBaseContext::removeRegionBase (string documentId,
+                                      string regionBaseId)
 {
 
   NclDocument *document;
@@ -887,7 +891,8 @@ PrivateBaseContext::addTransition (string documentId, string xmlTransition)
 }
 
 Transition *
-PrivateBaseContext::removeTransition (string documentId, string transitionId)
+PrivateBaseContext::removeTransition (string documentId,
+                                      string transitionId)
 {
 
   NclDocument *document;
@@ -936,7 +941,8 @@ PrivateBaseContext::addTransitionBase (string documentId,
       return NULL;
     }
 
-  base = (TransitionBase *)compileEntity (xmlTransitionBase, document, NULL);
+  base
+      = (TransitionBase *)compileEntity (xmlTransitionBase, document, NULL);
 
   if (base == NULL)
     {
@@ -1107,8 +1113,8 @@ PrivateBaseContext::addDescriptor (string documentId, string xmlDescriptor)
       return NULL;
     }
 
-  descriptor
-      = (GenericDescriptor *)(compileEntity (xmlDescriptor, document, base));
+  descriptor = (GenericDescriptor *)(compileEntity (xmlDescriptor, document,
+                                                    base));
 
   if (descriptor == NULL)
     {
@@ -1120,7 +1126,8 @@ PrivateBaseContext::addDescriptor (string documentId, string xmlDescriptor)
 }
 
 GenericDescriptor *
-PrivateBaseContext::removeDescriptor (string documentId, string descriptorId)
+PrivateBaseContext::removeDescriptor (string documentId,
+                                      string descriptorId)
 {
 
   NclDocument *document;
@@ -1167,7 +1174,8 @@ PrivateBaseContext::addDescriptorBase (string documentId,
       return NULL;
     }
 
-  base = (DescriptorBase *)(compileEntity (xmlDescriptorBase, document, NULL));
+  base = (DescriptorBase *)(compileEntity (xmlDescriptorBase, document,
+                                           NULL));
 
   if (base == NULL)
     {
@@ -1387,8 +1395,8 @@ PrivateBaseContext::addImportedDocumentBase (string documentId,
 }
 
 NclDocument *
-PrivateBaseContext::removeImportedDocumentBase (string documentId,
-                                                string importedDocumentBaseId)
+PrivateBaseContext::removeImportedDocumentBase (
+    string documentId, string importedDocumentBaseId)
 {
 
   NclDocument *document;
@@ -1593,8 +1601,8 @@ PrivateBaseContext::addInterface (string documentId, string nodeId,
 
   try
     {
-      interfacePoint
-          = (InterfacePoint *)(compileEntity (xmlInterface, document, node));
+      interfacePoint = (InterfacePoint *)(compileEntity (xmlInterface,
+                                                         document, node));
     }
   catch (exception *ex)
     {

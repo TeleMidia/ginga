@@ -28,8 +28,8 @@ NclPresentationSpecificationParser::NclPresentationSpecificationParser (
 }
 
 void *
-NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement,
-                                                     void *objGrandParent)
+NclPresentationSpecificationParser::parseDescriptor (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   clog << "parseDescriptor" << endl;
@@ -68,7 +68,8 @@ NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addDescriptorParamToDescriptor (parentObject, elementObject);
+                  addDescriptorParamToDescriptor (parentObject,
+                                                  elementObject);
                 }
             }
         }
@@ -109,7 +110,8 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importBase")
               == 0)
             {
 
@@ -118,7 +120,8 @@ NclPresentationSpecificationParser::parseDescriptorBase (
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToDescriptorBase (parentObject, elementObject);
+                  addImportBaseToDescriptorBase (parentObject,
+                                                 elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -145,7 +148,8 @@ NclPresentationSpecificationParser::parseDescriptorBase (
               elementObject = parseDescriptor (element, parentObject);
               if (elementObject != NULL)
                 {
-                  addDescriptorToDescriptorBase (parentObject, elementObject);
+                  addDescriptorToDescriptorBase (parentObject,
+                                                 elementObject);
                 }
             }
         }

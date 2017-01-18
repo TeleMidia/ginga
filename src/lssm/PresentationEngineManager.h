@@ -86,9 +86,9 @@ private:
   bool debugWindow;
 
 public:
-  PresentationEngineManager (int devClass, int xOffset, int yOffset, int width,
-                             int height, bool disableGfx, bool useMulticast,
-                             GingaScreenID screenId);
+  PresentationEngineManager (int devClass, int xOffset, int yOffset,
+                             int width, int height, bool disableGfx,
+                             bool useMulticast, GingaScreenID screenId);
   virtual ~PresentationEngineManager ();
   void setDebugWindow (bool debugWindow);
   void setExitOnEnd (bool exitOnEnd);
@@ -151,7 +151,8 @@ private:
   void presentationCompleted (string formatterId);
   void releaseFormatter (string formatterId);
   bool checkStatus ();
-  void updateStatus (short code, string parameter, short type, string value);
+  void updateStatus (short code, string parameter, short type,
+                     string value);
   bool userEventReceived (SDLInputEvent *ev);
   bool cmdEventReceived (string command, string args);
   static void *eventReceived (void *ptr);

@@ -86,7 +86,8 @@ class FormatterMultiDevice : public IPlayerListener,
                              public IRemoteDeviceListener
 {
 #else
-class FormatterMultiDevice : public IPlayerListener, public IInputEventListener
+class FormatterMultiDevice : public IPlayerListener,
+                             public IInputEventListener
 {
 #endif
 protected:
@@ -180,7 +181,8 @@ public:
   virtual void updatePassiveDevices ();
 
 protected:
-  void updateStatus (short code, string parameter, short type, string value);
+  void updateStatus (short code, string parameter, short type,
+                     string value);
   virtual bool userEventReceived (SDLInputEvent *ev) = 0;
 };
 

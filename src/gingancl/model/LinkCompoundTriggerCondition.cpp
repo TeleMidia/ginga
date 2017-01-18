@@ -117,7 +117,8 @@ LinkCompoundTriggerCondition::conditionSatisfied (void *condition)
                           break;
                   }
                   else {
-                          if (!((LinkStatement*)childCondition)->evaluate()) {
+                          if (!((LinkStatement*)childCondition)->evaluate())
+  {
                                   return;
                           }
                   }

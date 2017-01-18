@@ -39,7 +39,9 @@ ISDBTProvider::ISDBTProvider (long freq)
   this->capabilities = (DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM);
   /* | DPC_CAN_DEMUXBYHW |
 				DPC_CAN_FILTERPID |
-				DPC_CAN_FILTERTID); */ // TODO: implement these capabilities...
+				DPC_CAN_FILTERTID); */ // TODO: implement
+                                                       // these
+                                                       // capabilities...
 
   // -1 means scan
   if (freq == -1)
@@ -58,7 +60,8 @@ ISDBTProvider::ISDBTProvider (long freq)
   ring_buffer_create (&output_buffer, 28);
   keep_reading = 1;
   // start the thread which reads the data from the tuner
-  pthread_create (&output_thread_id, NULL, ISDBTProvider::output_thread, this);
+  pthread_create (&output_thread_id, NULL, ISDBTProvider::output_thread,
+                  this);
 }
 
 ISDBTProvider::~ISDBTProvider ()
@@ -96,7 +99,8 @@ ISDBTProvider::output_thread (void *ptr)
         }
 
     try_again_write:
-      if (ring_buffer_count_free_bytes (&(obj->output_buffer)) >= bytes_read)
+      if (ring_buffer_count_free_bytes (&(obj->output_buffer))
+          >= bytes_read)
         {
           pthread_mutex_lock (&(obj->output_mutex));
           addr = ring_buffer_write_address (&(obj->output_buffer));
@@ -181,8 +185,9 @@ ISDBTProvider::scanChannels ()
            << endl;
 
       params.frequency = tv_channels_list[channel_counter];
-      params.inversion = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO
-                                                             : INVERSION_OFF;
+      params.inversion = (info.caps & FE_CAN_INVERSION_AUTO)
+                             ? INVERSION_AUTO
+                             : INVERSION_OFF;
       params.u.ofdm.code_rate_HP = FEC_AUTO;
       params.u.ofdm.code_rate_LP = FEC_AUTO;
       params.u.ofdm.constellation = QAM_AUTO;
@@ -193,7 +198,8 @@ ISDBTProvider::scanChannels ()
       progress = (channel_counter - 14) * 100 / 55;
       cout << "cmd::0::tunerscanprogress::" << progress << "%" << endl;
 
-      if ((feFd = open (ISDBTFrontend::IFE_FE_DEV_NAME.c_str (), O_RDWR)) < 0)
+      if ((feFd = open (ISDBTFrontend::IFE_FE_DEV_NAME.c_str (), O_RDWR))
+          < 0)
         {
           cout << "cmd::1::tuner::Unable to tune." << endl;
           clog << "ISDBTProvider::scanChannels failed opening FrontEnd DVB "
@@ -213,9 +219,9 @@ ISDBTProvider::scanChannels ()
           < 0)
         {
           cout << "cmd::1::tuner::Unable to tune." << endl;
-          clog
-              << "ISDBTProvider::scanChannels failed opening DeMux DVB device."
-              << endl;
+          clog << "ISDBTProvider::scanChannels failed opening DeMux DVB "
+                  "device."
+               << endl;
           return false;
         }
 
@@ -228,7 +234,8 @@ ISDBTProvider::scanChannels ()
 
       if (ioctl (dmFd, DMX_SET_PES_FILTER, &filter_dmx) == -1)
         {
-          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error "
+          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl "
+                  "error "
                   "with arg IFE_DEMUX_DEV_NAME"
                << endl;
         }
@@ -239,7 +246,8 @@ ISDBTProvider::scanChannels ()
           < 0)
         {
           cout << "cmd::1::tuner::Unable to tune." << endl;
-          clog << "ISDBTProvider::scanChannels failed to open DVR DVB device. "
+          clog << "ISDBTProvider::scanChannels failed to open DVR DVB "
+                  "device. "
                << endl;
           return false;
         }
@@ -367,7 +375,8 @@ ISDBTProvider::initializeChannels ()
                               channel->setName (name);
 
                               channel->setFrequency (
-                                  (unsigned int)(::ginga::util::stof (freq)));
+                                  (unsigned int)(::ginga::util::stof (
+                                      freq)));
 
                               if (seg == "FULLSEG")
                                 {
@@ -437,7 +446,8 @@ ISDBTProvider::tune ()
       return true;
     }
 
-  if ((feDescriptor = open (ISDBTFrontend::IFE_FE_DEV_NAME.c_str (), O_RDWR))
+  if ((feDescriptor
+       = open (ISDBTFrontend::IFE_FE_DEV_NAME.c_str (), O_RDWR))
       < 0)
     {
       cout << "cmd::1::tuner::Unable to tune." << endl;
@@ -455,8 +465,8 @@ ISDBTProvider::tune ()
           tuned = frontend->changeFrequency (initialFrequency * 1000);
           if (!tuned)
             {
-              clog << "ISDBTProvider::tune frequency set " << initialFrequency
-                   << "Hz failed!" << endl;
+              clog << "ISDBTProvider::tune frequency set "
+                   << initialFrequency << "Hz failed!" << endl;
             }
         }
       else

@@ -308,7 +308,8 @@ PresentationEngineManager::nclEdit (string nclEditApi)
   string commandTag = trim (nclEditApi.substr (0, pos));
 
   return editingCommand (
-      commandTag, nclEditApi.substr (pos + 1, nclEditApi.length () - pos + 1));
+      commandTag,
+      nclEditApi.substr (pos + 1, nclEditApi.length () - pos + 1));
 }
 
 bool
@@ -728,7 +729,8 @@ PresentationEngineManager::openNclFile (string fname)
 }
 
 bool
-PresentationEngineManager::startPresentation (string nclFile, string interfId)
+PresentationEngineManager::startPresentation (string nclFile,
+                                              string interfId)
 {
 
   INCLPlayer *formatter;
@@ -806,7 +808,8 @@ PresentationEngineManager::stopPresentation (string nclFile)
 
 bool
 PresentationEngineManager::setPropertyValue (string nclFile,
-                                             string interfaceId, string value)
+                                             string interfaceId,
+                                             string value)
 {
 
   INCLPlayer *formatter;
@@ -931,8 +934,8 @@ PresentationEngineManager::abortPresentation (string nclFile)
 }
 
 void
-PresentationEngineManager::openNclDocument (string docUri, int x, int y, int w,
-                                            int h)
+PresentationEngineManager::openNclDocument (string docUri, int x, int y,
+                                            int w, int h)
 {
 
   clog << "PresentationEngineManager::openNclDocument docUri '";
@@ -1006,7 +1009,8 @@ PresentationEngineManager::setCmdFile (string cmdFile)
       ev->cmds = new vector<string> (commands);
 
       pthread_create (&autoCmdId_, 0,
-                      PresentationEngineManager::processAutoCmd, (void *)ev);
+                      PresentationEngineManager::processAutoCmd,
+                      (void *)ev);
 
       pthread_detach (autoCmdId_);
     }
@@ -1481,7 +1485,8 @@ PresentationEngineManager::getNclPlayer (string baseId, string docId,
 }
 
 void
-PresentationEngineManager::updateFormatters (short command, string parameter)
+PresentationEngineManager::updateFormatters (short command,
+                                             string parameter)
 {
 
   map<string, INCLPlayer *>::iterator i;

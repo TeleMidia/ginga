@@ -38,7 +38,8 @@ private:
   double repetitionInterval;
 
 public:
-  PresentationEvent (string id, void *executionObject, ContentAnchor *anchor);
+  PresentationEvent (string id, void *executionObject,
+                     ContentAnchor *anchor);
   virtual ~PresentationEvent ();
   bool stop ();
   double getDuration ();

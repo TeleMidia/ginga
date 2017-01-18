@@ -34,7 +34,8 @@ public:
   virtual void *createBind (DOMElement *parentElement, void *objGrandParent)
       = 0;
 
-  virtual void addBindParamToBind (void *parentObject, void *childObject) = 0;
+  virtual void addBindParamToBind (void *parentObject, void *childObject)
+      = 0;
 
   void *parseLinkParam (DOMElement *parentElement, void *objGrandParent);
   virtual void *createLinkParam (DOMElement *parentElement,
@@ -50,7 +51,8 @@ public:
   virtual void *createLink (DOMElement *parentElement, void *objGrandParent)
       = 0;
 
-  virtual void addLinkParamToLink (void *parentObject, void *childObject) = 0;
+  virtual void addLinkParamToLink (void *parentObject, void *childObject)
+      = 0;
 
   virtual void addBindToLink (void *parentObject, void *childObject) = 0;
 };

@@ -347,7 +347,8 @@ SDLSurface::setSurfaceContent (void *surface)
     {
       if (w->getContent () == sur && sur != NULL)
         {
-          ((SDLWindow *)parent)->setRenderedSurface ((SDL_Surface *)surface);
+          ((SDLWindow *)parent)
+              ->setRenderedSurface ((SDL_Surface *)surface);
         }
     }
 
@@ -725,8 +726,8 @@ SDLSurface::createSurface ()
 }
 
 void
-SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY, int srcW,
-                  int srcH)
+SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY,
+                  int srcW, int srcH)
 {
 
   SDL_Rect srcRect;

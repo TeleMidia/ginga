@@ -122,7 +122,8 @@ NetworkInterface::createProvider ()
   if (name == "ip")
     {
       ip = address.substr (0, address.find (":"));
-      portNumber = address.substr (address.find (":") + 1, address.length ());
+      portNumber
+          = address.substr (address.find (":") + 1, address.length ());
 
       provider = new NetworkProvider (
           ip, (int)::ginga::util::stof (portNumber), protocol);
@@ -226,7 +227,8 @@ NetworkInterface::getSTCValue (uint64_t *stc, int *valueType)
 }
 
 int
-NetworkInterface::createPesFilter (int pid, int pesType, bool compositeFiler)
+NetworkInterface::createPesFilter (int pid, int pesType,
+                                   bool compositeFiler)
 {
 
   if (provider != NULL)

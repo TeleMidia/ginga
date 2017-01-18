@@ -67,7 +67,8 @@ DsmccDownloadInfoIndication::processMessage (DsmccMessageHeader *message)
           = ((bytes[i] & 0xFF) << 24) | ((bytes[i + 1] & 0xFF) << 16)
             | ((bytes[i + 2] & 0xFF) << 8) | (bytes[i + 3] & 0xFF);
 
-      this->blockSize = ((bytes[i + 4] & 0xFF) << 8) | (bytes[i + 5] & 0xFF);
+      this->blockSize
+          = ((bytes[i + 4] & 0xFF) << 8) | (bytes[i + 5] & 0xFF);
 
       // jump 10 bytes of unused fields
       i = i + 10;
@@ -91,7 +92,8 @@ DsmccDownloadInfoIndication::processMessage (DsmccMessageHeader *message)
           moduleId = ((bytes[i] & 0xFF) << 8) | (bytes[i + 1] & 0xFF);
           moduleSize = ((bytes[i + 2] & 0xFF) << 24)
                        | ((bytes[i + 3] & 0xFF) << 16)
-                       | ((bytes[i + 4] & 0xFF) << 8) | (bytes[i + 5] & 0xFF);
+                       | ((bytes[i + 4] & 0xFF) << 8)
+                       | (bytes[i + 5] & 0xFF);
 
           moduleVersion = (bytes[i + 6] & 0xFF);
           moduleInfoLength = (bytes[i + 7] & 0xFF);
@@ -115,8 +117,9 @@ DsmccDownloadInfoIndication::processMessage (DsmccMessageHeader *message)
     }
   else
     {
-      clog << "DsmccDownloadInfoIndication::processMessage - Message header "
-              "error: could not open file ";
+      clog
+          << "DsmccDownloadInfoIndication::processMessage - Message header "
+             "error: could not open file ";
       clog << header->getFileName ().c_str () << endl;
       return -1;
     }
@@ -145,7 +148,8 @@ DsmccDownloadInfoIndication::getNumberOfModules ()
 }
 
 void
-DsmccDownloadInfoIndication::getInfo (map<unsigned int, DsmccModule *> *ocInfo)
+DsmccDownloadInfoIndication::getInfo (
+    map<unsigned int, DsmccModule *> *ocInfo)
 {
   ocInfo->insert (modules.begin (), modules.end ());
 }

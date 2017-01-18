@@ -91,8 +91,8 @@ RemoteEventService::addDeviceClass (unsigned int id)
 
 void
 RemoteEventService::addDevice (unsigned int device_class,
-                               unsigned int device_id, char *addr, int srvPort,
-                               bool isLocalConnection)
+                               unsigned int device_id, char *addr,
+                               int srvPort, bool isLocalConnection)
 {
 
   map<int, TcpSocketService *>::iterator i;
@@ -183,8 +183,10 @@ RemoteEventService::startDocument (unsigned int device_class, char *name)
   clog << "RemoteEventService::startDocument dir app=" << dir_app << endl;
   // clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
 
-  SystemCompat::zip_directory (zipDumpStr, dir_app, SystemCompat::getIUriD ());
-  clog << "RemoteEventService::startDocument zip_directory all done!" << endl;
+  SystemCompat::zip_directory (zipDumpStr, dir_app,
+                               SystemCompat::getIUriD ());
+  clog << "RemoteEventService::startDocument zip_directory all done!"
+       << endl;
 
   string zip_base64 = getBase64FromFile (zipDumpStr);
   clog << "RemoteEventService::startDocument getBase64 all done!" << endl;
@@ -198,12 +200,14 @@ RemoteEventService::startDocument (unsigned int device_class, char *name)
 
       //		tss->postTcpCommand((char*)"ADD", 0, name,
       //(char*)zip_base64.c_str());
-      //		clog << "RemoteEventService:: ADD name="<<name<<endl;
+      //		clog << "RemoteEventService:: ADD
+      //name="<<name<<endl;
 
       //		tss->postTcpCommand((char*)"START", 0, name,
       //(char*)"");
       //
-      tss->postTcpCommand ((char *)"START", 0, (char *)doc_rel_path.c_str (),
+      tss->postTcpCommand ((char *)"START", 0,
+                           (char *)doc_rel_path.c_str (),
                            (char *)zip_base64.c_str ());
 
       clog << "RemoteEventService:: START name=" << doc_rel_path << endl;

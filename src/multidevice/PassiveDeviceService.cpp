@@ -42,14 +42,14 @@ PassiveDeviceService::connectedToBaseDevice (unsigned int domainAddr)
       (*i)->connectedToBaseDevice (domainAddr);
       ++i;
     }
-  clog << "PassiveDeviceService::connectedToBaseDevice(" << domainAddr << ") "
-       << endl;
+  clog << "PassiveDeviceService::connectedToBaseDevice(" << domainAddr
+       << ") " << endl;
   Thread::mutexUnlock (&lMutex);
 }
 
 bool
-PassiveDeviceService::receiveMediaContent (unsigned int devAddr, char *stream,
-                                           int streamSize)
+PassiveDeviceService::receiveMediaContent (unsigned int devAddr,
+                                           char *stream, int streamSize)
 {
 
   int remoteDevClass, bytesWrite;

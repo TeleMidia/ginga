@@ -77,7 +77,8 @@ ApplicationNameDescriptor::process (char *data, size_t pos)
       pos += 3;
 
       appName->applicationNameLength = data[pos];
-      appName->applicationNameChar = new char[appName->applicationNameLength];
+      appName->applicationNameChar
+          = new char[appName->applicationNameLength];
 
       memcpy (appName->applicationNameChar, data + pos + 1,
               appName->applicationNameLength);

@@ -43,9 +43,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
                                               DeviceLayout *deviceLayout,
                                               int x, int y, int w, int h,
-                                              bool useMulticast, int srvPort)
-    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h, useMulticast,
-                            srvPort)
+                                              bool useMulticast,
+                                              int srvPort)
+    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
+                            useMulticast, srvPort)
 {
 
   this->deviceServicePort = srvPort;
@@ -75,7 +76,8 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
       serialized = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
                                      DV_QVGA_HEIGHT, -1.0);
 
-      s = dm->createRenderedSurfaceFromImageFile (myScreen, img_dev.c_str ());
+      s = dm->createRenderedSurfaceFromImageFile (myScreen,
+                                                  img_dev.c_str ());
 
       int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
       dm->setWindowCaps (myScreen, serialized, cap);
@@ -90,7 +92,8 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
     }
   else
     {
-      clog << "FormatterActiveDevice::constructor Warning! File not found: ";
+      clog
+          << "FormatterActiveDevice::constructor Warning! File not found: ";
       clog << img_dev << endl;
     }
 
@@ -137,11 +140,13 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
   listening = true;
   try
     {
-      // TCPServerSocket servSock(FormatterActiveDevice::COMMAND_SERVER_PORT);
+      // TCPServerSocket
+      // servSock(FormatterActiveDevice::COMMAND_SERVER_PORT);
       while (listening)
         {
           clog << "FormatterActiveDevice::FormatterActiveDevice ";
-          clog << "waiting servSock.accept() on port " << srvPortStr << endl;
+          clog << "waiting servSock.accept() on port " << srvPortStr
+               << endl;
 
           tcpSocket = servSock->accept ();
 
@@ -244,7 +249,8 @@ FormatterActiveDevice::connectedToBaseDevice (unsigned int domainAddr)
 }
 
 bool
-FormatterActiveDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
+FormatterActiveDevice::receiveRemoteEvent (int remoteDevClass,
+                                           int eventType,
                                            string eventContent)
 {
 
@@ -481,7 +487,8 @@ FormatterActiveDevice::getCommandCode (string *com)
  */
 bool
 FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
-                                         string scommand, string spayload_desc,
+                                         string scommand,
+                                         string spayload_desc,
                                          string payload)
 {
 
@@ -544,8 +551,8 @@ FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
         if (openDocument (full_path))
           {
 
-            clog << "FormatterActiveDevice::START_DOCUMENT play " << full_path
-                 << endl;
+            clog << "FormatterActiveDevice::START_DOCUMENT play "
+                 << full_path << endl;
             formatter->setKeyHandler (true);
             formatter->play ();
 
@@ -641,7 +648,8 @@ FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
         else
           {
             initVars[pname] = pvalue;
-            clog << "FormatterActiveDevice::SET VAR (init) " << pname << " = ";
+            clog << "FormatterActiveDevice::SET VAR (init) " << pname
+                 << " = ";
             clog << initVars[pname] << endl;
             // parent session initialization vars
           }
@@ -679,8 +687,9 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
   bool reading = true;
   vector<string> tokens;
   // char pri[100];
-  char pri[FormatterActiveDevice::RCVBUFSIZE]; // first line; MAX command size
-  char *sec; // second line
+  char pri[FormatterActiveDevice::RCVBUFSIZE]; // first line; MAX command
+                                               // size
+  char *sec;                                   // second line
 
   if (rdm != NULL)
     {
@@ -724,7 +733,8 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
       payload_size = 0;
 
       recvMsgSize = sock->recv (buffer, FormatterActiveDevice::RCVBUFSIZE);
-      // TODO: improve read/write to buffer using a loop to assure it gets at
+      // TODO: improve read/write to buffer using a loop to assure it gets
+      // at
       // least 100b
       // the above line is ok for usage over a local network
 
@@ -748,8 +758,8 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
 
           if (fileExists (img_reset))
             {
-              s = dm->createRenderedSurfaceFromImageFile (myScreen,
-                                                          img_reset.c_str ());
+              s = dm->createRenderedSurfaceFromImageFile (
+                  myScreen, img_reset.c_str ());
 
               int cap
                   = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
@@ -829,7 +839,8 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
               int diff = recvMsgSize - (pri_len);
               ++sec;
               ++sec;
-              // TODO: fix the lines above (\n removal) with portable solution
+              // TODO: fix the lines above (\n removal) with portable
+              // solution
 
               sec[diff] = '\0'; // part of the payload (second line)
 
@@ -852,7 +863,8 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
                   clog << "FormatterActiveDevice::received_size = ";
                   clog << received << endl;
 
-                  //						rest_payload[rest-1] =
+                  //						rest_payload[rest-1]
+                  //=
                   //'\0';
                   // payload.append(rest_payload);
                 }
@@ -875,8 +887,8 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
           // clog << "::payload = "<<payload << endl;
           //++sec;
           // clog << "::PAYLOAD: " << payload << endl; //sec = payload
-          valid_command
-              = handleTCPCommand (sid, snpt, scommand, spayload_desc, payload);
+          valid_command = handleTCPCommand (sid, snpt, scommand,
+                                            spayload_desc, payload);
         }
 
       while (tokens.size () > 0)

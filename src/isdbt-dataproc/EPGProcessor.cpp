@@ -135,9 +135,12 @@ EPGProcessor::setDataProcessor (void *dataProcessor)
 }
 
 /*
- * The EPG events could only be resquested by Lua node. When a Lua node request
- * epg events, the Lua Player register himself as epgListener associated with
- * request (more than one Lua could make the same request, making 1 request to
+ * The EPG events could only be resquested by Lua node. When a Lua node
+ * request
+ * epg events, the Lua Player register himself as epgListener associated
+ * with
+ * request (more than one Lua could make the same request, making 1 request
+ * to
  * n
  * epgListener association).
  * The standard defines three general request types:
@@ -247,10 +250,12 @@ EPGProcessor::decodeSdtSection (ITransportSection *section)
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
 
   pos = 0;
-  originalNetworkId = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  originalNetworkId
+      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
   /*
                   clog << endl;
-                  clog << "OriginalNetworkId: " << originalNetworkId << endl;
+                  clog << "OriginalNetworkId: " << originalNetworkId <<
+     endl;
 
                   clog << "TableId: " << hex   << tableId   << dec  << endl;
                   clog << "SectionVersion: "   << sectionVersion    << endl;
@@ -438,10 +443,12 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
 
   pos = 0;
-  transportStreamId = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  transportStreamId
+      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
 
   pos += 2;
-  originalNetworkId = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  originalNetworkId
+      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
 
   pos += 2;
   segmentLastSectionNumber = data[pos];
@@ -453,15 +460,21 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
      endl;
                   //clog << endl;
 
-                  clog << "TableId: " << hex    << tableId   << dec  << endl;
-                  clog << "SectionVersion: "    << sectionVersion    << endl;
-                  clog << "SectionNumber: "     << sectionNumber     << endl;
-                  clog << "LastSectionNumber: " << lastSectionNumber << endl;
+                  clog << "TableId: " << hex    << tableId   << dec  <<
+     endl;
+                  clog << "SectionVersion: "    << sectionVersion    <<
+     endl;
+                  clog << "SectionNumber: "     << sectionNumber     <<
+     endl;
+                  clog << "LastSectionNumber: " << lastSectionNumber <<
+     endl;
                   clog << "CurrentNextId: "     <<
      section->getCurrentNextIndicator();
                   clog << endl;
-                  //clog << "SectionName: "       << sectionName       << endl;
-                  //clog << "NewSectionName: "    << newSectionName    << endl;
+                  //clog << "SectionName: "       << sectionName       <<
+     endl;
+                  //clog << "NewSectionName: "    << newSectionName    <<
+     endl;
   */
   pos++; // pos = 6;
   while (pos < payloadSize)
@@ -560,7 +573,8 @@ EPGProcessor::generateSdtMap (IServiceInfo *si)
   // printFieldMap(&data);
   if (serviceListeners != NULL && !serviceListeners->empty ())
     {
-      for (j = serviceListeners->begin (); j != serviceListeners->end (); ++j)
+      for (j = serviceListeners->begin (); j != serviceListeners->end ();
+           ++j)
         {
 
           (*j)->pushSIEvent (data, IEPGListener::SI_LISTENER);
@@ -697,8 +711,8 @@ EPGProcessor::generateEitMap (map<unsigned int, IEventInfo *> *actualMap)
     }
   else
     {
-      clog
-          << "EPGProcessor::generateEitMap there is no epg listener to notify";
+      clog << "EPGProcessor::generateEitMap there is no epg listener to "
+              "notify";
       clog << endl;
     }
 }
@@ -799,7 +813,8 @@ EPGProcessor::decodeCdt (string fileName)
       rval = fread ((void *)&(data[0]), 1, 4084, fd);
       if (rval == 4084)
         {
-          originalNetworkId = (((data[0] << 8) & 0xFF00) | (data[1] & 0xFF));
+          originalNetworkId
+              = (((data[0] << 8) & 0xFF00) | (data[1] & 0xFF));
 
           // TODO: check data_type!!!
 

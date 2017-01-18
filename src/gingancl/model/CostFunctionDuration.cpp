@@ -45,7 +45,8 @@ CostFunctionDuration::getCostFunction ()
 }
 
 void
-CostFunctionDuration::setCostFunction (TemporalFlexibilityFunction *function)
+CostFunctionDuration::setCostFunction (
+    TemporalFlexibilityFunction *function)
 {
 
   costFunction = function;

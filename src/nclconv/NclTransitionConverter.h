@@ -44,13 +44,16 @@ class NclTransitionConverter : public NclTransitionParser
 {
 public:
   NclTransitionConverter (DocumentParser *documentParser);
-  void addTransitionToTransitionBase (void *parentObject, void *childObject);
+  void addTransitionToTransitionBase (void *parentObject,
+                                      void *childObject);
 
-  void *createTransitionBase (DOMElement *parentElement, void *objGrandParent);
+  void *createTransitionBase (DOMElement *parentElement,
+                              void *objGrandParent);
 
   void *createTransition (DOMElement *parentElement, void *objGrandParent);
 
-  void addImportBaseToTransitionBase (void *parentObject, void *childObject);
+  void addImportBaseToTransitionBase (void *parentObject,
+                                      void *childObject);
 };
 
 GINGA_NCLCONV_END

@@ -251,7 +251,8 @@ NCLSectionProcessor::getMetadata ()
 // creating stream
 vector<StreamData *> *
 NCLSectionProcessor::createNCLSections (string componentTag, string name,
-                                        string baseUri, vector<string> *files,
+                                        string baseUri,
+                                        vector<string> *files,
                                         map<int, string> *eventMap)
 {
 
@@ -276,7 +277,8 @@ NCLSectionProcessor::createNCLSections (string componentTag, string name,
       fileUri = *i;
 
       fileUriLen = fileUri.length ();
-      if (fileUriLen > baseUriLen && fileUri.substr (0, baseUriLen) == baseUri)
+      if (fileUriLen > baseUriLen
+          && fileUri.substr (0, baseUriLen) == baseUri)
         {
 
           fileUri = fileUri.substr (baseUriLen, fileUriLen - baseUriLen);

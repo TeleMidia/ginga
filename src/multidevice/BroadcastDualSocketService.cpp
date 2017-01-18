@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-BroadcastDualSocketService::BroadcastDualSocketService (unsigned int readPort,
-                                                        unsigned int writePort)
+BroadcastDualSocketService::BroadcastDualSocketService (
+    unsigned int readPort, unsigned int writePort)
 {
 
   outputBuffer = new vector<struct frame *>;
@@ -116,7 +116,8 @@ BroadcastDualSocketService::getServicePort ()
 }
 
 void
-BroadcastDualSocketService::dataRequest (char *data, int taskSize, bool repeat)
+BroadcastDualSocketService::dataRequest (char *data, int taskSize,
+                                         bool repeat)
 {
 
   struct frame *f;
@@ -201,7 +202,8 @@ BroadcastDualSocketService::checkInputBuffer (char *data, int *size)
 
   if (readSocket == NULL)
     {
-      clog << "BroadcastDualSocketService::checkInputBuffer readSocket == NULL"
+      clog << "BroadcastDualSocketService::checkInputBuffer readSocket == "
+              "NULL"
            << endl;
       return false;
     }
@@ -247,7 +249,7 @@ BroadcastDualSocketService::checkInputBuffer (char *data, int *size)
         recvFrom = getUIntFromStream (data + 1);
 
         //				if (!isValidRecvFrame(recvFrom,
-        //getUIntFromStream(groupAddress), data)) {
+        // getUIntFromStream(groupAddress), data)) {
         if (!isValidRecvFrame (recvFrom, interfaceIP, data))
           {
             clog << "BroadcastDualSocketService::checkInputBuffer() "

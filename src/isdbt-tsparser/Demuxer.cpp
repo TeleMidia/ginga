@@ -302,7 +302,8 @@ Demuxer::setupFilter (IFrontendFilter *filter)
               attached = true;
 
             } /* else {
-                     clog << "Demuxer::setupFilter can't getPidByTid pid = '";
+                     clog << "Demuxer::setupFilter can't getPidByTid pid =
+             '";
                      clog << pid << "' tid = '" << filter->getTid() << "'";
 
                      clog << " PMT print: " << endl;
@@ -355,7 +356,8 @@ Demuxer::demux (ITSPacket *packet)
                 }
               if (packet->getAdaptationFieldControl () == 2)
                 {
-                  cout << "NPT TS ERROR: AdaptationFieldControl is 2." << endl;
+                  cout << "NPT TS ERROR: AdaptationFieldControl is 2."
+                       << endl;
                 }
               char buf[184];
               packet->getPayload (buf);
@@ -418,7 +420,8 @@ Demuxer::demux (ITSPacket *packet)
                       /* If the version is different update */
                       if (newVer != currVer)
                         {
-                          clog << "demuxer replace pmt id = '" << pid << "'";
+                          clog << "demuxer replace pmt id = '" << pid
+                               << "'";
                           clog << " newVer = '" << newVer;
                           clog << "' currVer = '" << currVer << "': ";
                           // newPmt->print();

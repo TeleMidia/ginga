@@ -179,7 +179,8 @@ ContextNode::removeLink (Link *link)
 }
 
 bool
-ContextNode::setNodeDescriptor (string nodeId, GenericDescriptor *descriptor)
+ContextNode::setNodeDescriptor (string nodeId,
+                                GenericDescriptor *descriptor)
 {
 
   Node *node;

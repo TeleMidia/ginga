@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
 
-AdapterProgramAVPlayer::AdapterProgramAVPlayer () : AdapterFormatterPlayer ()
+AdapterProgramAVPlayer::AdapterProgramAVPlayer ()
+    : AdapterFormatterPlayer ()
 {
   typeSet.insert ("AdapterProgramAVPlayer");
   lastValue = "";
@@ -57,7 +58,8 @@ AdapterProgramAVPlayer::stop ()
 {
   player->setPropertyValue ("bounds", ""); // full screen
 
-  // TODO: create a map to handle each default value (before AIT app start cmd)
+  // TODO: create a map to handle each default value (before AIT app start
+  // cmd)
   player->setPropertyValue ("soundLevel", "1.0"); // full sound
 
   return AdapterFormatterPlayer::stop ();

@@ -209,7 +209,8 @@ NCLMetadata::createNCLSections ()
 
       writeDataElement (itos (structId), fileUri, itos (fileSize), cTag);
 
-      streamData = createStreamData (structId, ST_DATAFILE, fileUri, fileSize);
+      streamData
+          = createStreamData (structId, ST_DATAFILE, fileUri, fileSize);
 
       streams->push_back (streamData);
       ++i;

@@ -40,7 +40,8 @@ class NTPDatagram
 
 #define NTP_BUFFER_SIZE 48
 
-#define NTP_DATA_GRAM_CONTROL_HEADER(base_addr) ((alt_u32 *)(base_addr + 0x00))
+#define NTP_DATA_GRAM_CONTROL_HEADER(base_addr)                            \
+  ((alt_u32 *)(base_addr + 0x00))
 #define NTP_CONT_HEAD_PRECISION_MSK (0xFF)
 #define NTP_CONT_HEAD_PRECISION_OFST (0)
 #define NTP_CONT_HEAD_POLL_MSK (0xFF)
@@ -57,17 +58,21 @@ class NTPDatagram
 #define NTP_DATA_GRAM_ROOT_DELAY(base_addr) ((alt_u32 *)(base_addr + 0x04))
 #define NTP_DATA_GRAM_ROOT_DISP(base_addr) ((alt_u32 *)(base_addr + 0x08))
 #define NTP_DATA_GRAM_REF_ID(base_addr) ((alt_u32 *)(base_addr + 0x0C))
-#define NTP_DATA_GRAM_REF_TSTMP_INT(base_addr) ((alt_u32 *)(base_addr + 0x10))
-#define NTP_DATA_GRAM_REF_TSTMP_FRAC(base_addr) ((alt_u32 *)(base_addr + 0x14))
-#define NTP_DATA_GRAM_ORIG_TSTMP_INT(base_addr) ((alt_u32 *)(base_addr + 0x18))
-#define NTP_DATA_GRAM_ORIG_TSTMP_FRAC(base_addr)                              \
+#define NTP_DATA_GRAM_REF_TSTMP_INT(base_addr)                             \
+  ((alt_u32 *)(base_addr + 0x10))
+#define NTP_DATA_GRAM_REF_TSTMP_FRAC(base_addr)                            \
+  ((alt_u32 *)(base_addr + 0x14))
+#define NTP_DATA_GRAM_ORIG_TSTMP_INT(base_addr)                            \
+  ((alt_u32 *)(base_addr + 0x18))
+#define NTP_DATA_GRAM_ORIG_TSTMP_FRAC(base_addr)                           \
   ((alt_u32 *)(base_addr + 0x1C))
-#define NTP_DATA_GRAM_RECV_TSTMP_INT(base_addr) ((alt_u32 *)(base_addr + 0x20))
-#define NTP_DATA_GRAM_RECV_TSTMP_FRAC(base_addr)                              \
+#define NTP_DATA_GRAM_RECV_TSTMP_INT(base_addr)                            \
+  ((alt_u32 *)(base_addr + 0x20))
+#define NTP_DATA_GRAM_RECV_TSTMP_FRAC(base_addr)                           \
   ((alt_u32 *)(base_addr + 0x24))
-#define NTP_DATA_GRAM_TRANS_TSTMP_INT(base_addr)                              \
+#define NTP_DATA_GRAM_TRANS_TSTMP_INT(base_addr)                           \
   ((alt_u32 *)(base_addr + 0x28))
-#define NTP_DATA_GRAM_TRANS_TSTMP_FRAC(base_addr)                             \
+#define NTP_DATA_GRAM_TRANS_TSTMP_FRAC(base_addr)                          \
   ((alt_u32 *)(base_addr + 0x2C))
 #define NTP_DATA_GRAM_KEY_ID(base_addr) ((alt_u32 *)(base_addr + 0x30))
 #define NTP_DATA_GRAM_MSG_DIG1(base_addr) ((alt_u32 *)(base_addr + 0x34))

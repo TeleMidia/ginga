@@ -25,7 +25,8 @@ class LinkListener
 public:
   virtual ~LinkListener (){};
   virtual void linkEvaluationStarted (FormatterCausalLink *link) = 0;
-  virtual void linkEvaluationFinished (FormatterCausalLink *link, bool start)
+  virtual void linkEvaluationFinished (FormatterCausalLink *link,
+                                       bool start)
       = 0;
 };
 

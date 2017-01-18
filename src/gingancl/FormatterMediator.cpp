@@ -137,8 +137,8 @@ EntryEventListener::eventStateChanged (void *event, short transition,
 
               if (hasStartPoint && eventsRunning == 0)
                 {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START, "",
-                                                 eventType, value);
+                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
+                                                 "", eventType, value);
                 }
 
               eventsRunning++;
@@ -162,8 +162,8 @@ EntryEventListener::eventStateChanged (void *event, short transition,
 
               if (hasStartPoint && eventsRunning == 1)
                 {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP, "",
-                                                 eventType, value);
+                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
+                                                 "", eventType, value);
                 }
 
               eventsRunning--;
@@ -175,8 +175,8 @@ EntryEventListener::eventStateChanged (void *event, short transition,
 
               if (hasStartPoint && eventsRunning == 1)
                 {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT, "",
-                                                 eventType, value);
+                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
+                                                 "", eventType, value);
                 }
 
               eventsRunning--;
@@ -216,8 +216,8 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   presContext = new PresentationContext (data->screenId);
 
   multiDevice = new FormatterBaseDevice (
-      data->screenId, deviceLayout, data->playerId, data->x, data->y, data->w,
-      data->h, data->enableMulticast, 22222);
+      data->screenId, deviceLayout, data->playerId, data->x, data->y,
+      data->w, data->h, data->enableMulticast, 22222);
 
   multiDevice->setPresentationContex (presContext);
 
@@ -229,8 +229,8 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   ruleAdapter = new RuleAdapter (presContext);
   compiler = new FormatterConverter (ruleAdapter);
 
-  scheduler = new FormatterScheduler (playerManager, ruleAdapter, multiDevice,
-                                      compiler);
+  scheduler = new FormatterScheduler (playerManager, ruleAdapter,
+                                      multiDevice, compiler);
 
   scheduler->addSchedulerListener (this);
   compiler->setScheduler (scheduler);
@@ -539,7 +539,8 @@ FormatterMediator::setParentLayout (void *parentLayout)
     {
 
       mainLayout = (FormatterLayout *)(multiDevice->getMainLayout ());
-      ((FormatterLayout *)parentLayout)->addChild (data->baseId, mainLayout);
+      ((FormatterLayout *)parentLayout)
+          ->addChild (data->baseId, mainLayout);
     }
 }
 
@@ -703,7 +704,8 @@ FormatterMediator::removeDocument (string documentId)
     }
   else
     {
-      document = privateBaseManager->removeDocument (data->baseId, documentId);
+      document
+          = privateBaseManager->removeDocument (data->baseId, documentId);
     }
 
   if (document != NULL)
@@ -734,7 +736,8 @@ FormatterMediator::getDocumentContext (string documentId)
     }
   else
     {
-      nclDocument = privateBaseManager->getDocument (data->baseId, documentId);
+      nclDocument
+          = privateBaseManager->getDocument (data->baseId, documentId);
     }
 
   if (nclDocument == NULL)
@@ -803,7 +806,8 @@ FormatterMediator::getPortFromEvent (FormatterEvent *event)
 }
 
 vector<Port *> *
-FormatterMediator::getContextPorts (ContextNode *context, string interfaceId)
+FormatterMediator::getContextPorts (ContextNode *context,
+                                    string interfaceId)
 {
 
   int i, size;
@@ -969,13 +973,15 @@ FormatterMediator::initializeSettingNodes (Node *node)
                   if (isEmbedded)
                     {
                       perspective = new NodeNesting (
-                          privateBaseManager->getPrivateBase (data->baseId));
+                          privateBaseManager->getPrivateBase (
+                              data->baseId));
 
                       perspective->append ((*i)->getPerspective ());
                     }
                   else
                     {
-                      perspective = new NodeNesting ((*i)->getPerspective ());
+                      perspective
+                          = new NodeNesting ((*i)->getPerspective ());
                     }
 
                   clog << "FormatterMediator::initializeSettingNodes '";
@@ -1050,8 +1056,8 @@ FormatterMediator::compileDocument (string documentId)
 
       event = (*entryEvents)[0];
       executionObject = (ExecutionObject *)(event->getExecutionObject ());
-      parentObject
-          = (CompositeExecutionObject *)(executionObject->getParentObject ());
+      parentObject = (CompositeExecutionObject *)(executionObject
+                                                      ->getParentObject ());
 
       if (parentObject != NULL)
         {
@@ -1063,7 +1069,8 @@ FormatterMediator::compileDocument (string documentId)
                                                      ->getParentObject ());
             }
 
-          documentEvent = executionObject->getWholeContentPresentationEvent ();
+          documentEvent
+              = executionObject->getWholeContentPresentationEvent ();
         }
       else
         {
@@ -1108,8 +1115,8 @@ FormatterMediator::prepareDocument (string documentId)
     }
   else
     {
-      docLocation
-          = privateBaseManager->getDocumentLocation (data->baseId, documentId);
+      docLocation = privateBaseManager->getDocumentLocation (data->baseId,
+                                                             documentId);
     }
 
   if (docLocation == "")
@@ -1140,7 +1147,8 @@ FormatterMediator::prepareDocument (string documentId)
               descs = db->getDescriptors ();
               if (descs != NULL)
                 {
-                  solveRemoteDescriptorsUris (docLocation, descs, isRemoteDoc);
+                  solveRemoteDescriptorsUris (docLocation, descs,
+                                              isRemoteDoc);
                 }
             }
         }
@@ -1165,7 +1173,8 @@ FormatterMediator::prepareDocument (string documentId)
 
 void
 FormatterMediator::solveRemoteDescriptorsUris (
-    string docLocation, vector<GenericDescriptor *> *descs, bool isRemoteDoc)
+    string docLocation, vector<GenericDescriptor *> *descs,
+    bool isRemoteDoc)
 {
 
   string src;
@@ -1245,7 +1254,8 @@ FormatterMediator::solveRemoteNodesUris (string docLocation,
           if (content != NULL && content->instanceOf ("ReferenceContent"))
             {
 
-              src = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
+              src = ((ReferenceContent *)content)
+                        ->getCompleteReferenceUrl ();
 
               if (src != "" && src.find (".") != std::string::npos)
                 {
@@ -1316,9 +1326,10 @@ FormatterMediator::solveRemoteNclDeps (string docLocation, bool isRemoteDoc)
               && nclDep.find_first_of ("\"") != nclDep.find_last_of ("\""))
             {
 
-              nclDep = nclDep.substr (nclDep.find_first_of ("\"") + 1,
-                                      nclDep.find_last_of ("\"")
-                                          - (nclDep.find_first_of ("\"") + 1));
+              nclDep
+                  = nclDep.substr (nclDep.find_first_of ("\"") + 1,
+                                   nclDep.find_last_of ("\"")
+                                       - (nclDep.find_first_of ("\"") + 1));
 
               if ((!isRemoteDoc
                    && nclDep.find ("http://") == std::string::npos)
@@ -1458,7 +1469,8 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 
           if (interfaceId == "")
             {
-              AdapterFormatterPlayer::printAction ("startApp::" + documentId);
+              AdapterFormatterPlayer::printAction ("startApp::"
+                                                   + documentId);
 
               scheduler->startDocument (documentEvent, entryEvents);
             }
@@ -1472,7 +1484,8 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 
               filteredEvents.push_back (entryEvent);
 
-              AdapterFormatterPlayer::printAction ("startApp::" + documentId);
+              AdapterFormatterPlayer::printAction ("startApp::"
+                                                   + documentId);
 
               scheduler->startDocument (documentEvent, &filteredEvents);
             }
@@ -2424,8 +2437,8 @@ FormatterMediator::addRegion (string documentId, string regionBaseId,
                               string regionId, string xmlRegion)
 {
 
-  return privateBaseManager->addRegion (data->baseId, documentId, regionBaseId,
-                                        regionId, xmlRegion);
+  return privateBaseManager->addRegion (data->baseId, documentId,
+                                        regionBaseId, regionId, xmlRegion);
 }
 
 LayoutRegion *
@@ -2606,13 +2619,13 @@ FormatterMediator::addImportedDocumentBase (string documentId,
                                             string xmlImportedDocumentBase)
 {
 
-  return privateBaseManager->addImportedDocumentBase (data->baseId, documentId,
-                                                      xmlImportedDocumentBase);
+  return privateBaseManager->addImportedDocumentBase (
+      data->baseId, documentId, xmlImportedDocumentBase);
 }
 
 NclDocument *
-FormatterMediator::removeImportedDocumentBase (string documentId,
-                                               string importedDocumentBaseId)
+FormatterMediator::removeImportedDocumentBase (
+    string documentId, string importedDocumentBaseId)
 {
 
   return privateBaseManager->removeImportedDocumentBase (
@@ -2669,8 +2682,8 @@ FormatterMediator::processInsertedReferNode (ReferNode *referNode)
         }
       else
         {
-          clog
-              << "FormatterMediator::processInsertedReferNode referred object";
+          clog << "FormatterMediator::processInsertedReferNode referred "
+                  "object";
           clog << " is NULL for '";
           clog << nodeEntity->getId () << "' instType = '";
           clog << instanceType << "'" << endl;
@@ -2825,7 +2838,8 @@ FormatterMediator::removeNode (string documentId, string compositeId,
         {
 
           // remove the object entry
-          compiler->removeExecutionObject (executionObject, (ReferNode *)node);
+          compiler->removeExecutionObject (executionObject,
+                                           (ReferNode *)node);
         }
       else
         {
@@ -2903,7 +2917,8 @@ FormatterMediator::removeInterfaceMappings (Node *node,
                     {
                       mapping = (Port *)(*k);
                       if (mapping->getNode () == node
-                          && mapping->getInterfacePoint () == interfacePoint)
+                          && mapping->getInterfacePoint ()
+                                 == interfacePoint)
                         {
 
                           portsToBeRemoved->push_back (port);
@@ -2992,7 +3007,8 @@ FormatterMediator::removeInterfaceLinks (Node *node,
 }
 
 void
-FormatterMediator::removeInterface (Node *node, InterfacePoint *interfacePoint)
+FormatterMediator::removeInterface (Node *node,
+                                    InterfacePoint *interfacePoint)
 {
 
   CompositeNode *parentNode;
@@ -3002,7 +3018,8 @@ FormatterMediator::removeInterface (Node *node, InterfacePoint *interfacePoint)
 
   if (parentNode != NULL && parentNode->instanceOf ("ContextNode"))
     {
-      removeInterfaceLinks (node, interfacePoint, (ContextNode *)parentNode);
+      removeInterfaceLinks (node, interfacePoint,
+                            (ContextNode *)parentNode);
     }
 
   if (interfacePoint->instanceOf ("Anchor"))
@@ -3074,8 +3091,8 @@ FormatterMediator::addLink (string documentId, string compositeId,
   NclDocument *document;
   ContextNode *contextNode;
 
-  ncmLink = privateBaseManager->addLink (data->baseId, documentId, compositeId,
-                                         xmlLink);
+  ncmLink = privateBaseManager->addLink (data->baseId, documentId,
+                                         compositeId, xmlLink);
 
   if (ncmLink != NULL)
     {
@@ -3084,7 +3101,8 @@ FormatterMediator::addLink (string documentId, string compositeId,
       contextNode = (ContextNode *)(document->getNode (compositeId));
       if (ncmLink->instanceOf ("CausalLink"))
         {
-          fLink = compiler->addCausalLink (contextNode, (CausalLink *)ncmLink);
+          fLink = compiler->addCausalLink (contextNode,
+                                           (CausalLink *)ncmLink);
 
           if (fLink != NULL)
             {
@@ -3107,7 +3125,8 @@ FormatterMediator::addLink (string documentId, string compositeId,
 
                   event = object->getMainEvent ();
                   if (event != NULL
-                      && event->getCurrentState () == EventUtil::ST_OCCURRING)
+                      && event->getCurrentState ()
+                             == EventUtil::ST_OCCURRING)
                     {
 
                       player = (AdapterFormatterPlayer *)
@@ -3750,7 +3769,8 @@ FormatterMediator::getDepUris (vector<string> *uris, int targetDev)
 
 string
 FormatterMediator::getDepUrisFromNodes (vector<string> *uris,
-                                        vector<Node *> *nodes, int targetDev)
+                                        vector<Node *> *nodes,
+                                        int targetDev)
 {
 
   CompositeNode *node;

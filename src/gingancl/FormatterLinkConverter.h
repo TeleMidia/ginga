@@ -109,8 +109,9 @@ private:
 
   LinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, double delay,
-      vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
-      CompositeExecutionObject *parentObject, int depthLevel);
+      vector<ConditionExpression *> *ncmChildConditions,
+      CausalLink *ncmLink, CompositeExecutionObject *parentObject,
+      int depthLevel);
 
   LinkCondition *createCondition (TriggerExpression *triggerExpression,
                                   CausalLink *ncmLink,
@@ -130,21 +131,19 @@ private:
       AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
       CompositeExecutionObject *parentObject, int depthLevel);
 
-  LinkSimpleAction *createSimpleAction (SimpleAction *sae, Bind *bind,
-                                        Link *ncmLink,
-                                        CompositeExecutionObject *parentObject,
-                                        int depthLevel);
+  LinkSimpleAction *
+  createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
+                      CompositeExecutionObject *parentObject,
+                      int depthLevel);
 
-  LinkCompoundAction *
-  createCompoundAction (short op, double delay,
-                        vector<Action *> *ncmChildActions, CausalLink *ncmLink,
-                        CompositeExecutionObject *parentObject,
-                        int depthLevel);
+  LinkCompoundAction *createCompoundAction (
+      short op, double delay, vector<Action *> *ncmChildActions,
+      CausalLink *ncmLink, CompositeExecutionObject *parentObject,
+      int depthLevel);
 
-  LinkTriggerCondition *
-  createSimpleCondition (SimpleCondition *condition, Bind *bind, Link *ncmLink,
-                         CompositeExecutionObject *parentObject,
-                         int depthLevel);
+  LinkTriggerCondition *createSimpleCondition (
+      SimpleCondition *condition, Bind *bind, Link *ncmLink,
+      CompositeExecutionObject *parentObject, int depthLevel);
 
   FormatterEvent *createEvent (Bind *bind, Link *ncmLink,
                                CompositeExecutionObject *parentObject,

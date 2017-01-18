@@ -94,7 +94,8 @@ CompoundCondition::addConditionExpression (ConditionExpression *condition)
 }
 
 void
-CompoundCondition::removeConditionExpression (ConditionExpression *condition)
+CompoundCondition::removeConditionExpression (
+    ConditionExpression *condition)
 {
 
   vector<ConditionExpression *>::iterator iterator;

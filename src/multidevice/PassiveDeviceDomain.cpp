@@ -35,19 +35,21 @@ PassiveDeviceDomain::PassiveDeviceDomain (bool useMulticast, int srvPort)
   if (useMulticast)
     {
       passiveSocket = new MulticastSocketService (
-          (char *)(PASSIVE_MCAST_ADDR.c_str ()), BROADCAST_PORT + CT_PASSIVE);
+          (char *)(PASSIVE_MCAST_ADDR.c_str ()),
+          BROADCAST_PORT + CT_PASSIVE);
     }
   else
     {
-      passiveSocket = new BroadcastDualSocketService (SECO_WRITE_BCAST_PORT,
-                                                      BASE_WRITE_BCAST_PORT);
+      passiveSocket = new BroadcastDualSocketService (
+          SECO_WRITE_BCAST_PORT, BASE_WRITE_BCAST_PORT);
     }
 }
 
 PassiveDeviceDomain::~PassiveDeviceDomain () {}
 
 bool
-PassiveDeviceDomain::taskRequest (int destDevClass, char *data, int taskSize)
+PassiveDeviceDomain::taskRequest (int destDevClass, char *data,
+                                  int taskSize)
 {
 
   return passiveTaskRequest (data, taskSize);
@@ -75,7 +77,8 @@ PassiveDeviceDomain::postConnectionRequestTask (int w, int h)
   clog << endl;
 
   // prepare frame
-  task = mountFrame (myIP, CT_BASE, FT_CONNECTIONREQUEST, connReqPayloadSize);
+  task = mountFrame (myIP, CT_BASE, FT_CONNECTIONREQUEST,
+                     connReqPayloadSize);
 
   task[HEADER_SIZE] = deviceClass;
 
@@ -123,7 +126,8 @@ PassiveDeviceDomain::receiveMediaContentTask (char *task)
 {
   clog << "PassiveDeviceDomain::receiveMediaContentTask ";
   clog << "destcass = '" << destClass << "'" << endl;
-  return deviceService->receiveMediaContent (sourceIp, task, this->frameSize);
+  return deviceService->receiveMediaContent (sourceIp, task,
+                                             this->frameSize);
 }
 
 void
@@ -151,7 +155,8 @@ PassiveDeviceDomain::runControlTask ()
         }
       /*
       if (myIP == sourceIp) {
-              clog << "PassiveDeviceDomain::runControlTask got my own task ";
+              clog << "PassiveDeviceDomain::runControlTask got my own task
+      ";
               clog << "(size = '" << frameSize << "')" << endl;
 
               delete[] task;

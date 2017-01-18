@@ -105,8 +105,8 @@ PipeFilter::receiveTSPacket (ITSPacket *pack)
         }
     }
 
-  bytesWritten
-      = SystemCompat::writePipe (dstPd, packData, ITSPacket::TS_PACKET_SIZE);
+  bytesWritten = SystemCompat::writePipe (dstPd, packData,
+                                          ITSPacket::TS_PACKET_SIZE);
 
   assert (bytesWritten == ITSPacket::TS_PACKET_SIZE);
 }

@@ -21,22 +21,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclConnectorsConverter::NclConnectorsConverter (DocumentParser *documentParser)
+NclConnectorsConverter::NclConnectorsConverter (
+    DocumentParser *documentParser)
     : NclConnectorsParser (documentParser)
 {
 }
 
 void
-NclConnectorsConverter::addCausalConnectorToConnectorBase (void *parentObject,
-                                                           void *childObject)
+NclConnectorsConverter::addCausalConnectorToConnectorBase (
+    void *parentObject, void *childObject)
 {
 
   ((ConnectorBase *)parentObject)->addConnector ((Connector *)childObject);
 }
 
 void
-NclConnectorsConverter::addConnectorParamToCausalConnector (void *parentObject,
-                                                            void *childObject)
+NclConnectorsConverter::addConnectorParamToCausalConnector (
+    void *parentObject, void *childObject)
 {
 
   ((Connector *)parentObject)->addParameter ((Parameter *)childObject);
@@ -206,8 +207,8 @@ NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
   // transition
   if (parentElement->hasAttribute (XMLString::transcode ("transition")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("transition")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("transition")));
 
       conditionExpression->setTransition (
           EventUtil::getTransitionCode (attValue));
@@ -278,8 +279,8 @@ NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
   conditionExpression = new CompoundCondition ();
 
   if (XMLString::compareIString (
-          XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("operator"))),
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("operator"))),
 
           "and")
       == 0)
@@ -317,8 +318,8 @@ NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
 }
 
 void *
-NclConnectorsConverter::createAttributeAssessment (DOMElement *parentElement,
-                                                   void *objGrandParent)
+NclConnectorsConverter::createAttributeAssessment (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   AttributeAssessment *attributeAssessment;
@@ -388,8 +389,8 @@ NclConnectorsConverter::createValueAssessment (DOMElement *parentElement,
 }
 
 void *
-NclConnectorsConverter::createAssessmentStatement (DOMElement *parentElement,
-                                                   void *objGrandParent)
+NclConnectorsConverter::createAssessmentStatement (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   AssessmentStatement *assessmentStatement;
@@ -397,8 +398,8 @@ NclConnectorsConverter::createAssessmentStatement (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("comparator")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("comparator")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("comparator")));
 
       assessmentStatement
           = new AssessmentStatement (Comparator::fromString (attValue));
@@ -422,8 +423,8 @@ NclConnectorsConverter::createCompoundStatement (DOMElement *parentElement,
   compoundStatement = new CompoundStatement ();
 
   if (XMLString::compareIString (
-          XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("operator"))),
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("operator"))),
           "and")
       == 0)
     {
@@ -464,8 +465,8 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
   // transition
   if (parentElement->hasAttribute (XMLString::transcode ("actionType")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("actionType")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("actionType")));
 
       actionExpression->setActionType (convertActionType (attValue));
     }
@@ -490,8 +491,8 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
       if (parentElement->hasAttribute (XMLString::transcode ("duration")))
         {
 
-          durVal = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("duration")));
+          durVal = XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("duration")));
         }
 
       if (parentElement->hasAttribute (XMLString::transcode ("by")))
@@ -519,7 +520,8 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
                 }
               else
                 {
-                  animation->setDuration (itos (::ginga::util::stof (durVal)));
+                  animation->setDuration (
+                      itos (::ginga::util::stof (durVal)));
                 }
             }
 
@@ -568,17 +570,18 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
         }
       else
         {
-          actionExpression->setDelay (itos (
-              ::ginga::util::stof (attValue.substr (0, attValue.length () - 1))
-              * 1000));
+          actionExpression->setDelay (
+              itos (::ginga::util::stof (
+                        attValue.substr (0, attValue.length () - 1))
+                    * 1000));
         }
     }
 
   //  testing repeatDelay
   if (parentElement->hasAttribute (XMLString::transcode ("repeatDelay")))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("repeatDelay")));
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("repeatDelay")));
 
       actionExpression->setDelay (attValue);
       if (attValue[0] == '$')
@@ -587,9 +590,10 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
         }
       else
         {
-          actionExpression->setDelay (itos (
-              ::ginga::util::stof (attValue.substr (0, attValue.length () - 1))
-              * 1000));
+          actionExpression->setDelay (
+              itos (::ginga::util::stof (
+                        attValue.substr (0, attValue.length () - 1))
+                    * 1000));
         }
     }
 
@@ -633,8 +637,8 @@ NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
   actionExpression = new CompoundAction ();
 
   if (XMLString::compareIString (
-          XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("operator"))),
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("operator"))),
           "seq")
       == 0)
     {
@@ -658,9 +662,10 @@ NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
         }
       else
         {
-          actionExpression->setDelay (itos (
-              ::ginga::util::stof (attValue.substr (0, attValue.length () - 1))
-              * 1000));
+          actionExpression->setDelay (
+              itos (::ginga::util::stof (
+                        attValue.substr (0, attValue.length () - 1))
+                    * 1000));
         }
     }
 
@@ -785,7 +790,8 @@ NclConnectorsConverter::addAssessmentStatementToCompoundStatement (
     void *parentObject, void *childObject)
 {
 
-  ((CompoundStatement *)parentObject)->addStatement ((Statement *)childObject);
+  ((CompoundStatement *)parentObject)
+      ->addStatement ((Statement *)childObject);
 }
 
 void
@@ -793,7 +799,8 @@ NclConnectorsConverter::addCompoundStatementToCompoundStatement (
     void *parentObject, void *childObject)
 {
 
-  ((CompoundStatement *)parentObject)->addStatement ((Statement *)childObject);
+  ((CompoundStatement *)parentObject)
+      ->addStatement ((Statement *)childObject);
 }
 
 void
@@ -805,8 +812,8 @@ NclConnectorsConverter::addSimpleActionToCompoundAction (void *parentObject,
 }
 
 void
-NclConnectorsConverter::addCompoundActionToCompoundAction (void *parentObject,
-                                                           void *childObject)
+NclConnectorsConverter::addCompoundActionToCompoundAction (
+    void *parentObject, void *childObject)
 {
 
   ((CompoundAction *)parentObject)->addAction ((Action *)childObject);
@@ -831,16 +838,16 @@ NclConnectorsConverter::addCompoundConditionToCausalConnector (
 }
 
 void
-NclConnectorsConverter::addSimpleActionToCausalConnector (void *parentObject,
-                                                          void *childObject)
+NclConnectorsConverter::addSimpleActionToCausalConnector (
+    void *parentObject, void *childObject)
 {
 
   ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
 }
 
 void
-NclConnectorsConverter::addCompoundActionToCausalConnector (void *parentObject,
-                                                            void *childObject)
+NclConnectorsConverter::addCompoundActionToCausalConnector (
+    void *parentObject, void *childObject)
 {
 
   ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
@@ -871,8 +878,8 @@ NclConnectorsConverter::addConstraintConnectorToConnectorBase (
 }
 
 void *
-NclConnectorsConverter::createConstraintConnector (DOMElement *parentElement,
-                                                   void *objGrandParent)
+NclConnectorsConverter::createConstraintConnector (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   // TODO Auto-generated method stub

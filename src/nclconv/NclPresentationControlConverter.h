@@ -70,7 +70,8 @@ class NclPresentationControlConverter : public NclPresentationControlParser
   // posCreateContentControlGroup
   // addDescriptorGroupToDescriptorSwitchGroup
   // addBindRuleGroupToDescriptorSwitchGroup
-  // 3 adicionar posCreateDescriptorSwitchGroup no createDescriptorSwitchGroup
+  // 3 adicionar posCreateDescriptorSwitchGroup no
+  // createDescriptorSwitchGroup
   // 3 adicionar posCreateContentControlGroup no createContentControlGroup
   // 4 copiar adaptando posCompileContentControlGroup
   // 4 copiar adaptando posCompileDescriptorSwitchGroup
@@ -82,13 +83,15 @@ public:
   virtual ~NclPresentationControlConverter ();
 
   vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
-  void addCompositeRuleToCompositeRule (void *parentObject, void *childObject);
+  void addCompositeRuleToCompositeRule (void *parentObject,
+                                        void *childObject);
 
   void addCompositeRuleToRuleBase (void *parentObject, void *childObject);
   void addRuleToCompositeRule (void *parentObject, void *childObject);
   void addRuleToRuleBase (void *parentObject, void *childObject);
   void addSwitchPortToSwitch (void *parentObject, void *childObject);
-  void *createCompositeRule (DOMElement *parentElement, void *objGrandParent);
+  void *createCompositeRule (DOMElement *parentElement,
+                             void *objGrandParent);
 
   void *createSwitch (DOMElement *parentElement, void *objGrandParent);
   void *createRuleBase (DOMElement *parentElement, void *objGrandParent);
@@ -96,10 +99,12 @@ public:
   void *createDescriptorSwitch (DOMElement *parentElement,
                                 void *objGrandParent);
 
-  void addDescriptorToDescriptorSwitch (void *parentObject, void *childObject);
+  void addDescriptorToDescriptorSwitch (void *parentObject,
+                                        void *childObject);
 
   void addImportBaseToRuleBase (void *parentObject, void *childObject);
-  void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
+  void addBindRuleToDescriptorSwitch (void *parentObject,
+                                      void *childObject);
 
   void addBindRuleToSwitch (void *parentObject, void *childObject);
   void addDefaultComponentToSwitch (void *parentObject, void *childObject);

@@ -187,8 +187,8 @@ AdapterApplicationPlayer::prepare (ExecutionObject *object,
           if (content != NULL && content->instanceOf ("ReferenceContent"))
             {
 
-              this->mrl
-                  = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
+              this->mrl = ((ReferenceContent *)content)
+                              ->getCompleteReferenceUrl ();
 
               // Update the url with the iUriD separation path
               // FIXME: This code is here and in FomatterPlayerAdapter.cpp
@@ -316,7 +316,8 @@ AdapterApplicationPlayer::prepare (FormatterEvent *event)
 
   if (player != NULL && event->instanceOf ("AnchorEvent"))
     {
-      if ((((AnchorEvent *)event)->getAnchor ())->instanceOf ("LambdaAnchor"))
+      if ((((AnchorEvent *)event)->getAnchor ())
+              ->instanceOf ("LambdaAnchor"))
         {
 
           duration = ((PresentationEvent *)event)->getDuration ();
@@ -389,7 +390,8 @@ AdapterApplicationPlayer::start ()
     }
   if ((startSuccess) || (objectDevice == 2))
     { // DeviceDomain::CT_ACTIVE
-      // clog << "AdapterApplicationPlayer::play objectDevice" << objectDevice
+      // clog << "AdapterApplicationPlayer::play objectDevice" <<
+      // objectDevice
       // << endl;
       if (object != NULL && !object->start ())
         {
@@ -726,7 +728,9 @@ AdapterApplicationPlayer::naturalEnd ()
       event = i->second;
       if (event != NULL && event->instanceOf ("AnchorEvent")
           && ((AnchorEvent *)event)->getAnchor () != NULL
-          && ((AnchorEvent *)event)->getAnchor ()->instanceOf ("LambdaAnchor"))
+          && ((AnchorEvent *)event)
+                 ->getAnchor ()
+                 ->instanceOf ("LambdaAnchor"))
         {
 
           unlockPreparedEvents ();
@@ -750,8 +754,8 @@ AdapterApplicationPlayer::naturalEnd ()
 }
 
 void
-AdapterApplicationPlayer::updateStatus (short code, string param, short type,
-                                        string value)
+AdapterApplicationPlayer::updateStatus (short code, string param,
+                                        short type, string value)
 {
 
   ApplicationStatus *data;
@@ -1027,7 +1031,8 @@ AdapterApplicationPlayer::startEvent (string anchorId, short type,
 }
 
 bool
-AdapterApplicationPlayer::stopEvent (string anchorId, short type, string value)
+AdapterApplicationPlayer::stopEvent (string anchorId, short type,
+                                     string value)
 {
 
   FormatterEvent *event;

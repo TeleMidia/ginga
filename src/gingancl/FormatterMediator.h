@@ -191,7 +191,8 @@ public:
   Port *getPortFromEvent (FormatterEvent *event);
 
 private:
-  vector<Port *> *getContextPorts (ContextNode *context, string interfaceId);
+  vector<Port *> *getContextPorts (ContextNode *context,
+                                   string interfaceId);
 
   vector<FormatterEvent *> *processDocument (string documentId,
                                              string interfaceId);
@@ -212,7 +213,8 @@ private:
 
   void solveRemoteNclDeps (string docLocation, bool isRemoteDoc);
 
-  void solveRemoteLuaDeps (string docLocation, string src, bool isRemoteDoc);
+  void solveRemoteLuaDeps (string docLocation, string src,
+                           bool isRemoteDoc);
 
   string solveRemoteSourceUri (string docLocation, string src);
 
@@ -254,14 +256,17 @@ private:
 
   Connector *addConnector (string documentId, string xmlConnector);
   Connector *removeConnector (string documentId, string connectorId);
-  ConnectorBase *addConnectorBase (string documentId, string xmlConnectorBase);
+  ConnectorBase *addConnectorBase (string documentId,
+                                   string xmlConnectorBase);
 
   ConnectorBase *removeConnectorBase (string documentId,
                                       string connectorBaseId);
 
-  GenericDescriptor *addDescriptor (string documentId, string xmlDescriptor);
+  GenericDescriptor *addDescriptor (string documentId,
+                                    string xmlDescriptor);
 
-  GenericDescriptor *removeDescriptor (string documentId, string descriptorId);
+  GenericDescriptor *removeDescriptor (string documentId,
+                                       string descriptorId);
 
   DescriptorBase *addDescriptorBase (string documentId,
                                      string xmlDescriptorBase);
@@ -311,8 +316,8 @@ private:
 
   Link *removeLink (string documentId, string compositeId, string linkId);
 
-  bool setPropertyValue (string documentId, string nodeId, string propertyId,
-                         string value);
+  bool setPropertyValue (string documentId, string nodeId,
+                         string propertyId, string value);
 
 public:
   void setNotifyContentUpdate (bool notify){};
@@ -328,8 +333,8 @@ public:
   double getTotalMediaTime ();
   void setMediaTime (double newTime);
   bool setKeyHandler (bool isHandler);
-  void setScope (string scope, short type, double begin = -1, double end = -1,
-                 double outTransDur = -1);
+  void setScope (string scope, short type, double begin = -1,
+                 double end = -1, double outTransDur = -1);
 
   bool play ();
   void stop ();

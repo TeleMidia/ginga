@@ -24,7 +24,8 @@ class IDsmccObjectListener
 {
 public:
   virtual ~IDsmccObjectListener (){};
-  virtual void objectMounted (string ior, string clientUri, string name) = 0;
+  virtual void objectMounted (string ior, string clientUri, string name)
+      = 0;
 };
 
 GINGA_DATAPROC_END

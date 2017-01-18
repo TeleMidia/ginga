@@ -53,7 +53,8 @@ public:
   static vector<DsmccMpegDescriptor *> *
   getDescriptors (vector<DsmccMpegDescriptor *> *descriptors,
                   unsigned char Tag);
-  static int getDescriptorsLength (vector<DsmccMpegDescriptor *> *descriptors);
+  static int
+  getDescriptorsLength (vector<DsmccMpegDescriptor *> *descriptors);
 };
 
 GINGA_DATAPROC_END

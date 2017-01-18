@@ -46,7 +46,8 @@ NclPresentationControlConverter::~NclPresentationControlConverter ()
 }
 
 vector<Node *> *
-NclPresentationControlConverter::getSwitchConstituents (SwitchNode *switchNode)
+NclPresentationControlConverter::getSwitchConstituents (
+    SwitchNode *switchNode)
 {
 
   map<string, map<string, NodeEntity *> *>::iterator i;
@@ -123,8 +124,8 @@ NclPresentationControlConverter::createCompositeRule (
   short ruleOp = CompositeRule::OP_AND;
 
   if (XMLString::compareIString (
-          XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("operator"))),
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("operator"))),
           "and")
       == 0)
     {
@@ -142,10 +143,10 @@ NclPresentationControlConverter::createCompositeRule (
     }
 
   // cria regra composta
-  compositePresentationRule
-      = new CompositeRule (XMLString::transcode (parentElement->getAttribute (
-                               XMLString::transcode ("id"))),
-                           ruleOp);
+  compositePresentationRule = new CompositeRule (
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("id"))),
+      ruleOp);
 
   return compositePresentationRule;
 }
@@ -223,7 +224,8 @@ NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
     }
 
   switchNode = new SwitchNode (id);
-  (*switchConstituents)[switchNode->getId ()] = new map<string, NodeEntity *>;
+  (*switchConstituents)[switchNode->getId ()]
+      = new map<string, NodeEntity *>;
 
   return switchNode;
 }
@@ -300,7 +302,8 @@ NclPresentationControlConverter::addDescriptorToDescriptorSwitch (
               = (*switchConstituents)[((DescriptorSwitch *)parentObject)
                                           ->getId ()];
 
-          if (descriptors->count (((GenericDescriptor *)childObject)->getId ())
+          if (descriptors->count (
+                  ((GenericDescriptor *)childObject)->getId ())
               == 0)
             {
 
@@ -315,8 +318,8 @@ NclPresentationControlConverter::addDescriptorToDescriptorSwitch (
 }
 
 void
-NclPresentationControlConverter::addImportBaseToRuleBase (void *parentObject,
-                                                          void *childObject)
+NclPresentationControlConverter::addImportBaseToRuleBase (
+    void *parentObject, void *childObject)
 {
 
   string baseAlias, baseLocation;
@@ -393,8 +396,8 @@ NclPresentationControlConverter::addBindRuleToDescriptorSwitch (
       return;
     }
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   ncmRule = document->getRule (XMLString::transcode (
       bindRule->getAttribute (XMLString::transcode ("rule"))));
@@ -444,8 +447,8 @@ NclPresentationControlConverter::addBindRuleToSwitch (void *parentObject,
       return;
     }
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   ncmRule = document->getRule (XMLString::transcode (
       bindRule->getAttribute (XMLString::transcode ("rule"))));
@@ -459,7 +462,8 @@ NclPresentationControlConverter::addBindRuleToSwitch (void *parentObject,
 }
 
 void
-NclPresentationControlConverter::addUnmappedNodesToSwitch (void *parentObject)
+NclPresentationControlConverter::addUnmappedNodesToSwitch (
+    void *parentObject)
 {
 
   SwitchNode *switchNode;
@@ -509,8 +513,8 @@ NclPresentationControlConverter::addDefaultComponentToSwitch (
     }
 
   nodes = (*switchConstituents)[switchNode->getId ()];
-  if (nodes->count (XMLString::transcode (
-          defaultComponent->getAttribute (XMLString::transcode ("component"))))
+  if (nodes->count (XMLString::transcode (defaultComponent->getAttribute (
+          XMLString::transcode ("component"))))
       == 0)
     {
 
@@ -557,7 +561,8 @@ NclPresentationControlConverter::addDefaultDescriptorToDescriptorSwitch (
     }
 
   descriptor = (GenericDescriptor *)(*descriptors)[XMLString::transcode (
-      defaultDescriptor->getAttribute (XMLString::transcode ("descriptor")))];
+      defaultDescriptor->getAttribute (
+          XMLString::transcode ("descriptor")))];
 
   if (descriptor == NULL)
     {
@@ -636,8 +641,8 @@ NclPresentationControlConverter::createDefaultDescriptor (
 }
 
 void *
-NclPresentationControlConverter::posCompileSwitch (DOMElement *parentElement,
-                                                   void *parentObject)
+NclPresentationControlConverter::posCompileSwitch (
+    DOMElement *parentElement, void *parentObject)
 {
 
   clog << "posCompileSwitch" << endl;

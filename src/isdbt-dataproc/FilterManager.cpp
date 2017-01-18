@@ -342,8 +342,8 @@ FilterManager::processSection (ITransportSection *section)
             }
 
           sec = (*secs)[i];
-          bytesSaved = fwrite (sec->getPayload (), 1, sec->getPayloadSize (),
-                               sectionFd);
+          bytesSaved = fwrite (sec->getPayload (), 1,
+                               sec->getPayloadSize (), sectionFd);
 
           if (bytesSaved != (int)(sec->getPayloadSize ()))
             {

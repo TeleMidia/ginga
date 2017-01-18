@@ -48,7 +48,8 @@ ISDBTFrontend::ISDBTFrontend (int feFd) : Thread ()
 
   res = ioctl (feFd, FE_GET_INFO, &info);
   if (res == -1)
-    clog << "ISDBTFrontend::ISDBTFrontend error: " << strerror (errno) << endl;
+    clog << "ISDBTFrontend::ISDBTFrontend error: " << strerror (errno)
+         << endl;
 
   dumpFrontendInfo ();
 
@@ -73,11 +74,12 @@ ISDBTFrontend::initIsdbtParameters ()
   memset (&params, 0, sizeof (dvb_frontend_parameters));
 
   // for debugging purposes...
-  // params.frequency = 533142000; // sbt,  521142000 - rede vida,  599142000 -
+  // params.frequency = 533142000; // sbt,  521142000 - rede vida,
+  // 599142000 -
   // band;
 
-  params.inversion
-      = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO : INVERSION_OFF;
+  params.inversion = (info.caps & FE_CAN_INVERSION_AUTO) ? INVERSION_AUTO
+                                                         : INVERSION_OFF;
   params.u.ofdm.code_rate_HP = FEC_AUTO;
   params.u.ofdm.code_rate_LP = FEC_AUTO;
   params.u.ofdm.constellation = QAM_AUTO;
@@ -121,7 +123,8 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
 
       if (ioctl (feFd, FE_SET_FRONTEND, &params) == -1)
         {
-          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error "
+          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl "
+                  "error "
                   "with arg FE_SET_FRONTEND"
                << endl;
         }
@@ -130,7 +133,8 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
   if (dmFd == -1)
     {
       dmFd = open (IFE_DEMUX_DEV_NAME.c_str (), O_RDWR);
-      /* WARNING: For now we're just _not_ using the filter infrastructure of
+      /* WARNING: For now we're just _not_ using the filter infrastructure
+       * of
        * the linux kernel, so we just grab the "full" TS */
       if (dmFd < 0)
         {
@@ -149,7 +153,8 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
 
       if (ioctl (dmFd, DMX_SET_PES_FILTER, &filter_dmx))
         {
-          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl error "
+          clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl "
+                  "error "
                   "with arg IFE_DEMUX_DEV_NAME"
                << endl;
         }

@@ -67,7 +67,8 @@ public:
   static void mutexUnlock (pthread_mutex_t *mutex);
 
   /* Cond functions */
-  static void condInit (pthread_cond_t *cond, const pthread_condattr_t *attr);
+  static void condInit (pthread_cond_t *cond,
+                        const pthread_condattr_t *attr);
 
   static void condDestroy (pthread_cond_t *cond);
   static void condWait (pthread_cond_t *cond, pthread_mutex_t *mutex);

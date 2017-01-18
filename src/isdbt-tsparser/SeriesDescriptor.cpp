@@ -167,7 +167,8 @@ SeriesDescriptor::process (char *data, size_t pos)
   // cout <<"."<< (expireDate[1] & 0xFF) << endl;
   pos += 2; // pos = 25
 
-  episodeNumber = (((data[pos] << 4) & 0xFF00) | (data[pos + 1] & 0xF0) >> 4);
+  episodeNumber
+      = (((data[pos] << 4) & 0xFF00) | (data[pos + 1] & 0xF0) >> 4);
 
   lastEpisodeNumber
       = (((data[pos + 1] & 0x0F) << 8) | (data[pos + 2] & 0xFF) >> 8);

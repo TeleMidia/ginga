@@ -63,11 +63,14 @@ printHelp ()
   cout << "    --set-interfaceId         Set the interface that the ";
   cout << "document presentation" << endl;
   cout << "                                shall be started." << endl;
-  cout << "-i, --insert-delay <value>    Insert a delay before application ";
+  cout
+      << "-i, --insert-delay <value>    Insert a delay before application ";
   cout << "processing." << endl;
-  cout << "-i, --insert-oc-delay <value> Insert a delay before tune main A/V";
+  cout << "-i, --insert-oc-delay <value> Insert a delay before tune main "
+          "A/V";
   cout << " (to" << endl;
-  cout << "                              exclusively process OC elementary ";
+  cout
+      << "                              exclusively process OC elementary ";
   cout << "streams)." << endl;
   cout << "-v, --version                 Display version." << endl;
   cout << "    --enable-log [mode]       Enable log mode:" << endl;
@@ -77,36 +80,47 @@ printHelp ()
   cout << " device" << endl;
   cout << "                                according to mode." << endl;
   cout << "                                  [mode] can be:" << endl;
-  cout << "                                     'file'   write messages into";
+  cout << "                                     'file'   write messages "
+          "into";
   cout << " a file" << endl;
-  cout << "                                              named logFile.txt.";
+  cout
+      << "                                              named logFile.txt.";
   cout << endl;
-  cout << "                                     'stdout' write messages into";
+  cout << "                                     'stdout' write messages "
+          "into";
   cout << " /dev/stdout" << endl;
-  cout << "                                     'null'   write messages into";
+  cout << "                                     'null'   write messages "
+          "into";
   cout << " /dev/null" << endl;
   cout << "                                              (default mode).";
   cout << endl;
-  cout << "    --x-offset <value>        Offset of left Ginga display coord.";
-  cout << endl;
-  cout << "    --y-offset <value>        Offset of top Ginga display coord.";
-  cout << endl;
-  cout << "    --set-width <value>       Force a width Ginga display value.";
-  cout << endl;
-  cout << "    --set-height <value>      Force a height Ginga display value.";
+  cout << "    --x-offset <value>        Offset of left Ginga display "
+          "coord.";
   cout << endl;
   cout
-      << "    --device-class <value>    Define the NCL device class for Ginga";
+      << "    --y-offset <value>        Offset of top Ginga display coord.";
   cout << endl;
-  cout << "    --disable-multicast       Uses broadcast instead of multicast "
+  cout
+      << "    --set-width <value>       Force a width Ginga display value.";
+  cout << endl;
+  cout << "    --set-height <value>      Force a height Ginga display "
+          "value.";
+  cout << endl;
+  cout << "    --device-class <value>    Define the NCL device class for "
+          "Ginga";
+  cout << endl;
+  cout << "    --disable-multicast       Uses broadcast instead of "
+          "multicast "
           "for communication with devices";
   cout << endl;
-  cout << "    --device-srv-port <port>  Define the service port for Ginga as "
+  cout << "    --device-srv-port <port>  Define the service port for Ginga "
+          "as "
           "a secondary device";
   cout << endl;
   cout << "    --enable-automount        Enable trigger for main.ncl";
   cout << " applications received" << endl;
-  cout << "                                via a transport protocol." << endl;
+  cout << "                                via a transport protocol."
+       << endl;
   cout << "    --enable-remove-oc-filter Enable processor economies after";
   cout << " first time that" << endl;
   cout << "                                the object carousel is mounted.";
@@ -114,34 +128,44 @@ printHelp ()
   cout << "    --disable-interactivity   Disable NCL presentations" << endl;
   cout << "    --disable-oc              Disable OC filters" << endl;
   cout << "    --disable-mainav          Disable main AV decoders" << endl;
-  cout << "    --enable-nptprinter       Ginga becomes nothing, but an NPT ";
+  cout
+      << "    --enable-nptprinter       Ginga becomes nothing, but an NPT ";
   cout << "printer (debug purpose only)";
   cout << endl;
-  cout << "    --set-tuner [ni:channel]  Force an interface and a channel to "
+  cout << "    --set-tuner [ni:channel]  Force an interface and a channel "
+          "to "
           "be tuned."
        << endl;
   cout << "                              For instance:" << endl;
   cout << "                                 --set-tuner file:/tmp/test.ts"
        << endl;
-  cout << "                                 --set-tuner sbtvdt:635143" << endl;
+  cout << "                                 --set-tuner sbtvdt:635143"
+       << endl;
   cout << "                                 --set-tuner ip:224.0.0.1:1234"
        << endl;
   cout << "                                             (...)" << endl;
-  cout << "    --disable-unload          Disable unload components. Useful ";
+  cout
+      << "    --disable-unload          Disable unload components. Useful ";
   cout << "for debug. " << endl;
-  cout << "    --vsystem <vsystem>       Specifies the video backend to use.";
+  cout << "    --vsystem <vsystem>       Specifies the video backend to "
+          "use.";
   cout << endl;
-  cout << "                              The default is to use DirectFB (dfb";
+  cout << "                              The default is to use DirectFB "
+          "(dfb";
   cout << ") for Linux " << endl;
-  cout << "                              and SDL (sdl) for other OS but you ";
+  cout << "                              and SDL (sdl) for other OS but "
+          "you ";
   cout << "can also " << endl;
   cout << "                              run Ginga on Linux with SDL.";
   cout << endl;
-  cout << "    --vsubsystem <vsubsystem> Specifies the graphics system to be";
+  cout << "    --vsubsystem <vsubsystem> Specifies the graphics system to "
+          "be";
   cout << " used by the " << endl;
-  cout << "                              multimedia backend. For instance: ";
+  cout
+      << "                              multimedia backend. For instance: ";
   cout << endl;
-  cout << "                                 --vsystem dfb --vsubsystem fbdev";
+  cout << "                                 --vsystem dfb --vsubsystem "
+          "fbdev";
   cout << endl;
   cout << "                                 --vsystem dfb --vsubsystem x11";
   cout << endl;
@@ -149,12 +173,15 @@ printHelp ()
   cout << endl;
   cout << "                                 --vsystem sdl --vsubsystem x11";
   cout << endl;
-  cout << "                                 --vsystem sdl --vsubsystem cocoa";
+  cout << "                                 --vsystem sdl --vsubsystem "
+          "cocoa";
   cout << endl;
   cout << "                                             (...)" << endl;
-  cout << "    --asystem <asystem>       Specifies the audio backend to use.";
+  cout << "    --asystem <asystem>       Specifies the audio backend to "
+          "use.";
   cout << endl;
-  cout << "                              The default is to use xine (xine) ";
+  cout
+      << "                              The default is to use xine (xine) ";
   cout << "for Linux " << endl;
   cout << "                              and SDL (sdlffmpeg) for other OS ";
   cout << "but you can also " << endl;
@@ -162,7 +189,8 @@ printHelp ()
   cout << endl;
   cout << "                              For instance:" << endl;
   cout << "                              With dfb vsystem" << endl;
-  cout << "                                 --asystem fusionsound (default)";
+  cout
+      << "                                 --asystem fusionsound (default)";
   cout << endl;
   cout << "                                 --asystem xine";
   cout << endl;
@@ -171,12 +199,14 @@ printHelp ()
   cout << endl;
   cout << "    --vmode <width>x<height>  Specifies the Video Window size.";
   cout << endl;
-  cout << "    --wid <id>                Specifies an existent Window to be ";
+  cout << "    --wid <id>                Specifies an existent Window to "
+          "be ";
   cout << "used as Ginga device Window.";
   cout << endl;
   cout << "    --poll-stdin              Poll for events using stdin.";
   cout << endl;
-  cout << "    --enable-debug-window     Prints ginga windows hierarchy and ";
+  cout << "    --enable-debug-window     Prints ginga windows hierarchy "
+          "and ";
   cout << "dump their media contents.";
   cout << endl;
   cout << "    --disable-demuxer         Disables Ginga demuxer.";
@@ -231,7 +261,8 @@ main (int argc, char *argv[])
   for (i = 1; i < argc; i++)
     {
 
-      if ((strcmp (argv[i], "-h") == 0) || (strcmp (argv[i], "--help") == 0))
+      if ((strcmp (argv[i], "-h") == 0)
+          || (strcmp (argv[i], "--help") == 0))
         {
           printHelp ();
           return 0;
@@ -299,7 +330,8 @@ main (int argc, char *argv[])
               h = ::ginga::util::stof (param);
             }
         }
-      else if ((strcmp (argv[i], "--set-max-transp") == 0) && ((i + 1) < argc))
+      else if ((strcmp (argv[i], "--set-max-transp") == 0)
+               && ((i + 1) < argc))
         {
 
           if (isNumeric (argv[i + 1]))
@@ -308,7 +340,8 @@ main (int argc, char *argv[])
               maxTransp = ::ginga::util::stof (param);
             }
         }
-      else if ((strcmp (argv[i], "--set-bg-image") == 0) && ((i + 1) < argc))
+      else if ((strcmp (argv[i], "--set-bg-image") == 0)
+               && ((i + 1) < argc))
         {
 
           param = argv[i + 1];
@@ -364,7 +397,8 @@ main (int argc, char *argv[])
               delayTime = ::ginga::util::stof (param);
             }
         }
-      else if (strcmp (argv[i], "--insert-oc-delay") == 0 && ((i + 1) < argc))
+      else if (strcmp (argv[i], "--insert-oc-delay") == 0
+               && ((i + 1) < argc))
         {
 
           if (isNumeric (argv[i + 1]))
@@ -481,8 +515,8 @@ main (int argc, char *argv[])
     {
 
 #if WITH_MULTIDEVICE
-      fmd = new FormatterPassiveDevice (screenId, NULL, xOffset, yOffset, w, h,
-                                        useMulticast, deviceSrvPort);
+      fmd = new FormatterPassiveDevice (screenId, NULL, xOffset, yOffset, w,
+                                        h, useMulticast, deviceSrvPort);
 #endif
 #if WITH_MULTIDEVICE
       if (bgUri != "")
@@ -496,8 +530,8 @@ main (int argc, char *argv[])
   else if (devClass == 2)
     {
 #if WITH_MULTIDEVICE
-      fmd = new FormatterActiveDevice (screenId, NULL, xOffset, yOffset, w, h,
-                                       useMulticast, deviceSrvPort);
+      fmd = new FormatterActiveDevice (screenId, NULL, xOffset, yOffset, w,
+                                       h, useMulticast, deviceSrvPort);
 #endif
 
 #if WITH_MULTIDEVICE
@@ -518,7 +552,8 @@ main (int argc, char *argv[])
         }
 
       pem = new PresentationEngineManager (devClass, xOffset, yOffset, w, h,
-                                           enableGfx, useMulticast, screenId);
+                                           enableGfx, useMulticast,
+                                           screenId);
 
       if (pem == NULL)
         {

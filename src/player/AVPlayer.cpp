@@ -252,13 +252,13 @@ AVPlayer::timeShift (string direction)
     {
       if (direction == "forward")
         {
-          dm->setProviderMediaTime (provider,
-                                    dm->getProviderMediaTime (provider) + 10);
+          dm->setProviderMediaTime (
+              provider, dm->getProviderMediaTime (provider) + 10);
         }
       else if (direction == "backward")
         {
-          dm->setProviderMediaTime (provider,
-                                    dm->getProviderMediaTime (provider) - 10);
+          dm->setProviderMediaTime (
+              provider, dm->getProviderMediaTime (provider) - 10);
         }
     }
 }
@@ -460,11 +460,11 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              win = dm->createWindow (myScreen,
-                                      ::ginga::util::stof ((*vals)[0]),
-                                      ::ginga::util::stof ((*vals)[1]),
-                                      ::ginga::util::stof ((*vals)[2]),
-                                      ::ginga::util::stof ((*vals)[3]), 1.0);
+              win = dm->createWindow (
+                  myScreen, ::ginga::util::stof ((*vals)[0]),
+                  ::ginga::util::stof ((*vals)[1]),
+                  ::ginga::util::stof ((*vals)[2]),
+                  ::ginga::util::stof ((*vals)[3]), 1.0);
 
               int caps = dm->getWindowCap (myScreen, win, "NOSTRUCTURE")
                          | dm->getWindowCap (myScreen, win, "DOUBLEBUFFER");
@@ -626,8 +626,8 @@ AVPlayer::run ()
     {
       running = true;
 
-      this->provider
-          = dm->createContinuousMediaProvider (myScreen, mrl.c_str (), true);
+      this->provider = dm->createContinuousMediaProvider (
+          myScreen, mrl.c_str (), true);
 
       this->surface = createFrame ();
 

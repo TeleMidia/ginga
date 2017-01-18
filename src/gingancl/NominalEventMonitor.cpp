@@ -69,7 +69,8 @@ NominalEventMonitor::unregisterFromTimeBase ()
 }
 
 void
-NominalEventMonitor::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
+NominalEventMonitor::setTimeBaseProvider (
+    ITimeBaseProvider *timeBaseProvider)
 {
 
   if (timeBaseProvider == NULL)
@@ -104,7 +105,8 @@ NominalEventMonitor::prepareNptTransitionsEvents ()
       ContentAnchor::CAT_NPT,
       timeBaseProvider->getCurrentTimeValue (timeBaseId));
 
-  transValues = executionObject->getTransitionsValues (ContentAnchor::CAT_NPT);
+  transValues
+      = executionObject->getTransitionsValues (ContentAnchor::CAT_NPT);
 
   if (transValues == NULL || transValues->empty ())
     {
@@ -200,7 +202,8 @@ NominalEventMonitor::timeBaseNaturalEnd (unsigned char contentId,
       clog << "' value '" << timeValue;
       clog << "'" << endl;
 
-      executionObject->timeBaseNaturalEnd (timeValue, ContentAnchor::CAT_NPT);
+      executionObject->timeBaseNaturalEnd (timeValue,
+                                           ContentAnchor::CAT_NPT);
     }
 }
 
@@ -214,7 +217,8 @@ NominalEventMonitor::loopDetected ()
 }
 
 void
-NominalEventMonitor::valueReached (unsigned char timeBaseId, double timeValue)
+NominalEventMonitor::valueReached (unsigned char timeBaseId,
+                                   double timeValue)
 {
 
   if (this->timeBaseId != timeBaseId)
@@ -371,7 +375,8 @@ NominalEventMonitor::run ()
                 }
               else
                 {
-                  mediaTime = (adapter->getPlayer ()->getMediaTime () * 1000);
+                  mediaTime
+                      = (adapter->getPlayer ()->getMediaTime () * 1000);
 
                   expectedSleepTime = nextEntryTime - mediaTime;
                 }
@@ -413,7 +418,8 @@ NominalEventMonitor::run ()
                         {
                           // efetua a transicao no estado do evento
                           executionObject->updateTransitionTable (
-                              mediaTime + DEFAULT_ERROR, adapter->getPlayer (),
+                              mediaTime + DEFAULT_ERROR,
+                              adapter->getPlayer (),
                               ContentAnchor::CAT_TIME);
                         }
                     }

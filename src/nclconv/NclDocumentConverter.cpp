@@ -205,7 +205,8 @@ NclDocumentConverter::importDocument (string *docLocation)
         {
           uri = getAbsolutePath (uri)
                 + uri.substr (uri.find_last_of (getIUriD ()),
-                              uri.length () - uri.find_last_of (getIUriD ()));
+                              uri.length ()
+                                  - uri.find_last_of (getIUriD ()));
         }
     }
 
@@ -244,7 +245,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
       elementName = XMLString::transcode (rootElement->getTagName ());
       if (elementName == "region")
         {
-          return getLayoutParser ()->parseRegion (rootElement, parentObject);
+          return getLayoutParser ()->parseRegion (rootElement,
+                                                  parentObject);
         }
       else if (elementName == "regionBase")
         {
@@ -273,13 +275,13 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "ruleBase")
         {
-          return getPresentationControlParser ()->parseRuleBase (rootElement,
-                                                                 parentObject);
+          return getPresentationControlParser ()->parseRuleBase (
+              rootElement, parentObject);
         }
       else if (elementName == "causalConnector")
         {
-          return getConnectorsParser ()->parseCausalConnector (rootElement,
-                                                               parentObject);
+          return getConnectorsParser ()->parseCausalConnector (
+              rootElement, parentObject);
         }
       else if (elementName == "connectorBase")
         {
@@ -298,8 +300,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "descriptorBase")
         {
-          return getPresentationSpecificationParser ()->parseDescriptorBase (
-              rootElement, parentObject);
+          return getPresentationSpecificationParser ()
+              ->parseDescriptorBase (rootElement, parentObject);
         }
       else if (elementName == "importBase")
         {
@@ -308,8 +310,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "importedDocumentBase")
         {
-          return getImportParser ()->parseImportedDocumentBase (rootElement,
-                                                                parentObject);
+          return getImportParser ()->parseImportedDocumentBase (
+              rootElement, parentObject);
         }
       else if (elementName == "importNCL")
         {
@@ -331,8 +333,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "switch")
         {
-          object = getPresentationControlParser ()->parseSwitch (rootElement,
-                                                                 parentObject);
+          object = getPresentationControlParser ()->parseSwitch (
+              rootElement, parentObject);
 
           getPresentationControlParser ()->posCompileSwitch (rootElement,
                                                              object);
@@ -345,7 +347,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "area")
         {
-          return getInterfacesParser ()->parseArea (rootElement, parentObject);
+          return getInterfacesParser ()->parseArea (rootElement,
+                                                    parentObject);
         }
       else if (elementName == "property")
         {
@@ -354,7 +357,8 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else if (elementName == "port")
         {
-          return getInterfacesParser ()->parsePort (rootElement, parentObject);
+          return getInterfacesParser ()->parsePort (rootElement,
+                                                    parentObject);
         }
       else if (elementName == "switchPort")
         {

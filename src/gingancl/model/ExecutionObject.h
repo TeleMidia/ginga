@@ -61,7 +61,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "EndEventTransition.h"
 #include "EventTransition.h"
 #include "EventTransitionManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::transition;
+using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::
+    transition;
 
 #include "CascadingDescriptor.h"
 #include "FormatterRegion.h"
@@ -163,7 +164,7 @@ public:
   ExecutionObject *getMirrorSrc ();
   void setMirrorSrc (ExecutionObject *mirrorSrc);
 
-  void *getParentObject (); // CompositeExecutionObject
+  void *getParentObject ();           // CompositeExecutionObject
   void *getParentObject (Node *node); // CompositeExecutionObject
   void addParentObject (void *parentObject, Node *parentNode);
   void addParentObject (Node *node, void *parentObject, Node *parentNode);

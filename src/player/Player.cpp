@@ -354,7 +354,8 @@ Player::detachedNotifier (void *ptr)
 
 void
 Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list, short code,
-                                  string parameter, short type, string value)
+                                  string parameter, short type,
+                                  string value)
 {
 
   set<IPlayerListener *>::iterator i;
@@ -584,19 +585,23 @@ Player::setPropertyValue (string name, string value)
         }
       else if (name == "left")
         {
-          dm->setWindowX (myScreen, outputWindow, ::ginga::util::stof (value));
+          dm->setWindowX (myScreen, outputWindow,
+                          ::ginga::util::stof (value));
         }
       else if (name == "top")
         {
-          dm->setWindowY (myScreen, outputWindow, ::ginga::util::stof (value));
+          dm->setWindowY (myScreen, outputWindow,
+                          ::ginga::util::stof (value));
         }
       else if (name == "width")
         {
-          dm->setWindowW (myScreen, outputWindow, ::ginga::util::stof (value));
+          dm->setWindowW (myScreen, outputWindow,
+                          ::ginga::util::stof (value));
         }
       else if (name == "height")
         {
-          dm->setWindowH (myScreen, outputWindow, ::ginga::util::stof (value));
+          dm->setWindowH (myScreen, outputWindow,
+                          ::ginga::util::stof (value));
         }
       else if (name == "transparency")
         {
@@ -710,7 +715,8 @@ Player::checkScopeTime ()
 
   if (scopeInitTime >= 0 && scopeEndTime >= scopeInitTime)
     {
-      pthread_create (&threadId_, 0, Player::scopeTimeHandler, (void *)this);
+      pthread_create (&threadId_, 0, Player::scopeTimeHandler,
+                      (void *)this);
 
       pthread_detach (threadId_);
     }
@@ -722,8 +728,8 @@ Player::scopeTimeHandler (void *ptr)
   double expectedSleepTime;
   Player *p = (Player *)ptr;
 
-  expectedSleepTime
-      = (p->scopeEndTime - (p->scopeInitTime + (p->getMediaTime () / 1000)));
+  expectedSleepTime = (p->scopeEndTime
+                       - (p->scopeInitTime + (p->getMediaTime () / 1000)));
 
   clog << "Player::scopeTimeHandler expectedSleepTime = '";
   clog << expectedSleepTime << "'" << endl;

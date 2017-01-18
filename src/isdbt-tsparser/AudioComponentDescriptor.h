@@ -35,7 +35,7 @@ protected:
   unsigned char qualityIndicator;
   unsigned char samplingRate;
   char languageCode[3]; // static: always used
-  char *languageCode2; // dinamic: not always used, when used length is 3.
+  char *languageCode2;  // dinamic: not always used, when used length is 3.
   unsigned char textLength; // not sent in TS, so it is calculated
   char *textChar;
 

@@ -88,7 +88,8 @@ PrivateBaseManager::addDocument (string id, string location,
 
 NclDocument *
 PrivateBaseManager::embedDocument (string id, string docId, string nodeId,
-                                   string location, DeviceLayout *deviceLayout)
+                                   string location,
+                                   DeviceLayout *deviceLayout)
 {
 
   PrivateBaseContext *privateBaseContext;
@@ -113,7 +114,8 @@ PrivateBaseManager::addVisibleDocument (string id, string location,
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->addVisibleDocument (location, deviceLayout);
+      return privateBaseContext->addVisibleDocument (location,
+                                                     deviceLayout);
     }
 
   return NULL;
@@ -135,7 +137,8 @@ PrivateBaseManager::getDocumentLocation (string id, string docId)
 }
 
 string
-PrivateBaseManager::getEmbeddedDocumentLocation (string id, string parentDocId,
+PrivateBaseManager::getEmbeddedDocumentLocation (string id,
+                                                 string parentDocId,
                                                  string nodeId)
 {
 
@@ -211,7 +214,8 @@ PrivateBaseManager::removeDocument (string id, string docId)
 }
 
 NclDocument *
-PrivateBaseManager::removeEmbeddedDocument (string baseId, string parentDocId,
+PrivateBaseManager::removeEmbeddedDocument (string baseId,
+                                            string parentDocId,
                                             string nodeId)
 {
 
@@ -220,7 +224,8 @@ PrivateBaseManager::removeEmbeddedDocument (string baseId, string parentDocId,
   privateBaseContext = getPrivateBaseContext (baseId);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->removeEmbeddedDocument (parentDocId, nodeId);
+      return privateBaseContext->removeEmbeddedDocument (parentDocId,
+                                                         nodeId);
     }
 
   return NULL;
@@ -237,8 +242,8 @@ PrivateBaseManager::addRegion (string id, string documentId,
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->addRegion (documentId, regionBaseId, regionId,
-                                            xmlRegion);
+      return privateBaseContext->addRegion (documentId, regionBaseId,
+                                            regionId, xmlRegion);
     }
 
   return NULL;
@@ -287,7 +292,8 @@ PrivateBaseManager::removeRegionBase (string id, string documentId,
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->removeRegionBase (documentId, regionBaseId);
+      return privateBaseContext->removeRegionBase (documentId,
+                                                   regionBaseId);
     }
 
   return NULL;
@@ -381,7 +387,8 @@ PrivateBaseManager::removeTransition (string id, string documentId,
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->removeTransition (documentId, transitionId);
+      return privateBaseContext->removeTransition (documentId,
+                                                   transitionId);
     }
 
   return NULL;
@@ -513,7 +520,8 @@ PrivateBaseManager::removeDescriptor (string id, string documentId,
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->removeDescriptor (documentId, descriptorId);
+      return privateBaseContext->removeDescriptor (documentId,
+                                                   descriptorId);
     }
 
   return NULL;
@@ -605,8 +613,8 @@ PrivateBaseManager::addImportedDocumentBase (string id, string documentId,
 }
 
 NclDocument *
-PrivateBaseManager::removeImportedDocumentBase (string id, string documentId,
-                                                string importedDocumentBaseId)
+PrivateBaseManager::removeImportedDocumentBase (
+    string id, string documentId, string importedDocumentBaseId)
 {
 
   PrivateBaseContext *privateBaseContext;
@@ -654,8 +662,8 @@ PrivateBaseManager::removeImportNCL (string id, string documentId,
 }
 
 Node *
-PrivateBaseManager::addNode (string id, string documentId, string compositeId,
-                             string xmlNode)
+PrivateBaseManager::addNode (string id, string documentId,
+                             string compositeId, string xmlNode)
 {
 
   PrivateBaseContext *privateBaseContext;
@@ -670,8 +678,8 @@ PrivateBaseManager::addNode (string id, string documentId, string compositeId,
 }
 
 InterfacePoint *
-PrivateBaseManager::addInterface (string id, string documentId, string nodeId,
-                                  string xmlInterface)
+PrivateBaseManager::addInterface (string id, string documentId,
+                                  string nodeId, string xmlInterface)
 {
 
   PrivateBaseContext *privateBaseContext;
@@ -687,8 +695,8 @@ PrivateBaseManager::addInterface (string id, string documentId, string nodeId,
 }
 
 Link *
-PrivateBaseManager::addLink (string id, string documentId, string compositeId,
-                             string xmlLink)
+PrivateBaseManager::addLink (string id, string documentId,
+                             string compositeId, string xmlLink)
 {
 
   PrivateBaseContext *privateBaseContext;

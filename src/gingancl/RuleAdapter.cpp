@@ -146,10 +146,12 @@ RuleAdapter::adapt (CompositeExecutionObject *compositeObject, bool force)
           object = i->second;
           if (object->instanceOf ("ExecutionObjectSwitch"))
             {
-              initializeRuleObjectRelation ((ExecutionObjectSwitch *)object);
+              initializeRuleObjectRelation (
+                  (ExecutionObjectSwitch *)object);
 
               adapt ((ExecutionObjectSwitch *)object, force);
-              object = ((ExecutionObjectSwitch *)object)->getSelectedObject ();
+              object
+                  = ((ExecutionObjectSwitch *)object)->getSelectedObject ();
             }
 
           adaptDescriptor (object);
@@ -225,7 +227,8 @@ RuleAdapter::initializeRuleObjectRelation (
           // the switch will pertain to a set of objects that depend on this
   rule
           bool containsKey = false;
-          for (j = entityListenMap->begin(); j != entityListenMap->end(); ++j)
+          for (j = entityListenMap->begin(); j != entityListenMap->end();
+  ++j)
   {
                   if (j->first == rule) {
                           containsKey = true;
@@ -281,7 +284,8 @@ RuleAdapter::adapt (ExecutionObjectSwitch *objectAlternatives, bool force)
                   vector<FormatterEvent*>::iterator i;
                   i = events->begin();
                   while (i != events->end()) {
-                          if ((*i)->getCurrentState() == Event::ST_OCCURRING) {
+                          if ((*i)->getCurrentState() ==
+  Event::ST_OCCURRING) {
                                   return;
                           }
                           ++i;
@@ -384,7 +388,8 @@ RuleAdapter::adaptDescriptor (ExecutionObject *executionObject)
               descAlternatives->selectDefault ();
             }
 
-          if (selectedDescriptor != descAlternatives->getSelectedDescriptor ())
+          if (selectedDescriptor
+              != descAlternatives->getSelectedDescriptor ())
             {
 
               adapted = true;

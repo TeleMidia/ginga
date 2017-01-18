@@ -22,7 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
 
-AdapterBerkeliumPlayer::AdapterBerkeliumPlayer () : AdapterFormatterPlayer ()
+AdapterBerkeliumPlayer::AdapterBerkeliumPlayer ()
+    : AdapterFormatterPlayer ()
 {
 }
 

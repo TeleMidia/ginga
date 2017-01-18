@@ -185,7 +185,8 @@ ApplicationExecutionObject::setCurrentEvent (FormatterEvent *event)
 }
 
 bool
-ApplicationExecutionObject::prepare (FormatterEvent *event, double offsetTime)
+ApplicationExecutionObject::prepare (FormatterEvent *event,
+                                     double offsetTime)
 {
 
   int size;
@@ -219,7 +220,8 @@ ApplicationExecutionObject::prepare (FormatterEvent *event, double offsetTime)
   if (event->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)event)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           i = parentTable.begin ();
@@ -275,7 +277,8 @@ ApplicationExecutionObject::prepare (FormatterEvent *event, double offsetTime)
           attributeAnchor = attributeEvent->getAnchor ();
           if (attributeAnchor->getPropertyValue () != "")
             {
-              attributeEvent->setValue (attributeAnchor->getPropertyValue ());
+              attributeEvent->setValue (
+                  attributeAnchor->getPropertyValue ());
             }
         }
     }
@@ -383,7 +386,8 @@ ApplicationExecutionObject::stop ()
   if (currentEvent->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)currentEvent)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           isLabeled = true;

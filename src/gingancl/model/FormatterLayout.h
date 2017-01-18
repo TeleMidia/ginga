@@ -99,7 +99,8 @@ private:
                                  FormatterRegion *formatterRegion);
 
 public:
-  set<FormatterRegion *> *getFormatterRegionsFromNcmRegion (string regionId);
+  set<FormatterRegion *> *
+  getFormatterRegionsFromNcmRegion (string regionId);
 
   void clear ();
 

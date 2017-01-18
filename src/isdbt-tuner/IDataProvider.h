@@ -55,7 +55,8 @@ public:
   virtual bool getSTCValue (uint64_t *stc, int *valueType) = 0;
   virtual bool changeChannel (int factor) = 0;
   virtual bool setChannel (string channelValue) = 0;
-  virtual int createPesFilter (int pid, int pesType, bool compositeFiler) = 0;
+  virtual int createPesFilter (int pid, int pesType, bool compositeFiler)
+      = 0;
 
   virtual string getPesFilterOutput () = 0;
   virtual void close () = 0;

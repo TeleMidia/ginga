@@ -164,7 +164,8 @@ AudioComponentDescriptor::print ()
   /*		clog << "AudioComponentDescriptor::print" << endl;
                   clog << " -languageCode = " << getLanguageCode() << endl;
                   if (ESMultiLingualFlag) {
-                          clog << " -languageCode2 = " << getLanguageCode2() <<
+                          clog << " -languageCode2 = " << getLanguageCode2()
+     <<
      endl;
                   }*/
 }
@@ -185,7 +186,7 @@ AudioComponentDescriptor::process (char *data, size_t pos)
   pos += 2; // pos = 20
   // jumping reserved_future_use (first 4 bits of data[pos]
   streamContent = (data[pos] & 0x0F); // last 4 bits of data[pos]
-  pos += 1; // pos = 21
+  pos += 1;                           // pos = 21
 
   componentType = data[pos];
   pos++; // pos = 22

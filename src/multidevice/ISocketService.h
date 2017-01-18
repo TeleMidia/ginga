@@ -28,7 +28,8 @@ public:
   virtual ~ISocketService (){};
   virtual unsigned int getInterfaceIPAddress () = 0;
   virtual int getServicePort () = 0;
-  virtual void dataRequest (char *data, int taskSize, bool repeat = true) = 0;
+  virtual void dataRequest (char *data, int taskSize, bool repeat = true)
+      = 0;
   virtual bool checkOutputBuffer () = 0;
   virtual bool checkInputBuffer (char *data, int *size) = 0;
 };

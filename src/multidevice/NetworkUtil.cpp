@@ -72,7 +72,8 @@ isValidRecvFrame (int recvFrom, int myIP, char *frame)
               // ATS END
             }
         }
-      clog << "NetworkUtil::isValidRecvFrame():isControlFrame == true" << endl;
+      clog << "NetworkUtil::isValidRecvFrame():isControlFrame == true"
+           << endl;
       _rcf[recvFrom] = frameId;
       /*if ((frameId == 0 && receivedControlFrameId > 110) ||
                       (frameId > receivedControlFrameId) ||

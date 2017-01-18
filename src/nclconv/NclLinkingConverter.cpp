@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclLinkingConverter::NclLinkingConverter (DocumentParser *documentParser,
-                                          NclConnectorsConverter *connCompiler)
+NclLinkingConverter::NclLinkingConverter (
+    DocumentParser *documentParser, NclConnectorsConverter *connCompiler)
     : NclLinkingParser (documentParser)
 {
 }
@@ -36,14 +36,16 @@ NclLinkingConverter::addBindToLink (void *parentObject, void *childObject)
 }
 
 void
-NclLinkingConverter::addBindParamToBind (void *parentObject, void *childObject)
+NclLinkingConverter::addBindParamToBind (void *parentObject,
+                                         void *childObject)
 {
 
   ((Bind *)parentObject)->addParameter ((Parameter *)childObject);
 }
 
 void
-NclLinkingConverter::addLinkParamToLink (void *parentObject, void *childObject)
+NclLinkingConverter::addLinkParamToLink (void *parentObject,
+                                         void *childObject)
 {
 
   ((Link *)parentObject)->addParameter ((Parameter *)childObject);
@@ -118,8 +120,8 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
               && anchorNodeEntity->instanceOf ("CompositeNode"))
             {
 
-              interfacePoint
-                  = ((CompositeNode *)anchorNodeEntity)->getPort (interfaceId);
+              interfacePoint = ((CompositeNode *)anchorNodeEntity)
+                                   ->getPort (interfaceId);
             }
           else
             {
@@ -180,11 +182,12 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
   // atribui o bind ao elo (link)
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
-      document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                                 "document");
+      document = (NclDocument *)getDocumentParser ()->getObject (
+          "return", "document");
 
-      descriptor = document->getDescriptor (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("descriptor"))));
+      descriptor = document->getDescriptor (
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("descriptor"))));
     }
   else
     {
@@ -261,8 +264,8 @@ NclLinkingConverter::createLink (DOMElement *parentElement,
   string connectorId;
 
   // obtendo o conector do link
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   connectorId = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("xconnector")));

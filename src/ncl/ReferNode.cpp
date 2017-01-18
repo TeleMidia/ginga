@@ -81,7 +81,8 @@ ReferNode::setInstanceType (string instance)
       if (this->instanceType == "new")
         {
           this->instanceType = instance;
-          if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
+          if (referredNode != NULL
+              && referredNode->instanceOf ("NodeEntity"))
             {
 
               ((NodeEntity *)referredNode)->addSameInstance (this);
@@ -90,7 +91,8 @@ ReferNode::setInstanceType (string instance)
       else
         {
           this->instanceType = instance;
-          if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
+          if (referredNode != NULL
+              && referredNode->instanceOf ("NodeEntity"))
             {
 
               if (instance == "new")

@@ -148,7 +148,8 @@ FormatterEvent::hasNcmId (FormatterEvent *event, string anchorId)
               anchorName = "";
             }
 
-          if (anchorName == anchorId && !event->instanceOf ("SelectionEvent"))
+          if (anchorName == anchorId
+              && !event->instanceOf ("SelectionEvent"))
             {
 
               return true;

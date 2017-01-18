@@ -26,7 +26,8 @@ CompoundAction::CompoundAction () : Action ()
   typeSet.insert ("CompoundAction");
 }
 
-CompoundAction::CompoundAction (Action *a1, Action *a2, short op) : Action ()
+CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
+    : Action ()
 {
 
   actions = new vector<Action *>;

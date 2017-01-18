@@ -68,7 +68,8 @@ public:
   NclPlayerData *getNclPlayerData ();
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
   ITimeBaseProvider *getTimeBaseProvider ();
-  void setVisible (string objectId, string visible, AttributionEvent *event);
+  void setVisible (string objectId, string visible,
+                   AttributionEvent *event);
   bool removePlayer (void *object);
 
 private:

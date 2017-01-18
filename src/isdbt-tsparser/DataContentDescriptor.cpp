@@ -92,7 +92,8 @@ DataContentDescriptor::process (char *data, size_t pos)
   entryComponent = data[pos];
   pos++;
   selectorLength = data[pos];
-  // clog << "Data Contents entryComponent = " << (entryComponent & 0xFF) << "
+  // clog << "Data Contents entryComponent = " << (entryComponent & 0xFF) <<
+  // "
   // and";
   // clog << " selectorLength = " << (selectorLength & 0xFF) << endl;
   if (selectorLength > 0)

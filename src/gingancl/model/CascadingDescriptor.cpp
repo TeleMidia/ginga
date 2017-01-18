@@ -30,7 +30,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 
 int CascadingDescriptor::dummyCount = 0;
 
-CascadingDescriptor::CascadingDescriptor (GenericDescriptor *firstDescriptor)
+CascadingDescriptor::CascadingDescriptor (
+    GenericDescriptor *firstDescriptor)
 {
 
   initializeCascadingDescriptor ();
@@ -55,7 +56,8 @@ CascadingDescriptor::CascadingDescriptor (CascadingDescriptor *descriptor)
                                              ->descriptors[i]));
         }
 
-      size = ((CascadingDescriptor *)descriptor)->unsolvedDescriptors.size ();
+      size = ((CascadingDescriptor *)descriptor)
+                 ->unsolvedDescriptors.size ();
 
       for (i = 0; i < size; i++)
         {
@@ -206,7 +208,8 @@ CascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
   if (descriptor->getFocusDecoration () != NULL)
     {
       FocusDecoration *focusDecoration;
-      focusDecoration = (FocusDecoration *)(descriptor->getFocusDecoration ());
+      focusDecoration
+          = (FocusDecoration *)(descriptor->getFocusDecoration ());
 
       if (focusDecoration->getFocusBorderColor () != NULL)
         {
@@ -259,7 +262,8 @@ CascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
         }
 
       outputTransitions->insert (outputTransitions->end (),
-                                 transitions->begin (), transitions->end ());
+                                 transitions->begin (),
+                                 transitions->end ());
     }
 
   Parameter *param;

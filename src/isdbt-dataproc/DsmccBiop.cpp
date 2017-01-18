@@ -189,7 +189,8 @@ DsmccBiop::processMessageHeader ()
   i++;
 
   // get message_size
-  this->messageSize = ((data[i] & 0xFF) << 24) | ((data[i + 1] & 0xFF) << 16)
+  this->messageSize = ((data[i] & 0xFF) << 24)
+                      | ((data[i + 1] & 0xFF) << 16)
                       | ((data[i + 2] & 0xFF) << 8) | (data[i + 3] & 0xFF);
 
   idx = 0;
@@ -243,14 +244,15 @@ DsmccBiop::processMessageSubHeader ()
     {
       if (len == 4)
         {
-          objectKey = ((data[idx] & 0xFF) << 24)
-                      | ((data[idx + 1] & 0xFF) << 16)
-                      | ((data[idx + 2] & 0xFF) << 8) | (data[idx + 3] & 0xFF);
+          objectKey
+              = ((data[idx] & 0xFF) << 24) | ((data[idx + 1] & 0xFF) << 16)
+                | ((data[idx + 2] & 0xFF) << 8) | (data[idx + 3] & 0xFF);
         }
       else if (len == 3)
         {
           objectKey = ((data[idx] & 0xFF) << 16)
-                      | ((data[idx + 1] & 0xFF) << 8) | (data[idx + 2] & 0xFF);
+                      | ((data[idx + 1] & 0xFF) << 8)
+                      | (data[idx + 2] & 0xFF);
         }
       else if (len == 2)
         {
@@ -566,7 +568,8 @@ DsmccBiop::processIor (DsmccBinding *binding)
           idx = idx + 2;
 
           // check version: major == 1 && minor == 0
-          if (((data[idx] & 0xFF) != 0x01) || ((data[idx + 1] & 0xFF) != 0x00))
+          if (((data[idx] & 0xFF) != 0x01)
+              || ((data[idx + 1] & 0xFF) != 0x00))
             {
 
               clog << "BIOP Warning: Obj version, never reach here!!!";

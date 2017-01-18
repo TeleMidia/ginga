@@ -37,7 +37,8 @@ private:
 public:
   NclConnectorsParser (DocumentParser *documentParser);
 
-  void *parseSimpleCondition (DOMElement *parentElement, void *objGrandParent);
+  void *parseSimpleCondition (DOMElement *parentElement,
+                              void *objGrandParent);
 
   virtual void *createSimpleCondition (DOMElement *parentElement,
                                        void *objGrandParent)
@@ -58,8 +59,9 @@ public:
                                                         void *childObject)
       = 0;
 
-  virtual void addAssessmentStatementToCompoundCondition (void *parentObject,
-                                                          void *childObject)
+  virtual void
+  addAssessmentStatementToCompoundCondition (void *parentObject,
+                                             void *childObject)
       = 0;
 
   virtual void addCompoundStatementToCompoundCondition (void *parentObject,
@@ -73,8 +75,9 @@ public:
                                            void *objGrandParent)
       = 0;
 
-  virtual void addAttributeAssessmentToAssessmentStatement (void *parentObject,
-                                                            void *childObject)
+  virtual void
+  addAttributeAssessmentToAssessmentStatement (void *parentObject,
+                                               void *childObject)
       = 0;
 
   virtual void addValueAssessmentToAssessmentStatement (void *parentObject,
@@ -88,7 +91,8 @@ public:
                                            void *objGrandParent)
       = 0;
 
-  void *parseValueAssessment (DOMElement *parentElement, void *objGrandParent);
+  void *parseValueAssessment (DOMElement *parentElement,
+                              void *objGrandParent);
 
   virtual void *createValueAssessment (DOMElement *parentElement,
                                        void *objGrandParent)
@@ -101,8 +105,9 @@ public:
                                          void *objGrandParent)
       = 0;
 
-  virtual void addAssessmentStatementToCompoundStatement (void *parentObject,
-                                                          void *childObject)
+  virtual void
+  addAssessmentStatementToCompoundStatement (void *parentObject,
+                                             void *childObject)
       = 0;
 
   virtual void addCompoundStatementToCompoundStatement (void *parentObject,
@@ -115,7 +120,8 @@ public:
                                     void *objGrandParent)
       = 0;
 
-  void *parseCompoundAction (DOMElement *parentElement, void *objGrandParent);
+  void *parseCompoundAction (DOMElement *parentElement,
+                             void *objGrandParent);
 
   virtual void *createCompoundAction (DOMElement *parentElement,
                                       void *objGrandParent)
@@ -129,13 +135,15 @@ public:
                                                   void *childObject)
       = 0;
 
-  void *parseConnectorParam (DOMElement *parentElement, void *objGrandParent);
+  void *parseConnectorParam (DOMElement *parentElement,
+                             void *objGrandParent);
 
   virtual void *createConnectorParam (DOMElement *parentElement,
                                       void *objGrandParent)
       = 0;
 
-  void *parseCausalConnector (DOMElement *parentElement, void *objGrandParent);
+  void *parseCausalConnector (DOMElement *parentElement,
+                              void *objGrandParent);
 
   virtual void *createCausalConnector (DOMElement *parentElement,
                                        void *objGrandParent)
@@ -161,7 +169,8 @@ public:
                                                    void *childObject)
       = 0;
 
-  void *parseConnectorBase (DOMElement *parentElement, void *objGrandParent);
+  void *parseConnectorBase (DOMElement *parentElement,
+                            void *objGrandParent);
 
   virtual void *createConnectorBase (DOMElement *parentElement,
                                      void *objGrandParent)

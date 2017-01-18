@@ -124,8 +124,8 @@ InputManager::release ()
   mbKeyCode = ScreenManagerFactory::getInstance ()->fromGingaToMB (
       myScreen, CodeMap::KEY_QUIT);
 
-  ie = ScreenManagerFactory::getInstance ()->createInputEvent (myScreen, NULL,
-                                                               mbKeyCode);
+  ie = ScreenManagerFactory::getInstance ()->createInputEvent (
+      myScreen, NULL, mbKeyCode);
 
   if (wasRunning)
     {
@@ -544,7 +544,8 @@ InputManager::dispatchApplicationEvent (SDLInputEvent *inputEvent)
 }
 
 void
-InputManager::addApplicationInputEventListener (IInputEventListener *listener)
+InputManager::addApplicationInputEventListener (
+    IInputEventListener *listener)
 {
 
   LockedAction *action;
@@ -643,8 +644,8 @@ InputManager::postInputEvent (int keyCode)
   mbKeyCode = ScreenManagerFactory::getInstance ()->fromGingaToMB (myScreen,
                                                                    keyCode);
 
-  ie = ScreenManagerFactory::getInstance ()->createInputEvent (myScreen, NULL,
-                                                               mbKeyCode);
+  ie = ScreenManagerFactory::getInstance ()->createInputEvent (
+      myScreen, NULL, mbKeyCode);
 
   postInputEvent (ie);
 }
@@ -691,7 +692,8 @@ InputManager::getEventBuffer ()
   if (eventBuffer == NULL)
     {
       eventBuffer
-          = ScreenManagerFactory::getInstance ()->createEventBuffer (myScreen);
+          = ScreenManagerFactory::getInstance ()->createEventBuffer (
+              myScreen);
 
       if (!running)
         {
@@ -761,7 +763,8 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
       mouseX = currentXAxis;
       mouseY = currentYAxis;
 
-      inputEvent->getAxisValue (&currentXAxis, &currentYAxis, &currentZAxis);
+      inputEvent->getAxisValue (&currentXAxis, &currentYAxis,
+                                &currentZAxis);
 
       if (currentXAxis == 0)
         {
@@ -802,7 +805,8 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
     {
       inputEvent->setAxisValue (currentXAxis, currentYAxis, 0);
 
-      inputEvent->getAxisValue (&currentXAxis, &currentYAxis, &currentZAxis);
+      inputEvent->getAxisValue (&currentXAxis, &currentYAxis,
+                                &currentZAxis);
 
       dispatchEvent (inputEvent);
       return;

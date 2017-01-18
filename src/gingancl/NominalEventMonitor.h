@@ -37,7 +37,8 @@ using namespace ::ginga::ncl;
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "gingancl/model/EventTransition.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::transition;
+using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::
+    transition;
 
 #include "gingancl/model/ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;

@@ -62,8 +62,8 @@ public:
               Role *role);
 
   bool isConsistent ();
-  Bind *getBind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
-                 Role *role);
+  Bind *getBind (Node *node, InterfacePoint *interfPt,
+                 GenericDescriptor *desc, Role *role);
 
   vector<Bind *> *getBinds ();
   Connector *getConnector ();

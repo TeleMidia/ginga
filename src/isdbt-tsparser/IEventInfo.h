@@ -45,7 +45,7 @@ public:
   virtual ~IEventInfo (){};
 
   virtual time_t getStartTimeSecs () = 0; // startTime in secs since Epoch
-  virtual time_t getEndTimeSecs () = 0; // endTime in secs since Epoch
+  virtual time_t getEndTimeSecs () = 0;   // endTime in secs since Epoch
   virtual unsigned int getDurationSecs () = 0;
 
   virtual string getStartTimeSecsStr () = 0;

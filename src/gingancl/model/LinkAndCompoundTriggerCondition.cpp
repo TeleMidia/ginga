@@ -115,7 +115,8 @@ LinkAndCompoundTriggerCondition::conditionSatisfied (void *condition)
         {
           if (!(((LinkStatement *)(*i))->evaluate ()))
             {
-              notifyConditionObservers (LinkTriggerListener::EVALUATION_ENDED);
+              notifyConditionObservers (
+                  LinkTriggerListener::EVALUATION_ENDED);
 
               return;
             }

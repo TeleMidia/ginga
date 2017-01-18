@@ -193,7 +193,8 @@ RemoteDeviceManager::run ()
                       connecting = false;
 
               } else if (rdmTimer == 0 ||
-                              ((getCurrentTimeMillis() - rdmTimer) > 3000)) {
+                              ((getCurrentTimeMillis() - rdmTimer) > 3000))
+      {
 
                       rdmTimer = getCurrentTimeMillis();
                       domainService->postConnectionRequestTask();

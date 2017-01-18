@@ -118,8 +118,8 @@ NclPresentationSpecConverter::addImportBaseToDescriptorBase (
 
   // importing descriptor bases implies importing region, rule, and cost
   // function bases in order to maintain reference consistency
-  thisDocument
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  thisDocument = (NclDocument *)getDocumentParser ()->getObject (
+      "return", "document");
 
   regionBase = thisDocument->getRegionBase (0);
   if (regionBase == NULL)
@@ -154,16 +154,16 @@ NclPresentationSpecConverter::addImportBaseToDescriptorBase (
 }
 
 void *
-NclPresentationSpecConverter::createDescriptorParam (DOMElement *parentElement,
-                                                     void *objGrandParent)
+NclPresentationSpecConverter::createDescriptorParam (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   return parentElement;
 }
 
 void *
-NclPresentationSpecConverter::createDescriptorBind (DOMElement *parentElement,
-                                                    void *objGrandParent)
+NclPresentationSpecConverter::createDescriptorBind (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   // ver componentCompilers para comentarios
@@ -171,8 +171,8 @@ NclPresentationSpecConverter::createDescriptorBind (DOMElement *parentElement,
 }
 
 void *
-NclPresentationSpecConverter::createDescriptorBase (DOMElement *parentElement,
-                                                    void *objGrandParent)
+NclPresentationSpecConverter::createDescriptorBase (
+    DOMElement *parentElement, void *objGrandParent)
 {
 
   DescriptorBase *descBase;
@@ -206,8 +206,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   descriptor = new Descriptor (XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id"))));
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   // atributo region
   if (parentElement->hasAttribute (XMLString::transcode ("region")))
@@ -224,8 +224,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   // atributo explicitDur
   if (parentElement->hasAttribute (XMLString::transcode ("explicitDur")))
     {
-      string durStr = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("explicitDur")));
+      string durStr = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("explicitDur")));
 
       descriptor->setExplicitDuration (::ginga::util::strUTCToSec (durStr)
                                        * 1000);
@@ -259,8 +259,9 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   descriptor->setKeyNavigation (keyNavigation);
   if (parentElement->hasAttribute (XMLString::transcode ("focusIndex")))
     {
-      keyNavigation->setFocusIndex (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("focusIndex"))));
+      keyNavigation->setFocusIndex (
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("focusIndex"))));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("moveUp")))
@@ -283,8 +284,9 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("moveRight")))
     {
-      keyNavigation->setMoveRight (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("moveRight"))));
+      keyNavigation->setMoveRight (
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("moveRight"))));
     }
 
   focusDecoration = new FocusDecoration ();
@@ -305,7 +307,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
         }
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("focusBorderColor")))
+  if (parentElement->hasAttribute (
+          XMLString::transcode ("focusBorderColor")))
     {
 
       color = new Color (XMLString::transcode (parentElement->getAttribute (
@@ -314,7 +317,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
       focusDecoration->setFocusBorderColor (color);
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("focusBorderWidth")))
+  if (parentElement->hasAttribute (
+          XMLString::transcode ("focusBorderWidth")))
     {
 
       int w;
@@ -339,8 +343,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("focusSelSrc")))
     {
-      src = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("focusSelSrc")));
+      src = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("focusSelSrc")));
 
       if (getDocumentParser ()->isAbsolutePath (src))
         {
@@ -368,8 +372,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("transIn")));
+          attValue = XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("transIn")));
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -403,8 +407,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("transOut")));
+          attValue = XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("transOut")));
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())

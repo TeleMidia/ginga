@@ -40,7 +40,8 @@ private:
 
 public:
   CausalConnector (string id);
-  CausalConnector (string id, ConditionExpression *condition, Action *action);
+  CausalConnector (string id, ConditionExpression *condition,
+                   Action *action);
 
   virtual ~CausalConnector ();
 

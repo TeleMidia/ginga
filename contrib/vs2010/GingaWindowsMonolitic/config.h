@@ -81,11 +81,13 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 //#define HAVE_UNISTD_H 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
+/* Define to the sub-directory in which libtool stores uninstalled
+ * libraries.
    */
 //#define LT_OBJDIR ".libs/"
 
-/* Define to the address where bug reports for this package should be sent. */
+/* Define to the address where bug reports for this package should be sent.
+ */
 //#define PACKAGE_BUGREPORT "bugs@telemidia.puc-rio.br"
 
 /* Define to the full name of this package. */

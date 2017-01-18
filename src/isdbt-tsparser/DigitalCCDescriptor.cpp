@@ -95,9 +95,10 @@ DigitalCCDescriptor::process (char *data, size_t pos)
   pos += 2;
 
   digitalRecordingControlData = ((data[pos] & 0xC0) >> 6); // 2 bits
-  maximumBitrateFlag = ((data[pos] & 0x20) >> 5); // 1 bit
-  componentControlFlag = ((data[pos] & 0x10) >> 4); // 1 bit
-  // clog << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF) <<
+  maximumBitrateFlag = ((data[pos] & 0x20) >> 5);          // 1 bit
+  componentControlFlag = ((data[pos] & 0x10) >> 4);        // 1 bit
+  // clog << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF)
+  // <<
   // endl;
   copyControlType = ((data[pos] & 0x0C) >> 2); // 2 bits
 
@@ -131,7 +132,8 @@ DigitalCCDescriptor::process (char *data, size_t pos)
 
           remainingBytes -= 2; // 2 bytes read
 
-          component->digitalRecordingControlData = ((data[pos] & 0xC0) >> 6);
+          component->digitalRecordingControlData
+              = ((data[pos] & 0xC0) >> 6);
 
           component->maximumBitrateFlag = ((data[pos] & 0x20) >> 5);
           component->copyControlType = ((data[pos] & 0x0C) >> 2);

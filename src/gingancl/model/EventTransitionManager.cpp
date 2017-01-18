@@ -191,8 +191,8 @@ EventTransitionManager::removeEventTransition (PresentationEvent *event)
                      != NULL)
             {
 
-              endTransition
-                  = ((BeginEventTransition *)transition)->getEndTransition ();
+              endTransition = ((BeginEventTransition *)transition)
+                                  ->getEndTransition ();
 
               for (j = transitionEvents->begin ();
                    j != transitionEvents->end (); ++j)
@@ -208,8 +208,8 @@ EventTransitionManager::removeEventTransition (PresentationEvent *event)
                 }
             }
 
-          for (j = transitionEvents->begin (); j != transitionEvents->end ();
-               ++j)
+          for (j = transitionEvents->begin ();
+               j != transitionEvents->end (); ++j)
             {
 
               if (*j == transition)
@@ -441,7 +441,8 @@ EventTransitionManager::addPresentationEvent (PresentationEvent *event)
   if ((event->getAnchor ())->instanceOf ("LambdaAnchor"))
     {
       beginTransition = new BeginEventTransition (0, event);
-      transitionEvents->insert (transitionEvents->begin (), beginTransition);
+      transitionEvents->insert (transitionEvents->begin (),
+                                beginTransition);
       if (event->getEnd () >= 0)
         {
           endTransition = new EndEventTransition (event->getEnd (), event,
@@ -497,7 +498,8 @@ EventTransitionManager::addPresentationEvent (PresentationEvent *event)
 
       if (!PresentationEvent::isUndefinedInstant (end))
         {
-          endTransition = new EndEventTransition (end, event, beginTransition);
+          endTransition
+              = new EndEventTransition (end, event, beginTransition);
 
           addEventTransition (endTransition, type);
         }
@@ -554,7 +556,8 @@ EventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
 }
 
 void
-EventTransitionManager::updateTransitionTable (double value, IPlayer *player,
+EventTransitionManager::updateTransitionTable (double value,
+                                               IPlayer *player,
                                                FormatterEvent *mainEvent,
                                                short int transType)
 {
@@ -647,7 +650,8 @@ EventTransitionManager::getTransitionsValues (short int transType)
         }
       else
         {
-          currentTransitionIndex[transType] = startTransitionIndex[transType];
+          currentTransitionIndex[transType]
+              = startTransitionIndex[transType];
         }
     }
 
@@ -713,7 +717,8 @@ EventTransitionManager::getNextTransition (FormatterEvent *mainEvent)
       clog << "' transition time = '" << transTime << "'";
       clog << endl;*/
 
-      if (IntervalAnchor::isObjectDuration (eventEnd) || transTime <= eventEnd)
+      if (IntervalAnchor::isObjectDuration (eventEnd)
+          || transTime <= eventEnd)
         {
 
           return transition;

@@ -233,14 +233,16 @@ TransportSection::setSectionName ()
     {
 
       sectionName += "epg" + SystemCompat::getIUriD () + "data"
-                     + SystemCompat::getIUriD () + itos (pid) + itos (tableId)
-                     + itos (idExtention) + itos (versionNumber);
+                     + SystemCompat::getIUriD () + itos (pid)
+                     + itos (tableId) + itos (idExtention)
+                     + itos (versionNumber);
     }
   else
     {
       sectionName += "carousel" + SystemCompat::getIUriD () + "modules"
-                     + SystemCompat::getIUriD () + itos (pid) + itos (tableId)
-                     + itos (section[11]) + // part of messageId
+                     + SystemCompat::getIUriD () + itos (pid)
+                     + itos (tableId) + itos (section[11])
+                     + // part of messageId
                      itos (idExtention) + itos (versionNumber);
     }
 }

@@ -48,7 +48,8 @@ ActiveDeviceDomain::postConnectionRequestTask (int w, int h)
   // clog << endl;
 
   // prepare frame
-  task = mountFrame (myIP, CT_BASE, FT_CONNECTIONREQUEST, connReqPayloadSize);
+  task = mountFrame (myIP, CT_BASE, FT_CONNECTIONREQUEST,
+                     connReqPayloadSize);
 
   task[HEADER_SIZE] = deviceClass;
 

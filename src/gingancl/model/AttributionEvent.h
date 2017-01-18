@@ -41,7 +41,8 @@ protected:
   PresentationContext *presContext;
 
 public:
-  AttributionEvent (string id, void *executionObject, PropertyAnchor *anchor,
+  AttributionEvent (string id, void *executionObject,
+                    PropertyAnchor *anchor,
                     PresentationContext *presContext);
 
   virtual ~AttributionEvent ();

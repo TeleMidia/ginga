@@ -442,8 +442,8 @@ SectionFilter::verifyAndAddData (ITSPacket *pack, bool lastPacket)
           if (handler->headerSize == 8)
             {
 
-              handler->section = new TransportSection (handler->sectionHeader,
-                                                       handler->headerSize);
+              handler->section = new TransportSection (
+                  handler->sectionHeader, handler->headerSize);
 
               handler->section->addData (data + headerSizeLeft,
                                          payloadSize - headerSizeLeft);
@@ -543,8 +543,8 @@ SectionFilter::verifyAndCreateSection (ITSPacket *pack)
       memcpy ((void *)&buffer[handler->headerSize], data, payloadSize);
 
       /* Creates the new section */
-      handler->section
-          = new TransportSection (buffer, payloadSize + handler->headerSize);
+      handler->section = new TransportSection (
+          buffer, payloadSize + handler->headerSize);
 
       delete[] buffer;
       buffer = NULL;

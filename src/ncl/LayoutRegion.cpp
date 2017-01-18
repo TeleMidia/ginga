@@ -263,7 +263,8 @@ LayoutRegion::compareWidthSize (string w)
   oldW = getWidthInPixels ();
   if (isPercentualValue (w))
     {
-      newW = (int)((getParent ()->getWidthInPixels () * getPercentualValue (w))
+      newW = (int)((getParent ()->getWidthInPixels ()
+                    * getPercentualValue (w))
                    / 100);
     }
   else
@@ -294,9 +295,9 @@ LayoutRegion::compareHeightSize (string h)
   oldH = getHeightInPixels ();
   if (isPercentualValue (h))
     {
-      newH
-          = (int)((getParent ()->getHeightInPixels () * getPercentualValue (h))
-                  / 100);
+      newH = (int)((getParent ()->getHeightInPixels ()
+                    * getPercentualValue (h))
+                   / 100);
     }
   else
     {
@@ -1284,7 +1285,8 @@ LayoutRegion::getTopInPixels ()
         {
           if (isBottomPercentual ())
             {
-              b = (int)(((100 - bottom) * parent->getHeightInPixels ()) / 100);
+              b = (int)(((100 - bottom) * parent->getHeightInPixels ())
+                        / 100);
             }
           else
             {
@@ -1343,7 +1345,8 @@ LayoutRegion::getBottomInPixels ()
       if (isBottomPercentual () && parent != NULL)
         {
           bottomInPixels
-              = (int)(((100 - bottom) * parent->getHeightInPixels ()) / 100);
+              = (int)(((100 - bottom) * parent->getHeightInPixels ())
+                      / 100);
         }
       else
         {
@@ -1439,7 +1442,8 @@ LayoutRegion::getLeftInPixels ()
         {
           if (isRightPercentual ())
             {
-              r = (int)(((100 - right) * parent->getWidthInPixels ()) / 100);
+              r = (int)(((100 - right) * parent->getWidthInPixels ())
+                        / 100);
             }
           else
             {
@@ -1504,7 +1508,8 @@ LayoutRegion::getHeightInPixels ()
         {
           if (isBottomPercentual ())
             {
-              b = (int)(((100 - getBottom ()) * parent->getHeightInPixels ())
+              b = (int)(((100 - getBottom ())
+                         * parent->getHeightInPixels ())
                         / 100);
             }
           else

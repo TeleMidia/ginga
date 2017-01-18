@@ -69,8 +69,8 @@ DsmccDownloadServerInitiate::processMessage (DsmccMessageHeader *message)
   fd = fopen (header->getFileName ().c_str (), "rb");
   if (fd >= 0)
     {
-      rval = fread ((void *)&(data[0]), 1, header->getMessageLength () + idx,
-                    fd);
+      rval = fread ((void *)&(data[0]), 1,
+                    header->getMessageLength () + idx, fd);
 
       // skip serverId
       idx = idx + 20;
@@ -78,7 +78,8 @@ DsmccDownloadServerInitiate::processMessage (DsmccMessageHeader *message)
       // compatibilityDescriptor?
 
       // privateDataLength
-      privateDataLength = ((data[idx] & 0xFF) << 8) | (data[idx + 1] & 0xFF);
+      privateDataLength
+          = ((data[idx] & 0xFF) << 8) | (data[idx + 1] & 0xFF);
 
       idx = idx + 2;
 
@@ -208,10 +209,12 @@ DsmccDownloadServerInitiate::processIor ()
           idx = idx + 2;
 
           // check version: major == 1 && minor == 0
-          if (((data[idx] & 0xFF) != 0x01) || ((data[idx + 1] & 0xFF) != 0x00))
+          if (((data[idx] & 0xFF) != 0x01)
+              || ((data[idx + 1] & 0xFF) != 0x00))
             {
 
-              clog << "DSI Warning: DsmccObject version, never reach here!!!";
+              clog << "DSI Warning: DsmccObject version, never reach "
+                      "here!!!";
               clog << endl;
               return -5;
             }
