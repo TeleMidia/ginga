@@ -23,8 +23,8 @@ using namespace ::ginga::system;
 using namespace ::ginga::util;
 
 #include "ncl/DeviceLayout.h"
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 #if WITH_MULTIDEVICE
 #include "formatter/FormatterMultiDevice.h"
 #include "multidev/DeviceDomain.h"
@@ -39,7 +39,7 @@ using namespace ::ginga::mb;
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
@@ -229,7 +229,7 @@ main (int argc, char *argv[])
 {
   CommonCoreManager *ccm = NULL;
   PresentationEngineManager *pem = NULL;
-  LocalScreenManager *dm = NULL;
+  DisplayManager *dm = NULL;
 #if WITH_MULTIDEVICE
   FormatterMultiDevice *fmd = NULL;
 #endif
@@ -501,7 +501,7 @@ main (int argc, char *argv[])
   clog << "NCLFILE = '" << nclFile.c_str () << "'";
   clog << endl;
 
-  dm = ScreenManagerFactory::getInstance ();
+  dm = DisplayManagerFactory::getInstance ();
 
   screenId = dm->createScreen (argc, argv);
   if (screenId < 0)

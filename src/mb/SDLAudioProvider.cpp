@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "LocalScreenManager.h"
+#include "DisplayManager.h"
 #include "SDLAudioProvider.h"
 #include "SDLDeviceScreen.h"
 #include "SDLSurface.h"

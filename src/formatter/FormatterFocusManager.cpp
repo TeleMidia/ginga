@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterFocusManager.h"
 
-#include "mb/ScreenManagerFactory.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManagerFactory.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
@@ -39,7 +39,7 @@ bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 pthread_mutex_t FormatterFocusManager::iMutex;
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
@@ -49,8 +49,8 @@ FormatterFocusManager::FormatterFocusManager (
 
   string strValue;
 
-  LocalScreenManager::addIEListenerInstance (this);
-  LocalScreenManager::addMEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
+  DisplayManager::addMEListenerInstance (this);
 
   myScreen = playerManager->getNclPlayerData ()->screenId;
   im = dm->getInputManager (myScreen);
@@ -114,8 +114,8 @@ FormatterFocusManager::FormatterFocusManager (
 
 FormatterFocusManager::~FormatterFocusManager ()
 {
-  LocalScreenManager::removeIEListenerInstance (this);
-  LocalScreenManager::removeMEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
+  DisplayManager::removeMEListenerInstance (this);
 
   Thread::mutexLock (&mutexFocus);
   Thread::mutexLock (&mutexTable);

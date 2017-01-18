@@ -26,8 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterMediator.h"
 
-#include "mb/ScreenManagerFactory.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManagerFactory.h"
+#include "mb/DisplayManager.h"
 #include "mb/InputManager.h"
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
@@ -37,7 +37,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-LocalScreenManager *FormatterMultiDevice::dm = NULL;
+DisplayManager *FormatterMultiDevice::dm = NULL;
 #if WITH_MULTIDEVICE
 RemoteDeviceManager *FormatterMultiDevice::rdm = NULL;
 #else
@@ -69,10 +69,10 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
 
   if (dm == NULL)
     {
-      dm = ScreenManagerFactory::getInstance ();
+      dm = DisplayManagerFactory::getInstance ();
     }
 
-  LocalScreenManager::addIEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
 
   if (defaultWidth == 0)
     {
@@ -103,7 +103,7 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
 FormatterMultiDevice::~FormatterMultiDevice ()
 {
   set<IPlayer *>::iterator i;
-  LocalScreenManager::removeIEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
 
   presContext = NULL;
 

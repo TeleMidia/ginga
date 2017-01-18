@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
@@ -87,7 +87,7 @@ class FormatterMultiDevice : public IPlayerListener,
 {
 #endif
 protected:
-  static LocalScreenManager *dm;
+  static DisplayManager *dm;
   InputManager *im;
   pthread_mutex_t mutex;
 

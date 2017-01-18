@@ -17,8 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "InputManager.h"
-#include "LocalScreenManager.h"
-#include "ScreenManagerFactory.h"
+#include "DisplayManager.h"
+#include "DisplayManagerFactory.h"
 #include "CodeMap.h"
 
 GINGA_MB_BEGIN
@@ -121,10 +121,10 @@ InputManager::release ()
       runDone = (maxX == 0 && maxY == 0);
     }
 
-  mbKeyCode = ScreenManagerFactory::getInstance ()->fromGingaToMB (
+  mbKeyCode = DisplayManagerFactory::getInstance ()->fromGingaToMB (
       myScreen, CodeMap::KEY_QUIT);
 
-  ie = ScreenManagerFactory::getInstance ()->createInputEvent (
+  ie = DisplayManagerFactory::getInstance ()->createInputEvent (
       myScreen, NULL, mbKeyCode);
 
   if (wasRunning)
@@ -641,10 +641,10 @@ InputManager::postInputEvent (int keyCode)
   SDLInputEvent *ie;
   int mbKeyCode;
 
-  mbKeyCode = ScreenManagerFactory::getInstance ()->fromGingaToMB (myScreen,
+  mbKeyCode = DisplayManagerFactory::getInstance ()->fromGingaToMB (myScreen,
                                                                    keyCode);
 
-  ie = ScreenManagerFactory::getInstance ()->createInputEvent (
+  ie = DisplayManagerFactory::getInstance ()->createInputEvent (
       myScreen, NULL, mbKeyCode);
 
   postInputEvent (ie);
@@ -692,7 +692,7 @@ InputManager::getEventBuffer ()
   if (eventBuffer == NULL)
     {
       eventBuffer
-          = ScreenManagerFactory::getInstance ()->createEventBuffer (
+          = DisplayManagerFactory::getInstance ()->createEventBuffer (
               myScreen);
 
       if (!running)

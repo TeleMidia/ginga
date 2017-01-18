@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclFocusSourceManager.h"
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "util/functions.h"
@@ -30,7 +30,7 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 GingaSurfaceID
 NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,

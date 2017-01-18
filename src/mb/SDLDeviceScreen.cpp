@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
-#include "LocalScreenManager.h"
-#include "ScreenManagerFactory.h"
+#include "DisplayManager.h"
+#include "DisplayManagerFactory.h"
 #include "InputManager.h"
 
 extern "C" {
@@ -1161,7 +1161,7 @@ SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
       if (provider != NULL)
         {
           iSur = createSurfaceFrom (NULL);
-          ScreenManagerFactory::getInstance ()->registerSurface (iSur);
+          DisplayManagerFactory::getInstance ()->registerSurface (iSur);
           provider->playOver (iSur->getId ());
 
           releaseImageProvider (provider);

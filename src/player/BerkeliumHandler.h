@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/interface/SDLWindow.h"
 #include "mb/interface/IInputEventListener.h"
 
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "mb/interface/SDLWindow.h"
 using namespace ::ginga::mb;
 
@@ -47,7 +47,7 @@ class BerkeliumHandler : public WindowDelegate,
 private:
   static map<int, int> fromGingaToBklm;
   std::string mURL;
-  LocalScreenManager *dm;
+  DisplayManager *dm;
   GingaScreenID myScreen;
   InputManager *im;
   GingaSurfaceID surface;

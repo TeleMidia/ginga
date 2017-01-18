@@ -21,12 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 
 GINGA_PLAYER_BEGIN
 
-LocalScreenManager *Player::dm = NULL;
+DisplayManager *Player::dm = NULL;
 
 Player::Player (GingaScreenID screenId, string mrl)
 {
@@ -37,7 +37,7 @@ Player::Player (GingaScreenID screenId, string mrl)
 
   if (dm == NULL)
     {
-      dm = ScreenManagerFactory::getInstance ();
+      dm = DisplayManagerFactory::getInstance ();
     }
 
   this->myScreen = screenId;

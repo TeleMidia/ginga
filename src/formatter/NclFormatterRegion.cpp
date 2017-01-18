@@ -24,13 +24,13 @@ using namespace ::ginga::util;
 #include "NclFormatterRegion.h"
 #include "NclFormatterLayout.h"
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
                                         void *layoutManager)
 {

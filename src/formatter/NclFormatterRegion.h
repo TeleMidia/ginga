@@ -34,7 +34,7 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "mb/InputManager.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 

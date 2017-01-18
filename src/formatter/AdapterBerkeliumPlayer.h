@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "../../../../AdapterFormatterPlayer.h"
 
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
