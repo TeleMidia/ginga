@@ -17,29 +17,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "SDLDeviceScreen.h"
-#include "SDLWindow.h"
-#include "SDLSurface.h"
-#include "SDLEventBuffer.h"
-#include "SDLInputEvent.h"
+
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
 #include "InputManager.h"
-
-extern "C" {
-#include "SDL_endian.h"
-#include "SDL_syswm.h"
-}
-
 #include "SDLAudioProvider.h"
-#include "SDLImageProvider.h"
+#include "SDLEventBuffer.h"
 #include "SDLFontProvider.h"
+#include "SDLImageProvider.h"
+#include "SDLInputEvent.h"
+#include "SDLSurface.h"
 #include "SDLVideoProvider.h"
-
-#ifdef SDL_VIDEO_DRIVER_X11
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#endif
+#include "SDLWindow.h"
 
 GINGA_MB_BEGIN
 
@@ -1161,7 +1149,7 @@ SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
       if (provider != NULL)
         {
           iSur = createSurfaceFrom (NULL);
-          DisplayManagerFactory::getInstance ()->registerSurface (iSur);
+          G_DisplayManager->registerSurface (iSur);
           provider->playOver (iSur->getId ());
 
           releaseImageProvider (provider);

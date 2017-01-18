@@ -16,42 +16,31 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
+
+#include "lssm/CommonCoreManager.h"
+#include "lssm/PresentationEngineManager.h"
+using namespace ::ginga::lssm;
+
+#include "mb/DisplayManager.h"
+using namespace ::ginga::mb;
+
+#include "ncl/DeviceLayout.h"
+using namespace ::ginga::ncl;
+
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "ncl/DeviceLayout.h"
-#include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
 #if WITH_MULTIDEVICE
-#include "formatter/FormatterMultiDevice.h"
-#include "multidev/DeviceDomain.h"
-#include "formatter/FormatterPassiveDevice.h"
 #include "formatter/FormatterActiveDevice.h"
-#endif
-#include "lssm/CommonCoreManager.h"
-#include "lssm/PresentationEngineManager.h"
-
-using namespace ::ginga::mb;
-
-#include "ncl/DeviceLayout.h"
-using namespace ::ginga::ncl;
-
-#include "mb/DisplayManager.h"
-using namespace ::ginga::mb;
-
-#if WITH_MULTIDEVICE
+#include "formatter/FormatterMultiDevice.h"
+#include "formatter/FormatterMultiDevice.h"
+#include "formatter/FormatterPassiveDevice.h"
 #include "multidev/DeviceDomain.h"
 using namespace ::ginga::multidev;
-#include "formatter/FormatterMultiDevice.h"
-using namespace ::ginga::formatter;
 #endif
-
-#include "lssm/CommonCoreManager.h"
-#include "lssm/PresentationEngineManager.h"
-using namespace ::ginga::lssm;
 
 void
 printHelp ()
@@ -229,7 +218,6 @@ main (int argc, char *argv[])
 {
   CommonCoreManager *ccm = NULL;
   PresentationEngineManager *pem = NULL;
-  DisplayManager *dm = NULL;
 #if WITH_MULTIDEVICE
   FormatterMultiDevice *fmd = NULL;
 #endif
@@ -501,9 +489,9 @@ main (int argc, char *argv[])
   clog << "NCLFILE = '" << nclFile.c_str () << "'";
   clog << endl;
 
-  dm = DisplayManagerFactory::getInstance ();
+  _G_DisplayManager = new DisplayManager ();
 
-  screenId = dm->createScreen (argc, argv);
+  screenId = _G_DisplayManager->createScreen (argc, argv);
   if (screenId < 0)
     {
       clog << "ginga main() Warning! Can't create Ginga screen";
@@ -513,12 +501,9 @@ main (int argc, char *argv[])
 
   if (devClass == 1)
     {
-
 #if WITH_MULTIDEVICE
       fmd = new FormatterPassiveDevice (screenId, NULL, xOffset, yOffset, w,
                                         h, useMulticast, deviceSrvPort);
-#endif
-#if WITH_MULTIDEVICE
       if (bgUri != "")
         {
           fmd->setBackgroundImage (bgUri);
@@ -532,36 +517,28 @@ main (int argc, char *argv[])
 #if WITH_MULTIDEVICE
       fmd = new FormatterActiveDevice (screenId, NULL, xOffset, yOffset, w,
                                        h, useMulticast, deviceSrvPort);
-#endif
-
-#if WITH_MULTIDEVICE
       if (bgUri != "")
         {
           fmd->setBackgroundImage (bgUri);
         }
 #endif
-
       getchar ();
     }
   else
     {
-
       if (nclFile == "")
         {
           enableGfx = false;
         }
-
       pem = new PresentationEngineManager (devClass, xOffset, yOffset, w, h,
                                            enableGfx, useMulticast,
                                            screenId);
-
       if (pem == NULL)
         {
           clog << "ginga main() Warning! Can't create Presentation Engine";
           clog << endl;
           return -2;
         }
-
       pem->setEmbedApp (false);
 
       if (bgUri != "")
@@ -581,7 +558,6 @@ main (int argc, char *argv[])
       pem->setExitOnEnd (exitOnEnd);
       pem->setDisableFKeys (disableFKeys);
       pem->setDebugWindow (debugWindow);
-
       pem->setInteractivityInfo (hasInteract);
       if (nclFile == "")
         {

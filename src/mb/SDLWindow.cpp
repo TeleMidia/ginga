@@ -16,17 +16,15 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "util/Color.h"
+#include "SDLWindow.h"
 
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
-#include "SDLWindow.h"
-#include "SDLSurface.h"
-#include "SDLDeviceScreen.h"
 #include "SDLConvert.h"
+#include "SDLDeviceScreen.h"
+#include "SDLSurface.h"
 
-extern "C" {
-}
+#include "util/Color.h"
+using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
@@ -79,7 +77,7 @@ SDLWindow::~SDLWindow ()
   releaseColorKey ();
 
   // release window will delete texture
-  DisplayManagerFactory::getInstance ()->releaseWindow (myScreen, this);
+  G_DisplayManager->releaseWindow (myScreen, this);
 
   Thread::mutexDestroy (&mutexC);
 
@@ -149,7 +147,7 @@ SDLWindow::releaseWinISur ()
 {
   if (winISur != 0)
     {
-      DisplayManagerFactory::getInstance ()->deleteSurface (winISur);
+      G_DisplayManager->deleteSurface (winISur);
       winISur = 0;
     }
 }
@@ -575,8 +573,8 @@ SDLWindow::unprotectedValidate ()
 {
   if (winISur != 0)
     {
-      DisplayManagerFactory::getInstance ()->flipSurface (winISur);
-      curSur = (SDL_Surface *)(DisplayManagerFactory::getInstance ()
+      G_DisplayManager->flipSurface (winISur);
+      curSur = (SDL_Surface *)(G_DisplayManager
                                    ->getSurfaceContent (winISur));
       textureUpdate = true;
     }
@@ -594,7 +592,7 @@ SDLWindow::createDrawDataList ()
 
   lockChilds ();
   if (childSurface != NULL
-      && DisplayManagerFactory::getInstance ()->hasSurface (
+      && G_DisplayManager->hasSurface (
              myScreen, childSurface->getId ()))
     {
 
@@ -764,29 +762,29 @@ SDLWindow::renderImgFile (string serializedImageUrl)
   GingaProviderID providerId;
   GingaSurfaceID surId;
 
-  providerId = DisplayManagerFactory::getInstance ()->createImageProvider (
+  providerId = G_DisplayManager->createImageProvider (
       myScreen, serializedImageUrl.c_str ());
 
   IMediaProvider *mediaProvider
-      = DisplayManagerFactory::getInstance ()->getIMediaProviderFromId (
+      = G_DisplayManager->getIMediaProviderFromId (
           providerId);
   if (mediaProvider
       && mediaProvider->getType () == IMediaProvider::ImageProvider)
     img = (IImageProvider *)mediaProvider;
 
-  surId = DisplayManagerFactory::getInstance ()->createSurface (myScreen);
+  surId = G_DisplayManager->createSurface (myScreen);
   img->playOver (surId);
 
   lockSurface ();
-  curSur = (SDL_Surface *)DisplayManagerFactory::getInstance ()
+  curSur = (SDL_Surface *)G_DisplayManager
                ->getSurfaceContent (surId);
   unlockSurface ();
 
   textureUpdate = true;
 
-  DisplayManagerFactory::getInstance ()->releaseImageProvider (
+  G_DisplayManager->releaseImageProvider (
       myScreen, img->getId ());
-  DisplayManagerFactory::getInstance ()->deleteSurface (surId);
+  G_DisplayManager->deleteSurface (surId);
 }
 
 void
@@ -809,14 +807,14 @@ SDLWindow::renderFrom (SDLSurface *surface)
   if (!isMine (surface))
     {
       releaseWinISur ();
-      winISur = DisplayManagerFactory::getInstance ()->createSurface (
+      winISur = G_DisplayManager->createSurface (
           myScreen, contentSurface->w, contentSurface->h);
 
-      DisplayManagerFactory::getInstance ()->blitSurface (winISur, 0, 0,
+      G_DisplayManager->blitSurface (winISur, 0, 0,
                                                          surface->getId ());
-      DisplayManagerFactory::getInstance ()->flipSurface (winISur);
+      G_DisplayManager->flipSurface (winISur);
 
-      curSur = (SDL_Surface *)DisplayManagerFactory::getInstance ()
+      curSur = (SDL_Surface *)G_DisplayManager
                    ->getSurfaceContent (winISur);
       textureUpdate = true;
     }

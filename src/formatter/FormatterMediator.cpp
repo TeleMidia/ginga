@@ -3300,8 +3300,8 @@ FormatterMediator::getSurface ()
   GingaSurfaceID s = 0;
 
   s = Player::getSurface ();
-  dm->clearSurfaceContent (s);
-  dm->flipSurface (s);
+  G_DisplayManager->clearSurfaceContent (s);
+  G_DisplayManager->flipSurface (s);
 
   return s;
 }
@@ -3313,13 +3313,13 @@ FormatterMediator::flip ()
 
   if (data->devClass == 0)
     {
-      if (surface != 0 && dm->hasSurface (myScreen, surface))
+      if (surface != 0 && G_DisplayManager->hasSurface (myScreen, surface))
         {
-          w = dm->getSurfaceParentWindow (surface);
+          w = G_DisplayManager->getSurfaceParentWindow (surface);
           if (w != 0)
             {
-              dm->clearWindowContent (myScreen, w);
-              dm->validateWindow (myScreen, w);
+              G_DisplayManager->clearWindowContent (myScreen, w);
+              G_DisplayManager->validateWindow (myScreen, w);
             }
         }
     }

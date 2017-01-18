@@ -37,12 +37,12 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
 {
 
   deviceClass = DeviceDomain::CT_PASSIVE;
-  serialized = dm->createWindow (myScreen, x, y, defaultWidth,
+  serialized = G_DisplayManager->createWindow (myScreen, x, y, defaultWidth,
                                  defaultHeight, -1.0);
 
-  int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-  dm->setWindowCaps (myScreen, serialized, cap);
-  dm->drawWindow (myScreen, serialized);
+  int cap = G_DisplayManager->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+  G_DisplayManager->setWindowCaps (myScreen, serialized, cap);
+  G_DisplayManager->drawWindow (myScreen, serialized);
 
   if (rdm == NULL)
     {

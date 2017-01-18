@@ -313,10 +313,10 @@ BerkeliumPlayer::play ()
   GingaWindowID iWin;
 
   berkeliumFactory.createBrowser (bInfo);
-  iWin = dm->getSurfaceParentWindow (surface);
+  iWin = G_DisplayManager->getSurfaceParentWindow (surface);
   if (iWin != 0)
     {
-      dm->renderWindowFrom (myScreen, iWin, surface);
+      G_DisplayManager->renderWindowFrom (myScreen, iWin, surface);
     }
   return Player::play ();
 }

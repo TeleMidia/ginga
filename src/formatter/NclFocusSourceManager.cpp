@@ -19,24 +19,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclFocusSourceManager.h"
 
 #include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
-
-#include "util/functions.h"
-using namespace ::ginga::util;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-GINGA_FORMATTER_BEGIN
+#include "util/functions.h"
+using namespace ::ginga::util;
 
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
+GINGA_FORMATTER_BEGIN
 
 GingaSurfaceID
 NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
                                                 string src)
 {
-
   string::size_type index;
   string extension;
   GingaSurfaceID s;
@@ -55,8 +51,8 @@ NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
               || extension == "svgz" || extension == "webp")
             {
 
-              s = dm->createRenderedSurfaceFromImageFile (screenId,
-                                                          src.c_str ());
+              s = G_DisplayManager->createRenderedSurfaceFromImageFile
+                (screenId, src.c_str ());
 
               return s;
             }

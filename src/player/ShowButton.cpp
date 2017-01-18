@@ -19,11 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ShowButton.h"
 
 #include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
+using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 ShowButton::ShowButton (GingaScreenID screenId) : Thread ()
 {
   myScreen = screenId;
@@ -48,22 +47,16 @@ ShowButton::initializeWindow ()
 {
   int x = 0, y, w, h;
 
-  if (dm != NULL)
-    {
-      x = (int)(dm->getDeviceWidth (myScreen) - 70);
-    }
-
+  x = (int)(G_DisplayManager->getDeviceWidth (myScreen) - 70);
   y = 10;
   w = 60;
   h = 60;
 
-  if (dm != NULL)
-    {
-      win = dm->createWindow (myScreen, x, y, w, h, 4.0);
-    }
-  int caps = dm->getWindowCap (myScreen, win, "ALPHACHANNEL");
-  dm->setWindowCaps (myScreen, win, caps);
-  dm->drawWindow (myScreen, win);
+  win = G_DisplayManager->createWindow (myScreen, x, y, w, h, 4.0);
+
+  int caps = G_DisplayManager->getWindowCap (myScreen, win, "ALPHACHANNEL");
+  G_DisplayManager->setWindowCaps (myScreen, win, caps);
+  G_DisplayManager->drawWindow (myScreen, win);
 }
 
 void
@@ -108,8 +101,8 @@ ShowButton::release ()
   lock ();
   if (win != 0)
     {
-      dm->hideWindow (myScreen, win);
-      dm->deleteWindow (myScreen, win);
+      G_DisplayManager->hideWindow (myScreen, win);
+      G_DisplayManager->deleteWindow (myScreen, win);
       win = 0;
     }
   unlock ();
@@ -120,7 +113,7 @@ ShowButton::render (string mrl)
 {
   GingaSurfaceID surface;
 
-  surface = dm->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
+  surface = G_DisplayManager->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
 
   lock ();
   if (win == 0)
@@ -128,12 +121,12 @@ ShowButton::render (string mrl)
       initializeWindow ();
     }
 
-  if (dm->setSurfaceParentWindow (myScreen, surface, win))
+  if (G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win))
     {
-      dm->renderWindowFrom (myScreen, win, surface);
+      G_DisplayManager->renderWindowFrom (myScreen, win, surface);
     }
-  dm->showWindow (myScreen, win);
-  dm->raiseWindowToTop (myScreen, win);
+  G_DisplayManager->showWindow (myScreen, win);
+  G_DisplayManager->raiseWindowToTop (myScreen, win);
   unlock ();
 }
 

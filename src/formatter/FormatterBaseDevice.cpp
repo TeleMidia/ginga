@@ -47,7 +47,7 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
   deviceLayout->addDevice ("systemScreen(1)", 0, 0, DV_QVGA_WIDTH,
                            DV_QVGA_HEIGHT);
 
-  serialized = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
+  serialized = G_DisplayManager->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
@@ -55,9 +55,9 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
 
   im->addInputEventListener (this, evs);
 
-  int caps = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-  dm->setWindowCaps (myScreen, serialized, caps);
-  dm->drawWindow (myScreen, serialized);
+  int caps = G_DisplayManager->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+  G_DisplayManager->setWindowCaps (myScreen, serialized, caps);
+  G_DisplayManager->drawWindow (myScreen, serialized);
 
 #if WITH_MULTIDEVICE
   if (rdm == NULL)
@@ -96,9 +96,9 @@ FormatterBaseDevice::~FormatterBaseDevice ()
 #endif
     }
 
-  if (dm->hasWindow (myScreen, serialized))
+  if (G_DisplayManager->hasWindow (myScreen, serialized))
     {
-      dm->deleteWindow (myScreen, serialized);
+      G_DisplayManager->deleteWindow (myScreen, serialized);
       serialized = 0;
     }
 

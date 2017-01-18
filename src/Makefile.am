@@ -112,7 +112,6 @@ src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
 src+= mb/CodeMap.cpp
 src+= mb/DisplayManager.cpp
-src+= mb/DisplayManagerFactory.cpp
 src+= mb/InputManager.cpp
 src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLAudioProvider.cpp

@@ -16,21 +16,19 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "util/Color.h"
-using namespace ::ginga::util;
+#include "NclFormatterRegion.h"
 
 #include "NclCascadingDescriptor.h"
-
-#include "NclFormatterRegion.h"
 #include "NclFormatterLayout.h"
 
 #include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
+
+#include "util/Color.h"
+using namespace ::ginga::util;
 
 GINGA_FORMATTER_BEGIN
 
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
                                         void *layoutManager)
 {
@@ -283,7 +281,7 @@ NclFormatterRegion::setZIndex (int zIndex)
           clog << "original zIndex = '" << zIndex << "'";
           clog << "converted zIndex = '" << cvtZIndex << "'";
           clog << endl;
-          dm->setWindowZ (
+          G_DisplayManager->setWindowZ (
               ((NclFormatterLayout *)layoutManager)->getScreenID (),
               outputDisplay, cvtZIndex);
         }
@@ -829,7 +827,7 @@ NclFormatterRegion::sizeRegion ()
   lock ();
   if (outputDisplay != 0)
     {
-      dm->setWindowBounds (
+      G_DisplayManager->setWindowBounds (
           ((NclFormatterLayout *)layoutManager)->getScreenID (),
           outputDisplay, left, top, width, height);
     }
@@ -915,18 +913,17 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
       this->renderedSurface = renderedSurface;
 
       if (renderedSurface != 0
-          && dm->hasSurfaceExternalHandler (renderedSurface))
+          && G_DisplayManager->hasSurfaceExternalHandler (renderedSurface))
         {
-
           externHandler = true;
-          outputDisplay = dm->getSurfaceParentWindow (renderedSurface);
-          ;
+          outputDisplay = G_DisplayManager
+            ->getSurfaceParentWindow (renderedSurface);
         }
 
       if (!externHandler)
         {
-          outputDisplay = dm->createWindow (screenId, left, top, width,
-                                            height, cvtIndex);
+          outputDisplay = G_DisplayManager
+            ->createWindow (screenId, left, top, width, height, cvtIndex);
         }
 
       clog << "NclFormatterRegion::prepareOutputDisplay '" << outputDisplay;
@@ -947,7 +944,8 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
           clog << "b = '" << bgColor->getB () << "' ";
           clog << endl;
 
-          dm->setWindowBgColor (screenId, outputDisplay, bgColor->getR (),
+          G_DisplayManager
+            ->setWindowBgColor (screenId, outputDisplay, bgColor->getR (),
                                 bgColor->getG (), bgColor->getB (),
                                 bgColor->getAlpha ());
         }
@@ -955,81 +953,35 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
 
       if (!externHandler)
         {
-          dm->setWindowCurrentTransparency (screenId, outputDisplay,
+          G_DisplayManager
+            ->setWindowCurrentTransparency (screenId, outputDisplay,
                                             (int)(transparency * 255));
         }
 
-      int caps = dm->getWindowCap (screenId, outputDisplay, "ALPHACHANNEL");
+      int caps = G_DisplayManager
+        ->getWindowCap (screenId, outputDisplay, "ALPHACHANNEL");
       if (!externHandler && renderedSurface != 0
-          && (caps & dm->getSurfaceCaps (renderedSurface)))
+          && (caps & G_DisplayManager->getSurfaceCaps (renderedSurface)))
         {
 
-          dm->addWindowCaps (screenId, outputDisplay, caps);
+          G_DisplayManager->addWindowCaps (screenId, outputDisplay, caps);
         }
 
       if (chromaKey != NULL)
         {
-          caps = dm->getWindowCap (screenId, outputDisplay, "NOSTRUCTURE");
+          caps = G_DisplayManager
+            ->getWindowCap (screenId, outputDisplay, "NOSTRUCTURE");
 
-          dm->setWindowCaps (screenId, outputDisplay, caps);
-          dm->drawWindow (screenId, outputDisplay);
+          G_DisplayManager->setWindowCaps (screenId, outputDisplay, caps);
+          G_DisplayManager->drawWindow (screenId, outputDisplay);
 
-          dm->setWindowColorKey (screenId, outputDisplay,
+          G_DisplayManager->setWindowColorKey (screenId, outputDisplay,
                                  chromaKey->getR (), chromaKey->getG (),
                                  chromaKey->getB ());
         }
       else if (!externHandler)
         {
-          dm->drawWindow (screenId, outputDisplay);
-        }
-
-      if (scroll != Descriptor::SCROLL_NONE)
-        {
-          // int vertPolicy, horzPolicy;
-          switch (scroll)
-            {
-            case Descriptor::SCROLL_HORIZONTAL:
-              /*vertPolicy = JScrollPane.
-                          VERTICAL_SCROLLBAR_NEVER;
-
-              horzPolicy = JScrollPane.
-                          HORIZONTAL_SCROLLBAR_ALWAYS;*/
-              break;
-
-            case Descriptor::SCROLL_VERTICAL:
-              /*vertPolicy = JScrollPane.
-                          VERTICAL_SCROLLBAR_ALWAYS;
-
-              horzPolicy = JScrollPane.
-                          HORIZONTAL_SCROLLBAR_NEVER;*/
-
-              break;
-
-            case Descriptor::SCROLL_BOTH:
-              /*vertPolicy = JScrollPane.
-                          VERTICAL_SCROLLBAR_ALWAYS;
-
-              horzPolicy = JScrollPane.
-                          HORIZONTAL_SCROLLBAR_ALWAYS;*/
-
-              break;
-
-            case Descriptor::SCROLL_AUTOMATIC:
-              /*vertPolicy = JScrollPane.
-                          VERTICAL_SCROLLBAR_AS_NEEDED;
-
-              horzPolicy = JScrollPane.
-                          HORIZONTAL_SCROLLBAR_AS_NEEDED;*/
-              break;
-
-            default:
-              /*vertPolicy = JScrollPane.
-                          VERTICAL_SCROLLBAR_NEVER;
-
-              horzPolicy = JScrollPane.
-                          HORIZONTAL_SCROLLBAR_NEVER;*/
-              break;
-            }
+          G_DisplayManager->drawWindow (screenId, outputDisplay);
         }
     }
   else
@@ -1040,10 +992,10 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
 
   if (renderedSurface != 0 && !externHandler)
     {
-      if (dm->setSurfaceParentWindow (screenId, renderedSurface,
+      if (G_DisplayManager->setSurfaceParentWindow (screenId, renderedSurface,
                                       outputDisplay))
         {
-          dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
+          G_DisplayManager->renderWindowFrom (screenId, outputDisplay, renderedSurface);
         }
     }
 
@@ -1248,7 +1200,7 @@ NclFormatterRegion::setRegionVisibility (bool visible)
           clog << outputDisplay;
           clog << "' HIDE" << endl;
 
-          dm->hideWindow (screenId, outputDisplay);
+          G_DisplayManager->hideWindow (screenId, outputDisplay);
         }
       else
         {
@@ -1257,7 +1209,7 @@ NclFormatterRegion::setRegionVisibility (bool visible)
           clog << outputDisplay;
           clog << "' SHOW" << endl;
 
-          dm->showWindow (screenId, outputDisplay);
+          G_DisplayManager->showWindow (screenId, outputDisplay);
         }
     }
   imVisible = visible;
@@ -1273,7 +1225,7 @@ NclFormatterRegion::disposeOutputDisplay ()
           = ((NclFormatterLayout *)layoutManager)->getScreenID ();
       if (!externHandler)
         {
-          dm->disposeWindow (screenId, outputDisplay);
+          G_DisplayManager->disposeWindow (screenId, outputDisplay);
         }
       outputDisplay = 0;
     }
@@ -1290,7 +1242,7 @@ NclFormatterRegion::toFront ()
       = ((NclFormatterLayout *)layoutManager)->getScreenID ();
   if (outputDisplay != 0 && !externHandler)
     {
-      dm->raiseWindowToTop (screenId, outputDisplay);
+      G_DisplayManager->raiseWindowToTop (screenId, outputDisplay);
       unlock ();
       if (ncmRegion != NULL)
         {
@@ -1492,7 +1444,7 @@ NclFormatterRegion::setGhostRegion (bool ghost)
     {
       GingaScreenID screenId
           = ((NclFormatterLayout *)layoutManager)->getScreenID ();
-      dm->setGhostWindow (screenId, outputDisplay, ghost);
+      G_DisplayManager->setGhostWindow (screenId, outputDisplay, ghost);
     }
   unlock ();
 }
@@ -1535,11 +1487,11 @@ NclFormatterRegion::setSelection (bool selOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  dm->renderWindowFrom (screenId, outputDisplay,
+                  G_DisplayManager->renderWindowFrom (screenId, outputDisplay,
                                         selSurface);
                 }
 
-              dm->deleteSurface (selSurface);
+              G_DisplayManager->deleteSurface (selSurface);
             }
           unlock ();
         }
@@ -1550,12 +1502,12 @@ NclFormatterRegion::setSelection (bool selOn)
           lockFocusInfo ();
           if (selComponentSrc == "")
             {
-              dm->validateWindow (screenId, outputDisplay);
+              G_DisplayManager->validateWindow (screenId, outputDisplay);
             }
 
           if (selBorderColor != NULL)
             {
-              dm->setWindowBorder (
+              G_DisplayManager->setWindowBorder (
                   screenId, outputDisplay, selBorderColor->getR (),
                   selBorderColor->getG (), selBorderColor->getB (),
                   selBorderColor->getAlpha (), selBorderWidth);
@@ -1635,10 +1587,10 @@ NclFormatterRegion::setFocus (bool focusOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  dm->renderWindowFrom (screenId, outputDisplay,
+                  G_DisplayManager->renderWindowFrom (screenId, outputDisplay,
                                         focusSurface);
                 }
-              dm->deleteSurface (focusSurface);
+              G_DisplayManager->deleteSurface (focusSurface);
             }
           unlock ();
         }
@@ -1649,12 +1601,12 @@ NclFormatterRegion::setFocus (bool focusOn)
           lockFocusInfo ();
           if (focusComponentSrc == "")
             {
-              dm->validateWindow (screenId, outputDisplay);
+              G_DisplayManager->validateWindow (screenId, outputDisplay);
             }
 
           if (focusBorderColor != NULL)
             {
-              dm->setWindowBorder (
+              G_DisplayManager->setWindowBorder (
                   screenId, outputDisplay, focusBorderColor->getR (),
                   focusBorderColor->getG (), focusBorderColor->getB (),
                   focusBorderColor->getAlpha (), focusBorderWidth);
@@ -1681,14 +1633,14 @@ NclFormatterRegion::unselect ()
       GingaScreenID screenId
           = ((NclFormatterLayout *)layoutManager)->getScreenID ();
 
-      dm->setWindowBorder (screenId, outputDisplay, -1, -1, -1, -1, 0);
+      G_DisplayManager->setWindowBorder (screenId, outputDisplay, -1, -1, -1, -1, 0);
       if (renderedSurface != 0)
         {
-          dm->setSurfaceParentWindow (screenId, renderedSurface,
+          G_DisplayManager->setSurfaceParentWindow (screenId, renderedSurface,
                                       outputDisplay);
-          dm->renderWindowFrom (screenId, outputDisplay, renderedSurface);
+          G_DisplayManager->renderWindowFrom (screenId, outputDisplay, renderedSurface);
         }
-      dm->validateWindow (screenId, outputDisplay);
+      G_DisplayManager->validateWindow (screenId, outputDisplay);
     }
   unlock ();
 
@@ -1765,10 +1717,10 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
   GingaScreenID screenId
       = ((NclFormatterLayout *)layoutManager)->getScreenID ();
-  x = dm->getWindowX (screenId, outputDisplay);
-  y = dm->getWindowY (screenId, outputDisplay);
-  width = dm->getWindowW (screenId, outputDisplay);
-  height = dm->getWindowH (screenId, outputDisplay);
+  x = G_DisplayManager->getWindowX (screenId, outputDisplay);
+  y = G_DisplayManager->getWindowY (screenId, outputDisplay);
+  width = G_DisplayManager->getWindowW (screenId, outputDisplay);
+  height = G_DisplayManager->getWindowH (screenId, outputDisplay);
   unlock ();
 
   transitionDur = transition->getDur ();
@@ -1778,7 +1730,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
   endProgress = transition->getEndProgress ();
 
   transparencyValue
-      = dm->getWindowTransparencyValue (screenId, outputDisplay);
+      = G_DisplayManager->getWindowTransparencyValue (screenId, outputDisplay);
 
   // outputDisplay->setStretch(false);
   initTime = getCurrentTimeMillis ();
@@ -1792,9 +1744,9 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              dm->setWindowCurrentTransparency (screenId, outputDisplay,
+              G_DisplayManager->setWindowCurrentTransparency (screenId, outputDisplay,
                                                 transparencyValue);
-              dm->resizeWindow (screenId, outputDisplay, 1, height);
+              G_DisplayManager->resizeWindow (screenId, outputDisplay, 1, height);
             }
           unlock ();
 
@@ -1828,13 +1780,13 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
                   if (x >= 0 && x + (width - i) >= 0 && i > 0 && height > 0)
                     {
-                      dm->setWindowBounds (screenId, outputDisplay,
+                      G_DisplayManager->setWindowBounds (screenId, outputDisplay,
                                            x + (width - i), y, i, height);
                     }
                 }
               else if (i > 0 && height > 0)
                 {
-                  dm->resizeWindow (screenId, outputDisplay, i, height);
+                  G_DisplayManager->resizeWindow (screenId, outputDisplay, i, height);
                 }
             }
           else
@@ -1851,7 +1803,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              dm->validateWindow (screenId, outputDisplay);
+              G_DisplayManager->validateWindow (screenId, outputDisplay);
             }
           unlock ();
 
@@ -1874,7 +1826,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                     }
                   else
                     {
-                      dm->setWindowBounds (screenId, outputDisplay, x, y,
+                      G_DisplayManager->setWindowBounds (screenId, outputDisplay, x, y,
                                            width, height);
                     }
 
@@ -1904,11 +1856,11 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              dm->setWindowCurrentTransparency (screenId, outputDisplay,
+              G_DisplayManager->setWindowCurrentTransparency (screenId, outputDisplay,
                                                 transparencyValue);
               if (width > 0)
                 {
-                  dm->resizeWindow (screenId, outputDisplay, width, 1);
+                  G_DisplayManager->resizeWindow (screenId, outputDisplay, width, 1);
                 }
             }
           unlock ();
@@ -1943,13 +1895,13 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                 {
                   if (x >= 0 && y + (height - i) >= 0 && width > 0 && i > 0)
                     {
-                      dm->setWindowBounds (screenId, outputDisplay, x,
+                      G_DisplayManager->setWindowBounds (screenId, outputDisplay, x,
                                            y + (height - i), width, i);
                     }
                 }
               else if (width > 0 && i > 0)
                 {
-                  dm->resizeWindow (screenId, outputDisplay, width, i);
+                  G_DisplayManager->resizeWindow (screenId, outputDisplay, width, i);
                 }
             }
           else
@@ -1965,7 +1917,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              dm->validateWindow (screenId, outputDisplay);
+              G_DisplayManager->validateWindow (screenId, outputDisplay);
             }
           unlock ();
 
@@ -1988,7 +1940,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                     }
                   else
                     {
-                      dm->setWindowBounds (screenId, outputDisplay, x, y,
+                      G_DisplayManager->setWindowBounds (screenId, outputDisplay, x, y,
                                            width, height);
                     }
 
@@ -2015,9 +1967,9 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
       if (outputDisplay != 0)
         {
           // outputDisplay->setStretch(true);
-          dm->setWindowBounds (screenId, outputDisplay, x, y, width,
+          G_DisplayManager->setWindowBounds (screenId, outputDisplay, x, y, width,
                                height);
-          dm->validateWindow (screenId, outputDisplay);
+          G_DisplayManager->validateWindow (screenId, outputDisplay);
         }
     }
   unlock ();
@@ -2064,7 +2016,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
     }
 
   opacityValue
-      = (255 - dm->getWindowTransparencyValue (screenId, outputDisplay));
+      = (255 - G_DisplayManager->getWindowTransparencyValue (screenId, outputDisplay));
   unlock ();
 
   transitionDur = transition->getDur ();
@@ -2096,7 +2048,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       lock ();
       if (outputDisplay != 0)
         {
-          dm->setWindowCurrentTransparency (screenId, outputDisplay,
+          G_DisplayManager->setWindowCurrentTransparency (screenId, outputDisplay,
                                             255 - i);
         }
       else
@@ -2230,14 +2182,12 @@ NclFormatterRegion::setTransparency (float transparency)
       this->transparency = transparency;
     }
 
-  /*clog << "NclFormatterRegion::setTransparency : calling with value ";
-  clog << transparency << endl;*/
-
   if (outputDisplay != 0 && !externHandler)
     {
       GingaScreenID screenId
           = ((NclFormatterLayout *)layoutManager)->getScreenID ();
-      dm->setWindowCurrentTransparency (screenId, outputDisplay,
+      G_DisplayManager
+        ->setWindowCurrentTransparency (screenId, outputDisplay,
                                         (int)(this->transparency * 255));
     }
 

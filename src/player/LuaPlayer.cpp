@@ -17,9 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-extern "C" {
-}
-
 #include "mb/InputManager.h"
 #include "mb/DisplayManager.h"
 #include "util/functions.h"
@@ -198,7 +195,7 @@ LuaPlayer::nw_update_thread (void *data)
               SDL_Surface *sfc;
               GingaWindowID window;
 
-              dest = (SDL_Surface *)dm->getSurfaceContent (wrapper);
+              dest = (SDL_Surface *)G_DisplayManager->getSurfaceContent (wrapper);
 
               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
                                           0);
@@ -209,9 +206,9 @@ LuaPlayer::nw_update_thread (void *data)
               SDL_FreeSurface (sfc);
 
               // Refresh surface.
-              window = dm->getSurfaceParentWindow (wrapper);
+              window = G_DisplayManager->getSurfaceParentWindow (wrapper);
               assert (window != 0);
-              dm->renderWindowFrom (player->getScreenID (), window,
+              G_DisplayManager->renderWindowFrom (player->getScreenID (), window,
                                     wrapper);
             }
 
@@ -384,7 +381,7 @@ LuaPlayer::doPlay (void)
   sfc = this->getSurface ();
   if (sfc != 0)
     {
-      dm->getSurfaceSize (sfc, &w, &h);
+      G_DisplayManager->getSurfaceSize (sfc, &w, &h);
     }
 
   // Create the NCLua state.
@@ -450,7 +447,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
     g_warning ("%s", g_strerror (errno));
 
   DisplayManager::addIEListenerInstance (this);
-  this->im = dm->getInputManager (id);
+  this->im = G_DisplayManager->getInputManager (id);
 
   this->nw = NULL; // created by start()
   MUTEX_INIT (&this->mutex);

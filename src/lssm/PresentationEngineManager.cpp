@@ -18,52 +18,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "PresentationEngineManager.h"
 
-#if WITH_ISDBT
-#include "isdbt-tuner/Tuner.h"
-using namespace ::ginga::tuner;
-#endif
-
 #include "player/ProgramAV.h"
-
 #include "player/IProgramAV.h"
 #include "player/IApplicationPlayer.h"
 
-#include "ncl/LayoutRegion.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/ContentTypeManager.h"
-#include "ncl/NclDocument.h"
-using namespace ::ginga::ncl;
-
-#include "system/GingaLocatorFactory.h"
+#if WITH_ISDBT
+#include "DataWrapperListener.h"
+#include "isdbt-dataproc/NCLEventDescriptor.h"
+#include "isdbt-tuner/Tuner.h"
+using namespace ::ginga::dataproc;
+using namespace ::ginga::tuner;
+#endif
 
 #include "formatter/FormatterMediator.h"
 using namespace ::ginga::formatter;
 
-#include "player/ShowButton.h"
-
-#include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
-#include "mb/InputManager.h"
-using namespace ::ginga::mb;
-
-#if WITH_ISDBT
-#include "isdbt-dataproc/NCLEventDescriptor.h"
-using namespace ::ginga::dataproc;
-
-#include "DataWrapperListener.h"
-#endif
-
-#include "util/functions.h"
-using namespace ::ginga::util;
+#include "ncl/LayoutRegion.h"
+#include "ncl/ContentTypeManager.h"
+#include "ncl/NclDocument.h"
+using namespace ::ginga::ncl;
 
 #include "mb/CodeMap.h"
-#include "mb/InputManager.h"
 #include "mb/DisplayManager.h"
+#include "mb/InputManager.h"
 using namespace ::ginga::mb;
+
+#include "player/ShowButton.h"
+using namespace ::ginga::player;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
+
+#include "util/functions.h"
+using namespace ::ginga::util;
 
 GINGA_LSSM_BEGIN
 
@@ -78,7 +65,6 @@ struct inputEventNotification
   vector<string> *cmds;
 };
 
-DisplayManager *PresentationEngineManager::dm = NULL;
 bool PresentationEngineManager::autoProcess = false;
 
 PresentationEngineManager::PresentationEngineManager (
@@ -86,12 +72,6 @@ PresentationEngineManager::PresentationEngineManager (
     bool enableGfx, bool useMulticast, GingaScreenID screenId)
     : Thread ()
 {
-
-  if (dm == NULL)
-    {
-      dm = DisplayManagerFactory::getInstance ();
-    }
-
   DisplayManager::addIEListenerInstance (this);
 
   x = 0;
@@ -109,13 +89,13 @@ PresentationEngineManager::PresentationEngineManager (
   myScreen = screenId;
   enableMulticast = useMulticast;
 
-  w = dm->getDeviceWidth (myScreen);
+  w = G_DisplayManager->getDeviceWidth (myScreen);
   if (width > 0 && (width < w || w == 0))
     {
       w = width;
     }
 
-  h = dm->getDeviceHeight (myScreen);
+  h = G_DisplayManager->getDeviceHeight (myScreen);
   if (height > 0 && (height < h || h == 0))
     {
       h = height;
@@ -151,7 +131,7 @@ PresentationEngineManager::PresentationEngineManager (
   this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
-  this->im = dm->getInputManager (myScreen);
+  this->im = G_DisplayManager->getInputManager (myScreen);
   privateBaseManager = new PrivateBaseManager ();
   this->sb = new ShowButton (myScreen);
 
@@ -175,8 +155,6 @@ PresentationEngineManager::~PresentationEngineManager ()
 
   clog << "PresentationEngineManager::~PresentationEngineManager";
   clog << " releasing screen '" << myScreen << "'" << endl;
-
-  // dm->releaseScreen(myScreen);
 
   lock ();
   while (!formattersToRelease.empty ())

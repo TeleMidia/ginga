@@ -77,14 +77,14 @@ AVPlayer::~AVPlayer ()
   Thread::mutexLock (&tMutex);
   if (surface != 0 && mainAV)
     {
-      dm->setSurfaceParentWindow (myScreen, surface, 0);
+      G_DisplayManager->setSurfaceParentWindow (myScreen, surface, 0);
     }
 
   if (mainAV)
     {
       if (win != 0)
         {
-          dm->disposeWindow (myScreen, win);
+          G_DisplayManager->disposeWindow (myScreen, win);
           win = 0;
         }
     }
@@ -132,7 +132,7 @@ AVPlayer::createProvider (void)
 
   if (provider == 0 && (fileExists (mrl) || isRemote))
     {
-      provider = dm->createContinuousMediaProvider (myScreen, mrl.c_str (),
+      provider = G_DisplayManager->createContinuousMediaProvider (myScreen, mrl.c_str (),
                                                     isRemote);
 
       surface = createFrame ();
@@ -182,7 +182,7 @@ AVPlayer::setSoundLevel (float level)
   this->soundLevel = level;
   if (provider != 0)
     {
-      dm->setProviderSoundLevel (provider, soundLevel);
+      G_DisplayManager->setProviderSoundLevel (provider, soundLevel);
     }
   // unlock();
 }
@@ -199,15 +199,15 @@ AVPlayer::createFrame ()
       clog << endl;
       if (mainAV)
         {
-          dm->setSurfaceParentWindow (myScreen, surface, 0);
+          G_DisplayManager->setSurfaceParentWindow (myScreen, surface, 0);
         }
-      dm->deleteSurface (surface);
+      G_DisplayManager->deleteSurface (surface);
     }
 
-  surface = dm->createSurface (myScreen);
+  surface = G_DisplayManager->createSurface (myScreen);
   if (win != 0 && mainAV)
     {
-      dm->setSurfaceParentWindow (myScreen, surface, win);
+      G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win);
     }
 
   Thread::mutexUnlock (&tMutex);
@@ -220,7 +220,7 @@ AVPlayer::getOriginalResolution (int *width, int *height)
 {
   if (provider != 0)
     {
-      dm->getProviderOriginalResolution (provider, height, width);
+      G_DisplayManager->getProviderOriginalResolution (provider, height, width);
     }
 }
 
@@ -229,7 +229,7 @@ AVPlayer::getTotalMediaTime ()
 {
   if (provider != 0)
     {
-      return dm->getProviderTotalMediaTime (provider);
+      return G_DisplayManager->getProviderTotalMediaTime (provider);
     }
   return 0;
 }
@@ -242,7 +242,7 @@ AVPlayer::getVPts ()
       return 0;
     }
 
-  return dm->getProviderVPts (provider);
+  return G_DisplayManager->getProviderVPts (provider);
 }
 
 void
@@ -252,13 +252,13 @@ AVPlayer::timeShift (string direction)
     {
       if (direction == "forward")
         {
-          dm->setProviderMediaTime (
-              provider, dm->getProviderMediaTime (provider) + 10);
+          G_DisplayManager->setProviderMediaTime (
+              provider, G_DisplayManager->getProviderMediaTime (provider) + 10);
         }
       else if (direction == "backward")
         {
-          dm->setProviderMediaTime (
-              provider, dm->getProviderMediaTime (provider) - 10);
+          G_DisplayManager->setProviderMediaTime (
+              provider, G_DisplayManager->getProviderMediaTime (provider) - 10);
         }
     }
 }
@@ -274,7 +274,7 @@ AVPlayer::getCurrentMediaTime ()
       return -1;
     }
 
-  return dm->getProviderMediaTime (provider);
+  return G_DisplayManager->getProviderMediaTime (provider);
 }
 
 double
@@ -289,14 +289,14 @@ AVPlayer::setMediaTime (double pos)
   if (status == PLAY)
     {
       status = PAUSE;
-      dm->setProviderMediaTime (provider, pos);
+      G_DisplayManager->setProviderMediaTime (provider, pos);
       status = PLAY;
       running = true;
       Thread::startThread ();
     }
   else if (provider != 0)
     {
-      dm->setProviderMediaTime (provider, pos);
+      G_DisplayManager->setProviderMediaTime (provider, pos);
     }
 }
 
@@ -354,7 +354,7 @@ AVPlayer::play ()
 
   Player::play ();
   clog << "AVPlayer::play() calling provider play over" << endl;
-  dm->playProviderOver (provider, surface);
+  G_DisplayManager->playProviderOver (provider, surface);
 
   if (!running)
     {
@@ -377,9 +377,9 @@ AVPlayer::pause ()
 
   if (outputWindow != 0)
     {
-      dm->validateWindow (myScreen, outputWindow);
+      G_DisplayManager->validateWindow (myScreen, outputWindow);
     }
-  dm->pauseProvider (provider);
+  G_DisplayManager->pauseProvider (provider);
 
   clog << "AVPlayer::pause(" << mrl << ") all done!" << endl;
 }
@@ -397,7 +397,7 @@ AVPlayer::stop ()
 
   if (previousStatus != STOP)
     {
-      dm->stopProvider (provider);
+      G_DisplayManager->stopProvider (provider);
     }
 
   clog << "AVPlayer::stop(" << mrl << ") all done!" << endl;
@@ -409,7 +409,7 @@ AVPlayer::resume ()
   setSoundLevel (soundLevel);
 
   Player::play ();
-  dm->resumeProvider (provider, surface);
+  G_DisplayManager->resumeProvider (provider, surface);
 
   if (!running)
     {
@@ -423,7 +423,7 @@ AVPlayer::getPropertyValue (string name)
 {
   if (name == "soundLevel")
     {
-      return itos (dm->getProviderSoundLevel (provider));
+      return itos (G_DisplayManager->getProviderSoundLevel (provider));
     }
 
   return Player::getPropertyValue (name);
@@ -460,16 +460,16 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              win = dm->createWindow (
+              win = G_DisplayManager->createWindow (
                   myScreen, ::ginga::util::stof ((*vals)[0]),
                   ::ginga::util::stof ((*vals)[1]),
                   ::ginga::util::stof ((*vals)[2]),
                   ::ginga::util::stof ((*vals)[3]), 1.0);
 
-              int caps = dm->getWindowCap (myScreen, win, "NOSTRUCTURE")
-                         | dm->getWindowCap (myScreen, win, "DOUBLEBUFFER");
-              dm->setWindowCaps (myScreen, win, caps);
-              dm->drawWindow (myScreen, win);
+              int caps = G_DisplayManager->getWindowCap (myScreen, win, "NOSTRUCTURE")
+                         | G_DisplayManager->getWindowCap (myScreen, win, "DOUBLEBUFFER");
+              G_DisplayManager->setWindowCaps (myScreen, win, caps);
+              G_DisplayManager->drawWindow (myScreen, win);
             }
 
           delete vals;
@@ -484,7 +484,7 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              dm->setWindowBounds (myScreen, win,
+              G_DisplayManager->setWindowBounds (myScreen, win,
                                    ::ginga::util::stof ((*vals)[0]),
                                    ::ginga::util::stof ((*vals)[1]),
                                    ::ginga::util::stof ((*vals)[2]),
@@ -494,11 +494,11 @@ AVPlayer::setPropertyValue (string name, string value)
         }
       else if (name == "show" && win != 0)
         {
-          dm->showWindow (myScreen, win);
+          G_DisplayManager->showWindow (myScreen, win);
         }
       else if (name == "hide" && win != 0)
         {
-          dm->hideWindow (myScreen, win);
+          G_DisplayManager->hideWindow (myScreen, win);
         }
     }
 
@@ -514,7 +514,7 @@ AVPlayer::addListener (IPlayerListener *listener)
 void
 AVPlayer::release ()
 {
-  dm->releaseContinuousMediaProvider (myScreen, provider);
+  G_DisplayManager->releaseContinuousMediaProvider (myScreen, provider);
   provider = 0;
 }
 
@@ -577,7 +577,7 @@ AVPlayer::setAVPid (int aPid, int vPid)
     {
       g_usleep (150000);
     }
-  dm->setProviderAVPid (provider, aPid, vPid);
+  G_DisplayManager->setProviderAVPid (provider, aPid, vPid);
 }
 
 bool
@@ -593,17 +593,17 @@ AVPlayer::checkVideoResizeEvent ()
 
   if (mainAV)
     {
-      dm->feedProviderBuffers (provider);
+      G_DisplayManager->feedProviderBuffers (provider);
     }
   else
     {
       g_usleep (150000);
     }
-  hasEvent = dm->checkProviderVideoResizeEvent (provider, surface);
+  hasEvent = G_DisplayManager->checkProviderVideoResizeEvent (provider, surface);
   setSoundLevel (this->soundLevel);
   if (hasEvent)
     {
-      dm->playProviderOver (provider, surface);
+      G_DisplayManager->playProviderOver (provider, surface);
     }
 
   return hasEvent;
@@ -626,16 +626,16 @@ AVPlayer::run ()
     {
       running = true;
 
-      this->provider = dm->createContinuousMediaProvider (
+      this->provider = G_DisplayManager->createContinuousMediaProvider (
           myScreen, mrl.c_str (), true);
 
       this->surface = createFrame ();
 
-      if (this->win != 0 && dm->getSurfaceParentWindow (surface) == 0)
+      if (this->win != 0 && G_DisplayManager->getSurfaceParentWindow (surface) == 0)
         {
-          dm->setSurfaceParentWindow (myScreen, surface, win);
+          G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win);
         }
-      dm->playProviderOver (provider, surface);
+      G_DisplayManager->playProviderOver (provider, surface);
       checkVideoResizeEvent ();
       buffered = true;
 
@@ -786,7 +786,7 @@ AVPlayer::run ()
 
       if (provider != 0)
         {
-          dm->stopProvider (provider);
+          G_DisplayManager->stopProvider (provider);
         }
 
       clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;

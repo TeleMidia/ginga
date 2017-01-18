@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SystemInfo.h"
 
 #include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "util/functions.h"
@@ -113,18 +112,16 @@ SystemInfo::getReturnBitRate ()
 void
 SystemInfo::getScreenSize (GingaScreenID screenId, int *width, int *height)
 {
-  DisplayManager *dm = DisplayManagerFactory::getInstance ();
-  *width = dm->getDeviceWidth (screenId);
-  *height = dm->getDeviceHeight (screenId);
+  *width = G_DisplayManager->getDeviceWidth (screenId);
+  *height = G_DisplayManager->getDeviceHeight (screenId);
 }
 
 void
 SystemInfo::getScreenGraphicSize (GingaScreenID screenId, int *width,
                                   int *height)
 {
-  DisplayManager *dm = DisplayManagerFactory::getInstance ();
-  *width = dm->getDeviceWidth (screenId);
-  *height = dm->getDeviceHeight (screenId);
+  *width = G_DisplayManager->getDeviceWidth (screenId);
+  *height = G_DisplayManager->getDeviceHeight (screenId);
 }
 
 string

@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LocalScreenManager_H_
-#define LocalScreenManager_H_
+#ifndef DISPLAY_MANAGER_H
+#define DISPLAY_MANAGER_H
 
 #include "SDLDeviceScreen.h"
 #include "InputManager.h"
@@ -40,23 +40,6 @@ GINGA_MB_BEGIN
 class DisplayManager
 {
 public:
-  /* Ginga defining its Multimedia Backend System Types (GMBST)    */
-  /* System Description  String   */
-  static const short GMBST_DFLT; /* Default system:      dflt    */
-  static const short GMBST_DFB;  /* DirectFB:            dfb     */
-  static const short GMBST_DX;   /* DirectX:             dx      */
-  static const short GMBST_SDL;  /* SDL:                 sdl     */
-  static const short GMBST_TERM; /* Teminal:             term    */
-
-  /* Ginga defining its Multimedia Backend SubSystem Types (GMBSST)*/
-  /* System Description  String   */
-  static const short GMBSST_DFLT;  /* Default subsystem:  dflt     */
-  static const short GMBSST_FBDEV; /* Frame buffer:       fbdev    */
-  static const short GMBSST_X11;   /* X11:                x11      */
-  static const short GMBSST_HWND;  /* MS-W Window Handle: hwnd     */
-  static const short GMBSST_SDL;   /* SDL:                sdl      */
-  static const short GMBSST_COCOA; /* COCOA:              cocoa    */
-
   DisplayManager ();
 
 protected:
@@ -78,11 +61,6 @@ protected:
   static pthread_mutex_t mlMutex;
 
   static bool initMutex;
-
-  vector<short> sortSys;
-  map<string, short> sysNames;
-  pthread_mutex_t sysMutex;
-
   bool running;
 
   bool isWaiting;
@@ -136,19 +114,7 @@ public:
   UnderlyingWindowID getScreenUnderlyingWindow (GingaScreenID screenId);
 
 protected:
-  short getMBSystemType (string mbSystemName);
-
-  bool isAvailable (short mbSysType);
-  void lockSysNames ();
-  void unlockSysNames ();
-
   GingaSurfaceID provIdRefCounter;
-
-  virtual bool
-  isLocal ()
-  {
-    return true;
-  }
 
 public:
   IMediaProvider *getIMediaProviderFromId (const GingaProviderID &provId);
@@ -163,7 +129,7 @@ public:
   void blitScreen (GingaScreenID screenId, string fileUri);
   void refreshScreen (GingaScreenID screenId);
 
-  /* Interfacing output */
+  // Interfacing output.
   GingaWindowID createWindow (GingaScreenID screenId, int x, int y, int w,
                               int h, float z);
 
@@ -214,7 +180,6 @@ public:
   GingaSurfaceID createRenderedSurfaceFromImageFile (GingaScreenID screenId,
                                                      const char *mrl);
 
-  /* interfacing input */
 public:
   InputManager *getInputManager (GingaScreenID screenId);
   SDLEventBuffer *createEventBuffer (GingaScreenID screenId);
@@ -227,7 +192,6 @@ public:
   int fromMBToGinga (GingaScreenID screenId, int keyCode);
   int fromGingaToMB (GingaScreenID screenId, int keyCode);
 
-  /* Methods created to isolate gingacc-mb */
   // windows
   void addWindowCaps (const GingaScreenID &screenId,
                       const GingaWindowID &winId, int caps);
@@ -414,7 +378,6 @@ public:
 
   int getProviderHeight (const GingaProviderID &provId);
 
-  /* and finally some protected stuff */
 protected:
   void addScreen (GingaScreenID screenId, SDLDeviceScreen *screen);
 
@@ -431,6 +394,13 @@ protected:
   void unlock ();
 };
 
+// Global screen manager.
+extern DisplayManager *_G_DisplayManager;
+#define G_DisplayManager                                                \
+  ((::ginga::mb::_G_DisplayManager)                                     \
+   ? ::ginga::mb::_G_DisplayManager                                     \
+   : ((G_DEBUG_HERE (), ::std::abort ()), (DisplayManager *) NULL))
+
 GINGA_MB_END
 
-#endif /*LocalScreenManager_H_*/
+#endif /* DISPLAY_MANAGER_H*/

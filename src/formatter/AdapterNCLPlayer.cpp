@@ -22,7 +22,6 @@ using namespace ::ginga::player;
 #include "AdapterNCLPlayer.h"
 
 #include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "FormatterMediator.h"
@@ -124,14 +123,11 @@ AdapterNCLPlayer::createPlayer ()
             }
         }
 
-      DisplayManager *dm;
-
-      dm = DisplayManagerFactory::getInstance ();
       player = (INCLPlayer *)(new FormatterMediator (childData));
 
-      s = dm->createSurface (myScreen);
-      int cap = dm->getSurfaceCap (s, "ALPHACHANNEL");
-      dm->setSurfaceCaps (s, cap);
+      s = G_DisplayManager->createSurface (myScreen);
+      int cap = G_DisplayManager->getSurfaceCap (s, "ALPHACHANNEL");
+      G_DisplayManager->setSurfaceCaps (s, cap);
 
       ((INCLPlayer *)player)->setSurface (s);
       if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)

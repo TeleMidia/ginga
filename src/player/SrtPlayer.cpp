@@ -386,7 +386,7 @@ SrtPlayer::isPlayingSrt ()
   lock ();
   if (surface != 0)
     {
-      dm->clearSurfaceContent (surface);
+      G_DisplayManager->clearSurfaceContent (surface);
     }
   unlock ();
   return false;
@@ -401,7 +401,7 @@ SrtPlayer::run ()
   GingaWindowID parent = 0;
   if (surface != 0)
     {
-      parent = dm->getSurfaceParentWindow (surface);
+      parent = G_DisplayManager->getSurfaceParentWindow (surface);
     }
   else
     {
@@ -512,14 +512,14 @@ SrtPlayer::run ()
           lock ();
           if (surface != 0)
             {
-              parent = dm->getSurfaceParentWindow (surface);
+              parent = G_DisplayManager->getSurfaceParentWindow (surface);
               if (parent != 0 && isPlayingSrt ())
                 {
                   if (controlParentVisibility)
                     {
                       clog << "SrtPlayer::run show";
                       clog << "LINE: '" << line.c_str () << "'" << endl;
-                      dm->showWindow (myScreen, parent);
+                      G_DisplayManager->showWindow (myScreen, parent);
                     }
                 }
               else
@@ -557,11 +557,11 @@ SrtPlayer::run ()
           lock ();
           if (surface != 0)
             {
-              dm->clearSurfaceContent (surface);
-              parent = dm->getSurfaceParentWindow (surface);
+              G_DisplayManager->clearSurfaceContent (surface);
+              parent = G_DisplayManager->getSurfaceParentWindow (surface);
               if (parent != 0 && controlParentVisibility)
                 {
-                  dm->hideWindow (myScreen, parent);
+                  G_DisplayManager->hideWindow (myScreen, parent);
                 }
             }
           unlock ();
