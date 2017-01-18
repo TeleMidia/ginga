@@ -106,7 +106,8 @@ PlainTxtPlayer::loadTxt ()
         {
           // this->surface->setCaps(0);
           dm->clearSurfaceContent (surface);
-          dm->setWindowBgColor (myScreen, dm->getSurfaceParentWindow (surface),
+          dm->setWindowBgColor (myScreen,
+                                dm->getSurfaceParentWindow (surface),
                                 bgColor->getR (), bgColor->getG (),
                                 bgColor->getB (), bgColor->getAlpha ());
         }
@@ -308,9 +309,9 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
             {
               // this->surface->setCaps(0);
               dm->clearSurfaceContent (surface);
-              dm->setWindowBgColor (myScreen, parentWindow, bgColor->getR (),
-                                    bgColor->getG (), bgColor->getB (),
-                                    bgColor->getAlpha ());
+              dm->setWindowBgColor (myScreen, parentWindow,
+                                    bgColor->getR (), bgColor->getG (),
+                                    bgColor->getB (), bgColor->getAlpha ());
             }
         }
     }

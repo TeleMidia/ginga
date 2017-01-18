@@ -31,15 +31,16 @@ GINGA_TUNER_BEGIN
 class NetworkInterface : public ISTCProvider
 {
 private:
-  int id; // NetworkInterface number
-  string name; // eth, isdb-t, dvb-c, ...
+  int id;          // NetworkInterface number
+  string name;     // eth, isdb-t, dvb-c, ...
   string protocol; // none, rtp, ip, udp, ...
-  string address; // frequency, ip+sock, ...
+  string address;  // frequency, ip+sock, ...
   IDataProvider *provider;
   bool tuned;
 
 public:
-  NetworkInterface (int networkId, string name, string protocol, string addr);
+  NetworkInterface (int networkId, string name, string protocol,
+                    string addr);
 
   virtual ~NetworkInterface ();
 

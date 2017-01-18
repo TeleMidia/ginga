@@ -169,8 +169,8 @@ FormatterConverter::getObjectFromNodeId (string id)
   while (i != executionObjects.end ())
     {
       expectedObject = i->second;
-      dataObject
-          = (NodeEntity *)(expectedObject->getDataObject ()->getDataEntity ());
+      dataObject = (NodeEntity *)(expectedObject->getDataObject ()
+                                      ->getDataEntity ());
 
       if (dataObject->getId () == id)
         {
@@ -195,7 +195,8 @@ FormatterConverter::setScheduler (void *scheduler)
 }
 
 void
-FormatterConverter::setLinkActionListener (ILinkActionListener *actionListener)
+FormatterConverter::setLinkActionListener (
+    ILinkActionListener *actionListener)
 {
 
   this->actionListener = actionListener;
@@ -325,9 +326,9 @@ FormatterConverter::checkGradSameInstance (set<ReferNode *> *gradSame,
 }
 
 void
-FormatterConverter::addExecutionObject (ExecutionObject *executionObject,
-                                        CompositeExecutionObject *parentObject,
-                                        int depthLevel)
+FormatterConverter::addExecutionObject (
+    ExecutionObject *executionObject,
+    CompositeExecutionObject *parentObject, int depthLevel)
 {
 
   NodeEntity *dataObject;
@@ -433,10 +434,13 @@ FormatterConverter::addExecutionObject (ExecutionObject *executionObject,
   if (descriptor != NULL && descriptor->getPlayerName () != ""
       && ((descriptor->getPlayerName () == "VideoChannelPlayerAdapter")
           || (descriptor->getPlayerName () == "AudioChannelPlayerAdapter")
-          || (descriptor->getPlayerName () == "JmfVideoChannelPlayerAdapter")
-          || (descriptor->getPlayerName () == "JmfAudioChannelPlayerAdapter")
+          || (descriptor->getPlayerName ()
+              == "JmfVideoChannelPlayerAdapter")
+          || (descriptor->getPlayerName ()
+              == "JmfAudioChannelPlayerAdapter")
           || (descriptor->getPlayerName () == "QtVideoChannelPlayerAdapter")
-          || (descriptor->getPlayerName () == "QtAudioChannelPlayerAdapter")))
+          || (descriptor->getPlayerName ()
+              == "QtAudioChannelPlayerAdapter")))
     {
 
       createMultichannelObject ((CompositeExecutionObject *)executionObject,
@@ -479,8 +483,8 @@ FormatterConverter::compileExecutionObjectLinks (
           node = (Node *)(*i);
           compileExecutionObjectLinks (
               executionObject, node,
-              (CompositeExecutionObject *)(executionObject->getParentObject (
-                  node)),
+              (CompositeExecutionObject *)(executionObject
+                                               ->getParentObject (node)),
               depthLevel);
 
           ++i;
@@ -595,8 +599,8 @@ FormatterConverter::checkMirror (ExecutionObject *object, int depthLevel)
                   = (CompositeNode *)dataObject->getParentComposition ();
               while (parentNode->getParentComposition () != NULL)
                 {
-                  parentNode
-                      = (CompositeNode *)parentNode->getParentComposition ();
+                  parentNode = (CompositeNode *)
+                                   parentNode->getParentComposition ();
                 }
 
               mirrorNode = parentNode->recursivelyGetNode (mirrorSrc);
@@ -652,8 +656,8 @@ FormatterConverter::getParentExecutionObject (
 
 FormatterEvent *
 FormatterConverter::getEvent (ExecutionObject *executionObject,
-                              InterfacePoint *interfacePoint, int ncmEventType,
-                              string key)
+                              InterfacePoint *interfacePoint,
+                              int ncmEventType, string key)
 {
 
   string id;
@@ -749,8 +753,8 @@ FormatterConverter::getEvent (ExecutionObject *executionObject,
                   break;
 
                 case EventUtil::EVT_SELECTION:
-                  event = new SelectionEvent (id, executionObject,
-                                              (ContentAnchor *)interfacePoint);
+                  event = new SelectionEvent (
+                      id, executionObject, (ContentAnchor *)interfacePoint);
 
                   if (key != "")
                     {
@@ -835,7 +839,8 @@ FormatterConverter::createMultichannelObject (
 }
 
 ExecutionObject *
-FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
+FormatterConverter::createExecutionObject (string id,
+                                           NodeNesting *perspective,
                                            CascadingDescriptor *descriptor,
                                            int depthLevel)
 {
@@ -855,7 +860,8 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
   }
   clog << endl;*/
 
-  nodeEntity = (NodeEntity *)(perspective->getAnchorNode ()->getDataEntity ());
+  nodeEntity
+      = (NodeEntity *)(perspective->getAnchorNode ()->getDataEntity ());
 
   if (nodeEntity == NULL || !nodeEntity->instanceOf ("NodeEntity"))
     {
@@ -952,7 +958,8 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
       compositeEvent = new PresentationEvent (
           nodeEntity->getLambdaAnchor ()->getId () + "_"
               + itos (EventUtil::EVT_PRESENTATION),
-          executionObject, (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+          executionObject,
+          (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       executionObject->addEvent (compositeEvent);
       // to monitor the switch presentation and clear the selection after
@@ -970,7 +977,8 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
       compositeEvent = new PresentationEvent (
           nodeEntity->getLambdaAnchor ()->getId () + "_"
               + itos (EventUtil::EVT_PRESENTATION),
-          executionObject, (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+          executionObject,
+          (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       executionObject->addEvent (compositeEvent);
 
@@ -1288,8 +1296,9 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
                       i = sameInstances->begin ();
                       while (i != sameInstances->end ())
                         {
-                          contains = ((CausalLink *)ncmLink)
-                                         ->containsSourceNode (*i, descriptor);
+                          contains
+                              = ((CausalLink *)ncmLink)
+                                    ->containsSourceNode (*i, descriptor);
 
                           if (contains)
                             {
@@ -1428,7 +1437,8 @@ FormatterConverter::compileExecutionObjectLinks (
         {
           object = parentObject;
           parentObject
-              = (CompositeExecutionObject *)(parentObject->getParentObject ());
+              = (CompositeExecutionObject *)(parentObject
+                                                 ->getParentObject ());
 
           compileExecutionObjectLinks (object, dataObject, parentObject,
                                        depthLevel);
@@ -1441,7 +1451,8 @@ FormatterConverter::setActionListener (LinkAction *action)
 {
   if (action->instanceOf ("LinkSimpleAction"))
     {
-      ((LinkSimpleAction *)action)->setSimpleActionListener (actionListener);
+      ((LinkSimpleAction *)action)
+          ->setSimpleActionListener (actionListener);
     }
   else
     {
@@ -1492,8 +1503,8 @@ FormatterConverter::processExecutionObjectSwitch (
 
   id = selectedPerspective->getId () + SystemCompat::getIUriD ();
 
-  descriptor
-      = FormatterConverter::getCascadingDescriptor (selectedPerspective, NULL);
+  descriptor = FormatterConverter::getCascadingDescriptor (
+      selectedPerspective, NULL);
 
   if (descriptor != NULL)
     {
@@ -1517,8 +1528,8 @@ FormatterConverter::processExecutionObjectSwitch (
       return selectedObject;
     }
 
-  selectedObject = createExecutionObject (id, selectedPerspective, descriptor,
-                                          depthLevel);
+  selectedObject = createExecutionObject (id, selectedPerspective,
+                                          descriptor, depthLevel);
 
   delete selectedPerspective;
 
@@ -1544,8 +1555,8 @@ FormatterConverter::processExecutionObjectSwitch (
 }
 
 void
-FormatterConverter::resolveSwitchEvents (ExecutionObjectSwitch *switchObject,
-                                         int depthLevel)
+FormatterConverter::resolveSwitchEvents (
+    ExecutionObjectSwitch *switchObject, int depthLevel)
 {
 
   ExecutionObject *selectedObject;
@@ -1719,7 +1730,8 @@ FormatterConverter::insertNode (NodeNesting *perspective,
 }
 
 FormatterEvent *
-FormatterConverter::insertContext (NodeNesting *contextPerspective, Port *port)
+FormatterConverter::insertContext (NodeNesting *contextPerspective,
+                                   Port *port)
 {
 
   vector<Node *> *nestedSeq;
@@ -1731,8 +1743,9 @@ FormatterConverter::insertContext (NodeNesting *contextPerspective, Port *port)
            || port->getEndInterfacePoint ()->instanceOf ("LabeledAnchor")
            || port->getEndInterfacePoint ()->instanceOf ("PropertyAnchor")
            || port->getEndInterfacePoint ()->instanceOf ("SwitchPort"))
-      || !(contextPerspective->getAnchorNode ()->getDataEntity ()->instanceOf (
-             "ContextNode")))
+      || !(contextPerspective->getAnchorNode ()
+               ->getDataEntity ()
+               ->instanceOf ("ContextNode")))
     {
 
       clog << "FormatterConverter::insertContext Warning! ";
@@ -1807,7 +1820,8 @@ FormatterConverter::removeExecutionObject (ExecutionObject *executionObject)
 }
 
 bool
-FormatterConverter::ntsRemoveExecutionObject (ExecutionObject *executionObject)
+FormatterConverter::ntsRemoveExecutionObject (
+    ExecutionObject *executionObject)
 {
 
   map<string, ExecutionObject *>::iterator i;
@@ -1913,16 +1927,16 @@ FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
       while (i != binds->end ())
         {
           bind = (*i);
-          childObject
-              = hasExecutionObject (bind->getNode (), bind->getDescriptor ());
+          childObject = hasExecutionObject (bind->getNode (),
+                                            bind->getDescriptor ());
 
           if (childObject != NULL)
             {
               // compile causal link
               contextObject->removeLinkUncompiled (link);
-              formatterLink
-                  = ((FormatterLinkConverter *)linkCompiler)
-                        ->createCausalLink (link, contextObject, depthLevel);
+              formatterLink = ((FormatterLinkConverter *)linkCompiler)
+                                  ->createCausalLink (link, contextObject,
+                                                      depthLevel);
 
               if (formatterLink != NULL)
                 {
@@ -1983,7 +1997,8 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
                       ev = ((SwitchEvent *)(*i))->getMappedEvent ();
                       if (ev != NULL)
                         {
-                          // now we know the event is mapped, we can start the
+                          // now we know the event is mapped, we can start
+                          // the
                           // switchport
                           (*i)->start ();
                         }

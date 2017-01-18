@@ -11,16 +11,19 @@
    including commercial applications, and to alter it and redistribute it
    freely, subject to the following restrictions:
 
-   1. The origin of this source code must not be misrepresented; you must not
+   1. The origin of this source code must not be misrepresented; you must
+   not
       claim that you wrote the original source code. If you use this source
    code
       in a product, an acknowledgment in the product documentation would be
       appreciated but is not required.
 
-   2. Altered source versions must be plainly marked as such, and must not be
+   2. Altered source versions must be plainly marked as such, and must not
+   be
       misrepresented as being the original source code.
 
-   3. This notice may not be removed or altered from any source distribution.
+   3. This notice may not be removed or altered from any source
+   distribution.
 
    René Nyffenegger rene.nyffenegger@adp-gmbh.ch
 
@@ -161,10 +164,10 @@ base64_encode (unsigned char const *bytes_to_encode, unsigned int in_len)
         char_array_3[j] = '\0';
 
       char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-      char_array_4[1]
-          = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-      char_array_4[2]
-          = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+      char_array_4[1] = ((char_array_3[0] & 0x03) << 4)
+                        + ((char_array_3[1] & 0xf0) >> 4);
+      char_array_4[2] = ((char_array_3[1] & 0x0f) << 2)
+                        + ((char_array_3[2] & 0xc0) >> 6);
       char_array_4[3] = char_array_3[2] & 0x3f;
 
       for (j = 0; (j < i + 1); j++)
@@ -182,7 +185,8 @@ base64_decode (std::string const &encoded_string)
 {
   int in_len = encoded_string.size ();
 
-  // std::clog << ":: base64_decode.encoded_string.size()="<<in_len<<std::endl;
+  // std::clog << "::
+  // base64_decode.encoded_string.size()="<<in_len<<std::endl;
 
   int i = 0;
   int j = 0;
@@ -204,7 +208,8 @@ base64_decode (std::string const &encoded_string)
               = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
           char_array_3[1] = ((char_array_4[1] & 0xf) << 4)
                             + ((char_array_4[2] & 0x3c) >> 2);
-          char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+          char_array_3[2]
+              = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
 
           for (i = 0; (i < 3); i++)
             ret += char_array_3[i];
@@ -222,8 +227,8 @@ base64_decode (std::string const &encoded_string)
 
       char_array_3[0]
           = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
-      char_array_3[1]
-          = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+      char_array_3[1] = ((char_array_4[1] & 0xf) << 4)
+                        + ((char_array_4[2] & 0x3c) >> 2);
       char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
 
       for (j = 0; (j < i - 1); j++)

@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AttributeAssessment::AttributeAssessment (string role) : Assessment (), Role ()
+AttributeAssessment::AttributeAssessment (string role)
+    : Assessment (), Role ()
 {
 
   Role::setLabel (role);

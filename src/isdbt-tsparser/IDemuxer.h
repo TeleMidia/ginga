@@ -40,9 +40,9 @@ static const short PAT_TID = 0x00;
 static const short CAT_TID = 0x01;
 static const short PMT_TID = 0x02;
 static const short TSDT_TID = 0x03; // TS Description Section
-static const short OCI_TID = 0x3B; // Object Carousel Info
-static const short OCD_TID = 0x3C; // Object Carousel Data
-static const short DDE_TID = 0x3D; // DSM-CC Descriptors
+static const short OCI_TID = 0x3B;  // Object Carousel Info
+static const short OCD_TID = 0x3C;  // Object Carousel Data
+static const short DDE_TID = 0x3D;  // DSM-CC Descriptors
 static const short NIT_TID = 0x40;
 static const short SDT_TID = 0x42;
 static const short EIT_TID = 0x4E;
@@ -135,7 +135,8 @@ public:
 
   virtual void addPidFilter (unsigned int pid, ITSFilter *filter) = 0;
   virtual void addSectionFilter (unsigned int tid, ITSFilter *filter) = 0;
-  virtual void addStreamTypeFilter (short streamType, ITSFilter *filter) = 0;
+  virtual void addStreamTypeFilter (short streamType, ITSFilter *filter)
+      = 0;
 
   virtual int getDefaultMainVideoPid () = 0;
   virtual int getDefaultMainAudioPid () = 0;

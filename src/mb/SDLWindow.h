@@ -70,8 +70,8 @@ private:
   set<SDLWindow *> mirrors;
   SDLWindow *mirrorSrc;
 
-  pthread_mutex_t mutex; // external mutex
-  pthread_mutex_t mutexC; // childs mutex
+  pthread_mutex_t mutex;    // external mutex
+  pthread_mutex_t mutexC;   // childs mutex
   pthread_mutex_t texMutex; // texture mutex
   pthread_mutex_t surMutex; // underlying surface mutex
 
@@ -89,8 +89,8 @@ public:
 
 private:
   void initialize (GingaWindowID underlyingWindowID,
-                   GingaWindowID parentWindowID, GingaScreenID screenId, int x,
-                   int y, int width, int height, float z);
+                   GingaWindowID parentWindowID, GingaScreenID screenId,
+                   int x, int y, int width, int height, float z);
 
   void releaseWinISur ();
   void releaseBGColor ();

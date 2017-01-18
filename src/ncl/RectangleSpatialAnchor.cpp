@@ -23,8 +23,9 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-RectangleSpatialAnchor::RectangleSpatialAnchor (string id, long left, long top,
-                                                long width, long height)
+RectangleSpatialAnchor::RectangleSpatialAnchor (string id, long left,
+                                                long top, long width,
+                                                long height)
     : SpatialAnchor (id)
 {
 
@@ -60,7 +61,8 @@ RectangleSpatialAnchor::getHeight ()
 }
 
 void
-RectangleSpatialAnchor::setArea (long left, long top, long width, long height)
+RectangleSpatialAnchor::setArea (long left, long top, long width,
+                                 long height)
 {
 
   this->left = left;

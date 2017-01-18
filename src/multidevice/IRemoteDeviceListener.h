@@ -36,7 +36,8 @@ public:
   virtual bool receiveRemoteContent (int remoteDevClass, char *stream,
                                      int streamSize)
       = 0;
-  virtual bool receiveRemoteContentInfo (string contentId, string contentUri)
+  virtual bool receiveRemoteContentInfo (string contentId,
+                                         string contentUri)
       = 0;
 };
 

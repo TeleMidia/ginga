@@ -46,8 +46,8 @@ void *FormatterMultiDevice::rdm = NULL;
 #endif
 
 FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
-                                            DeviceLayout *deviceLayout, int x,
-                                            int y, int w, int h,
+                                            DeviceLayout *deviceLayout,
+                                            int x, int y, int w, int h,
                                             bool useMulticast, int srvPort)
 {
 
@@ -90,8 +90,8 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
   im->setAxisValues ((int)(dm->getDeviceWidth (myScreen) / 2),
                      (int)(dm->getDeviceHeight (myScreen) / 2), 0);
 
-  printScreen
-      = dm->createWindow (myScreen, 0, 0, defaultWidth, defaultHeight, -1.0);
+  printScreen = dm->createWindow (myScreen, 0, 0, defaultWidth,
+                                  defaultHeight, -1.0);
 
   int caps = dm->getWindowCap (myScreen, printScreen, "ALPHACHANNEL");
   dm->setWindowCaps (myScreen, printScreen, caps);
@@ -172,7 +172,8 @@ FormatterMultiDevice::printGingaWindows ()
   if (bitMapScreen != 0)
     {
       cout << (unsigned long)bitMapScreen << "'";
-      dm->getWindowDumpFileUri (myScreen, bitMapScreen, quality, dumpW, dumpH);
+      dm->getWindowDumpFileUri (myScreen, bitMapScreen, quality, dumpW,
+                                dumpH);
     }
   else
     {
@@ -258,7 +259,8 @@ FormatterMultiDevice::setParent (FormatterMultiDevice *parent)
 }
 
 void
-FormatterMultiDevice::setPresentationContex (PresentationContext *presContext)
+FormatterMultiDevice::setPresentationContex (
+    PresentationContext *presContext)
 {
 
   this->presContext = presContext;
@@ -304,7 +306,8 @@ FormatterMultiDevice::getScreenShot ()
 }
 
 string
-FormatterMultiDevice::serializeScreen (int devClass, GingaWindowID mapWindow)
+FormatterMultiDevice::serializeScreen (int devClass,
+                                       GingaWindowID mapWindow)
 {
 
   string fileUri = "";
@@ -335,8 +338,8 @@ FormatterMultiDevice::serializeScreen (int devClass, GingaWindowID mapWindow)
               dumpH = 320 / 1.8;
             }
         }
-      fileUri = dm->getWindowDumpFileUri (myScreen, mapWindow, quality, dumpW,
-                                          dumpH);
+      fileUri = dm->getWindowDumpFileUri (myScreen, mapWindow, quality,
+                                          dumpW, dumpH);
 
       clog << "FormatterMultiDevice::serializeScreen fileURI = '";
       clog << fileUri << "' sortedIds size = '" << sortedIds.size ();
@@ -471,8 +474,8 @@ FormatterMultiDevice::getFormatterLayout (CascadingDescriptor *descriptor,
 }
 
 GingaWindowID
-FormatterMultiDevice::prepareFormatterRegion (ExecutionObject *executionObject,
-                                              GingaSurfaceID renderedSurface)
+FormatterMultiDevice::prepareFormatterRegion (
+    ExecutionObject *executionObject, GingaSurfaceID renderedSurface)
 {
 
   FormatterLayout *layout;
@@ -543,12 +546,12 @@ FormatterMultiDevice::prepareFormatterRegion (ExecutionObject *executionObject,
               return windowId;
             }
 
-          bitMapScreen
-              = dm->createWindow (myScreen, bitMapRegion->getAbsoluteLeft (),
-                                  bitMapRegion->getAbsoluteTop (),
-                                  bitMapRegion->getWidthInPixels (),
-                                  bitMapRegion->getHeightInPixels (),
-                                  bitMapRegion->getZIndexValue ());
+          bitMapScreen = dm->createWindow (
+              myScreen, bitMapRegion->getAbsoluteLeft (),
+              bitMapRegion->getAbsoluteTop (),
+              bitMapRegion->getWidthInPixels (),
+              bitMapRegion->getHeightInPixels (),
+              bitMapRegion->getZIndexValue ());
 
           clog << endl << endl;
           clog << "FormatterMultiDevice::prepareFormatterRegion(";
@@ -562,7 +565,8 @@ FormatterMultiDevice::prepareFormatterRegion (ExecutionObject *executionObject,
           clog << "' zIndex = '" << bitMapRegion->getZIndexValue ();
           clog << endl << endl;
 
-          int caps = dm->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
+          int caps
+              = dm->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
           dm->setWindowCaps (myScreen, bitMapScreen, caps);
           dm->drawWindow (myScreen, bitMapScreen);
         }
@@ -629,9 +633,10 @@ FormatterMultiDevice::showObject (ExecutionObject *executionObject)
                   // clog << "activeBaseUri: "<<activeBaseUri<<endl;
                   // clog << "activeUris: "<<activeUris<<endl;
 
-                  content = ((NodeEntity *)(executionObject->getDataObject ()
-                                                ->getDataEntity ()))
-                                ->getContent ();
+                  content
+                      = ((NodeEntity *)(executionObject->getDataObject ()
+                                            ->getDataEntity ()))
+                            ->getContent ();
 
                   tempRelPath = "";
 
@@ -654,9 +659,9 @@ FormatterMultiDevice::showObject (ExecutionObject *executionObject)
                           = url.find_last_of (SystemCompat::getIUriD ());
 
                       if (pos != string::npos)
-                        tempRelPath
-                            = url.substr (activeBaseUri.size (),
-                                          url.size () - activeBaseUri.size ());
+                        tempRelPath = url.substr (
+                            activeBaseUri.size (),
+                            url.size () - activeBaseUri.size ());
                       else
                         tempRelPath = url;
 
@@ -664,9 +669,11 @@ FormatterMultiDevice::showObject (ExecutionObject *executionObject)
                       // SystemCompat::convertRelativePath(tempRelPath);
 
                       /*
-                      size_t pos = url.find_last_of(SystemCompat::getIUriD());
+                      size_t pos =
+                      url.find_last_of(SystemCompat::getIUriD());
                       if(pos != string::npos)
-                              relativePath = url.substr( pos + 1, url.size() -
+                              relativePath = url.substr( pos + 1, url.size()
+                      -
                       pos - 1 );
                       else
                               relativePath = url;
@@ -676,9 +683,10 @@ FormatterMultiDevice::showObject (ExecutionObject *executionObject)
                       clog << tempRelPath << "'" << endl;
                     }
 #if WITH_MULTIDEVICE
-                  rdm->postEvent (devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                                  (char *)("start::" + tempRelPath).c_str (),
-                                  ("start::" + tempRelPath).size ());
+                  rdm->postEvent (
+                      devClass, DeviceDomain::FT_PRESENTATIONEVENT,
+                      (char *)("start::" + tempRelPath).c_str (),
+                      ("start::" + tempRelPath).size ());
 
 /**streams = nsp->createNCLSections(
                 "0x01.0x01",
@@ -743,9 +751,10 @@ FormatterMultiDevice::hideObject (ExecutionObject *executionObject)
                   string relativePath = "";
                   string url;
 
-                  content = ((NodeEntity *)(executionObject->getDataObject ()
-                                                ->getDataEntity ()))
-                                ->getContent ();
+                  content
+                      = ((NodeEntity *)(executionObject->getDataObject ()
+                                            ->getDataEntity ()))
+                            ->getContent ();
 
                   if (content != NULL
                       && content->instanceOf ("ReferenceContent"))
@@ -760,9 +769,9 @@ FormatterMultiDevice::hideObject (ExecutionObject *executionObject)
                       clog << "'";
                       clog << endl;*/
 
-                      relativePath
-                          = url.substr (activeBaseUri.size () + 1,
-                                        url.size () - activeBaseUri.size ());
+                      relativePath = url.substr (
+                          activeBaseUri.size () + 1,
+                          url.size () - activeBaseUri.size ());
 
                       /*clog << "FormatterMultiDevice::hideObject";
                       clog << " executionObject.RP = '" << relativePath;
@@ -773,9 +782,10 @@ FormatterMultiDevice::hideObject (ExecutionObject *executionObject)
 clog << " POSTING STOP EVENT";
 clog << endl;*/
 #if WITH_MULTIDEVICE
-                  rdm->postEvent (devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                                  (char *)("stop::" + relativePath).c_str (),
-                                  ("stop::" + relativePath).size ());
+                  rdm->postEvent (
+                      devClass, DeviceDomain::FT_PRESENTATIONEVENT,
+                      (char *)("stop::" + relativePath).c_str (),
+                      ("stop::" + relativePath).size ());
 #endif // WITH_MULTIDEVICE
                 }
             }
@@ -811,7 +821,8 @@ FormatterMultiDevice::tapObject (int devClass, int x, int y)
         {
           clog << "FormatterMultiDevice::tapObject '";
           clog << object->getId () << "'" << endl;
-          ((FormatterFocusManager *)focusManager)->tapObject ((void *)object);
+          ((FormatterFocusManager *)focusManager)
+              ->tapObject ((void *)object);
         }
       else
         {
@@ -852,7 +863,8 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 
   if (layoutManager.count (newDevClass) == 0)
     {
-      layoutManager[newDevClass] = new FormatterLayout (myScreen, 0, 0, w, h);
+      layoutManager[newDevClass]
+          = new FormatterLayout (myScreen, 0, 0, w, h);
 
       isNewClass = true;
     }
@@ -957,8 +969,8 @@ FormatterMultiDevice::updatePassiveDevices ()
 }
 
 void
-FormatterMultiDevice::updateStatus (short code, string parameter, short type,
-                                    string value)
+FormatterMultiDevice::updateStatus (short code, string parameter,
+                                    short type, string value)
 {
 
   switch (code)

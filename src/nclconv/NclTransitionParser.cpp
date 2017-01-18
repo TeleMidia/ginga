@@ -53,7 +53,8 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importBase")
               == 0)
             {
 
@@ -62,7 +63,8 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToTransitionBase (parentObject, elementObject);
+                  addImportBaseToTransitionBase (parentObject,
+                                                 elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -73,7 +75,8 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
               elementObject = parseTransition (element, parentObject);
               if (elementObject != NULL)
                 {
-                  addTransitionToTransitionBase (parentObject, elementObject);
+                  addTransitionToTransitionBase (parentObject,
+                                                 elementObject);
                 }
             }
         }

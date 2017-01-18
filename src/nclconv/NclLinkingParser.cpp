@@ -26,7 +26,8 @@ NclLinkingParser::NclLinkingParser (DocumentParser *documentParser)
 }
 
 void *
-NclLinkingParser::parseBind (DOMElement *parentElement, void *objGrandParent)
+NclLinkingParser::parseBind (DOMElement *parentElement,
+                             void *objGrandParent)
 {
 
   clog << "parseBind" << endl;
@@ -56,7 +57,8 @@ NclLinkingParser::parseBind (DOMElement *parentElement, void *objGrandParent)
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "bindParam")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "bindParam")
               == 0)
             {
 
@@ -91,7 +93,8 @@ NclLinkingParser::parseBindParam (DOMElement *parentElement,
 }
 
 void *
-NclLinkingParser::parseLink (DOMElement *parentElement, void *objGrandParent)
+NclLinkingParser::parseLink (DOMElement *parentElement,
+                             void *objGrandParent)
 {
 
   clog << "parseLink" << endl;
@@ -121,7 +124,8 @@ NclLinkingParser::parseLink (DOMElement *parentElement, void *objGrandParent)
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "linkParam")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "linkParam")
               == 0)
             {
 
@@ -131,7 +135,8 @@ NclLinkingParser::parseLink (DOMElement *parentElement, void *objGrandParent)
                   addLinkParamToLink (parentObject, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (), "bind")
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "bind")
                    == 0)
             {
 

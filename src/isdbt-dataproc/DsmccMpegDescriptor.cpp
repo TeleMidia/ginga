@@ -186,8 +186,8 @@ DsmccMpegDescriptor::getStream (char **dataStream)
 }
 
 DsmccMpegDescriptor *
-DsmccMpegDescriptor::getDescriptor (vector<DsmccMpegDescriptor *> *descriptors,
-                                    unsigned char Tag)
+DsmccMpegDescriptor::getDescriptor (
+    vector<DsmccMpegDescriptor *> *descriptors, unsigned char Tag)
 {
   vector<DsmccMpegDescriptor *>::iterator dit;
   dit = descriptors->begin ();

@@ -76,7 +76,8 @@ NTPPlayer::updateTime ()
       ftime (&tsent);
       if (!udp.send (sendBuffer, NTP_BUFFER_SIZE) == NTP_BUFFER_SIZE)
         {
-          cout << "NTPPlayer::updateTime - Error sending NTP packet." << endl;
+          cout << "NTPPlayer::updateTime - Error sending NTP packet."
+               << endl;
           delete ntpSend;
           return false;
         }
@@ -93,13 +94,14 @@ NTPPlayer::updateTime ()
                   cout << "synchronized." << endl;
                   return false;
                 }
-              valueStruct
-                  = NTPDatagram::ntp2unix (ntpReceive->getRecvTimestamp1 ());
+              valueStruct = NTPDatagram::ntp2unix (
+                  ntpReceive->getRecvTimestamp1 ());
               timeb *recb = tm2timeb (
-                  valueStruct, ntpFrac2ms (ntpReceive->getRecvTimestamp2 ()));
+                  valueStruct,
+                  ntpFrac2ms (ntpReceive->getRecvTimestamp2 ()));
 
-              valueStruct
-                  = NTPDatagram::ntp2unix (ntpReceive->getTransTimestamp1 ());
+              valueStruct = NTPDatagram::ntp2unix (
+                  ntpReceive->getTransTimestamp1 ());
               ms = ntpFrac2ms (ntpReceive->getTransTimestamp2 ());
               timeb *transb = tm2timeb (valueStruct, ms);
               utcTime.time
@@ -266,8 +268,8 @@ NTPPlayer::elapsedTime (string &oldNclTime)
   struct tm when = { 0 };
   timeb tb, otb;
 
-  if (sscanf (oldNclTime.c_str (), "%d:%d:%d:%d:%d:%d.%d", &yy, &mo, &dd, &hh,
-              &mm, &ss, &ms)
+  if (sscanf (oldNclTime.c_str (), "%d:%d:%d:%d:%d:%d.%d", &yy, &mo, &dd,
+              &hh, &mm, &ss, &ms)
       != 7)
     {
       return -1.0;

@@ -25,9 +25,9 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 class FormatterPassiveDevice : public FormatterMultiDevice
 {
 public:
-  FormatterPassiveDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
-                          int x, int y, int w, int h, bool useMulticast,
-                          int srvPort);
+  FormatterPassiveDevice (GingaScreenID screenId,
+                          DeviceLayout *deviceLayout, int x, int y, int w,
+                          int h, bool useMulticast, int srvPort);
 
   virtual ~FormatterPassiveDevice ();
 
@@ -42,7 +42,8 @@ protected:
   void connectedToBaseDevice (unsigned int domainAddr);
 
   bool
-  receiveRemoteEvent (int remoteDevClass, int eventType, string eventContent)
+  receiveRemoteEvent (int remoteDevClass, int eventType,
+                      string eventContent)
   {
 
     return false;

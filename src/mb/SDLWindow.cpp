@@ -412,7 +412,7 @@ SDLWindow::raiseToTop ()
 {
   //		SDLDeviceScreen::updateWindowState(
   //				myScreen, this,
-  //SDLDeviceScreen::SUW_RAISETOTOP);
+  // SDLDeviceScreen::SUW_RAISETOTOP);
 }
 
 void
@@ -420,7 +420,7 @@ SDLWindow::lowerToBottom ()
 {
   //		SDLDeviceScreen::updateWindowState(
   //				myScreen, this,
-  //SDLDeviceScreen::SUW_LOWERTOBOTTOM);
+  // SDLDeviceScreen::SUW_LOWERTOBOTTOM);
 }
 
 void
@@ -635,7 +635,8 @@ SDLWindow::clearContent ()
   lockSurface ();
   if (curSur != NULL)
     {
-      if (SDL_FillRect (curSur, NULL, SDL_MapRGBA (curSur->format, 0, 0, 0, 0))
+      if (SDL_FillRect (curSur, NULL,
+                        SDL_MapRGBA (curSur->format, 0, 0, 0, 0))
           < 0)
         {
 
@@ -783,8 +784,8 @@ SDLWindow::renderImgFile (string serializedImageUrl)
 
   textureUpdate = true;
 
-  ScreenManagerFactory::getInstance ()->releaseImageProvider (myScreen,
-                                                              img->getId ());
+  ScreenManagerFactory::getInstance ()->releaseImageProvider (
+      myScreen, img->getId ());
   ScreenManagerFactory::getInstance ()->deleteSurface (surId);
 }
 
@@ -886,7 +887,8 @@ SDLWindow::getDumpFileUri (int quality, int dumpW, int dumpH)
     }
   else if (texture != NULL)
     {
-      dumpUSur = SDLDeviceScreen::createUnderlyingSurfaceFromTexture (texture);
+      dumpUSur
+          = SDLDeviceScreen::createUnderlyingSurfaceFromTexture (texture);
       freeSurface = true;
     }
   else
@@ -901,7 +903,8 @@ SDLWindow::getDumpFileUri (int quality, int dumpW, int dumpH)
   SDLDeviceScreen::lockSDL ();
   uri = string (g_get_tmp_dir ()) + "/" + "dump_"
         + itos ((unsigned long)windowId) + ".jpg";
-  int ret = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
+  int ret
+      = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)
     uri = "";
   if (freeSurface)

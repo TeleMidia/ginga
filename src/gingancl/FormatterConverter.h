@@ -126,8 +126,8 @@ public:
   void checkGradSameInstance (set<ReferNode *> *gradSame,
                               ExecutionObject *object);
 
-  CompositeExecutionObject *addSameInstance (ExecutionObject *executionObject,
-                                             ReferNode *referNode);
+  CompositeExecutionObject *
+  addSameInstance (ExecutionObject *executionObject, ReferNode *referNode);
 
 private:
   void addExecutionObject (ExecutionObject *executionObject,
@@ -155,14 +155,15 @@ private:
 
 public:
   FormatterEvent *getEvent (ExecutionObject *executionObject,
-                            InterfacePoint *interfacePoint, int ncmEventType,
-                            string key);
+                            InterfacePoint *interfacePoint,
+                            int ncmEventType, string key);
 
 private:
   void createMultichannelObject (CompositeExecutionObject *compositeObject,
                                  int depthLevel);
 
-  ExecutionObject *createExecutionObject (string id, NodeNesting *perspective,
+  ExecutionObject *createExecutionObject (string id,
+                                          NodeNesting *perspective,
                                           CascadingDescriptor *descriptor,
                                           int depthLevel);
 
@@ -209,7 +210,8 @@ private:
                               GenericDescriptor *descriptor);
 
 public:
-  FormatterEvent *insertContext (NodeNesting *contextPerspective, Port *port);
+  FormatterEvent *insertContext (NodeNesting *contextPerspective,
+                                 Port *port);
 
   bool removeExecutionObject (ExecutionObject *executionObject,
                               ReferNode *referNode);
@@ -223,7 +225,8 @@ public:
   ExecutionObject *hasExecutionObject (Node *node,
                                        GenericDescriptor *descriptor);
 
-  FormatterCausalLink *addCausalLink (ContextNode *context, CausalLink *link);
+  FormatterCausalLink *addCausalLink (ContextNode *context,
+                                      CausalLink *link);
 
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);

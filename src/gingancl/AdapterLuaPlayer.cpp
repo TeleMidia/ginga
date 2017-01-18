@@ -53,11 +53,13 @@ AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
 
       interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
 
-      if ((((AnchorEvent *)event)->getAnchor ())->instanceOf ("LabeledAnchor"))
+      if ((((AnchorEvent *)event)->getAnchor ())
+              ->instanceOf ("LabeledAnchor"))
         {
 
-          interfaceId = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
-                            ->getLabel ();
+          interfaceId
+              = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                    ->getLabel ();
         }
       else if ((((AnchorEvent *)event)->getAnchor ())
                    ->instanceOf ("LambdaAnchor"))
@@ -67,7 +69,8 @@ AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
+      ((ApplicationExecutionObject *)object)
+          ->setCurrentEvent (currentEvent);
 
       player->setCurrentScope (interfaceId);
     }
@@ -79,7 +82,8 @@ AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
       player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
+      ((ApplicationExecutionObject *)object)
+          ->setCurrentEvent (currentEvent);
 
       player->setCurrentScope (interfaceId);
     }

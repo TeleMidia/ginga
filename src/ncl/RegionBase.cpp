@@ -63,7 +63,8 @@ RegionBase::createDeviceRegion ()
       deviceRegion->setLeft ((double)(deviceProperty->getDeviceLeft ()),
                              false);
 
-      deviceRegion->setTop ((double)(deviceProperty->getDeviceTop ()), false);
+      deviceRegion->setTop ((double)(deviceProperty->getDeviceTop ()),
+                            false);
 
       deviceRegion->setWidth ((double)(deviceProperty->getDeviceWidth ()),
                               false);
@@ -83,9 +84,11 @@ RegionBase::createDeviceRegion ()
     }
   /*
                   clog << endl << endl;
-                  clog << "RegionBase::createDeviceRegion '" << deviceClass <<
+                  clog << "RegionBase::createDeviceRegion '" << deviceClass
+     <<
      "'";
-                  clog << " and mapId '" << outputMapRegionId << "'" << endl;
+                  clog << " and mapId '" << outputMapRegionId << "'" <<
+     endl;
                   clog << endl << endl;*/
 
   deviceRegion->setDeviceClass (deviceClass, outputMapRegionId);

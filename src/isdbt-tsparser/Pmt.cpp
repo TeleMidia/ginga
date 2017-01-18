@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-Pmt::Pmt (unsigned int pid, unsigned int programNumber) : TransportSection ()
+Pmt::Pmt (unsigned int pid, unsigned int programNumber)
+    : TransportSection ()
 {
 
   processed = false;
@@ -180,7 +181,8 @@ Pmt::isSectionType (unsigned int pid)
   short value;
   value = getStreamTypeValue (pid);
 
-  if (value == STREAM_TYPE_PRIVATE_SECTION || value == STREAM_TYPE_PRIVATE_DATA
+  if (value == STREAM_TYPE_PRIVATE_SECTION
+      || value == STREAM_TYPE_PRIVATE_DATA
       || (value >= STREAM_TYPE_DSMCC_TYPE_A
           && value <= STREAM_TYPE_DSMCC_TYPE_D))
     {
@@ -245,14 +247,14 @@ Pmt::processSectionPayload ()
     {
       streamType = (short)(sectionPayload[i] & 0xFF);
       i++;
-      elementaryPid
-          = ((sectionPayload[i] & 0x1F) << 8) | (sectionPayload[i + 1] & 0xFF);
+      elementaryPid = ((sectionPayload[i] & 0x1F) << 8)
+                      | (sectionPayload[i + 1] & 0xFF);
 
       streams[elementaryPid] = streamType;
 
       i += 2;
-      esInfoLength
-          = ((sectionPayload[i] & 0x0F) << 8) | (sectionPayload[i + 1] & 0xFF);
+      esInfoLength = ((sectionPayload[i] & 0x0F) << 8)
+                     | (sectionPayload[i + 1] & 0xFF);
       i += 2;
       esInfoPos = 0;
       while (esInfoPos < esInfoLength)
@@ -386,7 +388,8 @@ Pmt::getTaggedVideoPid (unsigned char idx)
     {
       st = getStreamTypeValue (itTag->first);
       if ((st == STREAM_TYPE_VIDEO_MPEG1) || (st == STREAM_TYPE_VIDEO_MPEG2)
-          || (st == STREAM_TYPE_VIDEO_MPEG4) || (st == STREAM_TYPE_VIDEO_H264))
+          || (st == STREAM_TYPE_VIDEO_MPEG4)
+          || (st == STREAM_TYPE_VIDEO_H264))
         {
 
           videoTags[itTag->second] = itTag->first;
@@ -421,8 +424,9 @@ Pmt::getTaggedAudioPid (unsigned char idx)
     {
       st = getStreamTypeValue (itTag->first);
       if ((st == STREAM_TYPE_AUDIO_MPEG1) || (st == STREAM_TYPE_AUDIO_MPEG2)
-          || (st == STREAM_TYPE_AUDIO_MPEG4) || (st == STREAM_TYPE_AUDIO_AAC)
-          || (st == STREAM_TYPE_AUDIO_AC3) || (st == STREAM_TYPE_AUDIO_DTS))
+          || (st == STREAM_TYPE_AUDIO_MPEG4)
+          || (st == STREAM_TYPE_AUDIO_AAC) || (st == STREAM_TYPE_AUDIO_AC3)
+          || (st == STREAM_TYPE_AUDIO_DTS))
         {
 
           audioTags[itTag->second] = itTag->first;

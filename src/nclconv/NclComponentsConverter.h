@@ -67,7 +67,8 @@ class NclComponentsConverter : public NclComponentsParser
 {
   /*tabela com a lista dos elementos q devem ser compilados ao fim do
    * processamento da composicao, ja' que referenciam outros elementos
-   * TODO deve ser feito o mesmo para linkBase, mas como esse elemento costuma
+   * TODO deve ser feito o mesmo para linkBase, mas como esse elemento
+   * costuma
    * vir ao final da composicao, foi ignorado pelo momento
    * para reaproveitar:
    * 1) copiar e inicializar as vars. abaixo
@@ -79,8 +80,10 @@ class NclComponentsConverter : public NclComponentsParser
    * 5)chamar o posCreateCompositionContentGroup do createcomposition
    * 6) chamar o posCreateCompositionContentGroup na criacao do body
    * 7) chamar o posCompileCompositionContentGroup no poscompile do body
-   * 8) criar createBindDescriptorGroup2 e fazer o antigo retornar o elemento
-   * 9) criar createCompositeInterfaceElementGroup2 e fazer o antigo retornar
+   * 8) criar createBindDescriptorGroup2 e fazer o antigo retornar o
+   * elemento
+   * 9) criar createCompositeInterfaceElementGroup2 e fazer o antigo
+   * retornar
    *    o elemento
    */
 

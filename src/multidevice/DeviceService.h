@@ -57,8 +57,8 @@ public:
   virtual void newDeviceConnected (unsigned int devAddr) = 0;
   virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
 
-  virtual bool receiveEvent (unsigned int devAddr, int eventType, char *stream,
-                             int streamSize)
+  virtual bool receiveEvent (unsigned int devAddr, int eventType,
+                             char *stream, int streamSize)
       = 0;
 
   virtual bool receiveMediaContent (unsigned int devAddr, char *stream,

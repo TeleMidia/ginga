@@ -91,7 +91,8 @@ ExecutionObject::ExecutionObject (string id, Node *node, bool handling,
 }
 
 ExecutionObject::ExecutionObject (string id, Node *node,
-                                  GenericDescriptor *descriptor, bool handling,
+                                  GenericDescriptor *descriptor,
+                                  bool handling,
                                   ILinkActionListener *seListener)
 {
 
@@ -1146,7 +1147,8 @@ ExecutionObject::prepare (FormatterEvent *event, double offsetTime)
   if (mainEvent->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)mainEvent)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           lockParentTable ();
@@ -1155,7 +1157,8 @@ ExecutionObject::prepare (FormatterEvent *event, double offsetTime)
             {
               clog << "ExecutionObject::prepare(" << id << ") call ";
               clog << "addEventListener '" << i->second << "' or '";
-              clog << (IEventListener *)(CompositeExecutionObject *)i->second;
+              clog << (IEventListener *)(CompositeExecutionObject *)
+                          i->second;
               clog << "'" << endl;
               // register parent as a mainEvent listener
               mainEvent->addEventListener (
@@ -1169,7 +1172,8 @@ ExecutionObject::prepare (FormatterEvent *event, double offsetTime)
 
   if (mainEvent->instanceOf ("PresentationEvent"))
     {
-      startTime = ((PresentationEvent *)mainEvent)->getBegin () + offsetTime;
+      startTime
+          = ((PresentationEvent *)mainEvent)->getBegin () + offsetTime;
 
       if (startTime > ((PresentationEvent *)mainEvent)->getEnd ())
         {
@@ -1240,7 +1244,8 @@ ExecutionObject::start ()
   if (mainEvent != NULL && mainEvent->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)mainEvent)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           transMan->start (offsetTime);
@@ -1320,7 +1325,8 @@ ExecutionObject::stop ()
   else if (mainEvent->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)mainEvent)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           /*clog << "ExecutionObject::stop for '" << id << "'";
@@ -1355,7 +1361,8 @@ ExecutionObject::abort ()
   else if (mainEvent->instanceOf ("AnchorEvent"))
     {
       contentAnchor = ((AnchorEvent *)mainEvent)->getAnchor ();
-      if (contentAnchor != NULL && contentAnchor->instanceOf ("LabeledAnchor"))
+      if (contentAnchor != NULL
+          && contentAnchor->instanceOf ("LabeledAnchor"))
         {
 
           mainEvent->abort ();
@@ -1604,8 +1611,8 @@ ExecutionObject::setPropertyValue (AttributionEvent *event, string value)
             }
           else
             {
-              ncmRegion->setTargetWidth ((double)::ginga::util::stof (width),
-                                         false);
+              ncmRegion->setTargetWidth (
+                  (double)::ginga::util::stof (width), false);
             }
         }
 
@@ -1613,12 +1620,13 @@ ExecutionObject::setPropertyValue (AttributionEvent *event, string value)
         {
           if (isPercentualValue (height))
             {
-              ncmRegion->setTargetHeight (getPercentualValue (height), true);
+              ncmRegion->setTargetHeight (getPercentualValue (height),
+                                          true);
             }
           else
             {
-              ncmRegion->setTargetHeight ((double)::ginga::util::stof (height),
-                                          false);
+              ncmRegion->setTargetHeight (
+                  (double)::ginga::util::stof (height), false);
             }
         }
 
@@ -1626,12 +1634,13 @@ ExecutionObject::setPropertyValue (AttributionEvent *event, string value)
         {
           if (isPercentualValue (bottom))
             {
-              ncmRegion->setTargetBottom (getPercentualValue (bottom), true);
+              ncmRegion->setTargetBottom (getPercentualValue (bottom),
+                                          true);
             }
           else
             {
-              ncmRegion->setTargetBottom ((double)::ginga::util::stof (bottom),
-                                          false);
+              ncmRegion->setTargetBottom (
+                  (double)::ginga::util::stof (bottom), false);
             }
         }
 
@@ -1643,8 +1652,8 @@ ExecutionObject::setPropertyValue (AttributionEvent *event, string value)
             }
           else
             {
-              ncmRegion->setTargetRight ((double)::ginga::util::stof (right),
-                                         false);
+              ncmRegion->setTargetRight (
+                  (double)::ginga::util::stof (right), false);
             }
         }
 
@@ -1837,7 +1846,8 @@ ExecutionObject::selectionEvent (int keyCode, double currentTime)
 
               selectedEvents->insert (selectionEvent);
             }
-          else if (selectionEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
+          else if (selectionEvent->getAnchor ()->instanceOf (
+                       "IntervalAnchor"))
             {
 
               intervalAnchor
@@ -1853,7 +1863,8 @@ ExecutionObject::selectionEvent (int keyCode, double currentTime)
               clog << currentTime << "'";
               clog << endl;
 
-              if (intervalBegin <= currentTime && intervalEnd >= currentTime)
+              if (intervalBegin <= currentTime
+                  && intervalEnd >= currentTime)
                 {
 
                   selectedEvents->insert (selectionEvent);
@@ -1917,8 +1928,8 @@ ExecutionObject::selectionEvent (int keyCode, double currentTime)
           clog << " calling scheduler to execute fake action";
           clog << endl;
 
-          fakeAct
-              = new LinkSimpleAction (selectionEvent, SimpleAction::ACT_START);
+          fakeAct = new LinkSimpleAction (selectionEvent,
+                                          SimpleAction::ACT_START);
 
           seListener->scheduleAction (NULL, fakeAct);
         }

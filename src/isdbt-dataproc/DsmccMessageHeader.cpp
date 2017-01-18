@@ -45,9 +45,9 @@ DsmccMessageHeader::readMessageFromFile (string fileName, unsigned int pid)
           this->protocolDiscriminator = (bytes[0] & 0xFF);
           this->dsmccType = (bytes[1] & 0xFF);
           this->messageId = ((bytes[2] & 0xFF) << 8) | (bytes[3] & 0xFF);
-          this->transactionId = ((bytes[4] & 0xFF) << 24)
-                                | ((bytes[5] & 0xFF) << 16)
-                                | ((bytes[6] & 0xFF) << 8) | (bytes[7] & 0xFF);
+          this->transactionId
+              = ((bytes[4] & 0xFF) << 24) | ((bytes[5] & 0xFF) << 16)
+                | ((bytes[6] & 0xFF) << 8) | (bytes[7] & 0xFF);
 
           // reserved
           if ((bytes[8] & 0xFF) != 0xFF)
@@ -57,7 +57,8 @@ DsmccMessageHeader::readMessageFromFile (string fileName, unsigned int pid)
             }
 
           this->adaptationLength = (bytes[9] & 0xFF);
-          this->messageLength = ((bytes[10] & 0xFF) << 8) | (bytes[11] & 0xFF);
+          this->messageLength
+              = ((bytes[10] & 0xFF) << 8) | (bytes[11] & 0xFF);
         }
       else
         {
@@ -67,7 +68,8 @@ DsmccMessageHeader::readMessageFromFile (string fileName, unsigned int pid)
     }
   else
     {
-      clog << "DsmccMessageHeader::DsmccMessageHeader - Message header error: "
+      clog << "DsmccMessageHeader::DsmccMessageHeader - Message header "
+              "error: "
               "could not open file ";
       clog << fileName.c_str () << endl;
       return -1;

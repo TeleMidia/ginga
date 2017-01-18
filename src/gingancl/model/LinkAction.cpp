@@ -22,7 +22,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
 LinkAction::LinkAction () : Thread () { initLinkAction (0.0); }
 
-LinkAction::LinkAction (double delay) : Thread () { initLinkAction (delay); }
+LinkAction::LinkAction (double delay) : Thread ()
+{
+  initLinkAction (delay);
+}
 
 LinkAction::~LinkAction ()
 {

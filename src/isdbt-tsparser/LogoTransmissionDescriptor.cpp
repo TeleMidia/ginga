@@ -148,7 +148,8 @@ LogoTransmissionDescriptor::process (char *data, size_t pos)
       pos += 2;
       logoVersion = (((data[pos] << 8) & 0x0100) | (data[pos + 1] & 0xFF));
       pos += 2;
-      downloadDataId = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+      downloadDataId
+          = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
       pos += 2;
     }
   else if (logoType == 0x02)

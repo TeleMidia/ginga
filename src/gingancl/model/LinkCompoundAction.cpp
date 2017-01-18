@@ -154,7 +154,8 @@ LinkCompoundAction::getSimpleActions (
 }
 
 void
-LinkCompoundAction::setCompoundActionListener (ILinkActionListener *listener)
+LinkCompoundAction::setCompoundActionListener (
+    ILinkActionListener *listener)
 {
 
   this->listener = listener;
@@ -243,7 +244,8 @@ LinkCompoundAction::getImplicitRefRoleActions ()
       assignmentActs = (*i)->getImplicitRefRoleActions ();
       if (assignmentActs != NULL)
         {
-          for (j = assignmentActs->begin (); j != assignmentActs->end (); ++j)
+          for (j = assignmentActs->begin (); j != assignmentActs->end ();
+               ++j)
             {
 
               refActs->push_back (*j);

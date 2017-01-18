@@ -75,7 +75,8 @@ public:
                            short int transType);
 
   void updateTransitionTable (double timeValue, IPlayer *player,
-                              FormatterEvent *mainEvent, short int transType);
+                              FormatterEvent *mainEvent,
+                              short int transType);
 
   set<double> *getTransitionsValues (short int transType);
   EventTransition *getNextTransition (FormatterEvent *mainEvent);

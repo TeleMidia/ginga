@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-TcpSocketService::TcpSocketService (unsigned int p, IRemoteDeviceListener *r)
+TcpSocketService::TcpSocketService (unsigned int p,
+                                    IRemoteDeviceListener *r)
 {
   res = r;
   port = p;
@@ -61,8 +62,9 @@ TcpSocketService::addConnection (unsigned int deviceId, char *addr,
       //	if (connections != NULL) {
       //(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
       connection_counter++;
-      tcpcc = new TCPClientConnection (deviceId, connection_counter, addr,
-                                       portStr, (IRemoteDeviceListener *)res);
+      tcpcc
+          = new TCPClientConnection (deviceId, connection_counter, addr,
+                                     portStr, (IRemoteDeviceListener *)res);
 
       (*connections)[deviceId] = tcpcc;
 
@@ -75,17 +77,19 @@ TcpSocketService::addConnection (unsigned int deviceId, char *addr,
 
       //		if (!isLocalConnection) {
       //			//TODO: maintain index when connection is
-      //created again for the same device
+      // created again for the same device
       //			//TODO: defining a getIndex method for the
-      //TCPClientConn class
-      //			//configurable: stick (based on address+port),
-      //slot (like videogames)
-      //			//and continuous (index in not regained, keeps
-      //increasing)
+      // TCPClientConn class
+      //			//configurable: stick (based on
+      //address+port),
+      // slot (like videogames)
+      //			//and continuous (index in not regained,
+      //keeps
+      // increasing)
       //
       //			connection_counter++;
       //			clog << "TcpSocketService::warning - not a
-      //local connection,";
+      // local connection,";
       //			clog << " removing and adding it again (";
       //			clog << deviceId << ")" << endl;
       //
@@ -96,7 +100,7 @@ TcpSocketService::addConnection (unsigned int deviceId, char *addr,
       //							addr,
       //							portStr,
       //							(IRemoteDeviceListener*)
-      //res);
+      // res);
       //
       //			(*connections)[deviceId] = tcpcc;
       //			tcpcc->startThread();

@@ -190,7 +190,8 @@ AdapterFormatterPlayer::createPlayer ()
             {
               param = (*it);
 
-              player->setPropertyValue (param->getName (), param->getValue ());
+              player->setPropertyValue (param->getName (),
+                                        param->getValue ());
 
               ++it;
             }
@@ -487,8 +488,8 @@ AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
                                          ->getNclPlayerData ()
                                          ->transparency);
 
-                  transpValue
-                      = (1 - (parentOpacity - (parentOpacity * transpValue)));
+                  transpValue = (1 - (parentOpacity
+                                      - (parentOpacity * transpValue)));
 
                   clog << "AdapterFormatterPlayer::prepareProperties";
                   clog << " parent opacity is '" << parentOpacity;
@@ -583,7 +584,8 @@ AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
                 {
                   if (fRegion != NULL)
                     {
-                      fRegion->setSelBorderWidth (::ginga::util::stof (value));
+                      fRegion->setSelBorderWidth (
+                          ::ginga::util::stof (value));
                     }
                 }
               else if (name == "selComponentSrc")
@@ -653,7 +655,8 @@ AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
                 {
                   if (name == "explicitDur")
                     {
-                      explicitDur = ::ginga::util::strUTCToSec (value) * 1000;
+                      explicitDur
+                          = ::ginga::util::strUTCToSec (value) * 1000;
                     }
                   else if (name == "left")
                     {
@@ -1056,7 +1059,8 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
 
   if (dataObject != NULL && dataObject->getDataEntity () != NULL)
     {
-      content = ((NodeEntity *)(dataObject->getDataEntity ()))->getContent ();
+      content
+          = ((NodeEntity *)(dataObject->getDataEntity ()))->getContent ();
 
       if (content != NULL && content->instanceOf ("ReferenceContent"))
         {
@@ -1345,7 +1349,8 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       clog << endl;
     }
 
-  timeBaseProvider = ((AdapterPlayerManager *)manager)->getTimeBaseProvider ();
+  timeBaseProvider
+      = ((AdapterPlayerManager *)manager)->getTimeBaseProvider ();
 
   if (object->hasSampleEvents () && timeBaseProvider != NULL)
     {
@@ -1360,7 +1365,8 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
   dataObject = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
   if (dataObject->instanceOf ("ContentNode"))
     {
-      if (((ContentNode *)dataObject)->isTimeNode () && anchorMonitor == NULL)
+      if (((ContentNode *)dataObject)->isTimeNode ()
+          && anchorMonitor == NULL)
         {
           anchorMonitor = new NominalEventMonitor (object, this);
         }
@@ -1956,8 +1962,8 @@ AdapterFormatterPlayer::setTimeBasePlayer (
 }
 
 void
-AdapterFormatterPlayer::updateStatus (short code, string parameter, short type,
-                                      string value)
+AdapterFormatterPlayer::updateStatus (short code, string parameter,
+                                      short type, string value)
 {
 
   FormatterEvent *mainEvent;
@@ -2000,7 +2006,8 @@ AdapterFormatterPlayer::updateStatus (short code, string parameter, short type,
             {
               mainEvent = object->getMainEvent ();
               if (mainEvent != NULL
-                  && mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+                  && mainEvent->getCurrentState ()
+                         != EventUtil::ST_SLEEPING)
                 {
 
                   rebase ();

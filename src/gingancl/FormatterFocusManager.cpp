@@ -338,7 +338,8 @@ FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
 }
 
 void
-FormatterFocusManager::insertObject (ExecutionObject *obj, string focusIndex)
+FormatterFocusManager::insertObject (ExecutionObject *obj,
+                                     string focusIndex)
 {
 
   string auxIndex;
@@ -361,7 +362,8 @@ FormatterFocusManager::insertObject (ExecutionObject *obj, string focusIndex)
 }
 
 void
-FormatterFocusManager::removeObject (ExecutionObject *obj, string focusIndex)
+FormatterFocusManager::removeObject (ExecutionObject *obj,
+                                     string focusIndex)
 {
 
   map<string, set<ExecutionObject *> *>::iterator i;
@@ -681,8 +683,9 @@ FormatterFocusManager::setFocus (CascadingDescriptor *descriptor)
   if (!isNaN (borderAlpha))
     {
       canDelFocusColor = true;
-      focusColor = new Color (focusColor->getR (), focusColor->getG (),
-                              focusColor->getB (), (int)(borderAlpha * 255));
+      focusColor
+          = new Color (focusColor->getR (), focusColor->getG (),
+                       focusColor->getB (), (int)(borderAlpha * 255));
     }
 
   width = borderWidth;
@@ -735,7 +738,8 @@ FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
       return;
     }
 
-  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (object);
+  player
+      = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (object);
   if (player != NULL)
     {
       fRegion = object->getDescriptor ()->getFormatterRegion ();
@@ -814,7 +818,8 @@ FormatterFocusManager::showObject (ExecutionObject *object)
     {
       registerNavigationKeys ();
 
-      paramValue = presContext->getPropertyValue ("service.currentKeyMaster");
+      paramValue
+          = presContext->getPropertyValue ("service.currentKeyMaster");
 
       if (paramValue == mediaId || objectToSelect == mediaId)
         {
@@ -844,7 +849,8 @@ FormatterFocusManager::showObject (ExecutionObject *object)
           setFocus (focusIndex);
         }
 
-      paramValue = presContext->getPropertyValue ("service.currentKeyMaster");
+      paramValue
+          = presContext->getPropertyValue ("service.currentKeyMaster");
 
       if ((paramValue == mediaId || objectToSelect == mediaId)
           && fr->isVisible ())
@@ -873,9 +879,8 @@ FormatterFocusManager::showObject (ExecutionObject *object)
 
               selectedObject = object;
               selectedObject->setHandler (true);
-              player
-                  = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-                      selectedObject);
+              player = (AdapterFormatterPlayer *)
+                           playerManager->getObjectPlayer (selectedObject);
               enterSelection (player);
             }
         }
@@ -912,8 +917,9 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
           && selectedObject == object)
         {
 
-          player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-              selectedObject);
+          player
+              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
+                  selectedObject);
           exitSelection (player);
           // region->setSelection(false);
           // recoveryDefaultState(selectedObject);
@@ -948,7 +954,8 @@ FormatterFocusManager::keyCodeOk (ExecutionObject *currentObject)
   AdapterFormatterPlayer *player;
   bool isHandling = false;
   /*
-                  clog << "FormatterFocusManager::keyCodeOk(" << this << ")";
+                  clog << "FormatterFocusManager::keyCodeOk(" << this <<
+     ")";
                   clog << " this->isHandler '" << this->isHandler << "'";
                   clog << " parentManager '" << parentManager << "'";
                   clog << " lastHandler '" << lastHandler << "'";
@@ -999,7 +1006,8 @@ FormatterFocusManager::keyCodeBack ()
   AdapterFormatterPlayer *player;
   string ix;
   /*
-                  clog << "FormatterFocusManager::keyCodeBack(" << this << ")";
+                  clog << "FormatterFocusManager::keyCodeBack(" << this <<
+     ")";
                   clog << " this->isHandler '" << this->isHandler << "'";
                   clog << " parentManager '" << parentManager << "'";
                   clog << " lastHandler '" << lastHandler << "'";
@@ -1204,7 +1212,8 @@ FormatterFocusManager::changeSettingState (string name, string act)
   FormatterEvent *event;
   string keyM;
 
-  settingObjects = ((FormatterConverter *)converter)->getSettingNodeObjects ();
+  settingObjects
+      = ((FormatterConverter *)converter)->getSettingNodeObjects ();
 
   /*clog << "FormatterFocusManager::changeSettingState number of ";
   clog << "settings objects: '" << settingObjects->size() << "'";

@@ -96,7 +96,8 @@ DsmccDownloadDataBlock::processDataBlock (
                       // checking reserved
                       if ((bytes[i + 3] & 0xFF) != 0xFF)
                         {
-                          clog << "DsmccDownloadDataBlock::processDataBlock ";
+                          clog << "DsmccDownloadDataBlock::"
+                                  "processDataBlock ";
                           clog << "Warning! Reserved DDB shall be set";
                           clog << "to 0xFF" << endl;
                         }

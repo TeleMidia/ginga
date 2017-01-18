@@ -142,7 +142,8 @@ TOT::print ()
   clog << "TOT::print printing..." << endl;
   clog << "UTC3Time: " << getUTC3TimeStr () << endl;
   /*
-                  for (i = descriptors->begin(); i != descriptors->end(); ++i)
+                  for (i = descriptors->begin(); i != descriptors->end();
+     ++i)
      {
                           (*i)->print();
                   }

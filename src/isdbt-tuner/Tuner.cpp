@@ -158,7 +158,8 @@ Tuner::initializeInterface (string niSpec)
           pos = niSpec.find_first_of ("//");
           if (pos != string::npos)
             {
-              niSpec = niSpec.substr (pos + 2, niSpec.length () - (pos + 2));
+              niSpec
+                  = niSpec.substr (pos + 2, niSpec.length () - (pos + 2));
             }
         }
 
@@ -208,7 +209,8 @@ Tuner::initializeInterfaces ()
   ifstream fis;
   string addr;
 
-  string tunerpath = SystemCompat::getGingaBinPath () + "/" + GINGA_TUNER_PATH;
+  string tunerpath
+      = SystemCompat::getGingaBinPath () + "/" + GINGA_TUNER_PATH;
 
   fis.open (tunerpath.c_str (), ifstream::in);
 

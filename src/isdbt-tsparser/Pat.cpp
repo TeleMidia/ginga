@@ -289,7 +289,8 @@ Pat::getStreamType (unsigned int pid)
 bool
 Pat::isSectionType (unsigned int pid)
 {
-  if (pid == 0x00 || pid == 0x01 || pid == 0x03 || programs.count (pid) != 0)
+  if (pid == 0x00 || pid == 0x01 || pid == 0x03
+      || programs.count (pid) != 0)
     {
 
       return true;
@@ -372,11 +373,13 @@ Pat::processSectionPayload ()
                   /*clog << "Pat::process ";
                   clog << "pnumByte1 = '" << (sectionPayload[((i*4) + 0)] &
                   0x1F);
-                  clog << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)] &
+                  clog << "' pnumByte2 = '" << (sectionPayload[((i*4) + 1)]
+                  &
                   0xFF);
                   clog << "ppidByte1 = '" << (sectionPayload[((i*4) + 2)] &
                   0x1F);
-                  clog << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)] &
+                  clog << "' ppidByte2 = '" << (sectionPayload[((i*4) + 3)]
+                  &
                   0xFF);
                   clog << "' sectionLength = '" << getSectionLength();
                   clog << "'" << endl;*/

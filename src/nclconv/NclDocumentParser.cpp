@@ -97,7 +97,8 @@ NclDocumentParser::getConnectorsParser ()
 }
 
 void
-NclDocumentParser::setConnectorsParser (NclConnectorsParser *connectorsParser)
+NclDocumentParser::setConnectorsParser (
+    NclConnectorsParser *connectorsParser)
 {
 
   this->connectorsParser = connectorsParser;
@@ -138,7 +139,8 @@ NclDocumentParser::getComponentsParser ()
 }
 
 void
-NclDocumentParser::setComponentsParser (NclComponentsParser *componentsParser)
+NclDocumentParser::setComponentsParser (
+    NclComponentsParser *componentsParser)
 {
 
   this->componentsParser = componentsParser;
@@ -191,7 +193,8 @@ NclDocumentParser::getInterfacesParser ()
 }
 
 void
-NclDocumentParser::setInterfacesParser (NclInterfacesParser *interfacesParser)
+NclDocumentParser::setInterfacesParser (
+    NclInterfacesParser *interfacesParser)
 {
 
   this->interfacesParser = interfacesParser;

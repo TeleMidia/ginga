@@ -26,7 +26,8 @@ NclLayoutParser::NclLayoutParser (DocumentParser *documentParser)
 }
 
 void *
-NclLayoutParser::parseRegion (DOMElement *parentElement, void *objGrandParent)
+NclLayoutParser::parseRegion (DOMElement *parentElement,
+                              void *objGrandParent)
 {
 
   clog << "parseRegion" << endl;
@@ -102,7 +103,8 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
           clog << XMLString::transcode (
               element->getAttribute (XMLString::transcode ("id")));
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importBase")
               == 0)
             {
 

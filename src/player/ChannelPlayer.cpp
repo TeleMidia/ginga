@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-ChannelPlayer::ChannelPlayer (GingaScreenID screenId) : Player (screenId, "")
+ChannelPlayer::ChannelPlayer (GingaScreenID screenId)
+    : Player (screenId, "")
 {
   this->objectMap = NULL;
   this->selectedPlayer = NULL;

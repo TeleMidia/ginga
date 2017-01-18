@@ -31,7 +31,8 @@ protected:
   TemporalFlexibilityFunction *costFunction;
 
 public:
-  CostFunctionDuration (double expectedValue, double minValue, double maxValue,
+  CostFunctionDuration (double expectedValue, double minValue,
+                        double maxValue,
                         TemporalFlexibilityFunction *function);
 
   CostFunctionDuration (double expectedValue,

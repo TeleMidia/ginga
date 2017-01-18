@@ -21,7 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
 
-AdapterPlainTxtPlayer::AdapterPlainTxtPlayer () : AdapterFormatterPlayer () {}
+AdapterPlainTxtPlayer::AdapterPlainTxtPlayer () : AdapterFormatterPlayer ()
+{
+}
 
 void
 AdapterPlainTxtPlayer::createPlayer ()
@@ -65,7 +67,8 @@ AdapterPlainTxtPlayer::createPlayer ()
       paramValue = trim (descriptor->getParameterValue ("fontColor"));
       if (paramValue == "")
         {
-          paramValue = trim (descriptor->getParameterValue ("x-rgbFontColor"));
+          paramValue
+              = trim (descriptor->getParameterValue ("x-rgbFontColor"));
 
           if (paramValue == "")
             {

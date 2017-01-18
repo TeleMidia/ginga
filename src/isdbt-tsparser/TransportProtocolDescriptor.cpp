@@ -86,7 +86,8 @@ TransportProtocolDescriptor::process (char *data, size_t pos)
   descriptorLength = data[pos + 1];
   pos += 2;
 
-  protocolId = ((((data[pos] & 0xFF) << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  protocolId
+      = ((((data[pos] & 0xFF) << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
   pos += 2;
 
   transportProtocolLabel = data[pos];

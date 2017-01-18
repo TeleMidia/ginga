@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclInterfacesConverter::NclInterfacesConverter (DocumentParser *documentParser)
+NclInterfacesConverter::NclInterfacesConverter (
+    DocumentParser *documentParser)
     : NclInterfacesParser (documentParser)
 {
 }
@@ -306,19 +307,22 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
           if (end.find ("s") != std::string::npos)
             {
               lastSyntax = ContentAnchor::CAT_SAMPLES;
-              endVal = ::ginga::util::stof (end.substr (0, end.length () - 1));
+              endVal
+                  = ::ginga::util::stof (end.substr (0, end.length () - 1));
             }
           else if (end.find ("f") != std::string::npos)
             {
               lastSyntax = ContentAnchor::CAT_FRAMES;
-              endVal = ::ginga::util::stof (end.substr (0, end.length () - 1));
+              endVal
+                  = ::ginga::util::stof (end.substr (0, end.length () - 1));
             }
           else if (end.find ("npt") != std::string::npos
                    || end.find ("NPT") != std::string::npos)
             {
 
               lastSyntax = ContentAnchor::CAT_NPT;
-              endVal = ::ginga::util::stof (end.substr (0, end.length () - 3));
+              endVal
+                  = ::ginga::util::stof (end.substr (0, end.length () - 3));
             }
         }
 
@@ -475,8 +479,9 @@ NclInterfacesConverter::createMapping (DOMElement *parentElement,
   if (parentElement->hasAttribute (XMLString::transcode ("interface")))
     {
       // tem-se o atributo, tentar pegar a ancora do document node
-      interfacePoint = mappingNodeEntity->getAnchor (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("interface"))));
+      interfacePoint = mappingNodeEntity->getAnchor (
+          XMLString::transcode (parentElement->getAttribute (
+              XMLString::transcode ("interface"))));
 
       if (interfacePoint == NULL)
         {
@@ -487,8 +492,8 @@ NclInterfacesConverter::createMapping (DOMElement *parentElement,
             {
               interfacePoint
                   = ((CompositeNode *)mappingNodeEntity)
-                        ->getPort (
-                            XMLString::transcode (parentElement->getAttribute (
+                        ->getPort (XMLString::transcode (
+                            parentElement->getAttribute (
                                 XMLString::transcode ("interface"))));
             }
         }

@@ -231,7 +231,8 @@ AnimationController::loadInitValues ()
 
           if (value == "")
             {
-              value = execObj->getPropertyValue (this->propertySingleNames[i]);
+              value = execObj->getPropertyValue (
+                  this->propertySingleNames[i]);
             }
           propValue = ::ginga::util::stof (value);
 
@@ -427,7 +428,8 @@ AnimationController::updateTargetRegion ()
         {
           if (param == "left")
             {
-              targetRegion->setTargetLeft (getPercentualValue (value), true);
+              targetRegion->setTargetLeft (getPercentualValue (value),
+                                           true);
             }
           else if (param == "top")
             {
@@ -435,19 +437,23 @@ AnimationController::updateTargetRegion ()
             }
           else if (param == "width")
             {
-              targetRegion->setTargetWidth (getPercentualValue (value), true);
+              targetRegion->setTargetWidth (getPercentualValue (value),
+                                            true);
             }
           else if (param == "height")
             {
-              targetRegion->setTargetHeight (getPercentualValue (value), true);
+              targetRegion->setTargetHeight (getPercentualValue (value),
+                                             true);
             }
           else if (param == "bottom")
             {
-              targetRegion->setTargetBottom (getPercentualValue (value), true);
+              targetRegion->setTargetBottom (getPercentualValue (value),
+                                             true);
             }
           else if (param == "right")
             {
-              targetRegion->setTargetRight (getPercentualValue (value), true);
+              targetRegion->setTargetRight (getPercentualValue (value),
+                                            true);
             }
         }
       else

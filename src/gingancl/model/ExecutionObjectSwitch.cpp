@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
 
-ExecutionObjectSwitch::ExecutionObjectSwitch (string id, Node *switchNode,
-                                              bool handling,
-                                              ILinkActionListener *seListener)
+ExecutionObjectSwitch::ExecutionObjectSwitch (
+    string id, Node *switchNode, bool handling,
+    ILinkActionListener *seListener)
     : CompositeExecutionObject (id, switchNode, handling, seListener)
 {
 

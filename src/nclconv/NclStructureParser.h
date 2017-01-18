@@ -57,12 +57,14 @@ public:
 
   virtual void *parseBody (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void *posCompileBody (DOMElement *parentElement, void *parentObject);
+  virtual void *posCompileBody (DOMElement *parentElement,
+                                void *parentObject);
 
   virtual void *createBody (DOMElement *parentElement, void *objGrandParent)
       = 0;
 
-  virtual void addPropertyToBody (void *parentObject, void *childObject) = 0;
+  virtual void addPropertyToBody (void *parentObject, void *childObject)
+      = 0;
 
   virtual void addPortToBody (void *parentObject, void *childObject) = 0;
 
@@ -79,17 +81,22 @@ public:
   virtual void *createHead (DOMElement *parentElement, void *objGrandParent)
       = 0;
 
-  virtual void addRegionBaseToHead (void *parentObject, void *childObject) = 0;
-
-  virtual void addDescriptorBaseToHead (void *parentObject, void *childObject)
+  virtual void addRegionBaseToHead (void *parentObject, void *childObject)
       = 0;
 
-  virtual void addTransitionBaseToHead (void *parentObject, void *childObject)
+  virtual void addDescriptorBaseToHead (void *parentObject,
+                                        void *childObject)
       = 0;
 
-  virtual void addRuleBaseToHead (void *parentObject, void *childObject) = 0;
+  virtual void addTransitionBaseToHead (void *parentObject,
+                                        void *childObject)
+      = 0;
 
-  virtual void addConnectorBaseToHead (void *parentObject, void *childObject)
+  virtual void addRuleBaseToHead (void *parentObject, void *childObject)
+      = 0;
+
+  virtual void addConnectorBaseToHead (void *parentObject,
+                                       void *childObject)
       = 0;
 
   virtual void addImportedDocumentBaseToHead (void *parentObject,
@@ -98,7 +105,8 @@ public:
 
   virtual void addMetaToHead (void *parentObject, void *childObject) = 0;
 
-  virtual void addMetadataToHead (void *parentObject, void *childObject) = 0;
+  virtual void addMetadataToHead (void *parentObject, void *childObject)
+      = 0;
 
   virtual void *parseNcl (DOMElement *parentElement, void *objGrandParent);
 
@@ -135,8 +143,8 @@ public:
   void setConnectorsParser (NclConnectorsParser *connectorsParser);
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
-  void
-  setMetainformationParser (NclMetainformationParser *metainformationParser);
+  void setMetainformationParser (
+      NclMetainformationParser *metainformationParser);
 };
 
 GINGA_NCLCONV_END

@@ -37,18 +37,18 @@ GINGA_PLAYER_BEGIN
 #define snprintf _snprintf
 #endif
 
-#define __clog(fmt, ...)                                                      \
-  do                                                                          \
-    {                                                                         \
-      fflush (NULL);                                                          \
-      fprintf (stderr, "NCLUA " fmt "\n", ##__VA_ARGS__);                     \
-    }                                                                         \
+#define __clog(fmt, ...)                                                   \
+  do                                                                       \
+    {                                                                      \
+      fflush (NULL);                                                       \
+      fprintf (stderr, "NCLUA " fmt "\n", ##__VA_ARGS__);                  \
+    }                                                                      \
   while (0)
 
 #define error(fmt, ...) __clog ("ERROR: " fmt, ##__VA_ARGS__)
 
-#define perror(fmt, ...)                                                      \
-  __clog ("%p ERROR: " fmt, (void *) this, ##__VA_ARGS__)
+#define perror(fmt, ...)                                                   \
+  __clog ("%p ERROR: " fmt, (void *)this, ##__VA_ARGS__)
 
 #define warn(fmt, ...) __clog ("Warning: " fmt, ##__VA_ARGS__)
 
@@ -57,8 +57,8 @@ GINGA_PLAYER_BEGIN
 #define trace(fmt, ...) __clog ("%s: " fmt, __FUNCTION__, ##__VA_ARGS__)
 
 #define ptrace0() ptrace ("%s", "")
-#define ptrace(fmt, ...)                                                      \
-  __clog ("%p %s: " fmt, (void *) this, __FUNCTION__, __VA_ARGS__)
+#define ptrace(fmt, ...)                                                   \
+  __clog ("%p %s: " fmt, (void *)this, __FUNCTION__, __VA_ARGS__)
 #else
 #define trace0()         // nothing
 #define trace(fmt, ...)  // nothing
@@ -68,16 +68,16 @@ GINGA_PLAYER_BEGIN
 
 // Mutex handling.
 
-#define MUTEX_INIT(m)                                                         \
-  do                                                                          \
-    {                                                                         \
-      pthread_mutexattr_t attr;                                               \
-      assert (pthread_mutexattr_init (&attr) == 0);                           \
-      assert (pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)      \
-              == 0);                                                          \
-      assert (pthread_mutex_init (m, &attr) == 0);                            \
-      assert (pthread_mutexattr_destroy (&attr) == 0);                        \
-    }                                                                         \
+#define MUTEX_INIT(m)                                                      \
+  do                                                                       \
+    {                                                                      \
+      pthread_mutexattr_t attr;                                            \
+      assert (pthread_mutexattr_init (&attr) == 0);                        \
+      assert (pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)   \
+              == 0);                                                       \
+      assert (pthread_mutex_init (m, &attr) == 0);                         \
+      assert (pthread_mutexattr_destroy (&attr) == 0);                     \
+    }                                                                      \
   while (0)
 #define MUTEX_FINI(m) assert (pthread_mutex_destroy (m) == 0)
 #define MUTEX_LOCK(m) assert (pthread_mutex_lock (m) == 0)
@@ -121,20 +121,20 @@ _evt_map_get (const evt_map_t map[], size_t size, const char *key)
                                      evt_map_compare);
 }
 
-#define evt_map_get(map, key)                                                 \
+#define evt_map_get(map, key)                                              \
   ((ptrdiff_t) ((_evt_map_get (map, nelementsof (map), key))->value))
 
 #define evt_ncl_get_type(type) evt_map_get (evt_map_ncl_type, type)
 
 #define evt_ncl_get_action(act) evt_map_get (evt_map_ncl_action, act)
 
-#define evt_ncl_send_attribution(nw, action, name, value)                     \
+#define evt_ncl_send_attribution(nw, action, name, value)                  \
   ncluaw_send_ncl_event (nw, "attribution", action, name, value)
 
-#define evt_ncl_send_presentation(nw, action, name)                           \
+#define evt_ncl_send_presentation(nw, action, name)                        \
   ncluaw_send_ncl_event (nw, "presentation", action, name, NULL)
 
-#define evt_ncl_send_selection(nw, action, name)                              \
+#define evt_ncl_send_selection(nw, action, name)                           \
   ncluaw_send_ncl_event (nw, "selection", action, name, NULL)
 
 #define evt_key_send ncluaw_send_key_event
@@ -200,17 +200,19 @@ LuaPlayer::nw_update_thread (void *data)
 
               dest = (SDL_Surface *)dm->getSurfaceContent (wrapper);
 
-              sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0, 0);
+              sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
+                                          0);
               assert (sfc != NULL);
-              ncluaw_paint (nw, (unsigned char *)sfc->pixels, "RGB24", sfc->w,
-                            sfc->h, sfc->pitch);
+              ncluaw_paint (nw, (unsigned char *)sfc->pixels, "RGB24",
+                            sfc->w, sfc->h, sfc->pitch);
               assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
               SDL_FreeSurface (sfc);
 
               // Refresh surface.
               window = dm->getSurfaceParentWindow (wrapper);
               assert (window != 0);
-              dm->renderWindowFrom (player->getScreenID (), window, wrapper);
+              dm->renderWindowFrom (player->getScreenID (), window,
+                                    wrapper);
             }
 
           while ((evt = ncluaw_receive (nw)) != NULL)
@@ -244,8 +246,9 @@ LuaPlayer::nw_update_thread (void *data)
               switch (type_value)
                 {
                 case Player::TYPE_ATTRIBUTION:
-                  player->notifyPlayerListeners (action_value, string (name),
-                                                 type_value, string (value));
+                  player->notifyPlayerListeners (action_value,
+                                                 string (name), type_value,
+                                                 string (value));
                   break;
 
                 case Player::TYPE_PRESENTATION:
@@ -261,7 +264,8 @@ LuaPlayer::nw_update_thread (void *data)
                       LuaPlayer::nw_update_remove (player);
                       player->doStop ();
                     }
-                  player->notifyPlayerListeners (action_value, string (name));
+                  player->notifyPlayerListeners (action_value,
+                                                 string (name));
                   break;
 
                 case Player::TYPE_SELECTION:
@@ -302,7 +306,8 @@ LuaPlayer::nw_update_insert (LuaPlayer *player)
       MUTEX_INIT (&nw_update_mutex);
       MUTEX_LOCK (&nw_update_mutex);
       nw_update_list = new list<LuaPlayer *> ();
-      assert (pthread_create (&nw_update_tid, 0, nw_update_thread, NULL) == 0);
+      assert (pthread_create (&nw_update_tid, 0, nw_update_thread, NULL)
+              == 0);
     }
   else
     {
@@ -636,7 +641,8 @@ LuaPlayer::userEventReceived (SDLInputEvent *evt)
       string key;
       int press;
 
-      key = (CodeMap::getInstance ()->getValue (evt->getKeyCode (myScreen)));
+      key = (CodeMap::getInstance ()->getValue (
+          evt->getKeyCode (myScreen)));
       press = evt->isPressedType ();
       ptrace ("key='%s', type='%s'", key.c_str (),
               press ? "press" : "release");

@@ -141,7 +141,8 @@ NTPDatagram::updateStream ()
 }
 
 /*
- * The purpose of this function is to convert an NTP buffer area from network
+ * The purpose of this function is to convert an NTP buffer area from
+ * network
  * byte order to host byte order.
  */
 int
@@ -181,13 +182,17 @@ NTPDatagram::convertNTPDataToHost (alt_u8 *buffer)
 
   *NTP_DATA_GRAM_KEY_ID (buffer) = ntohl (*NTP_DATA_GRAM_KEY_ID (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG1 (buffer) = ntohl (*NTP_DATA_GRAM_MSG_DIG1 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG1 (buffer)
+      = ntohl (*NTP_DATA_GRAM_MSG_DIG1 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG2 (buffer) = ntohl (*NTP_DATA_GRAM_MSG_DIG2 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG2 (buffer)
+      = ntohl (*NTP_DATA_GRAM_MSG_DIG2 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG3 (buffer) = ntohl (*NTP_DATA_GRAM_MSG_DIG3 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG3 (buffer)
+      = ntohl (*NTP_DATA_GRAM_MSG_DIG3 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG4 (buffer) = ntohl (*NTP_DATA_GRAM_MSG_DIG4 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG4 (buffer)
+      = ntohl (*NTP_DATA_GRAM_MSG_DIG4 (buffer));
 
   return 0;
 }
@@ -233,13 +238,17 @@ NTPDatagram::convertNTPDataToNet (alt_u8 *buffer)
 
   *NTP_DATA_GRAM_KEY_ID (buffer) = htonl (*NTP_DATA_GRAM_KEY_ID (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG1 (buffer) = htonl (*NTP_DATA_GRAM_MSG_DIG1 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG1 (buffer)
+      = htonl (*NTP_DATA_GRAM_MSG_DIG1 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG2 (buffer) = htonl (*NTP_DATA_GRAM_MSG_DIG2 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG2 (buffer)
+      = htonl (*NTP_DATA_GRAM_MSG_DIG2 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG3 (buffer) = htonl (*NTP_DATA_GRAM_MSG_DIG3 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG3 (buffer)
+      = htonl (*NTP_DATA_GRAM_MSG_DIG3 (buffer));
 
-  *NTP_DATA_GRAM_MSG_DIG4 (buffer) = htonl (*NTP_DATA_GRAM_MSG_DIG4 (buffer));
+  *NTP_DATA_GRAM_MSG_DIG4 (buffer)
+      = htonl (*NTP_DATA_GRAM_MSG_DIG4 (buffer));
 
   return 0;
 }

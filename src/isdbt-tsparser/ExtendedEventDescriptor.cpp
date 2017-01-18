@@ -144,8 +144,10 @@ ExtendedEventDescriptor::print ()
   clog << "ExtendedEventDescriptor::print" << endl;
   clog << " -descriptorNumber = " << getDescriptorNumber () << endl;
   clog << " -lastDescriptorNumber = " << getLastDescriptorNumber () << endl;
-  // clog << " -languageCode = "         << getLanguageCode()        << endl;
-  // clog << " -textChar = "             << getTextChar()            << endl;
+  // clog << " -languageCode = "         << getLanguageCode()        <<
+  // endl;
+  // clog << " -textChar = "             << getTextChar()            <<
+  // endl;
 
   if (lengthOfItems > 0)
     {
@@ -174,13 +176,14 @@ ExtendedEventDescriptor::process (char *data, size_t pos)
   // clog << "ExtendedEventDescriptor::process with pos = " << pos;
 
   descriptorLength = data[pos + 1]; // pos = 19
-  pos += 2; // pos = 20
+  pos += 2;                         // pos = 20
   // clog << " and  lenght = " << (descriptorLength&0xFF) << endl;
 
   descriptorNumber = ((data[pos] & 0xF0) >> 4); // 4 bits
-  lastDescriptorNumber = ((data[pos] & 0x0F)); // 4 bits
+  lastDescriptorNumber = ((data[pos] & 0x0F));  // 4 bits
   // clog << " Extended descriptorNumber = " << (descriptorNumber & 0xFF);
-  // clog << " and lastDescriptorNumber = " << (lastDescriptorNumber & 0xFF) <<
+  // clog << " and lastDescriptorNumber = " << (lastDescriptorNumber & 0xFF)
+  // <<
   // endl;
   pos += 1;
 
@@ -202,14 +205,16 @@ ExtendedEventDescriptor::process (char *data, size_t pos)
       item = new struct Item;
 
       item->itemDescriptionLength = data[pos];
-      // clog << " itemDescriptionLenght = "<< (item->itemDescriptionLength &
+      // clog << " itemDescriptionLenght = "<< (item->itemDescriptionLength
+      // &
       // 0xFF);
       if (item->itemDescriptionLength != 0)
         {
 
           item->itemDescriptionChar = new char[item->itemDescriptionLength];
 
-          memset (item->itemDescriptionChar, 0, item->itemDescriptionLength);
+          memset (item->itemDescriptionChar, 0,
+                  item->itemDescriptionLength);
 
           memcpy (item->itemDescriptionChar, data + pos + 1,
                   item->itemDescriptionLength);

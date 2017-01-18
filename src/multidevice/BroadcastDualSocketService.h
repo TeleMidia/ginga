@@ -45,7 +45,8 @@ private:
   vector<struct frame *> *outputBuffer;
 
 public:
-  BroadcastDualSocketService (unsigned int readPort, unsigned int writePort);
+  BroadcastDualSocketService (unsigned int readPort,
+                              unsigned int writePort);
 
   ~BroadcastDualSocketService ();
 

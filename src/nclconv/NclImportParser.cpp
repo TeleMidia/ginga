@@ -53,7 +53,8 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "importNCL")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importNCL")
               == 0)
             {
 

@@ -14,7 +14,8 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ * USA
  */
 
 #include "config.h"
@@ -139,8 +140,8 @@ Socket::getLocalAddress () throw (SocketException)
 
   if (getsockname (sockDesc, (sockaddr *)&addr, (socklen_t *)&addr_len) < 0)
     {
-      throw SocketException ("Fetch of local address failed (getsockname())",
-                             true);
+      throw SocketException (
+          "Fetch of local address failed (getsockname())", true);
     }
   return inet_ntoa (addr.sin_addr);
 }
@@ -186,8 +187,8 @@ Socket::setLocalAddressAndPort (
 
   if (bind (sockDesc, (sockaddr *)&localAddr, sizeof (sockaddr_in)) < 0)
     {
-      throw SocketException ("Set of local address and port failed (bind())",
-                             true);
+      throw SocketException (
+          "Set of local address and port failed (bind())", true);
     }
 }
 
@@ -210,18 +211,20 @@ Socket::resolveService (const string &service, const string &protocol)
   if ((serv = getservbyname (service.c_str (), protocol.c_str ())) == NULL)
     return atoi (service.c_str ()); /* Service is port number */
   else
-    return ntohs (serv->s_port); /* Found port (network byte order) by name */
+    return ntohs (
+        serv->s_port); /* Found port (network byte order) by name */
 }
 
 // CommunicatingSocket Code
 
-CommunicatingSocket::CommunicatingSocket (int type,
-                                          int protocol) throw (SocketException)
+CommunicatingSocket::CommunicatingSocket (int type, int protocol) throw (
+    SocketException)
     : Socket (type, protocol)
 {
 }
 
-CommunicatingSocket::CommunicatingSocket (int newConnSD) : Socket (newConnSD)
+CommunicatingSocket::CommunicatingSocket (int newConnSD)
+    : Socket (newConnSD)
 {
 }
 
@@ -255,7 +258,8 @@ CommunicatingSocket::send (const void *buffer,
 }
 
 int
-CommunicatingSocket::recv (void *buffer, int bufferLen) throw (SocketException)
+CommunicatingSocket::recv (void *buffer,
+                           int bufferLen) throw (SocketException)
 {
   int rtn;
   if ((rtn = ::recv (sockDesc, (raw_type *)buffer, bufferLen, 0)) < 0)
@@ -274,8 +278,8 @@ CommunicatingSocket::getForeignAddress () throw (SocketException)
 
   if (getpeername (sockDesc, (sockaddr *)&addr, (socklen_t *)&addr_len) < 0)
     {
-      throw SocketException ("Fetch of foreign address failed (getpeername())",
-                             true);
+      throw SocketException (
+          "Fetch of foreign address failed (getpeername())", true);
     }
   return inet_ntoa (addr.sin_addr);
 }
@@ -346,7 +350,8 @@ TCPServerSocket::setListen (int queueLen) throw (SocketException)
 {
   if (listen (sockDesc, queueLen) < 0)
     {
-      throw SocketException ("Set listening socket failed (listen())", true);
+      throw SocketException ("Set listening socket failed (listen())",
+                             true);
     }
 }
 
@@ -379,11 +384,14 @@ UDPSocket::UDPSocket (const string &localAddress,
 void
 UDPSocket::setBroadcast ()
 {
-  // If this fails, we'll hear about it when we try to send.  This will allow
-  // system that cannot broadcast to continue if they don't plan to broadcast
+  // If this fails, we'll hear about it when we try to send.  This will
+  // allow
+  // system that cannot broadcast to continue if they don't plan to
+  // broadcast
   int broadcastPermission = 1;
   setsockopt (sockDesc, SOL_SOCKET, SO_BROADCAST,
-              (raw_type *)&broadcastPermission, sizeof (broadcastPermission));
+              (raw_type *)&broadcastPermission,
+              sizeof (broadcastPermission));
 }
 
 void
@@ -516,8 +524,9 @@ UDPSocket::getBroadcastAddress () throw (SocketException)
           && (netInterface->ifr_flags & IFF_BROADCAST))
         {
 
-          //			result = ioctl(sockDesc, SIOCGIFBRDADDR, (char *)
-          //netInterface);
+          //			result = ioctl(sockDesc, SIOCGIFBRDADDR, (char
+          //*)
+          // netInterface);
           result = ioctl (sockDesc, SIOCGIFBRDADDR, netInterface);
 
           if (result >= 0)
@@ -576,7 +585,7 @@ UDPSocket::getLocalIPAddress () throw (SocketException)
         {
 
           //			return (unsigned int)
-          //pAddress->sin_addr.S_un.S_addr;
+          // pAddress->sin_addr.S_un.S_addr;
           /*
           #else
                                   return (unsigned int)
@@ -628,13 +637,15 @@ UDPSocket::getLocalIPAddress () throw (SocketException)
 }
 
 void
-UDPSocket::setMulticastTTL (unsigned char multicastTTL) throw (SocketException)
+UDPSocket::setMulticastTTL (unsigned char multicastTTL) throw (
+    SocketException)
 {
   if (setsockopt (sockDesc, IPPROTO_IP, IP_MULTICAST_TTL,
                   (raw_type *)&multicastTTL, sizeof (multicastTTL))
       < 0)
     {
-      throw SocketException ("Multicast TTL set failed (setsockopt())", true);
+      throw SocketException ("Multicast TTL set failed (setsockopt())",
+                             true);
     }
 }
 
@@ -643,7 +654,8 @@ UDPSocket::joinGroup (const string &multicastGroup) throw (SocketException)
 {
   struct ip_mreq multicastRequest;
 
-  multicastRequest.imr_multiaddr.s_addr = inet_addr (multicastGroup.c_str ());
+  multicastRequest.imr_multiaddr.s_addr
+      = inet_addr (multicastGroup.c_str ());
   multicastRequest.imr_interface.s_addr = htonl (INADDR_ANY);
   if (setsockopt (sockDesc, IPPROTO_IP, IP_ADD_MEMBERSHIP,
                   (raw_type *)&multicastRequest, sizeof (multicastRequest))
@@ -659,7 +671,8 @@ UDPSocket::leaveGroup (const string &multicastGroup) throw (SocketException)
 {
   struct ip_mreq multicastRequest;
 
-  multicastRequest.imr_multiaddr.s_addr = inet_addr (multicastGroup.c_str ());
+  multicastRequest.imr_multiaddr.s_addr
+      = inet_addr (multicastGroup.c_str ());
   multicastRequest.imr_interface.s_addr = htonl (INADDR_ANY);
   if (setsockopt (sockDesc, IPPROTO_IP, IP_DROP_MEMBERSHIP,
                   (raw_type *)&multicastRequest, sizeof (multicastRequest))
@@ -675,8 +688,8 @@ UDPSocket::setReuseAddr (bool reuse) throw (SocketException)
 {
   int value = (reuse) ? 1 : 0;
 
-  int ret = setsockopt (sockDesc, SOL_SOCKET, SO_REUSEADDR, (raw_type *)&value,
-                        sizeof (value));
+  int ret = setsockopt (sockDesc, SOL_SOCKET, SO_REUSEADDR,
+                        (raw_type *)&value, sizeof (value));
 
   if (ret < 0)
     {
@@ -694,7 +707,8 @@ UDPSocket::setMulticastLoop (bool loop) throw (SocketException)
 
   if (ret < 0)
     {
-      throw SocketException ("Set Multicast loop failed (setsockopt())", true);
+      throw SocketException ("Set Multicast loop failed (setsockopt())",
+                             true);
     }
 }
 

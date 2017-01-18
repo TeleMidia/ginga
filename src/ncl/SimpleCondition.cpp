@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleCondition::SimpleCondition (string role) : TriggerExpression (), Role ()
+SimpleCondition::SimpleCondition (string role)
+    : TriggerExpression (), Role ()
 {
 
   SimpleCondition::setLabel (role);

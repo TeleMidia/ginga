@@ -194,7 +194,8 @@ CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
     {
       tuningWindow = dm->createWindow (screenId, x, y, w, h, -10.0);
 
-      s = dm->createRenderedSurfaceFromImageFile (screenId, tunerImg.c_str ());
+      s = dm->createRenderedSurfaceFromImageFile (screenId,
+                                                  tunerImg.c_str ());
 
       int cap = dm->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
       dm->setWindowCaps (myScreen, tuningWindow, cap);
@@ -223,8 +224,9 @@ CommonCoreManager::releaseTunningWindow ()
 }
 
 IPlayer *
-CommonCoreManager::createMainAVPlayer (string dstUri, GingaScreenID screenId,
-                                       int x, int y, int w, int h)
+CommonCoreManager::createMainAVPlayer (string dstUri,
+                                       GingaScreenID screenId, int x, int y,
+                                       int w, int h)
 {
 
   IPlayer *ipav;
@@ -280,8 +282,8 @@ CommonCoreManager::startPresentation ()
   dstUri = ((IDemuxer *)demuxer)->createTSUri (dstUri);
 
   // Create Main AV
-  ipav = createMainAVPlayer (dstUri, data->screenId, data->x, data->y, data->w,
-                             data->h);
+  ipav = createMainAVPlayer (dstUri, data->screenId, data->x, data->y,
+                             data->w, data->h);
 
   delete data;
   clog << "lssm-ccm::sp create av ok" << endl;
@@ -314,7 +316,8 @@ CommonCoreManager::startPresentation ()
       ((DataProcessor *)dataProcessor)->setNptPrinter (nptPrinter);
       if (nptPrinter)
         {
-          if (((IDemuxer *)demuxer)->hasStreamType (STREAM_TYPE_DSMCC_TYPE_C))
+          if (((IDemuxer *)demuxer)
+                  ->hasStreamType (STREAM_TYPE_DSMCC_TYPE_C))
             {
               ((IDemuxer *)demuxer)->setNptPrinter (nptPrinter);
               cout << "TS HAS AN NPT STREAM" << endl;
@@ -322,7 +325,8 @@ CommonCoreManager::startPresentation ()
           else
             {
               cout << "NPTPRINTER WARNING!" << endl;
-              cout << "TS DOESNT HAVE A STREAM WITH NPT STREAM TYPE" << endl;
+              cout << "TS DOESNT HAVE A STREAM WITH NPT STREAM TYPE"
+                   << endl;
             }
           ((IDemuxer *)demuxer)->printPat ();
         }

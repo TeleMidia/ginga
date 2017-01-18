@@ -128,7 +128,8 @@ DsmccSectionPayload::updateStream ()
                           desc = *i;
                           streamLen = desc->getStream(&dataStream);
                           if ((pos + streamLen + 4) <= MAX_SECTION_SIZE) {
-                                  memcpy(stream + pos, dataStream, streamLen);
+                                  memcpy(stream + pos, dataStream,
+  streamLen);
                                   pos += streamLen;
                           } else {
                                   break;

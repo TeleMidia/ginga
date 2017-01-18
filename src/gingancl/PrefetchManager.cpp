@@ -37,8 +37,8 @@ PrefetchManager::PrefetchManager ()
   kbytes = 0;
   filesDown = 0;
   filesSched = 0;
-  prefetchRoot
-      = string (g_get_tmp_dir ()) + "/" + iurid + "tmp" + iurid + "prefetch";
+  prefetchRoot = string (g_get_tmp_dir ()) + "/" + iurid + "tmp" + iurid
+                 + "prefetch";
 
   createDirectory (prefetchRoot);
 }
@@ -144,16 +144,18 @@ PrefetchManager::createDocumentPrefetcher (string remoteDocUri)
             + remoteDocUri.substr (
                   remoteDocUri.find_last_of (SystemCompat::getIUriD ()),
                   remoteDocUri.length ()
-                      - remoteDocUri.find_last_of (SystemCompat::getIUriD ()));
+                      - remoteDocUri.find_last_of (
+                            SystemCompat::getIUriD ()));
 
       return localUri;
     }
 
-  localUri = prefetchRoot
-             + remoteDocUri.substr (
-                   remoteDocUri.find_last_of (SystemCompat::getIUriD ()),
-                   (remoteDocUri.find_last_of (".")
-                    - remoteDocUri.find_last_of (SystemCompat::getIUriD ())));
+  localUri
+      = prefetchRoot
+        + remoteDocUri.substr (
+              remoteDocUri.find_last_of (SystemCompat::getIUriD ()),
+              (remoteDocUri.find_last_of (".")
+               - remoteDocUri.find_last_of (SystemCompat::getIUriD ())));
 
   localUri = SystemCompat::updatePath (localUri);
   (*urisToLocalRoots)[remoteDocUri] = localUri;
@@ -275,8 +277,8 @@ PrefetchManager::createSourcePrefetcher (string localDocUri, string src)
     {
       newSrc = localRoot + SystemCompat::getIUriD () + relativeSrc;
       newSrc = SystemCompat::updatePath (newSrc);
-      createDirectory (
-          newSrc.substr (0, newSrc.find_last_of (SystemCompat::getIUriD ())));
+      createDirectory (newSrc.substr (
+          0, newSrc.find_last_of (SystemCompat::getIUriD ())));
 
       // clog << "PrefetchManager::createSourcePrefetcher: remoteUri '";
       // clog << remoteUri << "' oldSrc '" << src << "' newSrc '";
@@ -340,7 +342,8 @@ PrefetchManager::getContent (string remoteUri, string localUri)
 {
   if (icm != NULL)
     {
-      CurlInteractiveChannel *ic = icm->createInteractiveChannel (remoteUri);
+      CurlInteractiveChannel *ic
+          = icm->createInteractiveChannel (remoteUri);
 
       ic->setSourceTarget (localUri);
       ic->reserveUrl (remoteUri, this, "GingaNCL/0.13.6");
@@ -415,7 +418,8 @@ PrefetchManager::getScheduledContent (string clientUri)
       i = scheduledLocalUris->find (clientUri);
       j = scheduledRemoteUris->find (remoteUri);
 
-      if (i != scheduledLocalUris->end () && j != scheduledRemoteUris->end ())
+      if (i != scheduledLocalUris->end ()
+          && j != scheduledRemoteUris->end ())
         {
 
           scheduledLocalUris->erase (i);

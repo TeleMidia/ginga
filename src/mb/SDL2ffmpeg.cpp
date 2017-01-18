@@ -215,9 +215,9 @@ SDL2ffmpeg::openStreams ()
 
   memset (st_index, -1, sizeof (st_index));
 
-  st_index[AVMEDIA_TYPE_VIDEO]
-      = av_find_best_stream (vs->ic, AVMEDIA_TYPE_VIDEO,
-                             wanted_stream[AVMEDIA_TYPE_VIDEO], -1, NULL, 0);
+  st_index[AVMEDIA_TYPE_VIDEO] = av_find_best_stream (
+      vs->ic, AVMEDIA_TYPE_VIDEO, wanted_stream[AVMEDIA_TYPE_VIDEO], -1,
+      NULL, 0);
 
   st_index[AVMEDIA_TYPE_AUDIO] = av_find_best_stream (
       vs->ic, AVMEDIA_TYPE_AUDIO, wanted_stream[AVMEDIA_TYPE_AUDIO],
@@ -297,8 +297,8 @@ SDL2ffmpeg::prepare ()
 
       SDLDeviceScreen::lockSDL ();
 
-      vs->video_tid
-          = SDL_CreateThread (SDL2ffmpeg::video_thread, "video_thread", this);
+      vs->video_tid = SDL_CreateThread (SDL2ffmpeg::video_thread,
+                                        "video_thread", this);
 
       SDLDeviceScreen::unlockSDL ();
 
@@ -632,8 +632,10 @@ SDL2ffmpeg::opt_add_vfilter (void *optctx, const char *opt, const char *arg)
 }
 
 int
-SDL2ffmpeg::cmp_audio_fmts (enum AVSampleFormat fmt1, int64_t channel_count1,
-                            enum AVSampleFormat fmt2, int64_t channel_count2)
+SDL2ffmpeg::cmp_audio_fmts (enum AVSampleFormat fmt1,
+                            int64_t channel_count1,
+                            enum AVSampleFormat fmt2,
+                            int64_t channel_count2)
 {
 
   /* If channel count == 1, planar and non-planar formats are the same */
@@ -918,14 +920,15 @@ SDL2ffmpeg::render_vp (VideoPicture *vp)
                   ctx, vp->width, vp->height, (AVPixelFormat)fmt, w, h,
                   AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, 0, 0, 0);
 
-              int ret = sws_scale (ctx,
-                                   (const uint8_t *const *)vp->src_frame->data,
-                                   vp->src_frame->linesize, 0, vp->height,
-                                   pict.data, pict.linesize);
+              int ret = sws_scale (
+                  ctx, (const uint8_t *const *)vp->src_frame->data,
+                  vp->src_frame->linesize, 0, vp->height, pict.data,
+                  pict.linesize);
 
               if (ret < 0)
                 {
-                  clog << "SDL2ffmpeg::render_vp Warning! can't scale" << endl;
+                  clog << "SDL2ffmpeg::render_vp Warning! can't scale"
+                       << endl;
                 }
             }
         }
@@ -1002,7 +1005,8 @@ SDL2ffmpeg::get_clock (Clock *c)
   else
     {
       double time = av_gettime_relative () / 1000000.0;
-      return c->pts_drift + time - (time - c->last_updated) * (1.0 - c->speed);
+      return c->pts_drift + time
+             - (time - c->last_updated) * (1.0 - c->speed);
     }
 }
 
@@ -1045,7 +1049,8 @@ SDL2ffmpeg::sync_clock_to_slave (Clock *c, Clock *slave)
   double slave_clock = get_clock (slave);
 
   if (!isnan (slave_clock)
-      && (isnan (clock) || fabs (clock - slave_clock) > AV_NOSYNC_THRESHOLD))
+      && (isnan (clock)
+          || fabs (clock - slave_clock) > AV_NOSYNC_THRESHOLD))
     {
 
       set_clock (c, slave_clock, slave->serial);
@@ -1114,17 +1119,20 @@ SDL2ffmpeg::check_external_clock_speed ()
       || vs->audio_stream >= 0 && vs->audioq.nb_packets <= MIN_FRAMES / 2)
     {
 
-      set_clock_speed (&vs->extclk,
-                       FFMAX (EXTERNAL_CLOCK_SPEED_MIN,
-                              vs->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
+      set_clock_speed (
+          &vs->extclk,
+          FFMAX (EXTERNAL_CLOCK_SPEED_MIN,
+                 vs->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
     }
   else if ((vs->video_stream < 0 || vs->videoq.nb_packets > MIN_FRAMES * 2)
-           && (vs->audio_stream < 0 || vs->audioq.nb_packets > MIN_FRAMES * 2))
+           && (vs->audio_stream < 0
+               || vs->audioq.nb_packets > MIN_FRAMES * 2))
     {
 
-      set_clock_speed (&vs->extclk,
-                       FFMIN (EXTERNAL_CLOCK_SPEED_MAX,
-                              vs->extclk.speed + EXTERNAL_CLOCK_SPEED_STEP));
+      set_clock_speed (
+          &vs->extclk,
+          FFMIN (EXTERNAL_CLOCK_SPEED_MAX,
+                 vs->extclk.speed + EXTERNAL_CLOCK_SPEED_STEP));
     }
   else
     {
@@ -1266,7 +1274,8 @@ SDL2ffmpeg::pictq_nb_remaining ()
   return vs->pictq_size - vs->pictq_rindex_shown;
 }
 
-/* jump back to the previous picture if available by resetting rindex_shown */
+/* jump back to the previous picture if available by resetting rindex_shown
+ */
 int
 SDL2ffmpeg::pictq_prev_picture ()
 {
@@ -1335,8 +1344,8 @@ SDL2ffmpeg::video_refresh (void *opaque, double *remaining_time)
           vs->last_vis_time = time;
         }
 
-      *remaining_time
-          = FFMIN (*remaining_time, vs->last_vis_time + dec->rdftspeed - time);
+      *remaining_time = FFMIN (*remaining_time,
+                               vs->last_vis_time + dec->rdftspeed - time);
     }
 
   if (vs->video_st)
@@ -1423,7 +1432,8 @@ SDL2ffmpeg::video_refresh (void *opaque, double *remaining_time)
           if (dec->pictq_nb_remaining () > 1)
             {
               VideoPicture *nextvp
-                  = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown + 1)
+                  = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown
+                                + 1)
                                % VIDEO_PICTURE_QUEUE_SIZE];
               duration = vp_duration (vs, vp, nextvp);
               if (!vs->step && (redisplay || dec->framedrop > 0
@@ -1704,7 +1714,8 @@ SDL2ffmpeg::configure_filtergraph (AVFilterGraph *graph,
         }
     }
 
-  /* Reorder the filters to ensure that inputs of the custom filters are merged
+  /* Reorder the filters to ensure that inputs of the custom filters are
+   * merged
    * first */
   for (i = 0; i < graph->nb_filters - nb_filters; i++)
     FFSWAP (AVFilterContext *, graph->filters[i],
@@ -1734,12 +1745,13 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
   memset (sws_flags_str, 0, sizeof (sws_flags_str));
   graph->scale_sws_opts = av_strdup (sws_flags_str);
 
-  snprintf (buffersrc_args, sizeof (buffersrc_args),
-            "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
-            frame->width, frame->height, frame->format,
-            vs->video_st->time_base.num, vs->video_st->time_base.den,
-            codec->sample_aspect_ratio.num,
-            FFMAX (codec->sample_aspect_ratio.den, 1));
+  snprintf (
+      buffersrc_args, sizeof (buffersrc_args),
+      "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+      frame->width, frame->height, frame->format,
+      vs->video_st->time_base.num, vs->video_st->time_base.den,
+      codec->sample_aspect_ratio.num,
+      FFMAX (codec->sample_aspect_ratio.den, 1));
 
   if (fr.num && fr.den)
     {
@@ -1766,8 +1778,8 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
     }
 
   ret = avfilter_graph_create_filter (
-      &filt_out, avfilter_get_by_name ("buffersink"), "sdl2ffmpeg_buffersink",
-      NULL, NULL, graph);
+      &filt_out, avfilter_get_by_name ("buffersink"),
+      "sdl2ffmpeg_buffersink", NULL, NULL, graph);
 
   if (ret < 0)
     {
@@ -1843,23 +1855,23 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
 
 /* Note: this macro adds a filter before the lastly added filter, so the
  * processing order of the filters is in reverse */
-#define INSERT_FILT(name, arg)                                                \
-  do                                                                          \
-    {                                                                         \
-      AVFilterContext *filt_ctx;                                              \
-                                                                              \
-      ret = avfilter_graph_create_filter (                                    \
-          &filt_ctx, avfilter_get_by_name (name), "sdl2ffmpeg_" name, arg,    \
-          NULL, graph);                                                       \
-      if (ret < 0)                                                            \
-        return ret;                                                           \
-                                                                              \
-      ret = avfilter_link (filt_ctx, 0, last_filter, 0);                      \
-      if (ret < 0)                                                            \
-        return ret;                                                           \
-                                                                              \
-      last_filter = filt_ctx;                                                 \
-    }                                                                         \
+#define INSERT_FILT(name, arg)                                             \
+  do                                                                       \
+    {                                                                      \
+      AVFilterContext *filt_ctx;                                           \
+                                                                           \
+      ret = avfilter_graph_create_filter (                                 \
+          &filt_ctx, avfilter_get_by_name (name), "sdl2ffmpeg_" name, arg, \
+          NULL, graph);                                                    \
+      if (ret < 0)                                                         \
+        return ret;                                                        \
+                                                                           \
+      ret = avfilter_link (filt_ctx, 0, last_filter, 0);                   \
+      if (ret < 0)                                                         \
+        return ret;                                                        \
+                                                                           \
+      last_filter = filt_ctx;                                              \
+    }                                                                      \
   while (0)
   /* MACRO ends */
 
@@ -1871,7 +1883,8 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
     {
       AVDictionaryEntry *rotate_tag
           = av_dict_get (vs->video_st->metadata, "rotate", NULL, 0);
-      if (rotate_tag && *rotate_tag->value && strcmp (rotate_tag->value, "0"))
+      if (rotate_tag && *rotate_tag->value
+          && strcmp (rotate_tag->value, "0"))
         {
           if (!strcmp (rotate_tag->value, "90"))
             {
@@ -1934,8 +1947,8 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
 
   while ((e = av_dict_get (NULL, "", e, AV_DICT_IGNORE_SUFFIX)))
     {
-      av_strlcatf (aresample_swr_opts, sizeof (aresample_swr_opts), "%s=%s:",
-                   e->key, e->value);
+      av_strlcatf (aresample_swr_opts, sizeof (aresample_swr_opts),
+                   "%s=%s:", e->key, e->value);
     }
 
   if (strlen (aresample_swr_opts))
@@ -1945,11 +1958,12 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
 
   av_opt_set (vs->agraph, "aresample_swr_opts", aresample_swr_opts, 0);
 
-  ret = snprintf (asrc_args, sizeof (asrc_args),
-                  "sample_rate=%d:sample_fmt=%s:channels=%d:time_base=%d/%d",
-                  vs->audio_filter_src.freq,
-                  av_get_sample_fmt_name (vs->audio_filter_src.fmt),
-                  vs->audio_filter_src.channels, 1, vs->audio_filter_src.freq);
+  ret = snprintf (
+      asrc_args, sizeof (asrc_args),
+      "sample_rate=%d:sample_fmt=%s:channels=%d:time_base=%d/%d",
+      vs->audio_filter_src.freq,
+      av_get_sample_fmt_name (vs->audio_filter_src.fmt),
+      vs->audio_filter_src.channels, 1, vs->audio_filter_src.freq);
 
   if (vs->audio_filter_src.channel_layout)
     {
@@ -1977,8 +1991,9 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
       goto end;
     }
 
-  if ((ret = av_opt_set_int_list (filt_asink, "sample_fmts", sample_fmts,
-                                  AV_SAMPLE_FMT_NONE, AV_OPT_SEARCH_CHILDREN))
+  if ((ret
+       = av_opt_set_int_list (filt_asink, "sample_fmts", sample_fmts,
+                              AV_SAMPLE_FMT_NONE, AV_OPT_SEARCH_CHILDREN))
       < 0)
     {
 
@@ -2007,25 +2022,26 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
           goto end;
         }
 
+      if ((ret = av_opt_set_int_list (filt_asink, "channel_layouts",
+                                      channel_layouts, -1,
+                                      AV_OPT_SEARCH_CHILDREN))
+          < 0)
+        {
+
+          goto end;
+        }
+
+      if ((ret = av_opt_set_int_list (filt_asink, "channel_counts",
+                                      channels, -1, AV_OPT_SEARCH_CHILDREN))
+          < 0)
+        {
+
+          goto end;
+        }
+
       if ((ret
-           = av_opt_set_int_list (filt_asink, "channel_layouts",
-                                  channel_layouts, -1, AV_OPT_SEARCH_CHILDREN))
-          < 0)
-        {
-
-          goto end;
-        }
-
-      if ((ret = av_opt_set_int_list (filt_asink, "channel_counts", channels,
-                                      -1, AV_OPT_SEARCH_CHILDREN))
-          < 0)
-        {
-
-          goto end;
-        }
-
-      if ((ret = av_opt_set_int_list (filt_asink, "sample_rates", sample_rates,
-                                      -1, AV_OPT_SEARCH_CHILDREN))
+           = av_opt_set_int_list (filt_asink, "sample_rates", sample_rates,
+                                  -1, AV_OPT_SEARCH_CHILDREN))
           < 0)
         {
 
@@ -2033,8 +2049,8 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
         }
     }
 
-  if ((ret
-       = configure_filtergraph (vs->agraph, afilters, filt_asrc, filt_asink))
+  if ((ret = configure_filtergraph (vs->agraph, afilters, filt_asrc,
+                                    filt_asink))
       < 0)
     {
 
@@ -2113,7 +2129,8 @@ SDL2ffmpeg::video_thread (void *arg)
 
           avfilter_graph_free (&graph);
           graph = avfilter_graph_alloc ();
-          if ((ret = dec->configure_video_filters (graph, vfilter, frame)) < 0)
+          if ((ret = dec->configure_video_filters (graph, vfilter, frame))
+              < 0)
             {
               dec->abortRequest = true;
               clog << "SDL2ffmpeg::video_thread error!";
@@ -2154,7 +2171,8 @@ SDL2ffmpeg::video_thread (void *arg)
 
           vs->frame_last_filter_delay = av_gettime_relative () / 1000000.0
                                         - vs->frame_last_returned_time;
-          if (fabs (vs->frame_last_filter_delay) > AV_NOSYNC_THRESHOLD / 10.0)
+          if (fabs (vs->frame_last_filter_delay)
+              > AV_NOSYNC_THRESHOLD / 10.0)
             {
               vs->frame_last_filter_delay = 0;
             }
@@ -2193,7 +2211,8 @@ SDL2ffmpeg::synchronize_audio (int nb_samples)
 {
   int wanted_nb_samples = nb_samples;
 
-  /* if not master, then we try to remove or add samples to correct the clock
+  /* if not master, then we try to remove or add samples to correct the
+   * clock
    */
   if (get_master_sync_type () != AV_SYNC_AUDIO_MASTER)
     {
@@ -2215,7 +2234,8 @@ SDL2ffmpeg::synchronize_audio (int nb_samples)
           else
             {
               /* estimate the A-V difference */
-              avg_diff = vs->audio_diff_cum * (1.0 - vs->audio_diff_avg_coef);
+              avg_diff
+                  = vs->audio_diff_cum * (1.0 - vs->audio_diff_avg_coef);
 
               if (fabs (avg_diff) >= vs->audio_diff_threshold)
                 {
@@ -2339,14 +2359,14 @@ SDL2ffmpeg::audio_decode_frame ()
                 }
               else if (vs->frame->pkt_pts != AV_NOPTS_VALUE)
                 {
-                  vs->frame->pts = av_rescale_q (vs->frame->pkt_pts,
-                                                 vs->audio_st->time_base, tb);
+                  vs->frame->pts = av_rescale_q (
+                      vs->frame->pkt_pts, vs->audio_st->time_base, tb);
                 }
               else if (vs->audio_frame_next_pts != AV_NOPTS_VALUE)
                 {
                   AVRational rescavr = { 1, vs->audio_filter_src.freq };
-                  vs->frame->pts
-                      = av_rescale_q (vs->audio_frame_next_pts, rescavr, tb);
+                  vs->frame->pts = av_rescale_q (vs->audio_frame_next_pts,
+                                                 rescavr, tb);
                 }
 
               if (vs->frame->pts != AV_NOPTS_VALUE)
@@ -2378,7 +2398,8 @@ SDL2ffmpeg::audio_decode_frame ()
                   av_get_channel_layout_string (buf2, sizeof (buf2), -1,
                                                 dec_channel_layout);
 
-                  vs->audio_filter_src.fmt = (AVSampleFormat)vs->frame->format;
+                  vs->audio_filter_src.fmt
+                      = (AVSampleFormat)vs->frame->format;
                   vs->audio_filter_src.channels
                       = av_frame_get_channels (vs->frame);
                   vs->audio_filter_src.channel_layout = dec_channel_layout;
@@ -2391,8 +2412,8 @@ SDL2ffmpeg::audio_decode_frame ()
                     }
                 }
 
-              if ((ret
-                   = av_buffersrc_add_frame (vs->in_audio_filter, vs->frame))
+              if ((ret = av_buffersrc_add_frame (vs->in_audio_filter,
+                                                 vs->frame))
                   < 0)
                 {
                   return ret;
@@ -2418,31 +2439,33 @@ SDL2ffmpeg::audio_decode_frame ()
           tb = vs->out_audio_filter->inputs[0]->time_base;
 
           data_size = av_samples_get_buffer_size (
-              NULL, av_frame_get_channels (vs->frame), vs->frame->nb_samples,
-              (AVSampleFormat)vs->frame->format, 1);
+              NULL, av_frame_get_channels (vs->frame),
+              vs->frame->nb_samples, (AVSampleFormat)vs->frame->format, 1);
 
-          dec_channel_layout = (vs->frame->channel_layout
-                                && av_frame_get_channels (vs->frame)
-                                       == av_get_channel_layout_nb_channels (
-                                              vs->frame->channel_layout))
-                                   ? vs->frame->channel_layout
-                                   : av_get_default_channel_layout (
-                                         av_frame_get_channels (vs->frame));
+          dec_channel_layout
+              = (vs->frame->channel_layout
+                 && av_frame_get_channels (vs->frame)
+                        == av_get_channel_layout_nb_channels (
+                               vs->frame->channel_layout))
+                    ? vs->frame->channel_layout
+                    : av_get_default_channel_layout (
+                          av_frame_get_channels (vs->frame));
 
           wanted_nb_samples = synchronize_audio (vs->frame->nb_samples);
 
           if (vs->frame->format != vs->audio_src.fmt
               || dec_channel_layout != vs->audio_src.channel_layout
               || vs->frame->sample_rate != vs->audio_src.freq
-              || (wanted_nb_samples != vs->frame->nb_samples && !vs->swr_ctx))
+              || (wanted_nb_samples != vs->frame->nb_samples
+                  && !vs->swr_ctx))
             {
 
               swr_free (&vs->swr_ctx);
               vs->swr_ctx = swr_alloc_set_opts (
                   NULL, vs->audio_tgt.channel_layout, vs->audio_tgt.fmt,
                   vs->audio_tgt.freq, dec_channel_layout,
-                  (AVSampleFormat)vs->frame->format, vs->frame->sample_rate, 0,
-                  NULL);
+                  (AVSampleFormat)vs->frame->format, vs->frame->sample_rate,
+                  0, NULL);
 
               if (!vs->swr_ctx || swr_init (vs->swr_ctx) < 0)
                 {
@@ -2461,14 +2484,16 @@ SDL2ffmpeg::audio_decode_frame ()
 
           if (vs->swr_ctx)
             {
-              const uint8_t **in = (const uint8_t **)vs->frame->extended_data;
+              const uint8_t **in
+                  = (const uint8_t **)vs->frame->extended_data;
               uint8_t **out = &vs->audio_buf1;
-              int out_count = (int64_t)wanted_nb_samples * vs->audio_tgt.freq
+              int out_count = (int64_t)wanted_nb_samples
+                                  * vs->audio_tgt.freq
                                   / vs->frame->sample_rate
                               + 256;
               int out_size = av_samples_get_buffer_size (
-                  NULL, vs->audio_tgt.channels, out_count, vs->audio_tgt.fmt,
-                  0);
+                  NULL, vs->audio_tgt.channels, out_count,
+                  vs->audio_tgt.fmt, 0);
               int len2;
 
               if (out_size < 0)
@@ -2493,7 +2518,8 @@ SDL2ffmpeg::audio_decode_frame ()
                     }
                 }
 
-              av_fast_malloc (&vs->audio_buf1, &vs->audio_buf1_size, out_size);
+              av_fast_malloc (&vs->audio_buf1, &vs->audio_buf1_size,
+                              out_size);
               if (!vs->audio_buf1)
                 {
                   return AVERROR (ENOMEM);
@@ -2533,9 +2559,9 @@ SDL2ffmpeg::audio_decode_frame ()
           /* update the audio clock with the pts */
           if (vs->frame->pts != AV_NOPTS_VALUE)
             {
-              vs->audio_clock
-                  = vs->frame->pts * av_q2d (tb)
-                    + (double)vs->frame->nb_samples / vs->frame->sample_rate;
+              vs->audio_clock = vs->frame->pts * av_q2d (tb)
+                                + (double)vs->frame->nb_samples
+                                      / vs->frame->sample_rate;
             }
           else
             {
@@ -2566,7 +2592,8 @@ SDL2ffmpeg::audio_decode_frame ()
         }
 
       /* read next packet */
-      if ((packet_queue_get (&vs->audioq, pkt, 1, &vs->audio_pkt_temp_serial))
+      if ((packet_queue_get (&vs->audioq, pkt, 1,
+                             &vs->audio_pkt_temp_serial))
           < 0)
         {
           return -1;
@@ -2578,7 +2605,8 @@ SDL2ffmpeg::audio_decode_frame ()
           vs->audio_buf_frames_pending = 0;
           vs->audio_frame_next_pts = AV_NOPTS_VALUE;
           if ((vs->ic->iformat->flags
-               & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK))
+               & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH
+                  | AVFMT_NO_BYTE_SEEK))
               && !vs->ic->iformat->read_seek)
             {
               vs->audio_frame_next_pts = vs->audio_st->start_time;
@@ -2667,8 +2695,10 @@ SDL2ffmpeg::sdl_audio_callback (void *opaque, Uint8 *stream, int len)
               continue;
             }
 
-          vs->audio_write_buf_size = vs->audio_buf_size - vs->audio_buf_index;
-          /* Let's assume the audio driver that is used by SDL has two periods.
+          vs->audio_write_buf_size
+              = vs->audio_buf_size - vs->audio_buf_index;
+          /* Let's assume the audio driver that is used by SDL has two
+           * periods.
            */
           if (!isnan (vs->audio_clock))
             {
@@ -2689,8 +2719,8 @@ SDL2ffmpeg::sdl_audio_callback (void *opaque, Uint8 *stream, int len)
 }
 
 int
-SDL2ffmpeg::audio_open (int64_t wanted_channel_layout, int wanted_nb_channels,
-                        int wanted_sample_rate,
+SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
+                        int wanted_nb_channels, int wanted_sample_rate,
                         struct AudioParams *audio_hw_params)
 {
 
@@ -2743,8 +2773,8 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout, int wanted_nb_channels,
     {
       while (SDL_OpenAudio (&wantedSpec, &spec) < 0)
         {
-          wantedSpec.channels
-              = (unsigned int)next_nb_channels[FFMIN (7, wantedSpec.channels)];
+          wantedSpec.channels = (unsigned int)
+              next_nb_channels[FFMIN (7, wantedSpec.channels)];
 
           if ((unsigned int)wantedSpec.channels == 0
               || (unsigned int)wantedSpec.channels > 7)
@@ -2820,7 +2850,8 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout, int wanted_nb_channels,
       NULL, audio_hw_params->channels, audio_hw_params->freq,
       audio_hw_params->fmt, 1);
 
-  if (audio_hw_params->bytes_per_sec <= 0 || audio_hw_params->frame_size <= 0)
+  if (audio_hw_params->bytes_per_sec <= 0
+      || audio_hw_params->frame_size <= 0)
     {
       return -1;
     }
@@ -2939,8 +2970,8 @@ SDL2ffmpeg::stream_component_open (int stream_index)
 
       vs->audio_filter_src.freq = avctx->sample_rate;
       vs->audio_filter_src.channels = avctx->channels;
-      vs->audio_filter_src.channel_layout
-          = get_valid_channel_layout (avctx->channel_layout, avctx->channels);
+      vs->audio_filter_src.channel_layout = get_valid_channel_layout (
+          avctx->channel_layout, avctx->channels);
       vs->audio_filter_src.fmt = avctx->sample_fmt;
       if ((ret = configure_audio_filters (afilters, 0)) < 0)
         {
@@ -3080,7 +3111,8 @@ SDL2ffmpeg::decode_interrupt_cb (void *ctx)
 int
 SDL2ffmpeg::is_realtime (AVFormatContext *s)
 {
-  if (!strcmp (s->iformat->name, "rtp") || !strcmp (s->iformat->name, "rtsp")
+  if (!strcmp (s->iformat->name, "rtp")
+      || !strcmp (s->iformat->name, "rtsp")
       || !strcmp (s->iformat->name, "sdp"))
     {
 
@@ -3224,11 +3256,13 @@ SDL2ffmpeg::read_thread (void *arg)
       if (vs->seek_req)
         {
           int64_t seek_target = vs->seek_pos;
-          int64_t seek_min
-              = vs->seek_rel > 0 ? seek_target - vs->seek_rel + 2 : INT64_MIN;
+          int64_t seek_min = vs->seek_rel > 0
+                                 ? seek_target - vs->seek_rel + 2
+                                 : INT64_MIN;
 
-          int64_t seek_max
-              = vs->seek_rel < 0 ? seek_target - vs->seek_rel - 2 : INT64_MAX;
+          int64_t seek_max = vs->seek_rel < 0
+                                 ? seek_target - vs->seek_rel - 2
+                                 : INT64_MAX;
 
           /*
            * FIXME the +-2 is due to rounding being not done in the
@@ -3284,14 +3318,16 @@ SDL2ffmpeg::read_thread (void *arg)
               && vs->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)
             {
               AVPacket copy;
-              if ((ret = av_copy_packet (&copy, &vs->video_st->attached_pic))
+              if ((ret
+                   = av_copy_packet (&copy, &vs->video_st->attached_pic))
                   < 0)
                 {
                   dec->stop ();
                   return 0;
                 }
               dec->packet_queue_put (&vs->videoq, &copy);
-              dec->packet_queue_put_nullpacket (&vs->videoq, vs->video_stream);
+              dec->packet_queue_put_nullpacket (&vs->videoq,
+                                                vs->video_stream);
             }
           vs->queue_attachments_req = 0;
         }
@@ -3299,8 +3335,8 @@ SDL2ffmpeg::read_thread (void *arg)
       /* if the queue are full, no need to read more */
       if (dec->infinite_buffer < 1
           && (vs->audioq.size + vs->videoq.size > MAX_QUEUE_SIZE
-              || ((vs->audioq.nb_packets > MIN_FRAMES || vs->audio_stream < 0
-                   || vs->audioq.abort_request)
+              || ((vs->audioq.nb_packets > MIN_FRAMES
+                   || vs->audio_stream < 0 || vs->audioq.abort_request)
                   && (vs->videoq.nb_packets > MIN_FRAMES
                       || vs->video_stream < 0 || vs->videoq.abort_request
                       || (vs->video_st->disposition
@@ -3318,12 +3354,14 @@ SDL2ffmpeg::read_thread (void *arg)
         {
           if (vs->video_stream >= 0)
             {
-              dec->packet_queue_put_nullpacket (&vs->videoq, vs->video_stream);
+              dec->packet_queue_put_nullpacket (&vs->videoq,
+                                                vs->video_stream);
             }
 
           if (vs->audio_stream >= 0)
             {
-              dec->packet_queue_put_nullpacket (&vs->audioq, vs->audio_stream);
+              dec->packet_queue_put_nullpacket (&vs->audioq,
+                                                vs->audio_stream);
             }
 
           SDL_Delay (10);
@@ -3370,8 +3408,8 @@ SDL2ffmpeg::read_thread (void *arg)
             || (pkt->pts - (stream_start_time != AV_NOPTS_VALUE
                                 ? stream_start_time
                                 : 0))
-                           * av_q2d (
-                                 vs->ic->streams[pkt->stream_index]->time_base)
+                           * av_q2d (vs->ic->streams[pkt->stream_index]
+                                         ->time_base)
                        - (double)(dec->start_time != AV_NOPTS_VALUE
                                       ? dec->start_time
                                       : 0)
@@ -3383,7 +3421,8 @@ SDL2ffmpeg::read_thread (void *arg)
           dec->packet_queue_put (&vs->audioq, pkt);
         }
       else if (pkt->stream_index == vs->video_stream && pkt_in_play_range
-               && !(vs->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC))
+               && !(vs->video_st->disposition
+                    & AV_DISPOSITION_ATTACHED_PIC))
         {
 
           dec->packet_queue_put (&vs->videoq, pkt);
@@ -3459,7 +3498,8 @@ SDL2ffmpeg::stream_cycle_channel (int codec_type)
           return;
         }
 
-      st = vs->ic->streams[p ? p->stream_index[stream_index] : stream_index];
+      st = vs->ic
+               ->streams[p ? p->stream_index[stream_index] : stream_index];
       if (st->codec->codec_type == codec_type)
         {
           /* check that parameters are OK */
@@ -3524,8 +3564,8 @@ SDL2ffmpeg::filter_codec_opts (AVDictionary *opts, enum AVCodecID codec_id,
   AVDictionary *ret = NULL;
   AVDictionaryEntry *t = NULL;
 
-  int flags
-      = s->oformat ? AV_OPT_FLAG_ENCODING_PARAM : AV_OPT_FLAG_DECODING_PARAM;
+  int flags = s->oformat ? AV_OPT_FLAG_ENCODING_PARAM
+                         : AV_OPT_FLAG_DECODING_PARAM;
   char prefix = 0;
   const AVClass *cc = avcodec_get_class ();
 

@@ -549,7 +549,8 @@ BerkeliumHandler::mapOnPaintToTexture (
       strFile
           = createFile (bitmap_in, dest_texture_width, dest_texture_height);
 
-      s = dm->createRenderedSurfaceFromImageFile (myScreen, strFile.c_str ());
+      s = dm->createRenderedSurfaceFromImageFile (myScreen,
+                                                  strFile.c_str ());
       remove (strFile.c_str ());
 
       dm->blitSurface (surface, 0, 0, s);
@@ -573,7 +574,8 @@ BerkeliumHandler::mapOnPaintToTexture (
   if (dx != 0 || dy != 0)
     {
       // scroll_rect contains the Rect we need to move
-      // First we figure out where the the data is moved to by translating it
+      // First we figure out where the the data is moved to by translating
+      // it
       Berkelium::Rect scrolled_rect = scroll_rect.translate (-dx, -dy);
       // Next we figure out where they intersect, giving the scrolled
       // region
@@ -642,7 +644,8 @@ BerkeliumHandler::mapOnPaintToTexture (
       // is marked as dirty but not from scrolled data.
       strFile = createFile ((const unsigned char *)tmp_buffer, wid, hig);
 
-      s = dm->createRenderedSurfaceFromImageFile (myScreen, strFile.c_str ());
+      s = dm->createRenderedSurfaceFromImageFile (myScreen,
+                                                  strFile.c_str ());
       remove (strFile.c_str ());
 
       delete[] tmp_buffer;
@@ -706,9 +709,9 @@ BerkeliumHandler::createFile (const unsigned char *sourceBuffer, int width,
 
 void
 BerkeliumHandler::onPaint (Window *wini, const unsigned char *sourceBuffer,
-                           const Rect &sourceBufferRect, size_t numCopyRects,
-                           const Rect *copyRects, int dx, int dy,
-                           const Rect &scrollRect)
+                           const Rect &sourceBufferRect,
+                           size_t numCopyRects, const Rect *copyRects,
+                           int dx, int dy, const Rect &scrollRect)
 {
 
   bool updated = mapOnPaintToTexture (
@@ -761,7 +764,8 @@ BerkeliumHandler::onPaintPluginTexture (Window *win, void *sourceGLTexture,
 }
 
 void
-BerkeliumHandler::onWidgetCreated (Window *win, Widget *newWidget, int zIndex)
+BerkeliumHandler::onWidgetCreated (Window *win, Widget *newWidget,
+                                   int zIndex)
 {
 
   clog << "BerkeliumHandler::onWidgetCreated from source " << mURL;
@@ -784,7 +788,8 @@ BerkeliumHandler::onWidgetResize (Window *win, Widget *wid, int newWidth,
 }
 
 void
-BerkeliumHandler::onWidgetMove (Window *win, Widget *wid, int newX, int newY)
+BerkeliumHandler::onWidgetMove (Window *win, Widget *wid, int newX,
+                                int newY)
 {
 
   clog << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;

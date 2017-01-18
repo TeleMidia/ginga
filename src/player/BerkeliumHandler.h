@@ -104,19 +104,18 @@ public:
   virtual void onUnresponsive (Window *win);
 
 private:
-  bool mapOnPaintToTexture (Berkelium::Window *wini,
-                            const unsigned char *bitmap_in,
-                            const Berkelium::Rect &bitmap_rect,
-                            size_t num_copy_rects,
-                            const Berkelium::Rect *copy_rects, int dx, int dy,
-                            const Berkelium::Rect &scroll_rect,
-                            unsigned int dest_texture_width,
-                            unsigned int dest_texture_height,
-                            bool ignore_partial, unsigned char *scroll_buffer);
+  bool mapOnPaintToTexture (
+      Berkelium::Window *wini, const unsigned char *bitmap_in,
+      const Berkelium::Rect &bitmap_rect, size_t num_copy_rects,
+      const Berkelium::Rect *copy_rects, int dx, int dy,
+      const Berkelium::Rect &scroll_rect, unsigned int dest_texture_width,
+      unsigned int dest_texture_height, bool ignore_partial,
+      unsigned char *scroll_buffer);
 
   GingaSurfaceID createRenderedSurface (string fileName);
 
-  string createFile (const unsigned char *sourceBuffer, int width, int height);
+  string createFile (const unsigned char *sourceBuffer, int width,
+                     int height);
 
 public:
   virtual void onPaint (Window *wini, const unsigned char *bitmap_in,

@@ -60,21 +60,25 @@ extern "C" {
 #define ONE_HALF (1 << (SCALEBITS - 1))
 #define FIX(x) ((int)((x) * (1 << SCALEBITS) + 0.5))
 
-#define RGB_TO_Y_CCIR(r, g, b)                                                \
-  ((FIX (0.29900 * 219.0 / 255.0) * (r) + FIX (0.58700 * 219.0 / 255.0) * (g) \
-    + FIX (0.11400 * 219.0 / 255.0) * (b) + (ONE_HALF + (16 << SCALEBITS)))   \
+#define RGB_TO_Y_CCIR(r, g, b)                                             \
+  ((FIX (0.29900 * 219.0 / 255.0) * (r)                                    \
+    + FIX (0.58700 * 219.0 / 255.0) * (g)                                  \
+    + FIX (0.11400 * 219.0 / 255.0) * (b)                                  \
+    + (ONE_HALF + (16 << SCALEBITS)))                                      \
    >> SCALEBITS)
 
-#define RGB_TO_U_CCIR(r1, g1, b1, shift)                                      \
-  (((-FIX (0.16874 * 224.0 / 255.0) * r1 - FIX (0.33126 * 224.0 / 255.0) * g1 \
-     + FIX (0.50000 * 224.0 / 255.0) * b1 + (ONE_HALF << shift) - 1)          \
-    >> (SCALEBITS + shift))                                                   \
+#define RGB_TO_U_CCIR(r1, g1, b1, shift)                                   \
+  (((-FIX (0.16874 * 224.0 / 255.0) * r1                                   \
+     - FIX (0.33126 * 224.0 / 255.0) * g1                                  \
+     + FIX (0.50000 * 224.0 / 255.0) * b1 + (ONE_HALF << shift) - 1)       \
+    >> (SCALEBITS + shift))                                                \
    + 128)
 
-#define RGB_TO_V_CCIR(r1, g1, b1, shift)                                      \
-  (((FIX (0.50000 * 224.0 / 255.0) * r1 - FIX (0.41869 * 224.0 / 255.0) * g1  \
-     - FIX (0.08131 * 224.0 / 255.0) * b1 + (ONE_HALF << shift) - 1)          \
-    >> (SCALEBITS + shift))                                                   \
+#define RGB_TO_V_CCIR(r1, g1, b1, shift)                                   \
+  (((FIX (0.50000 * 224.0 / 255.0) * r1                                    \
+     - FIX (0.41869 * 224.0 / 255.0) * g1                                  \
+     - FIX (0.08131 * 224.0 / 255.0) * b1 + (ONE_HALF << shift) - 1)       \
+    >> (SCALEBITS + shift))                                                \
    + 128)
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
@@ -114,35 +118,36 @@ extern "C" {
 
 /* NOTE: the size must be big enough to compensate the hardware audio
  * buffersize size */
-/* TODO: We assume that a decoded and resampled frame fits into this buffer */
+/* TODO: We assume that a decoded and resampled frame fits into this buffer
+ */
 #define SAMPLE_ARRAY_SIZE (8 * 65536)
 
 #define VIDEO_PICTURE_QUEUE_SIZE 3
 
-#define ALPHA_BLEND(a, oldp, newp, s)                                         \
+#define ALPHA_BLEND(a, oldp, newp, s)                                      \
   ((((oldp << s) * (255 - (a))) + (newp * (a))) / (255 << s))
 
-#define RGBA_IN(r, g, b, a, s)                                                \
-  {                                                                           \
-    unsigned int v = ((const uint32_t *)(s))[0];                              \
-    a = (v >> 24) & 0xff;                                                     \
-    r = (v >> 16) & 0xff;                                                     \
-    g = (v >> 8) & 0xff;                                                      \
-    b = v & 0xff;                                                             \
+#define RGBA_IN(r, g, b, a, s)                                             \
+  {                                                                        \
+    unsigned int v = ((const uint32_t *)(s))[0];                           \
+    a = (v >> 24) & 0xff;                                                  \
+    r = (v >> 16) & 0xff;                                                  \
+    g = (v >> 8) & 0xff;                                                   \
+    b = v & 0xff;                                                          \
   }
 
-#define YUVA_IN(y, u, v, a, s, pal)                                           \
-  {                                                                           \
-    unsigned int val = ((const uint32_t *)(pal))[*(const uint8_t *)(s)];      \
-    a = (val >> 24) & 0xff;                                                   \
-    y = (val >> 16) & 0xff;                                                   \
-    u = (val >> 8) & 0xff;                                                    \
-    v = val & 0xff;                                                           \
+#define YUVA_IN(y, u, v, a, s, pal)                                        \
+  {                                                                        \
+    unsigned int val = ((const uint32_t *)(pal))[*(const uint8_t *)(s)];   \
+    a = (val >> 24) & 0xff;                                                \
+    y = (val >> 16) & 0xff;                                                \
+    u = (val >> 8) & 0xff;                                                 \
+    v = val & 0xff;                                                        \
   }
 
-#define YUVA_OUT(d, y, u, v, a)                                               \
-  {                                                                           \
-    ((uint32_t *)(d))[0] = (a << 24) | (y << 16) | (u << 8) | v;              \
+#define YUVA_OUT(d, y, u, v, a)                                            \
+  {                                                                        \
+    ((uint32_t *)(d))[0] = (a << 24) | (y << 16) | (u << 8) | v;           \
   }
 
 #define BPP 1
@@ -169,9 +174,9 @@ typedef struct PacketQueue
 
 typedef struct VideoPicture
 {
-  double pts; // presentation timestamp for this picture
+  double pts;      // presentation timestamp for this picture
   double duration; // estimated duration based on frame rate
-  int64_t pos; // byte position in file
+  int64_t pos;     // byte position in file
   SDL_Texture *tex;
   int width, height; // source height & width
   int allocated;
@@ -196,8 +201,9 @@ typedef struct AudioParams
 
 typedef struct Clock
 {
-  double pts;       /* clock base */
-  double pts_drift; /* clock base minus time at which we updated the clock */
+  double pts; /* clock base */
+  double
+      pts_drift; /* clock base minus time at which we updated the clock */
   double last_updated;
   double speed;
   int serial; /* clock is based on a packet with this serial */
@@ -419,13 +425,16 @@ public:
   float getSoundLevel ();
   void setSoundLevel (float level);
 
-  bool getAudioSpec (SDL_AudioSpec *spec, int sample_rate, uint8_t channels);
+  bool getAudioSpec (SDL_AudioSpec *spec, int sample_rate,
+                     uint8_t channels);
 
 private:
   int opt_add_vfilter (void *optctx, const char *opt, const char *arg);
 
-  static int cmp_audio_fmts (enum AVSampleFormat fmt1, int64_t channel_count1,
-                             enum AVSampleFormat fmt2, int64_t channel_count2);
+  static int cmp_audio_fmts (enum AVSampleFormat fmt1,
+                             int64_t channel_count1,
+                             enum AVSampleFormat fmt2,
+                             int64_t channel_count2);
 
   static int64_t get_valid_channel_layout (int64_t channel_layout,
                                            int channels);
@@ -438,7 +447,8 @@ private:
   void packet_queue_destroy (PacketQueue *q);
   void packet_queue_abort (PacketQueue *q);
   void packet_queue_start (PacketQueue *q);
-  int packet_queue_get (PacketQueue *q, AVPacket *pkt, int block, int *serial);
+  int packet_queue_get (PacketQueue *q, AVPacket *pkt, int block,
+                        int *serial);
 
   void render_vp (VideoPicture *vp);
 
@@ -488,7 +498,8 @@ private:
   int configure_video_filters (AVFilterGraph *graph, const char *vfilters,
                                AVFrame *frame);
 
-  int configure_audio_filters (const char *afilters, int force_output_format);
+  int configure_audio_filters (const char *afilters,
+                               int force_output_format);
   // AVFILTER end
 
   static int video_thread (void *arg);
@@ -499,7 +510,8 @@ private:
   static void sdl_audio_callback (void *opaque, Uint8 *stream, int len);
 
   int audio_open (int64_t wanted_channel_layout, int wanted_nb_channels,
-                  int wanted_sample_rate, struct AudioParams *audio_hw_params);
+                  int wanted_sample_rate,
+                  struct AudioParams *audio_hw_params);
 
   int stream_component_open (int stream_index);
   void stream_component_close (int stream_index);

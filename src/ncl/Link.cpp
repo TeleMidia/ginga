@@ -173,8 +173,8 @@ Link::isConsistent ()
 }
 
 Bind *
-Link::getBind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
-               Role *role)
+Link::getBind (Node *node, InterfacePoint *interfPt,
+               GenericDescriptor *desc, Role *role)
 {
 
   map<string, vector<Bind *> *>::iterator i;
@@ -225,7 +225,8 @@ Link::getConnector ()
 void
 Link::setParentComposition (LinkComposition *composition)
 {
-  if (composition == NULL || ((ContextNode *)composition)->containsLink (this))
+  if (composition == NULL
+      || ((ContextNode *)composition)->containsLink (this))
     {
 
       this->composition = composition;

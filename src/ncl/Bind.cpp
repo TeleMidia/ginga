@@ -201,7 +201,8 @@ Bind::getNodeNesting ()
 
           if (nodeSequence != NULL)
             {
-              for (i = nodeSequence->begin (); i != nodeSequence->end (); ++i)
+              for (i = nodeSequence->begin (); i != nodeSequence->end ();
+                   ++i)
                 {
 
                   nodeNesting->push_back (*i);

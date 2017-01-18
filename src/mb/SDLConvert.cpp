@@ -113,8 +113,10 @@ jpeg_SDL_RW_dest (j_compress_ptr cinfo, SDL_RWops *rwop)
   sdlrw_dest_ptr dest;
   if (cinfo->dest == NULL)
     {
-      cinfo->dest = (struct jpeg_destination_mgr *)(*cinfo->mem->alloc_small) (
-          (j_common_ptr)cinfo, JPOOL_PERMANENT, sizeof (sdlrw_dest_mgr));
+      cinfo->dest
+          = (struct jpeg_destination_mgr *)(*cinfo->mem->alloc_small) (
+              (j_common_ptr)cinfo, JPOOL_PERMANENT,
+              sizeof (sdlrw_dest_mgr));
     }
   dest = (sdlrw_dest_ptr)cinfo->dest;
   dest->rwop = rwop;
@@ -153,7 +155,8 @@ is_usable_format (SDL_Surface *surf)
 SDL_Surface *
 make_usable_format (SDL_Surface *surf)
 {
-  // SDL_PixelFormat pf_temp = { SDL_PIXELFORMAT_RGB332, NULL, 24, 3, 0, 0, 0,
+  // SDL_PixelFormat pf_temp = { SDL_PIXELFORMAT_RGB332, NULL, 24, 3, 0, 0,
+  // 0,
   // 8,
   // RSHIFT24, GSHIFT24, BSHIFT24, 0,
   // RMASK24, GMASK24, BMASK24, 0, 0, 255 };

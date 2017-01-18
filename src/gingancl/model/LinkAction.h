@@ -57,7 +57,8 @@ public:
   void setWaitDelay (double delay);
   bool hasDelay ();
 
-  void addActionProgressionListener (LinkActionProgressionListener *listener);
+  void
+  addActionProgressionListener (LinkActionProgressionListener *listener);
 
   void
   removeActionProgressionListener (LinkActionProgressionListener *listener);

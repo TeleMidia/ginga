@@ -35,7 +35,8 @@ public:
                                   void *objGrandParent)
       = 0;
 
-  virtual void addMappingToSwitchPort (void *parentObject, void *childObject)
+  virtual void addMappingToSwitchPort (void *parentObject,
+                                       void *childObject)
       = 0;
 
   virtual void *createArea (DOMElement *parentElement, void *objGrandParent)
@@ -49,7 +50,8 @@ public:
       = 0;
 
   void *parseMapping (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createMapping (DOMElement *parentElement, void *objGrandParent)
+  virtual void *createMapping (DOMElement *parentElement,
+                               void *objGrandParent)
       = 0;
 
   void *parseArea (DOMElement *parentElement, void *objGrandParent);

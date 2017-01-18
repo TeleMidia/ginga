@@ -61,7 +61,8 @@ static uint64_t tv_channels_list[] = {
   /* 34 */ 593142000,
   /* 35 */ 599142000,
   /* 36 */ 605142000,
-  /* 37 */ 611142000, // radio astronomy reserved (we are in rx mode anyway, so
+  /* 37 */ 611142000, // radio astronomy reserved (we are in rx mode anyway,
+                      // so
                       // no harm here...
   /* 38 */ 617142000,
   /* 39 */ 623142000,

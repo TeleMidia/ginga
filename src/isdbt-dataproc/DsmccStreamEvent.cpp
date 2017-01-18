@@ -33,7 +33,8 @@ DsmccStreamEvent::DsmccStreamEvent (void *descriptorData,
 
   // 4,5,6,7* reserved
   this->timeReference = (((uint64_t) (data[7] & 0x01)) << 32)
-                        | ((data[8] & 0xFF) << 24) | ((data[9] & 0xFF) << 16)
+                        | ((data[8] & 0xFF) << 24)
+                        | ((data[9] & 0xFF) << 16)
                         | ((data[10] & 0xFF) << 8) | (data[11] & 0xFF);
 }
 

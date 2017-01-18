@@ -242,7 +242,8 @@ DataProcessor::removeSEListener (string eventType,
 }
 
 void
-DataProcessor::setServiceDomainListener (IDsmccServiceDomainListener *listener)
+DataProcessor::setServiceDomainListener (
+    IDsmccServiceDomainListener *listener)
 {
 
   sdl = listener;
@@ -306,8 +307,8 @@ DataProcessor::notifySEListeners (DsmccStreamEvent *se)
           data->listener = *j;
           data->se = se;
 
-          pthread_create (&notifyThreadId_, 0, DataProcessor::notifySEListener,
-                          (void *)data);
+          pthread_create (&notifyThreadId_, 0,
+                          DataProcessor::notifySEListener, (void *)data);
 
           pthread_detach (notifyThreadId_);
 
@@ -380,8 +381,8 @@ DataProcessor::receiveSection (ITransportSection *section)
             }
 
           // TODO: we have to organize this mess
-          dsmccSection
-              = new DsmccSectionPayload (payload, section->getPayloadSize ());
+          dsmccSection = new DsmccSectionPayload (
+              payload, section->getPayloadSize ());
 
           nptProcessor->decodeDescriptors (
               dsmccSection->getDsmccDescritorList ());

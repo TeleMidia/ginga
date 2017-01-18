@@ -13,7 +13,7 @@ etags:
 
 .PHONY: indent
 indent:
-	@clang-format37 -i -style=GNU\
+	@clang-format -i\
 	  $(filter-out src/ginga.h, $(shell git ls-files '*.h' '*.cpp'))
 
 .PHONY: list-missing-config-h

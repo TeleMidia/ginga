@@ -334,7 +334,8 @@ SystemCompat::initializeGingaPath ()
 
   char DefChar = ' ';
   char exepath[300];
-  WideCharToMultiByte (CP_ACP, 0, wexepath, -1, exepath, 260, &DefChar, NULL);
+  WideCharToMultiByte (CP_ACP, 0, wexepath, -1, exepath, 260, &DefChar,
+                       NULL);
 
   currentPath = exepath;
 
@@ -406,7 +407,8 @@ SystemCompat::updatePath (string dir)
 
 int
 SystemCompat::zip_directory (const string &zipfile_path,
-                             const string &directory_path, const string &iUriD)
+                             const string &directory_path,
+                             const string &iUriD)
 {
 
 #if WITH_MULTIDEVICE
@@ -473,8 +475,8 @@ SystemCompat::zip_directory (const string &zipfile_path,
 
       if (zip_close (zipFile) == -1)
         {
-          clog
-              << "functions::zip_directory Warning! can't close zip archive '";
+          clog << "functions::zip_directory Warning! can't close zip "
+                  "archive '";
           clog << zipfile_path << endl;
           return -1;
         }

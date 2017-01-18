@@ -21,7 +21,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLSvgDecoder::SDLSvgDecoder (string filename) { filePath.assign (filename); }
+SDLSvgDecoder::SDLSvgDecoder (string filename)
+{
+  filePath.assign (filename);
+}
 
 SDLSvgDecoder::~SDLSvgDecoder () {}
 
@@ -51,7 +54,8 @@ SDLSvgDecoder::decode (int width, int height)
   int stride = x * 4; // ARGB
 
   /* Cairo Initiation */
-  uint8_t *image = (uint8_t *)malloc (stride * y); // ARGB uses 4 bytes / pixel
+  uint8_t *image
+      = (uint8_t *)malloc (stride * y); // ARGB uses 4 bytes / pixel
 
   // here the correct would be...
   cairoSurface = cairo_image_surface_create_for_data (

@@ -179,7 +179,8 @@ DsmccNPTProcessor::clearUnusedTimebase ()
                   clk->getContentId (),
                   Stc::baseToSecond (clk->getStopNpt ()));
 
-              clog << "DsmccNPTProcessor::clearUnusedTimebase - Deleted by ";
+              clog
+                  << "DsmccNPTProcessor::clearUnusedTimebase - Deleted by ";
               clog << "endpoint: CID = " << (clk->getContentId () & 0xFF);
               clog << endl;
 
@@ -209,9 +210,11 @@ DsmccNPTProcessor::clearUnusedTimebase ()
                   notifyNaturalEndListeners (clk->getContentId (),
                                              clk->getBaseToSecond ());
 
-                  clog << "DsmccNPTProcessor::clearUnusedTimebase - Deleted "
-                          "by ";
-                  clog << "lifetime: CID = " << (clk->getContentId () & 0xFF);
+                  clog
+                      << "DsmccNPTProcessor::clearUnusedTimebase - Deleted "
+                         "by ";
+                  clog << "lifetime: CID = "
+                       << (clk->getContentId () & 0xFF);
                   clog << endl;
                 }
               delete itLife->second;
@@ -240,7 +243,8 @@ DsmccNPTProcessor::getSTCValue ()
 }
 
 bool
-DsmccNPTProcessor::addLoopListener (unsigned char cid, ITimeBaseListener *ltn)
+DsmccNPTProcessor::addLoopListener (unsigned char cid,
+                                    ITimeBaseListener *ltn)
 {
   map<unsigned char, set<ITimeBaseProvider *> *>::iterator i;
   set<ITimeBaseProvider *> *listeners;
@@ -753,13 +757,15 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
             {
               DsmccNPTReference *lastNpt = NULL;
               cout << "FOUND NEW NPT REFERENCE DESCRIPTOR" << endl;
-              cout << "CONTENTID: " << (npt->getContentId () & 0xFF) << endl;
+              cout << "CONTENTID: " << (npt->getContentId () & 0xFF)
+                   << endl;
               cout << "NPT REFERENCE: " << npt->getNptRef () << " ("
                    << Stc::baseToSecond (npt->getNptRef ()) << "s)" << endl;
               cout << "STC REFERENCE: " << npt->getStcRef () << " ("
                    << Stc::baseToSecond (npt->getStcRef ()) << "s)" << endl;
               cout << "DISCONTINUITY INDICATOR: ";
-              cout << (npt->getPostDiscontinuityIndicator () & 0xFF) << endl;
+              cout << (npt->getPostDiscontinuityIndicator () & 0xFF)
+                   << endl;
               cout << "NPT SCALE: " << npt->getScaleNumerator () << "/"
                    << npt->getScaleDenominator () << endl;
 
@@ -786,19 +792,20 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
                                << Stc::baseToSecond (lastNpt->getNptRef ())
                                << "s" << endl;
                           cout << "Curr NPT: "
-                               << Stc::baseToSecond (npt->getNptRef ()) << "s"
-                               << endl;
+                               << Stc::baseToSecond (npt->getNptRef ())
+                               << "s" << endl;
                         }
                     }
                   else if ((npt->getScaleNumerator () < 0)
                            && (lastNpt->getScaleNumerator () < 0))
                     {
                       cout << "Error in NPT reference: ";
-                      cout << "Current NPT value must be lower than last NPT."
+                      cout << "Current NPT value must be lower than last "
+                              "NPT."
                            << endl;
                       cout << "Last NPT: "
-                           << Stc::baseToSecond (lastNpt->getNptRef ()) << "s"
-                           << endl;
+                           << Stc::baseToSecond (lastNpt->getNptRef ())
+                           << "s" << endl;
                       cout << "Curr NPT: "
                            << Stc::baseToSecond (npt->getNptRef ()) << "s"
                            << endl;
@@ -816,9 +823,9 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
                   if (npt->getStcRef () < lastNpt->getStcRef ())
                     {
                       cout << "Error in STC reference: ";
-                      cout
-                          << "Current STC value must be greater than last STC."
-                          << endl;
+                      cout << "Current STC value must be greater than last "
+                              "STC."
+                           << endl;
                     }
                   delete lastNpt;
                   lastNpt = NULL;
@@ -870,16 +877,19 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
               unlockConditionSatisfied ();
               if (newNpt->getScaleNumerator ())
                 {
-                  clog << "DsmccNPTProcessor::decodeDescriptors - Scheduling ";
+                  clog << "DsmccNPTProcessor::decodeDescriptors - "
+                          "Scheduling ";
                   clog << "new timebase: Transition to '";
                   clog << (newNpt->getContentId () & 0xFF);
-                  clog << "' (NPT STC_reference = '" << newNpt->getStcRef ();
+                  clog << "' (NPT STC_reference = '"
+                       << newNpt->getStcRef ();
                   clog << "'; System STC = '";
                   clog << getSTCValue () << "')" << endl;
                 }
               else
                 {
-                  clog << "DsmccNPTProcessor::decodeDescriptors - Scheduling ";
+                  clog << "DsmccNPTProcessor::decodeDescriptors - "
+                          "Scheduling ";
                   clog << "new timebase: CID ";
                   clog << (newNpt->getContentId () & 0xFF);
                   clog << " will be kept as paused." << endl;
@@ -951,9 +961,11 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
             {
               cout << "FOUND NEW NPT ENDPOINT DESCRIPTOR" << endl;
               cout << "START NPT: "
-                   << Stc::baseToSecond (nptEP->getStartNPT ()) << "s" << endl;
-              cout << "STOP  NPT: " << Stc::baseToSecond (nptEP->getStopNPT ())
-                   << "s" << endl;
+                   << Stc::baseToSecond (nptEP->getStartNPT ()) << "s"
+                   << endl;
+              cout << "STOP  NPT: "
+                   << Stc::baseToSecond (nptEP->getStopNPT ()) << "s"
+                   << endl;
             }
 
           clk = getCurrentTimebase ();
@@ -969,7 +981,8 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
                   clog << (clk->getContentId () & 0xFF) << " starts at ";
                   clog << Stc::stcToSecond (clk->getStartNpt () * 300);
                   clog << " and stops at ";
-                  clog << Stc::stcToSecond (clk->getStopNpt () * 300) << endl;
+                  clog << Stc::stcToSecond (clk->getStopNpt () * 300)
+                       << endl;
                 }
             }
         }
@@ -982,7 +995,8 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
           if (nptPrinter)
             {
               cout << "DsmccNPTProcessor::decodeDescriptors unknown NPT ";
-              cout << "descriptor tag: " << desc->getDescriptorTag () << endl;
+              cout << "descriptor tag: " << desc->getDescriptorTag ()
+                   << endl;
             }
         }
       ++it;
@@ -1246,7 +1260,8 @@ DsmccNPTProcessor::processNptValues ()
                   Thread::mutexLock (&lifeMutex);
                   timeBaseLife[npt->getContentId ()] = tblife;
                   Thread::mutexUnlock (&lifeMutex);
-                  clog << "DsmccNPTProcessor::processNptValues - Added CID: ";
+                  clog << "DsmccNPTProcessor::processNptValues - Added "
+                          "CID: ";
                   clog << (npt->getContentId () & 0xFF) << endl;
                 }
               else

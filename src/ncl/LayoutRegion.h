@@ -125,7 +125,8 @@ public:
   virtual void setTitle (string newTitle);
   virtual void setZIndex (int newZIndex);
   virtual vector<LayoutRegion *> *getRegionsSortedByZIndex ();
-  virtual vector<LayoutRegion *> *getRegionsOverRegion (LayoutRegion *region);
+  virtual vector<LayoutRegion *> *
+  getRegionsOverRegion (LayoutRegion *region);
 
   virtual LayoutRegion *getParent ();
   virtual void setParent (LayoutRegion *parent);

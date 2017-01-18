@@ -98,7 +98,8 @@ public:
   FormatterFocusManager (AdapterPlayerManager *playerManager,
                          PresentationContext *presContext,
                          FormatterMultiDevice *multiDevice,
-                         ILinkActionListener *settingActions, void *converter);
+                         ILinkActionListener *settingActions,
+                         void *converter);
 
   virtual ~FormatterFocusManager ();
 

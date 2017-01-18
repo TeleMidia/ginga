@@ -134,7 +134,8 @@ private:
   bool isDocumentRunning (FormatterEvent *event);
 
   void setTimeBaseObject (ExecutionObject *object,
-                          AdapterFormatterPlayer *objectPlayer, string nodeId);
+                          AdapterFormatterPlayer *objectPlayer,
+                          string nodeId);
 
   static void printAction (string action, LinkCondition *condition,
                            LinkSimpleAction *linkAction);
@@ -148,7 +149,8 @@ private:
   void runAction (FormatterEvent *event, LinkCondition *condition,
                   LinkSimpleAction *action);
 
-  void runActionOverProperty (FormatterEvent *event, LinkSimpleAction *action);
+  void runActionOverProperty (FormatterEvent *event,
+                              LinkSimpleAction *action);
 
   void runActionOverApplicationObject (
       ApplicationExecutionObject *executionObject, FormatterEvent *event,

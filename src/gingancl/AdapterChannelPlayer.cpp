@@ -53,7 +53,8 @@ AdapterChannelPlayer::createPlayer ()
           childObj = i->second;
           if (childObj != NULL && childObj->getDataObject () != NULL
               && childObj->getDataObject ()->getDataEntity () != NULL
-              && ((NodeEntity *)(childObj->getDataObject ()->getDataEntity ()))
+              && ((NodeEntity *)(childObj->getDataObject ()
+                                     ->getDataEntity ()))
                          ->getContent ()
                      != NULL)
             {
@@ -110,7 +111,8 @@ AdapterChannelPlayer::createPlayer ()
 }
 
 bool
-AdapterChannelPlayer::setPropertyValue (AttributionEvent *event, string value)
+AdapterChannelPlayer::setPropertyValue (AttributionEvent *event,
+                                        string value)
 {
 
   if (value == "")

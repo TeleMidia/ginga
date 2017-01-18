@@ -23,8 +23,8 @@ GINGA_MULTIDEVICE_BEGIN
 const static int MAX_MSG_SIZE = 1024;
 
 TCPClientConnection::TCPClientConnection (unsigned int devid,
-                                          unsigned int index, char *hostname,
-                                          char *port_str,
+                                          unsigned int index,
+                                          char *hostname, char *port_str,
                                           IRemoteDeviceListener *srv)
 {
 
@@ -35,7 +35,8 @@ TCPClientConnection::TCPClientConnection (unsigned int devid,
       counter = 0;
       tcpSocket = new TCPSocket (string (hostname), atoi (port_str));
       ////
-      // TODO: improve (create setIndex e getIndex methods) so index does not
+      // TODO: improve (create setIndex e getIndex methods) so index does
+      // not
       // change
 
       char *set_index = g_strdup_printf ("%d %s %s=%d\n", 0, "SET",

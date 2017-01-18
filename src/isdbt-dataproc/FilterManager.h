@@ -42,7 +42,8 @@ private:
 public:
   FilterManager ();
   virtual ~FilterManager ();
-  ITSFilter *createStreamTypeSectionFilter (short streamType, IDemuxer *demux,
+  ITSFilter *createStreamTypeSectionFilter (short streamType,
+                                            IDemuxer *demux,
                                             IFilterListener *listener);
 
   ITSFilter *createPidSectionFilter (int pid, IDemuxer *demux,

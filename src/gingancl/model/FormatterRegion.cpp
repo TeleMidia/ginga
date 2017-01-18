@@ -78,8 +78,8 @@ FormatterRegion::FormatterRegion (string objectId, void *descriptor,
 
   this->setTransparency (value);
 
-  value
-      = ((CascadingDescriptor *)descriptor)->getParameterValue ("background");
+  value = ((CascadingDescriptor *)descriptor)
+              ->getParameterValue ("background");
 
   if (::ginga::util::trim (value) != "")
     {
@@ -122,7 +122,8 @@ FormatterRegion::FormatterRegion (string objectId, void *descriptor,
 
   this->setScroll (value);
 
-  value = ((CascadingDescriptor *)descriptor)->getParameterValue ("chromakey");
+  value = ((CascadingDescriptor *)descriptor)
+              ->getParameterValue ("chromakey");
 
   this->setChromaKey (value);
 
@@ -282,8 +283,9 @@ FormatterRegion::setZIndex (int zIndex)
           clog << "original zIndex = '" << zIndex << "'";
           clog << "converted zIndex = '" << cvtZIndex << "'";
           clog << endl;
-          dm->setWindowZ (((FormatterLayout *)layoutManager)->getScreenID (),
-                          outputDisplay, cvtZIndex);
+          dm->setWindowZ (
+              ((FormatterLayout *)layoutManager)->getScreenID (),
+              outputDisplay, cvtZIndex);
         }
 
       toFront ();
@@ -598,9 +600,11 @@ FormatterRegion::getSelComponentSrc ()
 }
 
 void
-FormatterRegion::setFocusInfo (Color *focusBorderColor, int focusBorderWidth,
-                               string focusComponentSrc, Color *selBorderColor,
-                               int selBorderWidth, string selComponentSrc)
+FormatterRegion::setFocusInfo (Color *focusBorderColor,
+                               int focusBorderWidth,
+                               string focusComponentSrc,
+                               Color *selBorderColor, int selBorderWidth,
+                               string selComponentSrc)
 {
 
   setFocusBorderColor (focusBorderColor);
@@ -823,8 +827,9 @@ FormatterRegion::sizeRegion ()
   lock ();
   if (outputDisplay != 0)
     {
-      dm->setWindowBounds (((FormatterLayout *)layoutManager)->getScreenID (),
-                           outputDisplay, left, top, width, height);
+      dm->setWindowBounds (
+          ((FormatterLayout *)layoutManager)->getScreenID (), outputDisplay,
+          left, top, width, height);
     }
   unlock ();
 }
@@ -861,7 +866,8 @@ FormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
 
   // clog << "FormatterRegion::prepareOutputDisplay" << endl;
   lock ();
-  GingaScreenID screenId = ((FormatterLayout *)layoutManager)->getScreenID ();
+  GingaScreenID screenId
+      = ((FormatterLayout *)layoutManager)->getScreenID ();
 
   if (outputDisplay == 0)
     {
@@ -917,8 +923,8 @@ FormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
 
       if (!externHandler)
         {
-          outputDisplay = dm->createWindow (screenId, left, top, width, height,
-                                            cvtIndex);
+          outputDisplay = dm->createWindow (screenId, left, top, width,
+                                            height, cvtIndex);
         }
 
       clog << "FormatterRegion::prepareOutputDisplay '" << outputDisplay;
@@ -966,8 +972,9 @@ FormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
           dm->setWindowCaps (screenId, outputDisplay, caps);
           dm->drawWindow (screenId, outputDisplay);
 
-          dm->setWindowColorKey (screenId, outputDisplay, chromaKey->getR (),
-                                 chromaKey->getG (), chromaKey->getB ());
+          dm->setWindowColorKey (screenId, outputDisplay,
+                                 chromaKey->getR (), chromaKey->getG (),
+                                 chromaKey->getB ());
         }
       else if (!externHandler)
         {
@@ -1190,7 +1197,8 @@ FormatterRegion::getOutTransDur ()
 
   lockTransition ();
 
-  transitions = ((CascadingDescriptor *)descriptor)->getOutputTransitions ();
+  transitions
+      = ((CascadingDescriptor *)descriptor)->getOutputTransitions ();
 
   if (!transitions->empty ())
     {
@@ -1226,7 +1234,8 @@ FormatterRegion::setRegionVisibility (bool visible)
       return;
     }
 
-  GingaScreenID screenId = ((FormatterLayout *)layoutManager)->getScreenID ();
+  GingaScreenID screenId
+      = ((FormatterLayout *)layoutManager)->getScreenID ();
 
   if (outputDisplay != 0)
     {
@@ -1275,7 +1284,8 @@ void
 FormatterRegion::toFront ()
 {
   lock ();
-  GingaScreenID screenId = ((FormatterLayout *)layoutManager)->getScreenID ();
+  GingaScreenID screenId
+      = ((FormatterLayout *)layoutManager)->getScreenID ();
   if (outputDisplay != 0 && !externHandler)
     {
       dm->raiseWindowToTop (screenId, outputDisplay);
@@ -1522,7 +1532,8 @@ FormatterRegion::setSelection (bool selOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  dm->renderWindowFrom (screenId, outputDisplay, selSurface);
+                  dm->renderWindowFrom (screenId, outputDisplay,
+                                        selSurface);
                 }
 
               dm->deleteSurface (selSurface);
@@ -1576,13 +1587,17 @@ FormatterRegion::setFocus (bool focusOn)
 
       /*			if (borderWidth > 0) {
                                       outputDisplay->setBounds(
-                                                      outputDisplay->getX() -
+                                                      outputDisplay->getX()
+         -
          borderWidth,
-                                                      outputDisplay->getY() -
+                                                      outputDisplay->getY()
+         -
          borderWidth,
-                                                      outputDisplay->getW() +
+                                                      outputDisplay->getW()
+         +
          (2 * borderWidth),
-                                                      outputDisplay->getH() +
+                                                      outputDisplay->getH()
+         +
          (2 * borderWidth));
 
                                       currentComponent.setLocation(
@@ -1593,7 +1608,8 @@ FormatterRegion::setFocus (bool focusOn)
 
                               } else if (borderWidth < 0) {
                                       currentComponent.setSize(
-                                              currentComponent.getWidth() + (2
+                                              currentComponent.getWidth() +
+         (2
          * borderWidth),
                                       currentComponent.getHeight() + (2*
          borderWidth));
@@ -1616,7 +1632,8 @@ FormatterRegion::setFocus (bool focusOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  dm->renderWindowFrom (screenId, outputDisplay, focusSurface);
+                  dm->renderWindowFrom (screenId, outputDisplay,
+                                        focusSurface);
                 }
               dm->deleteSurface (focusSurface);
             }
@@ -1742,7 +1759,8 @@ FormatterRegion::barWipe (Transition *transition, bool isShowEffect)
       return;
     }
 
-  GingaScreenID screenId = ((FormatterLayout *)layoutManager)->getScreenID ();
+  GingaScreenID screenId
+      = ((FormatterLayout *)layoutManager)->getScreenID ();
   x = dm->getWindowX (screenId, outputDisplay);
   y = dm->getWindowY (screenId, outputDisplay);
   width = dm->getWindowW (screenId, outputDisplay);
@@ -1755,7 +1773,8 @@ FormatterRegion::barWipe (Transition *transition, bool isShowEffect)
   startProgress = transition->getStartProgress ();
   endProgress = transition->getEndProgress ();
 
-  transparencyValue = dm->getWindowTransparencyValue (screenId, outputDisplay);
+  transparencyValue
+      = dm->getWindowTransparencyValue (screenId, outputDisplay);
 
   // outputDisplay->setStretch(false);
   initTime = getCurrentTimeMillis ();
@@ -1992,7 +2011,8 @@ FormatterRegion::barWipe (Transition *transition, bool isShowEffect)
       if (outputDisplay != 0)
         {
           // outputDisplay->setStretch(true);
-          dm->setWindowBounds (screenId, outputDisplay, x, y, width, height);
+          dm->setWindowBounds (screenId, outputDisplay, x, y, width,
+                               height);
           dm->validateWindow (screenId, outputDisplay);
         }
     }
@@ -2023,7 +2043,8 @@ FormatterRegion::fade (Transition *transition, bool isShowEffect)
   double time, initTime, initValue, endValue, startProgress, endProgress;
   int opacityValue;
   double transitionDur;
-  GingaScreenID screenId = ((FormatterLayout *)layoutManager)->getScreenID ();
+  GingaScreenID screenId
+      = ((FormatterLayout *)layoutManager)->getScreenID ();
 
   lock ();
   if (outputDisplay == 0 || externHandler)
@@ -2071,7 +2092,8 @@ FormatterRegion::fade (Transition *transition, bool isShowEffect)
       lock ();
       if (outputDisplay != 0)
         {
-          dm->setWindowCurrentTransparency (screenId, outputDisplay, 255 - i);
+          dm->setWindowCurrentTransparency (screenId, outputDisplay,
+                                            255 - i);
         }
       else
         {

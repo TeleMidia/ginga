@@ -129,10 +129,11 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
       ;
     }
 
-  gingaValue = ScreenManagerFactory::getInstance ()->fromMBToGinga (screenId,
-                                                                    sdlValue);
+  gingaValue = ScreenManagerFactory::getInstance ()->fromMBToGinga (
+      screenId, sdlValue);
 
-  if (gingaValue >= CodeMap::KEY_SMALL_A && gingaValue <= CodeMap::KEY_SMALL_Z
+  if (gingaValue >= CodeMap::KEY_SMALL_A
+      && gingaValue <= CodeMap::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
 

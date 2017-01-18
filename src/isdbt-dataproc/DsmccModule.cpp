@@ -124,8 +124,8 @@ DsmccModule::getModuleFileName ()
 {
   return (string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD ()
           + "carousel" + SystemCompat::getIUriD () + "modules"
-          + SystemCompat::getIUriD () + itos (pid) + itos (id) + itos (version)
-          + ".mod");
+          + SystemCompat::getIUriD () + itos (pid) + itos (id)
+          + itos (version) + ".mod");
 }
 
 void

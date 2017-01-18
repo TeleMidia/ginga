@@ -44,12 +44,13 @@ BaseDeviceDomain::BaseDeviceDomain (bool useMulticast, int srvPort)
   if (useMulticast)
     {
       passiveSocket = new MulticastSocketService (
-          (char *)(PASSIVE_MCAST_ADDR.c_str ()), BROADCAST_PORT + CT_PASSIVE);
+          (char *)(PASSIVE_MCAST_ADDR.c_str ()),
+          BROADCAST_PORT + CT_PASSIVE);
     }
   else
     {
-      passiveSocket = new BroadcastDualSocketService (BASE_WRITE_BCAST_PORT,
-                                                      SECO_WRITE_BCAST_PORT);
+      passiveSocket = new BroadcastDualSocketService (
+          BASE_WRITE_BCAST_PORT, SECO_WRITE_BCAST_PORT);
     }
   /*
 passiveMulticast  = new MulticastSocketService(
@@ -269,8 +270,8 @@ BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
           if (destDevClass == DeviceDomain::CT_PASSIVE)
             {
               // prepare frame
-              task
-                  = mountFrame (myIP, destDevClass, FT_MEDIACONTENT, fileSize);
+              task = mountFrame (myIP, destDevClass, FT_MEDIACONTENT,
+                                 fileSize);
 
               bytesRead = fread (task + HEADER_SIZE, 1, fileSize, fd);
               if (bytesRead == fileSize)
@@ -348,9 +349,11 @@ BaseDeviceDomain::runControlTask ()
         }
       /*
                               if (myIP == sourceIp) {
-                                      clog << "DeviceDomain::runControlTask got
+                                      clog << "DeviceDomain::runControlTask
+         got
          my own task ";
-                                      clog << "(size = '" << frameSize << "')"
+                                      clog << "(size = '" << frameSize <<
+         "')"
          << endl;
 
                                       delete[] task;
@@ -442,7 +445,8 @@ BaseDeviceDomain::runDataTask ()
     }
   /*
                   if (myIP == sourceIp) {
-                          clog << "BaseDeviceDomain::runDataTask receiving my
+                          clog << "BaseDeviceDomain::runDataTask receiving
+     my
      own task";
                           clog << endl;
 
@@ -506,7 +510,8 @@ BaseDeviceDomain::checkPassiveTasks ()
       taskSize = remoteTask->size;
       passiveTasks.erase (i);
 
-      if (((remoteTask->timestamp - passiveTimestamp) > (1000 / PASSIVE_FPS))
+      if (((remoteTask->timestamp - passiveTimestamp)
+           > (1000 / PASSIVE_FPS))
           || passiveTimestamp == 0)
         {
 

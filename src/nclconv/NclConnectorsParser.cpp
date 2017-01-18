@@ -83,7 +83,8 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = parseAssessmentStatement (element, parentObject);
+              elementObject
+                  = parseAssessmentStatement (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -96,7 +97,8 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = parseCompoundCondition (element, parentObject);
+              elementObject
+                  = parseCompoundCondition (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -109,7 +111,8 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = parseCompoundStatement (element, parentObject);
+              elementObject
+                  = parseCompoundStatement (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -155,12 +158,13 @@ NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
               == 0)
             {
 
-              elementObject = parseAttributeAssessment (element, parentObject);
+              elementObject
+                  = parseAttributeAssessment (element, parentObject);
 
               if (elementObject != NULL)
                 {
-                  addAttributeAssessmentToAssessmentStatement (parentObject,
-                                                               elementObject);
+                  addAttributeAssessmentToAssessmentStatement (
+                      parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -236,7 +240,8 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
               == 0)
             {
 
-              elementObject = parseAssessmentStatement (element, parentObject);
+              elementObject
+                  = parseAssessmentStatement (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -249,7 +254,8 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = parseCompoundStatement (element, parentObject);
+              elementObject
+                  = parseCompoundStatement (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -434,7 +440,8 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                    == 0)
             {
 
-              elementObject = parseCompoundCondition (element, parentObject);
+              elementObject
+                  = parseCompoundCondition (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -480,7 +487,8 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                       element->getAttribute (XMLString::transcode ("id")))
                << endl;
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "importBase")
               == 0)
             {
 
@@ -489,7 +497,8 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToConnectorBase (parentObject, elementObject);
+                  addImportBaseToConnectorBase (parentObject,
+                                                elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),

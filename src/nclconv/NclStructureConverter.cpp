@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclStructureConverter::NclStructureConverter (DocumentParser *documentParser)
+NclStructureConverter::NclStructureConverter (
+    DocumentParser *documentParser)
     : NclStructureParser (documentParser)
 {
 }
@@ -48,14 +49,16 @@ NclStructureConverter::addPropertyToBody (void *parentObject,
 }
 
 void
-NclStructureConverter::addContextToBody (void *parentObject, void *childObject)
+NclStructureConverter::addContextToBody (void *parentObject,
+                                         void *childObject)
 {
 
   getComponentsParser ()->addContextToContext (parentObject, childObject);
 }
 
 void
-NclStructureConverter::addSwitchToBody (void *parentObject, void *childObject)
+NclStructureConverter::addSwitchToBody (void *parentObject,
+                                        void *childObject)
 {
 
   getComponentsParser ()->addSwitchToContext (parentObject, childObject);
@@ -67,8 +70,8 @@ NclStructureConverter::addDescriptorBaseToHead (void *parentObject,
 {
 
   NclDocument *document;
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->setDescriptorBase ((DescriptorBase *)childObject);
 }
@@ -86,8 +89,8 @@ NclStructureConverter::addRegionBaseToHead (void *parentObject,
 {
 
   NclDocument *document;
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->addRegionBase ((RegionBase *)childObject);
 }
@@ -115,7 +118,8 @@ NclStructureConverter::addLinkToBody (void *parentObject, void *childObject)
 }
 
 void
-NclStructureConverter::addMediaToBody (void *parentObject, void *childObject)
+NclStructureConverter::addMediaToBody (void *parentObject,
+                                       void *childObject)
 {
 
   getComponentsParser ()->addMediaToContext (parentObject, childObject);
@@ -127,8 +131,8 @@ NclStructureConverter::addRuleBaseToHead (void *parentObject,
 {
 
   NclDocument *document;
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->setRuleBase ((RuleBase *)childObject);
 }
@@ -139,8 +143,8 @@ NclStructureConverter::addConnectorBaseToHead (void *parentObject,
 {
 
   NclDocument *document;
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->setConnectorBase ((ConnectorBase *)childObject);
 }
@@ -156,8 +160,8 @@ NclStructureConverter::createBody (DOMElement *parentElement,
   NclDocument *document;
   ContextNode *context;
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   if (!parentElement->hasAttribute (XMLString::transcode ("id")))
     {
@@ -165,17 +169,17 @@ NclStructureConverter::createBody (DOMElement *parentElement,
           XMLString::transcode ("id"),
           XMLString::transcode (document->getId ().c_str ()));
 
-      context
-          = (ContextNode *)((NclComponentsConverter *)getComponentsParser ())
-                ->createContext (parentElement, objGrandParent);
+      context = (ContextNode *)((NclComponentsConverter *)
+                                    getComponentsParser ())
+                    ->createContext (parentElement, objGrandParent);
 
       parentElement->removeAttribute (XMLString::transcode ("id"));
     }
   else
     {
-      context
-          = (ContextNode *)((NclComponentsConverter *)getComponentsParser ())
-                ->createContext (parentElement, objGrandParent);
+      context = (ContextNode *)((NclComponentsConverter *)
+                                    getComponentsParser ())
+                    ->createContext (parentElement, objGrandParent);
     }
   document->setBody (context);
   return context;
@@ -313,8 +317,8 @@ NclStructureConverter::addMetaToHead (void *parentObject, void *childObject)
 
   NclDocument *document;
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->addMetainformation ((Meta *)childObject);
 }
@@ -326,8 +330,8 @@ NclStructureConverter::addMetadataToHead (void *parentObject,
 
   NclDocument *document;
 
-  document
-      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
+  document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                             "document");
 
   document->addMetadata ((Metadata *)childObject);
 }

@@ -61,7 +61,8 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-class NclPresentationSpecConverter : public NclPresentationSpecificationParser
+class NclPresentationSpecConverter
+    : public NclPresentationSpecificationParser
 {
 
 private:
@@ -71,21 +72,26 @@ public:
   NclPresentationSpecConverter (DocumentParser *documentParser,
                                 DeviceLayout *deviceLayout);
 
-  void addDescriptorToDescriptorBase (void *parentObject, void *childObject);
+  void addDescriptorToDescriptorBase (void *parentObject,
+                                      void *childObject);
 
   void addDescriptorSwitchToDescriptorBase (void *parentObject,
                                             void *childObject);
 
-  void addDescriptorParamToDescriptor (void *parentObject, void *childObject);
+  void addDescriptorParamToDescriptor (void *parentObject,
+                                       void *childObject);
 
-  void addImportBaseToDescriptorBase (void *parentObject, void *childObject);
+  void addImportBaseToDescriptorBase (void *parentObject,
+                                      void *childObject);
 
   void *createDescriptorParam (DOMElement *parentElement,
                                void *objGrandParent);
 
-  void *createDescriptorBind (DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBind (DOMElement *parentElement,
+                              void *objGrandParent);
 
-  void *createDescriptorBase (DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBase (DOMElement *parentElement,
+                              void *objGrandParent);
 
   void *createDescriptor (DOMElement *parentElement, void *objGrandParent);
 };

@@ -83,7 +83,8 @@ FileSystemProvider::setChannel (string channelValue)
 }
 
 int
-FileSystemProvider::createPesFilter (int pid, int pesType, bool compositeFiler)
+FileSystemProvider::createPesFilter (int pid, int pesType,
+                                     bool compositeFiler)
 {
 
   return -1;

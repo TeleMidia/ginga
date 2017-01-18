@@ -50,7 +50,8 @@ public:
   bool newDeviceConnected (int newDevClass, int w, int h);
   void connectedToBaseDevice (unsigned int domainAddr);
   bool receiveRemoteContent (int remoteDevClass, string contentUri);
-  bool receiveRemoteContent (int remoteDevClass, char *stream, int streamSize);
+  bool receiveRemoteContent (int remoteDevClass, char *stream,
+                             int streamSize);
   bool receiveRemoteContentInfo (string contentId, string contentUri);
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
                            string eventContent);

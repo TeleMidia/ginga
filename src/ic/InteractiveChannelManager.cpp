@@ -163,7 +163,8 @@ InteractiveChannelManager::performPendingUrls ()
 
   if (!ics->empty ())
     {
-      pthread_create (&id1, 0, InteractiveChannelManager::asyncPerform, this);
+      pthread_create (&id1, 0, InteractiveChannelManager::asyncPerform,
+                      this);
 
       pthread_detach (id1);
     }

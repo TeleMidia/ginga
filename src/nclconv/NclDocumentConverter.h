@@ -53,7 +53,8 @@ public:
   NclDocumentConverter ();
   virtual ~NclDocumentConverter ();
 
-  void setConverterInfo (IPrivateBaseContext *pbc, DeviceLayout *deviceLayout);
+  void setConverterInfo (IPrivateBaseContext *pbc,
+                         DeviceLayout *deviceLayout);
 
 protected:
   void checkManager ();

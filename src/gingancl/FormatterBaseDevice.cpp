@@ -34,11 +34,11 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
 FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
                                           DeviceLayout *deviceLayout,
-                                          string playerId, int x, int y, int w,
-                                          int h, bool useMulticast,
+                                          string playerId, int x, int y,
+                                          int w, int h, bool useMulticast,
                                           int srvPort)
-    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h, useMulticast,
-                            srvPort)
+    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
+                            useMulticast, srvPort)
 {
   set<int> *evs;
   string layoutName = deviceLayout->getLayoutName ();
@@ -48,8 +48,8 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
   deviceLayout->addDevice ("systemScreen(1)", 0, 0, DV_QVGA_WIDTH,
                            DV_QVGA_HEIGHT);
 
-  serialized
-      = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT, -1.0);
+  serialized = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
+                                 DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
   evs->insert (CodeMap::KEY_TAP);
@@ -66,10 +66,12 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
       rdm = RemoteDeviceManager::getInstance ();
       if (!active_dev)
         ((RemoteDeviceManager *)rdm)
-            ->setDeviceDomain (new BaseDeviceDomain (useMulticast, srvPort));
+            ->setDeviceDomain (
+                new BaseDeviceDomain (useMulticast, srvPort));
       else
         ((RemoteDeviceManager *)rdm)
-            ->setDeviceDomain (new ActiveDeviceDomain (useMulticast, srvPort));
+            ->setDeviceDomain (
+                new ActiveDeviceDomain (useMulticast, srvPort));
     }
 
   rdm->setDeviceInfo (deviceClass, w, h, playerId);
@@ -117,8 +119,8 @@ bool
 FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
                                          string eventContent)
 {
-  return FormatterMultiDevice::receiveRemoteEvent (remoteDevClass, eventType,
-                                                   eventContent);
+  return FormatterMultiDevice::receiveRemoteEvent (remoteDevClass,
+                                                   eventType, eventContent);
 }
 
 bool

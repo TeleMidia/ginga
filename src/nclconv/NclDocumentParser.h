@@ -89,8 +89,8 @@ public:
   NclInterfacesParser *getInterfacesParser ();
   void setInterfacesParser (NclInterfacesParser *interfacesParser);
   NclMetainformationParser *getMetainformationParser ();
-  void
-  setMetainformationParser (NclMetainformationParser *metainformationParser);
+  void setMetainformationParser (
+      NclMetainformationParser *metainformationParser);
 
   NclLinkingParser *getLinkingParser ();
   void setLinkingParser (NclLinkingParser *linkingParser);

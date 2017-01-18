@@ -169,11 +169,13 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
 
       interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
 
-      if ((((AnchorEvent *)event)->getAnchor ())->instanceOf ("LabeledAnchor"))
+      if ((((AnchorEvent *)event)->getAnchor ())
+              ->instanceOf ("LabeledAnchor"))
         {
 
-          interfaceId = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
-                            ->getLabel ();
+          interfaceId
+              = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                    ->getLabel ();
         }
       else if ((((AnchorEvent *)event)->getAnchor ())
                    ->instanceOf ("LambdaAnchor"))
@@ -183,7 +185,8 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
+      ((ApplicationExecutionObject *)object)
+          ->setCurrentEvent (currentEvent);
 
       if (player != NULL)
         {
@@ -201,7 +204,8 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
+      ((ApplicationExecutionObject *)object)
+          ->setCurrentEvent (currentEvent);
 
       if (player != NULL)
         {

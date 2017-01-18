@@ -32,14 +32,15 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
                                                 DeviceLayout *deviceLayout,
                                                 int x, int y, int w, int h,
-                                                bool useMulticast, int srvPort)
-    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h, useMulticast,
-                            srvPort)
+                                                bool useMulticast,
+                                                int srvPort)
+    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
+                            useMulticast, srvPort)
 {
 
   deviceClass = DeviceDomain::CT_PASSIVE;
-  serialized
-      = dm->createWindow (myScreen, x, y, defaultWidth, defaultHeight, -1.0);
+  serialized = dm->createWindow (myScreen, x, y, defaultWidth,
+                                 defaultHeight, -1.0);
 
   int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
   dm->setWindowCaps (myScreen, serialized, cap);
@@ -49,7 +50,8 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
     {
       rdm = RemoteDeviceManager::getInstance ();
       ((RemoteDeviceManager *)rdm)
-          ->setDeviceDomain (new PassiveDeviceDomain (useMulticast, srvPort));
+          ->setDeviceDomain (
+              new PassiveDeviceDomain (useMulticast, srvPort));
     }
 
   rdm->setDeviceInfo (deviceClass, w, h, "");

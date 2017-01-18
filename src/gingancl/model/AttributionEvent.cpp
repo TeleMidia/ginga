@@ -43,8 +43,8 @@ AttributionEvent::AttributionEvent (string id, void *executionObject,
   this->settingNode = false;
   this->presContext = presContext;
 
-  dataObject
-      = (NodeEntity *)(((ExecutionObject *)executionObject)->getDataObject ());
+  dataObject = (NodeEntity *)(((ExecutionObject *)executionObject)
+                                  ->getDataObject ());
 
   if (dataObject->instanceOf ("ContentNode")
       && ((ContentNode *)dataObject)->isSettingNode ())

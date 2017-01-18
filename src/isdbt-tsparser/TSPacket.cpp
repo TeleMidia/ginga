@@ -30,7 +30,8 @@ TSPacket::TSPacket (char *packetData)
   constructionFailed = !create (packetData);
 }
 
-TSPacket::TSPacket (bool sectionType, char *payload, unsigned char payloadSize)
+TSPacket::TSPacket (bool sectionType, char *payload,
+                    unsigned char payloadSize)
 {
 
   tsaf = NULL;
@@ -233,8 +234,8 @@ TSPacket::create (char *data)
             }
           else
             {
-              payloadSize
-                  = (TS_PACKET_SIZE - (tsaf->getAdaptationFieldLength () + 5));
+              payloadSize = (TS_PACKET_SIZE
+                             - (tsaf->getAdaptationFieldLength () + 5));
 
               if (payloadSize > TS_PAYLOAD_SIZE)
                 {
@@ -355,8 +356,8 @@ TSPacket::updateStream ()
               // adaptation field followed by payload
               assert (tsaf != NULL);
 
-              plen = (TS_PAYLOAD_SIZE
-                      - (tsaf->getAdaptationFieldLength () + 2)); // available
+              plen = (TS_PAYLOAD_SIZE - (tsaf->getAdaptationFieldLength ()
+                                         + 2)); // available
 
               len = tsaf->getStream (afbuffer);
               memcpy (stream + 4, afbuffer, len);

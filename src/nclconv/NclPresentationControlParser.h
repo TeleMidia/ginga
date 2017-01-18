@@ -51,10 +51,12 @@ public:
                                 void *objGrandParent)
       = 0;
 
-  virtual void addImportBaseToRuleBase (void *parentObject, void *childObject)
+  virtual void addImportBaseToRuleBase (void *parentObject,
+                                        void *childObject)
       = 0;
 
-  virtual void addRuleToRuleBase (void *parentObject, void *childObject) = 0;
+  virtual void addRuleToRuleBase (void *parentObject, void *childObject)
+      = 0;
 
   virtual void addCompositeRuleToRuleBase (void *parentObject,
                                            void *childObject)
@@ -90,28 +92,34 @@ public:
                                                        void *childObject)
       = 0;
 
-  virtual void *createSwitch (DOMElement *parentElement, void *objGrandParent)
+  virtual void *createSwitch (DOMElement *parentElement,
+                              void *objGrandParent)
       = 0;
 
   virtual void addSwitchPortToSwitch (void *parentObject, void *childObject)
       = 0;
 
   virtual void addMediaToSwitch (void *parentObject, void *childObject) = 0;
-  virtual void addContextToSwitch (void *parentObject, void *childObject) = 0;
+  virtual void addContextToSwitch (void *parentObject, void *childObject)
+      = 0;
 
-  virtual void addSwitchToSwitch (void *parentObject, void *childObject) = 0;
+  virtual void addSwitchToSwitch (void *parentObject, void *childObject)
+      = 0;
 
-  virtual void addBindRuleToSwitch (void *parentObject, void *childObject) = 0;
+  virtual void addBindRuleToSwitch (void *parentObject, void *childObject)
+      = 0;
 
   virtual void addUnmappedNodesToSwitch (void *parentObject) = 0;
 
-  void *parseCompositeRule (DOMElement *parentElement, void *objGrandParent);
+  void *parseCompositeRule (DOMElement *parentElement,
+                            void *objGrandParent);
 
   virtual void *createCompositeRule (DOMElement *parentElement,
                                      void *objGrandParent)
       = 0;
 
-  virtual void addRuleToCompositeRule (void *parentObject, void *childObject)
+  virtual void addRuleToCompositeRule (void *parentObject,
+                                       void *childObject)
       = 0;
 
   virtual void addCompositeRuleToCompositeRule (void *parentObject,

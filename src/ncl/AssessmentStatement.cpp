@@ -98,8 +98,8 @@ AssessmentStatement::getRoles ()
 string
 AssessmentStatement::toString ()
 {
-  return "Role = " + getMainAssessment ()->toString () + "\n" + "Comparator = "
-         + itos (getComparator ()) + "\n" + " "
+  return "Role = " + getMainAssessment ()->toString () + "\n"
+         + "Comparator = " + itos (getComparator ()) + "\n" + " "
          + getOtherAssessment ()->toString ();
 }
 

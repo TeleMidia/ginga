@@ -29,7 +29,8 @@ CompoundStatement::CompoundStatement () : Statement ()
   typeSet.insert ("CompoundStatement");
 }
 
-CompoundStatement::CompoundStatement (Statement *p1, Statement *p2, short op)
+CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
+                                      short op)
     : Statement ()
 {
 

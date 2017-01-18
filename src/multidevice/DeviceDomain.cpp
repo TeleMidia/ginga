@@ -202,8 +202,8 @@ DeviceDomain::addDevice (int reqDeviceClass, int width, int height,
 
   if (deviceService != NULL)
     {
-      added
-          = deviceService->addDevice (sourceIp, reqDeviceClass, width, height);
+      added = deviceService->addDevice (sourceIp, reqDeviceClass, width,
+                                        height);
     }
 
   return added;
@@ -253,8 +253,9 @@ DeviceDomain::postEventTask (int destDevClass, int frameType, char *payload,
     {
       if (frameType == DeviceDomain::FT_SELECTIONEVENT)
         {
-          clog << "DeviceDomain frameType == DeviceDomain::FT_SELECTIONEVENT"
-               << endl;
+          clog
+              << "DeviceDomain frameType == DeviceDomain::FT_SELECTIONEVENT"
+              << endl;
         }
       task = mountFrame (myIP, destDevClass, frameType, payloadSize);
 

@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 
-FormatterLayout::FormatterLayout (GingaScreenID screenId, int x, int y, int w,
-                                  int h)
+FormatterLayout::FormatterLayout (GingaScreenID screenId, int x, int y,
+                                  int w, int h)
 {
 
   myScreen = screenId;
@@ -180,7 +180,8 @@ FormatterLayout::getObject (int x, int y)
                   currentRegion = formRegion->getLayoutRegion ();
                   if (currentRegion != NULL && region != NULL)
                     {
-                      if (currentRegion->getZIndex () > region->getZIndex ())
+                      if (currentRegion->getZIndex ()
+                          > region->getZIndex ())
                         {
 
                           region = currentRegion;
@@ -226,12 +227,14 @@ objectMap.find(formatterRegion);
                                                 if (l != objectMap.end()) {
                                                         m =
 childs->find(l->second->getId());
-                                                        if (m != childs->end())
+                                                        if (m !=
+childs->end())
 {
                                                                 m->second->getScreenShot(formWindow);
                                                                 formWindow->validate();
                                                                 unlock();
-                                                                return false;
+                                                                return
+false;
                                                         }
                                                 }
                                         }
@@ -380,9 +383,9 @@ FormatterLayout::prepareFormatterRegion (ExecutionObject *object,
 }
 
 float
-FormatterLayout::refreshZIndex (FormatterRegion *region, string layoutRegionId,
-                                int zIndex, string plan,
-                                GingaSurfaceID renderedSurface)
+FormatterLayout::refreshZIndex (FormatterRegion *region,
+                                string layoutRegionId, int zIndex,
+                                string plan, GingaSurfaceID renderedSurface)
 {
 
   ExecutionObject *object;

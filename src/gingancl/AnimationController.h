@@ -41,7 +41,7 @@ class AnimationController : public Thread
 private:
   AdapterPlayerManager *pManager;
   AdapterFormatterPlayer *player; // useful if media is playing
-  ExecutionObject *execObj; // useful if the object isn't playing
+  ExecutionObject *execObj;       // useful if the object isn't playing
   // or it's a Ginga Settings Node.
 
   AttributionEvent *event; // attribution event
@@ -71,8 +71,9 @@ private:
 private:
   AnimationController (ExecutionObject *execObj,
                        AdapterPlayerManager *pManager,
-                       AdapterFormatterPlayer *player, AttributionEvent *event,
-                       string value, Animation *anim);
+                       AdapterFormatterPlayer *player,
+                       AttributionEvent *event, string value,
+                       Animation *anim);
 
   virtual ~AnimationController ();
 

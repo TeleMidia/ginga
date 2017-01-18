@@ -14,7 +14,8 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+ * USA
  */
 
 #ifndef PRACTICAL_SOCKET_H
@@ -92,7 +93,8 @@ public:
    *   will be selected.
    *   @param localAddress local address
    *   @param localPort local port
-   *   @exception SocketException thrown if setting local port or address fails
+   *   @exception SocketException thrown if setting local port or address
+   * fails
    */
   void setLocalAddressAndPort (const string &localAddress,
                                unsigned short localPort
@@ -103,9 +105,12 @@ public:
    *   this in our sample client code but include it in the library for
    *   completeness.  If you are running on Windows and you are concerned
    *   about DLL resource consumption, call this after you are done with all
-   *   Socket instances.  If you execute this on Windows while some instance of
-   *   Socket exists, you are toast.  For portability of client code, this is
-   *   an empty function on non-Windows platforms so you can always include it.
+   *   Socket instances.  If you execute this on Windows while some instance
+   * of
+   *   Socket exists, you are toast.  For portability of client code, this
+   * is
+   *   an empty function on non-Windows platforms so you can always include
+   * it.
    *   @param buffer buffer to receive the data
    *   @param bufferLen maximum number of bytes to read into buffer
    *   @return number of bytes read, 0 for EOF, and -1 for error
@@ -125,7 +130,7 @@ public:
 private:
   // Prevent the user from trying to use value semantics on this object
   Socket (const Socket &sock);
-  void operator=(const Socket &sock);
+  void operator= (const Socket &sock);
 
 protected:
   int sockDesc; // Socket descriptor
@@ -228,7 +233,8 @@ public:
    *                   give a system-assigned unused port
    *   @param queueLen maximum queue length for outstanding
    *                   connection requests (default 5)
-   *   @exception SocketException thrown if unable to create TCP server socket
+   *   @exception SocketException thrown if unable to create TCP server
+   * socket
    */
   TCPServerSocket (unsigned short localPort,
                    int queueLen = 5) throw (SocketException);
@@ -240,7 +246,8 @@ public:
    *   @param localPort local port of server socket
    *   @param queueLen maximum queue length for outstanding
    *                   connection requests (default 5)
-   *   @exception SocketException thrown if unable to create TCP server socket
+   *   @exception SocketException thrown if unable to create TCP server
+   * socket
    */
   TCPServerSocket (const string &localAddress, unsigned short localPort,
                    int queueLen = 5) throw (SocketException);
@@ -248,7 +255,8 @@ public:
   /**
    *   Blocks until a new connection is established on this socket or error
    *   @return new connection socket
-   *   @exception SocketException thrown if attempt to accept a new connection
+   *   @exception SocketException thrown if attempt to accept a new
+   * connection
    * fails
    */
   TCPSocket *accept () throw (SocketException);
@@ -302,11 +310,13 @@ public:
    *   @return true if send is successful
    *   @exception SocketException thrown if unable to send datagram
    */
-  void sendTo (const void *buffer, int bufferLen, const string &foreignAddress,
+  void sendTo (const void *buffer, int bufferLen,
+               const string &foreignAddress,
                unsigned short foreignPort) throw (SocketException);
 
   /**
-   *   Read read up to bufferLen bytes data from this socket.  The given buffer
+   *   Read read up to bufferLen bytes data from this socket.  The given
+   * buffer
    *   is where the data will be placed
    *   @param buffer buffer to receive data
    *   @param bufferLen maximum number of bytes to receive
@@ -367,8 +377,10 @@ public:
 
   /**
    *   Applies select() with the given timeout value
-   *   @param sec int value for the sec portion of timeval structure (select)
-   *   @param usec int value for the usec portion of timeval structure (select)
+   *   @param sec int value for the sec portion of timeval structure
+   * (select)
+   *   @param usec int value for the usec portion of timeval structure
+   * (select)
    *   @return int with the select() value
    */
   int select_t (int sec, int usec);

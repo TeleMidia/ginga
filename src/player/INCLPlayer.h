@@ -62,7 +62,8 @@ public:
   virtual void setMrl (string mrl, bool visible = true) = 0;
   virtual void reset () = 0;
   virtual void rebase () = 0;
-  virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider) = 0;
+  virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
+      = 0;
 
   virtual void setBackgroundImage (string uri) = 0;
   virtual void setParentLayout (void *layout) = 0;
@@ -70,13 +71,14 @@ public:
   virtual void *setCurrentDocument (string fName) = 0;
   virtual void setDepthLevel (int level) = 0;
   virtual int getDepthLevel () = 0;
-  virtual bool editingCommand (string commandTag, string editingCommand) = 0;
+  virtual bool editingCommand (string commandTag, string editingCommand)
+      = 0;
 
   virtual void setNotifyContentUpdate (bool notify) = 0;
   virtual void addListener (IPlayerListener *listener) = 0;
   virtual void removeListener (IPlayerListener *listener) = 0;
-  virtual void notifyPlayerListeners (short code, string paremeter, short type,
-                                      string value)
+  virtual void notifyPlayerListeners (short code, string paremeter,
+                                      short type, string value)
       = 0;
 
   virtual void setSurface (GingaSurfaceID surface) = 0;

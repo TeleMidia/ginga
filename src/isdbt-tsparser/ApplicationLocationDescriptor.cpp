@@ -84,7 +84,8 @@ string
 ApplicationLocationDescriptor::getClassPathExtension ()
 {
   string classPath;
-  classPath.assign (classPathExtensionByte, (classPathExtensionLength & 0xFF));
+  classPath.assign (classPathExtensionByte,
+                    (classPathExtensionLength & 0xFF));
 
   return classPath;
 }
@@ -128,8 +129,8 @@ ApplicationLocationDescriptor::process (char *data, size_t pos)
   memcpy (classPathExtensionByte, data + pos + 1, classPathExtensionLength);
   pos += classPathExtensionLength + 1;
 
-  initialClassLentgh
-      = descriptorLength - baseDirectoryLength - classPathExtensionLength - 2;
+  initialClassLentgh = descriptorLength - baseDirectoryLength
+                       - classPathExtensionLength - 2;
 
   initialClassByte = new char[initialClassLentgh];
   memcpy (initialClassByte, data + pos, initialClassLentgh);

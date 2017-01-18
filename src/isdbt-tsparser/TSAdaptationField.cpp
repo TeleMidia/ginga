@@ -34,7 +34,8 @@ TSAdaptationField::TSAdaptationField (uint64_t pcr)
   this->pcrExtension = Stc::stcToExt (pcr);
 }
 
-TSAdaptationField::TSAdaptationField (uint64_t pcrBase, uint64_t pcrExtension)
+TSAdaptationField::TSAdaptationField (uint64_t pcrBase,
+                                      uint64_t pcrExtension)
 {
 
   init ();
@@ -136,7 +137,8 @@ TSAdaptationField::process ()
           = originalPcrBase | ((adapFieldStream[pos++] & 0xFF) << 9);
       originalPcrBase
           = originalPcrBase | ((adapFieldStream[pos++] & 0xFF) << 1);
-      originalPcrBase = originalPcrBase | ((adapFieldStream[pos] & 0x80) >> 7);
+      originalPcrBase
+          = originalPcrBase | ((adapFieldStream[pos] & 0x80) >> 7);
 
       originalPcrExtension = ((adapFieldStream[pos++] & 0x01) << 8);
       originalPcrExtension
@@ -584,14 +586,15 @@ TSAdaptationField::updateStream ()
   adapFieldStream[1]
       = adapFieldStream[1] | ((randomAccessIndicator << 6) & 0x40);
   adapFieldStream[1] = adapFieldStream[1] & 0xDF;
-  adapFieldStream[1]
-      = adapFieldStream[1] | ((elementaryStreamPriorityIndicator << 5) & 0x20);
+  adapFieldStream[1] = adapFieldStream[1]
+                       | ((elementaryStreamPriorityIndicator << 5) & 0x20);
   adapFieldStream[1] = adapFieldStream[1] & 0xEF;
   adapFieldStream[1] = adapFieldStream[1] | ((pcrFlag << 4) & 0x10);
   adapFieldStream[1] = adapFieldStream[1] & 0xF7;
   adapFieldStream[1] = adapFieldStream[1] | ((oPCRFlag << 3) & 0x08);
   adapFieldStream[1] = adapFieldStream[1] & 0xFB;
-  adapFieldStream[1] = adapFieldStream[1] | ((splicingPointFlag << 2) & 0x04);
+  adapFieldStream[1]
+      = adapFieldStream[1] | ((splicingPointFlag << 2) & 0x04);
   adapFieldStream[1] = adapFieldStream[1] & 0xFD;
   adapFieldStream[1]
       = adapFieldStream[1] | ((transportPrivateDataFlag << 1) & 0x02);

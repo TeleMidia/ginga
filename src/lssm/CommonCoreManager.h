@@ -49,7 +49,8 @@ public:
   void setTunerSpec (string tunerSpec);
 
 private:
-  void showTunningWindow (GingaScreenID screenId, int x, int y, int w, int h);
+  void showTunningWindow (GingaScreenID screenId, int x, int y, int w,
+                          int h);
   void releaseTunningWindow ();
   IPlayer *createMainAVPlayer (string dstUri, GingaScreenID screenId, int x,
                                int y, int w, int h);

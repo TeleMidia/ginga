@@ -164,8 +164,10 @@ BroadcastSocketService::sendData (struct frame *f)
   data = f->data;
   taskSize = f->size;
 
-  // clog << "BroadcastSocketService::sendData Sending to "<< broadcastIPAddr;
-  // clog << " taskSize = " << taskSize << endl; //<< "' and headerSize = '";
+  // clog << "BroadcastSocketService::sendData Sending to "<<
+  // broadcastIPAddr;
+  // clog << " taskSize = " << taskSize << endl; //<< "' and headerSize =
+  // '";
   // clog << headerSize << "'" << endl;
 
   try
@@ -239,7 +241,8 @@ BroadcastSocketService::checkInputBuffer (char *data, int *size)
   switch (res)
     {
     case -1:
-      clog << "BroadcastSocketService::checkInputBuffer ERROR res=-1" << endl;
+      clog << "BroadcastSocketService::checkInputBuffer ERROR res=-1"
+           << endl;
       // clog << "Warning! select ERRNO = " << errno << endl;
       memset (data, 0, MAX_FRAME_SIZE);
       return false;

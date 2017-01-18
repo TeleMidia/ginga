@@ -56,11 +56,12 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (), "area") == 0)
+          if (XMLString::compareIString (elementTagName.c_str (), "area")
+              == 0)
             {
 
-              elementObject
-                  = getInterfacesParser ()->parseArea (element, parentObject);
+              elementObject = getInterfacesParser ()->parseArea (
+                  element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -197,8 +198,8 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
                  == 0)
         {
 
-          elementObject = getLinkingParser ()->parseLink ((DOMElement *)node,
-                                                          parentObject);
+          elementObject = getLinkingParser ()->parseLink (
+              (DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {

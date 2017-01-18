@@ -177,7 +177,8 @@ FormatterScheduler::isDocumentRunning (FormatterEvent *event)
         {
           executionObject = (ExecutionObject *)(parentObject);
           parentObject
-              = (CompositeExecutionObject *)(parentObject->getParentObject ());
+              = (CompositeExecutionObject *)(parentObject
+                                                 ->getParentObject ());
         }
 
       documentEvent = executionObject->getWholeContentPresentationEvent ();
@@ -253,13 +254,15 @@ FormatterScheduler::setTimeBaseObject (ExecutionObject *object,
       compositeNode = documentNode;
     }
 
-  if (compositeNode == NULL || !(compositeNode->instanceOf ("CompositeNode")))
+  if (compositeNode == NULL
+      || !(compositeNode->instanceOf ("CompositeNode")))
     {
 
       return;
     }
 
-  timeBaseNode = ((CompositeNode *)compositeNode)->recursivelyGetNode (nodeId);
+  timeBaseNode
+      = ((CompositeNode *)compositeNode)->recursivelyGetNode (nodeId);
 
   if (timeBaseNode == NULL || !(timeBaseNode->instanceOf ("ContentNode")))
     {
@@ -271,7 +274,8 @@ FormatterScheduler::setTimeBaseObject (ExecutionObject *object,
   if (documentNode->instanceOf ("ReferNode"))
     {
       perspective->removeHeadNode ();
-      compositePerspective = new NodeNesting (documentNode->getPerspective ());
+      compositePerspective
+          = new NodeNesting (documentNode->getPerspective ());
 
       compositePerspective->append (perspective);
       perspective = compositePerspective;
@@ -401,7 +405,8 @@ FormatterScheduler::runAction (LinkCondition *condition,
 }
 
 void
-FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
+FormatterScheduler::runAction (FormatterEvent *event,
+                               LinkCondition *condition,
                                LinkSimpleAction *action)
 {
 
@@ -458,7 +463,8 @@ FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
     }
   else if (executionObject->instanceOf ("CompositeExecutionObject")
            && (executionObject->getDescriptor () == NULL
-               || executionObject->getDescriptor ()->getPlayerName () == ""))
+               || executionObject->getDescriptor ()->getPlayerName ()
+                      == ""))
     {
 
       clog << "FormatterScheduler::runAction event '";
@@ -541,9 +547,8 @@ FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
                 {
 
                   // look for a reference time base player
-                  attValue
-                      = executionObject->getDescriptor ()->getParameterValue (
-                          "x-timeBaseObject");
+                  attValue = executionObject->getDescriptor ()
+                                 ->getParameterValue ("x-timeBaseObject");
 
                   if (attValue != "")
                     {
@@ -553,10 +558,10 @@ FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
 
               if (playerContent != NULL)
                 {
-                  winId
-                      = ((FormatterMultiDevice *)multiDevPres)
-                            ->prepareFormatterRegion (
-                                executionObject, playerContent->getSurface ());
+                  winId = ((FormatterMultiDevice *)multiDevPres)
+                              ->prepareFormatterRegion (
+                                  executionObject,
+                                  playerContent->getSurface ());
 
                   player->setOutputWindow (winId);
                   player->flip ();
@@ -697,13 +702,14 @@ FormatterScheduler::runActionOverProperty (FormatterEvent *event,
       && action->instanceOf ("LinkAssignmentAction"))
     {
 
-      propName = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
+      propName
+          = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
 
       propValue = ((LinkAssignmentAction *)action)->getValue ();
       if (propValue != "" && propValue.substr (0, 1) == "$")
         {
-          propValue = solveImplicitRefAssessment (propValue,
-                                                  (AttributionEvent *)event);
+          propValue = solveImplicitRefAssessment (
+              propValue, (AttributionEvent *)event);
         }
 
       event->start ();
@@ -809,7 +815,8 @@ FormatterScheduler::runActionOverProperty (FormatterEvent *event,
             }
           else if (player != NULL && player->hasPrepared ())
             {
-              player->setPropertyValue ((AttributionEvent *)event, propValue);
+              player->setPropertyValue ((AttributionEvent *)event,
+                                        propValue);
 
               event->stop ();
             }
@@ -885,8 +892,9 @@ FormatterScheduler::runActionOverApplicationObject (
           if (executionObject->getDescriptor () != NULL)
             {
               // look for a reference time base player
-              attValue = executionObject->getDescriptor ()->getParameterValue (
-                  "x-timeBaseObject");
+              attValue
+                  = executionObject->getDescriptor ()->getParameterValue (
+                      "x-timeBaseObject");
 
               if (attValue != "")
                 {
@@ -896,9 +904,10 @@ FormatterScheduler::runActionOverApplicationObject (
 
           if (playerContent != NULL)
             {
-              winId = ((FormatterMultiDevice *)multiDevPres)
-                          ->prepareFormatterRegion (
-                              executionObject, playerContent->getSurface ());
+              winId
+                  = ((FormatterMultiDevice *)multiDevPres)
+                        ->prepareFormatterRegion (
+                            executionObject, playerContent->getSurface ());
 
               player->setOutputWindow (winId);
               if (player->getObjectDevice () == 0)
@@ -922,7 +931,8 @@ FormatterScheduler::runActionOverApplicationObject (
       Thread::mutexLock (&lMutex);
       listening.insert (event);
       Thread::mutexUnlock (&lMutex);
-      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)
+              ->setAndLockCurrentEvent (event))
         {
 
           if (!player->start ())
@@ -961,7 +971,8 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case SimpleAction::ACT_PAUSE:
-      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)
+              ->setAndLockCurrentEvent (event))
         {
 
           player->pause ();
@@ -971,7 +982,8 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case SimpleAction::ACT_RESUME:
-      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)
+              ->setAndLockCurrentEvent (event))
         {
 
           player->resume ();
@@ -981,7 +993,8 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case SimpleAction::ACT_ABORT:
-      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)
+              ->setAndLockCurrentEvent (event))
         {
 
           player->abort ();
@@ -991,7 +1004,8 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case SimpleAction::ACT_STOP:
-      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)
+              ->setAndLockCurrentEvent (event))
         {
 
           player->stop ();
@@ -1138,9 +1152,8 @@ FormatterScheduler::runActionOverComposition (
                     }
                   else
                     { // force attribution
-                      pAdapter
-                          = (AdapterFormatterPlayer *)
-                                playerManager->getObjectPlayer (childObject);
+                      pAdapter = (AdapterFormatterPlayer *)playerManager
+                                     ->getObjectPlayer (childObject);
 
                       if (pAdapter != NULL)
                         {
@@ -1155,8 +1168,9 @@ FormatterScheduler::runActionOverComposition (
         {
           compositeObject->suspendLinkEvaluation (false);
 
-          compositeNode = (CompositeNode *)(compositeObject->getDataObject ()
-                                                ->getDataEntity ());
+          compositeNode
+              = (CompositeNode *)(compositeObject->getDataObject ()
+                                      ->getDataEntity ());
 
           size = compositeNode->getNumPorts ();
 
@@ -1167,7 +1181,8 @@ FormatterScheduler::runActionOverComposition (
             }
           else
             {
-              compositionPerspective = compositeObject->getNodePerspective ();
+              compositionPerspective
+                  = compositeObject->getNodePerspective ();
             }
 
           events = new vector<FormatterEvent *>;
@@ -1197,7 +1212,8 @@ FormatterScheduler::runActionOverComposition (
                                         ->getEvent (
                                             childObject,
                                             port->getEndInterfacePoint (),
-                                            EventUtil::EVT_PRESENTATION, ""));
+                                            EventUtil::EVT_PRESENTATION,
+                                            ""));
 
                       if (childEvent != NULL)
                         {
@@ -1335,7 +1351,8 @@ FormatterScheduler::runActionOverComposition (
                   if (childEvent == NULL)
                     {
                       childEvent
-                          = childObject->getWholeContentPresentationEvent ();
+                          = childObject
+                                ->getWholeContentPresentationEvent ();
                     }
 
                   if (childEvent != NULL)
@@ -1367,9 +1384,9 @@ FormatterScheduler::runActionOverComposition (
 }
 
 void
-FormatterScheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObject,
-                                         SwitchEvent *event,
-                                         LinkSimpleAction *action)
+FormatterScheduler::runActionOverSwitch (
+    ExecutionObjectSwitch *switchObject, SwitchEvent *event,
+    LinkSimpleAction *action)
 {
 
   ExecutionObject *selectedObject;
@@ -1450,10 +1467,11 @@ FormatterScheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
                     {
                       selectedEvent
                           = ((FormatterConverter *)compiler)
-                                ->getEvent (endPointObject,
-                                            mapping->getEndInterfacePoint (),
-                                            switchEvent->getEventType (),
-                                            switchEvent->getKey ());
+                                ->getEvent (
+                                    endPointObject,
+                                    mapping->getEndInterfacePoint (),
+                                    switchEvent->getEventType (),
+                                    switchEvent->getKey ());
                     }
                 }
               catch (ObjectCreationForbiddenException *exc)
@@ -2001,8 +2019,9 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
           // TODO: if (isDocumentRunning(event)) {
           object = (ExecutionObject *)(event->getExecutionObject ());
 
-          player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-              object);
+          player
+              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
+                  object);
           if (player != NULL)
             {
               ((FormatterMultiDevice *)multiDevPres)->showObject (object);
@@ -2022,7 +2041,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
               if (object->instanceOf ("ApplicationExecutionObject"))
                 {
-                  if (!((ApplicationExecutionObject *)object)->isSleeping ())
+                  if (!((ApplicationExecutionObject *)object)
+                           ->isSleeping ())
                     {
 
                       hideObj = false;
@@ -2037,7 +2057,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   clog << endl;
 
                   focusManager->hideObject (object);
-                  ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
+                  ((FormatterMultiDevice *)multiDevPres)
+                      ->hideObject (object);
 
                   player = (AdapterFormatterPlayer *)
                                playerManager->getObjectPlayer (object);
@@ -2082,9 +2103,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
               focusManager->hideObject (object);
               ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
 
-              player
-                  = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-                      object);
+              player = (AdapterFormatterPlayer *)
+                           playerManager->getObjectPlayer (object);
               if (player != NULL && player->getPlayer () != NULL
                   && player->getObjectDevice () == 0)
                 {

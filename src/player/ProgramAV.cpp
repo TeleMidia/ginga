@@ -369,8 +369,8 @@ ProgramAV::setPropertyValue (string pName, string pValue)
             {
               if (playerBounds.count (currentPid) != 0)
                 {
-                  currentPlayer->setPropertyValue (pName,
-                                                   playerBounds[currentPid]);
+                  currentPlayer->setPropertyValue (
+                      pName, playerBounds[currentPid]);
                 }
             }
           else

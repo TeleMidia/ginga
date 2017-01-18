@@ -32,7 +32,8 @@ private:
   Animation *animation;
 
 public:
-  LinkAssignmentAction (FormatterEvent *event, short actionType, string value);
+  LinkAssignmentAction (FormatterEvent *event, short actionType,
+                        string value);
 
   virtual ~LinkAssignmentAction ();
 

@@ -46,8 +46,8 @@ ActiveDeviceService::connectedToBaseDevice (unsigned int domainAddr)
 }
 
 bool
-ActiveDeviceService::receiveMediaContent (unsigned int devAddr, char *stream,
-                                          int streamSize)
+ActiveDeviceService::receiveMediaContent (unsigned int devAddr,
+                                          char *stream, int streamSize)
 {
 
   int remoteDevClass;

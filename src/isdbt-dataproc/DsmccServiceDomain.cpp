@@ -38,8 +38,9 @@ DsmccServiceDomain::DsmccServiceDomain (DsmccDownloadServerInitiate *dsi,
   hasServiceGateway = false;
   mountingServiceDomain = true;
 
-  mountPoint = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD ()
-               + "carousel" + SystemCompat::getIUriD () + itos (pid) + "."
+  mountPoint = string (g_get_tmp_dir ()) + "/ginga"
+               + SystemCompat::getIUriD () + "carousel"
+               + SystemCompat::getIUriD () + itos (pid) + "."
                + itos (carouselId) + SystemCompat::getIUriD ();
 
   remove (mountPoint.c_str ());
@@ -73,7 +74,8 @@ DsmccServiceDomain::~DsmccServiceDomain ()
 }
 
 void
-DsmccServiceDomain::setServiceDomainListener (IDsmccServiceDomainListener *sdl)
+DsmccServiceDomain::setServiceDomainListener (
+    IDsmccServiceDomainListener *sdl)
 {
   this->sdl = sdl;
 }
@@ -260,7 +262,8 @@ DsmccServiceDomain::run ()
                   return;
                 }
 
-              biop->processServiceGateway (serviceGatewayIor->getObjectKey ());
+              biop->processServiceGateway (
+                  serviceGatewayIor->getObjectKey ());
 
               hasServiceGateway = true;
 

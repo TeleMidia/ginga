@@ -48,7 +48,7 @@ class FormatterRegion
 {
 private:
   void *layoutManager; // FormatterLayout
-  void *descriptor; // CascadingDescriptor
+  void *descriptor;    // CascadingDescriptor
 
   string objectId;
   LayoutRegion *ncmRegion;

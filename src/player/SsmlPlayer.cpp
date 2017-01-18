@@ -19,7 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SsmlPlayer.h"
 
-// TODO: Develop a ginga common audio system and integrate this player in it.
+// TODO: Develop a ginga common audio system and integrate this player in
+// it.
 // The eSpeak header
 
 // size of the max read by the voice syntetizer
@@ -28,7 +29,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 bool isRunning;
 bool terminateSpeak;
 
-// Callback method which delivers the synthetized audio samples and the events.
+// Callback method which delivers the synthetized audio samples and the
+// events.
 static int
 SynthCallback (short *wav, int numsamples, espeak_EVENT *events)
 {
@@ -78,7 +80,8 @@ SsmlPlayer::setFile (string mrl)
     }
 }
 
-// This method is the most important one. It sets up the audio synthesizer, the
+// This method is the most important one. It sets up the audio synthesizer,
+// the
 // output audio device, reads the input SSML file and calls the apropriate
 // methods to perform the audio synthesis and playback.
 void

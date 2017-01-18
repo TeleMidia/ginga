@@ -44,28 +44,34 @@ public:
   NclComponentsParser (DocumentParser *documentParser);
 
   void *parseMedia (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createMedia (DOMElement *parentElement, void *objGrandParent)
+  virtual void *createMedia (DOMElement *parentElement,
+                             void *objGrandParent)
       = 0;
 
   virtual void addAreaToMedia (void *parentObject, void *childObject) = 0;
-  virtual void addPropertyToMedia (void *parentObject, void *childObject) = 0;
+  virtual void addPropertyToMedia (void *parentObject, void *childObject)
+      = 0;
 
   void *parseContext (DOMElement *parentElement, void *objGrandParent);
   virtual void *posCompileContext (DOMElement *parentElement,
                                    void *parentObject);
 
-  virtual void *createContext (DOMElement *parentElement, void *objGrandParent)
+  virtual void *createContext (DOMElement *parentElement,
+                               void *objGrandParent)
       = 0;
 
   virtual void addPortToContext (void *parentObject, void *childObject) = 0;
   virtual void addPropertyToContext (void *parentObject, void *childObject)
       = 0;
 
-  virtual void addMediaToContext (void *parentObject, void *childObject) = 0;
-  virtual void addContextToContext (void *parentObject, void *childObject) = 0;
+  virtual void addMediaToContext (void *parentObject, void *childObject)
+      = 0;
+  virtual void addContextToContext (void *parentObject, void *childObject)
+      = 0;
 
   virtual void addLinkToContext (void *parentObject, void *childObject) = 0;
-  virtual void addSwitchToContext (void *parentObject, void *childObject) = 0;
+  virtual void addSwitchToContext (void *parentObject, void *childObject)
+      = 0;
 
   NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 

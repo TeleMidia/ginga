@@ -134,7 +134,8 @@ private:
   static pthread_mutex_t winMutex; // mutex for C++ STL Window
   static pthread_mutex_t surMutex; // mutex for C++ STL Surface
   static pthread_mutex_t proMutex; // mutex for C++ STL Providers
-  static pthread_mutex_t cstMutex; // mutex for the others C++ STL structures
+  static pthread_mutex_t
+      cstMutex; // mutex for the others C++ STL structures
 
 public:
   SDLDeviceScreen (int numArgs, char **args, GingaScreenID myId,
@@ -261,7 +262,8 @@ private:
 
   static void releaseAll ();
 
-  static void initCMP (SDLDeviceScreen *screen, IContinuousMediaProvider *cmp);
+  static void initCMP (SDLDeviceScreen *screen,
+                       IContinuousMediaProvider *cmp);
 
   static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
 
@@ -291,20 +293,22 @@ private:
 
 public:
   /* output */
-  static void renderMapInsertWindow (GingaScreenID screenId, SDLWindow *iWin,
-                                     float z);
+  static void renderMapInsertWindow (GingaScreenID screenId,
+                                     SDLWindow *iWin, float z);
 
-  static void renderMapRemoveWindow (GingaScreenID screenId, SDLWindow *iWin,
-                                     float z);
+  static void renderMapRemoveWindow (GingaScreenID screenId,
+                                     SDLWindow *iWin, float z);
 
   //			static void updateWindowState(
-  //					GingaScreenID screenId, SDLWindow* win, short
-  //status);
+  //					GingaScreenID screenId, SDLWindow* win,
+  //short
+  // status);
 
 private:
   //			static void updateWindowList(
-  //					vector<SDLWindow*>* windows, SDLWindow* win, short
-  //status);
+  //					vector<SDLWindow*>* windows, SDLWindow* win,
+  //short
+  // status);
 
   static void removeFromWindowList (vector<SDLWindow *> *windows,
                                     SDLWindow *win);
