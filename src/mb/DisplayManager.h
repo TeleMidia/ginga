@@ -37,7 +37,7 @@ using namespace ::ginga::system;
 
 GINGA_MB_BEGIN
 
-class LocalScreenManager
+class DisplayManager
 {
 public:
   /* Ginga defining its Multimedia Backend System Types (GMBST)    */
@@ -57,7 +57,7 @@ public:
   static const short GMBSST_SDL;   /* SDL:                sdl      */
   static const short GMBSST_COCOA; /* COCOA:              cocoa    */
 
-  LocalScreenManager ();
+  DisplayManager ();
 
 protected:
   map<GingaScreenID, SDLDeviceScreen *> screens;
@@ -93,7 +93,7 @@ protected:
   static void checkInitMutex ();
 
 public:
-  virtual ~LocalScreenManager ();
+  virtual ~DisplayManager ();
 
   void releaseHandler ();
 

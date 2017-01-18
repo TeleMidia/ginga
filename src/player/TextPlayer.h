@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 #include "util/functions.h"

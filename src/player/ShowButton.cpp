@@ -18,12 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ShowButton.h"
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 
 GINGA_PLAYER_BEGIN
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 ShowButton::ShowButton (GingaScreenID screenId) : Thread ()
 {
   myScreen = screenId;

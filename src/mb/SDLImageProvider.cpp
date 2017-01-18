@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLDeviceScreen.h"
 
-#include "LocalScreenManager.h"
-#include "ScreenManagerFactory.h"
+#include "DisplayManager.h"
+#include "DisplayManagerFactory.h"
 
 #if WITH_LIBRSVG
 #include "SDLSvgDecoder.h"
@@ -97,7 +97,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
     }
 
   if (surface != 0
-      && ScreenManagerFactory::getInstance ()->hasSurface (myScreen,
+      && DisplayManagerFactory::getInstance ()->hasSurface (myScreen,
                                                            surface))
     {
 
@@ -135,16 +135,16 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
       if (renderedSurface != NULL)
         {
           SDLDeviceScreen::addUnderlyingSurface (renderedSurface);
-          GingaWindowID parentId = ScreenManagerFactory::getInstance ()
+          GingaWindowID parentId = DisplayManagerFactory::getInstance ()
                                        ->getSurfaceParentWindow (surface);
-          parent = (SDLWindow *)ScreenManagerFactory::getInstance ()
+          parent = (SDLWindow *)DisplayManagerFactory::getInstance ()
                        ->getIWindowFromId (myScreen, parentId);
 
           if (parent != NULL)
             {
               parent->setRenderedSurface (renderedSurface);
             }
-          ScreenManagerFactory::getInstance ()->setSurfaceContent (
+          DisplayManagerFactory::getInstance ()->setSurfaceContent (
               surface, (void *)renderedSurface);
         }
     }

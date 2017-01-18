@@ -15,28 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "config.h"
-#include "ScreenManagerFactory.h"
-using namespace ::ginga::mb;
+#ifndef SCREEN_MANAGER_FACTORY_H
+#define SCREEN_MANAGER_FACTORY_H
 
-LocalScreenManager *ScreenManagerFactory::_instance = NULL;
+#include "DisplayManager.h"
 
-LocalScreenManager *
-ScreenManagerFactory::getInstance (bool forceLocal)
+GINGA_MB_BEGIN
+
+class DisplayManagerFactory
 {
-  if (ScreenManagerFactory::_instance == NULL)
-    {
-      ScreenManagerFactory::_instance = new LocalScreenManager ();
-    }
-  return ScreenManagerFactory::_instance;
-}
+public:
+  static DisplayManager *getInstance (bool forceLocal = false);
 
-void
-ScreenManagerFactory::releaseInstance ()
-{
-  if (ScreenManagerFactory::_instance != NULL)
-    {
-      delete ScreenManagerFactory::_instance;
-      ScreenManagerFactory::_instance = NULL;
-    }
-}
+  static void releaseInstance ();
+
+  static DisplayManager *_instance;
+};
+
+GINGA_MB_END
+
+#endif /* SCREEN_MANAGER_FACTORY_H */

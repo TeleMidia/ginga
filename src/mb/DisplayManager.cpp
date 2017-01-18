@@ -17,8 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "CodeMap.h"
-#include "LocalScreenManager.h"
-#include "ScreenManagerFactory.h"
+#include "DisplayManager.h"
+#include "DisplayManagerFactory.h"
 #include "InputManager.h"
 
 extern "C" {
@@ -28,28 +28,28 @@ extern "C" {
 
 GINGA_MB_BEGIN
 
-set<IInputEventListener *> LocalScreenManager::iListeners;
-pthread_mutex_t LocalScreenManager::ilMutex;
+set<IInputEventListener *> DisplayManager::iListeners;
+pthread_mutex_t DisplayManager::ilMutex;
 
-set<IMotionEventListener *> LocalScreenManager::mListeners;
-pthread_mutex_t LocalScreenManager::mlMutex;
+set<IMotionEventListener *> DisplayManager::mListeners;
+pthread_mutex_t DisplayManager::mlMutex;
 
-bool LocalScreenManager::initMutex = false;
+bool DisplayManager::initMutex = false;
 
-const short LocalScreenManager::GMBST_DFLT = 0;
-const short LocalScreenManager::GMBST_DFB = 1;
-const short LocalScreenManager::GMBST_DX = 2;
-const short LocalScreenManager::GMBST_SDL = 3;
-const short LocalScreenManager::GMBST_TERM = 4;
+const short DisplayManager::GMBST_DFLT = 0;
+const short DisplayManager::GMBST_DFB = 1;
+const short DisplayManager::GMBST_DX = 2;
+const short DisplayManager::GMBST_SDL = 3;
+const short DisplayManager::GMBST_TERM = 4;
 
-const short LocalScreenManager::GMBSST_DFLT = 0;
-const short LocalScreenManager::GMBSST_FBDEV = 1;
-const short LocalScreenManager::GMBSST_X11 = 2;
-const short LocalScreenManager::GMBSST_HWND = 3;
-const short LocalScreenManager::GMBSST_SDL = 4;
-const short LocalScreenManager::GMBSST_COCOA = 5;
+const short DisplayManager::GMBSST_DFLT = 0;
+const short DisplayManager::GMBSST_FBDEV = 1;
+const short DisplayManager::GMBSST_X11 = 2;
+const short DisplayManager::GMBSST_HWND = 3;
+const short DisplayManager::GMBSST_SDL = 4;
+const short DisplayManager::GMBSST_COCOA = 5;
 
-LocalScreenManager::LocalScreenManager ()
+DisplayManager::DisplayManager ()
 {
   Thread::mutexInit (&mapMutex);
   Thread::mutexInit (&genMutex);
@@ -76,13 +76,13 @@ LocalScreenManager::LocalScreenManager ()
   Thread::condInit (&wsSignal, NULL);
   Thread::mutexInit (&wsMutex);
 
-  //		clog << "LocalScreenManager::LocalScreenManager(" << this <<
+  //		clog << "DisplayManager::DisplayManager(" << this <<
   //")
   //";
   //		clog << "all done" << endl;
 }
 
-LocalScreenManager::~LocalScreenManager ()
+DisplayManager::~DisplayManager ()
 {
   map<GingaScreenID, SDLDeviceScreen *>::iterator i;
 
@@ -134,7 +134,7 @@ LocalScreenManager::~LocalScreenManager ()
 }
 
 void
-LocalScreenManager::checkInitMutex ()
+DisplayManager::checkInitMutex ()
 {
   if (!initMutex)
     {
@@ -149,13 +149,13 @@ LocalScreenManager::checkInitMutex ()
 }
 
 void
-LocalScreenManager::releaseHandler ()
+DisplayManager::releaseHandler ()
 {
-  ScreenManagerFactory::releaseInstance ();
+  DisplayManagerFactory::releaseInstance ();
 }
 
 void
-LocalScreenManager::addIEListenerInstance (IInputEventListener *listener)
+DisplayManager::addIEListenerInstance (IInputEventListener *listener)
 {
 
   checkInitMutex ();
@@ -165,7 +165,7 @@ LocalScreenManager::addIEListenerInstance (IInputEventListener *listener)
 }
 
 void
-LocalScreenManager::removeIEListenerInstance (IInputEventListener *listener)
+DisplayManager::removeIEListenerInstance (IInputEventListener *listener)
 {
 
   set<IInputEventListener *>::iterator i;
@@ -181,7 +181,7 @@ LocalScreenManager::removeIEListenerInstance (IInputEventListener *listener)
 }
 
 bool
-LocalScreenManager::hasIEListenerInstance (IInputEventListener *listener,
+DisplayManager::hasIEListenerInstance (IInputEventListener *listener,
                                            bool removeInstance)
 {
 
@@ -206,7 +206,7 @@ LocalScreenManager::hasIEListenerInstance (IInputEventListener *listener,
 }
 
 void
-LocalScreenManager::addMEListenerInstance (IMotionEventListener *listener)
+DisplayManager::addMEListenerInstance (IMotionEventListener *listener)
 {
 
   checkInitMutex ();
@@ -216,7 +216,7 @@ LocalScreenManager::addMEListenerInstance (IMotionEventListener *listener)
 }
 
 void
-LocalScreenManager::removeMEListenerInstance (
+DisplayManager::removeMEListenerInstance (
     IMotionEventListener *listener)
 {
 
@@ -233,7 +233,7 @@ LocalScreenManager::removeMEListenerInstance (
 }
 
 bool
-LocalScreenManager::hasMEListenerInstance (IMotionEventListener *listener,
+DisplayManager::hasMEListenerInstance (IMotionEventListener *listener,
                                            bool removeInstance)
 {
 
@@ -258,7 +258,7 @@ LocalScreenManager::hasMEListenerInstance (IMotionEventListener *listener,
 }
 
 void
-LocalScreenManager::setBackgroundImage (GingaScreenID screenId, string uri)
+DisplayManager::setBackgroundImage (GingaScreenID screenId, string uri)
 {
 
   SDLDeviceScreen *screen;
@@ -270,7 +270,7 @@ LocalScreenManager::setBackgroundImage (GingaScreenID screenId, string uri)
 }
 
 int
-LocalScreenManager::getDeviceWidth (GingaScreenID screenId)
+DisplayManager::getDeviceWidth (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   int width = 0;
@@ -284,7 +284,7 @@ LocalScreenManager::getDeviceWidth (GingaScreenID screenId)
 }
 
 int
-LocalScreenManager::getDeviceHeight (GingaScreenID screenId)
+DisplayManager::getDeviceHeight (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   int height = 0;
@@ -298,7 +298,7 @@ LocalScreenManager::getDeviceHeight (GingaScreenID screenId)
 }
 
 void *
-LocalScreenManager::getGfxRoot (GingaScreenID screenId)
+DisplayManager::getGfxRoot (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   void *gfxRoot = NULL;
@@ -312,7 +312,7 @@ LocalScreenManager::getGfxRoot (GingaScreenID screenId)
 }
 
 void
-LocalScreenManager::releaseScreen (GingaScreenID screenId)
+DisplayManager::releaseScreen (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
 
@@ -325,7 +325,7 @@ LocalScreenManager::releaseScreen (GingaScreenID screenId)
 }
 
 void
-LocalScreenManager::releaseMB (GingaScreenID screenId)
+DisplayManager::releaseMB (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
 
@@ -336,7 +336,7 @@ LocalScreenManager::releaseMB (GingaScreenID screenId)
 }
 
 void
-LocalScreenManager::clearWidgetPools (GingaScreenID screenId)
+DisplayManager::clearWidgetPools (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
 
@@ -347,7 +347,7 @@ LocalScreenManager::clearWidgetPools (GingaScreenID screenId)
 }
 
 GingaScreenID
-LocalScreenManager::createScreen (int argc, char **args)
+DisplayManager::createScreen (int argc, char **args)
 {
   int i;
   bool externalRenderer = false;
@@ -357,7 +357,7 @@ LocalScreenManager::createScreen (int argc, char **args)
   string aSystem = "";
   GingaScreenID newScreen;
 
-  clog << "LocalScreenManager::createScreen argv[";
+  clog << "DisplayManager::createScreen argv[";
   clog << argc << "]" << endl;
 
   lock ();
@@ -400,7 +400,7 @@ LocalScreenManager::createScreen (int argc, char **args)
           useStdin = true;
         }
 
-      clog << "LocalScreenManager::createScreen PARSER argv[";
+      clog << "DisplayManager::createScreen PARSER argv[";
       clog << i << "] = '" << args[i] << "'" << endl;
     }
 
@@ -413,7 +413,7 @@ LocalScreenManager::createScreen (int argc, char **args)
 }
 
 GingaScreenID
-LocalScreenManager::createScreen (string vSystem, string vSubSystem,
+DisplayManager::createScreen (string vSystem, string vSubSystem,
                                   string vMode, string vParent,
                                   string vEmbed, string aSystem,
                                   bool externalRenderer, bool useStdin)
@@ -466,7 +466,7 @@ LocalScreenManager::createScreen (string vSystem, string vSubSystem,
           mbArgs[argc] = (char *)vParent.c_str ();
           argc++;
 
-          clog << "LocalScreenManager::createScreen parent with ";
+          clog << "DisplayManager::createScreen parent with ";
           clog << "following data '" << vParent << "'";
           clog << endl;
         }
@@ -475,7 +475,7 @@ LocalScreenManager::createScreen (string vSystem, string vSubSystem,
         {
           embedWin = (void *)strtoul (vEmbed.c_str (), NULL, 10);
 
-          clog << "LocalScreenManager::createScreen embed src = ";
+          clog << "DisplayManager::createScreen embed src = ";
           clog << vEmbed << "' and dst = '" << embedWin << "'";
           clog << endl;
         }
@@ -499,7 +499,7 @@ LocalScreenManager::createScreen (string vSystem, string vSubSystem,
       break;
 
     default:
-      clog << "LocalScreenManager::createScreen please reinstall";
+      clog << "DisplayManager::createScreen please reinstall";
       clog << " ginga with a multimedia library (SDL or DFB)";
       clog << endl;
       break;
@@ -516,7 +516,7 @@ LocalScreenManager::createScreen (string vSystem, string vSubSystem,
 }
 
 string
-LocalScreenManager::getScreenName (GingaScreenID screenId)
+DisplayManager::getScreenName (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   string screenName = "";
@@ -530,7 +530,7 @@ LocalScreenManager::getScreenName (GingaScreenID screenId)
 }
 
 UnderlyingWindowID
-LocalScreenManager::getScreenUnderlyingWindow (GingaScreenID screenId)
+DisplayManager::getScreenUnderlyingWindow (GingaScreenID screenId)
 {
 
   SDLDeviceScreen *screen;
@@ -545,7 +545,7 @@ LocalScreenManager::getScreenUnderlyingWindow (GingaScreenID screenId)
 }
 
 short
-LocalScreenManager::getMBSystemType (string mbSystemName)
+DisplayManager::getMBSystemType (string mbSystemName)
 {
   map<string, short>::iterator i;
   vector<short>::iterator j;
@@ -613,7 +613,7 @@ LocalScreenManager::getMBSystemType (string mbSystemName)
 
   if (!foundit)
     {
-      clog << "LocalScreenManager::getMBSystemType Warning! ";
+      clog << "DisplayManager::getMBSystemType Warning! ";
       clog << "Can't find a multimedia backend library" << endl;
       mbSystemType = -1;
     }
@@ -622,31 +622,31 @@ LocalScreenManager::getMBSystemType (string mbSystemName)
 }
 
 bool
-LocalScreenManager::isAvailable (short mbSysType)
+DisplayManager::isAvailable (short mbSysType)
 {
   bool hasSys = false;
   string screenName = "";
 
-  clog << "LocalScreenManager::isAvailable checking if '" << mbSysType;
+  clog << "DisplayManager::isAvailable checking if '" << mbSysType;
   clog << "' is available" << endl;
 
   return hasSys;
 }
 
 void
-LocalScreenManager::lockSysNames ()
+DisplayManager::lockSysNames ()
 {
   Thread::mutexLock (&sysMutex);
 }
 
 void
-LocalScreenManager::unlockSysNames ()
+DisplayManager::unlockSysNames ()
 {
   Thread::mutexUnlock (&sysMutex);
 }
 
 SDLWindow *
-LocalScreenManager::getIWindowFromId (GingaScreenID screenId,
+DisplayManager::getIWindowFromId (GingaScreenID screenId,
                                       GingaWindowID winId)
 {
 
@@ -662,7 +662,7 @@ LocalScreenManager::getIWindowFromId (GingaScreenID screenId,
 }
 
 bool
-LocalScreenManager::mergeIds (GingaScreenID screenId, GingaWindowID destId,
+DisplayManager::mergeIds (GingaScreenID screenId, GingaWindowID destId,
                               vector<GingaWindowID> *srcIds)
 {
 
@@ -677,7 +677,7 @@ LocalScreenManager::mergeIds (GingaScreenID screenId, GingaWindowID destId,
 }
 
 void
-LocalScreenManager::blitScreen (GingaScreenID screenId,
+DisplayManager::blitScreen (GingaScreenID screenId,
                                 SDLSurface *destination)
 {
 
@@ -690,7 +690,7 @@ LocalScreenManager::blitScreen (GingaScreenID screenId,
 }
 
 void
-LocalScreenManager::blitScreen (GingaScreenID screenId, string fileUri)
+DisplayManager::blitScreen (GingaScreenID screenId, string fileUri)
 {
 
   SDLDeviceScreen *screen;
@@ -702,7 +702,7 @@ LocalScreenManager::blitScreen (GingaScreenID screenId, string fileUri)
 }
 
 void
-LocalScreenManager::refreshScreen (GingaScreenID screenId)
+DisplayManager::refreshScreen (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
 
@@ -715,7 +715,7 @@ LocalScreenManager::refreshScreen (GingaScreenID screenId)
 /* interfacing output */
 
 GingaWindowID
-LocalScreenManager::createWindow (GingaScreenID screenId, int x, int y,
+DisplayManager::createWindow (GingaScreenID screenId, int x, int y,
                                   int w, int h, float z)
 {
 
@@ -728,7 +728,7 @@ LocalScreenManager::createWindow (GingaScreenID screenId, int x, int y,
     }
   else
     {
-      clog << "LocalScreenManager::createWindow Warning! ";
+      clog << "DisplayManager::createWindow Warning! ";
       clog << "can't find screen '" << screenId << "'" << endl;
     }
 
@@ -736,7 +736,7 @@ LocalScreenManager::createWindow (GingaScreenID screenId, int x, int y,
 }
 
 UnderlyingWindowID
-LocalScreenManager::createUnderlyingSubWindow (GingaScreenID screenId,
+DisplayManager::createUnderlyingSubWindow (GingaScreenID screenId,
                                                int x, int y, int w, int h,
                                                float z)
 {
@@ -750,7 +750,7 @@ LocalScreenManager::createUnderlyingSubWindow (GingaScreenID screenId,
     }
   else
     {
-      clog << "LocalScreenManager::createWindow Warning! ";
+      clog << "DisplayManager::createWindow Warning! ";
       clog << "can't find screen '" << screenId << "'" << endl;
     }
 
@@ -758,7 +758,7 @@ LocalScreenManager::createUnderlyingSubWindow (GingaScreenID screenId,
 }
 
 bool
-LocalScreenManager::hasWindow (GingaScreenID screenId, GingaWindowID winId)
+DisplayManager::hasWindow (GingaScreenID screenId, GingaWindowID winId)
 {
 
   SDLWindow *window;
@@ -775,7 +775,7 @@ LocalScreenManager::hasWindow (GingaScreenID screenId, GingaWindowID winId)
 }
 
 void
-LocalScreenManager::releaseWindow (GingaScreenID screenId, SDLWindow *win)
+DisplayManager::releaseWindow (GingaScreenID screenId, SDLWindow *win)
 {
 
   SDLDeviceScreen *screen;
@@ -787,7 +787,7 @@ LocalScreenManager::releaseWindow (GingaScreenID screenId, SDLWindow *win)
 }
 
 void
-LocalScreenManager::registerSurface (SDLSurface *surface)
+DisplayManager::registerSurface (SDLSurface *surface)
 {
   if (surface != NULL)
     {
@@ -798,7 +798,7 @@ LocalScreenManager::registerSurface (SDLSurface *surface)
 }
 
 GingaSurfaceID
-LocalScreenManager::createSurface (GingaScreenID screenId)
+DisplayManager::createSurface (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   SDLSurface *surface = NULL;
@@ -818,7 +818,7 @@ LocalScreenManager::createSurface (GingaScreenID screenId)
 }
 
 GingaSurfaceID
-LocalScreenManager::createSurface (GingaScreenID screenId, int w, int h)
+DisplayManager::createSurface (GingaScreenID screenId, int w, int h)
 {
 
   SDLDeviceScreen *screen;
@@ -839,7 +839,7 @@ LocalScreenManager::createSurface (GingaScreenID screenId, int w, int h)
 }
 
 GingaSurfaceID
-LocalScreenManager::createSurfaceFrom (GingaScreenID screenId,
+DisplayManager::createSurfaceFrom (GingaScreenID screenId,
                                        GingaSurfaceID underlyingSurface)
 {
 
@@ -862,7 +862,7 @@ LocalScreenManager::createSurfaceFrom (GingaScreenID screenId,
 }
 
 bool
-LocalScreenManager::hasSurface (const GingaScreenID &screenId,
+DisplayManager::hasSurface (const GingaScreenID &screenId,
                                 const GingaSurfaceID &surId)
 {
 
@@ -883,7 +883,7 @@ LocalScreenManager::hasSurface (const GingaScreenID &screenId,
 }
 
 bool
-LocalScreenManager::releaseSurface (GingaScreenID screenId, SDLSurface *sur)
+DisplayManager::releaseSurface (GingaScreenID screenId, SDLSurface *sur)
 {
 
   SDLDeviceScreen *screen;
@@ -899,7 +899,7 @@ LocalScreenManager::releaseSurface (GingaScreenID screenId, SDLSurface *sur)
 /* interfacing content */
 
 GingaProviderID
-LocalScreenManager::createContinuousMediaProvider (GingaScreenID screenId,
+DisplayManager::createContinuousMediaProvider (GingaScreenID screenId,
                                                    const char *mrl,
                                                    bool isRemote)
 {
@@ -925,7 +925,7 @@ LocalScreenManager::createContinuousMediaProvider (GingaScreenID screenId,
 }
 
 void
-LocalScreenManager::releaseContinuousMediaProvider (
+DisplayManager::releaseContinuousMediaProvider (
     GingaScreenID screenId, GingaProviderID providerId)
 {
 
@@ -950,7 +950,7 @@ LocalScreenManager::releaseContinuousMediaProvider (
 }
 
 GingaProviderID
-LocalScreenManager::createFontProvider (GingaScreenID screenId,
+DisplayManager::createFontProvider (GingaScreenID screenId,
                                         const char *mrl, int fontSize)
 {
 
@@ -975,7 +975,7 @@ LocalScreenManager::createFontProvider (GingaScreenID screenId,
 }
 
 void
-LocalScreenManager::releaseFontProvider (GingaScreenID screenId,
+DisplayManager::releaseFontProvider (GingaScreenID screenId,
                                          GingaProviderID providerId)
 {
 
@@ -998,7 +998,7 @@ LocalScreenManager::releaseFontProvider (GingaScreenID screenId,
 }
 
 GingaProviderID
-LocalScreenManager::createImageProvider (GingaScreenID screenId,
+DisplayManager::createImageProvider (GingaScreenID screenId,
                                          const char *mrl)
 {
 
@@ -1023,7 +1023,7 @@ LocalScreenManager::createImageProvider (GingaScreenID screenId,
 }
 
 void
-LocalScreenManager::releaseImageProvider (GingaScreenID screenId,
+DisplayManager::releaseImageProvider (GingaScreenID screenId,
                                           GingaProviderID providerId)
 {
 
@@ -1046,7 +1046,7 @@ LocalScreenManager::releaseImageProvider (GingaScreenID screenId,
 }
 
 GingaSurfaceID
-LocalScreenManager::createRenderedSurfaceFromImageFile (
+DisplayManager::createRenderedSurfaceFromImageFile (
     GingaScreenID screenId, const char *mrl)
 {
 
@@ -1069,7 +1069,7 @@ LocalScreenManager::createRenderedSurfaceFromImageFile (
 
 /* interfacing input */
 InputManager *
-LocalScreenManager::getInputManager (GingaScreenID screenId)
+DisplayManager::getInputManager (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   InputManager *iManager = NULL;
@@ -1083,7 +1083,7 @@ LocalScreenManager::getInputManager (GingaScreenID screenId)
 }
 
 SDLEventBuffer *
-LocalScreenManager::createEventBuffer (GingaScreenID screenId)
+DisplayManager::createEventBuffer (GingaScreenID screenId)
 {
   SDLDeviceScreen *screen;
   SDLEventBuffer *buffer = NULL;
@@ -1097,7 +1097,7 @@ LocalScreenManager::createEventBuffer (GingaScreenID screenId)
 }
 
 SDLInputEvent *
-LocalScreenManager::createInputEvent (GingaScreenID screenId, void *event,
+DisplayManager::createInputEvent (GingaScreenID screenId, void *event,
                                       const int symbol)
 {
 
@@ -1113,7 +1113,7 @@ LocalScreenManager::createInputEvent (GingaScreenID screenId, void *event,
 }
 
 SDLInputEvent *
-LocalScreenManager::createApplicationEvent (GingaScreenID screenId,
+DisplayManager::createApplicationEvent (GingaScreenID screenId,
                                             int type, void *data)
 {
 
@@ -1129,7 +1129,7 @@ LocalScreenManager::createApplicationEvent (GingaScreenID screenId,
 }
 
 int
-LocalScreenManager::fromMBToGinga (GingaScreenID screenId, int keyCode)
+DisplayManager::fromMBToGinga (GingaScreenID screenId, int keyCode)
 {
   SDLDeviceScreen *screen;
   int translated = CodeMap::KEY_NULL;
@@ -1143,7 +1143,7 @@ LocalScreenManager::fromMBToGinga (GingaScreenID screenId, int keyCode)
 }
 
 int
-LocalScreenManager::fromGingaToMB (GingaScreenID screenId, int keyCode)
+DisplayManager::fromGingaToMB (GingaScreenID screenId, int keyCode)
 {
   SDLDeviceScreen *screen;
   int translated = CodeMap::KEY_NULL;
@@ -1158,7 +1158,7 @@ LocalScreenManager::fromGingaToMB (GingaScreenID screenId, int keyCode)
 
 /* Methods created to isolate gingacc-mb */
 void
-LocalScreenManager::addWindowCaps (const GingaScreenID &screenId,
+DisplayManager::addWindowCaps (const GingaScreenID &screenId,
                                    const GingaWindowID &winId, int caps)
 {
   SDLWindow *win = NULL;
@@ -1168,7 +1168,7 @@ LocalScreenManager::addWindowCaps (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowCaps (const GingaScreenID &screenId,
+DisplayManager::setWindowCaps (const GingaScreenID &screenId,
                                    const GingaWindowID &winId, int caps)
 {
   SDLWindow *win = NULL;
@@ -1177,7 +1177,7 @@ LocalScreenManager::setWindowCaps (const GingaScreenID &screenId,
     win->setCaps (caps);
 }
 int
-LocalScreenManager::getWindowCap (const GingaScreenID &screenId,
+DisplayManager::getWindowCap (const GingaScreenID &screenId,
                                   const GingaWindowID &winId,
                                   const string &capName)
 {
@@ -1191,7 +1191,7 @@ LocalScreenManager::getWindowCap (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::drawWindow (const GingaScreenID &screenId,
+DisplayManager::drawWindow (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1201,7 +1201,7 @@ LocalScreenManager::drawWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowBounds (const GingaScreenID &screenId,
+DisplayManager::setWindowBounds (const GingaScreenID &screenId,
                                      const GingaWindowID &winId, int x,
                                      int y, int w, int h)
 {
@@ -1212,7 +1212,7 @@ LocalScreenManager::setWindowBounds (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::showWindow (const GingaScreenID &screenId,
+DisplayManager::showWindow (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1222,7 +1222,7 @@ LocalScreenManager::showWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::hideWindow (const GingaScreenID &screenId,
+DisplayManager::hideWindow (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1232,7 +1232,7 @@ LocalScreenManager::hideWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::raiseWindowToTop (const GingaScreenID &screenId,
+DisplayManager::raiseWindowToTop (const GingaScreenID &screenId,
                                       const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1242,7 +1242,7 @@ LocalScreenManager::raiseWindowToTop (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::renderWindowFrom (const GingaScreenID &screenId,
+DisplayManager::renderWindowFrom (const GingaScreenID &screenId,
                                       const GingaWindowID &winId,
                                       const GingaSurfaceID &surId)
 {
@@ -1261,7 +1261,7 @@ LocalScreenManager::renderWindowFrom (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowBgColor (const GingaScreenID &screenId,
+DisplayManager::setWindowBgColor (const GingaScreenID &screenId,
                                       const GingaWindowID &winId, int r,
                                       int g, int b, int alpha)
 {
@@ -1272,7 +1272,7 @@ LocalScreenManager::setWindowBgColor (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowBorder (const GingaScreenID &screenId,
+DisplayManager::setWindowBorder (const GingaScreenID &screenId,
                                      const GingaWindowID &winId, int r,
                                      int g, int b, int alpha, int width)
 {
@@ -1283,7 +1283,7 @@ LocalScreenManager::setWindowBorder (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowCurrentTransparency (
+DisplayManager::setWindowCurrentTransparency (
     const GingaScreenID &screenId, const GingaWindowID &winId,
     int transparency)
 {
@@ -1294,7 +1294,7 @@ LocalScreenManager::setWindowCurrentTransparency (
 }
 
 void
-LocalScreenManager::setWindowColorKey (const GingaScreenID &screenId,
+DisplayManager::setWindowColorKey (const GingaScreenID &screenId,
                                        const GingaWindowID &winId, int r,
                                        int g, int b)
 {
@@ -1305,7 +1305,7 @@ LocalScreenManager::setWindowColorKey (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowX (const GingaScreenID &screenId,
+DisplayManager::setWindowX (const GingaScreenID &screenId,
                                 const GingaWindowID &winId, int x)
 {
   SDLWindow *win = NULL;
@@ -1315,7 +1315,7 @@ LocalScreenManager::setWindowX (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowY (const GingaScreenID &screenId,
+DisplayManager::setWindowY (const GingaScreenID &screenId,
                                 const GingaWindowID &winId, int y)
 {
   SDLWindow *win = NULL;
@@ -1325,7 +1325,7 @@ LocalScreenManager::setWindowY (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowW (const GingaScreenID &screenId,
+DisplayManager::setWindowW (const GingaScreenID &screenId,
                                 const GingaWindowID &winId, int w)
 {
   SDLWindow *win = NULL;
@@ -1335,7 +1335,7 @@ LocalScreenManager::setWindowW (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowH (const GingaScreenID &screenId,
+DisplayManager::setWindowH (const GingaScreenID &screenId,
                                 const GingaWindowID &winId, int h)
 {
   SDLWindow *win = NULL;
@@ -1345,7 +1345,7 @@ LocalScreenManager::setWindowH (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowZ (const GingaScreenID &screenId,
+DisplayManager::setWindowZ (const GingaScreenID &screenId,
                                 const GingaWindowID &winId, float z)
 {
   SDLWindow *win = NULL;
@@ -1355,7 +1355,7 @@ LocalScreenManager::setWindowZ (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::disposeWindow (const GingaScreenID &screenId,
+DisplayManager::disposeWindow (const GingaScreenID &screenId,
                                    const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1365,7 +1365,7 @@ LocalScreenManager::disposeWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setGhostWindow (const GingaScreenID &screenId,
+DisplayManager::setGhostWindow (const GingaScreenID &screenId,
                                     const GingaWindowID &winId, bool ghost)
 {
   SDLWindow *win = NULL;
@@ -1375,7 +1375,7 @@ LocalScreenManager::setGhostWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::validateWindow (const GingaScreenID &screenId,
+DisplayManager::validateWindow (const GingaScreenID &screenId,
                                     const GingaWindowID &winId)
 {
   SDLWindow *win = NULL;
@@ -1385,7 +1385,7 @@ LocalScreenManager::validateWindow (const GingaScreenID &screenId,
 }
 
 int
-LocalScreenManager::getWindowX (const GingaScreenID &screenId,
+DisplayManager::getWindowX (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   int reply = 0;
@@ -1398,7 +1398,7 @@ LocalScreenManager::getWindowX (const GingaScreenID &screenId,
 }
 
 int
-LocalScreenManager::getWindowY (const GingaScreenID &screenId,
+DisplayManager::getWindowY (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   int reply = 0;
@@ -1411,7 +1411,7 @@ LocalScreenManager::getWindowY (const GingaScreenID &screenId,
 }
 
 int
-LocalScreenManager::getWindowW (const GingaScreenID &screenId,
+DisplayManager::getWindowW (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   int reply = 0;
@@ -1424,7 +1424,7 @@ LocalScreenManager::getWindowW (const GingaScreenID &screenId,
 }
 
 int
-LocalScreenManager::getWindowH (const GingaScreenID &screenId,
+DisplayManager::getWindowH (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   int reply = 0;
@@ -1437,7 +1437,7 @@ LocalScreenManager::getWindowH (const GingaScreenID &screenId,
 }
 
 float
-LocalScreenManager::getWindowZ (const GingaScreenID &screenId,
+DisplayManager::getWindowZ (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
   float reply = 0.0;
@@ -1450,7 +1450,7 @@ LocalScreenManager::getWindowZ (const GingaScreenID &screenId,
 }
 
 int
-LocalScreenManager::getWindowTransparencyValue (
+DisplayManager::getWindowTransparencyValue (
     const GingaScreenID &screenId, const GingaWindowID &winId)
 {
   int reply = 0;
@@ -1463,7 +1463,7 @@ LocalScreenManager::getWindowTransparencyValue (
 }
 
 void
-LocalScreenManager::resizeWindow (const GingaScreenID &screenId,
+DisplayManager::resizeWindow (const GingaScreenID &screenId,
                                   const GingaWindowID &winId, int width,
                                   int height)
 {
@@ -1474,7 +1474,7 @@ LocalScreenManager::resizeWindow (const GingaScreenID &screenId,
 }
 
 string
-LocalScreenManager::getWindowDumpFileUri (const GingaScreenID &screenId,
+DisplayManager::getWindowDumpFileUri (const GingaScreenID &screenId,
                                           const GingaWindowID &winId,
                                           int quality, int dumpW, int dumpH)
 {
@@ -1488,7 +1488,7 @@ LocalScreenManager::getWindowDumpFileUri (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::clearWindowContent (const GingaScreenID &screenId,
+DisplayManager::clearWindowContent (const GingaScreenID &screenId,
                                         const GingaWindowID &winId)
 {
   SDLWindow *win;
@@ -1498,7 +1498,7 @@ LocalScreenManager::clearWindowContent (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::revertWindowContent (const GingaScreenID &screenId,
+DisplayManager::revertWindowContent (const GingaScreenID &screenId,
                                          const GingaWindowID &winId)
 {
   SDLWindow *win;
@@ -1508,7 +1508,7 @@ LocalScreenManager::revertWindowContent (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::deleteWindow (const GingaScreenID &screenId,
+DisplayManager::deleteWindow (const GingaScreenID &screenId,
                                   const GingaWindowID &winId)
 {
   SDLWindow *win;
@@ -1518,7 +1518,7 @@ LocalScreenManager::deleteWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::moveWindowTo (const GingaScreenID &screenId,
+DisplayManager::moveWindowTo (const GingaScreenID &screenId,
                                   const GingaWindowID &winId, int x, int y)
 {
   SDLWindow *win;
@@ -1528,7 +1528,7 @@ LocalScreenManager::moveWindowTo (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::lowerWindowToBottom (const GingaScreenID &screenId,
+DisplayManager::lowerWindowToBottom (const GingaScreenID &screenId,
                                          const GingaWindowID &winId)
 {
   SDLWindow *win;
@@ -1538,7 +1538,7 @@ LocalScreenManager::lowerWindowToBottom (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::setWindowMirrorSrc (const GingaScreenID &screenId,
+DisplayManager::setWindowMirrorSrc (const GingaScreenID &screenId,
                                         const GingaWindowID &winId,
                                         const GingaWindowID &mirrorSrc)
 {
@@ -1553,7 +1553,7 @@ LocalScreenManager::setWindowMirrorSrc (const GingaScreenID &screenId,
 }
 
 void *
-LocalScreenManager::getSurfaceContent (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceContent (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
   void *surfaceContent = NULL;
@@ -1566,7 +1566,7 @@ LocalScreenManager::getSurfaceContent (const GingaSurfaceID &surId)
 }
 
 GingaWindowID
-LocalScreenManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
   GingaWindowID parentWindow = 0;
@@ -1583,7 +1583,7 @@ LocalScreenManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::deleteSurface (const GingaSurfaceID &surId)
+DisplayManager::deleteSurface (const GingaSurfaceID &surId)
 {
   SDLDeviceScreen *screen = NULL;
   SDLSurface *surface = NULL;
@@ -1600,7 +1600,7 @@ LocalScreenManager::deleteSurface (const GingaSurfaceID &surId)
 }
 
 bool
-LocalScreenManager::setSurfaceParentWindow (const GingaScreenID &screenId,
+DisplayManager::setSurfaceParentWindow (const GingaScreenID &screenId,
                                             const GingaSurfaceID &surId,
                                             const GingaWindowID &winId)
 {
@@ -1620,7 +1620,7 @@ LocalScreenManager::setSurfaceParentWindow (const GingaScreenID &screenId,
 }
 
 void
-LocalScreenManager::clearSurfaceContent (const GingaSurfaceID &surId)
+DisplayManager::clearSurfaceContent (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
 
@@ -1630,7 +1630,7 @@ LocalScreenManager::clearSurfaceContent (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::getSurfaceSize (const GingaSurfaceID &surId, int *width,
+DisplayManager::getSurfaceSize (const GingaSurfaceID &surId, int *width,
                                     int *height)
 {
   SDLSurface *surface = NULL;
@@ -1645,7 +1645,7 @@ LocalScreenManager::getSurfaceSize (const GingaSurfaceID &surId, int *width,
 }
 
 void
-LocalScreenManager::addSurfaceCaps (const GingaSurfaceID &surId,
+DisplayManager::addSurfaceCaps (const GingaSurfaceID &surId,
                                     const int caps)
 {
   SDLSurface *surface = NULL;
@@ -1656,7 +1656,7 @@ LocalScreenManager::addSurfaceCaps (const GingaSurfaceID &surId,
 }
 
 void
-LocalScreenManager::setSurfaceCaps (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceCaps (const GingaSurfaceID &surId,
                                     const int caps)
 {
   SDLSurface *surface = NULL;
@@ -1667,7 +1667,7 @@ LocalScreenManager::setSurfaceCaps (const GingaSurfaceID &surId,
 }
 
 int
-LocalScreenManager::getSurfaceCap (const GingaSurfaceID &surId,
+DisplayManager::getSurfaceCap (const GingaSurfaceID &surId,
                                    const string &cap)
 {
   SDLSurface *surface = NULL;
@@ -1681,7 +1681,7 @@ LocalScreenManager::getSurfaceCap (const GingaSurfaceID &surId,
 }
 
 int
-LocalScreenManager::getSurfaceCaps (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceCaps (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
   int value = 0;
@@ -1694,7 +1694,7 @@ LocalScreenManager::getSurfaceCaps (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::setSurfaceBgColor (const GingaSurfaceID &surId, int r,
+DisplayManager::setSurfaceBgColor (const GingaSurfaceID &surId, int r,
                                        int g, int b, int alpha)
 {
   SDLSurface *surface = NULL;
@@ -1705,7 +1705,7 @@ LocalScreenManager::setSurfaceBgColor (const GingaSurfaceID &surId, int r,
 }
 
 void
-LocalScreenManager::setSurfaceFont (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceFont (const GingaSurfaceID &surId,
                                     GingaSurfaceID font)
 {
   SDLSurface *surface = NULL;
@@ -1725,7 +1725,7 @@ LocalScreenManager::setSurfaceFont (const GingaSurfaceID &surId,
 }
 
 void
-LocalScreenManager::setColor (const GingaSurfaceID &surId, int r, int g,
+DisplayManager::setColor (const GingaSurfaceID &surId, int r, int g,
                               int b, int alpha)
 {
   SDLSurface *surface = NULL;
@@ -1736,7 +1736,7 @@ LocalScreenManager::setColor (const GingaSurfaceID &surId, int r, int g,
 }
 
 void
-LocalScreenManager::setExternalHandler (const GingaSurfaceID &surId,
+DisplayManager::setExternalHandler (const GingaSurfaceID &surId,
                                         bool extHandler)
 {
   SDLSurface *surface = NULL;
@@ -1747,7 +1747,7 @@ LocalScreenManager::setExternalHandler (const GingaSurfaceID &surId,
 }
 
 void
-LocalScreenManager::blitSurface (const GingaSurfaceID &surId, int x, int y,
+DisplayManager::blitSurface (const GingaSurfaceID &surId, int x, int y,
                                  GingaSurfaceID src, int srcX, int srcY,
                                  int srcW, int srcH)
 {
@@ -1763,7 +1763,7 @@ LocalScreenManager::blitSurface (const GingaSurfaceID &surId, int x, int y,
 }
 
 void
-LocalScreenManager::flipSurface (const GingaSurfaceID &surId)
+DisplayManager::flipSurface (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
 
@@ -1773,7 +1773,7 @@ LocalScreenManager::flipSurface (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::setSurfaceContent (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceContent (const GingaSurfaceID &surId,
                                        void *surface)
 {
   SDLSurface *sur = NULL;
@@ -1784,7 +1784,7 @@ LocalScreenManager::setSurfaceContent (const GingaSurfaceID &surId,
 }
 
 Color *
-LocalScreenManager::getSurfaceColor (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceColor (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
   Color *color = NULL;
@@ -1797,7 +1797,7 @@ LocalScreenManager::getSurfaceColor (const GingaSurfaceID &surId)
 }
 
 bool
-LocalScreenManager::hasSurfaceExternalHandler (const GingaSurfaceID &surId)
+DisplayManager::hasSurfaceExternalHandler (const GingaSurfaceID &surId)
 {
   SDLSurface *surface = NULL;
   bool reply = false;
@@ -1810,7 +1810,7 @@ LocalScreenManager::hasSurfaceExternalHandler (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::setSurfaceColor (const GingaSurfaceID &surId, int r,
+DisplayManager::setSurfaceColor (const GingaSurfaceID &surId, int r,
                                      int g, int b, int alpha)
 {
   SDLSurface *surface = NULL;
@@ -1821,7 +1821,7 @@ LocalScreenManager::setSurfaceColor (const GingaSurfaceID &surId, int r,
 }
 
 SDLSurface *
-LocalScreenManager::getISurfaceFromId (const GingaSurfaceID &surId)
+DisplayManager::getISurfaceFromId (const GingaSurfaceID &surId)
 {
   map<GingaSurfaceID, SDLSurface *>::iterator i;
   SDLSurface *iSur = NULL;
@@ -1838,7 +1838,7 @@ LocalScreenManager::getISurfaceFromId (const GingaSurfaceID &surId)
 }
 
 void
-LocalScreenManager::setProviderSoundLevel (const GingaProviderID &provId,
+DisplayManager::setProviderSoundLevel (const GingaProviderID &provId,
                                            float level)
 {
   IContinuousMediaProvider *provider = NULL;
@@ -1854,7 +1854,7 @@ LocalScreenManager::setProviderSoundLevel (const GingaProviderID &provId,
 }
 
 void
-LocalScreenManager::getProviderOriginalResolution (
+DisplayManager::getProviderOriginalResolution (
     const GingaProviderID &provId, int *width, int *height)
 {
   IContinuousMediaProvider *provider = NULL;
@@ -1870,7 +1870,7 @@ LocalScreenManager::getProviderOriginalResolution (
 }
 
 double
-LocalScreenManager::getProviderTotalMediaTime (
+DisplayManager::getProviderTotalMediaTime (
     const GingaProviderID &provId)
 {
   double totalTime = 0.0;
@@ -1889,7 +1889,7 @@ LocalScreenManager::getProviderTotalMediaTime (
 }
 
 double
-LocalScreenManager::getProviderSoundLevel (const GingaProviderID &provId)
+DisplayManager::getProviderSoundLevel (const GingaProviderID &provId)
 {
   double soundLevel = 0.0;
   IContinuousMediaProvider *provider = NULL;
@@ -1907,7 +1907,7 @@ LocalScreenManager::getProviderSoundLevel (const GingaProviderID &provId)
 }
 
 int64_t
-LocalScreenManager::getProviderVPts (const GingaProviderID &provId)
+DisplayManager::getProviderVPts (const GingaProviderID &provId)
 {
   int64_t vpts = 0.0;
   IContinuousMediaProvider *provider = NULL;
@@ -1925,7 +1925,7 @@ LocalScreenManager::getProviderVPts (const GingaProviderID &provId)
 }
 
 void
-LocalScreenManager::setProviderMediaTime (const GingaProviderID &provId,
+DisplayManager::setProviderMediaTime (const GingaProviderID &provId,
                                           double pos)
 {
   IContinuousMediaProvider *provider = NULL;
@@ -1941,7 +1941,7 @@ LocalScreenManager::setProviderMediaTime (const GingaProviderID &provId,
 }
 
 double
-LocalScreenManager::getProviderMediaTime (const GingaProviderID &provId)
+DisplayManager::getProviderMediaTime (const GingaProviderID &provId)
 {
   double totalTime = 0.0;
   IContinuousMediaProvider *provider = NULL;
@@ -1959,7 +1959,7 @@ LocalScreenManager::getProviderMediaTime (const GingaProviderID &provId)
 }
 
 void
-LocalScreenManager::pauseProvider (const GingaProviderID &provId)
+DisplayManager::pauseProvider (const GingaProviderID &provId)
 {
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
@@ -1974,7 +1974,7 @@ LocalScreenManager::pauseProvider (const GingaProviderID &provId)
 }
 
 void
-LocalScreenManager::stopProvider (const GingaProviderID &provId)
+DisplayManager::stopProvider (const GingaProviderID &provId)
 {
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
@@ -1989,7 +1989,7 @@ LocalScreenManager::stopProvider (const GingaProviderID &provId)
 }
 
 void
-LocalScreenManager::setProviderAVPid (const GingaProviderID &provId,
+DisplayManager::setProviderAVPid (const GingaProviderID &provId,
                                       int aPid, int vPid)
 {
   IContinuousMediaProvider *provider = NULL;
@@ -2005,7 +2005,7 @@ LocalScreenManager::setProviderAVPid (const GingaProviderID &provId,
 }
 
 void
-LocalScreenManager::resumeProvider (const GingaProviderID &provId,
+DisplayManager::resumeProvider (const GingaProviderID &provId,
                                     GingaSurfaceID surface)
 {
 
@@ -2022,7 +2022,7 @@ LocalScreenManager::resumeProvider (const GingaProviderID &provId,
 }
 
 void
-LocalScreenManager::feedProviderBuffers (const GingaProviderID &provId)
+DisplayManager::feedProviderBuffers (const GingaProviderID &provId)
 {
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
@@ -2037,7 +2037,7 @@ LocalScreenManager::feedProviderBuffers (const GingaProviderID &provId)
 }
 
 bool
-LocalScreenManager::checkProviderVideoResizeEvent (
+DisplayManager::checkProviderVideoResizeEvent (
     const GingaProviderID &provId, const GingaSurfaceID &frame)
 {
   bool resized = false;
@@ -2056,7 +2056,7 @@ LocalScreenManager::checkProviderVideoResizeEvent (
 }
 
 int
-LocalScreenManager::getProviderStringWidth (const GingaProviderID &provId,
+DisplayManager::getProviderStringWidth (const GingaProviderID &provId,
                                             const char *text,
                                             int textLength)
 {
@@ -2075,7 +2075,7 @@ LocalScreenManager::getProviderStringWidth (const GingaProviderID &provId,
 }
 
 void
-LocalScreenManager::playProviderOver (const GingaProviderID &provId,
+DisplayManager::playProviderOver (const GingaProviderID &provId,
                                       const GingaSurfaceID &surface)
 {
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
@@ -2087,7 +2087,7 @@ LocalScreenManager::playProviderOver (const GingaProviderID &provId,
 }
 
 void
-LocalScreenManager::playProviderOver (const GingaProviderID &provId,
+DisplayManager::playProviderOver (const GingaProviderID &provId,
                                       const GingaSurfaceID &surface,
                                       const char *text, int x, int y,
                                       short align)
@@ -2104,7 +2104,7 @@ LocalScreenManager::playProviderOver (const GingaProviderID &provId,
 }
 
 int
-LocalScreenManager::getProviderHeight (const GingaProviderID &provId)
+DisplayManager::getProviderHeight (const GingaProviderID &provId)
 {
   int height = 0;
   IFontProvider *provider = NULL;
@@ -2121,7 +2121,7 @@ LocalScreenManager::getProviderHeight (const GingaProviderID &provId)
 }
 
 IMediaProvider *
-LocalScreenManager::getIMediaProviderFromId (const GingaProviderID &provId)
+DisplayManager::getIMediaProviderFromId (const GingaProviderID &provId)
 {
   map<GingaProviderID, IMediaProvider *>::iterator i;
   IMediaProvider *iProv = NULL;
@@ -2140,7 +2140,7 @@ LocalScreenManager::getIMediaProviderFromId (const GingaProviderID &provId)
 /* private functions */
 
 void
-LocalScreenManager::addScreen (GingaScreenID screenId,
+DisplayManager::addScreen (GingaScreenID screenId,
                                SDLDeviceScreen *screen)
 {
 
@@ -2151,14 +2151,14 @@ LocalScreenManager::addScreen (GingaScreenID screenId,
     }
   else
     {
-      clog << "LocalScreenManager::addScreen Warning! Trying to add ";
+      clog << "DisplayManager::addScreen Warning! Trying to add ";
       clog << "a NULL screen" << endl;
     }
   unlockScreenMap ();
 }
 
 short
-LocalScreenManager::getNumOfScreens ()
+DisplayManager::getNumOfScreens ()
 {
   short numOfScreens;
 
@@ -2170,7 +2170,7 @@ LocalScreenManager::getNumOfScreens ()
 }
 
 bool
-LocalScreenManager::getScreen (GingaScreenID screenId,
+DisplayManager::getScreen (GingaScreenID screenId,
                                SDLDeviceScreen **screen)
 {
 
@@ -2190,7 +2190,7 @@ LocalScreenManager::getScreen (GingaScreenID screenId,
 }
 
 bool
-LocalScreenManager::removeScreen (GingaScreenID screenId)
+DisplayManager::removeScreen (GingaScreenID screenId)
 {
   bool hasScreen = false;
   map<GingaScreenID, SDLDeviceScreen *>::iterator i;
@@ -2207,25 +2207,25 @@ LocalScreenManager::removeScreen (GingaScreenID screenId)
 }
 
 void
-LocalScreenManager::lockScreenMap ()
+DisplayManager::lockScreenMap ()
 {
   Thread::mutexLock (&mapMutex);
 }
 
 void
-LocalScreenManager::unlockScreenMap ()
+DisplayManager::unlockScreenMap ()
 {
   Thread::mutexUnlock (&mapMutex);
 }
 
 void
-LocalScreenManager::lock ()
+DisplayManager::lock ()
 {
   Thread::mutexLock (&genMutex);
 }
 
 void
-LocalScreenManager::unlock ()
+DisplayManager::unlock ()
 {
   Thread::mutexUnlock (&genMutex);
 }

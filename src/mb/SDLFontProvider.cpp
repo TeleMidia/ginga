@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "LocalScreenManager.h"
-#include "ScreenManagerFactory.h"
+#include "DisplayManager.h"
+#include "DisplayManagerFactory.h"
 #include "SDLDeviceScreen.h"
 #include "SDLFontProvider.h"
 #include "SDLWindow.h"
@@ -295,7 +295,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
 
   Thread::mutexLock (&ntsMutex);
   this->content
-      = ScreenManagerFactory::getInstance ()->getISurfaceFromId (surface);
+      = DisplayManagerFactory::getInstance ()->getISurfaceFromId (surface);
 
   if (font == NULL)
     {
@@ -309,7 +309,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
         }
     }
 
-  if (ScreenManagerFactory::getInstance ()->hasSurface (myScreen,
+  if (DisplayManagerFactory::getInstance ()->hasSurface (myScreen,
                                                         content->getId ()))
     {
 

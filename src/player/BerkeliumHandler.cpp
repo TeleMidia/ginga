@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 #include "BerkeliumHandler.h"
@@ -31,10 +31,10 @@ BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
                                     int w, int h)
 {
 
-  LocalScreenManager::addIEListenerInstance (this);
-  LocalScreenManager::addMEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
+  DisplayManager::addMEListenerInstance (this);
 
-  dm = ScreenManagerFactory::getInstance ();
+  dm = DisplayManagerFactory::getInstance ();
   im = dm->getInputManager (myScreen);
 
   this->myScreen = myScreen;
@@ -67,8 +67,8 @@ BerkeliumHandler::~BerkeliumHandler ()
 {
   clog << "BerkeliumHandler::~BerkeliumHandler " << endl;
 
-  LocalScreenManager::removeIEListenerInstance (this);
-  LocalScreenManager::removeMEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
+  DisplayManager::removeMEListenerInstance (this);
   if (isValid)
     {
       isValid = false;

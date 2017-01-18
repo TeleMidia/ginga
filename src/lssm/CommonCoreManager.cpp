@@ -52,8 +52,8 @@ using namespace ::ginga::dataproc;
 #include "DataWrapperListener.h"
 #endif // WITH_ISDBT
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
@@ -67,7 +67,7 @@ using namespace ::ginga::player;
 
 GINGA_LSSM_BEGIN
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 CommonCoreManager::CommonCoreManager ()
 {

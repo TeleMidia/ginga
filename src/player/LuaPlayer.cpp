@@ -21,7 +21,7 @@ extern "C" {
 }
 
 #include "mb/InputManager.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -449,7 +449,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
   if (g_chdir (cwd.c_str ()) < 0)
     g_warning ("%s", g_strerror (errno));
 
-  LocalScreenManager::addIEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
   this->im = dm->getInputManager (id);
 
   this->nw = NULL; // created by start()
@@ -464,7 +464,7 @@ LuaPlayer::~LuaPlayer (void)
   this->lock ();
   ptrace0 ();
 
-  LocalScreenManager::removeIEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
 
   if (nw_update_list != NULL && nw_update_list->empty ())
     {

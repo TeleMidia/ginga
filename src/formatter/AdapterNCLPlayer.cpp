@@ -21,8 +21,8 @@ using namespace ::ginga::player;
 
 #include "AdapterNCLPlayer.h"
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "FormatterMediator.h"
@@ -124,9 +124,9 @@ AdapterNCLPlayer::createPlayer ()
             }
         }
 
-      LocalScreenManager *dm;
+      DisplayManager *dm;
 
-      dm = ScreenManagerFactory::getInstance ();
+      dm = DisplayManagerFactory::getInstance ();
       player = (INCLPlayer *)(new FormatterMediator (childData));
 
       s = dm->createSurface (myScreen);

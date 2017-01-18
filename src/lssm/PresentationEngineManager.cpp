@@ -42,8 +42,8 @@ using namespace ::ginga::formatter;
 
 #include "player/ShowButton.h"
 
-#include "mb/LocalScreenManager.h"
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManager.h"
+#include "mb/DisplayManagerFactory.h"
 #include "mb/InputManager.h"
 using namespace ::ginga::mb;
 
@@ -59,7 +59,7 @@ using namespace ::ginga::util;
 
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 #include "system/GingaLocatorFactory.h"
@@ -78,7 +78,7 @@ struct inputEventNotification
   vector<string> *cmds;
 };
 
-LocalScreenManager *PresentationEngineManager::dm = NULL;
+DisplayManager *PresentationEngineManager::dm = NULL;
 bool PresentationEngineManager::autoProcess = false;
 
 PresentationEngineManager::PresentationEngineManager (
@@ -89,10 +89,10 @@ PresentationEngineManager::PresentationEngineManager (
 
   if (dm == NULL)
     {
-      dm = ScreenManagerFactory::getInstance ();
+      dm = DisplayManagerFactory::getInstance ();
     }
 
-  LocalScreenManager::addIEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
 
   x = 0;
   if (xOffset > 0)
@@ -164,7 +164,7 @@ PresentationEngineManager::~PresentationEngineManager ()
 {
   clog << "PresentationEngineManager::~PresentationEngineManager" << endl;
 
-  LocalScreenManager::removeIEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
 
   if (!closed)
     {

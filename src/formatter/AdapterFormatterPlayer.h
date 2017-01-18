@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
@@ -64,7 +64,7 @@ class AdapterFormatterPlayer : public IAdapterPlayer,
 {
 
 protected:
-  static LocalScreenManager *dm;
+  static DisplayManager *dm;
   static double eventTS;
   InputManager *im;
 

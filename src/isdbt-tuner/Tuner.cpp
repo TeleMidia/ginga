@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Tuner.h"
 
-#include "mb/ScreenManagerFactory.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManagerFactory.h"
+#include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 GINGA_TUNER_BEGIN
 
-static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
               string address)

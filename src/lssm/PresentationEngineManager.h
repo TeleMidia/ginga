@@ -28,7 +28,7 @@ using namespace ::ginga::player;
 using namespace ::ginga::system;
 
 #include "mb/InputManager.h"
-#include "mb/LocalScreenManager.h"
+#include "mb/DisplayManager.h"
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
@@ -80,7 +80,7 @@ private:
   int currentPrivateBaseId;
   static bool autoProcess;
   vector<string> commands;
-  static LocalScreenManager *dm;
+  static DisplayManager *dm;
   InputManager *im;
   ShowButton *sb;
   bool debugWindow;

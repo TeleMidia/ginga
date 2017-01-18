@@ -23,14 +23,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkTransitionTriggerCondition.h"
 
-#include "mb/ScreenManagerFactory.h"
+#include "mb/DisplayManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "player/Player.h"
 
 GINGA_FORMATTER_BEGIN
 
-LocalScreenManager *AdapterFormatterPlayer::dm = NULL;
+DisplayManager *AdapterFormatterPlayer::dm = NULL;
 double AdapterFormatterPlayer::eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
@@ -63,7 +63,7 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
       im = NULL;
     }
 
-  LocalScreenManager::removeIEListenerInstance (this);
+  DisplayManager::removeIEListenerInstance (this);
   lockObject ();
   if (anchorMonitor != NULL)
     {
@@ -104,10 +104,10 @@ AdapterFormatterPlayer::setAdapterManager (void *manager)
       = ((AdapterPlayerManager *)manager)->getNclPlayerData ()->screenId;
   if (dm == NULL)
     {
-      dm = ScreenManagerFactory::getInstance ();
+      dm = DisplayManagerFactory::getInstance ();
     }
 
-  LocalScreenManager::addIEListenerInstance (this);
+  DisplayManager::addIEListenerInstance (this);
 
   im = dm->getInputManager (myScreen);
 }
