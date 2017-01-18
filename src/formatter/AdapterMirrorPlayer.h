@@ -15,38 +15,34 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef AVPLAYERADAPTER_H_
-#define AVPLAYERADAPTER_H_
-
-#include "gingancl/NclExecutionObject.h"
-using namespace ::ginga::formatter;
-
-#include "gingancl/NclAttributionEvent.h"
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
-
-#include "ncl/NodeEntity.h"
-#include "ncl/ReferenceContent.h"
-using namespace ::ginga::ncl;
+#ifndef MIRRORPLAYERADAPTER_H_
+#define MIRRORPLAYERADAPTER_H_
 
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
+
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
+using namespace ::ginga::formatter;
+
 GINGA_FORMATTER_BEGIN
 
-class AdapterAVPlayer : public AdapterFormatterPlayer
+class AdapterMirrorPlayer : public AdapterFormatterPlayer
 {
-public:
-  AdapterAVPlayer ();
+private:
+  string mirrorSrcId;
 
-  virtual ~AdapterAVPlayer (){};
+public:
+  AdapterMirrorPlayer ();
+  virtual ~AdapterMirrorPlayer ();
 
 protected:
   void createPlayer ();
-  bool setPropertyValue (NclAttributionEvent *event, string value);
 };
 
 GINGA_FORMATTER_END
-#endif /*AVPLAYERADAPTER_H_*/
+#endif /*MIRRORPLAYERADAPTER_H_*/

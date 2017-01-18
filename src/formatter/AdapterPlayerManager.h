@@ -31,8 +31,8 @@ using namespace ::ginga::system;
 #include "ncl/ContentNode.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/NclCascadingDescriptor.h"
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclCascadingDescriptor.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
 #include "system/ITimeBaseProvider.h"

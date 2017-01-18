@@ -15,40 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef CHANNELPLAYERADAPTER_H_
-#define CHANNELPLAYERADAPTER_H_
+#ifndef IAdapterPlayer_H_
+#define IAdapterPlayer_H_
 
-#include "gingancl/NclCompositeExecutionObject.h"
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclAttributionEvent.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclAttributionEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-using namespace ::ginga::formatter;
+#include "player/IPlayer.h"
+using namespace ::ginga::player;
 
-#include "ncl/Content.h"
-#include "ncl/NodeEntity.h"
-#include "ncl/ReferenceContent.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Transition.h"
-using namespace ::ginga::ncl;
-
-#include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
+using namespace ::ginga::system;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterChannelPlayer : public AdapterFormatterPlayer
+class IAdapterPlayer
 {
 public:
-  AdapterChannelPlayer ();
-  virtual ~AdapterChannelPlayer (){};
+  virtual ~IAdapterPlayer (){};
+
+  virtual void setAdapterManager (void *manager) = 0;
+
+public:
+  virtual bool instanceOf (string s) = 0;
 
 protected:
-  void createPlayer ();
-  bool setPropertyValue (NclAttributionEvent *event, string value);
+  virtual void createPlayer () = 0;
+
+public:
+  virtual IPlayer *getPlayer () = 0;
+
+  virtual double getOutTransTime () = 0;
+
+  virtual bool setPropertyValue (NclAttributionEvent *event, string value) = 0;
+
+  virtual string getPropertyValue (string name) = 0;
 };
 
 GINGA_FORMATTER_END
-#endif /*CHANNELPLAYERADAPTER_H_*/
+#endif /*IAdapterPlayer_H_*/

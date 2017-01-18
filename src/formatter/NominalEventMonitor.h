@@ -33,13 +33,13 @@ using namespace ::ginga::player;
 #include "ncl/IntervalAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/NclPresentationEvent.h"
+#include "formatter/NclPresentationEvent.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclEventTransition.h"
+#include "formatter/NclEventTransition.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
 #include "IAdapterPlayer.h"

@@ -36,7 +36,7 @@ using namespace ::ginga::mb;
 #include "player/IPlayerListener.h"
 using namespace ::ginga::player;
 
-#include "gingancl/PrivateBaseManager.h"
+#include "formatter/PrivateBaseManager.h"
 using namespace ::ginga::formatter;
 
 GINGA_LSSM_BEGIN

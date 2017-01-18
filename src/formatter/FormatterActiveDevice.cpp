@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidevice/ActiveDeviceDomain.h"
 #include "multidevice/PassiveDeviceDomain.h"
 #include "multidevice/BaseDeviceDomain.h"
-#include "gingancl/FormatterMediator.h"
+#include "formatter/FormatterMediator.h"
 using namespace ::ginga::formatter;
 
 #include "mb/CodeMap.h"
@@ -29,7 +29,7 @@ using namespace ::ginga::formatter;
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
 
-#include "gingancl/FormatterMediator.h"
+#include "formatter/FormatterMediator.h"
 using namespace ::ginga::formatter;
 
 #include "system/Thread.h"

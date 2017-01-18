@@ -26,10 +26,10 @@ using namespace ::ginga::util;
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 #if WITH_MULTIDEVICE
-#include "gingancl/FormatterMultiDevice.h"
+#include "formatter/FormatterMultiDevice.h"
 #include "multidevice/DeviceDomain.h"
-#include "gingancl/FormatterPassiveDevice.h"
-#include "gingancl/FormatterActiveDevice.h"
+#include "formatter/FormatterPassiveDevice.h"
+#include "formatter/FormatterActiveDevice.h"
 #endif
 #include "lssm/CommonCoreManager.h"
 #include "lssm/PresentationEngineManager.h"
@@ -45,7 +45,7 @@ using namespace ::ginga::mb;
 #if WITH_MULTIDEVICE
 #include "multidevice/DeviceDomain.h"
 using namespace ::ginga::multidevice;
-#include "gingancl/FormatterMultiDevice.h"
+#include "formatter/FormatterMultiDevice.h"
 using namespace ::ginga::formatter;
 #endif
 

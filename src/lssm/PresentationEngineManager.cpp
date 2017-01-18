@@ -37,7 +37,7 @@ using namespace ::ginga::ncl;
 
 #include "system/GingaLocatorFactory.h"
 
-#include "gingancl/FormatterMediator.h"
+#include "formatter/FormatterMediator.h"
 using namespace ::ginga::formatter;
 
 #include "player/ShowButton.h"

@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterApplicationPlayer.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclLinkTransitionTriggerCondition.h"
+#include "formatter/NclLinkTransitionTriggerCondition.h"
 using namespace ::ginga::formatter;
 
 #include "mb/ScreenManagerFactory.h"

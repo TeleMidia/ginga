@@ -15,31 +15,41 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMAGEPLAYERADAPTER_H_
-#define IMAGEPLAYERADAPTER_H_
+#ifndef SUBTITLEPLAYERADAPTER_H_
+#define SUBTITLEPLAYERADAPTER_H_
+
+#include "system/SystemCompat.h"
+using namespace ::ginga::system;
+
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
+
+#include "formatter/NclAttributionEvent.h"
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
+using namespace ::ginga::formatter;
+
+#include "ncl/NodeEntity.h"
+#include "ncl/Content.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclExecutionObject.h"
-using namespace ::ginga::formatter;
-
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
-
 GINGA_FORMATTER_BEGIN
 
-class AdapterImagePlayer : public AdapterFormatterPlayer
+class AdapterSubtitlePlayer : public AdapterFormatterPlayer
 {
 public:
-  AdapterImagePlayer ();
-  virtual ~AdapterImagePlayer (){};
+  AdapterSubtitlePlayer ();
+
+  virtual ~AdapterSubtitlePlayer (){};
 
 protected:
   void createPlayer ();
 };
 
 GINGA_FORMATTER_END
-#endif /*IMAGEPLAYERADAPTER_H_*/
+#endif /*SUBTITLEPLAYERADAPTER_H_*/

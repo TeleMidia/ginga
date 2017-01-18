@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/PresentationContext.h"
+#include "formatter/PresentationContext.h"
 using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"

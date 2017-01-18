@@ -15,55 +15,38 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PROGRAMAVPLAYERADAPTER_H_
-#define PROGRAMAVPLAYERADAPTER_H_
+#ifndef AVPLAYERADAPTER_H_
+#define AVPLAYERADAPTER_H_
 
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclAttributionEvent.h"
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
+#include "formatter/NclAttributionEvent.h"
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
 using namespace ::ginga::formatter;
 
-#include "ncl/Content.h"
+#include "ncl/NodeEntity.h"
 #include "ncl/ReferenceContent.h"
 using namespace ::ginga::ncl;
-
-#include "player/IProgramAV.h"
-using namespace ::ginga::player;
 
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterProgramAVPlayer : public AdapterFormatterPlayer
+class AdapterAVPlayer : public AdapterFormatterPlayer
 {
-private:
-  string lastValue;
-
-protected:
-  AdapterProgramAVPlayer ();
-  virtual ~AdapterProgramAVPlayer (){};
-  static AdapterProgramAVPlayer *_instance;
-
 public:
-  static AdapterProgramAVPlayer *getInstance ();
+  AdapterAVPlayer ();
 
-  virtual bool hasPrepared ();
-  virtual bool start ();
-  virtual bool stop ();
-  virtual bool resume ();
+  virtual ~AdapterAVPlayer (){};
 
 protected:
   void createPlayer ();
   bool setPropertyValue (NclAttributionEvent *event, string value);
-
-private:
-  void updateAVBounds ();
 };
 
 GINGA_FORMATTER_END
-#endif /*PROGRAMAVPLAYERADAPTER_H_*/
+#endif /*AVPLAYERADAPTER_H_*/

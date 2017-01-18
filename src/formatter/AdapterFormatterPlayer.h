@@ -45,13 +45,13 @@ using namespace ::ginga::ncl;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/NclCompositeExecutionObject.h"
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclCompositeExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclAttributionEvent.h"
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
+#include "formatter/NclAttributionEvent.h"
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
 using namespace ::ginga::formatter;
 
 #include "IAdapterPlayer.h"

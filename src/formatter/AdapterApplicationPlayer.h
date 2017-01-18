@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _APPLICATIONPLAYERADAPTER_H_
 #define _APPLICATIONPLAYERADAPTER_H_
 
-#include "gingancl/NclApplicationExecutionObject.h"
+#include "formatter/NclApplicationExecutionObject.h"
 using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
