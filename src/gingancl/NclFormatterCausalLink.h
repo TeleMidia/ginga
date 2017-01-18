@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclLinkAction.h"
 #include "NclLinkActionProgressionListener.h"
@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "NclLinkTriggerListener.h"
 #include "NclFormatterLink.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclFormatterCausalLink : public NclFormatterLink,
                             public NclLinkTriggerListener,
@@ -56,5 +56,5 @@ public:
   void actionProcessed (bool start);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_FORMATTERCAUSALLINK_H_

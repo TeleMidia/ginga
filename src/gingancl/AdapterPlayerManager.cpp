@@ -19,41 +19,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 
 #include "AdapterSubtitlePlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
+using namespace ::ginga::formatter;
 
 #include "AdapterPlainTxtPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::text;
+using namespace ::ginga::formatter;
 
 #include "AdapterSsmlPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::tts;
+using namespace ::ginga::formatter;
 
 #include "AdapterImagePlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::image;
+using namespace ::ginga::formatter;
 
 #include "AdapterMirrorPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::mirror;
+using namespace ::ginga::formatter;
 
 #include "AdapterAVPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
+using namespace ::ginga::formatter;
 
 #include "AdapterLuaPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::
-    lua;
+using namespace ::ginga::formatter;
 
 #include "AdapterNCLPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::
-    ncl;
+using namespace ::ginga::formatter;
 
 #include "AdapterChannelPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
+using namespace ::ginga::formatter;
 
 #include "AdapterProgramAVPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
+using namespace ::ginga::formatter;
 
 // #include "AdapterTimePlayer.h"
 // using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
 {
@@ -562,4 +560,4 @@ AdapterPlayerManager::run ()
   clog << "AdapterPlayerManager::run all done" << endl;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END

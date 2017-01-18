@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclExecutionObjectSwitch.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     string id, Node *switchNode, bool handling,
@@ -88,4 +88,4 @@ NclExecutionObjectSwitch::addEvent (NclFormatterEvent *event)
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
+GINGA_FORMATTER_END

@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EVENTTRANSITION_H_
 
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclEventTransition
 {
@@ -48,5 +48,5 @@ public:
   bool instanceOf (string s);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
+GINGA_FORMATTER_END
 #endif /*EVENTTRANSITION_H_*/

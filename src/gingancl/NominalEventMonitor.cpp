@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/SampleIntervalAnchor.h"
 using namespace ::ginga::ncl;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 const double NominalEventMonitor::DEFAULT_SLEEP_TIME = 5000;
 const double NominalEventMonitor::DEFAULT_ERROR = 50.0;
@@ -440,4 +440,4 @@ NominalEventMonitor::run ()
   unlock ();
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END

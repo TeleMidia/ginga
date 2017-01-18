@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterMirrorPlayer.h"
 #include "AdapterPlayerManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterMirrorPlayer::AdapterMirrorPlayer () : AdapterFormatterPlayer () {}
 
@@ -72,4 +72,4 @@ AdapterMirrorPlayer::createPlayer ()
   clog << mrl << "' ALL DONE" << endl;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_END
+GINGA_FORMATTER_END

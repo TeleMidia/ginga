@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclAnchorEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclAnchorEvent::NclAnchorEvent (string id, void *executionObject,
                           ContentAnchor *anchor)
@@ -37,4 +37,4 @@ NclAnchorEvent::getAnchor ()
   return anchor;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END

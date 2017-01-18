@@ -21,10 +21,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "gingancl/NclCascadingDescriptor.h"
 #include "gingancl/NclCompositeExecutionObject.h"
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclExecutionObjectSwitch.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
+using namespace ::ginga::formatter;
 
 #include "ncl/GenericDescriptor.h"
 using namespace ::ginga::ncl;
@@ -48,7 +48,7 @@ using namespace ::ginga::ncl;
 
 #include "PresentationContext.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class RuleAdapter : public Observer
 {
@@ -85,5 +85,5 @@ public:
   virtual void update (void *arg0, void *arg1);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
+GINGA_FORMATTER_END
 #endif //_RULEADAPTER_H_

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ctxmgmt/ContextManager.h"
 #include "ctxmgmt/SystemInfo.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 ContextManager *PresentationContext::contextManager = NULL;
 
@@ -320,4 +320,4 @@ PresentationContext::setRemoteDeviceListener (IRemoteDeviceListener *rdl)
 }
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
+GINGA_FORMATTER_END

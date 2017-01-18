@@ -39,10 +39,9 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::mb;
 
 #include "NclFocusSourceManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation::
-    focus;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclFormatterRegion
 {
@@ -234,12 +233,12 @@ private:
   void unlockFocusInfo ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
 typedef struct
 {
-  ::br::pucrio::telemidia::ginga::ncl::model::presentation::NclFormatterRegion
-      *fr;
+  NclFormatterRegion *fr;
   Transition *t;
 } TransInfo;
+
+GINGA_FORMATTER_END
 
 #endif /*FORMATTERREGION_H_*/

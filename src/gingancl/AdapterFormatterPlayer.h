@@ -47,17 +47,17 @@ using namespace ::ginga::ncl;
 
 #include "gingancl/NclCompositeExecutionObject.h"
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclAttributionEvent.h"
 #include "gingancl/NclFormatterEvent.h"
 #include "gingancl/NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "IAdapterPlayer.h"
 #include "NominalEventMonitor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IPlayerListener,
@@ -170,7 +170,7 @@ public:
   virtual void timeShift (string direction);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+GINGA_FORMATTER_END
+using namespace ::ginga::formatter;
 
 #endif //_FORMATTERPLAYER_H_

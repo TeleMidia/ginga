@@ -38,7 +38,7 @@ using namespace ::ginga::ncl;
 #include "system/GingaLocatorFactory.h"
 
 #include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "player/ShowButton.h"
 

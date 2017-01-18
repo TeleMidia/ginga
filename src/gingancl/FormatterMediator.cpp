@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterBaseDevice.h"
 
 #include "PresentationContext.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
@@ -33,7 +33,7 @@ using namespace ::ginga::system;
 #include "multidevice/DeviceDomain.h"
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 PrefetchManager *FormatterMediator::pm = NULL;
 
@@ -3903,4 +3903,4 @@ FormatterMediator::getPresentationContext ()
   return presContext;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END

@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IAdapterPlayer_H_
 
 #include "gingancl/NclAttributionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
 using namespace ::ginga::system;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class IAdapterPlayer
 {
@@ -51,5 +51,5 @@ public:
   virtual string getPropertyValue (string name) = 0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END
 #endif /*IAdapterPlayer_H_*/

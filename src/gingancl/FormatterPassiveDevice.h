@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterMultiDevice.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterPassiveDevice : public FormatterMultiDevice
 {
@@ -60,5 +60,5 @@ protected:
   bool userEventReceived (SDLInputEvent *ev);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END
 #endif /* _FormatterPassiveDevice_H_ */

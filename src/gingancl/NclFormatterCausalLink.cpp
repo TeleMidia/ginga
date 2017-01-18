@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclFormatterCausalLink.h"
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclFormatterCausalLink::NclFormatterCausalLink (NclLinkTriggerCondition *condition,
                                           NclLinkAction *action, Link *ncmLink,
@@ -151,4 +151,4 @@ NclFormatterCausalLink::actionProcessed (bool start)
       ->linkEvaluationFinished (this, start);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

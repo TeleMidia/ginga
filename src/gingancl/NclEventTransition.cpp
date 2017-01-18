@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclEventTransition.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclEventTransition::NclEventTransition (double time, NclPresentationEvent *event)
 {
@@ -149,4 +149,4 @@ NclEventTransition::getTime ()
   return time;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
+GINGA_FORMATTER_END

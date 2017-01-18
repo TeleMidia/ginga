@@ -46,7 +46,7 @@ using namespace ::ginga::mb;
 #include "multidevice/DeviceDomain.h"
 using namespace ::ginga::multidevice;
 #include "gingancl/FormatterMultiDevice.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
+using namespace ::ginga::formatter;
 #endif
 
 #include "lssm/CommonCoreManager.h"

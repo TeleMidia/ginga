@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterConverter.h"
 #include "FormatterLinkConverter.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+GINGA_FORMATTER_BEGIN
 
 int FormatterConverter::dummyCount = 0;
 
@@ -2053,4 +2053,4 @@ FormatterConverter::reset ()
   Thread::mutexUnlock (&objectsMutex);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
+GINGA_FORMATTER_END

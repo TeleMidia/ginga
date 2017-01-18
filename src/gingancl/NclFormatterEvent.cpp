@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationEvent.h"
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 set<NclFormatterEvent *> NclFormatterEvent::instances;
 bool NclFormatterEvent::init = false;
@@ -575,4 +575,4 @@ NclFormatterEvent::getStateName (short state)
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END

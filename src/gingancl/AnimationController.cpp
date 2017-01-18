@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "AnimationController.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AnimationController::AnimationController (NclExecutionObject *execObj,
                                           AdapterPlayerManager *pManager,
@@ -532,4 +532,4 @@ AnimationController::getSinglePropertyTarget (int i)
   return target;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_END
+GINGA_FORMATTER_END

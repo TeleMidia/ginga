@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterApplicationPlayer.h"
 #include "AdapterPlayerManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
@@ -1290,4 +1290,4 @@ AdapterApplicationPlayer::unlockPreparedEvents ()
   Thread::mutexUnlock (&eventsMutex);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_END
+GINGA_FORMATTER_END

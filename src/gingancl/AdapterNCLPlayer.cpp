@@ -27,7 +27,7 @@ using namespace ::ginga::mb;
 
 #include "gingancl/FormatterMediator.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterNCLPlayer::AdapterNCLPlayer () : AdapterApplicationPlayer ()
 {
@@ -241,4 +241,4 @@ AdapterNCLPlayer::flip ()
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END
+GINGA_FORMATTER_END

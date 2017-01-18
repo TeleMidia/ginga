@@ -34,18 +34,17 @@ using namespace ::ginga::player;
 using namespace ::ginga::ncl;
 
 #include "gingancl/NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclEventTransition.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::
-    transition;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "IAdapterPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NominalEventMonitor : public Thread, public ITimeBaseListener
 {
@@ -95,5 +94,5 @@ public:
   virtual void run ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END
 #endif /*NOMINALEVENTMONITOR_H_*/

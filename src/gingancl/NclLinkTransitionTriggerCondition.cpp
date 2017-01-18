@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkTransitionTriggerCondition.h"
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     NclFormatterEvent *event, short transition, Bind *bind)
@@ -111,4 +111,4 @@ NclLinkTransitionTriggerCondition::getEvents ()
   return events;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

@@ -22,9 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterLuaPlayer : public AdapterApplicationPlayer
 {
@@ -40,5 +40,5 @@ public:
   void unlockCurrentEvent (NclFormatterEvent *event);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END
+GINGA_FORMATTER_END
 #endif /* LUAPLAYERADAPTER_H_ */

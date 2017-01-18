@@ -22,12 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkAction.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkSimpleAction : public NclLinkAction
 {
@@ -51,5 +51,5 @@ public:
   virtual vector<NclLinkAction *> *getImplicitRefRoleActions ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKSIMPLEACTION_H_

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "NclCascadingDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
 #include "NclFormatterLayout.h"
@@ -29,7 +29,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "mb/ScreenManagerFactory.h"
 using namespace ::ginga::mb;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
@@ -2355,4 +2355,4 @@ NclFormatterRegion::setScroll (short value)
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END

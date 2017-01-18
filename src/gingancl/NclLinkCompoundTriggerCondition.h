@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LINKCOMPOUNDTRIGGERCONDITION_H_
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclLinkCondition.h"
 #include "NclLinkTriggerListener.h"
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
                                      public NclLinkTriggerListener
@@ -46,5 +46,5 @@ public:
   void evaluationEnded ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKCOMPOUNDTRIGGERCONDITION_H_

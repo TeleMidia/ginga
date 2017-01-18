@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclFormatterLayout.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclFormatterLayout::NclFormatterLayout (GingaScreenID screenId, int x, int y,
                                   int w, int h)
@@ -661,4 +661,4 @@ NclFormatterLayout::unlock ()
   Thread::mutexUnlock (&mutex);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END

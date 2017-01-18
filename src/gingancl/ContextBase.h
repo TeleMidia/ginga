@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CONTEXTBASE_H_
 #define _CONTEXTBASE_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 const string SYSTEM_LANGUAGE ("system.language");
 const string SYSTEM_CAPTION ("system.caption");
@@ -53,5 +53,5 @@ const string DEFAULT_FOCUS_BORDER_WIDTH ("default.focusBorderWidth");
 const string
     DEFAULT_FOCUS_BORDER_TRANSPARENCY ("default.focusBorderTransparency");
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
+GINGA_FORMATTER_END
 #endif //_CONTEXTBASE_H_

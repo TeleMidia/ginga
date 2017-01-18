@@ -66,20 +66,20 @@ using namespace ::ginga::ncl;
 #include "NclLinkStatement.h"
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTransitionTriggerCondition.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "FormatterConverter.h"
 #include "ObjectCreationForbiddenException.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterLinkConverter
 {
@@ -156,5 +156,5 @@ private:
   double compileDelay (Link *ncmLink, string delayObject, Bind *bind);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
+GINGA_FORMATTER_END
 #endif /*FORMATTERLINKCONVERTER_H_*/

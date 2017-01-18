@@ -29,7 +29,7 @@ using namespace ::ginga::ncl;
 
 #include "NclAnchorEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclSelectionEvent : public NclAnchorEvent
 {
@@ -44,5 +44,5 @@ public:
   void setSelectionCode (string codeStr);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END
 #endif //_SELECTIONEVENT_H_

@@ -27,7 +27,7 @@ using namespace ::ginga::ncl;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclNodeNesting
 {
@@ -64,5 +64,5 @@ public:
   string toString ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END
 #endif /*NODENESTING_H_*/

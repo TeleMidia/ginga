@@ -28,15 +28,15 @@ using namespace ::ginga::multidevice;
 #endif
 
 #include "FormatterConverter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "gingancl/FormatterScheduler.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
@@ -1457,4 +1457,4 @@ FormatterFocusManager::motionEventReceived (int x, int y, int z)
   return true;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_END
+GINGA_FORMATTER_END

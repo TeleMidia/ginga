@@ -22,13 +22,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclAttributionEvent.h"
 #include "gingancl/NclFormatterEvent.h"
 #include "gingancl/NclPresentationEvent.h"
 #include "gingancl/NclSelectionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "ncl/NodeEntity.h"
 #include "ncl/Content.h"
@@ -36,9 +36,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterSubtitlePlayer : public AdapterFormatterPlayer
 {
@@ -51,5 +51,5 @@ protected:
   void createPlayer ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END
+GINGA_FORMATTER_END
 #endif /*SUBTITLEPLAYERADAPTER_H_*/

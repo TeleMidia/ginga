@@ -52,7 +52,7 @@ using namespace ::ginga::ncl;
 
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
+using namespace ::ginga::formatter;
 
 #include "NclAttributionEvent.h"
 #include "NclPresentationEvent.h"
@@ -60,7 +60,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
@@ -68,30 +68,30 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "NclLinkCompoundAction.h"
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterLayout.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
 #include "AdapterPlayerManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "FormatterScheduler.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "ObjectCreationForbiddenException.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterConverter : public INclEventListener
 {
@@ -235,5 +235,5 @@ public:
   void reset ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
+GINGA_FORMATTER_END
 #endif /*FORMATTERCONVERTER_H_*/

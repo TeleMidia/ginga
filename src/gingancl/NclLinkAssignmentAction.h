@@ -19,11 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define LINKASSIGNMENTACTION_H_
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclLinkRepeatAction.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkAssignmentAction : public NclLinkRepeatAction
 {
@@ -43,5 +43,5 @@ public:
   void setAnimation (Animation *animation);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif /*LINKASSIGNMENTACTION_H_*/

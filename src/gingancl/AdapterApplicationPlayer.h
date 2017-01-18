@@ -19,15 +19,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _APPLICATIONPLAYERADAPTER_H_
 
 #include "gingancl/NclApplicationExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "player/IPlayerListener.h"
 using namespace ::ginga::player;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 typedef struct
 {
@@ -113,5 +113,5 @@ public:
   virtual void flip (){};
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_END
+GINGA_FORMATTER_END
 #endif //_AdapterApplicationPlayer_H_

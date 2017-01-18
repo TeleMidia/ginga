@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #endif
 
 #include "FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
@@ -36,7 +36,7 @@ using namespace ::ginga::mb;
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 LocalScreenManager *FormatterMultiDevice::dm = NULL;
 #if WITH_MULTIDEVICE
@@ -987,4 +987,4 @@ FormatterMultiDevice::updateStatus (short code, string parameter,
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END

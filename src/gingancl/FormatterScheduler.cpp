@@ -17,10 +17,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "FormatterConverter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;
+using namespace ::ginga::formatter;
 
 #include "NclLinkTransitionTriggerCondition.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
 #include "gingancl/FormatterScheduler.h"
@@ -28,7 +28,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,
                                         RuleAdapter *ruleAdapter,
@@ -2228,4 +2228,4 @@ FormatterScheduler::receiveGlobalAttribution (string propertyName,
   delete names;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END

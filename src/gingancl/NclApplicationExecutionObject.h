@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclApplicationExecutionObject : public NclExecutionObject
 {
@@ -72,5 +72,5 @@ private:
   void unlockEvents ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END
 #endif //_APPLICATIONEXECUTIONOBJECT_H_

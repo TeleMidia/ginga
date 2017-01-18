@@ -21,12 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkStatement.h"
 
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "ncl/CompoundStatement.h"
 using namespace ::ginga::ncl;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkCompoundStatement : public NclLinkStatement
 {
@@ -52,5 +52,5 @@ public:
   virtual bool evaluate ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKCOMPOUNDSTATEMENT_H_

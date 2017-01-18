@@ -32,12 +32,12 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclEventTransitionManager
 {
@@ -82,5 +82,5 @@ public:
   NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
+GINGA_FORMATTER_END
 #endif /*EventTransitionManager_H_*/

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "PrivateBaseManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 PrivateBaseManager::PrivateBaseManager ()
 {
@@ -753,4 +753,4 @@ PrivateBaseManager::unlockTable ()
   Thread::mutexUnlock (&mutexTable);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END

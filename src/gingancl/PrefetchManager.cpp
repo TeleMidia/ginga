@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
+GINGA_FORMATTER_BEGIN
 
 PrefetchManager::PrefetchManager ()
 {
@@ -463,4 +463,4 @@ PrefetchManager::getScheduledContents ()
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END
+GINGA_FORMATTER_END

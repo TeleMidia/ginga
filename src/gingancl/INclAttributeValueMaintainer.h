@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IATTRIBUTEVALUEMAINTAINER_H_
 #define IATTRIBUTEVALUEMAINTAINER_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class INclAttributeValueMaintainer
 {
@@ -28,5 +28,5 @@ public:
   virtual void setPropertyValue (string name, string value) = 0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END
 #endif /*IATTRIBUTEVALUEMAINTAINER_H_*/

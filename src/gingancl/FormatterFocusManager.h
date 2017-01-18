@@ -30,31 +30,31 @@ using namespace ::ginga::mb;
 
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclSelectionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkSimpleAction.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "PresentationContext.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
+using namespace ::ginga::formatter;
 
 #include "mb/IMotionEventListener.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterFocusManager : public IMotionEventListener,
                               public IInputEventListener
@@ -157,6 +157,6 @@ public:
   bool motionEventReceived (int x, int y, int z);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_FOCUS_END
+GINGA_FORMATTER_END
 
 #endif /* FORMATTER_FOCUS_MANAGER_H */

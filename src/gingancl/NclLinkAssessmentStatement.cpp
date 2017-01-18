@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkAssessmentStatement.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclLinkAssessmentStatement::NclLinkAssessmentStatement (
     short comparator, NclLinkAttributeAssessment *mainAssessment,
@@ -120,4 +120,4 @@ NclLinkAssessmentStatement::evaluate ()
                                otherAssessment->getValue (), comparator);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

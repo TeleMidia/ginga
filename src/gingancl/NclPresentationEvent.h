@@ -23,7 +23,7 @@ using namespace ::ginga::ncl;
 
 #include "NclAnchorEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclPresentationEvent : public NclAnchorEvent
 {
@@ -54,6 +54,6 @@ public:
   static bool isUndefinedInstant (double value);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END
 
 #endif /* PRESENTATION_EVENT_H */

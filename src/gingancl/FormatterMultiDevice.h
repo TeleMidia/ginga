@@ -58,13 +58,13 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclCascadingDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "ContextBase.h"
 
@@ -76,9 +76,9 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "PresentationContext.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 #if WITH_MULTIDEVICE
 class FormatterMultiDevice : public IPlayerListener,
@@ -186,6 +186,6 @@ protected:
   virtual bool userEventReceived (SDLInputEvent *ev) = 0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END
 
 #endif /* FORMATTER_MULTI_DEVICE_H */

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclSwitchEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclSwitchEvent::NclSwitchEvent (string id, void *executionObjectSwitch,
                           InterfacePoint *interfacePoint, int eventType,
@@ -96,4 +96,4 @@ NclSwitchEvent::getPriorityType ()
   return INclEventListener::PT_LINK;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
+GINGA_FORMATTER_END

@@ -28,7 +28,7 @@ using namespace ::ginga::util;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
@@ -65,4 +65,4 @@ NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
   return 0;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_END
+GINGA_FORMATTER_END
