@@ -255,7 +255,7 @@ GINGA_LSSM_BEGIN
 		}
 	}
 
-	void DataWrapperListener::receiveStreamEvent(StreamEvent* event) {
+	void DataWrapperListener::receiveStreamEvent(DsmccStreamEvent* event) {
 		string eventType;
 		string eventData;
 

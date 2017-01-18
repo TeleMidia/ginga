@@ -48,7 +48,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 using namespace ::ginga::mb;
 
 #if WITH_ISDBT
-#include "isdbt-dataproc/ncl/EventDescriptor.h"
+#include "isdbt-dataproc/NCLEventDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
 
 #include "lssm/DataWrapperListener.h"
@@ -295,7 +295,7 @@ struct inputEventNotification
 #if WITH_ISDBT
 		args   = split(commandPayload, ",");
 		i      = args->begin();
-		baseId = EventDescriptor::extractMarks(*i);
+		baseId = NCLEventDescriptor::extractMarks(*i);
 		++i;
 
 		//parse command
@@ -322,9 +322,9 @@ struct inputEventNotification
 			docIor = "";
 			while (i != args->end()) {
 				if ((*i).find("x-sbtvd://") != std::string::npos) {
-					uri = EventDescriptor::extractMarks(*i);
+					uri = NCLEventDescriptor::extractMarks(*i);
 					++i;
-					ior = EventDescriptor::extractMarks(*i);
+					ior = NCLEventDescriptor::extractMarks(*i);
 
 					if (uri.find("x-sbtvd://") != std::string::npos) {
 						uri = uri.substr(uri.find("x-sbtvd://") + 10,
@@ -387,7 +387,7 @@ struct inputEventNotification
 			//clog << "PresentationEngineManager::editingCommand not to base";
 			//clog << endl;
 
-			docId = EventDescriptor::extractMarks(*i);
+			docId = NCLEventDescriptor::extractMarks(*i);
 			if (getNclPlayer(baseId, docId, &docPlayer)) {
 				if (commandTag == EC_START_DOCUMENT) {
 					setTimeBaseInfo(docPlayer);
@@ -412,8 +412,8 @@ struct inputEventNotification
 		string commandPayload = "";
 
 #if WITH_ISDBT
-		commandTag     = EventDescriptor::getCommandTag(editingCmd);
-		commandPayload = EventDescriptor::getPrivateDataPayload(editingCmd);
+		commandTag     = NCLEventDescriptor::getCommandTag(editingCmd);
+		commandPayload = NCLEventDescriptor::getPrivateDataPayload(editingCmd);
 #endif
 
 		return editingCommand(commandTag, commandPayload);
