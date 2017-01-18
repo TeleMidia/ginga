@@ -15,34 +15,40 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef MIRRORPLAYERADAPTER_H_
-#define MIRRORPLAYERADAPTER_H_
+#ifndef CHANNELPLAYERADAPTER_H_
+#define CHANNELPLAYERADAPTER_H_
+
+#include "formatter/NclCompositeExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
+
+#include "formatter/NclAttributionEvent.h"
+#include "formatter/NclPresentationEvent.h"
+using namespace ::ginga::formatter;
+
+#include "ncl/Content.h"
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
+
+#include "ncl/Transition.h"
+using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclExecutionObject.h"
-using namespace ::ginga::formatter;
-
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
-
 GINGA_FORMATTER_BEGIN
 
-class AdapterMirrorPlayer : public AdapterFormatterPlayer
+class AdapterChannelPlayer : public AdapterFormatterPlayer
 {
-private:
-  string mirrorSrcId;
-
 public:
-  AdapterMirrorPlayer ();
-  virtual ~AdapterMirrorPlayer ();
+  AdapterChannelPlayer ();
+  virtual ~AdapterChannelPlayer (){};
 
 protected:
   void createPlayer ();
+  bool setPropertyValue (NclAttributionEvent *event, string value);
 };
 
 GINGA_FORMATTER_END
-#endif /*MIRRORPLAYERADAPTER_H_*/
+#endif /*CHANNELPLAYERADAPTER_H_*/

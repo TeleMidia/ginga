@@ -15,41 +15,31 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IAdapterPlayer_H_
-#define IAdapterPlayer_H_
+#ifndef IMAGEPLAYERADAPTER_H_
+#define IMAGEPLAYERADAPTER_H_
 
-#include "gingancl/NclAttributionEvent.h"
+#include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
-#include "player/IPlayer.h"
-using namespace ::ginga::player;
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
 
-using namespace ::ginga::system;
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
+using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
-class IAdapterPlayer
+class AdapterImagePlayer : public AdapterFormatterPlayer
 {
 public:
-  virtual ~IAdapterPlayer (){};
-
-  virtual void setAdapterManager (void *manager) = 0;
-
-public:
-  virtual bool instanceOf (string s) = 0;
+  AdapterImagePlayer ();
+  virtual ~AdapterImagePlayer (){};
 
 protected:
-  virtual void createPlayer () = 0;
-
-public:
-  virtual IPlayer *getPlayer () = 0;
-
-  virtual double getOutTransTime () = 0;
-
-  virtual bool setPropertyValue (NclAttributionEvent *event, string value) = 0;
-
-  virtual string getPropertyValue (string name) = 0;
+  void createPlayer ();
 };
 
 GINGA_FORMATTER_END
-#endif /*IAdapterPlayer_H_*/
+#endif /*IMAGEPLAYERADAPTER_H_*/

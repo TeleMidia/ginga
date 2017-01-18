@@ -15,41 +15,55 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SUBTITLEPLAYERADAPTER_H_
-#define SUBTITLEPLAYERADAPTER_H_
+#ifndef PROGRAMAVPLAYERADAPTER_H_
+#define PROGRAMAVPLAYERADAPTER_H_
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclAttributionEvent.h"
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
+#include "formatter/NclAttributionEvent.h"
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
 using namespace ::ginga::formatter;
 
-#include "ncl/NodeEntity.h"
 #include "ncl/Content.h"
 #include "ncl/ReferenceContent.h"
 using namespace ::ginga::ncl;
+
+#include "player/IProgramAV.h"
+using namespace ::ginga::player;
 
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterSubtitlePlayer : public AdapterFormatterPlayer
+class AdapterProgramAVPlayer : public AdapterFormatterPlayer
 {
-public:
-  AdapterSubtitlePlayer ();
+private:
+  string lastValue;
 
-  virtual ~AdapterSubtitlePlayer (){};
+protected:
+  AdapterProgramAVPlayer ();
+  virtual ~AdapterProgramAVPlayer (){};
+  static AdapterProgramAVPlayer *_instance;
+
+public:
+  static AdapterProgramAVPlayer *getInstance ();
+
+  virtual bool hasPrepared ();
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool resume ();
 
 protected:
   void createPlayer ();
+  bool setPropertyValue (NclAttributionEvent *event, string value);
+
+private:
+  void updateAVBounds ();
 };
 
 GINGA_FORMATTER_END
-#endif /*SUBTITLEPLAYERADAPTER_H_*/
+#endif /*PROGRAMAVPLAYERADAPTER_H_*/

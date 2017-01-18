@@ -33,7 +33,7 @@ using namespace ::ginga::formatter;
 #include "NclFormatterLayout.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/FormatterScheduler.h"
+#include "formatter/FormatterScheduler.h"
 using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN

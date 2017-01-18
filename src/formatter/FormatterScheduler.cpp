@@ -23,7 +23,7 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-#include "gingancl/FormatterScheduler.h"
+#include "formatter/FormatterScheduler.h"
 
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;

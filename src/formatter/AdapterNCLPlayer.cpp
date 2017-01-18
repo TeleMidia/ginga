@@ -25,7 +25,7 @@ using namespace ::ginga::player;
 #include "mb/ScreenManagerFactory.h"
 using namespace ::ginga::mb;
 
-#include "gingancl/FormatterMediator.h"
+#include "formatter/FormatterMediator.h"
 
 GINGA_FORMATTER_BEGIN
 

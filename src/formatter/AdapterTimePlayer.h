@@ -21,12 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterFormatterPlayer.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclFormatterEvent.h"
-#include "gingancl/NclPresentationEvent.h"
-#include "gingancl/NclSelectionEvent.h"
+#include "formatter/NclFormatterEvent.h"
+#include "formatter/NclPresentationEvent.h"
+#include "formatter/NclSelectionEvent.h"
 using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN

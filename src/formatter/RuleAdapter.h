@@ -18,12 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _RULEADAPTER_H_
 #define _RULEADAPTER_H_
 
-#include "gingancl/NclCascadingDescriptor.h"
-#include "gingancl/NclCompositeExecutionObject.h"
-#include "gingancl/NclExecutionObject.h"
+#include "formatter/NclCascadingDescriptor.h"
+#include "formatter/NclCompositeExecutionObject.h"
+#include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
-#include "gingancl/NclExecutionObjectSwitch.h"
+#include "formatter/NclExecutionObjectSwitch.h"
 using namespace ::ginga::formatter;
 
 #include "ncl/GenericDescriptor.h"
