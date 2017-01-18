@@ -21,26 +21,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
 
-#include "model/ExecutionObject.h"
-#include "model/NodeNesting.h"
-#include "model/CompositeExecutionObject.h"
+#include "NclExecutionObject.h"
+#include "NclNodeNesting.h"
+#include "NclCompositeExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "model/ExecutionObjectSwitch.h"
-#include "model/SwitchEvent.h"
+#include "NclExecutionObjectSwitch.h"
+#include "NclSwitchEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 
-#include "model/AttributionEvent.h"
-#include "model/IEventListener.h"
-#include "model/FormatterEvent.h"
-#include "model/PresentationEvent.h"
+#include "NclAttributionEvent.h"
+#include "INclEventListener.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "model/LinkAssignmentAction.h"
-#include "model/LinkSimpleAction.h"
+#include "NclLinkAssignmentAction.h"
+#include "NclLinkSimpleAction.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
-#include "model/FormatterLayout.h"
+#include "NclFormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "RuleAdapter.h"
@@ -88,8 +88,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::animation;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-class FormatterScheduler : public ILinkActionListener,
-                           public IEventListener,
+class FormatterScheduler : public INclLinkActionListener,
+                           public INclEventListener,
                            public IContextListener
 {
 
@@ -102,8 +102,8 @@ private:
 
   void *compiler; // FormatterConverter*
   vector<IFormatterSchedulerListener *> schedulerListeners;
-  vector<FormatterEvent *> documentEvents;
-  map<FormatterEvent *, bool> documentStatus;
+  vector<NclFormatterEvent *> documentEvents;
+  map<NclFormatterEvent *, bool> documentStatus;
   set<void *> actions;
 
   bool running;
@@ -112,7 +112,7 @@ private:
   pthread_mutex_t mutexD;
   pthread_mutex_t mutexActions;
 
-  set<FormatterEvent *> listening;
+  set<NclFormatterEvent *> listening;
   pthread_mutex_t lMutex;
 
 public:
@@ -131,66 +131,66 @@ public:
   void *getFormatterLayout (void *descriptor, void *object);
 
 private:
-  bool isDocumentRunning (FormatterEvent *event);
+  bool isDocumentRunning (NclFormatterEvent *event);
 
-  void setTimeBaseObject (ExecutionObject *object,
+  void setTimeBaseObject (NclExecutionObject *object,
                           AdapterFormatterPlayer *objectPlayer,
                           string nodeId);
 
-  static void printAction (string action, LinkCondition *condition,
-                           LinkSimpleAction *linkAction);
+  static void printAction (string action, NclLinkCondition *condition,
+                           NclLinkSimpleAction *linkAction);
 
 public:
   void scheduleAction (void *condition, void *action);
 
 private:
-  void runAction (LinkCondition *condition, LinkSimpleAction *action);
+  void runAction (NclLinkCondition *condition, NclLinkSimpleAction *action);
 
-  void runAction (FormatterEvent *event, LinkCondition *condition,
-                  LinkSimpleAction *action);
+  void runAction (NclFormatterEvent *event, NclLinkCondition *condition,
+                  NclLinkSimpleAction *action);
 
-  void runActionOverProperty (FormatterEvent *event,
-                              LinkSimpleAction *action);
+  void runActionOverProperty (NclFormatterEvent *event,
+                              NclLinkSimpleAction *action);
 
   void runActionOverApplicationObject (
-      ApplicationExecutionObject *executionObject, FormatterEvent *event,
-      AdapterFormatterPlayer *player, LinkSimpleAction *action);
+      NclApplicationExecutionObject *executionObject, NclFormatterEvent *event,
+      AdapterFormatterPlayer *player, NclLinkSimpleAction *action);
 
-  void runActionOverComposition (CompositeExecutionObject *compositeObject,
-                                 LinkSimpleAction *action);
+  void runActionOverComposition (NclCompositeExecutionObject *compositeObject,
+                                 NclLinkSimpleAction *action);
 
-  void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
-                            SwitchEvent *event, LinkSimpleAction *action);
+  void runActionOverSwitch (NclExecutionObjectSwitch *switchObject,
+                            NclSwitchEvent *event, NclLinkSimpleAction *action);
 
-  void runSwitchEvent (ExecutionObjectSwitch *switchObject,
-                       SwitchEvent *switchEvent,
-                       ExecutionObject *selectedObject,
-                       LinkSimpleAction *action);
+  void runSwitchEvent (NclExecutionObjectSwitch *switchObject,
+                       NclSwitchEvent *switchEvent,
+                       NclExecutionObject *selectedObject,
+                       NclLinkSimpleAction *action);
 
   string solveImplicitRefAssessment (string propValue,
-                                     AttributionEvent *event);
+                                     NclAttributionEvent *event);
 
 public:
-  void startEvent (FormatterEvent *event);
-  void stopEvent (FormatterEvent *event);
-  void pauseEvent (FormatterEvent *event);
-  void resumeEvent (FormatterEvent *event);
+  void startEvent (NclFormatterEvent *event);
+  void stopEvent (NclFormatterEvent *event);
+  void pauseEvent (NclFormatterEvent *event);
+  void resumeEvent (NclFormatterEvent *event);
 
 private:
   void initializeDefaultSettings ();
   void initializeDocumentSettings (Node *node);
 
 public:
-  void startDocument (FormatterEvent *documentEvent,
-                      vector<FormatterEvent *> *entryEvents);
+  void startDocument (NclFormatterEvent *documentEvent,
+                      vector<NclFormatterEvent *> *entryEvents);
 
 private:
-  void removeDocument (FormatterEvent *documentEvent);
+  void removeDocument (NclFormatterEvent *documentEvent);
 
 public:
-  void stopDocument (FormatterEvent *documentEvent);
-  void pauseDocument (FormatterEvent *documentEvent);
-  void resumeDocument (FormatterEvent *documentEvent);
+  void stopDocument (NclFormatterEvent *documentEvent);
+  void pauseDocument (NclFormatterEvent *documentEvent);
+  void resumeDocument (NclFormatterEvent *documentEvent);
   void stopAllDocuments ();
   void pauseAllDocuments ();
   void resumeAllDocuments ();

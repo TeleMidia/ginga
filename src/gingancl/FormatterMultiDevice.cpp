@@ -148,10 +148,10 @@ FormatterMultiDevice::printGingaWindows ()
 {
   string fileUri = "";
   GingaWindowID iWin;
-  FormatterLayout *formatterLayout;
+  NclFormatterLayout *formatterLayout;
 
   vector<GingaWindowID> sortedIds;
-  map<int, FormatterLayout *>::iterator i;
+  map<int, NclFormatterLayout *>::iterator i;
   vector<GingaWindowID>::iterator j;
 
   int quality = 100;
@@ -288,7 +288,7 @@ FormatterMultiDevice::getMainLayout ()
 void *
 FormatterMultiDevice::getFormatterLayout (int devClass)
 {
-  map<int, FormatterLayout *>::iterator i;
+  map<int, NclFormatterLayout *>::iterator i;
 
   i = layoutManager.find (devClass);
   if (i != layoutManager.end ())
@@ -311,9 +311,9 @@ FormatterMultiDevice::serializeScreen (int devClass,
 {
 
   string fileUri = "";
-  FormatterLayout *formatterLayout;
+  NclFormatterLayout *formatterLayout;
   vector<GingaWindowID> sortedIds;
-  map<int, FormatterLayout *>::iterator i;
+  map<int, NclFormatterLayout *>::iterator i;
   int quality = 100;
   int dumpW = defaultWidth;
   int dumpH = defaultHeight;
@@ -415,13 +415,13 @@ FormatterMultiDevice::postMediaContent (int destDevClass)
   Thread::mutexUnlock (&mutex);
 }
 
-FormatterLayout *
-FormatterMultiDevice::getFormatterLayout (CascadingDescriptor *descriptor,
-                                          ExecutionObject *object)
+NclFormatterLayout *
+FormatterMultiDevice::getFormatterLayout (NclCascadingDescriptor *descriptor,
+                                          NclExecutionObject *object)
 {
 
-  map<int, FormatterLayout *>::iterator i;
-  FormatterLayout *layout;
+  map<int, NclFormatterLayout *>::iterator i;
+  NclFormatterLayout *layout;
   LayoutRegion *region;
   int devClass;
 
@@ -454,7 +454,7 @@ FormatterMultiDevice::getFormatterLayout (CascadingDescriptor *descriptor,
     {
       if (devClass == DeviceDomain::CT_PASSIVE)
         {
-          layout = new FormatterLayout (myScreen, 0, 0, DV_QVGA_WIDTH,
+          layout = new NclFormatterLayout (myScreen, 0, 0, DV_QVGA_WIDTH,
                                         DV_QVGA_HEIGHT);
 
           layoutManager[devClass] = layout;
@@ -475,15 +475,15 @@ FormatterMultiDevice::getFormatterLayout (CascadingDescriptor *descriptor,
 
 GingaWindowID
 FormatterMultiDevice::prepareFormatterRegion (
-    ExecutionObject *executionObject, GingaSurfaceID renderedSurface)
+    NclExecutionObject *executionObject, GingaSurfaceID renderedSurface)
 {
 
-  FormatterLayout *layout;
-  CascadingDescriptor *descriptor;
+  NclFormatterLayout *layout;
+  NclCascadingDescriptor *descriptor;
   string regionId, plan = "";
   GingaWindowID windowId = 0;
 
-  map<int, FormatterLayout *>::iterator i;
+  map<int, NclFormatterLayout *>::iterator i;
   LayoutRegion *bitMapRegion;
   LayoutRegion *ncmRegion;
 
@@ -576,11 +576,11 @@ FormatterMultiDevice::prepareFormatterRegion (
 }
 
 void
-FormatterMultiDevice::showObject (ExecutionObject *executionObject)
+FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
 {
-  FormatterLayout *layout;
-  CascadingDescriptor *descriptor;
-  FormatterRegion *fRegion;
+  NclFormatterLayout *layout;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *fRegion;
   LayoutRegion *region;
   int devClass;
   string fileUri;
@@ -711,10 +711,10 @@ rdm->postEvent(
 }
 
 void
-FormatterMultiDevice::hideObject (ExecutionObject *executionObject)
+FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
 {
-  FormatterLayout *layout;
-  CascadingDescriptor *descriptor;
+  NclFormatterLayout *layout;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
   int devClass;
   string fileUri;
@@ -809,8 +809,8 @@ FormatterMultiDevice::renderFromUri (GingaWindowID win, string uri)
 void
 FormatterMultiDevice::tapObject (int devClass, int x, int y)
 {
-  FormatterLayout *layout;
-  ExecutionObject *object;
+  NclFormatterLayout *layout;
+  NclExecutionObject *object;
 
   if (layoutManager.count (devClass) != 0)
     {
@@ -864,7 +864,7 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
   if (layoutManager.count (newDevClass) == 0)
     {
       layoutManager[newDevClass]
-          = new FormatterLayout (myScreen, 0, 0, w, h);
+          = new NclFormatterLayout (myScreen, 0, 0, w, h);
 
       isNewClass = true;
     }

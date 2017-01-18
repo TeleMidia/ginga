@@ -18,12 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _RULEADAPTER_H_
 #define _RULEADAPTER_H_
 
-#include "gingancl/model/CascadingDescriptor.h"
-#include "gingancl/model/CompositeExecutionObject.h"
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclCascadingDescriptor.h"
+#include "gingancl/NclCompositeExecutionObject.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "gingancl/model/ExecutionObjectSwitch.h"
+#include "gingancl/NclExecutionObjectSwitch.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 
 #include "ncl/GenericDescriptor.h"
@@ -55,7 +55,7 @@ class RuleAdapter : public Observer
 private:
   PresentationContext *presContext;
   map<string, vector<Rule *> *> *ruleListenMap;
-  map<Rule *, vector<ExecutionObjectSwitch *> *> *entityListenMap;
+  map<Rule *, vector<NclExecutionObjectSwitch *> *> *entityListenMap;
   map<Rule *, vector<DescriptorSwitch *> *> *descListenMap;
 
 public:
@@ -66,14 +66,14 @@ public:
 
   PresentationContext *getPresentationContext ();
 
-  void adapt (CompositeExecutionObject *compositeObject, bool force);
+  void adapt (NclCompositeExecutionObject *compositeObject, bool force);
   void initializeAttributeRuleRelation (Rule *topRule, Rule *rule);
 
-  void initializeRuleObjectRelation (ExecutionObjectSwitch *object);
+  void initializeRuleObjectRelation (NclExecutionObjectSwitch *object);
 
-  void adapt (ExecutionObjectSwitch *objectAlternatives, bool force);
+  void adapt (NclExecutionObjectSwitch *objectAlternatives, bool force);
 
-  bool adaptDescriptor (ExecutionObject *executionObject);
+  bool adaptDescriptor (NclExecutionObject *executionObject);
   Node *adaptSwitch (SwitchNode *switchNode);
   bool evaluateRule (Rule *rule);
 

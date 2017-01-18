@@ -33,7 +33,7 @@ AdapterSsmlPlayer::createPlayer ()
   clog << "AdapterSsmlPlayer::createPlayer '" << mrl << "'" << endl;
 
   string paramValue;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
 
   bool hasVisual = false;
 

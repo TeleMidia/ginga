@@ -75,7 +75,7 @@ AdapterProgramAVPlayer::resume ()
 void
 AdapterProgramAVPlayer::createPlayer ()
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   string soundLevel;
 
   player = ProgramAV::getInstance (myScreen);
@@ -85,7 +85,7 @@ AdapterProgramAVPlayer::createPlayer ()
 }
 
 bool
-AdapterProgramAVPlayer::setPropertyValue (AttributionEvent *event,
+AdapterProgramAVPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
 
@@ -131,8 +131,8 @@ AdapterProgramAVPlayer::setPropertyValue (AttributionEvent *event,
 void
 AdapterProgramAVPlayer::updateAVBounds ()
 {
-  CascadingDescriptor *descriptor;
-  FormatterRegion *region;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *region;
   LayoutRegion *ncmRegion;
 
   if (object != NULL && object->getDescriptor () != NULL)

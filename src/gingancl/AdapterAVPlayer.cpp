@@ -29,7 +29,7 @@ AdapterAVPlayer::AdapterAVPlayer () : AdapterFormatterPlayer ()
 void
 AdapterAVPlayer::createPlayer ()
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   string soundLevel;
 
   clog << "AdapterAVPlayer::createPlayer for '" << mrl << "'" << endl;
@@ -45,7 +45,7 @@ AdapterAVPlayer::createPlayer ()
 }
 
 bool
-AdapterAVPlayer::setPropertyValue (AttributionEvent *event, string value)
+AdapterAVPlayer::setPropertyValue (NclAttributionEvent *event, string value)
 {
 
   return AdapterFormatterPlayer::setPropertyValue (event, value);

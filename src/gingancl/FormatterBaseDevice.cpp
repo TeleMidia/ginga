@@ -78,7 +78,7 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
   rdm->addListener (this);
 #endif // WITH_MULTIDEVICE
 
-  mainLayout = new FormatterLayout (myScreen, x, y, w, h);
+  mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
   mainLayout->getDeviceRegion ()->setDeviceClass (0, "");
   layoutManager[deviceClass] = mainLayout;
 }

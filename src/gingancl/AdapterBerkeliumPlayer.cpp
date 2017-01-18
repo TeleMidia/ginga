@@ -41,7 +41,7 @@ void
 AdapterBerkeliumPlayer::updateProperties ()
 {
   LayoutRegion *ncmRegion;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   int w, h, x, y;
   string value, strW, strH, strX, strY;
 
@@ -97,7 +97,7 @@ AdapterBerkeliumPlayer::createPlayer ()
 }
 
 bool
-AdapterBerkeliumPlayer::setPropertyValue (AttributionEvent *event,
+AdapterBerkeliumPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
 
@@ -111,7 +111,7 @@ AdapterBerkeliumPlayer::setPropertyValue (AttributionEvent *event,
       if (player != NULL)
         {
           LayoutRegion *ncmRegion;
-          CascadingDescriptor *descriptor;
+          NclCascadingDescriptor *descriptor;
           int x, y, w, h;
           string bVal, strW, strH, strX, strY;
 

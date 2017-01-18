@@ -29,23 +29,23 @@ FormatterLinkConverter::FormatterLinkConverter (
 
 FormatterLinkConverter::~FormatterLinkConverter () { compiler = NULL; }
 
-FormatterCausalLink *
+NclFormatterCausalLink *
 FormatterLinkConverter::createCausalLink (
-    CausalLink *ncmLink, CompositeExecutionObject *parentObject,
+    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
     int depthLevel)
 {
 
   CausalConnector *connector;
   ConditionExpression *conditionExpression;
   Action *actionExpression;
-  LinkCondition *formatterCondition;
-  LinkAction *formatterAction;
-  FormatterCausalLink *formatterLink;
-  vector<LinkAction *> *acts;
-  vector<LinkAction *>::iterator i;
-  LinkAssignmentAction *action;
+  NclLinkCondition *formatterCondition;
+  NclLinkAction *formatterAction;
+  NclFormatterCausalLink *formatterLink;
+  vector<NclLinkAction *> *acts;
+  vector<NclLinkAction *>::iterator i;
+  NclLinkAssignmentAction *action;
   string value;
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   Animation *anim;
 
   clog << "FormatterLinkConverter::createCausalLink inside '";
@@ -78,7 +78,7 @@ FormatterLinkConverter::createCausalLink (
                          parentObject, depthLevel);
 
   if (formatterCondition == NULL
-      || !(formatterCondition->instanceOf ("LinkTriggerCondition")))
+      || !(formatterCondition->instanceOf ("NclLinkTriggerCondition")))
     {
 
       clog << "FormatterLinkConverter::createCausalLink Warning!";
@@ -110,12 +110,12 @@ FormatterLinkConverter::createCausalLink (
     }
 
   // create formatter causal link
-  formatterLink = new FormatterCausalLink (
-      (LinkTriggerCondition *)formatterCondition, formatterAction, ncmLink,
-      (CompositeExecutionObject *)parentObject);
+  formatterLink = new NclFormatterCausalLink (
+      (NclLinkTriggerCondition *)formatterCondition, formatterAction, ncmLink,
+      (NclCompositeExecutionObject *)parentObject);
 
   //&got
-  if (formatterCondition->instanceOf ("LinkCompoundTriggerCondition"))
+  if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
     {
       acts = formatterAction->getImplicitRefRoleActions ();
       if (acts != NULL)
@@ -123,11 +123,11 @@ FormatterLinkConverter::createCausalLink (
           i = acts->begin ();
           while (i != acts->end ())
             {
-              action = (LinkAssignmentAction *)(*i);
+              action = (NclLinkAssignmentAction *)(*i);
               value = action->getValue ();
               if (value != "" && value.substr (0, 1) == "$")
                 {
-                  event = ((LinkRepeatAction *)(*i))->getEvent ();
+                  event = ((NclLinkRepeatAction *)(*i))->getEvent ();
                   setImplicitRefAssessment (
                       value.substr (1, value.length ()), ncmLink, event);
                 }
@@ -138,7 +138,7 @@ FormatterLinkConverter::createCausalLink (
                   value = anim->getDuration ();
                   if (value != "" && value.substr (0, 1) == "$")
                     {
-                      event = ((LinkRepeatAction *)(*i))->getEvent ();
+                      event = ((NclLinkRepeatAction *)(*i))->getEvent ();
                       setImplicitRefAssessment (
                           value.substr (1, value.length ()), ncmLink,
                           event);
@@ -147,7 +147,7 @@ FormatterLinkConverter::createCausalLink (
                   value = anim->getBy ();
                   if (value != "" && value.substr (0, 1) == "$")
                     {
-                      event = ((LinkRepeatAction *)(*i))->getEvent ();
+                      event = ((NclLinkRepeatAction *)(*i))->getEvent ();
                       setImplicitRefAssessment (
                           value.substr (1, value.length ()), ncmLink,
                           event);
@@ -166,19 +166,19 @@ FormatterLinkConverter::createCausalLink (
 void
 FormatterLinkConverter::setImplicitRefAssessment (string roleId,
                                                   CausalLink *ncmLink,
-                                                  FormatterEvent *event)
+                                                  NclFormatterEvent *event)
 {
 
-  FormatterEvent *refEvent;
+  NclFormatterEvent *refEvent;
   vector<Node *> *ncmPerspective;
   vector<Bind *> *binds;
   vector<Bind *>::iterator i;
-  NodeNesting *refPerspective;
-  ExecutionObject *refObject;
+  NclNodeNesting *refPerspective;
+  NclExecutionObject *refObject;
   InterfacePoint *refInterface;
   string value;
 
-  if (event->instanceOf ("AttributionEvent"))
+  if (event->instanceOf ("NclAttributionEvent"))
     {
       binds = ncmLink->getBinds ();
       i = binds->begin ();
@@ -193,7 +193,7 @@ FormatterLinkConverter::setImplicitRefAssessment (string roleId,
                 {
 
                   ncmPerspective = (*i)->getNode ()->getPerspective ();
-                  refPerspective = new NodeNesting (ncmPerspective);
+                  refPerspective = new NclNodeNesting (ncmPerspective);
 
                   delete ncmPerspective;
 
@@ -217,7 +217,7 @@ FormatterLinkConverter::setImplicitRefAssessment (string roleId,
                       = compiler->getEvent (refObject, refInterface,
                                             EventUtil::EVT_ATTRIBUTION, "");
 
-                  ((AttributionEvent *)event)
+                  ((NclAttributionEvent *)event)
                       ->setImplicitRefAssessmentEvent (roleId, refEvent);
 
                   break;
@@ -228,10 +228,10 @@ FormatterLinkConverter::setImplicitRefAssessment (string roleId,
     }
 }
 
-LinkAction *
+NclLinkAction *
 FormatterLinkConverter::createAction (
     Action *actionExpression, CausalLink *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
   double delay;
@@ -240,8 +240,8 @@ FormatterLinkConverter::createAction (
   vector<Bind *> *binds;
   int i, size;
   string delayObject;
-  LinkSimpleAction *simpleAction;
-  LinkCompoundAction *compoundAction;
+  NclLinkSimpleAction *simpleAction;
+  NclLinkCompoundAction *compoundAction;
 
   if (actionExpression == NULL)
     {
@@ -265,7 +265,7 @@ FormatterLinkConverter::createAction (
           else if (size > 1)
             {
               compoundAction
-                  = new LinkCompoundAction (sae->getQualifier ());
+                  = new NclLinkCompoundAction (sae->getQualifier ());
 
               for (i = 0; i < size; i++)
                 {
@@ -311,10 +311,10 @@ FormatterLinkConverter::createAction (
   return NULL;
 }
 
-LinkCondition *
+NclLinkCondition *
 FormatterLinkConverter::createCondition (
     ConditionExpression *ncmExpression, CausalLink *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
   if (ncmExpression->instanceOf ("TriggerExpression"))
@@ -329,24 +329,24 @@ FormatterLinkConverter::createCondition (
     }
 }
 
-LinkCompoundTriggerCondition *
+NclLinkCompoundTriggerCondition *
 FormatterLinkConverter::createCompoundTriggerCondition (
     short op, double delay,
     vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
-  LinkCompoundTriggerCondition *condition;
+  NclLinkCompoundTriggerCondition *condition;
   ConditionExpression *ncmChildCondition;
-  LinkCondition *childCondition;
+  NclLinkCondition *childCondition;
 
   if (op == CompoundCondition::OP_AND)
     {
-      condition = new LinkAndCompoundTriggerCondition ();
+      condition = new NclLinkAndCompoundTriggerCondition ();
     }
   else
     {
-      condition = new LinkCompoundTriggerCondition ();
+      condition = new NclLinkCompoundTriggerCondition ();
     }
 
   if (delay > 0)
@@ -372,10 +372,10 @@ FormatterLinkConverter::createCompoundTriggerCondition (
   return condition;
 }
 
-LinkCondition *
+NclLinkCondition *
 FormatterLinkConverter::createCondition (
     TriggerExpression *condition, CausalLink *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
   double delay;
@@ -384,8 +384,8 @@ FormatterLinkConverter::createCondition (
   vector<Bind *> *binds;
   int i, size;
   string delayObject;
-  LinkCompoundTriggerCondition *compoundCondition;
-  LinkTriggerCondition *simpleCondition;
+  NclLinkCompoundTriggerCondition *compoundCondition;
+  NclLinkTriggerCondition *simpleCondition;
 
   if (condition->instanceOf ("SimpleCondition"))
     {
@@ -405,11 +405,11 @@ FormatterLinkConverter::createCondition (
                 {
 
                   compoundCondition
-                      = new LinkAndCompoundTriggerCondition ();
+                      = new NclLinkAndCompoundTriggerCondition ();
                 }
               else
                 {
-                  compoundCondition = new LinkCompoundTriggerCondition ();
+                  compoundCondition = new NclLinkCompoundTriggerCondition ();
                 }
 
               for (i = 0; i < size; i++)
@@ -447,16 +447,16 @@ FormatterLinkConverter::createCondition (
   return NULL;
 }
 
-LinkAssessmentStatement *
+NclLinkAssessmentStatement *
 FormatterLinkConverter::createAssessmentStatement (
     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
-  LinkAttributeAssessment *mainAssessment;
-  LinkAssessment *otherAssessment;
+  NclLinkAttributeAssessment *mainAssessment;
+  NclLinkAssessment *otherAssessment;
   AttributeAssessment *aa;
-  LinkAssessmentStatement *statement;
+  NclLinkAssessmentStatement *statement;
   ValueAssessment *valueAssessment;
   string paramValue;
   Parameter *connParam, *param;
@@ -491,7 +491,7 @@ FormatterLinkConverter::createAssessmentStatement (
             }
         }
 
-      otherAssessment = new LinkValueAssessment (paramValue);
+      otherAssessment = new NclLinkValueAssessment (paramValue);
     }
   else
     {
@@ -511,24 +511,24 @@ FormatterLinkConverter::createAssessmentStatement (
         }
     }
   statement
-      = new LinkAssessmentStatement (assessmentStatement->getComparator (),
+      = new NclLinkAssessmentStatement (assessmentStatement->getComparator (),
                                      mainAssessment, otherAssessment);
 
   return statement;
 }
 
-LinkStatement *
+NclLinkStatement *
 FormatterLinkConverter::createStatement (
     Statement *statementExpression, Link *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
   AssessmentStatement *as;
   CompoundStatement *cs;
   vector<Bind *> *binds;
   int size;
-  LinkStatement *statement;
-  LinkStatement *childStatement;
+  NclLinkStatement *statement;
+  NclLinkStatement *childStatement;
   vector<Statement *> *statements;
   vector<Statement *>::iterator i;
   Statement *ncmChildStatement;
@@ -566,8 +566,8 @@ FormatterLinkConverter::createStatement (
   else
     { // CompoundStatement
       cs = (CompoundStatement *)statementExpression;
-      statement = new LinkCompoundStatement (cs->getOperator ());
-      ((LinkCompoundStatement *)statement)->setNegated (cs->isNegated ());
+      statement = new NclLinkCompoundStatement (cs->getOperator ());
+      ((NclLinkCompoundStatement *)statement)->setNegated (cs->isNegated ());
       statements = cs->getStatements ();
       if (statements != NULL)
         {
@@ -578,7 +578,7 @@ FormatterLinkConverter::createStatement (
               childStatement = createStatement (ncmChildStatement, ncmLink,
                                                 parentObject, depthLevel);
 
-              ((LinkCompoundStatement *)statement)
+              ((NclLinkCompoundStatement *)statement)
                   ->addStatement (childStatement);
 
               ++i;
@@ -589,29 +589,29 @@ FormatterLinkConverter::createStatement (
   return statement;
 }
 
-LinkAttributeAssessment *
+NclLinkAttributeAssessment *
 FormatterLinkConverter::createAttributeAssessment (
     AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
 
   event = createEvent (bind, ncmLink, parentObject, depthLevel);
-  return new LinkAttributeAssessment (
+  return new NclLinkAttributeAssessment (
       event, attributeAssessment->getAttributeType ());
 }
 
-LinkSimpleAction *
+NclLinkSimpleAction *
 FormatterLinkConverter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   short actionType;
   short eventType = -1;
-  LinkSimpleAction *action;
+  NclLinkSimpleAction *action;
   Parameter *connParam;
   Parameter *param;
   string paramValue;
@@ -632,13 +632,13 @@ FormatterLinkConverter::createSimpleAction (
       eventType = bind->getRole ()->getEventType ();
       event->setEventType (eventType);
       /*
-      if (event->instanceOf("PresentationEvent")) {
+      if (event->instanceOf("NclPresentationEvent")) {
               eventType = EventUtil::EVT_PRESENTATION;
 
-      } else if (event->instanceOf("AttributionEvent")) {
+      } else if (event->instanceOf("NclAttributionEvent")) {
               eventType = EventUtil::EVT_ATTRIBUTION;
 
-      } else if (event->instanceOf("SwitchEvent")) {
+      } else if (event->instanceOf("NclSwitchEvent")) {
               eventType = bind->getRole()->getEventType();
 
       } else {
@@ -663,7 +663,7 @@ FormatterLinkConverter::createSimpleAction (
     case SimpleAction::ACT_SET:
       if (eventType == EventUtil::EVT_PRESENTATION)
         {
-          action = new LinkRepeatAction (event, actionType);
+          action = new NclLinkRepeatAction (event, actionType);
 
           // repeat
           paramValue = sae->getRepeat ();
@@ -696,12 +696,12 @@ FormatterLinkConverter::createSimpleAction (
               repeat = (long)::ginga::util::stof (paramValue);
             }
 
-          ((LinkRepeatAction *)action)->setRepetitions (repeat);
+          ((NclLinkRepeatAction *)action)->setRepetitions (repeat);
 
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
           delay = compileDelay (ncmLink, paramValue, bind);
-          ((LinkRepeatAction *)action)->setRepetitionInterval (delay);
+          ((NclLinkRepeatAction *)action)->setRepetitionInterval (delay);
         }
       else if (eventType == EventUtil::EVT_ATTRIBUTION)
         {
@@ -730,7 +730,7 @@ FormatterLinkConverter::createSimpleAction (
                 }
             }
 
-          action = new LinkAssignmentAction (event, actionType, paramValue);
+          action = new NclLinkAssignmentAction (event, actionType, paramValue);
 
           // animation
           animation = sae->getAnimation ();
@@ -799,7 +799,7 @@ FormatterLinkConverter::createSimpleAction (
               if (durVal != "0")
                 {
                   isUsing = true;
-                  ((LinkAssignmentAction *)action)
+                  ((NclLinkAssignmentAction *)action)
                       ->setAnimation (newAnimation);
                 }
             }
@@ -817,7 +817,7 @@ FormatterLinkConverter::createSimpleAction (
     case SimpleAction::ACT_PAUSE:
     case SimpleAction::ACT_RESUME:
     case SimpleAction::ACT_ABORT:
-      action = new LinkSimpleAction (event, actionType);
+      action = new NclLinkSimpleAction (event, actionType);
       break;
 
     default:
@@ -843,18 +843,18 @@ FormatterLinkConverter::createSimpleAction (
   return action;
 }
 
-LinkCompoundAction *
+NclLinkCompoundAction *
 FormatterLinkConverter::createCompoundAction (
     short op, double delay, vector<Action *> *ncmChildActions,
-    CausalLink *ncmLink, CompositeExecutionObject *parentObject,
+    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
     int depthLevel)
 {
 
-  LinkCompoundAction *action;
+  NclLinkCompoundAction *action;
   Action *ncmChildAction;
-  LinkAction *childAction;
+  NclLinkAction *childAction;
 
-  action = new LinkCompoundAction (op);
+  action = new NclLinkCompoundAction (op);
   if (delay > 0)
     {
       action->setWaitDelay (delay);
@@ -898,19 +898,19 @@ FormatterLinkConverter::createCompoundAction (
   return action;
 }
 
-LinkTriggerCondition *
+NclLinkTriggerCondition *
 FormatterLinkConverter::createSimpleCondition (
     SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
-    CompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject, int depthLevel)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   double delay;
   string delayObject;
-  LinkTriggerCondition *condition;
+  NclLinkTriggerCondition *condition;
 
   event = createEvent (bind, ncmLink, parentObject, depthLevel);
-  condition = new LinkTransitionTriggerCondition (
+  condition = new NclLinkTransitionTriggerCondition (
       event, simpleCondition->getTransition (), bind);
 
   delayObject = simpleCondition->getDelay ();
@@ -922,19 +922,19 @@ FormatterLinkConverter::createSimpleCondition (
   return condition;
 }
 
-FormatterEvent *
+NclFormatterEvent *
 FormatterLinkConverter::createEvent (Bind *bind, Link *ncmLink,
-                                     CompositeExecutionObject *parentObject,
+                                     NclCompositeExecutionObject *parentObject,
                                      int depthLevel)
 {
 
-  NodeNesting *endPointNodeSequence;
-  NodeNesting *endPointPerspective;
+  NclNodeNesting *endPointNodeSequence;
+  NclNodeNesting *endPointPerspective;
   Node *parentNode;
-  ExecutionObject *executionObject;
+  NclExecutionObject *executionObject;
   InterfacePoint *interfacePoint;
   string key;
-  FormatterEvent *event = NULL;
+  NclFormatterEvent *event = NULL;
   vector<Node *> *seq;
 
   endPointPerspective = parentObject->getNodePerspective ();
@@ -945,7 +945,7 @@ FormatterLinkConverter::createEvent (Bind *bind, Link *ncmLink,
   // teste para verificar se ponto terminal eh o proprio contexto ou
   // refer para o proprio contexto
   seq = bind->getNodeNesting ();
-  endPointNodeSequence = new NodeNesting (seq);
+  endPointNodeSequence = new NclNodeNesting (seq);
   if (endPointNodeSequence->getAnchorNode ()
           != endPointPerspective->getAnchorNode ()
       && endPointNodeSequence->getAnchorNode ()

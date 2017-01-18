@@ -45,13 +45,13 @@ using namespace ::ginga::ncl;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/model/CompositeExecutionObject.h"
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclCompositeExecutionObject.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "gingancl/model/AttributionEvent.h"
-#include "gingancl/model/FormatterEvent.h"
-#include "gingancl/model/PresentationEvent.h"
+#include "gingancl/NclAttributionEvent.h"
+#include "gingancl/NclFormatterEvent.h"
+#include "gingancl/NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "IAdapterPlayer.h"
@@ -61,7 +61,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
 class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IPlayerListener,
-                               public IAttributeValueMaintainer,
+                               public INclAttributeValueMaintainer,
                                public IInputEventListener
 {
 
@@ -73,7 +73,7 @@ protected:
   void *manager;
   NominalEventMonitor *anchorMonitor;
   set<string> typeSet;
-  ExecutionObject *object;
+  NclExecutionObject *object;
   IPlayer *player;
   IPlayer *mirrorSrc;
   string playerCompName;
@@ -107,11 +107,11 @@ public:
   bool setKeyHandler (bool isHandler);
 
 protected:
-  double prepareProperties (ExecutionObject *obj);
-  void updatePlayerProperties (ExecutionObject *obj);
+  double prepareProperties (NclExecutionObject *obj);
+  void updatePlayerProperties (NclExecutionObject *obj);
 
 public:
-  virtual bool prepare (ExecutionObject *object, FormatterEvent *mainEvent);
+  virtual bool prepare (NclExecutionObject *object, NclFormatterEvent *mainEvent);
 
 protected:
   void prepare ();
@@ -124,7 +124,7 @@ public:
   double getOutTransTime ();
   void checkAnchorMonitor ();
 
-  static void printAction (string action, ExecutionObject *object);
+  static void printAction (string action, NclExecutionObject *object);
 
   static void printAction (string command);
 
@@ -137,11 +137,11 @@ public:
   virtual void naturalEnd ();
 
 private:
-  bool checkRepeat (PresentationEvent *mainEvent);
+  bool checkRepeat (NclPresentationEvent *mainEvent);
 
 public:
   virtual bool unprepare ();
-  virtual bool setPropertyValue (AttributionEvent *event, string value);
+  virtual bool setPropertyValue (NclAttributionEvent *event, string value);
 
   void setPropertyValue (string name, string value);
 

@@ -36,8 +36,8 @@ protected:
   void createPlayer ();
 
 public:
-  bool setAndLockCurrentEvent (FormatterEvent *event);
-  void unlockCurrentEvent (FormatterEvent *event);
+  bool setAndLockCurrentEvent (NclFormatterEvent *event);
+  void unlockCurrentEvent (NclFormatterEvent *event);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END

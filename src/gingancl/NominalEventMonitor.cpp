@@ -26,7 +26,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 const double NominalEventMonitor::DEFAULT_SLEEP_TIME = 5000;
 const double NominalEventMonitor::DEFAULT_ERROR = 50.0;
 
-NominalEventMonitor::NominalEventMonitor (ExecutionObject *object,
+NominalEventMonitor::NominalEventMonitor (NclExecutionObject *object,
                                           IAdapterPlayer *player)
     : Thread ()
 {
@@ -97,7 +97,7 @@ NominalEventMonitor::setTimeBaseProvider (
 void
 NominalEventMonitor::prepareNptTransitionsEvents ()
 {
-  AttributionEvent *event;
+  NclAttributionEvent *event;
   set<double> *transValues;
   set<double>::iterator i;
 
@@ -143,7 +143,7 @@ NominalEventMonitor::prepareNptTransitionsEvents ()
 
   delete transValues;
 
-  event = (AttributionEvent *)(executionObject->getEventFromAnchorId (
+  event = (NclAttributionEvent *)(executionObject->getEventFromAnchorId (
       "contentId"));
 
   if (event != NULL)
@@ -158,7 +158,7 @@ NominalEventMonitor::updateTimeBaseId (unsigned char oldContentId,
                                        unsigned char newContentId)
 {
 
-  AttributionEvent *event;
+  NclAttributionEvent *event;
 
   // checking if is an NPT loop
   if (oldContentId == newContentId)
@@ -166,7 +166,7 @@ NominalEventMonitor::updateTimeBaseId (unsigned char oldContentId,
       return;
     }
 
-  event = (AttributionEvent *)(executionObject->getEventFromAnchorId (
+  event = (NclAttributionEvent *)(executionObject->getEventFromAnchorId (
       "standby"));
 
   clog << "NominalEventMonitor::updateTimeBaseId event = '";
@@ -317,7 +317,7 @@ NominalEventMonitor::stopMonitor ()
 void
 NominalEventMonitor::run ()
 {
-  EventTransition *nextTransition = NULL;
+  NclEventTransition *nextTransition = NULL;
   double time;
   double mediaTime = 0;
   double nextEntryTime;

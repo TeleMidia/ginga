@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ANIMATIONCONTROLLER_H_
 #define _ANIMATIONCONTROLLER_H_
 
-#include "model/AttributionEvent.h"
+#include "NclAttributionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "ncl/Animation.h"
@@ -31,7 +31,7 @@ using namespace ::ginga::system;
 #include "AdapterPlayerManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "model/ExecutionObject.h"
+#include "NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
@@ -41,10 +41,10 @@ class AnimationController : public Thread
 private:
   AdapterPlayerManager *pManager;
   AdapterFormatterPlayer *player; // useful if media is playing
-  ExecutionObject *execObj;       // useful if the object isn't playing
+  NclExecutionObject *execObj;       // useful if the object isn't playing
   // or it's a Ginga Settings Node.
 
-  AttributionEvent *event; // attribution event
+  NclAttributionEvent *event; // attribution event
 
   // useful when the animation is over a region
   LayoutRegion *initRegion;
@@ -69,19 +69,19 @@ private:
   int stepSize; // this would be a vector
 
 private:
-  AnimationController (ExecutionObject *execObj,
+  AnimationController (NclExecutionObject *execObj,
                        AdapterPlayerManager *pManager,
                        AdapterFormatterPlayer *player,
-                       AttributionEvent *event, string value,
+                       NclAttributionEvent *event, string value,
                        Animation *anim);
 
   virtual ~AnimationController ();
 
 public:
-  static void startAnimation (ExecutionObject *execObj,
+  static void startAnimation (NclExecutionObject *execObj,
                               AdapterPlayerManager *pManager,
                               AdapterFormatterPlayer *player,
-                              AttributionEvent *event, string value,
+                              NclAttributionEvent *event, string value,
                               Animation *anim);
 
 private:

@@ -57,13 +57,13 @@ using namespace ::ginga::ncl;
 #include "ncl/ReferenceContent.h"
 using namespace ::ginga::ncl;
 
-#include "model/CascadingDescriptor.h"
+#include "NclCascadingDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include "model/ExecutionObject.h"
+#include "NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "model/FormatterLayout.h"
+#include "NclFormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "ContextBase.h"
@@ -102,10 +102,10 @@ protected:
 #endif
 
   DeviceLayout *deviceLayout;
-  map<int, FormatterLayout *> layoutManager;
+  map<int, NclFormatterLayout *> layoutManager;
   vector<string> *activeUris;
   string activeBaseUri;
-  FormatterLayout *mainLayout;
+  NclFormatterLayout *mainLayout;
   GingaWindowID serialized;
   GingaWindowID printScreen;
   GingaWindowID bitMapScreen;
@@ -146,12 +146,12 @@ protected:
   virtual void postMediaContent (int destDevClass);
 
 public:
-  FormatterLayout *getFormatterLayout (CascadingDescriptor *descriptor,
-                                       ExecutionObject *object);
-  GingaWindowID prepareFormatterRegion (ExecutionObject *object,
+  NclFormatterLayout *getFormatterLayout (NclCascadingDescriptor *descriptor,
+                                       NclExecutionObject *object);
+  GingaWindowID prepareFormatterRegion (NclExecutionObject *object,
                                         GingaSurfaceID renderedSurface);
-  void showObject (ExecutionObject *executionObject);
-  void hideObject (ExecutionObject *executionObject);
+  void showObject (NclExecutionObject *executionObject);
+  void hideObject (NclExecutionObject *executionObject);
 
 protected:
   virtual bool newDeviceConnected (int newDevClass, int w, int h);

@@ -59,7 +59,7 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
 
   im->addInputEventListener (this, NULL);
 
-  mainLayout = new FormatterLayout (myScreen, x, y, w, h);
+  mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
   layoutManager[deviceClass] = mainLayout;
 }
 

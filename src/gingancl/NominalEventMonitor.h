@@ -33,14 +33,14 @@ using namespace ::ginga::player;
 #include "ncl/IntervalAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/model/PresentationEvent.h"
+#include "gingancl/NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "gingancl/model/EventTransition.h"
+#include "gingancl/NclEventTransition.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::
     transition;
 
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "IAdapterPlayer.h"
@@ -52,7 +52,7 @@ class NominalEventMonitor : public Thread, public ITimeBaseListener
 private:
   double sleepTime;
   double expectedSleepTime;
-  ExecutionObject *executionObject;
+  NclExecutionObject *executionObject;
   IAdapterPlayer *adapter;
   int timeBaseId;
   ITimeBaseProvider *timeBaseProvider;
@@ -65,7 +65,7 @@ private:
   bool stopped;
 
 public:
-  NominalEventMonitor (ExecutionObject *obj, IAdapterPlayer *player);
+  NominalEventMonitor (NclExecutionObject *obj, IAdapterPlayer *player);
   virtual ~NominalEventMonitor ();
 
 private:

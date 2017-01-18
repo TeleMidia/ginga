@@ -78,10 +78,10 @@ AdapterApplicationPlayer::setNclEditListener (IPlayerListener *listener)
 }
 
 void
-AdapterApplicationPlayer::checkPlayerSurface (ExecutionObject *obj)
+AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
 {
-  CascadingDescriptor *descriptor;
-  FormatterRegion *fRegion;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *fRegion;
   LayoutRegion *ncmRegion;
   GingaSurfaceID wrapper;
   int w, h;
@@ -150,12 +150,12 @@ AdapterApplicationPlayer::hasPrepared ()
 }
 
 bool
-AdapterApplicationPlayer::prepare (ExecutionObject *object,
-                                   FormatterEvent *event)
+AdapterApplicationPlayer::prepare (NclExecutionObject *object,
+                                   NclFormatterEvent *event)
 {
 
   Content *content;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   double explicitDur;
 
   if (object == NULL)
@@ -223,9 +223,9 @@ AdapterApplicationPlayer::prepare (ExecutionObject *object,
       explicitDur = prepareProperties (object);
     }
 
-  if (event->instanceOf ("PresentationEvent"))
+  if (event->instanceOf ("NclPresentationEvent"))
     {
-      double duration = ((PresentationEvent *)event)->getDuration ();
+      double duration = ((NclPresentationEvent *)event)->getDuration ();
       bool infDur = (isNaN (duration) || isInfinity (duration));
 
       if (explicitDur < 0)
@@ -255,7 +255,7 @@ AdapterApplicationPlayer::prepare (ExecutionObject *object,
           // the object. Which means: start an interface with
           // begin = 4s an explicit duration = 5s => new duration
           // will be 1s
-          ((PresentationEvent *)event)->setEnd (explicitDur);
+          ((NclPresentationEvent *)event)->setEnd (explicitDur);
 
           /*
            * Adding event in object even though the it is added inside
@@ -269,9 +269,9 @@ AdapterApplicationPlayer::prepare (ExecutionObject *object,
           clog << "with explicitDur = '";
           clog << explicitDur << "' object duration was '";
           clog << duration << "'. Updated info: event begin = '";
-          clog << ((PresentationEvent *)event)->getBegin () << "'";
+          clog << ((NclPresentationEvent *)event)->getBegin () << "'";
           clog << " event end = '";
-          clog << ((PresentationEvent *)event)->getEnd () << "'";
+          clog << ((NclPresentationEvent *)event)->getEnd () << "'";
           clog << endl;
         }
     }
@@ -296,11 +296,11 @@ AdapterApplicationPlayer::prepare (ExecutionObject *object,
 }
 
 void
-AdapterApplicationPlayer::prepare (FormatterEvent *event)
+AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 {
   double duration;
   IntervalAnchor *intervalAnchor;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
 
   descriptor = object->getDescriptor ();
@@ -314,13 +314,13 @@ AdapterApplicationPlayer::prepare (FormatterEvent *event)
         }
     }
 
-  if (player != NULL && event->instanceOf ("AnchorEvent"))
+  if (player != NULL && event->instanceOf ("NclAnchorEvent"))
     {
-      if ((((AnchorEvent *)event)->getAnchor ())
+      if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LambdaAnchor"))
         {
 
-          duration = ((PresentationEvent *)event)->getDuration ();
+          duration = ((NclPresentationEvent *)event)->getDuration ();
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
@@ -328,23 +328,23 @@ AdapterApplicationPlayer::prepare (FormatterEvent *event)
                                 duration / 1000);
             }
         }
-      else if (((((AnchorEvent *)event)->getAnchor ()))
+      else if (((((NclAnchorEvent *)event)->getAnchor ()))
                    ->instanceOf ("IntervalAnchor"))
         {
 
           intervalAnchor
-              = (IntervalAnchor *)(((AnchorEvent *)event)->getAnchor ());
+              = (IntervalAnchor *)(((NclAnchorEvent *)event)->getAnchor ());
 
-          player->setScope (((AnchorEvent *)event)->getAnchor ()->getId (),
+          player->setScope (((NclAnchorEvent *)event)->getAnchor ()->getId (),
                             IPlayer::TYPE_PRESENTATION,
                             (intervalAnchor->getBegin () / 1000),
                             (intervalAnchor->getEnd () / 1000));
         }
-      else if (((((AnchorEvent *)event)->getAnchor ()))
+      else if (((((NclAnchorEvent *)event)->getAnchor ()))
                    ->instanceOf ("LabeledAnchor"))
         {
 
-          duration = ((PresentationEvent *)event)->getDuration ();
+          duration = ((NclPresentationEvent *)event)->getDuration ();
 
           clog << "AdapterApplicationPlayer::prepare '" << object->getId ();
           clog << "' with dur = '" << duration << "'" << endl;
@@ -352,14 +352,14 @@ AdapterApplicationPlayer::prepare (FormatterEvent *event)
           if (isNaN (duration))
             {
               player->setScope (
-                  ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                  ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                       ->getLabel (),
                   IPlayer::TYPE_PRESENTATION);
             }
           else
             {
               player->setScope (
-                  ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                  ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                       ->getLabel (),
                   IPlayer::TYPE_PRESENTATION, 0.0, duration / 1000);
             }
@@ -423,13 +423,13 @@ AdapterApplicationPlayer::start ()
 bool
 AdapterApplicationPlayer::stop ()
 {
-  map<string, FormatterEvent *>::iterator i;
-  FormatterEvent *event;
+  map<string, NclFormatterEvent *>::iterator i;
+  NclFormatterEvent *event;
   bool stopLambda = false;
 
-  if (currentEvent != NULL && currentEvent->instanceOf ("AnchorEvent")
-      && ((AnchorEvent *)currentEvent)->getAnchor () != NULL
-      && ((AnchorEvent *)currentEvent)
+  if (currentEvent != NULL && currentEvent->instanceOf ("NclAnchorEvent")
+      && ((NclAnchorEvent *)currentEvent)->getAnchor () != NULL
+      && ((NclAnchorEvent *)currentEvent)
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
@@ -548,13 +548,13 @@ AdapterApplicationPlayer::resume ()
 bool
 AdapterApplicationPlayer::abort ()
 {
-  map<string, FormatterEvent *>::iterator i;
-  FormatterEvent *event;
+  map<string, NclFormatterEvent *>::iterator i;
+  NclFormatterEvent *event;
   bool abortLambda = false;
 
-  if (currentEvent != NULL && currentEvent->instanceOf ("AnchorEvent")
-      && ((AnchorEvent *)currentEvent)->getAnchor () != NULL
-      && ((AnchorEvent *)currentEvent)
+  if (currentEvent != NULL && currentEvent->instanceOf ("NclAnchorEvent")
+      && ((NclAnchorEvent *)currentEvent)->getAnchor () != NULL
+      && ((NclAnchorEvent *)currentEvent)
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
@@ -632,7 +632,7 @@ AdapterApplicationPlayer::abort ()
 bool
 AdapterApplicationPlayer::unprepare ()
 {
-  map<string, FormatterEvent *>::iterator i;
+  map<string, NclFormatterEvent *>::iterator i;
 
   clog << "AdapterApplicationPlayer::unprepare ";
   clog << endl;
@@ -710,8 +710,8 @@ AdapterApplicationPlayer::unprepare ()
 void
 AdapterApplicationPlayer::naturalEnd ()
 {
-  map<string, FormatterEvent *>::iterator i;
-  FormatterEvent *event;
+  map<string, NclFormatterEvent *>::iterator i;
+  NclFormatterEvent *event;
 
   clog << "AdapterApplicationPlayer::naturalEnd ";
   clog << endl;
@@ -726,9 +726,9 @@ AdapterApplicationPlayer::naturalEnd ()
   while (i != preparedEvents.end ())
     {
       event = i->second;
-      if (event != NULL && event->instanceOf ("AnchorEvent")
-          && ((AnchorEvent *)event)->getAnchor () != NULL
-          && ((AnchorEvent *)event)
+      if (event != NULL && event->instanceOf ("NclAnchorEvent")
+          && ((NclAnchorEvent *)event)->getAnchor () != NULL
+          && ((NclAnchorEvent *)event)
                  ->getAnchor ()
                  ->instanceOf ("LambdaAnchor"))
         {
@@ -946,7 +946,7 @@ AdapterApplicationPlayer::run ()
 }
 
 bool
-AdapterApplicationPlayer::checkEvent (FormatterEvent *event, short type)
+AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
 {
 
   bool isPresentation;
@@ -954,10 +954,10 @@ AdapterApplicationPlayer::checkEvent (FormatterEvent *event, short type)
 
   if (event != NULL)
     {
-      isPresentation = event->instanceOf ("PresentationEvent")
+      isPresentation = event->instanceOf ("NclPresentationEvent")
                        && type == IPlayer::TYPE_PRESENTATION;
 
-      isAttribution = event->instanceOf ("AttributionEvent")
+      isAttribution = event->instanceOf ("NclAttributionEvent")
                       && type == IPlayer::TYPE_ATTRIBUTION;
 
       if (isPresentation || isAttribution)
@@ -974,7 +974,7 @@ AdapterApplicationPlayer::startEvent (string anchorId, short type,
                                       string value)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   bool fakeStart = false;
 
   event = object->getEventFromAnchorId (anchorId);
@@ -996,18 +996,18 @@ AdapterApplicationPlayer::startEvent (string anchorId, short type,
               else
                 {
                   fakeStart = event->start ();
-                  ((AttributionEvent *)event)->setValue (value);
+                  ((NclAttributionEvent *)event)->setValue (value);
                   unlockCurrentEvent (event);
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
                   }*/
                 }
             }
@@ -1035,7 +1035,7 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
                                      string value)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
 
   if (object->getId () == anchorId)
     {
@@ -1068,7 +1068,7 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
             }
           else
             {
-              ((AttributionEvent *)event)->setValue (value);
+              ((NclAttributionEvent *)event)->setValue (value);
               if (event->stop ())
                 {
                   unprepare ();
@@ -1076,13 +1076,13 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
                   }*/
                   return true;
                 }
@@ -1103,7 +1103,7 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
 bool
 AdapterApplicationPlayer::abortEvent (string anchorId, short type)
 {
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   string cvt_id = anchorId;
 
   if (object->getId () == anchorId)
@@ -1140,13 +1140,13 @@ AdapterApplicationPlayer::abortEvent (string anchorId, short type)
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (AttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event, value);
                   }*/
                   return true;
                 }
@@ -1167,7 +1167,7 @@ AdapterApplicationPlayer::abortEvent (string anchorId, short type)
 bool
 AdapterApplicationPlayer::pauseEvent (string anchorId, short type)
 {
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   string cvt_id = anchorId;
 
   if (object->getId () == anchorId)
@@ -1218,7 +1218,7 @@ AdapterApplicationPlayer::pauseEvent (string anchorId, short type)
 bool
 AdapterApplicationPlayer::resumeEvent (string anchorId, short type)
 {
-  FormatterEvent *event;
+  NclFormatterEvent *event;
   string cvt_id = anchorId;
 
   if (object->getId () == anchorId)

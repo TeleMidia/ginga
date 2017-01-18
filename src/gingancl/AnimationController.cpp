@@ -20,10 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 
-AnimationController::AnimationController (ExecutionObject *execObj,
+AnimationController::AnimationController (NclExecutionObject *execObj,
                                           AdapterPlayerManager *pManager,
                                           AdapterFormatterPlayer *player,
-                                          AttributionEvent *event,
+                                          NclAttributionEvent *event,
                                           string value, Animation *anim)
 {
 
@@ -67,10 +67,10 @@ AnimationController::~AnimationController ()
 }
 
 void
-AnimationController::startAnimation (ExecutionObject *execObj,
+AnimationController::startAnimation (NclExecutionObject *execObj,
                                      AdapterPlayerManager *pManager,
                                      AdapterFormatterPlayer *player,
-                                     AttributionEvent *event, string value,
+                                     NclAttributionEvent *event, string value,
                                      Animation *anim)
 {
 
@@ -203,7 +203,7 @@ bool
 AnimationController::loadInitValues ()
 {
   double propValue;
-  CascadingDescriptor *descriptor = NULL;
+  NclCascadingDescriptor *descriptor = NULL;
   unsigned int i;
   string value = "";
 
@@ -249,8 +249,8 @@ AnimationController::loadInitValues ()
 bool
 AnimationController::loadTargetValues ()
 {
-  CascadingDescriptor *descriptor = NULL;
-  FormatterRegion *region = NULL;
+  NclCascadingDescriptor *descriptor = NULL;
+  NclFormatterRegion *region = NULL;
   unsigned int i;
 
   this->targetValues.clear ();

@@ -30,7 +30,7 @@ void
 AdapterSubtitlePlayer::createPlayer ()
 {
   string paramValue;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   player = new SrtPlayer (myScreen, mrl.c_str ());
 
   descriptor = object->getDescriptor ();

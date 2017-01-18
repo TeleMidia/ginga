@@ -37,9 +37,9 @@ AdapterNCLPlayer::AdapterNCLPlayer () : AdapterApplicationPlayer ()
 void
 AdapterNCLPlayer::createPlayer ()
 {
-  FormatterRegion *region = NULL;
+  NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion;
-  CascadingDescriptor *descriptor = NULL;
+  NclCascadingDescriptor *descriptor = NULL;
   string value;
   bool isPercent;
   GingaSurfaceID s;
@@ -157,27 +157,27 @@ AdapterNCLPlayer::createPlayer ()
 }
 
 bool
-AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
+AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 
   lockEvent ();
   if (preparedEvents.count (event->getId ()) != 0
-      && !event->instanceOf ("SelectionEvent")
-      && event->instanceOf ("AnchorEvent"))
+      && !event->instanceOf ("NclSelectionEvent")
+      && event->instanceOf ("NclAnchorEvent"))
     {
 
-      interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
+      interfaceId = ((NclAnchorEvent *)event)->getAnchor ()->getId ();
 
-      if ((((AnchorEvent *)event)->getAnchor ())
+      if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LabeledAnchor"))
         {
 
           interfaceId
-              = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+              = ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                     ->getLabel ();
         }
-      else if ((((AnchorEvent *)event)->getAnchor ())
+      else if ((((NclAnchorEvent *)event)->getAnchor ())
                    ->instanceOf ("LambdaAnchor"))
         {
 
@@ -185,7 +185,7 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)object)
           ->setCurrentEvent (currentEvent);
 
       if (player != NULL)
@@ -193,10 +193,10 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
           player->setCurrentScope (interfaceId);
         }
     }
-  else if (event->instanceOf ("AttributionEvent"))
+  else if (event->instanceOf ("NclAttributionEvent"))
     {
       interfaceId
-          = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
+          = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
 
       if (player != NULL)
         {
@@ -204,7 +204,7 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)object)
           ->setCurrentEvent (currentEvent);
 
       if (player != NULL)
@@ -222,7 +222,7 @@ AdapterNCLPlayer::setAndLockCurrentEvent (FormatterEvent *event)
 }
 
 void
-AdapterNCLPlayer::unlockCurrentEvent (FormatterEvent *event)
+AdapterNCLPlayer::unlockCurrentEvent (NclFormatterEvent *event)
 {
   if (event != currentEvent)
     {

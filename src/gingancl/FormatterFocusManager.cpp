@@ -30,7 +30,7 @@ using namespace ::ginga::multidevice;
 #include "FormatterConverter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;
 
-#include "model/FormatterLayout.h"
+#include "NclFormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "gingancl/FormatterScheduler.h"
@@ -46,7 +46,7 @@ static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
-    FormatterMultiDevice *multiDevice, ILinkActionListener *settingActions,
+    FormatterMultiDevice *multiDevice, INclLinkActionListener *settingActions,
     void *converter)
 {
 
@@ -57,7 +57,7 @@ FormatterFocusManager::FormatterFocusManager (
 
   myScreen = playerManager->getNclPlayerData ()->screenId;
   im = dm->getInputManager (myScreen);
-  focusTable = new map<string, set<ExecutionObject *> *>;
+  focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
   isHandler = false;
@@ -218,9 +218,9 @@ FormatterFocusManager::isKeyHandler ()
 bool
 FormatterFocusManager::setKeyHandler (bool isHandler)
 {
-  ExecutionObject *focusedObj;
-  CascadingDescriptor *dc;
-  FormatterRegion *fr;
+  NclExecutionObject *focusedObj;
+  NclCascadingDescriptor *dc;
+  NclFormatterRegion *fr;
   string ix;
 
   /*clog << "FormatterFocusManager::setKeyHandler(" << this << ")";
@@ -301,13 +301,13 @@ FormatterFocusManager::setHandlingObjects (bool isHandling)
   ((FormatterConverter *)converter)->setHandlingStatus (isHandling);
 }
 
-ExecutionObject *
+NclExecutionObject *
 FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
 {
 
-  map<string, set<ExecutionObject *> *>::iterator i;
-  set<ExecutionObject *>::iterator j;
-  CascadingDescriptor *desc;
+  map<string, set<NclExecutionObject *> *>::iterator i;
+  set<NclExecutionObject *>::iterator j;
+  NclCascadingDescriptor *desc;
   bool visible;
 
   i = focusTable->find (focusIndex);
@@ -338,14 +338,14 @@ FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
 }
 
 void
-FormatterFocusManager::insertObject (ExecutionObject *obj,
+FormatterFocusManager::insertObject (NclExecutionObject *obj,
                                      string focusIndex)
 {
 
   string auxIndex;
-  map<string, set<ExecutionObject *> *>::iterator i;
+  map<string, set<NclExecutionObject *> *>::iterator i;
   vector<string>::iterator j;
-  set<ExecutionObject *> *objs;
+  set<NclExecutionObject *> *objs;
 
   i = focusTable->find (focusIndex);
   if (i != focusTable->end ())
@@ -354,7 +354,7 @@ FormatterFocusManager::insertObject (ExecutionObject *obj,
     }
   else
     {
-      objs = new set<ExecutionObject *>;
+      objs = new set<NclExecutionObject *>;
       (*focusTable)[focusIndex] = objs;
     }
 
@@ -362,14 +362,14 @@ FormatterFocusManager::insertObject (ExecutionObject *obj,
 }
 
 void
-FormatterFocusManager::removeObject (ExecutionObject *obj,
+FormatterFocusManager::removeObject (NclExecutionObject *obj,
                                      string focusIndex)
 {
 
-  map<string, set<ExecutionObject *> *>::iterator i;
-  set<ExecutionObject *>::iterator j;
+  map<string, set<NclExecutionObject *> *>::iterator i;
+  set<NclExecutionObject *>::iterator j;
   vector<string>::iterator k;
-  set<ExecutionObject *> *objs;
+  set<NclExecutionObject *> *objs;
 
   i = focusTable->find (focusIndex);
   if (i != focusTable->end ())
@@ -391,7 +391,7 @@ FormatterFocusManager::removeObject (ExecutionObject *obj,
 void
 FormatterFocusManager::resetKeyMaster ()
 {
-  CascadingDescriptor *desc;
+  NclCascadingDescriptor *desc;
   AdapterFormatterPlayer *player = NULL;
 
   if (selectedObject != NULL)
@@ -415,9 +415,9 @@ FormatterFocusManager::resetKeyMaster ()
 void
 FormatterFocusManager::tapObject (void *executionObject)
 {
-  ExecutionObject *object = (ExecutionObject *)executionObject;
-  CascadingDescriptor *ds = NULL;
-  FormatterRegion *fr = NULL;
+  NclExecutionObject *object = (NclExecutionObject *)executionObject;
+  NclCascadingDescriptor *ds = NULL;
+  NclFormatterRegion *fr = NULL;
 
   if (object->isSleeping ())
     {
@@ -478,9 +478,9 @@ FormatterFocusManager::tapObject (void *executionObject)
 void
 FormatterFocusManager::setKeyMaster (string mediaId)
 {
-  ExecutionObject *nextObject = NULL;
-  CascadingDescriptor *nextDescriptor = NULL;
-  FormatterRegion *fr = NULL;
+  NclExecutionObject *nextObject = NULL;
+  NclCascadingDescriptor *nextDescriptor = NULL;
+  NclFormatterRegion *fr = NULL;
   AdapterFormatterPlayer *player = NULL;
   LayoutRegion *ncmRegion = NULL;
   bool isFRVisible = false;
@@ -573,10 +573,10 @@ FormatterFocusManager::setKeyMaster (string mediaId)
 void
 FormatterFocusManager::setFocus (string focusIndex)
 {
-  ExecutionObject *nextObject = NULL;
-  ExecutionObject *currentObject = NULL;
-  CascadingDescriptor *currentDescriptor = NULL;
-  CascadingDescriptor *nextDescriptor = NULL;
+  NclExecutionObject *nextObject = NULL;
+  NclExecutionObject *currentObject = NULL;
+  NclCascadingDescriptor *currentDescriptor = NULL;
+  NclCascadingDescriptor *nextDescriptor = NULL;
 
   if ((focusIndex == currentFocus && currentFocus != "") || !isHandler)
     {
@@ -641,7 +641,7 @@ FormatterFocusManager::setFocus (string focusIndex)
 }
 
 void
-FormatterFocusManager::setFocus (CascadingDescriptor *descriptor)
+FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 {
   double borderAlpha;
   bool canDelFocusColor = false;
@@ -650,7 +650,7 @@ FormatterFocusManager::setFocus (CascadingDescriptor *descriptor)
   Color *selColor = NULL;
   int borderWidth = -3;
   int width;
-  FormatterRegion *fr = NULL;
+  NclFormatterRegion *fr = NULL;
 
   if (!isHandler)
     {
@@ -724,11 +724,11 @@ FormatterFocusManager::setFocus (CascadingDescriptor *descriptor)
 }
 
 void
-FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
+FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
 {
   GingaWindowID wId;
   AdapterFormatterPlayer *player;
-  FormatterRegion *fRegion;
+  NclFormatterRegion *fRegion;
 
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
@@ -753,10 +753,10 @@ FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
 }
 
 void
-FormatterFocusManager::showObject (ExecutionObject *object)
+FormatterFocusManager::showObject (NclExecutionObject *object)
 {
-  CascadingDescriptor *descriptor;
-  FormatterRegion *fr = NULL;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *fr = NULL;
   string focusIndex, auxIndex;
   string paramValue, mediaId;
   AdapterFormatterPlayer *player;
@@ -889,12 +889,12 @@ FormatterFocusManager::showObject (ExecutionObject *object)
 }
 
 void
-FormatterFocusManager::hideObject (ExecutionObject *object)
+FormatterFocusManager::hideObject (NclExecutionObject *object)
 {
   string focusIndex = "", ix;
-  FormatterRegion *fr;
+  NclFormatterRegion *fr;
   AdapterFormatterPlayer *player;
-  map<string, set<ExecutionObject *> *>::iterator i;
+  map<string, set<NclExecutionObject *> *>::iterator i;
 
   if (object == NULL || object->getDescriptor () == NULL)
     {
@@ -913,7 +913,7 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
       removeObject (object, focusIndex);
       Thread::mutexUnlock (&mutexTable);
 
-      if (fr != NULL && fr->getFocusState () == FormatterRegion::SELECTED
+      if (fr != NULL && fr->getFocusState () == NclFormatterRegion::SELECTED
           && selectedObject == object)
         {
 
@@ -949,7 +949,7 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
 }
 
 bool
-FormatterFocusManager::keyCodeOk (ExecutionObject *currentObject)
+FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
 {
   AdapterFormatterPlayer *player;
   bool isHandling = false;
@@ -1001,8 +1001,8 @@ FormatterFocusManager::keyCodeOk (ExecutionObject *currentObject)
 bool
 FormatterFocusManager::keyCodeBack ()
 {
-  CascadingDescriptor *selectedDescriptor;
-  FormatterRegion *fr = NULL;
+  NclCascadingDescriptor *selectedDescriptor;
+  NclFormatterRegion *fr = NULL;
   AdapterFormatterPlayer *player;
   string ix;
   /*
@@ -1207,9 +1207,9 @@ FormatterFocusManager::setMotionBoundaries (int x, int y, int w, int h)
 void
 FormatterFocusManager::changeSettingState (string name, string act)
 {
-  set<ExecutionObject *> *settingObjects;
-  set<ExecutionObject *>::iterator i;
-  FormatterEvent *event;
+  set<NclExecutionObject *> *settingObjects;
+  set<NclExecutionObject *>::iterator i;
+  NclFormatterEvent *event;
   string keyM;
 
   settingObjects
@@ -1223,7 +1223,7 @@ FormatterFocusManager::changeSettingState (string name, string act)
   while (i != settingObjects->end ())
     {
       event = (*i)->getEventFromAnchorId (name);
-      if (event != NULL && event->instanceOf ("AttributionEvent"))
+      if (event != NULL && event->instanceOf ("NclAttributionEvent"))
         {
           if (act == "start")
             {
@@ -1233,7 +1233,7 @@ FormatterFocusManager::changeSettingState (string name, string act)
             {
               if (name == "service.currentFocus")
                 {
-                  ((AttributionEvent *)(event))->setValue (currentFocus);
+                  ((NclAttributionEvent *)(event))->setValue (currentFocus);
                 }
               else if (name == "service.currentKeyMaster")
                 {
@@ -1243,7 +1243,7 @@ FormatterFocusManager::changeSettingState (string name, string act)
                                   ->getDataEntity ()
                                   ->getId ());
 
-                      ((AttributionEvent *)event)->setValue (keyM);
+                      ((NclAttributionEvent *)event)->setValue (keyM);
                     }
                 }
 
@@ -1260,11 +1260,11 @@ FormatterFocusManager::changeSettingState (string name, string act)
 bool
 FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
 {
-  ExecutionObject *currentObject;
-  CascadingDescriptor *currentDescriptor;
-  FormatterRegion *fr;
+  NclExecutionObject *currentObject;
+  NclCascadingDescriptor *currentDescriptor;
+  NclFormatterRegion *fr;
   string nextIndex;
-  map<string, set<ExecutionObject *> *>::iterator i;
+  map<string, set<NclExecutionObject *> *>::iterator i;
 
   const int code = userEvent->getKeyCode (myScreen);
 
@@ -1414,8 +1414,8 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
 bool
 FormatterFocusManager::motionEventReceived (int x, int y, int z)
 {
-  FormatterLayout *formatterLayout;
-  ExecutionObject *object;
+  NclFormatterLayout *formatterLayout;
+  NclExecutionObject *object;
   string objectFocusIndex;
 
   /*clog << "FormatterFocusManager::motionEventReceived (x, y, z) = '";
@@ -1424,7 +1424,7 @@ FormatterFocusManager::motionEventReceived (int x, int y, int z)
 
   if (isHandler)
     {
-      formatterLayout = (FormatterLayout *)(multiDevice->getMainLayout ());
+      formatterLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
       if (formatterLayout != NULL)
         {
           if ((x < xOffset || x > xOffset + width) || y < yOffset
@@ -1437,7 +1437,7 @@ FormatterFocusManager::motionEventReceived (int x, int y, int z)
           object = formatterLayout->getObject (x, y);
           if (object != NULL && object->getDescriptor () != NULL)
             {
-              FormatterRegion *fr;
+              NclFormatterRegion *fr;
               fr = object->getDescriptor ()->getFormatterRegion ();
 
               if (fr != NULL)

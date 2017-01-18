@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _APPLICATIONPLAYERADAPTER_H_
 #define _APPLICATIONPLAYERADAPTER_H_
 
-#include "gingancl/model/ApplicationExecutionObject.h"
+#include "gingancl/NclApplicationExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "AdapterFormatterPlayer.h"
@@ -49,8 +49,8 @@ private:
 
 protected:
   vector<ApplicationStatus *> notes;
-  map<string, FormatterEvent *> preparedEvents;
-  FormatterEvent *currentEvent;
+  map<string, NclFormatterEvent *> preparedEvents;
+  NclFormatterEvent *currentEvent;
 
 public:
   AdapterApplicationPlayer ();
@@ -59,14 +59,14 @@ public:
   void setNclEditListener (IPlayerListener *listener);
 
 protected:
-  void checkPlayerSurface (ExecutionObject *obj);
+  void checkPlayerSurface (NclExecutionObject *obj);
   virtual void createPlayer ();
 
   virtual bool hasPrepared ();
-  virtual bool prepare (ExecutionObject *object, FormatterEvent *mainEvent);
+  virtual bool prepare (NclExecutionObject *object, NclFormatterEvent *mainEvent);
 
 private:
-  void prepare (FormatterEvent *event);
+  void prepare (NclFormatterEvent *event);
 
 public:
   virtual bool start ();
@@ -90,11 +90,11 @@ private:
   void run ();
 
 public:
-  virtual bool setAndLockCurrentEvent (FormatterEvent *event) = 0;
-  virtual void unlockCurrentEvent (FormatterEvent *event) = 0;
+  virtual bool setAndLockCurrentEvent (NclFormatterEvent *event) = 0;
+  virtual void unlockCurrentEvent (NclFormatterEvent *event) = 0;
 
 private:
-  bool checkEvent (FormatterEvent *event, short type);
+  bool checkEvent (NclFormatterEvent *event, short type);
 
 protected:
   bool startEvent (string anchorId, short type, string value);

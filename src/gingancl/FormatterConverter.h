@@ -50,34 +50,34 @@ using namespace ::ginga::ncl;
 #include "ncl/ReferNode.h"
 using namespace ::ginga::ncl;
 
-#include "model/ExecutionObjectSwitch.h"
-#include "model/SwitchEvent.h"
+#include "NclExecutionObjectSwitch.h"
+#include "NclSwitchEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 
-#include "model/AttributionEvent.h"
-#include "model/PresentationEvent.h"
-#include "model/SelectionEvent.h"
-#include "model/IEventListener.h"
-#include "model/FormatterEvent.h"
-#include "model/PresentationEvent.h"
+#include "NclAttributionEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
+#include "INclEventListener.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "model/FormatterCausalLink.h"
-#include "model/FormatterLink.h"
-#include "model/LinkAction.h"
-#include "model/LinkCompoundAction.h"
-#include "model/LinkSimpleAction.h"
-#include "model/ILinkActionListener.h"
+#include "NclFormatterCausalLink.h"
+#include "NclFormatterLink.h"
+#include "NclLinkAction.h"
+#include "NclLinkCompoundAction.h"
+#include "NclLinkSimpleAction.h"
+#include "INclLinkActionListener.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
-#include "model/CascadingDescriptor.h"
-#include "model/FormatterLayout.h"
+#include "NclCascadingDescriptor.h"
+#include "NclFormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include "model/CompositeExecutionObject.h"
-#include "model/ApplicationExecutionObject.h"
-#include "model/ExecutionObject.h"
-#include "model/NodeNesting.h"
+#include "NclCompositeExecutionObject.h"
+#include "NclApplicationExecutionObject.h"
+#include "NclExecutionObject.h"
+#include "NclNodeNesting.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "RuleAdapter.h"
@@ -93,17 +93,17 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 
-class FormatterConverter : public IEventListener
+class FormatterConverter : public INclEventListener
 {
 private:
   int depthLevel;
   static int dummyCount;
-  map<string, ExecutionObject *> executionObjects;
-  set<FormatterEvent *> listening;
-  set<ExecutionObject *> settingObjects;
+  map<string, NclExecutionObject *> executionObjects;
+  set<NclFormatterEvent *> listening;
+  set<NclExecutionObject *> settingObjects;
   void *linkCompiler; // FormatterLinkConverter*
   FormatterScheduler *scheduler;
-  ILinkActionListener *actionListener;
+  INclLinkActionListener *actionListener;
   RuleAdapter *ruleAdapter;
   pthread_mutex_t objectsMutex;
   pthread_mutex_t lMutex;
@@ -114,118 +114,118 @@ public:
   virtual ~FormatterConverter ();
 
   void executionObjectReleased (string objectId);
-  set<ExecutionObject *> *getRunningObjects ();
+  set<NclExecutionObject *> *getRunningObjects ();
   void setHandlingStatus (bool hanling);
-  ExecutionObject *getObjectFromNodeId (string id);
+  NclExecutionObject *getObjectFromNodeId (string id);
 
   void setScheduler (void *scheduler);
-  void setLinkActionListener (ILinkActionListener *actionListener);
+  void setLinkActionListener (INclLinkActionListener *actionListener);
 
   void setDepthLevel (int level);
   int getDepthLevel ();
   void checkGradSameInstance (set<ReferNode *> *gradSame,
-                              ExecutionObject *object);
+                              NclExecutionObject *object);
 
-  CompositeExecutionObject *
-  addSameInstance (ExecutionObject *executionObject, ReferNode *referNode);
+  NclCompositeExecutionObject *
+  addSameInstance (NclExecutionObject *executionObject, ReferNode *referNode);
 
 private:
-  void addExecutionObject (ExecutionObject *executionObject,
-                           CompositeExecutionObject *parentObject,
+  void addExecutionObject (NclExecutionObject *executionObject,
+                           NclCompositeExecutionObject *parentObject,
                            int depthLevel);
 
 public:
-  void compileExecutionObjectLinks (ExecutionObject *executionObject,
+  void compileExecutionObjectLinks (NclExecutionObject *executionObject,
                                     int depthLevel);
 
-  ExecutionObject *getExecutionObjectFromPerspective (
-      NodeNesting *perspective, GenericDescriptor *descriptor,
+  NclExecutionObject *getExecutionObjectFromPerspective (
+      NclNodeNesting *perspective, GenericDescriptor *descriptor,
       int depthLevel) throw (ObjectCreationForbiddenException *);
 
 private:
-  void checkMirror (ExecutionObject *object, int depthLevel);
+  void checkMirror (NclExecutionObject *object, int depthLevel);
 
 public:
-  set<ExecutionObject *> *getSettingNodeObjects ();
+  set<NclExecutionObject *> *getSettingNodeObjects ();
 
 private:
-  CompositeExecutionObject *getParentExecutionObject (
-      NodeNesting *perspective,
+  NclCompositeExecutionObject *getParentExecutionObject (
+      NclNodeNesting *perspective,
       int depthLevel) throw (ObjectCreationForbiddenException *);
 
 public:
-  FormatterEvent *getEvent (ExecutionObject *executionObject,
+  NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
                             InterfacePoint *interfacePoint,
                             int ncmEventType, string key);
 
 private:
-  void createMultichannelObject (CompositeExecutionObject *compositeObject,
+  void createMultichannelObject (NclCompositeExecutionObject *compositeObject,
                                  int depthLevel);
 
-  ExecutionObject *createExecutionObject (string id,
-                                          NodeNesting *perspective,
-                                          CascadingDescriptor *descriptor,
+  NclExecutionObject *createExecutionObject (string id,
+                                          NclNodeNesting *perspective,
+                                          NclCascadingDescriptor *descriptor,
                                           int depthLevel);
 
   static bool hasDescriptorPropName (string name);
 
   static Descriptor *createDummyDescriptor (Node *node);
-  static CascadingDescriptor *createDummyCascadingDescriptor (Node *node);
+  static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);
 
-  static CascadingDescriptor *checkCascadingDescriptor (Node *node);
-  static CascadingDescriptor *
-  checkContextCascadingDescriptor (NodeNesting *nodePerspective,
-                                   CascadingDescriptor *cascadingDescriptor,
+  static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
+  static NclCascadingDescriptor *
+  checkContextCascadingDescriptor (NclNodeNesting *nodePerspective,
+                                   NclCascadingDescriptor *cascadingDescriptor,
                                    Node *ncmNode);
 
 public:
-  static CascadingDescriptor *
-  getCascadingDescriptor (NodeNesting *nodePerspective,
+  static NclCascadingDescriptor *
+  getCascadingDescriptor (NclNodeNesting *nodePerspective,
                           GenericDescriptor *descriptor);
 
 private:
   void processLink (Link *ncmLink, Node *dataObject,
-                    ExecutionObject *executionObject,
-                    CompositeExecutionObject *parentObject);
+                    NclExecutionObject *executionObject,
+                    NclCompositeExecutionObject *parentObject);
 
 public:
-  void compileExecutionObjectLinks (ExecutionObject *executionObject,
+  void compileExecutionObjectLinks (NclExecutionObject *executionObject,
                                     Node *dataObject,
-                                    CompositeExecutionObject *parentObject,
+                                    NclCompositeExecutionObject *parentObject,
                                     int depthLevel);
 
 private:
-  void setActionListener (LinkAction *action);
+  void setActionListener (NclLinkAction *action);
 
 public:
-  ExecutionObject *
-  processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
+  NclExecutionObject *
+  processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
 
 private:
-  void resolveSwitchEvents (ExecutionObjectSwitch *switchObject,
+  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject,
                             int depthLevel);
 
-  FormatterEvent *insertNode (NodeNesting *perspective,
+  NclFormatterEvent *insertNode (NclNodeNesting *perspective,
                               InterfacePoint *interfacePoint,
                               GenericDescriptor *descriptor);
 
 public:
-  FormatterEvent *insertContext (NodeNesting *contextPerspective,
+  NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
                                  Port *port);
 
-  bool removeExecutionObject (ExecutionObject *executionObject,
+  bool removeExecutionObject (NclExecutionObject *executionObject,
                               ReferNode *referNode);
 
-  bool removeExecutionObject (ExecutionObject *executionObject);
+  bool removeExecutionObject (NclExecutionObject *executionObject);
 
 private:
-  bool ntsRemoveExecutionObject (ExecutionObject *executionObject);
+  bool ntsRemoveExecutionObject (NclExecutionObject *executionObject);
 
 public:
-  ExecutionObject *hasExecutionObject (Node *node,
+  NclExecutionObject *hasExecutionObject (Node *node,
                                        GenericDescriptor *descriptor);
 
-  FormatterCausalLink *addCausalLink (ContextNode *context,
+  NclFormatterCausalLink *addCausalLink (ContextNode *context,
                                       CausalLink *link);
 
   void eventStateChanged (void *someEvent, short transition,
