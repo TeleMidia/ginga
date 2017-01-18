@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _EventDescriptor_H_
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class NCLEventDescriptor {
 		public:
@@ -34,5 +34,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 			static string extractMarks(string eventParam);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END
 #endif //_EventDescriptor_H_

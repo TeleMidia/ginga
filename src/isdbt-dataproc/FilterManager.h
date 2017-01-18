@@ -23,10 +23,10 @@ using namespace ::ginga::tsparser;
 
 #include "SectionFilter.h"
 #include "DsmccModule.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+using namespace ::ginga::dataproc;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class FilterManager {
 		private:
@@ -57,5 +57,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			void setBlockSize(unsigned short size);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
+GINGA_DATAPROC_END
 #endif /*FILTERMANAGER_H_*/

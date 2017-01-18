@@ -29,7 +29,7 @@ using namespace ::ginga::system;
 #include "IDsmccObjectListener.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class DsmccObjectProcessor {
 		private:
@@ -61,5 +61,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 			void notifyObjectListeners(DsmccObject* obj);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END
 #endif /*OBJECTPROCESSOR_H_*/

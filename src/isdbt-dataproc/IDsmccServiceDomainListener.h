@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::tsparser;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class IDsmccServiceDomainListener {
 		public:
@@ -35,5 +35,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 					map<string, string>* paths)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
+GINGA_DATAPROC_END
 #endif /*ISTREAMEVENTLISTENER_H_*/

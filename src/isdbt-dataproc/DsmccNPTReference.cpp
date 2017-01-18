@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccNPTReference.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 DsmccNPTReference::DsmccNPTReference() : DsmccMpegDescriptor(0x01) {
 	postDiscontinuityIndicator = 0;
@@ -161,4 +161,4 @@ void DsmccNPTReference::setScaleDenominator(unsigned short denominator) {
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END

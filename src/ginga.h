@@ -128,6 +128,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_END               NS_END
 #define GINGA_CTXMGMT_BEGIN     NS_BEGIN2 (ginga, ctxmgmt)
 #define GINGA_CTXMGMT_END       NS_END2
+#define GINGA_DATAPROC_BEGIN    NS_BEGIN2 (ginga, dataproc)
+#define GINGA_DATAPROC_END      NS_END2
 #define GINGA_IC_BEGIN          NS_BEGIN2 (ginga, ic)
 #define GINGA_IC_END            NS_END2
 #define GINGA_LSSM_BEGIN        NS_BEGIN2 (ginga, lssm)
@@ -152,36 +154,6 @@ typedef unsigned int GingaProviderID;
 #define GINGA_UTIL_END          NS_END2
 
 
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN\
-  NS_BEGIN6 (br, pucrio, telemidia, ginga, core, dataprocessing)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END\
-  NS_END6
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, dataprocessing, carousel)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN\
-  NS_BEGIN8 (br, pucrio, telemidia, ginga, core, dataprocessing, dsmcc, npt)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END\
-  NS_END8
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, dataprocessing, epg)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, dataprocessing, ncl)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END\
-  NS_END7
-
 #define BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN\
   NS_BEGIN7 (br, pucrio, telemidia, ginga, ncl, adaptation, context)
 

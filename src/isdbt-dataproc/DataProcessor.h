@@ -28,11 +28,11 @@ using namespace ::ginga::tsparser;
 #include "IDsmccServiceDomainListener.h"
 #include "IDsmccObjectListener.h"
 #include "DsmccMessageProcessor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+using namespace ::ginga::dataproc;
 
 #include "EPGProcessor.h"
 #include "IEPGListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+using namespace ::ginga::dataproc;
 
 #include "FilterManager.h"
 #include "system/ITimeBaseProvider.h"
@@ -46,20 +46,20 @@ using namespace ::ginga::tuner;
 using namespace ::ginga::tsparser;
 
 #include "IDsmccStreamEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
+using namespace ::ginga::dataproc;
 
 #include "IDsmccObjectListener.h"
 #include "IDsmccServiceDomainListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+using namespace ::ginga::dataproc;
 
 #include "IEPGListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
+using namespace ::ginga::dataproc;
 
 
 #include "IDsmccStreamEventListener.h"
 
 #include "DsmccNPTProcessor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
+using namespace ::ginga::dataproc;
 
 
 struct notifyData {
@@ -67,7 +67,7 @@ struct notifyData {
 	DsmccStreamEvent* se;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class DataProcessor : public IFilterListener, public ITunerListener,
 				public IDsmccServiceDomainListener, public Thread {
@@ -138,5 +138,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
+GINGA_DATAPROC_END
 #endif /*DataProcessor_H_*/

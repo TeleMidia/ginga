@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 #define TAG_BIOP 0x49534F06
 #define TAG_BIOP_OBJECT_LOCATION 0x49534F50
@@ -46,6 +46,6 @@ public:
   void print();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END
 
 #endif /* IOR_H */

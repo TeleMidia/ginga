@@ -14,19 +14,19 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
-
 #include "config.h"
 #include "NCLMetadataParser.h"
 #include "NCLDataFile.h"
 #include "NCLMetadata.h"
+#include "INCLMetadata.h"
 
+GINGA_DATAPROC_BEGIN
 
 typedef struct {
-	::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::INCLMetadata* metadata;
+	INCLMetadata* metadata;
 	bool isParsing;
 } MetadataAndParser;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 
 	INCLMetadata* NCLMetadataParser::parse(string xmlDocument) {
 		FILE* fd;
@@ -224,4 +224,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END

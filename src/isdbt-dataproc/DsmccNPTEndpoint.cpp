@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccNPTEndpoint.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 
 DsmccNPTEndpoint::DsmccNPTEndpoint() : DsmccMpegDescriptor(0x02) {
@@ -111,4 +111,4 @@ void DsmccNPTEndpoint::setStopNPT(uint64_t npt) {
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END

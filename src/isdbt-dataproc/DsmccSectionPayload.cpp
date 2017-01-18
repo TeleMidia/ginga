@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccSectionPayload.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 DsmccSectionPayload::DsmccSectionPayload(char* data, unsigned int length) {
 	payload            = data;
@@ -256,4 +256,4 @@ void DsmccSectionPayload::clearDsmccDescritor() {
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END

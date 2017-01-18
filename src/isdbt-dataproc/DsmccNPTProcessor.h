@@ -36,7 +36,7 @@ using namespace ::ginga::tuner;
 #include "DsmccTimeBaseClock.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 
 class DsmccNPTProcessor : public Thread, public ITimeBaseProvider {
@@ -124,5 +124,5 @@ class DsmccNPTProcessor : public Thread, public ITimeBaseProvider {
 };
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END
 #endif /* NPTPROCESSOR_H_ */
