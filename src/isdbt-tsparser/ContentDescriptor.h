@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define CONTENTDESCRIPTOR_H_
 
 #include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 
 
@@ -30,10 +30,8 @@ struct Content {
 	unsigned char userNibble2;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
-namespace si{
-namespace descriptors{
 	class ContentDescriptor : public IMpegDescriptor {
 		protected:
 			//unsigned char contentNibbleLevel1;
@@ -55,8 +53,5 @@ namespace descriptors{
 			size_t process (char* data, size_t pos);
 	};
 
-}
-}
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /* CONTENTDESCRIPTOR_H_ */

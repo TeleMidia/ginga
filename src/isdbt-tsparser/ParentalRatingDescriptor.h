@@ -23,10 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
-
-namespace si{
-namespace descriptors{
+GINGA_TSPARSER_BEGIN
 
 	class ParentalRatingDescriptor : public IParentalRatingDescriptor {
 		protected:
@@ -44,8 +41,5 @@ namespace descriptors{
 			size_t process (char* data, size_t pos);
 	};
 
-}
-}
-
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /* PARENTALRATINGDESCRIPTOR_H_ */

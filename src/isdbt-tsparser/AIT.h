@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define AIT_H_
 
 #include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "Application.h"
 #include "ApplicationDescriptor.h"
@@ -31,7 +31,7 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 #include "IAIT.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class AIT : public IAIT {
 		private:
@@ -54,5 +54,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 	};
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /* AIT_H_ */

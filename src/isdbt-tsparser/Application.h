@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define APPLICATION_H_
 
 #include "IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "ApplicationDescriptor.h"
 #include "ApplicationLocationDescriptor.h"
@@ -33,7 +33,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 using namespace ::ginga::system;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 
 	typedef struct {
@@ -64,5 +64,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			size_t process(char* data, size_t pos);
 		};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /* APPLICATION_H_ */

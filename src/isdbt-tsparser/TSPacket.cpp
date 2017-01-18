@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/TSPacket.h"
 #include "isdbt-tsparser/Demuxer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	TSPacket::TSPacket(char* packetData) {
 		isSectionType      = false;
@@ -494,4 +494,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 		clog << endl << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END

@@ -27,7 +27,7 @@ struct UnpPmtTime {
 		double time;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class Pat : public TransportSection {
 		private:
@@ -91,5 +91,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			void print();
 	 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /*PAT_H_*/

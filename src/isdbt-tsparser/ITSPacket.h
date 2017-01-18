@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITSPACKET_
 #define ITSPACKET_
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class ITSPacket {
 	public:
@@ -43,5 +43,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 		virtual unsigned int getPacketCount()=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*TSPACKET_*/

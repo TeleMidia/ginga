@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IServiceDomainListener_H_
 
 #include "isdbt-tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN

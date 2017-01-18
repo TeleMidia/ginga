@@ -28,7 +28,7 @@ using namespace ::ginga::system;
 #include "isdbt-tsparser/ITSPacket.h"
 #include "isdbt-tsparser/ITransportSection.h"
 #include "isdbt-tsparser/IFilterListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN

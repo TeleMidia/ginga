@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "isdbt-tsparser/StreamIdentifierDescriptor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+GINGA_TSPARSER_BEGIN
 
 
 	StreamIdentifierDescriptor::StreamIdentifierDescriptor() {
@@ -59,4 +59,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
+GINGA_TSPARSER_END

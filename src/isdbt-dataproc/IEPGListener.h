@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IEPGLISTENER_H_
 
 #include "isdbt-tsparser/IEventInfo.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 
 /*

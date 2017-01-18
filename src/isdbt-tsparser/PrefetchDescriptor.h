@@ -21,9 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 #include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 
 	struct Prefetch {
@@ -48,5 +48,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 	};
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /* PREFETCHDESCRIPTOR_H_ */

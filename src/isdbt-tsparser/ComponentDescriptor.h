@@ -20,9 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 #include "IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class ComponentDescriptor : public IMpegDescriptor {
 		protected:
@@ -44,5 +44,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 	};
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
+GINGA_TSPARSER_END
 #endif /* COMPONENTDESCRIPTOR_H_ */

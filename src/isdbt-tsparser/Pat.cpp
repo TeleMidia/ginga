@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/Pat.h"
 
 #include "isdbt-tsparser/IDemuxer.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	int Pat::defaultProgramNumber = -1;
 	int Pat::defaultProgramPid    = -1;
@@ -530,4 +530,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END

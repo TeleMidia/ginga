@@ -30,7 +30,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::system;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class PipeFilter : public ITSFilter, Thread {
 		private:
@@ -67,5 +67,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*PIPEFILTER_H_*/

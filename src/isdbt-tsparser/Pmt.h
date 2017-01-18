@@ -19,16 +19,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PMT_H_
 
 #include "TransportSection.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "StreamIdentifierDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class Pmt : public TransportSection {
 		protected:
@@ -72,5 +72,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			void print();
 	 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /*PMT_H_*/

@@ -41,7 +41,7 @@ using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/ITSFilter.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-dataproc/DataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+GINGA_TSPARSER_BEGIN
 
 
 	class ContentAvailabilityDescriptor : public IMpegDescriptor{
@@ -39,5 +39,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 	};
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
+GINGA_TSPARSER_END
 #endif /* CONTENTAVAILABILITYDESCRIPTOR_H_ */

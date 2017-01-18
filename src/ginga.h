@@ -144,6 +144,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_PLAYER_END        NS_END2
 #define GINGA_SYSTEM_BEGIN      NS_BEGIN2 (ginga, system)
 #define GINGA_SYSTEM_END        NS_END2
+#define GINGA_TSPARSER_BEGIN    NS_BEGIN2 (ginga, tsparser)
+#define GINGA_TSPARSER_END      NS_END2
 #define GINGA_TUNER_BEGIN       NS_BEGIN2 (ginga, tuner)
 #define GINGA_TUNER_END         NS_END2
 #define GINGA_UTIL_BEGIN        NS_BEGIN2 (ginga, util)
@@ -179,24 +181,6 @@ typedef unsigned int GingaProviderID;
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END\
   NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN\
-  NS_BEGIN6 (br, pucrio, telemidia, ginga, core, tsparser)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END\
-  NS_END6
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, tsparser, si)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN\
-  NS_BEGIN8 (br, pucrio, telemidia, ginga, core, tsparser, si, descriptors)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END\
-  NS_END8
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN\
   NS_BEGIN7 (br, pucrio, telemidia, ginga, ncl, adaptation, context)

@@ -29,15 +29,15 @@ using namespace ::ginga::util;
 
 #include "isdbt-tsparser/IServiceInfo.h"
 #include "isdbt-tsparser/IEventInfo.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-tsparser/IShortEventDescriptor.h"
 #include "isdbt-tsparser/IExtendedEventDescriptor.h"
 #include "isdbt-tsparser/IServiceDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-dataproc/IEPGListener.h"
 

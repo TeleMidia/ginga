@@ -21,11 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 //#include "ILogoTransmissionDescriptor.h"
 
 #include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
+GINGA_TSPARSER_BEGIN
 
     class LogoTransmissionDescriptor : public IMpegDescriptor {
 		protected:
@@ -55,5 +55,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 			size_t process (char* data, size_t pos);
     };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_END
+GINGA_TSPARSER_END
 #endif /*LOGOTRANSMISSIONDESCRIPTOR_H_*/

@@ -21,10 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
-namespace si{
-namespace descriptors{
 	class SeriesDescriptor : public IMpegDescriptor {
 		protected:
 			unsigned short seriesId;
@@ -51,8 +49,6 @@ namespace descriptors{
 			string getSeriesNameChar();
 			void print();
 		};
-}
-}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /* SERIESDESCRIPTOR_H_ */

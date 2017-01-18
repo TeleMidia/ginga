@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class TSAdaptationField {
 		private:
@@ -129,5 +129,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			int getStream(char stream[MAX_ADAPTATION_FIELD_SIZE]);
 	 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /* TSADAPTATIONFIELD_H_ */

@@ -20,10 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
-namespace si{
-namespace descriptors{
 	class DataContentDescriptor : public IMpegDescriptor{
 		protected:
 			unsigned short dataComponentId;
@@ -48,8 +46,6 @@ namespace descriptors{
 			void print();
 			size_t process (char*data, size_t pos);
 	};
-}
-}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /* DATACONTENTDESCRIPTOR_H_ */
