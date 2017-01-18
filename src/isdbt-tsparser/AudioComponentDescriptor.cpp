@@ -68,10 +68,6 @@ namespace descriptors{
 
 	string AudioComponentDescriptor::getLanguageCode() {
 		string str;
-
-		if(languageCode == NULL){
-			return "";
-		}
 		str.append(languageCode, 3);
 		return str;
 	}
