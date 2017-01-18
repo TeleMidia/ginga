@@ -48,16 +48,7 @@ FOREIGN_DELIM= "\\\\"
 INSTALL_PREFIX= "$(pkgdatadir)"
 FILES_PREFIX= "$(pkgdatadir)"
 
-DISTCLEANFILES= ini/ginga.ini
-ini/ginga.ini: ini/ginga.ini.in
-	@$(SED)\
-	  -e 's:@INTERNAL_DELIM@:$(INTERNAL_DELIM):'\
-	  -e 's:@FOREIGN_DELIM@:$(FOREIGN_DELIM):'\
-	  -e 's:@INSTALL_PREFIX@:$(INSTALL_PREFIX):'\
-	  -e 's:@FILES_PREFIX@:$(FILES_PREFIX):' $< >$@
-
 pkgdata_DATA=\
-  ini/ginga.ini\
   ini/mimetypes.ini\
   $(NULL)
 
