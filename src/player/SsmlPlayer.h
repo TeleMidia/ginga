@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SSMLPLAYER_H_
 #define SSMLPLAYER_H_
 
+#include "ginga.h"
+
 #include "mb/IImageProvider.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;

@@ -17,6 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "RingBuffer.h"
 
+GINGA_BEGIN_DECLS
+#include <sys/mman.h>
+GINGA_END_DECLS
+
+GINGA_BEGIN_DECLS
+
 void
 ring_buffer_create (struct ring_buffer *buffer, unsigned long order)
 {
@@ -130,3 +136,4 @@ ring_buffer_clear (struct ring_buffer *buffer)
   buffer->read_offset_bytes = 0;
 }
 
+GINGA_END_DECLS
