@@ -43,8 +43,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "model/FormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include "adaptation/RuleAdapter.h"
-#include "adaptation/PresentationContext.h"
+#include "RuleAdapter.h"
+#include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "adapters/ApplicationPlayerAdapter.h"

@@ -66,7 +66,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "model/FormatterLayout.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include "adaptation/ContextBase.h"
+#include "ContextBase.h"
 
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
@@ -75,7 +75,7 @@ using namespace ::ginga::ncl;
 #include "player/IPlayerListener.h"
 using namespace ::ginga::player;
 
-#include "adaptation/PresentationContext.h"
+#include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
