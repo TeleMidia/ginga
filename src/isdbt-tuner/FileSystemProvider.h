@@ -24,7 +24,7 @@ using namespace ::ginga::system;
 #include "IDataProvider.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	class FileSystemProvider : public IDataProvider {
 		protected:
@@ -59,5 +59,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			char* receiveData(int* len);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*FILESYSTEMPROVIDER_H_*/

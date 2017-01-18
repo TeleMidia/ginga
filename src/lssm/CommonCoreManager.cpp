@@ -37,7 +37,7 @@ using namespace ::ginga::system;
 
 #if WITH_ISDBT
 #include "isdbt-tuner/Tuner.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/ITSFilter.h"

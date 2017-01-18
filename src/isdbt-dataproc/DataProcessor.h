@@ -39,7 +39,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 using namespace ::ginga::system;
 
 #include "isdbt-tuner/ISTCProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/IFilterListener.h"

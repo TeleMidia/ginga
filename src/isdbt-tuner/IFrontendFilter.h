@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 class IFrontendFilter
 {
@@ -38,6 +38,6 @@ public:
   virtual void receiveSection(char* section, int secLen)=0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 
 #endif /* I_FRONTEND_FILTER_H */

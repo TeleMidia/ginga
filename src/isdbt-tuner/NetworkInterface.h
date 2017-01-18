@@ -27,7 +27,7 @@ using namespace ginga::util;
 #include "Channel.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	class NetworkInterface : public ISTCProvider {
 		private:
@@ -74,5 +74,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			void close();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*NETWORKINTERFACE_H_*/

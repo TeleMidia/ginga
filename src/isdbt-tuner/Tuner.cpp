@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
 
@@ -423,4 +423,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 		clog << "Tuner::run done " << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END

@@ -111,7 +111,7 @@ using namespace ::ginga::system;
 #include "RingBuffer.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 
 	class ISDBTProvider : public IDataProvider {
@@ -161,5 +161,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*FILESYSTEMPROVIDER_H_*/

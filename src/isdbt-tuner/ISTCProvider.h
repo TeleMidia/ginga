@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 static const int ST_90KHz = 0x01;
 static const int ST_27MHz = 0x02;
@@ -32,6 +32,6 @@ public:
   virtual bool getSTCValue(guint64 *stc, int *valueType)=0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 
 #endif /* ISTC_PROVIDER_H */

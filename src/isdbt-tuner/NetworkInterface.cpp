@@ -28,7 +28,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ISDBTProvider.h"
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	NetworkInterface::NetworkInterface(
 			int id, string name, string protocol, string addr) {
@@ -215,4 +215,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END

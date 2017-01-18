@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ITPROVIDERLISTENER_H_
 #define ITPROVIDERLISTENER_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 
 	static const short PST_LOOP = 0x01;
@@ -29,5 +29,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			virtual void receiveSignal(short signalCode)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*ITPROVIDERLISTENER_H_*/

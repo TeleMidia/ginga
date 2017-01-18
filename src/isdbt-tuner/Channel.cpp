@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Channel.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	Channel::Channel() {
 		id            = 0;
@@ -64,4 +64,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 		isFullSegment = isFullSeg;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END

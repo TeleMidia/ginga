@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
         const string ISDBTProvider::iniFileName(GINGA_ISDBT_PATH);
 
@@ -549,4 +549,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 	    return buff;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END

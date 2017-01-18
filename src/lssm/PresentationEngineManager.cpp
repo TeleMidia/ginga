@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if WITH_ISDBT
 #include "isdbt-tuner/Tuner.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 #endif
 
 #include "player/ProgramAV.h"
