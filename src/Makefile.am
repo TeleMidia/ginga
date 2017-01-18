@@ -338,7 +338,7 @@ src+= isdbt-tuner/Tuner.cpp
 if WITH_LINUXDVB
 src+= isdbt-tuner/ISDBTFrontend.cpp
 src+= isdbt-tuner/ISDBTProvider.cpp
-src+= isdbt-tuner/RingBuffer.c
+src+= isdbt-tuner/RingBuffer.cpp
 endif # WITH_LINUXDVB
 endif # WITH_ISDBT
 

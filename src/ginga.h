@@ -49,8 +49,17 @@ GINGA_BEGIN_DECLS
 #include <SDL.h>
 #include <SDL_bits.h>
 
+#if WITH_ESPEAK
+# include <espeak/speak_lib.h>
+#endif
+
 #if WITH_ISDBT
 # include <expat.h>
+# if WITH_LINUXDVB
+#  include <linux/dvb/version.h>
+#  include <linux/dvb/frontend.h>
+#  include <linux/dvb/dmx.h>
+# endif
 #endif
 
 #if WITH_MULTIDEVICE

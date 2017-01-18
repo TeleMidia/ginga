@@ -24,18 +24,54 @@ using namespace ::ginga::system;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "frontend_parameter.h"
-
 #include "IFrontendFilter.h"
 #include "Channel.h"
 
-typedef struct lockedFiltersAction
-{
-  ::br::pucrio::telemidia::ginga::core::tuning::IFrontendFilter *ff;
-  bool isAdd;
-} ActionsToFilters;
+GINGA_BEGIN_DECLS
+#include <sys/poll.h>
+GINGA_END_DECLS
 
 GINGA_TUNER_BEGIN
+
+struct frontend_parameters
+{
+  fe_delivery_system_t delivery_system;
+  uint32_t frequency;
+  fe_spectral_inversion_t inversion;
+
+  union
+  {
+    struct dvb_qpsk_parameters qpsk;
+    struct dvb_qam_parameters qam;
+    struct dvb_ofdm_parameters ofdm;
+    struct dvb_vsb_parameters vsb;
+    struct isdbt_parameters
+    {
+      uint32_t bandwidth_hz;
+      fe_transmit_mode_t transmission_mode;
+      fe_guard_interval_t guard_interval;
+      uint8_t isdbt_partial_reception;
+      uint8_t isdbt_sb_mode;
+      uint8_t isdbt_sb_subchannel;
+      uint32_t isdbt_sb_segment_idx;
+      uint32_t isdbt_sb_segment_count;
+      uint8_t isdbt_layer_enabled;
+      struct
+      {
+        uint8_t segment_count;
+        fe_code_rate_t fec;
+        fe_modulation_t modulation;
+        uint8_t interleaving;
+      } layer[3];
+    } isdbt;
+  } u;
+};
+
+typedef struct lockedFiltersAction
+{
+  IFrontendFilter *ff;
+  bool isAdd;
+} ActionsToFilters;
 
 class ISDBTFrontend : public Thread
 {

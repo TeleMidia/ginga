@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef HAVE_RING_BUFFER__
 #define HAVE_RING_BUFFER__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "ginga.h"
+
+GINGA_BEGIN_DECLS
 
 // Posix Ring Buffer implementation
 //
@@ -56,8 +56,6 @@ unsigned long ring_buffer_count_free_bytes (struct ring_buffer *buffer);
 
 void ring_buffer_clear (struct ring_buffer *buffer);
 
-#ifdef __cplusplus
-};
-#endif
+GINGA_END_DECLS
 
 #endif /* HAVE_RING_BUFFER__ */
