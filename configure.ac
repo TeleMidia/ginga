@@ -25,7 +25,6 @@ dnl Data directories.
 AC_SUBST([buttondir], ['${pkgdatadir}'/img/button])
 AC_SUBST([contextmanagerdir], ['${pkgdatadir}'/contextmanager])
 AC_SUBST([fontdir], ['${pkgdatadir}'/font])
-AC_SUBST([formatterdir], ['${pkgdatadir}'/cfg/formatter])
 AC_SUBST([formatterimgdir], ['${pkgdatadir}'/img/roller])
 AC_SUBST([formattermddir], ['${pkgdatadir}'/md])
 AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])

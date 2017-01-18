@@ -44,6 +44,19 @@ src=
 src+= ctxmgmt/ContextManager.cpp
 src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp
+src+= gingancl/AdapterAVPlayer.cpp
+src+= gingancl/AdapterApplicationPlayer.cpp
+src+= gingancl/AdapterChannelPlayer.cpp
+src+= gingancl/AdapterFormatterPlayer.cpp
+src+= gingancl/AdapterImagePlayer.cpp
+src+= gingancl/AdapterLuaPlayer.cpp
+src+= gingancl/AdapterMirrorPlayer.cpp
+src+= gingancl/AdapterNCLPlayer.cpp
+src+= gingancl/AdapterPlainTxtPlayer.cpp
+src+= gingancl/AdapterPlayerManager.cpp
+src+= gingancl/AdapterProgramAVPlayer.cpp
+src+= gingancl/AdapterSubtitlePlayer.cpp
+#src+= gingancl/AdapterTimePlayer.cpp
 src+= gingancl/AnimationController.cpp
 src+= gingancl/FormatterBaseDevice.cpp
 src+= gingancl/FormatterConverter.cpp
@@ -52,25 +65,12 @@ src+= gingancl/FormatterLinkConverter.cpp
 src+= gingancl/FormatterMediator.cpp
 src+= gingancl/FormatterMultiDevice.cpp
 src+= gingancl/FormatterScheduler.cpp
+src+= gingancl/NominalEventMonitor.cpp
 src+= gingancl/PrefetchManager.cpp
+src+= gingancl/PresentationContext.cpp
 src+= gingancl/PrivateBaseContext.cpp
 src+= gingancl/PrivateBaseManager.cpp
-src+= gingancl/PresentationContext.cpp
 src+= gingancl/RuleAdapter.cpp
-src+= gingancl/adapters/AVPlayerAdapter.cpp
-src+= gingancl/adapters/ApplicationPlayerAdapter.cpp
-src+= gingancl/adapters/ChannelPlayerAdapter.cpp
-src+= gingancl/adapters/FormatterPlayerAdapter.cpp
-src+= gingancl/adapters/ImagePlayerAdapter.cpp
-src+= gingancl/adapters/LuaPlayerAdapter.cpp
-src+= gingancl/adapters/MirrorPlayerAdapter.cpp
-src+= gingancl/adapters/NCLPlayerAdapter.cpp
-src+= gingancl/adapters/NominalEventMonitor.cpp
-src+= gingancl/adapters/PlainTxtPlayerAdapter.cpp
-src+= gingancl/adapters/PlayerAdapterManager.cpp
-src+= gingancl/adapters/ProgramAVPlayerAdapter.cpp
-src+= gingancl/adapters/SubtitlePlayerAdapter.cpp
-#src+= gingancl/adapters/TimePlayerAdapter.cpp
 src+= gingancl/model/AnchorEvent.cpp
 src+= gingancl/model/ApplicationExecutionObject.cpp
 src+= gingancl/model/AttributionEvent.cpp
@@ -244,7 +244,7 @@ src+= util/functions.cpp
 if WITH_BERKELIUM
 AM_CXXFLAGS+= $(BERKELIUM_CFLAGS)
 AM_LDFLAGS+= $(BERKELIUM_LIBS)
-src+= gingancl/adapters/BerkeliumPlayerAdapter.cpp
+src+= gingancl/AdapterBerkeliumPlayer.cpp
 src+= player/BerkeliumHandler.cpp
 src+= player/BerkeliumPlayer.cpp
 endif # WITH_BERKELIUM
@@ -252,7 +252,7 @@ endif # WITH_BERKELIUM
 if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
 AM_LDFLAGS+= $(ESPEAK_LIBS)
-src+= gingancl/adapters/SsmlPlayerAdapter.cpp
+src+= gingancl/AdapterSsmlPlayer.cpp
 src+= player/SsmlPlayer.cpp
 endif # WITH_ESPEAK
 

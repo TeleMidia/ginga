@@ -45,8 +45,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
-#include "adapters/FormatterPlayerAdapter.h"
-#include "adapters/PlayerAdapterManager.h"
+#include "AdapterFormatterPlayer.h"
+#include "AdapterPlayerManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "FormatterMultiDevice.h"
@@ -74,7 +74,7 @@ private:
   Color *defaultFocusBorderColor;
   int defaultFocusBorderWidth;
   Color *defaultSelBorderColor;
-  PlayerAdapterManager *playerManager;
+  AdapterPlayerManager *playerManager;
   FormatterFocusManager *parentManager;
   FormatterMultiDevice *multiDevice;
   ILinkActionListener *settingActions;
@@ -95,7 +95,7 @@ private:
   static pthread_mutex_t iMutex;
 
 public:
-  FormatterFocusManager (PlayerAdapterManager *playerManager,
+  FormatterFocusManager (AdapterPlayerManager *playerManager,
                          PresentationContext *presContext,
                          FormatterMultiDevice *multiDevice,
                          ILinkActionListener *settingActions, void *converter);
@@ -135,8 +135,8 @@ private:
 
   bool keyCodeOk (ExecutionObject *currentObject);
   bool keyCodeBack ();
-  bool enterSelection (FormatterPlayerAdapter *player);
-  void exitSelection (FormatterPlayerAdapter *player);
+  bool enterSelection (AdapterFormatterPlayer *player);
+  void exitSelection (AdapterFormatterPlayer *player);
   void registerNavigationKeys ();
   void registerBackKeys ();
   void unregister ();

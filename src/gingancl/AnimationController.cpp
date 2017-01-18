@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 
 AnimationController::AnimationController (ExecutionObject *execObj,
-                                          PlayerAdapterManager *pManager,
-                                          FormatterPlayerAdapter *player,
+                                          AdapterPlayerManager *pManager,
+                                          AdapterFormatterPlayer *player,
                                           AttributionEvent *event,
                                           string value, Animation *anim)
 {
@@ -68,8 +68,8 @@ AnimationController::~AnimationController ()
 
 void
 AnimationController::startAnimation (ExecutionObject *execObj,
-                                     PlayerAdapterManager *pManager,
-                                     FormatterPlayerAdapter *player,
+                                     AdapterPlayerManager *pManager,
+                                     AdapterFormatterPlayer *player,
                                      AttributionEvent *event, string value,
                                      Animation *anim)
 {

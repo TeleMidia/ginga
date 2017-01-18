@@ -27,8 +27,8 @@ using namespace ::ginga::ncl;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "adapters/FormatterPlayerAdapter.h"
-#include "adapters/PlayerAdapterManager.h"
+#include "AdapterFormatterPlayer.h"
+#include "AdapterPlayerManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "model/ExecutionObject.h"
@@ -39,8 +39,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
 class AnimationController : public Thread
 {
 private:
-  PlayerAdapterManager *pManager;
-  FormatterPlayerAdapter *player; // useful if media is playing
+  AdapterPlayerManager *pManager;
+  AdapterFormatterPlayer *player; // useful if media is playing
   ExecutionObject *execObj; // useful if the object isn't playing
   // or it's a Ginga Settings Node.
 
@@ -70,16 +70,16 @@ private:
 
 private:
   AnimationController (ExecutionObject *execObj,
-                       PlayerAdapterManager *pManager,
-                       FormatterPlayerAdapter *player, AttributionEvent *event,
+                       AdapterPlayerManager *pManager,
+                       AdapterFormatterPlayer *player, AttributionEvent *event,
                        string value, Animation *anim);
 
   virtual ~AnimationController ();
 
 public:
   static void startAnimation (ExecutionObject *execObj,
-                              PlayerAdapterManager *pManager,
-                              FormatterPlayerAdapter *player,
+                              AdapterPlayerManager *pManager,
+                              AdapterFormatterPlayer *player,
                               AttributionEvent *event, string value,
                               Animation *anim);
 
