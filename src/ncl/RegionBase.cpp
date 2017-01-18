@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	RegionBase::RegionBase(string id, IDeviceLayout* deviceLayout) : Base(id) {
+	RegionBase::RegionBase(string id, DeviceLayout* deviceLayout) : Base(id) {
 		this->deviceLayout      = deviceLayout;
 		this->device            = "";
 		this->deviceClass       = -1;
@@ -47,7 +47,7 @@ GINGA_NCL_BEGIN
 	}
 
 	void RegionBase::createDeviceRegion() {
-		IDeviceProperty* deviceProperty;
+		DeviceProperty* deviceProperty;
 
 		deviceRegion = new LayoutRegion(device);
 

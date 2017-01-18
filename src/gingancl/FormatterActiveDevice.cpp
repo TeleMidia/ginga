@@ -43,7 +43,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
 	FormatterActiveDevice::FormatterActiveDevice(
 			GingaScreenID screenId,
-			IDeviceLayout* deviceLayout,
+			DeviceLayout* deviceLayout,
 			int x, int y, int w, int h, bool useMulticast, int srvPort) : FormatterMultiDevice(
 					screenId, deviceLayout, x, y, w, h, useMulticast, srvPort) {
 

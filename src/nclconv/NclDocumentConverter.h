@@ -57,7 +57,7 @@ GINGA_NCLCONV_BEGIN
 		virtual ~NclDocumentConverter();
 
 		void setConverterInfo(
-				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout);
+				IPrivateBaseContext* pbc, DeviceLayout* deviceLayout);
 	protected:
 		void checkManager();
 		virtual void initialize();

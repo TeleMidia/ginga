@@ -33,7 +33,7 @@ using namespace ::ginga::ncl;
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
 FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
-                                          IDeviceLayout* deviceLayout,
+                                          DeviceLayout* deviceLayout,
                                           string playerId,
                                           int x, int y, int w, int h,
                                           bool useMulticast, int srvPort)

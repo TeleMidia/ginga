@@ -26,7 +26,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 class FormatterBaseDevice : public FormatterMultiDevice
 {
 public:
-  FormatterBaseDevice(GingaScreenID screenId, IDeviceLayout* deviceLayout,
+  FormatterBaseDevice(GingaScreenID screenId, DeviceLayout* deviceLayout,
                       string playerId, int x, int y, int w, int h,
                       bool useMulticast, int srvPort);
   virtual ~FormatterBaseDevice();

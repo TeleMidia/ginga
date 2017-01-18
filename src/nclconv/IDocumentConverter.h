@@ -32,7 +32,7 @@ GINGA_NCLCONV_BEGIN
 		virtual ~IDocumentConverter(){};
 
 		virtual void setConverterInfo(
-				IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout)=0;
+				IPrivateBaseContext* pbc, DeviceLayout* deviceLayout)=0;
 		virtual string getAttribute(void* element, string attribute)=0;
 		virtual void* getObject(string tableName, string key)=0;
 		virtual void* parse(string uri, string iUriD, string fUriD)=0;

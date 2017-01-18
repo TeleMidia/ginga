@@ -150,7 +150,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		PlayerAdapterManager* playerManager;
 		ITimeBaseProvider* timeBaseProvider;
 		vector<string> compileErrors;
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 		FormatterMultiDevice* multiDevice;
 		PresentationContext* presContext;
 		bool isEmbedded;

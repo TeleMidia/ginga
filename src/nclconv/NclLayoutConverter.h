@@ -47,11 +47,11 @@ GINGA_NCLCONV_BEGIN
 
   class NclLayoutConverter : public NclLayoutParser {
 	private:
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 	public:
 		NclLayoutConverter(
-				DocumentParser *documentParser, IDeviceLayout* deviceLayout);
+				DocumentParser *documentParser, DeviceLayout* deviceLayout);
 
 		void addImportBaseToRegionBase(void *parentObject, void *childObject);
 		void addRegionToRegion(void *parentObject, void *childObject);

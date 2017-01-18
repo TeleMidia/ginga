@@ -38,17 +38,17 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		void releasePrivateBases();
 
 		NclDocument* addDocument(
-				string id, string location, IDeviceLayout* deviceLayout);
+				string id, string location, DeviceLayout* deviceLayout);
 
 		NclDocument* embedDocument(
 				string id,
 				string docId,
 				string nodeId,
 				string location,
-				IDeviceLayout* deviceLayout);
+				DeviceLayout* deviceLayout);
 
 		void* addVisibleDocument(
-				string id, string location, IDeviceLayout* deviceLayout);
+				string id, string location, DeviceLayout* deviceLayout);
 
 		string getDocumentLocation(string id, string docId);
 		string getEmbeddedDocumentLocation(

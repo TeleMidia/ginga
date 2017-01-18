@@ -96,7 +96,7 @@ GINGA_NCLCONV_BEGIN
 	}
 
 	void NclDocumentConverter::setConverterInfo(
-			IPrivateBaseContext* pbc, IDeviceLayout* deviceLayout) {
+			IPrivateBaseContext* pbc, DeviceLayout* deviceLayout) {
 
 		setDeviceLayout(deviceLayout);
 		this->privateBaseContext = pbc;

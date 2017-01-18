@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 	NclPresentationSpecConverter::NclPresentationSpecConverter(
-		    DocumentParser *documentParser, IDeviceLayout* deviceLayout) :
+		    DocumentParser *documentParser, DeviceLayout* deviceLayout) :
 		    	    NclPresentationSpecificationParser(documentParser) {
 
 		this->deviceLayout = deviceLayout;

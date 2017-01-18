@@ -18,14 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DEVICELAYOUT_H_
 #define DEVICELAYOUT_H_
 
-#include "IDeviceLayout.h"
-
 #include <map>
 using namespace std;
 
 GINGA_NCL_BEGIN
 
-	class DeviceProperty : public IDeviceProperty {
+	class DeviceProperty {
 		private:
 			int left;
 			int top;
@@ -87,9 +85,9 @@ GINGA_NCL_BEGIN
 			}
 	};
 
-	class DeviceLayout : public IDeviceLayout {
+	class DeviceLayout {
 		private:
-			map<string, IDeviceProperty*>* devices;
+			map<string, DeviceProperty*>* devices;
 			string layoutName;
 
 		public:
@@ -97,8 +95,9 @@ GINGA_NCL_BEGIN
 			virtual ~DeviceLayout();
 			string getLayoutName();
 			void addDevice(string name, int x, int y, int width, int height);
-			IDeviceProperty* getDeviceProperty(string name);
+			DeviceProperty* getDeviceProperty(string name);
 	};
 
 GINGA_NCL_END
+
 #endif /*DEVICELAYOUT_H_*/

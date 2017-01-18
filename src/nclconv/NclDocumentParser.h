@@ -58,13 +58,13 @@ GINGA_NCLCONV_BEGIN
 		NclInterfacesParser *interfacesParser;
 		NclLinkingParser *linkingParser;
 		NclMetainformationParser* metainformationParser;
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 	public:
 		NclDocumentParser();
 		virtual ~NclDocumentParser();
 
-		void setDeviceLayout(IDeviceLayout* deviceLayout);
+		void setDeviceLayout(DeviceLayout* deviceLayout);
 
 	protected:
 		void setDependencies();

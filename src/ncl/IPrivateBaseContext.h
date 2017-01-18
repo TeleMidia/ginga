@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPrivateBaseContext_H_
 #define IPrivateBaseContext_H_
 
-#include "IDeviceLayout.h"
+#include "DeviceLayout.h"
 using namespace ::ginga::ncl;
 
 #include <string>
@@ -31,7 +31,7 @@ GINGA_NCL_BEGIN
 		virtual ~IPrivateBaseContext(){};
 		virtual void createPrivateBase(string id)=0;
 		virtual void* addVisibleDocument(
-				string location, IDeviceLayout* deviceLayout)=0;
+				string location, DeviceLayout* deviceLayout)=0;
   };
 
 GINGA_NCL_END
