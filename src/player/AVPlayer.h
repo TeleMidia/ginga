@@ -19,10 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define AVPLAYER_H_
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #ifdef IPROVIDERLISTENER
 #undef IPROVIDERLISTENER

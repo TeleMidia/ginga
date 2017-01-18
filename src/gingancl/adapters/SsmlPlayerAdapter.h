@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN

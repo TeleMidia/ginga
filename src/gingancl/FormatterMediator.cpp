@@ -27,7 +27,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+using namespace ::ginga::system;
 
 #if WITH_MULTIDEVICE
 # include "multidevice/DeviceDomain.h"

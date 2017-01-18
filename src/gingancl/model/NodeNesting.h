@@ -20,13 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 

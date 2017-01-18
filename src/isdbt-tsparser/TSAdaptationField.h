@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MAX_PRIVATE_DATA_SIZE 255
 
 #include "system/Stc.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN

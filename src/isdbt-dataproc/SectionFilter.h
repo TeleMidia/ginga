@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/ITSPacket.h"

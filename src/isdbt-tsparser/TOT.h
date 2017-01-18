@@ -25,7 +25,7 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 using namespace br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "ITOT.h"
 

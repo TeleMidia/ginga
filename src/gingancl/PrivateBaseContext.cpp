@@ -25,7 +25,7 @@ using namespace ::ginga::nclconv;
 #include "PrivateBaseContext.h"
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 

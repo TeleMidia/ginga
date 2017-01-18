@@ -31,7 +31,7 @@ using namespace ::ginga::player;
 
 #include "system/SystemCompat.h"
 #include "system/PracticalSocket.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "PrivateBaseManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl;

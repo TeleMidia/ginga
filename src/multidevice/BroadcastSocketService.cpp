@@ -29,7 +29,7 @@ typedef int socklen_t;
 
 #include "system/SystemCompat.h"
 #include "system/PracticalSocket.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 GINGA_MULTIDEVICE_BEGIN
 

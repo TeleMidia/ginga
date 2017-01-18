@@ -22,10 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SystemInfo.h"
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia;
+using namespace ::ginga::util;
 
 GINGA_CTXMGMT_BEGIN
 

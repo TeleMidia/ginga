@@ -36,7 +36,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 
 #include "FilterManager.h"
 #include "system/ITimeBaseProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "isdbt-tuner/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;

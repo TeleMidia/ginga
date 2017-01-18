@@ -22,14 +22,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
+GINGA_SYSTEM_BEGIN
 
 	class GingaLocatorFactory {
 		private:
@@ -56,5 +56,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
 			bool newLocatorConditionSatisfied();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_END
+GINGA_SYSTEM_END
 #endif /*GINGALOCATORFACTORY_H_*/

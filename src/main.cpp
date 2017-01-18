@@ -17,10 +17,10 @@
 
 #include "config.h"
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "util/functions.h"
-using namespace ::br::pucrio::telemidia;
+using namespace ::ginga::util;
 
 #include "ncl/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"

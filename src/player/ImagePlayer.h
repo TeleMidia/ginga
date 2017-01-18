@@ -23,14 +23,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::mb;
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+using namespace ::ginga::system;
 
 #include "util/Color.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "Player.h"
 

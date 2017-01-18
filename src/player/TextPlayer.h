@@ -26,7 +26,7 @@ using namespace ::ginga::mb;
 #include "util/functions.h"
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "system/Thread.h"
 
