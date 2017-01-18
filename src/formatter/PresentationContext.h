@@ -30,8 +30,8 @@ using namespace ::ginga::ctxmgmt;
 #include "config.h"
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
-using namespace ::ginga::multidevice;
+#include "multidev/DeviceDomain.h"
+using namespace ::ginga::multidev;
 #endif
 
 #include "system/Thread.h"
@@ -43,8 +43,8 @@ using namespace ::ginga::system;
 using namespace ::ginga::ctxmgmt;
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
-using namespace ::ginga::multidevice;
+#include "multidev/DeviceDomain.h"
+using namespace ::ginga::multidev;
 #endif
 
 #include "math.h"

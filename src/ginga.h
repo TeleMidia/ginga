@@ -110,35 +110,35 @@ typedef unsigned int GingaProviderID;
 // Namespaces.
 #define _GINGA_NS_BEGIN(t)      namespace t { /* } */
 #define _GINGA_NS_END                    /* { */ }
-#define _GINGA_BEGIN(t)         _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
-#define _GINGA_END              _GINGA_NS_END _GINGA_NS_END
-#define GINGA_CTXMGMT_BEGIN     _GINGA_BEGIN (ctxmgmt)
-#define GINGA_CTXMGMT_END       _GINGA_END
-#define GINGA_DATAPROC_BEGIN    _GINGA_BEGIN (dataproc)
-#define GINGA_DATAPROC_END      _GINGA_END
-#define GINGA_FORMATTER_BEGIN   _GINGA_BEGIN (formatter)
-#define GINGA_FORMATTER_END     _GINGA_END
-#define GINGA_IC_BEGIN          _GINGA_BEGIN (ic)
-#define GINGA_IC_END            _GINGA_END
-#define GINGA_LSSM_BEGIN        _GINGA_BEGIN (lssm)
-#define GINGA_LSSM_END          _GINGA_END
-#define GINGA_MB_BEGIN          _GINGA_BEGIN (mb)
-#define GINGA_MB_END            _GINGA_END
-#define GINGA_MULTIDEVICE_BEGIN _GINGA_BEGIN (multidevice)
-#define GINGA_MULTIDEVICE_END   _GINGA_END
-#define GINGA_NCL_BEGIN         _GINGA_BEGIN (ncl)
-#define GINGA_NCL_END           _GINGA_END
-#define GINGA_NCLCONV_BEGIN     _GINGA_BEGIN (nclconv)
-#define GINGA_NCLCONV_END       _GINGA_END
-#define GINGA_PLAYER_BEGIN      _GINGA_BEGIN (player)
-#define GINGA_PLAYER_END        _GINGA_END
-#define GINGA_SYSTEM_BEGIN      _GINGA_BEGIN (system)
-#define GINGA_SYSTEM_END        _GINGA_END
-#define GINGA_TSPARSER_BEGIN    _GINGA_BEGIN (tsparser)
-#define GINGA_TSPARSER_END      _GINGA_END
-#define GINGA_TUNER_BEGIN       _GINGA_BEGIN (tuner)
-#define GINGA_TUNER_END         _GINGA_END
-#define GINGA_UTIL_BEGIN        _GINGA_BEGIN (util)
-#define GINGA_UTIL_END          _GINGA_END
+#define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
+#define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
+#define GINGA_CTXMGMT_BEGIN   _GINGA_BEGIN (ctxmgmt)
+#define GINGA_CTXMGMT_END     _GINGA_END
+#define GINGA_DATAPROC_BEGIN  _GINGA_BEGIN (dataproc)
+#define GINGA_DATAPROC_END    _GINGA_END
+#define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
+#define GINGA_FORMATTER_END   _GINGA_END
+#define GINGA_IC_BEGIN        _GINGA_BEGIN (ic)
+#define GINGA_IC_END          _GINGA_END
+#define GINGA_LSSM_BEGIN      _GINGA_BEGIN (lssm)
+#define GINGA_LSSM_END        _GINGA_END
+#define GINGA_MB_BEGIN        _GINGA_BEGIN (mb)
+#define GINGA_MB_END          _GINGA_END
+#define GINGA_MULTIDEV_BEGIN  _GINGA_BEGIN (multidev)
+#define GINGA_MULTIDEV_END    _GINGA_END
+#define GINGA_NCL_BEGIN       _GINGA_BEGIN (ncl)
+#define GINGA_NCL_END         _GINGA_END
+#define GINGA_NCLCONV_BEGIN   _GINGA_BEGIN (nclconv)
+#define GINGA_NCLCONV_END     _GINGA_END
+#define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
+#define GINGA_PLAYER_END      _GINGA_END
+#define GINGA_SYSTEM_BEGIN    _GINGA_BEGIN (system)
+#define GINGA_SYSTEM_END      _GINGA_END
+#define GINGA_TSPARSER_BEGIN  _GINGA_BEGIN (tsparser)
+#define GINGA_TSPARSER_END    _GINGA_END
+#define GINGA_TUNER_BEGIN     _GINGA_BEGIN (tuner)
+#define GINGA_TUNER_END       _GINGA_END
+#define GINGA_UTIL_BEGIN      _GINGA_BEGIN (util)
+#define GINGA_UTIL_END        _GINGA_END
 
 #endif /* GINGA_H */

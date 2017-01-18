@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterBaseDevice.h"
 
-#include "multidevice/ActiveDeviceDomain.h"
-#include "multidevice/PassiveDeviceDomain.h"
-#include "multidevice/BaseDeviceDomain.h"
+#include "multidev/ActiveDeviceDomain.h"
+#include "multidev/PassiveDeviceDomain.h"
+#include "multidev/BaseDeviceDomain.h"
 #include "formatter/FormatterMediator.h"
 using namespace ::ginga::formatter;
 
