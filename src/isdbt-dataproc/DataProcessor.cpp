@@ -17,8 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "DataProcessor.h"
-#include "dsmcc/StreamEvent.h"
-#include "dsmcc/DSMCCSectionPayload.h"
+#include "DsmccStreamEvent.h"
+#include "DsmccSectionPayload.h"
 #include "isdbt-tsparser/AIT.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
@@ -45,8 +45,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 	DataProcessor::~DataProcessor() {
 		running = false;
 
-		map<string, set<IStreamEventListener*>*>::iterator it;
-		set<IStreamEventListener*>::iterator its;
+		map<string, set<IDsmccStreamEventListener*>*>::iterator it;
+		set<IDsmccStreamEventListener*>::iterator its;
 		it = eventListeners.begin();
 		while (it != eventListeners.end()) {
 			its = it->second->begin();
@@ -142,7 +142,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 	void DataProcessor::setSTCProvider(ISTCProvider* stcProvider) {
 		assert(nptProcessor == NULL);
 
-		nptProcessor = new NPTProcessor(stcProvider);
+		nptProcessor = new DsmccNPTProcessor(stcProvider);
 	}
 
 	ITimeBaseProvider* DataProcessor::getNPTProvider() {
@@ -158,35 +158,35 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 	}
 
 	void DataProcessor::addSEListener(
-			string eventType, IStreamEventListener* listener) {
+			string eventType, IDsmccStreamEventListener* listener) {
 
-		map<string, set<IStreamEventListener*>*>::iterator i;
-		set<IStreamEventListener*>* listeners;
+		map<string, set<IDsmccStreamEventListener*>*>::iterator i;
+		set<IDsmccStreamEventListener*>* listeners;
 
 		clog << "DataProcessor::addSEListener" << endl;
 		i = eventListeners.find(eventType);
 		if (i != eventListeners.end()) {
 			listeners = i->second;
 			if (listeners == NULL) {
-				listeners = new set<IStreamEventListener*>;
+				listeners = new set<IDsmccStreamEventListener*>;
 				eventListeners[eventType] = listeners;
 			}
 
 			listeners->insert(listener);
 
 		} else {
-			listeners = new set<IStreamEventListener*>;
+			listeners = new set<IDsmccStreamEventListener*>;
 			listeners->insert(listener);
 			eventListeners[eventType] = listeners;
 		}
 	}
 
 	void DataProcessor::removeSEListener(
-			string eventType, IStreamEventListener* listener) {
+			string eventType, IDsmccStreamEventListener* listener) {
 
-		map<string, set<IStreamEventListener*>*>::iterator i;
-		set<IStreamEventListener*>::iterator j;
-		set<IStreamEventListener*>* listeners;
+		map<string, set<IDsmccStreamEventListener*>*>::iterator i;
+		set<IDsmccStreamEventListener*>::iterator j;
+		set<IDsmccStreamEventListener*>* listeners;
 
 		i = eventListeners.find(eventType);
 		if (i != eventListeners.end()) {
@@ -201,17 +201,17 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 	}
 
 	void DataProcessor::setServiceDomainListener(
-			IServiceDomainListener* listener) {
+			IDsmccServiceDomainListener* listener) {
 
 		sdl = listener;
 	}
 
-	void DataProcessor::addObjectListener(IObjectListener* l) {
+	void DataProcessor::addObjectListener(IDsmccObjectListener* l) {
 		objectListeners.insert(l);
 	}
 
-	void DataProcessor::removeObjectListener(IObjectListener* l) {
-		set<IObjectListener*>::iterator i;
+	void DataProcessor::removeObjectListener(IDsmccObjectListener* l) {
+		set<IDsmccObjectListener*>::iterator i;
 
 		i = objectListeners.find(l);
 		if (i != objectListeners.end()) {
@@ -221,8 +221,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 
 	void* DataProcessor::notifySEListener(void* ptr) {
 		struct notifyData* data;
-		IStreamEventListener* listener;
-		StreamEvent* se;
+		IDsmccStreamEventListener* listener;
+		DsmccStreamEvent* se;
 
 		data = (struct notifyData*)ptr;
 		se = data->se;
@@ -235,10 +235,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		return NULL;
 	}
 
-	void DataProcessor::notifySEListeners(StreamEvent* se) {
-		map<string, set<IStreamEventListener*>*>::iterator i;
-		set<IStreamEventListener*>* listeners;
-		set<IStreamEventListener*>::iterator j;
+	void DataProcessor::notifySEListeners(DsmccStreamEvent* se) {
+		map<string, set<IDsmccStreamEventListener*>*>::iterator i;
+		set<IDsmccStreamEventListener*>* listeners;
+		set<IDsmccStreamEventListener*>::iterator j;
 		pthread_t notifyThreadId_;
 		struct notifyData* data = NULL;
 		string eventName = se->getEventName();
@@ -265,14 +265,14 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 	}
 
 	void DataProcessor::receiveSection(ITransportSection* section) {
-		StreamEvent* se;
+		DsmccStreamEvent* se;
 		string sectionName;
 		set<unsigned int>::iterator i;
 		char* payload;
 		short tableId;
 
 		//TODO: clean this mess
-		DSMCCSectionPayload* dsmccSection;
+		DsmccSectionPayload* dsmccSection;
 
 		assert(section != NULL);
 
@@ -295,7 +295,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 					return;
 				}
 				lastSeVer = section->getVersionNumber();
-				se = new StreamEvent(
+				se = new DsmccStreamEvent(
 						section->getPayload(), section->getPayloadSize());
 
 				//i = processedIds.find(se->getId());
@@ -322,7 +322,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 				}
 
 				//TODO: we have to organize this mess
-				dsmccSection = new DSMCCSectionPayload(
+				dsmccSection = new DsmccSectionPayload(
 						payload, section->getPayloadSize());
 
 				nptProcessor->decodeDescriptors(
@@ -419,9 +419,9 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		int pid;
 		ITransportSection* section;
 		DsmccMessageHeader* message;
-		ServiceDomain* sd = NULL;
+		DsmccServiceDomain* sd = NULL;
 		string sectionName;
-		MessageProcessor* processor;
+		DsmccMessageProcessor* processor;
 		bool hasSection;
 
 		running = true;
@@ -448,7 +448,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 						message = new DsmccMessageHeader();
 						if (message->readMessageFromFile(sectionName, pid) == 0) {
 							if (processors.count(pid) == 0) {
-								processor = new MessageProcessor(pid);
+								processor = new DsmccMessageProcessor(pid);
 								processors[pid] = processor;
 
 							} else {

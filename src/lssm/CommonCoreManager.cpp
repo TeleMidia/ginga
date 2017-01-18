@@ -46,7 +46,7 @@ using namespace ::ginga::tsparser;
 #include "isdbt-dataproc/DataProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "isdbt-dataproc/dsmcc/IObjectListener.h"
+#include "isdbt-dataproc/IDsmccObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "lssm/DataWrapperListener.h"
@@ -113,14 +113,14 @@ GINGA_LSSM_BEGIN
 
 		// Add PEM as a listener of SEs and OCs
 		((DataProcessor*)dataProcessor)->addSEListener(
-				"gingaEditingCommands", (IStreamEventListener*)(
+				"gingaEditingCommands", (IDsmccStreamEventListener*)(
 						(DataWrapperListener*)ccUser));
 
 		((DataProcessor*)dataProcessor)->addObjectListener(
-				(IObjectListener*)((DataWrapperListener*)ccUser));
+				(IDsmccObjectListener*)((DataWrapperListener*)ccUser));
 
 		((DataProcessor*)dataProcessor)->setServiceDomainListener(
-				(IServiceDomainListener*)((DataWrapperListener*)ccUser));
+				(IDsmccServiceDomainListener*)((DataWrapperListener*)ccUser));
 
 		((DataProcessor*)dataProcessor)->setDemuxer((IDemuxer*)demuxer);
 

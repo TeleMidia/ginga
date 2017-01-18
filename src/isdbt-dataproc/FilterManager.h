@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::tsparser;
 
 #include "SectionFilter.h"
-#include "dsmcc/Module.h"
+#include "DsmccModule.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 
@@ -34,7 +34,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			map<int, SectionFilter*> pidFilters;
 			set<string> processedSections;
 			map<string, map<unsigned int, ITransportSection*>*> sections;
-			map<unsigned int, Module*>* info;
+			map<unsigned int, DsmccModule*>* info;
 			bool reading;
 			unsigned short blockSize;
 			pthread_mutex_t filterMutex;
@@ -53,7 +53,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			void destroyFilter(IDemuxer* demux, ITSFilter* filter);
 			bool processSection(ITransportSection* section);
 			void addProcessedSection(string sectionName);
-			void setInfo(map<unsigned int, Module*>* info);
+			void setInfo(map<unsigned int, DsmccModule*>* info);
 			void setBlockSize(unsigned short size);
 	};
 

@@ -174,10 +174,10 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		map<unsigned int, ITransportSection*>* secs;
 		unsigned int i;
 		string sectionDir;
-		map<unsigned int, Module*>::iterator it;
+		map<unsigned int, DsmccModule*>::iterator it;
 		char* buffer;
 		unsigned int bufferSize;
-		Module* mod;
+		DsmccModule* mod;
 
 		if ((section->getTableId() == 0x3C) && (!info)) {
 			delete section;
@@ -349,7 +349,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		Thread::mutexUnlock(&filterMutex);
 	}
 
-	void FilterManager::setInfo(map<unsigned int, Module*>* info) {
+	void FilterManager::setInfo(map<unsigned int, DsmccModule*>* info) {
 		this->info = info;
 	}
 

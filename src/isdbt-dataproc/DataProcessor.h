@@ -24,10 +24,10 @@ using namespace ::ginga::tsparser;
 #include "isdbt-tsparser/IAIT.h"
 using namespace ::ginga::tsparser;
 
-#include "dsmcc/ServiceDomain.h"
-#include "dsmcc/IServiceDomainListener.h"
-#include "dsmcc/IObjectListener.h"
-#include "dsmcc/MessageProcessor.h"
+#include "DsmccServiceDomain.h"
+#include "IDsmccServiceDomainListener.h"
+#include "IDsmccObjectListener.h"
+#include "DsmccMessageProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "EPGProcessor.h"
@@ -45,42 +45,42 @@ using namespace ::ginga::tuner;
 #include "isdbt-tsparser/IFilterListener.h"
 using namespace ::ginga::tsparser;
 
-#include "dsmcc/IStreamEventListener.h"
+#include "IDsmccStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "dsmcc/IObjectListener.h"
-#include "dsmcc/IServiceDomainListener.h"
+#include "IDsmccObjectListener.h"
+#include "IDsmccServiceDomainListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 #include "IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 
 
-#include "dsmcc/IStreamEventListener.h"
+#include "IDsmccStreamEventListener.h"
 
-#include "dsmcc/NPTProcessor.h"
+#include "DsmccNPTProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
 
 struct notifyData {
-	IStreamEventListener* listener;
-	StreamEvent* se;
+	IDsmccStreamEventListener* listener;
+	DsmccStreamEvent* se;
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 
 	class DataProcessor : public IFilterListener, public ITunerListener,
-				public IServiceDomainListener, public Thread {
+				public IDsmccServiceDomainListener, public Thread {
 
 		private:
 			EPGProcessor* epgProcessor;
 			FilterManager* filterManager;
-			map<unsigned int, MessageProcessor*> processors;
-			map<string, set<IStreamEventListener*>*> eventListeners;
-			set<IObjectListener*> objectListeners;
-			IServiceDomainListener* sdl;
+			map<unsigned int, DsmccMessageProcessor*> processors;
+			map<string, set<IDsmccStreamEventListener*>*> eventListeners;
+			set<IDsmccObjectListener*> objectListeners;
+			IDsmccServiceDomainListener* sdl;
 			set<unsigned int> processedIds;
-			NPTProcessor* nptProcessor;
+			DsmccNPTProcessor* nptProcessor;
 			vector<ITransportSection*> sections;
 			IDemuxer* demux;
 			IAIT* ait;
@@ -114,17 +114,17 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			void createPidSectionFilter(int pid);
 
 			void addSEListener(
-					string eventType, IStreamEventListener* listener);
+					string eventType, IDsmccStreamEventListener* listener);
 
 			void removeSEListener(
-					string eventType, IStreamEventListener* listener);
+					string eventType, IDsmccStreamEventListener* listener);
 
-			void setServiceDomainListener(IServiceDomainListener* listener);
-			void addObjectListener(IObjectListener* listener);
-			void removeObjectListener(IObjectListener* listener);
+			void setServiceDomainListener(IDsmccServiceDomainListener* listener);
+			void addObjectListener(IDsmccObjectListener* listener);
+			void removeObjectListener(IDsmccObjectListener* listener);
 
 		private:
-			void notifySEListeners(StreamEvent* se);
+			void notifySEListeners(DsmccStreamEvent* se);
 			static void* notifySEListener(void* data);
 			void notifyEitListeners(set<IEventInfo*>* events);
 

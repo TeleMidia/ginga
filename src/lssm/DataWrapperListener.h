@@ -24,18 +24,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "isdbt-dataproc/dsmcc/IStreamEventListener.h"
+#include "isdbt-dataproc/IDsmccStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
 
-#include "isdbt-dataproc/dsmcc/IServiceDomainListener.h"
-#include "isdbt-dataproc/dsmcc/IObjectListener.h"
+#include "isdbt-dataproc/IDsmccServiceDomainListener.h"
+#include "isdbt-dataproc/IDsmccObjectListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 
 GINGA_LSSM_BEGIN
 
-class DataWrapperListener : public IStreamEventListener,
-                            public IObjectListener,
-                            public IServiceDomainListener,
+class DataWrapperListener : public IDsmccStreamEventListener,
+                            public IDsmccObjectListener,
+                            public IDsmccServiceDomainListener,
                             public Thread
 {
 
@@ -63,7 +63,7 @@ private:
 public:
   bool applicationInfoMounted(IAIT* ait);
   void objectMounted(string ior, string clientUri, string name);
-  void receiveStreamEvent(StreamEvent* event);
+  void receiveStreamEvent(DsmccStreamEvent* event);
 
 private:
   void addNCLInfo(string name, string path);
