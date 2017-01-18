@@ -28,6 +28,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_BEGIN_DECLS
 
+#if HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 // C library.
 #include <assert.h>
 #include <errno.h>
@@ -44,6 +48,10 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 #include <SDL.h>
 #include <SDL_bits.h>
+
+#if WITH_ISDBT
+# include <expat.h>
+#endif
 
 #if WITH_MULTIDEVICE
 # include <jerror.h>

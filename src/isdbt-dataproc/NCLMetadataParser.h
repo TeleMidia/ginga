@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _NCLMetadataParser_H_
 #define _NCLMetadataParser_H_
 
-#include "expat.h"
-
 #include "INCLMetadata.h"
 
 #include "util/functions.h"
