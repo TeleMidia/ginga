@@ -30,7 +30,7 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::system;
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
+#include "multidev/DeviceDomain.h"
 #endif
 
 GINGA_FORMATTER_BEGIN

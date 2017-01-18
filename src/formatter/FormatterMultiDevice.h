@@ -25,10 +25,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
-#include "multidevice/RemoteDeviceManager.h"
-#include "multidevice/IRemoteDeviceListener.h"
-using namespace ::ginga::multidevice;
+#include "multidev/DeviceDomain.h"
+#include "multidev/RemoteDeviceManager.h"
+#include "multidev/IRemoteDeviceListener.h"
+using namespace ::ginga::multidev;
 #else
 class DeviceDomain
 {

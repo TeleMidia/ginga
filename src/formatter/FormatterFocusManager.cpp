@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
-using namespace ::ginga::multidevice;
+#include "multidev/DeviceDomain.h"
+using namespace ::ginga::multidev;
 #endif
 
 #include "FormatterConverter.h"

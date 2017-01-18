@@ -27,7 +27,7 @@ using namespace ::ginga::util;
 #include "mb/ScreenManagerFactory.h"
 #if WITH_MULTIDEVICE
 #include "formatter/FormatterMultiDevice.h"
-#include "multidevice/DeviceDomain.h"
+#include "multidev/DeviceDomain.h"
 #include "formatter/FormatterPassiveDevice.h"
 #include "formatter/FormatterActiveDevice.h"
 #endif
@@ -43,8 +43,8 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
-#include "multidevice/DeviceDomain.h"
-using namespace ::ginga::multidevice;
+#include "multidev/DeviceDomain.h"
+using namespace ::ginga::multidev;
 #include "formatter/FormatterMultiDevice.h"
 using namespace ::ginga::formatter;
 #endif
