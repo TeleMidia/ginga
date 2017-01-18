@@ -48,7 +48,7 @@ EntryEventListener::EntryEventListener (Player *player, string interfaceId)
 
 EntryEventListener::~EntryEventListener ()
 {
-  set<FormatterEvent *>::iterator i;
+  set<NclFormatterEvent *>::iterator i;
 
   player = NULL;
 
@@ -56,7 +56,7 @@ EntryEventListener::~EntryEventListener ()
   i = events.begin ();
   while (i != events.end ())
     {
-      if (FormatterEvent::hasInstance (*i, false))
+      if (NclFormatterEvent::hasInstance (*i, false))
         {
           (*i)->removeEventListener (this);
         }
@@ -70,7 +70,7 @@ EntryEventListener::~EntryEventListener ()
 }
 
 void
-EntryEventListener::listenEvent (FormatterEvent *event)
+EntryEventListener::listenEvent (NclFormatterEvent *event)
 {
   Thread::mutexLock (&evMutex);
   events.insert (event);
@@ -87,28 +87,28 @@ EntryEventListener::eventStateChanged (void *event, short transition,
   Port *port;
   short eventType;
   string value = "";
-  FormatterEvent *ev;
-  ExecutionObject *obj;
-  CompositeExecutionObject *cObj = NULL;
+  NclFormatterEvent *ev;
+  NclExecutionObject *obj;
+  NclCompositeExecutionObject *cObj = NULL;
 
   if (player != NULL)
     {
-      ev = (FormatterEvent *)event;
+      ev = (NclFormatterEvent *)event;
       port = ((FormatterMediator *)player)->getPortFromEvent (ev);
 
       if (port != NULL)
         {
-          obj = (ExecutionObject *)(ev->getExecutionObject ());
+          obj = (NclExecutionObject *)(ev->getExecutionObject ());
           if (obj != NULL)
             {
-              cObj = (CompositeExecutionObject *)obj->getParentObject ();
+              cObj = (NclCompositeExecutionObject *)obj->getParentObject ();
             }
 
           eventType = ev->getEventType ();
           if (eventType == EventUtil::EVT_ATTRIBUTION)
             {
               eventType = IPlayer::TYPE_ATTRIBUTION;
-              value = ((AttributionEvent *)ev)->getCurrentValue ();
+              value = ((NclAttributionEvent *)ev)->getCurrentValue ();
             }
           else
             {
@@ -272,10 +272,10 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
 FormatterMediator::~FormatterMediator ()
 {
   string docId = "";
-  ExecutionObject *bodyObject;
-  map<string, FormatterEvent *>::iterator i;
-  map<string, vector<FormatterEvent *> *>::iterator j;
-  vector<FormatterEvent *>::iterator k;
+  NclExecutionObject *bodyObject;
+  map<string, NclFormatterEvent *>::iterator i;
+  map<string, vector<NclFormatterEvent *> *>::iterator j;
+  vector<NclFormatterEvent *>::iterator k;
 
   clog << "FormatterMediator::~FormatterMediator '";
   clog << data->playerId << "'";
@@ -428,7 +428,7 @@ set<string> *
 FormatterMediator::createPortIdList ()
 {
   set<string> *portIds = NULL;
-  map<Port *, FormatterEvent *>::iterator i;
+  map<Port *, NclFormatterEvent *>::iterator i;
 
   Thread::mutexLock (&pteMutex);
   if (!portsToEntryEvents.empty ())
@@ -450,7 +450,7 @@ short
 FormatterMediator::getMappedInterfaceType (string portId)
 {
   short interfaceType = -1;
-  map<Port *, FormatterEvent *>::iterator i;
+  map<Port *, NclFormatterEvent *>::iterator i;
 
   Thread::mutexLock (&pteMutex);
   i = portsToEntryEvents.begin ();
@@ -458,15 +458,15 @@ FormatterMediator::getMappedInterfaceType (string portId)
     {
       if (i->first->getId () == portId)
         {
-          if (i->second->instanceOf ("AttributionEvent"))
+          if (i->second->instanceOf ("NclAttributionEvent"))
             {
               interfaceType = EventUtil::EVT_ATTRIBUTION;
             }
-          else if (i->second->instanceOf ("PresentationEvent"))
+          else if (i->second->instanceOf ("NclPresentationEvent"))
             {
               interfaceType = EventUtil::EVT_PRESENTATION;
             }
-          else if (i->second->instanceOf ("SelectionEvent"))
+          else if (i->second->instanceOf ("NclSelectionEvent"))
             {
               interfaceType = EventUtil::EVT_SELECTION;
             }
@@ -529,7 +529,7 @@ FormatterMediator::setBackgroundImage (string uri)
 void
 FormatterMediator::setParentLayout (void *parentLayout)
 {
-  FormatterLayout *mainLayout;
+  NclFormatterLayout *mainLayout;
 
   clog << "FormatterMediator::setParentLayout in '" << data->playerId;
   clog << "'" << endl;
@@ -538,8 +538,8 @@ FormatterMediator::setParentLayout (void *parentLayout)
       && multiDevice->getMainLayout () != NULL)
     {
 
-      mainLayout = (FormatterLayout *)(multiDevice->getMainLayout ());
-      ((FormatterLayout *)parentLayout)
+      mainLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
+      ((NclFormatterLayout *)parentLayout)
           ->addChild (data->baseId, mainLayout);
     }
 }
@@ -761,18 +761,18 @@ FormatterMediator::getDepthLevel ()
 }
 
 Port *
-FormatterMediator::getPortFromEvent (FormatterEvent *event)
+FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
 {
 
   ContextNode *context;
   Port *port = NULL;
   Anchor *anchor;
   int i, size;
-  map<Port *, FormatterEvent *>::iterator j;
+  map<Port *, NclFormatterEvent *>::iterator j;
 
-  if (event->instanceOf ("AnchorEvent"))
+  if (event->instanceOf ("NclAnchorEvent"))
     {
-      anchor = ((AnchorEvent *)event)->getAnchor ();
+      anchor = ((NclAnchorEvent *)event)->getAnchor ();
       context = currentDocument->getBody ();
       size = context->getNumPorts ();
 
@@ -851,17 +851,17 @@ FormatterMediator::getContextPorts (ContextNode *context,
   return ports;
 }
 
-vector<FormatterEvent *> *
+vector<NclFormatterEvent *> *
 FormatterMediator::processDocument (string documentId, string interfaceId)
 {
 
-  vector<FormatterEvent *> *entryEvents;
+  vector<NclFormatterEvent *> *entryEvents;
   vector<Port *> *ports = NULL;
   ContextNode *context;
   Port *port;
   int i, size;
-  NodeNesting *contextPerspective;
-  FormatterEvent *event;
+  NclNodeNesting *contextPerspective;
+  NclFormatterEvent *event;
 
   port = NULL;
 
@@ -889,7 +889,7 @@ FormatterMediator::processDocument (string documentId, string interfaceId)
     }
 
   contextPerspective
-      = new NodeNesting (privateBaseManager->getPrivateBase (data->baseId));
+      = new NclNodeNesting (privateBaseManager->getPrivateBase (data->baseId));
 
   contextPerspective->insertAnchorNode (context);
 
@@ -898,7 +898,7 @@ FormatterMediator::processDocument (string documentId, string interfaceId)
       entryEventListener = new EntryEventListener (this, interfaceId);
     }
 
-  entryEvents = new vector<FormatterEvent *>;
+  entryEvents = new vector<NclFormatterEvent *>;
   size = ports->size ();
   for (i = 0; i < size; i++)
     {
@@ -941,8 +941,8 @@ FormatterMediator::initializeSettingNodes (Node *node)
 {
   vector<Node *> *nodes;
   vector<Node *>::iterator i;
-  NodeNesting *perspective;
-  ExecutionObject *object;
+  NclNodeNesting *perspective;
+  NclExecutionObject *object;
   NodeEntity *nodeEntity;
 
   // clog << "FormatterScheduler::initializeSettingNodes" << endl;
@@ -972,7 +972,7 @@ FormatterMediator::initializeSettingNodes (Node *node)
 
                   if (isEmbedded)
                     {
-                      perspective = new NodeNesting (
+                      perspective = new NclNodeNesting (
                           privateBaseManager->getPrivateBase (
                               data->baseId));
 
@@ -981,7 +981,7 @@ FormatterMediator::initializeSettingNodes (Node *node)
                   else
                     {
                       perspective
-                          = new NodeNesting ((*i)->getPerspective ());
+                          = new NclNodeNesting ((*i)->getPerspective ());
                     }
 
                   clog << "FormatterMediator::initializeSettingNodes '";
@@ -1018,7 +1018,7 @@ FormatterMediator::initializeSettingNodes (Node *node)
   // clog << "FormatterScheduler::initializeSettingNodes all done" << endl;
 }
 
-vector<FormatterEvent *> *
+vector<NclFormatterEvent *> *
 FormatterMediator::getDocumentEntryEvent (string documentId)
 {
 
@@ -1035,14 +1035,14 @@ FormatterMediator::getDocumentEntryEvent (string documentId)
 bool
 FormatterMediator::compileDocument (string documentId)
 {
-  vector<FormatterEvent *> *entryEvents;
-  vector<FormatterEvent *> *oldEntryEvents;
-  map<string, FormatterEvent *>::iterator i;
-  vector<FormatterEvent *>::iterator j, k;
-  FormatterEvent *event;
-  ExecutionObject *executionObject;
-  CompositeExecutionObject *parentObject;
-  FormatterEvent *documentEvent;
+  vector<NclFormatterEvent *> *entryEvents;
+  vector<NclFormatterEvent *> *oldEntryEvents;
+  map<string, NclFormatterEvent *>::iterator i;
+  vector<NclFormatterEvent *>::iterator j, k;
+  NclFormatterEvent *event;
+  NclExecutionObject *executionObject;
+  NclCompositeExecutionObject *parentObject;
+  NclFormatterEvent *documentEvent;
   bool newEntryEvent;
 
   i = documentEvents.find (documentId);
@@ -1055,8 +1055,8 @@ FormatterMediator::compileDocument (string documentId)
         }
 
       event = (*entryEvents)[0];
-      executionObject = (ExecutionObject *)(event->getExecutionObject ());
-      parentObject = (CompositeExecutionObject *)(executionObject
+      executionObject = (NclExecutionObject *)(event->getExecutionObject ());
+      parentObject = (NclCompositeExecutionObject *)(executionObject
                                                       ->getParentObject ());
 
       if (parentObject != NULL)
@@ -1065,7 +1065,7 @@ FormatterMediator::compileDocument (string documentId)
             {
               executionObject = parentObject;
               parentObject
-                  = (CompositeExecutionObject *)(parentObject
+                  = (NclCompositeExecutionObject *)(parentObject
                                                      ->getParentObject ());
             }
 
@@ -1413,14 +1413,14 @@ FormatterMediator::solveRemoteSourceUri (string localDocUri, string src)
   return pm->createSourcePrefetcher (localDocUri, src);
 }
 
-FormatterEvent *
+NclFormatterEvent *
 FormatterMediator::getEntryEvent (string interfaceId,
-                                  vector<FormatterEvent *> *events)
+                                  vector<NclFormatterEvent *> *events)
 {
 
-  map<Port *, FormatterEvent *>::iterator i;
-  vector<FormatterEvent *>::iterator j;
-  FormatterEvent *entryEvent = NULL;
+  map<Port *, NclFormatterEvent *>::iterator i;
+  vector<NclFormatterEvent *>::iterator j;
+  NclFormatterEvent *entryEvent = NULL;
 
   Thread::mutexLock (&pteMutex);
   i = portsToEntryEvents.begin ();
@@ -1450,10 +1450,10 @@ bool
 FormatterMediator::startDocument (string documentId, string interfaceId)
 {
 
-  vector<FormatterEvent *> *entryEvents;
-  vector<FormatterEvent *> filteredEvents;
-  FormatterEvent *documentEvent;
-  FormatterEvent *entryEvent;
+  vector<NclFormatterEvent *> *entryEvents;
+  vector<NclFormatterEvent *> filteredEvents;
+  NclFormatterEvent *documentEvent;
+  NclFormatterEvent *entryEvent;
 
   if (!docCompiled)
     {
@@ -1504,7 +1504,7 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 bool
 FormatterMediator::stopDocument (string documentId)
 {
-  FormatterEvent *documentEvent;
+  NclFormatterEvent *documentEvent;
 
   clog << "FormatterMediator::stopDocument from '";
   clog << documentId << "'" << endl;
@@ -1524,7 +1524,7 @@ FormatterMediator::stopDocument (string documentId)
   documentEvent = documentEvents[documentId];
 
   AdapterFormatterPlayer::printAction (
-      "stopApp", (ExecutionObject *)documentEvent->getExecutionObject ());
+      "stopApp", (NclExecutionObject *)documentEvent->getExecutionObject ());
 
   scheduler->stopDocument (documentEvent);
 
@@ -1545,7 +1545,7 @@ FormatterMediator::stopDocument (string documentId)
 bool
 FormatterMediator::pauseDocument (string documentId)
 {
-  FormatterEvent *documentEvent;
+  NclFormatterEvent *documentEvent;
 
   if (documentEvents.count (documentId) == 0)
     {
@@ -1562,7 +1562,7 @@ FormatterMediator::pauseDocument (string documentId)
 bool
 FormatterMediator::resumeDocument (string documentId)
 {
-  FormatterEvent *documentEvent;
+  NclFormatterEvent *documentEvent;
 
   if (documentEvents.count (documentId) == 0)
     {
@@ -1577,11 +1577,11 @@ FormatterMediator::resumeDocument (string documentId)
 }
 
 void
-FormatterMediator::presentationCompleted (FormatterEvent *documentEvent)
+FormatterMediator::presentationCompleted (NclFormatterEvent *documentEvent)
 {
 
   string documentId;
-  map<string, FormatterEvent *>::iterator i;
+  map<string, NclFormatterEvent *>::iterator i;
 
   clog << "FormatterMediator::presentationCompleted for '";
   clog << data->playerId;
@@ -2652,8 +2652,8 @@ void
 FormatterMediator::processInsertedReferNode (ReferNode *referNode)
 {
   NodeEntity *nodeEntity;
-  ExecutionObject *executionObject;
-  CompositeExecutionObject *parentObject;
+  NclExecutionObject *executionObject;
+  NclCompositeExecutionObject *parentObject;
   int depthLevel;
   string instanceType;
 
@@ -2784,7 +2784,7 @@ FormatterMediator::removeNode (string documentId, string compositeId,
       return NULL;
     }
 
-  ExecutionObject *executionObject;
+  NclExecutionObject *executionObject;
   set<Anchor *> *nodeInterfaces;
   set<Anchor *>::iterator setIt;
   vector<Anchor *> *anchors;
@@ -3081,12 +3081,12 @@ FormatterMediator::addLink (string documentId, string compositeId,
                             string xmlLink)
 {
 
-  FormatterCausalLink *fLink;
+  NclFormatterCausalLink *fLink;
   AdapterFormatterPlayer *player;
-  FormatterEvent *event;
-  ExecutionObject *object;
-  vector<FormatterEvent *> *events;
-  vector<FormatterEvent *>::iterator i;
+  NclFormatterEvent *event;
+  NclExecutionObject *object;
+  vector<NclFormatterEvent *> *events;
+  vector<NclFormatterEvent *>::iterator i;
   Link *ncmLink;
   NclDocument *document;
   ContextNode *contextNode;
@@ -3113,7 +3113,7 @@ FormatterMediator::addLink (string documentId, string compositeId,
                   clog << "FormatterMediator::addLink event '";
                   clog << (*i)->getId () << "'" << endl;
 
-                  object = (ExecutionObject *)(*i)->getExecutionObject ();
+                  object = (NclExecutionObject *)(*i)->getExecutionObject ();
                   if (object == NULL)
                     {
                       clog << "FormatterMediator::addLink Warning! ";
@@ -3149,12 +3149,12 @@ void
 FormatterMediator::removeLink (ContextNode *composition, Link *ncmLink)
 {
 
-  CompositeExecutionObject *compositeObject;
+  NclCompositeExecutionObject *compositeObject;
 
   if (composition->instanceOf ("CompositeNode"))
     {
       compositeObject
-          = (CompositeExecutionObject *)(compiler->hasExecutionObject (
+          = (NclCompositeExecutionObject *)(compiler->hasExecutionObject (
               (CompositeNode *)composition, NULL));
 
       if (compositeObject != NULL)
@@ -3210,10 +3210,10 @@ FormatterMediator::setPropertyValue (string documentId, string nodeId,
   NclDocument *document;
   Node *node;
   Anchor *anchor;
-  NodeNesting *perspective;
-  ExecutionObject *executionObject;
-  FormatterEvent *event;
-  LinkAssignmentAction *setAction;
+  NclNodeNesting *perspective;
+  NclExecutionObject *executionObject;
+  NclFormatterEvent *event;
+  NclLinkAssignmentAction *setAction;
 
   document = privateBaseManager->getDocument (data->baseId, documentId);
   if (document == NULL)
@@ -3236,7 +3236,7 @@ FormatterMediator::setPropertyValue (string documentId, string nodeId,
       return false;
     }
 
-  perspective = new NodeNesting (node->getPerspective ());
+  perspective = new NclNodeNesting (node->getPerspective ());
   try
     {
       /*clog << "FormatterMediator::setPropertyValue '";
@@ -3254,15 +3254,15 @@ FormatterMediator::setPropertyValue (string documentId, string nodeId,
   event = compiler->getEvent (executionObject, anchor,
                               EventUtil::EVT_ATTRIBUTION, "");
 
-  if (event == NULL || !(event->instanceOf ("AttributionEvent")))
+  if (event == NULL || !(event->instanceOf ("NclAttributionEvent")))
     {
       return false;
     }
 
-  setAction = new LinkAssignmentAction ((AttributionEvent *)event,
+  setAction = new NclLinkAssignmentAction ((NclAttributionEvent *)event,
                                         SimpleAction::ACT_START, value);
 
-  ((ILinkActionListener *)scheduler)->scheduleAction (NULL, setAction);
+  ((INclLinkActionListener *)scheduler)->scheduleAction (NULL, setAction);
   return true;
 }
 
@@ -3462,8 +3462,8 @@ FormatterMediator::resume ()
 string
 FormatterMediator::getPropertyValue (string name)
 {
-  map<Port *, FormatterEvent *>::iterator i;
-  FormatterEvent *portEvent = NULL;
+  map<Port *, NclFormatterEvent *>::iterator i;
+  NclFormatterEvent *portEvent = NULL;
   string value = "";
 
   Thread::mutexLock (&pteMutex);
@@ -3479,9 +3479,9 @@ FormatterMediator::getPropertyValue (string name)
     }
   Thread::mutexUnlock (&pteMutex);
 
-  if (portEvent != NULL && portEvent->instanceOf ("AttributionEvent"))
+  if (portEvent != NULL && portEvent->instanceOf ("NclAttributionEvent"))
     {
-      value = ((AttributionEvent *)portEvent)->getCurrentValue ();
+      value = ((NclAttributionEvent *)portEvent)->getCurrentValue ();
     }
   else
     {
@@ -3494,11 +3494,11 @@ FormatterMediator::getPropertyValue (string name)
 void
 FormatterMediator::setPropertyValue (string name, string value)
 {
-  IAttributeValueMaintainer *valueMaintainer;
+  INclAttributeValueMaintainer *valueMaintainer;
   PropertyAnchor *anchor;
 
-  map<Port *, FormatterEvent *>::iterator i;
-  FormatterEvent *portEvent = NULL;
+  map<Port *, NclFormatterEvent *>::iterator i;
+  NclFormatterEvent *portEvent = NULL;
 
   Thread::mutexLock (&pteMutex);
   i = portsToEntryEvents.begin ();
@@ -3513,14 +3513,14 @@ FormatterMediator::setPropertyValue (string name, string value)
     }
   Thread::mutexUnlock (&pteMutex);
 
-  if (portEvent != NULL && portEvent->instanceOf ("AttributionEvent"))
+  if (portEvent != NULL && portEvent->instanceOf ("NclAttributionEvent"))
     {
       if (portEvent->getCurrentState () == EventUtil::ST_SLEEPING)
         {
           valueMaintainer
-              = ((AttributionEvent *)portEvent)->getValueMaintainer ();
+              = ((NclAttributionEvent *)portEvent)->getValueMaintainer ();
 
-          anchor = ((AttributionEvent *)portEvent)->getAnchor ();
+          anchor = ((NclAttributionEvent *)portEvent)->getAnchor ();
 
           portEvent->start ();
           if (valueMaintainer != NULL && anchor != NULL)
@@ -3528,16 +3528,16 @@ FormatterMediator::setPropertyValue (string name, string value)
               valueMaintainer->setPropertyValue (anchor->getId (), value);
             }
 
-          ((AttributionEvent *)portEvent)->setValue (value);
+          ((NclAttributionEvent *)portEvent)->setValue (value);
           portEvent->stop ();
 
-          if (value != ((AttributionEvent *)portEvent)->getCurrentValue ())
+          if (value != ((NclAttributionEvent *)portEvent)->getCurrentValue ())
             {
 
               clog << "FormatterMediator::setPropertyValue Warning! ";
               clog << "Attributed value = '" << value << "'";
               clog << "BUT current value = '";
-              clog << ((AttributionEvent *)portEvent)->getCurrentValue ();
+              clog << ((NclAttributionEvent *)portEvent)->getCurrentValue ();
               clog << "'";
               clog << endl;
             }
@@ -3613,11 +3613,11 @@ FormatterMediator::isVisible ()
 void
 FormatterMediator::setVisible (bool visible)
 {
-  set<ExecutionObject *>::iterator i;
-  set<ExecutionObject *> *objects;
-  ExecutionObject *object;
+  set<NclExecutionObject *>::iterator i;
+  set<NclExecutionObject *> *objects;
+  NclExecutionObject *object;
   string strVisible = "true";
-  FormatterEvent *event = NULL;
+  NclFormatterEvent *event = NULL;
   PropertyAnchor *property = NULL;
   bool fakeEvent = false;
 
@@ -3636,7 +3636,7 @@ FormatterMediator::setVisible (bool visible)
         {
           property = new PropertyAnchor ("visible");
           property->setPropertyValue (strVisible);
-          event = new AttributionEvent ("visible", object, property,
+          event = new NclAttributionEvent ("visible", object, property,
                                         presContext);
 
           fakeEvent = true;
@@ -3646,10 +3646,10 @@ FormatterMediator::setVisible (bool visible)
           fakeEvent = false;
         }
 
-      if (event->instanceOf ("AttributionEvent"))
+      if (event->instanceOf ("NclAttributionEvent"))
         {
           playerManager->setVisible (object->getId (), strVisible,
-                                     (AttributionEvent *)event);
+                                     (NclAttributionEvent *)event);
         }
 
       if (fakeEvent)

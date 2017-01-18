@@ -1,0 +1,99 @@
+/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+
+This file is part of Ginga (Ginga-NCL).
+
+Ginga is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+Ginga is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
+#include "config.h"
+#include "NclSwitchEvent.h"
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+
+NclSwitchEvent::NclSwitchEvent (string id, void *executionObjectSwitch,
+                          InterfacePoint *interfacePoint, int eventType,
+                          string key)
+    : NclFormatterEvent (id, executionObjectSwitch)
+{
+
+  this->interfacePoint = interfacePoint;
+  this->eventType = eventType;
+  this->key = key;
+  this->mappedEvent = NULL;
+
+  typeSet.insert ("NclSwitchEvent");
+}
+
+NclSwitchEvent::~NclSwitchEvent ()
+{
+  if (NclFormatterEvent::hasInstance (mappedEvent, false))
+    {
+      mappedEvent->removeEventListener (this);
+      mappedEvent = NULL;
+    }
+}
+
+InterfacePoint *
+NclSwitchEvent::getInterfacePoint ()
+{
+  return interfacePoint;
+}
+
+short
+NclSwitchEvent::getEventType ()
+{
+  return eventType;
+}
+
+string
+NclSwitchEvent::getKey ()
+{
+  return key;
+}
+
+void
+NclSwitchEvent::setMappedEvent (NclFormatterEvent *event)
+{
+  if (mappedEvent != NULL)
+    {
+      mappedEvent->removeEventListener (this);
+    }
+
+  mappedEvent = event;
+  if (mappedEvent != NULL)
+    {
+      mappedEvent->addEventListener (this);
+    }
+}
+
+NclFormatterEvent *
+NclSwitchEvent::getMappedEvent ()
+{
+  return mappedEvent;
+}
+
+void
+NclSwitchEvent::eventStateChanged (void *someEvent, short transition,
+                                short previousState)
+{
+
+  changeState (getNewState (transition), transition);
+}
+
+short
+NclSwitchEvent::getPriorityType ()
+{
+  return INclEventListener::PT_LINK;
+}
+
+BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END

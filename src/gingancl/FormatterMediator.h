@@ -77,17 +77,17 @@ using namespace ::ginga::ncl;
 #include "ncl/TransitionBase.h"
 using namespace ::ginga::ncl;
 
-#include "model/CompositeExecutionObject.h"
-#include "model/ExecutionObject.h"
-#include "model/NodeNesting.h"
+#include "NclCompositeExecutionObject.h"
+#include "NclExecutionObject.h"
+#include "NclNodeNesting.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "model/FormatterEvent.h"
-#include "model/AttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclAttributionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "model/ILinkActionListener.h"
-#include "model/LinkAssignmentAction.h"
+#include "INclLinkActionListener.h"
+#include "NclLinkAssignmentAction.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "RuleAdapter.h"
@@ -105,11 +105,11 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::prefetch;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-class EntryEventListener : public IEventListener
+class EntryEventListener : public INclEventListener
 {
 private:
   Player *player;
-  set<FormatterEvent *> events;
+  set<NclFormatterEvent *> events;
   int eventsRunning;
   bool hasStartPoint;
   pthread_mutex_t evMutex;
@@ -118,7 +118,7 @@ public:
   EntryEventListener (Player *player, string interfaceId);
   virtual ~EntryEventListener ();
 
-  virtual void listenEvent (FormatterEvent *event);
+  virtual void listenEvent (NclFormatterEvent *event);
   virtual void eventStateChanged (void *event, short transition,
                                   short previousState);
 
@@ -138,9 +138,9 @@ private:
 
   PrivateBaseManager *privateBaseManager;
   static PrefetchManager *pm;
-  map<string, FormatterEvent *> documentEvents;
-  map<string, vector<FormatterEvent *> *> documentEntryEvents;
-  map<Port *, FormatterEvent *> portsToEntryEvents;
+  map<string, NclFormatterEvent *> documentEvents;
+  map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
+  map<Port *, NclFormatterEvent *> portsToEntryEvents;
   FormatterScheduler *scheduler;
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
@@ -188,18 +188,18 @@ public:
   void setDepthLevel (int level);
   int getDepthLevel ();
 
-  Port *getPortFromEvent (FormatterEvent *event);
+  Port *getPortFromEvent (NclFormatterEvent *event);
 
 private:
   vector<Port *> *getContextPorts (ContextNode *context,
                                    string interfaceId);
 
-  vector<FormatterEvent *> *processDocument (string documentId,
+  vector<NclFormatterEvent *> *processDocument (string documentId,
                                              string interfaceId);
 
   void initializeSettingNodes (Node *node);
 
-  vector<FormatterEvent *> *getDocumentEntryEvent (string documentId);
+  vector<NclFormatterEvent *> *getDocumentEntryEvent (string documentId);
 
   bool compileDocument (string documentId);
   bool prepareDocument (string documentId);
@@ -218,14 +218,14 @@ private:
 
   string solveRemoteSourceUri (string docLocation, string src);
 
-  FormatterEvent *getEntryEvent (string interfaceId,
-                                 vector<FormatterEvent *> *events);
+  NclFormatterEvent *getEntryEvent (string interfaceId,
+                                 vector<NclFormatterEvent *> *events);
 
   bool startDocument (string documentId, string interfaceId);
   bool stopDocument (string documentId);
   bool pauseDocument (string documentId);
   bool resumeDocument (string documentId);
-  void presentationCompleted (FormatterEvent *documentEvent);
+  void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
   bool nclEdit (string nclEditApi);

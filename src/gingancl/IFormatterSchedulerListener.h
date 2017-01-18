@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IFORMATTERSCHEDULERLISTENER_H_
 #define IFORMATTERSCHEDULERLISTENER_H_
 
-#include "model/FormatterEvent.h"
+#include "NclFormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
@@ -27,7 +27,7 @@ class IFormatterSchedulerListener
 {
 public:
   virtual ~IFormatterSchedulerListener (){};
-  virtual void presentationCompleted (FormatterEvent *documentEvent) = 0;
+  virtual void presentationCompleted (NclFormatterEvent *documentEvent) = 0;
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_END

@@ -32,16 +32,16 @@ void
 AdapterChannelPlayer::createPlayer ()
 {
   IPlayer *childPlayer = NULL;
-  CompositeExecutionObject *cpExObj;
-  ExecutionObject *childObj;
-  map<string, ExecutionObject *> *objects;
-  map<string, ExecutionObject *>::iterator i;
+  NclCompositeExecutionObject *cpExObj;
+  NclExecutionObject *childObj;
+  map<string, NclExecutionObject *> *objects;
+  map<string, NclExecutionObject *>::iterator i;
   map<string, IPlayer *> *objectMap;
   Content *content;
   string mrlPlayer;
   string selectedObject = "";
 
-  cpExObj = (CompositeExecutionObject *)object;
+  cpExObj = (NclCompositeExecutionObject *)object;
   objectMap = new map<string, IPlayer *>;
   objects = cpExObj->getExecutionObjects ();
 
@@ -111,7 +111,7 @@ AdapterChannelPlayer::createPlayer ()
 }
 
 bool
-AdapterChannelPlayer::setPropertyValue (AttributionEvent *event,
+AdapterChannelPlayer::setPropertyValue (NclAttributionEvent *event,
                                         string value)
 {
 
@@ -121,7 +121,7 @@ AdapterChannelPlayer::setPropertyValue (AttributionEvent *event,
       return false;
     }
 
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   string propName = "";
   string paramValue = "FALSE";
 

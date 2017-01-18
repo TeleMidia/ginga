@@ -26,7 +26,7 @@ RuleAdapter::RuleAdapter (PresentationContext *presContext)
   this->presContext->addObserver (this);
 
   ruleListenMap = new map<string, vector<Rule *> *>;
-  entityListenMap = new map<Rule *, vector<ExecutionObjectSwitch *> *>;
+  entityListenMap = new map<Rule *, vector<NclExecutionObjectSwitch *> *>;
   descListenMap = new map<Rule *, vector<DescriptorSwitch *> *>;
 }
 
@@ -84,8 +84,8 @@ RuleAdapter::reset ()
 
   if (entityListenMap != NULL)
     {
-      map<Rule *, vector<ExecutionObjectSwitch *> *>::iterator j;
-      vector<ExecutionObjectSwitch *> *objects;
+      map<Rule *, vector<NclExecutionObjectSwitch *> *>::iterator j;
+      vector<NclExecutionObjectSwitch *> *objects;
 
       j = entityListenMap->begin ();
       while (j != entityListenMap->end ())
@@ -130,12 +130,12 @@ RuleAdapter::getPresentationContext ()
 }
 
 void
-RuleAdapter::adapt (CompositeExecutionObject *compositeObject, bool force)
+RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject, bool force)
 {
 
-  ExecutionObject *object;
-  map<string, ExecutionObject *> *objs;
-  map<string, ExecutionObject *>::iterator i;
+  NclExecutionObject *object;
+  map<string, NclExecutionObject *> *objs;
+  map<string, NclExecutionObject *>::iterator i;
 
   objs = compositeObject->getExecutionObjects ();
   if (objs != NULL)
@@ -144,20 +144,20 @@ RuleAdapter::adapt (CompositeExecutionObject *compositeObject, bool force)
       while (i != objs->end ())
         {
           object = i->second;
-          if (object->instanceOf ("ExecutionObjectSwitch"))
+          if (object->instanceOf ("NclExecutionObjectSwitch"))
             {
               initializeRuleObjectRelation (
-                  (ExecutionObjectSwitch *)object);
+                  (NclExecutionObjectSwitch *)object);
 
-              adapt ((ExecutionObjectSwitch *)object, force);
+              adapt ((NclExecutionObjectSwitch *)object, force);
               object
-                  = ((ExecutionObjectSwitch *)object)->getSelectedObject ();
+                  = ((NclExecutionObjectSwitch *)object)->getSelectedObject ();
             }
 
           adaptDescriptor (object);
-          if (object->instanceOf ("CompositeExecutionObject"))
+          if (object->instanceOf ("NclCompositeExecutionObject"))
             {
-              adapt ((CompositeExecutionObject *)object, force);
+              adapt ((NclCompositeExecutionObject *)object, force);
             }
           ++i;
         }
@@ -210,16 +210,16 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 
 void
 RuleAdapter::initializeRuleObjectRelation (
-    ExecutionObjectSwitch *objectAlternatives)
+    NclExecutionObjectSwitch *objectAlternatives)
 {
 
   /*
-  vector<ExecutionObjectSwitch*>* objectVector;
-  ExecutionObject* object;
+  vector<NclExecutionObjectSwitch*>* objectVector;
+  NclExecutionObject* object;
   Rule* rule;
   int i, size;
   size = objectAlternatives->getNumRules();
-  map<Rule*, vector<ExecutionObjectSwitch*>*>::iterator j;
+  map<Rule*, vector<NclExecutionObjectSwitch*>*>::iterator j;
   for (i = 0; i < size; i++) {
           rule = objectAlternatives->getRule(i);
           initializeAttributeRuleRelation(rule, rule);
@@ -238,11 +238,11 @@ RuleAdapter::initializeRuleObjectRelation (
           }
 
           if (!containsKey) {
-                  objectVector = new vector<ExecutionObjectSwitch*>;
+                  objectVector = new vector<NclExecutionObjectSwitch*>;
                   (*entityListenMap)[rule] = objectVector;
           }
 
-          vector<ExecutionObjectSwitch*>::iterator j;
+          vector<NclExecutionObjectSwitch*>::iterator j;
           bool containsObject = false;
           for (j = objectVector->begin(); j != objectVector->end(); ++j) {
                   if ((*j) == objectAlternatives) {
@@ -255,22 +255,22 @@ RuleAdapter::initializeRuleObjectRelation (
           }
 
           object = objectAlternatives->getExecutionObject(i);
-          if (object->instanceOf("ExecutionObjectSwitch")) {
-                  initializeRuleObjectRelation((ExecutionObjectSwitch*)object);
+          if (object->instanceOf("NclExecutionObjectSwitch")) {
+                  initializeRuleObjectRelation((NclExecutionObjectSwitch*)object);
           }
   }
   */
 }
 
 void
-RuleAdapter::adapt (ExecutionObjectSwitch *objectAlternatives, bool force)
+RuleAdapter::adapt (NclExecutionObjectSwitch *objectAlternatives, bool force)
 {
 
   /*
   int i, size;
   Rule* rule;
-  ExecutionObject* object;
-  vector<FormatterEvent*>* events;
+  NclExecutionObject* object;
+  vector<NclFormatterEvent*>* events;
   bool selected, result;
 
   if (!force && objectAlternatives->getSelectedObject() != NULL) {
@@ -281,7 +281,7 @@ RuleAdapter::adapt (ExecutionObjectSwitch *objectAlternatives, bool force)
   if (object != NULL) {
           events = object->getEvents();
           if (events != NULL) {
-                  vector<FormatterEvent*>::iterator i;
+                  vector<NclFormatterEvent*>::iterator i;
                   i = events->begin();
                   while (i != events->end()) {
                           if ((*i)->getCurrentState() ==
@@ -309,17 +309,17 @@ RuleAdapter::adapt (ExecutionObjectSwitch *objectAlternatives, bool force)
 
   object = objectAlternatives->getSelectedObject();
   if (object != NULL) {
-          if (object->instanceOf("ExecutionObjectSwitch")) {
-                  adapt((ExecutionObjectSwitch*)object, force);
+          if (object->instanceOf("NclExecutionObjectSwitch")) {
+                  adapt((NclExecutionObjectSwitch*)object, force);
           }
   }
   */
 }
 
 bool
-RuleAdapter::adaptDescriptor (ExecutionObject *executionObject)
+RuleAdapter::adaptDescriptor (NclExecutionObject *executionObject)
 {
-  CascadingDescriptor *cascadingDescriptor;
+  NclCascadingDescriptor *cascadingDescriptor;
   GenericDescriptor *selectedDescriptor;
   GenericDescriptor *unsolvedDescriptor;
   DescriptorSwitch *descAlternatives;
@@ -566,10 +566,10 @@ RuleAdapter::update (void *arg0, void *arg1)
     }
 
   vector<Rule *>::iterator ruleIter;
-  vector<ExecutionObjectSwitch *>::iterator objIter;
+  vector<NclExecutionObjectSwitch *>::iterator objIter;
 
   Rule *rule;
-  ExecutionObjectSwitch *object;
+  NclExecutionObjectSwitch *object;
 
   for (ruleIter = ruleVector->begin (); ruleIter != ruleVector->end ();
        ++ruleIter)
@@ -579,7 +579,7 @@ RuleAdapter::update (void *arg0, void *arg1)
 
       if (entityListenMap->count (rule) != 0)
         {
-          vector<ExecutionObjectSwitch *> *objectVector;
+          vector<NclExecutionObjectSwitch *> *objectVector;
           objectVector = ((*entityListenMap)[rule]);
 
           for (objIter = objectVector->begin ();
@@ -587,7 +587,7 @@ RuleAdapter::update (void *arg0, void *arg1)
             {
 
               object = (*objIter);
-              if (object->instanceOf ("ExecutionObjectSwitch"))
+              if (object->instanceOf ("NclExecutionObjectSwitch"))
                 {
                   adapt (object, true);
                 }

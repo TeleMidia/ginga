@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterApplicationPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
 
-#include "gingancl/model/LinkTransitionTriggerCondition.h"
+#include "gingancl/NclLinkTransitionTriggerCondition.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "mb/ScreenManagerFactory.h"
@@ -155,10 +155,10 @@ AdapterFormatterPlayer::createPlayer ()
   vector<Anchor *> *anchors;
   vector<Anchor *>::iterator i;
 
-  vector<FormatterEvent *> *events;
-  vector<FormatterEvent *>::iterator j;
+  vector<NclFormatterEvent *> *events;
+  vector<NclFormatterEvent *>::iterator j;
 
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   vector<Parameter *> *descParams;
   vector<Parameter *>::iterator it;
 
@@ -234,10 +234,10 @@ AdapterFormatterPlayer::createPlayer ()
       j = events->begin ();
       while (j != events->end ())
         {
-          if (*j != NULL && (*j)->instanceOf ("AttributionEvent"))
+          if (*j != NULL && (*j)->instanceOf ("NclAttributionEvent"))
             {
-              property = ((AttributionEvent *)*j)->getAnchor ();
-              ((AttributionEvent *)(*j))->setValueMaintainer (this);
+              property = ((NclAttributionEvent *)*j)->getAnchor ();
+              ((NclAttributionEvent *)(*j))->setValueMaintainer (this);
             }
           ++j;
         }
@@ -255,7 +255,7 @@ AdapterFormatterPlayer::createPlayer ()
 int
 AdapterFormatterPlayer::getObjectDevice ()
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *ncmRegion = NULL;
 
   if (objectDevice > -1)
@@ -284,7 +284,7 @@ bool
 AdapterFormatterPlayer::hasPrepared ()
 {
   bool presented;
-  FormatterEvent *mEv;
+  NclFormatterEvent *mEv;
   short st;
 
   if (object == NULL || player == NULL)
@@ -312,7 +312,7 @@ AdapterFormatterPlayer::hasPrepared ()
     }
 
   mEv = object->getMainEvent ();
-  if (mEv != NULL && !object->instanceOf ("ApplicationExecutionObject"))
+  if (mEv != NULL && !object->instanceOf ("NclApplicationExecutionObject"))
     {
       st = mEv->getCurrentState ();
       if (st != EventUtil::ST_SLEEPING)
@@ -341,9 +341,9 @@ AdapterFormatterPlayer::setKeyHandler (bool isHandler)
 }
 
 double
-AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
+AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *region = NULL;
   PropertyAnchor *property;
   vector<string> *params;
@@ -352,7 +352,7 @@ AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
   vector<PropertyAnchor *> *anchors;
   vector<PropertyAnchor *>::iterator j;
   string name, value;
-  FormatterRegion *fRegion = NULL;
+  NclFormatterRegion *fRegion = NULL;
   Node *ncmNode;
   float transpValue = -1;
   float parentOpacity = -1;
@@ -986,9 +986,9 @@ AdapterFormatterPlayer::prepareProperties (ExecutionObject *obj)
 }
 
 void
-AdapterFormatterPlayer::updatePlayerProperties (ExecutionObject *obj)
+AdapterFormatterPlayer::updatePlayerProperties (NclExecutionObject *obj)
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   string value;
 
   if (object != NULL)
@@ -1011,12 +1011,12 @@ AdapterFormatterPlayer::updatePlayerProperties (ExecutionObject *obj)
 }
 
 bool
-AdapterFormatterPlayer::prepare (ExecutionObject *object,
-                                 FormatterEvent *event)
+AdapterFormatterPlayer::prepare (NclExecutionObject *object,
+                                 NclFormatterEvent *event)
 {
 
   Content *content;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   double explicitDur = -1;
   NodeEntity *dataObject;
 
@@ -1084,9 +1084,9 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
       anchorMonitor = NULL;
     }
 
-  if (event->instanceOf ("PresentationEvent"))
+  if (event->instanceOf ("NclPresentationEvent"))
     {
-      double duration = ((PresentationEvent *)event)->getDuration ();
+      double duration = ((NclPresentationEvent *)event)->getDuration ();
       bool infDur = (isNaN (duration) || isInfinity (duration));
 
       if (descriptor != NULL && explicitDur < 0)
@@ -1111,7 +1111,7 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
           // the object. For instance: start an interface with
           // begin = 4s and explicit duration = 5s => new duration
           // will be 1s
-          ((PresentationEvent *)event)->setEnd (explicitDur);
+          ((NclPresentationEvent *)event)->setEnd (explicitDur);
           object->addEvent (event);
 
           clog << "AdapterFormatterPlayer::prepare '";
@@ -1119,9 +1119,9 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
           clog << "with explicitDur = '";
           clog << explicitDur << "' object duration was '";
           clog << duration << "'. Updated info: event begin = '";
-          clog << ((PresentationEvent *)event)->getBegin () << "'";
+          clog << ((NclPresentationEvent *)event)->getBegin () << "'";
           clog << " event end = '";
-          clog << ((PresentationEvent *)event)->getEnd () << "'";
+          clog << ((NclPresentationEvent *)event)->getEnd () << "'";
           clog << endl;
         }
     }
@@ -1130,7 +1130,7 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
   updatePlayerProperties (object);
   if (event->getCurrentState () == EventUtil::ST_SLEEPING)
     {
-      object->prepare ((PresentationEvent *)event, 0);
+      object->prepare ((NclPresentationEvent *)event, 0);
       prepare ();
       return true;
     }
@@ -1143,7 +1143,7 @@ AdapterFormatterPlayer::prepare (ExecutionObject *object,
 void
 AdapterFormatterPlayer::prepare ()
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
 
   if (object == NULL)
@@ -1178,14 +1178,14 @@ AdapterFormatterPlayer::prepare ()
 void
 AdapterFormatterPlayer::prepareScope (double offset)
 {
-  PresentationEvent *mainEvent;
+  NclPresentationEvent *mainEvent;
   double duration;
   double playerDur;
   double initTime = 0;
   IntervalAnchor *intervalAnchor;
 
-  mainEvent = (PresentationEvent *)(object->getMainEvent ());
-  if (mainEvent->instanceOf ("PresentationEvent"))
+  mainEvent = (NclPresentationEvent *)(object->getMainEvent ());
+  if (mainEvent->instanceOf ("NclPresentationEvent"))
     {
       if ((mainEvent->getAnchor ())->instanceOf ("LambdaAnchor"))
         {
@@ -1277,8 +1277,8 @@ AdapterFormatterPlayer::prepareScope (double offset)
 double
 AdapterFormatterPlayer::getOutTransDur ()
 {
-  CascadingDescriptor *descriptor;
-  FormatterRegion *fRegion;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *fRegion;
   double outTransDur = 0.0;
 
   descriptor = object->getDescriptor ();
@@ -1304,7 +1304,7 @@ void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
   ITimeBaseProvider *timeBaseProvider = NULL;
-  EventTransition *nextTransition;
+  NclEventTransition *nextTransition;
   NodeEntity *dataObject;
 
   if (anchorMonitor != NULL)
@@ -1389,14 +1389,14 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 }
 
 void
-AdapterFormatterPlayer::printAction (string action, ExecutionObject *object)
+AdapterFormatterPlayer::printAction (string action, NclExecutionObject *object)
 {
 
-  FormatterEvent *event;
+  NclFormatterEvent *event;
 
-  if (object->instanceOf ("ApplicationExecutionObject"))
+  if (object->instanceOf ("NclApplicationExecutionObject"))
     {
-      event = ((ApplicationExecutionObject *)object)->getCurrentEvent ();
+      event = ((NclApplicationExecutionObject *)object)->getCurrentEvent ();
     }
   else
     {
@@ -1427,10 +1427,10 @@ AdapterFormatterPlayer::printAction (string command)
 bool
 AdapterFormatterPlayer::start ()
 {
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *ncmRegion = NULL;
   string paramValue;
-  FormatterEvent *objEv;
+  NclFormatterEvent *objEv;
 
   assert (object != NULL);
 
@@ -1508,8 +1508,8 @@ AdapterFormatterPlayer::start ()
 bool
 AdapterFormatterPlayer::stop ()
 {
-  FormatterEvent *mainEvent = NULL;
-  vector<FormatterEvent *> *events = NULL;
+  NclFormatterEvent *mainEvent = NULL;
+  vector<NclFormatterEvent *> *events = NULL;
 
   if (anchorMonitor != NULL)
     {
@@ -1532,9 +1532,9 @@ AdapterFormatterPlayer::stop ()
       events = object->getEvents ();
     }
 
-  if (mainEvent != NULL && mainEvent->instanceOf ("PresentationEvent"))
+  if (mainEvent != NULL && mainEvent->instanceOf ("NclPresentationEvent"))
     {
-      if (checkRepeat ((PresentationEvent *)mainEvent))
+      if (checkRepeat ((NclPresentationEvent *)mainEvent))
         {
           return true;
         }
@@ -1551,13 +1551,13 @@ AdapterFormatterPlayer::stop ()
 
   if (events != NULL)
     {
-      vector<FormatterEvent *>::iterator i;
+      vector<NclFormatterEvent *>::iterator i;
       i = events->begin ();
       while (i != events->end ())
         {
-          if (*i != NULL && (*i)->instanceOf ("AttributionEvent"))
+          if (*i != NULL && (*i)->instanceOf ("NclAttributionEvent"))
             {
-              ((AttributionEvent *)(*i))->setValueMaintainer (NULL);
+              ((NclAttributionEvent *)(*i))->setValueMaintainer (NULL);
             }
 
           if (i != events->end ())
@@ -1687,7 +1687,7 @@ AdapterFormatterPlayer::naturalEnd ()
 }
 
 bool
-AdapterFormatterPlayer::checkRepeat (PresentationEvent *event)
+AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 {
   if (event->getRepetitions () > 1)
     {
@@ -1732,7 +1732,7 @@ AdapterFormatterPlayer::unprepare ()
 
   ((AdapterPlayerManager *)manager)->removePlayer (object);
 
-  if (ExecutionObject::hasInstance (object, false))
+  if (NclExecutionObject::hasInstance (object, false))
     {
       object->unprepare ();
     }
@@ -1744,7 +1744,7 @@ AdapterFormatterPlayer::unprepare ()
 }
 
 bool
-AdapterFormatterPlayer::setPropertyValue (AttributionEvent *event,
+AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
 
@@ -1804,8 +1804,8 @@ AdapterFormatterPlayer::setPropertyValue (AttributionEvent *event,
             {
               bool isPercentual;
               float transpValue, parentOpacity;
-              FormatterRegion *fRegion;
-              CascadingDescriptor *descriptor;
+              NclFormatterRegion *fRegion;
+              NclCascadingDescriptor *descriptor;
 
               value = cvtPercentual (value, &isPercentual);
               transpValue = ::ginga::util::stof (value);
@@ -1875,7 +1875,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
       return "";
     }
 
-  name = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
+  name = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
   value = getPropertyValue (name);
 
   return value;
@@ -1912,7 +1912,7 @@ AdapterFormatterPlayer::getObjectExpectedDuration ()
 void
 AdapterFormatterPlayer::updateObjectExpectedDuration ()
 {
-  PresentationEvent *wholeContentEvent;
+  NclPresentationEvent *wholeContentEvent;
   double duration;
   double implicitDur;
 
@@ -1966,15 +1966,15 @@ AdapterFormatterPlayer::updateStatus (short code, string parameter,
                                       short type, string value)
 {
 
-  FormatterEvent *mainEvent;
+  NclFormatterEvent *mainEvent;
 
   switch (code)
     {
     case IPlayer::PL_NOTIFY_OUTTRANS:
       if (outTransDur > 0.0)
         {
-          CascadingDescriptor *descriptor;
-          FormatterRegion *fRegion;
+          NclCascadingDescriptor *descriptor;
+          NclFormatterRegion *fRegion;
 
           outTransDur = -1.0;
           outTransTime = -1.0;
@@ -2062,8 +2062,8 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
 void
 AdapterFormatterPlayer::setVisible (bool visible)
 {
-  CascadingDescriptor *descriptor;
-  FormatterRegion *region;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *region;
 
   descriptor = object->getDescriptor ();
   if (descriptor != NULL)

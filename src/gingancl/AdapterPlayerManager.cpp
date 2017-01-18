@@ -122,7 +122,7 @@ AdapterPlayerManager::getTimeBaseProvider ()
 
 void
 AdapterPlayerManager::setVisible (string objectId, string visible,
-                                  AttributionEvent *event)
+                                  NclAttributionEvent *event)
 {
 
   map<string, IAdapterPlayer *>::iterator i;
@@ -142,13 +142,13 @@ AdapterPlayerManager::setVisible (string objectId, string visible,
 bool
 AdapterPlayerManager::removePlayer (void *exObject)
 {
-  ExecutionObject *object;
+  NclExecutionObject *object;
   bool removed = false;
   string objId;
 
-  object = (ExecutionObject *)exObject;
+  object = (NclExecutionObject *)exObject;
   Thread::mutexLock (&mutexPlayer);
-  if (ExecutionObject::hasInstance (object, false))
+  if (NclExecutionObject::hasInstance (object, false))
     {
       objId = object->getId ();
       removed = removePlayer (objId);
@@ -209,7 +209,7 @@ AdapterPlayerManager::setNclEditListener (IPlayerListener *listener)
 }
 
 AdapterFormatterPlayer *
-AdapterPlayerManager::initializePlayer (ExecutionObject *object)
+AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
 {
   NodeEntity *entity;
   Content *content;
@@ -328,7 +328,7 @@ AdapterPlayerManager::getObjectPlayer (void *eObj)
   map<string, IAdapterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
   string objId;
-  ExecutionObject *execObj = (ExecutionObject *)eObj;
+  NclExecutionObject *execObj = (NclExecutionObject *)eObj;
 
   Thread::mutexLock (&mutexPlayer);
   objId = execObj->getId ();

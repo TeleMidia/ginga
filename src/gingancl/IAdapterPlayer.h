@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IAdapterPlayer_H_
 #define IAdapterPlayer_H_
 
-#include "gingancl/model/AttributionEvent.h"
+#include "gingancl/NclAttributionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "player/IPlayer.h"
@@ -46,7 +46,7 @@ public:
 
   virtual double getOutTransTime () = 0;
 
-  virtual bool setPropertyValue (AttributionEvent *event, string value) = 0;
+  virtual bool setPropertyValue (NclAttributionEvent *event, string value) = 0;
 
   virtual string getPropertyValue (string name) = 0;
 };

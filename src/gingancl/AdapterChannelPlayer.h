@@ -18,12 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CHANNELPLAYERADAPTER_H_
 #define CHANNELPLAYERADAPTER_H_
 
-#include "gingancl/model/CompositeExecutionObject.h"
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclCompositeExecutionObject.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "gingancl/model/AttributionEvent.h"
-#include "gingancl/model/PresentationEvent.h"
+#include "gingancl/NclAttributionEvent.h"
+#include "gingancl/NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "ncl/Content.h"
@@ -47,7 +47,7 @@ public:
 
 protected:
   void createPlayer ();
-  bool setPropertyValue (AttributionEvent *event, string value);
+  bool setPropertyValue (NclAttributionEvent *event, string value);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END

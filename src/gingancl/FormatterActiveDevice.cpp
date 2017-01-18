@@ -62,7 +62,7 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
   defaultWidth = dm->getDeviceWidth (myScreen);
   defaultHeight = dm->getDeviceHeight (myScreen);
 
-  mainLayout = new FormatterLayout (myScreen, x, y, w, h);
+  mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
   layoutManager[deviceClass] = mainLayout;
 
   evs = new set<int>;

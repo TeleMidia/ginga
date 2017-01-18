@@ -31,8 +31,8 @@ using namespace ::ginga::system;
 #include "ncl/ContentNode.h"
 using namespace ::ginga::ncl;
 
-#include "gingancl/model/CascadingDescriptor.h"
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclCascadingDescriptor.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "system/ITimeBaseProvider.h"
@@ -69,7 +69,7 @@ public:
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
   ITimeBaseProvider *getTimeBaseProvider ();
   void setVisible (string objectId, string visible,
-                   AttributionEvent *event);
+                   NclAttributionEvent *event);
   bool removePlayer (void *object);
 
 private:
@@ -80,7 +80,7 @@ public:
   void setNclEditListener (IPlayerListener *listener);
 
 private:
-  AdapterFormatterPlayer *initializePlayer (ExecutionObject *object);
+  AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
 
 public:
   void *getObjectPlayer (void *execObj);

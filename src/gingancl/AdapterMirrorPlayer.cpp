@@ -28,8 +28,8 @@ AdapterMirrorPlayer::~AdapterMirrorPlayer () { player = NULL; }
 void
 AdapterMirrorPlayer::createPlayer ()
 {
-  FormatterRegion *fRegion;
-  CascadingDescriptor *descriptor;
+  NclFormatterRegion *fRegion;
+  NclCascadingDescriptor *descriptor;
   LayoutRegion *ncmRegion = NULL;
   GingaSurfaceID mirrorSur;
 
@@ -37,7 +37,7 @@ AdapterMirrorPlayer::createPlayer ()
 
   string prefix = "ncl-mirror://";
   AdapterFormatterPlayer *sourceAdapter = NULL;
-  ExecutionObject *execObjSrc;
+  NclExecutionObject *execObjSrc;
   size_t pos;
 
   AdapterFormatterPlayer::createPlayer ();

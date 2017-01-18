@@ -41,27 +41,27 @@ AdapterLuaPlayer::createPlayer ()
 }
 
 bool
-AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
+AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 
   lockEvent ();
   if (preparedEvents.count (event->getId ()) != 0
-      && !event->instanceOf ("SelectionEvent")
-      && event->instanceOf ("AnchorEvent"))
+      && !event->instanceOf ("NclSelectionEvent")
+      && event->instanceOf ("NclAnchorEvent"))
     {
 
-      interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
+      interfaceId = ((NclAnchorEvent *)event)->getAnchor ()->getId ();
 
-      if ((((AnchorEvent *)event)->getAnchor ())
+      if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LabeledAnchor"))
         {
 
           interfaceId
-              = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+              = ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                     ->getLabel ();
         }
-      else if ((((AnchorEvent *)event)->getAnchor ())
+      else if ((((NclAnchorEvent *)event)->getAnchor ())
                    ->instanceOf ("LambdaAnchor"))
         {
 
@@ -69,20 +69,20 @@ AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
         }
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)object)
           ->setCurrentEvent (currentEvent);
 
       player->setCurrentScope (interfaceId);
     }
-  else if (event->instanceOf ("AttributionEvent"))
+  else if (event->instanceOf ("NclAttributionEvent"))
     {
       interfaceId
-          = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
+          = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
 
       player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 
       currentEvent = event;
-      ((ApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)object)
           ->setCurrentEvent (currentEvent);
 
       player->setCurrentScope (interfaceId);
@@ -100,7 +100,7 @@ AdapterLuaPlayer::setAndLockCurrentEvent (FormatterEvent *event)
 }
 
 void
-AdapterLuaPlayer::unlockCurrentEvent (FormatterEvent *event)
+AdapterLuaPlayer::unlockCurrentEvent (NclFormatterEvent *event)
 {
   if (event != currentEvent)
     {

@@ -33,8 +33,8 @@ protected:
   void createPlayer ();
 
 public:
-  bool setAndLockCurrentEvent (FormatterEvent *event);
-  void unlockCurrentEvent (FormatterEvent *event);
+  bool setAndLockCurrentEvent (NclFormatterEvent *event);
+  void unlockCurrentEvent (NclFormatterEvent *event);
   void flip ();
 };
 

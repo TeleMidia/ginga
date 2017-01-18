@@ -28,18 +28,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
 
-#include "model/CascadingDescriptor.h"
-#include "model/ExecutionObject.h"
+#include "NclCascadingDescriptor.h"
+#include "NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "model/SelectionEvent.h"
+#include "NclSelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "model/ILinkActionListener.h"
-#include "model/LinkSimpleAction.h"
+#include "INclLinkActionListener.h"
+#include "NclLinkSimpleAction.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
-#include "model/FormatterRegion.h"
+#include "NclFormatterRegion.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "PresentationContext.h"
@@ -65,11 +65,11 @@ private:
 
   GingaScreenID myScreen;
   PresentationContext *presContext;
-  map<string, set<ExecutionObject *> *> *focusTable;
+  map<string, set<NclExecutionObject *> *> *focusTable;
   bool isHandler;
   string currentFocus;
   string objectToSelect;
-  ExecutionObject *selectedObject;
+  NclExecutionObject *selectedObject;
 
   Color *defaultFocusBorderColor;
   int defaultFocusBorderWidth;
@@ -77,7 +77,7 @@ private:
   AdapterPlayerManager *playerManager;
   FormatterFocusManager *parentManager;
   FormatterMultiDevice *multiDevice;
-  ILinkActionListener *settingActions;
+  INclLinkActionListener *settingActions;
 
   int xOffset;
   int yOffset;
@@ -98,7 +98,7 @@ public:
   FormatterFocusManager (AdapterPlayerManager *playerManager,
                          PresentationContext *presContext,
                          FormatterMultiDevice *multiDevice,
-                         ILinkActionListener *settingActions,
+                         INclLinkActionListener *settingActions,
                          void *converter);
 
   virtual ~FormatterFocusManager ();
@@ -122,19 +122,19 @@ public:
   void setFocus (string focusIndex);
 
 private:
-  void setFocus (CascadingDescriptor *descriptor);
-  void recoveryDefaultState (ExecutionObject *object);
+  void setFocus (NclCascadingDescriptor *descriptor);
+  void recoveryDefaultState (NclExecutionObject *object);
 
 public:
-  void showObject (ExecutionObject *object);
-  void hideObject (ExecutionObject *object);
+  void showObject (NclExecutionObject *object);
+  void hideObject (NclExecutionObject *object);
 
 private:
-  ExecutionObject *getObjectFromFocusIndex (string focusIndex);
-  void insertObject (ExecutionObject *object, string focusIndex);
-  void removeObject (ExecutionObject *object, string focusIndex);
+  NclExecutionObject *getObjectFromFocusIndex (string focusIndex);
+  void insertObject (NclExecutionObject *object, string focusIndex);
+  void removeObject (NclExecutionObject *object, string focusIndex);
 
-  bool keyCodeOk (ExecutionObject *currentObject);
+  bool keyCodeOk (NclExecutionObject *currentObject);
   bool keyCodeBack ();
   bool enterSelection (AdapterFormatterPlayer *player);
   void exitSelection (AdapterFormatterPlayer *player);

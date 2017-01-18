@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AdapterBerkeliumPlayer_H_
 #define AdapterBerkeliumPlayer_H_
 
-#include "../../../../../model/ExecutionObject.h"
+#include "../../../../../model/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "../../../../../model/PresentationEvent.h"
+#include "../../../../../model/NclPresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "../../../../AdapterFormatterPlayer.h"
@@ -44,7 +44,7 @@ protected:
   void createPlayer ();
 
 public:
-  bool setPropertyValue (AttributionEvent *event, string value);
+  bool setPropertyValue (NclAttributionEvent *event, string value);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_END

@@ -29,7 +29,7 @@ void
 AdapterPlainTxtPlayer::createPlayer ()
 {
   string paramValue;
-  CascadingDescriptor *descriptor;
+  NclCascadingDescriptor *descriptor;
 
   if (fileExists (mrl))
     {

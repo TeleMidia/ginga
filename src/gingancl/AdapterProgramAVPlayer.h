@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PROGRAMAVPLAYERADAPTER_H_
 #define PROGRAMAVPLAYERADAPTER_H_
 
-#include "gingancl/model/ExecutionObject.h"
+#include "gingancl/NclExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
-#include "gingancl/model/AttributionEvent.h"
-#include "gingancl/model/FormatterEvent.h"
-#include "gingancl/model/PresentationEvent.h"
-#include "gingancl/model/SelectionEvent.h"
+#include "gingancl/NclAttributionEvent.h"
+#include "gingancl/NclFormatterEvent.h"
+#include "gingancl/NclPresentationEvent.h"
+#include "gingancl/NclSelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "ncl/Content.h"
@@ -59,7 +59,7 @@ public:
 
 protected:
   void createPlayer ();
-  bool setPropertyValue (AttributionEvent *event, string value);
+  bool setPropertyValue (NclAttributionEvent *event, string value);
 
 private:
   void updateAVBounds ();
