@@ -210,6 +210,7 @@ GINGA_PLAYER_BEGIN
 	};
 
 GINGA_PLAYER_END
+
 using namespace ::ginga::player;
 
 struct notify {

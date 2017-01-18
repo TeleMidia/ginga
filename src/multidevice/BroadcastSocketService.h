@@ -64,4 +64,5 @@ GINGA_MULTIDEVICE_BEGIN
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_BroadcastSocketService_H_*/

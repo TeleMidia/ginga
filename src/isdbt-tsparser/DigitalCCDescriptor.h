@@ -14,8 +14,10 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
 #ifndef DIGITALCCDESCRIPTOR_H_
 #define DIGITALCCDESCRIPTOR_H_
+
 #include "IMpegDescriptor.h"
 
 
@@ -54,4 +56,5 @@ struct Component{
 
 
 GINGA_TSPARSER_END
+
 #endif /* DIGITALCCDESCRIPTOR_H_ */

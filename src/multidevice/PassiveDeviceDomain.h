@@ -50,4 +50,5 @@ GINGA_MULTIDEVICE_BEGIN
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_PassiveDeviceDomain_H_*/

@@ -49,4 +49,5 @@ GINGA_MB_BEGIN
 	};
 
 GINGA_MB_END
+
 #endif /*IFONTPROVIDER_H_*/

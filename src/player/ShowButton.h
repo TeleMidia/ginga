@@ -63,4 +63,5 @@ GINGA_PLAYER_BEGIN
 	};
 
 GINGA_PLAYER_END
+
 #endif /*ShowButton_H_*/

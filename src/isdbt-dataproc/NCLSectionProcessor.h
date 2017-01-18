@@ -64,4 +64,5 @@ GINGA_DATAPROC_BEGIN
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_NCLSectionProcessor_H_

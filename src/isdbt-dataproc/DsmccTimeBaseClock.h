@@ -61,4 +61,5 @@ class DsmccTimeBaseClock : public Stc {
 
 
 GINGA_DATAPROC_END
+
 #endif /* TIMEBASECLOCK_H_ */

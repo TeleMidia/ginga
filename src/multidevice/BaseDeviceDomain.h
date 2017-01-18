@@ -83,4 +83,5 @@ typedef struct {
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_BaseDeviceDomain_H_*/

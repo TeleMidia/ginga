@@ -132,4 +132,5 @@ GINGA_PLAYER_BEGIN
 	};
 
 GINGA_PLAYER_END
+
 #endif //_INCLPlayer_H_

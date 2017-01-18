@@ -131,4 +131,5 @@ GINGA_MB_BEGIN
 	};
 
 GINGA_MB_END
+
 #endif /*INPUTMANAGER_H_*/

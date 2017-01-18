@@ -23,6 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 GINGA_NCL_BEGIN
+
 		
 	class LambdaAnchor : public RelativeTimeIntervalAnchor {
 		public:

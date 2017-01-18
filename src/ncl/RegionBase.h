@@ -65,4 +65,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif /*REGIONBASE_H_*/

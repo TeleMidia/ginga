@@ -87,4 +87,5 @@ GINGA_PLAYER_BEGIN
 	};
 
 GINGA_PLAYER_END
+
 #endif /*BerkeliumPlayer_h_*/

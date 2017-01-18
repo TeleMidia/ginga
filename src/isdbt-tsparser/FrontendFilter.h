@@ -56,4 +56,5 @@ GINGA_TSPARSER_BEGIN
 	};
 
 GINGA_TSPARSER_END
+
 #endif /*FrontendFilter_H_*/

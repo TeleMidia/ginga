@@ -33,4 +33,5 @@ GINGA_MULTIDEVICE_BEGIN
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_ISocketService_H_*/

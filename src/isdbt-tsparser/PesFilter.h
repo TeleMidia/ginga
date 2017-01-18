@@ -54,4 +54,5 @@ GINGA_TSPARSER_BEGIN
 	};
 
 GINGA_TSPARSER_END
+
 #endif /*PesFilter_H_*/

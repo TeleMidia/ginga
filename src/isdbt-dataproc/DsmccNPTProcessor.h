@@ -125,4 +125,5 @@ class DsmccNPTProcessor : public Thread, public ITimeBaseProvider {
 
 
 GINGA_DATAPROC_END
+
 #endif /* NPTPROCESSOR_H_ */

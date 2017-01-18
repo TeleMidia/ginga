@@ -48,4 +48,5 @@ GINGA_DATAPROC_BEGIN
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_NCLMetadataParser_H_

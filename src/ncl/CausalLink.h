@@ -48,4 +48,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif //_CAUSALLINK_H_

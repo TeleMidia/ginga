@@ -370,4 +370,5 @@ typedef struct {
 	};
 
 GINGA_MB_END
+
 #endif /*SDLDEVICESCREEN_H_*/

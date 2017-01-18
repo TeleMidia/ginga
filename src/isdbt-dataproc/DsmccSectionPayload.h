@@ -69,4 +69,5 @@ class DsmccSectionPayload {
 
 
 GINGA_DATAPROC_END
+
 #endif /* DSMCCSectionPayload_H_ */

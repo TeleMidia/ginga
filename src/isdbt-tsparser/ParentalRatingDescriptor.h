@@ -14,6 +14,7 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
 #ifndef PARENTALRATINGDESCRIPTOR_H_
 #define PARENTALRATINGDESCRIPTOR_H_
 
@@ -42,4 +43,5 @@ GINGA_TSPARSER_BEGIN
 	};
 
 GINGA_TSPARSER_END
+
 #endif /* PARENTALRATINGDESCRIPTOR_H_ */

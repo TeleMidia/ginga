@@ -53,4 +53,5 @@ GINGA_SYSTEM_BEGIN
 	};
 
 GINGA_SYSTEM_END
+
 #endif /*ITimeBaseProvider_H_*/

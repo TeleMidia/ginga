@@ -14,6 +14,7 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
 #ifndef _STATEMENT_H_
 #define _STATEMENT_H_
 
@@ -42,4 +43,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif //_STATEMENT_H_

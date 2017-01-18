@@ -75,4 +75,5 @@ GINGA_MULTIDEVICE_BEGIN
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_MulticastSocketService_H_*/

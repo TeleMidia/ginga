@@ -46,4 +46,5 @@ class DsmccStreamMode : public DsmccMpegDescriptor {
 
 
 GINGA_DATAPROC_END
+
 #endif /* STREAMMODE_H_ */

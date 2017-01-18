@@ -62,4 +62,5 @@ class DsmccNPTReference : public DsmccMpegDescriptor {
 
 
 GINGA_DATAPROC_END
+
 #endif /* NPTREFERENCE_H_ */

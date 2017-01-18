@@ -63,4 +63,5 @@ GINGA_SYSTEM_BEGIN
 	};
 
 GINGA_SYSTEM_END
+
 #endif /* STC_H_ */
