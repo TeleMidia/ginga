@@ -108,68 +108,37 @@ typedef unsigned int GingaSurfaceID;
 typedef unsigned int GingaProviderID;
 
 // Namespaces.
-#define NS_BEGIN(t)\
-  namespace t {
-
-#define NS_BEGIN2(t1, t2)\
-  NS_BEGIN (t1) NS_BEGIN (t2)
-
-#define NS_BEGIN3(t1, t2, t3)\
-  NS_BEGIN2 (t1, t2) NS_BEGIN (t3)
-
-#define NS_BEGIN4(t1, t2, t3, t4)\
-  NS_BEGIN3 (t1, t2, t3) NS_BEGIN(t4)
-
-#define NS_BEGIN5(t1, t2, t3, t4, t5)\
-  NS_BEGIN4 (t1, t2, t3, t4) NS_BEGIN (t5)
-
-#define NS_BEGIN6(t1, t2, t3, t4, t5, t6)\
-  NS_BEGIN5 (t1, t2, t3, t4, t5) NS_BEGIN (t6)
-
-#define NS_BEGIN7(t1, t2, t3, t4, t5, t6, t7)\
-  NS_BEGIN6 (t1, t2, t3, t4, t5, t6) NS_BEGIN (t7)
-
-#define NS_BEGIN8(t1, t2, t3, t4, t5, t6, t7, t8)\
-  NS_BEGIN7 (t1, t2, t3, t4, t5, t6, t7) NS_BEGIN (t8)
-
-#define NS_END  }
-#define NS_END2 }}
-#define NS_END3 }}}
-#define NS_END4 }}}}
-#define NS_END5 }}}}}
-#define NS_END6 }}}}}}
-#define NS_END7 }}}}}}}
-#define NS_END8 }}}}}}}}
-
-#define GINGA_BEGIN             NS_BEGIN  (ginga)
-#define GINGA_END               NS_END
-#define GINGA_CTXMGMT_BEGIN     NS_BEGIN2 (ginga, ctxmgmt)
-#define GINGA_CTXMGMT_END       NS_END2
-#define GINGA_DATAPROC_BEGIN    NS_BEGIN2 (ginga, dataproc)
-#define GINGA_DATAPROC_END      NS_END2
-#define GINGA_FORMATTER_BEGIN   NS_BEGIN2 (ginga, formatter)
-#define GINGA_FORMATTER_END     NS_END2
-#define GINGA_IC_BEGIN          NS_BEGIN2 (ginga, ic)
-#define GINGA_IC_END            NS_END2
-#define GINGA_LSSM_BEGIN        NS_BEGIN2 (ginga, lssm)
-#define GINGA_LSSM_END          NS_END2
-#define GINGA_MB_BEGIN          NS_BEGIN2 (ginga, mb)
-#define GINGA_MB_END            NS_END2
-#define GINGA_MULTIDEVICE_BEGIN NS_BEGIN2 (ginga, multidevice)
-#define GINGA_MULTIDEVICE_END   NS_END2
-#define GINGA_NCL_BEGIN         NS_BEGIN2 (ginga, ncl)
-#define GINGA_NCL_END           NS_END2
-#define GINGA_NCLCONV_BEGIN     NS_BEGIN2 (ginga, nclconv)
-#define GINGA_NCLCONV_END       NS_END2
-#define GINGA_PLAYER_BEGIN      NS_BEGIN2 (ginga, player)
-#define GINGA_PLAYER_END        NS_END2
-#define GINGA_SYSTEM_BEGIN      NS_BEGIN2 (ginga, system)
-#define GINGA_SYSTEM_END        NS_END2
-#define GINGA_TSPARSER_BEGIN    NS_BEGIN2 (ginga, tsparser)
-#define GINGA_TSPARSER_END      NS_END2
-#define GINGA_TUNER_BEGIN       NS_BEGIN2 (ginga, tuner)
-#define GINGA_TUNER_END         NS_END2
-#define GINGA_UTIL_BEGIN        NS_BEGIN2 (ginga, util)
-#define GINGA_UTIL_END          NS_END2
+#define _GINGA_NS_BEGIN(t)      namespace t { /* } */
+#define _GINGA_NS_END                    /* { */ }
+#define _GINGA_BEGIN(t)         _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
+#define _GINGA_END              _GINGA_NS_END _GINGA_NS_END
+#define GINGA_CTXMGMT_BEGIN     _GINGA_BEGIN (ctxmgmt)
+#define GINGA_CTXMGMT_END       _GINGA_END
+#define GINGA_DATAPROC_BEGIN    _GINGA_BEGIN (dataproc)
+#define GINGA_DATAPROC_END      _GINGA_END
+#define GINGA_FORMATTER_BEGIN   _GINGA_BEGIN (formatter)
+#define GINGA_FORMATTER_END     _GINGA_END
+#define GINGA_IC_BEGIN          _GINGA_BEGIN (ic)
+#define GINGA_IC_END            _GINGA_END
+#define GINGA_LSSM_BEGIN        _GINGA_BEGIN (lssm)
+#define GINGA_LSSM_END          _GINGA_END
+#define GINGA_MB_BEGIN          _GINGA_BEGIN (mb)
+#define GINGA_MB_END            _GINGA_END
+#define GINGA_MULTIDEVICE_BEGIN _GINGA_BEGIN (multidevice)
+#define GINGA_MULTIDEVICE_END   _GINGA_END
+#define GINGA_NCL_BEGIN         _GINGA_BEGIN (ncl)
+#define GINGA_NCL_END           _GINGA_END
+#define GINGA_NCLCONV_BEGIN     _GINGA_BEGIN (nclconv)
+#define GINGA_NCLCONV_END       _GINGA_END
+#define GINGA_PLAYER_BEGIN      _GINGA_BEGIN (player)
+#define GINGA_PLAYER_END        _GINGA_END
+#define GINGA_SYSTEM_BEGIN      _GINGA_BEGIN (system)
+#define GINGA_SYSTEM_END        _GINGA_END
+#define GINGA_TSPARSER_BEGIN    _GINGA_BEGIN (tsparser)
+#define GINGA_TSPARSER_END      _GINGA_END
+#define GINGA_TUNER_BEGIN       _GINGA_BEGIN (tuner)
+#define GINGA_TUNER_END         _GINGA_END
+#define GINGA_UTIL_BEGIN        _GINGA_BEGIN (util)
+#define GINGA_UTIL_END          _GINGA_END
 
 #endif /* GINGA_H */
