@@ -28,7 +28,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::system;
 
 #include "isdbt-tuner/ISTCProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "DSMCCSectionPayload.h"
 #include "MpegDescriptor.h"

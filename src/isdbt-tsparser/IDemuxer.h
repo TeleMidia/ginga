@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "isdbt-tuner/Tuner.h"
 #include "isdbt-tuner/IFrontendFilter.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "ITSFilter.h"
 

@@ -28,7 +28,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::player;
 
 #include "isdbt-tuner/Tuner.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IEventInfo.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;

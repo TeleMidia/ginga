@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define Channels_H_
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 class Channels {
 	private:
@@ -48,5 +48,5 @@ class Channels {
 		map<long, unsigned char>* getVirtualChannelsList();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*Channels_H_*/

@@ -25,7 +25,7 @@ using namespace ::ginga::system;
 
 #include "isdbt-tuner/IDataProvider.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	class MulticastProvider : public IDataProvider {
 		protected:
@@ -86,5 +86,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			virtual char* receiveData(int* len);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*MULTICASTPROVIDER_H_*/

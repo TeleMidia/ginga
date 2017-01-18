@@ -37,7 +37,7 @@ typedef struct lockedFiltersAction {
 	bool isAdd;
 } ActionsToFilters;
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	class ISDBTFrontend : public Thread {
 		private:
@@ -92,5 +92,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif /*ISDBTFRONTEND_H_*/

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "isdbt-tuner/ISTCProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tuning;
+using namespace ::ginga::tuner;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;

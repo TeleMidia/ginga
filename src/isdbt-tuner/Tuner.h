@@ -50,7 +50,7 @@ typedef struct
 #include "ITunerListener.h"
 #include "IProviderListener.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
+GINGA_TUNER_BEGIN
 
 	class Tuner : public IInputEventListener, public ITProviderListener, public Thread {
 		private:
@@ -105,5 +105,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 			virtual void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_END
+GINGA_TUNER_END
 #endif //__TUNER_H__
