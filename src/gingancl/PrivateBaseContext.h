@@ -67,7 +67,7 @@ typedef struct
   NclDocument *embeddedDocument;
 } EmbeddedNclData;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class PrivateBaseContext : public IPrivateBaseContext
 {
@@ -190,5 +190,5 @@ public:
   PrivateBase *getPrivateBase ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END
 #endif /*PrivateBaseContext_H_*/

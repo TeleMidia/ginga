@@ -21,9 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclApplicationExecutionObject.h"
 
 #include "NclSwitchEvent.h"
-using namespace br::pucrio::telemidia::ginga::ncl::model::switches;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 bool NclExecutionObject::initMutex = false;
 set<NclExecutionObject *> NclExecutionObject::objects;
@@ -2065,4 +2065,4 @@ NclExecutionObject::unlockParentTable ()
   Thread::mutexUnlock (&mutexParentTable);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END

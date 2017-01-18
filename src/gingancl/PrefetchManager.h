@@ -26,7 +26,7 @@ using namespace ::ginga::system;
 #include "ic/InteractiveChannelManager.h"
 using namespace ::ginga::ic;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class PrefetchManager : public IInteractiveChannelListener
 {
@@ -82,5 +82,5 @@ public:
   void getScheduledContents ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END
+GINGA_FORMATTER_END
 #endif /*PrefetchManager_H_*/

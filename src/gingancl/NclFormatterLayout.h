@@ -26,12 +26,12 @@ using namespace ::ginga::ncl;
 
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
 #include "NclFormatterDeviceRegion.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclFormatterLayout
 {
@@ -109,5 +109,5 @@ private:
   void unlock ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END
 #endif /*FORMATTERLAYOUT_H_*/

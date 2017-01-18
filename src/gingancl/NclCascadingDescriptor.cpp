@@ -24,9 +24,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 int NclCascadingDescriptor::dummyCount = 0;
 
@@ -791,4 +791,4 @@ NclCascadingDescriptor::getOutputTransitions ()
   return this->outputTransitions;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END

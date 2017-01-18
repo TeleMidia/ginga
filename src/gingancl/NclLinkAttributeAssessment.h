@@ -24,11 +24,11 @@ using namespace ::ginga::ncl;
 #include "NclAttributionEvent.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclLinkAssessment.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkAttributeAssessment : public NclLinkAssessment
 {
@@ -52,5 +52,5 @@ private:
   string getAssessmentWithOffset (string assessmentValue);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif /*LINKATTRIBUTEASSESSMENT_H_*/

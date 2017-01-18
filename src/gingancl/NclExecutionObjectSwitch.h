@@ -25,16 +25,16 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclSwitchEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclExecutionObjectSwitch : public NclCompositeExecutionObject
 {
@@ -51,5 +51,5 @@ public:
   bool addEvent (NclFormatterEvent *event);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
+GINGA_FORMATTER_END
 #endif //_EXECUTIONOBJECTSWITCH_H_

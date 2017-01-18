@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECTCREATIONFORBIDDENEXCEPTION_H_
 #define OBJECTCREATIONFORBIDDENEXCEPTION_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class ObjectCreationForbiddenException : public exception
 {
@@ -32,5 +32,5 @@ class ObjectCreationForbiddenException : public exception
   }
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
+GINGA_FORMATTER_END
 #endif /*OBJECTCREATIONFORBIDDENEXCEPTION_H_*/

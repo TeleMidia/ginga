@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterSubtitlePlayer.h"
 #include "player/SrtPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterSubtitlePlayer::AdapterSubtitlePlayer () : AdapterFormatterPlayer ()
 {
@@ -77,4 +77,4 @@ AdapterSubtitlePlayer::createPlayer ()
   AdapterFormatterPlayer::createPlayer ();
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END
+GINGA_FORMATTER_END

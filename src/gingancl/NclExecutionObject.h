@@ -55,26 +55,25 @@ using namespace ::ginga::ncl;
 #include "NclPresentationEvent.h"
 #include "NclSelectionEvent.h"
 #include "NclAttributionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 #include "NclEventTransition.h"
 #include "NclEventTransitionManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event::
-    transition;
+using namespace ::ginga::formatter;
 
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclNodeNesting.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclExecutionObject
 {
@@ -241,5 +240,5 @@ private:
   void unlockParentTable ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END
 #endif //_EXECUTIONOBJECT_H_

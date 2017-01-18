@@ -42,9 +42,9 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclFormatterRegion.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclCascadingDescriptor
 {
@@ -127,5 +127,5 @@ public:
   vector<Transition *> *getOutputTransitions ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END
 #endif //_CASCADINGDESCRIPTOR_H_

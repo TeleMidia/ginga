@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclSelectionEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclSelectionEvent::NclSelectionEvent (string id, void *executionObject,
                                 ContentAnchor *anchor)
@@ -52,4 +52,4 @@ NclSelectionEvent::setSelectionCode (string codeStr)
   selectionCode = CodeMap::getInstance ()->getCode (codeStr);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END

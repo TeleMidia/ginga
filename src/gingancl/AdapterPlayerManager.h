@@ -33,7 +33,7 @@ using namespace ::ginga::ncl;
 
 #include "gingancl/NclCascadingDescriptor.h"
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "system/ITimeBaseProvider.h"
 using namespace ::ginga::system;
@@ -44,7 +44,7 @@ using namespace ::ginga::player;
 #include "AdapterFormatterPlayer.h"
 #include "IAdapterPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterPlayerManager : public Thread
 {
@@ -102,5 +102,5 @@ protected:
   void run ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END
 #endif //_PLAYERADAPTERMANAGER_H_

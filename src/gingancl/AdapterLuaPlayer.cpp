@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterLuaPlayer.h"
 #include "player/LuaPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterLuaPlayer::AdapterLuaPlayer () : AdapterApplicationPlayer () {}
 
@@ -116,4 +116,4 @@ AdapterLuaPlayer::unlockCurrentEvent (NclFormatterEvent *event)
   unlockEvent ();
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END
+GINGA_FORMATTER_END

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkSimpleAction.h"
 #include "NclLinkAssignmentAction.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event, short type)
     : NclLinkAction ()
@@ -152,4 +152,4 @@ NclLinkSimpleAction::run ()
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

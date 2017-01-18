@@ -22,9 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclPresentationEvent.h"
 #include "NclFormatterEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkRepeatAction : public NclLinkSimpleAction
 {
@@ -43,5 +43,5 @@ public:
   void setRepetitionInterval (double delay);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKREPEATACTION_H_

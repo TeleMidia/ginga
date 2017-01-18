@@ -23,9 +23,9 @@ using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
 #include "INclEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclSwitchEvent : public NclFormatterEvent, public INclEventListener
 {
@@ -52,5 +52,5 @@ public:
   short getPriorityType ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
+GINGA_FORMATTER_END
 #endif //_SWITCHEVENT_H_

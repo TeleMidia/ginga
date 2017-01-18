@@ -30,7 +30,7 @@ using namespace ::ginga::ncl;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclFormatterDeviceRegion : public LayoutRegion
 {
@@ -116,5 +116,5 @@ public:
   int compareTo (void *arg0);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END
 #endif /*FORMATTERDEVICEREGION_H_*/

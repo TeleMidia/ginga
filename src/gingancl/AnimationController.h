@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _ANIMATIONCONTROLLER_H_
 
 #include "NclAttributionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "ncl/Animation.h"
 using namespace ::ginga::ncl;
@@ -29,12 +29,12 @@ using namespace ::ginga::system;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AnimationController : public Thread
 {
@@ -141,5 +141,5 @@ private:
   bool isExecutionObjectProperty (string name);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ANIMATION_END
+GINGA_FORMATTER_END
 #endif // _ANIMATIONCONTROLLER_H_

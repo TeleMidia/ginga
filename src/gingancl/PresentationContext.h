@@ -49,7 +49,7 @@ using namespace ::ginga::multidevice;
 
 #include "math.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class PresentationContext : public Observable, public IContextListener
 {
@@ -92,5 +92,5 @@ public:
 #endif // WITH_MULTIDEVICE
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
+GINGA_FORMATTER_END
 #endif //_PRESENTATIONCONTEXT_H_

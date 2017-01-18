@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "AdapterTimePlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterTimePlayer::AdapterTimePlayer () : AdapterFormatterPlayer () {}
 
@@ -35,4 +35,4 @@ AdapterTimePlayer::createPlayer ()
   clog << mrl << "' ALL DONE" << endl;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_END
+GINGA_FORMATTER_END

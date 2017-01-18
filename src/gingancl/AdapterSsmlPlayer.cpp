@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterSsmlPlayer.h"
 #include "player/SsmlPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterSsmlPlayer::AdapterSsmlPlayer () : AdapterFormatterPlayer ()
 {
@@ -45,4 +45,4 @@ AdapterSsmlPlayer::createPlayer ()
   AdapterFormatterPlayer::createPlayer ();
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END
+GINGA_FORMATTER_END

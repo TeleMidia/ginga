@@ -23,7 +23,7 @@ using namespace ::ginga::system;
 
 #include "PrivateBaseContext.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class PrivateBaseManager
 {
@@ -156,5 +156,5 @@ private:
   void unlockTable ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END
 #endif /*PrivateBaseManager_H_*/

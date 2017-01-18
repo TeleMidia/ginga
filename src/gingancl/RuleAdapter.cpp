@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "RuleAdapter.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 RuleAdapter::RuleAdapter (PresentationContext *presContext)
 {
@@ -601,4 +601,4 @@ RuleAdapter::update (void *arg0, void *arg1)
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
+GINGA_FORMATTER_END

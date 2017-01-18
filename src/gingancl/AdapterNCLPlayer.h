@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLPLAYERADAPTER_H_
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterNCLPlayer : public AdapterApplicationPlayer
 {
@@ -38,5 +38,5 @@ public:
   void flip ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END
+GINGA_FORMATTER_END
 #endif /* NCLPLAYERADAPTER_H_ */

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclCostFunctionDuration.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclCostFunctionDuration::NclCostFunctionDuration (
     double expectedValue, double minValue, double maxValue,
@@ -96,4 +96,4 @@ NclCostFunctionDuration::getCostValue (double value)
   return value;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_END
+GINGA_FORMATTER_END

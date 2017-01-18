@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclNodeNesting.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclNodeNesting::NclNodeNesting () { initialize (); }
 
@@ -296,4 +296,4 @@ NclNodeNesting::toString ()
   return id;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END

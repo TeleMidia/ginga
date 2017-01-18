@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclFormatterDeviceRegion.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclFormatterDeviceRegion::NclFormatterDeviceRegion (string id) : LayoutRegion (id)
 {
@@ -645,4 +645,4 @@ NclFormatterDeviceRegion::compareTo (void *arg0)
   return 0;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
+GINGA_FORMATTER_END

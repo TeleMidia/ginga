@@ -34,9 +34,9 @@ using namespace ::ginga::player;
 using namespace ::ginga::system;
 
 #include "PrivateBaseManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterActiveDevice : public FormatterMultiDevice
 {
@@ -100,6 +100,6 @@ protected:
                          string spayload_desc, string payload);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END
 
 #endif /* FORMATTER_ACTIVE_DEVICE_H */

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclCompositeExecutionObject.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclCompositeExecutionObject::NclCompositeExecutionObject (
     string id, Node *dataObject, bool handling,
@@ -929,4 +929,4 @@ NclCompositeExecutionObject::unlockSTL ()
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END

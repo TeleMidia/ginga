@@ -23,7 +23,7 @@ using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclAnchorEvent : public NclFormatterEvent
 {
@@ -48,5 +48,5 @@ public:
   };
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END
 #endif //_ANCHOREVENT_H_

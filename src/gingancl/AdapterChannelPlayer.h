@@ -20,11 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "gingancl/NclCompositeExecutionObject.h"
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclAttributionEvent.h"
 #include "gingancl/NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "ncl/Content.h"
 #include "ncl/NodeEntity.h"
@@ -35,9 +35,9 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterChannelPlayer : public AdapterFormatterPlayer
 {
@@ -50,5 +50,5 @@ protected:
   bool setPropertyValue (NclAttributionEvent *event, string value);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END
+GINGA_FORMATTER_END
 #endif /*CHANNELPLAYERADAPTER_H_*/

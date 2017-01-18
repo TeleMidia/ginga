@@ -19,12 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SSMLPLAYERADAPTER_H_
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterSsmlPlayer : public AdapterFormatterPlayer
 {
@@ -36,5 +36,5 @@ protected:
   void createPlayer ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END
+GINGA_FORMATTER_END
 #endif /*SSMLPLAYERADAPTER_H_*/

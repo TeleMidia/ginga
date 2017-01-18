@@ -31,18 +31,18 @@ using namespace ::ginga::ncl;
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
 #include "NclLinkListener.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclNodeNesting.h"
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclCompositeExecutionObject : public NclExecutionObject,
                                  public NclLinkListener,
@@ -124,5 +124,5 @@ private:
   void unlockSTL ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
+GINGA_FORMATTER_END
 #endif //_COMPOSITEEXECUTIONOBJECT_H_

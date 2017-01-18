@@ -19,13 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PROGRAMAVPLAYERADAPTER_H_
 
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclAttributionEvent.h"
 #include "gingancl/NclFormatterEvent.h"
 #include "gingancl/NclPresentationEvent.h"
 #include "gingancl/NclSelectionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "ncl/Content.h"
 #include "ncl/ReferenceContent.h"
@@ -35,9 +35,9 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterProgramAVPlayer : public AdapterFormatterPlayer
 {
@@ -65,5 +65,5 @@ private:
   void updateAVBounds ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_END
+GINGA_FORMATTER_END
 #endif /*PROGRAMAVPLAYERADAPTER_H_*/

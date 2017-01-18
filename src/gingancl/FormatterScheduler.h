@@ -24,35 +24,35 @@ using namespace ::ginga::ctxmgmt;
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
 #include "NclCompositeExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
+using namespace ::ginga::formatter;
 
 #include "NclAttributionEvent.h"
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclLinkAssignmentAction.h"
 #include "NclLinkSimpleAction.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
+using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
 #include "PresentationContext.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
+using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "ncl/SimpleAction.h"
 #include "ncl/EventUtil.h"
@@ -75,18 +75,18 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "FormatterFocusManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::focus;
+using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
+using namespace ::ginga::formatter;
 
 #include "IFormatterSchedulerListener.h"
 #include "ObjectCreationForbiddenException.h"
 
 #include "AnimationController.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::animation;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler : public INclLinkActionListener,
                            public INclEventListener,
@@ -203,5 +203,5 @@ public:
   void receiveGlobalAttribution (string propertyName, string value);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END
 #endif //_FORMATTERSCHEDULER_H_

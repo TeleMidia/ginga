@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidevice/PassiveDeviceDomain.h"
 #include "multidevice/BaseDeviceDomain.h"
 #include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "mb/CodeMap.h"
 #include "mb/InputManager.h"
@@ -30,7 +30,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 using namespace ::ginga::mb;
 
 #include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "system/Thread.h"
 using namespace ::ginga::system;
@@ -38,7 +38,7 @@ using namespace ::ginga::system;
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
                                               DeviceLayout *deviceLayout,
@@ -923,4 +923,4 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
   delete sock;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END

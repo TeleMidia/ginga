@@ -80,30 +80,30 @@ using namespace ::ginga::ncl;
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
 #include "NclAttributionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkAssignmentAction.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
+using namespace ::ginga::formatter;
 
 #include "ObjectCreationForbiddenException.h"
 #include "FormatterConverter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::emconverter;
+using namespace ::ginga::formatter;
 
 #include "PrefetchManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::prefetch;
+using namespace ::ginga::formatter;
 
 #include "FormatterScheduler.h"
 #include "PrivateBaseManager.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class EntryEventListener : public INclEventListener
 {
@@ -401,5 +401,5 @@ public:
   void timeShift (string direction);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END
 #endif //_FormatterMediator_H_

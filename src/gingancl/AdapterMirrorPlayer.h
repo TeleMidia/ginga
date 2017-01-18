@@ -19,17 +19,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define MIRRORPLAYERADAPTER_H_
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclFormatterEvent.h"
 #include "gingancl/NclPresentationEvent.h"
 #include "gingancl/NclSelectionEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class AdapterMirrorPlayer : public AdapterFormatterPlayer
 {
@@ -44,5 +44,5 @@ protected:
   void createPlayer ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_END
+GINGA_FORMATTER_END
 #endif /*MIRRORPLAYERADAPTER_H_*/

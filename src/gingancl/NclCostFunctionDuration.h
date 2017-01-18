@@ -23,7 +23,7 @@ using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "FlexibleTimeMeasurement.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclCostFunctionDuration : public FlexibleTimeMeasurement
 {
@@ -52,5 +52,5 @@ public:
   virtual double getCostValue (double value);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_END
+GINGA_FORMATTER_END
 #endif //_COSTFUNCTIONDURATION_H_

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterImagePlayer.h"
 #include "player/ImagePlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterImagePlayer::AdapterImagePlayer () : AdapterFormatterPlayer () {}
 
@@ -36,4 +36,4 @@ AdapterImagePlayer::createPlayer ()
   AdapterFormatterPlayer::createPlayer ();
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_END
+GINGA_FORMATTER_END

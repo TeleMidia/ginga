@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkAndCompoundTriggerCondition.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclLinkAndCompoundTriggerCondition::NclLinkAndCompoundTriggerCondition ()
     : NclLinkCompoundTriggerCondition ()
@@ -161,4 +161,4 @@ NclLinkAndCompoundTriggerCondition::getEvents ()
   return events;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

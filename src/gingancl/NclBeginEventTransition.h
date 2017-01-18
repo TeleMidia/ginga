@@ -19,12 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define BEGINEVENTTRANSITION_H_
 
 #include "NclPresentationEvent.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
+using namespace ::ginga::formatter;
 
 #include "NclEndEventTransition.h"
 #include "NclEventTransition.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclBeginEventTransition : public NclEventTransition
 {
@@ -38,5 +38,5 @@ public:
   void setEndTransition (NclEndEventTransition *entry);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
+GINGA_FORMATTER_END
 #endif /*BEGINEVENTTRANSITION_H_*/

@@ -24,7 +24,7 @@ using namespace ::ginga::system;
 #include "NclLinkTriggerListener.h"
 #include "NclLinkCondition.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 typedef struct
 {
@@ -66,5 +66,5 @@ private:
   void run ();
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKTRIGGERCONDITION_H_

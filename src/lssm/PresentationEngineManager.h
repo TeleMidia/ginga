@@ -37,7 +37,7 @@ using namespace ::ginga::mb;
 using namespace ::ginga::player;
 
 #include "gingancl/PrivateBaseManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 GINGA_LSSM_BEGIN
 

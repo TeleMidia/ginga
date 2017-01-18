@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterMultiDevice.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class FormatterBaseDevice : public FormatterMultiDevice
 {
@@ -49,6 +49,6 @@ protected:
   bool userEventReceived (SDLInputEvent *ev);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END
 
 #endif /* FORMATTER_BASE_DEVICE_H */

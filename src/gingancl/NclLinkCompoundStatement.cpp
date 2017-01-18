@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkCompoundStatement.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclLinkCompoundStatement::NclLinkCompoundStatement (short op) : NclLinkStatement ()
 {
@@ -153,4 +153,4 @@ NclLinkCompoundStatement::evaluate ()
     }
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END

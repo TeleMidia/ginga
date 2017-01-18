@@ -22,12 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidevice/PassiveDeviceDomain.h"
 #include "multidevice/BaseDeviceDomain.h"
 #include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
 #include "gingancl/FormatterMediator.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
+GINGA_FORMATTER_BEGIN
 
 FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
                                                 DeviceLayout *deviceLayout,
@@ -135,4 +135,4 @@ FormatterPassiveDevice::userEventReceived (SDLInputEvent *ev)
   return false;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
+GINGA_FORMATTER_END

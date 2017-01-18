@@ -23,9 +23,9 @@ using namespace ::ginga::ncl;
 #include "NclAttributionEvent.h"
 
 #include "NclExecutionObject.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
+using namespace ::ginga::formatter;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
+GINGA_FORMATTER_BEGIN
 
 NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
                                     PropertyAnchor *anchor,
@@ -167,4 +167,4 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (string roleId)
   return assessments[roleId];
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
+GINGA_FORMATTER_END

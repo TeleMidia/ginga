@@ -20,17 +20,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
+using namespace ::ginga::formatter;
 
 #include "gingancl/NclLinkTransitionTriggerCondition.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
+using namespace ::ginga::formatter;
 
 #include "mb/ScreenManagerFactory.h"
 using namespace ::ginga::mb;
 
 #include "player/Player.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
+GINGA_FORMATTER_BEGIN
 
 LocalScreenManager *AdapterFormatterPlayer::dm = NULL;
 double AdapterFormatterPlayer::eventTS = 0;
@@ -2111,4 +2111,4 @@ AdapterFormatterPlayer::unlockObject ()
   return true;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
+GINGA_FORMATTER_END

@@ -27,7 +27,7 @@ using namespace ::ginga::nclconv;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
+GINGA_FORMATTER_BEGIN
 
 PrivateBaseContext::PrivateBaseContext () { this->privateBase = NULL; }
 
@@ -1703,4 +1703,4 @@ PrivateBaseContext::getPrivateBase ()
   return privateBase;
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
+GINGA_FORMATTER_END

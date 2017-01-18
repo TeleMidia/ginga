@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterAVPlayer.h"
 #include "player/AVPlayer.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterAVPlayer::AdapterAVPlayer () : AdapterFormatterPlayer ()
 {
@@ -51,4 +51,4 @@ AdapterAVPlayer::setPropertyValue (NclAttributionEvent *event, string value)
   return AdapterFormatterPlayer::setPropertyValue (event, value);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END
+GINGA_FORMATTER_END

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AdaptersComponentSupport.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
+GINGA_FORMATTER_BEGIN
 
 AdapterBerkeliumPlayer::AdapterBerkeliumPlayer ()
     : AdapterFormatterPlayer ()
@@ -139,4 +139,4 @@ AdapterBerkeliumPlayer::setPropertyValue (NclAttributionEvent *event,
   return AdapterFormatterPlayer::setPropertyValue (event, value);
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_END
+GINGA_FORMATTER_END

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKTRIGGERLISTENER_H_
 #define _LINKTRIGGERLISTENER_H_
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclLinkTriggerListener
 {
@@ -32,5 +32,5 @@ public:
   virtual void evaluationEnded () = 0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
+GINGA_FORMATTER_END
 #endif //_LINKTRIGGERLISTENER_H_
