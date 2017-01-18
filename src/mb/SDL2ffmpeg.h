@@ -29,13 +29,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {
-
-#include <pthread.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "libavutil/avstring.h"
 #include "libavutil/pixfmt.h"
 #include "libavutil/time.h"
@@ -52,10 +45,6 @@ extern "C" {
 #include "libavfilter/buffersrc.h"
 // AVFILTER end
 
-#include <inttypes.h>
-#include <limits.h>
-#include <math.h>
-#include <pthread.h>
 }
 
 
@@ -69,8 +58,6 @@ extern "C" {
 
 /* SDL2ffmpeg cplusplus compat end*/
 
-#include <SDL.h>
-#include <SDL_thread.h>
 
 #define SCALEBITS 10
 #define ONE_HALF  (1 << (SCALEBITS - 1))
@@ -152,11 +139,6 @@ extern "C" {
 
 #define BPP 1
 
-#include <cmath>
-#include <string>
-#include <iostream>
-#include <set>
-using namespace std;
 
 GINGA_MB_BEGIN
 

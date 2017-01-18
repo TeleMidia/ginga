@@ -17,10 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef COMPONENTDESCRIPTOR_H_
 #define COMPONENTDESCRIPTOR_H_
 
-#include <string.h>
 
-#include <string>
-using namespace std;
 
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;

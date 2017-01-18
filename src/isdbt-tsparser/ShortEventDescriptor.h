@@ -24,10 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IShortEventDescriptor.h"
 
-#include <cstring>
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 

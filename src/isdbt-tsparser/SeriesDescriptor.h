@@ -20,9 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-#include <sstream>
 
-#include <string.h>
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 
 namespace si{

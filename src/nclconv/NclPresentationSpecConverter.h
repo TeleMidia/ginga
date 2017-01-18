@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclPresentationSpecConverter_H
 #define NclPresentationSpecConverter_H
 
-#include <vector>
-#include <string>
-using namespace std;
 
 #include "util/Color.h"
 
@@ -61,7 +58,6 @@ using namespace ::ginga::nclconv;
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

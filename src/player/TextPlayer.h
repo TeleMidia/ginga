@@ -32,11 +32,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "AVPlayer.h"
 
-#include <iostream>
-#include <map>
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

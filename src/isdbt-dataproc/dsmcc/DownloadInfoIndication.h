@@ -18,17 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DOWNLOADINFOINDICATION_H_
 #define DOWNLOADINFOINDICATION_H_
 
-extern "C" {
-	#include <stdio.h>
-}
-
 #include "Module.h"
 #include "DsmccMessageHeader.h"
 
-#include <string>
-#include <vector>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

@@ -27,9 +27,6 @@ struct frame {
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <string>
-#include <iostream>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

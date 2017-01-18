@@ -18,16 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EPGPROCESSOR_H_
 #define EPGPROCESSOR_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	#include <sys/stat.h>
-	#include <stdio.h>
-	#include <stdio.h>
-#ifdef __cplusplus
-}
-#endif
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -41,11 +31,6 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IEPGListener.h"
 
-#include <set>
-#include <vector>
-#include <map>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_EPG_BEGIN
 

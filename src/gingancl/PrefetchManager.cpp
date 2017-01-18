@@ -23,8 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <sys/stat.h>
-#include <stdio.h>
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
 

@@ -73,13 +73,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "NodeNesting.h"
 
-#include <pthread.h>
-#include <map>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 

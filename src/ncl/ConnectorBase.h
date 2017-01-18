@@ -23,9 +23,6 @@ using namespace ::ginga::ncl;
 
 #include "Connector.h"
 
-#include <set>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

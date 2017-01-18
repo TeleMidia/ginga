@@ -23,10 +23,6 @@ using namespace ::ginga::util;
 
 #include "Rule.h"
 
-#include <string>
-#include <iostream>
-#include <sstream>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -26,8 +26,6 @@ using namespace ::ginga::util;
 #include "Role.h"
 
 //#include <limits>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

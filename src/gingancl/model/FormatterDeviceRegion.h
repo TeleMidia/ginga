@@ -30,10 +30,6 @@ using namespace ::ginga::ncl;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include <pthread.h>
-#include <set>
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 

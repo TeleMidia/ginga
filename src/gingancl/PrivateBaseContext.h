@@ -60,10 +60,6 @@ using namespace ::ginga::ncl;
 #include "ncl/IPrivateBaseContext.h"
 using namespace ::ginga::ncl;
 
-#include <map>
-#include <vector>
-#include <string>
-using namespace std;
 
 typedef struct {
 	string embeddedNclNodeId;

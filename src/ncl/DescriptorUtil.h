@@ -23,8 +23,6 @@ using namespace ::ginga::util;
 
 #include "Descriptor.h"
 
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -34,8 +34,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "Player.h"
 
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

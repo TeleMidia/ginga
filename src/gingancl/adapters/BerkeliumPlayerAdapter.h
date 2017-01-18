@@ -30,9 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
 
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
 

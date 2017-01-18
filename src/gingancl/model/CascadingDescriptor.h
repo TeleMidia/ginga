@@ -44,11 +44,6 @@ using namespace ::ginga::ncl;
 #include "FormatterRegion.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
-#include <string>
-#include <map>
-#include <vector>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 

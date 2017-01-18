@@ -18,11 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef Channels_H_
 #define Channels_H_
 
-#include <string>
-#include <map>
-#include <fstream>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 

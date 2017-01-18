@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DOWNLOADSERVERINITIATE_H_
 #define DOWNLOADSERVERINITIATE_H_
 
-extern "C" {
-	#include <stdio.h>
-}
-
 #include "Module.h"
 #include "Ior.h"
 #include "DsmccMessageHeader.h"

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKTRANSITIONTRIGGERCONDITION_H_
 #define _LINKTRANSITIONTRIGGERCONDITION_H_
 
-#include <vector>
-using namespace std;
 
 #include "ncl/Bind.h"
 using namespace ::ginga::ncl;

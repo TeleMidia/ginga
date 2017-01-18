@@ -44,13 +44,6 @@ using namespace ::ginga::player;
 #include "FormatterPlayerAdapter.h"
 #include "IPlayerAdapter.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <set>
-#include <vector>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 

@@ -18,23 +18,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef UDPCLIENT_H_
 #define UDPCLIENT_H_
 
-#include <iostream>
-#include <cstdio>
-
 #if defined _MSC_VER || defined __CYGWIN__
-  #include <winsock2.h>
-  #include <ws2tcpip.h>
+# include <winsock2.h>
+# include <ws2tcpip.h>
 #else
-  #include <sys/socket.h>
-  #include <netinet/in.h>
-  #include <sys/ioctl.h>
-  #include <arpa/inet.h>
-  #include <netdb.h>
-  #include <net/if.h>
-  #include <netdb.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <sys/ioctl.h>
+# include <arpa/inet.h>
+# include <netdb.h>
+# include <net/if.h>
+# include <netdb.h>
 #endif
-
-using namespace std;
 
 class UDPClient {
 

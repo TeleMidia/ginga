@@ -23,9 +23,6 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IApplication.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

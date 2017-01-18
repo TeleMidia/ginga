@@ -30,9 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SimpleCondition.h"
 #include "Role.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

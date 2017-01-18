@@ -23,8 +23,6 @@ using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "FlexibleTimeMeasurement.h"
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
 

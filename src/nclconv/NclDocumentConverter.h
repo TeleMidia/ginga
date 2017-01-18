@@ -34,10 +34,7 @@ using namespace ::ginga::ncl;
 
 #include "IDocumentConverter.h"
 
-#include <string>
-using namespace std;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

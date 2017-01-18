@@ -28,9 +28,6 @@ using namespace ::ginga::util;
 #include "SimpleCondition.h"
 #include "Role.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

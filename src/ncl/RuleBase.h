@@ -23,9 +23,6 @@ using namespace ::ginga::ncl;
 
 #include "Rule.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

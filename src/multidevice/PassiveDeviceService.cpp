@@ -19,12 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PassiveDeviceService.h"
 #include "DeviceDomain.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
 
-#include <iostream>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

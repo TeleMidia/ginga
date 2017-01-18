@@ -30,16 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-extern "C" {
-#include <pthread.h>
-}
-
-#include <set>
-#include <string>
-#include <vector>
-#include <iostream>
-using namespace std;
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
 	class LinkAction : public Thread {

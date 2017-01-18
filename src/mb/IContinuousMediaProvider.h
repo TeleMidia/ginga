@@ -23,12 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IProviderListener.h"
 #include "IMediaProvider.h"
 
-extern "C" {
-#include <stdint.h>
-}
-
-#include <string>
-using namespace std;
 
 GINGA_MB_BEGIN
 

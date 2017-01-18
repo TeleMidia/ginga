@@ -35,18 +35,11 @@ using namespace ::ginga::mb;
 
 #include "IPlayer.h"
 
-#include <pthread.h>
 
 #ifndef HAVE_CLOCKTIME
 #define HAVE_CLOCKTIME 1
 #endif
 
-#include <iostream>
-#include <set>
-#include <vector>
-#include <map>
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

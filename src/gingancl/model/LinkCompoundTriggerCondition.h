@@ -26,8 +26,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "LinkTriggerCondition.h"
 #include "LinkTriggerListener.h"
 
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

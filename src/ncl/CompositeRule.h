@@ -20,9 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Rule.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

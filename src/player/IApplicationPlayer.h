@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IAPPLICATIONPLAYER_H_
 #define IAPPLICATIONPLAYER_H_
 
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

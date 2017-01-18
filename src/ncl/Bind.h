@@ -36,11 +36,6 @@ using namespace ::ginga::ncl;
 #include "Port.h"
 using namespace ::ginga::ncl;
 
-#include <string>
-#include <map>
-#include <vector>
-#include <set>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IDATAPROVIDER_H_
 #define IDATAPROVIDER_H_
 
-#include <stdint.h>
 
 #include "Channel.h"
 #include "IProviderListener.h"

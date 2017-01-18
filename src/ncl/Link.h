@@ -38,9 +38,6 @@ using namespace ::ginga::ncl;
 
 #include "Bind.h"
 
-#include <map>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

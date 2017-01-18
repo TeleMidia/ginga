@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AUDIOCOMPONENTDESCRIPTOR_H_
 #define AUDIOCOMPONENTDESCRIPTOR_H_
 
-#include <string.h>
 
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;

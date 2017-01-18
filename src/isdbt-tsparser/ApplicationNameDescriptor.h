@@ -18,10 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef APPLICATIONNAMEDESCRIPTOR_H_
 #define APPLICATIONNAMEDESCRIPTOR_H_
 
-#include <string.h>
 
-#include <vector>
-using namespace std;
 
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;

@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <sys/types.h>
-#include <stdio.h>
 
 GINGA_PLAYER_BEGIN
 

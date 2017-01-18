@@ -20,12 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IServiceDescriptor.h"
 
-#include <string>
-
-extern "C" {
-	#include <string.h>
-}
-
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 
 	class ServiceDescriptor : public IServiceDescriptor {

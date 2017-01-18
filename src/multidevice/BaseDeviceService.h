@@ -23,8 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DeviceDomain.h"
 #include "DeviceService.h"
 
-#include <map>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

@@ -27,12 +27,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include <pthread.h>
 
-#include <map>
-#include <vector>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
 

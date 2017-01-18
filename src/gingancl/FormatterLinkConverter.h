@@ -79,9 +79,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "FormatterConverter.h"
 #include "ObjectCreationForbiddenException.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 

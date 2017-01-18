@@ -26,7 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLConvert.h"
 
 extern "C" {
-#include <stdlib.h>
 }
 
 GINGA_MB_BEGIN

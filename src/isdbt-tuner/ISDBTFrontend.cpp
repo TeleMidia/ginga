@@ -16,13 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
-#include <linux/dvb/dmx.h>
-#include <linux/dvb/version.h>
-#include <errno.h>
 
 #include "ISDBTFrontend.h"
 #include "IDataProvider.h"

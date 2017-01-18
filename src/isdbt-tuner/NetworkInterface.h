@@ -26,8 +26,6 @@ using namespace ginga::util;
 #include "ISTCProvider.h"
 #include "Channel.h"
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 

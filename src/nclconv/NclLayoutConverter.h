@@ -36,11 +36,7 @@ using namespace ::ginga::nclconv;
 
 #include "NclImportConverter.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

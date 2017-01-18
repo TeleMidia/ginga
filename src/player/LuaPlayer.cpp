@@ -16,20 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include <list>
-#include <string>
 
 extern "C"
 {
-#include <assert.h>
-#include <errno.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <SDL.h>
-#include <ncluaw.h>
-#include <pthread.h>
 }
 
 #include "mb/InputManager.h"

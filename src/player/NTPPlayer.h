@@ -23,10 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/UDPClient.h"
 #include "player/NTPDatagram.h"
 
-#include <iostream>
-#include <sys/timeb.h>
 
-using namespace std;
 
 #define TRY_NUM 4
 #define TIMEOUT 2500 //milliseconds

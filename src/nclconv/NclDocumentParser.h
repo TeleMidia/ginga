@@ -36,12 +36,8 @@ using namespace ::ginga::nclconv;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-#include <iostream>
-#include <string>
-using namespace std;
 
 GINGA_NCLCONV_BEGIN
 

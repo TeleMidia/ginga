@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TCPSOCKETSERVICE_H_
 #define TCPSOCKETSERVICE_H_
 
-#include <map>
-#include <string.h>
-using namespace std;
 
 #include "IRemoteDeviceListener.h"
 #include "TcpClientConnection.h"

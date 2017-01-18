@@ -49,10 +49,6 @@ using namespace ::ginga::ncl;
 
 #include "Base.h"
 
-#include <map>
-#include <string>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

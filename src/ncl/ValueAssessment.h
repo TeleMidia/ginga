@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef VALUEASSESSMENT_H_
 #define VALUEASSESSMENT_H_
 
-#include <string>
-using namespace std;
 
 #include "Assessment.h"
 

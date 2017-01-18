@@ -29,15 +29,8 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "ITOT.h"
 
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iostream>
-using namespace std;
 
 
-#include <string.h>
-#include <time.h>
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

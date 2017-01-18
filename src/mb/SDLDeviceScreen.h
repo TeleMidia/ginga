@@ -30,9 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
@@ -41,13 +38,7 @@ using namespace ::ginga::util;
 
 #include "SDL.h"
 
-#include <pthread.h>
-#include <time.h>
 
-#include <set>
-#include <map>
-#include <iostream>
-using namespace std;
 
 #ifndef GINGA_PIXEL_FMT
 #define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24

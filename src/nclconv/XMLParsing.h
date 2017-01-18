@@ -18,19 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef XMLPARSING_H
 #define XMLPARSING_H
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
-#include <xercesc/sax/SAXException.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
 #include "DOMTreeErrorReporter.h"
 #include "stdlib.h"
 
-#include <string>
-using namespace std;
 
 // boilerplate DOM loading example.
 

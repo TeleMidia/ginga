@@ -24,7 +24,6 @@ using namespace ::ginga::util;
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 
-#include <iostream>
 
 GINGA_PLAYER_BEGIN
 

@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <vector>
-using namespace std;
 
 struct Item {
 	unsigned char itemDescriptionLength;

@@ -42,12 +42,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
 
-#include <iostream>
-#include <sstream>
 //#include <time.h>
 //#include <vector>
 //#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

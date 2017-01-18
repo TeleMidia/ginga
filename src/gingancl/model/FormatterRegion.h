@@ -41,9 +41,6 @@ using namespace ::ginga::mb;
 #include "FocusSourceManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation::focus;
 
-#include <vector>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 

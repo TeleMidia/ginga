@@ -42,6 +42,16 @@ GINGA_BEGIN_DECLS
 #include <glib/gstdio.h>
 #include <ncluaw.h>
 #include <SDL.h>
+#include <SDL_bits.h>
+
+#if WITH_MULTIDEVICE
+# include <jpeglib.h>
+#endif
+
+#if WITH_LIBRSVG
+# include <cairo.h>
+# include <librsvg/rsvg.h>
+#endif
 
 #define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 
@@ -62,7 +72,12 @@ using namespace std;
 
 // External C++ libraries.
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/framework/LocalFileInputSource.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/sax/SAXException.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_USE
 

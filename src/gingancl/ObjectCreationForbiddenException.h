@@ -17,8 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECTCREATIONFORBIDDENEXCEPTION_H_
 #define OBJECTCREATIONFORBIDDENEXCEPTION_H_
 
-#include <exception>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 

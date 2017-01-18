@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef REGIONBASE_H_
 #define REGIONBASE_H_
 
-#include <string>
-#include <map>
-using namespace std;
 
 #include "Base.h"
 

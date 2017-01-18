@@ -33,9 +33,6 @@ using namespace ::ginga::ncl;
 #include "Bind.h"
 #include "Link.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

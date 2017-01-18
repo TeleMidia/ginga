@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/Pat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

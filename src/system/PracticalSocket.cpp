@@ -20,36 +20,29 @@
 #include "config.h"
 #include "PracticalSocket.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
-#include <sstream>
 
-	std::string itos(double i) {
-		ostringstream os;
-		os << i;
-		return os.str();
-	}
+std::string itos(double i) {
+  ostringstream os;
+  os << i;
+  return os.str();
+}
 
 #ifdef _MSC_VER
-  #include <winsock2.h>         // For socket(), connect(), send(), and recv()
-  #include <ws2tcpip.h>
-  typedef int socklen_t;
-  typedef char raw_type;       // Type used for raw data on this platform
+#include <winsock2.h>         // For socket(), connect(), send(), and recv()
+#include <ws2tcpip.h>
+typedef int socklen_t;
+typedef char raw_type;       // Type used for raw data on this platform
 #else
-  #include <sys/types.h>       // For data types
-  #include <sys/socket.h>      // For socket(), connect(), send(), and recv()
-  #include <netdb.h>           // For gethostbyname()
-  #include <arpa/inet.h>       // For inet_addr()
-  #include <unistd.h>          // For close()
-  #include <netinet/in.h>      // For sockaddr_in
-  #include <net/if.h> 		   // For ifconf e ifreq
-  #include <sys/ioctl.h>	   // For ioctl()
-
+#include <sys/types.h>       // For data types
+#include <sys/socket.h>      // For socket(), connect(), send(), and recv()
+#include <netdb.h>           // For gethostbyname()
+#include <arpa/inet.h>       // For inet_addr()
+#include <unistd.h>          // For close()
+#include <netinet/in.h>      // For sockaddr_in
+#include <net/if.h> 		   // For ifconf e ifreq
+#include <sys/ioctl.h>	   // For ioctl()
   typedef void raw_type;       // Type used for raw data on this platform
 #endif
-
-#include <errno.h>             // For errno
 
 using namespace std;
 

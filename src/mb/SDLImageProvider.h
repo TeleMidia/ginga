@@ -20,12 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IImageProvider.h"
 
-#include <pthread.h>
 
 #include "SDL_image.h"
 
-#include <set>
-using namespace std;
 
 GINGA_MB_BEGIN
 

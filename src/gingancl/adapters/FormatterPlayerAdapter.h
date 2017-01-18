@@ -57,10 +57,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "IPlayerAdapter.h"
 #include "NominalEventMonitor.h"
 
-#include <string>
-#include <map>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 

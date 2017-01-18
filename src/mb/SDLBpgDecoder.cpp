@@ -19,11 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLBpgDecoder.h"
 
 extern "C" {
-#include <stdint.h>
-#include <libbpg.h>
 }
 
-using namespace std;
 
 GINGA_MB_BEGIN
 

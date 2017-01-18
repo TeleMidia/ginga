@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ICMDEVENTLISTENER_H_
 #define ICMDEVENTLISTENER_H_
 
-#include <string>
-using namespace std;
 
 GINGA_MB_BEGIN
 

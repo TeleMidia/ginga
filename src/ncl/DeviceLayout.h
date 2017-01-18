@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DEVICELAYOUT_H_
 #define DEVICELAYOUT_H_
 
-#include <map>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

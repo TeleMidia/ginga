@@ -21,12 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/ioctl.h>
-#include <sys/poll.h>
-#include <stdio.h>
-#include <stdint.h>
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
@@ -36,10 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "IFrontendFilter.h"
 #include "Channel.h"
 
-#include <map>
-#include <vector>
-#include <iostream>
-using namespace std;
 
 
 typedef struct lockedFiltersAction {

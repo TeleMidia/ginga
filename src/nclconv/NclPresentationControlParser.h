@@ -22,12 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DocumentParser.h"
 using namespace ::ginga::nclconv;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-#include <iostream>
-#include <string>
-using namespace std;
 
 #include "NclPresentationSpecificationParser.h"
 #include "NclInterfacesParser.h"

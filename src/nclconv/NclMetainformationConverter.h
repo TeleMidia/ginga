@@ -28,11 +28,7 @@ using namespace ::ginga::nclconv;
 #include "NclMetainformationParser.h"
 using namespace ::ginga::nclconv;
 
-#include <map>
-#include <string>
-using namespace std;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

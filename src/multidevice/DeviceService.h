@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _DeviceService_H_
 #define _DeviceService_H_
 
-#include <pthread.h>
 
 #include "util/functions.h"
 using namespace ::ginga::util;
@@ -29,9 +28,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "RemoteDevice.h"
 #include "IRemoteDeviceListener.h"
 
-#include <set>
-#include <map>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

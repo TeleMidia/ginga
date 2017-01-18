@@ -29,11 +29,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <sys/stat.h>
-#include <stdio.h>
-#include <map>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

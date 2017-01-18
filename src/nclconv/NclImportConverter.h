@@ -30,7 +30,6 @@ using namespace ::ginga::nclconv;
 
 #include "NclDocumentConverter.h"
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE;
 
 GINGA_NCLCONV_BEGIN

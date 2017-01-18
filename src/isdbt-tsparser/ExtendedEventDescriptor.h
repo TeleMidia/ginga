@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <string.h>
-#include <vector>
-using namespace std;
 
 #include "isdbt-tsparser/IExtendedEventDescriptor.h"
 

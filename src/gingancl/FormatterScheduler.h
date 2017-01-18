@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _FORMATTERSCHEDULER_H_
 #define _FORMATTERSCHEDULER_H_
 
-extern "C" {
-#include <assert.h>
-}
-
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
 
@@ -90,11 +86,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #include "AnimationController.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::animation;
 
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 

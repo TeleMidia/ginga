@@ -28,9 +28,6 @@ using namespace ::ginga::util;
 typedef uint32_t Uint32;
 typedef Uint32 SDL_WindowID;
 
-#include <iostream>
-#include <vector>
-using namespace std;
 
 GINGA_MB_BEGIN
 

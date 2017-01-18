@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DataFile.h"
 #include "Metadata.h"
 
-#include <string.h>
-#include <stdio.h>
 
 typedef struct {
 	::br::pucrio::telemidia::ginga::core::dataprocessing::ncl::IMetadata* metadata;

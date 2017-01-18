@@ -103,11 +103,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::prefetch;
 #include "FormatterScheduler.h"
 #include "PrivateBaseManager.h"
 
-#include <map>
-#include <set>
-#include <vector>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DeviceService.h"
 
-#include <iostream>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 
