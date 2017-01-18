@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "isdbt-dataproc/EPGProcessor.h"
+#include "EPGProcessor.h"
 
 #include "util/functions.h"
 using namespace ::ginga::util;
@@ -39,7 +39,7 @@ using namespace ::ginga::tsparser;
 #include "isdbt-tsparser/IServiceDescriptor.h"
 using namespace ::ginga::tsparser;
 
-#include "isdbt-dataproc/IEPGListener.h"
+#include "IEPGListener.h"
 
 #include "DataProcessor.h"
 

@@ -443,8 +443,8 @@ FormatterConverter::addExecutionObject (
               == "QtAudioChannelPlayerAdapter")))
     {
 
-      createMultichannelObject ((NclCompositeExecutionObject *)executionObject,
-                                depthLevel);
+      createMultichannelObject (
+          (NclCompositeExecutionObject *)executionObject, depthLevel);
     }
 
   if (depthLevel != 0)
@@ -484,7 +484,7 @@ FormatterConverter::compileExecutionObjectLinks (
           compileExecutionObjectLinks (
               executionObject, node,
               (NclCompositeExecutionObject *)(executionObject
-                                               ->getParentObject (node)),
+                                                  ->getParentObject (node)),
               depthLevel);
 
           ++i;
@@ -680,15 +680,16 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
 
   if (executionObject->instanceOf ("NclExecutionObjectSwitch"))
     {
-      event = new NclSwitchEvent (id, (NclExecutionObjectSwitch *)executionObject,
-                               interfacePoint, ncmEventType, key);
+      event = new NclSwitchEvent (
+          id, (NclExecutionObjectSwitch *)executionObject, interfacePoint,
+          ncmEventType, key);
     }
   else
     {
       if (ncmEventType == EventUtil::EVT_PRESENTATION)
         {
-          event = new NclPresentationEvent (id, executionObject,
-                                         (ContentAnchor *)interfacePoint);
+          event = new NclPresentationEvent (
+              id, executionObject, (ContentAnchor *)interfacePoint);
         }
       else
         {
@@ -839,10 +840,9 @@ FormatterConverter::createMultichannelObject (
 }
 
 NclExecutionObject *
-FormatterConverter::createExecutionObject (string id,
-                                           NclNodeNesting *perspective,
-                                           NclCascadingDescriptor *descriptor,
-                                           int depthLevel)
+FormatterConverter::createExecutionObject (
+    string id, NclNodeNesting *perspective,
+    NclCascadingDescriptor *descriptor, int depthLevel)
 {
 
   NodeEntity *nodeEntity;
@@ -907,9 +907,10 @@ FormatterConverter::createExecutionObject (string id,
                     {
                       if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
                         {
-                          executionObject = new NclApplicationExecutionObject (
-                              id, nodeEntity, descriptor, handling,
-                              actionListener);
+                          executionObject
+                              = new NclApplicationExecutionObject (
+                                  id, nodeEntity, descriptor, handling,
+                                  actionListener);
                         }
                       else
                         {
@@ -932,9 +933,9 @@ FormatterConverter::createExecutionObject (string id,
                     }
                   else
                     {
-                      executionObject
-                          = new NclExecutionObject (id, nodeEntity, descriptor,
-                                                 handling, actionListener);
+                      executionObject = new NclExecutionObject (
+                          id, nodeEntity, descriptor, handling,
+                          actionListener);
                     }
 
                   // TODO informa a substituicao
@@ -952,8 +953,8 @@ FormatterConverter::createExecutionObject (string id,
 
   if (nodeEntity->instanceOf ("SwitchNode"))
     {
-      executionObject
-          = new NclExecutionObjectSwitch (id, node, handling, actionListener);
+      executionObject = new NclExecutionObjectSwitch (id, node, handling,
+                                                      actionListener);
 
       compositeEvent = new NclPresentationEvent (
           nodeEntity->getLambdaAnchor ()->getId () + "_"
@@ -992,8 +993,8 @@ FormatterConverter::createExecutionObject (string id,
     }
   else
     {
-      executionObject = new NclExecutionObject (id, node, descriptor, handling,
-                                             actionListener);
+      executionObject = new NclExecutionObject (id, node, descriptor,
+                                                handling, actionListener);
     }
 
   return executionObject;
@@ -1131,8 +1132,8 @@ FormatterConverter::checkCascadingDescriptor (Node *node)
 
 NclCascadingDescriptor *
 FormatterConverter::checkContextCascadingDescriptor (
-    NclNodeNesting *nodePerspective, NclCascadingDescriptor *cascadingDescriptor,
-    Node *ncmNode)
+    NclNodeNesting *nodePerspective,
+    NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
 {
 
   ContextNode *context;
@@ -1327,7 +1328,8 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
               if (formatterLink != NULL)
                 {
                   setActionListener (
-                      ((NclFormatterCausalLink *)formatterLink)->getAction ());
+                      ((NclFormatterCausalLink *)formatterLink)
+                          ->getAction ());
 
                   parentObject->setLinkCompiled (formatterLink);
                   clog << "FormatterConverter::processLink ";
@@ -1438,7 +1440,7 @@ FormatterConverter::compileExecutionObjectLinks (
           object = parentObject;
           parentObject
               = (NclCompositeExecutionObject *)(parentObject
-                                                 ->getParentObject ());
+                                                    ->getParentObject ());
 
           compileExecutionObjectLinks (object, dataObject, parentObject,
                                        depthLevel);
@@ -1767,8 +1769,8 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
 }
 
 bool
-FormatterConverter::removeExecutionObject (NclExecutionObject *executionObject,
-                                           ReferNode *referNode)
+FormatterConverter::removeExecutionObject (
+    NclExecutionObject *executionObject, ReferNode *referNode)
 {
 
   NclNodeNesting *referPerspective;
@@ -1806,7 +1808,8 @@ FormatterConverter::removeExecutionObject (NclExecutionObject *executionObject,
 }
 
 bool
-FormatterConverter::removeExecutionObject (NclExecutionObject *executionObject)
+FormatterConverter::removeExecutionObject (
+    NclExecutionObject *executionObject)
 {
 
   map<string, NclExecutionObject *>::iterator i;

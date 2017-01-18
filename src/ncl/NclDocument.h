@@ -20,32 +20,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Rule.h"
 #include "RuleBase.h"
-using namespace ::ginga::ncl;
 
 #include "ContextNode.h"
 #include "Node.h"
 #include "NodeEntity.h"
-using namespace ::ginga::ncl;
 
 #include "Connector.h"
 #include "ConnectorBase.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
 #include "DescriptorBase.h"
-using namespace ::ginga::ncl;
 
 #include "LayoutRegion.h"
 #include "RegionBase.h"
-using namespace ::ginga::ncl;
 
 #include "Transition.h"
 #include "TransitionBase.h"
-using namespace ::ginga::ncl;
 
 #include "Meta.h"
 #include "Metadata.h"
-using namespace ::ginga::ncl;
 
 #include "Base.h"
 

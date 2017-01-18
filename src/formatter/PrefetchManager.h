@@ -83,4 +83,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*PrefetchManager_H_*/

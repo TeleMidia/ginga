@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclApplicationExecutionObject.h"
 
 #include "NclSwitchEvent.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -56,7 +55,8 @@ NclExecutionObject::removeInstance (NclExecutionObject *object)
 }
 
 bool
-NclExecutionObject::hasInstance (NclExecutionObject *object, bool eraseFromList)
+NclExecutionObject::hasInstance (NclExecutionObject *object,
+                                 bool eraseFromList)
 {
 
   set<NclExecutionObject *>::iterator i;
@@ -83,27 +83,29 @@ NclExecutionObject::hasInstance (NclExecutionObject *object, bool eraseFromList)
   return hasObject;
 }
 
-NclExecutionObject::NclExecutionObject (string id, Node *node, bool handling,
-                                  INclLinkActionListener *seListener)
+NclExecutionObject::NclExecutionObject (string id, Node *node,
+                                        bool handling,
+                                        INclLinkActionListener *seListener)
 {
 
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
 NclExecutionObject::NclExecutionObject (string id, Node *node,
-                                  GenericDescriptor *descriptor,
-                                  bool handling,
-                                  INclLinkActionListener *seListener)
+                                        GenericDescriptor *descriptor,
+                                        bool handling,
+                                        INclLinkActionListener *seListener)
 {
 
-  initializeExecutionObject (id, node, new NclCascadingDescriptor (descriptor),
+  initializeExecutionObject (id, node,
+                             new NclCascadingDescriptor (descriptor),
                              handling, seListener);
 }
 
 NclExecutionObject::NclExecutionObject (string id, Node *node,
-                                  NclCascadingDescriptor *descriptor,
-                                  bool handling,
-                                  INclLinkActionListener *seListener)
+                                        NclCascadingDescriptor *descriptor,
+                                        bool handling,
+                                        INclLinkActionListener *seListener)
 {
 
   initializeExecutionObject (id, node, descriptor, handling, seListener);
@@ -117,7 +119,8 @@ NclExecutionObject::~NclExecutionObject ()
   Node *parentNode;
   NclCompositeExecutionObject *parentObject;
 
-  clog << "NclExecutionObject::~NclExecutionObject(" << getId () << ")" << endl;
+  clog << "NclExecutionObject::~NclExecutionObject(" << getId () << ")"
+       << endl;
 
   removeInstance (this);
   unsetParentsAsListeners ();
@@ -162,10 +165,9 @@ NclExecutionObject::~NclExecutionObject ()
 }
 
 void
-NclExecutionObject::initializeExecutionObject (string id, Node *node,
-                                            NclCascadingDescriptor *descriptor,
-                                            bool handling,
-                                            INclLinkActionListener *seListener)
+NclExecutionObject::initializeExecutionObject (
+    string id, Node *node, NclCascadingDescriptor *descriptor,
+    bool handling, INclLinkActionListener *seListener)
 {
 
   typeSet.insert ("NclExecutionObject");
@@ -247,7 +249,8 @@ NclExecutionObject::unsetParentsAsListeners ()
 }
 
 void
-NclExecutionObject::removeParentListenersFromEvent (NclFormatterEvent *event)
+NclExecutionObject::removeParentListenersFromEvent (
+    NclFormatterEvent *event)
 {
 
   map<Node *, void *>::iterator i;
@@ -384,7 +387,7 @@ NclExecutionObject::addParentObject (void *parentObject, Node *parentNode)
 
 void
 NclExecutionObject::addParentObject (Node *node, void *parentObject,
-                                  Node *parentNode)
+                                     Node *parentNode)
 {
 
   lockParentTable ();
@@ -394,7 +397,8 @@ NclExecutionObject::addParentObject (Node *node, void *parentObject,
 }
 
 void
-NclExecutionObject::removeParentObject (Node *parentNode, void *parentObject)
+NclExecutionObject::removeParentObject (Node *parentNode,
+                                        void *parentObject)
 {
 
   map<Node *, void *>::iterator i;
@@ -414,7 +418,8 @@ NclExecutionObject::removeParentObject (Node *parentNode, void *parentObject)
 }
 
 void
-NclExecutionObject::setDescriptor (NclCascadingDescriptor *cascadingDescriptor)
+NclExecutionObject::setDescriptor (
+    NclCascadingDescriptor *cascadingDescriptor)
 {
 
   this->descriptor = cascadingDescriptor;
@@ -1126,7 +1131,8 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
       || event->getCurrentState () != EventUtil::ST_SLEEPING)
     {
 
-      // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" << endl;
+      // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" <<
+      // endl;
       return false;
     }
 
@@ -1162,7 +1168,8 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
               clog << "'" << endl;
               // register parent as a mainEvent listener
               mainEvent->addEventListener (
-                  (INclEventListener *)(NclCompositeExecutionObject *)i->second);
+                  (INclEventListener *)(NclCompositeExecutionObject *)
+                      i->second);
               ++i;
             }
           unlockParentTable ();
@@ -1259,7 +1266,8 @@ NclExecutionObject::start ()
 }
 
 void
-NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue, short int transType)
+NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue,
+                                        short int transType)
 {
 
   transMan->timeBaseNaturalEnd (timeValue, mainEvent, transType);
@@ -1267,7 +1275,7 @@ NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue, short int transType)
 
 void
 NclExecutionObject::updateTransitionTable (double value, IPlayer *player,
-                                        short int transType)
+                                           short int transType)
 {
 
   transMan->updateTransitionTable (value, player, mainEvent, transType);
@@ -1281,7 +1289,7 @@ NclExecutionObject::resetTransitionEvents (short int transType)
 
 void
 NclExecutionObject::prepareTransitionEvents (short int transType,
-                                          double startTime)
+                                             double startTime)
 {
 
   transMan->prepare (mainEvent == wholeContent, startTime, transType);
@@ -1456,7 +1464,8 @@ NclExecutionObject::resume ()
 }
 
 bool
-NclExecutionObject::setPropertyValue (NclAttributionEvent *event, string value)
+NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
+                                      string value)
 {
 
   string propName;
@@ -1905,7 +1914,8 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
                 }
               else
                 {
-                  clog << "NclExecutionObject::selectionEvent(" << id << ")";
+                  clog << "NclExecutionObject::selectionEvent(" << id
+                       << ")";
                   clog << " can't find event for anchorid = '";
                   clog << anchorId << "'" << endl;
                 }
@@ -1929,7 +1939,7 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
           clog << endl;
 
           fakeAct = new NclLinkSimpleAction (selectionEvent,
-                                          SimpleAction::ACT_START);
+                                             SimpleAction::ACT_START);
 
           seListener->scheduleAction (NULL, fakeAct);
         }

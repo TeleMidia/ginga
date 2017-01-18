@@ -117,7 +117,8 @@ NclLinkCompoundTriggerCondition::conditionSatisfied (void *condition)
                           break;
                   }
                   else {
-                          if (!((NclLinkStatement*)childCondition)->evaluate())
+                          if
+  (!((NclLinkStatement*)childCondition)->evaluate())
   {
                                   return;
                           }

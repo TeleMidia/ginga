@@ -31,4 +31,5 @@ public:
 };
 
 GINGA_NCL_END
+
 #endif //_LAMBDAANCHOR_H_

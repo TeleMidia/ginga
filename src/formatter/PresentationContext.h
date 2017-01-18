@@ -93,4 +93,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_PRESENTATIONCONTEXT_H_

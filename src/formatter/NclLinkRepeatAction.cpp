@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkRepeatAction::NclLinkRepeatAction (NclFormatterEvent *event, short actionType)
+NclLinkRepeatAction::NclLinkRepeatAction (NclFormatterEvent *event,
+                                          short actionType)
     : NclLinkSimpleAction (event, actionType)
 {
 

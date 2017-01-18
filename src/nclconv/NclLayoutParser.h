@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ModuleParser.h"
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 

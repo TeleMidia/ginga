@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define ENDEVENTTRANSITION_H_
 
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclEventTransition.h"
 
@@ -32,7 +31,7 @@ private:
 
 public:
   NclEndEventTransition (double time, NclPresentationEvent *event,
-                      void *transition); // NclBeginEventTransition
+                         void *transition); // NclBeginEventTransition
 
   virtual ~NclEndEventTransition ();
 
@@ -40,4 +39,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*ENDEVENTTRANSITION_H_*/

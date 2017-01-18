@@ -23,10 +23,8 @@ using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclImportParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclDocumentConverter.h"
 

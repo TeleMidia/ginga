@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkValueAssessment::NclLinkValueAssessment (string value) : NclLinkAssessment ()
+NclLinkValueAssessment::NclLinkValueAssessment (string value)
+    : NclLinkAssessment ()
 {
   this->value = value;
   typeSet.insert ("NclLinkValueAssessment");

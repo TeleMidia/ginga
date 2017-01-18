@@ -104,4 +104,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_FORMATTEREVENT_H_

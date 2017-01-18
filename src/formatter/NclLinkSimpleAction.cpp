@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event, short type)
+NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
+                                          short type)
     : NclLinkAction ()
 {
 
@@ -57,7 +58,8 @@ NclLinkSimpleAction::getType ()
 }
 
 void
-NclLinkSimpleAction::setSimpleActionListener (INclLinkActionListener *listener)
+NclLinkSimpleAction::setSimpleActionListener (
+    INclLinkActionListener *listener)
 {
 
   if (listener != NULL)

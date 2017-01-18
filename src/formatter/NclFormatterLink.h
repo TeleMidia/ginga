@@ -41,4 +41,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_FORMATTERLINK_H_

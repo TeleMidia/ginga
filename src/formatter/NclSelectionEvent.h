@@ -37,7 +37,8 @@ private:
   int selectionCode;
 
 public:
-  NclSelectionEvent (string id, void *executionObject, ContentAnchor *anchor);
+  NclSelectionEvent (string id, void *executionObject,
+                     ContentAnchor *anchor);
   virtual ~NclSelectionEvent ();
   bool start ();
   int getSelectionCode ();
@@ -45,4 +46,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_SELECTIONEVENT_H_

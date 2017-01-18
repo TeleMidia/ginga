@@ -16,10 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ncl/Entity.h"
-using namespace ::ginga::ncl;
+#include "Entity.h"
 
-#include "ncl/RectangleSpatialAnchor.h"
+#include "RectangleSpatialAnchor.h"
 
 GINGA_NCL_BEGIN
 

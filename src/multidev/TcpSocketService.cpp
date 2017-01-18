@@ -81,10 +81,10 @@ TcpSocketService::addConnection (unsigned int deviceId, char *addr,
       //			//TODO: defining a getIndex method for the
       // TCPClientConn class
       //			//configurable: stick (based on
-      //address+port),
+      // address+port),
       // slot (like videogames)
       //			//and continuous (index in not regained,
-      //keeps
+      // keeps
       // increasing)
       //
       //			connection_counter++;

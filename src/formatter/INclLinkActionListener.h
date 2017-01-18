@@ -31,4 +31,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_ILINKACTIONLISTENER_H_

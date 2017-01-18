@@ -19,22 +19,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _BIND_H_
 
 #include "Parameter.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 #include "Role.h"
-using namespace ::ginga::ncl;
 
 #include "NodeEntity.h"
 #include "CompositeNode.h"
-using namespace ::ginga::ncl;
 
 #include "InterfacePoint.h"
 #include "SwitchPort.h"
 #include "Port.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

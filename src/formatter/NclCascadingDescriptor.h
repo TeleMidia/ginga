@@ -42,7 +42,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclFormatterRegion.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -128,4 +127,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_CASCADINGDESCRIPTOR_H_

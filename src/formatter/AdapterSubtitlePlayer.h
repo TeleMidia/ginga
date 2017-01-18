@@ -21,14 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclExecutionObject.h"
 
-#include "formatter/NclAttributionEvent.h"
-#include "formatter/NclFormatterEvent.h"
-#include "formatter/NclPresentationEvent.h"
-#include "formatter/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
+#include "NclAttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
 
 #include "ncl/NodeEntity.h"
 #include "ncl/Content.h"
@@ -36,7 +34,6 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -52,4 +49,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*SUBTITLEPLAYERADAPTER_H_*/

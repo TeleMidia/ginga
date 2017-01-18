@@ -33,4 +33,5 @@ class ObjectCreationForbiddenException : public exception
 };
 
 GINGA_FORMATTER_END
+
 #endif /*OBJECTCREATIONFORBIDDENEXCEPTION_H_*/

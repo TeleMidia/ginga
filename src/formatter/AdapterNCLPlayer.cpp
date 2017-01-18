@@ -25,7 +25,7 @@ using namespace ::ginga::player;
 #include "mb/ScreenManagerFactory.h"
 using namespace ::ginga::mb;
 
-#include "formatter/FormatterMediator.h"
+#include "FormatterMediator.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -195,8 +195,9 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
     }
   else if (event->instanceOf ("NclAttributionEvent"))
     {
-      interfaceId
-          = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
+      interfaceId = ((NclAttributionEvent *)event)
+                        ->getAnchor ()
+                        ->getPropertyName ();
 
       if (player != NULL)
         {

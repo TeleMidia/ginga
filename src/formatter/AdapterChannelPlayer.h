@@ -18,13 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef CHANNELPLAYERADAPTER_H_
 #define CHANNELPLAYERADAPTER_H_
 
-#include "formatter/NclCompositeExecutionObject.h"
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclCompositeExecutionObject.h"
+#include "NclExecutionObject.h"
 
-#include "formatter/NclAttributionEvent.h"
-#include "formatter/NclPresentationEvent.h"
-using namespace ::ginga::formatter;
+#include "NclAttributionEvent.h"
+#include "NclPresentationEvent.h"
 
 #include "ncl/Content.h"
 #include "ncl/NodeEntity.h"
@@ -35,7 +33,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -51,4 +48,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*CHANNELPLAYERADAPTER_H_*/

@@ -23,7 +23,6 @@ using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
 #include "INclEventListener.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -36,8 +35,9 @@ private:
 
 public:
   NclSwitchEvent (string id,
-               void *executionObjectSwitch, // NclExecutionObjectSwitch
-               InterfacePoint *interfacePoint, int eventType, string key);
+                  void *executionObjectSwitch, // NclExecutionObjectSwitch
+                  InterfacePoint *interfacePoint, int eventType,
+                  string key);
 
   virtual ~NclSwitchEvent ();
 
@@ -53,4 +53,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_SWITCHEVENT_H_

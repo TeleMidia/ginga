@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _PRIVATEBASE_H_
 
 #include "Connector.h"
-using namespace ::ginga::ncl;
 
 #include "NodeEntity.h"
 #include "ContextNode.h"

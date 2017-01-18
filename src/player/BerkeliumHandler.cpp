@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
 
-#include "player/BerkeliumHandler.h"
-#include "player/PlayersComponentSupport.h"
+#include "BerkeliumHandler.h"
+#include "PlayersComponentSupport.h"
 
 GINGA_PLAYER_BEGIN
 

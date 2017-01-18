@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 

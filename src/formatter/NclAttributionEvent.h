@@ -21,8 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "formatter/PresentationContext.h"
-using namespace ::ginga::formatter;
+#include "PresentationContext.h"
 
 #include "NclFormatterEvent.h"
 #include "INclAttributeValueMaintainer.h"
@@ -42,8 +41,8 @@ protected:
 
 public:
   NclAttributionEvent (string id, void *executionObject,
-                    PropertyAnchor *anchor,
-                    PresentationContext *presContext);
+                       PropertyAnchor *anchor,
+                       PresentationContext *presContext);
 
   virtual ~NclAttributionEvent ();
   PropertyAnchor *getAnchor ();
@@ -51,10 +50,12 @@ public:
   bool setValue (string newValue);
   void setValueMaintainer (INclAttributeValueMaintainer *valueMaintainer);
   INclAttributeValueMaintainer *getValueMaintainer ();
-  void setImplicitRefAssessmentEvent (string roleId, NclFormatterEvent *event);
+  void setImplicitRefAssessmentEvent (string roleId,
+                                      NclFormatterEvent *event);
 
   NclFormatterEvent *getImplicitRefAssessmentEvent (string roleId);
 };
 
 GINGA_FORMATTER_END
+
 #endif //_ATTRIBUTEEVENT_H_

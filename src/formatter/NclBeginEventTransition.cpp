@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclBeginEventTransition::NclBeginEventTransition (double time,
-                                            NclPresentationEvent *event)
+NclBeginEventTransition::NclBeginEventTransition (
+    double time, NclPresentationEvent *event)
     : NclEventTransition (time, event)
 {
 

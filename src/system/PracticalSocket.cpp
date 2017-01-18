@@ -524,7 +524,8 @@ UDPSocket::getBroadcastAddress () throw (SocketException)
           && (netInterface->ifr_flags & IFF_BROADCAST))
         {
 
-          //			result = ioctl(sockDesc, SIOCGIFBRDADDR, (char
+          //			result = ioctl(sockDesc, SIOCGIFBRDADDR,
+          //(char
           //*)
           // netInterface);
           result = ioctl (sockDesc, SIOCGIFBRDADDR, netInterface);

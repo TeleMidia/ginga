@@ -17,13 +17,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "FormatterConverter.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkTransitionTriggerCondition.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-#include "formatter/FormatterScheduler.h"
+#include "FormatterScheduler.h"
 
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
@@ -168,8 +166,8 @@ FormatterScheduler::isDocumentRunning (NclFormatterEvent *event)
   NclFormatterEvent *documentEvent;
 
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
-  parentObject
-      = (NclCompositeExecutionObject *)(executionObject->getParentObject ());
+  parentObject = (NclCompositeExecutionObject *)(executionObject
+                                                     ->getParentObject ());
 
   if (parentObject != NULL)
     {
@@ -178,7 +176,7 @@ FormatterScheduler::isDocumentRunning (NclFormatterEvent *event)
           executionObject = (NclExecutionObject *)(parentObject);
           parentObject
               = (NclCompositeExecutionObject *)(parentObject
-                                                 ->getParentObject ());
+                                                    ->getParentObject ());
         }
 
       documentEvent = executionObject->getWholeContentPresentationEvent ();
@@ -336,7 +334,8 @@ FormatterScheduler::printAction (string action, NclLinkCondition *condition,
       && condition->instanceOf ("NclLinkTransitionTriggerCondition"))
     {
 
-      cndEvent = ((NclLinkTransitionTriggerCondition *)condition)->getEvent ();
+      cndEvent
+          = ((NclLinkTransitionTriggerCondition *)condition)->getEvent ();
       bind = ((NclLinkTransitionTriggerCondition *)condition)->getBind ();
       role = bind->getRole ()->getLabel ();
       cndObject = (NclExecutionObject *)cndEvent->getExecutionObject ();
@@ -378,7 +377,8 @@ FormatterScheduler::scheduleAction (void *condition, void *someAction)
 {
   pthread_mutex_lock (&mutexActions);
   assert (someAction != NULL);
-  runAction ((NclLinkCondition *)condition, (NclLinkSimpleAction *)someAction);
+  runAction ((NclLinkCondition *)condition,
+             (NclLinkSimpleAction *)someAction);
 
   pthread_mutex_unlock (&mutexActions);
 
@@ -472,8 +472,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       clog << executionObject->getId () << "' OVER COMPOSITION with ";
       clog << "action event = '" << action->getEvent ()->getId () << "'";
       clog << endl;
-      runActionOverComposition ((NclCompositeExecutionObject *)executionObject,
-                                action);
+      runActionOverComposition (
+          (NclCompositeExecutionObject *)executionObject, action);
     }
   else if (event->instanceOf ("NclAttributionEvent"))
     {
@@ -507,8 +507,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           clog << "' action '" << action->getType () << "'" << endl;
 
           runActionOverApplicationObject (
-              (NclApplicationExecutionObject *)executionObject, event, player,
-              action);
+              (NclApplicationExecutionObject *)executionObject, event,
+              player, action);
 
           return;
         }
@@ -702,8 +702,9 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
       && action->instanceOf ("NclLinkAssignmentAction"))
     {
 
-      propName
-          = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
+      propName = ((NclAttributionEvent *)event)
+                     ->getAnchor ()
+                     ->getPropertyName ();
 
       propValue = ((NclLinkAssignmentAction *)action)->getValue ();
       if (propValue != "" && propValue.substr (0, 1) == "$")
@@ -822,8 +823,8 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
             }
           else
             {
-              executionObject->setPropertyValue ((NclAttributionEvent *)event,
-                                                 propValue);
+              executionObject->setPropertyValue (
+                  (NclAttributionEvent *)event, propValue);
 
               event->stop ();
             }
@@ -841,8 +842,9 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
 void
 FormatterScheduler::runActionOverApplicationObject (
-    NclApplicationExecutionObject *executionObject, NclFormatterEvent *event,
-    AdapterFormatterPlayer *player, NclLinkSimpleAction *action)
+    NclApplicationExecutionObject *executionObject,
+    NclFormatterEvent *event, AdapterFormatterPlayer *player,
+    NclLinkSimpleAction *action)
 {
 
   NclCascadingDescriptor *descriptor;
@@ -1018,7 +1020,8 @@ FormatterScheduler::runActionOverApplicationObject (
 
 void
 FormatterScheduler::runActionOverComposition (
-    NclCompositeExecutionObject *compositeObject, NclLinkSimpleAction *action)
+    NclCompositeExecutionObject *compositeObject,
+    NclLinkSimpleAction *action)
 {
 
   CompositeNode *compositeNode;
@@ -1106,8 +1109,8 @@ FormatterScheduler::runActionOverComposition (
           if (event != NULL)
             {
               event->start ();
-              compositeObject->setPropertyValue ((NclAttributionEvent *)event,
-                                                 propValue);
+              compositeObject->setPropertyValue (
+                  (NclAttributionEvent *)event, propValue);
 
               ((NclAttributionEvent *)event)->setValue (propValue);
               event->stop ();
@@ -1327,7 +1330,8 @@ FormatterScheduler::runActionOverComposition (
               = new NclNodeNesting (compositeNode->getPerspective ());
 
           compositeObject
-              = (NclCompositeExecutionObject *)((FormatterConverter *)compiler)
+              = (NclCompositeExecutionObject *)((FormatterConverter *)
+                                                    compiler)
                     ->getExecutionObjectFromPerspective (
                         compositionPerspective, NULL,
                         ((FormatterConverter *)compiler)->getDepthLevel ());
@@ -1507,8 +1511,8 @@ FormatterScheduler::solveImplicitRefAssessment (string propValue,
       roleId = propValue.substr (1, propValue.length ());
     }
 
-  refEvent
-      = ((NclAttributionEvent *)event)->getImplicitRefAssessmentEvent (roleId);
+  refEvent = ((NclAttributionEvent *)event)
+                 ->getImplicitRefAssessmentEvent (roleId);
 
   if (refEvent != NULL)
     {

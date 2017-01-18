@@ -25,7 +25,7 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "player/LuaPlayer.h"
+#include "LuaPlayer.h"
 
 GINGA_PLAYER_BEGIN
 

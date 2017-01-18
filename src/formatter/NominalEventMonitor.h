@@ -33,14 +33,11 @@ using namespace ::ginga::player;
 #include "ncl/IntervalAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "formatter/NclPresentationEvent.h"
-using namespace ::ginga::formatter;
+#include "NclPresentationEvent.h"
 
-#include "formatter/NclEventTransition.h"
-using namespace ::ginga::formatter;
+#include "NclEventTransition.h"
 
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclExecutionObject.h"
 
 #include "IAdapterPlayer.h"
 
@@ -95,4 +92,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*NOMINALEVENTMONITOR_H_*/

@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclFormatterEvent.h"
 #include "NclAttributionEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkActionProgressionListener.h"
 
@@ -60,8 +59,8 @@ public:
   void
   addActionProgressionListener (NclLinkActionProgressionListener *listener);
 
-  void
-  removeActionProgressionListener (NclLinkActionProgressionListener *listener);
+  void removeActionProgressionListener (
+      NclLinkActionProgressionListener *listener);
 
   void notifyProgressionListeners (bool start);
   virtual vector<NclFormatterEvent *> *getEvents () = 0;
@@ -78,4 +77,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKACTION_H_

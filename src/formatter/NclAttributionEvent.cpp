@@ -23,13 +23,12 @@ using namespace ::ginga::ncl;
 #include "NclAttributionEvent.h"
 
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
 NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
-                                    PropertyAnchor *anchor,
-                                    PresentationContext *presContext)
+                                          PropertyAnchor *anchor,
+                                          PresentationContext *presContext)
     : NclFormatterEvent (id, executionObject)
 {
 
@@ -148,8 +147,8 @@ NclAttributionEvent::getValueMaintainer ()
 }
 
 void
-NclAttributionEvent::setImplicitRefAssessmentEvent (string roleId,
-                                                 NclFormatterEvent *event)
+NclAttributionEvent::setImplicitRefAssessmentEvent (
+    string roleId, NclFormatterEvent *event)
 {
 
   assessments[roleId] = event;

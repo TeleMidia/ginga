@@ -83,7 +83,8 @@ NclLinkAssessmentStatement::getMainAssessment ()
 }
 
 void
-NclLinkAssessmentStatement::setMainAssessment (NclLinkAssessment *assessment)
+NclLinkAssessmentStatement::setMainAssessment (
+    NclLinkAssessment *assessment)
 {
   mainAssessment = assessment;
 }
@@ -95,7 +96,8 @@ NclLinkAssessmentStatement::getOtherAssessment ()
 }
 
 void
-NclLinkAssessmentStatement::setOtherAssessment (NclLinkAssessment *assessment)
+NclLinkAssessmentStatement::setOtherAssessment (
+    NclLinkAssessment *assessment)
 {
   otherAssessment = assessment;
 }

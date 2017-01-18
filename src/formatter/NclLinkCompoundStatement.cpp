@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkCompoundStatement::NclLinkCompoundStatement (short op) : NclLinkStatement ()
+NclLinkCompoundStatement::NclLinkCompoundStatement (short op)
+    : NclLinkStatement ()
 {
   statements = new vector<NclLinkStatement *>;
   this->op = op;

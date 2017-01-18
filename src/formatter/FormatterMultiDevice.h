@@ -58,13 +58,10 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclCascadingDescriptor.h"
-using namespace ::ginga::formatter;
 
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::ginga::formatter;
 
 #include "ContextBase.h"
 
@@ -76,7 +73,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "PresentationContext.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -146,8 +142,9 @@ protected:
   virtual void postMediaContent (int destDevClass);
 
 public:
-  NclFormatterLayout *getFormatterLayout (NclCascadingDescriptor *descriptor,
-                                       NclExecutionObject *object);
+  NclFormatterLayout *
+  getFormatterLayout (NclCascadingDescriptor *descriptor,
+                      NclExecutionObject *object);
   GingaWindowID prepareFormatterRegion (NclExecutionObject *object,
                                         GingaSurfaceID renderedSurface);
   void showObject (NclExecutionObject *executionObject);

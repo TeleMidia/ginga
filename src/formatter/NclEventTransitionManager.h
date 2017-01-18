@@ -32,7 +32,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
@@ -83,4 +82,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*EventTransitionManager_H_*/

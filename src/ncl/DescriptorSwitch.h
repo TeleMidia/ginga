@@ -19,10 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _DESCRIPTORSWITCH_H_
 
 #include "Entity.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 #include "Rule.h"
 

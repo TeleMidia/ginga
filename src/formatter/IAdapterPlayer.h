@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IAdapterPlayer_H_
 #define IAdapterPlayer_H_
 
-#include "formatter/NclAttributionEvent.h"
-using namespace ::ginga::formatter;
+#include "NclAttributionEvent.h"
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
@@ -46,10 +45,12 @@ public:
 
   virtual double getOutTransTime () = 0;
 
-  virtual bool setPropertyValue (NclAttributionEvent *event, string value) = 0;
+  virtual bool setPropertyValue (NclAttributionEvent *event, string value)
+      = 0;
 
   virtual string getPropertyValue (string name) = 0;
 };
 
 GINGA_FORMATTER_END
+
 #endif /*IAdapterPlayer_H_*/

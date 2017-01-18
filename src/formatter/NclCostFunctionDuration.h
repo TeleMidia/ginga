@@ -32,11 +32,11 @@ protected:
 
 public:
   NclCostFunctionDuration (double expectedValue, double minValue,
-                        double maxValue,
-                        TemporalFlexibilityFunction *function);
+                           double maxValue,
+                           TemporalFlexibilityFunction *function);
 
   NclCostFunctionDuration (double expectedValue,
-                        TemporalFlexibilityFunction *function);
+                           TemporalFlexibilityFunction *function);
 
   virtual ~NclCostFunctionDuration (){};
   TemporalFlexibilityFunction *getCostFunction ();
@@ -53,4 +53,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_COSTFUNCTIONDURATION_H_

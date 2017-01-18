@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ServiceDescriptor.h"
 #include "LogoTransmissionDescriptor.h"
-using namespace ::ginga::tsparser;
 
 #include "IServiceInfo.h"
 

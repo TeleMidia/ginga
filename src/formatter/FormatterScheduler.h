@@ -24,35 +24,27 @@ using namespace ::ginga::ctxmgmt;
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
 #include "NclCompositeExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclAttributionEvent.h"
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkAssignmentAction.h"
 #include "NclLinkSimpleAction.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
 #include "PresentationContext.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::ginga::formatter;
 
 #include "ncl/SimpleAction.h"
 #include "ncl/EventUtil.h"
@@ -75,16 +67,13 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "FormatterFocusManager.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-using namespace ::ginga::formatter;
 
 #include "IFormatterSchedulerListener.h"
 #include "ObjectCreationForbiddenException.h"
 
 #include "AnimationController.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -153,14 +142,17 @@ private:
                               NclLinkSimpleAction *action);
 
   void runActionOverApplicationObject (
-      NclApplicationExecutionObject *executionObject, NclFormatterEvent *event,
-      AdapterFormatterPlayer *player, NclLinkSimpleAction *action);
+      NclApplicationExecutionObject *executionObject,
+      NclFormatterEvent *event, AdapterFormatterPlayer *player,
+      NclLinkSimpleAction *action);
 
-  void runActionOverComposition (NclCompositeExecutionObject *compositeObject,
-                                 NclLinkSimpleAction *action);
+  void
+  runActionOverComposition (NclCompositeExecutionObject *compositeObject,
+                            NclLinkSimpleAction *action);
 
   void runActionOverSwitch (NclExecutionObjectSwitch *switchObject,
-                            NclSwitchEvent *event, NclLinkSimpleAction *action);
+                            NclSwitchEvent *event,
+                            NclLinkSimpleAction *action);
 
   void runSwitchEvent (NclExecutionObjectSwitch *switchObject,
                        NclSwitchEvent *switchEvent,
@@ -204,4 +196,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_FORMATTERSCHEDULER_H_

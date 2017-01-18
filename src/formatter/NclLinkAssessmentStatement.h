@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LINKASSESSMENTSTATEMENT_H_
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "ncl/Comparator.h"
 using namespace ::ginga::ncl;
@@ -41,8 +40,8 @@ private:
 
 public:
   NclLinkAssessmentStatement (short comparator,
-                           NclLinkAttributeAssessment *mainAssessment,
-                           NclLinkAssessment *otherAssessment);
+                              NclLinkAttributeAssessment *mainAssessment,
+                              NclLinkAssessment *otherAssessment);
 
   virtual ~NclLinkAssessmentStatement ();
   vector<NclFormatterEvent *> *getEvents ();
@@ -56,4 +55,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKASSESSMENTSTATEMENT_H_

@@ -19,15 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TIMEPLAYERADAPTER_H_
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclExecutionObject.h"
 
-#include "formatter/NclFormatterEvent.h"
-#include "formatter/NclPresentationEvent.h"
-#include "formatter/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -45,4 +42,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*TIMEPLAYERADAPTER_H_*/

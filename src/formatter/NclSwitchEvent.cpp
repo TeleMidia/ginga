@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclSwitchEvent::NclSwitchEvent (string id, void *executionObjectSwitch,
-                          InterfacePoint *interfacePoint, int eventType,
-                          string key)
+                                InterfacePoint *interfacePoint,
+                                int eventType, string key)
     : NclFormatterEvent (id, executionObjectSwitch)
 {
 
@@ -84,7 +84,7 @@ NclSwitchEvent::getMappedEvent ()
 
 void
 NclSwitchEvent::eventStateChanged (void *someEvent, short transition,
-                                short previousState)
+                                   short previousState)
 {
 
   changeState (getNewState (transition), transition);

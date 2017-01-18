@@ -39,10 +39,8 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclInterfacesParser.h"
-using namespace ::ginga::nclconv;
 
 #include "util/functions.h"
 using namespace ::ginga::util;

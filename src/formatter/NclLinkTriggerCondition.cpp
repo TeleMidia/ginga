@@ -26,7 +26,8 @@ vector<ConditionStatus *> NclLinkTriggerCondition::notes;
 bool NclLinkTriggerCondition::initialized = false;
 bool NclLinkTriggerCondition::running = false;
 
-NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition (), Thread ()
+NclLinkTriggerCondition::NclLinkTriggerCondition ()
+    : NclLinkCondition (), Thread ()
 {
   listener = NULL;
   delay = 0.0;
@@ -50,7 +51,8 @@ NclLinkTriggerCondition::~NclLinkTriggerCondition ()
 }
 
 void
-NclLinkTriggerCondition::setTriggerListener (NclLinkTriggerListener *listener)
+NclLinkTriggerCondition::setTriggerListener (
+    NclLinkTriggerListener *listener)
 {
 
   this->listener = listener;
@@ -90,7 +92,8 @@ NclLinkTriggerCondition::conditionSatisfied (void *condition)
     }
   else
     {
-      notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
+      notifyConditionObservers (
+          NclLinkTriggerListener::CONDITION_SATISFIED);
     }
 }
 

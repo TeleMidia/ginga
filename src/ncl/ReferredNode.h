@@ -19,9 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define REFERREDNODE_H_
 
 #include "Entity.h"
-using namespace ::ginga::ncl;
 
-GINGA_NCLCONV_BEGIN
+GINGA_NCL_BEGIN
 
 class ReferredNode : public Entity
 {
@@ -33,6 +32,6 @@ public:
   void *getReferElement ();
 };
 
-GINGA_NCLCONV_END
+GINGA_NCL_END
 
 #endif /*REFERREDNODE_H_*/

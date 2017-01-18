@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkStatement.h"
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "ncl/CompoundStatement.h"
 using namespace ::ginga::ncl;
@@ -53,4 +52,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKCOMPOUNDSTATEMENT_H_

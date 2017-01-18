@@ -23,17 +23,13 @@ using namespace ::ginga::util;
 
 #include "Entity.h"
 #include "Parameter.h"
-using namespace ::ginga::ncl;
 
 #include "LayoutRegion.h"
-using namespace ::ginga::ncl;
 
 #include "FocusDecoration.h"
 #include "KeyNavigation.h"
-using namespace ::ginga::ncl;
 
 #include "Transition.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
 

@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ncl/ReferredNode.h"
+#include "ReferredNode.h"
 
-GINGA_NCLCONV_BEGIN
+GINGA_NCL_BEGIN
 
 ReferredNode::ReferredNode (string id, void *element) : Entity (id)
 {
@@ -32,4 +32,4 @@ ReferredNode::getReferElement ()
   return referElement;
 }
 
-GINGA_NCLCONV_END
+GINGA_NCL_END

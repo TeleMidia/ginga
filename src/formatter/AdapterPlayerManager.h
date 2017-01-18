@@ -31,9 +31,8 @@ using namespace ::ginga::system;
 #include "ncl/ContentNode.h"
 using namespace ::ginga::ncl;
 
-#include "formatter/NclCascadingDescriptor.h"
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclCascadingDescriptor.h"
+#include "NclExecutionObject.h"
 
 #include "system/ITimeBaseProvider.h"
 using namespace ::ginga::system;
@@ -103,4 +102,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_PLAYERADAPTERMANAGER_H_

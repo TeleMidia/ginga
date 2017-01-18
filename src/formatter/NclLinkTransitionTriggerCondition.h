@@ -23,7 +23,6 @@ using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
 #include "INclEventListener.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
@@ -31,7 +30,7 @@ using namespace ::ginga::formatter;
 GINGA_FORMATTER_BEGIN
 
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
-                                       public INclEventListener
+                                          public INclEventListener
 {
 
 protected:
@@ -40,8 +39,8 @@ protected:
   Bind *bind;
 
 public:
-  NclLinkTransitionTriggerCondition (NclFormatterEvent *event, short transition,
-                                  Bind *bind);
+  NclLinkTransitionTriggerCondition (NclFormatterEvent *event,
+                                     short transition, Bind *bind);
 
   virtual ~NclLinkTransitionTriggerCondition ();
 
@@ -57,4 +56,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKTRANSITIONTRIGGERCONDITION_H_

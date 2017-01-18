@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/IFontProvider.h"
 #include "mb/SDLSurface.h"
 
-#include "player/TextPlayer.h"
+#include "TextPlayer.h"
 
 GINGA_PLAYER_BEGIN
 

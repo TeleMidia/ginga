@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define LINKASSIGNMENTACTION_H_
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkRepeatAction.h"
 
@@ -33,7 +32,7 @@ private:
 
 public:
   NclLinkAssignmentAction (NclFormatterEvent *event, short actionType,
-                        string value);
+                           string value);
 
   virtual ~NclLinkAssignmentAction ();
 
@@ -44,4 +43,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*LINKASSIGNMENTACTION_H_*/

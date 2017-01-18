@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLDOCUMENTPARSER_H_
 
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclConnectorsParser.h"
 #include "NclImportParser.h"

@@ -22,10 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "SystemCompat.h"
-using namespace ::ginga::system;
 
 #include "Thread.h"
-using namespace ::ginga::system;
 
 GINGA_SYSTEM_BEGIN
 

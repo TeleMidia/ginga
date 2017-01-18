@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _PORT_H_
 
 #include "NodeEntity.h"
-using namespace ::ginga::ncl;
 
 #include "InterfacePoint.h"
 

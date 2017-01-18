@@ -26,7 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Content.h"
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

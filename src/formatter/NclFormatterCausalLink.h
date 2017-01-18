@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkAction.h"
 #include "NclLinkActionProgressionListener.h"
@@ -33,8 +32,8 @@ using namespace ::ginga::formatter;
 GINGA_FORMATTER_BEGIN
 
 class NclFormatterCausalLink : public NclFormatterLink,
-                            public NclLinkTriggerListener,
-                            public NclLinkActionProgressionListener
+                               public NclLinkTriggerListener,
+                               public NclLinkActionProgressionListener
 {
 
 private:
@@ -42,8 +41,9 @@ private:
   NclLinkAction *action;
 
 public:
-  NclFormatterCausalLink (NclLinkTriggerCondition *condition, NclLinkAction *action,
-                       Link *ncmLink, void *parentObject);
+  NclFormatterCausalLink (NclLinkTriggerCondition *condition,
+                          NclLinkAction *action, Link *ncmLink,
+                          void *parentObject);
 
   virtual ~NclFormatterCausalLink ();
 
@@ -57,4 +57,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_FORMATTERCAUSALLINK_H_

@@ -23,7 +23,6 @@ using namespace ::ginga::tsparser;
 
 #include "SectionFilter.h"
 #include "DsmccModule.h"
-using namespace ::ginga::dataproc;
 
 GINGA_DATAPROC_BEGIN
 

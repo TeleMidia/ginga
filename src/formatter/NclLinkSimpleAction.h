@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkAction.h"
@@ -52,4 +51,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKSIMPLEACTION_H_

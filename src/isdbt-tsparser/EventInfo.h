@@ -36,10 +36,8 @@ using namespace ::ginga::system;
 #include "SeriesDescriptor.h"
 #include "ParentalRatingDescriptor.h"
 #include "ContentAvailabilityDescriptor.h"
-using namespace ::ginga::tsparser;
 
 #include "IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
 
 //#include <time.h>
 //#include <vector>

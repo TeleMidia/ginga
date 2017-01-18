@@ -16,10 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ncl/Link.h"
+#include "Link.h"
 
-#include "ncl/ContextNode.h"
-using namespace ::ginga::ncl;
+#include "ContextNode.h"
 
 GINGA_NCL_BEGIN
 

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ncl/CausalLink.h"
+#include "CausalLink.h"
 
 GINGA_NCL_BEGIN
 

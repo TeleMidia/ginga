@@ -54,4 +54,5 @@ const string
     DEFAULT_FOCUS_BORDER_TRANSPARENCY ("default.focusBorderTransparency");
 
 GINGA_FORMATTER_END
+
 #endif //_CONTEXTBASE_H_

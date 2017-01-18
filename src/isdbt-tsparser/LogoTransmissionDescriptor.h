@@ -20,8 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 //#include "ILogoTransmissionDescriptor.h"
 
-#include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
+#include "IMpegDescriptor.h"
 
 GINGA_TSPARSER_BEGIN
 

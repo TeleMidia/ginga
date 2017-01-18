@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ScreenManagerFactory_H_
-#define ScreenManagerFactory_H_
+#ifndef SCREEN_MANAGER_FACTORY_H
+#define SCREEN_MANAGER_FACTORY_H
 
 #include "LocalScreenManager.h"
 
@@ -34,4 +34,4 @@ public:
 
 GINGA_MB_END
 
-#endif /* ScreenManagerFactory_H_ */
+#endif /* SCREEN_MANAGER_FACTORY_H */

@@ -109,8 +109,8 @@ NclEventTransitionManager::getTransitionEvents (short int type)
 }
 
 void
-NclEventTransitionManager::addEventTransition (NclEventTransition *transition,
-                                            short int type)
+NclEventTransitionManager::addEventTransition (
+    NclEventTransition *transition, short int type)
 {
 
   int beg, end, pos;
@@ -163,7 +163,8 @@ NclEventTransitionManager::addEventTransition (NclEventTransition *transition,
 }
 
 void
-NclEventTransitionManager::removeEventTransition (NclPresentationEvent *event)
+NclEventTransitionManager::removeEventTransition (
+    NclPresentationEvent *event)
 {
 
   int i, size = -1;
@@ -187,7 +188,8 @@ NclEventTransitionManager::removeEventTransition (NclPresentationEvent *event)
       if (transition->getEvent () == event)
         {
           if (transition->instanceOf ("NclBeginEventTransition")
-              && ((NclBeginEventTransition *)transition)->getEndTransition ()
+              && ((NclBeginEventTransition *)transition)
+                         ->getEndTransition ()
                      != NULL)
             {
 
@@ -255,7 +257,7 @@ NclEventTransitionManager::resetTimeIndexByType (short int type)
 
 void
 NclEventTransitionManager::prepare (bool wholeContent, double startTime,
-                                 short int type)
+                                    short int type)
 {
 
   vector<NclEventTransition *> *transitionEvents;
@@ -423,7 +425,8 @@ NclEventTransitionManager::abort (double endTime, bool applicationType)
 }
 
 void
-NclEventTransitionManager::addPresentationEvent (NclPresentationEvent *event)
+NclEventTransitionManager::addPresentationEvent (
+    NclPresentationEvent *event)
 {
 
   double begin, end;
@@ -445,8 +448,8 @@ NclEventTransitionManager::addPresentationEvent (NclPresentationEvent *event)
                                 beginTransition);
       if (event->getEnd () >= 0)
         {
-          endTransition = new NclEndEventTransition (event->getEnd (), event,
-                                                  beginTransition);
+          endTransition = new NclEndEventTransition (
+              event->getEnd (), event, beginTransition);
 
           i = transitionEvents->begin ();
           while (i != transitionEvents->end ())
@@ -514,8 +517,8 @@ NclEventTransitionManager::addPresentationEvent (NclPresentationEvent *event)
 
 void
 NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
-                                            NclFormatterEvent *mainEvent,
-                                            short int transType)
+                                               NclFormatterEvent *mainEvent,
+                                               short int transType)
 {
 
   NclPresentationEvent *ev;
@@ -556,10 +559,9 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
 }
 
 void
-NclEventTransitionManager::updateTransitionTable (double value,
-                                               IPlayer *player,
-                                               NclFormatterEvent *mainEvent,
-                                               short int transType)
+NclEventTransitionManager::updateTransitionTable (
+    double value, IPlayer *player, NclFormatterEvent *mainEvent,
+    short int transType)
 {
 
   NclEventTransition *transition;

@@ -49,4 +49,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_ANCHOREVENT_H_

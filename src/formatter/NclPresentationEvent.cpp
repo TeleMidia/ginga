@@ -25,8 +25,9 @@ GINGA_FORMATTER_BEGIN
 const double NclPresentationEvent::UNDEFINED_INSTANT
     = std::numeric_limits<double>::quiet_NaN ();
 
-NclPresentationEvent::NclPresentationEvent (string id, void *executionObject,
-                                      ContentAnchor *anchor)
+NclPresentationEvent::NclPresentationEvent (string id,
+                                            void *executionObject,
+                                            ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
 
@@ -112,7 +113,7 @@ NclPresentationEvent::setEnd (double e)
 
 void
 NclPresentationEvent::setRepetitionSettings (long repetitions,
-                                          double repetitionInterval)
+                                             double repetitionInterval)
 {
 
   if (repetitions >= 0)

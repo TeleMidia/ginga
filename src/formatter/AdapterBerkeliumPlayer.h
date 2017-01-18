@@ -19,13 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define AdapterBerkeliumPlayer_H_
 
 #include "../../../../../model/NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "../../../../../model/NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "../../../../AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
@@ -48,4 +45,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*AdapterBerkeliumPlayer_H_*/

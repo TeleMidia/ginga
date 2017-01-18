@@ -191,4 +191,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*PrivateBaseContext_H_*/

@@ -24,8 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-using namespace ::ginga::multidev;
-
 GINGA_MULTIDEV_BEGIN
 
 RemoteDeviceManager *RemoteDeviceManager::_instance = NULL;

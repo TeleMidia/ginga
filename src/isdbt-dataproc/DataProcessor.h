@@ -18,47 +18,33 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DATAPROCESSOR_H_
 #define DATAPROCESSOR_H_
 
-#include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
-
-#include "isdbt-tsparser/IAIT.h"
-using namespace ::ginga::tsparser;
-
-#include "DsmccServiceDomain.h"
-#include "IDsmccServiceDomainListener.h"
-#include "IDsmccObjectListener.h"
 #include "DsmccMessageProcessor.h"
-using namespace ::ginga::dataproc;
-
+#include "DsmccNPTProcessor.h"
+#include "DsmccServiceDomain.h"
 #include "EPGProcessor.h"
-#include "IEPGListener.h"
-using namespace ::ginga::dataproc;
-
 #include "FilterManager.h"
+#include "IDsmccObjectListener.h"
+#include "IDsmccObjectListener.h"
+#include "IDsmccServiceDomainListener.h"
+#include "IDsmccServiceDomainListener.h"
+#include "IDsmccStreamEventListener.h"
+#include "IDsmccStreamEventListener.h"
+#include "IEPGListener.h"
+#include "IEPGListener.h"
+
 #include "system/ITimeBaseProvider.h"
 using namespace ::ginga::system;
 
 #include "isdbt-tuner/ISTCProvider.h"
 using namespace ::ginga::tuner;
 
+#include "isdbt-tsparser/IAIT.h"
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/IFilterListener.h"
+#include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-#include "IDsmccStreamEventListener.h"
-using namespace ::ginga::dataproc;
-
-#include "IDsmccObjectListener.h"
-#include "IDsmccServiceDomainListener.h"
-using namespace ::ginga::dataproc;
-
-#include "IEPGListener.h"
-using namespace ::ginga::dataproc;
-
-#include "IDsmccStreamEventListener.h"
-
-#include "DsmccNPTProcessor.h"
-using namespace ::ginga::dataproc;
+GINGA_DATAPROC_BEGIN
 
 struct notifyData
 {
@@ -66,14 +52,11 @@ struct notifyData
   DsmccStreamEvent *se;
 };
 
-GINGA_DATAPROC_BEGIN
-
 class DataProcessor : public IFilterListener,
                       public ITunerListener,
                       public IDsmccServiceDomainListener,
                       public Thread
 {
-
 private:
   EPGProcessor *epgProcessor;
   FilterManager *filterManager;

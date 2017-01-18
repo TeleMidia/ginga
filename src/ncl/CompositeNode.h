@@ -24,10 +24,8 @@ using namespace ::ginga::util;
 #include "InterfacePoint.h"
 #include "Port.h"
 #include "Anchor.h"
-using namespace ::ginga::ncl;
 
 #include "Node.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

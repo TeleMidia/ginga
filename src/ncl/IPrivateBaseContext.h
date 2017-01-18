@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IPrivateBaseContext_H_
 
 #include "DeviceLayout.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

@@ -26,7 +26,6 @@ using namespace ::ginga::ncl;
 
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
 #include "NclFormatterDeviceRegion.h"
@@ -110,4 +109,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*FORMATTERLAYOUT_H_*/
