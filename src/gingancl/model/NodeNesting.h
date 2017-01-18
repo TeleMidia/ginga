@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NODENESTING_H_
 #define NODENESTING_H_
 
-#include <vector>
-using namespace std;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

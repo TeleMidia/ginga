@@ -21,10 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
-#include <string>
-#include <set>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

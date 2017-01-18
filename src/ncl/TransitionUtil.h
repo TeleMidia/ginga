@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <string>
-using namespace std;
 
 #include "Transition.h"
 

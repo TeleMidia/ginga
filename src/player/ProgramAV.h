@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "IProgramAV.h"
 
-#include <iostream>
-#include <map>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

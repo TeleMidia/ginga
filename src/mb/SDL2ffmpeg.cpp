@@ -24,15 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define AV_LOG_SKIP_REPEATED 1
 #endif
 
-using namespace std;
-
-#ifdef _MSC_VER
-#define isnan(x) _isnan(x)
-#else
-#define isnan(x) std::isnan(x)
-#endif
-
-
 
 GINGA_MB_BEGIN
 

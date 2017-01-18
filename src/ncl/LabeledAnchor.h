@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LABELED_ANCHOR_H_
 #define LABELED_ANCHOR_H_
 
-#include <string>
-using namespace std;
 
 #include "Entity.h"
 using namespace ::ginga::ncl;

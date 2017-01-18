@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "LinkCompoundAction.h"
 
-#include <stdexcept>
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

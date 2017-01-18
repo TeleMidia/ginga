@@ -36,16 +36,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include "ITSFilter.h"
 #include "IDemuxer.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
 
-#include <map>
-#include <vector>
-#include <list>
-#include <set>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

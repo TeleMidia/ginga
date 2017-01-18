@@ -54,7 +54,6 @@ using namespace ::ginga::nclconv;
 #include "NclConnectorsParser.h"
 using namespace ::ginga::nclconv;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE;
 
 GINGA_NCLCONV_BEGIN

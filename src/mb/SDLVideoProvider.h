@@ -23,8 +23,6 @@ using namespace ::ginga::mb;
 
 #include "SDLAudioProvider.h"
 
-#include <set>
-using namespace std;
 
 GINGA_MB_BEGIN
 

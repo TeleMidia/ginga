@@ -32,10 +32,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "Biop.h"
 #include "IServiceDomainListener.h"
 
-#include <map>
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

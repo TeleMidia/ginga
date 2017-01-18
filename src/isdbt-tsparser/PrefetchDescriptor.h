@@ -18,10 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PREFETCHDESCRIPTOR_H_
 #define PREFETCHDESCRIPTOR_H_
 
-#include <vector>
-using namespace std;
 
-#include <string.h>
 
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;

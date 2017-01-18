@@ -47,17 +47,9 @@ using namespace ::ginga::ctxmgmt;
 using namespace ::ginga::multidevice;
 #endif
 
-#include <set>
-#include <string>
 
 #include "math.h"
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
 

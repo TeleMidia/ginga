@@ -32,9 +32,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include <vector>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

@@ -25,9 +25,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <set>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 

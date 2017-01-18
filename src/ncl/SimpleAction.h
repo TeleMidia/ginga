@@ -29,9 +29,6 @@ using namespace ::ginga::ncl;
 #include "EventUtil.h"
 #include "Role.h"
 
-#include <iostream>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

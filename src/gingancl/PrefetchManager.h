@@ -26,8 +26,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "ic/InteractiveChannelManager.h"
 using namespace ::ginga::ic;
 
-#include <sys/stat.h>
-#include <map>
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
 

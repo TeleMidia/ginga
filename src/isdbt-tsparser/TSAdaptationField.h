@@ -24,9 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Stc.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 
-#include <iostream>
-#include <string.h>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

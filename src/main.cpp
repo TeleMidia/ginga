@@ -53,9 +53,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #include "lssm/PresentationEngineManager.h"
 using namespace ::ginga::lssm;
 
-#include <string>
-#include <iostream>
-using namespace std;
 
 
 void printHelp() {

@@ -32,14 +32,11 @@ using namespace ::ginga::nclconv;
 #include "NclTransitionParser.h"
 using namespace ::ginga::nclconv;
 
-#include <map>
-using namespace std;
 
 #include "util/functions.h"
 #include "util/Color.h"
 using namespace ::ginga::util;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

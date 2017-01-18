@@ -23,8 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LinkTriggerListener.h"
 #include "LinkCompoundTriggerCondition.h"
 
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

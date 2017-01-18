@@ -15,11 +15,7 @@
  */
 
 #include "config.h"
-#include <xercesc/sax/SAXParseException.hpp>
 #include "DOMTreeErrorReporter.h"
-#include <iostream>
-#include <stdlib.h>
-#include <string.h>
 
 
 void DOMTreeErrorReporter::warning(const SAXParseException&)

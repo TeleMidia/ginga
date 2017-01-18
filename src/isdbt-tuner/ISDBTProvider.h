@@ -21,15 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define INPUT_BUFFER_SIZE 4096
 
 extern "C" {
-	#include <sys/types.h>
-	#include <stdio.h>
-        #include <errno.h>
-        #include <poll.h>
-        #include <stdint.h>
-        #include <unistd.h>
-        #include <linux/dvb/version.h>
-        #include <linux/dvb/frontend.h>
-        #include <linux/dvb/dmx.h>
 
 
 // Latin America channel assignments for ISDB-T International
@@ -119,10 +110,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "ISDBTFrontend.h"
 #include "RingBuffer.h"
 
-#include <fstream>
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 

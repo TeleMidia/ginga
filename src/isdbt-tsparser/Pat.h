@@ -21,10 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Pmt.h"
 #include "TransportSection.h"
 
-#include <map>
-#include <vector>
-#include <iostream>
-using namespace std;
 
 struct UnpPmtTime {
 		unsigned int pid;

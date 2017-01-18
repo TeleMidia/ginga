@@ -24,8 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <iostream>
-using namespace std;
 
 using namespace ::ginga::multidevice;
 

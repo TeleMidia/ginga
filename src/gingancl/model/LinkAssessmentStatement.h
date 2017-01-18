@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKASSESSMENTSTATEMENT_H_
 #define _LINKASSESSMENTSTATEMENT_H_
 
-#include <vector>
-#include <set>
-using namespace std;
 
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

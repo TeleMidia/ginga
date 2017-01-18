@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDL2ffmpeg.h"
 
-#include <set>
-using namespace std;
 
 GINGA_MB_BEGIN
 

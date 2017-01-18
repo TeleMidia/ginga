@@ -35,11 +35,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "berkelium/WindowDelegate.hpp"
 #include "berkelium/Context.hpp"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sstream>
-#include <iostream>
-#include <memory>
 
 using namespace Berkelium;
 

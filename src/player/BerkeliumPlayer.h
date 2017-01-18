@@ -21,11 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "BerkeliumHandler.h"
 
-#include <pthread.h>
 
-#include <set>
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

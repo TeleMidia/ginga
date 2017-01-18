@@ -25,10 +25,6 @@ using namespace ::ginga::util;
 #include "AttributeAssessment.h"
 #include "Statement.h"
 
-#include <vector>
-#include <string>
-#include <set>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

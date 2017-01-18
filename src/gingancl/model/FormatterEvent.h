@@ -18,17 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _FORMATTEREVENT_H_
 #define _FORMATTEREVENT_H_
 
-#include <pthread.h>
 
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
 #include "IEventListener.h"
 
-#include <string>
-#include <iostream>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 

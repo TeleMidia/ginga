@@ -27,9 +27,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "FormatterEvent.h"
 #include "IAttributeValueMaintainer.h"
 
-#include <map>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 

@@ -29,8 +29,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
 

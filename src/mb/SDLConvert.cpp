@@ -20,15 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #if _MSC_VER
 # include "atlimage.h"
-#elif WITH_MULTIDEVICE
-# include <stdlib.h>
-# include <stdio.h>
-# include <setjmp.h>
-# include <jpeglib.h>
-# include <jerror.h>
-# include <SDL2/SDL_bits.h>
-# include <iostream>
-using namespace std;
 #endif
 
 GINGA_MB_BEGIN

@@ -37,8 +37,6 @@ using namespace ::ginga::player;
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
 

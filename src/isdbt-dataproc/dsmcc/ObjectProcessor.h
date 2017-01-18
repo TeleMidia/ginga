@@ -18,12 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECTPROCESSOR_H_
 #define OBJECTPROCESSOR_H_
 
-extern "C" {
-	#include <sys/stat.h>
-	#include <stdio.h>
-	#include <stdio.h>
-}
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -34,11 +28,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "Object.h"
 #include "IObjectListener.h"
 
-#include <set>
-#include <map>
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

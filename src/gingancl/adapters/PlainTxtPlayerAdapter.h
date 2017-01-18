@@ -24,8 +24,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
 

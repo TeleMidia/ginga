@@ -60,10 +60,12 @@ AC_SUBST([SWSCALE_REQUIRED_VERSION],     swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
 dnl Optional dependencies version.
+m4_define([cairo_required_version],      [1.10.2])
 m4_define([expat_required_version],      [2.1])
 m4_define([libbpg_required_version],     [0.9.5])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libzip_required_version],     [0.11.2])
+AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION],       expat_required_version)
 AC_SUBST([LIBBPG_REQUIRED_VERSION],      libbpg_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
@@ -137,7 +139,10 @@ AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
  [LIBBPG], [libbpg >= libbpg_required_version])
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
- [LIBRSVG], [librsvg-2.0 >= librsvg_required_version])
+ [LIBRSVG],
+ [librsvg-2.0 >= librsvg_required_version[]dnl
+  cairo >= cairo_required_version
+])
 
 dnl Optional dependencies that do not use pkg-config.
 dnl   $1: name;

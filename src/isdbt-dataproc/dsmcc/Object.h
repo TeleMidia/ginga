@@ -23,10 +23,6 @@ using namespace ::ginga::util;
 
 #include "Binding.h"
 
-#include <vector>
-#include <iostream>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

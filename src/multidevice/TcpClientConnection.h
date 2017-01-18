@@ -22,10 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/PracticalSocket.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <iostream>
-#include <sstream>
-#include <string.h>
-using namespace std;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

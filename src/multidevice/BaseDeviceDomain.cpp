@@ -26,7 +26,6 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <stdio.h>
 
 GINGA_MULTIDEVICE_BEGIN
 

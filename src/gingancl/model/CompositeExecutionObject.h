@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _COMPOSITEEXECUTIONOBJECT_H_
 #define _COMPOSITEEXECUTIONOBJECT_H_
 
-extern "C" {
-#include <assert.h>
-}
-
 #include "ncl/Node.h"
 #include "ncl/ContextNode.h"
 using namespace ::ginga::ncl;
@@ -46,10 +42,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "CascadingDescriptor.h"
 #include "ExecutionObject.h"
 
-#include <vector>
-#include <map>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 

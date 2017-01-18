@@ -35,9 +35,6 @@ using namespace ::ginga::ncl;
 #include "DescriptorSwitch.h"
 #include "SwitchContent.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -24,10 +24,6 @@ using namespace ::ginga::ncl;
 
 #include "Role.h"
 
-#include <map>
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

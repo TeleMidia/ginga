@@ -23,8 +23,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 
 #include "ITSPacket.h"
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

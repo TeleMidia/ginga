@@ -42,10 +42,6 @@ using namespace ::ginga::ncl;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include <map>
-#include <string>
-#include <vector>
-using namespace std;
 
 #include "ModuleParser.h"
 #include "DocumentParser.h"
@@ -57,7 +53,6 @@ using namespace ::ginga::nclconv;
 #include "NclPresentationSpecConverter.h"
 #include "NclComponentsConverter.h"
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

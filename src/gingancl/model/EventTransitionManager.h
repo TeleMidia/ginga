@@ -37,9 +37,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "BeginEventTransition.h"
 #include "EndEventTransition.h"
 
-#include <map>
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 

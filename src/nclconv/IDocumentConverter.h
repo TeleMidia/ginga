@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/IPrivateBaseContext.h"
 using namespace ::ginga::ncl;
 
-#include <string>
-using namespace std;
 
 GINGA_NCLCONV_BEGIN
 

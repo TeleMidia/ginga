@@ -23,9 +23,6 @@ using namespace ::ginga::mb;
 
 #include "Player.h"
 
-#include <map>
-#include <vector>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

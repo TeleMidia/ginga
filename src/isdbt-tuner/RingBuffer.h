@@ -22,12 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <string.h>
-#include <pthread.h>
 
 // Posix Ring Buffer implementation
 //

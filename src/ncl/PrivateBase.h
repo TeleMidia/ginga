@@ -24,9 +24,6 @@ using namespace ::ginga::ncl;
 #include "NodeEntity.h"
 #include "ContextNode.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

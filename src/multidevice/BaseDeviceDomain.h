@@ -30,9 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
 #include "DeviceDomain.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

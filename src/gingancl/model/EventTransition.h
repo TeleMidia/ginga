@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include <string>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 

@@ -24,9 +24,6 @@ using namespace ::ginga::ncl;
 #include "InterfacePoint.h"
 #include "Port.h"
 
-#include <string>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

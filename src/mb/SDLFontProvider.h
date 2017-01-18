@@ -26,13 +26,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "IFontProvider.h"
 #include "SDLSurface.h"
 
-#include <pthread.h>
 
 #include "SDL_ttf.h"
 
-#include <set>
-#include <map>
-using namespace std;
 
 GINGA_MB_BEGIN
 

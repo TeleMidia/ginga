@@ -25,8 +25,6 @@ using namespace ::ginga::util;
 #include "TriggerExpression.h"
 #include "Role.h"
 
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

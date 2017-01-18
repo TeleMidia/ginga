@@ -37,10 +37,6 @@ using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
 
-#include <string>
-#include <map>
-#include <vector>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -39,8 +39,6 @@ using namespace ::ginga::nclconv;
 #include "NclStructureParser.h"
 using namespace ::ginga::nclconv;
 
-#include <string>
-using namespace std;
 
 #include "NclPresentationSpecConverter.h"
 #include "NclComponentsConverter.h"
@@ -50,7 +48,6 @@ using namespace std;
 #include "NclPresentationControlConverter.h"
 #include "NclConnectorsConverter.h"
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

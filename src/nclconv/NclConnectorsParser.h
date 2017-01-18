@@ -24,7 +24,6 @@ using namespace ::ginga::nclconv;
 
 #include "NclImportParser.h"
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

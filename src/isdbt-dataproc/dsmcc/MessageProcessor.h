@@ -30,8 +30,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 #include "DownloadInfoIndication.h"
 #include "DownloadDataBlock.h"
 
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

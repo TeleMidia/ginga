@@ -23,9 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include <fstream>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 

@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NetworkUtil.h"
 #include "DeviceDomain.h"
 
-#include <map>
-using namespace std;
 
 map<int, char> _rcf; //received control frames;
 map<int, char> _rdf; //received data frames;

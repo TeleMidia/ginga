@@ -35,12 +35,6 @@ using namespace br::pucrio::telemidia::ginga::core::tuning;
 #include "NPTReference.h"
 #include "TimeBaseClock.h"
 
-#include <set>
-#include <map>
-#include <iostream>
-#include <string>
-#include <cmath>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
 

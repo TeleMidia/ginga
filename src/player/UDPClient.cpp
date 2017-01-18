@@ -16,13 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "player/UDPClient.h"
+#include "UDPClient.h"
 
-#ifndef _MSC_VER
 #include <unistd.h>
-#endif //_MSC_VER
-
-#include <string.h>
 
 UDPClient::UDPClient() {
 	sd = 0;

@@ -27,9 +27,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <map>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

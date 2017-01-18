@@ -21,10 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <string.h>
 
-#include <vector>
-using namespace std;
 
 struct Content {
 	unsigned char contentNibbleLevel1;

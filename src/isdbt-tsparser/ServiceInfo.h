@@ -24,11 +24,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "IServiceInfo.h"
 
-#include <iostream>
-#include <time.h>
-#include <vector>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

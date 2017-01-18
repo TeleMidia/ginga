@@ -1,11 +1,8 @@
 #ifndef FRONTEND_PARAMETER
 #define FRONTEND_PARAMETER
-#include <linux/dvb/version.h>
 
-#include <linux/dvb/frontend.h>
 
 #if defined(DVB_API_VERSION) && DVB_API_VERSION>=5
-#include <unistd.h>
 
 typedef unsigned char		uint8_t;
 typedef unsigned short int	uint16_t;

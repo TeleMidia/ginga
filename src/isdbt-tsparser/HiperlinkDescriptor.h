@@ -11,7 +11,6 @@
 #include "IMpegDescriptor.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
-#include <string.h>
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_DESCRIPTORS_BEGIN
 
 	class HiperlinkDescriptor : public IMpegDescriptor{

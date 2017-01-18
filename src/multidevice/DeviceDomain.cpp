@@ -28,10 +28,8 @@ using namespace ::ginga::util;
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #ifndef _MSC_VER
-#include <sys/ioctl.h>
 #endif
 
-#include <stdio.h>
 
 GINGA_MULTIDEVICE_BEGIN
 

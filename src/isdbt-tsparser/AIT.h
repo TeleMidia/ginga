@@ -30,10 +30,6 @@ using namespace br::pucrio::telemidia::ginga::core::tsparser;
 
 #include "IAIT.h"
 
-#include <string.h>
-#include <vector>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 

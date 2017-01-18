@@ -21,10 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IParentalRatingDescriptor.h"
 
-#include <string.h>
 
-#include <vector>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

@@ -91,11 +91,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "ObjectCreationForbiddenException.h"
 
-#include <map>
-#include <vector>
-#include <set>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 

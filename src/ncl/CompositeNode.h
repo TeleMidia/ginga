@@ -28,9 +28,6 @@ using namespace ::ginga::ncl;
 #include "Node.h"
 using namespace ::ginga::ncl;
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

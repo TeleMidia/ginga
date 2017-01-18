@@ -27,9 +27,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_MULTIDEVICE_BEGIN
 

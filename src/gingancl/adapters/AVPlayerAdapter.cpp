@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AVPlayerAdapter.h"
 #include "player/AVPlayer.h"
 
-#include <string.h>
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
 

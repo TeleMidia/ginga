@@ -24,8 +24,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 #include "ITSPacket.h"
 #include "isdbt-tsparser/TSAdaptationField.h"
 
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 

@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Content.h"
 #include "ContentTypeManager.h"
 
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Link.h"
 
-#include <set>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

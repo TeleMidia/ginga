@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CONDITIONEXPRESSION_H_
 #define _CONDITIONEXPRESSION_H_
 
-#include <string>
-#include <set>
-#include <iostream>
-using namespace std;
 
 #include "Role.h"
 

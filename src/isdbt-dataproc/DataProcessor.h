@@ -18,11 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DATAPROCESSOR_H_
 #define DATAPROCESSOR_H_
 
-extern "C" {
-	#include <stdio.h>
-	#include <stdio.h>
-}
-
 #include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 
@@ -60,20 +55,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
 #include "IEPGListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::epg;
 
-#include <map>
-#include <set>
-#include <string>
-using namespace std;
 
 #include "dsmcc/IStreamEventListener.h"
 
 #include "dsmcc/NPTProcessor.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::dsmcc::npt;
 
-#include <map>
-#include <set>
-#include <string>
-using namespace std;
 
 struct notifyData {
 	IStreamEventListener* listener;

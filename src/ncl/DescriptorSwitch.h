@@ -26,15 +26,6 @@ using namespace ::ginga::ncl;
 
 #include "Rule.h"
 
-extern "C" {
-#include <pthread.h>
-}
-
-#include <string>
-#include <iostream>
-#include <vector>
-using namespace std;
-
 GINGA_NCL_BEGIN
 
 	class DescriptorSwitch : public GenericDescriptor {

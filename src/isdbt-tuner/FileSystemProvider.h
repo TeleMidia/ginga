@@ -18,21 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FILESYSTEMPROVIDER_H_
 #define FILESYSTEMPROVIDER_H_
 
-extern "C" {
-	#include <sys/types.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <stdint.h>
-}
-
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
 #include "IDataProvider.h"
 
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_TUNING_BEGIN
 

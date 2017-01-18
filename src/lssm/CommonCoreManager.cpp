@@ -63,13 +63,8 @@ using namespace ::ginga::player;
 
 #include "lssm/StcWrapper.h"
 
-#include <sys/types.h>
-#include <stdio.h>
 
 #include "pthread.h"
-#include <string>
-#include <iostream>
-using namespace std;
 
 GINGA_LSSM_BEGIN
 

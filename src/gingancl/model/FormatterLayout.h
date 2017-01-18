@@ -31,10 +31,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "FormatterRegion.h"
 #include "FormatterDeviceRegion.h"
 
-#include <map>
-#include <string>
-#include <set>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 

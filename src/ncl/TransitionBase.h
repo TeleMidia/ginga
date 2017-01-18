@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Base.h"
 using namespace ::ginga::ncl;
 
-#include <vector>
-#include <string>
-using namespace std;
 
 #include "Transition.h"
 

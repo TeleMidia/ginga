@@ -28,8 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 extern "C" {
 #include "SDL_endian.h"
 #include "SDL_syswm.h"
-#include <string.h>
-#include <stdlib.h>
 }
 
 #include "SDLAudioProvider.h"

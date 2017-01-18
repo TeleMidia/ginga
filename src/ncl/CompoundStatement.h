@@ -25,9 +25,6 @@ using namespace ::ginga::util;
 #include "AssessmentStatement.h"
 #include "Role.h"
 
-#include <vector>
-#include <string>
-using namespace std;
 
 GINGA_NCL_BEGIN
 

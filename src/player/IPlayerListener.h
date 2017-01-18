@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPLAYERLISTENER_H_
 #define IPLAYERLISTENER_H_
 
-#include <string>
-using namespace std;
 
 GINGA_PLAYER_BEGIN
 

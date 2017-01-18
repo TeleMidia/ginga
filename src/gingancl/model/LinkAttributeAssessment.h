@@ -28,9 +28,6 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "LinkAssessment.h"
 
-#include <iostream>
-#include <string>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

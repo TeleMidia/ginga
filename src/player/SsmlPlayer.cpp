@@ -16,13 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include <cstdlib>
 
 #include "player/SsmlPlayer.h"
 
 // TODO: Develop a ginga common audio system and integrate this player in it.
 // The eSpeak header
-#include <espeak/speak_lib.h>
 
 // size of the max read by the voice syntetizer
 #define MAX_READ 100000

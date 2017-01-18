@@ -24,8 +24,6 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 #include "Module.h"
 #include "DsmccMessageHeader.h"
 
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

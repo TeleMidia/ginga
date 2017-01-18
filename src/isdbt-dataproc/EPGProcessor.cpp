@@ -40,8 +40,6 @@ using namespace::br::pucrio::telemidia::ginga::core::tsparser;
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "isdbt-dataproc/IEPGListener.h"
-#include <iostream>
-using namespace std;
 
 #include "DataProcessor.h"
 

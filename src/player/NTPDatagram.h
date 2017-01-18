@@ -18,19 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NTPDATAGRAM_H_
 #define NTPDATAGRAM_H_
 
-#include <iostream>
-#include <cstring>
-#include <ctime>
-#include <cmath>
-
-#if defined _MSC_VER || defined __CYGWIN__
-  #include <winsock2.h>
-#else
-  #include <netinet/in.h>
-#endif
-
-using namespace std;
-
 #ifndef ALT_ASM_SRC
 typedef signed char  alt_8;
 typedef unsigned char  alt_u8;
@@ -42,9 +29,11 @@ typedef long long alt_64;
 typedef unsigned long long alt_u64;
 #endif
 
-#define ALT_INLINE        __inline__
-#define ALT_ALWAYS_INLINE __attribute__ ((always_inline))
-#define ALT_WEAK          __attribute__((weak))
+#if defined _MSC_VER || defined __CYGWIN__
+# include <winsock2.h>
+#else
+# include <netinet/in.h>
+#endif
 
 class NTPDatagram {
 

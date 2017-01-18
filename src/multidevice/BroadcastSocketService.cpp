@@ -18,20 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "BroadcastSocketService.h"
 
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
 
-#include <sys/types.h>
 
 #ifndef _MSC_VER
-#include <sys/ioctl.h>
-#include <sys/time.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <net/if.h>
 #endif
 
 #ifdef _MSC_VER

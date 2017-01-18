@@ -18,11 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCONDITION_H_
 #define _LINKCONDITION_H_
 
-#include <vector>
-#include <set>
-#include <string>
-#include <iostream>
-using namespace std;
 
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

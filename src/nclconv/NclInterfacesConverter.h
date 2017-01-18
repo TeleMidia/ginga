@@ -47,10 +47,7 @@ using namespace ::ginga::nclconv;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <string>
-using namespace std;
 
-#include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN

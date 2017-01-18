@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IEventInfo.h"
 using namespace br::pucrio::telemidia::ginga::core::tsparser::si;
 
-#include <string>
-#include <map>
-using namespace std;
 
 /*
  * A Lua Node can register himself to handle EPG events (class='si', type='epg').

@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DSMCCSectionPayload_H_
 #define DSMCCSectionPayload_H_
 
-#include <string.h>
-#include <stdint.h>
 
 #include "Crc.h"
 #include "MpegDescriptor.h"
@@ -28,8 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NPTEndpoint.h"
 #include "StreamMode.h"
 
-#include <map>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
 

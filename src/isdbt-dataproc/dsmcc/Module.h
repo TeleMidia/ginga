@@ -18,21 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef MODULE_H_
 #define MODULE_H_
 
-extern "C" {
-	#include <sys/stat.h>
-	#include <stdio.h>
-	#include <stdio.h>
-}
-
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <set>
-#include <string>
-#include <iostream>
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 

@@ -18,10 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NPTREFERENCE_H_
 #define NPTREFERENCE_H_
 
-#include <stdint.h>
 #include "MpegDescriptor.h"
 
-using namespace std;
 
 BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
 

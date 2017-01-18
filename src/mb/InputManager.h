@@ -33,14 +33,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "IInputEventListener.h"
 #include "IMotionEventListener.h"
 
-#include <set>
-using namespace std;
 
-#include <iostream>
-#include <vector>
-#include <set>
-#include <map>
-using namespace std;
 
 typedef struct lockedLitenerAction {
 	::ginga::mb::IInputEventListener* l;
