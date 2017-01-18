@@ -45,7 +45,7 @@ pthread_mutex_t FormatterFocusManager::iMutex;
 static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
 FormatterFocusManager::FormatterFocusManager (
-    PlayerAdapterManager *playerManager, PresentationContext *presContext,
+    AdapterPlayerManager *playerManager, PresentationContext *presContext,
     FormatterMultiDevice *multiDevice, ILinkActionListener *settingActions,
     void *converter)
 {
@@ -390,7 +390,7 @@ void
 FormatterFocusManager::resetKeyMaster ()
 {
   CascadingDescriptor *desc;
-  FormatterPlayerAdapter *player = NULL;
+  AdapterFormatterPlayer *player = NULL;
 
   if (selectedObject != NULL)
     {
@@ -404,7 +404,7 @@ FormatterFocusManager::resetKeyMaster ()
 
       recoveryDefaultState (selectedObject);
 
-      player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
           selectedObject);
       exitSelection (player);
     }
@@ -479,7 +479,7 @@ FormatterFocusManager::setKeyMaster (string mediaId)
   ExecutionObject *nextObject = NULL;
   CascadingDescriptor *nextDescriptor = NULL;
   FormatterRegion *fr = NULL;
-  FormatterPlayerAdapter *player = NULL;
+  AdapterFormatterPlayer *player = NULL;
   LayoutRegion *ncmRegion = NULL;
   bool isFRVisible = false;
   bool abortKeyMaster = false;
@@ -557,7 +557,7 @@ FormatterFocusManager::setKeyMaster (string mediaId)
   // selecting new object
   selectedObject = nextObject;
   selectedObject->setHandler (true);
-  player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
       selectedObject);
 
   enterSelection (player);
@@ -724,7 +724,7 @@ void
 FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
 {
   GingaWindowID wId;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   FormatterRegion *fRegion;
 
   if (object == NULL || object->getDescriptor () == NULL
@@ -735,7 +735,7 @@ FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
       return;
     }
 
-  player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (object);
+  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (object);
   if (player != NULL)
     {
       fRegion = object->getDescriptor ()->getFormatterRegion ();
@@ -755,7 +755,7 @@ FormatterFocusManager::showObject (ExecutionObject *object)
   FormatterRegion *fr = NULL;
   string focusIndex, auxIndex;
   string paramValue, mediaId;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   Node *ncmNode;
   vector<string>::iterator i;
 
@@ -874,7 +874,7 @@ FormatterFocusManager::showObject (ExecutionObject *object)
               selectedObject = object;
               selectedObject->setHandler (true);
               player
-                  = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+                  = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
                       selectedObject);
               enterSelection (player);
             }
@@ -888,7 +888,7 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
 {
   string focusIndex = "", ix;
   FormatterRegion *fr;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   map<string, set<ExecutionObject *> *>::iterator i;
 
   if (object == NULL || object->getDescriptor () == NULL)
@@ -912,7 +912,7 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
           && selectedObject == object)
         {
 
-          player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+          player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
               selectedObject);
           exitSelection (player);
           // region->setSelection(false);
@@ -945,7 +945,7 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
 bool
 FormatterFocusManager::keyCodeOk (ExecutionObject *currentObject)
 {
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   bool isHandling = false;
   /*
                   clog << "FormatterFocusManager::keyCodeOk(" << this << ")";
@@ -971,7 +971,7 @@ FormatterFocusManager::keyCodeOk (ExecutionObject *currentObject)
 
   selectedObject = currentObject;
   selectedObject->setHandler (true);
-  player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
       selectedObject);
 
   changeSettingState ("service.currentKeyMaster", "start");
@@ -996,7 +996,7 @@ FormatterFocusManager::keyCodeBack ()
 {
   CascadingDescriptor *selectedDescriptor;
   FormatterRegion *fr = NULL;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   string ix;
   /*
                   clog << "FormatterFocusManager::keyCodeBack(" << this << ")";
@@ -1049,7 +1049,7 @@ FormatterFocusManager::keyCodeBack ()
 
   if (selectedObject != NULL)
     {
-      player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
           selectedObject);
       changeSettingState ("service.currentKeyMaster", "start");
       exitSelection (player);
@@ -1063,7 +1063,7 @@ FormatterFocusManager::keyCodeBack ()
 }
 
 bool
-FormatterFocusManager::enterSelection (FormatterPlayerAdapter *player)
+FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
 {
   bool newHandler = false;
   string keyMaster;
@@ -1093,7 +1093,7 @@ FormatterFocusManager::enterSelection (FormatterPlayerAdapter *player)
 }
 
 void
-FormatterFocusManager::exitSelection (FormatterPlayerAdapter *player)
+FormatterFocusManager::exitSelection (AdapterFormatterPlayer *player)
 {
   clog << "FormatterFocusManager::exitSelection(" << this << ")" << endl;
 

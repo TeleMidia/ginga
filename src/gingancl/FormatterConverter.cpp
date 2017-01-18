@@ -899,7 +899,7 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
                     }
                   catch (ObjectCreationForbiddenException *exc1)
                     {
-                      if (PlayerAdapterManager::isEmbeddedApp (nodeEntity))
+                      if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
                         {
                           executionObject = new ApplicationExecutionObject (
                               id, nodeEntity, descriptor, handling,
@@ -918,7 +918,7 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
               else
                 {
                   // not in the same base => create a new version
-                  if (PlayerAdapterManager::isEmbeddedApp (nodeEntity))
+                  if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
                     {
                       executionObject = new ApplicationExecutionObject (
                           id, nodeEntity, descriptor, handling,
@@ -977,7 +977,7 @@ FormatterConverter::createExecutionObject (string id, NodeNesting *perspective,
       // to monitor the presentation and remove object at stops
       // compositeEvent->addEventListener(this);
     }
-  else if (PlayerAdapterManager::isEmbeddedApp (nodeEntity))
+  else if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
     {
       executionObject = new ApplicationExecutionObject (
           id, node, descriptor, handling, actionListener);

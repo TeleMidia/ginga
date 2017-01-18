@@ -47,11 +47,11 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 #include "PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
-#include "adapters/ApplicationPlayerAdapter.h"
+#include "AdapterApplicationPlayer.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
 
-#include "adapters/FormatterPlayerAdapter.h"
-#include "adapters/PlayerAdapterManager.h"
+#include "AdapterFormatterPlayer.h"
+#include "AdapterPlayerManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "ncl/SimpleAction.h"
@@ -95,7 +95,7 @@ class FormatterScheduler : public ILinkActionListener,
 
 private:
   RuleAdapter *ruleAdapter;
-  PlayerAdapterManager *playerManager;
+  AdapterPlayerManager *playerManager;
   PresentationContext *presContext;
   FormatterMultiDevice *multiDevPres;
   FormatterFocusManager *focusManager;
@@ -116,7 +116,7 @@ private:
   pthread_mutex_t lMutex;
 
 public:
-  FormatterScheduler (PlayerAdapterManager *playerManager,
+  FormatterScheduler (AdapterPlayerManager *playerManager,
                       RuleAdapter *ruleAdapter,
                       FormatterMultiDevice *multiDevice,
                       void *compiler); // FormatterConverter
@@ -134,7 +134,7 @@ private:
   bool isDocumentRunning (FormatterEvent *event);
 
   void setTimeBaseObject (ExecutionObject *object,
-                          FormatterPlayerAdapter *objectPlayer, string nodeId);
+                          AdapterFormatterPlayer *objectPlayer, string nodeId);
 
   static void printAction (string action, LinkCondition *condition,
                            LinkSimpleAction *linkAction);
@@ -152,7 +152,7 @@ private:
 
   void runActionOverApplicationObject (
       ApplicationExecutionObject *executionObject, FormatterEvent *event,
-      FormatterPlayerAdapter *player, LinkSimpleAction *action);
+      AdapterFormatterPlayer *player, LinkSimpleAction *action);
 
   void runActionOverComposition (CompositeExecutionObject *compositeObject,
                                  LinkSimpleAction *action);

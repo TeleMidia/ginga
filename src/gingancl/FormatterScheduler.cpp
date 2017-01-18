@@ -30,7 +30,7 @@ using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-FormatterScheduler::FormatterScheduler (PlayerAdapterManager *playerManager,
+FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,
                                         RuleAdapter *ruleAdapter,
                                         FormatterMultiDevice *multiDevice,
                                         void *compiler)
@@ -201,7 +201,7 @@ FormatterScheduler::isDocumentRunning (FormatterEvent *event)
 
 void
 FormatterScheduler::setTimeBaseObject (ExecutionObject *object,
-                                       FormatterPlayerAdapter *objectPlayer,
+                                       AdapterFormatterPlayer *objectPlayer,
                                        string nodeId)
 {
 
@@ -214,7 +214,7 @@ FormatterScheduler::setTimeBaseObject (ExecutionObject *object,
   Node *timeBaseNode;
   NodeNesting *perspective;
   NodeNesting *compositePerspective;
-  FormatterPlayerAdapter *timeBasePlayer;
+  AdapterFormatterPlayer *timeBasePlayer;
 
   if (nodeId.find_last_of ('#') != std::string::npos)
     {
@@ -288,7 +288,7 @@ FormatterScheduler::setTimeBaseObject (ExecutionObject *object,
       if (timeBaseObject != NULL)
         {
           timeBasePlayer
-              = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
                   timeBaseObject);
           if (timeBasePlayer != NULL)
             {
@@ -366,7 +366,7 @@ FormatterScheduler::printAction (string action, LinkCondition *condition,
       action = action + "::" + itos (specTime);
     }
 
-  FormatterPlayerAdapter::printAction (action);
+  AdapterFormatterPlayer::printAction (action);
 }
 
 void
@@ -407,7 +407,7 @@ FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
 
   ExecutionObject *executionObject;
   CascadingDescriptor *descriptor;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   IPlayer *playerContent;
   NodeEntity *dataObject;
   short actionType;
@@ -482,7 +482,7 @@ FormatterScheduler::runAction (FormatterEvent *event, LinkCondition *condition,
       clog << "FormatterScheduler::runAction ";
       clog << "acquiring player for '" << executionObject->getId ();
       clog << "' ";
-      player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
           executionObject);
       if (player == NULL)
         {
@@ -685,7 +685,7 @@ FormatterScheduler::runActionOverProperty (FormatterEvent *event,
 
   NodeEntity *dataObject;
   ExecutionObject *executionObject;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   Animation *anim;
 
   executionObject = (ExecutionObject *)(event->getExecutionObject ());
@@ -740,7 +740,7 @@ FormatterScheduler::runActionOverProperty (FormatterEvent *event,
           anim = NULL;
         }
 
-      player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
           executionObject);
       actionType = action->getType ();
 
@@ -835,7 +835,7 @@ FormatterScheduler::runActionOverProperty (FormatterEvent *event,
 void
 FormatterScheduler::runActionOverApplicationObject (
     ApplicationExecutionObject *executionObject, FormatterEvent *event,
-    FormatterPlayerAdapter *player, LinkSimpleAction *action)
+    AdapterFormatterPlayer *player, LinkSimpleAction *action)
 {
 
   CascadingDescriptor *descriptor;
@@ -922,7 +922,7 @@ FormatterScheduler::runActionOverApplicationObject (
       Thread::mutexLock (&lMutex);
       listening.insert (event);
       Thread::mutexUnlock (&lMutex);
-      if (((ApplicationPlayerAdapter *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
         {
 
           if (!player->start ())
@@ -948,7 +948,7 @@ FormatterScheduler::runActionOverApplicationObject (
                 }
             }
 
-          ((ApplicationPlayerAdapter *)player)->unlockCurrentEvent (event);
+          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       time = getCurrentTimeMillis () - time;
@@ -961,41 +961,41 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case SimpleAction::ACT_PAUSE:
-      if (((ApplicationPlayerAdapter *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
         {
 
           player->pause ();
-          ((ApplicationPlayerAdapter *)player)->unlockCurrentEvent (event);
+          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       break;
 
     case SimpleAction::ACT_RESUME:
-      if (((ApplicationPlayerAdapter *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
         {
 
           player->resume ();
-          ((ApplicationPlayerAdapter *)player)->unlockCurrentEvent (event);
+          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       break;
 
     case SimpleAction::ACT_ABORT:
-      if (((ApplicationPlayerAdapter *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
         {
 
           player->abort ();
-          ((ApplicationPlayerAdapter *)player)->unlockCurrentEvent (event);
+          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       break;
 
     case SimpleAction::ACT_STOP:
-      if (((ApplicationPlayerAdapter *)player)->setAndLockCurrentEvent (event))
+      if (((AdapterApplicationPlayer *)player)->setAndLockCurrentEvent (event))
         {
 
           player->stop ();
-          ((ApplicationPlayerAdapter *)player)->unlockCurrentEvent (event);
+          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       break;
@@ -1016,7 +1016,7 @@ FormatterScheduler::runActionOverComposition (
   map<string, ExecutionObject *>::iterator j;
   ExecutionObject *childObject;
 
-  FormatterPlayerAdapter *pAdapter;
+  AdapterFormatterPlayer *pAdapter;
   AttributionEvent *attrEvent;
   FormatterEvent *event;
   string propName;
@@ -1139,7 +1139,7 @@ FormatterScheduler::runActionOverComposition (
                   else
                     { // force attribution
                       pAdapter
-                          = (FormatterPlayerAdapter *)
+                          = (AdapterFormatterPlayer *)
                                 playerManager->getObjectPlayer (childObject);
 
                       if (pAdapter != NULL)
@@ -1936,7 +1936,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 {
 
   ExecutionObject *object;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   vector<IFormatterSchedulerListener *>::iterator i;
   vector<FormatterEvent *>::iterator it;
   IFormatterSchedulerListener *listener;
@@ -2001,7 +2001,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
           // TODO: if (isDocumentRunning(event)) {
           object = (ExecutionObject *)(event->getExecutionObject ());
 
-          player = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+          player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
               object);
           if (player != NULL)
             {
@@ -2039,7 +2039,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   focusManager->hideObject (object);
                   ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
 
-                  player = (FormatterPlayerAdapter *)
+                  player = (AdapterFormatterPlayer *)
                                playerManager->getObjectPlayer (object);
                   if (player != NULL && player->getPlayer () != NULL)
                     {
@@ -2083,7 +2083,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
               ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
 
               player
-                  = (FormatterPlayerAdapter *)playerManager->getObjectPlayer (
+                  = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
                       object);
               if (player != NULL && player->getPlayer () != NULL
                   && player->getObjectDevice () == 0)

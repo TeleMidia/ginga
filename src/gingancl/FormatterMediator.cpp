@@ -221,7 +221,7 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
 
   multiDevice->setPresentationContex (presContext);
 
-  playerManager = new PlayerAdapterManager (data);
+  playerManager = new AdapterPlayerManager (data);
 
   compileErrors.clear ();
 
@@ -1458,7 +1458,7 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 
           if (interfaceId == "")
             {
-              FormatterPlayerAdapter::printAction ("startApp::" + documentId);
+              AdapterFormatterPlayer::printAction ("startApp::" + documentId);
 
               scheduler->startDocument (documentEvent, entryEvents);
             }
@@ -1472,7 +1472,7 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 
               filteredEvents.push_back (entryEvent);
 
-              FormatterPlayerAdapter::printAction ("startApp::" + documentId);
+              AdapterFormatterPlayer::printAction ("startApp::" + documentId);
 
               scheduler->startDocument (documentEvent, &filteredEvents);
             }
@@ -1510,7 +1510,7 @@ FormatterMediator::stopDocument (string documentId)
 
   documentEvent = documentEvents[documentId];
 
-  FormatterPlayerAdapter::printAction (
+  AdapterFormatterPlayer::printAction (
       "stopApp", (ExecutionObject *)documentEvent->getExecutionObject ());
 
   scheduler->stopDocument (documentEvent);
@@ -1579,7 +1579,7 @@ FormatterMediator::presentationCompleted (FormatterEvent *documentEvent)
   documentEvents.clear ();
   documentEntryEvents.clear ();
 
-  FormatterPlayerAdapter::printAction ("stopApp::" + data->docId);
+  AdapterFormatterPlayer::printAction ("stopApp::" + data->docId);
 
   Player::notifyPlayerListeners (PL_NOTIFY_STOP, data->playerId,
                                  TYPE_PRESENTATION);
@@ -3065,7 +3065,7 @@ FormatterMediator::addLink (string documentId, string compositeId,
 {
 
   FormatterCausalLink *fLink;
-  FormatterPlayerAdapter *player;
+  AdapterFormatterPlayer *player;
   FormatterEvent *event;
   ExecutionObject *object;
   vector<FormatterEvent *> *events;
@@ -3110,7 +3110,7 @@ FormatterMediator::addLink (string documentId, string compositeId,
                       && event->getCurrentState () == EventUtil::ST_OCCURRING)
                     {
 
-                      player = (FormatterPlayerAdapter *)
+                      player = (AdapterFormatterPlayer *)
                                    playerManager->getObjectPlayer (object);
                       if (player != NULL)
                         {

@@ -20,11 +20,6 @@ font_DATA=\
   $(NULL)
 
 # formatter
-formatter_DATA=\
-  formatter/ctrldefs.ini\
-  formatter/mimedefs.ini\
-  $(NULL)
-
 formatterimg_DATA=\
   formatterimg/loading.png\
   formatterimg/b1.png\

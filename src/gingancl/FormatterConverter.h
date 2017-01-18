@@ -83,7 +83,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "RuleAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 
-#include "adapters/PlayerAdapterManager.h"
+#include "AdapterPlayerManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 #include "FormatterScheduler.h"

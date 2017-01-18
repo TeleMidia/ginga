@@ -144,7 +144,7 @@ private:
   FormatterScheduler *scheduler;
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
-  PlayerAdapterManager *playerManager;
+  AdapterPlayerManager *playerManager;
   ITimeBaseProvider *timeBaseProvider;
   vector<string> compileErrors;
   DeviceLayout *deviceLayout;
