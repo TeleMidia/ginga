@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "DisplayManagerFactory.h"
-#include "DisplayManager.h"
 #include "SDLVideoProvider.h"
+
+#include "DisplayManager.h"
 #include "SDLDeviceScreen.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
@@ -139,7 +139,7 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
   SDLWindow *parent;
 
   SDLDeviceScreen::addCMPToRendererList (this);
-  parentId = DisplayManagerFactory::getInstance ()->getSurfaceParentWindow (
+  parentId = G_DisplayManager->getSurfaceParentWindow (
       surface);
 
   if (parentId == 0)
@@ -148,13 +148,13 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
       return;
     }
 
-  parent = (SDLWindow *)(DisplayManagerFactory::getInstance ()
+  parent = (SDLWindow *)(G_DisplayManager
                              ->getIWindowFromId (myScreen, parentId));
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-  if (DisplayManagerFactory::getInstance ()->hasWindow (myScreen, parentId))
+  if (G_DisplayManager->hasWindow (myScreen, parentId))
     {
-      win = (SDLWindow *)DisplayManagerFactory::getInstance ()
+      win = (SDLWindow *)G_DisplayManager
                 ->getIWindowFromId (myScreen, parentId);
       if (hasTex)
         {

@@ -18,15 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "CodeMap.h"
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
 #include "InputManager.h"
-
-extern "C" {
-}
-
 #include "SDLDeviceScreen.h"
 
 GINGA_MB_BEGIN
+
+// Global display manager; initialized in by main().
+DisplayManager *_G_DisplayManager = NULL;
 
 set<IInputEventListener *> DisplayManager::iListeners;
 pthread_mutex_t DisplayManager::ilMutex;
@@ -36,36 +34,12 @@ pthread_mutex_t DisplayManager::mlMutex;
 
 bool DisplayManager::initMutex = false;
 
-const short DisplayManager::GMBST_DFLT = 0;
-const short DisplayManager::GMBST_DFB = 1;
-const short DisplayManager::GMBST_DX = 2;
-const short DisplayManager::GMBST_SDL = 3;
-const short DisplayManager::GMBST_TERM = 4;
-
-const short DisplayManager::GMBSST_DFLT = 0;
-const short DisplayManager::GMBSST_FBDEV = 1;
-const short DisplayManager::GMBSST_X11 = 2;
-const short DisplayManager::GMBSST_HWND = 3;
-const short DisplayManager::GMBSST_SDL = 4;
-const short DisplayManager::GMBSST_COCOA = 5;
-
 DisplayManager::DisplayManager ()
 {
   Thread::mutexInit (&mapMutex);
   Thread::mutexInit (&genMutex);
-  Thread::mutexInit (&sysMutex);
   Thread::mutexInit (&surMapMutex);
   Thread::mutexInit (&provMapMutex);
-
-  sysNames["dflt"] = GMBST_DFLT;
-  sysNames["dfb"] = GMBST_DFB;
-  sysNames["dx"] = GMBST_DX;
-  sysNames["sdl"] = GMBST_SDL;
-  sysNames["term"] = GMBST_TERM;
-
-  sortSys.push_back (GMBST_DFB);
-  sortSys.push_back (GMBST_SDL);
-  sortSys.push_back (GMBST_TERM);
 
   waitingRefreshScreen = false;
   running = false;
@@ -75,11 +49,6 @@ DisplayManager::DisplayManager ()
 
   Thread::condInit (&wsSignal, NULL);
   Thread::mutexInit (&wsMutex);
-
-  //		clog << "DisplayManager::DisplayManager(" << this <<
-  //")
-  //";
-  //		clog << "all done" << endl;
 }
 
 DisplayManager::~DisplayManager ()
@@ -126,11 +95,6 @@ DisplayManager::~DisplayManager ()
   provMap.clear ();
   Thread::mutexUnlock (&provMapMutex);
   Thread::mutexDestroy (&provMapMutex);
-
-  lockSysNames ();
-  sysNames.clear ();
-  unlockSysNames ();
-  Thread::mutexDestroy (&sysMutex);
 }
 
 void
@@ -146,12 +110,6 @@ DisplayManager::checkInitMutex ()
       Thread::mutexInit (&mlMutex);
       mListeners.clear ();
     }
-}
-
-void
-DisplayManager::releaseHandler ()
-{
-  DisplayManagerFactory::releaseInstance ();
 }
 
 void
@@ -432,85 +390,50 @@ DisplayManager::createScreen (string vSystem, string vSubSystem,
   string mycmd = "ginga";
 
   screenId = getNumOfScreens ();
-  sysType = getMBSystemType (vSystem);
+  mbArgs[argc] = (char *)mycmd.c_str ();
+  argc++;
 
-  switch (sysType)
+  if (vMode != "")
     {
-    case GMBST_SDL:
-      mbArgs[argc] = (char *)mycmd.c_str ();
+      mbArgs[argc] = (char *)"mode";
       argc++;
 
-      if (vSubSystem != "")
-        {
-          mbArgs[argc] = (char *)"subsystem";
-          argc++;
-
-          mbArgs[argc] = (char *)vSubSystem.c_str ();
-          argc++;
-        }
-
-      if (vMode != "")
-        {
-          mbArgs[argc] = (char *)"mode";
-          argc++;
-
-          mbArgs[argc] = (char *)vMode.c_str ();
-          argc++;
-        }
-
-      if (vParent != "")
-        {
-          mbArgs[argc] = (char *)"parent";
-          argc++;
-
-          mbArgs[argc] = (char *)vParent.c_str ();
-          argc++;
-
-          clog << "DisplayManager::createScreen parent with ";
-          clog << "following data '" << vParent << "'";
-          clog << endl;
-        }
-
-      if (vEmbed != "")
-        {
-          embedWin = (void *)strtoul (vEmbed.c_str (), NULL, 10);
-
-          clog << "DisplayManager::createScreen embed src = ";
-          clog << vEmbed << "' and dst = '" << embedWin << "'";
-          clog << endl;
-        }
-
-      if (aSystem != "")
-        {
-          mbArgs[argc] = (char *)"audio";
-          argc++;
-
-          mbArgs[argc] = (char *)aSystem.c_str ();
-          argc++;
-        }
-
-      if (useStdin)
-        {
-          mbArgs[argc] = (char *)"poll-stdin";
-          argc++;
-        }
-      screen = new SDLDeviceScreen (argc, mbArgs, screenId, embedWin,
-                                    externalRenderer);
-      break;
-
-    default:
-      clog << "DisplayManager::createScreen please reinstall";
-      clog << " ginga with a multimedia library (SDL or DFB)";
-      clog << endl;
-      break;
+      mbArgs[argc] = (char *)vMode.c_str ();
+      argc++;
     }
 
-  addScreen (screenId, screen);
-
-  if (screen == NULL)
+  if (vParent != "")
     {
-      screenId = -1;
+      mbArgs[argc] = (char *)"parent";
+      argc++;
+
+      mbArgs[argc] = (char *)vParent.c_str ();
+      argc++;
+
+      clog << "DisplayManager::createScreen parent with ";
+      clog << "following data '" << vParent << "'";
+      clog << endl;
     }
+
+  if (vEmbed != "")
+    {
+      embedWin = (void *)strtoul (vEmbed.c_str (), NULL, 10);
+
+      clog << "DisplayManager::createScreen embed src = ";
+      clog << vEmbed << "' and dst = '" << embedWin << "'";
+      clog << endl;
+    }
+
+  if (useStdin)
+    {
+      mbArgs[argc] = (char *)"poll-stdin";
+      argc++;
+    }
+
+  screen = new SDLDeviceScreen (argc, mbArgs, screenId, embedWin,
+                                externalRenderer);
+  g_assert_nonnull (screen);
+  addScreen (screenId, screen);
 
   return screenId;
 }
@@ -542,107 +465,6 @@ DisplayManager::getScreenUnderlyingWindow (GingaScreenID screenId)
     }
 
   return uWin;
-}
-
-short
-DisplayManager::getMBSystemType (string mbSystemName)
-{
-  map<string, short>::iterator i;
-  vector<short>::iterator j;
-  bool foundit = true;
-  short mbSystemType = GMBST_DFLT;
-
-  if (mbSystemName == "sdl")
-    {
-      mbSystemType = GMBST_SDL;
-    }
-  else if (mbSystemName != "")
-    {
-      foundit = false;
-    }
-
-  if (mbSystemType == GMBST_DFLT)
-    {
-      mbSystemType = GMBST_SDL;
-      foundit = false;
-    }
-
-  if (mbSystemType == GMBST_DFLT)
-    {
-      mbSystemType = GMBST_SDL;
-    }
-
-  return mbSystemType;
-
-  lockSysNames ();
-
-  if (!foundit)
-    {
-      if (mbSystemName == "")
-        {
-          string lName = "sdl";
-          i = sysNames.find (lName);
-          if (i != sysNames.end ())
-            {
-              mbSystemType = i->second;
-              foundit = true;
-            }
-        }
-    }
-
-  if (!foundit || (foundit && !isAvailable (mbSystemType)))
-    {
-      foundit = false;
-      j = sortSys.begin ();
-      while (j != sortSys.end ())
-        {
-          if (*j != mbSystemType)
-            {
-              if (isAvailable (*j))
-                {
-                  foundit = true;
-                  mbSystemType = *j;
-                  break;
-                }
-            }
-          ++j;
-        }
-    }
-
-  unlockSysNames ();
-
-  if (!foundit)
-    {
-      clog << "DisplayManager::getMBSystemType Warning! ";
-      clog << "Can't find a multimedia backend library" << endl;
-      mbSystemType = -1;
-    }
-
-  return mbSystemType;
-}
-
-bool
-DisplayManager::isAvailable (short mbSysType)
-{
-  bool hasSys = false;
-  string screenName = "";
-
-  clog << "DisplayManager::isAvailable checking if '" << mbSysType;
-  clog << "' is available" << endl;
-
-  return hasSys;
-}
-
-void
-DisplayManager::lockSysNames ()
-{
-  Thread::mutexLock (&sysMutex);
-}
-
-void
-DisplayManager::unlockSysNames ()
-{
-  Thread::mutexUnlock (&sysMutex);
 }
 
 SDLWindow *

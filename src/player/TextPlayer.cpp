@@ -44,23 +44,23 @@ TextPlayer::~TextPlayer ()
     }
 
   /* release window and surface first; then, release font */
-  if (outputWindow != 0 && dm->hasWindow (myScreen, outputWindow))
+  if (outputWindow != 0 && G_DisplayManager->hasWindow (myScreen, outputWindow))
     {
-      dm->revertWindowContent (myScreen, outputWindow);
-      dm->deleteWindow (myScreen, outputWindow);
+      G_DisplayManager->revertWindowContent (myScreen, outputWindow);
+      G_DisplayManager->deleteWindow (myScreen, outputWindow);
 
       outputWindow = 0;
     }
 
-  if (surface != 0 && dm->hasSurface (myScreen, surface))
+  if (surface != 0 && G_DisplayManager->hasSurface (myScreen, surface))
     {
-      dm->deleteSurface (surface);
+      G_DisplayManager->deleteSurface (surface);
       surface = 0;
     }
 
   if (font != 0)
     {
-      dm->releaseFontProvider (myScreen, font);
+      G_DisplayManager->releaseFontProvider (myScreen, font);
       font = 0;
     }
 }
@@ -78,11 +78,11 @@ TextPlayer::initializePlayer (GingaScreenID screenId)
   this->fontColor = NULL;
   this->fontSize = 12;
   this->fontUri = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  this->surface = dm->createSurface (myScreen);
+  this->surface = G_DisplayManager->createSurface (myScreen);
   if (this->surface != 0)
     {
-      int cap = dm->getSurfaceCap (surface, "ALPHACHANNEL");
-      dm->setSurfaceCaps (surface, cap);
+      int cap = G_DisplayManager->getSurfaceCap (surface, "ALPHACHANNEL");
+      G_DisplayManager->setSurfaceCaps (surface, cap);
     }
 }
 
@@ -100,7 +100,7 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
   GingaProviderID font = 0;
   int width = 0;
 
-  font = dm->createFontProvider (screenId, fontUri.c_str (), fontSize);
+  font = G_DisplayManager->createFontProvider (screenId, fontUri.c_str (), fontSize);
 
   if (fontColor == NULL)
     {
@@ -109,15 +109,15 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
 
   if (font != 0)
     {
-      dm->setSurfaceColor (s, fontColor->getR (), fontColor->getG (),
+      G_DisplayManager->setSurfaceColor (s, fontColor->getR (), fontColor->getG (),
                            fontColor->getB (), fontColor->getAlpha ());
 
-      width = dm->getProviderStringWidth (
+      width = G_DisplayManager->getProviderStringWidth (
           font, text.c_str (), strlen ((const char *)(text.c_str ())));
 
-      dm->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
+      G_DisplayManager->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
 
-      dm->releaseFontProvider (screenId, font);
+      G_DisplayManager->releaseFontProvider (screenId, font);
       font = 0;
     }
 
@@ -140,11 +140,11 @@ TextPlayer::setFont (string someUri)
   this->fontUri = someUri;
   if (font != 0)
     {
-      dm->releaseFontProvider (myScreen, font);
+      G_DisplayManager->releaseFontProvider (myScreen, font);
       font = 0;
     }
 
-  font = dm->createFontProvider (myScreen, someUri.c_str (), fontSize);
+  font = G_DisplayManager->createFontProvider (myScreen, someUri.c_str (), fontSize);
   if (font == 0)
     {
       clog << "TextPlayer::setFont Warning! Can't create Font '";
@@ -152,7 +152,7 @@ TextPlayer::setFont (string someUri)
       return false;
     }
 
-  fontHeight = dm->getProviderHeight (font);
+  fontHeight = G_DisplayManager->getProviderHeight (font);
   return true;
 }
 
@@ -187,7 +187,7 @@ TextPlayer::setBgColor (int red, int green, int blue, int alpha)
   bgColor = new Color (red, green, blue, alpha);
   if (this->surface != 0)
     {
-      dm->setSurfaceBgColor (surface, red, green, blue, alpha);
+      G_DisplayManager->setSurfaceBgColor (surface, red, green, blue, alpha);
     }
 }
 
@@ -246,13 +246,13 @@ TextPlayer::drawText (string text, short align)
       fontColor = new Color ("black");
     }
 
-  dm->setSurfaceColor (surface, fontColor->getR (), fontColor->getG (),
+  G_DisplayManager->setSurfaceColor (surface, fontColor->getR (), fontColor->getG (),
                        fontColor->getB (), fontColor->getAlpha ());
 
   if (font != 0 && surface != 0)
     {
-      dm->getSurfaceSize (surface, &surWidth, &surHeight);
-      textWidth = dm->getProviderStringWidth (
+      G_DisplayManager->getSurfaceSize (surface, &surWidth, &surHeight);
+      textWidth = G_DisplayManager->getProviderStringWidth (
           font, aux.c_str (), strlen ((const char *)(aux.c_str ())));
 
       if (textWidth > surWidth && aux.length () > 1)
@@ -280,7 +280,7 @@ TextPlayer::drawText (string text, short align)
 
           aux = aux.substr (0, splitPos);
 
-          textWidth = dm->getProviderStringWidth (font, aux.c_str ());
+          textWidth = G_DisplayManager->getProviderStringWidth (font, aux.c_str ());
 
           while (textWidth > surWidth)
             {
@@ -308,7 +308,7 @@ TextPlayer::drawText (string text, short align)
                 }
 
               oldTextWidth = textWidth;
-              textWidth = dm->getProviderStringWidth (font, aux.c_str ());
+              textWidth = G_DisplayManager->getProviderStringWidth (font, aux.c_str ());
 
               if (oldTextWidth == textWidth)
                 {
@@ -316,7 +316,7 @@ TextPlayer::drawText (string text, short align)
                 }
             }
 
-          dm->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          G_DisplayManager->playProviderOver (font, surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           breakLine ();
@@ -327,7 +327,7 @@ TextPlayer::drawText (string text, short align)
         }
       else
         {
-          dm->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          G_DisplayManager->playProviderOver (font, surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           currentColumn += textWidth;
@@ -363,7 +363,7 @@ TextPlayer::breakLine ()
       setFont (string (GINGA_FONT_DATADIR) + "decker.ttf");
     }
 
-  dm->getSurfaceSize (surface, &w, &h);
+  G_DisplayManager->getSurfaceSize (surface, &w, &h);
   if ((currentLine + fontHeight) > h)
     {
       clog << "TextPlayer::breakLine() Exceeding surface bounds";

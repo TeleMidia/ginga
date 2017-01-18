@@ -50,7 +50,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
 
   if (fileExists (mrl))
     {
-      provider = dm->createImageProvider (myScreen, mrl.c_str ());
+      provider = G_DisplayManager->createImageProvider (myScreen, mrl.c_str ());
     }
   else
     {
@@ -103,7 +103,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
               if (fileExists (newMrl))
                 {
                   provider
-                      = dm->createImageProvider (myScreen, newMrl.c_str ());
+                      = G_DisplayManager->createImageProvider (myScreen, newMrl.c_str ());
                 }
               else
                 {
@@ -133,7 +133,7 @@ ImagePlayer::~ImagePlayer ()
 {
   if (provider != 0)
     {
-      dm->releaseImageProvider (myScreen, provider);
+      G_DisplayManager->releaseImageProvider (myScreen, provider);
     }
 }
 
@@ -146,7 +146,7 @@ ImagePlayer::play ()
       return false;
     }
 
-  dm->playProviderOver (provider, surface);
+  G_DisplayManager->playProviderOver (provider, surface);
   return Player::play ();
 }
 
@@ -165,16 +165,14 @@ ImagePlayer::resume ()
 void
 ImagePlayer::setPropertyValue (string name, string value)
 {
-  // TODO: set brightness, rotate...
-  // refresh changes
   GingaWindowID win;
 
   if (surface != 0)
     {
-      win = dm->getSurfaceParentWindow (surface);
+      win = G_DisplayManager->getSurfaceParentWindow (surface);
       if (win != 0)
         {
-          dm->renderWindowFrom (myScreen, win, surface);
+          G_DisplayManager->renderWindowFrom (myScreen, win, surface);
         }
     }
 
@@ -187,8 +185,8 @@ ImagePlayer::prepareSurface (GingaProviderID provider, string mrl)
 
   GingaSurfaceID renderedSurface = 0;
 
-  renderedSurface = dm->createSurfaceFrom (myScreen, 0);
-  dm->playProviderOver (provider, renderedSurface);
+  renderedSurface = G_DisplayManager->createSurfaceFrom (myScreen, 0);
+  G_DisplayManager->playProviderOver (provider, renderedSurface);
 
   return renderedSurface;
 }

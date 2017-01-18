@@ -17,11 +17,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "SDLSurface.h"
-#include "SDLWindow.h"
-#include "SDLDeviceScreen.h"
-#include "IFontProvider.h"
+
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
+#include "IFontProvider.h"
+#include "SDLDeviceScreen.h"
+#include "SDLWindow.h"
 
 GINGA_MB_BEGIN
 
@@ -45,7 +45,7 @@ SDLSurface::~SDLSurface ()
   Thread::mutexLock (&pMutex);
 
   SDLWindow *w = (SDLWindow *)parent;
-  DisplayManagerFactory::getInstance ()->releaseSurface (myScreen, this);
+  G_DisplayManager->releaseSurface (myScreen, this);
 
   releaseChromaColor ();
   releaseBorderColor ();
@@ -54,7 +54,7 @@ SDLSurface::~SDLSurface ()
   releaseFont ();
 
   if (w != NULL
-      && DisplayManagerFactory::getInstance ()->hasWindow (myScreen,
+      && G_DisplayManager->hasWindow (myScreen,
                                                           w->getId ()))
     {
 
@@ -228,7 +228,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      DisplayManagerFactory::getInstance ()->releaseFontProvider (
+      G_DisplayManager->releaseFontProvider (
           myScreen, iFont->getId ());
       iFont = NULL;
     }
@@ -699,7 +699,7 @@ SDLSurface::createSurface ()
   if (win == NULL)
     return NULL;
 
-  if (DisplayManagerFactory::getInstance ()->hasWindow (myScreen,
+  if (G_DisplayManager->hasWindow (myScreen,
                                                        win->getId ()))
     {
       w = win->getW ();

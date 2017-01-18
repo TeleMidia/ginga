@@ -57,8 +57,8 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
   deviceClass = DeviceDomain::CT_ACTIVE;
   formatter = NULL;
 
-  defaultWidth = dm->getDeviceWidth (myScreen);
-  defaultHeight = dm->getDeviceHeight (myScreen);
+  defaultWidth = G_DisplayManager->getDeviceWidth (myScreen);
+  defaultHeight = G_DisplayManager->getDeviceHeight (myScreen);
 
   mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
   layoutManager[deviceClass] = mainLayout;
@@ -71,21 +71,21 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
 
   if (fileExists (img_dev))
     {
-      serialized = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
+      serialized = G_DisplayManager->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
                                      DV_QVGA_HEIGHT, -1.0);
 
-      s = dm->createRenderedSurfaceFromImageFile (myScreen,
+      s = G_DisplayManager->createRenderedSurfaceFromImageFile (myScreen,
                                                   img_dev.c_str ());
 
-      int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-      dm->setWindowCaps (myScreen, serialized, cap);
-      dm->drawWindow (myScreen, serialized);
+      int cap = G_DisplayManager->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+      G_DisplayManager->setWindowCaps (myScreen, serialized, cap);
+      G_DisplayManager->drawWindow (myScreen, serialized);
 
-      dm->showWindow (myScreen, serialized);
-      dm->renderWindowFrom (myScreen, serialized, s);
-      dm->lowerWindowToBottom (myScreen, serialized);
+      G_DisplayManager->showWindow (myScreen, serialized);
+      G_DisplayManager->renderWindowFrom (myScreen, serialized, s);
+      G_DisplayManager->lowerWindowToBottom (myScreen, serialized);
 
-      dm->deleteSurface (s);
+      G_DisplayManager->deleteSurface (s);
       s = 0;
     }
   else
@@ -154,7 +154,7 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
           // handleTCPClient(servSock.accept());
           if (serialized)
             {
-              dm->hideWindow (myScreen, serialized);
+              G_DisplayManager->hideWindow (myScreen, serialized);
             }
           handleTCPClient (tcpSocket);
         }
@@ -175,7 +175,7 @@ FormatterActiveDevice::~FormatterActiveDevice ()
   // lock();
 
   listening = false;
-  dm->releaseScreen (myScreen);
+  G_DisplayManager->releaseScreen (myScreen);
 
   if (privateBaseManager != NULL)
     {
@@ -751,24 +751,24 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
           // TODO: player->stop()? flag to define this?
           // TODO: only change image if nothing is playing?
 
-          serialized = dm->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
+          serialized = G_DisplayManager->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
                                          DV_QVGA_HEIGHT, -1.0);
 
           if (fileExists (img_reset))
             {
-              s = dm->createRenderedSurfaceFromImageFile (
+              s = G_DisplayManager->createRenderedSurfaceFromImageFile (
                   myScreen, img_reset.c_str ());
 
               int cap
-                  = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-              dm->setWindowCaps (myScreen, serialized, cap);
-              dm->drawWindow (myScreen, serialized);
+                  = G_DisplayManager->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+              G_DisplayManager->setWindowCaps (myScreen, serialized, cap);
+              G_DisplayManager->drawWindow (myScreen, serialized);
 
-              dm->showWindow (myScreen, serialized);
-              dm->renderWindowFrom (myScreen, serialized, s);
-              dm->lowerWindowToBottom (myScreen, serialized);
+              G_DisplayManager->showWindow (myScreen, serialized);
+              G_DisplayManager->renderWindowFrom (myScreen, serialized, s);
+              G_DisplayManager->lowerWindowToBottom (myScreen, serialized);
 
-              dm->deleteSurface (s);
+              G_DisplayManager->deleteSurface (s);
               s = 0;
             }
           break;

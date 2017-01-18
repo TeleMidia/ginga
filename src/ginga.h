@@ -48,6 +48,8 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 #include <SDL.h>
 #include <SDL_bits.h>
+#include <SDL_endian.h>
+#include <SDL_syswm.h>
 
 #if WITH_ESPEAK
 # include <espeak/speak_lib.h>
@@ -100,13 +102,6 @@ using namespace std;
 #include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-// Typedefs.
-typedef void *UnderlyingWindowID;
-typedef unsigned long GingaWindowID;
-typedef short GingaScreenID;
-typedef unsigned int GingaSurfaceID;
-typedef unsigned int GingaProviderID;
-
 // Namespaces.
 #define _GINGA_NS_BEGIN(t)      namespace t { /* } */
 #define _GINGA_NS_END                    /* { */ }
@@ -140,5 +135,12 @@ typedef unsigned int GingaProviderID;
 #define GINGA_TUNER_END       _GINGA_END
 #define GINGA_UTIL_BEGIN      _GINGA_BEGIN (util)
 #define GINGA_UTIL_END        _GINGA_END
+
+// Typedefs.
+typedef void *UnderlyingWindowID;
+typedef unsigned long GingaWindowID;
+typedef short GingaScreenID;
+typedef unsigned int GingaSurfaceID;
+typedef unsigned int GingaProviderID;
 
 #endif /* GINGA_H */

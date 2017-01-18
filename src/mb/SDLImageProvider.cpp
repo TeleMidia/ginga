@@ -16,15 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "util/Color.h"
-
 #include "SDLImageProvider.h"
-#include "SDLWindow.h"
-#include "SDLSurface.h"
-#include "SDLDeviceScreen.h"
 
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
+#include "SDLDeviceScreen.h"
+#include "SDLSurface.h"
+#include "SDLWindow.h"
 
 #if WITH_LIBRSVG
 #include "SDLSvgDecoder.h"
@@ -33,6 +30,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if WITH_LIBBPG
 #include "SDLBpgDecoder.h"
 #endif
+
+#include "util/Color.h"
+using namespace  ::ginga::util;
 
 GINGA_MB_BEGIN
 
@@ -97,8 +97,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
     }
 
   if (surface != 0
-      && DisplayManagerFactory::getInstance ()->hasSurface (myScreen,
-                                                           surface))
+      && G_DisplayManager->hasSurface (myScreen, surface))
     {
 
 #if WITH_LIBRSVG
@@ -135,16 +134,16 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
       if (renderedSurface != NULL)
         {
           SDLDeviceScreen::addUnderlyingSurface (renderedSurface);
-          GingaWindowID parentId = DisplayManagerFactory::getInstance ()
+          GingaWindowID parentId = G_DisplayManager
                                        ->getSurfaceParentWindow (surface);
-          parent = (SDLWindow *)DisplayManagerFactory::getInstance ()
+          parent = (SDLWindow *)G_DisplayManager
                        ->getIWindowFromId (myScreen, parentId);
 
           if (parent != NULL)
             {
               parent->setRenderedSurface (renderedSurface);
             }
-          DisplayManagerFactory::getInstance ()->setSurfaceContent (
+          G_DisplayManager->setSurfaceContent (
               surface, (void *)renderedSurface);
         }
     }

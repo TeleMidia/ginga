@@ -18,13 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Tuner.h"
 
-#include "mb/DisplayManagerFactory.h"
 #include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
 GINGA_TUNER_BEGIN
-
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
               string address)
@@ -39,7 +36,7 @@ Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
   currentSpec = "";
   this->screenId = screenId;
 
-  dm->getInputManager (screenId)->addInputEventListener (this, NULL);
+  G_DisplayManager->getInputManager (screenId)->addInputEventListener (this, NULL);
 
   interfaces.clear ();
 
@@ -59,7 +56,7 @@ Tuner::~Tuner ()
 {
   clog << "Tuner::~Tuner" << endl;
 
-  dm->getInputManager (screenId)->removeInputEventListener (this);
+  G_DisplayManager->getInputManager (screenId)->removeInputEventListener (this);
   listener = NULL;
   loopListener = NULL;
 

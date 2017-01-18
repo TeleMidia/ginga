@@ -18,56 +18,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "CommonCoreManager.h"
 
+#include "StcWrapper.h"
+
 #if WITH_ISDBT
-#include "isdbt-tuner/Tuner.h"
-#include "isdbt-tsparser/Demuxer.h"
-#include "isdbt-tsparser/PipeFilter.h"
+#include "DataWrapperListener.h"
 #include "isdbt-dataproc/DataProcessor.h"
+#include "isdbt-dataproc/DataProcessor.h"
+#include "isdbt-dataproc/IDsmccObjectListener.h"
+#include "isdbt-tsparser/Demuxer.h"
+#include "isdbt-tsparser/IDemuxer.h"
+#include "isdbt-tsparser/ITSFilter.h"
+#include "isdbt-tsparser/PipeFilter.h"
+#include "isdbt-tuner/Tuner.h"
+using namespace ::ginga::dataproc;
+using namespace ::ginga::tsparser;
+using namespace ::ginga::tuner;
 #endif
 
-#include "util/functions.h"
-using namespace ::ginga::util;
+#include "mb/DisplayManager.h"
+#include "mb/SDLWindow.h"
+using namespace ::ginga::mb;
+
+#include "player/AVPlayer.h"
+#include "player/IPlayer.h"
+#include "player/IProgramAV.h"
+#include "player/ImagePlayer.h"
+#include "player/ProgramAV.h"
+using namespace ::ginga::player;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "player/ImagePlayer.h"
-#include "player/AVPlayer.h"
-#include "player/ProgramAV.h"
-
-#if WITH_ISDBT
-#include "isdbt-tuner/Tuner.h"
-using namespace ::ginga::tuner;
-
-#include "isdbt-tsparser/IDemuxer.h"
-#include "isdbt-tsparser/ITSFilter.h"
-using namespace ::ginga::tsparser;
-
-#include "isdbt-dataproc/DataProcessor.h"
-using namespace ::ginga::dataproc;
-
-#include "isdbt-dataproc/IDsmccObjectListener.h"
-using namespace ::ginga::dataproc;
-
-#include "DataWrapperListener.h"
-#endif // WITH_ISDBT
-
-#include "mb/DisplayManager.h"
-#include "mb/DisplayManagerFactory.h"
-#include "mb/SDLWindow.h"
-using namespace ::ginga::mb;
-
-#include "player/IPlayer.h"
-#include "player/IProgramAV.h"
-using namespace ::ginga::player;
-
-#include "StcWrapper.h"
-
-#include "pthread.h"
+#include "util/functions.h"
+using namespace ::ginga::util;
 
 GINGA_LSSM_BEGIN
-
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 CommonCoreManager::CommonCoreManager ()
 {
@@ -192,20 +177,20 @@ CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
   tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
   if (fileExists (tunerImg))
     {
-      tuningWindow = dm->createWindow (screenId, x, y, w, h, -10.0);
+      tuningWindow = G_DisplayManager->createWindow (screenId, x, y, w, h, -10.0);
 
-      s = dm->createRenderedSurfaceFromImageFile (screenId,
+      s = G_DisplayManager->createRenderedSurfaceFromImageFile (screenId,
                                                   tunerImg.c_str ());
 
-      int cap = dm->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
-      dm->setWindowCaps (myScreen, tuningWindow, cap);
+      int cap = G_DisplayManager->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
+      G_DisplayManager->setWindowCaps (myScreen, tuningWindow, cap);
 
-      dm->drawWindow (myScreen, tuningWindow);
-      dm->showWindow (myScreen, tuningWindow);
-      dm->renderWindowFrom (myScreen, tuningWindow, s);
-      dm->lowerWindowToBottom (myScreen, tuningWindow);
+      G_DisplayManager->drawWindow (myScreen, tuningWindow);
+      G_DisplayManager->showWindow (myScreen, tuningWindow);
+      G_DisplayManager->renderWindowFrom (myScreen, tuningWindow, s);
+      G_DisplayManager->lowerWindowToBottom (myScreen, tuningWindow);
 
-      dm->deleteSurface (s);
+      G_DisplayManager->deleteSurface (s);
       s = 0;
     }
 }
@@ -215,10 +200,10 @@ CommonCoreManager::releaseTunningWindow ()
 {
   if (tuningWindow != 0)
     {
-      dm->clearWindowContent (myScreen, tuningWindow);
-      dm->hideWindow (myScreen, tuningWindow);
+      G_DisplayManager->clearWindowContent (myScreen, tuningWindow);
+      G_DisplayManager->hideWindow (myScreen, tuningWindow);
 
-      dm->deleteWindow (myScreen, tuningWindow);
+      G_DisplayManager->deleteWindow (myScreen, tuningWindow);
       tuningWindow = 0;
     }
 }

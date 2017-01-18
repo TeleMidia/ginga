@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "SDLInputEvent.h"
+
 #include "CodeMap.h"
 #include "DisplayManager.h"
-#include "DisplayManagerFactory.h"
 
 GINGA_MB_BEGIN
 
@@ -85,7 +85,7 @@ SDLInputEvent::setKeyCode (GingaScreenID screenId, const int keyCode)
 {
   int sdlCode;
 
-  sdlCode = DisplayManagerFactory::getInstance ()->fromGingaToMB (screenId,
+  sdlCode = G_DisplayManager->fromGingaToMB (screenId,
                                                                  keyCode);
 
   if (event.type == SDL_USEREVENT)
@@ -129,7 +129,7 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
       ;
     }
 
-  gingaValue = DisplayManagerFactory::getInstance ()->fromMBToGinga (
+  gingaValue = G_DisplayManager->fromMBToGinga (
       screenId, sdlValue);
 
   if (gingaValue >= CodeMap::KEY_SMALL_A
@@ -137,7 +137,7 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
 
-      gingaValue = DisplayManagerFactory::getInstance ()->fromMBToGinga (
+      gingaValue = G_DisplayManager->fromMBToGinga (
           screenId, sdlValue + 5000);
     }
 

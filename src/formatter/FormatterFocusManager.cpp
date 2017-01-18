@@ -18,7 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "FormatterFocusManager.h"
 
-#include "mb/DisplayManagerFactory.h"
+#include "FormatterConverter.h"
+#include "FormatterScheduler.h"
+#include "NclFormatterLayout.h"
+
 #include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
 
@@ -27,19 +30,11 @@ using namespace ::ginga::mb;
 using namespace ::ginga::multidev;
 #endif
 
-#include "FormatterConverter.h"
-
-#include "NclFormatterLayout.h"
-
-#include "FormatterScheduler.h"
-
 GINGA_FORMATTER_BEGIN
 
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 pthread_mutex_t FormatterFocusManager::iMutex;
-
-static DisplayManager *dm = DisplayManagerFactory::getInstance ();
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
@@ -53,7 +48,7 @@ FormatterFocusManager::FormatterFocusManager (
   DisplayManager::addMEListenerInstance (this);
 
   myScreen = playerManager->getNclPlayerData ()->screenId;
-  im = dm->getInputManager (myScreen);
+  im = G_DisplayManager->getInputManager (myScreen);
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";

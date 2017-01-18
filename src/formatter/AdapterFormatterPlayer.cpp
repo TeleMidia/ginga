@@ -17,20 +17,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "AdapterFormatterPlayer.h"
-#include "AdapterPlayerManager.h"
 
 #include "AdapterApplicationPlayer.h"
-
+#include "AdapterPlayerManager.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
-#include "mb/DisplayManagerFactory.h"
-using namespace ::ginga::mb;
-
 #include "player/Player.h"
+using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-DisplayManager *AdapterFormatterPlayer::dm = NULL;
 double AdapterFormatterPlayer::eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
@@ -98,18 +94,11 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 void
 AdapterFormatterPlayer::setAdapterManager (void *manager)
 {
-
   this->manager = manager;
   this->myScreen
       = ((AdapterPlayerManager *)manager)->getNclPlayerData ()->screenId;
-  if (dm == NULL)
-    {
-      dm = DisplayManagerFactory::getInstance ();
-    }
-
   DisplayManager::addIEListenerInstance (this);
-
-  im = dm->getInputManager (myScreen);
+  im = G_DisplayManager->getInputManager (myScreen);
 }
 
 bool
@@ -1372,7 +1361,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 
   if (im == NULL)
     { // player was recovered from manager gc
-      im = dm->getInputManager (myScreen);
+      im = G_DisplayManager->getInputManager (myScreen);
     }
 
   if (im != NULL)
