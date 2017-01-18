@@ -41,4 +41,5 @@ class Crc32 {
 
 
 GINGA_DATAPROC_END
+
 #endif

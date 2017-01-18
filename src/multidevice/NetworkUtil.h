@@ -60,4 +60,5 @@ GINGA_MULTIDEVICE_BEGIN
 			unsigned int payloadSize);
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_NetworkUtil_H_*/

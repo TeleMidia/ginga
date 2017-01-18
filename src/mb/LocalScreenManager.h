@@ -455,4 +455,5 @@ GINGA_MB_BEGIN
 	};
 
 GINGA_MB_END
+
 #endif /*LocalScreenManager_H_*/

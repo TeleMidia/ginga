@@ -32,4 +32,5 @@ GINGA_MB_BEGIN
 	};
 
 GINGA_MB_END
+
 #endif /* IDiscreteMediaProvider_H_ */

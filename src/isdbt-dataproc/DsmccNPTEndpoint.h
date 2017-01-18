@@ -49,4 +49,5 @@ class DsmccNPTEndpoint : public DsmccMpegDescriptor {
 
 
 GINGA_DATAPROC_END
+
 #endif /* NPTENDPOINT_H_ */

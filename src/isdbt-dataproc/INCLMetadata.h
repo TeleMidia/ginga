@@ -57,4 +57,5 @@ typedef struct {
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_IMetadata_H_

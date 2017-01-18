@@ -526,4 +526,5 @@ GINGA_MB_BEGIN
   };
 
 GINGA_MB_END
+
 #endif /* SDL2FFMPEG_H */

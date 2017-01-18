@@ -47,4 +47,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif //_SIMPLERULE_H_

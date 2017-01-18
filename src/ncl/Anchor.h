@@ -28,4 +28,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif /*ANCHOR_H_*/

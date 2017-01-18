@@ -30,4 +30,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif //_RULE_H_

@@ -33,4 +33,5 @@ GINGA_MB_BEGIN
 	};
 
 GINGA_MB_END
+
 #endif /*IIMAGEPROVIDER_H_*/

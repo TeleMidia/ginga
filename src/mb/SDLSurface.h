@@ -144,4 +144,5 @@ GINGA_MB_BEGIN
   };
 
 GINGA_MB_END
+
 #endif /*SDLSURFACE_H_*/

@@ -106,4 +106,5 @@ GINGA_TUNER_BEGIN
 	};
 
 GINGA_TUNER_END
+
 #endif //__TUNER_H__

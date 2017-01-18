@@ -46,4 +46,5 @@ GINGA_NCL_BEGIN
 	};
 
 GINGA_NCL_END
+
 #endif /*REFERNODE_H_*/

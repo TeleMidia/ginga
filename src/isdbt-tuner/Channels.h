@@ -49,4 +49,5 @@ class Channels {
 };
 
 GINGA_TUNER_END
+
 #endif /*Channels_H_*/

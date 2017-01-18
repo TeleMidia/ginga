@@ -33,4 +33,5 @@ public:
 };
 
 GINGA_MB_END
+
 #endif /* ScreenManagerFactory_H_ */

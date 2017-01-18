@@ -64,4 +64,5 @@ GINGA_MULTIDEVICE_BEGIN
   };
 
 GINGA_MULTIDEVICE_END
+
 #endif /*_ActiveDeviceDomain_H_*/

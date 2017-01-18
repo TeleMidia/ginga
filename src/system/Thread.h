@@ -81,4 +81,5 @@ GINGA_SYSTEM_BEGIN
   };
 
 GINGA_SYSTEM_END
+
 #endif //__THREAD_H__

@@ -38,4 +38,5 @@ GINGA_MB_BEGIN
       };
 
 GINGA_MB_END
+
 #endif /* SDLBPGDECODER_H */

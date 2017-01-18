@@ -37,4 +37,5 @@ GINGA_DATAPROC_BEGIN
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_IDataFile_H_

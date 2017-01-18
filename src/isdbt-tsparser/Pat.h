@@ -92,4 +92,5 @@ GINGA_TSPARSER_BEGIN
 	 };
 
 GINGA_TSPARSER_END
+
 #endif /*PAT_H_*/

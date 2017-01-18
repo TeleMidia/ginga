@@ -45,4 +45,5 @@ GINGA_DATAPROC_BEGIN
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_INCLSectionProcessor_H_

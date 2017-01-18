@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "isdbt-tsparser/ContentDescriptor.h"
+
 GINGA_TSPARSER_BEGIN
 
 //TODO: get methods?

@@ -78,4 +78,5 @@ GINGA_NCLCONV_BEGIN
   };
 
 GINGA_NCLCONV_END
+
 #endif //NclLinkingConverter_H

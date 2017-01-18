@@ -88,4 +88,5 @@ GINGA_DATAPROC_BEGIN
 	};
 
 GINGA_DATAPROC_END
+
 #endif //_Metadata_H_

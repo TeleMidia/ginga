@@ -94,4 +94,5 @@ GINGA_PLAYER_BEGIN
 	static const string EC_SET_PROPERTY_VALUE            = "0x2D";
 
 GINGA_PLAYER_END
+
 #endif /*IAPPLICATIONPLAYER_H_*/

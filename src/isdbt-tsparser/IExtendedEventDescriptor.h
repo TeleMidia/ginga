@@ -28,6 +28,7 @@ struct Item {
 	unsigned char itemLength;
 	char* itemChar;
 };
+
 GINGA_TSPARSER_BEGIN
 
 	class IExtendedEventDescriptor : public IMpegDescriptor {
@@ -43,4 +44,5 @@ GINGA_TSPARSER_BEGIN
 	};
 
 GINGA_TSPARSER_END
+
 #endif /* IEXTENDEDEVENTDESCRIPTOR_H_ */

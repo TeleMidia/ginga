@@ -172,4 +172,5 @@ GINGA_PLAYER_BEGIN
   };
 
 GINGA_PLAYER_END
+
 #endif /*BerkeliumHandler_h_*/

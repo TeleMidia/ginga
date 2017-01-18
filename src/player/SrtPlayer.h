@@ -14,6 +14,7 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
 #ifndef SRTPLAYER_H_
 #define SRTPLAYER_H_
 
@@ -64,4 +65,5 @@ GINGA_PLAYER_BEGIN
 	};
 
 GINGA_PLAYER_END
+
 #endif /*SRTPLAYER_H_*/
